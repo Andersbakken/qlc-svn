@@ -53,6 +53,8 @@ Scene::~Scene()
       free(m_values);
       m_values = NULL;
     }
+
+  emit destroyed();
 }
 
 void Scene::unRegisterFunction(Feeder* feeder)
