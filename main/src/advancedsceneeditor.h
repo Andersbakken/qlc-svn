@@ -44,6 +44,7 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotSceneNameTextChanged(const QString& text);
 
   void slotEditValueClicked();
+  void slotContentsClicked(QListViewItem*, const QPoint&, int);
   void slotContentsClicked(QListViewItem* item);
   void slotContentsDoubleClicked(QListViewItem*);
   void slotChannelsContextMenuRequested(QListViewItem*, const QPoint &, int);

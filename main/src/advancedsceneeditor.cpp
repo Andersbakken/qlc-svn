@@ -231,7 +231,7 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
       m_scene->set(channel, value, m_scene->channelValue(channel).type);
       
       QString s;
-      s.setNum(value);
+      s.sprintf("%.3d", value);
       m_sceneContents->currentItem()->setText(KColumnValue, s);
       
       Capability* c = m_currentChannel->searchCapability(value);
@@ -364,6 +364,20 @@ void AdvancedSceneEditor::slotSceneNameTextChanged(const QString& text)
       setDirty(true);
     }
 }
+
+void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item,
+					      const QPoint& point, int col)
+{
+  if (col == KColumnValue)
+    {
+      item->startRename(KColumnValue);
+    }
+  else if (col == KColumnType)
+    {
+      item->startRename(KColumnType);
+    }
+}
+
 
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
@@ -571,11 +585,11 @@ void AdvancedSceneEditor::renameType(QString text)
     {
       slotTypeMenuActivated(Scene::Fade);
     }
-  else if (text.lower().contains("no"))
+  else if (text.lower().contains("n"))
     {
       slotTypeMenuActivated(Scene::NoSet);
     }
-  else if (text.lower().contains("s"))
+  else // if (text.lower().contains("s"))
     {
       slotTypeMenuActivated(Scene::Set);
     }

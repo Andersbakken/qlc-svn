@@ -38,6 +38,7 @@ class BusProperties : public UI_BusProperties
   void closed();
 
  private slots:
+  void slotItemClicked(QListViewItem*, const QPoint&, int);
   void slotItemRenamed(QListViewItem*, int, const QString &);
 
  protected:

@@ -113,11 +113,18 @@
         <receiver>UI_BusProperties</receiver>
         <slot>close()</slot>
     </connection>
+    <connection>
+        <sender>m_list</sender>
+        <signal>clicked(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>UI_BusProperties</receiver>
+        <slot>slotItemClicked(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotOKClicked()</slot>
     <slot>slotCancelClicked()</slot>
     <slot>slotItemRenamed(QListViewItem*,int,const QString&amp;)</slot>
+    <slot>slotItemClicked(QListViewItem*,const QPoint&amp;,int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

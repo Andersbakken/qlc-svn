@@ -41,6 +41,14 @@ BusProperties::~BusProperties()
 {
 }
 
+void BusProperties::slotItemClicked(QListViewItem* item, const QPoint& point,
+				    int col)
+{
+  if (col == KColumnName)
+    {
+      item->startRename(col);
+    }
+}
 
 void BusProperties::slotItemRenamed(QListViewItem* item, int col, 
 				    const QString &text)
