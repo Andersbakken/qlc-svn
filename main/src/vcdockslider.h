@@ -33,6 +33,11 @@ class QMouseEvent;
 class QFile;
 class QPoint;
 
+const QString KEY_DEFAULT_FADE_MIN ( "DefaultFadeMin" );
+const QString KEY_DEFAULT_FADE_MAX ( "DefaultFadeMax" );
+const QString KEY_DEFAULT_HOLD_MIN ( "DefaultHoldMin" );
+const QString KEY_DEFAULT_HOLD_MAX ( "DefaultHoldMax" );
+
 class VCDockSlider : public UI_VCDockSlider
 {
   Q_OBJECT

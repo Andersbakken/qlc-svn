@@ -36,6 +36,7 @@
 #include <qcolordialog.h>
 #include <qmessagebox.h>
 #include <qpushbutton.h>
+#include <qinputdialog.h>
 
 #include "vcdockslider.h"
 #include "vcdocksliderproperties.h"
@@ -66,7 +67,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
     m_mode           (             Speed ),
     m_busID          ( KBusIDDefaultFade ),
     m_busLowLimit    (                 0 ),
-    m_busHighLimit   (                15 ),
+    m_busHighLimit   (                 5 ),
     m_levelLowLimit  (                 0 ),
     m_levelHighLimit (               255 ),
     m_static         (          isStatic ),
@@ -246,6 +247,7 @@ QString VCDockSlider::modeString(Mode mode)
       return QString("Submaster");
     }
 }
+
 
 //
 // Set behaviour to speed slider and assign a bus
@@ -760,17 +762,60 @@ void VCDockSlider::invokeMenu(QPoint point)
 {
   if (m_static)
     {
-      _app->virtualConsole()->editMenu()->setItemEnabled(KVCMenuEditDelete,
-							 false);
+      QString dir;
+      _app->settings()->get(KEY_SYSTEM_DIR, dir);
+      dir += QString("/") + PIXMAPPATH;
+
+      QPopupMenu menu;
+      menu.insertItem(QPixmap(dir + "/settings.xpm"),
+		     QString("&Properties..."), KVCMenuEditProperties);
+
+      if (menu.exec(point) == KVCMenuEditProperties)
+	{
+	  bool ok = false;
+	  QString current;
+	  current.sprintf("%d-%d", m_busLowLimit, m_busHighLimit);
+
+	  QString text = 
+	    QInputDialog::getText(KApplicationNameShort,
+				  "Slider value range (e.g. 0-10) in seconds:",
+				  QLineEdit::Normal, current, &ok, this);
+	  
+	  if (ok && !text.isEmpty())
+	    {
+	      int dash = text.find('-');
+	      QString min = text.left(dash);
+	      QString max = text.mid(dash + 1);
+	      
+	      if (min.toInt() >= max.toInt())
+		{
+		  QMessageBox::warning(this, KApplicationNameShort,
+       "Minimum value cannot be bigger than or equal to the maximum value");
+		}
+	      else
+		{
+		  setBusRange(min.toInt(), max.toInt());
+		  setMode(Speed);
+
+		  if (m_busID == KBusIDDefaultFade)
+		    {
+		      _app->settings()->set(KEY_DEFAULT_FADE_MIN, min.toInt());
+		      _app->settings()->set(KEY_DEFAULT_FADE_MAX, max.toInt());
+		    }
+		  else
+		    {
+		      _app->settings()->set(KEY_DEFAULT_HOLD_MIN, min.toInt());
+		      _app->settings()->set(KEY_DEFAULT_HOLD_MAX, max.toInt());
+		    }
+		}
+	    }
+	}
     }
-
-  _app->virtualConsole()->editMenu()->exec(point);
-
-  if (m_static)
+  else
     {
-      _app->virtualConsole()->editMenu()->setItemEnabled(KVCMenuEditDelete,
-							 true);
+      _app->virtualConsole()->editMenu()->exec(point);
     }
+
 }
 
 
@@ -860,7 +905,7 @@ void VCDockSlider::slotModeChanged()
 
 void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
 {
-  if (_app->mode() == App::Design)
+  if (_app->mode() == App::Design && m_static == false)
     {
       if (m_resizeMode == true)
 	{	  

@@ -315,9 +315,9 @@ void VirtualConsole::initMenuBar()
 
   m_editMenu->insertSeparator();
 
-  m_editMenu->insertItem("Foreground", fgMenu);
-  m_editMenu->insertItem("Background", bgMenu);
-  m_editMenu->insertItem("Stacking Order", stackMenu);
+  m_editMenu->insertItem("Foreground", fgMenu, KVCMenuForegroundMin);
+  m_editMenu->insertItem("Background", bgMenu, KVCMenuBackgroundMin);
+  m_editMenu->insertItem("Stacking Order", stackMenu, KVCMenuStackingMin);
 
   m_menuBar->insertItem("&Tools", toolsMenu);
   m_menuBar->insertItem("&Add", m_addMenu);
