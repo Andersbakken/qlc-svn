@@ -212,8 +212,3 @@ void NewDevice::slotCancelClicked()
 {
   reject();
 }
-
-void NewDevice::closeEvent(QCloseEvent* e)
-{
-  slotCancelClicked();
-}

@@ -40,7 +40,6 @@ class NewDevice : public UI_NewDevice
   QString name() const { return m_nameValue; }
 
  protected:
-  void closeEvent(QCloseEvent*);
   void initView();
   void show();
 
