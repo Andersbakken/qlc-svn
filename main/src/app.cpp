@@ -30,6 +30,8 @@
 #include <qtoolbutton.h>
 #include <qfiledialog.h>
 #include <qwidgetlist.h>
+#include <qlabel.h>
+#include <qcolor.h>
 
 #include <unistd.h>
 
@@ -47,6 +49,12 @@
 #include "functiontree.h"
 
 #include "../../libs/common/outputplugin.h"
+
+static const QString KModeTextOperate = QString("Operate");
+static const QString KModeTextDesign = QString("Design");
+
+static const QColor KModeColorOperate = QColor(255, 0, 0);
+static const QColor KModeColorDesign = QColor(0, 255, 0);
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
@@ -98,6 +106,7 @@ App::App()
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
   m_dmView = NULL;
+  m_modeIndicator = NULL;
 }
 
 App::~App()
@@ -131,6 +140,36 @@ void App::initView(void)
       setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
       virtualConsole()->hide();
     }
+}
+
+void App::initStatusBar()
+{
+  statusBar()->message("Q Light Controller");
+
+  m_modeIndicator = new QLabel("Design Mode", statusBar());
+  statusBar()->addWidget(m_modeIndicator, 0, true);
+}
+
+void App::initToolBar()
+{
+  QPixmap pixmap;
+
+  m_toolbar = new QToolBar(this, "Workspace Toolbar");
+
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filenew.xpm")), "New workspace; clear everything", 0, this, SLOT(slotFileNew()), m_toolbar);
+  
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), "Open existing workspace", 0, this, SLOT(slotFileOpen()), m_toolbar);
+  
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), "Save current workspace", 0, this, SLOT(slotFileSave()), m_toolbar);
+
+  m_toolbar->addSeparator();
+
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "View device manager", 0, this, SLOT(slotViewDeviceManager()), m_toolbar);
+
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "View virtual console", 0, this, SLOT(slotViewVirtualConsole()), m_toolbar);
+
+  QToolBar* panic = new QToolBar(this, "!");
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic; Shut down all running functions", 0, this, SLOT(slotPanic()), panic);
 }
 
 void App::initSequenceEngine()
@@ -368,33 +407,6 @@ void App::slotWindowMenuCallback(int item)
     }
 }
 
-void App::initStatusBar()
-{
-  statusBar()->message("Q Light Controller");
-}
-
-void App::initToolBar()
-{
-  QPixmap pixmap;
-
-  m_toolbar = new QToolBar(this, "Workspace Toolbar");
-
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filenew.xpm")), "New workspace; clear everything", 0, this, SLOT(slotFileNew()), m_toolbar);
-  
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), "Open existing workspace", 0, this, SLOT(slotFileOpen()), m_toolbar);
-  
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), "Save current workspace", 0, this, SLOT(slotFileSave()), m_toolbar);
-
-  m_toolbar->addSeparator();
-
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "View device manager", 0, this, SLOT(slotViewDeviceManager()), m_toolbar);
-
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "View virtual console", 0, this, SLOT(slotViewVirtualConsole()), m_toolbar);
-
-  QToolBar* panic = new QToolBar(this, "!");
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic; Shut down all running functions", 0, this, SLOT(slotPanic()), panic);
-}
-
 void App::slotPanic()
 {
   /* Shut down all running functions */
@@ -605,4 +617,21 @@ void App::closeEvent(QCloseEvent* e)
     }
 
   statusBar()->message("Exit aborted", 2000);
+}
+
+void App::slotSetModeIndicator(VirtualConsole::Mode mode)
+{
+  switch(mode)
+    {
+    case VirtualConsole::Design:
+      m_modeIndicator->setText(KModeTextDesign);
+      break;
+
+    case VirtualConsole::Operate:
+      m_modeIndicator->setText(KModeTextOperate);
+      break;
+      
+    default:
+      break;
+    }
 }

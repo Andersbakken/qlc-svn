@@ -23,6 +23,7 @@
 #define APP_H
 
 #include <qmainwindow.h>
+#include "virtualconsole.h"
 
 class QWorkspace;
 class QApp;
@@ -35,9 +36,9 @@ class QPixmap;
 class QToolButton;
 class QFileDialog;
 class QWidgetList;
+class QLabel;
 
 class DeviceManagerView;
-class VirtualConsole;
 class Settings;
 class SequenceTimer;
 class SequenceProvider;
@@ -49,7 +50,7 @@ class OutputPlugin;
 // General program defines
 #define IDS_APP_NAME_LONG               "Q Light Controller 2"
 #define IDS_APP_NAME_SHORT              "QLC2"
-#define IDS_APP_VERSION_STR             "Version 2.1.0-1"
+#define IDS_APP_VERSION_STR             "Version 2.2.0"
 
 #define MIN_LIGHT_VALUE                 0
 #define MAX_LIGHT_VALUE                 100
@@ -120,6 +121,8 @@ class App : public QMainWindow
   void slotHelpAbout();
   void slotHelpAboutQt();
 
+  void slotSetModeIndicator(VirtualConsole::Mode mode);
+
  private:
   void initDoc();
   void initSettings();
@@ -152,6 +155,8 @@ class App : public QMainWindow
 
   SequenceProvider* m_sequenceProvider;
   SequenceTimer* m_sequenceTimer;
+
+  QLabel* m_modeIndicator;
 
  protected:
   void closeEvent(QCloseEvent*);

@@ -67,7 +67,6 @@ void Scene::copyFrom(Scene* sc)
 
 Scene::~Scene()
 {
-  emit destroyed();
 }
 
 bool Scene::unRegisterFunction(Feeder* feeder)

@@ -49,8 +49,6 @@ Function::Function(unsigned long id) : QObject()
 
 Function::~Function()
 {
-  emit destroyed();
-  emit destroyed(this);
 }
 
 QString Function::name() const
