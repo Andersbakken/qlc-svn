@@ -54,8 +54,9 @@ extern App* _app;
 
 Doc::Doc()
 {
-  m_modified = false;
   m_joystickPlugin = NULL;
+  m_workspaceFileName = QString("noname.qlc");
+  setModified(false);
 }
 
 Doc::~Doc()
@@ -401,6 +402,8 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  Bus* bus = new Bus();
 		  bus->createContents(list);
 		  addBus(bus);
+
+		  _app->virtualConsole()->setDefaultSpeedBus(bus);
 		}
 	      else if (*string == QString("Joystick"))
 		{
@@ -787,9 +790,9 @@ void Doc::newDocument()
       delete d;
     }
 
-  setModified(false);
+  m_workspaceFileName = QString("noname.qlc");
 
-  m_workspaceFileName = QString("");
+  setModified(false);
 
   emit newDocumentClicked();
 }

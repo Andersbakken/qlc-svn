@@ -52,10 +52,32 @@ VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
   : QWidget(parent, name)
 {
   m_drawArea = NULL;
+  m_defaultSpeedBus = NULL;
 }
 
 VirtualConsole::~VirtualConsole()
 {
+}
+
+void VirtualConsole::setDefaultSpeedBus(Bus* bus)
+{
+  m_defaultSpeedBus = bus;
+
+  if (bus != NULL)
+    {
+      connect(bus, SIGNAL(destroyed()), this, SLOT(slotDefaultSpeedBusDestroyed()));
+    }
+}
+
+void VirtualConsole::slotDefaultSpeedBusDestroyed()
+{
+  m_defaultSpeedBus = NULL;
+
+  Bus* bus = _app->doc()->busList()->at(_app->doc()->busList()->count() - 1);
+  if (bus != NULL)
+    {
+      m_defaultSpeedBus = bus;
+    }
 }
 
 bool VirtualConsole::isDesignMode(void)

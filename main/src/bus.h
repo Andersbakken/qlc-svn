@@ -57,6 +57,7 @@ class Bus : public QObject
 
  signals:
   void dataChanged(const Bus*);
+  void destroyed();
 
  private:
   unsigned long m_id;

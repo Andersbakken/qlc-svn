@@ -69,8 +69,12 @@ class VirtualConsole : public QWidget
   DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
   DMXWidget* drawArea() { return m_drawArea; }
 
+  void setDefaultSpeedBus(Bus* bus);
+  Bus* defaultSpeedBus() { return m_defaultSpeedBus; }
+
  public slots:
   void slotMenuItemActivated(int item);
+  void slotDefaultSpeedBusDestroyed();
 
  signals:
   void closed();
@@ -84,6 +88,12 @@ class VirtualConsole : public QWidget
   DMXWidgetBase* searchKeyReceiver(DMXWidgetBase* widget);
 
  private:
+  void setMode(Mode mode);
+
+  void createVirtualConsole(QList<QString>& list);
+  void createWidget(QList<QString> &list);
+
+ private:
   QMenuBar* m_menuBar;
   QPopupMenu* m_modeMenu;
   QPopupMenu* m_addMenu;
@@ -94,11 +104,7 @@ class VirtualConsole : public QWidget
 
   QList <DMXWidgetBase> m_keyReceivers;
 
- private:
-  void setMode(Mode mode);
-
-  void createVirtualConsole(QList<QString>& list);
-  void createWidget(QList<QString> &list);
+  Bus* m_defaultSpeedBus;
 };
 
 #endif

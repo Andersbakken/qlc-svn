@@ -38,6 +38,7 @@ Bus::Bus() : QObject()
 
 Bus::~Bus()
 {
+  emit destroyed();
 }
 
 Bus& Bus::operator=(Bus &b)
