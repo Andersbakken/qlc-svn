@@ -1,0 +1,52 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = EVO-7
+Type = Color Changer
+#
+Entry = Channel
+Number = 0
+Name = Colour
+# Capability Entries
+0-127 = Color/gobo indexing
+128-187 = Rainbow forward slow to fast
+188-193 = No rotation
+194-255 = Rainbow backward slow to fast
+Entry = Channel
+Number = 1
+Name = Prism rotation
+# Capability Entries
+0-7 = No rotation
+8-127 = Forward speed
+128-135 = No rotation
+136-255 = Backward speed
+Entry = Channel
+Number = 2
+Name = Shutter, strobe
+# Capability Entries
+0-3 = Shutter closed
+4-7 = Shutter closed, reset
+8-31 = Shutter closed
+32-63 = Dimmer
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open
+Entry = Channel
+Number = 3
+Name = Auto program
+# Capability Entries
+0-23 = Normal
+24-47 = Program 1
+48-71 = Program 2
+72-95 = Program 3
+96-119 = Program 4
+120-143 = Program 5
+144-167 = Program 6
+168-191 = Program 7
+192-215 = Program 8
+216-239 = Program 9
+240-255 = Program 10

@@ -1,0 +1,63 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = CY-200
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Left to Right
+Entry = Channel
+Number = 1
+Name = Cylinder rotation
+# Capability Entries
+0-19 = No rotation
+20-135 = Clockwise rotation
+136-139 = No rotation
+140-255 = Anti-clockwise Rotation
+Entry = Channel
+Number = 2
+Name = Color
+# Capability Entries
+0-10 = White
+11-21 = Cherry Red
+22-32 = Yellow
+33-43 = Dark Blue
+44-54 = Light Green
+55-65 = Pink
+66-76 = Purple Blue
+77-87 = Red
+88-98 = Pale Yellow
+99-109 = Light Blue
+110-120 = Orange
+121-127 = Dark Green
+128-191 = Forward Rainbow Speed
+192-255 = Backward Rainbow Speed
+Entry = Channel
+Number = 3
+Name = Gobo
+# Capability Entries
+0-7 = Closed
+8-15 = Open
+16-23 = Gobo 1
+24-31 = Gobo 2
+32-39 = Gobo 3
+40-47 = Gobo 4
+48-55 = Gobo 5
+56-63 = Gobo 6
+64-71 = Gobo 7
+72-79 = Gobo 8
+80-87 = Gobo 9
+88-95 = Gobo 10
+96-103 = Gobo 11
+104-111 = Gobo 12
+112-119 = Gobo 13
+120-127 = Gobo 14
+133-137 = Reset after 3-5 seconds
+138-159 = Forward Gobo Change Speed
+160-200 = Strobe Speed
+201-250 = Random Strobe Speed
+251-255 = Open

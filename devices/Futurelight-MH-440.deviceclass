@@ -1,0 +1,72 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = MH-440
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 2
+Name = Pan Fine
+# Capability Entries
+0-255 = Pan Fine
+Entry = Channel
+Number = 3
+Name = Tilt Fine
+# Capability Entries
+0-255 = Tilt Fine
+Entry = Channel
+Number = 4
+Name = Pan/Tilt Speed
+# Capability Entries
+0-0 = Tracking Mode
+1-249 = Vector Mode Speed
+250-252 = Tracking Mode, BO color changes
+253-255 = Max. Vector speed, BO pan/tilt/color change
+Entry = Channel
+Number = 5
+Name = Colour
+# Capability Entries
+0-0 = White
+10-10 = Turquoise
+21-21 = Red
+32-32 = Cyan
+42-42 = Light green
+53-53 = Magenta
+64-64 = Light blue
+74-74 = Yellow
+85-85 = Green
+96-96 = Pink
+106-106 = Blue
+117-117 = Orange
+128-189 = Rainbow forward
+190-193 = No Rotation
+194-255 = Rainbow backward
+Entry = Channel
+Number = 6
+Name = Dimmer
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 7
+Name = Shutter, Strobe, Reset
+# Capability Entries
+0-31 = Shutter closed
+64-95 = Shutter open
+96-127 = Strobe speed
+128-139 = Reset
+140-159 = Shutter closed
+160-175 = Pulse sequence speed slow to fast
+176-191 = Pulse sequence fast to slow
+192-223 = Random strobe slow to fast
+224-255 = Shutter open
