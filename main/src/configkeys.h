@@ -47,6 +47,4 @@ const QString KEY_APP_MAXIMIZED        (  "ApplicationMaximized" );
 const QString KEY_APP_BACKGROUND       ( "ApplicationBackground" );
 const QString KEY_APP_SHOW_TOOLTIPS    (          "ShowTooltips" );
 
-const QString KEY_KEY_REPEAT           ( "KeyRepeat" );
-
 #endif

@@ -63,11 +63,6 @@ void SettingsUI::init()
   _app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str);
   m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) 
 					  ? true : false);
-
-  _app->settings()->get(KEY_KEY_REPEAT, str);
-  m_keyRepeatCheckBox->setChecked((str == Settings::trueValue()) 
-				  ? true : false);
-
   fillOutputPluginCombo();
 
   fillAdvancedSettingsList();
@@ -198,15 +193,6 @@ void SettingsUI::slotOKClicked()
       _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::falseValue());
     }
 
-  if (m_keyRepeatCheckBox->isChecked())
-    {
-      _app->settings()->set(KEY_KEY_REPEAT, Settings::trueValue());
-    }
-  else
-    {
-      _app->settings()->set(KEY_KEY_REPEAT, Settings::falseValue());
-    }
-
   accept();
 }
 
@@ -214,4 +200,3 @@ void SettingsUI::slotCancelClicked()
 {
   reject();
 }
-
