@@ -704,7 +704,11 @@ void VCDockSlider::mousePressEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      _app->virtualConsole()->setSelectedWidget(this);
+      if (m_static == false)
+	{
+	  // Can't delete or edit default fade & hold sliders
+	  _app->virtualConsole()->setSelectedWidget(this);
+	}
 
       if (m_resizeMode == true)
 	{

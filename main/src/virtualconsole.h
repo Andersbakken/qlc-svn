@@ -146,6 +146,7 @@ class VirtualConsole : public QWidget
   QWidget* selectedWidget() { return m_selectedWidget; }
   void setSelectedWidget(QWidget*);
 
+  QPopupMenu* toolsMenu() { return m_toolsMenu; }
   QPopupMenu* editMenu() { return m_editMenu; }
   QPopupMenu* addMenu() { return m_addMenu; }
 
@@ -202,8 +203,9 @@ class VirtualConsole : public QWidget
  private:
   // Virtual console menu bar
   QMenuBar* m_menuBar;
-  QPopupMenu* m_editMenu;
+  QPopupMenu* m_toolsMenu;
   QPopupMenu* m_addMenu;
+  QPopupMenu* m_editMenu;
 
   // Master layout
   QHBoxLayout* m_layout; 

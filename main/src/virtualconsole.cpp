@@ -207,34 +207,35 @@ void VirtualConsole::initMenuBar()
   m_addMenu = new QPopupMenu();
   m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
 			"&Button", this, SLOT(slotAddButton()),
-			CTRL+Key_B, KVCMenuAddButton);
+			0, KVCMenuAddButton);
   m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
 			"&Slider", this, SLOT(slotAddSlider()),
-			CTRL+Key_D, KVCMenuAddSlider);
+			0, KVCMenuAddSlider);
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 			"&Frame", this, SLOT(slotAddFrame()),
-			CTRL+Key_F, KVCMenuAddFrame);
+			0, KVCMenuAddFrame);
  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 			"&XY-Pad", this, SLOT(slotAddXYPad()),
-			CTRL+Key_X, KVCMenuAddXYPad);			
+			0, KVCMenuAddXYPad);			
   m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
 			"L&abel", this, SLOT(slotAddLabel()),
-			CTRL+Key_L, KVCMenuAddLabel);
+			0, KVCMenuAddLabel);
 
   //
   // Tools menu
   //
-  QPopupMenu* toolsMenu = new QPopupMenu();
-  toolsMenu->insertItem(QPixmap(dir + "/settings.xpm"), 
-			"&Settings...", this, SLOT(slotToolsSettings()),
-			0, KVCMenuToolsSettings);
-  toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
-			"&Default Sliders", this, SLOT(slotToolsSliders()),
-			0, KVCMenuToolsSliders);
-  toolsMenu->insertSeparator();
-  toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), 
-			"&Panic!", this, SLOT(slotToolsPanic()),
-			CTRL+Key_Pause, KVCMenuToolsPanic);
+  m_toolsMenu = new QPopupMenu();
+  m_toolsMenu->insertItem(QPixmap(dir + "/settings.xpm"), 
+			  "&Settings...", this, SLOT(slotToolsSettings()),
+			  0, KVCMenuToolsSettings);
+  m_toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
+			  "&Default Sliders", this, SLOT(slotToolsSliders()),
+			  0, KVCMenuToolsSliders);
+  m_toolsMenu->insertSeparator();
+  m_toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), 
+			  "&Panic!", this, SLOT(slotToolsPanic()),
+			  0, KVCMenuToolsPanic);
+
 
   //
   // Foreground menu
@@ -286,19 +287,19 @@ void VirtualConsole::initMenuBar()
   m_editMenu = new QPopupMenu();
   m_editMenu->insertItem(QPixmap(dir + "/editcut.xpm"), 
 			 "Cut", this, SLOT(slotEditCut()),
-			 CTRL+Key_X, KVCMenuEditCut);
+			 0, KVCMenuEditCut);
   
   m_editMenu->insertItem(QPixmap(dir + "/editcopy.xpm"),
 			 "Copy", this, SLOT(slotEditCopy()),
-			 CTRL+Key_C, KVCMenuEditCopy);
+			 0, KVCMenuEditCopy);
   
   m_editMenu->insertItem(QPixmap(dir + "/editpaste.xpm"),
 			 "Paste", this, SLOT(slotEditPaste()),
-			 CTRL+Key_V, KVCMenuEditPaste);
+			 0, KVCMenuEditPaste);
   
   m_editMenu->insertItem(QPixmap(dir + "/remove.xpm"), 
 			 "Delete", this, SLOT(slotEditDelete()),
-			 Key_Delete, KVCMenuEditDelete);
+			 0, KVCMenuEditDelete);
   
   m_editMenu->insertSeparator();
   
@@ -319,7 +320,7 @@ void VirtualConsole::initMenuBar()
   m_editMenu->insertItem("Background", bgMenu, KVCMenuBackgroundMin);
   m_editMenu->insertItem("Stacking Order", stackMenu, KVCMenuStackingMin);
 
-  m_menuBar->insertItem("&Tools", toolsMenu);
+  m_menuBar->insertItem("&Tools", m_toolsMenu);
   m_menuBar->insertItem("&Add", m_addMenu);
   m_menuBar->insertItem("&Edit", m_editMenu);
 }
@@ -491,14 +492,20 @@ void VirtualConsole::slotEditDelete()
 {
   if (m_selectedWidget)
     {
-      if (QMessageBox::warning(this, "Remove Selected Widget",
-			       "Are you sure?",
-			       QMessageBox::Yes, QMessageBox::No)
-	  == QMessageBox::Yes)
+      //
+      // Bottom frame should not be deleted!
+      //
+      if (m_selectedWidget->className() == QString("VCFrame") &&
+	  ((VCFrame*) m_selectedWidget)->isBottomFrame() == false)
 	{
-	  _app->doc()->setModified(true);
-	  delete m_selectedWidget;
-	  m_selectedWidget = NULL;
+	  if (QMessageBox::warning(this, "Remove Selected Widget",
+				   "Are you sure?", QMessageBox::Yes,
+				   QMessageBox::No) == QMessageBox::Yes)
+	    {
+	      _app->doc()->setModified(true);
+	      delete m_selectedWidget;
+	      m_selectedWidget = NULL;
+	    }
 	}
     }
 }
@@ -728,6 +735,19 @@ void VirtualConsole::slotModeChanged()
 	{
 	  grabKeyboard();
 	}
+    }
+
+  if (_app->mode() == App::Operate)
+    {
+      m_editMenu->setEnabled(false);
+      m_addMenu->setEnabled(false);
+      m_toolsMenu->setItemEnabled(KVCMenuToolsSettings, false);
+    }
+  else
+    {
+      m_editMenu->setEnabled(true);
+      m_addMenu->setEnabled(true);
+      m_toolsMenu->setItemEnabled(KVCMenuToolsSettings, true);
     }
 }
 

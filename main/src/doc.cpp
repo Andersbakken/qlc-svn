@@ -200,7 +200,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	  if (*string == QString("Entry"))
 	    {
 	      string = list.next();
-	      
+	      qDebug(*string);
 	      if (*string == QString("Device"))
 		{
 		  Device::create(list);
