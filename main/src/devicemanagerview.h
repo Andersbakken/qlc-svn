@@ -61,6 +61,7 @@ class DeviceManagerView : public QWidget
   void slotAdd();
   void slotRemove();
   void slotClone();
+  void slotDoubleClicked(QListViewItem*);
   void slotProperties();
   void slotMonitor();
   void slotConsole();

@@ -35,6 +35,8 @@
 #include <qstylefactory.h>
 #include <qpixmap.h>
 #include <qworkspace.h>
+#include <qlabel.h>
+#include <qspinbox.h>
 
 extern App* _app;
 
@@ -51,6 +53,9 @@ SettingsUI::~SettingsUI()
 void SettingsUI::init()
 {
   QString str;
+
+  m_MRUSizeLabel->setEnabled(false);
+  m_MRUSizeSpin->setEnabled(false);
 
   _app->settings()->get(KEY_SYSTEM_DIR, str);
   m_systemEdit->setText(str);

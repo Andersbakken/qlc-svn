@@ -295,6 +295,9 @@ void DeviceManagerView::initDataView()
   connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
 	  this, SLOT(slotSelectionChanged(QListViewItem*)));
 
+  connect(m_listView, SIGNAL(doubleClicked(QListViewItem*)),
+	  this, SLOT(slotDoubleClicked(QListViewItem*)));
+
   connect(m_listView, SIGNAL(rightButtonClicked(QListViewItem*,
 						const QPoint&, int)),
 	  this, SLOT(slotRightButtonClicked(QListViewItem*,
@@ -469,6 +472,13 @@ void DeviceManagerView::slotRemove()
     }
 }
 
+void DeviceManagerView::slotDoubleClicked(QListViewItem* item)
+{
+  if (item)
+    {
+      slotProperties();
+    }
+}
 
 //
 // View Properties
