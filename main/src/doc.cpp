@@ -22,11 +22,10 @@
 #include "dmxdevice.h"
 #include "doc.h"
 #include "app.h"
-#include "function.h"
 #include "settings.h"
-#include "logicalchannel.h"
 #include "deviceclass.h"
 #include "dmxchannel.h"
+#include "function.h"
 #include "scene.h"
 #include "function.h"
 #include "functioncollection.h"
@@ -34,8 +33,6 @@
 #include "virtualconsole.h"
 #include "dummyoutplugin.h"
 #include "devicemanagerview.h"
-#include "devicemanager.h"
-#include "devicelistview.h"
 #include "configkeys.h"
 
 #include "../../libs/common/plugin.h"
@@ -53,7 +50,6 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <limits.h>
-
 
 extern App* _app;
 
@@ -132,7 +128,8 @@ bool Doc::readDeviceClasses()
   d.setNameFilter("*.deviceclass");
   if (d.exists() == false || d.isReadable() == false)
     {
-      QMessageBox::warning(_app, "QLC", "Unable to open or read from device directory! Check settings and permissions.");
+      QString msg("Unable to read from device directory!");
+      QMessageBox::warning(_app, KApplicationNameShort, msg);
       return false;
     }
 
@@ -726,7 +723,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
     }
   else
     {
-      QMessageBox::critical(_app, "QLC", "Unable to open file for writing!\nCheck permissions.");
+      QMessageBox::critical(_app, KApplicationNameShort, 
+			    "Unable to open file for writing!");
       return false;
     }
 

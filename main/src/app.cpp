@@ -168,15 +168,13 @@ void App::initView(void)
 
 void App::initStatusBar()
 {
-  statusBar()->message("Q Light Controller");
-
   m_modeIndicator = new QLabel("Design Mode", statusBar());
   statusBar()->addWidget(m_modeIndicator, 0, true);
 }
 
 void App::initToolBar()
 {
-  m_toolbar = new QToolBar(this, "Workspace Toolbar");
+  m_toolbar = new QToolBar(this, "Workspace");
 
   QString dir;
   settings()->get(KEY_SYSTEM_DIR, dir);
@@ -350,7 +348,7 @@ void App::initMenuBar()
   // Help menu
   m_helpMenu = new QPopupMenu();
   m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
-			 "About QLC...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
+			 "About...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
   m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
 			 "About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
 
@@ -370,7 +368,9 @@ void App::slotFileNew()
 {
   if (doc()->isModified())
     {
-      if (QMessageBox::warning(this, "QLC", "Are you sure you want to clear the current workspace & virtual console?", "&Yes", "&Cancel", 0, 1) == 1)
+      if (QMessageBox::warning(this, KApplicationNameShort, 
+			       "Are you sure you want to clear the current workspace & virtual console?", "&Yes", "&Cancel",
+			       0, 1) == 1)
 	{
 	  return;
 	}

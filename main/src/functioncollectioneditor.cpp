@@ -131,7 +131,8 @@ void FunctionCollectionEditor::slotAddClicked()
 	}
       else
 	{
-	  QMessageBox::warning(this, "QLC", "The selected device/function is already present in the current collection.\nOperation aborted.");
+	  QString msg("The selected function is already in collection.");
+	  QMessageBox::warning(this, KApplicationNameShort, msg);
 	}
     }
 }

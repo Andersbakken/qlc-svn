@@ -25,8 +25,6 @@
 #include "event.h"
 #include "settings.h"
 #include "feeder.h"
-#include "logicalchannel.h"
-#include "dmxdevice.h"
 
 #include <math.h>
 #include <stdlib.h>

@@ -77,7 +77,8 @@ void DeviceProperties::slotOKClicked()
   
   if (address + channels - 1 > 511)
     {
-      if (QMessageBox::warning(this, "QLC", "The device address goes beyond 512 channels!\nAre you sure you want to do this?",
+      QString msg("The device address goes beyond 512 channels!\nContinue?");
+      if (QMessageBox::warning(this, KApplicationNameShort, msg,
 			       QMessageBox::Yes, QMessageBox::No)
 	  == QMessageBox::No)
 	{
@@ -87,7 +88,8 @@ void DeviceProperties::slotOKClicked()
 
   if (m_deviceNameEdit->text().length() <= 0)
     {
-      QMessageBox::warning(this, "QLC", "Empty names are not allowed. Using previous name.");
+      QString msg("Empty names are not allowed. Preserving existing name.");
+      QMessageBox::warning(this, KApplicationNameShort, msg);
       m_deviceNameEdit->setText(m_device->name());
       return;
     }

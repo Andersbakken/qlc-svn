@@ -30,7 +30,6 @@
 #include "dmxdevice.h"
 #include "scene.h"
 #include "dmxchannel.h"
-#include "logicalchannel.h"
 #include "channelui.h"
 #include "listboxiditem.h"
 #include "configkeys.h"
