@@ -430,10 +430,20 @@ void Scene::run()
   // Check if this scene needs to play
   for (t_channel i = 0; i < m_channels; i++)
     {
-      if (m_values[i].value == (int) m_runTimeData[i].current)
-	{
-	  ready++;
-	}
+      if (m_values[i].type == Fade ||
+          m_values[i].type == Set)
+        {
+          if (m_values[i].value == (int) m_runTimeData[i].current)
+	    {
+              // This channel's value is what it should be, it's ready
+	      ready++;
+	    }
+        }
+      else
+        {
+          // Treat NoSet values as ready
+          ready++;
+        }
     }
 
   // This scene does not need to be played because all target
