@@ -35,7 +35,7 @@
 
 #include "joystick.h"
 #include "joysticksettings.h"
-#include "../common/plugininfo.h"
+#include "../common/plugin.h"
 
 #define JS_NAME_LENGTH    0x80
 
@@ -49,9 +49,6 @@ void* joystickThread(void* param);
 //
 Joystick::Joystick()
 {
-  m_id = PluginInfo::nextInputDeviceID;
-  PluginInfo::nextInputDeviceID++;
-
   m_valid = false;
   m_fd = -1;
   m_fdName = QString::null;

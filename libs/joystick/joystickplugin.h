@@ -22,33 +22,41 @@
 #ifndef JOYSTICKPLUGIN_H
 #define JOYSTICKPLUGIN_H
 
-#include <qobject.h>
-#include <qlist.h>
+#include "../common/plugin.h"
 #include "joystick.h"
+#include <qlist.h>
 
-class JoystickPlugin;
-struct PluginInfo;
+//
+// Exported functions
+//
+extern "C" Plugin* create(int id);
+extern "C" void destroy(Plugin* object);
 
-extern "C" QObject* create();
-extern "C" void destroy(QObject* object);
-
-class JoystickPlugin : public QObject
+//
+// Class definition
+//
+class JoystickPlugin : public Plugin
 {
   Q_OBJECT
 
  public:
-  JoystickPlugin();
+  JoystickPlugin(int id);
   virtual ~JoystickPlugin();
 
-  virtual void info(PluginInfo &p);
+  virtual bool open();
+  virtual bool close();
+  virtual void configure();
+  virtual QString infoText();
+  virtual void contextMenu(QPoint pos);
 
-  virtual void init();
-
-  QList<Joystick> *joystickList() { return &m_joystickList; }
+  virtual QList<Joystick> *joystickList() { return &m_joystickList; }
 
   virtual Joystick* selectJoystick();
 
   virtual Joystick* search(QString &device);
+
+ protected slots:
+  void slotContextMenuCallback(int);
 
  private:
   QList <Joystick> m_joystickList;

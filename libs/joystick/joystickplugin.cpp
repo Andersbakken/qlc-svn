@@ -21,46 +21,42 @@
 
 #include "joystickplugin.h"
 #include "joystick.h"
-#include "../common/plugininfo.h"
 #include "selectjoystick.h"
+
+#include <qpopupmenu.h>
 
 #define JS_MAX_NUM         32
 
-// The only two exported functions
+#define ID_CONFIGURE       10
 
-extern "C" QObject* create()
+//
+// Exported functions
+//
+extern "C" Plugin* create(int id)
 {
-  return new JoystickPlugin;
+  return new JoystickPlugin(id);
 }
 
-extern "C" void destroy(QObject* object)
+extern "C" void destroy(Plugin* object)
 {
   delete object;
 }
 
-///////////////////////////////////////
-// class JoystickPlugin implementation
-
-JoystickPlugin::JoystickPlugin()
+//
+// Class implementation
+//
+JoystickPlugin::JoystickPlugin(int id) : Plugin(id)
 {
+  m_name = QString("Joystick Input");
+  m_type = Plugin::InputType;
+  m_version = 0x00000100;
 }
 
 JoystickPlugin::~JoystickPlugin()
 {
-  while (m_joystickList.isEmpty() == false)
-    {
-      delete m_joystickList.take(0);
-    }
 }
 
-void JoystickPlugin::info(PluginInfo &p)
-{
-  p.name = QString("Generic joystick plugin");
-  p.type = QString(JOYSTICK_TYPE_STRING);
-  p.version = 0x00000100; /* (Version 0.0.1-0 == 0x00 00 01 00) */
-}
-
-void JoystickPlugin::init()
+bool JoystickPlugin::open()
 {
   unsigned int i = 0;
   char fileName[256];
@@ -81,6 +77,69 @@ void JoystickPlugin::init()
 	  delete j;
 	  j = NULL;
 	}
+    }
+
+  return true;
+}
+
+bool JoystickPlugin::close()
+{
+  while (m_joystickList.isEmpty() == false)
+    {
+      delete m_joystickList.take(0);
+    }
+
+  return true;
+}
+
+void JoystickPlugin::configure()
+{
+}
+
+QString JoystickPlugin::infoText()
+{
+  QString t;
+  QString str = QString::null;
+  str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+  str += QString("<TR>\n");
+  str += QString("<TD><B>Version</B></TD>");
+  str += QString("<TD>");
+  t.setNum((version() >> 16) & 0xff);
+  str += t + QString(".");
+  t.setNum((version() >> 8) & 0xff);
+  str += t + QString(".");
+  t.setNum(version() & 0xff);
+  str += t + QString("</TD>");
+  str += QString("</TR>");
+
+  str += QString("</TR>");
+  str += QString("</TABLE>");
+  str += QString("</BODY></HTML>");
+
+  return str;
+}
+
+void JoystickPlugin::contextMenu(QPoint pos)
+{
+  QPopupMenu* menu = new QPopupMenu();
+  menu->insertItem("Configure...", ID_CONFIGURE);
+
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  menu->exec(pos, 0);
+  delete menu;
+}
+
+void JoystickPlugin::slotContextMenuCallback(int item)
+{
+  switch(item)
+    {
+    case ID_CONFIGURE:
+      break;
+
+    default:
+      break;
     }
 }
 

@@ -48,17 +48,14 @@ void DeviceManagerView::initView()
   
   m_dm = new DeviceManager(this);
 
-  // These QIconSets work in qt 2.3.1 as well as 3.0
-  QToolButton* tb = NULL;
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addinputdevice.xpm")), "Add New Joystick Device", 0, m_dm, SLOT(slotDLAddInputDevice()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addbus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addbus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
   m_toolbar->addSeparator();
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "settings.xpm")), "Properties", 0, m_dm, SLOT(slotDLViewProperties()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "settings.xpm")), "Properties", 0, m_dm, SLOT(slotDLViewProperties()), m_toolbar);
   m_toolbar->addSeparator();
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "monitor.xpm")), "Monitor Device", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "console.xpm")), "View Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "monitor.xpm")), "Monitor Device", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "console.xpm")), "View Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
 
   m_layout->addWidget(m_dockArea);
   m_layout->addWidget(m_dm);

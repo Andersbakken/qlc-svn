@@ -44,6 +44,7 @@ class SequenceTimer;
 class SequenceProvider;
 class GlobalFunctionsView;
 class Doc;
+class OutputPlugin;
 
 ///////////////////////////////////////////////////////////////////
 // General program defines
@@ -60,6 +61,10 @@ class Doc;
 #define OUTPUT_DEVICE_ROOT_ID           0
 #define OUTPUT_DEVICE_ID_MIN            1
 #define OUTPUT_DEVICE_ID_MAX            999
+
+#define PLUGIN_ROOT_ID                  1000
+#define PLUGIN_ID_MIN                   1001
+#define PLUGIN_ID_MAX                   1999
 
 #define BUS_ROOT_ID                     2000
 #define BUS_ID_MIN                      2001

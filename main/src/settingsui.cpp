@@ -21,7 +21,10 @@
 
 #include "settingsui.h"
 #include "app.h"
+#include "doc.h"
 #include "settings.h"
+
+#include "../../libs/common/plugin.h"
 
 #include <qfontdialog.h>
 #include <qapplication.h>
@@ -41,15 +44,17 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
   QString str;
 
   m_systemEdit->setText(_app->settings()->systemPath());
-  m_picturesEdit->setText(_app->settings()->pixmapPath());
-  m_deviceClassesEdit->setText(_app->settings()->deviceClassPath());
-  m_pluginsEdit->setText(_app->settings()->pluginPath());
 
   fillStyleCombo();
+  fillOutputPluginCombo();
 
   m_openDeviceManagerCheckBox->setChecked(_app->settings()->openDeviceManager());
   m_openLastWorkspaceCheckBox->setChecked(_app->settings()->openLastWorkspace());
   m_keyRepeatCheckBox->setChecked(_app->settings()->keyRepeatOffInOperateMode());
+}
+
+SettingsUI::~SettingsUI()
+{
 }
 
 void SettingsUI::fillStyleCombo()
@@ -72,8 +77,32 @@ void SettingsUI::fillStyleCombo()
     }
 }
 
-SettingsUI::~SettingsUI()
+void SettingsUI::fillOutputPluginCombo()
 {
+  QList <Plugin> *pl = _app->doc()->pluginList();
+
+  m_outputPluginCombo->clear();
+  m_outputPluginCombo->insertItem(QString("<None>"));
+
+  for (unsigned int i = 0; i < pl->count(); i++)
+    {
+      Plugin* plugin = pl->at(i);
+      ASSERT(plugin != NULL);
+
+      if (plugin->type() == Plugin::OutputType)
+	{
+	  m_outputPluginCombo->insertItem(plugin->name(), 0);
+	}
+    }
+
+  for (int i = 0; i < m_outputPluginCombo->count(); i++)
+    {
+      if (m_outputPluginCombo->text(i) == _app->settings()->outputPlugin())
+	{
+	  m_outputPluginCombo->setCurrentItem(i);
+	  break;
+	}
+    }
 }
 
 void SettingsUI::slotSystemBrowseClicked()
@@ -84,24 +113,13 @@ void SettingsUI::slotSystemBrowseClicked()
   if (dir.isEmpty() == false)
     {
       m_systemEdit->setText(dir);
-      m_picturesEdit->setText(dir + _app->settings()->pixmapPathRelative());
-      m_deviceClassesEdit->setText(dir + _app->settings()->deviceClassPathRelative());
-      m_pluginsEdit->setText(dir + _app->settings()->pluginPathRelative());
     }
 }
 
-void SettingsUI::slotSystemEditTextChanged(const QString &text)
+void SettingsUI::slotStyleChanged(const QString &)
 {
-  QString path(text);
-
-  if (path.right(1) != QString("/"))
-    {
-      path += QString("/");
-    }
-
-  m_picturesEdit->setText(path + _app->settings()->pixmapPathRelative());
-  m_deviceClassesEdit->setText(path + _app->settings()->deviceClassPathRelative());
-  m_pluginsEdit->setText(path + _app->settings()->pluginPathRelative());
+  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
+  _qapp->setStyle( m_widgetStyleCombo->currentText());
 }
 
 void SettingsUI::slotOKClicked()
@@ -115,13 +133,9 @@ void SettingsUI::slotOKClicked()
 
   _app->settings()->setKeyRepeatOffInOperateMode(m_keyRepeatCheckBox->isChecked());
 
-  accept();
-}
+  _app->settings()->setOutputPlugin(m_outputPluginCombo->currentText());
 
-void SettingsUI::slotStyleChanged(const QString &)
-{
-  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
-  _qapp->setStyle( m_widgetStyleCombo->currentText());
+  accept();
 }
 
 void SettingsUI::slotCancelClicked()

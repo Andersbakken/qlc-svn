@@ -54,6 +54,38 @@ Bus& Bus::operator=(Bus &b)
   return *this;
 }
 
+QString Bus::infoText()
+{
+  QString t;
+  QString type;
+  
+  if (m_type == Bus::Generic)
+    {
+      type = "Generic";
+    }
+  else if (m_type == Bus::Speed)
+    {
+      type = "Speed";
+    }
+  
+  QString str = QString::null;
+  str += QString("<HTML><HEAD><TITLE>Bus Info</TITLE></HEAD><BODY>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+  str += QString("<TR>\n");
+  str += QString("<TD><B>Name</B></TD>");
+  str += QString("<TD>") + name() + QString("</TD>");
+  str += QString("</TR>");
+  str += QString("<TR>");
+  str += QString("<TD><B>Type</B></TD>");
+  str += QString("<TD>") + type + QString("</TD>");
+  str += QString("</TR>");
+  str += QString("</TABLE>");
+  str += QString("</BODY></HTML>");
+
+  return str;
+}
+
 void Bus::setValue(unsigned long value)
 { 
   m_value = value;

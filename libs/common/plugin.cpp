@@ -1,9 +1,9 @@
 /*
   Q Light Controller
-  settingsui.h
-  
+  plugin.cpp
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -13,43 +13,19 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#include "plugin.h"
 
-#include "classes.h"
-#include "uic_settings.h"
-
-class QFont;
-
-class SettingsUI : public UI_Settings
+Plugin::Plugin(int id) : QObject()
 {
-  Q_OBJECT
+  m_id = id;
+}
 
-  friend class Settings;
-
- public:
-  SettingsUI(QWidget* parent = NULL, const char* name = NULL);
-  ~SettingsUI();
-
- public slots:
-  void slotSystemBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotOKClicked();
-  void slotCancelClicked();
-
- private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-
- private:
-  bool m_openDeviceManager;
-  bool m_openLastWorkspace;
-};
-
-#endif
+Plugin::~Plugin()
+{
+}

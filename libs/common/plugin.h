@@ -1,72 +1,61 @@
 /*
   Q Light Controller
-  bus.h
-  
+  plugin.h
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef BUS_H
-#define BUS_H
+#ifndef PLUGIN_H
+#define PLUGIN_H
 
-#include "classes.h"
 #include <qobject.h>
-#include <qlist.h>
 
-class QFile;
-class QString;
-class QPoint;
-
-class Bus : public QObject
+class Plugin : public QObject
 {
   Q_OBJECT
 
  public:
-  Bus();
-  ~Bus();
+  Plugin(int id);
+  virtual ~Plugin();
 
-  enum Type { Generic = 0, Speed = 1 };
+  enum PluginType
+    {
+      OutputType,
+      InputType
+    };
 
-  unsigned long id() { return m_id; }
+  // These functions have to be overwritten
+  virtual bool open() = 0; // Generic open function
+  virtual bool close() = 0; // Generic close function
+  virtual void configure() = 0; // Generic configure function
+  virtual QString infoText() = 0; // Text that is displayed in device manager
+  virtual void contextMenu(QPoint pos) = 0; // Invoke a context menu from device manager
 
-  unsigned long value() const { return m_value; }
-  void setValue(unsigned long value);
-
-  Type type() { return m_type; }
-  void setType(Type type) { m_type = type; }
-
+  // Standard functions that don't have to be overwritten
   QString name() { return m_name; }
-  void setName(QString name) { m_name = QString(name); }
+  int id() { return m_id; }
+  unsigned long version() { return m_version; }
+  PluginType type() { return m_type; }
 
-  QString infoText();
-
-  void saveToFile(QFile &file);
-  void createContents(QList <QString> &list);
-
-  Bus& operator=(Bus &b);
-
- signals:
-  void dataChanged(const Bus*);
-  void destroyed();
-
- private:
-  unsigned long m_id;
-  unsigned long m_value;
-  Type m_type;
+ protected:
   QString m_name;
+  PluginType m_type;
+  unsigned long m_version;
+  int m_id;
 };
 
 #endif

@@ -22,23 +22,17 @@
 #ifndef OUTPUTPLUGIN_H
 #define OUTPUTPLUGIN_H
 
-#include <qobject.h>
+#include "plugin.h"
 
-class OutputPlugin : public QObject
+class OutputPlugin : public Plugin
 {
   Q_OBJECT
 
  public:
-  OutputPlugin() {}
-  virtual ~OutputPlugin() {}
-
-  virtual bool open() = 0;
-  virtual bool close() = 0;
-
-  virtual void configure() = 0;
+  OutputPlugin(int id);
+  virtual ~OutputPlugin();
 
   virtual bool writeChannel(unsigned short channel, unsigned char value) = 0;
-  virtual unsigned char readChannel(unsigned short channel) = 0;
 };
 
 #endif

@@ -24,9 +24,8 @@
 
 #include "../common/outputplugin.h"
 
-extern "C" OutputPlugin* create();
+extern "C" OutputPlugin* create(int id);
 extern "C" void destroy(OutputPlugin* object);
-extern "C" int getPluginType(void);
 
 #define MAX_MIDIOUT_DMX_CHANNELS 128
 
@@ -35,21 +34,25 @@ class MidiOut : public OutputPlugin
   Q_OBJECT
 
  public:
-  MidiOut();
+  MidiOut(int id);
   virtual ~MidiOut();
 
-  virtual void setFileName(QString);
   virtual bool open();
   virtual bool close();
-
   virtual void configure();
+  virtual QString infoText();
+  virtual void contextMenu(QPoint pos);
 
   bool writeChannel(unsigned short channel, unsigned char value);
   unsigned char readChannel(unsigned short channel);
 
  protected:
   void setMidiOutChannel(unsigned char channel);
+  virtual void setFileName(QString);
   unsigned char midiOutChannel() { return m_midiOutChannel; }
+
+ protected slots:
+  void slotContextMenuCallback(int);
 
  private:
   QString m_fileName;

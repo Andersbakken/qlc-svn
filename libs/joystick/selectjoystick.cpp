@@ -61,7 +61,7 @@ void SelectJoystick::fillList()
 
   if (list->count() == 0)
     {
-      m_plugin->init();
+      m_plugin->open();
     }
 
   for (Joystick* j = list->first(); j != NULL; j = list->next())

@@ -47,6 +47,8 @@
 #include "globalfunctionsview.h"
 #include "advancedsceneeditor.h"
 
+#include "../../libs/common/outputplugin.h"
+
 ///////////////////////////////////////////////////////////////////
 // File menu entries
 #define ID_FILE_NEW                 	10020
@@ -155,6 +157,8 @@ void App::initDoc()
 {
   m_doc = new Doc();
   m_doc->init();
+
+  connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
 }
 
 Doc* App::doc(void)

@@ -29,8 +29,7 @@
 #include "deviceclass.h"
 #include "bus.h"
 #include "classes.h"
-
-class JoystickPlugin;
+#include "../../libs/common/outputplugin.h"
 
 class Doc : public QObject
 {
@@ -56,9 +55,6 @@ class Doc : public QObject
 
   // Read file contents to a list of strings
   bool readFileToList(QString &fileName, QList<QString> &list);
-
-  // Return the pointer to our DMX interface object
-  DMX* dmx() const { return m_dmx; }
 
   //
   // DMX Channels
@@ -117,29 +113,33 @@ class Doc : public QObject
   void removeBus(unsigned int id, bool deleteBus = true);
 
   //
-  // Input devices
+  // General Plugin Stuff
   //
-  // Input device list
-  QList <Joystick> *inputDeviceList() { return &m_inputDeviceList; }
+  QList <Plugin> *pluginList() { return &m_pluginList; }
+  Plugin* searchPlugin(QString name);
+  Plugin* searchPlugin(QString name, Plugin::PluginType type);
+  Plugin* searchPlugin(int id);
+  void addPlugin(Plugin*);
+  void removePlugin(Plugin*);
+  void initPlugins();
+  bool probePlugin(QString path);
 
-  // Input device list operations
-  Joystick* searchInputDevice(QString fdName);
-  Joystick* searchInputDevice(unsigned int id);
-  void addInputDevice(Joystick* j);
-  void removeInputDevice(Joystick* j);
-  JoystickPlugin* joystickPlugin() { return m_joystickPlugin; }
-  void initializeJoystickPlugin();
+  //
+  // The Output Plugin
+  //
+  OutputPlugin* outputPlugin() { return m_outputPlugin; }
 
  signals:
   void deviceListChanged();
   void deviceRemoved(int);
   void newDocumentClicked();
 
- private:
-  void initializeDMXChannels();
-  void initializeDMX();
+ private slots:
+  void slotChangeOutputPlugin(const QString& name);
 
-  void dumpDeviceClass(DeviceClass* dc);
+ private:
+  void initDMXChannels();
+
   DeviceClass* createDeviceClass(QList<QString> &list);
   DMXDevice* createDevice(QList<QString> &list);
   Function* createFunction(QList<QString> &list);
@@ -148,19 +148,20 @@ class Doc : public QObject
 
  private:
   DMXChannel* m_DMXAddressAllocation[512];
-  DMX* m_dmx;
+
+  OutputPlugin* m_outputPlugin;
 
   QString m_workspaceFileName;
   bool m_modified;
-
-  JoystickPlugin* m_joystickPlugin;
 
   QList <Function> m_functions;
   QList <DMXDevice> m_deviceList;
   QList <DeviceClass> m_deviceClassList;
   QList <Bus> m_busList;
-  QList <Joystick> m_inputDeviceList;
+  QList <Plugin> m_pluginList;
 
+ private:
+  static int NextPluginID;
 };
 
 #endif

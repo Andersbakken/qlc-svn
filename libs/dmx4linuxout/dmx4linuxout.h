@@ -1,13 +1,13 @@
 /*
   Q Light Controller
-  settingsui.h
+  dmx4linuxout.h
   
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-
+  
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,37 +19,36 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#ifndef DMX4LINUXOUT_H
+#define DMX4LINUXOUT_H
 
-#include "classes.h"
-#include "uic_settings.h"
+#include "../common/outputplugin.h"
 
-class QFont;
+class QPoint;
+class QString;
 
-class SettingsUI : public UI_Settings
+extern "C" OutputPlugin* create(int id);
+extern "C" void destroy(OutputPlugin* object);
+
+class DMX4LinuxOut : public OutputPlugin
 {
-  Q_OBJECT
-
-  friend class Settings;
-
  public:
-  SettingsUI(QWidget* parent = NULL, const char* name = NULL);
-  ~SettingsUI();
+  DMX4LinuxOut(int id);
+  ~DMX4LinuxOut();
 
- public slots:
-  void slotSystemBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotOKClicked();
-  void slotCancelClicked();
+  virtual bool open();
+  virtual bool close();
+  virtual void configure();
+  virtual QString infoText();
+  virtual void contextMenu(QPoint pos);
+
+  virtual QString deviceName() { return m_deviceName; }
+
+  virtual bool writeChannel(unsigned short channel, unsigned char value);
 
  private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-
- private:
-  bool m_openDeviceManager;
-  bool m_openLastWorkspace;
+  QString m_deviceName;
+  int m_device;
 };
 
 #endif

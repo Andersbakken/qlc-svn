@@ -27,20 +27,23 @@
 
 #include <qstring.h>
 #include <qmessagebox.h>
+#include <qpopupmenu.h>
 
-#include "../common/plugininfo.h"
+#include "../common/plugin.h"
 #include "midiout.h"
 
 #define MIDI_NOTEOFF 0x80
 #define MIDI_NOTEON  0x90
 #define OFFSET 70
 
+#define ID_CONFIGURE       10
+
 //
 // Exported functions
 //
-extern "C" OutputPlugin* create()
+extern "C" OutputPlugin* create(int id)
 {
-  return new MidiOut;
+  return new MidiOut(id);
 }
 
 extern "C" void destroy(OutputPlugin* object)
@@ -48,18 +51,16 @@ extern "C" void destroy(OutputPlugin* object)
   delete object;
 }
 
-extern "C" int getPluginType(void)
-{
-  return PLUGIN_TYPE_OUTPUT;
-}
-
 //
 // Class implementation
 //
-MidiOut::MidiOut() : OutputPlugin()
+MidiOut::MidiOut(int id) : OutputPlugin(id)
 {
   m_fd = -1;
   m_midiOutChannel = 0;
+  m_name = QString("Midi Output");
+  m_version = 0x00000100;
+  m_fileName = QString("/dev/midi00");
 
   for (unsigned short i = 0; i < MAX_MIDIOUT_DMX_CHANNELS; i++)
     {
@@ -79,14 +80,18 @@ void MidiOut::setFileName(QString fileName)
 
 bool MidiOut::open()
 {
-  int fd = ::open(m_fileName, O_WRONLY);
+  qDebug("Open MidiOut plugin");
+
+  int fd = ::open((const char*) m_fileName, O_WRONLY);
   if (fd == -1)
     {
       perror("open");
+      qDebug("Midi Output not available");
       return false;
     }
   else
     {
+      qDebug(QString("Midi Output available thru ") + m_fileName);
       m_fd = fd;
     }
 
@@ -95,6 +100,8 @@ bool MidiOut::open()
 
 bool MidiOut::close()
 {
+  qDebug("Close MidiOut plugin");
+
   if (m_fd == -1)
     {
       return false;
@@ -103,11 +110,42 @@ bool MidiOut::close()
     {
       if (::close(m_fd) == -1)
 	{
+	  perror("close");
+	  qDebug("Unable to close MidiOut plugin");
 	  return false;
+	}
+      else
+	{
+	  qDebug("MidiOut plugin closed");
 	}
     }
 
   return true;
+}
+
+QString MidiOut::infoText()
+{
+  QString t;
+  QString str = QString::null;
+  str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+  str += QString("<TR>\n");
+  str += QString("<TD><B>Version</B></TD>");
+  str += QString("<TD>");
+  t.setNum((version() >> 16) & 0xff);
+  str += t + QString(".");
+  t.setNum((version() >> 8) & 0xff);
+  str += t + QString(".");
+  t.setNum(version() & 0xff);
+  str += t + QString("</TD>");
+  str += QString("</TR>");
+
+  str += QString("</TR>");
+  str += QString("</TABLE>");
+  str += QString("</BODY></HTML>");
+
+  return str;
 }
 
 void MidiOut::setMidiOutChannel(unsigned char channel)
@@ -169,4 +207,26 @@ void MidiOut::configure()
 {
   QMessageBox::information(NULL, QString("QLC Midi Output Plugin"),
 			   QString("Not implemented"));
+}
+
+void MidiOut::contextMenu(QPoint pos)
+{
+  QPopupMenu* menu = new QPopupMenu();
+  menu->insertItem("Configure...", ID_CONFIGURE);
+
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  menu->exec(pos, 0);
+  delete menu;
+}
+
+void MidiOut::slotContextMenuCallback(int item)
+{
+  switch(item)
+    {
+    case ID_CONFIGURE:
+      break;
+
+    default:
+      break;
+    }
 }

@@ -30,13 +30,13 @@ UICH =  uic_selectjoystick.h
 UICO =  uic_selectjoystick.o \
 	moc_uic_selectjoystick.o
 
-MOCS =  ../common/moc_ledbar.o \
+MOCS =  ../common/moc_ledbar.o ../common/moc_plugin.o \
 	moc_joystick.o moc_joystickplugin.o moc_selectjoystick.o \
 	moc_joysticksettings.o
 
 OBJS =	$(UICO) \
 	$(MOCS) \
-	../common/plugininfo.o ../common/ledbar.o \
+	../common/ledbar.o ../common/plugin.o \
 	joystick.o joystickplugin.o selectjoystick.o joysticksettings.o
 
 all:	banner dep $(UICH) $(UICO) $(LIBJOY_SO)
@@ -65,7 +65,7 @@ install:
 	@echo "Installed" $(LIBJOY_SO) "to" $(SYSTEMPATH)"/$(PLUGINPATH)"
 
 clean: emacsclean
-	rm -f *.o *.so *.bak uic_* moc_* $(UICH)
+	rm -f *.o *.so *.bak uic_* moc_* Makefile.dep $(UICH)
 
 emacsclean:
 	rm -f *~ #*

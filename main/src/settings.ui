@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>469</width>
-            <height>488</height>
+            <width>401</width>
+            <height>409</height>
         </rect>
     </property>
     <property name="caption">
@@ -23,8 +23,8 @@
             <rect>
                 <x>10</x>
                 <y>10</y>
-                <width>450</width>
-                <height>150</height>
+                <width>380</width>
+                <height>60</height>
             </rect>
         </property>
         <property name="frameShape">
@@ -36,54 +36,6 @@
         <property name="title">
             <string>Directories</string>
         </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_pluginsLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>110</y>
-                    <width>120</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Plugins</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_deviceClassesLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>80</y>
-                    <width>120</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Device Classes</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_picturesLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>50</y>
-                    <width>120</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Pictures</string>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>m_systemLabel</cstring>
@@ -102,57 +54,13 @@
         </widget>
         <widget class="QLineEdit">
             <property name="name">
-                <cstring>m_picturesEdit</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>50</y>
-                    <width>230</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="focusPolicy">
-                <enum>NoFocus</enum>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_deviceClassesEdit</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>80</y>
-                    <width>230</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="focusPolicy">
-                <enum>NoFocus</enum>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
                 <cstring>m_systemEdit</cstring>
             </property>
             <property name="geometry">
                 <rect>
                     <x>130</x>
                     <y>20</y>
-                    <width>230</width>
+                    <width>200</width>
                     <height>25</height>
                 </rect>
             </property>
@@ -163,36 +71,17 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>370</x>
+                    <x>330</x>
                     <y>20</y>
-                    <width>70</width>
+                    <width>30</width>
                     <height>25</height>
                 </rect>
             </property>
             <property name="text">
-                <string>Browse...</string>
+                <string>...</string>
             </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_pluginsEdit</cstring>
-            </property>
-            <property name="enabled">
+            <property name="flat">
                 <bool>false</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>110</y>
-                    <width>230</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="focusPolicy">
-                <enum>NoFocus</enum>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
             </property>
         </widget>
     </widget>
@@ -203,30 +92,14 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>170</y>
-                <width>450</width>
-                <height>80</height>
+                <y>80</y>
+                <width>380</width>
+                <height>60</height>
             </rect>
         </property>
         <property name="title">
             <string>Look and Feel</string>
         </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_widgetStyleLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>110</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Widget Style</string>
-            </property>
-        </widget>
         <widget class="QComboBox">
             <property name="name">
                 <cstring>m_widgetStyleCombo</cstring>
@@ -234,10 +107,26 @@
             <property name="geometry">
                 <rect>
                     <x>130</x>
-                    <y>30</y>
+                    <y>20</y>
                     <width>230</width>
                     <height>25</height>
                 </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_widgetStyleLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>110</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Widget Style</string>
             </property>
         </widget>
     </widget>
@@ -248,9 +137,9 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>260</y>
-                <width>450</width>
-                <height>100</height>
+                <y>150</y>
+                <width>380</width>
+                <height>60</height>
             </rect>
         </property>
         <property name="title">
@@ -258,29 +147,13 @@
         </property>
         <widget class="QCheckBox">
             <property name="name">
-                <cstring>m_openLastWorkspaceCheckBox</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>60</y>
-                    <width>420</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Open Last Workspace</string>
-            </property>
-        </widget>
-        <widget class="QCheckBox">
-            <property name="name">
                 <cstring>m_openDeviceManagerCheckBox</cstring>
             </property>
             <property name="geometry">
                 <rect>
                     <x>20</x>
-                    <y>30</y>
-                    <width>420</width>
+                    <y>20</y>
+                    <width>160</width>
                     <height>21</height>
                 </rect>
             </property>
@@ -288,41 +161,22 @@
                 <string>Open Device Manager</string>
             </property>
         </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>290</x>
-                <y>450</y>
-                <width>80</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>380</x>
-                <y>450</y>
-                <width>80</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>m_openLastWorkspaceCheckBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>200</x>
+                    <y>20</y>
+                    <width>160</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Open Last Workspace</string>
+            </property>
+        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -331,9 +185,9 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>370</y>
-                <width>450</width>
-                <height>70</height>
+                <y>220</y>
+                <width>380</width>
+                <height>60</height>
             </rect>
         </property>
         <property name="title">
@@ -346,8 +200,8 @@
             <property name="geometry">
                 <rect>
                     <x>20</x>
-                    <y>30</y>
-                    <width>420</width>
+                    <y>20</y>
+                    <width>340</width>
                     <height>20</height>
                 </rect>
             </property>
@@ -356,14 +210,88 @@
             </property>
         </widget>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>290</x>
+                <y>370</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>370</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_outputGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>290</y>
+                <width>380</width>
+                <height>60</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Output</string>
+        </property>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>m_outputPluginCombo</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>20</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_outputPluginLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>20</y>
+                    <width>100</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Output Plugin</string>
+            </property>
+        </widget>
+    </widget>
 </widget>
 <connections>
-    <connection>
-        <sender>m_systemEdit</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotSystemEditTextChanged(const QString&amp;)</slot>
-    </connection>
     <connection>
         <sender>m_systemBrowse</sender>
         <signal>clicked()</signal>
@@ -395,21 +323,16 @@
     <tabstop>m_widgetStyleCombo</tabstop>
     <tabstop>m_openDeviceManagerCheckBox</tabstop>
     <tabstop>m_openLastWorkspaceCheckBox</tabstop>
+    <tabstop>m_keyRepeatCheckBox</tabstop>
+    <tabstop>m_outputPluginCombo</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
-    <tabstop>m_picturesEdit</tabstop>
-    <tabstop>m_deviceClassesEdit</tabstop>
-    <tabstop>m_pluginsEdit</tabstop>
 </tabstops>
-<includes>
-    <include location="local" impldecl="in implementation">settings.ui.h</include>
-</includes>
 <slots>
     <slot>slotCancelClicked()</slot>
     <slot>slotOKClicked()</slot>
-    <slot>slotSystemBrowseClicked()</slot>
-    <slot>slotSystemEditTextChanged( const QString &amp; )</slot>
     <slot>slotStyleChanged( const QString &amp; )</slot>
+    <slot>slotSystemBrowseClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
