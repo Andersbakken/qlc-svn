@@ -113,6 +113,7 @@ class App : public QMainWindow
   void slotViewAdvancedSceneEditor();
 
   void slotHelpAbout();
+  void slotHelpAboutQt();
 
  private:
   void initDoc();

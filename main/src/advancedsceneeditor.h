@@ -45,6 +45,7 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotRemoveSceneClicked();
   void slotEditSceneNameClicked();
   void slotSceneSelected(QListViewItem* item);
+  void slotSceneDoubleClicked(QListViewItem* item);
 
   void slotEditValueClicked();
   void slotContentsClicked(QListViewItem* item);

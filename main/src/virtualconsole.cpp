@@ -42,6 +42,7 @@
 #include "dmxwidgetbase.h"
 #include "keybind.h"
 #include "dmxlabel.h"
+#include "sequenceprovider.h"
 
 #include <X11/Xlib.h>
 
@@ -64,6 +65,23 @@ bool VirtualConsole::isDesignMode(void)
 
 void VirtualConsole::setMode(Mode mode)
 {
+  QList <Feeder> *feederList = _app->sequenceProvider()->feederList();
+
+  if (feederList->count() > 0)
+    {
+      int result = QMessageBox::warning(this, QString("Virtual Console"),
+					QString("There are running functions. Do you want to stop them now?"),
+					QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+      if (result == QMessageBox::Yes)
+	{
+	  _app->sequenceProvider()->flush();
+	}
+      else if (result == QMessageBox::Cancel)
+	{
+	  return;
+	}
+    }
+
   Display* display;
   display = XOpenDisplay(NULL);
   ASSERT(display != NULL);

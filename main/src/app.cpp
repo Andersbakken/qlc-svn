@@ -85,6 +85,7 @@
 ///////////////////////////////////////////////////////////////////
 // Help menu entries
 #define ID_HELP_ABOUT               	1002
+#define ID_HELP_ABOUT_QT                1003
 
 //////////////////////////////////////////////////////////////////
 // Status bar messages
@@ -111,15 +112,15 @@ void App::initView(void)
   initWorkspace();
   initDoc();
   doc()->readDeviceClasses();
-  
+
+  initSequenceEngine();
+
   initMenuBar();
   initStatusBar();
   initToolBar();
 
   initDeviceManagerView();
   initVirtualConsole();
-
-  initSequenceEngine();
 
   if (m_settings->openLastWorkspace() == true)
     {
@@ -266,7 +267,8 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
-  m_helpMenu->insertItem("About...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
+  m_helpMenu->insertItem("About QLC...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
+  m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
@@ -578,6 +580,11 @@ void App::slotHelpAbout()
   ab = new AboutBox(this);
   ab->exec();
   delete ab;
+}
+
+void App::slotHelpAboutQt()
+{
+  QMessageBox::aboutQt(this, QString("Q Light Controller"));
 }
 
 void App::closeEvent(QCloseEvent* e)

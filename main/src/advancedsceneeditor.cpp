@@ -101,7 +101,7 @@ bool AdvancedSceneEditor::dirtyCheck()
     {
       int result = QMessageBox::information(this, "Advanced Scene Editor",
 					    "Do you want to LOSE changes?",
-					    QMessageBox::Yes, QMessageBox::Cancel);
+					    QMessageBox::Yes,QMessageBox::Cancel);
       if (result == QMessageBox::Yes)
 	{
 	  if (m_scene != NULL)
@@ -180,7 +180,7 @@ void AdvancedSceneEditor::slotAddSceneClicked()
       return;
     }
   else if (m_sceneList->currentItem() == m_deviceRoot ||
-      m_sceneList->currentItem()->parent() == m_deviceRoot)
+	   m_sceneList->currentItem()->parent() == m_deviceRoot)
     {
       caption = QString("Adding new scene for DEVICE");
       prompt = QString("Enter new scene name for device ") + m_device->name();
@@ -277,6 +277,74 @@ void AdvancedSceneEditor::slotRemoveSceneClicked()
   updateSceneList();
 }
 
+void AdvancedSceneEditor::slotEditSceneNameClicked()
+{
+  if (m_scene == NULL)
+    {
+      return;
+    }
+
+  bool ok = false;
+
+  QString text = QInputDialog::getText(QString("Edit Scene Name"), 
+				       QString("Enter Scene Name"), 
+				       QLineEdit::Normal,
+				       m_scene->name(), &ok, this );
+  if (ok && text.isEmpty() == false)
+    {
+      m_scene->setName(text);
+      m_sceneList->currentItem()->setText(0, text);
+      setDirty(true);
+    }
+}
+
+void AdvancedSceneEditor::slotSceneDoubleClicked(QListViewItem* item)
+{
+  slotSceneSelected(item);
+  slotEditSceneNameClicked();
+}
+
+void AdvancedSceneEditor::slotSceneSelected(QListViewItem* item)
+{
+  if (item->parent() == NULL)
+    {
+      m_scene = NULL;
+      m_sceneContents->clear();
+      return;
+    }
+
+  if (dirtyCheck() == false)
+    {
+      m_sceneList->setCurrentItem(m_currentSceneItem);
+      return;
+    }
+
+  m_currentSceneItem = item;
+
+  if (m_scene != NULL)
+    {
+      delete m_scene;
+      m_scene = NULL;
+    }
+
+  ASSERT(m_device != NULL);
+
+  if (item->parent() == m_deviceRoot)
+    {
+      m_scene = new Scene((Scene*) m_device->searchFunction(item->text(0)));
+    }
+  else if (item->parent() == m_deviceClassRoot)
+    {
+      m_scene = new Scene((Scene*) m_device->deviceClass()->searchFunction(item->text(0)));
+    }
+  else
+    {
+      ASSERT(false);
+    }
+
+  updateChannelList();
+}
+
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
   ASSERT(m_device != NULL);
@@ -302,7 +370,12 @@ void AdvancedSceneEditor::slotApplyClicked()
       return;
     }
 
+  //
+  // Save the name of the function and whether it is a device class or device function
+  // so that we can select it after scene list update
+  //
   QString sceneName = m_scene->name();
+  bool dcFunction = (m_scene->deviceClass() != NULL) ? true : false;
 
   if (m_scene->deviceClass() != NULL)
     {
@@ -351,17 +424,39 @@ void AdvancedSceneEditor::slotApplyClicked()
       ASSERT(false);
     }
 
+  //
+  // Clear scene list and fetch new items
+  //
   updateSceneList();
 
-  for (QListViewItem* item = m_sceneList->firstChild(); item != NULL; item = item->nextSibling())
+  //
+  // Select the function that was selected before we pressed apply
+  //
+  if (dcFunction == true)
     {
-      if (item->text(0) == sceneName)
+      for (QListViewItem* item = m_deviceClassRoot->firstChild(); item != NULL; item = item->nextSibling())
 	{
-	  m_sceneList->setSelected(item, true);
-	  slotSceneSelected(item);
-	  break;
+	  if (item->text(0) == sceneName)
+	    {
+	      m_sceneList->setSelected(item, true);
+	      slotSceneSelected(item);
+	      break;
+	    }
 	}
     }
+  else
+    {
+      for (QListViewItem* item = m_deviceRoot->firstChild(); item != NULL; item = item->nextSibling())
+	{
+	  if (item->text(0) == sceneName)
+	    {
+	      m_sceneList->setSelected(item, true);
+	      slotSceneSelected(item);
+	      break;
+	    }
+	}
+    }
+
 }
 
 void AdvancedSceneEditor::slotOKClicked()
@@ -372,6 +467,11 @@ void AdvancedSceneEditor::slotOKClicked()
 
 void AdvancedSceneEditor::slotCancelClicked()
 {
+  if (dirtyCheck() == false)
+    {
+      return;
+    }
+
   if (m_candidate == true)
     {
       delete m_scene;
@@ -429,75 +529,26 @@ void AdvancedSceneEditor::slotEditValueClicked()
     }
 }
 
-void AdvancedSceneEditor::slotEditSceneNameClicked()
-{
-  if (m_scene == NULL)
-    {
-      return;
-    }
-
-  bool ok = false;
-
-  QString text = QInputDialog::getText(QString("Edit Scene Name"), 
-				       QString("Enter Scene Name"), 
-				       QLineEdit::Normal,
-				       m_scene->name(), &ok, this );
-  if (ok && text.isEmpty() == false)
-    {
-      m_scene->setName(text);
-      m_sceneList->currentItem()->setText(0, text);
-      setDirty(true);
-    }
-}
-
 void AdvancedSceneEditor::slotOutputDeviceActivated(const QString &text)
 {
+  if (m_device != NULL)
+    {
+      QString device = m_device->name();
+      
+      if (dirtyCheck() == false)
+	{
+	  m_deviceCombo->setCurrentText(device);
+	  m_sceneList->setCurrentItem(m_currentSceneItem);
+	  return;
+	}
+    }
+
   m_device = _app->doc()->searchDevice(text);
 
   m_deviceClassEdit->setText(m_device->deviceClass()->manufacturer() +
 			     QString (" ") + m_device->deviceClass()->model());
 
   updateSceneList();
-}
-
-void AdvancedSceneEditor::slotSceneSelected(QListViewItem* item)
-{
-  if (item->parent() == NULL)
-    {
-      m_scene = NULL;
-      return;
-    }
-
-  if (dirtyCheck() == false)
-    {
-      m_sceneList->setCurrentItem(m_currentSceneItem);
-      return;
-    }
-
-  m_currentSceneItem = item;
-
-  if (m_scene != NULL)
-    {
-      delete m_scene;
-      m_scene = NULL;
-    }
-
-  ASSERT(m_device != NULL);
-
-  if (item->parent() == m_deviceRoot)
-    {
-      m_scene = new Scene((Scene*) m_device->searchFunction(item->text(0)));
-    }
-  else if (item->parent() == m_deviceClassRoot)
-    {
-      m_scene = new Scene((Scene*) m_device->deviceClass()->searchFunction(item->text(0)));
-    }
-  else
-    {
-      ASSERT(false);
-    }
-
-  updateChannelList();
 }
 
 void AdvancedSceneEditor::updateChannelList()
