@@ -31,6 +31,12 @@ class Event;
 class QFile;
 class QString;
 
+typedef struct
+{
+  Device* callerDevice;
+  Function* feederFunction;
+} ChaserStep;
+
 class Chaser : public Function
 {
   Q_OBJECT
@@ -52,7 +58,8 @@ class Chaser : public Function
 
   void registerFirstStep();
 
-  void unRegister();
+  void unRegisterFunction();
+  void registerFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
 

@@ -37,7 +37,7 @@ Chaser::Chaser() : Function()
 {
   m_type = Function::Chaser;
   m_running = false;
-  m_OKforNextStep = false;
+  m_OKforNextStep = true;
 }
 
 Chaser::~Chaser()
@@ -171,20 +171,34 @@ void Chaser::createContents(QList<QString> &list)
 
 void Chaser::addStep(Device* device, Function* function)
 {
-  ChaserStep* step = (ChaserStep*) malloc(sizeof(ChaserStep));
-
-  step->callerDevice = device;
-  step->feederFunction = function;
-
-  m_steps.append(step);
+  if (m_running == false)
+    {
+      ChaserStep* step = (ChaserStep*) malloc(sizeof(ChaserStep));
+      
+      step->callerDevice = device;
+      step->feederFunction = function;
+      
+      m_steps.append(step);
+    }
+  else
+    {
+      qDebug("Chaser is running. Cannot modify steps!");
+    }  
 }
 
 void Chaser::removeStep(int index)
 {
-  ChaserStep* step = m_steps.take(index);
-  if (step != NULL)
+  if (m_running == false)
     {
-      delete step;
+      ChaserStep* step = m_steps.take(index);
+      if (step != NULL)
+	{
+	  delete step;
+	}
+    }
+  else
+    {
+      qDebug("Chaser is running. Cannot modify steps!");
     }
 }
 
@@ -200,6 +214,19 @@ ChaserStep* Chaser::at(int index)
 
 void Chaser::recalculateSpeed(Feeder* feeder)
 {
+  for (unsigned long i = 0; i < m_steps.count(); i++)
+    {
+      m_steps.at(i)->feederFunction->recalculateSpeed(feeder);
+    }
+}
+
+void Chaser::registerFunction(Feeder* feeder)
+{
+  m_running = true;
+  m_OKforNextStep = true;
+
+  feeder->setNextEventIndex(0);
+  Function::registerFunction(feeder);
 }
 
 Event* Chaser::getEvent(Feeder* feeder)
@@ -209,79 +236,22 @@ Event* Chaser::getEvent(Feeder* feeder)
 
   ASSERT(feeder != NULL);
 
-  /*
-    if (feeder->first == true)
-    {
-    feeder->first = false;
-    
-    if (m_running == true)
-    {
-    // Each chaser only once at a time
-    event->m_type = Event::Ready;
-    return event;
-    }
-    else
-    {
-    step = m_steps.at(feeder->nextEventIndex);
-    
-    if (step != NULL)
-    {
-    feeder->nextEventIndex++;
-    m_running = true;
-    m_OKforNextStep = false;
-    
-    connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-    this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-    
-    _app->sequenceProvider()->registerEventFeeder(step->callerDevice, step->feederFunction, feeder->speedBus(), this);
-    }
-    else
-    {
-    m_OKforNextStep = false;
-    event->m_type = Event::Ready;
-    return event;
-    }
-    }
-    }
-    else*/ 
-
   if (m_OKforNextStep == true)
     {
       step = m_steps.at(feeder->nextEventIndex());
+      feeder->setNextEventIndex((feeder->nextEventIndex() + 1) % m_steps.count());
 
-      if (step != NULL)
-	{
-	  m_OKforNextStep = false;
-	  feeder->setNextEventIndex(feeder->nextEventIndex() + 1);
-	  _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
-	}
-      else
-	{
-	  if (feeder->repeatTimes() == 0)
-	    {
-	      // Repeat forever
-	      feeder->setNextEventIndex(0);
-	    }
-	  else if (feeder->repeatCounter() == feeder->repeatTimes())
-	    {
-	      // This chaser has been repeated as many times as wanted.
-	      // Disconnect any signals this class has been receiving
-	      // Signal sequence provider to unregister this
-	      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-			 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      ASSERT(step != NULL);
 
-	      m_OKforNextStep = false;
-	      event->m_type = Event::Ready;
-	      return event;
-	    }
-	  else
-	    {
-	      // Repeated once more
-	      m_OKforNextStep = true;
-	      feeder->setRepeatCounter(feeder->repeatCounter() + 1);
-	      feeder->setNextEventIndex(0);
-	    }
-	}
+      m_OKforNextStep = false;
+
+      _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
+      
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
     }
 
   return event;
@@ -295,7 +265,7 @@ void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, De
     }
 }
 
-void Chaser::unRegister()
+void Chaser::unRegisterFunction()
 {
   disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
 	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
@@ -303,5 +273,5 @@ void Chaser::unRegister()
   m_running = false;
   m_OKforNextStep = false;
 
-  Function::unRegister();
+  Function::unRegisterFunction();
 }

@@ -25,6 +25,12 @@
 #include "classes.h"
 #include "function.h"
 
+typedef struct
+{
+  Device* callerDevice;
+  Function* feederFunction;
+} CollectionItem;
+
 class FunctionCollection : public Function
 {
   Q_OBJECT
@@ -48,7 +54,8 @@ class FunctionCollection : public Function
 
   void increaseRegisterCount();
 
-  void unRegister();
+  void unRegisterFunction();
+  void registerFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
 

@@ -322,6 +322,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  if (d != NULL)
 		    {
 		      addDevice(d);
+		      allocateDMXAddressSpace(d->address(), d->deviceClass()->channels());
 		    }
 		}
 	      else if (*string == QString("Function"))

@@ -72,10 +72,19 @@ Function::Type Function::type() const
   return m_type;
 }
 
-void Function::unRegister()
+void Function::unRegisterFunction()
 {
   m_running = false;
+
+  qDebug(m_name + " unregistered");
   emit unRegistered(this);
+}
+
+void Function::registerFunction(Feeder* feeder)
+{
+  qDebug(m_name + " registered");
+
+  recalculateSpeed(feeder);
 }
 
 QString Function::typeString() const

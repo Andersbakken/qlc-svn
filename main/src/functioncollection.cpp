@@ -28,6 +28,7 @@
 #include "event.h"
 #include "doc.h"
 #include "deviceclass.h"
+
 #include <qstring.h>
 #include <qthread.h>
 
@@ -45,9 +46,14 @@ FunctionCollection::~FunctionCollection()
 
 }
 
-void FunctionCollection::unRegister()
+void FunctionCollection::unRegisterFunction()
 {
-  Function::unRegister();
+  Function::unRegisterFunction();
+}
+
+void FunctionCollection::registerFunction(Feeder* feeder)
+{
+  Function::registerFunction(feeder);
 }
 
 void FunctionCollection::saveToFile(QFile &file)

@@ -52,9 +52,14 @@ Scene::~Scene()
     }
 }
 
-void Scene::unRegister()
+void Scene::unRegisterFunction()
 {
-  Function::unRegister();
+  Function::unRegisterFunction();
+}
+
+void Scene::registerFunction(Feeder* feeder)
+{
+  Function::registerFunction(feeder);
 }
 
 void Scene::saveToFile(QFile &file)

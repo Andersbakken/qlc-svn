@@ -22,12 +22,14 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include <qstring.h>
-#include <pthread.h>
 #include <qlist.h>
-#include <qfile.h>
-#include "sequenceprovider.h"
 #include "classes.h"
+
+#define VALUE_READY INT_MAX
+
+class QFile;
+class QString;
+class Feeder;
 
 class Function : public QObject
 {
@@ -55,7 +57,10 @@ class Function : public QObject
   virtual void recalculateSpeed(Feeder* feeder) = 0;
 
   /* Used to emit an unRegistered() signal from this function */
-  virtual void unRegister();
+  virtual void unRegisterFunction();
+
+  /* Signal the function that it is registered -> do some init */
+  virtual void registerFunction(Feeder*);
 
   /* Save this function to a file */
   virtual void saveToFile(QFile &file) = 0;
