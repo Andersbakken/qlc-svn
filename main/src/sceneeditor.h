@@ -31,6 +31,7 @@
 #include <qwidget.h>
 
 #include "device.h"
+#include "scene.h"
 #include "uic_sceneeditor.h"
 
 
@@ -60,6 +61,9 @@ public slots:
     void slotHideClicked();
     void slotNewClicked();
     void slotSaveClicked();
+    void slotClassRadio_clicked();
+    void slotDeviceRadio_clicked();
+
 
 
 
@@ -67,7 +71,10 @@ public slots:
 
 protected:
    Device* m_device;
-
+   Scene* m_currentScene;
+   void m_selectFunctions(QList <Function> fl);
+   void m_setStatusText(QString text, QColor color);
+   QString m_deviceSource;
 };
 
 #endif // SCENEEDITOR_H

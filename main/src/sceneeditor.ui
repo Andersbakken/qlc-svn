@@ -1,6 +1,6 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>UI_SceneEditor</class>
-<widget class="QFrame">
+<widget class="QWidget">
     <property name="name">
         <cstring>UI_SceneEditor</cstring>
     </property>
@@ -111,25 +111,6 @@
     </widget>
     <widget class="QPushButton">
         <property name="name">
-            <cstring>m_saveButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>60</x>
-                <y>160</y>
-                <width>50</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Save</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Save as selected scene</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
             <cstring>m_hideButton</cstring>
         </property>
         <property name="geometry">
@@ -160,7 +141,7 @@
             </rect>
         </property>
         <property name="title">
-            <string>Save in</string>
+            <string>Source</string>
         </property>
         <widget class="QRadioButton">
             <property name="name">
@@ -201,6 +182,25 @@
             </property>
         </widget>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_saveButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>160</y>
+                <width>50</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Store</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Save as selected scene</string>
+        </property>
+    </widget>
 </widget>
 <connections>
     <connection>
@@ -227,6 +227,18 @@
         <receiver>UI_SceneEditor</receiver>
         <slot>slotHideClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_deviceClassRadio</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotClassRadio_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_deviceRadio</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotDeviceRadio_clicked()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">sceneeditor.ui.h</include>
@@ -236,6 +248,8 @@
     <slot>slotHideClicked()</slot>
     <slot>slotNewClicked()</slot>
     <slot>slotSaveClicked()</slot>
+    <slot>slotClassRadio_clicked()</slot>
+    <slot>slotDeviceRadio_clicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
