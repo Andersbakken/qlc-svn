@@ -37,7 +37,6 @@ VCDockSlider::VCDockSlider(QWidget* parent, const char* name)
   : UI_VCDockSlider(parent, name)
 {
   m_bus = NULL;
-  m_slider->setTracking(false);
 }
 
 VCDockSlider::~VCDockSlider()
@@ -47,8 +46,6 @@ VCDockSlider::~VCDockSlider()
 void VCDockSlider::slotSliderValueChanged(int value)
 {
   QString num;
-  num.sprintf("%.3d", KChannelValueMax - value);
-  m_valueLabel->setText(num);
 
   switch (m_mode)
     {
@@ -56,7 +53,9 @@ void VCDockSlider::slotSliderValueChanged(int value)
       break;
 
     case Speed:
-      m_bus->setValue(KChannelValueMax - value);
+      num.sprintf("%.3d", value);
+      m_valueLabel->setText(num);
+      m_bus->setValue(value);
       break;
 
     case Master:
@@ -95,6 +94,8 @@ void VCDockSlider::setMode(Mode mode)
 	    m_nameLabel->setText("Hold");
 	    m_infoLabel->setText("Speed");
 	  }
+
+	m_bus->setValue(m_slider->value());
       }
       break;
 

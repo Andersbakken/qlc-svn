@@ -103,14 +103,17 @@
                             <property name="name">
                                 <cstring>m_slider</cstring>
                             </property>
+                            <property name="minValue">
+                                <number>1</number>
+                            </property>
                             <property name="maxValue">
-                                <number>255</number>
+                                <number>256</number>
                             </property>
                             <property name="pageStep">
                                 <number>8</number>
                             </property>
                             <property name="value">
-                                <number>255</number>
+                                <number>1</number>
                             </property>
                             <property name="orientation">
                                 <enum>Vertical</enum>
@@ -119,7 +122,7 @@
                                 <enum>Below</enum>
                             </property>
                             <property name="tickInterval">
-                                <number>16</number>
+                                <number>8</number>
                             </property>
                         </widget>
                         <spacer>

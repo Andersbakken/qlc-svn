@@ -249,8 +249,8 @@ void SceneEditor::newScene()
       t_channel channels = m_device->deviceClass()->channels()->count();
       t_value val[channels];
 
-      _app->doc()->outputPlugin()->readRange(m_device->address(),
-					     val, channels);
+      _app->outputPlugin()->readRange(m_device->address(),
+				      val, channels);
       
       QPtrList <ChannelUI> ul = m_device->unitList();
 
@@ -281,7 +281,7 @@ void SceneEditor::store()
 
   t_channel channels = m_device->deviceClass()->channels()->count();
   t_value val[channels];
-  _app->doc()->outputPlugin()->readRange(m_device->address(),
+  _app->outputPlugin()->readRange(m_device->address(),
 					 val, channels);
   
   for (t_channel i = 0; i < channels; i++)

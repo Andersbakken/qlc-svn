@@ -30,12 +30,10 @@
 #include "functioncollection.h"
 #include "chaser.h"
 #include "virtualconsole.h"
-#include "dummyoutplugin.h"
 #include "devicemanagerview.h"
 #include "configkeys.h"
 #include "functionconsumer.h"
 
-#include "../../libs/common/plugin.h"
 #include "../../libs/common/filehandler.h"
 
 #include <qobject.h>
@@ -45,14 +43,9 @@
 #include <qptrlist.h>
 #include <qmessagebox.h>
 
-#include <ctype.h>
-#include <dlfcn.h>
-#include <stdlib.h>
-#include <limits.h>
-
 extern App* _app;
 
-t_plugin_id Doc::NextPluginID = KPluginIDMin;
+const t_bus_id KBusCount (32);
 
 //
 // Constructor
@@ -61,9 +54,7 @@ Doc::Doc() : QObject()
 {
   m_workspaceFileName = QString::null;
   setModified(false);
-
-  m_outputPlugin = NULL;
-  m_dummyOutPlugin = NULL;
+  m_busArray = NULL;
 }
 
 
@@ -110,11 +101,6 @@ void Doc::setModified(bool modified)
 //
 void Doc::init()
 {
-  QString outputPlugin;
-  _app->settings()->get("OutputPlugin", outputPlugin);
-
-  initPlugins();
-
   readDeviceClasses();
 
   connect(Bus::defaultFadeBus(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
@@ -282,13 +268,17 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		}
 	      else if (*string == QString("Bus"))
 		{
+		  /*
 		  Bus* bus = new Bus();
 		  bus->createContents(list);
 		  addBus(bus);
+		  */
+		  qDebug("Warning! Functionality removed");
 		}
 	      else if (*string == QString("Joystick"))
 		{
-		  createJoystickContents(list);
+		  qDebug("Warning! Functionality removed");
+		  //createJoystickContents(list);
 		}
 	      else if (*string == QString("Virtual Console"))
 		{
@@ -338,34 +328,6 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   setModified(false);
 
   return success;
-}
-
-
-//
-// Create joystick plugin contents... now what the heck is this
-// doing here???
-//
-void Doc::createJoystickContents(QPtrList <QString> &list)
-{
-  QString name;
-  QString fdName;
-
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
-      else if (*s == QString("FDName"))
-	{
-	  fdName = *(list.next());
-	}
-      else if (*s == QString("Name"))
-	{
-	  name = *(list.next());
-	}
-    }
 }
 
 
@@ -641,18 +603,8 @@ void Doc::newDocument()
 {
   Device* d = NULL;
   Function* f = NULL;
-  Bus* b = NULL;
 
   _app->functionConsumer()->purge();
-
-  // Delete all buses
-  m_busList.first();
-  while (!m_busList.isEmpty())
-    {
-      b = m_busList.take(0);
-      ASSERT(b);
-      delete b;
-    }
 
   // Delete all global functions
   m_functions.first();
@@ -678,6 +630,8 @@ void Doc::newDocument()
 
   Function::resetFunctionId();
 
+  initBuses();
+
   emit newDocumentClicked();
 }
 
@@ -693,11 +647,13 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Buses
       //
+      qDebug("Warning! Functionality removed");
+      /*
       for (Bus* b = m_busList.first(); b != NULL; b = m_busList.next())
 	{
 	  b->saveToFile(file);
 	}
-
+      */
       //
       // Devices
       //
@@ -966,66 +922,38 @@ Function* Doc::searchFunction(const t_function_id id)
 // Bus stuff //           
 ///////////////
 
-//
-// Add a new bus
-//
-void Doc::addBus(Bus* bus)
+void Doc::initBuses()
 {
-  ASSERT(bus != NULL);
-  m_busList.append(bus);
-  emit deviceListChanged();
+  delete [] m_busArray;
 
-  connect(bus, SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
-
-  setModified(true);
+  m_busArray = new Bus[KBusCount];
 }
 
-//
-// Search for a bus with its id
-//
-Bus* Doc::searchBus(const t_bus_id id)
+bool Doc::busValue(t_bus_id id, t_bus_value& value)
 {
-  Bus* bus = NULL;
-
-  for (t_bus_id i = 0; i < (t_bus_id) m_busList.count(); i++)
+  if (id < KBusCount)
     {
-      bus = m_busList.at(i);
-      ASSERT(bus);
-
-      if (bus->id() == id)
-	{
-	  return bus;
-	}
+      value = m_busArray[id].value();
+      return true;
     }
-
-  return NULL;
+  else
+    {
+      value = 0;
+      return false;
+    }
 }
 
-//
-// Remove bus (and delete it if "deleteBus" == true)
-//
-void Doc::removeBus(t_bus_id id, bool deleteBus)
+bool Doc::setBusValue(t_bus_id id, t_bus_value value)
 {
-  Bus* bus = NULL;
-  
-  bus = searchBus(id);
-
-  ASSERT(bus);
-
-  m_busList.remove(bus);
-
-  disconnect(bus, SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	     this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
-
-  if (deleteBus == true)
+  if (id < KBusCount)
     {
-      delete bus;
+      m_busArray[id].setValue(value);
+      return true;
     }
-
-  emit deviceListChanged();
-
-  setModified(true);
+  else
+    {
+      return false;
+    }
 }
 
 //
@@ -1042,239 +970,5 @@ void Doc::slotBusValueChanged(t_bus_id id, t_bus_value value)
     {
       ++it;
       function->busValueChanged(id, value);
-    }
-}
-
-
-//////////////////
-// Plugin stuff //
-//////////////////
-
-//
-// Search and load plugins
-//
-void Doc::initPlugins()
-{
-  QString path;
-
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PLUGINPATH + QString("/");
-
-  // First of all, add the dummy output plugin
-  m_dummyOutPlugin = new DummyOutPlugin(Doc::NextPluginID++);
-  connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
-	  this, SLOT(slotPluginActivated(Plugin*)));
-  addPlugin(m_dummyOutPlugin);
-
-  QDir d(dir);
-  d.setFilter(QDir::Files);
-  if (d.exists() == false || d.isReadable() == false)
-    {
-      fprintf(stderr, "Unable to access plugin directory %s.\n",
-	      (const char*) dir);
-      return;
-    }
-  
-  QStringList dirlist(d.entryList());
-  QStringList::Iterator it;
-
-  for (it = dirlist.begin(); it != dirlist.end(); ++it)
-    { 
-      // Ignore everything else than .so files
-      if ((*it).right(2) != QString("so"))
-	{
-	  continue;
-	}
-
-      path = dir + *it;
-
-      probePlugin(path);
-    }
-
-  //
-  // Use the output plugin that user has selected previously
-  //
-  QString config;
-  _app->settings()->get(KEY_OUTPUT_PLUGIN, config);
-  Plugin* plugin = searchPlugin(config, Plugin::OutputType);
-  if (plugin != NULL)
-    {
-      m_outputPlugin = static_cast<OutputPlugin*> (plugin);
-    }
-  else
-    {
-      m_outputPlugin = m_dummyOutPlugin;
-    }
-
-  slotPluginActivated(m_outputPlugin);
-}
-
-//
-// Try if the given file is a plugin
-//
-bool Doc::probePlugin(QString path)
-{
-  void* handle = NULL;
-  
-  handle = ::dlopen((const char*) path, RTLD_LAZY);
-  if (handle == NULL)
-    {
-      fprintf(stderr, "dlopen: %s\n", dlerror());
-    }
-  else
-    {
-      typedef Plugin* create_t(int);
-      typedef void destroy_t(Plugin*);
-
-      create_t* create = (create_t*) ::dlsym(handle, "create");
-      destroy_t* destroy = (destroy_t*) ::dlsym(handle, "destroy");
-
-      if (create == NULL || destroy == NULL)
-	{
-	  fprintf(stderr, "dlsym(init): %s\n", dlerror());
-	  return false;
-	}
-      else
-	{
-	  Plugin* plugin = create(Doc::NextPluginID++);
-	  ASSERT(plugin != NULL);
-
-	  plugin->setConfigDirectory(QString(getenv("HOME")) + 
-				     QString("/") + QString(QLCUSERDIR) + 
-				     QString("/"));
-	  plugin->loadSettings();
-
-	  connect(plugin, SIGNAL(activated(Plugin*)), 
-		  this, SLOT(slotPluginActivated(Plugin*)));
-	  addPlugin(plugin);
-
-	  qDebug(QString("Found ") + plugin->name() + " plugin");
-	}
-    }
-
-  return true;
-}
-
-//
-// Add a plugin to list
-//
-void Doc::addPlugin(Plugin* plugin)
-{
-  ASSERT(plugin != NULL);
-  m_pluginList.append(plugin);
-
-  emit deviceListChanged();
-}
-
-//
-// Remove a plugin from list
-//
-void Doc::removePlugin(Plugin* plugin)
-{
-  ASSERT(plugin != NULL);
-  m_pluginList.remove(plugin);
-
-  emit deviceListChanged();
-}
-
-//
-// Search for a plugin by its name
-//
-Plugin* Doc::searchPlugin(QString name)
-{
-  Plugin* plugin = NULL;
-
-  for (unsigned int i = 0; i < m_pluginList.count(); i++)
-    {
-      plugin = m_pluginList.at(i);
-
-      if (plugin->name() == name)
-	{
-	  return plugin;
-	}
-    }
-  return NULL;
-}
-
-//
-// Search for a plugin by its name & type
-//
-Plugin* Doc::searchPlugin(QString name, Plugin::PluginType type)
-{
-  Plugin* plugin = NULL;
-
-  for (unsigned int i = 0; i < m_pluginList.count(); i++)
-    {
-      plugin = m_pluginList.at(i);
-
-      if (plugin->name() == name && plugin->type() == type)
-	{
-	  return plugin;
-	}
-    }
-
-  return NULL;
-}
-
-//
-// Search plugin by its id
-//
-Plugin* Doc::searchPlugin(const t_plugin_id id)
-{
-  Plugin* plugin = NULL;
-
-  for (t_plugin_id i = 0; i < m_pluginList.count(); i++)
-    {
-      plugin = m_pluginList.at(i);
-
-      if (plugin->id() == id)
-	{
-	  return plugin;
-	}
-    }
-
-  return NULL;
-}
-
-//
-// A plugin has been activated
-//
-void Doc::slotPluginActivated(Plugin* plugin)
-{
-  if (plugin && plugin->type() == Plugin::OutputType)
-    {
-      slotChangeOutputPlugin(plugin->name());
-      _app->settings()->set("OutputPlugin", plugin->name());
-      _app->settings()->save();
-    }
-}
-
-//
-// Search for an output plugin and set it. If not found,
-// use Dummy Output by default.
-//
-void Doc::slotChangeOutputPlugin(const QString& name)
-{
-  if (m_outputPlugin != NULL)
-    {
-      m_outputPlugin->close();
-    }
-
-  m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
-  if (m_outputPlugin == NULL)
-    {
-      // If an output plugin cannot be found, use the dummy plugin
-      m_outputPlugin = m_dummyOutPlugin;
-    }
-
-  m_outputPlugin->open();
-  
-  // This if() has to be here so that this won't get called until all
-  // objects in the call chain have been created (during startup).
-  if (_app && _app->deviceManagerView() && 
-      _app->deviceManagerView()->deviceManager())
-    {
-      _app->deviceManagerView()->deviceManager()->slotUpdateDeviceList();
     }
 }

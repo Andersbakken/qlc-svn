@@ -22,52 +22,66 @@
 #ifndef DEVICEMANAGERVIEW_H
 #define DEVICEMANAGERVIEW_H
 
-#include "app.h"
-#include "devicemanager.h"
+#include <qwidget.h>
 
-class QWidget;
 class QToolBar;
 class QToolButton;
-class QLayout;
-class QPixmap;
-class QEvent;
-class QSize;
-class QLabel;
+class QVBoxLayout;
+class QCloseEvent;
 class QDockArea;
+class QSplitter;
+class QListView;
+class QListViewItem;
+class QTextView;
 
 class DeviceManagerView : public QWidget
 {
   Q_OBJECT
 
  public:
-  DeviceManagerView(QWidget* parent = 0);
+  DeviceManagerView(QWidget* parent, const char* name = 0);
   ~DeviceManagerView();
 
-  DeviceManager* deviceManager() { return m_dm; }
-  void initView(void);
+  void initView();
 
- private slots:
-  void slotModeChanged();
-  void slotSelectionChanged(int itemId, int itemType);
+ public slots:
+  void slotUpdate();
 
  private:
-  DeviceManager* m_dm;
-  QToolBar* m_toolbar;
-  QVBoxLayout* m_layout;
-  QDockArea* m_dockArea;
+  void initTitle();
+  void initToolBar();
+  void initDataView();
 
-  QToolButton* m_addOutputDeviceButton;
-  QToolButton* m_addBusButton;
+ private slots:
+  void slotAdd();
+  void slotRemove();
+  void slotProperties();
+  void slotMonitor();
+  void slotConsole();
+
+  void slotModeChanged();
+  void slotSelectionChanged(QListViewItem*);
+  void slotRightButtonClicked(QListViewItem*, const QPoint&, int);
+  void slotMenuCallBack(int);
+
+ private:
+  QVBoxLayout* m_layout;
+  QToolBar* m_toolbar;
+  QDockArea* m_dockArea;
+  QSplitter* m_splitter;
+  QListView* m_listView;
+  QTextView* m_textView;
+
+  QToolButton* m_addButton;
   QToolButton* m_removeButton;
   QToolButton* m_propertiesButton;
-  QToolButton* m_monitorButton;
   QToolButton* m_consoleButton;
+  QToolButton* m_monitorButton;
 
  signals:
   void closed();
 
  protected:
-  void resizeEvent(QResizeEvent* e);
   void closeEvent(QCloseEvent*);
 };
 

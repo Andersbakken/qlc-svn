@@ -216,7 +216,7 @@ void FunctionConsumer::event(time_t)
 		}
 	      else
 		{
-		  _app->doc()->outputPlugin()
+		  _app->outputPlugin()
 		    ->writeChannel(f->device()->address() + ch, ev[ch]);
 		}
 	    }

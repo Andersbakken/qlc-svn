@@ -20,12 +20,12 @@
 */
 
 #include "devicemanagerview.h"
-#include "devicelistview.h"
 #include "settings.h"
 #include "app.h"
 #include "doc.h"
 #include "configkeys.h"
 #include "virtualconsole.h"
+#include "newdevice.h"
 
 #include <qwidget.h>
 #include <qtoolbar.h>
@@ -33,247 +33,483 @@
 #include <qlayout.h>
 #include <qpixmap.h>
 #include <qevent.h>
-#include <qsize.h>
-#include <qlabel.h>
 #include <qdockarea.h>
+#include <qtextview.h>
+#include <qsplitter.h>
+#include <qlistview.h>
+#include <qstring.h>
+#include <qmessagebox.h>
+#include <qheader.h>
+#include <qpopupmenu.h>
 
 extern App* _app;
 
-DeviceManagerView::DeviceManagerView(QWidget* parent) : QWidget(parent)
+// List view column numbers
+const int KColumnName ( 0 );
+const int KColumnID   ( 1 );
+
+// List view item menu callback id's
+const int KMenuItemAdd        ( 0 );
+const int KMenuItemRemove     ( 1 );
+const int KMenuItemProperties ( 2 );
+const int KMenuItemMonitor    ( 3 );
+const int KMenuItemConsole    ( 4 );
+
+//
+// Constructor
+//
+DeviceManagerView::DeviceManagerView(QWidget* parent, const char* name)
+  : QWidget(parent, name)
 {
   m_layout = NULL;
   m_dockArea = NULL;
   m_toolbar = NULL;
-  m_dm = NULL;
+  m_splitter = NULL;
+  m_listView = NULL;
+  m_textView = NULL;
 }
 
-void DeviceManagerView::initView()
-{
-  setCaption(QString("Device Manager"));
-  resize(300, 200);
 
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  setIcon(dir + QString("/device.xpm"));
-
-  m_layout = new QVBoxLayout(this);
-
-  m_dockArea = new QDockArea(Horizontal, QDockArea::Normal, this);
-  m_dockArea->setFixedHeight(30);
-  m_toolbar = new QToolBar("Device Manager", _app, m_dockArea);
-  
-  m_dm = new DeviceManager(this);
-
-  m_addOutputDeviceButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), 
-		    "Add New Output Device", 0, m_dm, 
-		    SLOT(slotDLAddOutputDevice()), m_toolbar);
-
-  m_addBusButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/addbus.xpm")), 
-		    "Add New Bus", 0, m_dm, 
-		    SLOT(slotDLAddBus()), m_toolbar);
-
-  m_removeButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), 
-		    "Remove Current Selection", 0, m_dm, 
-		    SLOT(slotDLRemove()), m_toolbar);
-
-  m_toolbar->addSeparator();
-
-  m_propertiesButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), 
-		    "Properties", 0, m_dm, 
-		    SLOT(slotDLViewProperties()), m_toolbar);
-
-  m_toolbar->addSeparator();
-
-  m_monitorButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), 
-		    "Monitor Device", 0, m_dm, 
-		    SLOT(slotDLViewMonitor()), m_toolbar);
-
-  m_consoleButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), 
-		    "View Console", 0, m_dm, 
-		    SLOT(slotDLViewConsole()), m_toolbar);
-
-  m_layout->addWidget(m_dockArea);
-  m_layout->addWidget(m_dm);
-
-  connect(_app->virtualConsole(), SIGNAL(modeChange()),
-	  this, SLOT(slotModeChanged()));
-
-  connect(m_dm, SIGNAL(selectionChanged(int, int)),
-	  this, SLOT(slotSelectionChanged(int, int)));
-
-  slotSelectionChanged(-1, -1);
-}
-
+//
+// Destructor
+//
 DeviceManagerView::~DeviceManagerView()
 {
-  if (m_dm != NULL)
-    {
-      delete m_dm;
-    }
-
-  if (m_toolbar != NULL)
-    {
-      delete m_toolbar;
-    }
-
-  if (m_layout != NULL)
-    {
-      delete m_layout;
-    }
 }
 
-void DeviceManagerView::resizeEvent(QResizeEvent* e)
-{
-  QSize size = e->size();
-  size.setHeight(size.height() - m_toolbar->height());
-  m_dm->resize(size);
-}
 
+//
+// When closing this, send a notification (to app)
+//
 void DeviceManagerView::closeEvent(QCloseEvent* e)
 {
   e->accept();
   emit closed();
 }
 
-void DeviceManagerView::slotModeChanged()
+
+//
+// Initialize this widget
+//
+void DeviceManagerView::initView()
 {
-  QListViewItem* item = m_dm->deviceListView()->currentItem();
+  // Create a vertical layout to this widget
+  m_layout = new QVBoxLayout(this);
+
+  // Init the title and icon
+  initTitle();
+
+  // Set up toolbar
+  initToolBar();
+
+  // Init the device view and text view
+  initDataView();
+
+  connect(_app->virtualConsole(), SIGNAL(modeChange()),
+	  this, SLOT(slotModeChanged()));
+
+  // Update view
+  update();
+}
+
+
+//
+// Set an icon to this widget
+//
+void DeviceManagerView::initTitle()
+{
+  // Set the name
+  setCaption(QString("Device Manager"));
+
+  // Initial size, should be saved to settings on the fly instead
+  resize(500, 300);
+
+  // Get the system directory to get to pixmaps
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  // Set an icon
+  setIcon(dir + QString("/device.xpm"));
+}
+
+
+//
+// Set up a toolbar
+//
+void DeviceManagerView::initToolBar()
+{
+  // Get the system directory to get to pixmaps
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  // Create a dock area for the toolbar
+  m_dockArea = new QDockArea(Horizontal, QDockArea::Normal, this);
+  m_dockArea->setFixedHeight(30);
+
+  // Add the dock area to the top of the vertical layout
+  m_layout->addWidget(m_dockArea);
+
+  //
+  // Add a toolbar to the dock area
+  //
+  m_toolbar = new QToolBar("Device Manager", _app, m_dockArea);
+
+  m_addButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), 
+		    "Add New Output Device", 0, this,
+		    SLOT(slotAdd()), m_toolbar);
+
+  m_removeButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), 
+		    "Remove Current Selection", 0, this,
+		    SLOT(slotRemove()), m_toolbar);
+
+  m_propertiesButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), 
+		    "Properties", 0, this,
+		    SLOT(slotProperties()), m_toolbar);
+
+  m_toolbar->addSeparator();
+
+  m_monitorButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), 
+		    "Monitor Device", 0, this,
+		    SLOT(slotMonitor()), m_toolbar);
+
+  m_consoleButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), 
+		    "View Console", 0, this,
+		    SLOT(slotConsole()), m_toolbar);
+}
+
+
+//
+// Set up the actual data view
+//
+void DeviceManagerView::initDataView()
+{
+  // Create a splitter to divide list view and text view
+  m_splitter = new QSplitter(this);
+  m_layout->addWidget(m_splitter);
+
+  // Create the list view
+  m_listView = new QListView(m_splitter);
+  m_splitter->setResizeMode(m_listView, QSplitter::Auto);
+
+  m_listView->setMultiSelection(false);
+  m_listView->setAllColumnsShowFocus(true);
+  m_listView->setSorting(KColumnName, true);
+  m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
   
-  if (item)
+  m_listView->header()->setClickEnabled(true);
+  m_listView->header()->setResizeEnabled(true);
+  m_listView->header()->setMovingEnabled(false);
+
+  m_listView->addColumn("Devices");
+  m_listView->setColumnWidth(KColumnName, 200);
+
+  connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
+	  this, SLOT(slotSelectionChanged(QListViewItem*)));
+
+  connect(m_listView, SIGNAL(rightButtonClicked(QListViewItem*,
+						const QPoint&, int)),
+	  this, SLOT(slotRightButtonClicked(QListViewItem*,
+					    const QPoint&, int)));
+							       
+
+  // Create the text view
+  m_textView = new QTextView(m_splitter);
+  m_splitter->setResizeMode(m_textView, QSplitter::Auto);
+}
+
+
+//
+// Update List View
+//
+void DeviceManagerView::slotUpdate()
+{
+  t_device_id currentId = 0;
+  QListViewItem* newItem = NULL;
+
+  QString id;
+
+  if (m_listView->currentItem() != NULL)
     {
-      int id = item->text(KDLViewColumnID).toInt();
-      int type = item->text(KDLViewColumnType).toInt();
+      currentId = m_listView->currentItem()->text(KColumnID).toULong();
+    }
+
+  m_listView->clear();
+
+  // Add output devices
+  for (t_device_id i = 0; 
+       i < (t_device_id) _app->doc()->deviceList()->count(); i++)
+    {
+      Device* dev = _app->doc()->deviceList()->at(i);
+      newItem = new QListViewItem(m_listView, dev->name());
       
-      slotSelectionChanged(id, type);
+      // ID column
+      id.setNum(dev->id());
+      newItem->setText(KColumnID, id);
+
+      // Select this if it was selected before update
+      if (currentId == dev->id())
+	{
+	  m_listView->setSelected(newItem, true);
+	}
+    }
+}
+
+
+//
+// Add a device
+//
+void DeviceManagerView::slotAdd()
+{
+  NewDevice* ndlg = new NewDevice(_app);
+  
+  while (1)
+    {
+      if (ndlg->exec() == QDialog::Accepted)
+	{
+	  int address = ndlg->address();
+	  QString name = ndlg->name();
+	  QString manufacturer = ndlg->manufacturer();
+	  QString model = ndlg->model();
+	  
+	  if (name.stripWhiteSpace() == QString::null)
+	    {
+	      name = QString("Noname");
+	    }
+
+	  // Search the actual device class instance to be associated
+	  // with the new device
+	  DeviceClass* dc = _app->doc()->searchDeviceClass(manufacturer,model);
+	  ASSERT(dc);
+
+	  if (dc->channels()->count() == 0)
+	    {
+	      QString msg(QString("No channels specified for device class \"")
+			  + manufacturer + QString(" ") + model
+			  + QString("\".\n"));
+	      QMessageBox::warning(this, KApplicationNameShort, msg);
+	      continue;
+	    }
+
+	  // Add new device
+	  _app->doc()->addDevice(new Device(address, dc, name));
+	  break;
+	}
+      else
+	{
+	  break;
+	}
+    }
+
+  delete ndlg;
+}
+
+
+//
+// Remove a device
+//
+void DeviceManagerView::slotRemove()
+{
+  QListViewItem* item = m_listView->currentItem();
+  QListViewItem* itemAbove = item->itemAbove();
+
+  // Get the device id
+  t_device_id id = item->text(KColumnID).toInt();
+  
+  // Display a warning
+  QString msg;
+  msg = ("Do you want to remove device \"");
+  msg += item->text(KColumnName).latin1() + QString("\"?");
+  if (QMessageBox::warning(this, KApplicationNameShort, msg,
+			   QMessageBox::Yes, QMessageBox::No) 
+      == QMessageBox::No)
+    {
+      return;
     }
   else
     {
-      slotSelectionChanged(-1, -1);
+      Device* device = _app->doc()->searchDevice(id);
+      
+      ASSERT(device);
+      
+      _app->doc()->removeDevice(device);
+      
+      // Select the item above the removed item
+      m_listView->setSelected(itemAbove, true);
     }
 }
+
+
+//
+// View Properties
+//
+void DeviceManagerView::slotProperties()
+{
+  QListViewItem* item = m_listView->currentItem();
+
+  t_device_id id = item->text(KColumnID).toInt();
+  Device* device = _app->doc()->searchDevice(id);
+  
+  ASSERT(device);
+  
+  device->viewProperties();
+}
+
+
+//
+// View Monitor
+//
+void DeviceManagerView::slotMonitor()
+{
+  QListViewItem* item = m_listView->currentItem();
+
+  t_device_id id = item->text(KColumnID).toInt();
+  Device* device = _app->doc()->searchDevice(id);
+  
+  ASSERT(device);
+  
+  device->viewMonitor();
+}
+
+
+//
+// View Console
+//
+void DeviceManagerView::slotConsole()
+{
+  QListViewItem* item = m_listView->currentItem();
+
+  t_device_id id = item->text(KColumnID).toInt();
+  Device* device = _app->doc()->searchDevice(id);
+  
+  ASSERT(device);
+  
+  device->viewConsole();
+}
+
+
+//
+// The main operating mode has changed
+//
+void DeviceManagerView::slotModeChanged()
+{
+  slotSelectionChanged(m_listView->currentItem());
+}
+
 
 //
 // Enable / disable toolbar buttons according to selected item & type
 //
-void DeviceManagerView::slotSelectionChanged(int itemId, int itemType)
+void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
 {
-  // First set adding buttons because they are not dependent
-  // on selected item
-  if (_app->virtualConsole()->isDesignMode())
+  if (item == NULL)
     {
-      m_addOutputDeviceButton->setEnabled(true);
-      m_addBusButton->setEnabled(true);
-    }
-  else
-    {
-      m_addOutputDeviceButton->setEnabled(false);
-      m_addBusButton->setEnabled(false);
-    }
-
-  //
-  // Enable / disable buttons with devices
-  //
-  if (itemType == KDLViewTypeDevice)
-    {
-      if (itemId == KNoID)
-	{
-	  // Device root selected
-	  m_consoleButton->setEnabled(false);
-	  m_monitorButton->setEnabled(false);
-
-	  m_propertiesButton->setEnabled(false);
-	  m_removeButton->setEnabled(false);
-	}
-      else
-	{
-	  // Device selected
-	  m_consoleButton->setEnabled(true);
-	  m_monitorButton->setEnabled(true);
-
-	  if (_app->virtualConsole()->isDesignMode())
-	    {
-	      // Design mode, can edit
-	      m_propertiesButton->setEnabled(true);
-	      m_removeButton->setEnabled(true);
-	    }
-	  else
-	    {
-	      // Design mode, can't edit
-	      m_propertiesButton->setEnabled(false);
-	      m_removeButton->setEnabled(false);
-	    }
-	}
-    }
-
-  //
-  // Enable / disable button with buses
-  //
-  else if (itemType == KDLViewTypeBus)
-    {
-      // Console & monitor are available only for devices
-      m_consoleButton->setEnabled(false);
-      m_monitorButton->setEnabled(false);
-
-      if (itemId == KBusIDDefaultFade || 
-	  itemId == KBusIDDefaultHold || itemId == KNoID)
-	{
-	  // Default or root item selected, cannot modify
-	  m_removeButton->setEnabled(false);
-	  m_propertiesButton->setEnabled(false);
-	}
-      else
-	{
-	  if (_app->virtualConsole()->isDesignMode())
-	    {
-	      // Design mode, can edit
-	      m_removeButton->setEnabled(true);
-	      m_propertiesButton->setEnabled(true);
-	    }
-	  else
-	    {
-	      // Operate mode, can't edit
-	      m_removeButton->setEnabled(false);
-	      m_propertiesButton->setEnabled(false);
-	    }
-	}
-    }
-  //
-  // Enable / disable buttons with plugins
-  //
-  else if (itemType == KDLViewTypePlugin)
-    {
-      // Console & monitor are available only for devices
-      m_consoleButton->setEnabled(false);
-      m_monitorButton->setEnabled(false);
-      
-      // Plugins cannot be removed
-      m_removeButton->setEnabled(false);
-      
-      // No properties for root item
-      if (itemId == KNoID || !_app->virtualConsole()->isDesignMode())
-	{
-	  m_propertiesButton->setEnabled(false);
-	}
-      else
-	{
-	  m_propertiesButton->setEnabled(true);
-	}
-    }
-  else
-    {
-      m_addOutputDeviceButton->setEnabled(false);
-      m_addBusButton->setEnabled(false);
+      // Disable all
+      m_addButton->setEnabled(false);
       m_removeButton->setEnabled(false);
       m_propertiesButton->setEnabled(false);
-      m_consoleButton->setEnabled(false);
       m_monitorButton->setEnabled(false);
+      m_consoleButton->setEnabled(false);
+
+      m_textView->setText(QString::null);
+    }
+  else
+    {
+      // Set the text view's contents
+      Device* dev = _app->doc()->searchDevice(item->text(KColumnID).toInt());
+      ASSERT(dev);
+      m_textView->setText(dev->infoText());
+
+      // Enable console & monitor always
+      m_consoleButton->setEnabled(true);
+      m_monitorButton->setEnabled(true);
+      
+      if (_app->virtualConsole()->isDesignMode())
+	{
+	  m_addButton->setEnabled(true);
+	  m_removeButton->setEnabled(true);
+	  m_propertiesButton->setEnabled(true);
+	}
+      else
+	{
+	  m_addButton->setEnabled(false);
+	  m_removeButton->setEnabled(false);
+	  m_propertiesButton->setEnabled(false);
+	}
+    }
+}
+
+
+//
+// Right mouse button has been pressed in the listview
+//
+void DeviceManagerView::slotRightButtonClicked(QListViewItem* item, 
+					       const QPoint& point, int col)
+{
+  QPopupMenu* menu = new QPopupMenu();
+  menu->setCheckable(false);
+  
+  menu->insertItem("Add...", KMenuItemAdd);
+  menu->insertItem("Remove", KMenuItemRemove);
+  menu->insertItem("Properties...", KMenuItemProperties);
+  menu->insertSeparator();
+  menu->insertItem("View Console...", KMenuItemConsole);
+  menu->insertItem("View Monitor...", KMenuItemMonitor);
+  
+  if ( !_app->virtualConsole()->isDesignMode() || !item )
+    {
+      // At least not in design mode, remove and edit impossible
+      menu->setItemEnabled(KMenuItemRemove, false);
+      menu->setItemEnabled(KMenuItemProperties, false);
+
+      // No item selected, unable to view console either
+      if (!item)
+	{
+	  menu->setItemEnabled(KMenuItemConsole, false);
+	  menu->setItemEnabled(KMenuItemMonitor, false);
+	}
+    }
+  
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallBack(int)));
+  menu->exec(point, 0);
+  delete menu;
+}
+
+
+//
+// Listview item popup menu callback
+//
+void DeviceManagerView::slotMenuCallBack(int item)
+{
+  switch (item)
+    {
+    case KMenuItemAdd:
+      slotAdd();
+      break;
+
+    case KMenuItemRemove:
+      slotRemove();
+      break;
+
+    case KMenuItemProperties:
+      slotProperties();
+      break;
+
+    case KMenuItemConsole:
+      slotConsole();
+      break;
+
+    case KMenuItemMonitor:
+      slotMonitor();
+      break;
+
+    default:
+      break;
     }
 }

@@ -29,9 +29,6 @@
 #include "device.h"
 #include "deviceclass.h"
 #include "bus.h"
-#include "../../libs/common/outputplugin.h"
-
-class DummyOutPlugin;
 
 class Doc : public QObject
 {
@@ -86,27 +83,16 @@ class Doc : public QObject
   //
   // Buses
   //
+  void initBuses();
+  bool busValue(t_bus_id busID, t_bus_value& value);
+  bool setBusValue(t_bus_id busID, t_bus_value value);
+
+  /*
   QPtrList <Bus> *busList()  { return &m_busList; }
   Bus* searchBus(const t_bus_id id);
   void addBus(Bus* bus);
   void removeBus(const t_bus_id id, bool deleteBus = true);
-
-  //
-  // General Plugin Stuff
-  //
-  QPtrList <Plugin> *pluginList() { return &m_pluginList; }
-  Plugin* searchPlugin(QString name);
-  Plugin* searchPlugin(QString name, Plugin::PluginType type);
-  Plugin* searchPlugin(const t_plugin_id id);
-  void addPlugin(Plugin*);
-  void removePlugin(Plugin*);
-  void initPlugins();
-  bool probePlugin(QString path);
-
-  //
-  // The Output Plugin
-  //
-  OutputPlugin* outputPlugin() { return m_outputPlugin; }
+  */
 
  signals:
   void deviceListChanged();
@@ -116,32 +102,21 @@ class Doc : public QObject
  public slots:
   void slotBusValueChanged(t_bus_id, t_bus_value);
 
- private slots:
-  void slotChangeOutputPlugin(const QString& name);
-  void slotPluginActivated(Plugin* plugin);
-
  private:
   DeviceClass* createDeviceClass(QPtrList <QString> &list);
   Device* createDevice(QPtrList <QString> &list);
   Function* createFunction(QPtrList <QString> &list);
   void createFunctionContents(QPtrList <QString> &list);
-  void createJoystickContents(QPtrList <QString> &list);
 
  private:
-  OutputPlugin* m_outputPlugin;
-  DummyOutPlugin* m_dummyOutPlugin;
-
   QString m_workspaceFileName;
   bool m_modified;
 
   QPtrList <Function> m_functions;
   QPtrList <Device> m_deviceList;
   QPtrList <DeviceClass> m_deviceClassList;
-  QPtrList <Bus> m_busList;
-  QPtrList <Plugin> m_pluginList;
 
- private:
-  static t_plugin_id NextPluginID;
+  Bus* m_busArray;
 };
 
 #endif

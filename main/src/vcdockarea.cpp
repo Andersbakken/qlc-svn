@@ -53,11 +53,12 @@ void VCDockArea::init()
   m_defaultHoldSlider->setBus(Bus::defaultHoldBus());
   m_layout->addWidget(m_defaultHoldSlider);
 
+  /*
   // Default master slider
   m_masterSlider = new VCDockSlider(this, "Master Slider");
   m_masterSlider->setMode(VCDockSlider::Master);
   m_layout->addWidget(m_masterSlider);
-
+  */
   // Hide button
   m_hideButton = new QToolButton(this);
   m_hideButton->setText("Hide");

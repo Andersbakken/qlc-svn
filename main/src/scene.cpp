@@ -46,7 +46,7 @@ Scene::Scene(t_function_id id) : Function(id)
   m_runTimeData = NULL;
   m_channelData = NULL;
   m_channels = 0;
-  m_timeSpan = 256;
+  m_timeSpan = 255;
   m_parentFunction = NULL;
   m_virtualController = NULL;
   m_elapsedTime = 0;
@@ -357,9 +357,7 @@ SceneValue Scene::channelValue(t_channel ch)
 //
 void Scene::stop()
 {
-  m_stopMutex.lock();
   m_stopped = true;
-  m_stopMutex.unlock();
 }
 
 //
@@ -367,6 +365,11 @@ void Scene::stop()
 //
 void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 {
+  if (id != m_busID)
+    {
+      return;
+    }
+
   m_startMutex.lock();
 
   if (m_running)
@@ -407,7 +410,7 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 		 m_runTimeData[i].current) / 
 		(float) (m_timeSpan - newTimeSpan);
 
-	      qDebug("%d: %f -> %d incs %f in %d", i, 
+	      qDebug("%d: %f -> %d incs %f in %ld", i, 
 		     m_runTimeData[i].current, m_values[i].value,
 		     m_runTimeData[i].increment, newTimeSpan);
 	    }
@@ -444,8 +447,8 @@ void Scene::init()
   m_eventBuffer = new EventBuffer(m_channels);
 
   // Current values
-  _app->doc()->outputPlugin()->readRange(m_device->address(),
-					 m_channelData, m_channels);
+  _app->outputPlugin()->readRange(m_device->address(),
+				  m_channelData, m_channels);
 
   for (t_channel i = 0; i < m_channels; i++)
     {
@@ -453,7 +456,14 @@ void Scene::init()
 	static_cast<float> (m_channelData[i]);
     }
 
+  // No time has yet passed for this scene.
   m_elapsedTime = 0;
+
+  // Calculate starting values
+  speedChange(m_timeSpan);
+
+  // Append this function to running functions list
+  _app->functionConsumer()->cue(this);
 }
 
 
@@ -465,20 +475,11 @@ void Scene::run()
   t_channel ch = 0;
   t_channel ready = 0;
 
-  // Allocate space for some run time stuff
+  // Initialize this scene for running
   init();
 
-  // Calculate starting values
-  speedChange(m_timeSpan);
-
-  // Append this function to running functions list
-  _app->functionConsumer()->cue(this);
-
-  m_stopMutex.lock();
   while (!m_stopped)
     {
-      m_stopMutex.unlock();
-
       m_elapsedTime++;
       ready = 0;
       for (ch = 0; ch < m_channels; ch++)
@@ -499,17 +500,16 @@ void Scene::run()
 
       if (ready == m_channels)
 	{
-	  // All channels are ready
+	  // All channels are ready, nothing more to do
 	  break;
 	}
+      else
+	{
+	  // Put data to buffer
+	  m_eventBuffer->put(m_channelData);
+	}
 
-      // Put data to buffer
-      m_eventBuffer->put(m_channelData);
-
-      m_stopMutex.lock();
     }
-
-  m_stopMutex.unlock();
 
   // No more items produced -> this scene can be removed from
   // the list after the buffer is empty.

@@ -31,6 +31,7 @@
 #include "eventbuffer.h"
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <qfile.h>
 #include <sched.h>
 #include <qapplication.h>
@@ -43,6 +44,7 @@ extern App* _app;
 Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
+  m_holdTime = 2;
   m_busID = Bus::defaultHoldBus()->id();
 }
 
@@ -286,8 +288,12 @@ void Chaser::lowerStep(unsigned int index)
 //
 // Initiate a speed change (from a speed bus)
 //
-void Chaser::speedChange()
+void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
 {
+  if (id == m_busID)
+    {
+      m_holdTime = value;
+    }
 }
 
 
@@ -350,6 +356,8 @@ void Chaser::init()
 //
 void Chaser::run()
 {
+  struct timespec hold;
+
   // Calculate starting values
   init();
 
@@ -368,10 +376,16 @@ void Chaser::run()
 	  m_childRunning = true;
 
 	  it.current()->function()->engage(this);
-	  qDebug("member started");
+	  qDebug("Chaser: child started");
 
 	  while (m_childRunning) sched_yield();
-	  qDebug("member stopped");
+	  qDebug("Chaser: child stopped");
+
+	  hold.tv_sec = 2;
+	  hold.tv_nsec = m_holdTime * 1000;
+
+	  qDebug("Chaser: sleeping...");
+	  nanosleep(&hold, NULL);
 
 	  ++it;
 	}

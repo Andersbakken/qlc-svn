@@ -29,6 +29,7 @@
 #include "sceneeditor.h"
 #include "containerview.h"
 #include "monitor.h"
+#include "deviceproperties.h"
 #include "configkeys.h"
 
 #include <unistd.h>
@@ -110,7 +111,8 @@ void Device::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // Manufacturer
-  s = QString("Manufacturer = ") + deviceClass()->manufacturer() + QString("\n");
+  s = QString("Manufacturer = ") + deviceClass()->manufacturer()
+    + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Model
@@ -316,6 +318,16 @@ void Device::slotMonitorClosed()
   m_monitor->hide();
   delete m_monitor;
   m_monitor = NULL;
+}
+
+
+void Device::viewProperties()
+{
+  DeviceProperties* dp = new DeviceProperties(this);
+  dp->init();
+  dp->exec();
+  
+  delete dp;
 }
 
 

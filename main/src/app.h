@@ -23,6 +23,7 @@
 #define APP_H
 
 #include <qmainwindow.h>
+#include "../../libs/common/outputplugin.h"
 
 class QWorkspace;
 class QApp;
@@ -44,6 +45,8 @@ class Doc;
 class OutputPlugin;
 class FunctionConsumer;
 class VirtualConsole;
+class Plugin;
+class DummyOutPlugin;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -67,7 +70,28 @@ class App : public QMainWindow
   Settings* settings() { return m_settings; }
   FunctionConsumer* functionConsumer() { return m_functionConsumer; }
 
-  Doc* doc(void);
+  Doc* doc() { return m_doc; }
+
+  //
+  // General Plugin Stuff
+  //
+  QPtrList <Plugin> *pluginList() { return &m_pluginList; }
+  Plugin* searchPlugin(QString name);
+  Plugin* searchPlugin(QString name, Plugin::PluginType type);
+  Plugin* searchPlugin(const t_plugin_id id);
+  void addPlugin(Plugin*);
+  void removePlugin(Plugin*);
+  void initPlugins();
+  bool probePlugin(QString path);
+  
+  //
+  // The Output Plugin
+  //
+  OutputPlugin* outputPlugin() { return m_outputPlugin; }
+
+ private slots:
+  void slotChangeOutputPlugin(const QString& name);
+  void slotPluginActivated(Plugin* plugin);
 
  public slots:
   void slotFileNew();
@@ -111,6 +135,8 @@ class App : public QMainWindow
   void initStatusBar();
   void initToolBar();
 
+  void createJoystickContents(QPtrList <QString> &list);
+
  private slots:
   void slotWindowMenuCallback(int item);
 
@@ -134,9 +160,16 @@ class App : public QMainWindow
   QLabel* m_modeIndicator;
   QToolButton* m_modeButton;
 
+  OutputPlugin* m_outputPlugin;
+  DummyOutPlugin* m_dummyOutPlugin;
+  QPtrList <Plugin> m_pluginList;
+
  protected:
   void closeEvent(QCloseEvent*);
   bool event(QEvent* e);
+
+ private:
+  static t_plugin_id NextPluginID;
 };
 
 #endif

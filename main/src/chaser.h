@@ -51,7 +51,8 @@ class Chaser : public Function
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  void speedChange();
+  void busValueChanged(t_bus_id, t_bus_value);
+  
   void stop();
   void freeRunTimeData();
   void childFinished();
@@ -65,6 +66,8 @@ class Chaser : public Function
 
   bool m_childRunning;
   QMutex m_childMutex;
+
+  time_t m_holdTime;
 };
 
 #endif

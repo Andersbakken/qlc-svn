@@ -35,7 +35,7 @@
 #include "assignhotkey.h"
 #include "keybind.h"
 #include "devicemanagerview.h"
-#include "devicemanager.h"
+//#include "devicemanager.h"
 #include "device.h"
 #include "virtualconsole.h"
 #include "configkeys.h"

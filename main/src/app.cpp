@@ -35,6 +35,10 @@
 #include <qtooltip.h>
 
 #include <unistd.h>
+#include <ctype.h>
+#include <dlfcn.h>
+#include <stdlib.h>
+#include <limits.h>
 
 #include "app.h"
 #include "doc.h"
@@ -53,13 +57,17 @@
 
 #include "aboutbox.h"
 
+#include "dummyoutplugin.h"
 #include "../../libs/common/outputplugin.h"
+#include "../../libs/common/plugin.h"
 
 static const QString KModeTextOperate = QString("Operate");
 static const QString KModeTextDesign = QString("Design");
 
 static const QColor KModeColorOperate = QColor(255, 0, 0);
 static const QColor KModeColorDesign = QColor(0, 255, 0);
+
+t_plugin_id App::NextPluginID = KPluginIDMin;
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
@@ -117,6 +125,8 @@ App::App(Settings* settings)
   m_doc = NULL;
   m_workspace = NULL;
   m_functionConsumer = NULL;
+  m_outputPlugin = NULL;
+  m_dummyOutPlugin = NULL;
 
   ASSERT(settings != NULL);
   m_settings = settings;
@@ -135,6 +145,7 @@ App::~App()
 void App::initView(void)
 {
   initSettings();
+  initPlugins();
   initDoc();
   initSequenceEngine();
 
@@ -236,11 +247,6 @@ void App::initDoc()
   m_doc->init();
 }
 
-Doc* App::doc(void)
-{
-  return m_doc;
-}
-
 void App::initSettings()
 {
   QString x, y, w, h;
@@ -267,14 +273,13 @@ void App::initWorkspace()
 
 void App::initDeviceManagerView()
 {
-  // Create but don't show dm
+  // Create device manager view
   m_dmView = new DeviceManagerView(workspace());
   m_dmView->initView();
-  m_dmView->resize(500, 300);
 
+  // Check if DM should be open
   QString config;
   settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
-
   if (config == Settings::trueValue())
     {
       m_dmView->show();
@@ -287,9 +292,10 @@ void App::initDeviceManagerView()
     }
 
   connect(m_dmView, SIGNAL(closed()), 
-	  this, SLOT(slotDeviceManagerViewClosed()));
+  	  this, SLOT(slotDeviceManagerViewClosed()));
+  
   connect(m_doc, SIGNAL(deviceListChanged()), 
-	  m_dmView->deviceManager(), SLOT(slotUpdateDeviceList()));
+  	  m_dmView, SLOT(slotUpdate()));
 }
 
 void App::initVirtualConsole(void)
@@ -776,3 +782,269 @@ void App::slotModeButtonClicked()
       virtualConsole()->setMode(VirtualConsole::Design);
     }
 }
+
+
+//////////////////
+// Plugin stuff //
+//////////////////
+
+//
+// Search and load plugins
+//
+void App::initPlugins()
+{
+  QString path;
+
+  QString dir;
+  settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PLUGINPATH + QString("/");
+
+  // First of all, add the dummy output plugin
+  m_dummyOutPlugin = new DummyOutPlugin(NextPluginID++);
+  connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
+	  this, SLOT(slotPluginActivated(Plugin*)));
+  addPlugin(m_dummyOutPlugin);
+
+  QDir d(dir);
+  d.setFilter(QDir::Files);
+  if (d.exists() == false || d.isReadable() == false)
+    {
+      fprintf(stderr, "Unable to access plugin directory %s.\n",
+	      (const char*) dir);
+      return;
+    }
+  
+  QStringList dirlist(d.entryList());
+  QStringList::Iterator it;
+
+  for (it = dirlist.begin(); it != dirlist.end(); ++it)
+    { 
+      // Ignore everything else than .so files
+      if ((*it).right(2) != QString("so"))
+	{
+	  continue;
+	}
+
+      path = dir + *it;
+
+      probePlugin(path);
+    }
+
+  //
+  // Use the output plugin that user has selected previously
+  //
+  QString config;
+  settings()->get(KEY_OUTPUT_PLUGIN, config);
+  Plugin* plugin = searchPlugin(config, Plugin::OutputType);
+  if (plugin != NULL)
+    {
+      m_outputPlugin = static_cast<OutputPlugin*> (plugin);
+    }
+  else
+    {
+      m_outputPlugin = m_dummyOutPlugin;
+    }
+
+  slotPluginActivated(m_outputPlugin);
+}
+
+//
+// Try if the given file is a plugin
+//
+bool App::probePlugin(QString path)
+{
+  void* handle = NULL;
+  
+  handle = ::dlopen((const char*) path, RTLD_LAZY);
+  if (handle == NULL)
+    {
+      fprintf(stderr, "dlopen: %s\n", dlerror());
+    }
+  else
+    {
+      typedef Plugin* create_t(int);
+      typedef void destroy_t(Plugin*);
+
+      create_t* create = (create_t*) ::dlsym(handle, "create");
+      destroy_t* destroy = (destroy_t*) ::dlsym(handle, "destroy");
+
+      if (create == NULL || destroy == NULL)
+	{
+	  fprintf(stderr, "dlsym(init): %s\n", dlerror());
+	  return false;
+	}
+      else
+	{
+	  Plugin* plugin = create(App::NextPluginID++);
+	  ASSERT(plugin != NULL);
+
+	  plugin->setConfigDirectory(QString(getenv("HOME")) + 
+				     QString("/") + QString(QLCUSERDIR) + 
+				     QString("/"));
+	  plugin->loadSettings();
+
+	  connect(plugin, SIGNAL(activated(Plugin*)), 
+		  this, SLOT(slotPluginActivated(Plugin*)));
+	  addPlugin(plugin);
+
+	  qDebug(QString("Found ") + plugin->name() + " plugin");
+	}
+    }
+
+  return true;
+}
+
+//
+// Add a plugin to list
+//
+void App::addPlugin(Plugin* plugin)
+{
+  ASSERT(plugin != NULL);
+  m_pluginList.append(plugin);
+
+  qDebug("Warning! functionality removed");
+  // emit deviceListChanged();
+}
+
+//
+// Remove a plugin from list
+//
+void App::removePlugin(Plugin* plugin)
+{
+  ASSERT(plugin != NULL);
+  m_pluginList.remove(plugin);
+
+  qDebug("Warning! functionality removed");
+  // emit deviceListChanged();
+}
+
+//
+// Search for a plugin by its name
+//
+Plugin* App::searchPlugin(QString name)
+{
+  Plugin* plugin = NULL;
+
+  for (unsigned int i = 0; i < m_pluginList.count(); i++)
+    {
+      plugin = m_pluginList.at(i);
+
+      if (plugin->name() == name)
+	{
+	  return plugin;
+	}
+    }
+  return NULL;
+}
+
+//
+// Search for a plugin by its name & type
+//
+Plugin* App::searchPlugin(QString name, Plugin::PluginType type)
+{
+  Plugin* plugin = NULL;
+
+  for (unsigned int i = 0; i < m_pluginList.count(); i++)
+    {
+      plugin = m_pluginList.at(i);
+
+      if (plugin->name() == name && plugin->type() == type)
+	{
+	  return plugin;
+	}
+    }
+
+  return NULL;
+}
+
+//
+// Search plugin by its id
+//
+Plugin* App::searchPlugin(const t_plugin_id id)
+{
+  Plugin* plugin = NULL;
+
+  for (t_plugin_id i = 0; i < m_pluginList.count(); i++)
+    {
+      plugin = m_pluginList.at(i);
+
+      if (plugin->id() == id)
+	{
+	  return plugin;
+	}
+    }
+
+  return NULL;
+}
+
+//
+// A plugin has been activated
+//
+void App::slotPluginActivated(Plugin* plugin)
+{
+  if (plugin && plugin->type() == Plugin::OutputType)
+    {
+      slotChangeOutputPlugin(plugin->name());
+      settings()->set("OutputPlugin", plugin->name());
+      settings()->save();
+    }
+}
+
+//
+// Search for an output plugin and set it. If not found,
+// use Dummy Output by default.
+//
+void App::slotChangeOutputPlugin(const QString& name)
+{
+  if (m_outputPlugin != NULL)
+    {
+      m_outputPlugin->close();
+    }
+
+  m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
+  if (m_outputPlugin == NULL)
+    {
+      // If an output plugin cannot be found, use the dummy plugin
+      m_outputPlugin = m_dummyOutPlugin;
+    }
+
+  m_outputPlugin->open();
+  
+  // This if() has to be here so that this won't get called until all
+  // objects in the call chain have been created (during startup).
+  /*
+  if (deviceManagerView() && deviceManagerView()->deviceManager())
+    {
+      deviceManagerView()->deviceManager()->slotUpdateDeviceList();
+    }
+  */
+}
+
+//
+// Create joystick plugin contents... now what the heck is this
+// doing here???
+//
+void App::createJoystickContents(QPtrList <QString> &list)
+{
+  QString name;
+  QString fdName;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("FDName"))
+	{
+	  fdName = *(list.next());
+	}
+      else if (*s == QString("Name"))
+	{
+	  name = *(list.next());
+	}
+    }
+}
+
+

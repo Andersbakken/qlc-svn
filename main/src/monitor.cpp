@@ -279,8 +279,7 @@ void Monitor::slotMenuCallback(int item)
 
 void Monitor::slotTimeOut()
 {
-  _app->doc()->outputPlugin()->readRange(m_fromChannel, m_newValues,
-					 m_units);
+  _app->outputPlugin()->readRange(m_fromChannel, m_newValues, m_units);
 
   // Paint only changed values
   repaint(false);
