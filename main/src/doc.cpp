@@ -50,6 +50,7 @@
 
 #include <ctype.h>
 #include <dlfcn.h>
+#include <stdlib.h>
 
 extern App* _app;
 
