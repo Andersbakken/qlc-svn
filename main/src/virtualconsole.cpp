@@ -244,13 +244,12 @@ void VirtualConsole::initMenuBar()
   fgMenu->insertItem(QPixmap(dir + QString("/color.xpm")), 
 		     "&Color...", this, SLOT(slotForegroundColor()),
 		     0, KVCMenuForegroundColor);
-  fgMenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		     "&Reset to Defaults", this, SLOT(slotForegroundNone()), 
-		     0, KVCMenuForegroundNone);
-  fgMenu->insertSeparator();
-  fgMenu->insertItem(QPixmap(dir + QString("/font.xpm")), 
+  fgMenu->insertItem(QPixmap(dir + QString("/rename.xpm")), 
 		     "&Font...", this, SLOT(slotForegroundFont()),
 		     0, KVCMenuForegroundFont);
+  fgMenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
+		     "&Default", this, SLOT(slotForegroundNone()), 
+		     0, KVCMenuForegroundNone);
 
   //
   // Background Menu
@@ -263,7 +262,7 @@ void VirtualConsole::initMenuBar()
 		     "&Image...", this, SLOT(slotBackgroundImage()),
 		     0, KVCMenuBackgroundPixmap);
   bgMenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		     "&Reset to Defaults", this, SLOT(slotForegroundNone()), 
+		     "&Default", this, SLOT(slotBackgroundNone()), 
 		     0, KVCMenuBackgroundNone);
   bgMenu->insertSeparator();
   bgMenu->insertItem(QPixmap(dir + QString("/frame.xpm")),
@@ -473,39 +472,46 @@ void VirtualConsole::slotToolsSliders()
 
 void VirtualConsole::slotToolsPanic()
 {
+  // Panic button pressed: stop all running functions
   _app->slotPanic();
 }
 
 void VirtualConsole::slotEditCut()
 {
+  qDebug("Not implemented");
 }
 
 void VirtualConsole::slotEditCopy()
 {
+  qDebug("Not implemented");
 }
 
 void VirtualConsole::slotEditPaste()
 {
+  qDebug("Not implemented");
 }
 
 void VirtualConsole::slotEditDelete()
 {
   if (m_selectedWidget)
     {
-      //
-      // Bottom frame should not be deleted!
-      //
       if (m_selectedWidget->className() == QString("VCFrame") &&
-	  ((VCFrame*) m_selectedWidget)->isBottomFrame() == false)
+	  ((VCFrame*) m_selectedWidget)->isBottomFrame() == true)
 	{
-	  if (QMessageBox::warning(this, "Remove Selected Widget",
-				   "Are you sure?", QMessageBox::Yes,
-				   QMessageBox::No) == QMessageBox::Yes)
-	    {
-	      _app->doc()->setModified(true);
-	      delete m_selectedWidget;
-	      m_selectedWidget = NULL;
-	    }
+	  //
+	  // Bottom frame should not be deleted!
+	  //
+	  // Maybe the menu item should be removed, too, but it's
+	  // a bit complicated. Darn shared-menu-system-I-had-to-do-one-day
+	  //
+	}
+      else if (QMessageBox::warning(this, "Remove Selected Widget",
+				    "Are you sure?", QMessageBox::Yes,
+				    QMessageBox::No) == QMessageBox::Yes)
+	{
+	  _app->doc()->setModified(true);
+	  delete m_selectedWidget;
+	  m_selectedWidget = NULL;
 	}
     }
 }
@@ -514,6 +520,12 @@ void VirtualConsole::slotEditProperties()
 {
   if (m_selectedWidget)
     {
+      //
+      // By sending an event we don't need to know
+      // what class m_selectedWidget is when this is called.
+      // sendEvent is also synchronous call, so this is almost
+      // the same thing as calling the function directly.
+      //
       QApplication::sendEvent(m_selectedWidget, 
 			      new VCMenuEvent(KVCMenuEditProperties));
     }
@@ -523,13 +535,25 @@ void VirtualConsole::slotEditRename()
 {
   if (m_selectedWidget)
     {
+      //
+      // Delete if there already is a rename edit somewhere
+      // (a previous rename action...?)
+      //
       if (m_renameEdit) delete m_renameEdit;
       
+      // Create new QLineEdit widget.
       m_renameEdit = new FloatingEdit(m_selectedWidget->parentWidget());
+
+      // See the two function declarations below
       connect(m_renameEdit, SIGNAL(returnPressed()),
 	      this, SLOT(slotEditRenameReturnPressed()));
       connect(m_renameEdit, SIGNAL(cancelled()),
 	      this, SLOT(slotEditRenameCancelled()));
+
+      //
+      // Draw a QLineEdit the size of the selected widget and start rename.
+      // (might look ugly with big widgets, but who cares :)
+      //
       m_renameEdit->setMinimumSize(60, 25);
       m_renameEdit->setGeometry(m_selectedWidget->x() + 3, 
 				m_selectedWidget->y() + 3, 
@@ -545,6 +569,7 @@ void VirtualConsole::slotEditRename()
 
 void VirtualConsole::slotEditRenameReturnPressed()
 {
+  // Rename action was ok
   if (m_selectedWidget)
     {
       m_selectedWidget->setCaption(m_renameEdit->text());
@@ -560,6 +585,7 @@ void VirtualConsole::slotEditRenameReturnPressed()
 
 void VirtualConsole::slotEditRenameCancelled()
 {
+  // Rename action was cancelled
   assert(m_renameEdit);
   m_renameEdit->deleteLater(); // QT 3.1 crashes with normal delete
   m_renameEdit = NULL;
@@ -583,7 +609,7 @@ void VirtualConsole::slotForegroundColor()
       QColor color = 
 	QColorDialog::getColor(m_selectedWidget->paletteForegroundColor(), 
 			       this);
-      
+
       if (color.isValid())
 	{
 	  _app->doc()->setModified(true);
@@ -598,11 +624,16 @@ void VirtualConsole::slotForegroundNone()
 {
   if (m_selectedWidget)
     {
+      // Save the background color (note that we are resetting
+      // the foreground here!)
       QColor bgc = m_selectedWidget->paletteBackgroundColor();
       
+      // Reset palette and font
       m_selectedWidget->unsetPalette();
       m_selectedWidget->unsetFont();
       
+      // Now set the backround color again because we only reset
+      // foreground options.
       m_selectedWidget->setPaletteBackgroundColor(bgc);
       
       _app->doc()->setModified(true);
@@ -634,6 +665,8 @@ void VirtualConsole::slotBackgroundImage()
 				     this);
       if (fileName.isEmpty() == false)
 	{
+	  // Set the selected pixmap as bg image and icon.
+	  // Some QT styles don't know how to display bg pixmaps, hence icon.
 	  QPixmap pm(fileName);
 	  m_selectedWidget->setPaletteBackgroundPixmap(pm);
 	  m_selectedWidget->setIconText(fileName);
@@ -646,7 +679,16 @@ void VirtualConsole::slotBackgroundNone()
 {
   if (m_selectedWidget)
     {
+      // Save the foreground color (note that we are resetting
+      // the background here!)
+      QColor fgc(m_selectedWidget->paletteForegroundColor());
+      
+      // Reset palette
       m_selectedWidget->unsetPalette();
+
+      // Now set the foreground color again
+      m_selectedWidget->setPaletteForegroundColor(fgc);
+
       _app->doc()->setModified(true);
     }
 }
@@ -739,12 +781,14 @@ void VirtualConsole::slotModeChanged()
 
   if (_app->mode() == App::Operate)
     {
+      // Don't allow editing in operate mode
       m_editMenu->setEnabled(false);
       m_addMenu->setEnabled(false);
       m_toolsMenu->setItemEnabled(KVCMenuToolsSettings, false);
     }
   else
     {
+      // Allow editing in design mode
       m_editMenu->setEnabled(true);
       m_addMenu->setEnabled(true);
       m_toolsMenu->setItemEnabled(KVCMenuToolsSettings, true);
