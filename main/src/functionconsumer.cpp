@@ -34,6 +34,7 @@
 #include "function.h"
 #include "eventbuffer.h"
 #include "scene.h"
+#include "sequence.h"
 #include "app.h"
 #include "doc.h"
 
@@ -45,9 +46,12 @@ extern App* _app;
 //
 FunctionConsumer::FunctionConsumer() 
   : QThread(),
-    m_running  ( 0 ),
-    m_fd       ( 0 ),
-    m_timeCode ( 0 )
+    m_running  (    0 ),
+    m_fd       (    0 ),
+    m_timeCode (    0 ),
+    m_event    ( new t_value[512] ),
+    m_function ( NULL ),
+    m_channel  (    0 )
 {
 }
 
@@ -58,6 +62,7 @@ FunctionConsumer::FunctionConsumer()
 FunctionConsumer::~FunctionConsumer()
 {
   stop();
+  delete [] m_event;
 }
 
 
@@ -236,50 +241,45 @@ void FunctionConsumer::run()
 
 
 //
-// Actual consumer function
+// Actual consumer function. Nothing should be allocated here
+// (not even local variables) to keep this as fast as possible.
 //
 void FunctionConsumer::event(time_t)
 {
-  Function* f = NULL;
-  t_value* ev = NULL;
-  t_channel ch = 0;
-
-  QPtrListIterator<Function> it(m_functionList);
-
   m_functionListMutex.lock(); // First lock
-  while (it.current())
+
+  for (m_function = m_functionList.first(); m_function != NULL;
+       m_function = m_functionList.next())
     {
-      f = it.current();
-      ++it;
+      m_functionListMutex.unlock(); // Unlock after accessing list
 
-      m_functionListMutex.unlock(); // Unlock after using iterator it
-
-      ev = f->eventBuffer()->get();
-
-      if ( !ev )
+      if ( m_function->eventBuffer()->get(m_event) == -1)
         {
-          if (f->removeAfterEmpty())
+          if (m_function->removeAfterEmpty())
             {
               m_functionListMutex.lock(); // Lock before remove
-              m_functionList.remove(f);
-	      f->cleanup();
+              m_functionList.remove(m_function);
+	      m_function->cleanup();
               m_functionListMutex.unlock(); // Unlock after remove
             }
         }
       else
         {
-	  for (ch = 0; ch < (t_channel) f->eventBuffer()->eventSize(); ch++)
+	  for (m_channel = 0;
+	       m_channel < (t_channel) m_function->eventBuffer()->eventSize();
+	       m_channel++)
 	    {
-	      if ((f->type() == Function::Scene) &&
-		  (((Scene*) f)->channelValue(ch).type == Scene::NoSet))
+	      if ((m_function->type() == Function::Scene) &&
+		  (((Scene*) m_function)->channelValue(m_channel).type == Scene::NoSet))
 		{
 		  // Don't write NoSet values
 		}
 	      else
 		{
 		  _app->outputPlugin()
-		    ->writeChannel(_app->doc()->device(f->device())
-				   ->address() + ch, ev[ch]);
+		    ->writeChannel(_app->doc()->device(m_function->device())
+				   ->address()
+				   + m_channel, m_event[m_channel]);
 		}
 	    }
         }

@@ -39,10 +39,10 @@ class EventBuffer
     };
 
   // Put data to buffer
-  bool put(t_value* event);
+  int put(t_value* event);
 
   // Read data from buffer
-  t_value* get();
+  int get(t_value* event);
 
   // Clear the buffer
   void purge();

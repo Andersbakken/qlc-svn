@@ -25,6 +25,7 @@
 #include <malloc.h>
 #include <string.h>
 
+// eventSize = channel count, bufferSize = event count
 EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
   : 
   m_ring(NULL),
@@ -55,7 +56,7 @@ EventBuffer::~EventBuffer()
 // Put a new value to the front of the buffer if it is
 // not full
 //
-bool EventBuffer::put(t_value* ev)
+int EventBuffer::put(t_value* ev)
 {
   pthread_mutex_lock(&m_mutex);
   if (m_filled == m_size)
@@ -70,7 +71,7 @@ bool EventBuffer::put(t_value* ev)
   pthread_cond_signal(&m_nonEmpty);
   pthread_mutex_unlock(&m_mutex);
 
-  return true;
+  return 0;
 }
 
 
@@ -78,31 +79,30 @@ bool EventBuffer::put(t_value* ev)
 // Get the next value from rear of list
 // if the list is not empty
 //
-t_value* EventBuffer::get()
+int EventBuffer::get(t_value* event)
 {
   pthread_mutex_lock(&m_mutex);
   if (m_filled == 0)
     {
       pthread_mutex_unlock(&m_mutex);
-      return NULL;
+      return -1;
     }
 
-  t_value* ev = NULL;
-
   assert(m_filled > 0);
-  ev = m_ring + m_out;
+  memcpy(event, m_ring + m_out, m_eventSize);
   m_out = (m_out + m_eventSize) % m_size;
   m_filled -= m_eventSize;
   pthread_cond_signal(&m_nonFull);
   pthread_mutex_unlock(&m_mutex);
 
-  return ev;
+  return 0;
 }
 
 
 //
 // Empty the list by setting the put and get positions
-// to zero.
+// to zero. This doesn't actually touch the contents but the
+// result is exactly the same: the buffer seems empty.
 //
 void EventBuffer::purge()
 {
