@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_DeviceClassEditor</class>
 <widget class="QWidget">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>571</width>
-            <height>540</height>
+            <width>466</width>
+            <height>456</height>
         </rect>
     </property>
     <property name="caption">
@@ -32,7 +32,7 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout9</cstring>
+                        <cstring>layout6</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -42,10 +42,24 @@
                             <property name="name">
                                 <cstring>textLabel1</cstring>
                             </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
                             <property name="minimumSize">
                                 <size>
                                     <width>100</width>
                                     <height>0</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>100</width>
+                                    <height>32767</height>
                                 </size>
                             </property>
                             <property name="text">
@@ -64,51 +78,6 @@
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Manufacturer of this device class (e.g. FooLight Ltd.)</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer6</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>22</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_2</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Type</string>
-                            </property>
-                        </widget>
-                        <widget class="QComboBox">
-                            <property name="name">
-                                <cstring>m_typeCombo</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Type (purpose) of this device class</string>
                             </property>
                         </widget>
                     </hbox>
@@ -131,6 +100,12 @@
                                     <height>0</height>
                                 </size>
                             </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>100</width>
+                                    <height>32767</height>
+                                </size>
+                            </property>
                             <property name="text">
                                 <string>Model</string>
                             </property>
@@ -149,23 +124,103 @@
                                 <string>Model of this device class (e.g. HyperZapper 2000)</string>
                             </property>
                         </widget>
-                        <spacer>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout5</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
                             <property name="name">
-                                <cstring>spacer7</cstring>
+                                <cstring>textLabel1_2</cstring>
                             </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
+                            <property name="minimumSize">
                                 <size>
-                                    <width>290</width>
-                                    <height>20</height>
+                                    <width>100</width>
+                                    <height>0</height>
                                 </size>
                             </property>
-                        </spacer>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>100</width>
+                                    <height>32767</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>Type</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox">
+                            <item>
+                                <property name="text">
+                                    <string>Dimmer</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Color Changer</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Scanner</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Moving Head</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Fogger</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Hazer</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Fan</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Other</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>m_typeCombo</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="currentItem">
+                                <number>0</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Type of this device class</string>
+                            </property>
+                        </widget>
                     </hbox>
                 </widget>
             </vbox>
@@ -227,7 +282,10 @@
                                 <cstring>m_addChannelButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image0</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Add a new channel</string>
@@ -238,7 +296,10 @@
                                 <cstring>m_removeChannelButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image1</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Remove the selected channel</string>
@@ -249,7 +310,10 @@
                                 <cstring>m_editChannelButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image2</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Edit the selected channel's name</string>
@@ -260,7 +324,10 @@
                                 <cstring>m_raiseChannelButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image3</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Raise the selected channel up by one</string>
@@ -271,7 +338,10 @@
                                 <cstring>m_lowerChannelButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image4</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Lower the selected channel down by one</string>
@@ -366,7 +436,10 @@
                                 <cstring>m_addPresetButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image0</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Add a new capability to the selected channel</string>
@@ -377,7 +450,10 @@
                                 <cstring>m_removePresetButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image1</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Remove the selected capability from the selected channel</string>
@@ -388,7 +464,10 @@
                                 <cstring>m_editPresetButton</cstring>
                             </property>
                             <property name="text">
-                                <string>...</string>
+                                <string></string>
+                            </property>
+                            <property name="iconSet">
+                                <iconset>image2</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Edit the selected capability</string>
@@ -402,7 +481,7 @@
                                 <enum>Vertical</enum>
                             </property>
                             <property name="sizeType">
-                                <enum>MinimumExpanding</enum>
+                                <enum>Expanding</enum>
                             </property>
                             <property name="sizeHint">
                                 <size>
@@ -417,6 +496,23 @@
         </widget>
     </vbox>
 </widget>
+<images>
+    <image name="image0">
+        <data format="PNG" length="310">89504e470d0a1a0a0000000d494844520000001200000012080600000056ce8e57000000fd49444154789cad93418e83300c459f9911776a2414aec68db84025222a67cb05587307369e05050a944235781727797adf5144553953ce3933ab88319577fbc9d1e5dbadb7b993eff4e1f713485545c49919565543afef9d99b1319333d1fade99f7d5b40e21274d7501da351a6732c619ca0301ef019cc13cb3dd19a9aac4988a088430b93c8d20c661ffd068b632400821c7fb01e23dc4b83cbb6b34430260e4cf8469aa2202eb577b0b1a216ddbf278fc203226a816b15fef6ca2bd42baae23cb325487175ac7d93572ce595dd71445b1811cd5041a21f7fb9db22cbf824ca035a4699aaf200002fc1b02905c010148ae80c0c94f7bcae8120af0077982b58084ca33970000000049454e44ae426082</data>
+    </image>
+    <image name="image1">
+        <data format="PNG" length="601">89504e470d0a1a0a0000000d49484452000000110000001108060000003b6d47fa0000022049444154789ca5d3cd6b134118c7f16f5e4c5b6d488bd2d8aa94ea41c84950f1a6ffc17ab117412f822042898956b4a20815052388203d7a89b7221a115faec148033dea417bf020899af76c92ddcdceec78c83624698a880f2c0c03fb991fcf33e3c96432fc6ff9876d26e351255b0dc6c6c7a9150ad896058e83291d62ab2f3d7f4592f1a84abc7885d475903646fe07c216d47ee5c97e78c7354d530f5329cfb648321e554f336b6cdc5c448d8ca0027e2cd3c4d46bd8bac14ca1ca3cb0a069ea490fe41d04be2e5ec11f08e0335a0414ec54b0273849e8c07ea60e1f240c9c052e689aea4392f1a84abc7ec3b7db4b04c682886683b95b7769e672604b5ae51291d875acdc4f66f64e300d9c04ceb85037892c1691660b256c0edd590620f2e01166a34ee47e028063cf9ea30c1305eceee9451771aa15a4612076f8f872e36ab74f9b00c07aec32de893021c0d7d34b2f40bb5cc4329a18ed365e21180b4ef64100ebd14bd8151ddfecece0403b88699a48cb422901ca83a157fa12001c7dbcc2e8be29f4749ada3004c7a15e2d63db36a64ff5016b17cf75d7479613f8556728724b12e9f039fb09a19bb43636c89e9fef028e61903e751c80b77373fc06aaee275cc4b3f97696344d9d06c2c07468175e3f084611a512d23db9eefefc1d780facb817ae3b9d7ba9942709e4817cad895e6a62542ad840c5050a4380be249bb5a069ea046c19a374537c1c008622d0b989c39eb7005607806d917fad3ff0580cd8f4e380e50000000049454e44ae426082</data>
+    </image>
+    <image name="image2">
+        <data format="PNG" length="585">89504e470d0a1a0a0000000d494844520000001200000012080600000056ce8e570000021049444154789ca594cf4b545114c73f57df420a7904513118ccc35c59484133d87f90992ddcb46f2741d12263488509acadae82361118180a6d864825b1744afb3195da989593ccf47c9234a04cefe97befde16d298ccc4bce80b17cee19cfbe17cefe55e914c2601e8efef57fc832e36ac12696be595db2c00b43f8bbdbdbd15019665093f1153919656b4c91e888e500202300ca3186732995d792a95c24fc454f4cc69b489385028d6aa2a4de0fb3e4a29ccf43485e12b44dbce51fdf42650e0c7facef692893299ccae5c08c1eae7372c0d5cdb868c7521aa6cccbc6062018cd6bf4c6418467101e4bfccb396e8e364cb59b4d14e44b58399178c7f80ce277e306bbaae53e3e539da7e998dd7b3789e8699978ccd41f7339f072353a2ac3521c42e6bb50b23ec693ac17a6a0a6b294bae10e29d6972236933f068075202524a152d7d5bfe88163a8c585b617ee62513398bf90d9d17d3396ac34d25d397b526a5cfdeb9516a366d9e0f0d3236976668d1e1bbdcc7ed3bb7ca1e43d95b93ebcb0c4fa608d9e30cce2ca2871be98a9fdf6e703e0503d51ddacffdc43dfaee3ea4397a8af60b1d34d4d773e060089d1566dfbac1405fdf3f6636bd48fcfa558c701dc71b8f205d07df3391ae0dfe563050a821424ff731a4e720b71ca46be37b9b48773b466e560659d905ac2c48ef27cab551ae8df4ec62ac5c1ba45f19d4712956b62988c4efffe87f55f1f507d52fff34f1b4d82c5e030000000049454e44ae426082</data>
+    </image>
+    <image name="image3">
+        <data format="PNG" length="454">89504e470d0a1a0a0000000d4948445200000011000000100806000000f031945f0000018d49444154789cbdd4cd4b1b4118c7f1efae013d245129b909d59e7a51a258c156a322b8ad2451a2490b954a6891a2e0a51e8a0651110ffe0dbda9b4143d09a57a08e432f55615bc55ab7da178d842a390aaed3e3da46f925d0946fcc1c0bc3cf3611898d19452141abd60e1d290e0d87369bf734fce8d744d2fca702c88a7f93e6d914147c811898ccec950c8a0af37c04f7f239e3a83d650dc16b2457ac7e6e4f1dd6e128fda49ac7de0ba5183d4ddc2db14b1857290e8c40b1988658191b58fa4cc0336df7ca2bebb01abfa26ee1b615a430f4f41aeff07c1c4820c47c3c4a32df4bdde26651e70b897064025df516354b3e7f36261d162c424b5f252cb2e2a85528ab2db4fe46a6d58d08b0490b240bf3cdb32c53399946bf36fc537b32aa55d09014e35a5d4bf93bc1aefc9aa3c05a0736a49fce525b8f4632aabbceceeecf2652389524acbeb62ffc47fa5f86fbfb8a40872b6e781ac9b4700ec9b19be7efbee587726b2bcf1998e0a3799f4093f328764dedb3f5697edecefcc3e0863e92e04e1787fcbb14ebb88afe0171e538ff4ecf028f50000000049454e44ae426082</data>
+    </image>
+    <image name="image4">
+        <data format="PNG" length="434">89504e470d0a1a0a0000000d4948445200000011000000100806000000f031945f0000017949444154789cadd34f28c3611cc7f1f7b3fd988df2f72472536a4ab928c2c50e522e527675d99122ad1d296539ec46c94571f1e7e04fda7230f66b29c72992a5486dd4d86f3fff3d4e5b7e6dd316dfd353cfb757dfe7d3f711aaaaf2d732fd59f82f44c97731e05993e9738dd049bebc934a3ce05ff288821180f9e971065b1bb94968f8f64f59718f163709406f4b0363c14bdaaa6c846309e4d767f148a522d8ba49725d61e65d98c91761de606b84cee387849886c556ce8bc9841432676f661287cb2b4b6b1b320040f43e09e28d48348efe5586ad7398fec94569fe7ce539768b7e7584aaaa42fc5c3687cb2b9bfb0658773b09df696c5cc6099c469125562cf67ada9baa8884ced1422a4f9b331c070322eb39fe85497111d861687695117b1d81f338b2c48aa9423100a93d5f06c899491a6a9f58e671aa1b4bb5958e9ee60ca06dcf71e8df34ec4ace607f4227ce3603103cd8cd5a36f1db0774b8bc52b177c1c71ba93d5fd604052169483ff31b32281a29a4be015945a92e058710e50000000049454e44ae426082</data>
+    </image>
+</images>
 <connections>
     <connection>
         <sender>m_manufacturerEdit</sender>

@@ -36,6 +36,7 @@
 #include <qspinbox.h>
 #include <qevent.h>
 #include <qcheckbox.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -69,16 +70,20 @@ void NewDevice::initView()
   m_tree->addColumn("Device Classes");
   m_tree->setColumnWidth(0, 215);
   m_tree->setRootIsDecorated(true);
-  connect(m_tree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(slotSelectionChanged(QListViewItem*)));
-  connect(m_tree, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotTreeDoubleClicked(QListViewItem*)));
+  connect(m_tree, SIGNAL(selectionChanged(QListViewItem*)), 
+	  this, SLOT(slotSelectionChanged(QListViewItem*)));
+  connect(m_tree, SIGNAL(doubleClicked(QListViewItem*)), 
+	  this, SLOT(slotTreeDoubleClicked(QListViewItem*)));
   fillTree();
 
   m_treeOpenCheckBox = new QCheckBox(this);
   m_treeOpenCheckBox->setGeometry(10, 240, 230, 20);
   m_treeOpenCheckBox->setText("Open all list items by default");
   _app->settings()->get(KEY_NEWDEVICE_TREE_OPEN, config);
-  m_treeOpenCheckBox->setChecked( (config == Settings::trueValue()) ? true : false );
-  connect(m_treeOpenCheckBox, SIGNAL(clicked()), this, SLOT(slotTreeOpenCheckBoxClicked()));
+  m_treeOpenCheckBox->setChecked( (config == Settings::trueValue()) ? 
+				  true : false );
+  connect(m_treeOpenCheckBox, SIGNAL(clicked()), 
+	  this, SLOT(slotTreeOpenCheckBoxClicked()));
 
   m_nameLabel = new QLabel(this);
   m_nameLabel->setGeometry(240, 10, 150, 20);
@@ -86,7 +91,8 @@ void NewDevice::initView()
 
   m_nameEdit = new QLineEdit(this);
   m_nameEdit->setGeometry(240, 30, 150, 20);
-  connect(m_nameEdit, SIGNAL(textChanged(const QString &)), this, SLOT(slotNameChanged(const QString &)));
+  connect(m_nameEdit, SIGNAL(textChanged(const QString &)), 
+	  this, SLOT(slotNameChanged(const QString &)));
 
   m_typeLabel = new QLabel(this);
   m_typeLabel->setGeometry(240, 55, 150, 20);
@@ -98,8 +104,8 @@ void NewDevice::initView()
 
   m_addressSpin = new QSpinBox(this);
   m_addressSpin->setGeometry(240, 100, 100, 20);
-  m_addressSpin->setRange(0, 511);
-  m_addressSpin->setValue(0);
+  m_addressSpin->setRange(1, 512);
+  m_addressSpin->setValue(1);
 
   m_dipButton = new QPushButton(this);
   m_dipButton->setGeometry(340, 100, 50, 20);
@@ -123,7 +129,14 @@ void NewDevice::slotDIPClicked()
   dat->setAddress(m_addressSpin->value());
   if (dat->exec() == QDialog::Accepted)
     {
-      m_addressSpin->setValue(dat->address());
+      if (dat->address() > 0)
+	{
+	  m_addressSpin->setValue(dat->address());
+	}
+      else
+	{
+	  m_addressSpin->setValue(1);
+	}
     }
 
   delete dat;
@@ -157,6 +170,11 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
       m_manufacturerValue = item->parent()->text(0);
       m_typeLabel->setText("Type: " + item->text(1));
       m_nameEdit->setText(m_manufacturerValue + QString(" ") + m_modelValue);
+
+      DeviceClass* dc = _app->searchDeviceClass(m_manufacturerValue,
+						m_modelValue);
+      assert(dc);
+      m_addressSpin->setRange(1, 513 - dc->channels()->count());
     }
   else
     {
@@ -226,7 +244,7 @@ void NewDevice::show()
 
 void NewDevice::slotOKClicked()
 {
-  m_addressValue = m_addressSpin->value();
+  m_addressValue = m_addressSpin->value() - 1;
 
   if (m_selectionOK == true)
     {

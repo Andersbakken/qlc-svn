@@ -73,17 +73,6 @@ void DeviceClassEditor::init()
   m_manufacturerEdit->setText(m_dc->manufacturer());
   m_modelEdit->setText(m_dc->model());
 
-  m_addChannelButton->setPixmap(dir + QString("/add.xpm"));
-  m_removeChannelButton->setPixmap(dir + QString("/fileclose.xpm"));
-  m_editChannelButton->setPixmap(dir + QString("/edit.xpm"));
-
-  m_addPresetButton->setPixmap(dir + QString("/add.xpm"));
-  m_removePresetButton->setPixmap(dir + QString("/fileclose.xpm"));
-  m_editPresetButton->setPixmap(dir + QString("/edit.xpm"));
-
-  m_raiseChannelButton->setPixmap(dir + QString("/up.xpm"));
-  m_lowerChannelButton->setPixmap(dir + QString("/down.xpm"));
-
   updateChannelList();
   updatePresetValues();
 
@@ -307,7 +296,7 @@ void DeviceClassEditor::slotRaiseChannelClicked()
 	   item = item->nextSibling())
         {
           QString num;
-          num.sprintf("%03d", i);
+          num.sprintf("%03d", i + 1);
           if (item->text(KChannelNumberColumn) == num)
             {
               m_channelList->setSelected(item, true);
@@ -347,7 +336,7 @@ void DeviceClassEditor::slotLowerChannelClicked()
 	   item = item->nextSibling())
         {
           QString num;
-          num.sprintf("%03d", i);
+          num.sprintf("%03d", i + 1);
           if (item->text(KChannelNumberColumn) == num)
             {
               m_channelList->setSelected(item, true);
@@ -500,7 +489,7 @@ void DeviceClassEditor::updateChannelList()
   // Fill channels list
   for (LogicalChannel* c = cl->first(); c != NULL; c = cl->next())
     {
-      ch.sprintf("%03d", c->channel());
+      ch.sprintf("%03d", c->channel() + 1);
       new QListViewItem(m_channelList, ch, c->name());
     }
 }
@@ -536,7 +525,7 @@ LogicalChannel* DeviceClassEditor::currentChannel()
     }
 
   unsigned int channel = 0;
-  channel = m_channelList->currentItem()->text(KChannelNumberColumn).toInt();
+  channel = m_channelList->currentItem()->text(KChannelNumberColumn).toInt()-1;
   ASSERT(channel < m_dc->channels()->count());
 
   return m_dc->channels()->at(channel);

@@ -55,7 +55,8 @@ void DeviceProperties::init()
   num.setNum(m_device->deviceClass()->channels()->count());
   m_channelsEdit->setText(num);
 
-  m_addressSpin->setValue(m_device->address());
+  m_addressSpin->setRange(1, 513 - num.toInt());
+  m_addressSpin->setValue(m_device->address() + 1);
 }
 
 void DeviceProperties::slotDIPClicked()
@@ -64,7 +65,14 @@ void DeviceProperties::slotDIPClicked()
   dat->setAddress(m_addressSpin->value());
   if (dat->exec() == QDialog::Accepted)
     {
-      m_addressSpin->setValue(dat->address());
+      if (dat->address() > 0)
+	{
+	  m_addressSpin->setValue(dat->address());
+	}
+      else
+	{
+	  m_addressSpin->setValue(1);
+	}
     }
 
   delete dat;
@@ -72,19 +80,7 @@ void DeviceProperties::slotDIPClicked()
 
 void DeviceProperties::slotOKClicked()
 {
-  t_channel address = m_addressSpin->value();
-  t_channel channels = m_device->deviceClass()->channels()->count();
-  
-  if (address + channels - 1 > 511)
-    {
-      QString msg("The device address goes beyond 512 channels!\nContinue?");
-      if (QMessageBox::warning(this, KApplicationNameShort, msg,
-			       QMessageBox::Yes, QMessageBox::No)
-	  == QMessageBox::No)
-	{
-	  return;
-	}
-    }
+  t_channel address = m_addressSpin->value() - 1;
 
   if (m_deviceNameEdit->text().length() <= 0)
     {

@@ -148,7 +148,7 @@ void ChaserEditor::slotRemoveClicked()
 
   if (item != NULL)
     {
-      m_chaser->removeStep(item->text(COL_NUM).toInt());
+      m_chaser->removeStep(item->text(COL_NUM).toInt() - 1);
     }
 
   updateStepList();
@@ -176,7 +176,7 @@ void ChaserEditor::slotPlayClicked()
 
 void ChaserEditor::updateOrderNumbers()
 {
-  int i = 0;
+  int i = 1;
   QString size;
   QString num;
 
@@ -202,7 +202,7 @@ void ChaserEditor::slotRaiseClicked()
 
   if (item != NULL)
     {
-      index = item->text(COL_NUM).toInt();
+      index = item->text(COL_NUM).toInt() - 1;
       fid = item->text(COL_FID).toInt();
 
       if (m_chaser->raiseStep(index))
@@ -235,7 +235,7 @@ void ChaserEditor::slotLowerClicked()
 
   if (item != NULL)
     {
-      index = item->text(COL_NUM).toInt();
+      index = item->text(COL_NUM).toInt() - 1;
       fid = item->text(COL_FID).toInt();
 
       if (m_chaser->lowerStep(index))

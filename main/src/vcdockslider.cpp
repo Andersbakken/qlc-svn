@@ -275,7 +275,7 @@ bool VCDockSlider::setBusID(t_bus_id id)
       QString name = Bus::name(m_busID);
       if (name == QString::null)
 	{
-	  name.sprintf("%.2d", id);
+	  name.sprintf("%.2d", id + 1);
 	}
       m_nameLabel->setText(name);
 
@@ -349,7 +349,7 @@ void VCDockSlider::updateBusMenu()
 
   for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
     {
-      name.sprintf("%.2d: ", i);
+      name.sprintf("%.2d: ", i + 1);
       name += Bus::name(i);
       
       m_busMenu->insertItem(name, i);

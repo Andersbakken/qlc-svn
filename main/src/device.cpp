@@ -277,7 +277,7 @@ QString Device::infoText()
   str += QString("<TR>");
   str += QString("<TD><B>Address space</B></TD>");
   t.sprintf("%d - %d",
-	    address(), address() + m_deviceClass->channels()->count() - 1);
+	    address() + 1, address() + m_deviceClass->channels()->count());
   str += QString("<TD>") + t + QString("</TD>");
   str += QString("<TR>");
   str += QString("<TD><B>Channels</B></TD>");

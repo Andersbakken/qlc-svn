@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_DeviceProperties</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,170 +8,271 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>290</width>
-            <height>208</height>
+            <width>352</width>
+            <height>220</height>
         </rect>
     </property>
     <property name="caption">
         <string>Device Properties</string>
     </property>
-    <grid>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QLabel" row="1" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>m_deviceClassLabel</cstring>
+                <cstring>layout1</cstring>
             </property>
-            <property name="text">
-                <string>Device Class</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_deviceNameLabel</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>100</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="frameShape">
+                        <enum>NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Plain</enum>
+                    </property>
+                    <property name="text">
+                        <string>Device Name</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_deviceNameEdit</cstring>
+                    </property>
+                    <property name="readOnly">
+                        <bool>false</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The name of this device.</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QLabel" row="2" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>m_deviceTypeLabel</cstring>
+                <cstring>layout2</cstring>
             </property>
-            <property name="text">
-                <string>Device Type</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_deviceClassLabel</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>100</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Device Class</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_deviceClassEdit</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The device class that this device is based on.</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QLabel" row="3" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>TextLabel6</cstring>
+                <cstring>layout3</cstring>
             </property>
-            <property name="text">
-                <string>Channels</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_deviceTypeLabel</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>100</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Device Type</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_deviceTypeEdit</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The device type (e.g. dimmer, scanner etc.)</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QLabel" row="4" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>m_addressLabel</cstring>
+                <cstring>layout4</cstring>
             </property>
-            <property name="text">
-                <string>Address</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>TextLabel6</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>100</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Channels</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_channelsEdit</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Number of channels needed for this device.</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QPushButton" row="5" column="2">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>m_cancel</cstring>
+                <cstring>layout5</cstring>
             </property>
-            <property name="text">
-                <string>Cancel</string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Close this window without accepting changes.</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_addressLabel</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>100</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Address</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox">
+                    <property name="name">
+                        <cstring>m_addressSpin</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="wrapping">
+                        <bool>true</bool>
+                    </property>
+                    <property name="buttonSymbols">
+                        <enum>UpDownArrows</enum>
+                    </property>
+                    <property name="maxValue">
+                        <number>512</number>
+                    </property>
+                    <property name="minValue">
+                        <number>1</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>This device's address.</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_dipButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>DIP</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Select the address with DIP switches.</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QSpinBox" row="4" column="1">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>m_addressSpin</cstring>
+                <cstring>layout6</cstring>
             </property>
-            <property name="wrapping">
-                <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-                <enum>UpDownArrows</enum>
-            </property>
-            <property name="maxValue">
-                <number>511</number>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>This device's address.</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close this window.</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Close this window without accepting changes.</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QPushButton" row="5" column="1">
-            <property name="name">
-                <cstring>m_ok</cstring>
-            </property>
-            <property name="text">
-                <string>OK</string>
-            </property>
-            <property name="default">
-                <bool>true</bool>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Accept changes and close this window.</string>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="4" column="2">
-            <property name="name">
-                <cstring>m_dipButton</cstring>
-            </property>
-            <property name="text">
-                <string>DIP</string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Select the address with DIP switches.</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit" row="1" column="1" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_deviceClassEdit</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>The device class that this device is based on.</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit" row="2" column="1" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_deviceTypeEdit</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>The device type (e.g. dimmer, scanner etc.)</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit" row="3" column="1">
-            <property name="name">
-                <cstring>m_channelsEdit</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Number of channels needed for this device.</string>
-            </property>
-        </widget>
-        <widget class="QLabel" row="0" column="0">
-            <property name="name">
-                <cstring>m_deviceNameLabel</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Plain</enum>
-            </property>
-            <property name="text">
-                <string>Device Name</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit" row="0" column="1" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_deviceNameEdit</cstring>
-            </property>
-            <property name="readOnly">
-                <bool>false</bool>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>The name of this device.</string>
-            </property>
-        </widget>
-    </grid>
+    </vbox>
 </widget>
 <connections>
     <connection>

@@ -388,7 +388,7 @@ void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
   if (item)
     {
-      int ch = item->text(KColumnNumber).toInt();
+      int ch = item->text(KColumnNumber).toInt() - 1;
       t_device_id did = m_scene->device();
       
       if (did != KNoID)
@@ -496,7 +496,7 @@ void AdvancedSceneEditor::slotEditValueClicked()
   for (QListViewItem* item = m_sceneContents->firstChild(); 
        item != NULL; item = item->nextSibling())
     {
-      if (item->text(KColumnNumber).toInt() == ch)
+      if (item->text(KColumnNumber).toInt() - 1 == ch)
 	{
 	  m_sceneContents->setSelected(item, true);
 	  break;
@@ -549,7 +549,7 @@ void AdvancedSceneEditor::updateChannelList()
 	  cap = c->name();
 	}
       
-      num.sprintf("%03d", ch->channel());
+      num.sprintf("%03d", ch->channel() + 1);
       val.sprintf("%03d", m_scene->channelValue(ch->channel()).value);
       item = new QListViewItem(m_sceneContents, num, ch->name(), cap, val, 
 			       m_scene->valueTypeString(ch->channel()));

@@ -69,7 +69,7 @@ void BusProperties::fillTree()
   for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
     {
       item = new QListViewItem(m_list);
-      text.sprintf("%.2d", i);
+      text.sprintf("%.2d", i + 1);
       item->setText(KColumnID, text);
       item->setText(KColumnName, Bus::name(i));
 

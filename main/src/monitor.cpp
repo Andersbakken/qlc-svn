@@ -412,11 +412,11 @@ void Monitor::paintAll(void)
     {
       if (m_displayStyle == ID_ABSOLUTE)
 	{
-	  channelString.sprintf("%.3d", m_fromChannel + i);
+	  channelString.sprintf("%.3d", m_fromChannel + i + 1);
 	}
       else
 	{
-	  channelString.sprintf("%.3d", i);
+	  channelString.sprintf("%.3d", i + 1);
 	}
 
       valueString.sprintf("%.3d", m_newValues[i]);
