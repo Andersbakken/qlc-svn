@@ -1,0 +1,30 @@
+QLC MidiOut Plugin
+Copyright (C) Heikki Junnila
+
+
+DESCRIPTION
+-----------
+This is a simple plugin to convert QLC's internal DMX data into MIDI data.
+
+
+PROTOCOL
+--------
+The plugin supports 128 channels used at least in Botex devices, maybe others, 
+too. Basically the protocol used by Botex in their MIDI-capable devices is as
+follows:
+
+* MIDI channel has nothing to do with DMX channels. You can set any MIDI
+  channel for the plugin from 1 to 16, which should be the same as in your
+  MIDI-to-<Your equipment here>-device.
+
+* MIDI note NUMBERS from 0 to 127 correspond directly to DMX channels: Note 
+  number 0 == DMX channel 0 and MIDI 127 == DMX 127. Actually DMX channels run
+  from 1 to 512 which, in QLC means channel numbers 0 thru 511.
+
+* MIDI note VELOCITY sets the intensity for the corresponding channel. Since
+  MIDI data is represented only with 7 bits, values from 0 thru 127 are valid.
+  The given DMX value is just divided by two so that 255DMX == 127 MIDI;
+  127 DMX = 63MIDI.
+
+* MIDI note ON message is sent whenever velocities 1-127 (DMX values 1-255)
+  are used and MIDI note OFF message is sent when velocity/value 0 is used.
