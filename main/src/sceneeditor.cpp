@@ -314,7 +314,7 @@ void SceneEditor::fillFunctions()
 
   for (Function* f = fl->first(); f != NULL; f = fl->next())
     {
-      if (f->type() == Function::Scene)
+      if (f->type() == Function::Scene && f->device() == m_device)
 	{
 	  ListBoxIDItem* item = new ListBoxIDItem();
 	  item->setText(f->name());
