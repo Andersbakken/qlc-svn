@@ -48,13 +48,15 @@
 
 extern App* _app;
 
-const int KMenuRename      ( 0 );
-const int KMenuFont        ( 1 );
-const int KMenuFontColor   ( 2 );
-const int KMenuBackColor   ( 3 );
-const int KMenuResetColors ( 4 );
-const int KMenuDrawFrame   ( 5 );
-const int KMenuRemove      ( 6 );
+const int KMenuTitle             ( 0 );
+const int KMenuRename            ( 1 );
+const int KMenuFont              ( 2 );
+const int KMenuFontColor         ( 3 );
+const int KMenuBackgroundColor   ( 4 );
+const int KMenuBackgroundPixmap  ( 5 );
+const int KMenuBackgroundNone    ( 6 );
+const int KMenuDrawFrame         ( 7 );
+const int KMenuRemove            ( 8 );
 
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
@@ -268,27 +270,41 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 	  _app->settings()->get(KEY_SYSTEM_DIR, dir);
 	  dir += QString("/") + PIXMAPPATH;
 
-	  QPopupMenu* menu;
-	  menu = new QPopupMenu();
+	  //
+	  // Background menu
+	  //
+	  QPopupMenu* bgmenu = new QPopupMenu();
+	  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
+			     "&Color...", KMenuBackgroundColor);
+	  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
+			     "&Image...", KMenuBackgroundPixmap);
+	  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
+			     "&None", KMenuBackgroundNone);
+	  //
+	  // Main context menu
+	  //
+	  QPopupMenu* menu = new QPopupMenu();
+	  menu->insertItem("Label", KMenuTitle);
+	  menu->setItemEnabled(KMenuTitle, false);
+	  menu->insertSeparator();
 	  menu->setCheckable(true);
 	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-			   "Modify &text...", KMenuRename);
+			   "&Rename...", KMenuRename);
 	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
 			   "&Font...", KMenuFont);
 	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
 			   "&Text Color...", KMenuFontColor);
 	  menu->insertSeparator();
-	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			   "&Background Color...", KMenuBackColor);
+	  menu->insertItem("Background", bgmenu);
 	  menu->insertItem(QPixmap(dir + QString("/frame.xpm")),
 			   "Draw &Frame", KMenuDrawFrame);
-	  menu->insertSeparator();
-	  menu->insertItem(QPixmap(dir + QString("/panic.xpm")),
-			   "&Reset Colors", KMenuResetColors);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
 			   "Re&move", KMenuRemove);
           
+	  connect(bgmenu, SIGNAL(activated(int)),
+		  this, SLOT(slotMenuCallback(int)));
+
 	  connect(menu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
@@ -339,7 +355,7 @@ void VCLabel::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuBackColor:
+    case KMenuBackgroundColor:
       {
 	QColor color;
 	color = QColorDialog::getColor(paletteBackgroundColor(), this);
@@ -352,7 +368,7 @@ void VCLabel::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuResetColors:
+    case KMenuBackgroundNone:
       _app->doc()->setModified(true);
       setPalette(_app->palette());
       m_background = false;

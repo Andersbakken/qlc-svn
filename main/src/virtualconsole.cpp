@@ -295,6 +295,8 @@ void VirtualConsole::slotModeChanged()
 	  XAutoRepeatOn(display);
 	  
 	  XCloseDisplay(display);
+
+	  releaseKeyboard();
 	}
     }
   else
@@ -313,6 +315,8 @@ void VirtualConsole::slotModeChanged()
 	  XAutoRepeatOff(display);
 	  
 	  XCloseDisplay(display);
+
+	  grabKeyboard();
 	}
     }
 }

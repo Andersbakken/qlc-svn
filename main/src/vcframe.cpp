@@ -49,6 +49,7 @@ t_vc_id VCFrame::s_nextVCID = KVCIDMin;
 
 const int KColorMask            ( 0xff );
 
+const int KMenuTitle            ( 0  );
 const int KMenuRename           ( 1  );
 const int KMenuProperties       ( 2  );
 const int KMenuBackgroundNone   ( 4  );
@@ -314,7 +315,7 @@ void VCFrame::paintEvent(QPaintEvent* e)
 {
   QFrame::paintEvent(e);
 
-  if (_app->mode() == App::Design)
+  if (_app->mode() == App::Design && m_bottomFrame == false)
     {
       QPainter p(this);
       
@@ -344,8 +345,8 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 	  m_resizeMode = false;
 	}
       
-      if ((e->button() & LeftButton || e->button() & MidButton) && 
-	  m_bottomFrame == false)
+      if ((e->button() & LeftButton || e->button() & MidButton)
+	  && m_bottomFrame == false)
 	{
 	  if (e->x() > rect().width() - 10 &&
 	      e->y() > rect().height() - 10)
@@ -386,12 +387,12 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 	  //
 	  QPopupMenu* bgmenu = new QPopupMenu();
 	  bgmenu->setCheckable(true);
-	  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
-			     "Pixmap...", KMenuBackgroundPixmap);
 	  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			     "Color...", KMenuBackgroundColor);
+			     "&Color...", KMenuBackgroundColor);
+	  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
+			     "&Image...", KMenuBackgroundPixmap);
 	  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-			     "None", KMenuBackgroundNone);
+			     "&None", KMenuBackgroundNone);
 	  if (m_bgPixmap != NULL)
 	    {
 	      bgmenu->setItemChecked(KMenuBackgroundPixmap, true);
@@ -419,10 +420,12 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 			      "&Label", KMenuAddLabel);
 
 	  QPopupMenu* menu = new QPopupMenu();
-	  menu->insertItem(QPixmap(dir + QString("/image.xpm")),
-			   "Background", bgmenu);
+	  menu->insertItem("Frame", KMenuTitle);
+	  menu->setItemEnabled(KMenuTitle, false);
+	  menu->insertSeparator();	 
 	  menu->insertItem(QPixmap(dir + QString("/add.xpm")),
 			   "Add", addMenu);
+	  menu->insertItem("Background", bgmenu);
 	  menu->insertSeparator();
 
 	  if (m_bottomFrame == false)
@@ -467,7 +470,7 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      if (m_resizeMode == true && m_bottomFrame == false)
+      if (m_resizeMode == true)
 	{
 	  QPoint point = mapFromGlobal(QPoint(e->globalX(), e->globalY()));
 	  resize(point.x() + 2, point.y() + 2);
@@ -528,6 +531,7 @@ void VCFrame::slotMenuCallback(int item)
 	    m_bgColor = NULL;
 	  }
 
+	//setPalette(_app->palette());
 	setBackgroundMode(PaletteBackground);
 
 	emit backgroundChanged();

@@ -367,10 +367,10 @@
                         </sizepolicy>
                     </property>
                     <property name="text">
-                        <string>Set key repeat off in operate mode</string>
+                        <string>Grab keyboard in operate mode</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>To prevent flickering when a keyboard key is held down</string>
+                        <string>If set, keyboard is exclusively in virtual console's use.</string>
                     </property>
                 </widget>
             </grid>

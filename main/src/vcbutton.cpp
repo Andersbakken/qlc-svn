@@ -55,14 +55,16 @@ extern App* _app;
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
 const int KFlashReadyTime ( 1000 ); // 1 second
 
-const int KMenuRename           ( 0 );
-const int KMenuProperties       ( 1 );
-const int KMenuBackgroundColor  ( 2 );
-const int KMenuBackgroundPixmap ( 3 );
-const int KMenuCopy             ( 4 );
-const int KMenuRemove           ( 5 );
+const int KMenuTitle            ( 0 );
+const int KMenuRename           ( 1 );
+const int KMenuProperties       ( 2 );
+const int KMenuBackgroundColor  ( 3 );
+const int KMenuBackgroundPixmap ( 4 );
+const int KMenuBackgroundNone   ( 5 );
 const int KMenuAttach           ( 6 );
 const int KMenuDetach           ( 7 );
+const int KMenuCopy             ( 8 );
+const int KMenuRemove           ( 9 );
 
 VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
@@ -360,23 +362,46 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	}
       else if (e->button() & RightButton)
 	{
-	  QPopupMenu* menu;
-	  menu = new QPopupMenu;
-	  menu->insertItem("Button", -1);
-	  menu->insertSeparator();
-
 	  QString dir;
 	  _app->settings()->get(KEY_SYSTEM_DIR, dir);
 	  dir += QString("/") + PIXMAPPATH;
 
+	  //
+	  // Background menu
+	  //
+	  QPopupMenu* bgmenu = new QPopupMenu();
+	  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
+			     "&Color...", KMenuBackgroundColor);
+	  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
+			     "&Image...", KMenuBackgroundPixmap);
+	  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
+			     "&None", KMenuBackgroundNone);
+	  if (m_bgPixmap != NULL)
+	    {
+	      bgmenu->setItemChecked(KMenuBackgroundPixmap, true);
+	    }
+	  else if (m_bgColor != NULL)
+	    {
+	      bgmenu->setItemChecked(KMenuBackgroundColor, true);
+	    }
+	  else
+	    {
+	      bgmenu->setItemChecked(KMenuBackgroundNone, true);
+	    }
+	  //
+	  // Main context menu
+	  //
+	  QPopupMenu* menu;
+	  menu = new QPopupMenu;
+	  menu->insertItem("Button", KMenuTitle);
+	  menu->setItemEnabled(KMenuTitle, false);
+	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
 			   "&Rename...", KMenuRename);
 	  menu->insertItem(QPixmap(dir + QString("/settings.xpm")),
 			   "&Properties...", KMenuProperties);
-	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			   "Color...", KMenuBackgroundColor);
-	  menu->insertItem(QPixmap(dir + QString("/image.xpm")),
-			   "Pixmap...", KMenuBackgroundPixmap);
+	  menu->insertSeparator();
+	  menu->insertItem("Background", bgmenu);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/attach.xpm")),
 			   "&Attach function...", KMenuAttach);
@@ -384,15 +409,19 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 			   "&Detach current function", KMenuDetach);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/editcopy.xpm")),
-			   "Duplicate", KMenuCopy);
+			   "Create copy", KMenuCopy);
 	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
 			   "Re&move", KMenuRemove);
+
+	  connect(bgmenu, SIGNAL(activated(int)),
+		  this, SLOT(slotMenuCallback(int)));
 
 	  connect(menu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
 	  menu->exec(mapToGlobal(e->pos()));
 
+	  delete bgmenu;
 	  delete menu;
 	}
     }
@@ -468,6 +497,27 @@ void VCButton::slotMenuCallback(int item)
             show();
 	    _app->doc()->setModified(true);
 	  }
+      }
+      break;
+
+    case KMenuBackgroundNone:
+      {
+	if (m_bgPixmap != NULL)
+	  {
+	    m_bgPixmapFileName = QString::null;
+	    delete m_bgPixmap;
+	    m_bgPixmap = NULL;
+	  }
+	
+	if (m_bgColor != NULL)
+	  {
+	    delete m_bgColor;
+	    m_bgColor = NULL;
+	  }
+
+	setPalette(_app->palette());
+
+	_app->doc()->setModified(true);
       }
       break;
 
