@@ -36,14 +36,7 @@ VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
   : QWidget(parent, name)
 {
   m_designMode = true;
-  m_objectPointMode = false;
-
-  m_defaultSpeedSlider = NULL;
-
   m_drawArea = NULL;
-
-  m_sourceObject = NULL;
-  m_targetObject = NULL;
 }
 
 VirtualConsole::~VirtualConsole()
@@ -160,30 +153,6 @@ void VirtualConsole::saveToFile(QFile& file)
       m_drawArea->saveFramesToFile(file);
       m_drawArea->saveChildrenToFile(file);
     }
-}
-
-void VirtualConsole::setDefaultSpeedSlider(SpeedSlider* s)
-{
-  if (m_defaultSpeedSlider != NULL)
-    {
-      switch(QMessageBox::warning(this, "QLC", "Another slider has already been assigned as the default speed slider.\nAre you sure wish to use this new one instead?", "OK", "Cancel", 0, 1))
-	{
-	case 0:
-	  m_defaultSpeedSlider = s;
-	  break;
-	default:
-	  break;
-	}
-    }
-  else
-    {
-      m_defaultSpeedSlider = s;
-    }
-}
-
-bool VirtualConsole::isObjectPointMode(void)
-{
-  return m_objectPointMode;
 }
 
 void VirtualConsole::initView(void)

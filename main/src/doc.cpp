@@ -810,6 +810,48 @@ Function* Doc::searchFunction(const QString &fname)
   return function;
 }
 
+void Doc::addBus(Bus* bus)
+{
+  m_busList.append(bus);
+  emit deviceListChanged();
+}
+
+Bus* Doc::searchBus(unsigned int id)
+{
+  Bus* bus = NULL;
+
+  for (unsigned int i = 0; i < m_busList.count(); i++)
+    {
+      bus = m_busList.at(i);
+      ASSERT(bus);
+
+      if (bus->id == id)
+	{
+	  return bus;
+	}
+    }
+
+  return NULL;
+}
+
+void Doc::removeBus(unsigned int id, bool deleteBus)
+{
+  Bus* bus = NULL;
+  
+  bus = searchBus(id);
+
+  ASSERT(bus);
+
+  m_busList.remove(bus);
+
+  if (deleteBus == true)
+    {
+      delete bus;
+    }
+
+  emit deviceListChanged();
+}
+
 void Doc::findPluginObjects()
 {
   QString path = QString::null;

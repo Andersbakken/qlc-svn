@@ -99,7 +99,7 @@ void NewInputDevice::fetchInputDevices()
 	  JoystickPlugin* jp = (JoystickPlugin*) list.at(i);
 	  ASSERT(jp != NULL);
 
-	  QListViewItem* item = new QListViewItem(m_list, jp->name(), jp->typeString());
+	  new QListViewItem(m_list, jp->name(), jp->typeString());
 	}
     }
 }

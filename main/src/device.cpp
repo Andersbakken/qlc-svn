@@ -29,11 +29,11 @@
 
 extern App* _app;
 
-static int _nextDeviceId = 1;
+static int _nextDeviceId = OUTPUT_DEVICE_ID_MIN;
 
 Device::Device(int address, DeviceClass* dc, const QString& name)
 {
-  m_id = (_nextDeviceId << 10);
+  m_id = (_nextDeviceId);
   _nextDeviceId++;
 
   m_name = QString(name);
@@ -81,16 +81,3 @@ QList<Function> Device::functions() const
 { 
   return m_functions;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

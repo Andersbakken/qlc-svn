@@ -50,10 +50,13 @@ void DeviceManagerView::initView()
   QToolButton* tb = NULL;
   tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
   tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "addinputdevice.xpm")), "Add New Input Device", 0, m_dm, SLOT(slotDLAddInputDevice()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "remove.xpm")), "Remove Current Device", 0, m_dm, SLOT(slotDLRemoveDevice()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "monitor.xpm")), "Monitor Device Channels", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "console.xpm")), "Device Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
-  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "function.xpm")), "Functions", 0, m_dm, SLOT(slotDLViewFunctions()), m_toolbar);
+  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "bus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
+  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
+  m_toolbar->addSeparator();
+  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "settings.xpm")), "Properties", 0, m_dm, SLOT(slotDLViewProperties()), m_toolbar);
+  m_toolbar->addSeparator();
+  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "monitor.xpm")), "Monitor Device", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
+  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "console.xpm")), "View Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
 
   m_layout->addWidget(m_dockArea);
   m_layout->addWidget(m_dm);

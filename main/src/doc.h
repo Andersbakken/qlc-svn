@@ -29,6 +29,42 @@
 #include "inputdevice.h"
 #include "plugin.h"
 
+static int _nextBusID = BUS_ID_MIN;
+
+class Bus
+{
+ public:
+  enum Type { Generic = 0, Speed = 1 };
+
+  unsigned int id;
+  unsigned int value;
+  Type type;
+  QString name;
+
+  Bus()
+    {
+      id = _nextBusID;
+      _nextBusID++;
+      value = 0;
+      type = Generic;
+      name.sprintf("Bus #%d", id - BUS_ROOT_ID);
+    }
+
+  ~Bus() {}
+
+  Bus &operator= (Bus &s)
+    {
+      if (this != &s)
+	{
+	  id = s.id;
+	  value = s.value;
+	  type = s.type;
+	  name = QString(s.name);
+	}
+      return *this;
+    }
+};
+
 class Doc : public QObject
 {
   Q_OBJECT
@@ -88,7 +124,14 @@ class Doc : public QObject
 
   // Plugin libraries
   QList <Plugin> pluginList() const { return m_pluginList; }
-  
+
+  // System bus list
+  QList <Bus> *busList()  { return &m_busList; }
+
+  Bus* searchBus(unsigned int id);
+  void addBus(Bus* bus);
+  void removeBus(unsigned int id, bool deleteBus = true);
+
  signals:
   void deviceListChanged();
   void deviceRemoved(int);
@@ -116,6 +159,8 @@ class Doc : public QObject
   QList <InputDevice> m_inputDeviceList;
 
   QList <Plugin> m_pluginList;
+
+  QList <Bus> m_busList;
 };
 
 #endif

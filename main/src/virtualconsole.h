@@ -55,25 +55,17 @@ class VirtualConsole : public QWidget
   enum Mode { Operate, Design };
 
   void initView(void);
-
   void newDocument();
 
   void registerKeyReceiver(DMXWidgetBase* widget);
   void unRegisterKeyReceiver(DMXWidgetBase* widget);
 
-  // Used to get a correct parent frame for widgets
-  DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
-
   bool isDesignMode();
-  bool isObjectPointMode();
-
-  SpeedSlider* defaultSpeedSlider() { return m_defaultSpeedSlider; }
-  void setDefaultSpeedSlider(SpeedSlider* s);
 
   void saveToFile(QFile& file);
-
   void createWidget(QList<QString> &list);
-
+  // Used to get a correct parent frame for widgets
+  DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
   DMXWidget* drawArea() { return m_drawArea; }
 
  public slots:
@@ -96,13 +88,7 @@ class VirtualConsole : public QWidget
   DMXWidget* m_drawArea;
   QVBoxLayout* m_layout;
 
-  SpeedSlider* m_defaultSpeedSlider;
-
   bool m_designMode;
-  bool m_objectPointMode;
-
-  QWidget* m_sourceObject;
-  QWidget* m_targetObject;
 
   QList <DMXWidgetBase> m_keyReceivers;
 };
