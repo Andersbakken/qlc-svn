@@ -180,11 +180,17 @@ void AdvancedSceneEditor::slotPresetMenuActivated(int preset)
     }
 
   Capability* c = m_currentChannel->capabilities()->at(preset);
+  ASSERT(c);
+
+  int channel = m_currentChannel->channel();
+  int value = (int) floor((c->lo() + c->hi()) / 2);
+
+  m_scene->set(channel, value, m_scene->channelValue(channel).type);
 
   m_sceneContents->currentItem()->setText(2, c->name());
 
   QString s;
-  s.setNum((int) floor((c->lo() + c->hi()) / 2));
+  s.setNum(value);
   m_sceneContents->currentItem()->setText(3, s);
 
   setDirty(true);
@@ -295,7 +301,8 @@ void AdvancedSceneEditor::slotTypeMenuActivated(int type)
 
   int channel = m_currentChannel->channel();
 
-  m_scene->set(channel, m_scene->channelValue(channel).value, (SceneValueType) type);
+  m_scene->set(channel, m_scene->channelValue(channel).value,
+	       static_cast<SceneValueType> (type));
 
   switch (type)
     {
