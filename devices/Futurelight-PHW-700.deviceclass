@@ -1,0 +1,155 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = PHW-700
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 2
+Name = Pan/tilt speed
+# Capability Entries
+0-0 = Tracking mode
+1-249 = Vector speed fast to slow
+250-252 = Tracking mode BO color changes
+253-255 = Max vector speed, BO pan/tilt/color change
+Entry = Channel
+Number = 3
+Name = Colour
+# Capability Entries
+0-15 = White
+16-31 = Deep red
+32-47 = Blue
+48-63 = Green
+64-79 = Orange
+80-95 = 3200K correction filter
+96-111 = 6000K correction filter
+112-117 = UV filter
+128-190 = Rainbow forward fast to slow
+191-192 = No rotation
+193-255 = Rainbow backward slow to fast
+Entry = Channel
+Number = 4
+Name = Cyan
+# Capability Entries
+0-255 = Cyan mix
+Entry = Channel
+Number = 5
+Name = Magenta
+# Capability Entries
+0-255 = Magenta mix
+Entry = Channel
+Number = 6
+Name = Yellow
+# Capability Entries
+0-255 = Yellow mix
+Entry = Channel
+Number = 7
+Name = Speed of CMY and dimmer
+# Capability Entries
+0-255 = Fast to slow
+Entry = Channel
+Number = 8
+Name = Colour macros
+# Capability Entries
+0-7 = Off
+8-15 = Macro 1
+16-23 = Macro 2
+24-31 = Macro 3
+32-39 = Macro 4
+40-47 = Macro 5
+48-55 = Macro 6
+58-63 = Macro 7
+64-71 = Macro 8
+72-79 = Macro 9
+80-87 = Macro 10
+88-95 = Macro 11
+96-103 = Macro 12
+104-111 = Macro 13
+112-119 = Macro 14
+120-127 = Macro 15
+128-135 = Macro 16
+138-143 = Macro 17
+144-151 = Macro 18
+152-159 = Macro 19
+160-167 = Macro 20
+168-175 = Macro 21
+176-183 = Macro 22
+184-191 = Macro 23
+192-199 = Macro 24
+200-207 = Macro 25
+208-215 = Macro 26
+216-223 = Macro 27
+224-231 = Macro 28
+232-239 = Macro 29
+240-247 = Macro 30
+248-255 = Random CMY
+Entry = Channel
+Number = 9
+Name = Effect
+# Capability Entries
+0-70 = Full beam
+71-230 = Beam shaper
+231-255 = Frost filter
+Entry = Channel
+Number = 10
+Name = Zoom
+# Capability Entries
+0-255 = 28 to 7 degrees
+Entry = Channel
+Number = 11
+Name = Shutter, strobe
+# Capability Entries
+0-31 = Shutter closed
+32-63 = Shutter open
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open
+Entry = Channel
+Number = 12
+Name = Dimmer intensity
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 13
+Name = Lamp switch, reset, fan speed
+# Capability Entries
+0-15 = Normal colour change, shortest distance
+16-31 = Normal colour change, search clockwise
+32-47 = Colour change at every position, shortest distance
+48-63 = Colour change at every position, search clockwise
+64-79 = Lamp on
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-239 = Lamp off
+240-255 = No function
+Entry = Channel
+Number = 14
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 15
+Name = Tilt file
+# Capability Entries
+0-255 = Tilt fine

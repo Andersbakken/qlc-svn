@@ -1,0 +1,112 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = PHW-250
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 2
+Name = Pan/tilt speed
+# Capability Entries
+0-14 = Tracking mode
+15-225 = Vector mode speed fast to slow
+226-235 = BO with pan/tilt
+236-245 = BO with color/gobo change
+246-255 = No function
+Entry = Channel
+Number = 3
+Name = Colour
+# Capability Entries
+0-25 = White
+26-51 = Deep red
+52-77 = Blue
+78-103 = Green
+104-127 = Orange
+128-189 = Forwards rainbow speed
+190-191 = No rotation
+192-255 = Backwards rainbow speed
+Entry = Channel
+Number = 4
+Name = Cyan
+# Capability Entries
+0-255 = Cyan mix
+Entry = Channel
+Number = 5
+Name = Magenta
+# Capability Entries
+0-255 = Magenta mix
+Entry = Channel
+Number = 6
+Name = Yellow
+# Capability Entries
+0-255 = Yellow mix
+Entry = Channel
+Number = 7
+Name = Effect
+# Capability Entries
+0-70 = Full beam
+71-230 = Beam shaper
+231-255 = Frost filter
+Entry = Channel
+Number = 8
+Name = Zoom
+# Capability Entries
+0-255 = 28 to 7 degrees
+Entry = Channel
+Number = 9
+Name = Shutter, strobe
+# Capability Entries
+0-31 = Shutter closed
+32-63 = Dimmer activation
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open, dimmer deactivation
+Entry = Channel
+Number = 10
+Name = Dimmer intensity
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 11
+Name = Lamp switch, reset, programs
+# Capability Entries
+0-15 = Normal color change
+16-31 = Normal colour change, search clockwise
+32-47 = Colour change at every position, shortest distance
+48-63 = Colour change at every position, search clockwise
+64-79 = Lamp on
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-239 = Lamp off
+240-255 = No function
+Entry = Channel
+Number = 12
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 13
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine
