@@ -108,7 +108,7 @@ void SceneEditor::setScene(Scene* scene)
    for (unit = ul.first(); unit != NULL; unit = ul.next(), n++)
      {
        SceneValue value = scene->channelValue(n);
-       if (value.type == Set)
+       if (value.type == Set || value.type == Fade)
 	 {
 	   unit->slotAnimateValueChange(value.value);
 	   unit->setStatusButton(DMXChannel::On);

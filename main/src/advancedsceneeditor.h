@@ -43,9 +43,8 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
 
   void slotAddSceneClicked();
   void slotRemoveSceneClicked();
-  void slotEditSceneClicked();
+  void slotEditSceneNameClicked();
   void slotSceneSelected(QListViewItem* item);
-  void slotUpdateSceneList();
 
   void slotEditValueClicked();
   void slotContentsClicked(QListViewItem* item);
@@ -56,13 +55,20 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotCancelClicked();
 
  private:
+  void updateSceneList();
   void updateChannelList();
+  void setDirty(bool dirty);
+  bool dirtyCheck();
 
  private:
+  bool m_dirty; // Indicates whether we need to save changes (dirty) or not
+  bool m_candidate; // New scene added
+
   DMXDevice* m_device;
 
   QListViewItem* m_deviceRoot;
   QListViewItem* m_deviceClassRoot;
+  QListViewItem* m_currentSceneItem;
 
   Scene* m_scene;
   LogicalChannel* m_currentChannel;

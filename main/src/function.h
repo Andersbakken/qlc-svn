@@ -49,6 +49,8 @@ class Function : public QObject
   DMXDevice* device() const;
   void setDevice(DMXDevice* device);
 
+  unsigned long id() { return m_id; }
+
   Type type() const;
   QString typeString() const;
 
@@ -78,6 +80,9 @@ class Function : public QObject
   DMXDevice* m_device;
 
   bool m_running;
+
+  unsigned long m_id;
+  static unsigned long _nextFunctionId;
 };
 
 #endif

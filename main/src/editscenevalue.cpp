@@ -51,14 +51,17 @@ EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
   if (currentValue.type == Fade)
     {
       m_typeCombo->setCurrentItem(0);
+      m_type = QString("Fade");
     }
   else if (currentValue.type == Set)
     {
       m_typeCombo->setCurrentItem(1);
+      m_type = QString("Set");
     }
   else
     {
       m_typeCombo->setCurrentItem(2);
+      m_type = QString("NoSet");
     }
 
   connect(m_valueSpin, SIGNAL(valueChanged(int)), this, SLOT(slotValueChanged(int)));

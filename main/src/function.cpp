@@ -23,8 +23,13 @@
 #include "dmxdevice.h"
 #include "deviceclass.h"
 
+unsigned long Function::_nextFunctionId = 0;
+
 Function::Function() : QObject()
 {
+  m_id = _nextFunctionId;
+  _nextFunctionId++;
+
   m_name = QString::null;
   m_type = Function::Undefined;
   m_deviceClass = NULL;

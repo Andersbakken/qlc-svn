@@ -52,11 +52,12 @@ Scene::Scene(Scene* sc)
   m_name = QString(sc->name());
   m_deviceClass = sc->m_deviceClass;
   m_device = sc->m_device;
+  m_id = sc->id();
 
   for (int i = 0; i < 512; i++)
     {
-      sc->m_values[i].value = m_values[i].value;
-      sc->m_values[i].type = m_values[i].type;
+      m_values[i].value = sc->m_values[i].value;
+      m_values[i].type = sc->m_values[i].type;
     }
 }
 
@@ -184,7 +185,7 @@ void Scene::createContents(QList<QString> &list)
 	  ch = (unsigned char) s->toInt();
 	  t = *(list.next());
 	  m_values[ch].value = t.toInt();
-	  m_values[ch].type = NoSet;
+	  m_values[ch].type = Set;
 	}
       else if (*s == QString("ValueType"))
 	{
