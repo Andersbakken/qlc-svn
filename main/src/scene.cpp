@@ -215,6 +215,11 @@ bool Scene::set(unsigned short ch, unsigned char value)
   return true;
 }
 
+unsigned char Scene::getChannelValue(unsigned short ch)
+{
+  return m_values[ch].value;
+}
+
 void Scene::recalculateSpeed(Feeder* f)
 {
   unsigned short gap = 0;
@@ -267,14 +272,17 @@ Event* Scene::getEvent(Feeder* feeder)
 {
   unsigned short readyCount = 0;
   unsigned short channels = 0;
-  
+  unsigned char currentValue = 0;
+
   channels = feeder->device()->deviceClass()->channels().count();
 
   Event* event = new Event(channels);
 
   for (unsigned short i = 0; i < channels; i++)
     {
-      if (feeder->device()->getChannelValue(i) == m_values[i].value)
+      currentValue = feeder->device()->getChannelValue(i);
+
+      if (currentValue == m_values[i].value)
 	{
 	  event->m_values[i].type = Ready;
 	  readyCount++;
@@ -285,29 +293,29 @@ Event* Scene::getEvent(Feeder* feeder)
 	  event->m_values[i].type = Normal;
 	}
 
-      if (feeder->startLevel(i) > m_values[i].value)
+      if (currentValue > m_values[i].value)
 	{
 	  // Current level is above target, the new value is set toward 0
-	  unsigned short nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	  unsigned short nextGap = abs(m_values[i].value - currentValue);
 	  unsigned short nextStep = feeder->step();
 	  if (nextStep > nextGap)
 	    {
 	      nextStep = nextGap;
 	    }
 
-	  event->m_values[i].value = feeder->device()->getChannelValue(i) - nextStep;
+	  event->m_values[i].value = currentValue - nextStep;
 	}
-      else if (feeder->startLevel(i) < m_values[i].value)
+      else if (currentValue < m_values[i].value)
 	{
 	  // Current level is below target, the new value is set toward 255
-	  unsigned short nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	  unsigned short nextGap = abs(m_values[i].value - currentValue);
 	  unsigned short nextStep = feeder->step();
 	  if (nextStep > nextGap)
 	    {
 	      nextStep = nextGap;
 	    }
 
-	  event->m_values[i].value = feeder->device()->getChannelValue(i) + nextStep;
+	  event->m_values[i].value = currentValue + nextStep;
 	}
     }
 
@@ -323,10 +331,4 @@ Event* Scene::getEvent(Feeder* feeder)
     }
 
   return event;
-}
-
-
-unsigned char Scene::getChannelValue(unsigned short ch)
-{
-  return m_values[ch].value;
 }

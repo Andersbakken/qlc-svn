@@ -85,12 +85,17 @@ void FunctionCollection::saveToFile(QFile &file)
   // Device class, device name or "Global"
   if (deviceClass() != NULL)
     {
+      ASSERT(false);
     }
   else if (device() != NULL)
     {
+      ASSERT(false);
     }
   else
     {
+      s = QString("Device = Global") + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
       // For global collections, write device+scene pairs
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
@@ -123,13 +128,13 @@ void FunctionCollection::createContents(QList<QString> &list)
 	  s = list.prev();
 	  break;
 	}
-      else if (*s == QString("Device"))
-	{
-	  device = *(list.next());
-	}
       else if (*s == QString("Function"))
 	{
 	  function = *(list.next());
+	}
+      else if (*s == QString("Device"))
+	{
+	  device = *(list.next());
 	  
 	  if (device == QString("Global"))
 	    {
@@ -163,7 +168,7 @@ void FunctionCollection::createContents(QList<QString> &list)
 		      qDebug("Unable to find member <" + function + "> for Function Collection <" + name() + ">");
 		    }
 		}
-
+	      
 	      device = QString::null;
 	      function = QString::null;
 	    }
@@ -223,19 +228,23 @@ bool FunctionCollection::removeItem(QString deviceString, QString functionString
 
 void FunctionCollection::increaseRegisterCount()
 {
+  _mutex.lock();
   m_registerCount++;
+  _mutex.unlock();
 }
 
 void FunctionCollection::decreaseRegisterCount()
 {
+  _mutex.lock();
   m_registerCount--;
+  _mutex.unlock();
 }
 
 void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* controller, Device* caller, unsigned long feederID)
 {
   if (controller == this)
     {
-      m_registerCount--;
+      decreaseRegisterCount();
     }
 }
 
@@ -255,22 +264,26 @@ Event* FunctionCollection::getEvent(Feeder* feeder)
     {
       m_running = true;
 
+      // Disconnect the previous signal
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+
       connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
 	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-      
+
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
-	  m_registerCount++;
+	  increaseRegisterCount();
 	  _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
 	}
     }
-      
+
   if (m_registerCount == 0)
     {
       // Disconnect the previous signal
       disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
 		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-      
+
       // Ready event signals sequenceprovider that this
       // function is ready and can be unregistered
       event->m_type = Event::Ready;

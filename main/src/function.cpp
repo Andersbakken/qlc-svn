@@ -76,13 +76,13 @@ void Function::unRegisterFunction()
 {
   m_running = false;
 
-  qDebug(m_name + " unregistered");
+  qDebug(typeString() + "::unRegisterFunction [%s]", (const char*) m_name);
   emit unRegistered(this);
 }
 
 void Function::registerFunction(Feeder* feeder)
 {
-  qDebug(m_name + " registered");
+  qDebug(typeString() + "::registerFunction [%s]", (const char*) m_name);
 
   recalculateSpeed(feeder);
 }
