@@ -46,7 +46,7 @@ Scene::Scene(unsigned long id) : Function(id)
     }
 }
 
-Scene::Scene(Scene* sc)
+Scene::Scene(Scene* sc) : Function(sc->id())
 {
   copyFrom(sc);
 }
@@ -56,7 +56,6 @@ void Scene::copyFrom(Scene* sc)
   m_type = Function::Scene;
   m_name = QString(sc->name());
   m_device = sc->m_device;
-  m_id = sc->id();
 
   for (int i = 0; i < 512; i++)
     {
@@ -274,7 +273,8 @@ bool Scene::clear(unsigned short ch)
     }
   else
     {
-      return false;
+      m_values[ch].value = 0;
+      m_values[ch].type = NoSet;
     }
 
   return true;
@@ -292,9 +292,9 @@ void Scene::recalculateSpeed(Feeder* f)
 
   unsigned short channels = 0;
 
-  if (f->device() != NULL)
+  if (device() != NULL)
     {
-      channels = f->device()->deviceClass()->channels()->count();
+      channels = device()->deviceClass()->channels()->count();
     }
 
   // Calculate delta for the rest of the channels.
@@ -307,7 +307,7 @@ void Scene::recalculateSpeed(Feeder* f)
 	  continue;
 	}
 
-      gap = abs((signed short) f->device()->dmxChannel(i)->value() - (signed short) m_values[i].value);
+      gap = abs((signed short) device()->dmxChannel(i)->value() - (signed short) m_values[i].value);
 
       if (gap != 0)
 	{
@@ -348,7 +348,7 @@ Event* Scene::getEvent(Feeder* feeder)
   unsigned short channels = 0;
   unsigned char currentValue = 0;
 
-  channels = feeder->device()->deviceClass()->channels()->count();
+  channels = device()->deviceClass()->channels()->count();
 
   Event* event = new Event(channels);
 
@@ -361,7 +361,7 @@ Event* Scene::getEvent(Feeder* feeder)
 	  continue;
 	}
 
-      currentValue = feeder->device()->dmxChannel(i)->value();
+      currentValue = device()->dmxChannel(i)->value();
       
       if (currentValue == m_values[i].value)
 	{
@@ -409,7 +409,7 @@ Event* Scene::getEvent(Feeder* feeder)
 
   // Get delta from feeder and set it to next step's delta time
   event->m_delta = (unsigned long) floor(feeder->delta());
-  event->m_address = feeder->device()->address();
+  event->m_address = device()->address();
 
   // If all channels are marked "ready", then this scene is ready and
   // we can unregister this scene.

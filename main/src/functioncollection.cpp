@@ -77,11 +77,11 @@ bool FunctionCollection::unRegisterFunction(Feeder* feeder)
 
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      _app->sequenceProvider()->unRegisterEventFeeder(item->device(), item->function());
+      _app->sequenceProvider()->unRegisterEventFeeder(item->function());
     }
 
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
 
   Function::unRegisterFunction(feeder);
 
@@ -95,17 +95,17 @@ bool FunctionCollection::registerFunction(Feeder* feeder)
       m_running = true;
 
       // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
       
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
       
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
 	  increaseRegisterCount();
 	  item->setRegistered(true);
-	  _app->sequenceProvider()->registerEventFeeder(item->function(), feeder->speedBus(), item->device(), this);
+	  _app->sequenceProvider()->registerEventFeeder(item->function(), feeder->speedBus(), this);
 	}
 
       Function::registerFunction(feeder);
@@ -153,7 +153,7 @@ void FunctionCollection::saveToFile(QFile &file)
       s = QString("Device = 0\n");
     }
   file.writeBlock((const char*) s, s.length());
-  
+
   // For global collections, write device+scene pairs
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
@@ -187,7 +187,7 @@ void FunctionCollection::createContents(QList<QString> &list)
 	      Function* f = _app->doc()->searchFunction(fid);
 	      if (f != NULL)
 		{
-		  addItem(NULL, f);
+		  addItem(f);
 		}
 	      else
 		{
@@ -196,12 +196,12 @@ void FunctionCollection::createContents(QList<QString> &list)
 	    }
 	  else
 	    {
-	      DMXDevice* d = _app->doc()->searchDevice(did);
+	      DMXDevice* dummy;
 	      Function* f = NULL;
 	      
-	      f = _app->doc()->searchFunction(fid, &d);
+	      f = _app->doc()->searchFunction(fid, &dummy);
 	      
-	      addItem(d, f);
+	      addItem(f);
 	    }
 	}
       else
@@ -223,12 +223,11 @@ void FunctionCollection::slotMemberFunctionDestroyed(unsigned long fid)
     }
 }
 
-void FunctionCollection::addItem(DMXDevice* device, Function* function)
+void FunctionCollection::addItem(Function* function)
 {
   ASSERT(function != NULL);
 
   CollectionItem* item = new CollectionItem();
-  item->setDevice(device);
   item->setFunction(function);
   item->setRegistered(false);
 
@@ -238,13 +237,13 @@ void FunctionCollection::addItem(DMXDevice* device, Function* function)
 	  this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
 }
 
-bool FunctionCollection::removeItem(DMXDevice* device, Function* function)
+bool FunctionCollection::removeItem(Function* function)
 {
   bool retval = false;
 
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      if (item->device() == device && item->function() == function)
+      if (item->function()->id() == function->id())
 	{
 	  delete m_items.take();
 	  retval = true;
@@ -290,7 +289,7 @@ void FunctionCollection::decreaseRegisterCount()
   _mutex.unlock();
 }
 
-void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID)
+void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* controller, unsigned long feederID)
 {
   if (controller == this)
     {
@@ -316,8 +315,8 @@ Event* FunctionCollection::getEvent(Feeder* feeder)
       _mutex.unlock();
 
       // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
 
       // Ready event signals sequenceprovider that this
       // function is ready and can be unregistered

@@ -29,7 +29,6 @@ class CollectionItem
  public:
   CollectionItem()
     {
-      m_device = NULL;
       m_function = NULL;
       m_registered = false;
       m_functionId = 0;
@@ -37,7 +36,6 @@ class CollectionItem
 
   CollectionItem(CollectionItem* item)
     {
-      m_device = item->m_device;
       m_function = item->m_function;
       m_registered = item->m_registered;
       m_functionId = item->functionId();
@@ -46,9 +44,6 @@ class CollectionItem
   virtual ~CollectionItem()
     {
     }
-
-  void setDevice(DMXDevice* d) { m_device = d; }
-  DMXDevice* device() { return m_device; }
 
   void setFunction(Function* f)
     { 
@@ -69,7 +64,6 @@ class CollectionItem
   bool registered() { return m_registered; }
 
  private:
-  DMXDevice* m_device;
   Function* m_function;
   bool m_registered;
   unsigned long m_functionId;
@@ -89,8 +83,8 @@ class FunctionCollection : public Function
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed (Feeder *feeder);
 
-  void addItem(DMXDevice* device, Function* function);
-  bool removeItem(DMXDevice* device, Function* function);
+  void addItem(Function* function);
+  bool removeItem(Function* function);
   bool removeItem(const unsigned long functionId);
 
   void saveToFile(QFile &file);
@@ -109,7 +103,7 @@ class FunctionCollection : public Function
   int m_registerCount;
 
  private slots:
-  void slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID);
+  void slotFunctionUnRegistered(Function* feeder, Function* controller, unsigned long feederID);
   void slotMemberFunctionDestroyed(unsigned long fid);
 };
 

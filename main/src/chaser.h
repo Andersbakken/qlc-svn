@@ -120,7 +120,7 @@ class Chaser : public Function
   QPtrList <ChaserStep> m_steps;
 
  public slots:
-  void slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID);
+  void slotFunctionUnRegistered(Function* function, Function* controller, unsigned long feederID);
   void slotMemberFunctionDestroyed(unsigned long fid);
 
  protected:

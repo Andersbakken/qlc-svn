@@ -282,10 +282,10 @@ bool Chaser::unRegisterFunction(Feeder* feeder)
 
   ASSERT(step != NULL);
 
-  _app->sequenceProvider()->unRegisterEventFeeder(step->function()->device(), step->function());
+  _app->sequenceProvider()->unRegisterEventFeeder(step->function());
 
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
 
   m_running = false;
   m_OKforNextStep = false;
@@ -311,19 +311,19 @@ Event* Chaser::getEvent(Feeder* feeder)
       
       ASSERT(step != NULL);
       
-      _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), step->function()->device(), this);
+      _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), this);
 
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
       
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
     }
 
   return event;
 }
 
-void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID)
+void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, unsigned long feederID)
 {
   if (controller == this)
     {

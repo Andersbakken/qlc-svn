@@ -129,7 +129,7 @@ void FunctionCollectionEditor::slotAddClicked()
 	  id.setNum(function->id());
 	  new QListViewItem(m_functionList, QString("Global"), function->name(), id);
 
-	  m_functionCollection->addItem(device, function);
+	  m_functionCollection->addItem(function);
 	}
       else
 	{
@@ -162,7 +162,7 @@ void FunctionCollectionEditor::updateFunctionList()
     {
       QString id;
       id.setNum(item->function()->id());
-      new QListViewItem(m_functionList, item->device()->name(), item->function()->name(), id);
+      new QListViewItem(m_functionList, item->function()->device()->name(), item->function()->name(), id);
     }
 }
 
