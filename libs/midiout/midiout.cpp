@@ -125,6 +125,7 @@ bool MidiOut::close()
       else
 	{
 	  qDebug("MidiOut plugin closed");
+	  m_fd = -1;
 	}
     }
 
