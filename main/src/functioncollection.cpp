@@ -57,7 +57,8 @@ FunctionCollection::FunctionCollection(FunctionCollection* fc)
       CollectionItem* newItem = new CollectionItem(item);
       m_items.append(newItem);
 
-      connect(newItem->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
+      connect(newItem->function(), SIGNAL(destroyed(unsigned long)),
+	      this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
     }
 }
 
@@ -211,11 +212,11 @@ void FunctionCollection::createContents(QList<QString> &list)
     }
 }
 
-void FunctionCollection::slotMemberFunctionDestroyed(Function* f)
+void FunctionCollection::slotMemberFunctionDestroyed(unsigned long fid)
 {
   for (unsigned i = 0; i < m_items.count(); i++)
     {
-      if (m_items.at(i)->function() == f)
+      if (m_items.at(i)->functionId() == fid)
 	{
 	  delete m_items.take(i);
 	}
@@ -233,7 +234,8 @@ void FunctionCollection::addItem(DMXDevice* device, Function* function)
 
   m_items.append(item);
 
-  connect(item->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
+  connect(item->function(), SIGNAL(destroyed(unsigned long)),
+	  this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
 }
 
 bool FunctionCollection::removeItem(DMXDevice* device, Function* function)

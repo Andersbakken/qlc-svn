@@ -32,6 +32,7 @@ class CollectionItem
       m_device = NULL;
       m_function = NULL;
       m_registered = false;
+      m_functionId = 0;
     }
 
   CollectionItem(CollectionItem* item)
@@ -39,6 +40,7 @@ class CollectionItem
       m_device = item->m_device;
       m_function = item->m_function;
       m_registered = item->m_registered;
+      m_functionId = item->functionId();
     }
 
   virtual ~CollectionItem()
@@ -48,8 +50,20 @@ class CollectionItem
   void setDevice(DMXDevice* d) { m_device = d; }
   DMXDevice* device() { return m_device; }
 
-  void setFunction(Function* f) { m_function = f; }
+  void setFunction(Function* f)
+    { 
+      m_function = f;
+      if (f)
+	{
+	  m_functionId = f->id();
+	}
+      else
+	{
+	  m_functionId = 0;
+	}
+    }
   Function* function() { return m_function; }
+  unsigned long functionId() { return m_functionId; }
 
   void setRegistered(bool reg) { m_registered = reg; }
   bool registered() { return m_registered; }
@@ -58,7 +72,7 @@ class CollectionItem
   DMXDevice* m_device;
   Function* m_function;
   bool m_registered;
-
+  unsigned long m_functionId;
 };
 
 class FunctionCollection : public Function
@@ -96,7 +110,7 @@ class FunctionCollection : public Function
 
  private slots:
   void slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID);
-  void slotMemberFunctionDestroyed(Function* f);
+  void slotMemberFunctionDestroyed(unsigned long fid);
 };
 
 #endif

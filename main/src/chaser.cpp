@@ -68,7 +68,8 @@ void Chaser::copyFrom(Chaser* ch, bool append)
       ChaserStep* newStep = new ChaserStep(step);
       m_steps.append(newStep);
 
-      connect(newStep->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
+      connect(newStep->function(), SIGNAL(destroyed(unsigned long)),
+	      this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
     }
 }
 
@@ -118,7 +119,7 @@ void Chaser::saveToFile(QFile &file)
   // Steps
   s = QString("# Step entries") + QString("\n");
   file.writeBlock((const char*) s, s.length());
-  
+
   for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
     {
       ASSERT(step->function() != NULL);
@@ -172,7 +173,8 @@ void Chaser::addStep(Function* function)
       ChaserStep* step = new ChaserStep(function);
       m_steps.append(step);
 
-      connect(step->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
+      connect(step->function(), SIGNAL(destroyed(unsigned long)),
+	      this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
     }
   else
     {
@@ -232,11 +234,11 @@ void Chaser::lowerStep(unsigned int index)
     }
 }
 
-void Chaser::slotMemberFunctionDestroyed(Function* f)
+void Chaser::slotMemberFunctionDestroyed(unsigned long fid)
 {
   for (unsigned i = 0; i < m_steps.count(); i++)
     {
-      if (m_steps.at(i)->function() == f)
+      if (m_steps.at(i)->functionId() == fid)
 	{
 	  delete m_steps.take(i);
 	}

@@ -74,6 +74,7 @@ class Function : public QObject
 
  signals:
   void unRegistered(Function*);
+  void destroyed(unsigned long id);
 
  protected:
   QString m_name;

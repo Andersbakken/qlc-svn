@@ -37,22 +37,53 @@ class ChaserStep
   ChaserStep(Function* function = NULL)
     {
       m_function = function;
+      if (function)
+	{
+	  m_functionId = function->id();
+	}
+      else
+	{
+	  m_functionId = 0;
+	}
     }
 
   ChaserStep(ChaserStep* step)
     {
+      ASSERT(step && step->function());
       m_function = step->function();
+      m_functionId = step->functionId();
     }
 
   virtual ~ChaserStep()
     {
     }
 
-  void setFunction(Function* f) { m_function = f; }
-  Function* function() { return m_function; }
+  void setFunction(Function* f)
+    {
+      m_function = f;
+      if (f)
+	{
+	  m_functionId = f->id();
+	}
+      else
+	{
+	  m_functionId = 0;
+	}
+    }
+
+  Function* function()
+    { 
+      return m_function;
+    }
+
+  unsigned long functionId()
+    { 
+      return m_functionId;
+    }
 
  private:
   Function* m_function;
+  unsigned long m_functionId; // Used when deleting items because function might already be invalid
 };
 
 class Chaser : public Function
@@ -90,7 +121,7 @@ class Chaser : public Function
 
  public slots:
   void slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID);
-  void slotMemberFunctionDestroyed(Function*);
+  void slotMemberFunctionDestroyed(unsigned long fid);
 
  protected:
   bool m_running; // One chaser object can be running only once at a time

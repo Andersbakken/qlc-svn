@@ -70,7 +70,7 @@ class Scene : public Function
   void createContents(QList<QString> &list);
 
   void directSet(unsigned char intensity);
-  
+
  private:
   SceneValue m_values[512];
   QPtrList <ValueSetter> m_setterList;
