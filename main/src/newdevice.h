@@ -22,18 +22,11 @@
 #ifndef NEWDEVICE_H
 #define NEWDEVICE_H
 
-#include <qdialog.h>
+#include "uic_newdevice.h"
 
-class QListView;
-class QListViewItem;
-class QCheckBox;
-class QLineEdit;
-class QLabel;
-class QPushButton;
-class QSpinBox;
 class QString;
 
-class NewDevice : public QDialog
+class NewDevice : public UI_NewDevice
 {
   Q_OBJECT
 
@@ -52,25 +45,6 @@ class NewDevice : public QDialog
   void show();
 
   void fillTree();
-
-  QListView* m_tree;
-
-  QCheckBox* m_treeOpenCheckBox;
-
-  QLineEdit* m_nameEdit;
-  QLabel* m_nameLabel;
-
-  QLabel* m_typeLabel;
-
-  QSpinBox* m_channelSpin;
-  QLabel* m_channelLabel;
-
-  QSpinBox* m_addressSpin;
-  QLabel* m_addressLabel;
-
-  QPushButton* m_dipButton;
-  QPushButton* m_ok;
-  QPushButton* m_cancel;
 
  private:
   QString m_nameValue;
