@@ -304,7 +304,7 @@ void Sequence::saveToFile(QFile &file)
 	    {
 	      if (value[ch].type == Scene::NoSet)
 		{
-		  t = QString("XXX");
+		  t = QString("---");
 		}
 	      else
 		{
@@ -364,7 +364,8 @@ void Sequence::createContents(QPtrList <QString> &list)
 		}
 
 	      t = s->mid(i, j-i);
-	      if (t == QString("XXX"))
+	      if (t == QString("---") ||
+		  t == QString("XXX"))
 		{
 		  values[ch].value = 0;
 		  values[ch].type = Scene::NoSet;

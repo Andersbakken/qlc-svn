@@ -171,7 +171,7 @@ void SequenceEditor::setSequence(Sequence* sequence)
 	  s.sprintf("%.3d", m_sequence->m_steps.at(i)[ch].value);
 	  if (m_sequence->m_steps.at(i)[ch].type == Scene::NoSet)
 	    {
-	      item->setText(ch, "XXX");
+	      item->setText(ch, "---");
 	    }
 	  else
 	    {
@@ -212,7 +212,7 @@ void SequenceEditor::slotChannelChanged(t_channel channel, t_value value,
       s.sprintf("%.3d", value);
       if (status == Scene::NoSet)
 	{
-	  m_list->currentItem()->setText(channel, "XXX");
+	  m_list->currentItem()->setText(channel, "---");
 	}
       else
 	{
@@ -241,7 +241,7 @@ void SequenceEditor::slotInsert()
       s.sprintf("%.3d", m_tempValues[ch].value);
       if (m_tempValues[ch].type == Scene::NoSet)
 	{
-	  item->setText(ch, "XXX");
+	  item->setText(ch, "---");
 	}
       else
 	{
@@ -339,7 +339,7 @@ void SequenceEditor::slotOKClicked()
 	{
 	  value[i].value = item->text(i).toInt();
 
-	  if (item->text(i) != QString("XXX"))
+	  if (item->text(i) != QString("---"))
 	    {
 	      value[i].type = Scene::Set;
 	    }
@@ -402,7 +402,7 @@ void SequenceEditor::slotSelectionChanged(QListViewItem* item)
 
   for (t_channel i = 0; i < m_channels; i++)
     {
-      if (item->text(i) == QString("XXX"))
+      if (item->text(i) == QString("---"))
 	{
 	  m_tempValues[i].value = 0;
 	  m_tempValues[i].type = Scene::NoSet;
@@ -425,9 +425,9 @@ void SequenceEditor::slotItemRenamed(QListViewItem* item, int col,
       return;
     }
 
-  if (text.contains("x", false))
+  if (text.contains("-", false))
     {
-      item->setText(col, QString("XXX"));
+      item->setText(col, QString("---"));
     }
   else if (text.toInt() > 255)
     {
