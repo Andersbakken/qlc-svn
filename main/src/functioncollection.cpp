@@ -31,6 +31,7 @@
 
 #include <qstring.h>
 #include <qthread.h>
+#include <stdlib.h>
 
 extern App* _app;
 static QMutex _mutex;

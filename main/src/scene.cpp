@@ -27,6 +27,7 @@
 #include "feeder.h"
 
 #include <math.h>
+#include <stdlib.h>
 
 extern App* _app;
 
