@@ -82,6 +82,7 @@ class DeviceManagerView : public QWidget
   QTextView* m_textView;
 
   QToolButton* m_addButton;
+  QToolButton* m_cloneButton;
   QToolButton* m_removeButton;
   QToolButton* m_propertiesButton;
   QToolButton* m_consoleButton;

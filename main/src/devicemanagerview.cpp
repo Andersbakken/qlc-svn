@@ -44,6 +44,7 @@
 #include <qmessagebox.h>
 #include <qheader.h>
 #include <qpopupmenu.h>
+#include <qtooltip.h>
 #include <assert.h>
 
 extern App* _app;
@@ -220,24 +221,31 @@ void DeviceManagerView::initToolBar()
 
   m_addButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), 
-		    "Add New Device", 0, this,
+		    "Add", 0, this,
 		    SLOT(slotAdd()), m_toolbar);
   m_addButton->setUsesTextLabel(true);
-  m_addButton->setTextLabel("Add");
-
+  QToolTip::add( m_addButton,  "Add New Device");  
+  
+  m_cloneButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/editcopy.xpm")), 
+		    "Clone", 0, this,
+		    SLOT(slotClone()), m_toolbar);
+  m_cloneButton->setUsesTextLabel(true);
+  QToolTip::add( m_cloneButton, "Clone a device and its functions" );
+  
   m_removeButton =
     new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")),
-		    "Remove Current Selection", 0, this,
+		    "Remove", 0, this,
 		    SLOT(slotRemove()), m_toolbar);
   m_removeButton->setUsesTextLabel(true);
-  m_removeButton->setTextLabel("Remove");
-
+  QToolTip::add( m_removeButton, "Remove Current Selection");
+  
   m_propertiesButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), 
 		    "Properties", 0, this,
 		    SLOT(slotProperties()), m_toolbar);
   m_propertiesButton->setUsesTextLabel(true);
-  m_propertiesButton->setTextLabel("Properties");
+  QToolTip::add( m_propertiesButton,   "Device properties"); 
 
   m_toolbar->addSeparator();
 
@@ -246,14 +254,14 @@ void DeviceManagerView::initToolBar()
 		    "Monitor Device", 0, this,
 		    SLOT(slotMonitor()), m_toolbar);
   m_monitorButton->setUsesTextLabel(true);
-  m_monitorButton->setTextLabel("Monitor");
+  QToolTip::add(m_monitorButton, "Monitor Device");
 
   m_consoleButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), 
 		    "View Console", 0, this,
 		    SLOT(slotConsole()), m_toolbar);
   m_consoleButton->setUsesTextLabel(true);
-  m_consoleButton->setTextLabel("Console");
+  QToolTip::add( m_consoleButton, "View Console");
 }
 
 
@@ -542,7 +550,8 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
       m_propertiesButton->setEnabled(false);
       m_monitorButton->setEnabled(false);
       m_consoleButton->setEnabled(false);
-
+      m_cloneButton->setEnabled(false);
+      
       QString text;
 
       text = QString("<HTML><BODY>");
@@ -568,12 +577,14 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
 	  m_addButton->setEnabled(true);
 	  m_removeButton->setEnabled(true);
 	  m_propertiesButton->setEnabled(true);
+	  m_cloneButton->setEnabled(true);
 	}
       else
 	{
 	  m_addButton->setEnabled(false);
 	  m_removeButton->setEnabled(false);
 	  m_propertiesButton->setEnabled(false);
+	  m_cloneButton->setEnabled(false);
 	}
     }
 }
@@ -594,7 +605,8 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
 
   menu->insertItem(QPixmap(dir + "/addoutputdevice.xpm"),
 		   "Add...", KMenuItemAdd);
-  menu->insertItem("Clone...", KMenuItemClone);
+  menu->insertItem(QPixmap(dir + "/editcopy.xpm"),
+                   "Clone...", KMenuItemClone);
   menu->insertItem(QPixmap(dir + "/remove.xpm"),
 		   "Remove", KMenuItemRemove);
   menu->insertItem(QPixmap(dir + "/settings.xpm"),
