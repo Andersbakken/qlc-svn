@@ -70,6 +70,9 @@ clean: emacsclean
 emacsclean:
 	rm -f *~ #*
 
+distclean: clean
+	rm -rf CVS
+
 dep:
 	rm -f Makefile.dep
 	touch Makefile.dep
