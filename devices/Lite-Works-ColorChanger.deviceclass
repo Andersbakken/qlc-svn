@@ -1,0 +1,23 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Lite-Works
+Model = ColorChanger
+Type = Dimmer
+#
+Entry = Channel
+Number = 0
+Name = Dimming
+# Capability Entries
+0-255 = Channel Level
+Entry = Channel
+Number = 1
+Name = Color
+# Capability Entries
+0-20 = Red
+21-40 = Yellow
+Entry = Channel
+Number = 2
+Name = Fade time
+# Capability Entries
+0-255 = Channel Level

@@ -1,0 +1,12 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = ShowTec
+Model = UP-1
+Type = Dimmer
+#
+Entry = Channel
+Number = 0
+Name = Dimmer
+# Capability Entries
+0-255 = Channel Level

@@ -1,0 +1,82 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = GLP
+Model = PocketScan
+Type = Dimmer
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Left to right
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Up to down
+Entry = Channel
+Number = 2
+Name = Colors
+# Capability Entries
+96-99 = Yellow 601
+8-11 = Green
+16-19 = Orange
+24-27 = Blue 101
+32-35 = Yellow 603
+40-43 = Pink 310
+48-51 = Turques 208
+56-59 = Red 304
+64-67 = Cyan 104
+72-75 = Magenta 507
+80-83 = Magenta 501
+88-91 = UV Blue 108
+104-107 = Green 204
+112-115 = Orange 306
+120-123 = White
+128-191 = Rotation, clockwise, slow to fast
+192-253 = Rotation, counterclockwise, slow to fast
+255-255 = Rotation controlled by music
+0-7 = Open
+Entry = Channel
+Number = 3
+Name = Gobos
+# Capability Entries
+0-7 = Open
+8-15 = Ring
+16-23 = Narrow spot
+24-31 = Triangle
+32-39 = Holes, rectangle
+40-47 = Star
+48-55 = AL
+56-63 = Corel wheel
+64-71 = Four squares
+72-79 = Wheel of squares
+80-87 = Puzzle
+88-95 = Spiral
+96-103 = Three wheel
+104-127 = Shark tooth
+128-191 = Rotation, slow - fast, CW
+192-253 = Rotation, slow - fast, CCW
+255-255 = Gobo change by music
+Entry = Channel
+Number = 4
+Name = Shutter
+# Capability Entries
+0-15 = Closed
+16-239 = Shutter speed, slow to fast
+240-255 = Shutter open
+Entry = Channel
+Number = 5
+Name = Speed
+# Capability Entries
+0-15 = Pan/Tilt, relative
+16-250 = Pan/Tilt, slow -fast
+255-255 = Pan/Tilt controlled by music
+Entry = Channel
+Number = 6
+Name = Laser
+# Capability Entries
+128-191 = Laser ON
+16-27 = Laser flashing, speed
+0-15 = Laser OFF
