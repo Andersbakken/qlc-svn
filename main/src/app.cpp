@@ -41,7 +41,6 @@
 #include "virtualconsole.h"
 #include "aboutbox.h"
 #include "dmxaddresstool.h"
-#include "sequenceeditor.h"
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
 #include "globalfunctionsview.h"
@@ -240,19 +239,8 @@ void App::initMenuBar()
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
   m_viewMenu->insertSeparator();
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
-  //
-  // Sequence Editor is disabled for now because it doesn't work at all
-  //
-  // m_viewMenu->insertItem("Sequence Editor", this, SLOT(slotViewSequenceEditor()), 0, ID_VIEW_SEQUENCE_EDITOR);
-  //
   m_viewMenu->insertSeparator();
-  //  m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
-  //  m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
-  //  m_viewMenu->insertSeparator();
   m_viewMenu->insertItem("DMX Address Converter", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
-
-  //  m_viewMenu->setItemChecked(ID_VIEW_TOOLBAR, true);
-  //  m_viewMenu->setItemChecked(ID_VIEW_STATUSBAR, true);
 
   ///////////////////////////////////////////////////////////////////
   // Functions Menu
@@ -334,18 +322,6 @@ void App::slotViewDeviceClassEditor()
   dce->exec();
 
   delete dce;
-}
-
-void App::slotViewSequenceEditor()
-{
-  SequenceEditor* se;
-  se = new SequenceEditor(workspace());
-  se->show();
-  se->setFocus();
-}
-
-void App::slotSequenceEditorClosed()
-{
 }
 
 void App::slotViewDMXAddressTool()
@@ -469,7 +445,7 @@ void App::slotFileOpen()
   if (doc()->loadWorkspaceAs(fn) == false)
     {
       statusBar()->message("Load failed", 2000);
-      MSG_CRIT("Errors occurred while reading file. Data may be lost.");
+      QMessageBox::critical(this, IDS_APP_NAME_SHORT, "Errors occurred while reading file. Data may be lost.");
     }
   else
     {
@@ -491,7 +467,7 @@ void App::slotFileSave()
       if (m_doc->saveWorkspace() == false)
         {
           statusBar()->message("Save failed", 2000);
-          MSG_WARN("An error occurred while attempting to save configuration.\nData may be lost.");
+          QMessageBox::warning(this, IDS_APP_NAME_SHORT, "An error occurred while attempting to save configuration.\nData may be lost.");
 	}
       else
         {

@@ -24,8 +24,6 @@
 
 #include <qobject.h>
 
-#include "classes.h"
-
 class KeyBind : public QObject
 {
   Q_OBJECT

@@ -28,6 +28,12 @@
 #include "function.h"
 #include "functiontree.h"
 
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qlistview.h>
+#include <qpushbutton.h>
+#include <qmessagebox.h>
+
 extern App* _app;
 
 FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* functionCollection, QWidget* parent, const char* name)
@@ -128,7 +134,7 @@ void FunctionCollectionEditor::slotAddClicked()
 	}
       else
 	{
-	  MSG_WARN("The selected device/function is already present in the current collection.\nOperation aborted.");
+	  QMessageBox::warning(this, "QLC", "The selected device/function is already present in the current collection.\nOperation aborted.");
 	}
     }
 }

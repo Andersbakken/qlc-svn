@@ -23,7 +23,6 @@
 #define SCENE_H
 
 #include "function.h"
-#include "classes.h"
 #include <qlist.h>
 
 enum SceneValueType

@@ -26,8 +26,8 @@
 #include <qpopupmenu.h>
 
 #define JS_MAX_NUM         32
-
 #define ID_CONFIGURE       10
+#define CONF_FILE          "joystickplugin.conf"
 
 //
 // Exported functions
@@ -50,6 +50,7 @@ JoystickPlugin::JoystickPlugin(int id) : Plugin(id)
   m_name = QString("Joystick Input");
   m_type = Plugin::InputType;
   m_version = 0x00000100;
+  m_configDirectory = QString("~/.qlc/");
 }
 
 JoystickPlugin::~JoystickPlugin()
@@ -124,6 +125,19 @@ QString JoystickPlugin::infoText()
   str += QString("</BODY></HTML>");
 
   return str;
+}
+
+void JoystickPlugin::setConfigDirectory(QString dir)
+{
+  m_configDirectory = dir;
+}
+
+void JoystickPlugin::saveSettings()
+{
+}
+
+void JoystickPlugin::loadSettings()
+{
 }
 
 void JoystickPlugin::contextMenu(QPoint pos)

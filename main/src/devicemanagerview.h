@@ -22,19 +22,18 @@
 #ifndef DEVICEMANAGERVIEW_H
 #define DEVICEMANAGERVIEW_H
 
-#include "classes.h"
 #include "app.h"
 #include "devicemanager.h"
 
-#include <qwidget.h>
-#include <qtoolbar.h>
-#include <qtoolbutton.h>
-#include <qlayout.h>
-#include <qpixmap.h>
-#include <qevent.h>
-#include <qsize.h>
-#include <qlabel.h>
-#include <qdockarea.h>
+class QWidget;
+class QToolBar;
+class QToolButton;
+class QLayout;
+class QPixmap;
+class QEvent;
+class QSize;
+class QLabel;
+class QDockArea;
 
 class DeviceManagerView : public QWidget
 {

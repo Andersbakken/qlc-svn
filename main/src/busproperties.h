@@ -22,13 +22,8 @@
 #ifndef BUSPROPERTIES_H
 #define BUSPROPERTIES_H
 
-#include "classes.h"
 #include "uic_busproperties.h"
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
-#include "doc.h"
+#include "bus.h"
 
 class BusProperties : public UI_BusProperties
 {

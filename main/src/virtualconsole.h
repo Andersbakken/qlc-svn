@@ -24,13 +24,16 @@
 
 #include <qwidget.h>
 #include <qlist.h>
-#include "classes.h"
 
 class QMenuBar;
 class QPopupMenu;
 class QToolBar;
 class QVBoxLayout;
 class QFile;
+
+class DMXWidgetBase;
+class DMXWidget;
+class Bus;
 
 #define ID_VC_MODE                   100
 #define ID_VC_MODE_OPERATE           110

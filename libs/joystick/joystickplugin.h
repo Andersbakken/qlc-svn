@@ -50,6 +50,10 @@ class JoystickPlugin : public Plugin
   virtual QString infoText();
   virtual void contextMenu(QPoint pos);
 
+  virtual void setConfigDirectory(QString dir);
+  virtual void saveSettings();
+  virtual void loadSettings();
+
   virtual QList<Joystick> *joystickList() { return &m_joystickList; }
 
   virtual Joystick* selectJoystick();
@@ -61,6 +65,8 @@ class JoystickPlugin : public Plugin
 
  private:
   QList <Joystick> m_joystickList;
+
+  QString m_configDirectory;
 };
 
 #endif

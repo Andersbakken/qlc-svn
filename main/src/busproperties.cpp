@@ -21,6 +21,10 @@
 
 #include "busproperties.h"
 
+#include <qlineedit.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
+
 BusProperties::BusProperties(QWidget* parent, const char* name)
   : UI_BusProperties(parent, name, true)
 {

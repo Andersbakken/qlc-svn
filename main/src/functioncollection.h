@@ -22,7 +22,6 @@
 #ifndef FUNCTIONCOLLECTION_H
 #define FUNCTIONCOLLECTION_H
 
-#include "classes.h"
 #include "function.h"
 
 class CollectionItem

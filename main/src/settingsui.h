@@ -22,7 +22,6 @@
 #ifndef SETTINGSUI_H
 #define SETTINGSUI_H
 
-#include "classes.h"
 #include "uic_settings.h"
 
 class QFont;

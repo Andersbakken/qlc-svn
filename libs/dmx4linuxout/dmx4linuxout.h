@@ -24,9 +24,11 @@
 
 #include "../common/outputplugin.h"
 
+#include <qlist.h>
+#include <qstring.h>
+
 class ConfigureDMX4LinuxOut;
 class QPoint;
-class QString;
 
 extern "C" OutputPlugin* create(int id);
 extern "C" void destroy(OutputPlugin* object);
@@ -35,12 +37,13 @@ class DMX4LinuxOut : public OutputPlugin
 {
   Q_OBJECT
 
-    friend ConfigureDMX4LinuxOut;
+  friend class ConfigureDMX4LinuxOut;
 
  public:
   DMX4LinuxOut(int id);
   ~DMX4LinuxOut();
 
+  // Plugin methods
   virtual bool open();
   virtual bool close();
   virtual bool isOpen();
@@ -48,18 +51,27 @@ class DMX4LinuxOut : public OutputPlugin
   virtual QString infoText();
   virtual void contextMenu(QPoint pos);
 
-  virtual QString deviceName() { return m_deviceName; }
+  virtual void setConfigDirectory(QString dir);
+  virtual void saveSettings();
+  virtual void loadSettings();
 
+  // OutputPlugin methods
   virtual bool writeChannel(unsigned short channel, unsigned char value);
+
+  // Own methods
+  virtual QString deviceName() { return m_deviceName; }
+  virtual void setDeviceName(QString name) { m_deviceName = name; }
 
  private slots:
   void slotContextMenuCallback(int item);
 
  private:
   void activate();
+  void createContents(QList <QString> &list);
 
  private:
   QString m_deviceName;
+  QString m_configDir;
   int m_device;
 };
 

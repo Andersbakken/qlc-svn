@@ -22,12 +22,15 @@
 #ifndef FUNCTIONCOLLECTIONEDITOR_H
 #define FUNCTIONCOLLECTIONEDITOR_H
 
-#include "classes.h"
 #include <qdialog.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qlistview.h>
-#include <qpushbutton.h>
+
+class QLineEdit;
+class QLabel;
+class QListView;
+class QListViewItem;
+class QPushButton;
+
+class FunctionCollection;
 
 class FunctionCollectionEditor : public QDialog
 {

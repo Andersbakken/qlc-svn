@@ -27,6 +27,12 @@
                 <height>60</height>
             </rect>
         </property>
+        <property name="frameShape">
+            <enum>Box</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
         <property name="title">
             <string>Device</string>
         </property>
@@ -97,22 +103,6 @@
         <property name="title">
             <string>Status</string>
         </property>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_activate</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>160</x>
-                    <y>20</y>
-                    <width>80</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>&amp;Activate</string>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>m_statusLabel</cstring>
@@ -141,6 +131,25 @@
             </property>
             <property name="alignment">
                 <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_activate</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>20</y>
+                    <width>80</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Activate</string>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Activate the interface. Pressing this button also saves settings.</string>
             </property>
         </widget>
     </widget>

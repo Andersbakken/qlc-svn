@@ -44,6 +44,7 @@
 #include <qfont.h>
 #include <qheader.h>
 #include <qpopupmenu.h>
+#include <qmessagebox.h>
 
 #include <math.h>
 

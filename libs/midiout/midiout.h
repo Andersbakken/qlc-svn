@@ -44,23 +44,26 @@ class MidiOut : public OutputPlugin
   virtual QString infoText();
   virtual void contextMenu(QPoint pos);
 
+  virtual void setConfigDirectory(QString dir);
+  virtual void saveSettings();
+  virtual void loadSettings();
+
   bool writeChannel(unsigned short channel, unsigned char value);
-  unsigned char readChannel(unsigned short channel);
 
  protected:
   void setMidiOutChannel(unsigned char channel);
   virtual void setFileName(QString);
   unsigned char midiOutChannel() { return m_midiOutChannel; }
+  void activate();
 
  protected slots:
   void slotContextMenuCallback(int);
 
  private:
   QString m_fileName;
+  QString m_configDirectory;
   int m_fd;
   unsigned char m_midiOutChannel;
-
-  unsigned char m_buffer[MAX_MIDIOUT_DMX_CHANNELS];
 };
 
 #endif

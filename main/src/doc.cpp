@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "dmx.h"
 #include "dmxdevice.h"
 #include "doc.h"
 #include "app.h"
@@ -87,26 +86,6 @@ void Doc::init()
   initDMXChannels();
   initPlugins();
   slotChangeOutputPlugin(_app->settings()->outputPlugin());
-}
-
-void Doc::slotChangeOutputPlugin(const QString& name)
-{
-  if (m_outputPlugin != NULL)
-    {
-      m_outputPlugin->close();
-    }
-
-  if (name == QString("<None>"))
-    {
-      m_outputPlugin = NULL;
-    }
-  else
-    {
-      m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
-      ASSERT(m_outputPlugin != NULL);
-      
-      m_outputPlugin->open();
-    }
 }
 
 void Doc::initDMXChannels()
@@ -213,7 +192,7 @@ bool Doc::readDeviceClasses()
   d.setNameFilter("*.deviceclass");
   if (d.exists() == false || d.isReadable() == false)
     {
-      MSG_WARN("Unable to open or read from device directory! Check settings and permissions.");
+      QMessageBox::warning(_app, "QLC", "Unable to open or read from device directory! Check settings and permissions.");
       return false;
     }
 
@@ -835,7 +814,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
     }
   else
     {
-      MSG_CRIT("Unable to open file for writing!\nCheck permissions.");
+      QMessageBox::critical(_app, "QLC", "Unable to open file for writing!\nCheck permissions.");
       return false;
     }
 
@@ -1095,8 +1074,15 @@ bool Doc::probePlugin(QString path)
       else
 	{
 	  Plugin* plugin = create(Doc::NextPluginID++);
-	  qDebug(QString("Found ") + plugin->name());
+	  ASSERT(plugin != NULL);
+
+	  plugin->setConfigDirectory(QString(getenv("HOME")) + QString("/") + QString(QLCUSERDIR) + QString("/"));
+	  plugin->loadSettings();
+
+	  connect(plugin, SIGNAL(activated(Plugin*)), this, SLOT(slotPluginActivated(Plugin*)));
 	  addPlugin(plugin);
+
+	  qDebug(QString("Found ") + plugin->name());
 	}
     }
 
@@ -1167,3 +1153,34 @@ Plugin* Doc::searchPlugin(int id)
 
   return NULL;
 }
+
+void Doc::slotPluginActivated(Plugin* plugin)
+{
+  if (plugin && plugin->type() == Plugin::OutputType)
+    {
+      slotChangeOutputPlugin(plugin->name());
+      _app->settings()->setOutputPlugin(plugin->name());
+      _app->settings()->save();
+    }
+}
+
+void Doc::slotChangeOutputPlugin(const QString& name)
+{
+  if (m_outputPlugin != NULL)
+    {
+      m_outputPlugin->close();
+    }
+
+  if (name == QString("<None>"))
+    {
+      m_outputPlugin = NULL;
+    }
+  else
+    {
+      m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
+      ASSERT(m_outputPlugin != NULL);
+      
+      m_outputPlugin->open();
+    }
+}
+

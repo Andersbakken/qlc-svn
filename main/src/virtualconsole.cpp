@@ -30,6 +30,7 @@
 #include <qlayout.h>
 #include <qobjcoll.h>
 #include <qlabel.h>
+#include <qmessagebox.h>
 
 #include "virtualconsole.h"
 #include "app.h"

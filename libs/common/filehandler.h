@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  sequence.h
+  filehandler.h
   
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
@@ -19,26 +19,20 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SEQUENCE_H
-#define SEQUENCE_H
+#ifndef FILEHANDLER_H
+#define FILEHANDLER_H
 
-#include "pattern.h"
+#include <qobject.h>
 #include <qstring.h>
 #include <qlist.h>
 
-// Number of channels per sequence (or number of patterns per sequence)
-#define SEQUENCE_SIZE	64
-
-class Sequence 
+class FileHandler : public QObject
 {
- public: 
-  Sequence(bool create_nodes = true);
-  ~Sequence();
-  
-  QString m_description;
-  int m_speed;
-  
-  QList <Pattern> m_patternList;
+  Q_OBJECT
+
+ public:
+  static bool readFileToList(QString &fileName, QList<QString> &list);
+
 };
 
 #endif

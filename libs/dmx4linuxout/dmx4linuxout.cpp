@@ -21,6 +21,7 @@
 
 #include "dmx4linuxout.h"
 #include "configuredmx4linuxout.h"
+#include "../common/filehandler.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -31,10 +32,12 @@
 #include <qstring.h>
 #include <qpoint.h>
 #include <qpopupmenu.h>
+#include <qfile.h>
 
-#include <dmx.h>
+#define CONF_FILE "dmx4linuxout.conf"
 
 #define ID_CONFIGURE      10
+#define ID_ACTIVATE       20
 
 static QMutex _mutex;
 
@@ -61,6 +64,7 @@ DMX4LinuxOut::DMX4LinuxOut(int id) : OutputPlugin(id)
   m_type = OutputType;
   m_version = 0x00010000;
   m_deviceName = QString("/dev/dmx");    
+  m_configDir = QString("~/.qlc/");
 }
 
 DMX4LinuxOut::~DMX4LinuxOut()
@@ -72,7 +76,13 @@ bool DMX4LinuxOut::open()
 {
   qDebug("Open DMX4Linux plugin");
 
-  m_device = ::open((const char*) m_deviceName, O_RDWR | O_NONBLOCK);
+  if (m_device != -1)
+    {
+      qDebug("DMX4Linux already open");
+      return false;
+    }
+
+  m_device = ::open((const char*) m_deviceName, O_WRONLY | O_NONBLOCK);
   if (m_device == -1)
     {
       perror("open");
@@ -124,6 +134,7 @@ void DMX4LinuxOut::configure()
   if (conf->exec() == QDialog::Accepted)
     {
       m_deviceName = conf->device();
+      saveSettings();
     }
 
   delete conf;
@@ -146,6 +157,18 @@ QString DMX4LinuxOut::infoText()
   t.setNum(version() & 0xff);
   str += t + QString("</TD>");
   str += QString("</TR>");
+  str += QString("<TR>\n");
+  str += QString("<TD><B>Status</B></TD>");
+  str += QString("<TD>");
+  if (isOpen() == true)
+    {
+      str += QString("<I>Active</I></TD>");
+    }
+  else
+    {
+      str += QString("Not Active</TD>");
+    }
+  str += QString("</TR>");
 
   str += QString("</TR>");
   str += QString("</TABLE>");
@@ -154,10 +177,82 @@ QString DMX4LinuxOut::infoText()
   return str;
 }
 
+void DMX4LinuxOut::setConfigDirectory(QString dir)
+{
+  m_configDir = dir;
+}
+
+void DMX4LinuxOut::saveSettings()
+{
+  QString s;
+  QString t;
+
+  QString fileName = m_configDir + QString(CONF_FILE);
+  qDebug(fileName);
+  QFile file(fileName);
+  
+  if (file.open(IO_WriteOnly))
+    {
+      // Comment
+      s = QString("# DMX4Linux Entry\n");
+      file.writeBlock((const char*) s, s.length());
+      
+      // Entry type
+      s = QString("Entry = ") + name() + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      s = QString("Device = ") + m_deviceName + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      file.close();
+    }
+}
+
+void DMX4LinuxOut::loadSettings()
+{
+  QString fileName;
+  QList <QString> list;
+
+  fileName = m_configDir + QString(CONF_FILE);
+  qDebug(fileName);
+
+  FileHandler::readFileToList(fileName, list);
+
+  for (QString* s = list.first(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.next();
+	  if (*s == name())
+	    {
+	      createContents(list);
+	    }
+	}
+    }
+}
+
+void DMX4LinuxOut::createContents(QList <QString> &list)
+{
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("Device"))
+	{
+	  m_deviceName = *(list.next());
+	}
+    }
+}
+
 void DMX4LinuxOut::contextMenu(QPoint pos)
 {
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem("Configure...", ID_CONFIGURE);
+  menu->insertSeparator();
+  menu->insertItem("Activate", ID_ACTIVATE);
 
   connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
   menu->exec(pos, 0);
@@ -172,6 +267,10 @@ void DMX4LinuxOut::slotContextMenuCallback(int item)
       configure();
       break;
 
+    case ID_ACTIVATE:
+      activate();
+      break;
+
     default:
       break;
     }
@@ -179,10 +278,7 @@ void DMX4LinuxOut::slotContextMenuCallback(int item)
 
 void DMX4LinuxOut::activate()
 {
-  if (open() == true)
-    {
-      emit activated(this);
-    }
+  emit activated(this);
 }
 
 /* Write value to channel */

@@ -28,7 +28,6 @@
 #include "dmxdevice.h"
 #include "deviceclass.h"
 #include "bus.h"
-#include "classes.h"
 #include "../../libs/common/outputplugin.h"
 
 class Doc : public QObject
@@ -136,6 +135,7 @@ class Doc : public QObject
 
  private slots:
   void slotChangeOutputPlugin(const QString& name);
+  void slotPluginActivated(Plugin* plugin);
 
  private:
   void initDMXChannels();

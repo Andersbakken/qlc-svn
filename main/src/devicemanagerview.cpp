@@ -24,6 +24,16 @@
 #include "app.h"
 #include "doc.h"
 
+#include <qwidget.h>
+#include <qtoolbar.h>
+#include <qtoolbutton.h>
+#include <qlayout.h>
+#include <qpixmap.h>
+#include <qevent.h>
+#include <qsize.h>
+#include <qlabel.h>
+#include <qdockarea.h>
+
 extern App* _app;
 
 DeviceManagerView::DeviceManagerView(QWidget* parent, const char* name) : QWidget(parent, name)

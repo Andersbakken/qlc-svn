@@ -32,6 +32,12 @@
 
 extern App* _app;
 
+#include <qlabel.h>
+#include <qpushbutton.h>
+#include <qlistview.h>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
+
 ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent, const char* name)
   : QDialog(parent, name, true)
 {

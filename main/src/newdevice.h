@@ -22,6 +22,8 @@
 #ifndef NEWDEVICE_H
 #define NEWDEVICE_H
 
+#include <qdialog.h>
+
 class QListView;
 class QListViewItem;
 class QCheckBox;
@@ -30,9 +32,6 @@ class QLabel;
 class QPushButton;
 class QSpinBox;
 class QString;
-
-#include <qdialog.h>
-#include "classes.h"
 
 class NewDevice : public QDialog
 {

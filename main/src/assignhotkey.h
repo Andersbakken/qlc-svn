@@ -22,8 +22,9 @@
 #ifndef ASSIGNHOTKEY_H
 #define ASSIGNHOTKEY_H
 
-#include "classes.h"
 #include "uic_assignhotkey.h"
+
+class KeyBind;
 
 class AssignHotKey : public UI_AssignHotKey
 {

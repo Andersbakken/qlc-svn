@@ -22,13 +22,16 @@
 #ifndef CHASEREDITOR_H
 #define CHASEREDITOR_H
 
-#include "classes.h"
 #include <qdialog.h>
-#include <qlistview.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qtoolbutton.h>
+
+class QListView;
+class QListViewItem;
+class QLineEdit;
+class QLabel;
+class QPushButton;
+class QToolButton;
+
+class Chaser;
 
 class ChaserEditor : public QDialog
 {

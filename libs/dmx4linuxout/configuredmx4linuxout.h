@@ -37,6 +37,8 @@ class ConfigureDMX4LinuxOut : public UI_ConfigureDMX4LinuxOut
   void setDevice(QString deviceName);
   QString device();
 
+  void updateStatus();
+
  private slots:
   void slotActivateClicked();
 

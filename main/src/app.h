@@ -108,8 +108,6 @@ class App : public QMainWindow
   void slotDeviceManagerViewClosed();
   void slotViewVirtualConsole();
   void slotVirtualConsoleClosed();
-  void slotViewSequenceEditor();
-  void slotSequenceEditorClosed();
   void slotViewToolBar();
   void slotViewStatusBar();
   void slotViewDMXAddressTool();
@@ -132,7 +130,6 @@ class App : public QMainWindow
   void initWorkspace();
   void initDeviceManagerView();
   void initVirtualConsole();
-  void initSequenceEditor();
   void initSequenceEngine();
 
   void initMenuBar();

@@ -46,6 +46,10 @@ class Plugin : public QObject
   virtual QString infoText() = 0; // Text that is displayed in device manager
   virtual void contextMenu(QPoint pos) = 0; // Invoke a context menu from device manager
 
+  virtual void setConfigDirectory(QString dir) = 0; // Set the config file directory
+  virtual void saveSettings() = 0; // Save settings to a file in config dir
+  virtual void loadSettings() = 0; // Load settings from a file in config dir
+
   // Standard functions that don't have to be overwritten
   QString name() { return m_name; }
   int id() { return m_id; }

@@ -37,6 +37,9 @@
 #define OFFSET 70
 
 #define ID_CONFIGURE       10
+#define ID_ACTIVATE        20
+
+#define CONF_FILE          "midiout.conf"
 
 //
 // Exported functions
@@ -61,11 +64,7 @@ MidiOut::MidiOut(int id) : OutputPlugin(id)
   m_name = QString("Midi Output");
   m_version = 0x00000100;
   m_fileName = QString("/dev/midi00");
-
-  for (unsigned short i = 0; i < MAX_MIDIOUT_DMX_CHANNELS; i++)
-    {
-      m_buffer[i] = 0;
-    }
+  m_configDirectory = QString("~/.qlc/");
 }
 
 MidiOut::~MidiOut()
@@ -82,8 +81,14 @@ bool MidiOut::open()
 {
   qDebug("Open MidiOut plugin");
 
-  int fd = ::open((const char*) m_fileName, O_WRONLY);
-  if (fd == -1)
+  if (m_fd != -1)
+    {
+      qDebug("MidiOut already open");
+      return false;
+    }
+
+  m_fd = ::open((const char*) m_fileName, O_WRONLY | O_NONBLOCK);
+  if (m_fd == -1)
     {
       perror("open");
       qDebug("Midi Output not available");
@@ -92,7 +97,6 @@ bool MidiOut::open()
   else
     {
       qDebug(QString("Midi Output available thru ") + m_fileName);
-      m_fd = fd;
     }
 
   return true;
@@ -152,12 +156,37 @@ QString MidiOut::infoText()
   t.setNum(version() & 0xff);
   str += t + QString("</TD>");
   str += QString("</TR>");
+  str += QString("<TR>\n");
+  str += QString("<TD><B>Status</B></TD>");
+  str += QString("<TD>");
+  if (isOpen() == true)
+    {
+      str += QString("<I>Active</I></TD>");
+    }
+  else
+    {
+      str += QString("Not Active</TD>");
+    }
+  str += QString("</TR>");
 
   str += QString("</TR>");
   str += QString("</TABLE>");
   str += QString("</BODY></HTML>");
 
   return str;
+}
+
+void MidiOut::setConfigDirectory(QString dir)
+{
+  m_configDirectory = dir;
+}
+
+void MidiOut::saveSettings()
+{
+}
+
+void MidiOut::loadSettings()
+{
 }
 
 void MidiOut::setMidiOutChannel(unsigned char channel)
@@ -177,8 +206,6 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
       return false;
     }
 
-  m_buffer[channel] = value;
-  
   if (value == 0)
     {
       buf[0] = MIDI_NOTEOFF + m_midiOutChannel;
@@ -203,28 +230,23 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
     }
 }
 
-unsigned char MidiOut::readChannel(unsigned short channel)
-{
-  if (channel >= MAX_MIDIOUT_DMX_CHANNELS)
-    {
-      return 0;
-    }
-  else
-    {
-      return m_buffer[channel];
-    }
-}
-
 void MidiOut::configure()
 {
   QMessageBox::information(NULL, QString("QLC Midi Output Plugin"),
 			   QString("Not implemented"));
 }
 
+void MidiOut::activate()
+{
+  emit activated(this);
+}
+
 void MidiOut::contextMenu(QPoint pos)
 {
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem("Configure...", ID_CONFIGURE);
+  menu->insertSeparator();
+  menu->insertItem("Activate", ID_ACTIVATE);
 
   connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
   menu->exec(pos, 0);
@@ -236,6 +258,11 @@ void MidiOut::slotContextMenuCallback(int item)
   switch(item)
     {
     case ID_CONFIGURE:
+      configure();
+      break;
+
+    case ID_ACTIVATE:
+      activate();
       break;
 
     default:

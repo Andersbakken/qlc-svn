@@ -22,13 +22,19 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+#include <qobject.h>
 #include <qlist.h>
-#include "classes.h"
 
 #define VALUE_READY INT_MAX
 
 class QFile;
 class QString;
+
+class DeviceClass;
+class DMXDevice;
+class Event;
+class Feeder;
+class LogicalChannel;
 
 class Function : public QObject
 {

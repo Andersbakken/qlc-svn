@@ -25,6 +25,9 @@
 #include <qstring.h>
 #include <qlineedit.h>
 #include <qlabel.h>
+#include <qpushbutton.h>
+
+#include <unistd.h>
 
 ConfigureDMX4LinuxOut::ConfigureDMX4LinuxOut(DMX4LinuxOut* plugin) 
   : UI_ConfigureDMX4LinuxOut(NULL, NULL, true)
@@ -33,6 +36,8 @@ ConfigureDMX4LinuxOut::ConfigureDMX4LinuxOut(DMX4LinuxOut* plugin)
   m_plugin = plugin;
 
   m_deviceEdit->setText(m_plugin->deviceName());
+
+  updateStatus();
 }
 
 ConfigureDMX4LinuxOut::~ConfigureDMX4LinuxOut()
@@ -47,14 +52,30 @@ QString ConfigureDMX4LinuxOut::device()
 
 void ConfigureDMX4LinuxOut::slotActivateClicked()
 {
+  if (m_plugin->deviceName() != m_deviceEdit->text())
+    {
+      m_plugin->setDeviceName(m_deviceEdit->text());
+    }
+
   m_plugin->activate();
 
+  ::usleep(10);  // Allow the activation signal get passed to doc
+
+  updateStatus();
+}
+
+void ConfigureDMX4LinuxOut::updateStatus()
+{
   if (m_plugin->isOpen())
     {
       m_statusLabel->setText("Active");
+      m_deviceEdit->setEnabled(false);
+      m_activate->setEnabled(false);
     }
   else
     {
       m_statusLabel->setText("Not Active");
+      m_deviceEdit->setEnabled(true);
+      m_activate->setEnabled(true);
     }
 }
