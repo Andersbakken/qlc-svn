@@ -93,8 +93,8 @@ void DeviceConsole::setDevice(t_device_id id)
 						     Scene::ValueType)));
 
       // Scene editor updates to channels
-      connect(m_sceneEditor, SIGNAL(sceneActivated(Scene*)),
-	      unit, SLOT(slotSceneActivated(Scene*)));
+      connect(m_sceneEditor, SIGNAL(sceneActivated(SceneValue*,t_channel)),
+	      unit, SLOT(slotSceneActivated(SceneValue*, t_channel)));
       
       m_unitList.append(unit);
     }

@@ -29,6 +29,7 @@
 #include "function.h"
 #include "functioncollection.h"
 #include "chaser.h"
+#include "sequence.h"
 #include "virtualconsole.h"
 #include "devicemanagerview.h"
 #include "configkeys.h"
@@ -462,7 +463,7 @@ Function* Doc::newFunction(Function::Type type, t_function_id id)
       f = new FunctionCollection();
       break;
     case Function::Sequence:
-      f = NULL;
+      f = new Sequence();
       break;
     case Function::Undefined:
     default:

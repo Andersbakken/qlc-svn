@@ -269,15 +269,19 @@ void ConsoleChannel::slotContextMenuActivated(int value)
     }
 }
 
-void ConsoleChannel::slotSceneActivated(Scene* scene)
+void ConsoleChannel::slotSceneActivated(SceneValue* values,
+					t_channel channels)
 {
-  assert(scene);
+  assert(values);
   
-  SceneValue value = scene->channelValue(m_channel);
-  setStatusButton(value.type);
-  
-  if (value.type == Scene::Set || value.type == Scene::Fade)
+  if (m_channel <= channels)
     {
-      slotAnimateValueChange(value.value);
+      setStatusButton(values[m_channel].type);
+      
+      if (values[m_channel].type == Scene::Set || 
+	  values[m_channel].type == Scene::Fade)
+	{
+	  slotAnimateValueChange(values[m_channel].value);
+	}
     }
 }

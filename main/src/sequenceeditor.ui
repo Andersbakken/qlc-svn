@@ -81,8 +81,20 @@
                             <property name="minimumSize">
                                 <size>
                                     <width>20</width>
-                                    <height>20</height>
+                                    <height>200</height>
                                 </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>32767</width>
+                                    <height>200</height>
+                                </size>
+                            </property>
+                            <property name="frameShape">
+                                <enum>NoFrame</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>Plain</enum>
                             </property>
                         </widget>
                     </vbox>
@@ -336,6 +348,12 @@
         <receiver>UI_SequenceEditor</receiver>
         <slot>slotLower()</slot>
     </connection>
+    <connection>
+        <sender>m_list</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_SequenceEditor</receiver>
+        <slot>slotSelectionChanged(QListViewItem*)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotOKClicked()</slot>
@@ -344,6 +362,7 @@
     <slot>slotRemove()</slot>
     <slot>slotRaise()</slot>
     <slot>slotLower()</slot>
+    <slot>slotSelectionChanged(QListViewItem*)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  scene.h
+  sequence.h
   
-  Copyright (C) 2004 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,42 +19,32 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SEQUENCE_H
+#define SEQUENCE_H
 
 #include "function.h"
+#include "scene.h"
 #include "types.h"
 
 class EventBuffer;
 class Device;
 class RunTimeData;
-class SceneValue;
+class SequenceValue;
 
 typedef float t_scene_acc;
 
-class Scene : public Function
+class Sequence : public Function
 {
  public:
-  Scene();
-  ~Scene();
+  Sequence();
+  ~Sequence();
 
-  enum ValueType
-    {
-      Set   = 0, // Normal value
-      Fade  = 1, // Fade value
-      NoSet = 2  // Ignored value
-    };
-
-  bool copyFrom(Scene*);
+  bool copyFrom(Sequence* seq, t_device_id toDevice = KNoID);
   bool setDevice(t_device_id);
 
-  SceneValue* values() { return m_values; }
   t_channel channels() { return m_channels; }
 
-  bool set(t_channel ch, t_value value, ValueType type);
-  SceneValue channelValue(t_channel ch);
-  ValueType valueType(t_channel ch);
-  QString valueTypeString(t_channel ch);
+  QPtrList <SceneValue> m_values;
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
@@ -73,33 +63,11 @@ class Scene : public Function
  private:
   t_channel m_channels;
 
-  SceneValue* m_values;
-
   t_bus_value m_timeSpan;
   t_bus_value m_elapsedTime;
 
-  RunTimeData* m_runTimeData;
-  t_value* m_channelData;
-
   // This mutex is locked when the run time data is accessed
   QMutex m_dataMutex;
-};
-
-class RunTimeData
-{
- public:
-  t_scene_acc start;
-  t_scene_acc current;
-  t_scene_acc target;
-
-  bool ready;
-};
-
-class SceneValue
-{
- public:
-  Scene::ValueType type;
-  t_value value;
 };
 
 #endif

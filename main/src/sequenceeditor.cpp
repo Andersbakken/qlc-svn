@@ -27,21 +27,25 @@
 #include <qheader.h>
 #include <qscrollview.h>
 #include <qscrollbar.h>
+#include <qlineedit.h>
+#include <qmessagebox.h>
 
 #include "sequenceeditor.h"
 #include "consolechannel.h"
 #include "configkeys.h"
 #include "settings.h"
+#include "sequence.h"
 #include "device.h"
 #include "app.h"
 #include "doc.h"
 
 extern App* _app;
 
-SequenceEditor::SequenceEditor(QWidget* parent, const char* name)
-  : UI_SequenceEditor(parent, name),
-    m_tempScene ( NULL ),
-    m_channels  (    0 )
+SequenceEditor::SequenceEditor(Sequence* sequence, QWidget* parent)
+  : UI_SequenceEditor(parent),
+    m_sequence   ( sequence ),
+    m_channels   (        0 ),
+    m_tempValues (     NULL )
 {
 }
 
@@ -52,7 +56,7 @@ SequenceEditor::~SequenceEditor()
       delete m_unitList.take(0);
     }
 
-  if (m_tempScene) delete m_tempScene;
+  delete [] m_tempValues;
 }
 
 void SequenceEditor::init()
@@ -73,6 +77,14 @@ void SequenceEditor::init()
   m_list->header()->setClickEnabled(false);
   m_list->header()->setMovingEnabled(false);
   m_list->header()->setResizeEnabled(false);
+
+  setDevice(m_sequence->device());
+  setSequence(m_sequence);
+
+  m_name->setText(m_sequence->name());
+
+  QMessageBox::information(this, KApplicationNameShort,
+			   "Save/load and run doesn't work for sequences yet");
 }
 
 void SequenceEditor::setDevice(t_device_id id)
@@ -80,18 +92,18 @@ void SequenceEditor::setDevice(t_device_id id)
   Device* device = _app->doc()->device(id);
   assert(device);
 
-  if (m_tempScene) delete m_tempScene;
-  m_tempScene = new Scene();
-  m_tempScene->setDevice(id);
+  m_channels = device->deviceClass()->channels()->count();
+
+  if (m_tempValues) delete [] m_tempValues;
+  m_tempValues = new SceneValue[m_channels];
 
   QHBoxLayout* hbl = new QHBoxLayout(m_sliderContainer);
-
-  QString s;
-  m_channels = device->deviceClass()->channels()->count();
 
   ConsoleChannel* unit = NULL;
   for (t_channel ch = 0; ch < m_channels; ch++)
     {
+      QString s;
+
       s.sprintf("%.3d", ch + 1);
       m_list->addColumn(s);
 
@@ -105,6 +117,9 @@ void SequenceEditor::setDevice(t_device_id id)
       connect(unit, SIGNAL(changed(t_channel, t_value, Scene::ValueType)),
 	      this, SLOT(slotChannelChanged(t_channel, t_value, 
 					    Scene::ValueType)));
+
+      connect(this, SIGNAL(sceneActivated(SceneValue*, t_channel)),
+	      unit, SLOT(slotSceneActivated(SceneValue*, t_channel)));
 
       // Add the unit to the layout
       hbl->addWidget(unit);
@@ -127,6 +142,32 @@ void SequenceEditor::setDevice(t_device_id id)
   m_list->setSorting(-1);
 }
 
+void SequenceEditor::setSequence(Sequence* sequence)
+{
+  assert(sequence);
+  m_sequence = sequence;
+
+  QListViewItem* item = NULL;
+  
+  for (int i = m_sequence->m_values.count() - 1; i >= 0; i--)
+    {
+      QString s;
+      item = new QListViewItem(m_list);
+      for (t_channel ch = 0; ch < m_channels; ch++)
+	{
+	  s.sprintf("%.3d", m_sequence->m_values.at(i)[ch].value);
+	  if (m_sequence->m_values.at(i)[ch].type == Scene::NoSet)
+	    {
+	      item->setText(ch, "XXX");
+	    }
+	  else
+	    {
+	      item->setText(ch, s);
+	    }
+	}
+    }
+}
+
 void SequenceEditor::resizeEvent(QResizeEvent* e)
 {
   for (t_channel i = 0; i < m_channels; i++)
@@ -143,7 +184,11 @@ void SequenceEditor::resizeEvent(QResizeEvent* e)
 void SequenceEditor::slotChannelChanged(t_channel channel, t_value value, 
 					Scene::ValueType status)
 {
-  m_tempScene->set(channel, value, status);
+  assert(channel <= m_channels);
+  assert(m_tempValues);
+
+  m_tempValues[channel].value = value;
+  m_tempValues[channel].type = status;
   
   if (m_list->currentItem())
     {
@@ -162,7 +207,7 @@ void SequenceEditor::slotChannelChanged(t_channel channel, t_value value,
 
 void SequenceEditor::slotInsert()
 {
-  assert(m_tempScene);
+  assert(m_tempValues);
 
   QListViewItem* item = NULL;
   if (m_list->currentItem())
@@ -178,8 +223,8 @@ void SequenceEditor::slotInsert()
   QString s;
   for (t_channel ch = 0; ch < m_channels; ch++)
     {
-      s.sprintf("%.3d", m_tempScene->channelValue(ch).value);
-      if (m_tempScene->channelValue(ch).type == Scene::NoSet)
+      s.sprintf("%.3d", m_tempValues[ch].value);
+      if (m_tempValues[ch].type == Scene::NoSet)
 	{
 	  item->setText(ch, "XXX");
 	}
@@ -198,6 +243,12 @@ void SequenceEditor::slotRemove()
   if (m_list->currentItem())
     {
       delete m_list->currentItem();
+    }
+  
+  // Set the item below selected
+  if (m_list->currentItem())
+    {
+      m_list->setSelected(m_list->currentItem(), true);
     }
 }
 
@@ -244,6 +295,33 @@ void SequenceEditor::slotLower()
 
 void SequenceEditor::slotOKClicked()
 {
+  m_sequence->m_values.setAutoDelete(true);
+  m_sequence->m_values.clear();
+  m_sequence->m_values.setAutoDelete(false);
+  
+  for (QListViewItem* item = m_list->firstChild(); item != NULL;
+       item = item->itemBelow())
+    {
+      SceneValue* value = new SceneValue[m_channels];
+      for (t_channel i = 0; i < m_channels; i++)
+	{
+	  value[i].value = item->text(i).toInt();
+
+	  if (item->text(i) != QString("XXX"))
+	    {
+	      value[i].type = Scene::Set;
+	    }
+	  else
+	    {
+	      value[i].type = Scene::NoSet;
+	    }
+	}
+
+      m_sequence->m_values.append(value);
+    }
+
+  m_sequence->setName(m_name->text());
+
   accept();
 }
 
@@ -251,3 +329,28 @@ void SequenceEditor::slotCancelClicked()
 {
   reject();
 }
+
+void SequenceEditor::slotSelectionChanged(QListViewItem* item)
+{
+  if (item == NULL)
+    {
+      return;
+    }
+
+  for (t_channel i = 0; i < m_channels; i++)
+    {
+      if (item->text(i) == QString("XXX"))
+	{
+	  m_tempValues[i].value = 0;
+	  m_tempValues[i].type = Scene::NoSet;
+	}
+      else
+	{
+	  m_tempValues[i].value = item->text(i).toInt();
+	  m_tempValues[i].type = Scene::Set;
+	}
+    }
+
+  emit sceneActivated(m_tempValues, m_channels);
+}
+

@@ -56,7 +56,7 @@ class SceneEditor : public UI_SceneEditor
   Scene* currentScene();
 
  signals:
-  void sceneActivated(Scene*);
+  void sceneActivated(SceneValue* values, t_channel channels);
 
  public slots:
   void slotSceneListContextMenu(QListBoxItem*, const QPoint&);

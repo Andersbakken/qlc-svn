@@ -27,23 +27,25 @@
 #include <qevent.h>
 
 #include "uic_sequenceeditor.h"
+#include "sequence.h"
 #include "scene.h"
 #include "types.h"
 #include "consolechannel.h"
 
-class Scene;
+class Sequence;
 
 class SequenceEditor : public UI_SequenceEditor
 {
   Q_OBJECT
 
  public:
-  SequenceEditor(QWidget* parent, const char* name = NULL);
+  SequenceEditor(Sequence* sequence, QWidget* parent = NULL);
   ~SequenceEditor();
 
   void init();
 
-  void setDevice(t_device_id);
+ signals:
+  void sceneActivated(SceneValue* values, t_channel channels);
 
  public slots:
   void slotInsert();
@@ -54,13 +56,18 @@ class SequenceEditor : public UI_SequenceEditor
   void slotCancelClicked();
 
   void slotChannelChanged(t_channel, t_value, Scene::ValueType);
+  void slotSelectionChanged(QListViewItem*);
 
  protected:
+  void setDevice(t_device_id);
+  void setSequence(Sequence*);
+
   void resizeEvent(QResizeEvent* e);
 
  protected:
-  Scene* m_tempScene;
+  Sequence* m_sequence;
   t_channel m_channels;
+  SceneValue* m_tempValues;
 
   QPtrList <ConsoleChannel> m_unitList;
   QPtrList <QSpacerItem> m_spacerList;

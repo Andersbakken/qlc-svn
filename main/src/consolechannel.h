@@ -57,7 +57,7 @@ class ConsoleChannel : public UI_ConsoleChannel
   void slotValueChange(int);
   void slotAnimateValueChange(t_value);
 
-  void slotSceneActivated(Scene*);
+  void slotSceneActivated(SceneValue* values, t_channel channels);
 
  private slots:
   void slotStatusButtonClicked();

@@ -142,7 +142,9 @@ void SceneEditor::slotActivate()
 
 void SceneEditor::setScene(Scene* scene)
 {
-  emit sceneActivated(scene);
+  assert(scene);
+
+  emit sceneActivated(scene->values(), scene->channels());
 }
 
 void SceneEditor::slotSceneListContextMenu(QListBoxItem* item,
