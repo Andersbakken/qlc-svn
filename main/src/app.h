@@ -112,6 +112,7 @@ class App : public QMainWindow
   void slotWindowCascade();
   void slotWindowTile();
   void slotRefreshWindowMenu();
+  void slotRefreshToolsMenu();
 
   void slotViewGlobalFunctions();
   void slotGlobalFunctionsViewClosed();

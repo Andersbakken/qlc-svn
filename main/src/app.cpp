@@ -223,7 +223,7 @@ void App::initMenuBar()
   m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), 
 			 "&Open...", this, SLOT(slotFileOpen()), CTRL+Key_O, ID_FILE_OPEN);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), 
+  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")),
 			 "&Save", this, SLOT(slotFileSave()), CTRL+Key_S, ID_FILE_SAVE);
   m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
@@ -237,14 +237,18 @@ void App::initMenuBar()
   // View Menu
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
-  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "Device Manager", this, SLOT(slotViewDeviceManager()), 0, ID_VIEW_DEVICE_MANAGER);
-  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), 
+			  "Device Manager", this, SLOT(slotViewDeviceManager()), CTRL + Key_D, ID_VIEW_DEVICE_MANAGER);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), 
+			  "Virtual Console", this, SLOT(slotViewVirtualConsole()), CTRL + Key_G, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), 
+			  "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), CTRL + Key_E, ID_VIEW_DEVICE_CLASS_EDITOR);
   m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("function.xpm")), 
-			  "Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
+			  "Functions", this, SLOT(slotViewGlobalFunctions()), CTRL + Key_F, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), CTRL + Key_C, ID_FUNCTIONS_PANIC);
+  connect(m_toolsMenu, SIGNAL(aboutToShow()), this, SLOT(slotRefreshToolsMenu()));
 
   ///////////////////////////////////////////////////////////////////
   // Window Menu
@@ -256,7 +260,8 @@ void App::initMenuBar()
   m_helpMenu = new QPopupMenu();
   m_helpMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("help.xpm")),
 			 "About QLC...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
-  m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
+  m_helpMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("qt.xpm")),
+			 "About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
@@ -319,6 +324,20 @@ void App::slotRefreshWindowMenu()
   }
 
   connect(m_windowMenu, SIGNAL(activated(int)), this, SLOT(slotWindowMenuCallback(int)));
+}
+
+void App::slotRefreshToolsMenu()
+{
+  if (virtualConsole()->isDesignMode() == false)
+    {
+      m_toolsMenu->setItemEnabled(ID_FUNCTIONS_GLOBAL_FUNCTIONS, false);
+      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, false);
+    }
+  else
+    {
+      m_toolsMenu->setItemEnabled(ID_FUNCTIONS_GLOBAL_FUNCTIONS, true);
+      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, true);
+    }
 }
 	
 void App::slotWindowMenuCallback(int item)
