@@ -65,6 +65,7 @@ QTimer* Monitor::s_timer         (         NULL );
 int Monitor::s_monitors          (            0 );
 QMutex* Monitor::s_monitorsMutex ( new QMutex() );
 int Monitor::s_updateFrequency   (      ID_16HZ );
+int Monitor::s_displayStyle      (  ID_RELATIVE );
 
 Monitor::Monitor(QWidget* parent, t_channel fromChannel, t_channel toChannel)
   : QWidget(parent)
@@ -77,8 +78,6 @@ Monitor::Monitor(QWidget* parent, t_channel fromChannel, t_channel toChannel)
 
   m_newValues = NULL;
   m_oldValues = NULL;
-
-  m_displayStyle = ID_RELATIVE;
 }
 
 
@@ -124,10 +123,10 @@ void Monitor::init()
   //
   // Set display style
   _app->settings()->get(KEY_MONITOR_DISPLAY_STYLE, config);
-  m_displayStyle = config.toInt();
-  if (m_displayStyle == 0)
+  s_displayStyle = config.toInt();
+  if (s_displayStyle == 0)
     {
-      m_displayStyle = ID_RELATIVE;
+      s_displayStyle = ID_RELATIVE;
     }
 
   //
@@ -219,7 +218,7 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       displayMenu->setCheckable(true);
       displayMenu->insertItem("&Absolute", ID_ABSOLUTE);
       displayMenu->insertItem("&Relative to Device", ID_RELATIVE);
-      displayMenu->setItemChecked(m_displayStyle, true);
+      displayMenu->setItemChecked(s_displayStyle, true);
 
       QPopupMenu* speedMenu;
       speedMenu = new QPopupMenu();
@@ -259,14 +258,14 @@ void Monitor::slotMenuCallback(int item)
   switch (item)
     {
     case ID_ABSOLUTE:
-      m_displayStyle = ID_ABSOLUTE;
-      _app->settings()->set(KEY_MONITOR_DISPLAY_STYLE, m_displayStyle);
+      s_displayStyle = ID_ABSOLUTE;
+      _app->settings()->set(KEY_MONITOR_DISPLAY_STYLE, s_displayStyle);
       repaint(true);
       break;
       
     case ID_RELATIVE:
-      m_displayStyle = ID_RELATIVE;
-      _app->settings()->set(KEY_MONITOR_DISPLAY_STYLE, m_displayStyle);
+      s_displayStyle = ID_RELATIVE;
+      _app->settings()->set(KEY_MONITOR_DISPLAY_STYLE, s_displayStyle);
       repaint(true);
       break;
 
@@ -410,7 +409,7 @@ void Monitor::paintAll(void)
 
   for (short i = 0; i < m_units; i++)
     {
-      if (m_displayStyle == ID_ABSOLUTE)
+      if (s_displayStyle == ID_ABSOLUTE)
 	{
 	  channelString.sprintf("%.3d", m_fromChannel + i + 1);
 	}

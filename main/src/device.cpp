@@ -206,6 +206,12 @@ void Device::setName(QString name)
 {
   m_name = name;
   _app->doc()->setModified(true);
+
+  if (m_console)
+    m_console->setCaption(m_name + " Console");
+
+  if (m_monitor)
+    m_monitor->setCaption(m_name + " Monitor");
 }
 
 
@@ -307,11 +313,10 @@ void Device::viewConsole()
 {
   if (m_console == NULL)
     {
-      QString name = m_name + QString(" Console");
       m_console = new ContainerView((QWidget*) _app->workspace());
 
       // Tell the monitor the dimensions of its widgets
-      m_console->setCaption(name);
+      m_console->setCaption(m_name + " Console");
       
       // the next 2 lines must be in that order
       // drawback: the initial scene is not displayed automagically
@@ -389,7 +394,7 @@ void Device::viewMonitor()
       m_monitor = new Monitor(_app->workspace(), address(),
                               address() + channels - 1);
       m_monitor->init();
-      m_monitor->setCaption(m_name);
+      m_monitor->setCaption(m_name + " Monitor");
       m_monitor->setIcon(dir + QString("monitor.xpm"));
 
       connect(m_monitor, SIGNAL(closed()), this, SLOT(slotMonitorClosed()));

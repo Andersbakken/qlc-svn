@@ -53,8 +53,9 @@ const int KColumnID   ( 1 );
 const int KMenuItemAdd        ( 0 );
 const int KMenuItemRemove     ( 1 );
 const int KMenuItemProperties ( 2 );
-const int KMenuItemMonitor    ( 3 );
-const int KMenuItemConsole    ( 4 );
+const int KMenuItemRename     ( 3 );
+const int KMenuItemMonitor    ( 4 );
+const int KMenuItemConsole    ( 5 );
 
 const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
 const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
@@ -504,27 +505,43 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
   QPopupMenu* menu = new QPopupMenu();
   menu->setCheckable(false);
   
-  menu->insertItem("Add...", KMenuItemAdd);
-  menu->insertItem("Remove", KMenuItemRemove);
-  menu->insertItem("Properties...", KMenuItemProperties);
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  menu->insertItem(QPixmap(dir + "/addoutputdevice.xpm"),
+		   "Add...", KMenuItemAdd);
+  menu->insertItem(QPixmap(dir + "/remove.xpm"),
+		   "Remove", KMenuItemRemove);
+  menu->insertItem(QPixmap(dir + "/settings.xpm"),
+		   "Properties...", KMenuItemProperties);
+  menu->insertItem(QPixmap(dir + "/rename.xpm"),
+		   "Rename...", KMenuItemRename);
   menu->insertSeparator();
-  menu->insertItem("View Console...", KMenuItemConsole);
-  menu->insertItem("View Monitor...", KMenuItemMonitor);
+  menu->insertItem(QPixmap(dir + "/monitor.xpm"),
+		   "View Monitor...", KMenuItemMonitor);
+  menu->insertItem(QPixmap(dir + "/console.xpm"),
+		   "View Console...", KMenuItemConsole);
   
-  if ( _app->mode() == App::Operate || !item )
+  if (_app->mode() == App::Operate)
     {
       // Operate mode, remove and edit impossible
+      menu->setItemEnabled(KMenuItemAdd, false);
       menu->setItemEnabled(KMenuItemRemove, false);
       menu->setItemEnabled(KMenuItemProperties, false);
-
-      // No item selected, unable to view console either
-      if (!item)
-	{
-	  menu->setItemEnabled(KMenuItemConsole, false);
-	  menu->setItemEnabled(KMenuItemMonitor, false);
-	}
+      menu->setItemEnabled(KMenuItemRename, false);
     }
   
+  // No item selected, unable to do other things either
+  if (!item)
+    {
+      menu->setItemEnabled(KMenuItemRemove, false);
+      menu->setItemEnabled(KMenuItemConsole, false);
+      menu->setItemEnabled(KMenuItemMonitor, false);
+      menu->setItemEnabled(KMenuItemProperties, false);
+      menu->setItemEnabled(KMenuItemRename, false);
+    }
+
   connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallBack(int)));
   menu->exec(point, 0);
   delete menu;
@@ -550,6 +567,10 @@ void DeviceManagerView::slotMenuCallBack(int item)
       slotProperties();
       break;
 
+    case KMenuItemRename:
+      slotRename();
+      break;
+
     case KMenuItemConsole:
       slotConsole();
       break;
@@ -563,6 +584,12 @@ void DeviceManagerView::slotMenuCallBack(int item)
     }
 }
 
+
+void DeviceManagerView::slotRename()
+{
+  QListViewItem* item = m_listView->currentItem();
+  item->startRename(0);
+}
 
 //
 // An item has been renamed

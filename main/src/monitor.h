@@ -75,8 +75,6 @@ class Monitor : public QWidget
   t_value* m_oldValues;
   t_value* m_newValues;
 
-  int m_displayStyle;
-
   QPainter m_painter;
 
   QFont m_font;
@@ -92,6 +90,7 @@ class Monitor : public QWidget
   static int s_monitors;
   static QMutex* s_monitorsMutex;
   static int s_updateFrequency;
+  static int s_displayStyle;
 };
 
 #endif
