@@ -48,7 +48,7 @@ VCButtonProperties::VCButtonProperties(VCButton* btn, QWidget* parent,
   ASSERT(btn);
   m_button = btn;
 
-  m_function = btn->function();
+  m_functionID = btn->functionID();
 
   ASSERT (btn->keyBind());
   m_keyBind = new KeyBind((KeyBind*) btn->keyBind());
@@ -64,30 +64,10 @@ VCButtonProperties::~VCButtonProperties()
 
 void VCButtonProperties::initView()
 {
-  QString fname;
-
   m_nameEdit->setText(m_button->text());
 
-  if (m_function == NULL)
-    {
-      fname = "No Function";
-    }
-  else
-    {
-      if (m_function->device())
-	{
-	  fname = m_function->device()->name();
-	}
-      else
-	{
-	  fname = QString("Global/");
-	}
-      
-      fname += QString("/") + m_function->name();
-    }
-
+  setFunctionName();
   m_functionEdit->setReadOnly(true);
-  m_functionEdit->setText(fname);
 
   // Widget position lock
   m_lock->setOn(m_lockState);
@@ -221,53 +201,47 @@ void VCButtonProperties::slotReleaseGroupClicked(int id)
 
 void VCButtonProperties::slotAddFunctionClicked()
 {
-  QString str("No function");
-
   FunctionTree* ft = new FunctionTree(this);
   if (ft->exec() == QDialog::Accepted)
     {
-      if (m_function)
-	{
-	  //
-	  // Disconnect destroyed signal from previous function
-	  // disconnect(m_function, SIGNAL(destroyed()), 
-          //            this, SLOT(slotFunctionDestroyed()));
-	}
-      
-      //
-      // Get the function that was selected
-      m_function = _app->doc()->searchFunction(ft->functionID());
-
-      if (m_function)
-	{
-	  //
-	  // Connect destroyed signal to new function
-	  // connect(m_function, SIGNAL(destroyed()),
-          //         this, SLOT(slotFunctionDestroyed()));
-
-	  if (m_function->device())
-	    {
-	      str = m_function->device()->name();
-	    }
-	  else
-	    {
-	      str = QString("Global");
-	    }
-	  
-	  str += QString("/") + m_function->name();
-	}
+      m_functionID = ft->functionID();
+      setFunctionName();
     }
 
-  //
-  // Set the correct text to edit box
-  m_functionEdit->setText(str);
+  delete ft;
 }
 
 void VCButtonProperties::slotRemoveFunctionClicked()
 {
-  m_function = NULL;
+  m_functionID = KNoID;
+  setFunctionName();
+}
 
-  m_functionEdit->setText("No Function");
+void VCButtonProperties::setFunctionName()
+{
+  QString fname;
+
+  Function* f = _app->doc()->function(m_functionID);
+  if (f == NULL)
+    {
+      fname = "No Function";
+    }
+  else
+    {
+      Device* d = _app->doc()->device(f->device());
+      if (d)
+	{
+	  fname = d->name();
+	}
+      else
+	{
+	  fname = QString("Global/");
+	}
+      
+      fname += QString("/") + f->name();
+    }
+
+  m_functionEdit->setText(fname);
 }
 
 void VCButtonProperties::slotAddKeyClicked()

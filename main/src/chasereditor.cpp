@@ -28,7 +28,6 @@
 #include "functiontree.h"
 #include "bus.h"
 #include "chaser.h"
-#include "functionstep.h"
 
 #include <stdlib.h>
 #include <qlistview.h>
@@ -52,7 +51,7 @@ extern App* _app;
 ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
   : UI_ChaserEditor(parent, "", true)
 {
-  m_chaser = new Chaser(KFunctionIDTemp);
+  m_chaser = new Chaser();
   m_chaser->copyFrom(function);
   ASSERT(m_chaser != NULL);
 
@@ -68,31 +67,45 @@ ChaserEditor::~ChaserEditor()
 
 void ChaserEditor::updateStepList()
 {
-  FunctionStep* step = NULL;
-  QString device = NULL;
-  QString fid;
+  QString device = QString::null;
+  QString function = QString::null;
 
   m_stepList->clear();
 
-  QPtrList <FunctionStep> *steps = m_chaser->steps();
-
-  for (int i = steps->count() - 1; i >= 0; i--)
+  QValueList<t_function_id>::iterator it;
+  it = m_chaser->steps()->end();
+  for (unsigned int i = 0; i < m_chaser->steps()->count(); i++)
     {
-      step = steps->at(i);
-      ASSERT(step->function() != NULL);
-
-      if (step->function()->device() != NULL)
+      --it;
+      Function* f = _app->doc()->function(*it);
+      if (!f)
 	{
-	  device = step->function()->device()->name();
+	  device = QString("Invalid");
+	  function = QString("Invalid");
+	}
+      else if (f->device() != KNoID)
+	{
+	  function = f->name();
+
+	  Device* d = _app->doc()->device(f->device());
+	  if (!d)
+	    {
+	      device = QString("Invalid");
+	    }
+	  else
+	    {
+	      device = d->name();	      
+	    }
 	}
       else
 	{
+	  function = f->name();
 	  device = QString("Global");
 	}
 
-      fid.setNum(step->function()->id());
-      new QListViewItem(m_stepList, "###", device,
-			step->function()->name(), fid);
+      QString fid;
+      fid.setNum(*it);
+      new QListViewItem(m_stepList, "###", device, function, fid);
     }
 
   updateOrderNumbers();
@@ -135,8 +148,7 @@ void ChaserEditor::slotRemoveClicked()
 
   if (item != NULL)
     {
-      int index = item->text(COL_NUM).toInt();
-      m_chaser->removeStep(index);
+      m_chaser->removeStep(item->text(COL_NUM).toInt());
     }
 
   updateStepList();
@@ -145,14 +157,11 @@ void ChaserEditor::slotRemoveClicked()
 void ChaserEditor::slotAddClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
+  ft->setInactiveID(m_original->id());
 
-  if (ft->exec() == QDialog::Accepted && ft->functionID() != 0)
+  if (ft->exec() == QDialog::Accepted && ft->functionID() != KNoID)
     {
-      Function* function = NULL;
-      function = _app->doc()->searchFunction(ft->functionID());
-      ASSERT(function != NULL);
-
-      m_chaser->addStep(function);
+      m_chaser->addStep(ft->functionID());
     }
 
   delete ft;
@@ -194,7 +203,7 @@ void ChaserEditor::slotRaiseClicked()
   if (item != NULL)
     {
       index = item->text(COL_NUM).toInt();
-      fid = item->text(COL_FID).toULong();
+      fid = item->text(COL_FID).toInt();
 
       m_chaser->raiseStep(index);
     }
@@ -226,7 +235,7 @@ void ChaserEditor::slotLowerClicked()
   if (item != NULL)
     {
       index = item->text(COL_NUM).toInt();
-      fid = item->text(COL_FID).toULong();
+      fid = item->text(COL_FID).toInt();
 
       m_chaser->lowerStep(index);
     }

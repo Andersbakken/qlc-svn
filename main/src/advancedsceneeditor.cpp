@@ -63,7 +63,7 @@ AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
   ASSERT(scene);
   m_original = scene;
 
-  m_scene = new Scene(KFunctionIDTemp);
+  m_scene = new Scene();
   m_scene->copyFrom(scene);
   m_currentChannel = NULL;
 
@@ -173,20 +173,22 @@ void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
   QPopupMenu* menu = new QPopupMenu;
   QPtrList <QPopupMenu> deleteList;
 
-  menu->insertItem("Value", INT_MAX);
+  menu->insertItem("Value", KNoID);
   menu->insertSeparator();
   connect(menu, SIGNAL(activated(int)), 
 	  this, SLOT(slotValueMenuActivated(int)));
 
-  for (unsigned int i = 0; i < 256; i += 16)
+  menu->insertItem("0", 0);
+  menu->insertItem("255", 255);
+  for (t_value i = 0; i != 255; i += 15)
     {
       QPopupMenu* sub = new QPopupMenu();
       deleteList.append(sub);
 
       QString top;
-      top.sprintf("%d - %d", i, i + 15);
+      top.sprintf("%d - %d", i+1, i + 15);
 
-      for (unsigned int j = 0; j < 16; j++)
+      for (t_value j = 1; j < 16; j++)
 	{
 	  QString num;
 	  num.setNum(i + j);
@@ -220,7 +222,7 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
       return;
     }
 
-  if (value == INT_MAX)
+  if (value == KNoID)
     {
       slotEditValueClicked();
     }
@@ -382,10 +384,12 @@ void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item,
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
   int ch = item->text(KColumnNumber).toInt();
+  t_device_id did = m_scene->device();
 
-  if (m_scene->device() != NULL)
+  if (did != KNoID)
     {
-      m_currentChannel = m_scene->device()->deviceClass()->channels()->at(ch);
+      m_currentChannel = 
+	_app->doc()->device(did)->deviceClass()->channels()->at(ch);
     }
   else
     {
@@ -514,9 +518,10 @@ void AdvancedSceneEditor::updateChannelList()
   m_sceneContents->clear();
   m_currentChannel = NULL;
 
-  if (m_scene->device() != NULL)
+  t_device_id did = m_scene->device();
+  if (did != KNoID)
     {
-      cl = m_scene->device()->deviceClass()->channels();
+      cl = _app->doc()->device(did)->deviceClass()->channels();
     }
   else
     {

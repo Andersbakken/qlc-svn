@@ -20,14 +20,12 @@
 */
 
 #include "functioncollection.h"
-#include "functionstep.h"
 #include "function.h"
 #include "deviceclass.h"
 #include "app.h"
 #include "doc.h"
 #include "functionconsumer.h"
 #include "eventbuffer.h"
-#include "functionstep.h"
 
 #include <qapplication.h>
 #include <qstring.h>
@@ -35,16 +33,19 @@
 #include <stdlib.h>
 #include <qfile.h>
 #include <qptrlist.h>
+#include <assert.h>
 
 extern App* _app;
 
 //
 // Standard constructor
 //
-FunctionCollection::FunctionCollection(t_function_id id)
-  : Function(id)
+FunctionCollection::FunctionCollection()
+  : Function(Function::Collection),
+
+    m_childCount      (     0 ),
+    m_childCountMutex ( false )
 {
-  m_type = Function::Collection;
 }
 
 
@@ -57,24 +58,17 @@ void FunctionCollection::copyFrom(FunctionCollection* fc, bool append)
 
   if (!m_running)
     {
-      m_type = Function::Collection;
-      m_running = fc->m_running;
       m_name = fc->m_name;
 
       if (!append)
 	{
-	  while (!m_steps.isEmpty())
-	    {
-	      delete m_steps.take(0);
-	    }
+	  m_steps.clear();
 	}
 
-      QPtrListIterator <FunctionStep> it(*fc->steps());
-      while (it.current())
+      QValueList <t_function_id>::iterator it;
+      for (it = fc->m_steps.begin(); it != fc->m_steps.end(); ++it)
 	{
-	  FunctionStep* newItem = new FunctionStep(it.current());
-	  m_steps.append(newItem);
-	  ++it;
+	  m_steps.append(*it);
 	}
     }
 
@@ -90,10 +84,7 @@ FunctionCollection::~FunctionCollection()
   stop();
   while(m_running) sched_yield();
 
-  while (m_steps.isEmpty() == false)
-    {
-      delete m_steps.take(0);
-    }
+  m_steps.clear();
 }
 
 
@@ -118,7 +109,7 @@ void FunctionCollection::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // Type
-  s = QString("Type = ") + typeString() + QString("\n");
+  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // ID
@@ -126,21 +117,14 @@ void FunctionCollection::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // Device
-  if (m_device != NULL)
-    {
-      s.sprintf("Device = %d\n", m_device->id());
-    }
-  else
-    {
-      s = QString("Device = 0\n");
-    }
+  s.sprintf("Device = %d\n", m_deviceID);
   file.writeBlock((const char*) s, s.length());
 
-  // For global collections, write device+scene pairs
-  for (FunctionStep* step = m_steps.first(); step != NULL;
-       step = m_steps.next())
+  // Steps
+  QValueList <t_function_id>::iterator it;
+  for (it = m_steps.begin(); it != m_steps.end(); ++it)
     {
-      s.sprintf("Function = %d\n", step->function()->id());
+      s.sprintf("Function = %d\n", *it);
       file.writeBlock((const char*) s, s.length());
     }
 }
@@ -151,7 +135,7 @@ void FunctionCollection::saveToFile(QFile &file)
 //
 void FunctionCollection::createContents(QPtrList <QString> &list)
 {
-  t_function_id fid = 0;
+  t_function_id fid = KNoID;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -166,19 +150,8 @@ void FunctionCollection::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Function"))
 	{
-	  fid = list.next()->toULong();
-
-	  Function* f = NULL;
-	  f = _app->doc()->searchFunction(fid);
-	  if (f != NULL)
-	    {
-	      addItem(f);
-	    }
-	  else
-	    {
-	      qDebug("Unable to find member %d for function collection <"
-		     + name() + ">", fid);
-	    }
+	  fid = list.next()->toInt();
+	  addItem(fid);
 	}
       else
 	{
@@ -192,19 +165,14 @@ void FunctionCollection::createContents(QPtrList <QString> &list)
 //
 // Add a function to this collection
 //
-bool FunctionCollection::addItem(Function* function)
+bool FunctionCollection::addItem(t_function_id id)
 {
   m_startMutex.lock();
 
   if (!m_running)
     {
-      ASSERT(function != NULL);
-      
-      FunctionStep* step = new FunctionStep();
-      step->setFunction(function);
-      
-      m_steps.append(step);
-      
+      m_steps.append(id);
+
       m_startMutex.unlock();
       return true;
     }
@@ -217,50 +185,16 @@ bool FunctionCollection::addItem(Function* function)
 //
 // Remove a function from this collection (direct function pointer)
 //
-bool FunctionCollection::removeItem(Function* function)
+bool FunctionCollection::removeItem(t_function_id id)
 {
+  bool result = false;
+
   m_startMutex.lock();
 
   if (!m_running)
     {
-      for (FunctionStep* step = m_steps.first(); step != NULL; 
-	   step = m_steps.next())
-	{
-	  if (step->function()->id() == function->id())
-	    {
-	      delete m_steps.take();
-
-	      m_startMutex.unlock();
-	      return true;
-	    }
-	}
-    }
-
-  m_startMutex.unlock();
-  return false;
-}
-
-
-//
-// Remove a function from this collection (with function id)
-//
-bool FunctionCollection::removeItem(const t_function_id functionId)
-{
-  m_startMutex.lock();
-
-  if (!m_running)
-    {
-      for (FunctionStep* step = m_steps.first(); step != NULL; 
-	   step = m_steps.next())
-	{
-	  if (step->function()->id() == functionId)
-	    {
-	      delete m_steps.take();
-
-	      m_startMutex.unlock();
-	      return true;
-	    }
-	}
+      m_steps.remove(id);
+      result = true;
     }
 
   m_startMutex.unlock();
@@ -291,7 +225,7 @@ void FunctionCollection::freeRunTimeData()
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(this));
+			      new FunctionStopEvent(m_id));
       m_virtualController = NULL;
     }
 
@@ -312,15 +246,17 @@ void FunctionCollection::freeRunTimeData()
 //
 void FunctionCollection::stop()
 {
-  QPtrListIterator <FunctionStep> it(m_steps);
-  m_stopped = true;
-
-  while (it.current())
+  QValueList <t_function_id>::iterator it;
+  for (it = m_steps.begin(); it != m_steps.end(); ++it)
     {
-      it.current()->function()->stop();
-      ++it;
+      Function* f = _app->doc()->function(*it);
+      if (f)
+	{
+	  f->stop();
+	}
     }
 }
+
 
 //
 // Initialize some run-time values
@@ -344,22 +280,25 @@ void FunctionCollection::init()
 //
 void FunctionCollection::run()
 {
-  QPtrListIterator <FunctionStep> it(m_steps);
+  QValueList <t_function_id>::iterator it;
 
   // Calculate starting values
   init();
   
   m_stopped = false;
-  while (it.current() && !m_stopped)
+  for (it = m_steps.begin(); it != m_steps.end(); ++it)
     {
-      if (it.current()->function()->engage(this))
+      Function* f = _app->doc()->function(*it);
+      if (f && f->engage(this))
 	{
 	  m_childCountMutex.lock();
 	  m_childCount++;
 	  m_childCountMutex.unlock();
 	}
-
-      ++it;
+      else
+	{
+	  qDebug("Collection unable to start function <id:%d>", *it);
+	}
     }
 
   // Wait for all children to stop

@@ -22,25 +22,23 @@
 #ifndef FUNCTIONCOLLECTION_H
 #define FUNCTIONCOLLECTION_H
 
+#include <qvaluelist.h>
 #include "function.h"
-
-class FunctionStep;
 
 class FunctionCollection : public Function
 {
  public:
-  FunctionCollection(t_function_id id = KFunctionIDAuto);
+  FunctionCollection();
   virtual ~FunctionCollection();
 
   void copyFrom(FunctionCollection* fc, bool append = false);
 
-  QPtrList <FunctionStep> *steps() { return &m_steps; }
+  QValueList <t_function_id> *steps() { return &m_steps; }
 
-  bool setDevice(Device* device) { return false; }
+  bool setDevice(t_device_id) { return false; }
 
-  bool addItem(Function* function);
-  bool removeItem(Function* function);
-  bool removeItem(const t_function_id functionId);
+  bool addItem(t_function_id);
+  bool removeItem(t_function_id);
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
@@ -57,7 +55,7 @@ class FunctionCollection : public Function
   void run();
 
  private:
-  QPtrList <FunctionStep> m_steps;
+  QValueList <t_function_id> m_steps;
 
   int m_childCount;
   QMutex m_childCountMutex;

@@ -21,8 +21,9 @@
 
 #include <qstring.h>
 #include <qapplication.h>
-#include <sys/types.h>
-#include <signal.h>
+#include <qmessagebox.h>
+#include <assert.h>
+
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
@@ -33,68 +34,31 @@
 
 extern App* _app;
 
-//
-// Initialize function id
-//
-t_function_id Function::_nextFunctionID = KFunctionIDMin;
+const QString KCollectionString ( "Collection" );
+const QString KSceneString      (      "Scene" );
+const QString KChaserString     (     "Chaser" );
+const QString KSequenceString   (   "Sequence" );
+const QString KUndefinedString  (  "Undefined" );
 
 //
-// Standard constructor
-// id can be one of the following:
-// KFunctionIDTemp: Don't assign an id (used for editing)
-// KFunctionIDAuto: Assign an id automatically (default)
-// Everything else: Assign the given id to this function (reading from a file)
+// Standard constructor (protected)
 //
-Function::Function(t_function_id id) : QThread()
+Function::Function(Type type) : 
+  QThread(),
+  m_name              (                      QString::null ),
+  m_type              (                               type ),
+  m_id                (                              KNoID ),
+  m_deviceID          (                              KNoID ),
+  m_busID             (                      KBusIDInvalid ),
+  m_eventBuffer       (                               NULL ),
+  m_virtualController (                               NULL ),
+  m_parentFunction    (                               NULL ),
+  m_running           (                              false ),
+  m_stopped           (                              false ),
+  m_removeAfterEmpty  (                              false ),
+  m_startMutex        (                              false ),
+  m_listener          (                               NULL )
 {
-  if (id == KFunctionIDTemp)
-    {
-      m_id = id;
-    }
-  else if (id == KFunctionIDAuto)
-    {
-      m_id = _nextFunctionID;
-      _nextFunctionID++;
-
-      if (_nextFunctionID == KFunctionIDMax)
-	{
-	  // In case we ever go beyond the limit
-	  _nextFunctionID = KFunctionIDMin;
-	}
-    }
-  else
-    {
-      m_id = id;
-      if (id >= _nextFunctionID)
-	{
-	  _nextFunctionID = id + 1;
-	}
-
-      if (_nextFunctionID == KFunctionIDMax)
-	{
-	  // In case we ever go beyond the limit
-	  _nextFunctionID = KFunctionIDMin;
-	}
-    }
-
-  m_name = QString::null;
-  m_type = Function::Undefined;
-  m_device = NULL;
-  m_running = false;
-  m_eventBuffer = NULL;
-  m_virtualController = NULL;
-  m_parentFunction = NULL;
-  m_stopped = false;
-  m_busID = KBusIDInvalid;
-
-  if (id != KFunctionIDTemp)
-    {
-      m_listener = new FunctionNS::BusListener(this);
-    }
-  else
-    {
-      m_listener = NULL;
-    }
 }
 
 
@@ -105,40 +69,76 @@ Function::~Function()
 {
   delete m_listener;
   m_listener = NULL;
-
-  QApplication::postEvent(_app->doc(), new FunctionDestroyEvent(m_id));
 }
 
+//
+// Set the ID
+//
+void Function::setID(t_function_id id)
+{
+  m_id = id;
+
+  if (m_listener) delete m_listener;
+  m_listener = new FunctionNS::BusListener(m_id);
+}
 
 //
 // Return the type as a string
 //
-QString Function::typeString() const
+QString Function::typeToString(Type type)
 {
-  switch (m_type)
+  switch (type)
     {
     case Collection:
-      return QString("Collection");
+      return KCollectionString;
       break;
 
     case Scene:
-      return QString("Scene");
+      return KSceneString;
       break;
 
     case Chaser:
-      return QString("Chaser");
+      return KChaserString;
       break;
 
     case Sequence:
-      return QString("Sequence");
+      return KSequenceString;
       break;
 
+    case Undefined:
     default:
-      return QString("Undefined");
+      return KUndefinedString;
       break;
     }
 }
 
+
+//
+// Return the given string as a type enum
+//
+Function::Type Function::stringToType(QString string)
+{
+  if (string == KCollectionString)
+    {
+      return Collection;
+    }
+  else if (string == KSceneString)
+    {
+      return Scene;
+    }
+  else if (string == KChaserString)
+    {
+      return Chaser;
+    }
+  else if (string == KSequenceString)
+    {
+      return Sequence;
+    }
+  else
+    {
+      return Undefined;
+    }
+}
 
 //
 // Set a name to this function
@@ -164,7 +164,7 @@ bool Function::setName(QString name)
 // Assign a device to this function (or vice versa, whichever feels
 // familiar to you)
 //
-bool Function::setDevice(Device* device)
+bool Function::setDevice(t_device_id id)
 {
   m_startMutex.lock();
   if (m_running)
@@ -174,7 +174,7 @@ bool Function::setDevice(Device* device)
     }
   else
     {
-      m_device = device;
+      m_deviceID = id;
       m_startMutex.unlock();
       return true;
     }
@@ -269,16 +269,20 @@ void Function::stop()
 
 
 //
-// Load function's contents after it has been created with
-// createFunction()
+// Create a function from a file entry
 //
-void Function::createAllContents(QPtrList <QString> &list)
+Function* Function::create(QPtrList <QString> &list)
 {
   Function* function = NULL;
-  t_function_id id = KFunctionIDMax;
 
   QString name;
+  Function::Type type;
+  t_function_id fid = KNoID;
+  t_device_id did = KNoID;
 
+  //
+  // Read basic information
+  //
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
@@ -292,15 +296,15 @@ void Function::createAllContents(QPtrList <QString> &list)
 	}		      
       else if (*s == QString("Type"))
 	{
-	  list.next();
+	  type = Function::stringToType(*(list.next()));
 	}
       else if (*s == QString("ID"))
 	{
-	  id = list.next()->toULong();
+	  fid = list.next()->toInt();
 	}
       else if (*s == QString("Device"))
 	{
-	  list.next();
+	  did = list.next()->toInt();
 	  break;
 	}
       else
@@ -310,27 +314,34 @@ void Function::createAllContents(QPtrList <QString> &list)
 	}
     }
 
-  if (id == KFunctionIDMax)
+  //
+  // Create the function and its contents
+  //
+  function = _app->doc()->newFunction(type, fid);
+  if (function)
     {
-      qDebug("Couldn't find an ID for function <" + name + ">");
+      function->setDevice(did);
+      function->setName(name);
+      function->createContents(list);
     }
   else
     {
-      function = _app->doc()->searchFunction(id);
-
-      if (function != NULL)
-	{
-	  function->createContents(list);
-	}
-      else
-	{
-	  qDebug("Couldn't find function <" + name + ">");
-	}
-
-      name = QString::null;
-      id = KFunctionIDMax;
+      QString msg, num;
+      msg = QString("Unable to create function!");
+      msg += QString("Name:   ") + name + QString("\n");
+      msg += QString("Type:   ") + typeToString(type) + QString("\n");
+      num.setNum(fid);
+      msg += QString("ID:     ") + num + QString("\n");
+      num.setNum(did);
+      msg += QString("Device: ") + num + QString("\n");
+      QMessageBox::critical(_app, KApplicationNameShort, msg);
     }
+
+  return function;
 }
+
+
+
 
 
 ///////////////////////////
@@ -338,108 +349,10 @@ void Function::createAllContents(QPtrList <QString> &list)
 ///////////////////////////
 
 //
-// Create a function from a file entry
-// This has to be in a separate namespace for some pervert reason that
-// GCC won't tell me.
-//
-Function* FunctionNS::createFunction(QPtrList <QString> &list)
-{
-  Function* f = NULL;
-  Device* d = NULL;
-
-  QString name;
-  QString type;
-  t_device_id device = KNoID;
-  t_function_id id = KFunctionIDMax;
-
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
-      else if (*s == QString("Name"))
-	{
-	  name = *(list.next());
-	}		      
-      else if (*s == QString("Type"))
-	{
-	  type = *(list.next());
-	}
-      else if (*s == QString("ID"))
-	{
-	  id = list.next()->toInt();
-	}
-      else if (*s == QString("Device"))
-	{
-	  device = list.next()->toInt();
-	  break;
-	}
-      else
-	{
-	  // Unknown keyword (at this time)
-	  list.next();
-	}
-    }
-
-  if (id == KFunctionIDMax)
-    {
-      f = NULL;
-    }
-  else
-    {
-      if (device == KNoID)
-	{
-	  d = NULL;
-	}
-      else
-	{
-	  d = _app->doc()->searchDevice(device);
-	  if (d == NULL)
-	    {
-	      // This function's device was not found
-	      qDebug("Unable to find device %d", device);
-	      return NULL;
-	    }
-	}
-
-      if (type == QString("Collection"))
-	{
-	  f = static_cast<Function*> (new FunctionCollection(id));
-	  f->setName(name);
-	  f->setDevice(d);
-	}
-      else if (type == QString("Chaser"))
-	{
-	  f = static_cast<Function*> (new Chaser(id));
-	  f->setName(name);
-	  f->setDevice(d);
-	}
-      else if (type == QString("Scene"))
-	{
-	  f = static_cast<Function*> (new Scene(id));
-	  f->setName(name);
-	  f->setDevice(d);
-	}
-      else if (type == QString("Sequence"))
-	{
-	  f = NULL;
-	}
-      else
-	{
-	  f = NULL;
-	}
-    }
-
-  return f;
-}
-
-
-//
 // Bus Listener Constructor
 //
-FunctionNS::BusListener::BusListener(Function* f) : m_function(f)
+FunctionNS::BusListener::BusListener(t_function_id id) 
+  : m_functionID(id)
 { 
   connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
@@ -461,6 +374,7 @@ FunctionNS::BusListener::~BusListener()
 void FunctionNS::BusListener::slotBusValueChanged(t_bus_id id,
 						  t_bus_value value)
 { 
-  ASSERT(m_function);
-  m_function->busValueChanged(id, value);
+  Function* f = _app->doc()->function(m_functionID);
+  assert(f);
+  f->busValueChanged(id, value);
 }

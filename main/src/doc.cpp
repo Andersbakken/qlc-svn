@@ -45,15 +45,32 @@
 
 extern App* _app;
 
-//using namespace FunctionNS;
-
 //
 // Constructor
 //
 Doc::Doc() : QObject()
 {
-  m_workspaceFileName = QString::null;
+  m_fileName = QString::null;
   setModified(false);
+
+  //
+  // Allocate function array
+  //
+  m_functionArray = (Function**) 
+    malloc(sizeof(Function*) * KFunctionArraySize);
+  for (t_function_id i = 0; i < KFunctionArraySize; i++)
+    {
+      m_functionArray[i] = NULL;
+    }
+
+  //
+  // Allocate device array
+  //
+  m_deviceArray = (Device**) malloc(sizeof(Device*) * KDeviceArraySize);
+  for (t_device_id i = 0; i < KDeviceArraySize; i++)
+    {
+      m_deviceArray[i] = NULL;
+    }
 }
 
 
@@ -62,18 +79,16 @@ Doc::Doc() : QObject()
 //
 Doc::~Doc()
 {
-  Device* d = NULL;
-  Function* f = NULL;
-
   //
   // Delete all functions
   //
-  m_functions.first();
-  while (!m_functions.isEmpty())
+  for (t_function_id i = 0; i < KFunctionArraySize; i++)
     {
-      f = m_functions.take(0);
-      ASSERT(f);
-      delete f;
+      if (m_functionArray[i])
+	{
+	  delete m_functionArray[i];
+	  m_functionArray[i] = NULL;
+	}
     }
 
   //
@@ -82,25 +97,16 @@ Doc::~Doc()
   emit functionListChanged();
 
   //
-  // Reset function ID numbers
-  //
-  Function::resetID();
-
-  //
   // Delete all devices
   //
-  m_deviceList.first();
-  while (!m_deviceList.isEmpty())
+  for (t_device_id i = 0; i < KDeviceArraySize; i++)
     {
-      d = m_deviceList.take(0);
-      ASSERT(d);
-      delete d;
+      if (m_deviceArray[i])
+	{
+	  delete m_deviceArray[i];
+	  m_deviceArray[i] = NULL;
+	}
     }
-
-  //
-  // Reset device ID numbers
-  //
-  Device::resetID();
 
   //
   // Signal that device list has changed
@@ -117,9 +123,9 @@ void Doc::setModified(bool modified)
   m_modified = modified;
   
   QString caption(KApplicationNameLong);
-  if (workspaceFileName() != QString::null)
+  if (fileName() != QString::null)
     {
-      caption += QString(" - ") + workspaceFileName();
+      caption += QString(" - ") + fileName();
     }
 
   if (modified == true)
@@ -145,7 +151,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 
   if (FileHandler::readFileToList(fileName, list) == true)
     {
-      m_workspaceFileName = QString(fileName);
+      m_fileName = QString(fileName);
     }
   else
     {
@@ -153,8 +159,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
     }
 
   // Create devices and functions from the list
-  for (QString* string = list.first(); 
-       string != NULL; string = list.next())
+  for (QString* string = list.first(); string != NULL; string = list.next())
     {
       if (*string == QString("Entry"))
 	{
@@ -162,26 +167,14 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	  
 	  if (*string == QString("Device"))
 	    {
-	      Device* d = Device::create(list);
-	      
-	      if (d)
-		{
-		  addDevice(d);
-		}
+	      Device::create(list);
 	    }
 	  else if (*string == QString("Function"))
 	    {
-	      // Only create the function but not its contents
-	      Function* f = FunctionNS::createFunction(list);
-	      
-	      if (f)
-		{
-		  addFunction(f);
-		}
+	      Function::create(list);
 	    }
 	  else if (*string == QString("Bus"))
 	    {
-	      // Read bus names and values
 	      Bus::createContents(list);
 	    }
 	  else if (*string == QString("Virtual Console"))
@@ -199,27 +192,13 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	}
     }
 
-  // Now put contents to functions
-  // The functions are given their contents after every function
-  // object has been created. Otherwise some functions can not
-  // be created if their children have not been created.
-  for (QString* string = list.first(); 
-       string != NULL; string = list.next())
-    {
-      if (*string == QString("Entry"))
-	{
-	  string = list.next();
-	  if (*string == QString("Function"))
-	    {
-	      Function::createAllContents(list);
-	    }
-	}
-    }
-  
   //
   // Set the last workspace name
   //
-  _app->settings()->set(KEY_LAST_WORKSPACE_NAME, workspaceFileName());
+  _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
+
+  emit deviceListChanged();
+  emit functionListChanged();
   
   setModified(false);
   
@@ -232,7 +211,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 //
 bool Doc::saveWorkspace()
 {
-  return saveWorkspaceAs(m_workspaceFileName);
+  return saveWorkspaceAs(m_fileName);
 }
 
 
@@ -247,60 +226,22 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //////////////////////////
       // Devices              //
       //////////////////////////
-      for (Device* d = m_deviceList.first(); d != NULL; 
-	   d = m_deviceList.next())
+      for (t_device_id i = 0; i < KDeviceArraySize; i++)
         {
-	  d->saveToFile(file);
+	  if (m_deviceArray[i])
+	    {
+	      m_deviceArray[i]->saveToFile(file);
+	    }
 	}
 
       //////////////////////////
       // Functions            //
       //////////////////////////
-      //
-      // Scenes
-      //
-      for (Function* f = m_functions.first(); f != NULL; 
-	   f = m_functions.next())
+      for (t_function_id i = 0; i < KFunctionArraySize; i++)
 	{
-	  if (f->type() == Function::Scene)
+	  if (m_functionArray[i])
 	    {
-	      f->saveToFile(file);
-	    }
-	}
-
-      //
-      // Chasers
-      //
-      for (Function* f = m_functions.first(); f != NULL; 
-	   f = m_functions.next())
-	{
-	  if (f->type() == Function::Chaser)
-	    {
-	      f->saveToFile(file);
-	    }
-	}
-
-      //
-      // Sequences
-      //
-      for (Function* f = m_functions.first(); f != NULL; 
-	   f = m_functions.next())
-	{
-	  if (f->type() == Function::Sequence)
-	    {
-	      f->saveToFile(file);
-	    }
-	}
-
-      //
-      // Collections
-      //
-      for (Function* f = m_functions.first(); f != NULL; 
-	   f = m_functions.next())
-	{
-	  if (f->type() == Function::Collection)
-	    {
-	      f->saveToFile(file);
+	      m_functionArray[i]->saveToFile(file);
 	    }
 	}
 
@@ -318,19 +259,20 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       setModified(false);
 
       // Current workspace file
-      m_workspaceFileName = QString(fileName);
+      m_fileName = QString(fileName);
 
       //
       // Set the last workspace name
       //
-      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, workspaceFileName());
+      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
 
       file.close();
     }
   else
     {
       QMessageBox::critical(_app, KApplicationNameShort, 
-			    "Unable to open file for writing!");
+			    QString("Unable to open file for writing:\n")
+			    + file.errorString());
       return false;
     }
 
@@ -341,151 +283,197 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 //////////////////
 // Device stuff //
 //////////////////
-
-//
-// Add a new device to list
-//
-bool Doc::addDevice(Device* device)
+Device* Doc::newDevice(DeviceClass* dc, QString name,
+		       t_channel address, t_device_id id)
 {
-  ASSERT(device != NULL);
-  
-  m_deviceList.append(device);
+  Device* d = new Device();
 
-  setModified(true);
+  //
+  // If the device was created successfully, save it to device
+  // array and set its position in the array as its ID
+  //
+  if (d)
+    {
+      if (id == KNoID)
+	{
+	  for (t_device_id i = 0; i < KDeviceArraySize; i++)
+	    {
+	      if (m_deviceArray[i] == NULL)
+		{
+		  m_deviceArray[i] = d;
+		  d->setID(i);
+		  d->setDeviceClass(dc);
+		  d->setAddress(address);
+		  d->setName(name);
+		  break;
+		}
+	    }
+	}
+      else if (id >= 0 && id < KFunctionArraySize)
+	{
+	  if (m_deviceArray[id] == NULL)
+	    {
+	      m_deviceArray[id] = d;
+	      d->setID(id);
+	      d->setDeviceClass(dc);
+	      d->setAddress(address);
+	      d->setName(name);
+	    }
+	  else
+	    {
+	      delete d;
+	      QMessageBox::critical(_app, KApplicationNameShort,
+	            "Unable to create device; ID already taken!");
+	    }
+	}
+      else
+	{
+	  QMessageBox::warning(_app, KApplicationNameShort,
+			       "Function ID out of bounds!");
+	}
+
+    }
 
   emit deviceListChanged();
-  
-  return true;
+
+  return d;
 }
 
 
 //
-// Remove a device from list only when in design mode
+// Remove a device by a given id
 //
-bool Doc::removeDevice(Device* device)
+void Doc::deleteDevice(t_device_id id)
 {
-  if (_app->mode() == App::Design)
+  if (m_deviceArray[id])
     {
-      Device* dev = NULL;
-      bool ok = false;
-      int id = -1;
-      
-      ASSERT(device != NULL);
-      
-      for (dev = m_deviceList.first(); dev != NULL; dev = m_deviceList.next())
-	{
-	  if (dev->id() == device->id())
-	    {
-	      ok = m_deviceList.removeRef(dev);
-	      id = dev->id();
-	      delete dev;
-	      break;
-	    }
-	}
-      
-      setModified(true);
-      
-      emit deviceListChanged();
-      
-      return ok;
+      delete m_deviceArray[id];
+      m_deviceArray[id] = NULL;
+    }
+
+  emit deviceListChanged();
+}
+
+
+//
+// Return a device from the device array
+//
+Device* Doc::device(t_device_id id)
+{
+  if (id >= 0 && id < KDeviceArraySize)
+    {
+      return m_deviceArray[id];
     }
   else
     {
-      return false;
+      return NULL;
     }
 }
-
-
-//
-// Search for a device by its id number
-//
-Device* Doc::searchDevice(const t_device_id id)
-{
-  for (Device* device = m_deviceList.first(); device != NULL;
-       device = m_deviceList.next())
-    {
-      if (device->id() == id)
-	{
-	  return device;
-	}
-    }
-
-  return NULL;
-}
-
-
 
 
 ////////////////////
 // Function stuff //
 ////////////////////
-
 //
-// Add a new function to list
+// Create a new function
 //
-bool Doc::addFunction(const Function* function)
+Function* Doc::newFunction(Function::Type type, t_function_id id)
 {
-  ASSERT(function != NULL);
-  m_functions.append(function);
+  Function* f = NULL;
 
-  setModified(true);
+  //
+  // Create the function
+  //
+  switch(type)
+    {
+    case Function::Scene:
+      f = new Scene();
+      break;
+    case Function::Chaser:
+      f = new Chaser();
+      break;
+    case Function::Collection:
+      f = new FunctionCollection();
+      break;
+    case Function::Sequence:
+      f = NULL;
+      break;
+    case Function::Undefined:
+    default:
+      f = NULL;
+    }
+
+  //
+  // If the function was created successfully, save it to function
+  // array and set its position in the array as its ID
+  //
+  if (f)
+    {
+      if (id == KNoID)
+	{
+	  for (t_function_id i = 0; i < KFunctionArraySize; i++)
+	    {
+	      if (m_functionArray[i] == NULL)
+		{
+		  m_functionArray[i] = f;
+		  f->setID(i);
+		  break;
+		}
+	    }
+	}
+      else if (id >= 0 && id < KFunctionArraySize)
+	{
+	  if (m_functionArray[id] == NULL)
+	    {
+	      m_functionArray[id] = f;
+	      f->setID(id);
+	    }
+	  else
+	    {
+	      delete f;
+	      QMessageBox::critical(_app, KApplicationNameShort,
+		     "Unable to add function; ID already taken!");
+	    }
+	}
+      else
+	{
+	  QMessageBox::warning(_app, KApplicationNameShort,
+			       "Function ID out of bounds!");
+	}
+    }
 
   emit functionListChanged();
 
-  return true;
+  return f;
 }
 
 
 //
-// Remove (and delete) a function from list only when in design mode
+// Remove a function by a given id
 //
-bool Doc::removeFunction(const t_function_id id, bool deleteFunction)
+void Doc::deleteFunction(t_function_id id)
 {
-  Function* f = NULL;
-
-  if (_app->mode() == App::Design)
+  if (m_functionArray[id])
     {
-      for (f = m_functions.first(); f != NULL; f = m_functions.next())
-	{
-	  if (f->id() == id)
-	    {
-	      m_functions.take();
-	      
-	      if (deleteFunction)
-		{
-		  delete f;
-		}
-	      
-	      break;
-	    }
-	}
+      delete m_functionArray[id];
+      m_functionArray[id] = NULL;
+    }
 
-      setModified(true);
+  emit functionListChanged();
+}
 
-      emit functionListChanged();
 
-      return true;
+//
+// Return a function from the function array
+//
+Function* Doc::function(t_function_id id)
+{
+  if (id >= 0 && id < KFunctionArraySize)
+    {
+      return m_functionArray[id];
     }
   else
     {
-      return false;
+      return NULL;
     }
-}
-
-
-//
-// Search for a function by its id
-//
-Function* Doc::searchFunction(const t_function_id id)
-{
-  Function* f = NULL;
-  for (f = m_functions.first(); f != NULL; f = m_functions.next())
-    {
-      if (f->id() == id)
-	{
-	  return f;
-	}
-    }
-
-  return NULL;
 }

@@ -47,7 +47,7 @@ class Doc : public QObject
   //
   // Load & Save
   //
-  QString workspaceFileName() { return m_workspaceFileName; }
+  QString fileName() { return m_fileName; }
   bool loadWorkspaceAs(QString &);
   bool saveWorkspaceAs(QString &);
   bool saveWorkspace();
@@ -55,30 +55,28 @@ class Doc : public QObject
   //
   // Devices
   //
-  bool addDevice(Device* d);
-  bool removeDevice(Device* d);
-  Device* searchDevice(const t_device_id id);
-  QPtrList <Device> *deviceList() { return &m_deviceList; }
+  Device* newDevice(DeviceClass* dc, QString name,
+		    t_channel address, t_device_id id = KNoID);
+  void deleteDevice(t_device_id);
+  Device* device(t_device_id);
 
   //
   // Functions
   //
-  bool addFunction(const Function* function);
-  bool removeFunction(const t_function_id id, bool deleteFunction = true);
-  Function* searchFunction(const t_function_id id);
-  QPtrList <Function> *functions() { return &m_functions; }
+  Function* newFunction(Function::Type, t_function_id = KNoID);
+  void deleteFunction(t_function_id);
+  Function* function(t_function_id);
 
  signals:
   void deviceListChanged();
   void functionListChanged();
-  void modeChanged();
 
  private:
-  QString m_workspaceFileName;
+  QString m_fileName;
   bool m_modified;
 
-  QPtrList <Function> m_functions;
-  QPtrList <Device> m_deviceList;
+  Function** m_functionArray;
+  Device** m_deviceArray;
 };
 
 #endif

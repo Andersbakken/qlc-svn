@@ -22,7 +22,6 @@
 #include "functioncollectioneditor.h"
 #include "functioncollection.h"
 #include "function.h"
-#include "functionstep.h"
 #include "functiontree.h"
 #include "app.h"
 #include "doc.h"
@@ -34,6 +33,7 @@
 #include <qlistview.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -44,7 +44,7 @@ FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* fc,
   ASSERT(fc);
   m_original = fc;
 
-  m_fc = new FunctionCollection(KFunctionIDTemp);
+  m_fc = new FunctionCollection();
   m_fc->copyFrom(fc);
 
   init();
@@ -65,9 +65,10 @@ void FunctionCollectionEditor::init()
 void FunctionCollectionEditor::slotAddFunctionClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
-  ASSERT(ft);
+  assert(ft);
+  ft->setInactiveID(m_original->id());
 
-  if (ft->exec() == QDialog::Accepted && ft->functionID() != 0)
+  if (ft->exec() == QDialog::Accepted && ft->functionID() != KNoID)
     {
       if (isAlreadyMember(ft->functionID()))
 	{
@@ -76,21 +77,8 @@ void FunctionCollectionEditor::slotAddFunctionClicked()
 	}
       else
 	{
-      	  Function* function = NULL;
-	  function = _app->doc()->searchFunction(ft->functionID());
-	  ASSERT(function);
-	  
-	  if (m_fc->addItem(function))
-	    {
-	      QString id;
-	      id.setNum(function->id());
-	      new QListViewItem(m_functionList, QString("Global"), 
-				function->name(), id);
-	    }
-	  else
-	    {
-	      ASSERT(false);
-	    }
+	  m_fc->addItem(ft->functionID());
+	  updateFunctionList();
 	}
     }
 
@@ -107,7 +95,7 @@ void FunctionCollectionEditor::slotRemoveFunctionClicked()
     {
       t_function_id id = 0;
 
-      id = m_functionList->selectedItem()->text(2).toULong();
+      id = m_functionList->selectedItem()->text(2).toInt();
 
       if (m_fc->removeItem(id))
 	{
@@ -150,19 +138,45 @@ void FunctionCollectionEditor::slotCancelClicked()
 //
 void FunctionCollectionEditor::updateFunctionList()
 {
-  ASSERT(m_fc);
-  QPtrListIterator <FunctionStep> it(*m_fc->steps());
+  assert(m_fc);
+  QString device = QString::null;
+  QString function = QString::null;
+
+  QValueList<t_function_id>::iterator it;
 
   m_functionList->clear();
 
-  while (it.current())
+  for (it = m_fc->steps()->begin(); it != m_fc->steps()->end(); ++it)
     {
-      QString id;
-      id.setNum(it.current()->function()->id());
-      new QListViewItem(m_functionList, 
-			it.current()->function()->device()->name(), 
-			it.current()->function()->name(), id);
-      ++it;
+      Function* f = _app->doc()->function(*it);
+      if (!f)
+	{
+	  function = QString("Invalid");
+	  device = QString("Invalid");
+	}
+      else if (f->device() != KNoID)
+	{
+	  function = f->name();
+	  
+	  Device* d = _app->doc()->device(f->device());
+	  if (!d)
+	    {
+	      device = QString("Invalid");
+	    }
+	  else
+	    {
+	      device = d->name();	      
+	    }
+	}
+      else
+	{
+	  function = f->name();
+	  device = QString("Global");
+	}
+      
+      QString fid;
+      fid.setNum(*it);
+      new QListViewItem(m_functionList, device, function, fid);
     }
 }
 
@@ -172,16 +186,14 @@ void FunctionCollectionEditor::updateFunctionList()
 //
 bool FunctionCollectionEditor::isAlreadyMember(t_function_id id)
 {
-  QPtrListIterator <FunctionStep> it(*m_fc->steps());
+  QValueList<t_function_id>::iterator it;
 
-  while (it.current())
+  for (it = m_fc->steps()->begin(); it != m_fc->steps()->end(); ++it)
     {
-      if (it.current()->function()->id() == id)
+      if (*it == id)
 	{
 	  return true;
 	}
-
-      ++it;
     }
 
   return false;

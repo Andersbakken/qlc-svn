@@ -35,7 +35,7 @@ typedef float t_scene_acc;
 class Scene : public Function
 {
  public:
-  Scene(t_function_id id = KFunctionIDAuto);
+  Scene();
   ~Scene();
 
   enum ValueType
@@ -45,8 +45,8 @@ class Scene : public Function
       NoSet = 2  // Ignored value
     };
 
-  bool copyFrom(Scene* sc);
-  bool setDevice(Device* device);
+  bool copyFrom(Scene*);
+  bool setDevice(t_device_id);
 
   t_channel channels() { return m_channels; }
 

@@ -20,7 +20,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
@@ -194,7 +193,7 @@ void SceneEditor::remove()
 			   QMessageBox::Yes, QMessageBox::No) 
       == QMessageBox::Yes)
     {
-      _app->doc()->removeFunction(s->id());
+      _app->doc()->deleteFunction(s->id());
       fillFunctions();
     }
 }
@@ -242,9 +241,11 @@ void SceneEditor::newScene()
   
   if (ok && !text.isEmpty())
     {
-      Scene* sc = new Scene();
+      Scene* sc = static_cast<Scene*>
+	(_app->doc()->newFunction(Function::Scene));
+
       sc->setName(text);
-      sc->setDevice(m_device);
+      sc->setDevice(m_device->id());
       
       t_channel channels = m_device->deviceClass()->channels()->count();
       t_value val[channels];
@@ -259,9 +260,6 @@ void SceneEditor::newScene()
 	  sc->set(i, val[i], ul.at(i)->status());
 	}
       
-      // Save to function pool
-      _app->doc()->addFunction(sc);
-
       fillFunctions();
       selectFunction(sc->id());
     }
@@ -303,18 +301,20 @@ Scene* SceneEditor::currentScene()
 
   fid = static_cast<ListBoxIDItem*> (m_sceneList->selectedItem())->rtti();
 
-  return static_cast<Scene*> (_app->doc()->searchFunction(fid));
+  return static_cast<Scene*> (_app->doc()->function(fid));
 }
 
 void SceneEditor::fillFunctions()
 {
-  QPtrList <Function> *fl = _app->doc()->functions();
-
   m_sceneList->clear();
 
-  for (Function* f = fl->first(); f != NULL; f = fl->next())
+  for (t_function_id id = 0; id < KFunctionArraySize; id++)
     {
-      if (f->type() == Function::Scene && f->device() == m_device)
+      Function* f = _app->doc()->function(id);
+      if (!f)
+	continue;
+
+      if (f->type() == Function::Scene && f->device() == m_device->id())
 	{
 	  ListBoxIDItem* item = new ListBoxIDItem();
 	  item->setText(f->name());

@@ -32,7 +32,6 @@
 #include "types.h"
 
 const int KFunctionStopEvent        ( QEvent::User + 1 );
-const int KFunctionDestroyEvent     ( QEvent::User + 2 );
 
 class Device;
 class EventBuffer;
@@ -46,8 +45,6 @@ class Function;
 //
 namespace FunctionNS
 {
-  Function* createFunction(QPtrList <QString> &list);
-
   //
   // A listener class that listens to bus value changes
   //
@@ -56,14 +53,14 @@ namespace FunctionNS
       Q_OBJECT
 	
      public:
-      BusListener(Function* f);
+      BusListener(t_function_id);
       ~BusListener();
       
      public slots:
       void slotBusValueChanged(t_bus_id id, t_bus_value value);
-      
+
      protected:
-      Function* m_function;
+      t_function_id m_functionID;
     };
 };
 
@@ -71,12 +68,6 @@ namespace FunctionNS
 class Function : public QThread
 {
  public:
-  // Constructor. See .cpp file for explanation on id's
-  Function(t_function_id id = KFunctionIDAuto);
-
-  // Destructor
-  virtual ~Function();
-
   // Possible function types
   enum Type
     {
@@ -87,18 +78,30 @@ class Function : public QThread
       Sequence = 0x8
     };
 
+  // Constructor. See .cpp file for explanation on id's
+  Function(Type);
+
+  // Destructor
+  virtual ~Function();
+
  public:
   // This function's unique ID
   t_function_id id() { return m_id; }
 
+  // Set this function's ID
+  void setID(t_function_id);
+
   // Return the type of this function (see the enum above)
   Type type() { return m_type; }
 
-  // Create all functions' contents
-  static void createAllContents(QPtrList <QString> &list);
+  // Convert a type to string
+  static QString typeToString(Type);
 
-  // Same thing, only this time as a string
-  QString typeString() const;
+  // Convert a string to type enum
+  static Type stringToType(QString);
+
+  // Create one function from list
+  static Function* create(QPtrList <QString> &list);
 
   // Return the name of this function
   virtual QString name() { return m_name; }
@@ -107,10 +110,10 @@ class Function : public QThread
   virtual bool setName(QString name);
 
   // Return the device that this function is associated to
-  virtual Device* device() { return m_device; }
+  virtual t_device_id device() { return m_deviceID; }
 
   // Set the device that this function is associated to
-  virtual bool setDevice(Device* device);
+  virtual bool setDevice(t_device_id);
 
   // The bus for speed setting
   t_bus_id busID() const { return m_busID; }
@@ -154,13 +157,12 @@ class Function : public QThread
   // Semi-permanent function data
   QString m_name;
   Type m_type;
-  Device* m_device;
   t_function_id m_id;
+  t_device_id m_deviceID;
+  t_bus_id m_busID;
 
   // Run-time data
-  bool m_removeAfterEmpty;
   EventBuffer* m_eventBuffer;
-
   QObject* m_virtualController;
   Function* m_parentFunction;
 
@@ -169,25 +171,18 @@ class Function : public QThread
   // is definitely not running.
   bool m_running;
 
-  // The respective mutex for m_running
-  QMutex m_startMutex;
-
   // This can be used from the inside to signal that this function should
   // be stopped by setting it true.
   bool m_stopped;
 
-  // Bus for setting the speed
-  t_bus_id m_busID;
+  // Signals that removal of this function from consumer can be started
+  bool m_removeAfterEmpty;
+
+  // The respective mutex for m_running
+  QMutex m_startMutex;
 
   // Bus listener
   FunctionNS::BusListener* m_listener;
-
- private:
-  // Next ID that will be assigned to a new function
-  static t_function_id _nextFunctionID;
-
- public:
-  static void resetID() { _nextFunctionID = KFunctionIDMin; }
 };
 
 
@@ -197,31 +192,14 @@ class Function : public QThread
 class FunctionStopEvent : public QCustomEvent
 {
  public:
-  FunctionStopEvent(Function* stoppedFunction) 
-    : QCustomEvent( KFunctionStopEvent ),
-    m_function(stoppedFunction) {}
+  FunctionStopEvent(t_function_id id)
+    : QCustomEvent( KFunctionStopEvent )
+    { m_functionID = id; }
 
-  Function* function() { return m_function; }
-
- private:
-  Function* m_function;
-};
-
-
-//
-// Function Destroy Event
-//
-class FunctionDestroyEvent : public QCustomEvent
-{
- public:
-  FunctionDestroyEvent(t_function_id fid) 
-    : QCustomEvent( KFunctionDestroyEvent ),
-    m_id(fid) {}
-
-  t_function_id id() { return m_id; }
+  t_function_id functionID() { return m_functionID; }
 
  private:
-  t_function_id m_id;
+  t_function_id m_functionID;
 };
 
 #endif

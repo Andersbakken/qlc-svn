@@ -23,6 +23,7 @@
 #include <qptrlist.h>
 #include <time.h>
 #include <qapplication.h>
+#include <assert.h>
 
 #include "app.h"
 #include "doc.h"
@@ -39,18 +40,17 @@ extern App* _app;
 //
 // Standard constructor
 //
-Scene::Scene(t_function_id id) : Function(id)
-{
-  m_type = Function::Scene;
-  m_values = NULL;
-  m_runTimeData = NULL;
-  m_channelData = NULL;
-  m_channels = 0;
-  m_timeSpan = 255;
-  m_parentFunction = NULL;
-  m_virtualController = NULL;
-  m_elapsedTime = 0;
+Scene::Scene() : 
+  Function      ( Function::Scene ),
 
+  m_channels    (               0 ),
+  m_values      (            NULL ),
+  m_timeSpan    (             255 ),
+  m_elapsedTime (               0 ),
+  m_runTimeData (            NULL ),
+  m_channelData (            NULL ),
+  m_dataMutex   (           false )
+{
   setBus(KBusIDDefaultFade);
 }
 
@@ -60,9 +60,9 @@ Scene::Scene(t_function_id id) : Function(id)
 //
 bool Scene::copyFrom(Scene* sc)
 {
-  ASSERT(sc);
+  assert(sc);
 
-  if (setDevice(sc->device()))
+  if ( setDevice(sc->m_deviceID) )
     {
       m_startMutex.lock();
       m_name = sc->name();
@@ -85,8 +85,11 @@ bool Scene::copyFrom(Scene* sc)
 // familiar to you) and allocate a value array the size of device's
 // channels
 //
-bool Scene::setDevice(Device* device)
+bool Scene::setDevice(t_device_id id)
 {
+  Device* device = _app->doc()->device(id);
+  assert(device);
+
   m_startMutex.lock();
   if (m_running)
     {
@@ -95,8 +98,6 @@ bool Scene::setDevice(Device* device)
     }
   else if (m_values)
     {
-      ASSERT(device);
-
       t_channel newChannels = device->deviceClass()->channels()->count();
       
       // Store old values temporarily
@@ -116,7 +117,7 @@ bool Scene::setDevice(Device* device)
           // those that fit in
           memcpy(m_values, &tempValues, newChannels * sizeof(SceneValue));
           m_channels = newChannels;
-          m_device = device;
+          m_deviceID = id;
         }
       else if (newChannels > m_channels)
         {
@@ -130,13 +131,13 @@ bool Scene::setDevice(Device* device)
             }
 	  
           m_channels = newChannels;
-          m_device = device;
+          m_deviceID = id;
         }
       else
         {
           // Channel count is identical, just copy the values.
           memcpy(m_values, &tempValues, m_channels * sizeof(SceneValue));
-          m_device = device;
+          m_deviceID = id;
         }
     }
   else
@@ -145,7 +146,7 @@ bool Scene::setDevice(Device* device)
       m_channels = device->deviceClass()->channels()->count();
       
       // Set device
-      m_device = device;
+      m_deviceID = id;
       
       // Allocate space for new values
       m_values = new SceneValue[m_channels];
@@ -226,7 +227,7 @@ void Scene::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // Type
-  s = QString("Type = ") + typeString() + QString("\n");
+  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // ID
@@ -234,15 +235,15 @@ void Scene::saveToFile(QFile &file)
   s = QString("ID = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  if (device() != NULL)
-    {
-      t.setNum(device()->id());
-      s = QString("Device = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
+  // Device ID
+  t.setNum(m_deviceID);
+  s = QString("Device = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 
+  if (m_deviceID != KNoID)
+    {
       // Data
-      for (t_channel i = 0;
-           i < (t_channel) device()->deviceClass()->channels()->count(); i++)
+      for (t_channel i = 0; i < m_channels; i++)
         {
           t.setNum(i);
           s = t + QString(" = ");
@@ -256,11 +257,8 @@ void Scene::saveToFile(QFile &file)
     }
   else
     {
-      // For global scenes the device is zero
-      s = QString("Device = 0") + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      // TODO: write global scene data
+      assert(false);
+      // TODO: Global scenes?
     }
 }
 
@@ -400,18 +398,18 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 //
 void Scene::init()
 {
-  ASSERT(m_runTimeData == NULL);
+  assert(m_runTimeData == NULL);
   m_runTimeData = new RunTimeData[m_channels];
 
-  ASSERT(m_channelData == NULL);
+  assert(m_channelData == NULL);
   m_channelData = new t_value[m_channels];
 
-  ASSERT(m_eventBuffer == NULL);
+  assert(m_eventBuffer == NULL);
   m_eventBuffer = new EventBuffer(m_channels);
 
   // Current values
-  _app->outputPlugin()->readRange(m_device->address(), m_channelData, 
-				  m_channels);
+  _app->outputPlugin()->readRange(_app->doc()->device(m_deviceID)->address(), 
+				  m_channelData, m_channels);
 
   for (t_channel i = 0; i < m_channels; i++)
     {
@@ -430,7 +428,7 @@ void Scene::init()
   // Get speed bus value
   if ( !Bus::value(m_busID, m_timeSpan) )
     {
-      ASSERT(false);
+      assert(false);
     }
 
   // Set speed
@@ -550,7 +548,7 @@ void Scene::freeRunTimeData()
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(this));
+			      new FunctionStopEvent(m_id));
       m_virtualController = NULL;
     }
 

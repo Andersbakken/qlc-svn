@@ -22,13 +22,12 @@
 #ifndef CHASER_H
 #define CHASER_H
 
-#include <qptrlist.h>
+#include <qvaluelist.h>
 #include "function.h"
 
 class Event;
 class QFile;
 class QString;
-class FunctionStep;
 
 class Chaser : public Function
 {
@@ -47,14 +46,14 @@ class Chaser : public Function
     };
 
  public:
-  Chaser(t_function_id id = KFunctionIDAuto);
+  Chaser();
   virtual ~Chaser();
 
   void copyFrom(Chaser* ch, bool append = false);
 
-  bool setDevice(Device* device) { return false; }
+  bool setDevice(t_device_id) { return false; }
 
-  void addStep(Function* function);
+  void addStep(t_function_id);
   void removeStep(int index = 0);
 
   void raiseStep(unsigned int index);
@@ -66,7 +65,7 @@ class Chaser : public Function
   void setDirection(Direction dir);
   Direction direction() { return m_direction; }
 
-  QPtrList <FunctionStep> *steps() { return &m_steps; }
+  QValueList <t_function_id> *steps() { return &m_steps; }
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
@@ -81,7 +80,7 @@ class Chaser : public Function
   void run();
 
  protected:
-  QPtrList <FunctionStep> m_steps;
+  QValueList <t_function_id> m_steps;
 
   RunOrder m_runOrder;
   Direction m_direction;

@@ -26,7 +26,6 @@
 #include "bus.h"
 #include "scene.h"
 #include "device.h"
-#include "functionstep.h"
 #include "functionconsumer.h"
 #include "eventbuffer.h"
 
@@ -41,14 +40,14 @@ extern App* _app;
 //
 // Standard constructor
 //
-Chaser::Chaser(t_function_id id) : Function(id)
+Chaser::Chaser() : 
+  Function(Function::Chaser),
+
+  m_runOrder     (   Loop ),
+  m_direction    ( Normal ),
+  m_childRunning (  false ),
+  m_holdTime     (      0 )
 {
-  m_type = Function::Chaser;
-
-  m_direction = Normal;
-  m_runOrder = Loop;
-
-  m_holdTime = 0;
   setBus(KBusIDDefaultHold);
 }
 
@@ -66,17 +65,13 @@ void Chaser::copyFrom(Chaser* ch, bool append)
 
   if (append == false)
     {
-      while (m_steps.isEmpty() == false)
-	{
-	  delete m_steps.take(0);
-	}
+      m_steps.clear();
     }
 
-  for (FunctionStep* step = ch->m_steps.first(); step != NULL; 
-       step = ch->m_steps.next())
+  QValueList <t_function_id>::iterator it;
+  for (it = ch->m_steps.begin(); it != ch->m_steps.end(); ++it)
     {
-      FunctionStep* newStep = new FunctionStep(step);
-      m_steps.append(newStep);
+      m_steps.append(*it);
     }
 }
 
@@ -87,6 +82,7 @@ void Chaser::copyFrom(Chaser* ch, bool append)
 Chaser::~Chaser()
 {
   stop();
+  m_steps.clear();
 }
 
 
@@ -111,7 +107,7 @@ void Chaser::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // Type
-  s = QString("Type = ") + typeString() + QString("\n");
+  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // ID
@@ -126,12 +122,10 @@ void Chaser::saveToFile(QFile &file)
   s = QString("# Step entries") + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  for (FunctionStep* step = m_steps.first(); step != NULL;
-       step = m_steps.next())
+  QValueList <t_function_id>::iterator it;
+  for (it = m_steps.begin(); it != m_steps.end(); ++it)
     {
-      ASSERT(step->function() != NULL);
-
-      s.sprintf("Function = %d\n", step->function()->id());
+      s.sprintf("Function = %d\n", *it);
       file.writeBlock((const char*) s, s.length());
     }
 
@@ -150,7 +144,7 @@ void Chaser::saveToFile(QFile &file)
 //
 void Chaser::createContents(QPtrList <QString> &list)
 {
-  t_function_id functionId = 0;
+  t_function_id fid = KNoID;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -161,19 +155,9 @@ void Chaser::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Function"))
 	{
-	  functionId = list.next()->toULong();
-	  
-	  Function* function = _app->doc()->searchFunction(functionId);
-	  if (function != NULL)
-	    {
-	      addStep(function);
-	    }
-	  else
-	    {
-	      qDebug("Unable to find member for chaser <" + name() + ">");
-	    }
-
-	  functionId = 0;
+	  fid = list.next()->toInt();
+	  addStep(fid);
+	  fid = KNoID;
 	}
       else if (*s == QString("Direction"))
 	{
@@ -195,14 +179,14 @@ void Chaser::createContents(QPtrList <QString> &list)
 //
 // Add a new step into the end
 //
-void Chaser::addStep(Function* function)
+void Chaser::addStep(t_function_id id)
 {
   m_startMutex.lock();
 
   if (m_running == false)
     {
-      FunctionStep* step = new FunctionStep(function);
-      m_steps.append(step);
+      m_steps.append(id);
+      _app->doc()->setModified(true);
     }
   else
     {
@@ -214,19 +198,18 @@ void Chaser::addStep(Function* function)
 
 
 //
-// Completely remove a step (gap is removed)
+// Remove a step
 //
 void Chaser::removeStep(int index)
 {
-  ASSERT( ((unsigned)index) < m_steps.count());
+  ASSERT(((unsigned int)index) < m_steps.count());
 
   m_startMutex.lock();
 
   if (m_running == false)
     {
-      FunctionStep* step = m_steps.take(index);
-      ASSERT(step != NULL);
-      delete step;
+      m_steps.remove(m_steps.at(index));
+      _app->doc()->setModified(true);
     }
   else
     {
@@ -248,10 +231,8 @@ void Chaser::raiseStep(unsigned int index)
     {
       if (index > 0)
 	{
-	  FunctionStep* step = m_steps.take(index);
-	  ASSERT(step != NULL);
-	  
-	  m_steps.insert(index - 1, step);
+	  qDebug("Fucking valuelist...");
+	  _app->doc()->setModified(true);
 	}
     }
   else
@@ -274,10 +255,8 @@ void Chaser::lowerStep(unsigned int index)
     {
       if (index < m_steps.count() - 1)
 	{
-	  FunctionStep* step = m_steps.take(index);
-	  ASSERT(step != NULL);
-
-	  m_steps.insert(index + 1, step);
+	  qDebug("Fucking valuelist...");
+	  _app->doc()->setModified(true);
 	}
     }
   else
@@ -329,7 +308,7 @@ void Chaser::freeRunTimeData()
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(this));
+			      new FunctionStopEvent(m_id));
 
       m_virtualController = NULL;
     }
@@ -374,41 +353,43 @@ void Chaser::run()
 {
   struct timespec timeval;
   struct timespec timerem;
-  FunctionStep* step = NULL;
-
   Direction dir = m_direction;
 
   // Calculate starting values
   init();
 
-  QPtrListIterator <FunctionStep> it(m_steps);
-
+  QValueList <t_function_id>::iterator it;
+  
   if (dir == Reverse)
     {
       // Start from end
-      it.toLast();
+      it = m_steps.end();
+      --it;
     }
   else
     {
       // Start from beginning
-      it.toFirst();
+      it = m_steps.begin(); 
     }
 
   while ( !m_stopped )
     {
-      step = it.current();
-
-      if (step)
+      if (*it)
 	{
 	  m_childRunning = true;
-	  if (step->function()->engage(this))
+	  Function* f = _app->doc()->function(*it);
+	  if (!f)
+	    {
+	      qDebug("Chaser step function <id:%d> deleted!", *it);
+	    }
+	  else if (f->engage(this))
 	    {
 	      while (m_childRunning && !m_stopped) sched_yield();
 
 	      // Check if we need to be stopped
 	      if (m_stopped)
 		{
-		  step->function()->stop();
+		  f->stop();
 		}
 	      else if (m_holdTime > 0)
 		{
@@ -423,8 +404,7 @@ void Chaser::run()
 	    }
 	  else
 	    {
-	      qDebug("Chaser: " + it.current()->function()->name() + 
-		     " is already running! Skip to next function.");
+	      qDebug("Chaser step function <id:%d> is already running!", *it);
 	    }
 
 	  if (dir == Normal)
@@ -438,7 +418,7 @@ void Chaser::run()
 	}
       else if (m_runOrder == Loop)
 	{
-	  it.toFirst();
+	  it = m_steps.begin();
 	}
       else if (m_runOrder == PingPong)
 	{
@@ -446,16 +426,16 @@ void Chaser::run()
 	    {
 	      // it.current() is NULL now, but because dir == Normal,
 	      // we can start from the last-1 item
-	      it.toLast();
-	      --it;
+	      it = m_steps.end();
+	      --it; --it; // Yes, twice
 	      dir = Reverse;
 	    }
 	  else
 	    {
 	      // it.current() is NULL now, but because dir == Reverse,
 	      // we can start from the first+1 item
-	      it.toFirst();
-	      ++it;
+	      it = m_steps.begin();
+	      ++it; // Once
 	      dir = Normal;
 	    }
 	}

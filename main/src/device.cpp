@@ -43,36 +43,22 @@
 #include <qthread.h>
 #include <qpixmap.h>
 #include <qworkspace.h>
+#include <qmessagebox.h>
+#include <assert.h>
 
 extern App* _app;
 extern QApplication* _qapp;
 
-t_device_id Device::s_nextDeviceID = KOutputDeviceIDMin;
-
-Device::Device(t_channel address, DeviceClass* dc, const QString& name,
-		     t_device_id id)
-  : QObject()
+Device::Device() 
+  : QObject(),
+    m_deviceClass (          NULL ),
+    m_address     (    KNoChannel ),
+    m_id          (         KNoID ),
+    m_name        ( QString::null ),
+    m_console     (          NULL ),
+    m_sceneEditor (          NULL ),
+    m_monitor     (          NULL )
 {
-  if (id == 0)
-    {
-      m_id = s_nextDeviceID;
-      s_nextDeviceID++;
-    }
-  else
-    {
-      m_id = id;
-      if (id >= s_nextDeviceID)
-	{
-	  s_nextDeviceID = id + 1;
-	}
-    }
-
-  m_deviceClass = dc;
-  m_address = address;
-  m_name = QString(name);
-
-  m_console = NULL;
-  m_monitor = NULL;
 }
 
 
@@ -136,9 +122,9 @@ Device* Device::create(QPtrList <QString> &list)
   QString name = QString::null;
   QString manufacturer = QString::null;
   QString model = QString::null;
-  QString t = QString::null;
-  int address = 0;
-  t_device_id id = 0;
+
+  t_channel address = KNoChannel;
+  t_device_id id = KNoID;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -161,12 +147,11 @@ Device* Device::create(QPtrList <QString> &list)
 	}
       else if (*s == QString("ID"))
 	{
-	  id = list.next()->toULong();
+	  id = list.next()->toInt();
 	}
       else if (*s == QString("Address"))
 	{
-	  t = *(list.next());
-	  address = t.toInt();
+	  address = list.next()->toInt();
 	}
       else
 	{
@@ -175,41 +160,47 @@ Device* Device::create(QPtrList <QString> &list)
 	}
     }
 
-  if (id == 0 || manufacturer == QString::null || 
-      manufacturer == QString::null)
+  if (id == KNoID)
+    {
+      QMessageBox::warning(_app, KApplicationNameShort,
+       QString("Function ID is missing for <") + name + QString(">"));
+    }
+
+  DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
+  if (dc == NULL)
     {
       QString msg;
-      msg = QString("Unable to add device \"" + name +
-		    QString("\" because device id and/or class is missing."));
-      qDebug(msg);
+      msg = QString("Unable to add device <");
+      msg += name;
+      msg += QString(">:\n");
+      msg += QString("No device class description found for device class\n<");
+      msg += manufacturer;
+      msg += QString("/");
+      msg += model;
+      msg += QString(">");
       
+      QMessageBox::critical(_app, KApplicationNameShort, msg);
+
       return NULL;
     }
   else
     {
-      DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
-      if (dc == NULL)
-	{
-	  QString msg;
-	  msg = QString("Unable to add device \"" + name + "\"." + 
-			"\nNo device class description found for " +
-			manufacturer + QString(" ") + model);
-	  qDebug(msg);
-	  return NULL;
-	}
-      else
-	{
-	  return new Device(address, dc, name, id);
-	}
+      Device* d = _app->doc()->newDevice(dc, name, address, id);
+      return d;
     }
 }
 
 
-DeviceClass* Device::deviceClass()
+void Device::setID(t_device_id id)
 {
-  return m_deviceClass;
+  m_id = id;
 }
 
+
+t_device_id Device::id()
+{
+  return m_id;
+}
 
 void Device::setName(QString name)
 {
@@ -217,6 +208,11 @@ void Device::setName(QString name)
   _app->doc()->setModified(true);
 }
 
+
+QString Device::name()
+{
+  return m_name;
+}
 
 void Device::setAddress(t_channel address)
 {
@@ -238,8 +234,27 @@ void Device::setAddress(t_channel address)
 }
 
 
+t_channel Device::address()
+{
+  return m_address;
+}
+
+void Device::setDeviceClass(DeviceClass* dc)
+{
+  m_deviceClass = dc;
+}
+
+
+DeviceClass* Device::deviceClass()
+{
+  return m_deviceClass;
+}
+
+
 QString Device::infoText()
 {
+  assert(m_deviceClass);
+
   QString t;
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Device Info</TITLE></HEAD><BODY>");
@@ -249,36 +264,36 @@ QString Device::infoText()
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
   str += QString("<TR>\n");
   str += QString("<TD><B>Manufacturer</B></TD>");
-  str += QString("<TD>") + deviceClass()->manufacturer() + QString("</TD>");
+  str += QString("<TD>") + m_deviceClass->manufacturer() + QString("</TD>");
   str += QString("</TR>");
   str += QString("<TR>");
   str += QString("<TD><B>Model</B></TD>");
-  str += QString("<TD>") + deviceClass()->model() + QString("</TD>");
+  str += QString("<TD>") + m_deviceClass->model() + QString("</TD>");
   str += QString("</TR>");
   str += QString("<TR>");
   str += QString("<TD><B>Type</B></TD>");
-  str += QString("<TD>") + deviceClass()->type() + QString("</TD>");
+  str += QString("<TD>") + m_deviceClass->type() + QString("</TD>");
   str += QString("</TR>");
   str += QString("<TR>");
   str += QString("<TD><B>Address space</B></TD>");
   t.sprintf("%d - %d",
-	    address(), address() + deviceClass()->channels()->count() - 1);
+	    address(), address() + m_deviceClass->channels()->count() - 1);
   str += QString("<TD>") + t + QString("</TD>");
   str += QString("<TR>");
   str += QString("<TD><B>Channels</B></TD>");
-  t.setNum(deviceClass()->channels()->count());
+  t.setNum(m_deviceClass->channels()->count());
   str += QString("<TD>") + t + QString("</TD>");
   str += QString("</TR>");
   str += QString("</TABLE>");
   
-  if (deviceClass()->imageFileName() != QString::null)
+  if (m_deviceClass->imageFileName() != QString::null)
     {
       QString dir;
       _app->settings()->get(KEY_SYSTEM_DIR, dir);
       dir += QString("/") + DEVICECLASSPATH + QString("/");
 
       str += QString("<IMG SRC=\"") +
-	dir + deviceClass()->imageFileName() +
+	dir + m_deviceClass->imageFileName() +
 	QString("\">");
     }
 
@@ -287,11 +302,6 @@ QString Device::infoText()
   return str;
 }
 
-
-void Device::setDeviceClass(DeviceClass* dc)
-{
-  m_deviceClass = dc;
-}
 
 void Device::viewConsole()
 {

@@ -41,6 +41,7 @@
 #include <qmessagebox.h>
 #include <qheader.h>
 #include <qpopupmenu.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -282,6 +283,7 @@ void DeviceManagerView::initDataView()
 //
 void DeviceManagerView::slotUpdate()
 {
+  qDebug("update");
   t_device_id currentId = 0;
   QListViewItem* newItem = NULL;
 
@@ -289,29 +291,35 @@ void DeviceManagerView::slotUpdate()
 
   if (m_listView->currentItem() != NULL)
     {
-      currentId = m_listView->currentItem()->text(KColumnID).toULong();
+      currentId = m_listView->currentItem()->text(KColumnID).toInt();
     }
 
   m_listView->clear();
 
   // Add output devices
-  for (t_device_id i = 0; 
-       i < (t_device_id) _app->doc()->deviceList()->count(); i++)
+  for (t_device_id i = 0; i < KDeviceArraySize; i++)
     {
-      Device* dev = _app->doc()->deviceList()->at(i);
-      newItem = new QListViewItem(m_listView, dev->name());
-      
-      // ID column
-      id.setNum(dev->id());
-      newItem->setText(KColumnID, id);
-
-      // Enable rename
-      newItem->setRenameEnabled(KColumnName, true);
-
-      // Select this if it was selected before update
-      if (currentId == dev->id())
+      Device* dev = _app->doc()->device(i);
+      if (!dev)
 	{
-	  m_listView->setSelected(newItem, true);
+	  continue;
+	}
+      else
+	{
+	  newItem = new QListViewItem(m_listView, dev->name());
+	  
+	  // ID column
+	  id.setNum(dev->id());
+	  newItem->setText(KColumnID, id);
+	  
+	  // Enable rename
+	  newItem->setRenameEnabled(KColumnName, true);
+	  
+	  // Select this if it was selected before update
+	  if (currentId == dev->id())
+	    {
+	      m_listView->setSelected(newItem, true);
+	    }
 	}
     }
 }
@@ -324,42 +332,26 @@ void DeviceManagerView::slotAdd()
 {
   NewDevice* ndlg = new NewDevice(_app);
   
-  while (1)
+  if (ndlg->exec() == QDialog::Accepted)
     {
-      if (ndlg->exec() == QDialog::Accepted)
+      int address = ndlg->address();
+      QString name = ndlg->name();
+      QString manufacturer = ndlg->manufacturer();
+      QString model = ndlg->model();
+      
+      if (name.stripWhiteSpace() == QString::null)
 	{
-	  int address = ndlg->address();
-	  QString name = ndlg->name();
-	  QString manufacturer = ndlg->manufacturer();
-	  QString model = ndlg->model();
-	  
-	  if (name.stripWhiteSpace() == QString::null)
-	    {
-	      name = QString("Noname");
-	    }
-
-	  // Search the actual device class instance to be associated
-	  // with the new device
-	  DeviceClass* dc = _app->searchDeviceClass(manufacturer,model);
-	  ASSERT(dc);
-
-	  if (dc->channels()->count() == 0)
-	    {
-	      QString msg(QString("No channels specified for device class \"")
-			  + manufacturer + QString(" ") + model
-			  + QString("\".\n"));
-	      QMessageBox::warning(this, KApplicationNameShort, msg);
-	      continue;
-	    }
-
-	  // Add new device
-	  _app->doc()->addDevice(new Device(address, dc, name));
-	  break;
+	  name = QString("Noname");
 	}
-      else
-	{
-	  break;
-	}
+      
+      // Search the actual device class instance to be associated
+      // with the new device
+      DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
+      assert(dc);
+
+      // Add new device
+      Device* d = _app->doc()->newDevice(dc, name, address);
+      assert(d);
     }
 
   delete ndlg;
@@ -389,11 +381,11 @@ void DeviceManagerView::slotRemove()
     }
   else
     {
-      Device* device = _app->doc()->searchDevice(id);
+      Device* device = _app->doc()->device(id);
       
       ASSERT(device);
       
-      _app->doc()->removeDevice(device);
+      _app->doc()->deleteDevice(id);
       
       // Select the item above the removed item
       m_listView->setSelected(itemAbove, true);
@@ -409,7 +401,7 @@ void DeviceManagerView::slotProperties()
   QListViewItem* item = m_listView->currentItem();
 
   t_device_id id = item->text(KColumnID).toInt();
-  Device* device = _app->doc()->searchDevice(id);
+  Device* device = _app->doc()->device(id);
   
   ASSERT(device);
 
@@ -428,7 +420,7 @@ void DeviceManagerView::slotMonitor()
   QListViewItem* item = m_listView->currentItem();
 
   t_device_id id = item->text(KColumnID).toInt();
-  Device* device = _app->doc()->searchDevice(id);
+  Device* device = _app->doc()->device(id);
   
   ASSERT(device);
   
@@ -444,7 +436,7 @@ void DeviceManagerView::slotConsole()
   QListViewItem* item = m_listView->currentItem();
 
   t_device_id id = item->text(KColumnID).toInt();
-  Device* device = _app->doc()->searchDevice(id);
+  Device* device = _app->doc()->device(id);
   
   ASSERT(device);
   
@@ -480,7 +472,7 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
   else
     {
       // Set the text view's contents
-      Device* dev = _app->doc()->searchDevice(item->text(KColumnID).toInt());
+      Device* dev = _app->doc()->device(item->text(KColumnID).toInt());
       ASSERT(dev);
       m_textView->setText(dev->infoText());
 
@@ -578,7 +570,7 @@ void DeviceManagerView::slotMenuCallBack(int item)
 //
 void DeviceManagerView::slotItemRenamed(QListViewItem* item, int col)
 {
-  Device* dev = _app->doc()->searchDevice(item->text(KColumnID).toInt());
+  Device* dev = _app->doc()->device(item->text(KColumnID).toInt());
   ASSERT(dev);
 
   dev->setName(item->text(KColumnName));

@@ -22,6 +22,7 @@
 #ifndef VCBUTTONPROPERTIES_H
 #define VCBUTTONPROPERTIES_H
 
+#include "types.h"
 #include "vcbutton.h"
 #include "uic_vcbuttonproperties.h"
 
@@ -35,7 +36,7 @@ class VCButtonProperties : public UI_VCButtonProperties
   
   VCButton* button() { return m_button; }
 
-  Function* function() { return m_function; }
+  t_function_id functionID() { return m_functionID; }
   QString name() { return m_nameString; }
   KeyBind* keyBind() { return m_keyBind; }
   bool lock() { return m_lockState; }
@@ -52,10 +53,11 @@ class VCButtonProperties : public UI_VCButtonProperties
 
  private:
   void initView();
+  void setFunctionName();
 
  private:
   VCButton* m_button;
-  Function* m_function;
+  t_function_id m_functionID;
   QString m_nameString;
   KeyBind* m_keyBind;
   bool m_lockState;

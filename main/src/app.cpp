@@ -551,8 +551,7 @@ void App::slotFileNew()
 //
 void App::slotFileOpen()
 {
-  QString fn = QFileDialog::getOpenFileName(m_doc->workspaceFileName(), 
-					    "*.qlc", this);
+  QString fn = QFileDialog::getOpenFileName(m_doc->fileName(), "*.qlc", this);
 
   if (fn == QString::null)
     {
@@ -572,7 +571,7 @@ void App::slotFileOpen()
 //
 void App::slotFileSave()
 {
-  if (m_doc->workspaceFileName().isEmpty())
+  if (m_doc->fileName().isEmpty())
     {
       slotFileSaveAs();
     }
@@ -592,8 +591,7 @@ void App::slotFileSave()
 //
 void App::slotFileSaveAs()
 {
-  QString fn = QFileDialog::getSaveFileName(m_doc->workspaceFileName(),
-					    "*.qlc", this);
+  QString fn = QFileDialog::getSaveFileName(m_doc->fileName(), "*.qlc", this);
   if (!fn.isEmpty())
     {
       // Use the suffix ".qlc" always
@@ -610,7 +608,7 @@ void App::slotFileSaveAs()
       else
         {
 	  setCaption(KApplicationNameLong + QString(" - ") + 
-		     doc()->workspaceFileName());
+		     doc()->fileName());
         }
     }
 }

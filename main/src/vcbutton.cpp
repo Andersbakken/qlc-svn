@@ -72,7 +72,7 @@ const int KMenuStackLower       ( 11 );
 
 VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
-  m_function = NULL;
+  m_functionID = KNoID;
   m_resizeMode = false;
   m_renameEdit = NULL;
   m_bgColor = NULL;
@@ -102,7 +102,7 @@ void VCButton::init()
 
 void VCButton::copyFrom(VCButton* button)
 {
-  m_function = button->m_function;
+  m_functionID = button->m_functionID;
   m_resizeMode = false;
   m_renameEdit = NULL;
 
@@ -192,13 +192,9 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
       file.writeBlock((const char*) s, s.length());
     }
 
-   
   // Function
-  if (m_function != NULL)
-    {
-      s.sprintf("Function = %d\n", m_function->id());
-      file.writeBlock((const char*) s, s.length());
-    }
+  s.sprintf("Function = %d\n", m_functionID);
+  file.writeBlock((const char*) s, s.length());
 
   // Key binding
   assert(m_keyBind);
@@ -287,7 +283,7 @@ void VCButton::createContents(QPtrList <QString> &list)
 	}  
       else if (*s == QString("Function"))
 	{
-	  attachFunction(_app->doc()->searchFunction(list.next()->toInt()));
+	  attachFunction(list.next()->toInt());
 	}
       else if (*s == QString("BindKey"))
 	{
@@ -321,15 +317,6 @@ void VCButton::createContents(QPtrList <QString> &list)
     }
 
   setGeometry(rect);
-
-  QString str("No function");
-
-  if (m_function)
-    {
-      str = m_function->name();
-    }
-
-  QToolTip::add(this, str);
 }
 
 
@@ -563,7 +550,7 @@ void VCButton::slotMenuCallback(int item)
 		    this, SLOT(releaseFunction()));
 
 	    // Function
-	    attachFunction(p->function());
+	    attachFunction(p->functionID());
 	  }
 
 	delete p;
@@ -587,11 +574,7 @@ void VCButton::slotMenuCallback(int item)
 	FunctionTree* ft = new FunctionTree(this);
 	if (ft->exec() == QDialog::Accepted)
 	  {
-	    Function* function = NULL;
-	    function = _app->doc()->searchFunction(ft->functionID());
-	    assert(function);
-
-	    attachFunction(function);
+	    attachFunction(ft->functionID());
 	  }
 	delete ft;
       }
@@ -599,7 +582,7 @@ void VCButton::slotMenuCallback(int item)
 
     case KMenuDetach:
       {
-	attachFunction(NULL);
+	attachFunction(KNoID);
       }
       break;
 
@@ -773,26 +756,45 @@ void VCButton::pressFunction()
 
   qDebug("pressed");
 
-  if (m_keyBind->pressAction() == KeyBind::PressNothing || m_function == NULL)
+  if (m_keyBind->pressAction() == KeyBind::PressNothing || 
+      m_functionID == KNoID)
     {
       return;
     }
   else if (m_keyBind->pressAction() == KeyBind::PressStart)
     {
-      m_function->engage(static_cast<QObject*> (this));
-      setOn(true);
-    }
-  else if (m_keyBind->pressAction() == KeyBind::PressToggle)
-    {
-      if (isOn())
+      Function* f = _app->doc()->function(m_functionID);
+      if (f)
 	{
-	  m_function->stop();
-	  setOn(false);
+	  f->engage(static_cast<QObject*> (this));
+	  setOn(true);
 	}
       else
 	{
-	  m_function->engage(static_cast<QObject*> (this));
-	  setOn(true);
+	  qDebug("Function has been deleted!");
+	  attachFunction(KNoID);
+	}
+    }
+  else if (m_keyBind->pressAction() == KeyBind::PressToggle)
+    {
+      Function* f = _app->doc()->function(m_functionID);
+      if (f)
+	{
+	  if (isOn())
+	    {
+	      f->stop();
+	      setOn(false);
+	    }
+	  else
+	    {
+	      f->engage(static_cast<QObject*> (this));
+	      setOn(true);
+	    }
+	}
+      else
+	{
+	  qDebug("Function has been deleted!");
+	  attachFunction(KNoID);
 	}
     }
   else if (m_keyBind->pressAction() == KeyBind::PressStepForward)
@@ -812,28 +814,24 @@ void VCButton::pressFunction()
 void VCButton::releaseFunction()
 {
   assert(m_keyBind);
-
   qDebug("released");
-
-  if (m_function)
-    {
-    }
 }
 
-void VCButton::attachFunction(Function* function)
+void VCButton::attachFunction(t_function_id id)
 {
-  _app->doc()->setModified(true);
+  m_functionID = id;
 
-  m_function = function;
-
-  if (m_function)
+  Function* f = _app->doc()->function(id);
+  if (f)
     {
-      QToolTip::add(this, m_function->name());
+      QToolTip::add(this, f->name());
     }
   else
     {
-      QToolTip::remove(this);
+      QToolTip::add(this, "No function");
     }
+
+  _app->doc()->setModified(true);
 }
 
 void VCButton::slotRenameReturnPressed()
@@ -846,14 +844,10 @@ void VCButton::slotRenameReturnPressed()
   _app->doc()->setModified(true);
 }
 
-void VCButton::slotFunctionDestroyed()
-{
-  attachFunction(NULL);
-}
-
 void VCButton::customEvent(QCustomEvent* e)
 {
-  if (e->type() == KFunctionStopEvent)
+  if (e->type() == KFunctionStopEvent && 
+      ((FunctionStopEvent*)e)->functionID() == m_functionID)
     {
       setOn(false);
       slotFlashReady();

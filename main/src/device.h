@@ -42,17 +42,19 @@ class Device : public QObject
   Q_OBJECT
 
  public:
-  Device(t_channel address, DeviceClass* dc, 
-	 const QString& name, t_device_id id = 0);
+  Device();
   virtual ~Device();
 
   static Device* create(QPtrList <QString> &list);
 
+  void setID(t_device_id);
+  t_device_id id();
+
   void setAddress(t_channel address);
-  t_channel address() const { return m_address; }
+  t_channel address();
 
   void setName(QString);
-  QString name() const { return m_name; }
+  QString name();
 
   QString infoText();
 
@@ -82,26 +84,20 @@ class Device : public QObject
   void functionsListChanged(const QString &, bool);
 
  protected:
+  DeviceClass* m_deviceClass;
   t_channel m_address;
   t_device_id m_id;
   QString m_name;
 
-  DeviceClass* m_deviceClass;
   ContainerView* m_console;
+  SceneEditor* m_sceneEditor;
   Monitor* m_monitor;
 
  private:
   QPtrList <ChannelUI> m_unitList;
-  SceneEditor* m_sceneEditor;
 
  protected:
   void createChannelUnits(void);
-
- private:
-  static t_device_id s_nextDeviceID;
-
- public:
-  static void resetID() { s_nextDeviceID = KOutputDeviceIDMin; }
 };
 
 #endif

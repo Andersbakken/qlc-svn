@@ -23,7 +23,7 @@
 #define VCBUTTON_H
 
 #include <qpushbutton.h>
-#include <qptrlist.h>
+#include "types.h"
 
 class QLineEdit;
 class QMouseEvent;
@@ -33,7 +33,6 @@ class QString;
 class QColor;
 class QPixmap;
 
-class Function;
 class FloatingEdit;
 class KeyBind;
 
@@ -45,8 +44,6 @@ class VCButton : public QPushButton
   VCButton(QWidget* parent);
   ~VCButton();
 
-  Function* function() { return m_function; }
-
   void init();
   void copyFrom(VCButton* button);
 
@@ -57,7 +54,8 @@ class VCButton : public QPushButton
   void saveToFile(QFile& file, unsigned int parentID);
   void createContents(QPtrList <QString> &list);
 
-  void attachFunction(Function* function);
+  void attachFunction(t_function_id id);
+  t_function_id functionID() { return m_functionID; }
 
  private:
   QPixmap* m_bgPixmap;
@@ -70,7 +68,7 @@ class VCButton : public QPushButton
   int m_origY;
   bool m_resizeMode;
 
-  Function* m_function;
+  t_function_id m_functionID;
 
   FloatingEdit* m_renameEdit;
 
@@ -81,7 +79,6 @@ class VCButton : public QPushButton
 
  public slots:
   void slotRenameReturnPressed();
-  void slotFunctionDestroyed();
 
   void pressFunction();
   void releaseFunction();
