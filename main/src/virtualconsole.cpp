@@ -32,7 +32,8 @@
 
 extern App* _app;
 
-VirtualConsole::VirtualConsole(QWidget* parent, const char* name) : QWidget(parent, name)
+VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
+  : QWidget(parent, name)
 {
   m_designMode = true;
   m_objectPointMode = false;
@@ -351,10 +352,10 @@ void VirtualConsole::keyPressEvent(QKeyEvent* e)
   for (unsigned int i = 0; i < m_bindings.count(); i++)
     {
       b = m_bindings.at(i);
-      if (e->key() == b->key)
-	{
-	  b->receiver->keyPress(e);
-	}
+      //      if (e->key() == b->key)
+      //	{
+      //	  b->receiver->keyPress(e);
+      //	}
     }
 }
 
@@ -365,9 +366,21 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
   for (unsigned int i = 0; i < m_bindings.count(); i++)
     {
       b = m_bindings.at(i);
-      if (e->key() == b->key)
-	{
-	  b->receiver->keyRelease(e);
-	}
+      //      if (e->key() == b->key)
+      //	{
+      //	  b->receiver->keyRelease(e);
+      //	}
+    }
+}
+
+void VirtualConsole::registerKeyBind(KeyBind* kb)
+{
+  if (kb == NULL)
+    {
+      return;
+    }
+
+  for (unsigned int i = 0; i < m_bindings.count(); i++)
+    {
     }
 }

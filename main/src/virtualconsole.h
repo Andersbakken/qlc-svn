@@ -30,6 +30,7 @@
 #include <qlist.h>
 #include <qstring.h>
 #include "dmxwidgetbase.h"
+#include "keybind.h"
 #include "classes.h"
 
 #define ID_VC_MODE                   100
@@ -42,12 +43,6 @@
 #define ID_VC_ADD_SPEEDSLIDER        1030
 #define ID_VC_ADD_MONITOR            1040
 #define ID_VC_ADD_FRAME              1050
-
-typedef struct KeyBind
-{
-  DMXWidgetBase* receiver;
-  int key;
-} KeyBind;
 
 class VirtualConsole : public QWidget
 {
@@ -62,6 +57,8 @@ class VirtualConsole : public QWidget
   void initView(void);
 
   void newDocument();
+
+  void registerKeyBind(KeyBind* kb);
 
   // Used to get a correct parent frame for widgets
   DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
