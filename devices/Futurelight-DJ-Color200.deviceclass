@@ -1,0 +1,60 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = DJ-Color200
+Type = Color Changer
+#
+Entry = Channel
+Number = 0
+Name = Colour
+# Capability Entries
+0-10 = White
+11-21 = Light blue
+22-32 = Light green
+33-43 = Orange
+44-54 = Green
+55-65 = Sky blue
+66-76 = Pink
+77-87 = Red
+88-98 = Yellow
+99-109 = Dark blue
+110-120 = Dark green
+121-127 = Peach
+128-191 = Forwards rainbow speed
+Entry = Channel
+Number = 1
+Name = Effect
+# Capability Entries
+0-20 = Circle 1
+21-42 = 3200K correction filter
+43-63 = 6500K correction filter
+64-84 = Magenta
+85-106 = Cyan
+107-127 = Yellow
+128-148 = UV like
+149-170 = Gobo 2
+171-191 = Gobo 1
+192-212 = Circle 4
+213-234 = Circle 3
+235-255 = Circle 2
+Entry = Channel
+Number = 2
+Name = Shutter, strobe
+# Capability Entries
+0-0 = Shutter closed
+1-139 = Shutter open
+140-149 = Reset after 3 seconds
+150-219 = Strobe speed
+220-229 = Shutter open
+230-239 = Random strobe
+240-255 = Shutter open
+Entry = Channel
+Number = 3
+Name = Dimmer
+# Capability Entries
+0-0 = Blackout
+1-128 = Spot intensity 0 to 100
+129-186 = Spot intensity 100 to 0
+187-194 = Blackout
+195-255 = Wash intensity 0 to 100

@@ -1,0 +1,70 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = PCC-250
+Type = Color Changer
+#
+Entry = Channel
+Number = 0
+Name = Colour
+# Capability Entries
+0-15 = White
+16-31 = Deep red
+32-47 = Deep blue
+48-63 = Primary green
+64-79 = Orange
+80-95 = 3200K correction filter
+96-111 = 6500K correction filter
+112-127 = UV filter
+128-189 = Forwards rainbow speed
+190-191 = No rotation
+192-255 = Backwards rainbow speed
+Entry = Channel
+Number = 1
+Name = Effect
+# Capability Entries
+0-70 = Full beam
+71-230 = Beam shaper
+231-255 = Frost filter
+Entry = Channel
+Number = 2
+Name = Zoom
+# Capability Entries
+0-255 = 28 to 7 degrees
+Entry = Channel
+Number = 3
+Name = Shutter, strobe
+# Capability Entries
+0-31 = Shutter closed
+32-63 = Dimmer activation
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open, dimmer deactivation
+Entry = Channel
+Number = 4
+Name = Dimmer intensity
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 5
+Name = Lamp switch, reset, programs
+# Capability Entries
+0-15 = Normal color change
+16-31 = Normal colour change, search clockwise
+32-47 = Colour change at every position, shortest distance
+48-63 = Colour change at every position, search clockwise
+64-79 = Lamp on
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-239 = Lamp off
