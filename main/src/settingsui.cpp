@@ -1,7 +1,7 @@
 /*
   Q Light Controller
   settingsui.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
@@ -112,11 +112,17 @@ void SettingsUI::slotOKClicked()
   _app->settings()->setSystemPath(m_systemEdit->text());
 
   _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
-
+  
   _app->settings()->setOpenDeviceManager(m_openDeviceManagerCheckBox->isChecked());
   _app->settings()->setOpenLastWorkspace(m_openLastWorkspaceCheckBox->isChecked());
 
   accept();
+}
+
+void SettingsUI::slotStyleChanged(const QString &)
+{
+  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
+  _qapp->setStyle( m_widgetStyleCombo->currentText());
 }
 
 void SettingsUI::slotCancelClicked()

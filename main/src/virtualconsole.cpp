@@ -492,7 +492,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_LABEL:
       {
-	DMXLabel* p = NULL;
+ 	DMXLabel* p = NULL;
 	p = new DMXLabel(m_drawArea);
 	p->setText("New label");
 	p->show();

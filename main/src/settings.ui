@@ -62,54 +62,6 @@
     </widget>
     <widget class="QGroupBox">
         <property name="name">
-            <cstring>m_startupGroupBox</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>260</y>
-                <width>450</width>
-                <height>100</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Startup</string>
-        </property>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>m_openDeviceManagerCheckBox</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>30</y>
-                    <width>420</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Open Device Manager</string>
-            </property>
-        </widget>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>m_openLastWorkspaceCheckBox</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>60</y>
-                    <width>420</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Open Last Workspace</string>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
             <cstring>m_directoriesGroupBox</cstring>
         </property>
         <property name="geometry">
@@ -291,6 +243,70 @@
     </widget>
     <widget class="QPushButton">
         <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>380</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_startupGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>260</y>
+                <width>450</width>
+                <height>100</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Startup</string>
+        </property>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>m_openLastWorkspaceCheckBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>60</y>
+                    <width>420</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Open Last Workspace</string>
+            </property>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>m_openDeviceManagerCheckBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>420</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Open Device Manager</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
             <cstring>m_ok</cstring>
         </property>
         <property name="geometry">
@@ -306,22 +322,6 @@
         </property>
         <property name="default">
             <bool>true</bool>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>380</x>
-                <y>380</y>
-                <width>80</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
         </property>
     </widget>
 </widget>
@@ -356,6 +356,12 @@
         <receiver>UI_Settings</receiver>
         <slot>slotSystemEditTextChanged(const QString&amp;)</slot>
     </connection>
+    <connection>
+        <sender>m_widgetStyleCombo</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotStyleChanged(const QString&amp;)</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_systemEdit</tabstop>
@@ -380,6 +386,8 @@
     <slot>slotWidgetStyleActivated( int )</slot>
     <slot>slotSystemBrowseClicked()</slot>
     <slot>slotSystemEditTextChanged( const QString &amp; )</slot>
+    <slot>slotStyleCombo_textChanged( const QString &amp; )</slot>
+    <slot>slotStyleChanged( const QString &amp; )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
