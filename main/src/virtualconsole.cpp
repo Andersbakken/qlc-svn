@@ -242,11 +242,13 @@ void VirtualConsole::createWidget(QList<QString> &list)
       else if (*s == QString("Label"))
 	{
 	  DMXLabel* w = new DMXLabel(m_drawArea);
+	  w->init();
 	  w->createContents(list);
 	}
       else if (*s == QString("Button"))
 	{
 	  DMXButton* w = new DMXButton(m_drawArea);
+	  w->init();
 	  w->createContents(list);
 	}
       else if (*s == QString("SpeedSlider"))
@@ -256,7 +258,9 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	}
       else if (*s == QString("Slider"))
 	{
-	  list.next();
+	  DMXSlider* w = new DMXSlider(m_drawArea);
+	  w->init();
+	  w->createContents(list);
 	}
       else
 	{
@@ -361,6 +365,11 @@ void VirtualConsole::createContents(QList<QString> &list)
 	      list.prev();
 	      createWidget(list);
 	    }
+	  else if (*s == QString("Slider"))
+	    {
+	      list.prev();
+	      createWidget(list);
+	    }
 	  else
 	    {
 	      // Unknown keyword, skip
@@ -444,7 +453,7 @@ void VirtualConsole::initView(void)
   m_addMenu = new QPopupMenu();
   m_addMenu->setCheckable(false);
   m_addMenu->insertItem("&Button", ID_VC_ADD_BUTTON);
-  // m_addMenu->insertItem("&Slider", ID_VC_ADD_SLIDER);
+  m_addMenu->insertItem("&Slider", ID_VC_ADD_SLIDER);
   m_addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);
   // m_addMenu->insertItem("&Monitor", ID_VC_ADD_MONITOR);
   m_addMenu->insertItem("&Frame", ID_VC_ADD_FRAME);
@@ -510,6 +519,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
       {
 	DMXButton* b;
 	b = new DMXButton(m_drawArea);
+	b->init();
 	b->show();
 	_app->doc()->setModified(true);
       }
@@ -519,7 +529,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
       {
 	DMXSlider* s;
 	s = new DMXSlider(m_drawArea);
-	s->resize(20, 120);
+	s->init();
 	s->show();
 	_app->doc()->setModified(true);
       }
