@@ -120,6 +120,7 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 #define ID_HELP_INDEX                   1010
 #define ID_HELP_ABOUT               	1020
 #define ID_HELP_ABOUT_QT                1030
+#define ID_HELP_TOOLTIPS                1040
 
 //////////////////////////////////////////////////////////////////
 // Status bar messages
@@ -173,16 +174,16 @@ void App::init(void)
   initSettings();
 
   //
-  // The main view
-  //
-  initWorkspace();
-
-  //
   // Menus, toolbar, statusbar
   //
   initMenuBar();
   initStatusBar();
   initToolBar();
+
+  //
+  // The main view
+  //
+  initWorkspace();
 
   //
   // Plugins
@@ -254,14 +255,18 @@ void App::initSettings()
 //
 void App::initWorkspace()
 {
+  //
+  // Create workspace
+  //
   m_workspace = new QWorkspace(this, "Main Workspace");
   setCentralWidget(m_workspace);
   m_workspace->setScrollBarsEnabled(true);
 
+  //
+  // Set background picture
+  //
   QString path;
   settings()->get(KEY_APP_BACKGROUND, path);
-
-  // Set background picture
   m_workspace->setBackgroundPixmap(QPixmap(path));
 
   //
@@ -281,6 +286,22 @@ void App::initWorkspace()
       settings()->get(KEY_APP_W, w);
       settings()->get(KEY_APP_H, h);
       setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+    }
+
+  //
+  // Tooltips
+  //
+  QString tips;
+  settings()->get(KEY_APP_SHOW_TOOLTIPS, tips);
+  if (tips == Settings::falseValue())
+    {
+      QToolTip::setGloballyEnabled(false);
+      m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, false);
+    }
+  else
+    {
+      QToolTip::setGloballyEnabled(true);
+      m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, true);
     }
 
   //
@@ -402,15 +423,21 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
+  m_helpMenu->setCheckable(true);
   m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
 			 "Index...", this, SLOT(slotHelpIndex()),
 			 SHIFT + Key_F1, ID_HELP_INDEX);
+  m_helpMenu->insertSeparator();
   m_helpMenu->insertItem(QPixmap(dir + QString("/Q.xpm")),
 			 "About...", this, SLOT(slotHelpAbout()),
 			 0, ID_HELP_ABOUT);
   m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
 			 "About Qt...", this, SLOT(slotHelpAboutQt()),
 			 0, ID_HELP_ABOUT_QT);
+  m_helpMenu->insertSeparator();
+  m_helpMenu->insertItem(QPixmap(dir + QString("")),
+			 "Show Tooltips", this, SLOT(slotHelpTooltips()),
+			 0, ID_HELP_TOOLTIPS);
 
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
@@ -1006,6 +1033,24 @@ void App::slotHelpAboutQt()
   QMessageBox::aboutQt(this, QString("Q Light Controller"));
 }
 
+//
+// Help -> Toggle tooltips
+//
+void App::slotHelpTooltips()
+{
+  if (QToolTip::isGloballyEnabled())
+    {
+      QToolTip::setGloballyEnabled(false);
+      m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, false);
+      m_settings->set(KEY_APP_SHOW_TOOLTIPS, Settings::falseValue());
+    }
+  else
+    {
+      QToolTip::setGloballyEnabled(true);
+      m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, true);
+      m_settings->set(KEY_APP_SHOW_TOOLTIPS, Settings::trueValue());
+    }
+}
 
 //
 // Window close button was pressed

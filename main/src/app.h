@@ -135,6 +135,7 @@ class App : public QMainWindow
 
   void slotHelpAbout();
   void slotHelpAboutQt();
+  void slotHelpTooltips();
 
   void slotPanic();
   void slotSetDesignMode();
