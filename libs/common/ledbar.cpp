@@ -79,11 +79,6 @@ void LedBar::setText(QString text)
   m_text = QString(text);
 }
 
-void LedBar::setFont(QFont font)
-{
-  m_font = QFont(font);
-}
-
 void LedBar::setToolTip(QString text)
 {
   if (text == QString::null)
@@ -95,6 +90,11 @@ void LedBar::setToolTip(QString text)
       QToolTip::remove(this);
       QToolTip::add(this, text);
     }
+}
+
+void LedBar::slotSetValue(unsigned char value)
+{
+  slotSetValue((int) value);
 }
 
 void LedBar::slotSetValue(int value)
@@ -169,9 +169,13 @@ void LedBar::paint(void)
   valRect.setBottom(valRect.top() + 10);
   valRect.setLeft(1);
 
+  QFont font;
+  font.setStyleHint(QFont::System);
+  font.setPointSize(11);
+
   // Set black pen for text
   painter.setPen(Qt::black);
-  painter.setFont(m_font);
+  painter.setFont(font);
 
   // Draw info text
   painter.drawText(txtRect, AlignBottom, m_text);

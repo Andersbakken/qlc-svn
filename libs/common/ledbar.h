@@ -45,11 +45,11 @@ class LedBar : public QFrame
 
   void setRange(int min, int max);
   void setText(QString text);
-  void setFont(QFont font);
   void setToolTip(QString text = QString::null);
 
  public slots:
   void slotSetValue(int value);
+  void slotSetValue(unsigned char value);
 
  protected:
   void paintEvent(QPaintEvent* e);
@@ -66,7 +66,6 @@ class LedBar : public QFrame
   QFrame* m_drawFrame;
 
   QApplication* m_qapp;
-  QFont m_font;
 };
 
 #endif

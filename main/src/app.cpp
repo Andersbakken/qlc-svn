@@ -93,10 +93,8 @@
 App::App()
 {
   m_globalFunctionsView = NULL;
-  initSettings();
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
-
 }
 
 App::~App()
@@ -106,6 +104,8 @@ App::~App()
 
 void App::initView(void)
 {
+  initSettings();
+
   setIcon(QPixmap(settings()->pixmapPath() + QString("/Q.xpm")));
 
   initWorkspace();
@@ -120,6 +120,14 @@ void App::initView(void)
   initVirtualConsole();
 
   initSequenceEngine();
+
+  if (m_settings->openLastWorkspace() == true)
+    {
+      QString fileName = m_settings->lastWorkspaceFileName();
+      
+      doc()->loadWorkspaceAs(fileName);
+      setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
+    }
 }
 
 void App::initSequenceEngine()
@@ -427,6 +435,7 @@ void App::slotFileNew()
 	}
     }
 
+  m_settings->setLastWorkspaceFileName(QString::null);
   doc()->newDocument();
   virtualConsole()->newDocument();
   setCaption(IDS_APP_NAME_LONG);

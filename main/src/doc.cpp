@@ -285,6 +285,11 @@ bool Doc::readFileToList(QString &fileName, QList<QString> &list)
   QString buf = QString::null;
   int i = 0;
 
+  if (fileName == QString::null)
+    {
+      return false;
+    }
+
   while (list.isEmpty() == false)
     {
       list.first();
