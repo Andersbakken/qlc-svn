@@ -35,7 +35,7 @@ extern App* _app;
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
 {
-  m_designMode = true;
+  m_mode = Design;
   m_drawArea = NULL;
 }
 
@@ -45,7 +45,29 @@ VirtualConsole::~VirtualConsole()
 
 bool VirtualConsole::isDesignMode(void)
 { 
-  return m_designMode;
+  return (m_mode == Design) ? true : false;
+}
+
+void VirtualConsole::setMode(Mode mode)
+{
+  if (mode == Design)
+    {
+      m_mode = Design;
+      m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, true);
+      m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, false);
+      m_menuBar->setItemEnabled(ID_VC_ADD, true);
+      setCaption("Virtual Console - Design Mode");
+      emit modeChange(Design);
+    }
+  else
+    {
+      m_mode = Operate;
+      m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, false);
+      m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, true);
+      m_menuBar->setItemEnabled(ID_VC_ADD, false);
+      setCaption("Virtual Console - Operate Mode");
+      emit modeChange(Operate);
+    }
 }
 
 // Search for a parent frame by the id number <id>
@@ -146,8 +168,96 @@ void VirtualConsole::createWidget(QList<QString> &list)
     }
 }
 
+void VirtualConsole::createVirtualConsole(QList<QString>& list)
+{
+  QString t;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  list.prev();
+	  break;
+	}
+      else if (*s == QString("Mode"))
+	{
+	  t = *(list.next());
+	  if (t == QString("Design"))
+	    {
+	      setMode(Design);
+	    }
+	  else
+	    {
+	      setMode(Operate);
+	    }
+	}
+      else
+	{
+	  list.next();
+	}
+    }
+}
+
+void VirtualConsole::createContents(QList<QString>& list)
+{
+  QString t;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.next();
+
+	  if (*s == QString("Virtual Console"))
+	    {
+	      createVirtualConsole(list);
+	    }
+	  else if (*s == QString("Frame"))
+	    {
+	      list.prev();
+	      createWidget(list);
+	    }
+	  else if (*s == QString("Button"))
+	    {
+	      list.prev();
+	      createWidget(list);
+	    }
+	  else if (*s == QString("SpeedSlider"))
+	    {
+	      list.prev();
+	      createWidget(list);
+	    }
+	  else
+	    {
+	      // Unknown keyword, skip
+	      list.next();
+	    }
+	}
+      else
+	{
+	  list.next();
+	}
+    }
+}
+
 void VirtualConsole::saveToFile(QFile& file)
 {
+  QString s;
+  QString t;
+
+  // Comment
+  s = QString("# Virtual Console Master Entry\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Entry type
+  s = QString("Entry = Virtual Console") + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Name
+  t = (m_mode == Design) ? QString("Design") : QString("Operate");
+  s = QString("Mode = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
   if (m_drawArea != NULL)
     {
       m_drawArea->saveFramesToFile(file);
@@ -189,9 +299,8 @@ void VirtualConsole::initView(void)
   m_menuBar->insertItem("&Mode", modeMenu, ID_VC_MODE);
   m_menuBar->insertItem("&Add", addMenu, ID_VC_ADD);
 
-  m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, true);
-  m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, false);
   m_menuBar->setItemEnabled(ID_VC_ADD, true);
+  setMode(Design);
 }
 
 void VirtualConsole::newDocument()
@@ -223,21 +332,11 @@ void VirtualConsole::slotMenuItemActivated(int item)
   switch(item)
     {
     case ID_VC_MODE_OPERATE:
-      m_designMode = false;
-      m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, false);
-      m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, true);
-      m_menuBar->setItemEnabled(ID_VC_ADD, false);
-      setCaption("Virtual Console");
-      emit modeChange(Operate);
+      setMode(Operate);
       break;
 
     case ID_VC_MODE_DESIGN:
-      m_designMode = true;
-      m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, true);
-      m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, false);
-      m_menuBar->setItemEnabled(ID_VC_ADD, true);
-      setCaption("Virtual Console - Design Mode");
-      emit modeChange(Design);
+      setMode(Design);
       break;
 
     case ID_VC_ADD_BUTTON:

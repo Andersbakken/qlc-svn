@@ -49,11 +49,15 @@ FunctionCollection::~FunctionCollection()
 
 void FunctionCollection::unRegisterFunction()
 {
+  m_running = false; // Not running anymore
+
   Function::unRegisterFunction();
 }
 
 void FunctionCollection::registerFunction(Feeder* feeder)
 {
+  m_running = false; // Not running until the first event has been fetched
+
   Function::registerFunction(feeder);
 }
 
@@ -87,11 +91,18 @@ void FunctionCollection::saveToFile(QFile &file)
     }
   else
     {
-      // For global chasers, write device+scene pairs
+      // For global collections, write device+scene pairs
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
-	  // Global chasers need a device+scene pair
-	  s = QString("Device = ") + item->callerDevice->name() + QString("\n");
+	  if (item->callerDevice != NULL)
+	    {
+	      s = QString("Device = ") + item->callerDevice->name() + QString("\n");
+	    }
+	  else
+	    {
+	      s = QString("Device = Global") + QString("\n");
+	    }
+
 	  file.writeBlock((const char*) s, s.length());
 
 	  s = QString("Function = ") + item->feederFunction->name() + QString("\n");
@@ -230,24 +241,30 @@ void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* 
 
 void FunctionCollection::recalculateSpeed(Feeder* feeder)
 {
-  // No action necessary
+  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+    {
+      item->feederFunction->recalculateSpeed(feeder);
+    }
 }
 
 Event* FunctionCollection::getEvent(Feeder* feeder)
 {
-  ASSERT(feeder != NULL);
-
   Event* event = new Event();
 
-  connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	  this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-
-  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+  if (m_running == false)
     {
-      m_registerCount++;
-      _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
-    }
+      m_running = true;
 
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      
+      for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+	{
+	  m_registerCount++;
+	  _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
+	}
+    }
+      
   if (m_registerCount == 0)
     {
       // Disconnect the previous signal

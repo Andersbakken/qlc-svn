@@ -26,6 +26,19 @@
 #include "classes.h"
 #include <qlist.h>
 
+enum SceneValueType
+  {
+    Set,  // Normal value
+    NoSet // Empty value
+  };
+
+typedef struct
+{
+  unsigned char value;
+  SceneValueType type;
+
+} SceneValue;
+
 class Scene : public Function
 {
   Q_OBJECT
@@ -37,11 +50,10 @@ class Scene : public Function
 
  public:
   Event* getEvent(Feeder* feeder);
-  Event* getNextLevel(Feeder* f);
   void recalculateSpeed(Feeder* feeder);
 
-  void allocate(unsigned short channels);
-  void set(unsigned short ch, unsigned char value);
+  bool allocate(unsigned short channels);
+  bool set(unsigned short ch, unsigned char value);
   unsigned char getChannelValue(unsigned short ch);
 
   void saveToFile(QFile &file);
@@ -51,10 +63,8 @@ class Scene : public Function
 
   void createContents(QList<QString> &list);
   
-
-
  private:
-  unsigned char* m_values;
+  SceneValue* m_values;
 };
 
 #endif

@@ -62,8 +62,9 @@ class VirtualConsole : public QWidget
 
   bool isDesignMode();
 
-  void saveToFile(QFile& file);
-  void createWidget(QList<QString> &list);
+  void createContents(QList<QString>& file); // Create the virtual console from list
+  void saveToFile(QFile& file); // Save all widgets and vc data to file
+
   // Used to get a correct parent frame for widgets
   DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
   DMXWidget* drawArea() { return m_drawArea; }
@@ -88,9 +89,15 @@ class VirtualConsole : public QWidget
   DMXWidget* m_drawArea;
   QVBoxLayout* m_layout;
 
-  bool m_designMode;
+  Mode m_mode;
 
   QList <DMXWidgetBase> m_keyReceivers;
+
+ private:
+  void setMode(Mode mode);
+
+  void createVirtualConsole(QList<QString>& list);
+  void createWidget(QList<QString> &list);
 };
 
 #endif

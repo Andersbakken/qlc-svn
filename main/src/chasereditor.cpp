@@ -53,6 +53,8 @@ void ChaserEditor::addItems()
 {
   ChaserStep* step = NULL;
   QListViewItem* prev = NULL;
+  QString deviceName;
+
   int steps = m_function->steps();
 
   for (int i = 0; i < steps; i++)
@@ -60,11 +62,29 @@ void ChaserEditor::addItems()
       step = m_function->at(i);
       if (prev == NULL)
 	{
-	  prev = new QListViewItem(m_functionList, "", step->callerDevice->name(), step->feederFunction->name());
+	  if (step->callerDevice != NULL)
+	    {
+	      deviceName = step->callerDevice->name();
+	    }
+	  else
+	    {
+	      deviceName = QString("Global");
+	    }
+
+	  prev = new QListViewItem(m_functionList, "", deviceName, step->feederFunction->name());
 	}
       else
 	{
-	  prev = new QListViewItem(m_functionList, prev, "", step->callerDevice->name(), step->feederFunction->name());
+	  if (step->callerDevice != NULL)
+	    {
+	      deviceName = step->callerDevice->name();
+	    }
+	  else
+	    {
+	      deviceName = QString("Global");
+	    }
+
+	  prev = new QListViewItem(m_functionList, prev, "", deviceName, step->feederFunction->name());
 	}
 
       m_prevItem = prev;

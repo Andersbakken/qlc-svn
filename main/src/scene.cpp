@@ -33,7 +33,7 @@ extern App* _app;
 
 Scene::Scene(unsigned short channels) : Function()
 {
-  m_values = (unsigned char*) calloc(channels, sizeof(unsigned char));
+  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
   m_type = Function::Scene;
 }
 
@@ -92,7 +92,7 @@ void Scene::saveToFile(QFile &file)
 	{
 	  t.setNum(i);
 	  s = t + QString(" = ");
-	  t.setNum(m_values[i]);
+	  t.setNum(m_values[i].value);
 	  s += t + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
@@ -109,7 +109,7 @@ void Scene::saveToFile(QFile &file)
 	{
 	  t.setNum(i);
 	  s = t + QString(" = ");
-	  t.setNum(m_values[i]);
+	  t.setNum(m_values[i].value);
 	  s += t + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
@@ -137,9 +137,9 @@ void Scene::createContents(QList<QString> &list)
       else if (s->at(0).isNumber() == true)
 	{
 	  unsigned char ch = (unsigned char) s->toInt();
-	  m_values = (unsigned char*) realloc(m_values, channels * sizeof(unsigned char));
+	  m_values = (SceneValue*) realloc(m_values, channels * sizeof(SceneValue));
 	  t = *(list.next());
-	  m_values[ch] = t.toInt();
+	  m_values[ch].value = t.toInt();
 	  channels++;
 	}
       else
@@ -150,20 +150,72 @@ void Scene::createContents(QList<QString> &list)
     }
 }
 
-void Scene::allocate(unsigned short channels)
+bool Scene::allocate(unsigned short channels)
 {
-  m_values = (unsigned char*) calloc(channels, sizeof(unsigned char));
+  if (m_device != NULL)
+    {
+      if (channels < m_device->deviceClass()->channels())
+	{
+	  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
+	}
+      else
+	{
+	  return false;
+	}
+    }
+  else if (m_deviceClass != NULL)
+    {
+      if (channels < m_deviceClass->channels())
+	{
+	  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
+	}
+      else
+	{
+	  return false;
+	}
+    }
+
+  return true;
 }
 
-void Scene::set(unsigned short ch, unsigned char value)
+bool Scene::set(unsigned short ch, unsigned char value)
 {
-  m_values[ch] = value;
+  if (m_device != NULL)
+    {
+      if (ch < m_device->deviceClass()->channels())
+	{
+	  m_values[ch].value = value;
+	}
+      else
+	{
+	  // Channel value is beyond this device's limits
+	  return false;
+	}
+    }
+  else if (m_deviceClass != NULL)
+    {
+      if (ch < m_device->deviceClass()->channels())
+	{
+	  m_values[ch].value = value;
+	}
+      else
+	{
+	  // Channel value is beyond this deviceclass' limits
+	  return false;
+	}
+    }
+  else
+    {
+      return false;
+    }
+
+  return true;
 }
 
 void Scene::recalculateSpeed(Feeder* f)
 {
   unsigned short gap = 0;
-  unsigned long delta = 0;
+  float delta = 0;
 
   unsigned short channels = 0;
 
@@ -177,11 +229,11 @@ void Scene::recalculateSpeed(Feeder* f)
   // updates needed) and set it to this whole scene's delta
   for (unsigned short i = 0; i < channels; i++)
     {
-      gap = abs((signed short) f->startLevel(i) - (signed short) m_values[i]);
+      gap = abs((signed short) f->startLevel(i) - (signed short) m_values[i].value);
 
       if (gap != 0)
 	{
-	  delta = (unsigned long) ((double) f->timeSpan() / (double) gap);
+	  delta = (double) f->timeSpan() / (double) gap;
 	}
       else
 	{
@@ -190,65 +242,91 @@ void Scene::recalculateSpeed(Feeder* f)
 
       if (delta < f->delta())
 	{
-	  f->setDelta((unsigned long) delta);
+	  f->setDelta((unsigned long) ceil(delta));
 	}
+
+      if (delta < 1.0)
+	{
+	  // If the next updates should come more often than
+	  // 1/1000 sec, we need to increase the step value because
+	  // the sequence timer provides timer tick of 1/1000sec.
+	  f->setStep((unsigned long) ceil(1.0 / delta));
+	}
+      else
+	{
+	  // The next step value is 1 per each 1/1000 sec
+	  f->setStep(1);
+	}	  
     }
 }
 
 Event* Scene::getEvent(Feeder* feeder)
 {
-  return getNextLevel(feeder);
-}
-
-Event* Scene::getNextLevel(Feeder* f)
-{
   unsigned short readyCount = 0;
   unsigned short channels = 0;
   
-  if (f->device() != NULL)
+  if (feeder->device() != NULL)
     {
-      channels = f->device()->deviceClass()->channels();
+      channels = feeder->device()->deviceClass()->channels();
     }
 
   Event* event = new Event(channels);
 
   for (unsigned short i = 0; i < channels; i++)
     {
-      if (f->startLevel(i) > m_values[i])
-	{
-	  // Current level is above target, the new value is set toward 0
-	  if (f->device()->getChannelValue(i) <= m_values[i])
-	    {
-	      event->m_values[i] = VALUE_READY;
-	      readyCount++;
-	    }
-	  else
-	    {
-  	      event->m_values[i] = f->device()->getChannelValue(i) - 1;
-	    }
-	}
-      else if (f->startLevel(i) < m_values[i])
-	{
-	  // Current level is below target, the new value is set toward 255
-	  if (f->device()->getChannelValue(i) >= m_values[i])
-	    {
-	      event->m_values[i] = VALUE_READY;
-	      readyCount++;
-	    }
-	  else
-	    {
-  	      event->m_values[i] = f->device()->getChannelValue(i) + 1;
-	    }
-	}
-      else
+      if (feeder->device()->getChannelValue(i) == m_values[i].value)
 	{
 	  event->m_values[i] = VALUE_READY;
 	  readyCount++;
 	}
+
+      if (feeder->startLevel(i) > m_values[i].value)
+	{ 
+	  // Current level is above target, the new value is set toward 0
+	  
+	  // If the next step value is bigger than the next gap we need
+	  // to set the next step value to the gap value so that
+	  // we won't write too big values.
+	      // Example: current channel value is 254 and the scene's target
+	      // value is 255. If the step value is 2, the next value would
+	      // be 256 which (since we are using unsigned chars) would mean
+	      // actually 0 (with signed chars -127) so this would loop
+	      // endlessly without ever reaching the target value
+	  int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	  int nextStep = feeder->step();
+	  if (nextStep > nextGap)
+	    {
+	      nextStep = nextGap;
+	    }
+	  event->m_values[i] = feeder->device()->getChannelValue(i) - nextStep;
+	}
+      else if (feeder->startLevel(i) < m_values[i].value)
+	{
+	  // Current level is below target, the new value is set toward 255
+
+	  // If the next step value is bigger than the next gap we need
+	  // to set the next step value to the gap value so that
+	  // we won't write too big values.
+	  // Example: current channel value is 254 and the scene's target
+	  // value is 255. If the step value is 2, the next value would
+	  // be 256 which (since we are using unsigned chars) would mean
+	  // actually 0 (with signed chars -127) so this would loop
+	  // endlessly without ever reaching the target value
+	  int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	  int nextStep = feeder->step();
+	  if (nextStep > nextGap)
+	    {
+	      nextStep = nextGap;
+	    }
+	  event->m_values[i] = feeder->device()->getChannelValue(i) + nextStep;
+	}
     }
 
-  event->m_delta = (unsigned long) floor(f->delta());
+  // Get delta from feeder and set it to next step's delta time
+  event->m_delta = (unsigned long) floor(feeder->delta());
 
+  // If all channels are marked "ready", then this scene is ready and
+  // we can unregister this scene.
   if (readyCount == channels)
     {
       event->m_type = Event::Ready;
@@ -260,6 +338,93 @@ Event* Scene::getNextLevel(Feeder* f)
 
 unsigned char Scene::getChannelValue(unsigned short ch)
 {
-      return m_values[ch];
+  return m_values[ch].value;
 }
 
+/*
+This left here in purpose, in case I break something... :)
+
+Event* Scene::getEvent(Feeder* feeder)
+{
+  unsigned short readyCount = 0;
+  unsigned short channels = 0;
+  
+  if (feeder->device() != NULL)
+    {
+      channels = feeder->device()->deviceClass()->channels();
+    }
+
+  Event* event = new Event(channels);
+
+  for (unsigned short i = 0; i < channels; i++)
+    {
+      if (feeder->startLevel(i) > m_values[i].value)
+	{ // Current level is above target, the new value is set toward 0
+	  if (feeder->device()->getChannelValue(i) <= m_values[i].value)
+	    {
+	      event->m_values[i] = VALUE_READY;
+	      readyCount++;
+	    }
+	  else
+	    {
+	      // If the next step value is bigger than the next gap we need
+	      // to set the next step value to the gap value so that
+	      // we won't write too big values.
+	      // Example: current channel value is 254 and the scene's target
+	      // value is 255. If the step value is 2, the next value would
+	      // be 256 which (since we are using unsigned chars) would mean
+	      // actually 0 (with signed chars -127) so this would loop
+	      // endlessly without ever reaching the target value
+	      int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	      int nextStep = feeder->step();
+	      if (nextStep > nextGap)
+		{
+		  nextStep = nextGap;
+		}
+	      event->m_values[i] = feeder->device()->getChannelValue(i) - nextStep;
+	    }
+	}
+      // Current level is below target, the new value is set toward 255
+      else if (feeder->startLevel(i) < m_values[i].value)
+	{
+	  if (feeder->device()->getChannelValue(i) >= m_values[i].value)
+	    {
+	      event->m_values[i] = VALUE_READY;
+	      readyCount++;
+	    }
+	  else
+	    {
+	      // If the next step value is bigger than the next gap we need
+	      // to set the next step value to the gap value so that
+	      // we won't write too big values.
+	      // Example: current channel value is 254 and the scene's target
+	      // value is 255. If the step value is 2, the next value would
+	      // be 256 which (since we are using unsigned chars) would mean
+	      // actually 0 (with signed chars -127) so this would loop
+	      // endlessly without ever reaching the target value
+	      int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	      int nextStep = feeder->step();
+  	      if (nextStep > nextGap)
+		{
+		  nextStep = nextGap;
+		}
+	      event->m_values[i] = feeder->device()->getChannelValue(i) + nextStep;
+	    }
+	}
+      else
+	{
+	  event->m_values[i] = VALUE_READY;
+	  readyCount++;
+	}
+    }
+
+  event->m_delta = (unsigned long) floor(feeder->delta());
+
+  if (readyCount == channels)
+    {
+      event->m_type = Event::Ready;
+    }
+
+  return event;
+}
+*/

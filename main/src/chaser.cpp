@@ -49,6 +49,8 @@ void Chaser::saveToFile(QFile &file)
   QString s;
   QString t;
 
+  int i = 0;
+
   // Comment line
   s = QString("# Function entry\n");
   file.writeBlock((const char*) s, s.length());
@@ -70,8 +72,14 @@ void Chaser::saveToFile(QFile &file)
     {
       // For device class chasers we need to save only the steps because
       // all scenes are inside the device class
+
+      s = QString("# Step entries") + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
+	  ASSERT(step->feederFunction != NULL);
+
 	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
@@ -80,11 +88,13 @@ void Chaser::saveToFile(QFile &file)
     {
       // For device chasers (that are saved in the workspace file)
       // write also the device name that this chaser is attached to
-      s = QString("Device = ") + device()->name() + QString("\n");
+      s = QString("# Step entries") + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
+	  ASSERT(step->feederFunction != NULL);
+
 	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
@@ -94,10 +104,21 @@ void Chaser::saveToFile(QFile &file)
       // For global chasers, write device+scene pairs
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
-	  // Global chasers need a device+scene pair
-	  s = QString("Device = ") + step->callerDevice->name() + QString("\n");
+	  ASSERT(step->feederFunction != NULL);
+
+	  if (step->callerDevice != NULL)
+	    {
+	      // Regular function, device != NULL
+	      s = QString("Device = ") + step->callerDevice->name() + QString("\n");
+	    }
+	  else
+	    {
+	      // Global function, device == NULL
+	      s = QString("Device = Global") + QString("\n");
+	    }
+
 	  file.writeBlock((const char*) s, s.length());
-	  
+
 	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
@@ -133,7 +154,7 @@ void Chaser::createContents(QList<QString> &list)
 		}
 	      else
 		{
-		  qDebug("Unable to find member <" + function + "> for Function Collection <" + name() + ">");
+		  qDebug("Unable to find member <" + function + "> for chaser <" + name() + ">");
 		}
 	    }
 	  else

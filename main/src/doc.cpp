@@ -342,20 +342,12 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  bus->createContents(list);
 		  addBus(bus);
 		}
-	      else if (*string == QString("Frame"))
+	      else if (*string == QString("Virtual Console"))
 		{
+		  // Virtual console wants it all, 2x back to "Entry"
 		  list.prev();
-		  _app->virtualConsole()->createWidget(list);
-		}
-	      else if (*string == QString("Button"))
-		{
 		  list.prev();
-		  _app->virtualConsole()->createWidget(list);
-		}
-	      else if (*string == QString("SpeedSlider"))
-		{
-		  list.prev();
-		  _app->virtualConsole()->createWidget(list);
+		  _app->virtualConsole()->createContents(list);
 		}
 	      else
 		{
@@ -443,9 +435,11 @@ void Doc::createFunctionContents(QList<QString> &list)
 Function* Doc::createFunction(QList<QString> &list)
 {
   Function* f = NULL;
+  Device* d = NULL;
 
-  QString name = QString::null;
-  QString type = QString::null;
+  QString name;
+  QString type;
+  QString device;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -461,6 +455,10 @@ Function* Doc::createFunction(QList<QString> &list)
       else if (*s == QString("Type"))
 	{
 	  type = *(list.next());
+	}
+      else if (*s == QString("Device"))
+	{
+	  device = *(list.next());
 	  break;
 	}
       else
@@ -472,20 +470,37 @@ Function* Doc::createFunction(QList<QString> &list)
 
   if (name != QString::null && type != QString::null)
     {
+      if (device == QString("Global"))
+	{
+	  d = NULL;
+	}
+      else
+	{
+	  d = searchDevice(device, DeviceClass::ANY);
+	  if (d == NULL)
+	    {
+	      // This function's device was not found
+	      qDebug("Unable to find device for function %s", name);
+	    }
+	}
+
       if (type == QString("Collection"))
 	{
 	  f = (Function*) new FunctionCollection();
 	  f->setName(name);
+	  f->setDevice(d);
 	}
       else if (type == QString("Chaser"))
 	{
 	  f = (Function*) new Chaser();
 	  f->setName(name);
+	  f->setDevice(d);
 	}
       else if (type == QString("Scene"))
 	{
 	  f = (Function*) new Scene();
 	  f->setName(name);
+	  f->setDevice(d);
 	}
       else if (type == QString("Sequence"))
 	{
