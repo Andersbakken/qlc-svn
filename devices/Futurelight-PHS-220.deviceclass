@@ -1,0 +1,103 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = PHS-220
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 2
+Name = Pan/tilt speed
+# Capability Entries
+0-4 = Tracking mode
+5-225 = Vector mode speed
+226-235 = BO with pan/tilt
+236-245 = BO with colour/gobo change
+Entry = Channel
+Number = 3
+Name = Colour
+# Capability Entries
+0-13 = White
+14-27 = Orange
+28-41 = Blue
+42-55 = Green
+56-69 = Yellow
+70-83 = Red
+84-97 = Pink
+98-111 = Cyan
+112-127 = Magenta
+194-255 = Backwards rainbow speed
+188-193 = No rotation
+128-187 = Forwards rainbow speed
+Entry = Channel
+Number = 4
+Name = Gobo
+# Capability Entries
+0-9 = Open
+10-19 = Gobo 1
+20-29 = Gobo 2
+30-39 = Gobo 3
+40-49 = Gobo 4
+50-59 = Gobo 5
+60-69 = Gobo 6
+70-89 = Gobo 1 shake speed
+90-109 = Gobo 2 shake speed
+110-129 = Gobo 3 shake speed
+130-149 = Gobo 4 shake speed
+150-169 = Gobo 5 shake speed
+170-189 = Gobo 6 shake speed
+190-255 = Gobo rainbow speed
+Entry = Channel
+Number = 5
+Name = Gobo rotation
+# Capability Entries
+0-127 = No rotation
+128-187 = Forwards rotation speed fast to slow
+188-193 = No rotation
+194-255 = Backwards rotation slow to fast
+Entry = Channel
+Number = 6
+Name = Focus
+# Capability Entries
+0-255 = Near to far
+Entry = Channel
+Number = 7
+Name = Shutter
+# Capability Entries
+0-31 = Shutter closed
+32-63 = Dimmer control
+64-95 = Strobe speed
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open
+96-127 = Shutter open
+128-159 = Pulse sequence
+Entry = Channel
+Number = 8
+Name = Lamp switch, reset, programs
+# Capability Entries
+0-15 = Normal colour change, shortest distance
+32-47 = Colour change at every position, shortest distance
+64-79 = Lamp on
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-239 = Lamp off
+16-31 = Normal colour change, search clockwise
+48-63 = Colour change at every position, search clockwise
