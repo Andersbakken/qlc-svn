@@ -27,11 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements
 ------------
-* QT 3.0 development library (3.0.3)
-* Glibc library 2.2.4
-* Glibc development library 2.2.4
-* X11R6 4.1.0 or higher development library
-* /dev/rtc (Real-time clock) enabled from kernel
+* QT 3.x
+* X11R6 4.x
+* /dev/rtc (Real-time clock)
 * optional: dmx4linux 2.2
 
 For TODO-lists, known bugs, volunteering to work for the project and all other
@@ -87,8 +85,8 @@ If you wish to participate in the qlc development team
 I need instructions on...
 -------------------------
 See qlc2/main/docs/index.html for more documentation. The documentation is
-updated every now and then. If there is something that is missing from the
-documentation, feel free to ask: hjunnila@users.sourceforge.net
+updated every now and then -- usually then. If and when you see something
+missing from the documentation, feel free to ask us!
 
 
 List of people who have contributed to this piece of software
