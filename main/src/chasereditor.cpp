@@ -38,6 +38,7 @@
 #include <qlistview.h>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
+#include <limits.h>
 
 extern App* _app;
 

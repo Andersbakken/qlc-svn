@@ -45,6 +45,8 @@
 #include <qheader.h>
 #include <qpopupmenu.h>
 #include <qmessagebox.h>
+#include <limits.h>
+
 
 #include <math.h>
 

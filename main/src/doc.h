@@ -22,6 +22,9 @@
 #ifndef DOC_H
 #define DOC_H
 
+
+
+
 #include <qobject.h>
 #include <qlist.h>
 #include "function.h"

@@ -51,6 +51,8 @@
 #include <ctype.h>
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <limits.h>
+
 
 extern App* _app;
 
