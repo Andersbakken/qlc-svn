@@ -9,7 +9,7 @@
     <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
       <TR>
 	<TD ALIGN="left">
-	  <IMG SRC="qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+	  <IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
 	</TD>
 	<TD ALIGN="right">
 	  <A HREF="index.html" CLASS="link">QLC Documentation</A>
@@ -38,22 +38,25 @@
     <P CLASS="normal">
       QLC2 source distribution is divided in directories in order to keep
       different file types in their own directory. <B>qlc2</B> is the topmost
-      directory that houses all the other files and directories that are
-      present in QLC source distribution. Under <B>qlc2</B> directory, there
-      are two other directories: <B>libs</B> and <B>main</B>. Under <B>libs</B>
-      are the plugin libraries' sources (currently none) and under 
-      <B>main</B>, are the main application sources and other necessary files.
+      directory that houses all the directories that are
+      included in QLC source distribution.
     </P>
     
     <P CLASS="normal">
       <PRE>
 	qlc2/
-	    libs/   		<-- plugin library sources
+	    dce/
+	        src/            <-- device class editor sources
+	    libs/
+	        common/         <-- common helper classes
+                dmx4linuxout/   <-- DMX4Linux output plugin
+                joystick/       <-- Joystick input plugin (not supported yet)
+                midiout/        <-- MIDI-based output plugin
 	    main/
-		xpm/    	<-- user interface icons, background images etc.
-		devices/	<-- sample device class files
-		docs/		<-- documentation files
 		src/		<-- main application sources
+  	    xpm/                <-- user interface icons, background images etc.
+	    devices/            <-- sample device class files
+	    docs/               <-- documentation files
 	</PRE>
     </P>
 

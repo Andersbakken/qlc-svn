@@ -9,10 +9,10 @@
     <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
       <TR>
 	<TD ALIGN="left">
-	  <IMG SRC="qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+	  <IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
 	</TD>
 	<TD ALIGN="right">
-	  <A HREF="index.html" CLASS="link">QLC Documentation</A>
+	  <A HREF="index.html" CLASS="link">Documentation index</A>
 	  <BR>
 	  <A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
 	  <BR>
@@ -41,34 +41,30 @@
      <TR>
 	<TD CLASS="normal" BGCOLOR="#EFEFEF">I would like to see this or that <B>new feature</B> in QLC.
 					    <B>Whom</B> should I tell?</TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">We have a special <B>feature request</B> database for that at Sourceforge. Try this link.
-	                                     Same holds for <B>bugs</B>!</TR>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">We have a special <A HREF="http://sourceforge.net/tracker/?atid=441087&group_id=44856&func=browse" CLASS="link">feature request</A> 
+	                                     database for that at Sourceforge. Same goes for <A HREF="http://sourceforge.net/tracker/?atid=441084&group_id=44856&func=browse" CLASS="link">bugs</A>.</TR>
       <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">Can I use QLC on a <B>M$ Windows computer?</B></TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF"><B>No!</B> and <B>Yes!</B>
-	                                     QLC is tied to Linux and the great dmx4linux driver suite.
-					     However, as Linux can be given away and copied without a charge, you
-					     make ask a friend to lean you his installation CD. Most recent
-					     Linux distributions come with automagical installers that may even
-					     free the neccessary space and create needed partitions.</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">Can I use QLC on a <B>Windows computer?</B></TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">Although QT-based applications such as QLC can be ported to Windows quite
+	                                     easily, the <A HREF="http://llg.cubic.org" CLASS="link">dmx4linux</A> driver
+					     suite is only for Linux. There are no similar kinds of driver suites for Windows
+					     that we'd know of. If you know one, please, <A HREF="http://sourceforge.net/tracker/?atid=441087&group_id=44856&func=browse" CLASS="link">tell us!</A>
+					     </TD>
       </TR>
 
       <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">I <B>can't find</B> my dimmer pack in QLC's device list! Will QLC work with my equipment?</TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF"><B>Yes</B>, 99% sure about that. Dimmers are very simple devices. Just use the <B>generic dimmer</B>
-					      device class that fits your number of channels. Even any other brand may work.There will be some
-					      features in QLC in the future that - e.g. compensate for non-linear dimmer
-					      response and are device dependent. However, for the time beeing: don't worry about that!</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">I <B>can't find</B> my dimmer/scanner/effect in QLC's device list! Will QLC work with my equipment?</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF"><B>Yes</B>, You can use the device class editor (<I>/usr/local/qlc/bin/dce</I>) to create any kind of
+	                                                 device you have ever wanted to control. After all, it's just a matter of channels, which are
+							 limited only by the DMX protocol to a maximum of 512.</TD>
       </TR>
 
       <TR>
 	<TD CLASS="normal" BGCOLOR="#EFEFEF">Can I use <B>analoque equipment (0-10 V)</B> with QLC?</TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF"><B>Yes</B>, you may try the <B>i2c interface</B> decribed in the
-					     <B>dmx4linux</B> suite. More about this very-low cost interface can be
-					     found  <A HREF="http://www.gaia-returns.de/light/i2c/" target=_blank>here</A>.</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF"><B>Yes</B>, you may try the <B>i2c interface</B> described in the
+					     <A HREF="http://llg.cubic.org" CLASS="link">dmx4linux</A> suite.
+					     </TD>
       </TR>
-
-
 
     </TABLE>
 
