@@ -28,42 +28,7 @@
 #include "deviceclass.h"
 #include "inputdevice.h"
 #include "plugin.h"
-
-static int _nextBusID = BUS_ID_MIN;
-
-class Bus
-{
- public:
-  enum Type { Generic = 0, Speed = 1 };
-
-  unsigned int id;
-  unsigned int value;
-  Type type;
-  QString name;
-
-  Bus()
-    {
-      id = _nextBusID;
-      _nextBusID++;
-      value = 0;
-      type = Generic;
-      name.sprintf("Bus #%d", id - BUS_ROOT_ID);
-    }
-
-  ~Bus() {}
-
-  Bus &operator= (Bus &s)
-    {
-      if (this != &s)
-	{
-	  id = s.id;
-	  value = s.value;
-	  type = s.type;
-	  name = QString(s.name);
-	}
-      return *this;
-    }
-};
+#include "bus.h"
 
 class Doc : public QObject
 {

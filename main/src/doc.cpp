@@ -348,6 +348,11 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		      m_functions.append(f);
 		    }
 		}
+	      else if (*string == QString("Bus"))
+		{
+		  Bus* bus = new Bus();
+		  bus->createContents(list);
+		}
 	      else if (*string == QString("Frame"))
 		{
 		  list.prev();
@@ -575,16 +580,24 @@ void Doc::newDocument()
 {
   Device* d = NULL;
   Function* f = NULL;
+  Bus* b = NULL;
+
+  // Delete all buses
+  m_busList.first();
+  while (!m_busList.isEmpty())
+    {
+      b = m_busList.take();
+      ASSERT(b);
+      delete b;
+    }
 
   // Delete all global functions
   m_functions.first();
   while (!m_functions.isEmpty())
     {
       f = m_functions.take();
-      if (f != NULL)
-	{
-	  delete f;
-	}
+      ASSERT(f);
+      delete f;
     }
 
   // Delete all devices
@@ -592,11 +605,9 @@ void Doc::newDocument()
   while (!m_deviceList.isEmpty())
     {
       d = m_deviceList.take();
-      if (d != NULL)
-	{
-	  freeDMXAddressSpace(d->address(), d->deviceClass()->m_channels.count());
-	  delete d;
-	}
+      ASSERT(d);
+      freeDMXAddressSpace(d->address(), d->deviceClass()->m_channels.count());
+      delete d;
     }
 
   m_modified = false;
@@ -613,6 +624,13 @@ bool Doc::saveWorkspaceAs(QString &fileName)
     {
       Device* d;
       Function* f;
+      Bus* b;
+
+      // Save Buses
+      for (b = m_busList.first(); b != NULL; b = m_busList.next())
+	{
+	  b->saveToFile(file);
+	}
 
       // Save devices & their functions
       for (d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
@@ -825,7 +843,7 @@ Bus* Doc::searchBus(unsigned int id)
       bus = m_busList.at(i);
       ASSERT(bus);
 
-      if (bus->id == id)
+      if (bus->id() == id)
 	{
 	  return bus;
 	}
