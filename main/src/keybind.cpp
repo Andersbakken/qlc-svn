@@ -52,7 +52,7 @@ KeyBind::KeyBind() : QObject()
 //
 // Construct with key and modifier
 //
-KeyBind::KeyBind(int key, int mod) : QObject()
+KeyBind::KeyBind(const int key, const int mod) : QObject()
 {
   m_key = key;
   m_mod = mod;
@@ -80,7 +80,7 @@ KeyBind::KeyBind(int key, int mod) : QObject()
 //
 // Copy constructor
 //
-KeyBind::KeyBind(KeyBind* kb) : QObject()
+KeyBind::KeyBind(const KeyBind* kb) : QObject()
 {
   ASSERT(kb != NULL);
   m_key = kb->key();

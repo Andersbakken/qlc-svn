@@ -32,31 +32,32 @@ class KeyBind : public QObject
 
  public:
   KeyBind();
-  KeyBind(int key, int mod);
-  KeyBind(KeyBind* kb);
+  KeyBind(const int key, const int mod);
+  KeyBind(const KeyBind* kb);
   ~KeyBind();
 
   enum PressAction { PressStart = 0, PressToggle = 1, PressStepForward = 2,
-		     PressStepBackward = 3, PressStop = 4, PressNothing = 5 };
-
+		     PressStepBackward = 3, PressStop = 4, PressNothing = 5,
+		     PressFlash = 6 };
+  
   enum ReleaseAction { ReleaseStop = 0, ReleaseNothing = 1 };
 
   static QString keyString(int key, int mod);
   QString keyString() { return keyString(m_key, m_mod); }
 
-  int key() { return m_key; }
+  int key() const { return m_key; }
   void setKey(int key);
   
-  int mod() { return m_mod; }
+  int mod() const { return m_mod; }
   void setMod(int mod);
 
   void setPressAction(PressAction a) { m_pressAction = a; }
-  PressAction pressAction() { return m_pressAction; }
+  PressAction pressAction() const { return m_pressAction; }
 
   void setReleaseAction(ReleaseAction a) { m_releaseAction = a; }
-  ReleaseAction releaseAction() { return m_releaseAction; }
+  ReleaseAction releaseAction() const { return m_releaseAction; }
 
-  bool valid() { return m_valid; }
+  bool valid() const { return m_valid; }
 
   bool operator==(KeyBind*);
 

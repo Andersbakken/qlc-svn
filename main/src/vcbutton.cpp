@@ -102,7 +102,8 @@ void VCButton::init()
 
 void VCButton::copyFrom(VCButton* button)
 {
-  m_functionID = button->m_functionID;
+  attachFunction(button->m_functionID);
+
   m_resizeMode = false;
   m_renameEdit = NULL;
 
@@ -124,7 +125,7 @@ void VCButton::copyFrom(VCButton* button)
 
   setGeometry(button->geometry());
 
-  move(button->x() + 20, button->y() + 20);
+  move(button->x() + button->width(), button->y());
 }
 
 
@@ -317,6 +318,18 @@ void VCButton::createContents(QPtrList <QString> &list)
     }
 
   setGeometry(rect);
+}
+
+
+void VCButton::setKeyBind(const KeyBind* kb)
+{
+  assert(kb);
+
+  if (m_keyBind) delete m_keyBind;
+  m_keyBind = new KeyBind(kb);
+  
+  connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
+  connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 }
 
 
@@ -534,25 +547,7 @@ void VCButton::slotMenuCallback(int item)
       {
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
-
-	if (p->exec() == QDialog::Accepted)
-	  {
-	    // Name
-	    setText(p->name());
-
-	    // Set the keybind
-	    assert (p->keyBind() != NULL);
-	    if (m_keyBind) delete m_keyBind;
-	    m_keyBind = new KeyBind(p->keyBind());
-	    connect(m_keyBind, SIGNAL(pressed()),
-		    this, SLOT(pressFunction()));
-	    connect(m_keyBind, SIGNAL(released()),
-		    this, SLOT(releaseFunction()));
-
-	    // Function
-	    attachFunction(p->functionID());
-	  }
-
+	p->exec();
 	delete p;
       }
       break;

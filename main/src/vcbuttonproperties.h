@@ -31,25 +31,20 @@ class VCButtonProperties : public UI_VCButtonProperties
   Q_OBJECT
 
  public:
-  VCButtonProperties(VCButton* btn, QWidget* parent = 0, const char* name = 0);
+  VCButtonProperties(VCButton*, QWidget* parent = 0, const char* name = 0);
   ~VCButtonProperties();
-  
-  VCButton* button() { return m_button; }
-
-  t_function_id functionID() { return m_functionID; }
-  QString name() { return m_nameString; }
-  KeyBind* keyBind() { return m_keyBind; }
-  bool lock() { return m_lockState; }
   
  public slots:
   void slotPressGroupClicked(int);
-  void slotReleaseGroupClicked(int);
+
+  void slotAttachFunctionClicked();
+  void slotDetachFunctionClicked();
+
+  void slotAttachKeyClicked();
+  void slotDetachKeyClicked();
+
   void slotOKClicked();
   void slotCancelClicked();
-  void slotAddFunctionClicked();
-  void slotRemoveFunctionClicked();
-  void slotAddKeyClicked();
-  void slotRemoveKeyClicked();
 
  private:
   void initView();
@@ -57,10 +52,8 @@ class VCButtonProperties : public UI_VCButtonProperties
 
  private:
   VCButton* m_button;
-  t_function_id m_functionID;
-  QString m_nameString;
   KeyBind* m_keyBind;
-  bool m_lockState;
+  t_function_id m_functionID;
 };
 
 #endif

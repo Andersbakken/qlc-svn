@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_VCButtonProperties</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,270 +8,31 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>657</width>
-            <height>358</height>
+            <width>476</width>
+            <height>363</height>
         </rect>
     </property>
     <property name="caption">
         <string>Button Properties</string>
     </property>
-    <grid>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QPushButton" row="3" column="2">
-            <property name="name">
-                <cstring>m_ok</cstring>
-            </property>
-            <property name="text">
-                <string>OK</string>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="3" column="3">
-            <property name="name">
-                <cstring>m_cancel</cstring>
-            </property>
-            <property name="text">
-                <string>Cancel</string>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="3" column="0">
-            <property name="name">
-                <cstring>m_lock</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;Lock Position</string>
-            </property>
-            <property name="toggleButton">
-                <bool>true</bool>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Lock this widget's position in virtual console</string>
-            </property>
-        </widget>
-        <widget class="QButtonGroup" row="0" column="2" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_onButtonPressGroup</cstring>
-            </property>
-            <property name="title">
-                <string>On Button/Key Press...</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QRadioButton" row="0" column="0">
-                    <property name="name">
-                        <cstring>m_pressStart</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Start Function</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>0</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Start the attached function when this button (or the hotkey) is pressed</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton" row="1" column="0">
-                    <property name="name">
-                        <cstring>m_pressToggle</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Toggle Function on/off</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>1</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Every other key press starts and every other press stops the attached function.</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton" row="0" column="1">
-                    <property name="name">
-                        <cstring>m_pressStepForward</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Step Forward</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>2</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Signal the function to take one step forward (used only with chasers and sequences)</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton" row="1" column="1">
-                    <property name="name">
-                        <cstring>m_pressStepBackward</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Step Backward</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Signal the function to take one step forward (used only with chasers and sequences)</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton" row="2" column="0">
-                    <property name="name">
-                        <cstring>RadioButton8</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Stop Function</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>4</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Stop the attached function when this button is pressed</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton" row="2" column="1">
-                    <property name="name">
-                        <cstring>m_pressNothing</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Do Nothing</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>5</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Ignore all button and key presses for this button</string>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <widget class="QGroupBox" row="2" column="2" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_joystickButtonsGroup</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="title">
-                <string>Joystick Buttons</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget" row="0" column="0">
-                    <property name="name">
-                        <cstring>layout22</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer13</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_allJoystickButton</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>All</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Attach all joystick buttons to this button</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget" row="1" column="0">
-                    <property name="name">
-                        <cstring>layout23</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer15</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_noneJoystickButton</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>None</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Remove all joystick button attachments</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </grid>
-        </widget>
-        <spacer row="3" column="1">
-            <property name="name">
-                <cstring>spacer21</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>40</width>
-                    <height>20</height>
-                </size>
-            </property>
-        </spacer>
-        <widget class="QGroupBox" row="0" column="0" rowspan="1" colspan="2">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>m_generalInfoGroup</cstring>
             </property>
             <property name="title">
                 <string>General Info</string>
             </property>
-            <grid>
+            <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget" row="0" column="0">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout24</cstring>
+                        <cstring>layout8</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -295,38 +56,15 @@
                             <property name="name">
                                 <cstring>m_nameEdit</cstring>
                             </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
                             <property name="toolTip" stdset="0">
                                 <string>The name to be displayed on this button</string>
                             </property>
                         </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer17</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
                     </hbox>
                 </widget>
-                <widget class="QLayoutWidget" row="1" column="0">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout26</cstring>
+                        <cstring>layout7</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -350,19 +88,19 @@
                             <property name="name">
                                 <cstring>m_functionEdit</cstring>
                             </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
+                            <property name="focusPolicy">
+                                <enum>NoFocus</enum>
+                            </property>
+                            <property name="readOnly">
+                                <bool>true</bool>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>The function that this button's actions affect</string>
+                                <string>Attached function and its device</string>
                             </property>
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>m_addFunction</cstring>
+                                <cstring>m_attachFunction</cstring>
                             </property>
                             <property name="minimumSize">
                                 <size>
@@ -388,7 +126,7 @@
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>m_removeFunction</cstring>
+                                <cstring>m_detachFunction</cstring>
                             </property>
                             <property name="minimumSize">
                                 <size>
@@ -406,307 +144,297 @@
                                 <string></string>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>Remove function attachment</string>
+                                <string>Detach the current function</string>
                             </property>
                         </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer18</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
                     </hbox>
                 </widget>
-            </grid>
+            </vbox>
         </widget>
-        <widget class="QGroupBox" row="1" column="0" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_functionSpeedGroup</cstring>
-            </property>
-            <property name="title">
-                <string>Function Bus</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget" row="0" column="0">
-                    <property name="name">
-                        <cstring>layout27</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>m_busLabel</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>80</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>32767</width>
-                                    <height>32767</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Speed Bus</string>
-                            </property>
-                        </widget>
-                        <widget class="QComboBox">
-                            <property name="name">
-                                <cstring>m_busCombo</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Bus name</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_addBus</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Create a new bus</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer19</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </hbox>
-                </widget>
-            </grid>
-        </widget>
-        <widget class="QButtonGroup" row="1" column="2" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_onButtonReleaseGroup</cstring>
-            </property>
-            <property name="title">
-                <string>On Button/Key Release...</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QRadioButton" row="0" column="0">
-                    <property name="name">
-                        <cstring>m_relaseStop</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Stop Function</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>0</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Stop the attached function when this button is released</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton" row="1" column="1">
-                    <property name="name">
-                        <cstring>m_releaseNothing</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Do Nothing</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>1</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Ignore all button and key releases for this button</string>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <widget class="QGroupBox" row="2" column="0" rowspan="1" colspan="2">
+        <widget class="QGroupBox">
             <property name="name">
                 <cstring>m_keyboardHotkeyGroup</cstring>
             </property>
             <property name="title">
                 <string>Keyboard Hotkey</string>
             </property>
-            <grid>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget" row="0" column="0">
+                <widget class="QLabel">
                     <property name="name">
-                        <cstring>layout28</cstring>
+                        <cstring>m_keyLabel</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>m_keyLabel</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>80</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Key</string>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>m_keyEdit</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>The key (combination) that acts as if you would point and click on this button in virtual console</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_addKey</cstring>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Attach a keyboard key (combination) to this button</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_removeKey</cstring>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Remove key (combination) attachment</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer20</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </hbox>
+                    <property name="minimumSize">
+                        <size>
+                            <width>80</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Key</string>
+                    </property>
                 </widget>
-            </grid>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_keyEdit</cstring>
+                    </property>
+                    <property name="focusPolicy">
+                        <enum>NoFocus</enum>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The key (combination) that acts as if you would point and click on this button in virtual console</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_attachKey</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>30</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                    <property name="maximumSize">
+                        <size>
+                            <width>30</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string></string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Attach a keyboard key (combination) to this button</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_detachKey</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>30</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                    <property name="maximumSize">
+                        <size>
+                            <width>30</width>
+                            <height>30</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string></string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Detach key (combination)</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-    </grid>
+        <widget class="QButtonGroup">
+            <property name="name">
+                <cstring>m_onButtonPressGroup</cstring>
+            </property>
+            <property name="title">
+                <string>On Button/Key Press...</string>
+            </property>
+            <property name="selectedId" stdset="0">
+                <number>1</number>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_toggle</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Toggle Function on/off</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>1</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Every other key press starts and every other press stops the attached function.</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_flash</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>Flash</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>2</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Flash the selected function</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_forward</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>Step Forward (Chaser only)</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>3</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Signal the function to take one step forward (available only for chasers)</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_backward</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>Step Backward (Chaser only)</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>4</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Signal the function to take one step backward (available only for chasers)</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout9</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer8</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
 </widget>
+<connections>
+    <connection>
+        <sender>m_onButtonPressGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotPressGroupClicked(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_attachFunction</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotAttachFunctionClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_detachFunction</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotDetachFunctionClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_attachKey</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotAttachKeyClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_detachKey</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotDetachKeyClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCButtonProperties</receiver>
+        <slot>slotCancelClicked()</slot>
+    </connection>
+</connections>
 <tabstops>
     <tabstop>m_nameEdit</tabstop>
     <tabstop>m_functionEdit</tabstop>
-    <tabstop>m_addFunction</tabstop>
-    <tabstop>m_removeFunction</tabstop>
-    <tabstop>m_busCombo</tabstop>
-    <tabstop>m_addBus</tabstop>
+    <tabstop>m_attachFunction</tabstop>
+    <tabstop>m_detachFunction</tabstop>
     <tabstop>m_keyEdit</tabstop>
-    <tabstop>m_addKey</tabstop>
-    <tabstop>m_removeKey</tabstop>
-    <tabstop>m_pressStart</tabstop>
-    <tabstop>m_pressToggle</tabstop>
-    <tabstop>m_pressStepForward</tabstop>
-    <tabstop>m_pressStepBackward</tabstop>
-    <tabstop>RadioButton8</tabstop>
-    <tabstop>m_pressNothing</tabstop>
-    <tabstop>m_relaseStop</tabstop>
-    <tabstop>m_releaseNothing</tabstop>
-    <tabstop>m_allJoystickButton</tabstop>
-    <tabstop>m_noneJoystickButton</tabstop>
-    <tabstop>m_lock</tabstop>
+    <tabstop>m_attachKey</tabstop>
+    <tabstop>m_detachKey</tabstop>
+    <tabstop>m_toggle</tabstop>
+    <tabstop>m_flash</tabstop>
+    <tabstop>m_forward</tabstop>
+    <tabstop>m_backward</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
 <slots>
-    <slot>slotReleaseGroupClicked(int)</slot>
-    <slot>slotBusActivated(int)</slot>
-    <slot>slotBusAddClicked()</slot>
     <slot>slotCancelClicked()</slot>
-    <slot>slotFunctionAddClicked()</slot>
-    <slot>slotFunctionRemoveClicked()</slot>
-    <slot>slotJoystickAllClicked()</slot>
-    <slot>slotJoystickNoneClicked()</slot>
-    <slot>slotKeyAddClicked()</slot>
-    <slot>slotKeyRemoveClicked()</slot>
+    <slot>slotAttachFunctionClicked()</slot>
+    <slot>slotDetachFunctionClicked()</slot>
+    <slot>slotAttachKeyClicked()</slot>
+    <slot>slotDetachKeyClicked()</slot>
     <slot>slotOKClicked()</slot>
     <slot>slotPressGroupClicked(int)</slot>
 </slots>

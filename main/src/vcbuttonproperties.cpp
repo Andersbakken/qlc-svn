@@ -24,6 +24,7 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "vcbuttonproperties.h"
 #include "deviceclass.h"
@@ -41,18 +42,14 @@
 
 extern App* _app;
 
-VCButtonProperties::VCButtonProperties(VCButton* btn, QWidget* parent,
+VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent,
                                        const char* name) 
-  : UI_VCButtonProperties(parent, name, true)
+  : UI_VCButtonProperties(parent, name, true),
+
+    m_button     ( button               ),
+    m_keyBind    ( button->keyBind()    ),
+    m_functionID ( button->functionID() )
 {
-  ASSERT(btn);
-  m_button = btn;
-
-  m_functionID = btn->functionID();
-
-  ASSERT (btn->keyBind());
-  m_keyBind = new KeyBind((KeyBind*) btn->keyBind());
-
   initView();
 }
 
@@ -64,158 +61,33 @@ VCButtonProperties::~VCButtonProperties()
 
 void VCButtonProperties::initView()
 {
+  // Set name
   m_nameEdit->setText(m_button->text());
 
+  // Set function name
   setFunctionName();
-  m_functionEdit->setReadOnly(true);
-
-  // Widget position lock
-  m_lock->setOn(m_lockState);
 
   // KeyBind key
-  m_keyEdit->setReadOnly(true);
-  m_keyEdit->setFocusPolicy(NoFocus);
-  m_keyEdit->setAlignment(AlignCenter);
   m_keyEdit->setText(m_keyBind->keyString());
 
-  // Action groups
-  m_onButtonPressGroup->setEnabled(true);
-  m_onButtonReleaseGroup->setEnabled(true);
-
+  // Set press action
   m_onButtonPressGroup->setButton(m_keyBind->pressAction());
-  m_onButtonReleaseGroup->setButton(m_keyBind->releaseAction());
-
-  // This disables the release group if action group wants that
   slotPressGroupClicked(m_keyBind->pressAction());
 
+  //
+  // Pixmaps
+  //
   QString dir;
   _app->settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
 
-  // Pixmaps
-  m_addFunction->setPixmap(QPixmap(dir + "/attach.xpm"));
-  m_removeFunction->setPixmap(QPixmap(dir + "/detach.xpm"));
+  m_attachFunction->setPixmap(QPixmap(dir + "/attach.xpm"));
+  m_detachFunction->setPixmap(QPixmap(dir + "/detach.xpm"));
 
-  m_addKey->setPixmap(QPixmap(dir + "/key.xpm"));
-  m_removeKey->setPixmap(QPixmap(dir + "/fileclose.xpm"));
-
-  // Connections
-  connect((QObject*) m_onButtonPressGroup, SIGNAL(clicked(int)),
-	  this, SLOT(slotPressGroupClicked(int)));
-  connect((QObject*) m_onButtonReleaseGroup, SIGNAL(clicked(int)),
-	  this, SLOT(slotReleaseGroupClicked(int)));
-
-  connect((QObject*) m_addFunction, SIGNAL(clicked()),
-	  this, SLOT(slotAddFunctionClicked()));
-  connect((QObject*) m_removeFunction, SIGNAL(clicked()),
-	  this, SLOT(slotRemoveFunctionClicked()));
-
-  connect((QObject*) m_addKey, SIGNAL(clicked()),
-	  this, SLOT(slotAddKeyClicked()));
-  connect((QObject*) m_removeKey, SIGNAL(clicked()),
-	  this, SLOT(slotRemoveKeyClicked()));
-
-  connect((QObject*) m_ok, SIGNAL(clicked()), this, SLOT(slotOKClicked()));
-  connect((QObject*) m_cancel, SIGNAL(clicked()),
-	  this, SLOT(slotCancelClicked()));
+  m_attachKey->setPixmap(QPixmap(dir + "/key.xpm"));
+  m_detachKey->setPixmap(QPixmap(dir + "/fileclose.xpm"));
 }
 
-void VCButtonProperties::slotOKClicked()
-{
-  m_nameString = m_nameEdit->text();
-  m_lockState = m_lock->isOn();
-
-  _app->doc()->setModified(true);
-
-  accept();
-}
-
-void VCButtonProperties::slotCancelClicked()
-{
-  reject();
-}
-
-void VCButtonProperties::slotPressGroupClicked(int id)
-{
-  ASSERT(m_keyBind != NULL);
-
-  switch (id)
-    {
-    case 0:
-      m_onButtonReleaseGroup->setEnabled(true);
-      m_keyBind->setPressAction(KeyBind::PressStart);
-      break;
-
-    case 1:
-      m_onButtonReleaseGroup->setButton(1);
-      m_onButtonReleaseGroup->setEnabled(false);
-      m_keyBind->setPressAction(KeyBind::PressToggle);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
-      break;
-
-    case 2:
-      m_onButtonReleaseGroup->setEnabled(false);
-      m_keyBind->setPressAction(KeyBind::PressStepForward);
-      break;
-
-    case 3:
-      m_onButtonReleaseGroup->setEnabled(false);
-      m_keyBind->setPressAction(KeyBind::PressStepBackward);
-      break;
-
-    case 4:
-      m_onButtonReleaseGroup->setButton(1);
-      m_onButtonReleaseGroup->setEnabled(false);
-      m_keyBind->setPressAction(KeyBind::PressStop);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
-      break;
-
-    case 5:
-      m_onButtonReleaseGroup->setEnabled(true);
-      m_keyBind->setPressAction(KeyBind::PressNothing);
-      break;
-
-    default:
-      break;
-    }
-}
-
-void VCButtonProperties::slotReleaseGroupClicked(int id)
-{
-  ASSERT(m_keyBind != NULL);
-
-  switch (id)
-    {
-    case 0:
-      m_keyBind->setReleaseAction(KeyBind::ReleaseStop);
-      break;
-
-    case 1:
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
-      break;
-
-    default:
-      break;
-    }
-}
-
-void VCButtonProperties::slotAddFunctionClicked()
-{
-  FunctionTree* ft = new FunctionTree(this);
-  if (ft->exec() == QDialog::Accepted)
-    {
-      m_functionID = ft->functionID();
-      setFunctionName();
-    }
-
-  delete ft;
-}
-
-void VCButtonProperties::slotRemoveFunctionClicked()
-{
-  m_functionID = KNoID;
-  setFunctionName();
-}
 
 void VCButtonProperties::setFunctionName()
 {
@@ -231,28 +103,75 @@ void VCButtonProperties::setFunctionName()
       Device* d = _app->doc()->device(f->device());
       if (d)
 	{
-	  fname = d->name();
+	  fname = d->name() + QString(" / ") + f->name();
 	}
       else
 	{
-	  fname = QString("Global/");
+	  fname = QString("Global") + QString(" / ") + f->name();
 	}
-      
-      fname += QString("/") + f->name();
     }
 
   m_functionEdit->setText(fname);
 }
 
-void VCButtonProperties::slotAddKeyClicked()
+void VCButtonProperties::slotPressGroupClicked(int id)
+{
+  ASSERT(m_keyBind != NULL);
+
+  switch (id)
+    {
+    case 0:
+      m_keyBind->setPressAction(KeyBind::PressToggle);
+      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+      break;
+
+    case 1:
+      m_keyBind->setPressAction(KeyBind::PressFlash);
+      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+      break;
+
+    case 2:
+      m_keyBind->setPressAction(KeyBind::PressStepForward);
+      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+      break;
+
+    case 3:
+      m_keyBind->setPressAction(KeyBind::PressStepBackward);
+      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+      break;
+
+    default:
+      break;
+    }
+}
+
+void VCButtonProperties::slotAttachFunctionClicked()
+{
+  FunctionTree* ft = new FunctionTree(this);
+  if (ft->exec() == QDialog::Accepted)
+    {
+      m_functionID = ft->functionID();
+      setFunctionName();
+    }
+
+  delete ft;
+}
+
+void VCButtonProperties::slotDetachFunctionClicked()
+{
+  m_functionID = KNoID;
+  setFunctionName();
+}
+
+void VCButtonProperties::slotAttachKeyClicked()
 {
   AssignHotKey* a = NULL;
   a = new AssignHotKey(this);
 
   if (a->exec() == QDialog::Accepted)
     {
-      ASSERT (m_keyBind != NULL);
-      ASSERT (a->keyBind() != NULL);
+      assert(m_keyBind);
+      assert(a->keyBind());
 
       m_keyBind->setKey(a->keyBind()->key());
       m_keyBind->setMod(a->keyBind()->mod());
@@ -262,9 +181,26 @@ void VCButtonProperties::slotAddKeyClicked()
   delete a;
 }
 
-void VCButtonProperties::slotRemoveKeyClicked()
+void VCButtonProperties::slotDetachKeyClicked()
 {
   m_keyBind->setKey(0);
   m_keyBind->setMod(NoButton);
   m_keyEdit->setText(m_keyBind->keyString());
 }
+
+void VCButtonProperties::slotOKClicked()
+{
+  m_button->setText(m_nameEdit->text());
+  m_button->attachFunction(m_functionID);
+  m_button->setKeyBind(m_keyBind);
+
+  _app->doc()->setModified(true);
+
+  accept();
+}
+
+void VCButtonProperties::slotCancelClicked()
+{
+  reject();
+}
+

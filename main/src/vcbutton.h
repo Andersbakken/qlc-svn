@@ -48,6 +48,8 @@ class VCButton : public QPushButton
   void copyFrom(VCButton* button);
 
   KeyBind* keyBind() { return m_keyBind; }
+  void setKeyBind(const KeyBind* kb);
+
   QColor* bgColor() { return m_bgColor; }
   QPixmap* bgPixmap() const { return m_bgPixmap; }
 
@@ -55,7 +57,7 @@ class VCButton : public QPushButton
   void createContents(QPtrList <QString> &list);
 
   void attachFunction(t_function_id id);
-  t_function_id functionID() { return m_functionID; }
+  t_function_id functionID() const { return m_functionID; }
 
  private:
   QPixmap* m_bgPixmap;
