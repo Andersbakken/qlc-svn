@@ -49,17 +49,8 @@ class VCLabel : public QLabel
   void createContents(QPtrList <QString> &list);
 
  private:
-  int m_origX;
-  int m_origY;
-
-  FloatingEdit* m_renameEdit;
-
-  bool moveThreshold(int x, int y);
-  bool m_background;
-  bool m_resizeMode;
-
- private:
-  void moveTo(int x, int y);
+  void resizeTo(QPoint p);
+  void moveTo(QPoint p);
 
  public slots:
   void slotRenameReturnPressed();
@@ -74,6 +65,14 @@ class VCLabel : public QLabel
   void mouseMoveEvent(QMouseEvent* e);
   void mouseDoubleClickEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
+
+ private:
+  int m_origX;
+  int m_origY;
+
+  FloatingEdit* m_renameEdit;
+  bool m_background;
+  bool m_resizeMode;
 };
 
 #endif

@@ -37,6 +37,13 @@ class KeyBind;
 class Bus;
 class VCDockArea;
 
+const QString KEY_VIRTUAL_CONSOLE_OPEN      (          "VirtualConsoleOpen" );
+const QString KEY_VIRTUAL_CONSOLE_GRABKB    (  "VirtualConsoleGrabKeyboard" );
+const QString KEY_VIRTUAL_CONSOLE_KEYREPEAT (     "VirtualConsoleKeyRepeat" );
+const QString KEY_VIRTUAL_CONSOLE_SNAPGRID  (    "VirtualConsoleSnapToGrid" );
+const QString KEY_VIRTUAL_CONSOLE_GRIDX     (         "VirtualConsoleGridX" );
+const QString KEY_VIRTUAL_CONSOLE_GRIDY     (         "VirtualConsoleGridY" );
+
 class VirtualConsole : public QWidget
 {
   Q_OBJECT
@@ -60,6 +67,10 @@ class VirtualConsole : public QWidget
 
   // Used to get a correct parent frame for widgets
   VCFrame* getFrame(unsigned int id, VCFrame* widget = NULL);
+
+  bool isGridEnabled() { return m_gridEnabled; }
+  int gridX() { return m_gridX; }
+  int gridY() { return m_gridY; }
 
  public slots:
   void slotMenuItemActivated(int);
@@ -96,6 +107,11 @@ class VirtualConsole : public QWidget
 
   // Key receiver bind objects
   QPtrList <KeyBind> m_keyReceivers;
+
+  // Grid
+  bool m_gridEnabled;
+  int m_gridX;
+  int m_gridY;
 };
 
 #endif

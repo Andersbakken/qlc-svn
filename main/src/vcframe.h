@@ -56,21 +56,6 @@ class VCFrame : public QFrame
   QPixmap* bgPixmap() const { return m_bgPixmap; }
   QColor bgColor() const { return *m_bgColor; }
 
- protected:
-  int m_origX;
-  int m_origY;
-  int m_xpos;
-  int m_ypos;
-
-  t_vc_id m_id;
-
-  bool m_resizeMode;
-  bool m_bottomFrame;
-
-  QPixmap* m_bgPixmap;
-  QString m_bgPixmapFileName;
-  QColor* m_bgColor;
-
  private slots:
   void slotMenuCallback(int item);
   void slotModeChanged();
@@ -87,8 +72,23 @@ class VCFrame : public QFrame
   void mouseMoveEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
 
-  bool moveThreshold(int x, int y);
-  void moveTo(int x, int y);
+  void resizeTo(QPoint p);
+  void moveTo(QPoint p);
+
+ protected:
+  int m_origX;
+  int m_origY;
+  int m_xpos;
+  int m_ypos;
+
+  t_vc_id m_id;
+
+  bool m_resizeMode;
+  bool m_bottomFrame;
+
+  QPixmap* m_bgPixmap;
+  QString m_bgPixmapFileName;
+  QColor* m_bgColor;
 
  private:
   static t_vc_id s_nextVCID;

@@ -75,8 +75,8 @@ class VCDockSlider : public UI_VCDockSlider
   void mouseMoveEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
 
-  bool moveThreshold(int x, int y);
-  void moveTo(int x, int y);
+  void resizeTo(QPoint p);
+  void moveTo(QPoint p);
 
  private:
   t_vc_id m_id;

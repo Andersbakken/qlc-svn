@@ -648,19 +648,16 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
   if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true)
-	{
-	  QPoint pos(e->globalX(), e->globalY());
-	  pos = mapFromGlobal(pos);
-	  resize(pos.x() + 2, pos.y() + 2);
+	{	  
+	  QPoint p(QCursor::pos());
+	  resizeTo(mapFromGlobal(p));
 	  _app->doc()->setModified(true);
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
-	  if (moveThreshold(e->globalX(), e->globalY()))
-	    {
-	      _app->doc()->setModified(true);
-	      moveTo(e->globalX(), e->globalY());
-	    }
+	  QPoint p(QCursor::pos());
+	  moveTo(parentWidget()->mapFromGlobal(p));
+	  _app->doc()->setModified(true);
 	}
     }
   else
@@ -669,49 +666,77 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
     }
 }
 
-bool VCButton::moveThreshold(int x, int y)
+void VCButton::resizeTo(QPoint p)
 {
-  int dx = 0;
-  int dy = 0;
-
-  dx = abs(m_origX - x);
-  dy = abs(m_origY - y);
-
-  if (dx >= KMoveThreshold || dy >= KMoveThreshold)
-    return true;
-  else
-    return false;
-}
-
-void VCButton::moveTo(int x, int y)
-{
-  int centerx = rect().width() / 2;
-  int centery = rect().height() / 2;
-
-  QPoint point(parentWidget()->mapFromGlobal(QPoint(x - centerx,
-						    y - centery)));
-
-  /* Don't move over right or left */
-  if (point.x() < parentWidget()->rect().left())
+  // Grid settings
+  if (_app->virtualConsole()->isGridEnabled())
     {
-      point.setX(parentWidget()->rect().left());
+      p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+      p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
     }
-  else if (point.x() + rect().width() > parentWidget()->rect().right())
+
+  // Map to parent coordinates so that they can be compared
+  p = mapToParent(p);
+
+  // Don't move beyond left or right
+  if (p.x() < 0)
     {
-      point.setX(parentWidget()->rect().right() - rect().width());
+      p.setX(0);
+    }
+  else if (p.x() > parentWidget()->width())
+    {
+      p.setX(parentWidget()->width());
     }
   
-  /* Don't move over top or bottom */
-  if (point.y() < parentWidget()->rect().top())
+  // Don't move beyond top or bottom
+  if (p.y() < 0)
     {
-      point.setY(parentWidget()->rect().top());
+      p.setY(0);
     }
-  else if (point.y() + rect().height() > parentWidget()->rect().bottom())
+  else if (p.y() > parentWidget()->height())
     {
-      point.setY(parentWidget()->rect().bottom() - rect().height());
+      p.setY(parentWidget()->height());
     }
 
-  move(point);
+  // Map back so that this can be resized
+  p = mapFromParent(p);
+
+  // Do the resize
+  resize(p.x(), p.y());
+}
+
+
+void VCButton::moveTo(QPoint p)
+{
+  // Grid settings
+  if (_app->virtualConsole()->isGridEnabled())
+    {
+      p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+      p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+    }
+  
+  // Don't move beyond left or right
+  if (p.x() < 0)
+    {
+      p.setX(0);
+    }
+  else if (p.x() + rect().width() > parentWidget()->width())
+    {
+      p.setX(parentWidget()->width() - rect().width());
+    }
+  
+  // Don't move beyond top or bottom
+  if (p.y() < 0)
+    {
+      p.setY(0);
+    }
+  else if (p.y() + rect().height() > parentWidget()->height())
+    {
+      p.setY(parentWidget()->height() - rect().height());
+    }
+
+  // Do the move
+  move(p);
 }
 
 

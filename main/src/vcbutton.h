@@ -76,7 +76,8 @@ class VCButton : public QPushButton
 
  private:
   bool moveThreshold(int x, int y);
-  void moveTo(int x, int y);
+  void resizeTo(QPoint p);
+  void moveTo(QPoint p);
 
   void pressFunction();
   void releaseFunction();

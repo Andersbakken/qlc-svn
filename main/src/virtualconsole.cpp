@@ -34,6 +34,7 @@
 #include <qslider.h>
 
 #include "virtualconsole.h"
+#include "virtualconsoleproperties.h"
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
@@ -50,21 +51,23 @@
 
 extern App* _app;
 
-const QString KEY_VIRTUAL_CONSOLE_OPEN  (  "VirtualConsoleOpen" );
-
 const int KMenuAdd                 ( 0 );
 const int KMenuAddButton           ( 1 );
 const int KMenuAddSlider           ( 2 );
 const int KMenuAddFrame            ( 3 );
 const int KMenuAddLabel            ( 4 );
-const int KMenuDefaultSliders      ( 5 );
-const int KMenuPanic               ( 6 );
+const int KMenuProperties          ( 5 );
+const int KMenuDefaultSliders      ( 6 );
+const int KMenuPanic               ( 7 );
 
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
 {
   m_dockArea = NULL;
   m_drawArea = NULL;
+  m_gridEnabled = false;
+  m_gridX = 0;
+  m_gridY = 0;
 }
 
 VirtualConsole::~VirtualConsole()
@@ -124,6 +127,8 @@ void VirtualConsole::initView(void)
   //
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
+  m_toolsMenu->insertItem(QPixmap(dir + "/settings.xpm"),
+			  "&Properties...", KMenuProperties);
   m_toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"),
 			  "&Default Sliders", KMenuDefaultSliders);
   m_toolsMenu->insertSeparator();
@@ -157,6 +162,37 @@ void VirtualConsole::initView(void)
     {
       hide();
       _app->slotVirtualConsoleClosed();
+    }
+
+  // Grid
+  _app->settings()->get(KEY_VIRTUAL_CONSOLE_SNAPGRID, config);
+  if (config == Settings::trueValue())
+    {
+      m_gridEnabled = true;
+    }
+  else
+    {
+      m_gridEnabled = false;
+    }
+
+  // Grid X
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDX, config))
+    {
+      m_gridX = config.toInt();
+    }
+  else
+    {
+      m_gridX = 10;
+    }
+
+  // Grid Y
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDY, config))
+    {
+      m_gridY = config.toInt();
+    }
+  else
+    {
+      m_gridY = 10;
     }
 }
 
@@ -208,9 +244,19 @@ void VirtualConsole::slotMenuItemActivated(int item)
       }
       break;
 
-    case KMenuPanic:
+    case KMenuProperties:
       {
-	_app->slotPanic();
+	VirtualConsoleProperties* vcp = new VirtualConsoleProperties(this);
+	vcp->init();
+	if (vcp->exec() == QDialog::Accepted)
+	  {
+	    // Cache grid values so widgets don't have to get them
+	    // from settings each time (which is slow)
+	    m_gridEnabled = vcp->isGridEnabled();
+	    m_gridX = vcp->gridX();
+	    m_gridY = vcp->gridY();
+	  }
+	delete vcp;
       }
       break;
 
@@ -224,6 +270,12 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	  {
 	    m_dockArea->hide();
 	  }
+      }
+      break;
+
+    case KMenuPanic:
+      {
+	_app->slotPanic();
       }
       break;
 
@@ -276,46 +328,43 @@ void VirtualConsole::initDrawArea()
 void VirtualConsole::slotModeChanged()
 {
   QString config;
-  _app->settings()->get("KeyRepeatOffInOperateMode", config);
+  
+  qDebug("TODO: check if there are any running functions");
 
-  if (_app->mode() == App::Design)
+  //
+  // Key repeat
+  //
+  _app->settings()->get(KEY_VIRTUAL_CONSOLE_KEYREPEAT, config);
+  if (config == Settings::trueValue())
     {
-      qDebug("TODO: check if there are any running functions");
-      setCaption("Virtual Console - Design Mode");
-
-      /* Set auto repeat off when in "Operate" mode and on 
-       * again when vc is put to "Design" mode.
-       */
-      if (config == QString("true"))
+      Display* display;
+      display = XOpenDisplay(NULL);
+      ASSERT(display != NULL);
+      
+      if (_app->mode() == App::Design)
 	{
-	  Display* display;
-	  display = XOpenDisplay(NULL);
-	  ASSERT(display != NULL);
-	  
 	  XAutoRepeatOn(display);
-	  
-	  XCloseDisplay(display);
+	}
+      else
+	{
+	  XAutoRepeatOff(display);
+	}
+      
+      XCloseDisplay(display);
+    }
 
+  //
+  // Grab keyboard
+  //
+  _app->settings()->get(KEY_VIRTUAL_CONSOLE_GRABKB, config);
+  if (config == Settings::trueValue())
+    {
+      if (_app->mode() == App::Design)
+	{
 	  releaseKeyboard();
 	}
-    }
-  else
-    {
-      setCaption("Virtual Console - Operate Mode");
-
-      /* Set auto repeat off when in "Operate" mode and on 
-       * again when vc is put to "Design" mode.
-       */
-      if (config == QString("true"))
+      else
 	{
-	  Display* display;
-	  display = XOpenDisplay(NULL);
-	  ASSERT(display != NULL);
-	  
-	  XAutoRepeatOff(display);
-	  
-	  XCloseDisplay(display);
-
 	  grabKeyboard();
 	}
     }

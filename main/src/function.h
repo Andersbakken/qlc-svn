@@ -57,7 +57,7 @@ namespace FunctionNS
 	
      public:
       BusListener(Function* f);
-      ~BusListener() {}
+      ~BusListener();
       
      public slots:
       void slotBusValueChanged(t_bus_id id, t_bus_value value);

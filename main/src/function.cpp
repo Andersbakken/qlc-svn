@@ -103,6 +103,9 @@ Function::Function(t_function_id id) : QThread()
 //
 Function::~Function()
 {
+  delete m_listener;
+  m_listener = NULL;
+
   QApplication::postEvent(_app->doc(), new FunctionDestroyEvent(m_id));
 }
 
@@ -440,6 +443,15 @@ FunctionNS::BusListener::BusListener(Function* f) : m_function(f)
 { 
   connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+}
+
+//
+// Bus Listener destructor
+//
+FunctionNS::BusListener::~BusListener()
+{
+  disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	     this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 }
 
 
