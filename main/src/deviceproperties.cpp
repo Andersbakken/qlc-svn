@@ -42,20 +42,12 @@ DeviceProperties::~DeviceProperties()
 
 void DeviceProperties::init()
 {
-  QString num;
-
+  // Name
   m_deviceNameEdit->setText(m_device->name());
 
-  m_deviceClassEdit->setText(m_device->deviceClass()->manufacturer() +
-			     QString(" - ") +
-			     m_device->deviceClass()->model());
-
-  m_deviceTypeEdit->setText(m_device->deviceClass()->type());
-
-  num.setNum(m_device->deviceClass()->channels()->count());
-  m_channelsEdit->setText(num);
-
-  m_addressSpin->setRange(1, 513 - num.toInt());
+  // Address
+  m_addressSpin->setRange(1,
+			  513 - m_device->deviceClass()->channels()->count());
   m_addressSpin->setValue(m_device->address() + 1);
 }
 
@@ -80,20 +72,11 @@ void DeviceProperties::slotDIPClicked()
 
 void DeviceProperties::slotOKClicked()
 {
-  t_channel address = m_addressSpin->value() - 1;
-
-  if (m_deviceNameEdit->text().length() <= 0)
-    {
-      QString msg("Empty names are not allowed. Preserving existing name.");
-      QMessageBox::warning(this, KApplicationNameShort, msg);
-      m_deviceNameEdit->setText(m_device->name());
-      return;
-    }
-  else
-    {
-      m_device->setName(m_deviceNameEdit->text());
-    }
-      
-  m_device->setAddress(address);
+  // Name
+  m_device->setName(m_deviceNameEdit->text());
+  
+  // Address
+  m_device->setAddress(m_addressSpin->value() - 1);
+  
   accept();
 }
