@@ -468,9 +468,26 @@ void Scene::init()
 void Scene::run()
 {
   t_channel ch = 0;
+  t_channel ready = 0;
 
   // Initialize this scene for running
   init();
+
+  // Check if this scene needs to play
+  for (t_channel i = 0; i < m_channels; i++)
+    {
+      if (m_values[i].value == (int) m_runTimeData[i].current)
+	{
+	  ready++;
+	}
+    }
+
+  // This scene does not need to be played because all target
+  // values are already where they are supposed to be.
+  if (ready == m_channels)
+    {
+      m_stopped = true;
+    }
 
   m_dataMutex.lock();
 
@@ -512,7 +529,7 @@ void Scene::run()
 
 	  m_dataMutex.unlock();
 	}
-      
+
       m_eventBuffer->put(m_channelData);
 
       m_dataMutex.lock();
