@@ -54,7 +54,7 @@ class DocumentBrowser;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
-const QString KApplicationVersion   = "Version 2.3";
+const QString KApplicationVersion   = "Version 2.4";
 
 //////////////////////////////////////////////////////////////////
 // Class definition
