@@ -38,24 +38,20 @@ AboutBox::~AboutBox()
 void AboutBox::initDialog()
 {
   QColor white(255, 255, 255);
-  int w = 0;
-  int h = 0;
+  int w = 300;
+  int h = 123;
 
   setCaption("About QLC");
 
   m_pm = new QPixmap(_app->settings()->getPixmapPath() + "/qlc-big.xpm");
   if (m_pm->isNull() == false)
     {
-      w = m_pm->width();
-      h = m_pm->height();
       m_logo = new QWidget(this);
-      m_logo->setGeometry(0, 0, w, h);
+      m_logo->setGeometry(28, 0, w, h);
       m_logo->setBackgroundPixmap(*m_pm);
     }
   else
     {
-      w = 254;
-      h = 123;
       m_logo = (QWidget*) new QLabel(this);
       m_logo->setGeometry(0, 0, w, h);
       m_logo->setBackgroundColor(QColor(255, 255, 255));
@@ -86,12 +82,13 @@ void AboutBox::initDialog()
 
   m_people = new QListBox(this);
   m_people->setGeometry(5, h + 90, w-10, 80);
+  m_people->setBackgroundColor(white);
   m_people->insertItem("Heikki Junnila (hjunnila@iki.fi)");
   m_people->insertItem("Stefan Krumm (krumm@geol.uni-erlangen.de)");
   m_people->insertItem("Dirk Jagdmann (doj@cubic.org)");
 
   m_ok = new QPushButton(this);
-  m_ok->setGeometry(80, h + 180, 100, 30);
+  m_ok->setGeometry(108, h + 180, 100, 30);
   m_ok->setMinimumSize(100, 30);
   m_ok->setDefault(false);
   m_ok->setText("&OK");

@@ -239,17 +239,6 @@ void VirtualConsole::slotDrawAreaRemoved(DMXWidget* widget)
     }
 }
 
-void VirtualConsole::slotDMXWidgetRemoved(DMXWidget* widget)
-{
-  ASSERT(m_drawArea != NULL);
-  if (widget == m_defaultSpeedSlider)
-    {
-      disconnect(m_defaultSpeedSlider);
-      delete m_defaultSpeedSlider;
-      m_defaultSpeedSlider = NULL;
-    }
-}
-
 void VirtualConsole::closeEvent(QCloseEvent* e)
 {
   e->accept();
@@ -304,17 +293,24 @@ void VirtualConsole::slotMenuItemActivated(int item)
       break;
 
     case ID_VC_ADD_SPEEDSLIDER:
-      {
-	if (m_drawArea == NULL)
-	  {
-	    addBottomFrame();
-	  }
-	SpeedSlider* p;
-	p = new SpeedSlider(m_drawArea);
-	connect(p, SIGNAL(removed(DMXWidget*)), this, SLOT(slotDMXWidgetRemoved(DMXWidget*)));
-	p->show();
-      }
-	break;
+      if (m_drawArea == NULL)
+	{
+	  addBottomFrame();
+	}
+
+      if (m_drawArea->getSpeedSlider() != NULL)
+	{
+	  MSG_INFO("This frame already has a default speed slider. Unable to add new one.");
+	}
+      else
+	{
+	  SpeedSlider* p = NULL;
+	  p = new SpeedSlider(m_drawArea);
+	  m_drawArea->setSpeedSlider(p);
+	  connect(p, SIGNAL(destroyed()), m_drawArea, SLOT(slotSpeedSliderDestroyed()));
+	  p->show();
+	}
+      break;
 
     case ID_VC_ADD_MONITOR:
       break;
@@ -346,4 +342,32 @@ void VirtualConsole::addBottomFrame()
   connect(m_drawArea, SIGNAL(removed(DMXWidget*)), this, SLOT(slotDrawAreaRemoved(DMXWidget*)));
   m_layout->addWidget(m_drawArea, 1);
   m_drawArea->show();
+}
+
+void VirtualConsole::keyPressEvent(QKeyEvent* e)
+{
+  KeyBind* b = NULL;
+
+  for (unsigned int i = 0; i < m_bindings.count(); i++)
+    {
+      b = m_bindings.at(i);
+      if (e->key() == b->key)
+	{
+	  b->receiver->keyPress(e);
+	}
+    }
+}
+
+void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
+{
+  KeyBind* b = NULL;
+
+  for (unsigned int i = 0; i < m_bindings.count(); i++)
+    {
+      b = m_bindings.at(i);
+      if (e->key() == b->key)
+	{
+	  b->receiver->keyRelease(e);
+	}
+    }
 }

@@ -29,11 +29,12 @@
 #include <qfile.h>
 #include <qlist.h>
 #include <qstring.h>
+#include "dmxwidgetbase.h"
 #include "classes.h"
 
-#define ID_VC_MODE         100
-#define ID_VC_MODE_OPERATE 110
-#define ID_VC_MODE_DESIGN  120
+#define ID_VC_MODE                   100
+#define ID_VC_MODE_OPERATE           110
+#define ID_VC_MODE_DESIGN            120
 
 #define ID_VC_ADD                    1000
 #define ID_VC_ADD_BUTTON             1010
@@ -41,6 +42,12 @@
 #define ID_VC_ADD_SPEEDSLIDER        1030
 #define ID_VC_ADD_MONITOR            1040
 #define ID_VC_ADD_FRAME              1050
+
+typedef struct KeyBind
+{
+  DMXWidgetBase* receiver;
+  int key;
+} KeyBind;
 
 class VirtualConsole : public QWidget
 {
@@ -74,7 +81,6 @@ class VirtualConsole : public QWidget
  public slots:
   void slotMenuItemActivated(int item);
   void slotDrawAreaRemoved(DMXWidget* widget);
-  void slotDMXWidgetRemoved(DMXWidget* widget);
 
  signals:
   void closed();
@@ -82,6 +88,8 @@ class VirtualConsole : public QWidget
 
  protected:
   void closeEvent(QCloseEvent* e);
+  void keyPressEvent(QKeyEvent* e);
+  void keyReleaseEvent(QKeyEvent* e);
   void addBottomFrame();
 
  private:
@@ -96,6 +104,8 @@ class VirtualConsole : public QWidget
 
   QWidget* m_sourceObject;
   QWidget* m_targetObject;
+
+  QList <KeyBind> m_bindings;
 };
 
 #endif

@@ -35,6 +35,7 @@
 #include "chaser.h"
 #include "virtualconsole.h"
 #include "joystickplugin.h"
+#include "../../libs/common/qlcplugininfo.h"
 
 #include <qobject.h>
 #include <qstring.h>
@@ -836,15 +837,16 @@ void Doc::findPluginObjects()
       plugin = new Plugin(path);
       if (plugin->isValid() == true)
 	{
-	  if (plugin->type() == QString("QLC Joystick Plugin"))
+	  qDebug("Library: %s | Version: %s", plugin->name().latin1(), 
+		 plugin->versionString().latin1());
+
+	  if (QString(plugin->typeString()) == QString(JOYSTICK_TYPE_STRING))
 	    {
-	      JoystickPlugin* jp = new JoystickPlugin(plugin);
 	      delete plugin;
+	      plugin = NULL;
+	      JoystickPlugin* jp = new JoystickPlugin(path);
 	      m_pluginList.append((Plugin*) jp);
 	    }
-
-	  qDebug("%s Version %s", plugin->name().latin1(), 
-		 plugin->versionString().latin1());
 	}
       else
 	{

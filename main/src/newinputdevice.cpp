@@ -24,6 +24,7 @@
 #include "plugin.h"
 #include "settings.h"
 #include "newinputdevice.h"
+#include "joystickplugin.h"
 
 extern App* _app;
 
@@ -48,8 +49,8 @@ void NewInputDevice::initView(void)
   m_list->setGeometry(10, 10, 280, 180);
   m_list->addColumn("Name");
   m_list->addColumn("Type");
-  m_list->setColumnWidth(0, (int) (280 * 0.8) - 2);
-  m_list->setColumnWidth(1, (int) (280 * 0.2) - 2);
+  m_list->setColumnWidth(0, (int) (280 * 0.5) - 2);
+  m_list->setColumnWidth(1, (int) (280 * 0.5) - 2);
   connect(m_list, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(slotSelectionChanged(QListViewItem*)));
 
   m_customNameLabel = new QLabel(this);
@@ -96,6 +97,9 @@ void NewInputDevice::fetchInputDevices()
       if (list.at(i)->type() == Plugin::Joystick)
 	{
 	  JoystickPlugin* jp = (JoystickPlugin*) list.at(i);
+	  ASSERT(jp != NULL);
+
+	  QListViewItem* item = new QListViewItem(m_list, jp->name(), jp->typeString());
 	}
     }
 }
