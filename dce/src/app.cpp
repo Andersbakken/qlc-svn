@@ -250,22 +250,25 @@ void App::slotFileOpen()
 					      "Device Classes (*.deviceclass)",
 					      this);
 
-  FileHandler::readFileToList(path, list);
-
-  DeviceClass* dc = createDeviceClass(list);
-
-  if (!dc)
+  if (path != QString::null)
     {
-      QMessageBox::critical(this, KApplicationNameShort,
-			    "The file didn't contain a valid device class!!");
-    }
-  else
-    {
-      DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
-      connect(editor, SIGNAL(closed(DeviceClassEditor*)),
-	      this, SLOT(slotEditorClosed(DeviceClassEditor*)));
-      editor->init();
-      editor->show();
+      FileHandler::readFileToList(path, list);
+
+      DeviceClass* dc = createDeviceClass(list);
+      
+      if (!dc)
+	{
+	  QMessageBox::warning(this, KApplicationNameShort,
+			       "File didn't contain a valid device class.");
+	}
+      else
+	{
+	  DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
+	  connect(editor, SIGNAL(closed(DeviceClassEditor*)),
+		  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
+	  editor->init();
+	  editor->show();
+	}
     }
 }
 
@@ -312,8 +315,12 @@ void App::slotRefreshWindowMenu()
   dir += QString("/") + PIXMAPPATH;
   
   m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")), "Cascade", this, SLOT(slotWindowCascade()), 0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")), "Tile", this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
+  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")),
+			   "Cascade", this, SLOT(slotWindowCascade()),
+			   0, ID_WINDOW_CASCADE);
+  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")),
+			   "Tile", this, SLOT(slotWindowTile()),
+			   0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();
 
   for (widget = wl.first(); widget != NULL; widget = wl.next())
@@ -326,7 +333,8 @@ void App::slotRefreshWindowMenu()
     id++;
   }
 
-  connect(m_windowMenu, SIGNAL(activated(int)), this, SLOT(slotWindowMenuCallback(int)));
+  connect(m_windowMenu, SIGNAL(activated(int)), 
+	  this, SLOT(slotWindowMenuCallback(int)));
 }
 
 
@@ -351,7 +359,8 @@ void App::slotWindowMenuCallback(int item)
 	}
       else
 	{
-	  QMessageBox::critical(this, KApplicationNameShort, "Unable to focus window! Handle not found.");
+	  QMessageBox::critical(this, KApplicationNameShort, 
+				"Unable to focus window! Handle not found.");
 	}
 
       disconnect(m_windowMenu);

@@ -73,6 +73,8 @@ void DeviceClassEditor::init()
   m_manufacturerEdit->setText(m_dc->manufacturer());
   m_modelEdit->setText(m_dc->model());
 
+  m_typeCombo->setCurrentText(m_dc->type());
+
   updateChannelList();
   updatePresetValues();
 
@@ -84,9 +86,10 @@ void DeviceClassEditor::closeEvent(QCloseEvent* e)
   if (m_modified)
     {
       int r = QMessageBox::information(this, KApplicationNameShort,
-				       "Do you want to save changes to device class\n\""
-				       + m_dc->name() + "\"\nbefore closing?",
-				       QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+			      "Do you want to save changes to device class\n\""
+			      + m_dc->name() + "\"\nbefore closing?",
+			      QMessageBox::Yes, QMessageBox::No, 
+				       QMessageBox::Cancel);
       if (r == QMessageBox::Yes)
 	{
 	  if (save())
@@ -117,9 +120,11 @@ bool DeviceClassEditor::save()
   QString path;
   _app->settings()->get(KEY_SYSTEM_DIR, path);
   path += QString("/") + DEVICECLASSPATH + QString("/");
-  path += m_dc->manufacturer() + QString("-") + m_dc->model() + QString(".deviceclass");
+  path += m_dc->manufacturer() + QString("-") + 
+    m_dc->model() + QString(".deviceclass");
 
-  path = QFileDialog::getSaveFileName(path, "Device Classes (*.deviceclass)", this);
+  path = QFileDialog::getSaveFileName(path, "Device Classes (*.deviceclass)", 
+				      this);
   if (path != QString::null)
     {
       if (path.right(12) != QString(".deviceclass"))
@@ -172,6 +177,7 @@ void DeviceClassEditor::slotModelEditTextChanged(const QString &text)
 
 void DeviceClassEditor::slotTypeSelected(const QString &text)
 {
+  m_dc->setType(text);
   setModified();
 }
 
@@ -188,9 +194,9 @@ void DeviceClassEditor::slotAddChannelClicked()
 {
   bool ok = false;
   QString text = QInputDialog::getText(KApplicationNameShort,
-                                       QString("Enter description for new channel"),
-                                       QLineEdit::Normal, QString::null,
-				       &ok, this);
+                                  QString("Enter description for new channel"),
+                                  QLineEdit::Normal, QString::null,
+				  &ok, this);
   if (ok == true && text.isEmpty() == false)
     {
       LogicalChannel* lc = new LogicalChannel();

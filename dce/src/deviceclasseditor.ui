@@ -165,32 +165,17 @@
                         <widget class="QComboBox">
                             <item>
                                 <property name="text">
-                                    <string>Dimmer</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
                                     <string>Color Changer</string>
                                 </property>
                             </item>
                             <item>
                                 <property name="text">
-                                    <string>Scanner</string>
+                                    <string>Dimmer</string>
                                 </property>
                             </item>
                             <item>
                                 <property name="text">
-                                    <string>Moving Head</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Fogger</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Hazer</string>
+                                    <string>Effect</string>
                                 </property>
                             </item>
                             <item>
@@ -200,7 +185,42 @@
                             </item>
                             <item>
                                 <property name="text">
+                                    <string>Flower</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Haze</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Laser</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Moving Head</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
                                     <string>Other</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Scanner</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Smoke</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Strobe</string>
                                 </property>
                             </item>
                             <property name="name">
@@ -214,8 +234,8 @@
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
                             </property>
-                            <property name="currentItem">
-                                <number>0</number>
+                            <property name="sizeLimit">
+                                <number>15</number>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Type of this device class</string>
