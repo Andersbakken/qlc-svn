@@ -438,6 +438,7 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	  if (m_drawArea == NULL)
 	    {
 	      m_drawArea = new VCFrame(this);
+	      m_drawArea->init();
 	      m_drawArea->setBottomFrame(true);
 	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	      
@@ -450,6 +451,7 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	  else
 	    {
 	      VCFrame* w = new VCFrame(m_drawArea);
+	      w->init();
 	      w->createContents(list);
 	    }
 	}

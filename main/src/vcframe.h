@@ -42,6 +42,12 @@ class VCFrame : public QFrame
   VCFrame(QWidget* parent);
   virtual ~VCFrame();
 
+  enum ButtonBehaviour
+    {
+      Normal = 0,
+      Exclusive = 1
+    };
+  
   void init();
 
   t_vc_id id() const { return m_id; }
@@ -52,6 +58,9 @@ class VCFrame : public QFrame
 
   void setBottomFrame(bool set = true);
   bool isBottomFrame() { return m_bottomFrame; }
+
+  void setButtonBehaviour(ButtonBehaviour);
+  ButtonBehaviour buttonBehaviour() { return m_buttonBehaviour; }
 
   QPixmap* bgPixmap() const { return m_bgPixmap; }
   QColor bgColor() const { return *m_bgColor; }
@@ -66,6 +75,7 @@ class VCFrame : public QFrame
 
  protected:
   void setID(t_vc_id id);
+  void invokeContextMenu(QMouseEvent* e);
 
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
@@ -89,6 +99,8 @@ class VCFrame : public QFrame
   QPixmap* m_bgPixmap;
   QString m_bgPixmapFileName;
   QColor* m_bgColor;
+
+  ButtonBehaviour m_buttonBehaviour;
 
  private:
   static t_vc_id s_nextVCID;

@@ -732,14 +732,11 @@ void VCButton::paintEvent(QPaintEvent* e)
     {
       QPainter p(this);
       
-      QColor c(backgroundColor());
-      c.setRgb(c.red() ^ KColorMask,
-	       c.green() ^ KColorMask,
-	       c.blue() ^ KColorMask);
-      
-      QBrush b(c, Dense4Pattern);
-      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
-      p.drawRect(rect().width() - 10, rect().height() - 10, 10, 10);
+      QString dir;
+      _app->settings()->get(KEY_SYSTEM_DIR, dir);
+      dir += QString("/") + PIXMAPPATH;
+      p.drawPixmap(rect().width() - 10, rect().height() - 10, 
+		   QPixmap(dir + "/resize.xpm"), 0, 0);
     }
 }
 
