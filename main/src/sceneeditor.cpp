@@ -34,8 +34,10 @@
 #include <qlabel.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
-#include <iostream.h>
 #include <stdlib.h>
+
+#include <iostream>
+using namespace std;
 
 
 SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent, const char* name )
