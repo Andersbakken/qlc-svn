@@ -75,6 +75,20 @@ Doc::~Doc()
     }
 }
 
+void Doc::setModified(bool modified)
+{
+  m_modified = modified;
+
+  if (modified == true)
+    {
+      _app->setCaption("Q Light Controller 2 - " + workspaceFileName() + QString("*"));
+    }
+  else
+    {
+      _app->setCaption(QString("Q Light Controller 2 - ") + workspaceFileName());
+    }
+}
+
 void Doc::init()
 {
   initializeDMXChannels();
@@ -436,7 +450,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
       success = false;
     }
   
-  m_modified = false;
+  setModified(false);
 
   return success;
 }
@@ -752,7 +766,7 @@ void Doc::newDocument()
       delete d;
     }
 
-  m_modified = false;
+  setModified(false);
 
   m_workspaceFileName = QString("");
 
@@ -823,7 +837,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       _app->virtualConsole()->saveToFile(file);
 
       // Mark the document unmodified
-      m_modified = false;
+      setModified(false);
 
       // Current workspace file
       m_workspaceFileName = QString(fileName);
@@ -849,7 +863,9 @@ void Doc::addDevice(DMXDevice* device)
   ASSERT(device != NULL);
   
   m_deviceList.append(device);
-  m_modified = true;
+
+  setModified(true);
+
   emit deviceListChanged();
 }
 
@@ -872,7 +888,8 @@ bool Doc::removeDevice(DMXDevice* device)
 	}
     }
 
-  m_modified = true;
+  setModified(true);
+
   emit deviceListChanged();
 
   return ok;

@@ -47,7 +47,8 @@ class Doc : public QObject
   //
   void newDocument();
   bool isModified() { return m_modified; }
-  void setModified(bool modified) { m_modified = modified; }
+  void setModified(bool modified);
+
   QString workspaceFileName() { return m_workspaceFileName; }
   bool loadWorkspaceAs(QString &);
   bool saveWorkspaceAs(QString &);

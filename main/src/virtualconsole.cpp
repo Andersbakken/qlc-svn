@@ -65,20 +65,26 @@ bool VirtualConsole::isDesignMode(void)
 
 void VirtualConsole::setMode(Mode mode)
 {
-  QList <Feeder> *feederList = _app->sequenceProvider()->feederList();
-
-  if (feederList->count() > 0)
+  //
+  // If we're gonna change to design mode when functions are running
+  //
+  if (mode == Design)
     {
-      int result = QMessageBox::warning(this, QString("Virtual Console"),
-					QString("There are running functions. Do you want to stop them now?"),
-					QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
-      if (result == QMessageBox::Yes)
+      QList <Feeder> *feederList = _app->sequenceProvider()->feederList();
+      
+      if (feederList->count() > 0)
 	{
-	  _app->sequenceProvider()->flush();
-	}
-      else if (result == QMessageBox::Cancel)
-	{
-	  return;
+	  int result = QMessageBox::warning(this, QString("Virtual Console"),
+					    QString("There are running functions. Do you want to stop them now?"),
+					    QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+	  if (result == QMessageBox::Yes)
+	    {
+	      _app->sequenceProvider()->flush();
+	    }
+	  else if (result == QMessageBox::Cancel)
+	    {
+	      return;
+	    }
 	}
     }
 
@@ -445,12 +451,14 @@ void VirtualConsole::slotMenuItemActivated(int item)
     case ID_VC_MODE_OPERATE:
       {
 	setMode(Operate);
+	_app->doc()->setModified(true);
       }
       break;
 
     case ID_VC_MODE_DESIGN:
       {
 	setMode(Design);
+	_app->doc()->setModified(true);
       }
       break;
 
@@ -459,6 +467,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	DMXButton* b;
 	b = new DMXButton(m_drawArea);
 	b->show();
+	_app->doc()->setModified(true);
       }
       break;
 
@@ -468,6 +477,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	s = new DMXSlider(m_drawArea);
 	s->resize(20, 120);
 	s->show();
+	_app->doc()->setModified(true);
       }
       break;
 
@@ -476,6 +486,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	SpeedSlider* p = NULL;
 	p = new SpeedSlider(m_drawArea);
 	p->show();
+	_app->doc()->setModified(true);
       }
       break;
 
@@ -485,10 +496,12 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	p = new DMXLabel(m_drawArea);
 	p->setText("New label");
 	p->show();
+	_app->doc()->setModified(true);
       }
       break;
 
     case ID_VC_ADD_MONITOR:
+	_app->doc()->setModified(true);
       break;
 
     case ID_VC_ADD_FRAME:
@@ -498,6 +511,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	w->resize(120, 120);
 	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	w->show();
+	_app->doc()->setModified(true);
       }
       break;
 

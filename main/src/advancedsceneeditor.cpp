@@ -418,6 +418,8 @@ void AdvancedSceneEditor::slotApplyClicked()
 
       _app->doc()->setModified(true);
       setDirty(false);
+
+      _app->doc()->setModified(true);
     }
   else
     {
