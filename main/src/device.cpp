@@ -31,6 +31,8 @@
 #include "monitor.h"
 #include "deviceproperties.h"
 #include "configkeys.h"
+#include "deviceclass.h"
+#include "logicalchannel.h"
 
 #include <unistd.h>
 #include <qptrlist.h>
@@ -263,9 +265,13 @@ QString Device::infoText()
 
   QString t;
   QString str = QString::null;
+
+  //
+  // General Info
+  //
   str += QString("<HTML><HEAD><TITLE>Device Info</TITLE></HEAD><BODY>");
   str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-  str += QString("<TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=5>");
+  str += QString("<TR><TD BGCOLOR=\"darkblue\"><FONT COLOR=\"white\" SIZE=5>");
   str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
   str += QString("<TR>\n");
@@ -285,10 +291,38 @@ QString Device::infoText()
   t.sprintf("%d - %d",
 	    address() + 1, address() + m_deviceClass->channels()->count());
   str += QString("<TD>") + t + QString("</TD>");
+  str += QString("</TABLE>");
+
+  //
+  // Channels
+  //
+  str += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
   str += QString("<TR>");
-  str += QString("<TD><B>Channels</B></TD>");
-  t.setNum(m_deviceClass->channels()->count());
-  str += QString("<TD>") + t + QString("</TD>");
+  str += QString("<TD BGCOLOR=\"darkblue\">");
+  str += QString("<FONT COLOR=\"white\" SIZE=\"3\">Channel</FONT>");
+  str += QString("</TD>");
+  str += QString("<TD BGCOLOR=\"darkblue\">");
+  str += QString("<FONT COLOR=\"white\" SIZE=\"3\">DMX</FONT>");
+  str += QString("</TD>");
+  str += QString("</TR>");
+  str += QString("<TD BGCOLOR=\"darkblue\">");
+  str += QString("<FONT COLOR=\"white\" SIZE=\"3\">Name</FONT>");
+  str += QString("</TD>");
+  str += QString("</TR>");
+
+  for (t_channel ch = 0; ch < (t_channel) m_deviceClass->channels()->count(); 
+       ch++)
+    {
+      t.setNum(ch + 1);
+      str += QString("<TR>");
+      str += QString("<TD>" + t + "</TD>");
+      t.setNum(m_address + ch + 1);
+      str += QString("<TD>" + t + "</TD>");
+      str += QString("<TD>");
+      str += m_deviceClass->channels()->at(ch)->name();
+      str += QString("</TD>");
+    }
+
   str += QString("</TR>");
   str += QString("</TABLE>");
   
