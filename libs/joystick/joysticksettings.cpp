@@ -82,7 +82,7 @@ void JoystickSettings::initView()
 
   QFont font;
   font.setStyleHint(QFont::System);
-  font.setPointSize(8);
+  font.setPointSize(10);
 
   for (unsigned int i = 0; i < m_joystick->buttonsList().count(); i++)
     {
@@ -90,6 +90,7 @@ void JoystickSettings::initView()
       num.setNum(i + 1);
       QPushButton* b = new QPushButton(m_buttonsFrame);
       b->setGeometry(10 + (i * 20), 20, 20, 20);
+      b->setFont(font);
       b->setText(num);
       b->setToggleButton(true);
 
@@ -114,8 +115,7 @@ void JoystickSettings::initView()
     {
       QPushButton* b = new QPushButton(m_axesFrame);
       b->setGeometry(10 + (i * 25), 125, 20, 20);
-      b->setFont(font);
-      b->setText("><");
+      b->setText("<>");
       b->setToggleButton(true);
       QToolTip::add(b, "Invert axis");
 

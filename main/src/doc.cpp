@@ -476,6 +476,8 @@ void Doc::createJoystickContents(QList<QString> &list)
 	    {
 	      j->createContents(list);
 	      addInputDevice(j);
+	      j->open();
+	      j->start();
 	    }
 	}
     }
