@@ -27,10 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements
 ------------
-* QT 3.x
-* X11R6 4.x
-* /dev/rtc (Real-time clock)
-* optional: dmx4linux 2.2
+* QT 3.1+
+* X11R6 4.x or X.org 6.x
+* /dev/rtc (Real-time clock, usually enabled by default)
+* Recommended: dmx4linux 2.2
 
 For TODO-lists, known bugs, volunteering to work for the project and all other
 project-related information, go to http://www.sourceforge.net/projects/qlc/
@@ -76,4 +76,3 @@ List of people who have contributed to this piece of software
 -------------------------------------------------------------
 Heikki Junnila (Author) <hjunnila@users.sourceforge.net>
 Stefan Krumm <stefankrumm@users.sourceforge.net>
-Dirk Jagdmann <doj@users.sourceforge.net>
