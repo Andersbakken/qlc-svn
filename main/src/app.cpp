@@ -38,16 +38,21 @@
 
 #include "app.h"
 #include "doc.h"
-#include "settings.h"
-#include "devicemanagerview.h"
-#include "deviceclasseditor.h"
-#include "virtualconsole.h"
-#include "aboutbox.h"
-#include "dmxaddresstool.h"
+
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
-#include "functiontree.h"
+
+#include "settings.h"
+#include "settingsui.h"
 #include "configkeys.h"
+
+#include "devicemanagerview.h"
+
+#include "virtualconsole.h"
+#include "dmxaddresstool.h"
+#include "functiontree.h"
+
+#include "aboutbox.h"
 
 #include "../../libs/common/outputplugin.h"
 
@@ -458,11 +463,21 @@ void App::slotFileSaveAs()
   statusBar()->message(IDS_STATUS_DEFAULT);
 }
 
+
 void App::slotFileSettings()
 {
-  m_settings->load();
-  m_settings->showUI();
+  SettingsUI* sui = new SettingsUI(this);
+  sui->init();
+
+  if (sui->exec() == QDialog::Accepted)
+    {
+      // Save settings if OK
+      settings()->save();
+    }
+
+  delete sui;
 }
+
 
 void App::slotFileQuit()
 {
@@ -527,12 +542,7 @@ void App::slotFunctionTreeClosed()
 
 void App::slotViewDeviceClassEditor()
 {
-  DeviceClassEditor* dce = new DeviceClassEditor(NULL);
-
-  dce->init();
-  dce->exec();
-
-  delete dce;
+  qDebug("Deprecated.");
 }
 
 

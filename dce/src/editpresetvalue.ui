@@ -1,0 +1,126 @@
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<class>UI_EditPresetValue</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_EditPresetValue</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>395</width>
+            <height>125</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Add / Edit Preset Value</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QPushButton" row="1" column="1">
+            <property name="name">
+                <cstring>m_cancelButton</cstring>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="0">
+            <property name="name">
+                <cstring>m_okButton</cstring>
+            </property>
+            <property name="text">
+                <string>OK</string>
+            </property>
+            <property name="default">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QFrame" row="0" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_valueFrame</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Raised</enum>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="1">
+                    <property name="name">
+                        <cstring>m_maxLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Max</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_minLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Min</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_minSpin</cstring>
+                    </property>
+                    <property name="maxValue">
+                        <number>255</number>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="2">
+                    <property name="name">
+                        <cstring>m_descriptionEdit</cstring>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>m_maxSpin</cstring>
+                    </property>
+                    <property name="maxValue">
+                        <number>255</number>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="2">
+                    <property name="name">
+                        <cstring>m_descriptionLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Description</string>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>m_okButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditPresetValue</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditPresetValue</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_minSpin</tabstop>
+    <tabstop>m_maxSpin</tabstop>
+    <tabstop>m_descriptionEdit</tabstop>
+    <tabstop>m_okButton</tabstop>
+    <tabstop>m_cancelButton</tabstop>
+</tabstops>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
