@@ -1,0 +1,271 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_ChaserEditor</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_ChaserEditor</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>596</width>
+            <height>271</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Chaser Editor</string>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_nameLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>10</y>
+                <width>99</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>Panel</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="text">
+            <string>Chaser Name:</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_addStep</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>240</y>
+                <width>100</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Add Step...</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_removeStep</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>120</x>
+                <y>240</y>
+                <width>100</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Remove Step...</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>350</x>
+                <y>240</y>
+                <width>100</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>460</x>
+                <y>240</y>
+                <width>100</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_nameEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>110</x>
+                <y>10</y>
+                <width>450</width>
+                <height>30</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QToolButton">
+        <property name="name">
+            <cstring>m_raiseButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>560</x>
+                <y>50</y>
+                <width>20</width>
+                <height>90</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+        <property name="iconSet">
+            <iconset>image0</iconset>
+        </property>
+        <property name="usesTextLabel">
+            <bool>false</bool>
+        </property>
+    </widget>
+    <widget class="QToolButton">
+        <property name="name">
+            <cstring>m_lowerButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>560</x>
+                <y>140</y>
+                <width>20</width>
+                <height>90</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+        <property name="iconSet">
+            <iconset>image1</iconset>
+        </property>
+    </widget>
+    <widget class="QListView">
+        <column>
+            <property name="text">
+                <string>###</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>true</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Device</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>true</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Function</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>true</bool>
+            </property>
+        </column>
+        <property name="name">
+            <cstring>m_stepList</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>50</y>
+                <width>550</width>
+                <height>180</height>
+            </rect>
+        </property>
+        <property name="allColumnsShowFocus">
+            <bool>true</bool>
+        </property>
+    </widget>
+</widget>
+<images>
+    <image name="image0">
+        <data format="XPM.GZ" length="394">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523234530022230543251d2e253d856405bffcbc54105b19c856360003b0141a2020a6ac4c9498b2324c10af98b2325c109f98b23242108f98b23292206e316565644132c20021566bcd05000c1f44a5</data>
+    </image>
+    <image name="image1">
+        <data format="XPM.GZ" length="394">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523234530022230543251d2e253d856405bffcbc54105b19c856360003b0141a204d4c1909c0d5210be113d34312c22ba68710c22fa607172220a607132224863f0c6aadb9008ce044a5</data>
+    </image>
+</images>
+<connections>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotCancelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_addStep</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotAddClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_removeStep</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotRemoveClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_raiseButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotRaiseClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_lowerButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotLowerClicked()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_nameEdit</tabstop>
+    <tabstop>m_stepList</tabstop>
+    <tabstop>m_addStep</tabstop>
+    <tabstop>m_removeStep</tabstop>
+    <tabstop>m_ok</tabstop>
+    <tabstop>m_cancel</tabstop>
+</tabstops>
+<slots>
+    <slot>slotLowerClicked()</slot>
+    <slot>slotAddClicked()</slot>
+    <slot>slotCancelClicked()</slot>
+    <slot>slotOKClicked()</slot>
+    <slot>slotRaiseClicked()</slot>
+    <slot>slotRemoveClicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

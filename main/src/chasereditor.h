@@ -23,6 +23,7 @@
 #define CHASEREDITOR_H
 
 #include <qdialog.h>
+#include "uic_chasereditor.h"
 
 class QListView;
 class QListViewItem;
@@ -33,7 +34,7 @@ class QToolButton;
 
 class Chaser;
 
-class ChaserEditor : public QDialog
+class ChaserEditor : public UI_ChaserEditor
 {
   Q_OBJECT
 
@@ -44,37 +45,21 @@ class ChaserEditor : public QDialog
   void init();
 
  private:
+  void updateStepList(unsigned long selectId = 0);
   void updateOrderNumbers();
-  void addItems();
 
  private:
-  Chaser* m_function;
-  QListViewItem* m_prevItem;
-
- protected:
-  QLabel* m_nameLabel;
-  QLineEdit* m_nameEdit;
-
-  QListView* m_functionList;
-  QPushButton* m_addButton;
-  QPushButton* m_removeButton;
-  QPushButton* m_editButton;
-
-  QToolButton* m_raiseButton;
-  QToolButton* m_lowerButton;
-
-  QPushButton* m_ok;
-  QPushButton* m_cancel;
+  Chaser* m_chaser;
+  Chaser* m_original;
 
  private slots:
   void slotCancelClicked();
   void slotOKClicked();
-  void slotEditClicked();
+
   void slotRemoveClicked();
   void slotAddClicked();
   void slotRaiseClicked();
   void slotLowerClicked();
-
 };
 
 #endif

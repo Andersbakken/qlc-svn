@@ -76,6 +76,7 @@ void AdvancedSceneEditor::init()
   m_sceneContents->setColumnWidth(4, (int) floor(w * 0.1));
 
   m_sceneNameEdit->setText(m_scene->name());
+  m_sceneNameEdit->setSelection(0, m_scene->name().length());
 
   updateChannelList();
 

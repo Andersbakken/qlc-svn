@@ -41,11 +41,26 @@ Chaser::Chaser() : Function()
   m_OKforNextStep = true;
 }
 
-Chaser::Chaser(Chaser* ch)
+Chaser::Chaser(Chaser* ch, bool append) : Function()
+{
+  copyFrom(ch, append);
+}
+
+void Chaser::copyFrom(Chaser* ch, bool append)
 {
   m_running = ch->m_running;
   m_OKforNextStep = ch->m_OKforNextStep;
   m_repeatTimes = ch->m_repeatTimes;
+  m_id = ch->id();
+
+  if (append == false)
+    {
+      while (m_steps.isEmpty() == false)
+	{
+	  ChaserStep* step = m_steps.take(0);
+	  delete step;
+	}
+    }
 
   for (ChaserStep* step = ch->m_steps.first(); step != NULL; step = ch->m_steps.next())
     {
@@ -81,70 +96,22 @@ void Chaser::saveToFile(QFile &file)
   s = QString("Type = ") + typeString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // Device class, device name or "Global"
-  if (deviceClass() != NULL)
+  // Steps
+  s = QString("# Step entries") + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+  
+  for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
     {
-      // For device class chasers we need to save only the steps because
-      // all scenes are inside the device class
+      ASSERT(step->function() != NULL);
 
-      s = QString("# Step entries") + QString("\n");
+      s.sprintf("Function = %ld\n", step->function()->id());
       file.writeBlock((const char*) s, s.length());
-
-      for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
-	{
-	  ASSERT(step->function() != NULL);
-
-	  s = QString("Function = ") + step->function()->name() + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
-	}
-    }
-  else if (device() != NULL)
-    {
-      // For device chasers (that are saved in the workspace file)
-      // write also the device name that this chaser is attached to
-      s = QString("# Step entries") + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
-	{
-	  ASSERT(step->function() != NULL);
-
-	  s = QString("Function = ") + step->function()->name() + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
-	}
-    }
-  else
-    {
-      s = QString("Device = Global") + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      // For global chasers, write device+scene pairs
-      for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
-	{
-	  ASSERT(step->function() != NULL);
-
-	  if (step->device() != NULL)
-	    {
-	      // Regular function, device != NULL
-	      s = QString("Device = ") + step->device()->name() + QString("\n");
-	    }
-	  else
-	    {
-	      // Global function, device == NULL
-	      s = QString("Device = Global") + QString("\n");
-	    }
-	  file.writeBlock((const char*) s, s.length());
-
-	  s = QString("Function = ") + step->function()->name() + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
-	}
     }
 }
 
 void Chaser::createContents(QList<QString> &list)
 {
-  unsigned long device = 0;
-  unsigned long function = 0;
+  unsigned long functionId = 0;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -153,68 +120,38 @@ void Chaser::createContents(QList<QString> &list)
 	  s = list.prev();
 	  break;
 	}
-      else if (*s == QString("Device"))
-	{
-	  device = list.next()->toULong();
-	}
       else if (*s == QString("Function"))
 	{
-	  function = list.next()->toULong();
+	  DMXDevice* device = NULL;
+	  DeviceClass* deviceClass = NULL;
+
+	  functionId = list.next()->toULong();
 	  
-	  if (device == 0)
+	  Function* function = _app->doc()->searchFunction(functionId, &device, &deviceClass);
+	  if (function != NULL)
 	    {
-	      Function* f = _app->doc()->searchFunction(function);
-	      if (f != NULL)
-		{
-		  addStep(NULL, f);
-		}
-	      else
-		{
-		  qDebug("Unable to find member for chaser <" + name() + ">");
-		}
+	      addStep(function);
 	    }
 	  else
 	    {
-	      DMXDevice* d = _app->doc()->searchDevice(device);
-	      Function* f = NULL;
-	      if (d != NULL)
-		{
-		  f = d->searchFunction(function);
-		  if (f != NULL)
-		    {
-		      addStep(d, f);
-		    }
-		  else if ((f = d->deviceClass()->searchFunction(function)) != NULL)
-		    {
-		      addStep(d, f);
-		    }
-		  else
-		    {
-		      qDebug("Unable to find member for chaser <" + name() + ">");
-		    }
-		}
-
-	      device = 0;
-	      function = 0;
+	      qDebug("Unable to find member for chaser <" + name() + ">");
 	    }
+	  
+	  functionId = 0;
 	}
       else
 	{
-	  // Unknown keyword (at this time)
+	  // Unknown keyword
 	  list.next();
 	}
     }
 }
 
-void Chaser::addStep(DMXDevice* device, Function* function)
+void Chaser::addStep(Function* function)
 {
   if (m_running == false)
     {
-      ChaserStep* step = new ChaserStep();
-      
-      step->setDevice(device);
-      step->setFunction(function);
-      
+      ChaserStep* step = new ChaserStep(function);
       m_steps.append(step);
 
       connect(step->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
@@ -227,6 +164,8 @@ void Chaser::addStep(DMXDevice* device, Function* function)
 
 void Chaser::removeStep(int index)
 {
+  ASSERT( ((unsigned)index) < m_steps.count());
+
   if (m_running == false)
     {
       ChaserStep* step = m_steps.take(index);
@@ -236,6 +175,36 @@ void Chaser::removeStep(int index)
   else
     {
       qDebug("Chaser is running. Cannot modify steps!");
+    }
+}
+
+void Chaser::raiseStep(int index)
+{
+  ASSERT( ((unsigned)index) < m_steps.count());
+
+  if (m_running == false)
+    {
+      ChaserStep* step = m_steps.take(index);
+      ASSERT(step != NULL);
+      qDebug("Taking <%s> from %d", step->function()->name().latin1(), index);
+
+      m_steps.insert(m_steps.count(), step);
+    }
+}
+
+void Chaser::lowerStep(int index)
+{
+  ASSERT( ((unsigned)index) < m_steps.count());
+
+  if (m_running == false)
+    {
+      if (m_steps.at(index + 1) != NULL)
+	{
+	  ChaserStep* step = m_steps.take(index);
+	  ASSERT(step != NULL);
+
+	  m_steps.insert(index + 1, step);
+	}
     }
 }
 
@@ -287,7 +256,7 @@ bool Chaser::unRegisterFunction(Feeder* feeder)
 
   ASSERT(step != NULL);
 
-  _app->sequenceProvider()->unRegisterEventFeeder(step->device(), step->function());
+  _app->sequenceProvider()->unRegisterEventFeeder(step->function()->device(), step->function());
 
   disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
 	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
@@ -316,7 +285,7 @@ Event* Chaser::getEvent(Feeder* feeder)
       
       ASSERT(step != NULL);
       
-      _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), step->device(), this);
+      _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), step->function()->device(), this);
       
       disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
 		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));

@@ -34,30 +34,24 @@ class QString;
 class ChaserStep
 {
  public:
-  ChaserStep()
+  ChaserStep(Function* function = NULL)
     {
-      m_device = NULL;
-      m_function = NULL;
+      m_function = function;
     }
 
   ChaserStep(ChaserStep* step)
     {
       m_function = step->function();
-      m_device = step->device();
     }
 
   virtual ~ChaserStep()
     {
     }
 
-  void setDevice(DMXDevice* d) { m_device = d; }
-  DMXDevice* device() { return m_device; }
-
   void setFunction(Function* f) { m_function = f; }
   Function* function() { return m_function; }
 
  private:
-  DMXDevice* m_device;
   Function* m_function;
 };
 
@@ -67,11 +61,16 @@ class Chaser : public Function
 
  public:
   Chaser();
-  Chaser(Chaser* ch);
+  Chaser(Chaser* ch, bool append = true);
   virtual ~Chaser();
 
-  void addStep(DMXDevice* device, Function* function);
+  void copyFrom(Chaser* ch, bool append = true);
+
+  void addStep(Function* function);
   void removeStep(int index = 0);
+
+  void raiseStep(int index);
+  void lowerStep(int index);
 
   QList <ChaserStep> *steps() { return &m_steps; }
 
