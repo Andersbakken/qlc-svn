@@ -208,6 +208,7 @@ bool Doc::readDeviceClasses()
       dc = createDeviceClass(list);
       if (dc != NULL)
 	{
+          dc->setFile(path);
 	  m_deviceClassList.append(dc);
 	}
 
@@ -855,4 +856,6 @@ void Doc::findPluginObjects()
 
   qDebug("Found %d plugin object(s)", m_pluginList.count());
 }
+
+
 
