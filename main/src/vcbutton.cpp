@@ -117,9 +117,12 @@ void VCButton::copyFrom(VCButton* button)
 
   setText(button->text());
 
-  m_bgColor = new QColor(*button->bgColor());
-  if (m_bgColor != NULL)
-    setPaletteBackgroundColor(*m_bgColor);
+  if (m_bgColor) delete m_bgColor;
+  if (button->bgColor() != NULL)
+    {
+      m_bgColor = new QColor(*button->bgColor());
+      setPaletteBackgroundColor(*m_bgColor);
+    }
 
   reparent(button->parentWidget(), 0, QPoint(0, 0), true);
 
