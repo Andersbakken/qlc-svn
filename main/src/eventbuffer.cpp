@@ -1,7 +1,7 @@
 /*
   Q Light Controller
-  eventbuffer.cpp
-  
+  eventbuffer.h
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
@@ -19,73 +19,70 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <unistd.h>
+#include "assert.h"
 #include "eventbuffer.h"
 
-EventBuffer::EventBuffer()
+EventBuffer::EventBuffer(unsigned int size, unsigned int eventSize)
+  : 
+  m_ring(NULL),
+  m_size(size * eventSize),
+  m_eventSize(eventSize),
+  m_filled(0),
+  m_in(0),
+  m_out(0),
+  m_elapsedTime(0)
 {
-  m_headPos = 0;
-  m_tailPos = 0;
-  m_mutex = false;
+  m_ring = (unsigned char*) malloc(m_size);
+
+  pthread_mutex_init(&m_mutex, 0);
+  pthread_cond_init(&m_nonEmpty, 0);
+  pthread_cond_init(&m_nonFull, 0);
 }
 
 EventBuffer::~EventBuffer()
 {
-
+  pthread_mutex_destroy(&m_mutex);
+  pthread_cond_destroy(&m_nonEmpty);
+  pthread_cond_destroy(&m_nonFull);
 }
 
-void EventBuffer::ENTER_CRITICAL()
+bool EventBuffer::put(unsigned char* ev)
 {
-  while (m_mutex == true);
-  m_mutex = true;
-}
-
-void EventBuffer::EXIT_CRITICAL()
-{
-  m_mutex = false;
-}
-
-Event* EventBuffer::get()
-{
-  Event* event;
-  event = NULL;
-
-  if (m_headPos == m_tailPos)
+  pthread_mutex_lock(&m_mutex);
+  if (m_filled == m_size)
     {
-      event = NULL;
-    }
-  else
-    {
-      ENTER_CRITICAL();
-
-      event = m_buffer[m_headPos];
-      m_buffer[m_headPos] = NULL;
-      m_headPos = (m_headPos + 1) % EVENT_BUFFER_SIZE;
-
-      EXIT_CRITICAL();
+      pthread_cond_wait(&m_nonFull, &m_mutex);
     }
 
-  return event;
-}
+  assert(m_filled < m_size);
+  memcpy(m_ring + m_in, ev, m_eventSize);
+  m_in = (m_in + m_eventSize) % m_size;
+  m_filled += m_eventSize;
+  pthread_cond_signal(&m_nonEmpty);
+  pthread_mutex_unlock(&m_mutex);
 
-bool EventBuffer::put(Event* event)
-{
-  ENTER_CRITICAL();
-
-  m_tailPos = (m_tailPos + 1) % EVENT_BUFFER_SIZE;
-
-  EXIT_CRITICAL();
-
-  if (m_tailPos == m_headPos)
-    {
-      return false;
-    }
-
-  ENTER_CRITICAL();
-
-  m_buffer[m_tailPos] = event;
-
-  EXIT_CRITICAL();
-  
   return true;
+}
+
+unsigned char* EventBuffer::get()
+{
+  unsigned char* ev = NULL;
+
+  pthread_mutex_lock(&m_mutex);
+  m_elapsedTime++;
+  if (m_filled == 0)
+    {
+      pthread_mutex_unlock(&m_mutex);
+
+      return NULL;
+    }
+
+  assert(m_filled > 0);
+  ev = m_ring + m_out;
+  m_out = (m_out + m_eventSize) % m_size;
+  m_filled -= m_eventSize;
+  pthread_cond_signal(&m_nonFull);
+  pthread_mutex_unlock(&m_mutex);
+
+  return ev;
 }

@@ -25,7 +25,6 @@
 #include <qptrlist.h>
 
 #include "function.h"
-#include "valuesetter.h"
 #include "dmxchannel.h"
 
 enum SceneValueType
@@ -57,7 +56,6 @@ class Scene : public Function
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed(Feeder* feeder);
 
-  void reAllocateValueSetters(t_channel channels);
   bool set(t_channel ch, t_value value, SceneValueType type);
   bool clear(t_channel ch);
   SceneValue channelValue(t_channel ch);
@@ -75,7 +73,6 @@ class Scene : public Function
 
  private:
   SceneValue m_values[512];
-  QPtrList <ValueSetter> m_setterList;
 };
 
 #endif

@@ -66,37 +66,6 @@ Scene::~Scene()
 {
 }
 
-void Scene::reAllocateValueSetters(t_channel channels)
-{
-  t_channel currentCount = m_setterList.count();
-  ValueSetter* vs = NULL;
-
-  if (currentCount < channels)
-    {
-      // More channels needed
-      for (t_channel i = currentCount; 
-	   i < (channels - currentCount) && i < 512; i++)
-	{
-	  vs = new ValueSetter;
-	  m_setterList.append(vs);
-	  _app->doc()->dmxChannel(m_device->address()
-				  + i)->registerValueSetter(vs);
-	}
-    }
-  else if (currentCount > channels)
-    {
-      // Channels need to be deallocated
-      for (t_channel i = currentCount - 1; (i >= channels) && i < 512; i--)
-	{
-	  vs = m_setterList.take(i);
-	  _app->doc()->dmxChannel(m_device->address()
-				  + i)->unRegisterValueSetter(vs);
-
-	  delete vs;
-	}
-    }
-}
-
 bool Scene::unRegisterFunction(Feeder* feeder)
 {
   Function::unRegisterFunction(feeder);
@@ -428,7 +397,6 @@ void Scene::directSet(t_value intensity)
   double percent = 0;
   double value = 0;
   t_channel channels = 0;
-  ValueSetter* vs = NULL;
 
   percent = ((double) intensity) / ((double) 255);
   channels = m_device->deviceClass()->channels()->count();
@@ -437,11 +405,9 @@ void Scene::directSet(t_value intensity)
     {
       if (m_values[i].type != NoSet)
 	{
-	  vs = m_setterList.at(i);
-	  ASSERT(vs != NULL);
-
 	  value = m_values[i].value * percent;
-	  vs->setValue(static_cast<t_value> (value));
+	  _app->doc()->dmxChannel(m_device->address() + i)
+	    ->setValue(static_cast<t_value> (value));
 	}
     }
 }

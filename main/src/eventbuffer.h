@@ -1,50 +1,106 @@
-/*
-  Q Light Controller
-  eventbuffer.h
-  
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  Version 2 as published by the Free Software Foundation.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details. The license is
-  in the file "COPYING".
-  
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
-
 #ifndef EVENTBUFFER_H
 #define EVENTBUFFER_H
 
+#include <pthread.h>
+#include <vector>
 #include "event.h"
-
-#define EVENT_BUFFER_SIZE 256
 
 class EventBuffer
 {
  public:
-  EventBuffer();
+  EventBuffer(unsigned int size, unsigned int eventSize);
   ~EventBuffer();
 
-  bool put(Event*); /* false if buffer is full */
-  Event* get(void); /* null if buffer is empty */
+  bool put(unsigned char* event);
+  unsigned char* get();
+
+  unsigned long elapsedTime() { return m_elapsedTime; }
 
  private:
-  Event* m_buffer[EVENT_BUFFER_SIZE];
+  unsigned char* m_ring;
+  unsigned int m_size;
+  unsigned int m_eventSize;
 
-  bool m_mutex;
+  unsigned int m_filled; // # of objects in the buffer
+  unsigned int m_in; // next token is stored here
+  unsigned int m_out; // next token is taken from here
 
-  void ENTER_CRITICAL();
-  void EXIT_CRITICAL();
+  unsigned long m_elapsedTime;
 
-  int m_headPos;
-  int m_tailPos;
+  pthread_mutex_t m_mutex;
+  pthread_cond_t m_nonEmpty;
+  pthread_cond_t m_nonFull;
 };
+
+/*
+template<class Token> class RingBuffer
+{
+ public:
+  RingBuffer(unsigned int size) :
+    buffer(size), m_filled(0), m_in(0), m_out(0)
+    {
+      pthread_mutex_init(&m_mutex, 0);
+      pthread_cond_init(&m_nonEmpty, 0);
+      pthread_cond_init(&m_nonFull, 0);
+    } // constructor
+  
+  ~RingBuffer()
+    {
+      pthread_mutex_destroy(&m_mutex);
+      pthread_cond_destroy(&m_nonEmpty);
+      pthread_cond_destroy(&m_nonFull);
+    } // destructor
+  
+  void put(Token& token)
+    {
+      pthread_mutex_lock(&m_mutex);
+      if (m_filled == buffer.size())
+	{
+	  pthread_cond_wait(&m_nonFull, &m_mutex);
+	}
+      
+      assert(m_filled < buffer.size());
+      buffer[m_in] = token;
+      m_in = (m_in + 1) % buffer.size();
+      ++m_filled;
+      pthread_cond_signal(&m_nonEmpty);
+      pthread_mutex_unlock(&m_mutex);
+    } // add
+  
+  Token get()
+    {
+      Token token;
+      
+      pthread_mutex_lock(&m_mutex);
+      if (m_filled == 0)
+	{
+	  pthread_mutex_unlock(&m_mutex);
+	  return NULL;
+	  //pthread_cond_wait(&m_nonEmpty, &m_mutex);
+	}
+      
+      assert(m_filled > 0);
+      token = buffer[m_out];
+      m_out = (m_out + 1) % buffer.size();
+      --m_filled;
+      pthread_cond_signal(&m_nonFull);
+      pthread_mutex_unlock(&m_mutex);
+      
+      return token;
+    } // get
+  
+ private:
+  std::vector<Token> buffer;
+  unsigned int m_filled; // # of objects in the buffer
+  unsigned int m_in; // next token is stored here
+  unsigned int m_out; // next token is taken from here
+  pthread_mutex_t m_mutex;
+  pthread_cond_t m_nonEmpty;
+  pthread_cond_t m_nonFull;
+
+}; // class RingBuffer
+
+typedef RingBuffer<Event*> EventBuffer;
+*/
 
 #endif

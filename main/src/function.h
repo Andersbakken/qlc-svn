@@ -25,6 +25,7 @@
 typedef unsigned short int t_function_id;
 
 #include <qobject.h>
+#include <qthread.h>
 #include <qlist.h>
 
 #include "dmxchannel.h"
@@ -47,7 +48,7 @@ class Function : public QObject
   Q_OBJECT
 
  public:
-  Function(t_function_id = 0);
+  Function(t_function_id id = 0);
   virtual ~Function();
 
   enum Type
