@@ -245,6 +245,7 @@ void DeviceManagerView::initDataView()
 
   // Create the list view
   m_listView = new QListView(m_splitter);
+  m_listView->setResizeMode(QListView::AllColumns);
   m_splitter->setResizeMode(m_listView, QSplitter::Auto);
 
   m_listView->setMultiSelection(false);

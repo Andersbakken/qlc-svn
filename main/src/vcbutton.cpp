@@ -596,7 +596,7 @@ void VCButton::slotMenuCallback(int item)
 	if (ft->exec() == QDialog::Accepted)
 	  {
 	    Function* function = NULL;
-	    function = _app->doc()->searchFunction(ft->functionId());
+	    function = _app->doc()->searchFunction(ft->functionID());
 	    ASSERT(function);
 
 	    attachFunction(function);

@@ -132,12 +132,11 @@ void ChaserEditor::slotRemoveClicked()
 void ChaserEditor::slotAddClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
-  ft->setTypeFilter(Function::Scene | Function::Collection);
 
-  if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
+  if (ft->exec() == QDialog::Accepted && ft->functionID() != 0)
     {
       Function* function = NULL;
-      function = _app->doc()->searchFunction(ft->functionId());
+      function = _app->doc()->searchFunction(ft->functionID());
       ASSERT(function != NULL);
 
       m_chaser->addStep(function);

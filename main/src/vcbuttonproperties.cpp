@@ -238,7 +238,7 @@ void VCButtonProperties::slotAddFunctionClicked()
       
       //
       // Get the function that was selected
-      m_function = _app->doc()->searchFunction(ft->functionId());
+      m_function = _app->doc()->searchFunction(ft->functionID());
 
       if (m_function)
 	{

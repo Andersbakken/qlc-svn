@@ -114,19 +114,19 @@ void FunctionCollectionEditor::accept()
 void FunctionCollectionEditor::slotAddClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
-  ft->setTypeFilter(Function::Scene | Function::Chaser);
 
-  if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
+  if (ft->exec() == QDialog::Accepted && ft->functionID() != 0)
     {
-      if (findItem(ft->functionId()) == NULL)
+      if (findItem(ft->functionID()) == NULL)
 	{
 	  Function* function = NULL;
-	  function = _app->doc()->searchFunction(ft->functionId());
+	  function = _app->doc()->searchFunction(ft->functionID());
 	  ASSERT(function != NULL);
 	  
 	  QString id;
 	  id.setNum(function->id());
-	  new QListViewItem(m_functionList, QString("Global"), function->name(), id);
+	  new QListViewItem(m_functionList, QString("Global"), 
+			    function->name(), id);
 
 	  m_functionCollection->addItem(function);
 	}
