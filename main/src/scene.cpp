@@ -46,6 +46,7 @@ Scene::Scene(t_function_id id) : Function(id)
   m_channelData = NULL;
   m_channels = 0;
   m_timeSpan = 256;
+  m_parentFunction = NULL;
 }
 
 
@@ -302,19 +303,21 @@ void Scene::init()
   ASSERT(m_eventBuffer == NULL);
   m_eventBuffer = new EventBuffer(m_channels);
 
-  unsigned int i = 0;
-  for (i = 0; i < m_channels; i++)
-    {
-      // Current value
-      _app->doc()->outputPlugin()->readChannel(m_device->address() + i,
-					       m_channelData[i]);
+  // Current values
+  _app->doc()->outputPlugin()->readRange(m_device->address(),
+					 m_channelData, m_channels);
 
+  for (unsigned int i = 0; i < m_channels; i++)
+    {
       m_runTimeData[i].current = static_cast<float> (m_channelData[i]);
 
       // Step increment
       m_runTimeData[i].increment = 
 	(static_cast<float>(m_values[i].value) - 
 	 m_runTimeData[i].current) / (float) m_timeSpan;
+
+      qDebug("%d: %d -> %d incs %f", i, m_channelData[i],
+	     m_values[i].value, m_runTimeData[i].increment);
     }
 }
 
@@ -326,8 +329,6 @@ void Scene::run()
 {
   time_t time = 0;
   unsigned short ch = 0;
-
-  m_running = true;
 
   // Calculate starting values
   init();
@@ -341,10 +342,14 @@ void Scene::run()
 	{
 	  m_runTimeData[ch].current += m_runTimeData[ch].increment;
 	  m_channelData[ch] =
-	    static_cast<unsigned char> (m_runTimeData[ch].current);
+	    static_cast<t_value> (m_runTimeData[ch].current);
 	}
 
+      // Put data to buffer
       m_eventBuffer->put(m_channelData);
+      //t_value* ev = m_channelData;
+      //qDebug("%d %d %d %d %d %d", ev[0], ev[1], ev[2], 
+      //       ev[3], ev[4], ev[5]);
     }
 
   // No more items produced -> this scene can be removed from
@@ -359,6 +364,8 @@ void Scene::run()
 //
 void Scene::freeRunTimeData()
 {
+  qDebug("Scene::freeRunTimeData");
+
   delete [] m_runTimeData;
   m_runTimeData = NULL;
 
@@ -370,6 +377,16 @@ void Scene::freeRunTimeData()
 
   m_running = false;
 
-  ASSERT(m_virtualController);
-  QApplication::postEvent(m_virtualController, new FunctionStopEvent(this));
+  if (m_virtualController)
+    {
+      QApplication::postEvent(m_virtualController,
+			      new FunctionStopEvent(this));
+      m_virtualController = NULL;
+    }
+
+  if (m_parentFunction)
+    {
+      m_parentFunction->childFinished();
+      m_parentFunction = NULL;
+    }
 }

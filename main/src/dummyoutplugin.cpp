@@ -154,7 +154,9 @@ void DummyOutPlugin::loadSettings()
 
 bool DummyOutPlugin::writeChannel(t_channel channel, t_value value)
 {
+  m_mutex.lock();
   m_values[channel] = value;
+  m_mutex.unlock();
   return true;
 }
 
@@ -163,14 +165,19 @@ bool DummyOutPlugin::writeRange(t_channel address, t_value* values,
 {
   ASSERT(values);
 
+  m_mutex.lock();
   memcpy(m_values + address, values, num);
+  m_mutex.unlock();
 
   return true;
 }
 
 bool DummyOutPlugin::readChannel(t_channel channel, t_value &value)
 {
+  m_mutex.lock();
   value = m_values[channel];
+  m_mutex.unlock();
+
   return true;
 }
 
@@ -179,7 +186,9 @@ bool DummyOutPlugin::readRange(t_channel address, t_value* values,
 {
   ASSERT(values);
 
+  m_mutex.lock();
   memcpy(values, m_values + address, num);
+  m_mutex.unlock();
 
   return true;
 }

@@ -22,6 +22,7 @@
 #ifndef DUMMYOUTPLUGIN_H
 #define DUMMYOUTPLUGIN_H
 
+#include <qthread.h>
 #include "../../libs/common/outputplugin.h"
 #include "types.h"
 
@@ -62,6 +63,8 @@ class DummyOutPlugin : public OutputPlugin
  private:
   bool m_open;
   t_value m_values[512];
+
+  QMutex m_mutex;
 };
 
 #endif

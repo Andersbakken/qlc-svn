@@ -47,6 +47,8 @@ class FunctionCollection : public Function
   void stop();
   void freeRunTimeData();
 
+  void functionStopped();
+
  protected:
   void init();
   void run();

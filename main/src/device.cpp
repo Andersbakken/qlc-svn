@@ -238,9 +238,12 @@ void Device::viewConsole()
       m_console->setIcon(QPixmap(dir + QString("console.xpm")));
 
       connect(m_console, SIGNAL(closed()), this, SLOT(slotConsoleClosed()));
+
       m_console->show();
-      m_console->setMaximumSize(m_console->size().width() + SceneEditor::width(), ChannelUI::height());
-      m_console->resize(m_console->size().width() + SceneEditor::width(), ChannelUI::height());      
+      m_console->setMaximumSize(m_console->size().width() 
+				+ SceneEditor::width(), ChannelUI::height());
+      m_console->resize(m_console->size().width() 
+			+ SceneEditor::width(), ChannelUI::height());
     }
   else
     {
@@ -297,6 +300,7 @@ void Device::viewMonitor()
       m_monitor->setCaption(m_name);
       m_monitor->setIcon(dir + QString("monitor.xpm"));
 
+      connect(m_monitor, SIGNAL(closed()), this, SLOT(slotMonitorClosed()));
       m_monitor->show();
     }
   else

@@ -27,9 +27,12 @@
 #include "device.h"
 #include "functionstep.h"
 #include "functionconsumer.h"
+#include "eventbuffer.h"
 
 #include <stdlib.h>
 #include <qfile.h>
+#include <sched.h>
+#include <qapplication.h>
 
 extern App* _app;
 
@@ -40,7 +43,6 @@ Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
   m_running = false;
-  m_OKforNextStep = true;
 }
 
 
@@ -61,7 +63,6 @@ Chaser::Chaser(Chaser* ch, bool append) : Function(ch->id())
 void Chaser::copyFrom(Chaser* ch, bool append)
 {
   m_running = ch->m_running;
-  m_OKforNextStep = ch->m_OKforNextStep;
   m_name = ch->name();
 
   if (append == false)
@@ -287,6 +288,19 @@ void Chaser::stop()
 //
 void Chaser::freeRunTimeData()
 {
+  qDebug("Chaser::freeRunTimeData");
+
+  delete m_eventBuffer;
+  m_eventBuffer = NULL;
+
+  m_running = false;
+
+  if (m_virtualController)
+    {
+      qDebug("signalling");
+      QApplication::postEvent(m_virtualController,
+			      new FunctionStopEvent(this));
+    }
 }
 
 
@@ -295,6 +309,12 @@ void Chaser::freeRunTimeData()
 //
 void Chaser::init()
 {
+  m_childRunning = false;
+  m_removeAfterEmpty = false;
+  // There's actually no need for an eventbuffer, but
+  // because FunctionConsumer does EventBuffer::get() calls, it must be
+  // there... So allocate a zero length buffer.
+  m_eventBuffer = new EventBuffer(0, 0); 
 }
 
 
@@ -303,28 +323,41 @@ void Chaser::init()
 //
 void Chaser::run()
 {
-  Function* function = NULL;
-
   // Calculate starting values
   init();
-  
+
   QPtrListIterator <FunctionStep> it(m_steps);
 
-  /*
+  _app->functionConsumer()->cue(this);
+
+  m_running = true;
   while (m_running)
     {
-      if (it.current().function())
+      if (it.current())
 	{
-	  it.current().function()->start();
-	  it.current().function()->setVirtualController();
-	  _app->functionConsumer()->cue(it.current().function());
+	  m_childRunning = true;
+
+	  it.current()->function()->engage(this);
+	  qDebug("member started");
+
+	  while (m_childRunning) sched_yield();
+	  qDebug("member stopped");
 
 	  ++it;
 	}
       else
 	{
-	  it.first();
+	  it.toFirst();
 	}
     }
-  */
+
+  // This chaser can be removed from the list after the buffer is empty.
+  // (meaning immediately because it doesn't produce any events).
+  m_removeAfterEmpty = true;
+  qDebug("Chaser stopped");
+}
+
+void Chaser::childFinished()
+{
+  m_childRunning = false;
 }

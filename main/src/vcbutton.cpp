@@ -62,7 +62,6 @@ VCButton::VCButton(VCWidget* parent)
   m_function = NULL;
   m_resizeMode = false;
   m_renameEdit = NULL;
-  m_functionRunning = false;
   m_speedBus = NULL;
   m_bgColor = NULL;
   m_keyBind = NULL;
@@ -75,7 +74,6 @@ VCButton::VCButton(VCWidget* parent)
 void VCButton::init()
 {
   setToggleButton(true);
-   
 
   m_keyBind = new KeyBind();
 
@@ -99,7 +97,6 @@ void VCButton::copyFrom(VCButton* button)
   m_function =  button->function();
   m_resizeMode = false;
   m_renameEdit = NULL;
-  m_functionRunning = false;
 
   ASSERT(button->keyBind());
   m_keyBind = new KeyBind(button->keyBind());
@@ -856,21 +853,19 @@ void VCButton::pressFunction()
     }
   else if (m_keyBind->pressAction() == KeyBind::PressStart)
     {
-      if (m_functionRunning == false)
-	{
-	  m_function->start();
-	}
+      m_function->engage(static_cast<QObject*> (this));
+      setOn(true);
     }
   else if (m_keyBind->pressAction() == KeyBind::PressToggle)
     {
-      if (m_functionRunning == true)
+      if (isOn())
 	{
 	  m_function->stop();
+	  setOn(false);
 	}
       else
 	{
-	  m_function->start();
-	  m_functionRunning = true;
+	  m_function->engage(static_cast<QObject*> (this));
 	  setOn(true);
 	}
     }
@@ -919,27 +914,16 @@ void VCButton::attachFunction(Function* function)
 {
   _app->doc()->setModified(true);
 
-  // Disconnect existing function
-  if (m_function)
-    {
-      m_function->setVirtualController(NULL);
-
-      if (m_functionRunning == true)
-	{
-	  // Stop previous
-	}
-    }
-
   m_function = function;
 
-  QString str("No function");
   if (m_function)
     {
-      str = m_function->name();
-      m_function->setVirtualController(static_cast<QObject*> (this));
+      QToolTip::add(this, m_function->name());
     }
-
-  QToolTip::add(this, str);
+  else
+    {
+      QToolTip::remove(this);
+    }
 }
 
 void VCButton::slotRenameReturnPressed()
@@ -961,9 +945,6 @@ void VCButton::customEvent(QCustomEvent* e)
 {
   if (e->type() == KFunctionStopEvent)
     {
-      setOn(false);
-      m_functionRunning = false;
-
       slotFlashReady();
       QTimer::singleShot(KFlashReadyTime, this, SLOT(slotFlashReady()));
     }
@@ -971,6 +952,10 @@ void VCButton::customEvent(QCustomEvent* e)
 
 void VCButton::slotFlashReady()
 {
+  //
+  // This function is called twice with same XOR mask,
+  // thus creating a brief opposite-color-normal-color flash
+  //
   QColor c(backgroundColor());
   c.setRgb(c.red() ^ KReadyColorMask,
 	   c.green() ^ KReadyColorMask,

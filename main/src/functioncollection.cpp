@@ -298,3 +298,9 @@ void FunctionCollection::run()
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
 }
+
+
+void FunctionCollection::functionStopped()
+{
+}
+

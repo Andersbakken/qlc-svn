@@ -37,6 +37,7 @@
 #include <math.h>
 #include <qpopupmenu.h>
 #include <qfontdialog.h>
+#include <qevent.h>
 
 extern App* _app;
 extern QApplication* _qapp;
@@ -87,6 +88,12 @@ Monitor::~Monitor()
 
   delete [] m_newValues;
   delete [] m_oldValues;
+}
+
+
+void Monitor::closeEvent(QCloseEvent* e)
+{
+  emit closed();
 }
 
 void Monitor::init()

@@ -72,6 +72,8 @@ void FunctionConsumer::cue(Function* f)
 {
   ASSERT(f);
 
+  qDebug("FunctionConsumer::cue");
+
   m_functionListMutex.lock(); // Lock before access
   m_functionList.append(f);
   m_functionListMutex.unlock(); // Unlock after append
@@ -177,44 +179,40 @@ void FunctionConsumer::run()
 
 void FunctionConsumer::event(unsigned long delta)
 {
-  Function* p = NULL;
+  Function* f = NULL;
   unsigned char* ev = NULL;
 
   QPtrListIterator<Function> it(m_functionList);
 
   m_functionListMutex.lock(); // First lock
-  while ( (p = it.current()) != 0 )
+  while ( (f = it.current()) != 0 )
     {
       ++it;
 
       m_functionListMutex.unlock(); // Unlock after using iterator it
 
-      ev = p->eventBuffer()->get();
+      ev = f->eventBuffer()->get();
 
       if ( !ev )
         {
-          if (p->removeAfterEmpty())
+          if (f->removeAfterEmpty())
             {
-              printf("Function %3d is late %3ld ticks\n", p->id(),
-                     p->eventBuffer()->elapsedTime() - p->timeSpan());
+              printf("Function %3d is late %3ld ticks\n", f->id(),
+                     f->eventBuffer()->elapsedTime() - f->timeSpan());
 
               m_functionListMutex.lock(); // Lock before remove
-              m_functionList.remove(p);
-	      p->freeRunTimeData();
+              m_functionList.remove(f);
+	      f->freeRunTimeData();
               m_functionListMutex.unlock(); // Unlock after remove
             }
-
-	  qDebug("Ei mittee");
-
-          continue;
         }
       else
         {
 	  _app->doc()->outputPlugin()->
-	    writeRange(p->device()->address(), ev,
-		       p->device()->getChannelUnitList().count());
-	  //qDebug("%d, %d, %d, %d, %d, %d", ev[0], ev[1], ev[2], ev[3],
-	  // ev[4], ev[5]);
+	    writeRange(f->device()->address(), ev,
+		       f->device()->getChannelUnitList().count());
+	  //qDebug("%d %d %d %d %d %d", ev[0], ev[1], 
+	  // ev[2], ev[3], ev[4], ev[5]);
         }
 
       m_functionListMutex.lock(); // Lock for next round

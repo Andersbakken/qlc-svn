@@ -54,15 +54,15 @@ class Chaser : public Function
   void speedChange(long unsigned int newTimeSpan);
   void stop();
   void freeRunTimeData();
+  void childFinished();
 
  protected:
   void init();
   void run();
 
  protected:
-  bool m_running; // One chaser object can be running only once at a time
-  bool m_OKforNextStep;
-
+  bool m_running;
+  bool m_childRunning;
   QPtrList <FunctionStep> m_steps;
 };
 

@@ -82,7 +82,8 @@ class Doc : public QObject
   //
   QPtrList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
   bool readDeviceClasses();
-  DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
+  DeviceClass* searchDeviceClass(const QString &manufacturer,
+				 const QString &model);
   DeviceClass* searchDeviceClass(const t_deviceclass_id id);
 
   //

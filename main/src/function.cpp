@@ -22,8 +22,8 @@
 #include <qstring.h>
 
 #include "function.h"
-#include "device.h"
-
+//#include "device.h"
+#include "functionstep.h"
 
 //
 // Initialize function id
@@ -75,6 +75,7 @@ Function::Function(t_function_id id) : QThread()
   m_running = false;
   m_eventBuffer = NULL;
   m_virtualController = NULL;
+  m_parentFunction = NULL;
 }
 
 
@@ -131,5 +132,62 @@ QString Function::typeString() const
     default:
       return QString("Undefined");
       break;
+    }
+}
+
+/////////////////////////
+// Start the function
+/////////////////////////
+
+//
+// This function is used by VCButton to pass itself as a virtual controller
+// to this function. m_virtualController is signaled when this function stops.
+//
+bool Function::engage(QObject* virtualController)
+{
+  ASSERT(virtualController);
+
+  m_startMutex.lock();
+  if (m_running)
+    {
+      m_startMutex.unlock();
+      qDebug("Function " + name() + " is already running!");
+      return false;
+    }
+  else
+    {
+      m_virtualController = virtualController;
+      m_running = true;
+      start();
+      m_startMutex.unlock();
+
+      return true;
+    }
+}
+
+//
+// This function is used by Chaser & Collection to pass themselves as
+// a parent function to this function. m_parentFunction->childFinished()
+// is called when this function stops.
+//
+bool Function::engage(Function* parentFunction)
+{
+  ASSERT(parentFunction);
+
+  m_startMutex.lock();
+  if (m_running)
+    {
+      m_startMutex.unlock();
+      qDebug("Function " + name() + " is already running!");
+      return false;
+    }
+  else
+    {
+      m_parentFunction = parentFunction;
+      m_running = true;
+      start();
+      m_startMutex.unlock();
+
+      return true;
     }
 }

@@ -47,14 +47,12 @@ class RunTimeData
  public:
   float current;
   float increment;
-  float interval;
 };
 
 class Scene : public Function
 {
  public:
   Scene(t_function_id id = 0);
-  //Scene(Scene* sc);
   ~Scene();
 
   void copyFrom(Scene* sc);
@@ -64,16 +62,13 @@ class Scene : public Function
 
   bool set(t_channel ch, t_value value, SceneValueType type);
   SceneValue channelValue(t_channel ch);
-
   QString valueTypeString(t_channel ch);
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
   void speedChange(long unsigned int newTimeSpan) {}
-
   void stop();
-
   void freeRunTimeData();
 
  protected:

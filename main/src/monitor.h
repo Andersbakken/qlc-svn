@@ -61,9 +61,13 @@ class Monitor : public QWidget
  protected:
   void paintEvent(QPaintEvent* e);
   void mousePressEvent(QMouseEvent* e);
+  void closeEvent(QCloseEvent* e);
 
   void paint(void);
   void paintAll(void);
+
+ signals:
+  void closed();
 
  private:
   t_channel m_fromChannel;

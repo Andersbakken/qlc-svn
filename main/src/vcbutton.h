@@ -75,8 +75,6 @@ class VCButton : public QPushButton,
 
   FloatingEdit* m_renameEdit;
 
-  bool m_functionRunning;
-
   void keyPress(QKeyEvent* e);
   void keyRelease(QKeyEvent* e);
 
