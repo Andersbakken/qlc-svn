@@ -48,27 +48,24 @@ class OutputPlugin;
 
 ///////////////////////////////////////////////////////////////////
 // General program defines
-#define IDS_APP_NAME_LONG               "Q Light Controller 2"
-#define IDS_APP_NAME_SHORT              "QLC2"
-#define IDS_APP_VERSION_STR             "Version 2.2.0"
+const QString IDS_APP_NAME_LONG =             "Q Light Controller";
+const QString IDS_APP_NAME_SHORT =            "QLC";
+const QString IDS_APP_VERSION_STR =           "Version 2.2.2";
 
-#define MIN_LIGHT_VALUE                 0
-#define MAX_LIGHT_VALUE                 100
+const unsigned short MIN_DMX_VALUE =          0;
+const unsigned short MAX_DMX_VALUE =          255;
 
-#define MIN_DMX_VALUE                   0
-#define MAX_DMX_VALUE                   255
+const unsigned int OUTPUT_DEVICE_ROOT_ID =    0;
+const unsigned int OUTPUT_DEVICE_ID_MIN =     1;
+const unsigned int OUTPUT_DEVICE_ID_MAX =     999;
 
-#define OUTPUT_DEVICE_ROOT_ID           0
-#define OUTPUT_DEVICE_ID_MIN            1
-#define OUTPUT_DEVICE_ID_MAX            999
+const unsigned int PLUGIN_ROOT_ID =           1000;
+const unsigned int PLUGIN_ID_MIN =            1001;
+const unsigned int PLUGIN_ID_MAX =            1999;
 
-#define PLUGIN_ROOT_ID                  1000
-#define PLUGIN_ID_MIN                   1001
-#define PLUGIN_ID_MAX                   1999
-
-#define BUS_ROOT_ID                     2000
-#define BUS_ID_MIN                      2001
-#define BUS_ID_MAX                      2999
+const unsigned int BUS_ROOT_ID =              2000;
+const unsigned int BUS_ID_MIN =               2001;
+const unsigned int BUS_ID_MAX =               2999;
 
 //////////////////////////////////////////////////////////////////
 // Class definition
@@ -77,7 +74,7 @@ class App : public QMainWindow
 {
   Q_OBJECT
  public:
-  App();
+  App(Settings* settings);
   ~App();
 
  public:

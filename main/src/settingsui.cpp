@@ -23,6 +23,7 @@
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
+#include "configkeys.h"
 
 #include "../../libs/common/plugin.h"
 
@@ -45,15 +46,23 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
 {
   QString str;
 
-  m_systemEdit->setText(_app->settings()->systemPath());
-  m_backgroundEdit->setText(_app->settings()->workspaceBackgroundPath());
+  _app->settings()->get(KEY_SYSTEM_DIR, str);
+  m_systemEdit->setText(str);
+
+  _app->settings()->get(KEY_APP_BACKGROUND, str);
+  m_backgroundEdit->setText(str);
 
   fillStyleCombo();
   fillOutputPluginCombo();
 
-  m_openDeviceManagerCheckBox->setChecked(_app->settings()->openDeviceManager());
-  m_openLastWorkspaceCheckBox->setChecked(_app->settings()->openLastWorkspace());
-  m_keyRepeatCheckBox->setChecked(_app->settings()->keyRepeatOffInOperateMode());
+  _app->settings()->get(KEY_DEVICE_MANAGER_OPEN, str);
+  m_openDeviceManagerCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
+
+  _app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str);
+  m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
+
+  _app->settings()->get(KEY_KEY_REPEAT, str);
+  m_keyRepeatCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
 }
 
 SettingsUI::~SettingsUI()
@@ -64,6 +73,9 @@ void SettingsUI::fillStyleCombo()
 {
   QStyleFactory f;
   QStringList l = f.keys();
+
+  QString widgetStyle;
+  _app->settings()->get(KEY_WIDGET_STYLE, widgetStyle);
   
   for (QStringList::Iterator it = l.begin(); it != l.end(); ++it)
     {
@@ -72,7 +84,7 @@ void SettingsUI::fillStyleCombo()
   
   for (int i = 0; i < m_widgetStyleCombo->count(); i++)
     {
-      if (m_widgetStyleCombo->text(i) == _app->settings()->widgetStyle())
+      if (m_widgetStyleCombo->text(i) == widgetStyle)
 	{
 	  m_widgetStyleCombo->setCurrentItem(i);
 	  break;
@@ -83,8 +95,11 @@ void SettingsUI::fillStyleCombo()
 void SettingsUI::fillOutputPluginCombo()
 {
   QList <Plugin> *pl = _app->doc()->pluginList();
-
+  
   m_outputPluginCombo->clear();
+
+  QString outputPlugin;
+  _app->settings()->get(KEY_OUTPUT_PLUGIN, outputPlugin);
 
   for (unsigned int i = 0; i < pl->count(); i++)
     {
@@ -99,7 +114,7 @@ void SettingsUI::fillOutputPluginCombo()
 
   for (int i = 0; i < m_outputPluginCombo->count(); i++)
     {
-      if (m_outputPluginCombo->text(i) == _app->settings()->outputPlugin())
+      if (m_outputPluginCombo->text(i) == outputPlugin)
 	{
 	  m_outputPluginCombo->setCurrentItem(i);
 	  break;
@@ -132,23 +147,46 @@ void SettingsUI::slotBackgroundBrowseClicked()
 
 void SettingsUI::slotStyleChanged(const QString &)
 {
-  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
-  _qapp->setStyle( m_widgetStyleCombo->currentText());
+  _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
+  _qapp->setStyle(m_widgetStyleCombo->currentText());
 }
 
 void SettingsUI::slotOKClicked()
 {
-  _app->settings()->setSystemPath(m_systemEdit->text());
-  _app->settings()->setWorkspaceBackgroundPath(m_backgroundEdit->text());
+  _app->settings()->set(KEY_SYSTEM_DIR, m_systemEdit->text());
+  _app->settings()->set(KEY_APP_BACKGROUND, m_backgroundEdit->text());
 
-  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
+  _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
   
-  _app->settings()->setOpenDeviceManager(m_openDeviceManagerCheckBox->isChecked());
-  _app->settings()->setOpenLastWorkspace(m_openLastWorkspaceCheckBox->isChecked());
 
-  _app->settings()->setKeyRepeatOffInOperateMode(m_keyRepeatCheckBox->isChecked());
+  if (m_openDeviceManagerCheckBox->isChecked())
+    {
+      _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, Settings::trueValue());
+    }
+  else
+    {
+      _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, Settings::falseValue());
+    }
 
-  _app->settings()->setOutputPlugin(m_outputPluginCombo->currentText());
+  if (m_openLastWorkspaceCheckBox->isChecked())
+    {
+      _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::trueValue());
+    }
+  else
+    {
+      _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::falseValue());
+    }
+
+  if (m_keyRepeatCheckBox->isChecked())
+    {
+      _app->settings()->set(KEY_KEY_REPEAT, Settings::trueValue());
+    }
+  else
+    {
+      _app->settings()->set(KEY_KEY_REPEAT, Settings::falseValue());
+    }
+
+  _app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());
 
   accept();
 }

@@ -23,8 +23,10 @@
 #include <qstring.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <qstylefactory.h>
 
 #include "settings.h"
+#include "configkeys.h"
 #include "sequencetimer.h"
 #include "app.h"
 
@@ -32,72 +34,6 @@
 
 App* _app;
 QApplication* _qapp;
-
-int parseArgs(int argc, char **argv);
-
-int main(int argc, char **argv)
-{
-  int result;
-  uid_t uid;
-
-  qDebug("--- Q Light Controller %s ---\n", IDS_APP_VERSION_STR);
-  qDebug("This program is licensed under the terms of the GNU General Public License.");
-  qDebug("Copyright (c) Heikki Junnila (hjunnila@iki.fi)");
-
-  uid = ::getuid();
-  if (uid == 0)
-    {
-      qDebug("\nDo not run QLC as root. Instead, make the executable suid root:");
-      qDebug("    chown root.root qlc ; chmod +s qlc\n");
-    }
-
-  if (parseArgs(argc, argv) == 1)
-    {
-      return 0;
-    }
-
-  SequenceTimer* timer = new SequenceTimer();
-  timer->init();
-
-  // Initialize QApplication object
-  QApplication a(argc, argv);
-  _qapp = &a;
-
-  // Get widget style from settings
-  Settings* settings;
-  settings = new Settings();
-  settings->load();
-
-  // Allow the usage of the global system style setting
-  QStyle* style = settings->style(settings->widgetStyle());
-  if (style != NULL)
-    {
-      a.setStyle(style);
-    }
-
-  delete settings;
-
-  _app = new App();
-  _app->setCaption("Q Light Controller 2");
-  _app->setSequenceTimer(timer);
-  _app->initView();
-  a.setMainWidget(_app);
-  _app->show();
-  
-  result = a.exec();
-
-  delete _app;
-
-  delete timer;
-
-  Display* display;
-  display = XOpenDisplay(NULL);
-  ASSERT(display != NULL);
-  XAutoRepeatOn(display);
-  XCloseDisplay(display);
-
-  return result;
-}
 
 /*
  * Parse command line arguments
@@ -129,7 +65,7 @@ int parseArgs(int argc, char **argv)
 	  else if (::strcmp(argv[i], "-v") == 0 ||
 		   ::strcmp(argv[i], "--version") == 0)
 	    {
-	      qDebug("%s", IDS_APP_VERSION_STR);
+	      qDebug(IDS_APP_VERSION_STR);
 	      ret = 1;
 	    }
 	  else
@@ -137,10 +73,101 @@ int parseArgs(int argc, char **argv)
 	      ret = 0;
 	    }
 	}
-
-      // Print a couple of enters
-      qDebug("\n");
     }
 
   return ret;
+}
+
+/*
+ * main; entry point for program
+ */
+int main(int argc, char **argv)
+{
+  int result;
+  uid_t uid;
+
+  //
+  // Parse any command line arguments
+  if (parseArgs(argc, argv) == 1)
+    {
+      return 0;
+    }
+
+  qDebug("* " + IDS_APP_NAME_LONG + " " + IDS_APP_VERSION_STR);
+  qDebug("* This program is licensed under the terms of the GNU General Public License.");
+  qDebug("* Copyright (c) Heikki Junnila (hjunnila@iki.fi)");
+
+  //
+  // Warn the user if qlc is being run (effectively) as root
+  uid = ::getuid();
+  if (uid == 0)
+    {
+      qDebug("\nDo not run QLC as root. Instead, make the executable suid root:");
+      qDebug("    chown root.root qlc ; chmod +s qlc\n");
+    }
+
+  //
+  // Construct and init sequence timer object
+  SequenceTimer* timer = new SequenceTimer();
+  timer->init();
+
+  //
+  // Initialize QApplication object
+  QApplication a(argc, argv);
+  _qapp = &a;
+
+  //
+  // Construct settings class and load its contents
+  Settings* settings;
+  settings = new Settings();
+  settings->load();
+
+  //
+  // Get the widget style from settings
+  QString widgetStyle;
+  settings->get(KEY_WIDGET_STYLE, widgetStyle);
+
+  //
+  // Construct the style thru stylefactory and set it if it's valid
+  QStyleFactory f;
+  QStyle* style = f.create(widgetStyle);
+  if (style != NULL)
+    {
+      a.setStyle(style);
+    }
+
+  //
+  // Construct the main application class
+  _app = new App(settings);
+  _app->setCaption(IDS_APP_NAME_LONG);
+  _app->setSequenceTimer(timer);
+  _app->initView();
+  a.setMainWidget(_app);
+  _app->show();
+  
+  //
+  // Main application loop
+  //
+  result = a.exec();
+
+  //
+  // Delete main app class
+  delete _app;
+
+  //
+  // Delete settings
+  delete settings;
+
+  // Delete sequence timer
+  delete timer;
+
+  //
+  // Set key repeat on
+  Display* display;
+  display = XOpenDisplay(NULL);
+  ASSERT(display != NULL);
+  XAutoRepeatOn(display);
+  XCloseDisplay(display);
+
+  return result;
 }

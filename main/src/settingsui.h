@@ -24,8 +24,6 @@
 
 #include "uic_settings.h"
 
-class QFont;
-
 class SettingsUI : public UI_Settings
 {
   Q_OBJECT
@@ -33,7 +31,7 @@ class SettingsUI : public UI_Settings
   friend class Settings;
 
  public:
-  SettingsUI(QWidget* parent = NULL, const char* name = NULL);
+  SettingsUI(QWidget* parent, const char* name = NULL);
   ~SettingsUI();
 
  public slots:

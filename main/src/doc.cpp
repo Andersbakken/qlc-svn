@@ -36,6 +36,7 @@
 #include "devicemanagerview.h"
 #include "devicemanager.h"
 #include "devicelistview.h"
+#include "configkeys.h"
 
 #include "../../libs/common/plugin.h"
 #include "../../libs/common/filehandler.h"
@@ -93,9 +94,12 @@ void Doc::setModified(bool modified)
 
 void Doc::init()
 {
+  QString outputPlugin;
+  _app->settings()->get("OutputPlugin", outputPlugin);
+
   initDMXChannels();
   initPlugins();
-  slotChangeOutputPlugin(_app->settings()->outputPlugin());
+  //slotChangeOutputPlugin(_app->settings()->outputPlugin());
 
   readDeviceClasses();
 }
@@ -119,7 +123,10 @@ bool Doc::readDeviceClasses()
 {
   DeviceClass* dc = NULL;
   QString path = QString::null;
-  QString dir = _app->settings()->deviceClassPath();
+
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + DEVICECLASSPATH + QString("/");
 
   QDir d(dir);
   d.setFilter(QDir::Files);
@@ -871,24 +878,6 @@ Function* Doc::searchFunction(const unsigned long id, DMXDevice** device)
 	    }
 	}
     }
-  /*
-  //
-  // Last, try deviceclasses
-  //
-  for (DeviceClass* dc = m_deviceClassList.first(); dc != NULL; dc = m_deviceClassList.next())
-    {
-      QList<Function> *fl = dc->functions();
-      for (f = fl->first(); f != NULL; f = fl->next())
-	{
-	  if (f->id() == id)
-	    {
-	      *device = f->device();
-	      *deviceClass = f->deviceClass();
-	      return f;
-	    }
-	}      
-    }
-  */
 
   //
   // Didn't find, return nothing
@@ -925,25 +914,6 @@ Bus* Doc::searchBus(const unsigned int id)
   return NULL;
 }
 
-/*
-  Bus* Doc::searchBus(QString name)
-  {
-  Bus* bus = NULL;
-  
-  for (unsigned int i = 0; i < m_busList.count(); i++)
-  {
-  bus = m_busList.at(i);
-  ASSERT(bus);
-  
-  if (bus->name() == name)
-  {
-  return bus;
-  }
-  }
-  
-  return NULL;
-  }
-*/
 
 void Doc::removeBus(unsigned int id, bool deleteBus)
 {
@@ -968,7 +938,10 @@ void Doc::removeBus(unsigned int id, bool deleteBus)
 void Doc::initPlugins()
 {
   QString path;
-  QString dir = _app->settings()->pluginPath();
+
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PLUGINPATH + QString("/");
 
   // First of all, add the dummy output plugin
   m_dummyOutPlugin = new DummyOutPlugin(Doc::NextPluginID++);
@@ -1000,6 +973,23 @@ void Doc::initPlugins()
 
       probePlugin(path);
     }
+
+  //
+  // Use the output plugin that user has selected previously
+  //
+  QString config;
+  _app->settings()->get(KEY_OUTPUT_PLUGIN, config);
+  Plugin* plugin = searchPlugin(config, Plugin::OutputType);
+  if (plugin != NULL)
+    {
+      m_outputPlugin = static_cast<OutputPlugin*> (plugin);
+    }
+  else
+    {
+      m_outputPlugin = m_dummyOutPlugin;
+    }
+
+  slotPluginActivated(m_outputPlugin);
 }
 
 bool Doc::probePlugin(QString path)
@@ -1115,7 +1105,7 @@ void Doc::slotPluginActivated(Plugin* plugin)
   if (plugin && plugin->type() == Plugin::OutputType)
     {
       slotChangeOutputPlugin(plugin->name());
-      _app->settings()->setOutputPlugin(plugin->name());
+      _app->settings()->set("OutputPlugin", plugin->name());
       _app->settings()->save();
     }
 }

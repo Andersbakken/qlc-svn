@@ -44,6 +44,7 @@
 #include "keybind.h"
 #include "dmxlabel.h"
 #include "sequenceprovider.h"
+#include "configkeys.h"
 
 #include <X11/Xlib.h>
 
@@ -111,6 +112,9 @@ void VirtualConsole::setMode(Mode mode)
 	}
     }
 
+  QString config;
+  _app->settings()->get("KeyRepeatOffInOperateMode", config);
+
   if (mode == Design)
     {
       m_mode = Design;
@@ -122,7 +126,7 @@ void VirtualConsole::setMode(Mode mode)
       /* Set auto repeat off when in "Operate" mode and on 
        * again when vc is put to "Design" mode.
        */
-      if (_app->settings()->keyRepeatOffInOperateMode() == true)
+      if (config == QString("true"))
 	{
 	  Display* display;
 	  display = XOpenDisplay(NULL);
@@ -146,7 +150,7 @@ void VirtualConsole::setMode(Mode mode)
       /* Set auto repeat off when in "Operate" mode and on 
        * again when vc is put to "Design" mode.
        */
-      if (_app->settings()->keyRepeatOffInOperateMode() == true)
+      if (config == QString("true"))
 	{
 	  Display* display;
 	  display = XOpenDisplay(NULL);
@@ -438,7 +442,12 @@ void VirtualConsole::saveToFile(QFile& file)
 void VirtualConsole::initView(void)
 {
   setCaption("Virtual Console");
-  setIcon(_app->settings()->pixmapPath() + QString("virtualconsole.xpm"));
+
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  setIcon(dir + QString("/virtualconsole.xpm"));
 
   m_layout = new QVBoxLayout(this);
   m_layout->setAutoAdd(false);

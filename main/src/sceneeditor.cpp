@@ -33,6 +33,7 @@
 #include "logicalchannel.h"
 #include "channelui.h"
 #include "listboxiditem.h"
+#include "configkeys.h"
 
 #include <qlistbox.h>
 #include <qradiobutton.h>
@@ -78,22 +79,26 @@ SceneEditor::~SceneEditor()
 
 void SceneEditor::init()
 {
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
   m_menu = new QPopupMenu();
   connect(m_menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
 
-  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("key.xpm")),
+  m_menu->insertItem(QPixmap(dir + QString("/key.xpm")),
 		   "Activate scene", MENU_ACTIVATE);
   m_menu->insertSeparator();
-  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filenew.xpm")),
+  m_menu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
 		   "New...", MENU_NEW);
-  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filesave.xpm")),
+  m_menu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
 		   "Store", MENU_STORE);
-  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("remove.xpm")),
+  m_menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
 		   "Remove", MENU_REMOVE);
-  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("rename.xpm")),
+  m_menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
 		   "Rename...", MENU_RENAME);
   m_menu->insertSeparator();
-  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("fileclose.xpm")),
+  m_menu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
 		   "Hide Editor", MENU_HIDE);
 
   m_tools->setPopup(m_menu);

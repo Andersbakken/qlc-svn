@@ -29,10 +29,12 @@
 #include "aboutbox.h"
 #include "app.h"
 #include "settings.h"
+#include "configkeys.h"
 
 extern App* _app;
 
-AboutBox::AboutBox(QWidget* parent, const char* name) : QDialog (parent, name, true)
+AboutBox::AboutBox(QWidget* parent, const char* name)
+  : QDialog (parent, name, true)
 {
   initDialog();
 }
@@ -55,7 +57,11 @@ void AboutBox::initDialog()
 
   setCaption("About Q Light Controller");
 
-  m_pm = new QPixmap(_app->settings()->pixmapPath() + "qlc-big.xpm");
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  m_pm = new QPixmap(dir + "/qlc-big.xpm");
   m_logo = new QLabel(this);
 
   if (m_pm->isNull() == false)
@@ -99,9 +105,8 @@ void AboutBox::initDialog()
   m_people->setSelectionMode(QListBox::NoSelection);
   m_people->setFrameStyle(QFrame::Panel);
   m_people->setScrollBar(true);
-  m_people->insertItem("Heikki Junnila <hjunnila@iki.fi>    (Author)");
+  m_people->insertItem("Heikki Junnila <hjunnila@iki.fi>");
   m_people->insertItem("Stefan Krumm <krumm@geol.uni-erlangen.de>");
-  m_people->insertItem("Dirk Jagdmann <doj@cubic.org>");
   m_people->setBackgroundColor(white);
 
   m_ok = new QPushButton(this);
