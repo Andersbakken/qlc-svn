@@ -19,20 +19,34 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <ctype.h>
+#include <qnamespace.h>
+
 #include "keybind.h"
 #include "dmxwidgetbase.h"
-#include <ctype.h>
 
 KeyBind::KeyBind() : QObject()
 {
   m_pressAction = PressStart;
   m_releaseAction = ReleaseNothing;
+  m_key = 0;
+  m_mod = 0;
+  m_valid = false;
 }
 
 KeyBind::KeyBind(int key, int mod) : QObject()
 {
   m_key = key;
   m_mod = mod;
+
+  if (key != 0)
+    {
+      m_valid = true;
+    }
+  else
+    {
+      m_valid = false;
+    }
  
   m_pressAction = PressStart;
   m_releaseAction = ReleaseNothing;
@@ -43,6 +57,7 @@ KeyBind::KeyBind(KeyBind* kb) : QObject()
   ASSERT(kb != NULL);
   m_key = kb->key();
   m_mod = kb->mod();
+  m_valid = kb->valid();
   
   m_pressAction = kb->pressAction();
   m_releaseAction = kb->releaseAction();
@@ -56,6 +71,15 @@ void KeyBind::setKey(int key, int mod)
 {
   m_key = key;
   m_mod = mod;
+
+  if (key != 0)
+    {
+      m_valid = true;
+    }
+  else
+    {
+      m_valid = false;
+    }
 }
 
 QString KeyBind::keyString(int key, int mod)
@@ -233,6 +257,8 @@ QString KeyBind::keyString(int key, int mod)
 	  keyString.sprintf("Control +");
 	  break;
 	case 0:
+	  keyString.sprintf("None");
+	  break;
 	case Key_unknown:
 	  keyString.sprintf("Unknown");
 	  break;
@@ -257,17 +283,29 @@ QString KeyBind::keyString(int key, int mod)
       modString += QString("Control + ");
     }
 
-  return QString(modString + keyString);
+  if (key == 0)
+    {
+      return QString("None");
+    }
+  else
+    {
+      return QString(modString + keyString);
+    }
 }
 
 // Comparison between two KeyBind objects
 bool KeyBind::operator==(KeyBind* kb)
 {
-  bool result = true;
+  if (m_valid == kb->valid())
+    {
+    }
+  else
+    {
+      return false;
+    }
 
   if (this->m_key == kb->key() && this->m_mod == kb->mod())
     {
-      result = true;
     }
   else
     {
@@ -277,12 +315,11 @@ bool KeyBind::operator==(KeyBind* kb)
   if (this->pressAction() == kb->pressAction() &&
       this->releaseAction() == kb->releaseAction())
     {
-      result = true;
     }
   else
     {
       return false;
     }
 
-  return result;
+  return true;
 }

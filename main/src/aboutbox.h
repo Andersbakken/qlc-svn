@@ -23,11 +23,12 @@
 #define ABOUTBOX_H
 
 #include <qdialog.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qlistbox.h>
-#include <qpixmap.h>
-#include <qcolor.h>
+
+class QPushButton;
+class QLabel;
+class QListBox;
+class QPixmap;
+class QColor;
 
 class AboutBox : public QDialog
 {

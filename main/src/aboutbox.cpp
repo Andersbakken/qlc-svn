@@ -19,6 +19,12 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qpushbutton.h>
+#include <qlabel.h>
+#include <qlistbox.h>
+#include <qpixmap.h>
+#include <qcolor.h>
+
 #include "aboutbox.h"
 #include "app.h"
 #include "settings.h"

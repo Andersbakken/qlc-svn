@@ -29,7 +29,7 @@
 AssignHotKey::AssignHotKey(QWidget* parent, const char* name)
   : UI_AssignHotKey(parent, name, true)
 {
-  m_keyBind = NULL;
+  m_keyBind = new KeyBind();
   initView();
 }
 
@@ -70,14 +70,8 @@ void AssignHotKey::slotCancelClicked()
 
 void AssignHotKey::keyPressEvent(QKeyEvent* e)
 {
-  if (m_keyBind == NULL)
-    {
-      m_keyBind = new KeyBind(e->key(), e->state());
-    }
-  else
-    {
-      m_keyBind->setKey(e->key(), e->state());
-    }
+  ASSERT (m_keyBind != NULL);
+  m_keyBind->setKey(e->key(), e->state());
 
   m_previewEdit->setText(m_keyBind->keyString());
 }

@@ -33,7 +33,7 @@ class AssignHotKey : public UI_AssignHotKey
   AssignHotKey(QWidget* parent = NULL, const char* name = NULL);
   ~AssignHotKey();
 
-  const KeyBind* keyBind() { return (const KeyBind*) m_keyBind; }
+  KeyBind* keyBind() { return m_keyBind; }
 
   void initView();
 

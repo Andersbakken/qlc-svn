@@ -22,8 +22,9 @@
 #ifndef KEYBIND_H
 #define KEYBIND_H
 
+#include <qobject.h>
+
 #include "classes.h"
-#include <qevent.h>
 
 class KeyBind : public QObject
 {
@@ -52,11 +53,15 @@ class KeyBind : public QObject
   void setReleaseAction(ReleaseAction a) { m_releaseAction = a; }
   ReleaseAction releaseAction() { return m_releaseAction; }
 
+  bool valid() { return m_valid; }
+
   bool operator==(KeyBind*);
 
  private:
   int m_key; // Key
   int m_mod; // Modifier [shift|alt|control]
+
+  bool m_valid; // Does this object contain a valid key or not
 
   PressAction m_pressAction;
   ReleaseAction m_releaseAction;
