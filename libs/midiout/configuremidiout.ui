@@ -1,19 +1,19 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
-<class>UI_ConfigureDMX4LinuxOut</class>
+<class>UI_ConfigureMidiOut</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>UI_ConfigureDMX4LinuxOut</cstring>
+        <cstring>UI_ConfigureMidiOut</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
             <width>269</width>
-            <height>194</height>
+            <height>305</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Configure DMX4Linux Plugin</string>
+        <string>Configure Midi Output Plugin</string>
     </property>
     <widget class="QGroupBox">
         <property name="name">
@@ -118,6 +118,89 @@
             </property>
         </widget>
     </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox5</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>150</y>
+                <width>250</width>
+                <height>100</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Midi Settings</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_midiOutputLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>160</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Midi Output Channel</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_firstNoteNumber</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>60</y>
+                    <width>160</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>First Note Number</string>
+            </property>
+        </widget>
+        <widget class="QSpinBox">
+            <property name="name">
+                <cstring>m_midiChannelSpin</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>190</x>
+                    <y>30</y>
+                    <width>50</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>16</number>
+            </property>
+            <property name="minValue">
+                <number>1</number>
+            </property>
+        </widget>
+        <widget class="QSpinBox">
+            <property name="name">
+                <cstring>m_firstNoteSpin</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>190</x>
+                    <y>60</y>
+                    <width>50</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>127</number>
+            </property>
+        </widget>
+    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>m_ok</cstring>
@@ -125,7 +208,7 @@
         <property name="geometry">
             <rect>
                 <x>80</x>
-                <y>160</y>
+                <y>270</y>
                 <width>80</width>
                 <height>22</height>
             </rect>
@@ -144,7 +227,7 @@
         <property name="geometry">
             <rect>
                 <x>170</x>
-                <y>160</y>
+                <y>270</y>
                 <width>80</width>
                 <height>22</height>
             </rect>
@@ -156,29 +239,31 @@
 </widget>
 <connections>
     <connection>
-        <sender>m_cancel</sender>
+        <sender>m_activate</sender>
         <signal>clicked()</signal>
-        <receiver>UI_ConfigureDMX4LinuxOut</receiver>
-        <slot>reject()</slot>
+        <receiver>UI_ConfigureMidiOut</receiver>
+        <slot>slotActivateClicked()</slot>
     </connection>
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
-        <receiver>UI_ConfigureDMX4LinuxOut</receiver>
+        <receiver>UI_ConfigureMidiOut</receiver>
         <slot>accept()</slot>
     </connection>
     <connection>
-        <sender>m_activate</sender>
+        <sender>m_cancel</sender>
         <signal>clicked()</signal>
-        <receiver>UI_ConfigureDMX4LinuxOut</receiver>
-        <slot>slotActivateClicked()</slot>
+        <receiver>UI_ConfigureMidiOut</receiver>
+        <slot>reject()</slot>
     </connection>
 </connections>
 <tabstops>
-    <tabstop>m_cancel</tabstop>
     <tabstop>m_deviceEdit</tabstop>
     <tabstop>m_activate</tabstop>
+    <tabstop>m_midiChannelSpin</tabstop>
+    <tabstop>m_firstNoteSpin</tabstop>
     <tabstop>m_ok</tabstop>
+    <tabstop>m_cancel</tabstop>
 </tabstops>
 <slots>
     <slot>slotActivateClicked()</slot>

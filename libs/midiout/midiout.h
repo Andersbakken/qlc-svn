@@ -64,8 +64,8 @@ class MidiOut : public OutputPlugin
 
  protected:
   virtual void setFileName(QString);
-  void setMidiOutChannel(unsigned char channel);
-  unsigned char midiOutChannel() { return m_midiOutChannel; }
+  void setMidiChannel(unsigned char channel);
+  unsigned char midiChannel() { return m_midiChannel; }
   unsigned char firstNote() { return m_firstNote; }
   void activate();
   void createContents(QList <QString> &list);
@@ -77,7 +77,7 @@ class MidiOut : public OutputPlugin
   QString m_deviceName;
   QString m_configDirectory;
   int m_fd;
-  unsigned char m_midiOutChannel;
+  unsigned char m_midiChannel;
   unsigned char m_firstNote;
 };
 

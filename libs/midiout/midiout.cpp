@@ -32,7 +32,9 @@
 
 #include "../common/plugin.h"
 #include "../common/filehandler.h"
+
 #include "midiout.h"
+#include "configuremidiout.h"
 
 #define MIDI_NOTEOFF 0x80
 #define MIDI_NOTEON  0x90
@@ -61,7 +63,7 @@ extern "C" void destroy(OutputPlugin* object)
 MidiOut::MidiOut(int id) : OutputPlugin(id)
 {
   m_fd = -1;
-  m_midiOutChannel = 1;
+  m_midiChannel = 1;
   m_firstNote = 0;
   m_name = QString("Midi Output");
   m_version = 0x00000100;
@@ -158,8 +160,8 @@ QString MidiOut::infoText()
   t.setNum(version() & 0xff);
   str += t + QString("</TD></TR>");
 
-  str += QString("<TR><TD><B>Midi Out Channel</B></TD>");
-  t.setNum(m_midiOutChannel);
+  str += QString("<TR><TD><B>Midi Channel</B></TD>");
+  t.setNum(m_midiChannel);
   str += QString("<TD>") + t + QString("</TD></TR>");
 
   str += QString("<TR><TD><B>First Note Number</B></TD>");
@@ -212,8 +214,8 @@ void MidiOut::saveSettings()
       s = QString("Device = ") + m_deviceName + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
-      t.setNum(m_midiOutChannel);
-      s = QString("MidiOutChannel = ") + t + QString("\n");
+      t.setNum(m_midiChannel);
+      s = QString("MidiChannel = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
       t.setNum(m_firstNote);
@@ -266,10 +268,10 @@ void MidiOut::createContents(QList <QString> &list)
 	{
 	  m_deviceName = *(list.next());
 	}
-      else if (*s == QString("MidiOutChannel"))
+      else if (*s == QString("MidiChannel"))
 	{
 	  t = *(list.next());
-	  m_midiOutChannel = t.toInt();
+	  m_midiChannel = t.toInt();
 	}
       else if (*s == QString("FirstNote"))
 	{
@@ -279,11 +281,11 @@ void MidiOut::createContents(QList <QString> &list)
     }
 }
 
-void MidiOut::setMidiOutChannel(unsigned char channel)
+void MidiOut::setMidiChannel(unsigned char channel)
 {
-  if (channel <= 16)
+  if (channel <= 16 && channel > 0)
     {
-      m_midiOutChannel = channel;
+      m_midiChannel = channel;
     }
 }
 
@@ -301,13 +303,13 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
 
   if (value == 0)
     {
-      buf[0] = MIDI_NOTEOFF + m_midiOutChannel - 1;
+      buf[0] = MIDI_NOTEOFF + m_midiChannel - 1;
       buf[1] = m_firstNote + channel;
       buf[2] = 0xFF;
     }
   else
     {
-      buf[0] = MIDI_NOTEON + m_midiOutChannel - 1;
+      buf[0] = MIDI_NOTEON + m_midiChannel - 1;
       buf[1] = m_firstNote + channel;
       buf[2] = value;
     }
@@ -325,17 +327,15 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
 
 void MidiOut::configure()
 {
-/*
   ConfigureMidiOut* conf = new ConfigureMidiOut(this);
 
   if (conf->exec() == QDialog::Accepted)
     {
       m_deviceName = conf->device();
-      m_midiOutChannel = conf->midiChannel();
+      m_midiChannel = conf->midiChannel();
       m_firstNote = conf->firstNote();
       saveSettings();
     }
-*/
 }
 
 void MidiOut::activate()
