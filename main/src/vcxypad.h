@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  vcframe.h
+  vcxypad.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (C) 2005 Heikki Junnila, Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License

@@ -559,14 +559,17 @@ void App::initToolBar()
 			      "Panic; Shut down all running functions", 0, 
 			      this, SLOT(slotPanic()), m_toolbar);
 
-  m_modeTB = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
-			     "Design Mode; All editing features enabled", 
-			     0, this, SLOT(slotSetMode()), m_toolbar);
   
   m_blackOutTB = new QToolButton(QPixmap(dir + QString("/blackout.xpm")), 
 				 "Blackout", 
 				 0, this, SLOT(slotToggleBlackOut()), 
 				 m_toolbar);
+
+  m_modeTB = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")),
+                             "Design Mode; All editing features enabled",
+                             0, this, SLOT(slotSetMode()), m_toolbar);
+
+
 }
 
 

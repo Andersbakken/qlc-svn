@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  vcframe.cpp
+  vcxypad.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) 2005 Heikki Junnila, Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -75,7 +75,7 @@ void VCXYPad::init()
   
   resize(120, 120);
   setFrameStyle(QFrame::Panel | QFrame::Sunken);
-
+  setCursor(Qt::CrossCursor);
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
@@ -431,6 +431,7 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
       QString msg;
       msg.sprintf("%d  %d",e->x(),e->y());
       setMouseTracking(true);
+      //setCursor(Qt::CrossCursor);
       qDebug(msg);
       //QFrame::mousePressEvent(e);
     }
@@ -485,13 +486,15 @@ void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      setCursor(QCursor(ArrowCursor));
+      //this->setCursor(QCursor(ArrowCursor));
+      setCursor(Qt::CrossCursor);
       m_resizeMode = false;
       setMouseTracking(false);
     }
   else
     {
      setMouseTracking(false);
+     //unsetCursor();
       QFrame::mouseReleaseEvent(e);
     }
 }
@@ -514,10 +517,20 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	}
     }
   else
-    {
-      QString msg;
-      msg.sprintf("%d  %d",e->x(),e->y());
-      qDebug(msg);
+    { // the following is NOT done by hasMouse() because that fails if
+      // there are child widgets   
+      if( e->x()>0 &&  e->y()>0  && e->x()<rect().width() && e->y()<rect().height()  )
+        {
+           QString msg;
+           msg.sprintf("xy %d  %d",int(255*e->x()/rect().width()),e->y());
+           qDebug(msg);
+	   setCursor(Qt::CrossCursor);
+	   
+	}
+      else
+        {
+	   unsetCursor();
+	}	
       QFrame::mouseMoveEvent(e);
     }
 }
