@@ -42,7 +42,6 @@ extern App* _app;
 Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
-  m_running = false;
 }
 
 
@@ -62,7 +61,6 @@ Chaser::Chaser(Chaser* ch, bool append) : Function(ch->id())
 //
 void Chaser::copyFrom(Chaser* ch, bool append)
 {
-  m_running = ch->m_running;
   m_name = ch->name();
 
   if (append == false)
@@ -87,6 +85,7 @@ void Chaser::copyFrom(Chaser* ch, bool append)
 //
 Chaser::~Chaser()
 {
+  stop();
 }
 
 
@@ -190,6 +189,8 @@ void Chaser::createContents(QPtrList <QString> &list)
 //
 void Chaser::addStep(Function* function)
 {
+  m_startMutex.lock();
+
   if (m_running == false)
     {
       FunctionStep* step = new FunctionStep(function);
@@ -199,6 +200,8 @@ void Chaser::addStep(Function* function)
     {
       qDebug("Chaser is running. Cannot modify steps!");
     }  
+
+  m_startMutex.unlock();
 }
 
 
@@ -208,6 +211,8 @@ void Chaser::addStep(Function* function)
 void Chaser::removeStep(int index)
 {
   ASSERT( ((unsigned)index) < m_steps.count());
+
+  m_startMutex.lock();
 
   if (m_running == false)
     {
@@ -219,6 +224,8 @@ void Chaser::removeStep(int index)
     {
       qDebug("Chaser is running. Cannot modify steps!");
     }
+
+  m_startMutex.unlock();
 }
 
 
@@ -227,6 +234,8 @@ void Chaser::removeStep(int index)
 //
 void Chaser::raiseStep(unsigned int index)
 {
+  m_startMutex.lock();
+
   if (m_running == false)
     {
       if (index > 0)
@@ -241,6 +250,8 @@ void Chaser::raiseStep(unsigned int index)
     {
       qDebug("Chaser is running. Cannot modify steps!");
     }
+
+  m_startMutex.unlock();
 }
 
 
@@ -249,6 +260,8 @@ void Chaser::raiseStep(unsigned int index)
 //
 void Chaser::lowerStep(unsigned int index)
 {
+  m_startMutex.lock();
+
   if (m_running == false)
     {
       if (index < m_steps.count() - 1)
@@ -263,6 +276,8 @@ void Chaser::lowerStep(unsigned int index)
     {
       qDebug("Chaser is running. Cannot modify steps!");
     }
+
+  m_startMutex.lock();
 }
 
 
@@ -279,7 +294,9 @@ void Chaser::speedChange(long unsigned int newTimeSpan)
 //
 void Chaser::stop()
 {
-  m_running = false;
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
 }
 
 
@@ -293,14 +310,22 @@ void Chaser::freeRunTimeData()
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
-  m_running = false;
-
   if (m_virtualController)
     {
       qDebug("signalling");
       QApplication::postEvent(m_virtualController,
 			      new FunctionStopEvent(this));
+
+      m_virtualController = NULL;
     }
+
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
+
+  m_startMutex.lock();
+  m_running = false;
+  m_startMutex.unlock();
 }
 
 
@@ -330,9 +355,12 @@ void Chaser::run()
 
   _app->functionConsumer()->cue(this);
 
-  m_running = true;
-  while (m_running)
+  m_stopMutex.lock();
+  m_stopped = false;
+  while ( !m_stopped )
     {
+      m_stopMutex.unlock();
+
       if (it.current())
 	{
 	  m_childRunning = true;
@@ -349,10 +377,14 @@ void Chaser::run()
 	{
 	  it.toFirst();
 	}
+
+      m_stopMutex.lock();
     }
 
+  m_stopMutex.unlock();
+
   // This chaser can be removed from the list after the buffer is empty.
-  // (meaning immediately because it doesn't produce any events).
+  // (meaning immediately because this doesn't produce any events).
   m_removeAfterEmpty = true;
   qDebug("Chaser stopped");
 }

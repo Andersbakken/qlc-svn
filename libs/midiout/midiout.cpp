@@ -32,6 +32,7 @@
 
 #include "../common/plugin.h"
 #include "../common/filehandler.h"
+#include "../../main/src/types.h"
 
 #include "midiout.h"
 #include "configuremidiout.h"
@@ -271,7 +272,7 @@ void MidiOut::createContents(QPtrList <QString> &list)
     }
 }
 
-void MidiOut::setMidiChannel(unsigned char channel)
+void MidiOut::setMidiChannel(t_channel channel)
 {
   if (channel <= 16 && channel > 0)
     {
@@ -279,9 +280,9 @@ void MidiOut::setMidiChannel(unsigned char channel)
     }
 }
 
-bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
+bool MidiOut::writeChannel(t_channel channel, t_value value)
 {
-  unsigned char buf[3];
+  t_value buf[3];
 
   if (m_fd == -1 || channel >= (MAX_MIDIOUT_DMX_CHANNELS - m_firstNote))
     {
@@ -315,14 +316,14 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
     }
 }
 
-bool MidiOut::writeRange(unsigned short address, unsigned char* values,
-			 unsigned short num)
+bool MidiOut::writeRange(t_channel address, t_value* values,
+			 t_channel num)
 {
   //
   // TODO: Make use of MIDI's running status-feature to reduce overhead
   // http://www.borg.com/~jglatt/tech/midispec.htm
   //
-  for (unsigned short i = 0; i < num; i++)
+  for (t_channel i = 0; i < num; i++)
     {
       if (writeChannel(address + i, values[i]) == false)
 	{
@@ -333,16 +334,16 @@ bool MidiOut::writeRange(unsigned short address, unsigned char* values,
   return true;
 }
 
-bool MidiOut::readChannel(unsigned short channel, unsigned char &value)
+bool MidiOut::readChannel(t_channel channel, t_value &value)
 {
   value = 0;
   return false;
 }
 
-bool MidiOut::readRange(unsigned short address, unsigned char* values,
-			unsigned short num)
+bool MidiOut::readRange(t_channel address, t_value* values,
+			t_channel num)
 {
-  for (int i = 0; i < num; i++)
+  for (t_channel i = 0; i < num; i++)
     {
       values[i] = 0;
     }
@@ -375,7 +376,9 @@ void MidiOut::contextMenu(QPoint pos)
   menu->insertSeparator();
   menu->insertItem("Activate", ID_ACTIVATE);
 
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  connect(menu, SIGNAL(activated(int)),
+	  this, SLOT(slotContextMenuCallback(int)));
+
   menu->exec(pos, 0);
   delete menu;
 }

@@ -23,6 +23,7 @@
 #define DMX4LINUXOUT_H
 
 #include "../common/outputplugin.h"
+#include "../../main/src/types.h"
 
 #include <qptrlist.h>
 #include <qstring.h>
@@ -56,13 +57,13 @@ class DMX4LinuxOut : public OutputPlugin
   virtual void loadSettings();
 
   // OutputPlugin methods
-  virtual bool writeChannel(unsigned short channel, unsigned char value);
-  virtual bool writeRange(unsigned short address, unsigned char* values,
-			  unsigned short num);
+  virtual bool writeChannel(t_channel channel, t_value value);
+  virtual bool writeRange(t_channel address, t_value* values,
+			  t_channel num);
 
-  bool readChannel(unsigned short channel, unsigned char &value);
-  bool readRange(unsigned short address, unsigned char* values,
-		 unsigned short num);
+  bool readChannel(t_channel channel, t_value &value);
+  bool readRange(t_channel address, t_value* values,
+		 t_channel num);
 
   // Own methods
   virtual QString deviceName() { return m_deviceName; }

@@ -23,6 +23,7 @@
 #define OUTPUTPLUGIN_H
 
 #include "plugin.h"
+#include "../../main/src/types.h"
 
 class OutputPlugin : public Plugin
 {
@@ -32,13 +33,13 @@ class OutputPlugin : public Plugin
   OutputPlugin(int id);
   virtual ~OutputPlugin();
 
-  virtual bool writeChannel(unsigned short channel, unsigned char value) = 0;
-  virtual bool writeRange(unsigned short address, unsigned char* values,
-			  unsigned short num) = 0;
+  virtual bool writeChannel(t_channel channel, t_value) = 0;
+  virtual bool writeRange(t_channel address, t_value* values,
+                          t_channel num) = 0;
 
-  virtual bool readChannel(unsigned short channel, unsigned char &value) = 0;
-  virtual bool readRange(unsigned short address, unsigned char* values,
-			 unsigned short num) = 0;
+  virtual bool readChannel(t_channel channel, t_value &value) = 0;
+  virtual bool readRange(t_channel address, t_value* values,
+                         t_channel num) = 0;
 };
 
 #endif

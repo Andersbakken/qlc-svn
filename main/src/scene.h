@@ -76,7 +76,7 @@ class Scene : public Function
   void run();
 
  private:
-  unsigned int m_channels;
+  t_channel m_channels;
 
   SceneValue* m_values;
 

@@ -282,7 +282,7 @@ void DMX4LinuxOut::activate()
 //
 // Write a value to a channel
 //
-bool DMX4LinuxOut::writeChannel(unsigned short channel, unsigned char value)
+bool DMX4LinuxOut::writeChannel(t_channel channel, t_value value)
 {
   bool result = true;
 
@@ -300,8 +300,8 @@ bool DMX4LinuxOut::writeChannel(unsigned short channel, unsigned char value)
 //
 // Write num values starting from address
 //
-bool DMX4LinuxOut::writeRange(unsigned short address, unsigned char* values,
-			      unsigned short num)
+bool DMX4LinuxOut::writeRange(t_channel address, t_value* values,
+			      t_channel num)
 {
   ASSERT(values);
 
@@ -321,7 +321,7 @@ bool DMX4LinuxOut::writeRange(unsigned short address, unsigned char* values,
 //
 // Read a channel's value
 //
-bool DMX4LinuxOut::readChannel(unsigned short channel, unsigned char &value)
+bool DMX4LinuxOut::readChannel(t_channel channel, t_value &value)
 {
   bool result = true;
 
@@ -339,8 +339,8 @@ bool DMX4LinuxOut::readChannel(unsigned short channel, unsigned char &value)
 //
 // Read num channel's values starting from address
 //
-bool DMX4LinuxOut::readRange(unsigned short address, unsigned char* values,
-			  unsigned short num)
+bool DMX4LinuxOut::readRange(t_channel address, t_value* values,
+			     t_channel num)
 {
   ASSERT(values);
 

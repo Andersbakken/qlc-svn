@@ -125,7 +125,6 @@ class Function : public QThread
   t_function_id m_id;
 
   // Run-time data
-  bool m_running;
   bool m_removeAfterEmpty;
   EventBuffer* m_eventBuffer;
 
@@ -135,11 +134,22 @@ class Function : public QThread
   QObject* m_virtualController;
   Function* m_parentFunction;
 
+  // This is used to determine if this function is running.
+  // It is the very last variable that is set to false when this function
+  // is definitely not running.
+  bool m_running;
+
+  // The respective mutex for m_running
+  QMutex m_startMutex;
+
+  // This can be used from the inside to signal that this function should
+  // be stopped by setting it true.
+  bool m_stopped;
+  QMutex m_stopMutex;
+
  private:
   // Next ID that will be assigned to a new function
   static t_function_id _nextFunctionId;
-
-  QMutex m_startMutex;
 
  public:
   static void resetFunctionId() { _nextFunctionId = KFunctionIDMin; }

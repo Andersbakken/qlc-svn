@@ -76,6 +76,7 @@ Function::Function(t_function_id id) : QThread()
   m_eventBuffer = NULL;
   m_virtualController = NULL;
   m_parentFunction = NULL;
+  m_stopped = false;
 }
 
 

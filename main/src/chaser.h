@@ -61,9 +61,10 @@ class Chaser : public Function
   void run();
 
  protected:
-  bool m_running;
-  bool m_childRunning;
   QPtrList <FunctionStep> m_steps;
+
+  bool m_childRunning;
+  QMutex m_childMutex;
 };
 
 #endif

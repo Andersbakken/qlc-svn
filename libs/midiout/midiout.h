@@ -56,13 +56,13 @@ class MidiOut : public OutputPlugin
   virtual void loadSettings();
 
   // OutputPlugin functions
-  bool writeChannel(unsigned short channel, unsigned char value);
-  bool writeRange(unsigned short address, unsigned char* values,
-		  unsigned short num);
+  bool writeChannel(t_channel channel, t_value value);
+  bool writeRange(t_channel address, t_value* values,
+		  t_channel num);
 
-  bool readChannel(unsigned short channel, unsigned char &value);
-  bool readRange(unsigned short address, unsigned char* values,
-		 unsigned short num);
+  bool readChannel(t_channel channel, t_value &value);
+  bool readRange(t_channel address, t_value* values,
+		 t_channel num);
 
   // Own functions
   void setDeviceName(QString name) { m_deviceName = name; }
@@ -70,9 +70,9 @@ class MidiOut : public OutputPlugin
 
  protected:
   virtual void setFileName(QString);
-  void setMidiChannel(unsigned char channel);
-  unsigned char midiChannel() { return m_midiChannel; }
-  unsigned char firstNote() { return m_firstNote; }
+  void setMidiChannel(t_channel channel);
+  t_channel midiChannel() { return m_midiChannel; }
+  t_value firstNote() { return m_firstNote; }
   void activate();
   void createContents(QPtrList <QString> &list);
 
@@ -83,8 +83,8 @@ class MidiOut : public OutputPlugin
   QString m_deviceName;
   QString m_configDirectory;
   int m_fd;
-  unsigned char m_midiChannel;
-  unsigned char m_firstNote;
+  t_channel m_midiChannel;
+  t_channel m_firstNote;
 };
 
 #endif

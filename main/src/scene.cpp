@@ -80,20 +80,71 @@ void Scene::copyFrom(Scene* sc)
 // familiar to you) and allocate a value array the size of device's
 // channels
 //
-void Scene::setDevice(Device* d)
+void Scene::setDevice(Device* device)
 {
-  ASSERT(d);
-  m_device = d;
+  ASSERT(device);
 
-  m_channels = d->deviceClass()->channels()->count();
-
-  if (m_values) delete[] m_values;
-  m_values = new SceneValue[m_channels];
-
-  for (t_channel i = 0; i < m_channels; i++)
+  if (m_values)
     {
-      m_values[i].value = 0;
-      m_values[i].type = Fade;
+      t_channel newChannels = device->deviceClass()->channels()->count();
+      
+      // Store old values temporarily
+      SceneValue tempValues[m_channels];
+      memcpy(&tempValues, m_values, m_channels * sizeof(SceneValueType));
+      
+      // Delete old values
+      delete [] m_values;
+      
+      // Allocate space for new values
+      m_values = new SceneValue[newChannels];
+      
+      // Copy old values
+      if (newChannels < m_channels)
+        {
+          // New device has less channels than previous one, copy only
+          // those that fit in
+          memcpy(m_values, &tempValues, newChannels * sizeof(SceneValue));
+          m_channels = newChannels;
+          m_device = device;
+        }
+      else if (newChannels > m_channels)
+        {
+          // New device has more channels than previous one, copy old
+          // values and fill the rest with 0 and NoSet.
+          memcpy(m_values, &tempValues, newChannels * sizeof(SceneValue));
+          for (t_channel i = m_channels; i < newChannels; i++)
+            {
+	      m_values[i].value = 0;
+	      m_values[i].type = NoSet;
+            }
+	  
+          m_channels = newChannels;
+          m_device = device;
+        }
+      else
+        {
+          // Channel count is identical, just copy the values.
+          memcpy(m_values, &tempValues, m_channels * sizeof(SceneValue));
+          m_device = device;
+        }
+    }
+  else
+    {
+      // Get channel count
+      m_channels = device->deviceClass()->channels()->count();
+      
+      // Set device
+      m_device = device;
+      
+      // Allocate space for new values
+      m_values = new SceneValue[m_channels];
+      
+      // Set all channel values to 0 and fade
+      for (t_channel i = 0; i < m_channels; i++)
+        {
+          m_values[i].value = 0;
+          m_values[i].type = Fade;
+        }
     }
 }
 
@@ -103,10 +154,10 @@ void Scene::setDevice(Device* d)
 //
 Scene::~Scene()
 {
-  if (m_values) delete[] m_values;
-
   stop();
-  while (running());
+  while (m_running) sched_yield();
+
+  if (m_values) delete[] m_values;
 }
 
 
@@ -170,7 +221,7 @@ void Scene::saveToFile(QFile &file)
 
       // Data
       for (t_channel i = 0;
-           i < device()->deviceClass()->channels()->count(); i++)
+           i < (t_channel) device()->deviceClass()->channels()->count(); i++)
         {
           t.setNum(i);
           s = t + QString(" = ");
@@ -285,7 +336,9 @@ SceneValue Scene::channelValue(t_channel ch)
 //
 void Scene::stop()
 {
-  m_running = false;
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
 }
 
 
@@ -307,7 +360,7 @@ void Scene::init()
   _app->doc()->outputPlugin()->readRange(m_device->address(),
 					 m_channelData, m_channels);
 
-  for (unsigned int i = 0; i < m_channels; i++)
+  for (t_channel i = 0; i < m_channels; i++)
     {
       m_runTimeData[i].current = static_cast<float> (m_channelData[i]);
 
@@ -336,8 +389,11 @@ void Scene::run()
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
 
-  for (time = 0; time < m_timeSpan && m_running; time++)
+  m_stopMutex.lock();
+  for (time = 0; time < m_timeSpan && !m_stopped; time++)
     {
+      m_stopMutex.unlock();
+
       for (ch = 0; ch < m_channels; ch++)
 	{
 	  m_runTimeData[ch].current += m_runTimeData[ch].increment;
@@ -350,7 +406,11 @@ void Scene::run()
       //t_value* ev = m_channelData;
       //qDebug("%d %d %d %d %d %d", ev[0], ev[1], ev[2], 
       //       ev[3], ev[4], ev[5]);
+
+      m_stopMutex.lock();
     }
+
+  m_stopMutex.unlock();
 
   // No more items produced -> this scene can be removed from
   // the list after the buffer is empty.
@@ -360,7 +420,8 @@ void Scene::run()
 
 //
 // Free run time allocations
-// This fuction must be called ONLY from functionconsumer
+// This fuction must be called ONLY from functionconsumer AFTER
+// this function is REALLY stopped.
 //
 void Scene::freeRunTimeData()
 {
@@ -375,8 +436,6 @@ void Scene::freeRunTimeData()
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
-  m_running = false;
-
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
@@ -389,4 +448,12 @@ void Scene::freeRunTimeData()
       m_parentFunction->childFinished();
       m_parentFunction = NULL;
     }
+
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
+
+  m_startMutex.lock();
+  m_running = false;
+  m_startMutex.unlock();
 }
