@@ -102,6 +102,8 @@ App::~App()
 
 void App::initView(void)
 {
+  resize(640, 480);
+
   initSettings();
 
   QString dir;

@@ -93,6 +93,7 @@ VirtualConsole::~VirtualConsole()
 void VirtualConsole::initView(void)
 {
   setCaption("Virtual Console");
+  resize(200, 400);
 
   QString dir;
   _app->settings()->get(KEY_SYSTEM_DIR, dir);

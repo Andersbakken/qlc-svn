@@ -38,6 +38,8 @@
 #include "app.h"
 #include "doc.h"
 #include "functionconsumer.h"
+#include "settings.h"
+#include "configkeys.h"
 
 #include "../../libs/common/outputplugin.h"
 #include "../../libs/common/minmax.h"
@@ -74,6 +76,14 @@ VCDockSlider::~VCDockSlider()
 //
 void VCDockSlider::init()
 {
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  m_propertiesButton->setIconSet(QPixmap(dir + "/settings.xpm"));
+  m_busButton->setIconSet(QPixmap(dir + "/bus.xpm"));
+  m_functionButton->setIconSet(QPixmap(dir + "/function.xpm"));
+
   updateBusMenu();
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }

@@ -67,6 +67,15 @@ void DeviceClassEditor::init()
   dir += QString("/") + PIXMAPPATH;
 
   setIcon(QPixmap(dir + "/device.xpm"));
+  m_addChannelButton->setIconSet(QPixmap(dir + "/add.xpm"));
+  m_removeChannelButton->setIconSet(QPixmap(dir + "/remove.xpm"));
+  m_editChannelButton->setIconSet(QPixmap(dir + "/edit.xpm"));
+  m_raiseChannelButton->setIconSet(QPixmap(dir + "/up.xpm"));
+  m_lowerChannelButton->setIconSet(QPixmap(dir + "/down.xpm"));
+
+  m_addPresetButton->setIconSet(QPixmap(dir + "/add.xpm"));
+  m_removePresetButton->setIconSet(QPixmap(dir + "/remove.xpm"));
+  m_editPresetButton->setIconSet(QPixmap(dir + "/edit.xpm"));
 
   setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
 

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_ChaserEditor</class>
 <widget class="QDialog">
     <property name="name">
@@ -109,11 +109,14 @@
                             <property name="name">
                                 <cstring>m_raiseButton</cstring>
                             </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
                             <property name="text">
                                 <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image0</iconset>
                             </property>
                             <property name="usesTextLabel">
                                 <bool>false</bool>
@@ -126,11 +129,14 @@
                             <property name="name">
                                 <cstring>m_lowerButton</cstring>
                             </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
                             <property name="text">
                                 <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image1</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Lower the selected step once</string>
@@ -325,14 +331,6 @@
         </widget>
     </vbox>
 </widget>
-<images>
-    <image name="image0">
-        <data format="PNG" length="130">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000004949444154789c633c76ec180325808922dd840cb0b2b2fa6f6565f57f605c806c333e57d0c605d86cc4e50aeabb009f7fb1c951d70584e21c9b1aeab98018dbb1a9651cdc9989180000c85918df58f102f90000000049454e44ae426082</data>
-    </image>
-    <image name="image1">
-        <data format="PNG" length="139">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000005249444154789c633c76ec180325808922ddd4308005c6b0b2b2fa4f8ac663c78e31a2b80026408a661403c805280610e30a7435d48f057caec026479b7480cd265c2ea35d4a44b6115fb850ec02c601cf8d00c91d2003df4614970000000049454e44ae426082</data>
-    </image>
-</images>
 <connections>
     <connection>
         <sender>m_cancel</sender>

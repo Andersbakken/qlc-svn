@@ -147,7 +147,14 @@ void DeviceManagerView::initView()
   _app->settings()->get(KEY_DEVICE_MANAGER_Y, y);
   _app->settings()->get(KEY_DEVICE_MANAGER_W, w);
   _app->settings()->get(KEY_DEVICE_MANAGER_H, h);
-  setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+  if (w == 0 || h == 0)
+    {
+      setGeometry(0, 0, 350, 200);
+    }
+  else
+    {
+      setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+    }
 
   // Check if DM should be open
   QString config;

@@ -23,6 +23,7 @@
 #define VCBUTTON_H
 
 #include <qpushbutton.h>
+#include <qptrlist.h>
 #include "types.h"
 
 class QLineEdit;

@@ -160,6 +160,11 @@ App::~App()
 void App::init(void)
 {
   //
+  // Default size
+  //
+  resize(640, 480);
+
+  //
   // Settings has to be first
   //
   initSettings();
@@ -210,6 +215,7 @@ void App::init(void)
   //
   // Load the previous workspace
   //
+  bool success = false;
   QString config;
   if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config))
     {
@@ -218,8 +224,14 @@ void App::init(void)
 	  if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
 	    {
 	      doc()->loadWorkspaceAs(config);
+              success = true;
 	    }
 	}
+    }
+
+  if (!success)
+    {
+      newDocument();
     }
 }
 

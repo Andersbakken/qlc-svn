@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_VCDockSlider</class>
 <widget class="QFrame">
     <property name="name">
@@ -119,6 +119,12 @@
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
                             </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
                             <property name="maximumSize">
                                 <size>
                                     <width>20</width>
@@ -127,9 +133,6 @@
                             </property>
                             <property name="text">
                                 <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image0</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Edit this slider's properties</string>
@@ -147,6 +150,12 @@
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
                             </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
                             <property name="maximumSize">
                                 <size>
                                     <width>20</width>
@@ -155,9 +164,6 @@
                             </property>
                             <property name="text">
                                 <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image1</iconset>
                             </property>
                             <property name="popupDelay">
                                 <number>1</number>
@@ -178,6 +184,12 @@
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
                             </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
                             <property name="maximumSize">
                                 <size>
                                     <width>20</width>
@@ -186,9 +198,6 @@
                             </property>
                             <property name="text">
                                 <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image2</iconset>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Connect a function to this slider</string>
@@ -293,17 +302,6 @@
         </spacer>
     </vbox>
 </widget>
-<images>
-    <image name="image0">
-        <data format="PNG" length="758">89504e470d0a1a0a0000000d494844520000001200000012080600000056ce8e57000002bd49444154789cc5935b4893611cc67f5f5917951d242888242c33adb16e2afb8a321915199824291a0925d1c13c2c937524a7e221595926914829aecdcc6d8294a954abfc8ab21819a9c8ca0b536c44e7d90a79bb4969dabce8a6e7f2fdbffcde87f779fe92a228f8524e4e9ef0783c00dcb9d382a22892afbb7ebe06c78f9f147575b57cfbe6a6afaf9f2f5f8e21cbb2083bb08ff70e07d662831774c268407e7ea1906559c4c7c7f1e0c14374baa38487af44a3896485361d7d4626016af5f88ece9d2b112693917bf7eee3767fc56432d3dbdb4b6b6bab9476e3ba283da223b7e61aaea76decfdf449b87a7a469c7981fcfda7d3d6f68c888875a426ab9802141519a5e4ea2aa1cfc8a4b8a19e47d546e62e0ee654761e3b82177a3bcacad209956a19b1b1db090c0c24355985a1f8326f9e9bb8703e510cfe50e3f2b899396b16f3429750567886ba972f083bb06f0434b1abab5b58ad16dc6e371d1d1dd4d6dee0f3c7d70c7e78c896840bcc9dd4c94fc713d66cdbcfe4e9fecc080aa2f3dd008d361bef1d0ee2376eca06f01b1a1ac26eb7131515c5a143a9b4b7bfa0bcbc462aca891310cbaa906854a12eea53d6d23c7f2b009e8101bef6f77b2527298ac2faf5ebc4d9b325a4a41c0418e94b5eca66b15a3d9f849d0779e568e5567313171b5d7fed931f80dd7e5f92655944466ac8cdd54b00476c1611b0eb3437cb4e306d6a0571bb754cf10f00cc63a2f74aedcf57b26c56a14f4be3aed38971d946ccb79b983dc7c8a6983d0018f5d122f154fdf8853c6cad130519e9dc753ab198cdbcb1d83054b648a5554d58aee61312b69ccd911b30eaa3854fd0ded2f3a2205d4b63773716b399576597469c1a2a5ba42bf50e1a6c152c08598e6ae9222f9857215d3d3d343bc7428665a86c91b4491a2184e0f1b32e3adf7e27f1f74c1abdfd31995a31a03c1e77d3b5491a310c1e3e1b03fa578df9ecff0efa05e62939ccca84c2ef0000000049454e44ae426082</data>
-    </image>
-    <image name="image1">
-        <data format="PNG" length="262">89504e470d0a1a0a0000000d4948445200000011000000120806000000bdf93554000000cd49444154789c9dd3c10d84201005d0cf66ab9a78b30aab71688126a40c1393a9c112ec62f622088a82fb4f46e2f3cf241811412d44a4e15944ccf9fc5b15f6307306a6d8e70dd2f73d5415cc9cb56b6a12fe4a44ba2c0bc6718cad44c4343709e9ba0ed65af0ccf15d334244aaaa07301f0d9bc671cea9aa621806f8cd67405313e79c4ed3046b6d11a82229701e21cded3861077723549ba44bac01452405d675ad0217e40cf8cd3f7d1b63c2052422053318388086164061b10c002f80ac496cb3a715b820ffe6f5052ce507c00799f3d0e6d3eb0000000049454e44ae426082</data>
-    </image>
-    <image name="image2">
-        <data format="PNG" length="687">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000027649444154789ca5934b48947114c57fdf379f3a9aa543a51606e938a5543e3253f3318a4e6d7a6d445c24451a83a2a4543aa20312bda4086208da640fc88546a151829195f427cd459a614ca98b82a2d4c4d29419e7df224674a108dded39f7dc730ff72a4208fea7d4e5c01a5b95acb155c9150be4e7e7cf936b6c55b2d65e4f6d5d3db605220505058b0415ef0a797979b2adf5099595a544c74413b22e98f8d8181414fadf0f323afe8b77fd0338aedf60af25879696fbca2201efd4fab3e7187cd3ce66df6156fbb950559549979ecf734676a61da2f26439e72f5c52bc3dda423bb1b171387b1f93b6a69fe0400d8f8f1ecd7735ab02d7629c18a5fb751bbb93931765a0a4a7ef9196dc5cfcfdfd88080f2568fc1126838bc9598dbac601749a0fd7ec4584ae37f0baa797a9906c069d234c4fcff2e0612b9ac7e32627d782afa66362fc1b6b3d4178d49fdc6c1fa6bae1ae02e0b873419e3b53c8a6c86dfcd0af233b3c02b74bd2dc72ff5f06164b8e8c326ee6544519c91b2709f8dd4770d8764e3b3a40ef87c351857be217e3633afabfb8a9b6d5e0fc384cc7d367caa210af5c3e2fcb4b4bd8aa1fc277e63b011ba2d0190c28c0f44c005fff0473b1e12ac5274ae7439cbf83e2a2e3d26a2de183f323bda3614c855a70051871cd19f8a31a191ad3f3696884b2f20aac56ebfc2d680059e64c69b7db40ced1d7f796a6a67b242426919d634155e0e5f3667ababb898b4fe0486111478f15623667c8172fba1484100821309922e581fdb972f7ae1d52084196394376bdec94e25597cc32674821044989dbe5e183fbe41653a4f4f629cb3d9378d5295555474a6aa6b214475b0a00b8d5781b90a4a4662ec959d6c14aea2f5774f84b99a130060000000049454e44ae426082</data>
-    </image>
-</images>
 <connections>
     <connection>
         <sender>m_slider</sender>

@@ -28,6 +28,8 @@
 #include "functiontree.h"
 #include "bus.h"
 #include "chaser.h"
+#include "settings.h"
+#include "configkeys.h"
 
 #include <stdlib.h>
 #include <qlistview.h>
@@ -116,6 +118,13 @@ void ChaserEditor::init()
   m_nameEdit->setText(m_chaser->name());
   m_nameEdit->setSelection(0, m_nameEdit->text().length());
 
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+  
+  m_raiseButton->setIconSet(QPixmap(dir + "/up.xpm"));
+  m_lowerButton->setIconSet(QPixmap(dir + "/down.xpm"));
+
   m_reverse->setChecked( (m_chaser->direction() == Chaser::Reverse) );
   m_runOrderGroup->setButton((int) m_chaser->runOrder());
 
@@ -129,7 +138,18 @@ void ChaserEditor::slotOKClicked()
   m_chaser->setName(m_nameEdit->text());
   m_chaser->setDirection((m_reverse->isChecked()) ? 
 			 Chaser::Reverse : Chaser::Normal);
-  m_chaser->setRunOrder((Chaser::RunOrder) m_runOrderGroup->selectedId());
+  if (m_runOrderGroup->selected() == m_singleShot)
+    {
+       m_chaser->setRunOrder(Chaser::SingleShot);
+    }
+  else if (m_runOrderGroup->selected() == m_pingPong)
+    {
+      m_chaser->setRunOrder(Chaser::PingPong);
+    }
+  else
+    {
+      m_chaser->setRunOrder(Chaser::Loop);
+    }
 
   m_original->copyFrom(m_chaser, false);
 

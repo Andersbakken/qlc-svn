@@ -76,6 +76,8 @@ class BusEmitter : public QObject
 {
   Q_OBJECT
 
+  friend class Bus;
+
  public:
   BusEmitter() {};
   ~BusEmitter() {};
@@ -90,8 +92,6 @@ class BusEmitter : public QObject
  signals:
   void valueChanged(t_bus_id, t_bus_value);
   void nameChanged(t_bus_id, const QString&);
-
-  friend class Bus;
 };
 
 #endif

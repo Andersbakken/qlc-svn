@@ -307,8 +307,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
   else
     {
       QMessageBox::critical(_app, KApplicationNameShort, 
-			    QString("Unable to open file for writing:\n")
-			    + file.errorString());
+			    QString("Unable to open file for writing."));
       return false;
     }
 
