@@ -54,6 +54,15 @@ public:
     SceneEditor(Device* device, QWidget* parent = 0, const char* name = 0);
     ~SceneEditor();
 
+public slots:
+    void slotSceneChanged();
+    void slotSceneActivated( int nr );
+    void slotHideClicked();
+    void slotNewClicked();
+    void slotSaveClicked();
+
+
+
 
 
 protected:

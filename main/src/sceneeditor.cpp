@@ -26,6 +26,8 @@
 #include "deviceclass.h"
 
 #include <qcombobox.h>
+#include <qlabel.h>
+#include <qinputdialog.h>
 
 
 SceneEditor::SceneEditor(Device* device, QWidget* parent, const char* name )
@@ -39,6 +41,10 @@ SceneEditor::SceneEditor(Device* device, QWidget* parent, const char* name )
       if( f->typeString() == "Scene")
            m_availableScenesComboBox->insertItem(f->name());
     }
+  
+  m_statusLabel->setPaletteForegroundColor( QColor( 0, 255, 100 ) );
+  m_statusLabel->setText("unchanged");
+
 }
 
 
@@ -47,3 +53,46 @@ SceneEditor::~SceneEditor()
 
 }
 
+
+
+void SceneEditor::slotSceneChanged()
+{
+   m_statusLabel->setPaletteForegroundColor( QColor( 255, 0, 0 ) );
+   m_statusLabel->setText("modified");
+}
+
+
+void SceneEditor::slotSceneActivated( int nr )
+{
+  m_statusLabel->setPaletteForegroundColor( QColor( 0, 255, 100 ) );
+  m_statusLabel->setText("unchanged");
+}
+
+void  SceneEditor::slotHideClicked()
+{
+
+}
+
+
+void  SceneEditor::slotNewClicked()
+{
+ bool ok = FALSE;
+  QString text = QInputDialog::getText(
+                    tr( "Scene editor" ),
+                    tr( "Please enter scene name" ),
+                    QLineEdit::Normal, QString::null, &ok, this );
+  if ( ok && !text.isEmpty() )
+  {
+          m_availableScenesComboBox->insertItem( text );
+          m_statusLabel->setPaletteForegroundColor( QColor( 0, 255, 100 ) );
+          m_statusLabel->setText("unchanged");
+  }
+  else
+     slotNewClicked();
+}
+
+void  SceneEditor::slotSaveClicked()
+{
+  m_statusLabel->setPaletteForegroundColor( QColor( 0, 0, 255 ) );
+  m_statusLabel->setText("saved");
+}
