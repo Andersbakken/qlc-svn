@@ -43,11 +43,20 @@ void DeviceManagerView::initView()
   m_toolbar = new QToolBar("Device Manager Toolbar", _app, this);
   m_dm = new DeviceManager(this);
 
+  // QT3 fixes : doj 2001-01-28
+#if QT_VERSION >= 300
+  new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "add.xpm")), "Add new device", 0, m_dm, SLOT(slotDLAddDevice()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "remove.xpm")), "Remove current device", 0, m_dm, SLOT(slotDLRemoveDevice()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "monitor.xpm")), "Monitor device channels", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "console.xpm")), "Device DMX Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
+  new QToolButton(QIconSet(QPixmap(_app->settings()->getPixmapPath() + "function.xpm")), "Functions", 0, m_dm, SLOT(slotDLViewFunctions()), m_toolbar);
+#else
   new QToolButton(_app->settings()->getPixmapPath() + QString("add.xpm"), "Add new device", 0, m_dm, SLOT(slotDLAddDevice()), m_toolbar);
   new QToolButton(_app->settings()->getPixmapPath() + QString("remove.xpm"), "Remove current device", 0, m_dm, SLOT(slotDLRemoveDevice()), m_toolbar);
   new QToolButton(_app->settings()->getPixmapPath() + QString("monitor.xpm"), "Monitor device channels", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
   new QToolButton(_app->settings()->getPixmapPath() + QString("console.xpm"), "Device DMX Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
   new QToolButton(_app->settings()->getPixmapPath() + QString("function.xpm"), "Functions", 0, m_dm, SLOT(slotDLViewFunctions()), m_toolbar);
+#endif
 
   m_layout->addWidget(m_toolbar);
   m_layout->addWidget(m_dm);
