@@ -49,6 +49,7 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
 
   m_openDeviceManagerCheckBox->setChecked(_app->settings()->openDeviceManager());
   m_openLastWorkspaceCheckBox->setChecked(_app->settings()->openLastWorkspace());
+  m_keyRepeatCheckBox->setChecked(_app->settings()->keyRepeatOffInOperateMode());
 }
 
 void SettingsUI::fillStyleCombo()
@@ -111,6 +112,8 @@ void SettingsUI::slotOKClicked()
   
   _app->settings()->setOpenDeviceManager(m_openDeviceManagerCheckBox->isChecked());
   _app->settings()->setOpenLastWorkspace(m_openLastWorkspaceCheckBox->isChecked());
+
+  _app->settings()->setKeyRepeatOffInOperateMode(m_keyRepeatCheckBox->isChecked());
 
   accept();
 }

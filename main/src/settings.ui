@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>469</width>
-            <height>420</height>
+            <height>488</height>
         </rect>
     </property>
     <property name="caption">
@@ -296,7 +296,7 @@
         <property name="geometry">
             <rect>
                 <x>290</x>
-                <y>380</y>
+                <y>450</y>
                 <width>80</width>
                 <height>25</height>
             </rect>
@@ -315,7 +315,7 @@
         <property name="geometry">
             <rect>
                 <x>380</x>
-                <y>380</y>
+                <y>450</y>
                 <width>80</width>
                 <height>25</height>
             </rect>
@@ -323,6 +323,38 @@
         <property name="text">
             <string>Cancel</string>
         </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox5</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>370</y>
+                <width>450</width>
+                <height>70</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Virtual Console</string>
+        </property>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>m_keyRepeatCheckBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>420</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Set key repeat off in operate mode</string>
+            </property>
+        </widget>
     </widget>
 </widget>
 <connections>
@@ -375,9 +407,9 @@
 <slots>
     <slot>slotCancelClicked()</slot>
     <slot>slotOKClicked()</slot>
-    <slot>slotStyleChanged( const QString &amp; )</slot>
     <slot>slotSystemBrowseClicked()</slot>
     <slot>slotSystemEditTextChanged( const QString &amp; )</slot>
+    <slot>slotStyleChanged( const QString &amp; )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

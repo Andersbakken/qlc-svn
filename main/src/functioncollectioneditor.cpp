@@ -52,11 +52,11 @@ void FunctionCollectionEditor::init()
   setCaption("Function Collection");
   
   m_nameLabel = new QLabel(this);
-  m_nameLabel->setGeometry(10, 10, 100, 30);
-  m_nameLabel->setText("Function:");
+  m_nameLabel->setGeometry(10, 10, 130, 30);
+  m_nameLabel->setText("Collection Name");
 
   m_nameEdit = new QLineEdit(this);
-  m_nameEdit->setGeometry(100, 10, 260, 30);
+  m_nameEdit->setGeometry(130, 10, 230, 30);
   m_nameEdit->setText(m_functionCollection->name());
   m_nameEdit->setFocus();
   m_nameEdit->setSelection(0, m_functionCollection->name().length());
@@ -65,9 +65,8 @@ void FunctionCollectionEditor::init()
   m_functionList->setGeometry(10, 50, 350, 240);
   m_functionList->addColumn("Device");
   m_functionList->addColumn("Function");
-  m_functionList->setColumnWidth(0, (int) (350 * 0.49));
-  m_functionList->setColumnWidth(1, (int) (350 * 0.49));
   m_functionList->setAllColumnsShowFocus(true);
+  m_functionList->setResizeMode(QListView::LastColumn);
 
   m_addButton = new QPushButton(this);
   m_addButton->setText("Add");

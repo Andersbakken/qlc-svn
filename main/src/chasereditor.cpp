@@ -39,6 +39,8 @@ ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent, const char* name)
   ASSERT(m_function != NULL);
 
   m_prevItem = NULL;
+
+  init();
 }
 
 ChaserEditor::~ChaserEditor()
@@ -97,11 +99,11 @@ void ChaserEditor::init()
   setFixedSize(520, 300);
 
   m_nameLabel = new QLabel(this);
-  m_nameLabel->setGeometry(10, 10, 100, 30);
-  m_nameLabel->setText("Name:");
+  m_nameLabel->setGeometry(10, 10, 130, 30);
+  m_nameLabel->setText("Chaser Name");
 
   m_nameEdit = new QLineEdit(this);
-  m_nameEdit->setGeometry(100, 10, 260, 30);
+  m_nameEdit->setGeometry(130, 10, 230, 30);
   m_nameEdit->setText(m_function->name());
   m_nameEdit->setFocus();
   m_nameEdit->setSelection(0, m_function->name().length());
@@ -112,10 +114,8 @@ void ChaserEditor::init()
   m_functionList->addColumn("#");
   m_functionList->addColumn("Device");
   m_functionList->addColumn("Function");
-  m_functionList->setColumnWidth(0, (int) (350 * 0.09));
-  m_functionList->setColumnWidth(1, (int) (350 * 0.45));
-  m_functionList->setColumnWidth(2, (int) (350 * 0.45));
   m_functionList->setAllColumnsShowFocus(true);
+  m_functionList->setResizeMode(QListView::LastColumn);
 
   m_raiseButton = new QToolButton(UpArrow, this);
   m_raiseButton->setGeometry(360, 50, 20, 115);
@@ -259,7 +259,7 @@ void ChaserEditor::updateOrderNumbers()
   // Iterate through all items of the listview
   for (; it.current() != NULL; ++it)
     {
-      num.setNum(i++);
+      num.sprintf("%.03d", i++);
       it.current()->setText(0, num);
     }
 }

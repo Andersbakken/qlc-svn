@@ -39,14 +39,6 @@ int main(int argc, char **argv)
 {
   int result;
   uid_t uid;
-  Display* xd;
-  XKeyboardState xkbstate;
-
-  /* Get keyboard state (just for key repeat status) */
-  xd = XOpenDisplay(NULL);
-  ASSERT(xd != NULL);
-  XGetKeyboardControl(xd, &xkbstate);
-  XCloseDisplay(xd);
 
   qDebug("--- Q Light Controller %s ---\n", IDS_APP_VERSION_STR);
   qDebug("This program is licensed under the terms of the GNU General Public License.");
@@ -57,8 +49,6 @@ int main(int argc, char **argv)
     {
       qDebug("\nDo not run QLC as root. Instead, make the executable suid root:");
       qDebug("    chown root.root qlc ; chmod +s qlc\n");
-      qDebug("Exit.");
-      return -1;
     }
 
   if (parseArgs(argc, argv) == 1)
@@ -98,25 +88,13 @@ int main(int argc, char **argv)
 
   delete _app;
 
-  /* Set auto repeat on/off depending on its original state
-   * before starting qlc. Virtual Console sets auto repeat off
-   * each time it is put to "Operate" mode and on again when it is
-   * put to "Design" mode.
-   */
+  delete timer;
+
   Display* display;
   display = XOpenDisplay(NULL);
   ASSERT(display != NULL);
-  if (xkbstate.global_auto_repeat == 0)
-    {
-      XAutoRepeatOff(display);
-    }
-  else
-    {
-      XAutoRepeatOn(display);
-    }
+  XAutoRepeatOn(display);
   XCloseDisplay(display);
-
-  delete timer;
 
   return result;
 }

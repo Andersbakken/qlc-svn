@@ -88,13 +88,6 @@ void VirtualConsole::setMode(Mode mode)
 	}
     }
 
-  Display* display;
-  display = XOpenDisplay(NULL);
-  ASSERT(display != NULL);
-
-  /* Set auto repeat off when in "Operate" mode and on 
-   * again when vc is put to "Design" mode.
-   */
   if (mode == Design)
     {
       m_mode = Design;
@@ -103,7 +96,19 @@ void VirtualConsole::setMode(Mode mode)
       m_menuBar->setItemEnabled(ID_VC_ADD, true);
       setCaption("Virtual Console - Design Mode");
 
-      XAutoRepeatOn(display);
+      /* Set auto repeat off when in "Operate" mode and on 
+       * again when vc is put to "Design" mode.
+       */
+      if (_app->settings()->keyRepeatOffInOperateMode() == true)
+	{
+	  Display* display;
+	  display = XOpenDisplay(NULL);
+	  ASSERT(display != NULL);
+	  
+	  XAutoRepeatOn(display);
+	  
+	  XCloseDisplay(display);
+	}
     }
   else
     {
@@ -113,10 +118,20 @@ void VirtualConsole::setMode(Mode mode)
       m_menuBar->setItemEnabled(ID_VC_ADD, false);
       setCaption("Virtual Console - Operate Mode");
 
-      XAutoRepeatOff(display);
+      /* Set auto repeat off when in "Operate" mode and on 
+       * again when vc is put to "Design" mode.
+       */
+      if (_app->settings()->keyRepeatOffInOperateMode() == true)
+	{
+	  Display* display;
+	  display = XOpenDisplay(NULL);
+	  ASSERT(display != NULL);
+	  
+	  XAutoRepeatOff(display);
+	  
+	  XCloseDisplay(display);
+	}
     }
-
-  XCloseDisplay(display);
 }
 
 // Search for a parent frame by the id number <id>
