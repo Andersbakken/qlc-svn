@@ -820,7 +820,7 @@ void Doc::findPluginObjects()
   d.setFilter(QDir::Files);
   if (d.exists() == false || d.isReadable() == false)
     {
-      fprintf(stderr, "Unable to access plugin directory %s.", dir.latin1());
+      fprintf(stderr, "Unable to access plugin directory %s.\n", dir.latin1());
       return;
     }
   
