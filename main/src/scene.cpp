@@ -194,7 +194,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
     }
   else if (m_deviceClass != NULL)
     {
-      if (ch < m_device->deviceClass()->channels())
+      if (ch < deviceClass()->channels())
 	{
 	  m_values[ch].value = value;
 	}

@@ -125,7 +125,7 @@ void Chaser::saveToFile(QFile &file)
 
 void Chaser::createContents(QList<QString> &list)
 {
-  QString device = QString::null;
+  QString device = QString("Global");
   QString function = QString::null;
   
   for (QString* s = list.next(); s != NULL; s = list.next())

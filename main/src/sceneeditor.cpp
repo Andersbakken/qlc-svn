@@ -105,22 +105,37 @@ void  SceneEditor::slotNewClicked()
                     tr( "Scene editor" ),
                     tr( "Please enter scene name" ),
                     QLineEdit::Normal, QString::null, &ok, this );
+
    if ( ok && !text.isEmpty() )
-   {
-      Scene* sc = new Scene( m_device->deviceClass()->channels() );
-      sc->setName(text);
-      for( int n=0; n < m_device->deviceClass()->channels(); n++)
-      {
-         sc->set(n, m_currentScene->getChannelValue(n));
-      }
-      m_device->deviceClass()->addFunction(sc);
-      m_availableScenesComboBox->insertItem( text );
-      m_availableScenesComboBox->setCurrentItem( m_availableScenesComboBox->count()-1);
-      slotSceneActivated(0);
-   }
+     {
+       Scene* sc = new Scene( m_device->deviceClass()->channels() );
+       sc->setName(text);
+
+       for(unsigned int n = 0; n < m_device->deviceClass()->channels(); n++)
+	 {
+	   // Get values from device / HJu
+	   sc->set(n, m_device->getChannelValue(n));
+	 }
+
+       if (m_deviceSource == "DeviceClass")
+	 {
+	   // If deviceclass is selected, save to device class
+	   m_device->deviceClass()->addFunction(sc);
+	 }
+       else
+	 {
+	   // otherwise save to device / HJu
+	   m_device->addFunction(sc);
+	 }
+
+       m_availableScenesComboBox->insertItem(text);
+       m_availableScenesComboBox->setCurrentItem(m_availableScenesComboBox->count()-1);
+       slotSceneActivated(0);
+     }
    else
-   {
-   }
+     {
+       ASSERT(false);
+     }
 }
 
 
@@ -128,71 +143,77 @@ void  SceneEditor::slotNewClicked()
 
 void SceneEditor::slotSaveClicked()
 {
+  ASSERT(m_currentScene != NULL);
 
-  ChannelUI* unit;
-  QList <ChannelUI> ul = static_cast<DMXDevice*>(m_device)->getChannelUnitList();
-  int n=0;
-  for (unit = ul.first(); unit != NULL; unit = ul.next())
-  {
-     m_currentScene->set(n, unit->getSliderValue());
-     n++;
-  }
-  if( m_deviceSource == "DeviceClass")
-  {
+  // Take values from device because it returns real values for
+  // sure and they are unsigned chars and it is much simpler this way / HJu
+  for (unsigned short i = 0; i < m_device->deviceClass()->channels(); i++)
+    {
+      m_currentScene->set(i, m_device->getChannelValue(i));
+    }
+
+  if (m_deviceSource == "DeviceClass")
+    {
       m_device->deviceClass()->saveToFile();
-  }
+    }
+
   m_setStatusText("saved", QColor( 0, 0, 255));
 }
 
 
 void SceneEditor::slotDeviceRadio_clicked()
 {
-   Function* f;
-   m_deviceSource = "Device";
-   QList <Function> fl = m_device->functions();
+  Function* f;
 
-   if(fl.count() == 0)
-   {
-      switch( QMessageBox::warning( this, "Scene editor",
-        "No functions available for the current device.\n"
-        "Shall we copy them from the device class?"
-        "\n\n",
-        "Copy",
-        "Use device", "Use device class", 2, 1 ) ){
-      case 0:
-          m_device->functions() == m_device->deviceClass()->functions();
-        break;
-      case 1: // The user clicked the Quit or pressed Escape
-        // exit
-        break;
+  QList <Function> fl = m_device->functions();
+  m_availableScenesComboBox->clear();
+
+  for (f = fl.first(); f != NULL; f = fl.next())
+    {
+      if (f->type() == Function::Scene)
+	{
+	  m_availableScenesComboBox->insertItem(f->name());
+	}
     }
-   }
+  m_deviceSource = "Device";
 }
 
 
 void SceneEditor::slotClassRadio_clicked()
 {
-   m_deviceSource = "DeviceClass";
+  Function* f;
+  QList <Function> fl = m_device->deviceClass()->functions();
+  m_availableScenesComboBox->clear();
+
+  for (f = fl.first(); f != NULL; f = fl.next())
+    {
+      if (f->type() == Function::Scene)
+	{
+	  m_availableScenesComboBox->insertItem(f->name());
+	}
+    }
+
+  m_deviceSource = "DeviceClass";
 }
 
 
 
 void SceneEditor::m_selectFunctions(QList <Function> fl)
 {
-   Function* f;
-   for (f = fl.first(); f != NULL; f = fl.next())
+  Function* f;
+  for (f = fl.first(); f != NULL; f = fl.next())
     {
-       if( f->typeString() == "Scene")
-            m_availableScenesComboBox->insertItem(f->name());
-   }
-   m_setStatusText( "unchanged",QColor( 0, 255, 100 ));
-   slotSceneActivated(0);
+      if( f->typeString() == "Scene")
+	m_availableScenesComboBox->insertItem(f->name());
+    }
+  m_setStatusText( "unchanged",QColor( 0, 255, 100 ));
+  slotSceneActivated(0);
 }
 
 
 
 void SceneEditor::m_setStatusText(QString text, QColor color)
 {
-   m_statusLabel->setPaletteForegroundColor( color );
-   m_statusLabel->setText( text );
+  m_statusLabel->setPaletteForegroundColor( color );
+  m_statusLabel->setText( text );
 }

@@ -61,6 +61,8 @@ class Device : public QObject
   /* Save this device's properties to a file */
   virtual void saveToFile(QFile &file) = 0;
 
+  void addFunction(Function*);
+
   QList<Function> functions() const;
   QList<Function> m_functions;
   Function* searchFunction(const QString &fname);

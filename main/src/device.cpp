@@ -81,3 +81,13 @@ QList<Function> Device::functions() const
 { 
   return m_functions;
 }
+
+void Device::addFunction(Function* f)
+{
+  f->setDeviceClass(NULL);
+  f->setDevice(this);
+
+  ASSERT(f->device() != NULL);
+
+  m_functions.append(f);
+}
