@@ -120,22 +120,22 @@ void VCButtonProperties::slotPressGroupClicked(int id)
 
   switch (id)
     {
-    case 0:
+    case 1:
       m_keyBind->setPressAction(KeyBind::PressToggle);
       m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
       break;
 
-    case 1:
+    case 2:
       m_keyBind->setPressAction(KeyBind::PressFlash);
       m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
       break;
 
-    case 2:
+    case 3:
       m_keyBind->setPressAction(KeyBind::PressStepForward);
       m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
       break;
 
-    case 3:
+    case 4:
       m_keyBind->setPressAction(KeyBind::PressStepBackward);
       m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
       break;

@@ -56,8 +56,8 @@ class Chaser : public Function
   void addStep(t_function_id);
   void removeStep(int index = 0);
 
-  void raiseStep(unsigned int index);
-  void lowerStep(unsigned int index);
+  bool raiseStep(unsigned int index);
+  bool lowerStep(unsigned int index);
 
   void setRunOrder(RunOrder ro);
   RunOrder runOrder() { return m_runOrder; }

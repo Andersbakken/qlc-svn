@@ -761,6 +761,7 @@ void VCButton::pressFunction()
       Function* f = _app->doc()->function(m_functionID);
       if (f)
 	{
+	  qDebug("engage");
 	  f->engage(static_cast<QObject*> (this));
 	  setOn(true);
 	}
@@ -777,6 +778,7 @@ void VCButton::pressFunction()
 	{
 	  if (isOn())
 	    {
+	      qDebug("stop");
 	      f->stop();
 	      setOn(false);
 	    }

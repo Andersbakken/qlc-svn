@@ -228,16 +228,24 @@ void Chaser::removeStep(int index)
 //
 // Raise the given step once (move it one step earlier)
 //
-void Chaser::raiseStep(unsigned int index)
+bool Chaser::raiseStep(unsigned int index)
 {
+  bool result = false;
+
   m_startMutex.lock();
 
   if (m_running == false)
     {
       if (index > 0)
 	{
-	  qDebug("Fucking valuelist...");
+	  QValueList <t_function_id>::iterator it;
+	  it = m_steps.at(index);
+	  m_steps.remove(it);
+	  m_steps.insert(m_steps.at(index - 1), *it);
+	  
 	  _app->doc()->setModified(true);
+
+	  result = true;
 	}
     }
   else
@@ -246,22 +254,32 @@ void Chaser::raiseStep(unsigned int index)
     }
 
   m_startMutex.unlock();
+
+  return result;
 }
 
 
 //
 // Lower the given step once (move it one step later)
 //
-void Chaser::lowerStep(unsigned int index)
+bool Chaser::lowerStep(unsigned int index)
 {
+  bool result = false;
+
   m_startMutex.lock();
 
   if (m_running == false)
     {
       if (index < m_steps.count() - 1)
 	{
-	  qDebug("Fucking valuelist...");
+	  QValueList <t_function_id>::iterator it;
+	  it = m_steps.at(index);
+	  m_steps.remove(it);
+	  m_steps.insert(m_steps.at(index + 1), *it);
+
 	  _app->doc()->setModified(true);
+
+	  result = true;
 	}
     }
   else
@@ -269,7 +287,9 @@ void Chaser::lowerStep(unsigned int index)
       qDebug("Chaser is running. Cannot modify steps!");
     }
 
-  m_startMutex.lock();
+  m_startMutex.unlock();
+
+  return result;
 }
 
 
@@ -365,6 +385,8 @@ void Chaser::run()
 
   // Calculate starting values
   init();
+
+  qDebug("foo");
 
   QValueList <t_function_id>::iterator it;
   

@@ -205,23 +205,24 @@ void ChaserEditor::slotRaiseClicked()
       index = item->text(COL_NUM).toInt();
       fid = item->text(COL_FID).toInt();
 
-      m_chaser->raiseStep(index);
-    }
-
-  updateStepList();
-
-  // Select the item again, now it's one step above
-  QListViewItemIterator it(m_stepList);
-  while (it.current() != NULL)
-    {
-      if (newIndex == index - 1)
+      if (m_chaser->raiseStep(index))
 	{
-	  m_stepList->setSelected(it.current(), true);
-	  break;
+	  updateStepList();
+	  
+	  // Select the item again, now it's one step above
+	  QListViewItemIterator it(m_stepList);
+	  while (it.current() != NULL)
+	    {
+	      if (newIndex == index - 1)
+		{
+		  m_stepList->setSelected(it.current(), true);
+		  break;
+		}
+	      
+	      newIndex++;
+	      ++it;
+	    }
 	}
-
-      newIndex++;
-      ++it;
     }
 }
 
@@ -237,22 +238,23 @@ void ChaserEditor::slotLowerClicked()
       index = item->text(COL_NUM).toInt();
       fid = item->text(COL_FID).toInt();
 
-      m_chaser->lowerStep(index);
-    }
-
-  updateStepList();
-
-  // Select the item again, now it's one step below
-  QListViewItemIterator it(m_stepList);
-  while (it.current() != NULL)
-    {
-      if (newIndex == index + 1)
+      if (m_chaser->lowerStep(index))
 	{
-	  m_stepList->setSelected(it.current(), true);
-	  break;
+	  updateStepList();
+	  
+	  // Select the item again, now it's one step below
+	  QListViewItemIterator it(m_stepList);
+	  while (it.current() != NULL)
+	    {
+	      if (newIndex == index + 1)
+		{
+		  m_stepList->setSelected(it.current(), true);
+		  break;
+		}
+	      
+	      newIndex++;
+	      ++it;
+	    }
 	}
-
-      newIndex++;
-      ++it;
     }
 }

@@ -195,9 +195,9 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       menu->insertItem(QPixmap(dir + "/clock.xpm"), 
 		       "&Update Speed", speedMenu);
       menu->insertSeparator();
-      menu->insertItem(QPixmap(dir + "/move.xpm"), 
+      menu->insertItem(QPixmap(dir + "/move.xpm"),
 		       "&Resize to Default", ID_RESIZE_SQUARE);
-      menu->insertItem(QPixmap(dir + "/rename.xpm"), 
+      menu->insertItem(QPixmap(dir + "/rename.xpm"),
 		       "Choose &Font", ID_CHOOSE_FONT);
 
       connect(menu, SIGNAL(activated(int)), 
