@@ -116,12 +116,6 @@ App::~App()
 
 void App::initView(void)
 {
-  // Just for testing
-  QFont font;
-  font.setPixelSize(30);
-  //QApplication::setFont(font);
-  
-
   initSettings();
   initSequenceEngine();
 
@@ -223,8 +217,8 @@ void App::initWorkspace()
   m_workspace = new QWorkspace(this, "Main Workspace");
   setCentralWidget(m_workspace);
 
-  // Set a fancy background pixmap
-  m_workspace->setBackgroundPixmap(QPixmap(m_settings->pixmapPath() + QString("background.xpm")));
+  // Set background picture
+  m_workspace->setBackgroundPixmap(QPixmap(m_settings->workspaceBackgroundPath()));
 }
 
 void App::initDeviceManagerView()

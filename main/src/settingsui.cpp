@@ -33,6 +33,8 @@
 #include <qfiledialog.h>
 #include <qcheckbox.h>
 #include <qstylefactory.h>
+#include <qpixmap.h>
+#include <qworkspace.h>
 
 extern App* _app;
 
@@ -44,6 +46,7 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
   QString str;
 
   m_systemEdit->setText(_app->settings()->systemPath());
+  m_backgroundEdit->setText(_app->settings()->workspaceBackgroundPath());
 
   fillStyleCombo();
   fillOutputPluginCombo();
@@ -115,6 +118,18 @@ void SettingsUI::slotSystemBrowseClicked()
     }
 }
 
+void SettingsUI::slotBackgroundBrowseClicked()
+{
+  QString path;
+  path = QFileDialog::getOpenFileName(m_backgroundEdit->text(), QString("Images (*.png *.xpm *.jpg *.gif)"), this);
+
+  if (path.isEmpty() == false)
+    {
+      m_backgroundEdit->setText(path);
+      _app->workspace()->setBackgroundPixmap(QPixmap(path));
+    }
+}
+
 void SettingsUI::slotStyleChanged(const QString &)
 {
   _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
@@ -124,6 +139,7 @@ void SettingsUI::slotStyleChanged(const QString &)
 void SettingsUI::slotOKClicked()
 {
   _app->settings()->setSystemPath(m_systemEdit->text());
+  _app->settings()->setWorkspaceBackgroundPath(m_backgroundEdit->text());
 
   _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
   
