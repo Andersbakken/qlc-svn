@@ -69,6 +69,34 @@ Scene::~Scene()
 {
 }
 
+void Scene::reAllocateValueSetters(unsigned short channels)
+{
+  unsigned short currentCount = m_setterList.count();
+  ValueSetter* vs = NULL;
+
+  if (currentCount < channels)
+    {
+      // More channels needed
+      for (unsigned short i = currentCount; i < (channels - currentCount) && i < 512; i++)
+	{
+	  vs = new ValueSetter;
+	  m_setterList.append(vs);
+	  _app->doc()->dmxChannel(m_device->address() + i)->registerValueSetter(vs);
+	}
+    }
+  else if (currentCount > channels)
+    {
+      // Channels need to be deallocated
+      for (unsigned short i = currentCount - 1; (i >= channels) && i < 512; i--)
+	{
+	  vs = m_setterList.take(i);
+	  _app->doc()->dmxChannel(m_device->address() + i)->unRegisterValueSetter(vs);
+
+	  delete vs;
+	}
+    }
+}
+
 bool Scene::unRegisterFunction(Feeder* feeder)
 {
   Function::unRegisterFunction(feeder);
@@ -398,6 +426,7 @@ void Scene::directSet(unsigned char intensity)
   double percent = 0;
   unsigned short int channels = 0;
   double value = 0;
+  ValueSetter* vs = NULL;
 
   percent = ((double) intensity) / ((double) 255);
   channels = m_device->deviceClass()->channels()->count();
@@ -406,8 +435,11 @@ void Scene::directSet(unsigned char intensity)
     {
       if (m_values[i].type != NoSet)
 	{
+	  vs = m_setterList.at(i);
+	  ASSERT(vs != NULL);
+
 	  value = m_values[i].value * percent;
-	  _app->doc()->dmxChannel(m_device->address() + i)->setValue((unsigned char) value);
+	  vs->setValue((unsigned char) value);
 	}
     }
 }

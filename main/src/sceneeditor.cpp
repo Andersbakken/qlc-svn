@@ -82,7 +82,7 @@ void SceneEditor::init()
   connect(m_menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
 
   m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("key.xpm")),
-		   "Activate", MENU_ACTIVATE);
+		   "Activate scene", MENU_ACTIVATE);
   m_menu->insertSeparator();
   m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filenew.xpm")),
 		   "New...", MENU_NEW);

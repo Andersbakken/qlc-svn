@@ -534,6 +534,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	DMXSlider* s;
 	s = new DMXSlider(m_drawArea);
 	s->init();
+	s->setGeometry(0, 0, 20, 120);
 	s->show();
 	_app->doc()->setModified(true);
       }

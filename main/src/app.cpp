@@ -107,22 +107,33 @@ App::App()
   m_sequenceProvider = NULL;
   m_dmView = NULL;
   m_modeIndicator = NULL;
+  m_virtualConsole = NULL;
+  m_doc = NULL;
+  m_workspace = NULL;
 }
 
 App::~App()
 {
   m_sequenceTimer->stop();
+
+  delete m_sequenceProvider;
+  delete m_globalFunctionsView;
+  delete m_dmView;
+  delete m_modeIndicator;
+  delete m_virtualConsole;
+  delete m_doc;
+  delete m_workspace;
 }
 
 void App::initView(void)
 {
   initSettings();
+  initDoc();
   initSequenceEngine();
 
   setIcon(QPixmap(settings()->pixmapPath() + QString("/Q.xpm")));
 
   initWorkspace();
-  initDoc();
   connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
 
   initMenuBar();
@@ -175,7 +186,11 @@ void App::initToolBar()
 void App::initSequenceEngine()
 {
   m_sequenceProvider = new SequenceProvider();
-  ASSERT(m_sequenceProvider != NULL);
+  m_sequenceProvider->init();
+
+  ASSERT(m_sequenceProvider);
+
+  ASSERT(m_sequenceTimer);
 
   m_sequenceTimer->setSequenceProvider(m_sequenceProvider);
   m_sequenceTimer->start();

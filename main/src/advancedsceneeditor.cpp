@@ -540,7 +540,7 @@ void AdvancedSceneEditor::updateChannelList()
 	}
       
       num.sprintf("%03d", ch->channel());
-      val.setNum(m_scene->channelValue(ch->channel()).value);
+      val.sprintf("%03d", m_scene->channelValue(ch->channel()).value);
       new QListViewItem(m_sceneContents, num, ch->name(), cap, val, m_scene->valueTypeString(ch->channel()));
     }
 }

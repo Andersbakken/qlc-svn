@@ -110,7 +110,7 @@ void Doc::initDMXChannels()
 
 DMXChannel* Doc::dmxChannel(unsigned short channel)
 {
-  ASSERT(channel < 511);
+  ASSERT(channel < 512);
 
   return m_DMXChannel[channel];
 }

@@ -23,6 +23,7 @@
 #define SCENE_H
 
 #include "function.h"
+#include "valuesetter.h"
 #include <qlist.h>
 
 enum SceneValueType
@@ -46,7 +47,7 @@ class Scene : public Function
  public:
   Scene(unsigned long id = 0);
   Scene(Scene* sc);
-  virtual  ~Scene();
+  virtual ~Scene();
 
   void copyFrom(Scene* sc);
 
@@ -54,7 +55,7 @@ class Scene : public Function
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed(Feeder* feeder);
 
-  bool allocate(unsigned short channels);
+  void reAllocateValueSetters(unsigned short channels);
   bool set(unsigned short ch, unsigned char value, SceneValueType type);
   bool clear(unsigned short ch);
   SceneValue channelValue(unsigned short ch);
@@ -72,6 +73,7 @@ class Scene : public Function
   
  private:
   SceneValue m_values[512];
+  QPtrList <ValueSetter> m_setterList;
 };
 
 #endif
