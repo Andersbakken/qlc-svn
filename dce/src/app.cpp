@@ -180,36 +180,44 @@ void App::initMenuBar()
   // File Menu
   m_fileMenu = new QPopupMenu();
   m_fileMenu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
-			 "&New", this, SLOT(slotFileNew()), CTRL+Key_N, ID_FILE_NEW);
+			 "&New", this, SLOT(slotFileNew()), 
+			 CTRL+Key_N, ID_FILE_NEW);
 
   m_fileMenu->insertItem(QPixmap(dir + QString("/fileopen.xpm")), 
-			 "&Open...", this, SLOT(slotFileOpen()), CTRL+Key_O, ID_FILE_OPEN);
+			 "&Open...", this, SLOT(slotFileOpen()), 
+			 CTRL+Key_O, ID_FILE_OPEN);
 
   m_fileMenu->insertSeparator();
 
   m_fileMenu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
-			 "&Save", this, SLOT(slotFileSave()), CTRL+Key_S, ID_FILE_SAVE);
+			 "&Save", this, SLOT(slotFileSave()), 
+			 CTRL+Key_S, ID_FILE_SAVE);
 
-  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 0, ID_FILE_SAVE_AS);
+  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 
+			 0, ID_FILE_SAVE_AS);
 
   m_fileMenu->insertSeparator();
 
   m_fileMenu->insertItem(QPixmap(dir + QString("/exit.xpm")),
-			 "E&xit", this, SLOT(slotFileQuit()), CTRL+Key_Q, ID_FILE_QUIT);
+			 "E&xit", this, SLOT(slotFileQuit()), 
+			 CTRL+Key_Q, ID_FILE_QUIT);
 
   ///////////////////////////////////////////////////////////////////
   // Window Menu
   m_windowMenu = new QPopupMenu();
-  connect(m_windowMenu, SIGNAL(aboutToShow()), this, SLOT(slotRefreshWindowMenu()));
+  connect(m_windowMenu, SIGNAL(aboutToShow()), 
+	  this, SLOT(slotRefreshWindowMenu()));
   
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
   m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
-			 "About...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
+			 "About...", this, SLOT(slotHelpAbout()), 
+			 0, ID_HELP_ABOUT);
 
   m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
-			 "About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
+			 "About Qt...", this, SLOT(slotHelpAboutQt()), 
+			 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
@@ -240,21 +248,20 @@ void App::slotFileNew()
 
 void App::slotFileOpen()
 {
-  QString dir;
+  QString path;
   QPtrList <QString> list;
+  
+  settings()->get(KEY_SYSTEM_DIR, path);
+  path += QString("/") + DEVICECLASSPATH;
 
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + DEVICECLASSPATH;
-
-  QString path = QFileDialog::getOpenFileName(dir, 
-					      "Device Classes (*.deviceclass)",
-					      this);
+  path = QFileDialog::getOpenFileName(path, "Device Classes (*.deviceclass)",
+				      this);
 
   if (path != QString::null)
     {
       FileHandler::readFileToList(path, list);
 
-      DeviceClass* dc = createDeviceClass(list);
+      DeviceClass* dc = DeviceClass::createDeviceClass(list);
       
       if (!dc)
 	{
@@ -264,6 +271,7 @@ void App::slotFileOpen()
       else
 	{
 	  DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
+	  editor->setFileName(path);
 	  connect(editor, SIGNAL(closed(DeviceClassEditor*)),
 		  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
 	  editor->init();
@@ -292,7 +300,7 @@ void App::slotFileSaveAs()
 
   if (editor)
     {
-      editor->save();
+      editor->saveAs();
     }
 }
 
@@ -430,38 +438,4 @@ void App::closeEvent(QCloseEvent* e)
   m_settings->set(KApplicationRectW, rect().width());
   m_settings->set(KApplicationRectH, rect().height());
   m_settings->save();
-}
-
-DeviceClass* App::createDeviceClass(QPtrList <QString> &list)
-{
-  QString entry;
-  QString manufacturer;
-  QString model;
-  QString t;
-  
-  DeviceClass* dc = new DeviceClass();
-
-  for (QString *s = list.first(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  entry = *(list.next());
-	  if (entry == QString("Device Class"))
-	    {
-	      dc->createInfo(list);
-	    }
-	  else if (entry == QString("Channel"))
-	    {
-	      dc->createChannel(list);
-	    }
-	}
-    }
-
-  if (dc->manufacturer() == QString::null || dc->model() == QString::null)
-    {
-	delete dc;
-	dc = NULL;
-    }
-
-  return dc;
 }

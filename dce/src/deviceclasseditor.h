@@ -22,13 +22,13 @@
 #ifndef DEVICECLASSEDITOR_H
 #define DEVICECLASSEDITOR_H
 
-class QCloseEvent;
+#include "uic_deviceclasseditor.h"
 
+class QCloseEvent;
 class DeviceClass;
 class LogicalChannel;
 class Capability;
-
-#include "uic_deviceclasseditor.h"
+class QString;
 
 class DeviceClassEditor : public UI_DeviceClassEditor
 {
@@ -40,7 +40,9 @@ class DeviceClassEditor : public UI_DeviceClassEditor
 
   void init();
   bool save();
+  bool saveAs();
 
+  void setFileName(QString path) { m_fileName = path; }
   bool modified() const { return m_modified; }
 
  private slots:
@@ -68,14 +70,14 @@ class DeviceClassEditor : public UI_DeviceClassEditor
   void setModified(bool modified = true);
   void updateChannelList();
   void updatePresetValues();
-
+  
   LogicalChannel* currentChannel();
   Capability* currentCapability();
-
+  
  private:
-   DeviceClass* m_dc;
-
-   bool m_modified;
+  DeviceClass* m_dc;
+  QString m_fileName;
+  bool m_modified;
 };
 
 #endif

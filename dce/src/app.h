@@ -81,14 +81,11 @@ class App : public QMainWindow
   void slotEditorClosed(DeviceClassEditor* editor);
 
  private:
-  void initDoc();
   void initWorkspace();
 
   void initMenuBar();
   void initStatusBar();
   void initToolBar();
-
-  DeviceClass* createDeviceClass(QPtrList <QString> &list);
 
  private slots:
   void slotWindowMenuCallback(int item);

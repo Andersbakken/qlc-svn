@@ -40,6 +40,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <assert.h>
 
 #include "app.h"
 #include "doc.h"
@@ -453,7 +454,7 @@ void App::initToolBar()
 void App::initFunctionConsumer()
 {
   m_functionConsumer = new FunctionConsumer();
-  ASSERT(m_functionConsumer);
+  assert(m_functionConsumer);
   
   m_functionConsumer->init();
   m_functionConsumer->start();
@@ -859,7 +860,7 @@ void App::slotWindowMenuCallback(int item)
 	}
       else
 	{
-	  ASSERT(false);
+	  assert(false);
 	}
       
       disconnect(m_windowMenu);
@@ -1094,7 +1095,7 @@ bool App::probePlugin(QString path)
       else
 	{
 	  Plugin* plugin = create(App::NextPluginID++);
-	  ASSERT(plugin != NULL);
+	  assert(plugin != NULL);
 
 	  plugin->setConfigDirectory(QString(getenv("HOME")) + 
 				     QString("/") + QString(QLCUSERDIR) + 
@@ -1118,7 +1119,7 @@ bool App::probePlugin(QString path)
 //
 void App::addPlugin(Plugin* plugin)
 {
-  ASSERT(plugin != NULL);
+  assert(plugin != NULL);
   m_pluginList.append(plugin);
 }
 
@@ -1128,7 +1129,7 @@ void App::addPlugin(Plugin* plugin)
 //
 void App::removePlugin(Plugin* plugin)
 {
-  ASSERT(plugin != NULL);
+  assert(plugin != NULL);
   m_pluginList.remove(plugin);
 }
 
@@ -1304,10 +1305,10 @@ void App::initDeviceClasses()
     {
       path = dir + *it;
       FileHandler::readFileToList(path, list);
-      dc = createDeviceClass(list);
+      dc = DeviceClass::createDeviceClass(list);
       if (dc != NULL)
 	{
-	  m_deviceClassList.append(dc);
+	  addDeviceClass(dc);
 	}
 
       // The list needs to be cleared between files
@@ -1321,45 +1322,21 @@ void App::initDeviceClasses()
 
 
 //
-// Create device class from file entry
+// Add a device class
 //
-DeviceClass* App::createDeviceClass(QPtrList <QString> &list)
+void App::addDeviceClass(DeviceClass* dc)
 {
-  QString entry;
-  QString manufacturer;
-  QString model;
-  QString t;
+  assert(dc);
   
-  DeviceClass* dc = new DeviceClass();
-
-  for (QString *s = list.first(); s != NULL; s = list.next())
+  if (searchDeviceClass(dc->manufacturer(), dc->model()) == NULL)
     {
-      if (*s == QString("Entry"))
-	{
-	  entry = *(list.next());
-	  if (entry == QString("Device Class"))
-	    {
-	      dc->createInfo(list);
-	    }
-	  else if (entry == QString("Channel"))
-	    {
-	      dc->createChannel(list);
-	    }
-	  else if (entry == QString("Function"))
-	    {
-	      list.next();
-	    }
-	}
-      else
-	{
-	  // Unknown keyword
-	  list.next();
-	}
+      m_deviceClassList.append(dc);
     }
-
-  return dc;
+  else
+    {
+      qDebug("Cannot add same device class twice");
+    }
 }
-
 
 //
 // Search for a deviceclass by its manufacturer & model

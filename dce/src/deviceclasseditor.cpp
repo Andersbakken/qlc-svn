@@ -117,22 +117,48 @@ void DeviceClassEditor::closeEvent(QCloseEvent* e)
 
 bool DeviceClassEditor::save()
 {
+  if (m_fileName == QString::null)
+    {
+      return saveAs();
+    }
+  else
+    {
+      m_dc->saveToFile(m_fileName);
+      
+      setModified(false);
+      
+      return true;
+    }
+}
+
+bool DeviceClassEditor::saveAs()
+{
   QString path;
-  _app->settings()->get(KEY_SYSTEM_DIR, path);
-  path += QString("/") + DEVICECLASSPATH + QString("/");
-  path += m_dc->manufacturer() + QString("-") + 
-    m_dc->model() + QString(".deviceclass");
+
+  if (m_fileName == QString::null)
+    {
+      _app->settings()->get(KEY_SYSTEM_DIR, path);
+      path += QString("/") + DEVICECLASSPATH + QString("/");
+      path += m_dc->manufacturer() + QString("-") + 
+	m_dc->model() + QString(".deviceclass");
+    }
+  else
+    {
+      path = m_fileName;
+    }
 
   path = QFileDialog::getSaveFileName(path, "Device Classes (*.deviceclass)", 
 				      this);
+
   if (path != QString::null)
     {
       if (path.right(12) != QString(".deviceclass"))
 	{
 	  path += QString(".deviceclass");
 	}
-
+      
       m_dc->saveToFile(path);
+      m_fileName = QString(path);
 
       setModified(false);
 

@@ -90,6 +90,8 @@ class App : public QMainWindow
   //
   // Device classe stuff
   //
+  void initDeviceClasses();
+  void addDeviceClass(DeviceClass*);
   QPtrList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
   DeviceClass* searchDeviceClass(const QString &manufacturer,
 				 const QString &model);
@@ -140,7 +142,6 @@ class App : public QMainWindow
   
  private:
   void initSettings();
-  void initDeviceClasses();
   void initDoc();
   void initWorkspace();
   void initDeviceManagerView();
@@ -154,7 +155,6 @@ class App : public QMainWindow
   void saveSettings();
   void newDocument();
 
-  DeviceClass* createDeviceClass(QPtrList <QString> &list);
   void createJoystickContents(QPtrList <QString> &list);
 
  private slots:
