@@ -107,7 +107,7 @@ class App : public QMainWindow
   void slotPluginActivated(Plugin* plugin);
 
  public slots:
-  void slotFileNew();
+  bool slotFileNew();
   void slotFileOpen();
   void slotFileSave();
   void slotFileSaveAs();
@@ -152,6 +152,7 @@ class App : public QMainWindow
   void initToolBar();
 
   void saveSettings();
+  void newDocument();
 
   DeviceClass* createDeviceClass(QPtrList <QString> &list);
   void createJoystickContents(QPtrList <QString> &list);

@@ -528,24 +528,41 @@ void App::initVirtualConsole(void)
 //
 // New document; destroy everything and start anew
 //
-void App::slotFileNew()
+bool App::slotFileNew()
 {
+  bool result = false;
+
   if (doc()->isModified())
     {
-      QString msg("Are you sure you want to clear the current workspace?");
-      if (QMessageBox::warning(this, KApplicationNameShort, 
-			       msg, "&Yes", "&Cancel", 0, 1) == 1)
+      QString msg;
+      msg = "Are you sure you want to clear the current workspace?\n";
+      msg += "There are unsaved changes.";
+      if (QMessageBox::warning(this, KApplicationNameShort, msg,
+			       QMessageBox::Yes, QMessageBox::No)
+	  == QMessageBox::Yes)
 	{
-	  return;
+	  newDocument();
+	  result = true;
 	}
     }
+  else
+    {
+      newDocument();
+      result = true;
+    }
 
+  return result;
+}
+
+
+void App::newDocument()
+{
   setCaption(KApplicationNameLong);
-
+  
   initDoc();
   initDeviceManagerView();
   initVirtualConsole();
-
+  
   //
   // Set the last workspace name
   //
@@ -559,17 +576,22 @@ void App::slotFileNew()
 //
 void App::slotFileOpen()
 {
-  QString fn = QFileDialog::getOpenFileName(m_doc->fileName(), "*.qlc", this);
-
-  if (fn == QString::null)
+  if (slotFileNew())
     {
-      return;
-    }
-
-  if (doc()->loadWorkspaceAs(fn) == false)
-    {
-      QMessageBox::critical(this, KApplicationNameShort, 
-			    "Errors occurred while reading file.");
+      QString fn = QFileDialog::getOpenFileName(m_doc->fileName(), 
+						"*.qlc", this);
+      if (fn == QString::null)
+	{
+	  return;
+	}
+      else
+	{
+	  if (doc()->loadWorkspaceAs(fn) == false)
+	    {
+	      QMessageBox::critical(this, KApplicationNameShort, 
+				    "Errors occurred while reading file.");
+	    }
+	}
     }
 }
 
