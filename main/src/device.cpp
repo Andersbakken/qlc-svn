@@ -168,14 +168,11 @@ Device* Device::create(QPtrList <QString> &list)
   if (dc == NULL)
     {
       QString msg;
-      msg = QString("Unable to add device <");
-      msg += name;
-      msg += QString(">:\n");
-      msg += QString("No device class description found for device class\n<");
-      msg += manufacturer;
-      msg += QString("/");
-      msg += model;
-      msg += QString(">");
+      msg = QString("Unable to create device!\n");
+      msg += QString("Name: ") + name + QString("\n");
+      msg += QString("Manufacturer: ") + manufacturer + QString("\n");
+      msg += QString("Model: ") + model + QString("\n");
+      msg += QString("No such device class");
       
       QMessageBox::critical(_app, KApplicationNameShort, msg);
 

@@ -214,6 +214,18 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	  qc.setRgb(list.next()->toUInt());
 	  setPaletteBackgroundColor(qc);
 	}
+      else if (*s == QString("Color"))
+	{
+	  // Backwards compatibility for label background color
+	  QString t = *(list.next());
+	  int i = t.find(QString(","));
+	  int r = t.left(i).toInt();
+	  int j = t.find(QString(","), i + 1);
+	  int g = t.mid(i+1, j-i-1).toInt();
+	  int b = t.mid(j+1).toInt();
+	  QColor qc(r, g, b);
+	  setPaletteBackgroundColor(qc);
+	}
       else if (*s == QString("Pixmap"))
 	{
 	  QString t;

@@ -203,7 +203,7 @@ bool Function::setBus(t_bus_id id)
 	    {
 	      m_busID = KBusIDDefaultFade;
 	    }
-	  else if (m_type == Chaser)
+	  else if (m_type == Chaser || m_type == Sequence)
 	    {
 	      m_busID = KBusIDDefaultHold;
 	    }
@@ -347,24 +347,40 @@ Function* Function::create(QPtrList <QString> &list)
   function = _app->doc()->newFunction(type, fid);
   if (function)
     {
-      function->setDevice(did);
-      function->setName(name);
-      function->setBus(busid);
-      function->createContents(list);
+      if ((function->type() == Function::Scene ||
+	   function->type() == Function::Sequence) &&
+	  function->setDevice(did) == false)
+	{
+	  //
+	  // Unable to find a device for scene or sequence function
+	  //
+	  _app->doc()->deleteFunction(fid);
+	  function = NULL;
+
+	  QString msg, num;
+	  msg = QString("Unable to create function!\n");
+	  msg += QString("Name:   ") + name + QString("\n");
+	  msg += QString("Type:   ") + typeToString(type) + QString("\n");
+	  num.setNum(busid);
+	  msg += QString("Bus:    ") + num + QString("\n");
+	  num.setNum(fid);
+	  msg += QString("ID:     ") + num + QString("\n");
+	  num.setNum(did);
+	  msg += QString("Device: ") + num + QString(" (MISSING!)");
+	  QMessageBox::critical(_app, KApplicationNameShort, msg);
+	}
+      else
+	{
+	  function->setName(name);
+	  function->setBus(busid);
+	  function->createContents(list);
+	}
     }
   else
     {
-      QString msg, num;
-      msg = QString("Unable to create function!");
-      msg += QString("Name:   ") + name + QString("\n");
-      msg += QString("Type:   ") + typeToString(type) + QString("\n");
-      num.setNum(busid);
-      msg += QString("Bus:    ") + num + QString("\n");
-      num.setNum(fid);
-      msg += QString("ID:     ") + num + QString("\n");
-      num.setNum(did);
-      msg += QString("Device: ") + num + QString("\n");
-      QMessageBox::critical(_app, KApplicationNameShort, msg);
+      QString msg;
+      msg = QString("Unable to create function:\n");
+      msg += QString("No more free function slots!");
     }
 
   return function;

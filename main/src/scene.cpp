@@ -83,7 +83,10 @@ void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 bool Scene::setDevice(t_device_id id)
 {
   Device* device = _app->doc()->device(id);
-  assert(device);
+  if (!device)
+    {
+      return false;
+    }
   
   t_channel newChannels = device->deviceClass()->channels()->count();
 
