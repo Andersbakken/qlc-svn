@@ -79,6 +79,9 @@ class Chaser : public Function
   void init();
   void run();
 
+  bool startMemberAt(int);
+  void hold();
+
  protected:
   QValueList <t_function_id> m_steps;
 

@@ -42,7 +42,7 @@ extern App* _app;
 //
 Chaser::Chaser() : 
   Function(Function::Chaser),
-
+  
   m_runOrder     (   Loop ),
   m_direction    ( Normal ),
   m_childRunning (  false ),
@@ -379,99 +379,80 @@ void Chaser::init()
 //
 void Chaser::run()
 {
-  struct timespec timeval;
-  struct timespec timerem;
   Direction dir = m_direction;
+  int i = 0;
 
   // Calculate starting values
   init();
 
-  qDebug("foo");
-
-  QValueList <t_function_id>::iterator it;
-  
-  if (dir == Reverse)
+  if (dir == Normal)
     {
-      // Start from end
-      it = m_steps.end();
-      --it;
+      i = 0;
     }
   else
     {
-      // Start from beginning
-      it = m_steps.begin(); 
+      i = m_steps.count() - 1;
     }
 
   while ( !m_stopped )
     {
-      if (*it)
+      //
+      // Run thru either normal or reverse
+      //
+      if (dir == Normal)
 	{
-	  m_childRunning = true;
-	  Function* f = _app->doc()->function(*it);
-	  if (!f)
+	  while (i < (int) m_steps.count() && !m_stopped)
 	    {
-	      qDebug("Chaser step function <id:%d> deleted!", *it);
+	      m_childRunning = startMemberAt(i++);
+	      
+	      // Wait for child to complete or stop signal
+	      while (m_childRunning && !m_stopped) sched_yield();
+  
+	      // Wait for m_holdTime
+	      hold();
 	    }
-	  else if (f->engage(this))
+	}
+      else
+	{
+	  while (i >= 0 && !m_stopped)
 	    {
+	      m_childRunning = startMemberAt(i--);
+
+	      // Wait for child to complete or stop signal
 	      while (m_childRunning && !m_stopped) sched_yield();
 
-	      // Check if we need to be stopped
-	      if (m_stopped)
-		{
-		  f->stop();
-		}
-	      else if (m_holdTime > 0)
-		{
-		  // Because nanosleep sleeps at least 10msecs, don't
-		  // sleep at all if holdtime is zero.
-		  timeval.tv_sec = m_holdTime / KFrequency;
-		  timeval.tv_nsec = (m_holdTime % KFrequency) * 
-		    (1000000000 / KFrequency);
-		  
-		  nanosleep(&timeval, &timerem);
-		}
+	      // Wait for m_holdTime
+	      hold();
 	    }
-	  else
-	    {
-	      qDebug("Chaser step function <id:%d> is already running!", *it);
-	    }
+	}
 
-	  if (dir == Normal)
-	    {
-	      ++it;
-	    }
-	  else
-	    {
-	      --it;
-	    }
+      //
+      // Check what should be done after a round
+      //
+      if (m_runOrder == SingleShot)
+	{
+	  // That's it
+	  break;
 	}
       else if (m_runOrder == Loop)
 	{
-	  it = m_steps.begin();
+	  // Just continue as before
+	  i = 0;
+	  continue;
 	}
-      else if (m_runOrder == PingPong)
+      else // if (m_runOrder == PingPong)
 	{
+	  // Change run order
 	  if (dir == Normal)
 	    {
-	      // it.current() is NULL now, but because dir == Normal,
-	      // we can start from the last-1 item
-	      it = m_steps.end();
-	      --it; --it; // Yes, twice
 	      dir = Reverse;
+	      i = m_steps.count() - 2; // -2: Don't run the last function again
 	    }
 	  else
 	    {
-	      // it.current() is NULL now, but because dir == Reverse,
-	      // we can start from the first+1 item
-	      it = m_steps.begin();
-	      ++it; // Once
 	      dir = Normal;
+	      i = 1; // 1: Don't run the first function again
 	    }
-	}
-      else // if (m_runOrder == SingleShot)
-	{
-	  break;
 	}
     }
 
@@ -480,6 +461,52 @@ void Chaser::run()
   m_removeAfterEmpty = true;
 }
 
+
+//
+// Start a member function at index
+//
+bool Chaser::startMemberAt(int index)
+{
+  t_function_id id = *m_steps.at(index);
+  
+  Function* f = _app->doc()->function(id);
+  if (!f)
+    {
+      qDebug("Chaser step function <id:%d> deleted!", id);
+      return false;
+    }
+  
+  if (f->engage(this))
+    {
+      return true;
+    }
+  else
+    {
+      qDebug("Chaser step function <id:%d> is already running!", id);
+      return false;
+    }
+}
+
+
+//
+// Wait until m_holdTime ticks (1/Hz) have elapsed
+//
+void Chaser::hold()
+{
+  struct timespec timeval;
+  struct timespec timerem;
+
+  if (m_holdTime > 0)
+    {
+      // Because nanosleep sleeps at least 10msecs, don't
+      // sleep at all if holdtime is zero.
+      timeval.tv_sec = m_holdTime / KFrequency;
+      timeval.tv_nsec = (m_holdTime % KFrequency) * 
+	(1000000000 / KFrequency);
+      
+      nanosleep(&timeval, &timerem);
+    }
+}
 
 //
 // Currently running child function calls this function
