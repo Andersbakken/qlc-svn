@@ -98,7 +98,7 @@ bool DMX4LinuxOut::open()
 
 bool DMX4LinuxOut::close()
 {
-  qDebug("Close MidiOut plugin");
+  qDebug("Close DMX4Linux plugin");
 
   if (m_device != -1)
     {
@@ -111,6 +111,7 @@ bool DMX4LinuxOut::close()
     }
   else
     {
+      qDebug("Unable to close DMX4Linux plugin!");
       return false;
     }
 }
@@ -191,13 +192,13 @@ void DMX4LinuxOut::saveSettings()
   QString fileName = m_configDir + QString(CONF_FILE);
   qDebug(fileName);
   QFile file(fileName);
-  
+
   if (file.open(IO_WriteOnly))
     {
       // Comment
       s = QString("# DMX4LinuxOut Plugin Configuration\n");
       file.writeBlock((const char*) s, s.length());
-      
+
       // Entry type
       s = QString("Entry = ") + name() + QString("\n");
       file.writeBlock((const char*) s, s.length());
