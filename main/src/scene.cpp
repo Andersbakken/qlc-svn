@@ -335,7 +335,7 @@ void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Scene::speedChange(t_bus_value newTimeSpan)
 {
-  m_dataMutex.lock();
+  //m_dataMutex.lock();
 
   m_timeSpan = newTimeSpan;
   if (m_timeSpan == 0)
@@ -344,7 +344,7 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 	(1.0 / static_cast<float> (KFrequency));
     }
 
-  m_dataMutex.unlock();
+  //m_dataMutex.unlock();
 }
 
 
@@ -430,20 +430,19 @@ void Scene::run()
   // Check if this scene needs to play
   for (t_channel i = 0; i < m_channels; i++)
     {
-      if (m_values[i].type == Fade ||
-          m_values[i].type == Set)
-        {
-          if (m_values[i].value == (int) m_runTimeData[i].current)
+      if (m_values[i].type == Set ||
+	  m_values[i].type == Fade)
+	{
+	  if (m_values[i].value == (int) m_runTimeData[i].current)
 	    {
-              // This channel's value is what it should be, it's ready
 	      ready++;
 	    }
-        }
+	}
       else
-        {
-          // Treat NoSet values as ready
-          ready++;
-        }
+	{
+	  // NoSet values are treated as ready
+	  ready++;
+	}
     }
 
   // This scene does not need to be played because all target
@@ -453,12 +452,12 @@ void Scene::run()
       m_stopped = true;
     }
 
-  m_dataMutex.lock();
+  //m_dataMutex.lock();
 
   for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan && !m_stopped; 
        m_elapsedTime++)
     {
-      m_dataMutex.unlock();
+      //m_dataMutex.unlock();
 
       for (ch = 0; ch < m_channels; ch++)
 	{
@@ -482,7 +481,7 @@ void Scene::run()
 	    }
 	  else if (m_values[ch].type == Fade)
 	    {
-	      m_dataMutex.lock();
+	      //m_dataMutex.lock();
 
 	      // Calculate the current value based on what it should
 	      // be after m_elapsedTime to be ready at m_timeSpan
@@ -496,15 +495,15 @@ void Scene::run()
 	      m_channelData[m_channels + ch] = Set;
 	    }
 
-	  m_dataMutex.unlock();
+	  //m_dataMutex.unlock();
 	}
 
       m_eventBuffer->put(m_channelData);
 
-      m_dataMutex.lock();
+      //m_dataMutex.lock();
     }
 
-  m_dataMutex.unlock();
+  //m_dataMutex.unlock();
 
   // Write the last step exactly to target because timespan might have
   // been set to a smaller amount than what has elapsed. Also, because

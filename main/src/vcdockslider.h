@@ -46,6 +46,9 @@ class VCDockSlider : public UI_VCDockSlider
 
   void setCaption(const QString&);
   
+  //
+  // Mode stuff
+  //
   enum Mode
     {
       Speed  = 0,
@@ -57,15 +60,19 @@ class VCDockSlider : public UI_VCDockSlider
   Mode mode() { return m_mode; }
   QString modeString(Mode mode);
   
-  void assignSubmasters(bool assign);
-  
+  // Bus stuff
   bool setBusID(t_bus_id id);
   t_bus_id busID() const { return m_busID; }
-
   void setBusRange(t_bus_value lo, t_bus_value hi);
   void busRange(t_bus_value &lo, t_bus_value &hi);
 
+  //
+  // Level & Submaster stuff
+  //
   QValueList <t_channel>* channels() { return &m_channels; }
+  void assignSubmasters(bool assign);
+  void setLevelRange(t_value low, t_value hi);
+  void levelRange(t_value& lo, t_value& hi);
 
   void createContents(QPtrList <QString> &list);
   void saveToFile(QFile &file, t_vc_id parentID);
@@ -99,6 +106,9 @@ class VCDockSlider : public UI_VCDockSlider
 
   int m_busLowLimit;
   int m_busHighLimit;
+
+  int m_levelLowLimit;
+  int m_levelHighLimit;
 
   bool m_static;
   bool m_updateOnly;

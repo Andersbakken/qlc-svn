@@ -24,7 +24,6 @@
 
 #include "device.h"
 #include "function.h"
-#include "scene.h"
 
 #include <qwidget.h>
 
@@ -55,7 +54,8 @@ class DeviceManagerView : public QWidget
   void initTitle();
   void initToolBar();
   void initDataView();
-  void CopyFunction(Function* function, Device* device);
+  
+  void copyFunction(Function* function, Device* device);
 
  private slots:
   void slotAdd();

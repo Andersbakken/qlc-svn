@@ -63,12 +63,14 @@ const int KMoveThreshold      (    5 ); // Pixels
 //
 VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
   : UI_VCDockSlider(parent, name),
-    m_mode         (         Speed ),
-    m_busID        ( KBusIDDefaultFade ),
-    m_busLowLimit  (             0 ),
-    m_busHighLimit (            15 ),
-    m_static       (      isStatic ),
-    m_updateOnly   (         false )
+    m_mode           (             Speed ),
+    m_busID          ( KBusIDDefaultFade ),
+    m_busLowLimit    (                 0 ),
+    m_busHighLimit   (                15 ),
+    m_levelLowLimit  (                 0 ),
+    m_levelHighLimit (               255 ),
+    m_static         (          isStatic ),
+    m_updateOnly     (             false )
 {
 }
 
@@ -141,7 +143,8 @@ void VCDockSlider::setMode(Mode m)
 	connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 		this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 	
-	setBusRange(m_busLowLimit, m_busHighLimit);
+	m_slider->setRange(m_busLowLimit * KFrequency, 
+			   m_busHighLimit * KFrequency);
 
 	m_infoLabel->hide();
 	m_tapInButton->show();
@@ -160,6 +163,9 @@ void VCDockSlider::setMode(Mode m)
 	disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
+	m_slider->setRange(m_levelLowLimit, m_levelHighLimit);
+	slotSliderValueChanged(m_slider->value());
+
 	m_infoLabel->show();
 	m_tapInButton->hide();
       }
@@ -174,6 +180,7 @@ void VCDockSlider::setMode(Mode m)
 		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
 	m_slider->setRange(0, 100);
+	slotSliderValueChanged(m_slider->value());
 
 	m_infoLabel->show();
 	m_tapInButton->hide();
@@ -200,6 +207,26 @@ void VCDockSlider::assignSubmasters(bool assign)
 	  _app->resignSubmaster(*it);
 	}
     }
+}
+
+
+//
+// Set level value range
+//
+void VCDockSlider::setLevelRange(t_value lo, t_value hi)
+{
+  m_levelLowLimit = lo;
+  m_levelHighLimit = hi;
+}
+
+
+//
+// Return level slider range
+//
+void VCDockSlider::levelRange(t_value &lo, t_value &hi)
+{
+  lo = m_levelLowLimit;
+  hi = m_levelHighLimit;
 }
 
 
@@ -245,11 +272,6 @@ void VCDockSlider::setBusRange(t_bus_value lo, t_bus_value hi)
 {
   m_busLowLimit = lo;
   m_busHighLimit = hi;
-
-  if (m_mode == Speed)
-    {
-      m_slider->setRange(lo * KFrequency, hi * KFrequency);
-    }
 }
 
 
@@ -406,20 +428,28 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	      i = j + 1;
 	    }
 	}
+      else if (*s == QString("LevelLowLimit"))
+	{
+	  m_levelLowLimit = list.next()->toInt();
+	}
+      else if (*s == QString("LevelHighLimit"))
+	{
+	  m_levelHighLimit = list.next()->toInt();
+	}
       else if (*s == QString("Mode"))
 	{
 	  QString t = *list.next();
 	  if (t == modeString(Speed))
 	    {
-	      setMode(Speed);
+	      m_mode = Speed;
 	    }
 	  else if (t == modeString(Level))
 	    {
-	      setMode(Level);
+	      m_mode = Level;
 	    }
 	  else
 	    {
-	      setMode(Submaster);
+	      m_mode = Submaster;
 	    }
 	}
       else if (*s == QString("Value"))
@@ -433,13 +463,16 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	}
     }
 
+  setLevelRange(m_levelLowLimit, m_levelHighLimit);
+  setBusRange(m_busLowLimit, m_busHighLimit);
+  setGeometry(rect);
+
   if (m_mode == Submaster)
     {
       assignSubmasters(true);
     }
 
-  setBusRange(m_busLowLimit, m_busHighLimit);
-  setGeometry(rect);
+  setMode(m_mode);
 }
 
 
@@ -556,6 +589,16 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
       file.writeBlock((const char*) s, s.length());      
     }
 
+  // Level Lo
+  t.setNum(m_levelLowLimit);
+  s = QString("LevelLowLimit = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Level Hi
+  t.setNum(m_levelHighLimit);
+  s = QString("LevelHighLimit = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
   // Mode (must be written after bus & channel settings)
   s = QString("Mode = ") + modeString(m_mode) + QString("\n");
   file.writeBlock((const char*) s, s.length());
@@ -584,12 +627,20 @@ void VCDockSlider::slotSliderValueChanged(int value)
 	}
       
       QString num;
-      num.sprintf("%.2fs", ((float) value / (float) KFrequency));
+      num.sprintf("%.2fs", ((float) value / (float) KFrequency));      
       m_valueLabel->setText(num);
     }
   else if (m_mode == Level)
     {
-      m_valueLabel->setText("ERROR");
+      QString num;
+      num.sprintf("%.3d", m_levelHighLimit - value + m_levelLowLimit);
+      m_valueLabel->setText(num);
+
+      QValueList<t_channel>::iterator it;
+      for(it = m_channels.begin(); it != m_channels.end(); ++it)
+	{
+	  _app->setValue(*it, m_levelHighLimit - value + m_levelLowLimit);
+	}
     }
   else
     {
@@ -632,14 +683,16 @@ void VCDockSlider::slotBusValueChanged(t_bus_id id, t_bus_value value)
 }
 
 
+//
+// Calculate speed from button tap intervals
+//
 void VCDockSlider::slotTapInButtonClicked()
 {
   int t;
   t = m_time.elapsed();
-  m_slider->setValue(static_cast<int> (t * .001* KFrequency));
+  m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
   m_time.restart();
 }
-
 
 
 //
@@ -647,7 +700,7 @@ void VCDockSlider::slotTapInButtonClicked()
 //
 void VCDockSlider::mousePressEvent(QMouseEvent* e)
 {
-  if (_app->mode() == App::Design && m_static == false)
+  if (_app->mode() == App::Design)
     {
       _app->virtualConsole()->setSelectedWidget(this);
 
@@ -657,7 +710,8 @@ void VCDockSlider::mousePressEvent(QMouseEvent* e)
 	  m_resizeMode = false;
 	}
 
-      if (e->button() & LeftButton || e->button() & MidButton)
+      if ((e->button() & LeftButton || e->button() & MidButton) &&
+	  m_static == false)
 	{
 	  if (e->x() > rect().width() - 10 &&
 	      e->y() > rect().height() - 10)
@@ -704,7 +758,19 @@ void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
 //
 void VCDockSlider::invokeMenu(QPoint point)
 {
+  if (m_static)
+    {
+      _app->virtualConsole()->editMenu()->setItemEnabled(KVCMenuEditDelete,
+							 false);
+    }
+
   _app->virtualConsole()->editMenu()->exec(point);
+
+  if (m_static)
+    {
+      _app->virtualConsole()->editMenu()->setItemEnabled(KVCMenuEditDelete,
+							 true);
+    }
 }
 
 

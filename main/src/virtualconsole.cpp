@@ -57,6 +57,7 @@
 #include <X11/Xlib.h>
 
 extern App* _app;
+extern QApplication* _qapp;
 
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
@@ -515,7 +516,7 @@ void VirtualConsole::slotEditRenameReturnPressed()
     }
 
   assert(m_renameEdit);
-  delete m_renameEdit;
+  m_renameEdit->deleteLater(); // QT 3.1 crashes with normal delete
   m_renameEdit = NULL;
 
   _app->doc()->setModified(true);
@@ -525,7 +526,7 @@ void VirtualConsole::slotEditRenameReturnPressed()
 void VirtualConsole::slotEditRenameCancelled()
 {
   assert(m_renameEdit);
-  delete m_renameEdit;
+  m_renameEdit->deleteLater(); // QT 3.1 crashes with normal delete
   m_renameEdit = NULL;
 }
 

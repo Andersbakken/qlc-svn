@@ -37,6 +37,7 @@ class QToolButton;
 class QFileDialog;
 class QWidgetList;
 class QLabel;
+class QTimer;
 
 class DeviceManagerView;
 class Settings;
@@ -111,6 +112,9 @@ class App : public QMainWindow
   t_value value(t_channel);
   void valueRange(t_channel address, t_value* values, t_channel num);
 
+  bool isBlackOut() { return m_blackOut; }
+
+ public:
   //
   // Submasters
   //
@@ -125,6 +129,8 @@ class App : public QMainWindow
  private slots:
   void slotChangeOutputPlugin(const QString& name);
   void slotPluginActivated(Plugin* plugin);
+
+  void slotFlashBlackOutIndicator();
 
  public slots:
   bool slotFileNew();
@@ -160,6 +166,8 @@ class App : public QMainWindow
   void slotSetDesignMode();
   void slotSetOperateMode();
   void slotSetMode();
+
+  void slotToggleBlackOut();
 
  signals:
   void modeChanged();
@@ -200,6 +208,7 @@ class App : public QMainWindow
   QToolButton* m_vcTB;
   QToolButton* m_panicTB;
   QToolButton* m_modeTB;
+  QToolButton* m_blackOutTB;
 
   Doc* m_doc;
   Settings* m_settings;
@@ -213,6 +222,8 @@ class App : public QMainWindow
   FunctionConsumer* m_functionConsumer;
 
   QLabel* m_modeIndicator;
+  QLabel* m_blackOutIndicator;
+  QTimer* m_blackOutIndicatorTimer;
 
   OutputPlugin* m_outputPlugin;
   DummyOutPlugin* m_dummyOutPlugin;
@@ -227,6 +238,8 @@ class App : public QMainWindow
   t_value m_values[512];
   float m_submasterValues[512];
   int m_submasters[512];
+
+  bool m_blackOut;
 
  protected:
   void closeEvent(QCloseEvent*);

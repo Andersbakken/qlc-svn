@@ -154,7 +154,7 @@ void Bus::saveToFile(QFile &file)
   for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
     {
       Bus::value(i, value);
-      if (value != 0 && Bus::name(i) != QString::null)
+      if (value != 0 || Bus::name(i) != QString::null)
 	{
 	  // Write only non-nil values
 

@@ -290,10 +290,10 @@ void FunctionCollection::run()
     }
 
   // Wait for all children to stop
-  m_childCountMutex.lock();
+  //m_childCountMutex.lock();
   while (m_childCount > 0)
     {
-      m_childCountMutex.unlock();
+      //m_childCountMutex.unlock();
       sched_yield();
     }
 

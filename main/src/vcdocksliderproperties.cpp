@@ -69,6 +69,14 @@ void VCDockSliderProperties::init()
   m_slider->busRange(buslo, bushi);
   m_lowBusValueSpin->setValue(buslo);
   m_highBusValueSpin->setValue(bushi);
+
+  //
+  // Level stuff
+  //
+  t_value levello, levelhi;
+  m_slider->levelRange(levello, levelhi);
+  m_lowChannelValueSpin->setValue(levello);
+  m_highChannelValueSpin->setValue(levelhi);
   
   //
   // Mode
@@ -78,6 +86,10 @@ void VCDockSliderProperties::init()
 
 }
 
+
+//
+// Fill bus combo with available buses
+//
 void VCDockSliderProperties::fillBusCombo()
 {
   QString s;
@@ -91,9 +103,16 @@ void VCDockSliderProperties::fillBusCombo()
       m_busCombo->insertItem(s);
     }
 
+  //
+  // Select the bus that has been assigned to the slider
+  //
   m_busCombo->setCurrentItem(m_slider->busID());
 }
 
+
+//
+// Initialize the channel list view for level & submaster modes
+//
 void VCDockSliderProperties::fillChannelList()
 {
   QString s;
@@ -102,7 +121,8 @@ void VCDockSliderProperties::fillChannelList()
   QCheckListItem* item = NULL;
 
   //
-  // Fill the list view
+  // Fill the list view with available channels. Put only
+  // those channels that are occupied by existing devices.
   //
   for (t_device_id i = 0; i < KDeviceArraySize; i++)
     {
@@ -120,7 +140,7 @@ void VCDockSliderProperties::fillChannelList()
 	      // DMX Channel
 	      s.sprintf("%.3d", d->address() + ch + 1);
 	      item = new QCheckListItem(m_channelList, s, 
-					QCheckListItem::CheckBoxController);
+					QCheckListItem::CheckBox);
 	      
 	      // Device name
 	      item->setText(KColumnDevice, d->name());
@@ -134,7 +154,7 @@ void VCDockSliderProperties::fillChannelList()
     }
 
   //
-  // Check selected items
+  // Check those channels that are found from slider's channel list
   //
   QValueList <t_channel>::iterator it;
   for (it = m_slider->channels()->begin();
@@ -145,11 +165,15 @@ void VCDockSliderProperties::fillChannelList()
 					   ->findItem(s, KColumnDMXChannel));
       if (item)
 	{
-	  item->setState(QCheckListItem::On);
+	  item->setOn(true);
 	}
     }
 }
 
+
+//
+// Bus, Level or Submaster radio has been clicked
+//
 void VCDockSliderProperties::slotBehaviourSelected(int id)
 {
   switch (id)
@@ -180,6 +204,10 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
   m_mode = static_cast<VCDockSlider::Mode> (id);
 }
 
+
+//
+// Accept changes
+//
 void VCDockSliderProperties::slotOKClicked()
 {
   //
@@ -201,63 +229,23 @@ void VCDockSliderProperties::slotOKClicked()
     }
   else if (m_mode == VCDockSlider::Level)
     {
-      QCheckListItem* item = NULL;
-      t_channel ch = 0;
-
       //
-      // Clear channel list
-      //
-      m_slider->channels()->clear();
-      
-      //
-      // Then, add the new level channels
-      //
-      QListViewItemIterator it(m_channelList);
-      while (it.current())
-	{
-	  item = static_cast<QCheckListItem*> (it.current());
+      // Extract selected channels from channel list
+      // 
+     extractChannels();
 
-	  ch = static_cast<t_channel> 
-	    (item->text(KColumnDMXChannel).toInt() - 1);
-
-	  if (item->isOn() && 
-	      m_slider->channels()->find(ch) == m_slider->channels()->end())
-	    {
-	      m_slider->channels()->append(ch);
-	    }
-
-	  ++it;
-	}
+     //
+     // Set range
+     //
+     m_slider->setLevelRange(m_lowChannelValueSpin->value(),
+			     m_highChannelValueSpin->value());
     }
   else if (m_mode == VCDockSlider::Submaster)
     {
-      QCheckListItem* item = NULL;
-      t_channel ch = 0;
-
       //
-      // Clear channel list
+      // Extract selected channels from channel list
       //
-      m_slider->channels()->clear();
-
-      //
-      // Then, add the new submaster channels
-      //
-      QListViewItemIterator it(m_channelList);
-      while (it.current())
-	{
-	  item = static_cast<QCheckListItem*> (it.current());
-
-	  ch = static_cast<t_channel> 
-	    (item->text(KColumnDMXChannel).toInt() - 1);
-
-	  if (item->isOn() && 
-	      m_slider->channels()->find(ch) == m_slider->channels()->end())
-	    {
-	      m_slider->channels()->append(ch);
-	    }
-
-	  ++it;
-	}
+      extractChannels();
       
       //
       // Assign submasters
@@ -278,6 +266,46 @@ void VCDockSliderProperties::slotOKClicked()
   accept();
 }
 
+
+//
+// Get selected channels from channel list view and set them
+// to the slider's channel list. Used for both level & submaster modes.
+//
+void VCDockSliderProperties::extractChannels()
+{
+  QCheckListItem* item = NULL;
+  t_channel ch = 0;
+  
+  //
+  // Clear channel list
+  //
+  m_slider->channels()->clear();
+  
+  //
+  // Then, add the new submaster channels
+  //
+  QListViewItemIterator it(m_channelList);
+  while (it.current())
+    {
+      item = static_cast<QCheckListItem*> (it.current());
+      
+      ch = static_cast<t_channel> 
+	(item->text(KColumnDMXChannel).toInt() - 1);
+      
+      if (item->isOn() && 
+	  m_slider->channels()->find(ch) == m_slider->channels()->end())
+	{
+	  m_slider->channels()->append(ch);
+	}
+      
+      ++it;
+    }
+}
+
+
+//
+// Don't save changes
+//
 void VCDockSliderProperties::slotCancelClicked()
 {
   reject();

@@ -258,7 +258,7 @@ void FunctionConsumer::event(time_t)
           if (m_function->removeAfterEmpty())
             {
               m_functionListMutex.lock(); // Lock before remove
-              m_functionList.remove(m_function);
+              m_functionList.remove();
 	      m_function->cleanup();
               m_functionListMutex.unlock(); // Unlock after remove
             }

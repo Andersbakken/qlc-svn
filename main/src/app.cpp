@@ -35,6 +35,7 @@
 #include <qtooltip.h>
 #include <qstylefactory.h>
 #include <qrect.h>
+#include <qtimer.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -68,13 +69,17 @@
 
 #include "../../libs/common/filehandler.h"
 
-static const QString KModeTextOperate = QString("Operate");
-static const QString KModeTextDesign = QString("Design");
+static const QString KModeTextOperate ("Operate");
+static const QString KModeTextDesign  ("Design");
 
-static const QColor KModeColorOperate = QColor(255, 0, 0);
-static const QColor KModeColorDesign = QColor(0, 255, 0);
+static const QString KBlackOutText    ("Blackout");
+static const int KBlackOutIndicatorFlashInterval (500);
+static const int KColorMask (0xff);
 
-t_plugin_id App::NextPluginID = KPluginIDMin;
+static const QColor KModeColorOperate (255, 0, 0);
+static const QColor KModeColorDesign (0, 255, 0);
+
+t_plugin_id App::NextPluginID (KPluginIDMin);
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
@@ -127,6 +132,19 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 #define IDS_STATUS_DEFAULT              "Ready"
 
 extern QApplication _qapp;
+extern App* _app;
+
+//
+// DMX writer functions
+//
+// Generic writer function pointer
+void (*writer) (t_channel, t_value);
+
+// Used when blackout is active
+void blackOutWriter(t_channel, t_value);
+
+// Used when blackout is not active
+void normalWriter(t_channel, t_value);
 
 App::App() : QMainWindow()
 {
@@ -142,6 +160,10 @@ App::App() : QMainWindow()
   m_dummyOutPlugin = NULL;
   m_settings = NULL;
   m_mode = Design;
+  m_blackOut = false;
+  m_blackOutIndicatorTimer = NULL;
+
+  writer = normalWriter;
 }
 
 App::~App()
@@ -153,6 +175,7 @@ App::~App()
   delete m_modeIndicator;
   delete m_workspace;
   delete m_settings;
+  delete m_blackOutIndicatorTimer;
 }
 
 
@@ -484,8 +507,18 @@ void App::initMenuBar()
 //
 void App::initStatusBar()
 {
+  //
+  // Mode Indicator
+  //
   m_modeIndicator = new QLabel(KModeTextDesign, statusBar());
   statusBar()->addWidget(m_modeIndicator, 0, true);
+
+  //
+  // Blackout Indicator
+  //
+  m_blackOutIndicatorTimer = new QTimer(this);
+  m_blackOutIndicator = new QLabel(QString::null, statusBar());
+  statusBar()->addWidget(m_blackOutIndicator, 0, true);
 }
 
 
@@ -526,10 +559,14 @@ void App::initToolBar()
 			      "Panic; Shut down all running functions", 0, 
 			      this, SLOT(slotPanic()), m_toolbar);
 
-  // The pixmap needs to be changed in this button -> save its pointer
   m_modeTB = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
 			     "Design Mode; All editing features enabled", 
 			     0, this, SLOT(slotSetMode()), m_toolbar);
+  
+  m_blackOutTB = new QToolButton(QPixmap(dir + QString("/blackout.xpm")), 
+				 "Blackout", 
+				 0, this, SLOT(slotToggleBlackOut()), 
+				 m_toolbar);
 }
 
 
@@ -1216,8 +1253,52 @@ void App::slotSetMode()
   emit modeChanged();
 }
 
+void App::slotToggleBlackOut()
+{
+  if (m_blackOut)
+    {
+      m_blackOut = false;
+      m_blackOutIndicator->setText(QString::null);
+      m_blackOutIndicatorTimer->stop();
+      disconnect(m_blackOutIndicatorTimer, SIGNAL(timeout()),
+		 this, SLOT(slotFlashBlackOutIndicator()));
 
+      m_outputPlugin->writeRange(0, m_values, 512);
+      //
+      // Set the channel writer function to blackout writer
+      // to prevent channel value updates to DMX hardware
+      //
+      writer = normalWriter;
+    }
+  else
+    {
+      m_blackOut = true;
+      m_blackOutIndicator->setText(KBlackOutText);
+      connect(m_blackOutIndicatorTimer, SIGNAL(timeout()),
+	      this, SLOT(slotFlashBlackOutIndicator()));
+      m_blackOutIndicatorTimer->start(KBlackOutIndicatorFlashInterval);
 
+      for (t_channel ch = 0; ch < 512; ch++)
+	{
+	  m_outputPlugin->writeChannel(ch, 0);
+	}
+
+      //
+      // Set the channel writer function to blackout writer
+      // to prevent channel value updates to DMX hardware
+      //
+      writer = blackOutWriter;
+    }
+}
+
+void App::slotFlashBlackOutIndicator()
+{
+  QColor c(m_blackOutIndicator->backgroundColor());
+  c.setRgb(c.red() ^ KColorMask,
+	   c.green() ^ KColorMask,
+	   c.blue() ^ KColorMask);
+  m_blackOutIndicator->setPaletteBackgroundColor(c);
+}
 
 
 //////////////////
@@ -1614,10 +1695,24 @@ void App::setValue(t_channel ch, t_value value)
   assert(ch < 512 && ch >= 0);
 
   m_values[ch] = value;
-  
-  m_outputPlugin->writeChannel(ch,
-			       static_cast<t_value> 
-			       (((float) value) * m_submasterValues[ch]));
+
+  //
+  // This is either normalWriter or blackOutWriter, depending
+  // on whether blackout is enabled or disabled
+  //
+  writer(ch, value);
+}
+
+
+void blackOutWriter(t_channel, t_value)
+{
+  // Don't do anything
+}
+
+void normalWriter(t_channel ch, t_value value)
+{
+  _app->outputPlugin()->writeChannel(ch, static_cast<t_value> 
+		     (((float) value) * _app->submasterValue(ch)));
 }
 
 t_value App::value(t_channel ch)

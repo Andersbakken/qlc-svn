@@ -71,8 +71,9 @@ void VCButton::init()
 {
   setToggleButton(true);
 
-  if (m_keyBind) delete m_keyBind;
+  assert(m_keyBind == NULL);
   m_keyBind = new KeyBind();
+
   connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
   connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 
@@ -92,7 +93,12 @@ void VCButton::copyFrom(VCButton* button)
   m_resizeMode = false;
 
   assert(button->keyBind());
-  if (m_keyBind) delete m_keyBind;
+  if (m_keyBind)
+    {
+      disconnect(m_keyBind);
+      delete m_keyBind;
+    }
+
   m_keyBind = new KeyBind(button->keyBind());
   connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
   connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
@@ -354,7 +360,12 @@ void VCButton::setKeyBind(const KeyBind* kb)
 {
   assert(kb);
 
-  if (m_keyBind) delete m_keyBind;
+  if (m_keyBind) 
+    {
+      disconnect(m_keyBind);
+      delete m_keyBind;
+    }
+
   m_keyBind = new KeyBind(kb);
   
   connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
@@ -590,39 +601,19 @@ void VCButton::pressFunction()
 {
   assert(m_keyBind);
 
-  if (m_keyBind->pressAction() == KeyBind::PressNothing || 
+  if (/*m_keyBind->pressAction() == KeyBind::PressNothing || */
       m_functionID == KNoID)
     {
       return;
     }
+  /*
   else if (m_keyBind->pressAction() == KeyBind::PressStart)
     {
       Function* f = _app->doc()->function(m_functionID);
       if (f)
 	{
-	  qDebug("engage");
-	  f->engage(static_cast<QObject*> (this));
-	  setOn(true);
-	}
-      else
-	{
-	  qDebug("Function has been deleted!");
-	  attachFunction(KNoID);
-	}
-    }
-  else if (m_keyBind->pressAction() == KeyBind::PressToggle)
-    {
-      Function* f = _app->doc()->function(m_functionID);
-      if (f)
-	{
-	  if (isOn())
+	  if (f->engage(static_cast<QObject*> (this)))
 	    {
-	      f->stop();
-	      setOn(false);
-	    }
-	  else
-	    {
-	      f->engage(static_cast<QObject*> (this));
 	      setOn(true);
 	    }
 	}
@@ -632,6 +623,32 @@ void VCButton::pressFunction()
 	  attachFunction(KNoID);
 	}
     }
+  */
+  else //if (m_keyBind->pressAction() == KeyBind::PressToggle)
+    {
+      Function* f = _app->doc()->function(m_functionID);
+      if (f)
+	{
+	  if (isOn())
+	    {
+	      f->stop();
+	      //setOn(false);
+	    }
+	  else
+	    {
+	      if (f->engage(static_cast<QObject*> (this)))
+		{
+		  setOn(true);
+		}
+	    }
+	}
+      else
+	{
+	  qDebug("Function has been deleted!");
+	  attachFunction(KNoID);
+	}
+    }
+  /*
   else if (m_keyBind->pressAction() == KeyBind::PressStepForward)
     {
       //
@@ -644,11 +661,12 @@ void VCButton::pressFunction()
       // TODO: Implement a bus for stepping
       //
     }
+  */
 }
 
 void VCButton::releaseFunction()
 {
-  assert(m_keyBind);
+
 }
 
 void VCButton::attachFunction(t_function_id id)

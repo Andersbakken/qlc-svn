@@ -27,7 +27,8 @@
 #include "newdevice.h"
 #include "chaser.h"
 #include "functioncollection.h"
-
+#include "scene.h"
+#include "sequence.h"
 
 #include <qwidget.h>
 #include <qtoolbar.h>
@@ -387,16 +388,14 @@ void DeviceManagerView::slotClone()
 {
   QListViewItem* item = m_listView->currentItem();
 
-
   // Get the device id and name
   t_device_id old_id = item->text(KColumnID).toInt();
 
-
-   DeviceClass* dc =   _app->doc()->device(old_id)->deviceClass();
+   DeviceClass* dc = _app->doc()->device(old_id)->deviceClass();
    assert(dc);
 
    QString new_name;
-   new_name = item->text(KColumnName).latin1();
+   new_name = item->text(KColumnName);
    new_name += "_new";
 
    // Add new device
@@ -414,25 +413,13 @@ void DeviceManagerView::slotClone()
        //copy only functions that belong to parent device
        if (f->device() == old_id)
          {
-           CopyFunction(f,d);
+           copyFunction(f,d);
          }
    }
    
    m_listView->setCurrentItem(m_listView->findItem(new_name,0,0));
-   d->viewProperties();
-
-   
-   //quick & dirty but only way to update the list view.... ToDo
-   Device* dd = _app->doc()->newDevice(dc, new_name , 0);
-   _app->doc()->deleteDevice(dd->id());
-   
-   
-
+   slotProperties();
 }
-
-
-
-
 
 
 //
@@ -448,7 +435,7 @@ void DeviceManagerView::slotRemove()
   // Display a warning
   QString msg;
   msg = ("Do you want to remove device \"");
-  msg += item->text(KColumnName).latin1() + QString("\"?");
+  msg += item->text(KColumnName) + QString("\"?");
   if (QMessageBox::warning(this, KApplicationNameShort, msg,
 			   QMessageBox::Yes, QMessageBox::No) 
       == QMessageBox::No)
@@ -666,7 +653,6 @@ void DeviceManagerView::slotMenuCallBack(int item)
       slotClone();
       break;
 
-
     case KMenuItemProperties:
       slotProperties();
       break;
@@ -709,7 +695,7 @@ void DeviceManagerView::slotItemRenamed(QListViewItem* item, int col)
 
 
 
-void DeviceManagerView::CopyFunction(Function* function, Device* device)
+void DeviceManagerView::copyFunction(Function* function, Device* device)
 {
   switch(function->type())
     {
@@ -719,8 +705,6 @@ void DeviceManagerView::CopyFunction(Function* function, Device* device)
 	  (_app->doc()->newFunction(Function::Scene));
 
 	scene->copyFrom(static_cast<Scene*> (function), device->id());
-	//assert(device);
-	//scene->setDevice(id());
       }
       break;
 
@@ -746,6 +730,10 @@ void DeviceManagerView::CopyFunction(Function* function, Device* device)
 
     case Function::Sequence:
       {
+	Sequence* sequence = static_cast<Sequence*> 
+	  (_app->doc()->newFunction(Function::Sequence));
+	
+	sequence->copyFrom(static_cast<Sequence*> (function), device->id());
       }
       break;
 
