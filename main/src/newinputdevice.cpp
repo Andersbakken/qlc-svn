@@ -21,10 +21,10 @@
 
 #include "app.h"
 #include "doc.h"
-#include "plugin.h"
+#include "../../libs/common/plugin.h"
 #include "settings.h"
 #include "newinputdevice.h"
-#include "joystickplugin.h"
+#include "../../libs/joystick/joystickplugin.h"
 
 #include <qpixmap.h>
 
@@ -44,7 +44,7 @@ NewInputDevice::~NewInputDevice()
 void NewInputDevice::initView(void)
 {
   setCaption("Add New Input Device");
-  setIcon(QPixmap(_app->settings()->pixmapPath() + QString("addinputdevice.xpm")));
+  //setIcon(QPixmap(_app->settings()->pixmapPath() + QString("addinputdevice.xpm")));
   setFixedSize(460, 200);
 
   m_list = new QListView(this);
@@ -90,18 +90,20 @@ void NewInputDevice::slotCustomTextChanged(const QString &text)
 
 void NewInputDevice::fetchInputDevices()
 {
-  QList <Plugin> list = _app->doc()->pluginList();
+/*
+  QPtrList <Plugin> *list = _app->doc()->pluginList();
 
-  for (unsigned int i = 0; i < list.count(); i++)
+  for (unsigned int i = 0; i < list->count(); i++)
     {
-      ASSERT(list.at(i) != NULL);
+      ASSERT(list->at(i) != NULL);
 
-      if (list.at(i)->type() == Plugin::Joystick)
+      if (list->at(i)->type() == Plugin::Joystick)
 	{
-	  JoystickPlugin* jp = (JoystickPlugin*) list.at(i);
+	  JoystickPlugin* jp = (JoystickPlugin*) list->at(i);
 	  ASSERT(jp != NULL);
 
 	  new QListViewItem(m_list, jp->name(), jp->typeString());
 	}
     }
+*/
 }

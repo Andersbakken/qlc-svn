@@ -21,30 +21,31 @@
 
 include ../../config.make
 
+include uichfiles
+include uicofiles
+include mocuicofiles
+include mocofiles
+include objfiles
+
 LIBJOY_SO = libjoy.so
 LDFLAGS += -fPIC -shared
 LIBS = -L$(QTDIR)/lib -L$(X11LIBS) -lXext -lX11 -L$(QTLIB) -ldl -lpthread
 
-UICH =  uic_selectjoystick.h
+MOCOBJECTS = $(MOCO) \
+	../common/moc_ledbar.o ../common/moc_plugin.o
 
-UICO =  uic_selectjoystick.o \
-	moc_uic_selectjoystick.o
+OBJECTS = $(OBJS) \
+	../common/ledbar.o ../common/plugin.o
 
-MOCS =  ../common/moc_ledbar.o ../common/moc_plugin.o \
-	moc_joystick.o moc_joystickplugin.o moc_selectjoystick.o \
-	moc_joysticksettings.o
+all:	banner create_objects dep $(UICH) $(UICO) $(MOCUICO) $(OBJECTS) $(LIBJOY_SO)
 
-OBJS =	$(UICO) \
-	$(MOCS) \
-	../common/ledbar.o ../common/plugin.o \
-	joystick.o joystickplugin.o selectjoystick.o joysticksettings.o
-
-all:	banner dep $(UICH) $(UICO) $(LIBJOY_SO)
+create_objects:
+	../../buildtools/create_objects.sh
 
 banner:
 	@echo "----------------- Building QLC 2 Joystick Library -----------------"
 
-$(LIBJOY_SO): $(OBJS)
+$(LIBJOY_SO): $(UICO) $(MOCUICO) $(OBJECTS) $(MOCOBJECTS)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 moc_%.cpp: %.h
