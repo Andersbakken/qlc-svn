@@ -47,8 +47,7 @@ class Chaser : public Function
     };
 
  public:
-  Chaser(t_function_id id = 0);
-  Chaser(Chaser* ch, bool append = false);
+  Chaser(t_function_id id = KFunctionIDAuto);
   virtual ~Chaser();
 
   void copyFrom(Chaser* ch, bool append = false);

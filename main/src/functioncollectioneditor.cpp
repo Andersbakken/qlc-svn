@@ -42,8 +42,10 @@ FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* fc,
   : UI_FunctionCollectionEditor(parent, "FunctionCollectionEditor", true)
 {
   ASSERT(fc);
-  m_fc = new FunctionCollection(fc);
   m_original = fc;
+
+  m_fc = new FunctionCollection(KFunctionIDTemp);
+  m_fc->copyFrom(fc);
 
   init();
 }
@@ -78,12 +80,17 @@ void FunctionCollectionEditor::slotAddFunctionClicked()
 	  function = _app->doc()->searchFunction(ft->functionID());
 	  ASSERT(function);
 	  
-	  QString id;
-	  id.setNum(function->id());
-	  new QListViewItem(m_functionList, QString("Global"), 
-			    function->name(), id);
-
-	  m_fc->addItem(function);
+	  if (m_fc->addItem(function))
+	    {
+	      QString id;
+	      id.setNum(function->id());
+	      new QListViewItem(m_functionList, QString("Global"), 
+				function->name(), id);
+	    }
+	  else
+	    {
+	      ASSERT(false);
+	    }
 	}
     }
 
@@ -102,8 +109,14 @@ void FunctionCollectionEditor::slotRemoveFunctionClicked()
 
       id = m_functionList->selectedItem()->text(2).toULong();
 
-      m_fc->removeItem(id);
-      m_functionList->takeItem(m_functionList->selectedItem());
+      if (m_fc->removeItem(id))
+	{
+	  m_functionList->takeItem(m_functionList->selectedItem());
+	}
+      else
+	{
+	  ASSERT(false);
+	}
     }
 }
 

@@ -54,15 +54,6 @@ Chaser::Chaser(t_function_id id) : Function(id)
 
 
 //
-// Copy constructor
-//
-Chaser::Chaser(Chaser* ch, bool append) : Function(ch->id())
-{
-  copyFrom(ch, append);
-}
-
-
-//
 // Copy the contents of another chaser into this
 // If append == true, existing contents will not be cleared; new steps
 // will appear after existing steps

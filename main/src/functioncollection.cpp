@@ -49,19 +49,9 @@ FunctionCollection::FunctionCollection(t_function_id id)
 
 
 //
-// Copy constructor
-//
-FunctionCollection::FunctionCollection(FunctionCollection* fc) 
-  : Function(fc->id())
-{
-  copyFrom(fc);
-}
-
-
-//
 // Copy give function's contents to this
 //
-void FunctionCollection::copyFrom(FunctionCollection* fc)
+void FunctionCollection::copyFrom(FunctionCollection* fc, bool append)
 {
   m_startMutex.lock();
 
@@ -70,13 +60,21 @@ void FunctionCollection::copyFrom(FunctionCollection* fc)
       m_type = Function::Collection;
       m_running = fc->m_running;
       m_name = fc->m_name;
-      
-      QPtrList <FunctionStep> *il = fc->steps();
-      
-      for (FunctionStep* step = il->first(); step != NULL; step = il->next())
+
+      if (!append)
 	{
-	  FunctionStep* newItem = new FunctionStep(step);
+	  while (!m_steps.isEmpty())
+	    {
+	      delete m_steps.take(0);
+	    }
+	}
+
+      QPtrListIterator <FunctionStep> it(*fc->steps());
+      while (it.current())
+	{
+	  FunctionStep* newItem = new FunctionStep(it.current());
 	  m_steps.append(newItem);
+	  ++it;
 	}
     }
 

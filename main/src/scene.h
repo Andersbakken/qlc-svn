@@ -35,7 +35,7 @@ typedef float t_scene_acc;
 class Scene : public Function
 {
  public:
-  Scene(t_function_id id = 0);
+  Scene(t_function_id id = KFunctionIDAuto);
   ~Scene();
 
   enum ValueType

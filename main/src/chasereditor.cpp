@@ -52,7 +52,8 @@ extern App* _app;
 ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
   : UI_ChaserEditor(parent, "", true)
 {
-  m_chaser = new Chaser(function);
+  m_chaser = new Chaser(KFunctionIDTemp);
+  m_chaser->copyFrom(function);
   ASSERT(m_chaser != NULL);
 
   m_bus = NULL;

@@ -29,10 +29,10 @@ class FunctionStep;
 class FunctionCollection : public Function
 {
  public:
-  FunctionCollection(t_function_id id = 0);
-  FunctionCollection(FunctionCollection* fc);
-  void copyFrom(FunctionCollection* fc);
+  FunctionCollection(t_function_id id = KFunctionIDAuto);
   virtual ~FunctionCollection();
+
+  void copyFrom(FunctionCollection* fc, bool append = false);
 
   QPtrList <FunctionStep> *steps() { return &m_steps; }
 
