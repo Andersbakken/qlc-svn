@@ -45,7 +45,7 @@
             <property name="name">
                 <cstring>m_list</cstring>
             </property>
-            <property name="showSortIndicator">
+            <property name="allColumnsShowFocus">
                 <bool>true</bool>
             </property>
             <property name="resizeMode">
@@ -54,12 +54,20 @@
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout1</cstring>
+                <cstring>layout2</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_edit</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Edit...</string>
+                    </property>
+                </widget>
                 <spacer>
                     <property name="name">
                         <cstring>spacer1</cstring>
@@ -72,7 +80,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>80</width>
+                            <width>180</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -102,29 +110,26 @@
 </widget>
 <connections>
     <connection>
-        <sender>m_list</sender>
-        <signal>itemRenamed(QListViewItem*,int,const QString&amp;)</signal>
-        <receiver>UI_BusProperties</receiver>
-        <slot>slotItemRenamed(QListViewItem*,int,const QString&amp;)</slot>
-    </connection>
-    <connection>
         <sender>m_close</sender>
         <signal>clicked()</signal>
         <receiver>UI_BusProperties</receiver>
         <slot>close()</slot>
     </connection>
     <connection>
-        <sender>m_list</sender>
-        <signal>clicked(QListViewItem*,const QPoint&amp;,int)</signal>
+        <sender>m_edit</sender>
+        <signal>clicked()</signal>
         <receiver>UI_BusProperties</receiver>
-        <slot>slotItemClicked(QListViewItem*,const QPoint&amp;,int)</slot>
+        <slot>slotEditClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_list</sender>
+        <signal>doubleClicked(QListViewItem*)</signal>
+        <receiver>UI_BusProperties</receiver>
+        <slot>slotEditClicked()</slot>
     </connection>
 </connections>
 <slots>
-    <slot>slotOKClicked()</slot>
-    <slot>slotCancelClicked()</slot>
-    <slot>slotItemRenamed(QListViewItem*,int,const QString&amp;)</slot>
-    <slot>slotItemClicked(QListViewItem*,const QPoint&amp;,int)</slot>
+    <slot>slotEditClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -248,7 +248,9 @@ void SequenceEditor::slotInsert()
 	  item->setText(ch, s);
 	}
 
-      item->setRenameEnabled(ch, true);
+      // Rename doesn't work with rmb click in pre 3.3, 
+      // so it won't be available anywhere
+      item->setRenameEnabled(ch, false);
     }
 
   m_list->setSelected(item, true);

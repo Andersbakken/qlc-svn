@@ -44,7 +44,6 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotSceneNameTextChanged(const QString& text);
 
   void slotEditValueClicked();
-  void slotContentsClicked(QListViewItem*, const QPoint&, int);
   void slotContentsClicked(QListViewItem* item);
   void slotContentsDoubleClicked(QListViewItem*);
   void slotChannelsContextMenuRequested(QListViewItem*, const QPoint &, int);
@@ -54,8 +53,6 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotCancelClicked();
 
   void slotDeviceFunctionsListChanged(t_function_id fid);
-
-  void slotItemRenamed(QListViewItem* item, int col);
 
  signals:
   void closed();
@@ -68,9 +65,6 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void invokePresetMenu(const QPoint &);
   void invokeValueMenu(const QPoint &);
   void invokeTypeMenu(const QPoint &);
-
-  void renameValue(int value);
-  void renameType(QString text);
 
  private slots:
   void slotPresetMenuActivated(int);

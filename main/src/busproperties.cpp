@@ -23,7 +23,9 @@
 #include <qevent.h>
 #include <qlistview.h>
 #include <qstring.h>
+#include <qinputdialog.h>
 
+#include "app.h"
 #include "bus.h"
 #include "types.h"
 #include "busproperties.h"
@@ -41,19 +43,25 @@ BusProperties::~BusProperties()
 {
 }
 
-void BusProperties::slotItemClicked(QListViewItem* item, const QPoint& point,
-				    int col)
+void BusProperties::slotEditClicked()
 {
-  if (col == KColumnName)
+  QListViewItem* item = m_list->currentItem();
+  if (item)
     {
-      item->startRename(col);
-    }
-}
+      bool ok;
+      QString text = 
+	QInputDialog::getText(KApplicationNameShort, 
+			      "Bus name:", 
+			      QLineEdit::Normal,
+			      Bus::name(item->text(KColumnID).toInt() - 1), 
+			      &ok, this);
 
-void BusProperties::slotItemRenamed(QListViewItem* item, int col, 
-				    const QString &text)
-{
-  Bus::setName(item->text(KColumnID).toInt() - 1, text);
+      if ( ok && !text.isEmpty() )
+	{
+	  Bus::setName(item->text(KColumnID).toInt() - 1, text);
+	  item->setText(KColumnName, text);
+	}
+    }
 }
 
 void BusProperties::closeEvent(QCloseEvent* e)
@@ -73,6 +81,6 @@ void BusProperties::fillTree()
       item->setText(KColumnID, text);
       item->setText(KColumnName, Bus::name(i));
 
-      item->setRenameEnabled(KColumnName, true);
+      item->setRenameEnabled(KColumnName, false);
     }
 }

@@ -88,7 +88,7 @@ void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
 							   const QPoint &pos,
 							   int col)
 {
-  if (m_scene == NULL)
+  if (m_scene == NULL || m_sceneContents->isRenaming())
     {
       return;
     }
@@ -367,23 +367,6 @@ void AdvancedSceneEditor::slotSceneNameTextChanged(const QString& text)
     }
 }
 
-void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item,
-					      const QPoint& point, int col)
-{
-  if (item)
-    {
-      if (col == KColumnValue)
-	{
-	  item->startRename(KColumnValue);
-	}
-      else if (col == KColumnType)
-	{
-	  item->startRename(KColumnType);
-	}
-    }
-}
-
-
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
   if (item)
@@ -553,55 +536,5 @@ void AdvancedSceneEditor::updateChannelList()
       val.sprintf("%03d", m_scene->channelValue(ch->channel()).value);
       item = new QListViewItem(m_sceneContents, num, ch->name(), cap, val, 
 			       m_scene->valueTypeString(ch->channel()));
-      item->setRenameEnabled(KColumnValue, true);
-      item->setRenameEnabled(KColumnType, true);
-    }
-}
-
-
-void AdvancedSceneEditor::slotItemRenamed(QListViewItem* item, int col)
-{
-  switch(col)
-    {
-    case KColumnValue:
-      renameValue(item->text(KColumnValue).toInt());
-      break;
-
-    case KColumnType:
-      renameType(item->text(KColumnType));
-      break;
-
-    default:
-      break;
-    }
-}
-
-void AdvancedSceneEditor::renameValue(int value)
-{
-  if (value < KChannelValueMin)
-    {
-      value = KChannelValueMin;
-    }
-  else if (value > KChannelValueMax)
-    {
-      value = KChannelValueMax;
-    }
-
-  slotValueMenuActivated(value);
-}
-
-void AdvancedSceneEditor::renameType(QString text)
-{
-  if (text.lower().contains("f"))
-    {
-      slotTypeMenuActivated(Scene::Fade);
-    }
-  else if (text.lower().contains("n"))
-    {
-      slotTypeMenuActivated(Scene::NoSet);
-    }
-  else // if (text.lower().contains("s"))
-    {
-      slotTypeMenuActivated(Scene::Set);
     }
 }

@@ -36,7 +36,6 @@
 #include <qtooltip.h>
 #include <qframe.h>
 #include <qbutton.h>
-#include <iostream.h>
 #include <qfile.h>
 #include <qlayout.h>
 #include <qthread.h>

@@ -57,10 +57,9 @@ const int KColumnID   ( 1 );
 const int KMenuItemAdd        ( 0 );
 const int KMenuItemRemove     ( 1 );
 const int KMenuItemProperties ( 2 );
-const int KMenuItemRename     ( 3 );
-const int KMenuItemMonitor    ( 4 );
-const int KMenuItemConsole    ( 5 );
-const int KMenuItemClone      ( 6 );
+const int KMenuItemMonitor    ( 3 );
+const int KMenuItemConsole    ( 4 );
+const int KMenuItemClone      ( 5 );
 
 const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
 const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
@@ -300,9 +299,6 @@ void DeviceManagerView::initDataView()
 	  this, SLOT(slotRightButtonClicked(QListViewItem*,
 					    const QPoint&, int)));
 
-  connect(m_listView, SIGNAL(itemRenamed(QListViewItem*, int)),
-	  this, SLOT(slotItemRenamed(QListViewItem*, int)));
-
   // Create the text view
   m_textView = new QTextView(m_splitter);
   m_splitter->setResizeMode(m_textView, QSplitter::Auto);
@@ -343,9 +339,6 @@ void DeviceManagerView::slotUpdate()
 	  // ID column
 	  id.setNum(dev->id());
 	  newItem->setText(KColumnID, id);
-	  
-	  // Enable rename
-	  newItem->setRenameEnabled(KColumnName, true);
 	  
 	  // Select this if it was selected before update
 	  if (currentId == dev->id())
@@ -611,8 +604,6 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
 		   "Remove", KMenuItemRemove);
   menu->insertItem(QPixmap(dir + "/settings.xpm"),
 		   "Properties...", KMenuItemProperties);
-  menu->insertItem(QPixmap(dir + "/rename.xpm"),
-		   "Rename...", KMenuItemRename);
   menu->insertSeparator();
   menu->insertItem(QPixmap(dir + "/monitor.xpm"),
 		   "View Monitor...", KMenuItemMonitor);
@@ -625,7 +616,6 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemAdd, false);
       menu->setItemEnabled(KMenuItemRemove, false);
       menu->setItemEnabled(KMenuItemProperties, false);
-      menu->setItemEnabled(KMenuItemRename, false);
       menu->setItemEnabled(KMenuItemClone, false);
     }
   
@@ -636,7 +626,6 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemConsole, false);
       menu->setItemEnabled(KMenuItemMonitor, false);
       menu->setItemEnabled(KMenuItemProperties, false);
-      menu->setItemEnabled(KMenuItemRename, false);
       menu->setItemEnabled(KMenuItemClone, false);
     }
 
@@ -669,10 +658,6 @@ void DeviceManagerView::slotMenuCallBack(int item)
       slotProperties();
       break;
 
-    case KMenuItemRename:
-      slotRename();
-      break;
-
     case KMenuItemConsole:
       slotConsole();
       break;
@@ -685,26 +670,6 @@ void DeviceManagerView::slotMenuCallBack(int item)
       break;
     }
 }
-
-
-void DeviceManagerView::slotRename()
-{
-  QListViewItem* item = m_listView->currentItem();
-  item->startRename(KColumnName);
-}
-
-//
-// An item has been renamed
-//
-void DeviceManagerView::slotItemRenamed(QListViewItem* item, int col)
-{
-  Device* dev = _app->doc()->device(item->text(KColumnID).toInt());
-  ASSERT(dev);
-
-  dev->setName(item->text(KColumnName));
-  m_textView->setText(dev->infoText());
-}
-
 
 
 void DeviceManagerView::copyFunction(Function* function, Device* device)

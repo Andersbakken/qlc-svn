@@ -162,6 +162,7 @@ App::App() : QMainWindow()
   m_mode = Design;
   m_blackOut = false;
   m_blackOutIndicatorTimer = NULL;
+  m_documentBrowser = NULL;
 
   writer = normalWriter;
 }
