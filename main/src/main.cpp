@@ -28,15 +28,61 @@
 App* _app;
 QApplication* _qapp;
 
-int main(int argc, char *argv[])
+int parseArgs(int argc, char **argv)
+{
+  int ret = 0;
+
+  if (argc < 2)
+    {
+      // No args
+      return 0;
+    }
+  else
+    {
+      for (int i = 1; i < argc; i++)
+	{
+	  if (strcmp(argv[i], "-h") == 0 || 
+	      strcmp(argv[i], "--help") == 0)
+	    {
+	      printf("\nUsage:");
+	      printf("\n%s [options]", argv[0]);
+	      printf("\n\nOptions:");
+	      printf("\n-h or --help      Print this help");
+	      printf("\n-v or --version   Print version information");
+	      
+	      ret = -1;
+	    }
+	  else if (strcmp(argv[i], "-v") == 0 ||
+		   strcmp(argv[i], "--version") == 0)
+	    {
+	      printf("\n%s", IDS_APP_VERSION_STR);
+	      ret = -1;
+	    }
+	}
+
+      // Print a couple of enters
+      printf("\n\n");
+    }
+
+  return ret;
+}
+
+int main(int argc, char **argv)
 {
   int result;
+
+  printf("--- Q Light Controller 2 ---\n");
+  printf("This program is licensed under the terms of the GNU General Public License.\n");
+  printf("Copyright (c) Heikki Junnila (hjunnila@iki.fi)\n");
+
+  if (parseArgs(argc, argv) == -1)
+    {
+      exit(0);
+    }
+
+  // Initialize QApplication object
   QApplication a(argc, argv);
   _qapp = &a;
-
-  printf("--- Starting Q Light Controller 2 ---\n");
-  printf("This program is licensed under the terms of the GNU General Public License.\n");
-  printf("Copyright (c) 2000, 2001, 2002 Heikki Junnila (hjunnila@iki.fi)\n\n");
 
   // Get widget style from settings
   Settings* settings;

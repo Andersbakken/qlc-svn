@@ -38,31 +38,37 @@ AboutBox::AboutBox(QWidget* parent, const char* name) : QDialog (parent, name, t
 
 AboutBox::~AboutBox()
 {
-
+  delete m_pm;
+  delete m_logo;
+  delete m_version;
+  delete m_copyright;
+  delete m_peopleLabel;
+  delete m_people;
+  delete m_ok;
 }
 
 void AboutBox::initDialog()
 {
   QColor white(255, 255, 255);
-  int w = 300;
+  int w = 350;
   int h = 123;
 
   setCaption("About QLC");
 
   m_pm = new QPixmap(_app->settings()->pixmapPath() + "/qlc-big.xpm");
+  m_logo = new QLabel(this);
+
   if (m_pm->isNull() == false)
     {
-      m_logo = new QWidget(this);
-      m_logo->setGeometry(28, 0, w, h);
-      m_logo->setBackgroundPixmap(*m_pm);
+      m_logo->setGeometry(50, 0, 254, h);
+      m_logo->setPixmap(*m_pm);
     }
   else
     {
-      m_logo = (QWidget*) new QLabel(this);
       m_logo->setGeometry(0, 0, w, h);
       m_logo->setBackgroundColor(QColor(255, 255, 255));
-      ((QLabel*) m_logo)->setAlignment(AlignCenter);
-      ((QLabel*) m_logo)->setText("Pixmap path is missing from your settings!");
+      m_logo->setAlignment(AlignCenter);
+      m_logo->setText("Pixmap path is missing from your settings!");
     }
 
   setFixedSize(w, h + 220);
@@ -71,7 +77,7 @@ void AboutBox::initDialog()
   m_version = new QLabel(this);
   m_version->setGeometry(0, h, w, 20);
   m_version->setAlignment(AlignCenter);
-  m_version->setText("Version 2.0.10");
+  m_version->setText(IDS_APP_VERSION_STR);
   m_version->setBackgroundColor(white);
   
   m_copyright = new QLabel(this);
@@ -89,12 +95,14 @@ void AboutBox::initDialog()
   m_people = new QListBox(this);
   m_people->setGeometry(5, h + 90, w-10, 80);
   m_people->setBackgroundColor(white);
+  m_people->setFocusPolicy(QWidget::NoFocus);
+  m_people->setSelectionMode(QListBox::NoSelection);
   m_people->insertItem("Heikki Junnila (hjunnila@iki.fi)");
   m_people->insertItem("Stefan Krumm (krumm@geol.uni-erlangen.de)");
   m_people->insertItem("Dirk Jagdmann (doj@cubic.org)");
 
   m_ok = new QPushButton(this);
-  m_ok->setGeometry(108, h + 180, 100, 30);
+  m_ok->setGeometry(133, h + 180, 100, 30);
   m_ok->setMinimumSize(100, 30);
   m_ok->setDefault(false);
   m_ok->setText("&OK");

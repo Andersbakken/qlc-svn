@@ -47,7 +47,7 @@ class AboutBox : public QDialog
  protected:
   QPixmap* m_pm;
   QPushButton* m_ok;
-  QWidget* m_logo;
+  QLabel* m_logo;
   QLabel* m_version;
   QLabel* m_copyright;
   QLabel* m_peopleLabel;

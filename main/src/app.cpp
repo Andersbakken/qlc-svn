@@ -181,13 +181,13 @@ void App::initMenuBar()
   //m_viewMenu->insertSeparator();
   //m_viewMenu->insertItem(QPixmap(m_settings->getPixmapPath() + QString("joystick.xpm")), "Input devices", this, SLOT(slotViewInputDevices()), 0, ID_VIEW_INPUT_DEVICES);
   m_viewMenu->insertSeparator();
-  m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
-  m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
-  m_viewMenu->insertSeparator();
+//  m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
+//  m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
+//  m_viewMenu->insertSeparator();
   m_viewMenu->insertItem("DMX Address Tool", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
 
-  m_viewMenu->setItemChecked(ID_VIEW_TOOLBAR, true);
-  m_viewMenu->setItemChecked(ID_VIEW_STATUSBAR, true);
+//  m_viewMenu->setItemChecked(ID_VIEW_TOOLBAR, true);
+//  m_viewMenu->setItemChecked(ID_VIEW_STATUSBAR, true);
 
   ///////////////////////////////////////////////////////////////////
   // Functions Menu
@@ -299,6 +299,10 @@ void App::slotRefreshWindowMenu()
   for (widget = wl.first(); widget != NULL; widget = wl.next())
   {
     m_windowMenu->insertItem(widget->caption(), id);
+    if (widget->isVisible() == true)
+    {
+      m_windowMenu->setItemChecked(id, true);
+    }
     id++;
   }
 

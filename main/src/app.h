@@ -42,6 +42,7 @@ class QWidgetList;
 // General program defines
 #define IDS_APP_NAME_LONG               "Q Light Controller 2"
 #define IDS_APP_NAME_SHORT              "QLC2"
+#define IDS_APP_VERSION_STR             "Version 2.0.10"
 
 #define MIN_LIGHT_VALUE                 0
 #define MAX_LIGHT_VALUE                 100
