@@ -83,8 +83,6 @@ void MidiOut::setFileName(QString fileName)
 
 bool MidiOut::open()
 {
-  qDebug("Open MidiOut plugin");
-
   if (m_fd != -1)
     {
       qDebug("MidiOut already open");
@@ -98,18 +96,12 @@ bool MidiOut::open()
       qDebug("Midi Output not available");
       return false;
     }
-  else
-    {
-      qDebug(QString("Midi Output available thru ") + m_deviceName);
-    }
 
   return true;
 }
 
 bool MidiOut::close()
 {
-  qDebug("Close MidiOut plugin");
-
   if (m_fd == -1)
     {
       return false;
@@ -118,13 +110,10 @@ bool MidiOut::close()
     {
       if (::close(m_fd) == -1)
 	{
-	  perror("close");
-	  qDebug("Unable to close MidiOut plugin");
 	  return false;
 	}
       else
 	{
-	  qDebug("MidiOut plugin closed");
 	  m_fd = -1;
 	}
     }

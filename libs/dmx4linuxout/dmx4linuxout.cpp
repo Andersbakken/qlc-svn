@@ -74,8 +74,6 @@ DMX4LinuxOut::~DMX4LinuxOut()
 /* Attempt to open dmx device */
 bool DMX4LinuxOut::open()
 {
-  qDebug("Open DMX4Linux plugin");
-
   if (m_device != -1)
     {
       qDebug("DMX4Linux already open");
@@ -91,27 +89,21 @@ bool DMX4LinuxOut::open()
     }
   else
     {
-      qDebug("DMX output available thru " + m_deviceName);
       return true;
     }
 }
 
 bool DMX4LinuxOut::close()
 {
-  qDebug("Close DMX4Linux plugin");
-
   if (m_device != -1)
     {
       ::close(m_device);
       m_device = -1;
 
-      qDebug("DMX4Linux plugin closed");
-
       return true;
     }
   else
     {
-      qDebug("Unable to close DMX4Linux plugin!");
       return false;
     }
 }
@@ -211,7 +203,7 @@ void DMX4LinuxOut::saveSettings()
   else
     {
       perror("file.open");
-      qDebug("Unable to save MidiOut configuration");
+      qDebug("Unable to save DMX4LinuxOut configuration");
     }
 }
 
