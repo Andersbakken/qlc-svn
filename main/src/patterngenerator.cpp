@@ -156,8 +156,8 @@ void PatternGenerator::createCircle()
 
   for (i = 0; i < pi; i += m_density)
     {
-      x = static_cast<int> (m_yOffset + (sin(i) * m_width));
-      y = static_cast<int> (m_xOffset + (cos(i) * m_height));
+      x = static_cast<int> (m_xOffset + (sin(i) * m_width));
+      y = static_cast<int> (m_yOffset + (cos(i) * m_height));
       
       m_pointArray.setPoint(point++, x, y);
     }
