@@ -19,12 +19,15 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qfile.h>
+#include <qstring.h>
+
 #include "bus.h"
 #include "app.h"
 
 static int _nextBusID = BUS_ID_MIN;
 
-Bus::Bus()
+Bus::Bus() : QObject()
 {
   m_id = _nextBusID;
   _nextBusID++;
@@ -48,6 +51,12 @@ Bus& Bus::operator=(Bus &b)
     }
 
   return *this;
+}
+
+void Bus::setValue(unsigned long value)
+{ 
+  m_value = value;
+  emit dataChanged((const Bus*) this);
 }
 
 void Bus::saveToFile(QFile &file)

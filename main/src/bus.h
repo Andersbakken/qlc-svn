@@ -23,22 +23,26 @@
 #define BUS_H
 
 #include "classes.h"
-#include <qfile.h>
-#include <qstring.h>
+#include <qobject.h>
 #include <qlist.h>
 
-class Bus
+class QFile;
+class QString;
+
+class Bus : public QObject
 {
+  Q_OBJECT
+
  public:
   Bus();
   ~Bus();
 
   enum Type { Generic = 0, Speed = 1 };
 
-  unsigned int id() { return m_id; }
+  unsigned long id() { return m_id; }
 
-  unsigned int value() { return m_value; }
-  void setValue(unsigned int value) { m_value = value; }
+  unsigned long value() const { return m_value; }
+  void setValue(unsigned long value);
 
   Type type() { return m_type; }
   void setType(Type type) { m_type = type; }
@@ -51,9 +55,12 @@ class Bus
 
   Bus& operator=(Bus &b);
 
+ signals:
+  void dataChanged(const Bus*);
+
  private:
-  unsigned int m_id;
-  unsigned int m_value;
+  unsigned long m_id;
+  unsigned long m_value;
   Type m_type;
   QString m_name;
 };

@@ -27,12 +27,6 @@
 #include "classes.h"
 #include <qlist.h>
 
-#define MOD_SCENE 1000
-#define MOD_SCENE_FADE_IN MOD_SCENE + 1
-#define MOD_SCENE_FADE_OUT MOD_SCENE + 2
-#define MOD_SCENE_CROSSFADE_IN MOD_SCENE + 3
-#define MOD_SCENE_CROSSFADE_OUT MOD_SCENE + 4
-
 class Scene : public Function
 {
   Q_OBJECT
@@ -42,12 +36,13 @@ class Scene : public Function
   Scene();
   ~Scene();
 
+ public:
   Event* getEvent(Feeder* feeder);
   Event* getNextLevel(Feeder* f);
   void recalculateSpeed(Feeder* feeder);
 
   void allocate(unsigned short channels);
-  void set(unsigned short ch, unsigned short value);
+  void set(unsigned short ch, unsigned char value);
 
   void saveToFile(QFile &file);
 
@@ -56,7 +51,7 @@ class Scene : public Function
   void createContents(QList<QString> &list);
 
  private:
-  unsigned short* m_values;
+  unsigned char* m_values;
 };
 
 #endif

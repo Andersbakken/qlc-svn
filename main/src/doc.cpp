@@ -543,9 +543,9 @@ Device* Doc::createDevice(QList<QString> &list)
     }
 
   if (name == QString::null || manufacturer == QString::null ||
-      manufacturer == QString::null || address == 0)
+      manufacturer == QString::null)
     {
-      qDebug(QString("Unable to add device:") + name + manufacturer + model);
+      qDebug("Unable to add device %s [%s] [%s]" + name + manufacturer + model);
       return NULL;
     }
   else

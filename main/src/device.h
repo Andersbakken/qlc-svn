@@ -40,7 +40,7 @@ class Device : public QObject
   virtual void setName(QString);
   QString name() const { return m_name; }
 
-  int address() const { return m_address; }
+  unsigned short address() const { return m_address; }
 
   /* Device Class */
   DeviceClass* deviceClass() { return m_deviceClass; }

@@ -32,7 +32,7 @@ extern App* _app;
 
 Scene::Scene(unsigned short channels) : Function()
 {
-  m_values = (unsigned short*) calloc(channels, sizeof(short));
+  m_values = (unsigned char*) calloc(channels, sizeof(unsigned char));
   m_type = Function::Scene;
 }
 
@@ -82,7 +82,7 @@ void Scene::saveToFile(QFile &file)
   if (deviceClass() != NULL)
     {
       // Write only the data for device class scenes
-      for (unsigned short i = 0; i < deviceClass()->m_channels.count(); i++)
+      for (unsigned short i = 0; i < deviceClass()->channels(); i++)
 	{
 	  t.setNum(i);
 	  s = t + QString(" = ");
@@ -128,10 +128,10 @@ void Scene::createContents(QList<QString> &list)
 	  s = list.prev();
 	  break;
 	}
-      else if(s->at(0).isNumber() == true)
+      else if (s->at(0).isNumber() == true)
 	{
-	  int ch = s->toInt();
-	  m_values = (unsigned short*) realloc(m_values, channels * sizeof(int));
+	  unsigned char ch = (unsigned char) s->toInt();
+	  m_values = (unsigned char*) realloc(m_values, channels * sizeof(unsigned char));
 	  t = *(list.next());
 	  m_values[ch] = t.toInt();
 	  channels++;
@@ -146,10 +146,10 @@ void Scene::createContents(QList<QString> &list)
 
 void Scene::allocate(unsigned short channels)
 {
-  m_values = (unsigned short*) calloc(channels, sizeof(short));
+  m_values = (unsigned char*) calloc(channels, sizeof(unsigned char));
 }
 
-void Scene::set(unsigned short ch, unsigned short value)
+void Scene::set(unsigned short ch, unsigned char value)
 {
   m_values[ch] = value;
 }
@@ -157,38 +157,25 @@ void Scene::set(unsigned short ch, unsigned short value)
 void Scene::recalculateSpeed(Feeder* f)
 {
   unsigned short gap = 0;
-  double delta = 0;
+  unsigned long delta = 0;
 
   unsigned short channels = 0;
-  
+
   if (f->device() != NULL)
     {
       channels = f->device()->deviceClass()->channels();
     }
 
-  // Calculate the delta for first channel
-  gap = (unsigned short) abs((signed short) f->startLevel(0) - (signed short) m_values[0]);
-  if (gap != 0)
-    {
-      delta = ((double) f->timeSpan()) / ((double) gap);
-      f->setDelta((unsigned long) delta);
-    }
-  else
-    {
-      // We don't want to divide timeSpan with zero, so
-      // this is needed
-      delta = f->timeSpan();
-    }
-  
   // Calculate delta for the rest of the channels.
   // Find out the channel needing the smallest delta (most frequent
   // updates needed) and set it to this whole scene's delta
-  for (short i = 1; i < channels; i++)
+  for (unsigned short i = 0; i < channels; i++)
     {
       gap = abs((signed short) f->startLevel(i) - (signed short) m_values[i]);
+
       if (gap != 0)
 	{
-	  delta = f->timeSpan() / gap;
+	  delta = (unsigned long) ((double) f->timeSpan() / (double) gap);
 	}
       else
 	{
@@ -209,9 +196,8 @@ Event* Scene::getEvent(Feeder* feeder)
 
 Event* Scene::getNextLevel(Feeder* f)
 {
-  float readyCount = 0;
-
-  short channels = 0;
+  unsigned short readyCount = 0;
+  unsigned short channels = 0;
   
   if (f->device() != NULL)
     {
@@ -220,7 +206,7 @@ Event* Scene::getNextLevel(Feeder* f)
 
   Event* event = new Event(channels);
 
-  for (short i = 0; i < channels; i++)
+  for (unsigned short i = 0; i < channels; i++)
     {
       if (f->startLevel(i) > m_values[i])
 	{
@@ -252,7 +238,7 @@ Event* Scene::getNextLevel(Feeder* f)
 	{
 	  event->m_values[i] = VALUE_READY;
 	  readyCount++;
-	} 
+	}
     }
 
   event->m_delta = (unsigned long) floor(f->delta());
