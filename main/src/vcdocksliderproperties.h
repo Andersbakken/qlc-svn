@@ -37,13 +37,10 @@ class VCDockSliderProperties : public UI_VCDockSliderProperties
 
  protected:
   void fillBusCombo();
+  void fillChannelList();
 
  public slots:
   void slotBehaviourSelected(int);
-
-  void slotAddChannelClicked();
-  void slotRemoveChannelClicked();
-  void slotClearAllChannelsClicked();
 
   void slotOKClicked();
   void slotCancelClicked();

@@ -388,8 +388,8 @@ void Scene::init()
   m_removeAfterEmpty = false;
 
   // Current values
-  _app->outputPlugin()->readRange(_app->doc()->device(m_deviceID)->address(),
-				  m_channelData, m_channels);
+  _app->valueRange(_app->doc()->device(m_deviceID)->address(),
+		   m_channelData, m_channels);
 
   for (t_channel i = 0; i < m_channels; i++)
     {

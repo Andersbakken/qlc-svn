@@ -304,6 +304,10 @@ void VirtualConsole::initMenuBar()
 			 "&Rename...", this, SLOT(slotEditRename()),
 			 0, KVCMenuEditRename);
 
+  m_editMenu->setItemEnabled(KVCMenuEditCut, false);
+  m_editMenu->setItemEnabled(KVCMenuEditCopy, false);
+  m_editMenu->setItemEnabled(KVCMenuEditPaste, false);
+
   m_editMenu->insertSeparator();
 
   m_editMenu->insertItem("Foreground", fgMenu);

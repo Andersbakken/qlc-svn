@@ -88,7 +88,7 @@ class App : public QMainWindow
   bool probePlugin(QString path);
 
   //
-  // Device classe stuff
+  // Device class stuff
   //
   void initDeviceClasses();
   void addDeviceClass(DeviceClass*);
@@ -102,6 +102,25 @@ class App : public QMainWindow
   //
   enum Mode { Operate, Design };
   bool mode() { return m_mode; }
+
+  //
+  // Value read & write
+  //
+  void initValues();
+  void setValue(t_channel, t_value);
+  t_value value(t_channel);
+  void valueRange(t_channel address, t_value* values, t_channel num);
+
+  //
+  // Submasters
+  //
+  void initSubmasters();
+  bool assignSubmaster(t_channel);
+  bool resignSubmaster(t_channel);
+  int hasSubmaster(t_channel);
+  void resetSubmasters();
+  void setSubmasterValue(t_channel, int);
+  int submasterValue(t_channel);
 
  private slots:
   void slotChangeOutputPlugin(const QString& name);
@@ -204,6 +223,10 @@ class App : public QMainWindow
 
   // Device classes
   QPtrList <DeviceClass> m_deviceClassList;
+
+  t_value m_values[512];
+  float m_submasterValues[512];
+  int m_submasters[512];
 
  protected:
   void closeEvent(QCloseEvent*);

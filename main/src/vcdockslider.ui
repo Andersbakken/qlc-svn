@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_VCDockSlider</class>
 <widget class="QFrame">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>34</x>
             <y>0</y>
             <width>55</width>
-            <height>252</height>
+            <height>212</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -151,23 +151,25 @@
                 <string>Tap Speed</string>
             </property>
         </widget>
-        <spacer>
+        <widget class="QLabel">
             <property name="name">
-                <cstring>spacer3</cstring>
+                <cstring>m_infoLabel</cstring>
             </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
-            <property name="sizeType">
-                <enum>Fixed</enum>
+            <property name="text">
+                <string>No Name</string>
             </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>10</height>
-                </size>
+            <property name="alignment">
+                <set>WordBreak|AlignCenter</set>
             </property>
-        </spacer>
+        </widget>
     </vbox>
 </widget>
 <connections>

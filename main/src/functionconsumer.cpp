@@ -273,9 +273,13 @@ void FunctionConsumer::event(time_t)
 		}
 	      else
 		{
+		  _app->setValue(_app->doc()->device(m_function->device())->
+				 address() + m_channel, m_event[m_channel]);
+		  /*
 		  _app->outputPlugin()
 		    ->writeChannel(_app->doc()->device(m_function->device())->
 				   address() + m_channel, m_event[m_channel]);
+		  */
 		}
 	    }
         }

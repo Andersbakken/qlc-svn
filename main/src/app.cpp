@@ -196,6 +196,12 @@ void App::init(void)
   initDeviceClasses();
 
   //
+  // Submasters & values
+  //
+  initSubmasters();
+  initValues();
+
+  //
   // Function consumer
   //
   initFunctionConsumer();
@@ -1564,3 +1570,124 @@ DeviceClass* App::searchDeviceClass(const t_deviceclass_id id)
 
   return NULL;
 }
+
+void App::initSubmasters()
+{
+  for (t_channel i = 0; i < 512; i++)
+    {
+      m_submasters[i] = 0;
+      m_submasterValues[i] = 1;
+    }
+}
+
+void App::initValues()
+{
+  m_outputPlugin->readRange(0, m_values, 512);
+}
+
+//
+// Set a DMX value
+//
+void App::setValue(t_channel ch, t_value value)
+{
+  assert(ch < 512 && ch >= 0);
+
+  m_values[ch] = value;
+  
+  m_outputPlugin->writeChannel(ch,
+			       static_cast<t_value> 
+			       (((float) value) * m_submasterValues[ch]));
+}
+
+t_value App::value(t_channel ch)
+{
+  assert(ch < 512 && ch >= 0);
+
+  return m_values[ch];
+}
+
+void App::valueRange(t_channel address, t_value* values, t_channel num)
+{
+  assert(address < 512 && address >= 0);
+  memcpy(values, m_values + address, num);
+}
+
+
+////////////////
+// Submasters //
+////////////////
+//
+// Indicate that someone is setting submaster value to a channel
+//
+bool App::assignSubmaster(t_channel ch)
+{
+  assert(ch < 512 && ch >= 0);
+
+  m_submasters[ch]++;
+  return true;
+}
+
+
+//
+// Indicate that someone is no longer setting submaster value to a channel
+//
+bool App::resignSubmaster(t_channel ch)
+{
+  assert(ch < 512 && ch >= 0);
+
+  m_submasters[ch]--;
+
+  assert(m_submasters[ch] >= 0);
+
+  return true;
+}
+
+
+//
+// Check if a channel has a submaster
+//
+int App::hasSubmaster(t_channel ch)
+{
+  assert(ch < 512 && ch >= 0);
+
+  return m_submasters[ch];
+}
+
+
+//
+// After assign/resign, reset all non-assigned submaster channel values to 100%
+//
+void App::resetSubmasters()
+{
+  for (t_channel i = 0; i < 512; i++)
+    {
+      if (hasSubmaster(i) == 0)
+	{
+	  setSubmasterValue(i, 100);
+	}
+    }
+}
+
+
+//
+// Set the submaster value to a channel
+//
+void App::setSubmasterValue(t_channel ch, int percent)
+{
+  assert(ch < 512 && ch >= 0);
+
+  m_submasterValues[ch] = (float) percent / (float) 100;
+  setValue(ch, m_values[ch]);
+}
+
+
+//
+// Get the submaster value for a channel
+//
+int App::submasterValue(t_channel ch)
+{
+  assert(ch < 512 && ch >= 0);
+  
+  return static_cast<int> (m_submasterValues[ch]);
+}
+

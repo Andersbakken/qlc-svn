@@ -22,16 +22,25 @@
 #include <qcombobox.h>
 #include <qbuttongroup.h>
 #include <qmessagebox.h>
+#include <qlistview.h>
 #include <qspinbox.h>
 #include <assert.h>
 
 #include "vcdocksliderproperties.h"
 #include "vcdockslider.h"
+#include "device.h"
+#include "deviceclass.h"
+#include "logicalchannel.h"
 #include "types.h"
 #include "bus.h"
 #include "app.h"
+#include "doc.h"
 
 extern App* _app;
+
+const int KColumnDMXChannel     ( 0 );
+const int KColumnDevice         ( 1 );
+const int KColumnDeviceChannel  ( 2 );
 
 VCDockSliderProperties::VCDockSliderProperties(VCDockSlider* parent,
 					       const char* name)
@@ -48,20 +57,25 @@ VCDockSliderProperties::~VCDockSliderProperties()
 void VCDockSliderProperties::init()
 {
   //
-  // Mode
+  // Fill elements
   //
-  m_behaviourGroup->setButton(m_slider->mode());
-  slotBehaviourSelected(m_slider->mode());
+  fillBusCombo();
+  fillChannelList();
 
   //
-  // Bus elements
+  // Bus stuff
   //
   t_bus_value buslo, bushi;
   m_slider->busRange(buslo, bushi);
   m_lowBusValueSpin->setValue(buslo);
   m_highBusValueSpin->setValue(bushi);
   
-  fillBusCombo();
+  //
+  // Mode
+  //
+  m_behaviourGroup->setButton(m_slider->mode());
+  slotBehaviourSelected(m_slider->mode());
+
 }
 
 void VCDockSliderProperties::fillBusCombo()
@@ -78,6 +92,62 @@ void VCDockSliderProperties::fillBusCombo()
     }
 
   m_busCombo->setCurrentItem(m_slider->busID());
+}
+
+void VCDockSliderProperties::fillChannelList()
+{
+  QString s;
+  t_channel ch;
+  t_channel channels;
+  QCheckListItem* item = NULL;
+
+  //
+  // Fill the list view
+  //
+  for (t_device_id i = 0; i < KDeviceArraySize; i++)
+    {
+      Device* d = _app->doc()->device(i);
+      if (!d)
+	{
+	  continue;
+	}
+      else
+	{
+	  channels = (t_channel) d->deviceClass()->channels()->count();
+
+	  for (ch = 0; ch < channels; ch++)
+	    {
+	      // DMX Channel
+	      s.sprintf("%.3d", d->address() + ch + 1);
+	      item = new QCheckListItem(m_channelList, s, 
+					QCheckListItem::CheckBoxController);
+	      
+	      // Device name
+	      item->setText(KColumnDevice, d->name());
+
+	      // Device channel
+	      s.sprintf("%.3d:" + 
+			d->deviceClass()->channels()->at(ch)->name(), ch + 1);
+	      item->setText(KColumnDeviceChannel, s);
+	    }
+	}
+    }
+
+  //
+  // Check selected items
+  //
+  QValueList <t_channel>::iterator it;
+  for (it = m_slider->channels()->begin();
+       it != m_slider->channels()->end(); ++it)
+    {
+      s.sprintf("%.3d", (*it) + 1);
+      item = static_cast<QCheckListItem*> (m_channelList
+					   ->findItem(s, KColumnDMXChannel));
+      if (item)
+	{
+	  item->setState(QCheckListItem::On);
+	}
+    }
 }
 
 void VCDockSliderProperties::slotBehaviourSelected(int id)
@@ -110,27 +180,101 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
   m_mode = static_cast<VCDockSlider::Mode> (id);
 }
 
-void VCDockSliderProperties::slotAddChannelClicked()
-{
-}
-
-void VCDockSliderProperties::slotRemoveChannelClicked()
-{
-}
-
-void VCDockSliderProperties::slotClearAllChannelsClicked()
-{
-}
-
 void VCDockSliderProperties::slotOKClicked()
 {
+  //
+  // Resign previous submasters, if any
+  //
+  if (m_slider->mode() == VCDockSlider::Submaster)
+    {
+      m_slider->assignSubmasters(false);
+    }
+
+  //
+  // Check new mode
+  //
   if (m_mode == VCDockSlider::Speed)
     {
       m_slider->setBusRange(m_lowBusValueSpin->value(), 
 			    m_highBusValueSpin->value());
       m_slider->setBusID(m_busCombo->currentItem());
     }
+  else if (m_mode == VCDockSlider::Level)
+    {
+      QCheckListItem* item = NULL;
+      t_channel ch = 0;
 
+      //
+      // Clear channel list
+      //
+      m_slider->channels()->clear();
+      
+      //
+      // Then, add the new level channels
+      //
+      QListViewItemIterator it(m_channelList);
+      while (it.current())
+	{
+	  item = static_cast<QCheckListItem*> (it.current());
+
+	  ch = static_cast<t_channel> 
+	    (item->text(KColumnDMXChannel).toInt() - 1);
+
+	  if (item->isOn() && 
+	      m_slider->channels()->find(ch) == m_slider->channels()->end())
+	    {
+	      m_slider->channels()->append(ch);
+	    }
+
+	  ++it;
+	}
+    }
+  else if (m_mode == VCDockSlider::Submaster)
+    {
+      QCheckListItem* item = NULL;
+      t_channel ch = 0;
+
+      //
+      // Clear channel list
+      //
+      m_slider->channels()->clear();
+
+      //
+      // Then, add the new submaster channels
+      //
+      QListViewItemIterator it(m_channelList);
+      while (it.current())
+	{
+	  item = static_cast<QCheckListItem*> (it.current());
+
+	  ch = static_cast<t_channel> 
+	    (item->text(KColumnDMXChannel).toInt() - 1);
+
+	  if (item->isOn() && 
+	      m_slider->channels()->find(ch) == m_slider->channels()->end())
+	    {
+	      m_slider->channels()->append(ch);
+	    }
+
+	  ++it;
+	}
+      
+      //
+      // Assign submasters
+      //
+      m_slider->assignSubmasters(true);
+    }
+  
+  //
+  // Set the actual mode last
+  //
+  m_slider->setMode(m_mode);
+
+  //
+  // Reset all non-assigned submaster channels back to 100%
+  //
+  _app->resetSubmasters();
+  
   accept();
 }
 
