@@ -24,7 +24,6 @@
 #include "app.h"
 #include "doc.h"
 #include "configkeys.h"
-#include "virtualconsole.h"
 #include "newdevice.h"
 
 #include <qwidget.h>

@@ -424,7 +424,7 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 void VCFrame::invokeMenu(QPoint point)
 {
   QPopupMenu* menu = new QPopupMenu();
-  menu->insertItem("Frame", _app->virtualConsole()->widgetMenu());
+  menu->insertItem("Edit", _app->virtualConsole()->editMenu());
   menu->insertItem("Add", _app->virtualConsole()->addMenu());
   menu->exec(point);
   delete menu;
@@ -434,7 +434,7 @@ void VCFrame::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KVCMenuWidgetProperties:
+    case KVCMenuEditProperties:
       {
 	VCFrameProperties* vcfp = new VCFrameProperties(this);
 	vcfp->init();
@@ -447,7 +447,7 @@ void VCFrame::parseWidgetMenu(int item)
       }
       break;
 
-    case KVCMenuWidgetDrawFrame:
+    case KVCMenuBackgroundFrame:
       {
 	if (frameStyle() & KFrameStyle)
 	  {

@@ -1,0 +1,559 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>UI_VCDockSliderProperties</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_VCDockSliderProperties</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>379</width>
+            <height>488</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Slider Properties</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QButtonGroup">
+            <property name="name">
+                <cstring>m_behaviourGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Behaviour</string>
+            </property>
+            <property name="selectedId" stdset="0">
+                <number>0</number>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_speedRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Speed Setting</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+S</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>0</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use this slider to set fade or hold time for functions</string>
+                    </property>
+                </widget>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>m_busGroup</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="title">
+                        <string></string>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout3</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel1</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>70</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="text">
+                                        <string>Bus</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_busCombo</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>The bus that this slider will set its value to</string>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout4</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel2</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>70</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="text">
+                                        <string>Low Limit</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_lowBusValueSpin</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="suffix">
+                                        <string>s</string>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>999</number>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Shortest time in seconds</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel3</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>70</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="text">
+                                        <string>High Limit</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_highBusValueSpin</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="suffix">
+                                        <string>s</string>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>999</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>16</number>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Longest time in seconds</string>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_levelRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Level...</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+L</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>1</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use this slider to set the value for individual channels</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_submasterRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Submaster...</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>2</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use this slider to set the maximum value limit for selected channels</string>
+                    </property>
+                </widget>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>m_channelGroup</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="title">
+                        <string>...for Channels</string>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout5</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QListView">
+                                    <column>
+                                        <property name="text">
+                                            <string>DMX</string>
+                                        </property>
+                                        <property name="clickable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="resizable">
+                                            <bool>true</bool>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Device</string>
+                                        </property>
+                                        <property name="clickable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="resizable">
+                                            <bool>true</bool>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Channel</string>
+                                        </property>
+                                        <property name="clickable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="resizable">
+                                            <bool>true</bool>
+                                        </property>
+                                    </column>
+                                    <property name="name">
+                                        <cstring>listView2</cstring>
+                                    </property>
+                                    <property name="resizeMode">
+                                        <enum>AllColumns</enum>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>This slider affects these channels</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout5</cstring>
+                                    </property>
+                                    <vbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QPushButton">
+                                            <property name="name">
+                                                <cstring>m_addChannel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>&amp;Add...</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+A</string>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Add a channel to the list</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QPushButton">
+                                            <property name="name">
+                                                <cstring>m_removeChannel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>&amp;Remove</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+R</string>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Remove the selected channel from list</string>
+                                            </property>
+                                        </widget>
+                                        <spacer>
+                                            <property name="name">
+                                                <cstring>spacer1</cstring>
+                                            </property>
+                                            <property name="orientation">
+                                                <enum>Vertical</enum>
+                                            </property>
+                                            <property name="sizeType">
+                                                <enum>Expanding</enum>
+                                            </property>
+                                            <property name="sizeHint">
+                                                <size>
+                                                    <width>20</width>
+                                                    <height>40</height>
+                                                </size>
+                                            </property>
+                                        </spacer>
+                                        <widget class="QPushButton">
+                                            <property name="name">
+                                                <cstring>m_clearChannels</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>&amp;Clear All</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+C</string>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Remove all channels from the list</string>
+                                            </property>
+                                        </widget>
+                                    </vbox>
+                                </widget>
+                            </hbox>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout6</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel1_2</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>70</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="text">
+                                        <string>Low Limit</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_lowChannelValueSpin</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>255</number>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Lowest value that this slider can set to the selected channel(s)</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel2_2</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>70</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="text">
+                                        <string>High Limit</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_highChannelValueSpin</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>255</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>255</number>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Highest value this slider can set to the selected channel(s)</string>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout8</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Discard changes and close</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>m_behaviourGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotBehaviourSelected(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotCancelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_addChannel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotAddChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_removeChannel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotRemoveChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_clearChannels</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotClearAllChannelsClicked()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_speedRadio</tabstop>
+    <tabstop>m_busCombo</tabstop>
+    <tabstop>m_lowBusValueSpin</tabstop>
+    <tabstop>m_highBusValueSpin</tabstop>
+    <tabstop>m_levelRadio</tabstop>
+    <tabstop>m_addChannel</tabstop>
+    <tabstop>m_removeChannel</tabstop>
+    <tabstop>m_clearChannels</tabstop>
+</tabstops>
+<slots>
+    <slot>slotOKClicked()</slot>
+    <slot>slotCancelClicked()</slot>
+    <slot>slotAddChannelClicked()</slot>
+    <slot>slotRemoveChannelClicked()</slot>
+    <slot>slotClearAllChannelsClicked()</slot>
+    <slot>slotBehaviourSelected(int)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

@@ -28,7 +28,7 @@
 #include "deviceclass.h"
 #include "device.h"
 #include "scene.h"
-#include "channelui.h"
+#include "consolechannel.h"
 #include "listboxiditem.h"
 #include "configkeys.h"
 
@@ -47,20 +47,19 @@ using namespace std;
 
 extern App* _app;
 
-#define MENU_ACTIVATE 1000
-#define MENU_NEW      1001
-#define MENU_STORE    1002
-#define MENU_REMOVE   1003
-#define MENU_RENAME   1004
-#define MENU_HIDE     1005
+const int KMenuActivate ( 1000 );
+const int KMenuNew      ( 1001 );
+const int KMenuStore    ( 1002 );
+const int KMenuRemove   ( 1003 );
+const int KMenuRename   ( 1004 );
 
-static const QString KStatusStored = QString("Stored");
-static const QString KStatusUnchanged = QString("Unchanged");
-static const QString KStatusModified = QString("Modified");
+static const QString KStatusStored        ( "Stored"      );
+static const QString KStatusUnchanged     ( "Unchanged"   );
+static const QString KStatusModified      ( "Modified"    );
 
-static const QColor KStatusColorStored = QColor(100, 255, 100);
-static const QColor KStatusColorUnchanged = QColor(255, 255, 255);
-static const QColor KStatusColorModified = QColor(255, 100, 100);
+static const QColor KStatusColorStored    ( 100, 255, 100 );
+static const QColor KStatusColorUnchanged ( 255, 255, 255 );
+static const QColor KStatusColorModified  ( 255, 100, 100 );
 
 SceneEditor::SceneEditor(Device* device, QWidget* parent)
   : UI_SceneEditor(parent)
@@ -80,23 +79,25 @@ void SceneEditor::init()
   _app->settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
 
-  m_menu = new QPopupMenu();
-  connect(m_menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+  m_tools->setPixmap(QPixmap(dir + QString("/scene.png")));
 
+  m_menu = new QPopupMenu();
   m_menu->insertItem(QPixmap(dir + QString("/key.xpm")),
-		   "Activate scene", MENU_ACTIVATE);
+		     "Activate Selected", this, SLOT(slotActivate()),
+		     0, KMenuActivate);
   m_menu->insertSeparator();
   m_menu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
-		   "New...", MENU_NEW);
+		     "Create New...", this, SLOT(slotNew()), 
+		     0, KMenuNew);
   m_menu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
-		   "Store", MENU_STORE);
+		     "Overwrite", this, SLOT(slotStore()), 
+		     0, KMenuStore);
   m_menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-		   "Remove", MENU_REMOVE);
+		     "Remove Selected...", this, SLOT(slotRemove()), 
+		     0, KMenuRemove);
   m_menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-		   "Rename...", MENU_RENAME);
-  m_menu->insertSeparator();
-  m_menu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		   "Hide Editor", MENU_HIDE);
+		     "Rename Selected...", this, SLOT(slotRename()), 
+		     0, KMenuRename);
 
   m_tools->setPopup(m_menu);
 
@@ -108,7 +109,7 @@ void SceneEditor::slotSceneChanged()
   setStatusText(KStatusModified, KStatusColorModified);
 }
 
-void SceneEditor::slotSceneActivated(int nr)
+void SceneEditor::slotActivate()
 {
   Scene* s = currentScene();
 
@@ -117,14 +118,14 @@ void SceneEditor::slotSceneActivated(int nr)
       setScene(s);
     }
 
-  setStatusText(KStatusUnchanged, QColor(255, 255, 255));
+  setStatusText(KStatusUnchanged, KStatusColorUnchanged);
 }
 
 
 void SceneEditor::setScene(Scene* scene)
 {
-   ChannelUI* unit;
-   QPtrList <ChannelUI> ul = m_device->unitList();
+   ConsoleChannel* unit;
+   QPtrList <ConsoleChannel> ul = m_device->unitList();
    int n = 0;
 
    ASSERT(scene != NULL);
@@ -147,40 +148,7 @@ void SceneEditor::slotSceneListContextMenu(QListBoxItem* item,
   m_menu->exec(point);
 }
 
-void SceneEditor::slotMenuCallback(int item)
-{
-  switch(item)
-    {
-    case MENU_ACTIVATE:
-      slotSceneActivated(m_sceneList->currentItem());
-      break;
-
-    case MENU_NEW:
-      newScene();
-      break;
-
-    case MENU_STORE:
-      store();
-      break;
-
-    case MENU_REMOVE:
-      remove();
-      break;
-
-    case MENU_RENAME:
-      rename();
-      break;
-
-    case MENU_HIDE:
-      hide();
-      break;
-
-    default:
-      break;
-    }
-}
-
-void SceneEditor::remove()
+void SceneEditor::slotRemove()
 {
   Scene* s = currentScene();
 
@@ -198,7 +166,7 @@ void SceneEditor::remove()
     }
 }
 
-void SceneEditor::rename()
+void SceneEditor::slotRename()
 {
   bool ok = false;
   Scene* s = currentScene();
@@ -221,17 +189,7 @@ void SceneEditor::rename()
     }
 }
 
-void SceneEditor::hide()
-{
-  for (unsigned i = parentWidget()->width(); 
-       i > ChannelUI::width() * m_device->deviceClass()->channels()->count(); 
-       i--)
-    {
-      parentWidget()->resize(i, height());
-    }
-}
-
-void SceneEditor::newScene()
+void SceneEditor::slotNew()
 {
   bool ok = FALSE;
   QString text = QInputDialog::getText(tr("Scene editor - New Scene"),
@@ -253,7 +211,7 @@ void SceneEditor::newScene()
       _app->outputPlugin()->readRange(m_device->address(),
 				      val, channels);
       
-      QPtrList <ChannelUI> ul = m_device->unitList();
+      QPtrList <ConsoleChannel> ul = m_device->unitList();
 
       for (t_channel i = 0; i < channels; i++)
 	{
@@ -262,12 +220,12 @@ void SceneEditor::newScene()
       
       fillFunctions();
       selectFunction(sc->id());
+      
+      setStatusText(KStatusStored, KStatusColorStored);
     }
-  
-  setStatusText(KStatusStored, KStatusColorStored);
 }
 
-void SceneEditor::store()
+void SceneEditor::slotStore()
 {
   Scene* sc = currentScene();
   if (sc == NULL)
@@ -275,7 +233,7 @@ void SceneEditor::store()
       return;
     }
 
-  QPtrList <ChannelUI> ul = m_device->unitList();
+  QPtrList <ConsoleChannel> ul = m_device->unitList();
 
   t_channel channels = m_device->deviceClass()->channels()->count();
   t_value val[channels];

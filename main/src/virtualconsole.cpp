@@ -68,6 +68,7 @@ VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
   m_gridY = 0;
   m_selectedWidget = NULL;
   m_renameEdit = NULL;
+  m_editMenu = NULL;
 }
 
 VirtualConsole::~VirtualConsole()
@@ -90,6 +91,9 @@ VirtualConsole::~VirtualConsole()
 }
 
 
+//
+// Init the whole view
+//
 void VirtualConsole::initView(void)
 {
   setCaption("Virtual Console");
@@ -152,6 +156,34 @@ void VirtualConsole::initView(void)
     }
 }
 
+//
+// Init the left dock area
+//
+void VirtualConsole::initDockArea()
+{
+  if (m_dockArea) delete m_dockArea;
+  m_dockArea = new VCDockArea(this);
+  connect(m_dockArea, SIGNAL(areaHidden(bool)),
+	  this, SLOT(slotDockAreaHidden(bool)));
+  m_dockArea->init();
+
+  // Add the dock area into the master (horizontal) layout
+  m_layout->addWidget(m_dockArea, 0);
+}
+
+
+//
+// Init the main drawing area
+//
+void VirtualConsole::initDrawArea()
+{
+  if (m_drawArea) delete m_drawArea;
+  m_drawArea = new VCFrame(this);
+  m_drawArea->setBottomFrame(true);
+
+  // Add the draw area into the master (horizontal) layout
+  m_layout->addWidget(m_drawArea, 1);
+}
 
 void VirtualConsole::initMenuBar()
 {
@@ -172,122 +204,141 @@ void VirtualConsole::initMenuBar()
   //
   m_addMenu = new QPopupMenu();
   m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
-			"&Button", KVCMenuAddButton);
+			"&Button", this, SLOT(slotAddButton()),
+			CTRL+Key_B, KVCMenuAddButton);
   m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
-			"&Slider", KVCMenuAddSlider);
+			"&Slider", this, SLOT(slotAddSlider()),
+			CTRL+Key_D, KVCMenuAddSlider);
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
-			"&Frame", KVCMenuAddFrame);
+			"&Frame", this, SLOT(slotAddFrame()),
+			CTRL+Key_F, KVCMenuAddFrame);
   m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
-			"L&abel", KVCMenuAddLabel);
+			"L&abel", this, SLOT(slotAddLabel()),
+			CTRL+Key_L, KVCMenuAddLabel);
 
   //
   // Tools menu
   //
   QPopupMenu* toolsMenu = new QPopupMenu();
-  toolsMenu->insertItem(QPixmap(dir + "/settings.xpm"),
-			"&Settings...", KVCMenuToolsSettings);
-  toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"),
-			"&Default Sliders", KVCMenuToolsDefaultSliders);
+  toolsMenu->insertItem(QPixmap(dir + "/settings.xpm"), 
+			"&Settings...", this, SLOT(slotToolsSettings()),
+			0, KVCMenuToolsSettings);
+  toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
+			"&Default Sliders", this, SLOT(slotToolsSliders()),
+			0, KVCMenuToolsSliders);
   toolsMenu->insertSeparator();
   toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), 
-			"&Panic!", KVCMenuToolsPanic);
-
-  //
-  // Function menu
-  //
-  QPopupMenu* functionMenu = new QPopupMenu();
-  functionMenu->insertItem(QPixmap(dir + QString("/attach.xpm")),
-			   "&Attach function...", KVCMenuWidgetFunctionAttach);
-  functionMenu->insertItem(QPixmap(dir + QString("/detach.xpm")),
-			   "&Detach current function", 
-			   KVCMenuWidgetFunctionDetach);
+			"&Panic!", this, SLOT(slotToolsPanic()),
+			CTRL+Key_Pause, KVCMenuToolsPanic);
 
   //
   // Foreground menu
   //
   QPopupMenu* fgMenu = new QPopupMenu();
-  fgMenu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-		     "&Font...", KVCMenuWidgetFont);
-  fgMenu->insertSeparator();
-  fgMenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-		     "&Color...", KVCMenuWidgetForegroundColor);
+  fgMenu->insertItem(QPixmap(dir + QString("/color.xpm")), 
+		     "&Color...", this, SLOT(slotForegroundColor()),
+		     0, KVCMenuForegroundColor);
   fgMenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		     "&Reset to Defaults", KVCMenuWidgetForegroundNone);
+		     "&Reset to Defaults", this, SLOT(slotForegroundNone()), 
+		     0, KVCMenuForegroundNone);
+  fgMenu->insertSeparator();
+  fgMenu->insertItem(QPixmap(dir + QString("/font.xpm")), 
+		     "&Font...", this, SLOT(slotForegroundFont()),
+		     0, KVCMenuForegroundFont);
 
   //
   // Background Menu
   //
   QPopupMenu* bgMenu = new QPopupMenu();
-  bgMenu->insertItem(QPixmap(dir + QString("/frame.xpm")),
-		     "Toggle &Frame", KVCMenuWidgetDrawFrame);
-  bgMenu->insertSeparator();
-  bgMenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-		     "&Color...", KVCMenuWidgetBackgroundColor);
-  bgMenu->insertItem(QPixmap(dir + QString("/image.xpm")),
-		     "&Image...", KVCMenuWidgetBackgroundPixmap);
+  bgMenu->insertItem(QPixmap(dir + QString("/color.xpm")), 
+		     "&Color...", this, SLOT(slotBackgroundColor()),
+		     0, KVCMenuBackgroundColor);
+  bgMenu->insertItem(QPixmap(dir + QString("/image.xpm")), 
+		     "&Image...", this, SLOT(slotBackgroundImage()),
+		     0, KVCMenuBackgroundPixmap);
   bgMenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		     "&Reset to Defaults", KVCMenuWidgetBackgroundNone);
+		     "&Reset to Defaults", this, SLOT(slotForegroundNone()), 
+		     0, KVCMenuBackgroundNone);
+  bgMenu->insertSeparator();
+  bgMenu->insertItem(QPixmap(dir + QString("/frame.xpm")),
+		     "Toggle &Frame", this, SLOT(slotBackgroundFrame()),
+		     0, KVCMenuBackgroundFrame);
 
   //
   // Stacking order menu
   //
   QPopupMenu* stackMenu = new QPopupMenu();
   stackMenu->insertItem(QPixmap(dir + QString("/up.xpm")),
-			  "Bring to Front", KVCMenuWidgetStackRaise);
+			"&Raise", this, SLOT(slotStackingRaise()),
+			0, KVCMenuStackingRaise);
   stackMenu->insertItem(QPixmap(dir + QString("/down.xpm")),
-			  "Send to Back", KVCMenuWidgetStackLower);
+			"&Lower", this, SLOT(slotStackingLower()),
+			0, KVCMenuStackingLower);
   
   //
-  // Widget menu
+  // Edit menu
   //
-  m_widgetMenu = new QPopupMenu();
-  m_widgetMenu->insertItem(QPixmap(dir + "/settings.xpm"),
-			   "&Properties...", KVCMenuWidgetProperties);
-  m_widgetMenu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-			   "&Rename...", KVCMenuWidgetRename);
-
-  m_widgetMenu->insertSeparator();
-
-  m_widgetMenu->insertItem("Function", functionMenu);
-
-  m_widgetMenu->insertSeparator();
-
-  m_widgetMenu->insertItem("Foreground", fgMenu);
-  m_widgetMenu->insertItem("Background", bgMenu);
-  m_widgetMenu->insertItem("Stacking Order", stackMenu, KVCMenuWidgetStack);
-  m_widgetMenu->insertSeparator();
-
-  m_widgetMenu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-			   "Remove", KVCMenuWidgetRemove);
+  m_editMenu = new QPopupMenu();
+  m_editMenu->insertItem(QPixmap(dir + "/editcut.xpm"), 
+			 "Cut", this, SLOT(slotEditCut()),
+			 CTRL+Key_X, KVCMenuEditCut);
   
-  m_menuBar->insertItem("&Add", m_addMenu);
+  m_editMenu->insertItem(QPixmap(dir + "/editcopy.xpm"),
+			 "Copy", this, SLOT(slotEditCopy()),
+			 CTRL+Key_C, KVCMenuEditCopy);
+  
+  m_editMenu->insertItem(QPixmap(dir + "/editpaste.xpm"),
+			 "Paste", this, SLOT(slotEditPaste()),
+			 CTRL+Key_V, KVCMenuEditPaste);
+  
+  m_editMenu->insertItem(QPixmap(dir + "/remove.xpm"), 
+			 "Delete", this, SLOT(slotEditDelete()),
+			 Key_Delete, KVCMenuEditDelete);
+  
+  m_editMenu->insertSeparator();
+  
+  m_editMenu->insertItem(QPixmap(dir + "/settings.xpm"),
+			 "&Properties...", this, SLOT(slotEditProperties()),
+			 0, KVCMenuEditProperties);
+  m_editMenu->insertItem(QPixmap(dir + QString("/rename.xpm")),
+			 "&Rename...", this, SLOT(slotEditRename()),
+			 0, KVCMenuEditRename);
+
+  m_editMenu->insertSeparator();
+
+  m_editMenu->insertItem("Foreground", fgMenu);
+  m_editMenu->insertItem("Background", bgMenu);
+  m_editMenu->insertItem("Stacking Order", stackMenu);
+
   m_menuBar->insertItem("&Tools", toolsMenu);
-  m_menuBar->insertItem("&Widget", m_widgetMenu);
-
-  connect(m_menuBar, SIGNAL(activated(int)), 
-	  this, SLOT(slotMenuItemActivated(int)));
+  m_menuBar->insertItem("&Add", m_addMenu);
+  m_menuBar->insertItem("&Edit", m_editMenu);
 }
 
-//
-// Menu callback
-//
-void VirtualConsole::slotMenuItemActivated(int item)
+
+void VirtualConsole::slotAddButton()
 {
-  if (item >= KVCMenuAddMin && item <= KVCMenuAddMax)
+  QWidget* parent = NULL;
+  
+  if (m_selectedWidget && 
+      QString(m_selectedWidget->className()) == QString("VCFrame"))
     {
-      parseAddMenu(item);
+      parent = m_selectedWidget;
     }
-  else if (item >= KVCMenuToolsMin && item <= KVCMenuToolsMax)
+  else
     {
-      parseToolsMenu(item);
+      parent = m_drawArea;
     }
-  else if (item >= KVCMenuWidgetMin && item <= KVCMenuWidgetMax)
-    {
-      parseWidgetMenu(item);
-    }
+
+  VCButton* b = new VCButton(parent);
+  assert(b);
+  b->init();
+  b->show();
+
+  _app->doc()->setModified(true);
 }
 
-void VirtualConsole::parseAddMenu(int item)
+void VirtualConsole::slotAddSlider()
 {
   QWidget* parent = NULL;
 
@@ -301,245 +352,290 @@ void VirtualConsole::parseAddMenu(int item)
       parent = m_drawArea;
     }
 
-  switch(item)
-    {
-    case KVCMenuAddButton:
-      {
-	VCButton* b;
-	b = new VCButton(parent);
-	b->init();
-	b->show();
-	_app->doc()->setModified(true);
-      }
-      break;
+  VCDockSlider* s = new VCDockSlider(parent);
+  assert(s);
+  s->setBusID(KBusIDDefaultFade);
+  s->init();
+  s->resize(55, 200);
+  s->show();
 
-    case KVCMenuAddSlider:
-      {
-	VCDockSlider* vcd = new VCDockSlider(parent);
-	vcd->setBusID(KBusIDDefaultFade);
-	vcd->init();
-	vcd->resize(55, 200);
-	vcd->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuAddFrame:
-      {
-	VCFrame* w;
-	w = new VCFrame(parent);
-	w->init();
-	w->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuAddLabel:
-      {
- 	VCLabel* p = NULL;
-	p = new VCLabel(parent);
-	p->init();
-	p->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    default:
-      break;
-    }
+  _app->doc()->setModified(true);
 }
 
-void VirtualConsole::parseToolsMenu(int item)
+void VirtualConsole::slotAddFrame()
 {
-  switch(item)
+  QWidget* parent = NULL;
+
+  if (m_selectedWidget && 
+      QString(m_selectedWidget->className()) == QString("VCFrame"))
     {
-    case KVCMenuToolsSettings:
-      {
-	VirtualConsoleProperties* vcp = new VirtualConsoleProperties(this);
-	vcp->init();
-	if (vcp->exec() == QDialog::Accepted)
-	  {
-	    // Cache grid values so widgets don't have to get them
-	    // from settings each time (which is slow)
-	    m_gridEnabled = vcp->isGridEnabled();
-	    m_gridX = vcp->gridX();
-	    m_gridY = vcp->gridY();
-	  }
-	delete vcp;
-      }
-      break;
-
-    case KVCMenuToolsDefaultSliders:
-      {
-	if (m_dockArea->isHidden())
-	  {
-	    m_dockArea->show();
-	  }
-	else
-	  {
-	    m_dockArea->hide();
-	  }
-
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuToolsPanic:
-      {
-	_app->slotPanic();
-      }
-      break;
-
-    default:
-      break;
+      parent = m_selectedWidget;
     }
+  else
+    {
+      parent = m_drawArea;
+    }
+
+  VCFrame* f = new VCFrame(parent);
+  assert(f);
+  f->init();
+  f->show();
+
+  _app->doc()->setModified(true);
 }
 
-void VirtualConsole::parseWidgetMenu(int item)
+void VirtualConsole::slotAddLabel()
+{
+  QWidget* parent = NULL;
+
+  if (m_selectedWidget && 
+      QString(m_selectedWidget->className()) == QString("VCFrame"))
+    {
+      parent = m_selectedWidget;
+    }
+  else
+    {
+      parent = m_drawArea;
+    }
+
+  VCLabel* l = new VCLabel(parent);
+  assert(l);
+  l->init();
+  l->show();
+
+  _app->doc()->setModified(true);
+}
+
+void VirtualConsole::slotToolsSettings()
+{
+  VirtualConsoleProperties* p = new VirtualConsoleProperties(this);
+  assert(p);
+  p->init();
+  if (p->exec() == QDialog::Accepted)
+    {
+      // Cache grid values so widgets don't have to get them
+      // from settings each time (which is slow)
+      m_gridEnabled = p->isGridEnabled();
+      m_gridX = p->gridX();
+      m_gridY = p->gridY();
+    }
+
+  delete p;
+}
+
+void VirtualConsole::slotToolsSliders()
+{
+  if (m_dockArea->isHidden())
+    {
+      m_dockArea->show();
+    }
+  else
+    {
+      m_dockArea->hide();
+    }
+  
+  _app->doc()->setModified(true);
+}
+
+void VirtualConsole::slotToolsPanic()
+{
+  _app->slotPanic();
+}
+
+void VirtualConsole::slotEditCut()
+{
+}
+
+void VirtualConsole::slotEditCopy()
+{
+}
+
+void VirtualConsole::slotEditPaste()
+{
+}
+
+void VirtualConsole::slotEditDelete()
 {
   if (m_selectedWidget)
     {
-      switch(item)
+      if (QMessageBox::warning(this, "Remove Selected Widget",
+			       "Are you sure?",
+			       QMessageBox::Yes, QMessageBox::No)
+	  == QMessageBox::Yes)
 	{
-	case KVCMenuWidgetRename:
-	  {
-	    m_renameEdit = new FloatingEdit(m_selectedWidget->parentWidget());
-	    connect(m_renameEdit, SIGNAL(returnPressed()),
-		    this, SLOT(slotRenameReturnPressed()));
-	    m_renameEdit->setMinimumSize(60, 25);
-	    m_renameEdit->setGeometry(m_selectedWidget->x() + 3, 
-				      m_selectedWidget->y() + 3, 
-				      m_selectedWidget->width() - 6, 
-				      m_selectedWidget->height() - 6);
-	    m_renameEdit->setText(m_selectedWidget->caption());
-	    m_renameEdit->setFont(m_selectedWidget->font());
-	    m_renameEdit->setSelection(0,m_selectedWidget->caption().length());
-	    m_renameEdit->show();
-	    m_renameEdit->setFocus();
-	  }
-	  break;
-
-	case KVCMenuWidgetFont:
-	  {
-	    m_selectedWidget->setFont(QFontDialog::
-				      getFont(0, m_selectedWidget->font()));
-	    _app->doc()->setModified(true);
-	  }
-	  break;
-
-
-	case KVCMenuWidgetForegroundColor:
-	  {
-	    QColor color = QColorDialog::
-	      getColor(m_selectedWidget->paletteBackgroundColor(), this);
-	    if (color.isValid())
-	      {
-		_app->doc()->setModified(true);
-		m_selectedWidget->setPaletteForegroundColor(color);
-	      }
-	    
-	    _app->doc()->setModified(true);
-	  }
-	  break;
-	  
-	case KVCMenuWidgetForegroundNone:
-	  {
-	    QColor bgc = m_selectedWidget->paletteBackgroundColor();
-
-	    m_selectedWidget->unsetPalette();
-	    m_selectedWidget->unsetFont();
-
-	    m_selectedWidget->setPaletteBackgroundColor(bgc);
-
-	    _app->doc()->setModified(true);
-	  }
-	  break;
-
-	case KVCMenuWidgetBackgroundColor:
-	  {
-	    QColor newcolor = QColorDialog::
-	      getColor(m_selectedWidget->paletteBackgroundColor(), this);
-	    
-	    if (newcolor.isValid() == true)
-	      {
-		m_selectedWidget->setPaletteBackgroundColor(newcolor);
-		_app->doc()->setModified(true);
-	      }
-	  }
-	  break;
-
-	case KVCMenuWidgetBackgroundPixmap:
-	  {
-	    QString fileName = 
-	      QFileDialog::getOpenFileName(m_selectedWidget->iconText(), 
-					   QString("*.jpg *.png *.xpm *.gif"), 
-					   this);
-	    if (fileName.isEmpty() == false)
-	      {
-		QPixmap pm(fileName);
-		m_selectedWidget->setPaletteBackgroundPixmap(pm);
-		m_selectedWidget->setIconText(fileName);
-		_app->doc()->setModified(true);
-	      }
-	  }
-	  break;
-
-	case KVCMenuWidgetBackgroundNone:
-	  {
-	    m_selectedWidget->unsetPalette();
-	    _app->doc()->setModified(true);
-	  }
-	  break;
-	  
-	case KVCMenuWidgetStackRaise:
-	  m_selectedWidget->raise();
-	  break;
-	  
-	case KVCMenuWidgetStackLower:
-	  m_selectedWidget->lower();
-	  break;
-	  
-	case KVCMenuWidgetRemove:
-	  {
-	    if (QMessageBox::warning(this, "Remove Selected Widget",
-				     "Are you sure?",
-				     QMessageBox::Yes, QMessageBox::No)
-		== QMessageBox::Yes)
-	      {
-		_app->doc()->setModified(true);
-		delete m_selectedWidget;
-		m_selectedWidget = NULL;
-	      }
-	  }
-	  break;
-
-	default:
-	  QApplication::sendEvent(m_selectedWidget, new VCMenuEvent(item));
-	  break;
+	  _app->doc()->setModified(true);
+	  delete m_selectedWidget;
+	  m_selectedWidget = NULL;
 	}
     }
 }
 
-void VirtualConsole::slotRenameReturnPressed()
+void VirtualConsole::slotEditProperties()
 {
-  assert(m_selectedWidget);
+  if (m_selectedWidget)
+    {
+      QApplication::sendEvent(m_selectedWidget, 
+			      new VCMenuEvent(KVCMenuEditProperties));
+    }
+}
 
-  m_selectedWidget->setCaption(m_renameEdit->text());
+void VirtualConsole::slotEditRename()
+{
+  if (m_selectedWidget)
+    {
+      if (m_renameEdit) delete m_renameEdit;
+      
+      m_renameEdit = new FloatingEdit(m_selectedWidget->parentWidget());
+      connect(m_renameEdit, SIGNAL(returnPressed()),
+	      this, SLOT(slotEditRenameReturnPressed()));
+      connect(m_renameEdit, SIGNAL(cancelled()),
+	      this, SLOT(slotEditRenameCancelled()));
+      m_renameEdit->setMinimumSize(60, 25);
+      m_renameEdit->setGeometry(m_selectedWidget->x() + 3, 
+				m_selectedWidget->y() + 3, 
+				m_selectedWidget->width() - 6, 
+				m_selectedWidget->height() - 6);
+      m_renameEdit->setText(m_selectedWidget->caption());
+      m_renameEdit->setFont(m_selectedWidget->font());
+      m_renameEdit->setSelection(0,m_selectedWidget->caption().length());
+      m_renameEdit->show();
+      m_renameEdit->setFocus();
+    }
+}
 
+void VirtualConsole::slotEditRenameReturnPressed()
+{
+  if (m_selectedWidget)
+    {
+      m_selectedWidget->setCaption(m_renameEdit->text());
+    }
+
+  assert(m_renameEdit);
+  delete m_renameEdit;
+  m_renameEdit = NULL;
+
+  _app->doc()->setModified(true);
+}
+
+
+void VirtualConsole::slotEditRenameCancelled()
+{
+  assert(m_renameEdit);
   delete m_renameEdit;
   m_renameEdit = NULL;
 }
 
-void VirtualConsole::initDockArea()
-{
-  if (m_dockArea) delete m_dockArea;
-  m_dockArea = new VCDockArea(this);
-  connect(m_dockArea, SIGNAL(areaHidden(bool)),
-	  this, SLOT(slotDockAreaHidden(bool)));
-  m_dockArea->init();
 
-  // Add the dock area into the master (horizontal) layout
-  m_layout->addWidget(m_dockArea, 0);
+void VirtualConsole::slotForegroundFont()
+{
+  if (m_selectedWidget)
+    {
+      m_selectedWidget->setFont(QFontDialog::
+				getFont(0, m_selectedWidget->font()));
+      _app->doc()->setModified(true);
+    }
+}
+
+void VirtualConsole::slotForegroundColor()
+{
+  if (m_selectedWidget)
+    {
+      QColor color = 
+	QColorDialog::getColor(m_selectedWidget->paletteForegroundColor(), 
+			       this);
+      
+      if (color.isValid())
+	{
+	  _app->doc()->setModified(true);
+	  m_selectedWidget->setPaletteForegroundColor(color);
+	}
+  
+      _app->doc()->setModified(true);
+    }
+}
+
+void VirtualConsole::slotForegroundNone()
+{
+  if (m_selectedWidget)
+    {
+      QColor bgc = m_selectedWidget->paletteBackgroundColor();
+      
+      m_selectedWidget->unsetPalette();
+      m_selectedWidget->unsetFont();
+      
+      m_selectedWidget->setPaletteBackgroundColor(bgc);
+      
+      _app->doc()->setModified(true);
+    }
+}
+
+void VirtualConsole::slotBackgroundColor()
+{
+  if (m_selectedWidget)
+    {
+      QColor newcolor = QColorDialog::
+	getColor(m_selectedWidget->paletteBackgroundColor(), this);
+      
+      if (newcolor.isValid() == true)
+	{
+	  m_selectedWidget->setPaletteBackgroundColor(newcolor);
+	  _app->doc()->setModified(true);
+	}
+    }
+}
+
+void VirtualConsole::slotBackgroundImage()
+{
+  if (m_selectedWidget)
+    {
+      QString fileName = 
+	QFileDialog::getOpenFileName(m_selectedWidget->iconText(), 
+				     QString("*.jpg *.png *.xpm *.gif"), 
+				     this);
+      if (fileName.isEmpty() == false)
+	{
+	  QPixmap pm(fileName);
+	  m_selectedWidget->setPaletteBackgroundPixmap(pm);
+	  m_selectedWidget->setIconText(fileName);
+	  _app->doc()->setModified(true);
+	}
+    }
+}
+
+void VirtualConsole::slotBackgroundNone()
+{
+  if (m_selectedWidget)
+    {
+      m_selectedWidget->unsetPalette();
+      _app->doc()->setModified(true);
+    }
+}
+
+void VirtualConsole::slotBackgroundFrame()
+{
+  if (m_selectedWidget)
+    {
+      QApplication::sendEvent(m_selectedWidget, 
+			      new VCMenuEvent(KVCMenuBackgroundFrame));
+    }
+}
+
+void VirtualConsole::slotStackingRaise()
+{
+  if (m_selectedWidget)
+    {
+      m_selectedWidget->raise();
+      _app->doc()->setModified(true);
+    }
+}
+
+void VirtualConsole::slotStackingLower()
+{
+  if (m_selectedWidget)
+    {
+      m_selectedWidget->lower();
+      _app->doc()->setModified(true);
+    }
 }
 
 
@@ -547,23 +643,12 @@ void VirtualConsole::slotDockAreaHidden(bool areaHidden)
 {
   if (areaHidden == true)
     {
-      m_menuBar->setItemChecked(KVCMenuToolsDefaultSliders, false);
+      m_menuBar->setItemChecked(KVCMenuToolsSliders, false);
     }
   else
     {
-      m_menuBar->setItemChecked(KVCMenuToolsDefaultSliders, true);
+      m_menuBar->setItemChecked(KVCMenuToolsSliders, true);
     }
-}
-
-
-void VirtualConsole::initDrawArea()
-{
-  if (m_drawArea) delete m_drawArea;
-  m_drawArea = new VCFrame(this);
-  m_drawArea->setBottomFrame(true);
-
-  // Add the draw area into the master (horizontal) layout
-  m_layout->addWidget(m_drawArea, 1);
 }
 
 

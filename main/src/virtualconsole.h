@@ -46,7 +46,7 @@ const QString KEY_VIRTUAL_CONSOLE_GRIDX     (        "VirtualConsoleGridX" );
 const QString KEY_VIRTUAL_CONSOLE_GRIDY     (        "VirtualConsoleGridY" );
 
 // Menu stuff
-const int KVCMenuEvent  ( 2000 );
+const int KVCMenuEvent            ( 2000 );
 
 // Add Menu >>>
 const int KVCMenuAddMin           ( 100 );
@@ -58,40 +58,47 @@ const int KVCMenuAddLabel         ( 104 );
 // <<< Add Menu
 
 // Tools Menu >>>
-const int KVCMenuToolsMin            ( 200 );
-const int KVCMenuToolsMax            ( 299 );
-const int KVCMenuToolsSettings       ( 200 );
-const int KVCMenuToolsDefaultSliders ( 201 );
-const int KVCMenuToolsPanic          ( 202 );
+const int KVCMenuToolsMin         ( 200 );
+const int KVCMenuToolsMax         ( 299 );
+const int KVCMenuToolsSettings    ( 200 );
+const int KVCMenuToolsSliders     ( 201 );
+const int KVCMenuToolsPanic       ( 202 );
 // <<< Tools Menu
 
-// Widget Menu >>>
-const int KVCMenuWidgetMin              ( 300 );
-const int KVCMenuWidgetMax              ( 399 );
-const int KVCMenuWidgetProperties       ( 300 );
-const int KVCMenuWidgetRename           ( 301 );
+// Edit Menu >>>
+const int KVCMenuEditMin          ( 300 );
+const int KVCMenuEditMax          ( 399 );
+const int KVCMenuEditCut          ( 300 );
+const int KVCMenuEditCopy         ( 301 );
+const int KVCMenuEditPaste        ( 302 );
+const int KVCMenuEditDelete       ( 303 );
+const int KVCMenuEditProperties   ( 304 );
+const int KVCMenuEditRename       ( 305 );
+// <<< Edit Menu
 
-const int KVCMenuWidgetFont             ( 302 );
-const int KVCMenuWidgetForegroundColor  ( 303 );
-const int KVCMenuWidgetForegroundNone   ( 304 );
+// Foreground Menu >>>
+const int KVCMenuForegroundMin    ( 400 );
+const int KVCMenuForegroundMax    ( 499 );
+const int KVCMenuForegroundFont   ( 400 );
+const int KVCMenuForegroundColor  ( 401 );
+const int KVCMenuForegroundNone   ( 402 );
+// <<< Foreground Menu
 
-const int KVCMenuWidgetBackgroundNone   ( 305 );
-const int KVCMenuWidgetBackgroundColor  ( 306 );
-const int KVCMenuWidgetBackgroundPixmap ( 307 );
+// Background Menu >>>
+const int KVCMenuBackgroundMin    ( 500 );
+const int KVCMenuBackgroundMax    ( 599 );
+const int KVCMenuBackgroundFrame  ( 500 );
+const int KVCMenuBackgroundColor  ( 501 );
+const int KVCMenuBackgroundPixmap ( 502 );
+const int KVCMenuBackgroundNone   ( 503 );
+// <<< Foreground Menu
 
-const int KVCMenuWidgetRemove           ( 308 );
-const int KVCMenuWidgetCopy             ( 309 );
-
-const int KVCMenuWidgetStack            ( 310 );
-const int KVCMenuWidgetStackRaise       ( 311 );
-const int KVCMenuWidgetStackLower       ( 312 );
-
-const int KVCMenuWidgetFunction         ( 313 );
-const int KVCMenuWidgetFunctionAttach   ( 314 );
-const int KVCMenuWidgetFunctionDetach   ( 315 );
-
-const int KVCMenuWidgetDrawFrame        ( 316 );
-// <<< Widget Menu
+// Stacking Menu >>>
+const int KVCMenuStackingMin      ( 600 );
+const int KVCMenuStackingMax      ( 699 );
+const int KVCMenuStackingRaise    ( 600 );
+const int KVCMenuStackingLower    ( 601 );
+// <<< Stacking Menu
 
 class VCMenuEvent : public QCustomEvent
 {
@@ -138,14 +145,42 @@ class VirtualConsole : public QWidget
   QWidget* selectedWidget() { return m_selectedWidget; }
   void setSelectedWidget(QWidget*);
 
-  QPopupMenu* widgetMenu() { return m_widgetMenu; }
+  QPopupMenu* editMenu() { return m_editMenu; }
   QPopupMenu* addMenu() { return m_addMenu; }
 
  public slots:
-  void slotMenuItemActivated(int);
   void slotDockAreaHidden(bool);
   void slotModeChanged();
-  void slotRenameReturnPressed();
+
+  void slotAddButton();
+  void slotAddSlider();
+  void slotAddFrame();
+  void slotAddLabel();
+
+  void slotToolsSliders();
+  void slotToolsSettings();
+  void slotToolsPanic();
+
+  void slotEditCut();
+  void slotEditCopy();
+  void slotEditPaste();
+  void slotEditDelete();
+  void slotEditProperties();
+  void slotEditRename();
+  void slotEditRenameReturnPressed();
+  void slotEditRenameCancelled();
+
+  void slotForegroundFont();
+  void slotForegroundColor();
+  void slotForegroundNone();
+
+  void slotBackgroundColor();
+  void slotBackgroundImage();
+  void slotBackgroundNone();
+  void slotBackgroundFrame();
+
+  void slotStackingRaise();
+  void slotStackingLower();
 
  signals:
   void closed();
@@ -162,14 +197,10 @@ class VirtualConsole : public QWidget
   void createVirtualConsole(QPtrList <QString>& list);
   void createWidget(QPtrList <QString> &list);
 
-  void parseAddMenu(int);
-  void parseToolsMenu(int);
-  void parseWidgetMenu(int);
-
  private:
   // Virtual console menu bar
   QMenuBar* m_menuBar;
-  QPopupMenu* m_widgetMenu;
+  QPopupMenu* m_editMenu;
   QPopupMenu* m_addMenu;
 
   // Master layout

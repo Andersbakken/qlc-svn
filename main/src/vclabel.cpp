@@ -291,14 +291,14 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 
 void VCLabel::invokeMenu(QPoint point)
 {
-  _app->virtualConsole()->widgetMenu()->exec(point);
+  _app->virtualConsole()->editMenu()->exec(point);
 }
 
 void VCLabel::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KVCMenuWidgetDrawFrame:
+    case KVCMenuBackgroundFrame:
       {
 	if (frameStyle() & KFrameStyle)
 	  {
@@ -330,7 +330,7 @@ void VCLabel::mouseReleaseEvent(QMouseEvent* e)
 
 void VCLabel::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  parseWidgetMenu(KVCMenuWidgetRename);
+  parseWidgetMenu(KVCMenuEditRename);
 }
 
 

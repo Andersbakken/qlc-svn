@@ -46,9 +46,9 @@ class VCDockSlider : public UI_VCDockSlider
   
   enum Mode
     {
-      Normal = 0,
-      Speed  = 1,
-      Master = 2
+      Speed  = 0,
+      Level = 1,
+      Submaster = 2
     };
 
   bool setBusID(t_bus_id id);

@@ -25,7 +25,7 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
-#include "channelui.h"
+#include "consolechannel.h"
 #include "types.h"
 
 class QFile;
@@ -69,7 +69,7 @@ class Device : public QObject
   void viewMonitor();
   void viewProperties();
 
-  QPtrList <ChannelUI> unitList() { return m_unitList; }
+  QPtrList <ConsoleChannel> unitList() { return m_unitList; }
   SceneEditor* sceneEditor() { return m_sceneEditor; }
 
   /* Save this device's properties to a file */
@@ -94,7 +94,7 @@ class Device : public QObject
   Monitor* m_monitor;
 
  private:
-  QPtrList <ChannelUI> m_unitList;
+  QPtrList <ConsoleChannel> m_unitList;
 
  protected:
   void createChannelUnits(void);

@@ -24,7 +24,7 @@
 #include "device.h"
 #include "containerview.h"
 #include "scene.h"
-#include "channelui.h"
+#include "consolechannel.h"
 #include "settings.h"
 #include "sceneeditor.h"
 #include "containerview.h"
@@ -357,6 +357,7 @@ void Device::viewConsole()
       // otherwise, moved sliders cannot emit the "changed"-signal
       m_sceneEditor = new SceneEditor(this, m_console);
       m_sceneEditor->init();
+      m_sceneEditor->show();
       createChannelUnits();
 
       m_sceneEditor->update();
@@ -371,10 +372,7 @@ void Device::viewConsole()
       connect(m_console, SIGNAL(closed()), this, SLOT(slotConsoleClosed()));
 
       m_console->show();
-      m_console->setMaximumSize(m_console->size().width() 
-				+ SceneEditor::width(), ChannelUI::height());
-      m_console->resize(m_console->size().width() 
-			+ SceneEditor::width(), ChannelUI::height());
+      m_console->resize(m_console->minimumSizeHint().width(), 300);
     }
   else
     {
@@ -386,11 +384,11 @@ void Device::viewConsole()
 
 void Device::createChannelUnits()
 {
-  ChannelUI* unit = NULL;
+  ConsoleChannel* unit = NULL;
 
   for (unsigned int i = 0; i < deviceClass()->channels()->count(); i++)
     {
-      unit = new ChannelUI(this, i, m_console);
+      unit = new ConsoleChannel(this, i, m_console);
       unit->init();
       unit->update();
       m_unitList.append(unit);

@@ -38,6 +38,7 @@
 #include <qpushbutton.h>
 
 #include "vcdockslider.h"
+#include "vcdocksliderproperties.h"
 #include "vcframe.h"
 #include "virtualconsole.h"
 #include "types.h"
@@ -62,7 +63,7 @@ const int KMoveThreshold      (    5 ); // Pixels
 //
 VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
   : UI_VCDockSlider(parent, name),
-    m_mode       ( Normal ),
+    m_mode       ( Speed ),
     m_busID      ( KBusIDInvalid ),
     m_static     ( isStatic ),
     m_updateOnly ( false )
@@ -84,6 +85,9 @@ VCDockSlider::~VCDockSlider()
 //
 void VCDockSlider::init()
 {
+  m_valueLabel->setBackgroundOrigin(ParentOrigin);
+  m_slider->setBackgroundOrigin(ParentOrigin);
+
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
@@ -151,22 +155,24 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	      setIconText(t);
 	      unsetPalette();
 	      setPaletteBackgroundPixmap(pm);
+	      m_valueLabel->setBackgroundOrigin(ParentOrigin);
+	      m_slider->setBackgroundOrigin(ParentOrigin);
 	    }
 	}
       else if (*s == QString("Mode"))
 	{
 	  QString t = *(list.next());
-	  if (t == modeString(Normal))
-	    {
-	      m_mode = Normal;
-	    }
-	  else if (t == modeString(Speed))
+	  if (t == modeString(Speed))
 	    {
 	      m_mode = Speed;
 	    }
+	  else if (t == modeString(Level))
+	    {
+	      m_mode = Level;
+	    }
 	  else
 	    {
-	      m_mode = Master;
+	      m_mode = Submaster;
 	    }
 	}
       else if (*s == QString("Frame"))
@@ -305,12 +311,12 @@ QString VCDockSlider::modeString(Mode mode)
   switch(mode)
     {
     default:
-    case Normal:
-      return QString("Normal");
     case Speed:
       return QString("Speed");
-    case Master:
-      return QString("Master");
+    case Level:
+      return QString("Level");
+    case Submaster:
+      return QString("Submaster");
     }
 }
 
@@ -320,10 +326,7 @@ QString VCDockSlider::modeString(Mode mode)
 //
 void VCDockSlider::slotSliderValueChanged(int value)
 {
-  if (m_mode == Normal)
-    {
-    }
-  else if (m_mode == Speed)
+  if (m_mode == Speed)
     {
       if (!m_updateOnly)
 	{
@@ -338,8 +341,9 @@ void VCDockSlider::slotSliderValueChanged(int value)
       num.sprintf("%.2fs", ((float) value / (float) KFrequency));
       m_valueLabel->setText(num);
     }
-  else if (m_mode == Master)
+  else if (m_mode == Level)
     {
+      m_valueLabel->setText("ERROR");
     }
   else
     {
@@ -427,7 +431,7 @@ void VCDockSlider::slotTapInButtonClicked()
 {
   int t;
   t = m_time.elapsed();
-  m_slider->setValue (t * .001* KFrequency );
+  m_slider->setValue(static_cast<int> (t * .001* KFrequency));
   m_time.restart();
 }
 
@@ -495,7 +499,7 @@ void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
 //
 void VCDockSlider::invokeMenu(QPoint point)
 {
-  _app->virtualConsole()->widgetMenu()->exec(point);
+  _app->virtualConsole()->editMenu()->exec(point);
 }
 
 
@@ -503,12 +507,17 @@ void VCDockSlider::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KVCMenuWidgetProperties:
+    case KVCMenuEditProperties:
       {
+	VCDockSliderProperties* sp = new VCDockSliderProperties(this);
+	sp->init();
+	sp->exec();
+
+	delete sp;
       }
       break;
 
-    case KVCMenuWidgetDrawFrame:
+    case KVCMenuBackgroundFrame:
       {
 	if (frameStyle() & KFrameStyle)
 	  {

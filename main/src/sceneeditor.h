@@ -49,16 +49,17 @@ class SceneEditor : public UI_SceneEditor
   SceneEditor(Device* device, QWidget* parent);
   ~SceneEditor();
 
-  static int width() { return 133; }
-  static int height() { return 220; }
-
   void init();
 
  public slots:
   void slotSceneListContextMenu(QListBoxItem*, const QPoint&);
-  void slotMenuCallback(int);
   void slotSceneChanged();
-  void slotSceneActivated(int);
+
+  void slotActivate();
+  void slotNew();
+  void slotStore();
+  void slotRemove();
+  void slotRename();
 
  protected:
   Device* m_device;
@@ -69,12 +70,6 @@ class SceneEditor : public UI_SceneEditor
   void selectFunction(t_function_id fid);
   void setStatusText(QString text, QColor color);
   void setScene(Scene* scene);
-
-  void hide();
-  void newScene();
-  void store();
-  void remove();
-  void rename();
 
   Scene* currentScene();
 };

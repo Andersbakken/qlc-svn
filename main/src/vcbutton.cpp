@@ -392,14 +392,14 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 
 void VCButton::invokeMenu(QPoint point)
 {
-  _app->virtualConsole()->widgetMenu()->exec(point);
+  _app->virtualConsole()->editMenu()->exec(point);
 }
 
 void VCButton::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KVCMenuWidgetProperties:
+    case KVCMenuEditProperties:
       {
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
@@ -408,24 +408,7 @@ void VCButton::parseWidgetMenu(int item)
       }
       break;
 
-    case KVCMenuWidgetFunctionAttach:
-      {
-	FunctionTree* ft = new FunctionTree(this);
-	if (ft->exec() == QDialog::Accepted)
-	  {
-	    attachFunction(ft->functionID());
-	  }
-	delete ft;
-      }
-      break;
-
-    case KVCMenuWidgetFunctionDetach:
-      {
-	attachFunction(KNoID);
-      }
-      break;
-
-    case KVCMenuWidgetCopy:
+    case KVCMenuEditCopy:
       {
 	VCButton* bt = NULL;
 	bt = new VCButton(parentWidget());
