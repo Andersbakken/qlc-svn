@@ -50,7 +50,7 @@ class OutputPlugin;
 // General program defines
 const QString IDS_APP_NAME_LONG =             "Q Light Controller";
 const QString IDS_APP_NAME_SHORT =            "QLC";
-const QString IDS_APP_VERSION_STR =           "Version 2.2.2";
+const QString IDS_APP_VERSION_STR =           "Version 2.2.1";
 
 const unsigned short MIN_DMX_VALUE =          0;
 const unsigned short MAX_DMX_VALUE =          255;
