@@ -203,7 +203,7 @@ void DeviceManagerView::initToolBar()
 
   // Create a dock area for the toolbar
   m_dockArea = new QDockArea(Horizontal, QDockArea::Normal, this);
-  m_dockArea->setFixedHeight(30);
+  m_dockArea->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
   // Add the dock area to the top of the vertical layout
   m_layout->addWidget(m_dockArea);
@@ -215,18 +215,24 @@ void DeviceManagerView::initToolBar()
 
   m_addButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), 
-		    "Add New Output Device", 0, this,
+		    "Add New Device", 0, this,
 		    SLOT(slotAdd()), m_toolbar);
+  m_addButton->setUsesTextLabel(true);
+  m_addButton->setTextLabel("Add");
 
   m_removeButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), 
 		    "Remove Current Selection", 0, this,
 		    SLOT(slotRemove()), m_toolbar);
+  m_removeButton->setUsesTextLabel(true);
+  m_removeButton->setTextLabel("Remove");
 
   m_propertiesButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), 
 		    "Properties", 0, this,
 		    SLOT(slotProperties()), m_toolbar);
+  m_propertiesButton->setUsesTextLabel(true);
+  m_propertiesButton->setTextLabel("Properties");
 
   m_toolbar->addSeparator();
 
@@ -234,11 +240,15 @@ void DeviceManagerView::initToolBar()
     new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), 
 		    "Monitor Device", 0, this,
 		    SLOT(slotMonitor()), m_toolbar);
+  m_monitorButton->setUsesTextLabel(true);
+  m_monitorButton->setTextLabel("Monitor");
 
   m_consoleButton = 
     new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), 
 		    "View Console", 0, this,
 		    SLOT(slotConsole()), m_toolbar);
+  m_consoleButton->setUsesTextLabel(true);
+  m_consoleButton->setTextLabel("Console");
 }
 
 
@@ -249,6 +259,7 @@ void DeviceManagerView::initDataView()
 {
   // Create a splitter to divide list view and text view
   m_splitter = new QSplitter(this);
+  m_splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   m_layout->addWidget(m_splitter);
 
   // Create the list view
@@ -282,6 +293,8 @@ void DeviceManagerView::initDataView()
   // Create the text view
   m_textView = new QTextView(m_splitter);
   m_splitter->setResizeMode(m_textView, QSplitter::Auto);
+
+  slotSelectionChanged(NULL);
 }
 
 
@@ -396,6 +409,10 @@ void DeviceManagerView::slotRemove()
     {
       m_listView->setSelected(m_listView->currentItem(), true);
     }
+  else
+    {
+      slotSelectionChanged(NULL);
+    }
 }
 
 
@@ -467,13 +484,27 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
   if (item == NULL)
     {
       // Disable all
-      m_addButton->setEnabled(false);
+      if (_app->mode() == App::Design)
+	{
+	  m_addButton->setEnabled(true);
+	}
+      else
+	{
+	  m_addButton->setEnabled(false);
+	}
       m_removeButton->setEnabled(false);
       m_propertiesButton->setEnabled(false);
       m_monitorButton->setEnabled(false);
       m_consoleButton->setEnabled(false);
 
-      m_textView->setText(QString::null);
+      QString text;
+
+      text = QString("<HTML><BODY>");
+      text += QString("<H1>No Devices</H1>");
+      text += QString("Click \"Add\" on the toolbar to add a new device.");
+      text += QString("</BODY></HTML>");
+      
+      m_textView->setText(text);
     }
   else
     {
@@ -594,7 +625,7 @@ void DeviceManagerView::slotMenuCallBack(int item)
 void DeviceManagerView::slotRename()
 {
   QListViewItem* item = m_listView->currentItem();
-  item->startRename(0);
+  item->startRename(KColumnName);
 }
 
 //
