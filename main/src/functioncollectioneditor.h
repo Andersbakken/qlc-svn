@@ -24,6 +24,7 @@
 
 #include <qdialog.h>
 #include "function.h"
+#include "uic_functioncollectioneditor.h"
 
 class QLineEdit;
 class QLabel;
@@ -33,39 +34,29 @@ class QPushButton;
 
 class FunctionCollection;
 
-class FunctionCollectionEditor : public QDialog
+class FunctionCollectionEditor : public UI_FunctionCollectionEditor
 {
   Q_OBJECT
 
  public:
-  FunctionCollectionEditor(FunctionCollection* functionCollection,
-			   QWidget* parent = NULL);
+  FunctionCollectionEditor(FunctionCollection* fc, QWidget* parent = NULL);
   ~FunctionCollectionEditor();
 
-  QListViewItem* findItem(const t_function_id functionId);
-
-  void show();
+  void init();
 
  private slots:
-  void slotAddClicked();
-  void slotRemoveClicked();
-  void accept();
+  void slotAddFunctionClicked();
+  void slotRemoveFunctionClicked();
+  void slotOKClicked();
+  void slotCancelClicked();
 
  private:
-  void init();
+  bool isAlreadyMember(t_function_id id);
   void updateFunctionList();
 
  protected:
-  QListView* m_functionList;
-  QLabel* m_nameLabel;
-  QLineEdit* m_nameEdit;
-  QPushButton* m_addButton;
-  QPushButton* m_removeButton;
-  QPushButton* m_editButton;
-  QPushButton* m_ok;
-  QPushButton* m_cancel;
-
-  FunctionCollection* m_functionCollection;
+  FunctionCollection* m_fc;
+  FunctionCollection* m_original;
 };
 
 #endif

@@ -33,6 +33,20 @@ class FunctionStep;
 class Chaser : public Function
 {
  public:
+  enum RunOrder
+    {
+      Loop = 0,
+      SingleShot = 1,
+      PingPong = 2
+    };
+
+  enum Direction
+    {
+      Normal = 0,
+      Reverse = 1
+    };
+
+ public:
   Chaser(t_function_id id = 0);
   Chaser(Chaser* ch, bool append = false);
   virtual ~Chaser();
@@ -46,6 +60,12 @@ class Chaser : public Function
 
   void raiseStep(unsigned int index);
   void lowerStep(unsigned int index);
+
+  void setRunOrder(RunOrder ro);
+  RunOrder runOrder() { return m_runOrder; }
+
+  void setDirection(Direction dir);
+  Direction direction() { return m_direction; }
 
   QPtrList <FunctionStep> *steps() { return &m_steps; }
 
@@ -64,8 +84,11 @@ class Chaser : public Function
  protected:
   QPtrList <FunctionStep> m_steps;
 
-  bool m_childRunning;
-  QMutex m_childMutex;
+  RunOrder m_runOrder;
+  Direction m_direction;
+
+  pthread_cond_t m_childRunning;
+  pthread_mutex_t m_childMutex;
 
   time_t m_holdTime;
 };

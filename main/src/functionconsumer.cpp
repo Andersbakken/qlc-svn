@@ -74,8 +74,6 @@ void FunctionConsumer::cue(Function* f)
 {
   ASSERT(f);
 
-  qDebug("FunctionConsumer::cue");
-
   m_functionListMutex.lock(); // Lock before access
   m_functionList.append(f);
   m_functionListMutex.unlock(); // Unlock after append

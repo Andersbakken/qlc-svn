@@ -44,7 +44,12 @@ extern App* _app;
 Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
-  m_holdTime = 2;
+
+  m_direction = Normal;
+  m_runOrder = Loop;
+
+  m_holdTime = 0;
+  setBus(KBusIDDefaultHold);
 }
 
 
@@ -65,6 +70,8 @@ Chaser::Chaser(Chaser* ch, bool append) : Function(ch->id())
 void Chaser::copyFrom(Chaser* ch, bool append)
 {
   m_name = ch->name();
+  m_direction = ch->direction();
+  m_runOrder = ch->runOrder();
 
   if (append == false)
     {
@@ -136,6 +143,14 @@ void Chaser::saveToFile(QFile &file)
       s.sprintf("Function = %d\n", step->function()->id());
       file.writeBlock((const char*) s, s.length());
     }
+
+  // Direction
+  s.sprintf("Direction = %d\n", (int) m_direction);
+  file.writeBlock((const char*) s, s.length());
+
+  // Run order
+  s.sprintf("RunOrder = %d\n", (int) m_runOrder);
+  file.writeBlock((const char*) s, s.length());
 }
 
 
@@ -168,6 +183,14 @@ void Chaser::createContents(QPtrList <QString> &list)
 	    }
 
 	  functionId = 0;
+	}
+      else if (*s == QString("Direction"))
+	{
+	  m_direction = (Direction) list.next()->toInt();
+	}
+      else if (*s == QString("RunOrder"))
+	{
+	  m_runOrder = (RunOrder) list.next()->toInt();
 	}
       else
 	{
@@ -276,6 +299,23 @@ void Chaser::lowerStep(unsigned int index)
 
 
 //
+// Set run order
+//
+void Chaser::setRunOrder(RunOrder ro)
+{
+  m_runOrder = ro;
+}
+
+
+//
+// Set direction
+//
+void Chaser::setDirection(Direction dir)
+{
+  m_direction = dir;
+}
+
+//
 // Initiate a speed change (from a speed bus)
 //
 void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
@@ -292,18 +332,24 @@ void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Chaser::freeRunTimeData()
 {
-  qDebug("Chaser::freeRunTimeData");
-
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
+  pthread_mutex_destroy(&m_childMutex);
+  pthread_cond_destroy(&m_childRunning);
+
   if (m_virtualController)
     {
-      qDebug("signalling");
       QApplication::postEvent(m_virtualController,
 			      new FunctionStopEvent(this));
 
       m_virtualController = NULL;
+    }
+
+  if (m_parentFunction)
+    {
+      m_parentFunction->childFinished();
+      m_parentFunction = NULL;
     }
 
   m_stopped = false;
@@ -319,9 +365,11 @@ void Chaser::freeRunTimeData()
 //
 void Chaser::init()
 {
-  m_childRunning = false;
   m_removeAfterEmpty = false;
   m_stopped = false;
+
+  pthread_mutex_init(&m_childMutex, 0);
+  pthread_cond_init(&m_childRunning, 0);
 
   // There's actually no need for an eventbuffer, but
   // because FunctionConsumer does EventBuffer::get() calls, it must be
@@ -338,47 +386,102 @@ void Chaser::init()
 //
 void Chaser::run()
 {
-  struct timespec hold;
+  struct timespec timeval;
+  struct timespec timerem;
+
+  Direction dir = m_direction;
 
   // Calculate starting values
   init();
 
   QPtrListIterator <FunctionStep> it(m_steps);
 
+  if (dir == Reverse)
+    {
+      it.toLast();
+    }
+  else
+    {
+      it.toFirst();
+    }
+
   while ( !m_stopped )
     {
       if (it.current())
 	{
-	  m_childRunning = true;
+	  if (it.current()->function()->engage(this))
+	    {
+	      pthread_mutex_lock(&m_childMutex);
+	      pthread_cond_wait(&m_childRunning, &m_childMutex);
+	      pthread_mutex_unlock(&m_childMutex);
+	      
+	      if (m_holdTime > 0)
+		{
+		  timeval.tv_sec = m_holdTime / KFrequency;
+		  timeval.tv_nsec = (m_holdTime % KFrequency) * 
+		    (1000000000 / KFrequency);
+		  
+		  nanosleep(&timeval, &timerem);
+		}
+	    }
+	  else
+	    {
+	      qDebug("Chaser: " + it.current()->function()->name() + 
+		     " is already running! Skip to next function.");
+	    }
 
-	  it.current()->function()->engage(this);
-	  qDebug("Chaser: child started");
+	  if (dir == Normal)
+	    {
+	      ++it;
+	    }
+	  else
+	    {
+	      --it;
+	    }
 
-	  while (m_childRunning) sched_yield();
-	  qDebug("Chaser: child stopped");
-
-	  hold.tv_sec = 2;
-	  hold.tv_nsec = m_holdTime * 1000;
-
-	  qDebug("Chaser: sleeping...");
-	  nanosleep(&hold, NULL);
-
-	  ++it;
 	}
-      else
+
+      if (m_runOrder == Loop)
 	{
 	  it.toFirst();
 	}
-
+      else if (m_runOrder == PingPong)
+	{
+	  if (dir == Normal)
+	    {
+	      // it.current() is NULL now, but because dir == Normal,
+	      // we can start from the last-1 item
+	      it.toLast();
+	      --it;
+	      dir = Reverse;
+	    }
+	  else
+	    {
+	      // it.current() is NULL now, but because dir == Reverse,
+	      // we can start from the first+1 item
+	      it.toFirst();
+	      ++it;
+	      dir = Normal;
+	    }
+	}
+      else // if (m_runOrder == SingleShot)
+	{
+	  break;
+	}
     }
 
   // This chaser can be removed from the list after the buffer is empty.
   // (meaning immediately because this doesn't produce any events).
   m_removeAfterEmpty = true;
-  qDebug("Chaser stopped");
 }
 
+
+//
+// Currently running child function calls this function
+// when it is ready. This function wakes up the chaser
+// producer thread.
+//
 void Chaser::childFinished()
 {
-  m_childRunning = false;
+  pthread_cond_signal(&m_childRunning);
 }

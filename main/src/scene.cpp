@@ -385,6 +385,10 @@ void Scene::speedChange(t_bus_value newTimeSpan)
   m_dataMutex.lock();
 
   m_timeSpan = newTimeSpan;
+  if (m_timeSpan == 0)
+    {
+      m_timeSpan = 1.0/(float) KFrequency;
+    }
 
   m_dataMutex.unlock();
 }
@@ -528,8 +532,6 @@ void Scene::run()
 //
 void Scene::freeRunTimeData()
 {
-  qDebug("Scene::freeRunTimeData");
-
   delete [] m_runTimeData;
   m_runTimeData = NULL;
 

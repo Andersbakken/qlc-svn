@@ -364,7 +364,6 @@ void FunctionCollection::run()
 
 void FunctionCollection::childFinished()
 {
-  qDebug("FunctionCollection::childFinished");
   m_childCountMutex.lock();
   m_childCount--;
   m_childCountMutex.unlock();

@@ -30,6 +30,7 @@
 #include "app.h"
 #include "doc.h"
 #include "../../libs/common/outputplugin.h"
+#include "functionconsumer.h"
 
 extern App* _app;
 
@@ -53,7 +54,7 @@ void VCDockSlider::slotSliderValueChanged(int value)
       break;
 
     case Speed:
-      num.sprintf("%.3d", value);
+      num.sprintf("%.2fs", ((float) value / (float) KFrequency));
       m_valueLabel->setText(num);
       Bus::setValue(m_busID, m_slider->value());
       break;

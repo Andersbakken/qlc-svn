@@ -104,7 +104,7 @@
                                 <cstring>m_slider</cstring>
                             </property>
                             <property name="minValue">
-                                <number>1</number>
+                                <number>0</number>
                             </property>
                             <property name="maxValue">
                                 <number>1024</number>
@@ -113,7 +113,7 @@
                                 <number>1</number>
                             </property>
                             <property name="value">
-                                <number>1</number>
+                                <number>0</number>
                             </property>
                             <property name="orientation">
                                 <enum>Vertical</enum>

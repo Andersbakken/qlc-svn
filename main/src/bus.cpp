@@ -141,11 +141,14 @@ const QString Bus::name(t_bus_id id)
 //
 bool Bus::addListener(t_bus_id id, Function* function)
 {
+  ASSERT(function);
+
   if (id >= KBusIDMin && id < KBusCount)
     {
       if (s_busArray[id].m_listeners.find(function) == -1)
 	{
 	  s_busArray[id].m_listeners.append(function);
+	  function->busValueChanged(id, s_busArray[id].m_value);
 	  return true;
 	}
       else
@@ -165,6 +168,8 @@ bool Bus::addListener(t_bus_id id, Function* function)
 //
 bool Bus::removeListener(t_bus_id id, Function* function)
 {
+  ASSERT(function);
+
   if (id >= KBusIDMin && id < KBusCount)
     {
       int index = s_busArray[id].m_listeners.find(function);

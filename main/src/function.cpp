@@ -92,7 +92,7 @@ Function::Function(t_function_id id) : QThread()
 //
 Function::~Function()
 {
-  QApplication::postEvent(_app, new FunctionDestroyEvent(m_id));
+  QApplication::postEvent(_app->doc(), new FunctionDestroyEvent(m_id));
   Bus::removeListener(m_busID, this);
 }
 
@@ -183,9 +183,10 @@ bool Function::setBus(t_bus_id id)
     {
       Bus::removeListener(m_busID, this);
 
-      m_busID = id;
-
-      Bus::addListener(m_busID, this);
+      if (Bus::addListener(id, this))
+	{
+	  m_busID = id;
+	}
 
       m_startMutex.unlock();
       return true;

@@ -34,9 +34,12 @@
 #include <qlistview.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qtoolbutton.h>
+#include <qradiobutton.h>
+#include <qbuttongroup.h>
+#include <qcheckbox.h>
 #include <qlistview.h>
 #include <qlineedit.h>
-#include <qtoolbutton.h>
 #include <limits.h>
 
 extern App* _app;
@@ -87,7 +90,8 @@ void ChaserEditor::updateStepList()
 	}
 
       fid.setNum(step->function()->id());
-      new QListViewItem(m_stepList, "###", device, step->function()->name(), fid);
+      new QListViewItem(m_stepList, "###", device,
+			step->function()->name(), fid);
     }
 
   updateOrderNumbers();
@@ -98,6 +102,9 @@ void ChaserEditor::init()
   m_nameEdit->setText(m_chaser->name());
   m_nameEdit->setSelection(0, m_nameEdit->text().length());
 
+  m_reverse->setChecked( (m_chaser->direction() == Chaser::Reverse) );
+  m_runOrderGroup->setButton((int) m_chaser->runOrder());
+
   m_stepList->setSorting(-1);
 
   updateStepList();
@@ -106,8 +113,13 @@ void ChaserEditor::init()
 void ChaserEditor::slotOKClicked()
 {
   m_chaser->setName(m_nameEdit->text());
+  m_chaser->setDirection((m_reverse->isChecked()) ? 
+			 Chaser::Reverse : Chaser::Normal);
+  m_chaser->setRunOrder((Chaser::RunOrder) m_runOrderGroup->selectedId());
+
   m_original->copyFrom(m_chaser, false);
 
+  _app->doc()->setModified(true);
   accept();
 }
 

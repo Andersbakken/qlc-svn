@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_ChaserEditor</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,83 +8,44 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>566</width>
-            <height>294</height>
+            <width>514</width>
+            <height>354</height>
         </rect>
     </property>
     <property name="caption">
         <string>Chaser Editor</string>
     </property>
-    <grid>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QLabel" row="0" column="0">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>m_nameLabel</cstring>
+                <cstring>layout4</cstring>
             </property>
-            <property name="frameShape">
-                <enum>Panel</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="text">
-                <string>Chaser Name:</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_nameLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Chaser Name:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_nameEdit</cstring>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The name of this chaser</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-        <widget class="QPushButton" row="2" column="0">
-            <property name="name">
-                <cstring>m_addStep</cstring>
-            </property>
-            <property name="text">
-                <string>Add Step...</string>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="2" column="1">
-            <property name="name">
-                <cstring>m_removeStep</cstring>
-            </property>
-            <property name="text">
-                <string>Remove Step...</string>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="2" column="3">
-            <property name="name">
-                <cstring>m_ok</cstring>
-            </property>
-            <property name="text">
-                <string>OK</string>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="2" column="4">
-            <property name="name">
-                <cstring>m_cancel</cstring>
-            </property>
-            <property name="text">
-                <string>Cancel</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit" row="0" column="1" rowspan="1" colspan="4">
-            <property name="name">
-                <cstring>m_nameEdit</cstring>
-            </property>
-        </widget>
-        <widget class="QPushButton" row="2" column="2">
-            <property name="name">
-                <cstring>m_play</cstring>
-            </property>
-            <property name="text">
-                <string>Play...</string>
-            </property>
-            <property name="toggleButton">
-                <bool>true</bool>
-            </property>
-            <property name="iconSet">
-                <iconset>image0</iconset>
-            </property>
-        </widget>
-        <widget class="QLayoutWidget" row="1" column="0" rowspan="1" colspan="5">
+        <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout15</cstring>
             </property>
@@ -95,7 +56,7 @@
                 <widget class="QListView">
                     <column>
                         <property name="text">
-                            <string>###</string>
+                            <string>Step</string>
                         </property>
                         <property name="clickable">
                             <bool>false</bool>
@@ -126,22 +87,14 @@
                             <bool>true</bool>
                         </property>
                     </column>
-                    <column>
-                        <property name="text">
-                            <string>Function ID</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>false</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
                     <property name="name">
                         <cstring>m_stepList</cstring>
                     </property>
                     <property name="allColumnsShowFocus">
                         <bool>true</bool>
+                    </property>
+                    <property name="resizeMode">
+                        <enum>AllColumns</enum>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">
@@ -160,10 +113,13 @@
                                 <string></string>
                             </property>
                             <property name="iconSet">
-                                <iconset>image1</iconset>
+                                <iconset>image0</iconset>
                             </property>
                             <property name="usesTextLabel">
                                 <bool>false</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Raise the selected step once</string>
                             </property>
                         </widget>
                         <widget class="QToolButton">
@@ -174,24 +130,207 @@
                                 <string></string>
                             </property>
                             <property name="iconSet">
-                                <iconset>image2</iconset>
+                                <iconset>image1</iconset>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Lower the selected step once</string>
                             </property>
                         </widget>
                     </vbox>
                 </widget>
             </hbox>
         </widget>
-    </grid>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout5</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_runOrderGroup</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Run Order</string>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_looping</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;Loop</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+L</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Loop forever</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_singleShot</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;Single Shot</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+S</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Stop after the last step</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_pingPong</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;Ping Pong</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+P</string>
+                            </property>
+                            <property name="buttonGroupId">
+                                <number>2</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Run forever reversing the direction in both ends</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_directionGroup</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>4</hsizetype>
+                            <vsizetype>5</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="title">
+                        <string>Direction</string>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>m_reverse</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Reverse</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout3</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_addStep</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Add Step...</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+A</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Append a step</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_removeStep</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Re&amp;move Step...</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+M</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Remove the selected step</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_test</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>Test...</string>
+                    </property>
+                    <property name="toggleButton">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string></string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept and save changes</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
 </widget>
 <images>
     <image name="image0">
-        <data format="XPM.GZ" length="1722">789cb5d34b6f9b3000c0f17b3e056a6ed59436092441d30e247177dab4e3a46907f3f4a3d88e033630edbbcf2f29b4db346952ad1cf8897fb001f3701f7dfdf229ba7f585c3bd8e1222a1094d17dd9b7edf8edfb871f8bbbed26b2bf245adfbd5bdcada222facc59658f9fccf1729b6e0fdbd4f26360e179b68cd7f163ecfe780c8c3d3b47181f6268790a2c3c07cb64933c261bcb3e30f1bc3ac2244d5c3c05969ea3e56eb35bef5c7c094c3c3347b84b772e5681a5a7b6dc6ff7ebfdd65206269ec031dfa7fbdc5204969edcf2b03dac0f2e6681892775cc0fe9c1c524b0f4c496699caed3d81205269e8d6391a669619907969ed012c6700d5ddc06269eb563012174f132b0f2ac2cf338dfe42e2e02779ecf8e650ef3d2b20cac3c57ff186fda2c21ccf3bc78dd9445515455dd2084cd208450ba9c37cf755db7796306420c632e08b950caf0bc29f25c32135c31c21dc5b4a7b4978cb17953b68dd20821731e0f9c908e533132cedbf97ada864f18a1ab9928d3848ee62247c1397ad9e013c1b069115113c52d246cd25cb06ade207466b8c994a0f24a1955805f262140fda2c1278eb19092f281330ab450bd0080ce1a8871af09d18360d8ac47745a884e0229674d81f19811c24f8221c4051f47214e9994329f3d6742b22ba5b4938c722084384ba04f526af2a2518379b27dc6989ecc44670de4c0b506cb5b43a93e71c6b25e7071d4005c478910d15ab5f306748231703413f52300d34972b31c356f90b91740397f92428c0390974e6b3e5e5496dd9a256b5143383f2a012e9d59ec516975b64d396b1aa0cc5a872b00eaa8a53e4f4a0d63968166d65061c73400203f5ea41e47a532613eafdb5c3537f77c016034f3c829d35a53dabcdacf3517ca3c37a026d398a26d57b311f633722fc8bc21b34f97ab57e3d69804d4f56fc1adc1660b567f383d6faabf06ab37fe96ffa7f9f97ef10bc400bbe1</data>
+        <data format="PNG" length="130">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000004949444154789c633c76ec180325808922dd840cb0b2b2fa6f6565f57f605c806c333e57d0c605d86cc4e50aeabb009f7fb1c951d70584e21c9b1aeab98018dbb1a9651cdc9989180000c85918df58f102f90000000049454e44ae426082</data>
     </image>
     <image name="image1">
-        <data format="XPM.GZ" length="394">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523234530022230543251d2e253d856405bffcbc54105b19c856360003b0141a2020a6ac4c9498b2324c10af98b2325c109f98b23242108f98b23292206e316565644132c20021566bcd05000c1f44a5</data>
-    </image>
-    <image name="image2">
-        <data format="XPM.GZ" length="394">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523234530022230543251d2e253d856405bffcbc54105b19c856360003b0141a204d4c1909c0d5210be113d34312c22ba68710c22fa607172220a607132224863f0c6aadb9008ce044a5</data>
+        <data format="PNG" length="139">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000005249444154789c633c76ec180325808922ddd4308005c6b0b2b2fa4f8ac663c78e31a2b80026408a661403c805280610e30a7435d48f057caec026479b7480cd265c2ea35d4a44b6115fb850ec02c601cf8d00c91d2003df4614970000000049454e44ae426082</data>
     </image>
 </images>
 <connections>
@@ -232,7 +371,7 @@
         <slot>slotLowerClicked()</slot>
     </connection>
     <connection>
-        <sender>m_play</sender>
+        <sender>m_test</sender>
         <signal>clicked()</signal>
         <receiver>UI_ChaserEditor</receiver>
         <slot>slotPlayClicked()</slot>
@@ -241,9 +380,11 @@
 <tabstops>
     <tabstop>m_nameEdit</tabstop>
     <tabstop>m_stepList</tabstop>
+    <tabstop>m_looping</tabstop>
+    <tabstop>m_reverse</tabstop>
     <tabstop>m_addStep</tabstop>
     <tabstop>m_removeStep</tabstop>
-    <tabstop>m_play</tabstop>
+    <tabstop>m_test</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
