@@ -20,10 +20,12 @@
 */
 
 #include "app.h"
+#include "doc.h"
 #include "deviceproperties.h"
 #include "dmxdevice.h"
 #include "deviceclass.h"
 #include "dmxaddresstool.h"
+#include "qmessagebox.h"
 
 extern App* _app;
 
@@ -68,6 +70,21 @@ void DeviceProperties::slotDIPClicked()
   delete dat;
 }
 
-void DeviceProperties::slotFindClicked()
+void DeviceProperties::slotOKClicked()
 {
+  unsigned short address = m_addressSpin->value();
+  unsigned short channels = m_device->deviceClass()->channels()->count();
+  
+  if (address + channels - 1 > 511)
+    {
+      if (QMessageBox::warning(this, "QLC", "The device address goes beyond 512 channels!\nAre you sure you want to do this?",
+			       QMessageBox::Yes, QMessageBox::No)
+	  == QMessageBox::No)
+	{
+	  return;
+	}
+    }
+  
+  m_device->setAddress(address);
+  accept();
 }

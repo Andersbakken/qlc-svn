@@ -98,13 +98,6 @@ void NewDevice::initView()
   m_dipButton->setText("DIP");
   connect(m_dipButton, SIGNAL(clicked()), this, SLOT(slotDIPClicked()));
 
-  m_autoAddress = new QCheckBox(this);
-  m_autoAddress->setGeometry(240, 130, 150, 30);
-  m_autoAddress->setText("Automatic address");
-  m_autoAddress->setChecked(_app->settings()->autoAddressAssign());
-  slotAutoAddressClicked();
-  connect(m_autoAddress, SIGNAL(clicked()), this, SLOT(slotAutoAddressClicked()));
-
   m_ok = new QPushButton(this);
   m_ok->setGeometry(240, 190, 150, 30);
   m_ok->setText("&OK");
@@ -131,12 +124,6 @@ void NewDevice::slotDIPClicked()
 void NewDevice::slotTreeOpenCheckBoxClicked()
 {
   _app->settings()->setNewDeviceTreeOpen(m_treeOpenCheckBox->isChecked());
-}
-
-void NewDevice::slotAutoAddressClicked()
-{
-  m_addressSpin->setEnabled(!m_autoAddress->isChecked());
-  m_dipButton->setEnabled(!m_autoAddress->isChecked());
 }
 
 void NewDevice::slotTreeDoubleClicked(QListViewItem* item)
@@ -222,8 +209,6 @@ void NewDevice::slotOKClicked()
 
   if (m_selectionOK == true)
     {
-      _app->settings()->setAutoAddressAssign(m_autoAddress->isChecked());
-
       accept();
     }
 }

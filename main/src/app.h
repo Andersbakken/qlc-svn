@@ -109,7 +109,6 @@ class App : public QMainWindow
   void slotVirtualConsoleClosed();
   void slotViewToolBar();
   void slotViewStatusBar();
-  void slotViewDMXAddressTool();
   void slotWindowCascade();
   void slotWindowTile();
   void slotRefreshWindowMenu();
@@ -137,8 +136,7 @@ class App : public QMainWindow
 
  private:
   QPopupMenu* m_fileMenu;
-  QPopupMenu* m_viewMenu;
-  QPopupMenu* m_functionsMenu;
+  QPopupMenu* m_toolsMenu;
   QPopupMenu* m_windowMenu;
   QPopupMenu* m_helpMenu;
 

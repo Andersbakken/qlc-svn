@@ -68,8 +68,6 @@ class NewDevice : public QDialog
   QSpinBox* m_addressSpin;
   QLabel* m_addressLabel;
 
-  QCheckBox* m_autoAddress;
-
   QPushButton* m_dipButton;
   QPushButton* m_ok;
   QPushButton* m_cancel;
@@ -87,7 +85,6 @@ class NewDevice : public QDialog
   void slotCancelClicked();
   void slotSelectionChanged(QListViewItem* item);
   void slotNameChanged(const QString &text);
-  void slotAutoAddressClicked();
   void slotTreeDoubleClicked(QListViewItem* item);
   void slotTreeOpenCheckBoxClicked();
   void slotDIPClicked();

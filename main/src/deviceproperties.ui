@@ -95,44 +95,6 @@
             <string>Address</string>
         </property>
     </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_dipButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>200</x>
-                <y>130</y>
-                <width>40</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>DIP</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Select the address with DIP switches</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButton4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>240</x>
-                <y>130</y>
-                <width>40</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Find</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Find next free address space for this device</string>
-        </property>
-    </widget>
     <widget class="QLineEdit">
         <property name="name">
             <cstring>m_deviceClassEdit</cstring>
@@ -181,25 +143,6 @@
             <string>Cancel</string>
         </property>
     </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>100</x>
-                <y>180</y>
-                <width>80</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
-    </widget>
     <widget class="QSpinBox">
         <property name="name">
             <cstring>m_addressSpin</cstring>
@@ -238,6 +181,25 @@
             <bool>true</bool>
         </property>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>180</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
     <widget class="QLineEdit">
         <property name="name">
             <cstring>m_deviceTypeEdit</cstring>
@@ -254,14 +216,27 @@
             <bool>true</bool>
         </property>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_dipButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>130</y>
+                <width>40</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>DIP</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Select the address with DIP switches</string>
+        </property>
+    </widget>
 </widget>
 <connections>
-    <connection>
-        <sender>m_ok</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceProperties</receiver>
-        <slot>accept()</slot>
-    </connection>
     <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
@@ -275,10 +250,10 @@
         <slot>slotDIPClicked()</slot>
     </connection>
     <connection>
-        <sender>PushButton4</sender>
+        <sender>m_ok</sender>
         <signal>clicked()</signal>
         <receiver>UI_DeviceProperties</receiver>
-        <slot>slotFindClicked()</slot>
+        <slot>slotOKClicked()</slot>
     </connection>
 </connections>
 <tabstops>
@@ -288,13 +263,12 @@
     <tabstop>m_channelsEdit</tabstop>
     <tabstop>m_addressSpin</tabstop>
     <tabstop>m_dipButton</tabstop>
-    <tabstop>PushButton4</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
 <slots>
-    <slot>slotFindClicked()</slot>
     <slot>slotDIPClicked()</slot>
+    <slot>slotOKClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

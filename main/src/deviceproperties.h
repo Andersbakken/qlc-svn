@@ -38,13 +38,13 @@ class DeviceProperties : public UI_DeviceProperties
  public:
    DeviceProperties(DMXDevice* device);
    ~DeviceProperties();
-
+   
    void init();
    
  protected slots:
    void slotDIPClicked();
-   void slotFindClicked();
-   
+   void slotOKClicked();
+
  private:
    DMXDevice* m_device;
 };

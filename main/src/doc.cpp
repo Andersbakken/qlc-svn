@@ -54,7 +54,7 @@
 
 extern App* _app;
 
-int Doc::NextPluginID = PLUGIN_ID_MIN;
+unsigned long Doc::NextPluginID = PLUGIN_ID_MIN;
 
 Doc::Doc() : QObject()
 {
@@ -102,93 +102,15 @@ void Doc::initDMXChannels()
 {
   for (unsigned short i = 0; i < 512; i++)
     {
-      m_DMXAddressAllocation[i] = new DMXChannel(i);
+      m_DMXChannel[i] = new DMXChannel(i);
     }
-}
-
-bool Doc::isDMXAddressSpaceFree(unsigned short address, unsigned short channels)
-{
-  for (unsigned short i = address; i < address + channels; i++)
-    {
-      if (m_DMXAddressAllocation[i]->isFree() == false)
-	{
-	  return false;
-	}
-    }
-
-  return true;
-}
-
-bool Doc::allocateDMXAddressSpace(unsigned short address, unsigned short channels)
-{
-  if (isDMXAddressSpaceFree(address, channels) == false)
-    {
-      return false;
-    }
-  else
-    {
-      for (unsigned short i = address; i < address + channels; i++)
-	{
-	  m_DMXAddressAllocation[i]->allocate();
-	}
-      return true;
-    }
-}
-
-bool Doc::freeDMXAddressSpace(unsigned short address, unsigned short channels)
-{
-  if (isDMXAddressSpaceFree(address, channels) == false)
-    {
-      for (unsigned short i = address; i < address + channels; i++)
-	{
-	  m_DMXAddressAllocation[i]->free();
-	}
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-unsigned short Doc::findNextFreeDMXAddress(unsigned short channels)
-{
-  unsigned short i = 0;
-  unsigned short address = 0;
-  unsigned short retval = USHRT_MAX;
-
-  while (i < 512)
-    {
-      bool found = true;
-
-      for (i = address; i < address + channels; i++)
-	{
-	  if (m_DMXAddressAllocation[i]->isFree() == false)
-	    {
-	      found = false;
-	      break;
-	    }
-	}
-
-      if (found == true)
-	{
-	  retval = address;
-	  break;
-	}
-
-      address++;
-    }
-
-  return address;
 }
 
 DMXChannel* Doc::dmxChannel(unsigned short channel)
 {
-  DMXChannel* dmxch = NULL;
+  ASSERT(channel < 511);
 
-  dmxch = m_DMXAddressAllocation[channel];
-
-  return dmxch;
+  return m_DMXChannel[channel];
 }
 
 bool Doc::readDeviceClasses()
@@ -326,7 +248,6 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  if (d != NULL)
 		    {
 		      addDevice(d);
-		      allocateDMXAddressSpace(d->address(), d->deviceClass()->channels()->count());
 		    }
 		}
 	      else if (*string == QString("Function"))
@@ -711,7 +632,6 @@ void Doc::newDocument()
     {
       d = m_deviceList.take(0);
       ASSERT(d);
-      freeDMXAddressSpace(d->address(), d->deviceClass()->channels()->count());
       delete d;
     }
 
@@ -1161,7 +1081,7 @@ Plugin* Doc::searchPlugin(QString name, Plugin::PluginType type)
   return NULL;
 }
 
-Plugin* Doc::searchPlugin(int id)
+Plugin* Doc::searchPlugin(unsigned long id)
 {
   Plugin* plugin = NULL;
 

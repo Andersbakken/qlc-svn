@@ -60,10 +60,6 @@ class Doc : public QObject
   //
   // DMX Channels
   //
-  bool isDMXAddressSpaceFree(unsigned short address, unsigned short channels);
-  bool allocateDMXAddressSpace(unsigned short address, unsigned short channels);
-  bool freeDMXAddressSpace(unsigned short address, unsigned short channels);
-  unsigned short findNextFreeDMXAddress(unsigned short channels);
   DMXChannel* dmxChannel(unsigned short channel);
 
   //
@@ -120,7 +116,7 @@ class Doc : public QObject
   QList <Plugin> *pluginList() { return &m_pluginList; }
   Plugin* searchPlugin(QString name);
   Plugin* searchPlugin(QString name, Plugin::PluginType type);
-  Plugin* searchPlugin(int id);
+  Plugin* searchPlugin(unsigned long id);
   void addPlugin(Plugin*);
   void removePlugin(Plugin*);
   void initPlugins();
@@ -150,7 +146,7 @@ class Doc : public QObject
   void createJoystickContents(QList<QString> &list);
 
  private:
-  DMXChannel* m_DMXAddressAllocation[512];
+  DMXChannel* m_DMXChannel[512];
 
   OutputPlugin* m_outputPlugin;
   DummyOutPlugin* m_dummyOutPlugin;
@@ -165,7 +161,7 @@ class Doc : public QObject
   QList <Plugin> m_pluginList;
 
  private:
-  static int NextPluginID;
+  static unsigned long NextPluginID;
 };
 
 #endif

@@ -29,7 +29,7 @@ class Plugin : public QObject
   Q_OBJECT
 
  public:
-  Plugin(int id);
+  Plugin(unsigned long id);
   virtual ~Plugin();
 
   enum PluginType
@@ -52,7 +52,7 @@ class Plugin : public QObject
 
   // Standard functions that don't have to be overwritten
   QString name() { return m_name; }
-  int id() { return m_id; }
+  unsigned long id() { return m_id; }
   unsigned long version() { return m_version; }
   PluginType type() { return m_type; }
 
@@ -63,7 +63,7 @@ class Plugin : public QObject
   QString m_name;
   PluginType m_type;
   unsigned long m_version;
-  int m_id;
+  unsigned long m_id;
 };
 
 #endif

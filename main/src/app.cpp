@@ -60,8 +60,8 @@
 #define ID_FILE_QUIT                	10100
 
 ///////////////////////////////////////////////////////////////////
-// View menu entries                    
-#define ID_VIEW_TOOLBAR        	        12010
+// Tools menu entries                    
+#define ID_VIEW_TOOLBAR       	        12010
 #define ID_VIEW_STATUSBAR		12020
 
 #define ID_VIEW_DEVICE_MANAGER		12030
@@ -192,12 +192,12 @@ void App::initDeviceManagerView()
   if (m_settings->openDeviceManager() == true)
     {
       m_dmView->show();
-      m_viewMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
+      m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
     }
   else
     {
       m_dmView->hide();
-      m_viewMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
+      m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
     }
 
   connect(m_dmView, SIGNAL(closed()), this, SLOT(slotDeviceManagerViewClosed()));
@@ -230,22 +230,15 @@ void App::initMenuBar()
   
   ///////////////////////////////////////////////////////////////////
   // View Menu
-  m_viewMenu = new QPopupMenu();
-
-  m_viewMenu->setCheckable(true);
-  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "Device Manager", this, SLOT(slotViewDeviceManager()), 0, ID_VIEW_DEVICE_MANAGER);
-  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
-  m_viewMenu->insertSeparator();
-  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
-  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
-
-  ///////////////////////////////////////////////////////////////////
-  // Functions Menu
-  m_functionsMenu = new QPopupMenu();
-
-  m_functionsMenu->insertItem("DMX Address Converter", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
-  m_functionsMenu->insertSeparator();
-  m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
+  m_toolsMenu = new QPopupMenu();
+  m_toolsMenu->setCheckable(true);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "Device Manager", this, SLOT(slotViewDeviceManager()), 0, ID_VIEW_DEVICE_MANAGER);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
+  m_toolsMenu->insertSeparator();
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
+  m_toolsMenu->insertSeparator();
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
 
   ///////////////////////////////////////////////////////////////////
   // Window Menu
@@ -261,8 +254,7 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
   menuBar()->insertItem("&File", m_fileMenu);
-  menuBar()->insertItem("&View", m_viewMenu);
-  menuBar()->insertItem("&Tools", m_functionsMenu);
+  menuBar()->insertItem("&Tools", m_toolsMenu);
   menuBar()->insertItem("&Window", m_windowMenu);
   menuBar()->insertSeparator();  	
   menuBar()->insertItem("&Help", m_helpMenu);
@@ -295,13 +287,6 @@ void App::slotViewDeviceClassEditor()
   dce->exec();
 
   delete dce;
-}
-
-void App::slotViewDMXAddressTool()
-{
-  DMXAddressTool* d = new DMXAddressTool(this);
-  d->exec();
-  delete d;
 }
 
 void App::slotRefreshWindowMenu()
@@ -495,26 +480,26 @@ void App::slotFileQuit()
 
 void App::slotViewDeviceManager()
 {
-  m_viewMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
+  m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
   m_dmView->show();
   m_dmView->setFocus();
 }
 
 void App::slotDeviceManagerViewClosed()
 {
-  m_viewMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
+  m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
 }
 
 void App::slotViewVirtualConsole()
 {
-  m_viewMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, true);
+  m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, true);
   m_virtualConsole->show();
   m_virtualConsole->setFocus();
 }
 
 void App::slotVirtualConsoleClosed()
 {
-  m_viewMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, false);
+  m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, false);
 }
 
 void App::slotViewToolBar()
