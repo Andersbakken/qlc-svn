@@ -59,6 +59,8 @@ class NewDevice : public QDialog
   QLineEdit* m_nameEdit;
   QLabel* m_nameLabel;
 
+  QLabel* m_typeLabel;
+
   QSpinBox* m_channelSpin;
   QLabel* m_channelLabel;
 
@@ -72,6 +74,7 @@ class NewDevice : public QDialog
 
  private:
   QString m_nameValue;
+  QString m_typeValue;
   QString m_manufacturerValue;
   QString m_modelValue;
   int m_addressValue;

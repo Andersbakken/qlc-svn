@@ -28,6 +28,7 @@
 #include <qpixmap.h>
 #include <qheader.h>
 
+
 extern App* _app;
 
 NewDevice::NewDevice(QWidget *parent, const char *name) : QDialog(parent, name, true)
@@ -65,17 +66,21 @@ void NewDevice::initView()
   m_nameEdit->setGeometry(240, 30, 150, 20);
   connect(m_nameEdit, SIGNAL(textChanged(const QString &)), this, SLOT(slotNameChanged(const QString &)));
 
+  m_typeLabel = new QLabel(this);
+  m_typeLabel->setGeometry(240, 55, 150, 20);
+  m_typeLabel->setText("Type: ");
+
   m_addressLabel = new QLabel(this);
-  m_addressLabel->setGeometry(240, 60, 150, 20);
+  m_addressLabel->setGeometry(240, 80, 150, 20);
   m_addressLabel->setText("Address");
 
   m_addressSpin = new QSpinBox(this);
-  m_addressSpin->setGeometry(240, 80, 150, 20);
+  m_addressSpin->setGeometry(240, 100, 150, 20);
   m_addressSpin->setRange(0, 511);
   m_addressSpin->setValue(0);
 
   m_autoAddress = new QCheckBox(this);
-  m_autoAddress->setGeometry(240, 110, 150, 30);
+  m_autoAddress->setGeometry(240, 130, 150, 30);
   m_autoAddress->setText("Automatic address");
   m_autoAddress->setChecked(_app->settings()->autoAddressAssign());
   slotAutoAddressClicked();
@@ -105,7 +110,7 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
     {
       m_modelValue = item->text(0);
       m_manufacturerValue = item->parent()->text(0);
-
+      m_typeLabel->setText("Type: "+item->text(1));
       m_nameEdit->setText(m_manufacturerValue + QString(" ") + m_modelValue);
     }
   else
@@ -132,6 +137,7 @@ void NewDevice::fillTree()
 
       for (QListViewItem* i = m_tree->firstChild(); i != NULL; i = i->nextSibling())
 	{
+	  m_tree->setOpen(i, TRUE);
 	  if (i->text(0) == dc->manufacturer())
 	    {
 	      alreadyAdded = true;
@@ -142,13 +148,14 @@ void NewDevice::fillTree()
 
       if (alreadyAdded == false)
 	{
-	  parent = new QListViewItem(m_tree, dc->manufacturer());	  
+	  parent = new QListViewItem(m_tree, dc->manufacturer());
 	}
 
       parent->setPixmap(0, QPixmap(_app->settings()->pixmapPath() + QString("global.xpm")));
 
       newItem = new QListViewItem(parent, dc->model());
       newItem->setPixmap(0, pm);
+      newItem->setText(1,dc->type());
     }
 }
 

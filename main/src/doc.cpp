@@ -131,7 +131,7 @@ unsigned short Doc::findNextFreeDMXAddress(unsigned short channels)
   while (i < 512)
     {
       bool found = true;
-      
+
       for (i = address; i < address + channels; i++)
 	{
 	  if (m_DMXAddressAllocation[i]->isFree() == false)
@@ -140,16 +140,16 @@ unsigned short Doc::findNextFreeDMXAddress(unsigned short channels)
 	      break;
 	    }
 	}
-      
+
       if (found == true)
 	{
 	  retval = address;
 	  break;
 	}
-      
+
       address++;
     }
-  
+
   return address;
 }
 
@@ -170,12 +170,13 @@ bool Doc::readDeviceClasses()
 
   QDir d(dir);
   d.setFilter(QDir::Files);
+  d.setNameFilter("*.deviceclass");
   if (d.exists() == false || d.isReadable() == false)
     {
       MSG_WARN("Unable to open or read from device directory! Check settings and permissions.");
       return false;
     }
-  
+
   QStringList dirlist(d.entryList());
   QStringList::Iterator it;
 
