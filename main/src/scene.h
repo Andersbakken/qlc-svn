@@ -48,6 +48,8 @@ class Scene : public Function
   Scene(Scene* sc);
   virtual  ~Scene();
 
+  void copyFrom(Scene* sc);
+
  public:
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed(Feeder* feeder);

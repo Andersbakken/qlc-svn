@@ -48,6 +48,11 @@ Scene::Scene() : Function()
 
 Scene::Scene(Scene* sc)
 {
+  copyFrom(sc);
+}
+
+void Scene::copyFrom(Scene* sc)
+{
   m_type = Function::Scene;
   m_name = QString(sc->name());
   m_deviceClass = sc->m_deviceClass;

@@ -94,7 +94,6 @@ void LedBar::setToolTip(QString text)
 
 void LedBar::slotSetValue(unsigned char value)
 {
-  qDebug("%d", (int) value);
   slotSetValue((int) value);
 }
 

@@ -201,20 +201,37 @@ void AdvancedSceneEditor::slotPresetMenuActivated(int preset)
 void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 {
   QPopupMenu* menu = new QPopupMenu;
+  QList <QPopupMenu> deleteList;
 
-  menu->insertItem("Value");
+  menu->insertItem("Value", INT_MAX);
   menu->insertSeparator();
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotValueMenuActivated(int)));
 
-  for (unsigned int i = 0; i < 255; i++)
+  for (unsigned int i = 0; i < 256; i += 16)
     {
-      QString num;
-      num.setNum(i);
-      menu->insertItem(num, i);
+      QPopupMenu* sub = new QPopupMenu();
+      deleteList.append(sub);
+
+      QString top;
+      top.sprintf("%d - %d", i, i + 15);
+
+      for (unsigned int j = 0; j < 16; j++)
+	{
+	  QString num;
+	  num.setNum(i + j);
+	  sub->insertItem(num, i + j);
+	}
+      
+      menu->insertItem(top, sub);
+      connect(sub, SIGNAL(activated(int)), this, SLOT(slotValueMenuActivated(int)));
     }
 
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotValueMenuActivated(int)));
   menu->exec(pos);
-  disconnect(menu);
+
+  while (deleteList.isEmpty() == false)
+    {
+      delete deleteList.take(0);
+    }
 
   delete menu;
 }
@@ -231,27 +248,33 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
       return;
     }
 
-  int channel = m_currentChannel->channel();
-
-  m_scene->set(channel, value, m_scene->channelValue(channel).type);
-
-  QString s;
-  s.setNum(value);
-  m_sceneContents->currentItem()->setText(3, s);
-
-  Capability* c = m_currentChannel->searchCapability(value);
-  if (c == NULL)
+  if (value == INT_MAX)
     {
-      s = QString("<Unknown>");
+      slotEditValueClicked();
     }
   else
     {
-      s = c->name();
+      int channel = m_currentChannel->channel();
+      
+      m_scene->set(channel, value, m_scene->channelValue(channel).type);
+      
+      QString s;
+      s.setNum(value);
+      m_sceneContents->currentItem()->setText(3, s);
+      
+      Capability* c = m_currentChannel->searchCapability(value);
+      if (c == NULL)
+	{
+	  s = QString("<Unknown>");
+	}
+      else
+	{
+	  s = c->name();
+	}
+      
+      m_sceneContents->currentItem()->setText(2, s);
+      setDirty(true);
     }
-
-  m_sceneContents->currentItem()->setText(2, s);
-
-  setDirty(true);
 }
 
 void AdvancedSceneEditor::invokeTypeMenu(const QPoint &pos)
@@ -573,26 +596,34 @@ void AdvancedSceneEditor::slotApplyClicked()
       Scene* s = (Scene*) m_device->deviceClass()->searchFunctionById(m_scene->id());
       ASSERT(s != NULL);
       
-      m_device->deviceClass()->functions()->remove(s);
-      delete s;
-      
-      m_device->deviceClass()->functions()->append(m_scene);
+      /*
+	m_device->deviceClass()->functions()->remove(s);
+	delete s;
+	
+	m_device->deviceClass()->functions()->append(m_scene);
+      */
 
       m_device->deviceClass()->saveToFile();
       setDirty(false);
+
+      s->copyFrom(m_scene);
     }
   else if (m_scene->device() != NULL)
     {
       Scene* s = (Scene*) m_device->searchFunctionById(m_scene->id());
       ASSERT(s != NULL);
       
-      m_device->functions()->remove(s);
-      delete s;
+      /*
+	m_device->functions()->remove(s);
+	delete s;
+	
+	m_device->functions()->append(m_scene);
+      */
       
-      m_device->functions()->append(m_scene);
-
       _app->doc()->setModified(true);
       setDirty(false);
+      
+      s->copyFrom(m_scene);
     }
   else
     {
@@ -637,6 +668,13 @@ void AdvancedSceneEditor::slotApplyClicked()
 void AdvancedSceneEditor::slotOKClicked()
 {
   slotApplyClicked();
+
+  if (m_scene != NULL)
+    {
+      delete m_scene;
+      m_scene = NULL;
+    }
+
   close();
   emit closed();
 }
@@ -646,6 +684,12 @@ void AdvancedSceneEditor::slotCancelClicked()
   if (dirtyCheck() == false)
     {
       return;
+    }
+
+  if (m_scene != NULL)
+    {
+      delete m_scene;
+      m_scene = NULL;
     }
 
   close();
