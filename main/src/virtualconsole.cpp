@@ -29,6 +29,7 @@
 #include <qstring.h>
 #include <qlayout.h>
 #include <qobjcoll.h>
+#include <qlabel.h>
 
 #include "virtualconsole.h"
 #include "app.h"
@@ -40,6 +41,7 @@
 #include "speedslider.h"
 #include "dmxwidgetbase.h"
 #include "keybind.h"
+#include "dmxlabel.h"
 
 #include <X11/Xlib.h>
 
@@ -175,6 +177,11 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	      w->createContents(list);
 	    }
 	}
+      else if (*s == QString("Label"))
+	{
+	  DMXLabel* w = new DMXLabel(m_drawArea);
+	  w->createContents(list);
+	}
       else if (*s == QString("Button"))
 	{
 	  DMXButton* w = new DMXButton(m_drawArea);
@@ -287,6 +294,11 @@ void VirtualConsole::createContents(QList<QString> &list)
 	      list.prev();
 	      createWidget(list);
 	    }
+	  else if (*s == QString("Label"))
+	    {
+	      list.prev();
+	      createWidget(list);
+	    }
 	  else
 	    {
 	      // Unknown keyword, skip
@@ -374,6 +386,7 @@ void VirtualConsole::initView(void)
   m_addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);
   // m_addMenu->insertItem("&Monitor", ID_VC_ADD_MONITOR);
   m_addMenu->insertItem("&Frame", ID_VC_ADD_FRAME);
+  m_addMenu->insertItem("L&abel", ID_VC_ADD_LABEL);
   connect(m_addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
   m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
@@ -444,6 +457,15 @@ void VirtualConsole::slotMenuItemActivated(int item)
       {
 	SpeedSlider* p = NULL;
 	p = new SpeedSlider(m_drawArea);
+	p->show();
+      }
+      break;
+
+    case ID_VC_ADD_LABEL:
+      {
+	DMXLabel* p = NULL;
+	p = new DMXLabel(m_drawArea);
+	p->setText("New label");
 	p->show();
       }
       break;

@@ -42,6 +42,7 @@ class QFile;
 #define ID_VC_ADD_SPEEDSLIDER        1030
 #define ID_VC_ADD_MONITOR            1040
 #define ID_VC_ADD_FRAME              1050
+#define ID_VC_ADD_LABEL              1060
 
 class VirtualConsole : public QWidget
 {
