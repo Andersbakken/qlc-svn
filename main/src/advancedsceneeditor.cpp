@@ -327,10 +327,10 @@ bool AdvancedSceneEditor::dirtyCheck()
 {
   if (m_dirty == true)
     {
-      int result = QMessageBox::information(this, "Advanced Scene Editor",
-					    "Do you want to LOSE changes?",
-					    QMessageBox::Yes,QMessageBox::Cancel);
-      if (result == QMessageBox::Yes)
+      if (QMessageBox::information(this, "Advanced Scene Editor",
+				   "Do you want to LOSE changes?",
+				   QMessageBox::Yes, QMessageBox::Cancel)
+	  == QMessageBox::Yes)
 	{
 	  if (m_scene != NULL)
 	    {
@@ -397,7 +397,7 @@ void AdvancedSceneEditor::slotApplyClicked()
 
       _app->doc()->setModified(true);
       setDirty(false);
-      
+
       s->copyFrom(m_scene);
     }
   else

@@ -802,6 +802,8 @@ void Doc::addFunction(const Function* function)
 {
   ASSERT(function != NULL);
   m_functions.append(function);
+
+  setModified(true);
 }
 
 void Doc::removeFunction(const unsigned long id)
@@ -816,6 +818,8 @@ void Doc::removeFunction(const unsigned long id)
 	  break;
 	}
     }
+
+  setModified(true);
 }
 
 Function* Doc::searchFunction(const unsigned long id)
@@ -895,6 +899,8 @@ void Doc::addBus(Bus* bus)
   ASSERT(bus != NULL);
   m_busList.append(bus);
   emit deviceListChanged();
+
+  setModified(true);
 }
 
 Bus* Doc::searchBus(const unsigned int id)
@@ -951,6 +957,8 @@ void Doc::removeBus(unsigned int id, bool deleteBus)
     }
 
   emit deviceListChanged();
+
+  setModified(true);
 }
 
 void Doc::initPlugins()
@@ -1139,4 +1147,3 @@ void Doc::slotChangeOutputPlugin(const QString& name)
       _app->deviceManagerView()->deviceManager()->slotUpdateDeviceList();
     }
 }
-
