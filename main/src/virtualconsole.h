@@ -67,6 +67,7 @@ class VirtualConsole : public QWidget
   void unRegisterKeyReceiver(DMXWidgetBase* widget);
 
   bool isDesignMode();
+  void setMode(Mode mode);
 
   void createContents(QList<QString>& file); // Create the virtual console from list
   void saveToFile(QFile& file); // Save all widgets and vc data to file
@@ -94,8 +95,6 @@ class VirtualConsole : public QWidget
   DMXWidgetBase* searchKeyReceiver(DMXWidgetBase* widget);
 
  private:
-  void setMode(Mode mode);
-
   void createVirtualConsole(QList<QString>& list);
   void createWidget(QList<QString> &list);
 

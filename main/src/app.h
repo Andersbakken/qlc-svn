@@ -99,6 +99,7 @@ class App : public QMainWindow
   void slotFileQuit();
 
   void slotPanic();
+  void slotModeButtonClicked();
 
   void slotViewDeviceManager();
   void slotViewDeviceClassEditor();
@@ -154,6 +155,7 @@ class App : public QMainWindow
   SequenceTimer* m_sequenceTimer;
 
   QLabel* m_modeIndicator;
+  QToolButton* m_modeButton;
 
  protected:
   void closeEvent(QCloseEvent*);

@@ -32,6 +32,7 @@
 #include <qwidgetlist.h>
 #include <qlabel.h>
 #include <qcolor.h>
+#include <qtooltip.h>
 
 #include <unistd.h>
 
@@ -85,6 +86,7 @@ static const QColor KModeColorDesign = QColor(0, 255, 0);
 #define ID_FUNCTIONS_GLOBAL_FUNCTIONS       13010
 
 #define ID_FUNCTIONS_PANIC                  13030
+#define ID_FUNCTIONS_MODE                   13040
 
 ///////////////////////////////////////////////////////////////////
 // Window menu entries
@@ -181,9 +183,9 @@ void App::initToolBar()
   dir += QString("/") + PIXMAPPATH;
   
   new QToolButton(QPixmap(dir + QString("/filenew.xpm")), "New workspace; clear everything", 0, this, SLOT(slotFileNew()), m_toolbar);
-  
+
   new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), "Open existing workspace", 0, this, SLOT(slotFileOpen()), m_toolbar);
-  
+
   new QToolButton(QPixmap(dir + QString("/filesave.xpm")), "Save current workspace", 0, this, SLOT(slotFileSave()), m_toolbar);
 
   m_toolbar->addSeparator();
@@ -192,8 +194,12 @@ void App::initToolBar()
 
   new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), "View virtual console", 0, this, SLOT(slotViewVirtualConsole()), m_toolbar);
 
-  QToolBar* panic = new QToolBar(this, "!");
-  new QToolButton(QPixmap(dir + QString("/panic.xpm")), "Panic; Shut down all running functions", 0, this, SLOT(slotPanic()), panic);
+
+  QToolBar* vc = new QToolBar(this, "Virtual Console toolbar");
+
+  new QToolButton(QPixmap(dir + QString("/panic.xpm")), "Panic; Shut down all running functions", 0, this, SLOT(slotPanic()), vc);
+
+  m_modeButton = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), "Design Mode; All editing features enabled", 0, this, SLOT(slotModeButtonClicked()), vc);
 }
 
 void App::initSequenceEngine()
@@ -678,17 +684,37 @@ void App::closeEvent(QCloseEvent* e)
 
 void App::slotSetModeIndicator(VirtualConsole::Mode mode)
 {
+  QString dir;
+  settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+  
   switch(mode)
     {
     case VirtualConsole::Design:
       m_modeIndicator->setText(KModeTextDesign);
+      m_modeButton->setPixmap(dir + QString("/unlocked.xpm"));
+      QToolTip::add(m_modeButton, "Design Mode; All edit features available");
       break;
 
     case VirtualConsole::Operate:
       m_modeIndicator->setText(KModeTextOperate);
+      m_modeButton->setPixmap(dir + QString("/locked.xpm"));
+      QToolTip::add(m_modeButton, "Operate Mode; Edit features disabled");
       break;
-      
+
     default:
       break;
+    }
+}
+
+void App::slotModeButtonClicked()
+{
+  if (virtualConsole()->isDesignMode())
+    {
+      virtualConsole()->setMode(VirtualConsole::Operate);
+    }
+  else
+    {
+      virtualConsole()->setMode(VirtualConsole::Design);
     }
 }
