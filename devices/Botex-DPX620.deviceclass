@@ -9,7 +9,7 @@ Entry = Channel
 Number = 0
 Name = Channel 1
 # Capability Entries
-0-255 = Channel level
+0-255 = Channel Level
 Entry = Channel
 Number = 1
 Name = Channel 2

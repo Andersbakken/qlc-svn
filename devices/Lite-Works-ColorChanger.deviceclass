@@ -3,7 +3,7 @@
 Entry = Device Class
 Manufacturer = Lite-Works
 Model = ColorChanger
-Type = Dimmer
+Type = Color Changer
 #
 Entry = Channel
 Number = 0

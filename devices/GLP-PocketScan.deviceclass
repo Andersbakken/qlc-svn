@@ -3,7 +3,7 @@
 Entry = Device Class
 Manufacturer = GLP
 Model = PocketScan
-Type = Dimmer
+Type = Scanner
 #
 Entry = Channel
 Number = 0

@@ -8,19 +8,19 @@ Type = Dimmer
 Entry = Channel
 Number = 0
 Name = Channel 1
-0-255 = Channel level
+0-255 = Channel Level
 #
 Entry = Channel
 Number = 1
 Name = Channel 2
-0-255 = Channel level
+0-255 = Channel Level
 #
 Entry = Channel
 Number = 2
 Name = Channel 3
-0-255 = Channel level
+0-255 = Channel Level
 #
 Entry = Channel
 Number = 3
 Name = Channel 4
-0-255 = Channel level
+0-255 = Channel Level
