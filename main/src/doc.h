@@ -72,7 +72,7 @@ class Doc : public QObject
   //
   void addDevice(DMXDevice*);
   bool removeDevice(DMXDevice*);
-  QList <DMXDevice> deviceList() const;
+  QList <DMXDevice> *deviceList() { return &m_deviceList; }
 
   // Search functions
   DMXDevice* searchDevice(int id);
@@ -82,7 +82,7 @@ class Doc : public QObject
   // Functions
   //
   // Function list
-  QList<Function> functions() const { return m_functions; }
+  QList<Function> functions() { return m_functions; }
 
   // Function list operations
   Function* searchFunction(const QString &fname);
@@ -96,8 +96,7 @@ class Doc : public QObject
   bool readDeviceClasses();
 
   // Container for device classes
-  QList <DeviceClass> deviceClassList() const { return m_deviceClassList; }
-  QList <DeviceClass> * deviceClassListPointer()  { return &m_deviceClassList; }
+  QList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
 
   // Search for manuf + model
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);

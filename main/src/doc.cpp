@@ -63,10 +63,10 @@ Doc::~Doc()
   DMXDevice* dev = NULL;
   while (m_deviceList.isEmpty() == false)
     {
-      dev = m_deviceList.take();
+      dev = m_deviceList.take(0);
       delete dev;
     }
-  
+
   delete m_dmx;
 
   if (m_joystickPlugin != NULL)
@@ -265,7 +265,7 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
 	}
     }
 
-  if (dc->channels().count() == 0)
+  if (dc->channels()->count() == 0)
     {
       QString msg;
       msg.sprintf("No channels specified for device class " + dc->manufacturer() + QString(" - ") + dc->model() + QString(". Ignored."));
@@ -354,7 +354,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  if (d != NULL)
 		    {
 		      addDevice(d);
-		      allocateDMXAddressSpace(d->address(), d->deviceClass()->channels().count());
+		      allocateDMXAddressSpace(d->address(), d->deviceClass()->channels()->count());
 		    }
 		}
 	      else if (*string == QString("Function"))
@@ -714,7 +714,7 @@ void Doc::newDocument()
   m_busList.first();
   while (!m_busList.isEmpty())
     {
-      b = m_busList.take();
+      b = m_busList.take(0);
       ASSERT(b);
       delete b;
     }
@@ -723,7 +723,7 @@ void Doc::newDocument()
   m_inputDeviceList.first();
   while (!m_inputDeviceList.isEmpty())
     {
-      j = m_inputDeviceList.take();
+      j = m_inputDeviceList.take(0);
       ASSERT(j);
       delete j;
     }
@@ -732,7 +732,7 @@ void Doc::newDocument()
   m_functions.first();
   while (!m_functions.isEmpty())
     {
-      f = m_functions.take();
+      f = m_functions.take(0);
       ASSERT(f);
       delete f;
     }
@@ -741,9 +741,9 @@ void Doc::newDocument()
   m_deviceList.first();
   while (!m_deviceList.isEmpty())
     {
-      d = m_deviceList.take();
+      d = m_deviceList.take(0);
       ASSERT(d);
-      freeDMXAddressSpace(d->address(), d->deviceClass()->channels().count());
+      freeDMXAddressSpace(d->address(), d->deviceClass()->channels()->count());
       delete d;
     }
 
@@ -871,11 +871,6 @@ bool Doc::removeDevice(DMXDevice* device)
   emit deviceListChanged();
 
   return ok;
-}
-
-QList <DMXDevice> Doc::deviceList() const
-{
-  return ( QList <DMXDevice> ) m_deviceList;
 }
 
 /* Search for a device by its run-time id number */

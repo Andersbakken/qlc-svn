@@ -46,6 +46,20 @@ Scene::Scene() : Function()
     }
 }
 
+Scene::Scene(Scene* sc)
+{
+  m_type = Function::Scene;
+  m_name = QString(sc->name());
+  m_deviceClass = sc->m_deviceClass;
+  m_device = sc->m_device;
+
+  for (int i = 0; i < 512; i++)
+    {
+      sc->m_values[i].value = m_values[i].value;
+      sc->m_values[i].type = m_values[i].type;
+    }
+}
+
 Scene::~Scene()
 {
   emit destroyed();
@@ -91,7 +105,7 @@ void Scene::saveToFile(QFile &file)
   if (deviceClass() != NULL)
     {
       // Write only the data for device class scenes
-      for (unsigned short i = 0; i < deviceClass()->channels().count(); i++)
+      for (unsigned short i = 0; i < deviceClass()->channels()->count(); i++)
 	{
 	  if (m_values[i].type == Set)
 	    {
@@ -111,7 +125,7 @@ void Scene::saveToFile(QFile &file)
       file.writeBlock((const char*) s, s.length());
 
       // Data
-      for (unsigned short i = 0; i < device()->deviceClass()->channels().count(); i++)
+      for (unsigned short i = 0; i < device()->deviceClass()->channels()->count(); i++)
 	{
 	  if (m_values[i].type == Set)
 	    {
@@ -163,7 +177,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
 {
   if (m_device != NULL)
     {
-      if (ch < m_device->deviceClass()->channels().count())
+      if (ch < m_device->deviceClass()->channels()->count())
 	{
 	  m_values[ch].value = value;
 	  m_values[ch].type = Set;
@@ -176,7 +190,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
     }
   else if (m_deviceClass != NULL)
     {
-      if (ch < deviceClass()->channels().count())
+      if (ch < deviceClass()->channels()->count())
 	{
 	  m_values[ch].value = value;
 	  m_values[ch].type = Set;
@@ -199,7 +213,7 @@ bool Scene::clear(unsigned short ch)
 {
   if (m_device != NULL)
     {
-      if (ch < m_device->deviceClass()->channels().count())
+      if (ch < m_device->deviceClass()->channels()->count())
 	{
 	  m_values[ch].value = 0;
 	  m_values[ch].type = NoSet;
@@ -212,7 +226,7 @@ bool Scene::clear(unsigned short ch)
     }
   else if (m_deviceClass != NULL)
     {
-      if (ch < deviceClass()->channels().count())
+      if (ch < deviceClass()->channels()->count())
 	{
 	  m_values[ch].value = 0;
 	  m_values[ch].type = NoSet;
@@ -245,7 +259,7 @@ void Scene::recalculateSpeed(Feeder* f)
 
   if (f->device() != NULL)
     {
-      channels = f->device()->deviceClass()->channels().count();
+      channels = f->device()->deviceClass()->channels()->count();
     }
 
   // Calculate delta for the rest of the channels.
@@ -295,7 +309,7 @@ Event* Scene::getEvent(Feeder* feeder)
   unsigned short channels = 0;
   unsigned char currentValue = 0;
 
-  channels = feeder->device()->deviceClass()->channels().count();
+  channels = feeder->device()->deviceClass()->channels()->count();
 
   Event* event = new Event(channels);
 

@@ -110,6 +110,8 @@ class App : public QMainWindow
   void slotViewGlobalFunctions();
   void slotGlobalFunctionsViewClosed();
 
+  void slotViewAdvancedSceneEditor();
+
   void slotHelpAbout();
 
  private:

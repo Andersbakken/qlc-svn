@@ -45,7 +45,8 @@ class Scene : public Function
 
  public:
   Scene();
-  ~Scene();
+  Scene(Scene* sc);
+  virtual  ~Scene();
 
  public:
   Event* getEvent(Feeder* feeder);

@@ -56,6 +56,7 @@ DeviceClass* Function::deviceClass() const
 void Function::setDeviceClass(DeviceClass* dc)
 {
   m_deviceClass = dc;
+  m_device = NULL;
 }
 
 DMXDevice* Function::device() const
@@ -66,6 +67,7 @@ DMXDevice* Function::device() const
 void Function::setDevice(DMXDevice* device)
 {
   m_device = device;
+  m_deviceClass = NULL;
 }
 
 Function::Type Function::type() const

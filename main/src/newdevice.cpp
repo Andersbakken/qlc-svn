@@ -153,12 +153,12 @@ void NewDevice::fillTree()
   QListViewItem* parent = NULL;
   QListViewItem* newItem = NULL;
 
-  QList <DeviceClass> dclist(_app->doc()->deviceClassList());
+  QList <DeviceClass> *dl = _app->doc()->deviceClassList();
   QPixmap pm(_app->settings()->pixmapPath() + QString("dmx.xpm"));
 
   m_tree->clear();
 
-  for (DeviceClass* dc = dclist.first(); dc != NULL; dc = dclist.next())
+  for (DeviceClass* dc = dl->first(); dc != NULL; dc = dl->next())
     {
       bool alreadyAdded = false;
 

@@ -49,22 +49,19 @@ SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent, const char* name )
   // initially, get data from the device class as default.
   m_deviceSource="DeviceClass";
   m_deviceClassRadio->setChecked(TRUE);
-  m_selectFunctions(device->deviceClass()->functions());
+  
+  selectFunctions();
 }
-
 
 SceneEditor::~SceneEditor()
 {
 
 }
 
-
-
 void SceneEditor::slotSceneChanged()
 {
-   m_setStatusText( "modified", QColor( 255, 0, 0 ) );
+  setStatusText( "modified", QColor( 255, 0, 0 ) );
 }
-
 
 void SceneEditor::slotSceneActivated( int nr )
 {
@@ -72,8 +69,9 @@ void SceneEditor::slotSceneActivated( int nr )
 
   if( m_deviceSource == "DeviceClass")
     {
-      QList <Function> fl = m_device->deviceClass()->functions();
-      for (f = fl.first(); f != NULL; f = fl.next())
+      QList <Function> *fl = m_device->deviceClass()->functions();
+
+      for (f = fl->first(); f != NULL; f = fl->next())
 	{
 	  if( f->name() == m_availableScenesComboBox->currentText())
 	    {
@@ -84,8 +82,8 @@ void SceneEditor::slotSceneActivated( int nr )
     }
   else
     {
-      QList <Function> fl = m_device->functions();
-      for (f = fl.first(); f != NULL; f = fl.next())
+      QList <Function> *fl = m_device->functions();
+      for (f = fl->first(); f != NULL; f = fl->next())
 	{
 	  if( f->name() == m_availableScenesComboBox->currentText())
 	    {
@@ -95,7 +93,7 @@ void SceneEditor::slotSceneActivated( int nr )
 	}
     }
   
-  m_setStatusText( "unchanged", QColor( 0, 255, 100 ));
+  setStatusText( "unchanged", QColor( 0, 255, 100 ));
 }
 
 
@@ -126,22 +124,20 @@ void  SceneEditor::slotHideClicked()
 {
 }
 
-
-
 void  SceneEditor::slotNewClicked()
 {
    bool ok = FALSE;
    QString text = QInputDialog::getText(
-                    tr( "Scene editor" ),
-                    tr( "Enter scene name" ),
-                    QLineEdit::Normal, QString::null, &ok, this );
+					tr( "Scene editor" ),
+					tr( "Enter scene name" ),
+					QLineEdit::Normal, QString::null, &ok, this );
 
    if ( ok && !text.isEmpty() )
      {
        Scene* sc = new Scene();
        sc->setName(text);
        sc->setDeviceClass(m_device->deviceClass());
-       for(unsigned int n = 0; n < m_device->deviceClass()->channels().count(); n++)
+       for(unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
 	 {
 	   // Get values from device / HJu
 	   if (m_device->dmxChannel(n)->status() == DMXChannel::On)
@@ -185,7 +181,7 @@ void SceneEditor::slotSaveClicked()
 
   // Take values from device because it returns real values for
   // sure and they are unsigned chars and it is much simpler this way / HJu
-  for (unsigned short i = 0; i < m_device->deviceClass()->channels().count(); i++)
+  for (unsigned short i = 0; i < m_device->deviceClass()->channels()->count(); i++)
     {
       if (m_device->dmxChannel(i)->status() == DMXChannel::On)
 	{
@@ -202,35 +198,34 @@ void SceneEditor::slotSaveClicked()
       m_device->deviceClass()->saveToFile();
     }
 
-  m_setStatusText("saved", QColor( 0, 0, 255));
+  setStatusText("saved", QColor( 0, 0, 255));
 }
 
 
-void SceneEditor::slotDeviceRadio_clicked()
+void SceneEditor::slotDeviceRadioClicked()
 {
-  Function* f;
+  QList <Function> *fl = m_device->functions();
 
-  QList <Function> fl = m_device->functions();
   m_availableScenesComboBox->clear();
 
-  for (f = fl.first(); f != NULL; f = fl.next())
+  for (Function *f = fl->first(); f != NULL; f = fl->next())
     {
       if (f->type() == Function::Scene)
 	{
 	  m_availableScenesComboBox->insertItem(f->name());
 	}
     }
+
   m_deviceSource = "Device";
 }
 
 
-void SceneEditor::slotClassRadio_clicked()
+void SceneEditor::slotClassRadioClicked()
 {
-  Function* f;
-  QList <Function> fl = m_device->deviceClass()->functions();
+  QList <Function> *fl = m_device->deviceClass()->functions();
   m_availableScenesComboBox->clear();
 
-  for (f = fl.first(); f != NULL; f = fl.next())
+  for (Function* f = fl->first(); f != NULL; f = fl->next())
     {
       if (f->type() == Function::Scene)
 	{
@@ -243,10 +238,11 @@ void SceneEditor::slotClassRadio_clicked()
 
 
 
-void SceneEditor::m_selectFunctions(QList <Function> fl)
+void SceneEditor::selectFunctions()
 {
-  Function* f;
-  for (f = fl.first(); f != NULL; f = fl.next())
+  QList <Function> *fl = m_device->deviceClass()->functions();
+
+  for (Function* f = fl->first(); f != NULL; f = fl->next())
     {
       if (f->type() == Function::Scene)
 	{
@@ -254,13 +250,13 @@ void SceneEditor::m_selectFunctions(QList <Function> fl)
 	}
     }
 
-  m_setStatusText( "unchanged",QColor( 0, 255, 100 ));
+  setStatusText( "unchanged",QColor( 0, 255, 100 ));
   slotSceneActivated(0);
 }
 
 
 
-void SceneEditor::m_setStatusText(QString text, QColor color)
+void SceneEditor::setStatusText(QString text, QColor color)
 {
   m_statusLabel->setPaletteForegroundColor( color );
   m_statusLabel->setText( text );

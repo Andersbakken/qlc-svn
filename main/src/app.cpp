@@ -45,6 +45,7 @@
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
 #include "globalfunctionsview.h"
+#include "advancedsceneeditor.h"
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
@@ -68,6 +69,7 @@
 #define ID_VIEW_SEQUENCE_EDITOR         12050
 #define ID_VIEW_DMXADDRESSTOOL          12060
 #define ID_VIEW_INPUT_DEVICES           12070
+#define ID_VIEW_ADVANCED_SCENE_EDITOR   12080
 
 ///////////////////////////////////////////////////////////////////
 // Functions menu entries
@@ -223,14 +225,14 @@ void App::initMenuBar()
   m_viewMenu->setCheckable(true);
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "Device Manager", this, SLOT(slotViewDeviceManager()), 0, ID_VIEW_DEVICE_MANAGER);
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
+  m_viewMenu->insertSeparator();
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
+  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("function.xpm")), "Advanced Scene Editor", this, SLOT(slotViewAdvancedSceneEditor()), 0, ID_VIEW_ADVANCED_SCENE_EDITOR);
   //
   // Sequence Editor is disabled for now because it doesn't work at all
   //
   // m_viewMenu->insertItem("Sequence Editor", this, SLOT(slotViewSequenceEditor()), 0, ID_VIEW_SEQUENCE_EDITOR);
   //
-  //m_viewMenu->insertSeparator();
-  //m_viewMenu->insertItem(QPixmap(m_settings->getPixmapPath() + QString("joystick.xpm")), "Input devices", this, SLOT(slotViewInputDevices()), 0, ID_VIEW_INPUT_DEVICES);
   m_viewMenu->insertSeparator();
   //  m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
   //  m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
@@ -243,7 +245,7 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Functions Menu
   m_functionsMenu = new QPopupMenu();
-  
+
   m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Global Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
   m_functionsMenu->insertSeparator();
   m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
@@ -270,6 +272,14 @@ void App::initMenuBar()
   menuBar()->setSeparator(QMenuBar::InWindowsStyle);
 }
 
+void App::slotViewAdvancedSceneEditor()
+{
+  AdvancedSceneEditor* ase = new AdvancedSceneEditor(NULL);
+  ase->init();
+  ase->exec();
+  delete ase;
+}
+
 void App::slotViewGlobalFunctions()
 {
   if (m_globalFunctionsView == NULL)
@@ -294,9 +304,14 @@ void App::slotGlobalFunctionsViewClosed()
 
 void App::slotViewDeviceClassEditor()
 {
-  DeviceClassEditor* dCE = new DeviceClassEditor(NULL, "Device Class Editor", true);
-  dCE->show();
+  DeviceClassEditor* dce = new DeviceClassEditor(NULL);
+
+  dce->init();
+  dce->exec();
+
+  delete dce;
 }
+
 void App::slotViewSequenceEditor()
 {
   SequenceEditor* se;

@@ -45,7 +45,10 @@ FunctionCollection::FunctionCollection() : Function()
 
 FunctionCollection::~FunctionCollection()
 {
-
+  while (m_items.isEmpty() == false)
+    {
+      delete m_items.take(0);
+    }
 }
 
 bool FunctionCollection::unRegisterFunction(Feeder* feeder)

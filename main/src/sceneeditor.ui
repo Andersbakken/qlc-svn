@@ -43,6 +43,60 @@
             <string></string>
         </property>
     </widget>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>m_saveToGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>40</y>
+                <width>110</width>
+                <height>70</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Source</string>
+        </property>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>m_deviceClassRadio</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>97</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device class</string>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Save as a scene that can be used by any device of the same make and model</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>m_deviceRadio</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>40</y>
+                    <width>97</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device </string>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Save as a scene that can be used only by the current device</string>
+            </property>
+        </widget>
+    </widget>
     <widget class="QGroupBox">
         <property name="name">
             <cstring>m_statusGroup</cstring>
@@ -111,79 +165,6 @@
     </widget>
     <widget class="QPushButton">
         <property name="name">
-            <cstring>m_hideButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>190</y>
-                <width>110</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Hide</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Hide scene editor panel</string>
-        </property>
-    </widget>
-    <widget class="QButtonGroup">
-        <property name="name">
-            <cstring>m_saveToGroup</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>40</y>
-                <width>110</width>
-                <height>70</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Source</string>
-        </property>
-        <widget class="QRadioButton">
-            <property name="name">
-                <cstring>m_deviceClassRadio</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>20</y>
-                    <width>97</width>
-                    <height>19</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Device class</string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Save as a scene that can be used by any device of the same make and model</string>
-            </property>
-        </widget>
-        <widget class="QRadioButton">
-            <property name="name">
-                <cstring>m_deviceRadio</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>40</y>
-                    <width>97</width>
-                    <height>19</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Device </string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Save as a scene that can be used only by the current device</string>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
             <cstring>m_saveButton</cstring>
         </property>
         <property name="geometry">
@@ -199,6 +180,25 @@
         </property>
         <property name="toolTip" stdset="0">
             <string>Save as selected scene</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_hideButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>190</y>
+                <width>110</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Hide</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Hide scene editor panel</string>
         </property>
     </widget>
 </widget>
@@ -227,29 +227,14 @@
         <receiver>UI_SceneEditor</receiver>
         <slot>slotHideClicked()</slot>
     </connection>
-    <connection>
-        <sender>m_deviceClassRadio</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_SceneEditor</receiver>
-        <slot>slotClassRadio_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_deviceRadio</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_SceneEditor</receiver>
-        <slot>slotDeviceRadio_clicked()</slot>
-    </connection>
 </connections>
-<includes>
-    <include location="local" impldecl="in implementation">sceneeditor.ui.h</include>
-</includes>
 <slots>
-    <slot>slotSceneActivated( int )</slot>
+    <slot>slotClassRadioClicked()</slot>
+    <slot>slotDeviceRadioClicked()</slot>
     <slot>slotHideClicked()</slot>
     <slot>slotNewClicked()</slot>
     <slot>slotSaveClicked()</slot>
-    <slot>slotClassRadio_clicked()</slot>
-    <slot>slotDeviceRadio_clicked()</slot>
+    <slot>slotSceneActivated( int )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

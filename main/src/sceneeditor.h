@@ -54,8 +54,8 @@ class SceneEditor : public UI_SceneEditor
   void slotHideClicked();
   void slotNewClicked();
   void slotSaveClicked();
-  void slotClassRadio_clicked();
-  void slotDeviceRadio_clicked();
+  void slotClassRadioClicked();
+  void slotDeviceRadioClicked();
 
  protected:
   DMXDevice* m_device;
@@ -63,8 +63,8 @@ class SceneEditor : public UI_SceneEditor
   QString m_deviceSource;
 
  protected:
-  void m_selectFunctions(QList <Function> fl);
-  void m_setStatusText(QString text, QColor color);
+  void selectFunctions();
+  void setStatusText(QString text, QColor color);
   void setScene(Scene* scene);
 };
 

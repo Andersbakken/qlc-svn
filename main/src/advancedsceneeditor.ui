@@ -1,0 +1,447 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_AdvancedSceneEditor</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_AdvancedSceneEditor</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>591</width>
+            <height>475</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Advanced Scene Editor</string>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_outputDeviceLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>20</x>
+                <y>20</y>
+                <width>100</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Output Device:</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_sceneContentsLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>70</y>
+                <width>390</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Scene Contents:</string>
+        </property>
+    </widget>
+    <widget class="Line">
+        <property name="name">
+            <cstring>m_topLine</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>50</y>
+                <width>571</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_clearValuesButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>490</x>
+                <y>290</y>
+                <width>91</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Clear &amp;Values</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_closeButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>490</x>
+                <y>430</y>
+                <width>91</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;Close</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_sceneNameEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>360</y>
+                <width>100</width>
+                <height>30</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_addSceneButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>110</x>
+                <y>360</y>
+                <width>30</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_removeSceneButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>140</x>
+                <y>360</y>
+                <width>30</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+    </widget>
+    <widget class="Line">
+        <property name="name">
+            <cstring>m_bottomLine</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>400</y>
+                <width>571</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_deviceClassLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>305</x>
+                <y>20</y>
+                <width>100</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Device Class:</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>m_deviceCombo</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>130</x>
+                <y>20</y>
+                <width>160</width>
+                <height>20</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_deviceClassEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>410</x>
+                <y>20</y>
+                <width>160</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="readOnly">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>m_storeSceneInGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>320</y>
+                <width>390</width>
+                <height>70</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Store Scene In</string>
+        </property>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>m_storeInDeviceRadio</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>120</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device</string>
+            </property>
+            <property name="buttonGroupId">
+                <number>0</number>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Saving a scene in the DEVICE means, that the scene is available only for this specific DEVICE</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>m_storeInDeviceClassRadio</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>210</x>
+                    <y>30</y>
+                    <width>140</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device Class</string>
+            </property>
+            <property name="buttonGroupId">
+                <number>1</number>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Saving a scene in the DEVICE CLASS means, that the scene is available to all similar devices</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QListView">
+        <column>
+            <property name="text">
+                <string>Scenes</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <property name="name">
+            <cstring>m_sceneList</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>70</y>
+                <width>160</width>
+                <height>290</height>
+            </rect>
+        </property>
+        <property name="rootIsDecorated">
+            <bool>true</bool>
+        </property>
+        <property name="resizeMode">
+            <enum>AllColumns</enum>
+        </property>
+    </widget>
+    <widget class="QListView">
+        <column>
+            <property name="text">
+                <string>#</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Channel</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Value</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Mode</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <property name="name">
+            <cstring>m_sceneContents</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>90</y>
+                <width>390</width>
+                <height>200</height>
+            </rect>
+        </property>
+        <property name="allColumnsShowFocus">
+            <bool>true</bool>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_sceneContents</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotContentsClicked(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>m_addSceneButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotAddSceneClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_deviceCombo</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotOutputDeviceActivated(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_removeSceneButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotRemoveSceneClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_clearValuesButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotClearValuesClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_sceneNameEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotSceneNameTextChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_closeButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>close()</slot>
+    </connection>
+    <connection>
+        <sender>m_storeSceneInGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotStoreSceneInGroupClicked(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_sceneList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotSceneSelected(QListViewItem*)</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_deviceCombo</tabstop>
+    <tabstop>m_deviceClassEdit</tabstop>
+    <tabstop>m_sceneList</tabstop>
+    <tabstop>m_sceneNameEdit</tabstop>
+    <tabstop>m_addSceneButton</tabstop>
+    <tabstop>m_removeSceneButton</tabstop>
+    <tabstop>m_sceneContents</tabstop>
+    <tabstop>m_clearValuesButton</tabstop>
+    <tabstop>m_storeInDeviceRadio</tabstop>
+    <tabstop>m_storeInDeviceClassRadio</tabstop>
+    <tabstop>m_closeButton</tabstop>
+</tabstops>
+<slots>
+    <slot>slotAddSceneClicked()</slot>
+    <slot>slotClearValuesClicked()</slot>
+    <slot>slotContentsClicked(QListViewItem*)</slot>
+    <slot>slotOutputDeviceActivated(const QString&amp;)</slot>
+    <slot>slotRemoveSceneClicked()</slot>
+    <slot>slotSceneNameTextChanged(const QString&amp;)</slot>
+    <slot>slotSceneSelected(QListViewItem*)</slot>
+    <slot>slotStoreSceneInGroupClicked(int)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
