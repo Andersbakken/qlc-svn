@@ -26,6 +26,7 @@
 #include <qlist.h>
 
 #define VALUE_READY INT_MAX
+#define MIN_FUNCTION_ID 1
 
 class QFile;
 class QString;
@@ -85,6 +86,9 @@ class Function : public QObject
 
   unsigned long m_id;
   static unsigned long _nextFunctionId;
+
+ public:
+  static void resetFunctionId() { _nextFunctionId = MIN_FUNCTION_ID; }
 };
 
 #endif

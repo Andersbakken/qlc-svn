@@ -22,7 +22,7 @@
 #include "function.h"
 #include "dmxdevice.h"
 
-unsigned long Function::_nextFunctionId = 0;
+unsigned long Function::_nextFunctionId = MIN_FUNCTION_ID;
 
 Function::Function(unsigned long id) : QObject()
 {

@@ -639,6 +639,8 @@ void Doc::newDocument()
 
   setModified(false);
 
+  Function::resetFunctionId();
+
   emit newDocumentClicked();
 }
 
