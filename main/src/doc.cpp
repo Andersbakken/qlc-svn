@@ -93,6 +93,8 @@ void Doc::init()
   initDMXChannels();
   initPlugins();
   slotChangeOutputPlugin(_app->settings()->outputPlugin());
+
+  readDeviceClasses();
 }
 
 void Doc::initDMXChannels()

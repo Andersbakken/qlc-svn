@@ -115,14 +115,14 @@ void App::initView(void)
 
   initWorkspace();
   initDoc();
-  doc()->readDeviceClasses();
+  connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
 
   initMenuBar();
   initStatusBar();
   initToolBar();
 
-  initDeviceManagerView();
   initVirtualConsole();
+  initDeviceManagerView();
 
   if (m_settings->openLastWorkspace() == true)
     {
@@ -130,6 +130,7 @@ void App::initView(void)
 
       doc()->loadWorkspaceAs(fileName);
       setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
+      virtualConsole()->hide();
     }
 }
 
@@ -157,8 +158,6 @@ void App::initDoc()
 {
   m_doc = new Doc();
   m_doc->init();
-
-  connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
 }
 
 Doc* App::doc(void)
@@ -208,7 +207,6 @@ void App::initDeviceManagerView()
 
 void App::initVirtualConsole(void)
 {
-  // Create but don't show vc
   m_virtualConsole = new VirtualConsole(workspace());
   m_virtualConsole->initView();
   m_virtualConsole->resize(400, 400);

@@ -51,7 +51,7 @@
 extern App* _app;
 
 AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, const char* name)
-  : UI_AdvancedSceneEditor(parent, name, false)
+  : UI_AdvancedSceneEditor(parent, name, true)
 {
   m_device = NULL;
   m_scene = NULL;
@@ -130,10 +130,7 @@ void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
       return;
     }
 
-  QPoint p = m_sceneContents->mapFromGlobal(pos);
-  int index = m_sceneContents->header()->sectionAt(p.x());
-
-  switch (index)
+  switch (col)
     {
     case 0:
       break;
