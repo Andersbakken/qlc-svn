@@ -37,12 +37,12 @@ class QToolButton;
 class QFileDialog;
 class QWidgetList;
 class QLabel;
+class FunctionTree;
 
 class DeviceManagerView;
 class Settings;
 class SequenceTimer;
 class SequenceProvider;
-class GlobalFunctionsView;
 class Doc;
 class OutputPlugin;
 
@@ -98,26 +98,25 @@ class App : public QMainWindow
   void slotFileSettings();
   void slotFileQuit();
 
-  void slotPanic();
-  void slotModeButtonClicked();
-
   void slotViewDeviceManager();
   void slotViewDeviceClassEditor();
   void slotDeviceManagerViewClosed();
   void slotViewVirtualConsole();
   void slotVirtualConsoleClosed();
-  void slotViewToolBar();
-  void slotViewStatusBar();
+  void slotViewFunctionTree();
+  void slotFunctionTreeClosed();
+
   void slotWindowCascade();
   void slotWindowTile();
+
   void slotRefreshWindowMenu();
   void slotRefreshToolsMenu();
 
-  void slotViewGlobalFunctions();
-  void slotGlobalFunctionsViewClosed();
-
   void slotHelpAbout();
   void slotHelpAboutQt();
+
+  void slotPanic();
+  void slotModeButtonClicked();
 
   void slotSetModeIndicator(VirtualConsole::Mode mode);
 
@@ -149,7 +148,7 @@ class App : public QMainWindow
   DeviceManagerView* m_dmView;
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
-  GlobalFunctionsView* m_globalFunctionsView;
+  FunctionTree* m_functionTree;
 
   SequenceProvider* m_sequenceProvider;
   SequenceTimer* m_sequenceTimer;

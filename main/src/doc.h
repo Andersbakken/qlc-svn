@@ -22,8 +22,7 @@
 #ifndef DOC_H
 #define DOC_H
 
-
-
+class DummyOutPlugin;
 
 #include <qobject.h>
 #include <qlist.h>
@@ -32,8 +31,6 @@
 #include "deviceclass.h"
 #include "bus.h"
 #include "../../libs/common/outputplugin.h"
-
-class DummyOutPlugin;
 
 class Doc : public QObject
 {
@@ -80,13 +77,12 @@ class Doc : public QObject
   // Functions
   //
   // Function list
-  QList<Function> functions() { return m_functions; }
+  QList<Function> *functions() { return &m_functions; }
 
   // Function list operations
   void addFunction(const Function* function);
-  void removeFunction(const unsigned long id);
+  void removeFunction(const unsigned long id, bool deleteFunction = true);
   Function* searchFunction(const unsigned long id);
-  Function* searchFunction(const unsigned long id, DMXDevice** device);
 
   //
   // Device classes

@@ -43,7 +43,12 @@ FunctionCollection::FunctionCollection(unsigned long id) : Function(id)
   m_running = false;
 }
 
-FunctionCollection::FunctionCollection(FunctionCollection* fc)
+FunctionCollection::FunctionCollection(FunctionCollection* fc) : Function(fc->id())
+{
+  copyFrom(fc);
+}
+
+void FunctionCollection::copyFrom(FunctionCollection* fc)
 {
   m_type = Function::Collection;
   m_running = fc->m_running;
@@ -61,7 +66,6 @@ FunctionCollection::FunctionCollection(FunctionCollection* fc)
 	      this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
     }
 }
-
 
 FunctionCollection::~FunctionCollection()
 {
@@ -196,12 +200,16 @@ void FunctionCollection::createContents(QList<QString> &list)
 	    }
 	  else
 	    {
-	      DMXDevice* dummy;
 	      Function* f = NULL;
-	      
-	      f = _app->doc()->searchFunction(fid, &dummy);
-	      
-	      addItem(f);
+	      f = _app->doc()->searchFunction(fid);
+	      if (f != NULL)
+		{
+		  addItem(f);
+		}
+	      else
+		{
+		  qDebug("Unable to find member %d for function collection <" + name() + ">", fid);
+		}
 	    }
 	}
       else

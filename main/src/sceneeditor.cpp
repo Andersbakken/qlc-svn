@@ -197,7 +197,7 @@ void SceneEditor::remove()
   if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
 			   QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
     {
-      m_device->removeFunction(s->id());
+      _app->doc()->removeFunction(s->id());
       fillFunctions();
     }
 }
@@ -259,8 +259,8 @@ void SceneEditor::newScene()
 	    }
 	}
       
-      // Save to device / HJu
-      m_device->addFunction(sc);
+      // Save to function pool
+      _app->doc()->addFunction(sc);
 
       fillFunctions();
       selectFunction(sc->id());
@@ -307,12 +307,12 @@ Scene* SceneEditor::currentScene()
 
   fid = static_cast<ListBoxIDItem*> (m_sceneList->selectedItem())->rtti();
 
-  return static_cast<Scene*> (m_device->searchFunction(fid));
+  return static_cast<Scene*> (_app->doc()->searchFunction(fid));
 }
 
 void SceneEditor::fillFunctions()
 {
-  QList <Function> *fl = m_device->functions();
+  QPtrList <Function> *fl = _app->doc()->functions();
 
   m_sceneList->clear();
 

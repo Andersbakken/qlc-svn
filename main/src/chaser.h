@@ -92,10 +92,10 @@ class Chaser : public Function
 
  public:
   Chaser(unsigned long id = 0);
-  Chaser(Chaser* ch, bool append = true);
+  Chaser(Chaser* ch, bool append = false);
   virtual ~Chaser();
 
-  void copyFrom(Chaser* ch, bool append = true);
+  void copyFrom(Chaser* ch, bool append = false);
 
   void addStep(Function* function);
   void removeStep(int index = 0);

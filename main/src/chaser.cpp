@@ -41,7 +41,7 @@ Chaser::Chaser(unsigned long id) : Function(id)
   m_OKforNextStep = true;
 }
 
-Chaser::Chaser(Chaser* ch, bool append) : Function()
+Chaser::Chaser(Chaser* ch, bool append) : Function(ch->id())
 {
   copyFrom(ch, append);
 }
@@ -51,15 +51,13 @@ void Chaser::copyFrom(Chaser* ch, bool append)
   m_running = ch->m_running;
   m_OKforNextStep = ch->m_OKforNextStep;
   m_repeatTimes = ch->m_repeatTimes;
-  m_id = ch->id();
   m_name = ch->name();
 
   if (append == false)
     {
       while (m_steps.isEmpty() == false)
 	{
-	  ChaserStep* step = m_steps.take(0);
-	  delete step;
+	  delete m_steps.take(0);
 	}
     }
 
@@ -111,8 +109,7 @@ void Chaser::saveToFile(QFile &file)
     }
   else
     {
-      t.setNum(0);
-      s = QString("Device = ") + t + QString("\n");
+      s = QString("Device = 0\n");
       file.writeBlock((const char*) s, s.length());
     }
 
@@ -142,11 +139,9 @@ void Chaser::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Function"))
 	{
-	  DMXDevice* device = NULL;
-
 	  functionId = list.next()->toULong();
 	  
-	  Function* function = _app->doc()->searchFunction(functionId, &device);
+	  Function* function = _app->doc()->searchFunction(functionId);
 	  if (function != NULL)
 	    {
 	      addStep(function);

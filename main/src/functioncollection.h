@@ -76,6 +76,7 @@ class FunctionCollection : public Function
  public:
   FunctionCollection(unsigned long id = 0);
   FunctionCollection(FunctionCollection* fc);
+  void copyFrom(FunctionCollection* fc);
   virtual ~FunctionCollection();
 
   QList <CollectionItem> *items() { return &m_items; }

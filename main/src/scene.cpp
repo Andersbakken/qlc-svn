@@ -177,7 +177,7 @@ void Scene::saveToFile(QFile &file)
     }
   else
     {
-      // For global scenes the device name is "Global"
+      // For global scenes the device is zero
       s = QString("Device = 0") + QString("\n");
       file.writeBlock((const char*) s, s.length());
 

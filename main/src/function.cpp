@@ -30,6 +30,12 @@ Function::Function(unsigned long id) : QObject()
     {
       m_id = _nextFunctionId;
       _nextFunctionId++;
+
+      if (_nextFunctionId == 0)
+	{
+	  // In case we ever go beyond ULONG_MAX
+	  _nextFunctionId = MIN_FUNCTION_ID;
+	}
     }
   else
     {
@@ -37,6 +43,12 @@ Function::Function(unsigned long id) : QObject()
       if (id >= _nextFunctionId)
 	{
 	  _nextFunctionId = id + 1;
+	}
+
+      if (_nextFunctionId == 0)
+	{
+	  // In case we ever go beyond ULONG_MAX
+	  _nextFunctionId = MIN_FUNCTION_ID;
 	}
     }
 

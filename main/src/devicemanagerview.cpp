@@ -65,17 +65,27 @@ void DeviceManagerView::initView()
   
   m_dm = new DeviceManager(this);
 
-  new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
-  new QToolButton(QIconSet(QPixmap(dir + "/addbus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
-  new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
+  m_addOutputDeviceButton = new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
+
+  m_addBusButton = new QToolButton(QIconSet(QPixmap(dir + "/addbus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
+
+  m_removeButton = new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
+
   m_toolbar->addSeparator();
-  new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), "Properties", 0, m_dm, SLOT(slotDLViewProperties()), m_toolbar);
+
+  m_propertiesButton = new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), "Properties", 0, m_dm, SLOT(slotDLViewProperties()), m_toolbar);
+
   m_toolbar->addSeparator();
-  new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), "Monitor Device", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
-  new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), "View Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
+
+  m_monitorButton = new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), "Monitor Device", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
+
+  m_consoleButton = new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), "View Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
 
   m_layout->addWidget(m_dockArea);
   m_layout->addWidget(m_dm);
+
+  connect(_app->virtualConsole(), SIGNAL(modeChange(VirtualConsole::Mode)),
+	  this, SLOT(slotModeChanged(VirtualConsole::Mode)));
 }
 
 DeviceManagerView::~DeviceManagerView()
@@ -107,4 +117,22 @@ void DeviceManagerView::closeEvent(QCloseEvent* e)
 {
   e->accept();
   emit closed();
+}
+
+void DeviceManagerView::slotModeChanged(VirtualConsole::Mode m)
+{
+  if (m == VirtualConsole::Operate)
+    {
+      m_addOutputDeviceButton->setEnabled(false);
+      m_addBusButton->setEnabled(false);
+      m_removeButton->setEnabled(false);
+      m_propertiesButton->setEnabled(false);
+    }
+  else
+    {
+      m_addOutputDeviceButton->setEnabled(true);
+      m_addBusButton->setEnabled(true);
+      m_removeButton->setEnabled(true);
+      m_propertiesButton->setEnabled(true);
+    }
 }

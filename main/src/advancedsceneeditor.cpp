@@ -53,7 +53,7 @@
 extern App* _app;
 
 AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
-  : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", true)
+  : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", false)
 {
   ASSERT(scene != NULL);
 
@@ -392,20 +392,13 @@ void AdvancedSceneEditor::slotApplyClicked()
       return;
     }
 
-  if (m_scene->device() != NULL)
-    {
-      Scene* s = (Scene*) m_scene->device()->searchFunction(m_scene->id());
-      ASSERT(s != NULL);
+  Scene* s = (Scene*) _app->doc()->searchFunction(m_scene->id());
+  ASSERT(s != NULL);
 
-      _app->doc()->setModified(true);
-      setDirty(false);
+  _app->doc()->setModified(true);
+  setDirty(false);
 
-      s->copyFrom(m_scene);
-    }
-  else
-    {
-      ASSERT(false);
-    }
+  s->copyFrom(m_scene);
 }
 
 void AdvancedSceneEditor::slotOKClicked()
@@ -507,7 +500,7 @@ void AdvancedSceneEditor::slotDeviceClassFunctionsListChanged(unsigned long fid)
 
 void AdvancedSceneEditor::updateChannelList()
 {
-  QList <LogicalChannel> *cl;
+  QList <LogicalChannel> *cl = NULL;
   QString num;
   QString val;
   QString cap;

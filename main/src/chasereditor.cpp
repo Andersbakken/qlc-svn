@@ -138,10 +138,8 @@ void ChaserEditor::slotAddClicked()
 
   if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
     {
-      DMXDevice* device = NULL;
       Function* function = NULL;
-
-      function = _app->doc()->searchFunction(ft->functionId(), &device);
+      function = _app->doc()->searchFunction(ft->functionId());
       ASSERT(function != NULL);
 
       m_chaser->addStep(function);

@@ -119,10 +119,8 @@ void FunctionCollectionEditor::slotAddClicked()
     {
       if (findItem(ft->functionId()) == NULL)
 	{
-	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceId());
 	  Function* function = NULL;
-
-	  function = _app->doc()->searchFunction(ft->functionId(), &device);
+	  function = _app->doc()->searchFunction(ft->functionId());
 	  ASSERT(function != NULL);
 	  
 	  QString id;

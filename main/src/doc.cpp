@@ -99,7 +99,6 @@ void Doc::init()
 
   initDMXChannels();
   initPlugins();
-  //slotChangeOutputPlugin(_app->settings()->outputPlugin());
 
   readDeviceClasses();
 }
@@ -267,16 +266,8 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 
 		  if (f != NULL)
 		    {
-		      if (f->device() != NULL)
-			{
-			  // Add function to its parent device
-			  f->device()->addFunction(f);
-			}
-		      else
-			{
-			  // Add function to global functions
-			  addFunction(f);
-			}
+		      // Add function to function pool
+		      addFunction(f);
 		    }
 		}
 	      else if (*string == QString("Bus"))
@@ -365,12 +356,13 @@ void Doc::createJoystickContents(QList<QString> &list)
 
 void Doc::createFunctionContents(QList<QString> &list)
 {
-  Function* f = NULL;
-  DMXDevice* d = NULL;
+  Function* function = NULL;
+  DMXDevice* device = NULL;
+
+  unsigned long deviceId = 0;
+  unsigned long functionId = ULONG_MAX;
 
   QString name;
-  unsigned long device = 0;
-  unsigned long id = ULONG_MAX;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -389,18 +381,18 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
       else if (*s == QString("ID"))
 	{
-	  id = list.next()->toULong();
+	  functionId = list.next()->toULong();
 	}
       else if (*s == QString("Device"))
 	{
-	  device = list.next()->toInt();
-	  if (device == 0)
+	  deviceId = list.next()->toInt();
+	  if (deviceId == 0)
 	    {
-	      d = NULL;
+	      device = NULL;
 	    }
 	  else
 	    {
-	      d = searchDevice(device);
+	      device = searchDevice(deviceId);
 	    }
 	  break;
 	}
@@ -411,23 +403,22 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
     }
 
-  if (id == ULONG_MAX)
+  if (functionId == ULONG_MAX)
     {
-      qDebug("0 Invalid or missing information for function <%s>", (const char*) name);
+      qDebug("Couldn't find an ID for function <" + name + ">");
     }
   else
     {
-      DMXDevice* device = NULL;
-      f = searchFunction(id, &device);
+      function = searchFunction(functionId);
 
-      if (f != NULL)
+      if (function != NULL)
 	{
-	  f->setDevice(device);
-	  f->createContents(list);
+	  function->setDevice(device);
+	  function->createContents(list);
 	}
       else
 	{
-	  qDebug("Invalid or missing information for function <%s>", (const char*) name);
+	  qDebug("Couldn't find function <" + name + ">");
 	}
     }
 }
@@ -658,20 +649,29 @@ bool Doc::saveWorkspaceAs(QString &fileName)
   QFile file(fileName);
   if (file.open(IO_WriteOnly))
     {
-      // Save Buses
+      //
+      // Buses
+      //
       for (Bus* b = m_busList.first(); b != NULL; b = m_busList.next())
 	{
 	  b->saveToFile(file);
 	}
 
-      // Save devices & their functions
+      //
+      // Devices
+      //
       for (DMXDevice* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
         {
 	  d->saveToFile(file);
 	}
 
-      // Save global functions
-      // Save scenes
+      //
+      // Functions
+      //
+
+      //
+      // Scenes
+      //
       for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Scene)
@@ -680,7 +680,9 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	    }
 	}
 
-      // Save chasers
+      //
+      // Chasers
+      //
       for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Chaser)
@@ -689,7 +691,9 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	    }
 	}
 
-      // Save Sequences
+      //
+      // Sequences
+      //
       for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Sequence)
@@ -698,7 +702,9 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	    }
 	}
 
-      // Save Collections
+      //
+      // Collections
+      //
       for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Collection)
@@ -809,6 +815,7 @@ DeviceClass* Doc::searchDeviceClass(unsigned long id)
   return NULL;
 }
 
+
 void Doc::addFunction(const Function* function)
 {
   ASSERT(function != NULL);
@@ -817,7 +824,8 @@ void Doc::addFunction(const Function* function)
   setModified(true);
 }
 
-void Doc::removeFunction(const unsigned long id)
+
+void Doc::removeFunction(const unsigned long id, bool deleteFunction)
 {
   Function* f = NULL;
 
@@ -825,13 +833,20 @@ void Doc::removeFunction(const unsigned long id)
     {
       if (f->id() == id)
 	{
-	  delete m_functions.take();
+	  m_functions.take();
+
+	  if (deleteFunction)
+	    {
+	      delete f;
+	    }
+
 	  break;
 	}
     }
 
   setModified(true);
 }
+
 
 Function* Doc::searchFunction(const unsigned long id)
 {
@@ -847,45 +862,6 @@ Function* Doc::searchFunction(const unsigned long id)
   return NULL;
 }
 
-Function* Doc::searchFunction(const unsigned long id, DMXDevice** device)
-{
-  Function* f = NULL;
-
-  //
-  // Search thru global functions
-  //
-  for (f = m_functions.first(); f != NULL; f = m_functions.next())
-    {
-      if (f->id() == id)
-	{
-	  *device = f->device();
-	  return f;
-	}
-    }
-
-  //
-  // Search thru devices
-  //
-  for (DMXDevice* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
-    {
-      QList<Function> *fl = d->functions();
-      for (f = fl->first(); f != NULL; f = fl->next())
-	{
-	  if (f->id() == id)
-	    {
-	      *device = f->device();
-	      return f;
-	    }
-	}
-    }
-
-  //
-  // Didn't find, return nothing
-  //
-  *device = NULL;
-  return NULL;
-}
-
 
 void Doc::addBus(Bus* bus)
 {
@@ -895,6 +871,7 @@ void Doc::addBus(Bus* bus)
 
   setModified(true);
 }
+
 
 Bus* Doc::searchBus(const unsigned int id)
 {

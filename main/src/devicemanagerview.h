@@ -46,11 +46,21 @@ class DeviceManagerView : public QWidget
   DeviceManager* deviceManager() { return m_dm; }
   void initView(void);
 
+ private slots:
+  void slotModeChanged(VirtualConsole::Mode m);
+
  private:
   DeviceManager* m_dm;
   QToolBar* m_toolbar;
   QVBoxLayout* m_layout;
   QDockArea* m_dockArea;
+
+  QToolButton* m_addOutputDeviceButton;
+  QToolButton* m_addBusButton;
+  QToolButton* m_removeButton;
+  QToolButton* m_propertiesButton;
+  QToolButton* m_monitorButton;
+  QToolButton* m_consoleButton;
 
  signals:
   void closed();

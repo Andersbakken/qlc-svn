@@ -136,8 +136,6 @@ void VirtualConsole::setMode(Mode mode)
 	  
 	  XCloseDisplay(display);
 	}
-
-      _app->slotSetModeIndicator(Design);
     }
   else
     {
@@ -160,9 +158,9 @@ void VirtualConsole::setMode(Mode mode)
 	  
 	  XCloseDisplay(display);
 	}
-
-      _app->slotSetModeIndicator(Operate);
     }
+
+  emit modeChange(m_mode);
 }
 
 // Search for a parent frame by the id number <id>

@@ -85,7 +85,7 @@ class VirtualConsole : public QWidget
 
  signals:
   void closed();
-  void modeChange(Mode m);
+  void modeChange(VirtualConsole::Mode);
 
  protected:
   void closeEvent(QCloseEvent* e);

@@ -46,7 +46,6 @@
 #include "dmxaddresstool.h"
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
-#include "globalfunctionsview.h"
 #include "functiontree.h"
 #include "configkeys.h"
 
@@ -60,14 +59,15 @@ static const QColor KModeColorDesign = QColor(0, 255, 0);
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
-#define ID_FILE_NEW                 	10020
-#define ID_FILE_OPEN                	10030
-#define ID_FILE_SAVE                	10050
-#define ID_FILE_SAVE_AS             	10060
-#define ID_FILE_CLOSE               	10070
-#define ID_FILE_PRINT               	10080
-#define ID_FILE_SETTINGS                10090
-#define ID_FILE_QUIT                	10100
+#define ID_FILE                         10000
+#define ID_FILE_NEW                 	10010
+#define ID_FILE_OPEN                	10020
+#define ID_FILE_SAVE                	10030
+#define ID_FILE_SAVE_AS             	10040
+#define ID_FILE_CLOSE               	10050
+#define ID_FILE_PRINT               	10060
+#define ID_FILE_SETTINGS                10070
+#define ID_FILE_QUIT                	10080
 
 ///////////////////////////////////////////////////////////////////
 // Tools menu entries                    
@@ -80,13 +80,13 @@ static const QColor KModeColorDesign = QColor(0, 255, 0);
 #define ID_VIEW_SEQUENCE_EDITOR         12050
 #define ID_VIEW_DMXADDRESSTOOL          12060
 #define ID_VIEW_INPUT_DEVICES           12070
+#define ID_VIEW_FUNCTION_TREE           12080
 
 ///////////////////////////////////////////////////////////////////
 // Functions menu entries
-#define ID_FUNCTIONS_GLOBAL_FUNCTIONS       13010
-
-#define ID_FUNCTIONS_PANIC                  13030
-#define ID_FUNCTIONS_MODE                   13040
+#define ID_FUNCTIONS                    13000
+#define ID_FUNCTIONS_PANIC              13010
+#define ID_FUNCTIONS_MODE               13020
 
 ///////////////////////////////////////////////////////////////////
 // Window menu entries
@@ -96,8 +96,9 @@ static const QColor KModeColorDesign = QColor(0, 255, 0);
 
 ///////////////////////////////////////////////////////////////////
 // Help menu entries
-#define ID_HELP_ABOUT               	1002
-#define ID_HELP_ABOUT_QT                1003
+#define ID_HELP                         1000
+#define ID_HELP_ABOUT               	1001
+#define ID_HELP_ABOUT_QT                1002
 
 //////////////////////////////////////////////////////////////////
 // Status bar messages
@@ -105,7 +106,7 @@ static const QColor KModeColorDesign = QColor(0, 255, 0);
 
 App::App(Settings* settings)
 {
-  m_globalFunctionsView = NULL;
+  m_functionTree = NULL;
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
   m_dmView = NULL;
@@ -123,7 +124,6 @@ App::~App()
   m_sequenceTimer->stop();
 
   delete m_sequenceProvider;
-  delete m_globalFunctionsView;
   delete m_dmView;
   delete m_modeIndicator;
   delete m_virtualConsole;
@@ -239,9 +239,6 @@ Doc* App::doc(void)
 
 void App::initSettings()
 {
-  //m_settings = new Settings();
-  //m_settings->load();
-
   QString x, y, w, h;
   settings()->get(KEY_APP_X, x);
   settings()->get(KEY_APP_Y, y);
@@ -295,7 +292,12 @@ void App::initVirtualConsole(void)
   m_virtualConsole->initView();
   m_virtualConsole->resize(400, 400);
   m_virtualConsole->hide();
-  connect(m_virtualConsole, SIGNAL(closed()), this, SLOT(slotVirtualConsoleClosed()));
+
+  connect(m_virtualConsole, SIGNAL(closed()),
+	  this, SLOT(slotVirtualConsoleClosed()));
+
+  connect(m_virtualConsole, SIGNAL(modeChange(VirtualConsole::Mode)),
+	  this, SLOT(slotSetModeIndicator(VirtualConsole::Mode)));
 }
 
 void App::initMenuBar()
@@ -334,7 +336,7 @@ void App::initMenuBar()
   m_toolsMenu->insertItem(QPixmap(dir + QString("/deviceclasseditor.xpm")), 
 			  "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), CTRL + Key_E, ID_VIEW_DEVICE_CLASS_EDITOR);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/function.xpm")), 
-			  "Functions", this, SLOT(slotViewGlobalFunctions()), CTRL + Key_F, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
+			  "Function Tree", this, SLOT(slotViewFunctionTree()), CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(dir + QString("/panic.xpm")), "Panic!", this, SLOT(slotPanic()), CTRL + Key_C, ID_FUNCTIONS_PANIC);
   connect(m_toolsMenu, SIGNAL(aboutToShow()), this, SLOT(slotRefreshToolsMenu()));
@@ -363,109 +365,6 @@ void App::initMenuBar()
   menuBar()->setSeparator(QMenuBar::InWindowsStyle);
 }
 
-void App::slotViewGlobalFunctions()
-{
-  FunctionTree* ft = new FunctionTree(this, false);
-  ft->exec();
-  delete ft;
-}
-
-void App::slotGlobalFunctionsViewClosed()
-{
-  if (m_globalFunctionsView)
-    {
-      disconnect(m_globalFunctionsView);
-      delete m_globalFunctionsView;
-      m_globalFunctionsView = NULL;
-    }
-}
-
-void App::slotViewDeviceClassEditor()
-{
-  DeviceClassEditor* dce = new DeviceClassEditor(NULL);
-
-  dce->init();
-  dce->exec();
-
-  delete dce;
-}
-
-void App::slotRefreshWindowMenu()
-{
-  QWidget* widget;
-  int id = 0;
-
-  QList <QWidget> wl = workspace()->windowList();
-
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
-  m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")), "Cascade", this, SLOT(slotWindowCascade()), 0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")), "Tile", this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
-  m_windowMenu->insertSeparator();
-
-  for (widget = wl.first(); widget != NULL; widget = wl.next())
-  {
-    m_windowMenu->insertItem(widget->caption(), id);
-    if (widget->isVisible() == true)
-    {
-      m_windowMenu->setItemChecked(id, true);
-    }
-    id++;
-  }
-
-  connect(m_windowMenu, SIGNAL(activated(int)), this, SLOT(slotWindowMenuCallback(int)));
-}
-
-void App::slotRefreshToolsMenu()
-{
-  if (virtualConsole()->isDesignMode() == false)
-    {
-      m_toolsMenu->setItemEnabled(ID_FUNCTIONS_GLOBAL_FUNCTIONS, false);
-      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, false);
-    }
-  else
-    {
-      m_toolsMenu->setItemEnabled(ID_FUNCTIONS_GLOBAL_FUNCTIONS, true);
-      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, true);
-    }
-}
-	
-void App::slotWindowMenuCallback(int item)
-{
-  QList <QWidget> wl = workspace()->windowList();
-
-  if (item == ID_WINDOW_CASCADE || item == ID_WINDOW_TILE)
-    {
-      return;
-    }
-
-  if (wl.count())
-    {
-      QWidget* widget;
-
-      widget = wl.at(item);
-      if (widget != NULL)
-	{
-	  widget->show();
-	  widget->setFocus();
-	}
-      else
-	{
-	  QMessageBox::critical(this, IDS_APP_NAME_SHORT, "Unable to focus window! Handle not found.");
-	}
-      
-      disconnect(m_windowMenu);
-    }
-}
-
-void App::slotPanic()
-{
-  /* Shut down all running functions */
-  m_sequenceProvider->flush();
-}
 
 void App::slotFileNew()
 {
@@ -570,6 +469,7 @@ void App::slotFileQuit()
   close();
 }
 
+
 void App::slotViewDeviceManager()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
@@ -589,30 +489,145 @@ void App::slotViewVirtualConsole()
   m_virtualConsole->setFocus();
 }
 
+
 void App::slotVirtualConsoleClosed()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, false);
 }
 
-void App::slotViewToolBar()
-{
 
+void App::slotViewFunctionTree()
+{
+  if (m_functionTree == NULL)
+    {
+      m_functionTree = new FunctionTree(this, false);
+      connect(m_functionTree, SIGNAL(closed()),
+	      this, SLOT(slotFunctionTreeClosed()));
+    }
+  else
+    {
+      // Hide the ft first so that it pops on top
+      m_functionTree->hide();
+    }
+
+  m_functionTree->show();
 }
 
-void App::slotViewStatusBar()
-{
 
+void App::slotFunctionTreeClosed()
+{
+  if (m_functionTree)
+    {
+      disconnect(m_functionTree);
+      delete m_functionTree;
+      m_functionTree = NULL;
+    }
 }
+
+
+void App::slotViewDeviceClassEditor()
+{
+  DeviceClassEditor* dce = new DeviceClassEditor(NULL);
+
+  dce->init();
+  dce->exec();
+
+  delete dce;
+}
+
+
+void App::slotRefreshToolsMenu()
+{
+  if (virtualConsole()->isDesignMode() == false)
+    {
+      m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, false);
+      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, false);
+    }
+  else
+    {
+      m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, true);
+      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, true);
+    }
+}
+
+
+void App::slotRefreshWindowMenu()
+{
+  QWidget* widget;
+  int id = 0;
+
+  QList <QWidget> wl = workspace()->windowList();
+
+  QString dir;
+  settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+  
+  m_windowMenu->clear();
+  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")), "Cascade", this, SLOT(slotWindowCascade()), 0, ID_WINDOW_CASCADE);
+  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")), "Tile", this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
+  m_windowMenu->insertSeparator();
+
+  for (widget = wl.first(); widget != NULL; widget = wl.next())
+  {
+    m_windowMenu->insertItem(widget->caption(), id);
+    if (widget->isVisible() == true)
+    {
+      m_windowMenu->setItemChecked(id, true);
+    }
+    id++;
+  }
+
+  connect(m_windowMenu, SIGNAL(activated(int)), this, SLOT(slotWindowMenuCallback(int)));
+}
+
+
+void App::slotWindowMenuCallback(int item)
+{
+  QList <QWidget> wl = workspace()->windowList();
+
+  if (item == ID_WINDOW_CASCADE || item == ID_WINDOW_TILE)
+    {
+      return;
+    }
+
+  if (wl.count())
+    {
+      QWidget* widget;
+
+      widget = wl.at(item);
+      if (widget != NULL)
+	{
+	  widget->show();
+	  widget->setFocus();
+	}
+      else
+	{
+	  QMessageBox::critical(this, IDS_APP_NAME_SHORT, "Unable to focus window! Handle not found.");
+	}
+      
+      disconnect(m_windowMenu);
+    }
+}
+
 
 void App::slotWindowCascade()
 {
   workspace()->cascade();
 }
 
+
 void App::slotWindowTile()
 {
   workspace()->tile();
 }
+
+
+void App::slotPanic()
+{
+  /* Shut down all running functions */
+  m_sequenceProvider->flush();
+}
+
 
 void App::slotHelpAbout()
 {
@@ -621,6 +636,7 @@ void App::slotHelpAbout()
   ab->exec();
   delete ab;
 }
+
 
 void App::slotHelpAboutQt()
 {
