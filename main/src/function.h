@@ -44,7 +44,14 @@ class Function : public QObject
   Function(unsigned long id = 0);
   virtual ~Function();
 
-  enum Type { Undefined, Collection, Scene, Chaser, Sequence };
+  enum Type
+    {
+      Undefined = 0x0,
+      Collection = 0x1,
+      Scene = 0x2,
+      Chaser = 0x4,
+      Sequence = 0x8
+    };
 
   QString name() const;
   void setName(QString name);

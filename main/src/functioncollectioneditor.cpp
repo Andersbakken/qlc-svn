@@ -71,8 +71,7 @@ void FunctionCollectionEditor::init()
   m_functionList->setGeometry(10, 50, 350, 240);
   m_functionList->addColumn("Device");
   m_functionList->addColumn("Function");
-  m_functionList->addColumn("FID");
-  m_functionList->addColumn("DID");
+  m_functionList->addColumn("Function ID");
   m_functionList->setAllColumnsShowFocus(true);
   m_functionList->setResizeMode(QListView::LastColumn);
 
@@ -114,6 +113,7 @@ void FunctionCollectionEditor::accept()
 void FunctionCollectionEditor::slotAddClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
+  ft->setTypeFilter(Function::Scene | Function::Chaser);
 
   if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
     {

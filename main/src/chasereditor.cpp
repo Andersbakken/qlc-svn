@@ -134,6 +134,8 @@ void ChaserEditor::slotRemoveClicked()
 void ChaserEditor::slotAddClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
+  ft->setTypeFilter(Function::Scene | Function::Collection);
+
   if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
     {
       DMXDevice* device = NULL;

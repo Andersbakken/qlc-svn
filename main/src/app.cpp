@@ -330,7 +330,7 @@ void App::initMenuBar()
 
 void App::slotViewGlobalFunctions()
 {
-  FunctionTree* ft = new FunctionTree(this, "Function Tree", false);
+  FunctionTree* ft = new FunctionTree(this, false);
   ft->exec();
   delete ft;
 }
