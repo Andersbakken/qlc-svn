@@ -48,7 +48,10 @@ install:
 	@install -g root -o root -m 755 $(LIBJOY_SO) $(INSTALLDIR)/libs/$(LIBJOY_SO)
 	@echo "Installed" $(LIBJOY_SO) "to" $(INSTALLDIR)"/libs"
 
-clean:
-	rm -f *.o *.so *~ test *.bak
+clean: emacsclean
+	rm -f *.o *.so test *.bak
+
+emacsclean:
+	rm -f *~
 
 -include Makefile.dep
