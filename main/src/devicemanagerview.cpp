@@ -393,38 +393,40 @@ void DeviceManagerView::slotAdd()
 void DeviceManagerView::slotClone()
 {
   QListViewItem* item = m_listView->currentItem();
-
+  
   // Get the device id and name
   t_device_id old_id = item->text(KColumnID).toInt();
-
-   DeviceClass* dc = _app->doc()->device(old_id)->deviceClass();
-   assert(dc);
-
-   QString new_name;
-   new_name = item->text(KColumnName);
-   new_name += "_new";
-
-   // Add new device
-   Device* d = _app->doc()->newDevice(dc, new_name , 0);
-   assert(d);
-
-   for (t_function_id id = 0; id < KFunctionArraySize; id++)
-   {
+  
+  DeviceClass* dc = _app->doc()->device(old_id)->deviceClass();
+  assert(dc);
+  
+  QString new_name;
+  new_name = item->text(KColumnName);
+  new_name += "_new";
+  
+  // Add new device
+  Device* d = _app->doc()->newDevice(dc, new_name, 0);
+  assert(d);
+  
+  for (t_function_id id = 0; id < KFunctionArraySize; id++)
+    {
       Function* f = _app->doc()->function(id);
       if (!f)
 	{
 	  continue;
 	}
-
-       //copy only functions that belong to parent device
-       if (f->device() == old_id)
-         {
-           copyFunction(f,d);
-         }
-   }
-   
-   m_listView->setCurrentItem(m_listView->findItem(new_name,0,0));
-   slotProperties();
+      
+      //copy only functions that belong to parent device
+      if (f->device() == old_id)
+	{
+	  copyFunction(f, d);
+	}
+    }
+  
+  QString newid;
+  newid.setNum(d->id());
+  m_listView->setCurrentItem(m_listView->findItem(newid, KColumnID));
+  slotProperties();
 }
 
 
@@ -482,6 +484,9 @@ void DeviceManagerView::slotProperties()
 
   device->viewProperties();
 
+  QString address;
+  address.sprintf("%.3d", device->address() + 1);
+  item->setText(KColumnAddress, address);
   item->setText(KColumnName, device->name());
   slotSelectionChanged(item);
 }
