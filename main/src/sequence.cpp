@@ -249,7 +249,29 @@ void Sequence::saveToFile(QFile &file)
 
   if (m_deviceID != KNoID)
     {
-      // Write Data
+      for (unsigned int i = 0; i < m_values.count(); i++)
+	{
+	  SceneValue* value = m_values.at(i);
+	  s = QString("Step = ");
+
+	  for (t_channel ch = 0; ch < m_channels; ch++)
+	    {
+	      if (value[ch].type == Scene::NoSet)
+		{
+		  t = QString("XXX");
+		}
+	      else
+		{
+		  t.setNum(value[ch].value);
+		}
+
+	      s += t;
+	      s += QString(" ");
+	    }
+
+	  s += QString("\n");
+	  file.writeBlock((const char*) s, s.length());
+	}
     }
 }
 
@@ -267,9 +289,43 @@ void Sequence::createContents(QPtrList <QString> &list)
           s = list.prev();
           break;
         }
-      else if (s->at(0).isNumber() == true)
+      else if (*s == QString("Step"))
         {
-	  // Read data
+	  assert(m_channels > 0);
+	  SceneValue* values = new SceneValue[m_channels];
+	  QString t;
+
+	  unsigned int i = 0;
+	  int j = 0;
+	  t_channel ch = 0;
+
+	  s = list.next();
+
+	  while (i < s->length())
+	    {
+	      j = s->find(QChar(' '), i, false);
+	      if (j == -1)
+		{
+		  j = s->length();
+		}
+
+	      t = s->mid(i, j-i);
+	      if (t == QString("XXX"))
+		{
+		  values[ch].value = 0;
+		  values[ch].type = Scene::NoSet;
+		}
+	      else
+		{
+		  values[ch].value = t.toInt();
+		  values[ch].type = Scene::Set;
+		}
+	      
+	      ch++;
+	      i = j + 1;
+	    }
+
+	  m_values.append(values);
         }
       else
         {

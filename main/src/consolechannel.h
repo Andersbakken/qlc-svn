@@ -50,6 +50,9 @@ class ConsoleChannel : public UI_ConsoleChannel
 
   Scene::ValueType status() const { return m_status; }
 
+  // For sequence editor doesn't like fade values
+  void setFadeStatusEnabled(bool enable); 
+  
  signals:
   void changed(t_channel, t_value, Scene::ValueType);
 
@@ -76,6 +79,8 @@ class ConsoleChannel : public UI_ConsoleChannel
   Scene::ValueType m_status;
 
   t_device_id m_deviceID;
+
+  bool m_fadeStatusEnabled;
 };
 
 #endif

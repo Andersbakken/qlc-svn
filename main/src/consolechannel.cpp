@@ -53,10 +53,11 @@ const int KMenuTitle          ( INT_MAX );
 
 ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name) 
   : UI_ConsoleChannel(parent, name),
-    m_channel  (           0 ),
-    m_value    (           0 ),
-    m_status   ( Scene::Fade ),
-    m_deviceID (       KNoID )
+    m_channel    (           0 ),
+    m_value      (           0 ),
+    m_status     ( Scene::Fade ),
+    m_deviceID   (       KNoID ),
+    m_fadeStatusEnabled ( true )
 {
   m_statusButton->setBackgroundMode(FixedColor);
 
@@ -103,9 +104,36 @@ void ConsoleChannel::setStatusButton(Scene::ValueType status)
   updateStatusButton();
 }
 
+// For sequence editor doesn't like fade values
+void ConsoleChannel::setFadeStatusEnabled(bool enable)
+{
+  m_fadeStatusEnabled = enable;
+  if (m_status == Scene::Fade)
+    {
+      setStatusButton(Scene::Set);
+    }
+
+  updateStatusButton();
+}
+
 void ConsoleChannel::slotStatusButtonClicked()
 {
-  m_status = (Scene::ValueType) ((m_status + 1) % 3);
+  if (m_fadeStatusEnabled)
+    {
+      m_status = (Scene::ValueType) ((m_status + 1) % 3);
+    }
+  else
+    {
+      if (m_status == Scene::Set)
+	{
+	  m_status = Scene::NoSet;
+	}
+      else
+	{
+	  m_status = Scene::Set;
+	}
+    }
+
   updateStatusButton();
 
   emit changed(m_channel, m_value, m_status);
@@ -121,22 +149,19 @@ void ConsoleChannel::updateStatusButton()
     {
       m_statusButton->setPaletteBackgroundColor(KStatusButtonColorFade);
       m_statusButton->setText("F");
-      QToolTip::add(m_statusButton,
-		    "Fade; Scene will fade this channel's value");
+      QToolTip::add(m_statusButton, "Fade");
     }
   else if (m_status == Scene::Set)
     {
       m_statusButton->setPaletteBackgroundColor(KStatusButtonColorSet);
       m_statusButton->setText("S");
-      QToolTip::add(m_statusButton, 
-		    "Set; Scene will set this channel's value instantly");
+      QToolTip::add(m_statusButton, "Set");
     }
   else
     {
       m_statusButton->setPaletteBackgroundColor(KStatusButtonColorOff);
       m_statusButton->setText("X");
-      QToolTip::add(m_statusButton, 
-		    "Off; Scene will not set this channel's value");
+      QToolTip::add(m_statusButton, "Off");
     }
 }
 

@@ -65,7 +65,7 @@ void SequenceEditor::init()
   QString dir;
   _app->settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH + QString("/");
-  //setIcon(QPixmap(dir + QString("sequence.xpm")));
+  setIcon(QPixmap(dir + QString("chaser.xpm")));
 
   m_insert->setPixmap(QPixmap(dir + "/add.xpm"));
   m_remove->setPixmap(QPixmap(dir + "/remove.xpm"));
@@ -110,6 +110,7 @@ void SequenceEditor::setDevice(t_device_id id)
       unit = new ConsoleChannel(m_sliderContainer);
       unit->setDevice(id);
       unit->setChannel(ch);
+      unit->setFadeStatusEnabled(false);
       m_unitList.append(unit);
       unit->update();
       
