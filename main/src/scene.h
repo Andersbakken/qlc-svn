@@ -44,6 +44,7 @@ class Scene : public Function
 
   Event* getEvent(Feeder* feeder);
   Event* getNextLevel(Feeder* f);
+  void recalculateSpeed(Feeder* feeder);
 
   void allocate(unsigned short channels);
   void set(unsigned short ch, unsigned short value);

@@ -24,7 +24,7 @@
 #include "function.h"
 #include "app.h"
 #include "sequenceprovider.h"
-#include "sequencestructs.h"
+#include "feeder.h"
 #include "event.h"
 #include "doc.h"
 #include "deviceclass.h"
@@ -221,22 +221,24 @@ void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* 
     }
 }
 
+void FunctionCollection::recalculateSpeed(Feeder* feeder)
+{
+  // No action necessary
+}
+
 Event* FunctionCollection::getEvent(Feeder* feeder)
 {
   ASSERT(feeder != NULL);
 
   Event* event = new Event();
 
-  if (feeder->first == true)
+  connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+	  this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+
+  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-      for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
-	{
-	  m_registerCount++;
-	  _app->sequenceProvider()->registerEventFeeder(item->callerDevice, item->feederFunction, this);
-	}
-      feeder->first = false;
+      m_registerCount++;
+      _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
     }
 
   if (m_registerCount == 0)
@@ -244,11 +246,11 @@ Event* FunctionCollection::getEvent(Feeder* feeder)
       // Disconnect the previous signal
       disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
 		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-
+      
       // Ready event signals sequenceprovider that this
       // function is ready and can be unregistered
       event->m_type = Event::Ready;
     }
-
+  
   return event;
 }

@@ -21,13 +21,14 @@
 
 #include "chaser.h"
 #include "device.h"
-#include "scene.h"
-#include "function.h"
 #include "event.h"
 #include "deviceclass.h"
 #include "doc.h"
 #include "app.h"
 #include "sequenceprovider.h"
+#include "scene.h"
+#include "feeder.h"
+
 #include <stdlib.h>
 
 extern App* _app;
@@ -197,6 +198,10 @@ ChaserStep* Chaser::at(int index)
   return m_steps.at(index);
 }
 
+void Chaser::recalculateSpeed(Feeder* feeder)
+{
+}
+
 Event* Chaser::getEvent(Feeder* feeder)
 {
   Event* event = new Event();
@@ -204,57 +209,60 @@ Event* Chaser::getEvent(Feeder* feeder)
 
   ASSERT(feeder != NULL);
 
-  if (feeder->first == true)
+  /*
+    if (feeder->first == true)
     {
-      feeder->first = false;
-
-      if (m_running == true)
-	{
-	  // Each chaser only once at a time
-	  event->m_type = Event::Ready;
-	  return event;
-	}
-      else
-	{
-	  step = m_steps.at(feeder->nextEventIndex);
-	  
-	  if (step != NULL)
-	    {
-	      feeder->nextEventIndex++;
-	      m_running = true;
-	      m_OKforNextStep = false;
-
-	      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-		      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-
-	      _app->sequenceProvider()->registerEventFeeder(step->callerDevice, step->feederFunction, this);
-	    }
-	  else
-	    {
-	      m_OKforNextStep = false;
-	      event->m_type = Event::Ready;
-	      return event;
-	    }
-	}
+    feeder->first = false;
+    
+    if (m_running == true)
+    {
+    // Each chaser only once at a time
+    event->m_type = Event::Ready;
+    return event;
     }
-  else if (m_OKforNextStep == true)
+    else
     {
-      step = m_steps.at(feeder->nextEventIndex);
+    step = m_steps.at(feeder->nextEventIndex);
+    
+    if (step != NULL)
+    {
+    feeder->nextEventIndex++;
+    m_running = true;
+    m_OKforNextStep = false;
+    
+    connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+    this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+    
+    _app->sequenceProvider()->registerEventFeeder(step->callerDevice, step->feederFunction, feeder->speedBus(), this);
+    }
+    else
+    {
+    m_OKforNextStep = false;
+    event->m_type = Event::Ready;
+    return event;
+    }
+    }
+    }
+    else*/ 
+
+  if (m_OKforNextStep == true)
+    {
+      step = m_steps.at(feeder->nextEventIndex());
 
       if (step != NULL)
 	{
 	  m_OKforNextStep = false;
-	  feeder->nextEventIndex++;
-	  _app->sequenceProvider()->registerEventFeeder(step->callerDevice, step->feederFunction, this);
+	  feeder->setNextEventIndex(feeder->nextEventIndex() + 1);
+	  _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
 	}
       else
 	{
-	  if (feeder->repeatTimes == 0)
+	  if (feeder->repeatTimes() == 0)
 	    {
 	      // Repeat forever
-	      feeder->nextEventIndex = 0;
+	      feeder->setNextEventIndex(0);
 	    }
-	  else if (feeder->repeatCounter == feeder->repeatTimes)
+	  else if (feeder->repeatCounter() == feeder->repeatTimes())
 	    {
 	      // This chaser has been repeated as many times as wanted.
 	      // Disconnect any signals this class has been receiving
@@ -270,8 +278,8 @@ Event* Chaser::getEvent(Feeder* feeder)
 	    {
 	      // Repeated once more
 	      m_OKforNextStep = true;
-	      feeder->repeatCounter++;
-	      feeder->nextEventIndex = 0;
+	      feeder->setRepeatCounter(feeder->repeatCounter() + 1);
+	      feeder->setNextEventIndex(0);
 	    }
 	}
     }

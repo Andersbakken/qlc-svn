@@ -23,10 +23,13 @@
 #define CHASER_H
 
 #include <qlist.h>
-#include "classes.h"
 #include "function.h"
-#include "scene.h"
-#include "sequencestructs.h"
+
+class Feeder;
+class Scene;
+class Event;
+class QFile;
+class QString;
 
 class Chaser : public Function
 {
@@ -43,6 +46,7 @@ class Chaser : public Function
   ChaserStep* at(int index); 
 
   Event* getEvent(Feeder* feeder);
+  void recalculateSpeed (Feeder *f);
 
   void saveToFile(QFile &file);
 

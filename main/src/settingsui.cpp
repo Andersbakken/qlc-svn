@@ -39,8 +39,10 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
 {
   QString str;
 
+  m_systemEdit->setText(_app->settings()->systemPath());
   m_picturesEdit->setText(_app->settings()->pixmapPath());
   m_deviceClassesEdit->setText(_app->settings()->deviceClassPath());
+  m_pluginsEdit->setText(_app->settings()->pluginPath());
 
   m_widgetStyleCombo->insertItem("Motif");
   m_widgetStyleCombo->insertItem("Windows");
@@ -70,26 +72,32 @@ SettingsUI::~SettingsUI()
 {
 }
 
-void SettingsUI::slotPicturesBrowseClicked()
+void SettingsUI::slotSystemBrowseClicked()
 {
   QString dir;
-  dir = QFileDialog::getExistingDirectory(m_picturesEdit->text(), this);
+  dir = QFileDialog::getExistingDirectory(m_systemEdit->text(), this);
 
   if (dir.isEmpty() == false)
     {
-      m_picturesEdit->setText(dir);
+      m_systemEdit->setText(dir);
+      m_picturesEdit->setText(dir + _app->settings()->pixmapPathRelative());
+      m_deviceClassesEdit->setText(dir + _app->settings()->deviceClassPathRelative());
+      m_pluginsEdit->setText(dir + _app->settings()->pluginPathRelative());
     }
 }
 
-void SettingsUI::slotDeviceClassesBrowseClicked()
+void SettingsUI::slotSystemEditTextChanged(const QString &text)
 {
-  QString dir;
-  dir = QFileDialog::getExistingDirectory(m_deviceClassesEdit->text(), this);
+  QString path(text);
 
-  if (dir.isEmpty() == false)
+  if (path.right(1) != QString("/"))
     {
-      m_deviceClassesEdit->setText(dir);
+      path += QString("/");
     }
+
+  m_picturesEdit->setText(path + _app->settings()->pixmapPathRelative());
+  m_deviceClassesEdit->setText(path + _app->settings()->deviceClassPathRelative());
+  m_pluginsEdit->setText(path + _app->settings()->pluginPathRelative());
 }
 
 void SettingsUI::slotGeneralFontSelectClicked()
@@ -132,8 +140,7 @@ void SettingsUI::slotWidgetStyleActivated(int s)
 
 void SettingsUI::slotOKClicked()
 {
-  _app->settings()->setPixmapPath(m_picturesEdit->text());
-  _app->settings()->setDeviceClassPath(m_deviceClassesEdit->text());
+  _app->settings()->setSystemPath(m_systemEdit->text());
 
   _app->settings()->setGeneralFont(m_generalFont);
   _app->settings()->setSmallFont(m_smallFont);

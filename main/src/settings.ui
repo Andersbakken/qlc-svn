@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>469</width>
-            <height>449</height>
+            <height>481</height>
         </rect>
     </property>
     <property name="caption">
@@ -17,127 +17,12 @@
     </property>
     <widget class="QGroupBox">
         <property name="name">
-            <cstring>m_directoriesGroupBox</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>450</width>
-                <height>110</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>Box</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="title">
-            <string>Directories</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_picturesLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>120</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Pictures</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_deviceClassesLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>60</y>
-                    <width>120</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Device Classes</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_picturesEdit</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>30</y>
-                    <width>231</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_deviceClassesEdit</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>60</y>
-                    <width>230</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_browseDeviceClassesButton</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>370</x>
-                    <y>60</y>
-                    <width>70</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Browse...</string>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_browsePicturesButton</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>370</x>
-                    <y>30</y>
-                    <width>70</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Browse...</string>
-            </property>
-            <property name="autoDefault">
-                <bool>true</bool>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
             <cstring>m_stylesGroupBox</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>130</y>
+                <y>170</y>
                 <width>450</width>
                 <height>140</height>
             </rect>
@@ -145,35 +30,6 @@
         <property name="title">
             <string>Styles</string>
         </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_smallFontLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>60</y>
-                    <width>110</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Small Font</string>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>m_widgetStyleCombo</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>100</y>
-                    <width>230</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>m_widgetStyleLabel</cstring>
@@ -190,38 +46,6 @@
                 <string>Widget Style</string>
             </property>
         </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_smallFontEdit</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>60</y>
-                    <width>231</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_selectSmallFontButton</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>370</x>
-                    <y>60</y>
-                    <width>70</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Select...</string>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>m_generalFontLabel</cstring>
@@ -234,11 +58,27 @@
                     <x>10</x>
                     <y>30</y>
                     <width>110</width>
-                    <height>24</height>
+                    <height>25</height>
                 </rect>
             </property>
             <property name="text">
                 <string>General Font</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_smallFontLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>60</y>
+                    <width>110</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Small Font</string>
             </property>
         </widget>
         <widget class="QLineEdit">
@@ -252,8 +92,24 @@
                 <rect>
                     <x>130</x>
                     <y>30</y>
-                    <width>231</width>
-                    <height>24</height>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="readOnly">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_smallFontEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>60</y>
+                    <width>230</width>
+                    <height>25</height>
                 </rect>
             </property>
             <property name="readOnly">
@@ -279,6 +135,35 @@
                 <string>Select...</string>
             </property>
         </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_selectSmallFontButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>60</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Select...</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>m_widgetStyleCombo</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>100</y>
+                    <width>230</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -287,7 +172,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>280</y>
+                <y>320</y>
                 <width>450</width>
                 <height>100</height>
             </rect>
@@ -303,7 +188,7 @@
                 <rect>
                     <x>20</x>
                     <y>30</y>
-                    <width>310</width>
+                    <width>420</width>
                     <height>21</height>
                 </rect>
             </property>
@@ -319,7 +204,7 @@
                 <rect>
                     <x>20</x>
                     <y>60</y>
-                    <width>310</width>
+                    <width>420</width>
                     <height>21</height>
                 </rect>
             </property>
@@ -335,7 +220,7 @@
         <property name="geometry">
             <rect>
                 <x>380</x>
-                <y>400</y>
+                <y>440</y>
                 <width>80</width>
                 <height>25</height>
             </rect>
@@ -351,7 +236,7 @@
         <property name="geometry">
             <rect>
                 <x>290</x>
-                <y>400</y>
+                <y>440</y>
                 <width>80</width>
                 <height>25</height>
             </rect>
@@ -362,6 +247,169 @@
         <property name="default">
             <bool>true</bool>
         </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_directoriesGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>450</width>
+                <height>150</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>Box</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="title">
+            <string>Directories</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_pluginsLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>110</y>
+                    <width>120</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Plugins</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_deviceClassesLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>80</y>
+                    <width>120</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device Classes</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_picturesLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>50</y>
+                    <width>120</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Pictures</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_systemLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>120</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>QLC System</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_systemEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>20</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_systemBrowse</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>20</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Browse...</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_picturesEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>50</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="readOnly">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_deviceClassesEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>80</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="readOnly">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_pluginsEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>110</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="readOnly">
+                <bool>true</bool>
+            </property>
+        </widget>
     </widget>
 </widget>
 <connections>
@@ -376,18 +424,6 @@
         <signal>clicked()</signal>
         <receiver>UI_Settings</receiver>
         <slot>slotSmallFontSelectClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_browsePicturesButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotPicturesBrowseClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_browseDeviceClassesButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotDeviceClassesBrowseClicked()</slot>
     </connection>
     <connection>
         <sender>m_ok</sender>
@@ -407,12 +443,25 @@
         <receiver>UI_Settings</receiver>
         <slot>slotWidgetStyleActivated(int)</slot>
     </connection>
+    <connection>
+        <sender>m_systemBrowse</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotSystemBrowseClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_systemEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotSystemEditTextChanged(const QString&amp;)</slot>
+    </connection>
 </connections>
 <tabstops>
+    <tabstop>m_systemEdit</tabstop>
+    <tabstop>m_systemBrowse</tabstop>
     <tabstop>m_picturesEdit</tabstop>
-    <tabstop>m_browsePicturesButton</tabstop>
     <tabstop>m_deviceClassesEdit</tabstop>
-    <tabstop>m_browseDeviceClassesButton</tabstop>
+    <tabstop>m_pluginsEdit</tabstop>
     <tabstop>m_generalFontEdit</tabstop>
     <tabstop>m_selectGeneralFontButton</tabstop>
     <tabstop>m_smallFontEdit</tabstop>
@@ -423,13 +472,16 @@
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
+<includes>
+    <include location="local" impldecl="in implementation">settings.ui.h</include>
+</includes>
 <slots>
     <slot>slotCancelClicked()</slot>
-    <slot>slotDeviceClassesBrowseClicked()</slot>
     <slot>slotGeneralFontSelectClicked()</slot>
     <slot>slotOKClicked()</slot>
-    <slot>slotPicturesBrowseClicked()</slot>
     <slot>slotSmallFontSelectClicked()</slot>
+    <slot>slotSystemBrowseClicked()</slot>
+    <slot>slotSystemEditTextChanged(const QString &amp;)</slot>
     <slot>slotWidgetStyleActivated(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>

@@ -24,7 +24,6 @@
 
 #include "classes.h"
 #include "function.h"
-#include "sequencestructs.h"
 
 class FunctionCollection : public Function
 {
@@ -37,6 +36,7 @@ class FunctionCollection : public Function
   QList <CollectionItem> items() const { return m_items; }
 
   Event* getEvent(Feeder* feeder);
+  void recalculateSpeed (Feeder *feeder);
 
   int m_registerCount;
 

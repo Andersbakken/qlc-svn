@@ -38,8 +38,9 @@ class SettingsUI : public UI_Settings
   ~SettingsUI();
 
  public slots:
-  void slotPicturesBrowseClicked();
-  void slotDeviceClassesBrowseClicked();
+  void slotSystemBrowseClicked();
+  void slotSystemEditTextChanged(const QString &);
+
   void slotGeneralFontSelectClicked();
   void slotSmallFontSelectClicked();
   void slotOKClicked();

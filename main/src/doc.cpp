@@ -371,6 +371,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		{
 		  Bus* bus = new Bus();
 		  bus->createContents(list);
+		  addBus(bus);
 		}
 	      else if (*string == QString("Frame"))
 		{
@@ -728,16 +729,11 @@ void Doc::initDMX()
 
 void Doc::addDevice(Device* device)
 {
-  if (device != NULL)
-    {
-      m_deviceList.append(device);
-      m_modified = true;
-      emit deviceListChanged();
-    }
-  else
-    {
-      qDebug("Error: Doc: Null Device append not allowed!");
-    }
+  ASSERT(device != NULL);
+  
+  m_deviceList.append(device);
+  m_modified = true;
+  emit deviceListChanged();
 }
 
 bool Doc::removeDevice(Device* device)
@@ -746,22 +742,17 @@ bool Doc::removeDevice(Device* device)
   bool ok = false;
   int id = -1;
 
-  if (device != NULL)
+  ASSERT(device != NULL);
+
+  for (dev = m_deviceList.first(); dev != NULL; dev = m_deviceList.next())
     {
-      for (dev = m_deviceList.first(); dev != NULL; dev = m_deviceList.next())
+      if (dev->id() == device->id())
 	{
-	  if (dev->id() == device->id())
-	    {
-	      ok = m_deviceList.removeRef(dev);
-	      id = dev->id();
-	      delete dev;
-	      break;
-	    }
+	  ok = m_deviceList.removeRef(dev);
+	  id = dev->id();
+	  delete dev;
+	  break;
 	}
-    }
-  else
-    {
-      qDebug("Error: Doc: Null device remove not allowed!");
     }
 
   m_modified = true;
@@ -849,6 +840,7 @@ Function* Doc::searchFunction(const QString &fname)
 
 void Doc::addBus(Bus* bus)
 {
+  ASSERT(bus != NULL);
   m_busList.append(bus);
   emit deviceListChanged();
 }
@@ -910,7 +902,7 @@ void Doc::removeBus(unsigned int id, bool deleteBus)
 void Doc::findPluginObjects()
 {
   QString path = QString::null;
-  QString dir = _app->settings()->installDir() + QString("libs/");
+  QString dir = _app->settings()->pluginPath();
   qDebug("Probing %s for plugin objects...", dir.latin1());
 
   QDir d(dir);
@@ -929,9 +921,17 @@ void Doc::findPluginObjects()
   // Go thru all files in the directory
   for (it = dirlist.begin(); it != dirlist.end(); ++it)
     {
+      // Ignore everything else than .so files
+      if ((*it).right(2) != QString("so"))
+	{
+	  continue;
+	}
+
       path = dir + *it;
       
+      qDebug("Probing file: " + path);
       plugin = new Plugin(path);
+
       if (plugin->isValid() == true)
 	{
 	  qDebug("Library: %s | Version: %s", plugin->name().latin1(), 

@@ -24,6 +24,7 @@
 #include "doc.h"
 #include "event.h"
 #include "settings.h"
+#include "feeder.h"
 
 #include <math.h>
 
@@ -153,6 +154,50 @@ void Scene::set(unsigned short ch, unsigned short value)
   m_values[ch - 1] = value;
 }
 
+void Scene::recalculateSpeed(Feeder* f)
+{
+  float gap = 0;
+  float delta = 0;
+
+  short channels = 0;
+  
+  if (f->device() != NULL)
+    {
+      channels = f->device()->deviceClass()->channels();
+    }
+
+  /* Find out the channel needing the smallest delta (most frequent
+     updates needed) and set it to this whole scene's delta */
+  gap = abs((signed short) f->startLevel(0) - (signed short) m_values[0]);
+  if (gap != 0)
+    {
+      delta = f->timeSpan() / gap;
+      f->setDelta((unsigned long) delta);
+    }
+  else
+    {
+      delta = f->timeSpan();
+    }
+  
+  for (short i = 1; i < channels; i++)
+    {
+      gap = abs((signed short) f->startLevel(i) - (signed short) m_values[i]);
+      if (gap != 0)
+	{
+	  delta = f->timeSpan() / gap;
+	}
+      else
+	{
+	  delta = f->timeSpan();
+	}
+
+      if (delta < f->delta())
+	{
+	  f->setDelta((unsigned long) delta);
+	}
+    }
+}
+
 Event* Scene::getEvent(Feeder* feeder)
 {
   return getNextLevel(feeder);
@@ -160,81 +205,43 @@ Event* Scene::getEvent(Feeder* feeder)
 
 Event* Scene::getNextLevel(Feeder* f)
 {
-  float gap = 0;
   float readyCount = 0;
-  float delta = 0;
 
   short channels = 0;
-  if (f->callerDevice != NULL)
+  
+  if (f->device() != NULL)
     {
-      channels = f->callerDevice->deviceClass()->m_channels.count();
+      channels = f->device()->deviceClass()->channels();
     }
 
   Event* event = new Event(channels);
 
-  /* Find out the channel needing the smallest delta (most frequent
-     updates needed) and set it to this whole scene's delta */
-  if (f->first == true)
-    { 
-      gap = abs((signed short) f->startLevels[0] - (signed short) m_values[0]);
-      if (gap != 0)
-	{
-	  delta = f->timeSpan / gap;
-	  f->delta = (unsigned long) delta;
-	}
-      else
-	{
-	  delta = f->timeSpan;
-	}
-
-      for (short i = 1; i < channels; i++)
-	{
-	  gap = abs((signed short) f->startLevels[i] - (signed short) m_values[i]);
-	  if (gap != 0)
-	    {
-	      delta = f->timeSpan / gap;
-	    }
-	  else
-	    {
-	      delta = f->timeSpan;
-	    }
-	     
-	  if (delta < f->delta)
-	    {
-	      f->delta = (unsigned long) delta;
-	    }
-	}
-      f->first = false;
-    }
-
   for (short i = 0; i < channels; i++)
     {
-      if (f->startLevels[i] > m_values[i])
+      if (f->startLevel(i) > m_values[i])
 	{
-	  // Current level is above target, the values need to be toward 0
-	  if (f->currentLevels[i] <= m_values[i])
+	  // Current level is above target, the new value is set toward 0
+	  if (f->device()->getChannelValue(i) <= m_values[i])
 	    {
 	      event->m_values[i] = VALUE_READY;
 	      readyCount++;
 	    }
 	  else
 	    {
-  	      event->m_values[i] = f->currentLevels[i] - 1;
-	      f->currentLevels[i] = event->m_values[i];
+  	      event->m_values[i] = f->device()->getChannelValue(i) - 1;
 	    }
 	}
-      else if (f->startLevels[i] < m_values[i])
+      else if (f->startLevel(i) < m_values[i])
 	{
-	  // Current level is below target, the values need to be toward 255
-	  if (f->currentLevels[i] >= m_values[i])
+	  // Current level is below target, the new value is set toward 255
+	  if (f->device()->getChannelValue(i) >= m_values[i])
 	    {
 	      event->m_values[i] = VALUE_READY;
 	      readyCount++;
 	    }
 	  else
 	    {
-  	      event->m_values[i] = f->currentLevels[i] + 1;
-	      f->currentLevels[i] = event->m_values[i];
+  	      event->m_values[i] = f->device()->getChannelValue(i) + 1;
 	    }
 	}
       else
@@ -244,7 +251,7 @@ Event* Scene::getNextLevel(Feeder* f)
 	} 
     }
 
-  event->m_delta = (unsigned long) floor(f->delta);
+  event->m_delta = (unsigned long) floor(f->delta());
 
   if (readyCount == channels)
     {
@@ -253,5 +260,3 @@ Event* Scene::getNextLevel(Feeder* f)
 
   return event;
 }
-
-

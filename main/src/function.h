@@ -52,6 +52,7 @@ class Function : public QObject
   QString typeString() const;
 
   virtual Event* getEvent(Feeder* feeder) = 0;
+  virtual void recalculateSpeed(Feeder* feeder) = 0;
 
   /* Used to emit an unRegistered() signal from this function */
   virtual void unRegister();
