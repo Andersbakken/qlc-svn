@@ -23,17 +23,18 @@
 #define APP_H
 
 #include <qmainwindow.h>
-#include <qworkspace.h>
-#include <qapp.h>
-#include <qmessagebox.h>
-#include <qmenubar.h>
-#include <qtoolbar.h>
-#include <qstatusbar.h>
-#include <qpopupmenu.h>
-#include <qpixmap.h>
-#include <qtoolbutton.h>
-#include <qfiledialog.h>
-#include <qwidgetlist.h>
+
+class QWorkspace;
+class QApp;
+class QMessageBox;
+class QMenuBar;
+class QToolBar;
+class QStatusBar;
+class QPopupMenu;
+class QPixmap;
+class QToolButton;
+class QFileDialog;
+class QWidgetList;
 
 #include "classes.h"
 
@@ -186,8 +187,6 @@ class App : public QMainWindow
   QWorkspace* m_workspace;
   GlobalFunctionsView* m_globalFunctionsView;
   InputDeviceView* m_inputDeviceView;
-
-  QPixmap m_bgXpm;
 
   SequenceProvider* m_sequenceProvider;
   SequenceTimer* m_sequenceTimer;

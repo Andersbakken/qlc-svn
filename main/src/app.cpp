@@ -19,6 +19,20 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qworkspace.h>
+#include <qapp.h>
+#include <qmessagebox.h>
+#include <qmenubar.h>
+#include <qtoolbar.h>
+#include <qstatusbar.h>
+#include <qpopupmenu.h>
+#include <qpixmap.h>
+#include <qtoolbutton.h>
+#include <qfiledialog.h>
+#include <qwidgetlist.h>
+
+#include <unistd.h>
+
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
@@ -32,8 +46,6 @@
 #include "sequencetimer.h"
 #include "globalfunctionsview.h"
 #include "inputdeviceview.h"
-
-#include <unistd.h>
 
 App::App()
 {
@@ -428,37 +440,7 @@ void App::slotFileSettings()
 
 void App::slotFileQuit()
 {
-  int result;
-
-  statusBar()->message("Exiting application...");
-  
-  if (m_doc->isModified())
-    {
-      result = QMessageBox::information(this, "Exit...", "Do you want to save changes?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
-      if(result == QMessageBox::Yes)
-        {
-	  // Save main window geometry for next session 
-	  m_settings->setAppRect(rect());
-	  m_settings->save();
-          close();
-        }
-      else if (result == QMessageBox::No)
-        {
-	  // Save main window geometry for next session 
-	  m_settings->setAppRect(rect());
-	  m_settings->save();
-	  close();
-        }
-    }
-  else
-    {
-      // Save main window geometry for next session 
-      m_settings->setAppRect(rect());
-      m_settings->save();
-      close();
-    }
-
-  statusBar()->message("Ready", 2000);
+  close();
 }
 
 void App::slotViewDeviceManager()
@@ -515,7 +497,45 @@ void App::slotHelpAbout()
 
 void App::closeEvent(QCloseEvent* e)
 {
-  e->accept();
+  int result;
+
+  statusBar()->message("About to close the application...");
+
+  if (m_doc->isModified())
+    {
+      result = QMessageBox::information(this, "Exit...", "Do you want to save changes before exit?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+      if (result == QMessageBox::Yes)
+        {
+	  // Save main window geometry for next session 
+	  m_settings->setAppRect(rect());
+	  m_settings->save();
+	  slotFileSave();
+	  e->accept();
+	  // close();
+        }
+      else if (result == QMessageBox::No)
+        {
+	  // Save main window geometry for next session 
+	  m_settings->setAppRect(rect());
+	  m_settings->save();
+	  e->accept();
+	  // close();
+        }
+      else if (result == QMessageBox::Cancel)
+	{
+	  e->ignore();
+	}
+    }
+  else
+    {
+      // Save main window geometry for next session 
+      m_settings->setAppRect(rect());
+      m_settings->save();
+      e->accept();
+      // close();
+    }
+
+  statusBar()->message("Exit aborted", 2000);
 }
 
 
