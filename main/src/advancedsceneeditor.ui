@@ -13,7 +13,7 @@
         </rect>
     </property>
     <property name="caption">
-        <string>Advanced Scene Editor</string>
+        <string>Scene Editor</string>
     </property>
     <grid>
         <property name="name">
