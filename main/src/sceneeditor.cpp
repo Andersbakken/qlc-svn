@@ -28,6 +28,7 @@
 #include "scene.h"
 #include "dmxchannel.h"
 #include "logicalchannel.h"
+#include "channelui.h"
 
 #include <qcombobox.h>
 #include <qradiobutton.h>
@@ -35,6 +36,7 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <iostream>
 using namespace std;
@@ -122,6 +124,10 @@ void SceneEditor::setScene(Scene* scene)
 
 void  SceneEditor::slotHideClicked()
 {
+  for (unsigned i = parentWidget()->width(); i > ChannelUI::width() * m_device->deviceClass()->channels()->count(); i--)
+    {
+      parentWidget()->resize(i, height());
+    }
 }
 
 void  SceneEditor::slotNewClicked()

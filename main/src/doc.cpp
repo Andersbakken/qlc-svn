@@ -38,7 +38,7 @@
 #include "devicelistview.h"
 
 #include "../../libs/common/plugin.h"
-#include <dlfcn.h>
+#include "../../libs/common/filehandler.h"
 
 #include <qobject.h>
 #include <qstring.h>
@@ -47,7 +47,9 @@
 #include <qdir.h>
 #include <qlist.h>
 #include <qmessagebox.h>
+
 #include <ctype.h>
+#include <dlfcn.h>
 
 extern App* _app;
 
@@ -216,7 +218,7 @@ bool Doc::readDeviceClasses()
   for (it = dirlist.begin(); it != dirlist.end(); ++it)
     {
       path = dir + *it;
-      readFileToList(path, list);
+      FileHandler::readFileToList(path, list);
       dc = createDeviceClass(list);
       if (dc != NULL)
 	{
@@ -281,58 +283,15 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
   return dc;
 }
 
+
 bool Doc::readFileToList(QString &fileName, QList<QString> &list)
 {
-  QFile file(fileName);
-  QString s = QString::null;
-  QString t = QString::null;
-  QString buf = QString::null;
-  int i = 0;
+  qDebug("Doc::readFileToList() is deprecated; Use FileHandler::readFileToList() instead!");
+  ASSERT(false);
 
-  if (fileName == QString::null)
-    {
-      return false;
-    }
-
-  while (list.isEmpty() == false)
-    {
-      list.first();
-      delete list.take();
-    }
-
-  if (file.open(IO_ReadOnly))
-    {
-      list.append(new QString("Entry"));
-      list.append(new QString("Dummy"));
-
-      // First read all entries to a string list
-      while (file.atEnd() == false)
-	{
-	  file.readLine(buf, 1024);
-	  
-	  // If there is no "equal" sign on this row or it begins
-	  // with a hash, ignore it
-	  i = buf.find(QString("="));
-	  if (i > -1 && buf.left(1) != QString("#"))
-	    {
-	      /* Get the string up to equal sign */
-	      s = buf.mid(0, i).stripWhiteSpace();
-	      list.append(new QString(s));
-
-	      /* Get the string after the equal sign */
-	      t = buf.mid(i + 1).stripWhiteSpace();
-	      list.append(new QString(t));
-	    }
-	}
-
-      file.close();
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+  return false;
 }
+
 
 bool Doc::loadWorkspaceAs(QString &fileName)
 {
@@ -345,7 +304,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 
   newDocument();
 
-  if (readFileToList(fileName, list) == true)
+  if (FileHandler::readFileToList(fileName, list) == true)
     {
       m_workspaceFileName = QString(fileName);
       
