@@ -421,7 +421,8 @@ void VirtualConsole::slotAddLabel()
   QWidget* parent = NULL;
 
   if (m_selectedWidget && 
-      QString(m_selectedWidget->className()) == QString("VCFrame"))
+      (QString(m_selectedWidget->className()) == QString("VCFrame")
+      || QString(m_selectedWidget->className()) == QString("VCXYPad")))
     {
       parent = m_selectedWidget;
     }
