@@ -151,7 +151,7 @@ void App::initMenuBar()
   m_viewMenu->setCheckable(true);
   m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("device.xpm")), "Device Manager", this, SLOT(slotViewDeviceManager()), 0, ID_VIEW_DEVICE_MANAGER);
   m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
-  m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("device.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
+  m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
   //
   // Sequence Editor is disabled for now because it doesn't work at all
   //
@@ -517,6 +517,7 @@ void App::closeEvent(QCloseEvent* e)
 {
   e->accept();
 }
+
 
 
 
