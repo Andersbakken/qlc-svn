@@ -27,6 +27,7 @@
 class DMXDevice;
 class Scene;
 class LogicalChannel;
+class DeviceClass;
 
 class AdvancedSceneEditor : public UI_AdvancedSceneEditor
 {
@@ -47,13 +48,21 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotSceneSelected(QListViewItem* item);
   void slotSceneDoubleClicked(QListViewItem* item);
 
+  void slotSnapshotClicked();
   void slotEditValueClicked();
   void slotContentsClicked(QListViewItem* item);
   void slotContentsDoubleClicked(QListViewItem*);
+  void slotChannelsContextMenuRequested(QListViewItem*, const QPoint &, int);
 
   void slotApplyClicked();
   void slotOKClicked();
   void slotCancelClicked();
+
+  void slotDeviceFunctionsListChanged(const QString &name, bool add);
+  void slotDeviceClassFunctionsListChanged(const QString &name, bool add);
+
+ signals:
+  void closed();
 
  private:
   void updateSceneList();
@@ -61,9 +70,17 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void setDirty(bool dirty);
   bool dirtyCheck();
 
+  void invokePresetMenu(const QPoint &);
+  void invokeValueMenu(const QPoint &);
+  void invokeTypeMenu(const QPoint &);
+
+ private slots:
+  void slotPresetMenuActivated(int);
+  void slotValueMenuActivated(int);
+  void slotTypeMenuActivated(int);
+
  private:
   bool m_dirty; // Indicates whether we need to save changes (dirty) or not
-  bool m_candidate; // New scene added
 
   DMXDevice* m_device;
 

@@ -96,6 +96,7 @@ App::App()
   m_globalFunctionsView = NULL;
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
+  m_advancedSceneEditor = NULL;
 }
 
 App::~App()
@@ -284,10 +285,20 @@ void App::initMenuBar()
 
 void App::slotViewAdvancedSceneEditor()
 {
-  AdvancedSceneEditor* ase = new AdvancedSceneEditor(NULL);
-  ase->init();
-  ase->exec();
-  delete ase;
+  if (m_advancedSceneEditor == NULL)
+    {
+      m_advancedSceneEditor = new AdvancedSceneEditor(this);
+      connect(m_advancedSceneEditor, SIGNAL(closed()), this, SLOT(slotAdvancedSceneEditorClosed()));
+      m_advancedSceneEditor->init();
+      m_advancedSceneEditor->show();
+    }
+}
+
+void App::slotAdvancedSceneEditorClosed()
+{
+  disconnect(m_advancedSceneEditor);
+  delete m_advancedSceneEditor;
+  m_advancedSceneEditor = NULL;
 }
 
 void App::slotViewGlobalFunctions()
@@ -632,7 +643,3 @@ void App::closeEvent(QCloseEvent* e)
 
   statusBar()->message("Exit aborted", 2000);
 }
-
-
-
-

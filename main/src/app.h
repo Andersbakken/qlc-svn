@@ -36,7 +36,14 @@ class QToolButton;
 class QFileDialog;
 class QWidgetList;
 
-#include "classes.h"
+class AdvancedSceneEditor;
+class DeviceManagerView;
+class VirtualConsole;
+class Settings;
+class SequenceTimer;
+class SequenceProvider;
+class GlobalFunctionsView;
+class Doc;
 
 ///////////////////////////////////////////////////////////////////
 // General program defines
@@ -70,18 +77,16 @@ class App : public QMainWindow
 
  public:
   void initView(void);
-  DeviceManagerView* deviceManagerView() const { return m_dmView; }
-  VirtualConsole* virtualConsole() const { return m_virtualConsole; }
-  QWorkspace* workspace() const { return m_workspace; }
-  Settings* settings() const { return m_settings; }
-  SequenceTimer* sequenceTimer() const { return m_sequenceTimer; }
-  SequenceProvider* sequenceProvider() const { return m_sequenceProvider; }
-  GlobalFunctionsView* globalFunctionsView() const { return m_globalFunctionsView; }
+  DeviceManagerView* deviceManagerView() { return m_dmView; }
+  VirtualConsole* virtualConsole() { return m_virtualConsole; }
+  QWorkspace* workspace() { return m_workspace; }
+  Settings* settings() { return m_settings; }
+  SequenceTimer* sequenceTimer() { return m_sequenceTimer; }
+  SequenceProvider* sequenceProvider() { return m_sequenceProvider; }
 
   Doc* doc(void);
 
   void setSequenceTimer(SequenceTimer* timer);
-  
 
  public slots:
   void slotFileNew();
@@ -111,6 +116,7 @@ class App : public QMainWindow
   void slotGlobalFunctionsViewClosed();
 
   void slotViewAdvancedSceneEditor();
+  void slotAdvancedSceneEditorClosed();
 
   void slotHelpAbout();
   void slotHelpAboutQt();
@@ -146,6 +152,7 @@ class App : public QMainWindow
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
   GlobalFunctionsView* m_globalFunctionsView;
+  AdvancedSceneEditor* m_advancedSceneEditor;
 
   SequenceProvider* m_sequenceProvider;
   SequenceTimer* m_sequenceTimer;

@@ -71,6 +71,7 @@ class NewDevice : public QDialog
 
   QCheckBox* m_autoAddress;
 
+  QPushButton* m_dipButton;
   QPushButton* m_ok;
   QPushButton* m_cancel;
 
@@ -90,6 +91,7 @@ class NewDevice : public QDialog
   void slotAutoAddressClicked();
   void slotTreeDoubleClicked(QListViewItem* item);
   void slotTreeOpenCheckBoxClicked();
+  void slotDIPClicked();
 };
 
 #endif

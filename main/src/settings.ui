@@ -9,57 +9,12 @@
             <x>0</x>
             <y>0</y>
             <width>469</width>
-            <height>418</height>
+            <height>420</height>
         </rect>
     </property>
     <property name="caption">
         <string>Settings</string>
     </property>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>GroupBox4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>170</y>
-                <width>450</width>
-                <height>80</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Look and Feel</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_widgetStyleLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>110</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Widget Style</string>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>m_widgetStyleCombo</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>30</y>
-                    <width>230</width>
-                    <height>24</height>
-                </rect>
-            </property>
-        </widget>
-    </widget>
     <widget class="QGroupBox">
         <property name="name">
             <cstring>m_directoriesGroupBox</cstring>
@@ -147,35 +102,6 @@
         </widget>
         <widget class="QLineEdit">
             <property name="name">
-                <cstring>m_systemEdit</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>20</y>
-                    <width>230</width>
-                    <height>25</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_systemBrowse</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>370</x>
-                    <y>20</y>
-                    <width>70</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Browse...</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
                 <cstring>m_picturesEdit</cstring>
             </property>
             <property name="enabled">
@@ -220,6 +146,35 @@
         </widget>
         <widget class="QLineEdit">
             <property name="name">
+                <cstring>m_systemEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>20</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_systemBrowse</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>20</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Browse...</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
                 <cstring>m_pluginsEdit</cstring>
             </property>
             <property name="enabled">
@@ -241,21 +196,50 @@
             </property>
         </widget>
     </widget>
-    <widget class="QPushButton">
+    <widget class="QGroupBox">
         <property name="name">
-            <cstring>m_cancel</cstring>
+            <cstring>GroupBox4</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>380</x>
-                <y>380</y>
-                <width>80</width>
-                <height>25</height>
+                <x>10</x>
+                <y>170</y>
+                <width>450</width>
+                <height>80</height>
             </rect>
         </property>
-        <property name="text">
-            <string>Cancel</string>
+        <property name="title">
+            <string>Look and Feel</string>
         </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_widgetStyleLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>110</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Widget Style</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>m_widgetStyleCombo</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>30</y>
+                    <width>230</width>
+                    <height>25</height>
+                </rect>
+            </property>
+        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -324,8 +308,36 @@
             <bool>true</bool>
         </property>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>380</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
 </widget>
 <connections>
+    <connection>
+        <sender>m_systemEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotSystemEditTextChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_systemBrowse</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotSystemBrowseClicked()</slot>
+    </connection>
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
@@ -340,24 +352,6 @@
     </connection>
     <connection>
         <sender>m_widgetStyleCombo</sender>
-        <signal>activated(int)</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotWidgetStyleActivated(int)</slot>
-    </connection>
-    <connection>
-        <sender>m_systemBrowse</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotSystemBrowseClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_systemEdit</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotSystemEditTextChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>m_widgetStyleCombo</sender>
         <signal>activated(const QString&amp;)</signal>
         <receiver>UI_Settings</receiver>
         <slot>slotStyleChanged(const QString&amp;)</slot>
@@ -366,28 +360,24 @@
 <tabstops>
     <tabstop>m_systemEdit</tabstop>
     <tabstop>m_systemBrowse</tabstop>
-    <tabstop>m_picturesEdit</tabstop>
-    <tabstop>m_deviceClassesEdit</tabstop>
-    <tabstop>m_pluginsEdit</tabstop>
     <tabstop>m_widgetStyleCombo</tabstop>
     <tabstop>m_openDeviceManagerCheckBox</tabstop>
     <tabstop>m_openLastWorkspaceCheckBox</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
+    <tabstop>m_picturesEdit</tabstop>
+    <tabstop>m_deviceClassesEdit</tabstop>
+    <tabstop>m_pluginsEdit</tabstop>
 </tabstops>
 <includes>
     <include location="local" impldecl="in implementation">settings.ui.h</include>
 </includes>
 <slots>
     <slot>slotCancelClicked()</slot>
-    <slot>slotGeneralFontSelectClicked()</slot>
     <slot>slotOKClicked()</slot>
-    <slot>slotSmallFontSelectClicked()</slot>
-    <slot>slotWidgetStyleActivated( int )</slot>
+    <slot>slotStyleChanged( const QString &amp; )</slot>
     <slot>slotSystemBrowseClicked()</slot>
     <slot>slotSystemEditTextChanged( const QString &amp; )</slot>
-    <slot>slotStyleCombo_textChanged( const QString &amp; )</slot>
-    <slot>slotStyleChanged( const QString &amp; )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

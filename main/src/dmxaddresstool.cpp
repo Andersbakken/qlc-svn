@@ -38,37 +38,49 @@ DMXAddressTool::DMXAddressTool(QWidget* parent, const char* name)
 {
   m_address = 0;
 
+  m_updateValue = true;
+
   QFont font;
   font.setStyleHint(QFont::System);
   font.setPointSize(11);
 
   m_256Label->setFont(font);
   m_256Label->setText("256");
+  connect(m_256Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_128Label->setFont(font);
   m_128Label->setText("128");
+  connect(m_128Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_64Label->setFont(font);
   m_64Label->setText("64");
+  connect(m_64Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_32Label->setFont(font);
   m_32Label->setText("32");
+  connect(m_32Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_16Label->setFont(font);
   m_16Label->setText("16");
+  connect(m_16Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_8Label->setFont(font);
   m_8Label->setText("8");
+  connect(m_8Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_4Label->setFont(font);
   m_4Label->setText("4");
+  connect(m_4Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_2Label->setFont(font);
   m_2Label->setText("2");
+  connect(m_2Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
   m_1Label->setFont(font);
   m_1Label->setText("1");
+  connect(m_1Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
 
+  connect(m_decimalEdit, SIGNAL(textChanged(const QString &)), this, SLOT(slotDecimalChanged(const QString &)));
 }
 
 DMXAddressTool::~DMXAddressTool()
@@ -76,39 +88,18 @@ DMXAddressTool::~DMXAddressTool()
 
 }
 
-void DMXAddressTool::setAddress(int address)
+void DMXAddressTool::slotDecimalChanged(const QString &text)
 {
-  m_address = address;
+  if (m_updateValue == false)
+    {
+      return;
+    }
 
-  QString str;
-  str.setNum(address);
-  m_decimalEdit->setText(str);
-  slotDecimalToDipClicked();
-}
+  m_updateValue = false;
 
-void DMXAddressTool::slotDipToDecimalClicked()
-{
-  int number = 0;
-  QString str;
-
-  if (m_256Slider->value() == 1) number += 256;
-  if (m_128Slider->value() == 1) number += 128;
-  if (m_64Slider->value() == 1) number += 64;
-  if (m_32Slider->value() == 1) number += 32;
-  if (m_16Slider->value() == 1) number += 16;
-  if (m_8Slider->value() == 1) number += 8;
-  if (m_4Slider->value() == 1) number += 4;
-  if (m_2Slider->value() == 1) number += 2;
-  if (m_1Slider->value() == 1) number += 1;
-
-  str.setNum(number);
-  m_decimalEdit->setText(str);
-}
-
-void DMXAddressTool::slotDecimalToDipClicked()
-{
   int number = 0;
   number = m_decimalEdit->text().toInt();
+  m_address = number;
 
   if (number < 0)
     {
@@ -219,14 +210,45 @@ void DMXAddressTool::slotDecimalToDipClicked()
       number += 1;
       m_1Slider->setValue(0);
     }
+
+  m_updateValue = true;
 }
 
-void DMXAddressTool::slotOKClicked()
+void DMXAddressTool::slotSliderValueChanged(int value)
 {
-  accept();
+  if (m_updateValue == false)
+    {
+      return;
+    }
+
+  m_updateValue = false;
+
+  int number = 0;
+  QString str;
+
+  if (m_256Slider->value() == 1) number += 256;
+  if (m_128Slider->value() == 1) number += 128;
+  if (m_64Slider->value() == 1) number += 64;
+  if (m_32Slider->value() == 1) number += 32;
+  if (m_16Slider->value() == 1) number += 16;
+  if (m_8Slider->value() == 1) number += 8;
+  if (m_4Slider->value() == 1) number += 4;
+  if (m_2Slider->value() == 1) number += 2;
+  if (m_1Slider->value() == 1) number += 1;
+
+  m_address = number;
+
+  str.setNum(number);
+  m_decimalEdit->setText(str);
+
+  m_updateValue = true;
 }
 
-void DMXAddressTool::slotCancelClicked()
+void DMXAddressTool::setAddress(int address)
 {
-  reject();
+  m_address = address;
+
+  QString str;
+  str.setNum(address);
+  m_decimalEdit->setText(str);
 }

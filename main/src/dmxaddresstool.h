@@ -36,13 +36,12 @@ class DMXAddressTool : public UI_DMXAddressTool
   void setAddress(int address);
 
  private slots:
-  void slotDipToDecimalClicked();
-  void slotDecimalToDipClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
+  void slotSliderValueChanged(int value);
+  void slotDecimalChanged(const QString &text);
 
  private:
   int m_address;
+  bool m_updateValue;
 };
 
 #endif

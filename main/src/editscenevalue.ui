@@ -9,62 +9,27 @@
             <x>0</x>
             <y>0</y>
             <width>400</width>
-            <height>132</height>
+            <height>144</height>
         </rect>
     </property>
     <property name="caption">
         <string>Edit Scene Value</string>
     </property>
-    <widget class="QFrame">
+    <widget class="QGroupBox">
         <property name="name">
-            <cstring>Frame5</cstring>
+            <cstring>m_groupBox</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
                 <y>10</y>
                 <width>380</width>
-                <height>70</height>
+                <height>80</height>
             </rect>
         </property>
-        <property name="frameShape">
-            <enum>StyledPanel</enum>
+        <property name="title">
+            <string></string>
         </property>
-        <property name="frameShadow">
-            <enum>Raised</enum>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel4</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>280</x>
-                    <y>10</y>
-                    <width>80</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Type</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>190</x>
-                    <y>10</y>
-                    <width>65</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Value</string>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>TextLabel2</cstring>
@@ -123,22 +88,38 @@
                 <number>255</number>
             </property>
         </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>90</y>
-                <width>91</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel3</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>190</x>
+                    <y>10</y>
+                    <width>65</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Value</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel4</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>280</x>
+                    <y>10</y>
+                    <width>80</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Type</string>
+            </property>
+        </widget>
     </widget>
     <widget class="QPushButton">
         <property name="name">
@@ -147,13 +128,29 @@
         <property name="geometry">
             <rect>
                 <x>290</x>
-                <y>90</y>
+                <y>100</y>
                 <width>91</width>
                 <height>30</height>
             </rect>
         </property>
         <property name="text">
             <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>180</x>
+                <y>100</y>
+                <width>91</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
         </property>
     </widget>
 </widget>

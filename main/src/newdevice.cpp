@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "app.h"
 #include "doc.h"
+#include "dmxaddresstool.h"
 
 #include <qpixmap.h>
 #include <qheader.h>
@@ -88,9 +89,14 @@ void NewDevice::initView()
   m_addressLabel->setText("Address");
 
   m_addressSpin = new QSpinBox(this);
-  m_addressSpin->setGeometry(240, 100, 150, 20);
+  m_addressSpin->setGeometry(240, 100, 100, 20);
   m_addressSpin->setRange(0, 511);
   m_addressSpin->setValue(0);
+
+  m_dipButton = new QPushButton(this);
+  m_dipButton->setGeometry(340, 100, 50, 20);
+  m_dipButton->setText("DIP");
+  connect(m_dipButton, SIGNAL(clicked()), this, SLOT(slotDIPClicked()));
 
   m_autoAddress = new QCheckBox(this);
   m_autoAddress->setGeometry(240, 130, 150, 30);
@@ -110,6 +116,18 @@ void NewDevice::initView()
   connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancelClicked()));
 }
 
+void NewDevice::slotDIPClicked()
+{
+  DMXAddressTool* dat = new DMXAddressTool(_app);
+  dat->setAddress(m_addressSpin->value());
+  if (dat->exec() == QDialog::Accepted)
+    {
+      m_addressSpin->setValue(dat->address());
+    }
+
+  delete dat;
+}
+
 void NewDevice::slotTreeOpenCheckBoxClicked()
 {
   _app->settings()->setNewDeviceTreeOpen(m_treeOpenCheckBox->isChecked());
@@ -117,9 +135,8 @@ void NewDevice::slotTreeOpenCheckBoxClicked()
 
 void NewDevice::slotAutoAddressClicked()
 {
-  bool on = m_autoAddress->isChecked();
-  _app->settings()->setAutoAddressAssign(on);
-  m_addressSpin->setEnabled(!on);
+  m_addressSpin->setEnabled(!m_autoAddress->isChecked());
+  m_dipButton->setEnabled(!m_autoAddress->isChecked());
 }
 
 void NewDevice::slotTreeDoubleClicked(QListViewItem* item)
@@ -205,6 +222,8 @@ void NewDevice::slotOKClicked()
 
   if (m_selectionOK == true)
     {
+      _app->settings()->setAutoAddressAssign(m_autoAddress->isChecked());
+
       accept();
     }
 }

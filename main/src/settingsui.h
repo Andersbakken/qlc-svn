@@ -43,7 +43,6 @@ class SettingsUI : public UI_Settings
 
   void slotOKClicked();
   void slotCancelClicked();
-  void slotWidgetStyleActivated(int);
   void slotStyleChanged(const QString &);
 
  private:

@@ -310,7 +310,7 @@ void Scene::recalculateSpeed(Feeder* f)
 	  continue;
 	}
 
-      gap = abs((signed short) f->device()->dmxChannel(i)->getValue() - (signed short) m_values[i].value);
+      gap = abs((signed short) f->device()->dmxChannel(i)->value() - (signed short) m_values[i].value);
 
       if (gap != 0)
 	{
@@ -364,7 +364,7 @@ Event* Scene::getEvent(Feeder* feeder)
 	  continue;
 	}
 
-      currentValue = feeder->device()->dmxChannel(i)->getValue();
+      currentValue = feeder->device()->dmxChannel(i)->value();
       
       if (currentValue == m_values[i].value)
 	{

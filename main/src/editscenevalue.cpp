@@ -25,6 +25,8 @@
 #include <qcombobox.h>
 #include <qlist.h>
 
+#include <math.h>
+
 #include "editscenevalue.h"
 #include "logicalchannel.h"
 #include "capability.h"
@@ -113,9 +115,9 @@ void EditSceneValue::slotPresetComboActivated(const QString &text)
   Capability* c = m_channel->searchCapability(text);
   ASSERT(c != NULL);
 
-  m_valueSpin->setValue(c->lo());
-
-  m_value = c->lo();
+  int value = (int) floor((c->lo() + c->hi()) / 2);
+  m_valueSpin->setValue(value);
+  m_value = value;
 
   m_updateValue = true;
 }

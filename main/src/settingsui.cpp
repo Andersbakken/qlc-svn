@@ -103,10 +103,6 @@ void SettingsUI::slotSystemEditTextChanged(const QString &text)
   m_pluginsEdit->setText(path + _app->settings()->pluginPathRelative());
 }
 
-void SettingsUI::slotWidgetStyleActivated(int s)
-{
-}
-
 void SettingsUI::slotOKClicked()
 {
   _app->settings()->setSystemPath(m_systemEdit->text());

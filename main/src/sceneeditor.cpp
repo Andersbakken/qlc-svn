@@ -142,7 +142,7 @@ void  SceneEditor::slotNewClicked()
 	   // Get values from device / HJu
 	   if (m_device->dmxChannel(n)->status() == DMXChannel::On)
 	     {
-	       sc->set(n, m_device->dmxChannel(n)->getValue(), Set);
+	       sc->set(n, m_device->dmxChannel(n)->value(), Set);
 	     }
 	   else
 	     {
@@ -185,7 +185,7 @@ void SceneEditor::slotSaveClicked()
     {
       if (m_device->dmxChannel(i)->status() == DMXChannel::On)
 	{
-	  m_currentScene->set(i, m_device->dmxChannel(i)->getValue(), Set);
+	  m_currentScene->set(i, m_device->dmxChannel(i)->value(), Set);
 	}
       else
 	{

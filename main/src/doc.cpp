@@ -282,10 +282,10 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
   if (dc->channels()->count() == 0)
     {
       QString msg;
-      msg.sprintf("No channels specified for device class " + dc->manufacturer() + QString(" - ") + dc->model() + QString(". Ignored."));
-      qDebug(msg);
-      delete dc;
-      dc = NULL;
+      msg.sprintf("No channels specified for device class \"" + dc->manufacturer() +
+		  QString(" ") + dc->model() + QString("\".\n") +
+		  "Use the device class editor to add one or more channels.");
+      QMessageBox::warning(_app, IDS_APP_NAME_SHORT, msg);
     }
 
   return dc;
@@ -703,7 +703,11 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
   if (name == QString::null || manufacturer == QString::null ||
       manufacturer == QString::null)
     {
-      qDebug("Unable to add device %s [%s] [%s]" + name + manufacturer + model);
+      QString msg;
+      msg = QString("Unable to add device \"" + name +
+		    QString("\" because device class information is missing."));
+      QMessageBox::critical(_app, IDS_APP_NAME_SHORT, msg);
+
       return NULL;
     }
   else
@@ -711,13 +715,30 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
       DeviceClass* dc = searchDeviceClass(manufacturer, model);
       if (dc == NULL)
 	{
-	  qDebug("No device description found for" + manufacturer + QString(" ") + model);
+	  QString msg;
+	  msg = QString("Unable to add device \"" + name + "\"." + 
+			"\nNo device class description found for " +
+			manufacturer + QString(" ") + model);
+	  QMessageBox::critical(_app, IDS_APP_NAME_SHORT, msg);
 	  return NULL;
 	}
       else
 	{
-	  DMXDevice* d = new DMXDevice(address, dc, name);
-	  return d;
+	  if (dc->channels()->count() == 0)
+	    {
+	      QString msg;
+	      msg = QString("No channels specified for device class \"" + dc->manufacturer() +
+			    QString(" ") + dc->model() + QString("\".\n") +
+			    QString("Unable to load device \"") + name + QString("\" to workspace"));
+
+	      QMessageBox::warning(_app, IDS_APP_NAME_SHORT, msg);
+	      return NULL;
+	    }
+	  else
+	    {
+	      DMXDevice* d = new DMXDevice(address, dc, name);
+	      return d;
+	    }
 	}
     }
 }
