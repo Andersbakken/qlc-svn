@@ -87,8 +87,8 @@ class Sequence : public Function
   Direction m_runTimeDirection;
 
   t_bus_value m_holdTime;
-  t_bus_value m_holdStart;
-  t_bus_value m_timeCode;
+  t_bus_value m_runTimeHold;
+  t_value* m_holdNoSetData;
 };
 
 #endif

@@ -53,8 +53,8 @@ Sequence::Sequence() :
   m_runTimeDirection ( Forward ),
 
   m_holdTime      (     255 ),
-  m_holdStart     (       0 ),
-  m_timeCode      (       0 )
+  m_runTimeHold   (     255 ),
+  m_holdNoSetData (    NULL )
 {
   setBus(KBusIDDefaultHold);
 }
@@ -424,6 +424,16 @@ void Sequence::arm()
   if (m_channelData == NULL)
     m_channelData = new t_value[m_channels * 2];
 
+  if (m_holdNoSetData == NULL)
+    {
+      m_holdNoSetData = new t_value[m_channels * 2];
+      for (t_channel ch = 0; ch < m_channels; ch++)
+	{
+	  m_holdNoSetData[ch] = 0;
+	  m_holdNoSetData[m_channels + ch] = Scene::NoSet;
+	}
+    }
+
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(m_channels);
 }
@@ -436,6 +446,9 @@ void Sequence::disarm()
 {
   if (m_channelData) delete [] m_channelData;
   m_channelData = NULL;
+
+  if (m_holdNoSetData) delete [] m_holdNoSetData;
+  m_holdNoSetData = NULL;
 
   if (m_eventBuffer) delete m_eventBuffer;
   m_eventBuffer = NULL;
@@ -491,7 +504,6 @@ void Sequence::run()
 
 	      m_eventBuffer->put(m_channelData);
 	      hold();
-
 	    }
 	}
       else
@@ -542,7 +554,12 @@ void Sequence::run()
 	    }
 	}
     }
-
+  
+  if (m_stopped)
+    {
+      m_eventBuffer->purge();
+    }
+  
   // Finished
   m_removeAfterEmpty = true;
 }
@@ -555,18 +572,11 @@ void Sequence::hold()
 {
   if (m_holdTime > 0)
     {
-      _app->functionConsumer()->timeCode(m_holdStart);
-      while (!m_stopped)
+      for (m_runTimeHold = m_holdTime; 
+	   m_runTimeHold > 0 && !m_stopped; 
+	   m_runTimeHold--)
 	{
-	  _app->functionConsumer()->timeCode(m_timeCode);
-	  if ((m_timeCode - m_holdStart) >= m_holdTime)
-	    {
-	      break;
-	    }
-	  else
-	    {
-	      sched_yield();
-	    }
+	  m_eventBuffer->put(m_holdNoSetData);
 	}
     }
 }
