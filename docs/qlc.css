@@ -59,6 +59,7 @@ color: black
 .link {
 font-family: lucida, arial, helvetica;
 font-weight: normal;
+font-size: 10pt;
 text-decoration: none;
 color: #649af4
 }

@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
+<TITLE>Q Light Controller Documentation - Advanced Scene Editor</TITLE>
+</HEAD>
+  
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD ALIGN="left">
+<IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+</TD>
+<TD ALIGN="right">
+<A HREF="index.html" CLASS="link">Documentation index</A>
+<BR>
+<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+<BR>
+<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+<BR>
+</TD>
+</TR>
+</TABLE>
+
+<P CLASS="title">Advanced Scene Editor</P>
+
+<TABLE CELLSPACING="0" CELLPADDING="5" WIDTH="100%">
+
+<TR>
+<TD VALIGN="top">
+<A HREF="pics/advancedsceneeditor.png" CLASS="link" TARGET="_new"><IMG SRC="pics/advancedsceneeditor.png" WIDTH="100" BORDER="0">
+<BR>
+Click to see bigger</A>
+</TD>
+
+<TD VALIGN="top">
+<P CLASS="subtitle">
+Elements
+</P>
+
+<P CLASS="normal">
+<I>Scene Name</I>: Always use descriptive names for functions.<BR>
+</P>
+
+<P CLASS="normal">
+<B>Channel List Columns</B><BR>
+Number: Channel number that is relative to device.<BR>
+Channel: Channel name (the purpose of this particular channel).<BR>
+Preset: A preset value corresponding to a certain value range.<BR>
+Value: The DMX value (0-255) for the channel in this scene.<BR>
+Type: Can be Fade, Set or NoSet (see below).<BR>
+</P>
+
+<P CLASS="normal">
+The <B>type</B> field can be used to set how the value assigned to the particular
+<B>channel</B> is to be treated when the scene is run. If the <B>type</B> is <I>Fade</I>,
+the value is faded in the given time from the channel's current value to the target value
+defined in this scene. <I>Set</I> type values are namely set instantaneously, regardless
+of the fade time. <I>NoSet</I> type values are just ignored, thus this scene would not
+touch that channel at all.
+</P>
+
+<P CLASS="normal">
+The <B>preset</B> value is used to define a named purpose for a particular value range.
+In a scanner-type device a <B>preset</B> could be named as "ZigZag Gobo" that could correspond
+to a <B>value</B> range 16-20 on <B>channel</B> 3.
+</P>
+
+<P CLASS="subtitle">
+Editing
+</P>
+
+<P CLASS="normal">
+<B>Context Menu</B><BR>
+You can edit the <B>preset</B>, <B>value</B> and <B>type</B> fields by <I>right</I>-clicking
+over the appropriate column on a particular channel and selecting a value from the popup-menu.
+</P>
+
+<P CLASS="normal">
+<B>Keyboard</B><BR>
+You can edit the <B>value</B> and <B>type</B> fields also by <I>left</I>-clicking on them
+in the same manner and writing the value with your keyboard.
+</P>
+
+<P CLASS="normal">
+<B>Edit Dialog</B><BR>
+The third way is to either <I>double</I>-click anywhere on a particular channel, or first
+selecting a channel with <I>left</I>-click and pressing the <B>Edit Channel</B> button.
+</P>
+
+<P CLASS="subtitle">
+Closing
+</P>
+
+<P CLASS="normal">
+After you have modified the scene, you can close the dialog by clicking <B>OK</B> that also
+saves the modifications to the scene. Pressing <B>Cancel</B> will discard any changes and
+close the dialog. <B>Apply</B> just saves the values but doesn't close the dialog.
+</P>
+
+<P CLASS="normal">
+Closing the dialog from the <B>window manager handle</B> behaves like pressing <B>Cancel</B>.
+</P>
+
+</TD>
+
+</TR>
+</TABLE>
+
+<HR>
+<A HREF="mailto:hjunnila@iki.fi" CLASS="link">Heikki Junnila</A>
+</BODY>
+</HTML>
