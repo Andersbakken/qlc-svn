@@ -265,9 +265,7 @@ void FunctionConsumer::event(time_t)
         }
       else
         {
-	  for (m_channel = 0;
-	       m_channel < (t_channel) m_function->eventBuffer()->eventSize();
-	       m_channel++)
+	  for (m_channel = 0; m_channel < m_function->channels(); m_channel++)
 	    {
 	      if (m_event[m_function->channels() + m_channel] == Scene::NoSet)
 		{
