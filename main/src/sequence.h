@@ -26,18 +26,24 @@
 #include "scene.h"
 #include "types.h"
 
-class EventBuffer;
-class Device;
-class RunTimeData;
-class SequenceValue;
-
-typedef float t_scene_acc;
-
 class Sequence : public Function
 {
  public:
   Sequence();
   ~Sequence();
+
+  enum RunOrder
+    {
+      Loop,
+      SingleShot,
+      PingPong
+    };
+
+  enum Direction
+    {
+      Forward,
+      Backward
+    };
 
   bool copyFrom(Sequence* seq, t_device_id toDevice = KNoID);
   bool setDevice(t_device_id);
@@ -45,10 +51,16 @@ class Sequence : public Function
   void constructFromPointArray(const QPointArray& array,
 			       t_channel horizontalChannel,
 			       t_channel verticalChannel);
-
+  
   t_channel channels() { return m_channels; }
 
-  QPtrList <SceneValue> m_values;
+  QPtrList <SceneValue> m_steps;
+
+  void setRunOrder(RunOrder order) { m_runOrder = order; }
+  RunOrder runOrder() const { return m_runOrder; }
+
+  void setDirection(Direction dir) { m_direction = dir; }
+  Direction direction() const { return m_direction; }
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
@@ -63,13 +75,20 @@ class Sequence : public Function
   void init();
   void run();
 
+  void hold();
+
  private:
-  t_channel m_channels;
+  RunOrder m_runOrder;
+  Direction m_direction;
+
+  t_value* m_channelData;
+  SceneValue* m_runTimeValues;
+  t_channel m_runTimeChannel;
+  Direction m_runTimeDirection;
 
   t_bus_value m_holdTime;
-
-  // This mutex is locked when the run time data is accessed
-  QMutex m_dataMutex;
+  t_bus_value m_holdStart;
+  t_bus_value m_timeCode;
 };
 
 #endif

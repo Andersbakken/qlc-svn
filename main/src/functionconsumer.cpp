@@ -122,17 +122,17 @@ void FunctionConsumer::purge()
 
 void FunctionConsumer::timeCode(t_bus_value& timeCode)
 {
-  m_timeCodeMutex.lock();
+  //m_timeCodeMutex.lock();
   timeCode = m_timeCode;
-  m_timeCodeMutex.unlock();
+  //m_timeCodeMutex.unlock();
 }
 
 
 void FunctionConsumer::incrementTimeCode()
 {
-  m_timeCodeMutex.lock();
+  //m_timeCodeMutex.lock();
   m_timeCode++;
-  m_timeCodeMutex.unlock();
+  //m_timeCodeMutex.unlock();
 }
 
 //
@@ -269,17 +269,15 @@ void FunctionConsumer::event(time_t)
 	       m_channel < (t_channel) m_function->eventBuffer()->eventSize();
 	       m_channel++)
 	    {
-	      if ((m_function->type() == Function::Scene) &&
-		  (((Scene*) m_function)->channelValue(m_channel).type == Scene::NoSet))
+	      if (m_event[m_function->channels() + m_channel] == Scene::NoSet)
 		{
 		  // Don't write NoSet values
 		}
 	      else
 		{
 		  _app->outputPlugin()
-		    ->writeChannel(_app->doc()->device(m_function->device())
-				   ->address()
-				   + m_channel, m_event[m_channel]);
+		    ->writeChannel(_app->doc()->device(m_function->device())->
+				   address() + m_channel, m_event[m_channel]);
 		}
 	    }
         }

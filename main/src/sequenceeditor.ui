@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>541</width>
-            <height>437</height>
+            <height>534</height>
         </rect>
     </property>
     <property name="caption">
@@ -286,6 +286,88 @@
                             </property>
                         </widget>
                     </vbox>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_runOrderGroup</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Run Order</string>
+                    </property>
+                    <property name="selectedId" stdset="0">
+                        <number>0</number>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_looping</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Loop</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_singleShot</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Single Shot</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_pingPong</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Ping Pong</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_directionGroup</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Direction</string>
+                    </property>
+                    <property name="selectedId" stdset="0">
+                        <number>0</number>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_forward</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Forward</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_backward</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Backward</string>
+                            </property>
+                        </widget>
+                    </hbox>
                 </widget>
             </hbox>
         </widget>

@@ -43,7 +43,6 @@ extern App* _app;
 Scene::Scene() : 
   Function      ( Function::Scene ),
 
-  m_channels    (               0 ),
   m_values      (            NULL ),
   m_timeSpan    (             255 ),
   m_elapsedTime (               0 ),
@@ -355,7 +354,7 @@ void Scene::arm()
     m_runTimeData = new RunTimeData[m_channels];
 
   if (m_channelData == NULL)
-    m_channelData = new t_value[m_channels];
+    m_channelData = new t_value[m_channels * 2];
 
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(m_channels);
@@ -452,6 +451,8 @@ void Scene::run()
 	{
 	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
+	      m_channelData[m_channels + ch] = NoSet;
+	      
 	      // This channel contains a value that is not supposed
 	      // to be written (anymore, in case of ready value, which
 	      // comes from "set" type values)
@@ -461,6 +462,7 @@ void Scene::run()
 	    {
 	      // Just set the target value
 	      m_channelData[ch] = m_values[ch].value;
+	      m_channelData[m_channels + ch] = Set;
 
 	      // ...and don't touch this channel anymore
 	      m_runTimeData[ch].ready = true; 
@@ -477,6 +479,8 @@ void Scene::run()
 
 	      m_channelData[ch] =
 		static_cast<t_value> (m_runTimeData[ch].current);
+
+	      m_channelData[m_channels + ch] = Set;
 	    }
 
 	  m_dataMutex.unlock();
@@ -497,13 +501,15 @@ void Scene::run()
     {
       if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	{
+	  m_channelData[m_channels + ch] = NoSet;
 	  continue;
 	}
       else
 	{
 	  // Just set the target value
 	  m_channelData[ch] = m_values[ch].value;
-	  
+	  m_channelData[m_channels + ch] = Set;
+
 	  // ...and don't touch this channel anymore
 	  m_runTimeData[ch].ready = true;
 	}

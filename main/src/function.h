@@ -120,6 +120,11 @@ class Function : public QThread
   virtual bool setBus(t_bus_id id);
   virtual void busValueChanged(t_bus_id, t_bus_value) {}
 
+  // Number of channels that this function uses.
+  // The actual inheriting function class should define means
+  // for setting the channel count.
+  virtual t_channel channels() const { return m_channels; }
+
   // Save this function to a file
   virtual void saveToFile(QFile &file) = 0;
 
@@ -169,6 +174,7 @@ class Function : public QThread
   t_function_id m_id;
   t_device_id m_deviceID;
   t_bus_id m_busID;
+  t_channel m_channels;
 
   // Run-time data
   EventBuffer* m_eventBuffer;

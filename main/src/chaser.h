@@ -95,9 +95,8 @@ class Chaser : public Function
   bool m_childRunning;
 
   t_bus_value m_holdTime;
-
-  int m_holdFD;
-  QString m_fifoName;
+  t_bus_value m_holdStart;
+  t_bus_value m_timeCode;
 };
 
 #endif

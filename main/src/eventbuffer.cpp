@@ -25,12 +25,12 @@
 #include <malloc.h>
 #include <string.h>
 
-// eventSize = channel count, bufferSize = event count
+// eventSize = channel count, bufferSize = event count,
 EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
-  : 
+  :
   m_ring(NULL),
-  m_size(bufferSize * (eventSize * sizeof(t_value))),
-  m_eventSize(eventSize * sizeof(t_value)),
+  m_size(bufferSize * (eventSize * 2)),
+  m_eventSize(eventSize * 2),
   m_filled(0),
   m_in(0),
   m_out(0)

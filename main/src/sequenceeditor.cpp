@@ -31,6 +31,8 @@
 #include <qmessagebox.h>
 #include <qpoint.h>
 #include <qpointarray.h>
+#include <qbuttongroup.h>
+#include <qradiobutton.h>
 
 #include "patterngenerator.h"
 #include "sequenceeditor.h"
@@ -160,14 +162,14 @@ void SequenceEditor::setSequence(Sequence* sequence)
   
   m_list->clear();
 
-  for (int i = m_sequence->m_values.count() - 1; i >= 0; i--)
+  for (int i = m_sequence->m_steps.count() - 1; i >= 0; i--)
     {
       QString s;
       item = new QListViewItem(m_list);
       for (t_channel ch = 0; ch < m_channels; ch++)
 	{
-	  s.sprintf("%.3d", m_sequence->m_values.at(i)[ch].value);
-	  if (m_sequence->m_values.at(i)[ch].type == Scene::NoSet)
+	  s.sprintf("%.3d", m_sequence->m_steps.at(i)[ch].value);
+	  if (m_sequence->m_steps.at(i)[ch].type == Scene::NoSet)
 	    {
 	      item->setText(ch, "XXX");
 	    }
@@ -177,6 +179,9 @@ void SequenceEditor::setSequence(Sequence* sequence)
 	    }
 	}
     }
+
+  m_runOrderGroup->setButton((int) m_sequence->runOrder());
+  m_directionGroup->setButton((int) m_sequence->direction());
 }
 
 void SequenceEditor::resizeEvent(QResizeEvent* e)
@@ -319,9 +324,12 @@ void SequenceEditor::slotSlidersToggled(bool state)
 
 void SequenceEditor::slotOKClicked()
 {
-  m_sequence->m_values.setAutoDelete(true);
-  m_sequence->m_values.clear();
-  m_sequence->m_values.setAutoDelete(false);
+  //
+  // Values
+  //
+  m_sequence->m_steps.setAutoDelete(true);
+  m_sequence->m_steps.clear();
+  m_sequence->m_steps.setAutoDelete(false);
   
   for (QListViewItem* item = m_list->firstChild(); item != NULL;
        item = item->itemBelow())
@@ -341,10 +349,41 @@ void SequenceEditor::slotOKClicked()
 	    }
 	}
 
-      m_sequence->m_values.append(value);
+      m_sequence->m_steps.append(value);
     }
 
+  //
+  // Name
+  //
   m_sequence->setName(m_name->text());
+
+  //
+  // Run Order
+  //
+  if (m_runOrderGroup->selected() == m_singleShot)
+    {
+      m_sequence->setRunOrder(Sequence::SingleShot);
+    }
+  else if (m_runOrderGroup->selected() == m_pingPong)
+    {
+      m_sequence->setRunOrder(Sequence::PingPong);
+    }
+  else
+    {
+      m_sequence->setRunOrder(Sequence::Loop);
+    }
+
+  //
+  // Direction
+  //
+  if (m_directionGroup->selected() == m_backward)
+    {
+      m_sequence->setDirection(Sequence::Backward);
+    }
+  else
+    {
+      m_sequence->setDirection(Sequence::Forward);
+    }
 
   accept();
 }

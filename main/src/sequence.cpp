@@ -42,11 +42,19 @@ extern App* _app;
 // Standard constructor
 //
 Sequence::Sequence() : 
-  Function      ( Function::Sequence ),
+  Function     ( Function::Sequence ),
 
-  m_channels    (               0 ),
-  m_holdTime    (             255 ),
-  m_dataMutex   (           false )
+  m_runOrder      (    Loop ),
+  m_direction     ( Forward ),
+
+  m_channelData      (    NULL ),
+  m_runTimeValues    (    NULL ),
+  m_runTimeChannel   (       0 ),
+  m_runTimeDirection ( Forward ),
+
+  m_holdTime      (     255 ),
+  m_holdStart     (       0 ),
+  m_timeCode      (       0 )
 {
   setBus(KBusIDDefaultHold);
 }
@@ -85,21 +93,21 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
       m_name = QString(sc->m_name);
       m_busID = sc->m_busID;
 
-      m_values.setAutoDelete(true);
-      m_values.clear();
-      m_values.setAutoDelete(false);
+      m_steps.setAutoDelete(true);
+      m_steps.clear();
+      m_steps.setAutoDelete(false);
 
-      for (unsigned int i = 0; i < sc->m_values.count(); i++)
+      for (unsigned int i = 0; i < sc->m_steps.count(); i++)
 	{
 	  SceneValue* val = new SceneValue[m_channels];
 	  
 	  for (t_channel ch = 0; ch < m_channels; ch++)
 	    {
-	      val[ch].value = sc->m_values.at(i)[ch].value;
-	      val[ch].type = sc->m_values.at(i)[ch].type;
+	      val[ch].value = sc->m_steps.at(i)[ch].value;
+	      val[ch].type = sc->m_steps.at(i)[ch].type;
 	    }
 	  
-	  m_values.append(val);
+	  m_steps.append(val);
 	}
     }
   else
@@ -113,11 +121,11 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
       m_name = QString(sc->m_name);
       m_busID = sc->m_busID;
       
-      m_values.setAutoDelete(true);
-      m_values.clear();
-      m_values.setAutoDelete(false);
+      m_steps.setAutoDelete(true);
+      m_steps.clear();
+      m_steps.setAutoDelete(false);
       
-      for (unsigned int i = 0; i < sc->m_values.count(); i++)
+      for (unsigned int i = 0; i < sc->m_steps.count(); i++)
 	{
 	  SceneValue* val = new SceneValue[m_channels];
 	  
@@ -125,16 +133,16 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
 	    {
 	      for (t_channel ch = 0; ch < m_channels; ch++)
 		{
-		  val[ch].value = sc->m_values.at(i)[ch].value;
-		  val[ch].type = sc->m_values.at(i)[ch].type;
+		  val[ch].value = sc->m_steps.at(i)[ch].value;
+		  val[ch].type = sc->m_steps.at(i)[ch].type;
 		}
 	    }
 	  else
 	    {
 	      for (t_channel ch = 0; ch < sc->m_channels; ch++)
 		{
-		  val[ch].value = sc->m_values.at(i)[ch].value;
-		  val[ch].type = sc->m_values.at(i)[ch].type;
+		  val[ch].value = sc->m_steps.at(i)[ch].value;
+		  val[ch].type = sc->m_steps.at(i)[ch].type;
 		}
 
 	      for (t_channel ch = sc->m_channels; ch < m_channels; ch++)
@@ -144,7 +152,7 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
 		}
 	    }
 	  
-	  m_values.append(val);
+	  m_steps.append(val);
 	}
     }
 
@@ -164,11 +172,11 @@ bool Sequence::setDevice(t_device_id id)
 
   t_channel newChannels = device->deviceClass()->channels()->count();
   
-  if (m_values.count())
+  if (m_steps.count())
     {
-      for (unsigned int i = 0; i < m_values.count(); i++)
+      for (unsigned int i = 0; i < m_steps.count(); i++)
 	{
-	  SceneValue* oldVal = m_values.take(i);
+	  SceneValue* oldVal = m_steps.take(i);
 	  SceneValue* newVal = new SceneValue[newChannels];
 	  
 	  if (newChannels > m_channels)
@@ -197,7 +205,7 @@ bool Sequence::setDevice(t_device_id id)
 	    }
 
 	  delete oldVal;
-	  m_values.insert(i, newVal);
+	  m_steps.insert(i, newVal);
 	}
     }
 
@@ -214,9 +222,9 @@ void Sequence::constructFromPointArray(const QPointArray& array,
 {
   SceneValue* value = NULL;
 
-  m_values.setAutoDelete(true);
-  m_values.clear();
-  m_values.setAutoDelete(false);
+  m_steps.setAutoDelete(true);
+  m_steps.clear();
+  m_steps.setAutoDelete(false);
 
   for (unsigned int i = 0; i < array.size(); i++)
     {
@@ -241,7 +249,7 @@ void Sequence::constructFromPointArray(const QPointArray& array,
 	    }
 	}
 
-      m_values.append(value);
+      m_steps.append(value);
     }
 }
 
@@ -284,11 +292,12 @@ void Sequence::saveToFile(QFile &file)
   s = QString("Device = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
+  // Steps
   if (m_deviceID != KNoID)
     {
-      for (unsigned int i = 0; i < m_values.count(); i++)
+      for (unsigned int i = 0; i < m_steps.count(); i++)
 	{
-	  SceneValue* value = m_values.at(i);
+	  SceneValue* value = m_steps.at(i);
 	  s = QString("Step = ");
 
 	  for (t_channel ch = 0; ch < m_channels; ch++)
@@ -310,6 +319,14 @@ void Sequence::saveToFile(QFile &file)
 	  file.writeBlock((const char*) s, s.length());
 	}
     }
+
+  // Run order
+  s.sprintf("RunOrder = %d\n", (int) m_runOrder);
+  file.writeBlock((const char*) s, s.length());
+
+  // Direction
+  s.sprintf("Direction = %d\n", (int) m_direction);
+  file.writeBlock((const char*) s, s.length());
 }
 
 //
@@ -362,8 +379,16 @@ void Sequence::createContents(QPtrList <QString> &list)
 	      i = j + 1;
 	    }
 
-	  m_values.append(values);
+	  m_steps.append(values);
         }
+      else if (*s == QString("RunOrder"))
+	{
+	  m_runOrder = (RunOrder) list.next()->toInt();
+	}
+      else if (*s == QString("Direction"))
+	{
+	  m_direction = (Direction) list.next()->toInt();
+	}
       else
         {
           // Unknown keyword, skip
@@ -396,6 +421,9 @@ void Sequence::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Sequence::arm()
 {
+  if (m_channelData == NULL)
+    m_channelData = new t_value[m_channels * 2];
+
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(m_channels);
 }
@@ -406,6 +434,9 @@ void Sequence::arm()
 //
 void Sequence::disarm()
 {
+  if (m_channelData) delete [] m_channelData;
+  m_channelData = NULL;
+
   if (m_eventBuffer) delete m_eventBuffer;
   m_eventBuffer = NULL;
 }
@@ -418,6 +449,8 @@ void Sequence::init()
 {
   m_removeAfterEmpty = false;
 
+  m_stopped = false;
+
   // Get speed
   Bus::value(m_busID, m_holdTime);
   
@@ -427,46 +460,86 @@ void Sequence::init()
 
 
 //
-// The main scene producer thread
+// The main scene producer thread. Nothing should be allocated here
+// (not even local variables) to keep the function as fast as possible.
 //
 void Sequence::run()
 {
-  t_bus_value holdStart = 0;
-  t_bus_value timeCode = 0;
-
-  t_channel ch = 0;
-  t_value values[m_channels];
-
-  // Initialize this scene for running
+  // Initialize this sequence for running
   init();
 
-  QPtrListIterator<SceneValue> it(m_values);
+  m_runTimeDirection = m_direction;
 
-  while (it.current() && !m_stopped)
+  while (!m_stopped)
     {
-      for (ch = 0; ch < m_channels; ch++)
+      if (m_runTimeDirection == Forward)
 	{
-	  values[ch] = it.current()[ch].value;
-	}
-      
-      if (m_holdTime > 0)
-	{
-	  // Hold
-	  _app->functionConsumer()->timeCode(holdStart);
-	  while (!m_stopped)
+	  for (m_runTimeValues = m_steps.first(); 
+	       m_runTimeValues != NULL && !m_stopped; 
+	       m_runTimeValues = m_steps.next())
 	    {
-	      _app->functionConsumer()->timeCode(timeCode);
-	      if ((timeCode - holdStart) == m_holdTime)
+	      for (m_runTimeChannel = 0; 
+		   m_runTimeChannel < m_channels; 
+		   m_runTimeChannel++)
 		{
-		  break;
-		}
-	      else
-		{
-		  sched_yield();
-		}
-	    }
+		  m_channelData[m_runTimeChannel] = 
+		    m_runTimeValues[m_runTimeChannel].value;
 
-	  ++it;
+		  m_channelData[m_channels + m_runTimeChannel] = 
+		    m_runTimeValues[m_runTimeChannel].type;
+		}
+
+	      m_eventBuffer->put(m_channelData);
+	      hold();
+
+	    }
+	}
+      else
+	{
+	  for (m_runTimeValues = m_steps.last(); 
+	       m_runTimeValues != NULL && !m_stopped; 
+	       m_runTimeValues = m_steps.prev())
+	    {
+	      for (m_runTimeChannel = 0; 
+		   m_runTimeChannel < m_channels; 
+		   m_runTimeChannel++)
+		{
+		  m_channelData[m_runTimeChannel] = 
+		    m_runTimeValues[m_runTimeChannel].value;
+
+		  m_channelData[m_channels + m_runTimeChannel] = 
+		    m_runTimeValues[m_runTimeChannel].type;
+		}
+	      
+	      m_eventBuffer->put(m_channelData);
+	      hold();
+	    }
+	}
+
+      //
+      // Check what should be done after a round
+      //
+      if (m_runOrder == SingleShot)
+	{
+	  // That's it
+	  break;
+	}
+      else if (m_runOrder == Loop)
+	{
+	  // Just continue as before
+	  continue;
+	}
+      else // if (m_runOrder == PingPong)
+	{
+	  // Change run order
+	  if (m_runTimeDirection == Forward)
+	    {
+	      m_runTimeDirection = Backward;
+	    }
+	  else
+	    {
+	      m_runTimeDirection = Forward;
+	    }
 	}
     }
 
@@ -474,6 +547,29 @@ void Sequence::run()
   m_removeAfterEmpty = true;
 }
 
+
+//
+// Hold
+//
+void Sequence::hold()
+{
+  if (m_holdTime > 0)
+    {
+      _app->functionConsumer()->timeCode(m_holdStart);
+      while (!m_stopped)
+	{
+	  _app->functionConsumer()->timeCode(m_timeCode);
+	  if ((m_timeCode - m_holdStart) >= m_holdTime)
+	    {
+	      break;
+	    }
+	  else
+	    {
+	      sched_yield();
+	    }
+	}
+    }
+}
 
 //
 // This fuction must be called ONLY from functionconsumer AFTER

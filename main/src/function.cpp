@@ -45,19 +45,20 @@ const QString KUndefinedString  (  "Undefined" );
 //
 Function::Function(Type type) : 
   QThread(),
-  m_name              (                      QString::null ),
-  m_type              (                               type ),
-  m_id                (                              KNoID ),
-  m_deviceID          (                              KNoID ),
-  m_busID             (                      KBusIDInvalid ),
-  m_eventBuffer       (                               NULL ),
-  m_virtualController (                               NULL ),
-  m_parentFunction    (                               NULL ),
-  m_running           (                              false ),
-  m_stopped           (                              false ),
-  m_removeAfterEmpty  (                              false ),
-  m_startMutex        (                              false ),
-  m_listener          (                               NULL )
+  m_name              ( QString::null ),
+  m_type              (          type ),
+  m_id                (         KNoID ),
+  m_deviceID          (         KNoID ),
+  m_busID             ( KBusIDInvalid ),
+  m_channels          (             0 ),
+  m_eventBuffer       (          NULL ),
+  m_virtualController (          NULL ),
+  m_parentFunction    (          NULL ),
+  m_running           (         false ),
+  m_stopped           (         false ),
+  m_removeAfterEmpty  (         false ),
+  m_startMutex        (         false ),
+  m_listener          (          NULL )
 {
 }
 

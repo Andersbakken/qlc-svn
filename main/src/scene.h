@@ -37,7 +37,7 @@ class Scene : public Function
  public:
   Scene();
   ~Scene();
-
+  
   enum ValueType
     {
       Set   = 0, // Normal value
@@ -49,10 +49,10 @@ class Scene : public Function
   bool setDevice(t_device_id);
 
   SceneValue* values() { return m_values; }
-  t_channel channels() { return m_channels; }
 
   bool set(t_channel ch, t_value value, ValueType type);
   SceneValue channelValue(t_channel ch);
+  
   ValueType valueType(t_channel ch);
   QString valueTypeString(t_channel ch);
 
@@ -71,8 +71,6 @@ class Scene : public Function
   void run();
 
  private:
-  t_channel m_channels;
-
   SceneValue* m_values;
 
   t_bus_value m_timeSpan;

@@ -32,12 +32,6 @@ class EventBuffer
 	      unsigned int bufferSize = 32);
   ~EventBuffer();
 
-  enum t_info
-    {
-      Skip = 0,
-      Set = 1
-    };
-
   // Put data to buffer
   int put(t_value* event);
 
