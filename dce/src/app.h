@@ -65,6 +65,7 @@ class App : public QMainWindow
 
  private slots:
   void slotEmpty();
+
   void slotFileNew();
   void slotFileOpen();
   void slotFileSave();
@@ -75,6 +76,7 @@ class App : public QMainWindow
   void slotWindowTile();
 
   void slotEditMenuActivated(int);
+  void slotRefreshEditMenu();
   void slotRefreshWindowMenu();
 
   void slotHelpAbout();

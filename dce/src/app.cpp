@@ -33,11 +33,12 @@
 #include <qlabel.h>
 #include <qcolor.h>
 #include <qtooltip.h>
-#include "aboutbox.h"
 
+#include <assert.h>
 #include <unistd.h>
 
 #include "app.h"
+#include "aboutbox.h"
 
 #include "../../main/src/deviceclass.h"
 #include "../../main/src/settings.h"
@@ -263,6 +264,9 @@ void App::initMenuBar()
 
   connect(m_editMenu, SIGNAL(activated(int)),
 	  this, SLOT(slotEditMenuActivated(int)));
+
+  connect(m_editMenu, SIGNAL(aboutToShow()), 
+	  this, SLOT(slotRefreshEditMenu()));
   
   ///////////////////////////////////////////////////////////////////
   // Window Menu
@@ -301,6 +305,7 @@ void App::slotFileNew()
   DeviceClass* dc = new DeviceClass();
   ASSERT(dc);
 
+  // Set default manufacturer and model
   dc->setManufacturer(QString("Manufacturer"));
   dc->setModel(QString("Model"));
 
@@ -308,7 +313,7 @@ void App::slotFileNew()
   connect(editor, SIGNAL(closed(DeviceClassEditor*)),
 	  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
   editor->init();
-  editor->setCaption("New Device Class*");
+  editor->setCaption("New Device Class*"); // Set temporary window caption
   editor->show();
 }
 
@@ -317,6 +322,7 @@ void App::slotFileOpen()
 {
   QPtrList <QString> list;
 
+  // Read name to last path so that the next file dialog starts from there
   m_lastPath = QFileDialog::getOpenFileName(m_lastPath, 
 					    "Device Classes (*.deviceclass)",
 					    this);
@@ -325,6 +331,7 @@ void App::slotFileOpen()
     {
       FileHandler::readFileToList(m_lastPath, list);
 
+      // Attempt to read & create a device class from list
       DeviceClass* dc = DeviceClass::createDeviceClass(list);
       
       if (!dc)
@@ -352,6 +359,7 @@ void App::slotFileSave()
 
   if (editor && editor->save())
     {
+      // Save the last path so that the next file dialog starts from there
       m_lastPath = editor->fileName();
     }
 }
@@ -364,6 +372,7 @@ void App::slotFileSaveAs()
 
   if (editor && editor->saveAs())
     {
+      // Save the last path so that the next file dialog starts from there
       m_lastPath = editor->fileName();
     }
 }
@@ -396,6 +405,14 @@ void App::slotEditMenuActivated(int id)
 	  editor->slotEditChannelClicked();
 	  break;
 
+	case ID_EDIT_RAISE_CHANNEL:
+	  editor->slotRaiseChannelClicked();
+	  break;
+
+	case ID_EDIT_LOWER_CHANNEL:
+	  editor->slotLowerChannelClicked();
+	  break;
+
 	case ID_EDIT_ADD_CAPABILITY:
 	  editor->slotAddPresetClicked();
 	  break;
@@ -416,6 +433,34 @@ void App::slotEditMenuActivated(int id)
 }
 
 
+void App::slotRefreshEditMenu()
+{
+  // If there are no editor windows, disable edit menu items
+  if (workspace()->windowList().count() == 0)
+    {
+      m_editMenu->setItemEnabled(ID_EDIT_ADD_CHANNEL, false);
+      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CHANNEL, false);
+      m_editMenu->setItemEnabled(ID_EDIT_CHANNEL, false);
+      m_editMenu->setItemEnabled(ID_EDIT_RAISE_CHANNEL, false);
+      m_editMenu->setItemEnabled(ID_EDIT_LOWER_CHANNEL, false);
+      m_editMenu->setItemEnabled(ID_EDIT_ADD_CAPABILITY, false);
+      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CAPABILITY, false);
+      m_editMenu->setItemEnabled(ID_EDIT_CAPABILITY, false);
+    }
+  else
+    {
+      m_editMenu->setItemEnabled(ID_EDIT_ADD_CHANNEL, true);
+      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CHANNEL, true);
+      m_editMenu->setItemEnabled(ID_EDIT_CHANNEL, true);
+      m_editMenu->setItemEnabled(ID_EDIT_RAISE_CHANNEL, true);
+      m_editMenu->setItemEnabled(ID_EDIT_LOWER_CHANNEL, true);
+      m_editMenu->setItemEnabled(ID_EDIT_ADD_CAPABILITY, true);
+      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CAPABILITY, true);
+      m_editMenu->setItemEnabled(ID_EDIT_CAPABILITY, true);
+    }
+}
+
+
 void App::slotRefreshWindowMenu()
 {
   QWidget* widget;
@@ -426,7 +471,7 @@ void App::slotRefreshWindowMenu()
   QString dir;
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
-  
+
   m_windowMenu->clear();
   m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")),
 			   "Cascade", this, SLOT(slotWindowCascade()),
@@ -437,14 +482,14 @@ void App::slotRefreshWindowMenu()
   m_windowMenu->insertSeparator();
 
   for (widget = wl.first(); widget != NULL; widget = wl.next())
-  {
-    m_windowMenu->insertItem(widget->caption(), id);
-    if (widget->isVisible() == true)
     {
-      m_windowMenu->setItemChecked(id, true);
+      m_windowMenu->insertItem(widget->caption(), id);
+      if (widget->isVisible() == true)
+	{
+	  m_windowMenu->setItemChecked(id, true);
+	}
+      id++;
     }
-    id++;
-  }
 
   connect(m_windowMenu, SIGNAL(activated(int)), 
 	  this, SLOT(slotWindowMenuCallback(int)));
@@ -504,7 +549,7 @@ void App::slotHelpAbout()
 
 void App::slotHelpAboutQt()
 {
-  QMessageBox::aboutQt(this, KApplicationNameLong);
+  QMessageBox::aboutQt(this, KApplicationNameShort);
 }
 
 void App::slotEditorClosed(DeviceClassEditor* editor)
@@ -522,18 +567,13 @@ void App::closeEvent(QCloseEvent* e)
   for (unsigned int i = 0; i < wl.count(); i++)
     {
       editor = static_cast<DeviceClassEditor*> (wl.at(i));
-      if (editor == NULL)
+      assert(editor);
+
+      editor->show();
+      editor->setFocus();
+      if ( !editor->close() )
 	{
-	  qDebug("Strange...");
-	}
-      else
-	{
-	  editor->show();
-	  editor->setFocus();
-	  if ( !editor->close() )
-	    {
-	      e->ignore();
-	    }
+	  e->ignore();
 	}
     }
 
