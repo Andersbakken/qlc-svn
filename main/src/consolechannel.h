@@ -81,6 +81,8 @@ class ConsoleChannel : public UI_ConsoleChannel
   t_device_id m_deviceID;
 
   bool m_fadeStatusEnabled;
+
+  bool m_updateOnly;
 };
 
 #endif

@@ -43,10 +43,12 @@ extern App* _app;
 //
 // Constructor
 //
-FunctionConsumer::FunctionConsumer() : QThread()
+FunctionConsumer::FunctionConsumer() 
+  : QThread(),
+    m_running  ( 0 ),
+    m_fd       ( 0 ),
+    m_timeCode ( 0 )
 {
-  m_running = 0;
-  m_fd = 0;
 }
 
 
@@ -112,6 +114,21 @@ void FunctionConsumer::purge()
      }
 }
 
+
+void FunctionConsumer::timeCode(t_bus_value& timeCode)
+{
+  m_timeCodeMutex.lock();
+  timeCode = m_timeCode;
+  m_timeCodeMutex.unlock();
+}
+
+
+void FunctionConsumer::incrementTimeCode()
+{
+  m_timeCodeMutex.lock();
+  m_timeCode++;
+  m_timeCodeMutex.unlock();
+}
 
 //
 // Stop the function consumer
@@ -198,6 +215,7 @@ void FunctionConsumer::run()
         }
       else
         {
+	  incrementTimeCode();
           event(data);
         }
     }

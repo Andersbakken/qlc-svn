@@ -64,7 +64,7 @@ AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
   m_original = scene;
 
   m_scene = new Scene();
-  m_scene->copyFrom(scene);
+  m_scene->copyFrom(scene, scene->device());
   m_currentChannel = NULL;
 
   m_dirty = false;
@@ -337,7 +337,7 @@ bool AdvancedSceneEditor::dirtyCheck()
 					    QMessageBox::Cancel);
       if (result == QMessageBox::Yes)
 	{
-	  m_original->copyFrom(m_scene);
+	  m_original->copyFrom(m_scene, m_original->device());
 	  setDirty(false);
 	  return true;
 	}
@@ -420,7 +420,7 @@ void AdvancedSceneEditor::slotApplyClicked()
   _app->doc()->setModified(true);
   setDirty(false);
 
-  m_original->copyFrom(m_scene);
+  m_original->copyFrom(m_scene, m_original->device());
 }
 
 void AdvancedSceneEditor::slotOKClicked()

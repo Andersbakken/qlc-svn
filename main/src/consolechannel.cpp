@@ -6,7 +6,7 @@
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
-  Version 2 as published by the Free Software Foundation.
+  Versio 2 as published by the Free Software Foundation.
   
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,7 +57,8 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name)
     m_value      (           0 ),
     m_status     ( Scene::Fade ),
     m_deviceID   (       KNoID ),
-    m_fadeStatusEnabled ( true )
+    m_fadeStatusEnabled ( true ),
+    m_updateOnly (       false )
 {
   m_statusButton->setBackgroundMode(FixedColor);
 
@@ -135,7 +136,6 @@ void ConsoleChannel::slotStatusButtonClicked()
     }
 
   updateStatusButton();
-
   emit changed(m_channel, m_value, m_status);
 }
 
@@ -307,6 +307,7 @@ void ConsoleChannel::slotSceneActivated(SceneValue* values,
 	  values[m_channel].type == Scene::Fade)
 	{
 	  slotAnimateValueChange(values[m_channel].value);
+	  emit changed(m_channel, m_value, m_status);
 	}
     }
 }

@@ -89,7 +89,7 @@
                 <string>Value Type</string>
             </property>
             <property name="selectedId" stdset="0">
-                <number>0</number>
+                <number>-1</number>
             </property>
             <hbox>
                 <property name="name">
@@ -147,6 +147,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+O</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
                     </property>
                 </widget>
                 <widget class="QPushButton">

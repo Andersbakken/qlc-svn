@@ -25,6 +25,7 @@
 #include <qthread.h>
 #include <qptrlist.h>
 
+#include "types.h"
 #include "function.h"
 
 const int KFrequency(64);
@@ -44,6 +45,9 @@ class FunctionConsumer : public QThread
   // Stop all functions
   void purge();
 
+  // Get current timecode
+  void timeCode(t_bus_value& timeCode);
+
   // Functions that control the consumer
   void stop();
   void init();
@@ -52,12 +56,17 @@ class FunctionConsumer : public QThread
   virtual void run();
   void event(time_t);
 
+  void incrementTimeCode();
+
  protected:
   bool m_running;
   int m_fd;
 
   QPtrList <Function> m_functionList;
   QMutex m_functionListMutex;
+
+  t_bus_value m_timeCode;
+  QMutex m_timeCodeMutex;
 };
 
 #endif

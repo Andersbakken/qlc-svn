@@ -56,110 +56,57 @@ Scene::Scene() :
 
 
 //
-// Copy scene contents
+// Copy sequence contents
 //
-bool Scene::copyFrom(Scene* sc)
+void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 {
   assert(sc);
 
-  if ( setDevice(sc->m_deviceID) )
-    {
-      m_startMutex.lock();
-      m_name = sc->name();
-      m_busID = sc->busID();
+  setDevice(toDevice);
 
-      memcpy(m_values, sc->m_values, m_channels * sizeof(SceneValue));
+  m_name = QString(sc->m_name);
+  m_busID = sc->m_busID;
 
-      m_startMutex.unlock();
-      return true;
-    }
-  else
+  if (m_values) delete [] m_values;
+  m_values = new SceneValue[m_channels];
+  
+  for (t_channel ch = 0; ch < m_channels; ch++)
     {
-      return false;
+      m_values[ch].value = sc->m_values[ch].value;
+      m_values[ch].type = sc->m_values[ch].type;
     }
 }
 
 
 //
-// Assign this scene to a device (or vice versa, whatever feels
-// familiar to you) and allocate a value array the size of device's
-// channels
+// Assign this scene to a device
 //
 bool Scene::setDevice(t_device_id id)
 {
   Device* device = _app->doc()->device(id);
   assert(device);
+  
+  t_channel newChannels = device->deviceClass()->channels()->count();
 
-  m_startMutex.lock();
-  if (m_running)
+  if (m_channels == 0)
     {
-      m_startMutex.unlock();
-      return false;
-    }
-  else if (m_values)
-    {
-      t_channel newChannels = device->deviceClass()->channels()->count();
-      
-      // Store old values temporarily
-      SceneValue tempValues[m_channels];
-      memcpy(&tempValues, m_values, m_channels * sizeof(SceneValue));
-      
-      // Delete old values
-      delete [] m_values;
+      m_channels = newChannels;
 
-      // Allocate space for new values
-      m_values = new SceneValue[newChannels];
-      
-      // Copy old values
-      if (newChannels < m_channels)
-        {
-          // New device has less channels than previous one, copy only
-          // those that fit in
-          memcpy(m_values, &tempValues, newChannels * sizeof(SceneValue));
-          m_channels = newChannels;
-          m_deviceID = id;
-        }
-      else if (newChannels > m_channels)
-        {
-          // New device has more channels than previous one, copy old
-          // values and fill the rest with 0 and NoSet.
-          memcpy(m_values, &tempValues, m_channels * sizeof(SceneValue));
-          for (t_channel i = m_channels; i < newChannels; i++)
-            {
-	      m_values[i].value = 0;
-	      m_values[i].type = NoSet;
-            }
-	  
-          m_channels = newChannels;
-          m_deviceID = id;
-        }
-      else
-        {
-          // Channel count is identical, just copy the values.
-          memcpy(m_values, &tempValues, m_channels * sizeof(SceneValue));
-          m_deviceID = id;
-        }
+      m_values = new SceneValue[m_channels];
+
+      for (t_channel i = 0; i < m_channels; i++)
+	{
+	  m_values[i].value = 0;
+	  m_values[i].type = Fade;
+	}
     }
   else
     {
-      // Get channel count
-      m_channels = device->deviceClass()->channels()->count();
-      
-      // Set device
-      m_deviceID = id;
-      
-      // Allocate space for new values
-      m_values = new SceneValue[m_channels];
-      
-      // Set all channel values to 0 and fade
-      for (t_channel i = 0; i < m_channels; i++)
-        {
-          m_values[i].value = 0;
-          m_values[i].type = Fade;
-        }
+      assert(m_channels == newChannels);
     }
 
-  m_startMutex.unlock();
+  m_deviceID = id;
+
   return true;
 }
 
@@ -180,7 +127,7 @@ Scene::~Scene()
     }
   m_startMutex.unlock();
 
-  if (m_values) delete[] m_values;
+  if (m_values) delete [] m_values;
 }
 
 Scene::ValueType Scene::valueType(t_channel ch)

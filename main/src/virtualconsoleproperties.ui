@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>452</width>
-            <height>176</height>
+            <width>457</width>
+            <height>177</height>
         </rect>
     </property>
     <property name="caption">
@@ -214,6 +214,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+O</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Accept settings and close</string>

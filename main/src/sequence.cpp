@@ -45,11 +45,10 @@ Sequence::Sequence() :
   Function      ( Function::Sequence ),
 
   m_channels    (               0 ),
-  m_timeSpan    (             255 ),
-  m_elapsedTime (               0 ),
+  m_holdTime    (             255 ),
   m_dataMutex   (           false )
 {
-  setBus(KBusIDDefaultFade);
+  setBus(KBusIDDefaultHold);
 }
 
 
@@ -386,34 +385,9 @@ void Sequence::busValueChanged(t_bus_id id, t_bus_value value)
 
   m_startMutex.lock();
 
-  if (m_running)
-    {
-      speedChange(value);
-    }
-  else
-    {
-      m_timeSpan = value;
-    }
+  m_holdTime = value;
 
   m_startMutex.unlock();
-}
-
-
-//
-// Calculate new values
-//
-void Sequence::speedChange(t_bus_value newTimeSpan)
-{
-  m_dataMutex.lock();
-
-  m_timeSpan = newTimeSpan;
-  if (m_timeSpan == 0)
-    {
-      m_timeSpan = static_cast<t_bus_value> 
-	(1.0 / static_cast<float> (KFrequency));
-    }
-
-  m_dataMutex.unlock();
 }
 
 
@@ -444,15 +418,9 @@ void Sequence::init()
 {
   m_removeAfterEmpty = false;
 
-  // No time has yet passed for this scene.
-  m_elapsedTime = 0;
-
   // Get speed
-  Bus::value(m_busID, m_timeSpan);
+  Bus::value(m_busID, m_holdTime);
   
-  // Set speed
-  speedChange(m_timeSpan);
-
   // Append this function to running functions' list
   _app->functionConsumer()->cue(this);
 }
@@ -463,8 +431,44 @@ void Sequence::init()
 //
 void Sequence::run()
 {
+  t_bus_value holdStart = 0;
+  t_bus_value timeCode = 0;
+
+  t_channel ch = 0;
+  t_value values[m_channels];
+
   // Initialize this scene for running
   init();
+
+  QPtrListIterator<SceneValue> it(m_values);
+
+  while (it.current() && !m_stopped)
+    {
+      for (ch = 0; ch < m_channels; ch++)
+	{
+	  values[ch] = it.current()[ch].value;
+	}
+      
+      if (m_holdTime > 0)
+	{
+	  // Hold
+	  _app->functionConsumer()->timeCode(holdStart);
+	  while (!m_stopped)
+	    {
+	      _app->functionConsumer()->timeCode(timeCode);
+	      if ((timeCode - holdStart) == m_holdTime)
+		{
+		  break;
+		}
+	      else
+		{
+		  sched_yield();
+		}
+	    }
+
+	  ++it;
+	}
+    }
 
   // Finished
   m_removeAfterEmpty = true;

@@ -45,7 +45,7 @@ class Scene : public Function
       NoSet = 2  // Ignored value
     };
 
-  bool copyFrom(Scene*);
+  void copyFrom(Scene* sc, t_device_id toDevice);
   bool setDevice(t_device_id);
 
   SceneValue* values() { return m_values; }

@@ -23,6 +23,9 @@
             <property name="name">
                 <cstring>m_behaviourGroup</cstring>
             </property>
+            <property name="enabled">
+                <bool>false</bool>
+            </property>
             <property name="title">
                 <string>Button Behaviour</string>
             </property>
@@ -94,6 +97,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+O</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
                     </property>
                 </widget>
                 <widget class="QPushButton">

@@ -56,7 +56,7 @@
 extern App* _app;
 
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
-const int KFlashReadyTime ( 1000 ); // 1 second
+const int KFlashReadyTime (  200 ); // 1 second
 const int KMoveThreshold  (    5 ); // Pixels
 
 VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")

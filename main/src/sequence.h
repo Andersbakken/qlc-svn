@@ -54,7 +54,6 @@ class Sequence : public Function
   void createContents(QPtrList <QString> &list);
 
   void busValueChanged(t_bus_id, t_bus_value);
-  void speedChange(t_bus_value);
 
   void arm();
   void disarm();
@@ -67,8 +66,7 @@ class Sequence : public Function
  private:
   t_channel m_channels;
 
-  t_bus_value m_timeSpan;
-  t_bus_value m_elapsedTime;
+  t_bus_value m_holdTime;
 
   // This mutex is locked when the run time data is accessed
   QMutex m_dataMutex;

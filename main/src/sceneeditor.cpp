@@ -134,6 +134,7 @@ void SceneEditor::slotActivate()
   if (s != NULL)
     {
       setScene(s);
+      m_tempScene->copyFrom(s, s->device());
     }
 
   setStatusText(KStatusUnchanged, KStatusColorUnchanged);
@@ -196,7 +197,7 @@ void SceneEditor::slotRename()
 
 void SceneEditor::slotNew()
 {
-  bool ok = FALSE;
+  bool ok = false;
   QString text = QInputDialog::getText(tr("Scene editor - New Scene"),
 				       tr("Enter scene name"),
 				       QLineEdit::Normal,
@@ -207,12 +208,14 @@ void SceneEditor::slotNew()
       Scene* sc = static_cast<Scene*>
 	(_app->doc()->newFunction(Function::Scene));
 
-      sc->copyFrom(m_tempScene);
-
+      sc->copyFrom(m_tempScene, m_tempScene->device());
       sc->setName(text);
-      sc->setDevice(m_deviceID);
       
-      fillFunctions();
+      ListBoxIDItem* item = new ListBoxIDItem();
+      item->setText(sc->name());
+      item->setRtti(sc->id());
+      m_sceneList->insertItem(item);
+
       selectFunction(sc->id());
       
       setStatusText(KStatusStored, KStatusColorStored);
@@ -227,7 +230,15 @@ void SceneEditor::slotStore()
       return;
     }
 
-  sc->copyFrom(m_tempScene);
+  // Save name & bus because copyFrom overwrites them
+  QString name = sc->name();
+  t_bus_id bus = sc->busID();
+
+  sc->copyFrom(m_tempScene, m_tempScene->device());
+
+  // Set these again
+  sc->setName(name);
+  sc->setBus(bus);
 
   setStatusText(KStatusStored, KStatusColorStored);
 }
