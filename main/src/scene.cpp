@@ -61,6 +61,7 @@ void Scene::unRegisterFunction()
 
 void Scene::registerFunction(Feeder* feeder)
 {
+  recalculateSpeed(feeder);
   Function::registerFunction(feeder);
 }
 
@@ -244,20 +245,20 @@ void Scene::recalculateSpeed(Feeder* f)
       if (delta < f->delta())
 	{
 	  f->setDelta((unsigned long) ceil(delta));
-	}
 
-      if (delta < 1.0)
-	{
-	  // If the next updates should come more often than
-	  // 1/1000 sec, we need to increase the step value because
-	  // the sequence timer provides timer tick of 1/1000sec.
-	  f->setStep((unsigned long) ceil(1.0 / delta));
+	  if (delta < 1.0)
+	    {
+	      // If the next updates should come more often than
+	      // 1/1000 sec, we need to increase the step value because
+	      // the sequence timer provides timer tick of 1/1000sec.
+	      f->setStep((unsigned long) ceil(1.0 / delta));
+	    }
+	  else
+	    {
+	      // The next step value is 1 per each 1/1000 sec
+	      f->setStep(1);
+	    }
 	}
-      else
-	{
-	  // The next step value is 1 per each 1/1000 sec
-	  f->setStep(1);
-	}	  
     }
 }
 
@@ -266,10 +267,7 @@ Event* Scene::getEvent(Feeder* feeder)
   unsigned short readyCount = 0;
   unsigned short channels = 0;
   
-  if (feeder->device() != NULL)
-    {
-      channels = feeder->device()->deviceClass()->channels();
-    }
+  channels = feeder->device()->deviceClass()->channels();
 
   Event* event = new Event(channels);
 
@@ -277,54 +275,44 @@ Event* Scene::getEvent(Feeder* feeder)
     {
       if (feeder->device()->getChannelValue(i) == m_values[i].value)
 	{
-	  event->m_values[i] = VALUE_READY;
+	  event->m_values[i].type = Ready;
 	  readyCount++;
+	  continue;
+	}
+      else
+	{
+	  event->m_values[i].type = Normal;
 	}
 
       if (feeder->startLevel(i) > m_values[i].value)
-	{ 
+	{
 	  // Current level is above target, the new value is set toward 0
-	  
-	  // If the next step value is bigger than the next gap we need
-	  // to set the next step value to the gap value so that
-	  // we won't write too big values.
-	      // Example: current channel value is 254 and the scene's target
-	      // value is 255. If the step value is 2, the next value would
-	      // be 256 which (since we are using unsigned chars) would mean
-	      // actually 0 (with signed chars -127) so this would loop
-	      // endlessly without ever reaching the target value
-	  int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
-	  int nextStep = feeder->step();
+	  unsigned short nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	  unsigned short nextStep = feeder->step();
 	  if (nextStep > nextGap)
 	    {
 	      nextStep = nextGap;
 	    }
-	  event->m_values[i] = feeder->device()->getChannelValue(i) - nextStep;
+
+	  event->m_values[i].value = feeder->device()->getChannelValue(i) - nextStep;
 	}
       else if (feeder->startLevel(i) < m_values[i].value)
 	{
 	  // Current level is below target, the new value is set toward 255
-
-	  // If the next step value is bigger than the next gap we need
-	  // to set the next step value to the gap value so that
-	  // we won't write too big values.
-	  // Example: current channel value is 254 and the scene's target
-	  // value is 255. If the step value is 2, the next value would
-	  // be 256 which (since we are using unsigned chars) would mean
-	  // actually 0 (with signed chars -127) so this would loop
-	  // endlessly without ever reaching the target value
-	  int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
-	  int nextStep = feeder->step();
+	  unsigned short nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
+	  unsigned short nextStep = feeder->step();
 	  if (nextStep > nextGap)
 	    {
 	      nextStep = nextGap;
 	    }
-	  event->m_values[i] = feeder->device()->getChannelValue(i) + nextStep;
+
+	  event->m_values[i].value = feeder->device()->getChannelValue(i) + nextStep;
 	}
     }
 
   // Get delta from feeder and set it to next step's delta time
   event->m_delta = (unsigned long) floor(feeder->delta());
+  event->m_address = feeder->device()->address();
 
   // If all channels are marked "ready", then this scene is ready and
   // we can unregister this scene.

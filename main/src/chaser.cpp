@@ -257,12 +257,12 @@ Event* Chaser::getEvent(Feeder* feeder)
 
   if (m_OKforNextStep == true)
     {
+      m_OKforNextStep = false;
+
       step = m_steps.at(feeder->nextEventIndex());
       feeder->setNextEventIndex((feeder->nextEventIndex() + 1) % m_steps.count());
 
       ASSERT(step != NULL);
-
-      m_OKforNextStep = false;
 
       _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
       
