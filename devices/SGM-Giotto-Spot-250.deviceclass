@@ -1,0 +1,197 @@
+#
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = SGM
+Model = Giotto Spot 250
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 2
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 3
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine
+Entry = Channel
+Number = 4
+Name = Iris
+# Capability Entries
+0-255 = Iris
+Entry = Channel
+Number = 5
+Name = Color
+# Capability Entries
+0-24 = White
+25-49 = Red
+50-74 = Yellow
+75-99 = Green
+100-124 = Cyan
+125-149 = Blue
+150-174 = Magenta
+175-200 = Pink
+201-225 = Amber
+226-255 = Orange
+Entry = Channel
+Number = 6
+Name = Gobo
+# Capability Entries
+0-20 = Open
+21-41 = Gobo 1
+42-62 = Gobo 2
+63-83 = Gobo 3
+84-104 = Gobo 4
+105-125 = Gobo 5
+126-146 = Gobo 6
+147-167 = Gobo 7
+168-189 = Gobo 8
+190-245 = Rainbow speed
+246-255 = Music change
+Entry = Channel
+Number = 7
+Name = Shutter
+# Capability Entries
+0-7 = Closed
+8-15 = Strobe 1.00 Hz
+16-23 = Strobe 1.38 Hz
+24-31 = Strobe 1.60 Hz
+32-39 = Strobe 1.90 Hz
+40-47 = Strobe 2.30 Hz
+48-55 = Strobe 2.70 Hz
+56-63 = Strobe 3.40 Hz
+64-71 = Strobe 4.00 Hz
+72-79 = Strobe 5.00 Hz
+80-87 = Strobe 6.00 Hz
+88-95 = Strobe 7.00 Hz
+96-103 = Strobe 8.00 Hz
+104-111 = Strobe 9.00 Hz
+112-119 = Strobe 10.0 Hz
+120-136 = Low strobe, max freq in sync with bass
+137-153 = Music flash low
+154-170 = Autoshade open on gobos
+171-187 = Autoshade open on colours
+188-204 = Autoshade open on gobos and colours
+205-221 = Open with slow gobo change
+222-255 = Open
+Entry = Channel
+Number = 8
+Name = Dimmer
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 9
+Name = Gobo rotation
+# Capability Entries
+0-111 = Rotate CW
+112-144 = No rotation
+145-255 = Rotate CCW
+Entry = Channel
+Number = 10
+Name = Prism
+# Capability Entries
+0-84 = Off
+85-170 = Comet
+171-255 = 4-facet prism
+Entry = Channel
+Number = 11
+Name = Prism rotation
+# Capability Entries
+0-111 = Rotate CW
+112-143 = No rotation
+144-255 = Rotate CCW
+Entry = Channel
+Number = 12
+Name = Focus
+# Capability Entries
+0-255 = Focus
+Entry = Channel
+Number = 13
+Name = Zoom
+# Capability Entries
+0-255 = Zoom 9 - 24 degrees
+Entry = Channel
+Number = 14
+Name = Effects
+# Capability Entries
+0-31 = Open
+32-62 = Tunnel
+63-93 = Stripped texture
+94-124 = Honeycomb texture
+125-155 = Spider
+156-186 = Wood filter
+187-217 = Filter half CTO
+218-255 = Filter CTO
+Entry = Channel
+Number = 15
+Name = Frost
+# Capability Entries
+0-255 = Frost adjustment
+Entry = Channel
+Number = 16
+Name = Movement speed
+# Capability Entries
+0-3 = Tracking mode
+4-255 = Speed, slow -> fast
+Entry = Channel
+Number = 17
+Name = Reset
+# Capability Entries
+0-60 = Off
+61-129 = Hysteresis
+130-179 = On
+180-239 = Hysteresis
+240-255 = Reset
+Entry = Channel
+Number = 18
+Name = Gobo shake speed
+# Capability Entries
+0-255 = Shake speed
+Entry = Channel
+Number = 19
+Name = Colour mode
+# Capability Entries
+0-50 = Full colour
+51-101 = Half colour
+102-152 = Soft colour
+153-203 = Soft rainbow
+204-255 = Hard music change
+Entry = Channel
+Number = 20
+Name = Gobo mode
+# Capability Entries
+0-127 = Indexing mode
+128-255 = Normal mode
+Entry = Channel
+Number = 21
+Name = Macro
+# Capability Entries
+0-7 = No macro
+8-15 = Macro 1, dimmer, shutter
+16-23 = Macro 2, dimmer, shutter
+24-31 = Macro 3, dimmer, shutter
+32-39 = Macro 4, dimmer, shutter
+40-47 = Macro 5, dimmer, shutter
+48-55 = Macro 6, iris
+56-63 = Macro 7, iris
+64-71 = Macro 8, iris
+72-79 = Macro 9, iris
+80-87 = Macro 10, iris
+88-95 = Macro 11, iris
+96-103 = Macro 11, iris
+104-111 = Macro 12, shutter
+112-119 = Macro 13, frost
+120-127 = Macro 14, frost
+128-135 = Macro 15, frost
