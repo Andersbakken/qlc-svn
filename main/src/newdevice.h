@@ -22,16 +22,16 @@
 #ifndef NEWDEVICE_H
 #define NEWDEVICE_H
 
-#include <qwidget.h>
-#include <qlistview.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qlineedit.h>
-#include <qspinbox.h>
-#include <qevent.h>
-#include <qdialog.h>
-#include <qcheckbox.h>
+class QListView;
+class QListViewItem;
+class QCheckBox;
+class QLineEdit;
+class QLabel;
+class QPushButton;
+class QSpinBox;
+class QString;
 
+#include <qdialog.h>
 #include "classes.h"
 
 class NewDevice : public QDialog
@@ -55,6 +55,8 @@ class NewDevice : public QDialog
   void fillTree();
 
   QListView* m_tree;
+
+  QCheckBox* m_treeOpenCheckBox;
 
   QLineEdit* m_nameEdit;
   QLabel* m_nameLabel;
@@ -87,6 +89,7 @@ class NewDevice : public QDialog
   void slotNameChanged(const QString &text);
   void slotAutoAddressClicked();
   void slotTreeDoubleClicked(QListViewItem* item);
+  void slotTreeOpenCheckBoxClicked();
 };
 
 #endif

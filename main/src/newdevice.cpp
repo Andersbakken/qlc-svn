@@ -27,7 +27,13 @@
 
 #include <qpixmap.h>
 #include <qheader.h>
-
+#include <qlistview.h>
+#include <qlabel.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qspinbox.h>
+#include <qevent.h>
+#include <qcheckbox.h>
 
 extern App* _app;
 
@@ -47,8 +53,7 @@ NewDevice::~NewDevice()
 
 void NewDevice::initView()
 {
-  resize(400, 250);
-  setFixedSize(400, 250);
+  setFixedSize(400, 270);
   setCaption("Add New Output Device");
 
   m_tree = new QListView(this);
@@ -59,6 +64,12 @@ void NewDevice::initView()
   connect(m_tree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(slotSelectionChanged(QListViewItem*)));
   connect(m_tree, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotTreeDoubleClicked(QListViewItem*)));
   fillTree();
+
+  m_treeOpenCheckBox = new QCheckBox(this);
+  m_treeOpenCheckBox->setGeometry(10, 240, 230, 20);
+  m_treeOpenCheckBox->setText("Open all list items by default");
+  m_treeOpenCheckBox->setChecked(_app->settings()->newDeviceTreeOpen());
+  connect(m_treeOpenCheckBox, SIGNAL(clicked()), this, SLOT(slotTreeOpenCheckBoxClicked()));
 
   m_nameLabel = new QLabel(this);
   m_nameLabel->setGeometry(240, 10, 150, 20);
@@ -89,14 +100,19 @@ void NewDevice::initView()
   connect(m_autoAddress, SIGNAL(clicked()), this, SLOT(slotAutoAddressClicked()));
 
   m_ok = new QPushButton(this);
-  m_ok->setGeometry(240, 170, 150, 30);
+  m_ok->setGeometry(240, 190, 150, 30);
   m_ok->setText("&OK");
   connect(m_ok, SIGNAL(clicked()), this, SLOT(slotOKClicked()));
 
   m_cancel = new QPushButton(this);
-  m_cancel->setGeometry(240, 210, 150, 30);
+  m_cancel->setGeometry(240, 230, 150, 30);
   m_cancel->setText("&Cancel");
   connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancelClicked()));
+}
+
+void NewDevice::slotTreeOpenCheckBoxClicked()
+{
+  _app->settings()->setNewDeviceTreeOpen(m_treeOpenCheckBox->isChecked());
 }
 
 void NewDevice::slotAutoAddressClicked()
@@ -148,7 +164,6 @@ void NewDevice::fillTree()
 
       for (QListViewItem* i = m_tree->firstChild(); i != NULL; i = i->nextSibling())
 	{
-	  m_tree->setOpen(i, TRUE);
 	  if (i->text(0) == dc->manufacturer())
 	    {
 	      alreadyAdded = true;
@@ -160,6 +175,10 @@ void NewDevice::fillTree()
       if (alreadyAdded == false)
 	{
 	  parent = new QListViewItem(m_tree, dc->manufacturer());
+	  if (_app->settings()->newDeviceTreeOpen() == true)
+	    {
+	      parent->setOpen(true);
+	    }
 	}
 
       parent->setPixmap(0, QPixmap(_app->settings()->pixmapPath() + QString("global.xpm")));
