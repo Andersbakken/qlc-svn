@@ -42,7 +42,7 @@ Scene::Scene(unsigned long id) : Function(id)
   for (int i = 0; i < 512; i++)
     {
       m_values[i].value = 0;
-      m_values[i].type = NoSet;
+      m_values[i].type = Fade;
     }
 }
 
@@ -190,9 +190,13 @@ void Scene::createContents(QList<QString> &list)
 	    {
 	      m_values[ch].type = Fade;
 	    }
-	  else
+	  else if (t == QString("NoSet"))
 	    {
 	      m_values[ch].type = NoSet;
+	    }
+	  else
+	    {
+	      list.next();
 	    }
 	}
       else
@@ -388,4 +392,23 @@ Event* Scene::getEvent(Feeder* feeder)
     }
 
   return event;
+}
+
+void Scene::directSet(unsigned char intensity)
+{
+  double percent = 0;
+  unsigned short int channels = 0;
+  double value = 0;
+
+  percent = ((double) intensity) / ((double) 255);
+  channels = m_device->deviceClass()->channels()->count();
+
+  for (int i = 0; i < channels; i++)
+    {
+      if (m_values[i].type != NoSet)
+	{
+	  value = m_values[i].value * percent;
+	  _app->doc()->dmxChannel(m_device->address() + i)->setValue((unsigned char) value);
+	}
+    }
 }

@@ -84,7 +84,18 @@ void DeviceProperties::slotOKClicked()
 	  return;
 	}
     }
-  
+
+  if (m_deviceNameEdit->text().length() <= 0)
+    {
+      QMessageBox::warning(this, "QLC", "Empty names are not allowed. Using previous name.");
+      m_deviceNameEdit->setText(m_device->name());
+      return;
+    }
+  else
+    {
+      m_device->setName(m_deviceNameEdit->text());
+    }
+      
   m_device->setAddress(address);
   accept();
 }

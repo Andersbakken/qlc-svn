@@ -67,6 +67,8 @@ class Scene : public Function
   bool unRegisterFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
+
+  void directSet(unsigned char intensity);
   
  private:
   SceneValue m_values[512];

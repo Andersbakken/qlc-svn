@@ -31,8 +31,7 @@
 #include <qfont.h>
 #include <qtooltip.h>
 
-#define LEDBAR_WIDTH 20
-#define LEDBAR_HEIGHT 100
+static const int KLedBarHeight = 150;
 
 LedBar::LedBar(QWidget *parent, QApplication* qapp, const char *name) : QFrame (parent, name)
 {
@@ -58,12 +57,18 @@ LedBar::~LedBar()
 
 int LedBar::width()
 {
-  return LEDBAR_WIDTH;
+  int w = 0;
+
+  QFontMetrics m = QApplication::fontMetrics();
+  
+  w = m.width(QString("0000"));
+  
+  return w;
 }
 
 int LedBar::height()
 {
-  return LEDBAR_HEIGHT;
+  return KLedBarHeight;
 }
 
 void LedBar::setRange(int min, int max)
@@ -118,21 +123,17 @@ void LedBar::slotSetValue(int value)
 
 	  // Channel number
 	  chRect = rect();
-	  chRect.setRight(18);
-	  chRect.setTop(chRect.bottom() - 10);
-	  chRect.setLeft(2);
+	  chRect.setTop(chRect.bottom() - m_qapp->fontMetrics().height());
 	  
 	  // Channel value
 	  valRect = rect();
-	  valRect.setRight(18);
-	  valRect.setBottom(11);
-	  valRect.setLeft(2);
+	  valRect.setBottom(m_qapp->fontMetrics().height());
 	  
 	  // Actual led bar
 	  fillRect = rect();
-	  fillRect.setTop( (int) (((m_max - value) * (chRect.top() - valRect.bottom()) / (double) m_max) + valRect.bottom()));
+	  fillRect.setTop( static_cast<int> (((m_max - value) * (chRect.top() - valRect.bottom()) / (double) m_max) + valRect.bottom()));
 	  fillRect.setBottom(chRect.top() - 1);
-	  fillRect.setRight(15);
+	  fillRect.setRight(this->rect().width() - 5);
 	  fillRect.setLeft(5);
 	  
 	  m_drawFrame->setGeometry(fillRect);
@@ -158,16 +159,19 @@ void LedBar::paint(void)
   QRect valRect;
   QString value;
 
+  double val = ((double) m_value / (double) m_max) * (double) 255;
+  value.sprintf("%.3d", (int) val);
+
   // Text rect
   txtRect = rect();
-  txtRect.setRight(18);
-  txtRect.setTop(txtRect.bottom() - 10);
+  txtRect.setRight(this->rect().width() - 1); //m_qapp->fontMetrics().maxWidth() * m_text.length());
+  txtRect.setTop(txtRect.bottom() - m_qapp->fontMetrics().height()); // 10
   txtRect.setLeft(1);
 
   // Value rect
   valRect = rect();
-  valRect.setRight(18);
-  valRect.setBottom(valRect.top() + 10);
+  valRect.setRight(this->rect().width() - 1); //m_qapp->fontMetrics().maxWidth() * value.length());
+  valRect.setBottom(valRect.top() + m_qapp->fontMetrics().height()); // 11
   valRect.setLeft(1);
 
   QFont font;
@@ -179,10 +183,8 @@ void LedBar::paint(void)
   painter.setFont(font);
 
   // Draw info text
-  painter.drawText(txtRect, AlignBottom, m_text);
+  painter.drawText(txtRect, AlignCenter, m_text);
 
   // Draw value text
-  double val = ((double) m_value / (double) m_max) * (double) 255;
-  value.sprintf("%.3d", (int) val);
-  painter.drawText(valRect, AlignTop, value);
+  painter.drawText(valRect, AlignCenter, value);
 }

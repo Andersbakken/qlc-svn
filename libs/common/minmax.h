@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  ledbar.h
+  minmax.h
   
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
@@ -19,53 +19,15 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef LEDBAR_H
-#define LEDBAR_H
+#ifndef MINMAX_H
+#define MINMAX_H
 
-#include <qframe.h>
+#ifndef max
+#define max(x,y) (x < y) ? y : x
+#endif
 
-class QColor;
-class QBrush;
-class QPainter;
-class QRect;
-class QPixmap;
-class QApplication;
-class QFont;
-
-class LedBar : public QFrame
-{
-  Q_OBJECT
- 
- public:
-  LedBar(QWidget *parent, QApplication* qapp, const char *name = 0);
-  ~LedBar();
-
-  int width();
-  int height();
-
-  void setRange(int min, int max);
-  void setText(QString text);
-  void setToolTip(QString text = QString::null);
-
- public slots:
-  void slotSetValue(int value);
-  void slotSetValue(unsigned char value);
-
- protected:
-  void paintEvent(QPaintEvent* e);
-  void paint(void);
-
- private:
-  int m_min;
-  int m_max;
-  int m_value;
-  QString m_text;
-
-  QColor m_color;
-  QBrush m_brush;
-  QFrame* m_drawFrame;
-
-  QApplication* m_qapp;
-};
+#ifndef min
+#define min(x,y) (x < y) ? x : y
+#endif
 
 #endif
