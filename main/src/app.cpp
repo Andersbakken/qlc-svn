@@ -124,7 +124,7 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 
 extern QApplication _qapp;
 
-App::App()
+App::App() : QMainWindow()
 {
   m_functionTree = NULL;
   m_busProperties = NULL;
@@ -980,6 +980,23 @@ void App::slotSetMode()
 
   if (m_mode == Operate)
     {
+      if (m_functionConsumer->runningFunctions())
+        {
+          QString msg;
+          msg = "There are running functions. Do you really wish to stop\n";
+          msg += "them and change back to Design Mode?";
+          int result = QMessageBox::warning(this, KApplicationNameShort, msg,
+                                            QMessageBox::Yes, QMessageBox::No);
+          if (result == QMessageBox::No)
+            {
+              return;
+            }
+          else
+            {
+              m_functionConsumer->purge();
+            }
+        }
+
       m_modeIndicator->setText(KModeTextDesign);
       m_modeButton->setPixmap(dir + QString("/unlocked.xpm"));
       QToolTip::add(m_modeButton, "Design mode; All edit features available");

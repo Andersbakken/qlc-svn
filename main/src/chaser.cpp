@@ -19,7 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#define HOLD_WITH_NANOSLEEP
+//#define HOLD_WITH_NANOSLEEP
 
 #include "chaser.h"
 #include "deviceclass.h"
@@ -43,9 +43,13 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #endif
 
 extern App* _app;
+
+const QString KFIFOTemplate ("/tmp/.qlcfifo-");
 
 //
 // Standard constructor
@@ -56,7 +60,8 @@ Chaser::Chaser() :
   m_runOrder     (   Loop ),
   m_direction    ( Normal ),
   m_childRunning (  false ),
-  m_holdTime     (      0 )
+  m_holdTime     (      0 ),
+  m_holdFD       (     -1 )
 {
   setBus(KBusIDDefaultHold);
 }
@@ -342,6 +347,24 @@ void Chaser::arm()
   // there... So allocate a zero length buffer.
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(0, 0);
+
+#ifndef HOLD_WITH_NANOSLEEP
+  QString fid;
+  fid.setNum(m_id);
+  m_fifoName = KFIFOTemplate + fid;
+
+  if (mkfifo(m_fifoName.ascii(), S_IRUSR | S_IWUSR) == -1)
+    {
+      perror("mkfifo");
+    }
+
+  m_holdFD = open(m_fifoName, O_RDWR | O_NONBLOCK);
+  if (m_holdFD == -1)
+    {
+      perror("open");
+    }
+
+#endif
 }
 
 
@@ -352,6 +375,15 @@ void Chaser::disarm()
 {
   if (m_eventBuffer) delete m_eventBuffer;
   m_eventBuffer = NULL;
+
+#ifndef HOLD_WITH_NANOSLEEP
+  if (close(m_holdFD) == -1)
+    {
+      perror("close");
+    }
+
+   m_holdFD = -1;
+#endif
 }
 
 //
@@ -515,10 +547,23 @@ void Chaser::hold()
 	{
 	  perror("select");
 	}
-      else if (retval)
+      else if (FD_ISSET(m_holdFD, &rfds))
 	{
 	  qDebug("Waiting interrupted");
+          char buf[16];
+          if (m_holdFD != -1 && read(m_holdFD, buf, 16) == -1)
+            {
+              perror("write");
+            }
+          else
+            {
+              qDebug("read %s", buf);
+            }
 	}
+      else
+        {
+          qDebug("Hold time expired");
+        }
 #endif
     }
 }
@@ -529,6 +574,12 @@ void Chaser::hold()
 //
 void Chaser::stop()
 {
+#ifndef HOLD_WITH_NANOSLEEP
+  if (m_holdFD != -1 && write(m_holdFD, "stop\0", 5) == -1)
+    {
+      perror("write");
+    }
+#endif
   Function::stop();
 }
 

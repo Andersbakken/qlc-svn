@@ -35,6 +35,9 @@ class FunctionConsumer : public QThread
   FunctionConsumer();
   virtual ~FunctionConsumer();
 
+  // Number of running functions
+  int runningFunctions();
+
   // Run a function
   void cue(Function* f);
 

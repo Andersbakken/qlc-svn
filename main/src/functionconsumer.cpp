@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "functionconsumer.h"
 #include "function.h"
@@ -58,6 +59,31 @@ FunctionConsumer::~FunctionConsumer()
 
 
 //
+// Get the number of running functions
+//
+int FunctionConsumer::runningFunctions()
+{
+  int n = 0;
+  m_functionListMutex.lock();
+  n = m_functionList.count();
+  m_functionListMutex.unlock();
+  return n;
+}
+
+//
+// Add a function producer to producer list to run it
+//
+void FunctionConsumer::cue(Function* f)
+{
+  assert(f);
+
+  m_functionListMutex.lock(); // Lock before access
+  m_functionList.append(f);
+  m_functionListMutex.unlock(); // Unlock after append
+}
+
+
+//
 // Stop all running functions
 //
 void FunctionConsumer::purge()
@@ -65,6 +91,7 @@ void FunctionConsumer::purge()
   QPtrListIterator <Function> it(m_functionList);
 
   m_functionListMutex.lock();
+  it.toFirst();
   while (it.current())
     {
       m_functionListMutex.unlock();
@@ -75,19 +102,13 @@ void FunctionConsumer::purge()
     }
    m_functionListMutex.unlock();
 
-}
-
-
-//
-// Add a function producer to producer list to run it
-//
-void FunctionConsumer::cue(Function* f)
-{
-  ASSERT(f);
-
-  m_functionListMutex.lock(); // Lock before access
-  m_functionList.append(f);
-  m_functionListMutex.unlock(); // Unlock after append
+   //
+   // Wait until all functions have been stopped
+   //
+   while (m_functionList.count())
+     {
+       sched_yield();
+     }
 }
 
 
