@@ -73,9 +73,6 @@ Device::Device(t_channel address, DeviceClass* dc, const QString& name,
 
   m_console = NULL;
   m_monitor = NULL;
-
-  connect(dc, SIGNAL(replaceMeWith(DeviceClass*)),
-	  this, SLOT(slotReplaceDeviceClass(DeviceClass*)));
 }
 
 
@@ -140,6 +137,7 @@ DeviceClass* Device::deviceClass()
 void Device::setName(QString name)
 {
   m_name = name;
+  _app->doc()->setModified(true);
 }
 
 
@@ -158,6 +156,8 @@ void Device::setAddress(t_channel address)
       slotMonitorClosed();
       viewMonitor();
     }
+
+  _app->doc()->setModified(true);
 }
 
 
@@ -166,7 +166,9 @@ QString Device::infoText()
   QString t;
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Device Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
+  str += QString("<TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=5>");
+  str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
   str += QString("<TR>\n");
   str += QString("<TD><B>Manufacturer</B></TD>");
@@ -182,7 +184,8 @@ QString Device::infoText()
   str += QString("</TR>");
   str += QString("<TR>");
   str += QString("<TD><B>Address space</B></TD>");
-  t.sprintf("%d - %d", address(), address() + deviceClass()->channels()->count() - 1);
+  t.sprintf("%d - %d",
+	    address(), address() + deviceClass()->channels()->count() - 1);
   str += QString("<TD>") + t + QString("</TD>");
   str += QString("<TR>");
   str += QString("<TD><B>Channels</B></TD>");
@@ -328,16 +331,4 @@ void Device::viewProperties()
   dp->exec();
   
   delete dp;
-}
-
-
-void Device::slotReplaceDeviceClass(DeviceClass* dc)
-{
-  qDebug("Replacing DC for " + m_name);
-  disconnect(m_deviceClass);
-
-  m_deviceClass = dc;
-
-  connect(dc, SIGNAL(replaceMeWith(DeviceClass*)),
-	  this, SLOT(slotReplaceDeviceClass(DeviceClass*)));
 }

@@ -64,6 +64,8 @@ class DeviceManagerView : public QWidget
   void slotRightButtonClicked(QListViewItem*, const QPoint&, int);
   void slotMenuCallBack(int);
 
+  void slotItemRenamed(QListViewItem* item, int col);
+
  private:
   QVBoxLayout* m_layout;
   QToolBar* m_toolbar;

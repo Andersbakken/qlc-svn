@@ -267,7 +267,9 @@ void DeviceManagerView::initDataView()
 						const QPoint&, int)),
 	  this, SLOT(slotRightButtonClicked(QListViewItem*,
 					    const QPoint&, int)));
-							       
+
+  connect(m_listView, SIGNAL(itemRenamed(QListViewItem*, int)),
+	  this, SLOT(slotItemRenamed(QListViewItem*, int)));
 
   // Create the text view
   m_textView = new QTextView(m_splitter);
@@ -302,6 +304,9 @@ void DeviceManagerView::slotUpdate()
       // ID column
       id.setNum(dev->id());
       newItem->setText(KColumnID, id);
+
+      // Enable rename
+      newItem->setRenameEnabled(KColumnName, true);
 
       // Select this if it was selected before update
       if (currentId == dev->id())
@@ -565,4 +570,17 @@ void DeviceManagerView::slotMenuCallBack(int item)
     default:
       break;
     }
+}
+
+
+//
+// An item has been renamed
+//
+void DeviceManagerView::slotItemRenamed(QListViewItem* item, int col)
+{
+  Device* dev = _app->doc()->searchDevice(item->text(KColumnID).toInt());
+  ASSERT(dev);
+
+  dev->setName(item->text(KColumnName));
+  m_textView->setText(dev->infoText());
 }

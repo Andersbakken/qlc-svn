@@ -74,7 +74,6 @@ class Device : public QObject
  private slots:
   void slotConsoleClosed();
   void slotMonitorClosed();
-  void slotReplaceDeviceClass(DeviceClass* dc);
 
  signals:
   void valueChanged(int chnum, int value);
