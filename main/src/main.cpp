@@ -58,7 +58,7 @@ int main(int argc, char **argv)
       qDebug("\nDo not run QLC as root. Instead, make the executable suid root:");
       qDebug("    chown root.root qlc ; chmod +s qlc\n");
       qDebug("Exit.");
-//      return -1;
+      return -1;
     }
 
   if (parseArgs(argc, argv) == 1)
