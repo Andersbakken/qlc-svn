@@ -1,0 +1,84 @@
+#
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Martin
+Model = Roboscan 518 Mode 2
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Strobe, Stand-alone, Reset, Lamp
+# Capability Entries
+11-138 = Strobe speed
+139-170 = Remote, stand-alone, auto trigger
+171-202 = Remote, stand-alone, music trigger
+203-235 = Reset
+236-252 = Lamp on
+253-255 = Lamp off
+0-5 = Default
+6-10 = Fan low
+Entry = Channel
+Number = 1
+Name = Dimmer
+# Capability Entries
+0-14 = Full dimming
+15-239 = Dimmer 100 -> 0
+240-255 = No dimming
+Entry = Channel
+Number = 2
+Name = Color
+# Capability Entries
+0-255 = Channel Level
+Entry = Channel
+Number = 3
+Name = Gobo
+# Capability Entries
+0-0 = Open
+1-24 = Gobo 1, CCW, fast -> slow
+25-27 = Gobo 1, static
+28-51 = Gobo 1, CW, slow -> fast
+52-75 = Gobo 2, CCW, fast -> slow
+76-78 = Gobo 2, static
+79-102 = Gobo 2, CW, slow -> fast
+103-126 = Gobo 3, CCW, fast -> slow
+127-129 = Gobo 3, static
+130-153 = Gobo 3, CW, slow -> fast
+154-177 = Gobo 4, CCW, fast -> slow
+178-180 = Gobo 4, static
+181-204 = Gobo 4, CW, slow -> fast
+205-228 = Gobo 5, CCW, fast -> slow
+229-231 = Gobo 5, static
+232-255 = Gobo 5, CW, slow -> fast
+Entry = Channel
+Number = 4
+Name = Effect
+# Capability Entries
+0-63 = Open
+64-127 = 5500 -> 3400K CTC filter
+128-191 = Frost filter
+192-255 = Prism
+Entry = Channel
+Number = 5
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 6
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 7
+Name = Pan/tilt speed
+# Capability Entries
+0-0 = Tracking mode
+1-251 = Vector speed
+252-255 = Blackout while moving
+Entry = Channel
+Number = 8
+Name = Color/dimmer speed
+# Capability Entries
+0-0 = Tracking
+1-251 = Fast -> slow
+252-255 = Blackout while moving, fast dimmer
