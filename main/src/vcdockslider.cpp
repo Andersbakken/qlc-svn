@@ -35,6 +35,7 @@
 #include <qcolor.h>
 #include <qcolordialog.h>
 #include <qmessagebox.h>
+#include <qpushbutton.h>
 
 #include "vcdockslider.h"
 #include "vcframe.h"
@@ -69,6 +70,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
     m_bgColor    ( false ),
     m_fgColor    ( false )
 {
+    m_time.start();
 }
 
 
@@ -179,13 +181,13 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	  if (*(list.next()) == Settings::trueValue())
 	    {
 	      setFrameStyle(KFrameStyle);
-	      m_nameLabel->setFrameStyle(KFrameStyle);
+	      //m_nameLabel->setFrameStyle(KFrameStyle);
 	      m_valueLabel->setFrameStyle(KFrameStyle);
 	    }
 	  else
 	    {
 	      setFrameStyle(NoFrame);
-	      m_nameLabel->setFrameStyle(NoFrame);
+	      //m_nameLabel->setFrameStyle(NoFrame);
 	      m_valueLabel->setFrameStyle(NoFrame);
 	    }
 	}
@@ -379,7 +381,7 @@ bool VCDockSlider::setBusID(t_bus_id id)
 	{
 	  name.sprintf("%.2d", id + 1);
 	}
-      m_nameLabel->setText(name);
+      m_tapInButton->setText(name);
 
       m_slider->setValue(value);
 
@@ -400,11 +402,11 @@ bool VCDockSlider::setBusID(t_bus_id id)
 }
 
 
-// 
+//
 // Bus has been selected from menu
-// 
+//
 void VCDockSlider::slotBusMenuActivated(int id)
-{ 
+{
   setBusID(id);
 }
 
@@ -416,7 +418,7 @@ void VCDockSlider::slotBusNameChanged(t_bus_id id, const QString &name)
 {
   if (id == m_busID)
     {
-      m_nameLabel->setText(name);
+      m_tapInButton->setText(name);
     }
 }
 
@@ -433,6 +435,36 @@ void VCDockSlider::slotBusValueChanged(t_bus_id id, t_bus_value value)
       m_updateOnly = false;
     }
 }
+
+
+void VCDockSlider::slotTapInButtonClicked()
+{
+//slotSliderValueChanged(10. * KFrequency );
+  int t;
+  t = m_time.elapsed()-100;
+  if( t > 2000)
+     t = 100;
+  m_slider->setValue (5);//t * 0.001 * KFrequency );
+  m_time.restart();
+
+
+ /* AssignHotKey* a = NULL;
+  a = new AssignHotKey(this);
+
+  if (a->exec() == QDialog::Accepted)
+    {
+      assert(m_keyBind);
+      assert(a->keyBind());
+
+      m_keyBind->setKey(a->keyBind()->key());
+      m_keyBind->setMod(a->keyBind()->mod());
+    //  m_keyEdit->setText(m_keyBind->keyString());
+    }
+
+  delete a;*/
+
+}
+
 
 
 //
@@ -617,13 +649,13 @@ void VCDockSlider::parseWidgetMenu(int item)
 	if (frameStyle() & KFrameStyle)
 	  {
 	    setFrameStyle(NoFrame);
-	    m_nameLabel->setFrameStyle(NoFrame);
+	    //m_nameLabel->setFrameStyle(NoFrame); ToDo: remove
 	    m_valueLabel->setFrameStyle(NoFrame);
 	  }
 	else
 	  {
 	    setFrameStyle(KFrameStyle);
-	    m_nameLabel->setFrameStyle(KFrameStyle);
+	    //m_nameLabel->setFrameStyle(KFrameStyle);ToDo: remove
 	    m_valueLabel->setFrameStyle(KFrameStyle);
 	  }
 	
@@ -772,7 +804,7 @@ void VCDockSlider::moveTo(QPoint p)
     {
       p.setX(parentWidget()->width() - rect().width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {

@@ -9,7 +9,7 @@
             <x>34</x>
             <y>0</y>
             <width>55</width>
-            <height>274</height>
+            <height>376</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -146,21 +146,18 @@
                 </spacer>
             </hbox>
         </widget>
-        <widget class="QLabel">
+        <widget class="QPushButton">
             <property name="name">
-                <cstring>m_nameLabel</cstring>
+                <cstring>m_tapInButton</cstring>
             </property>
-            <property name="frameShape">
-                <enum>StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Raised</enum>
+            <property name="font">
+                <font>
+                    <family>Adobe Helvetica</family>
+                    <pointsize>8</pointsize>
+                </font>
             </property>
             <property name="text">
-                <string>LABEL</string>
-            </property>
-            <property name="alignment">
-                <set>WordBreak|AlignCenter</set>
+                <string>Label</string>
             </property>
         </widget>
     </vbox>
@@ -172,11 +169,18 @@
         <receiver>UI_VCDockSlider</receiver>
         <slot>slotSliderValueChanged(int)</slot>
     </connection>
+    <connection>
+        <sender>m_tapInButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSlider</receiver>
+        <slot>slotTapInButtonClicked()</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotSliderValueChanged(int)</slot>
     <slot>slotPropertiesButtonClicked()</slot>
     <slot>slotFunctionButtonClicked()</slot>
+    <slot>slotTapInButtonClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

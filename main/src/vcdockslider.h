@@ -24,6 +24,7 @@
 
 #include <qptrlist.h>
 #include <qstring.h>
+#include <qdatetime.h>
 
 #include "uic_vcdockslider.h"
 #include "types.h"
@@ -61,7 +62,7 @@ class VCDockSlider : public UI_VCDockSlider
  private slots:
   void slotSliderValueChanged(int);
   void slotBusMenuActivated(int);
-
+  void slotTapInButtonClicked();
   void slotModeChanged();
 
   void slotBusNameChanged(t_bus_id, const QString&);
@@ -94,6 +95,8 @@ class VCDockSlider : public UI_VCDockSlider
   int m_xpos;
   int m_ypos;
   bool m_resizeMode;
+
+  QTime m_time;
 
   bool m_bgPixmap;
   bool m_bgColor;
