@@ -417,12 +417,16 @@ void DeviceManagerView::slotClone()
            CopyFunction(f,d);
          }
    }
-
+   
+   m_listView->setCurrentItem(m_listView->findItem(new_name,0,0));
    d->viewProperties();
 
+   
    //quick & dirty but only way to update the list view.... ToDo
    Device* dd = _app->doc()->newDevice(dc, new_name , 0);
    _app->doc()->deleteDevice(dd->id());
+   
+   
 
 }
 
