@@ -19,9 +19,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-include config.make
+include ../../config.make
 
-CXXFLAGS += -I$(QTDIR)/include -O2
+LIBJOY_SO = libjoy.so
 LDFLAGS += -fPIC -shared
 LIBS = -L$(QTDIR)/lib -L$(X11LIBS) -lXext -lX11 -L$(QTLIB) -ldl -lpthread
 
