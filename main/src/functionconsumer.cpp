@@ -198,9 +198,6 @@ void FunctionConsumer::event(time_t)
         {
           if (f->removeAfterEmpty())
             {
-              //printf("Function %3d is late %3ld ticks\n", f->id(),
-              //       f->eventBuffer()->elapsedTime() - f->timeSpan());
-
               m_functionListMutex.lock(); // Lock before remove
               m_functionList.remove(f);
 	      f->freeRunTimeData();

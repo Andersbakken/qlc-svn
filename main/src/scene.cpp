@@ -65,13 +65,10 @@ bool Scene::copyFrom(Scene* sc)
     {
       m_startMutex.lock();
       m_name = sc->name();
+      m_busID = sc->bus();
 
-      for (t_channel i = 0; i < m_channels; i++)
-	{
-	  m_values[i].value = sc->m_values[i].value;
-	  m_values[i].type = sc->m_values[i].type;
-	}
-      
+      memcpy(m_values, sc->m_values, m_channels * sizeof(SceneValue));
+
       m_startMutex.unlock();
       return true;
     }
@@ -103,11 +100,11 @@ bool Scene::setDevice(Device* device)
       
       // Store old values temporarily
       SceneValue tempValues[m_channels];
-      memcpy(&tempValues, m_values, m_channels * sizeof(ValueType));
+      memcpy(&tempValues, m_values, m_channels * sizeof(SceneValue));
       
       // Delete old values
       delete [] m_values;
-      
+
       // Allocate space for new values
       m_values = new SceneValue[newChannels];
       
@@ -124,7 +121,7 @@ bool Scene::setDevice(Device* device)
         {
           // New device has more channels than previous one, copy old
           // values and fill the rest with 0 and NoSet.
-          memcpy(m_values, &tempValues, newChannels * sizeof(SceneValue));
+          memcpy(m_values, &tempValues, m_channels * sizeof(SceneValue));
           for (t_channel i = m_channels; i < newChannels; i++)
             {
 	      m_values[i].value = 0;
@@ -161,6 +158,7 @@ bool Scene::setDevice(Device* device)
     }
 
   m_startMutex.unlock();
+  return true;
 }
 
 
@@ -170,7 +168,14 @@ bool Scene::setDevice(Device* device)
 Scene::~Scene()
 {
   stop();
-  while (m_running) sched_yield();
+
+  m_startMutex.lock();
+  while (m_running)
+    {
+      m_startMutex.unlock();
+      sched_yield();
+      m_startMutex.lock();
+    }
 
   if (m_values) delete[] m_values;
 }
@@ -362,8 +367,8 @@ void Scene::stop()
 void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 {
   // How to get the bus value when function starts?
-  m_timeSpan = value;
-  speedChange(true);
+  //m_timeSpan = value;
+  //speedChange(true);
 }
 
 
@@ -376,13 +381,16 @@ void Scene::speedChange(bool alreadyRunning)
     {
       if (m_values[i].type == Fade)
 	{
-	  // This channel is faded
+	  // This channel is not ready
 	  m_eventBuffer->setChannelInfo(i, EventBuffer::Set);
 
 	  // Step increment
 	  m_runTimeData[i].increment = 
 	    (static_cast<float>(m_values[i].value) - 
 	     m_runTimeData[i].start) / (float) m_timeSpan;
+
+	  qDebug("%d: %d -> %d incs %f", i, m_channelData[i],
+		 m_values[i].value, m_runTimeData[i].increment);
 	}
       else if (m_values[i].type == NoSet)
 	{
@@ -399,9 +407,6 @@ void Scene::speedChange(bool alreadyRunning)
 	    (static_cast<float>(m_values[i].value) -
 	     m_runTimeData[i].start);
 	}
-
-      qDebug("%d: %d -> %d incs %f", i, m_channelData[i],
-	     m_values[i].value, m_runTimeData[i].increment);
     }
 }
 
@@ -423,7 +428,8 @@ void Scene::init()
 
   for (t_channel i = 0; i < m_channels; i++)
     {
-      m_runTimeData[i].start = static_cast<float> (m_channelData[i]);
+      m_runTimeData[i].current = m_runTimeData[i].start = 
+	static_cast<float> (m_channelData[i]);
     }
 
   ASSERT(m_eventBuffer == NULL);
@@ -455,7 +461,7 @@ void Scene::run()
 
       for (ch = 0; ch < m_channels; ch++)
 	{
-	  if (m_channelData[ch] == m_values[ch].value)
+	  if (m_runTimeData[ch].current == (float) m_values[ch].value)
 	    {
 	      // If the channel value is what it's supposed to be, 
 	      // don't touch it anymore (concerns mainly "Set" types)
@@ -502,7 +508,7 @@ void Scene::freeRunTimeData()
   m_eventBuffer = NULL;
 
   m_stopMutex.lock();
-  m_stopped = true;
+  m_stopped = false;
   m_stopMutex.unlock();
 
   m_startMutex.lock();
@@ -521,6 +527,8 @@ void Scene::freeRunTimeData()
     }
 
   m_running = false;
+
+  m_removeAfterEmpty = false;
 
   m_startMutex.unlock();
 }

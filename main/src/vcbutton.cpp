@@ -833,6 +833,7 @@ void VCButton::customEvent(QCustomEvent* e)
 {
   if (e->type() == KFunctionStopEvent)
     {
+      setOn(false);
       slotFlashReady();
       QTimer::singleShot(KFlashReadyTime, this, SLOT(slotFlashReady()));
     }

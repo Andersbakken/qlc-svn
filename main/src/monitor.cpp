@@ -140,7 +140,7 @@ void Monitor::init()
 
 void Monitor::show()
 {
-  m_timer->start(m_updateFrequency - ID_FREQUENCY);
+  m_timer->start(64);
 
   QWidget::show();
 }
