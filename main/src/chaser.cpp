@@ -44,12 +44,15 @@ Chaser::Chaser() :
   Function(Function::Chaser),
   
   m_runOrder     (   Loop ),
-  m_direction    ( Normal ),
+  m_direction    ( Forward ),
   m_childRunning (  false ),
 
-  m_holdTime     (      0 ),
+  m_holdTime     (       0 ),
   m_holdStart    (       0 ),
-  m_timeCode     (       0 )
+  m_timeCode     (       0 ),
+
+  m_runTimeDirection ( Forward ),
+  m_runTimePosition  (      0 )
 {
   setBus(KBusIDDefaultHold);
 }
@@ -369,19 +372,18 @@ void Chaser::init()
 //
 void Chaser::run()
 {
-  Direction dir = m_direction;
-  int i = 0;
-
   // Calculate starting values
   init();
 
-  if (dir == Normal)
+  m_runTimeDirection = m_direction;
+
+  if (m_runTimeDirection == Forward)
     {
-      i = 0;
+      m_runTimePosition = 0;
     }
   else
     {
-      i = m_steps.count() - 1;
+      m_runTimePosition = m_steps.count() - 1;
     }
 
   while ( !m_stopped )
@@ -389,47 +391,47 @@ void Chaser::run()
       //
       // Run thru either normal or reverse
       //
-      if (dir == Normal)
+      if (m_runTimeDirection == Forward)
 	{
-	  while (i < (int) m_steps.count() && !m_stopped)
+	  while (m_runTimePosition < (int) m_steps.count() && !m_stopped)
 	    {
-	      m_childRunning = startMemberAt(i);
+	      m_childRunning = startMemberAt(m_runTimePosition);
 	      
 	      // Wait for child to complete or stop signal
 	      while (m_childRunning && !m_stopped) sched_yield();
 
 	      if (m_stopped)
 		{
-		  stopMemberAt(i);
+		  stopMemberAt(m_runTimePosition);
 		  break;
 		}
 	      else
 		{
 		  // Wait for m_holdTime
 		  hold();
-		  i++;
+		  m_runTimePosition++;
 		}
 	    }
 	}
       else
 	{
-	  while (i >= 0 && !m_stopped)
+	  while (m_runTimePosition >= 0 && !m_stopped)
 	    {
-	      m_childRunning = startMemberAt(i);
+	      m_childRunning = startMemberAt(m_runTimePosition);
 
 	      // Wait for child to complete or stop signal
 	      while (m_childRunning && !m_stopped) sched_yield();
 
 	      if (m_stopped)
 		{
-		  stopMemberAt(i);
+		  stopMemberAt(m_runTimePosition);
 		  break;
 		}
 	      else
 		{
 		  // Wait for m_holdTime
 		  hold();
-		  i--;
+		  m_runTimePosition--;
 		}
 	    }
 	}
@@ -445,21 +447,25 @@ void Chaser::run()
       else if (m_runOrder == Loop)
 	{
 	  // Just continue as before
-	  i = 0;
+	  m_runTimePosition = 0;
 	  continue;
 	}
       else // if (m_runOrder == PingPong)
 	{
 	  // Change run order
-	  if (dir == Normal)
+	  if (m_runTimeDirection == Forward)
 	    {
-	      dir = Reverse;
-	      i = m_steps.count() - 2; // -2: Don't run the last function again
+	      m_runTimeDirection = Backward;
+	      
+	      // -2: Don't run the last function again
+	      m_runTimePosition = m_steps.count() - 2; 
 	    }
 	  else
 	    {
-	      dir = Normal;
-	      i = 1; // 1: Don't run the first function again
+	      m_runTimeDirection = Forward;
+
+	      // 1: Don't run the first function again
+	      m_runTimePosition = 1; 
 	    }
 	}
     }

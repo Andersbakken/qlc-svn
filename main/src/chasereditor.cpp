@@ -122,11 +122,14 @@ void ChaserEditor::init()
   _app->settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
   
-  m_raiseButton->setIconSet(QPixmap(dir + "/up.xpm"));
-  m_lowerButton->setIconSet(QPixmap(dir + "/down.xpm"));
+  m_addStep->setPixmap(QPixmap(dir + "/add.xpm"));
+  m_removeStep->setPixmap(QPixmap(dir + "/remove.xpm"));
 
-  m_reverse->setChecked( (m_chaser->direction() == Chaser::Reverse) );
+  m_raiseButton->setPixmap(QPixmap(dir + "/up.xpm"));
+  m_lowerButton->setPixmap(QPixmap(dir + "/down.xpm"));
+
   m_runOrderGroup->setButton((int) m_chaser->runOrder());
+  m_directionGroup->setButton((int) m_chaser->direction());
 
   m_stepList->setSorting(-1);
 
@@ -135,9 +138,14 @@ void ChaserEditor::init()
 
 void ChaserEditor::slotOKClicked()
 {
+  //
+  // Name
+  //
   m_chaser->setName(m_nameEdit->text());
-  m_chaser->setDirection((m_reverse->isChecked()) ? 
-			 Chaser::Reverse : Chaser::Normal);
+
+  //
+  // Run Order
+  //
   if (m_runOrderGroup->selected() == m_singleShot)
     {
        m_chaser->setRunOrder(Chaser::SingleShot);
@@ -149,6 +157,18 @@ void ChaserEditor::slotOKClicked()
   else
     {
       m_chaser->setRunOrder(Chaser::Loop);
+    }
+
+  //
+  // Direction
+  //
+  if (m_directionGroup->selected() == m_backward)
+    {
+      m_chaser->setDirection(Chaser::Backward);
+    }
+  else
+    {
+      m_chaser->setDirection(Chaser::Forward);
     }
 
   m_original->copyFrom(m_chaser, false);

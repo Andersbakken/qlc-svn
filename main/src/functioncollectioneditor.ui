@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>494</width>
-            <height>378</height>
+            <width>497</width>
+            <height>392</height>
         </rect>
     </property>
     <property name="caption">
@@ -39,38 +39,11 @@
                     <property name="name">
                         <cstring>m_nameEdit</cstring>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Collection name</string>
+                    </property>
                 </widget>
             </hbox>
-        </widget>
-        <widget class="QListView">
-            <column>
-                <property name="text">
-                    <string>Device</string>
-                </property>
-                <property name="clickable">
-                    <bool>true</bool>
-                </property>
-                <property name="resizable">
-                    <bool>true</bool>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Function</string>
-                </property>
-                <property name="clickable">
-                    <bool>true</bool>
-                </property>
-                <property name="resizable">
-                    <bool>true</bool>
-                </property>
-            </column>
-            <property name="name">
-                <cstring>m_functionList</cstring>
-            </property>
-            <property name="resizeMode">
-                <enum>AllColumns</enum>
-            </property>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -80,28 +53,130 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QPushButton">
+                <widget class="QListView">
+                    <column>
+                        <property name="text">
+                            <string>Device</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
+                    <column>
+                        <property name="text">
+                            <string>Function</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
                     <property name="name">
-                        <cstring>m_addFunction</cstring>
+                        <cstring>m_functionList</cstring>
                     </property>
-                    <property name="text">
-                        <string>&amp;Add Function...</string>
+                    <property name="resizeMode">
+                        <enum>AllColumns</enum>
                     </property>
-                    <property name="accel">
-                        <string>Alt+A</string>
+                    <property name="toolTip" stdset="0">
+                        <string>Functions assigned to this collection</string>
                     </property>
                 </widget>
-                <widget class="QPushButton">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>m_removeFunction</cstring>
+                        <cstring>layout12</cstring>
                     </property>
-                    <property name="text">
-                        <string>Re&amp;move Function</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+M</string>
-                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_addFunction</cstring>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>+</string>
+                            </property>
+                            <property name="accel">
+                                <string>Ins</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Add new function</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_removeFunction</cstring>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>X</string>
+                            </property>
+                            <property name="accel">
+                                <string>Del</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Remove selected function</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer4</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>40</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </vbox>
                 </widget>
+            </hbox>
+        </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout14</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
                 <spacer>
                     <property name="name">
                         <cstring>spacer1</cstring>
@@ -114,7 +189,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>20</width>
+                            <width>260</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -138,6 +213,9 @@
                     <property name="default">
                         <bool>true</bool>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -148,6 +226,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close</string>
                     </property>
                 </widget>
             </hbox>

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>514</width>
-            <height>354</height>
+            <width>524</width>
+            <height>391</height>
         </rect>
     </property>
     <property name="caption">
@@ -40,14 +40,14 @@
                         <cstring>m_nameEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The name of this chaser</string>
+                        <string>Chaser name</string>
                     </property>
                 </widget>
             </hbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout15</cstring>
+                <cstring>layout9</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -96,59 +96,119 @@
                     <property name="resizeMode">
                         <enum>AllColumns</enum>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Functions assigned to this chaser</string>
+                    </property>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout14</cstring>
+                        <cstring>layout8</cstring>
                     </property>
                     <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QToolButton">
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_addStep</cstring>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>+</string>
+                            </property>
+                            <property name="accel">
+                                <string>Ins</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Add new step</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_removeStep</cstring>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>X</string>
+                            </property>
+                            <property name="accel">
+                                <string>Del</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Remove selected step</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
                             <property name="name">
                                 <cstring>m_raiseButton</cstring>
                             </property>
-                            <property name="minimumSize">
+                            <property name="maximumSize">
                                 <size>
-                                    <width>20</width>
-                                    <height>20</height>
+                                    <width>30</width>
+                                    <height>30</height>
                                 </size>
                             </property>
                             <property name="text">
+                                <string>/\</string>
+                            </property>
+                            <property name="accel">
                                 <string></string>
                             </property>
-                            <property name="usesTextLabel">
-                                <bool>false</bool>
-                            </property>
                             <property name="toolTip" stdset="0">
-                                <string>Raise the selected step once</string>
+                                <string>Raise selected step</string>
                             </property>
                         </widget>
-                        <widget class="QToolButton">
+                        <widget class="QPushButton">
                             <property name="name">
                                 <cstring>m_lowerButton</cstring>
                             </property>
-                            <property name="minimumSize">
+                            <property name="maximumSize">
                                 <size>
-                                    <width>20</width>
-                                    <height>20</height>
+                                    <width>30</width>
+                                    <height>30</height>
                                 </size>
                             </property>
                             <property name="text">
-                                <string></string>
+                                <string>\/</string>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>Lower the selected step once</string>
+                                <string>Lower selected step</string>
                             </property>
                         </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>40</height>
+                                </size>
+                            </property>
+                        </spacer>
                     </vbox>
                 </widget>
             </hbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout5</cstring>
+                <cstring>layout13</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -219,86 +279,87 @@
                     <property name="name">
                         <cstring>m_directionGroup</cstring>
                     </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>4</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
                     <property name="title">
                         <string>Direction</string>
+                    </property>
+                    <property name="selectedId" stdset="0">
+                        <number>-1</number>
                     </property>
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QCheckBox">
+                        <widget class="QRadioButton">
                             <property name="name">
-                                <cstring>m_reverse</cstring>
+                                <cstring>m_forward</cstring>
                             </property>
                             <property name="text">
-                                <string>Reverse</string>
+                                <string>Forward</string>
+                            </property>
+                            <property name="buttonGroupId">
+                                <number>0</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Run from first to last</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_backward</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Backward</string>
+                            </property>
+                            <property name="buttonGroupId">
+                                <number>1</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Run from last to first</string>
                             </property>
                         </widget>
                     </hbox>
                 </widget>
             </hbox>
         </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>line2</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout3</cstring>
+                <cstring>layout6</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QPushButton">
+                <spacer>
                     <property name="name">
-                        <cstring>m_addStep</cstring>
+                        <cstring>spacer3</cstring>
                     </property>
-                    <property name="text">
-                        <string>&amp;Add Step...</string>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
                     </property>
-                    <property name="accel">
-                        <string>Alt+A</string>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
                     </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Append a step</string>
+                    <property name="sizeHint">
+                        <size>
+                            <width>310</width>
+                            <height>20</height>
+                        </size>
                     </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>m_removeStep</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Re&amp;move Step...</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+M</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Remove the selected step</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>m_test</cstring>
-                    </property>
-                    <property name="enabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="text">
-                        <string>Test...</string>
-                    </property>
-                    <property name="toggleButton">
-                        <bool>true</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string></string>
-                    </property>
-                </widget>
+                </spacer>
                 <widget class="QPushButton">
                     <property name="name">
                         <cstring>m_ok</cstring>
@@ -313,7 +374,7 @@
                         <bool>true</bool>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Accept and save changes</string>
+                        <string>Accept changes and close</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -371,26 +432,17 @@
         <receiver>UI_ChaserEditor</receiver>
         <slot>slotLowerClicked()</slot>
     </connection>
-    <connection>
-        <sender>m_test</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_ChaserEditor</receiver>
-        <slot>slotPlayClicked()</slot>
-    </connection>
 </connections>
 <tabstops>
     <tabstop>m_nameEdit</tabstop>
     <tabstop>m_stepList</tabstop>
     <tabstop>m_looping</tabstop>
-    <tabstop>m_reverse</tabstop>
     <tabstop>m_addStep</tabstop>
     <tabstop>m_removeStep</tabstop>
-    <tabstop>m_test</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
 <slots>
-    <slot>slotPlayClicked()</slot>
     <slot>slotAddClicked()</slot>
     <slot>slotCancelClicked()</slot>
     <slot>slotLowerClicked()</slot>

@@ -41,8 +41,8 @@ class Chaser : public Function
 
   enum Direction
     {
-      Normal = 0,
-      Reverse = 1
+      Forward = 0,
+      Backward = 1
     };
 
  public:
@@ -97,6 +97,9 @@ class Chaser : public Function
   t_bus_value m_holdTime;
   t_bus_value m_holdStart;
   t_bus_value m_timeCode;
+
+  Direction m_runTimeDirection;
+  int m_runTimePosition;
 };
 
 #endif
