@@ -1,0 +1,128 @@
+#
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = SGM
+Model = Victory II Pro150
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Not used
+# Capability Entries
+0-0 = Not used
+Entry = Channel
+Number = 1
+Name = Colour
+# Capability Entries
+0-9 = White
+10-19 = White + Yellow
+20-29 = Yellow
+30-39 = Yellow + Magenta
+40-49 = Magenta
+50-59 = Magenta + Cyan
+60-69 = Cyan
+70-79 = Cyan + Orange
+80-89 = Orange
+90-99 = Orange + Green
+100-109 = Green
+110-119 = Green + Blue
+120-129 = Blue
+130-139 = Blue + Red
+140-149 = Red
+150-159 = Red + White
+160-244 = Rainbow speed
+245-255 = Music hard change
+Entry = Channel
+Number = 2
+Name = Gobo
+# Capability Entries
+0-19 = Open
+20-39 = Gobo 1
+40-59 = Gobo 2
+60-79 = Gobo 3
+80-99 = Gobo 4
+100-119 = Gobo 5
+120-139 = Gobo 6
+140-159 = Gobo 7
+160-177 = Rotagobo - speed 1
+178-194 = Rotagobo - speed 2
+195-212 = Rotagobo - speed 3
+213-229 = Rotagobo - speed 4
+230-255 = Music hard change
+Entry = Channel
+Number = 3
+Name = Shutter
+# Capability Entries
+0-9 = Closed
+10-19 = Strobe 1.00 Hz
+20-29 = Strobe 1.39 Hz
+30-39 = Strobe 1.65 Hz
+40-49 = Strobe 1.94 Hz
+50-59 = Strobe 2.34 Hz
+60-69 = Strobe 2.78 Hz
+70-79 = Strobe 3.29 Hz
+80-89 = Strobe 3.91 Hz
+90-99 = Strobe 4.56 Hz
+100-109 = Strobe 5.45 Hz
+110-119 = Strobe 5.98 Hz
+120-129 = Strobe 6.98 Hz
+130-139 = Strobe 7.85 Hz
+140-149 = Strobe 9.00 Hz
+150-159 = Shutter sync: audio low freq
+160-172 = Flash sync: audio low freq
+173-185 = Flash sync: audio high freq
+186-198 = Open, auto shade gobos
+199-211 = Open, auto shade colours
+212-224 = Open, auto shade gobos and colours
+225-237 = Open, slow gobo change
+238-255 = Open
+Entry = Channel
+Number = 4
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 5
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 6
+Name = Gobo rotation
+# Capability Entries
+0-112 = Rotate CW
+113-142 = No rotation
+143-255 = Rotate CCW
+Entry = Channel
+Number = 7
+Name = Palette
+# Capability Entries
+0-63 = Off
+64-127 = Colour conversion filter
+128-191 = Frost filter
+192-255 = Colour conversion and frost filter
+Entry = Channel
+Number = 8
+Name = Prism
+# Capability Entries
+0-49 = Off
+50-79 = No rotation
+80-255 = Rotation, slow -> fast
+Entry = Channel
+Number = 9
+Name = Reset
+# Capability Entries
+0-49 = Off
+50-234 = Lamp hysteresis
+235-255 = Reset
+Entry = Channel
+Number = 10
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 11
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine
