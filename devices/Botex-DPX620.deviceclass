@@ -33,3 +33,6 @@ Name = Channel 5
 Entry = Channel
 Number = 5
 Name = Channel 6
+# Capability Entries
+0-255 = Channel level
+

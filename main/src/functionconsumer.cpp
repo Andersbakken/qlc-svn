@@ -212,11 +212,11 @@ void FunctionConsumer::event(time_t)
         {
 	  for (ch = 0; ch < (t_channel) f->eventBuffer()->eventSize(); ch++)
 	    {
-	      if (ev[ch] & KNoSetMask)
+	      //if (ev[ch] & KNoSetMask)
 		{
 		  // Don't write NoSet values
 		}
-	      else
+		//else
 		{
 		  _app->outputPlugin()
 		    ->writeChannel(f->device()->address() + ch, ev[ch]);

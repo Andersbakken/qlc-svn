@@ -997,6 +997,7 @@ void App::initPlugins()
   slotPluginActivated(m_outputPlugin);
 }
 
+
 //
 // Try if the given file is a plugin
 //
@@ -1043,6 +1044,7 @@ bool App::probePlugin(QString path)
   return true;
 }
 
+
 //
 // Add a plugin to list
 //
@@ -1052,6 +1054,7 @@ void App::addPlugin(Plugin* plugin)
   m_pluginList.append(plugin);
 }
 
+
 //
 // Remove a plugin from list
 //
@@ -1060,6 +1063,7 @@ void App::removePlugin(Plugin* plugin)
   ASSERT(plugin != NULL);
   m_pluginList.remove(plugin);
 }
+
 
 //
 // Search for a plugin by its name
@@ -1081,6 +1085,7 @@ Plugin* App::searchPlugin(QString name)
   return NULL;
 }
 
+
 //
 // Search for a plugin by its name & type
 //
@@ -1100,6 +1105,7 @@ Plugin* App::searchPlugin(QString name, Plugin::PluginType type)
 
   return NULL;
 }
+
 
 //
 // Search plugin by its id

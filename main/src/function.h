@@ -172,17 +172,4 @@ class FunctionStopEvent : public QCustomEvent
   Function* m_function;
 };
 
-class FunctionSpeedEvent : public QCustomEvent
-{
- public:
-  FunctionSpeedEvent(t_bus_value value) 
-    : QCustomEvent( KFunctionSpeedEvent ),
-    m_value(value) {}
-
-  t_bus_value value() const { return m_value; }
-
- private:
-  t_bus_value m_value;
-};
-
 #endif

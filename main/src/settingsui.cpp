@@ -123,15 +123,27 @@ void SettingsUI::fillOutputPluginCombo()
 }
 
 
+void SettingsUI::slotConfigurePluginClicked()
+{
+  OutputPlugin* p = static_cast<OutputPlugin*> 
+    (_app->searchPlugin(m_outputPluginCombo->currentText(), 
+			Plugin::OutputType));
+  ASSERT(p);
+
+  p->configure();
+}
+
 void SettingsUI::fillAdvancedSettingsList()
 {
+  QListViewItem* item = NULL;
   QPtrList <ConfigItem>* items = _app->settings()->items();
 
   m_advancedList->clear();
 
   for (ConfigItem* i = items->first(); i != NULL; i = items->next())
     {
-      new QListViewItem(m_advancedList, *(i->key()), *(i->text()));
+      item = new QListViewItem(m_advancedList, *(i->key()), *(i->text()));
+      item->setRenameEnabled(1, true);
     }
 }
 

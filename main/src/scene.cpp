@@ -442,7 +442,6 @@ void Scene::init()
 void Scene::run()
 {
   t_channel ch = 0;
-  t_channel ready = 0;
 
   // Initialize this scene for running
   init();
@@ -455,13 +454,14 @@ void Scene::run()
 
       for (ch = 0; ch < m_channels; ch++)
 	{
-	  if (m_channelData[ch] & FunctionConsumer::KNoSetMask)
+	  //if (m_channelData[ch] & FunctionConsumer::KNoSetMask)
 	    {
-	      continue;
+	      //continue;
 	    }
-	  else if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
+	    //else 
+	    if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
-	      m_channelData[ch] |= FunctionConsumer::KNoSetMask;
+	      //m_channelData[ch] |= FunctionConsumer::KNoSetMask;
 	      continue;
 	    }
 	  else if (m_values[ch].type == Set)
@@ -472,8 +472,8 @@ void Scene::run()
 	  else if (m_values[ch].type == Fade)
 	    {
 	      m_dataMutex.lock();
-
-		m_runTimeData[ch].current = m_runTimeData[ch].start 
+	      
+	      m_runTimeData[ch].current = m_runTimeData[ch].start 
 		+ (m_runTimeData[ch].target - m_runTimeData[ch].start) 
 		* ((float)m_elapsedTime / m_timeSpan);
 
