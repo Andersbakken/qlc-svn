@@ -82,7 +82,6 @@ void SettingsUI::fillOutputPluginCombo()
   QList <Plugin> *pl = _app->doc()->pluginList();
 
   m_outputPluginCombo->clear();
-  m_outputPluginCombo->insertItem(QString("<None>"));
 
   for (unsigned int i = 0; i < pl->count(); i++)
     {
