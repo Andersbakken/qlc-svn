@@ -231,7 +231,8 @@ void App::init(QString openFile)
        success = doc()->loadWorkspaceAs(openFile);
        if (!success)
          {
-            QString msg = "File: " + openFile + "\ncould'nt be opened. Please check path and spelling!\nWe revert to the previously used workspace.";
+            QString msg = "File: " + openFile + "\ncould'nt be opened. Please check path and spelling!\n";
+	            msg += "We revert to the previously used workspace.";
 	    QMessageBox::warning(this, KApplicationNameShort, msg,
 			       QMessageBox::Ok, 0);
          }
@@ -249,6 +250,9 @@ void App::init(QString openFile)
 	    if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
 	      {
 	         success =  doc()->loadWorkspaceAs(config);
+                 QString msg = "Previously used workspace file: " + openFile + "\ncould'nt be opened.";
+	                 msg += "We start over with a new workspace.";
+	         QMessageBox::warning(this, KApplicationNameShort, msg, QMessageBox::Ok, 0);
 	      }
 	  }
        }
