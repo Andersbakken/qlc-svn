@@ -1,0 +1,140 @@
+#
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = SGM
+Model = Giotto Wash 400
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 2
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 3
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine
+Entry = Channel
+Number = 4
+Name = Color
+# Capability Entries
+0-20 = White
+21-40 = Red
+41-60 = Blue
+61-80 = Orange
+81-100 = Green
+101-120 = Yellow
+121-140 = Pink
+141-160 = Wood filter
+161-255 = Rainbow speed
+Entry = Channel
+Number = 5
+Name = Cyan
+# Capability Entries
+0-255 = Cyan mix
+Entry = Channel
+Number = 6
+Name = Magenta
+# Capability Entries
+0-255 = Magenta mix
+Entry = Channel
+Number = 7
+Name = Yellow
+# Capability Entries
+0-255 = Yellow mix
+Entry = Channel
+Number = 8
+Name = Dimmer
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 9
+Name = Shutter
+# Capability Entries
+0-17 = Closed
+18-36 = Strobe 1.80 Hz
+37-54 = Strobe 2.00 Hz
+55-73 = Strobe 2.42 Hz
+74-91 = Strobe 2.90 Hz
+92-110 = Strobe 3.46 Hz
+111-128 = Strobe 4.15 Hz
+129-147 = Strobe 4.89 Hz
+148-165 = Strobe 5.93 Hz
+166-183 = Strobe 6.91 Hz
+184-202 = Strobe 8.29 Hz
+203-220 = Strobe 9.95 Hz
+221-238 = Strobe 11.83 Hz
+239-255 = Open
+Entry = Channel
+Number = 10
+Name = Zoom
+# Capability Entries
+0-255 = Zoom 9 - 24 degrees
+Entry = Channel
+Number = 11
+Name = Movement speed
+# Capability Entries
+0-3 = Tracking mode
+4-255 = Speed, slow -> fast
+Entry = Channel
+Number = 12
+Name = Reset
+# Capability Entries
+0-60 = Off
+61-129 = Hysteresis
+130-179 = On
+180-239 = Hysteresis
+240-255 = Reset
+Entry = Channel
+Number = 13
+Name = CTO
+# Capability Entries
+0-255 = White to 3200K
+Entry = Channel
+Number = 14
+Name = Colour Map
+# Capability Entries
+0-255 = Colour map
+Entry = Channel
+Number = 15
+Name = Macro
+# Capability Entries
+0-7 = No macro
+8-15 = Macro 1, dimmer, shutter
+16-23 = Macro 2, dimmer, shutter
+24-31 = Macro 3, dimmer, shutter
+32-39 = Macro 4, dimmer, shutter
+40-47 = Macro 5, dimmer, shutter
+48-55 = Macro 6, iris
+56-63 = Macro 7, iris
+64-71 = Macro 8, iris
+72-79 = Macro 9, iris
+80-87 = Macro 10, iris
+88-95 = Macro 11, iris
+96-103 = Macro 11, iris
+104-111 = Macro 12, shutter
+112-119 = Macro 13, frost
+120-127 = Macro 14, frost
+128-135 = Macro 15, frost
+Entry = Channel
+Number = 16
+Name = Beam shaper
+# Capability Entries
+0-255 = Beam shaper
+Entry = Channel
+Number = 17
+Name = Beam shaper indexing
+# Capability Entries
+0-255 = 0 - 180 degrees

@@ -33,7 +33,7 @@ Name = Iris
 0-255 = Iris
 Entry = Channel
 Number = 5
-Name = Color
+Name = Colour
 # Capability Entries
 0-24 = White
 25-49 = Red
@@ -195,3 +195,4 @@ Name = Macro
 112-119 = Macro 13, frost
 120-127 = Macro 14, frost
 128-135 = Macro 15, frost
+136-255 = Reserved
