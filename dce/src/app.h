@@ -102,6 +102,8 @@ class App : public QMainWindow
 
   Settings* m_settings;
 
+  QString m_lastPath;
+
  protected:
   void closeEvent(QCloseEvent*);
   bool event(QEvent* e);

@@ -43,6 +43,7 @@ class DeviceClassEditor : public UI_DeviceClassEditor
   bool saveAs();
 
   void setFileName(QString path) { m_fileName = path; }
+  QString fileName() const { return m_fileName; }
   bool modified() const { return m_modified; }
 
  private slots:

@@ -117,6 +117,10 @@ void App::initView(void)
   initMenuBar();
   initStatusBar();
   initToolBar();
+  
+  QString path;
+  settings()->get(KEY_SYSTEM_DIR, m_lastPath);
+  m_lastPath += QString("/") + DEVICECLASSPATH;
 }
 
 void App::initStatusBar()
@@ -132,11 +136,14 @@ void App::initToolBar()
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
 
-  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), "New...", 0, this, SLOT(slotFileNew()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), "New...",
+		  0, this, SLOT(slotFileNew()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), "Load...", 0, this, SLOT(slotFileOpen()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), "Load...",
+		  0, this, SLOT(slotFileOpen()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), "Save", 0, this, SLOT(slotFileSave()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), "Save",
+		  0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
 
@@ -250,18 +257,15 @@ void App::slotFileNew()
 
 void App::slotFileOpen()
 {
-  QString path;
   QPtrList <QString> list;
-  
-  settings()->get(KEY_SYSTEM_DIR, path);
-  path += QString("/") + DEVICECLASSPATH;
 
-  path = QFileDialog::getOpenFileName(path, "Device Classes (*.deviceclass)",
-				      this);
+  m_lastPath = QFileDialog::getOpenFileName(m_lastPath, 
+					    "Device Classes (*.deviceclass)",
+					    this);
 
-  if (path != QString::null)
+  if (m_lastPath != QString::null)
     {
-      FileHandler::readFileToList(path, list);
+      FileHandler::readFileToList(m_lastPath, list);
 
       DeviceClass* dc = DeviceClass::createDeviceClass(list);
       
@@ -273,7 +277,7 @@ void App::slotFileOpen()
       else
 	{
 	  DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
-	  editor->setFileName(path);
+	  editor->setFileName(m_lastPath);
 	  connect(editor, SIGNAL(closed(DeviceClassEditor*)),
 		  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
 	  editor->init();
@@ -288,9 +292,9 @@ void App::slotFileSave()
   DeviceClassEditor* editor = NULL;
   editor = static_cast<DeviceClassEditor*> (m_workspace->activeWindow());
 
-  if (editor)
+  if (editor && editor->save())
     {
-      editor->save();
+      m_lastPath = editor->fileName();
     }
 }
 
@@ -300,9 +304,9 @@ void App::slotFileSaveAs()
   DeviceClassEditor* editor = NULL;
   editor = static_cast<DeviceClassEditor*> (m_workspace->activeWindow());
 
-  if (editor)
+  if (editor && editor->saveAs())
     {
-      editor->saveAs();
+      m_lastPath = editor->fileName();
     }
 }
 

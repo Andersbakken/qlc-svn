@@ -177,7 +177,7 @@ bool DeviceClassEditor::saveAs()
 	  path += QString(".deviceclass");
 	}
       
-      if (m_dc->saveToFile(path))
+      if (m_dc->saveToFile(path) == IO_Ok)
 	{
 	  m_fileName = QString(path);
 	  setModified(false);
@@ -185,9 +185,9 @@ bool DeviceClassEditor::saveAs()
 	}
       else
 	{
-	  perror("save");
-	  QMessageBox::warning(this, KApplicationNameShort,
-			       "Unable to save file!");
+	  QMessageBox::critical(this, KApplicationNameShort,
+				QString("Unable to save file!\nReason: ") +
+				strerror(errno));
 	  return false;
 	}
     }
