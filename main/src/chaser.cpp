@@ -49,7 +49,10 @@ Chaser::Chaser(Chaser* ch)
 
   for (ChaserStep* step = ch->m_steps.first(); step != NULL; step = ch->m_steps.next())
     {
-      m_steps.append(new ChaserStep(step));
+      ChaserStep* newStep = new ChaserStep(step);
+      m_steps.append(newStep);
+
+      connect(newStep->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
     }
 }
 
@@ -213,6 +216,8 @@ void Chaser::addStep(DMXDevice* device, Function* function)
       step->setFunction(function);
       
       m_steps.append(step);
+
+      connect(step->function(), SIGNAL(destroyed(Function*)), this, SLOT(slotMemberFunctionDestroyed(Function*)));
     }
   else
     {
@@ -231,6 +236,17 @@ void Chaser::removeStep(int index)
   else
     {
       qDebug("Chaser is running. Cannot modify steps!");
+    }
+}
+
+void Chaser::slotMemberFunctionDestroyed(Function* f)
+{
+  for (unsigned i = 0; i < m_steps.count(); i++)
+    {
+      if (m_steps.at(i)->function() == f)
+	{
+	  delete m_steps.take(i);
+	}
     }
 }
 

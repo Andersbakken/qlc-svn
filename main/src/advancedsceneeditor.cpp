@@ -559,9 +559,7 @@ void AdvancedSceneEditor::slotContentsDoubleClicked(QListViewItem* item)
 
 void AdvancedSceneEditor::slotApplyClicked()
 {
-  ASSERT(m_device != NULL);
-
-  if (m_scene == NULL)
+  if (m_scene == NULL || m_device == NULL)
     {
       return;
     }

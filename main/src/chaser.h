@@ -91,6 +91,7 @@ class Chaser : public Function
 
  public slots:
   void slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID);
+  void slotMemberFunctionDestroyed(Function* f);
 
  protected:
   bool m_running; // One chaser object can be running only once at a time

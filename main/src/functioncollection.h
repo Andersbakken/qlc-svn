@@ -96,7 +96,7 @@ class FunctionCollection : public Function
 
  private slots:
   void slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID);
-
+  void slotMemberFunctionDestroyed(Function* f);
 };
 
 #endif

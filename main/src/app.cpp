@@ -98,6 +98,7 @@ App::App()
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
   m_advancedSceneEditor = NULL;
+  m_dmView = NULL;
 }
 
 App::~App()

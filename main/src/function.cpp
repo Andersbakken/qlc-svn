@@ -41,6 +41,7 @@ Function::Function() : QObject()
 Function::~Function()
 {
   emit destroyed();
+  emit destroyed(this);
 }
 
 QString Function::name() const

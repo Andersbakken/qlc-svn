@@ -33,6 +33,9 @@
 #include "chaser.h"
 #include "virtualconsole.h"
 #include "dummyoutplugin.h"
+#include "devicemanagerview.h"
+#include "devicemanager.h"
+#include "devicelistview.h"
 
 #include "../../libs/common/plugin.h"
 #include <dlfcn.h>
@@ -1194,6 +1197,13 @@ void Doc::slotChangeOutputPlugin(const QString& name)
 	}
 
       m_outputPlugin->open();
+    }
+
+  // This if() has to be here so that this won't get called until all
+  // objects in the call chain have been created.
+  if (_app && _app->deviceManagerView() && _app->deviceManagerView()->deviceManager())
+    {
+      _app->deviceManagerView()->deviceManager()->slotUpdateDeviceList();
     }
 }
 
