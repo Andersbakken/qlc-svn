@@ -44,7 +44,7 @@
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
 #include "globalfunctionsview.h"
-#include "advancedsceneeditor.h"
+#include "functiontree.h"
 
 #include "../../libs/common/outputplugin.h"
 
@@ -74,7 +74,7 @@
 ///////////////////////////////////////////////////////////////////
 // Functions menu entries
 #define ID_FUNCTIONS_GLOBAL_FUNCTIONS       13010
-#define ID_FUNCTIONS_ADVANCED_SCENE_EDITOR  13020
+
 #define ID_FUNCTIONS_PANIC                  13030
 
 ///////////////////////////////////////////////////////////////////
@@ -97,7 +97,6 @@ App::App()
   m_globalFunctionsView = NULL;
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
-  m_advancedSceneEditor = NULL;
   m_dmView = NULL;
 }
 
@@ -238,15 +237,13 @@ void App::initMenuBar()
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
   m_viewMenu->insertSeparator();
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
-  m_viewMenu->insertSeparator();
-  m_viewMenu->insertItem("DMX Address Converter", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
+  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
 
   ///////////////////////////////////////////////////////////////////
   // Functions Menu
   m_functionsMenu = new QPopupMenu();
 
-  m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Global Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
-  m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("function.xpm")), "Advanced Scene Editor", this, SLOT(slotViewAdvancedSceneEditor()), 0, ID_FUNCTIONS_ADVANCED_SCENE_EDITOR);
+  m_functionsMenu->insertItem("DMX Address Converter", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
   m_functionsMenu->insertSeparator();
   m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
 
@@ -265,7 +262,7 @@ void App::initMenuBar()
   // Menubar configuration
   menuBar()->insertItem("&File", m_fileMenu);
   menuBar()->insertItem("&View", m_viewMenu);
-  menuBar()->insertItem("F&unctions", m_functionsMenu);
+  menuBar()->insertItem("&Tools", m_functionsMenu);
   menuBar()->insertItem("&Window", m_windowMenu);
   menuBar()->insertSeparator();  	
   menuBar()->insertItem("&Help", m_helpMenu);
@@ -273,34 +270,11 @@ void App::initMenuBar()
   menuBar()->setSeparator(QMenuBar::InWindowsStyle);
 }
 
-void App::slotViewAdvancedSceneEditor()
-{
-  if (m_advancedSceneEditor == NULL)
-    {
-      m_advancedSceneEditor = new AdvancedSceneEditor(this);
-      connect(m_advancedSceneEditor, SIGNAL(closed()), this, SLOT(slotAdvancedSceneEditorClosed()));
-      m_advancedSceneEditor->init();
-      m_advancedSceneEditor->show();
-    }
-}
-
-void App::slotAdvancedSceneEditorClosed()
-{
-  disconnect(m_advancedSceneEditor);
-  delete m_advancedSceneEditor;
-  m_advancedSceneEditor = NULL;
-}
-
 void App::slotViewGlobalFunctions()
 {
-  if (m_globalFunctionsView == NULL)
-    {
-      m_globalFunctionsView = new GlobalFunctionsView(workspace());
-      connect(m_globalFunctionsView, SIGNAL(closed()), this, SLOT(slotGlobalFunctionsViewClosed()));
-      connect(m_doc, SIGNAL(deviceListChanged()), m_globalFunctionsView, SLOT(slotUpdateFunctionList()));
-      m_globalFunctionsView->show();
-    }
-  m_globalFunctionsView->setFocus();
+  FunctionTree* ft = new FunctionTree(this, "Function Tree", false);
+  ft->exec();
+  delete ft;
 }
 
 void App::slotGlobalFunctionsViewClosed()

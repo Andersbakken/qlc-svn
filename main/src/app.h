@@ -36,7 +36,6 @@ class QToolButton;
 class QFileDialog;
 class QWidgetList;
 
-class AdvancedSceneEditor;
 class DeviceManagerView;
 class VirtualConsole;
 class Settings;
@@ -118,9 +117,6 @@ class App : public QMainWindow
   void slotViewGlobalFunctions();
   void slotGlobalFunctionsViewClosed();
 
-  void slotViewAdvancedSceneEditor();
-  void slotAdvancedSceneEditorClosed();
-
   void slotHelpAbout();
   void slotHelpAboutQt();
 
@@ -154,7 +150,6 @@ class App : public QMainWindow
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
   GlobalFunctionsView* m_globalFunctionsView;
-  AdvancedSceneEditor* m_advancedSceneEditor;
 
   SequenceProvider* m_sequenceProvider;
   SequenceTimer* m_sequenceTimer;

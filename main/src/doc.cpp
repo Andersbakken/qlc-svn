@@ -438,8 +438,8 @@ void Doc::createFunctionContents(QList<QString> &list)
   DMXDevice* d = NULL;
 
   QString name;
-  QString type;
-  QString device;
+  unsigned long device = 0;
+  unsigned long id = 0;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -454,12 +454,16 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}		      
       else if (*s == QString("Type"))
 	{
-	  type = *(list.next());
+	  list.next();
+	}
+      else if (*s == QString("ID"))
+	{
+	  id = list.next()->toInt();
 	}
       else if (*s == QString("Device"))
 	{
-	  device = *(list.next());
-	  if (device == QString("Global"))
+	  device = list.next()->toInt();
+	  if (device == 0)
 	    {
 	      d = NULL;
 	    }
@@ -476,15 +480,15 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
     }
 
-  if (name != QString::null && type != QString::null)
+  if (id > 0)
     {
       if (d != NULL)
 	{
-	  f = d->searchFunction(name);
+	  f = d->searchFunction(id);
 	}
       else
 	{
-	  f = searchFunction(name);
+	  f = searchFunction(id);
 	}
 
       if (f != NULL)
@@ -510,7 +514,8 @@ Function* Doc::createFunction(QList<QString> &list)
 
   QString name;
   QString type;
-  QString device;
+  unsigned long device = 0;
+  unsigned long id = 0;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -527,9 +532,13 @@ Function* Doc::createFunction(QList<QString> &list)
 	{
 	  type = *(list.next());
 	}
+      else if (*s == QString("ID"))
+	{
+	  id = list.next()->toInt();
+	}
       else if (*s == QString("Device"))
 	{
-	  device = *(list.next());
+	  device = list.next()->toInt();
 	  break;
 	}
       else
@@ -539,9 +548,9 @@ Function* Doc::createFunction(QList<QString> &list)
 	}
     }
 
-  if (name != QString::null && type != QString::null)
+  if (id > 0)
     {
-      if (device == QString("Global"))
+      if (device == 0)
 	{
 	  d = NULL;
 	}
@@ -551,7 +560,7 @@ Function* Doc::createFunction(QList<QString> &list)
 	  if (d == NULL)
 	    {
 	      // This function's device was not found
-	      qDebug("Unable to find device %s for function %s. Discarding function.", (const char*) device, (const char*) name);
+	      qDebug("Unable to find device %ld for function %s. Discarding function.", device, (const char*) name);
 	      return NULL;
 	    }
 	}
@@ -831,25 +840,11 @@ bool Doc::removeDevice(DMXDevice* device)
 }
 
 /* Search for a device by its run-time id number */
-DMXDevice* Doc::searchDevice(int id)
+DMXDevice* Doc::searchDevice(const unsigned long id)
 {
   for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
       if (device->id() == id)
-	{
-	  return device;
-	}
-    }
-
-  return NULL;
-}
-
-/* Search for a device by its name (not very safe, because names are not unique) */
-DMXDevice* Doc::searchDevice(const QString &name)
-{
-  for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
-    {
-      if (device->name() == name)
 	{
 	  return device;
 	}
@@ -871,7 +866,7 @@ DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, const QString &
   return NULL;
 }
 
-DeviceClass* Doc::searchDeviceClassByID(int id)
+DeviceClass* Doc::searchDeviceClass(unsigned long id)
 {
   for (DeviceClass* d = m_deviceClassList.first(); d != NULL; d = m_deviceClassList.next())
     {
@@ -890,13 +885,13 @@ void Doc::addFunction(const Function* function)
   m_functions.append(function);
 }
 
-void Doc::removeFunction(const QString &functionString)
+void Doc::removeFunction(const unsigned long id)
 {
   Function* f = NULL;
 
   for (f = m_functions.first(); f != NULL; f = m_functions.next())
     {
-      if (f->name() == functionString)
+      if (f->id() == id)
 	{
 	  delete m_functions.take();
 	  break;
@@ -904,22 +899,80 @@ void Doc::removeFunction(const QString &functionString)
     }
 }
 
-Function* Doc::searchFunction(const QString &fname)
+Function* Doc::searchFunction(const unsigned long id)
 {
-  Function* function = NULL;
-  
   Function* f = NULL;
   for (f = m_functions.first(); f != NULL; f = m_functions.next())
     {
-      if (f->name() == fname)
+      if (f->id() == id)
 	{
-	  function = f;
-	  break;
+	  return f;
 	}
     }
 
-  return function;
+  return NULL;
 }
+
+Function* Doc::searchFunction(const unsigned long id, DMXDevice** device, DeviceClass** deviceClass)
+{
+  Function* f = NULL;
+
+  //
+  // Search thru global functions
+  //
+  for (f = m_functions.first(); f != NULL; f = m_functions.next())
+    {
+      if (f->id() == id)
+	{
+	  *device = f->device();
+	  *deviceClass = f->deviceClass();
+	  return f;
+	}
+    }
+
+  //
+  // Search thru devices
+  //
+  for (DMXDevice* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
+    {
+      QList<Function> *fl = d->functions();
+      for (f = fl->first(); f != NULL; f = fl->next())
+	{
+	  if (f->id() == id)
+	    {
+	      *device = f->device();
+	      *deviceClass = f->deviceClass();
+	      return f;
+	    }
+	}
+    }
+
+  //
+  // Last, try deviceclasses
+  //
+  for (DeviceClass* dc = m_deviceClassList.first(); dc != NULL; dc = m_deviceClassList.next())
+    {
+      QList<Function> *fl = dc->functions();
+      for (f = fl->first(); f != NULL; f = fl->next())
+	{
+	  if (f->id() == id)
+	    {
+	      *device = f->device();
+	      *deviceClass = f->deviceClass();
+	      return f;
+	    }
+	}      
+    }
+
+  //
+  // Didn't find, return nothing
+  //
+  *device = NULL;
+  *deviceClass = NULL;
+  return NULL;
+  
+}
+
 
 void Doc::addBus(Bus* bus)
 {
@@ -928,7 +981,7 @@ void Doc::addBus(Bus* bus)
   emit deviceListChanged();
 }
 
-Bus* Doc::searchBus(unsigned int id)
+Bus* Doc::searchBus(const unsigned int id)
 {
   Bus* bus = NULL;
 
@@ -946,23 +999,25 @@ Bus* Doc::searchBus(unsigned int id)
   return NULL;
 }
 
-Bus* Doc::searchBus(QString name)
-{
+/*
+  Bus* Doc::searchBus(QString name)
+  {
   Bus* bus = NULL;
-
+  
   for (unsigned int i = 0; i < m_busList.count(); i++)
-    {
-      bus = m_busList.at(i);
-      ASSERT(bus);
-
-      if (bus->name() == name)
-	{
-	  return bus;
-	}
-    }
-
+  {
+  bus = m_busList.at(i);
+  ASSERT(bus);
+  
+  if (bus->name() == name)
+  {
+  return bus;
+  }
+  }
+  
   return NULL;
-}
+  }
+*/
 
 void Doc::removeBus(unsigned int id, bool deleteBus)
 {

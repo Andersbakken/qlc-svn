@@ -451,8 +451,14 @@ void VirtualConsole::initView(void)
   m_addMenu->insertItem("L&abel", ID_VC_ADD_LABEL);
   connect(m_addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
+  m_toolsMenu = new QPopupMenu();
+  m_toolsMenu->setCheckable(false);
+  m_toolsMenu->insertItem("&Panic!", ID_VC_TOOLS_PANIC);
+  connect(m_toolsMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
+
   m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
   m_menuBar->insertItem("&Add", m_addMenu, ID_VC_ADD);
+  m_menuBar->insertItem("&Tools", m_toolsMenu, ID_VC_TOOLS);
 
   m_menuBar->setItemEnabled(ID_VC_ADD, true);
   setMode(Design);
@@ -550,6 +556,12 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	w->show();
 	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_TOOLS_PANIC:
+      {
+	_app->slotPanic();
       }
       break;
 

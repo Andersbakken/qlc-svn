@@ -143,8 +143,8 @@ void Chaser::saveToFile(QFile &file)
 
 void Chaser::createContents(QList<QString> &list)
 {
-  QString device = QString("Global");
-  QString function = QString::null;
+  unsigned long device = 0;
+  unsigned long function = 0;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -155,13 +155,13 @@ void Chaser::createContents(QList<QString> &list)
 	}
       else if (*s == QString("Device"))
 	{
-	  device = *(list.next());
+	  device = list.next()->toULong();
 	}
       else if (*s == QString("Function"))
 	{
-	  function = *(list.next());
+	  function = list.next()->toULong();
 	  
-	  if (device == QString("Global"))
+	  if (device == 0)
 	    {
 	      Function* f = _app->doc()->searchFunction(function);
 	      if (f != NULL)
@@ -170,7 +170,7 @@ void Chaser::createContents(QList<QString> &list)
 		}
 	      else
 		{
-		  qDebug("Unable to find member <" + function + "> for chaser <" + name() + ">");
+		  qDebug("Unable to find member for chaser <" + name() + ">");
 		}
 	    }
 	  else
@@ -190,12 +190,12 @@ void Chaser::createContents(QList<QString> &list)
 		    }
 		  else
 		    {
-		      qDebug("Unable to find member <" + function + "> for Function Collection <" + name() + ">");
+		      qDebug("Unable to find member for chaser <" + name() + ">");
 		    }
 		}
 
-	      device = QString::null;
-	      function = QString::null;
+	      device = 0;
+	      function = 0;
 	    }
 	}
       else

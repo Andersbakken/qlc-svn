@@ -77,7 +77,7 @@ class FunctionCollection : public Function
 
   void addItem(DMXDevice* device, Function* function);
   bool removeItem(DMXDevice* device, Function* function);
-  bool removeItem(QString deviceString, QString functionString);
+  bool removeItem(const unsigned long functionId);
 
   void saveToFile(QFile &file);
 

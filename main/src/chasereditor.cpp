@@ -120,6 +120,8 @@ void ChaserEditor::init()
   m_functionList->addColumn("#");
   m_functionList->addColumn("Device");
   m_functionList->addColumn("Function");
+  m_functionList->addColumn("FID");
+  m_functionList->addColumn("DID");
   m_functionList->setAllColumnsShowFocus(true);
   m_functionList->setResizeMode(QListView::LastColumn);
 
@@ -171,37 +173,35 @@ void ChaserEditor::slotOKClicked()
 
   // Insert new steps
   QListViewItemIterator it(m_functionList);
-  QString functionString;
-  QString deviceString;
   DMXDevice* device = NULL;
   Function* function = NULL;
 
   // Iterate through all items of the listview
   for (; it.current() != NULL; ++it)
     {
-      deviceString = it.current()->text(1);
-      functionString = it.current()->text(2);
+      unsigned long fid = it.current()->text(3).toULong();
+      unsigned long did = it.current()->text(4).toULong();
 
-      if (deviceString == QString("Global"))
+      if (did == 0)
 	{
 	  device = NULL;
 	}
       else
 	{
-	  device = _app->doc()->searchDevice(deviceString);
+	  device = _app->doc()->searchDevice(did);
 	  ASSERT(device != NULL);
 	}
 
       if (device == NULL)
 	{
-	  function = _app->doc()->searchFunction(functionString);
+	  function = _app->doc()->searchFunction(fid);
 	}
       else
 	{
-	  function = device->searchFunction(functionString);
+	  function = device->searchFunction(fid);
 	  if (function == NULL)
 	    {
-	      function = device->deviceClass()->searchFunction(functionString);
+	      function = device->deviceClass()->searchFunction(fid);
 	    }
 	}
 
@@ -239,15 +239,43 @@ void ChaserEditor::slotRemoveClicked()
 void ChaserEditor::slotAddClicked()
 {
   FunctionTree* ft = new FunctionTree(this);
-  if (ft->exec() == QDialog::Accepted && ft->deviceString() != QString::null && ft->functionString() != QString::null)
+  if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
     {
-      if (m_prevItem == NULL)
+      QString fid;
+      QString did;
+      DMXDevice* device = _app->doc()->searchDevice(ft->deviceId());
+      Function* function = NULL;
+
+      if (device == NULL)
 	{
-	  m_prevItem = new QListViewItem(m_functionList, "", ft->deviceString(), ft->functionString());
+	  function = _app->doc()->searchFunction(ft->functionId());
+	  ASSERT(function != NULL);
+	  
+	  fid.setNum(function->id());
+	  did.setNum(0);
 	}
       else
 	{
-	  m_prevItem = new QListViewItem(m_functionList, m_prevItem, "", ft->deviceString(), ft->functionString());
+	  function = device->searchFunction(ft->functionId());
+	  if (function == NULL)
+	    {
+	      function = device->deviceClass()->searchFunction(ft->functionId());
+	    }
+	  
+	  ASSERT(function != NULL);
+	  
+	  fid.setNum(function->id());
+	  did.setNum(device->id());
+	}
+
+      if (m_prevItem == NULL)
+	{
+	  new QListViewItem(m_functionList, "", "function", "device", fid, did);
+	}
+      else
+	{
+	  new QListViewItem(m_functionList, m_prevItem, "", 
+			    "function", "device", fid, did);
 	}
     }
 

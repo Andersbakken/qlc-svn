@@ -50,11 +50,12 @@
 
 extern App* _app;
 
-AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, const char* name)
-  : UI_AdvancedSceneEditor(parent, name, true)
+AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
+  : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", true)
 {
-  m_device = NULL;
-  m_scene = NULL;
+  ASSERT(scene != NULL);
+
+  m_scene = new Scene(scene);
   m_currentChannel = NULL;
 
   m_dirty = false;
@@ -66,9 +67,6 @@ AdvancedSceneEditor::~AdvancedSceneEditor()
 
 void AdvancedSceneEditor::init()
 {
-  m_addSceneButton->setPixmap(_app->settings()->pixmapPath() + QString("add.xpm"));
-  m_removeSceneButton->setPixmap(_app->settings()->pixmapPath() + QString("remove.xpm"));
-
   double w = (double) m_sceneContents->width();
 
   m_sceneContents->setColumnWidth(0, (int) floor(w * 0.07));
@@ -77,18 +75,9 @@ void AdvancedSceneEditor::init()
   m_sceneContents->setColumnWidth(3, (int) floor(w * 0.1));
   m_sceneContents->setColumnWidth(4, (int) floor(w * 0.1));
 
-  QList <DMXDevice> *dl = _app->doc()->deviceList();
+  m_sceneNameEdit->setText(m_scene->name());
 
-  for (DMXDevice* d = dl->first(); d != NULL; d = dl->next())
-    {
-      m_deviceCombo->insertItem(d->name());
-    }
-
-  if (m_deviceCombo->count() > 0)
-    {
-      m_deviceCombo->setCurrentItem(0);
-      slotOutputDeviceActivated(m_deviceCombo->currentText());
-    }
+  updateChannelList();
 
   setDirty(false);
 }
@@ -100,9 +89,9 @@ void AdvancedSceneEditor::slotSnapshotClicked()
       return;
     }
 
-  for (unsigned short i = 0; i < m_device->deviceClass()->channels()->count(); i++)
+  for (unsigned i = 0; i < m_scene->device()->deviceClass()->channels()->count(); i++)
     {
-      DMXChannel* channel = m_device->dmxChannel(i);
+      DMXChannel* channel = m_scene->device()->dmxChannel(i);
       SceneValueType type = Fade;
 
       if (channel->status() == DMXChannel::On)
@@ -362,212 +351,28 @@ bool AdvancedSceneEditor::dirtyCheck()
     }
 }
 
-void AdvancedSceneEditor::updateSceneList()
+void AdvancedSceneEditor::slotSceneNameTextChanged(const QString& text)
 {
-  m_sceneList->clear();
-  m_sceneContents->clear();
-
-  m_scene = NULL;
-  m_currentChannel = NULL;
-  m_currentSceneItem = NULL;
-
-  if (m_device == NULL)
-    {
-      return;
-    }
-
-  m_deviceRoot = new QListViewItem(m_sceneList, "Device");
-  m_deviceRoot->setOpen(true);
-
-  QList <Function> *fl = m_device->functions();
-
-  for (Function* f = fl->first(); f != NULL; f = fl->next())
-    {
-      if (f->type() == Function::Scene)
-	{
-	  new QListViewItem(m_deviceRoot, f->name());
-	}
-    }
-
-  m_deviceClassRoot = new QListViewItem(m_sceneList, "Device Class");
-  m_deviceClassRoot->setOpen(true);
-
-  fl = m_device->deviceClass()->functions();
-
-  for (Function* f = fl->first(); f != NULL; f = fl->next())
-    {
-      if (f->type() == Function::Scene)
-	{
-	  new QListViewItem(m_deviceClassRoot, f->name());
-	}
-    }
-
-  setDirty(false);
-}
-
-void AdvancedSceneEditor::slotAddSceneClicked()
-{
-  bool ok = false;
-  bool device = true;
-  QString prompt, caption;
-
-  if (m_sceneList->currentItem() == NULL)
-    {
-      return;
-    }
-  else if (m_sceneList->currentItem() == m_deviceRoot ||
-	   m_sceneList->currentItem()->parent() == m_deviceRoot)
-    {
-      caption = QString("Adding new scene for DEVICE");
-      prompt = QString("Enter new scene name for device ") + m_device->name();
-      device = true;
-    }
-  else
-    {
-      caption = QString("Adding new scene for DEVICE CLASS");
-      prompt = QString("Enter new scene name for device class ") +
-	m_device->deviceClass()->manufacturer() + QString(" ") +
-	m_device->deviceClass()->model();
-      device = false;
-    }
-
-  QString text = QInputDialog::getText(caption, prompt, QLineEdit::Normal,
-				       QString::null, &ok, this );
-  if (ok && text.isEmpty() == false)
-    {
-      if (device == true)
-	{
-	  Scene* s = new Scene();
-	  s->setName(text);
-	  m_device->addFunction(s);
-	}
-      else
-	{
-	  Scene* s = new Scene();
-	  s->setName(text);
-	  m_device->deviceClass()->addFunction(s);
-	}
-
-      setDirty(false);
-    }
-  else
-    {
-    }
-}
-
-void AdvancedSceneEditor::slotRemoveSceneClicked()
-{
-  QListViewItem* item = m_sceneList->currentItem();
-
-  if (item == NULL || m_scene == NULL)
-    {
-      return;
-    }
-
-  if (dirtyCheck() == false)
-    {
-      return;
-    }
-
-  if (item->parent() == m_deviceRoot)
-    {
-      Scene* s = (Scene*) m_device->searchFunctionById(m_scene->id());
-      ASSERT(s != NULL);
-      m_device->removeFunction((Function*) s);
-
-      delete m_scene;
-      m_scene = NULL;
-
-      m_currentSceneItem = NULL;
-    }
-  else if (item->parent() == m_deviceClassRoot)
-    {
-      Scene* s = (Scene*) m_device->deviceClass()->searchFunctionById(m_scene->id());
-      ASSERT(s != NULL);
-      m_device->deviceClass()->removeFunction((Function*) s);
-
-      delete m_scene;
-      m_scene = NULL;
-
-      m_currentSceneItem = NULL;
-    }
-}
-
-void AdvancedSceneEditor::slotEditSceneNameClicked()
-{
-  if (m_scene == NULL)
-    {
-      return;
-    }
-
-  bool ok = false;
-
-  QString text = QInputDialog::getText(QString("Edit Scene Name"), 
-				       QString("Enter Scene Name"), 
-				       QLineEdit::Normal,
-				       m_scene->name(), &ok, this );
-  if (ok && text.isEmpty() == false)
+  if (m_scene->name() != text)
     {
       m_scene->setName(text);
-      m_sceneList->currentItem()->setText(0, text);
+
       setDirty(true);
     }
 }
 
-void AdvancedSceneEditor::slotSceneDoubleClicked(QListViewItem* item)
+void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
-  slotSceneSelected(item);
-  slotEditSceneNameClicked();
-}
+  int ch = item->text(0).toInt();
 
-void AdvancedSceneEditor::slotSceneSelected(QListViewItem* item)
-{
-  if (item->parent() == NULL)
+  if (m_scene->device() == NULL)
     {
-      m_scene = NULL;
-      m_sceneContents->clear();
-      return;
-    }
-
-  if (dirtyCheck() == false)
-    {
-      m_sceneList->setCurrentItem(m_currentSceneItem);
-      return;
-    }
-
-  m_currentSceneItem = item;
-
-  if (m_scene != NULL)
-    {
-      delete m_scene;
-      m_scene = NULL;
-    }
-
-  ASSERT(m_device != NULL);
-
-  if (item->parent() == m_deviceRoot)
-    {
-      m_scene = new Scene((Scene*) m_device->searchFunction(item->text(0)));
-    }
-  else if (item->parent() == m_deviceClassRoot)
-    {
-      m_scene = new Scene((Scene*) m_device->deviceClass()->searchFunction(item->text(0)));
+      m_currentChannel = m_scene->deviceClass()->channels()->at(ch);
     }
   else
     {
-      ASSERT(false);
+      m_currentChannel = m_scene->device()->deviceClass()->channels()->at(ch);
     }
-
-  updateChannelList();
-}
-
-void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
-{
-  ASSERT(m_device != NULL);
-
-  int ch = item->text(0).toInt();
-
-  m_currentChannel = m_device->deviceClass()->channels()->at(ch);
 }
 
 void AdvancedSceneEditor::slotContentsDoubleClicked(QListViewItem* item)
@@ -579,47 +384,26 @@ void AdvancedSceneEditor::slotContentsDoubleClicked(QListViewItem* item)
 
 void AdvancedSceneEditor::slotApplyClicked()
 {
-  if (m_scene == NULL || m_device == NULL)
+  if (m_scene == NULL)
     {
       return;
     }
 
-  //
-  // Save the name of the function and whether it is a device class or device function
-  // so that we can select it after scene list update
-  //
-  QString sceneName = m_scene->name();
-  bool dcFunction = (m_scene->deviceClass() != NULL) ? true : false;
-
   if (m_scene->deviceClass() != NULL)
     {
-      Scene* s = (Scene*) m_device->deviceClass()->searchFunctionById(m_scene->id());
+      Scene* s = (Scene*) m_scene->deviceClass()->searchFunction(m_scene->id());
       ASSERT(s != NULL);
       
-      /*
-	m_device->deviceClass()->functions()->remove(s);
-	delete s;
-	
-	m_device->deviceClass()->functions()->append(m_scene);
-      */
-
-      m_device->deviceClass()->saveToFile();
+      m_scene->deviceClass()->saveToFile();
       setDirty(false);
-
+      
       s->copyFrom(m_scene);
     }
   else if (m_scene->device() != NULL)
     {
-      Scene* s = (Scene*) m_device->searchFunctionById(m_scene->id());
+      Scene* s = (Scene*) m_scene->device()->searchFunction(m_scene->id());
       ASSERT(s != NULL);
-      
-      /*
-	m_device->functions()->remove(s);
-	delete s;
-	
-	m_device->functions()->append(m_scene);
-      */
-      
+
       _app->doc()->setModified(true);
       setDirty(false);
       
@@ -629,40 +413,6 @@ void AdvancedSceneEditor::slotApplyClicked()
     {
       ASSERT(false);
     }
-
-  //
-  // Clear scene list and fetch new items
-  //
-  updateSceneList();
-
-  //
-  // Select the function that was selected before we pressed apply
-  //
-  if (dcFunction == true)
-    {
-      for (QListViewItem* item = m_deviceClassRoot->firstChild(); item != NULL; item = item->nextSibling())
-	{
-	  if (item->text(0) == sceneName)
-	    {
-	      m_sceneList->setSelected(item, true);
-	      slotSceneSelected(item);
-	      break;
-	    }
-	}
-    }
-  else
-    {
-      for (QListViewItem* item = m_deviceRoot->firstChild(); item != NULL; item = item->nextSibling())
-	{
-	  if (item->text(0) == sceneName)
-	    {
-	      m_sceneList->setSelected(item, true);
-	      slotSceneSelected(item);
-	      break;
-	    }
-	}
-    }
-
 }
 
 void AdvancedSceneEditor::slotOKClicked()
@@ -744,107 +494,47 @@ void AdvancedSceneEditor::slotEditValueClicked()
     }
 }
 
-void AdvancedSceneEditor::slotOutputDeviceActivated(const QString &text)
+void AdvancedSceneEditor::slotDeviceFunctionsListChanged(unsigned long fid)
 {
-  if (m_device != NULL)
+  // If the currently edited scene was deleted, exit immediately
+  if (m_scene && m_scene->id() == fid)
     {
-      QString device = m_device->name();
-      
-      if (dirtyCheck() == false)
-	{
-	  m_deviceCombo->setCurrentText(device);
-	  m_sceneList->setCurrentItem(m_currentSceneItem);
-	  return;
-	}
-    }
-
-  m_device = _app->doc()->searchDevice(text);
-  ASSERT(m_device != NULL);
-
-  connect(m_device, SIGNAL(functionsListChanged(const QString&, bool)), this, SLOT(slotDeviceFunctionsListChanged(const QString&, bool)));
-  connect(m_device->deviceClass(), SIGNAL(functionsListChanged(const QString&, bool)), this, SLOT(slotDeviceClassFunctionsListChanged(const QString&, bool)));
-
-  m_deviceClassEdit->setText(m_device->deviceClass()->manufacturer() +
-			     QString (" ") + m_device->deviceClass()->model());
-
-  updateSceneList();
-}
-
-void AdvancedSceneEditor::slotDeviceFunctionsListChanged(const QString &name, bool add)
-{
-  if (add == true)
-    {
-      new QListViewItem(m_deviceRoot, QString(name));
-    }
-  else
-    {
-      // If the currently edited scene was deleted, update everything; it's easier
-      if (m_scene && m_scene->name() == name)
-	{
-	  updateSceneList();
-	}
-      else
-	{
-	  // If some other function (not current scene) was deleted, remove only that one
-	  for (QListViewItem* item = m_deviceRoot->firstChild(); item != NULL; item = item->nextSibling())
-	    {
-	      if (item->text(0) == name)
-		{
-		  delete item;
-		  break;
-		}
-	    }
-	}
+      slotCancelClicked();
     }
 }
 
-void AdvancedSceneEditor::slotDeviceClassFunctionsListChanged(const QString &name, bool add)
+void AdvancedSceneEditor::slotDeviceClassFunctionsListChanged(unsigned long fid)
 {
-  if (add == true)
+  // If the currently edited scene was deleted, exit immediately
+  if (m_scene && m_scene->id() == fid)
     {
-      new QListViewItem(m_deviceClassRoot, QString(name));
-    }
-  else
-    {
-      // If the currently edited scene was deleted, update everything; it's easier
-      if (m_scene && m_scene->name() == name)
-	{
-	  updateSceneList();
-	}
-      else
-	{
-	  // If some other function (not current scene) was deleted, remove only that one
-	  for (QListViewItem* item = m_deviceClassRoot->firstChild(); item != NULL; item = item->nextSibling())
-	    {
-	      if (item->text(0) == name)
-		{
-		  delete item;
-		  break;
-		}
-	    }
-	}
+      slotCancelClicked();
     }
 }
 
 void AdvancedSceneEditor::updateChannelList()
 {
-  m_sceneContents->clear();
-  m_currentChannel = NULL;
-
-  if (m_scene == NULL)
-    {
-      return;
-    }
-
+  QList <LogicalChannel> *cl;
   QString num;
   QString val;
   QString cap;
 
-  QList <LogicalChannel> *cl = m_device->deviceClass()->channels();
+  m_sceneContents->clear();
+  m_currentChannel = NULL;
+
+  if (m_scene->device() == NULL)
+    {
+      cl = m_scene->deviceClass()->channels();
+    }
+  else
+    {
+      cl = m_scene->device()->deviceClass()->channels();
+    }
+
   for (LogicalChannel* ch = cl->first(); ch != NULL; ch = cl->next())
     {
       unsigned char value = m_scene->channelValue(ch->channel()).value;
-
+      
       Capability* c = ch->searchCapability(value);
       
       if (c == NULL)
@@ -855,7 +545,7 @@ void AdvancedSceneEditor::updateChannelList()
 	{
 	  cap = c->name();
 	}
-
+      
       num.sprintf("%03d", ch->channel());
       val.setNum(m_scene->channelValue(ch->channel()).value);
       new QListViewItem(m_sceneContents, num, ch->name(), cap, val, m_scene->valueTypeString(ch->channel()));

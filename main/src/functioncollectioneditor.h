@@ -40,7 +40,7 @@ class FunctionCollectionEditor : public QDialog
   FunctionCollectionEditor(FunctionCollection* functionCollection, QWidget* parent = NULL, const char* name = 0);
   ~FunctionCollectionEditor();
 
-  QListViewItem* findItem(QString deviceString, QString functionString);
+  QListViewItem* findItem(const unsigned long functionId);
 
   void show();
 

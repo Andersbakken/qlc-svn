@@ -34,19 +34,13 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   Q_OBJECT
     
  public:
-  AdvancedSceneEditor(QWidget* parent, const char* name = NULL);
+  AdvancedSceneEditor(QWidget* parent, Scene* scene);
   virtual ~AdvancedSceneEditor();
 
   void init();
 
  public slots:
-  void slotOutputDeviceActivated(const QString &text);
-
-  void slotAddSceneClicked();
-  void slotRemoveSceneClicked();
-  void slotEditSceneNameClicked();
-  void slotSceneSelected(QListViewItem* item);
-  void slotSceneDoubleClicked(QListViewItem* item);
+  void slotSceneNameTextChanged(const QString& text);
 
   void slotSnapshotClicked();
   void slotEditValueClicked();
@@ -58,14 +52,13 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotOKClicked();
   void slotCancelClicked();
 
-  void slotDeviceFunctionsListChanged(const QString &name, bool add);
-  void slotDeviceClassFunctionsListChanged(const QString &name, bool add);
+  void slotDeviceFunctionsListChanged(unsigned long fid);
+  void slotDeviceClassFunctionsListChanged(unsigned long fid);
 
  signals:
   void closed();
 
  private:
-  void updateSceneList();
   void updateChannelList();
   void setDirty(bool dirty);
   bool dirtyCheck();
@@ -81,12 +74,6 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
 
  private:
   bool m_dirty; // Indicates whether we need to save changes (dirty) or not
-
-  DMXDevice* m_device;
-
-  QListViewItem* m_deviceRoot;
-  QListViewItem* m_deviceClassRoot;
-  QListViewItem* m_currentSceneItem;
 
   Scene* m_scene;
   LogicalChannel* m_currentChannel;

@@ -35,17 +35,20 @@ class DMXWidgetBase;
 class DMXWidget;
 class Bus;
 
-#define ID_VC_MODE                   100
-#define ID_VC_MODE_OPERATE           110
-#define ID_VC_MODE_DESIGN            120
+#define ID_VC_MODE                   1000
+#define ID_VC_MODE_OPERATE           1010
+#define ID_VC_MODE_DESIGN            1020
 
-#define ID_VC_ADD                    1000
-#define ID_VC_ADD_BUTTON             1010
-#define ID_VC_ADD_SLIDER             1020
-#define ID_VC_ADD_SPEEDSLIDER        1030
-#define ID_VC_ADD_MONITOR            1040
-#define ID_VC_ADD_FRAME              1050
-#define ID_VC_ADD_LABEL              1060
+#define ID_VC_ADD                    1100
+#define ID_VC_ADD_BUTTON             1110
+#define ID_VC_ADD_SLIDER             1120
+#define ID_VC_ADD_SPEEDSLIDER        1130
+#define ID_VC_ADD_MONITOR            1140
+#define ID_VC_ADD_FRAME              1150
+#define ID_VC_ADD_LABEL              1160
+
+#define ID_VC_TOOLS                  1200
+#define ID_VC_TOOLS_PANIC            1210
 
 class VirtualConsole : public QWidget
 {
@@ -100,6 +103,7 @@ class VirtualConsole : public QWidget
   QMenuBar* m_menuBar;
   QPopupMenu* m_modeMenu;
   QPopupMenu* m_addMenu;
+  QPopupMenu* m_toolsMenu;
   DMXWidget* m_drawArea;
   QVBoxLayout* m_layout;
 

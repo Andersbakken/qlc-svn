@@ -138,6 +138,10 @@ void FunctionCollection::saveToFile(QFile &file)
   s = QString("Type = ") + typeString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
+  // ID
+  s.sprintf("ID = %ld\n", id());
+  file.writeBlock((const char*) s, s.length());
+
   // Device class, device name or "Global"
   if (deviceClass() != NULL)
     {
@@ -149,7 +153,7 @@ void FunctionCollection::saveToFile(QFile &file)
     }
   else
     {
-      s = QString("Device = Global") + QString("\n");
+      s = QString("Device = 0") + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
       // For global collections, write device+scene pairs
@@ -157,16 +161,16 @@ void FunctionCollection::saveToFile(QFile &file)
 	{
 	  if (item->device() != NULL)
 	    {
-	      s = QString("Device = ") + item->device()->name() + QString("\n");
+	      s.sprintf("Device = %ld\n", item->device()->id());
 	    }
 	  else
 	    {
-	      s = QString("Device = Global") + QString("\n");
+	      s = QString("Device = 0") + QString("\n");
 	    }
 
 	  file.writeBlock((const char*) s, s.length());
 
-	  s = QString("Function = ") + item->function()->name() + QString("\n");
+	  s.sprintf("Function = %ld", item->function()->id());
 	  file.writeBlock((const char*) s, s.length());
 	}
     }
@@ -174,8 +178,8 @@ void FunctionCollection::saveToFile(QFile &file)
 
 void FunctionCollection::createContents(QList<QString> &list)
 {
-  QString device = QString::null;
-  QString function = QString::null;
+  unsigned long did = 0;
+  unsigned long fid = 0;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -186,47 +190,47 @@ void FunctionCollection::createContents(QList<QString> &list)
 	}
       else if (*s == QString("Device"))
 	{
-	  device = *(list.next());
+	  did = list.next()->toULong();
 	}
       else if (*s == QString("Function"))
 	{
-	  function = *(list.next());
+	  fid = list.next()->toULong();
 
-	  if (device == QString("Global"))
+	  if (did == 0)
 	    {
-	      Function* f = _app->doc()->searchFunction(function);
+	      Function* f = _app->doc()->searchFunction(fid);
 	      if (f != NULL)
 		{
 		  addItem(NULL, f);
 		}
 	      else
 		{
-		  qDebug("Unable to find member <" + function + "> for Function Collection <" + name() + ">");
+		  qDebug("Unable to find member for function collection <" + name() + ">");
 		}
 	    }
 	  else
 	    {
-	      DMXDevice* d = _app->doc()->searchDevice(device);
+	      DMXDevice* d = _app->doc()->searchDevice(did);
 	      Function* f = NULL;
 	      if (d != NULL)
 		{
-		  f = d->searchFunction(function);
+		  f = d->searchFunction(fid);
 		  if (f != NULL)
 		    {
 		      addItem(d, f);
 		    }
-		  else if ((f = d->deviceClass()->searchFunction(function)) != NULL)
+		  else if ((f = d->deviceClass()->searchFunction(fid)) != NULL)
 		    {
 		      addItem(d, f);
 		    }
 		  else
 		    {
-		      qDebug("Unable to find member <" + function + "> for Function Collection <" + name() + ">");
+		      qDebug("Unable to find member for function collection <" + name() + ">");
 		    }
 		}
 	      
-	      device = QString::null;
-	      function = QString::null;
+	      did = 0;
+	      fid = 0;
 	    }
 	}
       else
@@ -279,13 +283,13 @@ bool FunctionCollection::removeItem(DMXDevice* device, Function* function)
   return retval;
 }
 
-bool FunctionCollection::removeItem(QString deviceString, QString functionString)
+bool FunctionCollection::removeItem(const unsigned long functionId)
 {
   bool retval = false;
 
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      if (item->device()->name() == deviceString && item->function()->name() == functionString)
+      if (item->function()->id() == functionId)
 	{
 	  delete m_items.take();
 	  retval = true;

@@ -73,9 +73,9 @@ class Doc : public QObject
   bool removeDevice(DMXDevice*);
   QList <DMXDevice> *deviceList() { return &m_deviceList; }
 
-  // Search functions
-  DMXDevice* searchDevice(int id);
-  DMXDevice* searchDevice(const QString &name);
+  // Search devices
+  DMXDevice* searchDevice(const unsigned long id);
+  // DMXDevice* searchDevice(const QString &name);
 
   //
   // Functions
@@ -84,9 +84,13 @@ class Doc : public QObject
   QList<Function> functions() { return m_functions; }
 
   // Function list operations
-  Function* searchFunction(const QString &fname);
   void addFunction(const Function* function);
-  void removeFunction(const QString &functionString);
+  void removeFunction(const unsigned long id);
+  Function* searchFunction(const unsigned long id);
+  Function* searchFunction(const unsigned long id, DMXDevice** device, DeviceClass** deviceClass);
+
+  // Function* searchFunction(const QString &fname);
+  // void removeFunction(const QString &functionString);
 
   //
   // Device classes
@@ -99,7 +103,7 @@ class Doc : public QObject
 
   // Search for manuf + model
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
-  DeviceClass* searchDeviceClassByID(int id);
+  DeviceClass* searchDeviceClass(unsigned long id);
 
   //
   // Bus
@@ -109,7 +113,7 @@ class Doc : public QObject
 
   // Bus handling functions
   Bus* searchBus(unsigned int id);
-  Bus* searchBus(QString name);
+  // Bus* searchBus(QString name);
   void addBus(Bus* bus);
   void removeBus(unsigned int id, bool deleteBus = true);
 

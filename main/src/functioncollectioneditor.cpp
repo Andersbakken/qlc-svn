@@ -71,6 +71,8 @@ void FunctionCollectionEditor::init()
   m_functionList->setGeometry(10, 50, 350, 240);
   m_functionList->addColumn("Device");
   m_functionList->addColumn("Function");
+  m_functionList->addColumn("FID");
+  m_functionList->addColumn("DID");
   m_functionList->setAllColumnsShowFocus(true);
   m_functionList->setResizeMode(QListView::LastColumn);
 
@@ -111,24 +113,40 @@ void FunctionCollectionEditor::accept()
 
 void FunctionCollectionEditor::slotAddClicked()
 {
-  FunctionTree* ft;
-  ft = new FunctionTree(this);
-  if (ft->exec() == QDialog::Accepted && ft->deviceString() != QString::null && ft->functionString() != QString::null)
+  FunctionTree* ft = new FunctionTree(this);
+
+  if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
     {
-      if (findItem(ft->deviceString(), ft->functionString()) == NULL)
+      if (findItem(ft->functionId()) == NULL)
 	{
-	  new QListViewItem(m_functionList, ft->deviceString(), ft->functionString());
-
-	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceString());
-
-	  Function* function = device->searchFunction(ft->functionString());
-	  if (function == NULL)
+	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceId());
+	  Function* function = NULL;
+	  if (device == NULL)
 	    {
-	      function = device->deviceClass()->searchFunction(ft->functionString());
-	    }
+	      function = _app->doc()->searchFunction(ft->functionId());
+	      ASSERT(function != NULL);
 
-	  ASSERT(function != NULL);
-	  ASSERT(m_functionCollection != NULL);
+	      QString id;
+	      id.setNum(function->id());
+	      new QListViewItem(m_functionList, QString("Global"), function->name(), id);
+	    }
+	  else
+	    {
+	      function = device->searchFunction(ft->functionId());
+	      if (function == NULL)
+		{
+		  function = device->deviceClass()->searchFunction(ft->functionId());
+		}
+
+	      ASSERT(function != NULL);
+
+	      QString fid;
+	      fid.setNum(function->id());
+
+	      QString did;
+	      did.setNum(device->id());
+	      new QListViewItem(m_functionList, device->name(), function->name(), fid, did);
+	    }
 
 	  m_functionCollection->addItem(device, function);
 	}
@@ -143,13 +161,11 @@ void FunctionCollectionEditor::slotRemoveClicked()
 {
   if (m_functionList->selectedItem() != NULL)
     {
-      QString functionString;
-      QString deviceString;
+      unsigned long id = 0;
 
-      deviceString = m_functionList->selectedItem()->text(0);
-      functionString = m_functionList->selectedItem()->text(1);
+      id = m_functionList->selectedItem()->text(2).toULong();
 
-      m_functionCollection->removeItem(deviceString, functionString);
+      m_functionCollection->removeItem(id);
       m_functionList->takeItem(m_functionList->selectedItem());
     }
 }
@@ -163,18 +179,23 @@ void FunctionCollectionEditor::updateFunctionList()
 
   for (CollectionItem* item = il->first(); item != NULL; item = il->next())
     {
-      new QListViewItem(m_functionList, item->device()->name(), item->function()->name());
+      QString id;
+      id.setNum(item->function()->id());
+      new QListViewItem(m_functionList, item->device()->name(), item->function()->name(), id);
     }
 }
 
-QListViewItem* FunctionCollectionEditor::findItem(QString deviceString, QString functionString)
+QListViewItem* FunctionCollectionEditor::findItem(const unsigned long functionId)
 {
   QListViewItem* item = NULL;
-
   QListViewItemIterator it(m_functionList);
+
+  QString id;
+  id.setNum(functionId);
+
   for (it = it; it.current(); ++it)
     {
-      if (it.current()->text(0) == deviceString && it.current()->text(1) == functionString)
+      if (it.current()->text(2) == id)
 	{
 	  item = it.current();
 	  break;
