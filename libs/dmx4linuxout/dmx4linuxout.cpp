@@ -34,6 +34,8 @@
 #include <qpopupmenu.h>
 #include <qfile.h>
 #include <assert.h>
+#include <errno.h>
+#include <linux/errno.h>
 
 #define CONF_FILE "dmx4linuxout.conf"
 
