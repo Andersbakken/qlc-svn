@@ -29,7 +29,10 @@
 #include <qscrollbar.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
+#include <qpoint.h>
+#include <qpointarray.h>
 
+#include "patterngenerator.h"
 #include "sequenceeditor.h"
 #include "consolechannel.h"
 #include "configkeys.h"
@@ -82,9 +85,6 @@ void SequenceEditor::init()
   setSequence(m_sequence);
 
   m_name->setText(m_sequence->name());
-
-  QMessageBox::information(this, KApplicationNameShort,
-			   "Save/load and run doesn't work for sequences yet");
 }
 
 void SequenceEditor::setDevice(t_device_id id)
@@ -219,7 +219,6 @@ void SequenceEditor::slotInsert()
     {
       item = new QListViewItem(m_list, m_list->lastItem());
     }
-  m_list->setSelected(item, true);
 
   QString s;
   for (t_channel ch = 0; ch < m_channels; ch++)
@@ -355,3 +354,27 @@ void SequenceEditor::slotSelectionChanged(QListViewItem* item)
   emit sceneActivated(m_tempValues, m_channels);
 }
 
+void SequenceEditor::slotGeneratorButtonClicked()
+{
+  PatternGenerator* pg = new PatternGenerator(this);
+  pg->setSequence(m_sequence);
+
+  if (pg->exec() == QDialog::Accepted)
+    {
+      /*
+      QPointArray a = pg->pointArray();
+      for (int i = 0; i < a.size(); i++)
+	{
+	  QListViewItem* item = new QListViewItem(m_list);
+	  QString s;
+	  s.setNum(a.point(i).x());
+	  item->setText(0, s);
+
+	  s.setNum(a.point(i).y());
+	  item->setText(1, s);
+	}
+      */
+    }
+
+  delete pg;
+}

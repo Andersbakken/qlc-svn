@@ -58,6 +58,8 @@ class SequenceEditor : public UI_SequenceEditor
   void slotChannelChanged(t_channel, t_value, Scene::ValueType);
   void slotSelectionChanged(QListViewItem*);
 
+  void slotGeneratorButtonClicked();
+
  protected:
   void setDevice(t_device_id);
   void setSequence(Sequence*);

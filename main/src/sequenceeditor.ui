@@ -268,12 +268,20 @@
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout4</cstring>
+                <cstring>layout32</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_generatorButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Pattern Generator...</string>
+                    </property>
+                </widget>
                 <spacer>
                     <property name="name">
                         <cstring>spacer2</cstring>
@@ -286,7 +294,7 @@
                     </property>
                     <property name="sizeHint">
                         <size>
-                            <width>40</width>
+                            <width>190</width>
                             <height>20</height>
                         </size>
                     </property>
@@ -354,6 +362,12 @@
         <receiver>UI_SequenceEditor</receiver>
         <slot>slotSelectionChanged(QListViewItem*)</slot>
     </connection>
+    <connection>
+        <sender>m_generatorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SequenceEditor</receiver>
+        <slot>slotGeneratorButtonClicked()</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotOKClicked()</slot>
@@ -363,6 +377,7 @@
     <slot>slotRaise()</slot>
     <slot>slotLower()</slot>
     <slot>slotSelectionChanged(QListViewItem*)</slot>
+    <slot>slotGeneratorButtonClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

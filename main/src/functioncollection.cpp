@@ -187,14 +187,14 @@ bool FunctionCollection::addItem(t_function_id id)
 //
 bool FunctionCollection::removeItem(t_function_id id)
 {
-  bool result = false;
-
   m_startMutex.lock();
 
   if (!m_running)
     {
       m_steps.remove(id);
-      result = true;
+      
+      m_startMutex.unlock();
+      return true;
     }
 
   m_startMutex.unlock();
