@@ -448,31 +448,32 @@ void Scene::run()
 
   m_dataMutex.lock();
 
-  for (m_elapsedTime = 0; m_elapsedTime <= m_timeSpan; m_elapsedTime++)
+  for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan; m_elapsedTime++)
     {
       m_dataMutex.unlock();
 
       for (ch = 0; ch < m_channels; ch++)
 	{
-	  //if (m_channelData[ch] & FunctionConsumer::KNoSetMask)
+	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
-	      //continue;
-	    }
-	    //else 
-	    if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
-	    {
-	      //m_channelData[ch] |= FunctionConsumer::KNoSetMask;
+	      // This channel contains a value that is not supposed
+	      // to be written (anymore, in case of ready value)
 	      continue;
 	    }
 	  else if (m_values[ch].type == Set)
 	    {
+	      // Just set the target value
 	      m_channelData[ch] = m_values[ch].value;
-	      m_runTimeData[ch].ready = true;
+
+	      // ...and don't touch this channel anymore
+	      m_runTimeData[ch].ready = true; 
 	    }
 	  else if (m_values[ch].type == Fade)
 	    {
 	      m_dataMutex.lock();
-	      
+
+	      // Calculate the current value based on what it should
+	      // be after m_elapsedTime to be ready at m_timeSpan
 	      m_runTimeData[ch].current = m_runTimeData[ch].start 
 		+ (m_runTimeData[ch].target - m_runTimeData[ch].start) 
 		* ((float)m_elapsedTime / m_timeSpan);
@@ -490,6 +491,28 @@ void Scene::run()
     }
 
   m_dataMutex.unlock();
+
+  // Write the last step exactly to target because timespan might have
+  // been set to a smaller amount than what has elapsed. Also, because
+  // floats are NEVER exact numbers, it might be that we never quite reach
+  // the target within the given timespan (in case the values don't add up).
+  for (ch = 0; ch < m_channels; ch++)
+    {
+      if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
+	{
+	  continue;
+	}
+      else
+	{
+	  // Just set the target value
+	  m_channelData[ch] = m_values[ch].value;
+	  
+	  // ...and don't touch this channel anymore
+	  m_runTimeData[ch].ready = true;
+	}
+    }
+
+  m_eventBuffer->put(m_channelData);
 
   // No more items produced -> this scene can be removed from
   // the list after the buffer is empty.

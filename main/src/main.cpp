@@ -64,6 +64,10 @@ int parseArgs(int argc, char **argv)
 	      qDebug(KApplicationVersion);
 	      ret = 1;
 	    }
+	  else if (::strcmp(argv[i], "-o") == 0 ||
+		   ::strcmp(argv[i], "--open") == 0)
+            {
+            }
 	  else
 	    {
 	      ret = 0;
