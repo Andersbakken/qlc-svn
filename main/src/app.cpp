@@ -116,6 +116,12 @@ App::~App()
 
 void App::initView(void)
 {
+  // Just for testing
+  QFont font;
+  font.setPixelSize(30);
+  //QApplication::setFont(font);
+  
+
   initSettings();
   initSequenceEngine();
 

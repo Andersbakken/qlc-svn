@@ -75,8 +75,7 @@ void AboutBox::initDialog()
   setBackgroundColor(white);
 
   QFont font;
-  font.setStyleHint(QFont::System);
-  font.setPixelSize(11);
+  font.setPixelSize(12);
 
   m_version = new QLabel(this);
   m_version->setFont(font);

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_EditSceneValue</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,151 +8,89 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>400</width>
-            <height>144</height>
+            <width>377</width>
+            <height>125</height>
         </rect>
     </property>
     <property name="caption">
         <string>Edit Scene Value</string>
     </property>
-    <widget class="QGroupBox">
+    <grid>
         <property name="name">
-            <cstring>m_groupBox</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>380</width>
-                <height>80</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string></string>
-        </property>
-        <widget class="QLabel">
+        <widget class="QPushButton" row="1" column="1">
             <property name="name">
-                <cstring>TextLabel2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>10</y>
-                    <width>160</width>
-                    <height>20</height>
-                </rect>
+                <cstring>m_cancel</cstring>
             </property>
             <property name="text">
-                <string>Preset Value</string>
+                <string>Cancel</string>
             </property>
         </widget>
-        <widget class="QComboBox">
+        <widget class="QPushButton" row="1" column="0">
             <property name="name">
-                <cstring>m_presetCombo</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>160</width>
-                    <height>22</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>m_typeCombo</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>280</x>
-                    <y>30</y>
-                    <width>90</width>
-                    <height>22</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QSpinBox">
-            <property name="name">
-                <cstring>m_valueSpin</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>190</x>
-                    <y>30</y>
-                    <width>70</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="maxValue">
-                <number>255</number>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>190</x>
-                    <y>10</y>
-                    <width>65</width>
-                    <height>20</height>
-                </rect>
+                <cstring>m_ok</cstring>
             </property>
             <property name="text">
-                <string>Value</string>
+                <string>OK</string>
             </property>
         </widget>
-        <widget class="QLabel">
+        <widget class="QGroupBox" row="0" column="0" rowspan="1" colspan="2">
             <property name="name">
-                <cstring>TextLabel4</cstring>
+                <cstring>m_groupBox</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>280</x>
-                    <y>10</y>
-                    <width>80</width>
-                    <height>20</height>
-                </rect>
+            <property name="title">
+                <string></string>
             </property>
-            <property name="text">
-                <string>Type</string>
-            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>TextLabel2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Preset Value</string>
+                    </property>
+                </widget>
+                <widget class="QComboBox" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_presetCombo</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="1">
+                    <property name="name">
+                        <cstring>TextLabel3</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Value</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>m_valueSpin</cstring>
+                    </property>
+                    <property name="maxValue">
+                        <number>255</number>
+                    </property>
+                </widget>
+                <widget class="QComboBox" row="1" column="2">
+                    <property name="name">
+                        <cstring>m_typeCombo</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="2">
+                    <property name="name">
+                        <cstring>TextLabel4</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Type</string>
+                    </property>
+                </widget>
+            </grid>
         </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>290</x>
-                <y>100</y>
-                <width>91</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>100</y>
-                <width>91</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-    </widget>
+    </grid>
 </widget>
 <connections>
     <connection>

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_AdvancedSceneEditor</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,211 +8,169 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>645</width>
-            <height>372</height>
+            <width>560</width>
+            <height>397</height>
         </rect>
     </property>
     <property name="caption">
         <string>Advanced Scene Editor</string>
     </property>
-    <widget class="QPushButton">
+    <grid>
         <property name="name">
-            <cstring>m_editValue</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>330</y>
-                <width>91</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Edit Channel</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Edit current channel's value</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_snapshotButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>120</x>
-                <y>330</y>
-                <width>91</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Snapshot</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Take a snapshot of the values in the device's dmx console</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>540</x>
-                <y>330</y>
-                <width>90</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>440</x>
-                <y>330</y>
-                <width>90</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_applyButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>340</x>
-                <y>330</y>
-                <width>90</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Apply</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>m_sceneNameLabel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>5</y>
-                <width>110</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>Panel</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="text">
-            <string>Scene name:</string>
-        </property>
-    </widget>
-    <widget class="QListView">
-        <column>
+        <widget class="QPushButton" row="2" column="0">
+            <property name="name">
+                <cstring>m_editValue</cstring>
+            </property>
             <property name="text">
-                <string>#</string>
+                <string>Edit Channel</string>
             </property>
-            <property name="clickable">
-                <bool>false</bool>
+            <property name="toolTip" stdset="0">
+                <string>Edit current channel's value</string>
             </property>
-            <property name="resizeable">
-                <bool>false</bool>
+        </widget>
+        <widget class="QPushButton" row="2" column="1">
+            <property name="name">
+                <cstring>m_snapshotButton</cstring>
             </property>
-        </column>
-        <column>
             <property name="text">
-                <string>Channel</string>
+                <string>Snapshot</string>
             </property>
-            <property name="clickable">
-                <bool>false</bool>
+            <property name="toolTip" stdset="0">
+                <string>Take a snapshot of the values in the device's dmx console</string>
             </property>
-            <property name="resizeable">
+        </widget>
+        <widget class="QPushButton" row="2" column="5">
+            <property name="name">
+                <cstring>m_cancel</cstring>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="2" column="4">
+            <property name="name">
+                <cstring>m_ok</cstring>
+            </property>
+            <property name="text">
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="2" column="3">
+            <property name="name">
+                <cstring>m_applyButton</cstring>
+            </property>
+            <property name="text">
+                <string>Apply</string>
+            </property>
+            <property name="default">
                 <bool>true</bool>
             </property>
-        </column>
-        <column>
+        </widget>
+        <widget class="QLabel" row="0" column="0">
+            <property name="name">
+                <cstring>m_sceneNameLabel</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>Panel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
             <property name="text">
-                <string>Preset</string>
+                <string>Scene name:</string>
             </property>
-            <property name="clickable">
-                <bool>false</bool>
+        </widget>
+        <widget class="QListView" row="1" column="0" rowspan="1" colspan="6">
+            <column>
+                <property name="text">
+                    <string>#</string>
+                </property>
+                <property name="clickable">
+                    <bool>false</bool>
+                </property>
+                <property name="resizable">
+                    <bool>false</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Channel</string>
+                </property>
+                <property name="clickable">
+                    <bool>false</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Preset</string>
+                </property>
+                <property name="clickable">
+                    <bool>false</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Value</string>
+                </property>
+                <property name="clickable">
+                    <bool>false</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Type</string>
+                </property>
+                <property name="clickable">
+                    <bool>false</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>m_sceneContents</cstring>
             </property>
-            <property name="resizeable">
+            <property name="allColumnsShowFocus">
                 <bool>true</bool>
             </property>
-        </column>
-        <column>
-            <property name="text">
-                <string>Value</string>
+            <property name="resizeMode">
+                <enum>LastColumn</enum>
             </property>
-            <property name="clickable">
-                <bool>false</bool>
+        </widget>
+        <widget class="QLineEdit" row="0" column="1" rowspan="1" colspan="5">
+            <property name="name">
+                <cstring>m_sceneNameEdit</cstring>
             </property>
-            <property name="resizeable">
-                <bool>true</bool>
+        </widget>
+        <spacer row="2" column="2">
+            <property name="name">
+                <cstring>spacer4</cstring>
             </property>
-        </column>
-        <column>
-            <property name="text">
-                <string>Type</string>
+            <property name="orientation">
+                <enum>Horizontal</enum>
             </property>
-            <property name="clickable">
-                <bool>false</bool>
+            <property name="sizeType">
+                <enum>Expanding</enum>
             </property>
-            <property name="resizeable">
-                <bool>true</bool>
+            <property name="sizeHint">
+                <size>
+                    <width>40</width>
+                    <height>20</height>
+                </size>
             </property>
-        </column>
-        <property name="name">
-            <cstring>m_sceneContents</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>40</y>
-                <width>620</width>
-                <height>280</height>
-            </rect>
-        </property>
-        <property name="allColumnsShowFocus">
-            <bool>true</bool>
-        </property>
-        <property name="resizeMode">
-            <enum>LastColumn</enum>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>m_sceneNameEdit</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>120</x>
-                <y>4</y>
-                <width>510</width>
-                <height>26</height>
-            </rect>
-        </property>
-    </widget>
+        </spacer>
+    </grid>
 </widget>
 <connections>
     <connection>
