@@ -25,16 +25,14 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
-#include "consolechannel.h"
 #include "types.h"
 
 class QFile;
 class QString;
 
 class DeviceClass;
-class SceneEditor;
 class Function;
-class ContainerView;
+class DeviceConsole;
 class Monitor;
 
 class Device : public QObject
@@ -69,9 +67,6 @@ class Device : public QObject
   void viewMonitor();
   void viewProperties();
 
-  QPtrList <ConsoleChannel> unitList() { return m_unitList; }
-  SceneEditor* sceneEditor() { return m_sceneEditor; }
-
   /* Save this device's properties to a file */
   void saveToFile(QFile &file);
 
@@ -89,15 +84,8 @@ class Device : public QObject
   t_device_id m_id;
   QString m_name;
 
-  ContainerView* m_console;
-  SceneEditor* m_sceneEditor;
+  DeviceConsole* m_console;
   Monitor* m_monitor;
-
- private:
-  QPtrList <ConsoleChannel> m_unitList;
-
- protected:
-  void createChannelUnits(void);
 };
 
 #endif

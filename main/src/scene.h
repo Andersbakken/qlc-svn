@@ -52,6 +52,7 @@ class Scene : public Function
 
   bool set(t_channel ch, t_value value, ValueType type);
   SceneValue channelValue(t_channel ch);
+  ValueType valueType(t_channel ch);
   QString valueTypeString(t_channel ch);
 
   void saveToFile(QFile &file);

@@ -41,6 +41,7 @@
 #include <unistd.h>
 #include <qpopupmenu.h>
 #include <qtoolbutton.h>
+#include <assert.h>
 
 #include <iostream>
 using namespace std;
@@ -61,19 +62,33 @@ static const QColor KStatusColorStored    ( 100, 255, 100 );
 static const QColor KStatusColorUnchanged ( 255, 255, 255 );
 static const QColor KStatusColorModified  ( 255, 100, 100 );
 
-SceneEditor::SceneEditor(Device* device, QWidget* parent)
-  : UI_SceneEditor(parent)
+SceneEditor::SceneEditor(QWidget* parent, const char* name)
+  : UI_SceneEditor(parent, name),
+    m_deviceID  ( KNoID ),
+    m_menu      (  NULL ),
+    m_tempScene (  NULL )
 {
-  m_device = device;
-  m_menu = NULL;
+  initMenu();
 }
 
 SceneEditor::~SceneEditor()
 {
-
+  if (m_tempScene) delete m_tempScene;
 }
 
-void SceneEditor::init()
+void SceneEditor::setDevice(t_device_id id)
+{
+  m_deviceID = id;
+
+  // The scene that contains all the edited values
+  if (m_tempScene) delete m_tempScene;
+  m_tempScene = new Scene();
+  m_tempScene->setDevice(id);
+
+  fillFunctions();
+}
+
+void SceneEditor::initMenu()
 {
   QString dir;
   _app->settings()->get(KEY_SYSTEM_DIR, dir);
@@ -81,6 +96,7 @@ void SceneEditor::init()
 
   m_tools->setPixmap(QPixmap(dir + QString("/scene.png")));
 
+  if (m_menu) delete m_menu;
   m_menu = new QPopupMenu();
   m_menu->insertItem(QPixmap(dir + QString("/key.xpm")),
 		     "Activate Selected", this, SLOT(slotActivate()),
@@ -100,13 +116,15 @@ void SceneEditor::init()
 		     0, KMenuRename);
 
   m_tools->setPopup(m_menu);
-
-  fillFunctions();
 }
 
-void SceneEditor::slotSceneChanged()
+void SceneEditor::slotChannelChanged(t_channel channel, t_value value,
+				     Scene::ValueType status)
 {
-  setStatusText(KStatusModified, KStatusColorModified);
+  assert(m_tempScene);
+  m_tempScene->set(channel, value, status);
+
+  setStatusText(KStatusModified, KStatusColorModified);  
 }
 
 void SceneEditor::slotActivate()
@@ -124,22 +142,7 @@ void SceneEditor::slotActivate()
 
 void SceneEditor::setScene(Scene* scene)
 {
-   ConsoleChannel* unit;
-   QPtrList <ConsoleChannel> ul = m_device->unitList();
-   int n = 0;
-
-   ASSERT(scene != NULL);
-
-   for (unit = ul.first(); unit != NULL; unit = ul.next(), n++)
-     {
-       SceneValue value = scene->channelValue(n);
-       unit->setStatusButton(value.type);
-
-       if (value.type == Scene::Set || value.type == Scene::Fade)
-	 {
-	   unit->slotAnimateValueChange(value.value);
-	 }
-     }
+  emit sceneActivated(scene);
 }
 
 void SceneEditor::slotSceneListContextMenu(QListBoxItem* item,
@@ -202,21 +205,10 @@ void SceneEditor::slotNew()
       Scene* sc = static_cast<Scene*>
 	(_app->doc()->newFunction(Function::Scene));
 
+      sc->copyFrom(m_tempScene);
+
       sc->setName(text);
-      sc->setDevice(m_device->id());
-      
-      t_channel channels = m_device->deviceClass()->channels()->count();
-      t_value val[channels];
-
-      _app->outputPlugin()->readRange(m_device->address(),
-				      val, channels);
-      
-      QPtrList <ConsoleChannel> ul = m_device->unitList();
-
-      for (t_channel i = 0; i < channels; i++)
-	{
-	  sc->set(i, val[i], ul.at(i)->status());
-	}
+      sc->setDevice(m_deviceID);
       
       fillFunctions();
       selectFunction(sc->id());
@@ -233,17 +225,7 @@ void SceneEditor::slotStore()
       return;
     }
 
-  QPtrList <ConsoleChannel> ul = m_device->unitList();
-
-  t_channel channels = m_device->deviceClass()->channels()->count();
-  t_value val[channels];
-  _app->outputPlugin()->readRange(m_device->address(),
-					 val, channels);
-  
-  for (t_channel i = 0; i < channels; i++)
-    {
-      sc->set(i, val[i], ul.at(i)->status());
-    }
+  sc->copyFrom(m_tempScene);
 
   setStatusText(KStatusStored, KStatusColorStored);
 }
@@ -272,7 +254,7 @@ void SceneEditor::fillFunctions()
       if (!f)
 	continue;
 
-      if (f->type() == Function::Scene && f->device() == m_device->id())
+      if (f->type() == Function::Scene && f->device() == m_deviceID)
 	{
 	  ListBoxIDItem* item = new ListBoxIDItem();
 	  item->setText(f->name());

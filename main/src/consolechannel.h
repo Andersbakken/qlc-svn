@@ -37,23 +37,27 @@ class ConsoleChannel : public UI_ConsoleChannel
   Q_OBJECT
 
  public:
-  ConsoleChannel(Device* device, t_channel channel, QWidget *parent);
+  ConsoleChannel(QWidget *parent, const char* name = NULL);
   ~ConsoleChannel();
 
-  void init(void);
+  void setDevice(t_device_id);
+  void setChannel(t_channel);
 
   int getSliderValue(void);
   void update(void);
 
-  void setNumber(t_channel number);
-  void setStatusButton(Scene::ValueType status);
+  void setStatusButton(Scene::ValueType);
 
   Scene::ValueType status() const { return m_status; }
 
+ signals:
+  void changed(t_channel, t_value, Scene::ValueType);
+
  public slots:
   void slotValueChange(int);
-  void slotAnimateValueChange(int value);
-  void slotAnimateValueChange(t_value value);
+  void slotAnimateValueChange(t_value);
+
+  void slotSceneActivated(Scene*);
 
  private slots:
   void slotStatusButtonClicked();
@@ -68,9 +72,10 @@ class ConsoleChannel : public UI_ConsoleChannel
   void updateStatusButton();
 
   t_channel m_channel;
+  t_value m_value;
   Scene::ValueType m_status;
 
-  Device* m_device;
+  t_device_id m_deviceID;
 };
 
 #endif

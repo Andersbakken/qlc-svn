@@ -26,8 +26,9 @@
 #include <qvariant.h>
 #include <qwidget.h>
 
-#include "scene.h"
 #include "uic_sceneeditor.h"
+#include "scene.h"
+#include "types.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -46,14 +47,20 @@ class SceneEditor : public UI_SceneEditor
   Q_OBJECT
 
  public:
-  SceneEditor(Device* device, QWidget* parent);
+  SceneEditor(QWidget* parent, const char* name = NULL);
   ~SceneEditor();
 
-  void init();
+  void setDevice(t_device_id);
+  void initMenu();
+
+  Scene* currentScene();
+
+ signals:
+  void sceneActivated(Scene*);
 
  public slots:
   void slotSceneListContextMenu(QListBoxItem*, const QPoint&);
-  void slotSceneChanged();
+  void slotChannelChanged(t_channel, t_value, Scene::ValueType);
 
   void slotActivate();
   void slotNew();
@@ -62,16 +69,15 @@ class SceneEditor : public UI_SceneEditor
   void slotRename();
 
  protected:
-  Device* m_device;
-  QPopupMenu* m_menu;
-
- protected:
   void fillFunctions();
   void selectFunction(t_function_id fid);
   void setStatusText(QString text, QColor color);
   void setScene(Scene* scene);
 
-  Scene* currentScene();
+ protected:
+  t_device_id m_deviceID;
+  QPopupMenu* m_menu;
+  Scene* m_tempScene;
 };
 
 #endif

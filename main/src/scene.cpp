@@ -183,6 +183,11 @@ Scene::~Scene()
   if (m_values) delete[] m_values;
 }
 
+Scene::ValueType Scene::valueType(t_channel ch)
+{
+  assert(ch < m_channels);
+  return m_values[ch].type;
+}
 
 //
 // Return one channel's value type as string

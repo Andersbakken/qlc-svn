@@ -22,12 +22,9 @@
 #include "app.h"
 #include "doc.h"
 #include "device.h"
-#include "containerview.h"
 #include "scene.h"
-#include "consolechannel.h"
 #include "settings.h"
-#include "sceneeditor.h"
-#include "containerview.h"
+#include "deviceconsole.h"
 #include "monitor.h"
 #include "deviceproperties.h"
 #include "configkeys.h"
@@ -58,7 +55,6 @@ Device::Device()
     m_id          (         KNoID ),
     m_name        ( QString::null ),
     m_console     (          NULL ),
-    m_sceneEditor (          NULL ),
     m_monitor     (          NULL )
 {
 }
@@ -347,28 +343,13 @@ void Device::viewConsole()
 {
   if (m_console == NULL)
     {
-      m_console = new ContainerView((QWidget*) _app->workspace());
+      m_console = new DeviceConsole(_app->workspace());
+      m_console->setDevice(m_id);
 
-      // Tell the monitor the dimensions of its widgets
+      // Set window title
       m_console->setCaption(m_name + " Console");
-      
-      // the next 2 lines must be in that order
-      // drawback: the initial scene is not displayed automagically
-      // otherwise, moved sliders cannot emit the "changed"-signal
-      m_sceneEditor = new SceneEditor(this, m_console);
-      m_sceneEditor->init();
-      m_sceneEditor->show();
-      createChannelUnits();
 
-      m_sceneEditor->update();
-
-      // Set a nice icon
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH + QString("/");
-
-      m_console->setIcon(QPixmap(dir + QString("console.xpm")));
-
+      // Catch close event
       connect(m_console, SIGNAL(closed()), this, SLOT(slotConsoleClosed()));
 
       m_console->show();
@@ -382,31 +363,8 @@ void Device::viewConsole()
 }
 
 
-void Device::createChannelUnits()
-{
-  ConsoleChannel* unit = NULL;
-
-  for (unsigned int i = 0; i < deviceClass()->channels()->count(); i++)
-    {
-      unit = new ConsoleChannel(this, i, m_console);
-      unit->init();
-      unit->update();
-      m_unitList.append(unit);
-    }
-}
-
-
 void Device::slotConsoleClosed()
 {
-  while (!m_unitList.isEmpty())
-    {
-      delete m_unitList.take(0);
-    }
-
-  disconnect(m_sceneEditor);
-  delete m_sceneEditor;
-  m_sceneEditor = NULL;
-
   disconnect(m_console);
   delete m_console;
   m_console = NULL;

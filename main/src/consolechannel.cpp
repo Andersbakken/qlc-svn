@@ -37,7 +37,7 @@
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
-#include "sceneeditor.h"
+#include "scene.h"
 #include "device.h"
 #include "logicalchannel.h"
 #include "capability.h"
@@ -51,37 +51,50 @@ const QColor KStatusButtonColorOff   (  28,  52,  77 );
 
 const int KMenuTitle          ( INT_MAX );
 
-ConsoleChannel::ConsoleChannel(Device* device, t_channel channel, 
-			       QWidget *parent) : UI_ConsoleChannel(parent)
+ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name) 
+  : UI_ConsoleChannel(parent, name),
+    m_channel  (           0 ),
+    m_value    (           0 ),
+    m_status   ( Scene::Fade ),
+    m_deviceID (       KNoID )
 {
-  assert(device);
-  assert(channel <= KChannelMax);
+  m_statusButton->setBackgroundMode(FixedColor);
 
-  m_channel = channel;
-  m_device = device;
-  m_status = Scene::Fade;
+  connect(m_valueSlider, SIGNAL(valueChanged(int)), 
+	  this, SLOT(slotValueChange(int)));
+
+  connect(m_valueSlider, SIGNAL(sliderPressed()),
+	  this, SLOT(slotSetFocus()));
+
+  connect(m_statusButton, SIGNAL(clicked()),
+	  this, SLOT(slotStatusButtonClicked()));
 }
 
 ConsoleChannel::~ConsoleChannel()
 {
 }
 
-void ConsoleChannel::init(void)
+void ConsoleChannel::setDevice(t_device_id id)
 {
-  connect(m_valueSlider, SIGNAL(valueChanged(int)), 
-	  this, SLOT(slotValueChange(int)));
-  connect(m_valueSlider, SIGNAL(valueChanged(int)), 
-	  m_device->sceneEditor(), SLOT(slotSceneChanged()));
-  connect(m_valueSlider, SIGNAL(sliderPressed()), this, SLOT(slotSetFocus()));
+  m_deviceID = id;
+  assert(_app->doc()->device(id));
+}
 
-  connect(m_statusButton, SIGNAL(clicked()), 
-	  this, SLOT(slotStatusButtonClicked()));
-  connect(m_statusButton, SIGNAL(pressed()), 
-	  m_device->sceneEditor(), SLOT(slotSceneChanged()));
-  m_statusButton->setBackgroundMode(FixedColor);
+void ConsoleChannel::setChannel(t_channel channel)
+{
+  QString num;
+
+  m_channel = channel;
+
+  num.sprintf("%.3d", channel + 1);
+  m_numberLabel->setText(num);
+
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+
+  QToolTip::add(this, device->deviceClass()->channels()->at(channel)->name());
+
   updateStatusButton();
-
-  setNumber(m_channel);
 }
 
 void ConsoleChannel::setStatusButton(Scene::ValueType status)
@@ -94,6 +107,8 @@ void ConsoleChannel::slotStatusButtonClicked()
 {
   m_status = (Scene::ValueType) ((m_status + 1) % 3);
   updateStatusButton();
+
+  emit changed(m_channel, m_value, m_status);
 }
 
 void ConsoleChannel::updateStatusButton()
@@ -129,9 +144,12 @@ void ConsoleChannel::slotSetFocus()
 {
   t_value value = 0;
 
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+
   // In case someone else has set the value for this channel, animate
   // the slider to the correct position
-  _app->outputPlugin()->readChannel(m_device->address() + m_channel, value);
+  _app->outputPlugin()->readChannel(device->address() + m_channel, value);
   slotAnimateValueChange(value);
 
   // Set focus to this slider
@@ -141,7 +159,11 @@ void ConsoleChannel::slotSetFocus()
 void ConsoleChannel::update()
 {
   t_value value = 0;
-  _app->outputPlugin()->readChannel(m_device->address() + m_channel, value);
+
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+
+  _app->outputPlugin()->readChannel(device->address() + m_channel, value);
 
   m_valueLabel->setNum(value);
   slotAnimateValueChange(value);
@@ -151,9 +173,15 @@ void ConsoleChannel::slotValueChange(int value)
 {
   value = KChannelValueMax - value;
 
-  _app->outputPlugin()->writeChannel(m_device->address() + m_channel, 
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+
+  _app->outputPlugin()->writeChannel(device->address() + m_channel, 
 				     (t_value) value);
   m_valueLabel->setNum(value);
+
+  m_value = value;
+  emit changed(m_channel, m_value, m_status);
 }
 
 int ConsoleChannel::getSliderValue()
@@ -162,25 +190,9 @@ int ConsoleChannel::getSliderValue()
 }
 
 // This slot emulates the user dragging the value slider
-void ConsoleChannel::slotAnimateValueChange(int value)
-{
-  m_valueSlider->setValue(KChannelValueMax - value);
-}
-
 void ConsoleChannel::slotAnimateValueChange(t_value value)
 {
   m_valueSlider->setValue(static_cast<int> (KChannelValueMax - value));
-}
-
-void ConsoleChannel::setNumber(t_channel number)
-{
-  QString num;
-
-  num.sprintf("%.3d", number+1);
-  m_numberLabel->setText(num);
-
-  QToolTip::add(m_valueSlider,
-		m_device->deviceClass()->channels()->at(number)->name());
 }
 
 void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
@@ -188,8 +200,12 @@ void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
   QString s;
   QString t;
   Capability* c = NULL;
-  LogicalChannel* ch = m_device->deviceClass()->channels()->at(m_channel);
 
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+  
+  LogicalChannel* ch = device->deviceClass()->channels()->at(m_channel);
+  
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem(ch->name(), KMenuTitle);
   menu->setItemEnabled(KMenuTitle, false);
@@ -250,5 +266,18 @@ void ConsoleChannel::slotContextMenuActivated(int value)
     {
       // The menuitem contains a valid DMX value
       slotAnimateValueChange(value);
+    }
+}
+
+void ConsoleChannel::slotSceneActivated(Scene* scene)
+{
+  assert(scene);
+  
+  SceneValue value = scene->channelValue(m_channel);
+  setStatusButton(value.type);
+  
+  if (value.type == Scene::Set || value.type == Scene::Fade)
+    {
+      slotAnimateValueChange(value.value);
     }
 }
