@@ -52,11 +52,13 @@ class SequenceEditor : public UI_SequenceEditor
   void slotRemove();
   void slotRaise();
   void slotLower();
+  void slotSlidersToggled(bool);
   void slotOKClicked();
   void slotCancelClicked();
 
   void slotChannelChanged(t_channel, t_value, Scene::ValueType);
   void slotSelectionChanged(QListViewItem*);
+  void slotItemRenamed(QListViewItem*, int, const QString&);
 
   void slotGeneratorButtonClicked();
 

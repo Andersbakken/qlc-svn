@@ -42,6 +42,10 @@ class Sequence : public Function
   bool copyFrom(Sequence* seq, t_device_id toDevice = KNoID);
   bool setDevice(t_device_id);
 
+  void constructFromPointArray(const QPointArray& array,
+			       t_channel horizontalChannel,
+			       t_channel verticalChannel);
+
   t_channel channels() { return m_channels; }
 
   QPtrList <SceneValue> m_values;

@@ -23,7 +23,9 @@
 #define PATTERNGENERATOR_H
 
 #include <qpointarray.h>
+
 #include "uic_patterngenerator.h"
+#include "types.h"
 
 class QPaintEvent;
 class GeneratorArea;
@@ -40,6 +42,8 @@ class PatternGenerator : public UI_PatternGenerator
   void setSequence(Sequence*);
 
   QPointArray pointArray() { return m_pointArray; }
+  t_channel horizontalChannel() { return m_horizontalChannel; }
+  t_channel verticalChannel() { return m_verticalChannel; }
 
  public slots:
   void slotWidthSpinChanged(int);
@@ -48,8 +52,8 @@ class PatternGenerator : public UI_PatternGenerator
   void slotYOffsetSpinChanged(int);
   void slotDensitySpinChanged(int);
 
-  void slotOKClicked();
-  void slotCancelClicked();
+  void slotHorizontalChannelSelected(int);
+  void slotVerticalChannelSelected(int);
 
  protected:
   void createCircle();
@@ -66,6 +70,9 @@ class PatternGenerator : public UI_PatternGenerator
   QPointArray m_pointArray;
 
   Sequence* m_sequence;
+
+  t_channel m_horizontalChannel;
+  t_channel m_verticalChannel;
 };
 
 #endif

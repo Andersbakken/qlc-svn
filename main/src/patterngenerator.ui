@@ -490,16 +490,10 @@
         <slot>slotYOffsetSpinChanged(int)</slot>
     </connection>
     <connection>
-        <sender>m_ok</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_PatternGenerator</receiver>
-        <slot>slotOKClicked()</slot>
-    </connection>
-    <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
         <receiver>UI_PatternGenerator</receiver>
-        <slot>slotCancelClicked()</slot>
+        <slot>reject()</slot>
     </connection>
     <connection>
         <sender>m_densitySpin</sender>
@@ -507,15 +501,33 @@
         <receiver>UI_PatternGenerator</receiver>
         <slot>slotDensitySpinChanged(int)</slot>
     </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_horizontalCombo</sender>
+        <signal>activated(int)</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>slotHorizontalChannelSelected(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_verticalCombo</sender>
+        <signal>activated(int)</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>slotVerticalChannelSelected(int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotHeightSpinChanged(int)</slot>
     <slot>slotXOffsetSpinChanged(int)</slot>
     <slot>slotYOffsetSpinChanged(int)</slot>
     <slot>slotWidthSpinChanged(int)</slot>
-    <slot>slotOKClicked()</slot>
-    <slot>slotCancelClicked()</slot>
     <slot>slotDensitySpinChanged(int)</slot>
+    <slot>slotHorizontalChannelSelected(int)</slot>
+    <slot>slotVerticalChannelSelected(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

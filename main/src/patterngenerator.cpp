@@ -41,14 +41,16 @@ extern App* _app;
 PatternGenerator::PatternGenerator(QWidget* parent, const char* name)
   : UI_PatternGenerator(parent, name),
 
-    m_width      ( 127 ),
-    m_height     ( 127 ),
-    m_xOffset    ( 127 ),
-    m_yOffset    ( 127 ),
-    m_density    (  .1 ),
-    m_area       ( new GeneratorArea(m_generatorFrame) ),
-    m_pointArray ( ),
-    m_sequence   ( NULL )
+    m_width             ( 127 ),
+    m_height            ( 127 ),
+    m_xOffset           ( 127 ),
+    m_yOffset           ( 127 ),
+    m_density           (  .1 ),
+    m_area              ( new GeneratorArea(m_generatorFrame) ),
+    m_pointArray        ( ),
+    m_sequence          ( NULL ),
+    m_horizontalChannel ( 0 ),
+    m_verticalChannel   ( 0 )
 {
   m_area->resize(m_generatorFrame->size());
 }
@@ -129,14 +131,14 @@ void PatternGenerator::slotDensitySpinChanged(int value)
   createCircle();
 }
 
-void PatternGenerator::slotOKClicked()
+void PatternGenerator::slotHorizontalChannelSelected(int channel)
 {
-  accept();
+  m_horizontalChannel = channel;
 }
 
-void PatternGenerator::slotCancelClicked()
+void PatternGenerator::slotVerticalChannelSelected(int channel)
 {
-  reject();
+  m_verticalChannel = channel;
 }
 
 void PatternGenerator::createCircle()

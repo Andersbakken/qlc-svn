@@ -65,6 +65,9 @@
                             <property name="allColumnsShowFocus">
                                 <bool>true</bool>
                             </property>
+                            <property name="defaultRenameAction">
+                                <enum>Accept</enum>
+                            </property>
                         </widget>
                         <widget class="QFrame">
                             <property name="name">
@@ -101,7 +104,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout7</cstring>
+                        <cstring>layout8</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -244,10 +247,44 @@
                             <property name="sizeHint">
                                 <size>
                                     <width>20</width>
-                                    <height>40</height>
+                                    <height>110</height>
                                 </size>
                             </property>
                         </spacer>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_sliders</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>5</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>SL</string>
+                            </property>
+                            <property name="toggleButton">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Toggle slider visibility</string>
+                            </property>
+                        </widget>
                     </vbox>
                 </widget>
             </hbox>
@@ -368,16 +405,30 @@
         <receiver>UI_SequenceEditor</receiver>
         <slot>slotGeneratorButtonClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_sliders</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>UI_SequenceEditor</receiver>
+        <slot>slotSlidersToggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>m_list</sender>
+        <signal>itemRenamed(QListViewItem*,int,const QString&amp;)</signal>
+        <receiver>UI_SequenceEditor</receiver>
+        <slot>slotItemRenamed(QListViewItem*,int,const QString&amp;)</slot>
+    </connection>
 </connections>
 <slots>
-    <slot>slotOKClicked()</slot>
-    <slot>slotCancelClicked()</slot>
     <slot>slotInsert()</slot>
     <slot>slotRemove()</slot>
     <slot>slotRaise()</slot>
     <slot>slotLower()</slot>
     <slot>slotSelectionChanged(QListViewItem*)</slot>
     <slot>slotGeneratorButtonClicked()</slot>
+    <slot>slotSlidersToggled(bool)</slot>
+    <slot>slotItemRenamed(QListViewItem*, int, const QString&amp;)</slot>
+    <slot>slotOKClicked()</slot>
+    <slot>slotCancelClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

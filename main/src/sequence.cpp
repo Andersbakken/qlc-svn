@@ -23,6 +23,7 @@
 #include <qptrlist.h>
 #include <time.h>
 #include <qapplication.h>
+#include <qpointarray.h>
 #include <assert.h>
 
 #include "app.h"
@@ -49,6 +50,24 @@ Sequence::Sequence() :
   m_dataMutex   (           false )
 {
   setBus(KBusIDDefaultFade);
+}
+
+
+//
+// Standard destructor
+//
+Sequence::~Sequence()
+{
+  stop();
+
+  m_startMutex.lock();
+  while (m_running)
+    {
+      m_startMutex.unlock();
+      sched_yield();
+      m_startMutex.lock();
+    }
+  m_startMutex.unlock();
 }
 
 
@@ -190,23 +209,42 @@ bool Sequence::setDevice(t_device_id id)
 }
 
 
-//
-// Standard destructor
-//
-Sequence::~Sequence()
+void Sequence::constructFromPointArray(const QPointArray& array,
+				       t_channel horizontalChannel,
+				       t_channel verticalChannel)
 {
-  stop();
+  SceneValue* value = NULL;
 
-  m_startMutex.lock();
-  while (m_running)
+  m_values.setAutoDelete(true);
+  m_values.clear();
+  m_values.setAutoDelete(false);
+
+  for (unsigned int i = 0; i < array.size(); i++)
     {
-      m_startMutex.unlock();
-      sched_yield();
-      m_startMutex.lock();
-    }
-  m_startMutex.unlock();
-}
+      value = new SceneValue[m_channels];
+      
+      for (t_channel ch = 0; ch < m_channels; ch++)
+	{
+	  if (ch == horizontalChannel)
+	    {
+	      value[ch].value = array.point(i).x();
+	      value[ch].type = Scene::Set;
+	    }
+	  else if (ch == verticalChannel)
+	    {
+	      value[ch].value = array.point(i).y();
+	      value[ch].type = Scene::Set;	      
+	    }
+	  else
+	    {
+	      value[ch].value = 0;
+	      value[ch].type = Scene::NoSet;
+	    }
+	}
 
+      m_values.append(value);
+    }
+}
 
 //
 // Save this sequence's contents to given file

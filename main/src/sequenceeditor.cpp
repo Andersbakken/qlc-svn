@@ -76,6 +76,8 @@ void SequenceEditor::init()
   m_raise->setPixmap(QPixmap(dir + "/up.xpm"));
   m_lower->setPixmap(QPixmap(dir + "/down.xpm"));
 
+  m_sliders->setPixmap(QPixmap(dir + "/console.xpm"));
+
   m_list->setVScrollBarMode(QScrollView::AlwaysOn);
   m_list->header()->setClickEnabled(false);
   m_list->header()->setMovingEnabled(false);
@@ -102,6 +104,10 @@ void SequenceEditor::setDevice(t_device_id id)
   ConsoleChannel* unit = NULL;
   for (t_channel ch = 0; ch < m_channels; ch++)
     {
+      // Set current values to noset
+      m_tempValues[ch].value = 0;
+      m_tempValues[ch].type = Scene::NoSet;
+
       QString s;
 
       s.sprintf("%.3d", ch + 1);
@@ -141,6 +147,8 @@ void SequenceEditor::setDevice(t_device_id id)
 
   m_list->setResizeMode(QListView::AllColumns);
   m_list->setSorting(-1);
+
+  m_sliderContainer->hide();
 }
 
 void SequenceEditor::setSequence(Sequence* sequence)
@@ -150,6 +158,8 @@ void SequenceEditor::setSequence(Sequence* sequence)
 
   QListViewItem* item = NULL;
   
+  m_list->clear();
+
   for (int i = m_sequence->m_values.count() - 1; i >= 0; i--)
     {
       QString s;
@@ -232,6 +242,8 @@ void SequenceEditor::slotInsert()
 	{
 	  item->setText(ch, s);
 	}
+
+      item->setRenameEnabled(ch, true);
     }
 
   m_list->setSelected(item, true);
@@ -291,6 +303,18 @@ void SequenceEditor::slotLower()
     }
 
   m_list->ensureItemVisible(item);
+}
+
+void SequenceEditor::slotSlidersToggled(bool state)
+{
+  if (state)
+    {
+      m_sliderContainer->show();
+    }
+  else
+    {
+      m_sliderContainer->hide();
+    }
 }
 
 void SequenceEditor::slotOKClicked()
@@ -354,6 +378,31 @@ void SequenceEditor::slotSelectionChanged(QListViewItem* item)
   emit sceneActivated(m_tempValues, m_channels);
 }
 
+void SequenceEditor::slotItemRenamed(QListViewItem* item, int col, 
+				     const QString& text)
+{
+  if (item == NULL)
+    {
+      return;
+    }
+
+  if (text.contains("x", false))
+    {
+      item->setText(col, QString("XXX"));
+    }
+  else if (text.toInt() > 255)
+    {
+      item->setText(col, QString("255"));
+    }
+  else if (text.toInt() <= 0)
+    {
+      item->setText(col, QString("0"));
+    }
+
+  m_list->setSelected(item, true);
+  slotSelectionChanged(item);
+}
+
 void SequenceEditor::slotGeneratorButtonClicked()
 {
   PatternGenerator* pg = new PatternGenerator(this);
@@ -361,19 +410,10 @@ void SequenceEditor::slotGeneratorButtonClicked()
 
   if (pg->exec() == QDialog::Accepted)
     {
-      /*
-      QPointArray a = pg->pointArray();
-      for (int i = 0; i < a.size(); i++)
-	{
-	  QListViewItem* item = new QListViewItem(m_list);
-	  QString s;
-	  s.setNum(a.point(i).x());
-	  item->setText(0, s);
-
-	  s.setNum(a.point(i).y());
-	  item->setText(1, s);
-	}
-      */
+      m_sequence->constructFromPointArray(pg->pointArray(),
+					  pg->horizontalChannel(),
+					  pg->verticalChannel());
+      setSequence(m_sequence);
     }
 
   delete pg;
