@@ -1,0 +1,421 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_Settings</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_Settings</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>469</width>
+            <height>449</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Settings</string>
+    </property>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_directoriesGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>450</width>
+                <height>110</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Directories</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_picturesLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>120</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Pictures</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_deviceClassesLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>60</y>
+                    <width>120</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device Classes</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_picturesEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>30</y>
+                    <width>231</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_deviceClassesEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>60</y>
+                    <width>230</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_browseDeviceClassesButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>60</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Browse...</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_browsePicturesButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>30</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Browse...</string>
+            </property>
+            <property name="autoDefault">
+                <bool>true</bool>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_stylesGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>130</y>
+                <width>450</width>
+                <height>140</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Styles</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_generalFontLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>110</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>General Font</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_smallFontLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>60</y>
+                    <width>110</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Small Font</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_selectGeneralFontButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>30</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Select...</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>m_widgetStyleCombo</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>100</y>
+                    <width>230</width>
+                    <height>24</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_widgetStyleLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>100</y>
+                    <width>110</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Widget Style</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_generalFontEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>30</y>
+                    <width>231</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="readOnly">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_smallFontEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>60</y>
+                    <width>231</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="readOnly">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_selectSmallFontButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>370</x>
+                    <y>60</y>
+                    <width>70</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Select...</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_startupGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>280</y>
+                <width>450</width>
+                <height>100</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Startup</string>
+        </property>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>m_openDeviceManagerCheckBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>310</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Open Device Manager</string>
+            </property>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>m_openLastWorkspaceCheckBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>60</y>
+                    <width>310</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Open Last Workspace</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>400</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>290</x>
+                <y>400</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_selectGeneralFontButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotGeneralFontSelectClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_selectSmallFontButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotSmallFontSelectClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_browsePicturesButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotPicturesBrowseClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_browseDeviceClassesButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotDeviceClassesBrowseClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotCancelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_widgetStyleCombo</sender>
+        <signal>activated(int)</signal>
+        <receiver>UI_Settings</receiver>
+        <slot>slotWidgetStyleActivated(int)</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_picturesEdit</tabstop>
+    <tabstop>m_browsePicturesButton</tabstop>
+    <tabstop>m_deviceClassesEdit</tabstop>
+    <tabstop>m_browseDeviceClassesButton</tabstop>
+    <tabstop>m_generalFontEdit</tabstop>
+    <tabstop>m_selectGeneralFontButton</tabstop>
+    <tabstop>m_smallFontEdit</tabstop>
+    <tabstop>m_selectSmallFontButton</tabstop>
+    <tabstop>m_widgetStyleCombo</tabstop>
+    <tabstop>m_openDeviceManagerCheckBox</tabstop>
+    <tabstop>m_openLastWorkspaceCheckBox</tabstop>
+    <tabstop>m_ok</tabstop>
+    <tabstop>m_cancel</tabstop>
+</tabstops>
+<slots>
+    <slot>slotCancelClicked()</slot>
+    <slot>slotDeviceClassesBrowseClicked()</slot>
+    <slot>slotGeneralFontSelectClicked()</slot>
+    <slot>slotOKClicked()</slot>
+    <slot>slotPicturesBrowseClicked()</slot>
+    <slot>slotSmallFontSelectClicked()</slot>
+    <slot>slotWidgetStyleActivated(int)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

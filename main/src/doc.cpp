@@ -198,7 +198,7 @@ bool Doc::readDeviceClasses()
 {
   DeviceClass* dc = NULL;
   QString path = QString::null;
-  QString dir = _app->settings()->getDevicePath();
+  QString dir = _app->settings()->deviceClassPath();
 
   QDir d(dir);
   d.setFilter(QDir::Files);
@@ -910,7 +910,7 @@ void Doc::removeBus(unsigned int id, bool deleteBus)
 void Doc::findPluginObjects()
 {
   QString path = QString::null;
-  QString dir = _app->settings()->getInstallDir() + QString("libs/");
+  QString dir = _app->settings()->installDir() + QString("libs/");
   qDebug("Probing %s for plugin objects...", dir.latin1());
 
   QDir d(dir);

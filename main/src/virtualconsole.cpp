@@ -158,7 +158,7 @@ void VirtualConsole::saveToFile(QFile& file)
 void VirtualConsole::initView(void)
 {
   setCaption("Virtual Console");
-  setIcon(_app->settings()->getPixmapPath() + QString("virtualconsole.xpm"));
+  setIcon(_app->settings()->pixmapPath() + QString("virtualconsole.xpm"));
 
   m_layout = new QVBoxLayout(this);
 

@@ -49,7 +49,7 @@ void AboutBox::initDialog()
 
   setCaption("About QLC");
 
-  m_pm = new QPixmap(_app->settings()->getPixmapPath() + "/qlc-big.xpm");
+  m_pm = new QPixmap(_app->settings()->pixmapPath() + "/qlc-big.xpm");
   if (m_pm->isNull() == false)
     {
       m_logo = new QWidget(this);

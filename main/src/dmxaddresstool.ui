@@ -1,0 +1,576 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_DMXAddressTool</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_DMXAddressTool</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>500</width>
+            <height>208</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>DMX Address Converter</string>
+    </property>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>90</y>
+                <width>320</width>
+                <height>110</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>DIP Setting</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_offLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>280</x>
+                    <y>30</y>
+                    <width>30</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Off</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_onLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>280</x>
+                    <y>60</y>
+                    <width>30</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>On</string>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_1Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>250</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_2Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>220</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_4Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>190</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_8Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_16Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_32Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>100</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_64Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>70</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_128Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>40</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>m_256Slider</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>20</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_256Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_128Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>40</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_64Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>70</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_32Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>100</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_16Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>130</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_8Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_4Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>190</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_2Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>220</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_1Label</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>250</x>
+                    <y>80</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_decimalValueGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>320</width>
+                <height>70</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Decimal Value</string>
+        </property>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_decimalEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>30</y>
+                    <width>300</width>
+                    <height>24</height>
+                </rect>
+            </property>
+            <property name="maxLength">
+                <number>3</number>
+            </property>
+            <property name="alignment">
+                <set>AlignHCenter</set>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_convertGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>340</x>
+                <y>10</y>
+                <width>150</width>
+                <height>110</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Convert</string>
+        </property>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_dipToDecimalButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>70</y>
+                    <width>110</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;DIP to Decimal</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_decimalToDIPButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>110</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Decimal To D&amp;IP</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>360</x>
+                <y>170</y>
+                <width>110</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;Cancel</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>360</x>
+                <y>130</y>
+                <width>110</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_dipToDecimalButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXAddressTool</receiver>
+        <slot>slotDipToDecimalClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_decimalToDIPButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXAddressTool</receiver>
+        <slot>slotDecimalToDipClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXAddressTool</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXAddressTool</receiver>
+        <slot>slotCancelClicked()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_decimalEdit</tabstop>
+    <tabstop>m_dipToDecimalButton</tabstop>
+    <tabstop>m_256Slider</tabstop>
+    <tabstop>m_128Slider</tabstop>
+    <tabstop>m_64Slider</tabstop>
+    <tabstop>m_32Slider</tabstop>
+    <tabstop>m_16Slider</tabstop>
+    <tabstop>m_8Slider</tabstop>
+    <tabstop>m_4Slider</tabstop>
+    <tabstop>m_2Slider</tabstop>
+    <tabstop>m_1Slider</tabstop>
+    <tabstop>m_decimalToDIPButton</tabstop>
+    <tabstop>m_ok</tabstop>
+    <tabstop>m_cancel</tabstop>
+</tabstops>
+<slots>
+    <slot access="private">slotCancelClicked()</slot>
+    <slot access="private">slotDecimalToDipClicked()</slot>
+    <slot access="private">slotDipToDecimalClicked()</slot>
+    <slot access="private">slotOKClicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

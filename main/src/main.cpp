@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   settings->load();
 
   // Allow the usage of the global system style setting
-  QStyle* style = settings->getStyle();
+  QStyle* style = settings->style(settings->widgetStyle());
   if (style != NULL)
     {
       a.setStyle(style);

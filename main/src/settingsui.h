@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  dmxaddresstool.h
+  settingsui.h
   
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
@@ -19,71 +19,43 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DMXADDRESSTOOL_H
-#define DMXADDRESSTOOL_H
+#ifndef SETTINGSUI_H
+#define SETTINGSUI_H
 
-#include "uic_dmxaddresstool.h"
+#include "classes.h"
+#include "uic_settings.h"
 
-class DMXAddressTool : public UI_DMXAddressTool
+class QFont;
+
+class SettingsUI : public UI_Settings
 {
   Q_OBJECT
 
+  friend class Settings;
+
  public:
-  DMXAddressTool(QWidget* parent = NULL, const char* name = NULL);
-  ~DMXAddressTool();
+  SettingsUI(QWidget* parent = NULL, const char* name = NULL);
+  ~SettingsUI();
 
-  int address() { return m_address; }
-  void setAddress(int address);
-
- private slots:
-  void slotDipToDecimalClicked();
-  void slotDecimalToDipClicked();
+ public slots:
+  void slotPicturesBrowseClicked();
+  void slotDeviceClassesBrowseClicked();
+  void slotGeneralFontSelectClicked();
+  void slotSmallFontSelectClicked();
   void slotOKClicked();
   void slotCancelClicked();
+  void slotWidgetStyleActivated(int);
 
  private:
-  int m_address;
+  QString m_picturePath;
+  QString m_deviceClassPath;
+
+  QFont m_generalFont;
+  QFont m_smallFont;
+
+  bool m_openDeviceManager;
+  bool m_openLastWorkspace;
+
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -77,7 +77,7 @@ void NewDevice::initView()
   m_autoAddress = new QCheckBox(this);
   m_autoAddress->setGeometry(240, 110, 150, 30);
   m_autoAddress->setText("Automatic address");
-  m_autoAddress->setChecked(_app->settings()->getAutoAddressAssign());
+  m_autoAddress->setChecked(_app->settings()->autoAddressAssign());
   slotAutoAddressClicked();
   connect(m_autoAddress, SIGNAL(clicked()), this, SLOT(slotAutoAddressClicked()));
 
@@ -122,7 +122,7 @@ void NewDevice::fillTree()
   QListViewItem* newItem = NULL;
 
   QList <DeviceClass> dclist(_app->doc()->deviceClassList());
-  QPixmap pm(_app->settings()->getPixmapPath() + QString("dmx.xpm"));
+  QPixmap pm(_app->settings()->pixmapPath() + QString("dmx.xpm"));
 
   m_tree->clear();
 
@@ -145,7 +145,7 @@ void NewDevice::fillTree()
 	  parent = new QListViewItem(m_tree, dc->manufacturer());	  
 	}
 
-      parent->setPixmap(0, QPixmap(_app->settings()->getPixmapPath() + QString("global.xpm")));
+      parent->setPixmap(0, QPixmap(_app->settings()->pixmapPath() + QString("global.xpm")));
 
       newItem = new QListViewItem(parent, dc->model());
       newItem->setPixmap(0, pm);
