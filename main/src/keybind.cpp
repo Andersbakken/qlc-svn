@@ -27,7 +27,7 @@
 
 KeyBind::KeyBind() : QObject()
 {
-  m_pressAction = PressStart;
+  m_pressAction = PressToggle;
   m_releaseAction = ReleaseNothing;
   m_key = 0;
   m_mod = 0;
