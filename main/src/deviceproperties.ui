@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>290</width>
-            <height>202</height>
+            <height>208</height>
         </rect>
     </property>
     <property name="caption">
@@ -58,6 +58,9 @@
             <property name="text">
                 <string>Cancel</string>
             </property>
+            <property name="toolTip" stdset="0">
+                <string>Close this window without accepting changes.</string>
+            </property>
         </widget>
         <widget class="QSpinBox" row="4" column="1">
             <property name="name">
@@ -72,6 +75,9 @@
             <property name="maxValue">
                 <number>511</number>
             </property>
+            <property name="toolTip" stdset="0">
+                <string>This device's address.</string>
+            </property>
         </widget>
         <widget class="QPushButton" row="5" column="1">
             <property name="name">
@@ -83,6 +89,9 @@
             <property name="default">
                 <bool>true</bool>
             </property>
+            <property name="toolTip" stdset="0">
+                <string>Accept changes and close this window.</string>
+            </property>
         </widget>
         <widget class="QPushButton" row="4" column="2">
             <property name="name">
@@ -92,7 +101,7 @@
                 <string>DIP</string>
             </property>
             <property name="toolTip" stdset="0">
-                <string>Select the address with DIP switches</string>
+                <string>Select the address with DIP switches.</string>
             </property>
         </widget>
         <widget class="QLineEdit" row="1" column="1" rowspan="1" colspan="2">
@@ -105,6 +114,9 @@
             <property name="readOnly">
                 <bool>true</bool>
             </property>
+            <property name="toolTip" stdset="0">
+                <string>The device class that this device is based on.</string>
+            </property>
         </widget>
         <widget class="QLineEdit" row="2" column="1" rowspan="1" colspan="2">
             <property name="name">
@@ -116,6 +128,9 @@
             <property name="readOnly">
                 <bool>true</bool>
             </property>
+            <property name="toolTip" stdset="0">
+                <string>The device type (e.g. dimmer, scanner etc.)</string>
+            </property>
         </widget>
         <widget class="QLineEdit" row="3" column="1">
             <property name="name">
@@ -126,6 +141,9 @@
             </property>
             <property name="readOnly">
                 <bool>true</bool>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Number of channels needed for this device.</string>
             </property>
         </widget>
         <widget class="QLabel" row="0" column="0">
@@ -148,6 +166,9 @@
             </property>
             <property name="readOnly">
                 <bool>false</bool>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>The name of this device.</string>
             </property>
         </widget>
     </grid>

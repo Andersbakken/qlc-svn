@@ -84,6 +84,9 @@
                                     <height>0</height>
                                 </size>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>QLC application system directory; you should not need to change this.</string>
+                            </property>
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
@@ -114,6 +117,9 @@
                             </property>
                             <property name="flat">
                                 <bool>false</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Browse QLC system directory.</string>
                             </property>
                         </widget>
                         <spacer>
@@ -183,6 +189,9 @@
                                     <height>0</height>
                                 </size>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The workspace background image.</string>
+                            </property>
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
@@ -213,6 +222,9 @@
                             </property>
                             <property name="flat">
                                 <bool>false</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Browse the workspace background image.</string>
                             </property>
                         </widget>
                         <spacer>
@@ -295,6 +307,9 @@
                                     <height>0</height>
                                 </size>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The general look of QLC.</string>
+                            </property>
                         </widget>
                         <spacer>
                             <property name="name">
@@ -343,6 +358,9 @@
                     <property name="text">
                         <string>Open Device Manager</string>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Open device manager when QLC starts.</string>
+                    </property>
                 </widget>
                 <widget class="QCheckBox">
                     <property name="name">
@@ -358,6 +376,9 @@
                     </property>
                     <property name="text">
                         <string>Open Last Workspace</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Open the last workspace file next time when you start QLC.</string>
                     </property>
                 </widget>
             </hbox>
@@ -387,6 +408,9 @@
                     </property>
                     <property name="text">
                         <string>Set key repeat off in operate mode</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>To prevent flickering when a keyboard key is held down</string>
                     </property>
                 </widget>
             </grid>
@@ -450,6 +474,9 @@
                                     <height>0</height>
                                 </size>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The plugin that is used to feed DMX/Analog information to your lighting equipment.</string>
+                            </property>
                         </widget>
                         <spacer>
                             <property name="name">
@@ -490,6 +517,9 @@
                     <property name="default">
                         <bool>true</bool>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept settings and close this window.</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -497,6 +527,9 @@
                     </property>
                     <property name="text">
                         <string>Cancel</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Close this window without accepting settings.</string>
                     </property>
                 </widget>
             </hbox>

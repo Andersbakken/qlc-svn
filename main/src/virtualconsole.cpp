@@ -465,17 +465,16 @@ void VirtualConsole::initView(void)
 
   m_addMenu = new QPopupMenu();
   m_addMenu->setCheckable(false);
-  m_addMenu->insertItem("&Button", ID_VC_ADD_BUTTON);
-  m_addMenu->insertItem("&Slider", ID_VC_ADD_SLIDER);
-  m_addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);
-  // m_addMenu->insertItem("&Monitor", ID_VC_ADD_MONITOR);
-  m_addMenu->insertItem("&Frame", ID_VC_ADD_FRAME);
-  m_addMenu->insertItem("L&abel", ID_VC_ADD_LABEL);
+  m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), "&Button", ID_VC_ADD_BUTTON);
+  m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), "&Slider", ID_VC_ADD_SLIDER);
+  m_addMenu->insertItem(QPixmap(dir + "/speedslider.xpm"), "S&peed slider", ID_VC_ADD_SPEEDSLIDER);
+  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), "&Frame", ID_VC_ADD_FRAME);
+  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), "L&abel", ID_VC_ADD_LABEL);
   connect(m_addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(false);
-  m_toolsMenu->insertItem("&Panic!", ID_VC_TOOLS_PANIC);
+  m_toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), "&Panic!", ID_VC_TOOLS_PANIC);
   connect(m_toolsMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
   m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
