@@ -37,9 +37,6 @@ class Bus
  public:
   ~Bus();
 
-  void saveToFile(QFile &file);
-  void createContents(QPtrList <QString> &list);
-
  public:
   static void init();
 
@@ -51,6 +48,9 @@ class Bus
 
   static bool addListener(t_bus_id, Function*);
   static bool removeListener(t_bus_id, Function*);
+
+  static void createContents(QPtrList <QString> &list);
+  static void saveToFile(QFile &file);
 
  private:
   t_bus_id m_id;

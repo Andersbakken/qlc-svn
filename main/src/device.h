@@ -46,6 +46,8 @@ class Device : public QObject
 	 const QString& name, t_device_id id = 0);
   virtual ~Device();
 
+  static Device* create(QPtrList <QString> &list);
+
   void setAddress(t_channel address);
   t_channel address() const { return m_address; }
 

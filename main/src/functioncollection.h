@@ -48,7 +48,7 @@ class FunctionCollection : public Function
   void speedChange();
   void freeRunTimeData();
 
-  void functionStopped();
+  void childFinished();
 
  protected:
   void init();

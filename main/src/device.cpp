@@ -128,6 +128,83 @@ void Device::saveToFile(QFile &file)
 }
 
 
+//
+// Create a device from a file entry
+//
+Device* Device::create(QPtrList <QString> &list)
+{
+  QString name = QString::null;
+  QString manufacturer = QString::null;
+  QString model = QString::null;
+  QString t = QString::null;
+  int address = 0;
+  t_device_id id = 0;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("Name"))
+	{
+	  name = *(list.next());
+	}		      
+      else if (*s == QString("Manufacturer"))
+	{
+	  manufacturer = *(list.next());
+	}
+      else if (*s == QString("Model"))
+	{
+	  model = *(list.next());
+	}
+      else if (*s == QString("ID"))
+	{
+	  id = list.next()->toULong();
+	}
+      else if (*s == QString("Address"))
+	{
+	  t = *(list.next());
+	  address = t.toInt();
+	}
+      else
+	{
+	  // Unknown keyword
+	  list.next();
+	}
+    }
+
+  if (id == 0 || manufacturer == QString::null || 
+      manufacturer == QString::null)
+    {
+      QString msg;
+      msg = QString("Unable to add device \"" + name +
+		    QString("\" because device id and/or class is missing."));
+      qDebug(msg);
+      
+      return NULL;
+    }
+  else
+    {
+      DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
+      if (dc == NULL)
+	{
+	  QString msg;
+	  msg = QString("Unable to add device \"" + name + "\"." + 
+			"\nNo device class description found for " +
+			manufacturer + QString(" ") + model);
+	  qDebug(msg);
+	  return NULL;
+	}
+      else
+	{
+	  return new Device(address, dc, name, id);
+	}
+    }
+}
+
+
 DeviceClass* Device::deviceClass()
 {
   return m_deviceClass;

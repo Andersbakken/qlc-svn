@@ -457,7 +457,8 @@ void Scene::run()
 	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
 	      // This channel contains a value that is not supposed
-	      // to be written (anymore, in case of ready value)
+	      // to be written (anymore, in case of ready value, which
+	      // comes from "set" type values)
 	      continue;
 	    }
 	  else if (m_values[ch].type == Set)

@@ -25,7 +25,6 @@
 #include <qptrlist.h>
 #include "function.h"
 
-class Scene;
 class Event;
 class QFile;
 class QString;

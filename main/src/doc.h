@@ -74,11 +74,6 @@ class Doc : public QObject
   void modeChanged();
 
  private:
-  Device* createDevice(QPtrList <QString> &list);
-  Function* createFunction(QPtrList <QString> &list);
-  void createFunctionContents(QPtrList <QString> &list);
-
- private:
   QString m_workspaceFileName;
   bool m_modified;
 

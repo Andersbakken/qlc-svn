@@ -87,8 +87,6 @@ void VCDockSlider::setMode(Mode mode)
 	    m_nameLabel->setText("Hold");
 	    m_infoLabel->setText("Speed");
 	  }
-
-	Bus::setValue(m_busID, m_slider->value());
       }
       break;
 
@@ -103,5 +101,9 @@ void VCDockSlider::setBusID(t_bus_id id)
 {
   m_busID = id;
   setMode(Speed);
+
+  t_bus_value value;
+  Bus::value(m_busID, value);
+  m_slider->setValue(value);
 }
 

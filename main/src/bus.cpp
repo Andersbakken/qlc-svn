@@ -36,7 +36,7 @@ Bus::Bus()
 {
   m_id = s_nextID++;
   m_value = 0;
-  m_name.sprintf("Bus %d", m_id);
+  m_name = QString::null;
 }
 
 
@@ -184,43 +184,57 @@ bool Bus::removeListener(t_bus_id id, Function* function)
     }
 }
 
+
 //
-// Save bus to a file
+// Save bus to a file (static)
 //
 void Bus::saveToFile(QFile &file)
 {
   QString s;
-  QString t;
+  t_bus_value value;
 
   // Comment
-  s = QString("# Bus Entry\n");
+  s = QString("# Bus Entries\n");
   file.writeBlock((const char*) s, s.length());
 
   // Entry type
   s = QString("Entry = Bus") + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // Name
-  s = QString("Name = ") + m_name + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+  for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
+    {
+      Bus::value(i, value);
+      if (value != 0 && Bus::name(i) != QString::null)
+	{
+	  // Write only non-nil values
 
-  // ID
-  t.setNum(m_id);
-  s = QString("ID = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Value
-  t.setNum(m_value);
-  s = QString("Value = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());  
+	  // Another comment
+	  s = QString("# Bus ID, its value and its name\n");
+	  file.writeBlock((const char*) s, s.length());
+	  
+	  // ID
+	  s.sprintf("ID = %d\n", i);
+	  file.writeBlock((const char*) s, s.length());
+	  
+	  // Value
+	  s.sprintf("Value = %ld\n", value);
+	  file.writeBlock((const char*) s, s.length());
+	  
+	  // Name
+	  s = QString("Name = ") + Bus::name(i) + QString("\n");
+	  file.writeBlock((const char*) s, s.length());
+	}
+    }
 }
 
 
 //
-// Load bus from file
+// Load bus from file (static)
 //
 void Bus::createContents(QPtrList <QString> &list)
 {
+  t_bus_id id = KBusIDInvalid;
+
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
@@ -228,17 +242,17 @@ void Bus::createContents(QPtrList <QString> &list)
 	  s = list.prev();
 	  break;
 	}
-      else if (*s == QString("Name"))
-	{
-	  m_name = *(list.next());
-	}
       else if (*s == QString("ID"))
 	{
-	  m_id = list.next()->toInt();
+	  id = list.next()->toInt();
 	}
       else if (*s == QString("Value"))
 	{
-	  m_value = list.next()->toInt();
+	  Bus::setValue(id, list.next()->toInt());
+	}
+      else if (*s == QString("Name"))
+	{
+	  Bus::setName(id, *(list.next()));
 	}
     }
 }

@@ -142,7 +142,7 @@ void FunctionCollection::saveToFile(QFile &file)
   for (FunctionStep* step = m_steps.first(); step != NULL;
        step = m_steps.next())
     {
-      s.sprintf("Function = %d", step->function()->id());
+      s.sprintf("Function = %d\n", step->function()->id());
       file.writeBlock((const char*) s, s.length());
     }
 }
@@ -153,7 +153,6 @@ void FunctionCollection::saveToFile(QFile &file)
 //
 void FunctionCollection::createContents(QPtrList <QString> &list)
 {
-  t_device_id did = 0;
   t_function_id fid = 0;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
@@ -165,38 +164,22 @@ void FunctionCollection::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Device"))
 	{
-	  did = list.next()->toULong();
+	  list.next();
 	}
       else if (*s == QString("Function"))
 	{
 	  fid = list.next()->toULong();
 
-	  if (did == 0)
+	  Function* f = NULL;
+	  f = _app->doc()->searchFunction(fid);
+	  if (f != NULL)
 	    {
-	      Function* f = _app->doc()->searchFunction(fid);
-	      if (f != NULL)
-		{
-		  addItem(f);
-		}
-	      else
-		{
-		  qDebug("Unable to find member for function collection <"
-			 + name() + ">");
-		}
+	      addItem(f);
 	    }
 	  else
 	    {
-	      Function* f = NULL;
-	      f = _app->doc()->searchFunction(fid);
-	      if (f != NULL)
-		{
-		  addItem(f);
-		}
-	      else
-		{
-		  qDebug("Unable to find member %d for function collection <"
-			 + name() + ">", fid);
-		}
+	      qDebug("Unable to find member %d for function collection <"
+		     + name() + ">", fid);
 	    }
 	}
       else
@@ -359,11 +342,12 @@ void FunctionCollection::run()
     {
       ++it;
 
-      m_childCountMutex.lock();
-      m_childCount++;
-      m_childCountMutex.unlock();
-
-      step->function()->engage(this);
+      if (step->function()->engage(this))
+	{
+	  m_childCountMutex.lock();
+	  m_childCount++;
+	  m_childCountMutex.unlock();
+	}
     }
 
   // Wait for all children to stop
@@ -378,10 +362,10 @@ void FunctionCollection::run()
 }
 
 
-void FunctionCollection::functionStopped()
+void FunctionCollection::childFinished()
 {
+  qDebug("FunctionCollection::childFinished");
   m_childCountMutex.lock();
   m_childCount--;
   m_childCountMutex.unlock();
 }
-

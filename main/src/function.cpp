@@ -1,29 +1,35 @@
 /*
   Q Light Controller
   function.cpp
-  
+
   Copyright (C) 2004 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include <qstring.h>
-
-#include "function.h"
-#include "functionstep.h"
+#include <qapplication.h>
 #include "bus.h"
+#include "app.h"
+#include "doc.h"
+#include "function.h"
+#include "functioncollection.h"
+#include "chaser.h"
+#include "scene.h"
+
+extern App* _app;
 
 //
 // Initialize function id
@@ -86,6 +92,8 @@ Function::Function(t_function_id id) : QThread()
 //
 Function::~Function()
 {
+  QApplication::postEvent(_app, new FunctionDestroyEvent(m_id));
+  Bus::removeListener(m_busID, this);
 }
 
 
@@ -249,4 +257,172 @@ bool Function::engage(Function* parentFunction)
 void Function::stop()
 {
   m_stopped = true;
+}
+
+
+//
+// Load function's contents after it has been created with
+// createFunction()
+//
+void Function::createAllContents(QPtrList <QString> &list)
+{
+  Function* function = NULL;
+  t_function_id id = KFunctionIDMax;
+
+  QString name;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("Name"))
+	{
+	  name = *(list.next());
+	}		      
+      else if (*s == QString("Type"))
+	{
+	  list.next();
+	}
+      else if (*s == QString("ID"))
+	{
+	  id = list.next()->toULong();
+	}
+      else if (*s == QString("Device"))
+	{
+	  list.next();
+	  break;
+	}
+      else
+	{
+	  // Unknown keyword (at this time)
+	  list.next();
+	}
+    }
+
+  if (id == KFunctionIDMax)
+    {
+      qDebug("Couldn't find an ID for function <" + name + ">");
+    }
+  else
+    {
+      function = _app->doc()->searchFunction(id);
+
+      if (function != NULL)
+	{
+	  function->createContents(list);
+	}
+      else
+	{
+	  qDebug("Couldn't find function <" + name + ">");
+	}
+
+      name = QString::null;
+      id = KFunctionIDMax;
+    }
+}
+
+
+///////////////////////////
+// namespace FunctionNS ///
+///////////////////////////
+
+//
+// Create a function from a file entry
+// This has to be in a separate namespace for some pervert reason that
+// GCC won't tell me.
+//
+Function* FunctionNS::createFunction(QPtrList <QString> &list)
+{
+  Function* f = NULL;
+  Device* d = NULL;
+
+  QString name;
+  QString type;
+  t_device_id device = KNoID;
+  t_function_id id = KFunctionIDMax;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("Name"))
+	{
+	  name = *(list.next());
+	}		      
+      else if (*s == QString("Type"))
+	{
+	  type = *(list.next());
+	}
+      else if (*s == QString("ID"))
+	{
+	  id = list.next()->toInt();
+	}
+      else if (*s == QString("Device"))
+	{
+	  device = list.next()->toInt();
+	  break;
+	}
+      else
+	{
+	  // Unknown keyword (at this time)
+	  list.next();
+	}
+    }
+
+  if (id == KFunctionIDMax)
+    {
+      f = NULL;
+    }
+  else
+    {
+      if (device == KNoID)
+	{
+	  d = NULL;
+	}
+      else
+	{
+	  d = _app->doc()->searchDevice(device);
+	  if (d == NULL)
+	    {
+	      // This function's device was not found
+	      qDebug("Unable to find device %d", device);
+	      return NULL;
+	    }
+	}
+
+      if (type == QString("Collection"))
+	{
+	  f = static_cast<Function*> (new FunctionCollection(id));
+	  f->setName(name);
+	  f->setDevice(d);
+	}
+      else if (type == QString("Chaser"))
+	{
+	  f = static_cast<Function*> (new Chaser(id));
+	  f->setName(name);
+	  f->setDevice(d);
+	}
+      else if (type == QString("Scene"))
+	{
+	  f = static_cast<Function*> (new Scene(id));
+	  f->setName(name);
+	  f->setDevice(d);
+	}
+      else if (type == QString("Sequence"))
+	{
+	  f = NULL;
+	}
+      else
+	{
+	  f = NULL;
+	}
+    }
+
+  return f;
 }

@@ -22,8 +22,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "types.h"
 #include "function.h"
+#include "types.h"
 
 class EventBuffer;
 class Device;

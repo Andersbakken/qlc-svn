@@ -45,6 +45,8 @@
 
 extern App* _app;
 
+//using namespace FunctionNS;
+
 //
 // Constructor
 //
@@ -136,8 +138,6 @@ void Doc::setModified(bool modified)
 //
 bool Doc::loadWorkspaceAs(QString &fileName)
 {
-  bool success = false;
-
   QString buf;
   QString s;
   QString t;
@@ -146,368 +146,84 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   if (FileHandler::readFileToList(fileName, list) == true)
     {
       m_workspaceFileName = QString(fileName);
-      
-      // Create devices and functions from the list
-      for (QString* string = list.first(); 
-	   string != NULL; string = list.next())
-	{
-	  if (*string == QString("Entry"))
-	    {
-	      string = list.next();
-	      
-	      if (*string == QString("Device"))
-		{
-		  Device* d = createDevice(list);
-		  
-		  if (d != NULL)
-		    {
-		      addDevice(d);
-		    }
-		}
-	      else if (*string == QString("Function"))
-		{
-		  // Only create the function but don't care for
-		  // its contents yet
-		  Function* f = createFunction(list);
-
-		  if (f != NULL)
-		    {
-		      // Add function to function pool
-		      addFunction(f);
-		    }
-		}
-	      else if (*string == QString("Bus"))
-		{
-		  /*
-		  Bus* bus = new Bus();
-		  bus->createContents(list);
-		  addBus(bus);
-		  */
-		  qDebug("Warning! Functionality removed");
-		}
-	      else if (*string == QString("Joystick"))
-		{
-		  qDebug("Warning! Functionality removed");
-		  //createJoystickContents(list);
-		}
-	      else if (*string == QString("Virtual Console"))
-		{
-		  // Virtual console wants it all, go to "Entry"
-		  list.prev();
-		  list.prev();
-
-		  _app->virtualConsole()->createContents(list);
-		}
-	      else
-		{
-		  // Unknown keyword, do nothing
-		}
-	    }
-	}
-
-      // Now put contents to functions
-      // The functions are given their contents after every function
-      // object has been created. Otherwise some functions can not
-      // be created.
-      for (QString* string = list.first(); 
-	   string != NULL; string = list.next())
-	{
-	  if (*string == QString("Entry"))
-	    {
-	      string = list.next();
-	      if (*string == QString("Function"))
-		{
-		  createFunctionContents(list);
-		}
-	      else
-		{
-		  // Reel back one step, it might contain the keyword
-		  // "Entry"
-		  string = list.prev();
-		}
-	    }
-	}
-
-      //
-      // Set the last workspace name
-      //
-      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, workspaceFileName());
-
-      success = true;
     }
   else
     {
-      success = false;
+      return false;
+    }
+
+  // Create devices and functions from the list
+  for (QString* string = list.first(); 
+       string != NULL; string = list.next())
+    {
+      if (*string == QString("Entry"))
+	{
+	  string = list.next();
+	  
+	  if (*string == QString("Device"))
+	    {
+	      Device* d = Device::create(list);
+	      
+	      if (d)
+		{
+		  addDevice(d);
+		}
+	    }
+	  else if (*string == QString("Function"))
+	    {
+	      // Only create the function but not its contents
+	      Function* f = FunctionNS::createFunction(list);
+	      
+	      if (f)
+		{
+		  addFunction(f);
+		}
+	    }
+	  else if (*string == QString("Bus"))
+	    {
+	      // Read bus names and values
+	      Bus::createContents(list);
+	    }
+	  else if (*string == QString("Virtual Console"))
+	    {
+	      // Virtual console wants it all, go to "Entry"
+	      list.prev();
+	      list.prev();
+	      
+	      _app->virtualConsole()->createContents(list);
+	    }
+	  else
+	    {
+	      // Unknown keyword, do nothing
+	    }
+	}
+    }
+
+  // Now put contents to functions
+  // The functions are given their contents after every function
+  // object has been created. Otherwise some functions can not
+  // be created if their children have not been created.
+  for (QString* string = list.first(); 
+       string != NULL; string = list.next())
+    {
+      if (*string == QString("Entry"))
+	{
+	  string = list.next();
+	  if (*string == QString("Function"))
+	    {
+	      Function::createAllContents(list);
+	    }
+	}
     }
   
+  //
+  // Set the last workspace name
+  //
+  _app->settings()->set(KEY_LAST_WORKSPACE_NAME, workspaceFileName());
+  
   setModified(false);
-
-  return success;
-}
-
-
-//
-// Load function's contents after it has been created with
-// createFunction()
-//
-void Doc::createFunctionContents(QPtrList <QString> &list)
-{
-  Function* function = NULL;
-  Device* device = NULL;
-
-  t_device_id deviceId = 0;
-  t_function_id functionId = KFunctionIDMax;
-
-  QString name;
-
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
-      else if (*s == QString("Name"))
-	{
-	  name = *(list.next());
-	}		      
-      else if (*s == QString("Type"))
-	{
-	  list.next();
-	}
-      else if (*s == QString("ID"))
-	{
-	  functionId = list.next()->toULong();
-	}
-      else if (*s == QString("Device"))
-	{
-	  deviceId = list.next()->toInt();
-	  if (deviceId == 0)
-	    {
-	      device = NULL;
-	    }
-	  else
-	    {
-	      device = searchDevice(deviceId);
-	    }
-	  break;
-	}
-      else
-	{
-	  // Unknown keyword (at this time)
-	  list.next();
-	}
-    }
-
-  if (functionId == KFunctionIDMax)
-    {
-      qDebug("Couldn't find an ID for function <" + name + ">");
-    }
-  else
-    {
-      function = searchFunction(functionId);
-
-      if (function != NULL)
-	{
-	  function->setDevice(device);
-	  function->createContents(list);
-	}
-      else
-	{
-	  qDebug("Couldn't find function <" + name + ">");
-	}
-    }
-}
-
-
-//
-// Create a function from a file entry
-//
-Function* Doc::createFunction(QPtrList <QString> &list)
-{
-  Function* f = NULL;
-  Device* d = NULL;
-
-  QString name;
-  QString type;
-  t_device_id device = 0;
-  t_function_id id = KFunctionIDMax;
-
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
-      else if (*s == QString("Name"))
-	{
-	  name = *(list.next());
-	}		      
-      else if (*s == QString("Type"))
-	{
-	  type = *(list.next());
-	}
-      else if (*s == QString("ID"))
-	{
-	  id = list.next()->toInt();
-	}
-      else if (*s == QString("Device"))
-	{
-	  device = list.next()->toInt();
-	  break;
-	}
-      else
-	{
-	  // Unknown keyword (at this time)
-	  list.next();
-	}
-    }
-
-  if (id == KFunctionIDMax)
-    {
-      f = NULL;
-    }
-  else
-    {
-      if (device == 0)
-	{
-	  d = NULL;
-	}
-      else
-	{
-	  d = searchDevice(device);
-	  if (d == NULL)
-	    {
-	      // This function's device was not found
-	      qDebug("Unable to find device %d for function %s.", 
-		     device, name.latin1());
-	      return NULL;
-	    }
-	}
-
-      if (type == QString("Collection"))
-	{
-	  f = static_cast<Function*> (new FunctionCollection());
-	  f->setName(name);
-	  f->setDevice(d);
-	}
-      else if (type == QString("Chaser"))
-	{
-	  f = static_cast<Function*> (new Chaser());
-	  f->setName(name);
-	  f->setDevice(d);
-	}
-      else if (type == QString("Scene"))
-	{
-	  f = static_cast<Function*> (new Scene(id));
-	  f->setName(name);
-	  f->setDevice(d);
-	}
-      else if (type == QString("Sequence"))
-	{
-	  f = NULL;
-	}
-      else
-	{
-	  f = NULL;
-	}
-    }
-
-  return f;
-}
-
-
-//
-// Create a device from a file entry
-//
-Device* Doc::createDevice(QPtrList <QString> &list)
-{
-  QString name = QString::null;
-  QString manufacturer = QString::null;
-  QString model = QString::null;
-  QString t = QString::null;
-  int address = 0;
-  t_device_id id = 0;
-
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
-      else if (*s == QString("Name"))
-	{
-	  name = *(list.next());
-	}		      
-      else if (*s == QString("Manufacturer"))
-	{
-	  manufacturer = *(list.next());
-	}
-      else if (*s == QString("Model"))
-	{
-	  model = *(list.next());
-	}
-      else if (*s == QString("ID"))
-	{
-	  id = list.next()->toULong();
-	}
-      else if (*s == QString("Address"))
-	{
-	  t = *(list.next());
-	  address = t.toInt();
-	}
-      else
-	{
-	  // Unknown keyword
-	  list.next();
-	}
-    }
-
-  if (id == 0 || manufacturer == QString::null || 
-      manufacturer == QString::null)
-    {
-      QString msg;
-      msg = QString("Unable to add device \"" + name +
-		    QString("\" because device information is missing."));
-      QMessageBox::critical(_app, KApplicationNameShort, msg);
-
-      return NULL;
-    }
-  else
-    {
-      DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
-      if (dc == NULL)
-	{
-	  QString msg;
-	  msg = QString("Unable to add device \"" + name + "\"." + 
-			"\nNo device class description found for " +
-			manufacturer + QString(" ") + model);
-	  QMessageBox::critical(_app, KApplicationNameShort, msg);
-	  return NULL;
-	}
-      else
-	{
-	  if (dc->channels()->count() == 0)
-	    {
-	      QString msg;
-	      msg = QString("No channels specified for device class \"" + 
-			    dc->manufacturer() +
-			    QString(" ") + dc->model() + QString("\".\n") +
-			    QString("Unable to load device \"") + name + 
-			    QString("\" to workspace"));
-
-	      QMessageBox::warning(_app, KApplicationNameShort, msg);
-	      return NULL;
-	    }
-	  else
-	    {
-	      Device* d = new Device(address, dc, name, id);
-	      return d;
-	    }
-	}
-    }
+  
+  return true;
 }
 
 
@@ -588,7 +304,14 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	    }
 	}
 
-      // Save Virtual Console
+      ///////////
+      // Buses //
+      ///////////
+      Bus::saveToFile(file);
+
+      /////////////////////
+      // Virtual Console //
+      /////////////////////
       _app->virtualConsole()->saveToFile(file);
 
       // Mark the document unmodified

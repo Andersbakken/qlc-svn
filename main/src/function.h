@@ -26,8 +26,12 @@
 #include <limits.h>
 #include <qptrlist.h>
 #include <qstring.h>
+#include <qevent.h>
 
 #include "types.h"
+
+const int KFunctionStopEvent        ( QEvent::User + 1 );
+const int KFunctionDestroyEvent     ( QEvent::User + 2 );
 
 class Device;
 class EventBuffer;
@@ -59,6 +63,9 @@ class Function : public QThread
 
   // Return the type of this function (see the enum above)
   Type type() { return m_type; }
+
+  // Create all functions' contents
+  static void createAllContents(QPtrList <QString> &list);
 
   // Same thing, only this time as a string
   QString typeString() const;
@@ -151,14 +158,15 @@ class Function : public QThread
 };
 
 
+namespace FunctionNS
+{
+  Function* createFunction(QPtrList <QString> &list);
+};
+
+
 //
 // Function Stop Event
 //
-#include <qevent.h>
-
-const int KFunctionStopEvent        ( QEvent::User + 1 );
-const int KFunctionSpeedEvent       ( QEvent::User + 2 );
-
 class FunctionStopEvent : public QCustomEvent
 {
  public:
@@ -170,6 +178,23 @@ class FunctionStopEvent : public QCustomEvent
 
  private:
   Function* m_function;
+};
+
+
+//
+// Function Destroy Event
+//
+class FunctionDestroyEvent : public QCustomEvent
+{
+ public:
+  FunctionDestroyEvent(t_function_id fid) 
+    : QCustomEvent( KFunctionDestroyEvent ),
+    m_id(fid) {}
+
+  t_function_id id() { return m_id; }
+
+ private:
+  t_function_id m_id;
 };
 
 #endif
