@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
 <TITLE>Q Light Controller Documentation - Main Window</TITLE>
 </HEAD>
   
@@ -12,35 +11,33 @@
 <IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
 </TD>
 <TD ALIGN="right">
-<A HREF="index.html" CLASS="link">Documentation index</A>
+<A HREF="index.html">Documentation index</A>
 <BR>
-<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+<A HREF="http://qlc.sourceforge.net">QLC Homepage</A>
 <BR>
-<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+<A HREF="http://www.sourceforge.net/projects/qlc">QLC at SourceForge</A>
 <BR>
 </TD>
 </TR>
 </TABLE>
 
-<P CLASS="title">Main Window</P>
+<H1>Main Window</H1>
 
 <TABLE CELLSPACING="0" CELLPADDING="5" WIDTH="100%">
 
 <TR>
 <TD VALIGN="top">
-<A HREF="pics/mainwindow.png" CLASS="link" TARGET="_new">
+<A HREF="pics/mainwindow.png" TARGET="_new">
 <IMG SRC="pics/mainwindow.png" WIDTH="100" BORDER="0">
 <BR>
 Click to see bigger</A>
 </TD>
 
 <TD VALIGN="top">
-<P CLASS="subtitle">
-Menubar
-</P>
+<H2>Menubar</H2>
 
-<P CLASS="normal">
-<B>File Menu</B><BR>
+<H3>File Menu</H3>
+<P>
 New: Discard all previous data and start a new workspace.
 <BR>
 Open: Open an existing qlc workspace file (*.qlc).
@@ -51,19 +48,19 @@ Save As: Specify a name to the current workspace and save it to a file.
 <BR>
 Settings: Edit some common settings.
 <BR>
-Exit: Exit the program. NOTE: Exit is disabled in </I>Operate Mode</I>.
+Exit: Exit the program (<I>disabled in Operate Mode!</I>)
 <BR>
 </P>
 
-<P CLASS="normal">
-<B>Tools Menu</B><BR>
-Device Manager: Open the <A HREF="devicemanager.html" CLASS="link">Device Manager</A> window.
+<H3>Tools Menu</H3>
+<P>
+Device Manager: Open the <A HREF="devicemanager.html">Device Manager</A> window.
 <BR>
-Virtual Console: Open the <A HREF="virtualconsole.html" CLASS="link">Virtual Console</A> window.
+Virtual Console: Open the <A HREF="virtualconsole.html">Virtual Console</A> window.
 <BR>
-Function Tree: Open the <A HREF="functiontree.html" CLASS="link">Function Tree</A> window.
+Function Manager: Open the <A HREF="functionmanager.html">Function Manager</A> window.
 <BR>
-Bus Properties: Open the <A HREF="busproperties.html" CLASS="link">Bus Properties</A> window.
+Bus Properties: Open the <A HREF="busproperties.html">Bus Properties</A> window.
 <BR>
 Panic: Stop all running functions in case something disastrous has happened.
 <BR>
@@ -71,8 +68,8 @@ Mode: Change the program's operating modes between <I>Design</I> and <I>Operate<
 <BR>
 </P>
 
-<P CLASS="normal">
-<B>Window Menu</B><BR>
+<H3>Window Menu</H3>
+<P>
 Tile: Arrange visible editor windows in a tiled pattern
 <BR>
 Cascade: Arrange visible editor windows in a cascaded pattern
@@ -82,41 +79,43 @@ Cascade: Arrange visible editor windows in a cascaded pattern
 <I>This menu also contains a list of all open windows.</I>
 </P>
 
-<P CLASS="normal">
-<B>Help Menu</B><BR>
+<H3>Help Menu</H3>
+<P>
+Index: Opens the QLC Help/Document Browser
+<BR>
 About: Displays an about box that contains information about the program.
 <BR>
 About QT: Displays an about box containing information about QT.
 <BR>
+Show Tooltips: Toggle global tooltip popups on/off.
 </P>
 
-<P CLASS="subtitle">
-Toolbar
-</P>
+<H2>Toolbar</H2>
 
-<P CLASS="normal">
+<P>
 New: Discard all previous data and start a new workspace.
 <BR>
 Open: Open an existing qlc workspace file (*.qlc).
 <BR>
 Save: Save the current workspace to a file.
 <BR>
-Device Manager: Open the <A HREF="devicemanager.html" CLASS="link">Device Manager</A> window.
+Device Manager: Open the <A HREF="devicemanager.html">Device Manager</A> window.
 <BR>
-Virtual Console: Open the <A HREF="virtualconsole.html" CLASS="link">Virtual Console</A> window.
+Virtual Console: Open the <A HREF="virtualconsole.html">Virtual Console</A> window.
 <BR>
 Panic: Stop all running functions in case something disastrous has happened.
+<BR>
+Blackout: Set all channel values to zero; value changes are not updated to devices.
 <BR>
 Mode: Switch the program's operating modes between <I>Design</I> and <I>Operate</I>.
 <BR>
 
-<P CLASS="subtitle">
-Statusbar
-</P>
+<H2>Statusbar</H2>
 
-<P CLASS="normal">
-The status bar at the bottom of the window displays some common information about the program, for
-example the current operating mode.
+<P>
+The status bar at the bottom of the window displays some common information about
+the program, for example the current operating mode and when blackout is enabled,
+a flashing blackout indicator can be seen in the status bar.
 </P>
 
 </TD>
@@ -124,6 +123,6 @@ example the current operating mode.
 </TABLE>
 
 <HR>
-<A HREF="mailto:hjunnila@iki.fi" CLASS="link">Heikki Junnila</A>
+<A HREF="mailto:hjunnila@users.sourceforge.net">Heikki Junnila</A>
 </BODY>
 </HTML>

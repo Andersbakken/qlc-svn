@@ -1,160 +1,166 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
-  <HEAD>
-    <LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
-    <TITLE>Q Light Controller 2 Coding Convention</TITLE>
-  </HEAD>
-  
-  <BODY>
+<HEAD>
+<TITLE>Q Light Controller 2 Coding Convention</TITLE>
+</HEAD>
 
-    <H1>Q Light Controller 2 Coding Convention</H1>
-    
-    <P CLASS="normal">
-      This file describes the coding convention used in qlc source code.<BR>
-      The purpose of this document is to instruct developers to write somewhat<BR>
-      uniform code. The following rules are more or less similar to Qt's coding<BR>
-      convention.
-    </P>
+<BODY>
 
-    <P CLASS="normal">
-      1. Each source file should be attached with this header:
-      <PRE>
+<H1>Q Light Controller 2 Coding Convention</H1>
+
+<P>
+This file describes the coding convention (ten commandments) used in QLC source code.
+The purpose of this document is to instruct developers to write somewhat
+uniform code. The following rules are more or less similar to Qt's coding
+convention.
+</P>
+
+<P>
+1. Each source file should be attached with this header:
+<PRE>
 /*
-  Q Light Controller
-  <individual source filename here>
+Q Light Controller
+<individual source filename here>
 
-  Copyright (c) Heikki Junnila
-                *your name here*
-  
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  Version 2 as published by the Free Software Foundation.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details. The license is
-  in the file "COPYING".
-  
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+Copyright (c) Heikki Junnila
+	    *your name here*
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+Version 2 as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details. The license is
+in the file "COPYING".
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-      </PRE>
-    </P>
-    
-    <P CLASS="normal">
-      2. Each member variable has a prefix "m_", for example int m_fooMember;<BR>
-	Each global variable or function begins with "_", for example int _foo;
-    </P>
-    
-    <P CLASS="normal">
-      3. Each function begins with a small letter and in compound words, all
-      the following words begin with a capital letter. No word separation with
-      "_" is allowed. Examples:
-      <PRE>
-   int foo();
-   int fooBar();
-   int thisIsAMemberFunction();
-   int this_is_not_allowed_because_it_is_ugly_and_differs_from_Qt_convention();
-      </PRE>
-    </P>
-    
-    <P CLASS="normal">
-      4. Every control structure (if, while, for...) will be written inside
-      brackets { } even if they would contain only one line of code.
-      Also, the brackets are written on a new line without anything
-      else after the bracket. This goes for functions, too:
-      <PRE>
-   do
-   {
-	foo();
-   }
-   while (bar);
+</PRE>
+</P>
 
-   if (foo == true)
-   {
-	foo();
-   }
-   else
-   {
-	bar();
-   }
+<P>
+2. Each member variable has a prefix "m_", for example int m_fooMember;<BR>
+Each global variable or function begins with "_", for example int _foo;<BR>
+<B>Avoid global variables!</B>
+</P>
 
-   for (int i = 0; i < n; i++)
-   {
-	foo(i);
-   }
+<P>
+3. Each function begins with a small letter and in compound words, all
+the following words begin with a capital letter. No word separation with
+underscore is allowed. Examples:
+<PRE>
+int foo();
+int fooBar();
+int thisIsAMemberFunction();
+int this_is_not_allowed_because_it_is_ugly;
+</PRE>
+</P>
 
-   void FooClass::fooBar()
-   {
-	...
-   }
-      </PRE>
-    </P>
-    
-    <P CLASS="normal">
-      5. Each class name will be written each word beginning with a capital letter:
-      <PRE>
-   class FooBar;
-   class Foo;
-      </PRE>
-    </P>
+<P>
+4. Every control structure (if, while, for...) will be written inside
+brackets { } even if they would contain only one line of code.
+Also, the brackets are written on a new line without anything
+else after the bracket. This goes for functions and classes, too:
+<PRE>
+do
+{
+    foo();
+}
+while (bar);
 
-    <P CLASS="normal">
-      5.1. Respectively, each class should be in its own file and the file name must be<BR>
-	the class' name, in small letters. If it makes things significantly more logical,<BR>
-	classes can be defined inside other classes' definitions and files. File suffix for<BR>
-	implementation files is ".cpp" and for header files ".h". Do NOT use other styles.<BR>
-	In general:<BR>
-	  <PRE>
-   class FooBarClass definition is saved in foobarclass.h
-     and its implementation is in foobarclass.cpp
-          </PRE>
-    
-    <P CLASS="normal">
-      6. All macro definitions are written completely in capital letters, words
-      may be separated with "_". Example:
-    <PRE>
-      #define FOOBAR 5
-      #define FOO_BAR(x) foobar(x);
-    </PRE>
-    </P>
-    
-    <P CLASS="normal">
-      7. Each operator will be separated with spaces:
-      <PRE>
-   if (foo == bar)
-   while ( foo != bar)
-   int foo = bar;
-      </PRE>
-    </P>
-    
-    <P CLASS="normal">
-      8. Variable, function and class names should be descriptive. Use your common
-      sense here.
-    </P>
+if (foo == true)
+{
+    foo();
+}
+else
+{
+    bar();
+}
 
-    <P CLASS="normal">
-      9. Do not write code in one pile, use spaces and empty lines between
-      logical sections.
-    </P>
+for (int i = 0; i < n; i++)
+{
+    foo(i);
+}
 
-    <P CLASS="normal">
-      10. Write nice and readable code.
-    </P>
+void FooClass::fooBar()
+{
+    ...
+}
+</PRE>
+</P>
 
-    <P CLASS="normal">
-      11. WRITE COMMENTS. I am a BAD example on this...
-    </P>
+<P>
+5. Each class name will be written each word beginning with a capital letter.
+Same rules as with functions.
+<PRE>
+class FooBar;
+class Foo;
+</PRE>
+</P>
+
+<P>
+5.1. Respectively, each class should be in its own file and the file name must be
+the class' name, in small letters. If it makes things significantly more logical,
+SMALL classes can be defined inside other classes' definitions and files. 
+File suffix for implementation files is ".cpp" and for header files ".h". Do NOT
+use other styles.<BR>
+In general:<BR>
+class FooBarClass definition is saved in foobarclass.h<BR>
+and its implementation is in foobarclass.cpp
+</P>
+
+<P>
+6. All macro definitions are written completely in capital letters, words
+may be separated with "_". Example:
+
+<PRE>
+#define FOOBAR 5
+#define FOO_BAR(x) foobar(x);
+</PRE>
+</P>
+
+<P>
+6.1 Normal integer macros, like the ones you would use to identify certain menu
+items, columns etc. can be substituted with static constants, in which case, the
+constant's name begins with a capital 'K'. This is done to associate them more
+into the field of #defined macros than variables.<BR>
+<PRE>
+static const int KMenuItem ( 1000 );
+</PRE>
+</P>
+
+<P>
+7. Each operator will be separated with spaces:
+<PRE>
+if (foo == bar)
+
+while ( foo != bar)
+
+int foo = bar;
+
+for (int foo = 0; foo < bar; foo++)
+</PRE>
+</P>
+
+<P>
+8. Variable, function and class names should be descriptive. Use your common
+sense here.
+</P>
+
+<P>
+10. Write nice and readable code. Do not write code in one pile, use spaces and
+empty lines between logical sections.
+</P>
+
+<P>
+10. WRITE COMMENTS. I am a BAD example on this...
+</P>
 
 <HR>
-<!-- Created: Sun Apr 28 12:39:02 EEST 2002 -->
-<A HREF="mailto:hjunnila@iki.fi" CLASS="link">Heikki Junnila</A>
-<P CLASS="normal">
-<!-- hhmts start -->
-Last modified: Sun Oct 12 23:46:36 EEST 2003
-<!-- hhmts end -->
-      </P>
-  </BODY>
+<A HREF="mailto:hjunnila@users.sourceforge.net">Heikki Junnila</A>
+</BODY>
 </HTML>

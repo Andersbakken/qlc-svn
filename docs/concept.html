@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
 <TITLE>Q Light Controller Documentation - Main Window</TITLE>
 </HEAD>
   
@@ -12,17 +11,17 @@
 <IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
 </TD>
 <TD ALIGN="right">
-<A HREF="index.html" CLASS="link">Documentation index</A>
+<A HREF="index.html" >Documentation index</A>
 <BR>
-<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+<A HREF="http://qlc.sourceforge.net" >QLC Homepage</A>
 <BR>
-<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+<A HREF="http://www.sourceforge.net/projects/qlc" >QLC at SourceForge</A>
 <BR>
 </TD>
 </TR>
 </TABLE>
 
-<P CLASS="title">The Q Light Controller Concept</P>
+<H1>The Q Light Controller Concept</H1>
 
 <TABLE CELLSPACING="0" CELLPADDING="5" WIDTH="100%">
 
@@ -32,43 +31,40 @@
 </TD>
 
 <TD VALIGN="top">
-<P CLASS="subtitle">
-Purpose
-</P>
+<H2>Purpose</H2>
 
 <P CLASS="normal">
 Q Light Controller (QLC for short) is meant to control lighting equipment used 
-in various performances, like live concerts and theatres etc. The main purpose is that
-QLC could outperform commercial lighting desks with an intuitive and flexible user interface.
+in various performances, like live concerts and theatres etc. The main purpose is
+that QLC could outperform commercial lighting desks with an intuitive and flexible
+user interface.
 </P>
 
-<P CLASS="subtitle">
-Modes
+<H2>Modes</H2>
+
+<P>
+Q Light Controller is based on the concept of having two distinct operational modes to 
+prevent accidental or otherwise harmful changes during operation. Design mode is meant 
+to edit the behaviour of the program; create and edit functions and devices and how 
+they are operated. Operate mode is meant to execute the created functions that actually
+automate lighting controls.
 </P>
 
-<P CLASS="normal">
-Q Light Controller is based on the concept of having two distinct operational modes to prevent 
-accidental or otherwise harmful changes during operation. Design mode is meant to edit the behaviour
-of the program; create and edit functions and devices and how they are operated. Operate mode is meant
-to execute the created functions that actually automate lighting controls.
+<H2>Devices</H2>
+
+<P>
+The software is based on the DMX512 standard which defines the number of universes, 
+number of channels and value range for all channels, as well as other protocol-related
+information. QLC supports the use of one DMX universe, consisting of 512 channels,
+each channel having an integer value between 0 and 255. DMX access is achieved thru
+the DMX4Linux driver suite. Additional protocols can be supported thru custom made
+plugins. It must be possible to run QLC without actual DMX hardware for offline
+editing.
 </P>
 
-<P CLASS="subtitle">
-Devices
-</P>
-
-<P CLASS="normal">
-The software is based on the DMX512 standard which defines the number of universes, number of 
-channels and value range for all channels, as well as other protocol-related information. QLC 
-will support the use of one DMX universe, consisting of 512 channels, each channel having an integer 
-value between 0 and 255. DMX access is achieved thru the DMX4Linux driver suite. Additional protocols 
-can be supported thru custom made plugins. It must be possible to run QLC without actual DMX hardware 
-for offline editing.
-</P>
-
-<P CLASS="normal">
-The user can store shared device information in a device class library that contains the following
-properties on each device class:
+<P>
+The user can store shared device information in a device class library that contains
+the following properties on each device class:
 <BR>
 &nbsp;
 <BR>
@@ -84,7 +80,7 @@ properties on each device class:
 <BR>
 </P>
 
-<P CLASS="normal">
+<P>
 These device class entries can then be used to create device instances (256 at most at a time), 
 that will, after instantiation, have additional properties defined by the user:
 <BR>
@@ -96,28 +92,24 @@ that will, after instantiation, have additional properties defined by the user:
 <BR>
 </P>
 
-<P CLASS="normal">
+<P>
 Although each device can be named, the name must not be used internally to discern device instances
 from one another. The same goes for the DMX address. Several instances of one device class can be
 created and one device can be an instance of exactly one device class.
 </P>
 
-<P CLASS="subtitle">
-Functions
-</P>
+<H2>Functions</H2>
 
-<P CLASS="normal">
+<P>
 The user can create a number of functions, that are used to automate the setting of values to channels. 
 The four different function types are: scene, chaser, collection and sequence. Each function can be 
 named, but the name must not be used internally to discern one function from another, although it is 
 encouraged that the user gives functions descriptive names.
 </P>
 
-<P CLASS="normal">
-<B>Speed Setting</B>
-</P>
+<H3>Speed Setting</H3>
 
-<P CLASS="normal">
+<P>
 Functions have a speed setting that is set by the user. A maximum of 32 different speed settings called 
 buses, are possible. One function can have exactly one bus and many functions can share a bus. The speed 
 settings can be changed at any time and can be between 0 and 10 seconds with a resolution of at least 
@@ -125,18 +117,16 @@ settings can be changed at any time and can be between 0 and 10 seconds with a r
 to each of the buses, for convenience and clarity.
 </P>
 
-<P CLASS="normal">
+<P>
 The names of the first two buses are fixed to "Default Fade" and "Default Hold", respectively.
 Functions completion times and their run-time accuracy in value setting can be late or early 10 
 milliseconds on average. The user must be able to quickly (<100ms) stop all running functions in case
 something disastrous happens.
 </P>
 
-<P CLASS="normal">
-<B>Scene</B>
-</P>
+<H3>Scene</H3>
 
-<P CLASS="normal">
+<P>
 A scene function encapsulates the values of all channels held by one device instance. Each stored value 
 holds information on the style that the value will be set once the scene function is activated. Possible 
 value types (styles) are:
@@ -151,7 +141,7 @@ value types (styles) are:
 <BR>
 </P>
 
-<P CLASS="normal">
+<P>
 Of these, "NoSet" means that the value of the channel must not be touched at all. "Set" value is set at 
 the very instant when the function is executed. "Fade" value is namely faded from the value that the 
 channel currently has, to the value specified in the scene, smoothly during the given time span (e.g. 
@@ -160,11 +150,11 @@ regardless of whether the channel values are already those specified in the scen
 type "Set" or "NoSet".
 </P>
 
-<P CLASS="normal">
+<P>
 Bus number 1 (Default Fade) is assigned to all newly created scenes by default.
 </P>
 
-<P CLASS="normal">
+<P>
 A copy of a scene function can be created to the same device that the original is assigned to, or to 
 another device. All scene properties are copied to the duplicated scene. If the target device has less 
 channels than the originating device, excess channels are cropped from the copy. If the target device 
@@ -173,39 +163,35 @@ type. After copying, the two functions are completely independent function entit
 moved between devices with the same rules.
 </P>
 
-<P CLASS="normal">
-<B>Collection</B>
-</P>
+<H3>Collection</H3>
 
-<P CLASS="normal">
+<P>
 A collection function encapsulates multiple functions that are executed simultaneously when the 
 collection function is executed. Any number of functions can be inserted to a collection. One function 
 can be inserted only once and a collection cannot be a member of itself. The collection function is not 
 attached to a device, thus it is held in the Global function space.
 </P>
 
-<P CLASS="normal">
+<P>
 The speed setting has no effect on a collection, therefore, it is not necessary to have the possibility 
 to assign a bus to a collection.
 </P>
 
-<P CLASS="normal">
+<P>
 A copy of a collection function can be created to the global function space. The duplicated function has 
 the same properties as the original function. After copying, the two functions are completely 
 independent function entities.
 </P>
 
-<P CLASS="normal">
-<B>Chaser</B>
-</P>
+<H3>Chaser</H3>
 
-<P CLASS="normal">
+<P>
 A chaser function encapsulates multiple functions that are executed in serial one after another when 
 the chaser function is executed. The next function is executed after the previous has stopped. Any 
 number of functions can be inserted to a chaser. The chaser cannot be a member of itself.
 </P>
 
-<P CLASS="normal">
+<P>
 A chaser's direction can be set to (mutually exclusive):
 <BR>
 &nbsp;
@@ -215,7 +201,7 @@ A chaser's direction can be set to (mutually exclusive):
 * Reverse (traverse the functions from the end to the beginning)
 </P>
 
-<P CLASS="normal">
+<P>
 The run order can be set to (mutually exclusive):
 <BR>
 &nbsp;
@@ -228,115 +214,109 @@ The run order can be set to (mutually exclusive):
 <BR>
 </P>
 
-<P CLASS="normal">
+<P>
 The direction setting affects run order as described.
 </P>
 
-<P CLASS="normal">
+<P>
 Speed setting is used to set a hold time between functions that must elapse, before the next function 
 is executed. Bus number 2 (Default Hold) is assigned to all newly created scenes by default.
 </P>
 
-<P CLASS="normal">
+<P>
 A copy of a chaser function can be created to the global function space. The duplicated function has 
 the same properties as the original function. After copying, the two functions are completely 
 independent function entities.
 </P>
 
-<P CLASS="subtitle">
-Virtual Console
-</P>
+<H2>Virtual Console</H2>
 
-<P CLASS="normal">
+<P>
 The primary purpose of the virtual console is to act as an open sandbox where the user can create
 a lighting desk of his/her preference.
 </P>
 
-<P CLASS="normal">
+<P>
 The virtual console is essentially a "drawing area", that is initially empty. The user can add and 
 remove buttons, sliders, frames and labels that are used to construct a custom lighting console. The 
 lighting automation is primarily controlled thru the virtual console, although limited control is also 
 possible thru the device console.
 </P>
 
-<P CLASS="normal">
+<P>
 The virtual console background can be a color or a tiled image. The user can restrict the movement and 
 sizes of the GUI elements (widgets) as if they were on a grid. The grid can have a resolution between 
 1-100 pixels independently for x- and y-axes and the grid can be turned on or off. If the grid is 
 turned off, widgets can be placed and resized freely.
 </P>
 
-<P CLASS="normal">
+<P>
 The user can set the virtual console to exclusively receive all keyboard input in operate mode. Also, 
 key repeating can (and should!) be turned off to prevent flickering caused by the computer emulating
 the user repeatedly pressing and releasing a key.
 </P>
 
-<P CLASS="normal">
+<P>
 On the left side of virtual console, are always two speed sliders that are always assigned to buses 
 number 1 (Default Fade) and 2 (Default Hold). These sliders can be hidden from view either from a 
 menu item, or pressing the "Hide" button.
 </P>
 
-<P CLASS="normal">
+<P>
 All widgets described below, can be configured thru a popup-menu that can be invoked only in design 
 mode by right mouse-click over the widget. This menu is available only in design mode.
 </P>
 
-<P CLASS="normal">
+<P>
 In design mode, all widgets draw a resize area in their lower-right corners. By keeping the mouse left 
 button pressed over the resize area and moving the mouse, the user can resize the widget. Left mouse 
 button press over the widget starts to move the widget, again only in design mode.
 </P>
 
-<P CLASS="normal">
-<B>Buttons</B>
-</P>
+<H3>Buttons</H3>
 
-<P CLASS="normal">
+<P>
 The virtual console can house any number of button-like widgets. The button size and placement can be 
 adjusted within the virtual console. The button has text and color or an image as foreground.
 </P>
 
-<P CLASS="normal">
+<P>
 One function can be assigned to each button. When a function is assigned to a button, that button's 
 tooltip is set to reflect the device (or Global) that function belongs to and the function's name.
 </P>
  
-<P CLASS="normal">
+<P>
 A button can be set to behave like a locking push button; pressed, the assigned function is run until 
 it stops by itself; or depressed again, causing the button to unlock, explicitly stopping the function 
 as soon as possible.
 </P>
 
-<P CLASS="normal">
+<P>
 A button can be set to behave like a flash button; when the button is pressed, the function is kept 
 running until the function stops by itself or the button is released and the function is stopped 
 explicitly by the button.
 </P>
 
-<P CLASS="normal">
+<P>
 Each button can have a keyboard key combination assigned to it acting the same way as if the button 
 was pressed with the mouse cursor.
 </P>
 
-<P CLASS="normal">
-<B>Sliders</B>
-</P>
+<H3>Sliders</H3>
 
-<P CLASS="normal">
+<P>
 The virtual console can house any number of slider-like widgets. The slider size and placement can be 
 adjusted within the virtual console. 
 </P>
 
-<P CLASS="normal">
+<P>
 One scene or collection can be assigned to a slider, which can then be used manually to fade the values 
 in the assigned function; Scene value type "set" is interpreted as "fade" and "NoSet" type values are 
 ignored. When a function is assigned to a slider, that slider's tooltip is set to reflect the device 
 (or Global) that function belongs to and the function name. 
 </P>
 
-<P CLASS="normal">
+<P>
 A slider can be assigned one or more individual channels not regarding which device they might belong 
 to; the slider is then used to directly set those channel's values. Possible scenes accessing these 
 channels have no effect to the slider's operation. If one channel is assigned to a slider, the absolute 
@@ -346,27 +326,23 @@ info text must be set by the user. If one or more channels are assigned to a sli
 those channels is displayed above the slider.
 </P>
 
-<P CLASS="normal">
+<P>
 A slider can be set to behave as a speed setting slider that directly sets a value to its assigned bus.
 Any bus can be assigned to any speed slider. When a bus value is updated, all speed sliders assigned to
 the bus will track the change by moving themselves to reflect the changed value.
 </P>
 
-<P CLASS="normal">
-<B>Frames</B>
-</P>
+<H3>Frames</H3>
 
-<P CLASS="normal">
+<P>
 The virtual console can house any number of frame-like widgets that are used to group any number of
 widgets together. The frame size and placement can be adjusted within the virtual console. The frame
 background can be a color or an image.
 </P>
 
-<P CLASS="normal">
-<B>Labels</B>
-</P>
+<H3>Labels</H3>
 
-<P CLASS="normal">
+<P>
 The virtual console can house any number of text labels. The text label size and placement can be 
 adjusted within the virtual console. The text, font, foreground color and background color can be 
 modified. The label can also have a background image.
@@ -377,6 +353,6 @@ modified. The label can also have a background image.
 </TABLE>
 
 <HR>
-<A HREF="mailto:hjunnila@iki.fi" CLASS="link">Heikki Junnila</A>
+<A HREF="mailto:hjunnila@users.sourceforge.net" >Heikki Junnila</A>
 </BODY>
 </HTML>
