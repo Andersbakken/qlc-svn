@@ -92,7 +92,6 @@ void LedBar::setToolTip(QString text)
     }
   else
     {
-      QToolTip::remove(this);
       QToolTip::add(this, text);
     }
 }
