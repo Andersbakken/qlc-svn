@@ -8,7 +8,7 @@ Type = Dimmer
 Entry = Channel
 Number = 0
 Name = Channel 1
-0-255 = Channel Level
+0-255 = Channel level
 #
 Entry = Channel
 Number = 1
@@ -24,31 +24,3 @@ Entry = Channel
 Number = 3
 Name = Channel 4
 0-255 = Channel level
-#
-# Function entry
-Entry = Function
-Name = Blackout
-Type = Scene
-0 = 0
-1 = 0
-2 = 0
-3 = 0
-#
-# Function entry
-Entry = Function
-Name = Full on
-Type = Scene
-0 = 255
-1 = 255
-2 = 255
-3 = 255
-#
-# Function entry
-Entry = Function
-Name = Semi on
-Type = Scene
-0 = 127
-1 = 127
-2 = 127
-3 = 127
-#

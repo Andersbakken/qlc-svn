@@ -213,6 +213,12 @@
         <receiver>UI_AdvancedSceneEditor</receiver>
         <slot>slotSceneNameTextChanged(const QString&amp;)</slot>
     </connection>
+    <connection>
+        <sender>m_sceneContents</sender>
+        <signal>itemRenamed(QListViewItem*,int)</signal>
+        <receiver>UI_AdvancedSceneEditor</receiver>
+        <slot>slotItemRenamed(QListViewItem*,int)</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_sceneNameEdit</tabstop>
@@ -239,6 +245,7 @@
     <slot>slotSceneSelected(QListViewItem*)</slot>
     <slot>slotStoreButtonClicked()</slot>
     <slot>slotStoreSceneInGroupClicked(int)</slot>
+    <slot>slotItemRenamed(QListViewItem*, int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

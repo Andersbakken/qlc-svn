@@ -95,16 +95,3 @@ Number = 6
 Name = Color / Gobo speed
 0-0 = Tracking mode enabled
 1-255 = Fast -> Slow
-#
-# Function entry
-Entry = Function
-Name = Reset
-Type = Scene
-0 = 0
-1 = 0
-2 = 0
-3 = 127
-4 = 127
-5 = 0
-6 = 0
-#

@@ -51,6 +51,12 @@
 
 extern App* _app;
 
+const int KColumnNumber  ( 0 );
+const int KColumnChannel ( 1 );
+const int KColumnPreset  ( 2 );
+const int KColumnValue   ( 3 );
+const int KColumnType    ( 4 );
+
 AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
   : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", false)
 {
@@ -89,21 +95,21 @@ void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
 
   switch (col)
     {
-    case 0:
+    case KColumnNumber:
       break;
       
-    case 1:
+    case KColumnChannel:
       break;
 
-    case 2:
+    case KColumnPreset:
       invokePresetMenu(pos);
       break;
 
-    case 3:
+    case KColumnValue:
       invokeValueMenu(pos);
       break;
 
-    case 4:
+    case KColumnType:
       invokeTypeMenu(pos);
       break;
 
@@ -128,7 +134,8 @@ void AdvancedSceneEditor::invokePresetMenu(const QPoint &pos)
 
   if (i > 0)
     {
-      connect(menu, SIGNAL(activated(int)), this, SLOT(slotPresetMenuActivated(int)));
+      connect(menu, SIGNAL(activated(int)), 
+	      this, SLOT(slotPresetMenuActivated(int)));
     }
 
   menu->exec(pos);
@@ -152,11 +159,11 @@ void AdvancedSceneEditor::slotPresetMenuActivated(int preset)
 
   m_scene->set(channel, value, m_scene->channelValue(channel).type);
 
-  m_sceneContents->currentItem()->setText(2, c->name());
+  m_sceneContents->currentItem()->setText(KColumnPreset, c->name());
 
   QString s;
   s.setNum(value);
-  m_sceneContents->currentItem()->setText(3, s);
+  m_sceneContents->currentItem()->setText(KColumnValue, s);
 
   setDirty(true);
 }
@@ -225,7 +232,7 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
       
       QString s;
       s.setNum(value);
-      m_sceneContents->currentItem()->setText(3, s);
+      m_sceneContents->currentItem()->setText(KColumnValue, s);
       
       Capability* c = m_currentChannel->searchCapability(value);
       if (c == NULL)
@@ -237,7 +244,7 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
 	  s = c->name();
 	}
       
-      m_sceneContents->currentItem()->setText(2, s);
+      m_sceneContents->currentItem()->setText(KColumnPreset, s);
       setDirty(true);
     }
 }
@@ -252,8 +259,25 @@ void AdvancedSceneEditor::invokeTypeMenu(const QPoint &pos)
   menu->insertItem("Set", Scene::Set);
   menu->insertItem("NoSet", Scene::NoSet);
 
+  t_channel channel = m_currentChannel->channel();
+  SceneValue v = m_scene->channelValue(channel);
+
+  if (v.type == Scene::Fade)
+    {
+      menu->setItemChecked(Scene::Fade, true);
+    }
+  else if (v.type == Scene::Set)
+    {
+      menu->setItemChecked(Scene::Set, true);
+    }
+  else
+    {
+      menu->setItemChecked(Scene::NoSet, true);
+    }
+
   connect(menu, SIGNAL(activated(int)), 
 	  this, SLOT(slotTypeMenuActivated(int)));
+
   menu->exec(pos);
   disconnect(menu);
 
@@ -275,17 +299,17 @@ void AdvancedSceneEditor::slotTypeMenuActivated(int type)
   switch (type)
     {
     case Scene::Fade:
-      m_sceneContents->currentItem()->setText(4, "Fade");
+      m_sceneContents->currentItem()->setText(KColumnType, "Fade");
       setDirty(true);
       break;
 
     case Scene::Set:
-      m_sceneContents->currentItem()->setText(4, "Set");
+      m_sceneContents->currentItem()->setText(KColumnType, "Set");
       setDirty(true);
       break;
 
     case Scene::NoSet:
-      m_sceneContents->currentItem()->setText(4, "NoSet");
+      m_sceneContents->currentItem()->setText(KColumnType, "NoSet");
       setDirty(true);
       break;
 
@@ -343,7 +367,7 @@ void AdvancedSceneEditor::slotSceneNameTextChanged(const QString& text)
 
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
-  int ch = item->text(0).toInt();
+  int ch = item->text(KColumnNumber).toInt();
 
   if (m_scene->device() != NULL)
     {
@@ -448,7 +472,7 @@ void AdvancedSceneEditor::slotEditValueClicked()
   for (QListViewItem* item = m_sceneContents->firstChild(); 
        item != NULL; item = item->nextSibling())
     {
-      if (item->text(0).toInt() == ch)
+      if (item->text(KColumnNumber).toInt() == ch)
 	{
 	  m_sceneContents->setSelected(item, true);
 	  break;
@@ -471,6 +495,7 @@ void AdvancedSceneEditor::updateChannelList()
   QString num;
   QString val;
   QString cap;
+  QListViewItem* item = NULL;
 
   m_sceneContents->clear();
   m_currentChannel = NULL;
@@ -501,7 +526,57 @@ void AdvancedSceneEditor::updateChannelList()
       
       num.sprintf("%03d", ch->channel());
       val.sprintf("%03d", m_scene->channelValue(ch->channel()).value);
-      new QListViewItem(m_sceneContents, num, ch->name(), cap, val, 
-			m_scene->valueTypeString(ch->channel()));
+      item = new QListViewItem(m_sceneContents, num, ch->name(), cap, val, 
+			       m_scene->valueTypeString(ch->channel()));
+      item->setRenameEnabled(KColumnValue, true);
+      item->setRenameEnabled(KColumnType, true);
+    }
+}
+
+
+void AdvancedSceneEditor::slotItemRenamed(QListViewItem* item, int col)
+{
+  switch(col)
+    {
+    case KColumnValue:
+      renameValue(item->text(KColumnValue).toInt());
+      break;
+
+    case KColumnType:
+      renameType(item->text(KColumnType));
+      break;
+
+    default:
+      break;
+    }
+}
+
+void AdvancedSceneEditor::renameValue(int value)
+{
+  if (value < KChannelValueMin)
+    {
+      value = KChannelValueMin;
+    }
+  else if (value > KChannelValueMax)
+    {
+      value = KChannelValueMax;
+    }
+
+  slotValueMenuActivated(value);
+}
+
+void AdvancedSceneEditor::renameType(QString text)
+{
+  if (text.lower().contains("f"))
+    {
+      slotTypeMenuActivated(Scene::Fade);
+    }
+  else if (text.lower().contains("no"))
+    {
+      slotTypeMenuActivated(Scene::NoSet);
+    }
+  else if (text.lower().contains("s"))
+    {
+      slotTypeMenuActivated(Scene::Set);
     }
 }
