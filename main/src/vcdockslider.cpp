@@ -425,30 +425,10 @@ void VCDockSlider::slotBusValueChanged(t_bus_id id, t_bus_value value)
 
 void VCDockSlider::slotTapInButtonClicked()
 {
-//slotSliderValueChanged(10. * KFrequency );
   int t;
-  t = m_time.elapsed()-100;
-  if( t > 2000)
-     t = 100;
-  m_slider->setValue (5);//t * 0.001 * KFrequency );
+  t = m_time.elapsed();
+  m_slider->setValue (t * .001* KFrequency );
   m_time.restart();
-
-
- /* AssignHotKey* a = NULL;
-  a = new AssignHotKey(this);
-
-  if (a->exec() == QDialog::Accepted)
-    {
-      assert(m_keyBind);
-      assert(a->keyBind());
-
-      m_keyBind->setKey(a->keyBind()->key());
-      m_keyBind->setMod(a->keyBind()->mod());
-    //  m_keyEdit->setText(m_keyBind->keyString());
-    }
-
-  delete a;*/
-
 }
 
 
