@@ -43,6 +43,23 @@ FunctionCollection::FunctionCollection() : Function()
   m_running = false;
 }
 
+FunctionCollection::FunctionCollection(FunctionCollection* fc)
+{
+  m_type = Function::Collection;
+  m_running = fc->m_running;
+  m_registerCount = fc->m_registerCount;
+  m_name = fc->m_name;
+
+  QList <CollectionItem> *il = fc->items();
+
+  for (CollectionItem* item = il->first(); item != NULL; item = il->next())
+    {
+      CollectionItem* i = new CollectionItem(item);
+      m_items.append(i);
+    }
+}
+
+
 FunctionCollection::~FunctionCollection()
 {
   while (m_items.isEmpty() == false)
@@ -57,7 +74,7 @@ bool FunctionCollection::unRegisterFunction(Feeder* feeder)
 
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      _app->sequenceProvider()->unRegisterEventFeeder(item->callerDevice, item->feederFunction);
+      _app->sequenceProvider()->unRegisterEventFeeder(item->device(), item->function());
     }
 
   disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
@@ -84,8 +101,8 @@ bool FunctionCollection::registerFunction(Feeder* feeder)
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
 	  increaseRegisterCount();
-	  item->registered = true;
-	  _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
+	  item->setRegistered(true);
+	  _app->sequenceProvider()->registerEventFeeder(item->function(), feeder->speedBus(), item->device(), this);
 	}
 
       Function::registerFunction(feeder);
@@ -136,9 +153,9 @@ void FunctionCollection::saveToFile(QFile &file)
       // For global collections, write device+scene pairs
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
-	  if (item->callerDevice != NULL)
+	  if (item->device() != NULL)
 	    {
-	      s = QString("Device = ") + item->callerDevice->name() + QString("\n");
+	      s = QString("Device = ") + item->device()->name() + QString("\n");
 	    }
 	  else
 	    {
@@ -147,7 +164,7 @@ void FunctionCollection::saveToFile(QFile &file)
 
 	  file.writeBlock((const char*) s, s.length());
 
-	  s = QString("Function = ") + item->feederFunction->name() + QString("\n");
+	  s = QString("Function = ") + item->function()->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
     }
@@ -222,10 +239,10 @@ void FunctionCollection::addItem(DMXDevice* device, Function* function)
 {
   ASSERT(function != NULL);
 
-  CollectionItem* item = (CollectionItem*) malloc (sizeof(CollectionItem));
-  item->callerDevice = device;
-  item->feederFunction = function;
-  item->registered = false;
+  CollectionItem* item = new CollectionItem();
+  item->setDevice(device);
+  item->setFunction(function);
+  item->setRegistered(false);
 
   m_items.append(item);
 }
@@ -236,7 +253,7 @@ bool FunctionCollection::removeItem(DMXDevice* device, Function* function)
 
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      if (item->callerDevice == device && item->feederFunction == function)
+      if (item->device() == device && item->function() == function)
 	{
 	  delete m_items.take();
 	  retval = true;
@@ -253,9 +270,9 @@ bool FunctionCollection::removeItem(QString deviceString, QString functionString
 
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      if (item->callerDevice->name() == deviceString && item->feederFunction->name() == functionString)
+      if (item->device()->name() == deviceString && item->function()->name() == functionString)
 	{
-	  free(m_items.take());
+	  delete m_items.take();
 	  retval = true;
 	  break;
 	}
@@ -294,7 +311,7 @@ void FunctionCollection::recalculateSpeed(Feeder* feeder)
 {
   for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
     {
-      item->feederFunction->recalculateSpeed(feeder);
+      item->function()->recalculateSpeed(feeder);
     }
 }
 

@@ -152,13 +152,13 @@ void FunctionCollectionEditor::slotRemoveClicked()
 void FunctionCollectionEditor::updateFunctionList()
 {
   ASSERT(m_functionCollection != NULL);
-  QList <CollectionItem> il = m_functionCollection->items();
+  QList <CollectionItem> *il = m_functionCollection->items();
 
   m_functionList->clear();
 
-  for (CollectionItem* item = il.first(); item != NULL; item = il.next())
+  for (CollectionItem* item = il->first(); item != NULL; item = il->next())
     {
-      new QListViewItem(m_functionList, item->callerDevice->name(), item->feederFunction->name());
+      new QListViewItem(m_functionList, item->device()->name(), item->function()->name());
     }
 }
 

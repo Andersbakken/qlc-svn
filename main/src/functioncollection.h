@@ -25,13 +25,42 @@
 #include "classes.h"
 #include "function.h"
 
-typedef struct
+class CollectionItem
 {
-  DMXDevice* callerDevice;
-  Function* feederFunction;
-  bool registered;
+ public:
+  CollectionItem()
+    {
+      m_device = NULL;
+      m_function = NULL;
+      m_registered = false;
+    }
 
-} CollectionItem;
+  CollectionItem(CollectionItem* item)
+    {
+      m_device = item->m_device;
+      m_function = item->m_function;
+      m_registered = item->m_registered;
+    }
+
+  virtual ~CollectionItem()
+    {
+    }
+
+  void setDevice(DMXDevice* d) { m_device = d; }
+  DMXDevice* device() { return m_device; }
+
+  void setFunction(Function* f) { m_function = f; }
+  Function* function() { return m_function; }
+
+  void setRegistered(bool reg) { m_registered = reg; }
+  bool registered() { return m_registered; }
+
+ private:
+  DMXDevice* m_device;
+  Function* m_function;
+  bool m_registered;
+
+};
 
 class FunctionCollection : public Function
 {
@@ -39,22 +68,19 @@ class FunctionCollection : public Function
 
  public:
   FunctionCollection();
-  ~FunctionCollection();
+  FunctionCollection(FunctionCollection* fc);
+  virtual ~FunctionCollection();
 
-  QList <CollectionItem> items() const { return m_items; }
+  QList <CollectionItem> *items() { return &m_items; }
 
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed (Feeder *feeder);
-
-  int m_registerCount;
 
   void addItem(DMXDevice* device, Function* function);
   bool removeItem(DMXDevice* device, Function* function);
   bool removeItem(QString deviceString, QString functionString);
 
   void saveToFile(QFile &file);
-
-  void increaseRegisterCount();
 
   bool registerFunction(Feeder* feeder);
   bool unRegisterFunction(Feeder* feeder);
@@ -65,6 +91,9 @@ class FunctionCollection : public Function
   QList <CollectionItem> m_items;
 
   void decreaseRegisterCount();
+  void increaseRegisterCount();
+
+  int m_registerCount;
 
  private slots:
   void slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID);

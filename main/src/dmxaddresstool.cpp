@@ -25,6 +25,7 @@
 #include <qdialog.h>
 #include <qslider.h>
 #include <qpushbutton.h>
+#include <qfont.h>
 
 #include "dmxaddresstool.h"
 #include "app.h"
@@ -37,31 +38,35 @@ DMXAddressTool::DMXAddressTool(QWidget* parent, const char* name)
 {
   m_address = 0;
 
-  m_256Label->setFont(_app->settings()->smallFont());
+  QFont font;
+  font.setStyleHint(QFont::System);
+  font.setPointSize(11);
+
+  m_256Label->setFont(font);
   m_256Label->setText("256");
 
-  m_128Label->setFont(_app->settings()->smallFont());
+  m_128Label->setFont(font);
   m_128Label->setText("128");
 
-  m_64Label->setFont(_app->settings()->smallFont());
+  m_64Label->setFont(font);
   m_64Label->setText("64");
 
-  m_32Label->setFont(_app->settings()->smallFont());
+  m_32Label->setFont(font);
   m_32Label->setText("32");
 
-  m_16Label->setFont(_app->settings()->smallFont());
+  m_16Label->setFont(font);
   m_16Label->setText("16");
 
-  m_8Label->setFont(_app->settings()->smallFont());
+  m_8Label->setFont(font);
   m_8Label->setText("8");
 
-  m_4Label->setFont(_app->settings()->smallFont());
+  m_4Label->setFont(font);
   m_4Label->setText("4");
 
-  m_2Label->setFont(_app->settings()->smallFont());
+  m_2Label->setFont(font);
   m_2Label->setText("2");
 
-  m_1Label->setFont(_app->settings()->smallFont());
+  m_1Label->setFont(font);
   m_1Label->setText("1");
 
 }

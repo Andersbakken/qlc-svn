@@ -41,6 +41,18 @@ Chaser::Chaser() : Function()
   m_OKforNextStep = true;
 }
 
+Chaser::Chaser(Chaser* ch)
+{
+  m_running = ch->m_running;
+  m_OKforNextStep = ch->m_OKforNextStep;
+  m_repeatTimes = ch->m_repeatTimes;
+
+  for (ChaserStep* step = ch->m_steps.first(); step != NULL; step = ch->m_steps.next())
+    {
+      m_steps.append(new ChaserStep(step));
+    }
+}
+
 Chaser::~Chaser()
 {
 }
@@ -77,9 +89,9 @@ void Chaser::saveToFile(QFile &file)
 
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
-	  ASSERT(step->feederFunction != NULL);
+	  ASSERT(step->function() != NULL);
 
-	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
+	  s = QString("Function = ") + step->function()->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
     }
@@ -92,9 +104,9 @@ void Chaser::saveToFile(QFile &file)
 
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
-	  ASSERT(step->feederFunction != NULL);
+	  ASSERT(step->function() != NULL);
 
-	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
+	  s = QString("Function = ") + step->function()->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
     }
@@ -106,12 +118,12 @@ void Chaser::saveToFile(QFile &file)
       // For global chasers, write device+scene pairs
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
-	  ASSERT(step->feederFunction != NULL);
+	  ASSERT(step->function() != NULL);
 
-	  if (step->callerDevice != NULL)
+	  if (step->device() != NULL)
 	    {
 	      // Regular function, device != NULL
-	      s = QString("Device = ") + step->callerDevice->name() + QString("\n");
+	      s = QString("Device = ") + step->device()->name() + QString("\n");
 	    }
 	  else
 	    {
@@ -120,7 +132,7 @@ void Chaser::saveToFile(QFile &file)
 	    }
 	  file.writeBlock((const char*) s, s.length());
 
-	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
+	  s = QString("Function = ") + step->function()->name() + QString("\n");
 	  file.writeBlock((const char*) s, s.length());
 	}
     }
@@ -195,10 +207,10 @@ void Chaser::addStep(DMXDevice* device, Function* function)
 {
   if (m_running == false)
     {
-      ChaserStep* step = (ChaserStep*) malloc(sizeof(ChaserStep));
+      ChaserStep* step = new ChaserStep();
       
-      step->callerDevice = device;
-      step->feederFunction = function;
+      step->setDevice(device);
+      step->setFunction(function);
       
       m_steps.append(step);
     }
@@ -213,10 +225,8 @@ void Chaser::removeStep(int index)
   if (m_running == false)
     {
       ChaserStep* step = m_steps.take(index);
-      if (step != NULL)
-	{
-	  delete step;
-	}
+      ASSERT(step != NULL);
+      delete step;
     }
   else
     {
@@ -224,21 +234,11 @@ void Chaser::removeStep(int index)
     }
 }
 
-int Chaser::steps(void)
-{ 
-  return m_steps.count();
-}
-
-ChaserStep* Chaser::at(int index)
-{ 
-  return m_steps.at(index);
-}
-
 void Chaser::recalculateSpeed(Feeder* feeder)
 {
   for (unsigned long i = 0; i < m_steps.count(); i++)
     {
-      m_steps.at(i)->feederFunction->recalculateSpeed(feeder);
+      m_steps.at(i)->function()->recalculateSpeed(feeder);
     }
 }
 
@@ -271,7 +271,7 @@ bool Chaser::unRegisterFunction(Feeder* feeder)
 
   ASSERT(step != NULL);
 
-  _app->sequenceProvider()->unRegisterEventFeeder(step->callerDevice, step->feederFunction);
+  _app->sequenceProvider()->unRegisterEventFeeder(step->device(), step->function());
 
   disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
 	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
@@ -300,7 +300,7 @@ Event* Chaser::getEvent(Feeder* feeder)
       
       ASSERT(step != NULL);
       
-      _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
+      _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), step->device(), this);
       
       disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
 		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));

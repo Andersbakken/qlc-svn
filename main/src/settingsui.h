@@ -41,18 +41,16 @@ class SettingsUI : public UI_Settings
   void slotSystemBrowseClicked();
   void slotSystemEditTextChanged(const QString &);
 
-  void slotGeneralFontSelectClicked();
-  void slotSmallFontSelectClicked();
   void slotOKClicked();
   void slotCancelClicked();
   void slotWidgetStyleActivated(int);
 
  private:
+  void fillStyleCombo();
+
+ private:
   QString m_picturePath;
   QString m_deviceClassPath;
-
-  QFont m_generalFont;
-  QFont m_smallFont;
 
   bool m_openDeviceManager;
   bool m_openLastWorkspace;

@@ -55,36 +55,36 @@ void ChaserEditor::addItems()
   QListViewItem* prev = NULL;
   QString deviceName;
 
-  int steps = m_function->steps();
+  int steps = m_function->steps()->count();
 
   for (int i = 0; i < steps; i++)
     {
-      step = m_function->at(i);
+      step = m_function->steps()->at(i);
       if (prev == NULL)
 	{
-	  if (step->callerDevice != NULL)
+	  if (step->device() != NULL)
 	    {
-	      deviceName = step->callerDevice->name();
+	      deviceName = step->device()->name();
 	    }
 	  else
 	    {
 	      deviceName = QString("Global");
 	    }
 
-	  prev = new QListViewItem(m_functionList, "", deviceName, step->feederFunction->name());
+	  prev = new QListViewItem(m_functionList, "", deviceName, step->function()->name());
 	}
       else
 	{
-	  if (step->callerDevice != NULL)
+	  if (step->device() != NULL)
 	    {
-	      deviceName = step->callerDevice->name();
+	      deviceName = step->device()->name();
 	    }
 	  else
 	    {
 	      deviceName = QString("Global");
 	    }
 
-	  prev = new QListViewItem(m_functionList, prev, "", deviceName, step->feederFunction->name());
+	  prev = new QListViewItem(m_functionList, prev, "", deviceName, step->function()->name());
 	}
 
       m_prevItem = prev;
@@ -157,7 +157,8 @@ void ChaserEditor::init()
 void ChaserEditor::slotOKClicked()
 {
   // Remove all existing steps
-  int steps = m_function->steps();
+  int steps = m_function->steps()->count();
+
   for (int i = 0; i < steps; i++)
     {
       m_function->removeStep(0);

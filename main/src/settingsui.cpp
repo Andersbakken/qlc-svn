@@ -29,6 +29,7 @@
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qcheckbox.h>
+#include <qstylefactory.h>
 
 extern App* _app;
 
@@ -44,28 +45,30 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
   m_deviceClassesEdit->setText(_app->settings()->deviceClassPath());
   m_pluginsEdit->setText(_app->settings()->pluginPath());
 
-  m_widgetStyleCombo->insertItem("Motif");
-  m_widgetStyleCombo->insertItem("Windows");
-  m_widgetStyleCombo->insertItem("Platinum");
-  m_widgetStyleCombo->insertItem("CDE");
-  m_widgetStyleCombo->insertItem("Motif Plus");
-  m_widgetStyleCombo->insertItem("SGI");
-  m_widgetStyleCombo->insertItem("Interlace");
-  m_widgetStyleCombo->insertItem("System default");
-  m_widgetStyleCombo->setCurrentItem(_app->settings()->widgetStyle());
-
-  m_generalFont = _app->settings()->generalFont();
-  str.sprintf("%s (%dpt)", m_generalFont.family().latin1(), m_generalFont.pointSize());
-  m_generalFontEdit->setFont(m_generalFont);
-  m_generalFontEdit->setText(str);
-
-  m_smallFont = _app->settings()->smallFont();
-  str.sprintf("%s (%dpt)", m_smallFont.family().latin1(), m_smallFont.pointSize());
-  m_smallFontEdit->setFont(m_smallFont);
-  m_smallFontEdit->setText(str);
+  fillStyleCombo();
 
   m_openDeviceManagerCheckBox->setChecked(_app->settings()->openDeviceManager());
   m_openLastWorkspaceCheckBox->setChecked(_app->settings()->openLastWorkspace());
+}
+
+void SettingsUI::fillStyleCombo()
+{
+  QStyleFactory f;
+  QStringList l = f.keys();
+  
+  for (QStringList::Iterator it = l.begin(); it != l.end(); ++it)
+    {
+      m_widgetStyleCombo->insertItem(*it);
+    }
+  
+  for (int i = 0; i < m_widgetStyleCombo->count(); i++)
+    {
+      if (m_widgetStyleCombo->text(i) == _app->settings()->widgetStyle())
+	{
+	  m_widgetStyleCombo->setCurrentItem(i);
+	  break;
+	}
+    }
 }
 
 SettingsUI::~SettingsUI()
@@ -100,40 +103,6 @@ void SettingsUI::slotSystemEditTextChanged(const QString &text)
   m_pluginsEdit->setText(path + _app->settings()->pluginPathRelative());
 }
 
-void SettingsUI::slotGeneralFontSelectClicked()
-{
-  bool ok;
-  QFont font;
-
-  font = QFontDialog::getFont(&ok, m_generalFont, this);
-
-  if (ok)
-    {
-      QString str;
-      str.sprintf("%s (%dpt)", font.family().latin1(), font.pointSize());
-      m_generalFontEdit->setFont(font);
-      m_generalFontEdit->setText(str);
-      m_generalFont = font;
-    }
-}
-
-void SettingsUI::slotSmallFontSelectClicked()
-{
-  bool ok;
-  QFont font;
-
-  font = QFontDialog::getFont(&ok, m_smallFont, this);
-
-  if (ok)
-    {
-      QString str;
-      str.sprintf("%s (%dpt)", font.family().latin1(), font.pointSize()); 
-      m_smallFontEdit->setFont(font);
-      m_smallFontEdit->setText(str);
-      m_smallFont = font;
-    }
-}
-
 void SettingsUI::slotWidgetStyleActivated(int s)
 {
 }
@@ -142,10 +111,7 @@ void SettingsUI::slotOKClicked()
 {
   _app->settings()->setSystemPath(m_systemEdit->text());
 
-  _app->settings()->setGeneralFont(m_generalFont);
-  _app->settings()->setSmallFont(m_smallFont);
-
-  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentItem());
+  _app->settings()->setWidgetStyle(m_widgetStyleCombo->currentText());
 
   _app->settings()->setOpenDeviceManager(m_openDeviceManagerCheckBox->isChecked());
   _app->settings()->setOpenLastWorkspace(m_openLastWorkspaceCheckBox->isChecked());

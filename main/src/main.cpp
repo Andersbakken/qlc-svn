@@ -48,7 +48,6 @@ int main(int argc, char **argv)
   XGetKeyboardControl(xd, &xkbstate);
   XCloseDisplay(xd);
 
-
   qDebug("--- Q Light Controller %s ---\n", IDS_APP_VERSION_STR);
   qDebug("This program is licensed under the terms of the GNU General Public License.");
   qDebug("Copyright (c) Heikki Junnila (hjunnila@iki.fi)");

@@ -31,11 +31,35 @@ class Event;
 class QFile;
 class QString;
 
-typedef struct
+class ChaserStep
 {
-  DMXDevice* callerDevice;
-  Function* feederFunction;
-} ChaserStep;
+ public:
+  ChaserStep()
+    {
+      m_device = NULL;
+      m_function = NULL;
+    }
+
+  ChaserStep(ChaserStep* step)
+    {
+      m_function = step->function();
+      m_device = step->device();
+    }
+
+  virtual ~ChaserStep()
+    {
+    }
+
+  void setDevice(DMXDevice* d) { m_device = d; }
+  DMXDevice* device() { return m_device; }
+
+  void setFunction(Function* f) { m_function = f; }
+  Function* function() { return m_function; }
+
+ private:
+  DMXDevice* m_device;
+  Function* m_function;
+};
 
 class Chaser : public Function
 {
@@ -43,13 +67,13 @@ class Chaser : public Function
 
  public:
   Chaser();
-  ~Chaser();
+  Chaser(Chaser* ch);
+  virtual ~Chaser();
 
   void addStep(DMXDevice* device, Function* function);
   void removeStep(int index = 0);
 
-  int steps(void);
-  ChaserStep* at(int index); 
+  QList <ChaserStep> *steps() { return &m_steps; }
 
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed (Feeder *f);

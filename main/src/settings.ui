@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>469</width>
-            <height>481</height>
+            <height>418</height>
         </rect>
     </property>
     <property name="caption">
@@ -17,18 +17,18 @@
     </property>
     <widget class="QGroupBox">
         <property name="name">
-            <cstring>m_stylesGroupBox</cstring>
+            <cstring>GroupBox4</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
                 <y>170</y>
                 <width>450</width>
-                <height>140</height>
+                <height>80</height>
             </rect>
         </property>
         <property name="title">
-            <string>Styles</string>
+            <string>Look and Feel</string>
         </property>
         <widget class="QLabel">
             <property name="name">
@@ -37,118 +37,13 @@
             <property name="geometry">
                 <rect>
                     <x>10</x>
-                    <y>100</y>
+                    <y>30</y>
                     <width>110</width>
                     <height>24</height>
                 </rect>
             </property>
             <property name="text">
                 <string>Widget Style</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_generalFontLabel</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>110</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>General Font</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_smallFontLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>60</y>
-                    <width>110</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Small Font</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_generalFontEdit</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>30</y>
-                    <width>230</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>m_smallFontEdit</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>130</x>
-                    <y>60</y>
-                    <width>230</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="readOnly">
-                <bool>true</bool>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_selectGeneralFontButton</cstring>
-            </property>
-            <property name="enabled">
-                <bool>false</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>370</x>
-                    <y>30</y>
-                    <width>70</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Select...</string>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>m_selectSmallFontButton</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>370</x>
-                    <y>60</y>
-                    <width>70</width>
-                    <height>25</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Select...</string>
             </property>
         </widget>
         <widget class="QComboBox">
@@ -158,7 +53,7 @@
             <property name="geometry">
                 <rect>
                     <x>130</x>
-                    <y>100</y>
+                    <y>30</y>
                     <width>230</width>
                     <height>24</height>
                 </rect>
@@ -172,7 +67,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>320</y>
+                <y>260</y>
                 <width>450</width>
                 <height>100</height>
             </rect>
@@ -212,41 +107,6 @@
                 <string>Open Last Workspace</string>
             </property>
         </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>380</x>
-                <y>440</y>
-                <width>80</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>290</x>
-                <y>440</y>
-                <width>80</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -366,6 +226,9 @@
             <property name="name">
                 <cstring>m_picturesEdit</cstring>
             </property>
+            <property name="enabled">
+                <bool>false</bool>
+            </property>
             <property name="geometry">
                 <rect>
                     <x>130</x>
@@ -373,6 +236,9 @@
                     <width>230</width>
                     <height>25</height>
                 </rect>
+            </property>
+            <property name="focusPolicy">
+                <enum>NoFocus</enum>
             </property>
             <property name="readOnly">
                 <bool>true</bool>
@@ -382,6 +248,9 @@
             <property name="name">
                 <cstring>m_deviceClassesEdit</cstring>
             </property>
+            <property name="enabled">
+                <bool>false</bool>
+            </property>
             <property name="geometry">
                 <rect>
                     <x>130</x>
@@ -389,6 +258,9 @@
                     <width>230</width>
                     <height>25</height>
                 </rect>
+            </property>
+            <property name="focusPolicy">
+                <enum>NoFocus</enum>
             </property>
             <property name="readOnly">
                 <bool>true</bool>
@@ -398,6 +270,9 @@
             <property name="name">
                 <cstring>m_pluginsEdit</cstring>
             </property>
+            <property name="enabled">
+                <bool>false</bool>
+            </property>
             <property name="geometry">
                 <rect>
                     <x>130</x>
@@ -406,25 +281,51 @@
                     <height>25</height>
                 </rect>
             </property>
+            <property name="focusPolicy">
+                <enum>NoFocus</enum>
+            </property>
             <property name="readOnly">
                 <bool>true</bool>
             </property>
         </widget>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>290</x>
+                <y>380</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>380</x>
+                <y>380</y>
+                <width>80</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
 </widget>
 <connections>
-    <connection>
-        <sender>m_selectGeneralFontButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotGeneralFontSelectClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_selectSmallFontButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotSmallFontSelectClicked()</slot>
-    </connection>
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
@@ -462,10 +363,6 @@
     <tabstop>m_picturesEdit</tabstop>
     <tabstop>m_deviceClassesEdit</tabstop>
     <tabstop>m_pluginsEdit</tabstop>
-    <tabstop>m_generalFontEdit</tabstop>
-    <tabstop>m_selectGeneralFontButton</tabstop>
-    <tabstop>m_smallFontEdit</tabstop>
-    <tabstop>m_selectSmallFontButton</tabstop>
     <tabstop>m_widgetStyleCombo</tabstop>
     <tabstop>m_openDeviceManagerCheckBox</tabstop>
     <tabstop>m_openLastWorkspaceCheckBox</tabstop>
@@ -480,9 +377,9 @@
     <slot>slotGeneralFontSelectClicked()</slot>
     <slot>slotOKClicked()</slot>
     <slot>slotSmallFontSelectClicked()</slot>
+    <slot>slotWidgetStyleActivated( int )</slot>
     <slot>slotSystemBrowseClicked()</slot>
-    <slot>slotSystemEditTextChanged(const QString &amp;)</slot>
-    <slot>slotWidgetStyleActivated(int)</slot>
+    <slot>slotSystemEditTextChanged( const QString &amp; )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

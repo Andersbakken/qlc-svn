@@ -24,6 +24,7 @@
 #include <qlistbox.h>
 #include <qpixmap.h>
 #include <qcolor.h>
+#include <qfont.h>
 
 #include "aboutbox.h"
 #include "app.h"
@@ -73,13 +74,19 @@ void AboutBox::initDialog()
   setFixedSize(w, h + 220);
   setBackgroundColor(white);
 
+  QFont font;
+  font.setStyleHint(QFont::System);
+  font.setPixelSize(11);
+
   m_version = new QLabel(this);
+  m_version->setFont(font);
   m_version->setGeometry(0, h, w, 20);
   m_version->setAlignment(AlignCenter);
   m_version->setText(IDS_APP_VERSION_STR);
   m_version->setBackgroundColor(white);
   
   m_copyright = new QLabel(this);
+  m_copyright->setFont(font);
   m_copyright->setGeometry(0, h + 30, w, 50);
   m_copyright->setAlignment(AlignCenter);
   m_copyright->setTextFormat(RichText);
@@ -87,6 +94,7 @@ void AboutBox::initDialog()
   m_copyright->setBackgroundColor(white);
 
   m_people = new QListBox(this);
+  m_people->setFont(font);
   m_people->setGeometry(5, h + 90, w - 10, 80);
   m_people->setFocusPolicy(QWidget::NoFocus);
   m_people->setSelectionMode(QListBox::NoSelection);
