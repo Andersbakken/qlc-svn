@@ -286,13 +286,21 @@ void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, De
     }
 }
 
-void Chaser::unRegisterFunction()
+void Chaser::unRegisterFunction(Feeder* feeder)
 {
+  ChaserStep* step = NULL;
+  int index = (feeder->nextEventIndex() - 1 + m_steps.count()) % m_steps.count();
+  step = m_steps.at(index);
+
+  ASSERT(step != NULL);
+
+  _app->sequenceProvider()->unRegisterEventFeeder(step->callerDevice, step->feederFunction);
+
   disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
 	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
 
   m_running = false;
   m_OKforNextStep = false;
 
-  Function::unRegisterFunction();
+  Function::unRegisterFunction(feeder);
 }

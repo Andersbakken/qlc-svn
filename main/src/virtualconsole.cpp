@@ -496,20 +496,23 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 
 void VirtualConsole::registerKeyReceiver(DMXWidgetBase* widget)
 {
-  if (searchKeyReceiver(widget) == NULL)
-    {
-      m_keyReceivers.append(widget);
-    }
+  ASSERT(widget != NULL);
+
+  m_keyReceivers.append(widget);
 }
 
 void VirtualConsole::unRegisterKeyReceiver(DMXWidgetBase* widget)
 {
+  ASSERT(widget != NULL);
+
   m_keyReceivers.remove(widget);
 }
 
 DMXWidgetBase* VirtualConsole::searchKeyReceiver(DMXWidgetBase* widget)
 {
   DMXWidgetBase* w = NULL;
+
+  ASSERT(widget != NULL);
 
   for (uint i = 0; i < m_keyReceivers.count(); i++)
     {

@@ -88,7 +88,6 @@ void AboutBox::initDialog()
 
   m_people = new QListBox(this);
   m_people->setGeometry(5, h + 90, w - 10, 80);
-  m_people->setBackgroundColor(white);
   m_people->setFocusPolicy(QWidget::NoFocus);
   m_people->setSelectionMode(QListBox::NoSelection);
   m_people->setFrameStyle(QFrame::Panel);
@@ -96,6 +95,7 @@ void AboutBox::initDialog()
   m_people->insertItem("Heikki Junnila <hjunnila@iki.fi>    (Author)");
   m_people->insertItem("Stefan Krumm <krumm@geol.uni-erlangen.de>");
   m_people->insertItem("Dirk Jagdmann <doj@cubic.org>");
+  m_people->setBackgroundColor(white);
 
   m_ok = new QPushButton(this);
   m_ok->setGeometry(133, h + 180, 100, 30);

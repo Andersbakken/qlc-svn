@@ -72,7 +72,7 @@ Function::Type Function::type() const
   return m_type;
 }
 
-void Function::unRegisterFunction()
+void Function::unRegisterFunction(Feeder* feeder)
 {
   m_running = false;
 

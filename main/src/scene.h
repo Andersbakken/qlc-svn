@@ -58,7 +58,7 @@ class Scene : public Function
 
   void saveToFile(QFile &file);
 
-  void unRegisterFunction();
+  void unRegisterFunction(Feeder* feeder);
   void registerFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);

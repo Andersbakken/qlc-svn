@@ -57,7 +57,7 @@ class Function : public QObject
   virtual void recalculateSpeed(Feeder* feeder) = 0;
 
   /* Used to emit an unRegistered() signal from this function */
-  virtual void unRegisterFunction();
+  virtual void unRegisterFunction(Feeder*);
 
   /* Signal the function that it is registered -> do some init */
   virtual void registerFunction(Feeder*);

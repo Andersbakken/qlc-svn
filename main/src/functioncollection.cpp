@@ -47,11 +47,11 @@ FunctionCollection::~FunctionCollection()
 
 }
 
-void FunctionCollection::unRegisterFunction()
+void FunctionCollection::unRegisterFunction(Feeder* feeder)
 {
   m_running = false; // Not running anymore
 
-  Function::unRegisterFunction();
+  Function::unRegisterFunction(feeder);
 }
 
 void FunctionCollection::registerFunction(Feeder* feeder)

@@ -55,9 +55,9 @@ Scene::~Scene()
     }
 }
 
-void Scene::unRegisterFunction()
+void Scene::unRegisterFunction(Feeder* feeder)
 {
-  Function::unRegisterFunction();
+  Function::unRegisterFunction(feeder);
 }
 
 void Scene::registerFunction(Feeder* feeder)
