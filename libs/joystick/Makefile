@@ -21,9 +21,9 @@
 
 include config.make
 
-CXXFLAGS += -g -I$(QTDIR)/include
+CXXFLAGS += -I$(QTDIR)/include -O2
 LDFLAGS += -fPIC -shared
-LIBS = -L$(QTDIR)/lib -L$(X11LIBS) -lXext -lX11 -lqt-mt -ldl -lpthread
+LIBS = -L$(QTDIR)/lib -L$(X11LIBS) -lXext -lX11 -lqt #-mt -ldl -lpthread
 
 UICH =  uic_selectjoystick.h
 
