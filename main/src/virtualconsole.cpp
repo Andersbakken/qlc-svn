@@ -246,7 +246,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	  {
 	    addBottomFrame();
 	  }
-	qDebug("hupsista");
 	DMXButton* b;
 	b = new DMXButton(m_drawArea);
 	b->show();
