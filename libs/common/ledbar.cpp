@@ -94,50 +94,52 @@ void LedBar::setToolTip(QString text)
 
 void LedBar::slotSetValue(unsigned char value)
 {
+  qDebug("%d", (int) value);
   slotSetValue((int) value);
 }
 
 void LedBar::slotSetValue(int value)
 {
+  QRect fillRect, chRect, valRect;
+
   // Update only if value has changed
   if (m_value != value)
     {
-      QRect fillRect, chRect, valRect;
+      m_qapp->lock();
 
       m_value = value;
+
       if (value == 0)
 	{
 	  m_drawFrame->hide();
-	  return;
 	}
-      else if (m_drawFrame->isVisible() == false)
+      else
 	{
 	  m_drawFrame->show();
+
+	  // Channel number
+	  chRect = rect();
+	  chRect.setRight(18);
+	  chRect.setTop(chRect.bottom() - 10);
+	  chRect.setLeft(2);
+	  
+	  // Channel value
+	  valRect = rect();
+	  valRect.setRight(18);
+	  valRect.setBottom(11);
+	  valRect.setLeft(2);
+	  
+	  // Actual led bar
+	  fillRect = rect();
+	  fillRect.setTop( (int) (((m_max - value) * (chRect.top() - valRect.bottom()) / (double) m_max) + valRect.bottom()));
+	  fillRect.setBottom(chRect.top() - 1);
+	  fillRect.setRight(15);
+	  fillRect.setLeft(5);
+	  
+	  m_drawFrame->setGeometry(fillRect);
 	}
-
-      m_qapp->lock();
+      
       repaint();
-
-      // Channel number
-      chRect = rect();
-      chRect.setRight(18);
-      chRect.setTop(chRect.bottom() - 10);
-      chRect.setLeft(2);
-      
-      // Channel value
-      valRect = rect();
-      valRect.setRight(18);
-      valRect.setBottom(11);
-      valRect.setLeft(2);
-      
-      // Actual led bar
-      fillRect = rect();
-      fillRect.setTop( (int) (((m_max - m_value) * (chRect.top() - valRect.bottom()) / (double) m_max) + valRect.bottom()));
-      fillRect.setBottom(chRect.top() - 1);
-      fillRect.setRight(15);
-      fillRect.setLeft(5);
-
-      m_drawFrame->setGeometry(fillRect);
 
       m_qapp->unlock();
     }

@@ -48,6 +48,9 @@ class SceneEditor : public UI_SceneEditor
   SceneEditor(DMXDevice* device, QWidget* parent = 0, const char* name = 0);
   ~SceneEditor();
 
+  static int width() { return 133; }
+  static int height() { return 220; }
+
  public slots:
   void slotSceneChanged();
   void slotSceneActivated( int nr );
