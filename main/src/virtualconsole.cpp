@@ -384,7 +384,7 @@ DMXWidgetBase* VirtualConsole::searchKeyReceiver(DMXWidgetBase* widget)
 {
   DMXWidgetBase* w = NULL;
 
-  for (int i = 0; i < m_keyReceivers.count(); i++)
+  for (uint i = 0; i < m_keyReceivers.count(); i++)
     {
       w = m_keyReceivers.at(i);
       if (w == widget)
