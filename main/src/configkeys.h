@@ -43,6 +43,7 @@ const QString KEY_APP_X                (      "ApplicationRectX" );
 const QString KEY_APP_Y                (      "ApplicationRectY" );
 const QString KEY_APP_W                (      "ApplicationRectW" );
 const QString KEY_APP_H                (      "ApplicationRectH" );
+const QString KEY_APP_MAXIMIZED        (  "ApplicationMaximized" );
 const QString KEY_APP_BACKGROUND       ( "ApplicationBackground" );
 
 const QString KEY_KEY_REPEAT           ( "KeyRepeat" );

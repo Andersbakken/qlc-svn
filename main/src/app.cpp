@@ -34,6 +34,7 @@
 #include <qcolor.h>
 #include <qtooltip.h>
 #include <qstylefactory.h>
+#include <qrect.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -164,7 +165,7 @@ void App::init(void)
   //
   // Default size
   //
-  resize(640, 480);
+  resize(maximumSize());
 
   //
   // Settings has to be first
@@ -266,12 +267,21 @@ void App::initWorkspace()
   //
   // Set App proportions
   //
-  QString x, y, w, h;
-  settings()->get(KEY_APP_X, x);
-  settings()->get(KEY_APP_Y, y);
-  settings()->get(KEY_APP_W, w);
-  settings()->get(KEY_APP_H, h);
-  setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+  QString max;
+  settings()->get(KEY_APP_MAXIMIZED, max);
+  if (max == Settings::trueValue())
+    {
+      showMaximized();
+    }
+  else
+    {
+      QString x, y, w, h;
+      settings()->get(KEY_APP_X, x);
+      settings()->get(KEY_APP_Y, y);
+      settings()->get(KEY_APP_W, w);
+      settings()->get(KEY_APP_H, h);
+      setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+    }
 
   //
   // Main application icon
@@ -598,7 +608,22 @@ void App::newDocument()
 //
 void App::slotFileOpen()
 {
-  if (slotFileNew())
+  bool ok = true;
+
+  if (doc()->isModified())
+    {
+      QString msg;
+      msg = "Are you sure you want to clear the current workspace?\n";
+      msg += "There are unsaved changes.";
+      if (QMessageBox::warning(this, KApplicationNameShort, msg,
+			       QMessageBox::Yes, QMessageBox::No)
+	  == QMessageBox::No)
+	{
+	  ok = false;
+	}
+    }
+
+  if (ok)
     {
       QString fn = QFileDialog::getOpenFileName(m_doc->fileName(), 
 						"*.qlc", this);
@@ -608,6 +633,7 @@ void App::slotFileOpen()
 	}
       else
 	{
+	  newDocument();
 	  if (doc()->loadWorkspaceAs(fn) == false)
 	    {
 	      QMessageBox::critical(this, KApplicationNameShort, 
@@ -1040,6 +1066,9 @@ void App::saveSettings()
   m_settings->set(KEY_APP_Y, rect().y());
   m_settings->set(KEY_APP_W, rect().width());
   m_settings->set(KEY_APP_H, rect().height());
+
+  m_settings->set(KEY_APP_MAXIMIZED, (isMaximized()) ? Settings::trueValue() :
+		  Settings::falseValue());
 }
 
 
