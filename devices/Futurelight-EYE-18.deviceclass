@@ -1,0 +1,82 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = EYE-18
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 2
+Name = Pan/tilt speed
+# Capability Entries
+0-225 = Vector mode speed
+226-235 = BO with pan/tilt
+236-245 = No function
+Entry = Channel
+Number = 3
+Name = Rainbow
+# Capability Entries
+0-7 = No function
+8-220 = Rainbow speed
+221-255 = Crossfading colour speed
+Entry = Channel
+Number = 4
+Name = Red
+# Capability Entries
+0-255 = Red mix
+Entry = Channel
+Number = 5
+Name = Green
+# Capability Entries
+0-255 = Green mix
+Entry = Channel
+Number = 6
+Name = Blue
+# Capability Entries
+0-255 = Blue mix
+Entry = Channel
+Number = 7
+Name = Shutter
+# Capability Entries
+0-63 = Shutter open
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open
+Entry = Channel
+Number = 8
+Name = Lamp switch, reset, programs
+# Capability Entries
+0-79 = No function
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-255 = No function
+Entry = Channel
+Number = 9
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 10
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine
