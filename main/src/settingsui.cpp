@@ -72,6 +72,8 @@ void SettingsUI::init()
   m_keyRepeatCheckBox->setChecked((str == Settings::trueValue()) 
 				  ? true : false);
 
+  fillOutputPluginCombo();
+
   fillAdvancedSettingsList();
 }
 
@@ -98,35 +100,30 @@ void SettingsUI::fillStyleCombo()
     }
 }
 
-void SettingsUI::slotSystemBrowseClicked()
-{
-  QString dir;
-  dir = QFileDialog::getExistingDirectory(m_systemEdit->text(), this);
 
-  if (dir.isEmpty() == false)
+void SettingsUI::fillOutputPluginCombo()
+{
+  QPtrListIterator <Plugin> it(*_app->pluginList());
+  int i = 0;
+
+  QString plugin;
+  _app->settings()->get(KEY_OUTPUT_PLUGIN, plugin);
+
+  while (it.current() != NULL)
     {
-      m_systemEdit->setText(dir);
-    }
-}
+      if (it.current()->type() == Plugin::OutputType)
+	{
+	  m_outputPluginCombo->insertItem(it.current()->name(), i);
+	  if (it.current()->name() == plugin)
+	    {
+	      m_outputPluginCombo->setCurrentItem(i);
+	    }
 
-void SettingsUI::slotBackgroundBrowseClicked()
-{
-  QString path;
-  path = QFileDialog::
-    getOpenFileName(m_backgroundEdit->text(), 
-		    QString("Images (*.png *.xpm *.jpg *.gif)"), this);
-  
-  if (path.isEmpty() == false)
-    {
-      m_backgroundEdit->setText(path);
-      _app->workspace()->setBackgroundPixmap(QPixmap(path));
-    }
-}
+	  i++;
+	}
 
-void SettingsUI::slotStyleChanged(const QString &)
-{
-  _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
-  _qapp->setStyle(m_widgetStyleCombo->currentText());
+      ++it;
+    }
 }
 
 
@@ -143,11 +140,46 @@ void SettingsUI::fillAdvancedSettingsList()
 }
 
 
+void SettingsUI::slotSystemBrowseClicked()
+{
+  QString dir;
+  dir = QFileDialog::getExistingDirectory(m_systemEdit->text(), this);
+
+  if (dir.isEmpty() == false)
+    {
+      m_systemEdit->setText(dir);
+    }
+}
+
+
+void SettingsUI::slotBackgroundBrowseClicked()
+{
+  QString path;
+  path = QFileDialog::
+    getOpenFileName(m_backgroundEdit->text(), 
+		    QString("Images (*.png *.xpm *.jpg *.gif)"), this);
+  
+  if (path.isEmpty() == false)
+    {
+      m_backgroundEdit->setText(path);
+      _app->workspace()->setBackgroundPixmap(QPixmap(path));
+    }
+}
+
+
+void SettingsUI::slotStyleChanged(const QString &)
+{
+  _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
+  _qapp->setStyle(m_widgetStyleCombo->currentText());
+}
+
+
 void SettingsUI::slotOKClicked()
 {
   _app->settings()->set(KEY_SYSTEM_DIR, m_systemEdit->text());
   _app->settings()->set(KEY_APP_BACKGROUND, m_backgroundEdit->text());
   _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
+  _app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());
   
   if (m_openDeviceManagerCheckBox->isChecked())
     {

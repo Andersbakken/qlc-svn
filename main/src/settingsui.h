@@ -43,6 +43,7 @@ class SettingsUI : public UI_Settings
 
  private:
   void fillStyleCombo();
+  void fillOutputPluginCombo();
   void fillAdvancedSettingsList();
 };
 
