@@ -66,7 +66,7 @@ Monitor::Monitor(QWidget* parent, t_channel fromChannel,
 		 t_channel toChannel)
   : QWidget(parent)
 {
-  ASSERT(fromChannel < toChannel);
+  ASSERT(fromChannel <= toChannel);
 
   m_fromChannel = fromChannel;
   m_toChannel = toChannel;
