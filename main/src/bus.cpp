@@ -33,7 +33,7 @@ Bus::Bus() : QObject()
   _nextBusID++;
   m_value = 0;
   m_type = Generic;
-  m_name.sprintf("Bus #%d", m_id - BUS_ROOT_ID);
+  m_name.sprintf("Bus %ld", m_id - BUS_ROOT_ID);
 }
 
 Bus::~Bus()

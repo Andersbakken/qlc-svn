@@ -203,7 +203,8 @@ bool Doc::readDeviceClasses()
       // The list wasn't cleared between files
       while (list.isEmpty() == false)
 	{
-	  delete list.take(0);
+	  list.first();
+	  delete list.take();
 	}
     }
   return true;
@@ -263,8 +264,17 @@ bool Doc::readFileToList(QString &fileName, QList<QString> &list)
   QString buf = QString::null;
   int i = 0;
 
+  while (list.isEmpty() == false)
+    {
+      list.first();
+      delete list.take();
+    }
+
   if (file.open(IO_ReadOnly))
     {
+      list.append(new QString("Entry"));
+      list.append(new QString("Dummy"));
+
       // First read all entries to a string list
       while (file.atEnd() == false)
 	{
@@ -277,13 +287,14 @@ bool Doc::readFileToList(QString &fileName, QList<QString> &list)
 	    {
 	      /* Get the string up to equal sign */
 	      s = buf.mid(0, i).stripWhiteSpace();
-	      t = buf.mid(i + 1).stripWhiteSpace();
-	      
 	      list.append(new QString(s));
+
+	      /* Get the string after the equal sign */
+	      t = buf.mid(i + 1).stripWhiteSpace();
 	      list.append(new QString(t));
 	    }
 	}
-      
+
       file.close();
       return true;
     }
@@ -295,7 +306,7 @@ bool Doc::readFileToList(QString &fileName, QList<QString> &list)
 
 bool Doc::loadWorkspaceAs(QString &fileName)
 {
-  bool success = true;
+  bool success = false;
 
   QString buf;
   QString s;
@@ -314,11 +325,11 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	  if (*string == QString("Entry"))
 	    {
 	      string = list.next();
-
+	      
 	      if (*string == QString("Device"))
 		{
 		  Device* d = createDevice(list);
-
+		  
 		  if (d != NULL)
 		    {
 		      addDevice(d);
@@ -351,16 +362,17 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		}
 	      else if (*string == QString("Virtual Console"))
 		{
-		  // Virtual console wants it all, 2x back to "Entry"
+		  // Virtual console wants it all, go to "Entry"
 		  list.prev();
 		  list.prev();
+		  
+		  // TODO: a quick and dirty hack?... -1...
+		  
 		  _app->virtualConsole()->createContents(list);
 		}
 	      else
 		{
-		  // Reel back one step, it might contain the keyword
-		  // "Entry"
-		  string = list.prev();
+		  // Unknown keyword, do nothing
 		}
 	    }
 	}
@@ -387,6 +399,11 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	    }
 	}
 
+      success = true;
+    }
+  else
+    {
+      success = false;
     }
   
   m_modified = false;

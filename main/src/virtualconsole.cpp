@@ -57,7 +57,6 @@ void VirtualConsole::setMode(Mode mode)
       m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, false);
       m_menuBar->setItemEnabled(ID_VC_ADD, true);
       setCaption("Virtual Console - Design Mode");
-      emit modeChange(Design);
     }
   else
     {
@@ -66,7 +65,6 @@ void VirtualConsole::setMode(Mode mode)
       m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, true);
       m_menuBar->setItemEnabled(ID_VC_ADD, false);
       setCaption("Virtual Console - Operate Mode");
-      emit modeChange(Operate);
     }
 }
 
@@ -124,7 +122,7 @@ DMXWidget* VirtualConsole::getFrame(unsigned int id, DMXWidget* widget)
 void VirtualConsole::createWidget(QList<QString> &list)
 {
   QString t;
-
+  
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
@@ -136,13 +134,13 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	{
 	  if (m_drawArea == NULL)
 	    {
-	        m_drawArea = new DMXWidget(this, "Bottom Frame");
-		m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-		connect(m_drawArea, SIGNAL(removed(DMXWidget*)), this, SLOT(slotDrawAreaRemoved(DMXWidget*)));
-		m_layout->addWidget(m_drawArea, 1);
-		m_drawArea->createContents(list);
-		setGeometry(m_drawArea->rect());
-		m_drawArea->show();
+	      m_drawArea = new DMXWidget(this, "Bottom Frame");
+	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	      connect(m_drawArea, SIGNAL(removed(DMXWidget*)), this, SLOT(slotDrawAreaRemoved(DMXWidget*)));
+	      m_layout->addWidget(m_drawArea, 1);
+	      m_drawArea->createContents(list);
+	      setGeometry(m_drawArea->rect());
+	      m_drawArea->show();
 	    }
 	  else
 	    {
@@ -198,7 +196,7 @@ void VirtualConsole::createVirtualConsole(QList<QString>& list)
     }
 }
 
-void VirtualConsole::createContents(QList<QString>& list)
+void VirtualConsole::createContents(QList<QString> &list)
 {
   QString t;
 
