@@ -81,9 +81,9 @@ void Scene::saveToFile(QFile &file)
   if (deviceClass() != NULL)
     {
       // Write only the data for device class scenes
-      for (unsigned i = 1; i < deviceClass()->m_channels.count(); i++)
+      for (unsigned i = 0; i < deviceClass()->m_channels.count(); i++)
 	{
-	  t.setNum(i);
+	  t.setNum(i+1);
 	  s = t + QString(" = ");
 	  t.setNum(m_values[i]);
 	  s += t + QString("\n");
@@ -98,9 +98,9 @@ void Scene::saveToFile(QFile &file)
       file.writeBlock((const char*) s, s.length());
 
       // Data
-      for (unsigned i = 1; i < device()->deviceClass()->m_channels.count(); i++)
+      for (unsigned i = 0; i < device()->deviceClass()->m_channels.count(); i++)
 	{
-	  t.setNum(i);
+	  t.setNum(i+1);
 	  s = t + QString(" = ");
 	  t.setNum(m_values[i]);
 	  s += t + QString("\n");
@@ -253,4 +253,5 @@ Event* Scene::getNextLevel(Feeder* f)
 
   return event;
 }
+
 
