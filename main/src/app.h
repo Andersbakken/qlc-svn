@@ -66,7 +66,7 @@ class App : public QMainWindow
   ~App();
 
  public:
-  void init(void);
+  void init(QString openFile);
   DeviceManagerView* deviceManagerView() { return m_dmView; }
   VirtualConsole* virtualConsole() { return m_virtualConsole; }
   QWorkspace* workspace() { return m_workspace; }

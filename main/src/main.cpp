@@ -31,6 +31,7 @@
 
 App* _app;
 QApplication* _qapp;
+QString openFile;
 
 /*
  * Parse command line arguments
@@ -48,18 +49,7 @@ int parseArgs(int argc, char **argv)
     {
       for (int i = 1; i < argc; i++)
 	{
-	  if (::strcmp(argv[i], "-h") == 0 || 
-	      ::strcmp(argv[i], "--help") == 0)
-	    {
-	      qDebug("Usage:");
-	      qDebug("%s [options]", argv[0]);
-	      qDebug("\nOptions:");
-	      qDebug("-h or --help      Print this help");
-	      qDebug("-v or --version   Print version information");
-	      
-	      ret = 1;
-	    }
-	  else if (::strcmp(argv[i], "-v") == 0 ||
+	  if (::strcmp(argv[i], "-v") == -0 ||
 		   ::strcmp(argv[i], "--version") == 0)
 	    {
 	      qDebug(KApplicationVersion);
@@ -68,7 +58,24 @@ int parseArgs(int argc, char **argv)
 	  else if (::strcmp(argv[i], "-o") == 0 ||
 		   ::strcmp(argv[i], "--open") == 0)
             {
+	       openFile = argv[i+1];
+               qDebug(QString("Trying to open: ")+openFile);
             }
+          /* User asks for help or has given an unknown option */
+          else if (::strcmp(argv[i], "-h") == 0 ||
+              ::strcmp(argv[i], "--help") == 0)
+            {
+              qDebug(" ");
+              qDebug("Usage:");
+              qDebug("%s [options]", argv[0]);
+              qDebug("\nOptions:");
+              qDebug("-o file or --open file    open the specified workspace file");
+              qDebug("-h or --help              Print this help");
+              qDebug("-v or --version           Print version information");
+
+              ret = 1;
+            }
+
 	  else
 	    {
 	      ret = 0;
@@ -86,7 +93,7 @@ int parseArgs(int argc, char **argv)
 int main(int argc, char **argv)
 {
   int result = 0;
-
+  openFile = "";
   //
   // Parse any command line arguments
   if (parseArgs(argc, argv) == 1)
@@ -107,7 +114,7 @@ int main(int argc, char **argv)
   // Construct the main application class
   _app = new App();
   _app->setCaption(KApplicationNameLong);
-  _app->init();
+  _app->init(openFile);
   a.setMainWidget(_app);
   _app->show();
   

@@ -161,7 +161,7 @@ App::~App()
 //                                                                  //
 // This creates all items that are not saved in workspace files     //
 //////////////////////////////////////////////////////////////////////
-void App::init(void)
+void App::init(QString openFile)
 {
   //
   // Default size
@@ -222,23 +222,37 @@ void App::init(void)
   initDeviceManagerView();
   initVirtualConsole();
 
+
+  // Trying to load workspace files
+  // Either specified on command line or the last active workspace
+  bool success = false;
+  if (openFile != "")
+    {
+       success = doc()->loadWorkspaceAs(openFile);
+       if (!success)
+         {
+            QString msg = "File: " + openFile + "\ncould'nt be opened. Please check path and spelling!\nWe revert to the previously used workspace.";
+	    QMessageBox::warning(this, KApplicationNameShort, msg,
+			       QMessageBox::Ok, 0);
+         }
+    }
   //
   // Load the previous workspace
   //
-  bool success = false;
-  QString config;
-  if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config))
+  if (!success)
     {
-      if (config == Settings::trueValue())
-	{
-	  if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
-	    {
-	      doc()->loadWorkspaceAs(config);
-              success = true;
-	    }
-	}
+      QString config;
+      if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config))
+       {
+         if (config == Settings::trueValue())
+	  {
+	    if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
+	      {
+	         success =  doc()->loadWorkspaceAs(config);
+	      }
+	  }
+       }
     }
-
   if (!success)
     {
       newDocument();
