@@ -57,9 +57,9 @@ extern App* _app;
 #define MENU_RENAME   1004
 #define MENU_HIDE     1005
 
-static const QString KStatusStored = QString("stored");
-static const QString KStatusUnchanged = QString("unchanged");
-static const QString KStatusModified = QString("modified");
+static const QString KStatusStored = QString("Stored");
+static const QString KStatusUnchanged = QString("Unchanged");
+static const QString KStatusModified = QString("Modified");
 
 static const QColor KStatusColorStored = QColor(100, 255, 100);
 static const QColor KStatusColorUnchanged = QColor(255, 255, 255);

@@ -86,6 +86,11 @@ void DeviceManagerView::initView()
 
   connect(_app->virtualConsole(), SIGNAL(modeChange(VirtualConsole::Mode)),
 	  this, SLOT(slotModeChanged(VirtualConsole::Mode)));
+
+  connect(m_dm, SIGNAL(selectionChanged()),
+	  this, SLOT(slotSelectionChanged()));
+
+  slotSelectionChanged();
 }
 
 DeviceManagerView::~DeviceManagerView()
@@ -134,5 +139,19 @@ void DeviceManagerView::slotModeChanged(VirtualConsole::Mode m)
       m_addBusButton->setEnabled(true);
       m_removeButton->setEnabled(true);
       m_propertiesButton->setEnabled(true);
+    }
+}
+
+void DeviceManagerView::slotSelectionChanged()
+{
+  if (m_dm->currentDevice() == NULL)
+    {
+      m_consoleButton->setEnabled(false);
+      m_monitorButton->setEnabled(false);
+    }
+  else
+    {
+      m_consoleButton->setEnabled(true);
+      m_monitorButton->setEnabled(true);
     }
 }
