@@ -44,7 +44,7 @@ class JoystickPlugin : public QObject
 
   virtual void init();
 
-  QList<Joystick> joystickList() { return m_joystickList; }
+  QList<Joystick> *joystickList() { return &m_joystickList; }
 
   virtual Joystick* selectJoystick();
 

@@ -57,9 +57,14 @@ void SelectJoystick::initView()
 
 void SelectJoystick::fillList()
 {
-  QList <Joystick> list = m_plugin->joystickList();
+  QList <Joystick> *list = m_plugin->joystickList();
 
-  for (Joystick* j = list.first(); j != NULL; j = list.next())
+  if (list->count() == 0)
+    {
+      m_plugin->init();
+    }
+
+  for (Joystick* j = list->first(); j != NULL; j = list->next())
     {
       QString t;
       QListViewItem* item = new QListViewItem(m_joystickList);

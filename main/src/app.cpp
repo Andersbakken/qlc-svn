@@ -107,14 +107,13 @@ App::~App()
 void App::initView(void)
 {
   initSettings();
+  initSequenceEngine();
 
   setIcon(QPixmap(settings()->pixmapPath() + QString("/Q.xpm")));
 
   initWorkspace();
   initDoc();
   doc()->readDeviceClasses();
-
-  initSequenceEngine();
 
   initMenuBar();
   initStatusBar();

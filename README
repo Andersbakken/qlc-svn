@@ -1,0 +1,99 @@
+Q Light Controller 2
+  
+Copyright (C) 2000, 2001, 2002 Heikki Junnila
+
+EMail: hjunnila@users.sourceforge.net
+QLC at SourceForge: http://qlc.sourceforge.net
+
+
+
+License
+-------
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+Version 2 as published by the Free Software Foundation.
+  
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details. The license is
+in the file "COPYING".
+  
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+
+Requirements
+------------
+* QT 3.0 development library (3.0.3)
+* Glibc library 2.2.4
+* Glibc development library 2.2.4
+* X11R6 4.1.0 or higher development library
+* linuxthreads
+* /dev/rtc (Real-time clock) enabled from kernel
+* dmx4linux 2.2 including dmx library
+
+For TODO-lists, known bugs, volunteering to work for the project and all other
+project-related information, go to http://www.sourceforge.net/projects/qlc/
+
+
+
+Compiling & Installation
+------------------------
+See main/docs/compiling.html for more detailed information.
+In general, just say
+
+	make
+
+as a regular user in the qlc root directory and then
+
+	make install
+
+(as root) to install QLC (to /usr/local/qlc by default).
+
+
+
+To get things finally working...
+-----------------------------------------
+* QLC must be executed suid root because it needs an interrupt timer from
+  /dev/rtc. Normally, a user can get frequencies up to 64Hz from rtc, and
+  root can get frequencies from 0-8192Hz. We use a frequency of 1024Hz to
+  drive the sequence engine (SequenceProvider) which actually executes all
+  functions (crossfades etc.)
+
+  Anyway, saying "chown root.root qlc ; chmod +s qlc" as root will do the
+  thing if the install script was unable to do this.
+
+  Another way with 2.4.x kernels is to say
+
+  echo 1024 > /proc/sys/dev/rtc/max-user-freq
+
+* If you do not tamper with the Makefiles & config.make too much, a default
+  qlc.rc file should be placed under /etc/
+
+
+If you wish to participate in the qlc development team
+------------------------------------------------------
+1. Send mail to hjunnila@users.sourceforge.net
+   and tell what you would like to do. A list of open tasks
+   is available at http://www.sourceforge.net/projects/qlc/
+
+2. When you have been granted write access to the cvs
+   repository, read docs/coding-convention.txt and try
+   to follow the rules as much as possible.
+
+
+I need instructions on...
+-------------------------
+See qlc2/main/docs/index.html for more documentation. The documentation is
+updated every now and then. If there is something that is missing from the
+documentation, feel free to ask: hjunnila@users.sourceforge.net
+
+
+List of people who have contributed to this piece of software
+-------------------------------------------------------------
+Heikki Junnila (Author) <hjunnila@users.sourceforge.net>
+Stefan Krumm <stefankrumm@users.sourceforge.net>
+Dirk Jagdmann <doj@users.sourceforge.net>

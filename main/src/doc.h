@@ -128,6 +128,7 @@ class Doc : public QObject
   void addInputDevice(Joystick* j);
   void removeInputDevice(Joystick* j);
   JoystickPlugin* joystickPlugin() { return m_joystickPlugin; }
+  void initializeJoystickPlugin();
 
  signals:
   void deviceListChanged();
@@ -137,7 +138,6 @@ class Doc : public QObject
  private:
   void initializeDMXChannels();
   void initializeDMX();
-  void initializeJoystickPlugin();
 
   void dumpDeviceClass(DeviceClass* dc);
   DeviceClass* createDeviceClass(QList<QString> &list);

@@ -63,6 +63,7 @@ void Joystick::create(const char* deviceFileName)
 {
   int axes = 0;
   int buttons = 0;
+  int version = 0x000800;
   char deviceName[JS_NAME_LENGTH + 1];
 
   /* Init the poll thread to NULL */
@@ -74,43 +75,26 @@ void Joystick::create(const char* deviceFileName)
       /* Copy the device file name to struct */
       m_fdName = QString(deviceFileName);
 
-      /* Get number of axes */
-      if (ioctl(m_fd, JSIOCGAXES, &axes) == -1)
-	{
-	  axes = 0;
-	  perror("ioctl");
-	}
-      else
-	{
-	  fillAxisNames(axes);
-      	}
+      ::usleep(2000);
 
-      /* Get number of buttons */
-      if (ioctl(m_fd, JSIOCGBUTTONS, &buttons) == -1)
-	{
-	  buttons = 0;
-	  perror("ioctl");
-	}
-      else
-	{
-          fillButtonNames(buttons);
-	}
+      ioctl(m_fd, JSIOCGVERSION, &version);
+      ioctl(m_fd, JSIOCGAXES, &axes);
+      fillAxisNames(axes);
 
-      /* Get the name of the joystick device */
-      if (ioctl(m_fd, JSIOCGNAME(JS_NAME_LENGTH), &deviceName) == -1)
-	{
-	  strcpy(deviceName, "Unknown");
-	  perror("ioctl");
-	}
+      ioctl(m_fd, JSIOCGBUTTONS, &buttons);
+      fillButtonNames(buttons);
 
+      ioctl(m_fd, JSIOCGNAME(JS_NAME_LENGTH), &deviceName);
       m_name = QString(deviceName);
 
-      printf("Device: %s\nName: %s\nAxes: %d\nButtons: %d\n",
-	     (const char*) m_fdName, (const char*) m_name, axes, buttons);
-
+      printf("Device: %s\nDriver version: %d.%d.%d\nName: %s\nAxes: %d\nButtons: %d\n",
+	     (const char*) m_fdName,
+	     (version >> 16), (version >> 8) & 0xFF, version & 0xFF,
+	     (const char*) m_name, axes, buttons);
+      
       /* Close this joystick until we really want to use it */
       close();
-
+      
       m_valid = true;
     }
   else
