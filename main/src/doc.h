@@ -30,6 +30,8 @@
 #include "bus.h"
 #include "../../libs/common/outputplugin.h"
 
+class DummyOutPlugin;
+
 class Doc : public QObject
 {
   Q_OBJECT
@@ -150,6 +152,7 @@ class Doc : public QObject
   DMXChannel* m_DMXAddressAllocation[512];
 
   OutputPlugin* m_outputPlugin;
+  DummyOutPlugin* m_dummyOutPlugin;
 
   QString m_workspaceFileName;
   bool m_modified;

@@ -29,10 +29,10 @@
 #include "dmxchannel.h"
 #include "scene.h"
 #include "function.h"
-#include "sequence.h"
 #include "functioncollection.h"
 #include "chaser.h"
 #include "virtualconsole.h"
+#include "dummyoutplugin.h"
 
 #include "../../libs/common/plugin.h"
 #include <dlfcn.h>
@@ -54,7 +54,9 @@ Doc::Doc() : QObject()
 {
   m_workspaceFileName = QString("noname.qlc");
   setModified(false);
+
   m_outputPlugin = NULL;
+  m_dummyOutPlugin = NULL;
 }
 
 Doc::~Doc()
@@ -1020,6 +1022,11 @@ void Doc::initPlugins()
   QString path;
   QString dir = _app->settings()->pluginPath();
 
+  // First of all, add the dummy output plugin
+  m_dummyOutPlugin = new DummyOutPlugin(Doc::NextPluginID++);
+  connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)), this, SLOT(slotPluginActivated(Plugin*)));
+  addPlugin(m_dummyOutPlugin);
+
   qDebug("Probing %s for plugin objects...", (const char*) dir);
 
   QDir d(dir);
@@ -1134,6 +1141,7 @@ Plugin* Doc::searchPlugin(QString name, Plugin::PluginType type)
 	  return plugin;
 	}
     }
+
   return NULL;
 }
 
@@ -1178,8 +1186,13 @@ void Doc::slotChangeOutputPlugin(const QString& name)
   else
     {
       m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
-      ASSERT(m_outputPlugin != NULL);
-      
+
+      // If an output plugin cannot be found, use the dummy plugin
+      if (m_outputPlugin == NULL)
+	{
+	  m_outputPlugin = m_dummyOutPlugin;
+	}
+
       m_outputPlugin->open();
     }
 }

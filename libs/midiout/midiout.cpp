@@ -28,13 +28,15 @@
 #include <qstring.h>
 #include <qmessagebox.h>
 #include <qpopupmenu.h>
+#include <qfile.h>
 
 #include "../common/plugin.h"
+#include "../common/filehandler.h"
 #include "midiout.h"
+#include "configuremidiout.h"
 
 #define MIDI_NOTEOFF 0x80
 #define MIDI_NOTEON  0x90
-#define OFFSET 70
 
 #define ID_CONFIGURE       10
 #define ID_ACTIVATE        20
@@ -60,10 +62,11 @@ extern "C" void destroy(OutputPlugin* object)
 MidiOut::MidiOut(int id) : OutputPlugin(id)
 {
   m_fd = -1;
-  m_midiOutChannel = 0;
+  m_midiOutChannel = 1;
+  m_firstNote = 0;
   m_name = QString("Midi Output");
   m_version = 0x00000100;
-  m_fileName = QString("/dev/midi00");
+  m_deviceName = QString("/dev/midi00");
   m_configDirectory = QString("~/.qlc/");
 }
 
@@ -74,7 +77,7 @@ MidiOut::~MidiOut()
 
 void MidiOut::setFileName(QString fileName)
 {
-  m_fileName = fileName;
+  m_deviceName = fileName;
 }
 
 bool MidiOut::open()
@@ -87,7 +90,7 @@ bool MidiOut::open()
       return false;
     }
 
-  m_fd = ::open((const char*) m_fileName, O_WRONLY | O_NONBLOCK);
+  m_fd = ::open((const char*) m_deviceName, O_WRONLY | O_NONBLOCK);
   if (m_fd == -1)
     {
       perror("open");
@@ -96,7 +99,7 @@ bool MidiOut::open()
     }
   else
     {
-      qDebug(QString("Midi Output available thru ") + m_fileName);
+      qDebug(QString("Midi Output available thru ") + m_deviceName);
     }
 
   return true;
@@ -146,16 +149,24 @@ QString MidiOut::infoText()
   str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
   str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-  str += QString("<TR>\n");
-  str += QString("<TD><B>Version</B></TD>");
+
+  str += QString("<TR><TD><B>Version</B></TD>");
   str += QString("<TD>");
   t.setNum((version() >> 16) & 0xff);
   str += t + QString(".");
   t.setNum((version() >> 8) & 0xff);
   str += t + QString(".");
   t.setNum(version() & 0xff);
-  str += t + QString("</TD>");
-  str += QString("</TR>");
+  str += t + QString("</TD></TR>");
+
+  str += QString("<TR><TD><B>Midi Out Channel</B></TD>");
+  t.setNum(m_midiOutChannel);
+  str += QString("<TD>") + t + QString("</TD></TR>");
+
+  str += QString("<TR><TD><B>First Note Number</B></TD>");
+  t.setNum(m_firstNote);
+  str += QString("<TD>") + t + QString("</TD></TR>");
+
   str += QString("<TR>\n");
   str += QString("<TD><B>Status</B></TD>");
   str += QString("<TD>");
@@ -169,7 +180,6 @@ QString MidiOut::infoText()
     }
   str += QString("</TR>");
 
-  str += QString("</TR>");
   str += QString("</TABLE>");
   str += QString("</BODY></HTML>");
 
@@ -183,15 +193,96 @@ void MidiOut::setConfigDirectory(QString dir)
 
 void MidiOut::saveSettings()
 {
+  QString s;
+  QString t;
+  
+  QString fileName = m_configDirectory + QString(CONF_FILE);
+  qDebug(fileName);
+  QFile file(fileName);
+  
+  if (file.open(IO_WriteOnly))
+    {
+      // Comment
+      s = QString("# MidiOut Plugin Configuration\n");
+      file.writeBlock((const char*) s, s.length());
+      
+      // Entry type
+      s = QString("Entry = ") + name() + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      s = QString("Device = ") + m_deviceName + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      t.setNum(m_midiOutChannel);
+      s = QString("MidiOutChannel = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      t.setNum(m_firstNote);
+      s = QString("FirstNote = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      file.close();
+    }
+  else
+    {
+      perror("file.open");
+      qDebug("Unable to save MidiOut configuration");
+    }
 }
 
 void MidiOut::loadSettings()
 {
+  QString fileName;
+  QList <QString> list;
+  
+  fileName = m_configDirectory + QString(CONF_FILE);
+  
+  FileHandler::readFileToList(fileName, list);
+  
+  for (QString* s = list.first(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.next();
+	  if (*s == name())
+	    {
+	      createContents(list);
+	    }
+	}
+    }
+}
+
+void MidiOut::createContents(QList <QString> &list)
+{
+  QString t;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("Device"))
+	{
+	  m_deviceName = *(list.next());
+	}
+      else if (*s == QString("MidiOutChannel"))
+	{
+	  t = *(list.next());
+	  m_midiOutChannel = t.toInt();
+	}
+      else if (*s == QString("FirstNote"))
+	{
+	  t = *(list.next());
+	  m_firstNote = t.toInt();
+	}
+    }
 }
 
 void MidiOut::setMidiOutChannel(unsigned char channel)
 {
-  if (channel < 16)
+  if (channel <= 16)
     {
       m_midiOutChannel = channel;
     }
@@ -201,21 +292,24 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
 {
   unsigned char buf[3];
 
-  if (m_fd == -1 || channel >= MAX_MIDIOUT_DMX_CHANNELS)
+  if (m_fd == -1 || channel >= (MAX_MIDIOUT_DMX_CHANNELS - m_firstNote))
     {
       return false;
     }
 
+  // Convert [0|255] values to [0|127]
+  value = value / 2;
+
   if (value == 0)
     {
-      buf[0] = MIDI_NOTEOFF + m_midiOutChannel;
-      buf[1] = OFFSET + channel;
+      buf[0] = MIDI_NOTEOFF + m_midiOutChannel - 1;
+      buf[1] = m_firstNote + channel;
       buf[2] = 0xFF;
     }
   else
     {
-      buf[0] = MIDI_NOTEON + m_midiOutChannel;
-      buf[1] = OFFSET + channel;
+      buf[0] = MIDI_NOTEON + m_midiOutChannel - 1;
+      buf[1] = m_firstNote + channel;
       buf[2] = value;
     }
 
@@ -232,8 +326,15 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
 
 void MidiOut::configure()
 {
-  QMessageBox::information(NULL, QString("QLC Midi Output Plugin"),
-			   QString("Not implemented"));
+  ConfigureMidiOut* conf = new ConfigureMidiOut(this);
+
+  if (conf->exec() == QDialog::Accepted)
+    {
+      m_deviceName = conf->device();
+      m_midiOutChannel = conf->midiChannel();
+      m_firstNote = conf->firstNote();
+      saveSettings();
+    }
 }
 
 void MidiOut::activate()

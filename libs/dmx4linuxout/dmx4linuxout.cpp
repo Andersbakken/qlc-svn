@@ -157,6 +157,7 @@ QString DMX4LinuxOut::infoText()
   t.setNum(version() & 0xff);
   str += t + QString("</TD>");
   str += QString("</TR>");
+
   str += QString("<TR>\n");
   str += QString("<TD><B>Status</B></TD>");
   str += QString("<TD>");
@@ -194,7 +195,7 @@ void DMX4LinuxOut::saveSettings()
   if (file.open(IO_WriteOnly))
     {
       // Comment
-      s = QString("# DMX4Linux Entry\n");
+      s = QString("# DMX4LinuxOut Plugin Configuration\n");
       file.writeBlock((const char*) s, s.length());
       
       // Entry type
@@ -206,6 +207,11 @@ void DMX4LinuxOut::saveSettings()
 
       file.close();
     }
+  else
+    {
+      perror("file.open");
+      qDebug("Unable to save MidiOut configuration");
+    }
 }
 
 void DMX4LinuxOut::loadSettings()
@@ -214,7 +220,6 @@ void DMX4LinuxOut::loadSettings()
   QList <QString> list;
 
   fileName = m_configDir + QString(CONF_FILE);
-  qDebug(fileName);
 
   FileHandler::readFileToList(fileName, list);
 
