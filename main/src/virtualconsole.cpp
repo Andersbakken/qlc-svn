@@ -332,11 +332,15 @@ void VirtualConsole::slotMenuItemActivated(int item)
   switch(item)
     {
     case ID_VC_MODE_OPERATE:
-      setMode(Operate);
+      {
+	setMode(Operate);
+      }
       break;
 
     case ID_VC_MODE_DESIGN:
-      setMode(Design);
+      {
+	setMode(Design);
+      }
       break;
 
     case ID_VC_ADD_BUTTON:
@@ -365,41 +369,35 @@ void VirtualConsole::slotMenuItemActivated(int item)
       break;
 
     case ID_VC_ADD_SPEEDSLIDER:
-      if (m_drawArea == NULL)
-	{
-	  addBottomFrame();
-	}
-
-      if (m_drawArea->getSpeedSlider() != NULL)
-	{
-	  MSG_INFO("This frame already has a default speed slider. Unable to add new one.");
-	}
-      else
-	{
-	  SpeedSlider* p = NULL;
-	  p = new SpeedSlider(m_drawArea);
-	  m_drawArea->setSpeedSlider(p);
-	  connect(p, SIGNAL(destroyed()), m_drawArea, SLOT(slotSpeedSliderDestroyed()));
-	  p->show();
-	}
+      {
+	if (m_drawArea == NULL)
+	  {
+	    addBottomFrame();
+	  }
+	SpeedSlider* p = NULL;
+	p = new SpeedSlider(m_drawArea);
+	p->show();
+      }
       break;
 
     case ID_VC_ADD_MONITOR:
       break;
 
     case ID_VC_ADD_FRAME:
-      if (m_drawArea == NULL)
-	{
-	  addBottomFrame();
-	}
-      else
-	{
-	  DMXWidget* w;
-	  w = new DMXWidget(m_drawArea);
-	  w->resize(120, 120);
-	  w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	  w->show();
-	}
+      {
+	if (m_drawArea == NULL)
+	  {
+	    addBottomFrame();
+	  }
+	else
+	  {
+	    DMXWidget* w;
+	    w = new DMXWidget(m_drawArea);
+	    w->resize(120, 120);
+	    w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	    w->show();
+	  }
+      }
       break;
 
     default:

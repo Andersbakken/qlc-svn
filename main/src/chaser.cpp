@@ -49,8 +49,6 @@ void Chaser::saveToFile(QFile &file)
   QString s;
   QString t;
 
-  int i = 0;
-
   // Comment line
   s = QString("# Function entry\n");
   file.writeBlock((const char*) s, s.length());

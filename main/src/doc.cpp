@@ -480,7 +480,7 @@ Function* Doc::createFunction(QList<QString> &list)
 	  if (d == NULL)
 	    {
 	      // This function's device was not found
-	      qDebug("Unable to find device for function %s", name);
+	      qDebug("Unable to find device for function %s", (const char*) name);
 	    }
 	}
 
