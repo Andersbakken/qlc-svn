@@ -34,8 +34,12 @@
 #include "functioncollection.h"
 #include "chaser.h"
 #include "virtualconsole.h"
-#include "joystickplugin.h"
-#include "../../libs/common/qlcplugininfo.h"
+
+#include "../../libs/joystick/joystickplugin.h"
+#include "../../libs/joystick/joystick.h"
+#include "../../libs/common/plugininfo.h"
+
+#include <dlfcn.h>
 
 #include <qobject.h>
 #include <qstring.h>
@@ -43,22 +47,20 @@
 #include <qstringlist.h>
 #include <qdir.h>
 #include <qlist.h>
+#include <qmessagebox.h>
 #include <ctype.h>
 
 extern App* _app;
 
 Doc::Doc()
 {
-  initializeDMXChannels();
-
-  findPluginObjects();
-
   m_modified = false;
+  m_joystickPlugin = NULL;
 }
 
 Doc::~Doc()
 {
-  DMXDevice* dev;
+  DMXDevice* dev = NULL;
   while (m_deviceList.isEmpty() == false)
     {
       dev = m_deviceList.take();
@@ -66,6 +68,18 @@ Doc::~Doc()
     }
   
   delete m_dmx;
+
+  if (m_joystickPlugin != NULL)
+    {
+      delete m_joystickPlugin;
+    }
+}
+
+void Doc::init()
+{
+  initializeDMXChannels();
+  initializeDMX();
+  initializeJoystickPlugin();
 }
 
 void Doc::initializeDMXChannels()
@@ -74,6 +88,13 @@ void Doc::initializeDMXChannels()
     {
       m_DMXAddressAllocation[i] = new DMXChannel(i);
     }
+}
+
+void Doc::initializeDMX()
+{
+  m_dmx = new DMX();
+  m_dmx->open();
+  m_dmx->start();
 }
 
 bool Doc::isDMXAddressSpaceFree(unsigned short address, unsigned short channels)
@@ -362,6 +383,10 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  bus->createContents(list);
 		  addBus(bus);
 		}
+	      else if (*string == QString("Joystick"))
+		{
+		  createJoystickContents(list);
+		}
 	      else if (*string == QString("Virtual Console"))
 		{
 		  // Virtual console wants it all, go to "Entry"
@@ -409,6 +434,51 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   m_modified = false;
 
   return success;
+}
+
+void Doc::createJoystickContents(QList<QString> &list)
+{
+  QString name;
+  QString fdName;
+
+  Joystick* j = NULL;
+
+  for (QString* s = list.next(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  s = list.prev();
+	  break;
+	}
+      else if (*s == QString("FDName"))
+	{
+	  fdName = *(list.next());
+	}
+      else if (*s == QString("Name"))
+	{
+	  name = *(list.next());
+
+	  j = joystickPlugin()->search(fdName);
+
+	  if (j == NULL || j->name() != name)
+	    {
+	      QString text;
+	      text.sprintf("Unable to find joystick \"%s\" from <%s> while loading workspace file.\n", (const char*) name, (const char*) fdName);
+	      text += QString("Do you want to select another device (press Yes) or skip this joystick (press No)?");
+	      if (QMessageBox::critical(NULL, QString("QLC"), text, QMessageBox::Yes,
+					QMessageBox::No) == QMessageBox::Yes)
+		{
+		  j = joystickPlugin()->selectJoystick();
+		}
+	    }
+	  
+	  if (j != NULL)
+	    {
+	      j->createContents(list);
+	      addInputDevice(j);
+	    }
+	}
+    }
 }
 
 void Doc::createFunctionContents(QList<QString> &list)
@@ -636,6 +706,7 @@ void Doc::newDocument()
   DMXDevice* d = NULL;
   Function* f = NULL;
   Bus* b = NULL;
+  Joystick* j = NULL;
 
   // Delete all buses
   m_busList.first();
@@ -644,6 +715,15 @@ void Doc::newDocument()
       b = m_busList.take();
       ASSERT(b);
       delete b;
+    }
+
+  // Delete all input devices
+  m_inputDeviceList.first();
+  while (!m_inputDeviceList.isEmpty())
+    {
+      j = m_inputDeviceList.take();
+      ASSERT(j);
+      delete j;
     }
 
   // Delete all global functions
@@ -669,7 +749,7 @@ void Doc::newDocument()
 
   m_workspaceFileName = QString("");
 
-  emit deviceListChanged();
+  emit newDocumentClicked();
 }
 
 bool Doc::saveWorkspaceAs(QString &fileName)
@@ -677,25 +757,27 @@ bool Doc::saveWorkspaceAs(QString &fileName)
   QFile file(fileName);
   if (file.open(IO_WriteOnly))
     {
-      DMXDevice* d;
-      Function* f;
-      Bus* b;
-
       // Save Buses
-      for (b = m_busList.first(); b != NULL; b = m_busList.next())
+      for (Bus* b = m_busList.first(); b != NULL; b = m_busList.next())
 	{
 	  b->saveToFile(file);
 	}
 
       // Save devices & their functions
-      for (d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
+      for (DMXDevice* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
         {
 	  d->saveToFile(file);
 	}
 
+      // Save input devices
+      for (Joystick* j = m_inputDeviceList.first(); j != NULL; j = m_inputDeviceList.next())
+	{
+	  j->saveToFile(file);
+	}
+
       // Save global functions
       // Save scenes
-      for (f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Scene)
 	    {
@@ -704,7 +786,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	}
 
       // Save chasers
-      for (f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Chaser)
 	    {
@@ -713,7 +795,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	}
 
       // Save Sequences
-      for (f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Sequence)
 	    {
@@ -722,7 +804,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 	}
 
       // Save Collections
-      for (f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
 	  if (f->type() == Function::Collection)
 	    {
@@ -753,13 +835,6 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 bool Doc::saveWorkspace()
 {
   return saveWorkspaceAs(m_workspaceFileName);
-}
-
-void Doc::initDMX()
-{
-  m_dmx = new DMX();
-  m_dmx->open();
-  m_dmx->start();
 }
 
 void Doc::addDevice(DMXDevice* device)
@@ -940,28 +1015,33 @@ void Doc::removeBus(unsigned int id, bool deleteBus)
   emit deviceListChanged();
 }
 
-void Doc::findPluginObjects()
+void Doc::initializeJoystickPlugin()
 {
-  QString path = QString::null;
+  QString path;
   QString dir = _app->settings()->pluginPath();
-  qDebug("Probing %s for plugin objects...", dir.latin1());
+  void* handle = NULL;
+  JoystickPlugin* plugin = NULL;
+
+  if (m_joystickPlugin != NULL)
+    {
+      return;
+    }
+
+  qDebug("Probing %s for plugin objects...", (const char*) dir);
 
   QDir d(dir);
   d.setFilter(QDir::Files);
   if (d.exists() == false || d.isReadable() == false)
     {
-      fprintf(stderr, "Unable to access plugin directory %s.\n", dir.latin1());
+      fprintf(stderr, "Unable to access plugin directory %s.\n", (const char*) dir);
       return;
     }
   
   QStringList dirlist(d.entryList());
   QStringList::Iterator it;
 
-  Plugin* plugin = NULL;
-
-  // Go thru all files in the directory
   for (it = dirlist.begin(); it != dirlist.end(); ++it)
-    {
+    { 
       // Ignore everything else than .so files
       if ((*it).right(2) != QString("so"))
 	{
@@ -969,31 +1049,83 @@ void Doc::findPluginObjects()
 	}
 
       path = dir + *it;
-      
+
       qDebug("Probing file: " + path);
-      plugin = new Plugin(path);
-
-      if (plugin->isValid() == true)
+      
+      handle = ::dlopen((const char*) path, RTLD_LAZY);
+      if (handle == NULL)
 	{
-	  qDebug("Library: %s | Version: %s", plugin->name().latin1(), 
-		 plugin->versionString().latin1());
-
-	  if (QString(plugin->typeString()) == QString(JOYSTICK_TYPE_STRING))
-	    {
-	      delete plugin;
-	      plugin = NULL;
-	      JoystickPlugin* jp = new JoystickPlugin(path);
-	      m_pluginList.append((Plugin*) jp);
-	    }
+	  fprintf(stderr, "dlopen: %s\n", dlerror());
 	}
       else
 	{
-	  delete plugin;
+	  typedef QObject* create_t();
+	  typedef void destroy_t(QObject*);
+
+	  create_t* create = (create_t*) ::dlsym(handle, "create");
+	  destroy_t* destroy = (destroy_t*) ::dlsym(handle, "destroy");
+
+	  if (create == NULL || destroy == NULL)
+	    {
+	      fprintf(stderr, "dlsym(init): %s\n", dlerror());
+	    }
+	  else
+	    {
+	      plugin = (JoystickPlugin*) create();
+	      PluginInfo info;
+	      plugin->info(info);
+
+	      fprintf(stderr, "Plugin: %s\nType: %s\nVersion: %ld.%ld.%ld-%ld\n\n",
+		      (const char*) info.name, (const char*) info.type,
+		      info.version >> 24, info.version >> 16,
+		      info.version >> 8, info.version & 0xff);
+
+	      m_joystickPlugin = plugin;
+	      m_joystickPlugin->init();
+
+	      break;
+	    }
 	}
     }
-
-  qDebug("Found %d plugin object(s)", m_pluginList.count());
 }
 
+Joystick* Doc::searchInputDevice(QString fdName)
+{
+  for (Joystick* j = m_inputDeviceList.first(); j != NULL; j = m_inputDeviceList.next())
+    {
+      if (fdName == j->fdName())
+	{
+	  return j;
+	}
+    }
+  
+  return NULL;
+}
 
+Joystick* Doc::searchInputDevice(unsigned int id)
+{
+  for (Joystick* j = m_inputDeviceList.first(); j != NULL; j = m_inputDeviceList.next())
+    {
+      if (id == j->id())
+	{
+	  return j;
+	}
+    }
+  
+  return NULL;
+}
 
+void Doc::addInputDevice(Joystick* j)
+{
+  if (searchInputDevice(j->fdName()) == NULL)
+    {
+      m_inputDeviceList.append(j);
+      emit deviceListChanged();
+    }
+}
+
+void Doc::removeInputDevice(Joystick* j)
+{
+  m_inputDeviceList.remove(j);
+  emit deviceListChanged();
+}

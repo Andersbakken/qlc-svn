@@ -1,0 +1,156 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_SelectJoystick</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_SelectJoystick</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>527</width>
+            <height>220</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Select Joystick</string>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>JoysticksLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>330</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Available Joysticks</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_okButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>430</x>
+                <y>30</y>
+                <width>84</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;OK</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancelButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>430</x>
+                <y>60</y>
+                <width>84</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;Cancel</string>
+        </property>
+    </widget>
+    <widget class="QListView">
+        <column>
+            <property name="text">
+                <string>Name</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Axes</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Buttons</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Device</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>false</bool>
+            </property>
+        </column>
+        <property name="name">
+            <cstring>m_joystickList</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>30</y>
+                <width>410</width>
+                <height>180</height>
+            </rect>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_okButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SelectJoystick</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SelectJoystick</receiver>
+        <slot>slotCancelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_joystickList</sender>
+        <signal>doubleClicked(QListViewItem*)</signal>
+        <receiver>UI_SelectJoystick</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_joystickList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_SelectJoystick</receiver>
+        <slot>slotJoystickSelected(QListViewItem*)</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotCancelClicked()</slot>
+    <slot>slotJoystickSelected(QListViewItem*)</slot>
+    <slot>slotOKClicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

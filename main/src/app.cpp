@@ -45,7 +45,6 @@
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
 #include "globalfunctionsview.h"
-#include "inputdeviceview.h"
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
@@ -92,7 +91,6 @@
 App::App()
 {
   m_globalFunctionsView = NULL;
-  m_inputDeviceView = NULL;
   initSettings();
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
@@ -145,7 +143,7 @@ bool App::event(QEvent* e)
 void App::initDoc()
 {
   m_doc = new Doc();
-  m_doc->initDMX();
+  m_doc->init();
 }
 
 Doc* App::doc(void)
@@ -282,27 +280,6 @@ void App::slotViewGlobalFunctions()
       m_globalFunctionsView->show();
     }
   m_globalFunctionsView->setFocus();
-}
-
-void App::slotViewInputDevices()
-{
-  if (m_inputDeviceView == NULL)
-    {
-      m_inputDeviceView = new InputDeviceView(workspace());
-      connect(m_inputDeviceView, SIGNAL(closed()), this, SLOT(slotInputDeviceViewClosed()));
-      m_inputDeviceView->show();
-    }
-  m_inputDeviceView->setFocus();
-}
-
-void App::slotInputDeviceViewClosed()
-{
-  if (m_inputDeviceView)
-    {
-      disconnect(m_inputDeviceView);
-      delete m_inputDeviceView;
-      m_inputDeviceView = NULL;
-    }
 }
 
 void App::slotGlobalFunctionsViewClosed()

@@ -21,37 +21,61 @@
 
 include config.make
 
-OBJS =	libjoy.o
+CXXFLAGS += -g -I$(QTDIR)/include
+LDFLAGS += -fPIC -shared
+LIBS = -L$(QTDIR)/lib -L$(X11LIBS) -lXext -lX11 -lqt-mt -ldl -lpthread
 
-all: banner $(LIBJOY_SO)
+UICH =  uic_selectjoystick.h
 
-banner:
-	@echo "----------------- Building QLC 2.0 Joystick Library -----------------"
+UICO =  uic_selectjoystick.o \
+	moc_uic_selectjoystick.o
 
-$(LIBJOY_SO): $(OBJS)
-	$(CXX) -shared -lpthread -fPIC -o $@ $^
+MOCS =  ../common/moc_ledbar.o \
+	moc_joystick.o moc_joystickplugin.o moc_selectjoystick.o \
+	moc_joysticksettings.o
+
+OBJS =	$(UICO) \
+	$(MOCS) \
+	../common/plugininfo.o ../common/ledbar.o \
+	joystick.o joystickplugin.o selectjoystick.o joysticksettings.o
+
+all:	banner dep $(UICH) $(UICO) $(LIBJOY_SO)
 
 test:
-	gcc test.c -lpthread -o test -ldl
+	cd test ; make
 
-# obsolete
-libjoy:
-	gcc -fPIC -c libjoy.c
-	gcc -shared -fPIC -lpthread -o $(LIBJOY_SO) libjoy.o
+banner:
+	@echo "----------------- Building QLC 2 Joystick Library -----------------"
 
-dep:
-	makedepend -fMakefile.dep -Y *.h *.c &> /dev/null
+$(LIBJOY_SO): $(OBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+moc_%.cpp: %.h
+	$(MOC) $< -o $@
+
+# UIC headers
+uic_%.h: %.ui
+	$(UIC) $< -o $@
+
+# UIC sources 
+uic_%.cpp: uic_%.h
+	$(UIC) -impl $< $*.ui -o $@
 
 install:
-	@if [ ! -d $(INSTALLDIR) ]; then echo "Couldn't find an existing installation from" $(INSTALLDIR); exit 1; fi
-	@if [ ! -d $(INSTALLDIR)/libs ]; then mkdir $(INSTALLDIR)/libs; fi
-	@install -g root -o root -m 755 $(LIBJOY_SO) $(INSTALLDIR)/libs/$(LIBJOY_SO)
-	@echo "Installed" $(LIBJOY_SO) "to" $(INSTALLDIR)"/libs"
+	@if [ ! -d $(SYSTEMPATH) ]; then echo "Couldn't find an existing installation from" $(SYSTEMPATH); exit 1; fi
+	@if [ ! -d $(SYSTEMPATH)/$(PLUGINPATH) ]; then mkdir $(SYSTEMPATH)/$(PLUGINPATH); fi
+	@install -g root -o root -m 755 $(LIBJOY_SO) $(SYSTEMPATH)/$(PLUGINPATH)/$(LIBJOY_SO)
+	@echo "Installed" $(LIBJOY_SO) "to" $(SYSTEMPATH)"/$(PLUGINPATH)"
 
 clean: emacsclean
-	rm -f *.o *.so test *.bak
+	rm -f *.o *.so test *.bak uic_* moc_* $(UICH)
 
 emacsclean:
-	rm -f *~
+	rm -f *~ #*
+
+dep:
+	rm -f Makefile.dep
+	touch Makefile.dep
+	makedepend -fMakefile.dep -Y *.h *.cpp &> /dev/null
 
 -include Makefile.dep

@@ -54,10 +54,6 @@ class QWidgetList;
 #define OUTPUT_DEVICE_ID_MIN            1
 #define OUTPUT_DEVICE_ID_MAX            999
 
-#define INPUT_DEVICE_ROOT_ID            1000
-#define INPUT_DEVICE_ID_MIN             1001
-#define INPUT_DEVICE_ID_MAX             1999
-
 #define BUS_ROOT_ID                     2000
 #define BUS_ID_MIN                      2001
 #define BUS_ID_MAX                      2999
@@ -81,7 +77,6 @@ class App : public QMainWindow
   SequenceTimer* sequenceTimer() const { return m_sequenceTimer; }
   SequenceProvider* sequenceProvider() const { return m_sequenceProvider; }
   GlobalFunctionsView* globalFunctionsView() const { return m_globalFunctionsView; }
-  InputDeviceView* inputDeviceView() const { return m_inputDeviceView; }
 
   Doc* doc(void);
 
@@ -114,9 +109,6 @@ class App : public QMainWindow
 
   void slotViewGlobalFunctions();
   void slotGlobalFunctionsViewClosed();
-
-  void slotViewInputDevices();
-  void slotInputDeviceViewClosed();
 
   void slotHelpAbout();
 
@@ -151,7 +143,6 @@ class App : public QMainWindow
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
   GlobalFunctionsView* m_globalFunctionsView;
-  InputDeviceView* m_inputDeviceView;
 
   SequenceProvider* m_sequenceProvider;
   SequenceTimer* m_sequenceTimer;

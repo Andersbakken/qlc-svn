@@ -21,6 +21,8 @@
 
 #include "devicemanagerview.h"
 #include "settings.h"
+#include "app.h"
+#include "doc.h"
 
 extern App* _app;
 
@@ -49,7 +51,7 @@ void DeviceManagerView::initView()
   // These QIconSets work in qt 2.3.1 as well as 3.0
   QToolButton* tb = NULL;
   tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
-  // tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addinputdevice.xpm")), "Add New Input Device", 0, m_dm, SLOT(slotDLAddInputDevice()), m_toolbar);
+  tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addinputdevice.xpm")), "Add New Joystick Device", 0, m_dm, SLOT(slotDLAddInputDevice()), m_toolbar);
   tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "addbus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
   tb = new QToolButton(QIconSet(QPixmap(_app->settings()->pixmapPath() + "remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
   m_toolbar->addSeparator();

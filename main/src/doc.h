@@ -27,10 +27,10 @@
 #include "function.h"
 #include "dmxdevice.h"
 #include "deviceclass.h"
-#include "inputdevice.h"
-#include "plugin.h"
 #include "bus.h"
 #include "classes.h"
+
+class JoystickPlugin;
 
 class Doc : public QObject
 {
@@ -40,40 +40,58 @@ class Doc : public QObject
   Doc();
   ~Doc();
 
+  void init();
+
+  //
+  // Document handling stuff
+  //
+  void newDocument();
+  bool isModified() const { return m_modified; }
+  QString workspaceFileName() { return m_workspaceFileName; }
   bool loadWorkspaceAs(QString &);
   bool saveWorkspaceAs(QString &);
   bool saveWorkspace();
 
-  void newDocument();
+  // Read file contents to a list of strings
+  bool readFileToList(QString &fileName, QList<QString> &list);
 
-  QString workspaceFileName() { return m_workspaceFileName; }
+  // Return the pointer to our DMX interface object
+  DMX* dmx() const { return m_dmx; }
 
+  //
+  // DMX Channels
+  //
   bool isDMXAddressSpaceFree(unsigned short address, unsigned short channels);
   bool allocateDMXAddressSpace(unsigned short address, unsigned short channels);
   bool freeDMXAddressSpace(unsigned short address, unsigned short channels);
   unsigned short findNextFreeDMXAddress(unsigned short channels);
   DMXChannel* dmxChannel(unsigned short channel);
 
+  //
+  // DMX Devices
+  //
   void addDevice(DMXDevice*);
   bool removeDevice(DMXDevice*);
   QList <DMXDevice> deviceList() const;
 
+  // Search functions
   DMXDevice* searchDevice(int id);
   DMXDevice* searchDevice(const QString &name);
 
-  bool isModified() const { return m_modified; }
-
+  //
+  // Functions
+  //
+  // Function list
   QList<Function> functions() const { return m_functions; }
+
+  // Function list operations
   Function* searchFunction(const QString &fname);
   void addFunction(const Function* function);
   void removeFunction(const QString &functionString);
 
-  // Init our DMX interface
-  void initDMX();
-  
-  // Return the pointer to our DMX interface object
-  DMX* dmx() const { return m_dmx; }
-
+  //
+  // Device classes
+  //
   // Read device class definition files
   bool readDeviceClasses();
 
@@ -84,56 +102,63 @@ class Doc : public QObject
   // Search for manuf + model
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
 
-  // Read file contents to a list of strings
-  bool readFileToList(QString &fileName, QList<QString> &list);
-
-  // Input devices
-  QList <InputDevice> inputDeviceList() const { return m_inputDeviceList; }
-
-  // Plugin libraries
-  QList <Plugin> pluginList() const { return m_pluginList; }
-
+  //
+  // Bus
+  //
   // System bus list
   QList <Bus> *busList()  { return &m_busList; }
 
+  // Bus handling functions
   Bus* searchBus(unsigned int id);
   Bus* searchBus(QString name);
   void addBus(Bus* bus);
   void removeBus(unsigned int id, bool deleteBus = true);
 
+  //
+  // Input devices
+  //
+  // Input device list
+  QList <Joystick> *inputDeviceList() { return &m_inputDeviceList; }
+
+  // Input device list operations
+  Joystick* searchInputDevice(QString fdName);
+  Joystick* searchInputDevice(unsigned int id);
+  void addInputDevice(Joystick* j);
+  void removeInputDevice(Joystick* j);
+  JoystickPlugin* joystickPlugin() { return m_joystickPlugin; }
+
  signals:
   void deviceListChanged();
   void deviceRemoved(int);
+  void newDocumentClicked();
 
  private:
   void initializeDMXChannels();
+  void initializeDMX();
+  void initializeJoystickPlugin();
 
   void dumpDeviceClass(DeviceClass* dc);
   DeviceClass* createDeviceClass(QList<QString> &list);
   DMXDevice* createDevice(QList<QString> &list);
   Function* createFunction(QList<QString> &list);
   void createFunctionContents(QList<QString> &list);
-  void findPluginObjects();
+  void createJoystickContents(QList<QString> &list);
 
  private:
-  QList <Function> m_functions;
-
   DMXChannel* m_DMXAddressAllocation[512];
-
-  QString m_workspaceFileName;
-
   DMX* m_dmx;
 
+  QString m_workspaceFileName;
   bool m_modified;
 
+  JoystickPlugin* m_joystickPlugin;
+
+  QList <Function> m_functions;
   QList <DMXDevice> m_deviceList;
   QList <DeviceClass> m_deviceClassList;
-
-  QList <InputDevice> m_inputDeviceList;
-
-  QList <Plugin> m_pluginList;
-
   QList <Bus> m_busList;
+  QList <Joystick> m_inputDeviceList;
+
 };
 
 #endif
