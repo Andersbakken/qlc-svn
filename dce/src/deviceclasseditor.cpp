@@ -29,6 +29,9 @@
 #include <qinputdialog.h>
 #include <qspinbox.h>
 
+#include <errno.h>
+#include <string.h>
+
 #include "app.h"
 #include "deviceclasseditor.h"
 #include "editpresetvalue.h"
@@ -40,6 +43,7 @@
 #include "../../main/src/capability.h"
 
 extern App* _app;
+extern int errno;
 
 const int KChannelNumberColumn(0);
 const int KChannelNameColumn(1);
@@ -132,16 +136,16 @@ bool DeviceClassEditor::save()
     }
   else
     {
-      if (m_dc->saveToFile(m_fileName))
+      if (m_dc->saveToFile(m_fileName) == IO_Ok)
 	{
 	  setModified(false);
 	  return true;
 	}
       else
 	{
-	  
-	  QMessageBox::warning(this, KApplicationNameShort,
-			       "Unable to save file!");
+	  QMessageBox::critical(this, KApplicationNameShort,
+				QString("Unable to save file!\nReason: ") +
+				strerror(errno));
 	  return false;
 	}
     }

@@ -25,6 +25,7 @@
 #include <qwidget.h>
 #include <qptrlist.h>
 
+#include "consolechannel.h"
 #include "types.h"
 
 class QCloseEvent;
@@ -32,7 +33,6 @@ class QHBoxLayout;
 
 class Device;
 class SceneEditor;
-class ConsoleChannel;
 
 class DeviceConsole : public QWidget
 {
