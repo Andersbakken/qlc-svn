@@ -218,7 +218,6 @@ bool Doc::readDeviceClasses()
 	  delete list.take(0);
 	}
     }
-
   return true;
 }
 
@@ -856,3 +855,4 @@ void Doc::findPluginObjects()
 
   qDebug("Found %d plugin object(s)", m_pluginList.count());
 }
+

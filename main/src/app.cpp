@@ -23,6 +23,7 @@
 #include "doc.h"
 #include "settings.h"
 #include "devicemanagerview.h"
+#include "deviceclasseditor.h"
 #include "virtualconsole.h"
 #include "aboutbox.h"
 #include "dmxaddresstool.h"
@@ -150,6 +151,7 @@ void App::initMenuBar()
   m_viewMenu->setCheckable(true);
   m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("device.xpm")), "Device Manager", this, SLOT(slotViewDeviceManager()), 0, ID_VIEW_DEVICE_MANAGER);
   m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
+  m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("device.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
   //
   // Sequence Editor is disabled for now because it doesn't work at all
   //
@@ -237,6 +239,11 @@ void App::slotGlobalFunctionsViewClosed()
     }
 }
 
+void App::slotViewDeviceClassEditor()
+{
+  DeviceClassEditor* dCE = new DeviceClassEditor(NULL, "Device Class Editor", true);
+  dCE->show();
+}
 void App::slotViewSequenceEditor()
 {
   SequenceEditor* se;
@@ -510,3 +517,6 @@ void App::closeEvent(QCloseEvent* e)
 {
   e->accept();
 }
+
+
+

@@ -65,6 +65,7 @@
 #define ID_VIEW_STATUSBAR		12020
 
 #define ID_VIEW_DEVICE_MANAGER		12030
+#define ID_VIEW_DEVICE_CLASS_EDITOR	12035
 #define ID_VIEW_VIRTUAL_CONSOLE         12040
 #define ID_VIEW_SEQUENCE_EDITOR         12050
 #define ID_VIEW_DMXADDRESSTOOL          12060
@@ -120,6 +121,7 @@ class App : public QMainWindow
   void slotFileQuit();
 
   void slotViewDeviceManager();
+  void slotViewDeviceClassEditor();
   void slotDeviceManagerViewClosed();
   void slotViewVirtualConsole();
   void slotVirtualConsoleClosed();
@@ -184,3 +186,4 @@ class App : public QMainWindow
 };
 
 #endif
+
