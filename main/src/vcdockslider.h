@@ -50,18 +50,24 @@ class VCDockSlider : public UI_VCDockSlider
       Level = 1,
       Submaster = 2
     };
-
+  
+  Mode mode() { return m_mode; }
+  QString modeString(Mode mode);
+  
   bool setBusID(t_bus_id id);
+  t_bus_id busID() const { return m_busID; }
+
+  void setBusRange(t_bus_value lo, t_bus_value hi);
+  void busRange(t_bus_value &lo, t_bus_value &hi);
+
+  void setLevelChannels(QValueList<t_channel> channels);
+  void setSubmasterChannels(QValueList<t_channel> channels);
 
   void createContents(QPtrList <QString> &list);
   void saveToFile(QFile &file, t_vc_id parentID);
 
-  Mode mode() { return m_mode; }
-  QString modeString(Mode mode);
-
  private slots:
   void slotSliderValueChanged(int);
-  void slotBusMenuActivated(int);
   void slotTapInButtonClicked();
   void slotModeChanged();
 
@@ -86,6 +92,9 @@ class VCDockSlider : public UI_VCDockSlider
   t_vc_id m_id;
   Mode m_mode;
   t_bus_id m_busID;
+
+  int m_busLowLimit;
+  int m_busHighLimit;
 
   bool m_static;
   bool m_updateOnly;

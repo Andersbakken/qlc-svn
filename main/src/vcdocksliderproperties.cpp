@@ -47,8 +47,20 @@ VCDockSliderProperties::~VCDockSliderProperties()
 
 void VCDockSliderProperties::init()
 {
+  //
+  // Mode
+  //
   m_behaviourGroup->setButton(m_slider->mode());
   slotBehaviourSelected(m_slider->mode());
+
+  //
+  // Bus elements
+  //
+  t_bus_value buslo, bushi;
+  m_slider->busRange(buslo, bushi);
+  m_lowBusValueSpin->setValue(buslo);
+  m_highBusValueSpin->setValue(bushi);
+  
   fillBusCombo();
 }
 
@@ -60,10 +72,12 @@ void VCDockSliderProperties::fillBusCombo()
 
   for (t_bus_id i = 0; i < KBusCount; i++)
     {
-      s.sprintf("%d:", i);
+      s.sprintf("%.2d:", i+1);
       s += Bus::name(i);
       m_busCombo->insertItem(s);
     }
+
+  m_busCombo->setCurrentItem(m_slider->busID());
 }
 
 void VCDockSliderProperties::slotBehaviourSelected(int id)
@@ -92,6 +106,8 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
       m_highChannelValueSpin->setEnabled(false);
       break;
     }
+
+  m_mode = static_cast<VCDockSlider::Mode> (id);
 }
 
 void VCDockSliderProperties::slotAddChannelClicked()
@@ -108,6 +124,13 @@ void VCDockSliderProperties::slotClearAllChannelsClicked()
 
 void VCDockSliderProperties::slotOKClicked()
 {
+  if (m_mode == VCDockSlider::Speed)
+    {
+      m_slider->setBusRange(m_lowBusValueSpin->value(), 
+			    m_highBusValueSpin->value());
+      m_slider->setBusID(m_busCombo->currentItem());
+    }
+
   accept();
 }
 

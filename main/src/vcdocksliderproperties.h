@@ -23,8 +23,7 @@
 #define VCDOCKSLIDERPROPERTIES_H
 
 #include "uic_vcdocksliderproperties.h"
-
-class VCDockSlider;
+#include "vcdockslider.h"
 
 class VCDockSliderProperties : public UI_VCDockSliderProperties
 {
@@ -51,6 +50,7 @@ class VCDockSliderProperties : public UI_VCDockSliderProperties
 
  protected:
   VCDockSlider* m_slider;
+  VCDockSlider::Mode m_mode;
 };
 
 #endif

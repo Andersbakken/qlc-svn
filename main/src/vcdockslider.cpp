@@ -63,10 +63,12 @@ const int KMoveThreshold      (    5 ); // Pixels
 //
 VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
   : UI_VCDockSlider(parent, name),
-    m_mode       ( Speed ),
-    m_busID      ( KBusIDInvalid ),
-    m_static     ( isStatic ),
-    m_updateOnly ( false )
+    m_mode         (         Speed ),
+    m_busID        ( KBusIDInvalid ),
+    m_busLowLimit  (             0 ),
+    m_busHighLimit (            15 ),
+    m_static       (      isStatic ),
+    m_updateOnly   (         false )
 {
   m_time.start();
 }
@@ -91,6 +93,101 @@ void VCDockSlider::init()
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
+
+//
+// Return mode as a string
+//
+QString VCDockSlider::modeString(Mode mode)
+{
+  switch(mode)
+    {
+    default:
+    case Speed:
+      return QString("Speed");
+    case Level:
+      return QString("Level");
+    case Submaster:
+      return QString("Submaster");
+    }
+}
+
+//
+// Set behaviour to speed slider and assign a bus
+//
+bool VCDockSlider::setBusID(t_bus_id id)
+{
+  t_bus_value value;
+  if (Bus::value(id, value))
+    {
+      m_mode = Speed;
+      m_busID = id;
+
+      //
+      // Set name label
+      //
+      QString name = Bus::name(m_busID);
+      if (name == QString::null)
+	{
+	  name.sprintf("%.2d", id + 1);
+	}
+      m_tapInButton->setText(name);
+
+      m_slider->setValue(value);
+
+      connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
+	      this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
+
+      connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	      this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+
+      _app->doc()->setModified(true);
+
+      setBusRange(m_busLowLimit, m_busHighLimit);
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+//
+// Set bus value range
+//
+void VCDockSlider::setBusRange(t_bus_value lo, t_bus_value hi)
+{
+  m_busLowLimit = lo;
+  m_busHighLimit = hi;
+
+  if (m_mode == Speed)
+    {
+      m_slider->setRange(lo * KFrequency, hi * KFrequency);
+    }
+}
+
+
+void VCDockSlider::busRange(t_bus_value &lo, t_bus_value &hi)
+{
+  lo = m_busLowLimit;
+  hi = m_busHighLimit;
+}
+
+//
+// Set bahaviour to level slider and set channels
+//
+void VCDockSlider::setLevelChannels(QValueList<t_channel> channels)
+{
+}
+
+
+//
+// Set bahaviour to submaster slider and set channels
+//
+void VCDockSlider::setSubmasterChannels(QValueList<t_channel> channels)
+{
+}
 
 //
 // Create this slider's contents from list
@@ -202,6 +299,14 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	      setBusID(t.toInt());
 	    }
 	}
+      else if (*s == QString("BusLowLimit"))
+	{
+	  m_busLowLimit = list.next()->toInt();
+	}
+      else if (*s == QString("BusHighLimit"))
+	{
+	  m_busHighLimit = list.next()->toInt();
+	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -209,6 +314,7 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	}
     }
 
+  setBusRange(m_busLowLimit, m_busHighLimit);
   setGeometry(rect);
 }
 
@@ -300,24 +406,16 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
   t.setNum(m_busID);
   s = QString("Bus = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
-}
 
+  // Bus Lo
+  t.setNum(m_busLowLimit);
+  s = QString("BusLowLimit = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 
-//
-// Return mode as a string
-//
-QString VCDockSlider::modeString(Mode mode)
-{
-  switch(mode)
-    {
-    default:
-    case Speed:
-      return QString("Speed");
-    case Level:
-      return QString("Level");
-    case Submaster:
-      return QString("Submaster");
-    }
+  // Bus Hi
+  t.setNum(m_busHighLimit);
+  s = QString("BusHighLimit = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 }
 
 
@@ -349,55 +447,6 @@ void VCDockSlider::slotSliderValueChanged(int value)
     {
       m_valueLabel->setText("ERROR");
     }
-}
-
-
-//
-// Set behaviour to speed slider and assign a bus
-//
-bool VCDockSlider::setBusID(t_bus_id id)
-{
-  t_bus_value value;
-  if (Bus::value(id, value))
-    {
-      m_busID = id;
-      m_mode = Speed;
-
-      //
-      // Set name label
-      //
-      QString name = Bus::name(m_busID);
-      if (name == QString::null)
-	{
-	  name.sprintf("%.2d", id + 1);
-	}
-      m_tapInButton->setText(name);
-
-      m_slider->setValue(value);
-
-      connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
-	      this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-
-      connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	      this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
-
-      _app->doc()->setModified(true);
-
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-
-//
-// Bus has been selected from menu
-//
-void VCDockSlider::slotBusMenuActivated(int id)
-{
-  setBusID(id);
 }
 
 
