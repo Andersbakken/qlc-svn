@@ -87,6 +87,7 @@ void PatternGenerator::setSequence(Sequence* sequence)
       if (horizontal == false && c->name().contains("pan", false))
 	{
 	  m_horizontalCombo->setCurrentItem(ch);
+	  m_horizontalChannel = ch;
 	  horizontal = true;
 	}
 
@@ -94,6 +95,7 @@ void PatternGenerator::setSequence(Sequence* sequence)
       if (vertical == false && c->name().contains("tilt", false))
 	{
 	  m_verticalCombo->setCurrentItem(ch);
+	  m_verticalChannel = ch;
 	  vertical = true; // Select the first that contains "tilt"
 	}
     }
