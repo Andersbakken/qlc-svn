@@ -86,8 +86,7 @@ class Chaser : public Function
   RunOrder m_runOrder;
   Direction m_direction;
 
-  pthread_cond_t m_childRunning;
-  pthread_mutex_t m_childMutex;
+  bool m_childRunning;
 
   time_t m_holdTime;
 };

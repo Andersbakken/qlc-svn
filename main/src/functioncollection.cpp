@@ -308,6 +308,21 @@ void FunctionCollection::freeRunTimeData()
 
 
 //
+// Stop
+//
+void FunctionCollection::stop()
+{
+  QPtrListIterator <FunctionStep> it(m_steps);
+  m_stopped = true;
+
+  while (it.current())
+    {
+      it.current()->function()->stop();
+      ++it;
+    }
+}
+
+//
 // Initialize some run-time values
 //
 void FunctionCollection::init()
@@ -330,22 +345,21 @@ void FunctionCollection::init()
 void FunctionCollection::run()
 {
   QPtrListIterator <FunctionStep> it(m_steps);
-  FunctionStep* step = NULL;
 
   // Calculate starting values
   init();
   
   m_stopped = false;
-  while ((step = it.current()) && !m_stopped)
+  while (it.current() && !m_stopped)
     {
-      ++it;
-
-      if (step->function()->engage(this))
+      if (it.current()->function()->engage(this))
 	{
 	  m_childCountMutex.lock();
 	  m_childCount++;
 	  m_childCountMutex.unlock();
 	}
+
+      ++it;
     }
 
   // Wait for all children to stop

@@ -50,6 +50,8 @@ class FunctionCollection : public Function
 
   void childFinished();
 
+  void stop();
+
  protected:
   void init();
   void run();

@@ -452,7 +452,8 @@ void Scene::run()
 
   m_dataMutex.lock();
 
-  for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan; m_elapsedTime++)
+  for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan && !m_stopped; 
+       m_elapsedTime++)
     {
       m_dataMutex.unlock();
 
@@ -501,7 +502,7 @@ void Scene::run()
   // been set to a smaller amount than what has elapsed. Also, because
   // floats are NEVER exact numbers, it might be that we never quite reach
   // the target within the given timespan (in case the values don't add up).
-  for (ch = 0; ch < m_channels; ch++)
+  for (ch = 0; ch < m_channels && !m_stopped; ch++)
     {
       if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	{

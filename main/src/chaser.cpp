@@ -326,9 +326,6 @@ void Chaser::freeRunTimeData()
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
-  pthread_mutex_destroy(&m_childMutex);
-  pthread_cond_destroy(&m_childRunning);
-
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
@@ -356,11 +353,9 @@ void Chaser::freeRunTimeData()
 //
 void Chaser::init()
 {
+  m_childRunning = false;
   m_removeAfterEmpty = false;
   m_stopped = false;
-
-  pthread_mutex_init(&m_childMutex, 0);
-  pthread_cond_init(&m_childRunning, 0);
 
   // There's actually no need for an eventbuffer, but
   // because FunctionConsumer does EventBuffer::get() calls, it must be
@@ -379,6 +374,7 @@ void Chaser::run()
 {
   struct timespec timeval;
   struct timespec timerem;
+  FunctionStep* step = NULL;
 
   Direction dir = m_direction;
 
@@ -389,25 +385,35 @@ void Chaser::run()
 
   if (dir == Reverse)
     {
+      // Start from end
       it.toLast();
     }
   else
     {
+      // Start from beginning
       it.toFirst();
     }
 
   while ( !m_stopped )
     {
-      if (it.current())
+      step = it.current();
+
+      if (step)
 	{
-	  if (it.current()->function()->engage(this))
+	  m_childRunning = true;
+	  if (step->function()->engage(this))
 	    {
-	      pthread_mutex_lock(&m_childMutex);
-	      pthread_cond_wait(&m_childRunning, &m_childMutex);
-	      pthread_mutex_unlock(&m_childMutex);
-	      
-	      if (m_holdTime > 0)
+	      while (m_childRunning && !m_stopped) sched_yield();
+
+	      // Check if we need to be stopped
+	      if (m_stopped)
 		{
+		  step->function()->stop();
+		}
+	      else if (m_holdTime > 0)
+		{
+		  // Because nanosleep sleeps at least 10msecs, don't
+		  // sleep at all if holdtime is zero.
 		  timeval.tv_sec = m_holdTime / KFrequency;
 		  timeval.tv_nsec = (m_holdTime % KFrequency) * 
 		    (1000000000 / KFrequency);
@@ -429,10 +435,8 @@ void Chaser::run()
 	    {
 	      --it;
 	    }
-
 	}
-
-      if (m_runOrder == Loop)
+      else if (m_runOrder == Loop)
 	{
 	  it.toFirst();
 	}
@@ -474,5 +478,5 @@ void Chaser::run()
 //
 void Chaser::childFinished()
 {
-  pthread_cond_signal(&m_childRunning);
+  m_childRunning = false;
 }

@@ -21,6 +21,8 @@
 
 #include <qstring.h>
 #include <qapplication.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
