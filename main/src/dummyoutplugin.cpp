@@ -32,7 +32,7 @@ DummyOutPlugin::DummyOutPlugin(int id) : OutputPlugin(id)
   m_version = 0x00010000;
   m_name = QString("Dummy Output");
 
-  for (int i = 0; i < 512; i++)
+  for (t_channel i = 0; i < 512; i++)
     {
       m_values[i] = 0;
     }
@@ -166,7 +166,7 @@ bool DummyOutPlugin::writeRange(t_channel address, t_value* values,
   ASSERT(values);
 
   m_mutex.lock();
-  memcpy(m_values + address, values, num);
+  memcpy(m_values + address, values, num * sizeof(t_value));
   m_mutex.unlock();
 
   return true;
@@ -187,7 +187,7 @@ bool DummyOutPlugin::readRange(t_channel address, t_value* values,
   ASSERT(values);
 
   m_mutex.lock();
-  memcpy(values, m_values + address, num);
+  memcpy(values, m_values + address, num * sizeof(t_value));
   m_mutex.unlock();
 
   return true;

@@ -116,6 +116,12 @@ void Doc::init()
   initPlugins();
 
   readDeviceClasses();
+
+  connect(Bus::defaultFadeBus(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+
+  connect(Bus::defaultHoldBus(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 }
 
 

@@ -47,15 +47,8 @@ class EventBuffer
   // Eventsize == channel count
   unsigned int eventSize() const { return m_eventSize; }
 
-  // Set channel status
-  void setChannelInfo(t_channel, t_info);
-
-  // Return the channel info array
-  t_info* channelInfo() const { return m_channelInfo; }
-
  private:
   t_value* m_ring;
-  t_info* m_channelInfo;
 
   unsigned int m_size;
   t_channel m_eventSize;

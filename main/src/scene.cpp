@@ -49,6 +49,7 @@ Scene::Scene(t_function_id id) : Function(id)
   m_timeSpan = 256;
   m_parentFunction = NULL;
   m_virtualController = NULL;
+  m_elapsedTime = 0;
 
   m_busID = Bus::defaultFadeBus()->id();
 }
@@ -366,48 +367,65 @@ void Scene::stop()
 //
 void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 {
-  // How to get the bus value when function starts?
-  //m_timeSpan = value;
-  //speedChange(true);
+  m_startMutex.lock();
+
+  if (m_running)
+    {
+      speedChange(value);
+    }
+  else
+    {
+      m_timeSpan = value;
+    }
+
+  m_startMutex.unlock();
 }
 
 
 //
 // Calculate new values
 //
-void Scene::speedChange(bool alreadyRunning)
+void Scene::speedChange(t_bus_value newTimeSpan)
 {
   for (t_channel i = 0; i < m_channels; i++)
     {
       if (m_values[i].type == Fade)
 	{
-	  // This channel is not ready
-	  m_eventBuffer->setChannelInfo(i, EventBuffer::Set);
+	  if (m_elapsedTime == 0)
+	    {
+	      // Step increment
+	      m_runTimeData[i].increment = 
+		(static_cast<float>(m_values[i].value) - 
+		 m_runTimeData[i].start) / (float) newTimeSpan;
+	    }
+	  else
+	    {
+	      // Scene has already been running. Calculate increment
+	      // for the remaining time
+	      m_runTimeData[i].increment =
+		(static_cast<float>(m_values[i].value) -
+		 m_runTimeData[i].current) / 
+		(float) (m_timeSpan - newTimeSpan);
 
-	  // Step increment
-	  m_runTimeData[i].increment = 
-	    (static_cast<float>(m_values[i].value) - 
-	     m_runTimeData[i].start) / (float) m_timeSpan;
-
-	  qDebug("%d: %d -> %d incs %f", i, m_channelData[i],
-		 m_values[i].value, m_runTimeData[i].increment);
+	      qDebug("%d: %f -> %d incs %f in %d", i, 
+		     m_runTimeData[i].current, m_values[i].value,
+		     m_runTimeData[i].increment, newTimeSpan);
+	    }
 	}
-      else if (m_values[i].type == NoSet)
+      else if (m_values[i].type == Set)
 	{
-	  // Don't touch this channel's values from this scene
-	  m_eventBuffer->setChannelInfo(i, EventBuffer::Skip);
-	}
-      else // if (m_values[i].type == Set)
-	{
-	  // This channel is just set to the value
-	  m_eventBuffer->setChannelInfo(i, EventBuffer::Set);
-
 	  // Set the gap between start and target value as the increment
 	  m_runTimeData[i].increment =
 	    (static_cast<float>(m_values[i].value) -
 	     m_runTimeData[i].start);
 	}
+      else
+	{
+	  // NoSet values don't need any speed changing
+	}
     }
+
+  m_timeSpan = newTimeSpan;
 }
 
 
@@ -422,6 +440,9 @@ void Scene::init()
   ASSERT(m_channelData == NULL);
   m_channelData = new t_value[m_channels];
 
+  ASSERT(m_eventBuffer == NULL);
+  m_eventBuffer = new EventBuffer(m_channels);
+
   // Current values
   _app->doc()->outputPlugin()->readRange(m_device->address(),
 					 m_channelData, m_channels);
@@ -432,8 +453,7 @@ void Scene::init()
 	static_cast<float> (m_channelData[i]);
     }
 
-  ASSERT(m_eventBuffer == NULL);
-  m_eventBuffer = new EventBuffer(m_channels);
+  m_elapsedTime = 0;
 }
 
 
@@ -442,30 +462,32 @@ void Scene::init()
 //
 void Scene::run()
 {
-  time_t time = 0;
   t_channel ch = 0;
+  t_channel ready = 0;
 
   // Allocate space for some run time stuff
   init();
 
   // Calculate starting values
-  speedChange(false);
+  speedChange(m_timeSpan);
 
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
 
   m_stopMutex.lock();
-  for (time = 0; time < m_timeSpan && !m_stopped; time++)
+  while (!m_stopped)
     {
       m_stopMutex.unlock();
 
+      m_elapsedTime++;
+      ready = 0;
       for (ch = 0; ch < m_channels; ch++)
 	{
-	  if (m_runTimeData[ch].current == (float) m_values[ch].value)
+	  if ((t_value) m_runTimeData[ch].current == m_values[ch].value
+	      || m_values[ch].type == NoSet)
 	    {
-	      // If the channel value is what it's supposed to be, 
-	      // don't touch it anymore (concerns mainly "Set" types)
-	      m_eventBuffer->setChannelInfo(ch, EventBuffer::Skip);
+	      m_channelData[ch] |= FunctionConsumer::KNoSetMask; 
+	      ready++;
 	    }
 	  else
 	    {
@@ -473,6 +495,12 @@ void Scene::run()
 	      m_channelData[ch] =
 		static_cast<t_value> (m_runTimeData[ch].current);
 	    }
+	}
+
+      if (ready == m_channels)
+	{
+	  // All channels are ready
+	  break;
 	}
 
       // Put data to buffer

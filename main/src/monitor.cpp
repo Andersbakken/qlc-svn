@@ -105,6 +105,11 @@ void Monitor::init()
   m_newValues = new t_value[m_units];
   m_oldValues = new t_value[m_units];
 
+  for (t_channel i = 0; i < m_units; i++)
+    {
+      m_newValues[i] = m_oldValues[i] = 0;
+    }
+
   //
   // Init the timer that updates the values
   m_timer = new QTimer(this);
@@ -140,7 +145,7 @@ void Monitor::init()
 
 void Monitor::show()
 {
-  m_timer->start(64);
+  m_timer->start(16);
 
   QWidget::show();
 }
@@ -156,23 +161,6 @@ void Monitor::slotResizeSquare()
 
   resize(unitsPerSide * (unitW * 2) + X_OFFSET, 
 	 unitsPerSide * (unitH * 3) + Y_OFFSET);
-}
-
-void Monitor::slotUpdate(t_value value, t_channel channel)
-{
-  /*
-    t_value *val = new t_value;
-    t_channel *ch = new t_channel;
-    
-    *val = value;
-    *ch = channel;
-    
-    m_mutex.lock();
-    
-    m_newValues[channel - m_fromChannel] = value;
-    
-    m_mutex.unlock();
-  */
 }
 
 void Monitor::mousePressEvent(QMouseEvent* e)
@@ -212,7 +200,8 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       menu->insertItem(QPixmap(dir + "/rename.xpm"), 
 		       "Choose &Font", ID_CHOOSE_FONT);
 
-      connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+      connect(menu, SIGNAL(activated(int)), 
+	      this, SLOT(slotMenuCallback(int)));
       connect(displayMenu, SIGNAL(activated(int)), 
 	      this, SLOT(slotMenuCallback(int)));
       connect(speedMenu, SIGNAL(activated(int)), 
@@ -250,21 +239,24 @@ void Monitor::slotMenuCallback(int item)
       m_timer->stop();
       m_timer->start(1000 / (item - ID_FREQUENCY));
       m_updateFrequency = item;
-      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item - ID_FREQUENCY);
+      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY,
+			    item - ID_FREQUENCY);
       break;
 
     case ID_32HZ:
       m_timer->stop();
       m_timer->start(1000 / (item - ID_FREQUENCY));
       m_updateFrequency = item;
-      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item - ID_FREQUENCY);
+      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 
+			    item - ID_FREQUENCY);
       break;
 
     case ID_64HZ:
       m_timer->stop();
       m_timer->start(1000 / (item - ID_FREQUENCY));
       m_updateFrequency = item;
-      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item - ID_FREQUENCY);
+      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 
+			    item - ID_FREQUENCY);
       break;
 
     case ID_CHOOSE_FONT:
@@ -298,12 +290,12 @@ void Monitor::paintEvent(QPaintEvent* e)
 {
   if (e->erased())
     {
-      while (m_painter.isActive()); // Wait until previous painter has finished
+      while (m_painter.isActive()); // Wait until previous painter is finished
       paintAll();// Everything needs to be repainted
     }
   else
     {
-      while (m_painter.isActive()); // Wait until previous painter has finished
+      while (m_painter.isActive()); // Wait until previous painter is finished
       paint(); // Paint only changed values
     }
 

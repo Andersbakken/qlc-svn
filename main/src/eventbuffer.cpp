@@ -28,20 +28,13 @@
 EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
   : 
   m_ring(NULL),
-  m_channelInfo(NULL),
-  m_size(bufferSize * eventSize),
-  m_eventSize(eventSize),
+  m_size(bufferSize * (eventSize * sizeof(t_value))),
+  m_eventSize(eventSize * sizeof(t_value)),
   m_filled(0),
   m_in(0),
   m_out(0)
 {
   m_ring = new t_value[m_size];
-  m_channelInfo = new t_info[m_eventSize];
-
-  for (t_channel i = 0; i < m_eventSize; i++)
-    {
-      m_channelInfo[i] = Set;
-    }
 
   pthread_mutex_init(&m_mutex, 0);
   pthread_cond_init(&m_nonEmpty, 0);
@@ -51,17 +44,10 @@ EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
 EventBuffer::~EventBuffer()
 {
   delete [] m_ring;
-  delete [] m_channelInfo;
 
   pthread_mutex_destroy(&m_mutex);
   pthread_cond_destroy(&m_nonEmpty);
   pthread_cond_destroy(&m_nonFull);
-}
-
-void EventBuffer::setChannelInfo(t_channel ch, t_info info)
-{
-  assert(ch < m_eventSize);
-  m_channelInfo[ch] = info;
 }
 
 bool EventBuffer::put(t_value* ev)

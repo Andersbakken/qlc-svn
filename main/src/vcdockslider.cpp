@@ -37,6 +37,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, const char* name)
   : UI_VCDockSlider(parent, name)
 {
   m_bus = NULL;
+  m_slider->setTracking(false);
 }
 
 VCDockSlider::~VCDockSlider()

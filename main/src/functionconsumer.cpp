@@ -37,6 +37,8 @@
 
 extern App* _app;
 
+t_value FunctionConsumer::KNoSetMask ( 0xff00 );
+
 FunctionConsumer::FunctionConsumer() : QThread()
 {
   m_running = 0;
@@ -208,7 +210,11 @@ void FunctionConsumer::event(time_t)
         {
 	  for (ch = 0; ch < (t_channel) f->eventBuffer()->eventSize(); ch++)
 	    {
-	      if ((f->eventBuffer()->channelInfo())[ch] == EventBuffer::Set)
+	      if (ev[ch] & KNoSetMask)
+		{
+		  // Don't write NoSet values
+		}
+	      else
 		{
 		  _app->doc()->outputPlugin()
 		    ->writeChannel(f->device()->address() + ch, ev[ch]);

@@ -50,9 +50,6 @@ class Monitor : public QWidget
   void init();
   void show();
 
- public slots:
-  void slotUpdate(t_value value, t_channel channel);
-
  protected slots:
   void slotTimeOut();
   void slotResizeSquare();

@@ -90,7 +90,6 @@ class Doc : public QObject
   Bus* searchBus(const t_bus_id id);
   void addBus(Bus* bus);
   void removeBus(const t_bus_id id, bool deleteBus = true);
-  void slotBusValueChanged(t_bus_id, t_bus_value);
 
   //
   // General Plugin Stuff
@@ -113,6 +112,9 @@ class Doc : public QObject
   void deviceListChanged();
   void deviceRemoved(int);
   void newDocumentClicked();
+
+ public slots:
+  void slotBusValueChanged(t_bus_id, t_bus_value);
 
  private slots:
   void slotChangeOutputPlugin(const QString& name);

@@ -55,7 +55,7 @@ class Scene : public Function
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  void speedChange(bool alreadyRunning);
+  void speedChange(t_bus_value);
   void busValueChanged(t_bus_id, t_bus_value);
   void stop();
   void freeRunTimeData();
@@ -71,6 +71,7 @@ class Scene : public Function
 
   RunTimeData* m_runTimeData;
   t_value* m_channelData;
+  time_t m_elapsedTime;
 };
 
 class RunTimeData
