@@ -46,7 +46,7 @@
 #include <qpopupmenu.h>
 #include <qmessagebox.h>
 #include <limits.h>
-
+#include <assert.h>
 #include <math.h>
 
 extern App* _app;
@@ -370,30 +370,36 @@ void AdvancedSceneEditor::slotSceneNameTextChanged(const QString& text)
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item,
 					      const QPoint& point, int col)
 {
-  if (col == KColumnValue)
+  if (item)
     {
-      item->startRename(KColumnValue);
-    }
-  else if (col == KColumnType)
-    {
-      item->startRename(KColumnType);
+      if (col == KColumnValue)
+	{
+	  item->startRename(KColumnValue);
+	}
+      else if (col == KColumnType)
+	{
+	  item->startRename(KColumnType);
+	}
     }
 }
 
 
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
-  int ch = item->text(KColumnNumber).toInt();
-  t_device_id did = m_scene->device();
-
-  if (did != KNoID)
+  if (item)
     {
-      m_currentChannel = 
-	_app->doc()->device(did)->deviceClass()->channels()->at(ch);
-    }
-  else
-    {
-      ASSERT(false);
+      int ch = item->text(KColumnNumber).toInt();
+      t_device_id did = m_scene->device();
+      
+      if (did != KNoID)
+	{
+	  m_currentChannel = 
+	    _app->doc()->device(did)->deviceClass()->channels()->at(ch);
+	}
+      else
+	{
+	  assert(false);
+	}
     }
 }
 
