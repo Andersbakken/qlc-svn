@@ -1,0 +1,241 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_SceneEditor</class>
+<widget class="QFrame">
+    <property name="name">
+        <cstring>UI_SceneEditor</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>2</x>
+            <y>0</y>
+            <width>120</width>
+            <height>220</height>
+        </rect>
+    </property>
+    <property name="minimumSize">
+        <size>
+            <width>0</width>
+            <height>220</height>
+        </size>
+    </property>
+    <property name="maximumSize">
+        <size>
+            <width>120</width>
+            <height>220</height>
+        </size>
+    </property>
+    <property name="caption">
+        <string>SceneEditor</string>
+    </property>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>m_availableScenesComboBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>10</y>
+                <width>110</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string></string>
+        </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_statusGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>110</y>
+                <width>110</width>
+                <height>41</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Status</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_statusLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>16</y>
+                    <width>90</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>255</red>
+                    <green>0</green>
+                    <blue>127</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <bold>1</bold>
+                </font>
+            </property>
+            <property name="text">
+                <string>modified</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_newButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>160</y>
+                <width>50</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>New...</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Create a new scene</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_saveButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>160</y>
+                <width>50</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Save</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Save as selected scene</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_hideButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>190</y>
+                <width>110</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Hide</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Hide scene editor panel</string>
+        </property>
+    </widget>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>m_saveToGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>40</y>
+                <width>110</width>
+                <height>70</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Save in</string>
+        </property>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>m_deviceClassRadio</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>97</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device class</string>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Save as a scene that can be used by any device of the same make and model</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>m_deviceRadio</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>40</y>
+                    <width>97</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Device </string>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Save as a scene that can be used only by the current device</string>
+            </property>
+        </widget>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_availableScenesComboBox</sender>
+        <signal>activated(int)</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotSceneActivated(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_newButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotNewClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_saveButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotSaveClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_hideButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotHideClicked()</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">sceneeditor.ui.h</include>
+</includes>
+<slots>
+    <slot>slotSceneActivated( int )</slot>
+    <slot>slotHideClicked()</slot>
+    <slot>slotNewClicked()</slot>
+    <slot>slotSaveClicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
