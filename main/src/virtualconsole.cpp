@@ -45,12 +45,21 @@
 #include "vclabel.h"
 #include "configkeys.h"
 #include "vcdockarea.h"
+#include "vcdockslider.h"
 
 #include <X11/Xlib.h>
 
 extern App* _app;
 
 const QString KEY_VIRTUAL_CONSOLE_OPEN  (  "VirtualConsoleOpen" );
+
+const int KMenuAdd                 ( 0 );
+const int KMenuAddButton           ( 1 );
+const int KMenuAddSlider           ( 2 );
+const int KMenuAddFrame            ( 3 );
+const int KMenuAddLabel            ( 4 );
+const int KMenuDefaultSliders      ( 5 );
+const int KMenuPanic               ( 6 );
 
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
@@ -95,33 +104,40 @@ void VirtualConsole::initView(void)
   m_menuBar = new QMenuBar(this);
   m_layout->setMenuBar(m_menuBar);
 
+  //
+  // Add menu
+  //
   m_addMenu = new QPopupMenu();
   m_addMenu->setCheckable(false);
   m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
-			"&Button", ID_VC_ADD_BUTTON);
+			"&Button", KMenuAddButton);
   m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
-			"&Slider", ID_VC_ADD_SLIDER);
+			"&Slider", KMenuAddSlider);
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
-			"&Frame", ID_VC_ADD_FRAME);
+			"&Frame", KMenuAddFrame);
   m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
-			"L&abel", ID_VC_ADD_LABEL);
+			"L&abel", KMenuAddLabel);
   connect(m_addMenu, SIGNAL(activated(int)), 
 	  this, SLOT(slotMenuItemActivated(int)));
 
+  //
+  // Tools menu
+  //
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
   m_toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"),
-			  "&Default Sliders", ID_VC_TOOLS_SLIDERS);
+			  "&Default Sliders", KMenuDefaultSliders);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), 
-			  "&Panic!", ID_VC_TOOLS_PANIC);
+			  "&Panic!", KMenuPanic);
+
   connect(m_toolsMenu, SIGNAL(activated(int)), 
 	  this, SLOT(slotMenuItemActivated(int)));
 
-  m_menuBar->insertItem("&Add", m_addMenu, ID_VC_ADD);
-  m_menuBar->insertItem("&Tools", m_toolsMenu, ID_VC_TOOLS);
+  m_menuBar->insertItem("&Add", m_addMenu, KMenuAdd);
+  m_menuBar->insertItem("&Tools", m_toolsMenu);
 
-  m_menuBar->setItemEnabled(ID_VC_ADD, true);
+  m_menuBar->setItemEnabled(KMenuAdd, true);
 
   VCWidget::ResetID();
 
@@ -153,7 +169,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 {
   switch(item)
     {
-    case ID_VC_ADD_BUTTON:
+    case KMenuAddButton:
       {
 	VCButton* b;
 	b = new VCButton(m_drawArea);
@@ -163,7 +179,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
       }
       break;
 
-    case ID_VC_ADD_SLIDER:
+    case KMenuAddSlider:
       {
 	VCSlider* s;
 	s = new VCSlider(m_drawArea);
@@ -173,20 +189,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
       }
       break;
 
-    case ID_VC_ADD_LABEL:
-      {
- 	VCLabel* p = NULL;
-	p = new VCLabel(m_drawArea);
-	p->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_MONITOR:
-      _app->doc()->setModified(true);
-      break;
-
-    case ID_VC_ADD_FRAME:
+    case KMenuAddFrame:
       {
 	VCWidget* w;
 	w = new VCWidget(m_drawArea);
@@ -196,13 +199,22 @@ void VirtualConsole::slotMenuItemActivated(int item)
       }
       break;
 
-    case ID_VC_TOOLS_PANIC:
+    case KMenuAddLabel:
+      {
+ 	VCLabel* p = NULL;
+	p = new VCLabel(m_drawArea);
+	p->show();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuPanic:
       {
 	_app->slotPanic();
       }
       break;
 
-    case ID_VC_TOOLS_SLIDERS:
+    case KMenuDefaultSliders:
       {
 	if (m_dockArea->isHidden())
 	  {
@@ -238,11 +250,11 @@ void VirtualConsole::slotDockAreaHidden(bool areaHidden)
 {
   if (areaHidden == true)
     {
-      m_toolsMenu->setItemChecked(ID_VC_TOOLS_SLIDERS, false);
+      m_toolsMenu->setItemChecked(KMenuDefaultSliders, false);
     }
   else
     {
-      m_toolsMenu->setItemChecked(ID_VC_TOOLS_SLIDERS, true);
+      m_toolsMenu->setItemChecked(KMenuDefaultSliders, true);
     }
 }
 

@@ -25,7 +25,7 @@
 #include <qframe.h>
 
 class QVBoxLayout;
-class QToolButton;
+class QPushButton;
 
 class VCDockSlider;
 
@@ -33,19 +33,18 @@ class VCDockArea : public QFrame
 {
   Q_OBJECT
     
-    public:
+ public:
   VCDockArea(QWidget* parent, const char* name = NULL);
   ~VCDockArea();
 
   void init();
-  void show();
-  void hide();
 
  signals:
   void areaHidden(bool);
 
  public slots:
-  void slotHideButtonClicked();
+  void show();
+  void hide();
 
  protected:
   QVBoxLayout* m_layout;
@@ -54,7 +53,7 @@ class VCDockArea : public QFrame
   VCDockSlider* m_defaultHoldSlider;
   VCDockSlider* m_masterSlider;
 
-  QToolButton* m_hideButton;
+  QPushButton* m_hideButton;
 };
 
 #endif

@@ -49,11 +49,22 @@
 #include <qfile.h>
 #include <limits.h>
 #include <qtimer.h>
+#include <qpainter.h>
+#include <qbrush.h>
 
 extern App* _app;
 
-const int KReadyColorMask (0xff); // Produces opposite colors with XOR
-const int KFlashReadyTime (1000); // 1 second
+const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
+const int KFlashReadyTime ( 1000 ); // 1 second
+
+const int KMenuRename           ( 0 );
+const int KMenuProperties       ( 1 );
+const int KMenuBackgroundColor  ( 2 );
+const int KMenuBackgroundPixmap ( 3 );
+const int KMenuCopy             ( 4 );
+const int KMenuRemove           ( 5 );
+const int KMenuAttach           ( 6 );
+const int KMenuDetach           ( 7 );
 
 VCButton::VCButton(VCWidget* parent) 
   : QPushButton(parent, "VCButton")
@@ -81,6 +92,10 @@ void VCButton::init()
   QToolTip::add(this, "No function");
 
   resize(30, 30);
+
+  setMinimumSize(20, 20);
+
+  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
 
@@ -352,17 +367,22 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	  m_resizeMode = false;
 	}
 
-      if (e->button() & LeftButton && m_lock == false)
+      if ((e->button() & MidButton || e->button() & LeftButton) && 
+	  m_lock == false)
 	{
-	  m_origX = e->globalX();
-	  m_origY = e->globalY();
-	  setCursor(QCursor(SizeAllCursor));
-	}
-      else if (e->button() & MidButton && m_lock == false)
-	{
-	  m_resizeMode = true;
-	  setMouseTracking(true);
-	  setCursor(QCursor(SizeFDiagCursor));
+	  if (e->x() > rect().width() - 10 &&
+	      e->y() > rect().height() - 10)
+	    {
+	      m_resizeMode = true;
+	      setMouseTracking(true);
+	      setCursor(QCursor(SizeFDiagCursor));
+	    }
+	  else
+	    {
+	      m_origX = e->globalX();
+	      m_origY = e->globalY();
+	      setCursor(QCursor(SizeAllCursor));
+	    }
 	}
       else if (e->button() & RightButton)
 	{
@@ -374,47 +394,31 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	  QString dir;
 	  _app->settings()->get(KEY_SYSTEM_DIR, dir);
 	  dir += QString("/") + PIXMAPPATH;
-	  
-	  QPopupMenu* sizeMenu;
-	  sizeMenu = new QPopupMenu();
-	  sizeMenu->setCheckable(false);
-	  sizeMenu->insertItem("&Tiny", VCWIDGET_SIZE_TINY);
-	  sizeMenu->insertItem("&Small", VCWIDGET_SIZE_SMALL);
-	  sizeMenu->insertItem("&Normal", VCWIDGET_SIZE_NORMAL);
-	  sizeMenu->insertItem("&Large", VCWIDGET_SIZE_LARGE);
-	  sizeMenu->insertItem("&Huge", VCWIDGET_SIZE_HUGE);
-	  sizeMenu->insertSeparator();
-	  sizeMenu->insertItem("&Manual", VCWIDGET_SIZE_MANUAL);
 
 	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-			   "&Rename...", VCWIDGET_MENU_RENAME);
+			   "&Rename...", KMenuRename);
 	  menu->insertItem(QPixmap(dir + QString("/settings.xpm")),
-			   "&Properties...", VCWIDGET_MENU_PROPERTIES);
-	  menu->insertItem(QPixmap(dir + QString("/move.xpm")),
-			   "&Size", sizeMenu);
+			   "&Properties...", KMenuProperties);
 	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			     "Color...", VCWIDGET_MENU_BACKGROUND_COLOR);
+			   "Color...", KMenuBackgroundColor);
 	  menu->insertItem(QPixmap(dir + QString("/image.xpm")),
-			     "Pixmap...", VCWIDGET_MENU_BACKGROUND_PIXMAP);
+			   "Pixmap...", KMenuBackgroundPixmap);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/attach.xpm")),
-			   "&Attach function...", VCBUTTON_MENU_ATTACH);
+			   "&Attach function...", KMenuAttach);
 	  menu->insertItem(QPixmap(dir + QString("/detach.xpm")),
-			   "&Detach current function", VCBUTTON_MENU_DETACH);
+			   "&Detach current function", KMenuDetach);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/editcopy.xpm")),
-			   "Duplicate", VCWIDGET_MENU_COPY);
+			   "Duplicate", KMenuCopy);
 	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-			   "Re&move", VCWIDGET_MENU_REMOVE);
+			   "Re&move", KMenuRemove);
 
 	  connect(menu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-	  connect(sizeMenu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
 	  menu->exec(mapToGlobal(e->pos()));
 
-	  delete sizeMenu;
 	  delete menu;
 	}
     }
@@ -429,51 +433,7 @@ void VCButton::slotMenuCallback(int item)
 {
   switch (item)
     {
-    case VCWIDGET_SIZE_TINY:
-      {
-	_app->doc()->setModified(true);
-	resize(15, 15);
-      }
-      break;
-
-    case VCWIDGET_SIZE_SMALL:
-      {
-	_app->doc()->setModified(true);
-	resize(20, 20);
-      }
-      break;
-
-    case VCWIDGET_SIZE_NORMAL:
-      {
-	_app->doc()->setModified(true);
-	resize(30, 30);
-      }
-      break;
-
-    case VCWIDGET_SIZE_LARGE:
-      {
-	_app->doc()->setModified(true);
-	resize(40, 40);
-      }
-      break;
-
-    case VCWIDGET_SIZE_HUGE:
-      {
-	_app->doc()->setModified(true);
-	resize(50, 50);
-      }
-      break;
-
-    case VCWIDGET_SIZE_MANUAL:
-      {
-	_app->doc()->setModified(true);
-	m_resizeMode = true;
-	setMouseTracking(true);
-	setCursor(QCursor(SizeFDiagCursor));
-      }
-      break;
-
-    case VCWIDGET_MENU_RENAME:
+    case KMenuRename:
       {
 	m_renameEdit = new FloatingEdit(parentWidget());
 	connect(m_renameEdit, SIGNAL(returnPressed()),
@@ -487,7 +447,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case VCWIDGET_MENU_BACKGROUND_COLOR:
+    case KMenuBackgroundColor:
       {
 	QColor currentcolor;
 	if (m_bgColor != NULL)
@@ -514,7 +474,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
       
-      case VCWIDGET_MENU_BACKGROUND_PIXMAP:
+      case KMenuBackgroundPixmap:
       {
 	QString fileName = 
 	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
@@ -536,7 +496,8 @@ void VCButton::slotMenuCallback(int item)
 	  }
       }
       break;
-    case VCWIDGET_MENU_PROPERTIES:
+
+    case KMenuProperties:
       {
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
@@ -579,7 +540,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case VCWIDGET_MENU_REMOVE:
+    case KMenuRemove:
       {
 	if (QMessageBox::warning(this, "Remove Button", "Are you sure?",
 				 QMessageBox::Yes, QMessageBox::No)
@@ -591,7 +552,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case VCBUTTON_MENU_ATTACH:
+    case KMenuAttach:
       {
 	FunctionTree* ft = new FunctionTree(this);
 	if (ft->exec() == QDialog::Accepted)
@@ -606,13 +567,13 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case VCBUTTON_MENU_DETACH:
+    case KMenuDetach:
       {
 	attachFunction(NULL);
       }
       break;
 
-    case VCWIDGET_MENU_COPY:
+    case KMenuCopy:
       {
 	VCButton* bt = NULL;
 	bt = new VCButton((VCWidget*) this->parentWidget());
@@ -654,7 +615,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
 	  resize(pos.x() + 2, pos.y() + 2);
 	  _app->doc()->setModified(true);
 	}
-      else if (e->state() & LeftButton)
+      else if (e->state() & LeftButton || e->state() & MidButton)
 	{
 	  if (moveThreshold(e->globalX(), e->globalY()) == true 
 	      && m_lock == false)
@@ -724,12 +685,35 @@ void VCButton::mouseDoubleClickEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      slotMenuCallback(VCWIDGET_MENU_PROPERTIES);
+      slotMenuCallback(KMenuProperties);
     }
   else
     {
       mousePressEvent(e);
     }
+}
+
+void VCButton::paintEvent(QPaintEvent* e)
+{
+  QPushButton::paintEvent(e);
+
+  if (_app->mode() == App::Design)
+    {
+      QPainter p(this);
+      
+      QColor c(backgroundColor());
+      c.setRgb(c.red() ^ KColorMask,
+	       c.green() ^ KColorMask,
+	       c.blue() ^ KColorMask);
+      
+      QBrush b(c, Dense3Pattern);
+      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+    }
+}
+
+void VCButton::slotModeChanged()
+{
+  repaint();
 }
 
 void VCButton::pressFunction()
@@ -847,8 +831,8 @@ void VCButton::slotFlashReady()
   // thus creating a brief opposite-color-normal-color flash
   //
   QColor c(backgroundColor());
-  c.setRgb(c.red() ^ KReadyColorMask,
-	   c.green() ^ KReadyColorMask,
-	   c.blue() ^ KReadyColorMask);
+  c.setRgb(c.red() ^ KColorMask,
+	   c.green() ^ KColorMask,
+	   c.blue() ^ KColorMask);
   setPaletteBackgroundColor(c);
 }

@@ -25,6 +25,9 @@
 #include "uic_vcdockslider.h"
 #include "types.h"
 
+class QMouseEvent;
+class QPopupMenu;
+
 class VCDockSlider : public UI_VCDockSlider
 {
   Q_OBJECT
@@ -41,15 +44,20 @@ class VCDockSlider : public UI_VCDockSlider
     };
       
 
-  void setMode(VCDockSlider::Mode mode);
-  void setBusID(t_bus_id id);
+  bool setBusID(t_bus_id id);
 
- public slots:
+ private slots:
   void slotSliderValueChanged(int);
+  void slotBusMenuActivated(int id);
+
+  void slotMoveButtonPressed();
+  void slotMoveButtonReleased();
 
  private:
   Mode m_mode;
   t_bus_id m_busID;
+
+  QPopupMenu* m_busMenu;
 };
 
 #endif

@@ -29,16 +29,12 @@
 
 class QLineEdit;
 class QMouseEvent;
+class QPaintEvent;
 class QFile;
 class QString;
 
 class VCWidget;
 class FloatingEdit;
-
-#define VCLABEL_MENU_FONT        1110
-#define VCLABEL_MENU_F_COLOR     1120
-#define VCLABEL_MENU_B_COLOR     1130
-#define VCLABEL_MENU_NO_BACKGR   1140
 
 class VCLabel : public QLabel,
 		public VCWidgetBase
@@ -60,24 +56,27 @@ class VCLabel : public QLabel,
 
   FloatingEdit* m_renameEdit;
 
- private:
   bool moveThreshold(int x, int y);
-  bool m_noBackground;
+  bool m_background;
+  bool m_resizeMode;
+
+ private:
   void moveTo(int x, int y);
-  void setTransparent();
+  void setTransparent(bool);
 
  public slots:
   void slotRenameReturnPressed();
 
  private slots:
   void slotMenuCallback(int item);
-  void slotBackgroundChanged();
+  void slotModeChanged();
 
  protected:
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
   void mouseDoubleClickEvent(QMouseEvent* e);
+  void paintEvent(QPaintEvent* e);
 };
 
 #endif

@@ -29,16 +29,13 @@
 
 class QLineEdit;
 class QMouseEvent;
+class QPaintEvent;
 class QFile;
 class QString;
 
 class VCWidget;
 class Function;
 class FloatingEdit;
-
-#define VCBUTTON_MENU_ATTACH     1110
-#define VCBUTTON_MENU_DETACH     1120
-#define VCBUTTON_MENU_SET_SPEED_SLIDER 1130
 
 class VCButton : public QPushButton,
 		 public VCWidgetBase
@@ -91,6 +88,7 @@ class VCButton : public QPushButton,
  private slots:
   void slotMenuCallback(int item);
   void slotFlashReady();
+  void slotModeChanged();
 
  protected:
   QPixmap* m_bgPixmap;
@@ -99,6 +97,7 @@ class VCButton : public QPushButton,
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
   void mouseDoubleClickEvent(QMouseEvent* e);
+  void paintEvent(QPaintEvent* e);
   void customEvent(QCustomEvent* e);
 };
 

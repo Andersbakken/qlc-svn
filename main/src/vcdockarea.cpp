@@ -19,7 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qtoolbutton.h>
+#include <qpushbutton.h>
 #include <qlayout.h>
 
 #include "vcdockarea.h"
@@ -53,23 +53,12 @@ void VCDockArea::init()
   m_defaultHoldSlider->setBusID(KBusIDDefaultHold);
   m_layout->addWidget(m_defaultHoldSlider);
 
-  /*
-  // Default master slider
-  m_masterSlider = new VCDockSlider(this, "Master Slider");
-  m_masterSlider->setMode(VCDockSlider::Master);
-  m_layout->addWidget(m_masterSlider);
-  */
   // Hide button
-  m_hideButton = new QToolButton(this);
+  m_hideButton = new QPushButton(this);
   m_hideButton->setText("Hide");
   m_layout->addWidget(m_hideButton);
   connect(m_hideButton, SIGNAL(clicked()), 
-	  this, SLOT(slotHideButtonClicked()));
-}
-
-void VCDockArea::slotHideButtonClicked()
-{
-  hide();
+	  this, SLOT(hide()));
 }
 
 void VCDockArea::hide()

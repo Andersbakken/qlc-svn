@@ -55,8 +55,8 @@ void Bus::init()
 {
   s_busArray = new Bus[KBusCount];
 
-  s_busArray[KBusIDDefaultFade].m_name = QString("Default Fade Speed");
-  s_busArray[KBusIDDefaultHold].m_name = QString("Default Hold Speed");
+  s_busArray[KBusIDDefaultFade].m_name = QString("Default Fade");
+  s_busArray[KBusIDDefaultHold].m_name = QString("Default Hold");
 }
 
 

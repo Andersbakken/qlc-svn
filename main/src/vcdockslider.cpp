@@ -23,6 +23,9 @@
 #include <qlabel.h>
 #include <qstring.h>
 #include <qpixmap.h>
+#include <qevent.h>
+#include <qtoolbutton.h>
+#include <qpopupmenu.h>
 
 #include "vcdockslider.h"
 #include "types.h"
@@ -38,6 +41,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, const char* name)
   : UI_VCDockSlider(parent, name)
 {
   m_busID = KBusIDInvalid;
+  m_busMenu = NULL;
 }
 
 VCDockSlider::~VCDockSlider()
@@ -46,65 +50,89 @@ VCDockSlider::~VCDockSlider()
 
 void VCDockSlider::slotSliderValueChanged(int value)
 {
-  QString num;
-
-  switch (m_mode)
+  if (Bus::setValue(m_busID, m_slider->value()))
     {
-    case Normal:
-      break;
-
-    case Speed:
+      QString num;
       num.sprintf("%.2fs", ((float) value / (float) KFrequency));
       m_valueLabel->setText(num);
-      Bus::setValue(m_busID, m_slider->value());
-      break;
-
-    case Master:
-      //_app->doc()->outputPlugin()->setMaster(KChannelValueMax - value);
-      break;
     }
-}
-
-
-void VCDockSlider::setMode(Mode mode)
-{
-  m_mode = mode;
-
-  switch (mode)
+  else
     {
-    default:
-    case Normal:
-      break;
-      
-    case Speed:
-      {
-	if (m_busID == KBusIDDefaultFade)
-	  {
-	    m_nameLabel->setText("Fade");
-	    m_infoLabel->setText("Speed");
-	  }
-	else if (m_busID == KBusIDDefaultHold)
-	  {
-	    m_nameLabel->setText("Hold");
-	    m_infoLabel->setText("Speed");
-	  }
-      }
-      break;
-
-    case Master:
-      m_nameLabel->setText("Master");
-      m_infoLabel->setText("Level");
-      break;
+      m_valueLabel->setText("ERROR");
     }
 }
 
-void VCDockSlider::setBusID(t_bus_id id)
+
+bool VCDockSlider::setBusID(t_bus_id id)
 {
-  m_busID = id;
-  setMode(Speed);
+  if (m_busMenu) delete m_busMenu;
 
   t_bus_value value;
-  Bus::value(m_busID, value);
-  m_slider->setValue(value);
+  if (Bus::value(id, value))
+    {
+      m_slider->setValue(value);
+      m_busID = id;
+
+      //
+      // Create bus menu to bus tool button
+      //
+      QString name;
+      m_busMenu = new QPopupMenu();
+      for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
+	{
+	  name.sprintf("%.2d: ", i);
+	  name += Bus::name(i);
+	  
+	  m_busMenu->insertItem(name, i);
+	  if (m_busID == i)
+	    {
+	      m_busMenu->setItemChecked(i, true);
+	    }
+	}
+      
+      m_busButton->setPopup(m_busMenu);
+      connect(m_busMenu, SIGNAL(activated(int)),
+	      this, SLOT(slotBusMenuActivated(int)));
+
+      //
+      // Set name label
+      //
+      name = Bus::name(m_busID);
+      if (name == QString::null)
+	{
+	  name.sprintf("%.2d", id);
+	}
+      m_nameLabel->setText(name);
+
+      //
+      // Enable/disable some buttons
+      //
+      m_functionButton->setEnabled(false);
+      m_busButton->setEnabled(true);
+
+      return true;
+    }
+  else
+    {
+      m_functionButton->setEnabled(false);
+      m_busButton->setEnabled(false);
+
+      return false;
+    }
+}
+
+
+void VCDockSlider::slotBusMenuActivated(int id)
+{
+  setBusID(id);
+}
+
+
+void VCDockSlider::slotMoveButtonPressed()
+{
+}
+
+void VCDockSlider::slotMoveButtonReleased()
+{
 }
 

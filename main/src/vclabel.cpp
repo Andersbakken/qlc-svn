@@ -32,6 +32,7 @@
 #include "vcwidget.h"
 #include "bus.h"
 #include "settings.h"
+#include "configkeys.h"
 #include "../../libs/common/minmax.h"
 
 #include <qpushbutton.h>
@@ -45,14 +46,27 @@
 #include <qfile.h>
 #include <qfontdialog.h>
 #include <qcolordialog.h>
+#include <qpainter.h>
 
 extern App* _app;
+
+const int KMenuRename      ( 0 );
+const int KMenuFont        ( 1 );
+const int KMenuFontColor   ( 2 );
+const int KMenuBackColor   ( 3 );
+const int KMenuResetColors ( 4 );
+const int KMenuDrawFrame   ( 5 );
+const int KMenuRemove      ( 6 );
+
+const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
+const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
 
 VCLabel::VCLabel(VCWidget* parent) : QLabel(parent, "VCLabel")
 {
   m_renameEdit = NULL;
   m_parent = parent;
-  m_noBackground = false;
+  m_background = false;
+  m_resizeMode = false;
 }
 
 VCLabel::~VCLabel()
@@ -62,41 +76,16 @@ VCLabel::~VCLabel()
 
 void VCLabel::init()
 {
+  setMinimumSize(20, 20);
+
   m_name = QString("Label");
   setText("New label");
-  adjustSize();
+  setAlignment(WordBreak | AlignCenter);
 
-  connect((VCWidget*) m_parent, SIGNAL(backgroundChanged()),
-	  this, SLOT(slotBackgroundChanged()));
+  setFrameStyle(KFrameStyle);
+
+  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
-
-
-void VCLabel::slotBackgroundChanged()
-{
-  if (m_noBackground)
-    {
-      setTransparent();
-    }
-}
-
-
-void VCLabel::setTransparent()
-{
-  m_noBackground = true;
-  
-  if (((VCWidget*) m_parent)->bgPixmap() != NULL)
-    {
-      setBackgroundOrigin(QWidget::ParentOrigin);
-      setPaletteBackgroundPixmap(*((VCWidget*) m_parent)->bgPixmap());
-      hide();
-      show();
-    }
-  else
-    {
-      setEraseColor(((VCWidget*) m_parent)->eraseColor());
-    }
-}
-
 
 void VCLabel::saveToFile(QFile& file, unsigned int parentID)
 {
@@ -140,35 +129,39 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
   s = QString("Height = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // text color
+  // Text color
   t.setNum(qRgb(paletteForegroundColor().red(),
                 paletteForegroundColor().green(),
 		paletteForegroundColor().blue()));
   s = QString("Textcolor = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // background color
-  t.setNum(qRgb(eraseColor().red(),
-                eraseColor().green(),
-		eraseColor().blue()));
-  s = QString("Backgroundcolor = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // background transparency
-  if (m_noBackground)
+  // Background color
+  if (m_background)
     {
-      s = QString("Transparent = ") + Settings::trueValue() + QString("\n");
+      t.setNum(qRgb(backgroundColor().red(),
+		    backgroundColor().green(),
+		    backgroundColor().blue()));
+      s = QString("Backgroundcolor = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
     }
-  else
-    {
-      s = QString("Transparent = ") + Settings::falseValue() + QString("\n");
-    }
-  file.writeBlock((const char*) s, s.length());
 
   // Font
   s = QString("Font = ") + font().toString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
+
+  // Frame
+  if (frameStyle() & KFrameStyle)
+    {
+      s = QString("Frame = ") + Settings::trueValue() + QString("\n");
+    }
+  else
+    {
+      s = QString("Frame = ") + Settings::falseValue() + QString("\n");
+    }
+  file.writeBlock((const char*) s, s.length());
 }
+
 
 void VCLabel::createContents(QPtrList <QString> &list)
 {
@@ -195,8 +188,6 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	    {
 	      reparent(parent, 0, QPoint(0, 0), true);
 	      m_parent = parent;
-	      connect((VCWidget*) m_parent, SIGNAL(backgroundChanged()),
-		      this, SLOT(slotBackgroundChanged()));
 	    }
 	}
       else if (*s == QString("X"))
@@ -225,15 +216,8 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	{
 	  QColor qc;
 	  qc.setRgb(list.next()->toUInt());
-	  setEraseColor(qc);
-	}
-      else if (*s == QString("Transparent"))
-	{
-	  QString q = *(list.next());
-	  if (q == Settings::trueValue())
-	    {
-	      m_noBackground = true;
-	    }
+	  setPaletteBackgroundColor(qc);
+	  m_background = true;
 	}
       else if (*s == QString("Font"))
 	{
@@ -241,6 +225,17 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	  QString q = *(list.next());
 	  f.fromString(q);
 	  setFont(f);
+	}
+      else if (*s == QString("Frame"))
+	{
+	  if (*(list.next()) == Settings::trueValue())
+	    {
+	      setFrameStyle(KFrameStyle);
+	    }
+	  else
+	    {
+	      setFrameStyle(NoFrame);
+	    }
 	}
       else
 	{
@@ -250,11 +245,6 @@ void VCLabel::createContents(QPtrList <QString> &list)
     }
 
   setGeometry(rect);
-
-  if (m_noBackground == true)
-    {
-      setTransparent();
-    }
 }
 
 
@@ -264,40 +254,47 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
     {
       if (e->button() & LeftButton)
 	{
-	  m_origX = e->globalX();
-	  m_origY = e->globalY();
-	  setCursor(QCursor(SizeAllCursor));
-	}
-
+	  if (e->x() > rect().width() - 10 &&
+	      e->y() > rect().height() - 10)
+	    {
+	      m_resizeMode = true;
+	      setMouseTracking(true);
+	      setCursor(QCursor(SizeFDiagCursor));
+	    }
+	  else
+	    {
+	      m_origX = e->globalX();
+	      m_origY = e->globalY();
+	      setCursor(QCursor(SizeAllCursor));
+	    }
+      	}
       else if (e->button() & RightButton)
 	{
-	  QPopupMenu* bgmenu = new QPopupMenu();
-	  bgmenu->setCheckable(true);
-	  bgmenu->insertItem("Color...", VCWIDGET_MENU_BACKGROUND_COLOR);
-	  bgmenu->insertItem("Transparent", VCWIDGET_MENU_BACKGROUND_NONE);
-	  if ( m_noBackground == FALSE )
-	    {
-	      bgmenu->setItemChecked(VCWIDGET_MENU_BACKGROUND_NONE, false);
-	      bgmenu->setItemChecked(VCWIDGET_MENU_BACKGROUND_COLOR, true);
-	    }
-	    else
-	    {
-	      bgmenu->setItemChecked(VCWIDGET_MENU_BACKGROUND_NONE, true);
-	      bgmenu->setItemChecked(VCWIDGET_MENU_BACKGROUND_COLOR, false);
-	    }
+	  QString dir;
+	  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+	  dir += QString("/") + PIXMAPPATH;
 
 	  QPopupMenu* menu;
 	  menu = new QPopupMenu();
-	  menu->insertItem("Modify &text...", VCWIDGET_MENU_RENAME);
-	  menu->insertItem("&Font...", VCLABEL_MENU_FONT);
-	  menu->insertItem("&Color...", VCLABEL_MENU_F_COLOR);
-	  menu->insertItem("&Background", bgmenu, VCWIDGET_MENU_BACKGROUND);
+	  menu->setCheckable(true);
+	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
+			   "Modify &text...", KMenuRename);
+	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
+			   "&Font...", KMenuFont);
+	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
+			   "&Text Color...", KMenuFontColor);
 	  menu->insertSeparator();
-
-	  menu->insertItem("Re&move", VCWIDGET_MENU_REMOVE);
+	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
+			   "&Background Color...", KMenuBackColor);
+	  menu->insertItem(QPixmap(dir + QString("/frame.xpm")),
+			   "Draw &Frame", KMenuDrawFrame);
+	  menu->insertSeparator();
+	  menu->insertItem(QPixmap(dir + QString("/panic.xpm")),
+			   "&Reset Colors", KMenuResetColors);
+	  menu->insertSeparator();
+	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+			   "Re&move", KMenuRemove);
           
-	  connect(bgmenu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
 	  connect(menu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
@@ -308,11 +305,12 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 
 }
 
+
 void VCLabel::slotMenuCallback(int item)
 {
   switch (item)
     {
-    case VCWIDGET_MENU_RENAME:
+    case KMenuRename:
       m_renameEdit = new FloatingEdit(parentWidget());
       connect(m_renameEdit, SIGNAL(returnPressed()),
 	      this, SLOT(slotRenameReturnPressed()));
@@ -324,33 +322,54 @@ void VCLabel::slotMenuCallback(int item)
       m_renameEdit->setFocus();
       break;
 
-    case VCWIDGET_MENU_REMOVE:
+    case KMenuRemove:
       _app->doc()->setModified(true);
       delete this;
       break;
 
-    case VCLABEL_MENU_FONT:
+    case KMenuFont:
       _app->doc()->setModified(true);
-      setFont( QFontDialog::getFont( 0, font() ) );
+      setFont(QFontDialog::getFont(0, font()));
       adjustSize();
       break;
 
-    case VCLABEL_MENU_F_COLOR:
-      _app->doc()->setModified(true);
-      setPaletteForegroundColor( QColorDialog::getColor
-				 ( paletteForegroundColor(), this ));
+    case KMenuFontColor:
+      {
+	QColor color;
+	color = QColorDialog::getColor(paletteBackgroundColor(), this);
+	if (color.isValid())
+	  {
+	    _app->doc()->setModified(true);
+	    setPaletteForegroundColor(color);
+	  }
+      }
       break;
 
-    case VCWIDGET_MENU_BACKGROUND_COLOR:
-      _app->doc()->setModified(true);
-      setEraseColor( QColorDialog::getColor( eraseColor(), this ));
-      m_noBackground = FALSE;
+    case KMenuBackColor:
+      {
+	QColor color;
+	color = QColorDialog::getColor(paletteBackgroundColor(), this);
+	if (color.isValid())
+	  {
+	    _app->doc()->setModified(true);
+	    setPaletteBackgroundColor(color);
+	    m_background = true;
+	  }
+      }
       break;
 
-    case VCWIDGET_MENU_BACKGROUND_NONE:
+    case KMenuResetColors:
       _app->doc()->setModified(true);
-      m_noBackground = TRUE;
-      setTransparent();
+      setPalette(_app->palette());
+      m_background = false;
+      break;
+
+    case KMenuDrawFrame:
+      _app->doc()->setModified(true);
+      if (frameStyle() & KFrameStyle)
+	setFrameStyle(NoFrame);
+      else
+	setFrameStyle(KFrameStyle);
       break;
 
     default:
@@ -363,7 +382,7 @@ void VCLabel::mouseReleaseEvent(QMouseEvent* e)
   if (_app->mode() == App::Design)
     {
       setCursor(QCursor(ArrowCursor));
-
+      m_resizeMode = false;
       setMouseTracking(false);
     }
 
@@ -371,21 +390,60 @@ void VCLabel::mouseReleaseEvent(QMouseEvent* e)
 
 void VCLabel::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  slotMenuCallback(VCWIDGET_MENU_RENAME);
+  slotMenuCallback(KMenuRename);
 }
 
+
+void VCLabel::paintEvent(QPaintEvent* e)
+{
+  QLabel::paintEvent(e);
+
+  if (_app->mode() == App::Design)
+    {
+      QPainter p(this);
+
+      QColor c(backgroundColor());
+      c.setRgb(c.red() ^ KColorMask,
+	       c.green() ^ KColorMask,
+	       c.blue() ^ KColorMask);
+
+      QBrush b(c, Dense3Pattern);
+      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+    }
+}
+
+void VCLabel::slotModeChanged()
+{
+  repaint();
+}
 
 void VCLabel::mouseMoveEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      if (e->state() & LeftButton)
+      if (m_resizeMode == true && m_lock == false)
+	{
+	  QPoint pos(e->globalX(), e->globalY());
+	  pos = mapFromGlobal(pos);
+	  resize(pos.x() + 2, pos.y() + 2);
+	  _app->doc()->setModified(true);
+	}
+      else if (e->state() & LeftButton || e->state() & MidButton)
+	{
+	  if (moveThreshold(e->globalX(), e->globalY()) == true 
+	      && m_lock == false)
+	    {
+	      _app->doc()->setModified(true);
+	      moveTo(e->globalX(), e->globalY());
+	    }
+	}
+      else if (e->state() & LeftButton)
 	{
 	  if (moveThreshold(e->globalX(), e->globalY()) == true )
 	    {
 	      _app->doc()->setModified(true);
 	      moveTo(e->globalX(), e->globalY());
-
+	      
 	      show();
 	    }
 	}

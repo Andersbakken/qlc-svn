@@ -37,18 +37,6 @@ class VCWidget;
 class Bus;
 class VCDockArea;
 
-#define ID_VC_ADD                    1100
-#define ID_VC_ADD_BUTTON             1110
-#define ID_VC_ADD_SLIDER             1120
-#define ID_VC_ADD_SPEEDSLIDER        1130
-#define ID_VC_ADD_MONITOR            1140
-#define ID_VC_ADD_FRAME              1150
-#define ID_VC_ADD_LABEL              1160
-
-#define ID_VC_TOOLS                  1200
-#define ID_VC_TOOLS_PANIC            1210
-#define ID_VC_TOOLS_SLIDERS          1220
-
 class VirtualConsole : public QWidget
 {
   Q_OBJECT
