@@ -177,6 +177,7 @@ void VirtualConsole::initView(void)
 
   QPopupMenu* addMenu;
   addMenu = new QPopupMenu();
+  addMenu->setCheckable(false);
   addMenu->insertItem("&Button", ID_VC_ADD_BUTTON);
   addMenu->insertItem("&Slider", ID_VC_ADD_SLIDER);
   addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);

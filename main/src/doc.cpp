@@ -26,8 +26,9 @@
 #include "app.h"
 #include "function.h"
 #include "settings.h"
-#include "dmxchannel.h"
+#include "logicalchannel.h"
 #include "deviceclass.h"
+#include "dmxchannel.h"
 #include "scene.h"
 #include "function.h"
 #include "sequence.h"
@@ -49,10 +50,7 @@ extern App* _app;
 
 Doc::Doc()
 {
-  for (int i = 0; i < 512; i++)
-    {
-      m_DMXAddressAllocation[i] = false;
-    }
+  initializeDMXChannels();
 
   findPluginObjects();
 
@@ -71,12 +69,20 @@ Doc::~Doc()
   delete m_dmx;
 }
 
+void Doc::initializeDMXChannels()
+{
+  for (int i = 0; i < 512; i++)
+    {
+      m_DMXAddressAllocation[i] = new DMXChannel(i + 1);
+    }
+}
+
 bool Doc::isDMXAddressSpaceFree(int address, int channels)
 {
   ASSERT(channels > 0 && address > 0);
   for (int i = address - 1; i < address + channels - 1; i++)
     {
-      if (m_DMXAddressAllocation[i] == true)
+      if (m_DMXAddressAllocation[i]->isFree() == false)
 	{
 	  return false;
 	}
@@ -96,7 +102,7 @@ bool Doc::allocateDMXAddressSpace(int address, int channels)
     {
       for (int i = address - 1; i < address + channels - 1; i++)
 	{
-	  m_DMXAddressAllocation[i] = true;
+	  m_DMXAddressAllocation[i]->allocate();
 	}
       return true;
     }
@@ -109,7 +115,7 @@ bool Doc::freeDMXAddressSpace(int address, int channels)
     {
       for (int i = address - 1; i < address + channels - 1; i++)
 	{
-	  m_DMXAddressAllocation[i] = false;
+	  m_DMXAddressAllocation[i]->free();
 	}
       return true;
     }
@@ -128,18 +134,19 @@ int Doc::findNextFreeDMXAddress(int channels)
 
   while (i < 512)
     {
-      if (m_DMXAddressAllocation[i] == false)
+      if (m_DMXAddressAllocation[i]->isFree() == true)
 	{
 	  bool found = true;
 	  address = i + 1;
 	  for (i = i; i < address + channels - 1; i++)
 	    {
-	      if (m_DMXAddressAllocation[i] == true)
+	      if (m_DMXAddressAllocation[i]->isFree() == false)
 		{
 		  break;
 		  found = false;
 		}
 	    }
+
 	  if (found == true)
 	    {
 	      return address;
@@ -152,6 +159,18 @@ int Doc::findNextFreeDMXAddress(int channels)
   return 0;
 }
 
+DMXChannel* Doc::dmxChannel(unsigned int channel)
+{
+  DMXChannel* dmxch = NULL;
+
+  if (channel > 0 && channel < 512)
+    {
+      dmxch = m_DMXAddressAllocation[channel - 1];
+    }
+
+  return dmxch;
+}
+
 // Debugging, dumps one deviceclass with its capabilities
 void Doc::dumpDeviceClass(DeviceClass* dc)
 {
@@ -159,14 +178,14 @@ void Doc::dumpDeviceClass(DeviceClass* dc)
   t.setNum(dc->m_channels.count());
   qDebug("Manufacturer: " + dc->manufacturer() + "\nModel: " + dc->model() + "\nChannels: " + t + "\n");
   
-  for (DMXChannel* ch = dc->m_channels.first(); ch != NULL; ch = dc->m_channels.next())
+  for (LogicalChannel* ch = dc->m_channels.first(); ch != NULL; ch = dc->m_channels.next())
     {
       t.setNum(ch->channel());
       QString c;
       c.setNum(ch->capabilities().count());
       qDebug("Channel:" + t + " Name:" + ch->name() + " Capabilities:" + c);
       
-      for (DMXChannel::Capability* cap = ch->m_capabilities.first(); cap != NULL; cap = ch->m_capabilities.next())
+      for (LogicalChannel::Capability* cap = ch->m_capabilities.first(); cap != NULL; cap = ch->m_capabilities.next())
 	{
 	  QString foo;
 	  foo.sprintf("Name:%s Lo:%d Hi:%d", (const char*) cap->name(), cap->lo(), cap->hi());
@@ -844,6 +863,24 @@ Bus* Doc::searchBus(unsigned int id)
       ASSERT(bus);
 
       if (bus->id() == id)
+	{
+	  return bus;
+	}
+    }
+
+  return NULL;
+}
+
+Bus* Doc::searchBus(QString name)
+{
+  Bus* bus = NULL;
+
+  for (unsigned int i = 0; i < m_busList.count(); i++)
+    {
+      bus = m_busList.at(i);
+      ASSERT(bus);
+
+      if (bus->name() == name)
 	{
 	  return bus;
 	}

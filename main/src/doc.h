@@ -30,6 +30,8 @@
 #include "plugin.h"
 #include "bus.h"
 
+#include "classes.h"
+
 class Doc : public QObject
 {
   Q_OBJECT
@@ -50,6 +52,7 @@ class Doc : public QObject
   bool allocateDMXAddressSpace(int address, int channels);
   bool freeDMXAddressSpace(int address, int channels);
   int findNextFreeDMXAddress(int channels);
+  DMXChannel* dmxChannel(unsigned int channel);
 
   void addDevice(Device*);
   bool removeDevice(Device*);
@@ -94,6 +97,7 @@ class Doc : public QObject
   QList <Bus> *busList()  { return &m_busList; }
 
   Bus* searchBus(unsigned int id);
+  Bus* searchBus(QString name);
   void addBus(Bus* bus);
   void removeBus(unsigned int id, bool deleteBus = true);
 
@@ -102,6 +106,8 @@ class Doc : public QObject
   void deviceRemoved(int);
 
  private:
+  void initializeDMXChannels();
+
   void dumpDeviceClass(DeviceClass* dc);
   DeviceClass* createDeviceClass(QList<QString> &list);
   Device* createDevice(QList<QString> &list);
@@ -110,7 +116,7 @@ class Doc : public QObject
   void findPluginObjects();
 
  private:
-  bool m_DMXAddressAllocation[512];
+  DMXChannel* m_DMXAddressAllocation[512];
 
   QString m_workspaceFileName;
 

@@ -35,7 +35,7 @@ class KeyBind : public QObject
   KeyBind(KeyBind* kb);
   ~KeyBind();
 
-  enum PressAction { PressStart = 0, PressToggle = 1, PressNothing = 2 };
+  enum PressAction { PressStart = 0, PressToggle = 1, PressNothing = 2, PressStep = 3 };
   enum ReleaseAction { ReleaseStop = 0, ReleaseNothing = 1 };
 
   static QString keyString(int key, int mod);

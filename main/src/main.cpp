@@ -43,10 +43,15 @@ int main(int argc, char *argv[])
   settings = new Settings();
   settings->load();
 
-  a.setStyle(settings->getStyle());
+  // Allow the usage of the global system style setting
+  QStyle* style = settings->getStyle();
+  if (style != NULL)
+    {
+      a.setStyle(style);
+    }
 
   delete settings;
-  
+
   _app = new App();
   _app->initView();
   a.setMainWidget(_app);
