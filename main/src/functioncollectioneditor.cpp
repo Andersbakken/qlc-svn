@@ -114,7 +114,7 @@ void FunctionCollectionEditor::slotAddClicked()
 	{
 	  new QListViewItem(m_functionList, ft->deviceString(), ft->functionString());
 
-	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceString(), DeviceClass::ANY);
+	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceString());
 
 	  Function* function = device->searchFunction(ft->functionString());
 	  if (function == NULL)

@@ -184,7 +184,7 @@ void FunctionCollection::createContents(QList<QString> &list)
 	    }
 	  else
 	    {
-	      DMXDevice* d = _app->doc()->searchDevice(device, DeviceClass::ANY);
+	      DMXDevice* d = _app->doc()->searchDevice(device);
 	      Function* f = NULL;
 	      if (d != NULL)
 		{

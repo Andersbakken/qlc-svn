@@ -182,7 +182,7 @@ void ChaserEditor::slotOKClicked()
 	}
       else
 	{
-	  device = _app->doc()->searchDevice(deviceString, DeviceClass::ANY);
+	  device = _app->doc()->searchDevice(deviceString);
 	  ASSERT(device != NULL);
 	}
 

@@ -35,6 +35,7 @@ NewDevice::NewDevice(QWidget *parent, const char *name) : QDialog(parent, name, 
 {
   m_nameValue = QString("");
   m_addressValue = 0;
+  m_selectionOK = false;
 
   initView();
 }
@@ -56,6 +57,7 @@ void NewDevice::initView()
   m_tree->setColumnWidth(0, 215);
   m_tree->setRootIsDecorated(true);
   connect(m_tree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(slotSelectionChanged(QListViewItem*)));
+  connect(m_tree, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotTreeDoubleClicked(QListViewItem*)));
   fillTree();
 
   m_nameLabel = new QLabel(this);
@@ -104,10 +106,18 @@ void NewDevice::slotAutoAddressClicked()
   m_addressSpin->setEnabled(!on);
 }
 
+void NewDevice::slotTreeDoubleClicked(QListViewItem* item)
+{
+  slotSelectionChanged(item);
+
+  slotOKClicked();
+}
+
 void NewDevice::slotSelectionChanged(QListViewItem* item)
 {
   if (item->parent() != NULL)
     {
+      m_selectionOK = true;
       m_modelValue = item->text(0);
       m_manufacturerValue = item->parent()->text(0);
       m_typeLabel->setText("Type: "+item->text(1));
@@ -115,6 +125,7 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
     }
   else
     {
+      m_selectionOK = false;
       m_manufacturerValue = QString("");
       m_modelValue = QString("");
       m_nameEdit->setText(QString(""));
@@ -173,7 +184,10 @@ void NewDevice::slotOKClicked()
 {
   m_addressValue = m_addressSpin->value();
 
-  accept();
+  if (m_selectionOK == true)
+    {
+      accept();
+    }
 }
 
 void NewDevice::slotCancelClicked()

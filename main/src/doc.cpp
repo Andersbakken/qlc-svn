@@ -444,7 +444,7 @@ void Doc::createFunctionContents(QList<QString> &list)
 	    }
 	  else
 	    {
-	      d = searchDevice(device, DeviceClass::ANY);
+	      d = searchDevice(device);
 	    }
 	  break;
 	}
@@ -526,7 +526,7 @@ Function* Doc::createFunction(QList<QString> &list)
 	}
       else
 	{
-	  d = searchDevice(device, DeviceClass::ANY);
+	  d = searchDevice(device);
 	  if (d == NULL)
 	    {
 	      // This function's device was not found
@@ -802,11 +802,11 @@ QList <DMXDevice> Doc::deviceList() const
 }
 
 /* Search for a device by its run-time id number */
-DMXDevice* Doc::searchDevice(int id, DeviceClass::Protocol p)
+DMXDevice* Doc::searchDevice(int id)
 {
   for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
-      if (device->id() == id && (device->deviceClass()->protocol() == p || p == DeviceClass::ANY))
+      if (device->id() == id)
 	{
 	  return device;
 	}
@@ -816,11 +816,11 @@ DMXDevice* Doc::searchDevice(int id, DeviceClass::Protocol p)
 }
 
 /* Search for a device by its name (not very safe, because names are not unique) */
-DMXDevice* Doc::searchDevice(const QString &name, DeviceClass::Protocol p)
+DMXDevice* Doc::searchDevice(const QString &name)
 {
   for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
-      if (device->name() == name && (device->deviceClass()->protocol() == p || p == DeviceClass::ANY))
+      if (device->name() == name)
 	{
 	  return device;
 	}

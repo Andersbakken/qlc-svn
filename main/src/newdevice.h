@@ -78,6 +78,7 @@ class NewDevice : public QDialog
   QString m_manufacturerValue;
   QString m_modelValue;
   int m_addressValue;
+  bool m_selectionOK;
 
  private slots:
   void slotOKClicked();
@@ -85,6 +86,7 @@ class NewDevice : public QDialog
   void slotSelectionChanged(QListViewItem* item);
   void slotNameChanged(const QString &text);
   void slotAutoAddressClicked();
+  void slotTreeDoubleClicked(QListViewItem* item);
 };
 
 #endif

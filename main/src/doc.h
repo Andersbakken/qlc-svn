@@ -58,8 +58,8 @@ class Doc : public QObject
   bool removeDevice(DMXDevice*);
   QList <DMXDevice> deviceList() const;
 
-  DMXDevice* searchDevice(int id, DeviceClass::Protocol p);
-  DMXDevice* searchDevice(const QString &name, DeviceClass::Protocol p);
+  DMXDevice* searchDevice(int id);
+  DMXDevice* searchDevice(const QString &name);
 
   bool isModified() const { return m_modified; }
 
