@@ -103,7 +103,7 @@ void VCFrame::init()
 void VCFrame::setID(t_vc_id newid)
 {
   m_id = newid;
-  if (newid > s_nextVCID)
+  if (newid >= s_nextVCID)
     {
       // Set the biggest id number + 1 to be the next free id
       s_nextVCID = newid + 1;
