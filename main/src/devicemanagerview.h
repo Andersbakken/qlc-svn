@@ -47,7 +47,7 @@ class DeviceManagerView : public QWidget
   void initView(void);
 
  private slots:
-  void slotModeChanged(VirtualConsole::Mode m);
+  void slotModeChanged();
   void slotSelectionChanged(int itemId, int itemType);
 
  private:

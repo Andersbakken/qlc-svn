@@ -31,6 +31,7 @@
 #include <qobjcoll.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
+#include <qslider.h>
 
 #include "virtualconsole.h"
 #include "app.h"
@@ -44,6 +45,7 @@
 #include "keybind.h"
 #include "vclabel.h"
 #include "configkeys.h"
+#include "vcdockarea.h"
 
 #include <X11/Xlib.h>
 
@@ -52,48 +54,240 @@ extern App* _app;
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
 {
+  m_dockArea = NULL;
   m_drawArea = NULL;
-  m_defaultSpeedBus = NULL;
 }
 
 VirtualConsole::~VirtualConsole()
 {
 }
 
-void VirtualConsole::setDefaultSpeedBus(Bus* bus)
+void VirtualConsole::initView(void)
 {
-  m_defaultSpeedBus = bus;
+  setCaption("Virtual Console");
 
-  if (bus != NULL)
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+
+  setIcon(dir + QString("/virtualconsole.xpm"));
+
+  m_layout = new QHBoxLayout(this);
+  m_layout->setAutoAdd(false);
+
+  m_menuBar = new QMenuBar(this);
+  m_layout->setMenuBar(m_menuBar);
+
+  m_modeMenu = new QPopupMenu();
+  m_modeMenu->setCheckable(true);
+  m_modeMenu->insertItem("&Operate", ID_VC_MODE_OPERATE);
+  m_modeMenu->insertItem("&Design", ID_VC_MODE_DESIGN);
+  connect(m_modeMenu, SIGNAL(activated(int)),
+	  this, SLOT(slotMenuItemActivated(int)));
+
+  m_addMenu = new QPopupMenu();
+  m_addMenu->setCheckable(false);
+  m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
+			"&Button", ID_VC_ADD_BUTTON);
+  m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
+			"&Slider", ID_VC_ADD_SLIDER);
+  m_addMenu->insertItem(QPixmap(dir + "/speedslider.xpm"), 
+			"S&peed slider", ID_VC_ADD_SPEEDSLIDER);
+  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
+			"&Frame", ID_VC_ADD_FRAME);
+  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
+			"L&abel", ID_VC_ADD_LABEL);
+  connect(m_addMenu, SIGNAL(activated(int)), 
+	  this, SLOT(slotMenuItemActivated(int)));
+
+  m_toolsMenu = new QPopupMenu();
+  m_toolsMenu->setCheckable(true);
+  m_toolsMenu->insertItem(QPixmap(dir + "/slider.xpm"),
+			  "&Default Sliders", ID_VC_TOOLS_SLIDERS);
+  m_toolsMenu->insertSeparator();
+  m_toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), 
+			  "&Panic!", ID_VC_TOOLS_PANIC);
+  connect(m_toolsMenu, SIGNAL(activated(int)), 
+	  this, SLOT(slotMenuItemActivated(int)));
+
+  m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
+  m_menuBar->insertItem("&Add", m_addMenu, ID_VC_ADD);
+  m_menuBar->insertItem("&Tools", m_toolsMenu, ID_VC_TOOLS);
+
+  m_menuBar->setItemEnabled(ID_VC_ADD, true);
+
+  newDocument();
+
+  setMode(Design);
+}
+
+//
+// Menu callback
+//
+void VirtualConsole::slotMenuItemActivated(int item)
+{
+  switch(item)
     {
-      connect(bus, SIGNAL(destroyed()), this, SLOT(slotDefaultSpeedBusDestroyed()));
+    case ID_VC_MODE_OPERATE:
+      {
+	setMode(Operate);
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_MODE_DESIGN:
+      {
+	setMode(Design);
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_ADD_BUTTON:
+      {
+	VCButton* b;
+	b = new VCButton(m_drawArea);
+	b->init();
+	b->show();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_ADD_SLIDER:
+      {
+	VCSlider* s;
+	s = new VCSlider(m_drawArea);
+	s->init();
+	s->setGeometry(0, 0, 20, 120);
+	s->show();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_ADD_SPEEDSLIDER:
+      {
+	SpeedSlider* p = NULL;
+	p = new SpeedSlider(m_drawArea);
+	p->show();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_ADD_LABEL:
+      {
+ 	VCLabel* p = NULL;
+	p = new VCLabel(m_drawArea);
+	p->setText("New label");
+	p->show();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_ADD_MONITOR:
+	_app->doc()->setModified(true);
+      break;
+
+    case ID_VC_ADD_FRAME:
+      {
+	VCWidget* w;
+	w = new VCWidget(m_drawArea);
+	w->resize(120, 120);
+	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	w->show();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case ID_VC_TOOLS_PANIC:
+      {
+	_app->slotPanic();
+      }
+      break;
+
+    case ID_VC_TOOLS_SLIDERS:
+      {
+	if (m_dockArea->isHidden())
+	  {
+	    m_dockArea->show();
+	  }
+	else
+	  {
+	    m_dockArea->hide();
+	  }
+      }
+      break;
+
+    default:
+      break;
     }
 }
 
-void VirtualConsole::slotDefaultSpeedBusDestroyed()
-{
-  m_defaultSpeedBus = NULL;
 
-  Bus* bus = _app->doc()->busList()->at(_app->doc()->busList()->count() - 1);
-  if (bus != NULL)
+void VirtualConsole::newDocument()
+{
+  VCWidget::globalVCWidgetIDReset();
+
+  initDockArea();
+  initDrawArea();
+}
+
+void VirtualConsole::initDockArea()
+{
+  if (m_dockArea) delete m_dockArea;
+  m_dockArea = new VCDockArea(this);
+  connect(m_dockArea, SIGNAL(areaHidden(bool)),
+	  this, SLOT(slotDockAreaHidden(bool)));
+  m_dockArea->init();
+  m_dockArea->show();
+
+  // Add the dock area into the master (horizontal) layout
+  m_layout->addWidget(m_dockArea, 0);
+  m_dockArea->show();
+}
+
+void VirtualConsole::slotDockAreaHidden(bool areaHidden)
+{
+  if (areaHidden == true)
     {
-      m_defaultSpeedBus = bus;
+      m_toolsMenu->setItemChecked(ID_VC_TOOLS_SLIDERS, false);
+    }
+  else
+    {
+      m_toolsMenu->setItemChecked(ID_VC_TOOLS_SLIDERS, true);
     }
 }
 
+void VirtualConsole::initDrawArea()
+{
+  if (m_drawArea) delete m_drawArea;
+  m_drawArea = new VCWidget(this);
+  m_drawArea->setBottomFrame(true);
+
+  // Add the draw area into the master (horizontal) layout
+  m_layout->addWidget(m_drawArea, 1);
+  m_drawArea->show();
+}
+
+
+//
+// Returns true if QLC is in design mode
+//
 bool VirtualConsole::isDesignMode(void)
 { 
   return (m_mode == Design) ? true : false;
 }
 
+//
+// Set the mode (Design/Operate)
+//
 void VirtualConsole::setMode(Mode mode)
 {
   //
-  // If we're gonna change to design mode when functions are running,
+  // If we're going to change to design mode when functions are running,
   // all functions should be stopped
   //
   if (mode == Design)
     {
+      qDebug("TODO: check if there are any running functions");
     }
 
   QString config;
@@ -144,7 +338,7 @@ void VirtualConsole::setMode(Mode mode)
 	}
     }
 
-  emit modeChange(m_mode);
+  emit modeChange();
 }
 
 // Search for a parent frame by the id number <id>
@@ -421,158 +615,10 @@ void VirtualConsole::saveToFile(QFile& file)
   m_drawArea->saveChildrenToFile(file);
 }
 
-void VirtualConsole::initView(void)
-{
-  setCaption("Virtual Console");
-
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  setIcon(dir + QString("/virtualconsole.xpm"));
-
-  m_layout = new QVBoxLayout(this);
-  m_layout->setAutoAdd(false);
-  
-  m_menuBar = new QMenuBar(this);
-  m_layout->setMenuBar(m_menuBar);
-
-  newDocument();
-
-  m_modeMenu = new QPopupMenu();
-  m_modeMenu->setCheckable(true);
-  m_modeMenu->insertItem("&Operate", ID_VC_MODE_OPERATE);
-  m_modeMenu->insertItem("&Design", ID_VC_MODE_DESIGN);
-  connect(m_modeMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
-
-  m_addMenu = new QPopupMenu();
-  m_addMenu->setCheckable(false);
-  m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), "&Button", ID_VC_ADD_BUTTON);
-  m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), "&Slider", ID_VC_ADD_SLIDER);
-  m_addMenu->insertItem(QPixmap(dir + "/speedslider.xpm"), "S&peed slider", ID_VC_ADD_SPEEDSLIDER);
-  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), "&Frame", ID_VC_ADD_FRAME);
-  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), "L&abel", ID_VC_ADD_LABEL);
-  connect(m_addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
-
-  m_toolsMenu = new QPopupMenu();
-  m_toolsMenu->setCheckable(false);
-  m_toolsMenu->insertItem(QPixmap(dir + "/panic.xpm"), "&Panic!", ID_VC_TOOLS_PANIC);
-  connect(m_toolsMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
-
-  m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
-  m_menuBar->insertItem("&Add", m_addMenu, ID_VC_ADD);
-  m_menuBar->insertItem("&Tools", m_toolsMenu, ID_VC_TOOLS);
-
-  m_menuBar->setItemEnabled(ID_VC_ADD, true);
-  setMode(Design);
-}
-
-void VirtualConsole::newDocument()
-{
-  VCWidget::globalVCWidgetIDReset();
-  
-  if (m_drawArea != NULL)
-    {
-      delete m_drawArea;
-    }
-
-  m_drawArea = new VCWidget(this);
-  m_drawArea->setBottomFrame(true);
-  m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-
-  m_layout->addWidget(m_drawArea, 0);
-
-  m_drawArea->show();
-}
-
 void VirtualConsole::closeEvent(QCloseEvent* e)
 {
   e->accept();
   emit closed();
-}
-
-void VirtualConsole::slotMenuItemActivated(int item)
-{
-  switch(item)
-    {
-    case ID_VC_MODE_OPERATE:
-      {
-	setMode(Operate);
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_MODE_DESIGN:
-      {
-	setMode(Design);
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_BUTTON:
-      {
-	VCButton* b;
-	b = new VCButton(m_drawArea);
-	b->init();
-	b->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_SLIDER:
-      {
-	VCSlider* s;
-	s = new VCSlider(m_drawArea);
-	s->init();
-	s->setGeometry(0, 0, 20, 120);
-	s->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_SPEEDSLIDER:
-      {
-	SpeedSlider* p = NULL;
-	p = new SpeedSlider(m_drawArea);
-	p->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_LABEL:
-      {
- 	VCLabel* p = NULL;
-	p = new VCLabel(m_drawArea);
-	p->setText("New label");
-	p->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_MONITOR:
-	_app->doc()->setModified(true);
-      break;
-
-    case ID_VC_ADD_FRAME:
-      {
-	VCWidget* w;
-	w = new VCWidget(m_drawArea);
-	w->resize(120, 120);
-	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	w->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_TOOLS_PANIC:
-      {
-	_app->slotPanic();
-      }
-      break;
-
-    default:
-      break;
-    }
 }
 
 void VirtualConsole::keyPressEvent(QKeyEvent* e)

@@ -36,14 +36,14 @@ class FunctionCollection : public Function
 
   QPtrList <FunctionStep> *steps() { return &m_steps; }
 
-  void addItem(Function* function);
+  bool addItem(Function* function);
   bool removeItem(Function* function);
   bool removeItem(const t_function_id functionId);
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  void speedChange(long unsigned int newTimeSpan);
+  void speedChange();
   void stop();
   void freeRunTimeData();
 
@@ -55,6 +55,9 @@ class FunctionCollection : public Function
 
  private:
   QPtrList <FunctionStep> m_steps;
+
+  int m_childCount;
+  QMutex m_childCountMutex;
 };
 
 #endif

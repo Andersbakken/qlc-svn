@@ -26,6 +26,7 @@
 
 #include "app.h"
 #include "doc.h"
+#include "bus.h"
 #include "device.h"
 #include "deviceclass.h"
 #include "eventbuffer.h"
@@ -47,6 +48,8 @@ Scene::Scene(t_function_id id) : Function(id)
   m_channels = 0;
   m_timeSpan = 256;
   m_parentFunction = NULL;
+
+  m_busID = Bus::defaultFadeBus()->id();
 }
 
 
@@ -341,21 +344,17 @@ void Scene::stop()
   m_stopMutex.unlock();
 }
 
-
 //
-// Calculate run time values for producer thread (below)
+// Bus value has changed
 //
-void Scene::init()
+void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 {
-  ASSERT(m_runTimeData == NULL);
-  m_runTimeData = new RunTimeData[m_channels];
+  // How to get the bus value when function starts?
+}
 
-  ASSERT(m_channelData == NULL);
-  m_channelData = new t_value[m_channels];
 
-  ASSERT(m_eventBuffer == NULL);
-  m_eventBuffer = new EventBuffer(m_channels);
-
+void Scene::speedChange()
+{
   // Current values
   _app->doc()->outputPlugin()->readRange(m_device->address(),
 					 m_channelData, m_channels);
@@ -376,6 +375,22 @@ void Scene::init()
 
 
 //
+// Allocate space for some run time stuff
+//
+void Scene::init()
+{
+  ASSERT(m_runTimeData == NULL);
+  m_runTimeData = new RunTimeData[m_channels];
+
+  ASSERT(m_channelData == NULL);
+  m_channelData = new t_value[m_channels];
+
+  ASSERT(m_eventBuffer == NULL);
+  m_eventBuffer = new EventBuffer(m_channels);
+}
+
+
+//
 // The main scene producer thread
 //
 void Scene::run()
@@ -383,8 +398,11 @@ void Scene::run()
   time_t time = 0;
   unsigned short ch = 0;
 
-  // Calculate starting values
+  // Allocate space for some run time stuff
   init();
+
+  // Calculate starting values
+  speedChange();
 
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
@@ -403,6 +421,7 @@ void Scene::run()
 
       // Put data to buffer
       m_eventBuffer->put(m_channelData);
+
       //t_value* ev = m_channelData;
       //qDebug("%d %d %d %d %d %d", ev[0], ev[1], ev[2], 
       //       ev[3], ev[4], ev[5]);
@@ -436,6 +455,12 @@ void Scene::freeRunTimeData()
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
+
+  m_startMutex.lock();
+
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
@@ -449,11 +474,7 @@ void Scene::freeRunTimeData()
       m_parentFunction = NULL;
     }
 
-  m_stopMutex.lock();
-  m_stopped = true;
-  m_stopMutex.unlock();
-
-  m_startMutex.lock();
   m_running = false;
+
   m_startMutex.unlock();
 }

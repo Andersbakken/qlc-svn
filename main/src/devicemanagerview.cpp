@@ -25,6 +25,7 @@
 #include "app.h"
 #include "doc.h"
 #include "configkeys.h"
+#include "virtualconsole.h"
 
 #include <qwidget.h>
 #include <qtoolbar.h>
@@ -102,8 +103,8 @@ void DeviceManagerView::initView()
   m_layout->addWidget(m_dockArea);
   m_layout->addWidget(m_dm);
 
-  connect(_app->virtualConsole(), SIGNAL(modeChange(VirtualConsole::Mode)),
-	  this, SLOT(slotModeChanged(VirtualConsole::Mode)));
+  connect(_app->virtualConsole(), SIGNAL(modeChange()),
+	  this, SLOT(slotModeChanged()));
 
   connect(m_dm, SIGNAL(selectionChanged(int, int)),
 	  this, SLOT(slotSelectionChanged(int, int)));
@@ -142,10 +143,10 @@ void DeviceManagerView::closeEvent(QCloseEvent* e)
   emit closed();
 }
 
-void DeviceManagerView::slotModeChanged(VirtualConsole::Mode m)
+void DeviceManagerView::slotModeChanged()
 {
   QListViewItem* item = m_dm->deviceListView()->currentItem();
-
+  
   if (item)
     {
       int id = item->text(KDLViewColumnID).toInt();

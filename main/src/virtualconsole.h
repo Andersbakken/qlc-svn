@@ -28,12 +28,14 @@
 class QMenuBar;
 class QPopupMenu;
 class QToolBar;
-class QVBoxLayout;
+class QHBoxLayout;
 class QFile;
+class QFrame;
 
 class VCWidgetBase;
 class VCWidget;
 class Bus;
+class VCDockArea;
 
 #define ID_VC_MODE                   1000
 #define ID_VC_MODE_OPERATE           1010
@@ -49,6 +51,7 @@ class Bus;
 
 #define ID_VC_TOOLS                  1200
 #define ID_VC_TOOLS_PANIC            1210
+#define ID_VC_TOOLS_SLIDERS          1220
 
 class VirtualConsole : public QWidget
 {
@@ -60,8 +63,10 @@ class VirtualConsole : public QWidget
 
   enum Mode { Operate, Design };
 
-  void initView(void);
+  void initView();
   void newDocument();
+  void initDockArea();
+  void initDrawArea();
 
   void registerKeyReceiver(VCWidgetBase* widget);
   void unRegisterKeyReceiver(VCWidgetBase* widget);
@@ -69,23 +74,21 @@ class VirtualConsole : public QWidget
   bool isDesignMode();
   void setMode(Mode mode);
 
-  void createContents(QPtrList <QString>& file); // Create the vc from list
-  void saveToFile(QFile& file); // Save all widgets and vc data to file
+  // Create the vc from list
+  void createContents(QPtrList <QString>& file); 
+  // Save all widgets and vc data to file
+  void saveToFile(QFile& file); 
 
   // Used to get a correct parent frame for widgets
   VCWidget* getFrame(unsigned int id, VCWidget* widget = NULL);
-  VCWidget* drawArea() { return m_drawArea; }
-
-  void setDefaultSpeedBus(Bus* bus);
-  Bus* defaultSpeedBus() { return m_defaultSpeedBus; }
 
  public slots:
-  void slotMenuItemActivated(int item);
-  void slotDefaultSpeedBusDestroyed();
+  void slotMenuItemActivated(int);
+  void slotDockAreaHidden(bool);
 
  signals:
   void closed();
-  void modeChange(VirtualConsole::Mode);
+  void modeChange();
 
  protected:
   void closeEvent(QCloseEvent* e);
@@ -99,19 +102,26 @@ class VirtualConsole : public QWidget
   void createWidget(QPtrList <QString> &list);
 
  private:
+  // Virtual console menus
   QMenuBar* m_menuBar;
   QPopupMenu* m_modeMenu;
   QPopupMenu* m_addMenu;
   QPopupMenu* m_toolsMenu;
 
-  VCWidget* m_drawArea;
-  QVBoxLayout* m_layout;
+  // Master layout
+  QHBoxLayout* m_layout; 
 
+  // Dock area
+  VCDockArea* m_dockArea;
+
+  // Draw area
+  VCWidget* m_drawArea;
+
+  // Main operating mode (should be in app, actually)
   Mode m_mode;
 
+  // Those widgets that have been registered as keyboard event receivers
   QPtrList <VCWidgetBase> m_keyReceivers;
-
-  Bus* m_defaultSpeedBus;
 };
 
 #endif

@@ -67,7 +67,8 @@ class Scene : public Function
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  void speedChange(long unsigned int newTimeSpan) {}
+  void speedChange();
+  void busValueChanged(t_bus_id, t_bus_value);
   void stop();
   void freeRunTimeData();
 

@@ -145,7 +145,8 @@ void App::initView(void)
   setIcon(QPixmap(dir + QString("/Q.xpm")));
 
   initWorkspace();
-  connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
+  connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), 
+	  m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
 
   initMenuBar();
   initStatusBar();
@@ -162,7 +163,8 @@ void App::initView(void)
       settings()->get(KEY_LAST_WORKSPACE_NAME, config);
 
       doc()->loadWorkspaceAs(config);
-      setCaption(KApplicationNameLong + QString(" - ") + doc()->workspaceFileName());
+      setCaption(KApplicationNameLong + QString(" - ") + 
+		 doc()->workspaceFileName());
       virtualConsole()->hide();
     }
 }
@@ -181,24 +183,37 @@ void App::initToolBar()
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
   
-  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), "New workspace; clear everything", 0, this, SLOT(slotFileNew()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
+		  "New workspace; clear everything", 0, 
+		  this, SLOT(slotFileNew()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), "Open existing workspace", 0, this, SLOT(slotFileOpen()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
+		  "Open existing workspace", 0, 
+		  this, SLOT(slotFileOpen()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), "Save current workspace", 0, this, SLOT(slotFileSave()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), 
+		  "Save current workspace", 0, 
+		  this, SLOT(slotFileSave()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  new QToolButton(QPixmap(dir + QString("/device.xpm")), "View device manager", 0, this, SLOT(slotViewDeviceManager()), m_toolbar);
+  new QToolButton(QPixmap(dir + QString("/device.xpm")), 
+		  "View device manager", 0, 
+		  this, SLOT(slotViewDeviceManager()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), "View virtual console", 0, this, SLOT(slotViewVirtualConsole()), m_toolbar);
-
+  new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
+		  "View virtual console", 0, 
+		  this, SLOT(slotViewVirtualConsole()), m_toolbar);
 
   QToolBar* vc = new QToolBar(this, "Virtual Console toolbar");
 
-  new QToolButton(QPixmap(dir + QString("/panic.xpm")), "Panic; Shut down all running functions", 0, this, SLOT(slotPanic()), vc);
+  new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
+		  "Panic; Shut down all running functions", 0, 
+		  this, SLOT(slotPanic()), vc);
 
-  m_modeButton = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), "Design Mode; All editing features enabled", 0, this, SLOT(slotModeButtonClicked()), vc);
+  m_modeButton = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
+				 "Design Mode; All editing features enabled", 
+				 0, this, SLOT(slotModeButtonClicked()), vc);
 }
 
 void App::initSequenceEngine()
@@ -271,8 +286,10 @@ void App::initDeviceManagerView()
       m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
     }
 
-  connect(m_dmView, SIGNAL(closed()), this, SLOT(slotDeviceManagerViewClosed()));
-  connect(m_doc, SIGNAL(deviceListChanged()), m_dmView->deviceManager(), SLOT(slotUpdateDeviceList()));
+  connect(m_dmView, SIGNAL(closed()), 
+	  this, SLOT(slotDeviceManagerViewClosed()));
+  connect(m_doc, SIGNAL(deviceListChanged()), 
+	  m_dmView->deviceManager(), SLOT(slotUpdateDeviceList()));
 }
 
 void App::initVirtualConsole(void)
@@ -285,8 +302,8 @@ void App::initVirtualConsole(void)
   connect(m_virtualConsole, SIGNAL(closed()),
 	  this, SLOT(slotVirtualConsoleClosed()));
 
-  connect(m_virtualConsole, SIGNAL(modeChange(VirtualConsole::Mode)),
-	  this, SLOT(slotSetModeIndicator(VirtualConsole::Mode)));
+  connect(m_virtualConsole, SIGNAL(modeChange()),
+	  this, SLOT(slotSetModeIndicator()));
 }
 
 void App::initMenuBar()
@@ -299,49 +316,69 @@ void App::initMenuBar()
   // File Menu
   m_fileMenu = new QPopupMenu();
   m_fileMenu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
-			 "&New", this, SLOT(slotFileNew()), CTRL+Key_N, ID_FILE_NEW);
+			 "&New", this, SLOT(slotFileNew()),
+			 CTRL+Key_N, ID_FILE_NEW);
   m_fileMenu->insertItem(QPixmap(dir + QString("/fileopen.xpm")), 
-			 "&Open...", this, SLOT(slotFileOpen()), CTRL+Key_O, ID_FILE_OPEN);
+			 "&Open...", this, SLOT(slotFileOpen()), 
+			 CTRL+Key_O, ID_FILE_OPEN);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
-			 "&Save", this, SLOT(slotFileSave()), CTRL+Key_S, ID_FILE_SAVE);
-  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 0, ID_FILE_SAVE_AS);
+			 "&Save", this, SLOT(slotFileSave()), 
+			 CTRL+Key_S, ID_FILE_SAVE);
+  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 
+			 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(dir + QString("/info.xpm")),
-			 "Se&ttings...", this, SLOT(slotFileSettings()), 0, ID_FILE_SETTINGS);
+			 "Se&ttings...", this, SLOT(slotFileSettings()), 
+			 0, ID_FILE_SETTINGS);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(dir + QString("/exit.xpm")),
-			 "E&xit", this, SLOT(slotFileQuit()), CTRL+Key_Q, ID_FILE_QUIT);
+			 "E&xit", this, SLOT(slotFileQuit()), 
+			 CTRL+Key_Q, ID_FILE_QUIT);
   
   ///////////////////////////////////////////////////////////////////
   // View Menu
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/device.xpm")), 
-			  "Device Manager", this, SLOT(slotViewDeviceManager()), CTRL + Key_D, ID_VIEW_DEVICE_MANAGER);
+			  "Device Manager", this, 
+			  SLOT(slotViewDeviceManager()), 
+			  CTRL + Key_D, ID_VIEW_DEVICE_MANAGER);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/virtualconsole.xpm")), 
-			  "Virtual Console", this, SLOT(slotViewVirtualConsole()), CTRL + Key_G, ID_VIEW_VIRTUAL_CONSOLE);
+			  "Virtual Console", this, 
+			  SLOT(slotViewVirtualConsole()), 
+			  CTRL + Key_G, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(dir + QString("/deviceclasseditor.xpm")), 
-			  "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), CTRL + Key_E, ID_VIEW_DEVICE_CLASS_EDITOR);
+			  "Device Class Editor", this, 
+			  SLOT(slotViewDeviceClassEditor()), 
+			  CTRL + Key_E, ID_VIEW_DEVICE_CLASS_EDITOR);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/function.xpm")), 
-			  "Function Tree", this, SLOT(slotViewFunctionTree()), CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
+			  "Function Tree", this, SLOT(slotViewFunctionTree()), 
+			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/panic.xpm")), "Panic!", this, SLOT(slotPanic()), CTRL + Key_C, ID_FUNCTIONS_PANIC);
-  connect(m_toolsMenu, SIGNAL(aboutToShow()), this, SLOT(slotRefreshToolsMenu()));
+  m_toolsMenu->insertItem(QPixmap(dir + QString("/panic.xpm")), "Panic!", 
+			  this, SLOT(slotPanic()), CTRL + Key_C, 
+			  ID_FUNCTIONS_PANIC);
+
+  connect(m_toolsMenu, SIGNAL(aboutToShow()), 
+	  this, SLOT(slotRefreshToolsMenu()));
 
   ///////////////////////////////////////////////////////////////////
   // Window Menu
   m_windowMenu = new QPopupMenu();
-  connect(m_windowMenu, SIGNAL(aboutToShow()), this, SLOT(slotRefreshWindowMenu()));
+  connect(m_windowMenu, SIGNAL(aboutToShow()), 
+	  this, SLOT(slotRefreshWindowMenu()));
   
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
   m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
-			 "About...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
+			 "About...", this, SLOT(slotHelpAbout()), 
+			 0, ID_HELP_ABOUT);
   m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
-			 "About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
+			 "About Qt...", this, SLOT(slotHelpAboutQt()), 
+			 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
@@ -359,9 +396,9 @@ void App::slotFileNew()
 {
   if (doc()->isModified())
     {
+      QString msg("Are you sure you want to clear the current workspace?");
       if (QMessageBox::warning(this, KApplicationNameShort, 
-			       "Are you sure you want to clear the current workspace & virtual console?", "&Yes", "&Cancel",
-			       0, 1) == 1)
+			       msg, "&Yes", "&Cancel", 0, 1) == 1)
 	{
 	  return;
 	}
@@ -375,7 +412,8 @@ void App::slotFileNew()
 
 void App::slotFileOpen()
 {
-  QString fn = QFileDialog::getOpenFileName(m_doc->workspaceFileName(), "*.qlc", this);
+  QString fn = QFileDialog::getOpenFileName(m_doc->workspaceFileName(), 
+					    "*.qlc", this);
 
   if (fn == QString::null)
     {
@@ -385,13 +423,15 @@ void App::slotFileOpen()
   if (doc()->loadWorkspaceAs(fn) == false)
     {
       statusBar()->message("Load failed", 2000);
-      QMessageBox::critical(this, KApplicationNameShort, "Errors occurred while reading file. Data may be lost.");
+      QMessageBox::critical(this, KApplicationNameShort, 
+			    "Errors occurred while reading file.");
     }
   else
     {
       m_settings->set(KEY_LAST_WORKSPACE_NAME, m_doc->workspaceFileName());
       statusBar()->message("Load successful", 2000);
-      setCaption(KApplicationNameLong + QString(" - ") + doc()->workspaceFileName());
+      setCaption(KApplicationNameLong + QString(" - ") + 
+		 doc()->workspaceFileName());
     }
 }
 
@@ -407,7 +447,8 @@ void App::slotFileSave()
       if (m_doc->saveWorkspace() == false)
         {
           statusBar()->message("Save failed", 2000);
-          QMessageBox::warning(this, KApplicationNameShort, "An error occurred while attempting to save configuration.\nData may be lost.");
+          QMessageBox::warning(this, KApplicationNameShort, 
+			       "Unable to save file!");
 	}
       else
         {
@@ -421,7 +462,8 @@ void App::slotFileSaveAs()
 {
   statusBar()->message("Saving file under new filename...");
 
-  QString fn = QFileDialog::getSaveFileName(m_doc->workspaceFileName(), "*.qlc", this);
+  QString fn = QFileDialog::getSaveFileName(m_doc->workspaceFileName(),
+					    "*.qlc", this);
   if (!fn.isEmpty())
     {
       // Use the suffix ".qlc" always
@@ -433,12 +475,14 @@ void App::slotFileSaveAs()
       if (m_doc->saveWorkspaceAs(fn) == false)
         {
           statusBar()->message("Save aborted", 2000);
-          QMessageBox::information(this, KApplicationNameShort, "An error occurred while attempting to save current workspace!");
+          QMessageBox::information(this, KApplicationNameShort, 
+				   "Unable to save file!");
 	}
       else
         {
           statusBar()->message("Save successful", 2000);
-	  setCaption(KApplicationNameLong + QString(" - ") + doc()->workspaceFileName());
+	  setCaption(KApplicationNameLong + QString(" - ") + 
+		     doc()->workspaceFileName());
         }
     }
   else
@@ -559,21 +603,25 @@ void App::slotRefreshWindowMenu()
   dir += QString("/") + PIXMAPPATH;
   
   m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")), "Cascade", this, SLOT(slotWindowCascade()), 0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")), "Tile", this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
+  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")), 
+			   "Cascade", this, SLOT(slotWindowCascade()), 
+			   0, ID_WINDOW_CASCADE);
+  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")), "Tile", 
+			   this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();
 
   for (widget = wl.first(); widget != NULL; widget = wl.next())
-  {
-    m_windowMenu->insertItem(widget->caption(), id);
-    if (widget->isVisible() == true)
     {
-      m_windowMenu->setItemChecked(id, true);
+      m_windowMenu->insertItem(widget->caption(), id);
+      if (widget->isVisible() == true)
+	{
+	  m_windowMenu->setItemChecked(id, true);
+	}
+      id++;
     }
-    id++;
-  }
 
-  connect(m_windowMenu, SIGNAL(activated(int)), this, SLOT(slotWindowMenuCallback(int)));
+  connect(m_windowMenu, SIGNAL(activated(int)),
+	  this, SLOT(slotWindowMenuCallback(int)));
 }
 
 
@@ -598,7 +646,7 @@ void App::slotWindowMenuCallback(int item)
 	}
       else
 	{
-	  QMessageBox::critical(this, KApplicationNameShort, "Unable to focus window! Handle not found.");
+	  ASSERT(false);
 	}
       
       disconnect(m_windowMenu);
@@ -647,7 +695,10 @@ void App::closeEvent(QCloseEvent* e)
 
   if (m_doc->isModified())
     {
-      result = QMessageBox::information(this, "Exit...", "Do you want to save changes before exit?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+      result = QMessageBox::information(this, "Exit...",
+					"Do you want to save before exit?", 
+					QMessageBox::Yes, QMessageBox::No, 
+					QMessageBox::Cancel);
       if (result == QMessageBox::Yes)
         {
 	  // Save main window geometry for next session 
@@ -694,28 +745,23 @@ void App::closeEvent(QCloseEvent* e)
   statusBar()->message("Exit aborted", 2000);
 }
 
-void App::slotSetModeIndicator(VirtualConsole::Mode mode)
+void App::slotSetModeIndicator()
 {
   QString dir;
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
   
-  switch(mode)
+  if (m_virtualConsole->isDesignMode())
     {
-    case VirtualConsole::Design:
       m_modeIndicator->setText(KModeTextDesign);
       m_modeButton->setPixmap(dir + QString("/unlocked.xpm"));
       QToolTip::add(m_modeButton, "Design Mode; All edit features available");
-      break;
-
-    case VirtualConsole::Operate:
+    }
+  else
+    {
       m_modeIndicator->setText(KModeTextOperate);
       m_modeButton->setPixmap(dir + QString("/locked.xpm"));
       QToolTip::add(m_modeButton, "Operate Mode; Edit features disabled");
-      break;
-
-    default:
-      break;
     }
 }
 

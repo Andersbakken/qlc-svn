@@ -28,7 +28,6 @@
 #include "vcbuttonproperties.h"
 #include "virtualconsole.h"
 #include "keybind.h"
-#include "bus.h"
 #include "vcwidgetbase.h"
 #include "vcwidget.h"
 #include "devicemanagerview.h"
@@ -62,7 +61,6 @@ VCButton::VCButton(VCWidget* parent)
   m_function = NULL;
   m_resizeMode = false;
   m_renameEdit = NULL;
-  m_speedBus = NULL;
   m_bgColor = NULL;
   m_keyBind = NULL;
   m_bgPixmapFileName = QString::null;
@@ -70,6 +68,7 @@ VCButton::VCButton(VCWidget* parent)
 
   m_lock = false;
 }
+
 
 void VCButton::init()
 {
@@ -82,13 +81,6 @@ void VCButton::init()
   QToolTip::add(this, "No function");
 
   resize(30, 30);
-
-  m_speedBus = _app->virtualConsole()->defaultSpeedBus();
-  if (m_speedBus)
-    {
-      connect(m_speedBus, SIGNAL(destroyed()),
-	      this, SLOT(slotSpeedBusDestroyed()));
-    }
 }
 
 
@@ -116,19 +108,8 @@ void VCButton::copyFrom(VCButton* button)
   setGeometry(button->geometry());
 
   move(button->x() + 20, button->y() + 20);
-
-  m_speedBus = button->speedBus();
-  if (m_speedBus)
-    {
-      connect(m_speedBus, SIGNAL(destroyed()),
-	      this, SLOT(slotSpeedBusDestroyed()));
-    }
 }
 
-void VCButton::slotSpeedBusDestroyed()
-{
-  m_speedBus = NULL;
-}
 
 VCButton::~VCButton()
 {
@@ -221,14 +202,8 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
   
   s.sprintf("BindRelease = %d\n", m_keyBind->releaseAction());
   file.writeBlock((const char*) s, s.length());
-
-  // Speed bus
-  if (m_speedBus != NULL)
-    {
-      s.sprintf("SpeedBus = %d\n", m_speedBus->id());
-      file.writeBlock((const char*) s, s.length());
-    }
 }
+
 
 void VCButton::createContents(QPtrList <QString> &list)
 {
@@ -333,11 +308,6 @@ void VCButton::createContents(QPtrList <QString> &list)
 	  QString t = *(list.next());
 	  m_lock = (t == QString("True")) ? true : false;
 	}
-      else if (*s == QString("SpeedBus"))
-	{
-	  unsigned int bus = list.next()->toInt();
-	  m_speedBus = _app->doc()->searchBus(bus);
-	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -430,14 +400,6 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 			   "&Attach function...", VCBUTTON_MENU_ATTACH);
 	  menu->insertItem(QPixmap(dir + QString("/detach.xpm")),
 			   "&Detach current function", VCBUTTON_MENU_DETACH);
-
-	  QPopupMenu* busMenu;
-	  busMenu = new QPopupMenu;
-	  busMenu->setCheckable(true);
-	  fillBusMenu(busMenu);
-
-	  menu->insertItem(QPixmap(dir + QString("/bus.xpm")),
-			   "&Speed Bus", busMenu);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/editcopy.xpm")),
 			   "Duplicate", VCWIDGET_MENU_COPY);
@@ -448,12 +410,9 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 		  this, SLOT(slotMenuCallback(int)));
 	  connect(sizeMenu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
-	  connect(busMenu, SIGNAL(activated(int)),
-		  this, SLOT(slotBusMenuCallback(int)));
 
 	  menu->exec(mapToGlobal(e->pos()));
 
-	  delete busMenu;
 	  delete sizeMenu;
 	  delete menu;
 	}
@@ -464,56 +423,6 @@ void VCButton::mousePressEvent(QMouseEvent* e)
     }
 }
 
-void VCButton::fillBusMenu(QPopupMenu* menu)
-{
-  Bus* bus = NULL;
-
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;  
-
-  menu->insertItem(QPixmap(dir + QString("/add.xpm")), 
-		   QString("New Bus..."), 0);
-
-  for (t_bus_id i = 0; i < (t_bus_id) _app->doc()->busList()->count(); i++)
-    {
-      bus = _app->doc()->busList()->at(i);
-
-      menu->insertItem(bus->name(), i+1);
-      
-      if (bus == m_speedBus)
-	{
-	  menu->setItemChecked(i+1, true);
-	}
-    }
-}
-
-void VCButton::slotBusMenuCallback(int item)
-{
-  switch(item)
-    {
-    case 0:
-      {
-	Bus* bus = _app->deviceManagerView()->deviceManager()
-	  ->slotDLAddBus(this);
-	
-	if (bus != NULL)
-	  {
-	    m_speedBus = bus;
-	  }
-      }
-      break;
-      
-    default:
-      {
-	Bus* bus = _app->doc()->busList()->at(item - 1);
-	if (bus != NULL)
-	  {
-	    m_speedBus = bus;
-	  }
-      }
-    }
-}
 
 void VCButton::slotMenuCallback(int item)
 {
@@ -663,23 +572,6 @@ void VCButton::slotMenuCallback(int item)
 	    
 	    // Function
 	    attachFunction(p->function());
-
-	    // Bus
-	    if (m_speedBus)
-	      {
-		disconnect(m_speedBus, SIGNAL(destroyed()),
-			   this, SLOT(slotSpeedBusDestroyed()));
-	      }
-
-	    m_speedBus = p->bus();
-	    _app->virtualConsole()->setDefaultSpeedBus(m_speedBus);
-	    
-	    if (m_speedBus)
-	      {
-		connect(m_speedBus, SIGNAL(destroyed()),
-			this, SLOT(slotSpeedBusDestroyed()));
-	      }
-
 	  }
 
 	delete p;

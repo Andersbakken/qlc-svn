@@ -255,8 +255,6 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  Bus* bus = new Bus();
 		  bus->createContents(list);
 		  addBus(bus);
-
-		  _app->virtualConsole()->setDefaultSpeedBus(bus);
 		}
 	      else if (*string == QString("Joystick"))
 		{
@@ -843,22 +841,33 @@ Function* Doc::searchFunction(const t_function_id id)
   return NULL;
 }
 
+///////////////
+// Bus stuff //           
+///////////////
 
+//
+// Add a new bus
+//
 void Doc::addBus(Bus* bus)
 {
   ASSERT(bus != NULL);
   m_busList.append(bus);
   emit deviceListChanged();
 
+  connect(bus, SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+
   setModified(true);
 }
 
-
+//
+// Search for a bus with its id
+//
 Bus* Doc::searchBus(const t_bus_id id)
 {
   Bus* bus = NULL;
 
-  for (t_bus_id i = 0; i < m_busList.count(); i++)
+  for (t_bus_id i = 0; i < (t_bus_id) m_busList.count(); i++)
     {
       bus = m_busList.at(i);
       ASSERT(bus);
@@ -872,7 +881,9 @@ Bus* Doc::searchBus(const t_bus_id id)
   return NULL;
 }
 
-
+//
+// Remove bus (and delete it if "deleteBus" == true)
+//
 void Doc::removeBus(t_bus_id id, bool deleteBus)
 {
   Bus* bus = NULL;
@@ -882,6 +893,9 @@ void Doc::removeBus(t_bus_id id, bool deleteBus)
   ASSERT(bus);
 
   m_busList.remove(bus);
+
+  disconnect(bus, SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	     this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
   if (deleteBus == true)
     {
@@ -893,7 +907,31 @@ void Doc::removeBus(t_bus_id id, bool deleteBus)
   setModified(true);
 }
 
+//
+// Broadcast all bus values to all functions.
+// This is not the most efficient nor latency-safe because this
+// happens in QT's message posting thread.
+//
+void Doc::slotBusValueChanged(t_bus_id id, t_bus_value value)
+{
+  QPtrListIterator <Function> it(m_functions);
+  Function* function = NULL;
 
+  while ( (function = it.current()) )
+    {
+      ++it;
+      function->busValueChanged(id, value);
+    }
+}
+
+
+//////////////////
+// Plugin stuff //
+//////////////////
+
+//
+// Search and load plugins
+//
 void Doc::initPlugins()
 {
   QString path;
@@ -904,14 +942,16 @@ void Doc::initPlugins()
 
   // First of all, add the dummy output plugin
   m_dummyOutPlugin = new DummyOutPlugin(Doc::NextPluginID++);
-  connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)), this, SLOT(slotPluginActivated(Plugin*)));
+  connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
+	  this, SLOT(slotPluginActivated(Plugin*)));
   addPlugin(m_dummyOutPlugin);
 
   QDir d(dir);
   d.setFilter(QDir::Files);
   if (d.exists() == false || d.isReadable() == false)
     {
-      fprintf(stderr, "Unable to access plugin directory %s.\n", (const char*) dir);
+      fprintf(stderr, "Unable to access plugin directory %s.\n",
+	      (const char*) dir);
       return;
     }
   
@@ -949,6 +989,9 @@ void Doc::initPlugins()
   slotPluginActivated(m_outputPlugin);
 }
 
+//
+// Try if the given file is a plugin
+//
 bool Doc::probePlugin(QString path)
 {
   void* handle = NULL;
@@ -976,10 +1019,13 @@ bool Doc::probePlugin(QString path)
 	  Plugin* plugin = create(Doc::NextPluginID++);
 	  ASSERT(plugin != NULL);
 
-	  plugin->setConfigDirectory(QString(getenv("HOME")) + QString("/") + QString(QLCUSERDIR) + QString("/"));
+	  plugin->setConfigDirectory(QString(getenv("HOME")) + 
+				     QString("/") + QString(QLCUSERDIR) + 
+				     QString("/"));
 	  plugin->loadSettings();
 
-	  connect(plugin, SIGNAL(activated(Plugin*)), this, SLOT(slotPluginActivated(Plugin*)));
+	  connect(plugin, SIGNAL(activated(Plugin*)), 
+		  this, SLOT(slotPluginActivated(Plugin*)));
 	  addPlugin(plugin);
 
 	  qDebug(QString("Found ") + plugin->name() + " plugin");
@@ -989,6 +1035,9 @@ bool Doc::probePlugin(QString path)
   return true;
 }
 
+//
+// Add a plugin to list
+//
 void Doc::addPlugin(Plugin* plugin)
 {
   ASSERT(plugin != NULL);
@@ -997,6 +1046,9 @@ void Doc::addPlugin(Plugin* plugin)
   emit deviceListChanged();
 }
 
+//
+// Remove a plugin from list
+//
 void Doc::removePlugin(Plugin* plugin)
 {
   ASSERT(plugin != NULL);
@@ -1005,6 +1057,9 @@ void Doc::removePlugin(Plugin* plugin)
   emit deviceListChanged();
 }
 
+//
+// Search for a plugin by its name
+//
 Plugin* Doc::searchPlugin(QString name)
 {
   Plugin* plugin = NULL;
@@ -1021,6 +1076,9 @@ Plugin* Doc::searchPlugin(QString name)
   return NULL;
 }
 
+//
+// Search for a plugin by its name & type
+//
 Plugin* Doc::searchPlugin(QString name, Plugin::PluginType type)
 {
   Plugin* plugin = NULL;
@@ -1038,6 +1096,9 @@ Plugin* Doc::searchPlugin(QString name, Plugin::PluginType type)
   return NULL;
 }
 
+//
+// Search plugin by its id
+//
 Plugin* Doc::searchPlugin(const t_plugin_id id)
 {
   Plugin* plugin = NULL;
@@ -1055,6 +1116,9 @@ Plugin* Doc::searchPlugin(const t_plugin_id id)
   return NULL;
 }
 
+//
+// A plugin has been activated
+//
 void Doc::slotPluginActivated(Plugin* plugin)
 {
   if (plugin && plugin->type() == Plugin::OutputType)
@@ -1065,6 +1129,10 @@ void Doc::slotPluginActivated(Plugin* plugin)
     }
 }
 
+//
+// Search for an output plugin and set it. If not found,
+// use Dummy Output by default.
+//
 void Doc::slotChangeOutputPlugin(const QString& name)
 {
   if (m_outputPlugin != NULL)
@@ -1072,26 +1140,19 @@ void Doc::slotChangeOutputPlugin(const QString& name)
       m_outputPlugin->close();
     }
 
-  if (name == QString("<None>"))
+  m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
+  if (m_outputPlugin == NULL)
     {
-      m_outputPlugin = NULL;
-    }
-  else
-    {
-      m_outputPlugin = (OutputPlugin*) searchPlugin(name, Plugin::OutputType);
-
       // If an output plugin cannot be found, use the dummy plugin
-      if (m_outputPlugin == NULL)
-	{
-	  m_outputPlugin = m_dummyOutPlugin;
-	}
-
-      m_outputPlugin->open();
+      m_outputPlugin = m_dummyOutPlugin;
     }
 
+  m_outputPlugin->open();
+  
   // This if() has to be here so that this won't get called until all
-  // objects in the call chain have been created.
-  if (_app && _app->deviceManagerView() && _app->deviceManagerView()->deviceManager())
+  // objects in the call chain have been created (during startup).
+  if (_app && _app->deviceManagerView() && 
+      _app->deviceManagerView()->deviceManager())
     {
       _app->deviceManagerView()->deviceManager()->slotUpdateDeviceList();
     }

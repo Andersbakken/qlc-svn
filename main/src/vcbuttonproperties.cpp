@@ -51,9 +51,6 @@ VCButtonProperties::VCButtonProperties(VCButton* btn, QWidget* parent,
 
   m_function = btn->function();
   m_lockState = btn->locked();
-  m_bus = btn->speedBus();
-
-  m_busIndex = NULL;
 
   ASSERT (btn->keyBind() != NULL);
   m_keyBind = new KeyBind((KeyBind*) btn->keyBind());
@@ -61,13 +58,11 @@ VCButtonProperties::VCButtonProperties(VCButton* btn, QWidget* parent,
   initView();
 }
 
+
 VCButtonProperties::~VCButtonProperties()
 {
-  if (m_busIndex != NULL)
-    {
-      delete m_busIndex;
-    }
 }
+
 
 void VCButtonProperties::initView()
 {
@@ -95,26 +90,6 @@ void VCButtonProperties::initView()
 
   m_functionEdit->setReadOnly(true);
   m_functionEdit->setText(fname);
-
-  // Bus stuff
-  fillBusCombo();
-
-  if (m_busCombo->count() != 1)
-    {
-      // Select current bus if present
-      if (m_bus != NULL)
-	{
-	  selectCurrentBus();
-	}
-      else
-	{
-	  m_busCombo->setCurrentItem(0);
-	}
-    }
-  else
-    {
-      m_busCombo->setCurrentItem(0);
-    }
 
   // Widget position lock
   m_lock->setOn(m_lockState);
@@ -146,23 +121,25 @@ void VCButtonProperties::initView()
   m_addKey->setPixmap(QPixmap(dir + "/key.xpm"));
   m_removeKey->setPixmap(QPixmap(dir + "/fileclose.xpm"));
 
-  m_addBus->setPixmap(QPixmap(dir + "/addbus.xpm"));
-
   // Connections
-  connect((QObject*) m_onButtonPressGroup, SIGNAL(clicked(int)), this, SLOT(slotPressGroupClicked(int)));
-  connect((QObject*) m_onButtonReleaseGroup, SIGNAL(clicked(int)), this, SLOT(slotReleaseGroupClicked(int)));
+  connect((QObject*) m_onButtonPressGroup, SIGNAL(clicked(int)),
+	  this, SLOT(slotPressGroupClicked(int)));
+  connect((QObject*) m_onButtonReleaseGroup, SIGNAL(clicked(int)),
+	  this, SLOT(slotReleaseGroupClicked(int)));
 
-  connect((QObject*) m_addFunction, SIGNAL(clicked()), this, SLOT(slotAddFunctionClicked()));
-  connect((QObject*) m_removeFunction, SIGNAL(clicked()), this, SLOT(slotRemoveFunctionClicked()));
+  connect((QObject*) m_addFunction, SIGNAL(clicked()),
+	  this, SLOT(slotAddFunctionClicked()));
+  connect((QObject*) m_removeFunction, SIGNAL(clicked()),
+	  this, SLOT(slotRemoveFunctionClicked()));
 
-  connect((QObject*) m_addKey, SIGNAL(clicked()), this, SLOT(slotAddKeyClicked()));
-  connect((QObject*) m_removeKey, SIGNAL(clicked()), this, SLOT(slotRemoveKeyClicked()));
-
-  connect((QObject*) m_addBus, SIGNAL(clicked()), this, SLOT(slotAddBusClicked()));
-  connect((QObject*) m_busCombo, SIGNAL(activated(int)), this, SLOT(slotBusActivated(int)));
+  connect((QObject*) m_addKey, SIGNAL(clicked()),
+	  this, SLOT(slotAddKeyClicked()));
+  connect((QObject*) m_removeKey, SIGNAL(clicked()),
+	  this, SLOT(slotRemoveKeyClicked()));
 
   connect((QObject*) m_ok, SIGNAL(clicked()), this, SLOT(slotOKClicked()));
-  connect((QObject*) m_cancel, SIGNAL(clicked()), this, SLOT(slotCancelClicked()));
+  connect((QObject*) m_cancel, SIGNAL(clicked()),
+	  this, SLOT(slotCancelClicked()));
 }
 
 void VCButtonProperties::slotOKClicked()
@@ -255,7 +232,8 @@ void VCButtonProperties::slotAddFunctionClicked()
 	{
 	  //
 	  // Disconnect destroyed signal from previous function
-	  // disconnect(m_function, SIGNAL(destroyed()), this, SLOT(slotFunctionDestroyed()));
+	  // disconnect(m_function, SIGNAL(destroyed()), 
+          //            this, SLOT(slotFunctionDestroyed()));
 	}
       
       //
@@ -266,8 +244,9 @@ void VCButtonProperties::slotAddFunctionClicked()
 	{
 	  //
 	  // Connect destroyed signal to new function
-	  // connect(m_function, SIGNAL(destroyed()), this, SLOT(slotFunctionDestroyed()));
-	  
+	  // connect(m_function, SIGNAL(destroyed()),
+          //         this, SLOT(slotFunctionDestroyed()));
+
 	  if (m_function->device())
 	    {
 	      str = m_function->device()->name();
@@ -284,7 +263,6 @@ void VCButtonProperties::slotAddFunctionClicked()
   //
   // Set the correct text to edit box
   m_functionEdit->setText(str);
-
 }
 
 void VCButtonProperties::slotRemoveFunctionClicked()
@@ -315,75 +293,4 @@ void VCButtonProperties::slotRemoveKeyClicked()
 {
   m_keyBind->setKey(0, 0);
   m_keyEdit->setText(m_keyBind->keyString());
-}
-
-void VCButtonProperties::slotBusActivated(int item)
-{
-  if (item != 0)
-    {
-      t_bus_id busIndex = m_busIndex[m_busCombo->currentItem() - 1];
-      m_bus = _app->doc()->searchBus(busIndex);
-      ASSERT(m_bus != NULL);
-      qDebug("Activated bus " + m_bus->name());
-    }
-  else
-    {
-      m_bus = NULL;
-    }
-}
-
-void VCButtonProperties::fillBusCombo()
-{
-  Bus* bus = NULL;
-  unsigned int i = 0;
-  unsigned int j = 0;
-
-  m_busCombo->clear();
-  m_busCombo->insertItem(QString("None"));
-
-  if (m_busIndex != NULL)
-    {
-      delete m_busIndex;
-    }
-
-  m_busIndex = new t_bus_id [_app->doc()->busList()->count()];
-
-  for (i = 0; i < _app->doc()->busList()->count(); i++)
-    {
-      bus = _app->doc()->busList()->at(i);
-
-      m_busCombo->insertItem(bus->name());
-      m_busIndex[j++] = bus->id();
-    }
-}
-
-void VCButtonProperties::selectCurrentBus()
-{
-  ASSERT(m_bus != NULL);
-  ASSERT(m_busIndex != NULL);
-
-  // Set "None" as the current item by default
-  m_busCombo->setCurrentItem(0);
-
-  for (t_bus_id i = 0; i < (t_bus_id) _app->doc()->busList()->count(); i++)
-    {
-      if (m_bus->id() == m_busIndex[i])
-	{
-	  m_busCombo->setCurrentItem(i+1);
-	  break;
-	}
-    }
-}
-
-void VCButtonProperties::slotAddBusClicked()
-{
-  Bus* bus = _app->deviceManagerView()->deviceManager()->slotDLAddBus(this);
-
-  if (bus != NULL)
-    {
-      fillBusCombo();
-      m_bus = bus;
-      _app->virtualConsole()->setDefaultSpeedBus(m_bus);
-      selectCurrentBus();
-    }
 }

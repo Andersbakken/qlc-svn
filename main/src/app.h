@@ -23,7 +23,6 @@
 #define APP_H
 
 #include <qmainwindow.h>
-#include "virtualconsole.h"
 
 class QWorkspace;
 class QApp;
@@ -44,10 +43,11 @@ class Settings;
 class Doc;
 class OutputPlugin;
 class FunctionConsumer;
+class VirtualConsole;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
-const QString KApplicationVersion   = "Version 2.2.1";
+const QString KApplicationVersion   = "Version 2.3";
 
 //////////////////////////////////////////////////////////////////
 // Class definition
@@ -97,7 +97,7 @@ class App : public QMainWindow
   void slotPanic();
   void slotModeButtonClicked();
 
-  void slotSetModeIndicator(VirtualConsole::Mode mode);
+  void slotSetModeIndicator();
 
  private:
   void initDoc();

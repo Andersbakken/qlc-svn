@@ -93,6 +93,7 @@ class Doc : public QObject
   Bus* searchBus(const t_bus_id id);
   void addBus(Bus* bus);
   void removeBus(const t_bus_id id, bool deleteBus = true);
+  void slotBusValueChanged(t_bus_id, t_bus_value);
 
   //
   // General Plugin Stuff

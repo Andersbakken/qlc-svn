@@ -39,7 +39,6 @@ class VCButtonProperties : public UI_VCButtonProperties
   QString name() { return m_nameString; }
   KeyBind* keyBind() { return m_keyBind; }
   bool lock() { return m_lockState; }
-  Bus* bus() { return m_bus; }
   
  public slots:
   void slotPressGroupClicked(int);
@@ -50,27 +49,16 @@ class VCButtonProperties : public UI_VCButtonProperties
   void slotRemoveFunctionClicked();
   void slotAddKeyClicked();
   void slotRemoveKeyClicked();
-  void slotAddBusClicked();
-  void slotBusActivated(int);
 
  private:
   void initView();
-  void fillBusCombo();
-  void selectCurrentBus();
 
  private:
   VCButton* m_button;
-
   Function* m_function;
-
   QString m_nameString;
-
   KeyBind* m_keyBind;
-
   bool m_lockState;
-
-  Bus* m_bus;
-  t_bus_id* m_busIndex;
 };
 
 #endif

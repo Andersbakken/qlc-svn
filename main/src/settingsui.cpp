@@ -26,8 +26,6 @@
 #include "configkeys.h"
 #include "configitem.h"
 
-#include "../../libs/common/plugin.h"
-
 #include <qlistview.h>
 #include <qapplication.h>
 #include <qcombobox.h>
@@ -63,13 +61,16 @@ void SettingsUI::init()
   fillStyleCombo();
 
   _app->settings()->get(KEY_DEVICE_MANAGER_OPEN, str);
-  m_openDeviceManagerCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
+  m_openDeviceManagerCheckBox->setChecked((str == Settings::trueValue()) 
+					  ? true : false);
 
   _app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str);
-  m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
+  m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) 
+					  ? true : false);
 
   _app->settings()->get(KEY_KEY_REPEAT, str);
-  m_keyRepeatCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
+  m_keyRepeatCheckBox->setChecked((str == Settings::trueValue()) 
+				  ? true : false);
 
   fillAdvancedSettingsList();
 }
@@ -111,8 +112,10 @@ void SettingsUI::slotSystemBrowseClicked()
 void SettingsUI::slotBackgroundBrowseClicked()
 {
   QString path;
-  path = QFileDialog::getOpenFileName(m_backgroundEdit->text(), QString("Images (*.png *.xpm *.jpg *.gif)"), this);
-
+  path = QFileDialog::
+    getOpenFileName(m_backgroundEdit->text(), 
+		    QString("Images (*.png *.xpm *.jpg *.gif)"), this);
+  
   if (path.isEmpty() == false)
     {
       m_backgroundEdit->setText(path);
@@ -144,10 +147,8 @@ void SettingsUI::slotOKClicked()
 {
   _app->settings()->set(KEY_SYSTEM_DIR, m_systemEdit->text());
   _app->settings()->set(KEY_APP_BACKGROUND, m_backgroundEdit->text());
-
   _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
   
-
   if (m_openDeviceManagerCheckBox->isChecked())
     {
       _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, Settings::trueValue());

@@ -23,6 +23,7 @@
 #include "deviceclass.h"
 #include "doc.h"
 #include "app.h"
+#include "bus.h"
 #include "scene.h"
 #include "device.h"
 #include "functionstep.h"
@@ -42,6 +43,7 @@ extern App* _app;
 Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
+  m_busID = Bus::defaultHoldBus()->id();
 }
 
 
@@ -284,7 +286,7 @@ void Chaser::lowerStep(unsigned int index)
 //
 // Initiate a speed change (from a speed bus)
 //
-void Chaser::speedChange(long unsigned int newTimeSpan)
+void Chaser::speedChange()
 {
 }
 

@@ -22,8 +22,8 @@
 #include <qstring.h>
 
 #include "function.h"
-//#include "device.h"
 #include "functionstep.h"
+#include "bus.h"
 
 //
 // Initialize function id
@@ -77,6 +77,7 @@ Function::Function(t_function_id id) : QThread()
   m_virtualController = NULL;
   m_parentFunction = NULL;
   m_stopped = false;
+  m_busID = KNoID;
 }
 
 
@@ -136,9 +137,19 @@ QString Function::typeString() const
     }
 }
 
-/////////////////////////
-// Start the function
-/////////////////////////
+
+//
+// Set the speed bus
+//
+void Function::setBus(t_bus_id id)
+{
+  m_busID = id;
+}
+
+
+////////////////////////
+// Start the function //
+////////////////////////
 
 //
 // This function is used by VCButton to pass itself as a virtual controller

@@ -61,7 +61,8 @@ class Bus : public QObject
   static Bus* defaultHoldBus() { return m_defaultHoldBus; }
 
  signals:
-  void dataChanged(const Bus*);
+  void valueChanged(t_bus_id, t_bus_value);
+  void destroyed(t_bus_id);
 
  private:
   t_bus_id m_id;

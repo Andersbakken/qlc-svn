@@ -26,7 +26,10 @@
 #include "app.h"
 #include "doc.h"
 #include "functionconsumer.h"
+#include "eventbuffer.h"
+#include "functionstep.h"
 
+#include <qapplication.h>
 #include <qstring.h>
 #include <qthread.h>
 #include <stdlib.h>
@@ -42,7 +45,10 @@ FunctionCollection::FunctionCollection(t_function_id id)
   : Function(id)
 {
   m_type = Function::Collection;
-  m_running = false;
+
+  // Hmm... should this propagate to child functions?
+  // Right now it has no particular purpose...
+  m_busID = Bus::defaultFadeBus()->id();
 }
 
 
@@ -61,17 +67,24 @@ FunctionCollection::FunctionCollection(FunctionCollection* fc)
 //
 void FunctionCollection::copyFrom(FunctionCollection* fc)
 {
-  m_type = Function::Collection;
-  m_running = fc->m_running;
-  m_name = fc->m_name;
+  m_startMutex.lock();
 
-  QPtrList <FunctionStep> *il = fc->steps();
-
-  for (FunctionStep* step = il->first(); step != NULL; step = il->next())
+  if (!m_running)
     {
-      FunctionStep* newItem = new FunctionStep(step);
-      m_steps.append(newItem);
+      m_type = Function::Collection;
+      m_running = fc->m_running;
+      m_name = fc->m_name;
+      
+      QPtrList <FunctionStep> *il = fc->steps();
+      
+      for (FunctionStep* step = il->first(); step != NULL; step = il->next())
+	{
+	  FunctionStep* newItem = new FunctionStep(step);
+	  m_steps.append(newItem);
+	}
     }
+
+  m_startMutex.unlock();
 }
 
 
@@ -80,6 +93,9 @@ void FunctionCollection::copyFrom(FunctionCollection* fc)
 //
 FunctionCollection::~FunctionCollection()
 {
+  stop();
+  while(m_running) sched_yield();
+
   while (m_steps.isEmpty() == false)
     {
       delete m_steps.take(0);
@@ -199,14 +215,25 @@ void FunctionCollection::createContents(QPtrList <QString> &list)
 //
 // Add a function to this collection
 //
-void FunctionCollection::addItem(Function* function)
+bool FunctionCollection::addItem(Function* function)
 {
-  ASSERT(function != NULL);
+  m_startMutex.lock();
 
-  FunctionStep* step = new FunctionStep();
-  step->setFunction(function);
+  if (!m_running)
+    {
+      ASSERT(function != NULL);
+      
+      FunctionStep* step = new FunctionStep();
+      step->setFunction(function);
+      
+      m_steps.append(step);
+      
+      m_startMutex.unlock();
+      return true;
+    }
 
-  m_steps.append(step);
+  m_startMutex.unlock();
+  return false;
 }
 
 
@@ -215,20 +242,25 @@ void FunctionCollection::addItem(Function* function)
 //
 bool FunctionCollection::removeItem(Function* function)
 {
-  bool retval = false;
+  m_startMutex.lock();
 
-  for (FunctionStep* step = m_steps.first(); step != NULL; 
-       step = m_steps.next())
+  if (!m_running)
     {
-      if (step->function()->id() == function->id())
+      for (FunctionStep* step = m_steps.first(); step != NULL; 
+	   step = m_steps.next())
 	{
-	  delete m_steps.take();
-	  retval = true;
-	  break;
+	  if (step->function()->id() == function->id())
+	    {
+	      delete m_steps.take();
+
+	      m_startMutex.unlock();
+	      return true;
+	    }
 	}
     }
 
-  return retval;
+  m_startMutex.unlock();
+  return false;
 }
 
 
@@ -237,27 +269,32 @@ bool FunctionCollection::removeItem(Function* function)
 //
 bool FunctionCollection::removeItem(const t_function_id functionId)
 {
-  bool retval = false;
+  m_startMutex.lock();
 
-  for (FunctionStep* step = m_steps.first(); step != NULL; 
-       step = m_steps.next())
+  if (!m_running)
     {
-      if (step->function()->id() == functionId)
+      for (FunctionStep* step = m_steps.first(); step != NULL; 
+	   step = m_steps.next())
 	{
-	  delete m_steps.take();
-	  retval = true;
-	  break;
+	  if (step->function()->id() == functionId)
+	    {
+	      delete m_steps.take();
+
+	      m_startMutex.unlock();
+	      return true;
+	    }
 	}
     }
 
-  return retval;
+  m_startMutex.unlock();
+  return false;
 }
 
 
 //
 // Initiate a speed change (from a speed bus)
 //
-void FunctionCollection::speedChange(long unsigned int newTimeSpan)
+void FunctionCollection::speedChange()
 {
 }
 
@@ -267,7 +304,9 @@ void FunctionCollection::speedChange(long unsigned int newTimeSpan)
 //
 void FunctionCollection::stop()
 {
-  m_running = false;
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
 }
 
 
@@ -276,6 +315,32 @@ void FunctionCollection::stop()
 //
 void FunctionCollection::freeRunTimeData()
 {
+  ASSERT(m_childCount == 0);
+
+  delete m_eventBuffer;
+  m_eventBuffer = NULL;
+
+  m_stopMutex.lock();
+  m_stopped = true;
+  m_stopMutex.unlock();
+
+  m_startMutex.lock();
+
+  if (m_virtualController)
+    {
+      QApplication::postEvent(m_virtualController,
+			      new FunctionStopEvent(this));
+      m_virtualController = NULL;
+    }
+
+  if (m_parentFunction)
+    {
+      m_parentFunction->childFinished();
+      m_parentFunction = NULL;
+    }
+
+  m_running = false;
+  m_startMutex.unlock();
 }
 
 
@@ -284,6 +349,12 @@ void FunctionCollection::freeRunTimeData()
 //
 void FunctionCollection::init()
 {
+  m_childCountMutex.lock();
+  m_childCount = 0;
+  m_childCountMutex.unlock();
+
+  m_removeAfterEmpty = false;
+  m_eventBuffer = new EventBuffer(0, 0);
 }
 
 
@@ -292,15 +363,43 @@ void FunctionCollection::init()
 //
 void FunctionCollection::run()
 {
+  QPtrListIterator <FunctionStep> it(m_steps);
+  FunctionStep* step = NULL;
+
   // Calculate starting values
   init();
   
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
+
+  m_stopped = false;
+  while ((step = it.current()) && !m_stopped)
+    {
+      ++it;
+
+      m_childCountMutex.lock();
+      m_childCount++;
+      m_childCountMutex.unlock();
+
+      step->function()->engage(this);
+    }
+
+  // Wait for all children to stop
+  m_childCountMutex.lock();
+  while (m_childCount > 0)
+    {
+      m_childCountMutex.unlock();
+      sched_yield();
+    }
+
+  m_removeAfterEmpty = true;
 }
 
 
 void FunctionCollection::functionStopped()
 {
+  m_childCountMutex.lock();
+  m_childCount--;
+  m_childCountMutex.unlock();
 }
 

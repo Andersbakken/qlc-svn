@@ -34,7 +34,6 @@ class QString;
 
 class VCWidget;
 class Function;
-class Bus;
 class FloatingEdit;
 
 #define VCBUTTON_MENU_ATTACH     1110
@@ -56,7 +55,6 @@ class VCButton : public QPushButton,
   Function* function() const;
 
   KeyBind* keyBind() { return m_keyBind; }
-  Bus* speedBus() { return m_speedBus; }
   QColor* bgColor() { return m_bgColor; }
   QPixmap* bgPixmap() const { return m_bgPixmap; }
 
@@ -78,13 +76,9 @@ class VCButton : public QPushButton,
   void keyPress(QKeyEvent* e);
   void keyRelease(QKeyEvent* e);
 
-  Bus* m_speedBus;
-
  private:
   bool moveThreshold(int x, int y);
   void moveTo(int x, int y);
-
-  void fillBusMenu(QPopupMenu* menu);
 
   void pressFunction();
   void releaseFunction();
@@ -93,11 +87,9 @@ class VCButton : public QPushButton,
  public slots:
   void slotRenameReturnPressed();
   void slotFunctionDestroyed();
-  void slotSpeedBusDestroyed();
 
  private slots:
   void slotMenuCallback(int item);
-  void slotBusMenuCallback(int item);
   void slotFlashReady();
 
  protected:
@@ -111,4 +103,3 @@ class VCButton : public QPushButton,
 };
 
 #endif
-

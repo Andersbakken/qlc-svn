@@ -75,6 +75,11 @@ class Function : public QThread
   // Same thing, only this time as a string
   QString typeString() const;
 
+  // The bus for speed setting
+  void setBus(t_bus_id id);
+  t_bus_id bus() const { return m_busID; }
+  virtual void busValueChanged(t_bus_id, t_bus_value) {}
+
   // Save this function to a file
   virtual void saveToFile(QFile &file) = 0;
 
@@ -85,9 +90,6 @@ class Function : public QThread
   // Use only these functions, not QThread::start()!!!
   virtual bool engage(QObject* virtualController); // From vcbutton
   virtual bool engage(Function* parentFunction); // From chaser & collection
-
-  // Change the speed of this function
-  virtual void speedChange(unsigned long newTimeSpan) = 0;
 
   // Stop this function
   virtual void stop() = 0;
@@ -140,6 +142,9 @@ class Function : public QThread
   bool m_stopped;
   QMutex m_stopMutex;
 
+  // Bus for setting the speed
+  t_bus_id m_busID;
+
  private:
   // Next ID that will be assigned to a new function
   static t_function_id _nextFunctionId;
@@ -155,6 +160,7 @@ class Function : public QThread
 #include <qevent.h>
 
 const int KFunctionStopEvent        ( QEvent::User + 1 );
+const int KFunctionSpeedEvent       ( QEvent::User + 2 );
 
 class FunctionStopEvent : public QCustomEvent
 {
@@ -167,6 +173,19 @@ class FunctionStopEvent : public QCustomEvent
 
  private:
   Function* m_function;
+};
+
+class FunctionSpeedEvent : public QCustomEvent
+{
+ public:
+  FunctionSpeedEvent(t_bus_value value) 
+    : QCustomEvent( KFunctionSpeedEvent ),
+    m_value(value) {}
+
+  t_bus_value value() const { return m_value; }
+
+ private:
+  t_bus_value m_value;
 };
 
 #endif

@@ -64,6 +64,7 @@ Bus::Bus(t_bus_id id) : QObject()
 //
 Bus::~Bus()
 {
+  emit destroyed(id());
 }
 
 
@@ -102,8 +103,8 @@ QString Bus::infoText()
     {
       str += QString("<P><B>") + name() + 
 	QString("</B> is assigned by default to all ");
-      str += QString("<B>scenes</B>. You can use it ");
-      str += QString("to set the <I>fade time</I>.</P>");
+      str += QString("<B>scenes</B>. You can use it thru the virtual ");
+      str += QString("console to set the <I>fade time</I>.</P>");
       str += QString("<H3>NOTE</H3>");
       str += QString("<P><I>This bus cannot be removed</I>.</P>");
     }
@@ -112,8 +113,8 @@ QString Bus::infoText()
     {
       str += QString("<P><B>") + name() + 
 	QString("</B> is assigned by default to all ");
-      str += QString("<B>chasers</B>. You can use this to set ");
-      str += QString("<I>hold time</I> between individual <I>scenes</I>.</P>");
+      str += QString("<B>chasers</B>. You can use it thru the virtual ");
+      str += QString("console to set <I>hold time</I> between steps.</P>");
       str += QString("<H3>NOTE</H3>");
       str += QString("<P><I>This bus cannot be removed</I>.</P>");
     }
@@ -146,7 +147,7 @@ void Bus::setName(QString name)
 void Bus::setValue(t_bus_value value)
 {
   m_value = value;
-  emit dataChanged((const Bus*) this);
+  emit valueChanged(m_id, value);
 }
 
 
