@@ -58,6 +58,7 @@
 #include "functiontree.h"
 #include "busproperties.h"
 
+#include "documentbrowser.h"
 #include "aboutbox.h"
 
 #include "dummyoutplugin.h"
@@ -115,8 +116,9 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 ///////////////////////////////////////////////////////////////////
 // Help menu entries
 #define ID_HELP                         1000
-#define ID_HELP_ABOUT               	1001
-#define ID_HELP_ABOUT_QT                1002
+#define ID_HELP_INDEX                   1010
+#define ID_HELP_ABOUT               	1020
+#define ID_HELP_ABOUT_QT                1030
 
 //////////////////////////////////////////////////////////////////
 // Status bar messages
@@ -321,7 +323,7 @@ void App::initMenuBar()
   m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 
 			 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(dir + QString("/info.xpm")),
+  m_fileMenu->insertItem(QPixmap(dir + QString("/settings.xpm")),
 			 "Se&ttings...", this, SLOT(slotFileSettings()), 
 			 0, ID_FILE_SETTINGS);
   m_fileMenu->insertSeparator();
@@ -390,10 +392,13 @@ void App::initMenuBar()
   // Help menu
   m_helpMenu = new QPopupMenu();
   m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
-			 "About...", this, SLOT(slotHelpAbout()), 
+			 "Index...", this, SLOT(slotHelpIndex()),
+			 SHIFT + Key_F1, ID_HELP_INDEX);
+  m_helpMenu->insertItem(QPixmap(dir + QString("/Q.xpm")),
+			 "About...", this, SLOT(slotHelpAbout()),
 			 0, ID_HELP_ABOUT);
   m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
-			 "About Qt...", this, SLOT(slotHelpAboutQt()), 
+			 "About Qt...", this, SLOT(slotHelpAboutQt()),
 			 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
@@ -922,6 +927,37 @@ void App::slotPanic()
   m_functionConsumer->purge();
 }
 
+
+//
+// Help -> Index
+//
+void App::slotHelpIndex()
+{
+  if (m_documentBrowser == NULL)
+    {
+      m_documentBrowser = new DocumentBrowser();
+      m_documentBrowser->init();
+      connect(m_documentBrowser, SIGNAL(closed()),
+	      this, SLOT(slotDocumentBrowserClosed()));
+    }
+  else
+    {
+      m_documentBrowser->hide();
+    }
+
+  m_documentBrowser->show();
+}
+
+
+void App::slotDocumentBrowserClosed()
+{
+  if (m_documentBrowser)
+    {
+      disconnect(m_documentBrowser);
+      delete m_documentBrowser;
+      m_documentBrowser = NULL;
+    }  
+}
 
 //
 // Help -> About QLC

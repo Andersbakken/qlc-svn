@@ -37,7 +37,6 @@ class QToolButton;
 class QFileDialog;
 class QWidgetList;
 class QLabel;
-class FunctionTree;
 
 class DeviceManagerView;
 class Settings;
@@ -50,6 +49,7 @@ class DummyOutPlugin;
 class DeviceClass;
 class FunctionTree;
 class BusProperties;
+class DocumentBrowser;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -130,6 +130,9 @@ class App : public QMainWindow
   void slotWindowCascade();
   void slotWindowTile();
 
+  void slotHelpIndex();
+  void slotDocumentBrowserClosed();
+
   void slotHelpAbout();
   void slotHelpAboutQt();
 
@@ -185,6 +188,7 @@ class App : public QMainWindow
   QWorkspace* m_workspace;
   FunctionTree* m_functionTree;
   BusProperties* m_busProperties;
+  DocumentBrowser* m_documentBrowser;
 
   FunctionConsumer* m_functionConsumer;
 
