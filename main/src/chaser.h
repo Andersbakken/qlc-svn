@@ -87,12 +87,12 @@ class Chaser : public Function
 
   void createContents(QList<QString> &list);
 
+  QList <ChaserStep> m_steps;
+
  public slots:
   void slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID);
 
  protected:
-  QList <ChaserStep> m_steps;
-
   bool m_running; // One chaser object can be running only once at a time
   bool m_OKforNextStep;
 

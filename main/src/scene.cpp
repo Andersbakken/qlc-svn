@@ -318,6 +318,10 @@ void Scene::recalculateSpeed(Feeder* f)
 	}
       else
 	{
+	  // This channel doesn't need update at all. If gap == 0, then both the target value
+	  // and the current value are the same.
+	  // continue;
+	  
 	  delta = f->timeSpan();
 	}
 
@@ -328,13 +332,13 @@ void Scene::recalculateSpeed(Feeder* f)
 	  if (delta < 1.0)
 	    {
 	      // If the next updates should come more often than
-	      // 1/1000 sec, we need to increase the step value because
-	      // the sequence timer provides timer tick of 1/1000sec.
+	      // 1/1024 sec, we need to increase the step value because
+	      // the sequence timer provides timer tick of 1/1024sec.
 	      f->setStep((unsigned long) ceil(1.0 / delta));
 	    }
 	  else
 	    {
-	      // The next step value is 1 per each 1/1000 sec
+	      // The next step value is 1 per each 1/1024 sec
 	      f->setStep(1);
 	    }
 	}
@@ -359,25 +363,26 @@ Event* Scene::getEvent(Feeder* feeder)
 	  readyCount++;
 	  continue;
 	}
-      else if (m_values[i].type == Set)
+
+      currentValue = feeder->device()->dmxChannel(i)->getValue();
+      
+      if (currentValue == m_values[i].value)
 	{
-	  event->m_values[i].value = m_values[i].value;
+	  event->m_values[i].type = Ready;
+	  readyCount++;
+	  continue;
 	}
       else
 	{
-	  currentValue = feeder->device()->dmxChannel(i)->getValue();
-	  
-	  if (currentValue == m_values[i].value)
-	    {
-	      event->m_values[i].type = Ready;
-	      readyCount++;
-	      continue;
-	    }
-	  else
-	    {
-	      event->m_values[i].type = Normal;
-	    }
-	  
+	  event->m_values[i].type = Normal;
+	}
+      
+      if (m_values[i].type == Set)
+	{
+	  event->m_values[i].value = m_values[i].value;
+	}
+      else if (m_values[i].type == Fade)
+	{
 	  if (currentValue > m_values[i].value)
 	    {
 	      // Current level is above target, the new value is set toward 0

@@ -39,9 +39,6 @@ ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent, const char* name)
   ASSERT(m_function != NULL);
 
   m_prevItem = NULL;
-
-  init();
-  addItems();
 }
 
 ChaserEditor::~ChaserEditor()
@@ -55,11 +52,11 @@ void ChaserEditor::addItems()
   QListViewItem* prev = NULL;
   QString deviceName;
 
-  int steps = m_function->steps()->count();
+  QList <ChaserStep> *steps = m_function->steps();
 
-  for (int i = 0; i < steps; i++)
+  for (unsigned int i = 0; i < steps->count(); i++)
     {
-      step = m_function->steps()->at(i);
+      step = steps->at(i);
       if (prev == NULL)
 	{
 	  if (step->device() != NULL)
@@ -152,6 +149,8 @@ void ChaserEditor::init()
   m_cancel->setText("&Cancel");
   m_cancel->setGeometry(390, 260, 120, 30);
   connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancelClicked()));
+
+  addItems();
 }
 
 void ChaserEditor::slotOKClicked()

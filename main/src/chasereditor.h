@@ -38,8 +38,9 @@ class ChaserEditor : public QDialog
   ChaserEditor(Chaser* function, QWidget* parent = NULL, const char* name = NULL);
   ~ChaserEditor();
 
- private:
   void init();
+
+ private:
   void updateOrderNumbers();
   void addItems();
 

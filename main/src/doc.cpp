@@ -94,7 +94,7 @@ void Doc::initializeDMX()
 {
   m_dmx = new DMX();
   m_dmx->open();
-  m_dmx->start();
+  // m_dmx->start();
 }
 
 bool Doc::isDMXAddressSpaceFree(unsigned short address, unsigned short channels)
