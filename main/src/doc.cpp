@@ -935,6 +935,7 @@ void Doc::removeBus(unsigned int id, bool deleteBus)
   setModified(true);
 }
 
+
 void Doc::initPlugins()
 {
   QString path;
@@ -947,8 +948,6 @@ void Doc::initPlugins()
   m_dummyOutPlugin = new DummyOutPlugin(Doc::NextPluginID++);
   connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)), this, SLOT(slotPluginActivated(Plugin*)));
   addPlugin(m_dummyOutPlugin);
-
-  qDebug("Probing %s for plugin objects...", (const char*) dir);
 
   QDir d(dir);
   d.setFilter(QDir::Files);
@@ -996,8 +995,6 @@ bool Doc::probePlugin(QString path)
 {
   void* handle = NULL;
   
-  qDebug("Probing file: " + path);
-
   handle = ::dlopen((const char*) path, RTLD_LAZY);
   if (handle == NULL)
     {
@@ -1027,7 +1024,7 @@ bool Doc::probePlugin(QString path)
 	  connect(plugin, SIGNAL(activated(Plugin*)), this, SLOT(slotPluginActivated(Plugin*)));
 	  addPlugin(plugin);
 
-	  qDebug(QString("Found ") + plugin->name());
+	  qDebug(QString("Found ") + plugin->name() + " plugin");
 	}
     }
 
