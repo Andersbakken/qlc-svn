@@ -50,7 +50,7 @@
                 <number>10</number>
             </property>
             <property name="textPosition">
-                <enum>BesideIcon</enum>
+                <enum>Right</enum>
             </property>
             <property name="toolTip" stdset="0">
                 <string>Open the quick scene editor menu</string>
