@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+     <LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
+    <TITLE>QLC Errata</TITLE>
+  </HEAD>
+
+  <BODY>
+    <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+      <TR>
+	<TD ALIGN="left">
+	  <IMG SRC="qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+	</TD>
+	<TD ALIGN="right">
+	  <A HREF="index.html" CLASS="link">QLC Documentation</A>
+	  <BR>
+	  <A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+	  <BR>
+	  <A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+	  <BR>
+	</TD>
+      </TR>
+    </TABLE>
+
+    <TABLE CELLSPACING="1" CELLPADDING="0" WIDTH="100%">
+      <TR>
+	<TD CLASS="headertd" WIDTH="100%">QLC Errata</TD>
+      </TR>
+    </TABLE>
+
+    <TABLE CELLSPACING="5" CELLPADDING="1" WIDTH="100%">
+      <TR>
+	<TD CLASS="headertd" WIDTH="50%">Problem</TD>
+	<TD CLASS="headertd" WIDTH="50%">Solution</TD>
+      </TR>
+
+      <TR>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF"></TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF"></TD>
+      </TR>
+
+      <TR>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">I seem to be able to <B>do nothing</B> in QLC. <B>How does this thing work?</B></TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">Open <B>device manager</B>, click <B>add new output device</B> and you're ready to rock'n'roll! :)</TD>
+      </TR>
+
+      <TR>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">OK, I've added a device to device manager, but when I try to click the <B>monitor</B> or
+	<B>dmx console</B> button, nothing happens.</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">You must first select the device whose <B>monitor</B> or <B>dmx console</> you want to view.</TD>
+      </TR>
+
+      <TR>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">I've assigned a function to a button in virtual console but when I press
+	  the button, nothing happens or the function runs slooooowly.</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">Create a speedslider to virtual console and assign a <B>Speed Bus</B> to it
+	  AND to the button. After this, dragging the speed slider will change the speed of your function.</TD>
+      </TR>
+      <TR>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">I've built the <B>analoque interface</B>, but QLC cannot control
+					     any dmx channels.</TD>
+	<TD CLASS="normal" BGCOLOR="#EFEFEF">First, run the small script that checks for
+					    the necessary <B>kernel modules</B>. If the output on the console seems okay,
+					    but the problem persists, check that the parallel port is set
+					    to <B>EPP in your BIOS</B> configuration.</TD>
+      </TR>
+
+    </TABLE>
+
+    <HR>
+    <A HREF="mailto:hjunnila@iki.fi" CLASS="link">Heikki Junnila</A>
+<!-- Created: Sun Apr 28 18:07:01 EEST 2002 -->
+<P CLASS="normal">
+<!-- hhmts start -->
+Last modified: Sat Aug 24 21:06:58 EEST 2002
+<!-- hhmts end -->
+</P>
+  </BODY>
+</HTML>

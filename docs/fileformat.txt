@@ -1,0 +1,50 @@
+INTRODUCTION
+------------
+This is a preliminary specification for the general fileformat used in
+qlc. The format is based on a "Keyword = Value" principle to keep things
+simple and consistent.
+
+Although the file format is the same for workspace files and deviceclass
+definition files, these two file types should not be mixed together.
+
+Every new item or section begins with an "Entry" keyword which specifies the
+type of data that is expected to follow until the next "Entry" keyword is found.
+
+Each line beginning with a hash "#" (*nix comment line) will be ignored as
+well as every line that doesn't contain the equal "=" sign _somewhere_.
+Comments that appear on a line with actual data will result in invalid value.
+
+SAMPLE FILE
+-----------
+# This line will be ignored
+Entry = Sample
+Data = Value
+This line will also be ignored.
+AnotherData = AnotherValue
+ValidData = InvalidValue #because this comment is on this line
+
+WORKSPACE FILES
+---------------
+Workspace files have the prefix .qlc to distinguish them from other files.
+
+Entry values recognised by the workspace file parser:
+
+Device		Defines a new device entry
+Function 	Defines a new global function entry
+Button		Defines a new button widget entry for virtual console
+Frame		Defines a new container frame widget entry for virtual console
+SpeedSlider	Defines a new speed slider widget entry for virtual console
+
+After the entry line is read, each entry is parsed by an object that is
+identified by the Value in the Entry field.
+
+All functions are parsed in two phases: first the functions are created,
+without any functionality. Then the file's contents are read again and
+the contents are put in place.
+
+DEVICE CLASS FILES
+------------------
+Device class files have the prefix .deviceclass to distinguish them from other
+files.
+
+*Yawn*

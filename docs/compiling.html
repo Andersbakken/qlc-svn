@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+    <LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
+      <TITLE>Compiling QLC</TITLE>
+  </HEAD>
+  
+  <BODY>
+    <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+      <TR>
+	<TD ALIGN="left">
+	  <IMG SRC="qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+	</TD>
+	<TD ALIGN="right">
+	  <A HREF="index.html" CLASS="link">QLC Documentation</A>
+	  <BR>
+	    <A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+	    <BR>
+	      <A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+	      <BR>
+	</TD>
+      </TR>
+    </TABLE>
+    
+    <TABLE CELLSPACING="1" CELLPADDING="0" WIDTH="100%">
+      <TR>
+	<TD CLASS="headertd" WIDTH="100%">Compiling QLC</TD>
+      </TR>
+    </TABLE>
+    
+    <P CLASS="normal">
+      This document discusses issues related to compiling Q Light Controller 2
+      from source files. It is assumed that the user is installing QLC with the default
+      settings.
+    </P>
+    
+    <H3>Directory structure</H3>
+    <P CLASS="normal">
+      QLC2 source distribution is divided in directories in order to keep
+      different file types in their own directory. <B>qlc2</B> is the topmost
+      directory that houses all the other files and directories that are
+      present in QLC source distribution. Under <B>qlc2</B> directory, there
+      are two other directories: <B>libs</B> and <B>main</B>. Under <B>libs</B>
+      are the plugin libraries' sources (currently none) and under 
+      <B>main</B>, are the main application sources and other necessary files.
+    </P>
+    
+    <P CLASS="normal">
+      <PRE>
+	qlc2/
+	    libs/   		<-- plugin library sources
+	    main/
+		xpm/    	<-- user interface icons, background images etc.
+		devices/	<-- sample device class files
+		docs/		<-- documentation files
+		src/		<-- main application sources
+	</PRE>
+    </P>
+
+    <H3>Configuration</H3>
+    <P CLASS="normal">
+      In most cases, qlc doesn't require any configuration if you have
+      all the necessary libraries installed on your Linux system. The most
+      common cases of unsuccessful compile operations are missing or
+      incorrect library/include directories. There is a special file for
+      library path settings in <B>qlc2</B> called <B>config.make</B>.
+      This file looks like this by default:
+      <PRE>
+	#
+	# Q Light Controller
+	# config.make
+	#
+	# Copyright (C) 2000, 2001, 2002 Heikki Junnila
+	#
+	# This program is free software; you can redistribute it and/or
+	# modify it under the terms of the GNU General Public License
+	# Version 2 as published by the Free Software Foundation.
+	#
+	# This program is distributed in the hope that it will be useful,
+	# but WITHOUT ANY WARRANTY; without even the implied warranty of
+	# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	# GNU General Public License for more details. The license is
+	# in the file "COPYING".
+	#
+	# You should have received a copy of the GNU General Public License
+	# along with this program; if not, write to the Free Software
+	# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	
+	# Edit these to suit your environment
+	# QTDIR = /usr/lib/qt3 	# You should use the environment variable QTDIR instead
+	DMXINCLUDES = /usr/local/include/dmx
+	DMXLIBS = /usr/local/lib/dmx
+	X11LIBS = /usr/X11R6/lib
+	MOC = $(QTDIR)/bin/moc
+	UIC = $(QTDIR)/bin/uic
+	CXXFLAGS += -Wall -DQT_FATAL_ASSERT -DQT_THREAD_SUPPORT
+	
+	# Edit this if you want to install to a different location
+	SYSTEMPATH = /usr/local/qlc/
+	
+	# You might want to leave these alone, unless you
+	# are absolutely sure what you are doing.
+	CONFIGFILE = /etc/qlc.conf
+	PIXMAPPATH = pixmap/
+	DEVICECLASSPATH = deviceclass/
+	PLUGINPATH = plugin/
+	OUTPUT = qlc
+			
+      </PRE>
+      
+      Check that each library path is set correctly. The <I>QTDIR</I>
+      variable is a special case: if you have QT correctly installed,
+      your system should have the environment variable <I>QTDIR</I> pointing
+      to the correct path. This is why it is commented on the config.make
+      file. If you have problems with QT libraries, try to set this directory
+      manually. You can check for the presence of this environment variable
+      by typing "<B>set | grep QTDIR</B>" in shell prompt.
+    </P>
+    
+    <H3>Compiling</H3>
+    <P CLASS="normal">
+      If everything is in order, you should be able to compile QLC by saying
+      <PRE>
+	make
+      </PRE>
+      in <B>qlc2</B> directory. After that, to install QLC to the path
+      specified in <I>SYSTEMPATH</I> variable in <B>config.make</B>
+      (<B>/usr/local/qlc</B> by default) you type
+      <PRE>
+	make install
+      </PRE>
+      in <B>qlc2</B> directory. After that typing
+      "<B>/usr/local/qlc/bin/qlc</B>" starts the application.
+    </P>
+    
+    <HR>
+      <A HREF="mailto:hjunnila@iki.fi" CLASS="link">Heikki Junnila</A>
+      
+      <!-- Created: Tue Apr 30 00:31:31 EEST 2002 -->
+      <P CLASS="normal">
+	<!-- hhmts start -->
+Last modified: Sun Oct 12 23:45:18 EEST 2003
+<!-- hhmts end -->
+      </P>
+  </BODY>
+</HTML>
