@@ -21,7 +21,7 @@
 
 
 #include <qlabel.h>
-#include <qlineedit.h>
+#include <qspinbox.h>
 #include <qdialog.h>
 #include <qslider.h>
 #include <qpushbutton.h>
@@ -36,51 +36,9 @@ extern App* _app;
 DMXAddressTool::DMXAddressTool(QWidget* parent, const char* name) 
   : UI_DMXAddressTool(parent, name, true)
 {
-  m_address = 0;
+  m_address = 1;
 
   m_updateValue = true;
-
-  QFont font;
-  font.setStyleHint(QFont::System);
-  font.setPointSize(11);
-
-  m_256Label->setFont(font);
-  m_256Label->setText("256");
-  connect(m_256Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_128Label->setFont(font);
-  m_128Label->setText("128");
-  connect(m_128Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_64Label->setFont(font);
-  m_64Label->setText("64");
-  connect(m_64Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_32Label->setFont(font);
-  m_32Label->setText("32");
-  connect(m_32Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_16Label->setFont(font);
-  m_16Label->setText("16");
-  connect(m_16Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_8Label->setFont(font);
-  m_8Label->setText("8");
-  connect(m_8Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_4Label->setFont(font);
-  m_4Label->setText("4");
-  connect(m_4Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_2Label->setFont(font);
-  m_2Label->setText("2");
-  connect(m_2Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  m_1Label->setFont(font);
-  m_1Label->setText("1");
-  connect(m_1Slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderValueChanged(int)));
-
-  connect(m_decimalEdit, SIGNAL(textChanged(const QString &)), this, SLOT(slotDecimalChanged(const QString &)));
 }
 
 DMXAddressTool::~DMXAddressTool()
@@ -97,21 +55,10 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
 
   m_updateValue = false;
 
-  int number = 0;
-  number = m_decimalEdit->text().toInt();
+  int number = 1;
+  number = m_decimalSpin->value();
   m_address = number;
 
-  if (number < 0)
-    {
-      m_decimalEdit->setText("0");
-      number = 0;
-    }
-  else if (number > 511)
-    {
-      m_decimalEdit->setText("511");
-      number = 511;
-    }
-  
   number -= 256;
   if (number >= 0)
     {
@@ -238,8 +185,7 @@ void DMXAddressTool::slotSliderValueChanged(int value)
 
   m_address = number;
 
-  str.setNum(number);
-  m_decimalEdit->setText(str);
+  m_decimalSpin->setValue(number);
 
   m_updateValue = true;
 }
@@ -248,7 +194,5 @@ void DMXAddressTool::setAddress(int address)
 {
   m_address = address;
 
-  QString str;
-  str.setNum(address);
-  m_decimalEdit->setText(str);
+  m_decimalSpin->setValue(address);
 }

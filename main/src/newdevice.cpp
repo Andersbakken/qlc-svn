@@ -68,6 +68,7 @@ void NewDevice::initView()
   m_treeOpenCheckBox->setChecked( (config == Settings::trueValue()) ? 
 				  true : false );
 
+  m_nameEdit->setText("New device");
   m_ok->setEnabled(false);
 }
 
@@ -116,7 +117,13 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
       m_selectionOK = true;
       m_modelValue = item->text(0);
       m_manufacturerValue = item->parent()->text(0);
-      m_nameEdit->setText(m_manufacturerValue + QString(" ") + m_modelValue);
+      if (m_nameEdit->text() == QString::null)
+	{
+	  m_nameEdit->setText("New device");
+	}
+
+      m_nameEdit->setSelection(0, m_nameEdit->text().length());
+      m_nameEdit->setFocus();
 
       DeviceClass* dc = _app->searchDeviceClass(m_manufacturerValue,
 						m_modelValue);
