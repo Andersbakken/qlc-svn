@@ -28,13 +28,13 @@ class SettingsUI : public UI_Settings
 {
   Q_OBJECT
 
-  friend class Settings;
-
  public:
-  SettingsUI(QWidget* parent, const char* name = NULL);
+  SettingsUI(QWidget* parent);
   ~SettingsUI();
 
- public slots:
+  void init();
+
+ private slots:
   void slotSystemBrowseClicked();
   void slotBackgroundBrowseClicked();
   void slotStyleChanged(const QString &);
@@ -43,11 +43,7 @@ class SettingsUI : public UI_Settings
 
  private:
   void fillStyleCombo();
-  void fillOutputPluginCombo();
-
- private:
-  bool m_openDeviceManager;
-  bool m_openLastWorkspace;
+  void fillAdvancedSettingsList();
 };
 
 #endif

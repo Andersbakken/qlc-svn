@@ -34,7 +34,7 @@
 
 extern App* _app;
 
-Chaser::Chaser(unsigned long id) : Function(id)
+Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
   m_running = false;
@@ -66,8 +66,8 @@ void Chaser::copyFrom(Chaser* ch, bool append)
       ChaserStep* newStep = new ChaserStep(step);
       m_steps.append(newStep);
 
-      connect(newStep->function(), SIGNAL(destroyed(unsigned long)),
-	      this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
+      connect(newStep->function(), SIGNAL(destroyed(t_function_id)),
+	      this, SLOT(slotMemberFunctionDestroyed(t_function_id)));
     }
 }
 
@@ -128,7 +128,7 @@ void Chaser::saveToFile(QFile &file)
 
 void Chaser::createContents(QPtrList <QString> &list)
 {
-  unsigned long functionId = 0;
+  t_function_id functionId = 0;
   
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -168,8 +168,8 @@ void Chaser::addStep(Function* function)
       ChaserStep* step = new ChaserStep(function);
       m_steps.append(step);
 
-      connect(step->function(), SIGNAL(destroyed(unsigned long)),
-	      this, SLOT(slotMemberFunctionDestroyed(unsigned long)));
+      connect(step->function(), SIGNAL(destroyed(t_function_id)),
+	      this, SLOT(slotMemberFunctionDestroyed(t_function_id)));
     }
   else
     {
@@ -229,7 +229,7 @@ void Chaser::lowerStep(unsigned int index)
     }
 }
 
-void Chaser::slotMemberFunctionDestroyed(unsigned long fid)
+void Chaser::slotMemberFunctionDestroyed(t_function_id fid)
 {
   for (unsigned i = 0; i < m_steps.count(); i++)
     {
@@ -242,7 +242,7 @@ void Chaser::slotMemberFunctionDestroyed(unsigned long fid)
 
 void Chaser::recalculateSpeed(Feeder* feeder)
 {
-  for (unsigned long i = 0; i < m_steps.count(); i++)
+  for (t_function_id i = 0; i < m_steps.count(); i++)
     {
       m_steps.at(i)->function()->recalculateSpeed(feeder);
     }
@@ -272,15 +272,15 @@ bool Chaser::registerFunction(Feeder* feeder)
 bool Chaser::unRegisterFunction(Feeder* feeder)
 {
   ChaserStep* step = NULL;
-  int index = (feeder->nextEventIndex() - 1 + m_steps.count()) % m_steps.count();
+  t_function_id index = (feeder->nextEventIndex() - 1 + m_steps.count()) % m_steps.count();
   step = m_steps.at(index);
 
   ASSERT(step != NULL);
 
   _app->sequenceProvider()->unRegisterEventFeeder(step->function());
 
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
 
   m_running = false;
   m_OKforNextStep = false;
@@ -308,17 +308,17 @@ Event* Chaser::getEvent(Feeder* feeder)
       
       _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), this);
 
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
       
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, unsigned long)));
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
     }
 
   return event;
 }
 
-void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, unsigned long feederID)
+void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, t_feeder_id feederID)
 {
   if (controller == this)
     {

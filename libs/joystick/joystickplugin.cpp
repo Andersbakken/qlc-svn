@@ -32,7 +32,7 @@
 //
 // Exported functions
 //
-extern "C" Plugin* create(int id)
+extern "C" Plugin* create(t_plugin_id id)
 {
   return new JoystickPlugin(id);
 }
@@ -45,7 +45,7 @@ extern "C" void destroy(Plugin* object)
 //
 // Class implementation
 //
-JoystickPlugin::JoystickPlugin(int id) : Plugin(id)
+JoystickPlugin::JoystickPlugin(t_plugin_id id) : Plugin(id)
 {
   m_name = QString("Joystick Input");
   m_type = Plugin::InputType;
@@ -59,7 +59,7 @@ JoystickPlugin::~JoystickPlugin()
 
 bool JoystickPlugin::open()
 {
-  unsigned int i = 0;
+  t_joystick_id i = 0;
   char fileName[256];
   Joystick* j = NULL;
 
@@ -122,6 +122,10 @@ QString JoystickPlugin::infoText()
 
   str += QString("</TR>");
   str += QString("</TABLE>");
+
+  str += QString("<H3>NOTE</H3>");
+  str += QString("<P>Joystick plugin is not fully implemented. ");
+  str += QString("You cannot use or configure it yet.</P>");
   str += QString("</BODY></HTML>");
 
   return str;

@@ -72,8 +72,8 @@ void DeviceProperties::slotDIPClicked()
 
 void DeviceProperties::slotOKClicked()
 {
-  unsigned short address = m_addressSpin->value();
-  unsigned short channels = m_device->deviceClass()->channels()->count();
+  t_channel address = m_addressSpin->value();
+  t_channel channels = m_device->deviceClass()->channels()->count();
   
   if (address + channels - 1 > 511)
     {

@@ -24,6 +24,8 @@
 
 #include "uic_advancedsceneeditor.h"
 
+#include "function.h"
+
 class DMXDevice;
 class Scene;
 class LogicalChannel;
@@ -52,8 +54,8 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotOKClicked();
   void slotCancelClicked();
 
-  void slotDeviceFunctionsListChanged(unsigned long fid);
-  void slotDeviceClassFunctionsListChanged(unsigned long fid);
+  void slotDeviceFunctionsListChanged(t_function_id fid);
+  void slotDeviceClassFunctionsListChanged(t_function_id fid);
 
  signals:
   void closed();

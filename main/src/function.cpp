@@ -22,9 +22,9 @@
 #include "function.h"
 #include "dmxdevice.h"
 
-unsigned long Function::_nextFunctionId = MIN_FUNCTION_ID;
+t_function_id Function::_nextFunctionId = KFunctionIDMin;
 
-Function::Function(unsigned long id) : QObject()
+Function::Function(t_function_id id) : QObject()
 {
   if (id == 0)
     {
@@ -33,8 +33,8 @@ Function::Function(unsigned long id) : QObject()
 
       if (_nextFunctionId == 0)
 	{
-	  // In case we ever go beyond ULONG_MAX
-	  _nextFunctionId = MIN_FUNCTION_ID;
+	  // In case we ever go beyond the limit
+	  _nextFunctionId = KFunctionIDMin;
 	}
     }
   else
@@ -47,8 +47,8 @@ Function::Function(unsigned long id) : QObject()
 
       if (_nextFunctionId == 0)
 	{
-	  // In case we ever go beyond ULONG_MAX
-	  _nextFunctionId = MIN_FUNCTION_ID;
+	  // In case we ever go beyond the limit
+	  _nextFunctionId = KFunctionIDMin;
 	}
     }
 

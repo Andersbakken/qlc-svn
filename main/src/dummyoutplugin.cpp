@@ -142,7 +142,7 @@ void DummyOutPlugin::loadSettings()
 {
 }
 
-bool DummyOutPlugin::writeChannel(unsigned short channel, unsigned char value)
+bool DummyOutPlugin::writeChannel(t_channel channel, t_value value)
 {
   return true;
 }

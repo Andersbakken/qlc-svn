@@ -65,7 +65,7 @@ int parseArgs(int argc, char **argv)
 	  else if (::strcmp(argv[i], "-v") == 0 ||
 		   ::strcmp(argv[i], "--version") == 0)
 	    {
-	      qDebug(IDS_APP_VERSION_STR);
+	      qDebug(KApplicationVersion);
 	      ret = 1;
 	    }
 	  else
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
       return 0;
     }
 
-  qDebug("* " + IDS_APP_NAME_LONG + " " + IDS_APP_VERSION_STR);
+  qDebug("* " + KApplicationNameLong + " " + KApplicationVersion);
   qDebug("* This program is licensed under the terms of the GNU General Public License.");
   qDebug("* Copyright (c) Heikki Junnila (hjunnila@iki.fi)");
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
   //
   // Construct the main application class
   _app = new App(settings);
-  _app->setCaption(IDS_APP_NAME_LONG);
+  _app->setCaption(KApplicationNameLong);
   _app->setSequenceTimer(timer);
   _app->initView();
   a.setMainWidget(_app);

@@ -35,11 +35,11 @@
 
 extern App* _app;
 
-Scene::Scene(unsigned long id) : Function(id)
+Scene::Scene(t_function_id id) : Function(id)
 {
   m_type = Function::Scene;
 
-  for (int i = 0; i < 512; i++)
+  for (t_channel i = 0; i < 512; i++)
     {
       m_values[i].value = 0;
       m_values[i].type = Fade;
@@ -57,7 +57,7 @@ void Scene::copyFrom(Scene* sc)
   m_name = QString(sc->name());
   m_device = sc->m_device;
 
-  for (int i = 0; i < 512; i++)
+  for (t_channel i = 0; i < 512; i++)
     {
       m_values[i].value = sc->m_values[i].value;
       m_values[i].type = sc->m_values[i].type;
@@ -68,28 +68,31 @@ Scene::~Scene()
 {
 }
 
-void Scene::reAllocateValueSetters(unsigned short channels)
+void Scene::reAllocateValueSetters(t_channel channels)
 {
-  unsigned short currentCount = m_setterList.count();
+  t_channel currentCount = m_setterList.count();
   ValueSetter* vs = NULL;
 
   if (currentCount < channels)
     {
       // More channels needed
-      for (unsigned short i = currentCount; i < (channels - currentCount) && i < 512; i++)
+      for (t_channel i = currentCount; 
+	   i < (channels - currentCount) && i < 512; i++)
 	{
 	  vs = new ValueSetter;
 	  m_setterList.append(vs);
-	  _app->doc()->dmxChannel(m_device->address() + i)->registerValueSetter(vs);
+	  _app->doc()->dmxChannel(m_device->address()
+				  + i)->registerValueSetter(vs);
 	}
     }
   else if (currentCount > channels)
     {
       // Channels need to be deallocated
-      for (unsigned short i = currentCount - 1; (i >= channels) && i < 512; i--)
+      for (t_channel i = currentCount - 1; (i >= channels) && i < 512; i--)
 	{
 	  vs = m_setterList.take(i);
-	  _app->doc()->dmxChannel(m_device->address() + i)->unRegisterValueSetter(vs);
+	  _app->doc()->dmxChannel(m_device->address()
+				  + i)->unRegisterValueSetter(vs);
 
 	  delete vs;
 	}
@@ -111,7 +114,7 @@ bool Scene::registerFunction(Feeder* feeder)
   return true;
 }
 
-QString Scene::valueTypeString(int ch)
+QString Scene::valueTypeString(t_channel ch)
 {
   switch(m_values[ch].type)
     {
@@ -163,7 +166,8 @@ void Scene::saveToFile(QFile &file)
       file.writeBlock((const char*) s, s.length());
 
       // Data
-      for (unsigned short i = 0; i < device()->deviceClass()->channels()->count(); i++)
+      for (t_channel i = 0;
+	   i < device()->deviceClass()->channels()->count(); i++)
 	{
 	  t.setNum(i);
 	  s = t + QString(" = ");
@@ -189,7 +193,7 @@ void Scene::createContents(QList<QString> &list)
 {
   QString t;
 
-  unsigned char ch = 0;
+  t_value ch = 0;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -200,7 +204,7 @@ void Scene::createContents(QList<QString> &list)
 	}
       else if (s->at(0).isNumber() == true)
 	{
-	  ch = (unsigned char) s->toInt();
+	  ch = static_cast<t_value> (s->toInt());
 	  t = *(list.next());
 	  m_values[ch].value = t.toInt();
 	  m_values[ch].type = Set;
@@ -233,7 +237,7 @@ void Scene::createContents(QList<QString> &list)
     }
 }
 
-bool Scene::set(unsigned short ch, unsigned char value, SceneValueType type)
+bool Scene::set(t_channel ch, t_value value, SceneValueType type)
 {
   if (m_device != NULL)
     {
@@ -256,7 +260,7 @@ bool Scene::set(unsigned short ch, unsigned char value, SceneValueType type)
   return true;
 }
 
-bool Scene::clear(unsigned short ch)
+bool Scene::clear(t_channel ch)
 {
   if (m_device != NULL)
     {
@@ -280,17 +284,17 @@ bool Scene::clear(unsigned short ch)
   return true;
 }
 
-SceneValue Scene::channelValue(unsigned short ch)
+SceneValue Scene::channelValue(t_channel ch)
 {
   return m_values[ch];
 }
 
 void Scene::recalculateSpeed(Feeder* f)
 {
-  unsigned short gap = 0;
+  t_value gap = 0;
   float delta = 0;
 
-  unsigned short channels = 0;
+  t_channel channels = 0;
 
   if (device() != NULL)
     {
@@ -300,7 +304,7 @@ void Scene::recalculateSpeed(Feeder* f)
   // Calculate delta for the rest of the channels.
   // Find out the channel needing the smallest delta (most frequent
   // updates needed) and set it to this whole scene's delta
-  for (unsigned short i = 0; i < channels; i++)
+  for (t_channel i = 0; i < channels; i++)
     {
       if (m_values[i].type == NoSet)
 	{
@@ -344,15 +348,15 @@ void Scene::recalculateSpeed(Feeder* f)
 
 Event* Scene::getEvent(Feeder* feeder)
 {
-  unsigned short readyCount = 0;
-  unsigned short channels = 0;
-  unsigned char currentValue = 0;
+  t_channel readyCount = 0;
+  t_channel channels = 0;
+  t_value currentValue = 0;
 
   channels = device()->deviceClass()->channels()->count();
 
   Event* event = new Event(channels);
 
-  for (unsigned short i = 0; i < channels; i++)
+  for (t_channel i = 0; i < channels; i++)
     {
       if (m_values[i].type == NoSet)
 	{
@@ -383,8 +387,8 @@ Event* Scene::getEvent(Feeder* feeder)
 	  if (currentValue > m_values[i].value)
 	    {
 	      // Current level is above target, the new value is set toward 0
-	      unsigned short nextGap = abs(m_values[i].value - currentValue);
-	      unsigned short nextStep = feeder->step();
+	      t_value nextGap = abs(m_values[i].value - currentValue);
+	      t_value nextStep = feeder->step();
 	      if (nextStep > nextGap)
 		{
 		  nextStep = nextGap;
@@ -395,8 +399,8 @@ Event* Scene::getEvent(Feeder* feeder)
 	  else if (currentValue < m_values[i].value)
 	    {
 	      // Current level is below target, the new value is set toward 255
-	      unsigned short nextGap = abs(m_values[i].value - currentValue);
-	      unsigned short nextStep = feeder->step();
+	      t_value nextGap = abs(m_values[i].value - currentValue);
+	      t_value nextStep = feeder->step();
 	      if (nextStep > nextGap)
 		{
 		  nextStep = nextGap;
@@ -421,17 +425,17 @@ Event* Scene::getEvent(Feeder* feeder)
   return event;
 }
 
-void Scene::directSet(unsigned char intensity)
+void Scene::directSet(t_value intensity)
 {
   double percent = 0;
-  unsigned short int channels = 0;
   double value = 0;
+  t_channel channels = 0;
   ValueSetter* vs = NULL;
 
   percent = ((double) intensity) / ((double) 255);
   channels = m_device->deviceClass()->channels()->count();
 
-  for (int i = 0; i < channels; i++)
+  for (t_channel i = 0; i < channels; i++)
     {
       if (m_values[i].type != NoSet)
 	{
@@ -439,7 +443,7 @@ void Scene::directSet(unsigned char intensity)
 	  ASSERT(vs != NULL);
 
 	  value = m_values[i].value * percent;
-	  vs->setValue((unsigned char) value);
+	  vs->setValue(static_cast<t_value> (value));
 	}
     }
 }

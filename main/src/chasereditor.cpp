@@ -47,8 +47,8 @@ extern App* _app;
 #define COL_FUNCTION 2
 #define COL_FID      3
 
-ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent, const char* name)
-  : UI_ChaserEditor(parent, name, true)
+ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
+  : UI_ChaserEditor(parent, "", true)
 {
   m_chaser = new Chaser(function);
   ASSERT(m_chaser != NULL);
@@ -158,15 +158,15 @@ void ChaserEditor::slotPlayClicked()
   m_bus->setType(Bus::Speed);
   m_bus->setValue(1024);
 
-  connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)), 
-	  this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+  connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, t_feeder_id)), 
+	  this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, t_feeder_id)));
 
-  unsigned long id = _app->sequenceProvider()->registerEventFeeder(m_chaser, m_bus, NULL);
-  if (id == FEEDER_ID_INVALID)
+  t_feeder_id id = _app->sequenceProvider()->registerEventFeeder(m_chaser, m_bus, NULL);
+  if (id == KFeederIDInvalid)
     {
       m_feederID = 0;
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)), 
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, t_feeder_id)), 
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, t_feeder_id)));
     }
   else
     {
@@ -176,12 +176,12 @@ void ChaserEditor::slotPlayClicked()
 
 }
 
-void ChaserEditor::slotFunctionUnRegistered(Function* f, Function* c, DMXDevice* d, unsigned long id)
+void ChaserEditor::slotFunctionUnRegistered(Function* f, Function* c, DMXDevice* d, t_feeder_id id)
 {
   if (id == m_feederID)
     {
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)), 
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, t_feeder_id)), 
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, t_feeder_id)));
       m_play->setOn(false);
 
       delete m_bus;
@@ -210,7 +210,7 @@ void ChaserEditor::updateOrderNumbers()
 void ChaserEditor::slotRaiseClicked()
 {
   QListViewItem* item = m_stepList->currentItem();
-  unsigned long fid = 0;
+  t_function_id fid = 0;
   int index = 0;
   int newIndex = 0;
 
@@ -242,7 +242,7 @@ void ChaserEditor::slotRaiseClicked()
 void ChaserEditor::slotLowerClicked()
 {
   QListViewItem* item = m_stepList->currentItem();
-  unsigned long fid = 0;
+  t_function_id fid = 0;
   int index = 0;
   int newIndex = 0;
 

@@ -32,9 +32,8 @@
 #include "capability.h"
 
 EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
-			       SceneValue &currentValue,
-			       const char* name)
-  : UI_EditSceneValue(parent, name, true)
+			       SceneValue &currentValue)
+  : UI_EditSceneValue(parent, "", true)
 {
   ASSERT(ch != NULL);
 

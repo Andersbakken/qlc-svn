@@ -23,6 +23,7 @@
 #define DUMMYOUTPLUGIN_H
 
 #include "../../libs/common/outputplugin.h"
+#include "dmxchannel.h"
 
 class DummyOutPlugin : public OutputPlugin
 {
@@ -46,7 +47,7 @@ class DummyOutPlugin : public OutputPlugin
   virtual void loadSettings();
   
   // OutputPlugin functions
-  bool writeChannel(unsigned short channel, unsigned char value);
+  bool writeChannel(t_channel channel, t_value value);
 
   void activate();
   

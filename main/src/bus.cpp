@@ -25,7 +25,7 @@
 #include "bus.h"
 #include "app.h"
 
-static int _nextBusID = BUS_ID_MIN;
+static int _nextBusID = KBusIDMin;
 
 Bus::Bus() : QObject()
 {
@@ -33,7 +33,7 @@ Bus::Bus() : QObject()
   _nextBusID++;
   m_value = 0;
   m_type = Generic;
-  m_name.sprintf("Bus %ld", m_id - BUS_ROOT_ID);
+  m_name.sprintf("Bus %d", m_id);
 }
 
 Bus::~Bus()
@@ -85,8 +85,8 @@ QString Bus::infoText()
   return str;
 }
 
-void Bus::setValue(unsigned long value)
-{ 
+void Bus::setValue(t_bus_value value)
+{
   m_value = value;
   emit dataChanged((const Bus*) this);
 }

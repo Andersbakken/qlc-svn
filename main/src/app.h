@@ -46,26 +46,9 @@ class SequenceProvider;
 class Doc;
 class OutputPlugin;
 
-///////////////////////////////////////////////////////////////////
-// General program defines
-const QString IDS_APP_NAME_LONG =             "Q Light Controller";
-const QString IDS_APP_NAME_SHORT =            "QLC";
-const QString IDS_APP_VERSION_STR =           "Version 2.2.1";
-
-const unsigned short MIN_DMX_VALUE =          0;
-const unsigned short MAX_DMX_VALUE =          255;
-
-const unsigned int OUTPUT_DEVICE_ROOT_ID =    0;
-const unsigned int OUTPUT_DEVICE_ID_MIN =     1;
-const unsigned int OUTPUT_DEVICE_ID_MAX =     999;
-
-const unsigned int PLUGIN_ROOT_ID =           1000;
-const unsigned int PLUGIN_ID_MIN =            1001;
-const unsigned int PLUGIN_ID_MAX =            1999;
-
-const unsigned int BUS_ROOT_ID =              2000;
-const unsigned int BUS_ID_MIN =               2001;
-const unsigned int BUS_ID_MAX =               2999;
+const QString KApplicationNameLong  = "Q Light Controller";
+const QString KApplicationNameShort = "QLC";
+const QString KApplicationVersion   = "Version 2.2.1";
 
 //////////////////////////////////////////////////////////////////
 // Class definition

@@ -57,7 +57,7 @@
 
 extern App* _app;
 
-unsigned long Doc::NextPluginID = PLUGIN_ID_MIN;
+t_plugin_id Doc::NextPluginID = KPluginIDMin;
 
 Doc::Doc() : QObject()
 {
@@ -105,13 +105,13 @@ void Doc::init()
 
 void Doc::initDMXChannels()
 {
-  for (unsigned short i = 0; i < 512; i++)
+  for (t_channel i = 0; i < 512; i++)
     {
       m_DMXChannel[i] = new DMXChannel(i);
     }
 }
 
-DMXChannel* Doc::dmxChannel(unsigned short channel)
+DMXChannel* Doc::dmxChannel(t_channel channel)
 {
   ASSERT(channel < 512);
 
@@ -211,7 +211,7 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
       msg.sprintf("No channels specified for device class \"" + dc->manufacturer() +
 		  QString(" ") + dc->model() + QString("\".\n") +
 		  "Use the device class editor to add one or more channels.");
-      QMessageBox::warning(_app, IDS_APP_NAME_SHORT, msg);
+      QMessageBox::warning(_app, KApplicationNameShort, msg);
     }
 
   return dc;
@@ -359,8 +359,8 @@ void Doc::createFunctionContents(QList<QString> &list)
   Function* function = NULL;
   DMXDevice* device = NULL;
 
-  unsigned long deviceId = 0;
-  unsigned long functionId = ULONG_MAX;
+  t_device_id deviceId = 0;
+  t_function_id functionId = KOutputDeviceIDMax;
 
   QString name;
 
@@ -430,8 +430,8 @@ Function* Doc::createFunction(QList<QString> &list)
 
   QString name;
   QString type;
-  unsigned long device = 0;
-  unsigned long id = ULONG_MAX;
+  t_device_id device = 0;
+  t_function_id id = KFunctionIDMax;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -480,7 +480,7 @@ Function* Doc::createFunction(QList<QString> &list)
 	  if (d == NULL)
 	    {
 	      // This function's device was not found
-	      qDebug("Unable to find device %ld for function %s. Discarding function.", device, (const char*) name);
+	      qDebug("Unable to find device %d for function %s. Discarding function.", device, name.latin1());
 	      return NULL;
 	    }
 	}
@@ -523,7 +523,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
   QString model = QString::null;
   QString t = QString::null;
   int address = 0;
-  unsigned long id = 0;
+  t_device_id id = 0;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -565,7 +565,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
       QString msg;
       msg = QString("Unable to add device \"" + name +
 		    QString("\" because device (class) information is missing."));
-      QMessageBox::critical(_app, IDS_APP_NAME_SHORT, msg);
+      QMessageBox::critical(_app, KApplicationNameShort, msg);
 
       return NULL;
     }
@@ -578,7 +578,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 	  msg = QString("Unable to add device \"" + name + "\"." + 
 			"\nNo device class description found for " +
 			manufacturer + QString(" ") + model);
-	  QMessageBox::critical(_app, IDS_APP_NAME_SHORT, msg);
+	  QMessageBox::critical(_app, KApplicationNameShort, msg);
 	  return NULL;
 	}
       else
@@ -590,7 +590,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 			    QString(" ") + dc->model() + QString("\".\n") +
 			    QString("Unable to load device \"") + name + QString("\" to workspace"));
 
-	      QMessageBox::warning(_app, IDS_APP_NAME_SHORT, msg);
+	      QMessageBox::warning(_app, KApplicationNameShort, msg);
 	      return NULL;
 	    }
 	  else
@@ -776,7 +776,7 @@ bool Doc::removeDevice(DMXDevice* device)
 }
 
 /* Search for a device by its run-time id number */
-DMXDevice* Doc::searchDevice(const unsigned long id)
+DMXDevice* Doc::searchDevice(const t_device_id id)
 {
   for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
@@ -802,7 +802,7 @@ DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, const QString &
   return NULL;
 }
 
-DeviceClass* Doc::searchDeviceClass(unsigned long id)
+DeviceClass* Doc::searchDeviceClass(const t_deviceclass_id id)
 {
   for (DeviceClass* d = m_deviceClassList.first(); d != NULL; d = m_deviceClassList.next())
     {
@@ -825,7 +825,7 @@ void Doc::addFunction(const Function* function)
 }
 
 
-void Doc::removeFunction(const unsigned long id, bool deleteFunction)
+void Doc::removeFunction(const t_function_id id, bool deleteFunction)
 {
   Function* f = NULL;
 
@@ -848,7 +848,7 @@ void Doc::removeFunction(const unsigned long id, bool deleteFunction)
 }
 
 
-Function* Doc::searchFunction(const unsigned long id)
+Function* Doc::searchFunction(const t_function_id id)
 {
   Function* f = NULL;
   for (f = m_functions.first(); f != NULL; f = m_functions.next())
@@ -873,11 +873,11 @@ void Doc::addBus(Bus* bus)
 }
 
 
-Bus* Doc::searchBus(const unsigned int id)
+Bus* Doc::searchBus(const t_bus_id id)
 {
   Bus* bus = NULL;
 
-  for (unsigned int i = 0; i < m_busList.count(); i++)
+  for (t_bus_id i = 0; i < m_busList.count(); i++)
     {
       bus = m_busList.at(i);
       ASSERT(bus);
@@ -892,7 +892,7 @@ Bus* Doc::searchBus(const unsigned int id)
 }
 
 
-void Doc::removeBus(unsigned int id, bool deleteBus)
+void Doc::removeBus(t_bus_id id, bool deleteBus)
 {
   Bus* bus = NULL;
   
@@ -1057,11 +1057,11 @@ Plugin* Doc::searchPlugin(QString name, Plugin::PluginType type)
   return NULL;
 }
 
-Plugin* Doc::searchPlugin(unsigned long id)
+Plugin* Doc::searchPlugin(const t_plugin_id id)
 {
   Plugin* plugin = NULL;
 
-  for (unsigned int i = 0; i < m_pluginList.count(); i++)
+  for (t_plugin_id i = 0; i < m_pluginList.count(); i++)
     {
       plugin = m_pluginList.at(i);
 

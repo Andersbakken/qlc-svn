@@ -20,6 +20,7 @@
 */
 
 #include "devicemanagerview.h"
+#include "devicelistview.h"
 #include "settings.h"
 #include "app.h"
 #include "doc.h"
@@ -37,8 +38,7 @@
 
 extern App* _app;
 
-DeviceManagerView::DeviceManagerView(QWidget* parent, const char* name) 
-  : QWidget(parent, name)
+DeviceManagerView::DeviceManagerView(QWidget* parent) : QWidget(parent)
 {
   m_layout = NULL;
   m_dockArea = NULL;
@@ -87,10 +87,10 @@ void DeviceManagerView::initView()
   connect(_app->virtualConsole(), SIGNAL(modeChange(VirtualConsole::Mode)),
 	  this, SLOT(slotModeChanged(VirtualConsole::Mode)));
 
-  connect(m_dm, SIGNAL(selectionChanged()),
-	  this, SLOT(slotSelectionChanged()));
+  connect(m_dm, SIGNAL(selectionChanged(int, int)),
+	  this, SLOT(slotSelectionChanged(int, int)));
 
-  slotSelectionChanged();
+  slotSelectionChanged(-1, -1);
 }
 
 DeviceManagerView::~DeviceManagerView()
@@ -142,9 +142,9 @@ void DeviceManagerView::slotModeChanged(VirtualConsole::Mode m)
     }
 }
 
-void DeviceManagerView::slotSelectionChanged()
+void DeviceManagerView::slotSelectionChanged(int itemId, int itemType)
 {
-  if (m_dm->currentDevice() == NULL)
+  if (itemType != KDLViewTypeDevice)
     {
       m_consoleButton->setEnabled(false);
       m_monitorButton->setEnabled(false);

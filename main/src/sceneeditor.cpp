@@ -280,8 +280,8 @@ void SceneEditor::store()
   QList <ChannelUI> ul = ((DMXDevice*) m_device)->getChannelUnitList();
 
   // Take values from device because it returns real values for
-  // sure and they are unsigned chars and it is much simpler this way / HJu
-  for (unsigned short i = 0; i < m_device->deviceClass()->channels()->count(); i++)
+  // sure and they are t_value's and it is much simpler this way
+  for (t_channel i = 0; i < m_device->deviceClass()->channels()->count(); i++)
     {
       if (m_device->dmxChannel(i)->status() == DMXChannel::On)
 	{
@@ -298,7 +298,7 @@ void SceneEditor::store()
 
 Scene* SceneEditor::currentScene()
 {
-  unsigned long fid = 0;
+  t_function_id fid = 0;
 
   if (m_sceneList->selectedItem() == NULL)
     {
@@ -332,7 +332,7 @@ void SceneEditor::fillFunctions()
   setStatusText(KStatusUnchanged, KStatusColorUnchanged);
 }
 
-void SceneEditor::selectFunction(unsigned long fid)
+void SceneEditor::selectFunction(t_function_id fid)
 {
   for (unsigned int i = 0; i < m_sceneList->count(); i++)
     {

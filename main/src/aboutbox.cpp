@@ -55,7 +55,7 @@ void AboutBox::initDialog()
   int w = 350;
   int h = 123;
 
-  setCaption("About Q Light Controller");
+  setCaption(QString("About ") + KApplicationNameLong);
 
   QString dir;
   _app->settings()->get(KEY_SYSTEM_DIR, dir);
@@ -87,7 +87,7 @@ void AboutBox::initDialog()
   m_version->setFont(font);
   m_version->setGeometry(0, h, w, 20);
   m_version->setAlignment(AlignCenter);
-  m_version->setText(IDS_APP_VERSION_STR);
+  m_version->setText(KApplicationVersion);
   m_version->setBackgroundColor(white);
   
   m_copyright = new QLabel(this);

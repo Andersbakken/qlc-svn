@@ -44,7 +44,7 @@ static QMutex _mutex;
 //
 // Exported functions
 //
-extern "C" OutputPlugin* create(int id)
+extern "C" OutputPlugin* create(t_plugin_id id)
 {
   return new DMX4LinuxOut(id);
 }
@@ -57,7 +57,7 @@ extern "C" void destroy(OutputPlugin* object)
 //
 // Class implementation
 //
-DMX4LinuxOut::DMX4LinuxOut(int id) : OutputPlugin(id)
+DMX4LinuxOut::DMX4LinuxOut(t_plugin_id id) : OutputPlugin(id)
 {
   m_device = -1;
   m_name = QString("DMX4Linux Output");

@@ -36,8 +36,8 @@
 
 extern App* _app;
 
-FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* functionCollection, QWidget* parent, const char* name)
-  : QDialog(parent, name, true)
+FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* functionCollection, QWidget* parent)
+  : QDialog(parent, "", true)
 {
   ASSERT(functionCollection != NULL);
   m_functionCollection = functionCollection;
@@ -140,7 +140,7 @@ void FunctionCollectionEditor::slotRemoveClicked()
 {
   if (m_functionList->selectedItem() != NULL)
     {
-      unsigned long id = 0;
+      t_function_id id = 0;
 
       id = m_functionList->selectedItem()->text(2).toULong();
 
@@ -164,7 +164,7 @@ void FunctionCollectionEditor::updateFunctionList()
     }
 }
 
-QListViewItem* FunctionCollectionEditor::findItem(const unsigned long functionId)
+QListViewItem* FunctionCollectionEditor::findItem(const t_function_id functionId)
 {
   QListViewItem* item = NULL;
   QListViewItemIterator it(m_functionList);

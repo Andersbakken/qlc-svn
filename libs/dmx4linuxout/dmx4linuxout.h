@@ -24,13 +24,13 @@
 
 #include "../common/outputplugin.h"
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 
 class ConfigureDMX4LinuxOut;
 class QPoint;
 
-extern "C" OutputPlugin* create(int id);
+extern "C" OutputPlugin* create(t_plugin_id id);
 extern "C" void destroy(OutputPlugin* object);
 
 class DMX4LinuxOut : public OutputPlugin
@@ -40,7 +40,7 @@ class DMX4LinuxOut : public OutputPlugin
   friend class ConfigureDMX4LinuxOut;
 
  public:
-  DMX4LinuxOut(int id);
+  DMX4LinuxOut(t_plugin_id id);
   ~DMX4LinuxOut();
 
   // Plugin methods
@@ -67,7 +67,7 @@ class DMX4LinuxOut : public OutputPlugin
 
  private:
   void activate();
-  void createContents(QList <QString> &list);
+  void createContents(QPtrList <QString> &list);
 
  private:
   QString m_deviceName;

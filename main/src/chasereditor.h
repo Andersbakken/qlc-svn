@@ -25,6 +25,9 @@
 #include <qdialog.h>
 #include "uic_chasereditor.h"
 
+#include "function.h"
+#include "feeder.h"
+
 class QListView;
 class QListViewItem;
 class QLineEdit;
@@ -42,7 +45,7 @@ class ChaserEditor : public UI_ChaserEditor
   Q_OBJECT
 
  public:
-  ChaserEditor(Chaser* function, QWidget* parent = NULL, const char* name = NULL);
+  ChaserEditor(Chaser* function, QWidget* parent = NULL);
   ~ChaserEditor();
 
   void init();
@@ -56,7 +59,7 @@ class ChaserEditor : public UI_ChaserEditor
   Chaser* m_original;
 
   Bus* m_bus;
-  unsigned long m_feederID;
+  t_feeder_id m_feederID;
 
  private slots:
   void slotCancelClicked();
@@ -68,7 +71,8 @@ class ChaserEditor : public UI_ChaserEditor
   void slotRaiseClicked();
   void slotLowerClicked();
 
-  void slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long);
+  void slotFunctionUnRegistered(Function*, Function*,
+				DMXDevice*, t_function_id);
 };
 
 #endif

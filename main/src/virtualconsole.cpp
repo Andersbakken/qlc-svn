@@ -229,7 +229,7 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	{
 	  if (m_drawArea == NULL)
 	    {
-	      m_drawArea = new DMXWidget(this, "Bottom Frame");
+	      m_drawArea = new DMXWidget(this);
 	      m_drawArea->setBottomFrame(true);
 	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	      
@@ -492,7 +492,7 @@ void VirtualConsole::newDocument()
       delete m_drawArea;
     }
 
-  m_drawArea = new DMXWidget(this, "Bottom Frame");
+  m_drawArea = new DMXWidget(this);
   m_drawArea->setBottomFrame(true);
   m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 

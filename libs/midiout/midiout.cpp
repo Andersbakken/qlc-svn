@@ -47,7 +47,7 @@
 //
 // Exported functions
 //
-extern "C" OutputPlugin* create(int id)
+extern "C" OutputPlugin* create(t_plugin_id id)
 {
   return new MidiOut(id);
 }
@@ -60,7 +60,7 @@ extern "C" void destroy(OutputPlugin* object)
 //
 // Class implementation
 //
-MidiOut::MidiOut(int id) : OutputPlugin(id)
+MidiOut::MidiOut(t_plugin_id id) : OutputPlugin(id)
 {
   m_fd = -1;
   m_midiChannel = 1;

@@ -22,9 +22,11 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <qptrlist.h>
+
 #include "function.h"
 #include "valuesetter.h"
-#include <qlist.h>
+#include "dmxchannel.h"
 
 enum SceneValueType
   {
@@ -35,7 +37,7 @@ enum SceneValueType
 
 typedef struct
 {
-  unsigned char value;
+  t_value value;
   SceneValueType type;
 
 } SceneValue;
@@ -45,7 +47,7 @@ class Scene : public Function
   Q_OBJECT
 
  public:
-  Scene(unsigned long id = 0);
+  Scene(t_function_id id = 0);
   Scene(Scene* sc);
   virtual ~Scene();
 
@@ -55,12 +57,12 @@ class Scene : public Function
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed(Feeder* feeder);
 
-  void reAllocateValueSetters(unsigned short channels);
-  bool set(unsigned short ch, unsigned char value, SceneValueType type);
-  bool clear(unsigned short ch);
-  SceneValue channelValue(unsigned short ch);
+  void reAllocateValueSetters(t_channel channels);
+  bool set(t_channel ch, t_value value, SceneValueType type);
+  bool clear(t_channel ch);
+  SceneValue channelValue(t_channel ch);
 
-  QString valueTypeString(int ch);
+  QString valueTypeString(t_channel ch);
 
   void saveToFile(QFile &file);
 
@@ -69,7 +71,7 @@ class Scene : public Function
 
   void createContents(QList<QString> &list);
 
-  void directSet(unsigned char intensity);
+  void directSet(t_value intensity);
 
  private:
   SceneValue m_values[512];

@@ -65,7 +65,7 @@ class SceneEditor : public UI_SceneEditor
 
  protected:
   void fillFunctions();
-  void selectFunction(unsigned long fid);
+  void selectFunction(t_function_id fid);
   void setStatusText(QString text, QColor color);
   void setScene(Scene* scene);
 
@@ -78,4 +78,4 @@ class SceneEditor : public UI_SceneEditor
   Scene* currentScene();
 };
 
-#endif // SCENEEDITOR_H
+#endif

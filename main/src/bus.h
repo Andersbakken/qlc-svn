@@ -23,11 +23,19 @@
 #define BUS_H
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
+#include <limits.h>
 
 class QFile;
 class QString;
 class QPoint;
+
+typedef unsigned short t_bus_id;
+typedef unsigned long t_bus_value;
+
+const t_bus_id KBusID    = 0;
+const t_bus_id KBusIDMin = 1;
+const t_bus_id KBusIDMax = USHRT_MAX;
 
 class Bus : public QObject
 {
@@ -39,10 +47,10 @@ class Bus : public QObject
 
   enum Type { Generic = 0, Speed = 1 };
 
-  unsigned long id() { return m_id; }
+  t_bus_id id() { return m_id; }
 
-  unsigned long value() const { return m_value; }
-  void setValue(unsigned long value);
+  t_bus_value value() const { return m_value; }
+  void setValue(t_bus_value value);
 
   Type type() { return m_type; }
   void setType(Type type) { m_type = type; }
@@ -61,8 +69,8 @@ class Bus : public QObject
   void dataChanged(const Bus*);
 
  private:
-  unsigned long m_id;
-  unsigned long m_value;
+  t_bus_id m_id;
+  t_bus_value m_value;
   Type m_type;
   QString m_name;
 };

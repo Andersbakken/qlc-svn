@@ -24,6 +24,7 @@
 
 #include <qptrlist.h>
 #include "function.h"
+#include "feeder.h"
 
 class Feeder;
 class Scene;
@@ -76,14 +77,16 @@ class ChaserStep
       return m_function;
     }
 
-  unsigned long functionId()
+  t_function_id functionId()
     { 
       return m_functionId;
     }
 
  private:
   Function* m_function;
-  unsigned long m_functionId; // Used when deleting items because function might already be invalid
+  
+  // Used when deleting items because function might already be invalid
+  t_function_id m_functionId;
 };
 
 class Chaser : public Function
@@ -91,7 +94,7 @@ class Chaser : public Function
   Q_OBJECT
 
  public:
-  Chaser(unsigned long id = 0);
+  Chaser(t_function_id id = 0);
   Chaser(Chaser* ch, bool append = false);
   virtual ~Chaser();
 
@@ -120,8 +123,10 @@ class Chaser : public Function
   QPtrList <ChaserStep> m_steps;
 
  public slots:
-  void slotFunctionUnRegistered(Function* function, Function* controller, unsigned long feederID);
-  void slotMemberFunctionDestroyed(unsigned long fid);
+  void slotFunctionUnRegistered(Function* function, Function* controller,
+				t_feeder_id feederID);
+
+  void slotMemberFunctionDestroyed(t_function_id fid);
 
  protected:
   bool m_running; // One chaser object can be running only once at a time

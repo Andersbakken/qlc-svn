@@ -23,6 +23,7 @@
 #define FUNCTIONCOLLECTIONEDITOR_H
 
 #include <qdialog.h>
+#include "function.h"
 
 class QLineEdit;
 class QLabel;
@@ -37,10 +38,11 @@ class FunctionCollectionEditor : public QDialog
   Q_OBJECT
 
  public:
-  FunctionCollectionEditor(FunctionCollection* functionCollection, QWidget* parent = NULL, const char* name = 0);
+  FunctionCollectionEditor(FunctionCollection* functionCollection,
+			   QWidget* parent = NULL);
   ~FunctionCollectionEditor();
 
-  QListViewItem* findItem(const unsigned long functionId);
+  QListViewItem* findItem(const t_function_id functionId);
 
   void show();
 

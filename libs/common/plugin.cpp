@@ -21,7 +21,7 @@
 
 #include "plugin.h"
 
-Plugin::Plugin(unsigned long id) : QObject()
+Plugin::Plugin(t_plugin_id id) : QObject()
 {
   m_id = id;
 }

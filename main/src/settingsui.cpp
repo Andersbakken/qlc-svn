@@ -24,10 +24,11 @@
 #include "doc.h"
 #include "settings.h"
 #include "configkeys.h"
+#include "configitem.h"
 
 #include "../../libs/common/plugin.h"
 
-#include <qfontdialog.h>
+#include <qlistview.h>
 #include <qapplication.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
@@ -41,8 +42,15 @@ extern App* _app;
 
 extern QApplication* _qapp;
 
-SettingsUI::SettingsUI(QWidget* parent, const char* name)
-  : UI_Settings(parent, name)
+SettingsUI::SettingsUI(QWidget* parent) : UI_Settings(parent)
+{
+}
+
+SettingsUI::~SettingsUI()
+{
+}
+
+void SettingsUI::init()
 {
   QString str;
 
@@ -53,7 +61,6 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
   m_backgroundEdit->setText(str);
 
   fillStyleCombo();
-  fillOutputPluginCombo();
 
   _app->settings()->get(KEY_DEVICE_MANAGER_OPEN, str);
   m_openDeviceManagerCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
@@ -63,10 +70,8 @@ SettingsUI::SettingsUI(QWidget* parent, const char* name)
 
   _app->settings()->get(KEY_KEY_REPEAT, str);
   m_keyRepeatCheckBox->setChecked((str == Settings::trueValue()) ? true : false);
-}
 
-SettingsUI::~SettingsUI()
-{
+  fillAdvancedSettingsList();
 }
 
 void SettingsUI::fillStyleCombo()
@@ -87,36 +92,6 @@ void SettingsUI::fillStyleCombo()
       if (m_widgetStyleCombo->text(i) == widgetStyle)
 	{
 	  m_widgetStyleCombo->setCurrentItem(i);
-	  break;
-	}
-    }
-}
-
-void SettingsUI::fillOutputPluginCombo()
-{
-  QList <Plugin> *pl = _app->doc()->pluginList();
-  
-  m_outputPluginCombo->clear();
-
-  QString outputPlugin;
-  _app->settings()->get(KEY_OUTPUT_PLUGIN, outputPlugin);
-
-  for (unsigned int i = 0; i < pl->count(); i++)
-    {
-      Plugin* plugin = pl->at(i);
-      ASSERT(plugin != NULL);
-
-      if (plugin->type() == Plugin::OutputType)
-	{
-	  m_outputPluginCombo->insertItem(plugin->name(), 0);
-	}
-    }
-
-  for (int i = 0; i < m_outputPluginCombo->count(); i++)
-    {
-      if (m_outputPluginCombo->text(i) == outputPlugin)
-	{
-	  m_outputPluginCombo->setCurrentItem(i);
 	  break;
 	}
     }
@@ -150,6 +125,20 @@ void SettingsUI::slotStyleChanged(const QString &)
   _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
   _qapp->setStyle(m_widgetStyleCombo->currentText());
 }
+
+
+void SettingsUI::fillAdvancedSettingsList()
+{
+  QPtrList<ConfigItem>* items = _app->settings()->items();
+
+  m_advancedList->clear();
+
+  for (ConfigItem* i = items->first(); i != NULL; i = items->next())
+    {
+      new QListViewItem(m_advancedList, *(i->key()), *(i->text()));
+    }
+}
+
 
 void SettingsUI::slotOKClicked()
 {
@@ -185,8 +174,6 @@ void SettingsUI::slotOKClicked()
     {
       _app->settings()->set(KEY_KEY_REPEAT, Settings::falseValue());
     }
-
-  _app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());
 
   accept();
 }

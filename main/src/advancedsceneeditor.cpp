@@ -47,7 +47,6 @@
 #include <qmessagebox.h>
 #include <limits.h>
 
-
 #include <math.h>
 
 extern App* _app;
@@ -487,7 +486,7 @@ void AdvancedSceneEditor::slotEditValueClicked()
     }
 }
 
-void AdvancedSceneEditor::slotDeviceFunctionsListChanged(unsigned long fid)
+void AdvancedSceneEditor::slotDeviceFunctionsListChanged(t_function_id fid)
 {
   // If the currently edited scene was deleted, exit immediately
   if (m_scene && m_scene->id() == fid)
@@ -496,7 +495,7 @@ void AdvancedSceneEditor::slotDeviceFunctionsListChanged(unsigned long fid)
     }
 }
 
-void AdvancedSceneEditor::slotDeviceClassFunctionsListChanged(unsigned long fid)
+void AdvancedSceneEditor::slotDeviceClassFunctionsListChanged(t_function_id fid)
 {
   // If the currently edited scene was deleted, exit immediately
   if (m_scene && m_scene->id() == fid)
@@ -526,7 +525,7 @@ void AdvancedSceneEditor::updateChannelList()
 
   for (LogicalChannel* ch = cl->first(); ch != NULL; ch = cl->next())
     {
-      unsigned char value = m_scene->channelValue(ch->channel()).value;
+      t_value value = m_scene->channelValue(ch->channel()).value;
       
       Capability* c = ch->searchCapability(value);
       

@@ -23,13 +23,20 @@
 #define PLUGIN_H
 
 #include <qobject.h>
+#include <limits.h>
+
+typedef unsigned short t_plugin_id;
+
+const t_plugin_id KPluginID    = 0;
+const t_plugin_id KPluginIDMin = 1;
+const t_plugin_id KPluginIDMax = USHRT_MAX;
 
 class Plugin : public QObject
 {
   Q_OBJECT
 
  public:
-  Plugin(unsigned long id);
+  Plugin(t_plugin_id id);
   virtual ~Plugin();
 
   enum PluginType
@@ -52,7 +59,7 @@ class Plugin : public QObject
 
   // Standard functions that don't have to be overwritten
   QString name() { return m_name; }
-  unsigned long id() { return m_id; }
+  t_plugin_id id() { return m_id; }
   unsigned long version() { return m_version; }
   PluginType type() { return m_type; }
 
@@ -63,7 +70,7 @@ class Plugin : public QObject
   QString m_name;
   PluginType m_type;
   unsigned long m_version;
-  unsigned long m_id;
+  t_plugin_id m_id;
 };
 
 #endif

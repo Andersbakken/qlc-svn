@@ -40,7 +40,7 @@ class DeviceManagerView : public QWidget
   Q_OBJECT
 
  public:
-  DeviceManagerView(QWidget* parent = 0, const char* name = 0);
+  DeviceManagerView(QWidget* parent = 0);
   ~DeviceManagerView();
 
   DeviceManager* deviceManager() { return m_dm; }
@@ -48,7 +48,7 @@ class DeviceManagerView : public QWidget
 
  private slots:
   void slotModeChanged(VirtualConsole::Mode m);
-  void slotSelectionChanged();
+  void slotSelectionChanged(int itemId, int itemType);
 
  private:
   DeviceManager* m_dm;

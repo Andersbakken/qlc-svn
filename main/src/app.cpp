@@ -161,7 +161,7 @@ void App::initView(void)
       settings()->get(KEY_LAST_WORKSPACE_NAME, config);
 
       doc()->loadWorkspaceAs(config);
-      setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
+      setCaption(KApplicationNameLong + QString(" - ") + doc()->workspaceFileName());
       virtualConsole()->hide();
     }
 }
@@ -379,7 +379,7 @@ void App::slotFileNew()
   m_settings->set(KEY_LAST_WORKSPACE_NAME, QString::null);
   doc()->newDocument();
   virtualConsole()->newDocument();
-  setCaption(IDS_APP_NAME_LONG);
+  setCaption(KApplicationNameLong);
 }
 
 void App::slotFileOpen()
@@ -394,13 +394,13 @@ void App::slotFileOpen()
   if (doc()->loadWorkspaceAs(fn) == false)
     {
       statusBar()->message("Load failed", 2000);
-      QMessageBox::critical(this, IDS_APP_NAME_SHORT, "Errors occurred while reading file. Data may be lost.");
+      QMessageBox::critical(this, KApplicationNameShort, "Errors occurred while reading file. Data may be lost.");
     }
   else
     {
       m_settings->set(KEY_LAST_WORKSPACE_NAME, m_doc->workspaceFileName());
       statusBar()->message("Load successful", 2000);
-      setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
+      setCaption(KApplicationNameLong + QString(" - ") + doc()->workspaceFileName());
     }
 }
 
@@ -416,7 +416,7 @@ void App::slotFileSave()
       if (m_doc->saveWorkspace() == false)
         {
           statusBar()->message("Save failed", 2000);
-          QMessageBox::warning(this, IDS_APP_NAME_SHORT, "An error occurred while attempting to save configuration.\nData may be lost.");
+          QMessageBox::warning(this, KApplicationNameShort, "An error occurred while attempting to save configuration.\nData may be lost.");
 	}
       else
         {
@@ -442,12 +442,12 @@ void App::slotFileSaveAs()
       if (m_doc->saveWorkspaceAs(fn) == false)
         {
           statusBar()->message("Save aborted", 2000);
-          QMessageBox::information(this, IDS_APP_NAME_LONG, "An error occurred while attempting to save current workspace!");
+          QMessageBox::information(this, KApplicationNameShort, "An error occurred while attempting to save current workspace!");
 	}
       else
         {
           statusBar()->message("Save successful", 2000);
-	  setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
+	  setCaption(KApplicationNameLong + QString(" - ") + doc()->workspaceFileName());
         }
     }
   else
@@ -602,7 +602,7 @@ void App::slotWindowMenuCallback(int item)
 	}
       else
 	{
-	  QMessageBox::critical(this, IDS_APP_NAME_SHORT, "Unable to focus window! Handle not found.");
+	  QMessageBox::critical(this, KApplicationNameShort, "Unable to focus window! Handle not found.");
 	}
       
       disconnect(m_windowMenu);

@@ -22,11 +22,12 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+typedef unsigned short int t_function_id;
+
 #include <qobject.h>
 #include <qlist.h>
 
-#define VALUE_READY INT_MAX
-#define MIN_FUNCTION_ID 1
+#include "dmxchannel.h"
 
 class QFile;
 class QString;
@@ -36,12 +37,17 @@ class Event;
 class Feeder;
 class LogicalChannel;
 
+const t_value KReadyValue = USHRT_MAX;
+
+const t_function_id KFunctionIDMin = 1;
+const t_function_id KFunctionIDMax = USHRT_MAX;
+
 class Function : public QObject
 {
   Q_OBJECT
 
  public:
-  Function(unsigned long id = 0);
+  Function(t_function_id = 0);
   virtual ~Function();
 
   enum Type
@@ -59,7 +65,7 @@ class Function : public QObject
   DMXDevice* device() const;
   void setDevice(DMXDevice* device);
 
-  unsigned long id() { return m_id; }
+  t_function_id id() { return m_id; }
 
   Type type() const;
   QString typeString() const;
@@ -81,7 +87,7 @@ class Function : public QObject
 
  signals:
   void unRegistered(Function*);
-  void destroyed(unsigned long id);
+  void destroyed(t_function_id id);
 
  protected:
   QString m_name;
@@ -90,11 +96,11 @@ class Function : public QObject
 
   bool m_running;
 
-  unsigned long m_id;
-  static unsigned long _nextFunctionId;
+  t_function_id m_id;
+  static t_function_id _nextFunctionId;
 
  public:
-  static void resetFunctionId() { _nextFunctionId = MIN_FUNCTION_ID; }
+  static void resetFunctionId() { _nextFunctionId = KFunctionIDMin; }
 };
 
 #endif

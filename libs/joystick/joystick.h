@@ -33,6 +33,8 @@
 
 #define MAX_AXES 16
 
+typedef unsigned short int t_joystick_id;
+
 struct js_info
 {
   int buttons;
@@ -65,7 +67,7 @@ class Joystick : public QObject
   Joystick();
   virtual ~Joystick();
 
-  unsigned long id() { return m_id; }
+  t_joystick_id id() { return m_id; }
 
   virtual int open();
   virtual int close();
@@ -92,7 +94,7 @@ class Joystick : public QObject
   void buttonEvent(int, int);
 
  private:
-  unsigned long m_id;
+  t_joystick_id m_id;
   bool m_valid;
 
   QString m_name;

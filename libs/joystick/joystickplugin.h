@@ -24,12 +24,12 @@
 
 #include "../common/plugin.h"
 #include "joystick.h"
-#include <qlist.h>
+#include <qptrlist.h>
 
 //
 // Exported functions
 //
-extern "C" Plugin* create(int id);
+extern "C" Plugin* create(t_plugin_id id);
 extern "C" void destroy(Plugin* object);
 
 //
@@ -40,7 +40,7 @@ class JoystickPlugin : public Plugin
   Q_OBJECT
 
  public:
-  JoystickPlugin(int id);
+  JoystickPlugin(t_plugin_id id);
   virtual ~JoystickPlugin();
 
   virtual bool open();
@@ -64,7 +64,7 @@ class JoystickPlugin : public Plugin
   void slotContextMenuCallback(int);
 
  private:
-  QList <Joystick> m_joystickList;
+  QPtrList <Joystick> m_joystickList;
 
   QString m_configDirectory;
 };

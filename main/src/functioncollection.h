@@ -23,6 +23,7 @@
 #define FUNCTIONCOLLECTION_H
 
 #include "function.h"
+#include "feeder.h"
 
 class CollectionItem
 {
@@ -58,7 +59,7 @@ class CollectionItem
 	}
     }
   Function* function() { return m_function; }
-  unsigned long functionId() { return m_functionId; }
+  t_function_id functionId() { return m_functionId; }
 
   void setRegistered(bool reg) { m_registered = reg; }
   bool registered() { return m_registered; }
@@ -66,7 +67,7 @@ class CollectionItem
  private:
   Function* m_function;
   bool m_registered;
-  unsigned long m_functionId;
+  t_function_id m_functionId;
 };
 
 class FunctionCollection : public Function
@@ -74,7 +75,7 @@ class FunctionCollection : public Function
   Q_OBJECT
 
  public:
-  FunctionCollection(unsigned long id = 0);
+  FunctionCollection(t_function_id id = 0);
   FunctionCollection(FunctionCollection* fc);
   void copyFrom(FunctionCollection* fc);
   virtual ~FunctionCollection();
@@ -86,7 +87,7 @@ class FunctionCollection : public Function
 
   void addItem(Function* function);
   bool removeItem(Function* function);
-  bool removeItem(const unsigned long functionId);
+  bool removeItem(const t_function_id functionId);
 
   void saveToFile(QFile &file);
 
@@ -104,8 +105,9 @@ class FunctionCollection : public Function
   int m_registerCount;
 
  private slots:
-  void slotFunctionUnRegistered(Function* feeder, Function* controller, unsigned long feederID);
-  void slotMemberFunctionDestroyed(unsigned long fid);
+  void slotFunctionUnRegistered(Function* feeder, Function* controller,
+				t_feeder_id feederID);
+  void slotMemberFunctionDestroyed(t_function_id fid);
 };
 
 #endif

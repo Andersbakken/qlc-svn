@@ -23,11 +23,11 @@
 #define MIDIOUT_H
 
 #include "../common/outputplugin.h"
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QString;
 
-extern "C" OutputPlugin* create(int id);
+extern "C" OutputPlugin* create(t_plugin_id id);
 extern "C" void destroy(OutputPlugin* object);
 
 #define MAX_MIDIOUT_DMX_CHANNELS 128
@@ -41,7 +41,7 @@ class MidiOut : public OutputPlugin
     friend class ConfigureMidiOut;
 
  public:
-  MidiOut(int id);
+  MidiOut(t_plugin_id id);
   virtual ~MidiOut();
 
   virtual bool open();
@@ -68,7 +68,7 @@ class MidiOut : public OutputPlugin
   unsigned char midiChannel() { return m_midiChannel; }
   unsigned char firstNote() { return m_firstNote; }
   void activate();
-  void createContents(QList <QString> &list);
+  void createContents(QPtrList <QString> &list);
 
  protected slots:
   void slotContextMenuCallback(int);

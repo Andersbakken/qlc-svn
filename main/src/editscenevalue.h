@@ -33,11 +33,11 @@ class EditSceneValue : public UI_EditSceneValue
   Q_OBJECT
 
  public:
-  EditSceneValue(QWidget* parent, LogicalChannel* ch, SceneValue &currentValue,
-		 const char* name = NULL);
+  EditSceneValue(QWidget* parent, LogicalChannel* ch,
+		 SceneValue &currentValue);
   virtual ~EditSceneValue();
 
-  unsigned char value() { return m_value; }
+  t_value value() { return m_value; }
   QString type() { return m_type; }
 
  private slots:
@@ -50,7 +50,7 @@ class EditSceneValue : public UI_EditSceneValue
 
   LogicalChannel* m_channel;
 
-  unsigned char m_value;
+  t_value m_value;
   QString m_type;
 };
 

@@ -25,9 +25,10 @@
 class DummyOutPlugin;
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include "function.h"
 #include "dmxdevice.h"
+#include "dmxchannel.h"
 #include "deviceclass.h"
 #include "bus.h"
 #include "../../libs/common/outputplugin.h"
@@ -60,7 +61,7 @@ class Doc : public QObject
   //
   // DMX Channels
   //
-  DMXChannel* dmxChannel(unsigned short channel);
+  DMXChannel* dmxChannel(t_channel channel);
 
   //
   // DMX Devices
@@ -68,10 +69,7 @@ class Doc : public QObject
   void addDevice(DMXDevice*);
   bool removeDevice(DMXDevice*);
   QList <DMXDevice> *deviceList() { return &m_deviceList; }
-
-  // Search devices
-  DMXDevice* searchDevice(const unsigned long id);
-  // DMXDevice* searchDevice(const QString &name);
+  DMXDevice* searchDevice(const t_device_id id);
 
   //
   // Functions
@@ -81,33 +79,24 @@ class Doc : public QObject
 
   // Function list operations
   void addFunction(const Function* function);
-  void removeFunction(const unsigned long id, bool deleteFunction = true);
-  Function* searchFunction(const unsigned long id);
+  void removeFunction(const t_function_id id, bool deleteFunction = true);
+  Function* searchFunction(const t_function_id id);
 
   //
   // Device classes
   //
-  // Read device class definition files
-  bool readDeviceClasses();
-
-  // Container for device classes
   QList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
-
-  // Search for manuf + model
+  bool readDeviceClasses();
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
-  DeviceClass* searchDeviceClass(unsigned long id);
+  DeviceClass* searchDeviceClass(const t_deviceclass_id id);
 
   //
   // Bus
   //
-  // System bus list
   QList <Bus> *busList()  { return &m_busList; }
-
-  // Bus handling functions
-  Bus* searchBus(unsigned int id);
-  // Bus* searchBus(QString name);
+  Bus* searchBus(const t_bus_id id);
   void addBus(Bus* bus);
-  void removeBus(unsigned int id, bool deleteBus = true);
+  void removeBus(const t_bus_id id, bool deleteBus = true);
 
   //
   // General Plugin Stuff
@@ -115,7 +104,7 @@ class Doc : public QObject
   QList <Plugin> *pluginList() { return &m_pluginList; }
   Plugin* searchPlugin(QString name);
   Plugin* searchPlugin(QString name, Plugin::PluginType type);
-  Plugin* searchPlugin(unsigned long id);
+  Plugin* searchPlugin(const t_plugin_id id);
   void addPlugin(Plugin*);
   void removePlugin(Plugin*);
   void initPlugins();
@@ -160,7 +149,7 @@ class Doc : public QObject
   QList <Plugin> m_pluginList;
 
  private:
-  static unsigned long NextPluginID;
+  static t_plugin_id NextPluginID;
 };
 
 #endif
