@@ -3,7 +3,7 @@
 Entry = Device Class
 Manufacturer = Antari
 Model = Z-1200
-Type = Fogger
+Type = Smoke
 #
 Entry = Channel
 Number = 0
