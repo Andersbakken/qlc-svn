@@ -32,37 +32,33 @@ class QFile;
 class QString;
 class QPoint;
 
-const t_bus_id KBusID    = 0;
-const t_bus_id KBusIDMin = 1;
-const t_bus_id KBusIDMax = USHRT_MAX;
-
 class Bus : public QObject
 {
   Q_OBJECT
 
  public:
-  Bus();
+  Bus(t_bus_id id = 0);
   ~Bus();
 
-  enum Type { Generic = 0, Speed = 1 };
+  Bus& operator=(Bus &b);
+
+  QString infoText();
 
   t_bus_id id() { return m_id; }
 
   t_bus_value value() const { return m_value; }
   void setValue(t_bus_value value);
 
-  Type type() { return m_type; }
-  void setType(Type type) { m_type = type; }
-
   QString name() { return m_name; }
-  void setName(QString name) { m_name = QString(name); }
+  void setName(QString name);
 
-  QString infoText();
+  bool isStatic() const { return m_static; }
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  Bus& operator=(Bus &b);
+  static Bus* defaultFadeBus() { return m_defaultFadeBus; }
+  static Bus* defaultHoldBus() { return m_defaultHoldBus; }
 
  signals:
   void dataChanged(const Bus*);
@@ -70,8 +66,12 @@ class Bus : public QObject
  private:
   t_bus_id m_id;
   t_bus_value m_value;
-  Type m_type;
   QString m_name;
+  bool m_static;
+
+  static Bus* m_defaultFadeBus;
+  static Bus* m_defaultHoldBus;
+  static t_bus_id m_nextBusID;
 };
 
 #endif

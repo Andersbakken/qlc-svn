@@ -111,12 +111,6 @@ class Function : public QThread
   // Return the eventbuffer object. Only for FunctionFonsumer's use.
   EventBuffer* eventBuffer() const { return m_eventBuffer; }
 
-  // This function's time span (e.g. speed)
-  time_t timeSpan() { return m_timeSpan; }
-
-  // When this function was started
-  time_t startTime() { return m_startTime; }
-
  protected:
   // Semi-permanent function data
   QString m_name;
@@ -129,7 +123,6 @@ class Function : public QThread
   EventBuffer* m_eventBuffer;
 
   time_t m_timeSpan;
-  time_t m_startTime;
 
   QObject* m_virtualController;
   Function* m_parentFunction;

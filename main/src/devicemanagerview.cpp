@@ -65,21 +65,39 @@ void DeviceManagerView::initView()
   
   m_dm = new DeviceManager(this);
 
-  m_addOutputDeviceButton = new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), "Add New Output Device", 0, m_dm, SLOT(slotDLAddOutputDevice()), m_toolbar);
+  m_addOutputDeviceButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), 
+		    "Add New Output Device", 0, m_dm, 
+		    SLOT(slotDLAddOutputDevice()), m_toolbar);
 
-  m_addBusButton = new QToolButton(QIconSet(QPixmap(dir + "/addbus.xpm")), "Add New Bus", 0, m_dm, SLOT(slotDLAddBus()), m_toolbar);
+  m_addBusButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/addbus.xpm")), 
+		    "Add New Bus", 0, m_dm, 
+		    SLOT(slotDLAddBus()), m_toolbar);
 
-  m_removeButton = new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), "Remove Current Selection", 0, m_dm, SLOT(slotDLRemove()), m_toolbar);
+  m_removeButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), 
+		    "Remove Current Selection", 0, m_dm, 
+		    SLOT(slotDLRemove()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  m_propertiesButton = new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), "Properties", 0, m_dm, SLOT(slotDLViewProperties()), m_toolbar);
+  m_propertiesButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), 
+		    "Properties", 0, m_dm, 
+		    SLOT(slotDLViewProperties()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  m_monitorButton = new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), "Monitor Device", 0, m_dm, SLOT(slotDLViewMonitor()), m_toolbar);
+  m_monitorButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), 
+		    "Monitor Device", 0, m_dm, 
+		    SLOT(slotDLViewMonitor()), m_toolbar);
 
-  m_consoleButton = new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), "View Console", 0, m_dm, SLOT(slotDLViewConsole()), m_toolbar);
+  m_consoleButton = 
+    new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), 
+		    "View Console", 0, m_dm, 
+		    SLOT(slotDLViewConsole()), m_toolbar);
 
   m_layout->addWidget(m_dockArea);
   m_layout->addWidget(m_dm);
@@ -126,32 +144,135 @@ void DeviceManagerView::closeEvent(QCloseEvent* e)
 
 void DeviceManagerView::slotModeChanged(VirtualConsole::Mode m)
 {
-  if (m == VirtualConsole::Operate)
+  QListViewItem* item = m_dm->deviceListView()->currentItem();
+
+  if (item)
+    {
+      int id = item->text(KDLViewColumnID).toInt();
+      int type = item->text(KDLViewColumnType).toInt();
+      
+      slotSelectionChanged(id, type);
+    }
+  else
+    {
+      slotSelectionChanged(-1, -1);
+    }
+}
+
+//
+// Enable / disable toolbar buttons according to selected item & type
+//
+void DeviceManagerView::slotSelectionChanged(int itemId, int itemType)
+{
+  // First set adding buttons because they are not dependent
+  // on selected item
+  if (_app->virtualConsole()->isDesignMode())
+    {
+      m_addOutputDeviceButton->setEnabled(true);
+      m_addBusButton->setEnabled(true);
+    }
+  else
+    {
+      m_addOutputDeviceButton->setEnabled(false);
+      m_addBusButton->setEnabled(false);
+    }
+
+  //
+  // Enable / disable buttons with devices
+  //
+  if (itemType == KDLViewTypeDevice)
+    {
+      if (itemId == KNoID)
+	{
+	  // Device root selected
+	  m_consoleButton->setEnabled(false);
+	  m_monitorButton->setEnabled(false);
+
+	  m_propertiesButton->setEnabled(false);
+	  m_removeButton->setEnabled(false);
+	}
+      else
+	{
+	  // Device selected
+	  m_consoleButton->setEnabled(true);
+	  m_monitorButton->setEnabled(true);
+
+	  if (_app->virtualConsole()->isDesignMode())
+	    {
+	      // Design mode, can edit
+	      m_propertiesButton->setEnabled(true);
+	      m_removeButton->setEnabled(true);
+	    }
+	  else
+	    {
+	      // Design mode, can't edit
+	      m_propertiesButton->setEnabled(false);
+	      m_removeButton->setEnabled(false);
+	    }
+	}
+    }
+
+  //
+  // Enable / disable button with buses
+  //
+  else if (itemType == KDLViewTypeBus)
+    {
+      // Console & monitor are available only for devices
+      m_consoleButton->setEnabled(false);
+      m_monitorButton->setEnabled(false);
+
+      if (itemId == KBusIDDefaultFade || 
+	  itemId == KBusIDDefaultHold || itemId == KNoID)
+	{
+	  // Default or root item selected, cannot modify
+	  m_removeButton->setEnabled(false);
+	  m_propertiesButton->setEnabled(false);
+	}
+      else
+	{
+	  if (_app->virtualConsole()->isDesignMode())
+	    {
+	      // Design mode, can edit
+	      m_removeButton->setEnabled(true);
+	      m_propertiesButton->setEnabled(true);
+	    }
+	  else
+	    {
+	      // Operate mode, can't edit
+	      m_removeButton->setEnabled(false);
+	      m_propertiesButton->setEnabled(false);
+	    }
+	}
+    }
+  //
+  // Enable / disable buttons with plugins
+  //
+  else if (itemType == KDLViewTypePlugin)
+    {
+      // Console & monitor are available only for devices
+      m_consoleButton->setEnabled(false);
+      m_monitorButton->setEnabled(false);
+      
+      // Plugins cannot be removed
+      m_removeButton->setEnabled(false);
+      
+      // No properties for root item
+      if (itemId == KNoID || !_app->virtualConsole()->isDesignMode())
+	{
+	  m_propertiesButton->setEnabled(false);
+	}
+      else
+	{
+	  m_propertiesButton->setEnabled(true);
+	}
+    }
+  else
     {
       m_addOutputDeviceButton->setEnabled(false);
       m_addBusButton->setEnabled(false);
       m_removeButton->setEnabled(false);
       m_propertiesButton->setEnabled(false);
-    }
-  else
-    {
-      m_addOutputDeviceButton->setEnabled(true);
-      m_addBusButton->setEnabled(true);
-      m_removeButton->setEnabled(true);
-      m_propertiesButton->setEnabled(true);
-    }
-}
-
-void DeviceManagerView::slotSelectionChanged(int itemId, int itemType)
-{
-  if (itemType != KDLViewTypeDevice)
-    {
       m_consoleButton->setEnabled(false);
       m_monitorButton->setEnabled(false);
-    }
-  else
-    {
-      m_consoleButton->setEnabled(true);
-      m_monitorButton->setEnabled(true);
     }
 }

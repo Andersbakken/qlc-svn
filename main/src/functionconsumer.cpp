@@ -177,10 +177,10 @@ void FunctionConsumer::run()
   close(m_fd);
 }
 
-void FunctionConsumer::event(unsigned long delta)
+void FunctionConsumer::event(time_t)
 {
   Function* f = NULL;
-  unsigned char* ev = NULL;
+  t_value* ev = NULL;
 
   QPtrListIterator<Function> it(m_functionList);
 
@@ -197,8 +197,8 @@ void FunctionConsumer::event(unsigned long delta)
         {
           if (f->removeAfterEmpty())
             {
-              printf("Function %3d is late %3ld ticks\n", f->id(),
-                     f->eventBuffer()->elapsedTime() - f->timeSpan());
+              //printf("Function %3d is late %3ld ticks\n", f->id(),
+              //       f->eventBuffer()->elapsedTime() - f->timeSpan());
 
               m_functionListMutex.lock(); // Lock before remove
               m_functionList.remove(f);
@@ -212,7 +212,7 @@ void FunctionConsumer::event(unsigned long delta)
 	    writeRange(f->device()->address(), ev,
 		       f->device()->getChannelUnitList().count());
 	  //qDebug("%d %d %d %d %d %d", ev[0], ev[1], 
-	  // ev[2], ev[3], ev[4], ev[5]);
+	  //       ev[2], ev[3], ev[4], ev[5]);
         }
 
       m_functionListMutex.lock(); // Lock for next round

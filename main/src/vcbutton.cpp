@@ -475,19 +475,15 @@ void VCButton::fillBusMenu(QPopupMenu* menu)
   menu->insertItem(QPixmap(dir + QString("/add.xpm")), 
 		   QString("New Bus..."), 0);
 
-  for (unsigned int i = 0; i < _app->doc()->busList()->count(); i++)
+  for (t_bus_id i = 0; i < (t_bus_id) _app->doc()->busList()->count(); i++)
     {
       bus = _app->doc()->busList()->at(i);
 
-      if (bus && bus->type() == Bus::Speed)
+      menu->insertItem(bus->name(), i+1);
+      
+      if (bus == m_speedBus)
 	{
-	  menu->insertItem(bus->name(), i+1);
-
-	  if (bus == m_speedBus)
-	    {
-	      menu->setItemChecked(i+1, true);
-	    }
-	      
+	  menu->setItemChecked(i+1, true);
 	}
     }
 }
@@ -499,7 +495,7 @@ void VCButton::slotBusMenuCallback(int item)
     case 0:
       {
 	Bus* bus = _app->deviceManagerView()->deviceManager()
-	  ->slotDLAddBus(this, Bus::Speed);
+	  ->slotDLAddBus(this);
 	
 	if (bus != NULL)
 	  {
@@ -507,7 +503,7 @@ void VCButton::slotBusMenuCallback(int item)
 	  }
       }
       break;
-
+      
     default:
       {
 	Bus* bus = _app->doc()->busList()->at(item - 1);

@@ -32,8 +32,7 @@ EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
   m_eventSize(eventSize),
   m_filled(0),
   m_in(0),
-  m_out(0),
-  m_elapsedTime(0)
+  m_out(0)
 {
   m_ring = new t_value[m_size];
 
@@ -71,16 +70,14 @@ bool EventBuffer::put(t_value* ev)
 
 t_value* EventBuffer::get()
 {
-  t_value* ev = NULL;
-
   pthread_mutex_lock(&m_mutex);
-  m_elapsedTime++;
   if (m_filled == 0)
     {
       pthread_mutex_unlock(&m_mutex);
-
       return NULL;
     }
+
+  t_value* ev = NULL;
 
   assert(m_filled > 0);
   ev = m_ring + m_out;

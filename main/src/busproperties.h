@@ -23,25 +23,25 @@
 #define BUSPROPERTIES_H
 
 #include "uic_busproperties.h"
-#include "bus.h"
+
+class Bus;
 
 class BusProperties : public UI_BusProperties
 {
   Q_OBJECT
 
  public:
-  BusProperties(QWidget* parent = NULL, const char* name = NULL);
+  BusProperties(QWidget* parent, Bus* bus, const char* name = NULL);
   ~BusProperties();
 
   void show();
 
- public:
-  QString m_name;
-  Bus::Type m_type;
-
  public slots:
   void slotOKClicked();
   void slotCancelClicked();
+
+ protected:
+  Bus* m_bus;
 };
 
 #endif

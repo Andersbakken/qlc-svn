@@ -78,11 +78,13 @@ void Doc::setModified(bool modified)
 
   if (modified == true)
     {
-      _app->setCaption("Q Light Controller 2 - " + workspaceFileName() + QString("*"));
+      _app->setCaption("Q Light Controller 2 - " + workspaceFileName() 
+		       + QString("*"));
     }
   else
     {
-      _app->setCaption(QString("Q Light Controller 2 - ") + workspaceFileName());
+      _app->setCaption(QString("Q Light Controller 2 - ") 
+		       + workspaceFileName());
     }
 }
 

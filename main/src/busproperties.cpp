@@ -19,38 +19,35 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "busproperties.h"
-
 #include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 
-BusProperties::BusProperties(QWidget* parent, const char* name)
+#include "busproperties.h"
+#include "bus.h"
+
+BusProperties::BusProperties(QWidget* parent, Bus* bus, const char* name)
   : UI_BusProperties(parent, name, true)
 {
-  m_typeCombo->insertItem("Generic");
-  m_typeCombo->insertItem("Speed");
+  ASSERT(bus);
+  m_bus = bus;
 }
 
 BusProperties::~BusProperties()
 {
-
 }
 
 void BusProperties::show()
 {
-  m_nameEdit->setText(m_name);
-  m_nameEdit->setSelection(0, m_name.length());
-  m_typeCombo->setCurrentItem(m_type);
+  m_nameEdit->setText(m_bus->name());
+  m_nameEdit->setSelection(0, m_bus->name().length());
 
   UI_BusProperties::show();
 }
 
 void BusProperties::slotOKClicked()
 {
-  m_name = m_nameEdit->text();
-  m_type = (Bus::Type) m_typeCombo->currentItem();
-
+  m_bus->setName(m_nameEdit->text());
   accept();
 }
 

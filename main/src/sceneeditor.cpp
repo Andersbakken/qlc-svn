@@ -280,7 +280,8 @@ void SceneEditor::store()
 
   // Take values from device because it returns real values for
   // sure and they are t_value's and it is much simpler this way
-  for (t_channel i = 0; i < m_device->deviceClass()->channels()->count(); i++)
+  for (t_channel i = 0; 
+       i < (t_channel) m_device->deviceClass()->channels()->count(); i++)
     {
       qDebug("Warning! Functionality removed!");
       /*

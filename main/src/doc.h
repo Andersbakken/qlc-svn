@@ -87,7 +87,7 @@ class Doc : public QObject
   DeviceClass* searchDeviceClass(const t_deviceclass_id id);
 
   //
-  // Bus
+  // Buses
   //
   QPtrList <Bus> *busList()  { return &m_busList; }
   Bus* searchBus(const t_bus_id id);

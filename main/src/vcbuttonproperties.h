@@ -70,7 +70,7 @@ class VCButtonProperties : public UI_VCButtonProperties
   bool m_lockState;
 
   Bus* m_bus;
-  unsigned int* m_busIndex;
+  t_bus_id* m_busIndex;
 };
 
 #endif

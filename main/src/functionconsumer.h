@@ -45,7 +45,7 @@ class FunctionConsumer : public QThread
 
  protected:
   virtual void run();
-  void event(unsigned long delta);
+  void event(time_t);
 
  protected:
   bool m_running;

@@ -321,7 +321,7 @@ void VCButtonProperties::slotBusActivated(int item)
 {
   if (item != 0)
     {
-      int busIndex = m_busIndex[m_busCombo->currentItem() - 1];
+      t_bus_id busIndex = m_busIndex[m_busCombo->currentItem() - 1];
       m_bus = _app->doc()->searchBus(busIndex);
       ASSERT(m_bus != NULL);
       qDebug("Activated bus " + m_bus->name());
@@ -346,17 +346,14 @@ void VCButtonProperties::fillBusCombo()
       delete m_busIndex;
     }
 
-  m_busIndex = (unsigned int*) malloc(_app->doc()->busList()->count() * sizeof(int));
+  m_busIndex = new t_bus_id [_app->doc()->busList()->count()];
 
   for (i = 0; i < _app->doc()->busList()->count(); i++)
     {
       bus = _app->doc()->busList()->at(i);
 
-      if (bus && bus->type() == Bus::Speed)
-	{
-	  m_busCombo->insertItem(bus->name());
-	  m_busIndex[j++] = bus->id();
-	}
+      m_busCombo->insertItem(bus->name());
+      m_busIndex[j++] = bus->id();
     }
 }
 
@@ -368,7 +365,7 @@ void VCButtonProperties::selectCurrentBus()
   // Set "None" as the current item by default
   m_busCombo->setCurrentItem(0);
 
-  for (unsigned int i = 0; i < _app->doc()->busList()->count(); i++)
+  for (t_bus_id i = 0; i < (t_bus_id) _app->doc()->busList()->count(); i++)
     {
       if (m_bus->id() == m_busIndex[i])
 	{
@@ -380,7 +377,7 @@ void VCButtonProperties::selectCurrentBus()
 
 void VCButtonProperties::slotAddBusClicked()
 {
-  Bus* bus = _app->deviceManagerView()->deviceManager()->slotDLAddBus(this, Bus::Speed);
+  Bus* bus = _app->deviceManagerView()->deviceManager()->slotDLAddBus(this);
 
   if (bus != NULL)
     {
