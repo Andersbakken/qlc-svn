@@ -50,7 +50,6 @@ class AboutBox : public QDialog
   QLabel* m_logo;
   QLabel* m_version;
   QLabel* m_copyright;
-  QLabel* m_peopleLabel;
   QListBox* m_people;
 };
 

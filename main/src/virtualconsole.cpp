@@ -19,6 +19,17 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qmenubar.h>
+#include <qpoint.h>
+#include <qpopupmenu.h>
+#include <qtoolbar.h>
+#include <qlayout.h>
+#include <qfile.h>
+#include <qlist.h>
+#include <qstring.h>
+#include <qlayout.h>
+#include <qobjcoll.h>
+
 #include "virtualconsole.h"
 #include "app.h"
 #include "doc.h"
@@ -27,15 +38,16 @@
 #include "dmxbutton.h"
 #include "dmxwidget.h"
 #include "speedslider.h"
-#include <qlayout.h>
-#include <qobjcoll.h>
+#include "dmxwidgetbase.h"
+#include "keybind.h"
+
+#include <X11/Xlib.h>
 
 extern App* _app;
 
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
 {
-  m_mode = Design;
   m_drawArea = NULL;
 }
 
@@ -50,6 +62,13 @@ bool VirtualConsole::isDesignMode(void)
 
 void VirtualConsole::setMode(Mode mode)
 {
+  Display* display;
+  display = XOpenDisplay(NULL);
+  ASSERT(display != NULL);
+
+  /* Set auto repeat off when in "Operate" mode and on 
+   * again when vc is put to "Design" mode.
+   */
   if (mode == Design)
     {
       m_mode = Design;
@@ -57,6 +76,8 @@ void VirtualConsole::setMode(Mode mode)
       m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, false);
       m_menuBar->setItemEnabled(ID_VC_ADD, true);
       setCaption("Virtual Console - Design Mode");
+
+      XAutoRepeatOn(display);
     }
   else
     {
@@ -65,7 +86,11 @@ void VirtualConsole::setMode(Mode mode)
       m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, true);
       m_menuBar->setItemEnabled(ID_VC_ADD, false);
       setCaption("Virtual Console - Operate Mode");
+
+      XAutoRepeatOff(display);
     }
+
+  XCloseDisplay(display);
 }
 
 // Search for a parent frame by the id number <id>
@@ -135,18 +160,20 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	  if (m_drawArea == NULL)
 	    {
 	      m_drawArea = new DMXWidget(this, "Bottom Frame");
+	      m_drawArea->setBottomFrame(true);
 	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	      connect(m_drawArea, SIGNAL(removed(DMXWidget*)), this, SLOT(slotDrawAreaRemoved(DMXWidget*)));
+	      
 	      m_layout->addWidget(m_drawArea, 1);
+	      
 	      m_drawArea->createContents(list);
-	      setGeometry(m_drawArea->rect());
+
 	      m_drawArea->show();
 	    }
 	  else
 	    {
 	      DMXWidget* w = new DMXWidget(m_drawArea);
 	      w->createContents(list);
-	    } 
+	    }
 	}
       else if (*s == QString("Button"))
 	{
@@ -157,6 +184,10 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	{
 	  SpeedSlider* w = new SpeedSlider(m_drawArea);
 	  w->createContents(list);
+	}
+      else if (*s == QString("Slider"))
+	{
+	  list.next();
 	}
       else
 	{
@@ -169,6 +200,7 @@ void VirtualConsole::createWidget(QList<QString> &list)
 void VirtualConsole::createVirtualConsole(QList<QString>& list)
 {
   QString t;
+  QRect rect(10, 10, 400, 400);
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -189,16 +221,46 @@ void VirtualConsole::createVirtualConsole(QList<QString>& list)
 	      setMode(Operate);
 	    }
 	}
+      else if (*s == QString("X"))
+	{
+	  t = *(list.next());
+	  rect.setX(t.toInt());
+	}
+      else if (*s == QString("Y"))
+	{
+	  t = *(list.next());
+	  rect.setY(t.toInt());
+	}
+      else if (*s == QString("Width"))
+	{
+	  t = *(list.next());
+	  rect.setWidth(t.toInt());
+	}
+      else if (*s == QString("Height"))
+	{
+	  t = *(list.next());
+	  rect.setHeight(t.toInt());
+	}
       else
 	{
 	  list.next();
 	}
     }
+
+  setGeometry(rect);
 }
 
 void VirtualConsole::createContents(QList<QString> &list)
 {
   QString t;
+
+  DMXWidget::globalDMXWidgetIDReset();
+  
+  if (m_drawArea != NULL)
+    {
+      delete m_drawArea;
+      m_drawArea = NULL;
+    }
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -236,6 +298,10 @@ void VirtualConsole::createContents(QList<QString> &list)
 	  list.next();
 	}
     }
+
+  // Virtual console sometimes loses its parent (or vice versa)
+  // when loading a new document... try to handle it with this.
+  reparent((QWidget*) _app->workspace(), 0, pos(), isVisible());
 }
 
 void VirtualConsole::saveToFile(QFile& file)
@@ -256,11 +322,30 @@ void VirtualConsole::saveToFile(QFile& file)
   s = QString("Mode = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  if (m_drawArea != NULL)
-    {
-      m_drawArea->saveFramesToFile(file);
-      m_drawArea->saveChildrenToFile(file);
-    }
+  // X
+  t.setNum(rect().x());
+  s = QString("X = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Y
+  t.setNum(rect().y());
+  s = QString("Y = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Width
+  t.setNum(rect().width());
+  s = QString("Width = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Height
+  t.setNum(rect().height());
+  s = QString("Height = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  ASSERT(m_drawArea != NULL);
+
+  m_drawArea->saveFramesToFile(file);
+  m_drawArea->saveChildrenToFile(file);
 }
 
 void VirtualConsole::initView(void)
@@ -270,32 +355,29 @@ void VirtualConsole::initView(void)
 
   m_layout = new QVBoxLayout(this);
   m_layout->setAutoAdd(false);
-
+  
   m_menuBar = new QMenuBar(this);
-  m_layout->addWidget(m_menuBar, 0);
-  m_menuBar->setFrameStyle(QFrame::MenuBarPanel);
+  m_layout->setMenuBar(m_menuBar);
 
-  // addBottomFrame();
+  newDocument();
 
-  QPopupMenu* modeMenu;
-  modeMenu = new QPopupMenu();
-  modeMenu->setCheckable(true);
-  modeMenu->insertItem("&Operate", ID_VC_MODE_OPERATE);
-  modeMenu->insertItem("&Design", ID_VC_MODE_DESIGN);
-  connect(modeMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
+  m_modeMenu = new QPopupMenu();
+  m_modeMenu->setCheckable(true);
+  m_modeMenu->insertItem("&Operate", ID_VC_MODE_OPERATE);
+  m_modeMenu->insertItem("&Design", ID_VC_MODE_DESIGN);
+  connect(m_modeMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
-  QPopupMenu* addMenu;
-  addMenu = new QPopupMenu();
-  addMenu->setCheckable(false);
-  addMenu->insertItem("&Button", ID_VC_ADD_BUTTON);
-  addMenu->insertItem("&Slider", ID_VC_ADD_SLIDER);
-  addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);
-  addMenu->insertItem("&Monitor", ID_VC_ADD_MONITOR);
-  addMenu->insertItem("&Frame", ID_VC_ADD_FRAME);
-  connect(addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
+  m_addMenu = new QPopupMenu();
+  m_addMenu->setCheckable(false);
+  m_addMenu->insertItem("&Button", ID_VC_ADD_BUTTON);
+  // m_addMenu->insertItem("&Slider", ID_VC_ADD_SLIDER);
+  m_addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);
+  // m_addMenu->insertItem("&Monitor", ID_VC_ADD_MONITOR);
+  m_addMenu->insertItem("&Frame", ID_VC_ADD_FRAME);
+  connect(m_addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
-  m_menuBar->insertItem("&Mode", modeMenu, ID_VC_MODE);
-  m_menuBar->insertItem("&Add", addMenu, ID_VC_ADD);
+  m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
+  m_menuBar->insertItem("&Add", m_addMenu, ID_VC_ADD);
 
   m_menuBar->setItemEnabled(ID_VC_ADD, true);
   setMode(Design);
@@ -303,20 +385,20 @@ void VirtualConsole::initView(void)
 
 void VirtualConsole::newDocument()
 {
+  DMXWidget::globalDMXWidgetIDReset();
+  
   if (m_drawArea != NULL)
     {
-      slotDrawAreaRemoved(m_drawArea);
-    }
-}
-
-void VirtualConsole::slotDrawAreaRemoved(DMXWidget* widget)
-{
-  if (widget == m_drawArea)
-    {
-      disconnect(m_drawArea);
       delete m_drawArea;
-      m_drawArea = NULL;
     }
+
+  m_drawArea = new DMXWidget(this, "Bottom Frame");
+  m_drawArea->setBottomFrame(true);
+  m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+
+  m_layout->addWidget(m_drawArea, 0);
+
+  m_drawArea->show();
 }
 
 void VirtualConsole::closeEvent(QCloseEvent* e)
@@ -343,10 +425,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_BUTTON:
       {
-	if (m_drawArea == NULL)
-	  {
-	    addBottomFrame();
-	  }
 	DMXButton* b;
 	b = new DMXButton(m_drawArea);
 	b->show();
@@ -355,10 +433,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_SLIDER:
       {
-	if (m_drawArea == NULL)
-	  {
-	    addBottomFrame();
-	  }
 	DMXSlider* s;
 	s = new DMXSlider(m_drawArea);
 	s->resize(20, 120);
@@ -368,10 +442,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_SPEEDSLIDER:
       {
-	if (m_drawArea == NULL)
-	  {
-	    addBottomFrame();
-	  }
 	SpeedSlider* p = NULL;
 	p = new SpeedSlider(m_drawArea);
 	p->show();
@@ -383,18 +453,11 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_FRAME:
       {
-	if (m_drawArea == NULL)
-	  {
-	    addBottomFrame();
-	  }
-	else
-	  {
-	    DMXWidget* w;
-	    w = new DMXWidget(m_drawArea);
-	    w->resize(120, 120);
-	    w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	    w->show();
-	  }
+	DMXWidget* w;
+	w = new DMXWidget(m_drawArea);
+	w->resize(120, 120);
+	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	w->show();
       }
       break;
 
@@ -403,23 +466,17 @@ void VirtualConsole::slotMenuItemActivated(int item)
     }
 }
 
-void VirtualConsole::addBottomFrame()
-{
-  m_drawArea = new DMXWidget(this, "Bottom Frame");
-  m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-  connect(m_drawArea, SIGNAL(removed(DMXWidget*)), this, SLOT(slotDrawAreaRemoved(DMXWidget*)));
-  m_layout->addWidget(m_drawArea, 1);
-  m_drawArea->show();
-}
-
 void VirtualConsole::keyPressEvent(QKeyEvent* e)
 {
   DMXWidgetBase* b = NULL;
 
-  for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
+  if (m_mode == Operate)
     {
-      b = m_keyReceivers.at(i);
-      b->keyPress(e);
+      for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
+	{
+	  b = m_keyReceivers.at(i);
+	  b->keyPress(e);
+	}
     }
 }
 
@@ -427,10 +484,13 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 {
   DMXWidgetBase* b = NULL;
 
-  for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
+  if (m_mode == Operate)
     {
-      b = m_keyReceivers.at(i);
-      b->keyRelease(e);
+      for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
+	{
+	  b = m_keyReceivers.at(i);
+	  b->keyRelease(e);
+	}
     }
 }
 

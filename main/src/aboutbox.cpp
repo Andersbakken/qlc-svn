@@ -42,7 +42,6 @@ AboutBox::~AboutBox()
   delete m_logo;
   delete m_version;
   delete m_copyright;
-  delete m_peopleLabel;
   delete m_people;
   delete m_ok;
 }
@@ -53,9 +52,9 @@ void AboutBox::initDialog()
   int w = 350;
   int h = 123;
 
-  setCaption("About QLC");
+  setCaption("About Q Light Controller");
 
-  m_pm = new QPixmap(_app->settings()->pixmapPath() + "/qlc-big.xpm");
+  m_pm = new QPixmap(_app->settings()->pixmapPath() + "qlc-big.xpm");
   m_logo = new QLabel(this);
 
   if (m_pm->isNull() == false)
@@ -68,7 +67,7 @@ void AboutBox::initDialog()
       m_logo->setGeometry(0, 0, w, h);
       m_logo->setBackgroundColor(QColor(255, 255, 255));
       m_logo->setAlignment(AlignCenter);
-      m_logo->setText("Pixmap path is missing from your settings!");
+      m_logo->setText("Incorrect pixmap path!");
     }
 
   setFixedSize(w, h + 220);
@@ -81,25 +80,22 @@ void AboutBox::initDialog()
   m_version->setBackgroundColor(white);
   
   m_copyright = new QLabel(this);
-  m_copyright->setGeometry(0, h + 20, w, 20);
+  m_copyright->setGeometry(0, h + 30, w, 50);
   m_copyright->setAlignment(AlignCenter);
-  m_copyright->setText("(c) 2002 Heikki junnila");
+  m_copyright->setTextFormat(RichText);
+  m_copyright->setText("QLC is licensed under the GNU GPL and is<BR>copyrighted &copy; by<BR><B>the people involved in QLC development:</B>");
   m_copyright->setBackgroundColor(white);
 
-  m_peopleLabel = new QLabel(this);
-  m_peopleLabel->setGeometry(5, h + 70, w - 10, 20);
-  m_peopleLabel->setAlignment(AlignLeft);
-  m_peopleLabel->setText("People involved in qlc development:");
-  m_peopleLabel->setBackgroundColor(white);
-
   m_people = new QListBox(this);
-  m_people->setGeometry(5, h + 90, w-10, 80);
+  m_people->setGeometry(5, h + 90, w - 10, 80);
   m_people->setBackgroundColor(white);
   m_people->setFocusPolicy(QWidget::NoFocus);
   m_people->setSelectionMode(QListBox::NoSelection);
-  m_people->insertItem("Heikki Junnila (hjunnila@iki.fi)");
-  m_people->insertItem("Stefan Krumm (krumm@geol.uni-erlangen.de)");
-  m_people->insertItem("Dirk Jagdmann (doj@cubic.org)");
+  m_people->setFrameStyle(QFrame::Panel);
+  m_people->setScrollBar(true);
+  m_people->insertItem("Heikki Junnila <hjunnila@iki.fi>    (Author)");
+  m_people->insertItem("Stefan Krumm <krumm@geol.uni-erlangen.de>");
+  m_people->insertItem("Dirk Jagdmann <doj@cubic.org>");
 
   m_ok = new QPushButton(this);
   m_ok->setGeometry(133, h + 180, 100, 30);

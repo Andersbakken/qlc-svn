@@ -350,7 +350,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 			}
 		      else
 			{
-			  this->addFunction(f);
+			  addFunction(f);
 			}
 		    }
 		}
@@ -365,9 +365,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  // Virtual console wants it all, go to "Entry"
 		  list.prev();
 		  list.prev();
-		  
-		  // TODO: a quick and dirty hack?... -1...
-		  
+
 		  _app->virtualConsole()->createContents(list);
 		}
 	      else
@@ -473,8 +471,12 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
       else
 	{
-	  ASSERT(false);
+	  qDebug("Invalid or missing information for function <%s>", (const char*) name);
 	}
+    }
+  else
+    {
+      qDebug("Invalid or missing information for function <%s>", (const char*) name);
     }
 }
 

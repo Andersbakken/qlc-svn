@@ -47,6 +47,48 @@
 #include "globalfunctionsview.h"
 #include "inputdeviceview.h"
 
+///////////////////////////////////////////////////////////////////
+// File menu entries
+#define ID_FILE_NEW                 	10020
+#define ID_FILE_OPEN                	10030
+#define ID_FILE_SAVE                	10050
+#define ID_FILE_SAVE_AS             	10060
+#define ID_FILE_CLOSE               	10070
+#define ID_FILE_PRINT               	10080
+#define ID_FILE_SETTINGS                10090
+#define ID_FILE_QUIT                	10100
+
+///////////////////////////////////////////////////////////////////
+// View menu entries                    
+#define ID_VIEW_TOOLBAR        	        12010
+#define ID_VIEW_STATUSBAR		12020
+
+#define ID_VIEW_DEVICE_MANAGER		12030
+#define ID_VIEW_DEVICE_CLASS_EDITOR	12035
+#define ID_VIEW_VIRTUAL_CONSOLE         12040
+#define ID_VIEW_SEQUENCE_EDITOR         12050
+#define ID_VIEW_DMXADDRESSTOOL          12060
+#define ID_VIEW_INPUT_DEVICES           12070
+
+///////////////////////////////////////////////////////////////////
+// Functions menu entries
+#define ID_FUNCTIONS_GLOBAL_FUNCTIONS   13010
+#define ID_FUNCTIONS_PANIC              13020
+
+///////////////////////////////////////////////////////////////////
+// Window menu entries
+#define ID_WINDOW_MENU			14000
+#define ID_WINDOW_CASCADE		14010
+#define ID_WINDOW_TILE			14020
+
+///////////////////////////////////////////////////////////////////
+// Help menu entries
+#define ID_HELP_ABOUT               	1002
+
+//////////////////////////////////////////////////////////////////
+// Status bar messages
+#define IDS_STATUS_DEFAULT              "Ready"
+
 App::App()
 {
   m_globalFunctionsView = NULL;
@@ -161,7 +203,7 @@ void App::initMenuBar()
   m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), "&Save", this, SLOT(slotFileSave()), CTRL+Key_S, ID_FILE_SAVE);
   m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("settings.xpm")), "Se&ttings...", this, SLOT(slotFileSettings()), 0, ID_FILE_SETTINGS);
+  m_fileMenu->insertItem("Se&ttings...", this, SLOT(slotFileSettings()), 0, ID_FILE_SETTINGS);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem("E&xit", this, SLOT(slotFileQuit()), CTRL+Key_Q, ID_FILE_QUIT);
   
@@ -181,19 +223,21 @@ void App::initMenuBar()
   //m_viewMenu->insertSeparator();
   //m_viewMenu->insertItem(QPixmap(m_settings->getPixmapPath() + QString("joystick.xpm")), "Input devices", this, SLOT(slotViewInputDevices()), 0, ID_VIEW_INPUT_DEVICES);
   m_viewMenu->insertSeparator();
-//  m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
-//  m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
-//  m_viewMenu->insertSeparator();
-  m_viewMenu->insertItem("DMX Address Tool", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
+  //  m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
+  //  m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
+  //  m_viewMenu->insertSeparator();
+  m_viewMenu->insertItem("DMX Address Converter", this, SLOT(slotViewDMXAddressTool()), 0, ID_VIEW_DMXADDRESSTOOL);
 
-//  m_viewMenu->setItemChecked(ID_VIEW_TOOLBAR, true);
-//  m_viewMenu->setItemChecked(ID_VIEW_STATUSBAR, true);
+  //  m_viewMenu->setItemChecked(ID_VIEW_TOOLBAR, true);
+  //  m_viewMenu->setItemChecked(ID_VIEW_STATUSBAR, true);
 
   ///////////////////////////////////////////////////////////////////
   // Functions Menu
   m_functionsMenu = new QPopupMenu();
   
-  m_functionsMenu->insertItem("Global Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_VIEW_GLOBAL_FUNCTIONS);
+  m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Global Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
+  m_functionsMenu->insertSeparator();
+  m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
 
   ///////////////////////////////////////////////////////////////////
   // Window Menu
@@ -292,8 +336,8 @@ void App::slotRefreshWindowMenu()
   QList <QWidget> wl = workspace()->windowList();
 
   m_windowMenu->clear();
-  m_windowMenu->insertItem("Cascade", this, SLOT(slotWindowCascade()), 0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem("Tile", this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
+  m_windowMenu->insertItem(QPixmap(settings()->pixmapPath() + QString("cascadewindow.xpm")), "Cascade", this, SLOT(slotWindowCascade()), 0, ID_WINDOW_CASCADE);
+  m_windowMenu->insertItem(QPixmap(settings()->pixmapPath() + QString("tilewindow.xpm")), "Tile", this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();
 
   for (widget = wl.first(); widget != NULL; widget = wl.next())
@@ -348,17 +392,26 @@ void App::initToolBar()
 
   m_toolbar = new QToolBar(this, "Workspace Toolbar");
 
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filenew.xpm")), "New Workspace", 0, this, SLOT(slotFileNew()), m_toolbar);
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filenew.xpm")), "New workspace; clear everything", 0, this, SLOT(slotFileNew()), m_toolbar);
   
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), "Open Workspace", 0, this, SLOT(slotFileOpen()), m_toolbar);
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), "Open existing workspace", 0, this, SLOT(slotFileOpen()), m_toolbar);
   
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), "Save Workspace", 0, this, SLOT(slotFileSave()), m_toolbar);
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), "Save current workspace", 0, this, SLOT(slotFileSave()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "Device Manager", 0, this, SLOT(slotViewDeviceManager()), m_toolbar);
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("device.xpm")), "View device manager", 0, this, SLOT(slotViewDeviceManager()), m_toolbar);
 
-  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", 0, this, SLOT(slotViewVirtualConsole()), m_toolbar);
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "View virtual console", 0, this, SLOT(slotViewVirtualConsole()), m_toolbar);
+
+  QToolBar* panic = new QToolBar(this, "!");
+  new QToolButton(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic; Shut down all running functions", 0, this, SLOT(slotPanic()), panic);
+}
+
+void App::slotPanic()
+{
+  /* Shut down all running functions */
+  m_sequenceProvider->flush();
 }
 
 void App::slotFileNew()

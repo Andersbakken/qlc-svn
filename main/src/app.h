@@ -42,7 +42,7 @@ class QWidgetList;
 // General program defines
 #define IDS_APP_NAME_LONG               "Q Light Controller 2"
 #define IDS_APP_NAME_SHORT              "QLC2"
-#define IDS_APP_VERSION_STR             "Version 2.0.10"
+#define IDS_APP_VERSION_STR             "Version 2.1.0-1"
 
 #define MIN_LIGHT_VALUE                 0
 #define MAX_LIGHT_VALUE                 100
@@ -61,47 +61,6 @@ class QWidgetList;
 #define BUS_ROOT_ID                     2000
 #define BUS_ID_MIN                      2001
 #define BUS_ID_MAX                      2999
-
-///////////////////////////////////////////////////////////////////
-// File menu entries
-#define ID_FILE_NEW                 	10020
-#define ID_FILE_OPEN                	10030
-#define ID_FILE_SAVE                	10050
-#define ID_FILE_SAVE_AS             	10060
-#define ID_FILE_CLOSE               	10070
-#define ID_FILE_PRINT               	10080
-#define ID_FILE_SETTINGS                10090
-#define ID_FILE_QUIT                	10100
-
-///////////////////////////////////////////////////////////////////
-// View menu entries                    
-#define ID_VIEW_TOOLBAR        	        12010
-#define ID_VIEW_STATUSBAR		12020
-
-#define ID_VIEW_DEVICE_MANAGER		12030
-#define ID_VIEW_DEVICE_CLASS_EDITOR	12035
-#define ID_VIEW_VIRTUAL_CONSOLE         12040
-#define ID_VIEW_SEQUENCE_EDITOR         12050
-#define ID_VIEW_DMXADDRESSTOOL          12060
-#define ID_VIEW_INPUT_DEVICES           12070
-
-///////////////////////////////////////////////////////////////////
-// Functions menu entries
-#define ID_VIEW_GLOBAL_FUNCTIONS        13010
-
-///////////////////////////////////////////////////////////////////
-// Window menu entries
-#define ID_WINDOW_MENU			14000
-#define ID_WINDOW_CASCADE		14010
-#define ID_WINDOW_TILE			14020
-
-///////////////////////////////////////////////////////////////////
-// Help menu entries
-#define ID_HELP_ABOUT               	1002
-
-//////////////////////////////////////////////////////////////////
-// Status bar messages
-#define IDS_STATUS_DEFAULT              "Ready"
 
 //////////////////////////////////////////////////////////////////
 // Class definition
@@ -133,6 +92,8 @@ class App : public QMainWindow
   void slotFileSaveAs();
   void slotFileSettings();
   void slotFileQuit();
+
+  void slotPanic();
 
   void slotViewDeviceManager();
   void slotViewDeviceClassEditor();

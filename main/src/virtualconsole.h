@@ -22,16 +22,15 @@
 #ifndef VIRTUALCONSOLE_H
 #define VIRTUALCONSOLE_H
 
-#include <qmenubar.h>
-#include <qpopupmenu.h>
-#include <qtoolbar.h>
-#include <qlayout.h>
-#include <qfile.h>
+#include <qwidget.h>
 #include <qlist.h>
-#include <qstring.h>
-#include "dmxwidgetbase.h"
-#include "keybind.h"
 #include "classes.h"
+
+class QMenuBar;
+class QPopupMenu;
+class QToolBar;
+class QVBoxLayout;
+class QFile;
 
 #define ID_VC_MODE                   100
 #define ID_VC_MODE_OPERATE           110
@@ -71,7 +70,6 @@ class VirtualConsole : public QWidget
 
  public slots:
   void slotMenuItemActivated(int item);
-  void slotDrawAreaRemoved(DMXWidget* widget);
 
  signals:
   void closed();
@@ -81,11 +79,13 @@ class VirtualConsole : public QWidget
   void closeEvent(QCloseEvent* e);
   void keyPressEvent(QKeyEvent* e);
   void keyReleaseEvent(QKeyEvent* e);
-  void addBottomFrame();
+
   DMXWidgetBase* searchKeyReceiver(DMXWidgetBase* widget);
 
  private:
   QMenuBar* m_menuBar;
+  QPopupMenu* m_modeMenu;
+  QPopupMenu* m_addMenu;
   DMXWidget* m_drawArea;
   QVBoxLayout* m_layout;
 

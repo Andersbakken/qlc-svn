@@ -22,14 +22,14 @@
 #ifndef DOC_H
 #define DOC_H
 
+#include <qobject.h>
+#include <qlist.h>
 #include "function.h"
-#include "classes.h"
 #include "dmxdevice.h"
 #include "deviceclass.h"
 #include "inputdevice.h"
 #include "plugin.h"
 #include "bus.h"
-
 #include "classes.h"
 
 class Doc : public QObject

@@ -99,6 +99,9 @@ void Chaser::saveToFile(QFile &file)
     }
   else
     {
+      s = QString("Device = Global") + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
       // For global chasers, write device+scene pairs
       for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
 	{
@@ -114,7 +117,6 @@ void Chaser::saveToFile(QFile &file)
 	      // Global function, device == NULL
 	      s = QString("Device = Global") + QString("\n");
 	    }
-
 	  file.writeBlock((const char*) s, s.length());
 
 	  s = QString("Function = ") + step->feederFunction->name() + QString("\n");
