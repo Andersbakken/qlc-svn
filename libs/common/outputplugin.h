@@ -33,6 +33,8 @@ class OutputPlugin : public Plugin
   virtual ~OutputPlugin();
 
   virtual bool writeChannel(unsigned short channel, unsigned char value) = 0;
+  virtual bool writeRange(unsigned short address, unsigned char* values,
+			  unsigned short num) = 0;
 
 };
 

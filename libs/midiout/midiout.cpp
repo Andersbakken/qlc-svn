@@ -315,6 +315,24 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
     }
 }
 
+bool MidiOut::writeRange(unsigned short address, unsigned char* values,
+			 unsigned short num)
+{
+  //
+  // TODO: Make use of MIDI's running status-feature to reduce overhead
+  // http://www.borg.com/~jglatt/tech/midispec.htm
+  //
+  for (unsigned short i = 0; i < num; i++)
+    {
+      if (writeChannel(address + i, values[i]) == false)
+	{
+	  return false;
+	}
+    }
+
+  return true;
+}
+
 void MidiOut::configure()
 {
   ConfigureMidiOut* conf = new ConfigureMidiOut(this);

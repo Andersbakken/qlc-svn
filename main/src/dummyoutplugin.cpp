@@ -147,3 +147,7 @@ bool DummyOutPlugin::writeChannel(t_channel channel, t_value value)
   return true;
 }
 
+bool DummyOutPlugin::writeRange(t_channel address, t_value* values, t_channel num)
+{
+  return true;
+}

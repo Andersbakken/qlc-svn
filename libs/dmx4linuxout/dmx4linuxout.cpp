@@ -294,3 +294,20 @@ bool DMX4LinuxOut::writeChannel(unsigned short channel, unsigned char value)
 
   return result;
 }
+
+/* Write multiple values starting from given address */
+bool DMX4LinuxOut::writeRange(unsigned short address, unsigned char* values,
+			      unsigned short num)
+{
+  bool result = true;
+
+  _mutex.lock();
+  lseek(m_device, address, SEEK_SET);
+  if (write(m_device, values, num))
+    {
+      result = false;
+    }
+  _mutex.unlock();
+
+  return result;
+}

@@ -48,6 +48,7 @@ class DummyOutPlugin : public OutputPlugin
   
   // OutputPlugin functions
   bool writeChannel(t_channel channel, t_value value);
+  bool writeRange(t_channel address, t_value* values, t_channel num);
 
   void activate();
   

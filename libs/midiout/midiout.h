@@ -57,6 +57,8 @@ class MidiOut : public OutputPlugin
 
   // OutputPlugin functions
   bool writeChannel(unsigned short channel, unsigned char value);
+  bool writeRange(unsigned short address, unsigned char* values,
+		  unsigned short num);
 
   // Own functions
   void setDeviceName(QString name) { m_deviceName = name; }

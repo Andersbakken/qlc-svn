@@ -57,6 +57,8 @@ class DMX4LinuxOut : public OutputPlugin
 
   // OutputPlugin methods
   virtual bool writeChannel(unsigned short channel, unsigned char value);
+  virtual bool writeRange(unsigned short address, unsigned char* values,
+			  unsigned short num);
 
   // Own methods
   virtual QString deviceName() { return m_deviceName; }
