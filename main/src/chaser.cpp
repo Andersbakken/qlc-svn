@@ -114,6 +114,11 @@ void Chaser::saveToFile(QFile &file)
   s.sprintf("ID = %d\n", m_id);
   file.writeBlock((const char*) s, s.length());
 
+  // Bus ID
+  t.setNum(m_busID);
+  s = QString("Bus = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
   // Device
   s = QString("Device = 0\n");
   file.writeBlock((const char*) s, s.length());

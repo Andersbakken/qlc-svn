@@ -154,6 +154,7 @@ bool Function::setName(QString name)
   else
     {
       m_name = QString(name);
+      _app->doc()->setModified(true);
       m_startMutex.unlock();
       return true;
     }
@@ -175,6 +176,7 @@ bool Function::setDevice(t_device_id id)
   else
     {
       m_deviceID = id;
+      _app->doc()->setModified(true);
       m_startMutex.unlock();
       return true;
     }
@@ -195,6 +197,7 @@ bool Function::setBus(t_bus_id id)
   else
     {
       m_busID = id;
+      _app->doc()->setModified(true);
       m_startMutex.unlock();
       return true;
     }
@@ -279,6 +282,7 @@ Function* Function::create(QPtrList <QString> &list)
   Function::Type type;
   t_function_id fid = KNoID;
   t_device_id did = KNoID;
+  t_bus_id busid = KNoID;
 
   //
   // Read basic information
@@ -302,6 +306,10 @@ Function* Function::create(QPtrList <QString> &list)
 	{
 	  fid = list.next()->toInt();
 	}
+      else if (*s == QString("Bus"))
+	{
+	  busid = list.next()->toInt();
+	}
       else if (*s == QString("Device"))
 	{
 	  did = list.next()->toInt();
@@ -322,6 +330,7 @@ Function* Function::create(QPtrList <QString> &list)
     {
       function->setDevice(did);
       function->setName(name);
+      function->setBus(busid);
       function->createContents(list);
     }
   else

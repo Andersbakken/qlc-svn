@@ -235,6 +235,11 @@ void Scene::saveToFile(QFile &file)
   s = QString("ID = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
+  // Bus ID
+  t.setNum(m_busID);
+  s = QString("Bus = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
   // Device ID
   t.setNum(m_deviceID);
   s = QString("Device = ") + t + QString("\n");
@@ -254,11 +259,6 @@ void Scene::saveToFile(QFile &file)
           s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
           file.writeBlock((const char*) s, s.length());
         }
-    }
-  else
-    {
-      assert(false);
-      // TODO: Global scenes?
     }
 }
 
