@@ -511,6 +511,8 @@ void App::initVirtualConsole(void)
 
   connect(m_virtualConsole, SIGNAL(closed()),
 	  this, SLOT(slotVirtualConsoleClosed()));
+
+  m_virtualConsole->resize(300, 300);
 }
 
 
@@ -543,6 +545,12 @@ void App::slotFileNew()
   initDoc();
   initDeviceManagerView();
   initVirtualConsole();
+
+  //
+  // Set the last workspace name
+  //
+  m_settings->set(KEY_LAST_WORKSPACE_NAME, QString::null);
+  m_doc->setModified(false);
 }
 
 

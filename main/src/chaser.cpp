@@ -346,6 +346,9 @@ void Chaser::init()
   // there... So allocate a zero length buffer.
   m_eventBuffer = new EventBuffer(0, 0); 
 
+  // Get speed
+  Bus::value(m_busID, m_holdTime);
+
   // Add this to function consumer
   _app->functionConsumer()->cue(this);
 }

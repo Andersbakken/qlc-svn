@@ -51,7 +51,6 @@ extern App* _app;
 Doc::Doc() : QObject()
 {
   m_fileName = QString::null;
-  setModified(false);
 
   //
   // Allocate function array
@@ -71,6 +70,8 @@ Doc::Doc() : QObject()
     {
       m_deviceArray[i] = NULL;
     }
+
+  setModified(false);
 }
 
 
@@ -91,10 +92,7 @@ Doc::~Doc()
 	}
     }
 
-  //
-  // Signal that function list has changed
-  //
-  emit functionListChanged();
+  delete [] m_functionArray;
 
   //
   // Delete all devices
@@ -108,10 +106,7 @@ Doc::~Doc()
 	}
     }
 
-  //
-  // Signal that device list has changed
-  //
-  emit deviceListChanged();
+  delete [] m_deviceArray;
 }
 
 
@@ -149,60 +144,60 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   QString t;
   QPtrList <QString> list;
 
+  bool result = false;
+
   if (FileHandler::readFileToList(fileName, list) == true)
     {
+      result = true;
       m_fileName = QString(fileName);
-    }
-  else
-    {
-      return false;
-    }
-
-  // Create devices and functions from the list
-  for (QString* string = list.first(); string != NULL; string = list.next())
-    {
-      if (*string == QString("Entry"))
+      
+      // Create devices and functions from the list
+      for (QString* string = list.first(); string != NULL;
+	   string = list.next())
 	{
-	  string = list.next();
-	  
-	  if (*string == QString("Device"))
+	  if (*string == QString("Entry"))
 	    {
-	      Device::create(list);
-	    }
-	  else if (*string == QString("Function"))
-	    {
-	      Function::create(list);
-	    }
-	  else if (*string == QString("Bus"))
-	    {
-	      Bus::createContents(list);
-	    }
-	  else if (*string == QString("Virtual Console"))
-	    {
-	      // Virtual console wants it all, go to "Entry"
-	      list.prev();
-	      list.prev();
+	      string = list.next();
 	      
-	      _app->virtualConsole()->createContents(list);
-	    }
-	  else
-	    {
-	      // Unknown keyword, do nothing
+	      if (*string == QString("Device"))
+		{
+		  Device::create(list);
+		}
+	      else if (*string == QString("Function"))
+		{
+		  Function::create(list);
+		}
+	      else if (*string == QString("Bus"))
+		{
+		  Bus::createContents(list);
+		}
+	      else if (*string == QString("Virtual Console"))
+		{
+		  // Virtual console wants it all, go to "Entry"
+		  list.prev();
+		  list.prev();
+		  
+		  _app->virtualConsole()->createContents(list);
+		}
+	      else
+		{
+		  // Unknown keyword, do nothing
+		}
 	    }
 	}
+      
+      //
+      // Set the last workspace name
+      //
+      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
+
+      emit deviceListChanged();
+      emit functionListChanged();
     }
 
-  //
-  // Set the last workspace name
-  //
-  _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
-
-  emit deviceListChanged();
-  emit functionListChanged();
-  
   setModified(false);
   
-  return true;
+  return result;
 }
 
 

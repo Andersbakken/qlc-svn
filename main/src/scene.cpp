@@ -425,12 +425,9 @@ void Scene::init()
   // No time has yet passed for this scene.
   m_elapsedTime = 0;
 
-  // Get speed bus value
-  if ( !Bus::value(m_busID, m_timeSpan) )
-    {
-      assert(false);
-    }
-
+  // Get speed
+  Bus::value(m_busID, m_timeSpan);
+  
   // Set speed
   speedChange(m_timeSpan);
 

@@ -87,7 +87,7 @@ class Chaser : public Function
 
   bool m_childRunning;
 
-  time_t m_holdTime;
+  t_bus_value m_holdTime;
 };
 
 #endif

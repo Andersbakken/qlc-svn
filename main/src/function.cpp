@@ -196,7 +196,25 @@ bool Function::setBus(t_bus_id id)
     }
   else
     {
-      m_busID = id;
+      if (id < KBusIDMin || id >= KBusCount)
+	{
+	  if (m_type == Scene)
+	    {
+	      m_busID = KBusIDDefaultFade;
+	    }
+	  else if (m_type == Chaser)
+	    {
+	      m_busID = KBusIDDefaultHold;
+	    }
+	  else
+	    {
+	      m_busID = KNoID;
+	    }
+	}
+      else
+	{
+	  m_busID = id;
+	}
       _app->doc()->setModified(true);
       m_startMutex.unlock();
       return true;
@@ -339,6 +357,8 @@ Function* Function::create(QPtrList <QString> &list)
       msg = QString("Unable to create function!");
       msg += QString("Name:   ") + name + QString("\n");
       msg += QString("Type:   ") + typeToString(type) + QString("\n");
+      num.setNum(busid);
+      msg += QString("Bus:    ") + num + QString("\n");
       num.setNum(fid);
       msg += QString("ID:     ") + num + QString("\n");
       num.setNum(did);
