@@ -3,7 +3,7 @@
   devicemanagerview.h
   
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -21,6 +21,10 @@
 
 #ifndef DEVICEMANAGERVIEW_H
 #define DEVICEMANAGERVIEW_H
+
+#include "device.h"
+#include "function.h"
+#include "scene.h"
 
 #include <qwidget.h>
 
@@ -51,10 +55,12 @@ class DeviceManagerView : public QWidget
   void initTitle();
   void initToolBar();
   void initDataView();
+  void CopyFunction(Function* function, Device* device);
 
  private slots:
   void slotAdd();
   void slotRemove();
+  void slotClone();
   void slotProperties();
   void slotMonitor();
   void slotConsole();

@@ -25,6 +25,9 @@
 #include "doc.h"
 #include "configkeys.h"
 #include "newdevice.h"
+#include "chaser.h"
+#include "functioncollection.h"
+
 
 #include <qwidget.h>
 #include <qtoolbar.h>
@@ -55,6 +58,7 @@ const int KMenuItemProperties ( 2 );
 const int KMenuItemRename     ( 3 );
 const int KMenuItemMonitor    ( 4 );
 const int KMenuItemConsole    ( 5 );
+const int KMenuItemClone      ( 6 );
 
 const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
 const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
@@ -220,8 +224,8 @@ void DeviceManagerView::initToolBar()
   m_addButton->setUsesTextLabel(true);
   m_addButton->setTextLabel("Add");
 
-  m_removeButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")), 
+  m_removeButton =
+    new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")),
 		    "Remove Current Selection", 0, this,
 		    SLOT(slotRemove()), m_toolbar);
   m_removeButton->setUsesTextLabel(true);
@@ -374,6 +378,57 @@ void DeviceManagerView::slotAdd()
 
   delete ndlg;
 }
+
+
+//
+// Clone a device
+//
+void DeviceManagerView::slotClone()
+{
+  QListViewItem* item = m_listView->currentItem();
+
+
+  // Get the device id and name
+  t_device_id old_id = item->text(KColumnID).toInt();
+
+
+   DeviceClass* dc =   _app->doc()->device(old_id)->deviceClass();
+   assert(dc);
+
+   QString new_name;
+   new_name = item->text(KColumnName).latin1();
+   new_name += "_new";
+
+   // Add new device
+   Device* d = _app->doc()->newDevice(dc, new_name , 0);
+   assert(d);
+
+   for (t_function_id id = 0; id < KFunctionArraySize; id++)
+   {
+      Function* f = _app->doc()->function(id);
+      if (!f)
+	{
+	  continue;
+	}
+
+       //copy only functions that belong to parent device
+       if (f->device() == old_id)
+         {
+           CopyFunction(f,d);
+         }
+   }
+
+   d->viewProperties();
+
+   //quick & dirty but only way to update the list view.... ToDo
+   Device* dd = _app->doc()->newDevice(dc, new_name , 0);
+   _app->doc()->deleteDevice(dd->id());
+
+}
+
+
+
+
 
 
 //
@@ -548,6 +603,7 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
 
   menu->insertItem(QPixmap(dir + "/addoutputdevice.xpm"),
 		   "Add...", KMenuItemAdd);
+  menu->insertItem("Clone...", KMenuItemClone);
   menu->insertItem(QPixmap(dir + "/remove.xpm"),
 		   "Remove", KMenuItemRemove);
   menu->insertItem(QPixmap(dir + "/settings.xpm"),
@@ -567,6 +623,7 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemRemove, false);
       menu->setItemEnabled(KMenuItemProperties, false);
       menu->setItemEnabled(KMenuItemRename, false);
+      menu->setItemEnabled(KMenuItemClone, false);
     }
   
   // No item selected, unable to do other things either
@@ -577,6 +634,7 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemMonitor, false);
       menu->setItemEnabled(KMenuItemProperties, false);
       menu->setItemEnabled(KMenuItemRename, false);
+      menu->setItemEnabled(KMenuItemClone, false);
     }
 
   connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallBack(int)));
@@ -599,6 +657,11 @@ void DeviceManagerView::slotMenuCallBack(int item)
     case KMenuItemRemove:
       slotRemove();
       break;
+
+    case KMenuItemClone:
+      slotClone();
+      break;
+
 
     case KMenuItemProperties:
       slotProperties();
@@ -639,3 +702,51 @@ void DeviceManagerView::slotItemRenamed(QListViewItem* item, int col)
   dev->setName(item->text(KColumnName));
   m_textView->setText(dev->infoText());
 }
+
+
+
+void DeviceManagerView::CopyFunction(Function* function, Device* device)
+{
+  switch(function->type())
+    {
+    case Function::Scene:
+      {
+	Scene* scene = static_cast<Scene*>
+	  (_app->doc()->newFunction(Function::Scene));
+
+	scene->copyFrom(static_cast<Scene*> (function), device->id());
+	//assert(device);
+	//scene->setDevice(id());
+      }
+      break;
+
+    case Function::Chaser:
+      {
+	Chaser* chaser = static_cast<Chaser*>
+	  (_app->doc()->newFunction(Function::Chaser));
+
+	chaser->copyFrom(static_cast<Chaser*> (function));
+	assert(device == NULL);
+      }
+      break;
+
+    case Function::Collection:
+      {
+	FunctionCollection* fc = static_cast<FunctionCollection*>
+	  (_app->doc()->newFunction(Function::Collection));
+
+	fc->copyFrom(static_cast<FunctionCollection*> (function));
+	assert(device == NULL);
+      }
+      break;
+
+    case Function::Sequence:
+      {
+      }
+      break;
+
+    default:
+      break;
+    }
+}
+
