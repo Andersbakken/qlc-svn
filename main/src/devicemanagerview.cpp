@@ -406,8 +406,11 @@ void DeviceManagerView::slotProperties()
   Device* device = _app->doc()->searchDevice(id);
   
   ASSERT(device);
-  
+
   device->viewProperties();
+
+  item->setText(KColumnName, device->name());
+  slotSelectionChanged(item);
 }
 
 

@@ -40,6 +40,8 @@ class Chaser : public Function
 
   void copyFrom(Chaser* ch, bool append = false);
 
+  bool setDevice(Device* device) { return false; }
+
   void addStep(Function* function);
   void removeStep(int index = 0);
 

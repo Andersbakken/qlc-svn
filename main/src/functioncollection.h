@@ -36,6 +36,8 @@ class FunctionCollection : public Function
 
   QPtrList <FunctionStep> *steps() { return &m_steps; }
 
+  bool setDevice(Device* device) { return false; }
+
   bool addItem(Function* function);
   bool removeItem(Function* function);
   bool removeItem(const t_function_id functionId);

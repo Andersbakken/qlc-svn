@@ -121,17 +121,8 @@ void Chaser::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // Device
-  if (m_device != NULL)
-    {
-      t.setNum(m_device->id());
-      s = QString("Device = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-    }
-  else
-    {
-      s = QString("Device = 0\n");
-      file.writeBlock((const char*) s, s.length());
-    }
+  s = QString("Device = 0\n");
+  file.writeBlock((const char*) s, s.length());
 
   // Steps
   s = QString("# Step entries") + QString("\n");
