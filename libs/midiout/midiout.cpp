@@ -123,6 +123,18 @@ bool MidiOut::close()
   return true;
 }
 
+bool MidiOut::isOpen()
+{
+  if (m_fd == -1)
+    {
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+}
+
 QString MidiOut::infoText()
 {
   QString t;

@@ -1,0 +1,178 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_ConfigureDMX4LinuxOut</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_ConfigureDMX4LinuxOut</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>269</width>
+            <height>194</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Configure DMX4Linux Plugin</string>
+    </property>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_deviceGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>250</width>
+                <height>60</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Device</string>
+        </property>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_deviceEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>230</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>80</x>
+                <y>160</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>170</x>
+                <y>160</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;Cancel</string>
+        </property>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>m_statusGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>80</y>
+                <width>250</width>
+                <height>60</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Status</string>
+        </property>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>m_activate</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>20</y>
+                    <width>80</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Activate</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>m_statusLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>140</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                    <bold>1</bold>
+                </font>
+            </property>
+            <property name="frameShape">
+                <enum>StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="text">
+                <string>Not Active</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ConfigureDMX4LinuxOut</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ConfigureDMX4LinuxOut</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_activate</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ConfigureDMX4LinuxOut</receiver>
+        <slot>slotActivateClicked()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_cancel</tabstop>
+    <tabstop>m_deviceEdit</tabstop>
+    <tabstop>m_activate</tabstop>
+    <tabstop>m_ok</tabstop>
+</tabstops>
+<slots>
+    <slot>slotActivateClicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

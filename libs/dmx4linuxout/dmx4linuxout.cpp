@@ -20,6 +20,7 @@
 */
 
 #include "dmx4linuxout.h"
+#include "configuredmx4linuxout.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,8 +30,11 @@
 #include <qthread.h>
 #include <qstring.h>
 #include <qpoint.h>
+#include <qpopupmenu.h>
 
 #include <dmx.h>
+
+#define ID_CONFIGURE      10
 
 static QMutex _mutex;
 
@@ -56,6 +60,7 @@ DMX4LinuxOut::DMX4LinuxOut(int id) : OutputPlugin(id)
   m_name = QString("DMX4Linux Output");
   m_type = OutputType;
   m_version = 0x00010000;
+  m_deviceName = QString("/dev/dmx");    
 }
 
 DMX4LinuxOut::~DMX4LinuxOut()
@@ -67,7 +72,7 @@ bool DMX4LinuxOut::open()
 {
   qDebug("Open DMX4Linux plugin");
 
-  m_device = ::open("/dev/dmx", O_RDWR | O_NONBLOCK);
+  m_device = ::open((const char*) m_deviceName, O_RDWR | O_NONBLOCK);
   if (m_device == -1)
     {
       perror("open");
@@ -76,8 +81,6 @@ bool DMX4LinuxOut::open()
     }
   else
     {
-      m_deviceName = QString("/dev/dmx");
-
       qDebug("DMX output available thru " + m_deviceName);
       return true;
     }
@@ -89,7 +92,6 @@ bool DMX4LinuxOut::close()
 
   if (m_device != -1)
     {
-      m_deviceName = QString::null;
       ::close(m_device);
       m_device = -1;
 
@@ -103,8 +105,28 @@ bool DMX4LinuxOut::close()
     }
 }
 
+bool DMX4LinuxOut::isOpen()
+{
+  if (m_device == -1)
+    {
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+}
+
 void DMX4LinuxOut::configure()
 {
+  ConfigureDMX4LinuxOut* conf = new ConfigureDMX4LinuxOut(this);
+
+  if (conf->exec() == QDialog::Accepted)
+    {
+      m_deviceName = conf->device();
+    }
+
+  delete conf;
 }
 
 QString DMX4LinuxOut::infoText()
@@ -134,6 +156,33 @@ QString DMX4LinuxOut::infoText()
 
 void DMX4LinuxOut::contextMenu(QPoint pos)
 {
+  QPopupMenu* menu = new QPopupMenu();
+  menu->insertItem("Configure...", ID_CONFIGURE);
+
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  menu->exec(pos, 0);
+  delete menu;
+}
+
+void DMX4LinuxOut::slotContextMenuCallback(int item)
+{
+  switch(item)
+    {
+    case ID_CONFIGURE:
+      configure();
+      break;
+
+    default:
+      break;
+    }
+}
+
+void DMX4LinuxOut::activate()
+{
+  if (open() == true)
+    {
+      emit activated(this);
+    }
 }
 
 /* Write value to channel */

@@ -92,6 +92,11 @@ bool JoystickPlugin::close()
   return true;
 }
 
+bool JoystickPlugin::isOpen()
+{
+  return true;
+}
+
 void JoystickPlugin::configure()
 {
 }

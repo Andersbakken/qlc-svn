@@ -45,6 +45,7 @@ class JoystickPlugin : public Plugin
 
   virtual bool open();
   virtual bool close();
+  virtual bool isOpen();
   virtual void configure();
   virtual QString infoText();
   virtual void contextMenu(QPoint pos);

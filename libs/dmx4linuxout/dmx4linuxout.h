@@ -24,6 +24,7 @@
 
 #include "../common/outputplugin.h"
 
+class ConfigureDMX4LinuxOut;
 class QPoint;
 class QString;
 
@@ -32,12 +33,17 @@ extern "C" void destroy(OutputPlugin* object);
 
 class DMX4LinuxOut : public OutputPlugin
 {
+  Q_OBJECT
+
+    friend ConfigureDMX4LinuxOut;
+
  public:
   DMX4LinuxOut(int id);
   ~DMX4LinuxOut();
 
   virtual bool open();
   virtual bool close();
+  virtual bool isOpen();
   virtual void configure();
   virtual QString infoText();
   virtual void contextMenu(QPoint pos);
@@ -45,6 +51,12 @@ class DMX4LinuxOut : public OutputPlugin
   virtual QString deviceName() { return m_deviceName; }
 
   virtual bool writeChannel(unsigned short channel, unsigned char value);
+
+ private slots:
+  void slotContextMenuCallback(int item);
+
+ private:
+  void activate();
 
  private:
   QString m_deviceName;

@@ -41,6 +41,7 @@ class Plugin : public QObject
   // These functions have to be overwritten
   virtual bool open() = 0; // Generic open function
   virtual bool close() = 0; // Generic close function
+  virtual bool isOpen() = 0; // Generic open-or-not? function
   virtual void configure() = 0; // Generic configure function
   virtual QString infoText() = 0; // Text that is displayed in device manager
   virtual void contextMenu(QPoint pos) = 0; // Invoke a context menu from device manager
@@ -50,6 +51,9 @@ class Plugin : public QObject
   int id() { return m_id; }
   unsigned long version() { return m_version; }
   PluginType type() { return m_type; }
+
+ signals:
+  void activated(Plugin*);
 
  protected:
   QString m_name;
