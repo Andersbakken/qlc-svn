@@ -140,11 +140,12 @@ void VirtualConsole::initView(void)
 
   m_menuBar->insertItem("&Add", m_addMenu, KMenuAdd);
   m_menuBar->insertItem("&Tools", m_toolsMenu);
-
   m_menuBar->setItemEnabled(KMenuAdd, true);
 
+  // Reset ID
   VCFrame::ResetID();
 
+  // Dock & Draw Area
   initDockArea();
   initDrawArea();
 

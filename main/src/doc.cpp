@@ -334,6 +334,8 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
     {
       if (id == KNoID)
 	{
+	  bool ok = false;
+
 	  for (t_device_id i = 0; i < KDeviceArraySize; i++)
 	    {
 	      if (m_deviceArray[i] == NULL)
@@ -343,8 +345,21 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 		  d->setDeviceClass(dc);
 		  d->setAddress(address);
 		  d->setName(name);
+		  
+		  ok = true;
 		  break;
 		}
+	    }
+
+	  if (!ok)
+	    {
+	      QString num;
+	      num.setNum(KDeviceArraySize);
+	      QMessageBox::warning(_app, KApplicationNameShort,
+				   "You cannot add more than " + num +
+				   " devices.");
+	      delete d;
+	      d = NULL;
 	    }
 	}
       else if (id >= 0 && id < KFunctionArraySize)
@@ -360,19 +375,22 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 	  else
 	    {
 	      delete d;
+	      d = NULL;
 	      QMessageBox::critical(_app, KApplicationNameShort,
-	            "Unable to create device; ID already taken!");
+				 "Unable to create device; ID already taken!");
 	    }
 	}
       else
 	{
+	  delete d;
+	  d = NULL;
 	  QMessageBox::warning(_app, KApplicationNameShort,
 			       "Function ID out of bounds!");
 	}
 
+      setModified(true);
+      emit deviceListChanged();
     }
-
-  emit deviceListChanged();
 
   return d;
 }
@@ -387,9 +405,22 @@ void Doc::deleteDevice(t_device_id id)
     {
       delete m_deviceArray[id];
       m_deviceArray[id] = NULL;
-    }
 
-  emit deviceListChanged();
+      for (int i = 0; i < KFunctionArraySize; i++)
+	{
+	  if (m_functionArray[i] && m_functionArray[i]->device() == id)
+	    {
+	      deleteFunction(i);
+	    }
+	}
+
+      setModified(true);
+      emit deviceListChanged();
+    }
+  else
+    {
+      qDebug("No such device ID:%d", id);
+    }
 }
 
 

@@ -350,8 +350,7 @@ void DeviceManagerView::slotAdd()
       assert(dc);
 
       // Add new device
-      Device* d = _app->doc()->newDevice(dc, name, address);
-      assert(d);
+      _app->doc()->newDevice(dc, name, address);
     }
 
   delete ndlg;
@@ -364,8 +363,7 @@ void DeviceManagerView::slotAdd()
 void DeviceManagerView::slotRemove()
 {
   QListViewItem* item = m_listView->currentItem();
-  QListViewItem* itemAbove = item->itemAbove();
-
+  
   // Get the device id
   t_device_id id = item->text(KColumnID).toInt();
   
@@ -386,9 +384,11 @@ void DeviceManagerView::slotRemove()
       ASSERT(device);
       
       _app->doc()->deleteDevice(id);
-      
-      // Select the item above the removed item
-      m_listView->setSelected(itemAbove, true);
+    }
+
+  if (m_listView->currentItem())
+    {
+      m_listView->setSelected(m_listView->currentItem(), true);
     }
 }
 

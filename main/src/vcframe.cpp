@@ -100,6 +100,19 @@ void VCFrame::init()
   setFrameStyle(QFrame::Panel | QFrame::Sunken);
 }
 
+void VCFrame::setBottomFrame(bool set) 
+{ 
+  m_bottomFrame = set;
+  if (set)
+    {
+      setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+    }
+  else
+    {
+      setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    }
+}
+
 void VCFrame::setID(t_vc_id newid)
 {
   m_id = newid;
@@ -306,11 +319,14 @@ void VCFrame::createContents(QPtrList <QString> &list)
 	}
     }
 
-  setFrameStyle(QFrame::Panel | QFrame::Sunken);
-
   if (m_bottomFrame == false)
     {
       setGeometry(rect);
+      setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    }
+  else
+    {
+      setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     }
 }
 

@@ -37,11 +37,8 @@ VCDockArea::~VCDockArea()
 
 void VCDockArea::init()
 {
-  setFrameStyle(QFrame::Panel | QFrame::Raised);
-
   // Align widgets vertically in the area
   m_layout = new QVBoxLayout(this);
-  m_layout->setMargin(2);
 
   // Default fade time slider
   m_defaultFadeSlider = new VCDockSlider(this, true, "Default Fade Slider");
@@ -52,13 +49,6 @@ void VCDockArea::init()
   m_defaultHoldSlider = new VCDockSlider(this, true, "Default Hold Slider");
   m_defaultHoldSlider->setBusID(KBusIDDefaultHold);
   m_layout->addWidget(m_defaultHoldSlider);
-
-  // Hide button
-  m_hideButton = new QPushButton(this);
-  m_hideButton->setText("Hide");
-  m_layout->addWidget(m_hideButton);
-  connect(m_hideButton, SIGNAL(clicked()), 
-	  this, SLOT(hide()));
 }
 
 void VCDockArea::hide()

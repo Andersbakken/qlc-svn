@@ -50,7 +50,7 @@ class VCFrame : public QFrame
   void saveChildrenToFile(QFile& file);
   virtual void createContents(QPtrList <QString> &list);
 
-  void setBottomFrame(bool set = true) { m_bottomFrame = set; }
+  void setBottomFrame(bool set = true);
   bool isBottomFrame() { return m_bottomFrame; }
 
   QPixmap* bgPixmap() const { return m_bgPixmap; }

@@ -25,8 +25,6 @@
 #include <qframe.h>
 
 class QVBoxLayout;
-class QPushButton;
-
 class VCDockSlider;
 
 class VCDockArea : public QFrame
@@ -51,9 +49,6 @@ class VCDockArea : public QFrame
 
   VCDockSlider* m_defaultFadeSlider;
   VCDockSlider* m_defaultHoldSlider;
-  VCDockSlider* m_masterSlider;
-
-  QPushButton* m_hideButton;
 };
 
 #endif
