@@ -20,7 +20,6 @@
 */
 
 #include "dmx.h"
-#include "device.h"
 #include "dmxdevice.h"
 #include "doc.h"
 #include "app.h"
@@ -59,7 +58,7 @@ Doc::Doc()
 
 Doc::~Doc()
 {
-  Device* dev;
+  DMXDevice* dev;
   while (m_deviceList.isEmpty() == false)
     {
       dev = m_deviceList.take();
@@ -329,7 +328,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	      
 	      if (*string == QString("Device"))
 		{
-		  Device* d = createDevice(list);
+		  DMXDevice* d = createDevice(list);
 		  
 		  if (d != NULL)
 		    {
@@ -415,7 +414,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 void Doc::createFunctionContents(QList<QString> &list)
 {
   Function* f = NULL;
-  Device* d = NULL;
+  DMXDevice* d = NULL;
 
   QString name;
   QString type;
@@ -486,7 +485,7 @@ void Doc::createFunctionContents(QList<QString> &list)
 Function* Doc::createFunction(QList<QString> &list)
 {
   Function* f = NULL;
-  Device* d = NULL;
+  DMXDevice* d = NULL;
 
   QString name;
   QString type;
@@ -571,7 +570,7 @@ Function* Doc::createFunction(QList<QString> &list)
   return f;
 }
 
-Device* Doc::createDevice(QList<QString> &list)
+DMXDevice* Doc::createDevice(QList<QString> &list)
 {
   QString name = QString::null;
   QString manufacturer = QString::null;
@@ -634,7 +633,7 @@ Device* Doc::createDevice(QList<QString> &list)
 
 void Doc::newDocument()
 {
-  Device* d = NULL;
+  DMXDevice* d = NULL;
   Function* f = NULL;
   Bus* b = NULL;
 
@@ -678,7 +677,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
   QFile file(fileName);
   if (file.open(IO_WriteOnly))
     {
-      Device* d;
+      DMXDevice* d;
       Function* f;
       Bus* b;
 
@@ -763,7 +762,7 @@ void Doc::initDMX()
   m_dmx->start();
 }
 
-void Doc::addDevice(Device* device)
+void Doc::addDevice(DMXDevice* device)
 {
   ASSERT(device != NULL);
   
@@ -772,9 +771,9 @@ void Doc::addDevice(Device* device)
   emit deviceListChanged();
 }
 
-bool Doc::removeDevice(Device* device)
+bool Doc::removeDevice(DMXDevice* device)
 {
-  Device* dev = NULL;
+  DMXDevice* dev = NULL;
   bool ok = false;
   int id = -1;
 
@@ -797,15 +796,15 @@ bool Doc::removeDevice(Device* device)
   return ok;
 }
 
-QList <Device> Doc::deviceList() const
+QList <DMXDevice> Doc::deviceList() const
 {
-  return ( QList <Device> ) m_deviceList;
+  return ( QList <DMXDevice> ) m_deviceList;
 }
 
 /* Search for a device by its run-time id number */
-Device* Doc::searchDevice(int id, DeviceClass::Protocol p)
+DMXDevice* Doc::searchDevice(int id, DeviceClass::Protocol p)
 {
-  for (Device* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
+  for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
       if (device->id() == id && (device->deviceClass()->protocol() == p || p == DeviceClass::ANY))
 	{
@@ -817,9 +816,9 @@ Device* Doc::searchDevice(int id, DeviceClass::Protocol p)
 }
 
 /* Search for a device by its name (not very safe, because names are not unique) */
-Device* Doc::searchDevice(const QString &name, DeviceClass::Protocol p)
+DMXDevice* Doc::searchDevice(const QString &name, DeviceClass::Protocol p)
 {
-  for (Device* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
+  for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
       if (device->name() == name && (device->deviceClass()->protocol() == p || p == DeviceClass::ANY))
 	{

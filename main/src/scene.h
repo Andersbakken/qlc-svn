@@ -44,7 +44,6 @@ class Scene : public Function
   Q_OBJECT
 
  public:
-  Scene(unsigned short channels);
   Scene();
   ~Scene();
 
@@ -54,7 +53,8 @@ class Scene : public Function
 
   bool allocate(unsigned short channels);
   bool set(unsigned short ch, unsigned char value);
-  unsigned char getChannelValue(unsigned short ch);
+  bool clear(unsigned short ch);
+  SceneValue channelValue(unsigned short ch);
 
   void saveToFile(QFile &file);
 
@@ -64,7 +64,7 @@ class Scene : public Function
   void createContents(QList<QString> &list);
   
  private:
-  SceneValue* m_values;
+  SceneValue m_values[512];
 };
 
 #endif

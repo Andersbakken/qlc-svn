@@ -27,7 +27,7 @@
 
 typedef struct
 {
-  Device* callerDevice;
+  DMXDevice* callerDevice;
   Function* feederFunction;
   bool registered;
 
@@ -48,8 +48,8 @@ class FunctionCollection : public Function
 
   int m_registerCount;
 
-  void addItem(Device* device, Function* function);
-  bool removeItem(Device* device, Function* function);
+  void addItem(DMXDevice* device, Function* function);
+  bool removeItem(DMXDevice* device, Function* function);
   bool removeItem(QString deviceString, QString functionString);
 
   void saveToFile(QFile &file);
@@ -67,7 +67,7 @@ class FunctionCollection : public Function
   void decreaseRegisterCount();
 
  private slots:
-  void slotFunctionUnRegistered(Function* feeder, Function* controller, Device* caller, unsigned long feederID);
+  void slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID);
 
 };
 

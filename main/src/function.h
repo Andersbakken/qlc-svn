@@ -29,7 +29,6 @@
 
 class QFile;
 class QString;
-class Feeder;
 
 class Function : public QObject
 {
@@ -47,8 +46,8 @@ class Function : public QObject
   DeviceClass* deviceClass() const;
   void setDeviceClass(DeviceClass* device);
 
-  Device* device() const;
-  void setDevice(Device* device);
+  DMXDevice* device() const;
+  void setDevice(DMXDevice* device);
 
   Type type() const;
   QString typeString() const;
@@ -76,7 +75,7 @@ class Function : public QObject
   QString m_name;
   Type m_type;
   DeviceClass* m_deviceClass;
-  Device* m_device;
+  DMXDevice* m_device;
 
   bool m_running;
 };

@@ -26,6 +26,7 @@
 #include "deviceclass.h"
 #include "dmxdevice.h"
 #include "scene.h"
+#include "dmxchannel.h"
 #include "logicalchannel.h"
 
 #include <qcombobox.h>
@@ -37,7 +38,7 @@
 #include <stdlib.h>
 
 
-SceneEditor::SceneEditor(Device* device, QWidget* parent, const char* name )
+SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent, const char* name )
              : UI_SceneEditor( parent, name)
 {
   m_device = device;
@@ -66,33 +67,58 @@ void SceneEditor::slotSceneChanged()
 void SceneEditor::slotSceneActivated( int nr )
 {
   Function* f;
+
   if( m_deviceSource == "DeviceClass")
-  {
-     QList <Function> fl = m_device->deviceClass()->functions();
-     for (f = fl.first(); f != NULL; f = fl.next())
-     {
-        if( f->name() == m_availableScenesComboBox->currentText())
-        {
-           static_cast<DMXDevice*>(m_device)->setScene(static_cast<Scene*>(f));
-	   m_currentScene = static_cast<Scene*>(f);
-        }
-      }
-   }else{
-     QList <Function> fl = m_device->functions();
-     for (f = fl.first(); f != NULL; f = fl.next())
-     {
-        if( f->name() == m_availableScenesComboBox->currentText())
-        {
-           static_cast<DMXDevice*>(m_device)->setScene(static_cast<Scene*>(f));
-	   m_currentScene = static_cast<Scene*>(f);
-        }
-      }
-   }
-
+    {
+      QList <Function> fl = m_device->deviceClass()->functions();
+      for (f = fl.first(); f != NULL; f = fl.next())
+	{
+	  if( f->name() == m_availableScenesComboBox->currentText())
+	    {
+	      setScene((Scene*) f);
+	      m_currentScene = (Scene*) f;
+	    }
+	}
+    }
+  else
+    {
+      QList <Function> fl = m_device->functions();
+      for (f = fl.first(); f != NULL; f = fl.next())
+	{
+	  if( f->name() == m_availableScenesComboBox->currentText())
+	    {
+	      setScene((Scene*) f);
+	      m_currentScene = (Scene*) f;
+	    }
+	}
+    }
+  
   m_setStatusText( "unchanged", QColor( 0, 255, 100 ));
-
 }
 
+
+void SceneEditor::setScene(Scene* scene)
+{
+   ChannelUI* unit;
+   QList <ChannelUI> ul = ((DMXDevice*) m_device)->getChannelUnitList();
+   int n = 0;
+
+   ASSERT(scene != NULL);
+
+   for (unit = ul.first(); unit != NULL; unit = ul.next(), n++)
+     {
+       SceneValue value = scene->channelValue(n);
+       if (value.type == Set)
+	 {
+	   unit->slotAnimateValueChange(value.value);
+	   unit->setStatusButton(DMXChannel::On);
+	 }
+       else
+	 {
+	   unit->setStatusButton(DMXChannel::Off);
+	 }
+     }
+}
 
 void  SceneEditor::slotHideClicked()
 {
@@ -110,13 +136,20 @@ void  SceneEditor::slotNewClicked()
 
    if ( ok && !text.isEmpty() )
      {
-       Scene* sc = new Scene( m_device->deviceClass()->channels().count() );
+       Scene* sc = new Scene();
        sc->setName(text);
        sc->setDeviceClass(m_device->deviceClass());
        for(unsigned int n = 0; n < m_device->deviceClass()->channels().count(); n++)
 	 {
 	   // Get values from device / HJu
-  	   sc->set(n, m_device->getChannelValue(n));
+	   if (m_device->dmxChannel(n)->status() == DMXChannel::On)
+	     {
+	       sc->set(n, m_device->dmxChannel(n)->getValue());
+	     }
+	   else
+	     {
+	       sc->clear(n);
+	     }
 	 }
 
        if (m_deviceSource == "DeviceClass")
@@ -146,12 +179,21 @@ void  SceneEditor::slotNewClicked()
 void SceneEditor::slotSaveClicked()
 {
   ASSERT(m_currentScene != NULL);
+  
+  QList <ChannelUI> ul = ((DMXDevice*) m_device)->getChannelUnitList();
 
   // Take values from device because it returns real values for
   // sure and they are unsigned chars and it is much simpler this way / HJu
   for (unsigned short i = 0; i < m_device->deviceClass()->channels().count(); i++)
     {
-      static_cast<Scene*>(m_currentScene)->set(i, m_device->getChannelValue(i));
+      if (m_device->dmxChannel(i)->status() == DMXChannel::On)
+	{
+	  m_currentScene->set(i, m_device->dmxChannel(i)->getValue());
+	}
+      else
+	{
+	  m_currentScene->clear(i);
+	}
     }
 
   if (m_deviceSource == "DeviceClass")
@@ -205,9 +247,12 @@ void SceneEditor::m_selectFunctions(QList <Function> fl)
   Function* f;
   for (f = fl.first(); f != NULL; f = fl.next())
     {
-      if( f->typeString() == "Scene")
-	m_availableScenesComboBox->insertItem(f->name());
+      if (f->type() == Function::Scene)
+	{
+	  m_availableScenesComboBox->insertItem(f->name());
+	}
     }
+
   m_setStatusText( "unchanged",QColor( 0, 255, 100 ));
   slotSceneActivated(0);
 }

@@ -24,7 +24,7 @@
 #include "app.h"
 #include "doc.h"
 #include "deviceclass.h"
-#include "device.h"
+#include "dmxdevice.h"
 #include "function.h"
 #include "functiontree.h"
 
@@ -79,10 +79,6 @@ void FunctionCollectionEditor::init()
   m_removeButton->setGeometry(380, 90, 100, 30);
   connect(m_removeButton, SIGNAL(clicked()), this, SLOT(slotRemoveClicked()));
 
-  //m_editButton = new QPushButton(this);
-  //m_editButton->setText("Edit");
-  //m_editButton->setGeometry(380, 90, 100, 30);
-  
   m_ok = new QPushButton(this);
   m_ok->setText("OK");
   m_ok->setGeometry(380, 210, 100, 30);
@@ -118,7 +114,7 @@ void FunctionCollectionEditor::slotAddClicked()
 	{
 	  new QListViewItem(m_functionList, ft->deviceString(), ft->functionString());
 
-	  Device* device = _app->doc()->searchDevice(ft->deviceString(), DeviceClass::ANY);
+	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceString(), DeviceClass::ANY);
 
 	  Function* function = device->searchFunction(ft->functionString());
 	  if (function == NULL)

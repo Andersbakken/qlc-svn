@@ -20,6 +20,7 @@
 */
 
 #include "function.h"
+#include "dmxdevice.h"
 #include "deviceclass.h"
 
 Function::Function() : QObject()
@@ -57,12 +58,12 @@ void Function::setDeviceClass(DeviceClass* dc)
   m_deviceClass = dc;
 }
 
-Device* Function::device() const
+DMXDevice* Function::device() const
 {
   return m_device;
 }
 
-void Function::setDevice(Device* device)
+void Function::setDevice(DMXDevice* device)
 {
   m_device = device;
 }

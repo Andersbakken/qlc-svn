@@ -20,7 +20,6 @@
 */
 
 #include "chaser.h"
-#include "device.h"
 #include "event.h"
 #include "deviceclass.h"
 #include "doc.h"
@@ -28,8 +27,10 @@
 #include "sequenceprovider.h"
 #include "scene.h"
 #include "feeder.h"
+#include "dmxdevice.h"
 
 #include <stdlib.h>
+#include <qfile.h>
 
 extern App* _app;
 
@@ -159,7 +160,7 @@ void Chaser::createContents(QList<QString> &list)
 	    }
 	  else
 	    {
-	      Device* d = _app->doc()->searchDevice(device, DeviceClass::ANY);
+	      DMXDevice* d = _app->doc()->searchDevice(device, DeviceClass::ANY);
 	      Function* f = NULL;
 	      if (d != NULL)
 		{
@@ -190,7 +191,7 @@ void Chaser::createContents(QList<QString> &list)
     }
 }
 
-void Chaser::addStep(Device* device, Function* function)
+void Chaser::addStep(DMXDevice* device, Function* function)
 {
   if (m_running == false)
     {
@@ -272,8 +273,8 @@ bool Chaser::unRegisterFunction(Feeder* feeder)
 
   _app->sequenceProvider()->unRegisterEventFeeder(step->callerDevice, step->feederFunction);
 
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
 
   m_running = false;
   m_OKforNextStep = false;
@@ -301,17 +302,17 @@ Event* Chaser::getEvent(Feeder* feeder)
       
       _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
       
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
       
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
     }
 
   return event;
 }
 
-void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, Device* caller, unsigned long feederID)
+void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, DMXDevice* caller, unsigned long feederID)
 {
   if (controller == this)
     {

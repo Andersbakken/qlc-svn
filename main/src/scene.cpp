@@ -26,34 +26,28 @@
 #include "settings.h"
 #include "feeder.h"
 #include "logicalchannel.h"
+#include "dmxdevice.h"
 
 #include <math.h>
 #include <stdlib.h>
 #include <iostream.h>
+#include <qfile.h>
 
 extern App* _app;
 
-Scene::Scene(unsigned short channels) : Function()
+Scene::Scene() : Function()
 {
-  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
   m_type = Function::Scene;
-}
 
-Scene::Scene()
-{
-  m_values = NULL;
-
-  m_type = Function::Scene;
+  for (int i = 0; i < 512; i++)
+    {
+      m_values[i].value = 0;
+      m_values[i].type = NoSet;
+    }
 }
 
 Scene::~Scene()
 {
-  if (m_values != NULL)
-    {
-      free(m_values);
-      m_values = NULL;
-    }
-
   emit destroyed();
 }
 
@@ -99,11 +93,14 @@ void Scene::saveToFile(QFile &file)
       // Write only the data for device class scenes
       for (unsigned short i = 0; i < deviceClass()->channels().count(); i++)
 	{
-	  t.setNum(i);
-	  s = t + QString(" = ");
-	  t.setNum(m_values[i].value);
-	  s += t + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
+	  if (m_values[i].type == Set)
+	    {
+	      t.setNum(i);
+	      s = t + QString(" = ");
+	      t.setNum(m_values[i].value);
+	      s += t + QString("\n");
+	      file.writeBlock((const char*) s, s.length());
+	    }
 	}
     }
   else if (device() != NULL)
@@ -116,11 +113,14 @@ void Scene::saveToFile(QFile &file)
       // Data
       for (unsigned short i = 0; i < device()->deviceClass()->channels().count(); i++)
 	{
-	  t.setNum(i);
-	  s = t + QString(" = ");
-	  t.setNum(m_values[i].value);
-	  s += t + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
+	  if (m_values[i].type == Set)
+	    {
+	      t.setNum(i);
+	      s = t + QString(" = ");
+	      t.setNum(m_values[i].value);
+	      s += t + QString("\n");
+	      file.writeBlock((const char*) s, s.length());
+	    }
 	}
     }
   else
@@ -128,12 +128,13 @@ void Scene::saveToFile(QFile &file)
       // For global scenes the device name is "Global"
       s = QString("Device = Global") + QString("\n");
       file.writeBlock((const char*) s, s.length());
+
+      // TODO: write global scene data
     }
 }
 
 void Scene::createContents(QList<QString> &list)
 {
-  unsigned short channels = 1;
   QString t;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
@@ -146,10 +147,9 @@ void Scene::createContents(QList<QString> &list)
       else if (s->at(0).isNumber() == true)
 	{
 	  unsigned char ch = (unsigned char) s->toInt();
-	  m_values = (SceneValue*) realloc(m_values, channels * sizeof(SceneValue));
 	  t = *(list.next());
 	  m_values[ch].value = t.toInt();
-	  channels++;
+	  m_values[ch].type = Set;
 	}
       else
 	{
@@ -159,34 +159,6 @@ void Scene::createContents(QList<QString> &list)
     }
 }
 
-bool Scene::allocate(unsigned short channels)
-{
-  if (m_device != NULL)
-    {
-      if (channels < m_device->deviceClass()->channels().count())
-	{
-	  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
-	}
-      else
-	{
-	  return false;
-	}
-    }
-  else if (m_deviceClass != NULL)
-    {
-      if (channels < m_deviceClass->channels().count())
-	{
-	  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
-	}
-      else
-	{
-	  return false;
-	}
-    }
-
-  return true;
-}
-
 bool Scene::set(unsigned short ch, unsigned char value)
 {
   if (m_device != NULL)
@@ -194,6 +166,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
       if (ch < m_device->deviceClass()->channels().count())
 	{
 	  m_values[ch].value = value;
+	  m_values[ch].type = Set;
 	}
       else
 	{
@@ -206,6 +179,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
       if (ch < deviceClass()->channels().count())
 	{
 	  m_values[ch].value = value;
+	  m_values[ch].type = Set;
 	}
       else
 	{
@@ -221,9 +195,45 @@ bool Scene::set(unsigned short ch, unsigned char value)
   return true;
 }
 
-unsigned char Scene::getChannelValue(unsigned short ch)
+bool Scene::clear(unsigned short ch)
 {
-  return m_values[ch].value;
+  if (m_device != NULL)
+    {
+      if (ch < m_device->deviceClass()->channels().count())
+	{
+	  m_values[ch].value = 0;
+	  m_values[ch].type = NoSet;
+	}
+      else
+	{
+	  // Channel value is beyond this device's limits
+	  return false;
+	}
+    }
+  else if (m_deviceClass != NULL)
+    {
+      if (ch < deviceClass()->channels().count())
+	{
+	  m_values[ch].value = 0;
+	  m_values[ch].type = NoSet;
+	}
+      else
+	{
+	  // Channel value is beyond this deviceclass' limits
+	  return false;
+	}
+    }
+  else
+    {
+      return false;
+    }
+
+  return true;
+}
+
+SceneValue Scene::channelValue(unsigned short ch)
+{
+  return m_values[ch];
 }
 
 void Scene::recalculateSpeed(Feeder* f)
@@ -243,7 +253,12 @@ void Scene::recalculateSpeed(Feeder* f)
   // updates needed) and set it to this whole scene's delta
   for (unsigned short i = 0; i < channels; i++)
     {
-      gap = abs((signed short) f->device()->getChannelValue(i) - (signed short) m_values[i].value);
+      if (m_values[i].type == NoSet)
+	{
+	  continue;
+	}
+
+      gap = abs((signed short) f->device()->dmxChannel(i)->getValue() - (signed short) m_values[i].value);
 
       if (gap != 0)
 	{
@@ -286,7 +301,14 @@ Event* Scene::getEvent(Feeder* feeder)
 
   for (unsigned short i = 0; i < channels; i++)
     {
-      currentValue = feeder->device()->getChannelValue(i);
+      if (m_values[i].type == NoSet)
+	{
+	  event->m_values[i].type = Ready;
+	  readyCount++;
+	  continue;
+	}
+
+      currentValue = feeder->device()->dmxChannel(i)->getValue();
 
       if (currentValue == m_values[i].value)
 	{

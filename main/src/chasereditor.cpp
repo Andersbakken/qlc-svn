@@ -22,7 +22,7 @@
 #include "chasereditor.h"
 #include "deviceclass.h"
 #include "function.h"
-#include "device.h"
+#include "dmxdevice.h"
 #include "app.h"
 #include "doc.h"
 #include "functiontree.h"
@@ -167,7 +167,7 @@ void ChaserEditor::slotOKClicked()
   QListViewItemIterator it(m_functionList);
   QString functionString;
   QString deviceString;
-  Device* device = NULL;
+  DMXDevice* device = NULL;
   Function* function = NULL;
 
   // Iterate through all items of the listview

@@ -54,12 +54,12 @@ class Doc : public QObject
   unsigned short findNextFreeDMXAddress(unsigned short channels);
   DMXChannel* dmxChannel(unsigned short channel);
 
-  void addDevice(Device*);
-  bool removeDevice(Device*);
-  QList <Device> deviceList() const;
+  void addDevice(DMXDevice*);
+  bool removeDevice(DMXDevice*);
+  QList <DMXDevice> deviceList() const;
 
-  Device* searchDevice(int id, DeviceClass::Protocol p);
-  Device* searchDevice(const QString &name, DeviceClass::Protocol p);
+  DMXDevice* searchDevice(int id, DeviceClass::Protocol p);
+  DMXDevice* searchDevice(const QString &name, DeviceClass::Protocol p);
 
   bool isModified() const { return m_modified; }
 
@@ -110,7 +110,7 @@ class Doc : public QObject
 
   void dumpDeviceClass(DeviceClass* dc);
   DeviceClass* createDeviceClass(QList<QString> &list);
-  Device* createDevice(QList<QString> &list);
+  DMXDevice* createDevice(QList<QString> &list);
   Function* createFunction(QList<QString> &list);
   void createFunctionContents(QList<QString> &list);
   void findPluginObjects();
@@ -126,7 +126,7 @@ class Doc : public QObject
 
   bool m_modified;
 
-  QList <Device> m_deviceList;
+  QList <DMXDevice> m_deviceList;
   QList <DeviceClass> m_deviceClassList;
 
   QList <InputDevice> m_inputDeviceList;

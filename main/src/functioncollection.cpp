@@ -20,7 +20,6 @@
 */
 
 #include "functioncollection.h"
-#include "device.h"
 #include "function.h"
 #include "app.h"
 #include "sequenceprovider.h"
@@ -32,6 +31,7 @@
 #include <qstring.h>
 #include <qthread.h>
 #include <stdlib.h>
+#include <qfile.h>
 
 extern App* _app;
 static QMutex _mutex;
@@ -57,8 +57,8 @@ bool FunctionCollection::unRegisterFunction(Feeder* feeder)
       _app->sequenceProvider()->unRegisterEventFeeder(item->callerDevice, item->feederFunction);
     }
 
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
 
   Function::unRegisterFunction(feeder);
 
@@ -72,11 +72,11 @@ bool FunctionCollection::registerFunction(Feeder* feeder)
       m_running = true;
 
       // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
       
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
       
       for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
 	{
@@ -184,7 +184,7 @@ void FunctionCollection::createContents(QList<QString> &list)
 	    }
 	  else
 	    {
-	      Device* d = _app->doc()->searchDevice(device, DeviceClass::ANY);
+	      DMXDevice* d = _app->doc()->searchDevice(device, DeviceClass::ANY);
 	      Function* f = NULL;
 	      if (d != NULL)
 		{
@@ -215,7 +215,7 @@ void FunctionCollection::createContents(QList<QString> &list)
     }
 }
 
-void FunctionCollection::addItem(Device* device, Function* function)
+void FunctionCollection::addItem(DMXDevice* device, Function* function)
 {
   ASSERT(function != NULL);
 
@@ -227,7 +227,7 @@ void FunctionCollection::addItem(Device* device, Function* function)
   m_items.append(item);
 }
 
-bool FunctionCollection::removeItem(Device* device, Function* function)
+bool FunctionCollection::removeItem(DMXDevice* device, Function* function)
 {
   bool retval = false;
 
@@ -279,7 +279,7 @@ void FunctionCollection::decreaseRegisterCount()
   _mutex.unlock();
 }
 
-void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* controller, Device* caller, unsigned long feederID)
+void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID)
 {
   if (controller == this)
     {
@@ -305,8 +305,8 @@ Event* FunctionCollection::getEvent(Feeder* feeder)
       _mutex.unlock();
 
       // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
 
       // Ready event signals sequenceprovider that this
       // function is ready and can be unregistered

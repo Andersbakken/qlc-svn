@@ -33,7 +33,7 @@ class QString;
 
 typedef struct
 {
-  Device* callerDevice;
+  DMXDevice* callerDevice;
   Function* feederFunction;
 } ChaserStep;
 
@@ -45,7 +45,7 @@ class Chaser : public Function
   Chaser();
   ~Chaser();
 
-  void addStep(Device* device, Function* function);
+  void addStep(DMXDevice* device, Function* function);
   void removeStep(int index = 0);
 
   int steps(void);
@@ -64,7 +64,7 @@ class Chaser : public Function
   void createContents(QList<QString> &list);
 
  public slots:
-  void slotFunctionUnRegistered(Function* function, Function* controller, Device* caller, unsigned long feederID);
+  void slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID);
 
  protected:
   QList <ChaserStep> m_steps;
