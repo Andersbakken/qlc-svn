@@ -283,7 +283,6 @@ void DeviceManagerView::initDataView()
 //
 void DeviceManagerView::slotUpdate()
 {
-  qDebug("update");
   t_device_id currentId = 0;
   QListViewItem* newItem = NULL;
 
