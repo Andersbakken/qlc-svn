@@ -90,25 +90,6 @@ Function::~Function()
 
 
 //
-// Set a name to this function
-//
-void Function::setName(QString name)
-{
-  m_name = QString(name);
-}
-
-
-//
-// Assign a device to this function (or vice versa, whichever feels
-// familiar to you)
-//
-void Function::setDevice(Device* device)
-{
-  m_device = device;
-}
-
-
-//
 // Return the type as a string
 //
 QString Function::typeString() const
@@ -139,11 +120,63 @@ QString Function::typeString() const
 
 
 //
+// Set a name to this function
+//
+bool Function::setName(QString name)
+{
+  m_startMutex.lock();
+  if (m_running)
+    {
+      m_startMutex.unlock();
+      return false;
+    }
+  else
+    {
+      m_name = QString(name);
+      m_startMutex.unlock();
+      return true;
+    }
+}
+
+
+//
+// Assign a device to this function (or vice versa, whichever feels
+// familiar to you)
+//
+bool Function::setDevice(Device* device)
+{
+  m_startMutex.lock();
+  if (m_running)
+    {
+      m_startMutex.unlock();
+      return false;
+    }
+  else
+    {
+      m_device = device;
+      m_startMutex.unlock();
+      return true;
+    }
+}
+
+
+//
 // Set the speed bus
 //
-void Function::setBus(t_bus_id id)
+bool Function::setBus(t_bus_id id)
 {
-  m_busID = id;
+  m_startMutex.lock();
+  if (m_running)
+    {
+      m_startMutex.unlock();
+      return false;
+    }
+  else
+    {
+      m_busID = id;
+      m_startMutex.unlock();
+      return true;
+    }
 }
 
 

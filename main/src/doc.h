@@ -55,13 +55,10 @@ class Doc : public QObject
   bool saveWorkspaceAs(QString &);
   bool saveWorkspace();
 
-  // Read file contents to a list of strings
-  bool readFileToList(QString &fileName, QPtrList <QString> &list);
-
   //
   // Devices
   //
-  void addDevice(Device* d);
+  bool addDevice(Device* d);
   bool removeDevice(Device* d);
   QPtrList <Device> *deviceList() { return &m_deviceList; }
   Device* searchDevice(const t_device_id id);
@@ -73,8 +70,8 @@ class Doc : public QObject
   QPtrList <Function> *functions() { return &m_functions; }
 
   // Function list operations
-  void addFunction(const Function* function);
-  void removeFunction(const t_function_id id, bool deleteFunction = true);
+  bool addFunction(const Function* function);
+  bool removeFunction(const t_function_id id, bool deleteFunction = true);
   Function* searchFunction(const t_function_id id);
 
   //

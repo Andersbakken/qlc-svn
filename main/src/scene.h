@@ -27,27 +27,8 @@
 
 class EventBuffer;
 class Device;
-
-enum SceneValueType
-  {
-    Set   = 0, // Normal value
-    Fade  = 1, // Fade value
-    NoSet = 2  // Empty value
-  };
-
-class SceneValue
-{
- public:
-  SceneValueType type;
-  t_value value;
-};
-
-class RunTimeData
-{
- public:
-  float current;
-  float increment;
-};
+class RunTimeData;
+class SceneValue;
 
 class Scene : public Function
 {
@@ -55,19 +36,26 @@ class Scene : public Function
   Scene(t_function_id id = 0);
   ~Scene();
 
-  void copyFrom(Scene* sc);
-  void setDevice(Device* device);
+  enum ValueType
+    {
+      Set   = 0, // Normal value
+      Fade  = 1, // Fade value
+      NoSet = 2  // Ignored value
+    };
+
+  bool copyFrom(Scene* sc);
+  bool setDevice(Device* device);
 
   t_channel channels() { return m_channels; }
 
-  bool set(t_channel ch, t_value value, SceneValueType type);
+  bool set(t_channel ch, t_value value, ValueType type);
   SceneValue channelValue(t_channel ch);
   QString valueTypeString(t_channel ch);
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  void speedChange();
+  void speedChange(bool alreadyRunning);
   void busValueChanged(t_bus_id, t_bus_value);
   void stop();
   void freeRunTimeData();
@@ -83,6 +71,21 @@ class Scene : public Function
 
   RunTimeData* m_runTimeData;
   t_value* m_channelData;
+};
+
+class RunTimeData
+{
+ public:
+  float start;
+  float current;
+  float increment;
+};
+
+class SceneValue
+{
+ public:
+  Scene::ValueType type;
+  t_value value;
 };
 
 #endif

@@ -75,6 +75,7 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   bool m_dirty; // Indicates whether we need to save changes (dirty) or not
 
   Scene* m_scene;
+  Scene* m_original;
   LogicalChannel* m_currentChannel;
 };
 

@@ -54,18 +54,6 @@ class Function : public QThread
     };
 
  public:
-  // Return the name of this function
-  QString name() { return m_name; }
-
-  // Set a name for this function
-  virtual void setName(QString name);
-
-  // Return the device that this function is associated to
-  Device* device() { return m_device; }
-
-  // Set the device that this function is associated to
-  virtual void setDevice(Device* device);
-
   // This function's unique ID
   t_function_id id() { return m_id; }
 
@@ -75,8 +63,20 @@ class Function : public QThread
   // Same thing, only this time as a string
   QString typeString() const;
 
+  // Return the name of this function
+  virtual QString name() { return m_name; }
+
+  // Set a name for this function
+  virtual bool setName(QString name);
+
+  // Return the device that this function is associated to
+  virtual Device* device() { return m_device; }
+
+  // Set the device that this function is associated to
+  virtual bool setDevice(Device* device);
+
   // The bus for speed setting
-  void setBus(t_bus_id id);
+  bool setBus(t_bus_id id);
   t_bus_id bus() const { return m_busID; }
   virtual void busValueChanged(t_bus_id, t_bus_value) {}
 

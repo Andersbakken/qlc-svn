@@ -64,7 +64,7 @@ class Device : public QObject
   void viewConsole();
   void viewMonitor();
 
-  QPtrList <ChannelUI> getChannelUnitList() { return m_unitList; }
+  QPtrList <ChannelUI> unitList() { return m_unitList; }
   SceneEditor* sceneEditor() { return m_sceneEditor; }
 
   /* Save this device's properties to a file */

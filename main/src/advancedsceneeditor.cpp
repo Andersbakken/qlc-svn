@@ -54,7 +54,8 @@ extern App* _app;
 AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
   : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", false)
 {
-  ASSERT(scene != NULL);
+  ASSERT(scene);
+  m_original = scene;
 
   m_scene = new Scene(KFunctionIDTemp);
   m_scene->copyFrom(scene);
@@ -78,7 +79,8 @@ void AdvancedSceneEditor::init()
 }
 
 void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
-							   const QPoint &pos, int col)
+							   const QPoint &pos,
+							   int col)
 {
   if (m_scene == NULL)
     {
@@ -166,7 +168,8 @@ void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 
   menu->insertItem("Value", INT_MAX);
   menu->insertSeparator();
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotValueMenuActivated(int)));
+  connect(menu, SIGNAL(activated(int)), 
+	  this, SLOT(slotValueMenuActivated(int)));
 
   for (unsigned int i = 0; i < 256; i += 16)
     {
@@ -184,7 +187,8 @@ void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 	}
       
       menu->insertItem(top, sub);
-      connect(sub, SIGNAL(activated(int)), this, SLOT(slotValueMenuActivated(int)));
+      connect(sub, SIGNAL(activated(int)), 
+	      this, SLOT(slotValueMenuActivated(int)));
     }
 
   menu->exec(pos);
@@ -244,11 +248,12 @@ void AdvancedSceneEditor::invokeTypeMenu(const QPoint &pos)
 
   menu->insertItem("Type");
   menu->insertSeparator();
-  menu->insertItem("Fade", (int) Fade);
-  menu->insertItem("Set", (int) Set);
-  menu->insertItem("NoSet", (int) NoSet);
+  menu->insertItem("Fade", Scene::Fade);
+  menu->insertItem("Set", Scene::Set);
+  menu->insertItem("NoSet", Scene::NoSet);
 
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotTypeMenuActivated(int)));
+  connect(menu, SIGNAL(activated(int)), 
+	  this, SLOT(slotTypeMenuActivated(int)));
   menu->exec(pos);
   disconnect(menu);
 
@@ -262,24 +267,24 @@ void AdvancedSceneEditor::slotTypeMenuActivated(int type)
       return;
     }
 
-  int channel = m_currentChannel->channel();
+  t_channel channel = m_currentChannel->channel();
 
   m_scene->set(channel, m_scene->channelValue(channel).value,
-	       static_cast<SceneValueType> (type));
+	       static_cast<Scene::ValueType> (type));
 
   switch (type)
     {
-    case Fade:
+    case Scene::Fade:
       m_sceneContents->currentItem()->setText(4, "Fade");
       setDirty(true);
       break;
 
-    case Set:
+    case Scene::Set:
       m_sceneContents->currentItem()->setText(4, "Set");
       setDirty(true);
       break;
 
-    case NoSet:
+    case Scene::NoSet:
       m_sceneContents->currentItem()->setText(4, "NoSet");
       setDirty(true);
       break;
@@ -299,17 +304,19 @@ bool AdvancedSceneEditor::dirtyCheck()
 {
   if (m_dirty == true)
     {
-      if (QMessageBox::information(this, "Advanced Scene Editor",
-				   "Do you want to LOSE changes?",
-				   QMessageBox::Yes, QMessageBox::Cancel)
-	  == QMessageBox::Yes)
+      int result = QMessageBox::information(this, "Advanced Scene Editor",
+					    "Do you want to save changes?",
+					    QMessageBox::Yes,
+					    QMessageBox::No,
+					    QMessageBox::Cancel);
+      if (result == QMessageBox::Yes)
 	{
-	  if (m_scene != NULL)
-	    {
-	      delete m_scene;
-	      m_scene = NULL;
-	    }
-	  
+	  m_original->copyFrom(m_scene);
+	  setDirty(false);
+	  return true;
+	}
+      else if (result == QMessageBox::No)
+	{
 	  setDirty(false);
 	  return true;
 	}
@@ -362,13 +369,10 @@ void AdvancedSceneEditor::slotApplyClicked()
       return;
     }
 
-  Scene* s = (Scene*) _app->doc()->searchFunction(m_scene->id());
-  ASSERT(s != NULL);
-
   _app->doc()->setModified(true);
   setDirty(false);
 
-  s->copyFrom(m_scene);
+  m_original->copyFrom(m_scene);
 }
 
 void AdvancedSceneEditor::slotOKClicked()
@@ -413,23 +417,24 @@ void AdvancedSceneEditor::slotEditValueClicked()
 
   SceneValue value = m_scene->channelValue(ch);
 
-  EditSceneValue* esv = new EditSceneValue((QWidget*) this, m_currentChannel, value);
+  EditSceneValue* esv = new EditSceneValue((QWidget*) this, 
+					   m_currentChannel, value);
 
   if (esv->exec() == QDialog::Accepted)
     {
-      SceneValueType type;
+      Scene::ValueType type;
 
       if (esv->type() == QString("Set"))
 	{
-	  type = Set;
+	  type = Scene::Set;
 	}
       else if (esv->type() == QString("Fade"))
 	{
-	  type = Fade;
+	  type = Scene::Fade;
 	}
       else
 	{
-	  type = NoSet;
+	  type = Scene::NoSet;
 	}
       
       m_scene->set(ch, esv->value(), type);
@@ -440,7 +445,8 @@ void AdvancedSceneEditor::slotEditValueClicked()
 
   updateChannelList();
 
-  for (QListViewItem* item = m_sceneContents->firstChild(); item != NULL; item = item->nextSibling())
+  for (QListViewItem* item = m_sceneContents->firstChild(); 
+       item != NULL; item = item->nextSibling())
     {
       if (item->text(0).toInt() == ch)
 	{
@@ -495,6 +501,7 @@ void AdvancedSceneEditor::updateChannelList()
       
       num.sprintf("%03d", ch->channel());
       val.sprintf("%03d", m_scene->channelValue(ch->channel()).value);
-      new QListViewItem(m_sceneContents, num, ch->name(), cap, val, m_scene->valueTypeString(ch->channel()));
+      new QListViewItem(m_sceneContents, num, ch->name(), cap, val, 
+			m_scene->valueTypeString(ch->channel()));
     }
 }

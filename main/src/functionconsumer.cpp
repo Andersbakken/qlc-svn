@@ -2,7 +2,7 @@
   Q Light Controller
   functionconsumer.cpp
 
-  Copyright (C) 2000, 2001, 2002, 2003, 2004 Heikki Junnila
+  Copyright (C) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -181,6 +181,7 @@ void FunctionConsumer::event(time_t)
 {
   Function* f = NULL;
   t_value* ev = NULL;
+  t_channel ch = 0;
 
   QPtrListIterator<Function> it(m_functionList);
 
@@ -208,11 +209,14 @@ void FunctionConsumer::event(time_t)
         }
       else
         {
-	  _app->doc()->outputPlugin()->
-	    writeRange(f->device()->address(), ev,
-		       f->device()->getChannelUnitList().count());
-	  //qDebug("%d %d %d %d %d %d", ev[0], ev[1], 
-	  //       ev[2], ev[3], ev[4], ev[5]);
+	  for (ch = 0; ch < (t_channel) f->eventBuffer()->eventSize(); ch++)
+	    {
+	      if ((f->eventBuffer()->channelInfo())[ch] == EventBuffer::Set)
+		{
+		  _app->doc()->outputPlugin()
+		    ->writeChannel(f->device()->address() + ch, ev[ch]);
+		}
+	    }
         }
 
       m_functionListMutex.lock(); // Lock for next round

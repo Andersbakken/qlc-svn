@@ -33,6 +33,7 @@
 #include "dummyoutplugin.h"
 #include "devicemanagerview.h"
 #include "configkeys.h"
+#include "functionconsumer.h"
 
 #include "../../libs/common/plugin.h"
 #include "../../libs/common/filehandler.h"
@@ -53,15 +54,22 @@ extern App* _app;
 
 t_plugin_id Doc::NextPluginID = KPluginIDMin;
 
+//
+// Constructor
+//
 Doc::Doc() : QObject()
 {
-  m_workspaceFileName = QString("noname.qlc");
+  m_workspaceFileName = QString::null;
   setModified(false);
 
   m_outputPlugin = NULL;
   m_dummyOutPlugin = NULL;
 }
 
+
+//
+// Destructor
+//
 Doc::~Doc()
 {
   Device* dev = NULL;
@@ -72,22 +80,34 @@ Doc::~Doc()
     }
 }
 
+
+//
+// Set doc's modified status
+//
 void Doc::setModified(bool modified)
 {
   m_modified = modified;
+  
+  QString caption(KApplicationNameLong);
+  if (workspaceFileName() != QString::null)
+    {
+      caption += QString(" - ") + workspaceFileName();
+    }
 
   if (modified == true)
     {
-      _app->setCaption("Q Light Controller 2 - " + workspaceFileName() 
-		       + QString("*"));
+      _app->setCaption(caption + QString(" *"));
     }
   else
     {
-      _app->setCaption(QString("Q Light Controller 2 - ") 
-		       + workspaceFileName());
+      _app->setCaption(caption);
     }
 }
 
+
+//
+// Initialize the Doc object
+//
 void Doc::init()
 {
   QString outputPlugin;
@@ -98,6 +118,10 @@ void Doc::init()
   readDeviceClasses();
 }
 
+
+//
+// Read all device classes from files
+//
 bool Doc::readDeviceClasses()
 {
   DeviceClass* dc = NULL;
@@ -150,6 +174,10 @@ bool Doc::readDeviceClasses()
   return true;
 }
 
+
+//
+// Create device class entry from file entry
+//
 DeviceClass* Doc::createDeviceClass(QPtrList <QString> &list)
 {
   QString entry;
@@ -188,7 +216,8 @@ DeviceClass* Doc::createDeviceClass(QPtrList <QString> &list)
   if (dc->channels()->count() == 0)
     {
       QString msg;
-      msg.sprintf("No channels specified for device class \"" + dc->manufacturer() +
+      msg.sprintf("No channels specified for device class \"" +
+		  dc->manufacturer() +
 		  QString(" ") + dc->model() + QString("\".\n") +
 		  "Use the device class editor to add one or more channels.");
       QMessageBox::warning(_app, KApplicationNameShort, msg);
@@ -198,15 +227,9 @@ DeviceClass* Doc::createDeviceClass(QPtrList <QString> &list)
 }
 
 
-bool Doc::readFileToList(QString &fileName, QPtrList <QString> &list)
-{
-  qDebug("Doc::readFileToList() is deprecated; Use FileHandler::readFileToList() instead!");
-  ASSERT(false);
-
-  return false;
-}
-
-
+//
+// Load workspace from a given filename
+//
 bool Doc::loadWorkspaceAs(QString &fileName)
 {
   bool success = false;
@@ -223,7 +246,8 @@ bool Doc::loadWorkspaceAs(QString &fileName)
       m_workspaceFileName = QString(fileName);
       
       // Create devices and functions from the list
-      for (QString* string = list.first(); string != NULL; string = list.next())
+      for (QString* string = list.first(); 
+	   string != NULL; string = list.next())
 	{
 	  if (*string == QString("Entry"))
 	    {
@@ -279,7 +303,8 @@ bool Doc::loadWorkspaceAs(QString &fileName)
       // The functions are given their contents after every function
       // object has been created. Otherwise some functions can not
       // be created.
-      for (QString* string = list.first(); string != NULL; string = list.next())
+      for (QString* string = list.first(); 
+	   string != NULL; string = list.next())
 	{
 	  if (*string == QString("Entry"))
 	    {
@@ -309,6 +334,11 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   return success;
 }
 
+
+//
+// Create joystick plugin contents... now what the heck is this
+// doing here???
+//
 void Doc::createJoystickContents(QPtrList <QString> &list)
 {
   QString name;
@@ -332,6 +362,11 @@ void Doc::createJoystickContents(QPtrList <QString> &list)
     }
 }
 
+
+//
+// Load function's contents after it has been created with
+// createFunction()
+//
 void Doc::createFunctionContents(QPtrList <QString> &list)
 {
   Function* function = NULL;
@@ -401,6 +436,10 @@ void Doc::createFunctionContents(QPtrList <QString> &list)
     }
 }
 
+
+//
+// Create a function from a file entry
+//
 Function* Doc::createFunction(QPtrList <QString> &list)
 {
   Function* f = NULL;
@@ -458,7 +497,8 @@ Function* Doc::createFunction(QPtrList <QString> &list)
 	  if (d == NULL)
 	    {
 	      // This function's device was not found
-	      qDebug("Unable to find device %d for function %s. Discarding function.", device, name.latin1());
+	      qDebug("Unable to find device %d for function %s.", 
+		     device, name.latin1());
 	      return NULL;
 	    }
 	}
@@ -494,6 +534,10 @@ Function* Doc::createFunction(QPtrList <QString> &list)
   return f;
 }
 
+
+//
+// Create a device from a file entry
+//
 Device* Doc::createDevice(QPtrList <QString> &list)
 {
   QString name = QString::null;
@@ -538,11 +582,12 @@ Device* Doc::createDevice(QPtrList <QString> &list)
 	}
     }
 
-  if (id == 0 || manufacturer == QString::null || manufacturer == QString::null)
+  if (id == 0 || manufacturer == QString::null || 
+      manufacturer == QString::null)
     {
       QString msg;
       msg = QString("Unable to add device \"" + name +
-		    QString("\" because device (class) information is missing."));
+		    QString("\" because device information is missing."));
       QMessageBox::critical(_app, KApplicationNameShort, msg);
 
       return NULL;
@@ -564,9 +609,11 @@ Device* Doc::createDevice(QPtrList <QString> &list)
 	  if (dc->channels()->count() == 0)
 	    {
 	      QString msg;
-	      msg = QString("No channels specified for device class \"" + dc->manufacturer() +
+	      msg = QString("No channels specified for device class \"" + 
+			    dc->manufacturer() +
 			    QString(" ") + dc->model() + QString("\".\n") +
-			    QString("Unable to load device \"") + name + QString("\" to workspace"));
+			    QString("Unable to load device \"") + name + 
+			    QString("\" to workspace"));
 
 	      QMessageBox::warning(_app, KApplicationNameShort, msg);
 	      return NULL;
@@ -580,11 +627,17 @@ Device* Doc::createDevice(QPtrList <QString> &list)
     }
 }
 
+
+//
+// Clear everything and start anew
+//
 void Doc::newDocument()
 {
   Device* d = NULL;
   Function* f = NULL;
   Bus* b = NULL;
+
+  _app->functionConsumer()->purge();
 
   // Delete all buses
   m_busList.first();
@@ -622,6 +675,10 @@ void Doc::newDocument()
   emit newDocumentClicked();
 }
 
+
+//
+// Save the workspace by a given filename
+//
 bool Doc::saveWorkspaceAs(QString &fileName)
 {
   QFile file(fileName);
@@ -638,7 +695,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Devices
       //
-      for (Device* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
+      for (Device* d = m_deviceList.first(); d != NULL; 
+	   d = m_deviceList.next())
         {
 	  d->saveToFile(file);
 	}
@@ -650,7 +708,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Scenes
       //
-      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; 
+	   f = m_functions.next())
 	{
 	  if (f->type() == Function::Scene)
 	    {
@@ -661,7 +720,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Chasers
       //
-      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; 
+	   f = m_functions.next())
 	{
 	  if (f->type() == Function::Chaser)
 	    {
@@ -672,7 +732,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Sequences
       //
-      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; 
+	   f = m_functions.next())
 	{
 	  if (f->type() == Function::Sequence)
 	    {
@@ -683,7 +744,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Collections
       //
-      for (Function* f = m_functions.first(); f != NULL; f = m_functions.next())
+      for (Function* f = m_functions.first(); f != NULL; 
+	   f = m_functions.next())
 	{
 	  if (f->type() == Function::Collection)
 	    {
@@ -712,12 +774,20 @@ bool Doc::saveWorkspaceAs(QString &fileName)
   return true;
 }
 
+
+//
+// Save the workspace
+//
 bool Doc::saveWorkspace()
 {
   return saveWorkspaceAs(m_workspaceFileName);
 }
 
-void Doc::addDevice(Device* device)
+
+//
+// Add a new device to list
+//
+bool Doc::addDevice(Device* device)
 {
   ASSERT(device != NULL);
   
@@ -726,38 +796,55 @@ void Doc::addDevice(Device* device)
   setModified(true);
 
   emit deviceListChanged();
+  
+  return true;
 }
 
+
+//
+// Remove a device from list only when in design mode
+//
 bool Doc::removeDevice(Device* device)
 {
-  Device* dev = NULL;
-  bool ok = false;
-  int id = -1;
-
-  ASSERT(device != NULL);
-
-  for (dev = m_deviceList.first(); dev != NULL; dev = m_deviceList.next())
+  if (_app->virtualConsole()->isDesignMode())
     {
-      if (dev->id() == device->id())
+      Device* dev = NULL;
+      bool ok = false;
+      int id = -1;
+      
+      ASSERT(device != NULL);
+      
+      for (dev = m_deviceList.first(); dev != NULL; dev = m_deviceList.next())
 	{
-	  ok = m_deviceList.removeRef(dev);
-	  id = dev->id();
-	  delete dev;
-	  break;
+	  if (dev->id() == device->id())
+	    {
+	      ok = m_deviceList.removeRef(dev);
+	      id = dev->id();
+	      delete dev;
+	      break;
+	    }
 	}
+      
+      setModified(true);
+      
+      emit deviceListChanged();
+      
+      return ok;
     }
-
-  setModified(true);
-
-  emit deviceListChanged();
-
-  return ok;
+  else
+    {
+      return false;
+    }
 }
 
-/* Search for a device by its run-time id number */
+
+//
+// Search for a device by its run-time id number
+//
 Device* Doc::searchDevice(const t_device_id id)
 {
-  for (Device* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
+  for (Device* device = m_deviceList.first(); device != NULL;
+       device = m_deviceList.next())
     {
       if (device->id() == id)
 	{
@@ -768,9 +855,15 @@ Device* Doc::searchDevice(const t_device_id id)
   return NULL;
 }
 
-DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, const QString &model)
+
+//
+// Search for a deviceclass by its manufacturer & model
+//
+DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, 
+				    const QString &model)
 {
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; d = m_deviceClassList.next())
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
+       d = m_deviceClassList.next())
     {
       if (d->manufacturer() == manufacturer && d->model() == model)
 	{
@@ -781,9 +874,14 @@ DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, const QString &
   return NULL;
 }
 
+
+//
+// Search for a deviceclass by its ID
+//
 DeviceClass* Doc::searchDeviceClass(const t_deviceclass_id id)
 {
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; d = m_deviceClassList.next())
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
+       d = m_deviceClassList.next())
     {
       if (d->id() == id)
 	{
@@ -795,35 +893,52 @@ DeviceClass* Doc::searchDeviceClass(const t_deviceclass_id id)
 }
 
 
-void Doc::addFunction(const Function* function)
+//
+// Add a new function to list
+//
+bool Doc::addFunction(const Function* function)
 {
   ASSERT(function != NULL);
   m_functions.append(function);
 
   setModified(true);
+
+  return true;
 }
 
 
-void Doc::removeFunction(const t_function_id id, bool deleteFunction)
+//
+// Remove (and delete) a function from list only when in design mode
+//
+bool Doc::removeFunction(const t_function_id id, bool deleteFunction)
 {
   Function* f = NULL;
 
-  for (f = m_functions.first(); f != NULL; f = m_functions.next())
+  if (_app->virtualConsole()->isDesignMode())
     {
-      if (f->id() == id)
+      for (f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
-	  m_functions.take();
-
-	  if (deleteFunction)
+	  if (f->id() == id)
 	    {
-	      delete f;
+	      m_functions.take();
+	      
+	      if (deleteFunction)
+		{
+		  delete f;
+		}
+	      
+	      break;
 	    }
-
-	  break;
 	}
-    }
 
-  setModified(true);
+      setModified(true);
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 

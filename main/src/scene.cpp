@@ -48,32 +48,36 @@ Scene::Scene(t_function_id id) : Function(id)
   m_channels = 0;
   m_timeSpan = 256;
   m_parentFunction = NULL;
+  m_virtualController = NULL;
 
   m_busID = Bus::defaultFadeBus()->id();
 }
 
 
 //
-// Used mainly by Advanced Scene Editor to work on a copy of the actual
-// function.
+// Copy scene contents
 //
-void Scene::copyFrom(Scene* sc)
+bool Scene::copyFrom(Scene* sc)
 {
   ASSERT(sc);
 
-  m_type = sc->type();
-  m_id = sc->id();
-  m_name = sc->name();
-  m_device = sc->m_device;
-  m_channels = sc->m_channels;
-
-  if (m_values) delete[] m_values;
-  m_values = new SceneValue[m_channels];
-  
-  for (t_channel i = 0; i < m_channels; i++)
+  if (setDevice(sc->device()))
     {
-      m_values[i].value = sc->m_values[i].value;
-      m_values[i].type = sc->m_values[i].type;
+      m_startMutex.lock();
+      m_name = sc->name();
+
+      for (t_channel i = 0; i < m_channels; i++)
+	{
+	  m_values[i].value = sc->m_values[i].value;
+	  m_values[i].type = sc->m_values[i].type;
+	}
+      
+      m_startMutex.unlock();
+      return true;
+    }
+  else
+    {
+      return false;
     }
 }
 
@@ -83,17 +87,23 @@ void Scene::copyFrom(Scene* sc)
 // familiar to you) and allocate a value array the size of device's
 // channels
 //
-void Scene::setDevice(Device* device)
+bool Scene::setDevice(Device* device)
 {
-  ASSERT(device);
-
-  if (m_values)
+  m_startMutex.lock();
+  if (m_running)
     {
+      m_startMutex.unlock();
+      return false;
+    }
+  else if (m_values)
+    {
+      ASSERT(device);
+
       t_channel newChannels = device->deviceClass()->channels()->count();
       
       // Store old values temporarily
       SceneValue tempValues[m_channels];
-      memcpy(&tempValues, m_values, m_channels * sizeof(SceneValueType));
+      memcpy(&tempValues, m_values, m_channels * sizeof(ValueType));
       
       // Delete old values
       delete [] m_values;
@@ -149,6 +159,8 @@ void Scene::setDevice(Device* device)
           m_values[i].type = Fade;
         }
     }
+
+  m_startMutex.unlock();
 }
 
 
@@ -301,27 +313,27 @@ void Scene::createContents(QPtrList <QString> &list)
 //
 // Set one channel value for this scene
 //
-bool Scene::set(t_channel ch, t_value value, SceneValueType type)
+bool Scene::set(t_channel ch, t_value value, ValueType type)
 {
-  if (m_device != NULL)
+  m_startMutex.lock();
+  if (m_running)
     {
-      if (ch < m_channels)
-	{
-	  m_values[ch].value = value;
-	  m_values[ch].type = type;
-	}
-      else
-	{
-	  // Channel value is beyond this device's limits
-	  return false;
-	}
+      m_startMutex.unlock();
+      return false;
+    }
+  else if (ch < m_channels)
+    {
+      m_values[ch].value = value;
+      m_values[ch].type = type;
+
+      m_startMutex.unlock();
+      return true;
     }
   else
     {
+      m_startMutex.unlock();
       return false;
     }
-  
-  return true;
 }
 
 
@@ -350,23 +362,43 @@ void Scene::stop()
 void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 {
   // How to get the bus value when function starts?
+  m_timeSpan = value;
+  speedChange(true);
 }
 
 
-void Scene::speedChange()
+//
+// Calculate new values
+//
+void Scene::speedChange(bool alreadyRunning)
 {
-  // Current values
-  _app->doc()->outputPlugin()->readRange(m_device->address(),
-					 m_channelData, m_channels);
-
   for (t_channel i = 0; i < m_channels; i++)
     {
-      m_runTimeData[i].current = static_cast<float> (m_channelData[i]);
+      if (m_values[i].type == Fade)
+	{
+	  // This channel is faded
+	  m_eventBuffer->setChannelInfo(i, EventBuffer::Set);
 
-      // Step increment
-      m_runTimeData[i].increment = 
-	(static_cast<float>(m_values[i].value) - 
-	 m_runTimeData[i].current) / (float) m_timeSpan;
+	  // Step increment
+	  m_runTimeData[i].increment = 
+	    (static_cast<float>(m_values[i].value) - 
+	     m_runTimeData[i].start) / (float) m_timeSpan;
+	}
+      else if (m_values[i].type == NoSet)
+	{
+	  // Don't touch this channel's values from this scene
+	  m_eventBuffer->setChannelInfo(i, EventBuffer::Skip);
+	}
+      else // if (m_values[i].type == Set)
+	{
+	  // This channel is just set to the value
+	  m_eventBuffer->setChannelInfo(i, EventBuffer::Set);
+
+	  // Set the gap between start and target value as the increment
+	  m_runTimeData[i].increment =
+	    (static_cast<float>(m_values[i].value) -
+	     m_runTimeData[i].start);
+	}
 
       qDebug("%d: %d -> %d incs %f", i, m_channelData[i],
 	     m_values[i].value, m_runTimeData[i].increment);
@@ -385,6 +417,15 @@ void Scene::init()
   ASSERT(m_channelData == NULL);
   m_channelData = new t_value[m_channels];
 
+  // Current values
+  _app->doc()->outputPlugin()->readRange(m_device->address(),
+					 m_channelData, m_channels);
+
+  for (t_channel i = 0; i < m_channels; i++)
+    {
+      m_runTimeData[i].start = static_cast<float> (m_channelData[i]);
+    }
+
   ASSERT(m_eventBuffer == NULL);
   m_eventBuffer = new EventBuffer(m_channels);
 }
@@ -396,13 +437,13 @@ void Scene::init()
 void Scene::run()
 {
   time_t time = 0;
-  unsigned short ch = 0;
+  t_channel ch = 0;
 
   // Allocate space for some run time stuff
   init();
 
   // Calculate starting values
-  speedChange();
+  speedChange(false);
 
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
@@ -414,17 +455,22 @@ void Scene::run()
 
       for (ch = 0; ch < m_channels; ch++)
 	{
-	  m_runTimeData[ch].current += m_runTimeData[ch].increment;
-	  m_channelData[ch] =
-	    static_cast<t_value> (m_runTimeData[ch].current);
+	  if (m_channelData[ch] == m_values[ch].value)
+	    {
+	      // If the channel value is what it's supposed to be, 
+	      // don't touch it anymore (concerns mainly "Set" types)
+	      m_eventBuffer->setChannelInfo(ch, EventBuffer::Skip);
+	    }
+	  else
+	    {
+	      m_runTimeData[ch].current += m_runTimeData[ch].increment;
+	      m_channelData[ch] =
+		static_cast<t_value> (m_runTimeData[ch].current);
+	    }
 	}
 
       // Put data to buffer
       m_eventBuffer->put(m_channelData);
-
-      //t_value* ev = m_channelData;
-      //qDebug("%d %d %d %d %d %d", ev[0], ev[1], ev[2], 
-      //       ev[3], ev[4], ev[5]);
 
       m_stopMutex.lock();
     }

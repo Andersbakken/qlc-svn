@@ -40,7 +40,8 @@ EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
   m_channel = ch;
   m_updateValue = true;
 
-  for (Capability* c = m_channel->capabilities()->first(); c != NULL; c = m_channel->capabilities()->next())
+  for (Capability* c = m_channel->capabilities()->first(); 
+       c != NULL; c = m_channel->capabilities()->next())
     {
       m_presetCombo->insertItem(c->name());
     }
@@ -49,12 +50,12 @@ EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
   m_typeCombo->insertItem("Set");
   m_typeCombo->insertItem("NoSet");
 
-  if (currentValue.type == Fade)
+  if (currentValue.type == Scene::Fade)
     {
       m_typeCombo->setCurrentItem(0);
       m_type = QString("Fade");
     }
-  else if (currentValue.type == Set)
+  else if (currentValue.type == Scene::Set)
     {
       m_typeCombo->setCurrentItem(1);
       m_type = QString("Set");
@@ -65,8 +66,10 @@ EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
       m_type = QString("NoSet");
     }
 
-  connect(m_valueSpin, SIGNAL(valueChanged(int)), this, SLOT(slotValueChanged(int)));
-  connect(m_presetCombo, SIGNAL(activated(const QString &)), this, SLOT(slotPresetComboActivated(const QString &)));
+  connect(m_valueSpin, SIGNAL(valueChanged(int)), 
+	  this, SLOT(slotValueChanged(int)));
+  connect(m_presetCombo, SIGNAL(activated(const QString &)), 
+	  this, SLOT(slotPresetComboActivated(const QString &)));
 
   m_valueSpin->setValue(currentValue.value);
   m_value = currentValue.value;

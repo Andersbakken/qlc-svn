@@ -125,7 +125,7 @@ void SceneEditor::slotSceneActivated(int nr)
 void SceneEditor::setScene(Scene* scene)
 {
    ChannelUI* unit;
-   QPtrList <ChannelUI> ul = ((Device*) m_device)->getChannelUnitList();
+   QPtrList <ChannelUI> ul = m_device->unitList();
    int n = 0;
 
    ASSERT(scene != NULL);
@@ -135,7 +135,7 @@ void SceneEditor::setScene(Scene* scene)
        SceneValue value = scene->channelValue(n);
        unit->setStatusButton(value.type);
 
-       if (value.type == Set || value.type == Fade)
+       if (value.type == Scene::Set || value.type == Scene::Fade)
 	 {
 	   unit->slotAnimateValueChange(value.value);
 	 }
@@ -191,7 +191,8 @@ void SceneEditor::remove()
     }
 
   if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
-			   QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+			   QMessageBox::Yes, QMessageBox::No) 
+      == QMessageBox::Yes)
     {
       _app->doc()->removeFunction(s->id());
       fillFunctions();
@@ -223,7 +224,9 @@ void SceneEditor::rename()
 
 void SceneEditor::hide()
 {
-  for (unsigned i = parentWidget()->width(); i > ChannelUI::width() * m_device->deviceClass()->channels()->count(); i--)
+  for (unsigned i = parentWidget()->width(); 
+       i > ChannelUI::width() * m_device->deviceClass()->channels()->count(); 
+       i--)
     {
       parentWidget()->resize(i, height());
     }
@@ -242,20 +245,18 @@ void SceneEditor::newScene()
       Scene* sc = new Scene();
       sc->setName(text);
       sc->setDevice(m_device);
-      for (unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
+      
+      t_channel channels = m_device->deviceClass()->channels()->count();
+      t_value val[channels];
+
+      _app->doc()->outputPlugin()->readRange(m_device->address(),
+					     val, channels);
+      
+      QPtrList <ChannelUI> ul = m_device->unitList();
+
+      for (t_channel i = 0; i < channels; i++)
 	{
-	   qDebug("Warning! Functionality removed!");
-	   /*
-	  // Get values from device / HJu
-	  if (m_device->channel(n)->status() == On)
-	    {
-	      sc->set(n, m_device->channel(n)->value(), Fade);
-	    }
-	  else
-	    {
-	      sc->set(n, m_device->channel(n)->value(), NoSet);
-	    }
-	   */
+	  sc->set(i, val[i], ul.at(i)->status());
 	}
       
       // Save to function pool
@@ -270,30 +271,22 @@ void SceneEditor::newScene()
 
 void SceneEditor::store()
 {
-  Scene* s = currentScene();
-  if (s == NULL)
+  Scene* sc = currentScene();
+  if (sc == NULL)
     {
       return;
     }
 
-  QPtrList <ChannelUI> ul = ((Device*) m_device)->getChannelUnitList();
+  QPtrList <ChannelUI> ul = m_device->unitList();
 
-  // Take values from device because it returns real values for
-  // sure and they are t_value's and it is much simpler this way
-  for (t_channel i = 0; 
-       i < (t_channel) m_device->deviceClass()->channels()->count(); i++)
+  t_channel channels = m_device->deviceClass()->channels()->count();
+  t_value val[channels];
+  _app->doc()->outputPlugin()->readRange(m_device->address(),
+					 val, channels);
+  
+  for (t_channel i = 0; i < channels; i++)
     {
-      qDebug("Warning! Functionality removed!");
-      /*
-      if (m_device->channel(i)->status() == On)
-	{
-	  s->set(i, m_device->channel(i)->value(), Fade);
-	}
-      else
-	{
-	  s->set(i, m_device->channel(i)->value(), NoSet);
-	}
-      */
+      sc->set(i, val[i], ul.at(i)->status());
     }
 
   setStatusText(KStatusStored, KStatusColorStored);
