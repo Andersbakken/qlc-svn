@@ -430,8 +430,9 @@ void App::initMenuBar()
 			  SLOT(slotViewVirtualConsole()), 
 			  CTRL + Key_V, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/function.xpm")), 
-			  "Function Tree", this, SLOT(slotViewFunctionTree()), 
+  m_toolsMenu->insertItem(QPixmap(dir + QString("/chaser.png")), 
+			  "Function Manager", this, 
+			  SLOT(slotViewFunctionTree()),
 			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/bus.xpm")),
 			  "Bus Properties", this, 
@@ -535,7 +536,7 @@ void App::initToolBar()
   dir += QString("/") + PIXMAPPATH;
   
   m_newTB = new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
-			    "New workspace; clear everything", 0, 
+			    "New workspace", 0, 
 			    this, SLOT(slotFileNew()), m_toolbar);
 
   m_openTB = new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
@@ -549,27 +550,29 @@ void App::initToolBar()
   m_toolbar->addSeparator();
 
   m_dmTB = new QToolButton(QPixmap(dir + QString("/device.xpm")), 
-			   "View device manager", 0, 
+			   "Device manager", 0, 
 			   this, SLOT(slotViewDeviceManager()), m_toolbar);
 
   m_vcTB = new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
-			   "View virtual console", 0, 
+			   "Virtual console", 0, 
 			   this, SLOT(slotViewVirtualConsole()), m_toolbar);
   
-  m_panicTB = new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
-			      "Panic; Shut down all running functions", 0, 
-			      this, SLOT(slotPanic()), m_toolbar);
+  m_ftTB = new QToolButton(QPixmap(dir + QString("/chaser.png")),
+			   "Function manager", 0,
+			   this, SLOT(slotViewFunctionTree()), m_toolbar);
 
-  
+  m_toolbar->addSeparator();
+
+  m_panicTB = new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
+			      "Panic!", 0, this, SLOT(slotPanic()), m_toolbar);
+
   m_blackOutTB = new QToolButton(QPixmap(dir + QString("/blackout.xpm")), 
-				 "Blackout", 
-				 0, this, SLOT(slotToggleBlackOut()), 
-				 m_toolbar);
+				 "Blackout", 0, this,
+				 SLOT(slotToggleBlackOut()), m_toolbar);
 
   m_modeTB = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")),
                              "Design Mode; All editing features enabled",
                              0, this, SLOT(slotSetMode()), m_toolbar);
-
 
 }
 
@@ -1237,7 +1240,7 @@ void App::slotSetMode()
 
       m_newTB->setEnabled(true);
       m_openTB->setEnabled(true);
-      m_panicTB->setEnabled(false);
+      m_ftTB->setEnabled(true);
 
       m_mode = Design;
     }
@@ -1249,7 +1252,10 @@ void App::slotSetMode()
 
       m_newTB->setEnabled(false);
       m_openTB->setEnabled(false);
-      m_panicTB->setEnabled(true);
+      m_ftTB->setEnabled(false);
+
+      // Close function tree if it's open
+      slotFunctionTreeClosed();
 
       m_mode = Operate;
     }

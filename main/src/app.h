@@ -206,6 +206,7 @@ class App : public QMainWindow
   QToolButton* m_saveTB;
   QToolButton* m_dmTB;
   QToolButton* m_vcTB;
+  QToolButton* m_ftTB;
   QToolButton* m_panicTB;
   QToolButton* m_modeTB;
   QToolButton* m_blackOutTB;

@@ -50,8 +50,9 @@
 extern App* _app;
 
 // List view column numbers
-const int KColumnName ( 0 );
-const int KColumnID   ( 1 );
+const int KColumnAddress ( 0 );
+const int KColumnName    ( 1 );
+const int KColumnID      ( 2 );
 
 // List view item menu callback id's
 const int KMenuItemAdd        ( 0 );
@@ -276,20 +277,20 @@ void DeviceManagerView::initDataView()
 
   // Create the list view
   m_listView = new QListView(m_splitter);
-  m_listView->setResizeMode(QListView::AllColumns);
+  m_listView->setResizeMode(QListView::LastColumn);
   m_splitter->setResizeMode(m_listView, QSplitter::Auto);
 
   m_listView->setMultiSelection(false);
   m_listView->setAllColumnsShowFocus(true);
-  m_listView->setSorting(KColumnName, true);
+  m_listView->setSorting(KColumnAddress, true);
   m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
   
   m_listView->header()->setClickEnabled(true);
   m_listView->header()->setResizeEnabled(true);
   m_listView->header()->setMovingEnabled(false);
 
+  m_listView->addColumn("Address");
   m_listView->addColumn("Devices");
-  m_listView->setColumnWidth(KColumnName, 200);
 
   connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
 	  this, SLOT(slotSelectionChanged(QListViewItem*)));
@@ -334,7 +335,11 @@ void DeviceManagerView::slotUpdate()
 	}
       else
 	{
-	  newItem = new QListViewItem(m_listView, dev->name());
+	  QString address;
+	  address.sprintf("%.3d", dev->address() + 1);
+	  newItem = new QListViewItem(m_listView);
+          newItem->setText(KColumnAddress, address);
+          newItem->setText(KColumnName, dev->name());
 	  
 	  // ID column
 	  id.setNum(dev->id());
