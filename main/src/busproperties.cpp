@@ -56,7 +56,7 @@ void BusProperties::slotEditClicked()
 			      Bus::name(item->text(KColumnID).toInt() - 1), 
 			      &ok, this);
 
-      if ( ok && !text.isEmpty() )
+      if ( ok )
 	{
 	  Bus::setName(item->text(KColumnID).toInt() - 1, text);
 	  item->setText(KColumnName, text);
