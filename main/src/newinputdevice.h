@@ -38,6 +38,7 @@ class NewInputDevice : public QDialog
 
  private:
   void initView();
+  void fetchInputDevices();
 
  private slots:
   void slotSelectionChanged(QListViewItem* item);

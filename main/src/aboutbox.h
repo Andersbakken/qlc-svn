@@ -25,6 +25,9 @@
 #include <qdialog.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
+#include <qlistbox.h>
+#include <qpixmap.h>
+#include <qcolor.h>
 
 class AboutBox : public QDialog
 {
@@ -41,10 +44,13 @@ class AboutBox : public QDialog
   void initDialog();
 
  protected:
+  QPixmap* m_pm;
   QPushButton* m_ok;
-  QLabel* m_qlc;
+  QWidget* m_logo;
+  QLabel* m_version;
   QLabel* m_copyright;
-  QLabel* m_email;
+  QLabel* m_peopleLabel;
+  QListBox* m_people;
 };
 
 #endif

@@ -20,6 +20,8 @@
 */
 
 #include "app.h"
+#include "doc.h"
+#include "plugin.h"
 #include "settings.h"
 #include "newinputdevice.h"
 
@@ -28,6 +30,7 @@ extern App* _app;
 NewInputDevice::NewInputDevice(QWidget* parent, const char* name) : QDialog (parent, name, true)
 {
   initView();
+  fetchInputDevices();
 }
 
 NewInputDevice::~NewInputDevice()
@@ -80,4 +83,19 @@ void NewInputDevice::slotSelectionChanged(QListViewItem* item)
 void NewInputDevice::slotCustomTextChanged(const QString &text)
 {
   m_customNameValue = QString(text);
+}
+
+void NewInputDevice::fetchInputDevices()
+{
+  QList <Plugin> list = _app->doc()->pluginList();
+
+  for (unsigned int i = 0; i < list.count(); i++)
+    {
+      ASSERT(list.at(i) != NULL);
+
+      if (list.at(i)->type() == Plugin::Joystick)
+	{
+	  JoystickPlugin* jp = (JoystickPlugin*) list.at(i);
+	}
+    }
 }
