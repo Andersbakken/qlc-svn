@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_Settings</class>
 <widget class="QDialog">
     <property name="name">
@@ -337,46 +337,6 @@
         </widget>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>GroupBox5</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>5</hsizetype>
-                    <vsizetype>0</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="title">
-                <string>Virtual Console</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QCheckBox" row="0" column="0">
-                    <property name="name">
-                        <cstring>m_keyRepeatCheckBox</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>3</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="text">
-                        <string>Grab keyboard in operate mode</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>If set, keyboard is exclusively in virtual console's use.</string>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
                 <cstring>groupBox6</cstring>
             </property>
             <property name="sizePolicy">
@@ -468,7 +428,7 @@
                 <cstring>groupBox7</cstring>
             </property>
             <property name="title">
-                <string>Advanced Settings</string>
+                <string>Advanced Settings (not yet modifiable)</string>
             </property>
             <grid>
                 <property name="name">
@@ -600,7 +560,6 @@
     <tabstop>m_backgroundBrowse</tabstop>
     <tabstop>m_widgetStyleCombo</tabstop>
     <tabstop>m_openLastWorkspaceCheckBox</tabstop>
-    <tabstop>m_keyRepeatCheckBox</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
