@@ -37,9 +37,12 @@ MOCOBJECTS = $(MOCO) \
 OBJECTS = $(OBJS) \
 	../common/ledbar.o ../common/plugin.o
 
-all:	banner create_objects dep $(UICH) $(UICO) $(MOCUICO) $(OBJECTS) $(LIBJOY_SO)
+all:	banner uichfiles uicofiles mocuicofiles mocofiles objfiles cppfiles \
+	hfiles uifiles Makefile.dep $(UICH) $(UICO) $(MOCUICO) $(OBJECTS) \
+	$(LIBJOY_SO)
 
-create_objects:
+uichfiles uicofiles mocuicofiles mocofiles objfiles cppfiles hfiles uifiles \
+mocfiles:
 	../../buildtools/create_objects.sh
 
 banner:
@@ -67,6 +70,8 @@ install:
 
 clean: emacsclean
 	rm -f *.o *.so *.bak uic_* moc_* Makefile.dep $(UICH)
+	rm -f uichfiles uicofiles mocuicofiles mocofiles objfiles cppfiles \
+	hfiles uifiles mocfiles
 
 emacsclean:
 	rm -f *~ #*
@@ -74,9 +79,10 @@ emacsclean:
 distclean: clean
 	rm -rf CVS
 
-dep:
+Makefile.dep:
 	rm -f Makefile.dep
 	touch Makefile.dep
 	makedepend -fMakefile.dep -Y *.h *.cpp &> /dev/null
 
--include Makefile.dep
+include Makefile.dep
+
