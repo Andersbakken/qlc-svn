@@ -136,7 +136,7 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
       m_selectionOK = true;
       m_modelValue = item->text(0);
       m_manufacturerValue = item->parent()->text(0);
-      m_typeLabel->setText("Type: "+item->text(1));
+      m_typeLabel->setText("Type: " + item->text(1));
       m_nameEdit->setText(m_manufacturerValue + QString(" ") + m_modelValue);
     }
   else
