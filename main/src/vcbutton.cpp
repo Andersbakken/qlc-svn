@@ -271,6 +271,7 @@ void VCButton::createContents(QPtrList <QString> &list)
 	  else
 	    {
 	      delete m_bgPixmap;
+	      m_bgPixmap = NULL;
 	    }
 	}
       else if (*s == QString("Color"))
@@ -283,7 +284,6 @@ void VCButton::createContents(QPtrList <QString> &list)
 	  int b = t.mid(j+1).toInt();
 	  m_bgColor = new QColor(r, g, b);
 	  setPaletteBackgroundColor(*m_bgColor);
-
 	}  
       else if (*s == QString("Function"))
 	{

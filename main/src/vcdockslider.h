@@ -29,8 +29,8 @@
 #include "types.h"
 
 class QMouseEvent;
-class QPopupMenu;
 class QFile;
+class QPoint;
 
 class VCDockSlider : public UI_VCDockSlider
 {
@@ -67,13 +67,16 @@ class VCDockSlider : public UI_VCDockSlider
   void slotBusNameChanged(t_bus_id, const QString&);
   void slotBusValueChanged(t_bus_id, t_bus_value);
 
+  void slotMenuCallback(int item);
+
  protected:
-  void updateBusMenu();
+  void displayMenu(QPoint);
 
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
+  void contextMenuEvent(QContextMenuEvent* e);
 
   void resizeTo(QPoint p);
   void moveTo(QPoint p);
@@ -92,7 +95,11 @@ class VCDockSlider : public UI_VCDockSlider
   int m_ypos;
   bool m_resizeMode;
 
-  QPopupMenu* m_busMenu;
+  bool m_bgPixmap;
+  bool m_bgColor;
+  bool m_fgColor;
+
+  QString m_bgPixmapFileName;
 };
 
 #endif

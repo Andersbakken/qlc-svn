@@ -29,6 +29,11 @@
 #include <qcursor.h>
 #include <qpainter.h>
 #include <qfile.h>
+#include <qfiledialog.h>
+#include <qpixmap.h>
+#include <qcolor.h>
+#include <qcolordialog.h>
+#include <qmessagebox.h>
 
 #include "vcdockslider.h"
 #include "vcframe.h"
@@ -46,20 +51,35 @@
 
 extern App* _app;
 
+const int KFrameStyle         ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask          ( 0xff ); // Produces opposite colors with XOR
 const int KMoveThreshold      (    5 ); // Pixels
+
+const int KMenuTitle            (  0 );
+const int KMenuProperties       (  1 );
+const int KMenuForegroundColor  (  2 );
+const int KMenuForegroundNone   (  3 );
+const int KMenuBackgroundColor  (  4 );
+const int KMenuBackgroundPixmap (  5 );
+const int KMenuBackgroundNone   (  6 );
+const int KMenuDrawFrame        (  7 );
+const int KMenuRemove           (  8 );
+const int KMenuStackRaise       (  9 );
+const int KMenuStackLower       ( 10 );
 
 //
 // Constructor
 //
 VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
-  : UI_VCDockSlider(parent, name)
+  : UI_VCDockSlider(parent, name),
+    m_mode       ( Normal ),
+    m_busID      ( KBusIDInvalid ),
+    m_static     ( isStatic ),
+    m_updateOnly ( false ),
+    m_bgPixmap   ( false ),
+    m_bgColor    ( false ),
+    m_fgColor    ( false )
 {
-  m_busID = KBusIDInvalid;
-  m_busMenu = NULL;
-  m_static = isStatic;
-  m_updateOnly = false;
-  m_mode = Normal;
 }
 
 
@@ -76,15 +96,6 @@ VCDockSlider::~VCDockSlider()
 //
 void VCDockSlider::init()
 {
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  m_propertiesButton->setIconSet(QPixmap(dir + "/settings.xpm"));
-  m_busButton->setIconSet(QPixmap(dir + "/bus.xpm"));
-  m_functionButton->setIconSet(QPixmap(dir + "/function.xpm"));
-
-  updateBusMenu();
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
@@ -129,6 +140,35 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	{
 	  rect.setHeight(list.next()->toInt());
 	}
+      else if (*s == QString("Textcolor"))
+	{
+	  QColor qc;
+	  qc.setRgb(list.next()->toUInt());
+	  setPaletteForegroundColor(qc);
+	  m_fgColor = true;
+	}
+      else if (*s == QString("Backgroundcolor"))
+	{
+	  QColor qc;
+	  qc.setRgb(list.next()->toUInt());
+	  setPaletteBackgroundColor(qc);
+	  m_bgColor = true;
+	  m_bgPixmap = false;
+	}
+      else if (*s == QString("Pixmap"))
+	{
+	  QString t;
+	  t = *(list.next());
+	  
+	  QPixmap pm(t);
+	  if (pm.isNull() == false)
+	    {
+	      m_bgPixmapFileName = t;
+	      setPaletteBackgroundPixmap(pm);
+	      m_bgPixmap = true;
+	      m_bgColor = false;
+	    }
+	}
       else if (*s == QString("Mode"))
 	{
 	  QString t = *(list.next());
@@ -143,6 +183,21 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	  else
 	    {
 	      m_mode = Master;
+	    }
+	}
+      else if (*s == QString("Frame"))
+	{
+	  if (*(list.next()) == Settings::trueValue())
+	    {
+	      setFrameStyle(KFrameStyle);
+	      m_nameLabel->setFrameStyle(KFrameStyle);
+	      m_valueLabel->setFrameStyle(KFrameStyle);
+	    }
+	  else
+	    {
+	      setFrameStyle(NoFrame);
+	      m_nameLabel->setFrameStyle(NoFrame);
+	      m_valueLabel->setFrameStyle(NoFrame);
 	    }
 	}
       else if (*s == QString("Bus"))
@@ -162,7 +217,6 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
     }
 
   setGeometry(rect);
-  updateBusMenu();
 }
 
 
@@ -205,6 +259,44 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
   // H
   t.setNum(height());
   s = QString("Height = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Text color
+  if (m_fgColor)
+    {
+      t.setNum(qRgb(paletteForegroundColor().red(),
+		    paletteForegroundColor().green(),
+		    paletteForegroundColor().blue()));
+      s = QString("Textcolor = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+    }
+
+  // Background color
+  if (m_bgColor)
+    {
+      t.setNum(qRgb(paletteBackgroundColor().red(),
+		    paletteBackgroundColor().green(),
+		    paletteBackgroundColor().blue()));
+      s = QString("Backgroundcolor = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+    }
+
+  // Background pixmap
+  if (m_bgPixmap)
+    {
+      s = QString("Pixmap = " + m_bgPixmapFileName + QString("\n"));
+      file.writeBlock((const char*) s, s.length());
+    }
+
+  // Frame
+  if (frameStyle() & KFrameStyle)
+    {
+      s = QString("Frame = ") + Settings::trueValue() + QString("\n");
+    }
+  else
+    {
+      s = QString("Frame = ") + Settings::falseValue() + QString("\n");
+    }
   file.writeBlock((const char*) s, s.length());
 
   // Mode
@@ -305,8 +397,6 @@ bool VCDockSlider::setBusID(t_bus_id id)
     {
       return false;
     }
-
-  updateBusMenu();
 }
 
 
@@ -344,35 +434,6 @@ void VCDockSlider::slotBusValueChanged(t_bus_id id, t_bus_value value)
     }
 }
 
-//
-//
-//
-void VCDockSlider::updateBusMenu()
-{
-  //
-  // Create bus menu to bus tool button
-  //
-  if (m_busMenu) delete m_busMenu;
-  m_busMenu = new QPopupMenu();
-
-  QString name;
-
-  for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
-    {
-      name.sprintf("%.2d: ", i + 1);
-      name += Bus::name(i);
-      
-      m_busMenu->insertItem(name, i);
-      if (m_busID == i)
-	{
-	  m_busMenu->setItemChecked(i, true);
-	}
-    }
-
-  m_busButton->setPopup(m_busMenu);
-  connect(m_busMenu, SIGNAL(activated(int)),
-	  this, SLOT(slotBusMenuActivated(int)));
-}
 
 //
 // Mouse button pressed inside the widget
@@ -407,11 +468,241 @@ void VCDockSlider::mousePressEvent(QMouseEvent* e)
 	}
       else if (e->button() & RightButton)
 	{
+	  displayMenu(mapToGlobal(e->pos()));
 	}
     }
   else
     {
       QFrame::mousePressEvent(e);
+    }
+}
+
+
+//
+// QSlider passes this event thru, so grab it also
+//
+void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
+{
+  if (_app->mode() == App::Design && m_static == false)
+    {
+      displayMenu(mapToGlobal(e->pos()));
+    }
+}
+
+//
+// Invoke a menu at given point
+//
+void VCDockSlider::displayMenu(QPoint point)
+{
+  QString dir;
+  _app->settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+  
+  //
+  // Background menu
+  //
+  QPopupMenu* bgmenu = new QPopupMenu();
+  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
+		     "&Color...", KMenuBackgroundColor);
+  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
+		     "&Image...", KMenuBackgroundPixmap);
+  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
+		     "&None", KMenuBackgroundNone);
+
+  //
+  // Foreground menu
+  //
+  QPopupMenu* fgmenu = new QPopupMenu();
+  fgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
+		     "&Color...", KMenuForegroundColor);
+  fgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
+		     "&None", KMenuForegroundNone);
+
+  //
+  // Stacking order menu
+  //
+  QPopupMenu* stackmenu = new QPopupMenu;
+  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
+			"Bring to Front", KMenuStackRaise);
+  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
+			"Send to Back", KMenuStackLower);
+
+  //
+  // Main context menu
+  //
+  QPopupMenu* menu;
+  menu = new QPopupMenu;
+  menu->insertItem("Slider", KMenuTitle);
+  menu->setItemEnabled(KMenuTitle, false);
+  menu->insertSeparator();
+  menu->insertItem(QPixmap(dir + QString("/settings.xpm")),
+		   "&Properties...", KMenuProperties);
+  menu->insertSeparator();
+  menu->insertItem("Foreground", fgmenu);
+  menu->insertItem("Background", bgmenu);
+  menu->insertItem("Stacking order", stackmenu);
+  menu->insertItem(QPixmap(dir + QString("/frame.xpm")),
+		   "Draw &Frame", KMenuDrawFrame);
+  menu->setItemChecked(KMenuDrawFrame, (frameStyle()&KFrameStyle)?true:false);
+
+  menu->insertSeparator();
+  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+		   "Re&move", KMenuRemove);
+
+  connect(bgmenu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+  connect(fgmenu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+  connect(stackmenu, SIGNAL(activated(int)),this, SLOT(slotMenuCallback(int)));
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+
+  menu->exec(point);
+
+  delete bgmenu;
+  delete fgmenu;
+  delete stackmenu;
+  delete menu;
+}
+
+void VCDockSlider::slotMenuCallback(int item)
+{
+  switch (item)
+    {
+    case KMenuProperties:
+      {/*
+	VCButtonProperties* p = NULL;
+	p = new VCButtonProperties(this);
+	p->exec();
+	delete p;
+       */
+      }
+      break;
+
+    case KMenuForegroundColor:
+      {
+	QColor color;
+	color = QColorDialog::getColor(paletteBackgroundColor(), this);
+	if (color.isValid())
+	  {
+	    _app->doc()->setModified(true);
+	    setPaletteForegroundColor(color);
+	    m_fgColor = true;
+	  }
+
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuForegroundNone:
+      {
+	if (m_bgColor)
+	  {
+	    QColor bgcolor = paletteBackgroundColor();
+	    unsetPalette();
+	    setPaletteBackgroundColor(bgcolor);
+	  }
+	else
+	  {
+	    unsetPalette();
+	  }
+
+	m_fgColor = false;
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuBackgroundColor:
+      {
+	QColor newcolor = 
+	  QColorDialog::getColor(paletteBackgroundColor(), this);
+
+	if (newcolor.isValid() == true)
+	  {
+	    setPaletteBackgroundColor(newcolor);
+	    _app->doc()->setModified(true);
+	  }
+      }
+      break;
+      
+      case KMenuBackgroundPixmap:
+      {
+	QString fileName = 
+	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
+				       QString("*.jpg *.png *.xpm *.gif"), 
+				       this);
+	if (fileName.isEmpty() == false)
+	  {
+	    m_bgPixmapFileName = fileName;
+	    QPixmap pm(fileName);
+	    setPaletteBackgroundPixmap(pm);
+	    _app->doc()->setModified(true);
+	  }
+      }
+      break;
+
+    case KMenuBackgroundNone:
+      {
+	if (m_fgColor)
+	  {
+	    QColor fgcolor = paletteForegroundColor();
+	    unsetPalette();
+	    setPaletteForegroundColor(fgcolor);
+	  }
+	else
+	  {
+	    unsetPalette();
+	  }
+
+	m_bgColor = false;
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuStackRaise:
+      {
+	raise();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuStackLower:
+      {
+	lower();
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuDrawFrame:
+      {
+	if (frameStyle() & KFrameStyle)
+	  {
+	    setFrameStyle(NoFrame);
+	    m_nameLabel->setFrameStyle(NoFrame);
+	    m_valueLabel->setFrameStyle(NoFrame);
+	  }
+	else
+	  {
+	    setFrameStyle(KFrameStyle);
+	    m_nameLabel->setFrameStyle(KFrameStyle);
+	    m_valueLabel->setFrameStyle(KFrameStyle);
+	  }
+	
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KMenuRemove:
+      {
+	if (QMessageBox::warning(this, "Remove Button", "Are you sure?",
+				 QMessageBox::Yes, QMessageBox::No)
+	    == QMessageBox::Yes)
+	  {
+	    _app->doc()->setModified(true);
+	    delete this;
+	  }
+      }
+      break;
+
+    default:
+      break;
     }
 }
 
@@ -453,19 +744,6 @@ void VCDockSlider::paintEvent(QPaintEvent* e)
 void VCDockSlider::slotModeChanged()
 {
   repaint();
-
-  if (_app->mode() == App::Design)
-    {
-      m_functionButton->setEnabled(true);
-      m_busButton->setEnabled(true);
-      m_propertiesButton->setEnabled(true);
-    }
-  else
-    {
-      m_functionButton->setEnabled(false);
-      m_busButton->setEnabled(false);
-      m_propertiesButton->setEnabled(false);
-    }
 }
 
 
