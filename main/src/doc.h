@@ -26,6 +26,8 @@
 #include "classes.h"
 #include "dmxdevice.h"
 #include "deviceclass.h"
+#include "inputdevice.h"
+#include "plugin.h"
 
 class Doc : public QObject
 {
@@ -79,6 +81,12 @@ class Doc : public QObject
 
   // Read file contents to a list of strings
   bool readFileToList(QString &fileName, QList<QString> &list);
+
+  // Input devices
+  QList <InputDevice> inputDeviceList() const { return m_inputDeviceList; }
+
+  // Plugin libraries
+  QList <Plugin> pluginList() const { return m_pluginList; }
   
  signals:
   void deviceListChanged();
@@ -90,6 +98,7 @@ class Doc : public QObject
   Device* createDevice(QList<QString> &list);
   Function* createFunction(QList<QString> &list);
   void createFunctionContents(QList<QString> &list);
+  void findPluginObjects();
 
  private:
   bool m_DMXAddressAllocation[512];
@@ -102,6 +111,10 @@ class Doc : public QObject
 
   QList <Device> m_deviceList;
   QList <DeviceClass> m_deviceClassList;
+
+  QList <InputDevice> m_inputDeviceList;
+
+  QList <Plugin> m_pluginList;
 };
 
 #endif

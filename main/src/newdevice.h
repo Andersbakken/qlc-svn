@@ -23,7 +23,7 @@
 #define NEWDEVICE_H
 
 #include <qwidget.h>
-#include <qcombobox.h>
+#include <qlistview.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
@@ -43,36 +43,30 @@ class NewDevice : public QDialog
   ~NewDevice();
 
   QString manufacturer() const { return m_manufacturerValue; }
-
   QString model() const { return m_modelValue; }
-
   int address() const { return m_addressValue; }
-
   QString name() const { return m_nameValue; }
 
  protected:
   void closeEvent(QCloseEvent*);
-  void init();
+  void initView();
   void show();
 
-  void showModels(QString mfg);
-  void showManufacturers();
+  void fillTree();
 
-  QComboBox* m_manufacturer;
-  QComboBox* m_model;
-  QLineEdit* m_name;
+  QListView* m_tree;
 
-  QLabel* m_qlabel1;
-  QLabel* m_qlabel2;
-  QLabel* m_qlabel3;
-  QLabel* m_qlabel4;
+  QLineEdit* m_nameEdit;
+  QLabel* m_nameLabel;
 
-  QSpinBox* m_channels;
-  QSpinBox* m_address;
+  QSpinBox* m_channelSpin;
+  QLabel* m_channelLabel;
+
+  QSpinBox* m_addressSpin;
+  QLabel* m_addressLabel;
 
   QCheckBox* m_autoAddress;
 
-  QPushButton* m_deviceInfo;
   QPushButton* m_ok;
   QPushButton* m_cancel;
 
@@ -85,8 +79,7 @@ class NewDevice : public QDialog
  private slots:
   void slotOKClicked();
   void slotCancelClicked();
-  void slotManufacturerActivated(int item);
-  void slotModelActivated(int item);
+  void slotSelectionChanged(QListViewItem* item);
   void slotNameChanged(const QString &text);
   void slotAutoAddressClicked();
 };

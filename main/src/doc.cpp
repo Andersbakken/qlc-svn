@@ -52,6 +52,8 @@ Doc::Doc()
       m_DMXAddressAllocation[i] = false;
     }
 
+  findPluginObjects();
+
   m_modified = false;
 }
 
@@ -205,6 +207,13 @@ bool Doc::readDeviceClasses()
       if (dc != NULL)
 	{
 	  m_deviceClassList.append(dc);
+	}
+
+      // 03-Jan-2002 / HJu
+      // The list wasn't cleared between files
+      while (list.isEmpty() == false)
+	{
+	  delete list.take(0);
 	}
     }
 
@@ -797,4 +806,44 @@ Function* Doc::searchFunction(const QString &fname)
     }
 
   return function;
+}
+
+void Doc::findPluginObjects()
+{
+  QString path = QString::null;
+  QString dir = _app->settings()->getInstallDir() + QString("libs/");
+  qDebug("Probing %s for plugin objects...", dir.latin1());
+
+  QDir d(dir);
+  d.setFilter(QDir::Files);
+  if (d.exists() == false || d.isReadable() == false)
+    {
+      fprintf(stderr, "Unable to access plugin directory %s.", dir.latin1());
+      return;
+    }
+  
+  QStringList dirlist(d.entryList());
+  QStringList::Iterator it;
+
+  Plugin* plugin = NULL;
+
+  // Go thru all files in the directory
+  for (it = dirlist.begin(); it != dirlist.end(); ++it)
+    {
+      path = dir + *it;
+      
+      plugin = new Plugin(path);
+      if (plugin->isValid() == true)
+	{
+	  m_pluginList.append(plugin);
+	  qDebug("%s Version %s", plugin->name().latin1(), 
+		 plugin->versionString().latin1());
+	}
+      else
+	{
+	  delete plugin;
+	}
+    }
+
+  qDebug("Found %d plugin object(s)", m_pluginList.count());
 }

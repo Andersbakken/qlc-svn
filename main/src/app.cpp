@@ -30,12 +30,14 @@
 #include "sequenceprovider.h"
 #include "sequencetimer.h"
 #include "globalfunctionsview.h"
+#include "inputdeviceview.h"
 
 #include <unistd.h>
 
 App::App()
 {
   m_globalFunctionsView = NULL;
+  m_inputDeviceView = NULL;
   initSettings();
 }
 
@@ -154,6 +156,8 @@ void App::initMenuBar()
   // m_viewMenu->insertItem("Sequence Editor", this, SLOT(slotViewSequenceEditor()), 0, ID_VIEW_SEQUENCE_EDITOR);
   //
   m_viewMenu->insertSeparator();
+  m_viewMenu->insertItem(QIconSet(m_settings->getPixmapPath() + QString("joystick.xpm")), "Input devices", this, SLOT(slotViewInputDevices()), 0, ID_VIEW_INPUT_DEVICES);
+  m_viewMenu->insertSeparator();
   m_viewMenu->insertItem("Toolbar", this, SLOT(slotViewToolBar()), 0, ID_VIEW_TOOLBAR);
   m_viewMenu->insertItem("Statusbar", this, SLOT(slotViewStatusBar()), 0, ID_VIEW_STATUSBAR);
   m_viewMenu->insertSeparator();
@@ -200,6 +204,27 @@ void App::slotViewGlobalFunctions()
       m_globalFunctionsView->show();
     }
   m_globalFunctionsView->setFocus();
+}
+
+void App::slotViewInputDevices()
+{
+  if (m_inputDeviceView == NULL)
+    {
+      m_inputDeviceView = new InputDeviceView(workspace());
+      connect(m_inputDeviceView, SIGNAL(closed()), this, SLOT(slotInputDeviceViewClosed()));
+      m_inputDeviceView->show();
+    }
+  m_inputDeviceView->setFocus();
+}
+
+void App::slotInputDeviceViewClosed()
+{
+  if (m_inputDeviceView)
+    {
+      disconnect(m_inputDeviceView);
+      delete m_inputDeviceView;
+      m_inputDeviceView = NULL;
+    }
 }
 
 void App::slotGlobalFunctionsViewClosed()

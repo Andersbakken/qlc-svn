@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
   QApplication a(argc, argv);
   _qapp = &a;
 
+  printf("--- Starting Q Light Controller 2 ---\n");
+  printf("This program is licensed under the terms of the GNU General Public License.\n");
+  printf("Copyright (c) 2000, 2001, 2002 Heikki Junnila (hjunnila@iki.fi)\n\n");
+
   // Get widget style from settings
   Settings* settings;
   settings = new Settings();
@@ -46,7 +50,7 @@ int main(int argc, char *argv[])
   _app = new App();
   _app->initView();
   a.setMainWidget(_app);
-  
+
   _app->setCaption("Q Light Controller");
   _app->show();
   

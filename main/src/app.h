@@ -67,8 +67,8 @@
 #define ID_VIEW_DEVICE_MANAGER		12030
 #define ID_VIEW_VIRTUAL_CONSOLE         12040
 #define ID_VIEW_SEQUENCE_EDITOR         12050
-
 #define ID_VIEW_DMXADDRESSTOOL          12060
+#define ID_VIEW_INPUT_DEVICES           12070
 
 ///////////////////////////////////////////////////////////////////
 // Functions menu entries
@@ -107,6 +107,7 @@ class App : public QMainWindow
   SequenceTimer* sequenceTimer() const { return m_sequenceTimer; }
   SequenceProvider* sequenceProvider() const { return m_sequenceProvider; }
   GlobalFunctionsView* globalFunctionsView() const { return m_globalFunctionsView; }
+  InputDeviceView* inputDeviceView() const { return m_inputDeviceView; }
 
   Doc* doc(void);
 
@@ -133,6 +134,9 @@ class App : public QMainWindow
 
   void slotViewGlobalFunctions();
   void slotGlobalFunctionsViewClosed();
+
+  void slotViewInputDevices();
+  void slotInputDeviceViewClosed();
 
   void slotHelpAbout();
 
@@ -167,6 +171,7 @@ class App : public QMainWindow
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
   GlobalFunctionsView* m_globalFunctionsView;
+  InputDeviceView* m_inputDeviceView;
 
   QPixmap m_bgXpm;
 
