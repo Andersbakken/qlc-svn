@@ -27,13 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements
 ------------
-* QT 3.1+
-* X11R6 4.x or X.org 6.x
+* QT/X11 3.1.1 or newer
 * /dev/rtc (Real-time clock, usually enabled by default)
-* Recommended: dmx4linux 2.2
-
-For TODO-lists, known bugs, volunteering to work for the project and all other
-project-related information, go to http://www.sourceforge.net/projects/qlc/
+* Recommended: dmx4linux 2.4
 
 
 
@@ -54,22 +50,16 @@ as a regular user in the qlc root directory and then
   and working qlc.rc file should be placed under /etc/
 
 
-If you wish to participate in the qlc development team
-------------------------------------------------------
-1. Send mail to hjunnila@users.sourceforge.net
-   and tell what you would like to do. A list of open tasks
-   is available at http://www.sourceforge.net/projects/qlc/
-
-2. When you have been granted write access to the cvs
-   repository, read docs/coding-convention.txt and try
-   to follow the rules as much as possible.
-
 
 I need instructions on...
 -------------------------
 See qlc2/main/docs/index.html for more documentation. The documentation is
 updated every now and then -- usually then. If and when you see something
 missing from the documentation, feel free to ask us!
+
+For TODO-lists, known and unknown bugs, volunteering to work for the project
+and all other project-related information, go to http://www.sf.net/projects/qlc
+
 
 
 List of people who have contributed to this piece of software

@@ -78,6 +78,7 @@ emacsclean:
 
 distclean: clean
 	rm -rf CVS
+	rm -rf test
 
 Makefile.dep:
 	rm -f Makefile.dep
