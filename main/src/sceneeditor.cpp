@@ -68,6 +68,7 @@ SceneEditor::SceneEditor(QWidget* parent, const char* name)
     m_menu      (  NULL ),
     m_tempScene (  NULL )
 {
+  m_sceneList->setHScrollBarMode(QScrollView::AlwaysOff);
   initMenu();
 }
 
@@ -216,7 +217,9 @@ void SceneEditor::slotNew()
       item->setRtti(sc->id());
       m_sceneList->insertItem(item);
 
+      m_sceneList->sort();
       selectFunction(sc->id());
+      m_sceneList->ensureCurrentVisible();
       
       setStatusText(KStatusStored, KStatusColorStored);
     }

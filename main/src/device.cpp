@@ -350,7 +350,8 @@ void Device::viewConsole()
       connect(m_console, SIGNAL(closed()), this, SLOT(slotConsoleClosed()));
 
       m_console->show();
-      m_console->resize(m_console->minimumSizeHint().width(), 300);
+      //m_console->resize(m_console->minimumSizeHint().width(), 300);
+      m_console->resize(m_console->width() + 100, 300);
     }
   else
     {
