@@ -21,6 +21,7 @@
 
 #include <qstring.h>
 #include <qpopupmenu.h>
+#include <assert.h>
 
 #include "dummyoutplugin.h"
 
@@ -42,20 +43,20 @@ DummyOutPlugin::~DummyOutPlugin()
 {
 }
 
-bool DummyOutPlugin::open()
+int DummyOutPlugin::open()
 {
   qDebug("DummyOut Plugin opened");
 
   m_open = true;
-  return true;
+  return 0;
 }
 
-bool DummyOutPlugin::close()
+int DummyOutPlugin::close()
 {
   qDebug("DummyOut Plugin closed");
 
   m_open = false;
-  return true;
+  return 0;
 }
 
 bool DummyOutPlugin::isOpen()
@@ -63,8 +64,9 @@ bool DummyOutPlugin::isOpen()
   return m_open;
 }
 
-void DummyOutPlugin::configure()
+int DummyOutPlugin::configure()
 {
+  return 0;
 }
 
 QString DummyOutPlugin::infoText()
@@ -140,53 +142,58 @@ void DummyOutPlugin::activate()
   emit activated(this);
 }
 
-void DummyOutPlugin::setConfigDirectory(QString dir)
+int DummyOutPlugin::setConfigDirectory(QString dir)
 {
+  return 0;
 }
 
-void DummyOutPlugin::saveSettings()
+int DummyOutPlugin::saveSettings()
 {
+  return -1;
 }
 
-void DummyOutPlugin::loadSettings()
+int DummyOutPlugin::loadSettings()
 {
+  return -1;
 }
 
-bool DummyOutPlugin::writeChannel(t_channel channel, t_value value)
+int DummyOutPlugin::writeChannel(t_channel channel, t_value value)
 {
   m_mutex.lock();
   m_values[channel] = value;
   m_mutex.unlock();
-  return true;
+  return 0;
 }
 
-bool DummyOutPlugin::writeRange(t_channel address, t_value* values,
-				t_channel num)
+int DummyOutPlugin::writeRange(t_channel address, t_value* values,
+			       t_channel num)
 {
+  assert(values);
+
   m_mutex.lock();
-  ASSERT(values);
   memcpy(m_values + address, values, num * sizeof(t_value));
   m_mutex.unlock();
 
-  return true;
+  return 0;
 }
 
-bool DummyOutPlugin::readChannel(t_channel channel, t_value &value)
+int DummyOutPlugin::readChannel(t_channel channel, t_value &value)
 {
   m_mutex.lock();
   value = m_values[channel];
   m_mutex.unlock();
 
-  return true;
+  return 0;
 }
 
-bool DummyOutPlugin::readRange(t_channel address, t_value* values,
+int DummyOutPlugin::readRange(t_channel address, t_value* values,
 			       t_channel num)
 {
+  assert(values);
+
   m_mutex.lock();
-  ASSERT(values);
   memcpy(values, m_values + address, num * sizeof(t_value));
   m_mutex.unlock();
 
-  return true;
+  return 0;
 }

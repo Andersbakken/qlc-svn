@@ -70,6 +70,11 @@ MidiOut::MidiOut(t_plugin_id id) : OutputPlugin(id)
   m_version = 0x00000100;
   m_deviceName = QString("/dev/midi00");
   m_configDirectory = QString("~/.qlc/");
+
+  for (t_channel i = 0; i < 512; i++)
+    {
+      m_values[i] = 0;
+    }
 }
 
 MidiOut::~MidiOut()
@@ -82,44 +87,53 @@ void MidiOut::setFileName(QString fileName)
   m_deviceName = fileName;
 }
 
-bool MidiOut::open()
+int MidiOut::setDeviceName(QString name)
 {
-  if (m_fd != -1)
-    {
-      qDebug("MidiOut already open");
-      return false;
-    }
-
-  m_fd = ::open((const char*) m_deviceName, O_WRONLY | O_NONBLOCK);
-  if (m_fd == -1)
-    {
-      perror("open");
-      qDebug("Midi Output not available");
-      return false;
-    }
-
-  return true;
+  m_deviceName = name;
+  return 0;
 }
 
-bool MidiOut::close()
+int MidiOut::open()
 {
-  if (m_fd == -1)
+  int r = 0;
+
+  m_mutex.lock();
+
+  r = ::open((const char*) m_deviceName, O_WRONLY | O_NONBLOCK);
+  if (r == -1)
     {
-      return false;
+      perror("open");
     }
   else
     {
-      if (::close(m_fd) == -1)
-	{
-	  return false;
-	}
-      else
-	{
-	  m_fd = -1;
-	}
+      m_fd = r;
+      r = 0;
     }
 
-  return true;
+  m_mutex.unlock();
+
+  return r;
+}
+
+int MidiOut::close()
+{
+  int r = 0;
+
+  m_mutex.lock();
+
+  r = ::close(m_fd);
+  if (r == -1)
+    {
+      perror("close");
+    }
+  else
+    {
+      m_fd = -1;
+    }
+
+  m_mutex.unlock();
+
+  return r;
 }
 
 bool MidiOut::isOpen()
@@ -139,7 +153,9 @@ QString MidiOut::infoText()
   QString t;
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
+  str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
+  str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 
   str += QString("<TR><TD><B>Version</B></TD>");
@@ -162,6 +178,7 @@ QString MidiOut::infoText()
   str += QString("<TR>\n");
   str += QString("<TD><B>Status</B></TD>");
   str += QString("<TD>");
+
   if (isOpen() == true)
     {
       str += QString("<I>Active</I></TD>");
@@ -178,12 +195,13 @@ QString MidiOut::infoText()
   return str;
 }
 
-void MidiOut::setConfigDirectory(QString dir)
+int MidiOut::setConfigDirectory(QString dir)
 {
   m_configDirectory = dir;
+  return 0;
 }
 
-void MidiOut::saveSettings()
+int MidiOut::saveSettings()
 {
   QString s;
   QString t;
@@ -218,11 +236,12 @@ void MidiOut::saveSettings()
   else
     {
       perror("file.open");
-      qDebug("Unable to save MidiOut configuration");
     }
+
+  return -1;
 }
 
-void MidiOut::loadSettings()
+int MidiOut::loadSettings()
 {
   QString fileName;
   QPtrList <QString> list;
@@ -242,6 +261,8 @@ void MidiOut::loadSettings()
 	    }
 	}
     }
+
+  return 0;
 }
 
 void MidiOut::createContents(QPtrList <QString> &list)
@@ -280,16 +301,19 @@ void MidiOut::setMidiChannel(t_channel channel)
     }
 }
 
-bool MidiOut::writeChannel(t_channel channel, t_value value)
+int MidiOut::writeChannel(t_channel channel, t_value value)
 {
   t_value buf[3];
 
-  if (m_fd == -1 || channel >= (MAX_MIDIOUT_DMX_CHANNELS - m_firstNote))
+  if (channel >= (MAX_MIDIOUT_DMX_CHANNELS - m_firstNote))
     {
-      return false;
+      return -1;
     }
 
+  m_mutex.lock();
+
   // Convert [0|255] values to [0|127]
+  m_values[channel] = value;
   value = value / 2;
 
   if (value == 0)
@@ -308,50 +332,56 @@ bool MidiOut::writeChannel(t_channel channel, t_value value)
   ssize_t num = ::write(m_fd, buf, sizeof(buf));
   if (num == sizeof(buf))
     {
-      return true;
+      m_mutex.unlock();
+      return 0;
     }
   else
     {
-      return false;
+      m_mutex.unlock();
+      perror("write");
+      return -1;
     }
 }
 
-bool MidiOut::writeRange(t_channel address, t_value* values,
-			 t_channel num)
+int MidiOut::writeRange(t_channel address, t_value* values, t_channel num)
 {
-  //
-  // TODO: Make use of MIDI's running status-feature to reduce overhead
-  // http://www.borg.com/~jglatt/tech/midispec.htm
-  //
   for (t_channel i = 0; i < num; i++)
     {
-      if (writeChannel(address + i, values[i]) == false)
+      if (writeChannel(address + i, values[i]) == -1)
 	{
-	  return false;
+	  return -1;
 	}
     }
 
-  return true;
+  return 0;
 }
 
-bool MidiOut::readChannel(t_channel channel, t_value &value)
+int MidiOut::readChannel(t_channel channel, t_value &value)
 {
-  value = 0;
-  return false;
+  m_mutex.lock();
+
+  value = m_values[channel];
+
+  m_mutex.unlock();
+
+  return 0;
 }
 
-bool MidiOut::readRange(t_channel address, t_value* values,
-			t_channel num)
+int MidiOut::readRange(t_channel address, t_value* values, t_channel num)
 {
+  m_mutex.lock();
+
   for (t_channel i = 0; i < num; i++)
     {
-      values[i] = 0;
+      values[i] = m_values[i];
     }
 
-  return false;
+  m_mutex.unlock();
+
+  return 0;
 }
 
-void MidiOut::configure()
+int MidiOut::configure()
 {
   ConfigureMidiOut* conf = new ConfigureMidiOut(this);
 
@@ -362,6 +392,8 @@ void MidiOut::configure()
       m_firstNote = conf->firstNote();
       saveSettings();
     }
+
+  return 0;
 }
 
 void MidiOut::activate()

@@ -43,16 +43,16 @@ class JoystickPlugin : public Plugin
   JoystickPlugin(t_plugin_id id);
   virtual ~JoystickPlugin();
 
-  virtual bool open();
-  virtual bool close();
-  virtual bool isOpen();
-  virtual void configure();
-  virtual QString infoText();
-  virtual void contextMenu(QPoint pos);
+  int open();
+  int close();
+  bool isOpen();
+  int configure();
+  QString infoText();
+  void contextMenu(QPoint pos);
 
-  virtual void setConfigDirectory(QString dir);
-  virtual void saveSettings();
-  virtual void loadSettings();
+  int setConfigDirectory(QString dir);
+  int saveSettings();
+  int loadSettings();
 
   virtual QPtrList <Joystick> *joystickList() { return &m_joystickList; }
 

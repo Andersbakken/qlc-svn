@@ -57,7 +57,7 @@ JoystickPlugin::~JoystickPlugin()
 {
 }
 
-bool JoystickPlugin::open()
+int JoystickPlugin::open()
 {
   t_joystick_id i = 0;
   char fileName[256];
@@ -80,17 +80,17 @@ bool JoystickPlugin::open()
 	}
     }
 
-  return true;
+  return 0;
 }
 
-bool JoystickPlugin::close()
+int JoystickPlugin::close()
 {
   while (m_joystickList.isEmpty() == false)
     {
       delete m_joystickList.take(0);
     }
 
-  return true;
+  return 0;
 }
 
 bool JoystickPlugin::isOpen()
@@ -98,8 +98,9 @@ bool JoystickPlugin::isOpen()
   return true;
 }
 
-void JoystickPlugin::configure()
+int JoystickPlugin::configure()
 {
+  return 0;
 }
 
 QString JoystickPlugin::infoText()
@@ -107,7 +108,9 @@ QString JoystickPlugin::infoText()
   QString t;
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
+  str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
+  str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
   str += QString("<TR>\n");
   str += QString("<TD><B>Version</B></TD>");
@@ -131,17 +134,20 @@ QString JoystickPlugin::infoText()
   return str;
 }
 
-void JoystickPlugin::setConfigDirectory(QString dir)
+int JoystickPlugin::setConfigDirectory(QString dir)
 {
   m_configDirectory = dir;
+  return 0;
 }
 
-void JoystickPlugin::saveSettings()
+int JoystickPlugin::saveSettings()
 {
+  return -1;
 }
 
-void JoystickPlugin::loadSettings()
+int JoystickPlugin::loadSettings()
 {
+  return -1;
 }
 
 void JoystickPlugin::contextMenu(QPoint pos)
@@ -149,7 +155,8 @@ void JoystickPlugin::contextMenu(QPoint pos)
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem("Configure...", ID_CONFIGURE);
 
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  connect(menu, SIGNAL(activated(int)), 
+	  this, SLOT(slotContextMenuCallback(int)));
   menu->exec(pos, 0);
   delete menu;
 }
@@ -183,7 +190,8 @@ Joystick* JoystickPlugin::selectJoystick()
 
 Joystick* JoystickPlugin::search(QString &device)
 {
-  for (Joystick* j = m_joystickList.first(); j != NULL; j = m_joystickList.next())
+  for (Joystick* j = m_joystickList.first(); j != NULL; 
+       j = m_joystickList.next())
     {
       if (j->fdName() == device)
 	{

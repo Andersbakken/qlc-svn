@@ -33,6 +33,7 @@
 #include <qpoint.h>
 #include <qpopupmenu.h>
 #include <qfile.h>
+#include <assert.h>
 
 #define CONF_FILE "dmx4linuxout.conf"
 
@@ -65,6 +66,11 @@ DMX4LinuxOut::DMX4LinuxOut(t_plugin_id id) : OutputPlugin(id)
   m_version = 0x00010000;
   m_deviceName = QString("/dev/dmx");    
   m_configDir = QString("~/.qlc/");
+
+  for (t_channel i = 0; i < 512; i++)
+    {
+      m_values[i] = 0;
+    }
 }
 
 DMX4LinuxOut::~DMX4LinuxOut()
@@ -72,7 +78,7 @@ DMX4LinuxOut::~DMX4LinuxOut()
 }
 
 /* Attempt to open dmx device */
-bool DMX4LinuxOut::open()
+int DMX4LinuxOut::open()
 {
   if (m_device != -1)
     {
@@ -85,27 +91,25 @@ bool DMX4LinuxOut::open()
     {
       perror("open");
       qDebug("DMX4Linux output is not available");
-      return false;
     }
-  else
-    {
-      return true;
-    }
+
+  return errno;
 }
 
-bool DMX4LinuxOut::close()
+int DMX4LinuxOut::close()
 {
-  if (m_device != -1)
+  int r = 0;
+  r = ::close(m_device);
+  if (r == -1)
     {
-      ::close(m_device);
-      m_device = -1;
-
-      return true;
+      perror("close");
     }
   else
     {
-      return false;
+      m_device = -1;
     }
+
+  return r;
 }
 
 bool DMX4LinuxOut::isOpen()
@@ -120,7 +124,7 @@ bool DMX4LinuxOut::isOpen()
     }
 }
 
-void DMX4LinuxOut::configure()
+int DMX4LinuxOut::configure()
 {
   ConfigureDMX4LinuxOut* conf = new ConfigureDMX4LinuxOut(this);
 
@@ -131,6 +135,8 @@ void DMX4LinuxOut::configure()
     }
 
   delete conf;
+
+  return 0;
 }
 
 QString DMX4LinuxOut::infoText()
@@ -138,7 +144,9 @@ QString DMX4LinuxOut::infoText()
   QString t;
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
+  str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
+  str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
   str += QString("<TR>\n");
   str += QString("<TD><B>Version</B></TD>");
@@ -171,12 +179,13 @@ QString DMX4LinuxOut::infoText()
   return str;
 }
 
-void DMX4LinuxOut::setConfigDirectory(QString dir)
+int DMX4LinuxOut::setConfigDirectory(QString dir)
 {
   m_configDir = dir;
+  return 0;
 }
 
-void DMX4LinuxOut::saveSettings()
+int DMX4LinuxOut::saveSettings()
 {
   QString s;
   QString t;
@@ -205,9 +214,11 @@ void DMX4LinuxOut::saveSettings()
       perror("file.open");
       qDebug("Unable to save DMX4LinuxOut configuration");
     }
+
+  return errno;
 }
 
-void DMX4LinuxOut::loadSettings()
+int DMX4LinuxOut::loadSettings()
 {
   QString fileName;
   QPtrList <QString> list;
@@ -227,6 +238,8 @@ void DMX4LinuxOut::loadSettings()
 	    }
 	}
     }
+
+  return 0;
 }
 
 void DMX4LinuxOut::createContents(QPtrList <QString> &list)
@@ -252,7 +265,8 @@ void DMX4LinuxOut::contextMenu(QPoint pos)
   menu->insertSeparator();
   menu->insertItem("Activate", ID_ACTIVATE);
 
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  connect(menu, SIGNAL(activated(int)), 
+	  this, SLOT(slotContextMenuCallback(int)));
   menu->exec(pos, 0);
   delete menu;
 }
@@ -282,77 +296,72 @@ void DMX4LinuxOut::activate()
 //
 // Write a value to a channel
 //
-bool DMX4LinuxOut::writeChannel(t_channel channel, t_value value)
+int DMX4LinuxOut::writeChannel(t_channel channel, t_value value)
 {
-  bool result = true;
+  int r = 0;
 
   _mutex.lock();
+
+  m_values[channel] = value;
+
   lseek(m_device, channel, SEEK_SET);
-  if (write(m_device, &value, 1))
+  r = write(m_device, &value, 1);
+  if (r == -1)
     {
-      result = false;
+      perror("write");
     }
+
   _mutex.unlock();
 
-  return result;
+  return r;
 }
 
 //
 // Write num values starting from address
 //
-bool DMX4LinuxOut::writeRange(t_channel address, t_value* values,
-			      t_channel num)
+int DMX4LinuxOut::writeRange(t_channel address, t_value* values, t_channel num)
 {
-  ASSERT(values);
-
-  bool result = true;
+  assert(values);
+  int r = 0;
 
   _mutex.lock();
+
+  memcpy(m_values + address, values, num * sizeof(t_value));
+
   lseek(m_device, address, SEEK_SET);
-  if (write(m_device, values, num))
+  r = write(m_device, values, num);
+  if (r == -1)
     {
-      result = false;
+      perror("write");
     }
+
   _mutex.unlock();
 
-  return result;
+  return r;
 }
 
 //
 // Read a channel's value
 //
-bool DMX4LinuxOut::readChannel(t_channel channel, t_value &value)
+int DMX4LinuxOut::readChannel(t_channel channel, t_value &value)
 {
-  bool result = true;
-
   _mutex.lock();
-  lseek(m_device, channel, SEEK_SET);
-  if (read(m_device, &value, 1))
-    {
-      result = false;
-    }
+  value = m_values[channel];
   _mutex.unlock();
 
-  return result;
+  return 0;
 }
 
 //
 // Read num channel's values starting from address
 //
-bool DMX4LinuxOut::readRange(t_channel address, t_value* values,
-			     t_channel num)
+int DMX4LinuxOut::readRange(t_channel address, t_value* values, t_channel num)
 {
-  ASSERT(values);
-
-  bool result = true;
+  assert(values);
 
   _mutex.lock();
-  lseek(m_device, address, SEEK_SET);
-  if (read(m_device, values, num))
-    {
-      result = false;
-    }
+  memcpy(values, m_values + address, num * sizeof(t_value));
   _mutex.unlock();
 
-  return result;
+  return 0;
 }

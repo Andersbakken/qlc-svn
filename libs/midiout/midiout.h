@@ -23,6 +23,7 @@
 #define MIDIOUT_H
 
 #include "../common/outputplugin.h"
+#include <qthread.h>
 #include <qptrlist.h>
 
 class QString;
@@ -44,32 +45,30 @@ class MidiOut : public OutputPlugin
   MidiOut(t_plugin_id id);
   virtual ~MidiOut();
 
-  virtual bool open();
-  virtual bool close();
-  virtual bool isOpen();
-  virtual void configure();
-  virtual QString infoText();
-  virtual void contextMenu(QPoint pos);
+  int open();
+  int close();
+  bool isOpen();
+  int configure();
+  QString infoText();
+  void contextMenu(QPoint pos);
 
-  virtual void setConfigDirectory(QString dir);
-  virtual void saveSettings();
-  virtual void loadSettings();
+  int setConfigDirectory(QString dir);
+  int saveSettings();
+  int loadSettings();
 
   // OutputPlugin functions
-  bool writeChannel(t_channel channel, t_value value);
-  bool writeRange(t_channel address, t_value* values,
-		  t_channel num);
+  int writeChannel(t_channel channel, t_value value);
+  int writeRange(t_channel address, t_value* values, t_channel num);
 
-  bool readChannel(t_channel channel, t_value &value);
-  bool readRange(t_channel address, t_value* values,
-		 t_channel num);
+  int readChannel(t_channel channel, t_value &value);
+  int readRange(t_channel address, t_value* values, t_channel num);
 
   // Own functions
-  void setDeviceName(QString name) { m_deviceName = name; }
+  int setDeviceName(QString name);
   QString deviceName() { return m_deviceName; }
 
  protected:
-  virtual void setFileName(QString);
+  void setFileName(QString);
   void setMidiChannel(t_channel channel);
   t_channel midiChannel() { return m_midiChannel; }
   t_value firstNote() { return m_firstNote; }
@@ -85,6 +84,9 @@ class MidiOut : public OutputPlugin
   int m_fd;
   t_channel m_midiChannel;
   t_channel m_firstNote;
+
+  QMutex m_mutex;
+  t_value m_values[512];
 };
 
 #endif

@@ -45,29 +45,27 @@ class DMX4LinuxOut : public OutputPlugin
   ~DMX4LinuxOut();
 
   // Plugin methods
-  virtual bool open();
-  virtual bool close();
-  virtual bool isOpen();
-  virtual void configure();
-  virtual QString infoText();
-  virtual void contextMenu(QPoint pos);
+  int open();
+  int close();
+  bool isOpen();
+  int configure();
+  QString infoText();
+  void contextMenu(QPoint pos);
 
-  virtual void setConfigDirectory(QString dir);
-  virtual void saveSettings();
-  virtual void loadSettings();
+  int setConfigDirectory(QString dir);
+  int saveSettings();
+  int loadSettings();
 
   // OutputPlugin methods
-  virtual bool writeChannel(t_channel channel, t_value value);
-  virtual bool writeRange(t_channel address, t_value* values,
-			  t_channel num);
+  int writeChannel(t_channel channel, t_value value);
+  int writeRange(t_channel address, t_value* values, t_channel num);
 
-  bool readChannel(t_channel channel, t_value &value);
-  bool readRange(t_channel address, t_value* values,
-		 t_channel num);
+  int readChannel(t_channel channel, t_value &value);
+  int readRange(t_channel address, t_value* values, t_channel num);
 
   // Own methods
-  virtual QString deviceName() { return m_deviceName; }
-  virtual void setDeviceName(QString name) { m_deviceName = name; }
+  QString deviceName() { return m_deviceName; }
+  void setDeviceName(QString name) { m_deviceName = name; }
 
  private slots:
   void slotContextMenuCallback(int item);
@@ -80,6 +78,7 @@ class DMX4LinuxOut : public OutputPlugin
   QString m_deviceName;
   QString m_configDir;
   int m_device;
+  t_value m_values[512];
 };
 
 #endif

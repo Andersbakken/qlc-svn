@@ -33,13 +33,13 @@ class OutputPlugin : public Plugin
   OutputPlugin(int id);
   virtual ~OutputPlugin();
 
-  virtual bool writeChannel(t_channel channel, t_value) = 0;
-  virtual bool writeRange(t_channel address, t_value* values,
-                          t_channel num) = 0;
+  virtual int writeChannel(t_channel channel, t_value) = 0;
+  virtual int writeRange(t_channel address, t_value* values,
+                	 t_channel num) = 0;
 
-  virtual bool readChannel(t_channel channel, t_value &value) = 0;
-  virtual bool readRange(t_channel address, t_value* values,
-                         t_channel num) = 0;
+  virtual int readChannel(t_channel channel, t_value &value) = 0;
+  virtual int readRange(t_channel address, t_value* values,
+                        t_channel num) = 0;
 };
 
 #endif

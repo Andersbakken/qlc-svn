@@ -46,16 +46,16 @@ class Plugin : public QObject
     };
 
   // These functions have to be overwritten
-  virtual bool open() = 0; // Generic open function
-  virtual bool close() = 0; // Generic close function
+  virtual int open() = 0; // Generic open function
+  virtual int close() = 0; // Generic close function
   virtual bool isOpen() = 0; // Generic open-or-not? function
-  virtual void configure() = 0; // Generic configure function
+  virtual int configure() = 0; // Generic configure function
   virtual QString infoText() = 0; // Text that is displayed in device manager
-  virtual void contextMenu(QPoint pos) = 0; // Invoke a context menu from device manager
+  virtual void contextMenu(QPoint pos) = 0; // Invoke a context menu
 
-  virtual void setConfigDirectory(QString dir) = 0; // Set the config file directory
-  virtual void saveSettings() = 0; // Save settings to a file in config dir
-  virtual void loadSettings() = 0; // Load settings from a file in config dir
+  virtual int setConfigDirectory(QString dir) = 0; // Set the config file dir
+  virtual int saveSettings() = 0; // Save settings to a file in config dir
+  virtual int loadSettings() = 0; // Load settings from a file in config dir
 
   // Standard functions that don't have to be overwritten
   QString name() { return m_name; }
