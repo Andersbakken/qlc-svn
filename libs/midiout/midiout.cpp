@@ -33,7 +33,6 @@
 #include "../common/plugin.h"
 #include "../common/filehandler.h"
 #include "midiout.h"
-#include "configuremidiout.h"
 
 #define MIDI_NOTEOFF 0x80
 #define MIDI_NOTEON  0x90
@@ -326,6 +325,7 @@ bool MidiOut::writeChannel(unsigned short channel, unsigned char value)
 
 void MidiOut::configure()
 {
+/*
   ConfigureMidiOut* conf = new ConfigureMidiOut(this);
 
   if (conf->exec() == QDialog::Accepted)
@@ -335,6 +335,7 @@ void MidiOut::configure()
       m_firstNote = conf->firstNote();
       saveSettings();
     }
+*/
 }
 
 void MidiOut::activate()
