@@ -40,6 +40,7 @@ FunctionCollection::FunctionCollection() : Function()
 {
   m_registerCount = 0;
   m_type = Function::Collection;
+  m_running = false;
 }
 
 FunctionCollection::~FunctionCollection()
@@ -47,7 +48,7 @@ FunctionCollection::~FunctionCollection()
 
 }
 
-void FunctionCollection::unRegisterFunction(Feeder* feeder)
+bool FunctionCollection::unRegisterFunction(Feeder* feeder)
 {
   m_running = false; // Not running anymore
 
@@ -60,13 +61,38 @@ void FunctionCollection::unRegisterFunction(Feeder* feeder)
 	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
 
   Function::unRegisterFunction(feeder);
+
+  return true;
 }
 
-void FunctionCollection::registerFunction(Feeder* feeder)
+bool FunctionCollection::registerFunction(Feeder* feeder)
 {
-  m_running = false; // Not running until the first event has been fetched
+  if (m_running == false)
+    {
+      m_running = true;
 
-  Function::registerFunction(feeder);
+      // Disconnect the previous signal
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      
+      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+      
+      for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+	{
+	  increaseRegisterCount();
+	  item->registered = true;
+	  _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
+	}
+
+      Function::registerFunction(feeder);
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 void FunctionCollection::saveToFile(QFile &file)
@@ -196,6 +222,7 @@ void FunctionCollection::addItem(Device* device, Function* function)
   CollectionItem* item = (CollectionItem*) malloc (sizeof(CollectionItem));
   item->callerDevice = device;
   item->feederFunction = function;
+  item->registered = false;
 
   m_items.append(item);
 }
@@ -237,14 +264,18 @@ bool FunctionCollection::removeItem(QString deviceString, QString functionString
 void FunctionCollection::increaseRegisterCount()
 {
   _mutex.lock();
+
   m_registerCount++;
+
   _mutex.unlock();
 }
 
 void FunctionCollection::decreaseRegisterCount()
 {
   _mutex.lock();
+
   m_registerCount--;
+
   _mutex.unlock();
 }
 
@@ -268,26 +299,11 @@ Event* FunctionCollection::getEvent(Feeder* feeder)
 {
   Event* event = new Event();
 
-  if (m_running == false)
-    {
-      m_running = true;
-
-      // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-
-      for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
-	{
-	  increaseRegisterCount();
-	  _app->sequenceProvider()->registerEventFeeder(item->feederFunction, feeder->speedBus(), item->callerDevice, this);
-	}
-    }
-
+  _mutex.lock();
   if (m_registerCount == 0)
     {
+      _mutex.unlock();
+
       // Disconnect the previous signal
       disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
 		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
@@ -296,6 +312,10 @@ Event* FunctionCollection::getEvent(Feeder* feeder)
       // function is ready and can be unregistered
       event->m_type = Event::Ready;
     }
-  
+  else
+    {
+      _mutex.unlock();
+    }
+
   return event;
 }

@@ -56,11 +56,11 @@ class Function : public QObject
   virtual Event* getEvent(Feeder* feeder) = 0;
   virtual void recalculateSpeed(Feeder* feeder) = 0;
 
-  /* Used to emit an unRegistered() signal from this function */
-  virtual void unRegisterFunction(Feeder*);
-
   /* Signal the function that it is registered -> do some init */
-  virtual void registerFunction(Feeder*);
+  virtual bool registerFunction(Feeder*);
+
+  /* Used to emit an unRegistered() signal from this function */
+  virtual bool unRegisterFunction(Feeder*);
 
   /* Save this function to a file */
   virtual void saveToFile(QFile &file) = 0;

@@ -57,15 +57,19 @@ Scene::~Scene()
   emit destroyed();
 }
 
-void Scene::unRegisterFunction(Feeder* feeder)
+bool Scene::unRegisterFunction(Feeder* feeder)
 {
   Function::unRegisterFunction(feeder);
+
+  return true;
 }
 
-void Scene::registerFunction(Feeder* feeder)
+bool Scene::registerFunction(Feeder* feeder)
 {
   recalculateSpeed(feeder);
   Function::registerFunction(feeder);
+
+  return true;
 }
 
 void Scene::saveToFile(QFile &file)
@@ -239,7 +243,7 @@ void Scene::recalculateSpeed(Feeder* f)
   // updates needed) and set it to this whole scene's delta
   for (unsigned short i = 0; i < channels; i++)
     {
-      gap = abs((signed short) f->startLevel(i) - (signed short) m_values[i].value);
+      gap = abs((signed short) f->device()->getChannelValue(i) - (signed short) m_values[i].value);
 
       if (gap != 0)
 	{

@@ -241,13 +241,46 @@ void Chaser::recalculateSpeed(Feeder* feeder)
     }
 }
 
-void Chaser::registerFunction(Feeder* feeder)
+bool Chaser::registerFunction(Feeder* feeder)
 {
-  m_running = true;
-  m_OKforNextStep = true;
+  if (m_running == false)
+    {
+      m_running = true;
+      m_OKforNextStep = true;
 
-  feeder->setNextEventIndex(0);
-  Function::registerFunction(feeder);
+      feeder->setNextEventIndex(0);
+
+      Function::registerFunction(feeder);
+
+      recalculateSpeed(feeder);
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool Chaser::unRegisterFunction(Feeder* feeder)
+{
+  ChaserStep* step = NULL;
+  int index = (feeder->nextEventIndex() - 1 + m_steps.count()) % m_steps.count();
+  step = m_steps.at(index);
+
+  ASSERT(step != NULL);
+
+  _app->sequenceProvider()->unRegisterEventFeeder(step->callerDevice, step->feederFunction);
+
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+
+  m_running = false;
+  m_OKforNextStep = false;
+
+  Function::unRegisterFunction(feeder);
+
+  return true;
 }
 
 Event* Chaser::getEvent(Feeder* feeder)
@@ -260,12 +293,12 @@ Event* Chaser::getEvent(Feeder* feeder)
   if (m_OKforNextStep == true)
     {
       m_OKforNextStep = false;
-
+      
       step = m_steps.at(feeder->nextEventIndex());
       feeder->setNextEventIndex((feeder->nextEventIndex() + 1) % m_steps.count());
-
+      
       ASSERT(step != NULL);
-
+      
       _app->sequenceProvider()->registerEventFeeder(step->feederFunction, feeder->speedBus(), step->callerDevice, this);
       
       disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
@@ -284,23 +317,4 @@ void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, De
     {
       m_OKforNextStep = true;
     }
-}
-
-void Chaser::unRegisterFunction(Feeder* feeder)
-{
-  ChaserStep* step = NULL;
-  int index = (feeder->nextEventIndex() - 1 + m_steps.count()) % m_steps.count();
-  step = m_steps.at(index);
-
-  ASSERT(step != NULL);
-
-  _app->sequenceProvider()->unRegisterEventFeeder(step->callerDevice, step->feederFunction);
-
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
-
-  m_running = false;
-  m_OKforNextStep = false;
-
-  Function::unRegisterFunction(feeder);
 }

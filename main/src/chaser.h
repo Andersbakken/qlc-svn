@@ -58,8 +58,8 @@ class Chaser : public Function
 
   void registerFirstStep();
 
-  void unRegisterFunction(Feeder* feeder);
-  void registerFunction(Feeder* feeder);
+  bool registerFunction(Feeder* feeder);
+  bool unRegisterFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
 

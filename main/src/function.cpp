@@ -72,19 +72,16 @@ Function::Type Function::type() const
   return m_type;
 }
 
-void Function::unRegisterFunction(Feeder* feeder)
+bool Function::unRegisterFunction(Feeder* feeder)
 {
-  m_running = false;
-
-  // qDebug(typeString() + "::unRegisterFunction [%s]", (const char*) m_name);
   emit unRegistered(this);
+
+  return true;
 }
 
-void Function::registerFunction(Feeder* feeder)
+bool Function::registerFunction(Feeder* feeder)
 {
-  // qDebug(typeString() + "::registerFunction [%s]", (const char*) m_name);
-
-  recalculateSpeed(feeder);
+  return true;
 }
 
 QString Function::typeString() const

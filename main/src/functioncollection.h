@@ -29,6 +29,8 @@ typedef struct
 {
   Device* callerDevice;
   Function* feederFunction;
+  bool registered;
+
 } CollectionItem;
 
 class FunctionCollection : public Function
@@ -54,8 +56,8 @@ class FunctionCollection : public Function
 
   void increaseRegisterCount();
 
-  void unRegisterFunction(Feeder* feeder);
-  void registerFunction(Feeder* feeder);
+  bool registerFunction(Feeder* feeder);
+  bool unRegisterFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
 

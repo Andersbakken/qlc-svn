@@ -58,8 +58,8 @@ class Scene : public Function
 
   void saveToFile(QFile &file);
 
-  void unRegisterFunction(Feeder* feeder);
-  void registerFunction(Feeder* feeder);
+  bool registerFunction(Feeder* feeder);
+  bool unRegisterFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
   
