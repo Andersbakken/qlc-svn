@@ -53,6 +53,8 @@ class KeyBind : public QObject
   void setReleaseAction(ReleaseAction a) { m_releaseAction = a; }
   ReleaseAction releaseAction() { return m_releaseAction; }
 
+  bool operator=(KeyBind*);
+
  private:
   DMXWidgetBase* m_receiver;
   QKeyEvent* m_keyEvent;

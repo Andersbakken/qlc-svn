@@ -78,23 +78,122 @@ QString KeyBind::keyString(const QKeyEvent* e)
 
   if (e->key() >= Key_F1 && e->key() <= Key_F12)
     {
+      // Function keys
       key.sprintf("F%d", e->key() - Key_F1 + 1);
     }
-  else if (e->key() < Key_Escape)
+  else if (e->key() >= Key_0 && e->key() <= Key_9)
     {
-      if (e->key() == Key_Space)
-	{
-	  key.sprintf("Space");
-	}
-      else
-	{
-	  key.sprintf("%c", toupper(e->ascii()));
-	}
+      // Number keys
+      key.sprintf("%d", e->key() - Key_0);
+    }
+  else if (e->key() >= Key_A && e->key() <= Key_Z)
+    {
+      // A-Z
+      key.sprintf("%c", 'A' + e->key() - Key_A);
     }
   else
     {
       switch(e->key())
 	{
+	case Key_Exclam:
+	  key.sprintf("!");
+	  break;
+	case Key_QuoteDbl:
+	  key.sprintf("\"");
+	  break;
+	case Key_NumberSign:
+	  key.sprintf("Unknown");
+	  break;
+	case Key_Dollar:
+	  key.sprintf("$");
+	  break;
+	case Key_Percent:
+	  key.sprintf("\%");
+	  break;
+	case Key_Ampersand:
+	  key.sprintf("&");
+	  break;
+	case Key_Apostrophe:
+	  key.sprintf("'");
+	  break;
+	case Key_ParenLeft:
+	  key.sprintf("(");
+	  break;
+	case Key_ParenRight:
+	  key.sprintf(")");
+	  break;
+	case Key_Asterisk:
+	  key.sprintf("*");
+	  break;
+	case Key_Plus:
+	  key.sprintf("+");
+	  break;
+	case Key_Comma:
+	  key.sprintf(",");
+	  break;
+	case Key_Minus:
+	  key.sprintf("-");
+	  break;
+	case Key_Period:
+	  key.sprintf(".");
+	  break;
+	case Key_Slash:
+	  key.sprintf("/");
+	  break;
+	case Key_Colon:
+	  key.sprintf(":");
+	  break;
+        case Key_Semicolon:
+	  key.sprintf(";");
+	  break;
+        case Key_Less:
+	  key.sprintf("<");
+	  break;
+        case Key_Equal:
+	  key.sprintf("/");
+	  break;
+        case Key_Greater:
+	  key.sprintf(">");
+	  break;
+        case Key_Question:
+	  key.sprintf("?");
+	  break;
+	case Key_BracketLeft:
+	  key.sprintf("?");
+	  break;
+        case Key_Backslash:
+	  key.sprintf("?");
+	  break;
+	case Key_BracketRight:
+	  key.sprintf("?");
+	  break;
+	case Key_AsciiCircum:
+	  key.sprintf("?");
+	  break;
+	case Key_Underscore:
+	  key.sprintf("_");
+	  break;
+	case Key_QuoteLeft:
+	  key.sprintf("`");
+	  break;
+	case Key_BraceLeft:
+	  key.sprintf("{");
+	  break;
+	case Key_Bar:
+	  key.sprintf("|");
+	  break;
+	case Key_BraceRight:
+	  key.sprintf("}");
+	  break;
+	case Key_AsciiTilde:
+	  key.sprintf("~");
+	  break;
+	case Key_At:
+	  key.sprintf("@");
+	  break;
+	case Key_Space:
+	  key.sprintf("Space");
+	  break;
 	case Key_Escape:
 	  key.sprintf("Escape");
 	  break;
@@ -146,8 +245,12 @@ QString KeyBind::keyString(const QKeyEvent* e)
 	case Key_Control:
 	  key.sprintf("Control +");
 	  break;
-	default:
+	case 0:
+	case Key_unknown:
 	  key.sprintf("Unknown");
+	  break;
+	default:
+	  key.sprintf("Code %d", e->key());
 	  break;
 	}
     }
@@ -168,4 +271,41 @@ QString KeyBind::keyString(const QKeyEvent* e)
     }
 
   return QString(mod + key);
+}
+
+// Comparison between two KeyBind objects
+bool KeyBind::operator=(KeyBind* kb)
+{
+  bool result = true;
+
+  if (kb->receiver() != this->receiver())
+    {
+      return false;
+    }
+
+  if (this->keyEvent() && kb->keyEvent() && 
+      kb->keyEvent()->key() == this->keyEvent()->key())
+    {
+      result = true;
+    }
+  else if (this->keyEvent() == NULL && kb->keyEvent() == NULL)
+    {
+      result = true;
+    }
+  else
+    {
+      return false;
+    }
+
+  if (this->pressAction() == kb->pressAction() &&
+      this->releaseAction() == kb->releaseAction())
+    {
+      result = true;
+    }
+  else
+    {
+      return false;
+    }
+
+  return result;
 }

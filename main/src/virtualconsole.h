@@ -58,7 +58,8 @@ class VirtualConsole : public QWidget
 
   void newDocument();
 
-  void registerKeyBind(KeyBind* kb);
+  void registerKeyReceiver(DMXWidgetBase* widget);
+  void unRegisterKeyReceiver(DMXWidgetBase* widget);
 
   // Used to get a correct parent frame for widgets
   DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
@@ -88,6 +89,7 @@ class VirtualConsole : public QWidget
   void keyPressEvent(QKeyEvent* e);
   void keyReleaseEvent(QKeyEvent* e);
   void addBottomFrame();
+  DMXWidgetBase* searchKeyReceiver(DMXWidgetBase* widget);
 
  private:
   QMenuBar* m_menuBar;
@@ -102,7 +104,7 @@ class VirtualConsole : public QWidget
   QWidget* m_sourceObject;
   QWidget* m_targetObject;
 
-  QList <KeyBind> m_bindings;
+  QList <DMXWidgetBase> m_keyReceivers;
 };
 
 #endif

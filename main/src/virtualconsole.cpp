@@ -347,40 +347,51 @@ void VirtualConsole::addBottomFrame()
 
 void VirtualConsole::keyPressEvent(QKeyEvent* e)
 {
-  KeyBind* b = NULL;
+  DMXWidgetBase* b = NULL;
 
-  for (unsigned int i = 0; i < m_bindings.count(); i++)
+  for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
     {
-      b = m_bindings.at(i);
-      //      if (e->key() == b->key)
-      //	{
-      //	  b->receiver->keyPress(e);
-      //	}
+      b = m_keyReceivers.at(i);
+      b->keyPress(e);
     }
 }
 
 void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 {
-  KeyBind* b = NULL;
+  DMXWidgetBase* b = NULL;
 
-  for (unsigned int i = 0; i < m_bindings.count(); i++)
+  for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
     {
-      b = m_bindings.at(i);
-      //      if (e->key() == b->key)
-      //	{
-      //	  b->receiver->keyRelease(e);
-      //	}
+      b = m_keyReceivers.at(i);
+      b->keyRelease(e);
     }
 }
 
-void VirtualConsole::registerKeyBind(KeyBind* kb)
+void VirtualConsole::registerKeyReceiver(DMXWidgetBase* widget)
 {
-  if (kb == NULL)
+  if (searchKeyReceiver(widget) == NULL)
     {
-      return;
+      m_keyReceivers.append(widget);
+    }
+}
+
+void VirtualConsole::unRegisterKeyReceiver(DMXWidgetBase* widget)
+{
+  m_keyReceivers.remove(widget);
+}
+
+DMXWidgetBase* VirtualConsole::searchKeyReceiver(DMXWidgetBase* widget)
+{
+  DMXWidgetBase* w = NULL;
+
+  for (int i = 0; i < m_keyReceivers.count(); i++)
+    {
+      w = m_keyReceivers.at(i);
+      if (w == widget)
+	{
+	  break;
+	}
     }
 
-  for (unsigned int i = 0; i < m_bindings.count(); i++)
-    {
-    }
+  return w;
 }
