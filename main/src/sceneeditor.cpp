@@ -28,6 +28,7 @@
 #include "scene.h"
 
 #include <qcombobox.h>
+#include <qradiobutton.h>
 #include <qlabel.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -42,6 +43,7 @@ SceneEditor::SceneEditor(Device* device, QWidget* parent, const char* name )
 
   // initially, get data from the device class as default.
   m_deviceSource="DeviceClass";
+  m_deviceClassRadio->setChecked(TRUE);
   m_selectFunctions(device->deviceClass()->functions());
 }
 
@@ -105,12 +107,16 @@ void  SceneEditor::slotNewClicked()
                     QLineEdit::Normal, QString::null, &ok, this );
    if ( ok && !text.isEmpty() )
    {
-      Scene* sc = new Scene( 6 );
+      Scene* sc = new Scene( m_device->deviceClass()->channels() );
       sc->setName(text);
+      for( int n=0; n < m_device->deviceClass()->channels(); n++)
+      {
+         sc->set(n, m_currentScene->getChannelValue(n));
+      }
       m_device->deviceClass()->addFunction(sc);
       m_availableScenesComboBox->insertItem( text );
       m_availableScenesComboBox->setCurrentItem( m_availableScenesComboBox->count()-1);
-      m_setStatusText( "unchanged",QColor( 0, 255, 100 ));
+      slotSceneActivated(0);
    }
    else
    {
