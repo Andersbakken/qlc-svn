@@ -28,8 +28,6 @@
 #include "vcbuttonproperties.h"
 #include "virtualconsole.h"
 #include "keybind.h"
-#include "vcwidgetbase.h"
-#include "vcwidget.h"
 #include "devicemanagerview.h"
 #include "settings.h"
 #include "configkeys.h"
@@ -66,8 +64,7 @@ const int KMenuRemove           ( 5 );
 const int KMenuAttach           ( 6 );
 const int KMenuDetach           ( 7 );
 
-VCButton::VCButton(VCWidget* parent) 
-  : QPushButton(parent, "VCButton")
+VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
   m_function = NULL;
   m_resizeMode = false;
@@ -76,8 +73,6 @@ VCButton::VCButton(VCWidget* parent)
   m_keyBind = NULL;
   m_bgPixmapFileName = QString::null;
   m_bgPixmap = NULL;
-
-  m_lock = false;
 }
 
 
@@ -87,13 +82,10 @@ void VCButton::init()
 
   m_keyBind = new KeyBind();
 
-  m_name = QString("Btn");
-  setText(m_name);
   QToolTip::add(this, "No function");
 
-  resize(30, 30);
-
   setMinimumSize(20, 20);
+  resize(30, 30);
 
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
@@ -101,24 +93,21 @@ void VCButton::init()
 
 void VCButton::copyFrom(VCButton* button)
 {
-  m_function =  button->function();
+  m_function = button->m_function;
   m_resizeMode = false;
   m_renameEdit = NULL;
 
   ASSERT(button->keyBind());
   m_keyBind = new KeyBind(button->keyBind());
 
-  m_lock = false;
-
   setToggleButton(true);
 
-  m_name = ((VCWidgetBase*) button)->name();
-  setText(m_name);
+  setText(button->text());
 
-  m_bgColor = button->bgColor();
+  m_bgColor = new QColor(*button->bgColor());
   if (m_bgColor != NULL)
     setPaletteBackgroundColor(*m_bgColor);
-	  
+
   reparent(button->parentWidget(), 0, QPoint(0, 0), true);
 
   setGeometry(button->geometry());
@@ -129,8 +118,9 @@ void VCButton::copyFrom(VCButton* button)
 
 VCButton::~VCButton()
 {
-  _app->virtualConsole()->unRegisterKeyReceiver(this);
+  _app->virtualConsole()->unRegisterKeyReceiver(m_keyBind);
 }
+
 
 void VCButton::saveToFile(QFile& file, unsigned int parentID)
 {
@@ -146,7 +136,7 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
   file.writeBlock((const char*) s, s.length());
 
   // Name
-  s = QString("Name = ") + VCWidgetBase::name() + QString("\n");
+  s = QString("Name = ") + text() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Parent ID
@@ -174,7 +164,7 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
   s = QString("Height = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-    // Pixmap or color
+  // Pixmap or color
   if (m_bgColor != NULL)
     {
       t.setNum(m_bgColor->red());
@@ -192,11 +182,6 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
     }
 
    
-  // Lock
-  s = QString("Lock = ") + ((VCWidgetBase::locked() == true) ? 
-			    QString("True\n") : QString("False\n"));
-  file.writeBlock((const char*) s, s.length());
-
   // Function
   if (m_function != NULL)
     {
@@ -239,16 +224,15 @@ void VCButton::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Name"))
 	{
-	  m_name = *(list.next());
-	  setText(m_name);
+	  setText(*(list.next()));
 	}
       else if (*s == QString("Parent"))
 	{
-	  VCWidget* parent =
+	  VCFrame* parent =
 	    _app->virtualConsole()->getFrame(list.next()->toInt());
 	  if (parent != NULL)
 	    {
-	      reparent(parent, 0, QPoint(0, 0), true);
+	      reparent((QWidget*)parent, 0, QPoint(0, 0), true);
 	    }
 	}
       else if (*s == QString("X"))
@@ -319,11 +303,6 @@ void VCButton::createContents(QPtrList <QString> &list)
 	  QString t = *(list.next());
 	  releaseAction = (KeyBind::ReleaseAction) t.toInt();
 	}
-      else if (*s == QString("Lock"))
-	{
-	  QString t = *(list.next());
-	  m_lock = (t == QString("True")) ? true : false;
-	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -339,7 +318,7 @@ void VCButton::createContents(QPtrList <QString> &list)
 
   if (m_keyBind->valid() == true)
     {
-      _app->virtualConsole()->registerKeyReceiver(this);
+      _app->virtualConsole()->registerKeyReceiver(m_keyBind);
     }
 
   QString str("No function");
@@ -352,10 +331,6 @@ void VCButton::createContents(QPtrList <QString> &list)
   QToolTip::add(this, str);
 }
 
-Function* VCButton::function() const
-{
-  return m_function;
-}
 
 void VCButton::mousePressEvent(QMouseEvent* e)
 {
@@ -367,8 +342,7 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	  m_resizeMode = false;
 	}
 
-      if ((e->button() & MidButton || e->button() & LeftButton) && 
-	  m_lock == false)
+      if (e->button() & MidButton || e->button() & LeftButton)
 	{
 	  if (e->x() > rect().width() - 10 &&
 	      e->y() > rect().height() - 10)
@@ -505,33 +479,22 @@ void VCButton::slotMenuCallback(int item)
 	if (p->exec() == QDialog::Accepted)
 	  {
 	    // Name
-	    m_name = (QString) p->name();
-	    setText(m_name);
+	    setText(p->name());
 
 	    // Delete old keybind
 	    ASSERT (m_keyBind != NULL);
 	    ASSERT (p->keyBind() != NULL);
 
+	    _app->virtualConsole()->unRegisterKeyReceiver(m_keyBind);
 	    delete m_keyBind;
 	    m_keyBind = NULL;
-	    m_keyBind = new KeyBind((KeyBind*) p->keyBind());
 
+	    m_keyBind = new KeyBind((KeyBind*) p->keyBind());
 	    if (m_keyBind->valid() == true)
 	      {
-		_app->virtualConsole()
-		  ->unRegisterKeyReceiver((VCWidgetBase*) this);
-		_app->virtualConsole()
-		  ->registerKeyReceiver((VCWidgetBase*) this);
-	      }
-	    else
-	      {
-		_app->virtualConsole()
-		  ->unRegisterKeyReceiver((VCWidgetBase*) this);
+		_app->virtualConsole()->registerKeyReceiver(m_keyBind);
 	      }
 
-	    // Widget position lock
-	    m_lock = p->lock();
-	    
 	    // Function
 	    attachFunction(p->function());
 	  }
@@ -576,7 +539,7 @@ void VCButton::slotMenuCallback(int item)
     case KMenuCopy:
       {
 	VCButton* bt = NULL;
-	bt = new VCButton((VCWidget*) this->parentWidget());
+	bt = new VCButton(parentWidget());
 	bt->init();
 	bt->copyFrom(this);
 	bt->show();
@@ -608,7 +571,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      if (m_resizeMode == true && m_lock == false)
+      if (m_resizeMode == true)
 	{
 	  QPoint pos(e->globalX(), e->globalY());
 	  pos = mapFromGlobal(pos);
@@ -617,8 +580,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
-	  if (moveThreshold(e->globalX(), e->globalY()) == true 
-	      && m_lock == false)
+	  if (moveThreshold(e->globalX(), e->globalY()))
 	    {
 	      _app->doc()->setModified(true);
 	      moveTo(e->globalX(), e->globalY());
@@ -706,8 +668,9 @@ void VCButton::paintEvent(QPaintEvent* e)
 	       c.green() ^ KColorMask,
 	       c.blue() ^ KColorMask);
       
-      QBrush b(c, Dense3Pattern);
+      QBrush b(c, Dense4Pattern);
       p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+      p.drawRect(rect().width() - 10, rect().height() - 10, 10, 10);
     }
 }
 
@@ -763,26 +726,6 @@ void VCButton::releaseFunction()
     }
 }
 
-void VCButton::keyPress(QKeyEvent* e)
-{
-  ASSERT(m_keyBind != NULL);
-
-  if (e != NULL && m_keyBind->valid() == true && e->key() == m_keyBind->key())
-    {
-      pressFunction();
-    }
-}
-
-void VCButton::keyRelease(QKeyEvent* e)
-{
-  ASSERT(m_keyBind != NULL);
-
-  if (e != NULL && m_keyBind->valid() == true && e->key() == m_keyBind->key())
-    {
-      releaseFunction();
-    }
-}
-
 void VCButton::attachFunction(Function* function)
 {
   _app->doc()->setModified(true);
@@ -801,8 +744,8 @@ void VCButton::attachFunction(Function* function)
 
 void VCButton::slotRenameReturnPressed()
 {
-  m_name = m_renameEdit->text();
-  setText(m_name);
+  ASSERT(m_renameEdit);
+  setText(m_renameEdit->text());
   disconnect(m_renameEdit);
   delete m_renameEdit;
   m_renameEdit = NULL;

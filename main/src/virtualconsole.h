@@ -32,8 +32,8 @@ class QHBoxLayout;
 class QFile;
 class QFrame;
 
-class VCWidgetBase;
-class VCWidget;
+class VCFrame;
+class KeyBind;
 class Bus;
 class VCDockArea;
 
@@ -49,8 +49,8 @@ class VirtualConsole : public QWidget
   void initDockArea();
   void initDrawArea();
 
-  void registerKeyReceiver(VCWidgetBase* widget);
-  void unRegisterKeyReceiver(VCWidgetBase* widget);
+  void registerKeyReceiver(KeyBind* kb);
+  void unRegisterKeyReceiver(KeyBind* kb);
 
   // Create the vc from list
   void createContents(QPtrList <QString>& file); 
@@ -59,7 +59,7 @@ class VirtualConsole : public QWidget
   void saveToFile(QFile& file); 
 
   // Used to get a correct parent frame for widgets
-  VCWidget* getFrame(unsigned int id, VCWidget* widget = NULL);
+  VCFrame* getFrame(unsigned int id, VCFrame* widget = NULL);
 
  public slots:
   void slotMenuItemActivated(int);
@@ -73,8 +73,6 @@ class VirtualConsole : public QWidget
   void closeEvent(QCloseEvent* e);
   void keyPressEvent(QKeyEvent* e);
   void keyReleaseEvent(QKeyEvent* e);
-
-  VCWidgetBase* searchKeyReceiver(VCWidgetBase* widget);
 
  private:
   void createVirtualConsole(QPtrList <QString>& list);
@@ -94,10 +92,10 @@ class VirtualConsole : public QWidget
   VCDockArea* m_dockArea;
 
   // Draw area
-  VCWidget* m_drawArea;
+  VCFrame* m_drawArea;
 
-  // Those widgets that have been registered as keyboard event receivers
-  QPtrList <VCWidgetBase> m_keyReceivers;
+  // Key receiver bind objects
+  QPtrList <KeyBind> m_keyReceivers;
 };
 
 #endif

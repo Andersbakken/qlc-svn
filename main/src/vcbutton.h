@@ -25,31 +25,30 @@
 #include <qpushbutton.h>
 #include <qptrlist.h>
 
-#include "vcwidgetbase.h"
-
 class QLineEdit;
 class QMouseEvent;
 class QPaintEvent;
 class QFile;
 class QString;
+class QColor;
+class QPixmap;
 
-class VCWidget;
 class Function;
 class FloatingEdit;
+class KeyBind;
 
-class VCButton : public QPushButton,
-		 public VCWidgetBase
+class VCButton : public QPushButton
 {
   Q_OBJECT
 
  public:
-  VCButton(VCWidget* parent);
+  VCButton(QWidget* parent);
   ~VCButton();
+
+  Function* function() { return m_function; }
 
   void init();
   void copyFrom(VCButton* button);
-
-  Function* function() const;
 
   KeyBind* keyBind() { return m_keyBind; }
   QColor* bgColor() { return m_bgColor; }
@@ -58,20 +57,22 @@ class VCButton : public QPushButton,
   void saveToFile(QFile& file, unsigned int parentID);
   void createContents(QPtrList <QString> &list);
 
+  void attachFunction(Function* function);
+
  private:
+  QPixmap* m_bgPixmap;
+  QString m_bgPixmapFileName;
+  QColor* m_bgColor;
+
+  KeyBind* m_keyBind;
+
   int m_origX;
   int m_origY;
-  
-  QColor* m_bgColor;
+  bool m_resizeMode;
 
   Function* m_function;
 
-  bool m_resizeMode;
-
   FloatingEdit* m_renameEdit;
-
-  void keyPress(QKeyEvent* e);
-  void keyRelease(QKeyEvent* e);
 
  private:
   bool moveThreshold(int x, int y);
@@ -79,7 +80,6 @@ class VCButton : public QPushButton,
 
   void pressFunction();
   void releaseFunction();
-  void attachFunction(Function* function);
 
  public slots:
   void slotRenameReturnPressed();
@@ -91,8 +91,6 @@ class VCButton : public QPushButton,
   void slotModeChanged();
 
  protected:
-  QPixmap* m_bgPixmap;
-  QString m_bgPixmapFileName;
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);

@@ -37,35 +37,46 @@
 
 extern App* _app;
 
-t_value FunctionConsumer::KNoSetMask ( 0xff00 );
 
+//
+// Constructor
+//
 FunctionConsumer::FunctionConsumer() : QThread()
 {
   m_running = 0;
   m_fd = 0;
 }
 
+
+//
+// Destructor
+//
 FunctionConsumer::~FunctionConsumer()
 {
   stop();
 }
 
+
 //
-// Clear function producer list to stop all running functions
+// Stop all running functions
 //
 void FunctionConsumer::purge()
 {
-  Function* p = NULL;
-  m_functionListMutex.lock(); // Lock before access
+  QPtrListIterator <Function> it(m_functionList);
 
-  while (! m_functionList.isEmpty() )
+  m_functionListMutex.lock();
+  while (it.current())
     {
-      p = m_functionList.take(0);
-      p->stop();
+      m_functionListMutex.unlock();
+      it.current()->stop();
+    
+      m_functionListMutex.lock();
+      ++it;
     }
+   m_functionListMutex.unlock();
 
-  m_functionListMutex.unlock(); // Unlock after access
 }
+
 
 //
 // Add a function producer to producer list to run it
@@ -79,6 +90,7 @@ void FunctionConsumer::cue(Function* f)
   m_functionListMutex.unlock(); // Unlock after append
 }
 
+
 //
 // Stop the function consumer
 //
@@ -88,6 +100,7 @@ void FunctionConsumer::stop()
 
   while (running());
 }
+
 
 //
 // Set up the consumer's timer etc.
@@ -143,6 +156,9 @@ void FunctionConsumer::init()
 }
 
 
+//
+// Timer thread
+//
 void FunctionConsumer::run()
 {
   int retval = -1;
@@ -179,6 +195,9 @@ void FunctionConsumer::run()
 }
 
 
+//
+// Actual consumer function
+//
 void FunctionConsumer::event(time_t)
 {
   Function* f = NULL;
@@ -188,8 +207,9 @@ void FunctionConsumer::event(time_t)
   QPtrListIterator<Function> it(m_functionList);
 
   m_functionListMutex.lock(); // First lock
-  while ( (f = it.current()) != 0 )
+  while (it.current())
     {
+      f = it.current();
       ++it;
 
       m_functionListMutex.unlock(); // Unlock after using iterator it
@@ -210,7 +230,7 @@ void FunctionConsumer::event(time_t)
         {
 	  for (ch = 0; ch < (t_channel) f->eventBuffer()->eventSize(); ch++)
 	    {
-	      if ((f->type() == Function::Scene) && 
+	      if ((f->type() == Function::Scene) &&
 		  (((Scene*) f)->channelValue(ch).type == Scene::NoSet))
 		{
 		  // Don't write NoSet values

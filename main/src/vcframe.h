@@ -1,9 +1,8 @@
 /*
   Q Light Controller
-  VCLabel.h
-
+  vcframe.h
+  
   Copyright (C) Heikki Junnila
-                Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -20,61 +19,82 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VCLABEL_H
-#define VCLABEL_H
+#ifndef VCFRAME_H
+#define VCFRAME_H
 
-#include <qlabel.h>
+#include <qframe.h>
 #include <qptrlist.h>
 
-class QLineEdit;
-class QMouseEvent;
-class QPaintEvent;
+#include "types.h"
+
 class QFile;
 class QString;
+class QPaintEvent;
+class QMouseEvent;
 
-class VCFrame;
 class FloatingEdit;
 
-class VCLabel : public QLabel
+class VCFrame : public QFrame
 {
   Q_OBJECT
 
  public:
-  VCLabel(QWidget* parent);
-  ~VCLabel();
+  VCFrame(QWidget* parent);
+  virtual ~VCFrame();
 
   void init();
 
-  void saveToFile(QFile& file, unsigned int parentID);
-  void createContents(QPtrList <QString> &list);
+  t_vc_id id() const { return m_id; }
 
- private:
+  void saveFramesToFile(QFile& file, t_vc_id parentID = 0);
+  void saveChildrenToFile(QFile& file);
+  virtual void createContents(QPtrList <QString> &list);
+
+  void setBottomFrame(bool set = true) { m_bottomFrame = set; }
+  bool isBottomFrame() { return m_bottomFrame; }
+
+  QPixmap* bgPixmap() const { return m_bgPixmap; }
+  QColor bgColor() const { return *m_bgColor; }
+
+ protected:
   int m_origX;
   int m_origY;
+  int m_xpos;
+  int m_ypos;
 
-  FloatingEdit* m_renameEdit;
+  t_vc_id m_id;
 
-  bool moveThreshold(int x, int y);
-  bool m_background;
   bool m_resizeMode;
+  bool m_bottomFrame;
 
- private:
-  void moveTo(int x, int y);
-
- public slots:
-  void slotRenameReturnPressed();
+  QPixmap* m_bgPixmap;
+  QString m_bgPixmapFileName;
+  QColor* m_bgColor;
 
  private slots:
   void slotMenuCallback(int item);
   void slotModeChanged();
 
+ signals:
+  void removed(VCFrame*);
+  void backgroundChanged();
+
  protected:
+  void setID(t_vc_id id);
+
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
-  void mouseDoubleClickEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
+
+  bool moveThreshold(int x, int y);
+  void moveTo(int x, int y);
+
+ private:
+  static t_vc_id s_nextVCID;
+
+ public:
+  static void ResetID() { s_nextVCID = KVCIDMin; }
 };
 
 #endif
-

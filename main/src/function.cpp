@@ -86,6 +86,15 @@ Function::Function(t_function_id id) : QThread()
   m_parentFunction = NULL;
   m_stopped = false;
   m_busID = KBusIDInvalid;
+
+  if (id != KFunctionIDTemp)
+    {
+      m_listener = new FunctionNS::BusListener(this);
+    }
+  else
+    {
+      m_listener = NULL;
+    }
 }
 
 
@@ -95,7 +104,6 @@ Function::Function(t_function_id id) : QThread()
 Function::~Function()
 {
   QApplication::postEvent(_app->doc(), new FunctionDestroyEvent(m_id));
-  Bus::removeListener(m_busID, this);
 }
 
 
@@ -183,13 +191,7 @@ bool Function::setBus(t_bus_id id)
     }
   else
     {
-      Bus::removeListener(m_busID, this);
-
-      if (Bus::addListener(id, this))
-	{
-	  m_busID = id;
-	}
-
+      m_busID = id;
       m_startMutex.unlock();
       return true;
     }
@@ -428,4 +430,25 @@ Function* FunctionNS::createFunction(QPtrList <QString> &list)
     }
 
   return f;
+}
+
+
+//
+// Bus Listener Constructor
+//
+FunctionNS::BusListener::BusListener(Function* f) : m_function(f)
+{ 
+  connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+}
+
+
+//
+// Bus Listener slot
+//
+void FunctionNS::BusListener::slotBusValueChanged(t_bus_id id,
+						  t_bus_value value)
+{ 
+  ASSERT(m_function);
+  m_function->busValueChanged(id, value);
 }

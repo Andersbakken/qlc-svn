@@ -35,10 +35,10 @@ class FunctionConsumer : public QThread
   FunctionConsumer();
   virtual ~FunctionConsumer();
 
-  static t_value KNoSetMask;
-
-  // Functions that control the running functions list
+  // Run a function
   void cue(Function* f);
+
+  // Stop all functions
   void purge();
 
   // Functions that control the consumer

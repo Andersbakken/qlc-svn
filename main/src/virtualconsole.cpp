@@ -37,10 +37,9 @@
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
-#include "vcslider.h"
+#include "vcdockslider.h"
 #include "vcbutton.h"
-#include "vcwidget.h"
-#include "vcwidgetbase.h"
+#include "vcframe.h"
 #include "keybind.h"
 #include "vclabel.h"
 #include "configkeys.h"
@@ -139,7 +138,7 @@ void VirtualConsole::initView(void)
 
   m_menuBar->setItemEnabled(KMenuAdd, true);
 
-  VCWidget::ResetID();
+  VCFrame::ResetID();
 
   initDockArea();
   initDrawArea();
@@ -181,18 +180,19 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case KMenuAddSlider:
       {
-	VCSlider* s;
-	s = new VCSlider(m_drawArea);
-	s->init();
-	s->show();
+	VCDockSlider* vcd = new VCDockSlider(m_drawArea);
+	vcd->setBusID(KBusIDDefaultFade);
+	vcd->init();
+	vcd->resize(60, 200);
+	vcd->show();
 	_app->doc()->setModified(true);
       }
       break;
 
     case KMenuAddFrame:
       {
-	VCWidget* w;
-	w = new VCWidget(m_drawArea);
+	VCFrame* w;
+	w = new VCFrame(m_drawArea);
 	w->init();
 	w->show();
 	_app->doc()->setModified(true);
@@ -262,7 +262,7 @@ void VirtualConsole::slotDockAreaHidden(bool areaHidden)
 void VirtualConsole::initDrawArea()
 {
   if (m_drawArea) delete m_drawArea;
-  m_drawArea = new VCWidget(this);
+  m_drawArea = new VCFrame(this);
   m_drawArea->setBottomFrame(true);
 
   // Add the draw area into the master (horizontal) layout
@@ -321,9 +321,9 @@ void VirtualConsole::slotModeChanged()
 // Search for a parent frame by the id number <id>
 // This is a recursive function and I have the feeling that it could
 // be done in a more sophisticated way. Anyway, it works now.
-VCWidget* VirtualConsole::getFrame(unsigned int id, VCWidget* widget)
+VCFrame* VirtualConsole::getFrame(unsigned int id, VCFrame* widget)
 {
-  VCWidget* w = NULL;
+  VCFrame* w = NULL;
   QObjectList* ol = NULL;
 
   if (widget != NULL)
@@ -356,9 +356,9 @@ VCWidget* VirtualConsole::getFrame(unsigned int id, VCWidget* widget)
 
   for (QObjectListIt it(*ol); it.current() != NULL; ++it)
     {
-      if (QString(it.current()->className()) == QString("VCWidget"))
+      if (QString(it.current()->className()) == QString("VCFrame"))
 	{
-	  w = getFrame(id, (VCWidget*) it.current());
+	  w = getFrame(id, (VCFrame*) it.current());
 	  if (w != NULL)
 	    {
 	      break;
@@ -384,7 +384,7 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	{
 	  if (m_drawArea == NULL)
 	    {
-	      m_drawArea = new VCWidget(this);
+	      m_drawArea = new VCFrame(this);
 	      m_drawArea->setBottomFrame(true);
 	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	      
@@ -396,7 +396,7 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	    }
 	  else
 	    {
-	      VCWidget* w = new VCWidget(m_drawArea);
+	      VCFrame* w = new VCFrame(m_drawArea);
 	      w->createContents(list);
 	    }
 	}
@@ -414,9 +414,9 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	}
       else if (*s == QString("Slider"))
 	{
-	  VCSlider* w = new VCSlider(m_drawArea);
-	  w->init();
-	  w->createContents(list);
+	  VCDockSlider* s = new VCDockSlider(m_drawArea);
+	  s->init();
+	  s->createContents(list);
 	}
       else
 	{
@@ -471,7 +471,7 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
 {
   QString t;
 
-  VCWidget::ResetID();
+  VCFrame::ResetID();
   
   if (m_drawArea != NULL)
     {
@@ -586,60 +586,42 @@ void VirtualConsole::closeEvent(QCloseEvent* e)
 
 void VirtualConsole::keyPressEvent(QKeyEvent* e)
 {
-  VCWidgetBase* b = NULL;
+  QPtrListIterator <KeyBind> it (m_keyReceivers);
 
   if (_app->mode() == App::Operate)
     {
-      for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
+      while (it.current())
 	{
-	  b = m_keyReceivers.at(i);
-	  b->keyPress(e);
+	  it.current()->press(e);
+          ++it;
 	}
     }
 }
 
 void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 {
-  VCWidgetBase* b = NULL;
+  QPtrListIterator <KeyBind> it(m_keyReceivers);
 
   if (_app->mode() == App::Operate)
     {
-      for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
+      while (it.current())
 	{
-	  b = m_keyReceivers.at(i);
-	  b->keyRelease(e);
+	  it.current()->release(e);
+          ++it;
 	}
     }
 }
 
-void VirtualConsole::registerKeyReceiver(VCWidgetBase* widget)
+void VirtualConsole::registerKeyReceiver(KeyBind* kb)
 {
-  ASSERT(widget != NULL);
+  ASSERT(kb);
 
-  m_keyReceivers.append(widget);
+  m_keyReceivers.append(kb);
 }
 
-void VirtualConsole::unRegisterKeyReceiver(VCWidgetBase* widget)
+void VirtualConsole::unRegisterKeyReceiver(KeyBind* kb)
 {
-  ASSERT(widget != NULL);
+  ASSERT(kb);
 
-  m_keyReceivers.remove(widget);
-}
-
-VCWidgetBase* VirtualConsole::searchKeyReceiver(VCWidgetBase* widget)
-{
-  VCWidgetBase* w = NULL;
-
-  ASSERT(widget != NULL);
-
-  for (uint i = 0; i < m_keyReceivers.count(); i++)
-    {
-      w = m_keyReceivers.at(i);
-      if (w == widget)
-	{
-	  break;
-	}
-    }
-
-  return w;
+  m_keyReceivers.remove(kb);
 }

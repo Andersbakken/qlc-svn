@@ -23,11 +23,13 @@
 #define BUS_H
 
 #include <qptrlist.h>
+#include <qobject.h>
 #include "types.h"
 
 class QFile;
 class QString;
 class Function;
+class BusEmitter;
 
 class Bus
 {
@@ -39,6 +41,8 @@ class Bus
 
  public:
   static void init();
+
+  static const BusEmitter* emitter() { return s_busEmitter; }
 
   static const bool value(t_bus_id, t_bus_value&);
   static bool setValue(t_bus_id, t_bus_value);
@@ -62,6 +66,32 @@ class Bus
  private:
   static Bus* s_busArray;
   static t_bus_id s_nextID;
+  static BusEmitter* s_busEmitter;
+};
+
+//
+// Bus Emitter class to handle signal emission
+//
+class BusEmitter : public QObject
+{
+  Q_OBJECT
+
+ public:
+  BusEmitter() {};
+  ~BusEmitter() {};
+
+ protected:
+  void emitValueChanged(t_bus_id id, t_bus_value value)
+    { emit valueChanged(id, value); }
+
+  void emitNameChanged(t_bus_id id, QString name)
+    { emit nameChanged(id, name); }
+
+ signals:
+  void valueChanged(t_bus_id, t_bus_value);
+  void nameChanged(t_bus_id, const QString&);
+
+  friend class Bus;
 };
 
 #endif

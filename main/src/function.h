@@ -22,6 +22,7 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+#include <qobject.h>
 #include <qthread.h>
 #include <limits.h>
 #include <qptrlist.h>
@@ -37,6 +38,35 @@ class Device;
 class EventBuffer;
 class QFile;
 class VirtualController;
+class Bus;
+class Function;
+
+//
+// Weird namespace, wouldn't work without...
+//
+namespace FunctionNS
+{
+  Function* createFunction(QPtrList <QString> &list);
+
+  //
+  // A listener class that listens to bus value changes
+  //
+  class BusListener : public QObject
+    {
+      Q_OBJECT
+	
+     public:
+      BusListener(Function* f);
+      ~BusListener() {}
+      
+     public slots:
+      void slotBusValueChanged(t_bus_id id, t_bus_value value);
+      
+     protected:
+      Function* m_function;
+    };
+};
+
 
 class Function : public QThread
 {
@@ -149,18 +179,15 @@ class Function : public QThread
   // Bus for setting the speed
   t_bus_id m_busID;
 
+  // Bus listener
+  FunctionNS::BusListener* m_listener;
+
  private:
   // Next ID that will be assigned to a new function
   static t_function_id _nextFunctionID;
 
  public:
   static void resetID() { _nextFunctionID = KFunctionIDMin; }
-};
-
-
-namespace FunctionNS
-{
-  Function* createFunction(QPtrList <QString> &list);
 };
 
 

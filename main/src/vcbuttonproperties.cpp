@@ -46,13 +46,12 @@ VCButtonProperties::VCButtonProperties(VCButton* btn, QWidget* parent,
                                        const char* name) 
   : UI_VCButtonProperties(parent, name, true)
 {
-  ASSERT(btn != NULL);
+  ASSERT(btn);
   m_button = btn;
 
   m_function = btn->function();
-  m_lockState = btn->locked();
 
-  ASSERT (btn->keyBind() != NULL);
+  ASSERT (btn->keyBind());
   m_keyBind = new KeyBind((KeyBind*) btn->keyBind());
 
   initView();
@@ -68,7 +67,7 @@ void VCButtonProperties::initView()
 {
   QString fname;
 
-  m_nameEdit->setText( ((VCWidgetBase*) m_button)->name());
+  m_nameEdit->setText(m_button->text());
 
   if (m_function == NULL)
     {
@@ -84,7 +83,7 @@ void VCButtonProperties::initView()
 	{
 	  fname = QString("Global/");
 	}
-
+      
       fname += QString("/") + m_function->name();
     }
 

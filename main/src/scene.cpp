@@ -387,7 +387,8 @@ void Scene::speedChange(t_bus_value newTimeSpan)
   m_timeSpan = newTimeSpan;
   if (m_timeSpan == 0)
     {
-      m_timeSpan = 1.0/(float) KFrequency;
+      m_timeSpan = static_cast<t_bus_value> 
+	(1.0 / static_cast<float> (KFrequency));
     }
 
   m_dataMutex.unlock();

@@ -23,8 +23,11 @@
 #include <qnamespace.h>
 
 #include "keybind.h"
-#include "vcwidgetbase.h"
 
+
+//
+// Constructor
+//
 KeyBind::KeyBind() : QObject()
 {
   m_pressAction = PressToggle;
@@ -34,6 +37,10 @@ KeyBind::KeyBind() : QObject()
   m_valid = false;
 }
 
+
+//
+// Construct with key and modifier
+//
 KeyBind::KeyBind(int key, int mod) : QObject()
 {
   m_key = key;
@@ -52,6 +59,10 @@ KeyBind::KeyBind(int key, int mod) : QObject()
   m_releaseAction = ReleaseNothing;
 }
 
+
+//
+// Copy constructor
+//
 KeyBind::KeyBind(KeyBind* kb) : QObject()
 {
   ASSERT(kb != NULL);
@@ -63,10 +74,18 @@ KeyBind::KeyBind(KeyBind* kb) : QObject()
   m_releaseAction = kb->releaseAction();
 }
 
+
+//
+// Destructor
+//
 KeyBind::~KeyBind()
 {
 }
 
+
+//
+// Set the bound keys
+//
 void KeyBind::setKey(int key, int mod)
 {
   m_key = key;
@@ -82,6 +101,10 @@ void KeyBind::setKey(int key, int mod)
     }
 }
 
+
+//
+// Output the key binding as a string
+//
 QString KeyBind::keyString(int key, int mod)
 {
   QString modString = QString::null;
@@ -293,7 +316,10 @@ QString KeyBind::keyString(int key, int mod)
     }
 }
 
+
+//
 // Comparison between two KeyBind objects
+//
 bool KeyBind::operator==(KeyBind* kb)
 {
   if (m_valid == kb->valid())
@@ -322,4 +348,14 @@ bool KeyBind::operator==(KeyBind* kb)
     }
 
   return true;
+}
+
+void KeyBind::press(QKeyEvent* e)
+{
+  e->ignore();
+}
+
+void KeyBind::release(QKeyEvent* e)
+{
+  e->ignore();
 }

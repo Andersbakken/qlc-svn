@@ -24,6 +24,8 @@
 
 #include <qobject.h>
 
+class QKeyEvent;
+
 class KeyBind : public QObject
 {
   Q_OBJECT
@@ -56,6 +58,10 @@ class KeyBind : public QObject
   bool valid() { return m_valid; }
 
   bool operator==(KeyBind*);
+
+ public slots:
+  void press(QKeyEvent* e);
+  void release(QKeyEvent* e);
 
  private:
   int m_key; // Key

@@ -48,6 +48,8 @@ class VirtualConsole;
 class Plugin;
 class DummyOutPlugin;
 class DeviceClass;
+class FunctionTree;
+class BusProperties;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -114,10 +116,15 @@ class App : public QMainWindow
 
   void slotViewDeviceManager();
   void slotDeviceManagerViewClosed();
+
   void slotViewVirtualConsole();
   void slotVirtualConsoleClosed();
+
   void slotViewFunctionTree();
   void slotFunctionTreeClosed();
+
+  void slotViewBusProperties();
+  void slotBusPropertiesClosed();
 
   void slotWindowCascade();
   void slotWindowTile();
@@ -168,6 +175,7 @@ class App : public QMainWindow
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
   FunctionTree* m_functionTree;
+  BusProperties* m_busProperties;
 
   FunctionConsumer* m_functionConsumer;
 

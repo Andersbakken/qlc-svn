@@ -28,6 +28,7 @@
 
 t_bus_id Bus::s_nextID               ( KBusIDMin );
 Bus* Bus::s_busArray                 (      NULL );
+BusEmitter* Bus::s_busEmitter        (      NULL );
 
 //
 // Constructor (private)
@@ -53,10 +54,14 @@ Bus::~Bus()
 //
 void Bus::init()
 {
+  if (s_busArray) delete s_busArray;
   s_busArray = new Bus[KBusCount];
 
   s_busArray[KBusIDDefaultFade].m_name = QString("Default Fade");
   s_busArray[KBusIDDefaultHold].m_name = QString("Default Hold");
+
+  if (s_busEmitter) delete s_busEmitter;
+  s_busEmitter = new BusEmitter();
 }
 
 
@@ -68,6 +73,7 @@ bool Bus::setName(t_bus_id id, QString name)
   if (id >= KBusIDMin && id < KBusCount)
     {
       s_busArray[id].m_name = name;
+      s_busEmitter->emitNameChanged(id, name);
       return true;
     }
   else
@@ -85,14 +91,7 @@ bool Bus::setValue(t_bus_id id, t_bus_value value)
   if (id >= KBusIDMin && id < KBusCount)
     {
       s_busArray[id].m_value = value;
-
-      QPtrListIterator <Function> it(s_busArray[id].m_listeners);
-
-      while (it.current())
-	{
-	  it.current()->busValueChanged(id, value);
-	  ++it;
-	}
+      s_busEmitter->emitValueChanged(id, value);
 
       return true;
     }
@@ -132,60 +131,6 @@ const QString Bus::name(t_bus_id id)
   else
     {
       return QString::null;
-    }
-}
-
-
-//
-// Add a function to listen to changes in a bus
-//
-bool Bus::addListener(t_bus_id id, Function* function)
-{
-  ASSERT(function);
-
-  if (id >= KBusIDMin && id < KBusCount)
-    {
-      if (s_busArray[id].m_listeners.find(function) == -1)
-	{
-	  s_busArray[id].m_listeners.append(function);
-	  function->busValueChanged(id, s_busArray[id].m_value);
-	  return true;
-	}
-      else
-	{
-	  return false;
-	}
-    }
-  else
-    {
-      return false;
-    }
-}
-
-
-//
-// Remove a listener
-//
-bool Bus::removeListener(t_bus_id id, Function* function)
-{
-  ASSERT(function);
-
-  if (id >= KBusIDMin && id < KBusCount)
-    {
-      int index = s_busArray[id].m_listeners.find(function);
-      if (index == -1)
-	{
-	  return false;
-	}
-      else
-	{
-	  s_busArray[id].m_listeners.take(index);
-	  return true;
-	}
-    }
-  else
-    {
-      return false;
     }
 }
 

@@ -6,15 +6,21 @@
     </property>
     <property name="geometry">
         <rect>
-            <x>32</x>
+            <x>37</x>
             <y>0</y>
-            <width>60</width>
-            <height>383</height>
+            <width>50</width>
+            <height>164</height>
         </rect>
+    </property>
+    <property name="minimumSize">
+        <size>
+            <width>50</width>
+            <height>160</height>
+        </size>
     </property>
     <property name="maximumSize">
         <size>
-            <width>60</width>
+            <width>50</width>
             <height>32767</height>
         </size>
     </property>
@@ -34,6 +40,14 @@
         <widget class="QLabel">
             <property name="name">
                 <cstring>m_valueLabel</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
             <property name="frameShape">
                 <enum>StyledPanel</enum>
@@ -55,6 +69,12 @@
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>0</number>
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
@@ -185,51 +205,6 @@
                                 </size>
                             </property>
                         </spacer>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_moveButton</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>20</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image3</iconset>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Move this widget</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>m_spacer3</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Fixed</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>20</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
                     </vbox>
                 </widget>
                 <widget class="QSlider">
@@ -272,6 +247,14 @@
             <property name="name">
                 <cstring>m_nameLabel</cstring>
             </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
             <property name="frameShape">
                 <enum>StyledPanel</enum>
             </property>
@@ -289,10 +272,18 @@
             <property name="name">
                 <cstring>line1</cstring>
             </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>1</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
             <property name="minimumSize">
                 <size>
                     <width>0</width>
-                    <height>9</height>
+                    <height>1</height>
                 </size>
             </property>
             <property name="frameShape">
@@ -308,6 +299,23 @@
                 <enum>Horizontal</enum>
             </property>
         </widget>
+        <spacer>
+            <property name="name">
+                <cstring>m_spacer4</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Fixed</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>10</height>
+                </size>
+            </property>
+        </spacer>
     </vbox>
 </widget>
 <images>
@@ -320,9 +328,6 @@
     <image name="image2">
         <data format="PNG" length="687">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000027649444154789ca5934b48947114c57fdf379f3a9aa543a51606e938a5543e3253f3318a4e6d7a6d445c24451a83a2a4543aa20312bda4086208da640fc88546a151829195f427cd459a614ca98b82a2d4c4d29419e7df224674a108dded39f7dc730ff72a4208fea7d4e5c01a5b95acb155c9150be4e7e7cf936b6c55b2d65e4f6d5d3db605220505058b0415ef0a797979b2adf5099595a544c74413b22e98f8d8181414fadf0f323afe8b77fd0338aedf60af25879696fbca2201efd4fab3e7187cd3ce66df6156fbb950559549979ecf734676a61da2f26439e72f5c52bc3dda423bb1b171387b1f93b6a69fe0400d8f8f1ecd7735ab02d7629c18a5fb751bbb93931765a0a4a7ef9196dc5cfcfdfd88080f2568fc1126838bc9598dbac601749a0fd7ec4584ae37f0baa797a9906c069d234c4fcff2e0612b9ac7e32627d782afa66362fc1b6b3d4178d49fdc6c1fa6bae1ae02e0b873419e3b53c8a6c86dfcd0af233b3c02b74bd2dc72ff5f06164b8e8c326ee6544519c91b2709f8dd4770d8764e3b3a40ef87c351857be217e3633afabfb8a9b6d5e0fc384cc7d367caa210af5c3e2fcb4b4bd8aa1fc277e63b011ba2d0190c28c0f44c005fff0473b1e12ac5274ae7439cbf83e2a2e3d26a2de183f323bda3614c855a70051871cd19f8a31a191ad3f3696884b2f20aac56ebfc2d680059e64c69b7db40ced1d7f796a6a67b242426919d634155e0e5f3667ababb898b4fe0486111478f15623667c8172fba1484100821309922e581fdb972f7ae1d52084196394376bdec94e25597cc32674821044989dbe5e183fbe41653a4f4f629cb3d9378d5295555474a6aa6b214475b0a00b8d5781b90a4a4662ec959d6c14aea2f5774f84b99a130060000000049454e44ae426082</data>
     </image>
-    <image name="image3">
-        <data format="PNG" length="166">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000006d49444154789cb592510ec02008430bc7e2fee9b5b6af2d8e50c52deb97317d0d458d249422e2000092a63cbe82f3b91550012ac47eabd0d51d30eb99357a7d17ce2106601b1ef5790746526ebb73ef95a1a38bf17cb1033f02deaafc89ea59ab29cb092aa3aa282b8cc06c3f27f49f426384274b430000000049454e44ae426082</data>
-    </image>
 </images>
 <connections>
     <connection>
@@ -332,23 +337,16 @@
         <slot>slotSliderValueChanged(int)</slot>
     </connection>
     <connection>
-        <sender>m_moveButton</sender>
-        <signal>pressed()</signal>
+        <sender>m_functionButton</sender>
+        <signal>clicked()</signal>
         <receiver>UI_VCDockSlider</receiver>
-        <slot>slotMoveButtonPressed()</slot>
-    </connection>
-    <connection>
-        <sender>m_moveButton</sender>
-        <signal>released()</signal>
-        <receiver>UI_VCDockSlider</receiver>
-        <slot>slotMoveButtonReleased()</slot>
+        <slot>slotFunctionButtonClicked()</slot>
     </connection>
 </connections>
 <slots>
     <slot>slotSliderValueChanged(int)</slot>
     <slot>slotPropertiesButtonClicked()</slot>
-    <slot>slotMoveButtonPressed()</slot>
-    <slot>slotMoveButtonReleased()</slot>
+    <slot>slotFunctionButtonClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

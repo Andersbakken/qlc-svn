@@ -55,6 +55,7 @@
 #include "virtualconsole.h"
 #include "dmxaddresstool.h"
 #include "functiontree.h"
+#include "busproperties.h"
 
 #include "aboutbox.h"
 
@@ -95,6 +96,7 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 #define ID_VIEW_DMXADDRESSTOOL          12060
 #define ID_VIEW_INPUT_DEVICES           12070
 #define ID_VIEW_FUNCTION_TREE           12080
+#define ID_VIEW_BUS_PROPERTIES          12090
 
 ///////////////////////////////////////////////////////////////////
 // Functions menu entries
@@ -124,6 +126,7 @@ extern QApplication _qapp;
 App::App()
 {
   m_functionTree = NULL;
+  m_busProperties = NULL;
   m_dmView = NULL;
   m_modeIndicator = NULL;
   m_virtualConsole = NULL;
@@ -317,9 +320,9 @@ void App::initMenuBar()
   // Tools Menu
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/device.xpm")), 
-			  "Device Manager", this, 
-			  SLOT(slotViewDeviceManager()), 
+  m_toolsMenu->insertItem(QPixmap(dir + QString("/device.xpm")),
+			  "Device Manager", this,
+			  SLOT(slotViewDeviceManager()),
 			  CTRL + Key_M, ID_VIEW_DEVICE_MANAGER);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/virtualconsole.xpm")), 
 			  "Virtual Console", this, 
@@ -329,6 +332,10 @@ void App::initMenuBar()
   m_toolsMenu->insertItem(QPixmap(dir + QString("/function.xpm")), 
 			  "Function Tree", this, SLOT(slotViewFunctionTree()), 
 			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
+  m_toolsMenu->insertItem(QPixmap(dir + QString("/bus.xpm")),
+			  "Bus Properties", this, 
+			  SLOT(slotViewBusProperties()), CTRL + Key_B,
+			  ID_VIEW_BUS_PROPERTIES);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(dir + QString("/panic.xpm")), "Panic!", 
 			  this, SLOT(slotPanic()), CTRL + Key_P,
@@ -710,6 +717,39 @@ void App::slotFunctionTreeClosed()
     }
 }
 
+
+//
+// View Bus Properties
+//
+void App::slotViewBusProperties()
+{
+  if (m_busProperties == NULL)
+    {
+      m_busProperties = new BusProperties(workspace());
+      connect(m_busProperties, SIGNAL(closed()),
+	      this, SLOT(slotBusPropertiesClosed()));
+    }
+  else
+    {
+      m_busProperties->hide();
+    }
+
+  m_busProperties->show();
+}
+
+
+//
+// Bus Properties Closed
+//
+void App::slotBusPropertiesClosed()
+{
+  if (m_busProperties)
+    {
+      disconnect(m_busProperties);
+      delete m_busProperties;
+      m_busProperties = NULL;
+    }
+}
 
 //
 // Refresh menu items' status depending on system mode

@@ -28,8 +28,6 @@
 #include "floatingedit.h"
 #include "virtualconsole.h"
 #include "keybind.h"
-#include "vcwidgetbase.h"
-#include "vcwidget.h"
 #include "bus.h"
 #include "settings.h"
 #include "configkeys.h"
@@ -61,24 +59,22 @@ const int KMenuRemove      ( 6 );
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
 
-VCLabel::VCLabel(VCWidget* parent) : QLabel(parent, "VCLabel")
+VCLabel::VCLabel(QWidget* parent) : QLabel(parent, "VCLabel")
 {
   m_renameEdit = NULL;
-  m_parent = parent;
   m_background = false;
   m_resizeMode = false;
 }
 
 VCLabel::~VCLabel()
 {
-  _app->virtualConsole()->unRegisterKeyReceiver(this);
+  //_app->virtualConsole()->unRegisterKeyReceiver(this);
 }
 
 void VCLabel::init()
 {
   setMinimumSize(20, 20);
 
-  m_name = QString("Label");
   setText("New label");
   setAlignment(WordBreak | AlignCenter);
 
@@ -93,7 +89,7 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
   QString t;
 
   // Comment
-  s = QString("# Virtual Console Button Entry\n");
+  s = QString("# Virtual Console Label Entry\n");
   file.writeBlock((const char*) s, s.length());
 
   // Entry type
@@ -101,7 +97,7 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
   file.writeBlock((const char*) s, s.length());
 
   // Name
-  s = QString("Name = ") + VCWidgetBase::name() + QString("\n");
+  s = QString("Name = ") + text() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Parent ID
@@ -139,9 +135,9 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
   // Background color
   if (m_background)
     {
-      t.setNum(qRgb(backgroundColor().red(),
-		    backgroundColor().green(),
-		    backgroundColor().blue()));
+      t.setNum(qRgb(paletteBackgroundColor().red(),
+		    paletteBackgroundColor().green(),
+		    paletteBackgroundColor().blue()));
       s = QString("Backgroundcolor = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
     }
@@ -176,18 +172,16 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Name"))
 	{
-	  m_name = *(list.next());
-	  setText(m_name);
+	  setText(*(list.next()));
 	}
       else if (*s == QString("Parent"))
 	{
-	  VCWidget* parent = 
+	  VCFrame* parent = 
 	    _app->virtualConsole()->getFrame(list.next()->toInt());
 
 	  if (parent != NULL)
 	    {
-	      reparent(parent, 0, QPoint(0, 0), true);
-	      m_parent = parent;
+	      reparent((QWidget*) parent, 0, QPoint(0, 0), true);
 	    }
 	}
       else if (*s == QString("X"))
@@ -407,8 +401,9 @@ void VCLabel::paintEvent(QPaintEvent* e)
 	       c.green() ^ KColorMask,
 	       c.blue() ^ KColorMask);
 
-      QBrush b(c, Dense3Pattern);
+      QBrush b(c, Dense4Pattern);
       p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+      p.drawRect(rect().width() - 10, rect().height() - 10, 10, 10);
     }
 }
 
@@ -421,7 +416,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      if (m_resizeMode == true && m_lock == false)
+      if (m_resizeMode == true)
 	{
 	  QPoint pos(e->globalX(), e->globalY());
 	  pos = mapFromGlobal(pos);
@@ -430,8 +425,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
-	  if (moveThreshold(e->globalX(), e->globalY()) == true 
-	      && m_lock == false)
+	  if (moveThreshold(e->globalX(), e->globalY()))
 	    {
 	      _app->doc()->setModified(true);
 	      moveTo(e->globalX(), e->globalY());
@@ -439,7 +433,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 	}
       else if (e->state() & LeftButton)
 	{
-	  if (moveThreshold(e->globalX(), e->globalY()) == true )
+	  if (moveThreshold(e->globalX(), e->globalY()))
 	    {
 	      _app->doc()->setModified(true);
 	      moveTo(e->globalX(), e->globalY());
@@ -502,8 +496,7 @@ void VCLabel::moveTo(int x, int y)
 
 void VCLabel::slotRenameReturnPressed()
 {
-  m_name = m_renameEdit->text();
-  setText(m_name);
+  setText(m_renameEdit->text());
   disconnect(m_renameEdit);
   delete m_renameEdit;
   m_renameEdit = NULL;

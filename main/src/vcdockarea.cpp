@@ -44,12 +44,12 @@ void VCDockArea::init()
   m_layout->setMargin(2);
 
   // Default fade time slider
-  m_defaultFadeSlider = new VCDockSlider(this, "Default Fade Slider");
+  m_defaultFadeSlider = new VCDockSlider(this, true, "Default Fade Slider");
   m_defaultFadeSlider->setBusID(KBusIDDefaultFade);
   m_layout->addWidget(m_defaultFadeSlider);
 
   // Default hold time slider
-  m_defaultHoldSlider = new VCDockSlider(this, "Default Hold Slider");
+  m_defaultHoldSlider = new VCDockSlider(this, true, "Default Hold Slider");
   m_defaultHoldSlider->setBusID(KBusIDDefaultHold);
   m_layout->addWidget(m_defaultHoldSlider);
 
