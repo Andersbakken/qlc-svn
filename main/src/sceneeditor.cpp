@@ -33,6 +33,7 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <iostream.h>
+#include <stdlib.h>
 
 
 SceneEditor::SceneEditor(Device* device, QWidget* parent, const char* name )
@@ -110,11 +111,11 @@ void  SceneEditor::slotNewClicked()
      {
        Scene* sc = new Scene( m_device->deviceClass()->channels() );
        sc->setName(text);
-
+       sc->setDeviceClass(m_device->deviceClass());
        for(unsigned int n = 0; n < m_device->deviceClass()->channels(); n++)
 	 {
 	   // Get values from device / HJu
-	   sc->set(n, m_device->getChannelValue(n));
+  	   sc->set(n, m_device->getChannelValue(n));
 	 }
 
        if (m_deviceSource == "DeviceClass")
@@ -149,7 +150,7 @@ void SceneEditor::slotSaveClicked()
   // sure and they are unsigned chars and it is much simpler this way / HJu
   for (unsigned short i = 0; i < m_device->deviceClass()->channels(); i++)
     {
-      m_currentScene->set(i, m_device->getChannelValue(i));
+      static_cast<Scene*>(m_currentScene)->set(i, m_device->getChannelValue(i));
     }
 
   if (m_deviceSource == "DeviceClass")

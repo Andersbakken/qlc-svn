@@ -28,6 +28,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <iostream.h>
 
 extern App* _app;
 

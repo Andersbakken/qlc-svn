@@ -71,7 +71,7 @@ public slots:
 
 protected:
    Device* m_device;
-   Scene* m_currentScene;
+   Function* m_currentScene;
    void m_selectFunctions(QList <Function> fl);
    void m_setStatusText(QString text, QColor color);
    QString m_deviceSource;
