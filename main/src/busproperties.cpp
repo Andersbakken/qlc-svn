@@ -53,7 +53,7 @@ void BusProperties::slotItemClicked(QListViewItem* item, const QPoint& point,
 void BusProperties::slotItemRenamed(QListViewItem* item, int col, 
 				    const QString &text)
 {
-  Bus::setName(item->text(KColumnID).toInt(), text);
+  Bus::setName(item->text(KColumnID).toInt() - 1, text);
 }
 
 void BusProperties::closeEvent(QCloseEvent* e)
