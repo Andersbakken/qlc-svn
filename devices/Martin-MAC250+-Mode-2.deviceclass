@@ -1,0 +1,142 @@
+#
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Martin
+Model = MAC250+ Mode 2
+Type = Moving Head
+#
+Entry = Channel
+Number = 0
+Name = Shutter, strobe, reset, lamp
+# Capability Entries
+0-19 = Shutter closed
+20-49 = Shutter open
+50-72 = Strobe, fast -> slow
+73-79 = Shutter open
+80-99 = Opening pulse, fast -> slow
+100-119 = Closing pulse, fast -> slow
+120-127 = Shutter open
+128-187 = Random strobe, fast -> slow
+188-190 = Shutter open
+191-193 = Random opening pulse, fast
+194-196 = Random opening pulse, slow
+197-199 = Random closing pulse, fast
+200-202 = Random closing pulse, slow
+203-207 = Shutter open
+208-217 = Reset
+218-227 = Shutter open
+228-237 = Lamp on
+238-247 = Shutter open
+248-255 = Lamp off
+Entry = Channel
+Number = 1
+Name = Dimmer
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 2
+Name = Color
+# Capability Entries
+0-11 = White
+12-23 = CTC
+24-35 = Yellow 603
+36-47 = Blue 104
+48-59 = Pink 312
+60-71 = Green 206
+72-83 = Blue 108
+84-95 = Red 301
+96-107 = Magenta 507
+108-119 = Blue 101
+120-131 = Orange 306
+132-143 = Green 202
+144-155 = Purple 502
+156-159 = Purple 502
+160-163 = Green 202
+164-167 = Orange 306
+168-171 = Blue 101
+172-175 = Magenta 507
+176-179 = Red 301
+180-183 = Blue 108
+184-187 = Green 206
+188-191 = Pink 312
+192-195 = Blue 104
+196-199 = Yellow 603
+200-203 = CTC
+204-207 = White
+208-226 = CW, fast -> slow
+227-245 = CCW, slow -> fast
+246-255 = Random, fast -> slow
+Entry = Channel
+Number = 3
+Name = Gobo
+# Capability Entries
+0-9 = Open
+10-19 = Gobo 1
+20-29 = Gobo 2
+30-39 = Gobo 3
+40-49 = Gobo 4
+50-59 = Gobo 5
+60-69 = Gobo 6
+70-79 = Gobo 7
+80-89 = Gobo 8
+90-104 = Gobo 8 shake speed
+105-119 = Gobo 7 shake speed
+120-134 = Gobo 6 shake speed
+135-149 = Gobo 5 shake speed
+150-164 = Gobo 4 shake speed
+165-179 = Gobo 3 shake speed
+180-194 = Gobo 2 shake speed
+195-209 = Gobo 1 shake speed
+210-232 = CW, slow -> fast
+233-255 = CCW, fast -> slow
+Entry = Channel
+Number = 4
+Name = Gobo rotation
+# Capability Entries
+0-2 = No rotation
+3-127 = CW, slow -> fast
+128-252 = CCW, fast -> slow
+253-255 = No rotation
+Entry = Channel
+Number = 5
+Name = Focus
+# Capability Entries
+0-255 = Infinity -> 2 meters
+Entry = Channel
+Number = 6
+Name = Prism
+# Capability Entries
+0-19 = Prism off
+20-79 = CCW, fast -> slow
+80-89 = No rotation
+90-149 = CW, slow -> fast
+150-215 = Prism off
+216-220 = Macro 1
+221-225 = Macro 2
+226-230 = Macro 3
+231-235 = Macro 4
+236-240 = Macro 5
+241-245 = Macro 6
+246-250 = Macro 7
+251-255 = Macro 8
+Entry = Channel
+Number = 7
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 8
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 9
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 10
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine
