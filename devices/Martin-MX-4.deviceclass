@@ -1,0 +1,107 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Martin
+Model = MX-4
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Dimmer, strobe, reset
+# Capability Entries
+0-9 = Shutter closed
+230-239 = Shutter closed
+240-249 = Reset
+250-255 = Lamp off
+10-19 = Lamp on
+20-99 = Shutter open
+100-159 = Strobe speed
+160-179 = Shutter closed
+180-204 = Remote stand-alone, music trigger
+205-229 = Remote stand-alone, auto trigger
+Entry = Channel
+Number = 1
+Name = Color wheel
+# Capability Entries
+0-5 = White
+6-11 = White / Light blue 101
+12-17 = Light blue 101
+18-23 = Light blue 101 / Fern green 205
+24-29 = Fern green 205
+30-35 = Fern green 205 / Red 304
+36-41 = Red 304
+42-47 = Red 304 / Yellow 603
+48-53 = Yellow 603
+54-59 = Yellow 603 / Magenta 507
+60-65 = Magenta 507
+66-71 = Magenta 507 / Medium blue 108
+72-77 = Medium blue 108
+78-83 = Medium blue 108 / Deep orange 302
+84-89 = Deep orange 302
+90-95 = Deep orange 302 / Light green 204
+96-101 = Light green 204
+102-107 = Light green 204 / Cyan 104
+108-113 = Cyan 104
+114-119 = Cyan 104 / Pink 312
+120-125 = Pink 312
+126-131 = Pink 312 / Blue 111
+132-137 = Blue 111
+138-143 = Blue 111 / Amber 604
+144-149 = Amber 604
+150-155 = Amber 604 / Primary red 308
+156-161 = Primary red 308
+162-167 = Primary red 308 / Primary green 206
+168-173 = Primary green 206
+174-179 = Primary green 206 / Orange 306
+180-185 = Orange 306
+186-191 = Orange 306 / Split-color 1
+192-197 = Split-color 1
+198-203 = Split-color 1 / Split-color 2
+204-209 = Split-color 2
+210-255 = Remote stand-alone
+Entry = Channel
+Number = 2
+Name = Gobo Wheel
+# Capability Entries
+0-11 = Open
+12-23 = Worms 2
+24-35 = Web
+36-47 = Petals
+48-59 = Spokes
+60-71 = Cone 2
+72-83 = Maze
+84-95 = Crater
+96-107 = Holes 2
+108-119 = Cross 2
+120-131 = Jagged cross
+132-143 = Atomic
+144-155 = Dot circle
+156-167 = Nordic
+168-179 = Aim
+180-191 = Spokes 2
+192-203 = Tie
+204-215 = Nova
+216-227 = Triple beam
+228-239 = Dot 2
+240-255 = Random, stand-alone
+Entry = Channel
+Number = 3
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 4
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 5
+Name = Pan/tilt speed
+# Capability Entries
+0-2 = Tracking mode
+3-255 = Vector mode speed fast to slow
+Entry = Channel
+Number = 6
+Name = Color/gobo speed
+# Capability Entries
+0-255 = Fast to slow

@@ -1,0 +1,69 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Martin
+Model = MX-1
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Dimmer, strobe, reset
+# Capability Entries
+0-4 = Light off
+5-154 = Dimmer intensity
+155-169 = Dimmer full open
+170-229 = Strobe speed fast to slow
+230-239 = Stand-alone, music trigger
+240-249 = Stand-alone, auto trigger
+250-255 = Reset
+Entry = Channel
+Number = 1
+Name = Not used
+# Capability Entries
+0-255 = Not used
+Entry = Channel
+Number = 2
+Name = Color / Gobo Wheel
+# Capability Entries
+0-11 = Open
+12-23 = Position 2
+24-35 = Position 3
+36-47 = Position 4
+48-59 = Position 5
+60-71 = Position 6
+72-83 = Position 7
+84-95 = Position 8
+96-107 = Position 9
+108-119 = Position 10
+120-131 = Position 11
+132-143 = Position 12
+144-155 = Position 13
+156-167 = Position 14
+168-179 = Position 15
+180-191 = Position 16
+192-203 = Position 17
+204-215 = Position 18
+216-227 = Position 19
+228-239 = Closed
+240-255 = Random, stand-alone
+Entry = Channel
+Number = 3
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 4
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 5
+Name = Pan/tilt speed
+# Capability Entries
+0-2 = Tracking mode
+3-255 = Vector mode speed fast to slow
+Entry = Channel
+Number = 6
+Name = Color/gobo speed
+# Capability Entries
+0-255 = Fast to slow
