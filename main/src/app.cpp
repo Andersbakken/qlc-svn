@@ -250,9 +250,12 @@ void App::init(QString openFile)
 	    if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
 	      {
 	         success =  doc()->loadWorkspaceAs(config);
-                 QString msg = "Previously used workspace file: " + openFile + "\ncould'nt be opened.";
-	                 msg += "We start over with a new workspace.";
-	         QMessageBox::warning(this, KApplicationNameShort, msg, QMessageBox::Ok, 0);
+		 if (!success)
+		   {
+                      QString msg = "Previously used workspace file: " + config + "\ncould'nt be opened.";
+	                      msg += "We start over with a new workspace.";
+	              QMessageBox::warning(this, KApplicationNameShort, msg, QMessageBox::Ok, 0);
+		   }
 	      }
 	  }
        }
