@@ -86,6 +86,7 @@ class App : public QMainWindow
   Doc* doc(void);
 
   void setSequenceTimer(SequenceTimer* timer);
+  
 
  public slots:
   void slotFileNew();

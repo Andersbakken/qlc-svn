@@ -96,6 +96,7 @@ App::App()
   initSettings();
   m_sequenceTimer = NULL;
   m_sequenceProvider = NULL;
+
 }
 
 App::~App()
