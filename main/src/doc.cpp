@@ -72,6 +72,8 @@ Doc::Doc() : QObject()
     }
 
   setModified(false);
+
+  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
 
@@ -107,6 +109,47 @@ Doc::~Doc()
     }
 
   delete [] m_deviceArray;
+}
+
+
+//
+// Mode changed
+//
+void Doc::slotModeChanged()
+{
+  Function* f = NULL;
+  if (_app->mode() == App::Operate)
+    {
+      //
+      // Arm all functions, allocate anything that is needed
+      // during run-time.
+      //
+      for (int i = 0; i < KFunctionArraySize; i++)
+	{
+	  f = m_functionArray[i];
+	  if (f)
+	    {
+	      f->arm();
+	      qDebug(f->name() + " armed.");
+	    }
+	}
+    }
+  else
+    {
+      //
+      // Disarm all functions, delete anything that was
+      // allocated above.
+      //
+      for (int i = 0; i < KFunctionArraySize; i++)
+	{
+	  f = m_functionArray[i];
+	  if (f)
+	    {
+	      f->disarm();
+	      qDebug(f->name() + " disarmed.");
+	    }
+	}
+    }
 }
 
 

@@ -60,7 +60,9 @@ class Scene : public Function
   void busValueChanged(t_bus_id, t_bus_value);
   void speedChange(t_bus_value);
 
-  void freeRunTimeData();
+  void arm();
+  void disarm();
+  void cleanup();
 
  protected:
   void init();

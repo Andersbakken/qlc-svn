@@ -67,6 +67,9 @@ class Doc : public QObject
   void deleteFunction(t_function_id);
   Function* function(t_function_id);
 
+ private slots:
+  void slotModeChanged();
+
  signals:
   void deviceListChanged();
   void functionListChanged();

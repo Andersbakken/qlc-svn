@@ -178,6 +178,7 @@ Scene::~Scene()
       sched_yield();
       m_startMutex.lock();
     }
+  m_startMutex.unlock();
 
   if (m_values) delete[] m_values;
 }
@@ -396,19 +397,44 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 //
 // Allocate space for some run time stuff
 //
+void Scene::arm()
+{
+  if (m_runTimeData == NULL)
+    m_runTimeData = new RunTimeData[m_channels];
+
+  if (m_channelData == NULL)
+    m_channelData = new t_value[m_channels];
+
+  if (m_eventBuffer == NULL)
+    m_eventBuffer = new EventBuffer(m_channels);
+}
+
+
+//
+// Free any run-time data
+//
+void Scene::disarm()
+{
+  if (m_runTimeData) delete [] m_runTimeData;
+  m_runTimeData = NULL;
+  
+  if (m_channelData) delete [] m_channelData;
+  m_channelData = NULL;
+
+  if (m_eventBuffer) delete m_eventBuffer;
+  m_eventBuffer = NULL;
+}
+
+
+//
+// Get starting values
+//
 void Scene::init()
 {
-  assert(m_runTimeData == NULL);
-  m_runTimeData = new RunTimeData[m_channels];
-
-  assert(m_channelData == NULL);
-  m_channelData = new t_value[m_channels];
-
-  assert(m_eventBuffer == NULL);
-  m_eventBuffer = new EventBuffer(m_channels);
+  m_removeAfterEmpty = false;
 
   // Current values
-  _app->outputPlugin()->readRange(_app->doc()->device(m_deviceID)->address(), 
+  _app->outputPlugin()->readRange(_app->doc()->device(m_deviceID)->address(),
 				  m_channelData, m_channels);
 
   for (t_channel i = 0; i < m_channels; i++)
@@ -431,7 +457,7 @@ void Scene::init()
   // Set speed
   speedChange(m_timeSpan);
 
-  // Append this function to running functions list
+  // Append this function to running functions' list
   _app->functionConsumer()->cue(this);
 }
 
@@ -523,24 +549,12 @@ void Scene::run()
 
 
 //
-// Free run time allocations
 // This fuction must be called ONLY from functionconsumer AFTER
 // this function is REALLY stopped.
 //
-void Scene::freeRunTimeData()
+void Scene::cleanup()
 {
-  delete [] m_runTimeData;
-  m_runTimeData = NULL;
-
-  delete [] m_channelData;
-  m_channelData = NULL;
-
-  delete m_eventBuffer;
-  m_eventBuffer = NULL;
-
   m_stopped = false;
-
-  m_startMutex.lock();
 
   if (m_virtualController)
     {
@@ -555,9 +569,7 @@ void Scene::freeRunTimeData()
       m_parentFunction = NULL;
     }
 
+  m_startMutex.lock();
   m_running = false;
-
-  m_removeAfterEmpty = false;
-
   m_startMutex.unlock();
 }

@@ -126,6 +126,15 @@ class Function : public QThread
   // Read this function's characteristics from a string list
   virtual void createContents(QPtrList <QString> &list) = 0;
 
+  // When the mode is changed to Operate, this is called to make all mem
+  // allocations so they are not done during run-time (and thus creating
+  // huge overhead)
+  virtual void arm() {};
+
+  // When the mode is changed back to Design, this is called to free
+  // any run-time allocations
+  virtual void disarm() {};
+
   // Start this function (start() and run() were already taken... :)
   // Use only these functions, not QThread::start()!!!
   virtual bool engage(QObject* virtualController); // From vcbutton
@@ -139,10 +148,10 @@ class Function : public QThread
   bool removeAfterEmpty() { return m_removeAfterEmpty; }
 
   // After this function has been removed from FunctionConsumer's
-  // list, it calls this function to delete any run time pointers etc.
-  // This function also notifies the virtual controller (if any) of
-  // finished operation.
-  virtual void freeRunTimeData() = 0;
+  // list, it calls this function to do some post-run cleanup (but not delete)
+  // This function also notifies the virtual controller or controller
+  // function (whichever started this function) of finished operation.
+  virtual void cleanup() = 0;
 
   // This function is implemented only in such functions that can be
   // parents to another function (e.g. only in chasers & collections).

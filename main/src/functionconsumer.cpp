@@ -222,7 +222,7 @@ void FunctionConsumer::event(time_t)
             {
               m_functionListMutex.lock(); // Lock before remove
               m_functionList.remove(f);
-	      f->freeRunTimeData();
+	      f->cleanup();
               m_functionListMutex.unlock(); // Unlock after remove
             }
         }

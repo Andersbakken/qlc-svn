@@ -19,6 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define HOLD_WITH_NANOSLEEP
+
 #include "chaser.h"
 #include "deviceclass.h"
 #include "doc.h"
@@ -34,6 +36,14 @@
 #include <qfile.h>
 #include <sched.h>
 #include <qapplication.h>
+
+#ifdef HOLD_WITH_NANOSLEEP
+#include <time.h>
+#else
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#endif
 
 extern App* _app;
 
@@ -323,34 +333,26 @@ void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
 
 
 //
-// Free run-time allocations
+// Allocate everything needed in run-time
 //
-void Chaser::freeRunTimeData()
+void Chaser::arm()
 {
-  delete m_eventBuffer;
-  m_eventBuffer = NULL;
-
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
-
-      m_virtualController = NULL;
-    }
-
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
-
-  m_stopped = false;
-
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
+  // There's actually no need for an eventbuffer, but
+  // because FunctionConsumer does EventBuffer::get() calls, it must be
+  // there... So allocate a zero length buffer.
+  if (m_eventBuffer == NULL)
+    m_eventBuffer = new EventBuffer(0, 0);
 }
 
+
+//
+// Delete everything needed in run-time
+//
+void Chaser::disarm()
+{
+  if (m_eventBuffer) delete m_eventBuffer;
+  m_eventBuffer = NULL;
+}
 
 //
 // Initialize some run-time values
@@ -360,11 +362,6 @@ void Chaser::init()
   m_childRunning = false;
   m_removeAfterEmpty = false;
   m_stopped = false;
-
-  // There's actually no need for an eventbuffer, but
-  // because FunctionConsumer does EventBuffer::get() calls, it must be
-  // there... So allocate a zero length buffer.
-  m_eventBuffer = new EventBuffer(0, 0); 
 
   // Get speed
   Bus::value(m_busID, m_holdTime);
@@ -493,20 +490,75 @@ bool Chaser::startMemberAt(int index)
 //
 void Chaser::hold()
 {
-  struct timespec timeval;
-  struct timespec timerem;
-
+  // Don't engage sleeping at all if holdtime is zero.
   if (m_holdTime > 0)
     {
-      // Because nanosleep sleeps at least 10msecs, don't
-      // sleep at all if holdtime is zero.
+#ifdef HOLD_WITH_NANOSLEEP
+      struct timespec timeval;
+      struct timespec timerem;
       timeval.tv_sec = m_holdTime / KFrequency;
-      timeval.tv_nsec = (m_holdTime % KFrequency) * 
-	(1000000000 / KFrequency);
+      timeval.tv_nsec = (m_holdTime % KFrequency) * (1000000000 / KFrequency);
       
       nanosleep(&timeval, &timerem);
+#else
+      fd_set rfds;
+      struct timeval tv;
+      int retval = 0;
+
+      FD_ZERO(&rfds);
+      FD_SET(m_holdFD, &rfds);
+      tv.tv_sec = m_holdTime / KFrequency;
+      tv.tv_usec = (m_holdTime % KFrequency) * (1000000 / KFrequency);
+
+      retval = select(m_holdFD + 1, &rfds, NULL, NULL, &tv);
+      if (retval == -1)
+	{
+	  perror("select");
+	}
+      else if (retval)
+	{
+	  qDebug("Waiting interrupted");
+	}
+#endif
     }
 }
+
+
+//
+// Stop this function
+//
+void Chaser::stop()
+{
+  Function::stop();
+}
+
+
+//
+// Do some post-run cleanup
+//
+void Chaser::cleanup()
+{
+  if (m_virtualController)
+    {
+      QApplication::postEvent(m_virtualController,
+			      new FunctionStopEvent(m_id));
+
+      m_virtualController = NULL;
+    }
+
+  if (m_parentFunction)
+    {
+      m_parentFunction->childFinished();
+      m_parentFunction = NULL;
+    }
+
+  m_stopped = false;
+
+  m_startMutex.lock();
+  m_running = false;
+  m_startMutex.unlock();
+}
+
 
 //
 // Currently running child function calls this function

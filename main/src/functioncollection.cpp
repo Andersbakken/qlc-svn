@@ -211,33 +211,22 @@ void FunctionCollection::speedChange()
 
 
 //
-// Free run-time allocations
+// Allocate some stuff for run-time
 //
-void FunctionCollection::freeRunTimeData()
+void FunctionCollection::arm()
 {
-  ASSERT(m_childCount == 0);
+  if (m_eventBuffer == NULL)
+    m_eventBuffer = new EventBuffer(0, 0);
+}
 
-  delete m_eventBuffer;
+
+//
+// Delete run-time allocations
+//
+void FunctionCollection::disarm()
+{
+  if (m_eventBuffer) delete m_eventBuffer;
   m_eventBuffer = NULL;
-
-  m_stopped = false;
-
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
-      m_virtualController = NULL;
-    }
-
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
-
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
 }
 
 
@@ -268,7 +257,6 @@ void FunctionCollection::init()
   m_childCountMutex.unlock();
 
   m_removeAfterEmpty = false;
-  m_eventBuffer = new EventBuffer(0, 0);
 
   // Append this function to running functions list
   _app->functionConsumer()->cue(this);
@@ -312,6 +300,33 @@ void FunctionCollection::run()
   m_removeAfterEmpty = true;
 }
 
+//
+// Do some post-run cleanup
+//
+void FunctionCollection::cleanup()
+{
+  ASSERT(m_childCount == 0);
+
+  m_stopped = false;
+
+  if (m_virtualController)
+    {
+      QApplication::postEvent(m_virtualController,
+			      new FunctionStopEvent(m_id));
+      m_virtualController = NULL;
+    }
+
+  if (m_parentFunction)
+    {
+      m_parentFunction->childFinished();
+      m_parentFunction = NULL;
+    }
+
+  m_startMutex.lock();
+  m_running = false;
+  m_startMutex.unlock();
+}
+
 
 void FunctionCollection::childFinished()
 {
@@ -319,3 +334,4 @@ void FunctionCollection::childFinished()
   m_childCount--;
   m_childCountMutex.unlock();
 }
+

@@ -44,11 +44,12 @@ class FunctionCollection : public Function
   void createContents(QPtrList <QString> &list);
 
   void speedChange();
-  void freeRunTimeData();
 
-  void childFinished();
-
+  void arm();
+  void disarm();
+  void cleanup();
   void stop();
+  void childFinished();
 
  protected:
   void init();
