@@ -37,12 +37,76 @@ class KeyBind;
 class Bus;
 class VCDockArea;
 
-const QString KEY_VIRTUAL_CONSOLE_OPEN      (          "VirtualConsoleOpen" );
-const QString KEY_VIRTUAL_CONSOLE_GRABKB    (  "VirtualConsoleGrabKeyboard" );
-const QString KEY_VIRTUAL_CONSOLE_KEYREPEAT (     "VirtualConsoleKeyRepeat" );
-const QString KEY_VIRTUAL_CONSOLE_SNAPGRID  (    "VirtualConsoleSnapToGrid" );
-const QString KEY_VIRTUAL_CONSOLE_GRIDX     (         "VirtualConsoleGridX" );
-const QString KEY_VIRTUAL_CONSOLE_GRIDY     (         "VirtualConsoleGridY" );
+const QString KEY_VIRTUAL_CONSOLE_OPEN      (         "VirtualConsoleOpen" );
+const QString KEY_VIRTUAL_CONSOLE_GRABKB    ( "VirtualConsoleGrabKeyboard" );
+const QString KEY_VIRTUAL_CONSOLE_KEYREPEAT (    "VirtualConsoleKeyRepeat" );
+const QString KEY_VIRTUAL_CONSOLE_SNAPGRID  (   "VirtualConsoleSnapToGrid" );
+const QString KEY_VIRTUAL_CONSOLE_GRIDX     (        "VirtualConsoleGridX" );
+const QString KEY_VIRTUAL_CONSOLE_GRIDY     (        "VirtualConsoleGridY" );
+
+// Menu stuff
+const int KVCMenuEvent  ( 2000 );
+
+// Add Menu >>>
+const int KVCMenuAddMin           ( 100 );
+const int KVCMenuAddMax           ( 199 );
+const int KVCMenuAddButton        ( 101 );
+const int KVCMenuAddSlider        ( 102 );
+const int KVCMenuAddFrame         ( 103 );
+const int KVCMenuAddLabel         ( 104 );
+// <<< Add Menu
+
+// Tools Menu >>>
+const int KVCMenuToolsMin            ( 200 );
+const int KVCMenuToolsMax            ( 299 );
+const int KVCMenuToolsSettings       ( 200 );
+const int KVCMenuToolsDefaultSliders ( 201 );
+const int KVCMenuToolsPanic          ( 202 );
+// <<< Tools Menu
+
+// Widget Menu >>>
+const int KVCMenuWidgetMin              ( 300 );
+const int KVCMenuWidgetMax              ( 399 );
+const int KVCMenuWidgetProperties       ( 300 );
+const int KVCMenuWidgetRename           ( 301 );
+
+const int KVCMenuWidgetFont             ( 302 );
+const int KVCMenuWidgetForegroundColor  ( 303 );
+const int KVCMenuWidgetForegroundNone   ( 304 );
+
+const int KVCMenuWidgetBackgroundNone   ( 305 );
+const int KVCMenuWidgetBackgroundColor  ( 306 );
+const int KVCMenuWidgetBackgroundPixmap ( 307 );
+
+const int KVCMenuWidgetRemove           ( 308 );
+const int KVCMenuWidgetCopy             ( 309 );
+
+const int KVCMenuWidgetStack            ( 310 );
+const int KVCMenuWidgetStackRaise       ( 311 );
+const int KVCMenuWidgetStackLower       ( 312 );
+
+const int KVCMenuWidgetFunction         ( 313 );
+const int KVCMenuWidgetFunctionAttach   ( 314 );
+const int KVCMenuWidgetFunctionDetach   ( 315 );
+
+const int KVCMenuWidgetDrawFrame        ( 316 );
+// <<< Widget Menu
+
+class VCMenuEvent : public QCustomEvent
+{
+ public:
+  VCMenuEvent( int item )
+    : QCustomEvent( KVCMenuEvent ),
+    m_menuItem( item ) 
+    {
+    }
+  
+  int menuItem() { return m_menuItem; }
+
+ private:
+  int m_menuItem;
+};
+
 
 class VirtualConsole : public QWidget
 {
@@ -53,6 +117,7 @@ class VirtualConsole : public QWidget
   ~VirtualConsole();
 
   void initView();
+  void initMenuBar();
   void initDockArea();
   void initDrawArea();
 
@@ -68,6 +133,11 @@ class VirtualConsole : public QWidget
   bool isGridEnabled() { return m_gridEnabled; }
   int gridX() { return m_gridX; }
   int gridY() { return m_gridY; }
+
+  QWidget* selectedWidget() { return m_selectedWidget; }
+  void setSelectedWidget(QWidget*);
+
+  QPopupMenu* widgetMenu() { return m_widgetMenu; }
 
  public slots:
   void slotMenuItemActivated(int);
@@ -89,12 +159,14 @@ class VirtualConsole : public QWidget
   void createVirtualConsole(QPtrList <QString>& list);
   void createWidget(QPtrList <QString> &list);
 
+  void parseAddMenu(int);
+  void parseToolsMenu(int);
+  void parseWidgetMenu(int);
+
  private:
-  // Virtual console menus
+  // Virtual console menu bar
   QMenuBar* m_menuBar;
-  QPopupMenu* m_modeMenu;
-  QPopupMenu* m_addMenu;
-  QPopupMenu* m_toolsMenu;
+  QPopupMenu* m_widgetMenu;
 
   // Master layout
   QHBoxLayout* m_layout; 
@@ -112,6 +184,9 @@ class VirtualConsole : public QWidget
   bool m_gridEnabled;
   int m_gridX;
   int m_gridY;
+
+  // Currently selected widget
+  QWidget* m_selectedWidget;
 };
 
 #endif

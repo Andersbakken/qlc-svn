@@ -33,6 +33,7 @@ class QFile;
 class QString;
 class QColor;
 class QPixmap;
+class QPoint;
 
 class FloatingEdit;
 class KeyBind;
@@ -76,6 +77,8 @@ class VCButton : public QPushButton
   FloatingEdit* m_renameEdit;
 
  private:
+  void invokeMenu(QPoint);
+  void parseWidgetMenu(int);
   bool moveThreshold(int x, int y);
   void resizeTo(QPoint p);
   void moveTo(QPoint p);
@@ -87,7 +90,6 @@ class VCButton : public QPushButton
   void releaseFunction();
 
  private slots:
-  void slotMenuCallback(int item);
   void slotFlashReady();
   void slotModeChanged();
 

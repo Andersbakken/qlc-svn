@@ -60,26 +60,26 @@ class VCDockSlider : public UI_VCDockSlider
 
  private slots:
   void slotSliderValueChanged(int);
-  void slotBusMenuActivated(int id);
+  void slotBusMenuActivated(int);
 
   void slotModeChanged();
 
   void slotBusNameChanged(t_bus_id, const QString&);
   void slotBusValueChanged(t_bus_id, t_bus_value);
 
-  void slotMenuCallback(int item);
-
  protected:
-  void displayMenu(QPoint);
+  void invokeMenu(QPoint);
+  void parseWidgetMenu(int);
 
-  void mousePressEvent(QMouseEvent* e);
-  void mouseReleaseEvent(QMouseEvent* e);
-  void mouseMoveEvent(QMouseEvent* e);
-  void paintEvent(QPaintEvent* e);
-  void contextMenuEvent(QContextMenuEvent* e);
+  void mousePressEvent(QMouseEvent*);
+  void mouseReleaseEvent(QMouseEvent*);
+  void mouseMoveEvent(QMouseEvent*);
+  void paintEvent(QPaintEvent*);
+  void contextMenuEvent(QContextMenuEvent*);
+  void customEvent(QCustomEvent*);
 
-  void resizeTo(QPoint p);
-  void moveTo(QPoint p);
+  void resizeTo(QPoint);
+  void moveTo(QPoint);
 
  private:
   t_vc_id m_id;

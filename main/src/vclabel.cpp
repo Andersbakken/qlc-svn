@@ -45,6 +45,7 @@
 #include <qfontdialog.h>
 #include <qcolordialog.h>
 #include <qpainter.h>
+#include <qfiledialog.h>
 
 extern App* _app;
 
@@ -52,23 +53,14 @@ const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
 const int KMoveThreshold   (    5 ); // Pixels
 
-const int KMenuTitle             (  0 );
-const int KMenuRename            (  1 );
-const int KMenuFont              (  2 );
-const int KMenuFontColor         (  3 );
-const int KMenuBackgroundColor   (  4 );
-const int KMenuBackgroundPixmap  (  5 );
-const int KMenuBackgroundNone    (  6 );
-const int KMenuDrawFrame         (  7 );
-const int KMenuRemove            (  8 );
-const int KMenuStackRaise        (  9 );
-const int KMenuStackLower        ( 10 );
-
-VCLabel::VCLabel(QWidget* parent) : QLabel(parent, "VCLabel")
+VCLabel::VCLabel(QWidget* parent) 
+  : QLabel(parent, "VCLabel"),
+  m_renameEdit ( NULL ),
+  m_resizeMode ( false ),
+  m_bgPixmap   ( false ),
+  m_bgColor    ( false ),
+  m_fgColor    ( false )
 {
-  m_renameEdit = NULL;
-  m_background = false;
-  m_resizeMode = false;
 }
 
 VCLabel::~VCLabel()
@@ -130,15 +122,18 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
   s = QString("Height = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // Text color
-  t.setNum(qRgb(paletteForegroundColor().red(),
-                paletteForegroundColor().green(),
-		paletteForegroundColor().blue()));
-  s = QString("Textcolor = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+// Text color
+  if (m_fgColor)
+    {
+      t.setNum(qRgb(paletteForegroundColor().red(),
+		    paletteForegroundColor().green(),
+		    paletteForegroundColor().blue()));
+      s = QString("Textcolor = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+    }
 
   // Background color
-  if (m_background)
+  if (m_bgColor)
     {
       t.setNum(qRgb(paletteBackgroundColor().red(),
 		    paletteBackgroundColor().green(),
@@ -147,9 +142,12 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
       file.writeBlock((const char*) s, s.length());
     }
 
-  // Font
-  s = QString("Font = ") + font().toString() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+  // Background pixmap
+  if (m_bgPixmap)
+    {
+      s = QString("Pixmap = " + m_bgPixmapFileName + QString("\n"));
+      file.writeBlock((const char*) s, s.length());
+    }
 
   // Frame
   if (frameStyle() & KFrameStyle)
@@ -160,6 +158,10 @@ void VCLabel::saveToFile(QFile& file, unsigned int parentID)
     {
       s = QString("Frame = ") + Settings::falseValue() + QString("\n");
     }
+  file.writeBlock((const char*) s, s.length());
+
+  // Font
+  s = QString("Font = ") + font().toString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 }
 
@@ -210,13 +212,29 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	  QColor qc;
 	  qc.setRgb(list.next()->toUInt());
 	  setPaletteForegroundColor(qc);
+	  m_fgColor = true;
 	}
       else if (*s == QString("Backgroundcolor"))
 	{
 	  QColor qc;
 	  qc.setRgb(list.next()->toUInt());
 	  setPaletteBackgroundColor(qc);
-	  m_background = true;
+	  m_bgColor = true;
+	  m_bgPixmap = false;
+	}
+      else if (*s == QString("Pixmap"))
+	{
+	  QString t;
+	  t = *(list.next());
+	  
+	  QPixmap pm(t);
+	  if (pm.isNull() == false)
+	    {
+	      m_bgPixmapFileName = t;
+	      setPaletteBackgroundPixmap(pm);
+	      m_bgPixmap = true;
+	      m_bgColor = false;
+	    }
 	}
       else if (*s == QString("Font"))
 	{
@@ -251,6 +269,8 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
+      _app->virtualConsole()->setSelectedWidget(this);
+
       if (e->button() & LeftButton)
 	{
 	  if (e->x() > rect().width() - 10 &&
@@ -269,106 +289,40 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
       	}
       else if (e->button() & RightButton)
 	{
-	  QString dir;
-	  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-	  dir += QString("/") + PIXMAPPATH;
-
-	  //
-	  // Background menu
-	  //
-	  QPopupMenu* bgmenu = new QPopupMenu();
-	  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			     "&Color...", KMenuBackgroundColor);
-	  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
-			     "&Image...", KMenuBackgroundPixmap);
-	  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-			     "&None", KMenuBackgroundNone);
-
-	  //
-	  // Stacking order menu
-	  //
-	  QPopupMenu* stackmenu = new QPopupMenu;
-	  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
-				"Bring to Front", KMenuStackRaise);
-	  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
-				"Send to Back", KMenuStackLower);
-
-	  //
-	  // Main context menu
-	  //
-	  QPopupMenu* menu = new QPopupMenu();
-	  menu->insertItem("Label", KMenuTitle);
-	  menu->setItemEnabled(KMenuTitle, false);
-	  menu->insertSeparator();
-	  menu->setCheckable(true);
-	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-			   "&Rename...", KMenuRename);
-	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-			   "&Font...", KMenuFont);
-	  menu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			   "&Text Color...", KMenuFontColor);
-	  menu->insertSeparator();
-	  menu->insertItem("Background", bgmenu);
-	  menu->insertItem("Stacking order", stackmenu);
-	  menu->insertItem(QPixmap(dir + QString("/frame.xpm")),
-			   "Draw &Frame", KMenuDrawFrame);
-	  menu->insertSeparator();
-	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-			   "Re&move", KMenuRemove);
-          
-	  if (frameStyle() & KFrameStyle)
-	    {
-	      menu->setItemChecked(KMenuDrawFrame, true);
-	    }
-
-	  connect(bgmenu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-
-	  connect(stackmenu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-
-	  connect(menu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-
-	  menu->exec(mapToGlobal(e->pos()));
-
-	  delete bgmenu;
-	  delete stackmenu;
-	  delete menu;
+	  invokeMenu(mapToGlobal(e->pos()));
 	}
     }
 
 }
 
+void VCLabel::invokeMenu(QPoint point)
+{
+  _app->virtualConsole()->widgetMenu()->exec(point);
+}
 
-void VCLabel::slotMenuCallback(int item)
+void VCLabel::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KMenuRename:
+    case KVCMenuWidgetRename:
       m_renameEdit = new FloatingEdit(parentWidget());
       connect(m_renameEdit, SIGNAL(returnPressed()),
 	      this, SLOT(slotRenameReturnPressed()));
       m_renameEdit->setMinimumSize(60, 25);
       m_renameEdit->setGeometry(x() + 3, y() + 3, width() - 6, height() - 6);
       m_renameEdit->setText(text());
+      m_renameEdit->setFont(font());
       m_renameEdit->setSelection(0, text().length());
       m_renameEdit->show();
       m_renameEdit->setFocus();
       break;
 
-    case KMenuRemove:
-      _app->doc()->setModified(true);
-      delete this;
-      break;
-
-    case KMenuFont:
+    case KVCMenuWidgetFont:
       _app->doc()->setModified(true);
       setFont(QFontDialog::getFont(0, font()));
-      adjustSize();
       break;
 
-    case KMenuFontColor:
+    case KVCMenuWidgetForegroundColor:
       {
 	QColor color;
 	color = QColorDialog::getColor(paletteBackgroundColor(), this);
@@ -376,38 +330,88 @@ void VCLabel::slotMenuCallback(int item)
 	  {
 	    _app->doc()->setModified(true);
 	    setPaletteForegroundColor(color);
+	    m_fgColor = true;
 	  }
+	
+	_app->doc()->setModified(true);
       }
       break;
 
-    case KMenuBackgroundColor:
+    case KVCMenuWidgetForegroundNone:
       {
-	QColor color;
-	color = QColorDialog::getColor(paletteBackgroundColor(), this);
-	if (color.isValid())
+	if (m_bgColor)
 	  {
+	    QColor bgcolor = paletteBackgroundColor();
+	    unsetPalette();
+	    setPaletteBackgroundColor(bgcolor);
+	  }
+	else
+	  {
+	    unsetPalette();
+	  }
+
+	unsetFont();
+	m_fgColor = false;
+	_app->doc()->setModified(true);
+      }
+      break;
+
+    case KVCMenuWidgetBackgroundColor:
+      {
+	QColor newcolor = 
+	  QColorDialog::getColor(paletteBackgroundColor(), this);
+
+	if (newcolor.isValid() == true)
+	  {
+	    setPaletteBackgroundColor(newcolor);
 	    _app->doc()->setModified(true);
-	    setPaletteBackgroundColor(color);
-	    m_background = true;
+	  }
+      }
+      break;
+      
+      case KVCMenuWidgetBackgroundPixmap:
+      {
+	QString fileName = 
+	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
+				       QString("*.jpg *.png *.xpm *.gif"), 
+				       this);
+	if (fileName.isEmpty() == false)
+	  {
+	    m_bgPixmapFileName = fileName;
+	    QPixmap pm(fileName);
+	    setPaletteBackgroundPixmap(pm);
+	    _app->doc()->setModified(true);
 	  }
       }
       break;
 
-    case KMenuBackgroundNone:
-      _app->doc()->setModified(true);
-      setPalette(_app->palette());
-      m_background = false;
+    case KVCMenuWidgetBackgroundNone:
+      {
+	if (m_fgColor)
+	  {
+	    QColor fgcolor = paletteForegroundColor();
+	    unsetPalette();
+	    setPaletteForegroundColor(fgcolor);
+	  }
+	else
+	  {
+	    unsetPalette();
+	  }
+
+	m_bgColor = false;
+	_app->doc()->setModified(true);
+      }
       break;
 
-    case KMenuStackRaise:
+    case KVCMenuWidgetStackRaise:
       raise();
       break;
 
-    case KMenuStackLower:
+    case KVCMenuWidgetStackLower:
       lower();
       break;
 
-    case KMenuDrawFrame:
+    case KVCMenuWidgetDrawFrame:
       _app->doc()->setModified(true);
       if (frameStyle() & KFrameStyle)
 	setFrameStyle(NoFrame);
@@ -433,7 +437,7 @@ void VCLabel::mouseReleaseEvent(QMouseEvent* e)
 
 void VCLabel::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  slotMenuCallback(KMenuRename);
+  parseWidgetMenu(KVCMenuWidgetRename);
 }
 
 
@@ -441,15 +445,28 @@ void VCLabel::paintEvent(QPaintEvent* e)
 {
   QLabel::paintEvent(e);
 
-  if (_app->mode() == App::Design)
+  if (_app->mode() == App::Design && 
+      _app->virtualConsole()->selectedWidget() == this)
     {
       QPainter p(this);
 
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH;
-      p.drawPixmap(rect().width() - 10, rect().height() - 10, 
-		   QPixmap(dir + "/resize.xpm"), 0, 0);
+      // Draw a dotted line around the widget
+      QPen pen(DotLine);
+      pen.setWidth(2);
+      p.setPen(pen);
+      p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+      // Draw a resize handle
+      QBrush b(SolidPattern);
+      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+    }
+}
+
+void VCLabel::customEvent(QCustomEvent* e)
+{
+  if (e->type() == KVCMenuEvent)
+    {
+      parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
     }
 }
 
@@ -560,6 +577,5 @@ void VCLabel::slotRenameReturnPressed()
   disconnect(m_renameEdit);
   delete m_renameEdit;
   m_renameEdit = NULL;
-  adjustSize();
 }
 

@@ -43,12 +43,14 @@
 #include <qtooltip.h>
 #include <qcolordialog.h>
 #include <qfiledialog.h>
+#include <qfontdialog.h>
 #include <qpopupmenu.h>
 #include <qfile.h>
 #include <limits.h>
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qbrush.h>
+#include <qpen.h>
 #include <assert.h>
 
 extern App* _app;
@@ -56,19 +58,6 @@ extern App* _app;
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
 const int KFlashReadyTime ( 1000 ); // 1 second
 const int KMoveThreshold  (    5 ); // Pixels
-
-const int KMenuTitle            (  0 );
-const int KMenuRename           (  1 );
-const int KMenuProperties       (  2 );
-const int KMenuBackgroundColor  (  3 );
-const int KMenuBackgroundPixmap (  4 );
-const int KMenuBackgroundNone   (  5 );
-const int KMenuAttach           (  6 );
-const int KMenuDetach           (  7 );
-const int KMenuCopy             (  8 );
-const int KMenuRemove           (  9 );
-const int KMenuStackRaise       ( 10 );
-const int KMenuStackLower       ( 11 );
 
 VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
@@ -196,6 +185,10 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
       file.writeBlock((const char*) s, s.length());
     }
 
+  // Font
+  s = QString("Font = ") + font().toString() + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+  
   // Function
   s.sprintf("Function = %d\n", m_functionID);
   file.writeBlock((const char*) s, s.length());
@@ -284,7 +277,14 @@ void VCButton::createContents(QPtrList <QString> &list)
 	  int b = t.mid(j+1).toInt();
 	  m_bgColor = new QColor(r, g, b);
 	  setPaletteBackgroundColor(*m_bgColor);
-	}  
+	}
+      else if (*s == QString("Font"))
+	{
+	  QFont f = font();
+	  QString q = *(list.next());
+	  f.fromString(q);
+	  setFont(f);
+	}
       else if (*s == QString("Function"))
 	{
 	  attachFunction(list.next()->toInt());
@@ -340,6 +340,8 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
+      _app->virtualConsole()->setSelectedWidget(this);
+
       if (m_resizeMode == true)
 	{
 	  setMouseTracking(false);
@@ -364,82 +366,7 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	}
       else if (e->button() & RightButton)
 	{
-	  QString dir;
-	  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-	  dir += QString("/") + PIXMAPPATH;
-
-	  //
-	  // Background menu
-	  //
-	  QPopupMenu* bgmenu = new QPopupMenu();
-	  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-			     "&Color...", KMenuBackgroundColor);
-	  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
-			     "&Image...", KMenuBackgroundPixmap);
-	  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-			     "&None", KMenuBackgroundNone);
-	  if (m_bgPixmap != NULL)
-	    {
-	      bgmenu->setItemChecked(KMenuBackgroundPixmap, true);
-	    }
-	  else if (m_bgColor != NULL)
-	    {
-	      bgmenu->setItemChecked(KMenuBackgroundColor, true);
-	    }
-	  else
-	    {
-	      bgmenu->setItemChecked(KMenuBackgroundNone, true);
-	    }
-
-	  //
-	  // Stacking order menu
-	  //
-	  QPopupMenu* stackmenu = new QPopupMenu;
-	  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
-				"Bring to Front", KMenuStackRaise);
-	  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
-				"Send to Back", KMenuStackLower);
-
-	  //
-	  // Main context menu
-	  //
-	  QPopupMenu* menu;
-	  menu = new QPopupMenu;
-	  menu->insertItem("Button", KMenuTitle);
-	  menu->setItemEnabled(KMenuTitle, false);
-	  menu->insertSeparator();
-	  menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
-			   "&Rename...", KMenuRename);
-	  menu->insertItem(QPixmap(dir + QString("/settings.xpm")),
-			   "&Properties...", KMenuProperties);
-	  menu->insertSeparator();
-	  menu->insertItem("Background", bgmenu);
-	  menu->insertItem("Stacking order", stackmenu);
-	  menu->insertSeparator();
-	  menu->insertItem(QPixmap(dir + QString("/attach.xpm")),
-			   "&Attach function...", KMenuAttach);
-	  menu->insertItem(QPixmap(dir + QString("/detach.xpm")),
-			   "&Detach current function", KMenuDetach);
-	  menu->insertSeparator();
-	  menu->insertItem(QPixmap(dir + QString("/editcopy.xpm")),
-			   "Create copy", KMenuCopy);
-	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-			   "Re&move", KMenuRemove);
-
-	  connect(bgmenu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-
-	  connect(stackmenu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-
-	  connect(menu, SIGNAL(activated(int)),
-		  this, SLOT(slotMenuCallback(int)));
-
-	  menu->exec(mapToGlobal(e->pos()));
-
-	  delete bgmenu;
-	  delete stackmenu;
-	  delete menu;
+	  invokeMenu(mapToGlobal(e->pos()));
 	}
     }
   else
@@ -449,11 +376,16 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 }
 
 
-void VCButton::slotMenuCallback(int item)
+void VCButton::invokeMenu(QPoint point)
+{
+  _app->virtualConsole()->widgetMenu()->exec(point);
+}
+
+void VCButton::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KMenuRename:
+    case KVCMenuWidgetRename:
       {
 	m_renameEdit = new FloatingEdit(parentWidget());
 	connect(m_renameEdit, SIGNAL(returnPressed()),
@@ -461,13 +393,19 @@ void VCButton::slotMenuCallback(int item)
 	m_renameEdit->setMinimumSize(60, 25);
 	m_renameEdit->setGeometry(x() + 3, y() + 3, width() - 6, height() - 6);
 	m_renameEdit->setText(text());
+	m_renameEdit->setFont(font());
 	m_renameEdit->setSelection(0, text().length());
 	m_renameEdit->show();
 	m_renameEdit->setFocus();
       }
       break;
 
-    case KMenuBackgroundColor:
+    case KVCMenuWidgetFont:
+      _app->doc()->setModified(true);
+      setFont(QFontDialog::getFont(0, font()));
+      break;
+
+    case KVCMenuWidgetBackgroundColor:
       {
 	QColor currentcolor;
 	if (m_bgColor != NULL)
@@ -494,7 +432,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
       
-      case KMenuBackgroundPixmap:
+      case KVCMenuWidgetBackgroundPixmap:
       {
 	QString fileName = 
 	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
@@ -517,7 +455,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuBackgroundNone:
+    case KVCMenuWidgetBackgroundNone:
       {
 	if (m_bgPixmap != NULL)
 	  {
@@ -538,15 +476,15 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuStackRaise:
+    case KVCMenuWidgetStackRaise:
       raise();
       break;
 
-    case KMenuStackLower:
+    case KVCMenuWidgetStackLower:
       lower();
       break;
 
-    case KMenuProperties:
+    case KVCMenuWidgetProperties:
       {
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
@@ -555,7 +493,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuRemove:
+    case KVCMenuWidgetRemove:
       {
 	if (QMessageBox::warning(this, "Remove Button", "Are you sure?",
 				 QMessageBox::Yes, QMessageBox::No)
@@ -567,7 +505,7 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuAttach:
+    case KVCMenuWidgetFunctionAttach:
       {
 	FunctionTree* ft = new FunctionTree(this);
 	if (ft->exec() == QDialog::Accepted)
@@ -578,13 +516,13 @@ void VCButton::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuDetach:
+    case KVCMenuWidgetFunctionDetach:
       {
 	attachFunction(KNoID);
       }
       break;
 
-    case KMenuCopy:
+    case KVCMenuWidgetCopy:
       {
 	VCButton* bt = NULL;
 	bt = new VCButton(parentWidget());
@@ -716,7 +654,7 @@ void VCButton::mouseDoubleClickEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      slotMenuCallback(KMenuProperties);
+      //slotMenuCallback(KVCMenuWidgetProperties);
     }
   else
     {
@@ -728,15 +666,20 @@ void VCButton::paintEvent(QPaintEvent* e)
 {
   QPushButton::paintEvent(e);
 
-  if (_app->mode() == App::Design)
+  if (_app->mode() == App::Design &&
+      _app->virtualConsole()->selectedWidget() == this)
     {
       QPainter p(this);
       
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH;
-      p.drawPixmap(rect().width() - 10, rect().height() - 10, 
-		   QPixmap(dir + "/resize.xpm"), 0, 0);
+      // Draw a dotted line around the widget
+      QPen pen(DotLine);
+      pen.setWidth(2);
+      p.setPen(pen);
+      p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+      // Draw a resize handle
+      QBrush b(SolidPattern);
+      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
     }
 }
 
@@ -845,6 +788,10 @@ void VCButton::customEvent(QCustomEvent* e)
       setOn(false);
       slotFlashReady();
       QTimer::singleShot(KFlashReadyTime, this, SLOT(slotFlashReady()));
+    }
+  else if (e->type() == KVCMenuEvent)
+    {
+      parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
     }
 }
 

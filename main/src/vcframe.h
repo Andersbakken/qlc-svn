@@ -66,7 +66,6 @@ class VCFrame : public QFrame
   QColor bgColor() const { return *m_bgColor; }
 
  private slots:
-  void slotMenuCallback(int item);
   void slotModeChanged();
 
  signals:
@@ -75,12 +74,14 @@ class VCFrame : public QFrame
 
  protected:
   void setID(t_vc_id id);
-  void invokeContextMenu(QMouseEvent* e);
+  void invokeMenu(QPoint point);
+  void parseWidgetMenu(int item);
 
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
+  void customEvent(QCustomEvent* e);
 
   void resizeTo(QPoint p);
   void moveTo(QPoint p);

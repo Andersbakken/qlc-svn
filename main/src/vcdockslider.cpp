@@ -30,6 +30,7 @@
 #include <qpainter.h>
 #include <qfile.h>
 #include <qfiledialog.h>
+#include <qfontdialog.h>
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qcolordialog.h>
@@ -54,18 +55,6 @@ extern App* _app;
 const int KFrameStyle         ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask          ( 0xff ); // Produces opposite colors with XOR
 const int KMoveThreshold      (    5 ); // Pixels
-
-const int KMenuTitle            (  0 );
-const int KMenuProperties       (  1 );
-const int KMenuForegroundColor  (  2 );
-const int KMenuForegroundNone   (  3 );
-const int KMenuBackgroundColor  (  4 );
-const int KMenuBackgroundPixmap (  5 );
-const int KMenuBackgroundNone   (  6 );
-const int KMenuDrawFrame        (  7 );
-const int KMenuRemove           (  8 );
-const int KMenuStackRaise       (  9 );
-const int KMenuStackLower       ( 10 );
 
 //
 // Constructor
@@ -200,6 +189,13 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	      m_valueLabel->setFrameStyle(NoFrame);
 	    }
 	}
+      else if (*s == QString("Font"))
+	{
+	  QFont f = font();
+	  QString q = *(list.next());
+	  f.fromString(q);
+	  setFont(f);
+	}
       else if (*s == QString("Bus"))
 	{
 	  QString t = *(list.next());
@@ -297,6 +293,10 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
     {
       s = QString("Frame = ") + Settings::falseValue() + QString("\n");
     }
+  file.writeBlock((const char*) s, s.length());
+
+  // Font
+  s = QString("Font = ") + font().toString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Mode
@@ -442,6 +442,8 @@ void VCDockSlider::mousePressEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design && m_static == false)
     {
+      _app->virtualConsole()->setSelectedWidget(this);
+
       if (m_resizeMode == true)
 	{
 	  setMouseTracking(false);
@@ -468,7 +470,7 @@ void VCDockSlider::mousePressEvent(QMouseEvent* e)
 	}
       else if (e->button() & RightButton)
 	{
-	  displayMenu(mapToGlobal(e->pos()));
+	  invokeMenu(mapToGlobal(e->pos()));
 	}
     }
   else
@@ -485,88 +487,23 @@ void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
 {
   if (_app->mode() == App::Design && m_static == false)
     {
-      displayMenu(mapToGlobal(e->pos()));
+      invokeMenu(mapToGlobal(e->pos()));
     }
 }
 
 //
 // Invoke a menu at given point
 //
-void VCDockSlider::displayMenu(QPoint point)
+void VCDockSlider::invokeMenu(QPoint point)
 {
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
-  //
-  // Background menu
-  //
-  QPopupMenu* bgmenu = new QPopupMenu();
-  bgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-		     "&Color...", KMenuBackgroundColor);
-  bgmenu->insertItem(QPixmap(dir + QString("/image.xpm")),
-		     "&Image...", KMenuBackgroundPixmap);
-  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		     "&None", KMenuBackgroundNone);
-
-  //
-  // Foreground menu
-  //
-  QPopupMenu* fgmenu = new QPopupMenu();
-  fgmenu->insertItem(QPixmap(dir + QString("/color.xpm")),
-		     "&Color...", KMenuForegroundColor);
-  fgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
-		     "&None", KMenuForegroundNone);
-
-  //
-  // Stacking order menu
-  //
-  QPopupMenu* stackmenu = new QPopupMenu;
-  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
-			"Bring to Front", KMenuStackRaise);
-  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
-			"Send to Back", KMenuStackLower);
-
-  //
-  // Main context menu
-  //
-  QPopupMenu* menu;
-  menu = new QPopupMenu;
-  menu->insertItem("Slider", KMenuTitle);
-  menu->setItemEnabled(KMenuTitle, false);
-  menu->insertSeparator();
-  menu->insertItem(QPixmap(dir + QString("/settings.xpm")),
-		   "&Properties...", KMenuProperties);
-  menu->insertSeparator();
-  menu->insertItem("Foreground", fgmenu);
-  menu->insertItem("Background", bgmenu);
-  menu->insertItem("Stacking order", stackmenu);
-  menu->insertItem(QPixmap(dir + QString("/frame.xpm")),
-		   "Draw &Frame", KMenuDrawFrame);
-  menu->setItemChecked(KMenuDrawFrame, (frameStyle()&KFrameStyle)?true:false);
-
-  menu->insertSeparator();
-  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-		   "Re&move", KMenuRemove);
-
-  connect(bgmenu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
-  connect(fgmenu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
-  connect(stackmenu, SIGNAL(activated(int)),this, SLOT(slotMenuCallback(int)));
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
-
-  menu->exec(point);
-
-  delete bgmenu;
-  delete fgmenu;
-  delete stackmenu;
-  delete menu;
+  _app->virtualConsole()->widgetMenu()->exec(point);
 }
 
-void VCDockSlider::slotMenuCallback(int item)
+void VCDockSlider::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KMenuProperties:
+    case KVCMenuWidgetProperties:
       {/*
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
@@ -576,7 +513,12 @@ void VCDockSlider::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuForegroundColor:
+    case KVCMenuWidgetFont:
+      _app->doc()->setModified(true);
+      setFont(QFontDialog::getFont(0, font()));
+      break;
+
+    case KVCMenuWidgetForegroundColor:
       {
 	QColor color;
 	color = QColorDialog::getColor(paletteBackgroundColor(), this);
@@ -591,7 +533,7 @@ void VCDockSlider::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuForegroundNone:
+    case KVCMenuWidgetForegroundNone:
       {
 	if (m_bgColor)
 	  {
@@ -609,7 +551,7 @@ void VCDockSlider::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuBackgroundColor:
+    case KVCMenuWidgetBackgroundColor:
       {
 	QColor newcolor = 
 	  QColorDialog::getColor(paletteBackgroundColor(), this);
@@ -622,7 +564,7 @@ void VCDockSlider::slotMenuCallback(int item)
       }
       break;
       
-      case KMenuBackgroundPixmap:
+      case KVCMenuWidgetBackgroundPixmap:
       {
 	QString fileName = 
 	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
@@ -638,7 +580,7 @@ void VCDockSlider::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuBackgroundNone:
+    case KVCMenuWidgetBackgroundNone:
       {
 	if (m_fgColor)
 	  {
@@ -656,21 +598,21 @@ void VCDockSlider::slotMenuCallback(int item)
       }
       break;
 
-    case KMenuStackRaise:
+    case KVCMenuWidgetStackRaise:
       {
 	raise();
 	_app->doc()->setModified(true);
       }
       break;
 
-    case KMenuStackLower:
+    case KVCMenuWidgetStackLower:
       {
 	lower();
 	_app->doc()->setModified(true);
       }
       break;
 
-    case KMenuDrawFrame:
+    case KVCMenuWidgetDrawFrame:
       {
 	if (frameStyle() & KFrameStyle)
 	  {
@@ -686,18 +628,6 @@ void VCDockSlider::slotMenuCallback(int item)
 	  }
 	
 	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KMenuRemove:
-      {
-	if (QMessageBox::warning(this, "Remove Button", "Are you sure?",
-				 QMessageBox::Yes, QMessageBox::No)
-	    == QMessageBox::Yes)
-	  {
-	    _app->doc()->setModified(true);
-	    delete this;
-	  }
       }
       break;
 
@@ -729,15 +659,20 @@ void VCDockSlider::paintEvent(QPaintEvent* e)
 {
   QFrame::paintEvent(e);
 
-  if (_app->mode() == App::Design && m_static == false)
+  if (_app->mode() == App::Design && 
+      _app->virtualConsole()->selectedWidget() == this)
     {
       QPainter p(this);
-      
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH;
-      p.drawPixmap(rect().width() - 10, rect().height() - 10, 
-		   QPixmap(dir + "/resize.xpm"), 0, 0);
+
+      // Draw a dotted line around the widget
+      QPen pen(DotLine);
+      pen.setWidth(2);
+      p.setPen(pen);
+      p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+      // Draw a resize handle
+      QBrush b(SolidPattern);
+      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
     }
 }
 
@@ -768,6 +703,14 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
   else
     {
       QFrame::mouseMoveEvent(e);
+    }
+}
+
+void VCDockSlider::customEvent(QCustomEvent* e)
+{
+  if (e->type() == KVCMenuEvent)
+    {
+      parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
     }
 }
 

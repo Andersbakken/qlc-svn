@@ -49,30 +49,36 @@ class VCLabel : public QLabel
   void createContents(QPtrList <QString> &list);
 
  private:
-  void resizeTo(QPoint p);
-  void moveTo(QPoint p);
+  void invokeMenu(QPoint);
+  void parseWidgetMenu(int);
+  void resizeTo(QPoint);
+  void moveTo(QPoint);
 
  public slots:
   void slotRenameReturnPressed();
 
  private slots:
-  void slotMenuCallback(int item);
   void slotModeChanged();
 
  protected:
-  void mousePressEvent(QMouseEvent* e);
-  void mouseReleaseEvent(QMouseEvent* e);
-  void mouseMoveEvent(QMouseEvent* e);
-  void mouseDoubleClickEvent(QMouseEvent* e);
-  void paintEvent(QPaintEvent* e);
+  void mousePressEvent(QMouseEvent*);
+  void mouseReleaseEvent(QMouseEvent*);
+  void mouseMoveEvent(QMouseEvent*);
+  void mouseDoubleClickEvent(QMouseEvent*);
+  void paintEvent(QPaintEvent*);
+  void customEvent(QCustomEvent*);
 
  private:
   int m_origX;
   int m_origY;
 
   FloatingEdit* m_renameEdit;
-  bool m_background;
   bool m_resizeMode;
+  bool m_bgPixmap;
+  bool m_bgColor;
+  bool m_fgColor;
+
+  QString m_bgPixmapFileName;
 };
 
 #endif
