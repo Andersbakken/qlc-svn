@@ -255,6 +255,7 @@ void App::initWorkspace()
 {
   m_workspace = new QWorkspace(this, "Main Workspace");
   setCentralWidget(m_workspace);
+  m_workspace->setScrollBarsEnabled(true);
 
   QString path;
   settings()->get(KEY_APP_BACKGROUND, path);

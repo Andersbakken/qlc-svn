@@ -186,6 +186,7 @@ void ConsoleChannel::setNumber(t_channel number)
 void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
 {
   QString s;
+  QString t;
   Capability* c = NULL;
   LogicalChannel* ch = m_device->deviceClass()->channels()->at(m_channel);
 
@@ -196,38 +197,58 @@ void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
 
   QPtrListIterator<Capability> it(*ch->capabilities());
 
+  QPopupMenu* valueMenu = NULL;
+
   while (it.current())
     {
       c = it.current();
-      s.sprintf("%d:", static_cast<int> (floor((c->lo() + c->hi()) / 2)));
+
+      // Set the value range and name as menu item's name
+      s.sprintf("%.3d - %.3d:", c->lo(), c->hi());
       s += c->name();
 
-      menu->insertItem(s, c->lo());
+      // Create a submenu for ranges that contain more than one value
+      if (c->hi() - c->lo() > 0)
+	{
+	  valueMenu = new QPopupMenu(menu);
+	  connect(valueMenu, SIGNAL(activated(int)),
+		  this, SLOT(slotContextMenuActivated(int)));
+
+	  for (int i = c->lo(); i <= c->hi(); i++)
+	    {
+	      t.sprintf("%.3d", i);
+	      valueMenu->insertItem(t, i);
+	    }
+	  menu->insertItem(s, valueMenu);
+	}
+      else
+	{
+	  // Just one value in this range, don't create a submenu
+	  menu->insertItem(s, c->lo());
+	}
+
       ++it;
     }
   
   connect(menu, SIGNAL(activated(int)),
 	  this, SLOT(slotContextMenuActivated(int)));
-  menu->exec(e->globalPos());
-  delete menu;
+
+  menu->exec(e->globalPos()); // Synchronous call
+
+  delete menu; // QT deletes also submenus automatically
 
   e->accept();
 }
 
-void ConsoleChannel::slotContextMenuActivated(int item)
+void ConsoleChannel::slotContextMenuActivated(int value)
 {
-  if (item == KMenuTitle)
+  if (value == KMenuTitle)
     {
       return;
     }
   else
     {
-      LogicalChannel* ch = m_device->deviceClass()->channels()->at(m_channel);
-      Capability* c = ch->searchCapability(item);
-      if (c)
-	{
-	  slotAnimateValueChange( static_cast<int>
-				  (floor((c->lo() + c->hi()) / 2)) );
-	}
+      // The menuitem contains a valid DMX value
+      slotAnimateValueChange(value);
     }
 }
