@@ -41,9 +41,6 @@ OBJS =	$(UICO) \
 
 all:	banner dep $(UICH) $(UICO) $(LIBJOY_SO)
 
-test:
-	cd test ; make
-
 banner:
 	@echo "----------------- Building QLC 2 Joystick Library -----------------"
 
@@ -68,7 +65,7 @@ install:
 	@echo "Installed" $(LIBJOY_SO) "to" $(SYSTEMPATH)"/$(PLUGINPATH)"
 
 clean: emacsclean
-	rm -f *.o *.so test *.bak uic_* moc_* $(UICH)
+	rm -f *.o *.so *.bak uic_* moc_* $(UICH)
 
 emacsclean:
 	rm -f *~ #*
