@@ -1,0 +1,300 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>UI_DeviceProperties</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_DeviceProperties</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>290</width>
+            <height>214</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Device Properties</string>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_deviceNameLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>80</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Device Name</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_deviceClassLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>40</y>
+                <width>80</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Device Class</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_deviceTypeLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>70</y>
+                <width>80</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Device Type</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>100</y>
+                <width>65</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Channels</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>m_addressLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>130</y>
+                <width>65</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Address</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_dipButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>130</y>
+                <width>40</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>DIP</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Select the address with DIP switches</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButton4</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>240</x>
+                <y>130</y>
+                <width>40</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Find</string>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Find next free address space for this device</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_deviceClassEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>40</y>
+                <width>180</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="readOnly">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_deviceNameEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>10</y>
+                <width>180</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="readOnly">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_cancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>180</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_ok</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>180</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>m_addressSpin</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>130</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="wrapping">
+            <bool>true</bool>
+        </property>
+        <property name="buttonSymbols">
+            <enum>UpDownArrows</enum>
+        </property>
+        <property name="maxValue">
+            <number>511</number>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_channelsEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>100</y>
+                <width>80</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="readOnly">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>m_deviceTypeEdit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>70</y>
+                <width>180</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="readOnly">
+            <bool>true</bool>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DeviceProperties</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DeviceProperties</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_dipButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DeviceProperties</receiver>
+        <slot>slotDIPClicked()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton4</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DeviceProperties</receiver>
+        <slot>slotFindClicked()</slot>
+    </connection>
+</connections>
+<tabstops>
+    <tabstop>m_deviceNameEdit</tabstop>
+    <tabstop>m_deviceClassEdit</tabstop>
+    <tabstop>m_deviceTypeEdit</tabstop>
+    <tabstop>m_channelsEdit</tabstop>
+    <tabstop>m_addressSpin</tabstop>
+    <tabstop>m_dipButton</tabstop>
+    <tabstop>PushButton4</tabstop>
+    <tabstop>m_ok</tabstop>
+    <tabstop>m_cancel</tabstop>
+</tabstops>
+<slots>
+    <slot>slotFindClicked()</slot>
+    <slot>slotDIPClicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
