@@ -277,7 +277,6 @@ void DeviceManagerView::initDataView()
 
   // Create the list view
   m_listView = new QListView(m_splitter);
-  m_listView->setResizeMode(QListView::LastColumn);
   m_splitter->setResizeMode(m_listView, QSplitter::Auto);
 
   m_listView->setMultiSelection(false);
@@ -290,7 +289,8 @@ void DeviceManagerView::initDataView()
   m_listView->header()->setMovingEnabled(false);
 
   m_listView->addColumn("Address");
-  m_listView->addColumn("Devices");
+  m_listView->addColumn("Device Name");
+  m_listView->setResizeMode(QListView::LastColumn);
 
   connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
 	  this, SLOT(slotSelectionChanged(QListViewItem*)));

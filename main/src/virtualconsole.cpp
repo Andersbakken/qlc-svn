@@ -214,9 +214,10 @@ void VirtualConsole::initMenuBar()
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 			"&Frame", this, SLOT(slotAddFrame()),
 			0, KVCMenuAddFrame);
- m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
-			"&XY-Pad", this, SLOT(slotAddXYPad()),
-			0, KVCMenuAddXYPad);			
+  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"),
+                        "&XY-Pad", this, SLOT(slotAddXYPad()),
+                        0, KVCMenuAddXYPad);
+  m_addMenu->setItemEnabled(KVCMenuAddXYPad, false);
   m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
 			"L&abel", this, SLOT(slotAddLabel()),
 			0, KVCMenuAddLabel);
