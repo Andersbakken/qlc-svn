@@ -52,6 +52,7 @@
 #include "configkeys.h"
 #include "vcdockarea.h"
 #include "vcdockslider.h"
+#include "vcxypad.h"
 #include "floatingedit.h"
 
 #include <X11/Xlib.h>
@@ -213,6 +214,9 @@ void VirtualConsole::initMenuBar()
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 			"&Frame", this, SLOT(slotAddFrame()),
 			CTRL+Key_F, KVCMenuAddFrame);
+ m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
+			"&XY-Pad", this, SLOT(slotAddXYPad()),
+			CTRL+Key_X, KVCMenuAddXYPad);			
   m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
 			"L&abel", this, SLOT(slotAddLabel()),
 			CTRL+Key_L, KVCMenuAddLabel);
@@ -388,6 +392,29 @@ void VirtualConsole::slotAddFrame()
 
   _app->doc()->setModified(true);
 }
+
+void VirtualConsole::slotAddXYPad()
+{
+  QWidget* parent = NULL;
+
+  if (m_selectedWidget && 
+      QString(m_selectedWidget->className()) == QString("VCFrame"))
+    {
+      parent = m_selectedWidget;
+    }
+  else
+    {
+      parent = m_drawArea;
+    }
+
+  VCXYPad* f = new VCXYPad(parent);
+  assert(f);
+  f->init();
+  f->show();
+
+  _app->doc()->setModified(true);
+}
+
 
 void VirtualConsole::slotAddLabel()
 {

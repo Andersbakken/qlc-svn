@@ -55,6 +55,7 @@ const int KVCMenuAddButton        ( 101 );
 const int KVCMenuAddSlider        ( 102 );
 const int KVCMenuAddFrame         ( 103 );
 const int KVCMenuAddLabel         ( 104 );
+const int KVCMenuAddXYPad         ( 105 );
 // <<< Add Menu
 
 // Tools Menu >>>
@@ -156,6 +157,7 @@ class VirtualConsole : public QWidget
   void slotAddSlider();
   void slotAddFrame();
   void slotAddLabel();
+  void slotAddXYPad();
 
   void slotToolsSliders();
   void slotToolsSettings();
