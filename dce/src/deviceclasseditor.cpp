@@ -139,7 +139,7 @@ bool DeviceClassEditor::save()
 	}
       else
 	{
-	  perror("save");
+	  
 	  QMessageBox::warning(this, KApplicationNameShort,
 			       "Unable to save file!");
 	  return false;
@@ -197,12 +197,11 @@ void DeviceClassEditor::setModified(bool modified)
 {
   if (modified == true)
     {
-      setCaption(m_dc->manufacturer() + QString(" - ") +
-		 m_dc->model() + QString(" *"));
+      setCaption(m_fileName + QString(" *"));
     }
   else
     {
-      setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
+      setCaption(m_fileName);
     }
 
   m_modified = modified;

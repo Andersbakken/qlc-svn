@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>466</width>
-            <height>456</height>
+            <height>465</height>
         </rect>
     </property>
     <property name="caption">
@@ -618,6 +618,18 @@
         <signal>clicked()</signal>
         <receiver>UI_DeviceClassEditor</receiver>
         <slot>slotEditPresetClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_presetList</sender>
+        <signal>doubleClicked(QListViewItem*)</signal>
+        <receiver>UI_DeviceClassEditor</receiver>
+        <slot>slotEditPresetClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_channelList</sender>
+        <signal>doubleClicked(QListViewItem*)</signal>
+        <receiver>UI_DeviceClassEditor</receiver>
+        <slot>slotEditChannelClicked()</slot>
     </connection>
 </connections>
 <slots>
