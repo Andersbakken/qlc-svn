@@ -51,7 +51,7 @@ Bus::~Bus()
 //
 // Allocate all buses (static)
 //
-void Bus::initAll()
+void Bus::init()
 {
   s_busArray = new Bus[KBusCount];
 

@@ -343,7 +343,7 @@ Function* VCButton::function() const
 
 void VCButton::mousePressEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true)
 	{
@@ -630,7 +630,7 @@ void VCButton::slotMenuCallback(int item)
 
 void VCButton::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       setCursor(QCursor(ArrowCursor));
       m_resizeMode = false;
@@ -644,7 +644,7 @@ void VCButton::mouseReleaseEvent(QMouseEvent* e)
 
 void VCButton::mouseMoveEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true && m_lock == false)
 	{
@@ -721,7 +721,7 @@ void VCButton::moveTo(int x, int y)
 
 void VCButton::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       slotMenuCallback(VCWIDGET_MENU_PROPERTIES);
     }

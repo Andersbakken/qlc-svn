@@ -144,6 +144,7 @@ void FunctionConsumer::init()
     }
 }
 
+
 void FunctionConsumer::run()
 {
   int retval = -1;
@@ -178,6 +179,7 @@ void FunctionConsumer::run()
 
   close(m_fd);
 }
+
 
 void FunctionConsumer::event(time_t)
 {
@@ -217,7 +219,7 @@ void FunctionConsumer::event(time_t)
 	      else
 		{
 		  _app->outputPlugin()
-		    ->writeChannel(f->device()->address() + ch, ev[ch] & (~KNoSetMask));
+		    ->writeChannel(f->device()->address() + ch, ev[ch]);
 		}
 	    }
         }

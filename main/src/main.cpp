@@ -23,10 +23,7 @@
 #include <qstring.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <qstylefactory.h>
 
-#include "settings.h"
-#include "configkeys.h"
 #include "app.h"
 
 #include <X11/Xlib.h>
@@ -92,7 +89,7 @@ int main(int argc, char **argv)
     }
 
   qDebug("* " + KApplicationNameLong + " " + KApplicationVersion);
-  qDebug("* This program is licensed under the terms of the GNU General Public License.");
+  qDebug("* This program is licensed under the terms of the GNU GPL.");
   qDebug("* Copyright (c) Heikki Junnila (hjunnila@iki.fi)");
 
   //
@@ -101,30 +98,10 @@ int main(int argc, char **argv)
   _qapp = &a;
 
   //
-  // Construct settings class and load its contents
-  Settings* settings;
-  settings = new Settings();
-  settings->load();
-
-  //
-  // Get the widget style from settings
-  QString widgetStyle;
-  settings->get(KEY_WIDGET_STYLE, widgetStyle);
-
-  //
-  // Construct the style thru stylefactory and set it if it's valid
-  QStyleFactory f;
-  QStyle* style = f.create(widgetStyle);
-  if (style != NULL)
-    {
-      a.setStyle(style);
-    }
-
-  //
   // Construct the main application class
-  _app = new App(settings);
+  _app = new App();
   _app->setCaption(KApplicationNameLong);
-  _app->initView();
+  _app->init();
   a.setMainWidget(_app);
   _app->show();
   
@@ -138,11 +115,9 @@ int main(int argc, char **argv)
   delete _app;
 
   //
-  // Delete settings
-  delete settings;
-
+  // Set key repeat on in case QLC is set to turn it off in operate mode.
+  // It's pretty safe to assume that most users have it always turned on.
   //
-  // Set key repeat on
   Display* display = XOpenDisplay(NULL);
   ASSERT(display != NULL);
   XAutoRepeatOn(display);

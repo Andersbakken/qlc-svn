@@ -316,25 +316,6 @@
                 </property>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>m_openDeviceManagerCheckBox</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>3</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="text">
-                        <string>Open Device Manager</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Open device manager when QLC starts.</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
                         <cstring>m_openLastWorkspaceCheckBox</cstring>
                     </property>
                     <property name="sizePolicy">
@@ -583,7 +564,6 @@
     <tabstop>m_backgroundEdit</tabstop>
     <tabstop>m_backgroundBrowse</tabstop>
     <tabstop>m_widgetStyleCombo</tabstop>
-    <tabstop>m_openDeviceManagerCheckBox</tabstop>
     <tabstop>m_openLastWorkspaceCheckBox</tabstop>
     <tabstop>m_keyRepeatCheckBox</tabstop>
     <tabstop>m_ok</tabstop>

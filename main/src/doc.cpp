@@ -60,12 +60,50 @@ Doc::Doc() : QObject()
 //
 Doc::~Doc()
 {
-  Device* dev = NULL;
-  while (m_deviceList.isEmpty() == false)
+  Device* d = NULL;
+  Function* f = NULL;
+
+  //
+  // Delete all functions
+  //
+  m_functions.first();
+  while (!m_functions.isEmpty())
     {
-      dev = m_deviceList.take(0);
-      delete dev;
+      f = m_functions.take(0);
+      ASSERT(f);
+      delete f;
     }
+
+  //
+  // Signal that function list has changed
+  //
+  emit functionListChanged();
+
+  //
+  // Reset function ID numbers
+  //
+  Function::resetID();
+
+  //
+  // Delete all devices
+  //
+  m_deviceList.first();
+  while (!m_deviceList.isEmpty())
+    {
+      d = m_deviceList.take(0);
+      ASSERT(d);
+      delete d;
+    }
+
+  //
+  // Reset device ID numbers
+  //
+  Device::resetID();
+
+  //
+  // Signal that device list has changed
+  //
+  emit deviceListChanged();
 }
 
 
@@ -94,123 +132,6 @@ void Doc::setModified(bool modified)
 
 
 //
-// Initialize the Doc object
-//
-void Doc::init()
-{
-  readDeviceClasses();
-}
-
-
-//
-// Read all device classes from files
-//
-bool Doc::readDeviceClasses()
-{
-  DeviceClass* dc = NULL;
-  QString path = QString::null;
-
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + DEVICECLASSPATH + QString("/");
-
-  QDir d(dir);
-  d.setFilter(QDir::Files);
-  d.setNameFilter("*.deviceclass");
-  if (d.exists() == false || d.isReadable() == false)
-    {
-      QString msg("Unable to read from device directory!");
-      QMessageBox::warning(_app, KApplicationNameShort, msg);
-      return false;
-    }
-
-  QStringList dirlist(d.entryList());
-  QStringList::Iterator it;
-
-  QPtrList <QString> list; // Our stringlist that contains the files' contents
-
-  // Put a slash to the end of the directory name if it isn't there
-  if (dir.right(1) != QString("/"))
-    {
-      dir = dir + QString("/");
-    }
-
-  // Go thru all files
-  for (it = dirlist.begin(); it != dirlist.end(); ++it)
-    {
-      path = dir + *it;
-      FileHandler::readFileToList(path, list);
-      dc = createDeviceClass(list);
-      if (dc != NULL)
-	{
-	  m_deviceClassList.append(dc);
-	}
-
-      // 03-Jan-2002 / HJu
-      // The list wasn't cleared between files
-      while (list.isEmpty() == false)
-	{
-	  list.first();
-	  delete list.take();
-	}
-    }
-  return true;
-}
-
-
-//
-// Create device class entry from file entry
-//
-DeviceClass* Doc::createDeviceClass(QPtrList <QString> &list)
-{
-  QString entry;
-  QString manufacturer;
-  QString model;
-  QString t;
-  
-  DeviceClass* dc = new DeviceClass();
-
-  for (QString *s = list.first(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  entry = *(list.next());
-	  if (entry == QString("Device Class"))
-	    {
-	      dc->createInfo(list);
-	    }
-	  else if (entry == QString("Channel"))
-	    {
-	      dc->createChannel(list);
-	    }
-	  else if (entry == QString("Function"))
-	    {
-	      list.next();
-	      // dc->createFunction(list);
-	    }
-	}
-      else
-	{
-	  // Unknown keyword (at this time)
-	  list.next();
-	}
-    }
-
-  if (dc->channels()->count() == 0)
-    {
-      QString msg;
-      msg.sprintf("No channels specified for device class \"" +
-		  dc->manufacturer() +
-		  QString(" ") + dc->model() + QString("\".\n") +
-		  "Use the device class editor to add one or more channels.");
-      QMessageBox::warning(_app, KApplicationNameShort, msg);
-    }
-
-  return dc;
-}
-
-
-//
 // Load workspace from a given filename
 //
 bool Doc::loadWorkspaceAs(QString &fileName)
@@ -221,8 +142,6 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   QString s;
   QString t;
   QPtrList <QString> list;
-
-  newDocument();
 
   if (FileHandler::readFileToList(fileName, list) == true)
     {
@@ -308,6 +227,11 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		}
 	    }
 	}
+
+      //
+      // Set the last workspace name
+      //
+      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, workspaceFileName());
 
       success = true;
     }
@@ -553,7 +477,7 @@ Device* Doc::createDevice(QPtrList <QString> &list)
     }
   else
     {
-      DeviceClass* dc = searchDeviceClass(manufacturer, model);
+      DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
       if (dc == NULL)
 	{
 	  QString msg;
@@ -588,44 +512,6 @@ Device* Doc::createDevice(QPtrList <QString> &list)
 
 
 //
-// Clear everything and start anew
-//
-void Doc::newDocument()
-{
-  Device* d = NULL;
-  Function* f = NULL;
-
-  _app->functionConsumer()->purge();
-
-  // Delete all functions
-  m_functions.first();
-  while (!m_functions.isEmpty())
-    {
-      f = m_functions.take(0);
-      ASSERT(f);
-      delete f;
-    }
-
-  // Delete all devices
-  m_deviceList.first();
-  while (!m_deviceList.isEmpty())
-    {
-      d = m_deviceList.take(0);
-      ASSERT(d);
-      delete d;
-    }
-
-  m_workspaceFileName = QString::null;
-
-  setModified(false);
-
-  Function::resetFunctionId();
-
-  emit newDocumentClicked();
-}
-
-
-//
 // Save the workspace
 //
 bool Doc::saveWorkspace()
@@ -642,29 +528,18 @@ bool Doc::saveWorkspaceAs(QString &fileName)
   QFile file(fileName);
   if (file.open(IO_WriteOnly))
     {
-      //
-      // Buses
-      //
-      qDebug("Warning! Functionality removed");
-      /*
-      for (Bus* b = m_busList.first(); b != NULL; b = m_busList.next())
-	{
-	  b->saveToFile(file);
-	}
-      */
-      //
-      // Devices
-      //
+      //////////////////////////
+      // Devices              //
+      //////////////////////////
       for (Device* d = m_deviceList.first(); d != NULL; 
 	   d = m_deviceList.next())
         {
 	  d->saveToFile(file);
 	}
 
-      //
-      // Functions
-      //
-
+      //////////////////////////
+      // Functions            //
+      //////////////////////////
       //
       // Scenes
       //
@@ -722,6 +597,11 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       // Current workspace file
       m_workspaceFileName = QString(fileName);
 
+      //
+      // Set the last workspace name
+      //
+      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, workspaceFileName());
+
       file.close();
     }
   else
@@ -761,7 +641,7 @@ bool Doc::addDevice(Device* device)
 //
 bool Doc::removeDevice(Device* device)
 {
-  if (_app->virtualConsole()->isDesignMode())
+  if (_app->mode() == App::Design)
     {
       Device* dev = NULL;
       bool ok = false;
@@ -812,47 +692,6 @@ Device* Doc::searchDevice(const t_device_id id)
 
 
 
-////////////////////////
-// Device Class stuff //
-////////////////////////
-
-//
-// Search for a deviceclass by its manufacturer & model
-//
-DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, 
-				    const QString &model)
-{
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
-       d = m_deviceClassList.next())
-    {
-      if (d->manufacturer() == manufacturer && d->model() == model)
-	{
-	  return d;
-	}
-    }
-
-  return NULL;
-}
-
-
-//
-// Search for a deviceclass by its ID
-//
-DeviceClass* Doc::searchDeviceClass(const t_deviceclass_id id)
-{
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
-       d = m_deviceClassList.next())
-    {
-      if (d->id() == id)
-	{
-	  return d;
-	}
-    }
-
-  return NULL;
-}
-
-
 
 ////////////////////
 // Function stuff //
@@ -868,6 +707,8 @@ bool Doc::addFunction(const Function* function)
 
   setModified(true);
 
+  emit functionListChanged();
+
   return true;
 }
 
@@ -879,7 +720,7 @@ bool Doc::removeFunction(const t_function_id id, bool deleteFunction)
 {
   Function* f = NULL;
 
-  if (_app->virtualConsole()->isDesignMode())
+  if (_app->mode() == App::Design)
     {
       for (f = m_functions.first(); f != NULL; f = m_functions.next())
 	{
@@ -897,6 +738,8 @@ bool Doc::removeFunction(const t_function_id id, bool deleteFunction)
 	}
 
       setModified(true);
+
+      emit functionListChanged();
 
       return true;
     }

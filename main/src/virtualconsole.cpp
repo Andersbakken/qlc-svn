@@ -50,6 +50,8 @@
 
 extern App* _app;
 
+const QString KEY_VIRTUAL_CONSOLE_OPEN  (  "VirtualConsoleOpen" );
+
 VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
   : QWidget(parent, name)
 {
@@ -59,7 +61,23 @@ VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
 
 VirtualConsole::~VirtualConsole()
 {
+  QString config;
+
+  //
+  // Save visible status
+  //
+  if (isShown())
+    {
+      config = Settings::trueValue();
+    }
+  else
+    {
+      config = Settings::falseValue();
+    }
+
+  _app->settings()->set(KEY_VIRTUAL_CONSOLE_OPEN, config);
 }
+
 
 void VirtualConsole::initView(void)
 {
@@ -76,13 +94,6 @@ void VirtualConsole::initView(void)
 
   m_menuBar = new QMenuBar(this);
   m_layout->setMenuBar(m_menuBar);
-
-  m_modeMenu = new QPopupMenu();
-  m_modeMenu->setCheckable(true);
-  m_modeMenu->insertItem("&Operate", ID_VC_MODE_OPERATE);
-  m_modeMenu->insertItem("&Design", ID_VC_MODE_DESIGN);
-  connect(m_modeMenu, SIGNAL(activated(int)),
-	  this, SLOT(slotMenuItemActivated(int)));
 
   m_addMenu = new QPopupMenu();
   m_addMenu->setCheckable(false);
@@ -107,16 +118,33 @@ void VirtualConsole::initView(void)
   connect(m_toolsMenu, SIGNAL(activated(int)), 
 	  this, SLOT(slotMenuItemActivated(int)));
 
-  m_menuBar->insertItem("&Mode", m_modeMenu, ID_VC_MODE);
   m_menuBar->insertItem("&Add", m_addMenu, ID_VC_ADD);
   m_menuBar->insertItem("&Tools", m_toolsMenu, ID_VC_TOOLS);
 
   m_menuBar->setItemEnabled(ID_VC_ADD, true);
 
-  newDocument();
+  VCWidget::ResetID();
 
-  setMode(Design);
+  initDockArea();
+  initDrawArea();
+
+  slotModeChanged();
+  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+
+  // Check if VC should be open
+  QString config;
+  _app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config);
+  if (config == Settings::trueValue())
+    {
+      _app->slotViewVirtualConsole();
+    }
+  else
+    {
+      hide();
+      _app->slotVirtualConsoleClosed();
+    }
 }
+
 
 //
 // Menu callback
@@ -125,20 +153,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 {
   switch(item)
     {
-    case ID_VC_MODE_OPERATE:
-      {
-	setMode(Operate);
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_MODE_DESIGN:
-      {
-	setMode(Design);
-	_app->doc()->setModified(true);
-      }
-      break;
-
     case ID_VC_ADD_BUTTON:
       {
 	VCButton* b;
@@ -154,7 +168,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	VCSlider* s;
 	s = new VCSlider(m_drawArea);
 	s->init();
-	s->setGeometry(0, 0, 20, 120);
 	s->show();
 	_app->doc()->setModified(true);
       }
@@ -164,22 +177,20 @@ void VirtualConsole::slotMenuItemActivated(int item)
       {
  	VCLabel* p = NULL;
 	p = new VCLabel(m_drawArea);
-	p->setText("New label");
 	p->show();
 	_app->doc()->setModified(true);
       }
       break;
 
     case ID_VC_ADD_MONITOR:
-	_app->doc()->setModified(true);
+      _app->doc()->setModified(true);
       break;
 
     case ID_VC_ADD_FRAME:
       {
 	VCWidget* w;
 	w = new VCWidget(m_drawArea);
-	w->resize(120, 120);
-	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	w->init();
 	w->show();
 	_app->doc()->setModified(true);
       }
@@ -210,14 +221,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 }
 
 
-void VirtualConsole::newDocument()
-{
-  VCWidget::globalVCWidgetIDReset();
-
-  initDockArea();
-  initDrawArea();
-}
-
 void VirtualConsole::initDockArea()
 {
   if (m_dockArea) delete m_dockArea;
@@ -225,12 +228,11 @@ void VirtualConsole::initDockArea()
   connect(m_dockArea, SIGNAL(areaHidden(bool)),
 	  this, SLOT(slotDockAreaHidden(bool)));
   m_dockArea->init();
-  m_dockArea->show();
 
   // Add the dock area into the master (horizontal) layout
   m_layout->addWidget(m_dockArea, 0);
-  m_dockArea->show();
 }
+
 
 void VirtualConsole::slotDockAreaHidden(bool areaHidden)
 {
@@ -244,6 +246,7 @@ void VirtualConsole::slotDockAreaHidden(bool areaHidden)
     }
 }
 
+
 void VirtualConsole::initDrawArea()
 {
   if (m_drawArea) delete m_drawArea;
@@ -252,41 +255,20 @@ void VirtualConsole::initDrawArea()
 
   // Add the draw area into the master (horizontal) layout
   m_layout->addWidget(m_drawArea, 1);
-  m_drawArea->show();
 }
 
-
-//
-// Returns true if QLC is in design mode
-//
-bool VirtualConsole::isDesignMode(void)
-{ 
-  return (m_mode == Design) ? true : false;
-}
 
 //
 // Set the mode (Design/Operate)
 //
-void VirtualConsole::setMode(Mode mode)
+void VirtualConsole::slotModeChanged()
 {
-  //
-  // If we're going to change to design mode when functions are running,
-  // all functions should be stopped
-  //
-  if (mode == Design)
-    {
-      qDebug("TODO: check if there are any running functions");
-    }
-
   QString config;
   _app->settings()->get("KeyRepeatOffInOperateMode", config);
 
-  if (mode == Design)
+  if (_app->mode() == App::Design)
     {
-      m_mode = Design;
-      m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, true);
-      m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, false);
-      m_menuBar->setItemEnabled(ID_VC_ADD, true);
+      qDebug("TODO: check if there are any running functions");
       setCaption("Virtual Console - Design Mode");
 
       /* Set auto repeat off when in "Operate" mode and on 
@@ -305,10 +287,6 @@ void VirtualConsole::setMode(Mode mode)
     }
   else
     {
-      m_mode = Operate;
-      m_menuBar->setItemChecked(ID_VC_MODE_DESIGN, false);
-      m_menuBar->setItemChecked(ID_VC_MODE_OPERATE, true);
-      m_menuBar->setItemEnabled(ID_VC_ADD, false);
       setCaption("Virtual Console - Operate Mode");
 
       /* Set auto repeat off when in "Operate" mode and on 
@@ -325,9 +303,8 @@ void VirtualConsole::setMode(Mode mode)
 	  XCloseDisplay(display);
 	}
     }
-
-  emit modeChange();
 }
+
 
 // Search for a parent frame by the id number <id>
 // This is a recursive function and I have the feeling that it could
@@ -449,18 +426,6 @@ void VirtualConsole::createVirtualConsole(QPtrList <QString>& list)
 	  list.prev();
 	  break;
 	}
-      else if (*s == QString("Mode"))
-	{
-	  t = *(list.next());
-	  if (t == QString("Design"))
-	    {
-	      setMode(Design);
-	    }
-	  else
-	    {
-	      setMode(Operate);
-	    }
-	}
       else if (*s == QString("X"))
 	{
 	  t = *(list.next());
@@ -494,7 +459,7 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
 {
   QString t;
 
-  VCWidget::globalVCWidgetIDReset();
+  VCWidget::ResetID();
   
   if (m_drawArea != NULL)
     {
@@ -518,11 +483,6 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
 	      createWidget(list);
 	    }
 	  else if (*s == QString("Button"))
-	    {
-	      list.prev();
-	      createWidget(list);
-	    }
-	  else if (*s == QString("SpeedSlider"))
 	    {
 	      list.prev();
 	      createWidget(list);
@@ -552,6 +512,19 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
   // Virtual console sometimes loses its parent (or vice versa)
   // when loading a new document... try to handle it with this.
   reparent((QWidget*) _app->workspace(), 0, pos(), isVisible());
+
+  // Check if VC should be open
+  QString config;
+  _app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config);
+  if (config == Settings::trueValue())
+    {
+      _app->slotViewVirtualConsole();
+    }
+  else
+    {
+      hide();
+      _app->slotVirtualConsoleClosed();
+    }
 }
 
 void VirtualConsole::saveToFile(QFile& file)
@@ -565,11 +538,6 @@ void VirtualConsole::saveToFile(QFile& file)
 
   // Entry type
   s = QString("Entry = Virtual Console") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Name
-  t = (m_mode == Design) ? QString("Design") : QString("Operate");
-  s = QString("Mode = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // X
@@ -608,7 +576,7 @@ void VirtualConsole::keyPressEvent(QKeyEvent* e)
 {
   VCWidgetBase* b = NULL;
 
-  if (m_mode == Operate)
+  if (_app->mode() == App::Operate)
     {
       for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
 	{
@@ -622,7 +590,7 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 {
   VCWidgetBase* b = NULL;
 
-  if (m_mode == Operate)
+  if (_app->mode() == App::Operate)
     {
       for (unsigned int i = 0; i < m_keyReceivers.count(); i++)
 	{

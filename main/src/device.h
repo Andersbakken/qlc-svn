@@ -90,13 +90,17 @@ class Device : public QObject
   Monitor* m_monitor;
 
  private:
-  static t_device_id m_nextDeviceId;
-
   QPtrList <ChannelUI> m_unitList;
   SceneEditor* m_sceneEditor;
 
  protected:
   void createChannelUnits(void);
+
+ private:
+  static t_device_id s_nextDeviceID;
+
+ public:
+  static void resetID() { s_nextDeviceID = KOutputDeviceIDMin; }
 };
 
 #endif

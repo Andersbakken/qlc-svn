@@ -55,6 +55,12 @@ const int KMenuItemProperties ( 2 );
 const int KMenuItemMonitor    ( 3 );
 const int KMenuItemConsole    ( 4 );
 
+const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
+const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
+const QString KEY_DEVICE_MANAGER_Y     ( "DeviceManagerRectY" );
+const QString KEY_DEVICE_MANAGER_W     ( "DeviceManagerRectW" );
+const QString KEY_DEVICE_MANAGER_H     ( "DeviceManagerRectH" );
+
 //
 // Constructor
 //
@@ -75,6 +81,26 @@ DeviceManagerView::DeviceManagerView(QWidget* parent, const char* name)
 //
 DeviceManagerView::~DeviceManagerView()
 {
+  QString config;
+
+  if (isShown())
+    {
+      config = Settings::trueValue();
+    }
+  else
+    {
+      config = Settings::falseValue();
+    }
+
+  _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, config);
+
+  //
+  // Save rect
+  //
+  _app->settings()->set(KEY_DEVICE_MANAGER_X, rect().x());
+  _app->settings()->set(KEY_DEVICE_MANAGER_Y, rect().y());
+  _app->settings()->set(KEY_DEVICE_MANAGER_W, rect().width());
+  _app->settings()->set(KEY_DEVICE_MANAGER_H, rect().height());
 }
 
 
@@ -105,11 +131,34 @@ void DeviceManagerView::initView()
   // Init the device view and text view
   initDataView();
 
-  connect(_app->virtualConsole(), SIGNAL(modeChange()),
-	  this, SLOT(slotModeChanged()));
+  // Connect to know when to enable/disable buttons
+  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
   // Update view
   update();
+
+  //
+  // Set widget proportions
+  //
+  QString x, y, w, h;
+  _app->settings()->get(KEY_DEVICE_MANAGER_X, x);
+  _app->settings()->get(KEY_DEVICE_MANAGER_Y, y);
+  _app->settings()->get(KEY_DEVICE_MANAGER_W, w);
+  _app->settings()->get(KEY_DEVICE_MANAGER_H, h);
+  setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+
+  // Check if DM should be open
+  QString config;
+  _app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
+  if (config == Settings::trueValue())
+    {
+      _app->slotViewDeviceManager();
+    }
+  else
+    {
+      hide();
+      _app->slotDeviceManagerViewClosed();
+    }
 }
 
 
@@ -285,7 +334,7 @@ void DeviceManagerView::slotAdd()
 
 	  // Search the actual device class instance to be associated
 	  // with the new device
-	  DeviceClass* dc = _app->doc()->searchDeviceClass(manufacturer,model);
+	  DeviceClass* dc = _app->searchDeviceClass(manufacturer,model);
 	  ASSERT(dc);
 
 	  if (dc->channels()->count() == 0)
@@ -430,7 +479,7 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
       m_consoleButton->setEnabled(true);
       m_monitorButton->setEnabled(true);
       
-      if (_app->virtualConsole()->isDesignMode())
+      if (_app->mode() == App::Design)
 	{
 	  m_addButton->setEnabled(true);
 	  m_removeButton->setEnabled(true);
@@ -462,9 +511,9 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
   menu->insertItem("View Console...", KMenuItemConsole);
   menu->insertItem("View Monitor...", KMenuItemMonitor);
   
-  if ( !_app->virtualConsole()->isDesignMode() || !item )
+  if ( _app->mode() == App::Operate || !item )
     {
-      // At least not in design mode, remove and edit impossible
+      // Operate mode, remove and edit impossible
       menu->setItemEnabled(KMenuItemRemove, false);
       menu->setItemEnabled(KMenuItemProperties, false);
 

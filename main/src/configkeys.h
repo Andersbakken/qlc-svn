@@ -33,19 +33,18 @@
  */
 
 // General settings
-const QString KEY_SYSTEM_DIR          = "SystemDirectory";
-const QString KEY_OUTPUT_PLUGIN       = "OutputPlugin";
-const QString KEY_WIDGET_STYLE        = "WidgetStyle";
-const QString KEY_OPEN_LAST_WORKSPACE = "OpenLastWorkspace";
-const QString KEY_LAST_WORKSPACE_NAME = "LastWorkspaceName";
-const QString KEY_DEVICE_MANAGER_OPEN = "DeviceManagerOpen";
+const QString KEY_SYSTEM_DIR           (    "SystemDirectory" );
+const QString KEY_OUTPUT_PLUGIN        (       "OutputPlugin" );
+const QString KEY_WIDGET_STYLE         (        "WidgetStyle" );
+const QString KEY_OPEN_LAST_WORKSPACE  (  "OpenLastWorkspace" );
+const QString KEY_LAST_WORKSPACE_NAME  (  "LastWorkspaceName" );
 
-const QString KEY_APP_X               = "ApplicationRectX";
-const QString KEY_APP_Y               = "ApplicationRectY";
-const QString KEY_APP_W               = "ApplicationRectW";
-const QString KEY_APP_H               = "ApplicationRectH";
-const QString KEY_APP_BACKGROUND      = "ApplicationBackground";
+const QString KEY_APP_X                (      "ApplicationRectX" );
+const QString KEY_APP_Y                (      "ApplicationRectY" );
+const QString KEY_APP_W                (      "ApplicationRectW" );
+const QString KEY_APP_H                (      "ApplicationRectH" );
+const QString KEY_APP_BACKGROUND       ( "ApplicationBackground" );
 
-const QString KEY_KEY_REPEAT          = "KeyRepeat";
+const QString KEY_KEY_REPEAT           ( "KeyRepeat" );
 
 #endif

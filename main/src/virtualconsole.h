@@ -37,10 +37,6 @@ class VCWidget;
 class Bus;
 class VCDockArea;
 
-#define ID_VC_MODE                   1000
-#define ID_VC_MODE_OPERATE           1010
-#define ID_VC_MODE_DESIGN            1020
-
 #define ID_VC_ADD                    1100
 #define ID_VC_ADD_BUTTON             1110
 #define ID_VC_ADD_SLIDER             1120
@@ -61,21 +57,16 @@ class VirtualConsole : public QWidget
   VirtualConsole(QWidget* parent = 0, const char* name = 0);
   ~VirtualConsole();
 
-  enum Mode { Operate, Design };
-
   void initView();
-  void newDocument();
   void initDockArea();
   void initDrawArea();
 
   void registerKeyReceiver(VCWidgetBase* widget);
   void unRegisterKeyReceiver(VCWidgetBase* widget);
 
-  bool isDesignMode();
-  void setMode(Mode mode);
-
   // Create the vc from list
   void createContents(QPtrList <QString>& file); 
+
   // Save all widgets and vc data to file
   void saveToFile(QFile& file); 
 
@@ -85,10 +76,10 @@ class VirtualConsole : public QWidget
  public slots:
   void slotMenuItemActivated(int);
   void slotDockAreaHidden(bool);
+  void slotModeChanged();
 
  signals:
   void closed();
-  void modeChange();
 
  protected:
   void closeEvent(QCloseEvent* e);
@@ -116,9 +107,6 @@ class VirtualConsole : public QWidget
 
   // Draw area
   VCWidget* m_drawArea;
-
-  // Main operating mode (should be in app, actually)
-  Mode m_mode;
 
   // Those widgets that have been registered as keyboard event receivers
   QPtrList <VCWidgetBase> m_keyReceivers;

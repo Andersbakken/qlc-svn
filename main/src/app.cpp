@@ -33,6 +33,7 @@
 #include <qlabel.h>
 #include <qcolor.h>
 #include <qtooltip.h>
+#include <qstylefactory.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -61,6 +62,8 @@
 #include "../../libs/common/outputplugin.h"
 #include "../../libs/common/plugin.h"
 
+#include "../../libs/common/filehandler.h"
+
 static const QString KModeTextOperate = QString("Operate");
 static const QString KModeTextDesign = QString("Design");
 
@@ -87,7 +90,6 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 #define ID_VIEW_STATUSBAR		12020
 
 #define ID_VIEW_DEVICE_MANAGER		12030
-#define ID_VIEW_DEVICE_CLASS_EDITOR	12035
 #define ID_VIEW_VIRTUAL_CONSOLE         12040
 #define ID_VIEW_SEQUENCE_EDITOR         12050
 #define ID_VIEW_DMXADDRESSTOOL          12060
@@ -98,7 +100,8 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 // Functions menu entries
 #define ID_FUNCTIONS                    13000
 #define ID_FUNCTIONS_PANIC              13010
-#define ID_FUNCTIONS_MODE               13020
+#define ID_FUNCTIONS_MODE_OPERATE       13020
+#define ID_FUNCTIONS_MODE_DESIGN        13030
 
 ///////////////////////////////////////////////////////////////////
 // Window menu entries
@@ -116,7 +119,9 @@ t_plugin_id App::NextPluginID = KPluginIDMin;
 // Status bar messages
 #define IDS_STATUS_DEFAULT              "Ready"
 
-App::App(Settings* settings)
+extern QApplication _qapp;
+
+App::App()
 {
   m_functionTree = NULL;
   m_dmView = NULL;
@@ -127,138 +132,107 @@ App::App(Settings* settings)
   m_functionConsumer = NULL;
   m_outputPlugin = NULL;
   m_dummyOutPlugin = NULL;
-
-  Bus::initAll();
-
-  ASSERT(settings != NULL);
-  m_settings = settings;
+  m_settings = NULL;
+  m_mode = Design;
 }
 
 App::~App()
 {
   delete m_functionConsumer;
   delete m_dmView;
-  delete m_modeIndicator;
   delete m_virtualConsole;
   delete m_doc;
+  delete m_modeIndicator;
   delete m_workspace;
+  delete m_settings;
 }
 
-void App::initView(void)
+
+//////////////////////////////////////////////////////////////////////
+// Main initialization function                                     //
+//                                                                  //
+// This creates all items that are not saved in workspace files     //
+//////////////////////////////////////////////////////////////////////
+void App::init(void)
 {
+  //
+  // Settings has to be first
+  //
   initSettings();
-  initPlugins();
-  initDoc();
-  initSequenceEngine();
 
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
-  setIcon(QPixmap(dir + QString("/Q.xpm")));
-
+  //
+  // The main view
+  //
   initWorkspace();
 
+  //
+  // Menus, toolbar, statusbar
+  //
   initMenuBar();
   initStatusBar();
   initToolBar();
 
-  initVirtualConsole();
+  //
+  // Plugins
+  //
+  initPlugins();
+
+  //
+  // Device classes
+  //
+  initDeviceClasses();
+
+  //
+  // Function consumer
+  //
+  initFunctionConsumer();
+
+  //
+  // Buses
+  //
+  Bus::init();
+
+  //
+  // Document
+  //
+  initDoc();
+
+  //
+  // Views
+  //
   initDeviceManagerView();
+  initVirtualConsole();
 
+  //
+  // Load the previous workspace
+  //
   QString config;
-  settings()->get(KEY_OPEN_LAST_WORKSPACE, config);
-
-  if (config == Settings::trueValue())
+  if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config))
     {
-      settings()->get(KEY_LAST_WORKSPACE_NAME, config);
-
-      doc()->loadWorkspaceAs(config);
-      setCaption(KApplicationNameLong + QString(" - ") + 
-		 doc()->workspaceFileName());
-      virtualConsole()->hide();
+      if (config == Settings::trueValue())
+	{
+	  if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
+	    {
+	      doc()->loadWorkspaceAs(config);
+	    }
+	}
     }
 }
 
-void App::initStatusBar()
-{
-  m_modeIndicator = new QLabel("Design Mode", statusBar());
-  statusBar()->addWidget(m_modeIndicator, 0, true);
-}
 
-void App::initToolBar()
-{
-  m_toolbar = new QToolBar(this, "Workspace");
-
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
-  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
-		  "New workspace; clear everything", 0, 
-		  this, SLOT(slotFileNew()), m_toolbar);
-
-  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
-		  "Open existing workspace", 0, 
-		  this, SLOT(slotFileOpen()), m_toolbar);
-
-  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), 
-		  "Save current workspace", 0, 
-		  this, SLOT(slotFileSave()), m_toolbar);
-
-  m_toolbar->addSeparator();
-
-  new QToolButton(QPixmap(dir + QString("/device.xpm")), 
-		  "View device manager", 0, 
-		  this, SLOT(slotViewDeviceManager()), m_toolbar);
-
-  new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
-		  "View virtual console", 0, 
-		  this, SLOT(slotViewVirtualConsole()), m_toolbar);
-
-  QToolBar* vc = new QToolBar(this, "Virtual Console toolbar");
-
-  new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
-		  "Panic; Shut down all running functions", 0, 
-		  this, SLOT(slotPanic()), vc);
-
-  m_modeButton = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
-				 "Design Mode; All editing features enabled", 
-				 0, this, SLOT(slotModeButtonClicked()), vc);
-}
-
-void App::initSequenceEngine()
-{
-  m_functionConsumer = new FunctionConsumer();
-  ASSERT(m_functionConsumer);
-  
-  m_functionConsumer->init();
-  m_functionConsumer->start();
-}
-
-bool App::event(QEvent* e)
-{
-  return QWidget::event(e);
-}
-
-void App::initDoc()
-{
-  m_doc = new Doc();
-  m_doc->init();
-}
-
+//
+// Create the settings object and load its contents
+//
 void App::initSettings()
 {
-  QString x, y, w, h;
-  settings()->get(KEY_APP_X, x);
-  settings()->get(KEY_APP_Y, y);
-  settings()->get(KEY_APP_W, w);
-  settings()->get(KEY_APP_H, h);
-
-  // Set the main window geometry
-  setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+  m_settings = new Settings();
+  m_settings->load();
 }
 
+
+//
+// Create the main workspace and load related settings
+//
 void App::initWorkspace()
 {
   m_workspace = new QWorkspace(this, "Main Workspace");
@@ -269,49 +243,46 @@ void App::initWorkspace()
 
   // Set background picture
   m_workspace->setBackgroundPixmap(QPixmap(path));
-}
 
-void App::initDeviceManagerView()
-{
-  // Create device manager view
-  m_dmView = new DeviceManagerView(workspace());
-  m_dmView->initView();
+  //
+  // Set App proportions
+  //
+  QString x, y, w, h;
+  settings()->get(KEY_APP_X, x);
+  settings()->get(KEY_APP_Y, y);
+  settings()->get(KEY_APP_W, w);
+  settings()->get(KEY_APP_H, h);
+  setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
 
-  // Check if DM should be open
-  QString config;
-  settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
-  if (config == Settings::trueValue())
+  //
+  // Main application icon
+  //
+  QString dir;
+  settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+  setIcon(QPixmap(dir + QString("/Q.xpm")));
+
+  //
+  // Get the widget style from settings
+  //
+  QString widgetStyle;
+  m_settings->get(KEY_WIDGET_STYLE, widgetStyle);
+
+  //
+  // Construct the style thru stylefactory and set it if it's valid
+  //
+  QStyleFactory f;
+  QStyle* style = f.create(widgetStyle);
+  if (style != NULL)
     {
-      m_dmView->show();
-      m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
+      _qapp.setStyle(style);
     }
-  else
-    {
-      m_dmView->hide();
-      m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
-    }
-
-  connect(m_dmView, SIGNAL(closed()), 
-  	  this, SLOT(slotDeviceManagerViewClosed()));
-  
-  connect(m_doc, SIGNAL(deviceListChanged()), 
-  	  m_dmView, SLOT(slotUpdate()));
 }
 
-void App::initVirtualConsole(void)
-{
-  m_virtualConsole = new VirtualConsole(workspace());
-  m_virtualConsole->initView();
-  m_virtualConsole->resize(400, 400);
-  m_virtualConsole->hide();
 
-  connect(m_virtualConsole, SIGNAL(closed()),
-	  this, SLOT(slotVirtualConsoleClosed()));
-
-  connect(m_virtualConsole, SIGNAL(modeChange()),
-	  this, SLOT(slotSetModeIndicator()));
-}
-
+//
+// Menu bar
+//
 void App::initMenuBar()
 {
   QString dir;
@@ -343,39 +314,55 @@ void App::initMenuBar()
 			 CTRL+Key_Q, ID_FILE_QUIT);
   
   ///////////////////////////////////////////////////////////////////
-  // View Menu
+  // Tools Menu
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/device.xpm")), 
 			  "Device Manager", this, 
 			  SLOT(slotViewDeviceManager()), 
-			  CTRL + Key_D, ID_VIEW_DEVICE_MANAGER);
+			  CTRL + Key_M, ID_VIEW_DEVICE_MANAGER);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/virtualconsole.xpm")), 
 			  "Virtual Console", this, 
 			  SLOT(slotViewVirtualConsole()), 
-			  CTRL + Key_G, ID_VIEW_VIRTUAL_CONSOLE);
+			  CTRL + Key_V, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/deviceclasseditor.xpm")), 
-			  "Device Class Editor", this, 
-			  SLOT(slotViewDeviceClassEditor()), 
-			  CTRL + Key_E, ID_VIEW_DEVICE_CLASS_EDITOR);
   m_toolsMenu->insertItem(QPixmap(dir + QString("/function.xpm")), 
 			  "Function Tree", this, SLOT(slotViewFunctionTree()), 
 			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(dir + QString("/panic.xpm")), "Panic!", 
-			  this, SLOT(slotPanic()), CTRL + Key_C, 
+			  this, SLOT(slotPanic()), CTRL + Key_P,
 			  ID_FUNCTIONS_PANIC);
 
   connect(m_toolsMenu, SIGNAL(aboutToShow()), 
-	  this, SLOT(slotRefreshToolsMenu()));
+	  this, SLOT(slotRefreshMenus()));
+
+  ////////////////////////////////////////////////////////////////////
+  // Mode menu
+  m_modeMenu = new QPopupMenu();
+  m_modeMenu->setCheckable(true);
+  m_modeMenu->insertItem(QPixmap(dir + QString("/unlocked.xpm")),
+			 "Design", this,
+			 SLOT(slotSetMode()), CTRL + Key_D,
+			 ID_FUNCTIONS_MODE_DESIGN);
+
+  m_modeMenu->insertItem(QPixmap(dir + QString("/locked.xpm")),
+			 "Operate", this,
+			 SLOT(slotSetMode()), CTRL + Key_R,
+			 ID_FUNCTIONS_MODE_OPERATE);
+
+  connect(m_modeMenu, SIGNAL(aboutToShow()),
+	  this, SLOT(slotRefreshMenus()));
 
   ///////////////////////////////////////////////////////////////////
   // Window Menu
   m_windowMenu = new QPopupMenu();
   connect(m_windowMenu, SIGNAL(aboutToShow()), 
-	  this, SLOT(slotRefreshWindowMenu()));
+	  this, SLOT(slotRefreshMenus()));
   
+  connect(m_windowMenu, SIGNAL(activated(int)),
+	  this, SLOT(slotWindowMenuCallback(int)));
+
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
@@ -390,6 +377,7 @@ void App::initMenuBar()
   // Menubar configuration
   menuBar()->insertItem("&File", m_fileMenu);
   menuBar()->insertItem("&Tools", m_toolsMenu);
+  m_toolsMenu->insertItem("&Mode", m_modeMenu);
   menuBar()->insertItem("&Window", m_windowMenu);
   menuBar()->insertSeparator();  	
   menuBar()->insertItem("&Help", m_helpMenu);
@@ -398,6 +386,139 @@ void App::initMenuBar()
 }
 
 
+//
+// Status bar
+//
+void App::initStatusBar()
+{
+  m_modeIndicator = new QLabel("Design Mode", statusBar());
+  statusBar()->addWidget(m_modeIndicator, 0, true);
+}
+
+
+//
+// Create & fill toolbar
+//
+void App::initToolBar()
+{
+  m_toolbar = new QToolBar(this, "Workspace");
+
+  QString dir;
+  settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + PIXMAPPATH;
+  
+  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
+		  "New workspace; clear everything", 0, 
+		  this, SLOT(slotFileNew()), m_toolbar);
+
+  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
+		  "Open existing workspace", 0, 
+		  this, SLOT(slotFileOpen()), m_toolbar);
+
+  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), 
+		  "Save current workspace", 0, 
+		  this, SLOT(slotFileSave()), m_toolbar);
+
+  m_toolbar->addSeparator();
+
+  new QToolButton(QPixmap(dir + QString("/device.xpm")), 
+		  "View device manager", 0, 
+		  this, SLOT(slotViewDeviceManager()), m_toolbar);
+
+  new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
+		  "View virtual console", 0, 
+		  this, SLOT(slotViewVirtualConsole()), m_toolbar);
+
+  new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
+		  "Panic; Shut down all running functions", 0, 
+		  this, SLOT(slotPanic()), m_toolbar);
+
+  // The pixmap needs to be changed in this button -> save its pointer
+  m_modeButton = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
+				 "Design Mode; All editing features enabled", 
+				 0, this, SLOT(slotSetMode()), m_toolbar);
+}
+
+
+//
+// Initialize the function consumer
+//
+void App::initFunctionConsumer()
+{
+  m_functionConsumer = new FunctionConsumer();
+  ASSERT(m_functionConsumer);
+  
+  m_functionConsumer->init();
+  m_functionConsumer->start();
+}
+
+
+//
+// Doc contains all workspace-related _variable_ data
+//
+void App::initDoc()
+{
+  if (m_doc)
+    {
+      delete m_doc;
+    }
+
+  m_doc = new Doc();
+}
+
+
+//
+// Device manager
+//
+void App::initDeviceManagerView()
+{
+  if (m_dmView)
+    {
+      delete m_dmView;
+    }
+
+  // Create device manager view
+  m_dmView = new DeviceManagerView(workspace());
+  m_dmView->initView();
+
+  connect(m_dmView, SIGNAL(closed()), 
+  	  this, SLOT(slotDeviceManagerViewClosed()));
+
+  connect(m_doc, SIGNAL(deviceListChanged()),
+  	  m_dmView, SLOT(slotUpdate()));
+}
+
+
+//
+// Create virtual console
+//
+void App::initVirtualConsole(void)
+{
+  if (m_virtualConsole)
+    {
+      delete m_virtualConsole;
+    }
+
+  m_virtualConsole = new VirtualConsole(workspace());
+  m_virtualConsole->initView();
+
+  connect(m_virtualConsole, SIGNAL(closed()),
+	  this, SLOT(slotVirtualConsoleClosed()));
+}
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////
+// Operational control functions                        //
+//////////////////////////////////////////////////////////
+//
+// New document; destroy everything and start anew
+//
 void App::slotFileNew()
 {
   if (doc()->isModified())
@@ -410,12 +531,17 @@ void App::slotFileNew()
 	}
     }
 
-  m_settings->set(KEY_LAST_WORKSPACE_NAME, QString::null);
-  doc()->newDocument();
-  virtualConsole()->newDocument();
   setCaption(KApplicationNameLong);
+
+  initDoc();
+  initDeviceManagerView();
+  initVirtualConsole();
 }
 
+
+//
+// Open an existing document
+//
 void App::slotFileOpen()
 {
   QString fn = QFileDialog::getOpenFileName(m_doc->workspaceFileName(), 
@@ -428,22 +554,17 @@ void App::slotFileOpen()
 
   if (doc()->loadWorkspaceAs(fn) == false)
     {
-      statusBar()->message("Load failed", 2000);
       QMessageBox::critical(this, KApplicationNameShort, 
 			    "Errors occurred while reading file.");
     }
-  else
-    {
-      m_settings->set(KEY_LAST_WORKSPACE_NAME, m_doc->workspaceFileName());
-      statusBar()->message("Load successful", 2000);
-      setCaption(KApplicationNameLong + QString(" - ") + 
-		 doc()->workspaceFileName());
-    }
 }
 
+
+//
+// Save current workspace
+//
 void App::slotFileSave()
 {
-  statusBar()->message("Saving current workspace...");
   if (m_doc->workspaceFileName().isEmpty())
     {
       slotFileSaveAs();
@@ -452,22 +573,18 @@ void App::slotFileSave()
     {
       if (m_doc->saveWorkspace() == false)
         {
-          statusBar()->message("Save failed", 2000);
           QMessageBox::warning(this, KApplicationNameShort, 
 			       "Unable to save file!");
 	}
-      else
-        {
-          statusBar()->message("Save successful", 2000);
-        }
     }
-  statusBar()->message(IDS_STATUS_DEFAULT);
 }
 
+
+//
+// Save current workspace, ask for a file name
+//
 void App::slotFileSaveAs()
 {
-  statusBar()->message("Saving file under new filename...");
-
   QString fn = QFileDialog::getSaveFileName(m_doc->workspaceFileName(),
 					    "*.qlc", this);
   if (!fn.isEmpty())
@@ -480,26 +597,21 @@ void App::slotFileSaveAs()
 
       if (m_doc->saveWorkspaceAs(fn) == false)
         {
-          statusBar()->message("Save aborted", 2000);
           QMessageBox::information(this, KApplicationNameShort, 
 				   "Unable to save file!");
 	}
       else
         {
-          statusBar()->message("Save successful", 2000);
 	  setCaption(KApplicationNameLong + QString(" - ") + 
 		     doc()->workspaceFileName());
         }
     }
-  else
-    {
-      statusBar()->message("Save aborted", 2000);
-    }
-
-  statusBar()->message(IDS_STATUS_DEFAULT);
 }
 
 
+//
+// Open settings UI
+//
 void App::slotFileSettings()
 {
   SettingsUI* sui = new SettingsUI(this);
@@ -515,12 +627,18 @@ void App::slotFileSettings()
 }
 
 
+//
+// Quit the program
+//
 void App::slotFileQuit()
 {
   close();
 }
 
 
+//
+// View device manager
+//
 void App::slotViewDeviceManager()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
@@ -528,11 +646,19 @@ void App::slotViewDeviceManager()
   m_dmView->setFocus();
 }
 
+
+//
+// Device manager was closed, uncheck menu item
+//
 void App::slotDeviceManagerViewClosed()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
 }
 
+
+//
+// View virtual console
+//
 void App::slotViewVirtualConsole()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, true);
@@ -541,12 +667,18 @@ void App::slotViewVirtualConsole()
 }
 
 
+//
+// Virtual console was closed, uncheck menu item
+//
 void App::slotVirtualConsoleClosed()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, false);
 }
 
 
+//
+// View function tree
+//
 void App::slotViewFunctionTree()
 {
   if (m_functionTree == NULL)
@@ -565,6 +697,9 @@ void App::slotViewFunctionTree()
 }
 
 
+//
+// Function tree was closed, delete the instance
+//
 void App::slotFunctionTreeClosed()
 {
   if (m_functionTree)
@@ -576,29 +711,33 @@ void App::slotFunctionTreeClosed()
 }
 
 
-void App::slotViewDeviceClassEditor()
+//
+// Refresh menu items' status depending on system mode
+// also fills window menu with open window titles
+//
+void App::slotRefreshMenus()
 {
-  qDebug("Deprecated.");
-}
-
-
-void App::slotRefreshToolsMenu()
-{
-  if (virtualConsole()->isDesignMode() == false)
+  //
+  // Refresh tools & mode menus
+  //
+  if (m_mode == Operate)
     {
       m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, false);
-      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, false);
+      
+      m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_OPERATE, true);
+      m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_DESIGN, false);
     }
   else
     {
       m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, true);
-      m_toolsMenu->setItemEnabled(ID_VIEW_DEVICE_CLASS_EDITOR, true);
+
+      m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_OPERATE, false);
+      m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_DESIGN, true);
     }
-}
 
-
-void App::slotRefreshWindowMenu()
-{
+  //
+  // Refresh window menu
+  //
   QWidget* widget;
   int id = 0;
 
@@ -625,12 +764,12 @@ void App::slotRefreshWindowMenu()
 	}
       id++;
     }
-
-  connect(m_windowMenu, SIGNAL(activated(int)),
-	  this, SLOT(slotWindowMenuCallback(int)));
 }
 
 
+//
+// A window title was selected from window menu, show that window
+//
 void App::slotWindowMenuCallback(int item)
 {
   QPtrList <QWidget> wl = workspace()->windowList();
@@ -660,18 +799,27 @@ void App::slotWindowMenuCallback(int item)
 }
 
 
+//
+// Windows should be organized in a cascaded order.
+//
 void App::slotWindowCascade()
 {
   workspace()->cascade();
 }
 
 
+//
+// Windows should be organized as a tile view.
+//
 void App::slotWindowTile()
 {
   workspace()->tile();
 }
 
 
+//
+// Panic button pressed; shut down all running functions
+//
 void App::slotPanic()
 {
   /* Shut down all running functions */
@@ -679,6 +827,9 @@ void App::slotPanic()
 }
 
 
+//
+// Help -> About QLC
+//
 void App::slotHelpAbout()
 {
   AboutBox* ab;
@@ -688,16 +839,21 @@ void App::slotHelpAbout()
 }
 
 
+//
+// Help -> About QT version
+//
 void App::slotHelpAboutQt()
 {
   QMessageBox::aboutQt(this, QString("Q Light Controller"));
 }
 
+
+//
+// Window close button was pressed
+//
 void App::closeEvent(QCloseEvent* e)
 {
   int result;
-
-  statusBar()->message("About to close the application...");
 
   if (m_doc->isModified())
     {
@@ -707,27 +863,13 @@ void App::closeEvent(QCloseEvent* e)
 					QMessageBox::Cancel);
       if (result == QMessageBox::Yes)
         {
-	  // Save main window geometry for next session 
 	  slotFileSave();
-	  m_settings->set(KEY_APP_X, rect().x());
-	  m_settings->set(KEY_APP_Y, rect().y());
-	  m_settings->set(KEY_APP_W, rect().width());
-	  m_settings->set(KEY_APP_H, rect().height());
-	  m_settings->set(KEY_LAST_WORKSPACE_NAME, m_doc->workspaceFileName());
-	  m_settings->save();
-
+	  saveSettings();
 	  e->accept();
         }
       else if (result == QMessageBox::No)
         {
-	  // Save main window geometry for next session 
-	  m_settings->set(KEY_APP_X, rect().x());
-	  m_settings->set(KEY_APP_Y, rect().y());
-	  m_settings->set(KEY_APP_W, rect().width());
-	  m_settings->set(KEY_APP_H, rect().height());
-	  m_settings->set(KEY_LAST_WORKSPACE_NAME, m_doc->workspaceFileName());
-	  m_settings->save();
-
+	  saveSettings();
 	  e->accept();
         }
       else if (result == QMessageBox::Cancel)
@@ -737,51 +879,58 @@ void App::closeEvent(QCloseEvent* e)
     }
   else
     {
-      // Save main window geometry for next session 
-      m_settings->set(KEY_APP_X, rect().x());
-      m_settings->set(KEY_APP_Y, rect().y());
-      m_settings->set(KEY_APP_W, rect().width());
-      m_settings->set(KEY_APP_H, rect().height());
-      m_settings->set(KEY_LAST_WORKSPACE_NAME, m_doc->workspaceFileName());
-      m_settings->save();
-
+      saveSettings();
       e->accept();
     }
-
-  statusBar()->message("Exit aborted", 2000);
 }
 
-void App::slotSetModeIndicator()
+
+//
+// Save some App-related global settings
+//
+void App::saveSettings()
+{
+  //
+  // Main window geometry
+  // 
+  m_settings->set(KEY_APP_X, rect().x());
+  m_settings->set(KEY_APP_Y, rect().y());
+  m_settings->set(KEY_APP_W, rect().width());
+  m_settings->set(KEY_APP_H, rect().height());
+}
+
+
+//
+// The main operating mode has been changed, signal it to everyone
+//
+void App::slotSetMode()
 {
   QString dir;
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
-  
-  if (m_virtualConsole->isDesignMode())
+
+  if (m_mode == Operate)
     {
       m_modeIndicator->setText(KModeTextDesign);
       m_modeButton->setPixmap(dir + QString("/unlocked.xpm"));
-      QToolTip::add(m_modeButton, "Design Mode; All edit features available");
+      QToolTip::add(m_modeButton, "Design mode; All edit features available");
+
+      m_mode = Design;
     }
   else
     {
       m_modeIndicator->setText(KModeTextOperate);
       m_modeButton->setPixmap(dir + QString("/locked.xpm"));
-      QToolTip::add(m_modeButton, "Operate Mode; Edit features disabled");
+      QToolTip::add(m_modeButton, "Operate mode; Edit features disabled");
+
+      m_mode = Operate;
     }
+
+  emit modeChanged();
 }
 
-void App::slotModeButtonClicked()
-{
-  if (virtualConsole()->isDesignMode())
-    {
-      virtualConsole()->setMode(VirtualConsole::Operate);
-    }
-  else
-    {
-      virtualConsole()->setMode(VirtualConsole::Design);
-    }
-}
+
+
 
 
 //////////////////
@@ -901,9 +1050,6 @@ void App::addPlugin(Plugin* plugin)
 {
   ASSERT(plugin != NULL);
   m_pluginList.append(plugin);
-
-  qDebug("Warning! functionality removed");
-  // emit deviceListChanged();
 }
 
 //
@@ -913,9 +1059,6 @@ void App::removePlugin(Plugin* plugin)
 {
   ASSERT(plugin != NULL);
   m_pluginList.remove(plugin);
-
-  qDebug("Warning! functionality removed");
-  // emit deviceListChanged();
 }
 
 //
@@ -934,6 +1077,7 @@ Plugin* App::searchPlugin(QString name)
 	  return plugin;
 	}
     }
+
   return NULL;
 }
 
@@ -977,6 +1121,7 @@ Plugin* App::searchPlugin(const t_plugin_id id)
   return NULL;
 }
 
+
 //
 // A plugin has been activated
 //
@@ -989,6 +1134,7 @@ void App::slotPluginActivated(Plugin* plugin)
       settings()->save();
     }
 }
+
 
 //
 // Search for an output plugin and set it. If not found,
@@ -1009,16 +1155,8 @@ void App::slotChangeOutputPlugin(const QString& name)
     }
 
   m_outputPlugin->open();
-  
-  // This if() has to be here so that this won't get called until all
-  // objects in the call chain have been created (during startup).
-  /*
-  if (deviceManagerView() && deviceManagerView()->deviceManager())
-    {
-      deviceManagerView()->deviceManager()->slotUpdateDeviceList();
-    }
-  */
 }
+
 
 //
 // Create joystick plugin contents... now what the heck is this
@@ -1048,3 +1186,139 @@ void App::createJoystickContents(QPtrList <QString> &list)
 }
 
 
+
+
+////////////////////////
+// Device Class stuff //
+////////////////////////
+//
+// Read all device classes from files
+//
+void App::initDeviceClasses()
+{
+  DeviceClass* dc = NULL;
+  QString path = QString::null;
+
+  QString dir;
+  settings()->get(KEY_SYSTEM_DIR, dir);
+  dir += QString("/") + DEVICECLASSPATH + QString("/");
+
+  QDir d(dir);
+  d.setFilter(QDir::Files);
+  d.setNameFilter("*.deviceclass");
+  if (d.exists() == false || d.isReadable() == false)
+    {
+      QString msg("Unable to read from device directory!");
+      QMessageBox::warning(this, KApplicationNameShort, msg);
+
+      return;
+    }
+
+  QStringList dirlist(d.entryList());
+  QStringList::Iterator it;
+
+  QPtrList <QString> list; // Our stringlist that contains the files' contents
+
+  // Put a slash to the end of the directory name if it isn't there
+  if (dir.right(1) != QString("/"))
+    {
+      dir = dir + QString("/");
+    }
+
+  // Go thru all files
+  for (it = dirlist.begin(); it != dirlist.end(); ++it)
+    {
+      path = dir + *it;
+      FileHandler::readFileToList(path, list);
+      dc = createDeviceClass(list);
+      if (dc != NULL)
+	{
+	  m_deviceClassList.append(dc);
+	}
+
+      // The list needs to be cleared between files
+      while (list.isEmpty() == false)
+	{
+	  list.first();
+	  delete list.take();
+	}
+    }
+}
+
+
+//
+// Create device class from file entry
+//
+DeviceClass* App::createDeviceClass(QPtrList <QString> &list)
+{
+  QString entry;
+  QString manufacturer;
+  QString model;
+  QString t;
+  
+  DeviceClass* dc = new DeviceClass();
+
+  for (QString *s = list.first(); s != NULL; s = list.next())
+    {
+      if (*s == QString("Entry"))
+	{
+	  entry = *(list.next());
+	  if (entry == QString("Device Class"))
+	    {
+	      dc->createInfo(list);
+	    }
+	  else if (entry == QString("Channel"))
+	    {
+	      dc->createChannel(list);
+	    }
+	  else if (entry == QString("Function"))
+	    {
+	      list.next();
+	    }
+	}
+      else
+	{
+	  // Unknown keyword
+	  list.next();
+	}
+    }
+
+  return dc;
+}
+
+
+//
+// Search for a deviceclass by its manufacturer & model
+//
+DeviceClass* App::searchDeviceClass(const QString &manufacturer, 
+				    const QString &model)
+{
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
+       d = m_deviceClassList.next())
+    {
+      if (d->manufacturer() == manufacturer && d->model() == model)
+	{
+	  return d;
+	}
+    }
+
+  return NULL;
+}
+
+
+//
+// Search for a deviceclass by its ID
+//
+DeviceClass* App::searchDeviceClass(const t_deviceclass_id id)
+{
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
+       d = m_deviceClassList.next())
+    {
+      if (d->id() == id)
+	{
+	  return d;
+	}
+    }
+
+  return NULL;
+}

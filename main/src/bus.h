@@ -41,7 +41,7 @@ class Bus
   void createContents(QPtrList <QString> &list);
 
  public:
-  static void initAll();
+  static void init();
 
   static const bool value(t_bus_id, t_bus_value&);
   static bool setValue(t_bus_id, t_bus_value);

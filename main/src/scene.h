@@ -30,7 +30,7 @@ class Device;
 class RunTimeData;
 class SceneValue;
 
-typedef double t_scene_acc;
+typedef float t_scene_acc;
 
 class Scene : public Function
 {
@@ -87,7 +87,7 @@ class RunTimeData
   t_scene_acc start;
   t_scene_acc current;
   t_scene_acc target;
-  t_scene_acc increment;
+
   bool ready;
 };
 

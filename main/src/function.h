@@ -144,10 +144,10 @@ class Function : public QThread
 
  private:
   // Next ID that will be assigned to a new function
-  static t_function_id _nextFunctionId;
+  static t_function_id _nextFunctionID;
 
  public:
-  static void resetFunctionId() { _nextFunctionId = KFunctionIDMin; }
+  static void resetID() { _nextFunctionID = KFunctionIDMin; }
 };
 
 

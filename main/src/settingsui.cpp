@@ -60,10 +60,6 @@ void SettingsUI::init()
 
   fillStyleCombo();
 
-  _app->settings()->get(KEY_DEVICE_MANAGER_OPEN, str);
-  m_openDeviceManagerCheckBox->setChecked((str == Settings::trueValue()) 
-					  ? true : false);
-
   _app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str);
   m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) 
 					  ? true : false);
@@ -181,15 +177,6 @@ void SettingsUI::slotOKClicked()
   _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
   _app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());
   
-  if (m_openDeviceManagerCheckBox->isChecked())
-    {
-      _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, Settings::trueValue());
-    }
-  else
-    {
-      _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, Settings::falseValue());
-    }
-
   if (m_openLastWorkspaceCheckBox->isChecked())
     {
       _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::trueValue());

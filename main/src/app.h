@@ -47,6 +47,7 @@ class FunctionConsumer;
 class VirtualConsole;
 class Plugin;
 class DummyOutPlugin;
+class DeviceClass;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -59,22 +60,22 @@ class App : public QMainWindow
 {
   Q_OBJECT
  public:
-  App(Settings* settings);
+  App();
   ~App();
 
  public:
-  void initView(void);
+  void init(void);
   DeviceManagerView* deviceManagerView() { return m_dmView; }
   VirtualConsole* virtualConsole() { return m_virtualConsole; }
   QWorkspace* workspace() { return m_workspace; }
   Settings* settings() { return m_settings; }
   FunctionConsumer* functionConsumer() { return m_functionConsumer; }
-
   Doc* doc() { return m_doc; }
 
   //
-  // General Plugin Stuff
+  // Plugin Stuff
   //
+  OutputPlugin* outputPlugin() { return m_outputPlugin; }
   QPtrList <Plugin> *pluginList() { return &m_pluginList; }
   Plugin* searchPlugin(QString name);
   Plugin* searchPlugin(QString name, Plugin::PluginType type);
@@ -83,11 +84,21 @@ class App : public QMainWindow
   void removePlugin(Plugin*);
   void initPlugins();
   bool probePlugin(QString path);
-  
+
   //
-  // The Output Plugin
+  // Device classe stuff
   //
-  OutputPlugin* outputPlugin() { return m_outputPlugin; }
+  QPtrList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
+  DeviceClass* searchDeviceClass(const QString &manufacturer,
+				 const QString &model);
+  DeviceClass* searchDeviceClass(const t_deviceclass_id id);
+
+  //
+  // Mode; operate or design
+  //
+  enum Mode { Operate, Design };
+  bool mode() { return m_mode; }
+  void setMode(Mode mode);
 
  private slots:
   void slotChangeOutputPlugin(const QString& name);
@@ -102,7 +113,6 @@ class App : public QMainWindow
   void slotFileQuit();
 
   void slotViewDeviceManager();
-  void slotViewDeviceClassEditor();
   void slotDeviceManagerViewClosed();
   void slotViewVirtualConsole();
   void slotVirtualConsoleClosed();
@@ -112,37 +122,41 @@ class App : public QMainWindow
   void slotWindowCascade();
   void slotWindowTile();
 
-  void slotRefreshWindowMenu();
-  void slotRefreshToolsMenu();
-
   void slotHelpAbout();
   void slotHelpAboutQt();
 
   void slotPanic();
-  void slotModeButtonClicked();
+  void slotSetMode();
 
-  void slotSetModeIndicator();
-
+ signals:
+  void modeChanged();
+  
  private:
-  void initDoc();
   void initSettings();
+  void initDeviceClasses();
+  void initDoc();
   void initWorkspace();
   void initDeviceManagerView();
   void initVirtualConsole();
-  void initSequenceEngine();
+  void initFunctionConsumer();
 
   void initMenuBar();
   void initStatusBar();
   void initToolBar();
 
+  void saveSettings();
+
+  DeviceClass* createDeviceClass(QPtrList <QString> &list);
   void createJoystickContents(QPtrList <QString> &list);
 
  private slots:
   void slotWindowMenuCallback(int item);
+  void slotRefreshMenus();
 
  private:
   QPopupMenu* m_fileMenu;
   QPopupMenu* m_toolsMenu;
+  QPopupMenu* m_modeMenu;
   QPopupMenu* m_windowMenu;
   QPopupMenu* m_helpMenu;
 
@@ -164,9 +178,14 @@ class App : public QMainWindow
   DummyOutPlugin* m_dummyOutPlugin;
   QPtrList <Plugin> m_pluginList;
 
+  // Main operating mode
+  Mode m_mode;
+
+  // Device classes
+  QPtrList <DeviceClass> m_deviceClassList;
+
  protected:
   void closeEvent(QCloseEvent*);
-  bool event(QEvent* e);
 
  private:
   static t_plugin_id NextPluginID;

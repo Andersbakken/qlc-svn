@@ -47,7 +47,7 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-static t_device_id _nextDeviceId = KOutputDeviceIDMin;
+t_device_id Device::s_nextDeviceID = KOutputDeviceIDMin;
 
 Device::Device(t_channel address, DeviceClass* dc, const QString& name,
 		     t_device_id id)
@@ -55,15 +55,15 @@ Device::Device(t_channel address, DeviceClass* dc, const QString& name,
 {
   if (id == 0)
     {
-      m_id = _nextDeviceId;
-      _nextDeviceId++;
+      m_id = s_nextDeviceID;
+      s_nextDeviceID++;
     }
   else
     {
       m_id = id;
-      if (id >= _nextDeviceId)
+      if (id >= s_nextDeviceID)
 	{
-	  _nextDeviceId = id + 1;
+	  s_nextDeviceID = id + 1;
 	}
     }
 

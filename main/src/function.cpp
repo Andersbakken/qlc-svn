@@ -28,7 +28,7 @@
 //
 // Initialize function id
 //
-t_function_id Function::_nextFunctionId = KFunctionIDMin;
+t_function_id Function::_nextFunctionID = KFunctionIDMin;
 
 //
 // Standard constructor
@@ -45,27 +45,27 @@ Function::Function(t_function_id id) : QThread()
     }
   else if (id == KFunctionIDAuto)
     {
-      m_id = _nextFunctionId;
-      _nextFunctionId++;
+      m_id = _nextFunctionID;
+      _nextFunctionID++;
 
-      if (_nextFunctionId == KFunctionIDMax)
+      if (_nextFunctionID == KFunctionIDMax)
 	{
 	  // In case we ever go beyond the limit
-	  _nextFunctionId = KFunctionIDMin;
+	  _nextFunctionID = KFunctionIDMin;
 	}
     }
   else
     {
       m_id = id;
-      if (id >= _nextFunctionId)
+      if (id >= _nextFunctionID)
 	{
-	  _nextFunctionId = id + 1;
+	  _nextFunctionID = id + 1;
 	}
 
-      if (_nextFunctionId == KFunctionIDMax)
+      if (_nextFunctionID == KFunctionIDMax)
 	{
 	  // In case we ever go beyond the limit
-	  _nextFunctionId = KFunctionIDMin;
+	  _nextFunctionID = KFunctionIDMin;
 	}
     }
 

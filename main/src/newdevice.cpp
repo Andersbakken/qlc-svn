@@ -42,7 +42,8 @@ extern App* _app;
 // Keys for settings
 const QString KEY_NEWDEVICE_TREE_OPEN = "NewDeviceTreeOpen";
 
-NewDevice::NewDevice(QWidget *parent, const char *name) : QDialog(parent, name, true)
+NewDevice::NewDevice(QWidget *parent, const char *name) 
+  : QDialog(parent, name, true)
 {
   m_nameValue = QString("");
   m_addressValue = 0;
@@ -171,7 +172,7 @@ void NewDevice::fillTree()
   QListViewItem* parent = NULL;
   QListViewItem* newItem = NULL;
 
-  QPtrList <DeviceClass> *dl = _app->doc()->deviceClassList();
+  QPtrList <DeviceClass> *dl = _app->deviceClassList();
 
   QString path;
   _app->settings()->get("SystemPath", path);
@@ -188,7 +189,8 @@ void NewDevice::fillTree()
     {
       bool alreadyAdded = false;
 
-      for (QListViewItem* i = m_tree->firstChild(); i != NULL; i = i->nextSibling())
+      for (QListViewItem* i = m_tree->firstChild(); 
+	   i != NULL; i = i->nextSibling())
 	{
 	  if (i->text(0) == dc->manufacturer())
 	    {

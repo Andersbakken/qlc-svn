@@ -260,7 +260,7 @@ void VCLabel::createContents(QPtrList <QString> &list)
 
 void VCLabel::mousePressEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       if (e->button() & LeftButton)
 	{
@@ -312,7 +312,6 @@ void VCLabel::slotMenuCallback(int item)
 {
   switch (item)
     {
-
     case VCWIDGET_MENU_RENAME:
       m_renameEdit = new FloatingEdit(parentWidget());
       connect(m_renameEdit, SIGNAL(returnPressed()),
@@ -338,7 +337,8 @@ void VCLabel::slotMenuCallback(int item)
 
     case VCLABEL_MENU_F_COLOR:
       _app->doc()->setModified(true);
-      setPaletteForegroundColor( QColorDialog::getColor( paletteForegroundColor(), this ));
+      setPaletteForegroundColor( QColorDialog::getColor
+				 ( paletteForegroundColor(), this ));
       break;
 
     case VCWIDGET_MENU_BACKGROUND_COLOR:
@@ -360,7 +360,7 @@ void VCLabel::slotMenuCallback(int item)
 
 void VCLabel::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       setCursor(QCursor(ArrowCursor));
 
@@ -371,13 +371,13 @@ void VCLabel::mouseReleaseEvent(QMouseEvent* e)
 
 void VCLabel::mouseDoubleClickEvent(QMouseEvent* e)
 {
-   slotMenuCallback(VCWIDGET_MENU_RENAME);
+  slotMenuCallback(VCWIDGET_MENU_RENAME);
 }
 
 
 void VCLabel::mouseMoveEvent(QMouseEvent* e)
 {
-  if (_app->virtualConsole()->isDesignMode() == true)
+  if (_app->mode() == App::Design)
     {
       if (e->state() & LeftButton)
 	{

@@ -416,7 +416,6 @@ void Scene::init()
       
       m_runTimeData[i].target = static_cast<t_scene_acc> (m_values[i].value);
 
-      m_runTimeData[i].increment = 0;
       m_runTimeData[i].ready = false;
     }
 
@@ -429,7 +428,7 @@ void Scene::init()
       ASSERT(false);
     }
 
-  // Calculate starting values
+  // Set speed
   speedChange(m_timeSpan);
 
   // Append this function to running functions list
@@ -467,23 +466,16 @@ void Scene::run()
 	    }
 	  else if (m_values[ch].type == Set)
 	    {
-	      m_dataMutex.lock();
-
 	      m_channelData[ch] = m_values[ch].value;
 	      m_runTimeData[ch].ready = true;
-
-	      m_dataMutex.unlock();
 	    }
 	  else if (m_values[ch].type == Fade)
 	    {
 	      m_dataMutex.lock();
 
-	      m_runTimeData[ch].increment = 
-		(m_runTimeData[ch].target - m_runTimeData[ch].start)
-		/ m_timeSpan;
-	      
-	      m_runTimeData[ch].current = m_runTimeData[ch].start + 
-		(m_elapsedTime * m_runTimeData[ch].increment);
+		m_runTimeData[ch].current = m_runTimeData[ch].start 
+		+ (m_runTimeData[ch].target - m_runTimeData[ch].start) 
+		* ((float)m_elapsedTime / m_timeSpan);
 
 	      m_channelData[ch] =
 		static_cast<t_value> (m_runTimeData[ch].current);

@@ -29,11 +29,11 @@ Workspace files have the prefix .qlc to distinguish them from other files.
 
 Entry values recognised by the workspace file parser:
 
-Device		Defines a new device entry
-Function 	Defines a new global function entry
-Button		Defines a new button widget entry for virtual console
-Frame		Defines a new container frame widget entry for virtual console
-SpeedSlider	Defines a new speed slider widget entry for virtual console
+Device		Defines a device entry
+Function 	Defines a function entry
+Button		Defines a button widget entry for virtual console
+Frame		Defines a container frame widget entry for virtual console
+Slider		Defines a slider widget entry for virtual console
 
 After the entry line is read, each entry is parsed by an object that is
 identified by the Value in the Entry field.

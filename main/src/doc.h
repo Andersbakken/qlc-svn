@@ -38,15 +38,15 @@ class Doc : public QObject
   Doc();
   ~Doc();
 
-  void init();
-
   //
-  // Document handling stuff
+  // Modified status
   //
-  void newDocument();
   bool isModified() { return m_modified; }
   void setModified(bool modified);
 
+  //
+  // Load & Save
+  //
   QString workspaceFileName() { return m_workspaceFileName; }
   bool loadWorkspaceAs(QString &);
   bool saveWorkspaceAs(QString &);
@@ -57,36 +57,23 @@ class Doc : public QObject
   //
   bool addDevice(Device* d);
   bool removeDevice(Device* d);
-  QPtrList <Device> *deviceList() { return &m_deviceList; }
   Device* searchDevice(const t_device_id id);
+  QPtrList <Device> *deviceList() { return &m_deviceList; }
 
   //
   // Functions
   //
-  // Function list
-  QPtrList <Function> *functions() { return &m_functions; }
-
-  // Function list operations
   bool addFunction(const Function* function);
   bool removeFunction(const t_function_id id, bool deleteFunction = true);
   Function* searchFunction(const t_function_id id);
-
-  //
-  // Device classes
-  //
-  QPtrList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
-  bool readDeviceClasses();
-  DeviceClass* searchDeviceClass(const QString &manufacturer,
-				 const QString &model);
-  DeviceClass* searchDeviceClass(const t_deviceclass_id id);
+  QPtrList <Function> *functions() { return &m_functions; }
 
  signals:
   void deviceListChanged();
-  void deviceRemoved(int);
-  void newDocumentClicked();
+  void functionListChanged();
+  void modeChanged();
 
  private:
-  DeviceClass* createDeviceClass(QPtrList <QString> &list);
   Device* createDevice(QPtrList <QString> &list);
   Function* createFunction(QPtrList <QString> &list);
   void createFunctionContents(QPtrList <QString> &list);
@@ -97,7 +84,6 @@ class Doc : public QObject
 
   QPtrList <Function> m_functions;
   QPtrList <Device> m_deviceList;
-  QPtrList <DeviceClass> m_deviceClassList;
 };
 
 #endif
