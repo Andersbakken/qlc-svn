@@ -218,15 +218,20 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // File Menu
   m_fileMenu = new QPopupMenu();
-  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filenew.xpm")), "&New", this, SLOT(slotFileNew()), CTRL+Key_N, ID_FILE_NEW);
-  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), "&Open...", this, SLOT(slotFileOpen()), CTRL+Key_O, ID_FILE_OPEN);
+  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filenew.xpm")),
+			 "&New", this, SLOT(slotFileNew()), CTRL+Key_N, ID_FILE_NEW);
+  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("fileopen.xpm")), 
+			 "&Open...", this, SLOT(slotFileOpen()), CTRL+Key_O, ID_FILE_OPEN);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), "&Save", this, SLOT(slotFileSave()), CTRL+Key_S, ID_FILE_SAVE);
+  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("filesave.xpm")), 
+			 "&Save", this, SLOT(slotFileSave()), CTRL+Key_S, ID_FILE_SAVE);
   m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem("Se&ttings...", this, SLOT(slotFileSettings()), 0, ID_FILE_SETTINGS);
+  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("info.xpm")),
+			 "Se&ttings...", this, SLOT(slotFileSettings()), 0, ID_FILE_SETTINGS);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem("E&xit", this, SLOT(slotFileQuit()), CTRL+Key_Q, ID_FILE_QUIT);
+  m_fileMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("exit.xpm")),
+			 "E&xit", this, SLOT(slotFileQuit()), CTRL+Key_Q, ID_FILE_QUIT);
   
   ///////////////////////////////////////////////////////////////////
   // View Menu
@@ -236,7 +241,8 @@ void App::initMenuBar()
   m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
-  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
+  m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("function.xpm")), 
+			  "Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
 
@@ -248,7 +254,8 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
-  m_helpMenu->insertItem("About QLC...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
+  m_helpMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("help.xpm")),
+			 "About QLC...", this, SLOT(slotHelpAbout()), 0, ID_HELP_ABOUT);
   m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()), 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
