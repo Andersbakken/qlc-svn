@@ -35,7 +35,6 @@
 #include "assignhotkey.h"
 #include "keybind.h"
 #include "devicemanagerview.h"
-//#include "devicemanager.h"
 #include "device.h"
 #include "virtualconsole.h"
 #include "configkeys.h"
@@ -281,7 +280,8 @@ void VCButtonProperties::slotAddKeyClicked()
       ASSERT (m_keyBind != NULL);
       ASSERT (a->keyBind() != NULL);
 
-      m_keyBind->setKey(a->keyBind()->key(), a->keyBind()->mod());
+      m_keyBind->setKey(a->keyBind()->key());
+      m_keyBind->setMod(a->keyBind()->mod());
       m_keyEdit->setText(m_keyBind->keyString());
     }
 
@@ -290,6 +290,7 @@ void VCButtonProperties::slotAddKeyClicked()
 
 void VCButtonProperties::slotRemoveKeyClicked()
 {
-  m_keyBind->setKey(0, 0);
+  m_keyBind->setKey(0);
+  m_keyBind->setMod(NoButton);
   m_keyEdit->setText(m_keyBind->keyString());
 }

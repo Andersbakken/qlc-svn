@@ -45,9 +45,10 @@ class KeyBind : public QObject
   QString keyString() { return keyString(m_key, m_mod); }
 
   int key() { return m_key; }
-  void setKey(int key, int mod);
-
+  void setKey(int key);
+  
   int mod() { return m_mod; }
+  void setMod(int mod);
 
   void setPressAction(PressAction a) { m_pressAction = a; }
   PressAction pressAction() { return m_pressAction; }
@@ -59,9 +60,13 @@ class KeyBind : public QObject
 
   bool operator==(KeyBind*);
 
+ signals:
+  void pressed();
+  void released();
+
  public slots:
-  void press(QKeyEvent* e);
-  void release(QKeyEvent* e);
+  void slotKeyPressed(QKeyEvent* e);
+  void slotKeyReleased(QKeyEvent* e);
 
  private:
   int m_key; // Key

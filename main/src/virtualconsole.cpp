@@ -639,42 +639,18 @@ void VirtualConsole::closeEvent(QCloseEvent* e)
 
 void VirtualConsole::keyPressEvent(QKeyEvent* e)
 {
-  QPtrListIterator <KeyBind> it (m_keyReceivers);
-
   if (_app->mode() == App::Operate)
     {
-      while (it.current())
-	{
-	  it.current()->press(e);
-          ++it;
-	}
+      emit keyPressed(e);
+      e->accept();
     }
 }
 
 void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 {
-  QPtrListIterator <KeyBind> it(m_keyReceivers);
-
   if (_app->mode() == App::Operate)
     {
-      while (it.current())
-	{
-	  it.current()->release(e);
-          ++it;
-	}
+      emit keyReleased(e);
+      e->accept();
     }
-}
-
-void VirtualConsole::registerKeyReceiver(KeyBind* kb)
-{
-  ASSERT(kb);
-
-  m_keyReceivers.append(kb);
-}
-
-void VirtualConsole::unRegisterKeyReceiver(KeyBind* kb)
-{
-  ASSERT(kb);
-
-  m_keyReceivers.remove(kb);
 }

@@ -21,8 +21,13 @@
 
 #include <ctype.h>
 #include <qnamespace.h>
+#include <qevent.h>
 
 #include "keybind.h"
+#include "virtualconsole.h"
+#include "app.h"
+
+extern App* _app;
 
 
 //
@@ -35,6 +40,12 @@ KeyBind::KeyBind() : QObject()
   m_key = 0;
   m_mod = 0;
   m_valid = false;
+
+  connect(_app->virtualConsole(), SIGNAL(keyPressed(QKeyEvent*)),
+	  this, SLOT(slotKeyPressed(QKeyEvent*)));
+
+  connect(_app->virtualConsole(), SIGNAL(keyReleased(QKeyEvent*)),
+	  this, SLOT(slotKeyReleased(QKeyEvent*)));
 }
 
 
@@ -57,6 +68,12 @@ KeyBind::KeyBind(int key, int mod) : QObject()
  
   m_pressAction = PressStart;
   m_releaseAction = ReleaseNothing;
+
+  connect(_app->virtualConsole(), SIGNAL(keyPressed(QKeyEvent*)),
+	  this, SLOT(slotKeyPressed(QKeyEvent*)));
+
+  connect(_app->virtualConsole(), SIGNAL(keyReleased(QKeyEvent*)),
+	  this, SLOT(slotKeyReleased(QKeyEvent*)));
 }
 
 
@@ -72,6 +89,12 @@ KeyBind::KeyBind(KeyBind* kb) : QObject()
   
   m_pressAction = kb->pressAction();
   m_releaseAction = kb->releaseAction();
+
+  connect(_app->virtualConsole(), SIGNAL(keyPressed(QKeyEvent*)),
+	  this, SLOT(slotKeyPressed(QKeyEvent*)));
+
+  connect(_app->virtualConsole(), SIGNAL(keyReleased(QKeyEvent*)),
+	  this, SLOT(slotKeyReleased(QKeyEvent*)));
 }
 
 
@@ -84,12 +107,11 @@ KeyBind::~KeyBind()
 
 
 //
-// Set the bound keys
+// Set the key
 //
-void KeyBind::setKey(int key, int mod)
+void KeyBind::setKey(int key)
 {
   m_key = key;
-  m_mod = mod;
 
   if (key != 0)
     {
@@ -99,6 +121,15 @@ void KeyBind::setKey(int key, int mod)
     {
       m_valid = false;
     }
+}
+
+
+//
+// Set modifier
+//
+void KeyBind::setMod(int mod)
+{
+  m_mod = mod;
 }
 
 
@@ -330,7 +361,7 @@ bool KeyBind::operator==(KeyBind* kb)
       return false;
     }
 
-  if (this->m_key == kb->key() && this->m_mod == kb->mod())
+  if (m_key == kb->key() && m_mod == kb->mod())
     {
     }
   else
@@ -338,8 +369,8 @@ bool KeyBind::operator==(KeyBind* kb)
       return false;
     }
 
-  if (this->pressAction() == kb->pressAction() &&
-      this->releaseAction() == kb->releaseAction())
+  if (pressAction() == kb->pressAction() &&
+      releaseAction() == kb->releaseAction())
     {
     }
   else
@@ -350,12 +381,18 @@ bool KeyBind::operator==(KeyBind* kb)
   return true;
 }
 
-void KeyBind::press(QKeyEvent* e)
+void KeyBind::slotKeyPressed(QKeyEvent* e)
 {
-  e->ignore();
+  if (e->key() == m_key && (e->state() == m_mod))
+    {
+      emit pressed();
+    }
 }
 
-void KeyBind::release(QKeyEvent* e)
+void KeyBind::slotKeyReleased(QKeyEvent* e)
 {
-  e->ignore();
+  if (e->key() == m_key && (e->state() == m_mod))
+    {
+      emit released();
+    }
 }

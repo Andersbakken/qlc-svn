@@ -49,6 +49,7 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qbrush.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -85,7 +86,10 @@ void VCButton::init()
 {
   setToggleButton(true);
 
+  if (m_keyBind) delete m_keyBind;
   m_keyBind = new KeyBind();
+  connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
+  connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 
   QToolTip::add(this, "No function");
 
@@ -102,8 +106,11 @@ void VCButton::copyFrom(VCButton* button)
   m_resizeMode = false;
   m_renameEdit = NULL;
 
-  ASSERT(button->keyBind());
+  assert(button->keyBind());
+  if (m_keyBind) delete m_keyBind;
   m_keyBind = new KeyBind(button->keyBind());
+  connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
+  connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 
   setToggleButton(true);
 
@@ -123,7 +130,6 @@ void VCButton::copyFrom(VCButton* button)
 
 VCButton::~VCButton()
 {
-  _app->virtualConsole()->unRegisterKeyReceiver(m_keyBind);
 }
 
 
@@ -195,7 +201,7 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
     }
 
   // Key binding
-  ASSERT (m_keyBind != NULL);
+  assert(m_keyBind);
 
   s.sprintf("BindKey = %d\n", m_keyBind->key());
   file.writeBlock((const char*) s, s.length());
@@ -214,11 +220,6 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
 void VCButton::createContents(QPtrList <QString> &list)
 {
   QRect rect(30, 30, 30, 30);
-  int key = 0;
-  int mod = 0;
-
-  KeyBind::PressAction pressAction = KeyBind::PressStart;
-  KeyBind::ReleaseAction releaseAction = KeyBind::ReleaseNothing;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -290,23 +291,27 @@ void VCButton::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("BindKey"))
 	{
+	  assert(m_keyBind);
 	  QString t = *(list.next());
-	  key = t.toInt();
+	  m_keyBind->setKey(t.toInt());
 	}
       else if (*s == QString("BindMod"))
 	{
+	  assert(m_keyBind);
 	  QString t = *(list.next());
-	  mod = t.toInt();
+	  m_keyBind->setMod(t.toInt());
 	}
       else if (*s == QString("BindPress"))
 	{
+	  assert(m_keyBind);
 	  QString t = *(list.next());
-	  pressAction = (KeyBind::PressAction) t.toInt();
+	  m_keyBind->setPressAction((KeyBind::PressAction) t.toInt());
 	}
       else if (*s == QString("BindRelease"))
 	{
+	  assert(m_keyBind);
 	  QString t = *(list.next());
-	  releaseAction = (KeyBind::ReleaseAction) t.toInt();
+	  m_keyBind->setReleaseAction((KeyBind::ReleaseAction) t.toInt());
 	}
       else
 	{
@@ -316,15 +321,6 @@ void VCButton::createContents(QPtrList <QString> &list)
     }
 
   setGeometry(rect);
-
-  m_keyBind = new KeyBind(key, mod);
-  m_keyBind->setPressAction(pressAction);
-  m_keyBind->setReleaseAction(releaseAction);
-
-  if (m_keyBind->valid() == true)
-    {
-      _app->virtualConsole()->registerKeyReceiver(m_keyBind);
-    }
 
   QString str("No function");
 
@@ -557,19 +553,14 @@ void VCButton::slotMenuCallback(int item)
 	    // Name
 	    setText(p->name());
 
-	    // Delete old keybind
-	    ASSERT (m_keyBind != NULL);
-	    ASSERT (p->keyBind() != NULL);
-
-	    _app->virtualConsole()->unRegisterKeyReceiver(m_keyBind);
-	    delete m_keyBind;
-	    m_keyBind = NULL;
-
-	    m_keyBind = new KeyBind((KeyBind*) p->keyBind());
-	    if (m_keyBind->valid() == true)
-	      {
-		_app->virtualConsole()->registerKeyReceiver(m_keyBind);
-	      }
+	    // Set the keybind
+	    assert (p->keyBind() != NULL);
+	    if (m_keyBind) delete m_keyBind;
+	    m_keyBind = new KeyBind(p->keyBind());
+	    connect(m_keyBind, SIGNAL(pressed()),
+		    this, SLOT(pressFunction()));
+	    connect(m_keyBind, SIGNAL(released()),
+		    this, SLOT(releaseFunction()));
 
 	    // Function
 	    attachFunction(p->function());
@@ -598,7 +589,7 @@ void VCButton::slotMenuCallback(int item)
 	  {
 	    Function* function = NULL;
 	    function = _app->doc()->searchFunction(ft->functionID());
-	    ASSERT(function);
+	    assert(function);
 
 	    attachFunction(function);
 	  }
@@ -778,7 +769,9 @@ void VCButton::slotModeChanged()
 
 void VCButton::pressFunction()
 {
-  ASSERT(m_keyBind != NULL);
+  assert(m_keyBind);
+
+  qDebug("pressed");
 
   if (m_keyBind->pressAction() == KeyBind::PressNothing || m_function == NULL)
     {
@@ -818,6 +811,10 @@ void VCButton::pressFunction()
 
 void VCButton::releaseFunction()
 {
+  assert(m_keyBind);
+
+  qDebug("released");
+
   if (m_function)
     {
     }
@@ -841,7 +838,7 @@ void VCButton::attachFunction(Function* function)
 
 void VCButton::slotRenameReturnPressed()
 {
-  ASSERT(m_renameEdit);
+  assert(m_renameEdit);
   setText(m_renameEdit->text());
   disconnect(m_renameEdit);
   delete m_renameEdit;

@@ -79,12 +79,12 @@ class VCButton : public QPushButton
   void resizeTo(QPoint p);
   void moveTo(QPoint p);
 
-  void pressFunction();
-  void releaseFunction();
-
  public slots:
   void slotRenameReturnPressed();
   void slotFunctionDestroyed();
+
+  void pressFunction();
+  void releaseFunction();
 
  private slots:
   void slotMenuCallback(int item);

@@ -42,9 +42,9 @@ void AssignHotKey::initView()
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Assign Key</TITLE></HEAD><BODY>");
   str += QString("<CENTER><H1>Assign Key</H1>");
-  str += QString("Hit the key-combination that you want to assign to this widget. ");
-  str += QString("You may hit either a single key or a modified key-combination");
-  str += QString("that consists of CTRL, ALT, or SHIFT and a regular key.</CENTER>");
+  str += QString("Hit the key-combination that you want to assign. ");
+  str += QString("You may hit either a single key or a key-combination");
+  str += QString("with a CTRL, ALT, and/or SHIFT.</CENTER>");
   str += QString("</BODY></HTML>");
   m_infoText->setText(str);
   m_infoText->setFocusPolicy(NoFocus);
@@ -53,8 +53,10 @@ void AssignHotKey::initView()
   m_previewEdit->setFocusPolicy(NoFocus);
   m_previewEdit->setAlignment(AlignCenter);
 
-  connect((QObject*) m_ok, SIGNAL(clicked()), this, SLOT(slotOKClicked()));
-  connect((QObject*) m_cancel, SIGNAL(clicked()), this, SLOT(slotCancelClicked()));
+  connect((QObject*) m_ok, SIGNAL(clicked()), 
+	  this, SLOT(slotOKClicked()));
+  connect((QObject*) m_cancel, SIGNAL(clicked()), 
+	  this, SLOT(slotCancelClicked()));
 
 }
 
@@ -71,7 +73,8 @@ void AssignHotKey::slotCancelClicked()
 void AssignHotKey::keyPressEvent(QKeyEvent* e)
 {
   ASSERT (m_keyBind != NULL);
-  m_keyBind->setKey(e->key(), e->state());
+  m_keyBind->setKey(e->key());
+  m_keyBind->setMod(e->state());
 
   m_previewEdit->setText(m_keyBind->keyString());
 }

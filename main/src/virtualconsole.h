@@ -56,9 +56,6 @@ class VirtualConsole : public QWidget
   void initDockArea();
   void initDrawArea();
 
-  void registerKeyReceiver(KeyBind* kb);
-  void unRegisterKeyReceiver(KeyBind* kb);
-
   // Create the vc from list
   void createContents(QPtrList <QString>& file); 
 
@@ -79,6 +76,9 @@ class VirtualConsole : public QWidget
 
  signals:
   void closed();
+
+  void keyPressed(QKeyEvent*);
+  void keyReleased(QKeyEvent*);
 
  protected:
   void closeEvent(QCloseEvent* e);
