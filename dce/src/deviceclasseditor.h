@@ -46,7 +46,7 @@ class DeviceClassEditor : public UI_DeviceClassEditor
   QString fileName() const { return m_fileName; }
   bool modified() const { return m_modified; }
 
- private slots:
+ public slots:
   void slotManufacturerEditTextChanged(const QString &text);
   void slotModelEditTextChanged(const QString &text);
   void slotTypeSelected(const QString &text);

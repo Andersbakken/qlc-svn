@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>466</width>
-            <height>465</height>
+            <height>587</height>
         </rect>
     </property>
     <property name="caption">
@@ -249,6 +249,26 @@
             <property name="name">
                 <cstring>groupBox2</cstring>
             </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="minimumSize">
+                <size>
+                    <width>0</width>
+                    <height>190</height>
+                </size>
+            </property>
+            <property name="maximumSize">
+                <size>
+                    <width>32767</width>
+                    <height>190</height>
+                </size>
+            </property>
             <property name="title">
                 <string>Channels</string>
             </property>
@@ -291,7 +311,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout5</cstring>
+                        <cstring>layout6</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -382,23 +402,6 @@
                                 <string>Lower the selected channel down by one</string>
                             </property>
                         </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer4</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>30</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
                     </vbox>
                 </widget>
             </hbox>

@@ -424,17 +424,12 @@ void DeviceClassEditor::slotAddPresetClicked()
 	  int max = epv->m_maxSpin->value();
 	  QString description = epv->m_descriptionEdit->text();
 	  
-	  if (ch->searchCapability(min) != NULL)
+	  if (ch->searchCapability(min) != NULL ||
+	      ch->searchCapability(max) != NULL)
 	    {
 	      QMessageBox::information(this, KApplicationNameShort,
-				       "Overlapping value range! Unable to add value.");
+		    "Overlapping value range! Unable to add value.");
 	      
-	      continue;
-	    }
-	  else if (ch->searchCapability(max) != NULL)
-	    {
-	      QMessageBox::information(this, KApplicationNameShort,
-				       "Overlapping value range! Unable to add value.");
 	      continue;
 	    }
 	  else

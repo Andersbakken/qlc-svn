@@ -33,6 +33,7 @@
 #include <qlabel.h>
 #include <qcolor.h>
 #include <qtooltip.h>
+#include "aboutbox.h"
 
 #include <unistd.h>
 
@@ -41,7 +42,6 @@
 #include "../../main/src/deviceclass.h"
 #include "../../main/src/settings.h"
 #include "../../main/src/configkeys.h"
-#include "../../main/src/aboutbox.h"
 
 #include "../../libs/common/filehandler.h"
 
@@ -60,7 +60,20 @@
 #define ID_FILE_QUIT                	10080
 
 ///////////////////////////////////////////////////////////////////
-// Tools menu entries                    
+// Edit menu entries                    
+#define ID_EDIT_ADD_CHANNEL             11000
+#define ID_EDIT_REMOVE_CHANNEL          11010
+#define ID_EDIT_CHANNEL                 11020
+
+#define ID_EDIT_RAISE_CHANNEL           11030
+#define ID_EDIT_LOWER_CHANNEL           11040
+
+#define ID_EDIT_ADD_CAPABILITY          11050
+#define ID_EDIT_REMOVE_CAPABILITY       11060
+#define ID_EDIT_CAPABILITY              11070
+
+///////////////////////////////////////////////////////////////////
+// View menu entries                    
 #define ID_VIEW_TOOLBAR       	        12010
 #define ID_VIEW_STATUSBAR		12020
 
@@ -202,7 +215,7 @@ void App::initMenuBar()
 			 "&Save", this, SLOT(slotFileSave()), 
 			 CTRL+Key_S, ID_FILE_SAVE);
 
-  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 
+  m_fileMenu->insertItem("Save As...", this, SLOT(slotFileSaveAs()), 
 			 0, ID_FILE_SAVE_AS);
 
   m_fileMenu->insertSeparator();
@@ -211,6 +224,46 @@ void App::initMenuBar()
 			 "E&xit", this, SLOT(slotFileQuit()), 
 			 CTRL+Key_Q, ID_FILE_QUIT);
 
+  ///////////////////////////////////////////////////////////////////
+  // Edit Menu
+  m_editMenu = new QPopupMenu();
+  m_editMenu->insertItem(QPixmap(dir + QString("/add.xpm")),
+			 "Add &Channel...", this, SLOT(slotEmpty()),
+			 CTRL+Key_C, ID_EDIT_ADD_CHANNEL);
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+			 "&Remove Channel", this, SLOT(slotEmpty()),
+			 CTRL+Key_R, ID_EDIT_REMOVE_CHANNEL);
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/edit.xpm")),
+			 "Edit C&hannel...", this, SLOT(slotEmpty()),
+			 CTRL+Key_H, ID_EDIT_CHANNEL);
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/up.xpm")),
+			 "Raise Channel", this, SLOT(slotEmpty()),
+			 CTRL+Key_Up, ID_EDIT_RAISE_CHANNEL);
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/down.xpm")),
+			 "Lower Channel", this, SLOT(slotEmpty()),
+			 CTRL+Key_Down, ID_EDIT_LOWER_CHANNEL);
+
+  m_editMenu->insertSeparator();
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/add.xpm")),
+			 "&Add Capability...", this, SLOT(slotEmpty()),
+			 CTRL+Key_A, ID_EDIT_ADD_CAPABILITY);
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+			 "R&emove Capability", this, SLOT(slotEmpty()),
+			 CTRL+Key_E, ID_EDIT_REMOVE_CAPABILITY);
+
+  m_editMenu->insertItem(QPixmap(dir + QString("/edit.xpm")),
+			 "Ed&it Capability...", this, SLOT(slotEmpty()),
+			 CTRL+Key_I, ID_EDIT_CAPABILITY);
+
+  connect(m_editMenu, SIGNAL(activated(int)),
+	  this, SLOT(slotEditMenuActivated(int)));
+  
   ///////////////////////////////////////////////////////////////////
   // Window Menu
   m_windowMenu = new QPopupMenu();
@@ -230,27 +283,32 @@ void App::initMenuBar()
 
   ///////////////////////////////////////////////////////////////////
   // Menubar configuration
-  menuBar()->insertItem("&File", m_fileMenu);
-  menuBar()->insertItem("&Window", m_windowMenu);
+  menuBar()->insertItem("File", m_fileMenu);
+  menuBar()->insertItem("Edit", m_editMenu);
+  menuBar()->insertItem("Window", m_windowMenu);
   menuBar()->insertSeparator();
-  menuBar()->insertItem("&Help", m_helpMenu);
+  menuBar()->insertItem("Help", m_helpMenu);
 
   menuBar()->setSeparator(QMenuBar::InWindowsStyle);
 }
 
+void App::slotEmpty()
+{
+}
 
 void App::slotFileNew()
 {
   DeviceClass* dc = new DeviceClass();
   ASSERT(dc);
 
-  dc->setManufacturer(QString("Unknown Manufacturer"));
-  dc->setModel(QString("Unknown Model"));
+  dc->setManufacturer(QString("Manufacturer"));
+  dc->setModel(QString("Model"));
 
   DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
   connect(editor, SIGNAL(closed(DeviceClassEditor*)),
 	  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
   editor->init();
+  editor->setCaption("New Device Class*");
   editor->show();
 }
 
@@ -314,6 +372,47 @@ void App::slotFileSaveAs()
 void App::slotFileQuit()
 {
   close();
+}
+
+
+void App::slotEditMenuActivated(int id)
+{
+  DeviceClassEditor* editor = NULL;
+  editor = static_cast<DeviceClassEditor*> (m_workspace->activeWindow());
+
+  if (editor)
+    {
+      switch(id)
+	{
+	case ID_EDIT_ADD_CHANNEL:
+	  editor->slotAddChannelClicked();
+	  break;
+
+	case ID_EDIT_REMOVE_CHANNEL:
+	  editor->slotRemoveChannelClicked();
+	  break;
+
+	case ID_EDIT_CHANNEL:
+	  editor->slotEditChannelClicked();
+	  break;
+
+	case ID_EDIT_ADD_CAPABILITY:
+	  editor->slotAddPresetClicked();
+	  break;
+
+	case ID_EDIT_REMOVE_CAPABILITY:
+	  editor->slotRemovePresetClicked();
+	  break;
+
+	case ID_EDIT_CAPABILITY:
+	  editor->slotEditPresetClicked();	
+	  break;
+
+	default:
+	  break;
+	}
+    }
+
 }
 
 
@@ -396,7 +495,7 @@ void App::slotWindowTile()
 
 void App::slotHelpAbout()
 {
-  AboutBox* ab;
+  AboutBox* ab = NULL;
   ab = new AboutBox(this);
   ab->exec();
   delete ab;

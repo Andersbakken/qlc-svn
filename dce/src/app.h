@@ -43,7 +43,7 @@ class DeviceClassEditor;
 
 const QString KApplicationNameLong  = "QLC Device Class Editor";
 const QString KApplicationNameShort = "DCE";
-const QString KApplicationVersion   = "Version 2.2.1";
+const QString KApplicationVersion   = "Version 2.3";
 
 //////////////////////////////////////////////////////////////////
 // Class definition
@@ -64,6 +64,7 @@ class App : public QMainWindow
   Settings* settings() { return m_settings; }
 
  private slots:
+  void slotEmpty();
   void slotFileNew();
   void slotFileOpen();
   void slotFileSave();
@@ -73,6 +74,7 @@ class App : public QMainWindow
   void slotWindowCascade();
   void slotWindowTile();
 
+  void slotEditMenuActivated(int);
   void slotRefreshWindowMenu();
 
   void slotHelpAbout();
@@ -92,6 +94,7 @@ class App : public QMainWindow
 
  private:
   QPopupMenu* m_fileMenu;
+  QPopupMenu* m_editMenu;
   QPopupMenu* m_toolsMenu;
   QPopupMenu* m_windowMenu;
   QPopupMenu* m_helpMenu;
