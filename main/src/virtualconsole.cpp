@@ -217,8 +217,9 @@ void VirtualConsole::initMenuBar()
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"),
                         "&XY-Pad", this, SLOT(slotAddXYPad()),
                         0, KVCMenuAddXYPad);
-  m_addMenu->setItemEnabled(KVCMenuAddXYPad, false);
-  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
+
+  m_addMenu->setItemEnabled(KVCMenuAddXYPad, true);
+  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"),
 			"L&abel", this, SLOT(slotAddLabel()),
 			0, KVCMenuAddLabel);
 
@@ -407,7 +408,7 @@ void VirtualConsole::slotAddXYPad()
     {
       parent = m_drawArea;
     }
-
+assert(parent);
   VCXYPad* f = new VCXYPad(parent);
   assert(f);
   f->init();
@@ -835,7 +836,8 @@ VCFrame* VirtualConsole::getFrame(unsigned int id, VCFrame* widget)
 
   for (QObjectListIt it(*ol); it.current() != NULL; ++it)
     {
-      if (QString(it.current()->className()) == QString("VCFrame"))
+    //helphelphelp
+      if (QString(it.current()->className()) == QString("VCFrame") || QString(it.current()->className()) == QString("VCXYPad"))
 	{
 	  w = getFrame(id, (VCFrame*) it.current());
 	  if (w != NULL)
@@ -899,6 +901,13 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	  s->init();
 	  s->createContents(list);
 	}
+      else if (*s == QString("VCXYPad"))
+	{
+	 qDebug("try to create new VCXYPad");
+	  VCXYPad* w = new VCXYPad(m_drawArea);
+	  w->init();
+	  w->createContents(list);
+	 }
       else
 	{
 	  // Unknown keyword, skip
@@ -997,6 +1006,11 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
 	      createWidget(list);
 	    }
 	  else if (*s == QString("Slider"))
+	    {
+	      list.prev();
+	      createWidget(list);
+	    }
+	  else if (*s == QString("VCXYPad"))
 	    {
 	      list.prev();
 	      createWidget(list);

@@ -22,6 +22,7 @@
 #include "vcframe.h"
 #include "vcbutton.h"
 #include "vclabel.h"
+#include "vcxypad.h"
 #include "vcdockslider.h"
 #include "floatingedit.h"
 #include "app.h"
@@ -233,6 +234,7 @@ void VCFrame::saveChildrenToFile(QFile& file)
       // Child frames
       while(it.current())
 	{
+	qDebug(QString(it.current()->className()));
 	  if (QString(it.current()->className()) == QString("VCButton"))
 	    {
 	      ((VCButton*) it.current())->saveToFile(file, id());
@@ -249,7 +251,10 @@ void VCFrame::saveChildrenToFile(QFile& file)
 	    {
 	      ((VCFrame*) it.current())->saveChildrenToFile(file);
 	    }
-
+	  else if (QString(it.current()->className()) == QString("VCXYPad"))
+	    {
+	      ((VCXYPad*) it.current())->saveFramesToFile(file);
+	    }
 	  ++it;
 	}
     }

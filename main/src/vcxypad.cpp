@@ -52,6 +52,26 @@ const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff );
 const int KMoveThreshold   (    5 ); // Pixels
 
+
+XYChannelUnit::XYChannelUnit()
+{
+   m_lo = 0;
+   m_hi = 0;
+   m_channel = 0;
+   m_reverse = false;
+}
+
+
+XYChannelUnit::XYChannelUnit( t_value lo, t_value hi, t_channel channel,  bool reverse )
+{
+   m_lo = lo;
+   m_hi = hi;
+   m_channel = channel;
+   m_reverse = reverse;
+}
+
+
+
 VCXYPad::VCXYPad(QWidget* parent) 
   : QFrame(parent),
     m_origX            ( 0 ),
@@ -63,6 +83,7 @@ VCXYPad::VCXYPad(QWidget* parent)
     m_bottomFrame      ( false ),
     m_buttonBehaviour  ( Normal )
 {
+    //m_XChannels = new QTPtrList();
 }
 
 VCXYPad::~VCXYPad()
@@ -111,13 +132,13 @@ void VCXYPad::saveFramesToFile(QFile& file, t_vc_id parentID)
 {
   QString s;
   QString t;
-
+qDebug("Saving frame to file");
   // Comment
   s = QString("# Virtual Console Frame Entry\n");
   file.writeBlock((const char*) s, s.length());
 
   // Entry type
-  s = QString("Entry = Frame") + QString("\n");
+  s = QString("Entry = VCXYPad") + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Name
@@ -125,13 +146,37 @@ void VCXYPad::saveFramesToFile(QFile& file, t_vc_id parentID)
   file.writeBlock((const char*) s, s.length());
 
   // Parent ID
-  if (parentID != 0)
+ if (parentID == 0)parentID=1;
+ // if (parentID != 0)
     {
       t.setNum(parentID);
       s = QString("Parent = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
     }
 
+  // X Channels and limits
+  QPtrListIterator<XYChannelUnit> xit(m_XChannels);
+  XYChannelUnit *xyc;
+     while ( (xyc = xit.current()) != 0 )
+       {
+         ++xit;
+	 if( xyc->m_reverse == true )
+            s.sprintf("ChannelEntryX = %d,%d,%d,true\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+	 else
+            s.sprintf("ChannelEntryX = %d,%d,%d,false\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+         file.writeBlock((const char*) s, s.length());
+       }
+  // Y Channels and limits
+  QPtrListIterator<XYChannelUnit> yit(m_YChannels);
+       while ( (xyc = yit.current()) != 0 )
+       {
+         ++yit;
+	 if( xyc->m_reverse == true )
+            s.sprintf("ChannelEntryY = %d,%d,%d,true\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+	 else
+            s.sprintf("ChannelEntryY = %d,%d,%d,false\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+         file.writeBlock((const char*) s, s.length());
+       }
   // Geometry
   if (m_bottomFrame == false)
     {
@@ -351,6 +396,26 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 	{
 	  rect.setHeight(list.next()->toInt());
 	}
+      else if (*s == QString("ChannelEntryX"))
+	{
+           QString t = *(list.next());
+	   QStringList lst( QStringList::split( ",", t ) );
+	   qDebug(t);
+
+	   XYChannelUnit * xyc = new XYChannelUnit(lst[1].toInt(),lst[2].toInt(),
+	                                           lst[0].toInt(), lst[3] == "true");
+           m_XChannels.append(xyc);
+	}
+      else if (*s == QString("ChannelEntryY"))
+	{
+           QString t = *(list.next());
+	   QStringList lst( QStringList::split( ",", t ) );
+	   qDebug(t);
+
+	   XYChannelUnit * xyc = new XYChannelUnit(lst[1].toInt(),lst[2].toInt(),
+	                                           lst[0].toInt(), lst[3] == "true");
+           m_YChannels.append(xyc);
+	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -362,6 +427,7 @@ void VCXYPad::createContents(QPtrList <QString> &list)
     {
       setGeometry(rect);
     }
+    qDebug("left VCXYpad");
 }
 
 
@@ -428,11 +494,10 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
     }
   else
     {
-      QString msg;
-      msg.sprintf("%d  %d",e->x(),e->y());
+      outputDMX( e->x(), e->y());
       setMouseTracking(true);
-      //setCursor(Qt::CrossCursor);
-      qDebug(msg);
+      setCursor(Qt::CrossCursor);
+
       //QFrame::mousePressEvent(e);
     }
 }
@@ -517,23 +582,58 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	}
     }
   else
-    { // the following is NOT done by hasMouse() because that fails if
+    { // the following is NOT done by hasMouse()  because that fails if
       // there are child widgets   
       if( e->x()>0 &&  e->y()>0  && e->x()<rect().width() && e->y()<rect().height()  )
         {
-           QString msg;
-           msg.sprintf("xy %d  %d",int(255*e->x()/rect().width()),e->y());
-           qDebug(msg);
-	   setCursor(Qt::CrossCursor);
-	   
+	  outputDMX( e->x(), e->y());
+          setCursor(Qt::CrossCursor);
 	}
       else
         {
 	   unsetCursor();
-	}	
+	}
       QFrame::mouseMoveEvent(e);
     }
 }
+
+
+void VCXYPad::outputDMX(int x, int y)
+{
+    QPtrListIterator<XYChannelUnit> xit(m_XChannels);
+    XYChannelUnit *xyc;
+    while ( (xyc = xit.current()) != 0 ) {
+      ++xit;
+      int delta = xyc->m_hi - xyc->m_lo;
+      int xx = xyc->m_lo + int(delta*x/rect().width());
+
+      if( xyc->m_reverse == false)
+           _app->outputPlugin()->writeChannel(xyc->m_channel,
+				     (t_value) xx);
+        else
+	   _app->outputPlugin()->writeChannel(xyc->m_channel,
+				     (t_value) 255-xx);
+     }
+
+
+    QPtrListIterator<XYChannelUnit> yit(m_YChannels);
+    while ( (xyc = yit.current()) != 0 ) {
+      ++yit;
+      int delta = xyc->m_hi - xyc->m_lo;
+      int xx = xyc->m_lo + int(delta*y/rect().height());
+
+      if( xyc->m_reverse == false)
+           _app->outputPlugin()->writeChannel(xyc->m_channel,
+				     (t_value) xx);
+        else
+	   _app->outputPlugin()->writeChannel(xyc->m_channel,
+				     (t_value) 255-xx);
+     }
+
+     setCursor(Qt::CrossCursor);
+}
+
+
 
 void VCXYPad::customEvent(QCustomEvent* e)
 {

@@ -32,6 +32,31 @@ class QString;
 class QPaintEvent;
 class QMouseEvent;
 
+
+class XYChannelUnit
+{
+public:
+        XYChannelUnit();
+	/*{
+           m_lo = 0;
+           m_hi = 0;
+           m_channel = 0;
+           m_reverse = false;
+	};*/
+        XYChannelUnit( t_value lo, t_value hi, t_channel channel,  bool reverse );
+	/*{
+             m_lo = lo;
+             m_hi = hi;
+             m_channel = channel;
+             m_reverse = reverse;
+	};*/
+        t_value m_lo;
+        t_value m_hi;
+        t_channel m_channel;
+        bool m_reverse;
+};
+
+
 class VCXYPad : public QFrame
 {
   Q_OBJECT
@@ -80,6 +105,8 @@ class VCXYPad : public QFrame
   void resizeTo(QPoint p);
   void moveTo(QPoint p);
 
+  void outputDMX(int x, int y);
+
  protected:
   int m_origX;
   int m_origY;
@@ -91,6 +118,8 @@ class VCXYPad : public QFrame
   bool m_resizeMode;
   bool m_bottomFrame;
 
+  QPtrList<XYChannelUnit> m_XChannels;
+  QPtrList <XYChannelUnit> m_YChannels;
   ButtonBehaviour m_buttonBehaviour;
 
  private:
