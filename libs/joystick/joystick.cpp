@@ -217,7 +217,7 @@ void Joystick::saveToFile(QFile &file)
     }
 }
 
-void Joystick::createContents(QList <QString> &list)
+void Joystick::createContents(QPtrList <QString> &list)
 {
   QString t;
   int axis = 0;

@@ -23,7 +23,7 @@
 #include "app.h"
 #include "doc.h"
 #include "function.h"
-#include "dmxdevice.h"
+#include "device.h"
 #include "settings.h"
 #include "logicalchannel.h"
 #include "capability.h"
@@ -56,7 +56,8 @@ AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
 {
   ASSERT(scene != NULL);
 
-  m_scene = new Scene(scene);
+  m_scene = new Scene(KFunctionIDTemp);
+  m_scene->copyFrom(scene);
   m_currentChannel = NULL;
 
   m_dirty = false;
@@ -68,49 +69,12 @@ AdvancedSceneEditor::~AdvancedSceneEditor()
 
 void AdvancedSceneEditor::init()
 {
-  double w = (double) m_sceneContents->width();
-
-  m_sceneContents->setColumnWidth(0, (int) floor(w * 0.07));
-  m_sceneContents->setColumnWidth(1, (int) floor(w * 0.38));
-  m_sceneContents->setColumnWidth(2, (int) floor(w * 0.35));
-  m_sceneContents->setColumnWidth(3, (int) floor(w * 0.1));
-  m_sceneContents->setColumnWidth(4, (int) floor(w * 0.1));
-
   m_sceneNameEdit->setText(m_scene->name());
   m_sceneNameEdit->setSelection(0, m_scene->name().length());
 
   updateChannelList();
 
   setDirty(false);
-}
-
-void AdvancedSceneEditor::slotSnapshotClicked()
-{
-  if (m_scene == NULL)
-    {
-      return;
-    }
-
-  for (unsigned i = 0; i < m_scene->device()->deviceClass()->channels()->count(); i++)
-    {
-      DMXChannel* channel = m_scene->device()->dmxChannel(i);
-      SceneValueType type = Fade;
-
-      if (channel->status() == DMXChannel::On)
-	{
-	  type = Fade;
-	}
-      else
-	{
-	  type = NoSet;
-	}
-
-      m_scene->set(i, channel->value(), type);
-    }
-
-  updateChannelList();
-
-  setDirty(true);
 }
 
 void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
@@ -198,7 +162,7 @@ void AdvancedSceneEditor::slotPresetMenuActivated(int preset)
 void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 {
   QPopupMenu* menu = new QPopupMenu;
-  QList <QPopupMenu> deleteList;
+  QPtrList <QPopupMenu> deleteList;
 
   menu->insertItem("Value", INT_MAX);
   menu->insertSeparator();
@@ -495,18 +459,9 @@ void AdvancedSceneEditor::slotDeviceFunctionsListChanged(t_function_id fid)
     }
 }
 
-void AdvancedSceneEditor::slotDeviceClassFunctionsListChanged(t_function_id fid)
-{
-  // If the currently edited scene was deleted, exit immediately
-  if (m_scene && m_scene->id() == fid)
-    {
-      slotCancelClicked();
-    }
-}
-
 void AdvancedSceneEditor::updateChannelList()
 {
-  QList <LogicalChannel> *cl = NULL;
+  QPtrList <LogicalChannel> *cl = NULL;
   QString num;
   QString val;
   QString cap;

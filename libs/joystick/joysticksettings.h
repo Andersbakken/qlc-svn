@@ -23,7 +23,7 @@
 #define JOYSTICKSETTINGS_H
 
 #include <qdialog.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qpushbutton.h>
 #include "joystick.h"
 
@@ -48,9 +48,9 @@ class JoystickSettings : public QDialog
 
  private:
   Joystick* m_joystick;
-  QList <QPushButton> m_buttonsList;
-  QList <LedBar> m_axesList;
-  QList <QPushButton> m_invertsList;
+  QPtrList <QPushButton> m_buttonsList;
+  QPtrList <LedBar> m_axesList;
+  QPtrList <QPushButton> m_invertsList;
 
  private slots:
   void slotButtonEvent(int button, int value);

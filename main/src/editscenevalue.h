@@ -24,6 +24,7 @@
 
 #include "uic_editscenevalue.h"
 #include "scene.h"
+#include "types.h"
 
 class QWidget;
 class LogicalChannel;

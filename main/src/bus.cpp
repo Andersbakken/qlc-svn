@@ -124,7 +124,7 @@ void Bus::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());  
 }
 
-void Bus::createContents(QList <QString> &list)
+void Bus::createContents(QPtrList <QString> &list)
 {
   for (QString* s = list.next(); s != NULL; s = list.next())
     {

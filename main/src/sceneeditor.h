@@ -26,7 +26,6 @@
 #include <qvariant.h>
 #include <qwidget.h>
 
-#include "dmxdevice.h"
 #include "scene.h"
 #include "uic_sceneeditor.h"
 
@@ -40,12 +39,14 @@ class QPushButton;
 class QRadioButton;
 class QPopupMenu;
 
+class Device;
+
 class SceneEditor : public UI_SceneEditor
 {
   Q_OBJECT
 
  public:
-  SceneEditor(DMXDevice* device, QWidget* parent);
+  SceneEditor(Device* device, QWidget* parent);
   ~SceneEditor();
 
   static int width() { return 133; }
@@ -60,7 +61,7 @@ class SceneEditor : public UI_SceneEditor
   void slotSceneActivated(int);
 
  protected:
-  DMXDevice* m_device;
+  Device* m_device;
   QPopupMenu* m_menu;
 
  protected:

@@ -21,12 +21,13 @@
 
 #include "functioncollectioneditor.h"
 #include "functioncollection.h"
+#include "function.h"
+#include "functionstep.h"
+#include "functiontree.h"
 #include "app.h"
 #include "doc.h"
 #include "deviceclass.h"
-#include "dmxdevice.h"
-#include "function.h"
-#include "functiontree.h"
+#include "device.h"
 
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -153,11 +154,11 @@ void FunctionCollectionEditor::slotRemoveClicked()
 void FunctionCollectionEditor::updateFunctionList()
 {
   ASSERT(m_functionCollection != NULL);
-  QList <CollectionItem> *il = m_functionCollection->items();
+  QPtrList <FunctionStep> *il = m_functionCollection->steps();
 
   m_functionList->clear();
 
-  for (CollectionItem* item = il->first(); item != NULL; item = il->next())
+  for (FunctionStep* item = il->first(); item != NULL; item = il->next())
     {
       QString id;
       id.setNum(item->function()->id());

@@ -210,7 +210,7 @@ void DMX4LinuxOut::saveSettings()
 void DMX4LinuxOut::loadSettings()
 {
   QString fileName;
-  QList <QString> list;
+  QPtrList <QString> list;
 
   fileName = m_configDir + QString(CONF_FILE);
 
@@ -229,7 +229,7 @@ void DMX4LinuxOut::loadSettings()
     }
 }
 
-void DMX4LinuxOut::createContents(QList <QString> &list)
+void DMX4LinuxOut::createContents(QPtrList <QString> &list)
 {
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -279,7 +279,9 @@ void DMX4LinuxOut::activate()
   emit activated(this);
 }
 
-/* Write value to channel */
+//
+// Write a value to a channel
+//
 bool DMX4LinuxOut::writeChannel(unsigned short channel, unsigned char value)
 {
   bool result = true;
@@ -295,15 +297,58 @@ bool DMX4LinuxOut::writeChannel(unsigned short channel, unsigned char value)
   return result;
 }
 
-/* Write multiple values starting from given address */
+//
+// Write num values starting from address
+//
 bool DMX4LinuxOut::writeRange(unsigned short address, unsigned char* values,
 			      unsigned short num)
 {
+  ASSERT(values);
+
   bool result = true;
 
   _mutex.lock();
   lseek(m_device, address, SEEK_SET);
   if (write(m_device, values, num))
+    {
+      result = false;
+    }
+  _mutex.unlock();
+
+  return result;
+}
+
+//
+// Read a channel's value
+//
+bool DMX4LinuxOut::readChannel(unsigned short channel, unsigned char &value)
+{
+  bool result = true;
+
+  _mutex.lock();
+  lseek(m_device, channel, SEEK_SET);
+  if (read(m_device, &value, 1))
+    {
+      result = false;
+    }
+  _mutex.unlock();
+
+  return result;
+}
+
+//
+// Read num channel's values starting from address
+//
+bool DMX4LinuxOut::readRange(unsigned short address, unsigned char* values,
+			  unsigned short num)
+{
+  ASSERT(values);
+
+  bool result = true;
+
+  _mutex.lock();
+  lseek(m_device, address, SEEK_SET);
+  if (read(m_device, values, num))
     {
       result = false;
     }

@@ -24,14 +24,14 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class FileHandler : public QObject
 {
   Q_OBJECT
 
  public:
-  static bool readFileToList(QString &fileName, QList<QString> &list);
+  static bool readFileToList(QString &fileName, QPtrList <QString> &list);
 
 };
 

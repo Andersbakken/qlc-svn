@@ -492,7 +492,7 @@ void DeviceClassEditor::slotEditPresetClicked()
 
 void DeviceClassEditor::updateChannelList()
 {
-  QList <LogicalChannel> *cl = m_dc->channels();
+  QPtrList <LogicalChannel> *cl = m_dc->channels();
   QString ch;
 
   m_channelList->clear();
@@ -515,7 +515,7 @@ void DeviceClassEditor::updatePresetValues()
     }
   else
     {
-      QList <Capability> *cl = currentChannel()->capabilities();
+      QPtrList <Capability> *cl = currentChannel()->capabilities();
       Capability* cap = NULL;
 
       for (cap = cl->first(); cap != NULL; cap = cl->next())

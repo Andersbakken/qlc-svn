@@ -29,14 +29,14 @@
 
 #include "uic_deviceproperties.h"
 
-class DMXDevice;
+class Device;
 
 class DeviceProperties : public UI_DeviceProperties
 {
    Q_OBJECT
 
  public:
-   DeviceProperties(DMXDevice* device);
+   DeviceProperties(Device* device);
    ~DeviceProperties();
    
    void init();
@@ -46,7 +46,7 @@ class DeviceProperties : public UI_DeviceProperties
    void slotOKClicked();
 
  private:
-   DMXDevice* m_device;
+   Device* m_device;
 };
 
 #endif

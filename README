@@ -50,25 +50,8 @@ as a regular user in the qlc root directory and then
 
 (as root) to install QLC (to /usr/local/qlc by default).
 
-
-
-To get things finally working...
------------------------------------------
-* QLC must be executed suid root because it needs an interrupt timer from
-  /dev/rtc. Normally, a user can get frequencies up to 64Hz from rtc, and
-  root can get frequencies from 0-8192Hz. We use a frequency of 1024Hz to
-  drive the sequence engine (SequenceProvider) which actually executes all
-  functions (crossfades etc.)
-
-  Anyway, saying "chown root.root qlc ; chmod +s qlc" as root will do the
-  thing if the install script was unable to do this.
-
-  Another way with 2.4.x kernels is to say
-
-  echo 1024 > /proc/sys/dev/rtc/max-user-freq
-
 * If you do not tamper with the Makefiles & config.make too much, a default
-  qlc.rc file should be placed under /etc/
+  and working qlc.rc file should be placed under /etc/
 
 
 If you wish to participate in the qlc development team

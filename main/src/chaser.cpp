@@ -20,20 +20,22 @@
 */
 
 #include "chaser.h"
-#include "event.h"
 #include "deviceclass.h"
 #include "doc.h"
 #include "app.h"
-#include "sequenceprovider.h"
 #include "scene.h"
-#include "feeder.h"
-#include "dmxdevice.h"
+#include "device.h"
+#include "functionstep.h"
+#include "functionconsumer.h"
 
 #include <stdlib.h>
 #include <qfile.h>
 
 extern App* _app;
 
+//
+// Standard constructor
+//
 Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
@@ -41,16 +43,25 @@ Chaser::Chaser(t_function_id id) : Function(id)
   m_OKforNextStep = true;
 }
 
+
+//
+// Copy constructor
+//
 Chaser::Chaser(Chaser* ch, bool append) : Function(ch->id())
 {
   copyFrom(ch, append);
 }
 
+
+//
+// Copy the contents of another chaser into this
+// If append == true, existing contents will not be cleared; new steps
+// will appear after existing steps
+//
 void Chaser::copyFrom(Chaser* ch, bool append)
 {
   m_running = ch->m_running;
   m_OKforNextStep = ch->m_OKforNextStep;
-  m_repeatTimes = ch->m_repeatTimes;
   m_name = ch->name();
 
   if (append == false)
@@ -61,20 +72,26 @@ void Chaser::copyFrom(Chaser* ch, bool append)
 	}
     }
 
-  for (ChaserStep* step = ch->m_steps.first(); step != NULL; step = ch->m_steps.next())
+  for (FunctionStep* step = ch->m_steps.first(); step != NULL; 
+       step = ch->m_steps.next())
     {
-      ChaserStep* newStep = new ChaserStep(step);
+      FunctionStep* newStep = new FunctionStep(step);
       m_steps.append(newStep);
-
-      connect(newStep->function(), SIGNAL(destroyed(t_function_id)),
-	      this, SLOT(slotMemberFunctionDestroyed(t_function_id)));
     }
 }
 
+
+//
+// Destructor
+//
 Chaser::~Chaser()
 {
 }
 
+
+//
+// Save this chaser's contents into the given file
+//
 void Chaser::saveToFile(QFile &file)
 {
   QString s;
@@ -97,7 +114,7 @@ void Chaser::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // ID
-  s.sprintf("ID = %ld\n", m_id);
+  s.sprintf("ID = %d\n", m_id);
   file.writeBlock((const char*) s, s.length());
 
   // Device
@@ -117,15 +134,20 @@ void Chaser::saveToFile(QFile &file)
   s = QString("# Step entries") + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  for (ChaserStep* step = m_steps.first(); step != NULL; step = m_steps.next())
+  for (FunctionStep* step = m_steps.first(); step != NULL;
+       step = m_steps.next())
     {
       ASSERT(step->function() != NULL);
 
-      s.sprintf("Function = %ld\n", step->function()->id());
+      s.sprintf("Function = %d\n", step->function()->id());
       file.writeBlock((const char*) s, s.length());
     }
 }
 
+
+//
+// Create this chaser's contents from a file that has been read into list
+//
 void Chaser::createContents(QPtrList <QString> &list)
 {
   t_function_id functionId = 0;
@@ -161,15 +183,16 @@ void Chaser::createContents(QPtrList <QString> &list)
     }
 }
 
+
+//
+// Add a new step into the end
+//
 void Chaser::addStep(Function* function)
 {
   if (m_running == false)
     {
-      ChaserStep* step = new ChaserStep(function);
+      FunctionStep* step = new FunctionStep(function);
       m_steps.append(step);
-
-      connect(step->function(), SIGNAL(destroyed(t_function_id)),
-	      this, SLOT(slotMemberFunctionDestroyed(t_function_id)));
     }
   else
     {
@@ -177,13 +200,17 @@ void Chaser::addStep(Function* function)
     }  
 }
 
+
+//
+// Completely remove a step (gap is removed)
+//
 void Chaser::removeStep(int index)
 {
   ASSERT( ((unsigned)index) < m_steps.count());
 
   if (m_running == false)
     {
-      ChaserStep* step = m_steps.take(index);
+      FunctionStep* step = m_steps.take(index);
       ASSERT(step != NULL);
       delete step;
     }
@@ -193,13 +220,17 @@ void Chaser::removeStep(int index)
     }
 }
 
+
+//
+// Raise the given step once (move it one step earlier)
+//
 void Chaser::raiseStep(unsigned int index)
 {
   if (m_running == false)
     {
       if (index > 0)
 	{
-	  ChaserStep* step = m_steps.take(index);
+	  FunctionStep* step = m_steps.take(index);
 	  ASSERT(step != NULL);
 	  
 	  m_steps.insert(index - 1, step);
@@ -211,13 +242,17 @@ void Chaser::raiseStep(unsigned int index)
     }
 }
 
+
+//
+// Lower the given step once (move it one step later)
+//
 void Chaser::lowerStep(unsigned int index)
 {
   if (m_running == false)
     {
       if (index < m_steps.count() - 1)
 	{
-	  ChaserStep* step = m_steps.take(index);
+	  FunctionStep* step = m_steps.take(index);
 	  ASSERT(step != NULL);
 
 	  m_steps.insert(index + 1, step);
@@ -229,99 +264,67 @@ void Chaser::lowerStep(unsigned int index)
     }
 }
 
-void Chaser::slotMemberFunctionDestroyed(t_function_id fid)
+
+//
+// Initiate a speed change (from a speed bus)
+//
+void Chaser::speedChange(long unsigned int newTimeSpan)
 {
-  for (unsigned i = 0; i < m_steps.count(); i++)
+}
+
+
+//
+// Explicitly stop this function
+//
+void Chaser::stop()
+{
+  m_running = false;
+}
+
+
+//
+// Free run-time allocations
+//
+void Chaser::freeRunTimeData()
+{
+}
+
+
+//
+// Initialize some run-time values
+//
+void Chaser::init()
+{
+}
+
+
+//
+// Main producer thread
+//
+void Chaser::run()
+{
+  Function* function = NULL;
+
+  // Calculate starting values
+  init();
+  
+  QPtrListIterator <FunctionStep> it(m_steps);
+
+  /*
+  while (m_running)
     {
-      if (m_steps.at(i)->functionId() == fid)
+      if (it.current().function())
 	{
-	  delete m_steps.take(i);
+	  it.current().function()->start();
+	  it.current().function()->setVirtualController();
+	  _app->functionConsumer()->cue(it.current().function());
+
+	  ++it;
+	}
+      else
+	{
+	  it.first();
 	}
     }
-}
-
-void Chaser::recalculateSpeed(Feeder* feeder)
-{
-  for (t_function_id i = 0; i < m_steps.count(); i++)
-    {
-      m_steps.at(i)->function()->recalculateSpeed(feeder);
-    }
-}
-
-bool Chaser::registerFunction(Feeder* feeder)
-{
-  if (m_running == false)
-    {
-      m_running = true;
-      m_OKforNextStep = true;
-
-      feeder->setNextEventIndex(0);
-
-      Function::registerFunction(feeder);
-
-      recalculateSpeed(feeder);
-
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-bool Chaser::unRegisterFunction(Feeder* feeder)
-{
-  ChaserStep* step = NULL;
-  t_function_id index = (feeder->nextEventIndex() - 1 + m_steps.count()) % m_steps.count();
-  step = m_steps.at(index);
-
-  ASSERT(step != NULL);
-
-  _app->sequenceProvider()->unRegisterEventFeeder(step->function());
-
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-
-  m_running = false;
-  m_OKforNextStep = false;
-
-  Function::unRegisterFunction(feeder);
-
-  return true;
-}
-
-Event* Chaser::getEvent(Feeder* feeder)
-{
-  Event* event = new Event();
-  ChaserStep* step = NULL;
-
-  ASSERT(feeder != NULL);
-
-  if (m_OKforNextStep == true)
-    {
-      m_OKforNextStep = false;
-      
-      step = m_steps.at(feeder->nextEventIndex());
-      feeder->setNextEventIndex((feeder->nextEventIndex() + 1) % m_steps.count());
-      
-      ASSERT(step != NULL);
-      
-      _app->sequenceProvider()->registerEventFeeder(step->function(), feeder->speedBus(), this);
-
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-      
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-    }
-
-  return event;
-}
-
-void Chaser::slotFunctionUnRegistered(Function* feeder, Function* controller, t_feeder_id feederID)
-{
-  if (controller == this)
-    {
-      m_OKforNextStep = true;
-    }
+  */
 }

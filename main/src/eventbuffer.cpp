@@ -22,17 +22,20 @@
 #include "assert.h"
 #include "eventbuffer.h"
 
-EventBuffer::EventBuffer(unsigned int size, unsigned int eventSize)
+#include <malloc.h>
+#include <string.h>
+
+EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
   : 
   m_ring(NULL),
-  m_size(size * eventSize),
+  m_size(bufferSize * eventSize),
   m_eventSize(eventSize),
   m_filled(0),
   m_in(0),
   m_out(0),
   m_elapsedTime(0)
 {
-  m_ring = (unsigned char*) malloc(m_size);
+  m_ring = new t_value[m_size];
 
   pthread_mutex_init(&m_mutex, 0);
   pthread_cond_init(&m_nonEmpty, 0);
@@ -41,12 +44,14 @@ EventBuffer::EventBuffer(unsigned int size, unsigned int eventSize)
 
 EventBuffer::~EventBuffer()
 {
+  delete [] m_ring;
+
   pthread_mutex_destroy(&m_mutex);
   pthread_cond_destroy(&m_nonEmpty);
   pthread_cond_destroy(&m_nonFull);
 }
 
-bool EventBuffer::put(unsigned char* ev)
+bool EventBuffer::put(t_value* ev)
 {
   pthread_mutex_lock(&m_mutex);
   if (m_filled == m_size)
@@ -64,9 +69,9 @@ bool EventBuffer::put(unsigned char* ev)
   return true;
 }
 
-unsigned char* EventBuffer::get()
+t_value* EventBuffer::get()
 {
-  unsigned char* ev = NULL;
+  t_value* ev = NULL;
 
   pthread_mutex_lock(&m_mutex);
   m_elapsedTime++;

@@ -26,12 +26,11 @@
 #include <qptrlist.h>
 #include <limits.h>
 
+#include "types.h"
+
 class QFile;
 class QString;
 class QPoint;
-
-typedef unsigned short t_bus_id;
-typedef unsigned long t_bus_value;
 
 const t_bus_id KBusID    = 0;
 const t_bus_id KBusIDMin = 1;
@@ -61,7 +60,7 @@ class Bus : public QObject
   QString infoText();
 
   void saveToFile(QFile &file);
-  void createContents(QList <QString> &list);
+  void createContents(QPtrList <QString> &list);
 
   Bus& operator=(Bus &b);
 

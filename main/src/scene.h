@@ -1,8 +1,8 @@
 /*
   Q Light Controller
   scene.h
-
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  
+  Copyright (C) 2004 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -22,57 +22,71 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <qptrlist.h>
-
+#include "types.h"
 #include "function.h"
-#include "dmxchannel.h"
+
+class EventBuffer;
+class Device;
 
 enum SceneValueType
   {
-    Set,  // Normal value
-    Fade, // Fade value
-    NoSet // Empty value
+    Set   = 0, // Normal value
+    Fade  = 1, // Fade value
+    NoSet = 2  // Empty value
   };
 
-typedef struct
+class SceneValue
 {
-  t_value value;
+ public:
   SceneValueType type;
+  t_value value;
+};
 
-} SceneValue;
+class RunTimeData
+{
+ public:
+  float current;
+  float increment;
+  float interval;
+};
 
 class Scene : public Function
 {
-  Q_OBJECT
-
  public:
   Scene(t_function_id id = 0);
-  Scene(Scene* sc);
-  virtual ~Scene();
+  //Scene(Scene* sc);
+  ~Scene();
 
   void copyFrom(Scene* sc);
+  void setDevice(Device* device);
 
- public:
-  Event* getEvent(Feeder* feeder);
-  void recalculateSpeed(Feeder* feeder);
+  t_channel channels() { return m_channels; }
 
   bool set(t_channel ch, t_value value, SceneValueType type);
-  bool clear(t_channel ch);
   SceneValue channelValue(t_channel ch);
 
   QString valueTypeString(t_channel ch);
 
   void saveToFile(QFile &file);
+  void createContents(QPtrList <QString> &list);
 
-  bool registerFunction(Feeder* feeder);
-  bool unRegisterFunction(Feeder* feeder);
+  void speedChange(long unsigned int newTimeSpan) {}
 
-  void createContents(QList<QString> &list);
+  void stop();
 
-  void directSet(t_value intensity);
+  void freeRunTimeData();
+
+ protected:
+  void init();
+  void run();
 
  private:
-  SceneValue m_values[512];
+  unsigned int m_channels;
+
+  SceneValue* m_values;
+
+  RunTimeData* m_runTimeData;
+  t_value* m_channelData;
 };
 
 #endif

@@ -31,6 +31,11 @@ DummyOutPlugin::DummyOutPlugin(int id) : OutputPlugin(id)
   m_open = false;
   m_version = 0x00010000;
   m_name = QString("Dummy Output");
+
+  for (int i = 0; i < 512; i++)
+    {
+      m_values[i] = 0;
+    }
 }
 
 DummyOutPlugin::~DummyOutPlugin()
@@ -67,7 +72,10 @@ QString DummyOutPlugin::infoText()
   QString t;
   QString str = QString::null;
   str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR><TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">") + name() + QString("</FONT></TD></TR></TABLE>");
+  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
+  str += QString("<TR><TD BGCOLOR=\"black\">");
+  str += QString("<FONT COLOR=\"white\" SIZE=\"5\">"); 
+  str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 
   str += QString("<TR><TD><B>Version</B></TD>");
@@ -94,8 +102,9 @@ QString DummyOutPlugin::infoText()
   str += QString("</TABLE>");
 
   str += QString("<H3>NOTE</H3>");
-  str += QString("<P>This plugin does absolutely nothing; you can use this if you don't have ");
-  str += QString("the necessary hardware for real DMX output.</P>");
+  str += QString("<P>This plugin does absolutely nothing; ");
+  str += QString("you can use this if you don't have ");
+  str += QString("the necessary hardware for real control.</P>");
 
   str += QString("</BODY></HTML>");
 
@@ -107,7 +116,8 @@ void DummyOutPlugin::contextMenu(QPoint pos)
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem("Activate", ID_ACTIVATE);
 
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotContextMenuCallback(int)));
+  connect(menu, SIGNAL(activated(int)), 
+	this, SLOT(slotContextMenuCallback(int)));
   menu->exec(pos, 0);
   delete menu;
 }
@@ -144,10 +154,32 @@ void DummyOutPlugin::loadSettings()
 
 bool DummyOutPlugin::writeChannel(t_channel channel, t_value value)
 {
+  m_values[channel] = value;
   return true;
 }
 
-bool DummyOutPlugin::writeRange(t_channel address, t_value* values, t_channel num)
+bool DummyOutPlugin::writeRange(t_channel address, t_value* values,
+				t_channel num)
 {
+  ASSERT(values);
+
+  memcpy(m_values + address, values, num);
+
+  return true;
+}
+
+bool DummyOutPlugin::readChannel(t_channel channel, t_value &value)
+{
+  value = m_values[channel];
+  return true;
+}
+
+bool DummyOutPlugin::readRange(t_channel address, t_value* values,
+			       t_channel num)
+{
+  ASSERT(values);
+
+  memcpy(values, m_values + address, num);
+
   return true;
 }

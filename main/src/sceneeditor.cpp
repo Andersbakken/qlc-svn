@@ -27,9 +27,8 @@
 #include "sceneeditor.h"
 #include "function.h"
 #include "deviceclass.h"
-#include "dmxdevice.h"
+#include "device.h"
 #include "scene.h"
-#include "dmxchannel.h"
 #include "channelui.h"
 #include "listboxiditem.h"
 #include "configkeys.h"
@@ -64,7 +63,7 @@ static const QColor KStatusColorStored = QColor(100, 255, 100);
 static const QColor KStatusColorUnchanged = QColor(255, 255, 255);
 static const QColor KStatusColorModified = QColor(255, 100, 100);
 
-SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent)
+SceneEditor::SceneEditor(Device* device, QWidget* parent)
   : UI_SceneEditor(parent)
 {
   m_device = device;
@@ -126,7 +125,7 @@ void SceneEditor::slotSceneActivated(int nr)
 void SceneEditor::setScene(Scene* scene)
 {
    ChannelUI* unit;
-   QList <ChannelUI> ul = ((DMXDevice*) m_device)->getChannelUnitList();
+   QPtrList <ChannelUI> ul = ((Device*) m_device)->getChannelUnitList();
    int n = 0;
 
    ASSERT(scene != NULL);
@@ -134,19 +133,17 @@ void SceneEditor::setScene(Scene* scene)
    for (unit = ul.first(); unit != NULL; unit = ul.next(), n++)
      {
        SceneValue value = scene->channelValue(n);
+       unit->setStatusButton(value.type);
+
        if (value.type == Set || value.type == Fade)
 	 {
 	   unit->slotAnimateValueChange(value.value);
-	   unit->setStatusButton(DMXChannel::On);
-	 }
-       else
-	 {
-	   unit->setStatusButton(DMXChannel::Off);
 	 }
      }
 }
 
-void SceneEditor::slotSceneListContextMenu(QListBoxItem* item, const QPoint &point)
+void SceneEditor::slotSceneListContextMenu(QListBoxItem* item,
+					   const QPoint &point)
 {
   m_menu->exec(point);
 }
@@ -247,15 +244,18 @@ void SceneEditor::newScene()
       sc->setDevice(m_device);
       for (unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
 	{
+	   qDebug("Warning! Functionality removed!");
+	   /*
 	  // Get values from device / HJu
-	  if (m_device->dmxChannel(n)->status() == DMXChannel::On)
+	  if (m_device->channel(n)->status() == On)
 	    {
-	      sc->set(n, m_device->dmxChannel(n)->value(), Set);
+	      sc->set(n, m_device->channel(n)->value(), Fade);
 	    }
 	  else
 	    {
-	      sc->clear(n);
+	      sc->set(n, m_device->channel(n)->value(), NoSet);
 	    }
+	   */
 	}
       
       // Save to function pool
@@ -276,20 +276,23 @@ void SceneEditor::store()
       return;
     }
 
-  QList <ChannelUI> ul = ((DMXDevice*) m_device)->getChannelUnitList();
+  QPtrList <ChannelUI> ul = ((Device*) m_device)->getChannelUnitList();
 
   // Take values from device because it returns real values for
   // sure and they are t_value's and it is much simpler this way
   for (t_channel i = 0; i < m_device->deviceClass()->channels()->count(); i++)
     {
-      if (m_device->dmxChannel(i)->status() == DMXChannel::On)
+      qDebug("Warning! Functionality removed!");
+      /*
+      if (m_device->channel(i)->status() == On)
 	{
-	  s->set(i, m_device->dmxChannel(i)->value(), Set);
+	  s->set(i, m_device->channel(i)->value(), Fade);
 	}
       else
 	{
-	  s->clear(i);
+	  s->set(i, m_device->channel(i)->value(), NoSet);
 	}
+      */
     }
 
   setStatusText(KStatusStored, KStatusColorStored);
@@ -336,7 +339,7 @@ void SceneEditor::selectFunction(t_function_id fid)
   for (unsigned int i = 0; i < m_sceneList->count(); i++)
     {
       ListBoxIDItem* item = static_cast<ListBoxIDItem*> (m_sceneList->item(i));
-      if (static_cast<unsigned int> (item->rtti()) == fid)
+      if (static_cast<t_function_id> (item->rtti()) == fid)
 	{
 	  m_sceneList->setSelected(item, true);
 	  m_sceneList->ensureCurrentVisible();

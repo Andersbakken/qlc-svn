@@ -24,75 +24,15 @@
 
 #include <qptrlist.h>
 #include "function.h"
-#include "feeder.h"
 
-class Feeder;
 class Scene;
 class Event;
 class QFile;
 class QString;
-
-class ChaserStep
-{
- public:
-  ChaserStep(Function* function = NULL)
-    {
-      m_function = function;
-      if (function)
-	{
-	  m_functionId = function->id();
-	}
-      else
-	{
-	  m_functionId = 0;
-	}
-    }
-
-  ChaserStep(ChaserStep* step)
-    {
-      ASSERT(step && step->function());
-      m_function = step->function();
-      m_functionId = step->functionId();
-    }
-
-  virtual ~ChaserStep()
-    {
-    }
-
-  void setFunction(Function* f)
-    {
-      m_function = f;
-      if (f)
-	{
-	  m_functionId = f->id();
-	}
-      else
-	{
-	  m_functionId = 0;
-	}
-    }
-
-  Function* function()
-    { 
-      return m_function;
-    }
-
-  t_function_id functionId()
-    { 
-      return m_functionId;
-    }
-
- private:
-  Function* m_function;
-  
-  // Used when deleting items because function might already be invalid
-  t_function_id m_functionId;
-};
+class FunctionStep;
 
 class Chaser : public Function
 {
-  Q_OBJECT
-
  public:
   Chaser(t_function_id id = 0);
   Chaser(Chaser* ch, bool append = false);
@@ -106,33 +46,24 @@ class Chaser : public Function
   void raiseStep(unsigned int index);
   void lowerStep(unsigned int index);
 
-  QPtrList <ChaserStep> *steps() { return &m_steps; }
-
-  Event* getEvent(Feeder* feeder);
-  void recalculateSpeed (Feeder *f);
+  QPtrList <FunctionStep> *steps() { return &m_steps; }
 
   void saveToFile(QFile &file);
+  void createContents(QPtrList <QString> &list);
 
-  void registerFirstStep();
+  void speedChange(long unsigned int newTimeSpan);
+  void stop();
+  void freeRunTimeData();
 
-  bool registerFunction(Feeder* feeder);
-  bool unRegisterFunction(Feeder* feeder);
-
-  void createContents(QList<QString> &list);
-
-  QPtrList <ChaserStep> m_steps;
-
- public slots:
-  void slotFunctionUnRegistered(Function* function, Function* controller,
-				t_feeder_id feederID);
-
-  void slotMemberFunctionDestroyed(t_function_id fid);
+ protected:
+  void init();
+  void run();
 
  protected:
   bool m_running; // One chaser object can be running only once at a time
   bool m_OKforNextStep;
 
-  unsigned long m_repeatTimes;
+  QPtrList <FunctionStep> m_steps;
 };
 
 #endif

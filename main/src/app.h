@@ -41,10 +41,9 @@ class FunctionTree;
 
 class DeviceManagerView;
 class Settings;
-class SequenceTimer;
-class SequenceProvider;
 class Doc;
 class OutputPlugin;
+class FunctionConsumer;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -66,12 +65,9 @@ class App : public QMainWindow
   VirtualConsole* virtualConsole() { return m_virtualConsole; }
   QWorkspace* workspace() { return m_workspace; }
   Settings* settings() { return m_settings; }
-  SequenceTimer* sequenceTimer() { return m_sequenceTimer; }
-  SequenceProvider* sequenceProvider() { return m_sequenceProvider; }
+  FunctionConsumer* functionConsumer() { return m_functionConsumer; }
 
   Doc* doc(void);
-
-  void setSequenceTimer(SequenceTimer* timer);
 
  public slots:
   void slotFileNew();
@@ -133,8 +129,7 @@ class App : public QMainWindow
   QWorkspace* m_workspace;
   FunctionTree* m_functionTree;
 
-  SequenceProvider* m_sequenceProvider;
-  SequenceTimer* m_sequenceTimer;
+  FunctionConsumer* m_functionConsumer;
 
   QLabel* m_modeIndicator;
   QToolButton* m_modeButton;

@@ -224,7 +224,7 @@ void MidiOut::saveSettings()
 void MidiOut::loadSettings()
 {
   QString fileName;
-  QList <QString> list;
+  QPtrList <QString> list;
   
   fileName = m_configDirectory + QString(CONF_FILE);
   
@@ -243,7 +243,7 @@ void MidiOut::loadSettings()
     }
 }
 
-void MidiOut::createContents(QList <QString> &list)
+void MidiOut::createContents(QPtrList <QString> &list)
 {
   QString t;
 
@@ -331,6 +331,23 @@ bool MidiOut::writeRange(unsigned short address, unsigned char* values,
     }
 
   return true;
+}
+
+bool MidiOut::readChannel(unsigned short channel, unsigned char &value)
+{
+  value = 0;
+  return false;
+}
+
+bool MidiOut::readRange(unsigned short address, unsigned char* values,
+			unsigned short num)
+{
+  for (int i = 0; i < num; i++)
+    {
+      values[i] = 0;
+    }
+
+  return false;
 }
 
 void MidiOut::configure()

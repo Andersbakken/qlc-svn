@@ -23,91 +23,36 @@
 #define FUNCTIONCOLLECTION_H
 
 #include "function.h"
-#include "feeder.h"
 
-class CollectionItem
-{
- public:
-  CollectionItem()
-    {
-      m_function = NULL;
-      m_registered = false;
-      m_functionId = 0;
-    }
-
-  CollectionItem(CollectionItem* item)
-    {
-      m_function = item->m_function;
-      m_registered = item->m_registered;
-      m_functionId = item->functionId();
-    }
-
-  virtual ~CollectionItem()
-    {
-    }
-
-  void setFunction(Function* f)
-    { 
-      m_function = f;
-      if (f)
-	{
-	  m_functionId = f->id();
-	}
-      else
-	{
-	  m_functionId = 0;
-	}
-    }
-  Function* function() { return m_function; }
-  t_function_id functionId() { return m_functionId; }
-
-  void setRegistered(bool reg) { m_registered = reg; }
-  bool registered() { return m_registered; }
-
- private:
-  Function* m_function;
-  bool m_registered;
-  t_function_id m_functionId;
-};
+class FunctionStep;
 
 class FunctionCollection : public Function
 {
-  Q_OBJECT
-
  public:
   FunctionCollection(t_function_id id = 0);
   FunctionCollection(FunctionCollection* fc);
   void copyFrom(FunctionCollection* fc);
   virtual ~FunctionCollection();
 
-  QList <CollectionItem> *items() { return &m_items; }
-
-  Event* getEvent(Feeder* feeder);
-  void recalculateSpeed (Feeder *feeder);
+  QPtrList <FunctionStep> *steps() { return &m_steps; }
 
   void addItem(Function* function);
   bool removeItem(Function* function);
   bool removeItem(const t_function_id functionId);
 
   void saveToFile(QFile &file);
+  void createContents(QPtrList <QString> &list);
 
-  bool registerFunction(Feeder* feeder);
-  bool unRegisterFunction(Feeder* feeder);
+  void speedChange(long unsigned int newTimeSpan);
+  void stop();
+  void freeRunTimeData();
 
-  void createContents(QList<QString> &list);
+ protected:
+  void init();
+  void run();
 
  private:
-  QList <CollectionItem> m_items;
-
-  void decreaseRegisterCount();
-  void increaseRegisterCount();
-
-  int m_registerCount;
-
- private slots:
-  void slotFunctionUnRegistered(Function* feeder, Function* controller,
-				t_feeder_id feederID);
-  void slotMemberFunctionDestroyed(t_function_id fid);
+  QPtrList <FunctionStep> m_steps;
 };
 
 #endif

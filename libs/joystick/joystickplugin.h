@@ -54,7 +54,7 @@ class JoystickPlugin : public Plugin
   virtual void saveSettings();
   virtual void loadSettings();
 
-  virtual QList<Joystick> *joystickList() { return &m_joystickList; }
+  virtual QPtrList <Joystick> *joystickList() { return &m_joystickList; }
 
   virtual Joystick* selectJoystick();
 

@@ -23,7 +23,7 @@
 #define VIRTUALCONSOLE_H
 
 #include <qwidget.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QMenuBar;
 class QPopupMenu;
@@ -31,8 +31,8 @@ class QToolBar;
 class QVBoxLayout;
 class QFile;
 
-class DMXWidgetBase;
-class DMXWidget;
+class VCWidgetBase;
+class VCWidget;
 class Bus;
 
 #define ID_VC_MODE                   1000
@@ -63,18 +63,18 @@ class VirtualConsole : public QWidget
   void initView(void);
   void newDocument();
 
-  void registerKeyReceiver(DMXWidgetBase* widget);
-  void unRegisterKeyReceiver(DMXWidgetBase* widget);
+  void registerKeyReceiver(VCWidgetBase* widget);
+  void unRegisterKeyReceiver(VCWidgetBase* widget);
 
   bool isDesignMode();
   void setMode(Mode mode);
 
-  void createContents(QList<QString>& file); // Create the virtual console from list
+  void createContents(QPtrList <QString>& file); // Create the vc from list
   void saveToFile(QFile& file); // Save all widgets and vc data to file
 
   // Used to get a correct parent frame for widgets
-  DMXWidget* getFrame(unsigned int id, DMXWidget* widget = NULL);
-  DMXWidget* drawArea() { return m_drawArea; }
+  VCWidget* getFrame(unsigned int id, VCWidget* widget = NULL);
+  VCWidget* drawArea() { return m_drawArea; }
 
   void setDefaultSpeedBus(Bus* bus);
   Bus* defaultSpeedBus() { return m_defaultSpeedBus; }
@@ -92,23 +92,24 @@ class VirtualConsole : public QWidget
   void keyPressEvent(QKeyEvent* e);
   void keyReleaseEvent(QKeyEvent* e);
 
-  DMXWidgetBase* searchKeyReceiver(DMXWidgetBase* widget);
+  VCWidgetBase* searchKeyReceiver(VCWidgetBase* widget);
 
  private:
-  void createVirtualConsole(QList<QString>& list);
-  void createWidget(QList<QString> &list);
+  void createVirtualConsole(QPtrList <QString>& list);
+  void createWidget(QPtrList <QString> &list);
 
  private:
   QMenuBar* m_menuBar;
   QPopupMenu* m_modeMenu;
   QPopupMenu* m_addMenu;
   QPopupMenu* m_toolsMenu;
-  DMXWidget* m_drawArea;
+
+  VCWidget* m_drawArea;
   QVBoxLayout* m_layout;
 
   Mode m_mode;
 
-  QList <DMXWidgetBase> m_keyReceivers;
+  QPtrList <VCWidgetBase> m_keyReceivers;
 
   Bus* m_defaultSpeedBus;
 };

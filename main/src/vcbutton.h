@@ -1,0 +1,116 @@
+/*
+  Q Light Controller
+  vcbutton.h
+  
+  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  Version 2 as published by the Free Software Foundation.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details. The license is
+  in the file "COPYING".
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#ifndef VCBUTTON_H
+#define VCBUTTON_H
+
+#include <qpushbutton.h>
+#include <qptrlist.h>
+
+#include "vcwidgetbase.h"
+
+class QLineEdit;
+class QMouseEvent;
+class QFile;
+class QString;
+
+class VCWidget;
+class Function;
+class Bus;
+class FloatingEdit;
+
+#define VCBUTTON_MENU_ATTACH     1110
+#define VCBUTTON_MENU_DETACH     1120
+#define VCBUTTON_MENU_SET_SPEED_SLIDER 1130
+
+class VCButton : public QPushButton,
+		 public VCWidgetBase
+{
+  Q_OBJECT
+
+ public:
+  VCButton(VCWidget* parent);
+  ~VCButton();
+
+  void init();
+  void copyFrom(VCButton* button);
+
+  Function* function() const;
+
+  KeyBind* keyBind() { return m_keyBind; }
+  Bus* speedBus() { return m_speedBus; }
+  QColor* bgColor() { return m_bgColor; }
+  QPixmap* bgPixmap() const { return m_bgPixmap; }
+
+  void saveToFile(QFile& file, unsigned int parentID);
+  void createContents(QPtrList <QString> &list);
+
+ private:
+  int m_origX;
+  int m_origY;
+  
+  QColor* m_bgColor;
+
+  Function* m_function;
+
+  bool m_resizeMode;
+
+  FloatingEdit* m_renameEdit;
+
+  bool m_functionRunning;
+
+  void keyPress(QKeyEvent* e);
+  void keyRelease(QKeyEvent* e);
+
+  Bus* m_speedBus;
+
+ private:
+  bool moveThreshold(int x, int y);
+  void moveTo(int x, int y);
+
+  void fillBusMenu(QPopupMenu* menu);
+
+  void pressFunction();
+  void releaseFunction();
+  void attachFunction(Function* function);
+
+ public slots:
+  void slotRenameReturnPressed();
+  void slotFunctionDestroyed();
+  void slotSpeedBusDestroyed();
+
+ private slots:
+  void slotMenuCallback(int item);
+  void slotBusMenuCallback(int item);
+  void slotFlashReady();
+
+ protected:
+  QPixmap* m_bgPixmap;
+  QString m_bgPixmapFileName;
+  void mousePressEvent(QMouseEvent* e);
+  void mouseReleaseEvent(QMouseEvent* e);
+  void mouseMoveEvent(QMouseEvent* e);
+  void mouseDoubleClickEvent(QMouseEvent* e);
+  void customEvent(QCustomEvent* e);
+};
+
+#endif
+

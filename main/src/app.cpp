@@ -39,8 +39,7 @@
 #include "app.h"
 #include "doc.h"
 
-#include "sequenceprovider.h"
-#include "sequencetimer.h"
+#include "functionconsumer.h"
 
 #include "settings.h"
 #include "settingsui.h"
@@ -112,13 +111,12 @@ static const QColor KModeColorDesign = QColor(0, 255, 0);
 App::App(Settings* settings)
 {
   m_functionTree = NULL;
-  m_sequenceTimer = NULL;
-  m_sequenceProvider = NULL;
   m_dmView = NULL;
   m_modeIndicator = NULL;
   m_virtualConsole = NULL;
   m_doc = NULL;
   m_workspace = NULL;
+  m_functionConsumer = NULL;
 
   ASSERT(settings != NULL);
   m_settings = settings;
@@ -126,9 +124,7 @@ App::App(Settings* settings)
 
 App::~App()
 {
-  m_sequenceTimer->stop();
-
-  delete m_sequenceProvider;
+  delete m_functionConsumer;
   delete m_dmView;
   delete m_modeIndicator;
   delete m_virtualConsole;
@@ -207,21 +203,11 @@ void App::initToolBar()
 
 void App::initSequenceEngine()
 {
-  m_sequenceProvider = new SequenceProvider();
-  m_sequenceProvider->init();
-
-  ASSERT(m_sequenceProvider);
-
-  ASSERT(m_sequenceTimer);
-
-  m_sequenceTimer->setSequenceProvider(m_sequenceProvider);
-  m_sequenceTimer->start();
-}
-
-void App::setSequenceTimer(SequenceTimer* timer)
-{
-  ASSERT(timer != NULL);
-  m_sequenceTimer = timer;
+  m_functionConsumer = new FunctionConsumer();
+  ASSERT(m_functionConsumer);
+  
+  m_functionConsumer->init();
+  m_functionConsumer->start();
 }
 
 bool App::event(QEvent* e)
@@ -566,7 +552,7 @@ void App::slotRefreshWindowMenu()
   QWidget* widget;
   int id = 0;
 
-  QList <QWidget> wl = workspace()->windowList();
+  QPtrList <QWidget> wl = workspace()->windowList();
 
   QString dir;
   settings()->get(KEY_SYSTEM_DIR, dir);
@@ -593,7 +579,7 @@ void App::slotRefreshWindowMenu()
 
 void App::slotWindowMenuCallback(int item)
 {
-  QList <QWidget> wl = workspace()->windowList();
+  QPtrList <QWidget> wl = workspace()->windowList();
 
   if (item == ID_WINDOW_CASCADE || item == ID_WINDOW_TILE)
     {
@@ -635,7 +621,7 @@ void App::slotWindowTile()
 void App::slotPanic()
 {
   /* Shut down all running functions */
-  m_sequenceProvider->flush();
+  m_functionConsumer->purge();
 }
 
 

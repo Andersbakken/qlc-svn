@@ -23,7 +23,7 @@
 #define DUMMYOUTPLUGIN_H
 
 #include "../../libs/common/outputplugin.h"
-#include "dmxchannel.h"
+#include "types.h"
 
 class DummyOutPlugin : public OutputPlugin
 {
@@ -50,6 +50,10 @@ class DummyOutPlugin : public OutputPlugin
   bool writeChannel(t_channel channel, t_value value);
   bool writeRange(t_channel address, t_value* values, t_channel num);
 
+  bool readChannel(t_channel channel, t_value &value);
+  bool readRange(t_channel address, t_value* values,
+		 t_channel num);
+
   void activate();
   
  protected slots:
@@ -57,7 +61,7 @@ class DummyOutPlugin : public OutputPlugin
   
  private:
   bool m_open;
+  t_value m_values[512];
 };
 
 #endif
-

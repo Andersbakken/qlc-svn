@@ -22,15 +22,14 @@
 #include "chasereditor.h"
 #include "deviceclass.h"
 #include "function.h"
-#include "dmxdevice.h"
+#include "device.h"
 #include "app.h"
 #include "doc.h"
 #include "functiontree.h"
-#include "sequenceprovider.h"
-#include "feeder.h"
 #include "bus.h"
-
 #include "chaser.h"
+#include "functionstep.h"
+
 #include <stdlib.h>
 #include <qlistview.h>
 #include <qlabel.h>
@@ -53,7 +52,6 @@ ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
   m_chaser = new Chaser(function);
   ASSERT(m_chaser != NULL);
 
-  m_feederID = 0;
   m_bus = NULL;
 
   m_original = function;
@@ -66,13 +64,13 @@ ChaserEditor::~ChaserEditor()
 
 void ChaserEditor::updateStepList()
 {
-  ChaserStep* step = NULL;
+  FunctionStep* step = NULL;
   QString device = NULL;
   QString fid;
 
   m_stepList->clear();
 
-  QList <ChaserStep> *steps = m_chaser->steps();
+  QPtrList <FunctionStep> *steps = m_chaser->steps();
 
   for (int i = steps->count() - 1; i >= 0; i--)
     {
@@ -152,40 +150,7 @@ void ChaserEditor::slotAddClicked()
 
 void ChaserEditor::slotPlayClicked()
 {
-  ASSERT(m_bus == NULL);
-
-  m_bus = new Bus();
-  m_bus->setType(Bus::Speed);
-  m_bus->setValue(1024);
-
-  connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, t_feeder_id)), 
-	  this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, t_feeder_id)));
-
-  t_feeder_id id = _app->sequenceProvider()->registerEventFeeder(m_chaser, m_bus, NULL);
-  if (id == KFeederIDInvalid)
-    {
-      m_feederID = 0;
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, t_feeder_id)), 
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, t_feeder_id)));
-    }
-  else
-    {
-      m_feederID = id;
-      m_play->setOn(true);
-    }
-
-}
-
-void ChaserEditor::slotFunctionUnRegistered(Function* f, Function* c, DMXDevice* d, t_feeder_id id)
-{
-  if (id == m_feederID)
-    {
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, t_feeder_id)), 
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, t_feeder_id)));
-      m_play->setOn(false);
-
-      delete m_bus;
-    }
+  qDebug("Not implemented");
 }
 
 void ChaserEditor::updateOrderNumbers()

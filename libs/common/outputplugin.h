@@ -36,6 +36,9 @@ class OutputPlugin : public Plugin
   virtual bool writeRange(unsigned short address, unsigned char* values,
 			  unsigned short num) = 0;
 
+  virtual bool readChannel(unsigned short channel, unsigned char &value) = 0;
+  virtual bool readRange(unsigned short address, unsigned char* values,
+			 unsigned short num) = 0;
 };
 
 #endif

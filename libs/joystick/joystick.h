@@ -25,7 +25,7 @@
 #include <pthread.h>
 #include <qobject.h>
 #include <qevent.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qapplication.h>
 
 #define CONTROLLER_BUTTON 0x01
@@ -73,7 +73,7 @@ class Joystick : public QObject
   virtual int close();
 
   virtual void saveToFile(QFile &file);
-  virtual void createContents(QList <QString> &list);
+  virtual void createContents(QPtrList <QString> &list);
   virtual void create(const char* deviceFileName);
 
   virtual void settings(QWidget*, QApplication*);
@@ -83,8 +83,8 @@ class Joystick : public QObject
   virtual int start();
   virtual int stop();
 
-  QList <Control> axesList() { return m_axesList; }
-  QList <Control> buttonsList() { return m_buttonsList; }
+  QPtrList <Control> axesList() { return m_axesList; }
+  QPtrList <Control> buttonsList() { return m_buttonsList; }
 
   QString name() { return m_name; }
   QString fdName() { return m_fdName; }
@@ -99,8 +99,8 @@ class Joystick : public QObject
 
   QString m_name;
 
-  QList <Control> m_axesList;
-  QList <Control> m_buttonsList;
+  QPtrList <Control> m_axesList;
+  QPtrList <Control> m_buttonsList;
 
   int m_fd;
   QString m_fdName;

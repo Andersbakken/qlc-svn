@@ -129,7 +129,7 @@ void SettingsUI::slotStyleChanged(const QString &)
 
 void SettingsUI::fillAdvancedSettingsList()
 {
-  QPtrList<ConfigItem>* items = _app->settings()->items();
+  QPtrList <ConfigItem>* items = _app->settings()->items();
 
   m_advancedList->clear();
 

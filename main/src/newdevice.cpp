@@ -171,7 +171,7 @@ void NewDevice::fillTree()
   QListViewItem* parent = NULL;
   QListViewItem* newItem = NULL;
 
-  QList <DeviceClass> *dl = _app->doc()->deviceClassList();
+  QPtrList <DeviceClass> *dl = _app->doc()->deviceClassList();
 
   QString path;
   _app->settings()->get("SystemPath", path);

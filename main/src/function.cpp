@@ -2,7 +2,7 @@
   Q Light Controller
   function.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) 2004 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,19 +19,36 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "function.h"
-#include "dmxdevice.h"
+#include <qstring.h>
 
+#include "function.h"
+#include "device.h"
+
+
+//
+// Initialize function id
+//
 t_function_id Function::_nextFunctionId = KFunctionIDMin;
 
-Function::Function(t_function_id id) : QObject()
+//
+// Standard constructor
+// id can be one of the following:
+// KFunctionIDTemp: Don't assign an id (used for editing)
+// KFunctionIDAuto: Assign an id automatically (default)
+// Everything else: Assign the given id to this function (reading from a file)
+//
+Function::Function(t_function_id id) : QThread()
 {
-  if (id == 0)
+  if (id == KFunctionIDTemp)
+    {
+      m_id = id;
+    }
+  else if (id == KFunctionIDAuto)
     {
       m_id = _nextFunctionId;
       _nextFunctionId++;
 
-      if (_nextFunctionId == 0)
+      if (_nextFunctionId == KFunctionIDMax)
 	{
 	  // In case we ever go beyond the limit
 	  _nextFunctionId = KFunctionIDMin;
@@ -45,7 +62,7 @@ Function::Function(t_function_id id) : QObject()
 	  _nextFunctionId = id + 1;
 	}
 
-      if (_nextFunctionId == 0)
+      if (_nextFunctionId == KFunctionIDMax)
 	{
 	  // In case we ever go beyond the limit
 	  _nextFunctionId = KFunctionIDMin;
@@ -55,52 +72,42 @@ Function::Function(t_function_id id) : QObject()
   m_name = QString::null;
   m_type = Function::Undefined;
   m_device = NULL;
-
   m_running = false;
+  m_eventBuffer = NULL;
+  m_virtualController = NULL;
 }
 
+
+//
+// Standard destructor
+//
 Function::~Function()
 {
-  emit destroyed(m_id);
 }
 
-QString Function::name() const
-{
-   return QString(m_name);
-}
 
+//
+// Set a name to this function
+//
 void Function::setName(QString name)
 {
   m_name = QString(name);
 }
 
-DMXDevice* Function::device() const
-{
-  return m_device;
-}
 
-void Function::setDevice(DMXDevice* device)
+//
+// Assign a device to this function (or vice versa, whichever feels
+// familiar to you)
+//
+void Function::setDevice(Device* device)
 {
   m_device = device;
 }
 
-Function::Type Function::type() const
-{
-  return m_type;
-}
 
-bool Function::unRegisterFunction(Feeder* feeder)
-{
-  emit unRegistered(this);
-
-  return true;
-}
-
-bool Function::registerFunction(Feeder* feeder)
-{
-  return true;
-}
-
+//
+// Return the type as a string
+//
 QString Function::typeString() const
 {
   switch (m_type)

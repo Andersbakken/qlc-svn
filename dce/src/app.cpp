@@ -241,7 +241,7 @@ void App::slotFileNew()
 void App::slotFileOpen()
 {
   QString dir;
-  QPtrList<QString> list;
+  QPtrList <QString> list;
 
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + DEVICECLASSPATH;
@@ -305,7 +305,7 @@ void App::slotRefreshWindowMenu()
   QWidget* widget;
   int id = 0;
 
-  QList <QWidget> wl = workspace()->windowList();
+  QPtrList <QWidget> wl = workspace()->windowList();
 
   QString dir;
   settings()->get(KEY_SYSTEM_DIR, dir);
@@ -332,7 +332,7 @@ void App::slotRefreshWindowMenu()
 
 void App::slotWindowMenuCallback(int item)
 {
-  QList <QWidget> wl = workspace()->windowList();
+  QPtrList <QWidget> wl = workspace()->windowList();
 
   if (item == ID_WINDOW_CASCADE || item == ID_WINDOW_TILE)
     {
@@ -423,7 +423,7 @@ void App::closeEvent(QCloseEvent* e)
   m_settings->save();
 }
 
-DeviceClass* App::createDeviceClass(QPtrList<QString> &list)
+DeviceClass* App::createDeviceClass(QPtrList <QString> &list)
 {
   QString entry;
   QString manufacturer;

@@ -22,7 +22,7 @@
 #include "filehandler.h"
 #include <qfile.h>
 
-bool FileHandler::readFileToList(QString &fileName, QList<QString> &list)
+bool FileHandler::readFileToList(QString &fileName, QPtrList <QString> &list)
 {
   QFile file(fileName);
   QString s = QString::null;

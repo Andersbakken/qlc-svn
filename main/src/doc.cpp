@@ -19,12 +19,11 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "dmxdevice.h"
 #include "doc.h"
 #include "app.h"
+#include "device.h"
 #include "settings.h"
 #include "deviceclass.h"
-#include "dmxchannel.h"
 #include "function.h"
 #include "scene.h"
 #include "function.h"
@@ -40,10 +39,9 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmessagebox.h>
 
 #include <ctype.h>
@@ -66,7 +64,7 @@ Doc::Doc() : QObject()
 
 Doc::~Doc()
 {
-  DMXDevice* dev = NULL;
+  Device* dev = NULL;
   while (m_deviceList.isEmpty() == false)
     {
       dev = m_deviceList.take(0);
@@ -93,25 +91,9 @@ void Doc::init()
   QString outputPlugin;
   _app->settings()->get("OutputPlugin", outputPlugin);
 
-  initDMXChannels();
   initPlugins();
 
   readDeviceClasses();
-}
-
-void Doc::initDMXChannels()
-{
-  for (t_channel i = 0; i < 512; i++)
-    {
-      m_DMXChannel[i] = new DMXChannel(i);
-    }
-}
-
-DMXChannel* Doc::dmxChannel(t_channel channel)
-{
-  ASSERT(channel < 512);
-
-  return m_DMXChannel[channel];
 }
 
 bool Doc::readDeviceClasses()
@@ -136,7 +118,7 @@ bool Doc::readDeviceClasses()
   QStringList dirlist(d.entryList());
   QStringList::Iterator it;
 
-  QList <QString> list; // Our stringlist that contains the files' contents
+  QPtrList <QString> list; // Our stringlist that contains the files' contents
 
   // Put a slash to the end of the directory name if it isn't there
   if (dir.right(1) != QString("/"))
@@ -166,7 +148,7 @@ bool Doc::readDeviceClasses()
   return true;
 }
 
-DeviceClass* Doc::createDeviceClass(QList<QString> &list)
+DeviceClass* Doc::createDeviceClass(QPtrList <QString> &list)
 {
   QString entry;
   QString manufacturer;
@@ -214,7 +196,7 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
 }
 
 
-bool Doc::readFileToList(QString &fileName, QList<QString> &list)
+bool Doc::readFileToList(QString &fileName, QPtrList <QString> &list)
 {
   qDebug("Doc::readFileToList() is deprecated; Use FileHandler::readFileToList() instead!");
   ASSERT(false);
@@ -230,7 +212,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   QString buf;
   QString s;
   QString t;
-  QList<QString> list;
+  QPtrList <QString> list;
 
   newDocument();
 
@@ -247,7 +229,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 	      
 	      if (*string == QString("Device"))
 		{
-		  DMXDevice* d = createDevice(list);
+		  Device* d = createDevice(list);
 		  
 		  if (d != NULL)
 		    {
@@ -327,7 +309,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
   return success;
 }
 
-void Doc::createJoystickContents(QList<QString> &list)
+void Doc::createJoystickContents(QPtrList <QString> &list)
 {
   QString name;
   QString fdName;
@@ -350,13 +332,13 @@ void Doc::createJoystickContents(QList<QString> &list)
     }
 }
 
-void Doc::createFunctionContents(QList<QString> &list)
+void Doc::createFunctionContents(QPtrList <QString> &list)
 {
   Function* function = NULL;
-  DMXDevice* device = NULL;
+  Device* device = NULL;
 
   t_device_id deviceId = 0;
-  t_function_id functionId = KOutputDeviceIDMax;
+  t_function_id functionId = KFunctionIDMax;
 
   QString name;
 
@@ -399,7 +381,7 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
     }
 
-  if (functionId == ULONG_MAX)
+  if (functionId == KFunctionIDMax)
     {
       qDebug("Couldn't find an ID for function <" + name + ">");
     }
@@ -419,10 +401,10 @@ void Doc::createFunctionContents(QList<QString> &list)
     }
 }
 
-Function* Doc::createFunction(QList<QString> &list)
+Function* Doc::createFunction(QPtrList <QString> &list)
 {
   Function* f = NULL;
-  DMXDevice* d = NULL;
+  Device* d = NULL;
 
   QString name;
   QString type;
@@ -460,7 +442,7 @@ Function* Doc::createFunction(QList<QString> &list)
 	}
     }
 
-  if (id == ULONG_MAX)
+  if (id == KFunctionIDMax)
     {
       f = NULL;
     }
@@ -483,19 +465,19 @@ Function* Doc::createFunction(QList<QString> &list)
 
       if (type == QString("Collection"))
 	{
-	  f = (Function*) new FunctionCollection();
+	  f = static_cast<Function*> (new FunctionCollection());
 	  f->setName(name);
 	  f->setDevice(d);
 	}
       else if (type == QString("Chaser"))
 	{
-	  f = (Function*) new Chaser();
+	  f = static_cast<Function*> (new Chaser());
 	  f->setName(name);
 	  f->setDevice(d);
 	}
       else if (type == QString("Scene"))
 	{
-	  f = (Function*) new Scene(id);
+	  f = static_cast<Function*> (new Scene(id));
 	  f->setName(name);
 	  f->setDevice(d);
 	}
@@ -512,7 +494,7 @@ Function* Doc::createFunction(QList<QString> &list)
   return f;
 }
 
-DMXDevice* Doc::createDevice(QList<QString> &list)
+Device* Doc::createDevice(QPtrList <QString> &list)
 {
   QString name = QString::null;
   QString manufacturer = QString::null;
@@ -591,7 +573,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 	    }
 	  else
 	    {
-	      DMXDevice* d = new DMXDevice(address, dc, name, id);
+	      Device* d = new Device(address, dc, name, id);
 	      return d;
 	    }
 	}
@@ -600,7 +582,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 
 void Doc::newDocument()
 {
-  DMXDevice* d = NULL;
+  Device* d = NULL;
   Function* f = NULL;
   Bus* b = NULL;
 
@@ -656,7 +638,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
       //
       // Devices
       //
-      for (DMXDevice* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
+      for (Device* d = m_deviceList.first(); d != NULL; d = m_deviceList.next())
         {
 	  d->saveToFile(file);
 	}
@@ -735,7 +717,7 @@ bool Doc::saveWorkspace()
   return saveWorkspaceAs(m_workspaceFileName);
 }
 
-void Doc::addDevice(DMXDevice* device)
+void Doc::addDevice(Device* device)
 {
   ASSERT(device != NULL);
   
@@ -746,9 +728,9 @@ void Doc::addDevice(DMXDevice* device)
   emit deviceListChanged();
 }
 
-bool Doc::removeDevice(DMXDevice* device)
+bool Doc::removeDevice(Device* device)
 {
-  DMXDevice* dev = NULL;
+  Device* dev = NULL;
   bool ok = false;
   int id = -1;
 
@@ -773,9 +755,9 @@ bool Doc::removeDevice(DMXDevice* device)
 }
 
 /* Search for a device by its run-time id number */
-DMXDevice* Doc::searchDevice(const t_device_id id)
+Device* Doc::searchDevice(const t_device_id id)
 {
-  for (DMXDevice* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
+  for (Device* device = m_deviceList.first(); device != NULL; device = m_deviceList.next())
     {
       if (device->id() == id)
 	{

@@ -2,7 +2,7 @@
   Q Light Controller
   functioncollection.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -20,108 +20,76 @@
 */
 
 #include "functioncollection.h"
+#include "functionstep.h"
 #include "function.h"
-#include "app.h"
-#include "sequenceprovider.h"
-#include "feeder.h"
-#include "event.h"
-#include "doc.h"
 #include "deviceclass.h"
+#include "app.h"
+#include "doc.h"
+#include "functionconsumer.h"
 
 #include <qstring.h>
 #include <qthread.h>
 #include <stdlib.h>
 #include <qfile.h>
+#include <qptrlist.h>
 
 extern App* _app;
-static QMutex _mutex;
 
-FunctionCollection::FunctionCollection(t_function_id id) : Function(id)
+//
+// Standard constructor
+//
+FunctionCollection::FunctionCollection(t_function_id id)
+  : Function(id)
 {
-  m_registerCount = 0;
   m_type = Function::Collection;
   m_running = false;
 }
 
-FunctionCollection::FunctionCollection(FunctionCollection* fc) : Function(fc->id())
+
+//
+// Copy constructor
+//
+FunctionCollection::FunctionCollection(FunctionCollection* fc) 
+  : Function(fc->id())
 {
   copyFrom(fc);
 }
 
+
+//
+// Copy give function's contents to this
+//
 void FunctionCollection::copyFrom(FunctionCollection* fc)
 {
   m_type = Function::Collection;
   m_running = fc->m_running;
-  m_registerCount = fc->m_registerCount;
   m_name = fc->m_name;
 
-  QList <CollectionItem> *il = fc->items();
+  QPtrList <FunctionStep> *il = fc->steps();
 
-  for (CollectionItem* item = il->first(); item != NULL; item = il->next())
+  for (FunctionStep* step = il->first(); step != NULL; step = il->next())
     {
-      CollectionItem* newItem = new CollectionItem(item);
-      m_items.append(newItem);
-
-      connect(newItem->function(), SIGNAL(destroyed(t_function_id)),
-	      this, SLOT(slotMemberFunctionDestroyed(t_function_id)));
+      FunctionStep* newItem = new FunctionStep(step);
+      m_steps.append(newItem);
     }
 }
 
+
+//
+// Destructor
+//
 FunctionCollection::~FunctionCollection()
 {
-  while (m_items.isEmpty() == false)
+  while (m_steps.isEmpty() == false)
     {
-      delete m_items.take(0);
+      delete m_steps.take(0);
     }
 }
 
-bool FunctionCollection::unRegisterFunction(Feeder* feeder)
-{
-  m_running = false; // Not running anymore
 
-  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
-    {
-      _app->sequenceProvider()->unRegisterEventFeeder(item->function());
-    }
-
-  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-
-  Function::unRegisterFunction(feeder);
-
-  return true;
-}
-
-bool FunctionCollection::registerFunction(Feeder* feeder)
-{
-  if (m_running == false)
-    {
-      m_running = true;
-
-      // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-      
-      connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-      
-      for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
-	{
-	  increaseRegisterCount();
-	  item->setRegistered(true);
-	  _app->sequenceProvider()->registerEventFeeder(item->function(), feeder->speedBus(), this);
-	}
-
-      Function::registerFunction(feeder);
-
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
+//
+// Save this function's contents to given file
+//
 void FunctionCollection::saveToFile(QFile &file)
 {
   QString s;
@@ -159,14 +127,19 @@ void FunctionCollection::saveToFile(QFile &file)
   file.writeBlock((const char*) s, s.length());
 
   // For global collections, write device+scene pairs
-  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+  for (FunctionStep* step = m_steps.first(); step != NULL;
+       step = m_steps.next())
     {
-      s.sprintf("Function = %d", item->function()->id());
+      s.sprintf("Function = %d", step->function()->id());
       file.writeBlock((const char*) s, s.length());
     }
 }
 
-void FunctionCollection::createContents(QList<QString> &list)
+
+//
+// Create this function's contents from a list
+//
+void FunctionCollection::createContents(QPtrList <QString> &list)
 {
   t_device_id did = 0;
   t_function_id fid = 0;
@@ -195,7 +168,8 @@ void FunctionCollection::createContents(QList<QString> &list)
 		}
 	      else
 		{
-		  qDebug("Unable to find member for function collection <" + name() + ">");
+		  qDebug("Unable to find member for function collection <"
+			 + name() + ">");
 		}
 	    }
 	  else
@@ -208,7 +182,8 @@ void FunctionCollection::createContents(QList<QString> &list)
 		}
 	      else
 		{
-		  qDebug("Unable to find member %d for function collection <" + name() + ">", fid);
+		  qDebug("Unable to find member %d for function collection <"
+			 + name() + ">", fid);
 		}
 	    }
 	}
@@ -220,40 +195,34 @@ void FunctionCollection::createContents(QList<QString> &list)
     }
 }
 
-void FunctionCollection::slotMemberFunctionDestroyed(t_function_id fid)
-{
-  for (t_function_id i = 0; i < m_items.count(); i++)
-    {
-      if (m_items.at(i)->functionId() == fid)
-	{
-	  delete m_items.take(i);
-	}
-    }
-}
 
+//
+// Add a function to this collection
+//
 void FunctionCollection::addItem(Function* function)
 {
   ASSERT(function != NULL);
 
-  CollectionItem* item = new CollectionItem();
-  item->setFunction(function);
-  item->setRegistered(false);
+  FunctionStep* step = new FunctionStep();
+  step->setFunction(function);
 
-  m_items.append(item);
-
-  connect(item->function(), SIGNAL(destroyed(t_function_id)),
-	  this, SLOT(slotMemberFunctionDestroyed(t_function_id)));
+  m_steps.append(step);
 }
 
+
+//
+// Remove a function from this collection (direct function pointer)
+//
 bool FunctionCollection::removeItem(Function* function)
 {
   bool retval = false;
 
-  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+  for (FunctionStep* step = m_steps.first(); step != NULL; 
+       step = m_steps.next())
     {
-      if (item->function()->id() == function->id())
+      if (step->function()->id() == function->id())
 	{
-	  delete m_items.take();
+	  delete m_steps.take();
 	  retval = true;
 	  break;
 	}
@@ -262,15 +231,20 @@ bool FunctionCollection::removeItem(Function* function)
   return retval;
 }
 
+
+//
+// Remove a function from this collection (with function id)
+//
 bool FunctionCollection::removeItem(const t_function_id functionId)
 {
   bool retval = false;
 
-  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+  for (FunctionStep* step = m_steps.first(); step != NULL; 
+       step = m_steps.next())
     {
-      if (item->function()->id() == functionId)
+      if (step->function()->id() == functionId)
 	{
-	  delete m_items.take();
+	  delete m_steps.take();
 	  retval = true;
 	  break;
 	}
@@ -279,61 +253,48 @@ bool FunctionCollection::removeItem(const t_function_id functionId)
   return retval;
 }
 
-void FunctionCollection::increaseRegisterCount()
+
+//
+// Initiate a speed change (from a speed bus)
+//
+void FunctionCollection::speedChange(long unsigned int newTimeSpan)
 {
-  _mutex.lock();
-
-  m_registerCount++;
-
-  _mutex.unlock();
 }
 
-void FunctionCollection::decreaseRegisterCount()
+
+//
+// Explicitly stop this function
+//
+void FunctionCollection::stop()
 {
-  _mutex.lock();
-
-  m_registerCount--;
-
-  _mutex.unlock();
+  m_running = false;
 }
 
-void FunctionCollection::slotFunctionUnRegistered(Function* function, Function* controller, t_feeder_id feederID)
+
+//
+// Free run-time allocations
+//
+void FunctionCollection::freeRunTimeData()
 {
-  if (controller == this)
-    {
-      decreaseRegisterCount();
-    }
 }
 
-void FunctionCollection::recalculateSpeed(Feeder* feeder)
+
+//
+// Initialize some run-time values
+//
+void FunctionCollection::init()
 {
-  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
-    {
-      item->function()->recalculateSpeed(feeder);
-    }
 }
 
-Event* FunctionCollection::getEvent(Feeder* feeder)
+
+//
+// Main producer thread
+//
+void FunctionCollection::run()
 {
-  Event* event = new Event();
-
-  _mutex.lock();
-  if (m_registerCount == 0)
-    {
-      _mutex.unlock();
-
-      // Disconnect the previous signal
-      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, t_feeder_id)),
-		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, t_feeder_id)));
-
-      // Ready event signals sequenceprovider that this
-      // function is ready and can be unregistered
-      event->m_type = Event::Ready;
-    }
-  else
-    {
-      _mutex.unlock();
-    }
-
-  return event;
+  // Calculate starting values
+  init();
+  
+  // Append this function to running functions list
+  _app->functionConsumer()->cue(this);
 }

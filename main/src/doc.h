@@ -22,16 +22,16 @@
 #ifndef DOC_H
 #define DOC_H
 
-class DummyOutPlugin;
-
 #include <qobject.h>
 #include <qptrlist.h>
+
 #include "function.h"
-#include "dmxdevice.h"
-#include "dmxchannel.h"
+#include "device.h"
 #include "deviceclass.h"
 #include "bus.h"
 #include "../../libs/common/outputplugin.h"
+
+class DummyOutPlugin;
 
 class Doc : public QObject
 {
@@ -56,26 +56,21 @@ class Doc : public QObject
   bool saveWorkspace();
 
   // Read file contents to a list of strings
-  bool readFileToList(QString &fileName, QList<QString> &list);
+  bool readFileToList(QString &fileName, QPtrList <QString> &list);
 
   //
-  // DMX Channels
+  // Devices
   //
-  DMXChannel* dmxChannel(t_channel channel);
-
-  //
-  // DMX Devices
-  //
-  void addDevice(DMXDevice*);
-  bool removeDevice(DMXDevice*);
-  QList <DMXDevice> *deviceList() { return &m_deviceList; }
-  DMXDevice* searchDevice(const t_device_id id);
+  void addDevice(Device* d);
+  bool removeDevice(Device* d);
+  QPtrList <Device> *deviceList() { return &m_deviceList; }
+  Device* searchDevice(const t_device_id id);
 
   //
   // Functions
   //
   // Function list
-  QList<Function> *functions() { return &m_functions; }
+  QPtrList <Function> *functions() { return &m_functions; }
 
   // Function list operations
   void addFunction(const Function* function);
@@ -85,7 +80,7 @@ class Doc : public QObject
   //
   // Device classes
   //
-  QList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
+  QPtrList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
   bool readDeviceClasses();
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
   DeviceClass* searchDeviceClass(const t_deviceclass_id id);
@@ -93,7 +88,7 @@ class Doc : public QObject
   //
   // Bus
   //
-  QList <Bus> *busList()  { return &m_busList; }
+  QPtrList <Bus> *busList()  { return &m_busList; }
   Bus* searchBus(const t_bus_id id);
   void addBus(Bus* bus);
   void removeBus(const t_bus_id id, bool deleteBus = true);
@@ -101,7 +96,7 @@ class Doc : public QObject
   //
   // General Plugin Stuff
   //
-  QList <Plugin> *pluginList() { return &m_pluginList; }
+  QPtrList <Plugin> *pluginList() { return &m_pluginList; }
   Plugin* searchPlugin(QString name);
   Plugin* searchPlugin(QString name, Plugin::PluginType type);
   Plugin* searchPlugin(const t_plugin_id id);
@@ -125,28 +120,24 @@ class Doc : public QObject
   void slotPluginActivated(Plugin* plugin);
 
  private:
-  void initDMXChannels();
-
-  DeviceClass* createDeviceClass(QList<QString> &list);
-  DMXDevice* createDevice(QList<QString> &list);
-  Function* createFunction(QList<QString> &list);
-  void createFunctionContents(QList<QString> &list);
-  void createJoystickContents(QList<QString> &list);
+  DeviceClass* createDeviceClass(QPtrList <QString> &list);
+  Device* createDevice(QPtrList <QString> &list);
+  Function* createFunction(QPtrList <QString> &list);
+  void createFunctionContents(QPtrList <QString> &list);
+  void createJoystickContents(QPtrList <QString> &list);
 
  private:
-  DMXChannel* m_DMXChannel[512];
-
   OutputPlugin* m_outputPlugin;
   DummyOutPlugin* m_dummyOutPlugin;
 
   QString m_workspaceFileName;
   bool m_modified;
 
-  QList <Function> m_functions;
-  QList <DMXDevice> m_deviceList;
-  QList <DeviceClass> m_deviceClassList;
-  QList <Bus> m_busList;
-  QList <Plugin> m_pluginList;
+  QPtrList <Function> m_functions;
+  QPtrList <Device> m_deviceList;
+  QPtrList <DeviceClass> m_deviceClassList;
+  QPtrList <Bus> m_busList;
+  QPtrList <Plugin> m_pluginList;
 
  private:
   static t_plugin_id NextPluginID;

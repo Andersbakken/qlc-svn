@@ -23,7 +23,7 @@
 #include <qnamespace.h>
 
 #include "keybind.h"
-#include "dmxwidgetbase.h"
+#include "vcwidgetbase.h"
 
 KeyBind::KeyBind() : QObject()
 {

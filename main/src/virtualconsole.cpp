@@ -25,7 +25,7 @@
 #include <qtoolbar.h>
 #include <qlayout.h>
 #include <qfile.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qlayout.h>
 #include <qobjcoll.h>
@@ -36,14 +36,13 @@
 #include "app.h"
 #include "doc.h"
 #include "settings.h"
-#include "dmxslider.h"
-#include "dmxbutton.h"
-#include "dmxwidget.h"
+#include "vcslider.h"
+#include "vcbutton.h"
+#include "vcwidget.h"
 #include "speedslider.h"
-#include "dmxwidgetbase.h"
+#include "vcwidgetbase.h"
 #include "keybind.h"
-#include "dmxlabel.h"
-#include "sequenceprovider.h"
+#include "vclabel.h"
 #include "configkeys.h"
 
 #include <X11/Xlib.h>
@@ -90,26 +89,11 @@ bool VirtualConsole::isDesignMode(void)
 void VirtualConsole::setMode(Mode mode)
 {
   //
-  // If we're gonna change to design mode when functions are running
+  // If we're gonna change to design mode when functions are running,
+  // all functions should be stopped
   //
   if (mode == Design)
     {
-      QList <Feeder> *feederList = _app->sequenceProvider()->feederList();
-      
-      if (feederList->count() > 0)
-	{
-	  int result = QMessageBox::warning(this, QString("Virtual Console"),
-					    QString("There are running functions. Do you want to stop them now?"),
-					    QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
-	  if (result == QMessageBox::Yes)
-	    {
-	      _app->sequenceProvider()->flush();
-	    }
-	  else if (result == QMessageBox::Cancel)
-	    {
-	      return;
-	    }
-	}
     }
 
   QString config;
@@ -166,9 +150,9 @@ void VirtualConsole::setMode(Mode mode)
 // Search for a parent frame by the id number <id>
 // This is a recursive function and I have the feeling that it could
 // be done in a more sophisticated way. Anyway, it works now.
-DMXWidget* VirtualConsole::getFrame(unsigned int id, DMXWidget* widget)
+VCWidget* VirtualConsole::getFrame(unsigned int id, VCWidget* widget)
 {
-  DMXWidget* w = NULL;
+  VCWidget* w = NULL;
   QObjectList* ol = NULL;
 
   if (widget != NULL)
@@ -201,9 +185,9 @@ DMXWidget* VirtualConsole::getFrame(unsigned int id, DMXWidget* widget)
 
   for (QObjectListIt it(*ol); it.current() != NULL; ++it)
     {
-      if (QString(it.current()->className()) == QString("DMXWidget"))
+      if (QString(it.current()->className()) == QString("VCWidget"))
 	{
-	  w = getFrame(id, (DMXWidget*) it.current());
+	  w = getFrame(id, (VCWidget*) it.current());
 	  if (w != NULL)
 	    {
 	      break;
@@ -214,7 +198,7 @@ DMXWidget* VirtualConsole::getFrame(unsigned int id, DMXWidget* widget)
   return w;
 }
 
-void VirtualConsole::createWidget(QList<QString> &list)
+void VirtualConsole::createWidget(QPtrList <QString> &list)
 {
   QString t;
   
@@ -229,7 +213,7 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	{
 	  if (m_drawArea == NULL)
 	    {
-	      m_drawArea = new DMXWidget(this);
+	      m_drawArea = new VCWidget(this);
 	      m_drawArea->setBottomFrame(true);
 	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	      
@@ -241,19 +225,19 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	    }
 	  else
 	    {
-	      DMXWidget* w = new DMXWidget(m_drawArea);
+	      VCWidget* w = new VCWidget(m_drawArea);
 	      w->createContents(list);
 	    }
 	}
       else if (*s == QString("Label"))
 	{
-	  DMXLabel* w = new DMXLabel(m_drawArea);
+	  VCLabel* w = new VCLabel(m_drawArea);
 	  w->init();
 	  w->createContents(list);
 	}
       else if (*s == QString("Button"))
 	{
-	  DMXButton* w = new DMXButton(m_drawArea);
+	  VCButton* w = new VCButton(m_drawArea);
 	  w->init();
 	  w->createContents(list);
 	}
@@ -264,7 +248,7 @@ void VirtualConsole::createWidget(QList<QString> &list)
 	}
       else if (*s == QString("Slider"))
 	{
-	  DMXSlider* w = new DMXSlider(m_drawArea);
+	  VCSlider* w = new VCSlider(m_drawArea);
 	  w->init();
 	  w->createContents(list);
 	}
@@ -276,7 +260,7 @@ void VirtualConsole::createWidget(QList<QString> &list)
     }
 }
 
-void VirtualConsole::createVirtualConsole(QList<QString>& list)
+void VirtualConsole::createVirtualConsole(QPtrList <QString>& list)
 {
   QString t;
   QRect rect(10, 10, 400, 400);
@@ -329,11 +313,11 @@ void VirtualConsole::createVirtualConsole(QList<QString>& list)
   setGeometry(rect);
 }
 
-void VirtualConsole::createContents(QList<QString> &list)
+void VirtualConsole::createContents(QPtrList <QString> &list)
 {
   QString t;
 
-  DMXWidget::globalDMXWidgetIDReset();
+  VCWidget::globalVCWidgetIDReset();
   
   if (m_drawArea != NULL)
     {
@@ -485,14 +469,14 @@ void VirtualConsole::initView(void)
 
 void VirtualConsole::newDocument()
 {
-  DMXWidget::globalDMXWidgetIDReset();
+  VCWidget::globalVCWidgetIDReset();
   
   if (m_drawArea != NULL)
     {
       delete m_drawArea;
     }
 
-  m_drawArea = new DMXWidget(this);
+  m_drawArea = new VCWidget(this);
   m_drawArea->setBottomFrame(true);
   m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 
@@ -527,8 +511,8 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_BUTTON:
       {
-	DMXButton* b;
-	b = new DMXButton(m_drawArea);
+	VCButton* b;
+	b = new VCButton(m_drawArea);
 	b->init();
 	b->show();
 	_app->doc()->setModified(true);
@@ -537,8 +521,8 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_SLIDER:
       {
-	DMXSlider* s;
-	s = new DMXSlider(m_drawArea);
+	VCSlider* s;
+	s = new VCSlider(m_drawArea);
 	s->init();
 	s->setGeometry(0, 0, 20, 120);
 	s->show();
@@ -557,8 +541,8 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_LABEL:
       {
- 	DMXLabel* p = NULL;
-	p = new DMXLabel(m_drawArea);
+ 	VCLabel* p = NULL;
+	p = new VCLabel(m_drawArea);
 	p->setText("New label");
 	p->show();
 	_app->doc()->setModified(true);
@@ -571,8 +555,8 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
     case ID_VC_ADD_FRAME:
       {
-	DMXWidget* w;
-	w = new DMXWidget(m_drawArea);
+	VCWidget* w;
+	w = new VCWidget(m_drawArea);
 	w->resize(120, 120);
 	w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	w->show();
@@ -593,7 +577,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
 void VirtualConsole::keyPressEvent(QKeyEvent* e)
 {
-  DMXWidgetBase* b = NULL;
+  VCWidgetBase* b = NULL;
 
   if (m_mode == Operate)
     {
@@ -607,7 +591,7 @@ void VirtualConsole::keyPressEvent(QKeyEvent* e)
 
 void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 {
-  DMXWidgetBase* b = NULL;
+  VCWidgetBase* b = NULL;
 
   if (m_mode == Operate)
     {
@@ -619,23 +603,23 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
     }
 }
 
-void VirtualConsole::registerKeyReceiver(DMXWidgetBase* widget)
+void VirtualConsole::registerKeyReceiver(VCWidgetBase* widget)
 {
   ASSERT(widget != NULL);
 
   m_keyReceivers.append(widget);
 }
 
-void VirtualConsole::unRegisterKeyReceiver(DMXWidgetBase* widget)
+void VirtualConsole::unRegisterKeyReceiver(VCWidgetBase* widget)
 {
   ASSERT(widget != NULL);
 
   m_keyReceivers.remove(widget);
 }
 
-DMXWidgetBase* VirtualConsole::searchKeyReceiver(DMXWidgetBase* widget)
+VCWidgetBase* VirtualConsole::searchKeyReceiver(VCWidgetBase* widget)
 {
-  DMXWidgetBase* w = NULL;
+  VCWidgetBase* w = NULL;
 
   ASSERT(widget != NULL);
 

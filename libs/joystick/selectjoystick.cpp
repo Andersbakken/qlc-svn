@@ -57,7 +57,7 @@ void SelectJoystick::initView()
 
 void SelectJoystick::fillList()
 {
-  QList <Joystick> *list = m_plugin->joystickList();
+  QPtrList <Joystick> *list = m_plugin->joystickList();
 
   if (list->count() == 0)
     {

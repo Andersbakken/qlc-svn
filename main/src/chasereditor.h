@@ -26,7 +26,6 @@
 #include "uic_chasereditor.h"
 
 #include "function.h"
-#include "feeder.h"
 
 class QListView;
 class QListViewItem;
@@ -37,7 +36,6 @@ class QToolButton;
 
 class Chaser;
 class Function;
-class DMXDevice;
 class Bus;
 
 class ChaserEditor : public UI_ChaserEditor
@@ -59,7 +57,6 @@ class ChaserEditor : public UI_ChaserEditor
   Chaser* m_original;
 
   Bus* m_bus;
-  t_feeder_id m_feederID;
 
  private slots:
   void slotCancelClicked();
@@ -70,9 +67,6 @@ class ChaserEditor : public UI_ChaserEditor
   void slotPlayClicked();
   void slotRaiseClicked();
   void slotLowerClicked();
-
-  void slotFunctionUnRegistered(Function*, Function*,
-				DMXDevice*, t_function_id);
 };
 
 #endif

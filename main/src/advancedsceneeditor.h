@@ -26,7 +26,6 @@
 
 #include "function.h"
 
-class DMXDevice;
 class Scene;
 class LogicalChannel;
 class DeviceClass;
@@ -44,7 +43,6 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
  public slots:
   void slotSceneNameTextChanged(const QString& text);
 
-  void slotSnapshotClicked();
   void slotEditValueClicked();
   void slotContentsClicked(QListViewItem* item);
   void slotContentsDoubleClicked(QListViewItem*);
@@ -55,7 +53,6 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void slotCancelClicked();
 
   void slotDeviceFunctionsListChanged(t_function_id fid);
-  void slotDeviceClassFunctionsListChanged(t_function_id fid);
 
  signals:
   void closed();

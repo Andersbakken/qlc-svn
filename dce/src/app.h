@@ -88,7 +88,7 @@ class App : public QMainWindow
   void initStatusBar();
   void initToolBar();
 
-  DeviceClass* createDeviceClass(QPtrList<QString> &list);
+  DeviceClass* createDeviceClass(QPtrList <QString> &list);
 
  private slots:
   void slotWindowMenuCallback(int item);

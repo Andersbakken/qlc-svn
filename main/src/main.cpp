@@ -27,7 +27,6 @@
 
 #include "settings.h"
 #include "configkeys.h"
-#include "sequencetimer.h"
 #include "app.h"
 
 #include <X11/Xlib.h>
@@ -83,8 +82,7 @@ int parseArgs(int argc, char **argv)
  */
 int main(int argc, char **argv)
 {
-  int result;
-  uid_t uid;
+  int result = 0;
 
   //
   // Parse any command line arguments
@@ -96,20 +94,6 @@ int main(int argc, char **argv)
   qDebug("* " + KApplicationNameLong + " " + KApplicationVersion);
   qDebug("* This program is licensed under the terms of the GNU General Public License.");
   qDebug("* Copyright (c) Heikki Junnila (hjunnila@iki.fi)");
-
-  //
-  // Warn the user if qlc is being run (effectively) as root
-  uid = ::getuid();
-  if (uid == 0)
-    {
-      qDebug("\nDo not run QLC as root. Instead, make the executable suid root:");
-      qDebug("    chown root.root qlc ; chmod +s qlc\n");
-    }
-
-  //
-  // Construct and init sequence timer object
-  SequenceTimer* timer = new SequenceTimer();
-  timer->init();
 
   //
   // Initialize QApplication object
@@ -140,7 +124,6 @@ int main(int argc, char **argv)
   // Construct the main application class
   _app = new App(settings);
   _app->setCaption(KApplicationNameLong);
-  _app->setSequenceTimer(timer);
   _app->initView();
   a.setMainWidget(_app);
   _app->show();
@@ -158,13 +141,9 @@ int main(int argc, char **argv)
   // Delete settings
   delete settings;
 
-  // Delete sequence timer
-  delete timer;
-
   //
   // Set key repeat on
-  Display* display;
-  display = XOpenDisplay(NULL);
+  Display* display = XOpenDisplay(NULL);
   ASSERT(display != NULL);
   XAutoRepeatOn(display);
   XCloseDisplay(display);

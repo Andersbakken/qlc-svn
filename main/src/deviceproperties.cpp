@@ -22,14 +22,14 @@
 #include "app.h"
 #include "doc.h"
 #include "deviceproperties.h"
-#include "dmxdevice.h"
+#include "device.h"
 #include "deviceclass.h"
 #include "dmxaddresstool.h"
 #include "qmessagebox.h"
 
 extern App* _app;
 
-DeviceProperties::DeviceProperties(DMXDevice* device) 
+DeviceProperties::DeviceProperties(Device* device) 
   : UI_DeviceProperties(NULL, NULL, true)
 {
   ASSERT(device != NULL);

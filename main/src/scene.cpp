@@ -2,7 +2,7 @@
   Q Light Controller
   scene.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) 2004 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,68 +19,99 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "scene.h"
+#include <qfile.h>
+#include <qptrlist.h>
+#include <time.h>
+#include <qapplication.h>
+
 #include "app.h"
 #include "doc.h"
-#include "event.h"
-#include "settings.h"
-#include "feeder.h"
-
-#include <math.h>
-#include <stdlib.h>
-#include <iostream.h>
-#include <qfile.h>
+#include "device.h"
+#include "deviceclass.h"
+#include "eventbuffer.h"
+#include "scene.h"
+#include "functionconsumer.h"
+#include "../../libs/common/outputplugin.h"
 
 extern App* _app;
 
+//
+// Standard constructor
+//
 Scene::Scene(t_function_id id) : Function(id)
 {
   m_type = Function::Scene;
-
-  for (t_channel i = 0; i < 512; i++)
-    {
-      m_values[i].value = 0;
-      m_values[i].type = Fade;
-    }
+  m_values = NULL;
+  m_runTimeData = NULL;
+  m_channelData = NULL;
+  m_channels = 0;
+  m_timeSpan = 256;
 }
 
-Scene::Scene(Scene* sc) : Function(sc->id())
-{
-  copyFrom(sc);
-}
 
+//
+// Used mainly by Advanced Scene Editor to work on a copy of the actual
+// function.
+//
 void Scene::copyFrom(Scene* sc)
 {
-  m_type = Function::Scene;
-  m_name = QString(sc->name());
-  m_device = sc->m_device;
+  ASSERT(sc);
 
-  for (t_channel i = 0; i < 512; i++)
+  m_type = sc->type();
+  m_id = sc->id();
+  m_name = sc->name();
+  m_device = sc->m_device;
+  m_channels = sc->m_channels;
+
+  if (m_values) delete[] m_values;
+  m_values = new SceneValue[m_channels];
+  
+  for (t_channel i = 0; i < m_channels; i++)
     {
       m_values[i].value = sc->m_values[i].value;
       m_values[i].type = sc->m_values[i].type;
     }
 }
 
+
+//
+// Assign this scene to a device (or vice versa, whatever feels
+// familiar to you) and allocate a value array the size of device's
+// channels
+//
+void Scene::setDevice(Device* d)
+{
+  ASSERT(d);
+  m_device = d;
+
+  m_channels = d->deviceClass()->channels()->count();
+
+  if (m_values) delete[] m_values;
+  m_values = new SceneValue[m_channels];
+
+  for (t_channel i = 0; i < m_channels; i++)
+    {
+      m_values[i].value = 0;
+      m_values[i].type = Fade;
+    }
+}
+
+
+//
+// Standard destructor
+//
 Scene::~Scene()
 {
+  if (m_values) delete[] m_values;
+
+  stop();
+  while (running());
 }
 
-bool Scene::unRegisterFunction(Feeder* feeder)
-{
-  Function::unRegisterFunction(feeder);
 
-  return true;
-}
-
-bool Scene::registerFunction(Feeder* feeder)
-{
-  recalculateSpeed(feeder);
-  Function::registerFunction(feeder);
-
-  return true;
-}
-
+//
+// Return one channel's value type as string
+//
 QString Scene::valueTypeString(t_channel ch)
 {
   switch(m_values[ch].type)
@@ -88,11 +119,11 @@ QString Scene::valueTypeString(t_channel ch)
     case Set:
       return QString("Set");
       break;
-
+      
     case Fade:
       return QString("Fade");
       break;
-
+      
     default:
     case NoSet:
       return QString("NoSet");
@@ -100,6 +131,10 @@ QString Scene::valueTypeString(t_channel ch)
     }
 }
 
+
+//
+// Save this scene's contents to given file
+//
 void Scene::saveToFile(QFile &file)
 {
   QString s;
@@ -134,17 +169,17 @@ void Scene::saveToFile(QFile &file)
 
       // Data
       for (t_channel i = 0;
-	   i < device()->deviceClass()->channels()->count(); i++)
-	{
-	  t.setNum(i);
-	  s = t + QString(" = ");
-	  t.setNum(m_values[i].value);
-	  s += t + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
-	  
-	  s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
-	}
+           i < device()->deviceClass()->channels()->count(); i++)
+        {
+          t.setNum(i);
+          s = t + QString(" = ");
+          t.setNum(m_values[i].value);
+          s += t + QString("\n");
+          file.writeBlock((const char*) s, s.length());
+
+          s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
+          file.writeBlock((const char*) s, s.length());
+        }
     }
   else
     {
@@ -156,7 +191,10 @@ void Scene::saveToFile(QFile &file)
     }
 }
 
-void Scene::createContents(QList<QString> &list)
+//
+// Create the scene's contents from file that has been read into list
+//
+void Scene::createContents(QPtrList <QString> &list)
 {
   QString t;
 
@@ -165,50 +203,54 @@ void Scene::createContents(QList<QString> &list)
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
+        {
+          s = list.prev();
+          break;
+        }
       else if (s->at(0).isNumber() == true)
-	{
-	  ch = static_cast<t_value> (s->toInt());
-	  t = *(list.next());
-	  m_values[ch].value = t.toInt();
-	  m_values[ch].type = Set;
-	}
+        {
+          ch = static_cast<t_value> (s->toInt());
+          t = *(list.next());
+          m_values[ch].value = t.toInt();
+          m_values[ch].type = Set;
+        }
       else if (*s == QString("ValueType"))
-	{
-	  t = *(list.next());
-	  if (t == QString("Set"))
-	    {
-	      m_values[ch].type = Set;
-	    }
-	  else if (t == QString("Fade"))
-	    {
-	      m_values[ch].type = Fade;
-	    }
-	  else if (t == QString("NoSet"))
-	    {
-	      m_values[ch].type = NoSet;
-	    }
-	  else
-	    {
-	      list.next();
-	    }
-	}
+        {
+          t = *(list.next());
+          if (t == QString("Set"))
+            {
+              m_values[ch].type = Set;
+            }
+          else if (t == QString("Fade"))
+            {
+              m_values[ch].type = Fade;
+            }
+          else if (t == QString("NoSet"))
+            {
+              m_values[ch].type = NoSet;
+            }
+          else
+            {
+              list.next();
+            }
+        }
       else
-	{
-	  // Unknown keyword, skip
-	  list.next();
-	}
+        {
+          // Unknown keyword, skip
+          list.next();
+        }
     }
 }
 
+
+//
+// Set one channel value for this scene
+//
 bool Scene::set(t_channel ch, t_value value, SceneValueType type)
 {
   if (m_device != NULL)
     {
-      if (ch < m_device->deviceClass()->channels()->count())
+      if (ch < m_channels)
 	{
 	  m_values[ch].value = value;
 	  m_values[ch].type = type;
@@ -223,191 +265,111 @@ bool Scene::set(t_channel ch, t_value value, SceneValueType type)
     {
       return false;
     }
-
+  
   return true;
 }
 
-bool Scene::clear(t_channel ch)
-{
-  if (m_device != NULL)
-    {
-      if (ch < m_device->deviceClass()->channels()->count())
-	{
-	  m_values[ch].value = 0;
-	  m_values[ch].type = NoSet;
-	}
-      else
-	{
-	  // Channel value is beyond this device's limits
-	  return false;
-	}
-    }
-  else
-    {
-      m_values[ch].value = 0;
-      m_values[ch].type = NoSet;
-    }
 
-  return true;
-}
-
+//
+// Return one channel value & type from this scene
+//
 SceneValue Scene::channelValue(t_channel ch)
 {
   return m_values[ch];
 }
 
-void Scene::recalculateSpeed(Feeder* f)
+
+//
+// Explicitly stop this function
+//
+void Scene::stop()
 {
-  t_value gap = 0;
-  float delta = 0;
+  m_running = false;
+}
 
-  t_channel channels = 0;
 
-  if (device() != NULL)
+//
+// Calculate run time values for producer thread (below)
+//
+void Scene::init()
+{
+  ASSERT(m_runTimeData == NULL);
+  m_runTimeData = new RunTimeData[m_channels];
+
+  ASSERT(m_channelData == NULL);
+  m_channelData = new t_value[m_channels];
+
+  ASSERT(m_eventBuffer == NULL);
+  m_eventBuffer = new EventBuffer(m_channels);
+
+  unsigned int i = 0;
+  for (i = 0; i < m_channels; i++)
     {
-      channels = device()->deviceClass()->channels()->count();
-    }
+      // Current value
+      _app->doc()->outputPlugin()->readChannel(m_device->address() + i,
+					       m_channelData[i]);
 
-  // Calculate delta for the rest of the channels.
-  // Find out the channel needing the smallest delta (most frequent
-  // updates needed) and set it to this whole scene's delta
-  for (t_channel i = 0; i < channels; i++)
-    {
-      if (m_values[i].type == NoSet)
-	{
-	  continue;
-	}
+      m_runTimeData[i].current = static_cast<float> (m_channelData[i]);
 
-      gap = abs((signed short) device()->dmxChannel(i)->value() - (signed short) m_values[i].value);
-
-      if (gap != 0)
-	{
-	  delta = (double) f->timeSpan() / (double) gap;
-	}
-      else
-	{
-	  // This channel doesn't need update at all. If gap == 0, then both the target value
-	  // and the current value are the same.
-	  // continue;
-	  
-	  delta = f->timeSpan();
-	}
-
-      if (delta < f->delta())
-	{
-	  f->setDelta((unsigned long) ceil(delta));
-
-	  if (delta < 1.0)
-	    {
-	      // If the next updates should come more often than
-	      // 1/1024 sec, we need to increase the step value because
-	      // the sequence timer provides timer tick of 1/1024sec.
-	      f->setStep((unsigned long) ceil(1.0 / delta));
-	    }
-	  else
-	    {
-	      // The next step value is 1 per each 1/1024 sec
-	      f->setStep(1);
-	    }
-	}
+      // Step increment
+      m_runTimeData[i].increment = 
+	(static_cast<float>(m_values[i].value) - 
+	 m_runTimeData[i].current) / (float) m_timeSpan;
     }
 }
 
-Event* Scene::getEvent(Feeder* feeder)
+
+//
+// The main scene producer thread
+//
+void Scene::run()
 {
-  t_channel readyCount = 0;
-  t_channel channels = 0;
-  t_value currentValue = 0;
+  time_t time = 0;
+  unsigned short ch = 0;
 
-  channels = device()->deviceClass()->channels()->count();
+  m_running = true;
 
-  Event* event = new Event(channels);
+  // Calculate starting values
+  init();
 
-  for (t_channel i = 0; i < channels; i++)
+  // Append this function to running functions list
+  _app->functionConsumer()->cue(this);
+
+  for (time = 0; time < m_timeSpan && m_running; time++)
     {
-      if (m_values[i].type == NoSet)
+      for (ch = 0; ch < m_channels; ch++)
 	{
-	  event->m_values[i].type = Ready;
-	  readyCount++;
-	  continue;
+	  m_runTimeData[ch].current += m_runTimeData[ch].increment;
+	  m_channelData[ch] =
+	    static_cast<unsigned char> (m_runTimeData[ch].current);
 	}
 
-      currentValue = device()->dmxChannel(i)->value();
-      
-      if (currentValue == m_values[i].value)
-	{
-	  event->m_values[i].type = Ready;
-	  readyCount++;
-	  continue;
-	}
-      else
-	{
-	  event->m_values[i].type = Normal;
-	}
-      
-      if (m_values[i].type == Set)
-	{
-	  event->m_values[i].value = m_values[i].value;
-	}
-      else if (m_values[i].type == Fade)
-	{
-	  if (currentValue > m_values[i].value)
-	    {
-	      // Current level is above target, the new value is set toward 0
-	      t_value nextGap = abs(m_values[i].value - currentValue);
-	      t_value nextStep = feeder->step();
-	      if (nextStep > nextGap)
-		{
-		  nextStep = nextGap;
-		}
-	      
-	      event->m_values[i].value = currentValue - nextStep;
-	    }
-	  else if (currentValue < m_values[i].value)
-	    {
-	      // Current level is below target, the new value is set toward 255
-	      t_value nextGap = abs(m_values[i].value - currentValue);
-	      t_value nextStep = feeder->step();
-	      if (nextStep > nextGap)
-		{
-		  nextStep = nextGap;
-		}
-	      
-	      event->m_values[i].value = currentValue + nextStep;
-	    }
-	}
+      m_eventBuffer->put(m_channelData);
     }
 
-  // Get delta from feeder and set it to next step's delta time
-  event->m_delta = (unsigned long) floor(feeder->delta());
-  event->m_address = device()->address();
-
-  // If all channels are marked "ready", then this scene is ready and
-  // we can unregister this scene.
-  if (readyCount == channels)
-    {
-      event->m_type = Event::Ready;
-    }
-
-  return event;
+  // No more items produced -> this scene can be removed from
+  // the list after the buffer is empty.
+  m_removeAfterEmpty = true;
 }
 
-void Scene::directSet(t_value intensity)
+
+//
+// Free run time allocations
+// This fuction must be called ONLY from functionconsumer
+//
+void Scene::freeRunTimeData()
 {
-  double percent = 0;
-  double value = 0;
-  t_channel channels = 0;
+  delete [] m_runTimeData;
+  m_runTimeData = NULL;
 
-  percent = ((double) intensity) / ((double) 255);
-  channels = m_device->deviceClass()->channels()->count();
+  delete [] m_channelData;
+  m_channelData = NULL;
 
-  for (t_channel i = 0; i < channels; i++)
-    {
-      if (m_values[i].type != NoSet)
-	{
-	  value = m_values[i].value * percent;
-	  _app->doc()->dmxChannel(m_device->address() + i)
-	    ->setValue(static_cast<t_value> (value));
-	}
-    }
+  delete m_eventBuffer;
+  m_eventBuffer = NULL;
+
+  m_running = false;
+
+  ASSERT(m_virtualController);
+  QApplication::postEvent(m_virtualController, new FunctionStopEvent(this));
 }
