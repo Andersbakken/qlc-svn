@@ -131,7 +131,7 @@ void  SceneEditor::slotNewClicked()
    bool ok = FALSE;
    QString text = QInputDialog::getText(
                     tr( "Scene editor" ),
-                    tr( "Please enter scene name" ),
+                    tr( "Enter scene name" ),
                     QLineEdit::Normal, QString::null, &ok, this );
 
    if ( ok && !text.isEmpty() )
@@ -169,7 +169,6 @@ void  SceneEditor::slotNewClicked()
      }
    else
      {
-       ASSERT(false);
      }
 }
 

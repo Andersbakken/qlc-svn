@@ -443,6 +443,11 @@ void App::slotFileOpen()
 {
   QString fn = QFileDialog::getOpenFileName(m_doc->workspaceFileName(), "*.qlc", this);
 
+  if (fn == QString::null)
+    {
+      return;
+    }
+
   if (doc()->loadWorkspaceAs(fn) == false)
     {
       statusBar()->message("Load failed", 2000);
