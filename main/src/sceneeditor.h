@@ -38,35 +38,44 @@ class QGroupBox;
 class QLabel;
 class QPushButton;
 class QRadioButton;
+class QPopupMenu;
 
 class SceneEditor : public UI_SceneEditor
 {
   Q_OBJECT
 
  public:
-  SceneEditor(DMXDevice* device, QWidget* parent = 0, const char* name = 0);
+  SceneEditor(DMXDevice* device, QWidget* parent);
   ~SceneEditor();
 
   static int width() { return 133; }
   static int height() { return 220; }
 
+  void init();
+
  public slots:
-  void slotSceneListContextMenu(QListBoxItem* item, const QPoint &point);
+  void slotSceneListContextMenu(QListBoxItem*, const QPoint&);
   void slotMenuCallback(int);
   void slotSceneChanged();
-  void slotSceneActivated( int nr );
-  void slotHideClicked();
-  void slotNewClicked();
-  void slotSaveClicked();
+  void slotSceneActivated(int);
 
  protected:
   DMXDevice* m_device;
-  Scene* m_currentScene;
+  QPopupMenu* m_menu;
 
  protected:
-  void selectFunctions();
+  void fillFunctions();
+  void selectFunction(unsigned long fid);
   void setStatusText(QString text, QColor color);
   void setScene(Scene* scene);
+
+  void hide();
+  void newScene();
+  void store();
+  void remove();
+  void rename();
+
+  Scene* currentScene();
 };
 
 #endif // SCENEEDITOR_H

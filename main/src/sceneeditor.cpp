@@ -22,6 +22,7 @@
 
 
 #include "app.h"
+#include "doc.h"
 #include "settings.h"
 #include "sceneeditor.h"
 #include "function.h"
@@ -31,6 +32,7 @@
 #include "dmxchannel.h"
 #include "logicalchannel.h"
 #include "channelui.h"
+#include "listboxiditem.h"
 
 #include <qlistbox.h>
 #include <qradiobutton.h>
@@ -40,6 +42,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <qpopupmenu.h>
+#include <qtoolbutton.h>
 
 #include <iostream>
 using namespace std;
@@ -53,13 +56,19 @@ extern App* _app;
 #define MENU_RENAME   1004
 #define MENU_HIDE     1005
 
-SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent, const char* name )
-             : UI_SceneEditor( parent, name)
+static const QString KStatusStored = QString("stored");
+static const QString KStatusUnchanged = QString("unchanged");
+static const QString KStatusModified = QString("modified");
+
+static const QColor KStatusColorStored = QColor(100, 255, 100);
+static const QColor KStatusColorUnchanged = QColor(255, 255, 255);
+static const QColor KStatusColorModified = QColor(255, 100, 100);
+
+SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent)
+  : UI_SceneEditor(parent)
 {
   m_device = device;
-  m_currentScene = NULL;
-
-  selectFunctions();
+  m_menu = NULL;
 }
 
 SceneEditor::~SceneEditor()
@@ -67,26 +76,46 @@ SceneEditor::~SceneEditor()
 
 }
 
-void SceneEditor::slotSceneChanged()
+void SceneEditor::init()
 {
-  setStatusText("modified", QColor(255, 0, 0));
+  m_menu = new QPopupMenu();
+  connect(m_menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+
+  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("key.xpm")),
+		   "Activate", MENU_ACTIVATE);
+  m_menu->insertSeparator();
+  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filenew.xpm")),
+		   "New...", MENU_NEW);
+  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filesave.xpm")),
+		   "Store", MENU_STORE);
+  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("remove.xpm")),
+		   "Remove", MENU_REMOVE);
+  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("rename.xpm")),
+		   "Rename...", MENU_RENAME);
+  m_menu->insertSeparator();
+  m_menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("fileclose.xpm")),
+		   "Hide Editor", MENU_HIDE);
+
+  m_tools->setPopup(m_menu);
+
+  fillFunctions();
 }
 
-void SceneEditor::slotSceneActivated( int nr )
+void SceneEditor::slotSceneChanged()
 {
-  Function* f;
+  setStatusText(KStatusModified, KStatusColorModified);
+}
 
-  QList <Function> *fl = m_device->functions();
-  for (f = fl->first(); f != NULL; f = fl->next())
+void SceneEditor::slotSceneActivated(int nr)
+{
+  Scene* s = currentScene();
+
+  if (s != NULL)
     {
-      if( f->name() == m_sceneList->currentText())
-	{
-	  setScene((Scene*) f);
-	  m_currentScene = (Scene*) f;
-	}
+      setScene(s);
     }
 
-  setStatusText("unchanged", QColor(255, 255, 255));
+  setStatusText(KStatusUnchanged, QColor(255, 255, 255));
 }
 
 
@@ -115,27 +144,7 @@ void SceneEditor::setScene(Scene* scene)
 
 void SceneEditor::slotSceneListContextMenu(QListBoxItem* item, const QPoint &point)
 {
-  QPopupMenu* menu = new QPopupMenu();
-  connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
-
-  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("key.xpm")),
-		   "Activate", MENU_ACTIVATE);
-  menu->insertSeparator();
-  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filenew.xpm")),
-		   "New...", MENU_NEW);
-  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filesave.xpm")),
-		   "Store", MENU_STORE);
-  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("remove.xpm")),
-		   "Remove", MENU_REMOVE);
-  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("rename.xpm")),
-		   "Rename...", MENU_RENAME);
-  menu->insertSeparator();
-  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("fileclose.xpm")),
-		   "Hide Editor", MENU_HIDE);
-
-  menu->exec(point);
-
-  delete menu;
+  m_menu->exec(point);
 }
 
 void SceneEditor::slotMenuCallback(int item)
@@ -143,27 +152,27 @@ void SceneEditor::slotMenuCallback(int item)
   switch(item)
     {
     case MENU_ACTIVATE:
-      if (m_sceneList->currentItem() != -1)
-	{
-	  slotSceneActivated(m_sceneList->currentItem());
-	}
+      slotSceneActivated(m_sceneList->currentItem());
       break;
 
     case MENU_NEW:
-      slotNewClicked();
+      newScene();
       break;
 
     case MENU_STORE:
-      slotSaveClicked();
+      store();
+      break;
 
     case MENU_REMOVE:
+      remove();
       break;
 
     case MENU_RENAME:
+      rename();
       break;
 
     case MENU_HIDE:
-      slotHideClicked();
+      hide();
       break;
 
     default:
@@ -171,7 +180,47 @@ void SceneEditor::slotMenuCallback(int item)
     }
 }
 
-void SceneEditor::slotHideClicked()
+void SceneEditor::remove()
+{
+  Scene* s = currentScene();
+
+  if (s == NULL)
+    {
+      return;
+    }
+
+  if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
+			   QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    {
+      m_device->removeFunction(s->id());
+      fillFunctions();
+    }
+}
+
+void SceneEditor::rename()
+{
+  bool ok = false;
+  Scene* s = currentScene();
+
+  if (s == NULL)
+    {
+      return;
+    }
+
+  QString text = QInputDialog::getText("Scene editor - Rename Scene",
+				       "Enter scene name",
+				       QLineEdit::Normal,
+				       s->name(), &ok, this);
+  if (ok && !text.isEmpty())
+    {
+      s->setName(text);
+      fillFunctions();
+
+      selectFunction(s->id());
+    }
+}
+
+void SceneEditor::hide()
 {
   for (unsigned i = parentWidget()->width(); i > ChannelUI::width() * m_device->deviceClass()->channels()->count(); i--)
     {
@@ -179,51 +228,46 @@ void SceneEditor::slotHideClicked()
     }
 }
 
-void SceneEditor::slotNewClicked()
+void SceneEditor::newScene()
 {
-   bool ok = FALSE;
-   QString text = QInputDialog::getText(
-					tr( "Scene editor" ),
-					tr( "Enter scene name" ),
-					QLineEdit::Normal, QString::null, &ok, this );
+  bool ok = FALSE;
+  QString text = QInputDialog::getText(tr("Scene editor - New Scene"),
+				       tr("Enter scene name"),
+				       QLineEdit::Normal,
+				       QString::null, &ok, this);
+  
+  if (ok && !text.isEmpty())
+    {
+      Scene* sc = new Scene();
+      sc->setName(text);
+      sc->setDevice(m_device);
+      for (unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
+	{
+	  // Get values from device / HJu
+	  if (m_device->dmxChannel(n)->status() == DMXChannel::On)
+	    {
+	      sc->set(n, m_device->dmxChannel(n)->value(), Set);
+	    }
+	  else
+	    {
+	      sc->clear(n);
+	    }
+	}
+      
+      // Save to device / HJu
+      m_device->addFunction(sc);
 
-   if ( ok && !text.isEmpty() )
-     {
-       Scene* sc = new Scene();
-       sc->setName(text);
-       sc->setDevice(m_device);
-       for (unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
-	 {
-	   // Get values from device / HJu
-	   if (m_device->dmxChannel(n)->status() == DMXChannel::On)
-	     {
-	       sc->set(n, m_device->dmxChannel(n)->value(), Set);
-	     }
-	   else
-	     {
-	       sc->clear(n);
-	     }
-	 }
-
-       // Save to device / HJu
-       m_device->addFunction(sc);
-
-       m_sceneList->insertItem(text);
-       m_sceneList->setCurrentItem(m_sceneList->count()-1);
-       slotSceneActivated(0);
-     }
-   else
-     {
-       qDebug("WTF?!");
-     }
+      fillFunctions();
+      selectFunction(sc->id());
+    }
+  
+  setStatusText(KStatusStored, KStatusColorStored);
 }
 
-
-
-
-void SceneEditor::slotSaveClicked()
+void SceneEditor::store()
 {
-  if (m_currentScene == NULL)
+  Scene* s = currentScene();
+  if (s == NULL)
     {
       return;
     }
@@ -236,34 +280,66 @@ void SceneEditor::slotSaveClicked()
     {
       if (m_device->dmxChannel(i)->status() == DMXChannel::On)
 	{
-	  m_currentScene->set(i, m_device->dmxChannel(i)->value(), Set);
+	  s->set(i, m_device->dmxChannel(i)->value(), Set);
 	}
       else
 	{
-	  m_currentScene->clear(i);
+	  s->clear(i);
 	}
     }
 
-  setStatusText("saved", QColor( 0, 255, 100));
+  setStatusText(KStatusStored, KStatusColorStored);
 }
 
+Scene* SceneEditor::currentScene()
+{
+  unsigned long fid = 0;
 
-void SceneEditor::selectFunctions()
+  if (m_sceneList->selectedItem() == NULL)
+    {
+      return NULL;
+    }
+
+  fid = static_cast<ListBoxIDItem*> (m_sceneList->selectedItem())->rtti();
+
+  return static_cast<Scene*> (m_device->searchFunction(fid));
+}
+
+void SceneEditor::fillFunctions()
 {
   QList <Function> *fl = m_device->functions();
+
+  m_sceneList->clear();
 
   for (Function* f = fl->first(); f != NULL; f = fl->next())
     {
       if (f->type() == Function::Scene)
 	{
-	  m_sceneList->insertItem(f->name());
+	  ListBoxIDItem* item = new ListBoxIDItem();
+	  item->setText(f->name());
+	  item->setRtti(f->id());
+	  m_sceneList->insertItem(item);
 	}
     }
 
-  setStatusText("unchanged", QColor( 255, 255, 255 ));
-  slotSceneActivated(0);
+  m_sceneList->sort();
+
+  setStatusText(KStatusUnchanged, KStatusColorUnchanged);
 }
 
+void SceneEditor::selectFunction(unsigned long fid)
+{
+  for (unsigned int i = 0; i < m_sceneList->count(); i++)
+    {
+      ListBoxIDItem* item = static_cast<ListBoxIDItem*> (m_sceneList->item(i));
+      if (static_cast<unsigned int> (item->rtti()) == fid)
+	{
+	  m_sceneList->setSelected(item, true);
+	  m_sceneList->ensureCurrentVisible();
+	  break;
+	}
+    }
+}
 
 
 void SceneEditor::setStatusText(QString text, QColor color)

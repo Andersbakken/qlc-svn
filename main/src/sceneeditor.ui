@@ -7,7 +7,7 @@
     <property name="geometry">
         <rect>
             <x>0</x>
-            <y>1</y>
+            <y>0</y>
             <width>130</width>
             <height>220</height>
         </rect>
@@ -27,31 +27,6 @@
     <property name="caption">
         <string>SceneEditor</string>
     </property>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>130</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>Box</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="text">
-            <string>Scenes</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>m_statusLabel</cstring>
@@ -96,6 +71,28 @@
             <set>AlignCenter</set>
         </property>
     </widget>
+    <widget class="QToolButton">
+        <property name="name">
+            <cstring>m_tools</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>130</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Scene Editor</string>
+        </property>
+        <property name="popupDelay">
+            <number>10</number>
+        </property>
+        <property name="textPosition">
+            <enum>Right</enum>
+        </property>
+    </widget>
     <widget class="QListBox">
         <property name="name">
             <cstring>m_sceneList</cstring>
@@ -115,7 +112,7 @@
             <enum>Plain</enum>
         </property>
         <property name="hScrollBarMode">
-            <enum>AlwaysOff</enum>
+            <enum>Auto</enum>
         </property>
     </widget>
 </widget>
@@ -132,13 +129,14 @@
         <receiver>UI_SceneEditor</receiver>
         <slot>slotSceneListContextMenu(QListBoxItem*,const QPoint&amp;)</slot>
     </connection>
+    <connection>
+        <sender>m_sceneList</sender>
+        <signal>selected(int)</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotSceneActivated(int)</slot>
+    </connection>
 </connections>
 <slots>
-    <slot>slotClassRadioClicked()</slot>
-    <slot>slotDeviceRadioClicked()</slot>
-    <slot>slotHideClicked()</slot>
-    <slot>slotNewClicked()</slot>
-    <slot>slotSaveClicked()</slot>
     <slot>slotSceneActivated( int )</slot>
     <slot>slotSceneListContextMenu(QListBoxItem*, const QPoint&amp;)</slot>
 </slots>
