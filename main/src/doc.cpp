@@ -346,10 +346,12 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		    {
 		      if (f->device() != NULL)
 			{
+			  // Add function to its parent device
 			  f->device()->addFunction(f);
 			}
 		      else
 			{
+			  // Add function to global functions
 			  addFunction(f);
 			}
 		    }

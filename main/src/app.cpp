@@ -94,6 +94,8 @@ App::App()
   m_globalFunctionsView = NULL;
   m_inputDeviceView = NULL;
   initSettings();
+  m_sequenceTimer = NULL;
+  m_sequenceProvider = NULL;
 }
 
 App::~App()
@@ -122,8 +124,16 @@ void App::initView(void)
 void App::initSequenceEngine()
 {
   m_sequenceProvider = new SequenceProvider();
-  m_sequenceTimer = new SequenceTimer(m_sequenceProvider);
+  ASSERT(m_sequenceProvider != NULL);
+
+  m_sequenceTimer->setSequenceProvider(m_sequenceProvider);
   m_sequenceTimer->start();
+}
+
+void App::setSequenceTimer(SequenceTimer* timer)
+{
+  ASSERT(timer != NULL);
+  m_sequenceTimer = timer;
 }
 
 bool App::event(QEvent* e)

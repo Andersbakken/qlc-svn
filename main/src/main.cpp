@@ -25,6 +25,7 @@
 #include <sys/types.h>
 
 #include "settings.h"
+#include "sequencetimer.h"
 #include "app.h"
 
 #include <X11/Xlib.h>
@@ -66,6 +67,9 @@ int main(int argc, char **argv)
       return 0;
     }
 
+  SequenceTimer* timer = new SequenceTimer();
+  timer->init();
+
   // Initialize QApplication object
   QApplication a(argc, argv);
   _qapp = &a;
@@ -85,10 +89,11 @@ int main(int argc, char **argv)
   delete settings;
 
   _app = new App();
+  _app->setSequenceTimer(timer);
   _app->initView();
   a.setMainWidget(_app);
 
-  _app->setCaption("Q Light Controller");
+  _app->setCaption("Q Light Controller 2");
   _app->show();
   
   result = a.exec();
@@ -112,6 +117,8 @@ int main(int argc, char **argv)
       XAutoRepeatOn(display);
     }
   XCloseDisplay(display);
+
+  delete timer;
 
   return result;
 }

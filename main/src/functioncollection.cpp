@@ -51,6 +51,14 @@ void FunctionCollection::unRegisterFunction(Feeder* feeder)
 {
   m_running = false; // Not running anymore
 
+  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+    {
+      _app->sequenceProvider()->unRegisterEventFeeder(item->callerDevice, item->feederFunction);
+    }
+
+  disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, Device*, unsigned long)),
+	     this, SLOT(slotFunctionUnRegistered(Function*, Function*, Device*, unsigned long)));
+
   Function::unRegisterFunction(feeder);
 }
 
@@ -128,14 +136,14 @@ void FunctionCollection::createContents(QList<QString> &list)
 	  s = list.prev();
 	  break;
 	}
-      else if (*s == QString("Function"))
-	{
-	  function = *(list.next());
-	}
       else if (*s == QString("Device"))
 	{
 	  device = *(list.next());
-	  
+	}
+      else if (*s == QString("Function"))
+	{
+	  function = *(list.next());
+
 	  if (device == QString("Global"))
 	    {
 	      Function* f = _app->doc()->searchFunction(function);
