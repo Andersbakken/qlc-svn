@@ -75,6 +75,7 @@ class Doc : public QObject
 
   // Container for device classes
   QList <DeviceClass> deviceClassList() const { return m_deviceClassList; }
+  QList <DeviceClass> * deviceClassListPointer()  { return &m_deviceClassList; }
 
   // Search for manuf + model
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
@@ -118,3 +119,4 @@ class Doc : public QObject
 };
 
 #endif
+
