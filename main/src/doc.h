@@ -56,7 +56,6 @@ class Doc : public QObject
 
   void addDevice(Device*);
   bool removeDevice(Device*);
-
   QList <Device> deviceList() const;
 
   Device* searchDevice(int id, DeviceClass::Protocol p);
@@ -64,8 +63,9 @@ class Doc : public QObject
 
   bool isModified() const { return m_modified; }
 
-  QList <Function> m_functions;
+  QList<Function> functions() const { return m_functions; }
   Function* searchFunction(const QString &fname);
+  void addFunction(const Function* function);
   void removeFunction(const QString &functionString);
 
   // Init our DMX interface
@@ -116,6 +116,8 @@ class Doc : public QObject
   void findPluginObjects();
 
  private:
+  QList <Function> m_functions;
+
   DMXChannel* m_DMXAddressAllocation[512];
 
   QString m_workspaceFileName;

@@ -26,6 +26,7 @@
 #include "deviceclass.h"
 #include "dmxdevice.h"
 #include "scene.h"
+#include "logicalchannel.h"
 
 #include <qcombobox.h>
 #include <qradiobutton.h>
@@ -109,10 +110,10 @@ void  SceneEditor::slotNewClicked()
 
    if ( ok && !text.isEmpty() )
      {
-       Scene* sc = new Scene( m_device->deviceClass()->channels() );
+       Scene* sc = new Scene( m_device->deviceClass()->channels().count() );
        sc->setName(text);
        sc->setDeviceClass(m_device->deviceClass());
-       for(unsigned int n = 0; n < m_device->deviceClass()->channels(); n++)
+       for(unsigned int n = 0; n < m_device->deviceClass()->channels().count(); n++)
 	 {
 	   // Get values from device / HJu
   	   sc->set(n, m_device->getChannelValue(n));
@@ -148,7 +149,7 @@ void SceneEditor::slotSaveClicked()
 
   // Take values from device because it returns real values for
   // sure and they are unsigned chars and it is much simpler this way / HJu
-  for (unsigned short i = 0; i < m_device->deviceClass()->channels(); i++)
+  for (unsigned short i = 0; i < m_device->deviceClass()->channels().count(); i++)
     {
       static_cast<Scene*>(m_currentScene)->set(i, m_device->getChannelValue(i));
     }

@@ -62,6 +62,7 @@ class Device : public QObject
   virtual void saveToFile(QFile &file) = 0;
 
   void addFunction(Function*);
+  void removeFunction(const QString &functionString);
 
   QList<Function> functions() const;
   QList<Function> m_functions;

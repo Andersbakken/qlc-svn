@@ -25,6 +25,7 @@
 #include "event.h"
 #include "settings.h"
 #include "feeder.h"
+#include "logicalchannel.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -90,7 +91,7 @@ void Scene::saveToFile(QFile &file)
   if (deviceClass() != NULL)
     {
       // Write only the data for device class scenes
-      for (unsigned short i = 0; i < deviceClass()->channels(); i++)
+      for (unsigned short i = 0; i < deviceClass()->channels().count(); i++)
 	{
 	  t.setNum(i);
 	  s = t + QString(" = ");
@@ -107,7 +108,7 @@ void Scene::saveToFile(QFile &file)
       file.writeBlock((const char*) s, s.length());
 
       // Data
-      for (unsigned short i = 0; i < device()->deviceClass()->m_channels.count(); i++)
+      for (unsigned short i = 0; i < device()->deviceClass()->channels().count(); i++)
 	{
 	  t.setNum(i);
 	  s = t + QString(" = ");
@@ -156,7 +157,7 @@ bool Scene::allocate(unsigned short channels)
 {
   if (m_device != NULL)
     {
-      if (channels < m_device->deviceClass()->channels())
+      if (channels < m_device->deviceClass()->channels().count())
 	{
 	  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
 	}
@@ -167,7 +168,7 @@ bool Scene::allocate(unsigned short channels)
     }
   else if (m_deviceClass != NULL)
     {
-      if (channels < m_deviceClass->channels())
+      if (channels < m_deviceClass->channels().count())
 	{
 	  m_values = (SceneValue*) calloc(channels, sizeof(SceneValue));
 	}
@@ -184,7 +185,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
 {
   if (m_device != NULL)
     {
-      if (ch < m_device->deviceClass()->channels())
+      if (ch < m_device->deviceClass()->channels().count())
 	{
 	  m_values[ch].value = value;
 	}
@@ -196,7 +197,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
     }
   else if (m_deviceClass != NULL)
     {
-      if (ch < deviceClass()->channels())
+      if (ch < deviceClass()->channels().count())
 	{
 	  m_values[ch].value = value;
 	}
@@ -223,7 +224,7 @@ void Scene::recalculateSpeed(Feeder* f)
 
   if (f->device() != NULL)
     {
-      channels = f->device()->deviceClass()->channels();
+      channels = f->device()->deviceClass()->channels().count();
     }
 
   // Calculate delta for the rest of the channels.
@@ -267,7 +268,7 @@ Event* Scene::getEvent(Feeder* feeder)
   unsigned short readyCount = 0;
   unsigned short channels = 0;
   
-  channels = feeder->device()->deviceClass()->channels();
+  channels = feeder->device()->deviceClass()->channels().count();
 
   Event* event = new Event(channels);
 
@@ -329,91 +330,3 @@ unsigned char Scene::getChannelValue(unsigned short ch)
 {
   return m_values[ch].value;
 }
-
-/*
-This left here in purpose, in case I break something... :)
-
-Event* Scene::getEvent(Feeder* feeder)
-{
-  unsigned short readyCount = 0;
-  unsigned short channels = 0;
-  
-  if (feeder->device() != NULL)
-    {
-      channels = feeder->device()->deviceClass()->channels();
-    }
-
-  Event* event = new Event(channels);
-
-  for (unsigned short i = 0; i < channels; i++)
-    {
-      if (feeder->startLevel(i) > m_values[i].value)
-	{ // Current level is above target, the new value is set toward 0
-	  if (feeder->device()->getChannelValue(i) <= m_values[i].value)
-	    {
-	      event->m_values[i] = VALUE_READY;
-	      readyCount++;
-	    }
-	  else
-	    {
-	      // If the next step value is bigger than the next gap we need
-	      // to set the next step value to the gap value so that
-	      // we won't write too big values.
-	      // Example: current channel value is 254 and the scene's target
-	      // value is 255. If the step value is 2, the next value would
-	      // be 256 which (since we are using unsigned chars) would mean
-	      // actually 0 (with signed chars -127) so this would loop
-	      // endlessly without ever reaching the target value
-	      int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
-	      int nextStep = feeder->step();
-	      if (nextStep > nextGap)
-		{
-		  nextStep = nextGap;
-		}
-	      event->m_values[i] = feeder->device()->getChannelValue(i) - nextStep;
-	    }
-	}
-      // Current level is below target, the new value is set toward 255
-      else if (feeder->startLevel(i) < m_values[i].value)
-	{
-	  if (feeder->device()->getChannelValue(i) >= m_values[i].value)
-	    {
-	      event->m_values[i] = VALUE_READY;
-	      readyCount++;
-	    }
-	  else
-	    {
-	      // If the next step value is bigger than the next gap we need
-	      // to set the next step value to the gap value so that
-	      // we won't write too big values.
-	      // Example: current channel value is 254 and the scene's target
-	      // value is 255. If the step value is 2, the next value would
-	      // be 256 which (since we are using unsigned chars) would mean
-	      // actually 0 (with signed chars -127) so this would loop
-	      // endlessly without ever reaching the target value
-	      int nextGap = abs(m_values[i].value - feeder->device()->getChannelValue(i));
-	      int nextStep = feeder->step();
-  	      if (nextStep > nextGap)
-		{
-		  nextStep = nextGap;
-		}
-	      event->m_values[i] = feeder->device()->getChannelValue(i) + nextStep;
-	    }
-	}
-      else
-	{
-	  event->m_values[i] = VALUE_READY;
-	  readyCount++;
-	}
-    }
-
-  event->m_delta = (unsigned long) floor(feeder->delta());
-
-  if (readyCount == channels)
-    {
-      event->m_type = Event::Ready;
-    }
-
-  return event;
-}
-*/

@@ -243,7 +243,7 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
 	}
     }
 
-  if (dc->m_channels.count() == 0)
+  if (dc->channels().count() == 0)
     {
       QString msg;
       msg.sprintf("No channels specified for device class " + dc->manufacturer() + QString(" - ") + dc->model() + QString(". Ignored."));
@@ -297,9 +297,9 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 {
   bool success = true;
 
-  QString buf = QString::null;
-  QString s = QString::null;
-  QString t = QString::null;
+  QString buf;
+  QString s;
+  QString t;
   QList<QString> list;
 
   newDocument();
@@ -322,18 +322,25 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  if (d != NULL)
 		    {
 		      addDevice(d);
-		      allocateDMXAddressSpace(d->address(), d->deviceClass()->channels());
+		      allocateDMXAddressSpace(d->address(), d->deviceClass()->channels().count());
 		    }
 		}
 	      else if (*string == QString("Function"))
 		{
-		  // Only create the functions but don't care for
-		  // their contents yet
+		  // Only create the function but don't care for
+		  // its contents yet
 		  Function* f = createFunction(list);
-
+		  
 		  if (f != NULL)
 		    {
-		      m_functions.append(f);
+		      if (f->device() != NULL)
+			{
+			  f->device()->addFunction(f);
+			}
+		      else
+			{
+			  this->addFunction(f);
+			}
 		    }
 		}
 	      else if (*string == QString("Bus"))
@@ -390,10 +397,11 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 void Doc::createFunctionContents(QList<QString> &list)
 {
   Function* f = NULL;
+  Device* d = NULL;
 
-  QString name = QString::null;
-  QString type = QString::null;
-  QString t = QString::null;
+  QString name;
+  QString type;
+  QString device;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -409,6 +417,18 @@ void Doc::createFunctionContents(QList<QString> &list)
       else if (*s == QString("Type"))
 	{
 	  type = *(list.next());
+	}
+      else if (*s == QString("Device"))
+	{
+	  device = *(list.next());
+	  if (device == QString("Global"))
+	    {
+	      d = NULL;
+	    }
+	  else
+	    {
+	      d = searchDevice(device, DeviceClass::ANY);
+	    }
 	  break;
 	}
       else
@@ -420,14 +440,23 @@ void Doc::createFunctionContents(QList<QString> &list)
 
   if (name != QString::null && type != QString::null)
     {
-      f = searchFunction(name);
-      if (f != NULL && f->typeString() == type)
+      if (d != NULL)
 	{
+	  f = d->searchFunction(name);
+	}
+      else
+	{
+	  f = searchFunction(name);
+	}
+
+      if (f != NULL)
+	{
+	  f->setDevice(d);
 	  f->createContents(list);
 	}
       else
 	{
-	  qDebug("Unable to create function contents for " + name);
+	  ASSERT(false);
 	}
     }
 }
@@ -480,7 +509,8 @@ Function* Doc::createFunction(QList<QString> &list)
 	  if (d == NULL)
 	    {
 	      // This function's device was not found
-	      qDebug("Unable to find device for function %s", (const char*) name);
+	      qDebug("Unable to find device %s for function %s. Discarding function.", (const char*) device, (const char*) name);
+	      return NULL;
 	    }
 	}
 
@@ -610,7 +640,7 @@ void Doc::newDocument()
     {
       d = m_deviceList.take();
       ASSERT(d);
-      freeDMXAddressSpace(d->address(), d->deviceClass()->m_channels.count());
+      freeDMXAddressSpace(d->address(), d->deviceClass()->channels().count());
       delete d;
     }
 
@@ -789,6 +819,12 @@ DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, const QString &
     }
 
   return NULL;
+}
+
+void Doc::addFunction(const Function* function)
+{
+  ASSERT(function != NULL);
+  m_functions.append(function);
 }
 
 void Doc::removeFunction(const QString &functionString)

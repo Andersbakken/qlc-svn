@@ -91,3 +91,17 @@ void Device::addFunction(Function* f)
 
   m_functions.append(f);
 }
+
+void Device::removeFunction(const QString &functionString)
+{
+  Function* f = NULL;
+
+  for (f = m_functions.first(); f != NULL; f = m_functions.next())
+    {
+      if (f->name() == functionString)
+	{
+	  delete m_functions.take();
+	  break;
+	}
+    }
+}
