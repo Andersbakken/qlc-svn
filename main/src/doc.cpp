@@ -71,16 +71,15 @@ Doc::~Doc()
 
 void Doc::initializeDMXChannels()
 {
-  for (int i = 0; i < 512; i++)
+  for (unsigned short i = 0; i < 512; i++)
     {
-      m_DMXAddressAllocation[i] = new DMXChannel(i + 1);
+      m_DMXAddressAllocation[i] = new DMXChannel(i);
     }
 }
 
-bool Doc::isDMXAddressSpaceFree(int address, int channels)
+bool Doc::isDMXAddressSpaceFree(unsigned short address, unsigned short channels)
 {
-  ASSERT(channels > 0 && address > 0);
-  for (int i = address - 1; i < address + channels - 1; i++)
+  for (unsigned short i = address; i < address + channels; i++)
     {
       if (m_DMXAddressAllocation[i]->isFree() == false)
 	{
@@ -91,16 +90,15 @@ bool Doc::isDMXAddressSpaceFree(int address, int channels)
   return true;
 }
 
-bool Doc::allocateDMXAddressSpace(int address, int channels)
+bool Doc::allocateDMXAddressSpace(unsigned short address, unsigned short channels)
 {
-  ASSERT(channels > 0 && address > 0);
   if (isDMXAddressSpaceFree(address, channels) == false)
     {
       return false;
     }
   else
     {
-      for (int i = address - 1; i < address + channels - 1; i++)
+      for (unsigned short i = address; i < address + channels; i++)
 	{
 	  m_DMXAddressAllocation[i]->allocate();
 	}
@@ -108,12 +106,11 @@ bool Doc::allocateDMXAddressSpace(int address, int channels)
     }
 }
 
-bool Doc::freeDMXAddressSpace(int address, int channels)
+bool Doc::freeDMXAddressSpace(unsigned short address, unsigned short channels)
 {
-  ASSERT(channels > 0 && address > 0);
   if (isDMXAddressSpaceFree(address, channels) == false)
     {
-      for (int i = address - 1; i < address + channels - 1; i++)
+      for (unsigned short i = address; i < address + channels; i++)
 	{
 	  m_DMXAddressAllocation[i]->free();
 	}
@@ -125,73 +122,44 @@ bool Doc::freeDMXAddressSpace(int address, int channels)
     }
 }
 
-int Doc::findNextFreeDMXAddress(int channels)
+unsigned short Doc::findNextFreeDMXAddress(unsigned short channels)
 {
-  int i = 0;
-  int address = 0;
-
-  ASSERT(channels > 0);
+  unsigned short i = 0;
+  unsigned short address = 0;
+  unsigned short retval = USHRT_MAX;
 
   while (i < 512)
     {
-      if (m_DMXAddressAllocation[i]->isFree() == true)
+      bool found = true;
+      
+      for (i = address; i < address + channels; i++)
 	{
-	  bool found = true;
-	  address = i + 1;
-	  for (i = i; i < address + channels - 1; i++)
+	  if (m_DMXAddressAllocation[i]->isFree() == false)
 	    {
-	      if (m_DMXAddressAllocation[i]->isFree() == false)
-		{
-		  break;
-		  found = false;
-		}
-	    }
-
-	  if (found == true)
-	    {
-	      return address;
+	      found = false;
+	      break;
 	    }
 	}
-
-      i++;
+      
+      if (found == true)
+	{
+	  retval = address;
+	  break;
+	}
+      
+      address++;
     }
-
-  return 0;
+  
+  return address;
 }
 
-DMXChannel* Doc::dmxChannel(unsigned int channel)
+DMXChannel* Doc::dmxChannel(unsigned short channel)
 {
   DMXChannel* dmxch = NULL;
 
-  if (channel > 0 && channel < 512)
-    {
-      dmxch = m_DMXAddressAllocation[channel - 1];
-    }
+  dmxch = m_DMXAddressAllocation[channel];
 
   return dmxch;
-}
-
-// Debugging, dumps one deviceclass with its capabilities
-void Doc::dumpDeviceClass(DeviceClass* dc)
-{
-  QString t;
-  t.setNum(dc->m_channels.count());
-  qDebug("Manufacturer: " + dc->manufacturer() + "\nModel: " + dc->model() + "\nChannels: " + t + "\n");
-  
-  for (LogicalChannel* ch = dc->m_channels.first(); ch != NULL; ch = dc->m_channels.next())
-    {
-      t.setNum(ch->channel());
-      QString c;
-      c.setNum(ch->capabilities().count());
-      qDebug("Channel:" + t + " Name:" + ch->name() + " Capabilities:" + c);
-      
-      for (LogicalChannel::Capability* cap = ch->m_capabilities.first(); cap != NULL; cap = ch->m_capabilities.next())
-	{
-	  QString foo;
-	  foo.sprintf("Name:%s Lo:%d Hi:%d", (const char*) cap->name(), cap->lo(), cap->hi());
-	  qDebug(foo);
-	}
-    }
 }
 
 bool Doc::readDeviceClasses()

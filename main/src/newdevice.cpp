@@ -33,7 +33,7 @@ extern App* _app;
 NewDevice::NewDevice(QWidget *parent, const char *name) : QDialog(parent, name, true)
 {
   m_nameValue = QString("");
-  m_addressValue = 1;
+  m_addressValue = 0;
 
   initView();
 }
@@ -71,8 +71,8 @@ void NewDevice::initView()
 
   m_addressSpin = new QSpinBox(this);
   m_addressSpin->setGeometry(240, 80, 150, 20);
-  m_addressSpin->setRange(1, 512);
-  m_addressSpin->setValue(1);
+  m_addressSpin->setRange(0, 511);
+  m_addressSpin->setValue(0);
 
   m_autoAddress = new QCheckBox(this);
   m_autoAddress->setGeometry(240, 110, 150, 30);

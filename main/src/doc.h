@@ -48,11 +48,11 @@ class Doc : public QObject
 
   QString workspaceFileName() { return m_workspaceFileName; }
 
-  bool isDMXAddressSpaceFree(int address, int channels);
-  bool allocateDMXAddressSpace(int address, int channels);
-  bool freeDMXAddressSpace(int address, int channels);
-  int findNextFreeDMXAddress(int channels);
-  DMXChannel* dmxChannel(unsigned int channel);
+  bool isDMXAddressSpaceFree(unsigned short address, unsigned short channels);
+  bool allocateDMXAddressSpace(unsigned short address, unsigned short channels);
+  bool freeDMXAddressSpace(unsigned short address, unsigned short channels);
+  unsigned short findNextFreeDMXAddress(unsigned short channels);
+  DMXChannel* dmxChannel(unsigned short channel);
 
   void addDevice(Device*);
   bool removeDevice(Device*);

@@ -82,9 +82,9 @@ void Scene::saveToFile(QFile &file)
   if (deviceClass() != NULL)
     {
       // Write only the data for device class scenes
-      for (unsigned i = 0; i < deviceClass()->m_channels.count(); i++)
+      for (unsigned short i = 0; i < deviceClass()->m_channels.count(); i++)
 	{
-	  t.setNum(i+1);
+	  t.setNum(i);
 	  s = t + QString(" = ");
 	  t.setNum(m_values[i]);
 	  s += t + QString("\n");
@@ -99,9 +99,9 @@ void Scene::saveToFile(QFile &file)
       file.writeBlock((const char*) s, s.length());
 
       // Data
-      for (unsigned i = 0; i < device()->deviceClass()->m_channels.count(); i++)
+      for (unsigned short i = 0; i < device()->deviceClass()->m_channels.count(); i++)
 	{
-	  t.setNum(i+1);
+	  t.setNum(i);
 	  s = t + QString(" = ");
 	  t.setNum(m_values[i]);
 	  s += t + QString("\n");
@@ -118,7 +118,7 @@ void Scene::saveToFile(QFile &file)
 
 void Scene::createContents(QList<QString> &list)
 {
-  int channels = 1;
+  unsigned short channels = 1;
   QString t;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
@@ -130,7 +130,7 @@ void Scene::createContents(QList<QString> &list)
 	}
       else if(s->at(0).isNumber() == true)
 	{
-	  int ch = s->toInt() - 1;
+	  int ch = s->toInt();
 	  m_values = (unsigned short*) realloc(m_values, channels * sizeof(int));
 	  t = *(list.next());
 	  m_values[ch] = t.toInt();
@@ -151,34 +151,38 @@ void Scene::allocate(unsigned short channels)
 
 void Scene::set(unsigned short ch, unsigned short value)
 {
-  m_values[ch - 1] = value;
+  m_values[ch] = value;
 }
 
 void Scene::recalculateSpeed(Feeder* f)
 {
-  float gap = 0;
-  float delta = 0;
+  unsigned short gap = 0;
+  double delta = 0;
 
-  short channels = 0;
+  unsigned short channels = 0;
   
   if (f->device() != NULL)
     {
       channels = f->device()->deviceClass()->channels();
     }
 
-  /* Find out the channel needing the smallest delta (most frequent
-     updates needed) and set it to this whole scene's delta */
-  gap = abs((signed short) f->startLevel(0) - (signed short) m_values[0]);
+  // Calculate the delta for first channel
+  gap = (unsigned short) abs((signed short) f->startLevel(0) - (signed short) m_values[0]);
   if (gap != 0)
     {
-      delta = f->timeSpan() / gap;
+      delta = ((double) f->timeSpan()) / ((double) gap);
       f->setDelta((unsigned long) delta);
     }
   else
     {
+      // We don't want to divide timeSpan with zero, so
+      // this is needed
       delta = f->timeSpan();
     }
   
+  // Calculate delta for the rest of the channels.
+  // Find out the channel needing the smallest delta (most frequent
+  // updates needed) and set it to this whole scene's delta
   for (short i = 1; i < channels; i++)
     {
       gap = abs((signed short) f->startLevel(i) - (signed short) m_values[i]);
