@@ -36,6 +36,7 @@ class VCFrame;
 class KeyBind;
 class Bus;
 class VCDockArea;
+class FloatingEdit;
 
 const QString KEY_VIRTUAL_CONSOLE_OPEN      (         "VirtualConsoleOpen" );
 const QString KEY_VIRTUAL_CONSOLE_GRABKB    ( "VirtualConsoleGrabKeyboard" );
@@ -138,11 +139,13 @@ class VirtualConsole : public QWidget
   void setSelectedWidget(QWidget*);
 
   QPopupMenu* widgetMenu() { return m_widgetMenu; }
+  QPopupMenu* addMenu() { return m_addMenu; }
 
  public slots:
   void slotMenuItemActivated(int);
   void slotDockAreaHidden(bool);
   void slotModeChanged();
+  void slotRenameReturnPressed();
 
  signals:
   void closed();
@@ -167,6 +170,7 @@ class VirtualConsole : public QWidget
   // Virtual console menu bar
   QMenuBar* m_menuBar;
   QPopupMenu* m_widgetMenu;
+  QPopupMenu* m_addMenu;
 
   // Master layout
   QHBoxLayout* m_layout; 
@@ -187,6 +191,9 @@ class VirtualConsole : public QWidget
 
   // Currently selected widget
   QWidget* m_selectedWidget;
+
+  // Rename edit
+  FloatingEdit* m_renameEdit;
 };
 
 #endif

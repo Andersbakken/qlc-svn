@@ -97,12 +97,6 @@ class VCDockSlider : public UI_VCDockSlider
   bool m_resizeMode;
 
   QTime m_time;
-
-  bool m_bgPixmap;
-  bool m_bgColor;
-  bool m_fgColor;
-
-  QString m_bgPixmapFileName;
 };
 
 #endif

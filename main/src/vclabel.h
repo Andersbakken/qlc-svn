@@ -48,14 +48,14 @@ class VCLabel : public QLabel
   void saveToFile(QFile& file, unsigned int parentID);
   void createContents(QPtrList <QString> &list);
 
+ public slots:
+  void setCaption(const QString&);
+
  private:
   void invokeMenu(QPoint);
   void parseWidgetMenu(int);
   void resizeTo(QPoint);
   void moveTo(QPoint);
-
- public slots:
-  void slotRenameReturnPressed();
 
  private slots:
   void slotModeChanged();
@@ -72,13 +72,7 @@ class VCLabel : public QLabel
   int m_origX;
   int m_origY;
 
-  FloatingEdit* m_renameEdit;
   bool m_resizeMode;
-  bool m_bgPixmap;
-  bool m_bgColor;
-  bool m_fgColor;
-
-  QString m_bgPixmapFileName;
 };
 
 #endif

@@ -32,8 +32,6 @@ class QString;
 class QPaintEvent;
 class QMouseEvent;
 
-class FloatingEdit;
-
 class VCFrame : public QFrame
 {
   Q_OBJECT
@@ -62,14 +60,10 @@ class VCFrame : public QFrame
   void setButtonBehaviour(ButtonBehaviour);
   ButtonBehaviour buttonBehaviour() { return m_buttonBehaviour; }
 
-  QPixmap* bgPixmap() const { return m_bgPixmap; }
-  QColor bgColor() const { return *m_bgColor; }
-
  private slots:
   void slotModeChanged();
 
  signals:
-  void removed(VCFrame*);
   void backgroundChanged();
 
  protected:
@@ -96,10 +90,6 @@ class VCFrame : public QFrame
 
   bool m_resizeMode;
   bool m_bottomFrame;
-
-  QPixmap* m_bgPixmap;
-  QString m_bgPixmapFileName;
-  QColor* m_bgColor;
 
   ButtonBehaviour m_buttonBehaviour;
 

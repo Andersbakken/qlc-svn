@@ -65,12 +65,9 @@ VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
     m_mode       ( Normal ),
     m_busID      ( KBusIDInvalid ),
     m_static     ( isStatic ),
-    m_updateOnly ( false ),
-    m_bgPixmap   ( false ),
-    m_bgColor    ( false ),
-    m_fgColor    ( false )
+    m_updateOnly ( false )
 {
-    m_time.start();
+  m_time.start();
 }
 
 
@@ -136,15 +133,12 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	  QColor qc;
 	  qc.setRgb(list.next()->toUInt());
 	  setPaletteForegroundColor(qc);
-	  m_fgColor = true;
 	}
       else if (*s == QString("Backgroundcolor"))
 	{
 	  QColor qc;
 	  qc.setRgb(list.next()->toUInt());
 	  setPaletteBackgroundColor(qc);
-	  m_bgColor = true;
-	  m_bgPixmap = false;
 	}
       else if (*s == QString("Pixmap"))
 	{
@@ -154,10 +148,9 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	  QPixmap pm(t);
 	  if (pm.isNull() == false)
 	    {
-	      m_bgPixmapFileName = t;
+	      setIconText(t);
+	      unsetPalette();
 	      setPaletteBackgroundPixmap(pm);
-	      m_bgPixmap = true;
-	      m_bgColor = false;
 	    }
 	}
       else if (*s == QString("Mode"))
@@ -181,14 +174,10 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	  if (*(list.next()) == Settings::trueValue())
 	    {
 	      setFrameStyle(KFrameStyle);
-	      //m_nameLabel->setFrameStyle(KFrameStyle);
-	      m_valueLabel->setFrameStyle(KFrameStyle);
 	    }
 	  else
 	    {
 	      setFrameStyle(NoFrame);
-	      //m_nameLabel->setFrameStyle(NoFrame);
-	      m_valueLabel->setFrameStyle(NoFrame);
 	    }
 	}
       else if (*s == QString("Font"))
@@ -260,18 +249,14 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
   file.writeBlock((const char*) s, s.length());
 
   // Text color
-  if (m_fgColor)
+  if (ownPalette())
     {
       t.setNum(qRgb(paletteForegroundColor().red(),
 		    paletteForegroundColor().green(),
 		    paletteForegroundColor().blue()));
       s = QString("Textcolor = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
-    }
-
-  // Background color
-  if (m_bgColor)
-    {
+      
       t.setNum(qRgb(paletteBackgroundColor().red(),
 		    paletteBackgroundColor().green(),
 		    paletteBackgroundColor().blue()));
@@ -280,9 +265,9 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
     }
 
   // Background pixmap
-  if (m_bgPixmap)
+  if (paletteBackgroundPixmap())
     {
-      s = QString("Pixmap = " + m_bgPixmapFileName + QString("\n"));
+      s = QString("Pixmap = " + iconText() + QString("\n"));
       file.writeBlock((const char*) s, s.length());
     }
 
@@ -328,6 +313,7 @@ QString VCDockSlider::modeString(Mode mode)
       return QString("Master");
     }
 }
+
 
 //
 // Slider has been moved
@@ -523,6 +509,7 @@ void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
     }
 }
 
+
 //
 // Invoke a menu at given point
 //
@@ -531,116 +518,13 @@ void VCDockSlider::invokeMenu(QPoint point)
   _app->virtualConsole()->widgetMenu()->exec(point);
 }
 
+
 void VCDockSlider::parseWidgetMenu(int item)
 {
   switch (item)
     {
     case KVCMenuWidgetProperties:
-      {/*
-	VCButtonProperties* p = NULL;
-	p = new VCButtonProperties(this);
-	p->exec();
-	delete p;
-       */
-      }
-      break;
-
-    case KVCMenuWidgetFont:
-      _app->doc()->setModified(true);
-      setFont(QFontDialog::getFont(0, font()));
-      break;
-
-    case KVCMenuWidgetForegroundColor:
       {
-	QColor color;
-	color = QColorDialog::getColor(paletteBackgroundColor(), this);
-	if (color.isValid())
-	  {
-	    _app->doc()->setModified(true);
-	    setPaletteForegroundColor(color);
-	    m_fgColor = true;
-	  }
-
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuWidgetForegroundNone:
-      {
-	if (m_bgColor)
-	  {
-	    QColor bgcolor = paletteBackgroundColor();
-	    unsetPalette();
-	    setPaletteBackgroundColor(bgcolor);
-	  }
-	else
-	  {
-	    unsetPalette();
-	  }
-
-	m_fgColor = false;
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuWidgetBackgroundColor:
-      {
-	QColor newcolor = 
-	  QColorDialog::getColor(paletteBackgroundColor(), this);
-
-	if (newcolor.isValid() == true)
-	  {
-	    setPaletteBackgroundColor(newcolor);
-	    _app->doc()->setModified(true);
-	  }
-      }
-      break;
-      
-      case KVCMenuWidgetBackgroundPixmap:
-      {
-	QString fileName = 
-	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
-				       QString("*.jpg *.png *.xpm *.gif"), 
-				       this);
-	if (fileName.isEmpty() == false)
-	  {
-	    m_bgPixmapFileName = fileName;
-	    QPixmap pm(fileName);
-	    setPaletteBackgroundPixmap(pm);
-	    _app->doc()->setModified(true);
-	  }
-      }
-      break;
-
-    case KVCMenuWidgetBackgroundNone:
-      {
-	if (m_fgColor)
-	  {
-	    QColor fgcolor = paletteForegroundColor();
-	    unsetPalette();
-	    setPaletteForegroundColor(fgcolor);
-	  }
-	else
-	  {
-	    unsetPalette();
-	  }
-
-	m_bgColor = false;
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuWidgetStackRaise:
-      {
-	raise();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuWidgetStackLower:
-      {
-	lower();
-	_app->doc()->setModified(true);
       }
       break;
 
@@ -649,14 +533,10 @@ void VCDockSlider::parseWidgetMenu(int item)
 	if (frameStyle() & KFrameStyle)
 	  {
 	    setFrameStyle(NoFrame);
-	    //m_nameLabel->setFrameStyle(NoFrame); ToDo: remove
-	    m_valueLabel->setFrameStyle(NoFrame);
 	  }
 	else
 	  {
 	    setFrameStyle(KFrameStyle);
-	    //m_nameLabel->setFrameStyle(KFrameStyle);ToDo: remove
-	    m_valueLabel->setFrameStyle(KFrameStyle);
 	  }
 	
 	_app->doc()->setModified(true);
@@ -708,11 +588,11 @@ void VCDockSlider::paintEvent(QPaintEvent* e)
     }
 }
 
+
 void VCDockSlider::slotModeChanged()
 {
   repaint();
 }
-
 
 
 void VCDockSlider::mouseMoveEvent(QMouseEvent* e)

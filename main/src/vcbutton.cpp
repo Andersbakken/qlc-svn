@@ -63,11 +63,7 @@ VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
   m_functionID = KNoID;
   m_resizeMode = false;
-  m_renameEdit = NULL;
-  m_bgColor = NULL;
   m_keyBind = NULL;
-  m_bgPixmapFileName = QString::null;
-  m_bgPixmap = NULL;
 }
 
 
@@ -94,7 +90,6 @@ void VCButton::copyFrom(VCButton* button)
   attachFunction(button->m_functionID);
 
   m_resizeMode = false;
-  m_renameEdit = NULL;
 
   assert(button->keyBind());
   if (m_keyBind) delete m_keyBind;
@@ -104,13 +99,22 @@ void VCButton::copyFrom(VCButton* button)
 
   setToggleButton(true);
 
-  setText(button->text());
+  setCaption(button->caption());
 
-  if (m_bgColor) delete m_bgColor;
-  if (button->bgColor() != NULL)
+  if (button->ownFont())
     {
-      m_bgColor = new QColor(*button->bgColor());
-      setPaletteBackgroundColor(*m_bgColor);
+      setFont(button->font());
+    }
+
+  if (button->ownPalette())
+    {
+      setPaletteForegroundColor(button->paletteForegroundColor());
+      setPaletteBackgroundColor(button->paletteBackgroundColor());
+    }
+
+  if (button->paletteBackgroundPixmap())
+    {
+      setPaletteBackgroundPixmap(*button->paletteBackgroundPixmap());
     }
 
   reparent(button->parentWidget(), 0, QPoint(0, 0), true);
@@ -123,6 +127,13 @@ void VCButton::copyFrom(VCButton* button)
 
 VCButton::~VCButton()
 {
+}
+
+
+void VCButton::setCaption(const QString& text)
+{
+  setText(text);
+  QWidget::setCaption(text);
 }
 
 
@@ -140,7 +151,7 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
   file.writeBlock((const char*) s, s.length());
 
   // Name
-  s = QString("Name = ") + text() + QString("\n");
+  s = QString("Name = ") + caption() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Parent ID
@@ -168,27 +179,34 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
   s = QString("Height = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // Pixmap or color
-  if (m_bgColor != NULL)
+  // Text color
+  if (ownPalette())
     {
-      t.setNum(m_bgColor->red());
-      s = QString("Color = " + t + QString(","));
-      t.setNum(m_bgColor->green());
-      s += t + QString(",");
-      t.setNum(m_bgColor->blue());
-      s += t + QString("\n");
+      t.setNum(qRgb(paletteForegroundColor().red(),
+		    paletteForegroundColor().green(),
+		    paletteForegroundColor().blue()));
+      s = QString("Textcolor = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+      // Background color
+      t.setNum(qRgb(paletteBackgroundColor().red(),
+		    paletteBackgroundColor().green(),
+		    paletteBackgroundColor().blue()));
+      s = QString("Backgroundcolor = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
     }
-  else if (m_bgPixmap != NULL)
+
+  // Background pixmap
+  if (paletteBackgroundPixmap())
     {
-      s = QString("Pixmap = ") + m_bgPixmapFileName + QString("\n");
+      s = QString("Pixmap = " + iconText() + QString("\n"));
       file.writeBlock((const char*) s, s.length());
     }
 
   // Font
   s = QString("Font = ") + font().toString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
-  
+
   // Function
   s.sprintf("Function = %d\n", m_functionID);
   file.writeBlock((const char*) s, s.length());
@@ -223,7 +241,7 @@ void VCButton::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Name"))
 	{
-	  setText(*(list.next()));
+	  setCaption(*(list.next()));
 	}
       else if (*s == QString("Parent"))
 	{
@@ -250,33 +268,29 @@ void VCButton::createContents(QPtrList <QString> &list)
 	{
 	  rect.setHeight(list.next()->toInt());
 	}
+      else if (*s == QString("Textcolor"))
+	{
+	  QColor qc;
+	  qc.setRgb(list.next()->toUInt());
+	  setPaletteForegroundColor(qc);
+	}
+      else if (*s == QString("Backgroundcolor"))
+	{
+	  QColor qc;
+	  qc.setRgb(list.next()->toUInt());
+	  setPaletteBackgroundColor(qc);
+	}
       else if (*s == QString("Pixmap"))
 	{
 	  QString t;
 	  t = *(list.next());
-
-	  m_bgPixmap = new QPixmap(t);
-	  if (m_bgPixmap->isNull() == false)
+	  
+	  QPixmap pm(t);
+	  if (pm.isNull() == false)
 	    {
-	      m_bgPixmapFileName = t;
-	      setPixmap(*m_bgPixmap);
+	      setIconText(t);
+	      setPaletteBackgroundPixmap(pm);
 	    }
-	  else
-	    {
-	      delete m_bgPixmap;
-	      m_bgPixmap = NULL;
-	    }
-	}
-      else if (*s == QString("Color"))
-	{
-	  QString t = *(list.next());
-	  int i = t.find(QString(","));
-	  int r = t.left(i).toInt();
-	  int j = t.find(QString(","), i + 1);
-	  int g = t.mid(i+1, j-i-1).toInt();
-	  int b = t.mid(j+1).toInt();
-	  m_bgColor = new QColor(r, g, b);
-	  setPaletteBackgroundColor(*m_bgColor);
 	}
       else if (*s == QString("Font"))
 	{
@@ -385,123 +399,12 @@ void VCButton::parseWidgetMenu(int item)
 {
   switch (item)
     {
-    case KVCMenuWidgetRename:
-      {
-	m_renameEdit = new FloatingEdit(parentWidget());
-	connect(m_renameEdit, SIGNAL(returnPressed()),
-		this, SLOT(slotRenameReturnPressed()));
-	m_renameEdit->setMinimumSize(60, 25);
-	m_renameEdit->setGeometry(x() + 3, y() + 3, width() - 6, height() - 6);
-	m_renameEdit->setText(text());
-	m_renameEdit->setFont(font());
-	m_renameEdit->setSelection(0, text().length());
-	m_renameEdit->show();
-	m_renameEdit->setFocus();
-      }
-      break;
-
-    case KVCMenuWidgetFont:
-      _app->doc()->setModified(true);
-      setFont(QFontDialog::getFont(0, font()));
-      break;
-
-    case KVCMenuWidgetBackgroundColor:
-      {
-	QColor currentcolor;
-	if (m_bgColor != NULL)
-	  {
-	    currentcolor = *m_bgColor;
-	  }
-
-	QColor newcolor = QColorDialog::getColor(currentcolor, this);
-
-	if (newcolor.isValid() == true)
-	  {
-	    if (m_bgPixmap != NULL)
-	      {
-		m_bgPixmapFileName = QString::null;
-		delete m_bgPixmap;
-		m_bgPixmap = NULL;
-	      }
-	    m_bgColor = new QColor(newcolor);
-	    setPaletteBackgroundColor(*m_bgColor);
-	    show();
-
-	    _app->doc()->setModified(true);
-	  }
-      }
-      break;
-      
-      case KVCMenuWidgetBackgroundPixmap:
-      {
-	QString fileName = 
-	  QFileDialog::getOpenFileName(m_bgPixmapFileName, 
-				       QString("*.jpg *.png *.xpm *.gif"), 
-				       this);
-	if (fileName.isEmpty() == false)
-	  {
-	    if (m_bgColor != NULL)
-	      {
-		delete m_bgColor;
-		m_bgColor = NULL;
-	      }
-
-	    m_bgPixmapFileName = fileName;
-	    m_bgPixmap = new QPixmap(fileName);
-	    setPixmap(*m_bgPixmap);
-            show();
-	    _app->doc()->setModified(true);
-	  }
-      }
-      break;
-
-    case KVCMenuWidgetBackgroundNone:
-      {
-	if (m_bgPixmap != NULL)
-	  {
-	    m_bgPixmapFileName = QString::null;
-	    delete m_bgPixmap;
-	    m_bgPixmap = NULL;
-	  }
-	
-	if (m_bgColor != NULL)
-	  {
-	    delete m_bgColor;
-	    m_bgColor = NULL;
-	  }
-
-	setPalette(_app->palette());
-
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case KVCMenuWidgetStackRaise:
-      raise();
-      break;
-
-    case KVCMenuWidgetStackLower:
-      lower();
-      break;
-
     case KVCMenuWidgetProperties:
       {
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
 	p->exec();
 	delete p;
-      }
-      break;
-
-    case KVCMenuWidgetRemove:
-      {
-	if (QMessageBox::warning(this, "Remove Button", "Are you sure?",
-				 QMessageBox::Yes, QMessageBox::No)
-	    == QMessageBox::Yes)
-	  {
-	    _app->doc()->setModified(true);
-	    delete this;
-	  }
       }
       break;
 
@@ -767,16 +670,6 @@ void VCButton::attachFunction(t_function_id id)
       QToolTip::add(this, "No function");
     }
 
-  _app->doc()->setModified(true);
-}
-
-void VCButton::slotRenameReturnPressed()
-{
-  assert(m_renameEdit);
-  setText(m_renameEdit->text());
-  disconnect(m_renameEdit);
-  delete m_renameEdit;
-  m_renameEdit = NULL;
   _app->doc()->setModified(true);
 }
 

@@ -9,7 +9,7 @@
             <x>34</x>
             <y>0</y>
             <width>55</width>
-            <height>376</height>
+            <height>252</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -39,14 +39,14 @@
         <enum>StyledPanel</enum>
     </property>
     <property name="frameShadow">
-        <enum>Raised</enum>
+        <enum>Sunken</enum>
     </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
         <property name="margin">
-            <number>0</number>
+            <number>2</number>
         </property>
         <property name="spacing">
             <number>0</number>
@@ -54,12 +54,6 @@
         <widget class="QLabel">
             <property name="name">
                 <cstring>m_valueLabel</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Raised</enum>
             </property>
             <property name="text">
                 <string>000</string>
@@ -150,16 +144,27 @@
             <property name="name">
                 <cstring>m_tapInButton</cstring>
             </property>
-            <property name="font">
-                <font>
-                    <family>Adobe Helvetica</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
             <property name="text">
-                <string>Label</string>
+                <string></string>
             </property>
         </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer3</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Fixed</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>10</height>
+                </size>
+            </property>
+        </spacer>
     </vbox>
 </widget>
 <connections>

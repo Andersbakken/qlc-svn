@@ -73,7 +73,6 @@ void BusProperties::fillTree()
       item->setText(KColumnID, text);
       item->setText(KColumnName, Bus::name(i));
 
-      if (i != KBusIDDefaultFade && i != KBusIDDefaultHold)
-	item->setRenameEnabled(KColumnName, true);
+      item->setRenameEnabled(KColumnName, true);
     }
 }

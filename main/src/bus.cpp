@@ -57,8 +57,8 @@ void Bus::init()
   if (s_busArray) delete s_busArray;
   s_busArray = new Bus[KBusCount];
 
-  s_busArray[KBusIDDefaultFade].m_name = QString("Default Fade");
-  s_busArray[KBusIDDefaultHold].m_name = QString("Default Hold");
+  s_busArray[KBusIDDefaultFade].m_name = QString("Fade");
+  s_busArray[KBusIDDefaultHold].m_name = QString("Hold");
 
   if (s_busEmitter) delete s_busEmitter;
   s_busEmitter = new BusEmitter();

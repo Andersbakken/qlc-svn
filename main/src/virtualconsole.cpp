@@ -33,6 +33,11 @@
 #include <qmessagebox.h>
 #include <qslider.h>
 #include <qapplication.h>
+#include <qcolordialog.h>
+#include <qfiledialog.h>
+#include <qfontdialog.h>
+#include <qcursor.h>
+#include <assert.h>
 
 #include "virtualconsole.h"
 #include "virtualconsoleproperties.h"
@@ -47,6 +52,7 @@
 #include "configkeys.h"
 #include "vcdockarea.h"
 #include "vcdockslider.h"
+#include "floatingedit.h"
 
 #include <X11/Xlib.h>
 
@@ -61,6 +67,7 @@ VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
   m_gridX = 0;
   m_gridY = 0;
   m_selectedWidget = NULL;
+  m_renameEdit = NULL;
 }
 
 VirtualConsole::~VirtualConsole()
@@ -163,15 +170,15 @@ void VirtualConsole::initMenuBar()
   //
   // Add menu
   //
-  QPopupMenu* addMenu = new QPopupMenu();
-  addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
-		      "&Button", KVCMenuAddButton);
-  addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
-		      "&Slider", KVCMenuAddSlider);
-  addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
-		      "&Frame", KVCMenuAddFrame);
-  addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
-		      "L&abel", KVCMenuAddLabel);
+  m_addMenu = new QPopupMenu();
+  m_addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
+			"&Button", KVCMenuAddButton);
+  m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
+			"&Slider", KVCMenuAddSlider);
+  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
+			"&Frame", KVCMenuAddFrame);
+  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
+			"L&abel", KVCMenuAddLabel);
 
   //
   // Tools menu
@@ -253,7 +260,7 @@ void VirtualConsole::initMenuBar()
   m_widgetMenu->insertItem(QPixmap(dir + QString("/remove.xpm")),
 			   "Remove", KVCMenuWidgetRemove);
   
-  m_menuBar->insertItem("&Add", addMenu);
+  m_menuBar->insertItem("&Add", m_addMenu);
   m_menuBar->insertItem("&Tools", toolsMenu);
   m_menuBar->insertItem("&Widget", m_widgetMenu);
 
@@ -282,12 +289,24 @@ void VirtualConsole::slotMenuItemActivated(int item)
 
 void VirtualConsole::parseAddMenu(int item)
 {
+  QWidget* parent = NULL;
+
+  if (m_selectedWidget && 
+      QString(m_selectedWidget->className()) == QString("VCFrame"))
+    {
+      parent = m_selectedWidget;
+    }
+  else
+    {
+      parent = m_drawArea;
+    }
+
   switch(item)
     {
     case KVCMenuAddButton:
       {
 	VCButton* b;
-	b = new VCButton(m_drawArea);
+	b = new VCButton(parent);
 	b->init();
 	b->show();
 	_app->doc()->setModified(true);
@@ -296,10 +315,10 @@ void VirtualConsole::parseAddMenu(int item)
 
     case KVCMenuAddSlider:
       {
-	VCDockSlider* vcd = new VCDockSlider(m_drawArea);
+	VCDockSlider* vcd = new VCDockSlider(parent);
 	vcd->setBusID(KBusIDDefaultFade);
 	vcd->init();
-	vcd->resize(60, 200);
+	vcd->resize(55, 200);
 	vcd->show();
 	_app->doc()->setModified(true);
       }
@@ -308,7 +327,7 @@ void VirtualConsole::parseAddMenu(int item)
     case KVCMenuAddFrame:
       {
 	VCFrame* w;
-	w = new VCFrame(m_drawArea);
+	w = new VCFrame(parent);
 	w->init();
 	w->show();
 	_app->doc()->setModified(true);
@@ -318,7 +337,8 @@ void VirtualConsole::parseAddMenu(int item)
     case KVCMenuAddLabel:
       {
  	VCLabel* p = NULL;
-	p = new VCLabel(m_drawArea);
+	p = new VCLabel(parent);
+	p->init();
 	p->show();
 	_app->doc()->setModified(true);
       }
@@ -379,23 +399,135 @@ void VirtualConsole::parseWidgetMenu(int item)
 {
   if (m_selectedWidget)
     {
-      if (item == KVCMenuWidgetRemove)
+      switch(item)
 	{
-	  if (QMessageBox::warning(this, "Remove Selected Widget",
-				   "Are you sure?",
-				   QMessageBox::Yes, QMessageBox::No)
-	      == QMessageBox::Yes)
-	    {
-	      _app->doc()->setModified(true);
-	      delete m_selectedWidget;
-	      m_selectedWidget = NULL;
-	    }
-	}
-      else
-	{
+	case KVCMenuWidgetRename:
+	  {
+	    m_renameEdit = new FloatingEdit(m_selectedWidget->parentWidget());
+	    connect(m_renameEdit, SIGNAL(returnPressed()),
+		    this, SLOT(slotRenameReturnPressed()));
+	    m_renameEdit->setMinimumSize(60, 25);
+	    m_renameEdit->setGeometry(m_selectedWidget->x() + 3, 
+				      m_selectedWidget->y() + 3, 
+				      m_selectedWidget->width() - 6, 
+				      m_selectedWidget->height() - 6);
+	    m_renameEdit->setText(m_selectedWidget->caption());
+	    m_renameEdit->setFont(m_selectedWidget->font());
+	    m_renameEdit->setSelection(0,m_selectedWidget->caption().length());
+	    m_renameEdit->show();
+	    m_renameEdit->setFocus();
+	  }
+	  break;
+
+	case KVCMenuWidgetFont:
+	  {
+	    m_selectedWidget->setFont(QFontDialog::
+				      getFont(0, m_selectedWidget->font()));
+	    _app->doc()->setModified(true);
+	  }
+	  break;
+
+
+	case KVCMenuWidgetForegroundColor:
+	  {
+	    QColor color = QColorDialog::
+	      getColor(m_selectedWidget->paletteBackgroundColor(), this);
+	    if (color.isValid())
+	      {
+		_app->doc()->setModified(true);
+		m_selectedWidget->setPaletteForegroundColor(color);
+	      }
+	    
+	    _app->doc()->setModified(true);
+	  }
+	  break;
+	  
+	case KVCMenuWidgetForegroundNone:
+	  {
+	    QColor bgc = m_selectedWidget->paletteBackgroundColor();
+
+	    m_selectedWidget->unsetPalette();
+	    m_selectedWidget->unsetFont();
+
+	    m_selectedWidget->setPaletteBackgroundColor(bgc);
+
+	    _app->doc()->setModified(true);
+	  }
+	  break;
+
+	case KVCMenuWidgetBackgroundColor:
+	  {
+	    QColor newcolor = QColorDialog::
+	      getColor(m_selectedWidget->paletteBackgroundColor(), this);
+	    
+	    if (newcolor.isValid() == true)
+	      {
+		m_selectedWidget->setPaletteBackgroundColor(newcolor);
+		_app->doc()->setModified(true);
+	      }
+	  }
+	  break;
+
+	case KVCMenuWidgetBackgroundPixmap:
+	  {
+	    QString fileName = 
+	      QFileDialog::getOpenFileName(m_selectedWidget->iconText(), 
+					   QString("*.jpg *.png *.xpm *.gif"), 
+					   this);
+	    if (fileName.isEmpty() == false)
+	      {
+		QPixmap pm(fileName);
+		m_selectedWidget->setPaletteBackgroundPixmap(pm);
+		m_selectedWidget->setIconText(fileName);
+		_app->doc()->setModified(true);
+	      }
+	  }
+	  break;
+
+	case KVCMenuWidgetBackgroundNone:
+	  {
+	    m_selectedWidget->unsetPalette();
+	    _app->doc()->setModified(true);
+	  }
+	  break;
+	  
+	case KVCMenuWidgetStackRaise:
+	  m_selectedWidget->raise();
+	  break;
+	  
+	case KVCMenuWidgetStackLower:
+	  m_selectedWidget->lower();
+	  break;
+	  
+	case KVCMenuWidgetRemove:
+	  {
+	    if (QMessageBox::warning(this, "Remove Selected Widget",
+				     "Are you sure?",
+				     QMessageBox::Yes, QMessageBox::No)
+		== QMessageBox::Yes)
+	      {
+		_app->doc()->setModified(true);
+		delete m_selectedWidget;
+		m_selectedWidget = NULL;
+	      }
+	  }
+	  break;
+
+	default:
 	  QApplication::sendEvent(m_selectedWidget, new VCMenuEvent(item));
+	  break;
 	}
     }
+}
+
+void VirtualConsole::slotRenameReturnPressed()
+{
+  assert(m_selectedWidget);
+
+  m_selectedWidget->setCaption(m_renameEdit->text());
+
+  delete m_renameEdit;
+  m_renameEdit = NULL;
 }
 
 void VirtualConsole::initDockArea()

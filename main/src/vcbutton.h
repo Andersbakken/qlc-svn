@@ -52,29 +52,11 @@ class VCButton : public QPushButton
   KeyBind* keyBind() { return m_keyBind; }
   void setKeyBind(const KeyBind* kb);
 
-  QColor* bgColor() { return m_bgColor; }
-  QPixmap* bgPixmap() const { return m_bgPixmap; }
-
   void saveToFile(QFile& file, unsigned int parentID);
   void createContents(QPtrList <QString> &list);
 
   void attachFunction(t_function_id id);
   t_function_id functionID() const { return m_functionID; }
-
- private:
-  QPixmap* m_bgPixmap;
-  QString m_bgPixmapFileName;
-  QColor* m_bgColor;
-
-  KeyBind* m_keyBind;
-
-  int m_origX;
-  int m_origY;
-  bool m_resizeMode;
-
-  t_function_id m_functionID;
-
-  FloatingEdit* m_renameEdit;
 
  private:
   void invokeMenu(QPoint);
@@ -84,7 +66,7 @@ class VCButton : public QPushButton
   void moveTo(QPoint p);
 
  public slots:
-  void slotRenameReturnPressed();
+  void setCaption(const QString& text);
 
   void pressFunction();
   void releaseFunction();
@@ -100,6 +82,14 @@ class VCButton : public QPushButton
   void mouseDoubleClickEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
   void customEvent(QCustomEvent* e);
+
+ private:
+  t_function_id m_functionID;
+  KeyBind* m_keyBind;
+
+  int m_origX;
+  int m_origY;
+  bool m_resizeMode;
 };
 
 #endif
