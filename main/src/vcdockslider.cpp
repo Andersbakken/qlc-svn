@@ -44,7 +44,8 @@
 
 extern App* _app;
 
-const int KColorMask               ( 0xff );
+const int KColorMask          ( 0xff ); // Produces opposite colors with XOR
+const int KMoveThreshold      (    5 ); // Pixels
 
 //
 // Constructor
@@ -99,7 +100,7 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 
 	  if (parent != NULL)
 	    {
-	      reparent((QWidget*)parent, 0, QPoint(0, 0), true);
+	      reparent((QFrame*)parent, 0, QPoint(0, 0), true);
 	    }
 	}
       else if (*s == QString("X"))
@@ -400,7 +401,7 @@ void VCDockSlider::mousePressEvent(QMouseEvent* e)
     }
   else
     {
-      QWidget::mousePressEvent(e);
+      QFrame::mousePressEvent(e);
     }
 }
 
@@ -418,7 +419,7 @@ void VCDockSlider::mouseReleaseEvent(QMouseEvent* e)
     }
   else
     {
-      QWidget::mouseReleaseEvent(e);
+      QFrame::mouseReleaseEvent(e);
     }
 }
 
@@ -445,14 +446,14 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
     }
   else
     {
-      QWidget::mouseMoveEvent(e);
+      QFrame::mouseMoveEvent(e);
     }
 }
 
 
 void VCDockSlider::paintEvent(QPaintEvent* e)
 {
-  QWidget::paintEvent(e);
+  QFrame::paintEvent(e);
 
   if (_app->mode() == App::Design && m_static == false)
     {
@@ -495,17 +496,13 @@ bool VCDockSlider::moveThreshold(int x, int y)
   int dx = 0;
   int dy = 0;
 
-  dx = max(m_origX, x) - min(m_origX, x);
-  dy = max(m_origY, y) - min(m_origY, y);
+  dx = abs(m_origX - x);
+  dy = abs(m_origY - y);
 
-  if (dx >= 5 || dy >= 5)
-    {
-      return true;
-    }
+  if (dx >= KMoveThreshold || dy >= KMoveThreshold)
+    return true;
   else
-    {
-      return false;
-    }
+    return false;
 }
 
 

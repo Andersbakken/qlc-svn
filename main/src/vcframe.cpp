@@ -48,20 +48,24 @@ extern App* _app;
 t_vc_id VCFrame::s_nextVCID = KVCIDMin;
 
 const int KColorMask            ( 0xff );
+const int KMoveThreshold        (    5 ); // Pixels
 
 const int KMenuTitle            ( 0  );
 const int KMenuRename           ( 1  );
-const int KMenuProperties       ( 2  );
-const int KMenuBackgroundNone   ( 4  );
-const int KMenuBackgroundColor  ( 5  );
-const int KMenuBackgroundPixmap ( 6  );
-const int KMenuRemove           ( 7  );
-const int KMenuCopy             ( 8  );
+const int KMenuBackgroundNone   ( 2  );
+const int KMenuBackgroundColor  ( 3  );
+const int KMenuBackgroundPixmap ( 4  );
+const int KMenuRemove           ( 5  );
+const int KMenuCopy             ( 6  );
 
-const int KMenuAddButton        ( 9  );
-const int KMenuAddSlider        ( 10 );
-const int KMenuAddFrame         ( 11 );
-const int KMenuAddLabel         ( 12 );
+const int KMenuAddButton        ( 7  );
+const int KMenuAddSlider        ( 8  );
+const int KMenuAddFrame         ( 9  );
+const int KMenuAddLabel         ( 10 );
+
+const int KMenuStack            ( 11 );
+const int KMenuStackRaise       ( 12 );
+const int KMenuStackLower       ( 13 );
 
 VCFrame::VCFrame(QWidget* parent) : QFrame(parent)
 {
@@ -407,6 +411,15 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 	    }
 	  
 	  //
+	  // Stacking order menu
+	  //
+	  QPopupMenu* stackmenu = new QPopupMenu;
+	  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
+				"Bring to Front", KMenuStackRaise);
+	  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
+				"Send to Back", KMenuStackLower);
+
+	  //
 	  // Add menu
 	  //
 	  QPopupMenu* addMenu = new QPopupMenu();
@@ -422,26 +435,36 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 	  QPopupMenu* menu = new QPopupMenu();
 	  menu->insertItem("Frame", KMenuTitle);
 	  menu->setItemEnabled(KMenuTitle, false);
-	  menu->insertSeparator();	 
-	  menu->insertItem(QPixmap(dir + QString("/add.xpm")),
-			   "Add", addMenu);
-	  menu->insertItem("Background", bgmenu);
 	  menu->insertSeparator();
+	  menu->insertItem("Add", addMenu);
+	  menu->insertItem("Background", bgmenu);
+	  menu->insertItem("Stacking order", stackmenu, KMenuStack);
+	  menu->insertSeparator();
+	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+			   "Remove", KMenuRemove);
 
-	  if (m_bottomFrame == false)
+	  if (m_bottomFrame == true)
 	    {
-	      menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
-			       "Remove", KMenuRemove);
+	      menu->setItemEnabled(KMenuRemove, false);
+	      menu->setItemEnabled(KMenuStack, false);
 	    }
 
 	  connect(bgmenu, SIGNAL(activated(int)), 
 		  this, SLOT(slotMenuCallback(int)));
+
+	  connect(stackmenu, SIGNAL(activated(int)), 
+		  this, SLOT(slotMenuCallback(int)));
+
 	  connect(addMenu, SIGNAL(activated(int)), 
 		  this, SLOT(slotMenuCallback(int)));
+
 	  connect(menu, SIGNAL(activated(int)), 
 		  this, SLOT(slotMenuCallback(int)));
 
 	  menu->exec(mapToGlobal(e->pos()));
+
+	  delete bgmenu;
+	  delete stackmenu;
 	  delete addMenu;
 	  delete menu;
 	}
@@ -449,44 +472,6 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
   else
     {
       QFrame::mousePressEvent(e);
-    }
-}
-
-void VCFrame::mouseReleaseEvent(QMouseEvent* e)
-{
-  if (_app->mode() == App::Design)
-    {
-      setCursor(QCursor(ArrowCursor));
-      m_resizeMode = false;
-      setMouseTracking(false);
-    }
-  else
-    {
-      QFrame::mouseReleaseEvent(e);
-    }
-}
-
-void VCFrame::mouseMoveEvent(QMouseEvent* e)
-{
-  if (_app->mode() == App::Design)
-    {
-      if (m_resizeMode == true)
-	{
-	  QPoint point = mapFromGlobal(QPoint(e->globalX(), e->globalY()));
-	  resize(point.x() + 2, point.y() + 2);
-	}
-      else if ((e->state() & LeftButton || e->state() & MidButton) && 
-	       m_bottomFrame == false)
-	{
-	  if (moveThreshold(e->globalX(), e->globalY()) == true)
-	    {
-	      moveTo(e->globalX(), e->globalY());
-	    }
-	}
-    }
-  else
-    {
-      QFrame::mouseMoveEvent(e);
     }
 }
 
@@ -511,9 +496,6 @@ void VCFrame::slotMenuCallback(int item)
 	    break;
 	  }
       }
-      break;
-
-    case KMenuProperties:
       break;
 
     case KMenuBackgroundNone:
@@ -593,6 +575,14 @@ void VCFrame::slotMenuCallback(int item)
       }
       break;
 
+    case KMenuStackRaise:
+      raise();
+      break;
+
+    case KMenuStackLower:
+      lower();
+      break;
+
     case KMenuAddButton:
       {
 	VCButton* b;
@@ -642,22 +632,56 @@ void VCFrame::slotMenuCallback(int item)
     }
 }
 
+void VCFrame::mouseReleaseEvent(QMouseEvent* e)
+{
+  if (_app->mode() == App::Design)
+    {
+      setCursor(QCursor(ArrowCursor));
+      m_resizeMode = false;
+      setMouseTracking(false);
+    }
+  else
+    {
+      QFrame::mouseReleaseEvent(e);
+    }
+}
+
+void VCFrame::mouseMoveEvent(QMouseEvent* e)
+{
+  if (_app->mode() == App::Design)
+    {
+      if (m_resizeMode == true)
+	{
+	  QPoint point = mapFromGlobal(QPoint(e->globalX(), e->globalY()));
+	  resize(point.x() + 2, point.y() + 2);
+	}
+      else if ((e->state() & LeftButton || e->state() & MidButton) && 
+	       m_bottomFrame == false)
+	{
+	  if (moveThreshold(e->globalX(), e->globalY()) == true)
+	    {
+	      moveTo(e->globalX(), e->globalY());
+	    }
+	}
+    }
+  else
+    {
+      QFrame::mouseMoveEvent(e);
+    }
+}
+
 bool VCFrame::moveThreshold(int x, int y)
 {
   int dx = 0;
   int dy = 0;
 
-  dx = max(m_origX, x) - min(m_origX, x);
-  dy = max(m_origY, y) - min(m_origY, y);
+  dx = abs(m_origX - x);
+  dy = abs(m_origY - y);
 
-  if (dx >= 5 || dy >= 5)
-    {
-      return true;
-    }
+  if (dx >= KMoveThreshold || dy >= KMoveThreshold)
+    return true;
   else
-    {
-      return false;
-    }
+    return false;
 }
 
 void VCFrame::moveTo(int x, int y)

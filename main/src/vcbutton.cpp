@@ -54,17 +54,20 @@ extern App* _app;
 
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
 const int KFlashReadyTime ( 1000 ); // 1 second
+const int KMoveThreshold  (    5 ); // Pixels
 
-const int KMenuTitle            ( 0 );
-const int KMenuRename           ( 1 );
-const int KMenuProperties       ( 2 );
-const int KMenuBackgroundColor  ( 3 );
-const int KMenuBackgroundPixmap ( 4 );
-const int KMenuBackgroundNone   ( 5 );
-const int KMenuAttach           ( 6 );
-const int KMenuDetach           ( 7 );
-const int KMenuCopy             ( 8 );
-const int KMenuRemove           ( 9 );
+const int KMenuTitle            (  0 );
+const int KMenuRename           (  1 );
+const int KMenuProperties       (  2 );
+const int KMenuBackgroundColor  (  3 );
+const int KMenuBackgroundPixmap (  4 );
+const int KMenuBackgroundNone   (  5 );
+const int KMenuAttach           (  6 );
+const int KMenuDetach           (  7 );
+const int KMenuCopy             (  8 );
+const int KMenuRemove           (  9 );
+const int KMenuStackRaise       ( 10 );
+const int KMenuStackLower       ( 11 );
 
 VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
@@ -388,6 +391,16 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	    {
 	      bgmenu->setItemChecked(KMenuBackgroundNone, true);
 	    }
+
+	  //
+	  // Stacking order menu
+	  //
+	  QPopupMenu* stackmenu = new QPopupMenu;
+	  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
+				"Bring to Front", KMenuStackRaise);
+	  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
+				"Send to Back", KMenuStackLower);
+
 	  //
 	  // Main context menu
 	  //
@@ -402,6 +415,7 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 			   "&Properties...", KMenuProperties);
 	  menu->insertSeparator();
 	  menu->insertItem("Background", bgmenu);
+	  menu->insertItem("Stacking order", stackmenu);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/attach.xpm")),
 			   "&Attach function...", KMenuAttach);
@@ -416,12 +430,16 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	  connect(bgmenu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
+	  connect(stackmenu, SIGNAL(activated(int)),
+		  this, SLOT(slotMenuCallback(int)));
+
 	  connect(menu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
 	  menu->exec(mapToGlobal(e->pos()));
 
 	  delete bgmenu;
+	  delete stackmenu;
 	  delete menu;
 	}
     }
@@ -519,6 +537,14 @@ void VCButton::slotMenuCallback(int item)
 
 	_app->doc()->setModified(true);
       }
+      break;
+
+    case KMenuStackRaise:
+      raise();
+      break;
+
+    case KMenuStackLower:
+      lower();
       break;
 
     case KMenuProperties:
@@ -648,17 +674,13 @@ bool VCButton::moveThreshold(int x, int y)
   int dx = 0;
   int dy = 0;
 
-  dx = max(m_origX, x) - min(m_origX, x);
-  dy = max(m_origY, y) - min(m_origY, y);
+  dx = abs(m_origX - x);
+  dy = abs(m_origY - y);
 
-  if (dx >= 5 || dy >= 5)
-    {
-      return true;
-    }
+  if (dx >= KMoveThreshold || dy >= KMoveThreshold)
+    return true;
   else
-    {
-      return false;
-    }
+    return false;
 }
 
 void VCButton::moveTo(int x, int y)

@@ -48,18 +48,21 @@
 
 extern App* _app;
 
-const int KMenuTitle             ( 0 );
-const int KMenuRename            ( 1 );
-const int KMenuFont              ( 2 );
-const int KMenuFontColor         ( 3 );
-const int KMenuBackgroundColor   ( 4 );
-const int KMenuBackgroundPixmap  ( 5 );
-const int KMenuBackgroundNone    ( 6 );
-const int KMenuDrawFrame         ( 7 );
-const int KMenuRemove            ( 8 );
-
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
+const int KMoveThreshold   (    5 ); // Pixels
+
+const int KMenuTitle             (  0 );
+const int KMenuRename            (  1 );
+const int KMenuFont              (  2 );
+const int KMenuFontColor         (  3 );
+const int KMenuBackgroundColor   (  4 );
+const int KMenuBackgroundPixmap  (  5 );
+const int KMenuBackgroundNone    (  6 );
+const int KMenuDrawFrame         (  7 );
+const int KMenuRemove            (  8 );
+const int KMenuStackRaise        (  9 );
+const int KMenuStackLower        ( 10 );
 
 VCLabel::VCLabel(QWidget* parent) : QLabel(parent, "VCLabel")
 {
@@ -77,7 +80,7 @@ void VCLabel::init()
 {
   setMinimumSize(20, 20);
 
-  setText("New label");
+  setText("Label");
   setAlignment(WordBreak | AlignCenter);
 
   setFrameStyle(KFrameStyle);
@@ -280,6 +283,16 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 			     "&Image...", KMenuBackgroundPixmap);
 	  bgmenu->insertItem(QPixmap(dir + QString("/fileclose.xpm")),
 			     "&None", KMenuBackgroundNone);
+
+	  //
+	  // Stacking order menu
+	  //
+	  QPopupMenu* stackmenu = new QPopupMenu;
+	  stackmenu->insertItem(QPixmap(dir + QString("/up.xpm")),
+				"Bring to Front", KMenuStackRaise);
+	  stackmenu->insertItem(QPixmap(dir + QString("/down.xpm")),
+				"Send to Back", KMenuStackLower);
+
 	  //
 	  // Main context menu
 	  //
@@ -296,19 +309,31 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 			   "&Text Color...", KMenuFontColor);
 	  menu->insertSeparator();
 	  menu->insertItem("Background", bgmenu);
+	  menu->insertItem("Stacking order", stackmenu);
 	  menu->insertItem(QPixmap(dir + QString("/frame.xpm")),
 			   "Draw &Frame", KMenuDrawFrame);
 	  menu->insertSeparator();
 	  menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
 			   "Re&move", KMenuRemove);
           
+	  if (frameStyle() & KFrameStyle)
+	    {
+	      menu->setItemChecked(KMenuDrawFrame, true);
+	    }
+
 	  connect(bgmenu, SIGNAL(activated(int)),
+		  this, SLOT(slotMenuCallback(int)));
+
+	  connect(stackmenu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
 	  connect(menu, SIGNAL(activated(int)),
 		  this, SLOT(slotMenuCallback(int)));
 
 	  menu->exec(mapToGlobal(e->pos()));
+
+	  delete bgmenu;
+	  delete stackmenu;
 	  delete menu;
 	}
     }
@@ -372,6 +397,14 @@ void VCLabel::slotMenuCallback(int item)
       _app->doc()->setModified(true);
       setPalette(_app->palette());
       m_background = false;
+      break;
+
+    case KMenuStackRaise:
+      raise();
+      break;
+
+    case KMenuStackLower:
+      lower();
       break;
 
     case KMenuDrawFrame:
@@ -465,17 +498,13 @@ bool VCLabel::moveThreshold(int x, int y)
   int dx = 0;
   int dy = 0;
 
-  dx = max(m_origX, x) - min(m_origX, x);
-  dy = max(m_origY, y) - min(m_origY, y);
+  dx = abs(m_origX - x);
+  dy = abs(m_origY - y);
 
-  if (dx >= 5 || dy >= 5)
-    {
-      return true;
-    }
+  if (dx >= KMoveThreshold || dy >= KMoveThreshold)
+    return true;
   else
-    {
-      return false;
-    }
+    return false;
 }
 
 void VCLabel::moveTo(int x, int y)
