@@ -779,7 +779,6 @@ void VCButton::pressFunction()
 	{
 	  if (isOn())
 	    {
-	      qDebug("stop");
 	      f->stop();
 	      setOn(false);
 	    }

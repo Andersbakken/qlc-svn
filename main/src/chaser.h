@@ -83,6 +83,7 @@ class Chaser : public Function
   void run();
 
   bool startMemberAt(int);
+  void stopMemberAt(int);
   void hold();
 
  protected:

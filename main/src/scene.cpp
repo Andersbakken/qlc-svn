@@ -540,7 +540,18 @@ void Scene::run()
 	}
     }
 
-  m_eventBuffer->put(m_channelData);
+  if (!m_stopped)
+    {
+      m_eventBuffer->put(m_channelData);
+    }
+  else
+    {
+      //
+      // This scene was stopped. Clear buffer so that this function
+      // can finish as quickly as possible
+      //
+      m_eventBuffer->purge();
+    }
 
   // No more items produced -> this scene can be removed from
   // the list after the buffer is empty.

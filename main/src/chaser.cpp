@@ -363,7 +363,6 @@ void Chaser::arm()
     {
       perror("open");
     }
-
 #endif
 }
 
@@ -382,6 +381,11 @@ void Chaser::disarm()
       perror("close");
     }
 
+  if (unlink(m_fifoName.ascii()) == -1)
+    {
+      perror("unlink");
+    }
+
    m_holdFD = -1;
 #endif
 }
@@ -397,6 +401,14 @@ void Chaser::init()
 
   // Get speed
   Bus::value(m_busID, m_holdTime);
+
+#ifndef HOLD_WITH_NANOSLEEP
+  char buf[2];
+  if (m_holdFD != -1 && read(m_holdFD, buf, 2) == -1)
+    {
+      perror("read");
+    }
+#endif
 
   // Add this to function consumer
   _app->functionConsumer()->cue(this);
@@ -432,26 +444,44 @@ void Chaser::run()
 	{
 	  while (i < (int) m_steps.count() && !m_stopped)
 	    {
-	      m_childRunning = startMemberAt(i++);
+	      m_childRunning = startMemberAt(i);
 	      
 	      // Wait for child to complete or stop signal
 	      while (m_childRunning && !m_stopped) sched_yield();
-  
-	      // Wait for m_holdTime
-	      hold();
+
+	      if (m_stopped)
+		{
+		  stopMemberAt(i);
+		  break;
+		}
+	      else
+		{
+		  // Wait for m_holdTime
+		  hold();
+		  i++;
+		}
 	    }
 	}
       else
 	{
 	  while (i >= 0 && !m_stopped)
 	    {
-	      m_childRunning = startMemberAt(i--);
+	      m_childRunning = startMemberAt(i);
 
 	      // Wait for child to complete or stop signal
 	      while (m_childRunning && !m_stopped) sched_yield();
 
-	      // Wait for m_holdTime
-	      hold();
+	      if (m_stopped)
+		{
+		  stopMemberAt(i);
+		  break;
+		}
+	      else
+		{
+		  // Wait for m_holdTime
+		  hold();
+		  i--;
+		}
 	    }
 	}
 
@@ -518,6 +548,25 @@ bool Chaser::startMemberAt(int index)
 
 
 //
+// Stop a member function at index
+//
+void Chaser::stopMemberAt(int index)
+{
+  t_function_id id = *m_steps.at(index);
+  
+  Function* f = _app->doc()->function(id);
+  if (!f)
+    {
+      qDebug("Chaser step function <id:%d> deleted!", id);
+    }
+  else
+    {
+      f->stop();
+    }
+}
+
+
+//
 // Wait until m_holdTime ticks (1/Hz) have elapsed
 //
 void Chaser::hold()
@@ -549,21 +598,12 @@ void Chaser::hold()
 	}
       else if (FD_ISSET(m_holdFD, &rfds))
 	{
-	  qDebug("Waiting interrupted");
-          char buf[16];
-          if (m_holdFD != -1 && read(m_holdFD, buf, 16) == -1)
+          char buf[2];
+          if (m_holdFD != -1 && read(m_holdFD, buf, 2) == -1)
             {
-              perror("write");
-            }
-          else
-            {
-              qDebug("read %s", buf);
+              perror("read");
             }
 	}
-      else
-        {
-          qDebug("Hold time expired");
-        }
 #endif
     }
 }
@@ -575,7 +615,7 @@ void Chaser::hold()
 void Chaser::stop()
 {
 #ifndef HOLD_WITH_NANOSLEEP
-  if (m_holdFD != -1 && write(m_holdFD, "stop\0", 5) == -1)
+  if (m_holdFD != -1 && write(m_holdFD, "X\0", 2) == -1)
     {
       perror("write");
     }

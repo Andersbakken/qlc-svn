@@ -256,6 +256,7 @@ void FunctionCollection::init()
   m_childCount = 0;
   m_childCountMutex.unlock();
 
+  m_stopped = false;
   m_removeAfterEmpty = false;
 
   // Append this function to running functions list
@@ -273,8 +274,7 @@ void FunctionCollection::run()
   // Calculate starting values
   init();
   
-  m_stopped = false;
-  for (it = m_steps.begin(); it != m_steps.end(); ++it)
+  for (it = m_steps.begin(); it != m_steps.end() && !m_stopped; ++it)
     {
       Function* f = _app->doc()->function(*it);
       if (f && f->engage(this))

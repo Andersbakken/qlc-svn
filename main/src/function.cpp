@@ -297,7 +297,7 @@ Function* Function::create(QPtrList <QString> &list)
   Function* function = NULL;
 
   QString name;
-  Function::Type type;
+  Type type = Undefined;
   t_function_id fid = KNoID;
   t_device_id did = KNoID;
   t_bus_id busid = KNoID;

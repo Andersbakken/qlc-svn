@@ -50,6 +50,11 @@ EventBuffer::~EventBuffer()
   pthread_cond_destroy(&m_nonFull);
 }
 
+
+//
+// Put a new value to the front of the buffer if it is
+// not full
+//
 bool EventBuffer::put(t_value* ev)
 {
   pthread_mutex_lock(&m_mutex);
@@ -68,6 +73,11 @@ bool EventBuffer::put(t_value* ev)
   return true;
 }
 
+
+//
+// Get the next value from rear of list
+// if the list is not empty
+//
 t_value* EventBuffer::get()
 {
   pthread_mutex_lock(&m_mutex);
@@ -87,4 +97,20 @@ t_value* EventBuffer::get()
   pthread_mutex_unlock(&m_mutex);
 
   return ev;
+}
+
+
+//
+// Empty the list by setting the put and get positions
+// to zero.
+//
+void EventBuffer::purge()
+{
+  pthread_mutex_lock(&m_mutex);
+
+  m_filled = 0;
+  m_in = 0;
+  m_out = 0;
+
+  pthread_mutex_unlock(&m_mutex);
 }

@@ -330,8 +330,6 @@ void VirtualConsole::slotModeChanged()
 {
   QString config;
   
-  qDebug("TODO: check if there are any running functions");
-
   //
   // Key repeat
   //

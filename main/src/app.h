@@ -102,7 +102,6 @@ class App : public QMainWindow
   //
   enum Mode { Operate, Design };
   bool mode() { return m_mode; }
-  void setMode(Mode mode);
 
  private slots:
   void slotChangeOutputPlugin(const QString& name);
@@ -135,6 +134,8 @@ class App : public QMainWindow
   void slotHelpAboutQt();
 
   void slotPanic();
+  void slotSetDesignMode();
+  void slotSetOperateMode();
   void slotSetMode();
 
  signals:
@@ -168,7 +169,14 @@ class App : public QMainWindow
   QPopupMenu* m_windowMenu;
   QPopupMenu* m_helpMenu;
 
-  QToolBar*   m_toolbar;
+  QToolBar* m_toolbar;
+  QToolButton* m_newTB;
+  QToolButton* m_openTB;
+  QToolButton* m_saveTB;
+  QToolButton* m_dmTB;
+  QToolButton* m_vcTB;
+  QToolButton* m_panicTB;
+  QToolButton* m_modeTB;
 
   Doc* m_doc;
   Settings* m_settings;
@@ -181,7 +189,6 @@ class App : public QMainWindow
   FunctionConsumer* m_functionConsumer;
 
   QLabel* m_modeIndicator;
-  QToolButton* m_modeButton;
 
   OutputPlugin* m_outputPlugin;
   DummyOutPlugin* m_dummyOutPlugin;

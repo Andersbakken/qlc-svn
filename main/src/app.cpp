@@ -317,6 +317,9 @@ void App::initMenuBar()
 			 "E&xit", this, SLOT(slotFileQuit()), 
 			 CTRL+Key_Q, ID_FILE_QUIT);
   
+  connect(m_fileMenu, SIGNAL(aboutToShow()), 
+	  this, SLOT(slotRefreshMenus()));
+
   ///////////////////////////////////////////////////////////////////
   // Tools Menu
   m_toolsMenu = new QPopupMenu();
@@ -351,12 +354,12 @@ void App::initMenuBar()
   m_modeMenu->setCheckable(true);
   m_modeMenu->insertItem(QPixmap(dir + QString("/unlocked.xpm")),
 			 "Design", this,
-			 SLOT(slotSetMode()), CTRL + Key_D,
+			 SLOT(slotSetDesignMode()), CTRL + Key_D,
 			 ID_FUNCTIONS_MODE_DESIGN);
 
   m_modeMenu->insertItem(QPixmap(dir + QString("/locked.xpm")),
 			 "Operate", this,
-			 SLOT(slotSetMode()), CTRL + Key_R,
+			 SLOT(slotSetOperateMode()), CTRL + Key_R,
 			 ID_FUNCTIONS_MODE_OPERATE);
 
   connect(m_modeMenu, SIGNAL(aboutToShow()),
@@ -399,7 +402,7 @@ void App::initMenuBar()
 //
 void App::initStatusBar()
 {
-  m_modeIndicator = new QLabel("Design Mode", statusBar());
+  m_modeIndicator = new QLabel(KModeTextDesign, statusBar());
   statusBar()->addWidget(m_modeIndicator, 0, true);
 }
 
@@ -415,36 +418,36 @@ void App::initToolBar()
   settings()->get(KEY_SYSTEM_DIR, dir);
   dir += QString("/") + PIXMAPPATH;
   
-  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
-		  "New workspace; clear everything", 0, 
-		  this, SLOT(slotFileNew()), m_toolbar);
+  m_newTB = new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
+			    "New workspace; clear everything", 0, 
+			    this, SLOT(slotFileNew()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
-		  "Open existing workspace", 0, 
-		  this, SLOT(slotFileOpen()), m_toolbar);
+  m_openTB = new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
+			     "Open existing workspace", 0, 
+			     this, SLOT(slotFileOpen()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), 
-		  "Save current workspace", 0, 
-		  this, SLOT(slotFileSave()), m_toolbar);
+  m_saveTB = new QToolButton(QPixmap(dir + QString("/filesave.xpm")), 
+			     "Save current workspace", 0, 
+			     this, SLOT(slotFileSave()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  new QToolButton(QPixmap(dir + QString("/device.xpm")), 
-		  "View device manager", 0, 
-		  this, SLOT(slotViewDeviceManager()), m_toolbar);
+  m_dmTB = new QToolButton(QPixmap(dir + QString("/device.xpm")), 
+			   "View device manager", 0, 
+			   this, SLOT(slotViewDeviceManager()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
-		  "View virtual console", 0, 
-		  this, SLOT(slotViewVirtualConsole()), m_toolbar);
-
-  new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
-		  "Panic; Shut down all running functions", 0, 
-		  this, SLOT(slotPanic()), m_toolbar);
+  m_vcTB = new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
+			   "View virtual console", 0, 
+			   this, SLOT(slotViewVirtualConsole()), m_toolbar);
+  
+  m_panicTB = new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
+			      "Panic; Shut down all running functions", 0, 
+			      this, SLOT(slotPanic()), m_toolbar);
 
   // The pixmap needs to be changed in this button -> save its pointer
-  m_modeButton = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
-				 "Design Mode; All editing features enabled", 
-				 0, this, SLOT(slotSetMode()), m_toolbar);
+  m_modeTB = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")), 
+			     "Design Mode; All editing features enabled", 
+			     0, this, SLOT(slotSetMode()), m_toolbar);
 }
 
 
@@ -791,6 +794,12 @@ void App::slotRefreshMenus()
   //
   if (m_mode == Operate)
     {
+      m_fileMenu->setItemEnabled(ID_FILE_NEW, false);
+      m_fileMenu->setItemEnabled(ID_FILE_OPEN, false);
+      m_fileMenu->setItemEnabled(ID_FILE_SAVE_AS, false);
+      m_fileMenu->setItemEnabled(ID_FILE_SETTINGS, false);
+      m_fileMenu->setItemEnabled(ID_FILE_QUIT, false);
+
       m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, false);
       
       m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_OPERATE, true);
@@ -798,6 +807,12 @@ void App::slotRefreshMenus()
     }
   else
     {
+      m_fileMenu->setItemEnabled(ID_FILE_NEW, true);
+      m_fileMenu->setItemEnabled(ID_FILE_OPEN, true);
+      m_fileMenu->setItemEnabled(ID_FILE_SAVE_AS, true);
+      m_fileMenu->setItemEnabled(ID_FILE_SETTINGS, true);
+      m_fileMenu->setItemEnabled(ID_FILE_QUIT, true);
+
       m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, true);
 
       m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_OPERATE, false);
@@ -924,6 +939,16 @@ void App::closeEvent(QCloseEvent* e)
 {
   int result;
 
+  if (m_mode == Operate)
+    {
+      QString msg;
+      msg = "Cannot close while in operate mode.\n";
+      msg += "Switch back to Design mode to close the application.";
+      QMessageBox::warning(this, KApplicationNameShort, msg);
+      e->ignore();
+      return;
+    }
+
   if (m_doc->isModified())
     {
       result = QMessageBox::information(this, "Exit...",
@@ -969,6 +994,24 @@ void App::saveSettings()
 }
 
 
+void App::slotSetDesignMode()
+{
+  if (m_mode == Operate)
+    {
+      slotSetMode();
+    }
+}
+
+
+void App::slotSetOperateMode()
+{
+  if (m_mode == Design)
+    {
+      slotSetMode();
+    }
+}
+
+
 //
 // The main operating mode has been changed, signal it to everyone
 //
@@ -998,16 +1041,24 @@ void App::slotSetMode()
         }
 
       m_modeIndicator->setText(KModeTextDesign);
-      m_modeButton->setPixmap(dir + QString("/unlocked.xpm"));
-      QToolTip::add(m_modeButton, "Design mode; All edit features available");
+      m_modeTB->setPixmap(dir + QString("/unlocked.xpm"));
+      QToolTip::add(m_modeTB, "Design mode; All edit features available");
+
+      m_newTB->setEnabled(true);
+      m_openTB->setEnabled(true);
+      m_panicTB->setEnabled(false);
 
       m_mode = Design;
     }
   else
     {
       m_modeIndicator->setText(KModeTextOperate);
-      m_modeButton->setPixmap(dir + QString("/locked.xpm"));
-      QToolTip::add(m_modeButton, "Operate mode; Edit features disabled");
+      m_modeTB->setPixmap(dir + QString("/locked.xpm"));
+      QToolTip::add(m_modeTB, "Operate mode; Edit features disabled");
+
+      m_newTB->setEnabled(false);
+      m_openTB->setEnabled(false);
+      m_panicTB->setEnabled(true);
 
       m_mode = Operate;
     }

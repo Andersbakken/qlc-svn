@@ -130,7 +130,6 @@ void Doc::slotModeChanged()
 	  if (f)
 	    {
 	      f->arm();
-	      qDebug(f->name() + " armed.");
 	    }
 	}
     }
@@ -146,7 +145,6 @@ void Doc::slotModeChanged()
 	  if (f)
 	    {
 	      f->disarm();
-	      qDebug(f->name() + " disarmed.");
 	    }
 	}
     }

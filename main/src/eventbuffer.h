@@ -44,6 +44,9 @@ class EventBuffer
   // Read data from buffer
   t_value* get();
 
+  // Clear the buffer
+  void purge();
+
   // Eventsize == channel count
   unsigned int eventSize() const { return m_eventSize; }
 
