@@ -66,6 +66,8 @@ public slots:
 
 
 protected:
+   Device* m_device;
+
 };
 
 #endif // SCENEEDITOR_H

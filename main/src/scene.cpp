@@ -256,3 +256,10 @@ Event* Scene::getNextLevel(Feeder* f)
 
   return event;
 }
+
+
+unsigned char Scene::getChannelValue(unsigned short ch)
+{
+      return m_values[ch];
+}
+

@@ -1,7 +1,7 @@
 /*
   Q Light Controller
   scene.h
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
@@ -42,6 +42,7 @@ class Scene : public Function
 
   void allocate(unsigned short channels);
   void set(unsigned short ch, unsigned char value);
+  unsigned char getChannelValue(unsigned short ch);
 
   void saveToFile(QFile &file);
 
@@ -49,6 +50,8 @@ class Scene : public Function
   void registerFunction(Feeder* feeder);
 
   void createContents(QList<QString> &list);
+  
+
 
  private:
   unsigned char* m_values;

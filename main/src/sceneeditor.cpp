@@ -24,6 +24,8 @@
 #include "sceneeditor.h"
 #include "function.h"
 #include "deviceclass.h"
+#include "dmxdevice.h"
+#include "scene.h"
 
 #include <qcombobox.h>
 #include <qlabel.h>
@@ -33,6 +35,8 @@
 SceneEditor::SceneEditor(Device* device, QWidget* parent, const char* name )
              : UI_SceneEditor( parent, name)
 {
+  m_device = device;
+
   Function* f;
   QList <Function> fl = device->deviceClass()->functions();
 
@@ -64,9 +68,20 @@ void SceneEditor::slotSceneChanged()
 
 void SceneEditor::slotSceneActivated( int nr )
 {
+  Function* f;
+  QList <Function> fl = m_device->deviceClass()->functions();
+
+  for (f = fl.first(); f != NULL; f = fl.next())
+  {
+      if( f->name() == m_availableScenesComboBox->currentText())
+      {
+          static_cast<DMXDevice*>(m_device)->setScene(static_cast<Scene*>(f));
+      }
+  }
   m_statusLabel->setPaletteForegroundColor( QColor( 0, 255, 100 ) );
   m_statusLabel->setText("unchanged");
 }
+
 
 void  SceneEditor::slotHideClicked()
 {
