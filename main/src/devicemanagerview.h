@@ -34,6 +34,7 @@
 #include <qevent.h>
 #include <qsize.h>
 #include <qlabel.h>
+#include <qdockarea.h>
 
 class DeviceManagerView : public QWidget
 {
@@ -50,6 +51,7 @@ class DeviceManagerView : public QWidget
   DeviceManager* m_dm;
   QToolBar* m_toolbar;
   QVBoxLayout* m_layout;
+  QDockArea* m_dockArea;
 
  signals:
   void closed();

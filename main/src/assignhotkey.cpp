@@ -70,13 +70,14 @@ void AssignHotKey::slotCancelClicked()
 
 void AssignHotKey::keyPressEvent(QKeyEvent* e)
 {
-  if (m_keyBind != NULL)
+  if (m_keyBind == NULL)
     {
-      delete m_keyBind;
-      m_keyBind = NULL;
+      m_keyBind = new KeyBind(e->key(), e->state());
     }
-
-  m_keyBind = new KeyBind(e);
+  else
+    {
+      m_keyBind->setKey(e->key(), e->state());
+    }
 
   m_previewEdit->setText(m_keyBind->keyString());
 }

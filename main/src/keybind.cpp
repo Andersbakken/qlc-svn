@@ -25,28 +25,25 @@
 
 KeyBind::KeyBind() : QObject()
 {
-  m_keyEvent = NULL;
-  m_receiver = NULL;
   m_pressAction = PressStart;
   m_releaseAction = ReleaseNothing;
 }
 
-KeyBind::KeyBind(QKeyEvent* e) : QObject()
+KeyBind::KeyBind(int key, int mod) : QObject()
 {
-  m_keyEvent = new QKeyEvent(QEvent::KeyPress, e->key(), e->ascii(), e->state());
+  m_key = key;
+  m_mod = mod;
  
-  m_receiver = NULL;
   m_pressAction = PressStart;
   m_releaseAction = ReleaseNothing;
 }
 
-KeyBind::KeyBind(KeyBind* kb, DMXWidgetBase* recv) : QObject()
+KeyBind::KeyBind(KeyBind* kb) : QObject()
 {
   ASSERT(kb != NULL);
-  m_keyEvent = new QKeyEvent(QEvent::KeyPress, kb->keyEvent()->key(), 
-			     kb->keyEvent()->ascii(), kb->keyEvent()->state());
+  m_key = kb->key();
+  m_mod = kb->mod();
   
-  m_receiver = recv;
   m_pressAction = kb->pressAction();
   m_releaseAction = kb->releaseAction();
 }
@@ -55,240 +52,220 @@ KeyBind::~KeyBind()
 {
 }
 
-void KeyBind::setKeyEvent(const QKeyEvent* e)
+void KeyBind::setKey(int key, int mod)
 {
-  if (m_keyEvent != NULL)
-    {
-      delete m_keyEvent;
-      m_keyEvent = NULL;
-    }
-
-  m_keyEvent = new QKeyEvent(QEvent::KeyPress, e->key(), e->ascii(), e->state());
+  m_key = key;
+  m_mod = mod;
 }
 
-QString KeyBind::keyString(const QKeyEvent* e)
+QString KeyBind::keyString(int key, int mod)
 {
-  QString mod = QString::null;
-  QString key = QString::null;
+  QString modString = QString::null;
+  QString keyString = QString::null;
 
-  if (e == NULL)
-    {
-      return QString::null;
-    }
-
-  if (e->key() >= Key_F1 && e->key() <= Key_F12)
+  if (key >= Key_F1 && key <= Key_F12)
     {
       // Function keys
-      key.sprintf("F%d", e->key() - Key_F1 + 1);
+      keyString.sprintf("F%d", key - Key_F1 + 1);
     }
-  else if (e->key() >= Key_0 && e->key() <= Key_9)
+  else if (key >= Key_0 && key <= Key_9)
     {
       // Number keys
-      key.sprintf("%d", e->key() - Key_0);
+      keyString.sprintf("%d", key - Key_0);
     }
-  else if (e->key() >= Key_A && e->key() <= Key_Z)
+  else if (key >= Key_A && key <= Key_Z)
     {
       // A-Z
-      key.sprintf("%c", 'A' + e->key() - Key_A);
+      keyString.sprintf("%c", 'A' + key - Key_A);
     }
   else
     {
-      switch(e->key())
+      switch(key)
 	{
 	case Key_Exclam:
-	  key.sprintf("!");
+	  keyString.sprintf("!");
 	  break;
 	case Key_QuoteDbl:
-	  key.sprintf("\"");
+	  keyString.sprintf("\"");
 	  break;
 	case Key_NumberSign:
-	  key.sprintf("Unknown");
+	  keyString.sprintf("Unknown");
 	  break;
 	case Key_Dollar:
-	  key.sprintf("$");
+	  keyString.sprintf("$");
 	  break;
 	case Key_Percent:
-	  key.sprintf("\%");
+	  keyString.sprintf("%%");
 	  break;
 	case Key_Ampersand:
-	  key.sprintf("&");
+	  keyString.sprintf("&");
 	  break;
 	case Key_Apostrophe:
-	  key.sprintf("'");
+	  keyString.sprintf("'");
 	  break;
 	case Key_ParenLeft:
-	  key.sprintf("(");
+	  keyString.sprintf("(");
 	  break;
 	case Key_ParenRight:
-	  key.sprintf(")");
+	  keyString.sprintf(")");
 	  break;
 	case Key_Asterisk:
-	  key.sprintf("*");
+	  keyString.sprintf("*");
 	  break;
 	case Key_Plus:
-	  key.sprintf("+");
+	  keyString.sprintf("+");
 	  break;
 	case Key_Comma:
-	  key.sprintf(",");
+	  keyString.sprintf(",");
 	  break;
 	case Key_Minus:
-	  key.sprintf("-");
+	  keyString.sprintf("-");
 	  break;
 	case Key_Period:
-	  key.sprintf(".");
+	  keyString.sprintf(".");
 	  break;
 	case Key_Slash:
-	  key.sprintf("/");
+	  keyString.sprintf("/");
 	  break;
 	case Key_Colon:
-	  key.sprintf(":");
+	  keyString.sprintf(":");
 	  break;
         case Key_Semicolon:
-	  key.sprintf(";");
+	  keyString.sprintf(";");
 	  break;
         case Key_Less:
-	  key.sprintf("<");
+	  keyString.sprintf("<");
 	  break;
         case Key_Equal:
-	  key.sprintf("/");
+	  keyString.sprintf("/");
 	  break;
         case Key_Greater:
-	  key.sprintf(">");
+	  keyString.sprintf(">");
 	  break;
         case Key_Question:
-	  key.sprintf("?");
+	  keyString.sprintf("?");
 	  break;
 	case Key_BracketLeft:
-	  key.sprintf("?");
+	  keyString.sprintf("?");
 	  break;
         case Key_Backslash:
-	  key.sprintf("?");
+	  keyString.sprintf("?");
 	  break;
 	case Key_BracketRight:
-	  key.sprintf("?");
+	  keyString.sprintf("?");
 	  break;
 	case Key_AsciiCircum:
-	  key.sprintf("?");
+	  keyString.sprintf("?");
 	  break;
 	case Key_Underscore:
-	  key.sprintf("_");
+	  keyString.sprintf("_");
 	  break;
 	case Key_QuoteLeft:
-	  key.sprintf("`");
+	  keyString.sprintf("`");
 	  break;
 	case Key_BraceLeft:
-	  key.sprintf("{");
+	  keyString.sprintf("{");
 	  break;
 	case Key_Bar:
-	  key.sprintf("|");
+	  keyString.sprintf("|");
 	  break;
 	case Key_BraceRight:
-	  key.sprintf("}");
+	  keyString.sprintf("}");
 	  break;
 	case Key_AsciiTilde:
-	  key.sprintf("~");
+	  keyString.sprintf("~");
 	  break;
 	case Key_At:
-	  key.sprintf("@");
+	  keyString.sprintf("@");
 	  break;
 	case Key_Space:
-	  key.sprintf("Space");
+	  keyString.sprintf("Space");
 	  break;
 	case Key_Escape:
-	  key.sprintf("Escape");
+	  keyString.sprintf("Escape");
 	  break;
 	case Key_Return:
-	  key.sprintf("Return");
+	  keyString.sprintf("Return");
 	  break;
 	case Key_Enter:
-	  key.sprintf("Enter");
+	  keyString.sprintf("Enter");
 	  break;
 	case Key_Insert:
-	  key.sprintf("Insert");
+	  keyString.sprintf("Insert");
 	  break;
 	case Key_Delete:
-	  key.sprintf("Delete");
+	  keyString.sprintf("Delete");
 	  break;
 	case Key_Pause:
-	  key.sprintf("Pause");
+	  keyString.sprintf("Pause");
 	  break;
 	case Key_Home:
-	  key.sprintf("Home");
+	  keyString.sprintf("Home");
 	  break;
 	case Key_End:
-	  key.sprintf("End");
+	  keyString.sprintf("End");
           break;
 	case Key_PageUp:
-	  key.sprintf("PageUp");
+	  keyString.sprintf("PageUp");
 	  break;
 	case Key_PageDown:
-	  key.sprintf("PageDown");
+	  keyString.sprintf("PageDown");
 	  break;
 	case Key_Left:
-	  key.sprintf("Left");
+	  keyString.sprintf("Left");
           break;
 	case Key_Right:
-	  key.sprintf("Right");
+	  keyString.sprintf("Right");
           break;
 	case Key_Up:
-	  key.sprintf("Up");
+	  keyString.sprintf("Up");
           break;
 	case Key_Down:
-	  key.sprintf("Down");
+	  keyString.sprintf("Down");
           break;
 	case Key_Shift:
-	  key.sprintf("Shift +");
+	  keyString.sprintf("Shift +");
 	  break;
 	case Key_Alt:
-	  key.sprintf("Alt +");
+	  keyString.sprintf("Alt +");
 	  break;
 	case Key_Control:
-	  key.sprintf("Control +");
+	  keyString.sprintf("Control +");
 	  break;
 	case 0:
 	case Key_unknown:
-	  key.sprintf("Unknown");
+	  keyString.sprintf("Unknown");
 	  break;
 	default:
-	  key.sprintf("Code %d", e->key());
+	  keyString.sprintf("Code %d", key);
 	  break;
 	}
     }
 
-  if (e->state() & ShiftButton)
+  if (mod & ShiftButton)
     {
-      mod += QString("Shift + ");
+      modString += QString("Shift + ");
     }
   
-  if (e->state() & AltButton)
+  if (mod & AltButton)
     {
-      mod += QString("Alt + ");
+      modString += QString("Alt + ");
     }
 
-  if (e->state() & ControlButton)
+  if (mod & ControlButton)
     {
-      mod += QString("Control + ");
+      modString += QString("Control + ");
     }
 
-  return QString(mod + key);
+  return QString(modString + keyString);
 }
 
 // Comparison between two KeyBind objects
-bool KeyBind::operator=(KeyBind* kb)
+bool KeyBind::operator==(KeyBind* kb)
 {
   bool result = true;
 
-  if (kb->receiver() != this->receiver())
-    {
-      return false;
-    }
-
-  if (this->keyEvent() && kb->keyEvent() && 
-      kb->keyEvent()->key() == this->keyEvent()->key())
-    {
-      result = true;
-    }
-  else if (this->keyEvent() == NULL && kb->keyEvent() == NULL)
+  if (this->m_key == kb->key() && this->m_mod == kb->mod())
     {
       result = true;
     }

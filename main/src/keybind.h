@@ -31,21 +31,20 @@ class KeyBind : public QObject
 
  public:
   KeyBind();
-  KeyBind(QKeyEvent* e);
-  KeyBind(KeyBind* kb, DMXWidgetBase* recv = NULL);
+  KeyBind(int key, int mod);
+  KeyBind(KeyBind* kb);
   ~KeyBind();
 
   enum PressAction { PressStart = 0, PressToggle = 1, PressNothing = 2 };
   enum ReleaseAction { ReleaseStop = 0, ReleaseNothing = 1 };
 
-  void setReceiver(DMXWidgetBase* widget) { m_receiver = widget; }
-  const DMXWidgetBase* receiver() { return (const DMXWidgetBase*) m_receiver; }
+  static QString keyString(int key, int mod);
+  QString keyString() { return keyString(m_key, m_mod); }
 
-  static QString keyString(const QKeyEvent* e);
-  QString keyString() { return keyString(m_keyEvent); }
+  int key() { return m_key; }
+  void setKey(int key, int mod);
 
-  const QKeyEvent* keyEvent() { return (const QKeyEvent*) m_keyEvent; }
-  void setKeyEvent(const QKeyEvent* e);
+  int mod() { return m_mod; }
 
   void setPressAction(PressAction a) { m_pressAction = a; }
   PressAction pressAction() { return m_pressAction; }
@@ -53,11 +52,11 @@ class KeyBind : public QObject
   void setReleaseAction(ReleaseAction a) { m_releaseAction = a; }
   ReleaseAction releaseAction() { return m_releaseAction; }
 
-  bool operator=(KeyBind*);
+  bool operator==(KeyBind*);
 
  private:
-  DMXWidgetBase* m_receiver;
-  QKeyEvent* m_keyEvent;
+  int m_key; // Key
+  int m_mod; // Modifier [shift|alt|control]
 
   PressAction m_pressAction;
   ReleaseAction m_releaseAction;
