@@ -132,11 +132,18 @@ bool DeviceClassEditor::save()
     }
   else
     {
-      m_dc->saveToFile(m_fileName);
-      
-      setModified(false);
-      
-      return true;
+      if (m_dc->saveToFile(m_fileName))
+	{
+	  setModified(false);
+	  return true;
+	}
+      else
+	{
+	  perror("save");
+	  QMessageBox::warning(this, KApplicationNameShort,
+			       "Unable to save file!");
+	  return false;
+	}
     }
 }
 
@@ -166,12 +173,19 @@ bool DeviceClassEditor::saveAs()
 	  path += QString(".deviceclass");
 	}
       
-      m_dc->saveToFile(path);
-      m_fileName = QString(path);
-
-      setModified(false);
-
-      return true;
+      if (m_dc->saveToFile(path))
+	{
+	  m_fileName = QString(path);
+	  setModified(false);
+	  return true;
+	}
+      else
+	{
+	  perror("save");
+	  QMessageBox::warning(this, KApplicationNameShort,
+			       "Unable to save file!");
+	  return false;
+	}
     }
   else
     {
