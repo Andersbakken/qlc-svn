@@ -22,7 +22,7 @@
 #ifndef CHASER_H
 #define CHASER_H
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include "function.h"
 
 class Feeder;
@@ -60,7 +60,7 @@ class Chaser : public Function
   Q_OBJECT
 
  public:
-  Chaser();
+  Chaser(unsigned long id = 0);
   Chaser(Chaser* ch, bool append = true);
   virtual ~Chaser();
 
@@ -69,10 +69,10 @@ class Chaser : public Function
   void addStep(Function* function);
   void removeStep(int index = 0);
 
-  void raiseStep(int index);
-  void lowerStep(int index);
+  void raiseStep(unsigned int index);
+  void lowerStep(unsigned int index);
 
-  QList <ChaserStep> *steps() { return &m_steps; }
+  QPtrList <ChaserStep> *steps() { return &m_steps; }
 
   Event* getEvent(Feeder* feeder);
   void recalculateSpeed (Feeder *f);
@@ -86,7 +86,7 @@ class Chaser : public Function
 
   void createContents(QList<QString> &list);
 
-  QList <ChaserStep> m_steps;
+  QPtrList <ChaserStep> m_steps;
 
  public slots:
   void slotFunctionUnRegistered(Function* function, Function* controller, DMXDevice* caller, unsigned long feederID);

@@ -6,7 +6,7 @@
     </property>
     <property name="geometry">
         <rect>
-            <x>3</x>
+            <x>0</x>
             <y>0</y>
             <width>131</width>
             <height>220</height>
@@ -27,76 +27,6 @@
     <property name="caption">
         <string>SceneEditor</string>
     </property>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>m_availableScenesComboBox</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>25</y>
-                <width>130</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string></string>
-        </property>
-    </widget>
-    <widget class="QButtonGroup">
-        <property name="name">
-            <cstring>m_saveToGroup</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>50</y>
-                <width>130</width>
-                <height>70</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>SRC / DEST</string>
-        </property>
-        <widget class="QRadioButton">
-            <property name="name">
-                <cstring>m_deviceClassRadio</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>20</y>
-                    <width>110</width>
-                    <height>19</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Device class</string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Save as a scene that can be used by any device of the same make and model</string>
-            </property>
-        </widget>
-        <widget class="QRadioButton">
-            <property name="name">
-                <cstring>m_deviceRadio</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>40</y>
-                    <width>110</width>
-                    <height>19</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Device </string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Save as a scene that can be used only by the current device</string>
-            </property>
-        </widget>
-    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>m_saveButton</cstring>
@@ -224,14 +154,24 @@
             <set>AlignCenter</set>
         </property>
     </widget>
+    <widget class="QListBox">
+        <property name="name">
+            <cstring>m_sceneList</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>20</y>
+                <width>130</width>
+                <height>110</height>
+            </rect>
+        </property>
+        <property name="hScrollBarMode">
+            <enum>AlwaysOff</enum>
+        </property>
+    </widget>
 </widget>
 <connections>
-    <connection>
-        <sender>m_availableScenesComboBox</sender>
-        <signal>activated(int)</signal>
-        <receiver>UI_SceneEditor</receiver>
-        <slot>slotSceneActivated(int)</slot>
-    </connection>
     <connection>
         <sender>m_newButton</sender>
         <signal>clicked()</signal>
@@ -249,6 +189,12 @@
         <signal>clicked()</signal>
         <receiver>UI_SceneEditor</receiver>
         <slot>slotHideClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_sceneList</sender>
+        <signal>selected(int)</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotSceneActivated(int)</slot>
     </connection>
 </connections>
 <slots>

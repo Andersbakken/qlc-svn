@@ -26,6 +26,10 @@
 #include "app.h"
 #include "doc.h"
 #include "functiontree.h"
+#include "sequenceprovider.h"
+#include "feeder.h"
+#include "bus.h"
+
 #include "chaser.h"
 #include <stdlib.h>
 #include <qlistview.h>
@@ -41,13 +45,15 @@ extern App* _app;
 #define COL_DEVICE   1
 #define COL_FUNCTION 2
 #define COL_FID      3
-#define COL_DID      4
 
 ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent, const char* name)
   : UI_ChaserEditor(parent, name, true)
 {
   m_chaser = new Chaser(function);
   ASSERT(m_chaser != NULL);
+
+  m_feederID = 0;
+  m_bus = NULL;
 
   m_original = function;
 }
@@ -57,18 +63,17 @@ ChaserEditor::~ChaserEditor()
   delete m_chaser;
 }
 
-void ChaserEditor::updateStepList(unsigned long selectId)
+void ChaserEditor::updateStepList()
 {
   ChaserStep* step = NULL;
   QString device = NULL;
-  QListViewItem* item = NULL;
   QString fid;
 
   m_stepList->clear();
 
   QList <ChaserStep> *steps = m_chaser->steps();
 
-  for (unsigned int i = 0; i < steps->count(); i++)
+  for (int i = steps->count() - 1; i >= 0; i--)
     {
       step = steps->at(i);
       ASSERT(step->function() != NULL);
@@ -77,21 +82,13 @@ void ChaserEditor::updateStepList(unsigned long selectId)
 	{
 	  device = step->function()->device()->name();
 	}
-      else if (step->function()->deviceClass() != NULL)
-	{
-	  device = step->function()->deviceClass()->name();
-	}
       else
 	{
 	  device = QString("Global");
 	}
 
       fid.setNum(step->function()->id());
-      item = new QListViewItem(m_stepList, "###", device, step->function()->name(), fid);
-      if (fid == selectId)
-	{
-	  m_stepList->setSelected(item, true);
-	}
+      new QListViewItem(m_stepList, "###", device, step->function()->name(), fid);
     }
 
   updateOrderNumbers();
@@ -99,11 +96,17 @@ void ChaserEditor::updateStepList(unsigned long selectId)
 
 void ChaserEditor::init()
 {
+  m_nameEdit->setText(m_chaser->name());
+  m_nameEdit->setSelection(0, m_nameEdit->text().length());
+
+  m_stepList->setSorting(-1);
+
   updateStepList();
 }
 
 void ChaserEditor::slotOKClicked()
 {
+  m_chaser->setName(m_nameEdit->text());
   m_original->copyFrom(m_chaser, false);
 
   accept();
@@ -133,10 +136,9 @@ void ChaserEditor::slotAddClicked()
   if (ft->exec() == QDialog::Accepted && ft->functionId() != 0)
     {
       DMXDevice* device = NULL;
-      DeviceClass* deviceClass = NULL; 
       Function* function = NULL;
 
-      function = _app->doc()->searchFunction(ft->functionId(), &device, &deviceClass);
+      function = _app->doc()->searchFunction(ft->functionId(), &device);
       ASSERT(function != NULL);
 
       m_chaser->addStep(function);
@@ -145,6 +147,44 @@ void ChaserEditor::slotAddClicked()
   delete ft;
 
   updateStepList();
+}
+
+void ChaserEditor::slotPlayClicked()
+{
+  ASSERT(m_bus == NULL);
+
+  m_bus = new Bus();
+  m_bus->setType(Bus::Speed);
+  m_bus->setValue(1024);
+
+  connect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)), 
+	  this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+
+  unsigned long id = _app->sequenceProvider()->registerEventFeeder(m_chaser, m_bus, NULL);
+  if (id == FEEDER_ID_INVALID)
+    {
+      m_feederID = 0;
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)), 
+		 this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+    }
+  else
+    {
+      m_feederID = id;
+      m_play->setOn(true);
+    }
+
+}
+
+void ChaserEditor::slotFunctionUnRegistered(Function* f, Function* c, DMXDevice* d, unsigned long id)
+{
+  if (id == m_feederID)
+    {
+      disconnect(_app->sequenceProvider(), SIGNAL(unRegistered(Function*, Function*, DMXDevice*, unsigned long)), 
+	      this, SLOT(slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long)));
+      m_play->setOn(false);
+
+      delete m_bus;
+    }
 }
 
 void ChaserEditor::updateOrderNumbers()
@@ -171,6 +211,7 @@ void ChaserEditor::slotRaiseClicked()
   QListViewItem* item = m_stepList->currentItem();
   unsigned long fid = 0;
   int index = 0;
+  int newIndex = 0;
 
   if (item != NULL)
     {
@@ -180,7 +221,21 @@ void ChaserEditor::slotRaiseClicked()
       m_chaser->raiseStep(index);
     }
 
-  updateStepList(fid);
+  updateStepList();
+
+  // Select the item again, now it's one step above
+  QListViewItemIterator it(m_stepList);
+  while (it.current() != NULL)
+    {
+      if (newIndex == index - 1)
+	{
+	  m_stepList->setSelected(it.current(), true);
+	  break;
+	}
+
+      newIndex++;
+      ++it;
+    }
 }
 
 void ChaserEditor::slotLowerClicked()
@@ -188,6 +243,7 @@ void ChaserEditor::slotLowerClicked()
   QListViewItem* item = m_stepList->currentItem();
   unsigned long fid = 0;
   int index = 0;
+  int newIndex = 0;
 
   if (item != NULL)
     {
@@ -197,5 +253,19 @@ void ChaserEditor::slotLowerClicked()
       m_chaser->lowerStep(index);
     }
 
-  updateStepList(fid);
+  updateStepList();
+
+  // Select the item again, now it's one step below
+  QListViewItemIterator it(m_stepList);
+  while (it.current() != NULL)
+    {
+      if (newIndex == index + 1)
+	{
+	  m_stepList->setSelected(it.current(), true);
+	  break;
+	}
+
+      newIndex++;
+      ++it;
+    }
 }

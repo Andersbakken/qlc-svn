@@ -121,32 +121,13 @@ void FunctionCollectionEditor::slotAddClicked()
 	{
 	  DMXDevice* device = _app->doc()->searchDevice(ft->deviceId());
 	  Function* function = NULL;
-	  if (device == NULL)
-	    {
-	      function = _app->doc()->searchFunction(ft->functionId());
-	      ASSERT(function != NULL);
 
-	      QString id;
-	      id.setNum(function->id());
-	      new QListViewItem(m_functionList, QString("Global"), function->name(), id);
-	    }
-	  else
-	    {
-	      function = device->searchFunction(ft->functionId());
-	      if (function == NULL)
-		{
-		  function = device->deviceClass()->searchFunction(ft->functionId());
-		}
-
-	      ASSERT(function != NULL);
-
-	      QString fid;
-	      fid.setNum(function->id());
-
-	      QString did;
-	      did.setNum(device->id());
-	      new QListViewItem(m_functionList, device->name(), function->name(), fid, did);
-	    }
+	  function = _app->doc()->searchFunction(ft->functionId(), &device);
+	  ASSERT(function != NULL);
+	  
+	  QString id;
+	  id.setNum(function->id());
+	  new QListViewItem(m_functionList, QString("Global"), function->name(), id);
 
 	  m_functionCollection->addItem(device, function);
 	}

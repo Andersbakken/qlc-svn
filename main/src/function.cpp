@@ -21,18 +21,27 @@
 
 #include "function.h"
 #include "dmxdevice.h"
-#include "deviceclass.h"
 
 unsigned long Function::_nextFunctionId = 0;
 
-Function::Function() : QObject()
+Function::Function(unsigned long id) : QObject()
 {
-  m_id = _nextFunctionId;
-  _nextFunctionId++;
+  if (id == 0)
+    {
+      m_id = _nextFunctionId;
+      _nextFunctionId++;
+    }
+  else
+    {
+      m_id = id;
+      if (id >= _nextFunctionId)
+	{
+	  _nextFunctionId = id + 1;
+	}
+    }
 
   m_name = QString::null;
   m_type = Function::Undefined;
-  m_deviceClass = NULL;
   m_device = NULL;
 
   m_running = false;
@@ -54,17 +63,6 @@ void Function::setName(QString name)
   m_name = QString(name);
 }
 
-DeviceClass* Function::deviceClass() const
-{
-  return m_deviceClass;
-}
-
-void Function::setDeviceClass(DeviceClass* dc)
-{
-  m_deviceClass = dc;
-  m_device = NULL;
-}
-
 DMXDevice* Function::device() const
 {
   return m_device;
@@ -73,7 +71,6 @@ DMXDevice* Function::device() const
 void Function::setDevice(DMXDevice* device)
 {
   m_device = device;
-  m_deviceClass = NULL;
 }
 
 Function::Type Function::type() const

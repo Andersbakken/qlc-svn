@@ -189,6 +189,17 @@
                 <bool>true</bool>
             </property>
         </column>
+        <column>
+            <property name="text">
+                <string>Function ID</string>
+            </property>
+            <property name="clickable">
+                <bool>false</bool>
+            </property>
+            <property name="resizeable">
+                <bool>true</bool>
+            </property>
+        </column>
         <property name="name">
             <cstring>m_stepList</cstring>
         </property>
@@ -204,6 +215,28 @@
             <bool>true</bool>
         </property>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>m_play</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>240</x>
+                <y>240</y>
+                <width>84</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Play...</string>
+        </property>
+        <property name="toggleButton">
+            <bool>true</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>image2</iconset>
+        </property>
+    </widget>
 </widget>
 <images>
     <image name="image0">
@@ -211,6 +244,9 @@
     </image>
     <image name="image1">
         <data format="XPM.GZ" length="394">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523234530022230543251d2e253d856405bffcbc54105b19c856360003b0141a204d4c1909c0d5210be113d34312c22ba68710c22fa607172220a607132224863f0c6aadb9008ce044a5</data>
+    </image>
+    <image name="image2">
+        <data format="XPM.GZ" length="1722">789cb5d34b6f9b3000c0f17b3e056a6ed59436092441d30e247177dab4e3a46907f3f4a3d88e033630edbbcf2f29b4db346952ad1cf8897fb001f3701f7dfdf229ba7f585c3bd8e1222a1094d17dd9b7edf8edfb871f8bbbed26b2bf245adfbd5bdcada222facc59658f9fccf1729b6e0fdbd4f26360e179b68cd7f163ecfe780c8c3d3b47181f6268790a2c3c07cb64933c261bcb3e30f1bc3ac2244d5c3c05969ea3e56eb35bef5c7c094c3c3347b84b772e5681a5a7b6dc6ff7ebfdd65206269ec031dfa7fbdc5204969edcf2b03dac0f2e6681892775cc0fe9c1c524b0f4c496699caed3d81205269e8d6391a669619907969ed012c6700d5ddc06269eb563012174f132b0f2ac2cf338dfe42e2e02779ecf8e650ef3d2b20cac3c57ff186fda2c21ccf3bc78dd9445515455dd2084cd208450ba9c37cf755db7796306420c632e08b950caf0bc29f25c32135c31c21dc5b4a7b4978cb17953b68dd20821731e0f9c908e533132cedbf97ada864f18a1ab9928d3848ee62247c1397ad9e013c1b069115113c52d246cd25cb06ade207466b8c994a0f24a1955805f262140fda2c1278eb19092f281330ab450bd0080ce1a8871af09d18360d8ac47745a884e0229674d81f19811c24f8221c4051f47214e9994329f3d6742b22ba5b4938c722084384ba04f526af2a2518379b27dc6989ecc44670de4c0b506cb5b43a93e71c6b25e7071d4005c478910d15ab5f306748231703413f52300d34972b31c356f90b91740397f92428c0390974e6b3e5e5496dd9a256b5143383f2a012e9d59ec516975b64d396b1aa0cc5a872b00eaa8a53e4f4a0d63968166d65061c73400203f5ea41e47a532613eafdb5c3537f77c016034f3c829d35a53dabcdacf3517ca3c37a026d398a26d57b311f633722fc8bc21b34f97ab57e3d69804d4f56fc1adc1660b567f383d6faabf06ab37fe96ffa7f9f97ef10bc400bbe1</data>
     </image>
 </images>
 <connections>
@@ -250,19 +286,27 @@
         <receiver>UI_ChaserEditor</receiver>
         <slot>slotLowerClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_play</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ChaserEditor</receiver>
+        <slot>slotPlayClicked()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_nameEdit</tabstop>
     <tabstop>m_stepList</tabstop>
     <tabstop>m_addStep</tabstop>
     <tabstop>m_removeStep</tabstop>
+    <tabstop>m_play</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
 <slots>
-    <slot>slotLowerClicked()</slot>
+    <slot>slotPlayClicked()</slot>
     <slot>slotAddClicked()</slot>
     <slot>slotCancelClicked()</slot>
+    <slot>slotLowerClicked()</slot>
     <slot>slotOKClicked()</slot>
     <slot>slotRaiseClicked()</slot>
     <slot>slotRemoveClicked()</slot>

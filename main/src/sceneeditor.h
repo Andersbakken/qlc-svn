@@ -34,7 +34,6 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QGridLayout; 
 class QButtonGroup;
-class QComboBox;
 class QGroupBox;
 class QLabel;
 class QPushButton;
@@ -57,13 +56,10 @@ class SceneEditor : public UI_SceneEditor
   void slotHideClicked();
   void slotNewClicked();
   void slotSaveClicked();
-  void slotClassRadioClicked();
-  void slotDeviceRadioClicked();
 
  protected:
   DMXDevice* m_device;
   Scene* m_currentScene;
-  QString m_deviceSource;
 
  protected:
   void selectFunctions();

@@ -35,7 +35,7 @@
 
 extern App* _app;
 
-Scene::Scene() : Function()
+Scene::Scene(unsigned long id) : Function(id)
 {
   m_type = Function::Scene;
 
@@ -55,7 +55,6 @@ void Scene::copyFrom(Scene* sc)
 {
   m_type = Function::Scene;
   m_name = QString(sc->name());
-  m_deviceClass = sc->m_deviceClass;
   m_device = sc->m_device;
   m_id = sc->id();
 
@@ -126,27 +125,15 @@ void Scene::saveToFile(QFile &file)
   s = QString("Type = ") + typeString() + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // Device class, device name or "Global"
-  if (deviceClass() != NULL)
-    {
-      // Write only the data for device class scenes
-      for (unsigned short i = 0; i < deviceClass()->channels()->count(); i++)
-	{
-	  t.setNum(i);
-	  s = t + QString(" = ");
-	  t.setNum(m_values[i].value);
-	  s += t + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
+  // ID
+  t.setNum(m_id);
+  s = QString("ID = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 
-	  s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
-	}
-    }
-  else if (device() != NULL)
+  if (device() != NULL)
     {
-      // For device scenes (that are saved in the workspace file)
-      // write also the device name that this scene is attached to
-      s = QString("Device = ") + device()->name() + QString("\n");
+      t.setNum(device()->id());
+      s = QString("Device = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
       // Data
@@ -165,7 +152,7 @@ void Scene::saveToFile(QFile &file)
   else
     {
       // For global scenes the device name is "Global"
-      s = QString("Device = Global") + QString("\n");
+      s = QString("Device = 0") + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
       // TODO: write global scene data
@@ -231,19 +218,6 @@ bool Scene::set(unsigned short ch, unsigned char value, SceneValueType type)
 	  return false;
 	}
     }
-  else if (m_deviceClass != NULL)
-    {
-      if (ch < deviceClass()->channels()->count())
-	{
-	  m_values[ch].value = value;
-	  m_values[ch].type = type;
-	}
-      else
-	{
-	  // Channel value is beyond this deviceclass' limits
-	  return false;
-	}
-    }
   else
     {
       return false;
@@ -264,19 +238,6 @@ bool Scene::clear(unsigned short ch)
       else
 	{
 	  // Channel value is beyond this device's limits
-	  return false;
-	}
-    }
-  else if (m_deviceClass != NULL)
-    {
-      if (ch < deviceClass()->channels()->count())
-	{
-	  m_values[ch].value = 0;
-	  m_values[ch].type = NoSet;
-	}
-      else
-	{
-	  // Channel value is beyond this deviceclass' limits
 	  return false;
 	}
     }

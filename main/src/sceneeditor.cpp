@@ -30,7 +30,7 @@
 #include "logicalchannel.h"
 #include "channelui.h"
 
-#include <qcombobox.h>
+#include <qlistbox.h>
 #include <qradiobutton.h>
 #include <qlabel.h>
 #include <qinputdialog.h>
@@ -48,10 +48,6 @@ SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent, const char* name )
   m_device = device;
   m_currentScene = NULL;
 
-  // initially, get data from the device class as default.
-  m_deviceSource="DeviceClass";
-  m_deviceClassRadio->setChecked(TRUE);
-  
   selectFunctions();
 }
 
@@ -69,29 +65,13 @@ void SceneEditor::slotSceneActivated( int nr )
 {
   Function* f;
 
-  if( m_deviceSource == "DeviceClass")
+  QList <Function> *fl = m_device->functions();
+  for (f = fl->first(); f != NULL; f = fl->next())
     {
-      QList <Function> *fl = m_device->deviceClass()->functions();
-
-      for (f = fl->first(); f != NULL; f = fl->next())
+      if( f->name() == m_sceneList->currentText())
 	{
-	  if( f->name() == m_availableScenesComboBox->currentText())
-	    {
-	      setScene((Scene*) f);
-	      m_currentScene = (Scene*) f;
-	    }
-	}
-    }
-  else
-    {
-      QList <Function> *fl = m_device->functions();
-      for (f = fl->first(); f != NULL; f = fl->next())
-	{
-	  if( f->name() == m_availableScenesComboBox->currentText())
-	    {
-	      setScene((Scene*) f);
-	      m_currentScene = (Scene*) f;
-	    }
+	  setScene((Scene*) f);
+	  m_currentScene = (Scene*) f;
 	}
     }
   
@@ -142,8 +122,8 @@ void  SceneEditor::slotNewClicked()
      {
        Scene* sc = new Scene();
        sc->setName(text);
-       sc->setDeviceClass(m_device->deviceClass());
-       for(unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
+       sc->setDevice(m_device);
+       for (unsigned int n = 0; n < m_device->deviceClass()->channels()->count(); n++)
 	 {
 	   // Get values from device / HJu
 	   if (m_device->dmxChannel(n)->status() == DMXChannel::On)
@@ -156,23 +136,16 @@ void  SceneEditor::slotNewClicked()
 	     }
 	 }
 
-       if (m_deviceSource == "DeviceClass")
-	 {
-	   // If deviceclass is selected, save to device class
-	   m_device->deviceClass()->addFunction(sc);
-	 }
-       else
-	 {
-	   // otherwise save to device / HJu
-	   m_device->addFunction(sc);
-	 }
+       // Save to device / HJu
+       m_device->addFunction(sc);
 
-       m_availableScenesComboBox->insertItem(text);
-       m_availableScenesComboBox->setCurrentItem(m_availableScenesComboBox->count()-1);
+       m_sceneList->insertItem(text);
+       m_sceneList->setCurrentItem(m_sceneList->count()-1);
        slotSceneActivated(0);
      }
    else
      {
+       qDebug("WTF?!");
      }
 }
 
@@ -199,60 +172,19 @@ void SceneEditor::slotSaveClicked()
 	}
     }
 
-  if (m_deviceSource == "DeviceClass")
-    {
-      m_device->deviceClass()->saveToFile();
-    }
-
   setStatusText("saved", QColor( 0, 0, 255));
 }
 
 
-void SceneEditor::slotDeviceRadioClicked()
+void SceneEditor::selectFunctions()
 {
   QList <Function> *fl = m_device->functions();
 
-  m_availableScenesComboBox->clear();
-
-  for (Function *f = fl->first(); f != NULL; f = fl->next())
-    {
-      if (f->type() == Function::Scene)
-	{
-	  m_availableScenesComboBox->insertItem(f->name());
-	}
-    }
-
-  m_deviceSource = "Device";
-}
-
-
-void SceneEditor::slotClassRadioClicked()
-{
-  QList <Function> *fl = m_device->deviceClass()->functions();
-  m_availableScenesComboBox->clear();
-
   for (Function* f = fl->first(); f != NULL; f = fl->next())
     {
       if (f->type() == Function::Scene)
 	{
-	  m_availableScenesComboBox->insertItem(f->name());
-	}
-    }
-
-  m_deviceSource = "DeviceClass";
-}
-
-
-
-void SceneEditor::selectFunctions()
-{
-  QList <Function> *fl = m_device->deviceClass()->functions();
-
-  for (Function* f = fl->first(); f != NULL; f = fl->next())
-    {
-      if (f->type() == Function::Scene)
-	{
-	  m_availableScenesComboBox->insertItem(f->name());
+	  m_sceneList->insertItem(f->name());
 	}
     }
 

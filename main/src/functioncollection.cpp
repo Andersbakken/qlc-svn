@@ -36,7 +36,7 @@
 extern App* _app;
 static QMutex _mutex;
 
-FunctionCollection::FunctionCollection() : Function()
+FunctionCollection::FunctionCollection(unsigned long id) : Function(id)
 {
   m_registerCount = 0;
   m_type = Function::Collection;
@@ -142,37 +142,22 @@ void FunctionCollection::saveToFile(QFile &file)
   s.sprintf("ID = %ld\n", id());
   file.writeBlock((const char*) s, s.length());
 
-  // Device class, device name or "Global"
-  if (deviceClass() != NULL)
+  // Device
+  if (m_device != NULL)
     {
-      ASSERT(false);
-    }
-  else if (device() != NULL)
-    {
-      ASSERT(false);
+      s.sprintf("Device = %ld\n", m_device->id());
     }
   else
     {
-      s = QString("Device = 0") + QString("\n");
+      s = QString("Device = 0\n");
+    }
+  file.writeBlock((const char*) s, s.length());
+  
+  // For global collections, write device+scene pairs
+  for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
+    {
+      s.sprintf("Function = %ld", item->function()->id());
       file.writeBlock((const char*) s, s.length());
-
-      // For global collections, write device+scene pairs
-      for (CollectionItem* item = m_items.first(); item != NULL; item = m_items.next())
-	{
-	  if (item->device() != NULL)
-	    {
-	      s.sprintf("Device = %ld\n", item->device()->id());
-	    }
-	  else
-	    {
-	      s = QString("Device = 0") + QString("\n");
-	    }
-
-	  file.writeBlock((const char*) s, s.length());
-
-	  s.sprintf("Function = %ld", item->function()->id());
-	  file.writeBlock((const char*) s, s.length());
-	}
     }
 }
 
@@ -212,25 +197,10 @@ void FunctionCollection::createContents(QList<QString> &list)
 	    {
 	      DMXDevice* d = _app->doc()->searchDevice(did);
 	      Function* f = NULL;
-	      if (d != NULL)
-		{
-		  f = d->searchFunction(fid);
-		  if (f != NULL)
-		    {
-		      addItem(d, f);
-		    }
-		  else if ((f = d->deviceClass()->searchFunction(fid)) != NULL)
-		    {
-		      addItem(d, f);
-		    }
-		  else
-		    {
-		      qDebug("Unable to find member for function collection <" + name() + ">");
-		    }
-		}
 	      
-	      did = 0;
-	      fid = 0;
+	      f = _app->doc()->searchFunction(fid, &d);
+	      
+	      addItem(d, f);
 	    }
 	}
       else

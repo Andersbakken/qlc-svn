@@ -44,7 +44,7 @@ class Scene : public Function
   Q_OBJECT
 
  public:
-  Scene();
+  Scene(unsigned long id = 0);
   Scene(Scene* sc);
   virtual  ~Scene();
 

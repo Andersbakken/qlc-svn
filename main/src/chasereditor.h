@@ -33,6 +33,9 @@ class QPushButton;
 class QToolButton;
 
 class Chaser;
+class Function;
+class DMXDevice;
+class Bus;
 
 class ChaserEditor : public UI_ChaserEditor
 {
@@ -45,12 +48,15 @@ class ChaserEditor : public UI_ChaserEditor
   void init();
 
  private:
-  void updateStepList(unsigned long selectId = 0);
+  void updateStepList();
   void updateOrderNumbers();
 
  private:
   Chaser* m_chaser;
   Chaser* m_original;
+
+  Bus* m_bus;
+  unsigned long m_feederID;
 
  private slots:
   void slotCancelClicked();
@@ -58,8 +64,11 @@ class ChaserEditor : public UI_ChaserEditor
 
   void slotRemoveClicked();
   void slotAddClicked();
+  void slotPlayClicked();
   void slotRaiseClicked();
   void slotLowerClicked();
+
+  void slotFunctionUnRegistered(Function*, Function*, DMXDevice*, unsigned long);
 };
 
 #endif

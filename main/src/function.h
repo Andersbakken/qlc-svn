@@ -30,7 +30,6 @@
 class QFile;
 class QString;
 
-class DeviceClass;
 class DMXDevice;
 class Event;
 class Feeder;
@@ -41,16 +40,13 @@ class Function : public QObject
   Q_OBJECT
 
  public:
-  Function();
+  Function(unsigned long id = 0);
   virtual ~Function();
 
   enum Type { Undefined, Collection, Scene, Chaser, Sequence };
 
   QString name() const;
   void setName(QString name);
-
-  DeviceClass* deviceClass() const;
-  void setDeviceClass(DeviceClass* device);
 
   DMXDevice* device() const;
   void setDevice(DMXDevice* device);
@@ -83,7 +79,6 @@ class Function : public QObject
  protected:
   QString m_name;
   Type m_type;
-  DeviceClass* m_deviceClass;
   DMXDevice* m_device;
 
   bool m_running;

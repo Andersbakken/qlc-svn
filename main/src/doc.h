@@ -87,10 +87,7 @@ class Doc : public QObject
   void addFunction(const Function* function);
   void removeFunction(const unsigned long id);
   Function* searchFunction(const unsigned long id);
-  Function* searchFunction(const unsigned long id, DMXDevice** device, DeviceClass** deviceClass);
-
-  // Function* searchFunction(const QString &fname);
-  // void removeFunction(const QString &functionString);
+  Function* searchFunction(const unsigned long id, DMXDevice** device);
 
   //
   // Device classes

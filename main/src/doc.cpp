@@ -264,7 +264,8 @@ DeviceClass* Doc::createDeviceClass(QList<QString> &list)
 	    }
 	  else if (entry == QString("Function"))
 	    {
-	      dc->createFunction(list);
+	      list.next();
+	      // dc->createFunction(list);
 	    }
 	}
       else
@@ -333,7 +334,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  // Only create the function but don't care for
 		  // its contents yet
 		  Function* f = createFunction(list);
-		  
+
 		  if (f != NULL)
 		    {
 		      if (f->device() != NULL)
@@ -439,7 +440,7 @@ void Doc::createFunctionContents(QList<QString> &list)
 
   QString name;
   unsigned long device = 0;
-  unsigned long id = 0;
+  unsigned long id = ULONG_MAX;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -458,7 +459,7 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
       else if (*s == QString("ID"))
 	{
-	  id = list.next()->toInt();
+	  id = list.next()->toULong();
 	}
       else if (*s == QString("Device"))
 	{
@@ -480,30 +481,24 @@ void Doc::createFunctionContents(QList<QString> &list)
 	}
     }
 
-  if (id > 0)
+  if (id == ULONG_MAX)
     {
-      if (d != NULL)
-	{
-	  f = d->searchFunction(id);
-	}
-      else
-	{
-	  f = searchFunction(id);
-	}
+      qDebug("0 Invalid or missing information for function <%s>", (const char*) name);
+    }
+  else
+    {
+      DMXDevice* device = NULL;
+      f = searchFunction(id, &device);
 
       if (f != NULL)
 	{
-	  f->setDevice(d);
+	  f->setDevice(device);
 	  f->createContents(list);
 	}
       else
 	{
 	  qDebug("Invalid or missing information for function <%s>", (const char*) name);
 	}
-    }
-  else
-    {
-      qDebug("Invalid or missing information for function <%s>", (const char*) name);
     }
 }
 
@@ -515,7 +510,7 @@ Function* Doc::createFunction(QList<QString> &list)
   QString name;
   QString type;
   unsigned long device = 0;
-  unsigned long id = 0;
+  unsigned long id = ULONG_MAX;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -548,7 +543,11 @@ Function* Doc::createFunction(QList<QString> &list)
 	}
     }
 
-  if (id > 0)
+  if (id == ULONG_MAX)
+    {
+      f = NULL;
+    }
+  else
     {
       if (device == 0)
 	{
@@ -579,7 +578,7 @@ Function* Doc::createFunction(QList<QString> &list)
 	}
       else if (type == QString("Scene"))
 	{
-	  f = (Function*) new Scene();
+	  f = (Function*) new Scene(id);
 	  f->setName(name);
 	  f->setDevice(d);
 	}
@@ -592,10 +591,6 @@ Function* Doc::createFunction(QList<QString> &list)
 	  f = NULL;
 	}
     }
-  else
-    {
-      f = NULL;
-    }
 
   return f;
 }
@@ -607,6 +602,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
   QString model = QString::null;
   QString t = QString::null;
   int address = 0;
+  unsigned long id = 0;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
@@ -627,6 +623,10 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 	{
 	  model = *(list.next());
 	}
+      else if (*s == QString("ID"))
+	{
+	  id = list.next()->toULong();
+	}
       else if (*s == QString("Address"))
 	{
 	  t = *(list.next());
@@ -639,12 +639,11 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 	}
     }
 
-  if (name == QString::null || manufacturer == QString::null ||
-      manufacturer == QString::null)
+  if (id == 0 || manufacturer == QString::null || manufacturer == QString::null)
     {
       QString msg;
       msg = QString("Unable to add device \"" + name +
-		    QString("\" because device class information is missing."));
+		    QString("\" because device (class) information is missing."));
       QMessageBox::critical(_app, IDS_APP_NAME_SHORT, msg);
 
       return NULL;
@@ -675,7 +674,7 @@ DMXDevice* Doc::createDevice(QList<QString> &list)
 	    }
 	  else
 	    {
-	      DMXDevice* d = new DMXDevice(address, dc, name);
+	      DMXDevice* d = new DMXDevice(address, dc, name, id);
 	      return d;
 	    }
 	}
@@ -913,7 +912,7 @@ Function* Doc::searchFunction(const unsigned long id)
   return NULL;
 }
 
-Function* Doc::searchFunction(const unsigned long id, DMXDevice** device, DeviceClass** deviceClass)
+Function* Doc::searchFunction(const unsigned long id, DMXDevice** device)
 {
   Function* f = NULL;
 
@@ -925,7 +924,6 @@ Function* Doc::searchFunction(const unsigned long id, DMXDevice** device, Device
       if (f->id() == id)
 	{
 	  *device = f->device();
-	  *deviceClass = f->deviceClass();
 	  return f;
 	}
     }
@@ -941,12 +939,11 @@ Function* Doc::searchFunction(const unsigned long id, DMXDevice** device, Device
 	  if (f->id() == id)
 	    {
 	      *device = f->device();
-	      *deviceClass = f->deviceClass();
 	      return f;
 	    }
 	}
     }
-
+  /*
   //
   // Last, try deviceclasses
   //
@@ -963,14 +960,13 @@ Function* Doc::searchFunction(const unsigned long id, DMXDevice** device, Device
 	    }
 	}      
     }
+  */
 
   //
   // Didn't find, return nothing
   //
   *device = NULL;
-  *deviceClass = NULL;
   return NULL;
-  
 }
 
 

@@ -366,13 +366,13 @@ void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
   int ch = item->text(0).toInt();
 
-  if (m_scene->device() == NULL)
+  if (m_scene->device() != NULL)
     {
-      m_currentChannel = m_scene->deviceClass()->channels()->at(ch);
+      m_currentChannel = m_scene->device()->deviceClass()->channels()->at(ch);
     }
   else
     {
-      m_currentChannel = m_scene->device()->deviceClass()->channels()->at(ch);
+      ASSERT(false);
     }
 }
 
@@ -390,17 +390,7 @@ void AdvancedSceneEditor::slotApplyClicked()
       return;
     }
 
-  if (m_scene->deviceClass() != NULL)
-    {
-      Scene* s = (Scene*) m_scene->deviceClass()->searchFunction(m_scene->id());
-      ASSERT(s != NULL);
-      
-      m_scene->deviceClass()->saveToFile();
-      setDirty(false);
-      
-      s->copyFrom(m_scene);
-    }
-  else if (m_scene->device() != NULL)
+  if (m_scene->device() != NULL)
     {
       Scene* s = (Scene*) m_scene->device()->searchFunction(m_scene->id());
       ASSERT(s != NULL);
@@ -523,13 +513,13 @@ void AdvancedSceneEditor::updateChannelList()
   m_sceneContents->clear();
   m_currentChannel = NULL;
 
-  if (m_scene->device() == NULL)
+  if (m_scene->device() != NULL)
     {
-      cl = m_scene->deviceClass()->channels();
+      cl = m_scene->device()->deviceClass()->channels();
     }
   else
     {
-      cl = m_scene->device()->deviceClass()->channels();
+      ASSERT(false);
     }
 
   for (LogicalChannel* ch = cl->first(); ch != NULL; ch = cl->next())

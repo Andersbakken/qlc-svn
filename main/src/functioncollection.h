@@ -66,7 +66,7 @@ class FunctionCollection : public Function
   Q_OBJECT
 
  public:
-  FunctionCollection();
+  FunctionCollection(unsigned long id = 0);
   FunctionCollection(FunctionCollection* fc);
   virtual ~FunctionCollection();
 
