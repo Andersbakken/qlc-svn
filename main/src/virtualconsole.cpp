@@ -161,11 +161,11 @@ void VirtualConsole::initView(void)
   setIcon(_app->settings()->pixmapPath() + QString("virtualconsole.xpm"));
 
   m_layout = new QVBoxLayout(this);
+  m_layout->setAutoAdd(false);
 
   m_menuBar = new QMenuBar(this);
   m_layout->addWidget(m_menuBar, 0);
-  m_menuBar->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  connect(m_menuBar, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
+  m_menuBar->setFrameStyle(QFrame::MenuBarPanel);
 
   // addBottomFrame();
 
@@ -174,6 +174,7 @@ void VirtualConsole::initView(void)
   modeMenu->setCheckable(true);
   modeMenu->insertItem("&Operate", ID_VC_MODE_OPERATE);
   modeMenu->insertItem("&Design", ID_VC_MODE_DESIGN);
+  connect(modeMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
   QPopupMenu* addMenu;
   addMenu = new QPopupMenu();
@@ -183,6 +184,7 @@ void VirtualConsole::initView(void)
   addMenu->insertItem("S&peed slider", ID_VC_ADD_SPEEDSLIDER);
   addMenu->insertItem("&Monitor", ID_VC_ADD_MONITOR);
   addMenu->insertItem("&Frame", ID_VC_ADD_FRAME);
+  connect(addMenu, SIGNAL(activated(int)), this, SLOT(slotMenuItemActivated(int)));
 
   m_menuBar->insertItem("&Mode", modeMenu, ID_VC_MODE);
   m_menuBar->insertItem("&Add", addMenu, ID_VC_ADD);
@@ -244,6 +246,7 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	  {
 	    addBottomFrame();
 	  }
+	qDebug("hupsista");
 	DMXButton* b;
 	b = new DMXButton(m_drawArea);
 	b->show();

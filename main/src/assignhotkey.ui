@@ -15,22 +15,6 @@
     <property name="caption">
         <string>Assign Hotkey to Button</string>
     </property>
-    <widget class="QTextView">
-        <property name="name">
-            <cstring>m_infoText</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>261</width>
-                <height>200</height>
-            </rect>
-        </property>
-        <property name="textFormat">
-            <enum>AutoText</enum>
-        </property>
-    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>m_ok</cstring>
@@ -82,14 +66,33 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>100</x>
+                <x>10</x>
                 <y>230</y>
-                <width>90</width>
+                <width>260</width>
                 <height>20</height>
             </rect>
         </property>
         <property name="text">
             <string>Preview hotkey</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
+    <widget class="QTextView">
+        <property name="name">
+            <cstring>m_infoText</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>260</width>
+                <height>200</height>
+            </rect>
+        </property>
+        <property name="textFormat">
+            <enum>AutoText</enum>
         </property>
     </widget>
 </widget>
