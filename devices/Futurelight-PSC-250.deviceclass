@@ -1,0 +1,168 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = PSC-250
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Pan
+# Capability Entries
+0-255 = Pan
+Entry = Channel
+Number = 1
+Name = Tilt
+# Capability Entries
+0-255 = Tilt
+Entry = Channel
+Number = 2
+Name = Pan/tilt speed
+# Capability Entries
+0-14 = Tracking mode
+15-225 = Vector mode speed fast to slow
+226-235 = BO with pan/tilt
+236-245 = BO with color/gobo change
+Entry = Channel
+Number = 3
+Name = Colour
+# Capability Entries
+0-13 = White
+14-27 = Light blue
+28-41 = Red
+42-55 = Blue
+56-69 = Green
+70-83 = Yellow
+84-97 = Magenta
+98-111 = Light green
+112-127 = Dark green
+128-187 = Rainbow forward fast to slow
+188-193 = No rotation
+194-255 = Rainbow backward slow to fast
+Entry = Channel
+Number = 4
+Name = Static gobo
+# Capability Entries
+0-13 = Open
+14-27 = Gobo 1
+28-41 = Gobo 2
+42-55 = Gobo 3
+56-69 = Gobo 4
+70-83 = Gobo 5
+84-97 = Gobo 6
+98-111 = Gobo 7
+112-127 = Gobo 1 shake speed
+128-143 = Gobo 2 shake speed
+144-159 = Gobo 3 shake speed
+160-175 = Gobo 4 shake speed
+176-191 = Gobo 5 shake speed
+192-207 = Gobo 6 shake speed
+208-223 = Gobo 7 shake speed
+224-255 = Gobo rainbow speed
+Entry = Channel
+Number = 5
+Name = Rotating gobo
+# Capability Entries
+0-9 = Open
+10-19 = Gobo 1
+20-29 = Gobo 2
+30-39 = Gobo 3
+40-49 = Gobo 4
+50-59 = Gobo 5
+60-69 = Gobo 6
+70-89 = Gobo 1 shake speed
+90-109 = Gobo 2 shake speed
+110-129 = Gobo 3 shake speed
+130-149 = Gobo 4 shake speed
+150-169 = Gobo 5 shake speed
+170-189 = Gobo 6 shake speed
+190-255 = Gobo rainbow speed
+Entry = Channel
+Number = 6
+Name = Rotating gobo index, rotation
+# Capability Entries
+0-127 = Gobo indexing
+128-187 = Forward speed fast to slow
+188-193 = No rotation
+194-255 = Backward speed slow to fast
+Entry = Channel
+Number = 7
+Name = Effect
+# Capability Entries
+0-9 = Open
+10-19 = UV filter
+20-29 = 3200K correction filter
+30-39 = 5600K correction filter
+40-49 = Frost filter
+50-59 = 3 facet prism
+60-119 = Forward rotation fast to slow
+120-127 = No rotation
+128-187 = Backward rotation slow to fast
+188-191 = Macro 1
+192-195 = Macro 2
+196-199 = Macro 3
+200-203 = Macro 4
+204-207 = Macro 5
+208-211 = Macro 6
+212-215 = Macro 7
+216-219 = Macro 8
+220-223 = Macro 9
+224-227 = Macro 10
+228-231 = Macro 11
+232-235 = Macro 12
+236-239 = Macro 13
+240-243 = Macro 14
+244-247 = Macro 15
+248-251 = Macro 16
+252-255 = Macro 17
+Entry = Channel
+Number = 8
+Name = Focus
+# Capability Entries
+0-255 = Near to far
+Entry = Channel
+Number = 9
+Name = Shutter, strobe
+# Capability Entries
+0-31 = Shutter closed
+32-63 = Dimmer activation
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open, dimmer deactivation
+Entry = Channel
+Number = 10
+Name = Dimmer intensity
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 11
+Name = Lamp switch, reset, programs
+# Capability Entries
+0-15 = Normal color change
+16-31 = Normal colour change, search clockwise
+32-47 = Colour change at every position, shortest distance
+48-63 = Colour change at every position, search clockwise
+64-79 = Lamp on
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-239 = Lamp off
+Entry = Channel
+Number = 12
+Name = Pan fine
+# Capability Entries
+0-255 = Pan fine
+Entry = Channel
+Number = 13
+Name = Tilt fine
+# Capability Entries
+0-255 = Tilt fine

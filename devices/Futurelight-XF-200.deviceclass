@@ -1,0 +1,40 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = XF-200
+Type = Flower
+#
+Entry = Channel
+Number = 0
+Name = Gobo
+# Capability Entries
+0-10 = Blackout
+11-21 = Open
+22-32 = Gobo 1
+33-43 = Gobo 2
+44-54 = Gobo 3
+55-65 = Gobo 4
+66-76 = Gobo 5
+77-87 = Gobo 6
+88-98 = Gobo 7
+99-109 = Gobo 8
+110-120 = Gobo 9
+121-131 = Gobo 10
+132-193 = Backward gobo rainbow speed
+194-255 = Forward gobo rainbow speed
+Entry = Channel
+Number = 1
+Name = Color
+# Capability Entries
+0-240 = Color combinations
+241-250 = Rainbow
+251-255 = Sound activation
+Entry = Channel
+Number = 2
+Name = Flower reflector
+# Capability Entries
+0-15 = Stop
+16-130 = Clockwise rotation speed
+131-245 = Anti-clockwise rotation speed
+246-255 = Sound activation
