@@ -23,7 +23,6 @@
 #define SCENE_H
 
 #include "function.h"
-#include "sequencestructs.h"
 #include "classes.h"
 #include <qlist.h>
 
