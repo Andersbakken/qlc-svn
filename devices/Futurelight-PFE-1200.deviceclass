@@ -1,0 +1,132 @@
+# Q Light Controller device class definition file
+#
+Entry = Device Class
+Manufacturer = Futurelight
+Model = PFE-1200
+Type = Flower
+#
+Entry = Channel
+Number = 0
+Name = Colour 1
+# Capability Entries
+0-10 = White
+11-21 = Color 1
+22-32 = Color 2
+33-43 = Blue
+44-54 = Yellow green
+55-65 = Light yellow
+66-76 = Magenta
+77-87 = Orange
+88-98 = Purple
+128-187 = Forwards rainbow speed
+188-193 = No rotation
+194-255 = Backwards rainbow speed
+99-127 = Colour shake
+Entry = Channel
+Number = 1
+Name = Static gobo
+# Capability Entries
+0-14 = Open
+15-29 = Gobo 1
+30-44 = Gobo 2
+45-59 = Gobo 3
+60-74 = Gobo 4
+75-89 = Gobo 5
+90-113 = Gobo 1 shake speed
+114-137 = Gobo 2 shake speed
+138-161 = Gobo 3 shake speed
+162-185 = Gobo 4 shake speed
+186-209 = Gobo 5 shake speed
+210-255 = Gobo rainbow speed
+Entry = Channel
+Number = 2
+Name = Rotating gobo
+# Capability Entries
+0-14 = Gobo 1
+15-29 = Gobo 2
+30-44 = Gobo 3
+45-59 = Gobo 4
+60-74 = Gobo 5
+75-102 = Gobo 1 shake speed
+103-130 = Gobo 2 shake speed
+131-158 = Gobo 3 shake speed
+159-186 = Gobo 4 shake speed
+187-214 = Gobo 5 shake speed
+215-255 = Gobo rainbow speed
+Entry = Channel
+Number = 3
+Name = Rotating gobo index, rotation
+# Capability Entries
+0-127 = Gobo indexing
+128-187 = Forward speed fast to slow
+188-193 = No rotation
+194-255 = Backward speed slow to fast
+Entry = Channel
+Number = 4
+Name = Prism
+# Capability Entries
+0-25 = Prism 1
+26-51 = Prism 2
+52-77 = Prism 3
+78-103 = Prism 4
+104-127 = Prism 5
+128-135 = Macro 1
+136-143 = Macro 2
+144-151 = Macro 3
+152-159 = Macro 4
+160-167 = Macro 5
+168-175 = Macro 6
+176-183 = Macro 7
+184-191 = Macro 8
+192-199 = Macro 9
+200-207 = Macro 10
+208-215 = Macro 11
+216-223 = Macro 12
+224-231 = Macro 13
+232-239 = Macro 14
+240-247 = Macro 15
+248-255 = Macro 16
+Entry = Channel
+Number = 5
+Name = Prism rotation
+# Capability Entries
+0-127 = Prism indexing
+128-187 = Forward rotation speed fast to slow
+188-193 = No rotation
+194-255 = Backward rotation speed slow to fast
+Entry = Channel
+Number = 6
+Name = Shutter, strobe
+# Capability Entries
+0-31 = Shutter closed
+32-63 = Dimmer activation
+64-95 = Strobe speed
+96-127 = Shutter open
+128-159 = Pulse sequence
+160-191 = Shutter open
+192-223 = Random strobe speed
+224-255 = Shutter open, dimmer deactivation
+Entry = Channel
+Number = 7
+Name = Dimmer intensity
+# Capability Entries
+0-255 = Dimmer intensity
+Entry = Channel
+Number = 8
+Name = Lamp switch, reset, programs
+# Capability Entries
+0-15 = Normal color change
+16-31 = Normal colour change, search clockwise
+32-47 = Colour change at every position, shortest distance
+48-63 = Colour change at every position, search clockwise
+64-79 = Lamp on
+80-95 = Reset
+96-111 = Internal program 1
+112-127 = Internal program 2
+128-143 = Internal program 3
+144-159 = Internal program 4
+160-175 = Internal program 5
+176-191 = Internal program 6
+192-207 = Internal program 7
+208-223 = Internal program 8
+224-239 = Lamp off
