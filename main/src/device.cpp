@@ -405,7 +405,6 @@ void Device::viewMonitor()
 
 void Device::slotMonitorClosed()
 {
-  m_monitor->hide();
   delete m_monitor;
   m_monitor = NULL;
 }

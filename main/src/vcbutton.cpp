@@ -752,8 +752,6 @@ void VCButton::pressFunction()
 {
   assert(m_keyBind);
 
-  qDebug("pressed");
-
   if (m_keyBind->pressAction() == KeyBind::PressNothing || 
       m_functionID == KNoID)
     {
@@ -814,7 +812,6 @@ void VCButton::pressFunction()
 void VCButton::releaseFunction()
 {
   assert(m_keyBind);
-  qDebug("released");
 }
 
 void VCButton::attachFunction(t_function_id id)

@@ -43,12 +43,10 @@ class Monitor : public QWidget
   Q_OBJECT
 
  public:
-  Monitor(QWidget* parent, t_channel fromChannel,
-	  t_channel toChannel);
+  Monitor(QWidget* parent, t_channel fromChannel, t_channel toChannel);
   ~Monitor();
 
   void init();
-  void show();
 
  protected slots:
   void slotTimeOut();
@@ -63,6 +61,9 @@ class Monitor : public QWidget
   void paint(void);
   void paintAll(void);
 
+  void connectTimer();
+  void disconnectTimer();
+
  signals:
   void closed();
 
@@ -74,10 +75,7 @@ class Monitor : public QWidget
   t_value* m_oldValues;
   t_value* m_newValues;
 
-  QTimer* m_timer;
-
   int m_displayStyle;
-  int m_updateFrequency;
 
   QPainter m_painter;
 
@@ -89,6 +87,11 @@ class Monitor : public QWidget
   static const QString KEY_MONITOR_FONT;
   static const QString KEY_MONITOR_DISPLAY_STYLE;
   static const QString KEY_MONITOR_UPDATE_FREQUENCY;
+
+  static QTimer* s_timer;
+  static int s_monitors;
+  static QMutex* s_monitorsMutex;
+  static int s_updateFrequency;
 };
 
 #endif

@@ -49,21 +49,24 @@ extern QApplication* _qapp;
 #define ID_ABSOLUTE         1010
 #define ID_RELATIVE         1020
 
-#define ID_FREQUENCY        2000
-#define ID_16HZ             ID_FREQUENCY + 16
-#define ID_32HZ             ID_FREQUENCY + 32
-#define ID_64HZ             ID_FREQUENCY + 64
+#define ID_16HZ             16
+#define ID_32HZ             32
+#define ID_64HZ             64
 
 #define ID_RESIZE_SQUARE    0010
 
 #define ID_CHOOSE_FONT      3000
 
-const QString Monitor::KEY_MONITOR_FONT = "MonitorFont";
-const QString Monitor::KEY_MONITOR_DISPLAY_STYLE = "MonitorDisplayStyle";
-const QString Monitor::KEY_MONITOR_UPDATE_FREQUENCY = "MonitorUpdateFrequency";
+const QString Monitor::KEY_MONITOR_FONT             (          "MonitorFont" );
+const QString Monitor::KEY_MONITOR_DISPLAY_STYLE    (  "MonitorDisplayStyle" );
+const QString Monitor::KEY_MONITOR_UPDATE_FREQUENCY ("MonitorUpdateFrequency");
 
-Monitor::Monitor(QWidget* parent, t_channel fromChannel,
-		 t_channel toChannel)
+QTimer* Monitor::s_timer         (         NULL );
+int Monitor::s_monitors          (            0 );
+QMutex* Monitor::s_monitorsMutex ( new QMutex() );
+int Monitor::s_updateFrequency   (      ID_16HZ );
+
+Monitor::Monitor(QWidget* parent, t_channel fromChannel, t_channel toChannel)
   : QWidget(parent)
 {
   ASSERT(fromChannel <= toChannel);
@@ -76,14 +79,11 @@ Monitor::Monitor(QWidget* parent, t_channel fromChannel,
   m_oldValues = NULL;
 
   m_displayStyle = ID_RELATIVE;
-  m_updateFrequency = ID_64HZ;
 }
+
 
 Monitor::~Monitor()
 {
-  m_timer->stop();
-  delete m_timer;
-
   while (m_painter.isActive());
 
   delete [] m_newValues;
@@ -93,8 +93,10 @@ Monitor::~Monitor()
 
 void Monitor::closeEvent(QCloseEvent* e)
 {
+  disconnectTimer();
   emit closed();
 }
+
 
 void Monitor::init()
 {
@@ -111,11 +113,6 @@ void Monitor::init()
     }
 
   //
-  // Init the timer that updates the values
-  m_timer = new QTimer(this);
-  connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
-
-  //
   // Set font
   _app->settings()->get(KEY_MONITOR_FONT, config);
   
@@ -128,11 +125,23 @@ void Monitor::init()
   // Set display style
   _app->settings()->get(KEY_MONITOR_DISPLAY_STYLE, config);
   m_displayStyle = config.toInt();
+  if (m_displayStyle == 0)
+    {
+      m_displayStyle = ID_RELATIVE;
+    }
 
   //
   // Set display update frequency
   _app->settings()->get(KEY_MONITOR_UPDATE_FREQUENCY, config);
-  m_updateFrequency = config.toInt() + ID_FREQUENCY;
+  s_updateFrequency = config.toInt();
+  if (s_updateFrequency > ID_64HZ)
+    {
+      s_updateFrequency = ID_64HZ;
+    }
+  else if (s_updateFrequency < ID_16HZ)
+    {
+      s_updateFrequency = ID_16HZ;
+    }
 
   //
   // Try and resize the window to square shape
@@ -141,13 +150,43 @@ void Monitor::init()
   //
   // Background color
   setBackgroundColor(Qt::black);
+
+  connectTimer();
 }
 
-void Monitor::show()
-{
-  m_timer->start(16);
 
-  QWidget::show();
+void Monitor::connectTimer()
+{
+  s_monitorsMutex->lock();
+
+  if (s_monitors == 0)
+    {
+      s_timer = new QTimer();
+      s_timer->start(1000 / s_updateFrequency);
+    }
+
+  connect(s_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
+  s_monitors++;
+
+  s_monitorsMutex->unlock();
+}
+
+
+void Monitor::disconnectTimer()
+{
+  s_monitorsMutex->lock();
+
+  disconnect(s_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
+  s_monitors--;
+
+  if (s_monitors == 0)
+    {
+      s_timer->stop();
+      delete s_timer;
+      s_timer = NULL;
+    }
+
+  s_monitorsMutex->unlock();
 }
 
 void Monitor::slotResizeSquare()
@@ -188,7 +227,7 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       speedMenu->insertItem("16Hz", ID_16HZ);
       speedMenu->insertItem("32Hz", ID_32HZ);
       speedMenu->insertItem("64Hz", ID_64HZ);
-      speedMenu->setItemChecked(m_updateFrequency, true);
+      speedMenu->setItemChecked(s_updateFrequency, true);
 
       menu->insertItem(QPixmap(dir + "/monitor.xpm"), 
 		       "Channel &Display", displayMenu);
@@ -236,27 +275,24 @@ void Monitor::slotMenuCallback(int item)
       break;
 
     case ID_16HZ:
-      m_timer->stop();
-      m_timer->start(1000 / (item - ID_FREQUENCY));
-      m_updateFrequency = item;
-      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY,
-			    item - ID_FREQUENCY);
+      s_timer->stop();
+      s_timer->start(1000 / item);
+      s_updateFrequency = item;
+      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item);
       break;
 
     case ID_32HZ:
-      m_timer->stop();
-      m_timer->start(1000 / (item - ID_FREQUENCY));
-      m_updateFrequency = item;
-      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 
-			    item - ID_FREQUENCY);
+      s_timer->stop();
+      s_timer->start(1000 / item);
+      s_updateFrequency = item;
+      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item);
       break;
 
     case ID_64HZ:
-      m_timer->stop();
-      m_timer->start(1000 / (item - ID_FREQUENCY));
-      m_updateFrequency = item;
-      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 
-			    item - ID_FREQUENCY);
+      s_timer->stop();
+      s_timer->start(1000 / item);
+      s_updateFrequency = item;
+      _app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item);
       break;
 
     case ID_CHOOSE_FONT:
@@ -277,6 +313,7 @@ void Monitor::slotMenuCallback(int item)
     }
 }
 
+
 void Monitor::slotTimeOut()
 {
   _app->outputPlugin()->readRange(m_fromChannel, m_newValues, m_units);
@@ -284,6 +321,7 @@ void Monitor::slotTimeOut()
   // Paint only changed values
   repaint(false);
 }
+
 
 void Monitor::paintEvent(QPaintEvent* e)
 {
