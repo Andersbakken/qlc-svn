@@ -53,7 +53,6 @@ class Chaser : public Function
 
   void busValueChanged(t_bus_id, t_bus_value);
   
-  void stop();
   void freeRunTimeData();
   void childFinished();
 

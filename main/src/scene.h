@@ -30,6 +30,8 @@ class Device;
 class RunTimeData;
 class SceneValue;
 
+typedef double t_scene_acc;
+
 class Scene : public Function
 {
  public:
@@ -55,9 +57,9 @@ class Scene : public Function
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  void speedChange(t_bus_value);
   void busValueChanged(t_bus_id, t_bus_value);
-  void stop();
+  void speedChange(t_bus_value);
+
   void freeRunTimeData();
 
  protected:
@@ -69,17 +71,24 @@ class Scene : public Function
 
   SceneValue* m_values;
 
+  t_bus_value m_timeSpan;
+  t_bus_value m_elapsedTime;
+
   RunTimeData* m_runTimeData;
   t_value* m_channelData;
-  time_t m_elapsedTime;
+
+  // This mutex is locked when the run time data is accessed
+  QMutex m_dataMutex;
 };
 
 class RunTimeData
 {
  public:
-  float start;
-  float current;
-  float increment;
+  t_scene_acc start;
+  t_scene_acc current;
+  t_scene_acc target;
+  t_scene_acc increment;
+  bool ready;
 };
 
 class SceneValue

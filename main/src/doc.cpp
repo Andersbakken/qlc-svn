@@ -45,8 +45,6 @@
 
 extern App* _app;
 
-const t_bus_id KBusCount (32);
-
 //
 // Constructor
 //
@@ -54,7 +52,6 @@ Doc::Doc() : QObject()
 {
   m_workspaceFileName = QString::null;
   setModified(false);
-  m_busArray = NULL;
 }
 
 
@@ -102,12 +99,6 @@ void Doc::setModified(bool modified)
 void Doc::init()
 {
   readDeviceClasses();
-
-  connect(Bus::defaultFadeBus(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
-
-  connect(Bus::defaultHoldBus(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 }
 
 
@@ -606,7 +597,7 @@ void Doc::newDocument()
 
   _app->functionConsumer()->purge();
 
-  // Delete all global functions
+  // Delete all functions
   m_functions.first();
   while (!m_functions.isEmpty())
     {
@@ -624,15 +615,22 @@ void Doc::newDocument()
       delete d;
     }
 
-  m_workspaceFileName = QString("noname.qlc");
+  m_workspaceFileName = QString::null;
 
   setModified(false);
 
   Function::resetFunctionId();
 
-  initBuses();
-
   emit newDocumentClicked();
+}
+
+
+//
+// Save the workspace
+//
+bool Doc::saveWorkspace()
+{
+  return saveWorkspaceAs(m_workspaceFileName);
 }
 
 
@@ -737,14 +735,9 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 }
 
 
-//
-// Save the workspace
-//
-bool Doc::saveWorkspace()
-{
-  return saveWorkspaceAs(m_workspaceFileName);
-}
-
+//////////////////
+// Device stuff //
+//////////////////
 
 //
 // Add a new device to list
@@ -801,7 +794,7 @@ bool Doc::removeDevice(Device* device)
 
 
 //
-// Search for a device by its run-time id number
+// Search for a device by its id number
 //
 Device* Doc::searchDevice(const t_device_id id)
 {
@@ -817,6 +810,11 @@ Device* Doc::searchDevice(const t_device_id id)
   return NULL;
 }
 
+
+
+////////////////////////
+// Device Class stuff //
+////////////////////////
 
 //
 // Search for a deviceclass by its manufacturer & model
@@ -854,6 +852,11 @@ DeviceClass* Doc::searchDeviceClass(const t_deviceclass_id id)
   return NULL;
 }
 
+
+
+////////////////////
+// Function stuff //
+////////////////////
 
 //
 // Add a new function to list
@@ -904,6 +907,9 @@ bool Doc::removeFunction(const t_function_id id, bool deleteFunction)
 }
 
 
+//
+// Search for a function by its id
+//
 Function* Doc::searchFunction(const t_function_id id)
 {
   Function* f = NULL;
@@ -916,59 +922,4 @@ Function* Doc::searchFunction(const t_function_id id)
     }
 
   return NULL;
-}
-
-///////////////
-// Bus stuff //           
-///////////////
-
-void Doc::initBuses()
-{
-  delete [] m_busArray;
-
-  m_busArray = new Bus[KBusCount];
-}
-
-bool Doc::busValue(t_bus_id id, t_bus_value& value)
-{
-  if (id < KBusCount)
-    {
-      value = m_busArray[id].value();
-      return true;
-    }
-  else
-    {
-      value = 0;
-      return false;
-    }
-}
-
-bool Doc::setBusValue(t_bus_id id, t_bus_value value)
-{
-  if (id < KBusCount)
-    {
-      m_busArray[id].setValue(value);
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-//
-// Broadcast all bus values to all functions.
-// This is not the most efficient nor latency-safe because this
-// happens in QT's message posting thread.
-//
-void Doc::slotBusValueChanged(t_bus_id id, t_bus_value value)
-{
-  QPtrListIterator <Function> it(m_functions);
-  Function* function = NULL;
-
-  while ( (function = it.current()) )
-    {
-      ++it;
-      function->busValueChanged(id, value);
-    }
 }

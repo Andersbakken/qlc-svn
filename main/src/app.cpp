@@ -128,6 +128,8 @@ App::App(Settings* settings)
   m_outputPlugin = NULL;
   m_dummyOutPlugin = NULL;
 
+  Bus::initAll();
+
   ASSERT(settings != NULL);
   m_settings = settings;
 }
@@ -156,8 +158,6 @@ void App::initView(void)
   setIcon(QPixmap(dir + QString("/Q.xpm")));
 
   initWorkspace();
-  connect(m_settings, SIGNAL(outputPluginChanged(const QString&)), 
-	  m_doc, SLOT(slotChangeOutputPlugin(const QString&)));
 
   initMenuBar();
   initStatusBar();

@@ -25,8 +25,6 @@
 #include "uic_vcdockslider.h"
 #include "types.h"
 
-class Bus;
-
 class VCDockSlider : public UI_VCDockSlider
 {
   Q_OBJECT
@@ -44,15 +42,14 @@ class VCDockSlider : public UI_VCDockSlider
       
 
   void setMode(VCDockSlider::Mode mode);
-  void setBus(Bus* bus);
+  void setBusID(t_bus_id id);
 
  public slots:
   void slotSliderValueChanged(int);
-  void slotBusDestroyed(t_bus_id);
 
  private:
   Mode m_mode;
-  Bus* m_bus;
+  t_bus_id m_busID;
 };
 
 #endif

@@ -51,7 +51,7 @@ Scene::Scene(t_function_id id) : Function(id)
   m_virtualController = NULL;
   m_elapsedTime = 0;
 
-  m_busID = Bus::defaultFadeBus()->id();
+  setBus(KBusIDDefaultFade);
 }
 
 
@@ -66,7 +66,7 @@ bool Scene::copyFrom(Scene* sc)
     {
       m_startMutex.lock();
       m_name = sc->name();
-      m_busID = sc->bus();
+      m_busID = sc->busID();
 
       memcpy(m_values, sc->m_values, m_channels * sizeof(SceneValue));
 
@@ -353,14 +353,6 @@ SceneValue Scene::channelValue(t_channel ch)
 
 
 //
-// Explicitly stop this function
-//
-void Scene::stop()
-{
-  m_stopped = true;
-}
-
-//
 // Bus value has changed
 //
 void Scene::busValueChanged(t_bus_id id, t_bus_value value)
@@ -390,45 +382,11 @@ void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Scene::speedChange(t_bus_value newTimeSpan)
 {
-  for (t_channel i = 0; i < m_channels; i++)
-    {
-      if (m_values[i].type == Fade)
-	{
-	  if (m_elapsedTime == 0)
-	    {
-	      // Step increment
-	      m_runTimeData[i].increment = 
-		(static_cast<float>(m_values[i].value) - 
-		 m_runTimeData[i].start) / (float) newTimeSpan;
-	    }
-	  else
-	    {
-	      // Scene has already been running. Calculate increment
-	      // for the remaining time
-	      m_runTimeData[i].increment =
-		(static_cast<float>(m_values[i].value) -
-		 m_runTimeData[i].current) / 
-		(float) (m_timeSpan - newTimeSpan);
-
-	      qDebug("%d: %f -> %d incs %f in %ld", i, 
-		     m_runTimeData[i].current, m_values[i].value,
-		     m_runTimeData[i].increment, newTimeSpan);
-	    }
-	}
-      else if (m_values[i].type == Set)
-	{
-	  // Set the gap between start and target value as the increment
-	  m_runTimeData[i].increment =
-	    (static_cast<float>(m_values[i].value) -
-	     m_runTimeData[i].start);
-	}
-      else
-	{
-	  // NoSet values don't need any speed changing
-	}
-    }
+  m_dataMutex.lock();
 
   m_timeSpan = newTimeSpan;
+
+  m_dataMutex.unlock();
 }
 
 
@@ -447,17 +405,29 @@ void Scene::init()
   m_eventBuffer = new EventBuffer(m_channels);
 
   // Current values
-  _app->outputPlugin()->readRange(m_device->address(),
-				  m_channelData, m_channels);
+  _app->outputPlugin()->readRange(m_device->address(), m_channelData, 
+				  m_channels);
 
   for (t_channel i = 0; i < m_channels; i++)
     {
-      m_runTimeData[i].current = m_runTimeData[i].start = 
-	static_cast<float> (m_channelData[i]);
+      m_runTimeData[i].current = 
+	m_runTimeData[i].start =
+	static_cast<t_scene_acc> (m_channelData[i]);
+      
+      m_runTimeData[i].target = static_cast<t_scene_acc> (m_values[i].value);
+
+      m_runTimeData[i].increment = 0;
+      m_runTimeData[i].ready = false;
     }
 
   // No time has yet passed for this scene.
   m_elapsedTime = 0;
+
+  // Get speed bus value
+  if ( !Bus::value(m_busID, m_timeSpan) )
+    {
+      ASSERT(false);
+    }
 
   // Calculate starting values
   speedChange(m_timeSpan);
@@ -478,38 +448,56 @@ void Scene::run()
   // Initialize this scene for running
   init();
 
-  while (!m_stopped)
+  m_dataMutex.lock();
+
+  for (m_elapsedTime = 0; m_elapsedTime <= m_timeSpan; m_elapsedTime++)
     {
-      m_elapsedTime++;
-      ready = 0;
+      m_dataMutex.unlock();
+
       for (ch = 0; ch < m_channels; ch++)
 	{
-	  if ((t_value) m_runTimeData[ch].current == m_values[ch].value
-	      || m_values[ch].type == NoSet)
+	  if (m_channelData[ch] & FunctionConsumer::KNoSetMask)
 	    {
-	      m_channelData[ch] |= FunctionConsumer::KNoSetMask; 
-	      ready++;
+	      continue;
 	    }
-	  else
+	  else if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
-	      m_runTimeData[ch].current += m_runTimeData[ch].increment;
+	      m_channelData[ch] |= FunctionConsumer::KNoSetMask;
+	      continue;
+	    }
+	  else if (m_values[ch].type == Set)
+	    {
+	      m_dataMutex.lock();
+
+	      m_channelData[ch] = m_values[ch].value;
+	      m_runTimeData[ch].ready = true;
+
+	      m_dataMutex.unlock();
+	    }
+	  else if (m_values[ch].type == Fade)
+	    {
+	      m_dataMutex.lock();
+
+	      m_runTimeData[ch].increment = 
+		(m_runTimeData[ch].target - m_runTimeData[ch].start)
+		/ m_timeSpan;
+	      
+	      m_runTimeData[ch].current = m_runTimeData[ch].start + 
+		(m_elapsedTime * m_runTimeData[ch].increment);
+
 	      m_channelData[ch] =
 		static_cast<t_value> (m_runTimeData[ch].current);
 	    }
-	}
 
-      if (ready == m_channels)
-	{
-	  // All channels are ready, nothing more to do
-	  break;
+	  m_dataMutex.unlock();
 	}
-      else
-	{
-	  // Put data to buffer
-	  m_eventBuffer->put(m_channelData);
-	}
+      
+      m_eventBuffer->put(m_channelData);
 
+      m_dataMutex.lock();
     }
+
+  m_dataMutex.unlock();
 
   // No more items produced -> this scene can be removed from
   // the list after the buffer is empty.
@@ -535,9 +523,7 @@ void Scene::freeRunTimeData()
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
-  m_stopMutex.lock();
   m_stopped = false;
-  m_stopMutex.unlock();
 
   m_startMutex.lock();
 

@@ -76,8 +76,8 @@ class Function : public QThread
   virtual bool setDevice(Device* device);
 
   // The bus for speed setting
-  bool setBus(t_bus_id id);
-  t_bus_id bus() const { return m_busID; }
+  t_bus_id busID() const { return m_busID; }
+  virtual bool setBus(t_bus_id id);
   virtual void busValueChanged(t_bus_id, t_bus_value) {}
 
   // Save this function to a file
@@ -92,7 +92,7 @@ class Function : public QThread
   virtual bool engage(Function* parentFunction); // From chaser & collection
 
   // Stop this function
-  virtual void stop() = 0;
+  virtual void stop();
 
   // If the buffer is empty and this is true, FunctionConsumer removes
   // this function from its list; this function has finished.
@@ -124,8 +124,6 @@ class Function : public QThread
   bool m_removeAfterEmpty;
   EventBuffer* m_eventBuffer;
 
-  time_t m_timeSpan;
-
   QObject* m_virtualController;
   Function* m_parentFunction;
 
@@ -140,7 +138,6 @@ class Function : public QThread
   // This can be used from the inside to signal that this function should
   // be stopped by setting it true.
   bool m_stopped;
-  QMutex m_stopMutex;
 
   // Bus for setting the speed
   t_bus_id m_busID;

@@ -44,7 +44,6 @@ class FunctionCollection : public Function
   void createContents(QPtrList <QString> &list);
 
   void speedChange();
-  void stop();
   void freeRunTimeData();
 
   void functionStopped();

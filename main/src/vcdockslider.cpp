@@ -36,7 +36,7 @@ extern App* _app;
 VCDockSlider::VCDockSlider(QWidget* parent, const char* name)
   : UI_VCDockSlider(parent, name)
 {
-  m_bus = NULL;
+  m_busID = KBusIDInvalid;
 }
 
 VCDockSlider::~VCDockSlider()
@@ -55,19 +55,13 @@ void VCDockSlider::slotSliderValueChanged(int value)
     case Speed:
       num.sprintf("%.3d", value);
       m_valueLabel->setText(num);
-      m_bus->setValue(value);
+      Bus::setValue(m_busID, m_slider->value());
       break;
 
     case Master:
       //_app->doc()->outputPlugin()->setMaster(KChannelValueMax - value);
       break;
     }
-}
-
-
-void VCDockSlider::slotBusDestroyed(t_bus_id)
-{
-  m_bus = Bus::defaultFadeBus();
 }
 
 
@@ -83,19 +77,18 @@ void VCDockSlider::setMode(Mode mode)
       
     case Speed:
       {
-	ASSERT(m_bus);
-	if (m_bus == Bus::defaultFadeBus())
+	if (m_busID == KBusIDDefaultFade)
 	  {
 	    m_nameLabel->setText("Fade");
 	    m_infoLabel->setText("Speed");
 	  }
-	else if (m_bus == Bus::defaultHoldBus())
+	else if (m_busID == KBusIDDefaultHold)
 	  {
 	    m_nameLabel->setText("Hold");
 	    m_infoLabel->setText("Speed");
 	  }
 
-	m_bus->setValue(m_slider->value());
+	Bus::setValue(m_busID, m_slider->value());
       }
       break;
 
@@ -106,27 +99,9 @@ void VCDockSlider::setMode(Mode mode)
     }
 }
 
-void VCDockSlider::setBus(Bus* bus)
+void VCDockSlider::setBusID(t_bus_id id)
 {
-  if (m_bus)
-    {
-      // Disconnect old bus
-      disconnect(m_bus, SIGNAL(destroyed(t_bus_id)),
-		 this, SLOT(slotBusDestroyed(t_bus_id)));
-    }
-
-  // Take new bus
-  m_bus = bus;
-
-  if (bus)
-    {
-      // Connect new bus
-      connect(m_bus, SIGNAL(destroyed(t_bus_id)),
-	      this, SLOT(slotBusDestroyed(t_bus_id)));
-
-      // Since a bus was set to this slider, we can
-      // make it a speed slider
-      setMode(Speed);
-    }
+  m_busID = id;
+  setMode(Speed);
 }
 

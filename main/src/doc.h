@@ -80,27 +80,10 @@ class Doc : public QObject
 				 const QString &model);
   DeviceClass* searchDeviceClass(const t_deviceclass_id id);
 
-  //
-  // Buses
-  //
-  void initBuses();
-  bool busValue(t_bus_id busID, t_bus_value& value);
-  bool setBusValue(t_bus_id busID, t_bus_value value);
-
-  /*
-  QPtrList <Bus> *busList()  { return &m_busList; }
-  Bus* searchBus(const t_bus_id id);
-  void addBus(Bus* bus);
-  void removeBus(const t_bus_id id, bool deleteBus = true);
-  */
-
  signals:
   void deviceListChanged();
   void deviceRemoved(int);
   void newDocumentClicked();
-
- public slots:
-  void slotBusValueChanged(t_bus_id, t_bus_value);
 
  private:
   DeviceClass* createDeviceClass(QPtrList <QString> &list);
@@ -115,8 +98,6 @@ class Doc : public QObject
   QPtrList <Function> m_functions;
   QPtrList <Device> m_deviceList;
   QPtrList <DeviceClass> m_deviceClassList;
-
-  Bus* m_busArray;
 };
 
 #endif

@@ -77,7 +77,7 @@ Function::Function(t_function_id id) : QThread()
   m_virtualController = NULL;
   m_parentFunction = NULL;
   m_stopped = false;
-  m_busID = KNoID;
+  m_busID = KBusIDInvalid;
 }
 
 
@@ -173,7 +173,12 @@ bool Function::setBus(t_bus_id id)
     }
   else
     {
+      Bus::removeListener(m_busID, this);
+
       m_busID = id;
+
+      Bus::addListener(m_busID, this);
+
       m_startMutex.unlock();
       return true;
     }
@@ -235,4 +240,13 @@ bool Function::engage(Function* parentFunction)
 
       return true;
     }
+}
+
+
+//
+// Stop this function
+//
+void Function::stop()
+{
+  m_stopped = true;
 }

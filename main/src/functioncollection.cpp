@@ -45,10 +45,6 @@ FunctionCollection::FunctionCollection(t_function_id id)
   : Function(id)
 {
   m_type = Function::Collection;
-
-  // Hmm... should this propagate to child functions?
-  // Right now it has no particular purpose...
-  m_busID = Bus::defaultFadeBus()->id();
 }
 
 
@@ -300,17 +296,6 @@ void FunctionCollection::speedChange()
 
 
 //
-// Explicitly stop this function
-//
-void FunctionCollection::stop()
-{
-  m_stopMutex.lock();
-  m_stopped = true;
-  m_stopMutex.unlock();
-}
-
-
-//
 // Free run-time allocations
 //
 void FunctionCollection::freeRunTimeData()
@@ -320,11 +305,7 @@ void FunctionCollection::freeRunTimeData()
   delete m_eventBuffer;
   m_eventBuffer = NULL;
 
-  m_stopMutex.lock();
-  m_stopped = true;
-  m_stopMutex.unlock();
-
-  m_startMutex.lock();
+  m_stopped = false;
 
   if (m_virtualController)
     {
@@ -339,6 +320,7 @@ void FunctionCollection::freeRunTimeData()
       m_parentFunction = NULL;
     }
 
+  m_startMutex.lock();
   m_running = false;
   m_startMutex.unlock();
 }
@@ -355,6 +337,9 @@ void FunctionCollection::init()
 
   m_removeAfterEmpty = false;
   m_eventBuffer = new EventBuffer(0, 0);
+
+  // Append this function to running functions list
+  _app->functionConsumer()->cue(this);
 }
 
 
@@ -369,9 +354,6 @@ void FunctionCollection::run()
   // Calculate starting values
   init();
   
-  // Append this function to running functions list
-  _app->functionConsumer()->cue(this);
-
   m_stopped = false;
   while ((step = it.current()) && !m_stopped)
     {

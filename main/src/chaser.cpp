@@ -45,7 +45,6 @@ Chaser::Chaser(t_function_id id) : Function(id)
 {
   m_type = Function::Chaser;
   m_holdTime = 2;
-  m_busID = Bus::defaultHoldBus()->id();
 }
 
 
@@ -298,17 +297,6 @@ void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
 
 
 //
-// Explicitly stop this function
-//
-void Chaser::stop()
-{
-  m_stopMutex.lock();
-  m_stopped = true;
-  m_stopMutex.unlock();
-}
-
-
-//
 // Free run-time allocations
 //
 void Chaser::freeRunTimeData()
@@ -327,9 +315,7 @@ void Chaser::freeRunTimeData()
       m_virtualController = NULL;
     }
 
-  m_stopMutex.lock();
-  m_stopped = true;
-  m_stopMutex.unlock();
+  m_stopped = false;
 
   m_startMutex.lock();
   m_running = false;
@@ -344,10 +330,15 @@ void Chaser::init()
 {
   m_childRunning = false;
   m_removeAfterEmpty = false;
+  m_stopped = false;
+
   // There's actually no need for an eventbuffer, but
   // because FunctionConsumer does EventBuffer::get() calls, it must be
   // there... So allocate a zero length buffer.
   m_eventBuffer = new EventBuffer(0, 0); 
+
+  // Add this to function consumer
+  _app->functionConsumer()->cue(this);
 }
 
 
@@ -363,14 +354,8 @@ void Chaser::run()
 
   QPtrListIterator <FunctionStep> it(m_steps);
 
-  _app->functionConsumer()->cue(this);
-
-  m_stopMutex.lock();
-  m_stopped = false;
   while ( !m_stopped )
     {
-      m_stopMutex.unlock();
-
       if (it.current())
 	{
 	  m_childRunning = true;
@@ -394,10 +379,7 @@ void Chaser::run()
 	  it.toFirst();
 	}
 
-      m_stopMutex.lock();
     }
-
-  m_stopMutex.unlock();
 
   // This chaser can be removed from the list after the buffer is empty.
   // (meaning immediately because this doesn't produce any events).

@@ -40,7 +40,6 @@
 #include "vcslider.h"
 #include "vcbutton.h"
 #include "vcwidget.h"
-#include "speedslider.h"
 #include "vcwidgetbase.h"
 #include "keybind.h"
 #include "vclabel.h"
@@ -91,8 +90,6 @@ void VirtualConsole::initView(void)
 			"&Button", ID_VC_ADD_BUTTON);
   m_addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
 			"&Slider", ID_VC_ADD_SLIDER);
-  m_addMenu->insertItem(QPixmap(dir + "/speedslider.xpm"), 
-			"S&peed slider", ID_VC_ADD_SPEEDSLIDER);
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 			"&Frame", ID_VC_ADD_FRAME);
   m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"), 
@@ -159,15 +156,6 @@ void VirtualConsole::slotMenuItemActivated(int item)
 	s->init();
 	s->setGeometry(0, 0, 20, 120);
 	s->show();
-	_app->doc()->setModified(true);
-      }
-      break;
-
-    case ID_VC_ADD_SPEEDSLIDER:
-      {
-	SpeedSlider* p = NULL;
-	p = new SpeedSlider(m_drawArea);
-	p->show();
 	_app->doc()->setModified(true);
       }
       break;
@@ -433,11 +421,6 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	{
 	  VCButton* w = new VCButton(m_drawArea);
 	  w->init();
-	  w->createContents(list);
-	}
-      else if (*s == QString("SpeedSlider"))
-	{
-	  SpeedSlider* w = new SpeedSlider(m_drawArea);
 	  w->createContents(list);
 	}
       else if (*s == QString("Slider"))

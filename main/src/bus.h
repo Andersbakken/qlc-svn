@@ -22,57 +22,46 @@
 #ifndef BUS_H
 #define BUS_H
 
-#include <qobject.h>
 #include <qptrlist.h>
-#include <limits.h>
-
 #include "types.h"
 
 class QFile;
 class QString;
-class QPoint;
+class Function;
 
-class Bus : public QObject
+class Bus
 {
-  Q_OBJECT
+ private:
+  Bus();
 
  public:
-  Bus(t_bus_id id = 0);
   ~Bus();
-
-  Bus& operator=(Bus &b);
-
-  QString infoText();
-
-  t_bus_id id() { return m_id; }
-
-  t_bus_value value() const { return m_value; }
-  void setValue(t_bus_value value);
-
-  QString name() { return m_name; }
-  void setName(QString name);
-
-  bool isStatic() const { return m_static; }
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
 
-  static Bus* defaultFadeBus() { return m_defaultFadeBus; }
-  static Bus* defaultHoldBus() { return m_defaultHoldBus; }
+ public:
+  static void initAll();
 
- signals:
-  void valueChanged(t_bus_id, t_bus_value);
-  void destroyed(t_bus_id);
+  static const bool value(t_bus_id, t_bus_value&);
+  static bool setValue(t_bus_id, t_bus_value);
+
+  static const QString name(t_bus_id);
+  static bool setName(t_bus_id, QString);
+
+  static bool addListener(t_bus_id, Function*);
+  static bool removeListener(t_bus_id, Function*);
 
  private:
   t_bus_id m_id;
   t_bus_value m_value;
   QString m_name;
-  bool m_static;
 
-  static Bus* m_defaultFadeBus;
-  static Bus* m_defaultHoldBus;
-  static t_bus_id m_nextBusID;
+  QPtrList <Function> m_listeners;
+
+ private:
+  static Bus* s_busArray;
+  static t_bus_id s_nextID;
 };
 
 #endif

@@ -24,38 +24,19 @@
 
 #include "bus.h"
 #include "app.h"
+#include "function.h"
 
-t_bus_id Bus::m_nextBusID = KBusIDMin;
-Bus* Bus::m_defaultFadeBus = new Bus(KBusIDDefaultFade);
-Bus* Bus::m_defaultHoldBus = new Bus(KBusIDDefaultHold);
+t_bus_id Bus::s_nextID               ( KBusIDMin );
+Bus* Bus::s_busArray                 (      NULL );
 
 //
-// Constructor
+// Constructor (private)
 //
-Bus::Bus(t_bus_id id) : QObject()
+Bus::Bus()
 {
-  if (id == KBusIDDefaultFade)
-    {
-      m_id = id;
-      m_name = QString("Default Fade Time");
-      m_value = 64;
-      m_static = true;
-    }
-  else if (id == KBusIDDefaultHold)
-    {
-      m_id = id;
-      m_name = QString("Default Hold Time");
-      m_value = 0;
-      m_static = true;
-    }
-  else
-    {
-      m_id = m_nextBusID;
-      m_nextBusID++;
-      m_value = 0;
-      m_name.sprintf("Bus %d", m_id);
-      m_static = false;
-    }
+  m_id = s_nextID++;
+  m_value = 0;
+  m_name.sprintf("Bus %d", m_id);
 }
 
 
@@ -64,92 +45,144 @@ Bus::Bus(t_bus_id id) : QObject()
 //
 Bus::~Bus()
 {
-  emit destroyed(id());
 }
 
 
 //
-// (Shallow?) Copy
+// Allocate all buses (static)
 //
-Bus& Bus::operator=(Bus &b)
+void Bus::initAll()
 {
-  if (this != &b)
-    {
-      m_id = b.id();
-      m_value = b.value();
-      m_name = QString(b.name());
-    }
+  s_busArray = new Bus[KBusCount];
 
-  return *this;
+  s_busArray[KBusIDDefaultFade].m_name = QString("Default Fade Speed");
+  s_busArray[KBusIDDefaultHold].m_name = QString("Default Hold Speed");
 }
 
 
 //
-// Info string displayed in device manager
+// Set bus name (static)
 //
-QString Bus::infoText()
+bool Bus::setName(t_bus_id id, QString name)
 {
-  QString t;
-
-  QString str = QString::null;
-  str += QString("<HTML><HEAD><TITLE>Bus Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
-  str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
-  str += name() + QString("</FONT></TD></TR></TABLE>");
-  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-  str += QString("</TABLE>");
-
-  if (m_id == KBusIDDefaultFade)
+  if (id >= KBusIDMin && id < KBusCount)
     {
-      str += QString("<P><B>") + name() + 
-	QString("</B> is assigned by default to all ");
-      str += QString("<B>scenes</B>. You can use it thru the virtual ");
-      str += QString("console to set the <I>fade time</I>.</P>");
-      str += QString("<H3>NOTE</H3>");
-      str += QString("<P><I>This bus cannot be removed</I>.</P>");
-    }
-
-  if (m_id == KBusIDDefaultHold)
-    {
-      str += QString("<P><B>") + name() + 
-	QString("</B> is assigned by default to all ");
-      str += QString("<B>chasers</B>. You can use it thru the virtual ");
-      str += QString("console to set <I>hold time</I> between steps.</P>");
-      str += QString("<H3>NOTE</H3>");
-      str += QString("<P><I>This bus cannot be removed</I>.</P>");
-    }
-
-  str += QString("</BODY></HTML>");
-
-  return str;
-}
-
-
-//
-// Set bus name
-//
-void Bus::setName(QString name)
-{
-  if (m_static)
-    {
-      return;
+      s_busArray[id].m_name = name;
+      return true;
     }
   else
     {
-      m_name = name;
+      return false;
     }
 }
 
 
 //
-// Set bus value
+// Set bus value (static)
 //
-void Bus::setValue(t_bus_value value)
+bool Bus::setValue(t_bus_id id, t_bus_value value)
 {
-  m_value = value;
-  emit valueChanged(m_id, value);
+  if (id >= KBusIDMin && id < KBusCount)
+    {
+      s_busArray[id].m_value = value;
+
+      QPtrListIterator <Function> it(s_busArray[id].m_listeners);
+
+      while (it.current())
+	{
+	  it.current()->busValueChanged(id, value);
+	  ++it;
+	}
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
+
+//
+// Return bus value (static)
+//
+const bool Bus::value(t_bus_id id, t_bus_value& value)
+{
+  if (id >= KBusIDMin && id < KBusCount)
+    {
+      value = s_busArray[id].m_value;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+//
+// Return bus name (static)
+//
+const QString Bus::name(t_bus_id id)
+{
+  if (id >= KBusIDMin && id < KBusCount)
+    {
+      return s_busArray[id].m_name;
+    }
+  else
+    {
+      return QString::null;
+    }
+}
+
+
+//
+// Add a function to listen to changes in a bus
+//
+bool Bus::addListener(t_bus_id id, Function* function)
+{
+  if (id >= KBusIDMin && id < KBusCount)
+    {
+      if (s_busArray[id].m_listeners.find(function) == -1)
+	{
+	  s_busArray[id].m_listeners.append(function);
+	  return true;
+	}
+      else
+	{
+	  return false;
+	}
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+//
+// Remove a listener
+//
+bool Bus::removeListener(t_bus_id id, Function* function)
+{
+  if (id >= KBusIDMin && id < KBusCount)
+    {
+      int index = s_busArray[id].m_listeners.find(function);
+      if (index == -1)
+	{
+	  return false;
+	}
+      else
+	{
+	  s_busArray[id].m_listeners.take(index);
+	  return true;
+	}
+    }
+  else
+    {
+      return false;
+    }
+}
 
 //
 // Save bus to a file
@@ -158,12 +191,6 @@ void Bus::saveToFile(QFile &file)
 {
   QString s;
   QString t;
-
-  if (m_id == KBusIDDefaultHold || m_id == KBusIDDefaultFade)
-    {
-      // Don't save default buses
-      return;
-    }
 
   // Comment
   s = QString("# Bus Entry\n");

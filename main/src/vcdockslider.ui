@@ -107,7 +107,7 @@
                                 <number>1</number>
                             </property>
                             <property name="maxValue">
-                                <number>256</number>
+                                <number>1024</number>
                             </property>
                             <property name="pageStep">
                                 <number>8</number>
