@@ -190,7 +190,7 @@ void VCButtonProperties::slotDetachKeyClicked()
 
 void VCButtonProperties::slotOKClicked()
 {
-  m_button->setText(m_nameEdit->text());
+  m_button->setCaption(m_nameEdit->text());
   m_button->attachFunction(m_functionID);
   m_button->setKeyBind(m_keyBind);
 
