@@ -21,6 +21,8 @@
 */
 
 
+#include "app.h"
+#include "settings.h"
 #include "sceneeditor.h"
 #include "function.h"
 #include "deviceclass.h"
@@ -37,10 +39,19 @@
 #include <qmessagebox.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <qpopupmenu.h>
 
 #include <iostream>
 using namespace std;
 
+extern App* _app;
+
+#define MENU_ACTIVATE 1000
+#define MENU_NEW      1001
+#define MENU_STORE    1002
+#define MENU_REMOVE   1003
+#define MENU_RENAME   1004
+#define MENU_HIDE     1005
 
 SceneEditor::SceneEditor(DMXDevice* device, QWidget* parent, const char* name )
              : UI_SceneEditor( parent, name)
@@ -58,7 +69,7 @@ SceneEditor::~SceneEditor()
 
 void SceneEditor::slotSceneChanged()
 {
-  setStatusText( "modified", QColor( 255, 0, 0 ) );
+  setStatusText("modified", QColor(255, 0, 0));
 }
 
 void SceneEditor::slotSceneActivated( int nr )
@@ -74,8 +85,8 @@ void SceneEditor::slotSceneActivated( int nr )
 	  m_currentScene = (Scene*) f;
 	}
     }
-  
-  setStatusText( "unchanged", QColor( 0, 255, 100 ));
+
+  setStatusText("unchanged", QColor(255, 255, 255));
 }
 
 
@@ -102,7 +113,65 @@ void SceneEditor::setScene(Scene* scene)
      }
 }
 
-void  SceneEditor::slotHideClicked()
+void SceneEditor::slotSceneListContextMenu(QListBoxItem* item, const QPoint &point)
+{
+  QPopupMenu* menu = new QPopupMenu();
+  connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallback(int)));
+
+  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("key.xpm")),
+		   "Activate", MENU_ACTIVATE);
+  menu->insertSeparator();
+  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filenew.xpm")),
+		   "New...", MENU_NEW);
+  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("filesave.xpm")),
+		   "Store", MENU_STORE);
+  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("remove.xpm")),
+		   "Remove", MENU_REMOVE);
+  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("rename.xpm")),
+		   "Rename...", MENU_RENAME);
+  menu->insertSeparator();
+  menu->insertItem(QPixmap(_app->settings()->pixmapPath() + QString("fileclose.xpm")),
+		   "Hide Editor", MENU_HIDE);
+
+  menu->exec(point);
+
+  delete menu;
+}
+
+void SceneEditor::slotMenuCallback(int item)
+{
+  switch(item)
+    {
+    case MENU_ACTIVATE:
+      if (m_sceneList->currentItem() != -1)
+	{
+	  slotSceneActivated(m_sceneList->currentItem());
+	}
+      break;
+
+    case MENU_NEW:
+      slotNewClicked();
+      break;
+
+    case MENU_STORE:
+      slotSaveClicked();
+
+    case MENU_REMOVE:
+      break;
+
+    case MENU_RENAME:
+      break;
+
+    case MENU_HIDE:
+      slotHideClicked();
+      break;
+
+    default:
+      break;
+    }
+}
+
+void SceneEditor::slotHideClicked()
 {
   for (unsigned i = parentWidget()->width(); i > ChannelUI::width() * m_device->deviceClass()->channels()->count(); i--)
     {
@@ -110,7 +179,7 @@ void  SceneEditor::slotHideClicked()
     }
 }
 
-void  SceneEditor::slotNewClicked()
+void SceneEditor::slotNewClicked()
 {
    bool ok = FALSE;
    QString text = QInputDialog::getText(
@@ -154,8 +223,11 @@ void  SceneEditor::slotNewClicked()
 
 void SceneEditor::slotSaveClicked()
 {
-  ASSERT(m_currentScene != NULL);
-  
+  if (m_currentScene == NULL)
+    {
+      return;
+    }
+
   QList <ChannelUI> ul = ((DMXDevice*) m_device)->getChannelUnitList();
 
   // Take values from device because it returns real values for
@@ -172,7 +244,7 @@ void SceneEditor::slotSaveClicked()
 	}
     }
 
-  setStatusText("saved", QColor( 0, 0, 255));
+  setStatusText("saved", QColor( 0, 255, 100));
 }
 
 
@@ -188,7 +260,7 @@ void SceneEditor::selectFunctions()
 	}
     }
 
-  setStatusText( "unchanged",QColor( 0, 255, 100 ));
+  setStatusText("unchanged", QColor( 255, 255, 255 ));
   slotSceneActivated(0);
 }
 
@@ -196,6 +268,6 @@ void SceneEditor::selectFunctions()
 
 void SceneEditor::setStatusText(QString text, QColor color)
 {
-  m_statusLabel->setPaletteForegroundColor( color );
-  m_statusLabel->setText( text );
+  m_statusLabel->setPaletteForegroundColor(color);
+  m_statusLabel->setText(text);
 }

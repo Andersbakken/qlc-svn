@@ -51,6 +51,8 @@ class SceneEditor : public UI_SceneEditor
   static int height() { return 220; }
 
  public slots:
+  void slotSceneListContextMenu(QListBoxItem* item, const QPoint &point);
+  void slotMenuCallback(int);
   void slotSceneChanged();
   void slotSceneActivated( int nr );
   void slotHideClicked();

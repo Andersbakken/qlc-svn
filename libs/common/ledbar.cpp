@@ -164,23 +164,18 @@ void LedBar::paint(void)
 
   // Text rect
   txtRect = rect();
-  txtRect.setRight(this->rect().width() - 1); //m_qapp->fontMetrics().maxWidth() * m_text.length());
-  txtRect.setTop(txtRect.bottom() - m_qapp->fontMetrics().height()); // 10
+  txtRect.setRight(this->rect().width() - 1);
+  txtRect.setTop(txtRect.bottom() - m_qapp->fontMetrics().height());
   txtRect.setLeft(1);
 
   // Value rect
   valRect = rect();
-  valRect.setRight(this->rect().width() - 1); //m_qapp->fontMetrics().maxWidth() * value.length());
-  valRect.setBottom(valRect.top() + m_qapp->fontMetrics().height()); // 11
+  valRect.setRight(this->rect().width() - 1);
+  valRect.setBottom(valRect.top() + m_qapp->fontMetrics().height());
   valRect.setLeft(1);
-
-  QFont font;
-  font.setStyleHint(QFont::System);
-  font.setPointSize(11);
 
   // Set black pen for text
   painter.setPen(Qt::black);
-  painter.setFont(font);
 
   // Draw info text
   painter.drawText(txtRect, AlignCenter, m_text);

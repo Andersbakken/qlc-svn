@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_SceneEditor</class>
 <widget class="QWidget">
     <property name="name">
@@ -7,8 +7,8 @@
     <property name="geometry">
         <rect>
             <x>0</x>
-            <y>0</y>
-            <width>131</width>
+            <y>1</y>
+            <width>130</width>
             <height>220</height>
         </rect>
     </property>
@@ -27,63 +27,6 @@
     <property name="caption">
         <string>SceneEditor</string>
     </property>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_saveButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>70</x>
-                <y>160</y>
-                <width>60</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Store</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Save as selected scene</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_newButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>160</y>
-                <width>60</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>New...</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Create a new scene</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_hideButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>190</y>
-                <width>130</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Hide</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Hide scene editor panel</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel2</cstring>
@@ -97,10 +40,10 @@
             </rect>
         </property>
         <property name="frameShape">
-            <enum>Panel</enum>
+            <enum>Box</enum>
         </property>
         <property name="frameShadow">
-            <enum>Raised</enum>
+            <enum>Sunken</enum>
         </property>
         <property name="text">
             <string>Scenes</string>
@@ -116,7 +59,7 @@
         <property name="geometry">
             <rect>
                 <x>0</x>
-                <y>130</y>
+                <y>200</y>
                 <width>130</width>
                 <height>21</height>
             </rect>
@@ -137,7 +80,6 @@
         </property>
         <property name="font">
             <font>
-                <pointsize>10</pointsize>
                 <bold>1</bold>
             </font>
         </property>
@@ -161,10 +103,16 @@
         <property name="geometry">
             <rect>
                 <x>0</x>
-                <y>20</y>
+                <y>24</y>
                 <width>130</width>
-                <height>110</height>
+                <height>176</height>
             </rect>
+        </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Plain</enum>
         </property>
         <property name="hScrollBarMode">
             <enum>AlwaysOff</enum>
@@ -173,28 +121,16 @@
 </widget>
 <connections>
     <connection>
-        <sender>m_newButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_SceneEditor</receiver>
-        <slot>slotNewClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_saveButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_SceneEditor</receiver>
-        <slot>slotSaveClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_hideButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_SceneEditor</receiver>
-        <slot>slotHideClicked()</slot>
-    </connection>
-    <connection>
         <sender>m_sceneList</sender>
         <signal>selected(int)</signal>
         <receiver>UI_SceneEditor</receiver>
         <slot>slotSceneActivated(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_sceneList</sender>
+        <signal>contextMenuRequested(QListBoxItem*,const QPoint&amp;)</signal>
+        <receiver>UI_SceneEditor</receiver>
+        <slot>slotSceneListContextMenu(QListBoxItem*,const QPoint&amp;)</slot>
     </connection>
 </connections>
 <slots>
@@ -204,6 +140,7 @@
     <slot>slotNewClicked()</slot>
     <slot>slotSaveClicked()</slot>
     <slot>slotSceneActivated( int )</slot>
+    <slot>slotSceneListContextMenu(QListBoxItem*, const QPoint&amp;)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
