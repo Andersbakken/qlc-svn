@@ -29,6 +29,7 @@
 enum SceneValueType
   {
     Set,  // Normal value
+    Fade, // Fade value
     NoSet // Empty value
   };
 
@@ -53,9 +54,11 @@ class Scene : public Function
   void recalculateSpeed(Feeder* feeder);
 
   bool allocate(unsigned short channels);
-  bool set(unsigned short ch, unsigned char value);
+  bool set(unsigned short ch, unsigned char value, SceneValueType type);
   bool clear(unsigned short ch);
   SceneValue channelValue(unsigned short ch);
+
+  QString valueTypeString(int ch);
 
   void saveToFile(QFile &file);
 

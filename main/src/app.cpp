@@ -69,12 +69,12 @@
 #define ID_VIEW_SEQUENCE_EDITOR         12050
 #define ID_VIEW_DMXADDRESSTOOL          12060
 #define ID_VIEW_INPUT_DEVICES           12070
-#define ID_VIEW_ADVANCED_SCENE_EDITOR   12080
 
 ///////////////////////////////////////////////////////////////////
 // Functions menu entries
-#define ID_FUNCTIONS_GLOBAL_FUNCTIONS   13010
-#define ID_FUNCTIONS_PANIC              13020
+#define ID_FUNCTIONS_GLOBAL_FUNCTIONS       13010
+#define ID_FUNCTIONS_ADVANCED_SCENE_EDITOR  13020
+#define ID_FUNCTIONS_PANIC                  13030
 
 ///////////////////////////////////////////////////////////////////
 // Window menu entries
@@ -124,7 +124,7 @@ void App::initView(void)
   if (m_settings->openLastWorkspace() == true)
     {
       QString fileName = m_settings->lastWorkspaceFileName();
-      
+
       doc()->loadWorkspaceAs(fileName);
       setCaption(IDS_APP_NAME_LONG + QString(" - ") + doc()->workspaceFileName());
     }
@@ -235,7 +235,6 @@ void App::initMenuBar()
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("virtualconsole.xpm")), "Virtual Console", this, SLOT(slotViewVirtualConsole()), 0, ID_VIEW_VIRTUAL_CONSOLE);
   m_viewMenu->insertSeparator();
   m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("deviceclasseditor.xpm")), "Device Class Editor", this, SLOT(slotViewDeviceClassEditor()), 0, ID_VIEW_DEVICE_CLASS_EDITOR);
-  m_viewMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("function.xpm")), "Advanced Scene Editor", this, SLOT(slotViewAdvancedSceneEditor()), 0, ID_VIEW_ADVANCED_SCENE_EDITOR);
   //
   // Sequence Editor is disabled for now because it doesn't work at all
   //
@@ -255,6 +254,7 @@ void App::initMenuBar()
   m_functionsMenu = new QPopupMenu();
 
   m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("global.xpm")), "Global Functions", this, SLOT(slotViewGlobalFunctions()), 0, ID_FUNCTIONS_GLOBAL_FUNCTIONS);
+  m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("function.xpm")), "Advanced Scene Editor", this, SLOT(slotViewAdvancedSceneEditor()), 0, ID_FUNCTIONS_ADVANCED_SCENE_EDITOR);
   m_functionsMenu->insertSeparator();
   m_functionsMenu->insertItem(QPixmap(m_settings->pixmapPath() + QString("panic.xpm")), "Panic!", this, SLOT(slotPanic()), 0, ID_FUNCTIONS_PANIC);
 

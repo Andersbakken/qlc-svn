@@ -80,6 +80,25 @@ bool Scene::registerFunction(Feeder* feeder)
   return true;
 }
 
+QString Scene::valueTypeString(int ch)
+{
+  switch(m_values[ch].type)
+    {
+    case Set:
+      return QString("Set");
+      break;
+
+    case Fade:
+      return QString("Fade");
+      break;
+
+    default:
+    case NoSet:
+      return QString("NoSet");
+      break;
+    }
+}
+
 void Scene::saveToFile(QFile &file)
 {
   QString s;
@@ -107,14 +126,14 @@ void Scene::saveToFile(QFile &file)
       // Write only the data for device class scenes
       for (unsigned short i = 0; i < deviceClass()->channels()->count(); i++)
 	{
-	  if (m_values[i].type == Set)
-	    {
-	      t.setNum(i);
-	      s = t + QString(" = ");
-	      t.setNum(m_values[i].value);
-	      s += t + QString("\n");
-	      file.writeBlock((const char*) s, s.length());
-	    }
+	  t.setNum(i);
+	  s = t + QString(" = ");
+	  t.setNum(m_values[i].value);
+	  s += t + QString("\n");
+	  file.writeBlock((const char*) s, s.length());
+
+	  s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
+	  file.writeBlock((const char*) s, s.length());
 	}
     }
   else if (device() != NULL)
@@ -127,14 +146,14 @@ void Scene::saveToFile(QFile &file)
       // Data
       for (unsigned short i = 0; i < device()->deviceClass()->channels()->count(); i++)
 	{
-	  if (m_values[i].type == Set)
-	    {
-	      t.setNum(i);
-	      s = t + QString(" = ");
-	      t.setNum(m_values[i].value);
-	      s += t + QString("\n");
-	      file.writeBlock((const char*) s, s.length());
-	    }
+	  t.setNum(i);
+	  s = t + QString(" = ");
+	  t.setNum(m_values[i].value);
+	  s += t + QString("\n");
+	  file.writeBlock((const char*) s, s.length());
+	  
+	  s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
+	  file.writeBlock((const char*) s, s.length());
 	}
     }
   else
@@ -151,6 +170,8 @@ void Scene::createContents(QList<QString> &list)
 {
   QString t;
 
+  unsigned char ch = 0;
+
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
@@ -160,10 +181,26 @@ void Scene::createContents(QList<QString> &list)
 	}
       else if (s->at(0).isNumber() == true)
 	{
-	  unsigned char ch = (unsigned char) s->toInt();
+	  ch = (unsigned char) s->toInt();
 	  t = *(list.next());
 	  m_values[ch].value = t.toInt();
-	  m_values[ch].type = Set;
+	  m_values[ch].type = NoSet;
+	}
+      else if (*s == QString("ValueType"))
+	{
+	  t = *(list.next());
+	  if (t == QString("Set"))
+	    {
+	      m_values[ch].type = Set;
+	    }
+	  else if (t == QString("Fade"))
+	    {
+	      m_values[ch].type = Fade;
+	    }
+	  else
+	    {
+	      m_values[ch].type = NoSet;
+	    }
 	}
       else
 	{
@@ -173,14 +210,14 @@ void Scene::createContents(QList<QString> &list)
     }
 }
 
-bool Scene::set(unsigned short ch, unsigned char value)
+bool Scene::set(unsigned short ch, unsigned char value, SceneValueType type)
 {
   if (m_device != NULL)
     {
       if (ch < m_device->deviceClass()->channels()->count())
 	{
 	  m_values[ch].value = value;
-	  m_values[ch].type = Set;
+	  m_values[ch].type = type;
 	}
       else
 	{
@@ -193,7 +230,7 @@ bool Scene::set(unsigned short ch, unsigned char value)
       if (ch < deviceClass()->channels()->count())
 	{
 	  m_values[ch].value = value;
-	  m_values[ch].type = Set;
+	  m_values[ch].type = type;
 	}
       else
 	{
@@ -321,43 +358,49 @@ Event* Scene::getEvent(Feeder* feeder)
 	  readyCount++;
 	  continue;
 	}
-
-      currentValue = feeder->device()->dmxChannel(i)->getValue();
-
-      if (currentValue == m_values[i].value)
+      else if (m_values[i].type == Set)
 	{
-	  event->m_values[i].type = Ready;
-	  readyCount++;
-	  continue;
+	  event->m_values[i].value = m_values[i].value;
 	}
       else
 	{
-	  event->m_values[i].type = Normal;
-	}
-
-      if (currentValue > m_values[i].value)
-	{
-	  // Current level is above target, the new value is set toward 0
-	  unsigned short nextGap = abs(m_values[i].value - currentValue);
-	  unsigned short nextStep = feeder->step();
-	  if (nextStep > nextGap)
+	  currentValue = feeder->device()->dmxChannel(i)->getValue();
+	  
+	  if (currentValue == m_values[i].value)
 	    {
-	      nextStep = nextGap;
+	      event->m_values[i].type = Ready;
+	      readyCount++;
+	      continue;
 	    }
-
-	  event->m_values[i].value = currentValue - nextStep;
-	}
-      else if (currentValue < m_values[i].value)
-	{
-	  // Current level is below target, the new value is set toward 255
-	  unsigned short nextGap = abs(m_values[i].value - currentValue);
-	  unsigned short nextStep = feeder->step();
-	  if (nextStep > nextGap)
+	  else
 	    {
-	      nextStep = nextGap;
+	      event->m_values[i].type = Normal;
 	    }
-
-	  event->m_values[i].value = currentValue + nextStep;
+	  
+	  if (currentValue > m_values[i].value)
+	    {
+	      // Current level is above target, the new value is set toward 0
+	      unsigned short nextGap = abs(m_values[i].value - currentValue);
+	      unsigned short nextStep = feeder->step();
+	      if (nextStep > nextGap)
+		{
+		  nextStep = nextGap;
+		}
+	      
+	      event->m_values[i].value = currentValue - nextStep;
+	    }
+	  else if (currentValue < m_values[i].value)
+	    {
+	      // Current level is below target, the new value is set toward 255
+	      unsigned short nextGap = abs(m_values[i].value - currentValue);
+	      unsigned short nextStep = feeder->step();
+	      if (nextStep > nextGap)
+		{
+		  nextStep = nextGap;
+		}
+	      
+	      event->m_values[i].value = currentValue + nextStep;
+	    }
 	}
     }
 

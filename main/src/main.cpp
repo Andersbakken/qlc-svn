@@ -88,11 +88,10 @@ int main(int argc, char **argv)
   delete settings;
 
   _app = new App();
+  _app->setCaption("Q Light Controller 2");
   _app->setSequenceTimer(timer);
   _app->initView();
   a.setMainWidget(_app);
-
-  _app->setCaption("Q Light Controller 2");
   _app->show();
   
   result = a.exec();

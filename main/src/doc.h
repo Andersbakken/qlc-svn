@@ -46,7 +46,8 @@ class Doc : public QObject
   // Document handling stuff
   //
   void newDocument();
-  bool isModified() const { return m_modified; }
+  bool isModified() { return m_modified; }
+  void setModified(bool modified) { m_modified = modified; }
   QString workspaceFileName() { return m_workspaceFileName; }
   bool loadWorkspaceAs(QString &);
   bool saveWorkspaceAs(QString &);
@@ -100,6 +101,7 @@ class Doc : public QObject
 
   // Search for manuf + model
   DeviceClass* searchDeviceClass(const QString &manufacturer, const QString &model);
+  DeviceClass* searchDeviceClassByID(int id);
 
   //
   // Bus

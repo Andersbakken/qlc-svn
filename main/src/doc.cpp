@@ -919,6 +919,19 @@ DeviceClass* Doc::searchDeviceClass(const QString &manufacturer, const QString &
   return NULL;
 }
 
+DeviceClass* Doc::searchDeviceClassByID(int id)
+{
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; d = m_deviceClassList.next())
+    {
+      if (d->id() == id)
+	{
+	  return d;
+	}
+    }
+
+  return NULL;
+}
+
 void Doc::addFunction(const Function* function)
 {
   ASSERT(function != NULL);

@@ -25,6 +25,8 @@
 #include "uic_advancedsceneeditor.h"
 
 class DMXDevice;
+class Scene;
+class LogicalChannel;
 
 class AdvancedSceneEditor : public UI_AdvancedSceneEditor
 {
@@ -37,21 +39,33 @@ class AdvancedSceneEditor : public UI_AdvancedSceneEditor
   void init();
 
  public slots:
+  void slotOutputDeviceActivated(const QString &text);
+
   void slotAddSceneClicked();
   void slotRemoveSceneClicked();
-  void slotClearValuesClicked();
-  void slotContentsClicked(QListViewItem* item);
-  void slotOutputDeviceActivated(const QString &text);
-  void slotSceneNameTextChanged(const QString &text);
+  void slotEditSceneClicked();
   void slotSceneSelected(QListViewItem* item);
-  void slotStoreSceneInGroupClicked(int item);
   void slotUpdateSceneList();
+
+  void slotEditValueClicked();
+  void slotContentsClicked(QListViewItem* item);
+  void slotContentsDoubleClicked(QListViewItem*);
+
+  void slotApplyClicked();
+  void slotOKClicked();
+  void slotCancelClicked();
+
+ private:
+  void updateChannelList();
 
  private:
   DMXDevice* m_device;
 
   QListViewItem* m_deviceRoot;
   QListViewItem* m_deviceClassRoot;
+
+  Scene* m_scene;
+  LogicalChannel* m_currentChannel;
 };
 
 #endif

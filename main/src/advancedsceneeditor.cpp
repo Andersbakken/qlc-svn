@@ -28,6 +28,7 @@
 #include "logicalchannel.h"
 #include "capability.h"
 #include "scene.h"
+#include "editscenevalue.h"
 
 #include <qlistbox.h>
 #include <qcombobox.h>
@@ -37,6 +38,10 @@
 #include <qstring.h>
 #include <qpixmap.h>
 #include <qbuttongroup.h>
+#include <qtooltip.h>
+#include <qinputdialog.h>
+
+#include <math.h>
 
 extern App* _app;
 
@@ -44,6 +49,8 @@ AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, const char* name)
   : UI_AdvancedSceneEditor(parent, name, true)
 {
   m_device = NULL;
+  m_scene = NULL;
+  m_currentChannel = NULL;
 }
 
 AdvancedSceneEditor::~AdvancedSceneEditor()
@@ -57,10 +64,11 @@ void AdvancedSceneEditor::init()
 
   double w = (double) m_sceneContents->width();
 
-  m_sceneContents->setColumnWidth(0, (int) (w * 0.05));
-  m_sceneContents->setColumnWidth(1, (int) (w * 0.5));
-  m_sceneContents->setColumnWidth(2, (int) (w * 0.3));
-  m_sceneContents->setColumnWidth(3, (int) (w * 0.145));
+  m_sceneContents->setColumnWidth(0, (int) floor(w * 0.07));
+  m_sceneContents->setColumnWidth(1, (int) floor(w * 0.38));
+  m_sceneContents->setColumnWidth(2, (int) floor(w * 0.35));
+  m_sceneContents->setColumnWidth(3, (int) floor(w * 0.1));
+  m_sceneContents->setColumnWidth(4, (int) floor(w * 0.1));
 
   QList <DMXDevice> *dl = _app->doc()->deviceList();
 
@@ -80,6 +88,9 @@ void AdvancedSceneEditor::slotUpdateSceneList()
 {
   m_sceneList->clear();
   m_sceneContents->clear();
+
+  m_scene = NULL;
+  m_currentChannel = NULL;
 
   if (m_device == NULL)
     {
@@ -115,83 +126,207 @@ void AdvancedSceneEditor::slotUpdateSceneList()
 
 void AdvancedSceneEditor::slotAddSceneClicked()
 {
+  bool ok = false;
+
+  QString text = QInputDialog::getText(tr( "Scene Editor" ),
+				       tr( "Enter name for the new scene" ),
+				       QLineEdit::Normal, QString::null, &ok, this );
+  if (ok && text.isEmpty() == false)
+    {
+    }
+  else
+    {
+    }
 }
 
 void AdvancedSceneEditor::slotRemoveSceneClicked()
 {
-}
+  QListViewItem* item = m_sceneList->currentItem();
 
-void AdvancedSceneEditor::slotClearValuesClicked()
-{
+  if (item == NULL || m_scene == NULL)
+    {
+      return;
+    }
+
+  if (item->parent() == m_deviceRoot)
+    {
+      m_scene->device()->functions()->remove(m_scene);
+      delete m_scene;
+
+      slotUpdateSceneList();
+    }
+  else if (item->parent() == m_deviceClassRoot)
+    {
+      m_scene->deviceClass()->functions()->remove(m_scene);
+      delete m_scene;
+      
+      slotUpdateSceneList();
+    }
 }
 
 void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
 {
+  ASSERT(m_device != NULL);
+
+  int ch = item->text(0).toInt();
+
+  m_currentChannel = m_device->deviceClass()->channels()->at(ch);
 }
 
-void AdvancedSceneEditor::slotStoreSceneInGroupClicked(int item)
+void AdvancedSceneEditor::slotContentsDoubleClicked(QListViewItem* item)
 {
-  switch (item)
+  slotContentsClicked(item);
+
+  slotEditValueClicked();
+}
+
+void AdvancedSceneEditor::slotApplyClicked()
+{
+  if (m_scene->deviceClass() != NULL)
     {
-    case 0:
-      break;
-
-    case 1:
-      break;
-
-    default:
-      break;
+      m_scene->deviceClass()->saveToFile();
     }
+  else if (m_scene->device() != NULL)
+    {
+      _app->doc()->setModified(true);
+    }
+  else
+    {
+    }
+}
+
+void AdvancedSceneEditor::slotOKClicked()
+{
+  slotApplyClicked();
+  accept();
+}
+
+void AdvancedSceneEditor::slotCancelClicked()
+{
+  reject();
+}
+
+void AdvancedSceneEditor::slotEditValueClicked()
+{
+  if (m_currentChannel == NULL)
+    {
+      return;
+    }
+
+  int ch = m_currentChannel->channel();
+
+  SceneValue value = m_scene->channelValue(ch);
+
+  EditSceneValue* esv = new EditSceneValue((QWidget*) this, m_currentChannel, value);
+  
+  if (esv->exec() == QDialog::Accepted)
+    {
+      SceneValueType type;
+
+      if (esv->type() == QString("Set"))
+	{
+	  type = Set;
+	}
+      else if (esv->type() == QString("Fade"))
+	{
+	  type = Fade;
+	}
+      else
+	{
+	  type = NoSet;
+	}
+
+      m_scene->set(ch, esv->value(), type);
+    }
+
+  delete esv;
+
+  updateChannelList();
+
+  for (QListViewItem* item = m_sceneContents->firstChild(); item != NULL; item = item->nextSibling())
+    {
+      if (item->text(0).toInt() == ch)
+	{
+	  m_sceneContents->setSelected(item, true);
+	  break;
+	}
+    }
+}
+
+void AdvancedSceneEditor::slotEditSceneClicked()
+{
 }
 
 void AdvancedSceneEditor::slotOutputDeviceActivated(const QString &text)
 {
   m_device = _app->doc()->searchDevice(text);
-  
+
   m_deviceClassEdit->setText(m_device->deviceClass()->manufacturer() +
 			     QString (" ") + m_device->deviceClass()->model());
 
   slotUpdateSceneList();
 }
 
-void AdvancedSceneEditor::slotSceneNameTextChanged(const QString &text)
-{
-}
-
 void AdvancedSceneEditor::slotSceneSelected(QListViewItem* item)
 {
-  ASSERT(m_device != NULL);
   if (item->parent() == NULL)
+    {
+      m_scene = NULL;
+      return;
+    }
+
+  ASSERT(m_device != NULL);
+
+  if (item->parent() == m_deviceRoot)
+    {
+      m_scene = (Scene*) m_device->searchFunction(item->text(0));
+    }
+  else if (item->parent() == m_deviceClassRoot)
+    {
+      m_scene = (Scene*) m_device->deviceClass()->searchFunction(item->text(0));
+    }
+  else
+    {
+      m_scene = NULL;
+      ASSERT(false);
+    }
+
+  updateChannelList();
+}
+
+void AdvancedSceneEditor::updateChannelList()
+{
+  m_sceneContents->clear();
+  m_currentChannel = NULL;
+
+  if (m_scene == NULL)
     {
       return;
     }
 
-  m_sceneContents->clear();
-  
-  Scene* s = NULL;
-
-  if (item->parent() == m_deviceRoot)
-    {
-      s = (Scene*) m_device->searchFunction(item->text(0));
-    }
-  else if (item->parent() == m_deviceClassRoot)
-    {
-      s = (Scene*) m_device->deviceClass()->searchFunction(item->text(0));
-    }
-  else
-    {
-      ASSERT(false);
-    }
-
   QString num;
+  QString val;
   QString cap;
 
   QList <LogicalChannel> *cl = m_device->deviceClass()->channels();
-  for (LogicalChannel* c = cl->first(); c != NULL; c = cl->next())
+  for (LogicalChannel* ch = cl->first(); ch != NULL; ch = cl->next())
     {
-      cap = c->searchCapability(s->channelValue(c->channel()).value)->name();
-      num.setNum(c->channel());
-      new QListViewItem(m_sceneContents, num, c->name(), cap);
+      unsigned char value = m_scene->channelValue(ch->channel()).value;
+
+      Capability* c = ch->searchCapability(value);
+      
+      if (c == NULL)
+	{
+	  cap = QString("<Unknown>");
+	}
+      else
+	{
+	  cap = c->name();
+	}
+
+      num.sprintf("%03d", ch->channel());
+      val.setNum(m_scene->channelValue(ch->channel()).value);
+      new QListViewItem(m_sceneContents, num, ch->name(), cap, val, m_scene->valueTypeString(ch->channel()));
     }
 
 }
