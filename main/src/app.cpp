@@ -1721,8 +1721,6 @@ void blackOutWriter(t_channel, t_value)
 
 void normalWriter(t_channel ch, t_value value)
 {
-  qDebug("%f %f", (float) value, _app->submasterValue(ch));
-
   _app->outputPlugin()->writeChannel(ch, static_cast<t_value> 
 		     (((float) value) * _app->submasterValue(ch)));
 }
