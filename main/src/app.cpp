@@ -1721,6 +1721,8 @@ void blackOutWriter(t_channel, t_value)
 
 void normalWriter(t_channel ch, t_value value)
 {
+  qDebug("%f %f", (float) value, _app->submasterValue(ch));
+
   _app->outputPlugin()->writeChannel(ch, static_cast<t_value> 
 		     (((float) value) * _app->submasterValue(ch)));
 }
@@ -1810,10 +1812,10 @@ void App::setSubmasterValue(t_channel ch, int percent)
 //
 // Get the submaster value for a channel
 //
-int App::submasterValue(t_channel ch)
+float App::submasterValue(t_channel ch)
 {
   assert(ch < 512 && ch >= 0);
   
-  return static_cast<int> (m_submasterValues[ch]);
+  return m_submasterValues[ch];
 }
 

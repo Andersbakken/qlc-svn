@@ -124,7 +124,7 @@ class App : public QMainWindow
   int hasSubmaster(t_channel);
   void resetSubmasters();
   void setSubmasterValue(t_channel, int);
-  int submasterValue(t_channel);
+  float submasterValue(t_channel);
 
  private slots:
   void slotChangeOutputPlugin(const QString& name);
