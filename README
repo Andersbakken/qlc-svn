@@ -46,20 +46,25 @@ as a regular user in the qlc root directory and then
 
 (as root) to install QLC (to /usr/local/qlc by default).
 
-* If you do not tamper with the Makefiles & config.make too much, a default
-  and working qlc.rc file should be placed under /etc/
+If you do not tamper with the Makefiles & config.make too much, a default
+and working qlc.rc file should be placed under /etc/
+
+If you want to create KDE/GNOME menu items under Accessories category,
+you should type
+
+	make menuitems
+
+Note that this is still a bit experimental and might not work on all
+configurations. If it doesn't work, please see below for "Support & Bug Reports".
 
 
+Support & Bug Reports
+---------------------
+In general, support requests and bug reports should be sent to 
+qlc-devel@lists.sf.net.
 
-I need instructions on...
--------------------------
-See qlc2/main/docs/index.html for more documentation. The documentation is
-updated every now and then -- usually then. If and when you see something
-missing from the documentation, feel free to ask us!
-
-For TODO-lists, known and unknown bugs, volunteering to work for the project
-and all other project-related information, go to http://www.sf.net/projects/qlc
-
+For TODO-lists, known bugs and other related information, go to
+http://www.sf.net/projects/qlc
 
 
 List of people who have contributed to this piece of software
