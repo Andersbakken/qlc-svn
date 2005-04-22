@@ -21,6 +21,7 @@
 
 #include "vcxypad.h"
 #include "vcbutton.h"
+#include "device.h"
 #include "vclabel.h"
 #include "vcdockslider.h"
 #include "floatingedit.h"
@@ -30,7 +31,7 @@
 #include "settings.h"
 #include "../../libs/common/minmax.h"
 #include "configkeys.h"
-#include "vcframeproperties.h"
+#include "vcxypadproperties.h"
 
 #include <qcursor.h>
 #include <qpoint.h>
@@ -40,9 +41,11 @@
 #include <stdio.h>
 #include <qcolordialog.h>
 #include <qfiledialog.h>
-#include <qobjcoll.h>
+#include <qobjectlist.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
+#include <qlistview.h>
+
 
 extern App* _app;
 
@@ -55,21 +58,22 @@ const int KMoveThreshold   (    5 ); // Pixels
 
 XYChannelUnit::XYChannelUnit()
 {
-   m_lo = 0;
-   m_hi = 0;
-   m_channel = 0;
-   m_reverse = false;
 }
 
 
-XYChannelUnit::XYChannelUnit( t_value lo, t_value hi, t_channel channel,  bool reverse )
+XYChannelUnit::XYChannelUnit( Device* device, const t_channel channel,
+	             const t_value lo,const t_value hi,const bool reverse)	      
 {
+   m_device = device;
+   m_channel = channel;
    m_lo = lo;
    m_hi = hi;
-   m_channel = channel;
    m_reverse = reverse;
 }
 
+XYChannelUnit::~XYChannelUnit()
+{
+}
 
 
 VCXYPad::VCXYPad(QWidget* parent) 
@@ -83,7 +87,7 @@ VCXYPad::VCXYPad(QWidget* parent)
     m_bottomFrame      ( false ),
     m_buttonBehaviour  ( Normal )
 {
-    //m_XChannels = new QTPtrList();
+   //m_channelsY = new QPtrList<XYChannelUnit>;
 }
 
 VCXYPad::~VCXYPad()
@@ -93,7 +97,7 @@ VCXYPad::~VCXYPad()
 void VCXYPad::init()
 {
   setMinimumSize(20, 20);
-  
+
   resize(120, 120);
   setFrameStyle(QFrame::Panel | QFrame::Sunken);
   setCursor(Qt::CrossCursor);
@@ -132,7 +136,7 @@ void VCXYPad::saveFramesToFile(QFile& file, t_vc_id parentID)
 {
   QString s;
   QString t;
-qDebug("Saving frame to file");
+
   // Comment
   s = QString("# Virtual Console Frame Entry\n");
   file.writeBlock((const char*) s, s.length());
@@ -146,35 +150,38 @@ qDebug("Saving frame to file");
   file.writeBlock((const char*) s, s.length());
 
   // Parent ID
- if (parentID == 0)parentID=1;
- // if (parentID != 0)
+  if (parentID != 0)
     {
       t.setNum(parentID);
       s = QString("Parent = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
     }
-
+    else
+    {// No  idea what's happening. Parent must be the VC top frame.
+      s = QString("Parent = 1") + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+    }
   // X Channels and limits
-  QPtrListIterator<XYChannelUnit> xit(m_XChannels);
+  QPtrListIterator<XYChannelUnit> xit(m_channelsX);
   XYChannelUnit *xyc;
      while ( (xyc = xit.current()) != 0 )
        {
          ++xit;
 	 if( xyc->m_reverse == true )
-            s.sprintf("ChannelEntryX = %d,%d,%d,true\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+            s.sprintf("ChannelEntryX = %d,%d,%d,%d,true\n",xyc->device()->id(),xyc->channel(),xyc->lo(), xyc->hi());
 	 else
-            s.sprintf("ChannelEntryX = %d,%d,%d,false\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+            s.sprintf("ChannelEntryX = %d,%d,%d,%d,false\n",xyc->device()->id(),xyc->channel(),xyc->lo(), xyc->hi());
          file.writeBlock((const char*) s, s.length());
        }
   // Y Channels and limits
-  QPtrListIterator<XYChannelUnit> yit(m_YChannels);
-       while ( (xyc = yit.current()) != 0 )
+  QPtrListIterator<XYChannelUnit> yit(m_channelsY);
+     while ( (xyc = yit.current()) != 0 )
        {
          ++yit;
 	 if( xyc->m_reverse == true )
-            s.sprintf("ChannelEntryY = %d,%d,%d,true\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+            s.sprintf("ChannelEntryY = %d,%d,%d,%d,true\n",xyc->device()->id(),xyc->channel(),xyc->lo(), xyc->hi());
 	 else
-            s.sprintf("ChannelEntryY = %d,%d,%d,false\n", xyc->m_channel,xyc->m_lo, xyc->m_hi);
+            s.sprintf("ChannelEntryY = %d,%d,%d,%d,false\n",xyc->device()->id(),xyc->channel(),xyc->lo(), xyc->hi());
          file.writeBlock((const char*) s, s.length());
        }
   // Geometry
@@ -380,6 +387,62 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 	  f.fromString(q);
 	  setFont(f);
 	}
+	else if (*s == QString("ChannelEntryX"))
+	{
+           QString t = *(list.next());
+	   QStringList lst( QStringList::split( ",", t ) );
+           bool foundDevice=false;
+           for (t_device_id i = 0; i < KDeviceArraySize; i++)
+             {
+               Device* dev = _app->doc()->device(i);
+               if (!dev)
+	         {
+	            continue;
+	         }
+                 else
+	         {
+	           if(dev->id() == lst[0].toInt())
+	             {
+	                XYChannelUnit * xyc = new XYChannelUnit(dev, lst[1].toInt(),
+	                                                             lst[2].toInt(),
+								     lst[3].toInt(),
+								     lst[4] == "true");
+			m_channelsX.append(xyc);
+			foundDevice=true;
+		     }
+                 }
+	     }
+	     if(!foundDevice)
+	        qDebug("Error: couldn't find device# " + lst[0] + " for XY-Pad channel!");
+	}
+	else if (*s == QString("ChannelEntryY"))
+	{
+           QString t = *(list.next());
+	   QStringList lst( QStringList::split( ",", t ) );
+           bool foundDevice=false;
+           for (t_device_id i = 0; i < KDeviceArraySize; i++)
+             {
+               Device* dev = _app->doc()->device(i);
+               if (!dev)
+	         {
+	            continue;
+	         }
+                 else
+	         {
+	           if(dev->id() == lst[0].toInt())
+	             {
+	                XYChannelUnit * xyc = new XYChannelUnit(dev, lst[1].toInt(),
+	                                                             lst[2].toInt(),
+								     lst[3].toInt(),
+								     lst[4] == "true");
+			m_channelsY.append(xyc);
+			foundDevice=true;
+		     }
+                 }
+	     }
+	     if(!foundDevice)
+	        qDebug("Error: couldn't find device# " + lst[0] + " for XY-Pad channel!");
+	}
       else if (*s == QString("X"))
 	{
 	  rect.setX(list.next()->toInt());
@@ -396,26 +459,6 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 	{
 	  rect.setHeight(list.next()->toInt());
 	}
-      else if (*s == QString("ChannelEntryX"))
-	{
-           QString t = *(list.next());
-	   QStringList lst( QStringList::split( ",", t ) );
-	   qDebug(t);
-
-	   XYChannelUnit * xyc = new XYChannelUnit(lst[1].toInt(),lst[2].toInt(),
-	                                           lst[0].toInt(), lst[3] == "true");
-           m_XChannels.append(xyc);
-	}
-      else if (*s == QString("ChannelEntryY"))
-	{
-           QString t = *(list.next());
-	   QStringList lst( QStringList::split( ",", t ) );
-	   qDebug(t);
-
-	   XYChannelUnit * xyc = new XYChannelUnit(lst[1].toInt(),lst[2].toInt(),
-	                                           lst[0].toInt(), lst[3] == "true");
-           m_YChannels.append(xyc);
-	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -427,7 +470,6 @@ void VCXYPad::createContents(QPtrList <QString> &list)
     {
       setGeometry(rect);
     }
-    qDebug("left VCXYpad");
 }
 
 
@@ -494,10 +536,9 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
     }
   else
     {
-      outputDMX( e->x(), e->y());
       setMouseTracking(true);
       setCursor(Qt::CrossCursor);
-
+      outputDMX( e->x(), e->y());
       //QFrame::mousePressEvent(e);
     }
 }
@@ -517,15 +558,65 @@ void VCXYPad::parseWidgetMenu(int item)
     {
     case KVCMenuEditProperties:
       {
-	/*VCXYPadProperties* vcfp = new VCXYPadProperties(this);
+	VCXYPadProperties* vcfp = new VCXYPadProperties(this);
 	vcfp->init();
 	if (vcfp->exec() == QDialog::Accepted)
 	  {
-	    _app->doc()->setModified(true);
-	  }
+	   _app->doc()->setModified(true);
+	   m_channelsX.clear();
+	   QListViewItemIterator it( vcfp->m_listX );
+	   // abuse all the listview items as mmemory
+           while ( it.current() ) {
+	      //serch device
+	      Device* dev = new Device();
+	      for (t_device_id i = 0; i < KDeviceArraySize; i++)
+                {
+                  dev = _app->doc()->device(i);
+                  if (dev)
+	             {
 
-	delete vcfp;*/
+	               if(dev->id() == it.current()->text(Kid).toInt())
+		         {
+                           m_channelsX.append( new XYChannelUnit(
+		           dev,
+		           it.current()->text(Kchannel).toInt(),
+                           it.current()->text(Kmin).toInt(),
+			   it.current()->text(Kmax).toInt(),
+		           it.current()->text(Kreverse)=="Yes"));
+			 }
+		     }
+	        }
+                 ++it;
+	     }
+	   m_channelsY.clear();
+	   QListViewItemIterator yit( vcfp->m_listY );
+	   // abuse all the listview items as mmemory
+           while ( yit.current() ) {
+	      //serch device
+	      Device* dev = new Device();
+	      for (t_device_id i = 0; i < KDeviceArraySize; i++)
+                {
+                  dev = _app->doc()->device(i);
+                  if (dev)
+	             {
+
+	               if(dev->id() == yit.current()->text(Kid).toInt())
+		         {
+                           m_channelsY.append( new XYChannelUnit(
+		           dev,
+		           yit.current()->text(Kchannel).toInt(),
+                           yit.current()->text(Kmin).toInt(),
+			   yit.current()->text(Kmax).toInt(),
+		           yit.current()->text(Kreverse)=="Yes"));
+			 }
+		     }
+	        }
+                 ++yit;
+	  }
       }
+   }
+
+
       break;
 
     case KVCMenuBackgroundFrame:
@@ -582,17 +673,18 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	}
     }
   else
-    { // the following is NOT done by hasMouse()  because that fails if
+    { // the following is NOT done by hasMouse() because that fails if
       // there are child widgets   
       if( e->x()>0 &&  e->y()>0  && e->x()<rect().width() && e->y()<rect().height()  )
         {
-	  outputDMX( e->x(), e->y());
-          setCursor(Qt::CrossCursor);
+	   outputDMX( e->x(), e->y());
+	   setCursor(Qt::CrossCursor);
+	   
 	}
       else
         {
 	   unsetCursor();
-	}
+	}	
       QFrame::mouseMoveEvent(e);
     }
 }
@@ -600,39 +692,20 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 
 void VCXYPad::outputDMX(int x, int y)
 {
-    QPtrListIterator<XYChannelUnit> xit(m_XChannels);
+    QPtrListIterator<XYChannelUnit> xit(*channelsX());
     XYChannelUnit *xyc;
     while ( (xyc = xit.current()) != 0 ) {
       ++xit;
-      int delta = xyc->m_hi - xyc->m_lo;
-      int xx = xyc->m_lo + int(delta*x/rect().width());
-
-      if( xyc->m_reverse == false)
-           _app->outputPlugin()->writeChannel(xyc->m_channel,
+      int delta = xyc->hi() - xyc->lo();
+      int xx = xyc->lo() + int(delta*x/rect().width());
+      if( xyc->reverse() == false)
+           _app->outputPlugin()->writeChannel(xyc->device()->address()+xyc->channel()-1,
 				     (t_value) xx);
         else
-	   _app->outputPlugin()->writeChannel(xyc->m_channel,
+	   _app->outputPlugin()->writeChannel(xyc->device()->address()+xyc->channel()-1,
 				     (t_value) 255-xx);
      }
-
-
-    QPtrListIterator<XYChannelUnit> yit(m_YChannels);
-    while ( (xyc = yit.current()) != 0 ) {
-      ++yit;
-      int delta = xyc->m_hi - xyc->m_lo;
-      int xx = xyc->m_lo + int(delta*y/rect().height());
-
-      if( xyc->m_reverse == false)
-           _app->outputPlugin()->writeChannel(xyc->m_channel,
-				     (t_value) xx);
-        else
-	   _app->outputPlugin()->writeChannel(xyc->m_channel,
-				     (t_value) 255-xx);
-     }
-
-     setCursor(Qt::CrossCursor);
 }
-
 
 
 void VCXYPad::customEvent(QCustomEvent* e)

@@ -26,6 +26,7 @@
 #include <qptrlist.h>
 
 #include "types.h"
+#include "device.h"
 
 class QFile;
 class QString;
@@ -37,23 +38,22 @@ class XYChannelUnit
 {
 public:
         XYChannelUnit();
-	/*{
-           m_lo = 0;
-           m_hi = 0;
-           m_channel = 0;
-           m_reverse = false;
-	};*/
-        XYChannelUnit( t_value lo, t_value hi, t_channel channel,  bool reverse );
-	/*{
-             m_lo = lo;
-             m_hi = hi;
-             m_channel = channel;
-             m_reverse = reverse;
-	};*/
-        t_value m_lo;
-        t_value m_hi;
-        t_channel m_channel;
-        bool m_reverse;
+	XYChannelUnit( Device* device, const t_channel channel,
+	             const t_value lo,const t_value hi,const bool reverse);
+	~XYChannelUnit();
+
+	t_value m_lo;
+	t_value m_hi;
+	Device* m_device;
+	t_channel m_channel;
+	bool m_reverse;
+
+	t_value lo() {return m_lo;}
+	t_value hi() {return m_hi;}
+	Device* device() {return m_device;}
+	t_channel channel(){return m_channel;}
+	bool reverse()  {return m_reverse;}
+
 };
 
 
@@ -65,6 +65,9 @@ class VCXYPad : public QFrame
   VCXYPad(QWidget* parent);
   virtual ~VCXYPad();
 
+  QPtrList<XYChannelUnit> m_channelsX;
+  QPtrList<XYChannelUnit> m_channelsY;
+  
   enum ButtonBehaviour
     {
       Normal = 0,
@@ -85,6 +88,9 @@ class VCXYPad : public QFrame
   void setButtonBehaviour(ButtonBehaviour);
   ButtonBehaviour buttonBehaviour() { return m_buttonBehaviour; }
 
+  QPtrList<XYChannelUnit>* channelsX(){return &m_channelsX;}
+  QPtrList<XYChannelUnit>* channelsY(){return &m_channelsY;}
+
  private slots:
   void slotModeChanged();
 
@@ -104,7 +110,6 @@ class VCXYPad : public QFrame
 
   void resizeTo(QPoint p);
   void moveTo(QPoint p);
-
   void outputDMX(int x, int y);
 
  protected:
@@ -118,8 +123,6 @@ class VCXYPad : public QFrame
   bool m_resizeMode;
   bool m_bottomFrame;
 
-  QPtrList<XYChannelUnit> m_XChannels;
-  QPtrList <XYChannelUnit> m_YChannels;
   ButtonBehaviour m_buttonBehaviour;
 
  private:
@@ -127,6 +130,7 @@ class VCXYPad : public QFrame
 
  public:
   static void ResetID() { s_nextVCID = KVCIDMin; }
+
 };
 
 #endif

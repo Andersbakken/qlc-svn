@@ -32,7 +32,7 @@
 #include "devicelist.h"
 #include "deviceclass.h"
 #include "logicalchannel.h"
-
+#include "device.h"
 
 VCXYPadProperties::VCXYPadProperties(QWidget* parent, const char* name)
                   : UI_VCXYPadProperties(parent, name, true)
