@@ -705,6 +705,25 @@ void VCXYPad::outputDMX(int x, int y)
 	   _app->outputPlugin()->writeChannel(xyc->device()->address()+xyc->channel()-1,
 				     (t_value) 255-xx);
      }
+
+
+    QPtrListIterator<XYChannelUnit> yit(*channelsY());
+    //XYChannelUnit *xyc;
+    while ( (xyc = yit.current()) != 0 ) {
+      ++yit;
+      int delta = xyc->hi() - xyc->lo();
+      int xx = xyc->lo() + int(delta*y/rect().height());
+      if( xyc->reverse() == false)
+           _app->outputPlugin()->writeChannel(xyc->device()->address()+xyc->channel()-1,
+				     (t_value) xx);
+        else
+	   _app->outputPlugin()->writeChannel(xyc->device()->address()+xyc->channel()-1,
+				     (t_value) 255-xx);
+     }
+
+
+
+
 }
 
 
