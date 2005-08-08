@@ -46,24 +46,32 @@ class PatternGenerator : public UI_PatternGenerator
   t_channel verticalChannel() { return m_verticalChannel; }
 
  public slots:
+  void slotPatternSelected (const QString &text);
   void slotWidthSpinChanged(int);
   void slotHeightSpinChanged(int);
   void slotXOffsetSpinChanged(int);
   void slotYOffsetSpinChanged(int);
   void slotDensitySpinChanged(int);
-
+  void slotOrientationChanged(int);
+  
   void slotHorizontalChannelSelected(int);
   void slotVerticalChannelSelected(int);
+  
 
  protected:
   void createCircle();
-
+  void createLine();
+  void createEight();
+  void createSquare();
+  void createTriangle();
+ 
  protected:
   double m_width;
   double m_height;
   double m_xOffset;
   double m_yOffset;
   double m_density;
+  double m_orientation;
 
  protected:
   GeneratorArea* m_area;

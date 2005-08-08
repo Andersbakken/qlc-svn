@@ -46,6 +46,7 @@ PatternGenerator::PatternGenerator(QWidget* parent, const char* name)
     m_xOffset           ( 127 ),
     m_yOffset           ( 127 ),
     m_density           (  .1 ),
+    m_orientation       ( 0 ),
     m_area              ( new GeneratorArea(m_generatorFrame) ),
     m_pointArray        ( ),
     m_sequence          ( NULL ),
@@ -53,6 +54,7 @@ PatternGenerator::PatternGenerator(QWidget* parent, const char* name)
     m_verticalChannel   ( 0 )
 {
   m_area->resize(m_generatorFrame->size());
+//  m_patternCombo->setCurrentText("Circle");
 }
 
 PatternGenerator::~PatternGenerator()
@@ -100,37 +102,73 @@ void PatternGenerator::setSequence(Sequence* sequence)
 	}
     }
 
-  createCircle();
+//  createEight();
+}
+
+
+void PatternGenerator::slotPatternSelected(const QString &text)
+{
+  if (m_patternCombo->currentText() == "Circle")
+    {
+      createCircle();
+    }
+
+  else if (m_patternCombo->currentText() == "Eight")
+    {
+      createEight();
+    }
+    
+  else if (m_patternCombo->currentText() == "Line")
+    {
+      createLine();
+    }
+    
+  else if (m_patternCombo->currentText() == "Square")
+    {
+      createSquare();
+    }
+    
+  else if (m_patternCombo->currentText() == "Triangle")
+    {
+      createTriangle();
+    }
 }
 
 void PatternGenerator::slotWidthSpinChanged(int value)
 {
   m_width = value;
-  createCircle();
+  slotPatternSelected(m_patternCombo->currentText());
 }
 
 void PatternGenerator::slotHeightSpinChanged(int value)
 {
   m_height = value;
-  createCircle();
+  slotPatternSelected(m_patternCombo->currentText());
 }
 
 void PatternGenerator::slotXOffsetSpinChanged(int value)
 {
   m_xOffset = value;
-  createCircle();
+  slotPatternSelected(m_patternCombo->currentText());
 }
 
 void PatternGenerator::slotYOffsetSpinChanged(int value)
 {
   m_yOffset = value;
-  createCircle();
+  slotPatternSelected(m_patternCombo->currentText());
 }
 
 void PatternGenerator::slotDensitySpinChanged(int value)
 {
   m_density = static_cast<double> (value) / 100.0;
-  createCircle();
+  slotPatternSelected(m_patternCombo->currentText());
+}
+
+// New Function to
+void PatternGenerator::slotOrientationChanged(int value)
+{
+  m_orientation = value;
+  slotPatternSelected(m_patternCombo->currentText());
 }
 
 void PatternGenerator::slotHorizontalChannelSelected(int channel)
@@ -163,4 +201,60 @@ void PatternGenerator::createCircle()
     }
 
   m_area->setPointArray(m_pointArray);
+}
+
+void PatternGenerator::createLine()
+{
+  double i = 0;
+  int x = 0;
+  int y = 0;
+  int point = 0;
+  
+  double pi = 3.14159 * 2;
+
+  m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
+
+  for (i = 0; i < pi; i += m_density)
+    {
+      x = static_cast<int> (m_xOffset + (sin(i) * m_width));
+      y = static_cast<int> (m_yOffset + (sin(i + pi) * m_height));
+      
+      m_pointArray.setPoint(point++, x, y);
+    }
+
+  m_area->setPointArray(m_pointArray);
+}
+
+void PatternGenerator::createEight()
+{
+  double i = 0;
+  int x = 0;
+  int y = 0;
+
+  int point = 0;
+
+  double pi = 3.14159 * 2;
+
+  m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
+
+  for (i = 0; i < pi; i += m_density)
+    {
+      x = static_cast<int> (m_xOffset + (sin(2 * i) * m_width));
+      y = static_cast<int> (m_yOffset + (cos(i) * m_height));
+      
+      m_pointArray.setPoint(point++, x, y);
+    }
+    
+  m_area->setPointArray(m_pointArray);
+
+}
+
+void PatternGenerator::createSquare()
+{
+
+}
+
+void PatternGenerator::createTriangle()
+{
+
 }
