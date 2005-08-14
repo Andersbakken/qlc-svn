@@ -61,6 +61,7 @@ const int KMenuItemProperties ( 2 );
 const int KMenuItemMonitor    ( 3 );
 const int KMenuItemConsole    ( 4 );
 const int KMenuItemClone      ( 5 );
+const int KMenuItemAutoFunction      ( 6 );
 
 const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
 const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
@@ -517,6 +518,22 @@ void DeviceManagerView::slotMonitor()
   device->viewMonitor();
 }
 
+void DeviceManagerView::slotAutoFunction()
+{
+  QListViewItem* item = m_listView->currentItem();
+
+  t_device_id id = item->text(KColumnID).toInt();
+  Device* device = _app->doc()->device(id);
+  
+  ASSERT(device);
+  
+  //loop over all channels
+     // loop over all capabilities
+        //create function
+  
+  
+  device->viewMonitor();
+}
 
 //
 // View Console
@@ -628,7 +645,8 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
   menu->insertItem(QPixmap(dir + "/monitor.xpm"),
 		   "View Monitor...", KMenuItemMonitor);
   menu->insertItem(QPixmap(dir + "/console.xpm"),
-		   "View Console...", KMenuItemConsole);
+		   "View Console...", KMenuItemConsole);  
+  menu->insertItem( "Autocreate Functions", KMenuItemAutoFunction);
   
   if (_app->mode() == App::Operate)
     {
@@ -685,7 +703,9 @@ void DeviceManagerView::slotMenuCallBack(int item)
     case KMenuItemMonitor:
       slotMonitor();
       break;
-
+    case KMenuItemAutoFunction:
+      slotAutoFunction();
+      break;
     default:
       break;
     }

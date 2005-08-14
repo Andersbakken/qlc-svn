@@ -38,6 +38,10 @@ Compiling & Installation
 See main/docs/compiling.html for more detailed information.
 In general, just say
 
+        ./configure
+	
+and then	
+	
 	make
 
 as a regular user in the qlc root directory and then

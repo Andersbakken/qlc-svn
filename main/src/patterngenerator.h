@@ -38,7 +38,7 @@ class PatternGenerator : public UI_PatternGenerator
  public:
   PatternGenerator(QWidget* parent = NULL, const char* name = NULL);
   ~PatternGenerator();
-
+  
   void setSequence(Sequence*);
 
   QPointArray pointArray() { return m_pointArray; }
@@ -53,6 +53,10 @@ class PatternGenerator : public UI_PatternGenerator
   void slotYOffsetSpinChanged(int);
   void slotDensitySpinChanged(int);
   void slotOrientationChanged(int);
+  void slotOmegaXChanged(int);
+  void slotOmegaYChanged(int);
+  void slotPhaseXChanged(int);
+  void slotPhaseYChanged(int);
   
   void slotHorizontalChannelSelected(int);
   void slotVerticalChannelSelected(int);
@@ -64,7 +68,8 @@ class PatternGenerator : public UI_PatternGenerator
   void createEight();
   void createSquare();
   void createTriangle();
- 
+  void createLissajou();
+  
  protected:
   double m_width;
   double m_height;
@@ -72,6 +77,10 @@ class PatternGenerator : public UI_PatternGenerator
   double m_yOffset;
   double m_density;
   double m_orientation;
+  double m_omegax;
+  double m_omegay;
+  double m_phasex;
+  double m_phasey;
 
  protected:
   GeneratorArea* m_area;

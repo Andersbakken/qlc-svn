@@ -47,6 +47,10 @@ PatternGenerator::PatternGenerator(QWidget* parent, const char* name)
     m_yOffset           ( 127 ),
     m_density           (  .1 ),
     m_orientation       ( 0 ),
+    m_omegax            ( 1 ),
+    m_omegay            ( 1 ),
+    m_phasex            ( .0174532 ),
+    m_phasey            ( .0174532 ),
     m_area              ( new GeneratorArea(m_generatorFrame) ),
     m_pointArray        ( ),
     m_sequence          ( NULL ),
@@ -54,7 +58,7 @@ PatternGenerator::PatternGenerator(QWidget* parent, const char* name)
     m_verticalChannel   ( 0 )
 {
   m_area->resize(m_generatorFrame->size());
-//  m_patternCombo->setCurrentText("Circle");
+
 }
 
 PatternGenerator::~PatternGenerator()
@@ -102,7 +106,7 @@ void PatternGenerator::setSequence(Sequence* sequence)
 	}
     }
 
-//  createEight();
+  createCircle();
 }
 
 
@@ -131,6 +135,11 @@ void PatternGenerator::slotPatternSelected(const QString &text)
   else if (m_patternCombo->currentText() == "Triangle")
     {
       createTriangle();
+    }
+    
+  else if (m_patternCombo->currentText() == "Lissajou")
+    {
+      createLissajou();
     }
 }
 
@@ -171,6 +180,30 @@ void PatternGenerator::slotOrientationChanged(int value)
   slotPatternSelected(m_patternCombo->currentText());
 }
 
+void PatternGenerator::slotOmegaXChanged(int value)
+{
+  m_omegax = value;
+  slotPatternSelected(m_patternCombo->currentText());
+}
+
+void PatternGenerator::slotOmegaYChanged(int value)
+{
+  m_omegay = value;
+  slotPatternSelected(m_patternCombo->currentText());
+}
+
+void PatternGenerator::slotPhaseXChanged(int value)
+{
+  m_phasex = static_cast<double> ((value) * M_PI) / 180.0;
+  slotPatternSelected(m_patternCombo->currentText());
+}
+
+void PatternGenerator::slotPhaseYChanged(int value)
+{
+  m_phasey = static_cast<double> ((value) * M_PI) / 180.0;
+  slotPatternSelected(m_patternCombo->currentText());
+}
+
 void PatternGenerator::slotHorizontalChannelSelected(int channel)
 {
   m_horizontalChannel = channel;
@@ -188,13 +221,13 @@ void PatternGenerator::createCircle()
   int y = 0;
   int point = 0;
   
-  double pi = 3.14159 * 2;
+  double pi = M_PI * 2;
 
   m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
 
   for (i = 0; i < pi; i += m_density)
     {
-      x = static_cast<int> (m_xOffset + (sin(i) * m_width));
+      x = static_cast<int> (m_xOffset + (cos(i + M_PI_2) * m_width));
       y = static_cast<int> (m_yOffset + (cos(i) * m_height));
       
       m_pointArray.setPoint(point++, x, y);
@@ -210,14 +243,14 @@ void PatternGenerator::createLine()
   int y = 0;
   int point = 0;
   
-  double pi = 3.14159 * 2;
+  double pi = M_PI * 2;
 
   m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
 
   for (i = 0; i < pi; i += m_density)
     {
-      x = static_cast<int> (m_xOffset + (sin(i) * m_width));
-      y = static_cast<int> (m_yOffset + (sin(i + pi) * m_height));
+      x = static_cast<int> (m_xOffset + (cos(i) * m_width));
+      y = static_cast<int> (m_yOffset + (cos(i) * m_height));
       
       m_pointArray.setPoint(point++, x, y);
     }
@@ -233,13 +266,13 @@ void PatternGenerator::createEight()
 
   int point = 0;
 
-  double pi = 3.14159 * 2;
+  double pi = M_PI * 2;
 
   m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
 
   for (i = 0; i < pi; i += m_density)
     {
-      x = static_cast<int> (m_xOffset + (sin(2 * i) * m_width));
+      x = static_cast<int> (m_xOffset + (cos((i * 2) + M_PI_2) * m_width));
       y = static_cast<int> (m_yOffset + (cos(i) * m_height));
       
       m_pointArray.setPoint(point++, x, y);
@@ -251,10 +284,66 @@ void PatternGenerator::createEight()
 
 void PatternGenerator::createSquare()
 {
+  double i = 0;
+  int x = 0;
+  int y = 0;
+  int point = 0;
+  
+  double pi = M_PI * 2;
 
+  m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
+
+  for (i = 0; i < pi; i += m_density)
+    {
+      x = static_cast<int> (m_xOffset + (pow(cos(i - M_PI_2), 3) * m_width));
+      y = static_cast<int> (m_yOffset + (pow(cos(i), 3) * m_height));
+      
+      m_pointArray.setPoint(point++, x, y);
+    }
+
+  m_area->setPointArray(m_pointArray);
 }
 
 void PatternGenerator::createTriangle()
 {
+  double i = 0;
+  int x = 0;
+  int y = 0;
+  int point = 0;
+  
+  double pi = M_PI* 2;
 
+  m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
+
+  for (i = 0; i < pi; i += m_density)
+    {
+      x = static_cast<int> (m_xOffset + (cos(i) * m_width));
+      y = static_cast<int> (m_yOffset + (sin(i) * m_height));
+      
+      m_pointArray.setPoint(point++, x, y);
+    }
+
+  m_area->setPointArray(m_pointArray);
+}
+
+void PatternGenerator::createLissajou()
+{
+  double i = 0;
+  int x = 0;
+  int y = 0;
+  int point = 0;
+  
+  double pi = 3.14159 * 2;
+  
+  m_pointArray.resize(static_cast<int> (ceil(pi / m_density)));
+
+  for (i = 0; i < pi; i += m_density)
+    {
+      x = static_cast<int> (m_xOffset + (cos((m_omegax * i) - m_phasex) * m_width));
+      y = static_cast<int> (m_yOffset + (cos((m_omegay * i) - m_phasey) * m_height));
+      
+      m_pointArray.setPoint(point++, x, y);
+    }
+
+  m_area->setPointArray(m_pointArray);
 }

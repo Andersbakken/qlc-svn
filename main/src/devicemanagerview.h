@@ -65,6 +65,7 @@ class DeviceManagerView : public QWidget
   void slotProperties();
   void slotMonitor();
   void slotConsole();
+  void slotAutoFunction();
 
   void slotModeChanged();
   void slotSelectionChanged(QListViewItem*);

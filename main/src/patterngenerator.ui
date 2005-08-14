@@ -8,12 +8,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>420</width>
-            <height>431</height>
+            <width>569</width>
+            <height>450</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Pattern Generator (Only circle pattern is currently supported)</string>
+        <string>Pattern Generator</string>
     </property>
     <widget class="QFrame">
         <property name="name">
@@ -99,6 +99,11 @@
                         <string>Triangle</string>
                     </property>
                 </item>
+                <item>
+                    <property name="text">
+                        <string>Lissajou</string>
+                    </property>
+                </item>
                 <property name="name">
                     <cstring>m_patternCombo</cstring>
                 </property>
@@ -137,13 +142,167 @@
     </widget>
     <widget class="QGroupBox">
         <property name="name">
+            <cstring>m_axesGroup</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>274</y>
+                <width>398</width>
+                <height>98</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Axes</string>
+        </property>
+        <vbox>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLayoutWidget">
+                <property name="name">
+                    <cstring>layout14</cstring>
+                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>m_horizontalLabel</cstring>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>70</width>
+                                <height>0</height>
+                            </size>
+                        </property>
+                        <property name="maximumSize">
+                            <size>
+                                <width>70</width>
+                                <height>32767</height>
+                            </size>
+                        </property>
+                        <property name="text">
+                            <string>Horizontal</string>
+                        </property>
+                    </widget>
+                    <widget class="QComboBox">
+                        <property name="name">
+                            <cstring>m_horizontalCombo</cstring>
+                        </property>
+                        <property name="toolTip" stdset="0">
+                            <string>Horizontal (X) axis channel (usually pan)</string>
+                        </property>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QLayoutWidget">
+                <property name="name">
+                    <cstring>layout15</cstring>
+                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>m_verticalLabel</cstring>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>70</width>
+                                <height>0</height>
+                            </size>
+                        </property>
+                        <property name="maximumSize">
+                            <size>
+                                <width>70</width>
+                                <height>32767</height>
+                            </size>
+                        </property>
+                        <property name="text">
+                            <string>Vertical</string>
+                        </property>
+                    </widget>
+                    <widget class="QComboBox">
+                        <property name="name">
+                            <cstring>m_verticalCombo</cstring>
+                        </property>
+                        <property name="toolTip" stdset="0">
+                            <string>Vertical (Y) axis channel (usually tilt)</string>
+                        </property>
+                    </widget>
+                </hbox>
+            </widget>
+        </vbox>
+    </widget>
+    <widget class="QLayoutWidget">
+        <property name="name">
+            <cstring>layout13</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>380</y>
+                <width>475</width>
+                <height>50</height>
+            </rect>
+        </property>
+        <hbox>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <spacer>
+                <property name="name">
+                    <cstring>spacer4</cstring>
+                </property>
+                <property name="orientation">
+                    <enum>Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                    <enum>Expanding</enum>
+                </property>
+                <property name="sizeHint">
+                    <size>
+                        <width>40</width>
+                        <height>20</height>
+                    </size>
+                </property>
+            </spacer>
+            <widget class="QPushButton">
+                <property name="name">
+                    <cstring>m_ok</cstring>
+                </property>
+                <property name="text">
+                    <string>OK</string>
+                </property>
+                <property name="toolTip" stdset="0">
+                    <string>Generate pattern and close.</string>
+                </property>
+            </widget>
+            <widget class="QPushButton">
+                <property name="name">
+                    <cstring>m_cancel</cstring>
+                </property>
+                <property name="text">
+                    <string>Cancel</string>
+                </property>
+                <property name="toolTip" stdset="0">
+                    <string>Close and do not generate a pattern.</string>
+                </property>
+            </widget>
+        </hbox>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
             <cstring>m_parametersGroup</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>275</x>
                 <y>70</y>
-                <width>135</width>
+                <width>290</width>
                 <height>200</height>
             </rect>
         </property>
@@ -152,13 +311,13 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout10</cstring>
+                <cstring>layout14</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>5</x>
+                    <x>10</x>
                     <y>20</y>
-                    <width>125</width>
+                    <width>120</width>
                     <height>176</height>
                 </rect>
             </property>
@@ -381,160 +540,171 @@
                 </widget>
             </vbox>
         </widget>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout13</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>380</y>
-                <width>398</width>
-                <height>40</height>
-            </rect>
-        </property>
-        <hbox>
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>unnamed</cstring>
+                <cstring>m_paraLissa</cstring>
             </property>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer4</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>40</width>
-                        <height>20</height>
-                    </size>
-                </property>
-            </spacer>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_ok</cstring>
-                </property>
-                <property name="text">
-                    <string>OK</string>
-                </property>
-                <property name="toolTip" stdset="0">
-                    <string>Generate pattern and close.</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_cancel</cstring>
-                </property>
-                <property name="text">
-                    <string>Cancel</string>
-                </property>
-                <property name="toolTip" stdset="0">
-                    <string>Close and do not generate a pattern.</string>
-                </property>
-            </widget>
-        </hbox>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>m_axesGroup</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>274</y>
-                <width>398</width>
-                <height>98</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Axes</string>
-        </property>
-        <vbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
+            <property name="enabled">
+                <bool>true</bool>
             </property>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout14</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>m_horizontalLabel</cstring>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>70</width>
-                                <height>0</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>70</width>
-                                <height>32767</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string>Horizontal</string>
-                        </property>
-                    </widget>
-                    <widget class="QComboBox">
-                        <property name="name">
-                            <cstring>m_horizontalCombo</cstring>
-                        </property>
-                        <property name="toolTip" stdset="0">
-                            <string>Horizontal (X) axis channel (usually pan)</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
+            <property name="geometry">
+                <rect>
+                    <x>140</x>
+                    <y>30</y>
+                    <width>140</width>
+                    <height>140</height>
+                </rect>
+            </property>
+            <property name="title">
+                <string>Lissajou</string>
+            </property>
             <widget class="QLayoutWidget">
                 <property name="name">
                     <cstring>layout15</cstring>
                 </property>
-                <hbox>
+                <property name="geometry">
+                    <rect>
+                        <x>5</x>
+                        <y>20</y>
+                        <width>130</width>
+                        <height>116</height>
+                    </rect>
+                </property>
+                <vbox>
                     <property name="name">
                         <cstring>unnamed</cstring>
                     </property>
-                    <widget class="QLabel">
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>m_verticalLabel</cstring>
+                            <cstring>layout13</cstring>
                         </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>70</width>
-                                <height>0</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>70</width>
-                                <height>32767</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string>Vertical</string>
-                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_omegaxLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>FrequenceX</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_omegax</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="maxValue">
+                                    <number>5</number>
+                                </property>
+                                <property name="minValue">
+                                    <number>1</number>
+                                </property>
+                            </widget>
+                        </hbox>
                     </widget>
-                    <widget class="QComboBox">
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>m_verticalCombo</cstring>
+                            <cstring>layout14</cstring>
                         </property>
-                        <property name="toolTip" stdset="0">
-                            <string>Vertical (Y) axis channel (usually tilt)</string>
-                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_omegayLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>FrequenceY</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_omegay</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="maxValue">
+                                    <number>5</number>
+                                </property>
+                                <property name="minValue">
+                                    <number>1</number>
+                                </property>
+                            </widget>
+                        </hbox>
                     </widget>
-                </hbox>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout15</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_phasexLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>PhaseX</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_phasex</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="maxValue">
+                                    <number>180</number>
+                                </property>
+                                <property name="minValue">
+                                    <number>1</number>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout13</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_phaseyLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>PhaseY</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_phasey</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="maxValue">
+                                    <number>180</number>
+                                </property>
+                                <property name="minValue">
+                                    <number>1</number>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
             </widget>
-        </vbox>
+        </widget>
     </widget>
 </widget>
 <connections>
@@ -604,6 +774,30 @@
         <receiver>UI_PatternGenerator</receiver>
         <slot>slotOrientationChanged(int)</slot>
     </connection>
+    <connection>
+        <sender>m_omegax</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>slotOmegaXChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_omegay</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>slotOmegaYChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_phasex</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>slotPhaseXChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_phasey</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_PatternGenerator</receiver>
+        <slot>slotPhaseYChanged(int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotHeightSpinChanged( int )</slot>
@@ -615,6 +809,10 @@
     <slot>slotVerticalChannelSelected( int )</slot>
     <slot>slotPatternSelected( const QString &amp; )</slot>
     <slot>slotOrientationChanged( int )</slot>
+    <slot>slotOmegaXChanged( int )</slot>
+    <slot>slotOmegaYChanged( int )</slot>
+    <slot>slotPhaseXChanged( int )</slot>
+    <slot>slotPhaseYChanged( int )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
