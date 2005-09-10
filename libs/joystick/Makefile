@@ -28,8 +28,7 @@ include mocofiles
 include objfiles
 
 LIBJOY_SO = libjoy.so
-LDFLAGS += -fPIC -shared
-LIBS = -L$(QTDIR)/lib -L$(X11LIBS) -lXext -lX11 -L$(QTLIB) -ldl -lpthread
+LDFLAGS += -fPIC -shared -lXext -lX11 -ldl -lpthread
 
 MOCOBJECTS = $(MOCO) \
 	../common/moc_ledbar.o ../common/moc_plugin.o
@@ -49,7 +48,7 @@ banner:
 	@echo "----------------- Building QLC 2 Joystick Library -----------------"
 
 $(LIBJOY_SO): $(UICO) $(MOCUICO) $(OBJECTS) $(MOCOBJECTS)
-	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 moc_%.cpp: %.h
 	$(MOC) $< -o $@
