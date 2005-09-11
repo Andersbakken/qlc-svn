@@ -29,6 +29,9 @@
 #include "functioncollection.h"
 #include "scene.h"
 #include "sequence.h"
+#include "consolechannel.h"
+#include "logicalchannel.h"
+#include "capability.h"
 
 #include <qwidget.h>
 #include <qtoolbar.h>
@@ -528,11 +531,32 @@ void DeviceManagerView::slotAutoFunction()
   ASSERT(device);
   
   //loop over all channels
-     // loop over all capabilities
-        //create function
-  
-  
-  device->viewMonitor();
+  int n=0;
+  while(n < device->deviceClass()->channels()->count())
+    {
+       // loop over all capabilities
+       int i = 0;
+       for (Capability* c = device->deviceClass()->channels()->at(n)->capabilities()->first(); c != NULL; 
+                        c = device->deviceClass()->channels()->at(n)->capabilities()->next())
+         {
+               Scene* sc = static_cast<Scene*>	(_app->doc()->newFunction(Function::Scene));
+	       sc->setDevice(id);
+               sc->setName(device->deviceClass()->channels()->at(n)->name()+"-"+c->name());
+	       int nn=0;
+	       // set the unused channels to NoSet and zero.
+               while(nn < device->deviceClass()->channels()->count())
+	         {  
+		   sc->set(nn, 0, Scene::NoSet);
+		   nn++;
+	        }
+		//create function
+		sc->set(n, c->lo(), Scene::Set);
+	       i++;
+         }
+       n++;
+    }
+    device->slotConsoleClosed();
+    device->viewConsole();
 }
 
 //
@@ -646,7 +670,8 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
 		   "View Monitor...", KMenuItemMonitor);
   menu->insertItem(QPixmap(dir + "/console.xpm"),
 		   "View Console...", KMenuItemConsole);  
-  menu->insertItem( "Autocreate Functions", KMenuItemAutoFunction);
+  menu->insertItem( QPixmap(dir + "/add.xpm"),
+                   "Autocreate Functions", KMenuItemAutoFunction);
   
   if (_app->mode() == App::Operate)
     {

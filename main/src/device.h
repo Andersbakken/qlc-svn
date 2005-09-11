@@ -70,8 +70,10 @@ class Device : public QObject
   /* Save this device's properties to a file */
   void saveToFile(QFile &file);
 
- private slots:
+ public slots: 
   void slotConsoleClosed();
+  
+ private slots:
   void slotMonitorClosed();
 
  signals:
