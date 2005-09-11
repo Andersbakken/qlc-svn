@@ -47,4 +47,13 @@ const QString KEY_APP_MAXIMIZED        (  "ApplicationMaximized" );
 const QString KEY_APP_BACKGROUND       ( "ApplicationBackground" );
 const QString KEY_APP_SHOW_TOOLTIPS    (          "ShowTooltips" );
 
+// These aren't actually settings keys, but I wanted to get rid of
+// the compile-time defines, so I moved them here.
+const QString PIXMAPPATH               (             "pixmap" );
+const QString PLUGINPATH               (             "plugin" );
+const QString DOCPATH                  (           "document" );
+const QString DEVICECLASSPATH          (        "deviceclass" );
+const QString CONFIGFILE               (           "qlc.conf" );
+const QString QLCUSERDIR               (               ".qlc" );
+
 #endif
