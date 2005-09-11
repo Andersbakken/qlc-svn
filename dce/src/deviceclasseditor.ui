@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_DeviceClassEditor</class>
 <widget class="QWidget">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>466</width>
-            <height>587</height>
+            <height>595</height>
         </rect>
     </property>
     <property name="caption">

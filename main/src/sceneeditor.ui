@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_SceneEditor</class>
 <widget class="QWidget">
     <property name="name">
@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>170</width>
+            <width>173</width>
             <height>220</height>
         </rect>
     </property>
@@ -50,7 +50,7 @@
                 <number>10</number>
             </property>
             <property name="textPosition">
-                <enum>Right</enum>
+                <enum>BesideIcon</enum>
             </property>
             <property name="toolTip" stdset="0">
                 <string>Open the quick scene editor menu</string>

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_AssignHotKey</class>
 <widget class="QDialog">
     <property name="name">
@@ -15,32 +15,19 @@
     <property name="caption">
         <string>Assign Hotkey to Button</string>
     </property>
-    <grid>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QPushButton" row="3" column="0">
+        <widget class="QTextView">
             <property name="name">
-                <cstring>m_ok</cstring>
+                <cstring>m_infoText</cstring>
             </property>
-            <property name="text">
-                <string>OK</string>
+            <property name="textFormat">
+                <enum>AutoText</enum>
             </property>
         </widget>
-        <widget class="QPushButton" row="3" column="1">
-            <property name="name">
-                <cstring>m_cancel</cstring>
-            </property>
-            <property name="text">
-                <string>Cancel</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit" row="2" column="0" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>m_previewEdit</cstring>
-            </property>
-        </widget>
-        <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+        <widget class="QLabel">
             <property name="name">
                 <cstring>m_previewLabel</cstring>
             </property>
@@ -51,15 +38,38 @@
                 <set>AlignCenter</set>
             </property>
         </widget>
-        <widget class="QTextView" row="0" column="0" rowspan="1" colspan="2">
+        <widget class="QLineEdit">
             <property name="name">
-                <cstring>m_infoText</cstring>
-            </property>
-            <property name="textFormat">
-                <enum>AutoText</enum>
+                <cstring>m_previewEdit</cstring>
             </property>
         </widget>
-    </grid>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout9</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_VirtualConsoleProperties</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>457</width>
-            <height>177</height>
+            <width>496</width>
+            <height>178</height>
         </rect>
     </property>
     <property name="caption">

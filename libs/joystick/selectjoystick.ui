@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_SelectJoystick</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,118 +8,128 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>527</width>
+            <width>529</width>
             <height>220</height>
         </rect>
     </property>
     <property name="caption">
         <string>Select Joystick</string>
     </property>
-    <widget class="QLabel">
+    <hbox>
         <property name="name">
-            <cstring>JoysticksLabel</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>330</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Available Joysticks</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_okButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>430</x>
-                <y>30</y>
-                <width>84</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;OK</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancelButton</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>430</x>
-                <y>60</y>
-                <width>84</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;Cancel</string>
-        </property>
-    </widget>
-    <widget class="QListView">
-        <column>
-            <property name="text">
-                <string>Name</string>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout7</cstring>
             </property>
-            <property name="clickable">
-                <bool>false</bool>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>JoysticksLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Available Joysticks</string>
+                    </property>
+                </widget>
+                <widget class="QListView">
+                    <column>
+                        <property name="text">
+                            <string>Name</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>false</bool>
+                        </property>
+                    </column>
+                    <column>
+                        <property name="text">
+                            <string>Axes</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>false</bool>
+                        </property>
+                    </column>
+                    <column>
+                        <property name="text">
+                            <string>Buttons</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>false</bool>
+                        </property>
+                    </column>
+                    <column>
+                        <property name="text">
+                            <string>Device</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>false</bool>
+                        </property>
+                    </column>
+                    <property name="name">
+                        <cstring>m_joystickList</cstring>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout8</cstring>
             </property>
-            <property name="resizeable">
-                <bool>false</bool>
-            </property>
-        </column>
-        <column>
-            <property name="text">
-                <string>Axes</string>
-            </property>
-            <property name="clickable">
-                <bool>false</bool>
-            </property>
-            <property name="resizeable">
-                <bool>false</bool>
-            </property>
-        </column>
-        <column>
-            <property name="text">
-                <string>Buttons</string>
-            </property>
-            <property name="clickable">
-                <bool>false</bool>
-            </property>
-            <property name="resizeable">
-                <bool>false</bool>
-            </property>
-        </column>
-        <column>
-            <property name="text">
-                <string>Device</string>
-            </property>
-            <property name="clickable">
-                <bool>false</bool>
-            </property>
-            <property name="resizeable">
-                <bool>false</bool>
-            </property>
-        </column>
-        <property name="name">
-            <cstring>m_joystickList</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>30</y>
-                <width>410</width>
-                <height>180</height>
-            </rect>
-        </property>
-    </widget>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_okButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancelButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer3</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Vertical</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>40</height>
+                        </size>
+                    </property>
+                </spacer>
+            </vbox>
+        </widget>
+    </hbox>
 </widget>
 <connections>
     <connection>

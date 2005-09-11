@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>UI_ConfigureDMX4LinuxOut</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,151 +8,140 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>269</width>
-            <height>194</height>
+            <width>272</width>
+            <height>193</height>
         </rect>
     </property>
     <property name="caption">
         <string>Configure DMX4Linux Plugin</string>
     </property>
-    <widget class="QGroupBox">
+    <vbox>
         <property name="name">
-            <cstring>m_deviceGroup</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>250</width>
-                <height>60</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>Box</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="title">
-            <string>Device</string>
-        </property>
-        <widget class="QLineEdit">
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>m_deviceEdit</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>20</y>
-                    <width>230</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>m_statusGroup</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>80</y>
-                <width>250</width>
-                <height>60</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Status</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_statusLabel</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>20</y>
-                    <width>140</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <bold>1</bold>
-                </font>
+                <cstring>m_deviceGroup</cstring>
             </property>
             <property name="frameShape">
-                <enum>StyledPanel</enum>
+                <enum>Box</enum>
             </property>
             <property name="frameShadow">
                 <enum>Sunken</enum>
             </property>
-            <property name="text">
-                <string>Not Active</string>
+            <property name="title">
+                <string>Device</string>
             </property>
-            <property name="alignment">
-                <set>AlignCenter</set>
-            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_deviceEdit</cstring>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+                    </property>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QPushButton">
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>m_activate</cstring>
+                <cstring>m_statusGroup</cstring>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>160</x>
-                    <y>20</y>
-                    <width>80</width>
-                    <height>22</height>
-                </rect>
+            <property name="title">
+                <string>Status</string>
             </property>
-            <property name="text">
-                <string>&amp;Activate</string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string>Activate the interface. Pressing this button also saves settings.</string>
-            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_statusLabel</cstring>
+                    </property>
+                    <property name="font">
+                        <font>
+                            <bold>1</bold>
+                        </font>
+                    </property>
+                    <property name="frameShape">
+                        <enum>StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="text">
+                        <string>Not Active</string>
+                    </property>
+                    <property name="alignment">
+                        <set>AlignCenter</set>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_activate</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Activate</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Activate the interface. Pressing this button also saves settings.</string>
+                    </property>
+                </widget>
+            </hbox>
         </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_ok</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>80</x>
-                <y>160</y>
-                <width>80</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;OK</string>
-        </property>
-        <property name="default">
-            <bool>true</bool>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_cancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>170</x>
-                <y>160</y>
-                <width>80</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;Cancel</string>
-        </property>
-    </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;OK</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
+                    </property>
+                    <property name="default">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
 </widget>
 <connections>
     <connection>
