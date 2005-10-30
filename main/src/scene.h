@@ -30,8 +30,6 @@ class Device;
 class RunTimeData;
 class SceneValue;
 
-typedef float t_scene_acc;
-
 class Scene : public Function
 {
  public:
@@ -81,14 +79,17 @@ class Scene : public Function
 
   // This mutex is locked when the run time data is accessed
   QMutex m_dataMutex;
+
+  // Use ONLY at run time to prevent allocating a local variable
+  t_channel m_address;
 };
 
 class RunTimeData
 {
  public:
-  t_scene_acc start;
-  t_scene_acc current;
-  t_scene_acc target;
+  float start;
+  float current;
+  float target;
 
   bool ready;
 };

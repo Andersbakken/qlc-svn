@@ -29,7 +29,8 @@ class EventBuffer
 {
  public:
   EventBuffer(unsigned int eventSize,
-	      unsigned int bufferSize = 32);
+	      unsigned int bufferSize = 32,
+	      unsigned int byteSize = 2);
   ~EventBuffer();
 
   // Put data to buffer
@@ -49,6 +50,7 @@ class EventBuffer
 
   unsigned int m_size;
   t_channel m_eventSize;
+  unsigned int m_byteSize;
 
   unsigned int m_filled; // # of objects in the buffer
   unsigned int m_in; // next token is stored here

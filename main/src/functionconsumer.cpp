@@ -267,20 +267,10 @@ void FunctionConsumer::event(time_t)
         {
 	  for (m_channel = 0; m_channel < m_function->channels(); m_channel++)
 	    {
-	      if (m_event[m_function->channels() + m_channel] == Scene::NoSet)
-		{
-		  // Don't write NoSet values
-		}
-	      else
-		{
-		  _app->setValue(_app->doc()->device(m_function->device())->
-				 address() + m_channel, m_event[m_channel]);
-		  /*
-		  _app->outputPlugin()
-		    ->writeChannel(_app->doc()->device(m_function->device())->
-				   address() + m_channel, m_event[m_channel]);
-		  */
-		}
+	      // Write also invalid values; let _app->setValue() take
+	      // care of them
+	      _app->setValue(m_event[(m_channel << 1)],
+			     m_event[(m_channel << 1) + 1]);
 	    }
         }
 

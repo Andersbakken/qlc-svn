@@ -22,26 +22,48 @@
 #include "assert.h"
 #include "eventbuffer.h"
 
+#include <qt.h>
 #include <malloc.h>
 #include <string.h>
 
-// eventSize = channel count, bufferSize = event count,
-EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize)
-  :
-  m_ring(NULL),
-  m_size(bufferSize * (eventSize * 2)),
-  m_eventSize(eventSize * 2),
-  m_filled(0),
-  m_in(0),
-  m_out(0)
-{
-  m_ring = new t_value[m_size];
+/**
+ * \brief Constructor
+ *
+ * The buffer is a circular list that contains events,
+ * which, contain value pairs representing a channel and its value:
+ *
+ * <ev1 [ch1 val1] ... [chn valn]> ... <evn [ch1 val1] ... [chn valn]>
+ *
+ * \param eventSize Tells the number of values per event
+ * \param buffersize Tells the number of events i.e. buffer size.
+ * \param byteSize Tells the size of individual values to store, e.g. 1 for char, 2 for short, 4 for int etc.
+ */
 
+// eventSize = number of values per event
+// bufferSize = maximum event count per buffer
+EventBuffer::EventBuffer(unsigned int eventSize,
+			 unsigned int bufferSize,
+			 unsigned int byteSize)
+  :
+  m_ring       ( NULL ),
+  m_size       ( bufferSize * (eventSize * byteSize) ),
+  m_eventSize  ( eventSize * byteSize ),
+  m_byteSize   ( byteSize ),
+  m_filled     ( 0 ),
+  m_in         ( 0 ),
+  m_out        ( 0 )
+{
+
+  m_ring = new t_value[m_size];
+  
   pthread_mutex_init(&m_mutex, 0);
   pthread_cond_init(&m_nonEmpty, 0);
   pthread_cond_init(&m_nonFull, 0);
 }
 
+/**
+ * \brief Destructor
+ */
 EventBuffer::~EventBuffer()
 {
   delete [] m_ring;
@@ -52,10 +74,11 @@ EventBuffer::~EventBuffer()
 }
 
 
-//
-// Put a new value to the front of the buffer if it is
-// not full
-//
+/**
+ * Put a new value to the front of the buffer if it is not full.
+ *
+ * \param ev Event to put into the buffer's tail
+ */
 int EventBuffer::put(t_value* ev)
 {
   pthread_mutex_lock(&m_mutex);
@@ -75,10 +98,11 @@ int EventBuffer::put(t_value* ev)
 }
 
 
-//
-// Get the next value from rear of list
-// if the list is not empty
-//
+/**
+ * Get the next value from rear of list if it is not empty
+ *
+ * \param event The next event taken from the head of the list
+ */
 int EventBuffer::get(t_value* event)
 {
   pthread_mutex_lock(&m_mutex);
@@ -99,11 +123,11 @@ int EventBuffer::get(t_value* event)
 }
 
 
-//
-// Empty the list by setting the put and get positions
-// to zero. This doesn't actually touch the contents but the
-// result is exactly the same: the buffer seems empty.
-//
+/**
+ * Empty the list by setting the put and get positions
+ * to zero. This doesn't actually touch the contents but the
+ * result is exactly the same: the buffer looks empty.
+ */
 void EventBuffer::purge()
 {
   pthread_mutex_lock(&m_mutex);

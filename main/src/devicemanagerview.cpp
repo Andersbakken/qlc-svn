@@ -530,33 +530,33 @@ void DeviceManagerView::slotAutoFunction()
   
   ASSERT(device);
   
-  //loop over all channels
-  int n=0;
+  unsigned int n = 0;
+  // Loop over all channels
   while(n < device->deviceClass()->channels()->count())
     {
-       // loop over all capabilities
-       int i = 0;
-       for (Capability* c = device->deviceClass()->channels()->at(n)->capabilities()->first(); c != NULL; 
+      unsigned int i = 0;
+      // Loop over all capabilities
+      for (Capability* c = device->deviceClass()->channels()->at(n)->capabilities()->first(); c != NULL; 
                         c = device->deviceClass()->channels()->at(n)->capabilities()->next())
          {
                Scene* sc = static_cast<Scene*>	(_app->doc()->newFunction(Function::Scene));
 	       sc->setDevice(id);
                sc->setName(device->deviceClass()->channels()->at(n)->name()+"-"+c->name());
-	       int nn=0;
-	       // set the unused channels to NoSet and zero.
+	       unsigned int nn = 0;
+	       // Set the unused channels to NoSet and zero.
                while(nn < device->deviceClass()->channels()->count())
 	         {  
 		   sc->set(nn, 0, Scene::NoSet);
 		   nn++;
-	        }
-		//create function
-		sc->set(n, c->lo(), Scene::Set);
+		 }
+	       // Create function
+	       sc->set(n, c->lo(), Scene::Set);
 	       i++;
          }
-       n++;
+      n++;
     }
-    device->slotConsoleClosed();
-    device->viewConsole();
+  device->slotConsoleClosed();
+  device->viewConsole();
 }
 
 //

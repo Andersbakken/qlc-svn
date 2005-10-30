@@ -59,7 +59,7 @@ void DeviceList::init()
 	  m_listView->setColumnWidthMode(4,QListView::Manual);
 	  m_listView->setColumnWidth(4,0);
 	  
-	  int n=0;
+	  unsigned int n = 0;
 	  while(n < dev->deviceClass()->channels()->count())
 	    {
 	       QListViewItem *newSubItem =  new QListViewItem(m_listView);

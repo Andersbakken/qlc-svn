@@ -38,6 +38,7 @@ const QString KCollectionString ( "Collection" );
 const QString KSceneString      (      "Scene" );
 const QString KChaserString     (     "Chaser" );
 const QString KSequenceString   (   "Sequence" );
+const QString KEFXString        (        "EFX" );
 const QString KUndefinedString  (  "Undefined" );
 
 //
@@ -106,6 +107,10 @@ QString Function::typeToString(Type type)
       return KSequenceString;
       break;
 
+    case EFX:
+      return KEFXString;
+      break;
+
     case Undefined:
     default:
       return KUndefinedString;
@@ -134,6 +139,10 @@ Function::Type Function::stringToType(QString string)
   else if (string == KSequenceString)
     {
       return Sequence;
+    }
+  else if (string == KEFXString)
+    {
+      return EFX;
     }
   else
     {

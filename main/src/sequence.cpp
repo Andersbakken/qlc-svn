@@ -54,7 +54,9 @@ Sequence::Sequence() :
 
   m_holdTime      (     255 ),
   m_runTimeHold   (     255 ),
-  m_holdNoSetData (    NULL )
+  m_holdNoSetData (    NULL ),
+
+  m_address       (       0 )
 {
   setBus(KBusIDDefaultHold);
 }
@@ -422,6 +424,10 @@ void Sequence::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Sequence::arm()
 {
+  // Fetch the device address for run time access.
+  // It cannot change when functions have been armed for running
+  m_address = _app->doc()->device(m_deviceID)->address();
+
   if (m_channelData == NULL)
     m_channelData = new t_value[m_channels * 2];
 
@@ -430,13 +436,15 @@ void Sequence::arm()
       m_holdNoSetData = new t_value[m_channels * 2];
       for (t_channel ch = 0; ch < m_channels; ch++)
 	{
-	  m_holdNoSetData[ch] = 0;
-	  m_holdNoSetData[m_channels + ch] = Scene::NoSet;
+	  m_holdNoSetData[(ch << 1)] = 0;
+	  m_holdNoSetData[(ch << 1) + 1] = KChannelValueInvalid;
 	}
     }
 
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels);
+    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value),
+				    KFrequency >> 1, /* == KFrequency / 2 */
+				    sizeof(t_value));
 }
 
 
@@ -445,6 +453,9 @@ void Sequence::arm()
 //
 void Sequence::disarm()
 {
+  // Just a nuisance to prevent using this at non-run-time :)
+  m_address = 0;
+
   if (m_channelData) delete [] m_channelData;
   m_channelData = NULL;
 
@@ -496,11 +507,23 @@ void Sequence::run()
 		   m_runTimeChannel < m_channels; 
 		   m_runTimeChannel++)
 		{
-		  m_channelData[m_runTimeChannel] = 
-		    m_runTimeValues[m_runTimeChannel].value;
+		  // Set the absolute address
+		  m_channelData[(m_runTimeChannel << 1)] = 
+		    m_address + m_runTimeChannel;
 
-		  m_channelData[m_channels + m_runTimeChannel] = 
-		    m_runTimeValues[m_runTimeChannel].type;
+		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
+		    {
+		      // Set invalid value for such channels that don't
+		      // have a valid value
+		      m_channelData[(m_runTimeChannel << 1) + 1] = 
+			KChannelValueInvalid;
+		    }
+		  else
+		    {
+		      // Set a normal value
+		      m_channelData[(m_runTimeChannel << 1) + 1] = 
+			m_runTimeValues[m_runTimeChannel].value;
+		    }
 		}
 
 	      m_eventBuffer->put(m_channelData);
@@ -517,11 +540,23 @@ void Sequence::run()
 		   m_runTimeChannel < m_channels; 
 		   m_runTimeChannel++)
 		{
-		  m_channelData[m_runTimeChannel] = 
-		    m_runTimeValues[m_runTimeChannel].value;
-
-		  m_channelData[m_channels + m_runTimeChannel] = 
-		    m_runTimeValues[m_runTimeChannel].type;
+		  // Set the absolute address
+		  m_channelData[(m_runTimeChannel << 1)] = 
+		    m_address + m_runTimeChannel;
+		  
+		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
+		    {
+		      // Set invalid value for such channels that don't
+		      // have a valid value
+		      m_channelData[(m_runTimeChannel << 1) + 1] = 
+			KChannelValueInvalid;
+		    }
+		  else
+		    {
+		      // Set a normal value
+		      m_channelData[(m_runTimeChannel << 1) + 1] = 
+			m_runTimeValues[m_runTimeChannel].value;
+		    }
 		}
 	      
 	      m_eventBuffer->put(m_channelData);

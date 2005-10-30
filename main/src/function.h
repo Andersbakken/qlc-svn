@@ -75,6 +75,7 @@ class Function : public QThread
       Collection = 0x1,
       Scene = 0x2,
       Chaser = 0x4,
+      EFX = 0x5,
       Sequence = 0x8
     };
 
@@ -92,10 +93,10 @@ class Function : public QThread
   void setID(t_function_id);
 
   // Return the type of this function (see the enum above)
-  Type type() { return m_type; }
+  Function::Type type() { return m_type; }
 
   // Convert a type to string
-  static QString typeToString(Type);
+  static QString typeToString(Function::Type);
 
   // Convert a string to type enum
   static Type stringToType(QString);

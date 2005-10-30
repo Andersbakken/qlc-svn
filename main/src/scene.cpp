@@ -48,7 +48,8 @@ Scene::Scene() :
   m_elapsedTime (               0 ),
   m_runTimeData (            NULL ),
   m_channelData (            NULL ),
-  m_dataMutex   (           false )
+  m_dataMutex   (           false ),
+  m_address     (               0 )
 {
   setBus(KBusIDDefaultFade);
 }
@@ -353,6 +354,10 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 //
 void Scene::arm()
 {
+  // Fetch the device address for run time access.
+  // It cannot change when functions have been armed for running
+  m_address = _app->doc()->device(m_deviceID)->address();
+  
   if (m_runTimeData == NULL)
     m_runTimeData = new RunTimeData[m_channels];
 
@@ -360,7 +365,9 @@ void Scene::arm()
     m_channelData = new t_value[m_channels * 2];
 
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels);
+    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value),
+				    KFrequency >> 1, /* == KFrequency / 2 */
+				    sizeof(t_value));
 }
 
 
@@ -369,6 +376,9 @@ void Scene::arm()
 //
 void Scene::disarm()
 {
+  // Just a nuisance to prevent using this at non-run-time :)
+  m_address = 0;
+
   if (m_runTimeData) delete [] m_runTimeData;
   m_runTimeData = NULL;
   
@@ -387,17 +397,13 @@ void Scene::init()
 {
   m_removeAfterEmpty = false;
 
-  // Current values
-  _app->valueRange(_app->doc()->device(m_deviceID)->address(),
-		   m_channelData, m_channels);
-
   for (t_channel i = 0; i < m_channels; i++)
     {
       m_runTimeData[i].current = 
 	m_runTimeData[i].start =
-	static_cast<t_scene_acc> (m_channelData[i]);
+	static_cast<float> (_app->value(m_address + i));
       
-      m_runTimeData[i].target = static_cast<t_scene_acc> (m_values[i].value);
+      m_runTimeData[i].target = static_cast<float> (m_values[i].value);
 
       m_runTimeData[i].ready = false;
     }
@@ -463,7 +469,8 @@ void Scene::run()
 	{
 	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
-	      m_channelData[m_channels + ch] = NoSet;
+	      m_channelData[(ch << 1)] = m_address + ch;
+	      m_channelData[(ch << 1) + 1] = KChannelValueInvalid;
 	      
 	      // This channel contains a value that is not supposed
 	      // to be written (anymore, in case of ready value, which
@@ -473,8 +480,8 @@ void Scene::run()
 	  else if (m_values[ch].type == Set)
 	    {
 	      // Just set the target value
-	      m_channelData[ch] = m_values[ch].value;
-	      m_channelData[m_channels + ch] = Set;
+	      m_channelData[(ch << 1)] = m_address + ch;
+	      m_channelData[(ch << 1) + 1] = m_values[ch].value;
 
 	      // ...and don't touch this channel anymore
 	      m_runTimeData[ch].ready = true; 
@@ -489,17 +496,16 @@ void Scene::run()
 		+ (m_runTimeData[ch].target - m_runTimeData[ch].start) 
 		* ((float)m_elapsedTime / m_timeSpan);
 
-	      m_channelData[ch] =
-		static_cast<t_value> (m_runTimeData[ch].current);
+	      m_channelData[(ch << 1)] = m_address + ch;
 
-	      m_channelData[m_channels + ch] = Set;
+	      m_channelData[(ch << 1) + 1] =
+		static_cast<t_value> (m_runTimeData[ch].current);
 	    }
 
 	  //m_dataMutex.unlock();
 	}
 
       m_eventBuffer->put(m_channelData);
-
       //m_dataMutex.lock();
     }
 
@@ -509,19 +515,19 @@ void Scene::run()
   // been set to a smaller amount than what has elapsed. Also, because
   // floats are NEVER exact numbers, it might be that we never quite reach
   // the target within the given timespan (in case the values don't add up).
-  for (ch = 0; ch < m_channels && !m_stopped; ch++)
+  for (ch = 0; ch < m_channels; ch++)
     {
       if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	{
-	  m_channelData[m_channels + ch] = NoSet;
-	  continue;
+	  m_channelData[(ch << 1)] = m_address + ch;
+	  m_channelData[(ch << 1) + 1] = KChannelValueInvalid;
 	}
       else
 	{
 	  // Just set the target value
-	  m_channelData[ch] = m_values[ch].value;
-	  m_channelData[m_channels + ch] = Set;
-
+	  m_channelData[(ch << 1)] = m_address + ch;
+	  m_channelData[(ch << 1) + 1] = m_values[ch].value;
+	  
 	  // ...and don't touch this channel anymore
 	  m_runTimeData[ch].ready = true;
 	}

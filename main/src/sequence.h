@@ -89,6 +89,9 @@ class Sequence : public Function
   t_bus_value m_holdTime;
   t_bus_value m_runTimeHold;
   t_value* m_holdNoSetData;
+
+  // Use ONLY at run time to prevent allocating a local variable
+  t_channel m_address;
 };
 
 #endif
