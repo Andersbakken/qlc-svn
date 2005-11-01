@@ -22,7 +22,6 @@
 #include "assert.h"
 #include "eventbuffer.h"
 
-#include <qt.h>
 #include <malloc.h>
 #include <string.h>
 
