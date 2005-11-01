@@ -49,13 +49,12 @@ EFX::EFX() :
   m_height            ( 127 ),
   m_xOffset           ( 127 ),
   m_yOffset           ( 127 ),
+
   m_stepSize          ( 0 ),
-  m_cycleDuration     ( KFrequency ), /* 1 second */
-  m_orientation       ( 0 ),
-  m_omegax            ( 1 ),
-  m_omegay            ( 1 ),
-  m_phasex            ( .0174532 ),
-  m_phasey            ( .0174532 ),
+  m_cycleDuration     ( KFrequency ),
+
+  m_customParameters     ( NULL ),
+  m_customParameterCount ( 0 ),
 
   m_algorithm         ( EFX::Circle ),
   m_channelData       ( NULL )
@@ -102,20 +101,174 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
   return false;
 }
 
-//
-// Assign this EFX to a device (or vice versa, whatever feels
-// familiar to you) and allocate value arrays the size of device's
-// channels
-//
-bool EFX::setDevice(t_device_id id)
+/**
+ * Set the pattern width
+ *
+ * @param width Pattern width (0-255)
+ */
+void EFX::setWidth(int width)
 {
-  Device* device = _app->doc()->device(id);
+  m_width = static_cast<double> (width);
+}
+
+/**
+ * Get the pattern width
+ *
+ * @return Pattern width (0-255)
+ */
+int EFX::width()
+{
+  return static_cast<int> (m_width);
+}
+
+/**
+ * Set the pattern height
+ *
+ * @param height Pattern height (0-255)
+ */
+void EFX::setHeight(int height)
+{
+  m_height = static_cast<double> (height);
+}
+
+/**
+ * Get the pattern height
+ *
+ * @return Pattern height (0-255)
+ */
+int EFX::height()
+{
+  return static_cast<int> (m_height);
+}
+
+/**
+ * Set the pattern offset on the X-axis
+ *
+ * @param offset Pattern offset (0-255; 127 is middle)
+ */
+void EFX::setXOffset(int offset)
+{
+  m_xOffset = static_cast<double> (offset);
+}
+
+/**
+ * Get the pattern offset on the X-axis
+ *
+ * @return Pattern offset (0-255; 127 is middle)
+ */
+int EFX::xOffset()
+{
+  return static_cast<int> (m_xOffset);
+}
+
+/**
+ * Set the pattern offset on the Y-axis
+ *
+ * @param offset Pattern offset (0-255; 127 is middle)
+ */
+void EFX::setYOffset(int offset)
+{
+  m_yOffset = static_cast<double> (offset);
+}
+
+/**
+ * Get the pattern offset on the Y-axis
+ *
+ * @return Pattern offset (0-255; 127 is middle)
+ */
+int EFX::yOffset()
+{
+  return static_cast<int> (m_yOffset);
+}
+
+/**
+ * A list of integers to set as custom pattern
+ * parameters (i.e. such parameters that are not
+ * common to all patterns)
+ *
+ * @param params Array of integer values
+ * @param len Array length
+ */
+void EFX::setCustomParameters(int* params, int len)
+{
+  /* Delete existing parameter array */
+  if (m_customParameters)
+    {
+      delete [] m_customParameters;
+      m_customParameters = NULL;
+      m_customParameterCount = 0;
+    }
+
+  /* Create new array if necessary */
+  if (len > 0)
+    {
+      m_customParameters = new int[len];
+      memcpy(m_customParameters, params, len);
+      m_customParameterCount = len;
+    }
+}
+
+/**
+ * Get the array of custom parameters
+ *
+ * @param len The length of the array.
+ * @return The internal parameter array. Do not modify.
+ */
+const int* EFX::customParameters(int* len)
+{
+  if (len)
+    {
+      *len = m_customParameterCount;
+      return static_cast <const int*> (m_customParameters);
+    }
+  else
+    {
+      assert(false);
+    }
+}
+
+/**
+ * Set a channel from a device to be used as the X axis.
+ *
+ * @param channel Relative number of the channel used as the X axis
+ */
+void EFX::setXChannel(t_channel channel)
+{
+  Device* device = _app->doc()->device(m_deviceID);
   assert(device);
 
-  /* TODO */
-
-  return false;
+  if (channel <= (signed) device->deviceClass()->channels()->count())
+    {
+      m_xChannel = channel;
+    }
+  else
+    {
+      qDebug("Invalid channel number!");
+      assert(false);
+    }
 }
+
+/**
+ * Set a channel from a device to be used as the Y axis.
+ *
+ * @param channel Relative number of the channel used as the Y axis
+ */
+void EFX::setYChannel(t_channel channel)
+{
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+
+  if (channel <= (signed) device->deviceClass()->channels()->count())
+    {
+      m_yChannel = channel;
+    }
+  else
+    {
+      qDebug("Invalid channel number!");
+      assert(false);
+    }
+}
+
 
 //
 // Save this function's contents to given file
@@ -359,7 +512,6 @@ void EFX::setPoint(int x, int y)
 void EFX::circle()
 {
   double i = 0;
-  int ch = 0;
   int x = 0;
   int y = 0;
 
