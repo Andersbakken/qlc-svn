@@ -39,6 +39,14 @@
 
 extern App* _app;
 
+/* Supported EFX algorithms */
+static const char* KCircleAlgorithmName    ( "Circle"    );
+static const char* KEightAlgorithmName     ( "Eight"     );
+static const char* KLineAlgorithmName      ( "Line"      );
+static const char* KSquareAlgorithmName    ( "Square"    );
+static const char* KTriangleAlgorithmName  ( "Triangle"  );
+static const char* KLissajousAlgorithmName ( "Lissajous" );
+
 //
 // Standard constructor
 //
@@ -56,7 +64,9 @@ EFX::EFX() :
   m_customParameters     ( NULL ),
   m_customParameterCount ( 0 ),
 
-  m_algorithm         ( EFX::Circle ),
+  m_previewPointArray ( NULL ),
+
+  m_algorithm         ( KCircleAlgorithmName ),
   m_channelData       ( NULL )
 {
   /* Set Default Fade as the speed bus */
@@ -80,25 +90,53 @@ EFX::~EFX()
   m_startMutex.unlock();
 }
 
-//
-// Copy EFX contents
-//
-bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
+/**
+ * Set a pointer to a point array for updating the
+ * changes when editing the function.
+ *
+ * @note Call this function with NULL after editing is finished!
+ *
+ * @param array The array to save the preview points to
+ */
+void EFX::setPreviewPointArray(QPointArray* array)
 {
-  assert(efx);
+  m_previewPointArray = array;
+}
 
-  if (toDevice == KNoID || toDevice == m_deviceID)
-    {
-      // Same device
-      /* TODO */
-    }
-  else
-    {
-      // Different device
-      /* TODO */
-    }
+/**
+ * Get the supported algorithms as a string list
+ *
+ * @note This is a static function
+ *
+ * @param algorithms A QStrList that shall contain the algorithms
+ */
+void EFX::algorithmList(QStringList& list)
+{
+  list.clear();
+  list.append(KCircleAlgorithmName);
+  list.append(KEightAlgorithmName);
+  list.append(KLineAlgorithmName);
+  list.append(KSquareAlgorithmName);
+  list.append(KTriangleAlgorithmName);
+  list.append(KLissajousAlgorithmName);
+}
 
-  return false;
+/** 
+ * Get the current algorithm
+ *
+ */
+QString EFX::algorithm()
+{
+  return m_algorithm;
+}
+
+/**
+ * Set the current algorithm
+ *
+ */
+void EFX::setAlgorithm(QString algorithm)
+{
+  m_algorithm = QString(algorithm);
 }
 
 /**
@@ -270,9 +308,36 @@ void EFX::setYChannel(t_channel channel)
 }
 
 
-//
-// Save this function's contents to given file
-//
+/**
+ * Copy function contents from another function
+ *
+ * @param efx EFX function from which to copy contents to this function
+ * @param toDevice The new parent for this function
+ */
+bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
+{
+  assert(efx);
+
+  if (toDevice == KNoID || toDevice == m_deviceID)
+    {
+      // Same device
+      /* TODO */
+    }
+  else
+    {
+      // Different device
+      /* TODO */
+    }
+
+  return false;
+}
+
+/**
+ * Called by Doc when saving the workspace file. Saves this function's
+ * contents to the given file.
+ *
+ * @param file File to save to
+ */
 void EFX::saveToFile(QFile &file)
 {
   QString s;
@@ -312,9 +377,12 @@ void EFX::saveToFile(QFile &file)
   /* TODO: EFX Specific */
 }
 
-//
-// Create the function contents from file that has been read into list
-//
+/**
+ * Parse function contents from a list of string tokens. This is
+ * called by Doc when loading a workspace file.
+ *
+ * @param list List of string tokens (item,value,item,value,item...)
+ */
 void EFX::createContents(QPtrList <QString> &list)
 {
   QString t;
@@ -335,9 +403,13 @@ void EFX::createContents(QPtrList <QString> &list)
     }
 }
 
-//
-// Bus value has changed
-//
+/**
+ * This is called by buses for each function when the
+ * bus value is changed.
+ * 
+ * @param id ID of the bus that has changed its value
+ * @param value Bus' new value
+ */
 void EFX::busValueChanged(t_bus_id id, t_bus_value value)
 {
   if (id != m_busID)
@@ -349,6 +421,7 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
 
   m_cycleDuration = static_cast<double> (value);
 
+  /*
   switch (m_algorithm)
     {
     case EFX::Circle:
@@ -376,13 +449,16 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
     default:
       break;
     }
+  */
 
   m_startMutex.unlock();
 }
 
-//
-// Allocate space for some run time stuff
-//
+/**
+ * Prepare this function for running. This is called when
+ * the user sets the mode to Operate. Basically allocates everything
+ * that is needed to run the function.
+ */
 void EFX::arm()
 {
   if (m_channelData == NULL)
@@ -392,9 +468,10 @@ void EFX::arm()
     m_eventBuffer = new EventBuffer(m_channels);
 }
 
-//
-// Free any run-time data
-//
+/**
+ * Free all run-time allocations. This is called respectively when
+ * the user sets the mode back to Design.
+ */
 void EFX::disarm()
 {
   if (m_channelData) delete [] m_channelData;
@@ -404,10 +481,36 @@ void EFX::disarm()
   m_eventBuffer = NULL;
 }
 
+/**
+ * Called by FunctionConsumer after the function has stopped running.
+ * Usually notifies parent function and/or virtual console that the
+ * function has been stopped.
+ */
+void EFX::cleanup()
+{
+  m_stopped = false;
+  
+  if (m_virtualController)
+    {
+      QApplication::postEvent(m_virtualController,
+			      new FunctionStopEvent(m_id));
+      m_virtualController = NULL;
+    }
+  
+  if (m_parentFunction)
+    {
+      m_parentFunction->childFinished();
+      m_parentFunction = NULL;
+    }
+  
+  m_startMutex.lock();
+  m_running = false;
+  m_startMutex.unlock();
+}
 
-//
-// Get starting values
-//
+/**
+ * Pre-run initialization that is run just before the function is started.
+ */
 void EFX::init()
 {
   t_bus_value speed;
@@ -424,15 +527,16 @@ void EFX::init()
   _app->functionConsumer()->cue(this);
 }
 
-//
-// The main scene producer thread. Nothing should be allocated here
-// (not even local variables) to keep the function as fast as possible.
-//
+/**
+ * The worker thread that takes care of filling the function's
+ * buffer with event data
+ */
 void EFX::run()
 {
   // Initialize this function for running
   init();
-  
+
+  /*  
   switch (m_type)
     {
     case EFX::Circle:
@@ -462,6 +566,7 @@ void EFX::run()
     default:
       break;
     }
+  */
 
   if (m_stopped)
     {
@@ -472,43 +577,18 @@ void EFX::run()
   m_removeAfterEmpty = true;
 }
 
-//
-// This fuction must be called ONLY from functionconsumer AFTER
-// this function is REALLY stopped.
-//
-void EFX::cleanup()
-{
-  m_stopped = false;
-  
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
-      m_virtualController = NULL;
-    }
-  
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
-  
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
-}
-
-//
-// Set the values calculated by EFX functions
-//
+/**
+ * Write the actual calculated coordinate data to
+ * event buffer.
+ */
 void EFX::setPoint(int x, int y)
 {
   /* TODO */
 }
 
-//
-// Render a circle
-//
+/**
+ * Worker thread for creating circle patterns
+ */
 void EFX::circle()
 {
   double i = 0;
@@ -527,9 +607,9 @@ void EFX::circle()
     }
 }
 
-//
-// Render an eight
-//
+/**
+ * Worker thread for creating eight patterns
+ */
 void EFX::eight()
 {
   while (!m_stopped)
@@ -538,9 +618,9 @@ void EFX::eight()
     }
 }
 
-//
-// Render a line
-//
+/**
+ * Worker thread for creating line patterns
+ */
 void EFX::line()
 {
   while (!m_stopped)
@@ -549,9 +629,9 @@ void EFX::line()
     }
 }
 
-//
-// Render a square
-//
+/**
+ * Worker thread for creating square patterns
+ */
 void EFX::square()
 {
   while (!m_stopped)
@@ -560,9 +640,9 @@ void EFX::square()
     }
 }
 
-//
-// Render a triangle
-//
+/**
+ * Worker thread for creating triangle patterns
+ */
 void EFX::triangle()
 {
   while (!m_stopped)
@@ -571,9 +651,9 @@ void EFX::triangle()
     }
 }
 
-//
-// Render a complex lissajous pattern
-//
+/**
+ * Worker thread for creating lissajous patterns
+ */
 void EFX::lissajous()
 {
   while (!m_stopped)

@@ -1,0 +1,125 @@
+/*
+  Q Light Controller
+  efxeditor.h
+  
+  Copyright (C) Heikki Junnila
+  
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  Version 2 as published by the Free Software Foundation.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details. The license is
+  in the file "COPYING".
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#ifndef EFXEDITOR_H
+#define EFXEDITOR_H
+
+#include <qpointarray.h>
+#include <qframe.h>
+
+#include "uic_efxeditor.h"
+#include "types.h"
+#include "efx.h"
+
+class QPaintEvent;
+class EFXPreviewArea;
+
+class EFXEditor : public UI_EFXEditor
+{
+  Q_OBJECT
+
+ public:
+  EFXEditor(QWidget* parent = NULL, const char* name = NULL);
+  ~EFXEditor();
+
+  /**
+   * Set the EFX function to edit
+   *
+   * @param efx The EFX function to edit
+   */
+  void setEFX(EFX* efx);
+  
+  /**
+   * Get channels from the EFX function's device
+   * and fill the combos with them.
+   */
+  void fillChannelCombos();
+
+ public:
+  void slotAlgorithmSelected(const QString &text);
+  void slotWidthSpinChanged(int value);
+  void slotHeightSpinChanged(int value);
+  void slotXOffsetSpinChanged(int value);
+  void slotYOffsetSpinChanged(int value);
+
+  void slotXFrequencyChanged(int value);
+  void slotYFrequencyChanged(int value);
+  void slotXPhaseChanged(int value);
+  void slotYPhaseChanged(int value);
+
+  void slotHorizontalChannelSelected(int index);
+  void slotVerticalChannelSelected(int index);
+
+ protected:
+  double m_width;
+  double m_height;
+  double m_xOffset;
+  double m_yOffset;
+
+  double m_xFrequency;
+  double m_yFrequency;
+  double m_xPhase;
+  double m_yPhase;
+
+  t_channel m_horizontalChannel;
+  t_channel m_verticalChannel;
+
+ protected:
+  EFXPreviewArea* m_previewArea;
+  QPointArray* m_pointArray;
+
+  EFX* m_efx;
+};
+
+/**
+ * The area that is used to draw a preview of
+ * the EFX function currently being edited.
+ */
+class EFXPreviewArea : public QFrame
+{
+  Q_OBJECT
+
+ public:
+  EFXPreviewArea(QWidget* parent = NULL, const char* name = NULL);
+  ~EFXPreviewArea();
+
+  /**
+   * Get the pointer for the point array that is used
+   * to draw the preview
+   *
+   * @return The point array
+   */
+  QPointArray* pointArray();
+
+ protected:
+  /**
+   * QT Framework calls this when the widget needs
+   * to be repainted.
+   *
+   * @param e QPaintEvent
+   */
+  void paintEvent(QPaintEvent* e);
+
+  QPointArray* m_pointArray;
+};
+
+
+#endif
