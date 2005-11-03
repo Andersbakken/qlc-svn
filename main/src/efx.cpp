@@ -238,7 +238,19 @@ QString EFX::algorithm()
  */
 void EFX::setAlgorithm(QString algorithm)
 {
-  m_algorithm = QString(algorithm);
+  QStringList list;
+
+  list = list.grep(algorithm);
+  if (list.isEmpty())
+    {
+      qDebug("Invalid algorithm for EFX: " + algorithm);
+      m_algorithm = KCircleAlgorithmName;
+    }
+  else
+    {
+      m_algorithm = QString(algorithm);
+    }
+
   updatePreview();
 }
 
@@ -553,6 +565,8 @@ void EFX::arm()
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(m_channels);
 
+  m_stopped = false;
+
   /* Choose a point calculation function depending on the algorithm */
   if (m_algorithm == KCircleAlgorithmName)
     {
@@ -580,7 +594,7 @@ void EFX::arm()
     }
   else
     {
-      /* There's something wrong, stop this function */
+      /* There's something wrong, don't run this function */
       pointFunc = NULL;
       m_stopped = true;
 
@@ -638,8 +652,6 @@ void EFX::init()
   t_bus_value speed;
 
   m_removeAfterEmpty = false;
-
-  m_stopped = false;
 
   // Get speed
   Bus::value(m_busID, speed);
