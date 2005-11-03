@@ -240,6 +240,8 @@ void EFX::setAlgorithm(QString algorithm)
 {
   QStringList list;
 
+  EFX::algorithmList(list);
+
   list = list.grep(algorithm);
   if (list.isEmpty())
     {
