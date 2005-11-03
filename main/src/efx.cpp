@@ -52,6 +52,8 @@ static const char* KLissajousAlgorithmName ( "Lissajous" );
 //
 EFX::EFX() :
   Function            ( Function::EFX ),
+
+  pointFunc           ( NULL ),
   
   m_width             ( 127 ),
   m_height            ( 127 ),
@@ -104,6 +106,62 @@ void EFX::setPreviewPointArray(QPointArray* array)
 }
 
 /**
+ * Updates the preview points (if necessary)
+ *
+ * @todo Maybe this should be private?
+ */
+void EFX::updatePreview()
+{
+  if (m_previewPointArray == NULL)
+    {
+      return;
+    }
+  
+  int stepCount = 128;
+  int step = 0;
+  float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2));
+  float i = 0;
+  float *x = new float;
+  float *y = new float;
+
+  m_previewPointArray->resize(stepCount);
+
+  if (m_algorithm == KCircleAlgorithmName)
+    {
+      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	{
+	  circlePoint(this, i, x, y);
+	  m_previewPointArray->setPoint(step++, 
+					static_cast<int> (*x),
+					static_cast<int> (*y));
+	}
+    }
+  else if (m_algorithm == KEightAlgorithmName)
+    {
+    }
+  else if (m_algorithm == KLineAlgorithmName)
+    {
+    }
+  else if (m_algorithm == KSquareAlgorithmName)
+    {
+    }
+  else if (m_algorithm == KTriangleAlgorithmName)
+    {
+    }
+  else if (m_algorithm == KLissajousAlgorithmName)
+    {
+    }
+  else
+    {
+      m_previewPointArray->resize(0);
+    }
+
+  delete x;
+  delete y;
+}
+
+
+/**
  * Get the supported algorithms as a string list
  *
  * @note This is a static function
@@ -137,6 +195,7 @@ QString EFX::algorithm()
 void EFX::setAlgorithm(QString algorithm)
 {
   m_algorithm = QString(algorithm);
+  updatePreview();
 }
 
 /**
@@ -147,6 +206,7 @@ void EFX::setAlgorithm(QString algorithm)
 void EFX::setWidth(int width)
 {
   m_width = static_cast<double> (width);
+  updatePreview();
 }
 
 /**
@@ -167,6 +227,7 @@ int EFX::width()
 void EFX::setHeight(int height)
 {
   m_height = static_cast<double> (height);
+  updatePreview();
 }
 
 /**
@@ -187,6 +248,7 @@ int EFX::height()
 void EFX::setXOffset(int offset)
 {
   m_xOffset = static_cast<double> (offset);
+  updatePreview();
 }
 
 /**
@@ -207,6 +269,7 @@ int EFX::xOffset()
 void EFX::setYOffset(int offset)
 {
   m_yOffset = static_cast<double> (offset);
+  updatePreview();
 }
 
 /**
@@ -244,6 +307,8 @@ void EFX::setCustomParameters(int* params, int len)
       memcpy(m_customParameters, params, len);
       m_customParameterCount = len;
     }
+
+  updatePreview();
 }
 
 /**
@@ -278,6 +343,7 @@ void EFX::setXChannel(t_channel channel)
   if (channel <= (signed) device->deviceClass()->channels()->count())
     {
       m_xChannel = channel;
+      updatePreview();
     }
   else
     {
@@ -299,6 +365,7 @@ void EFX::setYChannel(t_channel channel)
   if (channel <= (signed) device->deviceClass()->channels()->count())
     {
       m_yChannel = channel;
+      updatePreview();
     }
   else
     {
@@ -421,35 +488,7 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
 
   m_cycleDuration = static_cast<double> (value);
 
-  /*
-  switch (m_algorithm)
-    {
-    case EFX::Circle:
-      {
-	m_stepSize = (double)(1) / ((double)(m_cycleDuration) / (M_PI * 2));
-	qDebug("1 / (%f / %f) = %f", m_cycleDuration, (M_PI * 2), m_stepSize);
-      }
-      break;
-
-    case EFX::Eight:
-      break;
-
-    case EFX::Line:
-      break;
-
-    case EFX::Square:
-      break;
-
-    case EFX::Triangle:
-      break;
-      
-    case EFX::Lissajous:
-      break;
-
-    default:
-      break;
-    }
-  */
+  m_stepSize = (double)(1) / ((double)(m_cycleDuration) / (M_PI * 2));
 
   m_startMutex.unlock();
 }
@@ -466,6 +505,40 @@ void EFX::arm()
 
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(m_channels);
+
+  /* Choose a point calculation function depending on the algorithm */
+  if (m_algorithm == KCircleAlgorithmName)
+    {
+      pointFunc = circlePoint;
+    }
+  else if (m_algorithm == KEightAlgorithmName)
+    {
+      pointFunc = eightPoint;
+    }
+  else if (m_algorithm == KLineAlgorithmName)
+    {
+      pointFunc = linePoint;
+    }
+  else if (m_algorithm == KTriangleAlgorithmName)
+    {
+      pointFunc = trianglePoint;
+    }
+  else if (m_algorithm == KSquareAlgorithmName)
+    {
+      pointFunc = squarePoint;
+    }
+  else if (m_algorithm == KLissajousAlgorithmName)
+    {
+      pointFunc = lissajousPoint;
+    }
+  else
+    {
+      /* There's something wrong, stop this function */
+      pointFunc = NULL;
+      m_stopped = true;
+
+      qDebug("Unknown algorithm used in EFX: " + m_name);
+    }
 }
 
 /**
@@ -479,6 +552,8 @@ void EFX::disarm()
 
   if (m_eventBuffer) delete m_eventBuffer;
   m_eventBuffer = NULL;
+
+  pointFunc = NULL;
 }
 
 /**
@@ -533,40 +608,25 @@ void EFX::init()
  */
 void EFX::run()
 {
+  float i = 0;
+  float* x = new float;
+  float* y = new float;
+
   // Initialize this function for running
   init();
 
-  /*  
-  switch (m_type)
+  while (!m_stopped)
     {
-    case EFX::Circle:
-      circle();
-      break;
-
-    case EFX::Eight:
-      eight();
-      break;
-
-    case EFX::Line:
-      line();
-      break;
-
-    case EFX::Square:
-      square();
-      break;
-
-    case EFX::Triangle:
-      triangle();
-      break;
-      
-    case EFX::Lissajous:
-      lissajous();
-      break;
-
-    default:
-      break;
+      for (i = 0; i < (M_PI * 2.0); i += m_stepSize)
+	{
+	  pointFunc(this, i, x, y);
+	  setPoint(static_cast<t_value> (*x),
+		   static_cast<t_value> (*y));
+	}
     }
-  */
+
+  delete x;
+  delete y;
 
   if (m_stopped)
     {
@@ -578,87 +638,118 @@ void EFX::run()
 }
 
 /**
+ * Calculate a single point in a circle pattern based on
+ * the value of iterator (which is basically a step number)
+ *
+ * @note This is a static function
+ *
+ * @param efx The EFX function using this
+ * @param iterator Step number
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ */
+void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
+{
+  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+}
+
+/**
+ * Calculate a single point in an eight pattern based on
+ * the value of iterator (which is basically a step number)
+ *
+ * @note This is a static function
+ *
+ * @param efx The EFX function using this
+ * @param iterator Step number
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ */
+void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
+{
+  /* TODO !!! */
+  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+}
+
+/**
+ * Calculate a single point in a line pattern based on
+ * the value of iterator (which is basically a step number)
+ *
+ * @note This is a static function
+ *
+ * @param efx The EFX function using this
+ * @param iterator Step number
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ */
+void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
+{
+  /* TODO !!! */
+  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+}
+
+/**
+ * Calculate a single point in a triangle pattern based on
+ * the value of iterator (which is basically a step number)
+ *
+ * @note This is a static function
+ *
+ * @param efx The EFX function using this
+ * @param iterator Step number
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ */
+void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
+{
+  /* TODO !!! */
+  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+}
+
+/**
+ * Calculate a single point in a square pattern based on
+ * the value of iterator (which is basically a step number)
+ *
+ * @note This is a static function
+ *
+ * @param efx The EFX function using this
+ * @param iterator Step number
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ */
+void EFX::squarePoint(EFX* efx, float iterator, float* x, float* y)
+{
+  /* TODO !!! */
+  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+}
+
+/**
+ * Calculate a single point in a lissajous pattern based on
+ * the value of iterator (which is basically a step number)
+ *
+ * @note This is a static function
+ *
+ * @param efx The EFX function using this
+ * @param iterator Step number
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ */
+void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
+{
+  /* TODO !!! */
+  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+}
+
+
+/**
  * Write the actual calculated coordinate data to
  * event buffer.
  */
-void EFX::setPoint(int x, int y)
+void EFX::setPoint(t_value x, t_value y)
 {
   /* TODO */
 }
-
-/**
- * Worker thread for creating circle patterns
- */
-void EFX::circle()
-{
-  double i = 0;
-  int x = 0;
-  int y = 0;
-
-  while (!m_stopped)
-    {
-      for (i = 0; i < (M_PI * 2); i += m_stepSize)
-	{
-	  x = static_cast<int> (m_xOffset + (cos(i + M_PI_2) * m_width));
-	  y = static_cast<int> (m_yOffset + (cos(i) * m_height));
-	  
-	  setPoint(x, y);
-	}
-    }
-}
-
-/**
- * Worker thread for creating eight patterns
- */
-void EFX::eight()
-{
-  while (!m_stopped)
-    {
-      /* TODO */
-    }
-}
-
-/**
- * Worker thread for creating line patterns
- */
-void EFX::line()
-{
-  while (!m_stopped)
-    {
-      /* TODO */
-    }
-}
-
-/**
- * Worker thread for creating square patterns
- */
-void EFX::square()
-{
-  while (!m_stopped)
-    {
-      /* TODO */
-    }
-}
-
-/**
- * Worker thread for creating triangle patterns
- */
-void EFX::triangle()
-{
-  while (!m_stopped)
-    {
-      /* TODO */
-    }
-}
-
-/**
- * Worker thread for creating lissajous patterns
- */
-void EFX::lissajous()
-{
-  while (!m_stopped)
-    {
-      /* TODO */
-    }
-}
-

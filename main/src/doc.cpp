@@ -30,6 +30,7 @@
 #include "functioncollection.h"
 #include "chaser.h"
 #include "sequence.h"
+#include "efx.h"
 #include "virtualconsole.h"
 #include "devicemanagerview.h"
 #include "configkeys.h"
@@ -456,15 +457,23 @@ Function* Doc::newFunction(Function::Type type, t_function_id id)
     case Function::Scene:
       f = new Scene();
       break;
+
     case Function::Chaser:
       f = new Chaser();
       break;
+
     case Function::Collection:
       f = new FunctionCollection();
       break;
+
     case Function::Sequence:
       f = new Sequence();
       break;
+
+    case Function::EFX:
+      f = new EFX();
+      break;
+
     case Function::Undefined:
     default:
       f = NULL;

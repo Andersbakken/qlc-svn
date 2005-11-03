@@ -30,20 +30,32 @@
 #include <qevent.h>
 #include <qpainter.h>
 #include <qcombobox.h>
+#include <qlineedit.h>
+#include <assert.h>
 
 extern App* _app;
 
-EFXEditor::EFXEditor(QWidget* parent, const char* name)
-  : UI_EFXEditor(parent, name),
+EFXEditor::EFXEditor(EFX* efx, QWidget* parent)
+  : UI_EFXEditor(parent, "EFXEditor", true),
 
     m_previewArea ( new EFXPreviewArea(m_previewFrame) ),
-    m_efx         ( NULL )
+    m_efx         ( efx )
 {
 }
 
 EFXEditor::~EFXEditor()
 {
   m_efx->setPreviewPointArray(NULL);
+}
+
+void EFXEditor::init()
+{
+  m_nameEdit->setText(m_efx->name());
+
+  m_previewArea->resize(m_previewFrame->width(),
+			m_previewFrame->height());
+
+  setEFX(m_efx);
 }
 
 void EFXEditor::setEFX(EFX* efx)
@@ -111,6 +123,15 @@ void EFXEditor::fillChannelCombos()
 	  vertical = true; // Select the first that contains "tilt"
 	}
     }
+}
+
+void EFXEditor::slotNameChanged(const QString &text)
+{
+  assert(m_efx);
+
+  setCaption(QString("EFX Editor - ") + text);
+
+  m_efx->setName(text);
 }
 
 void EFXEditor::slotAlgorithmSelected(const QString &text)

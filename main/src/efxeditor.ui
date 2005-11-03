@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>498</width>
-            <height>424</height>
+            <width>486</width>
+            <height>456</height>
         </rect>
     </property>
     <property name="caption">
@@ -19,6 +19,29 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout15</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_nameLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Name:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_nameEdit</cstring>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout27</cstring>
@@ -589,6 +612,12 @@
         <receiver>UI_EFXEditor</receiver>
         <slot>slotWidthSpinChanged(int)</slot>
     </connection>
+    <connection>
+        <sender>m_nameEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotNameChanged(const QString&amp;)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotHeightSpinChanged( int )</slot>
@@ -598,6 +627,7 @@
     <slot>slotHorizontalChannelSelected( int )</slot>
     <slot>slotVerticalChannelSelected( int )</slot>
     <slot>slotAlgorithmSelected( const QString &amp; )</slot>
+    <slot>slotNameChanged( const QString &amp; )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

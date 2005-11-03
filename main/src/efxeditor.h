@@ -37,8 +37,10 @@ class EFXEditor : public UI_EFXEditor
   Q_OBJECT
 
  public:
-  EFXEditor(QWidget* parent = NULL, const char* name = NULL);
+  EFXEditor(EFX* efx, QWidget* parent = NULL);
   ~EFXEditor();
+
+  void init();
 
   /**
    * Set the EFX function to edit
@@ -54,6 +56,8 @@ class EFXEditor : public UI_EFXEditor
   void fillChannelCombos();
 
  public:
+  void slotNameChanged(const QString &text);
+
   void slotAlgorithmSelected(const QString &text);
   void slotWidthSpinChanged(int value);
   void slotHeightSpinChanged(int value);

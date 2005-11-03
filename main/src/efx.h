@@ -49,6 +49,13 @@ class EFX : public Function
   void setPreviewPointArray(QPointArray* array);
 
   /**
+   * Updates the preview points (if necessary)
+   *
+   * @todo Maybe this should be private?
+   */
+  void updatePreview();
+
+  /**
    * Get the supported algorithms as a string list
    *
    * @note This is a static function
@@ -222,40 +229,95 @@ class EFX : public Function
   void run();
 
   /**
-   * Worker thread for creating circle patterns
+   * Function pointer for the point calculation function.
+   * This pointer is replaced by the appropriate function pointer
+   * depending on the chosen algorithm.
    */
-  void circle();
+  void (*pointFunc) (EFX* efx, float iterator, float* x, float* y);
 
   /**
-   * Worker thread for creating eight patterns
+   * Calculate a single point in a circle based on
+   * the value of iterator (which is basically a step number)
+   *
+   * @note This is a static function
+   *
+   * @param efx The EFX function using this
+   * @param iterator Step number
+   * @param x Holds the calculated X coordinate
+   * @param y Holds the calculated Y coordinate
    */
-  void eight();
+  static void circlePoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
-   * Worker thread for creating line patterns
+   * Calculate a single point in a eight pattern based on
+   * the value of iterator (which is basically a step number)
+   *
+   * @note This is a static function
+   *
+   * @param efx The EFX function using this
+   * @param iterator Step number
+   * @param x Holds the calculated X coordinate
+   * @param y Holds the calculated Y coordinate
    */
-  void line();
+  static void eightPoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
-   * Worker thread for creating square patterns
+   * Calculate a single point in a line pattern based on
+   * the value of iterator (which is basically a step number)
+   *
+   * @note This is a static function
+   *
+   * @param efx The EFX function using this
+   * @param iterator Step number
+   * @param x Holds the calculated X coordinate
+   * @param y Holds the calculated Y coordinate
    */
-  void square();
+  static void linePoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
-   * Worker thread for creating triangle patterns
+   * Calculate a single point in a triangle pattern based on
+   * the value of iterator (which is basically a step number)
+   *
+   * @note This is a static function
+   *
+   * @param efx The EFX function using this
+   * @param iterator Step number
+   * @param x Holds the calculated X coordinate
+   * @param y Holds the calculated Y coordinate
    */
-  void triangle();
+  static void trianglePoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
-   * Worker thread for creating lissajous patterns
+   * Calculate a single point in a square pattern based on
+   * the value of iterator (which is basically a step number)
+   *
+   * @note This is a static function
+   *
+   * @param efx The EFX function using this
+   * @param iterator Step number
+   * @param x Holds the calculated X coordinate
+   * @param y Holds the calculated Y coordinate
    */
-  void lissajous();
+  static void squarePoint(EFX* efx, float iterator, float* x, float* y);
+
+  /**
+   * Calculate a single point in a lissajous pattern based on
+   * the value of iterator (which is basically a step number)
+   *
+   * @note This is a static function
+   *
+   * @param efx The EFX function using this
+   * @param iterator Step number
+   * @param x Holds the calculated X coordinate
+   * @param y Holds the calculated Y coordinate
+   */
+  static void lissajousPoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
    * Write the actual calculated coordinate data to
    * event buffer.
    */
-  void setPoint(int x, int y);
+  void setPoint(t_value x, t_value y);
 
  protected:
   /**
