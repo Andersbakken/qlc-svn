@@ -720,8 +720,7 @@ void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO !!! */
-  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  *x = efx->m_xOffset + (cos((iterator * 2) + M_PI_2) * efx->m_width);
   *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
 }
 
@@ -738,8 +737,8 @@ void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO !!! */
-  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
+  /* TODO: It's a simple line, I don't think we need cos() :) */
+  *x = efx->m_xOffset + (cos(iterator) * efx->m_width);
   *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
 }
 
@@ -757,8 +756,8 @@ void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 {
   /* TODO !!! */
-  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
-  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+  *x = efx->m_xOffset + (cos(iterator) * efx->m_width);
+  *y = efx->m_yOffset + (sin(iterator) * efx->m_height);
 }
 
 /**
@@ -774,9 +773,8 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::squarePoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO !!! */
-  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
-  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+  *x = efx->m_xOffset + (pow(cos(iterator - M_PI_2), 3) * efx->m_width);
+  *y = efx->m_yOffset + (pow(cos(iterator), 3) * efx->m_height);
 }
 
 /**
@@ -792,11 +790,12 @@ void EFX::squarePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO !!! */
-  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
-  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+  /* TODO: get omega and phase from custom parameters */
+  /*
+  *x = efx->m_xOffset + (cos((m_omegax * iterator) - m_phasex) * efx->m_width));
+  *y = m_yOffset + (cos((m_omegay * iterator) - m_phasey) * efx->m_height));
+  */
 }
-
 
 /**
  * Write the actual calculated coordinate data to
