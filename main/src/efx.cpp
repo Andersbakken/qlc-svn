@@ -47,9 +47,9 @@ static const char* KSquareAlgorithmName    ( "Square"    );
 static const char* KTriangleAlgorithmName  ( "Triangle"  );
 static const char* KLissajousAlgorithmName ( "Lissajous" );
 
-//
-// Standard constructor
-//
+/**
+ * Standard constructor
+ */
 EFX::EFX() :
   Function            ( Function::EFX ),
 
@@ -75,9 +75,9 @@ EFX::EFX() :
   setBus(KBusIDDefaultFade);
 }
 
-//
-// Standard destructor
-//
+/**
+ * Standard destructor
+ */
 EFX::~EFX()
 {
   stop();
@@ -108,7 +108,6 @@ void EFX::setPreviewPointArray(QPointArray* array)
 /**
  * Updates the preview points (if necessary)
  *
- * @todo Maybe this should be private?
  */
 void EFX::updatePreview()
 {
@@ -116,18 +115,21 @@ void EFX::updatePreview()
     {
       return;
     }
-  
+
   int stepCount = 128;
   int step = 0;
-  float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2));
+  float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2.0));
+
   float i = 0;
   float *x = new float;
   float *y = new float;
 
+  /* Resize the array to contain stepCount points */
   m_previewPointArray->resize(stepCount);
 
   if (m_algorithm == KCircleAlgorithmName)
     {
+      /* Draw a preview of a circle */
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  circlePoint(this, i, x, y);
@@ -138,18 +140,58 @@ void EFX::updatePreview()
     }
   else if (m_algorithm == KEightAlgorithmName)
     {
+      /* Draw a preview of a eight */
+      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	{
+	  eightPoint(this, i, x, y);
+	  m_previewPointArray->setPoint(step++, 
+					static_cast<int> (*x),
+					static_cast<int> (*y));
+	}
     }
   else if (m_algorithm == KLineAlgorithmName)
     {
+      /* Draw a preview of a line */
+      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	{
+	  linePoint(this, i, x, y);
+	  m_previewPointArray->setPoint(step++, 
+					static_cast<int> (*x),
+					static_cast<int> (*y));
+	}
     }
   else if (m_algorithm == KSquareAlgorithmName)
     {
+      /* Draw a preview of a square */
+      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	{
+	  squarePoint(this, i, x, y);
+	  m_previewPointArray->setPoint(step++, 
+					static_cast<int> (*x),
+					static_cast<int> (*y));
+	}
     }
   else if (m_algorithm == KTriangleAlgorithmName)
     {
+      /* Draw a preview of a triangle */
+      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	{
+	  trianglePoint(this, i, x, y);
+	  m_previewPointArray->setPoint(step++, 
+					static_cast<int> (*x),
+					static_cast<int> (*y));
+	}
     }
   else if (m_algorithm == KLissajousAlgorithmName)
     {
+      /* Draw a preview of a lissajous */
+      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	{
+	  lissajousPoint(this, i, x, y);
+	  m_previewPointArray->setPoint(step++, 
+					static_cast<int> (*x),
+					static_cast<int> (*y));
+	}
     }
   else
     {
@@ -182,6 +224,7 @@ void EFX::algorithmList(QStringList& list)
 /** 
  * Get the current algorithm
  *
+ * @return Name of the current algorithm. See @ref algorithmList
  */
 QString EFX::algorithm()
 {
@@ -191,6 +234,7 @@ QString EFX::algorithm()
 /**
  * Set the current algorithm
  *
+ * @param algorithm One of the strings returned by @ref algorithmList
  */
 void EFX::setAlgorithm(QString algorithm)
 {
@@ -481,13 +525,16 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
 {
   if (id != m_busID)
     {
+      /* Not our bus */
       return;
     }
 
   m_startMutex.lock();
 
+  /* Basically number of steps required to complete a full cycle */
   m_cycleDuration = static_cast<double> (value);
 
+  /* Size of one step */
   m_stepSize = (double)(1) / ((double)(m_cycleDuration) / (M_PI * 2));
 
   m_startMutex.unlock();
@@ -619,21 +666,27 @@ void EFX::run()
     {
       for (i = 0; i < (M_PI * 2.0); i += m_stepSize)
 	{
+	  /* Calculate the next point */
 	  pointFunc(this, i, x, y);
-	  setPoint(static_cast<t_value> (*x),
-		   static_cast<t_value> (*y));
+
+	  /* Write the point to event buffer */
+	  setPoint(static_cast<t_value> (*x), static_cast<t_value> (*y));
 	}
     }
 
+  /* These are no longer needed */
   delete x;
   delete y;
 
   if (m_stopped)
     {
+      /* The function was stopped elsewhere, purge the contents of
+       * the eventbuffer so that the function is removed from queue
+       * as soon as possible */
       m_eventBuffer->purge();
     }
   
-  // Finished
+  /* Finished */
   m_removeAfterEmpty = true;
 }
 

@@ -49,13 +49,6 @@ class EFX : public Function
   void setPreviewPointArray(QPointArray* array);
 
   /**
-   * Updates the preview points (if necessary)
-   *
-   * @todo Maybe this should be private?
-   */
-  void updatePreview();
-
-  /**
    * Get the supported algorithms as a string list
    *
    * @note This is a static function
@@ -227,6 +220,12 @@ class EFX : public Function
    * buffer with event data
    */
   void run();
+
+  /**
+   * Updates the preview points (if necessary)
+   *
+   */
+  void updatePreview();
 
   /**
    * Function pointer for the point calculation function.

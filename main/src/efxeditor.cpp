@@ -56,20 +56,38 @@ void EFXEditor::init()
 			m_previewFrame->height());
 
   setEFX(m_efx);
+
+  /* Causes the EFX function to update the preview point array */
+  m_efx->setAlgorithm(m_efx->algorithm());
+  
+  /* Draw the points */
+  m_previewArea->repaint();
 }
 
 void EFXEditor::setEFX(EFX* efx)
 {
   assert(efx);
+
+  if (m_efx)
+    {
+      /* If another EFX function has been edited with this dialog,
+       * set its preview point array NULL so it doesn't try to
+       * update its preview anymore
+       */
+      m_efx->setPreviewPointArray(NULL);
+    }
+
+  /* Take the new EFX function for editing */
   m_efx = efx;
+
+  /* Set the preview point array for the new EFX */
+  m_efx->setPreviewPointArray(m_previewArea->pointArray());
 
   /* Get supported algorithms and fill the algorithm combo with them */
   QStringList list;
   EFX::algorithmList(list);
   m_algorithmCombo->clear();
   m_algorithmCombo->insertStringList(list);
-
-  m_efx->setPreviewPointArray(m_previewArea->pointArray());
 
   /* Select the EFX's algorithm from the algorithm combo */
   for (int i = 0; i < m_algorithmCombo->count(); i++)
@@ -139,6 +157,8 @@ void EFXEditor::slotAlgorithmSelected(const QString &text)
   assert(m_efx);
 
   m_efx->setAlgorithm(text);
+
+  m_previewArea->repaint();
 }
 
 void EFXEditor::slotWidthSpinChanged(int value)
@@ -146,6 +166,8 @@ void EFXEditor::slotWidthSpinChanged(int value)
   assert(m_efx);
 
   m_efx->setWidth(value);
+
+  m_previewArea->repaint();
 }
 
 void EFXEditor::slotHeightSpinChanged(int value)
@@ -153,6 +175,8 @@ void EFXEditor::slotHeightSpinChanged(int value)
   assert(m_efx);
 
   m_efx->setHeight(value);
+
+  m_previewArea->repaint();
 }
 
 void EFXEditor::slotXOffsetSpinChanged(int value)
@@ -160,6 +184,8 @@ void EFXEditor::slotXOffsetSpinChanged(int value)
   assert(m_efx);
 
   m_efx->setXOffset(value);
+
+  m_previewArea->repaint();
 }
 
 void EFXEditor::slotYOffsetSpinChanged(int value)
@@ -167,6 +193,8 @@ void EFXEditor::slotYOffsetSpinChanged(int value)
   assert(m_efx);
 
   m_efx->setYOffset(value);
+
+  m_previewArea->repaint();
 }
 
 void EFXEditor::slotHorizontalChannelSelected(int channel)
@@ -174,6 +202,8 @@ void EFXEditor::slotHorizontalChannelSelected(int channel)
   assert(m_efx);
 
   m_efx->setXChannel(static_cast<t_channel> (channel));
+
+  m_previewArea->repaint();
 }
 
 void EFXEditor::slotVerticalChannelSelected(int channel)
@@ -181,6 +211,8 @@ void EFXEditor::slotVerticalChannelSelected(int channel)
   assert(m_efx);
 
   m_efx->setYChannel(static_cast<t_channel> (channel));
+
+  m_previewArea->repaint();
 }
 
 
@@ -251,6 +283,6 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
       painter.drawPoint(point);
 
       // Draw a small ellipse around each point
-      painter.drawEllipse(point.x() - 3, point.y() - 3, 6, 6);
+      painter.drawEllipse(point.x() - 2, point.y() - 2, 4, 4);
     }
 }
