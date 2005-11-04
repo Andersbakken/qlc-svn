@@ -31,6 +31,7 @@
 #include <qpainter.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
+#include <qspinbox.h>
 #include <assert.h>
 
 extern App* _app;
@@ -50,11 +51,20 @@ EFXEditor::~EFXEditor()
 
 void EFXEditor::init()
 {
+  /* Get supported algorithms and fill the algorithm combo with them */
+  QStringList list;
+  EFX::algorithmList(list);
+  m_algorithmCombo->clear();
+  m_algorithmCombo->insertStringList(list);
+
+  /* Set the algorithm's name to the name field */
   m_nameEdit->setText(m_efx->name());
 
+  /* Resize the preview area to fill its frame */
   m_previewArea->resize(m_previewFrame->width(),
 			m_previewFrame->height());
 
+  /* Set the currently edited EFX function */
   setEFX(m_efx);
 
   /* Causes the EFX function to update the preview point array */
@@ -83,12 +93,6 @@ void EFXEditor::setEFX(EFX* efx)
   /* Set the preview point array for the new EFX */
   m_efx->setPreviewPointArray(m_previewArea->pointArray());
 
-  /* Get supported algorithms and fill the algorithm combo with them */
-  QStringList list;
-  EFX::algorithmList(list);
-  m_algorithmCombo->clear();
-  m_algorithmCombo->insertStringList(list);
-
   /* Select the EFX's algorithm from the algorithm combo */
   for (int i = 0; i < m_algorithmCombo->count(); i++)
     {
@@ -98,6 +102,12 @@ void EFXEditor::setEFX(EFX* efx)
 	  break;
 	}
     }
+
+  /* Get the algorithm parameters */
+  m_widthSpin->setValue(m_efx->width());
+  m_heightSpin->setValue(m_efx->height());
+  m_xOffsetSpin->setValue(m_efx->xOffset());
+  m_yOffsetSpin->setValue(m_efx->yOffset());
 
   fillChannelCombos();
 }
