@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  settingsui.h
+  imagecontentspreview.h
   
   Copyright (C) Heikki Junnila
   
@@ -19,33 +19,20 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#ifndef IMAGECONTENTSPREVIEW_H
+#define IMAGECONTENTSPREVIEW_H
 
-#include "uic_settings.h"
+#include <qfiledialog.h>
+#include <qlabel.h>
+#include <qstring.h>
 
-class SettingsUI : public UI_Settings
+class ImageContentsPreview : public QLabel, public QFilePreview
 {
-  Q_OBJECT
-
  public:
-  SettingsUI(QWidget* parent);
-  ~SettingsUI();
+  ImageContentsPreview(QWidget* parent = 0);
+  ~ImageContentsPreview();
 
-  void init();
-
- private slots:
-  void slotSystemBrowseClicked();
-  void slotBackgroundBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotConfigurePluginClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
-
- private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-  void fillAdvancedSettingsList();
+  void previewUrl( const QUrl &u );
 };
 
 #endif

@@ -25,6 +25,7 @@
 #include "settings.h"
 #include "configkeys.h"
 #include "configitem.h"
+#include "imagecontentspreview.h"
 
 #include <qlistview.h>
 #include <qapplication.h>
@@ -163,15 +164,28 @@ void SettingsUI::slotSystemBrowseClicked()
 void SettingsUI::slotBackgroundBrowseClicked()
 {
   QString path;
-  path = QFileDialog::
-    getOpenFileName(m_backgroundEdit->text(), 
-		    QString("Images (*.png *.xpm *.jpg *.gif)"), this);
+
+  ImageContentsPreview* p = new ImageContentsPreview;
   
-  if (path.isEmpty() == false)
+  QFileDialog* fd = new QFileDialog( this );
+  fd->setContentsPreviewEnabled( TRUE );
+  fd->setContentsPreview( p, p );
+  fd->setPreviewMode( QFileDialog::Contents );
+  fd->setFilter("Images (*.png *.xpm *.jpg *.gif)");
+  fd->setSelection(m_backgroundEdit->text());
+
+  if (fd->exec() == QDialog::Accepted)
     {
-      m_backgroundEdit->setText(path);
-      _app->workspace()->setBackgroundPixmap(QPixmap(path));
+      path = fd->selectedFile();
+      
+      if (path.isEmpty() == false)
+	{
+	  m_backgroundEdit->setText(path);
+	}
     }
+
+  delete p;
+  delete fd;
 }
 
 
@@ -197,6 +211,8 @@ void SettingsUI::slotOKClicked()
     {
       _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::falseValue());
     }
+
+  _app->workspace()->setBackgroundPixmap(QPixmap(m_backgroundEdit->text()));
 
   accept();
 }

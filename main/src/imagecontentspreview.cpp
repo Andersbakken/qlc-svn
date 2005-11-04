@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  settingsui.h
+  imagecontentspreview.cpp
   
   Copyright (C) Heikki Junnila
   
@@ -19,33 +19,32 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#include "imagecontentspreview.h"
 
-#include "uic_settings.h"
+#include <qfiledialog.h>
+#include <qlabel.h>
+#include <qpixmap.h>
+#include <qstring.h>
 
-class SettingsUI : public UI_Settings
+ImageContentsPreview::ImageContentsPreview(QWidget* parent) 
+  : QLabel(parent)
 {
-  Q_OBJECT
+}
+  
+ImageContentsPreview::~ImageContentsPreview()
+{
+}
 
- public:
-  SettingsUI(QWidget* parent);
-  ~SettingsUI();
-
-  void init();
-
- private slots:
-  void slotSystemBrowseClicked();
-  void slotBackgroundBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotConfigurePluginClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
-
- private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-  void fillAdvancedSettingsList();
-};
-
-#endif
+void ImageContentsPreview::previewUrl(const QUrl &u)
+{
+  QString path = u.path();
+  QPixmap pix( path );
+  if ( pix.isNull() )
+    {
+      setText("Not a valid image file");
+    }
+  else
+    {
+      setPixmap( pix );
+    }
+}
