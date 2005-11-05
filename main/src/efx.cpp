@@ -43,7 +43,7 @@ extern App* _app;
 static const char* KCircleAlgorithmName    ( "Circle"    );
 static const char* KEightAlgorithmName     ( "Eight"     );
 static const char* KLineAlgorithmName      ( "Line"      );
-static const char* KDiamondAlgorithmName    ( "Diamond"    );
+static const char* KDiamondAlgorithmName   ( "Diamond"    );
 static const char* KTriangleAlgorithmName  ( "Triangle"  );
 static const char* KLissajousAlgorithmName ( "Lissajous" );
 
@@ -61,9 +61,9 @@ EFX::EFX() :
   m_yOffset           ( 127 ),
 
   m_xFrequency        ( 2 ),
-  m_yFrequency        ( 1 ),
-  m_xPhase            ( .0174532 ),
-  m_yPhase            ( .0174532 ),
+  m_yFrequency        ( 3 ),
+  m_xPhase            ( 1.5707963267 ),
+  m_yPhase            ( 0 ),
 
   m_stepSize          ( 0 ),
   m_cycleDuration     ( KFrequency ),
@@ -222,7 +222,7 @@ void EFX::algorithmList(QStringList& list)
   list.append(KEightAlgorithmName);
   list.append(KLineAlgorithmName);
   list.append(KDiamondAlgorithmName);
-  list.append(KTriangleAlgorithmName);
+  /* list.append(KTriangleAlgorithmName); */
   list.append(KLissajousAlgorithmName);
 }
 

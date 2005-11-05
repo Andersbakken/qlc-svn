@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>486</width>
-            <height>456</height>
+            <width>509</width>
+            <height>509</height>
         </rect>
     </property>
     <property name="caption">
@@ -39,464 +39,706 @@
                     <property name="name">
                         <cstring>m_nameEdit</cstring>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The EFX name</string>
+                    </property>
                 </widget>
             </hbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <widget class="QTabWidget">
             <property name="name">
-                <cstring>layout27</cstring>
+                <cstring>m_tab</cstring>
             </property>
-            <hbox>
+            <widget class="QWidget">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                    <cstring>tab</cstring>
                 </property>
-                <widget class="QLayoutWidget">
+                <attribute name="title">
+                    <string>Basic Movement</string>
+                </attribute>
+                <hbox>
                     <property name="name">
-                        <cstring>layout26</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <vbox>
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>layout26</cstring>
                         </property>
-                        <widget class="QFrame">
+                        <vbox>
                             <property name="name">
-                                <cstring>m_previewFrame</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>255</width>
-                                    <height>255</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>255</width>
-                                    <height>255</height>
-                                </size>
-                            </property>
-                            <property name="frameShape">
-                                <enum>StyledPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Sunken</enum>
-                            </property>
-                        </widget>
-                        <widget class="QGroupBox">
-                            <property name="name">
-                                <cstring>m_axesGroup</cstring>
-                            </property>
-                            <property name="title">
-                                <string>Axes</string>
-                            </property>
-                            <vbox>
+                            <widget class="QFrame">
                                 <property name="name">
-                                    <cstring>unnamed</cstring>
+                                    <cstring>m_previewFrame</cstring>
                                 </property>
-                                <widget class="QLayoutWidget">
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>0</hsizetype>
+                                        <vsizetype>0</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>255</width>
+                                        <height>255</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>255</width>
+                                        <height>255</height>
+                                    </size>
+                                </property>
+                                <property name="frameShape">
+                                    <enum>StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>Sunken</enum>
+                                </property>
+                            </widget>
+                            <widget class="QGroupBox">
+                                <property name="name">
+                                    <cstring>m_axesGroup</cstring>
+                                </property>
+                                <property name="title">
+                                    <string>Axes</string>
+                                </property>
+                                <vbox>
                                     <property name="name">
-                                        <cstring>layout14</cstring>
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                    <hbox>
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>unnamed</cstring>
+                                            <cstring>layout14</cstring>
                                         </property>
-                                        <widget class="QLabel">
+                                        <hbox>
                                             <property name="name">
-                                                <cstring>m_horizontalLabel</cstring>
+                                                <cstring>unnamed</cstring>
                                             </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>70</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>Horizontal (X)</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QComboBox">
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_horizontalLabel</cstring>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>70</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Horizontal (X)</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QComboBox">
+                                                <property name="name">
+                                                    <cstring>m_horizontalCombo</cstring>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Horizontal (X) axis channel (usually pan)</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout15</cstring>
+                                        </property>
+                                        <hbox>
                                             <property name="name">
-                                                <cstring>m_horizontalCombo</cstring>
+                                                <cstring>unnamed</cstring>
                                             </property>
-                                            <property name="toolTip" stdset="0">
-                                                <string>Horizontal (X) axis channel (usually pan)</string>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_verticalLabel</cstring>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>70</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Vertical (Y)</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QComboBox">
+                                                <property name="name">
+                                                    <cstring>m_verticalCombo</cstring>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Vertical (Y) axis channel (usually tilt)</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout25</cstring>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QGroupBox">
+                                <property name="name">
+                                    <cstring>m_algorithmGroup</cstring>
+                                </property>
+                                <property name="title">
+                                    <string>Algorithm</string>
+                                </property>
+                                <hbox>
                                     <property name="name">
-                                        <cstring>layout15</cstring>
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                    <hbox>
+                                    <widget class="QComboBox">
                                         <property name="name">
-                                            <cstring>unnamed</cstring>
+                                            <cstring>m_algorithmCombo</cstring>
                                         </property>
-                                        <widget class="QLabel">
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>7</hsizetype>
+                                                <vsizetype>0</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Selected EFX algorithm</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QGroupBox">
+                                <property name="name">
+                                    <cstring>m_parametersGroup</cstring>
+                                </property>
+                                <property name="title">
+                                    <string>Parameters</string>
+                                </property>
+                                <vbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout6</cstring>
+                                        </property>
+                                        <hbox>
                                             <property name="name">
-                                                <cstring>m_verticalLabel</cstring>
+                                                <cstring>unnamed</cstring>
                                             </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>70</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>Vertical (Y)</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QComboBox">
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_widthLabel</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Width</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_widthSpin</cstring>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>127</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>127</number>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>The width of the pattern</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout7</cstring>
+                                        </property>
+                                        <hbox>
                                             <property name="name">
-                                                <cstring>m_verticalCombo</cstring>
+                                                <cstring>unnamed</cstring>
                                             </property>
-                                            <property name="toolTip" stdset="0">
-                                                <string>Vertical (Y) axis channel (usually tilt)</string>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_heightLabel</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Height</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_heightSpin</cstring>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>127</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>127</number>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>The height of the pattern</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout8</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
                                             </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                            </vbox>
-                        </widget>
-                    </vbox>
-                </widget>
-                <widget class="QLayoutWidget">
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_xOffsetLabel</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>X Offset</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_xOffsetSpin</cstring>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>255</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>127</number>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>The horizontal center point of the pattern</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout9</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_yOffsetLabel</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Y Offset</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_yOffsetSpin</cstring>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>255</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>127</number>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>The vertical center point of the pattern</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Vertical</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>20</width>
+                                                <height>16</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout9_2</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_xFrequencyLabel</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>X Frequency</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_xFrequencySpin</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>5</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>2</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout9_3</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_yFrequencyLabel</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Y Frequency</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_yFrequencySpin</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>5</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>1</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout9_4</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_xPhaseLabel</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>X Phase</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_xPhaseSpin</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="wrapping">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>360</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>90</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout9_5</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_yPhaseLabel</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Y Phase</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_yPhaseSpin</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="wrapping">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>360</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>90</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Advanced Options</string>
+                </attribute>
+                <vbox>
                     <property name="name">
-                        <cstring>layout25</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <vbox>
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>layout16</cstring>
                         </property>
-                        <widget class="QGroupBox">
+                        <hbox>
                             <property name="name">
-                                <cstring>m_algorithmGroup</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="title">
-                                <string>Algorithm</string>
-                            </property>
-                            <hbox>
+                            <widget class="QButtonGroup">
                                 <property name="name">
-                                    <cstring>unnamed</cstring>
+                                    <cstring>m_modeGroup</cstring>
                                 </property>
-                                <widget class="QComboBox">
+                                <property name="title">
+                                    <string>Mode</string>
+                                </property>
+                                <property name="selectedId" stdset="0">
+                                    <number>0</number>
+                                </property>
+                                <vbox>
                                     <property name="name">
-                                        <cstring>m_algorithmCombo</cstring>
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>7</hsizetype>
-                                            <vsizetype>0</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
+                                    <widget class="QRadioButton">
+                                        <property name="name">
+                                            <cstring>m_loopModeButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Loop</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Loop continuously</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QRadioButton">
+                                        <property name="name">
+                                            <cstring>m_pingPongModeButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Ping-Pong</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Reverse direction at both ends</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QRadioButton">
+                                        <property name="name">
+                                            <cstring>m_singleShotModeButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Single-Shot</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Run thru only once and stop</string>
+                                        </property>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                            <widget class="QButtonGroup">
+                                <property name="name">
+                                    <cstring>m_directionGroup</cstring>
+                                </property>
+                                <property name="title">
+                                    <string>Direction</string>
+                                </property>
+                                <property name="selectedId" stdset="0">
+                                    <number>0</number>
+                                </property>
+                                <vbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                </widget>
-                            </hbox>
-                        </widget>
-                        <widget class="QGroupBox">
+                                    <widget class="QRadioButton">
+                                        <property name="name">
+                                            <cstring>m_forwardsDirectionButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Forwards</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Normal direction</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QRadioButton">
+                                        <property name="name">
+                                            <cstring>m_backwardsDirectionButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Backwards</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Reversed direction</string>
+                                        </property>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QButtonGroup">
+                        <property name="name">
+                            <cstring>m_modulationParametersGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Modulation Parameters</string>
+                        </property>
+                        <grid>
                             <property name="name">
-                                <cstring>m_parametersGroup</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="title">
-                                <string>Parameters</string>
-                            </property>
-                            <vbox>
+                            <widget class="QCheckBox" row="0" column="0">
                                 <property name="name">
-                                    <cstring>unnamed</cstring>
+                                    <cstring>m_widthButton</cstring>
                                 </property>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout6</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_widthLabel</cstring>
-                                            </property>
-                                            <property name="text">
-                                                <string>Width</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_widthSpin</cstring>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>127</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>127</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout7</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_heightLabel</cstring>
-                                            </property>
-                                            <property name="text">
-                                                <string>Height</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_heightSpin</cstring>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>127</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>127</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout8</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_xOffsetLabel</cstring>
-                                            </property>
-                                            <property name="text">
-                                                <string>X Offset</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_xOffsetSpin</cstring>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>255</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>127</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout9</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_yOffsetLabel</cstring>
-                                            </property>
-                                            <property name="text">
-                                                <string>Y Offset</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_yOffsetSpin</cstring>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>255</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>127</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer2</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Vertical</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Expanding</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>20</width>
-                                            <height>16</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout9_2</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_xFrequencyLabel</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="text">
-                                                <string>X Frequency</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_xFrequencySpin</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>5</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>2</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout9_3</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_yFrequencyLabel</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="text">
-                                                <string>Y Frequency</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_yFrequencySpin</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>5</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>1</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout9_4</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_xPhaseLabel</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="text">
-                                                <string>X Phase</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_xPhaseSpin</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="wrapping">
-                                                <bool>true</bool>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>360</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>90</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout9_5</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>m_yPhaseLabel</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="text">
-                                                <string>Y Phase</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QSpinBox">
-                                            <property name="name">
-                                                <cstring>m_yPhaseSpin</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="wrapping">
-                                                <bool>true</bool>
-                                            </property>
-                                            <property name="maxValue">
-                                                <number>360</number>
-                                            </property>
-                                            <property name="value">
-                                                <number>90</number>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                            </vbox>
-                        </widget>
-                    </vbox>
-                </widget>
-            </hbox>
+                                <property name="text">
+                                    <string>Width</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="1" column="0">
+                                <property name="name">
+                                    <cstring>m_heightButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Height</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="2" column="0">
+                                <property name="name">
+                                    <cstring>m_xOffsetButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>X Offset</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="3" column="0">
+                                <property name="name">
+                                    <cstring>m_yOffsetButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Y Offset</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="0" column="1">
+                                <property name="name">
+                                    <cstring>m_xFrequencyButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>X Frequency</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="1" column="1">
+                                <property name="name">
+                                    <cstring>m_yFrequencyButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Y Frequency</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="2" column="1">
+                                <property name="name">
+                                    <cstring>m_xPhaseButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>X Phase</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="3" column="1">
+                                <property name="name">
+                                    <cstring>m_yPhaseButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Y Phase</string>
+                                </property>
+                            </widget>
+                        </grid>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>m_modulationSpeedGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Modulation Speed</string>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_modulationSpeedLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Speed Bus:</string>
+                                </property>
+                            </widget>
+                            <widget class="QComboBox">
+                                <property name="name">
+                                    <cstring>m_modulationSpeedCombo</cstring>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>The bus that adjusts the parameter modulation speed</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
         </widget>
         <widget class="Line">
             <property name="name">
@@ -649,6 +891,34 @@
         <slot>slotYPhaseSpinChanged(int)</slot>
     </connection>
 </connections>
+<tabstops>
+    <tabstop>m_nameEdit</tabstop>
+    <tabstop>m_algorithmCombo</tabstop>
+    <tabstop>m_widthSpin</tabstop>
+    <tabstop>m_heightSpin</tabstop>
+    <tabstop>m_xOffsetSpin</tabstop>
+    <tabstop>m_yOffsetSpin</tabstop>
+    <tabstop>m_xFrequencySpin</tabstop>
+    <tabstop>m_yFrequencySpin</tabstop>
+    <tabstop>m_xPhaseSpin</tabstop>
+    <tabstop>m_yPhaseSpin</tabstop>
+    <tabstop>m_horizontalCombo</tabstop>
+    <tabstop>m_verticalCombo</tabstop>
+    <tabstop>m_loopModeButton</tabstop>
+    <tabstop>m_forwardsDirectionButton</tabstop>
+    <tabstop>m_widthButton</tabstop>
+    <tabstop>m_heightButton</tabstop>
+    <tabstop>m_xOffsetButton</tabstop>
+    <tabstop>m_yOffsetButton</tabstop>
+    <tabstop>m_xFrequencyButton</tabstop>
+    <tabstop>m_yFrequencyButton</tabstop>
+    <tabstop>m_xPhaseButton</tabstop>
+    <tabstop>m_yPhaseButton</tabstop>
+    <tabstop>m_modulationSpeedCombo</tabstop>
+    <tabstop>m_ok</tabstop>
+    <tabstop>m_cancel</tabstop>
+    <tabstop>m_tab</tabstop>
+</tabstops>
 <slots>
     <slot>slotHeightSpinChanged( int )</slot>
     <slot>slotXOffsetSpinChanged( int )</slot>
