@@ -43,7 +43,7 @@ extern App* _app;
 static const char* KCircleAlgorithmName    ( "Circle"    );
 static const char* KEightAlgorithmName     ( "Eight"     );
 static const char* KLineAlgorithmName      ( "Line"      );
-static const char* KSquareAlgorithmName    ( "Square"    );
+static const char* KDiamondAlgorithmName    ( "Diamond"    );
 static const char* KTriangleAlgorithmName  ( "Triangle"  );
 static const char* KLissajousAlgorithmName ( "Lissajous" );
 
@@ -59,6 +59,11 @@ EFX::EFX() :
   m_height            ( 127 ),
   m_xOffset           ( 127 ),
   m_yOffset           ( 127 ),
+
+  m_xFrequency        ( 2 ),
+  m_yFrequency        ( 1 ),
+  m_xPhase            ( .0174532 ),
+  m_yPhase            ( .0174532 ),
 
   m_stepSize          ( 0 ),
   m_cycleDuration     ( KFrequency ),
@@ -160,12 +165,12 @@ void EFX::updatePreview()
 					static_cast<int> (*y));
 	}
     }
-  else if (m_algorithm == KSquareAlgorithmName)
+  else if (m_algorithm == KDiamondAlgorithmName)
     {
-      /* Draw a preview of a square */
+      /* Draw a preview of a diamond */
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
-	  squarePoint(this, i, x, y);
+	  diamondPoint(this, i, x, y);
 	  m_previewPointArray->setPoint(step++, 
 					static_cast<int> (*x),
 					static_cast<int> (*y));
@@ -216,7 +221,7 @@ void EFX::algorithmList(QStringList& list)
   list.append(KCircleAlgorithmName);
   list.append(KEightAlgorithmName);
   list.append(KLineAlgorithmName);
-  list.append(KSquareAlgorithmName);
+  list.append(KDiamondAlgorithmName);
   list.append(KTriangleAlgorithmName);
   list.append(KLissajousAlgorithmName);
 }
@@ -339,6 +344,122 @@ int EFX::yOffset()
 {
   return static_cast<int> (m_yOffset);
 }
+
+/**
+ * Set the lissajous pattern frequency  on the X-axis
+ *
+ * @param freq Pattern frequency (0-255)
+ */
+void EFX::setXFrequency(int freq)
+{
+  m_xFrequency = freq;
+  updatePreview();
+}
+
+/**
+ * Get the lissajous pattern frequency on the X-axis
+ *
+ * @return Pattern offset (0-255)
+ */
+int EFX::xFrequency()
+{
+  return static_cast<int> (m_xFrequency);
+}
+
+/**
+ * Set the lissajous pattern frequency  on the Y-axis
+ *
+ * @param freq Pattern frequency (0-255)
+ */
+void EFX::setYFrequency(int freq)
+{
+  m_yFrequency = freq;
+  updatePreview();
+}
+
+/**
+ * Get the lissajous pattern frequency on the Y-axis
+ *
+ * @return Pattern offset (0-255)
+ */
+int EFX::yFrequency()
+{
+  return static_cast<int> (m_yFrequency);
+}
+
+/**
+ * Set the lissajous pattern phase on the X-axis
+ *
+ * @param phase Pattern phase (0-255)
+ */
+void EFX::setXPhase(int phase)
+{
+  m_xPhase = static_cast<float> (phase * M_PI / 180.0);
+  updatePreview();
+}
+
+/**
+ * Get the lissajous pattern phase on the X-axis
+ *
+ * @return Pattern phase (0-255)
+ */
+int EFX::xPhase()
+{
+  return static_cast<int> (m_xPhase * 180.0 / M_PI);
+}
+
+/**
+ * Set the lissajous pattern phase on the Y-axis
+ *
+ * @param phase Pattern phase (0-255)
+ */
+void EFX::setYPhase(int phase)
+{
+  m_yPhase = static_cast<float> (phase * M_PI) / 180.0;
+  updatePreview();
+}
+
+/**
+ * Get the lissajous pattern phase on the Y-axis
+ *
+ * @return Pattern phase (0-255)
+ */
+int EFX::yPhase()
+{
+  return static_cast<int> (m_yPhase * 180.0 / M_PI);
+}
+
+/**
+ * Returns true when lissajous has been selected
+ */
+bool EFX::isFrequencyEnabled()
+{
+  if (m_algorithm == KLissajousAlgorithmName)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+/**
+ * Returns true when lissajous has been selected
+ */
+bool EFX::isPhaseEnabled()
+{
+  if (m_algorithm == KLissajousAlgorithmName)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
 
 /**
  * A list of integers to set as custom pattern
@@ -586,9 +707,9 @@ void EFX::arm()
     {
       pointFunc = trianglePoint;
     }
-  else if (m_algorithm == KSquareAlgorithmName)
+  else if (m_algorithm == KDiamondAlgorithmName)
     {
-      pointFunc = squarePoint;
+      pointFunc = diamondPoint;
     }
   else if (m_algorithm == KLissajousAlgorithmName)
     {
@@ -775,7 +896,7 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 }
 
 /**
- * Calculate a single point in a square pattern based on
+ * Calculate a single point in a diamond pattern based on
  * the value of iterator (which is basically a step number)
  *
  * @note This is a static function
@@ -785,7 +906,7 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
  * @param x Holds the calculated X coordinate
  * @param y Holds the calculated Y coordinate
  */
-void EFX::squarePoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
 {
   *x = efx->m_xOffset + (pow(cos(iterator - M_PI_2), 3) * efx->m_width);
   *y = efx->m_yOffset + (pow(cos(iterator), 3) * efx->m_height);
@@ -804,11 +925,11 @@ void EFX::squarePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO: get omega and phase from custom parameters */
-  /*
-  *x = efx->m_xOffset + (cos((m_omegax * iterator) - m_phasex) * efx->m_width));
-  *y = m_yOffset + (cos((m_omegay * iterator) - m_phasey) * efx->m_height));
-  */
+  *x = efx->m_xOffset + (cos((efx->m_xFrequency * iterator) - 
+			     efx->m_xPhase) * efx->m_width);
+
+  *y = efx->m_yOffset + (cos((efx->m_yFrequency * iterator) - 
+			     efx->m_yPhase) * efx->m_height);
 }
 
 /**

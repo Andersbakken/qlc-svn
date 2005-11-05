@@ -32,6 +32,7 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
+#include <qlabel.h>
 #include <assert.h>
 
 extern App* _app;
@@ -67,9 +68,6 @@ void EFXEditor::init()
   /* Set the currently edited EFX function */
   setEFX(m_efx);
 
-  /* Causes the EFX function to update the preview point array */
-  m_efx->setAlgorithm(m_efx->algorithm());
-  
   /* Draw the points */
   m_previewArea->repaint();
 }
@@ -86,6 +84,9 @@ void EFXEditor::setEFX(EFX* efx)
        */
       m_efx->setPreviewPointArray(NULL);
     }
+
+  /* Causes the EFX function to update the preview point array */
+  slotAlgorithmSelected(m_efx->algorithm());
 
   /* Take the new EFX function for editing */
   m_efx = efx;
@@ -108,6 +109,11 @@ void EFXEditor::setEFX(EFX* efx)
   m_heightSpin->setValue(m_efx->height());
   m_xOffsetSpin->setValue(m_efx->xOffset());
   m_yOffsetSpin->setValue(m_efx->yOffset());
+
+  m_xFrequencySpin->setValue(m_efx->xFrequency());
+  m_yFrequencySpin->setValue(m_efx->yFrequency());
+  m_xPhaseSpin->setValue(m_efx->xPhase());
+  m_yPhaseSpin->setValue(m_efx->yPhase());
 
   fillChannelCombos();
 }
@@ -168,6 +174,41 @@ void EFXEditor::slotAlgorithmSelected(const QString &text)
 
   m_efx->setAlgorithm(text);
 
+  if (m_efx->isFrequencyEnabled())
+    {
+      m_xFrequencyLabel->setEnabled(true);
+      m_yFrequencyLabel->setEnabled(true);
+
+      m_xFrequencySpin->setEnabled(true);
+      m_yFrequencySpin->setEnabled(true);
+    }
+  else
+    {
+      m_xFrequencyLabel->setEnabled(false);
+      m_yFrequencyLabel->setEnabled(false);
+
+      m_xFrequencySpin->setEnabled(false);
+      m_yFrequencySpin->setEnabled(false);
+    }
+
+  if (m_efx->isPhaseEnabled())
+    {
+      m_xPhaseLabel->setEnabled(true);
+      m_yPhaseLabel->setEnabled(true);
+
+      m_xPhaseSpin->setEnabled(true);
+      m_yPhaseSpin->setEnabled(true);
+    }
+  else
+    {
+      m_xPhaseLabel->setEnabled(false);
+      m_yPhaseLabel->setEnabled(false);
+
+      m_xPhaseSpin->setEnabled(false);
+      m_yPhaseSpin->setEnabled(false);
+    }
+
+
   m_previewArea->repaint();
 }
 
@@ -203,6 +244,42 @@ void EFXEditor::slotYOffsetSpinChanged(int value)
   assert(m_efx);
 
   m_efx->setYOffset(value);
+
+  m_previewArea->repaint();
+}
+
+void EFXEditor::slotXFrequencySpinChanged(int value)
+{
+  assert(m_efx);
+
+  m_efx->setXFrequency(value);
+
+  m_previewArea->repaint();
+}
+
+void EFXEditor::slotYFrequencySpinChanged(int value)
+{
+  assert(m_efx);
+
+  m_efx->setYFrequency(value);
+
+  m_previewArea->repaint();
+}
+
+void EFXEditor::slotXPhaseSpinChanged(int value)
+{
+  assert(m_efx);
+
+  m_efx->setXPhase(value);
+
+  m_previewArea->repaint();
+}
+
+void EFXEditor::slotYPhaseSpinChanged(int value)
+{
+  assert(m_efx);
+
+  m_efx->setYPhase(value);
 
   m_previewArea->repaint();
 }
@@ -274,6 +351,7 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
   QPainter painter(this);
   QPen pen;
   QPoint point;
+  //QPoint prevPoint;
 
   // Draw crosshairs
   painter.setPen(lightGray);
@@ -286,13 +364,22 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
   // Use the black pen as the painter
   painter.setPen(pen);
 
+  painter.drawPolygon(*m_pointArray);
+
+  // Take the last point so that the first line is drawn
+  // from the last to the first
+  // prevPoint = m_pointArray->point(m_pointArray->size() - 1);
+
   // Draw the points from the point array
   for (unsigned int i = 0; isUpdatesEnabled() && i < m_pointArray->size(); i++)
     {
       point = m_pointArray->point(i);
-      painter.drawPoint(point);
+      //painter.drawPoint(point);
+      //painter.drawLine(prevPoint, point);
 
       // Draw a small ellipse around each point
       painter.drawEllipse(point.x() - 2, point.y() - 2, 4, 4);
+
+      //prevPoint = point;
     }
 }

@@ -126,6 +126,72 @@ class EFX : public Function
   int yOffset();
 
   /**
+   * Set the lissajous pattern frequency  on the X-axis
+   *
+   * @param freq Pattern frequency (0-255)
+   */
+  void setXFrequency(int freq);
+
+  /**
+   * Get the lissajous pattern frequency on the X-axis
+   *
+   * @return Pattern offset (0-255)
+   */
+  int xFrequency();
+
+  /**
+   * Set the lissajous pattern frequency  on the Y-axis
+   *
+   * @param freq Pattern frequency (0-255)
+   */
+  void setYFrequency(int freq);
+
+  /**
+   * Get the lissajous pattern frequency on the Y-axis
+   *
+   * @return Pattern offset (0-255)
+   */
+  int yFrequency();
+
+  /**
+   * Returns true when lissajous has been selected
+   */
+  bool isFrequencyEnabled();
+
+  /**
+   * Set the lissajous pattern phase on the X-axis
+   *
+   * @param phase Pattern phase (0-255)
+   */
+  void setXPhase(int phase);
+
+  /**
+   * Get the lissajous pattern phase on the X-axis
+   *
+   * @return Pattern phase (0-255)
+   */
+  int xPhase();
+
+  /**
+   * Set the lissajous pattern phase on the Y-axis
+   *
+   * @param phase Pattern phase (0-255)
+   */
+  void setYPhase(int phase);
+
+  /**
+   * Get the lissajous pattern phase on the Y-axis
+   *
+   * @return Pattern phase (0-255)
+   */
+  int yPhase();
+
+  /**
+   * Returns true when lissajous has been selected
+   */
+  bool isPhaseEnabled();
+
+  /**
    * An array of integers to set as custom pattern parameters
    * (i.e. such parameters that are not common to all algorithms)
    *
@@ -287,7 +353,7 @@ class EFX : public Function
   static void trianglePoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
-   * Calculate a single point in a square pattern based on
+   * Calculate a single point in a diamond pattern based on
    * the value of iterator (which is basically a step number)
    *
    * @note This is a static function
@@ -297,7 +363,7 @@ class EFX : public Function
    * @param x Holds the calculated X coordinate
    * @param y Holds the calculated Y coordinate
    */
-  static void squarePoint(EFX* efx, float iterator, float* x, float* y);
+  static void diamondPoint(EFX* efx, float iterator, float* x, float* y);
 
   /**
    * Calculate a single point in a lissajous pattern based on
@@ -322,28 +388,48 @@ class EFX : public Function
   /**
    * Pattern width, see \ref setWidth
    */
-  double m_width;
+  float m_width;
 
   /**
    * Pattern height, see \ref setHeight
    */
-  double m_height;
+  float m_height;
 
   /**
    * Pattern X offset, see \ref setXOffset
    */
-  double m_xOffset;
+  float m_xOffset;
 
   /**
    * Pattern Y offset, see \ref setXOffset
    */
-  double m_yOffset;
+  float m_yOffset;
+
+  /**
+   * Lissajous pattern X frequency, see \ref setXFrequency
+   */
+  float m_xFrequency;
+
+  /**
+   * Lissajous pattern Y frequency, see \ref setYFrequency
+   */
+  float m_yFrequency;
+
+  /**
+   * Lissajous pattern X phase, see \ref setXPhase
+   */
+  float m_xPhase;
+
+  /**
+   * Lissajous pattern Y phase, see \ref setYPhase
+   */
+  float m_yPhase;
 
   /**
    * The size of one step derived from \ref m_cycleDuration. If m_cycleDuration
    * is 64, then this is 1/64.
    */
-  double m_stepSize;
+  float m_stepSize;
 
   /**
    * How long (how many timer ticks) the function should take to complete
@@ -351,7 +437,7 @@ class EFX : public Function
    * setting KFrequency as the cycle duration means that the function takes
    * one second to complete a full cycle.
    */
-  double m_cycleDuration;
+  float m_cycleDuration;
 
   /**
    * Parameters that are not common to all algorithms.

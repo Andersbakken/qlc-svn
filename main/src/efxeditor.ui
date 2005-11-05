@@ -373,10 +373,10 @@
                                                 <bool>false</bool>
                                             </property>
                                             <property name="maxValue">
-                                                <number>255</number>
+                                                <number>5</number>
                                             </property>
                                             <property name="value">
-                                                <number>127</number>
+                                                <number>2</number>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -408,10 +408,10 @@
                                                 <bool>false</bool>
                                             </property>
                                             <property name="maxValue">
-                                                <number>255</number>
+                                                <number>5</number>
                                             </property>
                                             <property name="value">
-                                                <number>127</number>
+                                                <number>1</number>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -442,11 +442,14 @@
                                             <property name="enabled">
                                                 <bool>false</bool>
                                             </property>
+                                            <property name="wrapping">
+                                                <bool>true</bool>
+                                            </property>
                                             <property name="maxValue">
-                                                <number>255</number>
+                                                <number>360</number>
                                             </property>
                                             <property name="value">
-                                                <number>127</number>
+                                                <number>90</number>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -477,11 +480,14 @@
                                             <property name="enabled">
                                                 <bool>false</bool>
                                             </property>
+                                            <property name="wrapping">
+                                                <bool>true</bool>
+                                            </property>
                                             <property name="maxValue">
-                                                <number>255</number>
+                                                <number>360</number>
                                             </property>
                                             <property name="value">
-                                                <number>127</number>
+                                                <number>90</number>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -618,6 +624,30 @@
         <receiver>UI_EFXEditor</receiver>
         <slot>slotNameChanged(const QString&amp;)</slot>
     </connection>
+    <connection>
+        <sender>m_xFrequencySpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotXFrequencySpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_yFrequencySpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotYFrequencySpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_xPhaseSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotXPhaseSpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_yPhaseSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotYPhaseSpinChanged(int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotHeightSpinChanged( int )</slot>
@@ -628,6 +658,10 @@
     <slot>slotVerticalChannelSelected( int )</slot>
     <slot>slotAlgorithmSelected( const QString &amp; )</slot>
     <slot>slotNameChanged( const QString &amp; )</slot>
+    <slot>slotXFrequencySpinChanged(int)</slot>
+    <slot>slotYFrequencySpinChanged(int)</slot>
+    <slot>slotXPhaseSpinChanged(int)</slot>
+    <slot>slotYPhaseSpinChanged(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

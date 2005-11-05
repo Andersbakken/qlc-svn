@@ -64,10 +64,10 @@ class EFXEditor : public UI_EFXEditor
   void slotXOffsetSpinChanged(int value);
   void slotYOffsetSpinChanged(int value);
 
-  void slotXFrequencyChanged(int value);
-  void slotYFrequencyChanged(int value);
-  void slotXPhaseChanged(int value);
-  void slotYPhaseChanged(int value);
+  void slotXFrequencySpinChanged(int value);
+  void slotYFrequencySpinChanged(int value);
+  void slotXPhaseSpinChanged(int value);
+  void slotYPhaseSpinChanged(int value);
 
   void slotHorizontalChannelSelected(int index);
   void slotVerticalChannelSelected(int index);
