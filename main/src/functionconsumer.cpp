@@ -265,17 +265,17 @@ void FunctionConsumer::event(time_t)
         }
       else
         {
-	  for (m_channel = 0; 
-	       m_channel < m_function->eventBuffer()->eventSize();
-	       m_channel = m_channel + 2)
+	  /* Each event contains a channel and a value, making eventSize()
+	   * twice as big (for example 6 channels and 6 values). So divide
+	   * the eventSize() by two (x >> 1 == x/2) */
+	  for (m_channel = 0;
+	       m_channel < m_function->eventBuffer()->eventSize() >> 1;
+	       m_channel++)
 	    {
 	      // Write also invalid values; let _app->setValue() take
 	      // care of them
 	      _app->setValue(m_event[(m_channel << 1)],
 			     m_event[(m_channel << 1) + 1]);
-	      qDebug("%d: %d",
-		     m_event[(m_channel << 1)],
-		     m_event[(m_channel << 1) + 1]);
 	    }
         }
 

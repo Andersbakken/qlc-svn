@@ -899,7 +899,7 @@ void EFX::arm()
    * There are only two channels to set.
    */
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(2 * sizeof(t_value),
+    m_eventBuffer = new EventBuffer(2 * sizeof(t_value) * 2,
 				    KFrequency >> 1, /* == KFrequency / 2 */
 				    sizeof(t_value));
 
@@ -1026,7 +1026,7 @@ void EFX::run()
 
   while (!m_stopped)
     {
-      for (i = 0; i < (M_PI * 2.0); i += m_stepSize)
+      for (i = 0; i < (M_PI * 2.0) && !m_stopped; i += m_stepSize)
 	{
 	  /* Calculate the next point */
 	  pointFunc(this, i, x, y);
@@ -1172,6 +1172,4 @@ void EFX::setPoint(t_value x, t_value y)
   m_channelData[3] = y;
 
   m_eventBuffer->put(m_channelData);
-  qDebug("%d:%d, %d:%d", m_address + m_xChannel, x, 
-	 m_address + m_yChannel, y);
 }

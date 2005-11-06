@@ -442,7 +442,7 @@ void Sequence::arm()
     }
 
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value),
+    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value) * 2,
 				    KFrequency >> 1, /* == KFrequency / 2 */
 				    sizeof(t_value));
 }
