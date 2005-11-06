@@ -357,7 +357,8 @@ Function* Function::create(QPtrList <QString> &list)
   if (function)
     {
       if ((function->type() == Function::Scene ||
-	   function->type() == Function::Sequence) &&
+	   function->type() == Function::Sequence ||
+	   function->type() == Function::EFX) &&
 	  function->setDevice(did) == false)
 	{
 	  //

@@ -436,8 +436,8 @@ void Sequence::arm()
       m_holdNoSetData = new t_value[m_channels * 2];
       for (t_channel ch = 0; ch < m_channels; ch++)
 	{
-	  m_holdNoSetData[(ch << 1)] = 0;
-	  m_holdNoSetData[(ch << 1) + 1] = KChannelValueInvalid;
+	  m_holdNoSetData[(ch << 1)] = KChannelInvalid;
+	  m_holdNoSetData[(ch << 1) + 1] = 0;
 	}
     }
 
@@ -507,16 +507,14 @@ void Sequence::run()
 		   m_runTimeChannel < m_channels; 
 		   m_runTimeChannel++)
 		{
-		  // Set the absolute address
-		  m_channelData[(m_runTimeChannel << 1)] = 
-		    m_address + m_runTimeChannel;
-
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
+		      // Set the absolute address
+		      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
+
 		      // Set invalid value for such channels that don't
 		      // have a valid value
-		      m_channelData[(m_runTimeChannel << 1) + 1] = 
-			KChannelValueInvalid;
+		      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
 		    }
 		  else
 		    {
@@ -540,16 +538,14 @@ void Sequence::run()
 		   m_runTimeChannel < m_channels; 
 		   m_runTimeChannel++)
 		{
-		  // Set the absolute address
-		  m_channelData[(m_runTimeChannel << 1)] = 
-		    m_address + m_runTimeChannel;
-		  
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
+		      // Set the absolute address
+		      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
+		  
 		      // Set invalid value for such channels that don't
 		      // have a valid value
-		      m_channelData[(m_runTimeChannel << 1) + 1] = 
-			KChannelValueInvalid;
+		      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
 		    }
 		  else
 		    {

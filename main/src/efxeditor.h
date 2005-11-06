@@ -55,6 +55,12 @@ class EFXEditor : public UI_EFXEditor
    */
   void fillChannelCombos();
 
+  /**
+   * Update the list of available buses
+   *
+   */
+  void updateModulationBusCombo();
+
  public:
   void slotNameChanged(const QString &text);
 
@@ -71,20 +77,6 @@ class EFXEditor : public UI_EFXEditor
 
   void slotHorizontalChannelSelected(int index);
   void slotVerticalChannelSelected(int index);
-
- protected:
-  double m_width;
-  double m_height;
-  double m_xOffset;
-  double m_yOffset;
-
-  double m_xFrequency;
-  double m_yFrequency;
-  double m_xPhase;
-  double m_yPhase;
-
-  t_channel m_horizontalChannel;
-  t_channel m_verticalChannel;
 
  protected:
   EFXPreviewArea* m_previewArea;

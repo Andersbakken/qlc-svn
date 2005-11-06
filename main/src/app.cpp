@@ -1702,13 +1702,10 @@ void App::initValues()
 //
 void App::setValue(t_channel ch, t_value value)
 {
-  assert(ch < 512 && ch >= 0);
-
-  if (value <= KChannelValueMax &&
-      value >= KChannelValueMin)
+  if (ch <= KChannelMax)
     {
       m_values[ch] = value;
-
+      
       //
       // This is either normalWriter or blackOutWriter, depending
       // on whether blackout is enabled or disabled

@@ -30,6 +30,7 @@
 #include <qevent.h>
 #include <qpainter.h>
 #include <qcombobox.h>
+#include <qbuttongroup.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qlabel.h>
@@ -57,6 +58,9 @@ void EFXEditor::init()
   EFX::algorithmList(list);
   m_algorithmCombo->clear();
   m_algorithmCombo->insertStringList(list);
+
+  /* Get a list of buses and insert them into the bus combo */
+  updateModulationBusCombo();
 
   /* Set the algorithm's name to the name field */
   m_nameEdit->setText(m_efx->name());
@@ -109,11 +113,22 @@ void EFXEditor::setEFX(EFX* efx)
   m_heightSpin->setValue(m_efx->height());
   m_xOffsetSpin->setValue(m_efx->xOffset());
   m_yOffsetSpin->setValue(m_efx->yOffset());
+  
+  m_xFrequencySpin->setValue(m_efx->xFrequency());
+  m_yFrequencySpin->setValue(m_efx->yFrequency());
+  m_xPhaseSpin->setValue(m_efx->xPhase());
+  m_yPhaseSpin->setValue(m_efx->yPhase());
 
   m_xFrequencySpin->setValue(m_efx->xFrequency());
   m_yFrequencySpin->setValue(m_efx->yFrequency());
   m_xPhaseSpin->setValue(m_efx->xPhase());
   m_yPhaseSpin->setValue(m_efx->yPhase());
+
+  /* Get advanced parameters */
+  m_runOrderGroup->setButton(m_efx->runOrder());
+  m_directionGroup->setButton(m_efx->direction());
+
+  m_modulationBusCombo->setCurrentItem(m_efx->modulationBus());
 
   fillChannelCombos();
 }
@@ -127,9 +142,6 @@ void EFXEditor::fillChannelCombos()
 
   t_channel channels = device->deviceClass()->channels()->count();
 
-  bool horizontal = false;
-  bool vertical = false;
-
   QString s;
   for (t_channel ch = 0; ch < channels; ch++)
     {
@@ -137,25 +149,68 @@ void EFXEditor::fillChannelCombos()
       assert(c);
       
       // Insert ch:name strings to combos
-      s.sprintf("%d:" + c->name(), ch);
+      s.sprintf("%d:" + c->name(), ch + 1); /* Display channels as 1-based */
       m_horizontalCombo->insertItem(s);
       m_verticalCombo->insertItem(s);
+    }
 
-      // Select the first channel that contains the word "pan"
-      if (horizontal == false && c->name().contains("pan", false))
+  /* Select a channel as the X axis */
+  if (m_efx->xChannel() != KChannelInvalid)
+    {
+      /* If the EFX already has a valid x channel, select it instead */
+      m_horizontalCombo->setCurrentItem(m_efx->xChannel());
+    }
+  else
+    {
+      for (t_channel ch = 0; ch < channels; ch++)
 	{
-	  m_horizontalCombo->setCurrentItem(ch);
-	  m_horizontalChannel = ch;
-	  horizontal = true;
+	  LogicalChannel* c = device->deviceClass()->channels()->at(ch);
+	  assert(c);
+      
+	  // Select the first channel that contains the word "pan"
+	  if (c->name().contains("pan", false))
+	    {
+	      m_horizontalCombo->setCurrentItem(ch);
+	      m_efx->setXChannel(ch);
+	      break;
+	    }
 	}
+    }
 
-      // Select the first channel that contains the word "tilt"
-      if (vertical == false && c->name().contains("tilt", false))
+  /* Select a channel as the X axis */
+  if (m_efx->yChannel() != KChannelInvalid)
+    {
+      /* If the EFX already has a valid y channel, select it instead */
+      m_verticalCombo->setCurrentItem(m_efx->yChannel());
+    }
+  else
+    {  
+      for (t_channel ch = 0; ch < channels; ch++)
 	{
-	  m_verticalCombo->setCurrentItem(ch);
-	  m_verticalChannel = ch;
-	  vertical = true; // Select the first that contains "tilt"
+	  LogicalChannel* c = device->deviceClass()->channels()->at(ch);
+	  assert(c);
+      
+	  // Select the first channel that contains the word "tilt"
+	  if (c->name().contains("tilt", false))
+	    {
+	      m_verticalCombo->setCurrentItem(ch);
+	      m_efx->setYChannel(ch);
+	      break;
+	    }
 	}
+    }
+}
+
+void EFXEditor::updateModulationBusCombo()
+{
+  m_modulationBusCombo->clear();
+
+  for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
+    {
+      QString bus;
+      bus.sprintf("%.2d:", i + 1);
+      bus += Bus::name(i);
+      m_modulationBusCombo->insertItem(bus, i);
     }
 }
 

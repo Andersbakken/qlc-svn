@@ -365,7 +365,7 @@ void Scene::arm()
     m_channelData = new t_value[m_channels * 2];
 
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value),
+    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value) * 2,
 				    KFrequency >> 1, /* == KFrequency / 2 */
 				    sizeof(t_value));
 }
@@ -469,8 +469,8 @@ void Scene::run()
 	{
 	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
-	      m_channelData[(ch << 1)] = m_address + ch;
-	      m_channelData[(ch << 1) + 1] = KChannelValueInvalid;
+	      m_channelData[(ch << 1)] = KChannelInvalid;
+	      m_channelData[(ch << 1) + 1] = 0;
 	      
 	      // This channel contains a value that is not supposed
 	      // to be written (anymore, in case of ready value, which
@@ -519,8 +519,8 @@ void Scene::run()
     {
       if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	{
-	  m_channelData[(ch << 1)] = m_address + ch;
-	  m_channelData[(ch << 1) + 1] = KChannelValueInvalid;
+	  m_channelData[(ch << 1)] = KChannelInvalid;
+	  m_channelData[(ch << 1) + 1] = 0;
 	}
       else
 	{

@@ -22,6 +22,7 @@
 #include "assert.h"
 #include "eventbuffer.h"
 
+#include <qapplication.h>
 #include <malloc.h>
 #include <string.h>
 
@@ -35,7 +36,7 @@
  *
  * \param eventSize Tells the number of values per event
  * \param buffersize Tells the number of events i.e. buffer size.
- * \param byteSize Tells the size of individual values to store, e.g. 1 for char, 2 for short, 4 for int etc.
+ * \param byteSize Tells the size of individual values to store
  */
 
 // eventSize = number of values per event
@@ -54,6 +55,8 @@ EventBuffer::EventBuffer(unsigned int eventSize,
 {
 
   m_ring = new t_value[m_size];
+
+  qDebug("%d, %d", m_size, m_eventSize);
   
   pthread_mutex_init(&m_mutex, 0);
   pthread_cond_init(&m_nonEmpty, 0);

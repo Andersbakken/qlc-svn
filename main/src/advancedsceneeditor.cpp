@@ -58,7 +58,7 @@ const int KColumnValue   ( 3 );
 const int KColumnType    ( 4 );
 
 AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
-  : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", false)
+  : UI_AdvancedSceneEditor(parent, "AdvancedSceneEditor", true)
 {
   ASSERT(scene);
   m_original = scene;
@@ -416,8 +416,7 @@ void AdvancedSceneEditor::slotOKClicked()
       m_scene = NULL;
     }
 
-  close();
-  emit closed();
+  accept();
 }
 
 void AdvancedSceneEditor::slotCancelClicked()
@@ -433,8 +432,7 @@ void AdvancedSceneEditor::slotCancelClicked()
       m_scene = NULL;
     }
 
-  close();
-  emit closed();
+  reject();
 }
 
 void AdvancedSceneEditor::slotEditValueClicked()

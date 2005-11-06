@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>UI_EFXEditor</class>
 <widget class="QDialog">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>509</width>
-            <height>509</height>
+            <height>511</height>
         </rect>
     </property>
     <property name="caption">
@@ -544,10 +544,10 @@
                             </property>
                             <widget class="QButtonGroup">
                                 <property name="name">
-                                    <cstring>m_modeGroup</cstring>
+                                    <cstring>m_runOrderGroup</cstring>
                                 </property>
                                 <property name="title">
-                                    <string>Mode</string>
+                                    <string>Run Order</string>
                                 </property>
                                 <property name="selectedId" stdset="0">
                                     <number>0</number>
@@ -569,24 +569,30 @@
                                     </widget>
                                     <widget class="QRadioButton">
                                         <property name="name">
-                                            <cstring>m_pingPongModeButton</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Ping-Pong</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Reverse direction at both ends</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QRadioButton">
-                                        <property name="name">
                                             <cstring>m_singleShotModeButton</cstring>
                                         </property>
                                         <property name="text">
                                             <string>Single-Shot</string>
                                         </property>
+                                        <property name="buttonGroupId">
+                                            <number>1</number>
+                                        </property>
                                         <property name="toolTip" stdset="0">
                                             <string>Run thru only once and stop</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QRadioButton">
+                                        <property name="name">
+                                            <cstring>m_pingPongModeButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Ping-Pong</string>
+                                        </property>
+                                        <property name="buttonGroupId">
+                                            <number>2</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Reverse direction at both ends</string>
                                         </property>
                                     </widget>
                                 </vbox>
@@ -729,7 +735,7 @@
                             </widget>
                             <widget class="QComboBox">
                                 <property name="name">
-                                    <cstring>m_modulationSpeedCombo</cstring>
+                                    <cstring>m_modulationBusCombo</cstring>
                                 </property>
                                 <property name="toolTip" stdset="0">
                                     <string>The bus that adjusts the parameter modulation speed</string>
@@ -787,7 +793,7 @@
                         <string>OK</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Generate pattern and close.</string>
+                        <string>Accept changes and close</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -798,7 +804,7 @@
                         <string>Cancel</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Close and do not generate a pattern.</string>
+                        <string>Reject changes and close</string>
                     </property>
                 </widget>
             </hbox>
@@ -914,7 +920,7 @@
     <tabstop>m_yFrequencyButton</tabstop>
     <tabstop>m_xPhaseButton</tabstop>
     <tabstop>m_yPhaseButton</tabstop>
-    <tabstop>m_modulationSpeedCombo</tabstop>
+    <tabstop>m_modulationBusCombo</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
     <tabstop>m_tab</tabstop>

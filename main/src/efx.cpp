@@ -43,7 +43,7 @@ extern App* _app;
 static const char* KCircleAlgorithmName    ( "Circle"    );
 static const char* KEightAlgorithmName     ( "Eight"     );
 static const char* KLineAlgorithmName      ( "Line"      );
-static const char* KDiamondAlgorithmName   ( "Diamond"    );
+static const char* KDiamondAlgorithmName   ( "Diamond"   );
 static const char* KTriangleAlgorithmName  ( "Triangle"  );
 static const char* KLissajousAlgorithmName ( "Lissajous" );
 
@@ -65,16 +65,27 @@ EFX::EFX() :
   m_xPhase            ( 1.5707963267 ),
   m_yPhase            ( 0 ),
 
-  m_stepSize          ( 0 ),
-  m_cycleDuration     ( KFrequency ),
-
   m_customParameters     ( NULL ),
   m_customParameterCount ( 0 ),
+
+  m_xChannel          ( KChannelInvalid ),
+  m_yChannel          ( KChannelInvalid ),
+
+  m_runOrder          ( EFX::Loop ),
+  m_direction         ( EFX::Forward ),
+
+  m_modulationBus     ( KBusIDDefaultHold ),
 
   m_previewPointArray ( NULL ),
 
   m_algorithm         ( KCircleAlgorithmName ),
-  m_channelData       ( NULL )
+
+  m_stepSize          ( 0 ),
+  m_cycleDuration     ( KFrequency ),
+
+  m_channelData       ( NULL ),
+
+  m_address           ( KChannelInvalid )
 {
   /* Set Default Fade as the speed bus */
   setBus(KBusIDDefaultFade);
@@ -459,8 +470,6 @@ bool EFX::isPhaseEnabled()
     }
 }
 
-
-
 /**
  * A list of integers to set as custom pattern
  * parameters (i.e. such parameters that are not
@@ -519,7 +528,7 @@ void EFX::setXChannel(t_channel channel)
   Device* device = _app->doc()->device(m_deviceID);
   assert(device);
 
-  if (channel <= (signed) device->deviceClass()->channels()->count())
+  if (channel < (t_channel) device->deviceClass()->channels()->count())
     {
       m_xChannel = channel;
       updatePreview();
@@ -541,7 +550,7 @@ void EFX::setYChannel(t_channel channel)
   Device* device = _app->doc()->device(m_deviceID);
   assert(device);
 
-  if (channel <= (signed) device->deviceClass()->channels()->count())
+  if (channel < (t_channel) device->deviceClass()->channels()->count())
     {
       m_yChannel = channel;
       updatePreview();
@@ -553,7 +562,83 @@ void EFX::setYChannel(t_channel channel)
     }
 }
 
+/**
+ * Get the channel used as the X axis.
+ *
+ */
+t_channel EFX::xChannel()
+{
+  return m_xChannel;
+}
 
+/**
+ * Get the channel used as the Y axis.
+ *
+ */
+t_channel EFX::yChannel()
+{
+  return m_yChannel;
+}
+
+/**
+ * Set the run order
+ *
+ * @param runOrder Run Order
+ */
+void EFX::setRunOrder(EFX::RunOrder runOrder)
+{
+  m_runOrder = runOrder;
+}
+
+/**
+ * Get the run order
+ *
+ */
+EFX::RunOrder EFX::runOrder()
+{
+  return m_runOrder;
+}
+
+/**
+ * Set the running direction
+ *
+ * @param dir Direction
+ */
+void EFX::setDirection(EFX::Direction dir)
+{
+  m_direction = dir;
+}
+
+/**
+ * Get the direction
+ *
+ */
+EFX::Direction EFX::direction()
+{
+  return m_direction;
+}
+
+/**
+ * Set the modulation speed bus
+ *
+ */
+void EFX::setModulationBus(t_bus_id bus)
+{
+  if (bus > KBusIDMin && bus < KBusCount)
+    {
+      m_modulationBus = bus;
+    }
+}
+
+/**
+ * Get the modulation speed bus
+ *
+ */
+t_bus_id EFX::modulationBus()
+{
+  return m_modulationBus;
+}
+  
 /**
  * Copy function contents from another function
  *
@@ -620,7 +705,74 @@ void EFX::saveToFile(QFile &file)
   s = QString("Device = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  /* TODO: EFX Specific */
+  // Algorithm
+  s = QString("Algorithm = ") + algorithm() + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Width
+  t.setNum(width());
+  s = QString("Width = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Height
+  t.setNum(height());
+  s = QString("Height = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // X Offset
+  t.setNum(xOffset());
+  s = QString("XOffset = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Y Offset
+  t.setNum(yOffset());
+  s = QString("YOffset = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // X Frequency
+  t.setNum(xFrequency());
+  s = QString("XFrequency = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Y Frequency
+  t.setNum(yFrequency());
+  s = QString("YFrequency = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // X Phase
+  t.setNum(xPhase());
+  s = QString("XPhase = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Y Phase
+  t.setNum(yPhase());
+  s = QString("YPhase = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // X Channel
+  t.setNum(xChannel());
+  s = QString("XChannel = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Y Channel
+  t.setNum(yChannel());
+  s = QString("YChannel = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Run Order
+  t.setNum((int) runOrder());
+  s = QString("RunOrder = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Direction
+  t.setNum((int) direction());
+  s = QString("Direction = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Modulation Bus
+  t.setNum((int) modulationBus());
+  s = QString("ModulationBus = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 }
 
 /**
@@ -640,7 +792,62 @@ void EFX::createContents(QPtrList <QString> &list)
           s = list.prev();
           break;
         }
-      /* TODO: EFX Specific */
+      else if (*s == QString("Algorithm"))
+	{
+	  setAlgorithm(*(list.next()));
+	}
+      else if (*s == QString("Width"))
+	{
+	  setWidth(list.next()->toInt());
+	}
+      else if (*s == QString("Height"))
+	{
+	  setHeight(list.next()->toInt());
+	}
+      else if (*s == QString("XOffset"))
+	{
+	  setXOffset(list.next()->toInt());
+	}
+      else if (*s == QString("YOffset"))
+	{
+	  setYOffset(list.next()->toInt());
+	}
+      else if (*s == QString("XFrequency"))
+	{
+	  setXFrequency(list.next()->toInt());
+	}
+      else if (*s == QString("YFrequency"))
+	{
+	  setYFrequency(list.next()->toInt());
+	}
+      else if (*s == QString("XPhase"))
+	{
+	  setXPhase(list.next()->toInt());
+	}
+      else if (*s == QString("YPhase"))
+	{
+	  setYPhase(list.next()->toInt());
+	}
+      else if (*s == QString("XChannel"))
+	{
+	  setXChannel(list.next()->toInt());
+	}
+      else if (*s == QString("YChannel"))
+	{
+	  setYChannel(list.next()->toInt());
+	}
+      else if (*s == QString("RunOrder"))
+	{
+	  setRunOrder((RunOrder) list.next()->toInt());
+	}
+      else if (*s == QString("Direction"))
+	{
+	  setDirection((Direction) list.next()->toInt());
+	}
+      else if (*s == QString("ModulationBus"))
+	{
+	  setModulationBus((t_bus_id) list.next()->toInt());
+	}
       else
         {
           // Unknown keyword, skip
@@ -682,11 +889,29 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
  */
 void EFX::arm()
 {
+  /* Allocate space for channel data set to eventbuffer.
+   * There are only two channels to set.
+   */
   if (m_channelData == NULL)
-    m_channelData = new t_value[m_channels * 2];
+    m_channelData = new t_value[2 * 2];
 
+  /* Allocate space for the event buffer.
+   * There are only two channels to set.
+   */
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels);
+    m_eventBuffer = new EventBuffer(2 * sizeof(t_value),
+				    KFrequency >> 1, /* == KFrequency / 2 */
+				    sizeof(t_value));
+
+  /* Set the run time address for channel data */
+  if (_app->doc()->device(m_deviceID))
+    {
+      m_address = _app->doc()->device(m_deviceID)->address();
+    }
+  else
+    {
+      qDebug("No device for EFX: " + Function::name());
+    }
 
   m_stopped = false;
 
@@ -736,6 +961,8 @@ void EFX::disarm()
 
   if (m_eventBuffer) delete m_eventBuffer;
   m_eventBuffer = NULL;
+
+  m_address = KChannelInvalid;
 
   pointFunc = NULL;
 }
@@ -938,5 +1165,13 @@ void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::setPoint(t_value x, t_value y)
 {
-  /* TODO */
+  m_channelData[0] = m_address + m_xChannel;
+  m_channelData[1] = x;
+
+  m_channelData[2] = m_address + m_yChannel;
+  m_channelData[3] = y;
+
+  m_eventBuffer->put(m_channelData);
+  qDebug("%d:%d, %d:%d", m_address + m_xChannel, x, 
+	 m_address + m_yChannel, y);
 }
