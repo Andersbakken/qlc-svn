@@ -518,6 +518,10 @@ void Sequence::run()
 		    }
 		  else
 		    {
+		      // Set the absolute channel
+		      m_channelData[(m_runTimeChannel << 1)] = 
+			m_address + m_runTimeChannel;
+
 		      // Set a normal value
 		      m_channelData[(m_runTimeChannel << 1) + 1] = 
 			m_runTimeValues[m_runTimeChannel].value;
@@ -549,6 +553,10 @@ void Sequence::run()
 		    }
 		  else
 		    {
+		      // Set the absolute channel
+		      m_channelData[(m_runTimeChannel << 1)] = 
+			m_address + m_runTimeChannel;
+
 		      // Set a normal value
 		      m_channelData[(m_runTimeChannel << 1) + 1] = 
 			m_runTimeValues[m_runTimeChannel].value;
