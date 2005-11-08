@@ -837,7 +837,8 @@ VCFrame* VirtualConsole::getFrame(unsigned int id, VCFrame* widget)
   for (QObjectListIt it(*ol); it.current() != NULL; ++it)
     {
     //helphelphelp
-      if (QString(it.current()->className()) == QString("VCFrame") || QString(it.current()->className()) == QString("VCXYPad"))
+      if (QString(it.current()->className()) == QString("VCFrame") || 
+	  QString(it.current()->className()) == QString("VCXYPad"))
 	{
 	  w = getFrame(id, (VCFrame*) it.current());
 	  if (w != NULL)
@@ -903,7 +904,6 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	}
       else if (*s == QString("VCXYPad"))
 	{
-	 qDebug("try to create new VCXYPad");
 	  VCXYPad* w = new VCXYPad(m_drawArea);
 	  w->init();
 	  w->createContents(list);
