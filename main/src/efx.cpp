@@ -1082,8 +1082,8 @@ void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = efx->m_xOffset + (cos((iterator * 2) + M_PI_2) * efx->m_width);
-  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+  *x = efx->m_xOffset + (cos(iterator * 2) * efx->m_width);
+  *y = efx->m_yOffset + (sin(iterator) * efx->m_height);
 }
 
 /**
