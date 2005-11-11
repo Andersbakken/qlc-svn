@@ -112,6 +112,20 @@ class EFX : public Function
   int height();
 
   /**
+   * Set the pattern rotation
+   *
+   * @param rot Pattern rotation (0-359)
+   */
+  void setRotation(int rot);
+
+  /**
+   * Get the pattern rotation
+   *
+   * @return Pattern rotation (0-359)
+   */
+  int rotation();
+
+  /**
    * Set the pattern offset on the X-axis
    *
    * @param offset Pattern offset (0-255; 127 is middle)
@@ -452,6 +466,12 @@ class EFX : public Function
    */
   void setPoint(t_value x, t_value y);
 
+  /**
+   *Rotate a point of the pattern by rot degrees
+   *Do scaling of height and width
+   */
+   void rotateAndScale(EFX* efx, float *x, float *y, int rot);
+
  protected:
   /**
    * Pattern width, see \ref setWidth
@@ -472,6 +492,11 @@ class EFX : public Function
    * Pattern Y offset, see \ref setXOffset
    */
   float m_yOffset;
+  
+  /**
+   * Pattern rotation, see \ref setRotation
+   */
+  int m_rotation;
 
   /**
    * Lissajous pattern X frequency, see \ref setXFrequency

@@ -59,6 +59,7 @@ EFX::EFX() :
   m_height            ( 127 ),
   m_xOffset           ( 127 ),
   m_yOffset           ( 127 ),
+  m_rotation	      ( 0 ),
 
   m_xFrequency        ( 2 ),
   m_yFrequency        ( 3 ),
@@ -313,6 +314,28 @@ int EFX::height()
 {
   return static_cast<int> (m_height);
 }
+
+  /**
+   * Set the pattern rotation
+   *
+   * @param rot Pattern rotation (0-359)
+   */
+ void EFX::setRotation(int rot)
+{
+  m_rotation = static_cast<int> (rot);
+  updatePreview();
+}
+
+/**
+ * Get the pattern rotation
+ *
+ * @return Pattern rotation (0-359)
+ */
+int EFX::rotation()
+{
+  return static_cast<int> (m_rotation);
+}
+
 
 /**
  * Set the pattern offset on the X-axis
@@ -719,6 +742,11 @@ void EFX::saveToFile(QFile &file)
   s = QString("Height = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
+  // Rotation
+  t.setNum(rotation());
+  s = QString("Rotation = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
   // X Offset
   t.setNum(xOffset());
   s = QString("XOffset = ") + t + QString("\n");
@@ -803,6 +831,10 @@ void EFX::createContents(QPtrList <QString> &list)
       else if (*s == QString("Height"))
 	{
 	  setHeight(list.next()->toInt());
+	}
+     else if (*s == QString("Rotation"))
+	{
+	  setRotation(list.next()->toInt());
 	}
       else if (*s == QString("XOffset"))
 	{
@@ -1065,8 +1097,9 @@ void EFX::run()
  */
 void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = efx->m_xOffset + (cos(iterator + M_PI_2) * efx->m_width);
-  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+  *x = cos(iterator + M_PI_2);
+  *y = cos(iterator);
+  efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1082,8 +1115,9 @@ void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = efx->m_xOffset + (cos(iterator * 2) * efx->m_width);
-  *y = efx->m_yOffset + (sin(iterator) * efx->m_height);
+  *x = cos((iterator * 2) + M_PI_2);
+  *y = cos(iterator);
+  efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1100,8 +1134,9 @@ void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 {
   /* TODO: It's a simple line, I don't think we need cos() :) */
-  *x = efx->m_xOffset + (cos(iterator) * efx->m_width);
-  *y = efx->m_yOffset + (cos(iterator) * efx->m_height);
+  *x = cos(iterator);
+  *y = cos(iterator);
+  efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1118,8 +1153,9 @@ void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 {
   /* TODO !!! */
-  *x = efx->m_xOffset + (cos(iterator) * efx->m_width);
-  *y = efx->m_yOffset + (sin(iterator) * efx->m_height);
+  *x = cos(iterator);
+  *y = sin(iterator);
+  efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1135,8 +1171,9 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = efx->m_xOffset + (pow(cos(iterator - M_PI_2), 3) * efx->m_width);
-  *y = efx->m_yOffset + (pow(cos(iterator), 3) * efx->m_height);
+  *x = pow(cos(iterator - M_PI_2), 3);
+  *y = pow(cos(iterator), 3);
+  efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1152,11 +1189,9 @@ void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = efx->m_xOffset + (cos((efx->m_xFrequency * iterator) - 
-			     efx->m_xPhase) * efx->m_width);
-
-  *y = efx->m_yOffset + (cos((efx->m_yFrequency * iterator) - 
-			     efx->m_yPhase) * efx->m_height);
+  *x = cos((efx->m_xFrequency * iterator) - efx->m_xPhase);
+  *y = cos((efx->m_yFrequency * iterator) - efx->m_yPhase);
+  efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1173,3 +1208,25 @@ void EFX::setPoint(t_value x, t_value y)
 
   m_eventBuffer->put(m_channelData);
 }
+
+
+/**
+ * Rotate a single point in a  pattern by
+ * the value of rot, scale height and width
+ *
+ *
+ * @param x Holds the calculated X coordinate
+ * @param y Holds the calculated Y coordinate
+ * @param rot Amount of rotation in degrees
+ */
+void EFX::rotateAndScale(EFX* efx, float* x, float* y, int rot)
+{
+  float xx, yy;
+  xx = *x;
+  yy = *y;
+  float r = M_PI/180 * float (rot);
+  *x = efx->m_xOffset + (xx * cos(r) + yy  * sin(r)) * efx->m_width ;
+  *y = efx->m_yOffset + (-xx * sin(r) + yy * cos(r))  * efx->m_height;
+}
+
+

@@ -69,6 +69,7 @@ class EFXEditor : public UI_EFXEditor
   void slotHeightSpinChanged(int value);
   void slotXOffsetSpinChanged(int value);
   void slotYOffsetSpinChanged(int value);
+  void slotRotationSpinChanged(int value);
 
   void slotXFrequencySpinChanged(int value);
   void slotYFrequencySpinChanged(int value);

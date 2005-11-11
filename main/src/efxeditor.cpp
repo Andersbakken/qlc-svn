@@ -113,6 +113,7 @@ void EFXEditor::setEFX(EFX* efx)
   m_heightSpin->setValue(m_efx->height());
   m_xOffsetSpin->setValue(m_efx->xOffset());
   m_yOffsetSpin->setValue(m_efx->yOffset());
+  m_rotationSpin->setValue(m_efx->rotation());
   
   m_xFrequencySpin->setValue(m_efx->xFrequency());
   m_yFrequencySpin->setValue(m_efx->yFrequency());
@@ -281,6 +282,15 @@ void EFXEditor::slotHeightSpinChanged(int value)
   assert(m_efx);
 
   m_efx->setHeight(value);
+
+  m_previewArea->repaint();
+}
+
+void EFXEditor::slotRotationSpinChanged(int value)
+{
+  assert(m_efx);
+
+  m_efx->setRotation(value);
 
   m_previewArea->repaint();
 }
