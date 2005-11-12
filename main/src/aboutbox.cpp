@@ -95,18 +95,18 @@ void AboutBox::initDialog()
   m_copyright->setGeometry(0, h + 30, w, 50);
   m_copyright->setAlignment(AlignCenter);
   m_copyright->setTextFormat(RichText);
-  m_copyright->setText("QLC is licensed under the GNU GPL and is<BR>copyrighted &copy; by<BR><B>the people involved in QLC development:</B>");
+  m_copyright->setText("QLC is licensed under the GNU GPL<BR>and contains &copy; material created by<BR><B>the people involved in QLC development:</B>");
   m_copyright->setBackgroundColor(white);
 
   m_people = new QListBox(this);
   m_people->setFont(font);
   m_people->setGeometry(5, h + 90, w - 10, 80);
   m_people->setFocusPolicy(QWidget::NoFocus);
-  m_people->setSelectionMode(QListBox::NoSelection);
   m_people->setFrameStyle(QFrame::Panel);
   m_people->setScrollBar(true);
-  m_people->insertItem("Heikki Junnila <hjunnila@iki.fi>");
-  m_people->insertItem("Stefan Krumm <krumm@geol.uni-erlangen.de>");
+  m_people->insertItem("Heikki Junnila <hjunnila@users.sf.net>");
+  m_people->insertItem("Stefan Krumm <stefankrumm@users.sf.net>");
+  m_people->insertItem("Christian Sühs <dance-or-die@users.sf.net>");
   m_people->setBackgroundColor(white);
 
   m_ok = new QPushButton(this);
