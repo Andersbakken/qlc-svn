@@ -513,8 +513,6 @@ class EFX : public Function
    */
   int m_rotation;
   
-  int m_blackoutValue;
-
   /**
    * Lissajous pattern X frequency, see \ref setXFrequency
    */
@@ -555,10 +553,15 @@ class EFX : public Function
    */
   t_channel m_yChannel;
   
-    /**
+  /**
    * Channel used for Blackout
    */
   t_channel m_blackoutChannel;
+
+  /**
+   * Value for Blackout
+   */
+  int m_blackoutValue;
 
   /**
    * Run order (or mode): loop, ping-pong or single-shot
