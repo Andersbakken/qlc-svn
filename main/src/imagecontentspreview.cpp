@@ -25,26 +25,34 @@
 #include <qlabel.h>
 #include <qpixmap.h>
 #include <qstring.h>
+#include <qimage.h>
 
 ImageContentsPreview::ImageContentsPreview(QWidget* parent) 
   : QLabel(parent)
 {
 }
-  
+
 ImageContentsPreview::~ImageContentsPreview()
 {
 }
 
 void ImageContentsPreview::previewUrl(const QUrl &u)
 {
-  QString path = u.path();
-  QPixmap pix( path );
-  if ( pix.isNull() )
+  QPixmap pix(u.path());
+  if (pix.isNull())
     {
       setText("Not a valid image file");
     }
   else
     {
-      setPixmap( pix );
+      /* Resize all larger images to 200x200 */
+      if (pix.width() > 200 || pix.height() > 200)
+	{
+	  QImage image = pix.convertToImage();
+	  image = image.smoothScale(200, 200);
+	  pix.convertFromImage(image);
+	}
+
+      setPixmap(pix);
     }
 }
