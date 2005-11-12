@@ -31,6 +31,7 @@
 #include <qpainter.h>
 #include <qcombobox.h>
 #include <qbuttongroup.h>
+#include <qcheckbox.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qlabel.h>
@@ -120,16 +121,22 @@ void EFXEditor::setEFX(EFX* efx)
   m_xPhaseSpin->setValue(m_efx->xPhase());
   m_yPhaseSpin->setValue(m_efx->yPhase());
 
-  m_xFrequencySpin->setValue(m_efx->xFrequency());
-  m_yFrequencySpin->setValue(m_efx->yFrequency());
-  m_xPhaseSpin->setValue(m_efx->xPhase());
-  m_yPhaseSpin->setValue(m_efx->yPhase());
+//  m_xFrequencySpin->setValue(m_efx->xFrequency());
+//  m_yFrequencySpin->setValue(m_efx->yFrequency());
+//  m_xPhaseSpin->setValue(m_efx->xPhase());
+//  m_yPhaseSpin->setValue(m_efx->yPhase());
 
   /* Get advanced parameters */
   m_runOrderGroup->setButton(m_efx->runOrder());
   m_directionGroup->setButton(m_efx->direction());
 
   m_modulationBusCombo->setCurrentItem(m_efx->modulationBus());
+
+  if (m_efx->blackoutChannel() != KChannelInvalid)
+    {
+      m_blackoutFeatureEnabled->setChecked(true);
+      m_blackoutFeatureValueSpin->setValue(m_efx->blackoutValue());
+    }
 
   fillChannelCombos();
 }
@@ -153,6 +160,7 @@ void EFXEditor::fillChannelCombos()
       s.sprintf("%d:" + c->name(), ch + 1); /* Display channels as 1-based */
       m_horizontalCombo->insertItem(s);
       m_verticalCombo->insertItem(s);
+      m_blackoutFeatureCombo->insertItem(s);
     }
 
   /* Select a channel as the X axis */
@@ -196,6 +204,29 @@ void EFXEditor::fillChannelCombos()
 	    {
 	      m_verticalCombo->setCurrentItem(ch);
 	      m_efx->setYChannel(ch);
+	      break;
+	    }
+	}
+    }
+    
+  /* Select a channel for Blackout */
+  if (m_efx->blackoutChannel() != KChannelInvalid)
+    {
+      /* If the EFX already has a valid y channel, select it instead */
+      m_blackoutFeatureCombo->setCurrentItem(m_efx->blackoutChannel());
+    }
+  else
+    {  
+      for (t_channel ch = 0; ch < channels; ch++)
+	{
+	  LogicalChannel* c = device->deviceClass()->channels()->at(ch);
+	  assert(c);
+      
+	  // Select the first channel that contains the word "blackout"
+	  if (c->name().contains("blackout", false))
+	    {
+	      m_blackoutFeatureCombo->setCurrentItem(ch);
+	      m_efx->setBlackoutChannel(ch);
 	      break;
 	    }
 	}
@@ -349,6 +380,15 @@ void EFXEditor::slotYPhaseSpinChanged(int value)
   m_previewArea->repaint();
 }
 
+void EFXEditor::slotBlackoutFeatureValueSpinChanged(int value)
+{
+  assert(m_efx);
+
+  m_efx->setBlackoutValue(value);
+
+//  m_previewArea->repaint();
+}
+
 void EFXEditor::slotHorizontalChannelSelected(int channel)
 {
   assert(m_efx);
@@ -367,6 +407,28 @@ void EFXEditor::slotVerticalChannelSelected(int channel)
   m_previewArea->repaint();
 }
 
+void EFXEditor::slotBlackoutChannelSelected(int channel)
+{
+  assert(m_efx);
+
+  m_efx->setBlackoutChannel(static_cast<t_channel> (channel));
+
+//  m_previewArea->repaint();
+}
+
+void EFXEditor::slotBlackoutEnabled()
+{
+  if (m_blackoutFeatureEnabled->isChecked() == true)
+    {
+      m_blackoutFeatureValueSpin->setEnabled(true);
+      m_blackoutFeatureCombo->setEnabled(true);
+    }
+  else
+    {
+      m_blackoutFeatureValueSpin->setEnabled(false);
+      m_blackoutFeatureCombo->setEnabled(false);
+    }
+}
 
 /*****************************************************************************
  * EFX Preview Area implementation

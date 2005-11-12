@@ -71,7 +71,10 @@ EFX::EFX() :
 
   m_xChannel          ( KChannelInvalid ),
   m_yChannel          ( KChannelInvalid ),
-
+  
+  m_blackoutChannel   ( KChannelInvalid ),
+  m_blackoutValue     ( 0 ),
+  
   m_runOrder          ( EFX::Loop ),
   m_direction         ( EFX::Forward ),
 
@@ -463,6 +466,17 @@ int EFX::yPhase()
   return static_cast<int> (m_yPhase * 180.0 / M_PI);
 }
 
+void EFX::setBlackoutValue(int blackout)
+{
+  m_blackoutValue = blackout;
+//  updatePreview();
+}
+
+int EFX::blackoutValue()
+{
+  return static_cast<int> (m_blackoutValue);
+}
+
 /**
  * Returns true when lissajous has been selected
  */
@@ -586,6 +600,28 @@ void EFX::setYChannel(t_channel channel)
 }
 
 /**
+ * Set a channel from a device to be used as the Blackout.
+ *
+ * @param channel Relative number of the channel used as the Blackout
+ */
+void EFX::setBlackoutChannel(t_channel channel)
+{
+  Device* device = _app->doc()->device(m_deviceID);
+  assert(device);
+
+  if (channel < (t_channel) device->deviceClass()->channels()->count())
+    {
+      m_blackoutChannel = channel;
+      updatePreview();
+    }
+  else
+    {
+      qDebug("Invalid channel number!");
+      assert(false);
+    }
+}
+
+/**
  * Get the channel used as the X axis.
  *
  */
@@ -601,6 +637,15 @@ t_channel EFX::xChannel()
 t_channel EFX::yChannel()
 {
   return m_yChannel;
+}
+
+/**
+ * Get the channel used as the Blackout.
+ *
+ */
+t_channel EFX::blackoutChannel()
+{
+  return m_blackoutChannel;
 }
 
 /**
@@ -787,6 +832,19 @@ void EFX::saveToFile(QFile &file)
   s = QString("YChannel = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
+  // Blackout Channel
+  if (blackoutChannel() != KChannelInvalid)
+    {
+      t.setNum(blackoutChannel());
+      s = QString("BlackoutChannel = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+  
+      // Blackout Value
+      t.setNum(blackoutValue());
+      s = QString("BlackoutValue = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+    }
+
   // Run Order
   t.setNum((int) runOrder());
   s = QString("RunOrder = ") + t + QString("\n");
@@ -867,6 +925,14 @@ void EFX::createContents(QPtrList <QString> &list)
       else if (*s == QString("YChannel"))
 	{
 	  setYChannel(list.next()->toInt());
+	}
+      else if (*s == QString("BlackoutChannel"))
+	{
+	  setBlackoutChannel(list.next()->toInt());
+	}
+      else if (*s == QString("BlackoutValue"))
+	{
+	  setBlackoutValue(list.next()->toInt());
 	}
       else if (*s == QString("RunOrder"))
 	{

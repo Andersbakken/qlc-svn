@@ -78,6 +78,10 @@ class EFXEditor : public UI_EFXEditor
 
   void slotHorizontalChannelSelected(int index);
   void slotVerticalChannelSelected(int index);
+  
+  void slotBlackoutFeatureValueSpinChanged(int value);
+  void slotBlackoutChannelSelected(int index);
+  void slotBlackoutEnabled();
 
  protected:
   EFXPreviewArea* m_previewArea;

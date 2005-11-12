@@ -266,6 +266,21 @@ class EFX : public Function
    */
   t_channel yChannel();
 
+  void setBlackoutValue(int blackout);
+  int blackoutValue();
+  /**
+   * Set a channel from a device to be used as the Blackout.
+   *
+   * @param channel Relative number of the channel used as the Blackout
+   */
+  void setBlackoutChannel(t_channel channel);
+
+  /**
+   * Get the channel used as the blackout.
+   *
+   */
+  t_channel blackoutChannel();
+
   /**
    * Set the run order
    *
@@ -497,6 +512,8 @@ class EFX : public Function
    * Pattern rotation, see \ref setRotation
    */
   int m_rotation;
+  
+  int m_blackoutValue;
 
   /**
    * Lissajous pattern X frequency, see \ref setXFrequency
@@ -537,6 +554,11 @@ class EFX : public Function
    * Channel used for Y coordinate data
    */
   t_channel m_yChannel;
+  
+    /**
+   * Channel used for Blackout
+   */
+  t_channel m_blackoutChannel;
 
   /**
    * Run order (or mode): loop, ping-pong or single-shot
