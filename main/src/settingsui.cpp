@@ -168,6 +168,7 @@ void SettingsUI::slotBackgroundBrowseClicked()
   ImageContentsPreview* p = new ImageContentsPreview;
   
   QFileDialog* fd = new QFileDialog( this );
+  fd->setCaption("Choose the workspace background image");
   fd->setContentsPreviewEnabled( TRUE );
   fd->setContentsPreview( p, p );
   fd->setPreviewMode( QFileDialog::Contents );
