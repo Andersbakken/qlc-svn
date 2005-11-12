@@ -54,6 +54,7 @@
 #include "vcdockslider.h"
 #include "vcxypad.h"
 #include "floatingedit.h"
+#include "imagecontentspreview.h"
 
 #include <X11/Xlib.h>
 
@@ -661,20 +662,36 @@ void VirtualConsole::slotBackgroundImage()
 {
   if (m_selectedWidget)
     {
-      QString fileName = 
-	QFileDialog::getOpenFileName(m_selectedWidget->iconText(), 
-				     QString("*.jpg *.png *.xpm *.gif"), 
-				     this);
-      if (fileName.isEmpty() == false)
-	{
-	  // Set the selected pixmap as bg image and icon.
-	  // Some QT styles don't know how to display bg pixmaps, hence icon.
-	  QPixmap pm(fileName);
-	  m_selectedWidget->setPaletteBackgroundPixmap(pm);
-	  m_selectedWidget->setIconText(fileName);
-	  _app->doc()->setModified(true);
-	}
+      QString fileName;
+
+      ImageContentsPreview* p = new ImageContentsPreview;
+
+	QFileDialog* fd = new QFileDialog( this );
+	fd->setContentsPreviewEnabled( true );
+	fd->setContentsPreview( p, p );
+	fd->setPreviewMode(QFileDialog::Contents);
+	fd->setFilter("Images (*.png *.xpm *.jpg *.gif)");
+	fd->setSelection(m_selectedWidget->iconText());
+
+	if (fd->exec() == QDialog::Accepted)
+	  {
+	    fileName = fd->selectedFile();
+	  }
+
+    	if (fileName.isEmpty() == false)
+	  {
+	    // Set the selected pixmap as bg image and icon.
+	    // Some QT styles don't know how to display bg pixmaps, hence icon.
+	    QPixmap pm(fileName);
+	    m_selectedWidget->setPaletteBackgroundPixmap(pm);
+	    m_selectedWidget->setIconText(fileName);
+	    _app->doc()->setModified(true);
+	  }
+	delete p;
+	delete fd;
     }
+//  delete p;
+//  delete fd;
 }
 
 void VirtualConsole::slotBackgroundNone()
