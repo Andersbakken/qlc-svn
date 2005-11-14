@@ -46,6 +46,7 @@ Sequence::Sequence() :
 
   m_runOrder      (    Loop ),
   m_direction     ( Forward ),
+  m_advanced      ( SetZeroEnabled ),
 
   m_channelData      (    NULL ),
   m_runTimeValues    (    NULL ),
@@ -55,7 +56,7 @@ Sequence::Sequence() :
   m_holdTime      (     255 ),
   m_runTimeHold   (     255 ),
   m_holdNoSetData (    NULL ),
-
+  
   m_address       (       0 )
 {
   setBus(KBusIDDefaultHold);
@@ -329,6 +330,10 @@ void Sequence::saveToFile(QFile &file)
   // Direction
   s.sprintf("Direction = %d\n", (int) m_direction);
   file.writeBlock((const char*) s, s.length());
+  
+  // Advanced
+  s.sprintf("Advanced = %d\n", (int) m_advanced);
+  file.writeBlock((const char*) s, s.length());
 }
 
 //
@@ -392,6 +397,10 @@ void Sequence::createContents(QPtrList <QString> &list)
 	{
 	  m_direction = (Direction) list.next()->toInt();
 	}
+      else if (*s == QString("Advanced"))
+	{
+	  m_advanced = (Advanced) list.next()->toInt();
+	}
       else
         {
           // Unknown keyword, skip
@@ -424,10 +433,10 @@ void Sequence::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Sequence::arm()
 {
-  // Fetch the device address for run time access.
+  // Fetch the device adress for run time access.
   // It cannot change when functions have been armed for running
   m_address = _app->doc()->device(m_deviceID)->address();
-
+  
   if (m_channelData == NULL)
     m_channelData = new t_value[m_channels * 2];
 
@@ -443,8 +452,8 @@ void Sequence::arm()
 
   if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value) * 2,
-				    KFrequency >> 1, /* == KFrequency / 2 */
-				    sizeof(t_value));
+			KFrequency >> 1, /* == KFrequency / 2 */
+			sizeof(t_value));
 }
 
 
@@ -455,7 +464,7 @@ void Sequence::disarm()
 {
   // Just a nuisance to prevent using this at non-run-time :)
   m_address = 0;
-
+  
   if (m_channelData) delete [] m_channelData;
   m_channelData = NULL;
 
@@ -509,22 +518,20 @@ void Sequence::run()
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
-		      // Set the absolute address
+		      // Set the absolut adress
 		      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
-
 		      // Set invalid value for such channels that don't
 		      // have a valid value
 		      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
 		    }
 		  else
 		    {
-		      // Set the absolute channel
-		      m_channelData[(m_runTimeChannel << 1)] = 
+		      // Set the absolut adress
+		      m_channelData[(m_runTimeChannel << 1)] =
 			m_address + m_runTimeChannel;
-
 		      // Set a normal value
-		      m_channelData[(m_runTimeChannel << 1) + 1] = 
-			m_runTimeValues[m_runTimeChannel].value;
+		      m_channelData[(m_runTimeChannel << 1) + 1] =
+		        m_runTimeValues[m_runTimeChannel].value;
 		    }
 		}
 
@@ -544,22 +551,22 @@ void Sequence::run()
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
-		      // Set the absolute address
+		      // Set the absolut adress
 		      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
-		  
-		      // Set invalid value for such channels that don't
+		      // Set invalid value fur such channels that don't
 		      // have a valid value
 		      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
 		    }
 		  else
 		    {
-		      // Set the absolute channel
-		      m_channelData[(m_runTimeChannel << 1)] = 
+		      // Set the absolut adress
+		      m_channelData[(m_runTimeChannel << 1)] =
 			m_address + m_runTimeChannel;
-
+			
 		      // Set a normal value
-		      m_channelData[(m_runTimeChannel << 1) + 1] = 
-			m_runTimeValues[m_runTimeChannel].value;
+		      m_channelData[(m_runTimeChannel << 1) + 1] =
+		        m_runTimeValues[m_runTimeChannel].value;
+			qDebug("%d:", m_runTimeChannel);
 		    }
 		}
 	      
@@ -574,6 +581,7 @@ void Sequence::run()
       if (m_runOrder == SingleShot)
 	{
 	  // That's it
+//	  m_stopped = true;
 	  break;
 	}
       else if (m_runOrder == Loop)
@@ -595,11 +603,41 @@ void Sequence::run()
 	}
     }
   
-  if (m_stopped)
+  if (m_stopped && m_advanced == SetZeroEnabled)
+    {
+      // Set the last step as reference
+      m_runTimeValues = m_steps.last();
+      
+      // Loop over all touched channels
+      for (m_runTimeChannel = 0; 
+	   m_runTimeChannel < m_channels; 
+	   m_runTimeChannel++)
+	{  
+	  // I think, that is not really needed ??
+	  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
+	    {
+	      // Set absolut adress
+	      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
+	      //
+	      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
+	    }
+	  else
+	    {
+	      m_channelData[(m_runTimeChannel << 1)] =
+			m_address + m_runTimeChannel;
+	      // Set a Zero value on touched channels
+	      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
+	    }
+	}
+      // Stops immediately the running sequence
+      m_eventBuffer->purge();
+      // Set the zero values after stopping
+      m_eventBuffer->put(m_channelData);
+    }
+  else if (m_stopped && m_advanced == SetZeroDisabled)
     {
       m_eventBuffer->purge();
     }
-  
   // Finished
   m_removeAfterEmpty = true;
 }

@@ -33,6 +33,8 @@
 #include <qpointarray.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
+#include <qgroupbox.h>
+#include <qcheckbox.h>
 
 #include "patterngenerator.h"
 #include "sequenceeditor.h"
@@ -182,6 +184,7 @@ void SequenceEditor::setSequence(Sequence* sequence)
 
   m_runOrderGroup->setButton((int) m_sequence->runOrder());
   m_directionGroup->setButton((int) m_sequence->direction());
+  m_advancedOptionGroup->setButton((int) m_sequence->advanced());
 }
 
 void SequenceEditor::resizeEvent(QResizeEvent* e)
@@ -387,6 +390,18 @@ void SequenceEditor::slotOKClicked()
       m_sequence->setDirection(Sequence::Forward);
     }
 
+  //
+  // Advanced Options
+  //
+  if (m_advancedOptionGroup->selected() == m_zeroEnabled)
+    {
+      m_sequence->setAdvanced(Sequence::SetZeroEnabled);
+    }
+  else
+    {
+      m_sequence->setAdvanced(Sequence::SetZeroDisabled);
+    }
+    
   accept();
 }
 

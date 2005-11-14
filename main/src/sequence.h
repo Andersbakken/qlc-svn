@@ -45,6 +45,12 @@ class Sequence : public Function
       Backward
     };
 
+  enum Advanced
+    {
+      SetZeroEnabled,
+      SetZeroDisabled
+    };
+
   bool copyFrom(Sequence* seq, t_device_id toDevice = KNoID);
   bool setDevice(t_device_id);
 
@@ -61,6 +67,9 @@ class Sequence : public Function
 
   void setDirection(Direction dir) { m_direction = dir; }
   Direction direction() const { return m_direction; }
+  
+  void setAdvanced(Advanced adv) { m_advanced = adv; }
+  Advanced advanced() const { return m_advanced; }
 
   void saveToFile(QFile &file);
   void createContents(QPtrList <QString> &list);
@@ -80,6 +89,7 @@ class Sequence : public Function
  private:
   RunOrder m_runOrder;
   Direction m_direction;
+  Advanced m_advanced;
 
   t_value* m_channelData;
   SceneValue* m_runTimeValues;
@@ -89,8 +99,8 @@ class Sequence : public Function
   t_bus_value m_holdTime;
   t_bus_value m_runTimeHold;
   t_value* m_holdNoSetData;
-
-  // Use ONLY at run time to prevent allocating a local variable
+  
+  // Use only at run time to prevent allocating a local variable
   t_channel m_address;
 };
 
