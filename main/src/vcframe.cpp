@@ -234,7 +234,6 @@ void VCFrame::saveChildrenToFile(QFile& file)
       // Child frames
       while(it.current())
 	{
-	qDebug(QString(it.current()->className()));
 	  if (QString(it.current()->className()) == QString("VCButton"))
 	    {
 	      ((VCButton*) it.current())->saveToFile(file, id());
