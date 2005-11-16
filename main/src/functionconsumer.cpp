@@ -49,7 +49,7 @@ FunctionConsumer::FunctionConsumer()
     m_running  (    0 ),
     m_fd       (    0 ),
     m_timeCode (    0 ),
-    m_event    ( new t_value[512] ),
+    m_event    ( new t_buffer_data[512] ),
     m_function ( NULL ),
     m_channel  (    0 )
 {
@@ -240,10 +240,10 @@ void FunctionConsumer::run()
 }
 
 
-//
-// Actual consumer function. Nothing should be allocated here
-// (not even local variables) to keep this as fast as possible.
-//
+/**
+ * Actual consumer function. Nothing should be allocated here
+ * (not even local variables) to keep this as fast as possible.
+ */
 void FunctionConsumer::event(time_t)
 {
   m_functionListMutex.lock(); // First lock
@@ -269,13 +269,13 @@ void FunctionConsumer::event(time_t)
 	   * twice as big (for example 6 channels and 6 values). So divide
 	   * the eventSize() by two (x >> 1 == x/2) */
 	  for (m_channel = 0;
-	       m_channel < m_function->eventBuffer()->eventSize() >> 1;
+	       m_channel < m_function->eventBuffer()->eventSize();
 	       m_channel++)
 	    {
 	      // Write also invalid values; let _app->setValue() take
 	      // care of them
-	      _app->setValue(m_event[(m_channel << 1)],
-			     m_event[(m_channel << 1) + 1]);
+	      _app->setValue(m_event[m_channel] >> 8,
+			     m_event[m_channel] & 0xFF);
 	    }
         }
 

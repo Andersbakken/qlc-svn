@@ -51,6 +51,11 @@ class Device : public QObject
   void setAddress(t_channel address);
   t_channel address();
 
+  void setUniverse(t_channel universe);
+  t_channel universe();
+
+  t_channel universeAddress();
+
   void setName(QString);
   QString name();
 
@@ -72,7 +77,7 @@ class Device : public QObject
 
  public slots: 
   void slotConsoleClosed();
-  
+
  private slots:
   void slotMonitorClosed();
 

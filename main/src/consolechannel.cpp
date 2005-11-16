@@ -174,10 +174,8 @@ void ConsoleChannel::slotSetFocus()
 
   // In case someone else has set the value for this channel, animate
   // the slider to the correct position
-  value = _app->value(device->address() + m_channel);
-  /*
-  _app->outputPlugin()->readChannel(device->address() + m_channel, value);
-  */
+  value = _app->value(device->universeAddress() + m_channel);
+
   slotAnimateValueChange(value);
 
   // Set focus to this slider
@@ -191,11 +189,7 @@ void ConsoleChannel::update()
   Device* device = _app->doc()->device(m_deviceID);
   assert(device);
 
-  value = _app->value(device->address() + m_channel);
-
-  /*
-  _app->outputPlugin()->readChannel(device->address() + m_channel, value);
-  */
+  value = _app->value(device->universeAddress() + m_channel);
 
   m_valueLabel->setNum(value);
   slotAnimateValueChange(value);
@@ -208,12 +202,7 @@ void ConsoleChannel::slotValueChange(int value)
   Device* device = _app->doc()->device(m_deviceID);
   assert(device);
 
-  _app->setValue(device->address() + m_channel, (t_value) value);
-
-  /*
-  _app->outputPlugin()->writeChannel(device->address() + m_channel, 
-				     (t_value) value);
-  */
+  _app->setValue(device->universeAddress() + m_channel, (t_value) value);
 
   m_valueLabel->setNum(value);
 

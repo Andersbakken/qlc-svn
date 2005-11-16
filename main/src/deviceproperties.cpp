@@ -40,6 +40,9 @@ DeviceProperties::~DeviceProperties()
 {
 }
 
+/**
+ * Dialog pre-initialisation
+ */
 void DeviceProperties::init()
 {
   // Name
@@ -49,8 +52,15 @@ void DeviceProperties::init()
   m_addressSpin->setRange(1,
 			  513 - m_device->deviceClass()->channels()->count());
   m_addressSpin->setValue(m_device->address() + 1);
+
+  // Universe
+  m_universeSpin->setRange(1, KUniverseCount);
+  m_universeSpin->setValue(m_device->universe() + 1);
 }
 
+/**
+ * Callback for DIP button click
+ */
 void DeviceProperties::slotDIPClicked()
 {
   DMXAddressTool* dat = new DMXAddressTool(_app);
@@ -70,6 +80,9 @@ void DeviceProperties::slotDIPClicked()
   delete dat;
 }
 
+/**
+ * Callback for OK button click
+ */
 void DeviceProperties::slotOKClicked()
 {
   // Name
@@ -77,6 +90,9 @@ void DeviceProperties::slotOKClicked()
   
   // Address
   m_device->setAddress(m_addressSpin->value() - 1);
+
+  // Universe
+  m_device->setUniverse(m_universeSpin->value() - 1);
   
   accept();
 }

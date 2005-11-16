@@ -49,7 +49,7 @@ Scene::Scene() :
   m_runTimeData (            NULL ),
   m_channelData (            NULL ),
   m_dataMutex   (           false ),
-  m_address     (               0 )
+  m_address     ( KChannelInvalid )
 {
   setBus(KBusIDDefaultFade);
 }
@@ -356,18 +356,16 @@ void Scene::arm()
 {
   // Fetch the device address for run time access.
   // It cannot change when functions have been armed for running
-  m_address = _app->doc()->device(m_deviceID)->address();
+  m_address = _app->doc()->device(m_deviceID)->universeAddress();
   
   if (m_runTimeData == NULL)
     m_runTimeData = new RunTimeData[m_channels];
 
   if (m_channelData == NULL)
-    m_channelData = new t_value[m_channels * 2];
+    m_channelData = new t_buffer_data[m_channels];
 
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value) * 2,
-				    KFrequency >> 1, /* == KFrequency / 2 */
-				    sizeof(t_value));
+    m_eventBuffer = new EventBuffer(m_channels, KFrequency >> 1);
 }
 
 
@@ -377,7 +375,7 @@ void Scene::arm()
 void Scene::disarm()
 {
   // Just a nuisance to prevent using this at non-run-time :)
-  m_address = 0;
+  m_address = KChannelInvalid;
 
   if (m_runTimeData) delete [] m_runTimeData;
   m_runTimeData = NULL;
@@ -469,8 +467,8 @@ void Scene::run()
 	{
 	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	    {
-	      m_channelData[(ch << 1)] = KChannelInvalid;
-	      m_channelData[(ch << 1) + 1] = 0;
+	      m_channelData[ch] = KChannelInvalid << 8;
+	      m_channelData[ch] |= 0;
 	      
 	      // This channel contains a value that is not supposed
 	      // to be written (anymore, in case of ready value, which
@@ -480,8 +478,9 @@ void Scene::run()
 	  else if (m_values[ch].type == Set)
 	    {
 	      // Just set the target value
-	      m_channelData[(ch << 1)] = m_address + ch;
-	      m_channelData[(ch << 1) + 1] = m_values[ch].value;
+	      m_channelData[ch] = (m_address + ch) << 8;
+	      m_channelData[ch] |= 
+		static_cast<t_buffer_data> (m_values[ch].value);
 
 	      // ...and don't touch this channel anymore
 	      m_runTimeData[ch].ready = true; 
@@ -496,10 +495,10 @@ void Scene::run()
 		+ (m_runTimeData[ch].target - m_runTimeData[ch].start) 
 		* ((float)m_elapsedTime / m_timeSpan);
 
-	      m_channelData[(ch << 1)] = m_address + ch;
+	      m_channelData[ch] = (m_address + ch) << 8;
 
-	      m_channelData[(ch << 1) + 1] =
-		static_cast<t_value> (m_runTimeData[ch].current);
+	      m_channelData[ch] |=
+		static_cast<t_buffer_data> (m_runTimeData[ch].current);
 	    }
 
 	  //m_dataMutex.unlock();
@@ -519,14 +518,14 @@ void Scene::run()
     {
       if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
 	{
-	  m_channelData[(ch << 1)] = KChannelInvalid;
-	  m_channelData[(ch << 1) + 1] = 0;
+	  m_channelData[ch] = KChannelInvalid << 8;
+	  m_channelData[ch] |= 0;
 	}
       else
 	{
 	  // Just set the target value
-	  m_channelData[(ch << 1)] = m_address + ch;
-	  m_channelData[(ch << 1) + 1] = m_values[ch].value;
+	  m_channelData[ch] = (m_address + ch) << 8;
+	  m_channelData[ch] |= static_cast<t_buffer_data> (m_values[ch].value);
 	  
 	  // ...and don't touch this channel anymore
 	  m_runTimeData[ch].ready = true;

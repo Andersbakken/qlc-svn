@@ -56,7 +56,9 @@ class Doc : public QObject
   // Devices
   //
   Device* newDevice(DeviceClass* dc, QString name,
-		    t_channel address, t_device_id id = KNoID);
+		    t_channel address, t_channel universe,
+		    t_device_id id = KNoID);
+
   void deleteDevice(t_device_id);
   Device* device(t_device_id);
 

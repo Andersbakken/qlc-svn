@@ -78,7 +78,7 @@ class DMX4LinuxOut : public OutputPlugin
   QString m_deviceName;
   QString m_configDir;
   int m_device;
-  t_value m_values[512];
+  t_value m_values[KChannelMax];
 };
 
 #endif

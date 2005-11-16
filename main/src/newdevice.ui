@@ -8,12 +8,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>541</width>
-            <height>595</height>
+            <width>490</width>
+            <height>515</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Create New Device</string>
+        <string>Add a new device to the workspace</string>
     </property>
     <vbox>
         <property name="name">
@@ -30,7 +30,7 @@
                 <widget class="QListView">
                     <column>
                         <property name="text">
-                            <string>Device Classes</string>
+                            <string>Device</string>
                         </property>
                         <property name="clickable">
                             <bool>true</bool>
@@ -60,7 +60,10 @@
                         <bool>true</bool>
                     </property>
                     <property name="resizeMode">
-                        <enum>LastColumn</enum>
+                        <enum>AllColumns</enum>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>List of available devices</string>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">
@@ -71,105 +74,125 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLayoutWidget">
+                        <widget class="QGroupBox">
                             <property name="name">
-                                <cstring>layout1</cstring>
+                                <cstring>groupBox1</cstring>
                             </property>
-                            <hbox>
+                            <property name="title">
+                                <string>New Device Properties</string>
+                            </property>
+                            <vbox>
                                 <property name="name">
                                     <cstring>unnamed</cstring>
                                 </property>
-                                <widget class="QLabel">
+                                <widget class="QLayoutWidget">
                                     <property name="name">
-                                        <cstring>textLabel1</cstring>
+                                        <cstring>layout1</cstring>
                                     </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>0</hsizetype>
-                                            <vsizetype>5</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>80</width>
-                                            <height>0</height>
-                                        </size>
-                                    </property>
-                                    <property name="text">
-                                        <string>Name:</string>
-                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>m_nameLabel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Name</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit">
+                                            <property name="name">
+                                                <cstring>m_nameEdit</cstring>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Give the device a descriptive name</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
                                 </widget>
-                                <widget class="QLineEdit">
+                                <widget class="QLayoutWidget">
                                     <property name="name">
-                                        <cstring>m_nameEdit</cstring>
+                                        <cstring>layout3</cstring>
                                     </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Give the device a descriptive name</string>
-                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>m_addressLabel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Address</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_addressSpin</cstring>
+                                            </property>
+                                            <property name="wrapping">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>512</number>
+                                            </property>
+                                            <property name="minValue">
+                                                <number>1</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>The device's address</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
                                 </widget>
-                            </hbox>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout10</cstring>
+                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>m_universeLabel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Universe</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_universeSpin</cstring>
+                                            </property>
+                                            <property name="wrapping">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>128</number>
+                                            </property>
+                                            <property name="minValue">
+                                                <number>1</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>The device's universe</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
+                                </widget>
+                            </vbox>
                         </widget>
-                        <widget class="QLayoutWidget">
+                        <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>layout3</cstring>
+                                <cstring>m_treeOpenCheckBox</cstring>
                             </property>
-                            <hbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel3</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>0</hsizetype>
-                                            <vsizetype>5</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>80</width>
-                                            <height>0</height>
-                                        </size>
-                                    </property>
-                                    <property name="text">
-                                        <string>Address:</string>
-                                    </property>
-                                </widget>
-                                <widget class="QSpinBox">
-                                    <property name="name">
-                                        <cstring>m_addressSpin</cstring>
-                                    </property>
-                                    <property name="wrapping">
-                                        <bool>true</bool>
-                                    </property>
-                                    <property name="maxValue">
-                                        <number>512</number>
-                                    </property>
-                                    <property name="minValue">
-                                        <number>1</number>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>The device's address</string>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>m_dipButton</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>DIP...</string>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Set the device address using a DIP switch-style interface</string>
-                                    </property>
-                                </widget>
-                            </hbox>
+                            <property name="text">
+                                <string>Keep folders open</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>If checked, all manufacturer folders are always open</string>
+                            </property>
                         </widget>
                         <spacer>
                             <property name="name">
@@ -184,18 +207,10 @@
                             <property name="sizeHint">
                                 <size>
                                     <width>20</width>
-                                    <height>110</height>
+                                    <height>290</height>
                                 </size>
                             </property>
                         </spacer>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>m_treeOpenCheckBox</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Keep device nodes open</string>
-                            </property>
-                        </widget>
                     </vbox>
                 </widget>
             </hbox>
@@ -246,30 +261,19 @@
                     <property name="text">
                         <string>OK</string>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Add the device to the workspace</string>
+                    </property>
                 </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Minimum</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>16</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
                 <widget class="QPushButton">
                     <property name="name">
                         <cstring>m_cancel</cstring>
                     </property>
                     <property name="text">
                         <string>Cancel</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Do not add the device to the workspace</string>
                     </property>
                 </widget>
             </hbox>
@@ -312,12 +316,6 @@
         <signal>clicked()</signal>
         <receiver>UI_NewDevice</receiver>
         <slot>slotTreeOpenCheckBoxClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_dipButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_NewDevice</receiver>
-        <slot>slotDIPClicked()</slot>
     </connection>
 </connections>
 <slots>

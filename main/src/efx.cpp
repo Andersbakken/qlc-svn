@@ -991,20 +991,18 @@ void EFX::arm()
    * There are only two channels to set.
    */
   if (m_channelData == NULL)
-    m_channelData = new t_value[2 * 2];
+    m_channelData = new unsigned int[2];
 
   /* Allocate space for the event buffer.
    * There are only two channels to set.
    */
-  if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(2 * sizeof(t_value) * 2,
-				    KFrequency >> 1, /* == KFrequency / 2 */
-				    sizeof(t_value));
+  if (m_eventBuffer == NULL)	
+    m_eventBuffer = new EventBuffer(2, KFrequency >> 1);
 
   /* Set the run time address for channel data */
   if (_app->doc()->device(m_deviceID))
     {
-      m_address = _app->doc()->device(m_deviceID)->address();
+      m_address = _app->doc()->device(m_deviceID)->universeAddress();
     }
   else
     {
@@ -1266,11 +1264,11 @@ void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::setPoint(t_value x, t_value y)
 {
-  m_channelData[0] = m_address + m_xChannel;
-  m_channelData[1] = x;
+  m_channelData[0] = (m_address + m_xChannel) << 8;
+  m_channelData[0] |= x;
 
-  m_channelData[2] = m_address + m_yChannel;
-  m_channelData[3] = y;
+  m_channelData[1] = (m_address + m_yChannel) << 8;
+  m_channelData[1] |= y;
 
   m_eventBuffer->put(m_channelData);
 }

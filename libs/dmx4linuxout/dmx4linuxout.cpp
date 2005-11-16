@@ -69,7 +69,7 @@ DMX4LinuxOut::DMX4LinuxOut(t_plugin_id id) : OutputPlugin(id)
   m_deviceName = QString("/dev/dmx");    
   m_configDir = QString("~/.qlc/");
 
-  for (t_channel i = 0; i < 512; i++)
+  for (t_channel i = 0; i < KChannelMax; i++)
     {
       m_values[i] = 0;
     }

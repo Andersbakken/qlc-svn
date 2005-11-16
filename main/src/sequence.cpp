@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  seqeuence.cpp
+  sequence.cpp
   
   Copyright (C) Heikki Junnila
   
@@ -56,8 +56,8 @@ Sequence::Sequence() :
   m_holdTime      (     255 ),
   m_runTimeHold   (     255 ),
   m_holdNoSetData (    NULL ),
-  
-  m_address       (       0 )
+
+  m_address       ( KChannelInvalid )
 {
   setBus(KBusIDDefaultHold);
 }
@@ -435,25 +435,23 @@ void Sequence::arm()
 {
   // Fetch the device adress for run time access.
   // It cannot change when functions have been armed for running
-  m_address = _app->doc()->device(m_deviceID)->address();
-  
+  m_address = _app->doc()->device(m_deviceID)->universeAddress();
+
   if (m_channelData == NULL)
-    m_channelData = new t_value[m_channels * 2];
+    m_channelData = new t_buffer_data[m_channels];
 
   if (m_holdNoSetData == NULL)
     {
-      m_holdNoSetData = new t_value[m_channels * 2];
+      m_holdNoSetData = new t_buffer_data[m_channels];
       for (t_channel ch = 0; ch < m_channels; ch++)
 	{
-	  m_holdNoSetData[(ch << 1)] = KChannelInvalid;
-	  m_holdNoSetData[(ch << 1) + 1] = 0;
+	  m_holdNoSetData[ch] = KChannelInvalid << 8;
+	  m_holdNoSetData[ch] |= 0;
 	}
     }
 
   if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels * sizeof(t_value) * 2,
-			KFrequency >> 1, /* == KFrequency / 2 */
-			sizeof(t_value));
+    m_eventBuffer = new EventBuffer(m_channels, KFrequency >> 1);
 }
 
 
@@ -463,7 +461,7 @@ void Sequence::arm()
 void Sequence::disarm()
 {
   // Just a nuisance to prevent using this at non-run-time :)
-  m_address = 0;
+  m_address = KChannelInvalid;
   
   if (m_channelData) delete [] m_channelData;
   m_channelData = NULL;
@@ -518,20 +516,20 @@ void Sequence::run()
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
-		      // Set the absolut adress
-		      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
-		      // Set invalid value for such channels that don't
-		      // have a valid value
-		      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
+		      // Set the absolute address
+		      m_channelData[m_runTimeChannel] = KChannelInvalid << 8;
+		      m_channelData[m_runTimeChannel] |= 0;
 		    }
 		  else
 		    {
-		      // Set the absolut adress
-		      m_channelData[(m_runTimeChannel << 1)] =
-			m_address + m_runTimeChannel;
+		      // Set the absolute channel
+		      m_channelData[m_runTimeChannel] = 
+			(m_address + m_runTimeChannel) << 8;
+
 		      // Set a normal value
-		      m_channelData[(m_runTimeChannel << 1) + 1] =
-		        m_runTimeValues[m_runTimeChannel].value;
+		      m_channelData[m_runTimeChannel] |= 
+			static_cast<t_buffer_data> 
+			(m_runTimeValues[m_runTimeChannel].value);
 		    }
 		}
 
@@ -551,22 +549,23 @@ void Sequence::run()
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
-		      // Set the absolut adress
-		      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
-		      // Set invalid value fur such channels that don't
+		      // Set the absolute address
+		      m_channelData[m_runTimeChannel] = KChannelInvalid << 8;
+		      
+		      // Set invalid value for such channels that don't
 		      // have a valid value
-		      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
+		      m_channelData[m_runTimeChannel] |= 0;
 		    }
 		  else
 		    {
-		      // Set the absolut adress
-		      m_channelData[(m_runTimeChannel << 1)] =
-			m_address + m_runTimeChannel;
-			
+		      // Set the absolute channel
+		      m_channelData[m_runTimeChannel] = 
+			(m_address + m_runTimeChannel) << 8;
+
 		      // Set a normal value
-		      m_channelData[(m_runTimeChannel << 1) + 1] =
-		        m_runTimeValues[m_runTimeChannel].value;
-			qDebug("%d:", m_runTimeChannel);
+		      m_channelData[m_runTimeChannel] |= 
+			static_cast<t_buffer_data> 
+			(m_runTimeValues[m_runTimeChannel].value);
 		    }
 		}
 	      
@@ -581,7 +580,7 @@ void Sequence::run()
       if (m_runOrder == SingleShot)
 	{
 	  // That's it
-//	  m_stopped = true;
+	  // m_stopped = true;
 	  break;
 	}
       else if (m_runOrder == Loop)

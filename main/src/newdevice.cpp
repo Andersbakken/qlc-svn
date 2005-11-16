@@ -62,6 +62,12 @@ void NewDevice::initView()
 {
   QString config;
 
+  // Default range for address spin
+  m_addressSpin->setRange(1, 512);
+
+  // Range for universe spin
+  m_universeSpin->setRange(1, KUniverseCount);
+
   fillTree();
 
   _app->settings()->get(KEY_NEWDEVICE_TREE_OPEN, config);
@@ -201,6 +207,8 @@ void NewDevice::show()
 void NewDevice::slotOKClicked()
 {
   m_addressValue = m_addressSpin->value() - 1;
+
+  m_universeValue = m_universeSpin->value() - 1;
 
   if (m_selectionOK == true)
     {

@@ -411,7 +411,7 @@ void Monitor::paintAll(void)
     {
       if (s_displayStyle == ID_ABSOLUTE)
 	{
-	  channelString.sprintf("%.3d", m_fromChannel + i + 1);
+	  channelString.sprintf("%.3d", (m_fromChannel & 0x1FF) + i + 1);
 	}
       else
 	{

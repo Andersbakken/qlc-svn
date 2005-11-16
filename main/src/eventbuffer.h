@@ -29,15 +29,14 @@ class EventBuffer
 {
  public:
   EventBuffer(unsigned int eventSize,
-	      unsigned int bufferSize = 32,
-	      unsigned int byteSize = 2);
+	      unsigned int bufferSize = 32);
   ~EventBuffer();
 
   // Put data to buffer
-  int put(t_value* event);
+  int put(t_buffer_data* event);
 
   // Read data from buffer
-  int get(t_value* event);
+  int get(t_buffer_data* event);
 
   // Clear the buffer
   void purge();
@@ -46,11 +45,10 @@ class EventBuffer
   unsigned int eventSize() const { return m_eventSize; }
 
  private:
-  t_value* m_ring;
+  t_buffer_data* m_ring;
 
   unsigned int m_size;
-  t_channel m_eventSize;
-  unsigned int m_byteSize;
+  unsigned int m_eventSize;
 
   unsigned int m_filled; // # of objects in the buffer
   unsigned int m_in; // next token is stored here

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>265</width>
-            <height>127</height>
+            <width>258</width>
+            <height>151</height>
         </rect>
     </property>
     <property name="caption">
@@ -30,18 +30,6 @@
                 <widget class="QLabel">
                     <property name="name">
                         <cstring>m_deviceNameLabel</cstring>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>70</width>
-                            <height>0</height>
-                        </size>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>70</width>
-                            <height>32767</height>
-                        </size>
                     </property>
                     <property name="text">
                         <string>Name</string>
@@ -69,18 +57,6 @@
                     <property name="name">
                         <cstring>m_addressLabel</cstring>
                     </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>70</width>
-                            <height>0</height>
-                        </size>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>70</width>
-                            <height>32767</height>
-                        </size>
-                    </property>
                     <property name="text">
                         <string>Address</string>
                     </property>
@@ -99,23 +75,33 @@
                         <string>Device's DMX address</string>
                     </property>
                 </widget>
-                <widget class="QPushButton">
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout4</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
                     <property name="name">
-                        <cstring>m_dipButton</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>0</hsizetype>
-                            <vsizetype>0</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
+                        <cstring>m_universeLabel</cstring>
                     </property>
                     <property name="text">
-                        <string>DIP</string>
+                        <string>Universe</string>
                     </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Select the address with DIP switches</string>
+                </widget>
+                <widget class="QSpinBox">
+                    <property name="name">
+                        <cstring>m_universeSpin</cstring>
+                    </property>
+                    <property name="maxValue">
+                        <number>128</number>
+                    </property>
+                    <property name="minValue">
+                        <number>1</number>
                     </property>
                 </widget>
             </hbox>
@@ -182,12 +168,6 @@
         <slot>reject()</slot>
     </connection>
     <connection>
-        <sender>m_dipButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceProperties</receiver>
-        <slot>slotDIPClicked()</slot>
-    </connection>
-    <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
         <receiver>UI_DeviceProperties</receiver>
@@ -197,7 +177,6 @@
 <tabstops>
     <tabstop>m_deviceNameEdit</tabstop>
     <tabstop>m_addressSpin</tabstop>
-    <tabstop>m_dipButton</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>

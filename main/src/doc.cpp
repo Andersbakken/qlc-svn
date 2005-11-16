@@ -321,7 +321,8 @@ bool Doc::saveWorkspaceAs(QString &fileName)
 // Device stuff //
 //////////////////
 Device* Doc::newDevice(DeviceClass* dc, QString name,
-		       t_channel address, t_device_id id)
+		       t_channel address, t_channel universe,
+		       t_device_id id)
 {
   Device* d = new Device();
 
@@ -343,6 +344,7 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 		  d->setID(i);
 		  d->setDeviceClass(dc);
 		  d->setAddress(address);
+		  d->setUniverse(universe);
 		  d->setName(name);
 		  
 		  ok = true;
@@ -369,6 +371,7 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 	      d->setID(id);
 	      d->setDeviceClass(dc);
 	      d->setAddress(address);
+	      d->setUniverse(universe);
 	      d->setName(name);
 	    }
 	  else

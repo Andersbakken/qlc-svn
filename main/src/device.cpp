@@ -49,12 +49,12 @@ extern QApplication* _qapp;
 
 Device::Device() 
   : QObject(),
-    m_deviceClass (          NULL ),
-    m_address     (    KNoChannel ),
-    m_id          (         KNoID ),
-    m_name        ( QString::null ),
-    m_console     (          NULL ),
-    m_monitor     (          NULL )
+    m_deviceClass (            NULL ),
+    m_address     ( KChannelInvalid ),
+    m_id          (           KNoID ),
+    m_name        (   QString::null ),
+    m_console     (            NULL ),
+    m_monitor     (            NULL )
 {
 }
 
@@ -108,6 +108,11 @@ void Device::saveToFile(QFile &file)
   t.setNum(address());
   s = QString("Address = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
+
+  // Universe
+  t.setNum(universe());
+  s = QString("Universe = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 }
 
 
@@ -120,7 +125,8 @@ Device* Device::create(QPtrList <QString> &list)
   QString manufacturer = QString::null;
   QString model = QString::null;
 
-  t_channel address = KNoChannel;
+  t_channel address = KChannelInvalid;
+  t_channel universe = 0;
   t_device_id id = KNoID;
 
   for (QString* s = list.next(); s != NULL; s = list.next())
@@ -149,6 +155,10 @@ Device* Device::create(QPtrList <QString> &list)
       else if (*s == QString("Address"))
 	{
 	  address = list.next()->toInt();
+	}
+      else if (*s == QString("Universe"))
+	{
+	  universe = list.next()->toInt();
 	}
       else
 	{
@@ -179,7 +189,7 @@ Device* Device::create(QPtrList <QString> &list)
     }
   else
     {
-      Device* d = _app->doc()->newDevice(dc, name, address, id);
+      Device* d = _app->doc()->newDevice(dc, name, address, universe, id);
       return d;
     }
 }
@@ -214,9 +224,51 @@ QString Device::name()
   return m_name;
 }
 
+/**
+ * Set the device address
+ *
+ * @param address The DMX address (0-511)
+ */
 void Device::setAddress(t_channel address)
 {
-  m_address = address;
+  /* The address part is stored in the lowest 9 bits */
+  m_address = (m_address & 0xFE00) | (address & 0x01FF);
+
+  if (m_console)
+    {
+      slotConsoleClosed();
+      viewConsole();
+    }
+
+  if (m_monitor)
+    {
+      slotMonitorClosed();
+      viewMonitor();
+    }
+
+  _app->doc()->setModified(true);
+}
+
+/**
+ * Get the device's DMX address (0-511)
+ *
+ */
+t_channel Device::address()
+{
+  /* The address part is stored in the lowest 9 bits */
+  return (m_address & 0x01FF);
+}
+
+
+/**
+ * Set the device's universe
+ *
+ * @param universe The DMX universe number (0-127)
+ */
+void Device::setUniverse(t_channel universe)
+{
+  /* The universe part is stored in the highest 7 bits */
+  m_address = (m_address & 0x01FF) | (universe << 9);
 
   if (m_console)
     {
@@ -234,7 +286,22 @@ void Device::setAddress(t_channel address)
 }
 
 
-t_channel Device::address()
+/**
+ * Get the device's universe
+ *
+ * @return DMX universe number
+ */
+t_channel Device::universe()
+{
+  /* The universe part is stored in the highest 7 bits */
+  return (m_address >> 9);
+}
+
+
+/**
+ * Get the complete address, including universe and DMX address
+ */
+t_channel Device::universeAddress()
 {
   return m_address;
 }
@@ -279,10 +346,16 @@ QString Device::infoText()
   str += QString("<TD>") + m_deviceClass->type() + QString("</TD>");
   str += QString("</TR>");
   str += QString("<TR>");
+  str += QString("<TD><B>Universe</B></TD>");
+  t.sprintf("%d", universe() + 1);
+  str += QString("<TD>") + t + QString("</TD>");
+  str += QString("</TR>");
+  str += QString("<TR>");
   str += QString("<TD><B>Address space</B></TD>");
   t.sprintf("%d - %d",
 	    address() + 1, address() + m_deviceClass->channels()->count());
   str += QString("<TD>") + t + QString("</TD>");
+  str += QString("</TR>");
   str += QString("</TABLE>");
 
   //
@@ -308,7 +381,7 @@ QString Device::infoText()
       t.setNum(ch + 1);
       str += QString("<TR>");
       str += QString("<TD>" + t + "</TD>");
-      t.setNum(m_address + ch + 1);
+      t.setNum(address() + ch + 1);
       str += QString("<TD>" + t + "</TD>");
       str += QString("<TD>");
       str += m_deviceClass->channels()->at(ch)->name();
@@ -378,8 +451,8 @@ void Device::viewMonitor()
       _app->settings()->get(KEY_SYSTEM_DIR, dir);
       dir += QString("/") + PIXMAPPATH + QString("/");
 
-      m_monitor = new Monitor(_app->workspace(), address(),
-                              address() + channels - 1);
+      m_monitor = new Monitor(_app->workspace(), universeAddress(),
+                              universeAddress() + channels - 1);
       m_monitor->init();
       m_monitor->setCaption(m_name + " Monitor");
       m_monitor->setIcon(dir + QString("monitor.xpm"));

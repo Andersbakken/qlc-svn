@@ -347,7 +347,7 @@ void DeviceManagerView::slotUpdate()
 	  newItem = new QListViewItem(m_listView);
           newItem->setText(KColumnAddress, address);
           newItem->setText(KColumnName, dev->name());
-	  
+
 	  // ID column
 	  id.setNum(dev->id());
 	  newItem->setText(KColumnID, id);
@@ -372,6 +372,7 @@ void DeviceManagerView::slotAdd()
   if (ndlg->exec() == QDialog::Accepted)
     {
       int address = ndlg->address();
+      int universe = ndlg->universe();
       QString name = ndlg->name();
       QString manufacturer = ndlg->manufacturer();
       QString model = ndlg->model();
@@ -387,7 +388,7 @@ void DeviceManagerView::slotAdd()
       assert(dc);
 
       // Add new device
-      _app->doc()->newDevice(dc, name, address);
+      _app->doc()->newDevice(dc, name, address, universe);
     }
 
   delete ndlg;
@@ -412,7 +413,7 @@ void DeviceManagerView::slotClone()
   new_name += "_new";
   
   // Add new device
-  Device* d = _app->doc()->newDevice(dc, new_name, 0);
+  Device* d = _app->doc()->newDevice(dc, new_name, 0, 0);
   assert(d);
   
   for (t_function_id id = 0; id < KFunctionArraySize; id++)

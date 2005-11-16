@@ -1273,7 +1273,7 @@ void App::slotToggleBlackOut()
       disconnect(m_blackOutIndicatorTimer, SIGNAL(timeout()),
 		 this, SLOT(slotFlashBlackOutIndicator()));
 
-      m_outputPlugin->writeRange(0, m_values, 512);
+      m_outputPlugin->writeRange(0, m_values, KChannelMax);
       //
       // Set the channel writer function to blackout writer
       // to prevent channel value updates to DMX hardware
@@ -1288,7 +1288,7 @@ void App::slotToggleBlackOut()
 	      this, SLOT(slotFlashBlackOutIndicator()));
       m_blackOutIndicatorTimer->start(KBlackOutIndicatorFlashInterval);
 
-      for (t_channel ch = 0; ch < 512; ch++)
+      for (t_channel ch = 0; ch < KChannelMax; ch++)
 	{
 	  m_outputPlugin->writeChannel(ch, 0);
 	}
@@ -1685,7 +1685,7 @@ DeviceClass* App::searchDeviceClass(const t_deviceclass_id id)
 
 void App::initSubmasters()
 {
-  for (t_channel i = 0; i < 512; i++)
+  for (t_channel i = 0; i < KChannelMax; i++)
     {
       m_submasters[i] = 0;
       m_submasterValues[i] = 1;
@@ -1694,7 +1694,7 @@ void App::initSubmasters()
 
 void App::initValues()
 {
-  m_outputPlugin->readRange(0, m_values, 512);
+  m_outputPlugin->readRange(0, m_values, KChannelMax);
 }
 
 //
@@ -1702,7 +1702,7 @@ void App::initValues()
 //
 void App::setValue(t_channel ch, t_value value)
 {
-  if (ch <= KChannelMax)
+  if (ch < KChannelMax)
     {
       m_values[ch] = value;
       
@@ -1728,14 +1728,11 @@ void normalWriter(t_channel ch, t_value value)
 
 t_value App::value(t_channel ch)
 {
-  assert(ch < 512 && ch >= 0);
-
   return m_values[ch];
 }
 
 void App::valueRange(t_channel address, t_value* values, t_channel num)
 {
-  assert(address < 512 && address >= 0);
   memcpy(values, m_values + address, num);
 }
 
@@ -1748,8 +1745,6 @@ void App::valueRange(t_channel address, t_value* values, t_channel num)
 //
 bool App::assignSubmaster(t_channel ch)
 {
-  assert(ch < 512 && ch >= 0);
-
   m_submasters[ch]++;
   return true;
 }
@@ -1760,8 +1755,6 @@ bool App::assignSubmaster(t_channel ch)
 //
 bool App::resignSubmaster(t_channel ch)
 {
-  assert(ch < 512 && ch >= 0);
-
   m_submasters[ch]--;
 
   assert(m_submasters[ch] >= 0);
@@ -1775,8 +1768,6 @@ bool App::resignSubmaster(t_channel ch)
 //
 int App::hasSubmaster(t_channel ch)
 {
-  assert(ch < 512 && ch >= 0);
-
   return m_submasters[ch];
 }
 
@@ -1786,7 +1777,7 @@ int App::hasSubmaster(t_channel ch)
 //
 void App::resetSubmasters()
 {
-  for (t_channel i = 0; i < 512; i++)
+  for (t_channel i = 0; i < KChannelMax; i++)
     {
       if (hasSubmaster(i) == 0)
 	{
@@ -1801,8 +1792,6 @@ void App::resetSubmasters()
 //
 void App::setSubmasterValue(t_channel ch, int percent)
 {
-  assert(ch < 512 && ch >= 0);
-
   m_submasterValues[ch] = (float) percent / (float) 100;
   setValue(ch, m_values[ch]);
 }
@@ -1813,8 +1802,6 @@ void App::setSubmasterValue(t_channel ch, int percent)
 //
 float App::submasterValue(t_channel ch)
 {
-  assert(ch < 512 && ch >= 0);
-  
   return m_submasterValues[ch];
 }
 

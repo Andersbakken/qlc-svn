@@ -61,7 +61,7 @@ class DummyOutPlugin : public OutputPlugin
   
  private:
   bool m_open;
-  t_value m_values[512];
+  t_value m_values[KChannelMax];
 
   QMutex m_mutex;
 };

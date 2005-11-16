@@ -236,9 +236,9 @@ class App : public QMainWindow
   // Device classes
   QPtrList <DeviceClass> m_deviceClassList;
 
-  t_value m_values[512];
-  float m_submasterValues[512];
-  int m_submasters[512];
+  t_value m_values[KChannelMax];
+  float m_submasterValues[KChannelMax];
+  int m_submasters[KChannelMax];
 
   bool m_blackOut;
 

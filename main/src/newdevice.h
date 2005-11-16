@@ -22,6 +22,7 @@
 #ifndef NEWDEVICE_H
 #define NEWDEVICE_H
 
+#include "types.h"
 #include "uic_newdevice.h"
 
 class QString;
@@ -36,7 +37,8 @@ class NewDevice : public UI_NewDevice
 
   QString manufacturer() const { return m_manufacturerValue; }
   QString model() const { return m_modelValue; }
-  int address() const { return m_addressValue; }
+  t_channel address() const { return m_addressValue; }
+  t_channel universe() const { return m_universeValue; }
   QString name() const { return m_nameValue; }
 
  protected:
@@ -50,7 +52,8 @@ class NewDevice : public UI_NewDevice
   QString m_typeValue;
   QString m_manufacturerValue;
   QString m_modelValue;
-  int m_addressValue;
+  t_channel m_addressValue;
+  t_channel m_universeValue;
   bool m_selectionOK;
 
  private slots:

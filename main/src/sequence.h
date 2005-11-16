@@ -91,16 +91,16 @@ class Sequence : public Function
   Direction m_direction;
   Advanced m_advanced;
 
-  t_value* m_channelData;
+  t_buffer_data* m_channelData;
   SceneValue* m_runTimeValues;
   t_channel m_runTimeChannel;
   Direction m_runTimeDirection;
 
   t_bus_value m_holdTime;
   t_bus_value m_runTimeHold;
-  t_value* m_holdNoSetData;
-  
-  // Use only at run time to prevent allocating a local variable
+  t_buffer_data* m_holdNoSetData;
+
+  // Use ONLY at run time to prevent allocating a local variable
   t_channel m_address;
 };
 

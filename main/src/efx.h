@@ -611,7 +611,7 @@ class EFX : public Function
   /**
    * Channel data that is written to the event buffer
    */
-  t_value* m_channelData;
+  t_buffer_data* m_channelData;
 
   /**
    * Run-time device address. Don't use for anything else!

@@ -28,8 +28,6 @@
 #include "types.h"
 #include "function.h"
 
-const int KFrequency(64);
-
 class FunctionConsumer : public QThread
 {
  public:
@@ -68,7 +66,7 @@ class FunctionConsumer : public QThread
   t_bus_value m_timeCode;
   QMutex m_timeCodeMutex;
 
-  t_value* m_event;
+  t_buffer_data* m_event;
   Function* m_function;
   t_channel m_channel;
 };

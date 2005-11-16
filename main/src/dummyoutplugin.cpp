@@ -33,7 +33,7 @@ DummyOutPlugin::DummyOutPlugin(int id) : OutputPlugin(id)
   m_version = 0x00010000;
   m_name = QString("Dummy Output");
 
-  for (t_channel i = 0; i < 512; i++)
+  for (t_channel i = 0; i < KChannelMax; i++)
     {
       m_values[i] = 0;
     }

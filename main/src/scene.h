@@ -75,7 +75,7 @@ class Scene : public Function
   t_bus_value m_elapsedTime;
 
   RunTimeData* m_runTimeData;
-  t_value* m_channelData;
+  t_buffer_data* m_channelData;
 
   // This mutex is locked when the run time data is accessed
   QMutex m_dataMutex;

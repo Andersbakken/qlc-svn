@@ -27,34 +27,33 @@
 #include <string.h>
 
 /**
- * \brief Constructor
+ * @brief Constructor
  *
- * The buffer is a circular list that contains events,
- * which, contain value pairs representing a channel and its value:
+ * The buffer is a circular array of events that consist of
+ * t_buffer_data type values.
  *
- * <ev1 [ch1 val1] ... [chn valn]> ... <evn [ch1 val1] ... [chn valn]>
+ * Each value is an unsigned int, where bits 1-8 (byte) contain
+ * the DMX value and bits 9-24 (word) contain the channel (and universe).
  *
- * \param eventSize Tells the number of values per event
- * \param buffersize Tells the number of events i.e. buffer size.
- * \param byteSize Tells the size of individual values to store
+ * @param eventSize Tells the number of values per event
+ * @param buffersize Tells the max number of events i.e. buffer size.
  */
-
-// eventSize = number of values per event
-// bufferSize = maximum event count per buffer
 EventBuffer::EventBuffer(unsigned int eventSize,
-			 unsigned int bufferSize,
-			 unsigned int byteSize)
+			 unsigned int bufferSize)
   :
   m_ring       ( NULL ),
-  m_size       ( bufferSize * (eventSize * byteSize) ),
-  m_eventSize  ( eventSize * byteSize ),
-  m_byteSize   ( byteSize ),
+  m_size       ( bufferSize * eventSize ),
+  m_eventSize  ( eventSize ),
   m_filled     ( 0 ),
   m_in         ( 0 ),
   m_out        ( 0 )
 {
+  m_ring = new t_buffer_data[m_size];
 
-  m_ring = new t_value[m_size];
+  for (int i = 0; i < m_size; i++)
+    {
+      m_ring[i] = 0;
+    }
 
   pthread_mutex_init(&m_mutex, 0);
   pthread_cond_init(&m_nonEmpty, 0);
@@ -62,7 +61,7 @@ EventBuffer::EventBuffer(unsigned int eventSize,
 }
 
 /**
- * \brief Destructor
+ * @brief Destructor
  */
 EventBuffer::~EventBuffer()
 {
@@ -77,9 +76,9 @@ EventBuffer::~EventBuffer()
 /**
  * Put a new value to the front of the buffer if it is not full.
  *
- * \param ev Event to put into the buffer's tail
+ * @param ev Event to put into the buffer's tail
  */
-int EventBuffer::put(t_value* ev)
+int EventBuffer::put(t_buffer_data* ev)
 {
   pthread_mutex_lock(&m_mutex);
   if (m_filled == m_size)
@@ -88,7 +87,7 @@ int EventBuffer::put(t_value* ev)
     }
 
   assert(m_filled < m_size);
-  memcpy(m_ring + m_in, ev, m_eventSize);
+  memcpy(m_ring + m_in, ev, m_eventSize * sizeof(t_buffer_data));
   m_in = (m_in + m_eventSize) % m_size;
   m_filled += m_eventSize;
   pthread_cond_signal(&m_nonEmpty);
@@ -101,9 +100,9 @@ int EventBuffer::put(t_value* ev)
 /**
  * Get the next value from rear of list if it is not empty
  *
- * \param event The next event taken from the head of the list
+ * @param event The next event taken from the head of the list
  */
-int EventBuffer::get(t_value* event)
+int EventBuffer::get(t_buffer_data* event)
 {
   pthread_mutex_lock(&m_mutex);
   if (m_filled == 0)
@@ -113,7 +112,7 @@ int EventBuffer::get(t_value* event)
     }
 
   assert(m_filled > 0);
-  memcpy(event, m_ring + m_out, m_eventSize);
+  memcpy(event, m_ring + m_out, m_eventSize * sizeof(t_buffer_data));
   m_out = (m_out + m_eventSize) % m_size;
   m_filled -= m_eventSize;
   pthread_cond_signal(&m_nonFull);
