@@ -102,10 +102,26 @@ void NewDevice::slotTreeOpenCheckBoxClicked()
   if (m_treeOpenCheckBox->isChecked() == true)
     {
       _app->settings()->set(KEY_NEWDEVICE_TREE_OPEN, Settings::trueValue());
+
+      /* Open all folders */
+      QListViewItemIterator it(m_tree);
+      while (it.current())
+	{
+	  it.current()->setOpen(true);
+	  it++;
+	}
     }
   else
     {
       _app->settings()->set(KEY_NEWDEVICE_TREE_OPEN, Settings::falseValue());
+
+      /* Close all folders */
+      QListViewItemIterator it(m_tree);
+      while (it.current())
+	{
+	  it.current()->setOpen(false);
+	  it++;
+	}
     }
 }
 
