@@ -43,6 +43,11 @@ class VCDockSliderProperties : public UI_VCDockSliderProperties
 
  public slots:
   void slotBehaviourSelected(int);
+  void slotAllChannelsClicked();
+  void slotInvertChannelsClicked();
+  void slotClearChannelsClicked();
+  void slotDeviceChannelsClicked();
+  void slotRoleChannelsClicked();
 
   void slotOKClicked();
   void slotCancelClicked();

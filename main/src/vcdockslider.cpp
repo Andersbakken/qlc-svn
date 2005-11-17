@@ -106,6 +106,8 @@ void VCDockSlider::init()
   setCaption("No Name");
   setMode(Speed);
 
+  m_slider->setValue(0);
+	
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 

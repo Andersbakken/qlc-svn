@@ -21,6 +21,7 @@
 
 #include <qcombobox.h>
 #include <qbuttongroup.h>
+#include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlistview.h>
 #include <qspinbox.h>
@@ -38,9 +39,9 @@
 
 extern App* _app;
 
-const int KColumnDMXChannel     ( 0 );
-const int KColumnDevice         ( 1 );
-const int KColumnDeviceChannel  ( 2 );
+const int KColumnDevice         ( 0 );
+const int KColumnDeviceChannel  ( 1 );
+const int KColumnDMXChannel     ( 2 );
 
 VCDockSliderProperties::VCDockSliderProperties(VCDockSlider* parent,
 					       const char* name)
@@ -137,18 +138,19 @@ void VCDockSliderProperties::fillChannelList()
 
 	  for (ch = 0; ch < channels; ch++)
 	    {
-	      // DMX Channel
-	      s.sprintf("%.3d", d->address() + ch + 1);
-	      item = new QCheckListItem(m_channelList, s, 
-					QCheckListItem::CheckBox);
-	      
-	      // Device name
-	      item->setText(KColumnDevice, d->name());
-
-	      // Device channel
-	      s.sprintf("%.3d:" + 
-			d->deviceClass()->channels()->at(ch)->name(), ch + 1);
-	      item->setText(KColumnDeviceChannel, s);
+		// DMX Channel
+		// Device name
+		item = new QCheckListItem(m_channelList, d->name(), 
+		    QCheckListItem::CheckBox);
+		    
+		// Device channel
+		s.sprintf("%.3d:" + 
+		   d->deviceClass()->channels()->at(ch)->name(), ch + 1);
+		item->setText(KColumnDeviceChannel, s);
+		
+		// DMX & Universe Channel
+		s.sprintf("%d", d->universeAddress() + ch);
+		item->setText(KColumnDMXChannel, s);
 	    }
 	}
     }
@@ -160,9 +162,9 @@ void VCDockSliderProperties::fillChannelList()
   for (it = m_slider->channels()->begin();
        it != m_slider->channels()->end(); ++it)
     {
-      s.sprintf("%.3d", (*it) + 1);
+      s.sprintf("%d", (*it));
       item = static_cast<QCheckListItem*> (m_channelList
-					   ->findItem(s, KColumnDMXChannel));
+				   ->findItem(s, KColumnDMXChannel));
       if (item)
 	{
 	  item->setOn(true);
@@ -177,33 +179,147 @@ void VCDockSliderProperties::fillChannelList()
 void VCDockSliderProperties::slotBehaviourSelected(int id)
 {
   switch (id)
-    {
-    default:
-    case VCDockSlider::Speed:
-      m_busGroup->setEnabled(true);
-      m_channelGroup->setEnabled(false);
-      break;
+	{
+	default:
+	case VCDockSlider::Speed:
+		m_busGroup->setEnabled(true);
+		m_channelGroup->setEnabled(false);
+
+		m_allChannels->setEnabled(false);
+		m_invertChannels->setEnabled(false);
+		m_clearChannels->setEnabled(false);
+		m_deviceChannels->setEnabled(false);
+		m_roleChannels->setEnabled(false);
+
+		m_lowChannelValueSpin->setEnabled(false);
+		m_highChannelValueSpin->setEnabled(false);
+	break;
       
-    case VCDockSlider::Level:
-      m_busGroup->setEnabled(false);
-      m_channelGroup->setEnabled(true);
+	case VCDockSlider::Level:
+		m_busGroup->setEnabled(false);
+		m_channelGroup->setEnabled(true);
+    
+		m_allChannels->setEnabled(true);
+		m_invertChannels->setEnabled(true);
+		m_clearChannels->setEnabled(true);
+		m_deviceChannels->setEnabled(true);
+		m_roleChannels->setEnabled(true);
 
-      m_lowChannelValueSpin->setEnabled(true);
-      m_highChannelValueSpin->setEnabled(true);
-      break;
+		m_lowChannelValueSpin->setEnabled(true);
+		m_highChannelValueSpin->setEnabled(true);
+	break;
 
-    case VCDockSlider::Submaster:
-      m_busGroup->setEnabled(false);
-      m_channelGroup->setEnabled(true);
+	case VCDockSlider::Submaster:
+		m_busGroup->setEnabled(false);
+		m_channelGroup->setEnabled(true);
 
-      m_lowChannelValueSpin->setEnabled(false);
-      m_highChannelValueSpin->setEnabled(false);
-      break;
+		m_allChannels->setEnabled(true);
+		m_invertChannels->setEnabled(true);
+		m_clearChannels->setEnabled(true);
+		m_deviceChannels->setEnabled(true);
+		m_roleChannels->setEnabled(true);
+
+		m_lowChannelValueSpin->setEnabled(false);
+		m_highChannelValueSpin->setEnabled(false);
+	break;
     }
 
   m_mode = static_cast<VCDockSlider::Mode> (id);
 }
 
+/**
+ * Select all channels
+ */
+void VCDockSliderProperties::slotAllChannelsClicked()
+{
+	QListViewItemIterator it(m_channelList);
+	while (it.current())
+	{
+		static_cast<QCheckListItem*> (it.current())->setOn(true);
+		it++;
+	}
+}
+
+/**
+ * Invert selection
+ */
+void VCDockSliderProperties::slotInvertChannelsClicked()
+{
+	QListViewItemIterator it(m_channelList);
+	while (it.current())
+	{
+		static_cast<QCheckListItem*> (it.current())->setOn(
+		    !(static_cast<QCheckListItem*> (it.current())->isOn()));
+		it++;
+	}
+}
+
+/**
+ * Clear selection
+ */
+void VCDockSliderProperties::slotClearChannelsClicked()
+{
+	QListViewItemIterator it(m_channelList);
+	while (it.current())
+	{
+		static_cast<QCheckListItem*> (it.current())->setOn(false);
+		it++;
+	}
+}
+
+/**
+ * Select all channels from the selected device
+ */
+void VCDockSliderProperties::slotDeviceChannelsClicked()
+{
+	QCheckListItem* item;
+	QListViewItemIterator it(m_channelList->currentItem());
+	QString name;
+	
+	if (it.current())
+	{
+		name = it.current()->text(KColumnDevice);
+	}
+	
+	while (it.current() && it.current()->text(KColumnDevice) == name)
+	{
+		item = static_cast<QCheckListItem*> (it.current());
+		item->setOn(!item->isOn());
+		it++;
+	}
+}
+
+/**
+ * Select channels whose roles (names) match with the selected channel
+ */
+void VCDockSliderProperties::slotRoleChannelsClicked()
+{
+	QCheckListItem* item;
+	QListViewItemIterator it(m_channelList->currentItem());
+	QString role;
+	QString itrole;
+	
+	if (it.current())
+	{
+		role = it.current()->text(KColumnDeviceChannel);
+		role = role.right(role.length() - role.find(':', 0, FALSE) - 1);
+		qDebug(role);
+	}
+	
+	while (it.current())
+	{
+		item = static_cast<QCheckListItem*> (it.current());
+		itrole = item->text(KColumnDeviceChannel);
+		itrole = itrole.right(itrole.length() - itrole.find(':', 0, FALSE) - 1);
+		
+		if (itrole == role)
+		{
+			item->setOn(!item->isOn());
+		}
+		
+		it++;
+	}
+}
 
 //
 // Accept changes
@@ -290,7 +406,7 @@ void VCDockSliderProperties::extractChannels()
       item = static_cast<QCheckListItem*> (it.current());
       
       ch = static_cast<t_channel> 
-	(item->text(KColumnDMXChannel).toInt() - 1);
+	(item->text(KColumnDMXChannel).toInt());
       
       if (item->isOn() && 
 	  m_slider->channels()->find(ch) == m_slider->channels()->end())

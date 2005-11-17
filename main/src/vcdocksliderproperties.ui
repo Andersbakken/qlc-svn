@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>420</width>
-            <height>488</height>
+            <width>443</width>
+            <height>560</height>
         </rect>
     </property>
     <property name="caption">
@@ -24,10 +24,10 @@
                 <cstring>m_behaviourGroup</cstring>
             </property>
             <property name="frameShape">
-                <enum>NoFrame</enum>
+                <enum>Box</enum>
             </property>
             <property name="frameShadow">
-                <enum>Plain</enum>
+                <enum>Sunken</enum>
             </property>
             <property name="title">
                 <string></string>
@@ -238,134 +238,230 @@
                     <property name="title">
                         <string>...for Channels</string>
                     </property>
-                    <vbox>
+                    <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QListView">
-                            <column>
-                                <property name="text">
-                                    <string>DMX</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>true</bool>
-                                </property>
-                            </column>
-                            <column>
-                                <property name="text">
-                                    <string>Device</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>true</bool>
-                                </property>
-                            </column>
-                            <column>
-                                <property name="text">
-                                    <string>Channel</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>true</bool>
-                                </property>
-                            </column>
+                        <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>m_channelList</cstring>
+                                <cstring>layout7</cstring>
                             </property>
-                            <property name="resizeMode">
-                                <enum>AllColumns</enum>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>This slider affects these channels</string>
-                            </property>
+                            <vbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QListView">
+                                    <column>
+                                        <property name="text">
+                                            <string>Device</string>
+                                        </property>
+                                        <property name="clickable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="resizable">
+                                            <bool>true</bool>
+                                        </property>
+                                    </column>
+                                    <column>
+                                        <property name="text">
+                                            <string>Channel</string>
+                                        </property>
+                                        <property name="clickable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="resizable">
+                                            <bool>true</bool>
+                                        </property>
+                                    </column>
+                                    <property name="name">
+                                        <cstring>m_channelList</cstring>
+                                    </property>
+                                    <property name="resizeMode">
+                                        <enum>AllColumns</enum>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>This slider affects these channels</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout5</cstring>
+                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>textLabel1_2</cstring>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>70</width>
+                                                    <height>0</height>
+                                                </size>
+                                            </property>
+                                            <property name="text">
+                                                <string>Low Limit</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_lowChannelValueSpin</cstring>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>7</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>255</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Lowest value that this slider can set to the selected channel(s)</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>textLabel2_2</cstring>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>70</width>
+                                                    <height>0</height>
+                                                </size>
+                                            </property>
+                                            <property name="text">
+                                                <string>High Limit</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_highChannelValueSpin</cstring>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>7</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>255</number>
+                                            </property>
+                                            <property name="value">
+                                                <number>255</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Highest value this slider can set to the selected channel(s)</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
+                                </widget>
+                            </vbox>
                         </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
                                 <cstring>layout6</cstring>
                             </property>
-                            <hbox>
+                            <vbox>
                                 <property name="name">
                                     <cstring>unnamed</cstring>
                                 </property>
-                                <widget class="QLabel">
+                                <widget class="QPushButton">
                                     <property name="name">
-                                        <cstring>textLabel1_2</cstring>
+                                        <cstring>m_allChannels</cstring>
                                     </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>70</width>
-                                            <height>0</height>
-                                        </size>
+                                    <property name="enabled">
+                                        <bool>false</bool>
                                     </property>
                                     <property name="text">
-                                        <string>Low Limit</string>
-                                    </property>
-                                </widget>
-                                <widget class="QSpinBox">
-                                    <property name="name">
-                                        <cstring>m_lowChannelValueSpin</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>7</hsizetype>
-                                            <vsizetype>0</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="maxValue">
-                                        <number>255</number>
+                                        <string>All</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>Lowest value that this slider can set to the selected channel(s)</string>
+                                        <string>Select all channels</string>
                                     </property>
                                 </widget>
-                                <widget class="QLabel">
+                                <widget class="QPushButton">
                                     <property name="name">
-                                        <cstring>textLabel2_2</cstring>
+                                        <cstring>m_invertChannels</cstring>
                                     </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>70</width>
-                                            <height>0</height>
-                                        </size>
+                                    <property name="enabled">
+                                        <bool>false</bool>
                                     </property>
                                     <property name="text">
-                                        <string>High Limit</string>
-                                    </property>
-                                </widget>
-                                <widget class="QSpinBox">
-                                    <property name="name">
-                                        <cstring>m_highChannelValueSpin</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>7</hsizetype>
-                                            <vsizetype>0</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="maxValue">
-                                        <number>255</number>
-                                    </property>
-                                    <property name="value">
-                                        <number>255</number>
+                                        <string>Invert</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>Highest value this slider can set to the selected channel(s)</string>
+                                        <string>Invert selection</string>
                                     </property>
                                 </widget>
-                            </hbox>
+                                <widget class="QPushButton">
+                                    <property name="name">
+                                        <cstring>m_clearChannels</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Clear</string>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Clear channel selection</string>
+                                    </property>
+                                </widget>
+                                <widget class="QPushButton">
+                                    <property name="name">
+                                        <cstring>m_deviceChannels</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Device</string>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Toggle selection on all channels from the current device</string>
+                                    </property>
+                                </widget>
+                                <widget class="QPushButton">
+                                    <property name="name">
+                                        <cstring>m_roleChannels</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Role</string>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Toggle selection on such channels, whose roles (names) match the selected channel</string>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer5</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Vertical</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>20</width>
+                                            <height>51</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </vbox>
                         </widget>
-                    </vbox>
+                    </hbox>
                 </widget>
             </vbox>
         </widget>
@@ -425,23 +521,6 @@
                         <string>Discard changes and close</string>
                     </property>
                 </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer3</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Fixed</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>10</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
             </hbox>
         </widget>
     </vbox>
@@ -465,6 +544,36 @@
         <receiver>UI_VCDockSliderProperties</receiver>
         <slot>slotCancelClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_allChannels</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotAllChannelsClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_invertChannels</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotInvertChannelsClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_clearChannels</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotClearChannelsClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_deviceChannels</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotDeviceChannelsClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_roleChannels</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotRoleChannelsClicked()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_speedRadio</tabstop>
@@ -477,6 +586,11 @@
     <slot>slotOKClicked()</slot>
     <slot>slotCancelClicked()</slot>
     <slot>slotBehaviourSelected(int)</slot>
+    <slot>slotAllChannelsClicked()</slot>
+    <slot>slotClearChannelsClicked()</slot>
+    <slot>slotInvertChannelsClicked()</slot>
+    <slot>slotDeviceChannelsClicked()</slot>
+    <slot>slotRoleChannelsClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
