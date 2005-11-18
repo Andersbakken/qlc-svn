@@ -60,6 +60,13 @@ class VCFrame : public QFrame
   void setButtonBehaviour(ButtonBehaviour);
   ButtonBehaviour buttonBehaviour() { return m_buttonBehaviour; }
 
+ public slots:
+  void slotAddButton(QPoint p);
+  void slotAddSlider(QPoint p);
+  void slotAddFrame(QPoint p);
+  void slotAddXYPad(QPoint p);
+  void slotAddLabel(QPoint p);
+  
  private slots:
   void slotModeChanged();
 

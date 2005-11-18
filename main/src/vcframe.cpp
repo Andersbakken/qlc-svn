@@ -434,12 +434,127 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 
 void VCFrame::invokeMenu(QPoint point)
 {
-  QPopupMenu* menu = new QPopupMenu();
-  menu->insertItem("Edit", _app->virtualConsole()->editMenu());
-  menu->insertItem("Add", _app->virtualConsole()->addMenu());
-  menu->exec(point);
-  delete menu;
+	QString dir;
+	_app->settings()->get(KEY_SYSTEM_DIR, dir);
+	dir += QString("/") + PIXMAPPATH;
+	
+	//
+	// Add menu
+	//
+	QPopupMenu* addMenu = new QPopupMenu();
+	addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
+		"&Button", KVCMenuAddButton);
+	addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
+		"&Slider", KVCMenuAddSlider);
+	addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
+		"&Frame", KVCMenuAddFrame);
+	addMenu->insertItem(QPixmap(dir + "/frame.xpm"),
+		"&XY-Pad", KVCMenuAddXYPad);
+	addMenu->insertItem(QPixmap(dir + "/rename.xpm"),
+		"L&abel", KVCMenuAddLabel);
+	
+	QPopupMenu* menu = new QPopupMenu();
+	// Insert common stuff from virtual console (100% dirty hack)
+	menu->insertItem("Edit", _app->virtualConsole()->editMenu());
+	
+	// Insert the add menu
+	menu->insertItem("Add", addMenu);
+	
+	switch(menu->exec(point))
+	{
+		case KVCMenuAddButton:
+			slotAddButton(mapFromGlobal(point));
+		break;
+		
+		case KVCMenuAddSlider:
+			slotAddSlider(mapFromGlobal(point));
+		break;
+		
+		case KVCMenuAddFrame:
+			slotAddFrame(mapFromGlobal(point));
+		break;
+		
+		case KVCMenuAddXYPad:
+			slotAddXYPad(mapFromGlobal(point));
+		break;
+		
+		case KVCMenuAddLabel:
+			slotAddLabel(mapFromGlobal(point));
+		break;
+		
+		default:
+			break;
+	}
+	
+	delete addMenu;
+	delete menu;
 }
+
+void VCFrame::slotAddButton(QPoint p)
+{
+  VCButton* b = new VCButton(this);
+  assert(b);
+  b->init();
+  b->show();
+
+  b->move(p);
+    
+  _app->doc()->setModified(true);
+}
+
+void VCFrame::slotAddSlider(QPoint p)
+{
+  VCDockSlider* s = new VCDockSlider(this);
+  assert(s);
+  s->setBusID(KBusIDDefaultFade);
+  s->init();
+  s->resize(55, 200);
+  s->show();
+
+  s->move(p);
+    
+  _app->doc()->setModified(true);
+}
+
+void VCFrame::slotAddFrame(QPoint p)
+{
+  VCFrame* f = new VCFrame(this);
+  assert(f);
+  f->init();
+  f->show();
+
+  f->move(p);
+    
+  _app->doc()->setModified(true);
+}
+
+void VCFrame::slotAddXYPad(QPoint p)
+{
+  VCXYPad* x = new VCXYPad(this);
+  assert(x);
+  x->init();
+  x->show();
+
+  x->move(p);
+    
+  _app->doc()->setModified(true);
+}
+
+
+void VCFrame::slotAddLabel(QPoint p)
+{
+  VCLabel* l = new VCLabel(this);
+  assert(l);
+  l->init();
+  l->show();
+
+  l->move(p);
+    
+  _app->doc()->setModified(true);
+}
+
+
+
 
 void VCFrame::parseWidgetMenu(int item)
 {

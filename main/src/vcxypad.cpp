@@ -561,11 +561,7 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 
 void VCXYPad::invokeMenu(QPoint point)
 {
-  QPopupMenu* menu = new QPopupMenu();
-  menu->insertItem("Edit", _app->virtualConsole()->editMenu());
-  menu->insertItem("Add", _app->virtualConsole()->addMenu());
-  menu->exec(point);
-  delete menu;
+	_app->virtualConsole()->editMenu()->exec(point);
 }
 
 void VCXYPad::parseWidgetMenu(int item)

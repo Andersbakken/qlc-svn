@@ -327,119 +327,35 @@ void VirtualConsole::initMenuBar()
   m_menuBar->insertItem("&Edit", m_editMenu);
 }
 
-
 void VirtualConsole::slotAddButton()
 {
-  QWidget* parent = NULL;
-  
-  if (m_selectedWidget && 
-      QString(m_selectedWidget->className()) == QString("VCFrame"))
-    {
-      parent = m_selectedWidget;
-    }
-  else
-    {
-      parent = m_drawArea;
-    }
-
-  VCButton* b = new VCButton(parent);
-  assert(b);
-  b->init();
-  b->show();
-
-  _app->doc()->setModified(true);
+	m_drawArea->slotAddButton(QPoint(0, 0));
+	_app->doc()->setModified(true);
 }
 
 void VirtualConsole::slotAddSlider()
 {
-  QWidget* parent = NULL;
-
-  if (m_selectedWidget && 
-      QString(m_selectedWidget->className()) == QString("VCFrame"))
-    {
-      parent = m_selectedWidget;
-    }
-  else
-    {
-      parent = m_drawArea;
-    }
-
-  VCDockSlider* s = new VCDockSlider(parent);
-  assert(s);
-  s->setBusID(KBusIDDefaultFade);
-  s->init();
-  s->resize(55, 200);
-  s->show();
-
-  _app->doc()->setModified(true);
+	m_drawArea->slotAddSlider(QPoint(0, 0));
+	_app->doc()->setModified(true);
 }
 
 void VirtualConsole::slotAddFrame()
 {
-  QWidget* parent = NULL;
-
-  if (m_selectedWidget && 
-      QString(m_selectedWidget->className()) == QString("VCFrame"))
-    {
-      parent = m_selectedWidget;
-    }
-  else
-    {
-      parent = m_drawArea;
-    }
-
-  VCFrame* f = new VCFrame(parent);
-  assert(f);
-  f->init();
-  f->show();
-
-  _app->doc()->setModified(true);
+	m_drawArea->slotAddFrame(QPoint(0, 0));
+	_app->doc()->setModified(true);
 }
 
 void VirtualConsole::slotAddXYPad()
 {
-  QWidget* parent = NULL;
-
-  if (m_selectedWidget && 
-      QString(m_selectedWidget->className()) == QString("VCFrame"))
-    {
-      parent = m_selectedWidget;
-    }
-  else
-    {
-      parent = m_drawArea;
-    }
-assert(parent);
-  VCXYPad* f = new VCXYPad(parent);
-  assert(f);
-  f->init();
-  f->show();
-
-  _app->doc()->setModified(true);
+	m_drawArea->slotAddXYPad(QPoint(0, 0));
+	_app->doc()->setModified(true);
 }
 
 
 void VirtualConsole::slotAddLabel()
 {
-  QWidget* parent = NULL;
-
-  if (m_selectedWidget && 
-      (QString(m_selectedWidget->className()) == QString("VCFrame")
-      || QString(m_selectedWidget->className()) == QString("VCXYPad")))
-    {
-      parent = m_selectedWidget;
-    }
-  else
-    {
-      parent = m_drawArea;
-    }
-
-  VCLabel* l = new VCLabel(parent);
-  assert(l);
-  l->init();
-  l->show();
-
-  _app->doc()->setModified(true);
+	m_drawArea->slotAddLabel(QPoint(0, 0));
+	_app->doc()->setModified(true);
 }
 
 void VirtualConsole::slotToolsSettings()
