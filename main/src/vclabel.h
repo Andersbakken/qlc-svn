@@ -69,9 +69,7 @@ class VCLabel : public QLabel
   void customEvent(QCustomEvent*);
 
  private:
-  int m_origX;
-  int m_origY;
-
+  QPoint m_mousePressPoint;
   bool m_resizeMode;
 };
 

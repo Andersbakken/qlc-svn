@@ -47,7 +47,6 @@ extern App* _app;
 
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
-const int KMoveThreshold   (    5 ); // Pixels
 
 VCLabel::VCLabel(QWidget* parent) 
   : QLabel(parent, "VCLabel"),
@@ -284,8 +283,7 @@ void VCLabel::mousePressEvent(QMouseEvent* e)
 	    }
 	  else
 	    {
-	      m_origX = e->globalX();
-	      m_origY = e->globalY();
+	      m_mousePressPoint = QPoint(e->x(), e->y());
 	      setCursor(QCursor(SizeAllCursor));
 	    }
       	}
@@ -388,8 +386,11 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
-	  QPoint p(QCursor::pos());
-	  moveTo(parentWidget()->mapFromGlobal(p));
+	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+	  p.setX(p.x() - m_mousePressPoint.x());
+	  p.setY(p.y() - m_mousePressPoint.y());
+		
+	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
     }

@@ -51,12 +51,9 @@ t_vc_id VCFrame::s_nextVCID = KVCIDMin;
 
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff );
-const int KMoveThreshold   (    5 ); // Pixels
 
 VCFrame::VCFrame(QWidget* parent) 
   : QFrame(parent),
-    m_origX            ( 0 ),
-    m_origY            ( 0 ),
     m_xpos             ( 0 ),
     m_ypos             ( 0 ),
     m_id               ( s_nextVCID++ ),
@@ -420,8 +417,7 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 	    }
 	  else
 	    {
-	      m_origX = e->globalX();
-	      m_origY = e->globalY();
+	      m_mousePressPoint = QPoint(e->x(), e->y());
 	      setCursor(QCursor(SizeAllCursor));
 	    }
 	}
@@ -507,8 +503,11 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
-	  QPoint p(QCursor::pos());
-	  moveTo(parentWidget()->mapFromGlobal(p));
+	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+	  p.setX(p.x() - m_mousePressPoint.x());
+	  p.setY(p.y() - m_mousePressPoint.y());
+		
+	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
     }

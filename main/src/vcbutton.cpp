@@ -57,7 +57,6 @@ extern App* _app;
 
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
 const int KFlashReadyTime (  200 ); // 1 second
-const int KMoveThreshold  (    5 ); // Pixels
 
 VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
 {
@@ -396,8 +395,7 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 	    }
 	  else
 	    {
-	      m_origX = e->globalX();
-	      m_origY = e->globalY();
+	      m_mousePressPoint = QPoint(e->x(), e->y());
 	      setCursor(QCursor(SizeAllCursor));
 	    }
 	}
@@ -474,8 +472,11 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
-	  QPoint p(QCursor::pos());
-	  moveTo(parentWidget()->mapFromGlobal(p));
+	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+	  p.setX(p.x() - m_mousePressPoint.x());
+	  p.setY(p.y() - m_mousePressPoint.y());
+		
+	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
     }
@@ -533,7 +534,7 @@ void VCButton::moveTo(QPoint p)
       p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
       p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
     }
-  
+
   // Don't move beyond left or right
   if (p.x() < 0)
     {

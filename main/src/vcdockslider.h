@@ -118,12 +118,11 @@ class VCDockSlider : public UI_VCDockSlider
   bool m_static;
   bool m_updateOnly;
 
-  int m_origX;
-  int m_origY;
   int m_xpos;
   int m_ypos;
   bool m_resizeMode;
-
+  QPoint m_mousePressPoint;
+ 
   QTime m_time;
 
   QValueList<t_channel> m_channels;

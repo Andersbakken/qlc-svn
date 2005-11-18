@@ -87,8 +87,7 @@ class VCButton : public QPushButton
   t_function_id m_functionID;
   KeyBind* m_keyBind;
 
-  int m_origX;
-  int m_origY;
+  QPoint m_mousePressPoint;
   bool m_resizeMode;
 };
 

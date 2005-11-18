@@ -113,13 +113,12 @@ class VCXYPad : public QFrame
   void outputDMX(int x, int y);
 
  protected:
-  int m_origX;
-  int m_origY;
   int m_xpos;
   int m_ypos;
 
   t_vc_id m_id;
 
+  QPoint m_mousePressPoint;
   bool m_resizeMode;
   bool m_bottomFrame;
 
