@@ -92,12 +92,15 @@ VCXYPad::~VCXYPad()
 
 void VCXYPad::init()
 {
-  setMinimumSize(20, 20);
+	setMinimumSize(20, 20);
 
-  resize(120, 120);
-  setFrameStyle(QFrame::Panel | QFrame::Sunken);
-  setCursor(Qt::CrossCursor);
-  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	resize(120, 120);
+	setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	setCursor(Qt::CrossCursor);
+	
+	setBackgroundColor(white);
+	
+	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
 void VCXYPad::setBottomFrame(bool set) 
@@ -471,24 +474,38 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 
 void VCXYPad::paintEvent(QPaintEvent* e)
 {
-  QFrame::paintEvent(e);
-
-  QPainter p(this);
-
-  if (_app->mode() == App::Design && 
-      _app->virtualConsole()->selectedWidget() == this &&
-      m_bottomFrame == false)
-    {
-      // Draw a dotted line around the widget
-      QPen pen(DotLine);
-      pen.setWidth(2);
-      p.setPen(pen);
-      p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
-
-      // Draw a resize handle
-      QBrush b(SolidPattern);
-      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
-    }
+	QFrame::paintEvent(e);
+	QPainter p(this);
+	QPen pen;
+	
+	if (_app->mode() == App::Design && 
+		_app->virtualConsole()->selectedWidget() == this &&
+	m_bottomFrame == false)
+	{
+		// Draw a dotted line around the widget
+		pen.setStyle(DotLine);
+		pen.setWidth(2);
+		p.setPen(pen);
+		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+	
+		// Draw a resize handle
+		QBrush b(SolidPattern);
+		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+	}
+	
+	// Draw crosshairs
+	pen.setStyle(DotLine);
+	pen.setColor(paletteForegroundColor());
+	pen.setWidth(1);
+	p.setPen(pen);
+	p.drawLine(width() / 2, 0, width() / 2, height());
+	p.drawLine(0, height() / 2, width(), height() / 2);
+	
+	// Draw an ellipse to the last mouse press/move position
+	pen.setStyle(SolidLine);
+	p.setPen(pen);
+	p.drawEllipse(m_currentXYPosition.x() - 4,
+		      m_currentXYPosition.y() - 4, 8, 8);
 }
 
 void VCXYPad::slotModeChanged()
@@ -520,8 +537,9 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 	    }
 	  else
 	    {
-	      m_mousePressPoint = QPoint(e->x(), e->y());
-	      setCursor(QCursor(SizeAllCursor));
+		    m_mousePressPoint = QPoint(e->x(), e->y());
+
+		    setCursor(QCursor(SizeAllCursor));
 	    }
 	}
       else if (e->button() & RightButton)
@@ -531,10 +549,14 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
     }
   else
     {
-      setMouseTracking(true);
-      setCursor(Qt::CrossCursor);
-      outputDMX( e->x(), e->y());
-      //QFrame::mousePressEvent(e);
+	m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
+	m_currentXYPosition.setX(e->x());
+	m_currentXYPosition.setY(e->y());
+	repaint();
+
+	setMouseTracking(true);
+	setCursor(Qt::CrossCursor);
+	outputDMX( e->x(), e->y());
     }
 }
 
@@ -673,15 +695,21 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
   else
     { // the following is NOT done by hasMouse() because that fails if
       // there are child widgets   
-      if( e->x()>0 &&  e->y()>0  && e->x()<rect().width() && e->y()<rect().height()  )
+      if (e->x() > 0 &&  e->y() > 0 && 
+	  e->x() < rect().width() && 
+          e->y() < rect().height())
         {
-	   outputDMX( e->x(), e->y());
-	   setCursor(Qt::CrossCursor);
-	   
+		m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
+		m_currentXYPosition.setX(e->x());
+		m_currentXYPosition.setY(e->y());
+		repaint();
+		
+		outputDMX( e->x(), e->y());
+		setCursor(Qt::CrossCursor);
 	}
       else
         {
-	   unsetCursor();
+		unsetCursor();
 	}	
       QFrame::mouseMoveEvent(e);
     }

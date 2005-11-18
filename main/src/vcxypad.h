@@ -119,6 +119,7 @@ class VCXYPad : public QFrame
   t_vc_id m_id;
 
   QPoint m_mousePressPoint;
+  QPoint m_currentXYPosition;
   bool m_resizeMode;
   bool m_bottomFrame;
 
