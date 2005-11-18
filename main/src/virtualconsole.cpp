@@ -215,12 +215,10 @@ void VirtualConsole::initMenuBar()
   m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 			"&Frame", this, SLOT(slotAddFrame()),
 			0, KVCMenuAddFrame);
-  m_addMenu->insertItem(QPixmap(dir + "/frame.xpm"),
+  m_addMenu->insertItem(QPixmap(dir + "/xypad.xpm"),
                         "&XY-Pad", this, SLOT(slotAddXYPad()),
                         0, KVCMenuAddXYPad);
-
-  m_addMenu->setItemEnabled(KVCMenuAddXYPad, true);
-  m_addMenu->insertItem(QPixmap(dir + "/rename.xpm"),
+  m_addMenu->insertItem(QPixmap(dir + "/label.xpm"),
 			"L&abel", this, SLOT(slotAddLabel()),
 			0, KVCMenuAddLabel);
 
@@ -277,10 +275,10 @@ void VirtualConsole::initMenuBar()
   //
   QPopupMenu* stackMenu = new QPopupMenu();
   stackMenu->insertItem(QPixmap(dir + QString("/up.xpm")),
-			"&Raise", this, SLOT(slotStackingRaise()),
+			"Bring to &Front", this, SLOT(slotStackingRaise()),
 			0, KVCMenuStackingRaise);
   stackMenu->insertItem(QPixmap(dir + QString("/down.xpm")),
-			"&Lower", this, SLOT(slotStackingLower()),
+			"Send to &Back", this, SLOT(slotStackingLower()),
 			0, KVCMenuStackingLower);
   
   //

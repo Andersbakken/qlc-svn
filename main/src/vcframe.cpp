@@ -448,9 +448,9 @@ void VCFrame::invokeMenu(QPoint point)
 		"&Slider", KVCMenuAddSlider);
 	addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
 		"&Frame", KVCMenuAddFrame);
-	addMenu->insertItem(QPixmap(dir + "/frame.xpm"),
+	addMenu->insertItem(QPixmap(dir + "/xypad.xpm"),
 		"&XY-Pad", KVCMenuAddXYPad);
-	addMenu->insertItem(QPixmap(dir + "/rename.xpm"),
+	addMenu->insertItem(QPixmap(dir + "/label.xpm"),
 		"L&abel", KVCMenuAddLabel);
 	
 	QPopupMenu* menu = new QPopupMenu();
