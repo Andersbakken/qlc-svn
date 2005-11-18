@@ -866,7 +866,7 @@ void VCDockSlider::mouseReleaseEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design && m_static == false)
     {
-      setCursor(QCursor(ArrowCursor));
+      unsetCursor();
       m_resizeMode = false;
       setMouseTracking(false);
     }

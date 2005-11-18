@@ -481,7 +481,7 @@ void VCFrame::mouseReleaseEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      setCursor(QCursor(ArrowCursor));
+      unsetCursor();
       m_resizeMode = false;
       setMouseTracking(false);
     }

@@ -96,7 +96,6 @@ void VCXYPad::init()
 
 	resize(120, 120);
 	setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	setCursor(Qt::CrossCursor);
 	
 	setBackgroundColor(white);
 	
@@ -659,15 +658,14 @@ void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 {
   if (_app->mode() == App::Design)
     {
-      //this->setCursor(QCursor(ArrowCursor));
-      setCursor(Qt::CrossCursor);
+      unsetCursor();
       m_resizeMode = false;
       setMouseTracking(false);
     }
   else
     {
-     setMouseTracking(false);
-     //unsetCursor();
+      setMouseTracking(false);
+      unsetCursor();
       QFrame::mouseReleaseEvent(e);
     }
 }
