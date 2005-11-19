@@ -24,6 +24,7 @@
 
 #include <qframe.h>
 #include <qptrlist.h>
+#include <qpixmap.h>
 
 #include "types.h"
 #include "device.h"
@@ -32,8 +33,7 @@ class QFile;
 class QString;
 class QPaintEvent;
 class QMouseEvent;
-
-
+	
 class XYChannelUnit
 {
 public:
@@ -119,12 +119,14 @@ class VCXYPad : public QFrame
   t_vc_id m_id;
 
   QPoint m_mousePressPoint;
-  QPoint m_currentXYPosition;
   bool m_resizeMode;
   bool m_bottomFrame;
 
   ButtonBehaviour m_buttonBehaviour;
-
+ 
+  QPoint m_currentXYPosition;
+  QPixmap m_pixmap;
+ 
  private:
   static t_vc_id s_nextVCID;
 

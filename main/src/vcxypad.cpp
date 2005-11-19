@@ -92,12 +92,21 @@ VCXYPad::~VCXYPad()
 
 void VCXYPad::init()
 {
+	QString dir;
+	_app->settings()->get(KEY_SYSTEM_DIR, dir);
+	dir += QString("/") + PIXMAPPATH;
+	
 	setMinimumSize(20, 20);
 
 	resize(120, 120);
 	setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	
 	setBackgroundColor(white);
+	
+	m_pixmap = QPixmap(dir + "/xypad-point.xpm");
+	
+	m_currentXYPosition.setX(width() / 2);
+	m_currentXYPosition.setY(height() / 2);
 	
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
@@ -499,12 +508,19 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 	p.setPen(pen);
 	p.drawLine(width() / 2, 0, width() / 2, height());
 	p.drawLine(0, height() / 2, width(), height() / 2);
+
+	p.drawPixmap(m_currentXYPosition.x() - (m_pixmap.width() / 2), 
+		     m_currentXYPosition.y() - (m_pixmap.height() / 2),
+		     m_pixmap);
 	
 	// Draw an ellipse to the last mouse press/move position
+/*
 	pen.setStyle(SolidLine);
+	pen.setColor(lightGray);
 	p.setPen(pen);
-	p.drawEllipse(m_currentXYPosition.x() - 4,
-		      m_currentXYPosition.y() - 4, 8, 8);
+	p.drawEllipse(m_currentXYPosition.x() - 7,
+		      m_currentXYPosition.y() - 3, 10, 10);
+*/
 }
 
 void VCXYPad::slotModeChanged()
