@@ -53,9 +53,9 @@
 extern App* _app;
 
 // List view column numbers
-const int KColumnAddress ( 0 );
-const int KColumnName    ( 1 );
-const int KColumnID      ( 2 );
+const int KColumnUniverse ( 0 );
+const int KColumnName     ( 1 );
+const int KColumnID       ( 2 );
 
 // List view item menu callback id's
 const int KMenuItemAdd        ( 0 );
@@ -71,6 +71,7 @@ const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
 const QString KEY_DEVICE_MANAGER_Y     ( "DeviceManagerRectY" );
 const QString KEY_DEVICE_MANAGER_W     ( "DeviceManagerRectW" );
 const QString KEY_DEVICE_MANAGER_H     ( "DeviceManagerRectH" );
+const QString KEY_DEVICE_MANAGER_SPLITTER ( "DeviceManagerSplitter" );
 
 //
 // Constructor
@@ -92,26 +93,32 @@ DeviceManagerView::DeviceManagerView(QWidget* parent, const char* name)
 //
 DeviceManagerView::~DeviceManagerView()
 {
-  QString config;
+	QString config;
 
-  if (isShown())
-    {
-      config = Settings::trueValue();
-    }
-  else
-    {
-      config = Settings::falseValue();
-    }
+	if (isShown())
+	{
+		config = Settings::trueValue();
+	}
+	else
+	{
+		config = Settings::falseValue();
+	}
+	
+	_app->settings()->set(KEY_DEVICE_MANAGER_OPEN, config);
 
-  _app->settings()->set(KEY_DEVICE_MANAGER_OPEN, config);
-
-  //
-  // Save rect
-  //
-  _app->settings()->set(KEY_DEVICE_MANAGER_X, rect().x());
-  _app->settings()->set(KEY_DEVICE_MANAGER_Y, rect().y());
-  _app->settings()->set(KEY_DEVICE_MANAGER_W, rect().width());
-  _app->settings()->set(KEY_DEVICE_MANAGER_H, rect().height());
+	//
+	// Save rect
+	//
+	_app->settings()->set(KEY_DEVICE_MANAGER_X, rect().x());
+	_app->settings()->set(KEY_DEVICE_MANAGER_Y, rect().y());
+	_app->settings()->set(KEY_DEVICE_MANAGER_W, rect().width());
+	_app->settings()->set(KEY_DEVICE_MANAGER_H, rect().height());
+  
+	// Save the splitter position
+	config.truncate(0);
+	QValueList<int> list = m_splitter->sizes();
+	QValueList<int>::Iterator it = list.begin();
+	_app->settings()->set(KEY_DEVICE_MANAGER_SPLITTER, *it);
 }
 
 
@@ -130,53 +137,69 @@ void DeviceManagerView::closeEvent(QCloseEvent* e)
 //
 void DeviceManagerView::initView()
 {
-  // Create a vertical layout to this widget
-  m_layout = new QVBoxLayout(this);
+	// Create a vertical layout to this widget
+	m_layout = new QVBoxLayout(this);
 
-  // Init the title and icon
-  initTitle();
+	// Init the title and icon
+	initTitle();
 
-  // Set up toolbar
-  initToolBar();
+	// Set up toolbar
+	initToolBar();
 
-  // Init the device view and text view
-  initDataView();
+	// Init the device view and text view
+	initDataView();
 
-  // Connect to know when to enable/disable buttons
-  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	// Connect to know when to enable/disable buttons
+	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
-  // Update view
-  update();
+	// Update view
+	update();
 
-  //
-  // Set widget proportions
-  //
-  QString x, y, w, h;
-  _app->settings()->get(KEY_DEVICE_MANAGER_X, x);
-  _app->settings()->get(KEY_DEVICE_MANAGER_Y, y);
-  _app->settings()->get(KEY_DEVICE_MANAGER_W, w);
-  _app->settings()->get(KEY_DEVICE_MANAGER_H, h);
-  if (w == 0 || h == 0)
-    {
-      setGeometry(0, 0, 350, 200);
-    }
-  else
-    {
-      setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
-    }
+	//
+	// Set widget proportions
+	//
+	QString x, y, w, h;
+	_app->settings()->get(KEY_DEVICE_MANAGER_X, x);
+	_app->settings()->get(KEY_DEVICE_MANAGER_Y, y);
+	_app->settings()->get(KEY_DEVICE_MANAGER_W, w);
+	_app->settings()->get(KEY_DEVICE_MANAGER_H, h);
 
-  // Check if DM should be open
-  QString config;
-  _app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
-  if (config == Settings::trueValue())
-    {
-      _app->slotViewDeviceManager();
-    }
-  else
-    {
-      hide();
-      _app->slotDeviceManagerViewClosed();
-    }
+	if (w.toInt() <= 0 || h.toInt() <= 0)
+	{
+		setGeometry(0, 0, 350, 200);
+	}
+	else
+	{
+		setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+	}
+	
+	// Set the splitter position
+	QValueList<int> list;
+	_app->settings()->get(KEY_DEVICE_MANAGER_SPLITTER, w);
+	if (w.toInt() <= 0)
+	{
+		list.append(width() / 2);
+	}
+	else
+	{
+		list.append(w.toInt());
+		list.append(width() - w.toInt());
+	}
+	
+	m_splitter->setSizes(list);
+	
+	// Check if DM should be open
+	QString config;
+	_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
+	if (config == Settings::trueValue())
+	{
+		_app->slotViewDeviceManager();
+	}
+	else
+	{	
+		hide();
+		_app->slotDeviceManagerViewClosed();
+	}
 }
 
 
@@ -285,14 +308,14 @@ void DeviceManagerView::initDataView()
 
   m_listView->setMultiSelection(false);
   m_listView->setAllColumnsShowFocus(true);
-  m_listView->setSorting(KColumnAddress, true);
+  m_listView->setSorting(KColumnUniverse, true);
   m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
   
   m_listView->header()->setClickEnabled(true);
   m_listView->header()->setResizeEnabled(true);
   m_listView->header()->setMovingEnabled(false);
 
-  m_listView->addColumn("Address");
+  m_listView->addColumn("Universe");
   m_listView->addColumn("Device Name");
   m_listView->setResizeMode(QListView::LastColumn);
 
@@ -342,10 +365,10 @@ void DeviceManagerView::slotUpdate()
 	}
       else
 	{
-	  QString address;
-	  address.sprintf("%.3d", dev->address() + 1);
+	  QString universe;
+	  universe.sprintf("%d", dev->universe() + 1);
 	  newItem = new QListViewItem(m_listView);
-          newItem->setText(KColumnAddress, address);
+          newItem->setText(KColumnUniverse, universe);
           newItem->setText(KColumnName, dev->name());
 
 	  // ID column
@@ -499,9 +522,9 @@ void DeviceManagerView::slotProperties()
 
   device->viewProperties();
 
-  QString address;
-  address.sprintf("%.3d", device->address() + 1);
-  item->setText(KColumnAddress, address);
+  QString universe;
+  universe.sprintf("%d", device->universe() + 1);
+  item->setText(KColumnUniverse, universe);
   item->setText(KColumnName, device->name());
   slotSelectionChanged(item);
 }
