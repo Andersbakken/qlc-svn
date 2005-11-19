@@ -49,7 +49,7 @@ const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
 
 VCLabel::VCLabel(QWidget* parent) 
-  : QLabel(parent, "VCLabel"),
+  : QLabel(parent, "Label"),
     m_resizeMode ( false )
 {
 }

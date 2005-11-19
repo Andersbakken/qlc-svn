@@ -151,6 +151,7 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
 						m_modelValue);
       assert(dc);
       m_addressSpin->setRange(1, 513 - dc->channels()->count());
+      m_channelsSpin->setValue(dc->channels()->count());
       m_ok->setEnabled(true);
     }
   else
@@ -160,6 +161,7 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
       m_manufacturerValue = QString("");
       m_modelValue = QString("");
       m_nameEdit->setText(QString(""));
+      m_channelsSpin->setValue(0);
     }
 }
 

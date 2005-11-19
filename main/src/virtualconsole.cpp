@@ -410,27 +410,35 @@ void VirtualConsole::slotEditPaste()
 
 void VirtualConsole::slotEditDelete()
 {
-  if (m_selectedWidget)
-    {
-      if (m_selectedWidget->className() == QString("VCFrame") &&
-	  ((VCFrame*) m_selectedWidget)->isBottomFrame() == true)
+	if (m_selectedWidget)
 	{
-	  //
-	  // Bottom frame should not be deleted!
-	  //
-	  // Maybe the menu item should be removed, too, but it's
-	  // a bit complicated. Darn shared-menu-system-I-had-to-do-one-day
-	  //
+		if (m_selectedWidget->className() == QString("VCFrame") &&
+		    ((VCFrame*) m_selectedWidget)->isBottomFrame() == true)
+		{
+			//
+			// Bottom frame should not be deleted!
+			//
+			// Maybe the menu item should be removed, 
+			// too, but it's a bit complicated. Darn
+			// shared-menu-system-I-had-to-do-one-day
+			//
+		}
+		else 
+		{
+			int result = QMessageBox::warning(this, 
+					QString(m_selectedWidget->name()),
+					QString("Remove selected widget?"),
+					QMessageBox::Yes,
+					QMessageBox::No);
+			
+			if (result == QMessageBox::Yes)
+			{
+				_app->doc()->setModified(true);
+				delete m_selectedWidget;
+				m_selectedWidget = NULL;
+			}
+		}
 	}
-      else if (QMessageBox::warning(this, "Remove Selected Widget",
-				    "Are you sure?", QMessageBox::Yes,
-				    QMessageBox::No) == QMessageBox::Yes)
-	{
-	  _app->doc()->setModified(true);
-	  delete m_selectedWidget;
-	  m_selectedWidget = NULL;
-	}
-    }
 }
 
 void VirtualConsole::slotEditProperties()
@@ -941,7 +949,8 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
 	      list.prev();
 	      createWidget(list);
 	    }
-	  else if (*s == QString("VCXYPad"))
+	  else if (*s == QString("VCXYPad") ||
+		   *s == QString("XYPad")) // Let's keep things consistent
 	    {
 	      list.prev();
 	      createWidget(list);

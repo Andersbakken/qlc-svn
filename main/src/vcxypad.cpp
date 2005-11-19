@@ -75,7 +75,7 @@ XYChannelUnit::~XYChannelUnit()
 
 
 VCXYPad::VCXYPad(QWidget* parent) 
-  : QFrame(parent),
+  : QFrame(parent, "XYPad"),
     m_xpos             ( 0 ),
     m_ypos             ( 0 ),
     m_id               ( s_nextVCID++ ),
@@ -149,7 +149,7 @@ void VCXYPad::saveFramesToFile(QFile& file, t_vc_id parentID)
   file.writeBlock((const char*) s, s.length());
 
   // Entry type
-  s = QString("Entry = VCXYPad") + QString("\n");
+  s = QString("Entry = XYPad") + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
   // Name

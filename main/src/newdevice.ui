@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>490</width>
+            <width>482</width>
             <height>515</height>
         </rect>
     </property>
@@ -21,7 +21,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout8</cstring>
+                <cstring>layout11</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -68,7 +68,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout7</cstring>
+                        <cstring>layout10</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -79,7 +79,7 @@
                                 <cstring>groupBox1</cstring>
                             </property>
                             <property name="title">
-                                <string>New Device Properties</string>
+                                <string>Device Properties</string>
                             </property>
                             <vbox>
                                 <property name="name">
@@ -104,6 +104,20 @@
                                         <widget class="QLineEdit">
                                             <property name="name">
                                                 <cstring>m_nameEdit</cstring>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>4</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>150</width>
+                                                    <height>0</height>
+                                                </size>
                                             </property>
                                             <property name="toolTip" stdset="0">
                                                 <string>Give the device a descriptive name</string>
@@ -130,6 +144,14 @@
                                         <widget class="QSpinBox">
                                             <property name="name">
                                                 <cstring>m_addressSpin</cstring>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>4</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
                                             </property>
                                             <property name="wrapping">
                                                 <bool>true</bool>
@@ -166,6 +188,14 @@
                                             <property name="name">
                                                 <cstring>m_universeSpin</cstring>
                                             </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>4</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
                                             <property name="wrapping">
                                                 <bool>true</bool>
                                             </property>
@@ -181,17 +211,85 @@
                                         </widget>
                                     </hbox>
                                 </widget>
+                                <widget class="Line">
+                                    <property name="name">
+                                        <cstring>line2</cstring>
+                                    </property>
+                                    <property name="frameShape">
+                                        <enum>HLine</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                        <enum>Sunken</enum>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout10_2</cstring>
+                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>m_channelsLabel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Channels</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_channelsSpin</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>4</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
+                                            <property name="wrapping">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>128</number>
+                                            </property>
+                                            <property name="minValue">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Number of channels taken by the device</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
+                                </widget>
                             </vbox>
                         </widget>
                         <widget class="QCheckBox">
                             <property name="name">
                                 <cstring>m_treeOpenCheckBox</cstring>
                             </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>4</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
                             <property name="text">
                                 <string>Keep folders open</string>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>If checked, all manufacturer folders are always open</string>
+                                <string>Keep all devices visible by opening all folders</string>
                             </property>
                         </widget>
                         <spacer>
@@ -207,7 +305,7 @@
                             <property name="sizeHint">
                                 <size>
                                     <width>20</width>
-                                    <height>290</height>
+                                    <height>214</height>
                                 </size>
                             </property>
                         </spacer>

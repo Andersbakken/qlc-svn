@@ -53,7 +53,7 @@ const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff );
 
 VCFrame::VCFrame(QWidget* parent) 
-  : QFrame(parent),
+  : QFrame(parent, "Frame"),
     m_xpos             ( 0 ),
     m_ypos             ( 0 ),
     m_id               ( s_nextVCID++ ),

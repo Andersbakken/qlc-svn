@@ -58,7 +58,7 @@ extern App* _app;
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
 const int KFlashReadyTime (  200 ); // 1 second
 
-VCButton::VCButton(QWidget* parent) : QPushButton(parent, "VCButton")
+VCButton::VCButton(QWidget* parent) : QPushButton(parent, "Button")
 {
   m_functionID = KNoID;
   m_resizeMode = false;

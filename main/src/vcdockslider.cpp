@@ -62,7 +62,7 @@ const int KColorMask          ( 0xff ); // Produces opposite colors with XOR
 // Constructor
 //
 VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
-  : UI_VCDockSlider(parent, name),
+  : UI_VCDockSlider(parent, "Slider"),
     m_mode           (             Speed ),
     m_busID          ( KBusIDDefaultFade ),
     m_busLowLimit    (                 0 ),
