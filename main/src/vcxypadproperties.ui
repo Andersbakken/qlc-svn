@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>636</width>
-            <height>446</height>
+            <width>607</width>
+            <height>453</height>
         </rect>
     </property>
     <property name="caption">
@@ -30,71 +30,136 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QListView">
-                    <column>
-                        <property name="text">
-                            <string>Device</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Channel</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Min</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Max</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Reverse</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>m_listX</cstring>
+                        <cstring>layout5</cstring>
                     </property>
-                    <property name="allColumnsShowFocus">
-                        <bool>true</bool>
-                    </property>
-                    <property name="resizeMode">
-                        <enum>AllColumns</enum>
-                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QListView">
+                            <column>
+                                <property name="text">
+                                    <string>Device</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Channel</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Min</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Max</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Reverse</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <property name="name">
+                                <cstring>m_listX</cstring>
+                            </property>
+                            <property name="allColumnsShowFocus">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizeMode">
+                                <enum>AllColumns</enum>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout4</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_minXLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Minimum Value</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_minXSpin</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>255</number>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_maxXLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Maximum Value</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_maxXSpin</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>255</number>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_reverseXLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Reverse</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_reverseXCombo</cstring>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
@@ -158,71 +223,136 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QListView">
-                    <column>
-                        <property name="text">
-                            <string>Device</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Channel</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Min</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Max</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Reverse</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>m_listY</cstring>
+                        <cstring>layout7</cstring>
                     </property>
-                    <property name="allColumnsShowFocus">
-                        <bool>true</bool>
-                    </property>
-                    <property name="resizeMode">
-                        <enum>AllColumns</enum>
-                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QListView">
+                            <column>
+                                <property name="text">
+                                    <string>Device</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Channel</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Min</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Max</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Reverse</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <property name="name">
+                                <cstring>m_listY</cstring>
+                            </property>
+                            <property name="allColumnsShowFocus">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizeMode">
+                                <enum>AllColumns</enum>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout6</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_minYLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Minimum Value</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_minYSpin</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>255</number>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_maxYLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Maximum Value</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>m_maxYSpin</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>255</number>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>m_reverseYLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Reverse</string>
+                                    </property>
+                                </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>m_reverseYCombo</cstring>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
@@ -324,6 +454,9 @@
                     <property name="text">
                         <string>&amp;Cancel</string>
                     </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
                     <property name="toolTip" stdset="0">
                         <string>Reject changes and close</string>
                     </property>
@@ -358,12 +491,6 @@
         <slot>slotRemoveY()</slot>
     </connection>
     <connection>
-        <sender>m_ok</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_VCXYPadProperties</receiver>
-        <slot>accept()</slot>
-    </connection>
-    <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
         <receiver>UI_VCXYPadProperties</receiver>
@@ -387,6 +514,54 @@
         <receiver>UI_VCXYPadProperties</receiver>
         <slot>slotOKClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_minXSpin</sender>
+        <signal>valueChanged(const QString&amp;)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotMinXChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_maxXSpin</sender>
+        <signal>valueChanged(const QString&amp;)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotMaxXChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_minYSpin</sender>
+        <signal>valueChanged(const QString&amp;)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotMinYChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_maxYSpin</sender>
+        <signal>valueChanged(const QString&amp;)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotMaxYChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_reverseXCombo</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotReverseXActivated(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_reverseYCombo</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotReverseYActivated(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_listX</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotSelectionXChanged(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>m_listY</sender>
+        <signal>currentChanged(QListViewItem*)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotSelectionYChanged(QListViewItem*)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotAddX()</slot>
@@ -395,6 +570,14 @@
     <slot>slotRemoveY()</slot>
     <slot>slotContextMenuRequested(QListViewItem*, const QPoint&amp;, int)</slot>
     <slot>slotOKClicked()</slot>
+    <slot>slotMinXChanged(const QString&amp;)</slot>
+    <slot>slotMinYChanged(const QString&amp;)</slot>
+    <slot>slotMaxXChanged(const QString&amp;)</slot>
+    <slot>slotMaxYChanged(const QString &amp;)</slot>
+    <slot>slotReverseXActivated(const QString&amp;)</slot>
+    <slot>slotReverseYActivated(const QString&amp;)</slot>
+    <slot>slotSelectionXChanged(QListViewItem*)</slot>
+    <slot>slotSelectionYChanged(QListViewItem*)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

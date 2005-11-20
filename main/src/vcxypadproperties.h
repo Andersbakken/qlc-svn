@@ -37,22 +37,14 @@ public:
 	~VCXYPadProperties();
 
 	void init();
+    
+protected:
+	/**
+	* Fill a channel list with XYChannelUnit objects
+	*/
 	void fillChannelList(QListView *list, 
 			     QPtrList<XYChannelUnit>* channels);
-    
-public slots:
-	void slotAddX();
-	void slotRemoveX();
-	void slotAddY();
-	void slotRemoveY();
-	void slotAdd(QListView *list);
 
-	void slotContextMenuRequested(QListViewItem* item,
-				      const QPoint &point, int column);
-
-	void slotOKClicked();
-
-protected:
 	/**
 	* Create a channel entry to the given parent listview
 	*/
@@ -68,9 +60,32 @@ protected:
 	XYChannelUnit* createChannelUnit(QListViewItem* item);
 
 	/**
-	* Get a DMX value using a menu
+	* Display a DMX value menu, divided into submenus of 16 values
 	*/
 	int invokeDMXValueMenu(const QPoint &point);
+
+protected slots:
+	void slotAddX();
+	void slotRemoveX();
+	void slotAddY();
+	void slotRemoveY();
+	void slotAdd(QListView *list);
+
+	void slotMaxXChanged(const QString& text);
+	void slotMinXChanged(const QString& text);
+	void slotMaxYChanged(const QString& text);
+	void slotMinYChanged(const QString& text);
+
+	void slotReverseXActivated(const QString& text);
+	void slotReverseYActivated(const QString& text);
+
+	void slotSelectionXChanged(QListViewItem* item);
+	void slotSelectionYChanged(QListViewItem* item);
+
+	void slotContextMenuRequested(QListViewItem* item,
+				      const QPoint &point, int column);
+
+	void slotOKClicked();
 
 protected:
 	VCXYPad* m_parent;
