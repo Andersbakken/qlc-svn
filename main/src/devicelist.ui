@@ -53,52 +53,14 @@
                             <bool>true</bool>
                         </property>
                     </column>
-                    <column>
-                        <property name="text">
-                            <string>Capability</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>DMX</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Universe</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>ID</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
                     <property name="name">
                         <cstring>m_listView</cstring>
+                    </property>
+                    <property name="allColumnsShowFocus">
+                        <bool>true</bool>
+                    </property>
+                    <property name="resizeMode">
+                        <enum>AllColumns</enum>
                     </property>
                 </widget>
             </grid>
@@ -178,10 +140,20 @@
     </connection>
     <connection>
         <sender>m_listView</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_DeviceList</receiver>
+        <slot>slotSelectionChanged(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>m_listView</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
         <receiver>UI_DeviceList</receiver>
-        <slot>accept()</slot>
+        <slot>slotItemDoubleClicked(QListViewItem*)</slot>
     </connection>
 </connections>
+<slots>
+    <slot>slotSelectionChanged(QListViewItem*)</slot>
+    <slot>slotItemDoubleClicked(QListViewItem*)</slot>
+</slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

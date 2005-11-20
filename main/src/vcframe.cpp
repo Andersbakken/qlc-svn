@@ -243,13 +243,13 @@ void VCFrame::saveChildrenToFile(QFile& file)
 	    {
 	      ((VCDockSlider*) it.current())->saveToFile(file, id());
 	    }
+	  else if (QString(it.current()->className()) == QString("VCXYPad"))
+	    {
+	      ((VCXYPad*) it.current())->saveToFile(file, id());
+	    }
 	  else if (QString(it.current()->className()) == QString("VCFrame"))
 	    {
 	      ((VCFrame*) it.current())->saveChildrenToFile(file);
-	    }
-	  else if (QString(it.current()->className()) == QString("VCXYPad"))
-	    {
-	      ((VCXYPad*) it.current())->saveFramesToFile(file);
 	    }
 	  ++it;
 	}

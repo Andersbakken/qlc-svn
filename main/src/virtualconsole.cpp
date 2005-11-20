@@ -841,7 +841,8 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	  s->init();
 	  s->createContents(list);
 	}
-      else if (*s == QString("VCXYPad"))
+      else if (*s == QString("VCXYPad") ||
+	       *s == QString("XYPad")) // Consistency...
 	{
 	  VCXYPad* w = new VCXYPad(m_drawArea);
 	  w->init();

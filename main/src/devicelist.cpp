@@ -20,25 +20,27 @@
 */
 
 #include <qlistview.h>
+#include <qpushbutton.h>
 
-#include "vcxypadproperties.h"
 #include "devicelist.h"
 #include "app.h"
 #include "device.h"
 #include "doc.h"
 #include "consolechannel.h"
 #include "logicalchannel.h"
+
 extern App* _app;
 
-const int KColumnDevice     ( 0 );
-const int KColumnChannel    ( 1 );
-const int KColumnCapability ( 2 );
-const int KColumnDMX        ( 3 );
-const int KColumnUniverse   ( 4 );
-const int KColumnID         ( 5 );
+const int KColumnDevice      ( 0 );
+const int KColumnChannelName ( 1 );
+
+const int KColumnDeviceID    ( 2 );
+const int KColumnChannelNum  ( 3 );
 
 DeviceList::DeviceList(QWidget* parent, const char* name)
-                  : UI_DeviceList(parent, name, true)
+	: UI_DeviceList(parent, name, true),
+	m_deviceID ( KNoID ),
+	m_channel  ( KChannelInvalid)
 {
 }
 
@@ -49,49 +51,85 @@ DeviceList::~DeviceList()
 
 void DeviceList::init()
 {
-   m_listView->clear();
-   for (t_device_id i = 0; i < KDeviceArraySize; i++)
-    {
-      Device* dev = _app->doc()->device(i);
-      if (!dev)
+	unsigned int n;
+	QString did;
+	QString s;
+	QListViewItem* item;
+	LogicalChannel* channel;
+	
+	m_listView->clear();
+	
+	for (t_device_id i = 0; i < KDeviceArraySize; i++)
 	{
-	  continue;
+		Device* dev = _app->doc()->device(i);
+		if (!dev)
+		{
+			continue;
+		}
+		else
+		{
+			did.setNum(dev->id());
+			
+			for (n = 0;
+			     n < dev->deviceClass()->channels()->count();
+			     n++)
+			{
+				// Device name
+				item = new QListViewItem(m_listView);
+				item->setText(KColumnDevice, dev->name());
+
+				// Channel name
+				channel = 
+					dev->deviceClass()->channels()->at(n);
+				
+				if (channel)
+				{
+					s.sprintf("%.3d: ", n + 1);
+					s += channel->name();
+					item->setText(KColumnChannelName, s);
+				}
+				else
+				{
+					delete item;
+					continue;
+				}
+				
+				// Relative channel number (not shown)
+				s.sprintf("%.3d", n);
+				item->setText(KColumnChannelNum, s);
+
+				// Device ID (not shown)
+				item->setText(KColumnDeviceID, did);
+			}   
+		}
 	}
-      else
-	{
-	  QString address;
-	  address.sprintf("%.3d", dev->address() + 1);
-	  
-	  m_listView->setAllColumnsShowFocus(true);
-	  m_listView->setColumnWidthMode(4,QListView::Manual);
-	  m_listView->setColumnWidth(4,0);
-	  
-	  unsigned int n = 0;
-	  while(n < dev->deviceClass()->channels()->count())
-	    {
-	       QListViewItem *newSubItem =  new QListViewItem(m_listView);
-	       newSubItem->setText(KColumnDevice, " " + dev->name() + " ");
-
-	       newSubItem->setText(KColumnCapability,
-		        dev->deviceClass()->channels()->at(n)->name() + " ");
-
-	       QString s;
-	       s.sprintf("%.3d", dev->address() + n + 1);
-	       newSubItem->setText(KColumnDMX, address);
-
-	       s.sprintf("%.3d", dev->universe() + 1);
-	       newSubItem->setText(KColumnUniverse, s);
-
-	       s.sprintf("%.3d", n + 1);
-	       newSubItem->setText(KColumnChannel, s);
-
-	       s.sprintf("%d", dev->id());
-	       newSubItem->setText(KColumnID, s);
-
-	       n++;
-	    }   
-	}
-     }	
-     m_listView->setCurrentItem(m_listView->firstChild());
+	
+	m_listView->setSelected(m_listView->firstChild(), true);
 }
 
+void DeviceList::slotSelectionChanged(QListViewItem* item)
+{
+	if (item)
+	{
+		m_deviceID = 
+		static_cast<t_device_id> (item->text(KColumnDeviceID).toInt());
+		
+		m_channel =
+		static_cast<t_channel> (item->text(KColumnChannelNum).toInt());
+		
+		m_ok->setEnabled(true);
+	}
+	else
+	{
+		m_deviceID = KNoID;
+		m_channel = KChannelInvalid;
+		
+		m_ok->setEnabled(false);
+	}
+}
+
+void DeviceList::slotItemDoubleClicked(QListViewItem* item)
+{
+	slotSelectionChanged(item);
+	accept();
+}

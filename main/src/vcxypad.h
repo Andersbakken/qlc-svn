@@ -33,29 +33,7 @@ class QFile;
 class QString;
 class QPaintEvent;
 class QMouseEvent;
-	
-class XYChannelUnit
-{
-public:
-        XYChannelUnit();
-	XYChannelUnit( Device* device, const t_channel channel,
-	             const t_value lo,const t_value hi,const bool reverse);
-	~XYChannelUnit();
-
-	t_value m_lo;
-	t_value m_hi;
-	Device* m_device;
-	t_channel m_channel;
-	bool m_reverse;
-
-	t_value lo() {return m_lo;}
-	t_value hi() {return m_hi;}
-	Device* device() {return m_device;}
-	t_channel channel(){return m_channel;}
-	bool reverse()  {return m_reverse;}
-
-};
-
+class XYChannelUnit;
 
 class VCXYPad : public QFrame
 {
@@ -65,32 +43,14 @@ class VCXYPad : public QFrame
   VCXYPad(QWidget* parent);
   virtual ~VCXYPad();
 
-  QPtrList<XYChannelUnit> m_channelsX;
-  QPtrList<XYChannelUnit> m_channelsY;
-  
-  enum ButtonBehaviour
-    {
-      Normal = 0,
-      Exclusive = 1
-    };
-  
   void init();
 
-  t_vc_id id() const { return m_id; }
-
-  void saveFramesToFile(QFile& file, t_vc_id parentID = 0);
-  void saveChildrenToFile(QFile& file);
+  void saveToFile(QFile& file, t_vc_id parentID = 0);
   virtual void createContents(QPtrList <QString> &list);
 
-  void setBottomFrame(bool set = true);
-  bool isBottomFrame() { return m_bottomFrame; }
-
-  void setButtonBehaviour(ButtonBehaviour);
-  ButtonBehaviour buttonBehaviour() { return m_buttonBehaviour; }
-
-  QPtrList<XYChannelUnit>* channelsX(){return &m_channelsX;}
-  QPtrList<XYChannelUnit>* channelsY(){return &m_channelsY;}
-
+  QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
+  QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }
+  
  private slots:
   void slotModeChanged();
 
@@ -98,7 +58,6 @@ class VCXYPad : public QFrame
   void backgroundChanged();
 
  protected:
-  void setID(t_vc_id id);
   void invokeMenu(QPoint point);
   void parseWidgetMenu(int item);
 
@@ -112,27 +71,20 @@ class VCXYPad : public QFrame
   void moveTo(QPoint p);
   void outputDMX(int x, int y);
 
+  void createChannelUnitFromString(QString string, bool isX);
+ 
  protected:
   int m_xpos;
   int m_ypos;
 
-  t_vc_id m_id;
-
   QPoint m_mousePressPoint;
   bool m_resizeMode;
-  bool m_bottomFrame;
-
-  ButtonBehaviour m_buttonBehaviour;
  
   QPoint m_currentXYPosition;
   QPixmap m_pixmap;
- 
- private:
-  static t_vc_id s_nextVCID;
 
- public:
-  static void ResetID() { s_nextVCID = KVCIDMin; }
-
+  QPtrList<XYChannelUnit> m_channelsX;
+  QPtrList<XYChannelUnit> m_channelsY;
 };
 
 #endif

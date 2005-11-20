@@ -27,15 +27,31 @@
 
 class DeviceList : public UI_DeviceList
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  DeviceList(QWidget* parent = 0, const char* name = 0);
-  ~DeviceList();
-  
-  QListView* listView(){ return m_listView;}
-  void init();
+public:
+	DeviceList(QWidget* parent = 0, const char* name = 0);
+	~DeviceList();
 
+	void init();
+	
+	/**
+	* Return the ID of the selected channel's device
+	*/
+	t_device_id selectedDeviceID() const { return m_deviceID; }
+
+	/**
+	* Return the selected channel
+	*/
+	t_channel selectedChannel() const { return m_channel; }
+
+public slots:
+	void slotSelectionChanged(QListViewItem* item);
+	void slotItemDoubleClicked(QListViewItem* item);
+
+protected:
+	t_device_id m_deviceID;
+	t_channel m_channel;
 };
 
 #endif

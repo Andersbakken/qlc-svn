@@ -23,48 +23,57 @@
 #define VCXYPADROPERTIES_H
 
 #include "types.h"
-#include "vcxypad.h"
 #include "uic_vcxypadproperties.h"
 
-
-const int Kdmx        (7);
-const int Kdevice     (0);
-const int Kchannel    (1);
-const int Kcapability (2);
-const int Kmin        (3);
-const int Kmax        (4);
-const int Kreverse    (5);
-const int Kid         (6);
-
+class VCXYPad;
+class XYChannelUnit;
 
 class VCXYPadProperties : public UI_VCXYPadProperties
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  VCXYPadProperties(QWidget* parent = 0, const char* name = 0);
-  ~VCXYPadProperties();
+public:
+	VCXYPadProperties(QWidget* parent, const char* name = 0);
+	~VCXYPadProperties();
 
-  void init();
-  void fillIt(QListView *list, QPtrList<XYChannelUnit> channels);
-  
-  //QPtrList<XYChannelUnit>* channelsX(){return m_channelsX;}
- // void setPointerListX(QPtrList<XYChannelUnit> xl)
- //                             { m_channelsX = xl;}
-  //QPtrList<XYChannelUnit>* m_channelsX;
-  
- public slots:
-    virtual void slotAddX();
-    virtual void slotEditX();
-    virtual void slotRemoveX();
-    virtual void slotAddY();
-    virtual void slotRemoveY();
-    virtual void slotEditY();
-    virtual void slotEdit(QListView *list);
-    virtual void slotAdd(QListView *list);
- protected:
-  VCXYPad* m_parent;
+	void init();
+	void fillChannelList(QListView *list, 
+			     QPtrList<XYChannelUnit>* channels);
+    
+public slots:
+	void slotAddX();
+	void slotRemoveX();
+	void slotAddY();
+	void slotRemoveY();
+	void slotAdd(QListView *list);
 
+	void slotContextMenuRequested(QListViewItem* item,
+				      const QPoint &point, int column);
+
+	void slotOKClicked();
+
+protected:
+	/**
+	* Create a channel entry to the given parent listview
+	*/
+	QListViewItem* createChannelEntry(QListView* parent,
+					t_device_id deviceID,
+					t_channel channel,
+					t_value lo,
+					t_value hi,
+					bool reverse);
+	/**
+	* Create an XY channel unit from the given list item
+	*/
+	XYChannelUnit* createChannelUnit(QListViewItem* item);
+
+	/**
+	* Get a DMX value using a menu
+	*/
+	int invokeDMXValueMenu(const QPoint &point);
+
+protected:
+	VCXYPad* m_parent;
 };
 
 #endif

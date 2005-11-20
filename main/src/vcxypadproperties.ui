@@ -55,17 +55,6 @@
                     </column>
                     <column>
                         <property name="text">
-                            <string>Capability</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
                             <string>Min</string>
                         </property>
                         <property name="clickable">
@@ -97,33 +86,14 @@
                             <bool>true</bool>
                         </property>
                     </column>
-                    <column>
-                        <property name="text">
-                            <string>ID</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>false</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>DMX #</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
                     <property name="name">
                         <cstring>m_listX</cstring>
                     </property>
+                    <property name="allColumnsShowFocus">
+                        <bool>true</bool>
+                    </property>
                     <property name="resizeMode">
-                        <enum>LastColumn</enum>
+                        <enum>AllColumns</enum>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">
@@ -154,17 +124,6 @@
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Remove selected channel from X axis control</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_editX</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Edit</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Edit selected X axis control channel</string>
                             </property>
                         </widget>
                         <spacer>
@@ -224,17 +183,6 @@
                     </column>
                     <column>
                         <property name="text">
-                            <string>Capability</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
                             <string>Min</string>
                         </property>
                         <property name="clickable">
@@ -266,33 +214,14 @@
                             <bool>true</bool>
                         </property>
                     </column>
-                    <column>
-                        <property name="text">
-                            <string>ID</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>DMX #</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
                     <property name="name">
                         <cstring>m_listY</cstring>
                     </property>
+                    <property name="allColumnsShowFocus">
+                        <bool>true</bool>
+                    </property>
                     <property name="resizeMode">
-                        <enum>LastColumn</enum>
+                        <enum>AllColumns</enum>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">
@@ -323,17 +252,6 @@
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Remove selected channel from Y-axis control</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_editY</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Edit</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Edit selected Y-axis control channel</string>
                             </property>
                         </widget>
                         <spacer>
@@ -428,12 +346,6 @@
         <slot>slotRemoveX()</slot>
     </connection>
     <connection>
-        <sender>m_editX</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_VCXYPadProperties</receiver>
-        <slot>slotEditX()</slot>
-    </connection>
-    <connection>
         <sender>m_addY</sender>
         <signal>clicked()</signal>
         <receiver>UI_VCXYPadProperties</receiver>
@@ -444,12 +356,6 @@
         <signal>clicked()</signal>
         <receiver>UI_VCXYPadProperties</receiver>
         <slot>slotRemoveY()</slot>
-    </connection>
-    <connection>
-        <sender>m_editY</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_VCXYPadProperties</receiver>
-        <slot>slotEditY()</slot>
     </connection>
     <connection>
         <sender>m_ok</sender>
@@ -463,14 +369,32 @@
         <receiver>UI_VCXYPadProperties</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>m_listX</sender>
+        <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
+    <connection>
+        <sender>m_listY</sender>
+        <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCXYPadProperties</receiver>
+        <slot>slotOKClicked()</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotAddX()</slot>
     <slot>slotAddY()</slot>
     <slot>slotRemoveX()</slot>
     <slot>slotRemoveY()</slot>
-    <slot>slotEditX()</slot>
-    <slot>slotEditY()</slot>
+    <slot>slotContextMenuRequested(QListViewItem*, const QPoint&amp;, int)</slot>
+    <slot>slotOKClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
