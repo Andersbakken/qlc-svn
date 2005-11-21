@@ -79,6 +79,9 @@ void VCXYPadProperties::init()
 		
 	fillChannelList(m_listX, m_parent->channelsX());
 	fillChannelList(m_listY, m_parent->channelsY());
+
+	m_maxYSpin->setValue(255);
+	m_maxXSpin->setValue(255);
 	
 	m_reverseXCombo->insertItem(Settings::trueValue(), KComboItemReverse);
 	m_reverseXCombo->insertItem(Settings::falseValue(), KComboItemNormal);
@@ -463,7 +466,7 @@ void VCXYPadProperties::slotOKClicked()
 		list->append(createChannelUnit(*yit));
 		++yit;
 	}
- close();
+       accept();
 }
 
 /**
