@@ -704,6 +704,7 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemRemove, false);
       menu->setItemEnabled(KMenuItemProperties, false);
       menu->setItemEnabled(KMenuItemClone, false);
+      menu->setItemEnabled(KMenuItemAutoFunction, false);
     }
   
   // No item selected, unable to do other things either
@@ -714,6 +715,7 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemMonitor, false);
       menu->setItemEnabled(KMenuItemProperties, false);
       menu->setItemEnabled(KMenuItemClone, false);
+      menu->setItemEnabled(KMenuItemAutoFunction, false);
     }
 
   connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuCallBack(int)));
