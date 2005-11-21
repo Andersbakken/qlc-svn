@@ -463,6 +463,7 @@ void VCXYPadProperties::slotOKClicked()
 		list->append(createChannelUnit(*yit));
 		++yit;
 	}
+ close();
 }
 
 /**
