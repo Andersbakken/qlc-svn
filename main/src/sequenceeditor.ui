@@ -413,9 +413,6 @@
                             <property name="text">
                                 <string>Set to zero</string>
                             </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Set the touched channels to zero, if sequence is stopped</string>
-                            </property>
                         </widget>
                     </widget>
                     <spacer>

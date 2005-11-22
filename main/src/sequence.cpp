@@ -56,7 +56,7 @@ Sequence::Sequence() :
   m_holdTime      (     255 ),
   m_runTimeHold   (     255 ),
   m_holdNoSetData (    NULL ),
-
+  
   m_address       ( KChannelInvalid )
 {
   setBus(KBusIDDefaultHold);
@@ -436,7 +436,7 @@ void Sequence::arm()
   // Fetch the device adress for run time access.
   // It cannot change when functions have been armed for running
   m_address = _app->doc()->device(m_deviceID)->universeAddress();
-
+  
   if (m_channelData == NULL)
     m_channelData = new t_buffer_data[m_channels];
 
@@ -516,20 +516,20 @@ void Sequence::run()
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
-		      // Set the absolute address
+		      // Set the absolut adress
 		      m_channelData[m_runTimeChannel] = KChannelInvalid << 8;
 		      m_channelData[m_runTimeChannel] |= 0;
 		    }
 		  else
 		    {
-		      // Set the absolute channel
-		      m_channelData[m_runTimeChannel] = 
+		      // Set the absolut adress
+		      m_channelData[m_runTimeChannel] =
 			(m_address + m_runTimeChannel) << 8;
-
+			
 		      // Set a normal value
-		      m_channelData[m_runTimeChannel] |= 
-			static_cast<t_buffer_data> 
-			(m_runTimeValues[m_runTimeChannel].value);
+		      m_channelData[m_runTimeChannel] |=
+		        static_cast<t_buffer_data>
+		        (m_runTimeValues[m_runTimeChannel].value);
 		    }
 		}
 
@@ -549,23 +549,23 @@ void Sequence::run()
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
-		      // Set the absolute address
+		      // Set the absolut adress
 		      m_channelData[m_runTimeChannel] = KChannelInvalid << 8;
 		      
-		      // Set invalid value for such channels that don't
+		      // Set invalid value fur such channels that don't
 		      // have a valid value
 		      m_channelData[m_runTimeChannel] |= 0;
 		    }
 		  else
 		    {
-		      // Set the absolute channel
-		      m_channelData[m_runTimeChannel] = 
+		      // Set the absolut adress
+		      m_channelData[m_runTimeChannel] =
 			(m_address + m_runTimeChannel) << 8;
-
+			
 		      // Set a normal value
-		      m_channelData[m_runTimeChannel] |= 
-			static_cast<t_buffer_data> 
-			(m_runTimeValues[m_runTimeChannel].value);
+		      m_channelData[m_runTimeChannel] |=
+		        static_cast<t_buffer_data>
+		        (m_runTimeValues[m_runTimeChannel].value);
 		    }
 		}
 	      
@@ -580,7 +580,7 @@ void Sequence::run()
       if (m_runOrder == SingleShot)
 	{
 	  // That's it
-	  // m_stopped = true;
+//	  m_stopped = true;
 	  break;
 	}
       else if (m_runOrder == Loop)
@@ -616,16 +616,16 @@ void Sequence::run()
 	  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 	    {
 	      // Set absolut adress
-	      m_channelData[(m_runTimeChannel << 1)] = KChannelInvalid;
+	      m_channelData[m_runTimeChannel] = KChannelInvalid << 8;
 	      //
-	      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
+	      m_channelData[m_runTimeChannel] |= 0;
 	    }
 	  else
 	    {
-	      m_channelData[(m_runTimeChannel << 1)] =
-			m_address + m_runTimeChannel;
+	      m_channelData[m_runTimeChannel] =
+			(m_address + m_runTimeChannel) << 8;
 	      // Set a Zero value on touched channels
-	      m_channelData[(m_runTimeChannel << 1) + 1] = 0;
+	      m_channelData[m_runTimeChannel] |= 0;
 	    }
 	}
       // Stops immediately the running sequence
