@@ -58,6 +58,9 @@ class VCButton : public QPushButton
   void attachFunction(t_function_id id);
   t_function_id functionID() const { return m_functionID; }
 
+  void setExclusive(bool exclusive = true);
+  bool isExclusive() { return m_isExclusive; }
+
  private:
   void invokeMenu(QPoint);
   void parseWidgetMenu(int);
@@ -82,6 +85,7 @@ class VCButton : public QPushButton
   void mouseDoubleClickEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
   void customEvent(QCustomEvent* e);
+  bool m_isExclusive;
 
  private:
   t_function_id m_functionID;

@@ -44,6 +44,10 @@
 #include <qobjcoll.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
+#include <qbuttongroup.h>
+#include <qobjectlist.h>
+
+#include <assert.h>
 
 extern App* _app;
 
@@ -103,6 +107,49 @@ void VCFrame::setID(t_vc_id newid)
 void VCFrame::setButtonBehaviour(ButtonBehaviour b)
 {
   m_buttonBehaviour = b;
+
+  if (buttonBehaviour() == VCFrame::Exclusive)
+    {
+      if (_app->virtualConsole()->selectedWidget())
+        {
+	  QObjectList* l = _app->virtualConsole()->selectedWidget()->queryList("VCButton");
+          QObjectListIt it(*l);
+          QObject *obj;
+          while ((obj = it.current()) != 0) {
+    	    ++it;
+	    ((VCButton*)obj)->setExclusive(true);
+          }
+          delete l;
+          setFrameStyle(QFrame::GroupBoxPanel | QFrame::Sunken);
+          setLineWidth(2);
+	}
+      else
+        {
+	  setFrameStyle(QFrame::GroupBoxPanel | QFrame::Sunken);
+          setLineWidth(2);
+	}
+    }
+  else
+    {
+      if (_app->virtualConsole()->selectedWidget())
+        {
+	  QObjectList* l = _app->virtualConsole()->selectedWidget()->queryList("VCButton");
+          QObjectListIt it(*l);
+          QObject *obj;
+          while ((obj = it.current()) != 0) {
+    	    ++it;
+	    ((VCButton*)obj)->setExclusive(false);
+          }
+          delete l;
+      setFrameStyle(KFrameStyle);
+      setLineWidth(1);
+        }
+      else
+        {
+	  setFrameStyle(KFrameStyle);
+	  setLineWidth(1);
+	}
+    }
 }
 
 void VCFrame::saveFramesToFile(QFile& file, t_vc_id parentID)
@@ -496,7 +543,16 @@ void VCFrame::slotAddButton(QPoint p)
   assert(b);
   b->init();
   b->show();
-
+  
+  if (buttonBehaviour() == VCFrame::Exclusive)
+    {
+      b->setExclusive(true);
+    }
+  else
+    {
+      b->setExclusive(false);
+    }
+  
   b->move(p);
     
   _app->doc()->setModified(true);
@@ -539,7 +595,6 @@ void VCFrame::slotAddXYPad(QPoint p)
     
   _app->doc()->setModified(true);
 }
-
 
 void VCFrame::slotAddLabel(QPoint p)
 {
@@ -712,4 +767,16 @@ void VCFrame::moveTo(QPoint p)
 
   // Do the move
   move(p);
+}
+
+void VCFrame::mouseDoubleClickEvent(QMouseEvent* e)
+{
+  if (_app->mode() == App::Design)
+    {
+      invokeMenu(mapToGlobal(e->pos()));
+    }
+  else
+    {
+      mousePressEvent(e);
+    }
 }

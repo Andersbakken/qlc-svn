@@ -36,9 +36,9 @@ class KeyBind : public QObject
   KeyBind(const KeyBind* kb);
   ~KeyBind();
 
-  enum PressAction { PressStart = 0, PressToggle = 1, PressStepForward = 2,
+  enum PressAction { PressStart = 0, PressToggle = 1, PressStepForward = 6,
 		     PressStepBackward = 3, PressStop = 4, PressNothing = 5,
-		     PressFlash = 6 };
+		     PressFlash = 2 };
   
   enum ReleaseAction { ReleaseStop = 0, ReleaseNothing = 1 };
 

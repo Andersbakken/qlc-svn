@@ -82,6 +82,7 @@ class VCFrame : public QFrame
   void mouseReleaseEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
   void paintEvent(QPaintEvent* e);
+  void mouseDoubleClickEvent(QMouseEvent* e);
   void customEvent(QCustomEvent* e);
 
   void resizeTo(QPoint p);

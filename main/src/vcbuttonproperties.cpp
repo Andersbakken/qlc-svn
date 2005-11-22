@@ -127,7 +127,7 @@ void VCButtonProperties::slotPressGroupClicked(int id)
 
     case 2:
       m_keyBind->setPressAction(KeyBind::PressFlash);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+      m_keyBind->setReleaseAction(KeyBind::ReleaseStop);
       break;
 
     case 3:
