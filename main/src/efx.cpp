@@ -77,8 +77,8 @@ EFX::EFX() :
 
   m_modulationBus     ( KBusIDDefaultHold ),
   
-  m_startSceneID      ( KFunctionArraySize ),
-  m_stopSceneID       ( KFunctionArraySize ),
+  m_startSceneID      ( KNoID ),
+  m_stopSceneID       ( KNoID ),
 
   m_previewPointArray ( NULL ),
 
@@ -668,7 +668,7 @@ t_bus_id EFX::modulationBus()
 
 void EFX::setStartScene(t_function_id scene)
 {
-  if (scene >= 0 && scene <= KFunctionArraySize)
+  if (scene > KNoID && scene <= KFunctionArraySize)
     {
       m_startSceneID = scene;
     }
@@ -685,7 +685,7 @@ t_function_id EFX::startScene()
 
 void EFX::setStopScene(t_function_id scene)
 {
-  if (scene >= 0 && scene <= KFunctionArraySize)
+  if (scene > KNoID && scene <= KFunctionArraySize)
     {
       m_stopSceneID = scene;
     }
@@ -1112,7 +1112,7 @@ void EFX::run()
   
   if (!m_stopped)
     {
-      if (startScene() != KFunctionArraySize)
+      if (startScene() > KNoID)
         {
 	  Function*f = _app->doc()->function(startScene());
 	  if (!f)
@@ -1144,7 +1144,7 @@ void EFX::run()
 
   if (m_stopped)
     {
-      if (stopScene() != KFunctionArraySize)
+      if (stopScene() > KNoID)
         {
 	  Function*f = _app->doc()->function(stopScene());
 	  if (!f)

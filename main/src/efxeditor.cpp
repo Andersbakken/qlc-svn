@@ -35,7 +35,6 @@
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qlabel.h>
-#include <qlistbox.h>
 #include <assert.h>
 
 extern App* _app;
@@ -204,8 +203,8 @@ void EFXEditor::fillSceneCombos()
 {
   assert(m_efx);
   
-  Device* device = _app->doc()->device(m_efx->device());
-  assert(device);
+//  Device* device = _app->doc()->device(m_efx->device());
+//  assert(device);
   
   QString s;
   for (t_function_id id = 0; id < KFunctionArraySize; id++)
@@ -224,7 +223,7 @@ void EFXEditor::fillSceneCombos()
         }
     }
     
-  if (m_efx->startScene() < KFunctionArraySize)
+  if (m_efx->startScene() > KNoID)
     {
       m_startSceneCheckbox->setChecked(true);
       /* If the EFX already has a valid start function, select it instead */
@@ -244,7 +243,7 @@ void EFXEditor::fillSceneCombos()
       m_startSceneCombo->setEnabled(false);
     }
 
-  if (m_efx->stopScene() < KFunctionArraySize)
+  if (m_efx->stopScene() > KNoID)
     {
       m_stopSceneCheckbox->setChecked(true);
       /* If the EFX already has a valid stop function, select it instead */
@@ -441,7 +440,7 @@ void EFXEditor::slotStartSceneCheckboxToggled(bool state)
   else
     {
       m_startSceneCombo->setEnabled(false);
-      t_function_id scene = KFunctionArraySize;
+      t_function_id scene = KNoID;
       m_efx->setStartScene(static_cast<t_function_id> (scene));
     }
 }
@@ -458,7 +457,7 @@ void EFXEditor::slotStopSceneCheckboxToggled(bool state)
   else
     {
       m_stopSceneCombo->setEnabled(false);
-      t_function_id scene = KFunctionArraySize;
+      t_function_id scene = KNoID;
       m_efx->setStopScene(static_cast<t_function_id> (scene));
     }
 }
