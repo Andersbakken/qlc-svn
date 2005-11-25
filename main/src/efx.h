@@ -220,27 +220,6 @@ class EFX : public Function
   bool isPhaseEnabled();
 
   /**
-   * An array of integers to set as custom pattern parameters
-   * (i.e. such parameters that are not common to all algorithms)
-   *
-   * @note This is not used right now
-   *
-   * @param params Array of integer values
-   * @param len Array length
-   */
-  void setCustomParameters(int* params, int len);
-
-  /**
-   * Get the array of custom parameters
-   *
-   * @note This is not used right now
-   *
-   * @param len The length of the array.
-   * @return The internal parameter array. Do not modify.
-   */
-  const int* customParameters(int* len);
-
-  /**
    * Set a channel from a device to be used as the X axis.
    *
    * @param channel Relative number of the channel used as the X axis

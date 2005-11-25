@@ -66,9 +66,6 @@ EFX::EFX() :
   m_xPhase            ( 1.5707963267 ),
   m_yPhase            ( 0 ),
 
-  m_customParameters     ( NULL ),
-  m_customParameterCount ( 0 ),
-
   m_xChannel          ( KChannelInvalid ),
   m_yChannel          ( KChannelInvalid ),
 
@@ -497,54 +494,6 @@ bool EFX::isPhaseEnabled()
 }
 
 /**
- * A list of integers to set as custom pattern
- * parameters (i.e. such parameters that are not
- * common to all patterns)
- *
- * @param params Array of integer values
- * @param len Array length
- */
-void EFX::setCustomParameters(int* params, int len)
-{
-  /* Delete existing parameter array */
-  if (m_customParameters)
-    {
-      delete [] m_customParameters;
-      m_customParameters = NULL;
-      m_customParameterCount = 0;
-    }
-
-  /* Create new array if necessary */
-  if (len > 0)
-    {
-      m_customParameters = new int[len];
-      memcpy(m_customParameters, params, len);
-      m_customParameterCount = len;
-    }
-
-  updatePreview();
-}
-
-/**
- * Get the array of custom parameters
- *
- * @param len The length of the array.
- * @return The internal parameter array. Do not modify.
- */
-const int* EFX::customParameters(int* len)
-{
-  if (len)
-    {
-      *len = m_customParameterCount;
-      return static_cast <const int*> (m_customParameters);
-    }
-  else
-    {
-      assert(false);
-    }
-}
-
-/**
  * Set a channel from a device to be used as the X axis.
  *
  * @param channel Relative number of the channel used as the X axis
@@ -708,20 +657,46 @@ t_function_id EFX::stopScene()
  */
 bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
 {
-  assert(efx);
+	assert(efx);
 
-  if (toDevice == KNoID || toDevice == m_deviceID)
-    {
-      // Same device
-      /* TODO */
-    }
-  else
-    {
-      // Different device
-      /* TODO */
-    }
+	Function::setDevice(toDevice);
+	m_name = QString(efx->name());
+	m_busID = efx->busID();
+	
+	m_width = efx->width();
+	m_height = efx->height();
+	m_xOffset = efx->xOffset();
+	m_yOffset = efx->yOffset();
+	m_rotation = efx->rotation();
 
-  return false;
+	m_xFrequency = efx->xFrequency();
+	m_yFrequency = efx->yFrequency();
+	m_xPhase = efx->xPhase();
+	m_yPhase = efx->yPhase();
+
+	m_xChannel = efx->xChannel();
+	m_yChannel = efx->yChannel();
+
+	m_runOrder = efx->runOrder();
+	m_direction = efx->direction();
+
+	m_modulationBus = efx->modulationBus();
+  
+	m_startSceneID = efx->startScene();
+	m_stopSceneID = efx->stopScene();
+
+	m_previewPointArray = NULL;
+
+	m_algorithm = QString(efx->algorithm());
+
+	m_stepSize = 0;
+	m_cycleDuration = KFrequency;
+
+	m_channelData = NULL;
+
+	m_address = KChannelInvalid;
+
+	return true;
 }
 
 /**
