@@ -56,6 +56,12 @@ class EFXEditor : public UI_EFXEditor
   void fillChannelCombos();
 
   /**
+   * Get sceness from the EFX function's device
+   * and fill the combos with them.
+   */
+  void fillSceneCombos();
+
+  /**
    * Update the list of available buses
    *
    */
@@ -79,9 +85,10 @@ class EFXEditor : public UI_EFXEditor
   void slotHorizontalChannelSelected(int index);
   void slotVerticalChannelSelected(int index);
   
-  void slotBlackoutFeatureValueSpinChanged(int value);
-  void slotBlackoutChannelSelected(int index);
-  void slotBlackoutEnabled();
+  void slotStartSceneCheckboxToggled(bool);
+  void slotStopSceneCheckboxToggled(bool);
+  void slotStartSceneComboSelected(int index);
+  void slotStopSceneComboSelected(int index);
 
  protected:
   EFXPreviewArea* m_previewArea;

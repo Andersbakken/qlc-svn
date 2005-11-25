@@ -71,14 +71,14 @@ EFX::EFX() :
 
   m_xChannel          ( KChannelInvalid ),
   m_yChannel          ( KChannelInvalid ),
-  
-  m_blackoutChannel   ( KChannelInvalid ),
-  m_blackoutValue     ( 0 ),
-  
+
   m_runOrder          ( EFX::Loop ),
   m_direction         ( EFX::Forward ),
 
   m_modulationBus     ( KBusIDDefaultHold ),
+  
+  m_startSceneID      ( KFunctionArraySize ),
+  m_stopSceneID       ( KFunctionArraySize ),
 
   m_previewPointArray ( NULL ),
 
@@ -466,17 +466,6 @@ int EFX::yPhase()
   return static_cast<int> (m_yPhase * 180.0 / M_PI);
 }
 
-void EFX::setBlackoutValue(int blackout)
-{
-  m_blackoutValue = blackout;
-//  updatePreview();
-}
-
-int EFX::blackoutValue()
-{
-  return static_cast<int> (m_blackoutValue);
-}
-
 /**
  * Returns true when lissajous has been selected
  */
@@ -600,28 +589,6 @@ void EFX::setYChannel(t_channel channel)
 }
 
 /**
- * Set a channel from a device to be used as the Blackout.
- *
- * @param channel Relative number of the channel used as the Blackout
- */
-void EFX::setBlackoutChannel(t_channel channel)
-{
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
-
-  if (channel < (t_channel) device->deviceClass()->channels()->count())
-    {
-      m_blackoutChannel = channel;
-      updatePreview();
-    }
-  else
-    {
-      qDebug("Invalid channel number!");
-      assert(false);
-    }
-}
-
-/**
  * Get the channel used as the X axis.
  *
  */
@@ -637,15 +604,6 @@ t_channel EFX::xChannel()
 t_channel EFX::yChannel()
 {
   return m_yChannel;
-}
-
-/**
- * Get the channel used as the Blackout.
- *
- */
-t_channel EFX::blackoutChannel()
-{
-  return m_blackoutChannel;
 }
 
 /**
@@ -706,7 +664,42 @@ t_bus_id EFX::modulationBus()
 {
   return m_modulationBus;
 }
-  
+
+
+void EFX::setStartScene(t_function_id scene)
+{
+  if (scene >= 0 && scene <= KFunctionArraySize)
+    {
+      m_startSceneID = scene;
+    }
+}
+
+/**
+ * Get the id for start scene
+ *
+ */
+t_function_id EFX::startScene()
+{
+  return m_startSceneID;
+}
+
+void EFX::setStopScene(t_function_id scene)
+{
+  if (scene >= 0 && scene <= KFunctionArraySize)
+    {
+      m_stopSceneID = scene;
+    }
+}
+
+/**
+ * Get the id for stop scene
+ *
+ */
+t_function_id EFX::stopScene()
+{
+  return m_stopSceneID;
+}
+
 /**
  * Copy function contents from another function
  *
@@ -832,19 +825,6 @@ void EFX::saveToFile(QFile &file)
   s = QString("YChannel = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
-  // Blackout Channel
-  if (blackoutChannel() != KChannelInvalid)
-    {
-      t.setNum(blackoutChannel());
-      s = QString("BlackoutChannel = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-  
-      // Blackout Value
-      t.setNum(blackoutValue());
-      s = QString("BlackoutValue = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-    }
-
   // Run Order
   t.setNum((int) runOrder());
   s = QString("RunOrder = ") + t + QString("\n");
@@ -858,6 +838,16 @@ void EFX::saveToFile(QFile &file)
   // Modulation Bus
   t.setNum((int) modulationBus());
   s = QString("ModulationBus = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // StartScene
+  t.setNum(startScene());
+  s = QString("StartScene = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+  
+  // Stop Scene
+  t.setNum(stopScene());
+  s = QString("StopScene = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 }
 
@@ -890,7 +880,7 @@ void EFX::createContents(QPtrList <QString> &list)
 	{
 	  setHeight(list.next()->toInt());
 	}
-     else if (*s == QString("Rotation"))
+      else if (*s == QString("Rotation"))
 	{
 	  setRotation(list.next()->toInt());
 	}
@@ -926,14 +916,6 @@ void EFX::createContents(QPtrList <QString> &list)
 	{
 	  setYChannel(list.next()->toInt());
 	}
-      else if (*s == QString("BlackoutChannel"))
-	{
-	  setBlackoutChannel(list.next()->toInt());
-	}
-      else if (*s == QString("BlackoutValue"))
-	{
-	  setBlackoutValue(list.next()->toInt());
-	}
       else if (*s == QString("RunOrder"))
 	{
 	  setRunOrder((RunOrder) list.next()->toInt());
@@ -945,6 +927,14 @@ void EFX::createContents(QPtrList <QString> &list)
       else if (*s == QString("ModulationBus"))
 	{
 	  setModulationBus((t_bus_id) list.next()->toInt());
+	}
+      else if (*s == QString("StartScene"))
+	{
+	  setStartScene(list.next()->toInt());
+	}
+      else if (*s == QString("StopScene"))
+	{
+	  setStopScene(list.next()->toInt());
 	}
       else
         {
@@ -996,7 +986,7 @@ void EFX::arm()
   /* Allocate space for the event buffer.
    * There are only two channels to set.
    */
-  if (m_eventBuffer == NULL)	
+  if (m_eventBuffer == NULL)
     m_eventBuffer = new EventBuffer(2, KFrequency >> 1);
 
   /* Set the run time address for channel data */
@@ -1119,6 +1109,22 @@ void EFX::run()
 
   // Initialize this function for running
   init();
+  
+  if (!m_stopped)
+    {
+      if (startScene() != KFunctionArraySize)
+        {
+	  Function*f = _app->doc()->function(startScene());
+	  if (!f)
+	    {
+	      qDebug("Selected start scene deleted!");
+	    }
+	  if (f->engage(this))
+	    {
+	    
+	    }
+	}
+    }
 
   while (!m_stopped)
     {
@@ -1138,12 +1144,20 @@ void EFX::run()
 
   if (m_stopped)
     {
-      /* The function was stopped elsewhere, purge the contents of
-       * the eventbuffer so that the function is removed from queue
-       * as soon as possible */
+      if (stopScene() != KFunctionArraySize)
+        {
+	  Function*f = _app->doc()->function(stopScene());
+	  if (!f)
+	    {
+	      qDebug("Selected stop scene deleted!");
+	    }
+	  if (f->engage(this))
+	    {
+	    
+	    }
+	}
       m_eventBuffer->purge();
     }
-  
   /* Finished */
   m_removeAfterEmpty = true;
 }
