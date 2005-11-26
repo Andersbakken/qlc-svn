@@ -617,7 +617,7 @@ t_bus_id EFX::modulationBus()
 
 void EFX::setStartScene(t_function_id scene)
 {
-  if (scene > KNoID && scene <= KFunctionArraySize)
+  if (scene >= KNoID && scene <= KFunctionArraySize)
     {
       m_startSceneID = scene;
     }
@@ -634,7 +634,7 @@ t_function_id EFX::startScene()
 
 void EFX::setStopScene(t_function_id scene)
 {
-  if (scene > KNoID && scene <= KFunctionArraySize)
+  if (scene >= KNoID && scene <= KFunctionArraySize)
     {
       m_stopSceneID = scene;
     }

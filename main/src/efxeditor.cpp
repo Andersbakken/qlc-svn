@@ -436,6 +436,7 @@ void EFXEditor::slotStartSceneCheckboxToggled(bool state)
   if (state)
     {
       m_startSceneCombo->setEnabled(true);
+      slotStartSceneComboSelected(m_startSceneCombo->currentItem());
     }
   else
     {
@@ -450,9 +451,10 @@ void EFXEditor::slotStopSceneCheckboxToggled(bool state)
 {
   assert(m_efx);
 
-  if (state == true)
+  if (state)
     {
       m_stopSceneCombo->setEnabled(true);
+      slotStopSceneComboSelected(m_stopSceneCombo->currentItem());
     }
   else
     {
