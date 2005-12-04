@@ -35,7 +35,6 @@ class SettingsUI : public UI_Settings
   void init();
 
  private slots:
-  void slotSystemBrowseClicked();
   void slotBackgroundBrowseClicked();
   void slotStyleChanged(const QString &);
   void slotConfigurePluginClicked();

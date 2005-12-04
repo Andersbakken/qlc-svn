@@ -116,8 +116,6 @@ App::~App()
 
 void App::initView(void)
 {
-  resize(640, 480);
-
   initSettings();
 
   setIcon(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")));
@@ -159,14 +157,26 @@ bool App::event(QEvent* e)
 
 void App::initSettings()
 {
-  QString x, y, w, h;
-  settings()->get(KApplicationRectX, x);
-  settings()->get(KApplicationRectY, y);
-  settings()->get(KApplicationRectW, w);
-  settings()->get(KApplicationRectH, h);
+	QString x, y, w, h;
+	if (settings()->get(KApplicationRectX, x) == -1)
+	{
+		x = QString("0");
+	}
+	if (settings()->get(KApplicationRectY, y) == -1)
+	{
+		y = QString("0");
+	}
+	if (settings()->get(KApplicationRectW, w) == -1)
+	{
+		w = QString("640");
+	}
+	if (settings()->get(KApplicationRectH, h) == -1)
+	{
+		h = QString("480");
+	}
 
-  // Set the main window geometry
-  setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+	// Set the main window geometry
+	setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
 }
 
 

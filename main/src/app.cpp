@@ -188,11 +188,6 @@ App::~App()
 void App::init(QString openFile)
 {
   //
-  // Default size
-  //
-  resize(maximumSize());
-
-  //
   // Settings has to be first
   //
   initSettings();
@@ -332,10 +327,22 @@ void App::initWorkspace()
   else
     {
       QString x, y, w, h;
-      settings()->get(KEY_APP_X, x);
-      settings()->get(KEY_APP_Y, y);
-      settings()->get(KEY_APP_W, w);
-      settings()->get(KEY_APP_H, h);
+      if (settings()->get(KEY_APP_X, x) == -1)
+	{
+		x = QString("0");
+	}
+      if (settings()->get(KEY_APP_Y, y) == -1)
+	{
+		y = QString("0");
+	}
+      if (settings()->get(KEY_APP_W, w) == -1)
+	{
+		w = QString("640");
+	}
+      if (settings()->get(KEY_APP_H, h) == -1)
+	{
+		h = QString("480");
+	}
       setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
     }
 

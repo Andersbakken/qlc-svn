@@ -58,9 +58,6 @@ void SettingsUI::init()
   m_MRUSizeLabel->setEnabled(false);
   m_MRUSizeSpin->setEnabled(false);
 
-  _app->settings()->get(KEY_SYSTEM_DIR, str);
-  m_systemEdit->setText(str);
-
   _app->settings()->get(KEY_APP_BACKGROUND, str);
   m_backgroundEdit->setText(str);
 
@@ -148,19 +145,6 @@ void SettingsUI::fillAdvancedSettingsList()
     }
 }
 
-
-void SettingsUI::slotSystemBrowseClicked()
-{
-  QString dir;
-  dir = QFileDialog::getExistingDirectory(m_systemEdit->text(), this);
-
-  if (dir.isEmpty() == false)
-    {
-      m_systemEdit->setText(dir);
-    }
-}
-
-
 void SettingsUI::slotBackgroundBrowseClicked()
 {
   QString path;
@@ -199,7 +183,6 @@ void SettingsUI::slotStyleChanged(const QString &)
 
 void SettingsUI::slotOKClicked()
 {
-  _app->settings()->set(KEY_SYSTEM_DIR, m_systemEdit->text());
   _app->settings()->set(KEY_APP_BACKGROUND, m_backgroundEdit->text());
   _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
   _app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());

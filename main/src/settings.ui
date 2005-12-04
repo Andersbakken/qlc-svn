@@ -29,7 +29,7 @@
         </property>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>m_directoriesGroupBox</cstring>
+                <cstring>m_backgroundGroupBox</cstring>
             </property>
             <property name="sizePolicy">
                 <sizepolicy>
@@ -46,100 +46,12 @@
                 <enum>Sunken</enum>
             </property>
             <property name="title">
-                <string>Directories</string>
+                <string>Background Wallpaper</string>
             </property>
             <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout8</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>m_systemLabel</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>3</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>80</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>QLC System</string>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>m_systemEdit</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>3</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>200</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>QLC application system directory; you should not need to change this.</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_systemBrowse</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>23</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>23</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>...</string>
-                            </property>
-                            <property name="flat">
-                                <bool>false</bool>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Browse QLC system directory.</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
                         <cstring>layout9</cstring>
@@ -148,28 +60,6 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>m_backgroundLabel</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>3</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>80</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Background</string>
-                            </property>
-                        </widget>
                         <widget class="QLineEdit">
                             <property name="name">
                                 <cstring>m_backgroundEdit</cstring>
@@ -576,12 +466,6 @@
 </widget>
 <connections>
     <connection>
-        <sender>m_systemBrowse</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotSystemBrowseClicked()</slot>
-    </connection>
-    <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
         <receiver>UI_Settings</receiver>
@@ -613,8 +497,6 @@
     </connection>
 </connections>
 <tabstops>
-    <tabstop>m_systemEdit</tabstop>
-    <tabstop>m_systemBrowse</tabstop>
     <tabstop>m_backgroundEdit</tabstop>
     <tabstop>m_backgroundBrowse</tabstop>
     <tabstop>m_widgetStyleCombo</tabstop>
@@ -626,7 +508,6 @@
     <slot>slotCancelClicked()</slot>
     <slot>slotOKClicked()</slot>
     <slot>slotStyleChanged( const QString &amp; )</slot>
-    <slot>slotSystemBrowseClicked()</slot>
     <slot>slotBackgroundBrowseClicked()</slot>
     <slot>slotConfigurePluginClicked()</slot>
 </slots>

@@ -33,7 +33,6 @@
  */
 
 // General settings
-const QString KEY_SYSTEM_DIR           (    "SystemDirectory" );
 const QString KEY_OUTPUT_PLUGIN        (       "OutputPlugin" );
 const QString KEY_WIDGET_STYLE         (        "WidgetStyle" );
 const QString KEY_OPEN_LAST_WORKSPACE  (  "OpenLastWorkspace" );
