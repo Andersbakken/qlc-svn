@@ -74,7 +74,6 @@ qlc_SOURCES = \
 	src/devicemanagerview.cpp \
 	src/deviceproperties.cpp \
 	src/dmxaddresstool.cpp \
-	src/dmxmanager.cpp \
 	src/doc.cpp \
 	src/documentbrowser.cpp \
 	src/dummyoutplugin.cpp \
@@ -135,7 +134,6 @@ qlc_SOURCES = \
 	src/moc_devicemanagerview.cpp \
 	src/moc_deviceproperties.cpp \
 	src/moc_dmxaddresstool.cpp \
-	src/moc_dmxmanager.cpp \
 	src/moc_doc.cpp \
 	src/moc_documentbrowser.cpp \
 	src/moc_dummyoutplugin.cpp \
