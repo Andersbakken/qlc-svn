@@ -70,10 +70,6 @@ VCXYPad::~VCXYPad()
 
 void VCXYPad::init()
 {
-	QString dir;
-	_app->settings()->get(KEY_SYSTEM_DIR, dir);
-	dir += QString("/") + PIXMAPPATH;
-	
 	setMinimumSize(20, 20);
 
 	resize(120, 120);
@@ -81,7 +77,7 @@ void VCXYPad::init()
 	
 	setBackgroundColor(white);
 	
-	m_pixmap = QPixmap(dir + "/xypad-point.xpm");
+	m_pixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.xpm"));
 	
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);

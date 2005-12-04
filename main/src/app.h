@@ -23,6 +23,8 @@
 #define APP_H
 
 #include <qmainwindow.h>
+#include <qstring.h>
+#include <qptrlist.h>
 #include "../../libs/common/outputplugin.h"
 
 class QWorkspace;

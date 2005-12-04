@@ -63,10 +63,7 @@ void DeviceConsole::setDevice(t_device_id id)
   assert(device);
   
   // Set an icon
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH + QString("/");
-  setIcon(QPixmap(dir + QString("console.xpm")));
+  setIcon(QPixmap(PIXMAPS + QString("/console.xpm")));
 
   // Set the main horizontal layout
   m_layout = new QHBoxLayout(this);

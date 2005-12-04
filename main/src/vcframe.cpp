@@ -481,23 +481,19 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 
 void VCFrame::invokeMenu(QPoint point)
 {
-	QString dir;
-	_app->settings()->get(KEY_SYSTEM_DIR, dir);
-	dir += QString("/") + PIXMAPPATH;
-	
 	//
 	// Add menu
 	//
 	QPopupMenu* addMenu = new QPopupMenu();
-	addMenu->insertItem(QPixmap(dir + "/button.xpm"), 
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.xpm")), 
 		"&Button", KVCMenuAddButton);
-	addMenu->insertItem(QPixmap(dir + "/slider.xpm"), 
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")), 
 		"&Slider", KVCMenuAddSlider);
-	addMenu->insertItem(QPixmap(dir + "/frame.xpm"), 
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")), 
 		"&Frame", KVCMenuAddFrame);
-	addMenu->insertItem(QPixmap(dir + "/xypad.xpm"),
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/xypad.xpm")),
 		"&XY-Pad", KVCMenuAddXYPad);
-	addMenu->insertItem(QPixmap(dir + "/label.xpm"),
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/label.xpm")),
 		"L&abel", KVCMenuAddLabel);
 	
 	QPopupMenu* menu = new QPopupMenu();

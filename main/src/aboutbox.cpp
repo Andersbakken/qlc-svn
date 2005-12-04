@@ -57,11 +57,7 @@ void AboutBox::initDialog()
 
   setCaption(QString("About ") + KApplicationNameLong);
 
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  m_pm = new QPixmap(dir + "/qlc-big.xpm");
+  m_pm = new QPixmap(QString(PIXMAPS) + QString("/qlc-big.xpm"));
   m_logo = new QLabel(this);
 
   if (m_pm->isNull() == false)

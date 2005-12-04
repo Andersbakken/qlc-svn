@@ -77,15 +77,11 @@ void VCButtonProperties::initView()
   //
   // Pixmaps
   //
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
+  m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/attach.xpm")));
+  m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/detach.xpm")));
 
-  m_attachFunction->setPixmap(QPixmap(dir + "/attach.xpm"));
-  m_detachFunction->setPixmap(QPixmap(dir + "/detach.xpm"));
-
-  m_attachKey->setPixmap(QPixmap(dir + "/key.xpm"));
-  m_detachKey->setPixmap(QPixmap(dir + "/fileclose.xpm"));
+  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key.xpm")));
+  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")));
 }
 
 

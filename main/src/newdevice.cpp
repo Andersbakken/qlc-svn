@@ -172,10 +172,7 @@ void NewDevice::fillTree()
 
   QPtrList <DeviceClass> *dl = _app->deviceClassList();
 
-  QString path;
-  _app->settings()->get("SystemPath", path);
-  path += QString("/") + PIXMAPPATH;
-  QPixmap pm(path + QString("/dmx.xpm"));
+  QPixmap pm(PIXMAPS + QString("/dmx.xpm"));
 
   QString tree;
   _app->settings()->get("NewDeviceTreeOpen", tree);
@@ -204,7 +201,7 @@ void NewDevice::fillTree()
 	  parent->setOpen(treeOpen);
 	}
 
-      parent->setPixmap(0, QPixmap(path + QString("/global.xpm")));
+      parent->setPixmap(0, QPixmap(PIXMAPS + QString("/global.xpm")));
 
       newItem = new QListViewItem(parent, dc->model());
       newItem->setPixmap(0, pm);

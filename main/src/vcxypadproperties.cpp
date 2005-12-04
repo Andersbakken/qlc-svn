@@ -64,18 +64,14 @@ VCXYPadProperties::~VCXYPadProperties()
 {
 }
 
-   
+
 void VCXYPadProperties::init()
 {
-	QString dir;
-	_app->settings()->get(KEY_SYSTEM_DIR, dir);
-	dir += QString("/") + PIXMAPPATH;
-	
-	m_addX->setPixmap(QPixmap(dir + "/add.xpm"));
-	m_addY->setPixmap(QPixmap(dir + "/add.xpm"));
+	m_addX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
+	m_addY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
 
-	m_removeX->setPixmap(QPixmap(dir + "/remove.xpm"));
-	m_removeY->setPixmap(QPixmap(dir + "/remove.xpm"));
+	m_removeX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
+	m_removeY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
 		
 	fillChannelList(m_listX, m_parent->channelsX());
 	fillChannelList(m_listY, m_parent->channelsY());

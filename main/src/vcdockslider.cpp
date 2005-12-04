@@ -764,12 +764,8 @@ void VCDockSlider::invokeMenu(QPoint point)
 {
   if (m_static)
     {
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH;
-
       QPopupMenu menu;
-      menu.insertItem(QPixmap(dir + "/settings.xpm"),
+      menu.insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
 		     QString("&Properties..."), KVCMenuEditProperties);
 
       if (menu.exec(point) == KVCMenuEditProperties)

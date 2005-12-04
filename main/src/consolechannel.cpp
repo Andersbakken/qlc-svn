@@ -141,10 +141,6 @@ void ConsoleChannel::slotStatusButtonClicked()
 
 void ConsoleChannel::updateStatusButton()
 {
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   if (m_status == Scene::Fade)
     {
       m_statusButton->setPaletteBackgroundColor(KStatusButtonColorFade);

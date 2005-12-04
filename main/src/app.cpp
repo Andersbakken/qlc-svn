@@ -36,6 +36,7 @@
 #include <qstylefactory.h>
 #include <qrect.h>
 #include <qtimer.h>
+#include <qfile.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -66,7 +67,6 @@
 #include "dummyoutplugin.h"
 #include "../../libs/common/outputplugin.h"
 #include "../../libs/common/plugin.h"
-
 #include "../../libs/common/filehandler.h"
 
 static const QString KModeTextOperate ("Operate");
@@ -358,10 +358,7 @@ void App::initWorkspace()
   //
   // Main application icon
   //
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  setIcon(QPixmap(dir + QString("/Q.xpm")));
+  setIcon(QString(PIXMAPS) + QString("/Q.xpm"));
 
   //
   // Get the widget style from settings
@@ -386,31 +383,27 @@ void App::initWorkspace()
 //
 void App::initMenuBar()
 {
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   ///////////////////////////////////////////////////////////////////
   // File Menu
   m_fileMenu = new QPopupMenu();
-  m_fileMenu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")),
 			 "&New", this, SLOT(slotFileNew()),
 			 CTRL+Key_N, ID_FILE_NEW);
-  m_fileMenu->insertItem(QPixmap(dir + QString("/fileopen.xpm")), 
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), 
 			 "&Open...", this, SLOT(slotFileOpen()), 
 			 CTRL+Key_O, ID_FILE_OPEN);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")),
 			 "&Save", this, SLOT(slotFileSave()), 
 			 CTRL+Key_S, ID_FILE_SAVE);
   m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 
 			 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(dir + QString("/settings.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
 			 "Se&ttings...", this, SLOT(slotFileSettings()), 
 			 0, ID_FILE_SETTINGS);
   m_fileMenu->insertSeparator();
-  m_fileMenu->insertItem(QPixmap(dir + QString("/exit.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.xpm")),
 			 "E&xit", this, SLOT(slotFileQuit()), 
 			 CTRL+Key_Q, ID_FILE_QUIT);
   
@@ -421,25 +414,25 @@ void App::initMenuBar()
   // Tools Menu
   m_toolsMenu = new QPopupMenu();
   m_toolsMenu->setCheckable(true);
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/device.xpm")),
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/device.xpm")),
 			  "Device Manager", this,
 			  SLOT(slotViewDeviceManager()),
 			  CTRL + Key_M, ID_VIEW_DEVICE_MANAGER);
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/virtualconsole.xpm")), 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.xpm")), 
 			  "Virtual Console", this, 
 			  SLOT(slotViewVirtualConsole()), 
 			  CTRL + Key_V, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/chaser.png")), 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/chaser.png")), 
 			  "Function Manager", this, 
 			  SLOT(slotViewFunctionTree()),
 			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/bus.xpm")),
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/bus.xpm")),
 			  "Bus Properties", this, 
 			  SLOT(slotViewBusProperties()), CTRL + Key_B,
 			  ID_VIEW_BUS_PROPERTIES);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(dir + QString("/panic.xpm")), "Panic!", 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")), "Panic!", 
 			  this, SLOT(slotPanic()), CTRL + Key_P,
 			  ID_FUNCTIONS_PANIC);
 
@@ -450,12 +443,12 @@ void App::initMenuBar()
   // Mode menu
   m_modeMenu = new QPopupMenu();
   m_modeMenu->setCheckable(true);
-  m_modeMenu->insertItem(QPixmap(dir + QString("/unlocked.xpm")),
+  m_modeMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/unlocked.xpm")),
 			 "Design", this,
 			 SLOT(slotSetDesignMode()), CTRL + Key_D,
 			 ID_FUNCTIONS_MODE_DESIGN);
 
-  m_modeMenu->insertItem(QPixmap(dir + QString("/locked.xpm")),
+  m_modeMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/locked.xpm")),
 			 "Operate", this,
 			 SLOT(slotSetOperateMode()), CTRL + Key_R,
 			 ID_FUNCTIONS_MODE_OPERATE);
@@ -476,18 +469,18 @@ void App::initMenuBar()
   // Help menu
   m_helpMenu = new QPopupMenu();
   m_helpMenu->setCheckable(true);
-  m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.xpm")),
 			 "Index...", this, SLOT(slotHelpIndex()),
 			 SHIFT + Key_F1, ID_HELP_INDEX);
   m_helpMenu->insertSeparator();
-  m_helpMenu->insertItem(QPixmap(dir + QString("/Q.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")),
 			 "About...", this, SLOT(slotHelpAbout()),
 			 0, ID_HELP_ABOUT);
-  m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/qt.xpm")),
 			 "About Qt...", this, SLOT(slotHelpAboutQt()),
 			 0, ID_HELP_ABOUT_QT);
   m_helpMenu->insertSeparator();
-  m_helpMenu->insertItem(QPixmap(dir + QString("")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("")),
 			 "Show Tooltips", this, SLOT(slotHelpTooltips()),
 			 0, ID_HELP_TOOLTIPS);
 
@@ -530,47 +523,43 @@ void App::initStatusBar()
 void App::initToolBar()
 {
   m_toolbar = new QToolBar(this, "Workspace");
-
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
   
-  m_newTB = new QToolButton(QPixmap(dir + QString("/filenew.xpm")), 
+  m_newTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")), 
 			    "New workspace", 0, 
 			    this, SLOT(slotFileNew()), m_toolbar);
 
-  m_openTB = new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), 
+  m_openTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), 
 			     "Open existing workspace", 0, 
 			     this, SLOT(slotFileOpen()), m_toolbar);
 
-  m_saveTB = new QToolButton(QPixmap(dir + QString("/filesave.xpm")), 
+  m_saveTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")), 
 			     "Save current workspace", 0, 
 			     this, SLOT(slotFileSave()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  m_dmTB = new QToolButton(QPixmap(dir + QString("/device.xpm")), 
+  m_dmTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/device.xpm")), 
 			   "Device manager", 0, 
 			   this, SLOT(slotViewDeviceManager()), m_toolbar);
 
-  m_vcTB = new QToolButton(QPixmap(dir + QString("/virtualconsole.xpm")), 
+  m_vcTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.xpm")), 
 			   "Virtual console", 0, 
 			   this, SLOT(slotViewVirtualConsole()), m_toolbar);
   
-  m_ftTB = new QToolButton(QPixmap(dir + QString("/chaser.png")),
+  m_ftTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/chaser.png")),
 			   "Function manager", 0,
 			   this, SLOT(slotViewFunctionTree()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  m_panicTB = new QToolButton(QPixmap(dir + QString("/panic.xpm")), 
+  m_panicTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")), 
 			      "Panic!", 0, this, SLOT(slotPanic()), m_toolbar);
 
-  m_blackOutTB = new QToolButton(QPixmap(dir + QString("/blackout.xpm")), 
+  m_blackOutTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/blackout.xpm")), 
 				 "Blackout", 0, this,
 				 SLOT(slotToggleBlackOut()), m_toolbar);
 
-  m_modeTB = new QToolButton(QPixmap(dir + QString("/unlocked.xpm")),
+  m_modeTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/unlocked.xpm")),
                              "Design Mode; All editing features enabled",
                              0, this, SLOT(slotSetMode()), m_toolbar);
 
@@ -968,16 +957,12 @@ void App::slotRefreshMenus()
   int id = 0;
 
   QPtrList <QWidget> wl = workspace()->windowList();
-
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
+ 
   m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")), 
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/cascadewindow.xpm")), 
 			   "Cascade", this, SLOT(slotWindowCascade()), 
 			   0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")), "Tile", 
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/tilewindow.xpm")), "Tile", 
 			   this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();
 
@@ -1211,10 +1196,6 @@ void App::slotSetOperateMode()
 //
 void App::slotSetMode()
 {
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   if (m_mode == Operate)
     {
       if (m_functionConsumer->runningFunctions())
@@ -1235,7 +1216,7 @@ void App::slotSetMode()
         }
 
       m_modeIndicator->setText(KModeTextDesign);
-      m_modeTB->setPixmap(dir + QString("/unlocked.xpm"));
+      m_modeTB->setPixmap(QString(PIXMAPS) + QString("/unlocked.xpm"));
       QToolTip::add(m_modeTB, "Design mode; All edit features available");
 
       m_newTB->setEnabled(true);
@@ -1247,7 +1228,7 @@ void App::slotSetMode()
   else
     {
       m_modeIndicator->setText(KModeTextOperate);
-      m_modeTB->setPixmap(dir + QString("/locked.xpm"));
+      m_modeTB->setPixmap(QString(PIXMAPS) + QString("/locked.xpm"));
       QToolTip::add(m_modeTB, "Operate mode; Edit features disabled");
 
       m_newTB->setEnabled(false);
@@ -1322,22 +1303,18 @@ void App::initPlugins()
 {
   QString path;
 
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PLUGINPATH + QString("/");
-
   // First of all, add the dummy output plugin
   m_dummyOutPlugin = new DummyOutPlugin(NextPluginID++);
   connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
 	  this, SLOT(slotPluginActivated(Plugin*)));
   addPlugin(m_dummyOutPlugin);
 
-  QDir d(dir);
+  QDir d(PLUGINS);
   d.setFilter(QDir::Files);
   if (d.exists() == false || d.isReadable() == false)
     {
       fprintf(stderr, "Unable to access plugin directory %s.\n",
-	      (const char*) dir);
+	      (const char*) PLUGINS);
       return;
     }
   
@@ -1352,7 +1329,7 @@ void App::initPlugins()
 	  continue;
 	}
 
-      path = dir + *it;
+      path = QString(PLUGINS) + QString("/") + *it;
 
       probePlugin(path);
     }
@@ -1583,11 +1560,7 @@ void App::initDeviceClasses()
   DeviceClass* dc = NULL;
   QString path = QString::null;
 
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + DEVICECLASSPATH + QString("/");
-
-  QDir d(dir);
+  QDir d(FIXTURES);
   d.setFilter(QDir::Files);
   d.setNameFilter("*.deviceclass");
   if (d.exists() == false || d.isReadable() == false)
@@ -1603,16 +1576,10 @@ void App::initDeviceClasses()
 
   QPtrList <QString> list; // Our stringlist that contains the files' contents
 
-  // Put a slash to the end of the directory name if it isn't there
-  if (dir.right(1) != QString("/"))
-    {
-      dir = dir + QString("/");
-    }
-
   // Go thru all files
   for (it = dirlist.begin(); it != dirlist.end(); ++it)
     {
-      path = dir + *it;
+      path = QString(FIXTURES) + QString("/") + *it;
       FileHandler::readFileToList(path, list);
       dc = DeviceClass::createDeviceClass(list);
       if (dc != NULL)
@@ -1804,4 +1771,3 @@ float App::submasterValue(t_channel ch)
 {
   return m_submasterValues[ch];
 }
-

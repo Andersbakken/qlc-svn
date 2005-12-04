@@ -214,13 +214,8 @@ void DeviceManagerView::initTitle()
   // Initial size, should be saved to settings on the fly instead
   resize(500, 300);
 
-  // Get the system directory to get to pixmaps
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   // Set an icon
-  setIcon(dir + QString("/device.xpm"));
+  setIcon(QString(PIXMAPS) + QString("/device.xpm"));
 }
 
 
@@ -229,11 +224,6 @@ void DeviceManagerView::initTitle()
 //
 void DeviceManagerView::initToolBar()
 {
-  // Get the system directory to get to pixmaps
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   // Create a dock area for the toolbar
   m_dockArea = new QDockArea(Horizontal, QDockArea::Normal, this);
   m_dockArea->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -247,28 +237,28 @@ void DeviceManagerView::initToolBar()
   m_toolbar = new QToolBar("Device Manager", _app, m_dockArea);
 
   m_addButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/addoutputdevice.xpm")), 
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/addoutputdevice.xpm"))),
 		    "Add", 0, this,
 		    SLOT(slotAdd()), m_toolbar);
   m_addButton->setUsesTextLabel(true);
   QToolTip::add( m_addButton,  "Add New Device");  
   
   m_cloneButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/editcopy.xpm")), 
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/editcopy.xpm"))),
 		    "Clone", 0, this,
 		    SLOT(slotClone()), m_toolbar);
   m_cloneButton->setUsesTextLabel(true);
   QToolTip::add( m_cloneButton, "Clone a device and its functions" );
   
   m_removeButton =
-    new QToolButton(QIconSet(QPixmap(dir + "/remove.xpm")),
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/remove.xpm"))),
 		    "Remove", 0, this,
 		    SLOT(slotRemove()), m_toolbar);
   m_removeButton->setUsesTextLabel(true);
   QToolTip::add( m_removeButton, "Remove Current Selection");
   
   m_propertiesButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/settings.xpm")), 
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/settings.xpm"))),
 		    "Properties", 0, this,
 		    SLOT(slotProperties()), m_toolbar);
   m_propertiesButton->setUsesTextLabel(true);
@@ -277,14 +267,14 @@ void DeviceManagerView::initToolBar()
   m_toolbar->addSeparator();
 
   m_monitorButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/monitor.xpm")), 
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/monitor.xpm"))),
 		    "Monitor Device", 0, this,
 		    SLOT(slotMonitor()), m_toolbar);
   m_monitorButton->setUsesTextLabel(true);
   QToolTip::add(m_monitorButton, "Monitor Device");
 
   m_consoleButton = 
-    new QToolButton(QIconSet(QPixmap(dir + "/console.xpm")), 
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/console.xpm"))), 
 		    "View Console", 0, this,
 		    SLOT(slotConsole()), m_toolbar);
   m_consoleButton->setUsesTextLabel(true);
@@ -677,24 +667,20 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
   QPopupMenu* menu = new QPopupMenu();
   menu->setCheckable(false);
   
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  menu->insertItem(QPixmap(dir + "/addoutputdevice.xpm"),
+  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/addoutputdevice.xpm")),
 		   "Add...", KMenuItemAdd);
-  menu->insertItem(QPixmap(dir + "/editcopy.xpm"),
+  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.xpm")),
                    "Clone...", KMenuItemClone);
-  menu->insertItem(QPixmap(dir + "/remove.xpm"),
+  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
 		   "Remove", KMenuItemRemove);
-  menu->insertItem(QPixmap(dir + "/settings.xpm"),
+  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
 		   "Properties...", KMenuItemProperties);
   menu->insertSeparator();
-  menu->insertItem(QPixmap(dir + "/monitor.xpm"),
+  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.xpm")),
 		   "View Monitor...", KMenuItemMonitor);
-  menu->insertItem(QPixmap(dir + "/console.xpm"),
+  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/console.xpm")),
 		   "View Console...", KMenuItemConsole);  
-  menu->insertItem( QPixmap(dir + "/add.xpm"),
+  menu->insertItem( QPixmap(QString(PIXMAPS) + QString("/add.xpm")),
                    "Autocreate Functions", KMenuItemAutoFunction);
   
   if (_app->mode() == App::Operate)

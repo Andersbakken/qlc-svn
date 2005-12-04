@@ -390,17 +390,6 @@ QString Device::infoText()
 
   str += QString("</TR>");
   str += QString("</TABLE>");
-  
-  if (m_deviceClass->imageFileName() != QString::null)
-    {
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + DEVICECLASSPATH + QString("/");
-
-      str += QString("<IMG SRC=\"") +
-	dir + m_deviceClass->imageFileName() +
-	QString("\">");
-    }
 
   str += QString("</BODY></HTML>");
 
@@ -447,15 +436,11 @@ void Device::viewMonitor()
   
   if (m_monitor == NULL)
     {
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH + QString("/");
-
       m_monitor = new Monitor(_app->workspace(), universeAddress(),
                               universeAddress() + channels - 1);
       m_monitor->init();
       m_monitor->setCaption(m_name + " Monitor");
-      m_monitor->setIcon(dir + QString("monitor.xpm"));
+      m_monitor->setIcon(PIXMAPS + QString("monitor.xpm"));
 
       connect(m_monitor, SIGNAL(closed()), this, SLOT(slotMonitorClosed()));
       m_monitor->show();

@@ -120,11 +120,7 @@ void App::initView(void)
 
   initSettings();
 
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  setIcon(QPixmap(dir + QString("/Q.xpm")));
+  setIcon(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")));
 
   initWorkspace();
 
@@ -132,9 +128,7 @@ void App::initView(void)
   initStatusBar();
   initToolBar();
   
-  QString path;
-  settings()->get(KEY_SYSTEM_DIR, m_lastPath);
-  m_lastPath += QString("/") + DEVICECLASSPATH;
+  m_lastPath = QString(FIXTURES);
 }
 
 void App::initStatusBar()
@@ -146,17 +140,13 @@ void App::initToolBar()
 {
   m_toolbar = new QToolBar(this, "Workspace");
 
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  new QToolButton(QPixmap(dir + QString("/filenew.xpm")), "New...",
+  new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")), "New...",
 		  0, this, SLOT(slotFileNew()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/fileopen.xpm")), "Load...",
+  new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), "Load...",
 		  0, this, SLOT(slotFileOpen()), m_toolbar);
 
-  new QToolButton(QPixmap(dir + QString("/filesave.xpm")), "Save",
+  new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")), "Save",
 		  0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
@@ -195,24 +185,20 @@ void App::initWorkspace()
 
 void App::initMenuBar()
 {
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   ///////////////////////////////////////////////////////////////////
   // File Menu
   m_fileMenu = new QPopupMenu();
-  m_fileMenu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")),
 			 "&New", this, SLOT(slotFileNew()), 
 			 CTRL+Key_N, ID_FILE_NEW);
 
-  m_fileMenu->insertItem(QPixmap(dir + QString("/fileopen.xpm")), 
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), 
 			 "&Open...", this, SLOT(slotFileOpen()), 
 			 CTRL+Key_O, ID_FILE_OPEN);
 
   m_fileMenu->insertSeparator();
 
-  m_fileMenu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")),
 			 "&Save", this, SLOT(slotFileSave()), 
 			 CTRL+Key_S, ID_FILE_SAVE);
 
@@ -221,44 +207,44 @@ void App::initMenuBar()
 
   m_fileMenu->insertSeparator();
 
-  m_fileMenu->insertItem(QPixmap(dir + QString("/exit.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.xpm")),
 			 "E&xit", this, SLOT(slotFileQuit()), 
 			 CTRL+Key_Q, ID_FILE_QUIT);
 
   ///////////////////////////////////////////////////////////////////
   // Edit Menu
   m_editMenu = new QPopupMenu();
-  m_editMenu->insertItem(QPixmap(dir + QString("/add.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/add.xpm")),
 			 "Add &Channel...", this, SLOT(slotEmpty()),
 			 CTRL+Key_C, ID_EDIT_ADD_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
 			 "&Remove Channel", this, SLOT(slotEmpty()),
 			 CTRL+Key_R, ID_EDIT_REMOVE_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/edit.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")),
 			 "Edit C&hannel...", this, SLOT(slotEmpty()),
 			 CTRL+Key_H, ID_EDIT_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/up.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.xpm")),
 			 "Raise Channel", this, SLOT(slotEmpty()),
 			 CTRL+Key_Up, ID_EDIT_RAISE_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/down.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.xpm")),
 			 "Lower Channel", this, SLOT(slotEmpty()),
 			 CTRL+Key_Down, ID_EDIT_LOWER_CHANNEL);
 
   m_editMenu->insertSeparator();
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/add.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/add.xpm")),
 			 "&Add Capability...", this, SLOT(slotEmpty()),
 			 CTRL+Key_A, ID_EDIT_ADD_CAPABILITY);
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
 			 "R&emove Capability", this, SLOT(slotEmpty()),
 			 CTRL+Key_E, ID_EDIT_REMOVE_CAPABILITY);
 
-  m_editMenu->insertItem(QPixmap(dir + QString("/edit.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")),
 			 "Ed&it Capability...", this, SLOT(slotEmpty()),
 			 CTRL+Key_I, ID_EDIT_CAPABILITY);
 
@@ -277,11 +263,11 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
-  m_helpMenu->insertItem(QPixmap(dir + QString("/help.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.xpm")),
 			 "About...", this, SLOT(slotHelpAbout()), 
 			 0, ID_HELP_ABOUT);
 
-  m_helpMenu->insertItem(QPixmap(dir + QString("/qt.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/qt.xpm")),
 			 "About Qt...", this, SLOT(slotHelpAboutQt()), 
 			 0, ID_HELP_ABOUT_QT);
 
@@ -468,15 +454,11 @@ void App::slotRefreshWindowMenu()
 
   QPtrList <QWidget> wl = workspace()->windowList();
 
-  QString dir;
-  settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
   m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(dir + QString("/cascadewindow.xpm")),
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/cascadewindow.xpm")),
 			   "Cascade", this, SLOT(slotWindowCascade()),
 			   0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(dir + QString("/tilewindow.xpm")),
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/tilewindow.xpm")),
 			   "Tile", this, SLOT(slotWindowTile()),
 			   0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();

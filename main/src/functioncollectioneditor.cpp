@@ -60,12 +60,8 @@ FunctionCollectionEditor::~FunctionCollectionEditor()
 
 void FunctionCollectionEditor::init()
 {
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
-  m_addFunction->setPixmap(QPixmap(dir + "/add.xpm"));
-  m_removeFunction->setPixmap(QPixmap(dir + "/remove.xpm"));
+  m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
+  m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
 
   m_nameEdit->setText(m_fc->name());
   updateFunctionList();

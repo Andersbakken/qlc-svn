@@ -91,28 +91,24 @@ void SceneEditor::setDevice(t_device_id id)
 
 void SceneEditor::initMenu()
 {
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-
-  m_tools->setPixmap(QPixmap(dir + QString("/scene.png")));
+  m_tools->setPixmap(QPixmap(PIXMAPS + QString("/scene.png")));
 
   if (m_menu) delete m_menu;
   m_menu = new QPopupMenu();
-  m_menu->insertItem(QPixmap(dir + QString("/key.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/key.xpm")),
 		     "Activate Selected", this, SLOT(slotActivate()),
 		     0, KMenuActivate);
   m_menu->insertSeparator();
-  m_menu->insertItem(QPixmap(dir + QString("/filenew.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/filenew.xpm")),
 		     "Create New...", this, SLOT(slotNew()), 
 		     0, KMenuNew);
-  m_menu->insertItem(QPixmap(dir + QString("/filesave.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.xpm")),
 		     "Overwrite", this, SLOT(slotStore()), 
 		     0, KMenuStore);
-  m_menu->insertItem(QPixmap(dir + QString("/remove.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/remove.xpm")),
 		     "Remove Selected...", this, SLOT(slotRemove()), 
 		     0, KMenuRemove);
-  m_menu->insertItem(QPixmap(dir + QString("/rename.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/rename.xpm")),
 		     "Rename Selected...", this, SLOT(slotRename()), 
 		     0, KMenuRename);
 

@@ -66,20 +66,16 @@ DeviceClassEditor::~DeviceClassEditor()
 
 void DeviceClassEditor::init()
 {
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
+  setIcon(QPixmap(QString(PIXMAPS) + QString("/device.xpm")));
+  m_addChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
+  m_removeChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
+  m_editChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")));
+  m_raiseChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/up.xpm")));
+  m_lowerChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/down.xpm")));
 
-  setIcon(QPixmap(dir + "/device.xpm"));
-  m_addChannelButton->setIconSet(QPixmap(dir + "/add.xpm"));
-  m_removeChannelButton->setIconSet(QPixmap(dir + "/remove.xpm"));
-  m_editChannelButton->setIconSet(QPixmap(dir + "/edit.xpm"));
-  m_raiseChannelButton->setIconSet(QPixmap(dir + "/up.xpm"));
-  m_lowerChannelButton->setIconSet(QPixmap(dir + "/down.xpm"));
-
-  m_addPresetButton->setIconSet(QPixmap(dir + "/add.xpm"));
-  m_removePresetButton->setIconSet(QPixmap(dir + "/remove.xpm"));
-  m_editPresetButton->setIconSet(QPixmap(dir + "/edit.xpm"));
+  m_addPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
+  m_removePresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
+  m_editPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")));
 
   setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
 
@@ -157,10 +153,9 @@ bool DeviceClassEditor::saveAs()
 
   if (m_fileName == QString::null)
     {
-      _app->settings()->get(KEY_SYSTEM_DIR, path);
-      path += QString("/") + DEVICECLASSPATH + QString("/");
-      path += m_dc->manufacturer() + QString("-") + 
-	m_dc->model() + QString(".deviceclass");
+      path = QString(FIXTURES) + QString("/");
+      path += m_dc->manufacturer() + QString("-");
+      path += m_dc->model() + QString(".deviceclass");
     }
   else
     {

@@ -205,10 +205,6 @@ void Monitor::mousePressEvent(QMouseEvent* e)
 {
   if (e->button() & RightButton)
     {
-      QString dir;
-      _app->settings()->get(KEY_SYSTEM_DIR, dir);
-      dir += QString("/") + PIXMAPPATH;
-
       QPopupMenu* menu;
       menu = new QPopupMenu;
       menu->setCheckable(false);
@@ -228,14 +224,14 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       speedMenu->insertItem("64Hz", ID_64HZ);
       speedMenu->setItemChecked(s_updateFrequency, true);
 
-      menu->insertItem(QPixmap(dir + "/monitor.xpm"), 
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.xpm")),
 		       "Channel &Display", displayMenu);
-      menu->insertItem(QPixmap(dir + "/clock.xpm"), 
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/clock.xpm")),
 		       "&Update Speed", speedMenu);
       menu->insertSeparator();
-      menu->insertItem(QPixmap(dir + "/move.xpm"),
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/move.xpm")),
 		       "&Resize to Default", ID_RESIZE_SQUARE);
-      menu->insertItem(QPixmap(dir + "/rename.xpm"),
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")),
 		       "Choose &Font", ID_CHOOSE_FONT);
 
       connect(menu, SIGNAL(activated(int)), 

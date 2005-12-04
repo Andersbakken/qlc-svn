@@ -118,15 +118,11 @@ void ChaserEditor::init()
   m_nameEdit->setText(m_chaser->name());
   m_nameEdit->setSelection(0, m_nameEdit->text().length());
 
-  QString dir;
-  _app->settings()->get(KEY_SYSTEM_DIR, dir);
-  dir += QString("/") + PIXMAPPATH;
-  
-  m_addStep->setPixmap(QPixmap(dir + "/add.xpm"));
-  m_removeStep->setPixmap(QPixmap(dir + "/remove.xpm"));
+  m_addStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
+  m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
 
-  m_raiseButton->setPixmap(QPixmap(dir + "/up.xpm"));
-  m_lowerButton->setPixmap(QPixmap(dir + "/down.xpm"));
+  m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/up.xpm")));
+  m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/down.xpm")));
 
   m_runOrderGroup->setButton((int) m_chaser->runOrder());
   m_directionGroup->setButton((int) m_chaser->direction());
