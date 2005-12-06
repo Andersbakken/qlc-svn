@@ -38,12 +38,17 @@ dce_LDADD = ../libs/common/libqlccommon.la @QT_LIBS@
 
 # MOCS
 moc_%.cpp: %.h
-	moc $< -o $@
+	$(MOC) $< -o $@
 
 # UIC headers
 uic_%.h: %.ui
-	uic $< -o $@
+	$(UIC) $< -o $@
 
 # UIC sources
 uic_%.cpp: uic_%.h
-	uic -impl $< $*.ui -o $@
+	$(UIC) -impl $< $*.ui -o $@
+
+install-data-local:
+	install -o root -g root -m 644 $(top_srcdir)/xpm/deviceclasseditor.xpm $(datadir)/pixmaps/qlc-dce.xpm
+	desktop-file-install dce.desktop --vendor=qlc
+

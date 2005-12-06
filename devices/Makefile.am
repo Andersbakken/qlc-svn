@@ -1,4 +1,4 @@
-install-data:
+install-data-local:
 	if [ ! -d $(datadir)/$(FIXTURES) ]; then mkdir -p $(datadir)/$(FIXTURES); fi
 
 	chmod 755 $(datadir)/$(FIXTURES)

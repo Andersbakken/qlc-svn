@@ -22,12 +22,12 @@ libmidiout_la_LIBADD = @QT_LIBS@
 libdir = $(PLUGINS)
 
 moc_%.cpp: %.h
-	moc $< -o $@
+	$(MOC) $< -o $@
 
 # UIC headers
 uic_%.h: %.ui
-	uic $< -o $@
+	$(UIC) $< -o $@
 
 # UIC sources 
 uic_%.cpp: uic_%.h
-	uic -impl $< $*.ui -o $@
+	$(UIC) -impl $< $*.ui -o $@

@@ -1,4 +1,4 @@
-install-data:
+install-data-local:
 	if [ ! -d $(datadir)/$(PIXMAPS) ]; then mkdir -p $(datadir)/$(PIXMAPS); fi
 
 	chmod 755 $(datadir)/$(PIXMAPS)

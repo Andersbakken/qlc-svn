@@ -1,4 +1,4 @@
-install-data:
+install-data-local:
 	if [ ! -d $(prefix)/$(DOCUMENTS) ]; then mkdir -p $(prefix)/$(DOCUMENTS); fi
 	if [ ! -d $(prefix)/$(DOCUMENTS)/$(PACKAGE) ]; then mkdir -p $(prefix)/$(DOCUMENTS)/$(PACKAGE); fi
 	install -o root -g root -m 644 *.html *.css $(prefix)/$(DOCUMENTS)/$(PACKAGE)
