@@ -2,8 +2,8 @@ Q Light Controller 2
 
 Copyright (c) Heikki Junnila
 
-EMail: hjunnila@users.sourceforge.net
-QLC at SourceForge: http://qlc.sourceforge.net
+EMail: hjunnila@users.sf.net
+QLC at SourceForge: http://qlc.sf.net
 
 
 
@@ -27,7 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements
 ------------
-* QT/X11 3.1.1 or newer
+* GNU auto tools (automake, autoconf)
+* QT/X11 3.1 or newer
 * /dev/rtc (Real-time clock, usually enabled by default)
 * Recommended: dmx4linux 2.4
 
@@ -38,13 +39,17 @@ Compiling & Installation
 See main/docs/compiling.html for more detailed information.
 In general, just say
 
+	./bootstrap
+
+and then
+
         ./configure
 	
-and then	
+then
 	
 	make
 
-as a regular user in the qlc root directory and then
+as a regular user in the qlc root directory and finally
 
 	make install
 
@@ -53,13 +58,6 @@ as a regular user in the qlc root directory and then
 If you do not tamper with the Makefiles & config.make too much, a default
 and working qlc.rc file should be placed under /etc/
 
-If you want to create KDE/GNOME menu items under Accessories category,
-you should type
-
-	make menuitems
-
-Note that this is still a bit experimental and might not work on all
-configurations. If it doesn't work, please see below for "Support & Bug Reports".
 
 
 Support & Bug Reports
@@ -71,7 +69,9 @@ For TODO-lists, known bugs and other related information, go to
 http://www.sf.net/projects/qlc
 
 
+
 List of people who have contributed to this piece of software
 -------------------------------------------------------------
-Heikki Junnila (Author) <hjunnila@users.sourceforge.net>
-Stefan Krumm <stefankrumm@users.sourceforge.net>
+Heikki Junnila (Author) <hjunnila@users.sf.net>
+Stefan Krumm <stefankrumm@users.sf.net>
+Christian Sühs <dance-or-die@users.sf.net>
