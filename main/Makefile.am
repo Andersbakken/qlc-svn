@@ -190,6 +190,6 @@ uic_%.h: %.ui
 uic_%.cpp: uic_%.h
 	$(UIC) -impl $< $*.ui -o $@
 
-install-data-local:
-	install -o root -g root -m 644 $(top_srcdir)/xpm/Q.xpm $(datadir)/pixmaps/qlc.xpm
-	desktop-file-install qlc.desktop --vendor=qlc
+#install-data-local:
+#	install -o root -g root -m 644 $(top_srcdir)/xpm/Q.xpm $(datadir)/pixmaps/qlc.xpm
+#	desktop-file-install qlc.desktop --vendor=qlc

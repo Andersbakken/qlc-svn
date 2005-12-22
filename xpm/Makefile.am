@@ -1,6 +1,63 @@
-install-data-local:
-	if [ ! -d $(datadir)/$(PIXMAPS) ]; then mkdir -p $(datadir)/$(PIXMAPS); fi
+imagesdir = $(datadir)/$(PIXMAPS)
 
-	chmod 755 $(datadir)/$(PIXMAPS)
-
-	install -o root -g root -m 644 *.xpm *.png $(datadir)/$(PIXMAPS)
+dist_images_DATA = \
+	addbus.xpm \
+	addinputdevice.xpm \
+	addoutputdevice.xpm \
+	add.xpm \
+	attach.xpm \
+	background.xpm \
+	blackout.xpm \
+	bus.xpm \
+	button.xpm \
+	cascadewindow.xpm \
+	chaser.png \
+	clock.xpm \
+	collection.png \
+	color.xpm \
+	console.xpm \
+	detach.xpm \
+	deviceclasseditor.xpm \
+	deviceclass.xpm \
+	device.xpm \
+	dmx.xpm \
+	down.xpm \
+	editcopy.xpm \
+	editcut.xpm \
+	edit.xpm \
+	exit.xpm \
+	fileclose.xpm \
+	filenew.xpm \
+	fileopen.xpm \
+	filesave.xpm \
+	frame.xpm \
+	function.xpm \
+	global.xpm \
+	help.xpm \
+	image.xpm \
+	info.xpm \
+	joystick.xpm \
+	key.xpm \
+	label.xpm \
+	left.xpm \
+	locked.xpm \
+	monitor.xpm \
+	move.xpm \
+	panic.xpm \
+	qlc-big.xpm \
+	qt.xpm \
+	Q.xpm \
+	remove.xpm \
+	rename.xpm \
+	resize.xpm \
+	right.xpm \
+	scene.png \
+	settings.xpm \
+	slider.xpm \
+	speedslider.xpm \
+	tilewindow.xpm \
+	unlocked.xpm \
+	up.xpm \
+	virtualconsole.xpm \
+	xypad-point.xpm \
+	xypad.xpm

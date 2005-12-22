@@ -48,7 +48,6 @@ uic_%.h: %.ui
 uic_%.cpp: uic_%.h
 	$(UIC) -impl $< $*.ui -o $@
 
-install-data-local:
-	install -o root -g root -m 644 $(top_srcdir)/xpm/deviceclasseditor.xpm $(datadir)/pixmaps/qlc-dce.xpm
-	desktop-file-install dce.desktop --vendor=qlc
-
+#install-data-local:
+#	install -o root -g root -m 644 $(top_srcdir)/xpm/deviceclasseditor.xpm $(datadir)/pixmaps/qlc-dce.xpm
+#	desktop-file-install dce.desktop --vendor=qlc

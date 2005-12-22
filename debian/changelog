@@ -1,0 +1,6 @@
+qlc (2.5-0) stable; urgency=low
+
+  * Initial debian-packaged release.
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Wed, 21 Dec 2005 20:44:01 +0300
+

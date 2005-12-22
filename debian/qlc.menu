@@ -1,0 +1,17 @@
+?package(qlc):\
+        needs="x11"\
+        section="Apps/Technical"\
+        hints="QT,QLC"\
+        title="QLC"\
+	longtitle="Q Light Controller"\
+        icon="/usr/share/pixmaps/qlc/Q.xpm"\
+        command="/usr/bin/qlc"
+
+?package(qlc):\
+        needs="x11"\
+        section="Apps/Technical"\
+        hints="QT,QLC"\
+	title="QLC-DCE"\
+        longtitle="QLC Device Class Editor"\
+        icon="/usr/share/pixmaps/qlc/deviceclasseditor.xpm"\
+        command="/usr/bin/dce"

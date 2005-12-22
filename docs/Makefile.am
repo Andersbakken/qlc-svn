@@ -1,7 +1,30 @@
-install-data-local:
-	if [ ! -d $(prefix)/$(DOCUMENTS) ]; then mkdir -p $(prefix)/$(DOCUMENTS); fi
-	if [ ! -d $(prefix)/$(DOCUMENTS)/$(PACKAGE) ]; then mkdir -p $(prefix)/$(DOCUMENTS)/$(PACKAGE); fi
-	install -o root -g root -m 644 *.html *.css $(prefix)/$(DOCUMENTS)/$(PACKAGE)
-	
-	if [ ! -d $(prefix)/$(DOCUMENTS)/$(PACKAGE)/pics ]; then mkdir -p $(prefix)/$(DOCUMENTS)/$(PACKAGE)/pics; fi
-	install -o root -g root -m 644 pics/*.* $(prefix)/$(DOCUMENTS)/$(PACKAGE)/pics
+docsdir = $(datadir)/$(DOCUMENTS)/$(PACKAGE)
+picsdir = $(docsdir)/pics
+
+dist_docs_DATA = \
+	advancedsceneeditor.html \
+	busproperties.html \
+	coding-convention.html \
+	compiling.html \
+	concept.html \
+	deviceclasseditor.html \
+	devicemanager.html \
+	errata.html \
+	faq.html \
+	functionmanager.html \
+	getting-started.html \
+	glossary.html \
+	index.html \
+	mainwindow.html \
+	settings.html
+
+dist_pics_DATA = \
+	pics/advancedsceneeditor.png \
+	pics/busproperties.png \
+	pics/dce-main.png \
+	pics/devicemanager.png \
+	pics/functionmanager.png \
+	pics/mainwindow.png \
+	pics/qlc-logo.jpg \
+	pics/selectfunction.png \
+	pics/settings.png

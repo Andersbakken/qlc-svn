@@ -1,0 +1,21 @@
+Source: qlc
+Section: Electronics
+Priority: optional
+Maintainer: Heikki Junnila <hjunnila@users.sf.net>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: qlc
+Section: Electronics
+Architecture: i386
+Depends: ${shlibs:Depends}
+Suggests: dmx4linux
+Description: Software DMX lighting desk
+  Software DMX lighting desk
+
+Package: qlc-fixtures
+Section: Electronics
+Architecture: any
+Depends: qlc
+Description: Additional fixtures for Q Light Controller
+  Additional fixtures for Q Light Controller
