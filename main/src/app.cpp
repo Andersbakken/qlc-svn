@@ -20,7 +20,7 @@
 */
 
 #include <qworkspace.h>
-#include <qapp.h>
+#include <qapplication.h>
 #include <qmessagebox.h>
 #include <qmenubar.h>
 #include <qtoolbar.h>

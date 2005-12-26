@@ -28,7 +28,6 @@
 #include <qptrlist.h>
 #include <qstring.h>
 #include <qlayout.h>
-#include <qobjcoll.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
 #include <qslider.h>
@@ -38,6 +37,7 @@
 #include <qfontdialog.h>
 #include <qcursor.h>
 #include <assert.h>
+#include <qobjectlist.h>
 
 #include "virtualconsole.h"
 #include "virtualconsoleproperties.h"

@@ -41,7 +41,6 @@
 #include <stdio.h>
 #include <qcolordialog.h>
 #include <qfiledialog.h>
-#include <qobjcoll.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
 #include <qbuttongroup.h>
