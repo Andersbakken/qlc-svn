@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   newdevice.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -43,7 +43,7 @@ extern App* _app;
 // Keys for settings
 const QString KEY_NEWDEVICE_TREE_OPEN = "NewDeviceTreeOpen";
 
-NewDevice::NewDevice(QWidget *parent, const char *name) 
+NewDevice::NewDevice(QWidget *parent, const char *name)
   : UI_NewDevice(parent, name, true)
 {
   m_nameValue = QString("");
@@ -70,9 +70,15 @@ void NewDevice::initView()
 
   fillTree();
 
-  _app->settings()->get(KEY_NEWDEVICE_TREE_OPEN, config);
-  m_treeOpenCheckBox->setChecked( (config == Settings::trueValue()) ? 
-				  true : false );
+  if (_app->settings()->get(KEY_NEWDEVICE_TREE_OPEN, config) != -1
+	&& config == Settings::trueValue())
+  {
+	m_treeOpenCheckBox->setChecked(true);
+  }
+  else
+  {
+	m_treeOpenCheckBox->setChecked(false);
+  }
 
   m_nameEdit->setText("New device");
   m_ok->setEnabled(false);
@@ -174,9 +180,17 @@ void NewDevice::fillTree()
 
   QPixmap pm(PIXMAPS + QString("/dmx.xpm"));
 
-  QString tree;
-  _app->settings()->get("NewDeviceTreeOpen", tree);
-  bool treeOpen = (tree == Settings::trueValue()) ? true : false;
+  QString config;
+  bool treeOpen = false;
+  if (_app->settings()->get("NewDeviceTreeOpen", config) != -1 &&
+	config == Settings::trueValue())
+  {
+	treeOpen = true;
+  }
+  else
+  {
+	treeOpen = false;
+  }
 
   m_tree->clear();
 
@@ -184,7 +198,7 @@ void NewDevice::fillTree()
     {
       bool alreadyAdded = false;
 
-      for (QListViewItem* i = m_tree->firstChild(); 
+      for (QListViewItem* i = m_tree->firstChild();
 	   i != NULL; i = i->nextSibling())
 	{
 	  if (i->text(0) == dc->manufacturer())

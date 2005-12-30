@@ -24,6 +24,7 @@
 Plugin::Plugin(t_plugin_id id) : QObject()
 {
   m_id = id;
+  m_handle = NULL;
 }
 
 Plugin::~Plugin()

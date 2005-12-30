@@ -3,8 +3,14 @@ lib_LTLIBRARIES = libdmx4linuxout.la
 INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(prefix)/$(DOCUMENTS)/$(PACKAGE)\" \
+	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\"
+
+noinst_HEADERS = \
+	uic_configuredmx4linuxout.h \
+	\
+	configuredmx4linuxout.cpp \
+	dmx4linuxout.h
 
 libdmx4linuxout_la_SOURCES = \
 	uic_configuredmx4linuxout.cpp \

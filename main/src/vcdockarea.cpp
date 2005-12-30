@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   vcdockarea.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -53,7 +53,8 @@ void VCDockArea::init()
   m_defaultFadeSlider->setBusID(KBusIDDefaultFade);
 
   // Get value range
-  if (_app->settings()->get(KEY_DEFAULT_FADE_MIN, value))
+  if (_app->settings()->get(KEY_DEFAULT_FADE_MIN, value) != -1
+	&& value != "")
     {
       min = value.toInt();
     }
@@ -62,7 +63,8 @@ void VCDockArea::init()
       min = 0;
     }
 
-  if (_app->settings()->get(KEY_DEFAULT_FADE_MAX, value))
+  if (_app->settings()->get(KEY_DEFAULT_FADE_MAX, value) != -1
+	&& value != "")
     {
       max = value.toInt();
     }
@@ -93,7 +95,8 @@ void VCDockArea::init()
   m_defaultHoldSlider->setBusID(KBusIDDefaultHold);
 
   // Get value range
-  if (_app->settings()->get(KEY_DEFAULT_HOLD_MIN, value))
+  if (_app->settings()->get(KEY_DEFAULT_HOLD_MIN, value) != -1
+	&& value != "")
     {
       min = value.toInt();
     }
@@ -102,7 +105,8 @@ void VCDockArea::init()
       min = 0;
     }
 
-  if (_app->settings()->get(KEY_DEFAULT_HOLD_MAX, value))
+  if (_app->settings()->get(KEY_DEFAULT_HOLD_MAX, value) != -1
+	&& value != "")
     {
       max = value.toInt();
     }

@@ -3,7 +3,7 @@ lib_LTLIBRARIES = libqlccommon.la
 INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(prefix)/$(DOCUMENTS)/$(PACKAGE)\" \
+	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\"
 
 libqlccommon_la_SOURCES = \

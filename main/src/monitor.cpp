@@ -113,34 +113,50 @@ void Monitor::init()
 
   //
   // Set font
-  _app->settings()->get(KEY_MONITOR_FONT, config);
-  
-  if (config != QString::null)
+  if (_app->settings()->get(KEY_MONITOR_FONT, config) != -1 &&
+	config != "")
     {
-      m_font.fromString(config);
+	m_font.fromString(config);
+    }
+    else
+    {
+	m_font = QApplication::font();
     }
 
   //
   // Set display style
-  _app->settings()->get(KEY_MONITOR_DISPLAY_STYLE, config);
-  s_displayStyle = config.toInt();
-  if (s_displayStyle == 0)
-    {
-      s_displayStyle = ID_RELATIVE;
-    }
+  if (_app->settings()->get(KEY_MONITOR_DISPLAY_STYLE, config) != -1 &&
+	config != "")
+  {
+	s_displayStyle = config.toInt();
+	if (s_displayStyle == 0)
+	{
+		s_displayStyle = ID_RELATIVE;
+	}
+	else
+	{
+		s_displayStyle = ID_ABSOLUTE;
+	}
+  }
+  else
+  {
+	s_displayStyle = ID_RELATIVE;
+  }
 
   //
   // Set display update frequency
-  _app->settings()->get(KEY_MONITOR_UPDATE_FREQUENCY, config);
-  s_updateFrequency = config.toInt();
-  if (s_updateFrequency > ID_64HZ)
-    {
-      s_updateFrequency = ID_64HZ;
-    }
-  else if (s_updateFrequency < ID_16HZ)
-    {
-      s_updateFrequency = ID_16HZ;
-    }
+  if (_app->settings()->get(KEY_MONITOR_UPDATE_FREQUENCY, config) != -1)
+  {
+	s_updateFrequency = config.toInt();
+	if (s_updateFrequency > ID_64HZ)
+	{
+		s_updateFrequency = ID_64HZ;
+	}
+	else if (s_updateFrequency < ID_16HZ)
+	{
+		s_updateFrequency = ID_16HZ;
+	}
+  }
 
   //
   // Try and resize the window to square shape
@@ -197,7 +213,7 @@ void Monitor::slotResizeSquare()
 
   int unitsPerSide = static_cast<int> (ceil(sqrt(m_units)));
 
-  resize(unitsPerSide * (unitW * 2) + X_OFFSET, 
+  resize(unitsPerSide * (unitW * 2) + X_OFFSET,
 	 unitsPerSide * (unitH * 3) + Y_OFFSET);
 }
 
@@ -208,7 +224,7 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       QPopupMenu* menu;
       menu = new QPopupMenu;
       menu->setCheckable(false);
-      
+
       QPopupMenu* displayMenu;
       displayMenu = new QPopupMenu();
       displayMenu->setCheckable(true);
@@ -234,15 +250,15 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")),
 		       "Choose &Font", ID_CHOOSE_FONT);
 
-      connect(menu, SIGNAL(activated(int)), 
+      connect(menu, SIGNAL(activated(int)),
 	      this, SLOT(slotMenuCallback(int)));
-      connect(displayMenu, SIGNAL(activated(int)), 
+      connect(displayMenu, SIGNAL(activated(int)),
 	      this, SLOT(slotMenuCallback(int)));
-      connect(speedMenu, SIGNAL(activated(int)), 
+      connect(speedMenu, SIGNAL(activated(int)),
 	      this, SLOT(slotMenuCallback(int)));
 
       menu->exec(mapToGlobal(e->pos()));
-      
+
       delete displayMenu;
       delete speedMenu;
       delete menu;
@@ -258,7 +274,7 @@ void Monitor::slotMenuCallback(int item)
       _app->settings()->set(KEY_MONITOR_DISPLAY_STYLE, s_displayStyle);
       repaint(true);
       break;
-      
+
     case ID_RELATIVE:
       s_displayStyle = ID_RELATIVE;
       _app->settings()->set(KEY_MONITOR_DISPLAY_STYLE, s_displayStyle);
@@ -355,7 +371,7 @@ void Monitor::paint(void)
   for (short i = 0; i < m_units; i++)
     {
       m_mutex.lock(); // Lock access to value array
-      
+
       if (m_oldValues[i] != m_newValues[i])
 	{
 	  m_oldValues[i] = m_newValues[i];
@@ -368,12 +384,12 @@ void Monitor::paint(void)
 
 	  // Calculate x and y positions for this channel
 	  x = X_OFFSET + ((i % unitsX) * (unitW * 2));
-	  y = Y_OFFSET + static_cast<short> 
+	  y = Y_OFFSET + static_cast<short>
 	    (floor((i / unitsX)) * (unitH * 3));
-	  
+
 	  _qapp->lock(); // Lock QT to draw only to this widget
 	  m_painter.eraseRect(x, y + unitH, unitW, unitH);
-	  m_painter.drawText(x, y + unitH, unitW, unitH, 
+	  m_painter.drawText(x, y + unitH, unitW, unitH,
 			     AlignBottom, valueString);
 	  _qapp->unlock(); // Unlock QT
 	}

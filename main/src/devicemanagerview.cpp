@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   devicemanagerview.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -73,18 +73,22 @@ const QString KEY_DEVICE_MANAGER_W     ( "DeviceManagerRectW" );
 const QString KEY_DEVICE_MANAGER_H     ( "DeviceManagerRectH" );
 const QString KEY_DEVICE_MANAGER_SPLITTER ( "DeviceManagerSplitter" );
 
+const int KDefaultWidth  ( 500 );
+const int KDefaultHeight ( 300 );
+
 //
 // Constructor
 //
 DeviceManagerView::DeviceManagerView(QWidget* parent, const char* name)
-  : QWidget(parent, name)
+	: QWidget(parent, name),
+
+	m_layout   ( NULL ),
+	m_dockArea ( NULL ),
+	m_toolbar  ( NULL ),
+	m_splitter ( NULL ),
+	m_listView ( NULL ),
+	m_textView ( NULL )
 {
-  m_layout = NULL;
-  m_dockArea = NULL;
-  m_toolbar = NULL;
-  m_splitter = NULL;
-  m_listView = NULL;
-  m_textView = NULL;
 }
 
 
@@ -103,7 +107,7 @@ DeviceManagerView::~DeviceManagerView()
 	{
 		config = Settings::falseValue();
 	}
-	
+
 	_app->settings()->set(KEY_DEVICE_MANAGER_OPEN, config);
 
 	//
@@ -113,7 +117,7 @@ DeviceManagerView::~DeviceManagerView()
 	_app->settings()->set(KEY_DEVICE_MANAGER_Y, rect().y());
 	_app->settings()->set(KEY_DEVICE_MANAGER_W, rect().width());
 	_app->settings()->set(KEY_DEVICE_MANAGER_H, rect().height());
-  
+
 	// Save the splitter position
 	config.truncate(0);
 	QValueList<int> list = m_splitter->sizes();
@@ -159,44 +163,58 @@ void DeviceManagerView::initView()
 	// Set widget proportions
 	//
 	QString x, y, w, h;
-	_app->settings()->get(KEY_DEVICE_MANAGER_X, x);
-	_app->settings()->get(KEY_DEVICE_MANAGER_Y, y);
-	_app->settings()->get(KEY_DEVICE_MANAGER_W, w);
-	_app->settings()->get(KEY_DEVICE_MANAGER_H, h);
 
-	if (w.toInt() <= 0 || h.toInt() <= 0)
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_X, x) == -1
+		|| x.toInt() <= 0 || x.toInt() >= _app->width())
 	{
-		setGeometry(0, 0, 350, 200);
+		x.setNum(0);
 	}
-	else
+
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_Y, y) == -1
+		|| y.toInt() <= 0 || y.toInt() >= _app->height())
 	{
-		setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+		y.setNum(0);
 	}
-	
+
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_W, w) == -1
+		|| w.toInt() <= 0 || w.toInt() >= _app->width())
+	{
+		w.setNum(KDefaultWidth);
+	}
+
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_H, h) == -1
+		|| h.toInt() <= 0 || w.toInt() >= _app->height())
+	{
+		h.setNum(KDefaultHeight);
+	}
+
+	setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
+
 	// Set the splitter position
 	QValueList<int> list;
-	_app->settings()->get(KEY_DEVICE_MANAGER_SPLITTER, w);
-	if (w.toInt() <= 0)
-	{
-		list.append(width() / 2);
-	}
-	else
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_SPLITTER, w) != -1
+		&& w.toInt() >= 0)
 	{
 		list.append(w.toInt());
 		list.append(width() - w.toInt());
 	}
-	
+	else
+	{
+		list.append(width() / 2);
+		list.append(width() / 2);
+	}
+
 	m_splitter->setSizes(list);
-	
+
 	// Check if DM should be open
 	QString config;
-	_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
-	if (config == Settings::trueValue())
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config) != -1
+		&& config == Settings::trueValue())
 	{
 		_app->slotViewDeviceManager();
 	}
 	else
-	{	
+	{
 		hide();
 		_app->slotDeviceManagerViewClosed();
 	}
@@ -208,14 +226,11 @@ void DeviceManagerView::initView()
 //
 void DeviceManagerView::initTitle()
 {
-  // Set the name
-  setCaption(QString("Device Manager"));
+	// Set the name
+	setCaption(QString("Device Manager"));
 
-  // Initial size, should be saved to settings on the fly instead
-  resize(500, 300);
-
-  // Set an icon
-  setIcon(QString(PIXMAPS) + QString("/device.xpm"));
+	// Set an icon
+	setIcon(QString(PIXMAPS) + QString("/device.xpm"));
 }
 
 
@@ -236,45 +251,45 @@ void DeviceManagerView::initToolBar()
   //
   m_toolbar = new QToolBar("Device Manager", _app, m_dockArea);
 
-  m_addButton = 
+  m_addButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/addoutputdevice.xpm"))),
 		    "Add", 0, this,
 		    SLOT(slotAdd()), m_toolbar);
   m_addButton->setUsesTextLabel(true);
-  QToolTip::add( m_addButton,  "Add New Device");  
-  
-  m_cloneButton = 
+  QToolTip::add( m_addButton,  "Add New Device");
+
+  m_cloneButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/editcopy.xpm"))),
 		    "Clone", 0, this,
 		    SLOT(slotClone()), m_toolbar);
   m_cloneButton->setUsesTextLabel(true);
   QToolTip::add( m_cloneButton, "Clone a device and its functions" );
-  
+
   m_removeButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/remove.xpm"))),
 		    "Remove", 0, this,
 		    SLOT(slotRemove()), m_toolbar);
   m_removeButton->setUsesTextLabel(true);
   QToolTip::add( m_removeButton, "Remove Current Selection");
-  
-  m_propertiesButton = 
+
+  m_propertiesButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/settings.xpm"))),
 		    "Properties", 0, this,
 		    SLOT(slotProperties()), m_toolbar);
   m_propertiesButton->setUsesTextLabel(true);
-  QToolTip::add( m_propertiesButton,   "Device properties"); 
+  QToolTip::add( m_propertiesButton,   "Device properties");
 
   m_toolbar->addSeparator();
 
-  m_monitorButton = 
+  m_monitorButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/monitor.xpm"))),
 		    "Monitor Device", 0, this,
 		    SLOT(slotMonitor()), m_toolbar);
   m_monitorButton->setUsesTextLabel(true);
   QToolTip::add(m_monitorButton, "Monitor Device");
 
-  m_consoleButton = 
-    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/console.xpm"))), 
+  m_consoleButton =
+    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/console.xpm"))),
 		    "View Console", 0, this,
 		    SLOT(slotConsole()), m_toolbar);
   m_consoleButton->setUsesTextLabel(true);
@@ -300,7 +315,7 @@ void DeviceManagerView::initDataView()
   m_listView->setAllColumnsShowFocus(true);
   m_listView->setSorting(KColumnUniverse, true);
   m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  
+
   m_listView->header()->setClickEnabled(true);
   m_listView->header()->setResizeEnabled(true);
   m_listView->header()->setMovingEnabled(false);
@@ -364,7 +379,7 @@ void DeviceManagerView::slotUpdate()
 	  // ID column
 	  id.setNum(dev->id());
 	  newItem->setText(KColumnID, id);
-	  
+
 	  // Select this if it was selected before update
 	  if (currentId == dev->id())
 	    {
@@ -381,7 +396,7 @@ void DeviceManagerView::slotUpdate()
 void DeviceManagerView::slotAdd()
 {
   NewDevice* ndlg = new NewDevice(_app);
-  
+
   if (ndlg->exec() == QDialog::Accepted)
     {
       int address = ndlg->address();
@@ -389,12 +404,12 @@ void DeviceManagerView::slotAdd()
       QString name = ndlg->name();
       QString manufacturer = ndlg->manufacturer();
       QString model = ndlg->model();
-      
+
       if (name.stripWhiteSpace() == QString::null)
 	{
 	  name = QString("Noname");
 	}
-      
+
       // Search the actual device class instance to be associated
       // with the new device
       DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
@@ -414,21 +429,21 @@ void DeviceManagerView::slotAdd()
 void DeviceManagerView::slotClone()
 {
   QListViewItem* item = m_listView->currentItem();
-  
+
   // Get the device id and name
   t_device_id old_id = item->text(KColumnID).toInt();
-  
+
   DeviceClass* dc = _app->doc()->device(old_id)->deviceClass();
   assert(dc);
-  
+
   QString new_name;
   new_name = item->text(KColumnName);
   new_name += "_new";
-  
+
   // Add new device
   Device* d = _app->doc()->newDevice(dc, new_name, 0, 0);
   assert(d);
-  
+
   for (t_function_id id = 0; id < KFunctionArraySize; id++)
     {
       Function* f = _app->doc()->function(id);
@@ -436,14 +451,14 @@ void DeviceManagerView::slotClone()
 	{
 	  continue;
 	}
-      
+
       //copy only functions that belong to parent device
       if (f->device() == old_id)
 	{
 	  copyFunction(f, d);
 	}
     }
-  
+
   QString newid;
   newid.setNum(d->id());
   m_listView->setCurrentItem(m_listView->findItem(newid, KColumnID));
@@ -457,16 +472,16 @@ void DeviceManagerView::slotClone()
 void DeviceManagerView::slotRemove()
 {
   QListViewItem* item = m_listView->currentItem();
-  
+
   // Get the device id
   t_device_id id = item->text(KColumnID).toInt();
-  
+
   // Display a warning
   QString msg;
   msg = ("Do you want to remove device \"");
   msg += item->text(KColumnName) + QString("\"?");
   if (QMessageBox::warning(this, KApplicationNameShort, msg,
-			   QMessageBox::Yes, QMessageBox::No) 
+			   QMessageBox::Yes, QMessageBox::No)
       == QMessageBox::No)
     {
       return;
@@ -474,9 +489,9 @@ void DeviceManagerView::slotRemove()
   else
     {
       Device* device = _app->doc()->device(id);
-      
+
       ASSERT(device);
-      
+
       _app->doc()->deleteDevice(id);
     }
 
@@ -507,7 +522,7 @@ void DeviceManagerView::slotProperties()
 
   t_device_id id = item->text(KColumnID).toInt();
   Device* device = _app->doc()->device(id);
-  
+
   ASSERT(device);
 
   device->viewProperties();
@@ -529,9 +544,9 @@ void DeviceManagerView::slotMonitor()
 
   t_device_id id = item->text(KColumnID).toInt();
   Device* device = _app->doc()->device(id);
-  
+
   ASSERT(device);
-  
+
   device->viewMonitor();
 }
 
@@ -541,16 +556,16 @@ void DeviceManagerView::slotAutoFunction()
 
   t_device_id id = item->text(KColumnID).toInt();
   Device* device = _app->doc()->device(id);
-  
+
   ASSERT(device);
-  
+
   unsigned int n = 0;
   // Loop over all channels
   while(n < device->deviceClass()->channels()->count())
     {
       unsigned int i = 0;
       // Loop over all capabilities
-      for (Capability* c = device->deviceClass()->channels()->at(n)->capabilities()->first(); c != NULL; 
+      for (Capability* c = device->deviceClass()->channels()->at(n)->capabilities()->first(); c != NULL;
                         c = device->deviceClass()->channels()->at(n)->capabilities()->next())
          {
                Scene* sc = static_cast<Scene*>	(_app->doc()->newFunction(Function::Scene));
@@ -559,7 +574,7 @@ void DeviceManagerView::slotAutoFunction()
 	       unsigned int nn = 0;
 	       // Set the unused channels to NoSet and zero.
                while(nn < device->deviceClass()->channels()->count())
-	         {  
+	         {
 		   sc->set(nn, 0, Scene::NoSet);
 		   nn++;
 		 }
@@ -582,9 +597,9 @@ void DeviceManagerView::slotConsole()
 
   t_device_id id = item->text(KColumnID).toInt();
   Device* device = _app->doc()->device(id);
-  
+
   ASSERT(device);
-  
+
   device->viewConsole();
 }
 
@@ -619,14 +634,14 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
       m_monitorButton->setEnabled(false);
       m_consoleButton->setEnabled(false);
       m_cloneButton->setEnabled(false);
-      
+
       QString text;
 
       text = QString("<HTML><BODY>");
       text += QString("<H1>No Devices</H1>");
       text += QString("Click \"Add\" on the toolbar to add a new device.");
       text += QString("</BODY></HTML>");
-      
+
       m_textView->setText(text);
     }
   else
@@ -639,7 +654,7 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
       // Enable console & monitor always
       m_consoleButton->setEnabled(true);
       m_monitorButton->setEnabled(true);
-      
+
       if (_app->mode() == App::Design)
 	{
 	  m_addButton->setEnabled(true);
@@ -661,12 +676,12 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
 //
 // Right mouse button has been pressed in the listview
 //
-void DeviceManagerView::slotRightButtonClicked(QListViewItem* item, 
+void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
 					       const QPoint& point, int col)
 {
   QPopupMenu* menu = new QPopupMenu();
   menu->setCheckable(false);
-  
+
   menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/addoutputdevice.xpm")),
 		   "Add...", KMenuItemAdd);
   menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.xpm")),
@@ -679,10 +694,10 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
   menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.xpm")),
 		   "View Monitor...", KMenuItemMonitor);
   menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/console.xpm")),
-		   "View Console...", KMenuItemConsole);  
+		   "View Console...", KMenuItemConsole);
   menu->insertItem( QPixmap(QString(PIXMAPS) + QString("/add.xpm")),
                    "Autocreate Functions", KMenuItemAutoFunction);
-  
+
   if (_app->mode() == App::Operate)
     {
       // Operate mode, remove and edit impossible
@@ -692,7 +707,7 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
       menu->setItemEnabled(KMenuItemClone, false);
       menu->setItemEnabled(KMenuItemAutoFunction, false);
     }
-  
+
   // No item selected, unable to do other things either
   if (!item)
     {
@@ -784,9 +799,9 @@ void DeviceManagerView::copyFunction(Function* function, Device* device)
 
     case Function::Sequence:
       {
-	Sequence* sequence = static_cast<Sequence*> 
+	Sequence* sequence = static_cast<Sequence*>
 	  (_app->doc()->newFunction(Function::Sequence));
-	
+
 	sequence->copyFrom(static_cast<Sequence*> (function), device->id());
       }
       break;

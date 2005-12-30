@@ -3,8 +3,17 @@ bin_PROGRAMS = dce
 INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(prefix)/$(DOCUMENTS)/$(PACKAGE)\" \
+	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\"
+
+noinst_HEADERS = \
+	src/uic_deviceclasseditor.h \
+	src/uic_editpresetvalue.h \
+	\
+	src/aboutbox.h \
+	src/app.h \
+	src/deviceclasseditor.h \
+	src/editpresetvalue.h
 
 dce_SOURCES = \
 	src/uic_deviceclasseditor.cpp \

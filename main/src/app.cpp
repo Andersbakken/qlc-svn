@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   app.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -44,6 +44,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <assert.h>
+
+#include <X11/Xlib.h>
 
 #include "app.h"
 #include "doc.h"
@@ -94,7 +96,7 @@ t_plugin_id App::NextPluginID (KPluginIDMin);
 #define ID_FILE_QUIT                	10080
 
 ///////////////////////////////////////////////////////////////////
-// Tools menu entries                    
+// Tools menu entries
 #define ID_VIEW_TOOLBAR       	        12010
 #define ID_VIEW_STATUSBAR		12020
 
@@ -146,37 +148,116 @@ void blackOutWriter(t_channel, t_value);
 // Used when blackout is not active
 void normalWriter(t_channel, t_value);
 
-App::App() : QMainWindow()
+App::App() : QMainWindow(),
+	m_functionTree     ( NULL ),
+	m_busProperties    ( NULL ),
+	m_dmView           ( NULL ),
+	m_virtualConsole   ( NULL ),
+	m_doc              ( NULL ),
+	m_workspace        ( NULL ),
+	m_functionConsumer ( NULL ),
+	m_outputPlugin     ( NULL ),
+	m_dummyOutPlugin   ( NULL ),
+	m_settings         ( NULL ),
+	m_mode             ( Design ),
+	m_blackOut         ( false ),
+	m_modeIndicator    ( NULL ),
+	m_blackOutIndicator ( NULL ),
+	m_blackOutIndicatorTimer ( NULL ),
+	m_documentBrowser  ( NULL )
 {
-  m_functionTree = NULL;
-  m_busProperties = NULL;
-  m_dmView = NULL;
-  m_modeIndicator = NULL;
-  m_virtualConsole = NULL;
-  m_doc = NULL;
-  m_workspace = NULL;
-  m_functionConsumer = NULL;
-  m_outputPlugin = NULL;
-  m_dummyOutPlugin = NULL;
-  m_settings = NULL;
-  m_mode = Design;
-  m_blackOut = false;
-  m_blackOutIndicatorTimer = NULL;
-  m_documentBrowser = NULL;
-
-  writer = normalWriter;
+	writer = normalWriter;
 }
 
 App::~App()
 {
-  delete m_functionConsumer;
-  delete m_dmView;
-  delete m_virtualConsole;
-  delete m_doc;
-  delete m_modeIndicator;
-  delete m_workspace;
-  delete m_settings;
-  delete m_blackOutIndicatorTimer;
+	// Delete function tree
+	if (m_functionTree)
+		delete m_functionTree;
+	m_functionTree = NULL;
+
+	// Delete bus properties
+	if (m_busProperties)
+		delete m_busProperties;
+	m_busProperties = NULL;
+
+	// Delete device manager view
+	if (m_dmView)
+		delete m_dmView;
+	m_dmView = NULL;
+
+	// Delete virtual console
+	if (m_virtualConsole)
+		delete m_virtualConsole;
+	m_virtualConsole = NULL;
+
+	// Delete doc
+	if (m_doc)
+		delete m_doc;
+	m_doc = NULL;
+
+	// Delete workspace
+	if (m_workspace)
+		delete m_workspace;
+	m_workspace = NULL;
+
+	// Delete function consumer
+	if (m_functionConsumer)
+		delete m_functionConsumer;
+	m_functionConsumer = NULL;
+
+	// Delete mode indicator
+	if (m_modeIndicator)
+		delete m_modeIndicator;
+	m_modeIndicator = NULL;
+
+	// Delete blackout indicator's timer
+	if (m_blackOutIndicatorTimer)
+		delete m_blackOutIndicatorTimer;
+	m_blackOutIndicatorTimer = NULL;
+
+	// Delete the blackout indicator
+	if (m_blackOutIndicator)
+		delete m_blackOutIndicator;
+	m_blackOutIndicator = NULL;
+
+	// Delete document browser
+	if (m_documentBrowser)
+		delete m_documentBrowser;
+	m_documentBrowser = NULL;
+
+	// Delete device classes
+	while (!m_deviceClassList.isEmpty())
+	{
+		delete m_deviceClassList.take(0);
+	}
+
+	// Delete plugins
+	Plugin* plugin = NULL;
+	void* handle = NULL;
+	while (!m_pluginList.isEmpty())
+	{
+		plugin = m_pluginList.take(0);
+
+		if (plugin->name() != DummyOutPlugin::PluginName)
+		{
+			handle = plugin->handle();
+			delete plugin;
+
+			// Close all real plugins
+			dlclose(handle);
+		}
+	}
+
+	// Delete dummy output "plugin"
+	if (m_dummyOutPlugin)
+		delete m_dummyOutPlugin;
+	m_dummyOutPlugin = NULL;
+
+	// Delete settings
+	if (m_settings)
+		delete m_settings;
+	m_settings = NULL;
 }
 
 
@@ -187,102 +268,107 @@ App::~App()
 //////////////////////////////////////////////////////////////////////
 void App::init(QString openFile)
 {
-  //
-  // Settings has to be first
-  //
-  initSettings();
+	QString msg;
+	bool success = false;
 
-  //
-  // Menus, toolbar, statusbar
-  //
-  initMenuBar();
-  initStatusBar();
-  initToolBar();
+	//
+	// Settings has to be first
+	//
+	initSettings();
 
-  //
-  // The main view
-  //
-  initWorkspace();
+	//
+	// Menus, toolbar, statusbar
+	//
+	initMenuBar();
+	initStatusBar();
+	initToolBar();
 
-  //
-  // Plugins
-  //
-  initPlugins();
+	//
+	// The main view
+	//
+	initWorkspace();
 
-  //
-  // Device classes
-  //
-  initDeviceClasses();
+	//
+	// Plugins
+	//
+	initPlugins();
 
-  //
-  // Submasters & values
-  //
-  initSubmasters();
-  initValues();
+	//
+	// Device classes
+	//
+	initDeviceClasses();
 
-  //
-  // Function consumer
-  //
-  initFunctionConsumer();
+	//
+	// Submasters & values
+	//
+	initSubmasters();
+	initValues();
 
-  //
-  // Buses
-  //
-  Bus::init();
+	//
+	// Function consumer
+	//
+	initFunctionConsumer();
 
-  //
-  // Document
-  //
-  initDoc();
+	//
+	// Buses
+	//
+	Bus::init();
 
-  //
-  // Views
-  //
-  initDeviceManagerView();
-  initVirtualConsole();
+	//
+	// Document
+	//
+	initDoc();
+
+	//
+	// Views
+	//
+	initDeviceManagerView();
+	initVirtualConsole();
 
 
-  // Trying to load workspace files
-  // Either specified on command line or the last active workspace
-  bool success = false;
-  if (openFile != "")
-    {
-       success = doc()->loadWorkspaceAs(openFile);
-       if (!success)
-         {
-            QString msg = "File: " + openFile + "\ncould'nt be opened. Please check path and spelling!\n";
-	            msg += "We revert to the previously used workspace.";
-	    QMessageBox::warning(this, KApplicationNameShort, msg,
-			       QMessageBox::Ok, 0);
-         }
-    }
-  //
-  // Load the previous workspace
-  //
-  if (!success)
-    {
-      QString config;
-      if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config))
-       {
-         if (config == Settings::trueValue())
-	  {
-	    if (settings()->get(KEY_LAST_WORKSPACE_NAME, config))
-	      {
-	         success =  doc()->loadWorkspaceAs(config);
-		 if (!success)
-		   {
-                      QString msg = "Previously used workspace file: " + config + "\ncould'nt be opened.";
-	                      msg += "We start over with a new workspace.";
-	              QMessageBox::warning(this, KApplicationNameShort, msg, QMessageBox::Ok, 0);
-		   }
-	      }
-	  }
-       }
-    }
-  if (!success)
-    {
-      newDocument();
-    }
+	// Trying to load workspace files
+	// Either specified on command line or the last active workspace
+	if (openFile != QString::null)
+	{
+		success = doc()->loadWorkspaceAs(openFile);
+		if (!success)
+		{
+			msg = "Unable to open workspace \""
+				+ openFile + "\".\n";
+			msg += "Please check the file's name and path.";
+			QMessageBox::warning(this, KApplicationNameShort, msg);
+
+			newDocument();
+		}
+	}
+
+	//
+	// Load the previous workspace
+	//
+	if (!success)
+	{
+		QString config;
+		if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config) != -1
+		    && config == Settings::trueValue())
+		{
+			config = QString::null;
+
+			if (settings()->get(KEY_LAST_WORKSPACE_NAME, config) != -1
+			    && config.length() > 0)
+			{
+				success = doc()->loadWorkspaceAs(config);
+				if (!success)
+				{
+					msg = "Unable to open workspace \""
+						+ config + "\".\n";
+					QMessageBox::warning(this,
+						KApplicationNameShort, msg);
+
+					newDocument();
+				}
+			}
+		}
+	}
 }
 
 
@@ -301,87 +387,133 @@ void App::initSettings()
 //
 void App::initWorkspace()
 {
-  //
-  // Create workspace
-  //
-  m_workspace = new QWorkspace(this, "Main Workspace");
-  setCentralWidget(m_workspace);
-  m_workspace->setScrollBarsEnabled(true);
+	QString config;
+	int x, y, w, h, wmax, hmax;
+	Display* display = NULL;
 
-  //
-  // Set background picture
-  //
-  QString path;
-  settings()->get(KEY_APP_BACKGROUND, path);
-  m_workspace->setBackgroundPixmap(QPixmap(path));
+	//
+	// Create workspace
+	//
+	m_workspace = new QWorkspace(this, "Main Workspace");
+	setCentralWidget(m_workspace);
+	m_workspace->setScrollBarsEnabled(true);
 
-  //
-  // Set App proportions
-  //
-  QString max;
-  settings()->get(KEY_APP_MAXIMIZED, max);
-  if (max == Settings::trueValue())
-    {
-      showMaximized();
-    }
-  else
-    {
-      QString x, y, w, h;
-      if (settings()->get(KEY_APP_X, x) == -1)
+	//
+	// Set background picture
+	//
+	if (settings()->get(KEY_APP_BACKGROUND, config) != -1
+		&& config.length() > 0)
 	{
-		x = QString("0");
+		m_workspace->setBackgroundPixmap(QPixmap(config));
 	}
-      if (settings()->get(KEY_APP_Y, y) == -1)
+
+	//
+	// Set the maximum values for width & height
+	//
+	display = XOpenDisplay(NULL);
+	if (display != NULL)
 	{
-		y = QString("0");
+		wmax = XDisplayWidth(display, XDefaultScreen(display));
+		hmax = XDisplayHeight(display, XDefaultScreen(display));
 	}
-      if (settings()->get(KEY_APP_W, w) == -1)
+	else
 	{
-		w = QString("640");
+		QMessageBox::warning(this, KApplicationNameShort,
+				"XOpenDisplay failed!");
+		wmax = 800;
+		hmax = 600;
 	}
-      if (settings()->get(KEY_APP_H, h) == -1)
+
+	//
+	// Check that the window isn't positioned out of screen
+	//
+	if (settings()->get(KEY_APP_X, config) == -1
+		|| config.toInt() < 0 || config.toInt() >= wmax)
 	{
-		h = QString("480");
+		x = 0;
 	}
-      setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
-    }
+	else
+	{
+		x = config.toInt();
+	}
 
-  //
-  // Tooltips
-  //
-  QString tips;
-  settings()->get(KEY_APP_SHOW_TOOLTIPS, tips);
-  if (tips == Settings::falseValue())
-    {
-      QToolTip::setGloballyEnabled(false);
-      m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, false);
-    }
-  else
-    {
-      QToolTip::setGloballyEnabled(true);
-      m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, true);
-    }
+	if (settings()->get(KEY_APP_Y, config) == -1
+		|| config.toInt() < 0 || config.toInt() >= hmax)
+	{
+		y = 0;
+	}
+	else
+	{
+		y = config.toInt();
+	}
 
-  //
-  // Main application icon
-  //
-  setIcon(QString(PIXMAPS) + QString("/Q.xpm"));
+	//
+	// Check that the window isn't going to be too big
+	//
+	if (settings()->get(KEY_APP_W, config) == -1
+		|| config.toInt() <= 0 || config.toInt() > wmax)
+	{
+		w = wmax - 100; // Heretic
+	}
+	else
+	{
+		w = config.toInt();
+	}
 
-  //
-  // Get the widget style from settings
-  //
-  QString widgetStyle;
-  m_settings->get(KEY_WIDGET_STYLE, widgetStyle);
+	if (settings()->get(KEY_APP_H, config) == -1
+		|| config.toInt() <= 0 || config.toInt() > hmax)
+	{
+		h = hmax - 100; // Heretic
+	}
+	else
+	{
+		h = config.toInt();
+	}
 
-  //
-  // Construct the style thru stylefactory and set it if it's valid
-  //
-  QStyleFactory f;
-  QStyle* style = f.create(widgetStyle);
-  if (style != NULL)
-    {
-      _qapp.setStyle(style);
-    }
+	XCloseDisplay(display);
+
+	//
+	// Set geometry
+	//
+	setGeometry(x, y, w, h);
+
+	//
+	// Set maximized
+	//
+	if (settings()->get(KEY_APP_MAXIMIZED, config) != -1
+	    && config == Settings::trueValue())
+	{
+		showMaximized();
+	}
+
+	//
+	// Tooltips
+	//
+	if (settings()->get(KEY_APP_SHOW_TOOLTIPS, config) != -1
+	    && config == Settings::falseValue())
+	{
+		QToolTip::setGloballyEnabled(false);
+		m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, false);
+	}
+	else
+	{
+		QToolTip::setGloballyEnabled(true);
+		m_helpMenu->setItemChecked(ID_HELP_TOOLTIPS, true);
+	}
+
+	//
+	// Main application icon
+	//
+	setIcon(QString(PIXMAPS) + QString("/Q.xpm"));
+
+	//
+	// Get the widget style from settings
+	//
+	if (m_settings->get(KEY_WIDGET_STYLE, config) != -1
+	    && config != "")
+	{
+		QApplication::setStyle(config);
+	}
 }
 
 
@@ -396,25 +528,25 @@ void App::initMenuBar()
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")),
 			 "&New", this, SLOT(slotFileNew()),
 			 CTRL+Key_N, ID_FILE_NEW);
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), 
-			 "&Open...", this, SLOT(slotFileOpen()), 
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")),
+			 "&Open...", this, SLOT(slotFileOpen()),
 			 CTRL+Key_O, ID_FILE_OPEN);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")),
-			 "&Save", this, SLOT(slotFileSave()), 
+			 "&Save", this, SLOT(slotFileSave()),
 			 CTRL+Key_S, ID_FILE_SAVE);
-  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()), 
+  m_fileMenu->insertItem("Save &As...", this, SLOT(slotFileSaveAs()),
 			 0, ID_FILE_SAVE_AS);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
-			 "Se&ttings...", this, SLOT(slotFileSettings()), 
+			 "Se&ttings...", this, SLOT(slotFileSettings()),
 			 0, ID_FILE_SETTINGS);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.xpm")),
-			 "E&xit", this, SLOT(slotFileQuit()), 
+			 "E&xit", this, SLOT(slotFileQuit()),
 			 CTRL+Key_Q, ID_FILE_QUIT);
-  
-  connect(m_fileMenu, SIGNAL(aboutToShow()), 
+
+  connect(m_fileMenu, SIGNAL(aboutToShow()),
 	  this, SLOT(slotRefreshMenus()));
 
   ///////////////////////////////////////////////////////////////////
@@ -425,25 +557,25 @@ void App::initMenuBar()
 			  "Device Manager", this,
 			  SLOT(slotViewDeviceManager()),
 			  CTRL + Key_M, ID_VIEW_DEVICE_MANAGER);
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.xpm")), 
-			  "Virtual Console", this, 
-			  SLOT(slotViewVirtualConsole()), 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.xpm")),
+			  "Virtual Console", this,
+			  SLOT(slotViewVirtualConsole()),
 			  CTRL + Key_V, ID_VIEW_VIRTUAL_CONSOLE);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/chaser.png")), 
-			  "Function Manager", this, 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/chaser.png")),
+			  "Function Manager", this,
 			  SLOT(slotViewFunctionTree()),
 			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
   m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/bus.xpm")),
-			  "Bus Properties", this, 
+			  "Bus Properties", this,
 			  SLOT(slotViewBusProperties()), CTRL + Key_B,
 			  ID_VIEW_BUS_PROPERTIES);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")), "Panic!", 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")), "Panic!",
 			  this, SLOT(slotPanic()), CTRL + Key_P,
 			  ID_FUNCTIONS_PANIC);
 
-  connect(m_toolsMenu, SIGNAL(aboutToShow()), 
+  connect(m_toolsMenu, SIGNAL(aboutToShow()),
 	  this, SLOT(slotRefreshMenus()));
 
   ////////////////////////////////////////////////////////////////////
@@ -466,9 +598,9 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Window Menu
   m_windowMenu = new QPopupMenu();
-  connect(m_windowMenu, SIGNAL(aboutToShow()), 
+  connect(m_windowMenu, SIGNAL(aboutToShow()),
 	  this, SLOT(slotRefreshMenus()));
-  
+
   connect(m_windowMenu, SIGNAL(activated(int)),
 	  this, SLOT(slotWindowMenuCallback(int)));
 
@@ -497,7 +629,7 @@ void App::initMenuBar()
   menuBar()->insertItem("&Tools", m_toolsMenu);
   m_toolsMenu->insertItem("&Mode", m_modeMenu);
   menuBar()->insertItem("&Window", m_windowMenu);
-  menuBar()->insertSeparator();  	
+  menuBar()->insertSeparator();
   menuBar()->insertItem("&Help", m_helpMenu);
 
   menuBar()->setSeparator(QMenuBar::InWindowsStyle);
@@ -530,39 +662,39 @@ void App::initStatusBar()
 void App::initToolBar()
 {
   m_toolbar = new QToolBar(this, "Workspace");
-  
-  m_newTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")), 
-			    "New workspace", 0, 
+
+  m_newTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")),
+			    "New workspace", 0,
 			    this, SLOT(slotFileNew()), m_toolbar);
 
-  m_openTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), 
-			     "Open existing workspace", 0, 
+  m_openTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")),
+			     "Open existing workspace", 0,
 			     this, SLOT(slotFileOpen()), m_toolbar);
 
-  m_saveTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")), 
-			     "Save current workspace", 0, 
+  m_saveTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")),
+			     "Save current workspace", 0,
 			     this, SLOT(slotFileSave()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  m_dmTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/device.xpm")), 
-			   "Device manager", 0, 
+  m_dmTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/device.xpm")),
+			   "Device manager", 0,
 			   this, SLOT(slotViewDeviceManager()), m_toolbar);
 
-  m_vcTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.xpm")), 
-			   "Virtual console", 0, 
+  m_vcTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.xpm")),
+			   "Virtual console", 0,
 			   this, SLOT(slotViewVirtualConsole()), m_toolbar);
-  
+
   m_ftTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/chaser.png")),
 			   "Function manager", 0,
 			   this, SLOT(slotViewFunctionTree()), m_toolbar);
 
   m_toolbar->addSeparator();
 
-  m_panicTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")), 
+  m_panicTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")),
 			      "Panic!", 0, this, SLOT(slotPanic()), m_toolbar);
 
-  m_blackOutTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/blackout.xpm")), 
+  m_blackOutTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/blackout.xpm")),
 				 "Blackout", 0, this,
 				 SLOT(slotToggleBlackOut()), m_toolbar);
 
@@ -580,7 +712,7 @@ void App::initFunctionConsumer()
 {
   m_functionConsumer = new FunctionConsumer();
   assert(m_functionConsumer);
-  
+
   m_functionConsumer->init();
   m_functionConsumer->start();
 }
@@ -614,7 +746,7 @@ void App::initDeviceManagerView()
   m_dmView = new DeviceManagerView(workspace());
   m_dmView->initView();
 
-  connect(m_dmView, SIGNAL(closed()), 
+  connect(m_dmView, SIGNAL(closed()),
   	  this, SLOT(slotDeviceManagerViewClosed()));
 
   connect(m_doc, SIGNAL(deviceListChanged()),
@@ -684,11 +816,11 @@ bool App::slotFileNew()
 void App::newDocument()
 {
   setCaption(KApplicationNameLong);
-  
+
   initDoc();
   initDeviceManagerView();
   initVirtualConsole();
-  
+
   //
   // Set the last workspace name
   //
@@ -719,7 +851,7 @@ void App::slotFileOpen()
 
   if (ok)
     {
-      QString fn = QFileDialog::getOpenFileName(m_doc->fileName(), 
+      QString fn = QFileDialog::getOpenFileName(m_doc->fileName(),
 						"*.qlc", this);
       if (fn == QString::null)
 	{
@@ -730,7 +862,7 @@ void App::slotFileOpen()
 	  newDocument();
 	  if (doc()->loadWorkspaceAs(fn) == false)
 	    {
-	      QMessageBox::critical(this, KApplicationNameShort, 
+	      QMessageBox::critical(this, KApplicationNameShort,
 				    "Errors occurred while reading file.");
 	    }
 	}
@@ -751,7 +883,7 @@ void App::slotFileSave()
     {
       if (m_doc->saveWorkspace() == false)
         {
-          QMessageBox::warning(this, KApplicationNameShort, 
+          QMessageBox::warning(this, KApplicationNameShort,
 			       "Unable to save file!");
 	}
     }
@@ -774,12 +906,12 @@ void App::slotFileSaveAs()
 
       if (m_doc->saveWorkspaceAs(fn) == false)
         {
-          QMessageBox::information(this, KApplicationNameShort, 
+          QMessageBox::information(this, KApplicationNameShort,
 				   "Unable to save file!");
 	}
       else
         {
-	  setCaption(KApplicationNameLong + QString(" - ") + 
+	  setCaption(KApplicationNameLong + QString(" - ") +
 		     doc()->fileName());
         }
     }
@@ -939,7 +1071,7 @@ void App::slotRefreshMenus()
       m_fileMenu->setItemEnabled(ID_FILE_QUIT, false);
 
       m_toolsMenu->setItemEnabled(ID_VIEW_FUNCTION_TREE, false);
-      
+
       m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_OPERATE, true);
       m_modeMenu->setItemChecked(ID_FUNCTIONS_MODE_DESIGN, false);
     }
@@ -964,12 +1096,12 @@ void App::slotRefreshMenus()
   int id = 0;
 
   QPtrList <QWidget> wl = workspace()->windowList();
- 
+
   m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/cascadewindow.xpm")), 
-			   "Cascade", this, SLOT(slotWindowCascade()), 
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/cascadewindow.xpm")),
+			   "Cascade", this, SLOT(slotWindowCascade()),
 			   0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/tilewindow.xpm")), "Tile", 
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/tilewindow.xpm")), "Tile",
 			   this, SLOT(slotWindowTile()), 0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();
 
@@ -1011,7 +1143,7 @@ void App::slotWindowMenuCallback(int item)
 	{
 	  assert(false);
 	}
-      
+
       disconnect(m_windowMenu);
     }
 }
@@ -1073,7 +1205,7 @@ void App::slotDocumentBrowserClosed()
       disconnect(m_documentBrowser);
       delete m_documentBrowser;
       m_documentBrowser = NULL;
-    }  
+    }
 }
 
 //
@@ -1120,7 +1252,7 @@ void App::slotHelpTooltips()
 //
 void App::closeEvent(QCloseEvent* e)
 {
-  int result;
+  int result = 0;
 
   if (m_mode == Operate)
     {
@@ -1135,18 +1267,16 @@ void App::closeEvent(QCloseEvent* e)
   if (m_doc->isModified())
     {
       result = QMessageBox::information(this, "Exit...",
-					"Do you want to save before exit?", 
-					QMessageBox::Yes, QMessageBox::No, 
+					"Do you want to save before exit?",
+					QMessageBox::Yes, QMessageBox::No,
 					QMessageBox::Cancel);
       if (result == QMessageBox::Yes)
         {
 	  slotFileSave();
-	  saveSettings();
 	  e->accept();
         }
       else if (result == QMessageBox::No)
         {
-	  saveSettings();
 	  e->accept();
         }
       else if (result == QMessageBox::Cancel)
@@ -1156,9 +1286,10 @@ void App::closeEvent(QCloseEvent* e)
     }
   else
     {
-      saveSettings();
       e->accept();
     }
+
+  saveSettings();
 }
 
 
@@ -1169,14 +1300,16 @@ void App::saveSettings()
 {
   //
   // Main window geometry
-  // 
-  m_settings->set(KEY_APP_X, rect().x());
-  m_settings->set(KEY_APP_Y, rect().y());
-  m_settings->set(KEY_APP_W, rect().width());
-  m_settings->set(KEY_APP_H, rect().height());
+  //
+  m_settings->set(KEY_APP_X, x());
+  m_settings->set(KEY_APP_Y, y());
+  m_settings->set(KEY_APP_W, width());
+  m_settings->set(KEY_APP_H, height());
 
   m_settings->set(KEY_APP_MAXIMIZED, (isMaximized()) ? Settings::trueValue() :
 		  Settings::falseValue());
+
+  settings()->save();
 }
 
 
@@ -1308,55 +1441,63 @@ void App::slotFlashBlackOutIndicator()
 //
 void App::initPlugins()
 {
-  QString path;
+	QString path;
 
-  // First of all, add the dummy output plugin
-  m_dummyOutPlugin = new DummyOutPlugin(NextPluginID++);
-  connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
-	  this, SLOT(slotPluginActivated(Plugin*)));
-  addPlugin(m_dummyOutPlugin);
+	// First of all, add the dummy output plugin
+	m_dummyOutPlugin = new DummyOutPlugin(NextPluginID++);
+	connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
+		this, SLOT(slotPluginActivated(Plugin*)));
+	addPlugin(m_dummyOutPlugin);
 
-  QDir d(PLUGINS);
-  d.setFilter(QDir::Files);
-  if (d.exists() == false || d.isReadable() == false)
-    {
-      fprintf(stderr, "Unable to access plugin directory %s.\n",
-	      (const char*) PLUGINS);
-      return;
-    }
-  
-  QStringList dirlist(d.entryList());
-  QStringList::Iterator it;
-
-  for (it = dirlist.begin(); it != dirlist.end(); ++it)
-    { 
-      // Ignore everything else than .so files
-      if ((*it).right(2) != QString("so"))
+	QDir d(PLUGINS);
+	d.setFilter(QDir::Files);
+	if (d.exists() == false || d.isReadable() == false)
 	{
-	  continue;
+		QString msg;
+		msg = "Unable to access plugin directory:\n";
+		msg += PLUGINS;
+		QMessageBox::warning(this, KApplicationNameShort, msg);
 	}
 
-      path = QString(PLUGINS) + QString("/") + *it;
+	QStringList dirlist(d.entryList());
+	QStringList::Iterator it;
 
-      probePlugin(path);
-    }
+	for (it = dirlist.begin(); it != dirlist.end(); ++it)
+	{
+		// Ignore everything else than .so files
+		if ((*it).right(2) != QString("so"))
+		{
+			continue;
+		}
 
-  //
-  // Use the output plugin that user has selected previously
-  //
-  QString config;
-  settings()->get(KEY_OUTPUT_PLUGIN, config);
-  Plugin* plugin = searchPlugin(config, Plugin::OutputType);
-  if (plugin != NULL)
-    {
-      m_outputPlugin = static_cast<OutputPlugin*> (plugin);
-    }
-  else
-    {
-      m_outputPlugin = m_dummyOutPlugin;
-    }
+		path = QString(PLUGINS) + QString("/") + *it;
 
-  slotPluginActivated(m_outputPlugin);
+		probePlugin(path);
+	}
+
+	//
+	// Use the output plugin that user has selected previously
+	//
+	QString config;
+	if (settings()->get(KEY_OUTPUT_PLUGIN, config) != -1
+		&& config != "")
+	{
+		Plugin* plugin = searchPlugin(config, Plugin::OutputType);
+		if (plugin != NULL)
+		{
+			m_outputPlugin = static_cast<OutputPlugin*> (plugin);
+		}
+		else
+		{
+			m_outputPlugin = m_dummyOutPlugin;
+		}
+	}
+	else
+	{
+		m_outputPlugin = m_dummyOutPlugin;
+	}
+
+	slotPluginActivated(m_outputPlugin);
 }
 
 
@@ -1366,7 +1507,7 @@ void App::initPlugins()
 bool App::probePlugin(QString path)
 {
   void* handle = NULL;
-  
+
   handle = ::dlopen((const char*) path, RTLD_LAZY);
   if (handle == NULL)
     {
@@ -1389,13 +1530,14 @@ bool App::probePlugin(QString path)
 	{
 	  Plugin* plugin = create(App::NextPluginID++);
 	  assert(plugin != NULL);
+	  plugin->setHandle(handle);
 
-	  plugin->setConfigDirectory(QString(getenv("HOME")) + 
-				     QString("/") + QString(QLCUSERDIR) + 
+	  plugin->setConfigDirectory(QString(getenv("HOME")) +
+				     QString("/") + QString(QLCUSERDIR) +
 				     QString("/"));
 	  plugin->loadSettings();
 
-	  connect(plugin, SIGNAL(activated(Plugin*)), 
+	  connect(plugin, SIGNAL(activated(Plugin*)),
 		  this, SLOT(slotPluginActivated(Plugin*)));
 	  addPlugin(plugin);
 
@@ -1564,43 +1706,44 @@ void App::createJoystickContents(QPtrList <QString> &list)
 //
 void App::initDeviceClasses()
 {
-  DeviceClass* dc = NULL;
-  QString path = QString::null;
+	DeviceClass* dc = NULL;
+	QString path = QString::null;
 
-  QDir d(FIXTURES);
-  d.setFilter(QDir::Files);
-  d.setNameFilter("*.deviceclass");
-  if (d.exists() == false || d.isReadable() == false)
-    {
-      QString msg("Unable to read from device directory!");
-      QMessageBox::warning(this, KApplicationNameShort, msg);
-
-      return;
-    }
-
-  QStringList dirlist(d.entryList());
-  QStringList::Iterator it;
-
-  QPtrList <QString> list; // Our stringlist that contains the files' contents
-
-  // Go thru all files
-  for (it = dirlist.begin(); it != dirlist.end(); ++it)
-    {
-      path = QString(FIXTURES) + QString("/") + *it;
-      FileHandler::readFileToList(path, list);
-      dc = DeviceClass::createDeviceClass(list);
-      if (dc != NULL)
+	QDir d(FIXTURES);
+	d.setFilter(QDir::Files);
+	d.setNameFilter("*.deviceclass");
+	if (d.exists() == false || d.isReadable() == false)
 	{
-	  addDeviceClass(dc);
+		QString msg("Unable to access device directory:\n");
+		msg += FIXTURES;
+		QMessageBox::warning(this, KApplicationNameShort, msg);
+
+		return;
 	}
 
-      // The list needs to be cleared between files
-      while (list.isEmpty() == false)
+	QStringList dirlist(d.entryList());
+	QStringList::Iterator it;
+
+	QPtrList <QString> list; // Our stringlist that contains the files' contents
+
+	// Go thru all files
+	for (it = dirlist.begin(); it != dirlist.end(); ++it)
 	{
-	  list.first();
-	  delete list.take();
+		path = QString(FIXTURES) + QString("/") + *it;
+		FileHandler::readFileToList(path, list);
+		dc = DeviceClass::createDeviceClass(list);
+		if (dc != NULL)
+		{
+			addDeviceClass(dc);
+		}
+
+		// The list needs to be cleared between files
+		while (list.isEmpty() == false)
+		{
+			list.first();
+			delete list.take();
+		}
 	}
-    }
 }
 
 
@@ -1610,7 +1753,7 @@ void App::initDeviceClasses()
 void App::addDeviceClass(DeviceClass* dc)
 {
   assert(dc);
-  
+
   if (searchDeviceClass(dc->manufacturer(), dc->model()) == NULL)
     {
       m_deviceClassList.append(dc);
@@ -1624,10 +1767,10 @@ void App::addDeviceClass(DeviceClass* dc)
 //
 // Search for a deviceclass by its manufacturer & model
 //
-DeviceClass* App::searchDeviceClass(const QString &manufacturer, 
+DeviceClass* App::searchDeviceClass(const QString &manufacturer,
 				    const QString &model)
 {
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL;
        d = m_deviceClassList.next())
     {
       if (d->manufacturer() == manufacturer && d->model() == model)
@@ -1645,7 +1788,7 @@ DeviceClass* App::searchDeviceClass(const QString &manufacturer,
 //
 DeviceClass* App::searchDeviceClass(const t_deviceclass_id id)
 {
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL; 
+  for (DeviceClass* d = m_deviceClassList.first(); d != NULL;
        d = m_deviceClassList.next())
     {
       if (d->id() == id)
@@ -1668,7 +1811,10 @@ void App::initSubmasters()
 
 void App::initValues()
 {
-  m_outputPlugin->readRange(0, m_values, KChannelMax);
+  if (m_outputPlugin)
+	m_outputPlugin->readRange(0, m_values, KChannelMax);
+  else
+	qDebug("vitut");
 }
 
 //
@@ -1679,7 +1825,7 @@ void App::setValue(t_channel ch, t_value value)
   if (ch < KChannelMax)
     {
       m_values[ch] = value;
-      
+
       //
       // This is either normalWriter or blackOutWriter, depending
       // on whether blackout is enabled or disabled
@@ -1696,7 +1842,7 @@ void blackOutWriter(t_channel, t_value)
 
 void normalWriter(t_channel ch, t_value value)
 {
-  _app->outputPlugin()->writeChannel(ch, static_cast<t_value> 
+  _app->outputPlugin()->writeChannel(ch, static_cast<t_value>
 		     (((float) value) * _app->submasterValue(ch)));
 }
 

@@ -3,8 +3,96 @@ bin_PROGRAMS = qlc
 INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(prefix)/$(DOCUMENTS)/$(PACKAGE)\" \
+	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\"
+
+noinst_HEADERS = \
+	src/uic_advancedsceneeditor.h \
+	src/uic_assignhotkey.h \
+	src/uic_busproperties.h \
+	src/uic_chasereditor.h \
+	src/uic_consolechannel.h \
+	src/uic_devicelist.h \
+	src/uic_deviceproperties.h \
+	src/uic_dmxaddresstool.h \
+	src/uic_editscenevalue.h \
+	src/uic_editsettingskey.h \
+	src/uic_efxeditor.h \
+	src/uic_functioncollectioneditor.h \
+	src/uic_functiontree.h \
+	src/uic_newdevice.h \
+	src/uic_patterngenerator.h \
+	src/uic_sceneeditor.h \
+	src/uic_sequenceeditor.h \
+	src/uic_settings.h \
+	src/uic_vcbuttonproperties.h \
+	src/uic_vcdocksliderproperties.h \
+	src/uic_vcdockslider.h \
+	src/uic_vcframeproperties.h \
+	src/uic_vcxypadproperties.h \
+	src/uic_virtualconsoleproperties.h \
+	\
+	src/aboutbox.h \
+	src/advancedsceneeditor.h \
+	src/app.h \
+	src/assignhotkey.h \
+	src/bus.h \
+	src/busproperties.h \
+	src/capability.h \
+	src/chasereditor.h \
+	src/chaser.h \
+	src/configitem.h \
+	src/configkeys.h \
+	src/consolechannel.h \
+	src/deviceclass.h \
+	src/deviceconsole.h \
+	src/device.h \
+	src/devicelist.h \
+	src/devicemanagerview.h \
+	src/deviceproperties.h \
+	src/dmxaddresstool.h \
+	src/doc.h \
+	src/documentbrowser.h \
+	src/dummyoutplugin.h \
+	src/editscenevalue.h \
+	src/efxeditor.h \
+	src/efx.h \
+	src/eventbuffer.h \
+	src/floatingedit.h \
+	src/functioncollectioneditor.h \
+	src/functioncollection.h \
+	src/functionconsumer.h \
+	src/function.h \
+	src/functiontree.h \
+	src/generatorarea.h \
+	src/imagecontentspreview.h \
+	src/keybind.h \
+	src/listboxiditem.h \
+	src/logicalchannel.h \
+	src/monitor.h \
+	src/newdevice.h \
+	src/newinputdevice.h \
+	src/patterngenerator.h \
+	src/sceneeditor.h \
+	src/scene.h \
+	src/sequenceeditor.h \
+	src/sequence.h \
+	src/settings.h \
+	src/settingsui.h \
+	src/types.h \
+	src/vcbutton.h \
+	src/vcbuttonproperties.h \
+	src/vcdockarea.h \
+	src/vcdockslider.h \
+	src/vcdocksliderproperties.h \
+	src/vcframe.h \
+	src/vcframeproperties.h \
+	src/vclabel.h \
+	src/vcxypad.h \
+	src/vcxypadproperties.h \
+	src/virtualconsole.h \
+	src/virtualconsoleproperties.h \
+	src/xychannelunit.h
 
 qlc_SOURCES = \
 	src/uic_advancedsceneeditor.cpp \

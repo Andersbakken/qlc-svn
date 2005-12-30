@@ -3,8 +3,14 @@ lib_LTLIBRARIES = libmidiout.la
 INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(prefix)/$(DOCUMENTS)/$(PACKAGE)\" \
+	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\"
+
+noinst_HEADERS = \
+	uic_configuremidiout.h \
+	\
+	configuremidiout.h \
+	midiout.h
 
 libmidiout_la_SOURCES = \
 	uic_configuremidiout.cpp \

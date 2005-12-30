@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   virtualconsole.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -61,7 +61,7 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-VirtualConsole::VirtualConsole(QWidget* parent, const char* name) 
+VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
   : QWidget(parent, name)
 {
   m_dockArea = NULL;
@@ -116,8 +116,8 @@ void VirtualConsole::initView(void)
 
   // Check if VC should be open
   QString config;
-  _app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config);
-  if (config == Settings::trueValue())
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config) != -1 &&
+	config == Settings::trueValue())
     {
       _app->slotViewVirtualConsole();
     }
@@ -128,18 +128,18 @@ void VirtualConsole::initView(void)
     }
 
   // Grid
-  _app->settings()->get(KEY_VIRTUAL_CONSOLE_SNAPGRID, config);
-  if (config == Settings::trueValue())
-    {
-      m_gridEnabled = true;
-    }
-  else
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_SNAPGRID, config) != -1 &&
+	config == Settings::falseValue())
     {
       m_gridEnabled = false;
     }
+  else
+    {
+      m_gridEnabled = true;
+    }
 
   // Grid X
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDX, config))
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDX, config) != -1)
     {
       m_gridX = config.toInt();
     }
@@ -149,7 +149,7 @@ void VirtualConsole::initView(void)
     }
 
   // Grid Y
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDY, config))
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDY, config) != -1)
     {
       m_gridY = config.toInt();
     }
@@ -202,13 +202,13 @@ void VirtualConsole::initMenuBar()
   // Add menu
   //
   m_addMenu = new QPopupMenu();
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.xpm")), 
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.xpm")),
 			"&Button", this, SLOT(slotAddButton()),
 			0, KVCMenuAddButton);
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")), 
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")),
 			"&Slider", this, SLOT(slotAddSlider()),
 			0, KVCMenuAddSlider);
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")), 
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")),
 			"&Frame", this, SLOT(slotAddFrame()),
 			0, KVCMenuAddFrame);
   m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/xypad.xpm")),
@@ -222,10 +222,10 @@ void VirtualConsole::initMenuBar()
   // Tools menu
   //
   m_toolsMenu = new QPopupMenu();
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")), 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
 			  "&Settings...", this, SLOT(slotToolsSettings()),
 			  0, KVCMenuToolsSettings);
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")), 
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")),
 			  "&Default Sliders", this, SLOT(slotToolsSliders()),
 			  0, KVCMenuToolsSliders);
   m_toolsMenu->insertSeparator();
@@ -238,28 +238,28 @@ void VirtualConsole::initMenuBar()
   // Foreground menu
   //
   QPopupMenu* fgMenu = new QPopupMenu();
-  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.xpm")), 
+  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.xpm")),
 		     "&Color...", this, SLOT(slotForegroundColor()),
 		     0, KVCMenuForegroundColor);
-  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")), 
+  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")),
 		     "&Font...", this, SLOT(slotForegroundFont()),
 		     0, KVCMenuForegroundFont);
   fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")),
-		     "&Default", this, SLOT(slotForegroundNone()), 
+		     "&Default", this, SLOT(slotForegroundNone()),
 		     0, KVCMenuForegroundNone);
 
   //
   // Background Menu
   //
   QPopupMenu* bgMenu = new QPopupMenu();
-  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.xpm")), 
+  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.xpm")),
 		     "&Color...", this, SLOT(slotBackgroundColor()),
 		     0, KVCMenuBackgroundColor);
-  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.xpm")), 
+  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.xpm")),
 		     "&Image...", this, SLOT(slotBackgroundImage()),
 		     0, KVCMenuBackgroundPixmap);
   bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")),
-		     "&Default", this, SLOT(slotBackgroundNone()), 
+		     "&Default", this, SLOT(slotBackgroundNone()),
 		     0, KVCMenuBackgroundNone);
   bgMenu->insertSeparator();
   bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")),
@@ -276,29 +276,29 @@ void VirtualConsole::initMenuBar()
   stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.xpm")),
 			"Send to &Back", this, SLOT(slotStackingLower()),
 			0, KVCMenuStackingLower);
-  
+
   //
   // Edit menu
   //
   m_editMenu = new QPopupMenu();
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcut.xpm")), 
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcut.xpm")),
 			 "Cut", this, SLOT(slotEditCut()),
 			 0, KVCMenuEditCut);
-  
+
   m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.xpm")),
 			 "Copy", this, SLOT(slotEditCopy()),
 			 0, KVCMenuEditCopy);
-  
+
   m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.xpm")),
 			 "Paste", this, SLOT(slotEditPaste()),
 			 0, KVCMenuEditPaste);
-  
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")), 
+
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
 			 "Delete", this, SLOT(slotEditDelete()),
 			 0, KVCMenuEditDelete);
-  
+
   m_editMenu->insertSeparator();
-  
+
   m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
 			 "&Properties...", this, SLOT(slotEditProperties()),
 			 0, KVCMenuEditProperties);
@@ -379,7 +379,7 @@ void VirtualConsole::slotToolsSliders()
     {
       m_dockArea->hide();
     }
-  
+
   _app->doc()->setModified(true);
 }
 
@@ -414,19 +414,19 @@ void VirtualConsole::slotEditDelete()
 			//
 			// Bottom frame should not be deleted!
 			//
-			// Maybe the menu item should be removed, 
+			// Maybe the menu item should be removed,
 			// too, but it's a bit complicated. Darn
 			// shared-menu-system-I-had-to-do-one-day
 			//
 		}
-		else 
+		else
 		{
-			int result = QMessageBox::warning(this, 
+			int result = QMessageBox::warning(this,
 					QString(m_selectedWidget->name()),
 					QString("Remove selected widget?"),
 					QMessageBox::Yes,
 					QMessageBox::No);
-			
+
 			if (result == QMessageBox::Yes)
 			{
 				_app->doc()->setModified(true);
@@ -447,7 +447,7 @@ void VirtualConsole::slotEditProperties()
       // sendEvent is also synchronous call, so this is almost
       // the same thing as calling the function directly.
       //
-      QApplication::sendEvent(m_selectedWidget, 
+      QApplication::sendEvent(m_selectedWidget,
 			      new VCMenuEvent(KVCMenuEditProperties));
     }
 }
@@ -461,7 +461,7 @@ void VirtualConsole::slotEditRename()
       // (a previous rename action...?)
       //
       if (m_renameEdit) delete m_renameEdit;
-      
+
       // Create new QLineEdit widget.
       m_renameEdit = new FloatingEdit(m_selectedWidget->parentWidget());
 
@@ -476,9 +476,9 @@ void VirtualConsole::slotEditRename()
       // (might look ugly with big widgets, but who cares :)
       //
       m_renameEdit->setMinimumSize(60, 25);
-      m_renameEdit->setGeometry(m_selectedWidget->x() + 3, 
-				m_selectedWidget->y() + 3, 
-				m_selectedWidget->width() - 6, 
+      m_renameEdit->setGeometry(m_selectedWidget->x() + 3,
+				m_selectedWidget->y() + 3,
+				m_selectedWidget->width() - 6,
 				m_selectedWidget->height() - 6);
       m_renameEdit->setText(m_selectedWidget->caption());
       m_renameEdit->setFont(m_selectedWidget->font());
@@ -527,8 +527,8 @@ void VirtualConsole::slotForegroundColor()
 {
   if (m_selectedWidget)
     {
-      QColor color = 
-	QColorDialog::getColor(m_selectedWidget->paletteForegroundColor(), 
+      QColor color =
+	QColorDialog::getColor(m_selectedWidget->paletteForegroundColor(),
 			       this);
 
       if (color.isValid())
@@ -536,7 +536,7 @@ void VirtualConsole::slotForegroundColor()
 	  _app->doc()->setModified(true);
 	  m_selectedWidget->setPaletteForegroundColor(color);
 	}
-  
+
       _app->doc()->setModified(true);
     }
 }
@@ -548,15 +548,15 @@ void VirtualConsole::slotForegroundNone()
       // Save the background color (note that we are resetting
       // the foreground here!)
       QColor bgc = m_selectedWidget->paletteBackgroundColor();
-      
+
       // Reset palette and font
       m_selectedWidget->unsetPalette();
       m_selectedWidget->unsetFont();
-      
+
       // Now set the backround color again because we only reset
       // foreground options.
       m_selectedWidget->setPaletteBackgroundColor(bgc);
-      
+
       _app->doc()->setModified(true);
     }
 }
@@ -567,7 +567,7 @@ void VirtualConsole::slotBackgroundColor()
     {
       QColor newcolor = QColorDialog::
 	getColor(m_selectedWidget->paletteBackgroundColor(), this);
-      
+
       if (newcolor.isValid() == true)
 	{
 	  m_selectedWidget->setPaletteBackgroundColor(newcolor);
@@ -619,7 +619,7 @@ void VirtualConsole::slotBackgroundNone()
       // Save the foreground color (note that we are resetting
       // the background here!)
       QColor fgc(m_selectedWidget->paletteForegroundColor());
-      
+
       // Reset palette
       m_selectedWidget->unsetPalette();
 
@@ -634,7 +634,7 @@ void VirtualConsole::slotBackgroundFrame()
 {
   if (m_selectedWidget)
     {
-      QApplication::sendEvent(m_selectedWidget, 
+      QApplication::sendEvent(m_selectedWidget,
 			      new VCMenuEvent(KVCMenuBackgroundFrame));
     }
 }
@@ -677,17 +677,17 @@ void VirtualConsole::slotDockAreaHidden(bool areaHidden)
 void VirtualConsole::slotModeChanged()
 {
   QString config;
-  
+
   //
   // Key repeat
   //
-  _app->settings()->get(KEY_VIRTUAL_CONSOLE_KEYREPEAT, config);
-  if (config == Settings::trueValue())
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_KEYREPEAT, config) != -1
+	&& config == Settings::trueValue())
     {
       Display* display;
       display = XOpenDisplay(NULL);
       ASSERT(display != NULL);
-      
+
       if (_app->mode() == App::Design)
 	{
 	  XAutoRepeatOn(display);
@@ -696,15 +696,15 @@ void VirtualConsole::slotModeChanged()
 	{
 	  XAutoRepeatOff(display);
 	}
-      
+
       XCloseDisplay(display);
     }
 
   //
   // Grab keyboard
   //
-  _app->settings()->get(KEY_VIRTUAL_CONSOLE_GRABKB, config);
-  if (config == Settings::trueValue())
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRABKB, config) != -1
+	&& config == Settings::trueValue())
     {
       if (_app->mode() == App::Design)
 	{
@@ -772,7 +772,7 @@ VCFrame* VirtualConsole::getFrame(unsigned int id, VCFrame* widget)
   for (QObjectListIt it(*ol); it.current() != NULL; ++it)
     {
     //helphelphelp
-      if (QString(it.current()->className()) == QString("VCFrame") || 
+      if (QString(it.current()->className()) == QString("VCFrame") ||
 	  QString(it.current()->className()) == QString("VCXYPad"))
 	{
 	  w = getFrame(id, (VCFrame*) it.current());
@@ -789,7 +789,7 @@ VCFrame* VirtualConsole::getFrame(unsigned int id, VCFrame* widget)
 void VirtualConsole::createWidget(QPtrList <QString> &list)
 {
   QString t;
-  
+
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
@@ -805,9 +805,9 @@ void VirtualConsole::createWidget(QPtrList <QString> &list)
 	      m_drawArea->init();
 	      m_drawArea->setBottomFrame(true);
 	      m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	      
+
 	      m_layout->addWidget(m_drawArea, 1);
-	      
+
 	      m_drawArea->createContents(list);
 
 	      m_drawArea->show();
@@ -909,7 +909,7 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
   QString t;
 
   VCFrame::ResetID();
-  
+
   if (m_drawArea != NULL)
     {
       delete m_drawArea;
@@ -970,8 +970,8 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
 
   // Check if VC should be open
   QString config;
-  _app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config);
-  if (config == Settings::trueValue())
+  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config) != -1
+	&& config == Settings::trueValue())
     {
       _app->slotViewVirtualConsole();
     }

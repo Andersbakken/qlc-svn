@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   dummyoutplugin.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -27,11 +27,13 @@
 
 #define ID_ACTIVATE        20
 
+const QString DummyOutPlugin::PluginName = QString( "Dummy Output" );
+
 DummyOutPlugin::DummyOutPlugin(int id) : OutputPlugin(id)
 {
   m_open = false;
   m_version = 0x00010000;
-  m_name = QString("Dummy Output");
+  m_name = DummyOutPlugin::PluginName;
 
   for (t_channel i = 0; i < KChannelMax; i++)
     {
@@ -76,7 +78,7 @@ QString DummyOutPlugin::infoText()
   str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
   str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
   str += QString("<TR><TD BGCOLOR=\"black\">");
-  str += QString("<FONT COLOR=\"white\" SIZE=\"5\">"); 
+  str += QString("<FONT COLOR=\"white\" SIZE=\"5\">");
   str += name() + QString("</FONT></TD></TR></TABLE>");
   str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 
@@ -118,7 +120,7 @@ void DummyOutPlugin::contextMenu(QPoint pos)
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem("Activate", ID_ACTIVATE);
 
-  connect(menu, SIGNAL(activated(int)), 
+  connect(menu, SIGNAL(activated(int)),
 	this, SLOT(slotContextMenuCallback(int)));
   menu->exec(pos, 0);
   delete menu;
