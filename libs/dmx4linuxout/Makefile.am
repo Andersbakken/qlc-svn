@@ -9,7 +9,7 @@ INCLUDES = @QT_CFLAGS@ \
 noinst_HEADERS = \
 	uic_configuredmx4linuxout.h \
 	\
-	configuredmx4linuxout.cpp \
+	configuredmx4linuxout.h \
 	dmx4linuxout.h
 
 libdmx4linuxout_la_SOURCES = \
@@ -34,6 +34,6 @@ moc_%.cpp: %.h
 uic_%.h: %.ui
 	$(UIC) $< -o $@
 
-# UIC sources 
+# UIC sources
 uic_%.cpp: uic_%.h
 	$(UIC) -impl $< $*.ui -o $@

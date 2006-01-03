@@ -71,7 +71,6 @@ noinst_HEADERS = \
 	src/logicalchannel.h \
 	src/monitor.h \
 	src/newdevice.h \
-	src/newinputdevice.h \
 	src/patterngenerator.h \
 	src/sceneeditor.h \
 	src/scene.h \
@@ -183,7 +182,6 @@ qlc_SOURCES = \
 	src/main.cpp \
 	src/monitor.cpp \
 	src/newdevice.cpp \
-	src/newinputdevice.cpp \
 	src/patterngenerator.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
@@ -242,7 +240,6 @@ qlc_SOURCES = \
 	src/moc_logicalchannel.cpp \
 	src/moc_monitor.cpp \
 	src/moc_newdevice.cpp \
-	src/moc_newinputdevice.cpp \
 	src/moc_patterngenerator.cpp \
 	src/moc_scene.cpp \
 	src/moc_sceneeditor.cpp \

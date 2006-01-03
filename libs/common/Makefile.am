@@ -6,6 +6,13 @@ INCLUDES = @QT_CFLAGS@ \
 	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\"
 
+noinst_HEADERS = \
+	filehandler.h \
+	ledbar.h \
+	minmax.h \
+	outputplugin.h \
+	plugin.h
+
 libqlccommon_la_SOURCES = \
 	filehandler.cpp \
 	ledbar.cpp \
@@ -15,7 +22,7 @@ libqlccommon_la_SOURCES = \
 	moc_filehandler.cpp \
 	moc_ledbar.cpp \
 	moc_plugin.cpp \
-	moc_outputplugin.cpp	
+	moc_outputplugin.cpp
 
 libqlccommon_la_LIBADD = @QT_LIBS@
 
