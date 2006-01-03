@@ -1,0 +1,142 @@
+# Created by QLC Device Class Editor
+#
+Entry = Device Class
+Manufacturer = Elation
+Model = Vision 250
+Type = Scanner
+#
+Entry = Channel
+Number = 0
+Name = Pan
+0-255 = Pan movement coarse control
+#
+Entry = Channel
+Number = 1
+Name = Tilt
+0-255 = Tilt movement coarse control
+#
+Entry = Channel
+Number = 2
+Name = Pan fine
+0-255 = Fine control of pan movement
+#
+Entry = Channel
+Number = 3
+Name = Tilt fine
+0-255 = Fine control of tilt
+#
+Entry = Channel
+Number = 4
+Name = Speed of pan/tilt movement
+0-0 = Max. speed (tracking mode)
+1-249 = Min speed
+250-255 = Max speed, vector mode, black-out while any change
+#
+Entry = Channel
+Number = 5
+Name = Lamp on/off, reset, fan speed control
+0-127 = From max to min fan speed
+128-139 = Lamp on, reset
+140-229 = No function
+230-239 = Lamp off after 3 sec
+240-255 = No function
+#
+Entry = Channel
+Number = 6
+Name = Colours
+0-0 = Open, white
+10-20 = Turquoise
+21-31 = Red
+32-41 = Cyan
+42-52 = Light green
+53-63 = Magenta
+64-73 = Light blue
+74-84 = Yellow
+85-95 = Green
+96-105 = Pink
+106-116 = Blue
+117-127 = Orange
+128-189 = Forwards rainbow effect from fast to slow
+190-193 = No rotation
+194-255 = Backwards rainbow effect from slow to fast
+#
+Entry = Channel
+Number = 7
+Name = No function
+#
+Entry = Channel
+Number = 8
+Name = Frost, correction filters, 3-facet prism, Macros
+0-95 = Open position (hole)
+96-103 = Frost filter
+104-135 = 3-facet prism
+136-143 = 3200 K correction filter
+144-151 = 5600 K correction filter
+152-159 = UV filter
+160-167 = Macro 1
+168-175 = Macro 2
+176-183 = Macro 3
+184-191 = Macro 4
+192-199 = Macro 5
+200-207 = Macro 6
+208-215 = Macro 7
+216-223 = Macro 8
+224-231 = Macro 9
+232-239 = Macro 10
+240-247 = Macro 11
+248-255 = Macro 12
+#
+Entry = Channel
+Number = 9
+Name = 3-facet prism rotation control
+0-0 = No rotation
+1-126 = Forwards rotation from fast to slow
+127-128 = No rotation
+129-255 = Backwards rotation from slow to fast
+#
+Entry = Channel
+Number = 10
+Name = Rotating gobos; continous rotation
+0-31 = Open
+32-63 = Rotation gobo 1 (dichroic)
+64-95 = Rotation gobo 2 (glass)
+96-127 = Rotation gobo 3 (metal)
+128-159 = Rotation gobo 4 (metal)
+160-191 = Rotation gobo 5 (metal)
+192-223 = Rotation gobo 6 (metal)
+224-255 = Rotation gobo wheel, cont. rotation from slow to fast
+#
+Entry = Channel
+Number = 11
+Name = Rotating gobo indexing, rotating gobo rotation
+0-127 = Gobo indexing
+128-191 = Forwards gobo rotation from fast to slow
+192-192 = No rotation
+193-255 = Backwards gobo rotation from slow to fast
+#
+Entry = Channel
+Number = 12
+Name = No function
+0-255 = Proportional focus control
+#
+Entry = Channel
+Number = 13
+Name = Focus
+#
+Entry = Channel
+Number = 14
+Name = Shutter, strobe
+0-31 = Shutter closed
+32-63 = No function, shutter open
+64-95 = Strobe effect from slow to fast (max. 10 flashes/sec)
+96-127 = No function, shutter open
+128-159 = Pulse effect in sequences
+160-191 = No function (shutter open)
+192-223 = Random strobe effect from slow to fast
+224-255 = No function (shutter open)
+#
+Entry = Channel
+Number = 15
+Name = Dimmer intensity
+0-255 = Gradual adjustment of the dimmer intensity from 0 to 100%
+#

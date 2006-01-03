@@ -6,8 +6,8 @@ dist_fixtures_DATA = \
 	Botex-DPX620.deviceclass \
 	Botex-T-4.deviceclass \
 	Botex-T-6.deviceclass \
-	Elation-Color\ Spot\ 150.deviceclass \
-	Elation-Vision\ 250.deviceclass \
+	Elation-Color-Spot-150.deviceclass \
+	Elation-Vision-250.deviceclass \
 	Futurelight-AHS-150.deviceclass \
 	Futurelight-CF-200.deviceclass \
 	Futurelight-CY-200.deviceclass \
