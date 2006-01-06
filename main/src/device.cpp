@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   device.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,7 +23,7 @@
 #include "doc.h"
 #include "device.h"
 #include "scene.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "deviceconsole.h"
 #include "monitor.h"
 #include "deviceproperties.h"
@@ -47,7 +47,7 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-Device::Device() 
+Device::Device()
   : QObject(),
     m_deviceClass (            NULL ),
     m_address     ( KChannelInvalid ),
@@ -139,7 +139,7 @@ Device* Device::create(QPtrList <QString> &list)
       else if (*s == QString("Name"))
 	{
 	  name = *(list.next());
-	}		      
+	}
       else if (*s == QString("Manufacturer"))
 	{
 	  manufacturer = *(list.next());
@@ -182,7 +182,7 @@ Device* Device::create(QPtrList <QString> &list)
       msg += QString("Manufacturer: ") + manufacturer + QString("\n");
       msg += QString("Model: ") + model + QString("\n");
       msg += QString("No such device class");
-      
+
       QMessageBox::critical(_app, KApplicationNameShort, msg);
 
       return NULL;
@@ -375,7 +375,7 @@ QString Device::infoText()
   str += QString("</TD>");
   str += QString("</TR>");
 
-  for (t_channel ch = 0; ch < (t_channel) m_deviceClass->channels()->count(); 
+  for (t_channel ch = 0; ch < (t_channel) m_deviceClass->channels()->count();
        ch++)
     {
       t.setNum(ch + 1);
@@ -433,7 +433,7 @@ void Device::slotConsoleClosed()
 void Device::viewMonitor()
 {
   t_channel channels = deviceClass()->channels()->count();
-  
+
   if (m_monitor == NULL)
     {
       m_monitor = new Monitor(_app->workspace(), universeAddress(),
@@ -465,6 +465,6 @@ void Device::viewProperties()
   DeviceProperties* dp = new DeviceProperties(this);
   dp->init();
   dp->exec();
-  
+
   delete dp;
 }

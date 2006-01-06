@@ -26,7 +26,8 @@
 #include "vcdockslider.h"
 #include "bus.h"
 #include "app.h"
-#include "settings.h"
+#include "common/settings.h"
+#include "configkeys.h"
 
 extern App* _app;
 

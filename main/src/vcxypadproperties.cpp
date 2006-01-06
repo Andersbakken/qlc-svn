@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   vcbuttonproperties.h
-  
+
   Copyright (C) 2005, Stefan Krumm, Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,7 +35,7 @@
 #include "deviceclass.h"
 #include "logicalchannel.h"
 #include "device.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "configkeys.h"
 #include "app.h"
 #include "doc.h"
@@ -72,22 +72,22 @@ void VCXYPadProperties::init()
 
 	m_removeX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
 	m_removeY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
-		
+
 	fillChannelList(m_listX, m_parent->channelsX());
 	fillChannelList(m_listY, m_parent->channelsY());
 
 	m_maxYSpin->setValue(255);
 	m_maxXSpin->setValue(255);
-	
+
 	m_reverseXCombo->insertItem(Settings::trueValue(), KComboItemReverse);
 	m_reverseXCombo->insertItem(Settings::falseValue(), KComboItemNormal);
-	
+
 	m_reverseYCombo->insertItem(Settings::trueValue(), KComboItemReverse);
 	m_reverseYCombo->insertItem(Settings::falseValue(), KComboItemNormal);
-	
+
 	m_listX->setSelected(m_listX->firstChild(), true);
 	slotSelectionXChanged(m_listX->firstChild());
-	
+
 	m_listY->setSelected(m_listY->firstChild(), true);
 	slotSelectionYChanged(m_listY->firstChild());
 }
@@ -95,7 +95,7 @@ void VCXYPadProperties::init()
 /**
  * Fill a channel list with XYChannelUnit objects
  */
-void VCXYPadProperties::fillChannelList(QListView *list, 
+void VCXYPadProperties::fillChannelList(QListView *list,
 					QPtrList<XYChannelUnit>* channels)
 {
 	QPtrListIterator<XYChannelUnit> it( *channels );
@@ -104,7 +104,7 @@ void VCXYPadProperties::fillChannelList(QListView *list,
 	while ( (e = *it) != NULL)
 	{
 		++it;
-		
+
 		createChannelEntry(list, e->deviceID(),
 				e->channel(),
 				e->lo(),
@@ -127,7 +127,7 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 	LogicalChannel* log_ch;
 	QListViewItem* item;
 	QString s;
-	
+
 	device = _app->doc()->device(deviceID);
 	if (device == NULL)
 	{
@@ -135,10 +135,10 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 	}
 
 	item = new QListViewItem(parent);
-	
+
 	// Device name
 	item->setText(KColumnDeviceName, device->name());
-				
+
 	// Channel name
 	log_ch = device->deviceClass()->channels()->at(channel);
 	if (log_ch)
@@ -152,15 +152,15 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 		delete item;
 		return NULL;
 	}
-	
+
 	// High limit
 	s.sprintf("%.3d", hi);
 	item->setText(KColumnHi, s);
-	
+
 	// Low limit
 	s.sprintf("%.3d", lo);
 	item->setText(KColumnLo, s);
-	
+
 	// Reverse
 	if (reverse)
 	{
@@ -170,15 +170,15 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 	{
 		item->setText(KColumnReverse, Settings::falseValue());
 	}
-	
+
 	// Device ID
 	s.setNum(deviceID);
 	item->setText(KColumnDeviceID, s);
-	
+
 	// Channel number
 	s.sprintf("%.3d", channel);
 	item->setText(KColumnChannelNumber, s);
-	
+
 	return item;
 }
 
@@ -214,12 +214,12 @@ void VCXYPadProperties::slotAdd(QListView *list)
 	{
 		dl->setCaption("Add a channel to the list of vertical axes");
 	}
-	
+
 	if (dl->exec() == QDialog::Accepted)
 	{
 		t_device_id did = dl->selectedDeviceID();
 		t_channel ch = dl->selectedChannel();
-		
+
 		if (did != KNoID && ch != KChannelInvalid)
 		{
 			createChannelEntry(list, did, ch,
@@ -228,7 +228,7 @@ void VCXYPadProperties::slotAdd(QListView *list)
 					false);
 		}
 	}
-	
+
 	delete dl;
 }
 
@@ -330,17 +330,17 @@ void VCXYPadProperties::slotContextMenuRequested(QListViewItem* item,
 {
 	int result;
 	QString s;
-	
+
 	if (column == KColumnLo)
 	{
 		result = invokeDMXValueMenu(point);
-	
+
 		if (result <= KChannelValueMax &&
 		result >= KChannelValueMin)
 		{
 			s.sprintf("%.3d", result);
 			item->setText(KColumnLo, s);
-			
+
 			slotSelectionXChanged(m_listX->currentItem());
 			slotSelectionYChanged(m_listY->currentItem());
 		}
@@ -348,13 +348,13 @@ void VCXYPadProperties::slotContextMenuRequested(QListViewItem* item,
 	else if (column == KColumnHi)
 	{
 		result = invokeDMXValueMenu(point);
-	
+
 		if (result <= KChannelValueMax &&
 		result >= KChannelValueMin)
 		{
 			s.sprintf("%.3d", result);
 			item->setText(KColumnHi, s);
-			
+
 			slotSelectionXChanged(m_listX->currentItem());
 			slotSelectionYChanged(m_listY->currentItem());
 		}
@@ -366,7 +366,7 @@ void VCXYPadProperties::slotContextMenuRequested(QListViewItem* item,
 		menu->insertSeparator();
 		menu->insertItem(Settings::trueValue(), KComboItemReverse);
 		menu->insertItem(Settings::falseValue(), KComboItemNormal);
-		
+
 		result = menu->exec(point);
 		if (result == KComboItemNormal)
 		{
@@ -376,10 +376,10 @@ void VCXYPadProperties::slotContextMenuRequested(QListViewItem* item,
 		{
 			item->setText(KColumnReverse, Settings::trueValue());
 		}
-		
+
 		slotSelectionXChanged(m_listX->currentItem());
 		slotSelectionYChanged(m_listY->currentItem());
-		
+
 		delete menu;
 	}
 }
@@ -390,7 +390,7 @@ void VCXYPadProperties::slotContextMenuRequested(QListViewItem* item,
 int VCXYPadProperties::invokeDMXValueMenu(const QPoint &point)
 {
 	int result;
-	
+
 	QPopupMenu* menu = new QPopupMenu;
 	QPtrList <QPopupMenu> deleteList;
 
@@ -413,7 +413,7 @@ int VCXYPadProperties::invokeDMXValueMenu(const QPoint &point)
 			num.setNum(i + j);
 			sub->insertItem(num, i + j);
 		}
-      
+
 		menu->insertItem(top, sub);
 	}
 
@@ -424,39 +424,39 @@ int VCXYPadProperties::invokeDMXValueMenu(const QPoint &point)
 		delete deleteList.take(0);
 	}
 
-	delete menu;	
+	delete menu;
 
 	return result;
 }
 
 void VCXYPadProperties::slotOKClicked()
-{	
+{
 	QPtrList<XYChannelUnit>* list;
 
 	// Update the X list
 	list = m_parent->channelsX();
-	
+
 	list->setAutoDelete(true);
 	list->clear();
 	list->setAutoDelete(false);
-	
+
 	QListViewItemIterator xit(m_listX);
-	
+
 	while (xit.current())
 	{
 		list->append(createChannelUnit(*xit));
 		++xit;
 	}
-	
+
 	// Update the Y list
 	list = m_parent->channelsY();
-	
+
 	list->setAutoDelete(true);
 	list->clear();
 	list->setAutoDelete(false);
-	
+
 	QListViewItemIterator yit(m_listY);
-	
+
 	while (yit.current())
 	{
 		list->append(createChannelUnit(*yit));

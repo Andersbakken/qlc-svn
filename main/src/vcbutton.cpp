@@ -30,9 +30,9 @@
 #include "virtualconsole.h"
 #include "keybind.h"
 #include "devicemanagerview.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "configkeys.h"
-#include "../../libs/common/minmax.h"
+#include "common/minmax.h"
 
 #include <qmessagebox.h>
 #include <qpushbutton.h>
@@ -230,7 +230,7 @@ void VCButton::saveToFile(QFile& file, unsigned int parentID)
 
   s.sprintf("BindPress = %d\n", m_keyBind->pressAction());
   file.writeBlock((const char*) s, s.length());
-  
+
   s.sprintf("BindRelease = %d\n", m_keyBind->releaseAction());
   file.writeBlock((const char*) s, s.length());
 }
@@ -314,7 +314,7 @@ void VCButton::createContents(QPtrList <QString> &list)
 	{
 	  QString t;
 	  t = *(list.next());
-	  
+
 	  QPixmap pm(t);
 	  if (pm.isNull() == false)
 	    {
@@ -372,14 +372,14 @@ void VCButton::setKeyBind(const KeyBind* kb)
 {
   assert(kb);
 
-  if (m_keyBind) 
+  if (m_keyBind)
     {
       disconnect(m_keyBind);
       delete m_keyBind;
     }
 
   m_keyBind = new KeyBind(kb);
-  
+
   connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
   connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 }
@@ -484,7 +484,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
   if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true)
-	{	  
+	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
 	  _app->doc()->setModified(true);
@@ -494,7 +494,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
 	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
 	  p.setX(p.x() - m_mousePressPoint.x());
 	  p.setY(p.y() - m_mousePressPoint.y());
-		
+
 	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
@@ -526,7 +526,7 @@ void VCButton::resizeTo(QPoint p)
     {
       p.setX(parentWidget()->width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {
@@ -563,7 +563,7 @@ void VCButton::moveTo(QPoint p)
     {
       p.setX(parentWidget()->width() - rect().width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {
@@ -677,7 +677,7 @@ void VCButton::pressFunction()
 	  attachFunction(KNoID);
 	}
     }
-    
+
   else if (m_keyBind->pressAction() == KeyBind::PressToggle && m_isExclusive == true)
     {
       QObjectList* l = parentWidget()->queryList("VCButton");
@@ -788,7 +788,7 @@ void VCButton::attachFunction(t_function_id id)
 
 void VCButton::customEvent(QCustomEvent* e)
 {
-  if (e->type() == KFunctionStopEvent && 
+  if (e->type() == KFunctionStopEvent &&
       ((FunctionStopEvent*)e)->functionID() == m_functionID)
     {
       setOn(false);

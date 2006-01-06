@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   dmxaddresstool.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -29,11 +29,10 @@
 
 #include "dmxaddresstool.h"
 #include "app.h"
-#include "settings.h"
 
 extern App* _app;
 
-DMXAddressTool::DMXAddressTool(QWidget* parent, const char* name) 
+DMXAddressTool::DMXAddressTool(QWidget* parent, const char* name)
   : UI_DMXAddressTool(parent, name, true)
 {
   m_address = 1;
@@ -69,18 +68,18 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 256;
       m_256Slider->setValue(0);
     }
-  
+
   number -= 128;
   if (number >= 0)
     {
       m_128Slider->setValue(1);
     }
-  else 
+  else
     {
       number += 128;
       m_128Slider->setValue(0);
     }
-  
+
   number -= 64;
   if (number >= 0)
     {
@@ -91,7 +90,7 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 64;
       m_64Slider->setValue(0);
     }
-  
+
   number -= 32;
   if (number >= 0)
     {
@@ -102,7 +101,7 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 32;
       m_32Slider->setValue(0);
     }
-  
+
   number -= 16;
   if (number >= 0)
     {
@@ -113,7 +112,7 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 16;
       m_16Slider->setValue(0);
     }
-  
+
   number -= 8;
   if (number >= 0)
     {
@@ -124,7 +123,7 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 8;
       m_8Slider->setValue(0);
     }
-  
+
   number -= 4;
   if (number >= 0)
     {
@@ -135,7 +134,7 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 4;
       m_4Slider->setValue(0);
     }
-  
+
   number -= 2;
   if (number >= 0)
     {
@@ -146,7 +145,7 @@ void DMXAddressTool::slotDecimalChanged(const QString &text)
       number += 2;
       m_2Slider->setValue(0);
     }
-  
+
   number -= 1;
   if (number >= 0)
     {

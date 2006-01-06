@@ -4,7 +4,9 @@ INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
 	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\"
+	-DPLUGINS=\"$(PLUGINS)\" \
+	\
+	-I$(top_srcdir)/libs
 
 noinst_HEADERS = \
 	src/uic_deviceclasseditor.h \
@@ -36,12 +38,10 @@ dce_SOURCES = \
 	../main/src/capability.cpp \
 	../main/src/deviceclass.cpp \
 	../main/src/logicalchannel.cpp \
-	../main/src/settings.cpp \
 	\
 	../main/src/moc_capability.cpp \
 	../main/src/moc_deviceclass.cpp \
-	../main/src/moc_logicalchannel.cpp \
-	../main/src/moc_settings.cpp
+	../main/src/moc_logicalchannel.cpp
 
 dce_LDADD = ../libs/common/libqlccommon.la @QT_LIBS@
 

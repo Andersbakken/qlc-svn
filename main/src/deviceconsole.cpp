@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   deviceconsole.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -31,7 +31,7 @@
 #include "deviceconsole.h"
 #include "consolechannel.h"
 #include "configkeys.h"
-#include "settings.h"
+#include "common/settings.h"
 
 extern App* _app;
 
@@ -61,7 +61,7 @@ void DeviceConsole::setDevice(t_device_id id)
 
   Device* device = _app->doc()->device(m_deviceID);
   assert(device);
-  
+
   // Set an icon
   setIcon(QPixmap(PIXMAPS + QString("/console.xpm")));
 
@@ -83,16 +83,16 @@ void DeviceConsole::setDevice(t_device_id id)
       unit->setDevice(m_deviceID);
       unit->setChannel(i);
       unit->update();
-      
+
       // Channel updates to scene editor
       connect(unit, SIGNAL(changed(t_channel, t_value, Scene::ValueType)),
-	      m_sceneEditor, SLOT(slotChannelChanged(t_channel, t_value, 
+	      m_sceneEditor, SLOT(slotChannelChanged(t_channel, t_value,
 						     Scene::ValueType)));
 
       // Scene editor updates to channels
       connect(m_sceneEditor, SIGNAL(sceneActivated(SceneValue*,t_channel)),
 	      unit, SLOT(slotSceneActivated(SceneValue*, t_channel)));
-      
+
       m_unitList.append(unit);
     }
 

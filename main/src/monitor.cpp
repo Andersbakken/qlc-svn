@@ -22,7 +22,7 @@
 #include "monitor.h"
 #include "app.h"
 #include "doc.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "configkeys.h"
 
 #include <qapplication.h>

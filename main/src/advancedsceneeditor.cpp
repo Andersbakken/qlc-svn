@@ -13,7 +13,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -24,7 +24,7 @@
 #include "doc.h"
 #include "function.h"
 #include "device.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "logicalchannel.h"
 #include "capability.h"
 #include "scene.h"
@@ -97,7 +97,7 @@ void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
     {
     case KColumnNumber:
       break;
-      
+
     case KColumnChannel:
       break;
 
@@ -126,7 +126,7 @@ void AdvancedSceneEditor::invokePresetMenu(const QPoint &pos)
   menu->insertSeparator();
 
   int i = 0;
-  for (Capability* c = m_currentChannel->capabilities()->first(); c != NULL; 
+  for (Capability* c = m_currentChannel->capabilities()->first(); c != NULL;
        c = m_currentChannel->capabilities()->next())
     {
       menu->insertItem(c->name(), i++);
@@ -134,7 +134,7 @@ void AdvancedSceneEditor::invokePresetMenu(const QPoint &pos)
 
   if (i > 0)
     {
-      connect(menu, SIGNAL(activated(int)), 
+      connect(menu, SIGNAL(activated(int)),
 	      this, SLOT(slotPresetMenuActivated(int)));
     }
 
@@ -175,7 +175,7 @@ void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 
   menu->insertItem("Value", KNoID);
   menu->insertSeparator();
-  connect(menu, SIGNAL(activated(int)), 
+  connect(menu, SIGNAL(activated(int)),
 	  this, SLOT(slotValueMenuActivated(int)));
 
   menu->insertItem("0", 0);
@@ -194,9 +194,9 @@ void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 	  num.setNum(i + j);
 	  sub->insertItem(num, i + j);
 	}
-      
+
       menu->insertItem(top, sub);
-      connect(sub, SIGNAL(activated(int)), 
+      connect(sub, SIGNAL(activated(int)),
 	      this, SLOT(slotValueMenuActivated(int)));
     }
 
@@ -229,13 +229,13 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
   else
     {
       int channel = m_currentChannel->channel();
-      
+
       m_scene->set(channel, value, m_scene->channelValue(channel).type);
-      
+
       QString s;
       s.sprintf("%.3d", value);
       m_sceneContents->currentItem()->setText(KColumnValue, s);
-      
+
       Capability* c = m_currentChannel->searchCapability(value);
       if (c == NULL)
 	{
@@ -245,7 +245,7 @@ void AdvancedSceneEditor::slotValueMenuActivated(int value)
 	{
 	  s = c->name();
 	}
-      
+
       m_sceneContents->currentItem()->setText(KColumnPreset, s);
       setDirty(true);
     }
@@ -277,7 +277,7 @@ void AdvancedSceneEditor::invokeTypeMenu(const QPoint &pos)
       menu->setItemChecked(Scene::NoSet, true);
     }
 
-  connect(menu, SIGNAL(activated(int)), 
+  connect(menu, SIGNAL(activated(int)),
 	  this, SLOT(slotTypeMenuActivated(int)));
 
   menu->exec(pos);
@@ -373,10 +373,10 @@ void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
     {
       int ch = item->text(KColumnNumber).toInt() - 1;
       t_device_id did = m_scene->device();
-      
+
       if (did != KNoID)
 	{
-	  m_currentChannel = 
+	  m_currentChannel =
 	    _app->doc()->device(did)->deviceClass()->channels()->at(ch);
 	}
       else
@@ -446,7 +446,7 @@ void AdvancedSceneEditor::slotEditValueClicked()
 
   SceneValue value = m_scene->channelValue(ch);
 
-  EditSceneValue* esv = new EditSceneValue((QWidget*) this, 
+  EditSceneValue* esv = new EditSceneValue((QWidget*) this,
 					   m_currentChannel, value);
 
   if (esv->exec() == QDialog::Accepted)
@@ -465,7 +465,7 @@ void AdvancedSceneEditor::slotEditValueClicked()
 	{
 	  type = Scene::NoSet;
 	}
-      
+
       m_scene->set(ch, esv->value(), type);
       setDirty(true);
     }
@@ -474,7 +474,7 @@ void AdvancedSceneEditor::slotEditValueClicked()
 
   updateChannelList();
 
-  for (QListViewItem* item = m_sceneContents->firstChild(); 
+  for (QListViewItem* item = m_sceneContents->firstChild();
        item != NULL; item = item->nextSibling())
     {
       if (item->text(KColumnNumber).toInt() - 1 == ch)
@@ -518,9 +518,9 @@ void AdvancedSceneEditor::updateChannelList()
   for (LogicalChannel* ch = cl->first(); ch != NULL; ch = cl->next())
     {
       t_value value = m_scene->channelValue(ch->channel()).value;
-      
+
       Capability* c = ch->searchCapability(value);
-      
+
       if (c == NULL)
 	{
 	  cap = QString("<Unknown>");
@@ -529,10 +529,10 @@ void AdvancedSceneEditor::updateChannelList()
 	{
 	  cap = c->name();
 	}
-      
+
       num.sprintf("%03d", ch->channel() + 1);
       val.sprintf("%03d", m_scene->channelValue(ch->channel()).value);
-      item = new QListViewItem(m_sceneContents, num, ch->name(), cap, val, 
+      item = new QListViewItem(m_sceneContents, num, ch->name(), cap, val,
 			       m_scene->valueTypeString(ch->channel()));
     }
 }

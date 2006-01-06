@@ -20,7 +20,7 @@
 */
 
 #include "devicemanagerview.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "app.h"
 #include "doc.h"
 #include "configkeys.h"

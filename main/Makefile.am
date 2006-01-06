@@ -4,7 +4,9 @@ INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
 	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\"
+	-DPLUGINS=\"$(PLUGINS)\" \
+	\
+	-I$(top_srcdir)/libs
 
 noinst_HEADERS = \
 	src/uic_advancedsceneeditor.h \
@@ -23,8 +25,8 @@ noinst_HEADERS = \
 	src/uic_newdevice.h \
 	src/uic_patterngenerator.h \
 	src/uic_sceneeditor.h \
-	src/uic_sequenceeditor.h \
 	src/uic_settings.h \
+	src/uic_sequenceeditor.h \
 	src/uic_vcbuttonproperties.h \
 	src/uic_vcdocksliderproperties.h \
 	src/uic_vcdockslider.h \
@@ -41,7 +43,6 @@ noinst_HEADERS = \
 	src/capability.h \
 	src/chasereditor.h \
 	src/chaser.h \
-	src/configitem.h \
 	src/configkeys.h \
 	src/consolechannel.h \
 	src/deviceclass.h \
@@ -73,10 +74,9 @@ noinst_HEADERS = \
 	src/patterngenerator.h \
 	src/sceneeditor.h \
 	src/scene.h \
+	src/settingsui.h \
 	src/sequenceeditor.h \
 	src/sequence.h \
-	src/settings.h \
-	src/settingsui.h \
 	src/types.h \
 	src/vcbutton.h \
 	src/vcbuttonproperties.h \
@@ -109,8 +109,8 @@ qlc_SOURCES = \
 	src/uic_newdevice.cpp \
 	src/uic_patterngenerator.cpp \
 	src/uic_sceneeditor.cpp \
-	src/uic_sequenceeditor.cpp \
 	src/uic_settings.cpp \
+	src/uic_sequenceeditor.cpp \
 	src/uic_vcbuttonproperties.cpp \
 	src/uic_vcdocksliderproperties.cpp \
 	src/uic_vcdockslider.cpp \
@@ -134,8 +134,8 @@ qlc_SOURCES = \
 	src/moc_uic_newdevice.cpp \
 	src/moc_uic_patterngenerator.cpp \
 	src/moc_uic_sceneeditor.cpp \
-	src/moc_uic_sequenceeditor.cpp \
 	src/moc_uic_settings.cpp \
+	src/moc_uic_sequenceeditor.cpp \
 	src/moc_uic_vcbuttonproperties.cpp \
 	src/moc_uic_vcdocksliderproperties.cpp \
 	src/moc_uic_vcdockslider.cpp \
@@ -183,10 +183,9 @@ qlc_SOURCES = \
 	src/patterngenerator.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
+	src/settingsui.cpp \
 	src/sequence.cpp \
 	src/sequenceeditor.cpp \
-	src/settings.cpp \
-	src/settingsui.cpp \
 	src/vcbutton.cpp \
 	src/vcbuttonproperties.cpp \
 	src/vcdockarea.cpp \
@@ -240,10 +239,9 @@ qlc_SOURCES = \
 	src/moc_patterngenerator.cpp \
 	src/moc_scene.cpp \
 	src/moc_sceneeditor.cpp \
+	src/moc_settingsui.cpp \
 	src/moc_sequence.cpp \
 	src/moc_sequenceeditor.cpp \
-	src/moc_settings.cpp \
-	src/moc_settingsui.cpp \
 	src/moc_vcbutton.cpp \
 	src/moc_vcbuttonproperties.cpp \
 	src/moc_vcdockarea.cpp \

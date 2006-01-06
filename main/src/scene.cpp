@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   scene.cpp
-  
+
   Copyright (C) 2004 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -33,14 +33,13 @@
 #include "eventbuffer.h"
 #include "scene.h"
 #include "functionconsumer.h"
-#include "../../libs/common/outputplugin.h"
 
 extern App* _app;
 
 //
 // Standard constructor
 //
-Scene::Scene() : 
+Scene::Scene() :
   Function      ( Function::Scene ),
 
   m_values      (            NULL ),
@@ -69,7 +68,7 @@ void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 
   if (m_values) delete [] m_values;
   m_values = new SceneValue[m_channels];
-  
+
   for (t_channel ch = 0; ch < m_channels; ch++)
     {
       m_values[ch].value = sc->m_values[ch].value;
@@ -88,7 +87,7 @@ bool Scene::setDevice(t_device_id id)
     {
       return false;
     }
-  
+
   t_channel newChannels = device->deviceClass()->channels()->count();
 
   if (m_channels == 0)
@@ -149,11 +148,11 @@ QString Scene::valueTypeString(t_channel ch)
     case Set:
       return QString("Set");
       break;
-      
+
     case Fade:
       return QString("Fade");
       break;
-      
+
     default:
     case NoSet:
       return QString("NoSet");
@@ -341,7 +340,7 @@ void Scene::speedChange(t_bus_value newTimeSpan)
   m_timeSpan = newTimeSpan;
   if (m_timeSpan == 0)
     {
-      m_timeSpan = static_cast<t_bus_value> 
+      m_timeSpan = static_cast<t_bus_value>
 	(1.0 / static_cast<float> (KFrequency));
     }
 
@@ -357,7 +356,7 @@ void Scene::arm()
   // Fetch the device address for run time access.
   // It cannot change when functions have been armed for running
   m_address = _app->doc()->device(m_deviceID)->universeAddress();
-  
+
   if (m_runTimeData == NULL)
     m_runTimeData = new RunTimeData[m_channels];
 
@@ -379,7 +378,7 @@ void Scene::disarm()
 
   if (m_runTimeData) delete [] m_runTimeData;
   m_runTimeData = NULL;
-  
+
   if (m_channelData) delete [] m_channelData;
   m_channelData = NULL;
 
@@ -397,10 +396,10 @@ void Scene::init()
 
   for (t_channel i = 0; i < m_channels; i++)
     {
-      m_runTimeData[i].current = 
+      m_runTimeData[i].current =
 	m_runTimeData[i].start =
 	static_cast<float> (_app->value(m_address + i));
-      
+
       m_runTimeData[i].target = static_cast<float> (m_values[i].value);
 
       m_runTimeData[i].ready = false;
@@ -411,7 +410,7 @@ void Scene::init()
 
   // Get speed
   Bus::value(m_busID, m_timeSpan);
-  
+
   // Set speed
   speedChange(m_timeSpan);
 
@@ -458,7 +457,7 @@ void Scene::run()
 
   //m_dataMutex.lock();
 
-  for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan && !m_stopped; 
+  for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan && !m_stopped;
        m_elapsedTime++)
     {
       //m_dataMutex.unlock();
@@ -469,7 +468,7 @@ void Scene::run()
 	    {
 	      m_channelData[ch] = KChannelInvalid << 8;
 	      m_channelData[ch] |= 0;
-	      
+
 	      // This channel contains a value that is not supposed
 	      // to be written (anymore, in case of ready value, which
 	      // comes from "set" type values)
@@ -479,11 +478,11 @@ void Scene::run()
 	    {
 	      // Just set the target value
 	      m_channelData[ch] = (m_address + ch) << 8;
-	      m_channelData[ch] |= 
+	      m_channelData[ch] |=
 		static_cast<t_buffer_data> (m_values[ch].value);
 
 	      // ...and don't touch this channel anymore
-	      m_runTimeData[ch].ready = true; 
+	      m_runTimeData[ch].ready = true;
 	    }
 	  else if (m_values[ch].type == Fade)
 	    {
@@ -491,8 +490,8 @@ void Scene::run()
 
 	      // Calculate the current value based on what it should
 	      // be after m_elapsedTime to be ready at m_timeSpan
-	      m_runTimeData[ch].current = m_runTimeData[ch].start 
-		+ (m_runTimeData[ch].target - m_runTimeData[ch].start) 
+	      m_runTimeData[ch].current = m_runTimeData[ch].start
+		+ (m_runTimeData[ch].target - m_runTimeData[ch].start)
 		* ((float)m_elapsedTime / m_timeSpan);
 
 	      m_channelData[ch] = (m_address + ch) << 8;
@@ -526,7 +525,7 @@ void Scene::run()
 	  // Just set the target value
 	  m_channelData[ch] = (m_address + ch) << 8;
 	  m_channelData[ch] |= static_cast<t_buffer_data> (m_values[ch].value);
-	  
+
 	  // ...and don't touch this channel anymore
 	  m_runTimeData[ch].ready = true;
 	}

@@ -36,7 +36,7 @@
 #include "deviceclasseditor.h"
 #include "editpresetvalue.h"
 
-#include "../../main/src/settings.h"
+#include "common/settings.h"
 #include "../../main/src/configkeys.h"
 #include "../../main/src/deviceclass.h"
 #include "../../main/src/logicalchannel.h"
@@ -97,7 +97,7 @@ void DeviceClassEditor::closeEvent(QCloseEvent* e)
       int r = QMessageBox::information(this, KApplicationNameShort,
 			      "Do you want to save changes to device class\n\""
 			      + m_dc->name() + "\"\nbefore closing?",
-			      QMessageBox::Yes, QMessageBox::No, 
+			      QMessageBox::Yes, QMessageBox::No,
 				       QMessageBox::Cancel);
       if (r == QMessageBox::Yes)
 	{
@@ -162,7 +162,7 @@ bool DeviceClassEditor::saveAs()
       path = m_fileName;
     }
 
-  path = QFileDialog::getSaveFileName(path, "Device Classes (*.deviceclass)", 
+  path = QFileDialog::getSaveFileName(path, "Device Classes (*.deviceclass)",
 				      this);
 
   if (path != QString::null)
@@ -171,7 +171,7 @@ bool DeviceClassEditor::saveAs()
 	{
 	  path += QString(".deviceclass");
 	}
-      
+
       if (m_dc->saveToFile(path) == IO_Ok)
 	{
 	  m_fileName = QString(path);
@@ -255,7 +255,7 @@ void DeviceClassEditor::slotAddChannelClicked()
       c->setHi(255);
       c->setName(QString("Channel Level"));
       lc->capabilities()->append(c);
-      
+
       m_dc->channels()->append(lc);
 
       updateChannelList();
@@ -293,7 +293,7 @@ void DeviceClassEditor::slotRemoveChannelClicked()
 
   updateChannelList();
   updatePresetValues();
-  
+
   setModified();
 }
 
@@ -315,7 +315,7 @@ void DeviceClassEditor::slotEditChannelClicked()
     {
       ch->setName(text);
       updateChannelList();
-      
+
       setModified();
     }
 }
@@ -342,10 +342,10 @@ void DeviceClassEditor::slotRaiseChannelClicked()
       ch->setChannel(i);
       m_dc->channels()->insert(i, ch);
       updateChannelList();
-      
+
       setModified();
-      
-      for (QListViewItem* item = m_channelList->firstChild(); item != NULL; 
+
+      for (QListViewItem* item = m_channelList->firstChild(); item != NULL;
 	   item = item->nextSibling())
         {
           QString num;
@@ -382,9 +382,9 @@ void DeviceClassEditor::slotLowerChannelClicked()
       ch->setChannel(i);
       m_dc->channels()->insert(i, ch);
       updateChannelList();
-      
+
       setModified();
-      
+
       for (QListViewItem* item = m_channelList->firstChild(); item != NULL;
 	   item = item->nextSibling())
         {
@@ -408,9 +408,9 @@ void DeviceClassEditor::slotAddPresetClicked()
     {
       return;
     }
-  
+
   EditPresetValue* epv = new EditPresetValue(this);
-  
+
   while (1)
     {
       if (epv->exec() == QDialog::Accepted)
@@ -418,13 +418,13 @@ void DeviceClassEditor::slotAddPresetClicked()
 	  int min = epv->m_minSpin->value();
 	  int max = epv->m_maxSpin->value();
 	  QString description = epv->m_descriptionEdit->text();
-	  
+
 	  if (ch->searchCapability(min) != NULL ||
 	      ch->searchCapability(max) != NULL)
 	    {
 	      QMessageBox::information(this, KApplicationNameShort,
 		    "Overlapping value range! Unable to add value.");
-	      
+
 	      continue;
 	    }
 	  else
@@ -433,11 +433,11 @@ void DeviceClassEditor::slotAddPresetClicked()
 	      cap->setLo(min);
 	      cap->setHi(max);
 	      cap->setName(description);
-	      
+
 	      ch->capabilities()->append(cap);
-	      
+
 	      setModified();
-	      
+
 	      updatePresetValues();
 	      break;
 	    }
@@ -458,7 +458,7 @@ void DeviceClassEditor::slotRemovePresetClicked()
     {
       return;
     }
-  
+
   currentChannel()->capabilities()->remove(cap);
   delete cap;
 
@@ -476,7 +476,7 @@ void DeviceClassEditor::slotEditPresetClicked()
     {
       return;
     }
-  
+
   EditPresetValue* epv = new EditPresetValue(this);
   epv->m_minSpin->setValue(orig->lo());
   epv->m_maxSpin->setValue(orig->hi());
@@ -489,10 +489,10 @@ void DeviceClassEditor::slotEditPresetClicked()
 	  int min = epv->m_minSpin->value();
 	  int max = epv->m_maxSpin->value();
 	  QString description = epv->m_descriptionEdit->text();
-	  
+
 	  Capability* minCap = ch->searchCapability(min);
 	  Capability* maxCap = ch->searchCapability(max);
-	  
+
 	  if (minCap != NULL && minCap != orig)
 	    {
 	      QMessageBox::information(this, KApplicationNameShort,
@@ -511,11 +511,11 @@ void DeviceClassEditor::slotEditPresetClicked()
 	      orig->setHi(max);
 	      orig->setName(description);
 	    }
-	  
+
 	  setModified();
-	  
+
 	  updatePresetValues();
-	  
+
 	  break;
 	}
       else

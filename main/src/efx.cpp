@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   efx.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,7 +35,6 @@
 #include "eventbuffer.h"
 #include "efx.h"
 #include "functionconsumer.h"
-#include "../../libs/common/outputplugin.h"
 
 extern App* _app;
 
@@ -54,7 +53,7 @@ EFX::EFX() :
   Function            ( Function::EFX ),
 
   pointFunc           ( NULL ),
-  
+
   m_width             ( 127 ),
   m_height            ( 127 ),
   m_xOffset           ( 127 ),
@@ -73,7 +72,7 @@ EFX::EFX() :
   m_direction         ( EFX::Forward ),
 
   m_modulationBus     ( KBusIDDefaultHold ),
-  
+
   m_startSceneID      ( KNoID ),
   m_stopSceneID       ( KNoID ),
 
@@ -150,7 +149,7 @@ void EFX::updatePreview()
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  circlePoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++, 
+	  m_previewPointArray->setPoint(step++,
 					static_cast<int> (*x),
 					static_cast<int> (*y));
 	}
@@ -161,7 +160,7 @@ void EFX::updatePreview()
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  eightPoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++, 
+	  m_previewPointArray->setPoint(step++,
 					static_cast<int> (*x),
 					static_cast<int> (*y));
 	}
@@ -172,7 +171,7 @@ void EFX::updatePreview()
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  linePoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++, 
+	  m_previewPointArray->setPoint(step++,
 					static_cast<int> (*x),
 					static_cast<int> (*y));
 	}
@@ -183,7 +182,7 @@ void EFX::updatePreview()
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  diamondPoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++, 
+	  m_previewPointArray->setPoint(step++,
 					static_cast<int> (*x),
 					static_cast<int> (*y));
 	}
@@ -194,7 +193,7 @@ void EFX::updatePreview()
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  trianglePoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++, 
+	  m_previewPointArray->setPoint(step++,
 					static_cast<int> (*x),
 					static_cast<int> (*y));
 	}
@@ -205,7 +204,7 @@ void EFX::updatePreview()
       for (i = 0; i < (M_PI * 2.0); i += stepSize)
 	{
 	  lissajousPoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++, 
+	  m_previewPointArray->setPoint(step++,
 					static_cast<int> (*x),
 					static_cast<int> (*y));
 	}
@@ -238,7 +237,7 @@ void EFX::algorithmList(QStringList& list)
   list.append(KLissajousAlgorithmName);
 }
 
-/** 
+/**
  * Get the current algorithm
  *
  * @return Name of the current algorithm. See @ref algorithmList
@@ -662,7 +661,7 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
 	Function::setDevice(toDevice);
 	m_name = QString(efx->name());
 	m_busID = efx->busID();
-	
+
 	m_width = efx->width();
 	m_height = efx->height();
 	m_xOffset = efx->xOffset();
@@ -681,7 +680,7 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
 	m_direction = efx->direction();
 
 	m_modulationBus = efx->modulationBus();
-  
+
 	m_startSceneID = efx->startScene();
 	m_stopSceneID = efx->stopScene();
 
@@ -819,7 +818,7 @@ void EFX::saveToFile(QFile &file)
   t.setNum(startScene());
   s = QString("StartScene = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
-  
+
   // Stop Scene
   t.setNum(stopScene());
   s = QString("StopScene = ") + t + QString("\n");
@@ -835,7 +834,7 @@ void EFX::saveToFile(QFile &file)
 void EFX::createContents(QPtrList <QString> &list)
 {
   QString t;
-  
+
   for (QString* s = list.next(); s != NULL; s = list.next())
     {
       if (*s == QString("Entry"))
@@ -922,7 +921,7 @@ void EFX::createContents(QPtrList <QString> &list)
 /**
  * This is called by buses for each function when the
  * bus value is changed.
- * 
+ *
  * @param id ID of the bus that has changed its value
  * @param value Bus' new value
  */
@@ -1036,20 +1035,20 @@ void EFX::disarm()
 void EFX::cleanup()
 {
   m_stopped = false;
-  
+
   if (m_virtualController)
     {
       QApplication::postEvent(m_virtualController,
 			      new FunctionStopEvent(m_id));
       m_virtualController = NULL;
     }
-  
+
   if (m_parentFunction)
     {
       m_parentFunction->childFinished();
       m_parentFunction = NULL;
     }
-  
+
   m_startMutex.lock();
   m_running = false;
   m_startMutex.unlock();
@@ -1067,7 +1066,7 @@ void EFX::init()
   // Get speed
   Bus::value(m_busID, speed);
   busValueChanged(m_busID, speed);
-  
+
   // Append this function to running functions' list
   _app->functionConsumer()->cue(this);
 }
@@ -1084,7 +1083,7 @@ void EFX::run()
 
   // Initialize this function for running
   init();
-  
+
   if (!m_stopped)
     {
       if (startScene() > KNoID)
@@ -1096,7 +1095,7 @@ void EFX::run()
 	    }
 	  if (f->engage(this))
 	    {
-	    
+
 	    }
 	}
     }
@@ -1128,7 +1127,7 @@ void EFX::run()
 	    }
 	  if (f->engage(this))
 	    {
-	    
+
 	    }
 	}
       m_eventBuffer->purge();

@@ -14,7 +14,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -22,7 +22,6 @@
 
 #include "app.h"
 #include "doc.h"
-#include "settings.h"
 #include "sceneeditor.h"
 #include "function.h"
 #include "deviceclass.h"
@@ -100,16 +99,16 @@ void SceneEditor::initMenu()
 		     0, KMenuActivate);
   m_menu->insertSeparator();
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/filenew.xpm")),
-		     "Create New...", this, SLOT(slotNew()), 
+		     "Create New...", this, SLOT(slotNew()),
 		     0, KMenuNew);
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.xpm")),
-		     "Overwrite", this, SLOT(slotStore()), 
+		     "Overwrite", this, SLOT(slotStore()),
 		     0, KMenuStore);
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/remove.xpm")),
-		     "Remove Selected...", this, SLOT(slotRemove()), 
+		     "Remove Selected...", this, SLOT(slotRemove()),
 		     0, KMenuRemove);
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/rename.xpm")),
-		     "Rename Selected...", this, SLOT(slotRename()), 
+		     "Rename Selected...", this, SLOT(slotRename()),
 		     0, KMenuRename);
 
   m_tools->setPopup(m_menu);
@@ -121,7 +120,7 @@ void SceneEditor::slotChannelChanged(t_channel channel, t_value value,
   assert(m_tempScene);
   m_tempScene->set(channel, value, status);
 
-  setStatusText(KStatusModified, KStatusColorModified);  
+  setStatusText(KStatusModified, KStatusColorModified);
 }
 
 void SceneEditor::slotActivate()
@@ -161,7 +160,7 @@ void SceneEditor::slotRemove()
     }
 
   if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
-			   QMessageBox::Yes, QMessageBox::No) 
+			   QMessageBox::Yes, QMessageBox::No)
       == QMessageBox::Yes)
     {
       _app->doc()->deleteFunction(s->id());
@@ -199,7 +198,7 @@ void SceneEditor::slotNew()
 				       tr("Enter scene name"),
 				       QLineEdit::Normal,
 				       QString::null, &ok, this);
-  
+
   if (ok && !text.isEmpty())
     {
       Scene* sc = static_cast<Scene*>
@@ -207,7 +206,7 @@ void SceneEditor::slotNew()
 
       sc->copyFrom(m_tempScene, m_tempScene->device());
       sc->setName(text);
-      
+
       ListBoxIDItem* item = new ListBoxIDItem();
       item->setText(sc->name());
       item->setRtti(sc->id());
@@ -216,7 +215,7 @@ void SceneEditor::slotNew()
       m_sceneList->sort();
       selectFunction(sc->id());
       m_sceneList->ensureCurrentVisible();
-      
+
       setStatusText(KStatusStored, KStatusColorStored);
     }
 }

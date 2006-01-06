@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   chasereditor.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -28,8 +28,8 @@
 #include "functiontree.h"
 #include "bus.h"
 #include "chaser.h"
-#include "settings.h"
 #include "configkeys.h"
+#include "common/settings.h"
 
 #include <stdlib.h>
 #include <qlistview.h>
@@ -96,7 +96,7 @@ void ChaserEditor::updateStepList()
 	    }
 	  else
 	    {
-	      device = d->name();	      
+	      device = d->name();
 	    }
 	}
       else
@@ -244,7 +244,7 @@ void ChaserEditor::slotRaiseClicked()
       if (m_chaser->raiseStep(index))
 	{
 	  updateStepList();
-	  
+
 	  // Select the item again, now it's one step above
 	  QListViewItemIterator it(m_stepList);
 	  while (it.current() != NULL)
@@ -254,7 +254,7 @@ void ChaserEditor::slotRaiseClicked()
 		  m_stepList->setSelected(it.current(), true);
 		  break;
 		}
-	      
+
 	      newIndex++;
 	      ++it;
 	    }
@@ -277,7 +277,7 @@ void ChaserEditor::slotLowerClicked()
       if (m_chaser->lowerStep(index))
 	{
 	  updateStepList();
-	  
+
 	  // Select the item again, now it's one step below
 	  QListViewItemIterator it(m_stepList);
 	  while (it.current() != NULL)
@@ -287,7 +287,7 @@ void ChaserEditor::slotLowerClicked()
 		  m_stepList->setSelected(it.current(), true);
 		  break;
 		}
-	      
+
 	      newIndex++;
 	      ++it;
 	    }

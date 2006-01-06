@@ -21,10 +21,10 @@
 
 #include "app.h"
 #include "doc.h"
-#include "../../libs/common/plugin.h"
+#include "common/plugin.h"
 #include "settings.h"
 #include "newinputdevice.h"
-#include "../../libs/joystick/joystickplugin.h"
+#include "joystick/joystickplugin.h"
 
 #include <qpixmap.h>
 

@@ -24,7 +24,7 @@
 
 #include "virtualconsoleproperties.h"
 #include "virtualconsole.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "app.h"
 
 extern App* _app;

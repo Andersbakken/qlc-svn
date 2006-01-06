@@ -22,9 +22,9 @@
 #include "settingsui.h"
 #include "app.h"
 #include "doc.h"
-#include "settings.h"
+#include "common/settings.h"
+#include "common/configitem.h"
 #include "configkeys.h"
-#include "configitem.h"
 #include "imagecontentspreview.h"
 #include "dummyoutplugin.h"
 

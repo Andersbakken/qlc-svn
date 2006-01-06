@@ -23,7 +23,7 @@
 #define DUMMYOUTPLUGIN_H
 
 #include <qthread.h>
-#include "../../libs/common/outputplugin.h"
+#include "common/outputplugin.h"
 #include "types.h"
 
 class DummyOutPlugin : public OutputPlugin

@@ -49,27 +49,22 @@
 
 #include "app.h"
 #include "doc.h"
-
 #include "functionconsumer.h"
-
-#include "settings.h"
 #include "settingsui.h"
 #include "configkeys.h"
-
 #include "devicemanagerview.h"
-
 #include "virtualconsole.h"
 #include "dmxaddresstool.h"
 #include "functiontree.h"
 #include "busproperties.h"
-
-#include "../../libs/common/documentbrowser.h"
 #include "aboutbox.h"
-
 #include "dummyoutplugin.h"
-#include "../../libs/common/outputplugin.h"
-#include "../../libs/common/plugin.h"
-#include "../../libs/common/filehandler.h"
+
+#include "common/settings.h"
+#include "common/outputplugin.h"
+#include "common/plugin.h"
+#include "common/filehandler.h"
+#include "common/documentbrowser.h"
 
 static const QString KModeTextOperate ("Operate");
 static const QString KModeTextDesign  ("Design");

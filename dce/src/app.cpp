@@ -41,11 +41,11 @@
 #include "aboutbox.h"
 
 #include "../../main/src/deviceclass.h"
-#include "../../main/src/settings.h"
 #include "../../main/src/configkeys.h"
 
-#include "../../libs/common/filehandler.h"
-#include "../../libs/common/documentbrowser.h"
+#include "common/settings.h"
+#include "common/filehandler.h"
+#include "common/documentbrowser.h"
 
 #include "deviceclasseditor.h"
 

@@ -7,25 +7,29 @@ INCLUDES = @QT_CFLAGS@ \
 	-DPLUGINS=\"$(PLUGINS)\"
 
 noinst_HEADERS = \
+	configitem.h \
+	documentbrowser.h \
 	filehandler.h \
 	ledbar.h \
 	minmax.h \
 	outputplugin.h \
 	plugin.h \
-	documentbrowser.h
+	settings.h
 
 libqlccommon_la_SOURCES = \
+	documentbrowser.cpp \
 	filehandler.cpp \
 	ledbar.cpp \
 	plugin.cpp \
 	outputplugin.cpp \
-	documentbrowser.cpp \
+	settings.cpp \
 	\
 	moc_filehandler.cpp \
 	moc_ledbar.cpp \
 	moc_plugin.cpp \
 	moc_outputplugin.cpp \
-	moc_documentbrowser.cpp
+	moc_documentbrowser.cpp \
+	moc_settings.cpp
 
 libqlccommon_la_LIBADD = @QT_LIBS@
 

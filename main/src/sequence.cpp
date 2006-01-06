@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   sequence.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -34,14 +34,13 @@
 #include "eventbuffer.h"
 #include "sequence.h"
 #include "functionconsumer.h"
-#include "../../libs/common/outputplugin.h"
 
 extern App* _app;
 
 //
 // Standard constructor
 //
-Sequence::Sequence() : 
+Sequence::Sequence() :
   Function     ( Function::Sequence ),
 
   m_runOrder      (    Loop ),
@@ -56,7 +55,7 @@ Sequence::Sequence() :
   m_holdTime      (     255 ),
   m_runTimeHold   (     255 ),
   m_holdNoSetData (    NULL ),
-  
+
   m_address       ( KChannelInvalid )
 {
   setBus(KBusIDDefaultHold);
@@ -103,13 +102,13 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
       for (unsigned int i = 0; i < sc->m_steps.count(); i++)
 	{
 	  SceneValue* val = new SceneValue[m_channels];
-	  
+
 	  for (t_channel ch = 0; ch < m_channels; ch++)
 	    {
 	      val[ch].value = sc->m_steps.at(i)[ch].value;
 	      val[ch].type = sc->m_steps.at(i)[ch].type;
 	    }
-	  
+
 	  m_steps.append(val);
 	}
     }
@@ -123,15 +122,15 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
       m_channels = device->deviceClass()->channels()->count();
       m_name = QString(sc->m_name);
       m_busID = sc->m_busID;
-      
+
       m_steps.setAutoDelete(true);
       m_steps.clear();
       m_steps.setAutoDelete(false);
-      
+
       for (unsigned int i = 0; i < sc->m_steps.count(); i++)
 	{
 	  SceneValue* val = new SceneValue[m_channels];
-	  
+
 	  if (sc->m_channels > m_channels)
 	    {
 	      for (t_channel ch = 0; ch < m_channels; ch++)
@@ -154,7 +153,7 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
 		  val[ch].type = Scene::NoSet;
 		}
 	    }
-	  
+
 	  m_steps.append(val);
 	}
     }
@@ -174,14 +173,14 @@ bool Sequence::setDevice(t_device_id id)
   assert(device);
 
   t_channel newChannels = device->deviceClass()->channels()->count();
-  
+
   if (m_steps.count())
     {
       for (unsigned int i = 0; i < m_steps.count(); i++)
 	{
 	  SceneValue* oldVal = m_steps.take(i);
 	  SceneValue* newVal = new SceneValue[newChannels];
-	  
+
 	  if (newChannels > m_channels)
 	    {
 	      // Copy existing values
@@ -232,7 +231,7 @@ void Sequence::constructFromPointArray(const QPointArray& array,
   for (unsigned int i = 0; i < array.size(); i++)
     {
       value = new SceneValue[m_channels];
-      
+
       for (t_channel ch = 0; ch < m_channels; ch++)
 	{
 	  if (ch == horizontalChannel)
@@ -243,7 +242,7 @@ void Sequence::constructFromPointArray(const QPointArray& array,
 	  else if (ch == verticalChannel)
 	    {
 	      value[ch].value = array.point(i).y();
-	      value[ch].type = Scene::Set;	      
+	      value[ch].type = Scene::Set;
 	    }
 	  else
 	    {
@@ -330,7 +329,7 @@ void Sequence::saveToFile(QFile &file)
   // Direction
   s.sprintf("Direction = %d\n", (int) m_direction);
   file.writeBlock((const char*) s, s.length());
-  
+
   // Advanced
   s.sprintf("Advanced = %d\n", (int) m_advanced);
   file.writeBlock((const char*) s, s.length());
@@ -382,7 +381,7 @@ void Sequence::createContents(QPtrList <QString> &list)
 		  values[ch].value = t.toInt();
 		  values[ch].type = Scene::Set;
 		}
-	      
+
 	      ch++;
 	      i = j + 1;
 	    }
@@ -436,7 +435,7 @@ void Sequence::arm()
   // Fetch the device adress for run time access.
   // It cannot change when functions have been armed for running
   m_address = _app->doc()->device(m_deviceID)->universeAddress();
-  
+
   if (m_channelData == NULL)
     m_channelData = new t_buffer_data[m_channels];
 
@@ -462,7 +461,7 @@ void Sequence::disarm()
 {
   // Just a nuisance to prevent using this at non-run-time :)
   m_address = KChannelInvalid;
-  
+
   if (m_channelData) delete [] m_channelData;
   m_channelData = NULL;
 
@@ -485,7 +484,7 @@ void Sequence::init()
 
   // Get speed
   Bus::value(m_busID, m_holdTime);
-  
+
   // Append this function to running functions' list
   _app->functionConsumer()->cue(this);
 }
@@ -506,12 +505,12 @@ void Sequence::run()
     {
       if (m_runTimeDirection == Forward)
 	{
-	  for (m_runTimeValues = m_steps.first(); 
-	       m_runTimeValues != NULL && !m_stopped; 
+	  for (m_runTimeValues = m_steps.first();
+	       m_runTimeValues != NULL && !m_stopped;
 	       m_runTimeValues = m_steps.next())
 	    {
-	      for (m_runTimeChannel = 0; 
-		   m_runTimeChannel < m_channels; 
+	      for (m_runTimeChannel = 0;
+		   m_runTimeChannel < m_channels;
 		   m_runTimeChannel++)
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
@@ -525,7 +524,7 @@ void Sequence::run()
 		      // Set the absolut adress
 		      m_channelData[m_runTimeChannel] =
 			(m_address + m_runTimeChannel) << 8;
-			
+
 		      // Set a normal value
 		      m_channelData[m_runTimeChannel] |=
 		        static_cast<t_buffer_data>
@@ -539,19 +538,19 @@ void Sequence::run()
 	}
       else
 	{
-	  for (m_runTimeValues = m_steps.last(); 
-	       m_runTimeValues != NULL && !m_stopped; 
+	  for (m_runTimeValues = m_steps.last();
+	       m_runTimeValues != NULL && !m_stopped;
 	       m_runTimeValues = m_steps.prev())
 	    {
-	      for (m_runTimeChannel = 0; 
-		   m_runTimeChannel < m_channels; 
+	      for (m_runTimeChannel = 0;
+		   m_runTimeChannel < m_channels;
 		   m_runTimeChannel++)
 		{
 		  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 		    {
 		      // Set the absolut adress
 		      m_channelData[m_runTimeChannel] = KChannelInvalid << 8;
-		      
+
 		      // Set invalid value fur such channels that don't
 		      // have a valid value
 		      m_channelData[m_runTimeChannel] |= 0;
@@ -561,14 +560,14 @@ void Sequence::run()
 		      // Set the absolut adress
 		      m_channelData[m_runTimeChannel] =
 			(m_address + m_runTimeChannel) << 8;
-			
+
 		      // Set a normal value
 		      m_channelData[m_runTimeChannel] |=
 		        static_cast<t_buffer_data>
 		        (m_runTimeValues[m_runTimeChannel].value);
 		    }
 		}
-	      
+
 	      m_eventBuffer->put(m_channelData);
 	      hold();
 	    }
@@ -601,17 +600,17 @@ void Sequence::run()
 	    }
 	}
     }
-  
+
   if (m_stopped && m_advanced == SetZeroEnabled)
     {
       // Set the last step as reference
       m_runTimeValues = m_steps.last();
-      
+
       // Loop over all touched channels
-      for (m_runTimeChannel = 0; 
-	   m_runTimeChannel < m_channels; 
+      for (m_runTimeChannel = 0;
+	   m_runTimeChannel < m_channels;
 	   m_runTimeChannel++)
-	{  
+	{
 	  // I think, that is not really needed ??
 	  if (m_runTimeValues[m_runTimeChannel].type == Scene::NoSet)
 	    {
@@ -649,8 +648,8 @@ void Sequence::hold()
 {
   if (m_holdTime > 0)
     {
-      for (m_runTimeHold = m_holdTime; 
-	   m_runTimeHold > 0 && !m_stopped; 
+      for (m_runTimeHold = m_holdTime;
+	   m_runTimeHold > 0 && !m_stopped;
 	   m_runTimeHold--)
 	{
 	  m_eventBuffer->put(m_holdNoSetData);

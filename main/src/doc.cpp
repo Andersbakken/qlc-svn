@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   doc.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -22,7 +22,6 @@
 #include "doc.h"
 #include "app.h"
 #include "device.h"
-#include "settings.h"
 #include "deviceclass.h"
 #include "function.h"
 #include "scene.h"
@@ -36,7 +35,8 @@
 #include "configkeys.h"
 #include "functionconsumer.h"
 
-#include "../../libs/common/filehandler.h"
+#include "common/filehandler.h"
+#include "common/settings.h"
 
 #include <qobject.h>
 #include <qstring.h>
@@ -57,7 +57,7 @@ Doc::Doc() : QObject()
   //
   // Allocate function array
   //
-  m_functionArray = (Function**) 
+  m_functionArray = (Function**)
     malloc(sizeof(Function*) * KFunctionArraySize);
   for (t_function_id i = 0; i < KFunctionArraySize; i++)
     {
@@ -159,7 +159,7 @@ void Doc::slotModeChanged()
 void Doc::setModified(bool modified)
 {
   m_modified = modified;
-  
+
   QString caption(KApplicationNameLong);
   if (fileName() != QString::null)
     {
@@ -193,7 +193,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
     {
       result = true;
       m_fileName = QString(fileName);
-      
+
       // Create devices and functions from the list
       for (QString* string = list.first(); string != NULL;
 	   string = list.next())
@@ -219,7 +219,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		  // Virtual console wants it all, go to "Entry"
 		  list.prev();
 		  list.prev();
-		  
+
 		  _app->virtualConsole()->createContents(list);
 		}
 	      else
@@ -228,7 +228,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 		}
 	    }
 	}
-      
+
       //
       // Set the last workspace name
       //
@@ -239,7 +239,7 @@ bool Doc::loadWorkspaceAs(QString &fileName)
     }
 
   setModified(false);
-  
+
   return result;
 }
 
@@ -308,7 +308,7 @@ bool Doc::saveWorkspaceAs(QString &fileName)
     }
   else
     {
-      QMessageBox::critical(_app, KApplicationNameShort, 
+      QMessageBox::critical(_app, KApplicationNameShort,
 			    QString("Unable to open file for writing."));
       return false;
     }
@@ -346,7 +346,7 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 		  d->setAddress(address);
 		  d->setUniverse(universe);
 		  d->setName(name);
-		  
+
 		  ok = true;
 		  break;
 		}

@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   vcxypad.cpp
-  
+
   Copyright (C) 2005 Heikki Junnila, Stefan Krumm
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -29,8 +29,8 @@
 #include "app.h"
 #include "doc.h"
 #include "virtualconsole.h"
-#include "settings.h"
-#include "../../libs/common/minmax.h"
+#include "common/settings.h"
+#include "common/minmax.h"
 #include "configkeys.h"
 #include "vcxypadproperties.h"
 
@@ -63,7 +63,7 @@ VCXYPad::~VCXYPad()
 {
 	m_channelsX.setAutoDelete(true);
 	m_channelsX.clear();
-	
+
 	m_channelsY.setAutoDelete(true);
 	m_channelsY.clear();
 }
@@ -74,14 +74,14 @@ void VCXYPad::init()
 
 	resize(120, 120);
 	setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	
+
 	setBackgroundColor(white);
-	
+
 	m_pixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.xpm"));
-	
+
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
-	
+
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
@@ -90,7 +90,7 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 	QString s;
 	QString t;
 	XYChannelUnit *xyc = NULL;
-	
+
 	// Comment
 	s = QString("# Virtual Console XYPad Entry\n");
 	file.writeBlock((const char*) s, s.length());
@@ -130,16 +130,16 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 				xyc->lo(),
 				xyc->hi());
 		}
-		
+
 		file.writeBlock((const char*) s, s.length());
 	}
-  
+
 	// Y Channels and limits
 	QPtrListIterator<XYChannelUnit> yit(m_channelsY);
 	while ( (xyc = yit.current()) != 0 )
 	{
 		++yit;
-		
+
 		if (xyc->reverse() == true)
 		{
 			s.sprintf("ChannelEntryY = %d,%d,%d,%d,true\n",
@@ -156,25 +156,25 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 				xyc->lo(),
 				xyc->hi());
 		}
-		
+
 		file.writeBlock((const char*) s, s.length());
 	}
-       
+
 	// X
 	t.setNum(x());
 	s = QString("X = ") + t + QString("\n");
 	file.writeBlock((const char*) s, s.length());
-      
+
 	// Y
 	t.setNum(y());
 	s = QString("Y = ") + t + QString("\n");
 	file.writeBlock((const char*) s, s.length());
-      
+
 	// W
 	t.setNum(width());
 	s = QString("Width = ") + t + QString("\n");
 	file.writeBlock((const char*) s, s.length());
-      
+
 	// H
 	t.setNum(height());
 	s = QString("Height = ") + t + QString("\n");
@@ -187,7 +187,7 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 		t.setNum(qRgb(paletteForegroundColor().red(),
 		    paletteForegroundColor().green(),
 		    paletteForegroundColor().blue()));
-		
+
 		s = QString("Textcolor = ") + t + QString("\n");
 		file.writeBlock((const char*) s, s.length());
 
@@ -195,7 +195,7 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 		t.setNum(qRgb(paletteBackgroundColor().red(),
 		    paletteBackgroundColor().green(),
 		    paletteBackgroundColor().blue()));
-		
+
 		s = QString("Backgroundcolor = ") + t + QString("\n");
 		file.writeBlock((const char*) s, s.length());
 	}
@@ -214,12 +214,12 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 	// Frame
 	if (frameStyle() & KFrameStyle)
 	{
-		s = QString("Frame = ") + 
+		s = QString("Frame = ") +
 			Settings::trueValue() + QString("\n");
 	}
 	else
 	{
-		s = QString("Frame = ") + 
+		s = QString("Frame = ") +
 			Settings::falseValue() + QString("\n");
 	}
 	file.writeBlock((const char*) s, s.length());
@@ -244,7 +244,7 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 
 			if (parent != NULL)
 			{
-				reparent((QWidget*) parent, 0, 
+				reparent((QWidget*) parent, 0,
 					 QPoint(0, 0), true);
 			}
 		}
@@ -276,7 +276,7 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 		{
 			QString t;
 			t = *(list.next());
-	  
+
 			QPixmap pm(t);
 			if (pm.isNull() == false)
 			{
@@ -321,23 +321,23 @@ void VCXYPad::createContents(QPtrList <QString> &list)
 			list.next();
 		}
 	}
-	
+
 	setGeometry(rect);
 }
 
 void VCXYPad::createChannelUnitFromString(QString string, bool isX)
 {
 	QStringList lst(QStringList::split(",", string));
-	
+
 	if (isX)
 	{
 		m_channelsX.append(
 			new XYChannelUnit(
-				lst[XYChannelUnit::FileElementDevice].toInt(), 
+				lst[XYChannelUnit::FileElementDevice].toInt(),
 				lst[XYChannelUnit::FileElementChannel].toInt(),
 				lst[XYChannelUnit::FileElementLo].toInt(),
 				lst[XYChannelUnit::FileElementHi].toInt(),
-				lst[XYChannelUnit::FileElementReverse] 
+				lst[XYChannelUnit::FileElementReverse]
 					== Settings::trueValue())
 			);
 	}
@@ -345,11 +345,11 @@ void VCXYPad::createChannelUnitFromString(QString string, bool isX)
 	{
 		m_channelsY.append(
 			new XYChannelUnit(
-				lst[XYChannelUnit::FileElementDevice].toInt(), 
+				lst[XYChannelUnit::FileElementDevice].toInt(),
 				lst[XYChannelUnit::FileElementChannel].toInt(),
 				lst[XYChannelUnit::FileElementLo].toInt(),
 				lst[XYChannelUnit::FileElementHi].toInt(),
-				lst[XYChannelUnit::FileElementReverse] 
+				lst[XYChannelUnit::FileElementReverse]
 					== Settings::trueValue())
 			);
 	}
@@ -360,8 +360,8 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 	QFrame::paintEvent(e);
 	QPainter p(this);
 	QPen pen;
-	
-	if (_app->mode() == App::Design && 
+
+	if (_app->mode() == App::Design &&
 	    _app->virtualConsole()->selectedWidget() == this)
 	{
 		// Draw a dotted line around the widget
@@ -369,12 +369,12 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 		pen.setWidth(2);
 		p.setPen(pen);
 		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
-	
+
 		// Draw a resize handle
 		QBrush b(SolidPattern);
 		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
 	}
-	
+
 	// Draw crosshairs
 	pen.setStyle(DotLine);
 	pen.setColor(paletteForegroundColor());
@@ -383,7 +383,7 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 	p.drawLine(width() / 2, 0, width() / 2, height());
 	p.drawLine(0, height() / 2, width(), height() / 2);
 
-	p.drawPixmap(m_currentXYPosition.x() - (m_pixmap.width() / 2), 
+	p.drawPixmap(m_currentXYPosition.x() - (m_pixmap.width() / 2),
 		     m_currentXYPosition.y() - (m_pixmap.height() / 2),
 		     m_pixmap);
 }
@@ -404,8 +404,8 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 			setMouseTracking(false);
 			m_resizeMode = false;
 		}
-      
-		if ((e->button() & LeftButton || 
+
+		if ((e->button() & LeftButton ||
 			e->button() & MidButton))
 		{
 			if (e->x() > rect().width() - 10 &&
@@ -436,7 +436,7 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 
 		setMouseTracking(true);
 		setCursor(Qt::CrossCursor);
-		
+
 		outputDMX(e->x(), e->y());
 	}
 }
@@ -454,12 +454,12 @@ void VCXYPad::parseWidgetMenu(int item)
 		{
 			VCXYPadProperties* p = new VCXYPadProperties(this);
 			p->init();
-			
+
 			if (p->exec() == QDialog::Accepted)
 			{
 				_app->doc()->setModified(true);
 			}
-			
+
 			delete p;
 		}
 		break;
@@ -504,7 +504,7 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
   if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true)
-	{	  
+	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
 	  _app->doc()->setModified(true);
@@ -514,30 +514,30 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
 	  p.setX(p.x() - m_mousePressPoint.x());
 	  p.setY(p.y() - m_mousePressPoint.y());
-		
+
 	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
     }
   else
     { // the following is NOT done by hasMouse() because that fails if
-      // there are child widgets   
-      if (e->x() > 0 &&  e->y() > 0 && 
-	  e->x() < rect().width() && 
+      // there are child widgets
+      if (e->x() > 0 &&  e->y() > 0 &&
+	  e->x() < rect().width() &&
           e->y() < rect().height())
         {
 		m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
 		m_currentXYPosition.setX(e->x());
 		m_currentXYPosition.setY(e->y());
 		repaint();
-		
+
 		outputDMX( e->x(), e->y());
 		setCursor(Qt::CrossCursor);
 	}
       else
         {
 		unsetCursor();
-	}	
+	}
       QFrame::mouseMoveEvent(e);
     }
 }
@@ -549,7 +549,7 @@ void VCXYPad::outputDMX(int x, int y)
 	int xx;
 
 	QPtrListIterator<XYChannelUnit> xit(*channelsX());
-	XYChannelUnit *xyc; 
+	XYChannelUnit *xyc;
 
 	while ( (xyc = xit.current()) != 0 )
 	{
@@ -559,14 +559,14 @@ void VCXYPad::outputDMX(int x, int y)
 		if (xyc->reverse() == false)
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() + 
+				xyc->device()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() + 
-				xyc->channel(), 
+				xyc->device()->universeAddress() +
+				xyc->channel(),
 				(t_value) KChannelValueMax - xx);
 		}
 	}
@@ -580,14 +580,14 @@ void VCXYPad::outputDMX(int x, int y)
 		if (xyc->reverse() == false)
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() + 
+				xyc->device()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
 			_app->outputPlugin()->writeChannel(
 				xyc->device()->universeAddress() +
-				xyc->channel(), 
+				xyc->channel(),
 				(t_value) KChannelValueMax - xx);
 		}
 	}
@@ -625,7 +625,7 @@ void VCXYPad::resizeTo(QPoint p)
     {
       p.setX(parentWidget()->width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {
@@ -652,7 +652,7 @@ void VCXYPad::moveTo(QPoint p)
       p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
       p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
     }
-  
+
   // Don't move beyond left or right
   if (p.x() < 0)
     {
@@ -662,7 +662,7 @@ void VCXYPad::moveTo(QPoint p)
     {
       p.setX(parentWidget()->width() - rect().width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {

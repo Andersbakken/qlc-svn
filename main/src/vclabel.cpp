@@ -1,20 +1,20 @@
 /*
   Q Light Controller
   vclabel.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
                                  Stefan Krumm
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -25,9 +25,9 @@
 #include "doc.h"
 #include "floatingedit.h"
 #include "virtualconsole.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "configkeys.h"
-#include "../../libs/common/minmax.h"
+#include "common/minmax.h"
 
 #include <qpushbutton.h>
 #include <qlineedit.h>
@@ -48,7 +48,7 @@ extern App* _app;
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
 
-VCLabel::VCLabel(QWidget* parent) 
+VCLabel::VCLabel(QWidget* parent)
   : QLabel(parent, "Label"),
     m_resizeMode ( false )
 {
@@ -177,7 +177,7 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	}
       else if (*s == QString("Parent"))
 	{
-	  VCFrame* parent = 
+	  VCFrame* parent =
 	    _app->virtualConsole()->getFrame(list.next()->toInt());
 
 	  if (parent != NULL)
@@ -229,7 +229,7 @@ void VCLabel::createContents(QPtrList <QString> &list)
 	{
 	  QString t;
 	  t = *(list.next());
-	  
+
 	  QPixmap pm(t);
 	  if (pm.isNull() == false)
 	    {
@@ -344,7 +344,7 @@ void VCLabel::paintEvent(QPaintEvent* e)
 {
   QLabel::paintEvent(e);
 
-  if (_app->mode() == App::Design && 
+  if (_app->mode() == App::Design &&
       _app->virtualConsole()->selectedWidget() == this)
     {
       QPainter p(this);
@@ -379,7 +379,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
   if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true)
-	{	  
+	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
 	  _app->doc()->setModified(true);
@@ -389,7 +389,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
 	  p.setX(p.x() - m_mousePressPoint.x());
 	  p.setY(p.y() - m_mousePressPoint.y());
-		
+
 	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
@@ -421,7 +421,7 @@ void VCLabel::resizeTo(QPoint p)
     {
       p.setX(parentWidget()->width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {
@@ -448,7 +448,7 @@ void VCLabel::moveTo(QPoint p)
       p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
       p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
     }
-  
+
   // Don't move beyond left or right
   if (p.x() < 0)
     {
@@ -458,7 +458,7 @@ void VCLabel::moveTo(QPoint p)
     {
       p.setX(parentWidget()->width() - rect().width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {

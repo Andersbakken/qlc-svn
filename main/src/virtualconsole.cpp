@@ -43,7 +43,7 @@
 #include "virtualconsoleproperties.h"
 #include "app.h"
 #include "doc.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "vcdockslider.h"
 #include "vcbutton.h"
 #include "vcframe.h"

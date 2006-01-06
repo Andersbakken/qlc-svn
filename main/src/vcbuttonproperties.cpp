@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   vcbuttonproperties.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -30,7 +30,6 @@
 #include "deviceclass.h"
 #include "function.h"
 #include "functiontree.h"
-#include "settings.h"
 #include "app.h"
 #include "doc.h"
 #include "assignhotkey.h"
@@ -38,12 +37,11 @@
 #include "devicemanagerview.h"
 #include "device.h"
 #include "virtualconsole.h"
-#include "configkeys.h"
 
 extern App* _app;
 
 VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent,
-                                       const char* name) 
+                                       const char* name)
   : UI_VCButtonProperties(parent, name, true),
 
     m_button     ( button               ),

@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   sequenceeditor.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -39,8 +39,6 @@
 #include "patterngenerator.h"
 #include "sequenceeditor.h"
 #include "consolechannel.h"
-#include "configkeys.h"
-#include "settings.h"
 #include "sequence.h"
 #include "device.h"
 #include "app.h"
@@ -119,10 +117,10 @@ void SequenceEditor::setDevice(t_device_id id)
       unit->setFadeStatusEnabled(false);
       m_unitList.append(unit);
       unit->update();
-      
+
       // Channel updates to scene editor
       connect(unit, SIGNAL(changed(t_channel, t_value, Scene::ValueType)),
-	      this, SLOT(slotChannelChanged(t_channel, t_value, 
+	      this, SLOT(slotChannelChanged(t_channel, t_value,
 					    Scene::ValueType)));
 
       connect(this, SIGNAL(sceneActivated(SceneValue*, t_channel)),
@@ -130,18 +128,18 @@ void SequenceEditor::setDevice(t_device_id id)
 
       // Add the unit to the layout
       hbl->addWidget(unit);
-      
+
       // Add a spacer between all consolechannel units
       // QT deletes spacers automagically
-      QSpacerItem* sp = new QSpacerItem(m_list->header()->sectionSize(ch) 
+      QSpacerItem* sp = new QSpacerItem(m_list->header()->sectionSize(ch)
 					- 35, 0, QSizePolicy::Minimum);
       hbl->addItem(sp);
       m_spacerList.append(sp);
-      
+
     }
 
   // Add a spacer that has the size of the listview's scrollbar
-  QSpacerItem* sp = new QSpacerItem(m_list->verticalScrollBar()->width(), 
+  QSpacerItem* sp = new QSpacerItem(m_list->verticalScrollBar()->width(),
 				    0, QSizePolicy::Fixed);
   hbl->addItem(sp);
 
@@ -157,7 +155,7 @@ void SequenceEditor::setSequence(Sequence* sequence)
   m_sequence = sequence;
 
   QListViewItem* item = NULL;
-  
+
   m_list->clear();
 
   for (int i = m_sequence->m_steps.count() - 1; i >= 0; i--)
@@ -196,7 +194,7 @@ void SequenceEditor::resizeEvent(QResizeEvent* e)
   UI_SequenceEditor::resizeEvent(e);
 }
 
-void SequenceEditor::slotChannelChanged(t_channel channel, t_value value, 
+void SequenceEditor::slotChannelChanged(t_channel channel, t_value value,
 					Scene::ValueType status)
 {
   assert(channel <= m_channels);
@@ -204,7 +202,7 @@ void SequenceEditor::slotChannelChanged(t_channel channel, t_value value,
 
   m_tempValues[channel].value = value;
   m_tempValues[channel].type = status;
-  
+
   if (m_list->currentItem())
     {
       QString s;
@@ -247,7 +245,7 @@ void SequenceEditor::slotInsert()
 	  item->setText(ch, s);
 	}
 
-      // Rename doesn't work with rmb click in pre 3.3, 
+      // Rename doesn't work with rmb click in pre 3.3,
       // so it won't be available anywhere
       item->setRenameEnabled(ch, false);
     }
@@ -262,7 +260,7 @@ void SequenceEditor::slotRemove()
     {
       delete m_list->currentItem();
     }
-  
+
   // Set the item below selected
   if (m_list->currentItem())
     {
@@ -331,7 +329,7 @@ void SequenceEditor::slotOKClicked()
   m_sequence->m_steps.setAutoDelete(true);
   m_sequence->m_steps.clear();
   m_sequence->m_steps.setAutoDelete(false);
-  
+
   for (QListViewItem* item = m_list->firstChild(); item != NULL;
        item = item->itemBelow())
     {
@@ -397,7 +395,7 @@ void SequenceEditor::slotOKClicked()
     {
       m_sequence->setAdvanced(Sequence::SetZeroDisabled);
     }
-    
+
   accept();
 }
 
@@ -430,7 +428,7 @@ void SequenceEditor::slotSelectionChanged(QListViewItem* item)
   emit sceneActivated(m_tempValues, m_channels);
 }
 
-void SequenceEditor::slotItemRenamed(QListViewItem* item, int col, 
+void SequenceEditor::slotItemRenamed(QListViewItem* item, int col,
 				     const QString& text)
 {
   if (item == NULL)

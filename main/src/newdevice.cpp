@@ -21,7 +21,7 @@
 
 #include "newdevice.h"
 #include "deviceclass.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "app.h"
 #include "doc.h"
 #include "dmxaddresstool.h"

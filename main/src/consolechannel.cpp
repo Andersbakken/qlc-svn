@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   consolechannel.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Versio 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -36,7 +36,7 @@
 #include "consolechannel.h"
 #include "app.h"
 #include "doc.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "scene.h"
 #include "device.h"
 #include "logicalchannel.h"
@@ -51,7 +51,7 @@ const QColor KStatusButtonColorOff   (  28,  52,  77 );
 
 const int KMenuTitle          ( INT_MAX );
 
-ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name) 
+ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name)
   : UI_ConsoleChannel(parent, name),
     m_channel    (           0 ),
     m_value      (           0 ),
@@ -62,7 +62,7 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name)
 {
   m_statusButton->setBackgroundMode(FixedColor);
 
-  connect(m_valueSlider, SIGNAL(valueChanged(int)), 
+  connect(m_valueSlider, SIGNAL(valueChanged(int)),
 	  this, SLOT(slotValueChange(int)));
 
   connect(m_valueSlider, SIGNAL(sliderPressed()),
@@ -225,9 +225,9 @@ void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
 
   Device* device = _app->doc()->device(m_deviceID);
   assert(device);
-  
+
   LogicalChannel* ch = device->deviceClass()->channels()->at(m_channel);
-  
+
   QPopupMenu* menu = new QPopupMenu();
   menu->insertItem(ch->name(), KMenuTitle);
   menu->setItemEnabled(KMenuTitle, false);
@@ -267,7 +267,7 @@ void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
 
       ++it;
     }
-  
+
   connect(menu, SIGNAL(activated(int)),
 	  this, SLOT(slotContextMenuActivated(int)));
 
@@ -295,12 +295,12 @@ void ConsoleChannel::slotSceneActivated(SceneValue* values,
 					t_channel channels)
 {
   assert(values);
-  
+
   if (m_channel <= channels)
     {
       setStatusButton(values[m_channel].type);
-      
-      if (values[m_channel].type == Scene::Set || 
+
+      if (values[m_channel].type == Scene::Set ||
 	  values[m_channel].type == Scene::Fade)
 	{
 	  slotAnimateValueChange(values[m_channel].value);

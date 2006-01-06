@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   vcframe.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -28,8 +28,8 @@
 #include "app.h"
 #include "doc.h"
 #include "virtualconsole.h"
-#include "settings.h"
-#include "../../libs/common/minmax.h"
+#include "common/settings.h"
+#include "common/minmax.h"
 #include "configkeys.h"
 #include "vcframeproperties.h"
 
@@ -55,7 +55,7 @@ t_vc_id VCFrame::s_nextVCID = KVCIDMin;
 const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
 const int KColorMask       ( 0xff );
 
-VCFrame::VCFrame(QWidget* parent) 
+VCFrame::VCFrame(QWidget* parent)
   : QFrame(parent, "Frame"),
     m_xpos             ( 0 ),
     m_ypos             ( 0 ),
@@ -73,15 +73,15 @@ VCFrame::~VCFrame()
 void VCFrame::init()
 {
   setMinimumSize(20, 20);
-  
+
   resize(120, 120);
   setFrameStyle(QFrame::Panel | QFrame::Sunken);
 
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
-void VCFrame::setBottomFrame(bool set) 
-{ 
+void VCFrame::setBottomFrame(bool set)
+{
   m_bottomFrame = set;
   if (set)
     {
@@ -183,17 +183,17 @@ void VCFrame::saveFramesToFile(QFile& file, t_vc_id parentID)
       t.setNum(x());
       s = QString("X = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
-      
+
       // Y
       t.setNum(y());
       s = QString("Y = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
-      
+
       // W
       t.setNum(width());
       s = QString("Width = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
-      
+
       // H
       t.setNum(height());
       s = QString("Height = ") + t + QString("\n");
@@ -254,7 +254,7 @@ void VCFrame::saveFramesToFile(QFile& file, t_vc_id parentID)
     {
       QObjectList* ol = (QObjectList*) children();
       QObjectListIt it(*ol);
-      
+
       // Child frames
       for (; it.current() != NULL; ++it)
 	{
@@ -273,7 +273,7 @@ void VCFrame::saveChildrenToFile(QFile& file)
     {
       QObjectList* ol = (QObjectList*) children();
       QObjectListIt it(*ol);
-      
+
       // Child frames
       while(it.current())
 	{
@@ -326,7 +326,7 @@ void VCFrame::createContents(QPtrList <QString> &list)
 	{
 	  if (m_bottomFrame == false)
 	    {
-	      VCFrame* parent = 
+	      VCFrame* parent =
 		_app->virtualConsole()->getFrame(list.next()->toInt());
 
 	      if (parent != NULL)
@@ -367,7 +367,7 @@ void VCFrame::createContents(QPtrList <QString> &list)
 	{
 	  QString t;
 	  t = *(list.next());
-	  
+
 	  QPixmap pm(t);
 	  if (pm.isNull() == false)
 	    {
@@ -418,7 +418,7 @@ void VCFrame::paintEvent(QPaintEvent* e)
 
   QPainter p(this);
 
-  if (_app->mode() == App::Design && 
+  if (_app->mode() == App::Design &&
       _app->virtualConsole()->selectedWidget() == this &&
       m_bottomFrame == false)
     {
@@ -450,7 +450,7 @@ void VCFrame::mousePressEvent(QMouseEvent* e)
 	  setMouseTracking(false);
 	  m_resizeMode = false;
 	}
-      
+
       if ((e->button() & LeftButton || e->button() & MidButton)
 	  && m_bottomFrame == false)
 	{
@@ -484,50 +484,50 @@ void VCFrame::invokeMenu(QPoint point)
 	// Add menu
 	//
 	QPopupMenu* addMenu = new QPopupMenu();
-	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.xpm")), 
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.xpm")),
 		"&Button", KVCMenuAddButton);
-	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")), 
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")),
 		"&Slider", KVCMenuAddSlider);
-	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")), 
+	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")),
 		"&Frame", KVCMenuAddFrame);
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/xypad.xpm")),
 		"&XY-Pad", KVCMenuAddXYPad);
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/label.xpm")),
 		"L&abel", KVCMenuAddLabel);
-	
+
 	QPopupMenu* menu = new QPopupMenu();
 	// Insert common stuff from virtual console (100% dirty hack)
 	menu->insertItem("Edit", _app->virtualConsole()->editMenu());
-	
+
 	// Insert the add menu
 	menu->insertItem("Add", addMenu);
-	
+
 	switch(menu->exec(point))
 	{
 		case KVCMenuAddButton:
 			slotAddButton(mapFromGlobal(point));
 		break;
-		
+
 		case KVCMenuAddSlider:
 			slotAddSlider(mapFromGlobal(point));
 		break;
-		
+
 		case KVCMenuAddFrame:
 			slotAddFrame(mapFromGlobal(point));
 		break;
-		
+
 		case KVCMenuAddXYPad:
 			slotAddXYPad(mapFromGlobal(point));
 		break;
-		
+
 		case KVCMenuAddLabel:
 			slotAddLabel(mapFromGlobal(point));
 		break;
-		
+
 		default:
 			break;
 	}
-	
+
 	delete addMenu;
 	delete menu;
 }
@@ -538,7 +538,7 @@ void VCFrame::slotAddButton(QPoint p)
   assert(b);
   b->init();
   b->show();
-  
+
   if (buttonBehaviour() == VCFrame::Exclusive)
     {
       b->setExclusive(true);
@@ -547,9 +547,9 @@ void VCFrame::slotAddButton(QPoint p)
     {
       b->setExclusive(false);
     }
-  
+
   b->move(p);
-    
+
   _app->doc()->setModified(true);
 }
 
@@ -563,7 +563,7 @@ void VCFrame::slotAddSlider(QPoint p)
   s->show();
 
   s->move(p);
-    
+
   _app->doc()->setModified(true);
 }
 
@@ -575,7 +575,7 @@ void VCFrame::slotAddFrame(QPoint p)
   f->show();
 
   f->move(p);
-    
+
   _app->doc()->setModified(true);
 }
 
@@ -587,7 +587,7 @@ void VCFrame::slotAddXYPad(QPoint p)
   x->show();
 
   x->move(p);
-    
+
   _app->doc()->setModified(true);
 }
 
@@ -599,7 +599,7 @@ void VCFrame::slotAddLabel(QPoint p)
   l->show();
 
   l->move(p);
-    
+
   _app->doc()->setModified(true);
 }
 
@@ -661,7 +661,7 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
   if (_app->mode() == App::Design)
     {
       if (m_resizeMode == true)
-	{	  
+	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
 	  _app->doc()->setModified(true);
@@ -671,7 +671,7 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
 	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
 	  p.setX(p.x() - m_mousePressPoint.x());
 	  p.setY(p.y() - m_mousePressPoint.y());
-		
+
 	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
@@ -712,7 +712,7 @@ void VCFrame::resizeTo(QPoint p)
     {
       p.setX(parentWidget()->width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {
@@ -739,7 +739,7 @@ void VCFrame::moveTo(QPoint p)
       p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
       p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
     }
-  
+
   // Don't move beyond left or right
   if (p.x() < 0)
     {
@@ -749,7 +749,7 @@ void VCFrame::moveTo(QPoint p)
     {
       p.setX(parentWidget()->width() - rect().width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {

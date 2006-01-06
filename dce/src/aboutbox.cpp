@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   aboutbox.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -28,7 +28,7 @@
 
 #include "aboutbox.h"
 #include "app.h"
-#include "../../main/src/settings.h"
+#include "common/settings.h"
 #include "../../main/src/configkeys.h"
 
 extern App* _app;
@@ -85,7 +85,7 @@ void AboutBox::initDialog()
   m_version->setAlignment(AlignCenter);
   m_version->setText(KApplicationNameLong + " " + KApplicationVersion);
   m_version->setBackgroundColor(white);
-  
+
   m_copyright = new QLabel(this);
   m_copyright->setFont(font);
   m_copyright->setGeometry(0, h + 30, w, 50);

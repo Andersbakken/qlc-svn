@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 #include "app.h"
-#include "../../main/src/settings.h"
+#include "common/settings.h"
 
 App* _app;
 QApplication* _qapp;

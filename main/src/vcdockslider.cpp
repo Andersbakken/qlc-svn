@@ -47,11 +47,11 @@
 #include "app.h"
 #include "doc.h"
 #include "functionconsumer.h"
-#include "settings.h"
+#include "common/settings.h"
 #include "configkeys.h"
 
-#include "../../libs/common/outputplugin.h"
-#include "../../libs/common/minmax.h"
+#include "common/outputplugin.h"
+#include "common/minmax.h"
 
 extern App* _app;
 
@@ -86,7 +86,7 @@ VCDockSlider::~VCDockSlider()
   if (m_mode == Submaster)
     {
       assignSubmasters(false);
-      
+
       // Reset submasters to 100% if they are not occupied
       // anymore by another slider
       _app->resetSubmasters();
@@ -106,7 +106,7 @@ void VCDockSlider::init()
   setMode(Speed);
 
   m_slider->setValue(0);
-	
+
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
@@ -136,16 +136,16 @@ void VCDockSlider::setMode(Mode m)
 	  {
 	    name.sprintf("%.2d", m_busID + 1);
 	  }
-	
+
 	m_tapInButton->setText(name);
-	
+
 	connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
 		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-	
+
 	connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 		this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
-	
-	m_slider->setRange(m_busLowLimit * KFrequency, 
+
+	m_slider->setRange(m_busLowLimit * KFrequency,
 			   m_busHighLimit * KFrequency);
 
 	m_infoLabel->hide();
@@ -161,7 +161,7 @@ void VCDockSlider::setMode(Mode m)
       {
 	disconnect(Bus::emitter(),SIGNAL(nameChanged(t_bus_id,const QString&)),
 		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-	
+
 	disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
@@ -177,7 +177,7 @@ void VCDockSlider::setMode(Mode m)
       {
 	disconnect(Bus::emitter(),SIGNAL(nameChanged(t_bus_id,const QString&)),
 		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-	
+
 	disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
@@ -357,7 +357,7 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	{
 	  QString t;
 	  t = *(list.next());
-	  
+
 	  QPixmap pm(t);
 	  if (pm.isNull() == false)
 	    {
@@ -421,13 +421,13 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 		}
 
 	      t = s->mid(i, j-i);
-	      
+
 	      // Check for duplicates
 	      if (m_channels.find(t.toInt()) == m_channels.end())
 		{
 		  m_channels.append(t.toInt());
 		}
-	      
+
 	      i = j + 1;
 	    }
 	}
@@ -486,7 +486,7 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
 {
   QString s;
   QString t;
-  
+
   // Comment
   s = QString("# Virtual Console Slider Entry\n");
   file.writeBlock((const char*) s, s.length());
@@ -532,7 +532,7 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
 		    paletteForegroundColor().blue()));
       s = QString("Textcolor = ") + t + QString("\n");
       file.writeBlock((const char*) s, s.length());
-      
+
       t.setNum(qRgb(paletteBackgroundColor().red(),
 		    paletteBackgroundColor().green(),
 		    paletteBackgroundColor().blue()));
@@ -589,7 +589,7 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
 	}
 
       s += QString("\n");
-      file.writeBlock((const char*) s, s.length());      
+      file.writeBlock((const char*) s, s.length());
     }
 
   // Level Lo
@@ -628,9 +628,9 @@ void VCDockSlider::slotSliderValueChanged(int value)
 	      return;
 	    }
 	}
-      
+
       QString num;
-      num.sprintf("%.2fs", ((float) value / (float) KFrequency));      
+      num.sprintf("%.2fs", ((float) value / (float) KFrequency));
       m_valueLabel->setText(num);
     }
   else if (m_mode == Level)
@@ -774,17 +774,17 @@ void VCDockSlider::invokeMenu(QPoint point)
 	  QString current;
 	  current.sprintf("%d-%d", m_busLowLimit, m_busHighLimit);
 
-	  QString text = 
+	  QString text =
 	    QInputDialog::getText(KApplicationNameShort,
 				  "Slider value range (e.g. 0-10) in seconds:",
 				  QLineEdit::Normal, current, &ok, this);
-	  
+
 	  if (ok && !text.isEmpty())
 	    {
 	      int dash = text.find('-');
 	      QString min = text.left(dash);
 	      QString max = text.mid(dash + 1);
-	      
+
 	      if (min.toInt() >= max.toInt())
 		{
 		  QMessageBox::warning(this, KApplicationNameShort,
@@ -829,7 +829,7 @@ void VCDockSlider::parseWidgetMenu(int item)
 	  {
 	    _app->doc()->setModified(true);
 	  }
-	
+
 	delete sp;
       }
       break;
@@ -844,7 +844,7 @@ void VCDockSlider::parseWidgetMenu(int item)
 	  {
 	    setFrameStyle(KFrameStyle);
 	  }
-	
+
 	_app->doc()->setModified(true);
       }
       break;
@@ -877,7 +877,7 @@ void VCDockSlider::paintEvent(QPaintEvent* e)
 {
   QFrame::paintEvent(e);
 
-  if (_app->mode() == App::Design && 
+  if (_app->mode() == App::Design &&
       _app->virtualConsole()->selectedWidget() == this)
     {
       QPainter p(this);
@@ -906,7 +906,7 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
   if (_app->mode() == App::Design && m_static == false)
     {
       if (m_resizeMode == true)
-	{	  
+	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
 	  _app->doc()->setModified(true);
@@ -916,7 +916,7 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
 	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
 	  p.setX(p.x() - m_mousePressPoint.x());
 	  p.setY(p.y() - m_mousePressPoint.y());
-		
+
 	  moveTo(p);
 	  _app->doc()->setModified(true);
 	}
@@ -956,7 +956,7 @@ void VCDockSlider::resizeTo(QPoint p)
     {
       p.setX(parentWidget()->width());
     }
-  
+
   // Don't move beyond top or bottom
   if (p.y() < 0)
     {
@@ -983,7 +983,7 @@ void VCDockSlider::moveTo(QPoint p)
       p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
       p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
     }
-  
+
   // Don't move beyond left or right
   if (p.x() < 0)
     {
