@@ -45,6 +45,7 @@
 #include "../../main/src/configkeys.h"
 
 #include "../../libs/common/filehandler.h"
+#include "../../libs/common/documentbrowser.h"
 
 #include "deviceclasseditor.h"
 
@@ -61,7 +62,7 @@
 #define ID_FILE_QUIT                	10080
 
 ///////////////////////////////////////////////////////////////////
-// Edit menu entries                    
+// Edit menu entries
 #define ID_EDIT_ADD_CHANNEL             11000
 #define ID_EDIT_REMOVE_CHANNEL          11010
 #define ID_EDIT_CHANNEL                 11020
@@ -74,7 +75,7 @@
 #define ID_EDIT_CAPABILITY              11070
 
 ///////////////////////////////////////////////////////////////////
-// View menu entries                    
+// View menu entries
 #define ID_VIEW_TOOLBAR       	        12010
 #define ID_VIEW_STATUSBAR		12020
 
@@ -87,8 +88,9 @@
 ///////////////////////////////////////////////////////////////////
 // Help menu entries
 #define ID_HELP                         1000
-#define ID_HELP_ABOUT               	1001
-#define ID_HELP_ABOUT_QT                1002
+#define ID_HELP_INDEX			1010
+#define ID_HELP_ABOUT               	1020
+#define ID_HELP_ABOUT_QT                1030
 
 //////////////////////////////////////////////////////////////////
 // Status bar messages
@@ -101,32 +103,47 @@ const QString KApplicationRectY("DCE_ApplicationRectY");
 const QString KApplicationRectW("DCE_ApplicationRectW");
 const QString KApplicationRectH("DCE_ApplicationRectH");
 
-App::App(Settings* settings)
+App::App(Settings* settings) :
+	m_settings         ( settings ),
+	m_workspace        ( NULL ),
+	m_documentBrowser  ( NULL ),
+	m_fileMenu         ( NULL ),
+	m_editMenu         ( NULL ),
+	m_toolsMenu        ( NULL ),
+	m_windowMenu       ( NULL ),
+	m_helpMenu         ( NULL ),
+	m_toolbar          ( NULL )
 {
-  m_workspace = NULL;
-
-  ASSERT(settings != NULL);
-  m_settings = settings;
 }
 
 App::~App()
 {
-  delete m_workspace;
+	if (m_workspace)
+		delete m_workspace;
+	m_workspace = NULL;
+
+	if (m_documentBrowser)
+		delete m_documentBrowser;
+	m_documentBrowser = NULL;
+
+	if (m_settings)
+		delete m_settings;
+	m_settings = NULL;
 }
 
 void App::initView(void)
 {
-  initSettings();
+	initSettings();
 
-  setIcon(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")));
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")));
 
-  initWorkspace();
+	initWorkspace();
 
-  initMenuBar();
-  initStatusBar();
-  initToolBar();
-  
-  m_lastPath = QString(FIXTURES);
+	initMenuBar();
+	initStatusBar();
+	initToolBar();
+
+	m_lastPath = QString(FIXTURES);
 }
 
 void App::initStatusBar()
@@ -136,22 +153,22 @@ void App::initStatusBar()
 
 void App::initToolBar()
 {
-  m_toolbar = new QToolBar(this, "Workspace");
+	m_toolbar = new QToolBar(this, "Workspace");
 
-  new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")), "New...",
-		  0, this, SLOT(slotFileNew()), m_toolbar);
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")), "New...",
+			0, this, SLOT(slotFileNew()), m_toolbar);
 
-  new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), "Load...",
-		  0, this, SLOT(slotFileOpen()), m_toolbar);
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), "Load...",
+			0, this, SLOT(slotFileOpen()), m_toolbar);
 
-  new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")), "Save",
-		  0, this, SLOT(slotFileSave()), m_toolbar);
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")), "Save",
+			0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
 
 bool App::event(QEvent* e)
 {
-  return QWidget::event(e);
+	return QWidget::event(e);
 }
 
 
@@ -182,14 +199,14 @@ void App::initSettings()
 
 void App::initWorkspace()
 {
-  m_workspace = new QWorkspace(this, "Main Workspace");
-  setCentralWidget(m_workspace);
+	m_workspace = new QWorkspace(this, "Main Workspace");
+	setCentralWidget(m_workspace);
 
-  QString path;
-  settings()->get(KEY_APP_BACKGROUND, path);
+	QString path;
+	settings()->get(KEY_APP_BACKGROUND, path);
 
-  // Set background picture
-  m_workspace->setBackgroundPixmap(QPixmap(path));
+	// Set background picture
+	m_workspace->setBackgroundPixmap(QPixmap(path));
 }
 
 
@@ -199,26 +216,26 @@ void App::initMenuBar()
   // File Menu
   m_fileMenu = new QPopupMenu();
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")),
-			 "&New", this, SLOT(slotFileNew()), 
+			 "&New", this, SLOT(slotFileNew()),
 			 CTRL+Key_N, ID_FILE_NEW);
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), 
-			 "&Open...", this, SLOT(slotFileOpen()), 
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")),
+			 "&Open...", this, SLOT(slotFileOpen()),
 			 CTRL+Key_O, ID_FILE_OPEN);
 
   m_fileMenu->insertSeparator();
 
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")),
-			 "&Save", this, SLOT(slotFileSave()), 
+			 "&Save", this, SLOT(slotFileSave()),
 			 CTRL+Key_S, ID_FILE_SAVE);
 
-  m_fileMenu->insertItem("Save As...", this, SLOT(slotFileSaveAs()), 
+  m_fileMenu->insertItem("Save As...", this, SLOT(slotFileSaveAs()),
 			 0, ID_FILE_SAVE_AS);
 
   m_fileMenu->insertSeparator();
 
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.xpm")),
-			 "E&xit", this, SLOT(slotFileQuit()), 
+			 "E&xit", this, SLOT(slotFileQuit()),
 			 CTRL+Key_Q, ID_FILE_QUIT);
 
   ///////////////////////////////////////////////////////////////////
@@ -261,24 +278,28 @@ void App::initMenuBar()
   connect(m_editMenu, SIGNAL(activated(int)),
 	  this, SLOT(slotEditMenuActivated(int)));
 
-  connect(m_editMenu, SIGNAL(aboutToShow()), 
+  connect(m_editMenu, SIGNAL(aboutToShow()),
 	  this, SLOT(slotRefreshEditMenu()));
-  
+
   ///////////////////////////////////////////////////////////////////
   // Window Menu
   m_windowMenu = new QPopupMenu();
-  connect(m_windowMenu, SIGNAL(aboutToShow()), 
+  connect(m_windowMenu, SIGNAL(aboutToShow()),
 	  this, SLOT(slotRefreshWindowMenu()));
-  
+
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
   m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.xpm")),
-			 "About...", this, SLOT(slotHelpAbout()), 
+			 "Index...", this, SLOT(slotHelpIndex()),
+			 SHIFT + Key_F1, ID_HELP_INDEX);
+  m_helpMenu->insertSeparator();
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")),
+			 "About...", this, SLOT(slotHelpAbout()),
 			 0, ID_HELP_ABOUT);
 
   m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/qt.xpm")),
-			 "About Qt...", this, SLOT(slotHelpAboutQt()), 
+			 "About Qt...", this, SLOT(slotHelpAboutQt()),
 			 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
@@ -319,7 +340,7 @@ void App::slotFileOpen()
   QPtrList <QString> list;
 
   // Read name to last path so that the next file dialog starts from there
-  m_lastPath = QFileDialog::getOpenFileName(m_lastPath, 
+  m_lastPath = QFileDialog::getOpenFileName(m_lastPath,
 					    "Device Classes (*.deviceclass)",
 					    this);
 
@@ -329,7 +350,7 @@ void App::slotFileOpen()
 
       // Attempt to read & create a device class from list
       DeviceClass* dc = DeviceClass::createDeviceClass(list);
-      
+
       if (!dc)
 	{
 	  QMessageBox::warning(this, KApplicationNameShort,
@@ -418,7 +439,7 @@ void App::slotEditMenuActivated(int id)
 	  break;
 
 	case ID_EDIT_CAPABILITY:
-	  editor->slotEditPresetClicked();	
+	  editor->slotEditPresetClicked();
 	  break;
 
 	default:
@@ -483,7 +504,7 @@ void App::slotRefreshWindowMenu()
       id++;
     }
 
-  connect(m_windowMenu, SIGNAL(activated(int)), 
+  connect(m_windowMenu, SIGNAL(activated(int)),
 	  this, SLOT(slotWindowMenuCallback(int)));
 }
 
@@ -509,7 +530,7 @@ void App::slotWindowMenuCallback(int item)
 	}
       else
 	{
-	  QMessageBox::critical(this, KApplicationNameShort, 
+	  QMessageBox::critical(this, KApplicationNameShort,
 				"Unable to focus window! Handle not found.");
 	}
 
@@ -529,26 +550,69 @@ void App::slotWindowTile()
   workspace()->tile();
 }
 
+//
+// Help -> Index
+//
+void App::slotHelpIndex()
+{
+	if (m_documentBrowser == NULL)
+	{
+		m_documentBrowser = new DocumentBrowser(this);
+		m_documentBrowser->init();
+		connect(m_documentBrowser, SIGNAL(closed()),
+			this, SLOT(slotDocumentBrowserClosed()));
+	}
+	else
+	{
+		m_documentBrowser->hide();
+	}
 
+	m_documentBrowser->show();
+}
+
+//
+// Document browser window has been closed
+//
+void App::slotDocumentBrowserClosed()
+{
+	if (m_documentBrowser)
+	{
+		disconnect(m_documentBrowser);
+		delete m_documentBrowser;
+		m_documentBrowser = NULL;
+	}
+}
+
+//
+// Help -> About QLC
+//
 void App::slotHelpAbout()
 {
-  AboutBox* ab = NULL;
-  ab = new AboutBox(this);
-  ab->exec();
-  delete ab;
+	AboutBox* ab = NULL;
+	ab = new AboutBox(this);
+	ab->exec();
+	delete ab;
 }
 
-
+//
+// Help -> About QT
+//
 void App::slotHelpAboutQt()
 {
-  QMessageBox::aboutQt(this, KApplicationNameShort);
+	QMessageBox::aboutQt(this, KApplicationNameShort);
 }
 
+//
+// An editor window has been closed
+//
 void App::slotEditorClosed(DeviceClassEditor* editor)
 {
-  delete editor;
+	delete editor;
 }
 
+//
+// File -> Exit or Window destroyed
+//
 void App::closeEvent(QCloseEvent* e)
 {
   DeviceClassEditor* editor = NULL;
@@ -569,7 +633,7 @@ void App::closeEvent(QCloseEvent* e)
 	}
     }
 
-  // Save main window geometry for next session 
+  // Save main window geometry for next session
   m_settings->set(KApplicationRectX, rect().x());
   m_settings->set(KApplicationRectY, rect().y());
   m_settings->set(KApplicationRectW, rect().width());

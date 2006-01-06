@@ -11,18 +11,21 @@ noinst_HEADERS = \
 	ledbar.h \
 	minmax.h \
 	outputplugin.h \
-	plugin.h
+	plugin.h \
+	documentbrowser.h
 
 libqlccommon_la_SOURCES = \
 	filehandler.cpp \
 	ledbar.cpp \
 	plugin.cpp \
 	outputplugin.cpp \
+	documentbrowser.cpp \
 	\
 	moc_filehandler.cpp \
 	moc_ledbar.cpp \
 	moc_plugin.cpp \
-	moc_outputplugin.cpp
+	moc_outputplugin.cpp \
+	moc_documentbrowser.cpp
 
 libqlccommon_la_LIBADD = @QT_LIBS@
 

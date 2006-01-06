@@ -63,7 +63,7 @@
 #include "functiontree.h"
 #include "busproperties.h"
 
-#include "documentbrowser.h"
+#include "../../libs/common/documentbrowser.h"
 #include "aboutbox.h"
 
 #include "dummyoutplugin.h"
@@ -1184,7 +1184,7 @@ void App::slotHelpIndex()
 {
   if (m_documentBrowser == NULL)
     {
-      m_documentBrowser = new DocumentBrowser();
+      m_documentBrowser = new DocumentBrowser(this);
       m_documentBrowser->init();
       connect(m_documentBrowser, SIGNAL(closed()),
 	      this, SLOT(slotDocumentBrowserClosed()));

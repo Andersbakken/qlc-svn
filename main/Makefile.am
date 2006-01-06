@@ -52,7 +52,6 @@ noinst_HEADERS = \
 	src/deviceproperties.h \
 	src/dmxaddresstool.h \
 	src/doc.h \
-	src/documentbrowser.h \
 	src/dummyoutplugin.h \
 	src/editscenevalue.h \
 	src/efxeditor.h \
@@ -162,7 +161,6 @@ qlc_SOURCES = \
 	src/deviceproperties.cpp \
 	src/dmxaddresstool.cpp \
 	src/doc.cpp \
-	src/documentbrowser.cpp \
 	src/dummyoutplugin.cpp \
 	src/editscenevalue.cpp \
 	src/efx.cpp \
@@ -221,7 +219,6 @@ qlc_SOURCES = \
 	src/moc_deviceproperties.cpp \
 	src/moc_dmxaddresstool.cpp \
 	src/moc_doc.cpp \
-	src/moc_documentbrowser.cpp \
 	src/moc_dummyoutplugin.cpp \
 	src/moc_editscenevalue.cpp \
 	src/moc_efx.cpp \

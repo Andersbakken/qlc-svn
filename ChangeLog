@@ -1,0 +1,4 @@
+2005-Jan-01  Heikki Junnila <hjunnila@users.sf.net>
+	* Created ChangeLog
+	* Moved documentbrowser.[cpp|h] to libs/common/
+	* Added "Index..." to DCE's help menu to access document browser
