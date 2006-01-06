@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Getting Started</TITLE>
+<TITLE>Q Light Controller Documentation - Getting Started</TITLE>
 </HEAD>
 
 <BODY>
@@ -84,34 +84,35 @@ following dialog:</LI>
 
 <P>
 On the left side you can see the list of available fixture manufacturers. Each manufacturer folder
-contains a number of fixtures produced by each manufacturer. You can find for example an "MX-4"
-under "Martin" folder. As you click a fixture from the list, you can see the <B>channels</B>
+contains a number of fixtures produced by each manufacturer. You can find for example a "DJScan250"
+under "Futurelight" folder. As you click a fixture from the list, you can see the <B>channels</B>
 field on the right change to display the number of DMX channels required by the selected fixture.
 </P>
 
-<LI>Go ahead and select Martin MX-4 but don't click OK just yet.</LI>
+<LI>Go ahead and select Futurelight DJScan250 but don't click OK just yet.</LI>
 
 <P>
-You can edit the new device's name in the <B>Name</B> field and its DMX address
-to the <B>Address</B> field. If you don't understand the DMX addressing principles,
-please consult your lighting equipment manuals for more info.
+You can edit the new device's name in the <B>Name</B> field and its DMX address to the
+<B>Address</B> field. If you have only one DMX output device, you should use <B>universe</B> 1.
 </P>
 
+<P>
+If you don't understand the DMX addressing principles, please consult your lighting equipment
+manuals for more info. In general, the DMX address is the first DMX channel of your fixture. In the
+case of a DJScan250, assigning for example 205 as its DMX address, reserves channels 205, 206, 207,
+208, 209, and 210 (6 channels in all) to the fixture.
+</P>
 
-      <P>
-	<B>Device Manager with DPX-620 as an output device</B><BR>
-	  <IMG SRC="" ALT="Device Manager with DPX-620 as an output device">
-      </P>
+<H3>Back in the device manager</H3>
 
-      <P>
-	In the left pane you can see the devices that are present in your current
-	workspace. In the right pane, you can see the currently selected device's
-	information.
-      </P>
+<IMG SRC="pics/devicemanager.png" ALT="Device Manager with DJScan250 as an output device">
 
+<P>
+On the left pane you can see the devices that are present in your current workspace. On the right
+pane, you can see the currently selected device's information. You can edit the device's name,
+address and universe by clicking the <B>Properties</B> button. When you're happy with the properties
+we can move on to creating some functions.
+</P>
 
-
-<HR>
-<A HREF="mailto:hjunnila@users.sourceforge.net" CLASS="link">Heikki Junnila</A>
-  </BODY>
+</BODY>
 </HTML>
