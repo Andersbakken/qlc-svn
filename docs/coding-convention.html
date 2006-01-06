@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Q Light Controller 2 Coding Convention</TITLE>
+<TITLE>Q Light Controller Coding Convention</TITLE>
 </HEAD>
 
 <BODY>
@@ -19,25 +19,25 @@ convention.
 1. Each source file should be attached with this header:
 <PRE>
 /*
-Q Light Controller
-<individual source filename here>
+  Q Light Controller
+  *individual source filename here*
 
-Copyright (c) Heikki Junnila
-	    *your name here*
+  Copyright (c) Heikki Junnila
+	        *your name here*
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-Version 2 as published by the Free Software Foundation.
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  Version 2 as published by the Free Software Foundation.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details. The license is
-in the file "COPYING".
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details. The license is
+  in the file "COPYING".
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 </PRE>
 </P>
@@ -81,7 +81,7 @@ else
     bar();
 }
 
-for (int i = 0; i < n; i++)
+for (int i = 0; i != n; i++)
 {
     foo(i);
 }
@@ -105,7 +105,7 @@ class Foo;
 <P>
 5.1. Respectively, each class should be in its own file and the file name must be
 the class' name, in small letters. If it makes things significantly more logical,
-SMALL classes can be defined inside other classes' definitions and files. 
+SMALL classes can be defined inside other classes' definitions and files.
 File suffix for implementation files is ".cpp" and for header files ".h". Do NOT
 use other styles.<BR>
 In general:<BR>
@@ -138,11 +138,12 @@ static const int KMenuItem ( 1000 );
 <PRE>
 if (foo == bar)
 
-while ( foo != bar)
+while (foo != bar)
 
 int foo = bar;
 
-for (int foo = 0; foo < bar; foo++)
+for (int foo = 0; foo != bar; foo++)
+...
 </PRE>
 </P>
 
@@ -157,10 +158,8 @@ empty lines between logical sections.
 </P>
 
 <P>
-10. WRITE COMMENTS. I am a BAD example on this...
+11. WRITE COMMENTS. I am a BAD example on this...
 </P>
 
-<HR>
-<A HREF="mailto:hjunnila@users.sourceforge.net">Heikki Junnila</A>
 </BODY>
 </HTML>

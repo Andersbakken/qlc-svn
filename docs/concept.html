@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Q Light Controller Documentation - Main Window</TITLE>
+<TITLE>Q Light Controller Documentation - The Concept</TITLE>
 </HEAD>
-  
+
 <BODY>
 <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
 <TR>
@@ -33,8 +33,8 @@
 <TD VALIGN="top">
 <H2>Purpose</H2>
 
-<P CLASS="normal">
-Q Light Controller (QLC for short) is meant to control lighting equipment used 
+<P>
+Q Light Controller (QLC for short) is meant to control lighting equipment used
 in various performances, like live concerts and theatres etc. The main purpose is
 that QLC could outperform commercial lighting desks with an intuitive and flexible
 user interface.
@@ -43,92 +43,93 @@ user interface.
 <H2>Modes</H2>
 
 <P>
-Q Light Controller is based on the concept of having two distinct operational modes to 
-prevent accidental or otherwise harmful changes during operation. Design mode is meant 
-to edit the behaviour of the program; create and edit functions and devices and how 
-they are operated. Operate mode is meant to execute the created functions that actually
-automate lighting controls.
+Q Light Controller is based on the common concept of having two distinct operational
+modes to prevent accidental or otherwise harmful changes during operation. Design mode
+is meant to edit the behaviour of the program; create and edit functions and fixtures
+and how they work. Operate mode is meant to execute the created functions that
+eventually control your lighting fixtures.
 </P>
 
-<H2>Devices</H2>
+<H2>Fixtures</H2>
 
 <P>
-The software is based on the DMX512 standard which defines the number of universes, 
+The software is based on the DMX512 standard which defines the number of universes,
 number of channels and value range for all channels, as well as other protocol-related
-information. QLC supports the use of one DMX universe, consisting of 512 channels,
+information. QLC supports the use of 8 DMX universes, each consisting of 512 channels,
 each channel having an integer value between 0 and 255. DMX access is achieved thru
 the DMX4Linux driver suite. Additional protocols can be supported thru custom made
-plugins. It must be possible to run QLC without actual DMX hardware for offline
-editing.
+plugins (for example the 128-channel midiout plugin). It is also possible to run
+QLC without actual DMX hardware for offline editing.
 </P>
 
 <P>
-The user can store shared device information in a device class library that contains
-the following properties on each device class:
+The user can store shared fixture information in a fixture library that contains
+the following properties on each fixture:
 <BR>
 &nbsp;
 <BR>
 * Manufacturer and model (e.g. Manufacturer:Martin, Model:MAC550).
 <BR>
-* Type (Dimmer, Color changer, Scanner, Moving head, Fogger, Hazer, Fan, Other)
+* Type (Dimmer, Color changer, Scanner, Moving head, Fogger, Hazer, Fan, Others)
 <BR>
 * Number of channels (1-512).
 <BR>
 * Description of each channel's purpose (e.g. Gobo, Color, Speed etc.)
 <BR>
-* Value ranges in each channel representing a special functionality (e.g. 0-1:Lamp on)
+* Value ranges in each channel representing a special functionality (e.g. 0-5:Lamp on)
 <BR>
 </P>
 
 <P>
-These device class entries can then be used to create device instances (256 at most at a time), 
+These fixture entries can then be used to create fixture instances (256 at most at a time),
 that will, after instantiation, have additional properties defined by the user:
 <BR>
 &nbsp;
 <BR>
 * DMX Address
 <BR>
+* DMX Universe
+<BR>
 * Name
 <BR>
 </P>
 
 <P>
-Although each device can be named, the name must not be used internally to discern device instances
-from one another. The same goes for the DMX address. Several instances of one device class can be
-created and one device can be an instance of exactly one device class.
+Several instances of one fixture can be created. Each fixture can be named, but the name is
+not used internally to discern fixture instances from one another. The same goes for the DMX address.
+So you can have any number of devices with the same name and/or address, if you feel that doing so
+serves a purpose.
 </P>
 
 <H2>Functions</H2>
 
 <P>
-The user can create a number of functions, that are used to automate the setting of values to channels. 
-The four different function types are: scene, chaser, collection and sequence. Each function can be 
-named, but the name must not be used internally to discern one function from another, although it is 
-encouraged that the user gives functions descriptive names.
+The user can create a number of functions, that are used to automate the setting of values to channels.
+The different function types are: scene, chaser, EFX, collection and sequence. Each function can be
+named, but the name is not used internally to discern one function from another, although it is
+encouraged that the user gives functions descriptive names (for his own good).
 </P>
 
 <H3>Speed Setting</H3>
 
 <P>
-Functions have a speed setting that is set by the user. A maximum of 32 different speed settings called 
-buses, are possible. One function can have exactly one bus and many functions can share a bus. The speed 
-settings can be changed at any time and can be between 0 and 10 seconds with a resolution of at least 
-25 milliseconds. Any of the buses can be assigned in design mode to any function. A name can be assigned 
-to each of the buses, for convenience and clarity.
+Functions have a speed setting that is set by the user. A maximum of 32 different speed settings called
+buses, are possible. One function can have exactly one bus and many functions can share a bus. The speed
+settings can be changed at any time with a resolution of 1/64 seconds. Any of the buses can be assigned
+in design mode to any function. A name can be assigned to each of the buses, for convenience and clarity.
 </P>
 
 <P>
-The names of the first two buses are fixed to "Default Fade" and "Default Hold", respectively.
-Functions completion times and their run-time accuracy in value setting can be late or early 10 
-milliseconds on average. The user must be able to quickly (<100ms) stop all running functions in case
-something disastrous happens.
+The names of the first two buses are fixed to "Fade" and "Hold". Functions' completion times and their
+run-time accuracy in value setting can be late or early 10 milliseconds on average. The user is able to
+quickly stop all running functions (pressing a panic button) in case something disastrous happens.
 </P>
 
-<H3>Scene</H3>
+<A NAME="Scene" HREF="#Scene"><H3>Scene</H3></A>
 
 <P>
-A scene function encapsulates the values of all channels held by one device instance. Each stored value 
-holds information on the style that the value will be set once the scene function is activated. Possible 
+A scene function encapsulates the values of all channels held by one fixture instance. Each stored value
+holds information on the style that the value will be set once the scene function is activated. Possible
 value types (styles) are:
 <BR>
 &nbsp;
@@ -142,53 +143,103 @@ value types (styles) are:
 </P>
 
 <P>
-Of these, "NoSet" means that the value of the channel must not be touched at all. "Set" value is set at 
-the very instant when the function is executed. "Fade" value is namely faded from the value that the 
-channel currently has, to the value specified in the scene, smoothly during the given time span (e.g. 
-speed bus value). The execution of a scene takes always the time specified as the function's speed, 
-regardless of whether the channel values are already those specified in the scene or all values are of 
+Of these, "NoSet" means that the value of the channel must not be touched at all. "Set" value is set at
+the very instant when the function is executed. "Fade" value is namely faded from the value that the
+channel currently has, to the value specified in the scene, smoothly during the given time span (e.g.
+speed bus value). The execution of a scene takes always the time specified as the function's speed,
+regardless of whether the channel values are already those specified in the scene or all values are of
 type "Set" or "NoSet".
 </P>
 
 <P>
-Bus number 1 (Default Fade) is assigned to all newly created scenes by default.
+Bus number 1 (Default Fade) is assigned to all newly created scenes by default. The bus value is used
+as the overall time given to fade the scene channels from their current values to the ones defined in
+the scene.
 </P>
 
 <P>
-A copy of a scene function can be created to the same device that the original is assigned to, or to 
-another device. All scene properties are copied to the duplicated scene. If the target device has less 
-channels than the originating device, excess channels are cropped from the copy. If the target device 
-has more channels than the originating device, the extra channels are set to zero value with "NoSet" 
-type. After copying, the two functions are completely independent function entities. Scenes can also be 
-moved between devices with the same rules.
+A copy of a scene function can be created to the same fixture that the original is assigned to, or to
+another fixture. All scene properties are copied to the duplicated scene. If the target fixture has less
+channels than the originating fixture, excess channels are cropped from the copy. If the target fixture
+has more channels than the originating fixture, the extra channels are set to zero value with "NoSet"
+type. After copying, the two functions are completely independent function entities. Scenes can also be
+moved between fixtures with the same rules.
 </P>
 
-<H3>Collection</H3>
+<A NAME="EFX" HREF="#EFX"><H3>EFX</H3></A>
 
 <P>
-A collection function encapsulates multiple functions that are executed simultaneously when the 
-collection function is executed. Any number of functions can be inserted to a collection. One function 
-can be inserted only once and a collection cannot be a member of itself. The collection function is not 
-attached to a device, thus it is held in the Global function space.
+An EFX function is mainly used to automate moving lights (e.g. scanners & moving heads). The EFX can
+create complex mathematical paths to an X-Y plane that are converted to DMX values for the fixture's
+pan and tilt channels.
 </P>
 
 <P>
-The speed setting has no effect on a collection, therefore, it is not necessary to have the possibility 
+Bus number 1 (Default Fade) is assigned to all newly created EFX's by default. The bus value is used
+as the overall time for an EFX to complete one cycle (i.e. in a circle algorithm it is the time
+given to complete a full 360 degree circle).
+</P>
+
+<P>
+A copy of an EFX function can be created to the same fixture that the original is assigned to, or to
+another fixture. All EFX properties are copied to the duplicated EFX. Channel mappings are done using
+direct channel numbers (e.g. 1=1, 2=2 etc.). If the target fixture has less channels than the
+originating fixture, excess channels are cropped from the copy. After copying, the two functions are
+completely independent function entities. EFX's can also be moved between fixtures with the same rules.
+</P>
+
+<A NAME="Sequence" HREF="#Sequence"><H3>Sequence</H3></A>
+
+<P>
+A sequence function is also used to automate moving lights (e.g. scanners & moving heads). The big
+difference between an EFX and a sequence is that you must enter each step manually for sequences,
+while EFX's will create the steps automatically using different mathematical formulae. Also, you can
+enter values for each channel of a fixture in a sequence function, while EFX's operate solely on
+pan and tilt channels.
+</P>
+
+<P>
+Bus number 2 (Default Hold) is assigned to all newly created sequences by default. The bus value is
+used as hold time between steps.
+</P>
+
+<P>
+A copy of a sequence function can be created to the same fixture that the original is assigned to, or
+to another fixture. All sequence properties are copied to the duplicated sequence. If the target
+fixture has less channels than the originating fixture, excess channels are cropped from the copy.
+If the target fixture has more channels than the originating fixture, the extra channels are set to
+zero value with "NoSet" type. After copying, the two functions are completely independent function
+entities. Sequences can also be moved between fixtures with the same rules.
+</P>
+
+<A NAME="Collection" HREF="#Collection"><H3>Collection</H3></A>
+
+<P>
+A collection function encapsulates multiple functions that are executed simultaneously when the
+collection function is executed. Any number of functions can be inserted to a collection. One function
+can be inserted only once and a collection cannot be a member of itself. The collection function is not
+attached to a fixture, thus it is held in the Global function space.
+</P>
+
+<P>
+The speed setting has no effect on a collection, therefore, it is not necessary to have the possibility
 to assign a bus to a collection.
 </P>
 
 <P>
-A copy of a collection function can be created to the global function space. The duplicated function has 
-the same properties as the original function. After copying, the two functions are completely 
+A copy of a collection function can be created to the global function space. The duplicated function has
+the same properties as the original function. After copying, the two functions are completely
 independent function entities.
 </P>
 
-<H3>Chaser</H3>
+<A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
 
 <P>
-A chaser function encapsulates multiple functions that are executed in serial one after another when 
-the chaser function is executed. The next function is executed after the previous has stopped. Any 
-number of functions can be inserted to a chaser. The chaser cannot be a member of itself.
+A chaser function encapsulates multiple functions that are executed in serial one after another when
+the chaser function is run. The next function is run after the previous has finished. Any number of
+functions can be inserted to a chaser. The chaser cannot be a member of itself, although it is possible
+to add for example a collection as a member that holds the same chaser. These situations should be
+avoided because they create endless nested loops.
 </P>
 
 <P>
@@ -215,17 +266,17 @@ The run order can be set to (mutually exclusive):
 </P>
 
 <P>
-The direction setting affects run order as described.
+The direction setting has effect on run order as described.
 </P>
 
 <P>
-Speed setting is used to set a hold time between functions that must elapse, before the next function 
-is executed. Bus number 2 (Default Hold) is assigned to all newly created scenes by default.
+Bus number 2 (Default Hold) is assigned to all newly created chasers by default. The bus value
+is used as hold time between steps.
 </P>
 
 <P>
-A copy of a chaser function can be created to the global function space. The duplicated function has 
-the same properties as the original function. After copying, the two functions are completely 
+A copy of a chaser function can be created to the global function space. The duplicated function has
+the same properties as the original function. After copying, the two functions are completely
 independent function entities.
 </P>
 
@@ -233,126 +284,12 @@ independent function entities.
 
 <P>
 The primary purpose of the virtual console is to act as an open sandbox where the user can create
-a lighting desk of his/her preference.
-</P>
-
-<P>
-The virtual console is essentially a "drawing area", that is initially empty. The user can add and 
-remove buttons, sliders, frames and labels that are used to construct a custom lighting console. The 
-lighting automation is primarily controlled thru the virtual console, although limited control is also 
-possible thru the device console.
-</P>
-
-<P>
-The virtual console background can be a color or a tiled image. The user can restrict the movement and 
-sizes of the GUI elements (widgets) as if they were on a grid. The grid can have a resolution between 
-1-100 pixels independently for x- and y-axes and the grid can be turned on or off. If the grid is 
-turned off, widgets can be placed and resized freely.
-</P>
-
-<P>
-The user can set the virtual console to exclusively receive all keyboard input in operate mode. Also, 
-key repeating can (and should!) be turned off to prevent flickering caused by the computer emulating
-the user repeatedly pressing and releasing a key.
-</P>
-
-<P>
-On the left side of virtual console, are always two speed sliders that are always assigned to buses 
-number 1 (Default Fade) and 2 (Default Hold). These sliders can be hidden from view either from a 
-menu item, or pressing the "Hide" button.
-</P>
-
-<P>
-All widgets described below, can be configured thru a popup-menu that can be invoked only in design 
-mode by right mouse-click over the widget. This menu is available only in design mode.
-</P>
-
-<P>
-In design mode, all widgets draw a resize area in their lower-right corners. By keeping the mouse left 
-button pressed over the resize area and moving the mouse, the user can resize the widget. Left mouse 
-button press over the widget starts to move the widget, again only in design mode.
-</P>
-
-<H3>Buttons</H3>
-
-<P>
-The virtual console can house any number of button-like widgets. The button size and placement can be 
-adjusted within the virtual console. The button has text and color or an image as foreground.
-</P>
-
-<P>
-One function can be assigned to each button. When a function is assigned to a button, that button's 
-tooltip is set to reflect the device (or Global) that function belongs to and the function's name.
-</P>
- 
-<P>
-A button can be set to behave like a locking push button; pressed, the assigned function is run until 
-it stops by itself; or depressed again, causing the button to unlock, explicitly stopping the function 
-as soon as possible.
-</P>
-
-<P>
-A button can be set to behave like a flash button; when the button is pressed, the function is kept 
-running until the function stops by itself or the button is released and the function is stopped 
-explicitly by the button.
-</P>
-
-<P>
-Each button can have a keyboard key combination assigned to it acting the same way as if the button 
-was pressed with the mouse cursor.
-</P>
-
-<H3>Sliders</H3>
-
-<P>
-The virtual console can house any number of slider-like widgets. The slider size and placement can be 
-adjusted within the virtual console. 
-</P>
-
-<P>
-One scene or collection can be assigned to a slider, which can then be used manually to fade the values 
-in the assigned function; Scene value type "set" is interpreted as "fade" and "NoSet" type values are 
-ignored. When a function is assigned to a slider, that slider's tooltip is set to reflect the device 
-(or Global) that function belongs to and the function name. 
-</P>
-
-<P>
-A slider can be assigned one or more individual channels not regarding which device they might belong 
-to; the slider is then used to directly set those channel's values. Possible scenes accessing these 
-channels have no effect to the slider's operation. If one channel is assigned to a slider, the absolute 
-channel number is placed under the slider as info text, which can be edited by the user. If multiple 
-channels are assigned to a slider, the channel numbers are set to the slider's tooltip and the slider's 
-info text must be set by the user. If one or more channels are assigned to a slider, the value set to 
-those channels is displayed above the slider.
-</P>
-
-<P>
-A slider can be set to behave as a speed setting slider that directly sets a value to its assigned bus.
-Any bus can be assigned to any speed slider. When a bus value is updated, all speed sliders assigned to
-the bus will track the change by moving themselves to reflect the changed value.
-</P>
-
-<H3>Frames</H3>
-
-<P>
-The virtual console can house any number of frame-like widgets that are used to group any number of
-widgets together. The frame size and placement can be adjusted within the virtual console. The frame
-background can be a color or an image.
-</P>
-
-<H3>Labels</H3>
-
-<P>
-The virtual console can house any number of text labels. The text label size and placement can be 
-adjusted within the virtual console. The text, font, foreground color and background color can be 
-modified. The label can also have a background image.
+a lighting desk of his/her choice. <A HREF="virtualconsole.html">Read more...</A>
 </P>
 
 </TD>
 </TR>
 </TABLE>
 
-<HR>
-<A HREF="mailto:hjunnila@users.sourceforge.net" >Heikki Junnila</A>
 </BODY>
 </HTML>

@@ -3,7 +3,7 @@
 <HEAD>
 <TITLE>Q Light Controller Documentation - Function Manager</TITLE>
 </HEAD>
-  
+
 <BODY>
 <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
 <TR>
@@ -27,7 +27,7 @@
 
 <TR>
 <TD VALIGN="top">
-<A HREF="pics/functionmanager.png" TARGET="_new">
+<A HREF="functionmanager-pic.html">
 <IMG SRC="pics/functionmanager.png" WIDTH="100" BORDER="0">
 <BR>
 Click to see bigger</A>
@@ -37,29 +37,33 @@ Click to see bigger</A>
 <H2>Menubar</H2>
 
 <H3>Add Menu</H3>
+<P>
+<B>Scene:</B> Create a new <A HREF="concept.html#Scene">scene</A> to the selected device (available only for devices).
 <BR>
-* Scene: Create a new scene to the selected device (available only for devices).
+<B>EFX:</B> Create a new <A HREF="concept.html#EFX">EFX</A> to the selected device (available only for devices)
 <BR>
-* Chaser: Create a new chaser to the global function space (available only to global).
+<B>Sequence:</B> Create a new <A HREF="concept.html#Sequence">Sequence</A> to the selected device (available only for devices)
 <BR>
-* Collection: Create a new collection to the global function space (available only
+<B>Chaser:</B> Create a new <A HREF="concept.html#Chaser">chaser</A> to the global function space (available only to global).
+<BR>
+<B>Collection:</B> Create a new <A HREF="concept.html#Collection">collection</A> to the global function space (available only
 to global).
 <BR>
 </P>
 
 <H3>Edit Menu</H3>
+<P>
+<B>Cut:</B> Prepare  the selected function to be <I>moved</I> to another device or global.
 <BR>
-* Cut: Prepare  the selected function to be <I>moved</I> to another device or global.
+<B>Copy:</B> Prepare the selected function to be <I>copied</I> to another device or global.
 <BR>
-* Copy: Prepare the selected function to be <I>copied</I> to another device or global.
+<B>Paste:</B> Move or copy the prepared function to the selected device or global.
 <BR>
-* Paste: Move or copy the prepared function to the selected device or global.
+<B>Delete:</B> Delete the selected function.
 <BR>
-* Delete: Delete the selected function.
+<B>Edit:</B> Edit the selected function; opens a separate dialog.
 <BR>
-* Edit: Edit the selected function; opens a separate dialog.
-<BR>
-* Assign Bus: Assign a speed bus for the selected function.
+<B>Assign Bus:</B> Assign a speed bus for the selected function.
 </P>
 
 <P>
@@ -75,8 +79,7 @@ and individual functions as the leaf nodes.
 </P>
 
 <P>
-Setting the <I>Keep device nodes open</I>-checkbox on, all device nodes are
-kept always open.
+Checking the <B>Keep folders open</B>, all device nodes are kept always open.
 </P>
 
 </TD>
@@ -84,7 +87,7 @@ kept always open.
 
 <TR>
 <TD VALIGN="top">
-<A HREF="pics/selectfunction.png" TARGET="_new">
+<A HREF="selectfunction-pic.html">
 <IMG SRC="pics/selectfunction.png" WIDTH="100" BORDER="0">
 <BR>
 Click to see bigger</A>
@@ -95,28 +98,33 @@ Click to see bigger</A>
 
 <P>
 The same function manager dialog is used also when selecting member functions for
-another function (e.g. chaser and collection). 
+another function (e.g. chaser and collection).
 </P>
 
 <P>
-The difference between normal and selection mode is that the selection dialog 
+The difference between normal and selection mode is that the selection dialog
 doesn't have any menus nor edit capabilities available. Also, <I>OK</I> and
 <I>Cancel</I> buttons are available in selection mode to accept or reject function
 selection.
+</P>
+
+<P>
+The function that is being edited (i.e. the one that will contain the selected function)
+is disabled in selection mode to prevent direct recursive loops.
 </P>
 
 <H2>Closing</H2>
 
 <P>
 To close the dialog, click on the <I>close</I> button or either one of the <I>OK</I>
-and <I>Cancel</I> buttons, whichever is/are available.
+and <I>Cancel</I> buttons, whichever is/are available. Clicking <I>OK</I> in selection mode
+treats the selected function as the current selection and closes the dialog. Clicking
+<I>Cancel</I> or <I>Close</I> results in nothing else than closing the dialog.
 </P>
 
 </TD>
 
 </TABLE>
 
-<HR>
-<A HREF="mailto:hjunnila@users.sourceforge.net">Heikki Junnila</A>
 </BODY>
 </HTML>

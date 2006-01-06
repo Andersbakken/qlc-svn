@@ -1,140 +1,116 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
-  <HEAD>
-    <LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
-    <TITLE>Getting Started</TITLE>
-  </HEAD>
+<HEAD>
+<TITLE>Getting Started</TITLE>
+</HEAD>
 
-  <BODY>
-    <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-      <TR>
-	<TD ALIGN="left">
-	  <IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
-	</TD>
-	<TD ALIGN="right">
-	  <A HREF="index.html" CLASS="link">QLC Documentation</A>
-	  <BR>
-	  <A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
-	  <BR>
-	  <A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
-	  <BR>
-	</TD>
-      </TR>
-    </TABLE>
-    
-    <TABLE CELLSPACING="1" CELLPADDING="0" WIDTH="100%">
-      <TR>
-	<TD CLASS="headertd" WIDTH="100%">Getting Started</TD>
-      </TR>
-    </TABLE>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD ALIGN="left">
+<IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+</TD>
+<TD ALIGN="right">
+<A HREF="index.html" CLASS="link">QLC Documentation</A>
+<BR>
+<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+<BR>
+<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+<BR>
+</TD>
+</TR>
+</TABLE>
 
-    <P CLASS="normal">
-      THIS IS NOT EVEN NEAR TO A COMPLETE DOCUMENT!
-    </P>
-    
-    <H3>Starting QLC</H3>
-    <BLOCKQUOTE>
-	<LI CLASS="normal">Start qlc from you terminal by issuing the command <I>qlc</I>.
-	You'll see some text on the terminal about version, plugins etc.
-	QLC startup messages might look like:</LI>
-      <PRE>
+<H1>Getting Started</H1>
 
---- Starting Q Light Controller 2 ---
-This program is licensed under the terms of the GNU General Public License.
-Copyright (c) 2000, 2001, 2002 Heikki Junnila (hjunnila@users.sourceforge.net)
+<H3>Starting QLC</H3>
+<P>
+<LI>Start qlc from the desktop menu or from a terminal with the command:</LI>
+<PRE>
+	qlc
+</PRE>
+</P>
 
-Probing /usr/local/qlc/libs/ for plugin objects...
-Library: Joystick | Version: 0.0.1
-Found 1 plugin object(s)
+<P>
+After some messages the main window will open. If there are any errors, refer to
+<A HREF="errata.html" CLASS="link">Errata</A> and <A HREF="faq.html" CLASS="link">FAQ</A>.
+</P>
 
-      </PRE>
-      
-      <P CLASS="normal">
-	  After these messages the main window will open. If there are any
-	  errors, refer to <A HREF="errata.html" CLASS="link">Errata</A> and
-	  <A HREF="faq.html" CLASS="link">FAQ</A>.
-      </P>
-      
-      <P CLASS="normal">
-	<B>Main Window</B><BR>
-	  <IMG SRC="gs1.gif" ALT="Main Window">
-      </P>
+<H3>Main Window</H3>
+<IMG SRC="pics/mainwindow.png" ALT="Main Window">
 
-      <P CLASS="normal">
-	Most controls throughout the software have tooltips, which you can see holding your mouse button
-	over a control item (button, slider etc.) for a while. The menubar on the
-	top of the workspace window contains vital operations which we will discuss
-	a bit later. Below the menubar is the toolbar that contains the following buttons
-	(from left to right): <B>new workspace</B>, <B>open an existing workspace</B>,
-	<B>save current workspace</B>, <B>open device manager</B> and <B>open virtual console</B>.
-      </P>
-	
-    </BLOCKQUOTE>
+<P>
+Most controls throughout the software have tooltips, which pop up after holding your mouse button
+over a control item (button, slider etc.) for a while. The menubar on the top of the workspace window
+contains vital operations which we will discuss a bit later. Below the menubar is the toolbar that
+contains the following buttons (from left to right): <B>new</B>, <B>open</B>, <B>save</B>,
+<B>device manager</B>, <B>virtual console</B>, <B>function manager</B>, <B>panic</B>, <B>blackout</B>
+and <B>mode change</B>.
+</P>
 
-    <H3>Settings</H3>
-    <BLOCKQUOTE>
-      <P CLASS="normal">
-	The first thing you should do is to check that qlc's global settings are correct. Select
-	<I>Settings</I> from <I>File</I> menu. The following dialog should appear:
-      </P>
-      <IMG SRC="gs0.gif" ALT="Settings Dialog"></IMG>
-      <BR></BR>
-      Now check:
-      <LI CLASS="normal">The Pixmap Directory (depends on installation options, /usr/local/qlc/xpm by default)</LI>
-      <LI CLASS="normal">The Device Directory (depends on installation options, /usr/local/qlc/devices by default)</LI>
-      <LI CLASS="normal">Widget Style (you can slightly alter the look of qlc with this feature).</LI>
-      <P CLASS="normal">
-	Click OK to accept and close the settings dialog.
-      </P>
-    </BLOCKQUOTE>
+<P>
+Notice also the status bar at the bottom of the window. There are the indicators for mode and blackout.
+The mode indicator says "Design" which means that the application is in design (edit) mode. The blackout
+indicator is not visible, but when you click the blackout button on the toolbar, the indicator starts
+flashing to notify that all channels are disabled and their values are set to zero (until you release
+the blackout by pressing the button once more).
+</P>
 
-    <H3>Device Manager</H3>
-    <BLOCKQUOTE>
-      <P CLASS="normal">
-	The device manager is the heart of qlc's device-oriented architecture.
-	As its name already says, you <B>manage</B> your input and output devices
-	from the device manager. You can add or remove devices, assign DMX addresses and so on..
-      </P>
-      
-      <LI CLASS="normal">Open the device manager by pressing its button on the toolbar if it's not open.</LI>
+<H3>Device Manager</H3>
+<P>
+The device manager is the heart of qlc's device-oriented architecture. As its name already says, you
+manage your DMX devices (i.e. fixtures) from the device manager.
+</P>
 
-      <P CLASS="normal">
-	<B>Device Manager</B><BR>
-	  <IMG SRC="pics/devicemanager.png" ALT="Device Manager">
-      </P>
+<LI>Open the device manager now by pressing its button on the toolbar.</LI>
 
-      <LI CLASS="normal">Add an input device (press the first button from left) to
-	our workspace. You should see a the following dialog:
-      </LI>
+<P>
+<IMG SRC="pics/devicemanager.png" ALT="Device Manager">
+</P>
 
-      <P CLASS="normal">
-	<B>Add New Device Dialog</B><BR>
-	  <IMG SRC="" ALT="Add new device dialog">
-      </P>
+<P>
+The device manager also has a toolbar, containing the following buttons (from left to right):
+<B>Add</B>, <B>Clone</B>, <B>Remove</B>, <B>Properties</B>, <B>Monitor</B> and <B>Console</B>. In short,
+you can <B>add</B> new devices, create exact replicas <B>clones</B> of existing devices and their
+functions, edit the <B>properties</B> of your devices, <B>monitor</B> the devices' channel values and
+use the <B>console</B> to control the channel values of each device.
+</P>
 
-      <LI CLASS="normal">Now select Botex -> DPX-620.</LI>
-      
-      <P CLASS="normal">
-	You can edit the new device's name in the <B>Name</B> field and its DMX address 
-	to the <B>Address</B> field. If you don't understand the DMX addressing principles,
-	please consult your lighting equipment manuals for more info.
-      </P>
-      
-      <LI CLASS="normal">When you're done, press OK</LI>
+<LI>Add an input device (press the first button from left) to our workspace. You should see a the
+following dialog:</LI>
 
-      <P CLASS="normal">
+<H3>New Device</H3>
+<IMG SRC="pics/newdevice.png" ALT="Add new device dialog">
+
+<P>
+On the left side you can see the list of available fixture manufacturers. Each manufacturer folder
+contains a number of fixtures produced by each manufacturer. You can find for example an "MX-4"
+under "Martin" folder. As you click a fixture from the list, you can see the <B>channels</B>
+field on the right change to display the number of DMX channels required by the selected fixture.
+</P>
+
+<LI>Go ahead and select Martin MX-4 but don't click OK just yet.</LI>
+
+<P>
+You can edit the new device's name in the <B>Name</B> field and its DMX address
+to the <B>Address</B> field. If you don't understand the DMX addressing principles,
+please consult your lighting equipment manuals for more info.
+</P>
+
+
+      <P>
 	<B>Device Manager with DPX-620 as an output device</B><BR>
 	  <IMG SRC="" ALT="Device Manager with DPX-620 as an output device">
       </P>
 
-      <P CLASS="normal">
+      <P>
 	In the left pane you can see the devices that are present in your current
 	workspace. In the right pane, you can see the currently selected device's
 	information.
       </P>
 
-    </BLOCKQUOTE>
-    
+
+
 <HR>
 <A HREF="mailto:hjunnila@users.sourceforge.net" CLASS="link">Heikki Junnila</A>
   </BODY>

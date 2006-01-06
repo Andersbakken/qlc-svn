@@ -3,7 +3,7 @@
 <HEAD>
 <TITLE>Q Light Controller Documentation - Bus Properties</TITLE>
 </HEAD>
-  
+
 <BODY>
 <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
 <TR>
@@ -27,7 +27,7 @@
 
 <TR>
 <TD VALIGN="top">
-<A HREF="pics/busproperties.png" TARGET="_new">
+<A HREF="busproperties-pic.html">
 <IMG SRC="pics/busproperties.png" WIDTH="100" BORDER="0">
 <BR>
 Click to see bigger</A>
@@ -44,21 +44,37 @@ Name: Bus name; always use descriptive names.<BR>
 
 <P>
 <I>Left</I>-click on the name column will let you give a name to the selected bus. A total of 32
-buses are available for function speed setting. Although the same bus can be assigned to any function
-(see virtual console and function tree for more info on bus assignment), each function type interprets
-the same bus value differently:
-<BR>
-&nbsp;
-<BR>
-<I>Scene</I> understands the value as <I>fade time</I><BR>
-<I>Chaser</I> understands the same value as <I>hold time</I>, whereas<BR>
-<I>Collection</I> merely ignores all bus values.
+buses are available for function speed setting. Although the same bus can be assigned to any
+function, each function type understands bus values differently:
 </P>
 
+<UL>
 <P>
-<I>Default Fade</I> is assigned to all newly created scene functions, and the second, 
-<I>Default Hold</I> is assigned to all newly created chaser and sequence functions.
+<B>Scene:</B> fade time (time given to fade from level A to level B)<BR>
+<B>EFX:</B> duration of one cycle (ex. a full 360-degree circle)<BR>
+<B>Sequence:</B> hold time between steps<BR>
+<B>Chaser:</B> hold time between steps<BR>
+<B>Collection:</B> no effect
 </P>
+</UL>
+
+<P>
+A bus is assigned to each newly created function:
+</P>
+
+<UL>
+<P>
+<B>Scene:</B> Default Fade (01)<BR>
+<B>EFX:</B> Default Fade (01)<BR>
+<B>Sequence:</B> Default Hold (02)<BR>
+<B>Chaser:</B> Default Hold (02)<BR>
+<B>Collection:</B> None
+</P>
+</UL>
+
+<P>
+You can change the bus assignments for each function from the <A HREF="functionmanager.html">
+Function Manager.</A>
 
 <H2>Closing</H2>
 

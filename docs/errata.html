@@ -1,73 +1,87 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
-  <HEAD>
-     <LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
-    <TITLE>QLC Errata</TITLE>
-  </HEAD>
+<HEAD>
+<TITLE>QLC Errata</TITLE>
+</HEAD>
 
-  <BODY>
-    <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-      <TR>
-	<TD ALIGN="left">
-	  <IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
-	</TD>
-	<TD ALIGN="right">
-	  <A HREF="index.html" CLASS="link">QLC Documentation</A>
-	  <BR>
-	  <A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
-	  <BR>
-	  <A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
-	  <BR>
-	</TD>
-      </TR>
-    </TABLE>
+<BODY>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD ALIGN="left">
+<IMG SRC="pics/qlc-logo.jpg" ALIGN="absmiddle" ALT="Q Light Controller">
+</TD>
+<TD ALIGN="right">
+<A HREF="index.html" CLASS="link">QLC Documentation</A>
+<BR>
+<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
+<BR>
+<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
+<BR>
+</TD>
+</TR>
+</TABLE>
 
-    <TABLE CELLSPACING="1" CELLPADDING="0" WIDTH="100%">
-      <TR>
-	<TD CLASS="headertd" WIDTH="100%">QLC Errata</TD>
-      </TR>
-    </TABLE>
+<H1>Errata</H1>
 
     <TABLE CELLSPACING="5" CELLPADDING="1" WIDTH="100%">
       <TR>
-	<TD CLASS="headertd" WIDTH="50%">Problem</TD>
-	<TD CLASS="headertd" WIDTH="50%">Solution</TD>
+	<TD WIDTH="50%" BGCOLOR="#EFEFEF"><B>Problem</B></TD>
+	<TD WIDTH="50%" BGCOLOR="#EFEFEF"><B>Solution</B></TD>
       </TR>
 
       <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF"></TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF"></TD>
+	<TD BGCOLOR="#EFEFEF">I seem to be able to <B>do nothing</B> in QLC. <B>How does this thing work?</B></TD>
+	<TD BGCOLOR="#EFEFEF">Open <B>device manager</B>, click <B>add new output device</B> and you're ready to rock'n'roll! :)</TD>
       </TR>
 
       <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">I seem to be able to <B>do nothing</B> in QLC. <B>How does this thing work?</B></TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">Open <B>device manager</B>, click <B>add new output device</B> and you're ready to rock'n'roll! :)</TD>
-      </TR>
-
-      <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">OK, I've added a device to device manager, but when I try to click the <B>monitor</B> or
+	<TD BGCOLOR="#EFEFEF">OK, I've added a device to device manager, but when I try to click the <B>monitor</B> or
 	<B>dmx console</B> button, nothing happens.</TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">You must first select the device whose <B>monitor</B> or <B>dmx console</> you want to view.</TD>
+	<TD BGCOLOR="#EFEFEF">You must first select the device whose <B>monitor</B> or <B>dmx console</> you want to view.</TD>
       </TR>
 
       <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">I've assigned a function to a button in virtual console but when I press
+	<TD BGCOLOR="#EFEFEF">I've assigned a function to a button in virtual console but when I press
 	  the button, nothing happens or the function runs slooooowly.</TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">Create a speedslider to virtual console and assign a <B>Speed Bus</B> to it
+	<TD BGCOLOR="#EFEFEF">Create a speedslider to virtual console and assign a <B>Speed Bus</B> to it
 	  AND to the button. After this, dragging the speed slider will change the speed of your function.</TD>
       </TR>
       <TR>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">I've built the <B>analoque interface</B>, but QLC cannot control
+	<TD BGCOLOR="#EFEFEF">I've built the <B>analoque interface</B>, but QLC cannot control
 					     any dmx channels.</TD>
-	<TD CLASS="normal" BGCOLOR="#EFEFEF">First, run the small script that checks for
+	<TD BGCOLOR="#EFEFEF">First, run the small script that checks for
 					    the necessary <B>kernel modules</B>. If the output on the console seems okay,
 					    but the problem persists, check that the parallel port is set
 					    to <B>EPP in your BIOS</B> configuration.</TD>
       </TR>
 
-    </TABLE>
+      <TR>
+	<TD BGCOLOR="#EFEFEF">I got the message "Unable to access device directory: /foo/bar/blah".</TD>
+	<TD BGCOLOR="#EFEFEF">You don't have any fixture definitions in the directory.
+		Either create some with dce or install qlc-fixtures package.</TD>
+      </TR>
 
-    <HR>
-    <A HREF="mailto:hjunnila@users.sourceforge.net" CLASS="link">Heikki Junnila</A>
+      <TR>
+	<TD BGCOLOR="#EFEFEF">I got the message "Unable to open workspace: /foo/bar/blah.qlc".</TD>
+	<TD BGCOLOR="#EFEFEF">You have set an option in the settings dialog to try and
+		open the last used workspace file on startup. Either create a new workspace file or
+		clear the setting from settings dialog.</TD>
+      </TR>
+
+      <TR>
+	<TD BGCOLOR="#EFEFEF">I got the message "Unable to save file".</TD>
+	<TD BGCOLOR="#EFEFEF">In most cases this means that you don't have write permission
+		to the directory or the file (that already exists).</TD>
+      </TR>
+
+      <TR>
+	<TD BGCOLOR="#EFEFEF">I got the message "Unable to access the plugin directory: /foo/bar/blah".</TD>
+	<TD BGCOLOR="#EFEFEF">The directory that QLC probes for plugins doesn't exist.
+		You can use the program normally with the dummy plugin (no DMX hardware support). If you
+		wish to have hardware support, we recommend installing the dmx4linux plugin (that should
+		already be installed, by the way...)</TD>
+      </TR>
+
+    </TABLE>
   </BODY>
 </HTML>

@@ -1,10 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
   <HEAD>
-    <LINK REL="stylesheet" TYPE="text/css" HREF="qlc.css">
       <TITLE>Compiling QLC</TITLE>
   </HEAD>
-  
+
   <BODY>
     <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
       <TR>
@@ -21,79 +20,147 @@
 	</TD>
       </TR>
     </TABLE>
-    
+
     <TABLE CELLSPACING="1" CELLPADDING="0" WIDTH="100%">
       <TR>
-	<TD CLASS="headertd" WIDTH="100%">Compiling QLC</TD>
+	<TD WIDTH="100%" BGCOLOR="#649af4"><FONT COLOR="white">Compiling QLC</FONT></TD>
       </TR>
     </TABLE>
-    
-    <P CLASS="normal">
+
+    <P>
       This document discusses issues related to compiling Q Light Controller 2
       from source files. It is assumed that the user is installing QLC with the default
       settings.
     </P>
-    
+
     <H3>Directory structure</H3>
-    <P CLASS="normal">
+    <P>
       QLC2 source distribution is divided in directories in order to keep
       different file types in their own directory. <B>qlc2</B> is the topmost
       directory that houses all the directories that are
       included in QLC source distribution.
     </P>
-    
-    <P CLASS="normal">
-      <PRE>
-	qlc2/
-	    dce/
-	        src/            <-- device class editor sources
-	    libs/
-	        common/         <-- common helper classes
-                dmx4linuxout/   <-- DMX4Linux output plugin
-                joystick/       <-- Joystick input plugin (not supported yet)
-                midiout/        <-- MIDI-based output plugin
-	    main/
-		src/		<-- main application sources
-  	    xpm/                <-- user interface icons, background images etc.
-	    devices/            <-- device class definitions
-	    docs/               <-- these documentation files
-	</PRE>
+
+    <P>
+      <TABLE COLS="2">
+      <TR>
+      <TD COLSPAN="2">dce/</TD>
+      </TR>
+      <TR>
+      <TD>&nbsp;&nbsp;&nbsp;src/</TD><TD>Fixture editor sources</TD>
+      </TR>
+      <TR>
+      <TD COLSPAN="2">libs/</TD>
+      </TR>
+      <TR>
+      <TD>&nbsp;&nbsp;&nbsp;common/</TD><TD>Common helper classes</TD>
+      </TR>
+      <TR>
+      <TD>&nbsp;&nbsp;&nbsp;dmx4linuxout/</TD><TD>DMX4Linux output plugin</TD>
+      </TR>
+      <TR>
+      <TD>&nbsp;&nbsp;&nbsp;midiout/</TD><TD>MIDI-based output plugin</TD>
+      </TR>
+      <TR>
+      <TD COLSPAN="2">main/</TD>
+      </TR>
+      <TR>
+      <TD>&nbsp;&nbsp;&nbsp;src/</TD><TD>Main application sources</TD>
+      </TR>
+      <TR>
+      <TD>xpm/</TD><TD>User interface icons, backgrounds, etc.</TD>
+      </TR>
+      <TR>
+      <TD>devices/</TD><TD>Fixture definitions</TD>
+      </TR>
+      <TR>
+      <TD>docs/</TD><TD>All documentation files</TD>
+      </TR>
+      </TABLE>
     </P>
 
     <H3>Configuration</H3>
-    <P CLASS="normal">
-      In most cases, qlc doesn't require any configuration if you have
+    <P>
+      In most cases, qlc doesn't require any manual configuration if you have
       all the necessary libraries installed on your Linux system. The most
       common cases of unsuccessful compile operations are missing or
-      incorrect library or header directories. Basically, running
-      <B>./configure</B> from the <B>qlc2/</B> main directory, sets all
-      library paths correctly -- provided that you have installed them to
-      your system.
+      incorrect libraries. To compile QLC, you need at least these
+      versions of the following components (the more recent the better):
+      <LI>QT 3.3 library (multithreaded qt-mt.so)
+      <LI>QT 3.3 headers (i.e. development package)
+      <LI>GNU automake 1.9
+      <LI>GNU autoconf 2.59
+      <LI>GNU make 3.0
+      <LI>GNU libtool 1.5
+      <LI>GCC (g++) 2.x
+      <LI>pkg-config 0.16
+      <LI>AWK 3.x
+      <LI>GNU coreutils (usually present in all linux boxes)
+     </P>
+     <P>
+      To automatically configure QLC, run:
+      <PRE>
+	./configure
+      </PRE>
     </P>
-    
+
     <H3>Compiling</H3>
-    <P CLASS="normal">
-      Now, that everything should be in order, go to qlc2/ and compile QLC with:
+    <P>
+      Now, that everything should be in order, compile QLC with:
 
       <PRE>
 	make
       </PRE>
 
-      To install QLC (to <B>/usr/local/qlc</B>), type:
+      To install QLC, type:
 
       <PRE>
 	make install
       </PRE>
-
-      To install icons to KDE & GNOME application menus, type:
-
-      <PRE>
-        make menuitems
-      </PRE>
-
     </P>
-    
-    <HR>
-      <A HREF="mailto:hjunnila@users.sourceforge.net" CLASS="link">Heikki Junnila</A>
+
+    <H3>Package creation (debian)</H3>
+    <P>
+    If you wish to create your own debian packages, there is a special <I>debian</I>
+    directory for debian-specific package info. In general, you shouldn't have to modify
+    anything in the directory, in fact, you don't need to go there at all. To be able to
+    create debian packages, you'll need the following components, in addition to the ones
+    needed to compile QLC:
+    <LI>debhelper
+    <LI>dpkg
+    <LI>dpkg-dev (namely dpkg-buildpackage)
+    <LI>fakeroot
+    </P>
+    <P>
+    To start building a debian package, just <B>cd</B> to the QLC top directory and type:
+    <PRE>
+	./create_debian_package.sh
+    </PRE>
+
+    or
+
+    <PRE>
+	dpkg-buildpackage -rfakeroot -uc -us -sa -D
+    </PRE>
+    </P>
+
+    <P>
+    This way, if everything goes well, the scripts create two packages to the
+    parent directory (<B>cd ..</B>):
+    <LI>qlc (The main application package)
+    <LI>qlc-fixtures (Additional fixture definitions)
+    </P>
+
+    <H3>Package installation (debian)</H3>
+    You can install the packages with:
+    <PRE>
+	dpkg --install [package name].deb
+    </PRE>
+    And uninstall them with:
+    <PRE>
+	dpkg -r [package name].deb
+    </PRE>
+    </P>
+
   </BODY>
 </HTML>
