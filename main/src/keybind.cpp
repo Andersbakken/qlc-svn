@@ -111,7 +111,7 @@ KeyBind::~KeyBind()
 //
 void KeyBind::setKey(int key)
 {
-	if (key >= 0 && key < Key_unknown)
+	if (key >= 0 && key <= Key_unknown)
 	{
 		m_key = key;
 		m_valid = true;
