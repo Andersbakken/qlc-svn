@@ -60,76 +60,76 @@ extern App* _app;
 const int KColorMask      ( 0xff ); // Produces opposite colors with XOR
 const int KFlashReadyTime (   50 ); // 1/4 second
 
-VCButton::VCButton(QWidget* parent) : QPushButton(parent, "Button")
+VCButton::VCButton(QWidget* parent) :
+	QPushButton   ( parent, "Button" ),
+	m_functionID  ( KNoID ),
+	m_resizeMode  ( false ),
+	m_keyBind     ( NULL ),
+	m_isExclusive ( false )
 {
-  m_functionID = KNoID;
-  m_resizeMode = false;
-  m_keyBind = NULL;
-  m_isExclusive = false;
 }
-
 
 void VCButton::init()
 {
-  setToggleButton(true);
+	setToggleButton(true);
 
-  assert(m_keyBind == NULL);
-  m_keyBind = new KeyBind();
+	assert(m_keyBind == NULL);
+	m_keyBind = new KeyBind();
 
-  connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
-  connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
+	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
+	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 
-  QToolTip::add(this, "No function");
+	QToolTip::add(this, "No function");
 
-  setMinimumSize(20, 20);
-  resize(30, 30);
+	setMinimumSize(20, 20);
+	resize(30, 30);
 
-  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
 
 void VCButton::copyFrom(VCButton* button)
 {
-  attachFunction(button->m_functionID);
+	attachFunction(button->m_functionID);
 
-  m_resizeMode = false;
+	m_resizeMode = false;
 
-  assert(button->keyBind());
-  if (m_keyBind)
-    {
-      disconnect(m_keyBind);
-      delete m_keyBind;
-    }
+	assert(button->keyBind());
+	if (m_keyBind)
+	{
+		disconnect(m_keyBind);
+		delete m_keyBind;
+	}
 
-  m_keyBind = new KeyBind(button->keyBind());
-  connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
-  connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
+	m_keyBind = new KeyBind(button->keyBind());
+	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
+	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 
-  setToggleButton(true);
+	setToggleButton(true);
 
-  setCaption(button->caption());
+	setCaption(button->caption());
 
-  if (button->ownFont())
-    {
-      setFont(button->font());
-    }
+	if (button->ownFont())
+	{
+		setFont(button->font());
+	}
 
-  if (button->ownPalette())
-    {
-      setPaletteForegroundColor(button->paletteForegroundColor());
-      setPaletteBackgroundColor(button->paletteBackgroundColor());
-    }
+	if (button->ownPalette())
+	{
+		setPaletteForegroundColor(button->paletteForegroundColor());
+		setPaletteBackgroundColor(button->paletteBackgroundColor());
+	}
 
-  if (button->paletteBackgroundPixmap())
-    {
-      setPaletteBackgroundPixmap(*button->paletteBackgroundPixmap());
-    }
+	if (button->paletteBackgroundPixmap())
+	{
+		setPaletteBackgroundPixmap(*button->paletteBackgroundPixmap());
+	}
 
-  reparent(button->parentWidget(), 0, QPoint(0, 0), true);
+	reparent(button->parentWidget(), 0, QPoint(0, 0), true);
 
-  setGeometry(button->geometry());
+	setGeometry(button->geometry());
 
-  move(button->x() + button->width(), button->y());
+	move(button->x() + button->width(), button->y());
 }
 
 
@@ -140,8 +140,8 @@ VCButton::~VCButton()
 
 void VCButton::setCaption(const QString& text)
 {
-  setText(text);
-  QWidget::setCaption(text);
+	setText(text);
+	QWidget::setCaption(text);
 }
 
 
@@ -370,18 +370,17 @@ void VCButton::createContents(QPtrList <QString> &list)
 
 void VCButton::setKeyBind(const KeyBind* kb)
 {
-  assert(kb);
+	assert(kb);
 
-  if (m_keyBind)
-    {
-      disconnect(m_keyBind);
-      delete m_keyBind;
-    }
+	if (m_keyBind)
+	{
+		delete m_keyBind;
+	}
 
-  m_keyBind = new KeyBind(kb);
+	m_keyBind = new KeyBind(kb);
 
-  connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
-  connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
+	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
+	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
 }
 
 // sure, we have made this over the frame stuff
@@ -443,6 +442,7 @@ void VCButton::parseWidgetMenu(int item)
       {
 	VCButtonProperties* p = NULL;
 	p = new VCButtonProperties(this);
+	p->initView();
 	p->exec();
 	delete p;
       }
@@ -628,145 +628,112 @@ void VCButton::slotModeChanged()
 
 void VCButton::pressFunction()
 {
-  assert(m_keyBind);
+	Function* f = NULL;
 
-  if (/*m_keyBind->pressAction() == KeyBind::PressNothing || */
-      m_functionID == KNoID)
-    {
-      return;
-    }
-  /*
-  else if (m_keyBind->pressAction() == KeyBind::PressStart)
-    {
-      Function* f = _app->doc()->function(m_functionID);
-      if (f)
+	assert(m_keyBind);
+
+	if (m_functionID == KNoID)
 	{
-	  if (f->engage(static_cast<QObject*> (this)))
-	    {
-	      setOn(true);
-	    }
+		return;
 	}
-      else
+	else if (m_keyBind->pressAction() == KeyBind::PressToggle &&
+		 m_isExclusive == false)
 	{
-	  qDebug("Function has been deleted!");
-	  attachFunction(KNoID);
-	}
-    }
-  */
-  else if (m_keyBind->pressAction() == KeyBind::PressToggle && m_isExclusive == false)
-    {
-      Function* f = _app->doc()->function(m_functionID);
-      if (f)
-	{
-	  if (isOn())
-	    {
-	      f->stop();
-	      //setOn(false);
-	    }
-	  else
-	    {
-	      if (f->engage(static_cast<QObject*> (this)))
+		f = _app->doc()->function(m_functionID);
+		if (f)
 		{
-		  setOn(true);
+			if (isOn())
+			{
+				f->stop();
+			}
+			else
+			{
+				if (f->engage(static_cast<QObject*> (this)))
+				{
+					setOn(true);
+				}
+			}
 		}
-	    }
+		else
+		{
+			qDebug("Function has been deleted!");
+			attachFunction(KNoID);
+		}
 	}
-      else
+	else if (m_keyBind->pressAction() == KeyBind::PressToggle &&
+		 m_isExclusive == true)
 	{
-	  qDebug("Function has been deleted!");
-	  attachFunction(KNoID);
-	}
-    }
+		QObjectList* l = parentWidget()->queryList("VCButton");
+		QObjectListIt it(*l);
+		QObject* obj;
+		while ((obj = it.current()) != NULL)
+		{
+			++it;
+			if (((VCButton*)obj)->isOn())
+			{
+				f = _app->doc()->function(((VCButton*)obj)->functionID());
+				f->stop();
+			}
+		}
+		delete l;
 
-  else if (m_keyBind->pressAction() == KeyBind::PressToggle && m_isExclusive == true)
-    {
-      QObjectList* l = parentWidget()->queryList("VCButton");
-      QObjectListIt it(*l);
-      QObject* obj;
-      while ((obj = it.current()) != 0) {
-    	    ++it;
-	    if (((VCButton*)obj)->isOn())
-	      {
-	        Function* f = _app->doc()->function(((VCButton*)obj)->functionID());
-		f->stop();
-	      }
+		f = _app->doc()->function(m_functionID);
+		if (f)
+		{
+			if (f->engage(static_cast<QObject*> (this)))
+			{
+				setOn(true);
+			}
+		}
+		else
+		{
+			qDebug("Function has been deleted!");
+			attachFunction(KNoID);
+		}
 	}
-	delete l;
-
-      Function* f = _app->doc()->function(m_functionID);
-      if (f)
-        {
-          if (f->engage(static_cast<QObject*> (this)))
-	    {
-	      setOn(true);
-	    }
-	}
-      else
+	else if (m_keyBind->pressAction() == KeyBind::PressFlash)
 	{
-	  qDebug("Function has been deleted!");
-	  attachFunction(KNoID);
+		f = _app->doc()->function(m_functionID);
+		if (f)
+		{
+			if (f->engage(static_cast<QObject*> (this)))
+			{
+				setOn(true);
+			}
+		}
+		else
+		{
+			qDebug("Function has been deleted!");
+			attachFunction(KNoID);
+		}
 	}
-    }
-
-  else if (m_keyBind->pressAction() == KeyBind::PressFlash)
-    {
-      Function* f = _app->doc()->function(m_functionID);
-      if (f)
-        {
-          if (f->engage(static_cast<QObject*> (this)))
-	    {
-	      setOn(true);
-	    }
-	}
-      else
-	{
-	  qDebug("Function has been deleted!");
-	  attachFunction(KNoID);
-	}
-    }
-  /*
-  else if (m_keyBind->pressAction() == KeyBind::PressStepForward)
-    {
-      //
-      // TODO: Implement a bus for stepping
-      //
-    }
-  else if (m_keyBind->pressAction() == KeyBind::PressStepBackward)
-    {
-      //
-      // TODO: Implement a bus for stepping
-      //
-    }
-  */
 }
 
 void VCButton::releaseFunction()
 {
-  assert(m_keyBind);
+	Function* f = NULL;
 
-  if (/*m_keyBind->pressAction() == KeyBind::PressNothing || */
-      m_functionID == KNoID)
-    {
-      return;
-    }
+	assert(m_keyBind);
 
-  else if (m_keyBind->releaseAction() == KeyBind::ReleaseNothing)
-    {
-      return;
-    }
-
-  else if (m_keyBind->releaseAction() == KeyBind::ReleaseStop)
-    {
-      Function* f = _app->doc()->function(m_functionID);
-      if (f)
+	if (m_functionID == KNoID)
 	{
-	  if (isOn())
-	    {
-	      f->stop();
-//	      setOn(false);
-	    }
-        }
-    }
+		return;
+	}
+	else if (m_keyBind->releaseAction() == KeyBind::ReleaseNothing)
+	{
+		return;
+	}
+	else if (m_keyBind->releaseAction() == KeyBind::ReleaseStop)
+	{
+		f = _app->doc()->function(m_functionID);
+		if (f)
+		{
+			if (isOn())
+			{
+				f->stop();
+			}
+		}
+	}
 }
 
 void VCButton::attachFunction(t_function_id id)

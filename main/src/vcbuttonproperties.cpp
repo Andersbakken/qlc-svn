@@ -44,21 +44,23 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent,
                                        const char* name)
   : UI_VCButtonProperties(parent, name, true),
 
-    m_button     ( button               ),
-    m_keyBind    ( button->keyBind()    ),
+    m_button     ( button ),
+    m_keyBind    ( new KeyBind(button->keyBind()) ),
     m_functionID ( button->functionID() )
 {
-  initView();
 }
 
 
 VCButtonProperties::~VCButtonProperties()
 {
+	delete m_keyBind;
 }
 
 
 void VCButtonProperties::initView()
 {
+  QString keyString;
+
   // Set name
   m_nameEdit->setText(m_button->text());
 
@@ -66,7 +68,8 @@ void VCButtonProperties::initView()
   setFunctionName();
 
   // KeyBind key
-  m_keyEdit->setText(m_keyBind->keyString());
+  m_keyBind->keyString(keyString);
+  m_keyEdit->setText(keyString);
 
   // Set press action
   m_onButtonPressGroup->setButton(m_keyBind->pressAction());
@@ -141,60 +144,69 @@ void VCButtonProperties::slotPressGroupClicked(int id)
 
 void VCButtonProperties::slotAttachFunctionClicked()
 {
-  FunctionTree* ft = new FunctionTree(this);
-  if (ft->exec() == QDialog::Accepted)
-    {
-      m_functionID = ft->functionID();
-      setFunctionName();
-    }
+	FunctionTree* ft = new FunctionTree(this);
+	if (ft->exec() == QDialog::Accepted)
+	{
+		m_functionID = ft->functionID();
+		setFunctionName();
+	}
 
-  delete ft;
+	delete ft;
 }
 
 void VCButtonProperties::slotDetachFunctionClicked()
 {
-  m_functionID = KNoID;
-  setFunctionName();
+	m_functionID = KNoID;
+	setFunctionName();
 }
 
 void VCButtonProperties::slotAttachKeyClicked()
 {
-  AssignHotKey* a = NULL;
-  a = new AssignHotKey(this);
+	QString keyString;
 
-  if (a->exec() == QDialog::Accepted)
-    {
-      assert(m_keyBind);
-      assert(a->keyBind());
+	AssignHotKey* a = new AssignHotKey(this);
+	if (a->exec() == QDialog::Accepted)
+	{
+		assert(a->keyBind());
 
-      m_keyBind->setKey(a->keyBind()->key());
-      m_keyBind->setMod(a->keyBind()->mod());
-      m_keyEdit->setText(m_keyBind->keyString());
-    }
+		if (m_keyBind)
+		{
+			delete m_keyBind;
+		}
 
-  delete a;
+		m_keyBind = new KeyBind(a->keyBind());
+
+		m_keyBind->keyString(keyString);
+		m_keyEdit->setText(keyString);
+	}
+
+	delete a;
 }
 
 void VCButtonProperties::slotDetachKeyClicked()
 {
-  m_keyBind->setKey(0);
-  m_keyBind->setMod(NoButton);
-  m_keyEdit->setText(m_keyBind->keyString());
+	QString keyString;
+
+	m_keyBind->setKey(Key_unknown);
+	m_keyBind->setMod(NoButton);
+
+	m_keyBind->keyString(keyString);
+	m_keyEdit->setText(keyString);
 }
 
 void VCButtonProperties::slotOKClicked()
 {
-  m_button->setCaption(m_nameEdit->text());
-  m_button->attachFunction(m_functionID);
-  m_button->setKeyBind(m_keyBind);
+	m_button->setCaption(m_nameEdit->text());
+	m_button->attachFunction(m_functionID);
+	m_button->setKeyBind(m_keyBind);
 
-  _app->doc()->setModified(true);
+	_app->doc()->setModified(true);
 
-  accept();
+	accept();
 }
 
 void VCButtonProperties::slotCancelClicked()
 {
-  reject();
+	reject();
 }
 

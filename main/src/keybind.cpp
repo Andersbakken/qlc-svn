@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   keybind.cpp
-  
+
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -37,8 +37,8 @@ KeyBind::KeyBind() : QObject()
 {
   m_pressAction = PressToggle;
   m_releaseAction = ReleaseNothing;
-  m_key = 0;
-  m_mod = 0;
+  m_key = Key_unknown;
+  m_mod = NoButton;
   m_valid = false;
 
   connect(_app->virtualConsole(), SIGNAL(keyPressed(QKeyEvent*)),
@@ -57,7 +57,7 @@ KeyBind::KeyBind(const int key, const int mod) : QObject()
   m_key = key;
   m_mod = mod;
 
-  if (key != 0)
+  if (key >= 0 && key < Key_unknown)
     {
       m_valid = true;
     }
@@ -65,7 +65,7 @@ KeyBind::KeyBind(const int key, const int mod) : QObject()
     {
       m_valid = false;
     }
- 
+
   m_pressAction = PressStart;
   m_releaseAction = ReleaseNothing;
 
@@ -86,7 +86,7 @@ KeyBind::KeyBind(const KeyBind* kb) : QObject()
   m_key = kb->key();
   m_mod = kb->mod();
   m_valid = kb->valid();
-  
+
   m_pressAction = kb->pressAction();
   m_releaseAction = kb->releaseAction();
 
@@ -111,16 +111,16 @@ KeyBind::~KeyBind()
 //
 void KeyBind::setKey(int key)
 {
-  m_key = key;
-
-  if (key != 0)
-    {
-      m_valid = true;
-    }
-  else
-    {
-      m_valid = false;
-    }
+	if (key >= 0 && key < Key_unknown)
+	{
+		m_key = key;
+		m_valid = true;
+	}
+	else
+	{
+		key = Key_unknown;
+		m_valid = false;
+	}
 }
 
 
@@ -129,19 +129,19 @@ void KeyBind::setKey(int key)
 //
 void KeyBind::setMod(int mod)
 {
-  m_mod = mod;
+	m_mod = mod;
 }
 
 
 //
 // Output the key binding as a string
 //
-QString KeyBind::keyString(int key, int mod)
+void KeyBind::keyString(int key, int mod, QString &string)
 {
   QString modString = QString::null;
   QString keyString = QString::null;
 
-  if (key >= Key_F1 && key <= Key_F12)
+  if (key >= Key_F1 && key <= Key_F35)
     {
       // Function keys
       keyString.sprintf("F%d", key - Key_F1 + 1);
@@ -326,7 +326,7 @@ QString KeyBind::keyString(int key, int mod)
     {
       modString += QString("Shift + ");
     }
-  
+
   if (mod & AltButton)
     {
       modString += QString("Alt + ");
@@ -337,13 +337,13 @@ QString KeyBind::keyString(int key, int mod)
       modString += QString("Control + ");
     }
 
-  if (key == 0)
+  if (key <= 0 || key > Key_unknown)
     {
-      return QString("None");
+      string = QString("None");
     }
   else
     {
-      return QString(modString + keyString);
+      string = QString(modString + keyString);
     }
 }
 
