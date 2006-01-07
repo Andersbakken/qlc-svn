@@ -318,82 +318,80 @@ DeviceClass* Device::deviceClass()
 }
 
 
-QString Device::infoText()
+void Device::infoText(QString &info)
 {
   assert(m_deviceClass);
 
   QString t;
-  QString str = QString::null;
+  info = QString::null;
 
   //
   // General Info
   //
-  str += QString("<HTML><HEAD><TITLE>Device Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-  str += QString("<TR><TD BGCOLOR=\"darkblue\"><FONT COLOR=\"white\" SIZE=5>");
-  str += name() + QString("</FONT></TD></TR></TABLE>");
-  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-  str += QString("<TR>\n");
-  str += QString("<TD><B>Manufacturer</B></TD>");
-  str += QString("<TD>") + m_deviceClass->manufacturer() + QString("</TD>");
-  str += QString("</TR>");
-  str += QString("<TR>");
-  str += QString("<TD><B>Model</B></TD>");
-  str += QString("<TD>") + m_deviceClass->model() + QString("</TD>");
-  str += QString("</TR>");
-  str += QString("<TR>");
-  str += QString("<TD><B>Type</B></TD>");
-  str += QString("<TD>") + m_deviceClass->type() + QString("</TD>");
-  str += QString("</TR>");
-  str += QString("<TR>");
-  str += QString("<TD><B>Universe</B></TD>");
+  info += QString("<HTML><HEAD><TITLE>Device Info</TITLE></HEAD><BODY>");
+  info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
+  info += QString("<TR><TD BGCOLOR=\"darkblue\"><FONT COLOR=\"white\" SIZE=5>");
+  info += name() + QString("</FONT></TD></TR></TABLE>");
+  info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+  info += QString("<TR>\n");
+  info += QString("<TD><B>Manufacturer</B></TD>");
+  info += QString("<TD>") + m_deviceClass->manufacturer() + QString("</TD>");
+  info += QString("</TR>");
+  info += QString("<TR>");
+  info += QString("<TD><B>Model</B></TD>");
+  info += QString("<TD>") + m_deviceClass->model() + QString("</TD>");
+  info += QString("</TR>");
+  info += QString("<TR>");
+  info += QString("<TD><B>Type</B></TD>");
+  info += QString("<TD>") + m_deviceClass->type() + QString("</TD>");
+  info += QString("</TR>");
+  info += QString("<TR>");
+  info += QString("<TD><B>Universe</B></TD>");
   t.sprintf("%d", universe() + 1);
-  str += QString("<TD>") + t + QString("</TD>");
-  str += QString("</TR>");
-  str += QString("<TR>");
-  str += QString("<TD><B>Address space</B></TD>");
+  info += QString("<TD>") + t + QString("</TD>");
+  info += QString("</TR>");
+  info += QString("<TR>");
+  info += QString("<TD><B>Address space</B></TD>");
   t.sprintf("%d - %d",
 	    address() + 1, address() + m_deviceClass->channels()->count());
-  str += QString("<TD>") + t + QString("</TD>");
-  str += QString("</TR>");
-  str += QString("</TABLE>");
+  info += QString("<TD>") + t + QString("</TD>");
+  info += QString("</TR>");
+  info += QString("</TABLE>");
 
   //
   // Channels
   //
-  str += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
-  str += QString("<TR>");
-  str += QString("<TD BGCOLOR=\"darkblue\">");
-  str += QString("<FONT COLOR=\"white\" SIZE=\"3\">Channel</FONT>");
-  str += QString("</TD>");
-  str += QString("<TD BGCOLOR=\"darkblue\">");
-  str += QString("<FONT COLOR=\"white\" SIZE=\"3\">DMX</FONT>");
-  str += QString("</TD>");
-  str += QString("</TR>");
-  str += QString("<TD BGCOLOR=\"darkblue\">");
-  str += QString("<FONT COLOR=\"white\" SIZE=\"3\">Name</FONT>");
-  str += QString("</TD>");
-  str += QString("</TR>");
+  info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
+  info += QString("<TR>");
+  info += QString("<TD BGCOLOR=\"darkblue\">");
+  info += QString("<FONT COLOR=\"white\" SIZE=\"3\">Channel</FONT>");
+  info += QString("</TD>");
+  info += QString("<TD BGCOLOR=\"darkblue\">");
+  info += QString("<FONT COLOR=\"white\" SIZE=\"3\">DMX</FONT>");
+  info += QString("</TD>");
+  info += QString("</TR>");
+  info += QString("<TD BGCOLOR=\"darkblue\">");
+  info += QString("<FONT COLOR=\"white\" SIZE=\"3\">Name</FONT>");
+  info += QString("</TD>");
+  info += QString("</TR>");
 
   for (t_channel ch = 0; ch < (t_channel) m_deviceClass->channels()->count();
        ch++)
     {
       t.setNum(ch + 1);
-      str += QString("<TR>");
-      str += QString("<TD>" + t + "</TD>");
+      info += QString("<TR>");
+      info += QString("<TD>" + t + "</TD>");
       t.setNum(address() + ch + 1);
-      str += QString("<TD>" + t + "</TD>");
-      str += QString("<TD>");
-      str += m_deviceClass->channels()->at(ch)->name();
-      str += QString("</TD>");
+      info += QString("<TD>" + t + "</TD>");
+      info += QString("<TD>");
+      info += m_deviceClass->channels()->at(ch)->name();
+      info += QString("</TD>");
     }
 
-  str += QString("</TR>");
-  str += QString("</TABLE>");
+  info += QString("</TR>");
+  info += QString("</TABLE>");
 
-  str += QString("</BODY></HTML>");
-
-  return str;
+  info += QString("</BODY></HTML>");
 }
 
 

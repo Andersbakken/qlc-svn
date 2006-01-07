@@ -618,6 +618,8 @@ void DeviceManagerView::slotModeChanged()
 //
 void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
 {
+  QString info;
+
   if (item == NULL)
     {
       // Disable all
@@ -635,21 +637,21 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
       m_consoleButton->setEnabled(false);
       m_cloneButton->setEnabled(false);
 
-      QString text;
+      info = QString("<HTML><BODY>");
+      info += QString("<H1>No Devices</H1>");
+      info += QString("Click \"Add\" on the toolbar to add a new device.");
+      info += QString("</BODY></HTML>");
 
-      text = QString("<HTML><BODY>");
-      text += QString("<H1>No Devices</H1>");
-      text += QString("Click \"Add\" on the toolbar to add a new device.");
-      text += QString("</BODY></HTML>");
-
-      m_textView->setText(text);
+      m_textView->setText(info);
     }
   else
     {
       // Set the text view's contents
       Device* dev = _app->doc()->device(item->text(KColumnID).toInt());
       ASSERT(dev);
-      m_textView->setText(dev->infoText());
+
+      dev->infoText(info);
+      m_textView->setText(info);
 
       // Enable console & monitor always
       m_consoleButton->setEnabled(true);
