@@ -23,8 +23,12 @@ dist_docs_DATA = \
 	index.html \
 	mainwindow.html \
 	mainwindow-pic.html \
+	monitor.html \
+	monitor-pic.html \
+	selectfunction-pic.html \
 	settings.html \
-	settings-pic.html
+	settings-pic.html \
+	virtualconsole.html
 
 dist_pics_DATA = \
 	pics/advancedsceneeditor.png \
