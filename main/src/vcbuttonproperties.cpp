@@ -25,11 +25,11 @@
 #include <qlineedit.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <qmessagebox.h>
 
 #include "vcbuttonproperties.h"
 #include "deviceclass.h"
 #include "function.h"
-#include "functiontree.h"
 #include "app.h"
 #include "doc.h"
 #include "assignhotkey.h"
@@ -37,6 +37,7 @@
 #include "devicemanagerview.h"
 #include "device.h"
 #include "virtualconsole.h"
+#include "functionmanager.h"
 
 extern App* _app;
 
@@ -144,6 +145,9 @@ void VCButtonProperties::slotPressGroupClicked(int id)
 
 void VCButtonProperties::slotAttachFunctionClicked()
 {
+	QMessageBox::critical(this, "TODO", "TODO!!!");
+
+/*
 	FunctionTree* ft = new FunctionTree(this);
 	if (ft->exec() == QDialog::Accepted)
 	{
@@ -152,6 +156,7 @@ void VCButtonProperties::slotAttachFunctionClicked()
 	}
 
 	delete ft;
+*/
 }
 
 void VCButtonProperties::slotDetachFunctionClicked()

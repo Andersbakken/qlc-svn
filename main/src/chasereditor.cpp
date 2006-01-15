@@ -25,7 +25,7 @@
 #include "device.h"
 #include "app.h"
 #include "doc.h"
-#include "functiontree.h"
+#include "functionmanager.h"
 #include "bus.h"
 #include "chaser.h"
 #include "configkeys.h"
@@ -42,6 +42,8 @@
 #include <qlistview.h>
 #include <qlineedit.h>
 #include <limits.h>
+#include <qmessagebox.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -60,6 +62,8 @@ ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
   m_bus = NULL;
 
   m_original = function;
+
+  m_functionManager = NULL;
 }
 
 ChaserEditor::~ChaserEditor()
@@ -192,17 +196,42 @@ void ChaserEditor::slotRemoveClicked()
 
 void ChaserEditor::slotAddClicked()
 {
-  FunctionTree* ft = new FunctionTree(this);
-  ft->setInactiveID(m_original->id());
+	m_functionManager = new FunctionManager(this,
+					FunctionManager::SelectionMode);
 
-  if (ft->exec() == QDialog::Accepted && ft->functionID() != KNoID)
-    {
-      m_chaser->addStep(ft->functionID());
-    }
+	// Prevent the user from selecting this function
+	m_functionManager->setInactiveID(m_original->id());
+	m_functionManager->init();
 
-  delete ft;
+	connect(m_functionManager, SIGNAL(closed()),
+			this, SLOT(slotFunctionManagerClosed()));
 
-  updateStepList();
+	m_functionManager->show();
+}
+
+void ChaserEditor::slotFunctionManagerClosed()
+{
+	FunctionIDList list;
+	FunctionIDList::iterator it;
+
+	assert(m_functionManager);
+
+	if (m_functionManager->result() == QDialog::Accepted)
+	{
+		m_functionManager->selection(list);
+
+		for (it = list.begin(); it != list.end(); ++it)
+		{
+			m_chaser->addStep(*it);
+		}
+
+		list.clear();
+
+		updateStepList();
+	}
+
+	delete m_functionManager;
+	m_functionManager = NULL;
 }
 
 void ChaserEditor::slotPlayClicked()

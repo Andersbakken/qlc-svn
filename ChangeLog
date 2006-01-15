@@ -1,3 +1,8 @@
+2005-Jan-15  Heikki Junnila <hjunnilc@users.sf.net>
+	* Made a new version of function manager. It supports now multiple
+	  selections and fashions an explorer-like split view.
+	* Added icons for sequence, efx and paste
+
 2005-Jan-01  Heikki Junnila <hjunnila@users.sf.net>
 	* Created ChangeLog
 	* Moved documentbrowser.[cpp|h] to libs/common/

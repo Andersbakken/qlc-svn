@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   function.h
-  
+
   Copyright (C) 2004 Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -51,11 +51,11 @@ namespace FunctionNS
   class BusListener : public QObject
     {
       Q_OBJECT
-	
+
      public:
       BusListener(t_function_id);
       ~BusListener();
-      
+
      public slots:
       void slotBusValueChanged(t_bus_id id, t_bus_value value);
 
@@ -116,9 +116,17 @@ class Function : public QThread
   // Set the device that this function is associated to
   virtual bool setDevice(t_device_id);
 
-  // The bus for speed setting
+  // Get the bus used for speed setting
   t_bus_id busID() const { return m_busID; }
+
+  // Get a textual representation of the function's bus (ID: Name)
+  // Do NOT use as an id key in lists; use busID() for that.
+  virtual QString busName();
+
+  // Set the function's speed bus
   virtual bool setBus(t_bus_id id);
+
+  // Callback for bus value changes
   virtual void busValueChanged(t_bus_id, t_bus_value) {}
 
   // Number of channels that this function uses.
@@ -167,6 +175,9 @@ class Function : public QThread
 
   // Return the eventbuffer object. Only for FunctionFonsumer's use.
   EventBuffer* eventBuffer() const { return m_eventBuffer; }
+
+  // Get a pixmap representing the function's type to be used in lists etc.
+  virtual QPixmap pixmap();
 
  protected:
   // Semi-permanent function data

@@ -55,7 +55,7 @@
 #include "devicemanagerview.h"
 #include "virtualconsole.h"
 #include "dmxaddresstool.h"
-#include "functiontree.h"
+#include "functionmanager.h"
 #include "busproperties.h"
 #include "aboutbox.h"
 #include "dummyoutplugin.h"
@@ -144,7 +144,7 @@ void blackOutWriter(t_channel, t_value);
 void normalWriter(t_channel, t_value);
 
 App::App() : QMainWindow(),
-	m_functionTree     ( NULL ),
+	m_functionManager  ( NULL ),
 	m_busProperties    ( NULL ),
 	m_dmView           ( NULL ),
 	m_virtualConsole   ( NULL ),
@@ -167,9 +167,9 @@ App::App() : QMainWindow(),
 App::~App()
 {
 	// Delete function tree
-	if (m_functionTree)
-		delete m_functionTree;
-	m_functionTree = NULL;
+	if (m_functionManager)
+		delete m_functionManager;
+	m_functionManager = NULL;
 
 	// Delete bus properties
 	if (m_busProperties)
@@ -559,7 +559,7 @@ void App::initMenuBar()
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/chaser.png")),
 			  "Function Manager", this,
-			  SLOT(slotViewFunctionTree()),
+			  SLOT(slotViewFunctionManager()),
 			  CTRL + Key_F, ID_VIEW_FUNCTION_TREE);
   m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/bus.xpm")),
 			  "Bus Properties", this,
@@ -682,7 +682,7 @@ void App::initToolBar()
 
   m_ftTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/chaser.png")),
 			   "Function manager", 0,
-			   this, SLOT(slotViewFunctionTree()), m_toolbar);
+			   this, SLOT(slotViewFunctionManager()), m_toolbar);
 
   m_toolbar->addSeparator();
 
@@ -981,37 +981,39 @@ void App::slotVirtualConsoleClosed()
 
 
 //
-// View function tree
+// View function manager
 //
-void App::slotViewFunctionTree()
+void App::slotViewFunctionManager()
 {
-  if (m_functionTree == NULL)
-    {
-      m_functionTree = new FunctionTree(this, false);
-      connect(m_functionTree, SIGNAL(closed()),
-	      this, SLOT(slotFunctionTreeClosed()));
-    }
-  else
-    {
-      // Hide the ft first so that it pops on top
-      m_functionTree->hide();
-    }
+	if (m_functionManager == NULL)
+	{
+		m_functionManager = new FunctionManager(workspace());
+		m_functionManager->init();
 
-  m_functionTree->show();
+		connect(m_functionManager, SIGNAL(closed()),
+			this, SLOT(slotFunctionManagerClosed()));
+	}
+	else
+	{
+		// Hide the window first so that it pops on top
+		m_functionManager->hide();
+	}
+
+	m_functionManager->show();
 }
 
 
 //
-// Function tree was closed, delete the instance
+// Function manager was closed, delete the instance
 //
-void App::slotFunctionTreeClosed()
+void App::slotFunctionManagerClosed()
 {
-  if (m_functionTree)
-    {
-      disconnect(m_functionTree);
-      delete m_functionTree;
-      m_functionTree = NULL;
-    }
+	if (m_functionManager)
+	{
+		disconnect(m_functionManager);
+		delete m_functionManager;
+		m_functionManager = NULL;
+	}
 }
 
 
@@ -1371,7 +1373,7 @@ void App::slotSetMode()
       m_ftTB->setEnabled(false);
 
       // Close function tree if it's open
-      slotFunctionTreeClosed();
+      slotFunctionManagerClosed();
 
       m_mode = Operate;
     }

@@ -50,7 +50,7 @@ class VirtualConsole;
 class Plugin;
 class DummyOutPlugin;
 class DeviceClass;
-class FunctionTree;
+class FunctionManager;
 class BusProperties;
 class DocumentBrowser;
 
@@ -148,8 +148,8 @@ class App : public QMainWindow
   void slotViewVirtualConsole();
   void slotVirtualConsoleClosed();
 
-  void slotViewFunctionTree();
-  void slotFunctionTreeClosed();
+  void slotViewFunctionManager();
+  void slotFunctionManagerClosed();
 
   void slotViewBusProperties();
   void slotBusPropertiesClosed();
@@ -218,7 +218,7 @@ class App : public QMainWindow
   DeviceManagerView* m_dmView;
   VirtualConsole* m_virtualConsole;
   QWorkspace* m_workspace;
-  FunctionTree* m_functionTree;
+  FunctionManager* m_functionManager;
   BusProperties* m_busProperties;
   DocumentBrowser* m_documentBrowser;
 

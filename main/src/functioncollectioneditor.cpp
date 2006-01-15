@@ -22,7 +22,7 @@
 #include "functioncollectioneditor.h"
 #include "functioncollection.h"
 #include "function.h"
-#include "functiontree.h"
+#include "functionmanager.h"
 #include "app.h"
 #include "doc.h"
 #include "deviceclass.h"
@@ -48,6 +48,8 @@ FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* fc,
   m_fc = new FunctionCollection();
   m_fc->copyFrom(fc);
 
+  m_functionManager = NULL;
+
   init();
 }
 
@@ -66,27 +68,57 @@ void FunctionCollectionEditor::init()
   updateFunctionList();
 }
 
+/**
+ * The user wants to add functions
+ */
 void FunctionCollectionEditor::slotAddFunctionClicked()
 {
-  FunctionTree* ft = new FunctionTree(this);
-  assert(ft);
-  ft->setInactiveID(m_original->id());
+	// Create the function manager in selection mode so it
+	// looks like a normal modal dialog
+	m_functionManager = new FunctionManager(this,
+					FunctionManager::SelectionMode);
 
-  if (ft->exec() == QDialog::Accepted && ft->functionID() != KNoID)
-    {
-      if (isAlreadyMember(ft->functionID()))
-	{
-	  QString msg("The selected function is already in collection.");
-	  QMessageBox::warning(this, KApplicationNameShort, msg);
-	}
-      else
-	{
-	  m_fc->addItem(ft->functionID());
-	  updateFunctionList();
-	}
-    }
+	// Prevent the user from selecting this function
+	m_functionManager->setInactiveID(m_original->id());
+	m_functionManager->init();
 
-  delete ft;
+	// Catch the close event
+	connect(m_functionManager, SIGNAL(closed()),
+			this, SLOT(slotFunctionManagerClosed()));
+
+	// Show the dialog
+	m_functionManager->show();
+}
+
+/**
+ * The selection dialog was closed, take the selection
+ */
+void FunctionCollectionEditor::slotFunctionManagerClosed()
+{
+	FunctionIDList list;
+	FunctionIDList::iterator it;
+
+	assert(m_functionManager);
+
+	if (m_functionManager->result() == QDialog::Accepted)
+	{
+		m_functionManager->selection(list);
+
+		for (it = list.begin(); it != list.end(); ++it)
+		{
+			if (isAlreadyMember(*it) == false)
+			{
+				m_fc->addItem(*it);
+			}
+		}
+
+		list.clear();
+
+		updateFunctionList();
+	}
+
+	delete m_functionManager;
+	m_functionManager = NULL;
 }
 
 

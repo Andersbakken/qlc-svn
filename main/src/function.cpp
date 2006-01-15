@@ -23,6 +23,7 @@
 #include <qapplication.h>
 #include <qmessagebox.h>
 #include <assert.h>
+#include <qpixmap.h>
 
 #include "bus.h"
 #include "app.h"
@@ -44,7 +45,7 @@ const QString KUndefinedString  (  "Undefined" );
 //
 // Standard constructor (protected)
 //
-Function::Function(Type type) : 
+Function::Function(Type type) :
   QThread(),
   m_name              ( QString::null ),
   m_type              (          type ),
@@ -192,6 +193,25 @@ bool Function::setDevice(t_device_id id)
     }
 }
 
+//
+// Get a textual representation of the function's bus (ID: Name)
+//
+QString Function::busName()
+{
+	QString text;
+
+	if (busID() != KNoID)
+	{
+		text.sprintf("%.2d: ", busID() + 1);
+		text += Bus::name(busID());
+	}
+	else
+	{
+		text = QString("N/A");
+	}
+
+	return text;
+}
 
 //
 // Set the speed bus
@@ -325,7 +345,7 @@ Function* Function::create(QPtrList <QString> &list)
       else if (*s == QString("Name"))
 	{
 	  name = *(list.next());
-	}		      
+	}
       else if (*s == QString("Type"))
 	{
 	  type = Function::stringToType(*(list.next()));
@@ -396,7 +416,33 @@ Function* Function::create(QPtrList <QString> &list)
   return function;
 }
 
-
+//
+// Get a pixmap representing the function's type to be used in lists etc.
+//
+QPixmap Function::pixmap()
+{
+	switch (m_type)
+	{
+		case Scene:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/scene.png"));
+		case Chaser:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/chaser.png"));
+		case Collection:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/collection.png"));
+		case Sequence:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/sequence.png"));
+		case EFX:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/efx.png"));
+		default:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/function.png"));
+	}
+}
 
 
 
@@ -407,9 +453,9 @@ Function* Function::create(QPtrList <QString> &list)
 //
 // Bus Listener Constructor
 //
-FunctionNS::BusListener::BusListener(t_function_id id) 
+FunctionNS::BusListener::BusListener(t_function_id id)
   : m_functionID(id)
-{ 
+{
   connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 }
@@ -429,7 +475,7 @@ FunctionNS::BusListener::~BusListener()
 //
 void FunctionNS::BusListener::slotBusValueChanged(t_bus_id id,
 						  t_bus_value value)
-{ 
+{
   Function* f = _app->doc()->function(m_functionID);
   assert(f);
   f->busValueChanged(id, value);

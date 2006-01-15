@@ -22,7 +22,6 @@
 #include "vcbutton.h"
 #include "app.h"
 #include "doc.h"
-#include "functiontree.h"
 #include "function.h"
 #include "floatingedit.h"
 #include "vcbuttonproperties.h"

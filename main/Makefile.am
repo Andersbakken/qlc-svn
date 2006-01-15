@@ -21,7 +21,6 @@ noinst_HEADERS = \
 	src/uic_editsettingskey.h \
 	src/uic_efxeditor.h \
 	src/uic_functioncollectioneditor.h \
-	src/uic_functiontree.h \
 	src/uic_newdevice.h \
 	src/uic_patterngenerator.h \
 	src/uic_sceneeditor.h \
@@ -63,7 +62,7 @@ noinst_HEADERS = \
 	src/functioncollection.h \
 	src/functionconsumer.h \
 	src/function.h \
-	src/functiontree.h \
+	src/functionmanager.h \
 	src/generatorarea.h \
 	src/imagecontentspreview.h \
 	src/keybind.h \
@@ -105,7 +104,6 @@ qlc_SOURCES = \
 	src/uic_editsettingskey.cpp \
 	src/uic_efxeditor.cpp \
 	src/uic_functioncollectioneditor.cpp \
-	src/uic_functiontree.cpp \
 	src/uic_newdevice.cpp \
 	src/uic_patterngenerator.cpp \
 	src/uic_sceneeditor.cpp \
@@ -130,7 +128,6 @@ qlc_SOURCES = \
 	src/moc_uic_editsettingskey.cpp \
 	src/moc_uic_efxeditor.cpp \
 	src/moc_uic_functioncollectioneditor.cpp \
-	src/moc_uic_functiontree.cpp \
 	src/moc_uic_newdevice.cpp \
 	src/moc_uic_patterngenerator.cpp \
 	src/moc_uic_sceneeditor.cpp \
@@ -171,7 +168,7 @@ qlc_SOURCES = \
 	src/functioncollectioneditor.cpp \
 	src/functionconsumer.cpp \
 	src/function.cpp \
-	src/functiontree.cpp \
+	src/functionmanager.cpp \
 	src/generatorarea.cpp \
 	src/imagecontentspreview.cpp \
 	src/keybind.cpp \
@@ -228,7 +225,7 @@ qlc_SOURCES = \
 	src/moc_functioncollectioneditor.cpp \
 	src/moc_functionconsumer.cpp \
 	src/moc_function.cpp \
-	src/moc_functiontree.cpp \
+	src/moc_functionmanager.cpp \
 	src/moc_generatorarea.cpp \
 	src/moc_imagecontentspreview.cpp \
 	src/moc_keybind.cpp \

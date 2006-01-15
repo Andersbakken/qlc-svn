@@ -22,8 +22,10 @@ dist_images_DATA = \
 	device.xpm \
 	dmx.xpm \
 	down.xpm \
+	efx.png \
 	editcopy.xpm \
 	editcut.xpm \
+	editpaste.png \
 	edit.xpm \
 	exit.xpm \
 	fileclose.xpm \
@@ -52,6 +54,7 @@ dist_images_DATA = \
 	resize.xpm \
 	right.xpm \
 	scene.png \
+	sequence.png \
 	settings.xpm \
 	slider.xpm \
 	speedslider.xpm \
