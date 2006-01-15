@@ -162,8 +162,6 @@ void FunctionManager::init()
 	// control of the layout item
 	new QVBoxLayout(this);
 	layout()->setAutoAdd(false);
-	layout()->setSpacing(10);
-	layout()->setMargin(5);
 
 	if (m_selectionMode == false)
 	{
@@ -172,6 +170,11 @@ void FunctionManager::init()
 
 		// Create tool bar
 		initToolbar();
+	}
+	else
+	{
+		layout()->setSpacing(10);
+		layout()->setMargin(5);
 	}
 
 	// Create the splitter which contains the fixture & function trees
