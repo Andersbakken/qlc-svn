@@ -26,6 +26,9 @@
 #include "vcbutton.h"
 #include "uic_vcbuttonproperties.h"
 
+class FunctionManager;
+class KeyBind;
+
 class VCButtonProperties : public UI_VCButtonProperties
 {
   Q_OBJECT
@@ -43,6 +46,7 @@ class VCButtonProperties : public UI_VCButtonProperties
   void slotDetachFunctionClicked();
 
   void slotAttachKeyClicked();
+  void slotFunctionManagerClosed();
   void slotDetachKeyClicked();
 
   void slotOKClicked();
@@ -55,6 +59,7 @@ class VCButtonProperties : public UI_VCButtonProperties
   VCButton* m_button;
   KeyBind* m_keyBind;
   t_function_id m_functionID;
+  FunctionManager* m_functionManager;
 };
 
 #endif

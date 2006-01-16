@@ -47,7 +47,8 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent,
 
     m_button     ( button ),
     m_keyBind    ( new KeyBind(button->keyBind()) ),
-    m_functionID ( button->functionID() )
+    m_functionID ( button->functionID() ),
+    m_functionManager ( NULL )
 {
 }
 
@@ -145,19 +146,36 @@ void VCButtonProperties::slotPressGroupClicked(int id)
 
 void VCButtonProperties::slotAttachFunctionClicked()
 {
-	QMessageBox::critical(this, "TODO", "TODO!!!");
+	m_functionManager = new FunctionManager(this,
+					FunctionManager::SelectionMode);
+	m_functionManager->init();
 
-/*
-	FunctionTree* ft = new FunctionTree(this);
-	if (ft->exec() == QDialog::Accepted)
+	connect(m_functionManager, SIGNAL(closed()),
+			this, SLOT(slotFunctionManagerClosed()));
+
+	m_functionManager->show();
+}
+
+void VCButtonProperties::slotFunctionManagerClosed()
+{
+	FunctionIDList list;
+
+	assert(m_functionManager);
+
+	if (m_functionManager->result() == QDialog::Accepted)
 	{
-		m_functionID = ft->functionID();
+		m_functionManager->selection(list);
+
+		m_functionID = list.first();
 		setFunctionName();
+
+		list.clear();
 	}
 
-	delete ft;
-*/
+	delete m_functionManager;
+	m_functionManager = NULL;
 }
+
 
 void VCButtonProperties::slotDetachFunctionClicked()
 {

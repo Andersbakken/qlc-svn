@@ -1,4 +1,7 @@
-2005-Jan-15  Heikki Junnila <hjunnilc@users.sf.net>
+2005-Jan-16  Heikki Junnila <hjunnila@users.sf.net>
+	* Added new function manager to vcbuttonproperties
+
+2005-Jan-15  Heikki Junnila <hjunnila@users.sf.net>
 	* Made a new version of function manager. It supports now multiple
 	  selections and fashions an explorer-like split view.
 	* Added icons for sequence, efx and paste
