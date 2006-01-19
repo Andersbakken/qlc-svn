@@ -1,3 +1,6 @@
+2005-Jan-19  Heikki Junnila <hjunnila@users.sf.net>
+	* Added config/dummy so that the dir would get copied from CVS.
+
 2005-Jan-16  Heikki Junnila <hjunnila@users.sf.net>
 	* Added new function manager to vcbuttonproperties
 
