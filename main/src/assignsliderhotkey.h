@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  vcdocksliderproperties.h
-
-  Copyright (C) Heikki Junnila
+  assignhotkey.h
+  
+  Copyright (C) 2000, 2001, 2002 Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,47 +19,34 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VCDOCKSLIDERPROPERTIES_H
-#define VCDOCKSLIDERPROPERTIES_H
+#ifndef ASSIGNSLIDERHOTKEY_H
+#define ASSIGNSLIDERHOTKEY_H
 
-#include "uic_vcdocksliderproperties.h"
-#include "vcdockslider.h"
+#include "uic_assignsliderhotkey.h"
 
 class SliderKeyBind;
 
-class VCDockSliderProperties : public UI_VCDockSliderProperties
+class AssignSliderHotKey : public UI_AssignSliderHotKey
 {
   Q_OBJECT
 
-    public:
-  VCDockSliderProperties(VCDockSlider* parent, const char* name = NULL);
-  ~VCDockSliderProperties();
+ public:
+  AssignSliderHotKey(QWidget* parent = NULL, const char* name = NULL);
+  ~AssignSliderHotKey();
 
-  void init();
+  SliderKeyBind* sliderKeyBind() { return m_sliderKeyBind; }
 
- protected:
-  void fillBusCombo();
-  void fillChannelList();
-
-  void extractChannels();
+  void initView();
 
  public slots:
-  void slotBehaviourSelected(int);
-  void slotAllChannelsClicked();
-  void slotInvertChannelsClicked();
-  void slotClearChannelsClicked();
-  void slotDeviceChannelsClicked();
-  void slotRoleChannelsClicked();
-  void slotAttachKeyClicked();
-  void slotDetachKeyClicked();
-
   void slotOKClicked();
   void slotCancelClicked();
 
  protected:
-  VCDockSlider* m_slider;
-  VCDockSlider::Mode m_mode;
+  void keyPressEvent(QKeyEvent*);
+//  void keyPressEventDown(QKeyEvent*);
 
+ private:
   SliderKeyBind* m_sliderKeyBind;
 };
 

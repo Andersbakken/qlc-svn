@@ -32,6 +32,7 @@
 class QMouseEvent;
 class QFile;
 class QPoint;
+class SliderKeyBind;
 
 const QString KEY_DEFAULT_FADE_MIN ( "DefaultFadeMin" );
 const QString KEY_DEFAULT_FADE_MAX ( "DefaultFadeMax" );
@@ -50,7 +51,10 @@ class VCDockSlider : public UI_VCDockSlider
   void init();
 
   void setCaption(const QString&);
-  
+
+  SliderKeyBind* sliderKeyBind() { return m_sliderKeyBind; }
+  void setSliderKeyBind(const SliderKeyBind* skb);
+
   //
   // Mode stuff
   //
@@ -82,6 +86,10 @@ class VCDockSlider : public UI_VCDockSlider
   void createContents(QPtrList <QString> &list);
   void saveToFile(QFile &file, t_vc_id parentID);
 
+ public slots:
+  void pressUp();
+  void pressDown();
+
  private slots:
   void slotSliderValueChanged(int);
   void slotTapInButtonClicked();
@@ -97,6 +105,7 @@ class VCDockSlider : public UI_VCDockSlider
   void mousePressEvent(QMouseEvent*);
   void mouseReleaseEvent(QMouseEvent*);
   void mouseMoveEvent(QMouseEvent*);
+  void mouseDoubleClickEvent(QMouseEvent*);
   void paintEvent(QPaintEvent*);
   void contextMenuEvent(QContextMenuEvent*);
   void customEvent(QCustomEvent*);
@@ -122,10 +131,12 @@ class VCDockSlider : public UI_VCDockSlider
   int m_ypos;
   bool m_resizeMode;
   QPoint m_mousePressPoint;
- 
+  
   QTime m_time;
 
   QValueList<t_channel> m_channels;
+
+  SliderKeyBind* m_sliderKeyBind;
 };
 
 #endif

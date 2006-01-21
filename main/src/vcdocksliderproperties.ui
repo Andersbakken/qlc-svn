@@ -35,11 +35,11 @@
             <property name="selectedId" stdset="0">
                 <number>-1</number>
             </property>
-            <vbox>
+            <grid>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QRadioButton">
+                <widget class="QRadioButton" row="0" column="0">
                     <property name="name">
                         <cstring>m_speedRadio</cstring>
                     </property>
@@ -56,7 +56,7 @@
                         <string>Use this slider to set fade or hold time for functions</string>
                     </property>
                 </widget>
-                <widget class="QGroupBox">
+                <widget class="QGroupBox" row="1" column="0">
                     <property name="name">
                         <cstring>m_busGroup</cstring>
                     </property>
@@ -197,24 +197,7 @@
                         </widget>
                     </vbox>
                 </widget>
-                <widget class="QRadioButton">
-                    <property name="name">
-                        <cstring>m_levelRadio</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Level...</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+L</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>1</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Use this slider to set the value for individual channels</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton">
+                <widget class="QRadioButton" row="3" column="0">
                     <property name="name">
                         <cstring>m_submasterRadio</cstring>
                     </property>
@@ -228,7 +211,7 @@
                         <string>Use this slider to set the maximum value limit for selected channels</string>
                     </property>
                 </widget>
-                <widget class="QGroupBox">
+                <widget class="QGroupBox" row="4" column="0">
                     <property name="name">
                         <cstring>m_channelGroup</cstring>
                     </property>
@@ -463,7 +446,103 @@
                         </widget>
                     </hbox>
                 </widget>
-            </vbox>
+                <widget class="QRadioButton" row="2" column="0">
+                    <property name="name">
+                        <cstring>m_levelRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Level...</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+L</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>1</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use this slider to set the value for individual channels</string>
+                    </property>
+                </widget>
+                <widget class="QGroupBox" row="5" column="0">
+                    <property name="name">
+                        <cstring>m_keybourdHotkeyGroup</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Keyboard Hotkeys</string>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>m_keyUpLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Key Up</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>m_keyDownLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Key Down</string>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="0" column="1">
+                            <property name="name">
+                                <cstring>m_keyUpEdit</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QLineEdit" row="1" column="1">
+                            <property name="name">
+                                <cstring>m_keyDownEdit</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton" row="0" column="3" rowspan="2" colspan="1">
+                            <property name="name">
+                                <cstring>m_detachKey</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string></string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton" row="0" column="2" rowspan="2" colspan="1">
+                            <property name="name">
+                                <cstring>m_attachKey</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string></string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+            </grid>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -574,6 +653,18 @@
         <receiver>UI_VCDockSliderProperties</receiver>
         <slot>slotRoleChannelsClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_attachKey</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotAttachKeyClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_detachKey</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCDockSliderProperties</receiver>
+        <slot>slotDetachKeyClicked()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_speedRadio</tabstop>
@@ -591,6 +682,8 @@
     <slot>slotInvertChannelsClicked()</slot>
     <slot>slotDeviceChannelsClicked()</slot>
     <slot>slotRoleChannelsClicked()</slot>
+    <slot>slotAttachKeyClicked()</slot>
+    <slot>slotDetachKeyClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

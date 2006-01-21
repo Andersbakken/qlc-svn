@@ -11,6 +11,7 @@ INCLUDES = @QT_CFLAGS@ \
 noinst_HEADERS = \
 	src/uic_advancedsceneeditor.h \
 	src/uic_assignhotkey.h \
+	src/uic_assignsliderhotkey.h \
 	src/uic_busproperties.h \
 	src/uic_chasereditor.h \
 	src/uic_consolechannel.h \
@@ -24,8 +25,8 @@ noinst_HEADERS = \
 	src/uic_newdevice.h \
 	src/uic_patterngenerator.h \
 	src/uic_sceneeditor.h \
-	src/uic_settings.h \
 	src/uic_sequenceeditor.h \
+	src/uic_settings.h \
 	src/uic_vcbuttonproperties.h \
 	src/uic_vcdocksliderproperties.h \
 	src/uic_vcdockslider.h \
@@ -37,6 +38,7 @@ noinst_HEADERS = \
 	src/advancedsceneeditor.h \
 	src/app.h \
 	src/assignhotkey.h \
+	src/assignsliderhotkey.h \
 	src/bus.h \
 	src/busproperties.h \
 	src/capability.h \
@@ -76,6 +78,7 @@ noinst_HEADERS = \
 	src/settingsui.h \
 	src/sequenceeditor.h \
 	src/sequence.h \
+	src/sliderkeybind.h \
 	src/types.h \
 	src/vcbutton.h \
 	src/vcbuttonproperties.h \
@@ -94,6 +97,7 @@ noinst_HEADERS = \
 qlc_SOURCES = \
 	src/uic_advancedsceneeditor.cpp \
 	src/uic_assignhotkey.cpp \
+	src/uic_assignsliderhotkey.cpp \
 	src/uic_busproperties.cpp \
 	src/uic_chasereditor.cpp \
 	src/uic_consolechannel.cpp \
@@ -107,8 +111,8 @@ qlc_SOURCES = \
 	src/uic_newdevice.cpp \
 	src/uic_patterngenerator.cpp \
 	src/uic_sceneeditor.cpp \
-	src/uic_settings.cpp \
 	src/uic_sequenceeditor.cpp \
+	src/uic_settings.cpp \
 	src/uic_vcbuttonproperties.cpp \
 	src/uic_vcdocksliderproperties.cpp \
 	src/uic_vcdockslider.cpp \
@@ -118,6 +122,7 @@ qlc_SOURCES = \
 	\
 	src/moc_uic_advancedsceneeditor.cpp \
 	src/moc_uic_assignhotkey.cpp \
+	src/moc_uic_assignsliderhotkey.cpp \
 	src/moc_uic_busproperties.cpp \
 	src/moc_uic_chasereditor.cpp \
 	src/moc_uic_consolechannel.cpp \
@@ -131,8 +136,8 @@ qlc_SOURCES = \
 	src/moc_uic_newdevice.cpp \
 	src/moc_uic_patterngenerator.cpp \
 	src/moc_uic_sceneeditor.cpp \
-	src/moc_uic_settings.cpp \
 	src/moc_uic_sequenceeditor.cpp \
+	src/moc_uic_settings.cpp \
 	src/moc_uic_vcbuttonproperties.cpp \
 	src/moc_uic_vcdocksliderproperties.cpp \
 	src/moc_uic_vcdockslider.cpp \
@@ -144,6 +149,7 @@ qlc_SOURCES = \
 	src/advancedsceneeditor.cpp \
 	src/app.cpp \
 	src/assignhotkey.cpp \
+	src/assignsliderhotkey.cpp \
 	src/bus.cpp \
 	src/busproperties.cpp \
 	src/capability.cpp \
@@ -183,6 +189,7 @@ qlc_SOURCES = \
 	src/settingsui.cpp \
 	src/sequence.cpp \
 	src/sequenceeditor.cpp \
+	src/sliderkeybind.cpp \
 	src/vcbutton.cpp \
 	src/vcbuttonproperties.cpp \
 	src/vcdockarea.cpp \
@@ -201,6 +208,7 @@ qlc_SOURCES = \
 	src/moc_advancedsceneeditor.cpp \
 	src/moc_app.cpp \
 	src/moc_assignhotkey.cpp \
+	src/moc_assignsliderhotkey.cpp \
 	src/moc_bus.cpp \
 	src/moc_busproperties.cpp \
 	src/moc_capability.cpp \
@@ -239,6 +247,7 @@ qlc_SOURCES = \
 	src/moc_settingsui.cpp \
 	src/moc_sequence.cpp \
 	src/moc_sequenceeditor.cpp \
+	src/moc_sliderkeybind.cpp \
 	src/moc_vcbutton.cpp \
 	src/moc_vcbuttonproperties.cpp \
 	src/moc_vcdockarea.cpp \

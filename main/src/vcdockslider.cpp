@@ -37,11 +37,14 @@
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <qinputdialog.h>
+#include <assert.h>
 
 #include "vcdockslider.h"
 #include "vcdocksliderproperties.h"
 #include "vcframe.h"
 #include "virtualconsole.h"
+#include "sliderkeybind.h"
+#include "assignsliderhotkey.h"
 #include "types.h"
 #include "bus.h"
 #include "app.h"
@@ -70,7 +73,8 @@ VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic, const char* name)
     m_levelLowLimit  (                 0 ),
     m_levelHighLimit (               255 ),
     m_static         (          isStatic ),
-    m_updateOnly     (             false )
+    m_updateOnly     (             false ),
+    m_sliderKeyBind  (              NULL )
 {
 }
 
@@ -105,9 +109,16 @@ void VCDockSlider::init()
   setCaption("No Name");
   setMode(Speed);
 
+  m_slider->setPageStep(1);
   m_slider->setValue(0);
 
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+
+  assert(m_sliderKeyBind == NULL);
+  m_sliderKeyBind = new SliderKeyBind();
+
+  connect(m_sliderKeyBind, SIGNAL(pressedUp()), this, SLOT(pressUp()));
+  connect(m_sliderKeyBind, SIGNAL(pressedDown()), this, SLOT(pressDown()));
 }
 
 
@@ -284,6 +295,20 @@ void VCDockSlider::busRange(t_bus_value &lo, t_bus_value &hi)
   hi = m_busHighLimit;
 }
 
+void VCDockSlider::setSliderKeyBind(const SliderKeyBind* skb)
+{
+  assert(skb);
+
+  if (m_sliderKeyBind)
+    {
+      delete m_sliderKeyBind;
+    }
+
+  m_sliderKeyBind = new SliderKeyBind(skb);
+
+  connect(m_sliderKeyBind, SIGNAL(pressedUp()), this, SLOT(pressUp()));
+  connect(m_sliderKeyBind, SIGNAL(pressedDown()), this, SLOT(pressDown()));
+}
 
 //
 // Create this slider's contents from list
@@ -459,6 +484,30 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	{
 	  m_slider->setValue(list.next()->toInt());
 	}
+      else if (*s == QString("BindKeyUp"))
+        {
+	  assert(m_sliderKeyBind);
+	  QString t = *(list.next());
+	  m_sliderKeyBind->setKeyUp(t.toInt());
+	}
+      else if (*s == QString("BindModUp"))
+        {
+	  assert(m_sliderKeyBind);
+	  QString t = *(list.next());
+	  m_sliderKeyBind->setModUp(t.toInt());
+	}
+      else if (*s == QString("BindKeyDown"))
+        {
+	  assert(m_sliderKeyBind);
+	  QString t = *(list.next());
+	  m_sliderKeyBind->setKeyDown(t.toInt());
+	}
+	else if (*s == QString("BindModDown"))
+        {
+	  assert(m_sliderKeyBind);
+	  QString t = *(list.next());
+	  m_sliderKeyBind->setModDown(t.toInt());
+	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -610,8 +659,46 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
   t.setNum(m_slider->value());
   s = QString("Value = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
+
+  // Bind Keys
+  assert(m_sliderKeyBind);
+
+  t.setNum(m_sliderKeyBind->keyUp());
+  s = QString("BindKeyUp = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  t.setNum(m_sliderKeyBind->modUp());
+  s = QString("BindModUp = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  t.setNum(m_sliderKeyBind->keyDown());
+  s = QString("BindKeyDown = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  t.setNum(m_sliderKeyBind->modDown());
+  s = QString("BindModDown = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
 }
 
+//
+// Slider up Key has been pressed
+//
+void VCDockSlider::pressUp()
+{
+  assert(m_sliderKeyBind);
+  m_slider->setPageStep(5);
+  m_slider->addStep();
+}
+
+//
+// Slider down Key has been pressed
+//
+void VCDockSlider::pressDown()
+{
+  assert(m_sliderKeyBind);
+  m_slider->setPageStep(5);
+  m_slider->subtractStep();
+}
 
 //
 // Slider has been moved
@@ -1006,4 +1093,16 @@ void VCDockSlider::moveTo(QPoint p)
 
   // Do the move
   move(p);
+}
+
+void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
+{
+  if (_app->mode() == App::Design)
+    {
+      invokeMenu(mapToGlobal(e->pos()));
+    }
+  else
+    {
+      mousePressEvent(e);
+    }
 }

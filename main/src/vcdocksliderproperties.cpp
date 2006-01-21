@@ -24,6 +24,7 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlistview.h>
+#include <qlineedit.h>
 #include <qspinbox.h>
 #include <assert.h>
 
@@ -36,6 +37,8 @@
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
+#include "sliderkeybind.h"
+#include "assignsliderhotkey.h"
 
 extern App* _app;
 
@@ -49,10 +52,12 @@ VCDockSliderProperties::VCDockSliderProperties(VCDockSlider* parent,
 {
   assert(parent);
   m_slider = parent;
+  m_sliderKeyBind = new SliderKeyBind(parent->sliderKeyBind());
 }
 
 VCDockSliderProperties::~VCDockSliderProperties()
 {
+  delete m_sliderKeyBind;
 }
 
 void VCDockSliderProperties::init()
@@ -78,12 +83,29 @@ void VCDockSliderProperties::init()
   m_slider->levelRange(levello, levelhi);
   m_lowChannelValueSpin->setValue(levello);
   m_highChannelValueSpin->setValue(levelhi);
-  
+
   //
   // Mode
   //
   m_behaviourGroup->setButton(m_slider->mode());
   slotBehaviourSelected(m_slider->mode());
+
+  //
+  // Slider key bind
+  //
+  QString keyStringUp;
+  QString keyStringDown;
+
+  m_sliderKeyBind->keyStringUp(keyStringUp);
+  m_sliderKeyBind->keyStringDown(keyStringDown);
+  m_keyUpEdit->setText(keyStringUp);
+  m_keyDownEdit->setText(keyStringDown);
+
+  //
+  // Pixmaps
+  //
+  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key.xpm")));
+  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")));
 
 }
 
@@ -140,14 +162,14 @@ void VCDockSliderProperties::fillChannelList()
 	    {
 		// DMX Channel
 		// Device name
-		item = new QCheckListItem(m_channelList, d->name(), 
+		item = new QCheckListItem(m_channelList, d->name(),
 		    QCheckListItem::CheckBox);
-		    
+
 		// Device channel
-		s.sprintf("%.3d:" + 
+		s.sprintf("%.3d:" +
 		   d->deviceClass()->channels()->at(ch)->name(), ch + 1);
 		item->setText(KColumnDeviceChannel, s);
-		
+
 		// DMX & Universe Channel
 		s.sprintf("%d", d->universeAddress() + ch);
 		item->setText(KColumnDMXChannel, s);
@@ -194,11 +216,11 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
 		m_lowChannelValueSpin->setEnabled(false);
 		m_highChannelValueSpin->setEnabled(false);
 	break;
-      
+
 	case VCDockSlider::Level:
 		m_busGroup->setEnabled(false);
 		m_channelGroup->setEnabled(true);
-    
+
 		m_allChannels->setEnabled(true);
 		m_invertChannels->setEnabled(true);
 		m_clearChannels->setEnabled(true);
@@ -275,12 +297,12 @@ void VCDockSliderProperties::slotDeviceChannelsClicked()
 	QCheckListItem* item;
 	QListViewItemIterator it(m_channelList->currentItem());
 	QString name;
-	
+
 	if (it.current())
 	{
 		name = it.current()->text(KColumnDevice);
 	}
-	
+
 	while (it.current() && it.current()->text(KColumnDevice) == name)
 	{
 		item = static_cast<QCheckListItem*> (it.current());
@@ -298,27 +320,69 @@ void VCDockSliderProperties::slotRoleChannelsClicked()
 	QListViewItemIterator it(m_channelList->currentItem());
 	QString role;
 	QString itrole;
-	
+
 	if (it.current())
 	{
 		role = it.current()->text(KColumnDeviceChannel);
 		role = role.right(role.length() - role.find(':', 0, FALSE) - 1);
 		qDebug(role);
 	}
-	
+
 	while (it.current())
 	{
 		item = static_cast<QCheckListItem*> (it.current());
 		itrole = item->text(KColumnDeviceChannel);
 		itrole = itrole.right(itrole.length() - itrole.find(':', 0, FALSE) - 1);
-		
+
 		if (itrole == role)
 		{
 			item->setOn(!item->isOn());
 		}
-		
+
 		it++;
 	}
+}
+
+void VCDockSliderProperties::slotAttachKeyClicked()
+{
+  QString keyStringUp;
+  QString keyStringDown;
+
+  AssignSliderHotKey* a = new AssignSliderHotKey(this);
+
+  if (a->exec() == QDialog::Accepted)
+    {
+      assert(a->sliderKeyBind());
+
+      if (m_sliderKeyBind)
+        {
+	  delete m_sliderKeyBind;
+	}
+
+      m_sliderKeyBind = new SliderKeyBind(a->sliderKeyBind());
+      m_sliderKeyBind->keyStringUp(keyStringUp);
+      m_keyUpEdit->setText(keyStringUp);
+      m_sliderKeyBind->keyStringDown(keyStringDown);
+      m_keyDownEdit->setText(keyStringDown);
+    }
+
+  delete a;
+}
+
+void VCDockSliderProperties::slotDetachKeyClicked()
+{
+  QString keyStringUp;
+  QString keyStringDown;
+
+  m_sliderKeyBind->setKeyUp(Key_unknown);
+  m_sliderKeyBind->setModUp(NoButton);
+  m_sliderKeyBind->setKeyDown(Key_unknown);
+  m_sliderKeyBind->setModDown(NoButton);
+
+  m_sliderKeyBind->keyStringUp(keyStringUp);
+  m_keyUpEdit->setText(keyStringUp);
+  m_sliderKeyBind->keyStringDown(keyStringDown);
+  m_keyDownEdit->setText(keyStringDown);
 }
 
 //
@@ -326,6 +390,10 @@ void VCDockSliderProperties::slotRoleChannelsClicked()
 //
 void VCDockSliderProperties::slotOKClicked()
 {
+  //
+  // Set the keyBinds
+  //
+  m_slider->setSliderKeyBind(m_sliderKeyBind);
   //
   // Resign previous submasters, if any
   //

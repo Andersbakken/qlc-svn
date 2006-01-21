@@ -1,0 +1,104 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>UI_AssignSliderHotKey</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_AssignSliderHotKey</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>282</width>
+            <height>439</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Assign Hotkeys to Sliders</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QTextView">
+            <property name="name">
+                <cstring>m_infoText</cstring>
+            </property>
+            <property name="textFormat">
+                <enum>AutoText</enum>
+            </property>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>m_assignGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Assign keys for the slider</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLineEdit" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_previewUpEdit</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="2" column="0">
+                    <property name="name">
+                        <cstring>m_previewDownLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Preview hotkey down</string>
+                    </property>
+                    <property name="alignment">
+                        <set>AlignCenter</set>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="3" column="0">
+                    <property name="name">
+                        <cstring>m_previewDownEdit</cstring>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_previewUpLabel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Preview hotkey up</string>
+                    </property>
+                    <property name="alignment">
+                        <set>AlignCenter</set>
+                    </property>
+                </widget>
+            </grid>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout9</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
