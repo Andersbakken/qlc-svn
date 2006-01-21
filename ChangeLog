@@ -1,3 +1,6 @@
+2005-Jan-21  Christin Sühs  <dance-or-die@users.sf.net>
+	* Added a slider keybind function.
+
 2005-Jan-19  Heikki Junnila <hjunnila@users.sf.net>
 	* Added config/dummy so that the dir would get copied from CVS.
 
