@@ -15,484 +15,444 @@
     <property name="caption">
         <string>Sequence Editor</string>
     </property>
-    <widget class="QLayoutWidget">
+    <vbox>
         <property name="name">
-            <cstring>layout11</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>6</x>
-                <y>13</y>
-                <width>533</width>
-                <height>561</height>
-            </rect>
-        </property>
-        <vbox>
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>unnamed</cstring>
+                <cstring>layout4</cstring>
             </property>
-            <widget class="QLayoutWidget">
+            <hbox>
                 <property name="name">
-                    <cstring>layout4</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <hbox>
+                <widget class="QLabel">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>m_nameLabel</cstring>
                     </property>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>m_nameLabel</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Name:</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>m_name</cstring>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget">
+                    <property name="text">
+                        <string>Name:</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_name</cstring>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout9</cstring>
+            </property>
+            <hbox>
                 <property name="name">
-                    <cstring>layout9</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <hbox>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout8</cstring>
                     </property>
-                    <widget class="QLayoutWidget">
+                    <vbox>
                         <property name="name">
-                            <cstring>layout8</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <vbox>
+                        <widget class="QListView">
                             <property name="name">
-                                <cstring>unnamed</cstring>
+                                <cstring>m_list</cstring>
                             </property>
-                            <widget class="QListView">
-                                <property name="name">
-                                    <cstring>m_list</cstring>
-                                </property>
-                                <property name="allColumnsShowFocus">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="defaultRenameAction">
-                                    <enum>Accept</enum>
-                                </property>
-                            </widget>
-                            <widget class="QFrame">
-                                <property name="name">
-                                    <cstring>m_sliderContainer</cstring>
-                                </property>
-                                <property name="sizePolicy">
-                                    <sizepolicy>
-                                        <hsizetype>7</hsizetype>
-                                        <vsizetype>5</vsizetype>
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>20</width>
-                                        <height>200</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>32767</width>
-                                        <height>200</height>
-                                    </size>
-                                </property>
-                                <property name="frameShape">
-                                    <enum>NoFrame</enum>
-                                </property>
-                                <property name="frameShadow">
-                                    <enum>Plain</enum>
-                                </property>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <widget class="QLayoutWidget">
-                        <property name="name">
-                            <cstring>layout8</cstring>
-                        </property>
-                        <vbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
+                            <property name="allColumnsShowFocus">
+                                <bool>true</bool>
                             </property>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>m_insert</cstring>
-                                </property>
-                                <property name="sizePolicy">
-                                    <sizepolicy>
-                                        <hsizetype>0</hsizetype>
-                                        <vsizetype>1</vsizetype>
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>+</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Insert</string>
-                                </property>
-                            </widget>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>m_remove</cstring>
-                                </property>
-                                <property name="sizePolicy">
-                                    <sizepolicy>
-                                        <hsizetype>5</hsizetype>
-                                        <vsizetype>1</vsizetype>
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>-</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Remove selected step</string>
-                                </property>
-                            </widget>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>m_raise</cstring>
-                                </property>
-                                <property name="sizePolicy">
-                                    <sizepolicy>
-                                        <hsizetype>5</hsizetype>
-                                        <vsizetype>5</vsizetype>
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>/\</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Raise selected step up</string>
-                                </property>
-                            </widget>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>m_lower</cstring>
-                                </property>
-                                <property name="sizePolicy">
-                                    <sizepolicy>
-                                        <hsizetype>5</hsizetype>
-                                        <vsizetype>5</vsizetype>
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>\/</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Lower selected step down</string>
-                                </property>
-                            </widget>
-                            <spacer>
-                                <property name="name">
-                                    <cstring>spacer3</cstring>
-                                </property>
-                                <property name="orientation">
-                                    <enum>Vertical</enum>
-                                </property>
-                                <property name="sizeType">
-                                    <enum>Expanding</enum>
-                                </property>
-                                <property name="sizeHint">
-                                    <size>
-                                        <width>20</width>
-                                        <height>110</height>
-                                    </size>
-                                </property>
-                            </spacer>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>m_sliders</cstring>
-                                </property>
-                                <property name="sizePolicy">
-                                    <sizepolicy>
-                                        <hsizetype>5</hsizetype>
-                                        <vsizetype>5</vsizetype>
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>30</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>SL</string>
-                                </property>
-                                <property name="toggleButton">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Toggle slider visibility</string>
-                                </property>
-                            </widget>
-                        </vbox>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout6</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QButtonGroup">
-                        <property name="name">
-                            <cstring>m_runOrderGroup</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Run Order</string>
-                        </property>
-                        <property name="selectedId" stdset="0">
-                            <number>-1</number>
-                        </property>
-                        <hbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>m_looping</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Loop</string>
-                                </property>
-                            </widget>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>m_singleShot</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Single Shot</string>
-                                </property>
-                            </widget>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>m_pingPong</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Ping Pong</string>
-                                </property>
-                            </widget>
-                        </hbox>
-                    </widget>
-                    <widget class="QButtonGroup">
-                        <property name="name">
-                            <cstring>m_directionGroup</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Direction</string>
-                        </property>
-                        <property name="selectedId" stdset="0">
-                            <number>-1</number>
-                        </property>
-                        <hbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>m_forward</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Forward</string>
-                                </property>
-                            </widget>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>m_backward</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Backward</string>
-                                </property>
-                            </widget>
-                        </hbox>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout9</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QButtonGroup">
-                        <property name="name">
-                            <cstring>m_advancedOptionGroup</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Advanced Option</string>
-                        </property>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>m_zeroEnabled</cstring>
-                            </property>
-                            <property name="geometry">
-                                <rect>
-                                    <x>10</x>
-                                    <y>20</y>
-                                    <width>85</width>
-                                    <height>19</height>
-                                </rect>
-                            </property>
-                            <property name="text">
-                                <string>Set to zero</string>
+                            <property name="defaultRenameAction">
+                                <enum>Accept</enum>
                             </property>
                         </widget>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer7</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>400</width>
-                                <height>45</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </hbox>
-            </widget>
-            <widget class="Line">
-                <property name="name">
-                    <cstring>m_line</cstring>
-                </property>
-                <property name="frameShape">
-                    <enum>HLine</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>Sunken</enum>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout7</cstring>
-                </property>
-                <hbox>
+                        <widget class="QFrame">
+                            <property name="name">
+                                <cstring>m_sliderContainer</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>20</width>
+                                    <height>200</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>32767</width>
+                                    <height>200</height>
+                                </size>
+                            </property>
+                            <property name="frameShape">
+                                <enum>NoFrame</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>Plain</enum>
+                            </property>
+                        </widget>
+                    </vbox>
+                </widget>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout8</cstring>
                     </property>
-                    <spacer>
+                    <vbox>
                         <property name="name">
-                            <cstring>spacer3_2</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>351</width>
-                                <height>25</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QPushButton">
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_insert</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>1</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>+</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Insert</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_remove</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>5</hsizetype>
+                                    <vsizetype>1</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>-</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Remove selected step</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_raise</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>5</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>/\</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Raise selected step up</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_lower</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>5</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>\/</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Lower selected step down</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>110</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>m_sliders</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>5</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>30</width>
+                                    <height>30</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>SL</string>
+                            </property>
+                            <property name="toggleButton">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Toggle slider visibility</string>
+                            </property>
+                        </widget>
+                    </vbox>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_runOrderGroup</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Run Order</string>
+                    </property>
+                    <property name="selectedId" stdset="0">
+                        <number>-1</number>
+                    </property>
+                    <hbox>
                         <property name="name">
-                            <cstring>m_ok</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="text">
-                            <string>OK</string>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_looping</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Loop</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_singleShot</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Single Shot</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_pingPong</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Ping Pong</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_directionGroup</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Direction</string>
+                    </property>
+                    <property name="selectedId" stdset="0">
+                        <number>-1</number>
+                    </property>
+                    <hbox>
                         <property name="name">
-                            <cstring>m_cancel</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="text">
-                            <string>Cancel</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-        </vbox>
-    </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_forward</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Forward</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_backward</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Backward</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QButtonGroup">
+            <property name="name">
+                <cstring>m_advancedOptionGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Advanced</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>m_zeroEnabled</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Set Channels to Zero After Stop</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Set all channels to zero when this sequence stops</string>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>m_line</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout7</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer3_2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>351</width>
+                            <height>25</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
 </widget>
 <connections>
     <connection>
