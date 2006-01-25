@@ -39,6 +39,7 @@
 #include <qworkspace.h>
 #include <qlabel.h>
 #include <qspinbox.h>
+#include <qpushbutton.h>
 
 extern App* _app;
 
@@ -64,6 +65,9 @@ void SettingsUI::init()
 	m_backgroundEdit->setText(str);
   }
 
+  m_backgroundBrowse->setPixmap(QPixmap(QString(PIXMAPS) +
+					QString("/fileopen.png")));
+
   fillStyleCombo();
 
   if (_app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str) != -1
@@ -77,6 +81,9 @@ void SettingsUI::init()
   }
 
   fillOutputPluginCombo();
+
+  m_configurePlugin->setPixmap(QPixmap(QString(PIXMAPS) +
+				QString("/configure.png")));
 
   fillAdvancedSettingsList();
 }

@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>372</width>
-            <height>548</height>
+            <height>561</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -66,8 +66,8 @@
                             </property>
                             <property name="sizePolicy">
                                 <sizepolicy>
-                                    <hsizetype>3</hsizetype>
-                                    <vsizetype>0</vsizetype>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>1</vsizetype>
                                     <horstretch>0</horstretch>
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -86,31 +86,8 @@
                             <property name="name">
                                 <cstring>m_backgroundBrowse</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>23</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>23</height>
-                                </size>
-                            </property>
                             <property name="text">
-                                <string>...</string>
-                            </property>
-                            <property name="flat">
-                                <bool>false</bool>
+                                <string></string>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Browse the workspace background image.</string>
@@ -331,17 +308,11 @@
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy>
-                            <hsizetype>3</hsizetype>
+                            <hsizetype>7</hsizetype>
                             <vsizetype>0</vsizetype>
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>160</width>
-                            <height>0</height>
-                        </size>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>The currently selected output plugin</string>
@@ -351,20 +322,8 @@
                     <property name="name">
                         <cstring>m_configurePlugin</cstring>
                     </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>30</width>
-                            <height>23</height>
-                        </size>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>30</width>
-                            <height>23</height>
-                        </size>
-                    </property>
                     <property name="text">
-                        <string>...</string>
+                        <string></string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Configure the selected plugin</string>
