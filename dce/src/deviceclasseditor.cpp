@@ -66,16 +66,16 @@ DeviceClassEditor::~DeviceClassEditor()
 
 void DeviceClassEditor::init()
 {
-  setIcon(QPixmap(QString(PIXMAPS) + QString("/device.xpm")));
-  m_addChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
-  m_removeChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
-  m_editChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")));
-  m_raiseChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/up.xpm")));
-  m_lowerChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/down.xpm")));
+  setIcon(QPixmap(QString(PIXMAPS) + QString("/fixture.png")));
+  m_addChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/wizard.png")));
+  m_removeChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")));
+  m_editChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.png")));
+  m_raiseChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/up.png")));
+  m_lowerChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/down.png")));
 
-  m_addPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
-  m_removePresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
-  m_editPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")));
+  m_addPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
+  m_removePresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
+  m_editPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.png")));
 
   setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
 

@@ -122,11 +122,11 @@ void ChaserEditor::init()
   m_nameEdit->setText(m_chaser->name());
   m_nameEdit->setSelection(0, m_nameEdit->text().length());
 
-  m_addStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
-  m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
+  m_addStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
+  m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
 
-  m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/up.xpm")));
-  m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/down.xpm")));
+  m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/up.png")));
+  m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/down.png")));
 
   m_runOrderGroup->setButton((int) m_chaser->runOrder());
   m_directionGroup->setButton((int) m_chaser->direction());

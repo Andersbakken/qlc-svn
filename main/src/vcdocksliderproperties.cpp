@@ -104,8 +104,8 @@ void VCDockSliderProperties::init()
   //
   // Pixmaps
   //
-  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key.xpm")));
-  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")));
+  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
+  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
 
 }
 
@@ -407,7 +407,7 @@ void VCDockSliderProperties::slotOKClicked()
   //
   if (m_mode == VCDockSlider::Speed)
     {
-      m_slider->setBusRange(m_lowBusValueSpin->value(), 
+      m_slider->setBusRange(m_lowBusValueSpin->value(),
 			    m_highBusValueSpin->value());
       m_slider->setBusID(m_busCombo->currentItem());
     }
@@ -415,7 +415,7 @@ void VCDockSliderProperties::slotOKClicked()
     {
       //
       // Extract selected channels from channel list
-      // 
+      //
      extractChannels();
 
      //
@@ -430,13 +430,13 @@ void VCDockSliderProperties::slotOKClicked()
       // Extract selected channels from channel list
       //
       extractChannels();
-      
+
       //
       // Assign submasters
       //
       m_slider->assignSubmasters(true);
     }
-  
+
   //
   // Set the actual mode last
   //
@@ -446,7 +446,7 @@ void VCDockSliderProperties::slotOKClicked()
   // Reset all non-assigned submaster channels back to 100%
   //
   _app->resetSubmasters();
-  
+
   accept();
 }
 
@@ -459,12 +459,12 @@ void VCDockSliderProperties::extractChannels()
 {
   QCheckListItem* item = NULL;
   t_channel ch = 0;
-  
+
   //
   // Clear channel list
   //
   m_slider->channels()->clear();
-  
+
   //
   // Then, add the new submaster channels
   //
@@ -472,16 +472,16 @@ void VCDockSliderProperties::extractChannels()
   while (it.current())
     {
       item = static_cast<QCheckListItem*> (it.current());
-      
-      ch = static_cast<t_channel> 
+
+      ch = static_cast<t_channel>
 	(item->text(KColumnDMXChannel).toInt());
-      
-      if (item->isOn() && 
+
+      if (item->isOn() &&
 	  m_slider->channels()->find(ch) == m_slider->channels()->end())
 	{
 	  m_slider->channels()->append(ch);
 	}
-      
+
       ++it;
     }
 }

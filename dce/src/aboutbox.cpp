@@ -57,7 +57,7 @@ void AboutBox::initDialog()
 
   setCaption(QString("About ") + KApplicationNameLong);
 
-  m_pm = new QPixmap(QString(PIXMAPS) + QString("/qlc-big.xpm"));
+  m_pm = new QPixmap(QString(PIXMAPS) + QString("/qlc-big.png"));
   m_logo = new QLabel(this);
 
   if (m_pm->isNull() == false)

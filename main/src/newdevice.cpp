@@ -178,7 +178,7 @@ void NewDevice::fillTree()
 
   QPtrList <DeviceClass> *dl = _app->deviceClassList();
 
-  QPixmap pm(PIXMAPS + QString("/dmx.xpm"));
+  /* QPixmap pm(PIXMAPS + QString("/fixture.png")); */
 
   QString config;
   bool treeOpen = false;
@@ -215,10 +215,10 @@ void NewDevice::fillTree()
 	  parent->setOpen(treeOpen);
 	}
 
-      parent->setPixmap(0, QPixmap(PIXMAPS + QString("/global.xpm")));
+      /* parent->setPixmap(0, QPixmap(PIXMAPS + QString("/global.png"))); */
 
       newItem = new QListViewItem(parent, dc->model());
-      newItem->setPixmap(0, pm);
+      /* newItem->setPixmap(0, pm); */
       newItem->setText(1,dc->type());
     }
 }

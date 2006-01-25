@@ -66,15 +66,15 @@ SequenceEditor::~SequenceEditor()
 
 void SequenceEditor::init()
 {
-  setIcon(QPixmap(QString(PIXMAPS) + QString("chaser.xpm")));
+  setIcon(QPixmap(QString(PIXMAPS) + QString("sequence.png")));
 
-  m_insert->setPixmap(QPixmap(QString(PIXMAPS) + "/add.xpm"));
-  m_remove->setPixmap(QPixmap(QString(PIXMAPS) + "/remove.xpm"));
+  m_insert->setPixmap(QPixmap(QString(PIXMAPS) + "/edit_add.png"));
+  m_remove->setPixmap(QPixmap(QString(PIXMAPS) + "/edit_remove.png"));
 
-  m_raise->setPixmap(QPixmap(QString(PIXMAPS) + "/up.xpm"));
-  m_lower->setPixmap(QPixmap(QString(PIXMAPS) + "/down.xpm"));
+  m_raise->setPixmap(QPixmap(QString(PIXMAPS) + "/up.png"));
+  m_lower->setPixmap(QPixmap(QString(PIXMAPS) + "/down.png"));
 
-  m_sliders->setPixmap(QPixmap(QString(PIXMAPS) + "/console.xpm"));
+  m_sliders->setPixmap(QPixmap(QString(PIXMAPS) + "/console.png"));
 
   m_list->setVScrollBarMode(QScrollView::AlwaysOn);
   m_list->header()->setClickEnabled(false);

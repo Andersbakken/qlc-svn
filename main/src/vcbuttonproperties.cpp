@@ -80,11 +80,11 @@ void VCButtonProperties::initView()
   //
   // Pixmaps
   //
-  m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/attach.xpm")));
-  m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/detach.xpm")));
+  m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/attach.png")));
+  m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/detach.png")));
 
-  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key.xpm")));
-  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")));
+  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
+  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
 }
 
 

@@ -135,7 +135,7 @@ void App::initView(void)
 {
 	initSettings();
 
-	setIcon(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")));
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/fixtureeditor.png")));
 
 	initWorkspace();
 
@@ -155,13 +155,13 @@ void App::initToolBar()
 {
 	m_toolbar = new QToolBar(this, "Workspace");
 
-	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")), "New...",
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.png")), "New...",
 			0, this, SLOT(slotFileNew()), m_toolbar);
 
-	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")), "Load...",
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")), "Load...",
 			0, this, SLOT(slotFileOpen()), m_toolbar);
 
-	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")), "Save",
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.png")), "Save",
 			0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
@@ -215,17 +215,17 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // File Menu
   m_fileMenu = new QPopupMenu();
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.png")),
 			 "&New", this, SLOT(slotFileNew()),
 			 CTRL+Key_N, ID_FILE_NEW);
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")),
 			 "&Open...", this, SLOT(slotFileOpen()),
 			 CTRL+Key_O, ID_FILE_OPEN);
 
   m_fileMenu->insertSeparator();
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.png")),
 			 "&Save", this, SLOT(slotFileSave()),
 			 CTRL+Key_S, ID_FILE_SAVE);
 
@@ -234,44 +234,44 @@ void App::initMenuBar()
 
   m_fileMenu->insertSeparator();
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.xpm")),
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.png")),
 			 "E&xit", this, SLOT(slotFileQuit()),
 			 CTRL+Key_Q, ID_FILE_QUIT);
 
   ///////////////////////////////////////////////////////////////////
   // Edit Menu
   m_editMenu = new QPopupMenu();
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/add.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/wizard.png")),
 			 "Add &Channel...", this, SLOT(slotEmpty()),
 			 CTRL+Key_C, ID_EDIT_ADD_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
 			 "&Remove Channel", this, SLOT(slotEmpty()),
 			 CTRL+Key_R, ID_EDIT_REMOVE_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
 			 "Edit C&hannel...", this, SLOT(slotEmpty()),
 			 CTRL+Key_H, ID_EDIT_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.png")),
 			 "Raise Channel", this, SLOT(slotEmpty()),
 			 CTRL+Key_Up, ID_EDIT_RAISE_CHANNEL);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.png")),
 			 "Lower Channel", this, SLOT(slotEmpty()),
 			 CTRL+Key_Down, ID_EDIT_LOWER_CHANNEL);
 
   m_editMenu->insertSeparator();
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/add.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")),
 			 "&Add Capability...", this, SLOT(slotEmpty()),
 			 CTRL+Key_A, ID_EDIT_ADD_CAPABILITY);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")),
 			 "R&emove Capability", this, SLOT(slotEmpty()),
 			 CTRL+Key_E, ID_EDIT_REMOVE_CAPABILITY);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
 			 "Ed&it Capability...", this, SLOT(slotEmpty()),
 			 CTRL+Key_I, ID_EDIT_CAPABILITY);
 
@@ -290,16 +290,15 @@ void App::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // Help menu
   m_helpMenu = new QPopupMenu();
-  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.png")),
 			 "Index...", this, SLOT(slotHelpIndex()),
 			 SHIFT + Key_F1, ID_HELP_INDEX);
   m_helpMenu->insertSeparator();
-  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.xpm")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.png")),
 			 "About...", this, SLOT(slotHelpAbout()),
 			 0, ID_HELP_ABOUT);
 
-  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/qt.xpm")),
-			 "About Qt...", this, SLOT(slotHelpAboutQt()),
+  m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()),
 			 0, ID_HELP_ABOUT_QT);
 
   ///////////////////////////////////////////////////////////////////
@@ -486,10 +485,10 @@ void App::slotRefreshWindowMenu()
   QPtrList <QWidget> wl = workspace()->windowList();
 
   m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/cascadewindow.xpm")),
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/view_sidetree.png")),
 			   "Cascade", this, SLOT(slotWindowCascade()),
 			   0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/tilewindow.xpm")),
+  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/view_left_right.png")),
 			   "Tile", this, SLOT(slotWindowTile()),
 			   0, ID_WINDOW_TILE);
   m_windowMenu->insertSeparator();

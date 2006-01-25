@@ -94,20 +94,20 @@ void SceneEditor::initMenu()
 
   if (m_menu) delete m_menu;
   m_menu = new QPopupMenu();
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/key.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/apply.png")),
 		     "Activate Selected", this, SLOT(slotActivate()),
 		     0, KMenuActivate);
   m_menu->insertSeparator();
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/filenew.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/wizard.png")),
 		     "Create New...", this, SLOT(slotNew()),
 		     0, KMenuNew);
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.png")),
 		     "Overwrite", this, SLOT(slotStore()),
 		     0, KMenuStore);
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/remove.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/editdelete.png")),
 		     "Remove Selected...", this, SLOT(slotRemove()),
 		     0, KMenuRemove);
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/rename.xpm")),
+  m_menu->insertItem(QPixmap(PIXMAPS + QString("/editclear.png")),
 		     "Rename Selected...", this, SLOT(slotRename()),
 		     0, KMenuRename);
 

@@ -67,11 +67,11 @@ VCXYPadProperties::~VCXYPadProperties()
 
 void VCXYPadProperties::init()
 {
-	m_addX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
-	m_addY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
+	m_addX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
+	m_addY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
 
-	m_removeX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
-	m_removeY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
+	m_removeX->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
+	m_removeY->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
 
 	fillChannelList(m_listX, m_parent->channelsX());
 	fillChannelList(m_listY, m_parent->channelsY());

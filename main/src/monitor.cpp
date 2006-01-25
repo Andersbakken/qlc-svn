@@ -240,14 +240,14 @@ void Monitor::mousePressEvent(QMouseEvent* e)
       speedMenu->insertItem("64Hz", ID_64HZ);
       speedMenu->setItemChecked(s_updateFrequency, true);
 
-      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.xpm")),
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.png")),
 		       "Channel &Display", displayMenu);
-      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/clock.xpm")),
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/clock.png")),
 		       "&Update Speed", speedMenu);
       menu->insertSeparator();
-      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/move.xpm")),
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/window_nofullscreen.png")),
 		       "&Resize to Default", ID_RESIZE_SQUARE);
-      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")),
+      menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fonts.png")),
 		       "Choose &Font", ID_CHOOSE_FONT);
 
       connect(menu, SIGNAL(activated(int)),

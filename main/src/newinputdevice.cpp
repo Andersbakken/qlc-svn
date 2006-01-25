@@ -44,7 +44,6 @@ NewInputDevice::~NewInputDevice()
 void NewInputDevice::initView(void)
 {
   setCaption("Add New Input Device");
-  //setIcon(QPixmap(_app->settings()->pixmapPath() + QString("addinputdevice.xpm")));
   setFixedSize(460, 200);
 
   m_list = new QListView(this);

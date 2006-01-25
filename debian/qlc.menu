@@ -4,7 +4,7 @@
         hints="QT,QLC"\
         title="QLC"\
 	longtitle="Q Light Controller"\
-        icon="/usr/share/pixmaps/qlc/Q.xpm"\
+        icon="/usr/share/pixmaps/qlc/Q.png"\
         command="/usr/bin/qlc"
 
 ?package(qlc):\
@@ -13,5 +13,5 @@
         hints="QT,QLC"\
 	title="QLC-DCE"\
         longtitle="QLC Device Class Editor"\
-        icon="/usr/share/pixmaps/qlc/deviceclasseditor.xpm"\
+        icon="/usr/share/pixmaps/qlc/fixtureeditor.png"\
         command="/usr/bin/dce"

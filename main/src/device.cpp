@@ -438,7 +438,7 @@ void Device::viewMonitor()
                               universeAddress() + channels - 1);
       m_monitor->init();
       m_monitor->setCaption(m_name + " Monitor");
-      m_monitor->setIcon(PIXMAPS + QString("monitor.xpm"));
+      m_monitor->setIcon(PIXMAPS + QString("monitor.png"));
 
       connect(m_monitor, SIGNAL(closed()), this, SLOT(slotMonitorClosed()));
       m_monitor->show();

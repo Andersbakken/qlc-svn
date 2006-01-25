@@ -155,6 +155,9 @@ void FunctionManager::init()
 		setCaption("Select Function(s)");
 	}
 
+	// Icon
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/chaser.png")));
+
 	// Window size
 	resize(640, 480);
 
@@ -260,13 +263,13 @@ void FunctionManager::initMenu()
 	//
 	m_editMenu = new QPopupMenu();
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/editcut.xpm")),
+				QString("/editcut.png")),
 				"Cut",
 				this, SLOT(slotCut()),
 				CTRL+Key_X, KMenuCut);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/editcopy.xpm")),
+				QString("/editcopy.png")),
 				"Copy",
 				this, SLOT(slotCopy()),
 				CTRL+Key_C, KMenuCopy);
@@ -278,13 +281,13 @@ void FunctionManager::initMenu()
 				CTRL+Key_V, KMenuPaste);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/remove.xpm")),
+				QString("/editdelete.png")),
 				"Delete",
 				this, SLOT(slotDelete()),
 				Key_Delete, KMenuDelete);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/down.xpm")),
+				QString("/selectall.png")),
 				"Select All",
 				this, SLOT(slotSelectAll()),
 				CTRL+Key_A, KMenuSelectAll);
@@ -292,7 +295,7 @@ void FunctionManager::initMenu()
 	m_editMenu->insertSeparator();
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/edit.xpm")),
+				QString("/edit.png")),
 				"Edit...",
 				this, SLOT(slotEdit()),
 				CTRL+Key_E, KMenuEdit);
@@ -307,11 +310,30 @@ void FunctionManager::initMenu()
 	// Add menu
 	//
 	m_addMenu = new QPopupMenu();
-	m_addMenu->insertItem("Scene...", Function::Scene);
-	m_addMenu->insertItem("Chaser...", Function::Chaser);
-	m_addMenu->insertItem("Collection...", Function::Collection);
-	m_addMenu->insertItem("Sequence...", Function::Sequence);
-	m_addMenu->insertItem("EFX...", Function::EFX);
+	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				QString("/scene.png")),
+				"Scene...",
+				Function::Scene);
+
+	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				QString("/chaser.png")),
+				"Chaser...",
+				Function::Chaser);
+
+	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				QString("/collection.png")),
+				"Collection...",
+				Function::Collection);
+
+	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				QString("/sequence.png")),
+				"Sequence...",
+				Function::Sequence);
+
+	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				QString("/efx.png")),
+				"EFX...",
+				Function::EFX);
 
 	menubar->insertItem("Add", m_addMenu);
 	menubar->insertItem("Edit", m_editMenu);
@@ -403,7 +425,7 @@ void FunctionManager::initToolbar()
 	m_cutButton = new QToolButton(
 					QIconSet(QPixmap(
 						QString(PIXMAPS) +
-						QString("/editcut.xpm"))),
+						QString("/editcut.png"))),
 					"Cut",
 					0,
 					this,
@@ -415,7 +437,7 @@ void FunctionManager::initToolbar()
 	m_copyButton = new QToolButton(
 					QIconSet(QPixmap(
 						QString(PIXMAPS) +
-						QString("/editcopy.xpm"))),
+						QString("/editcopy.png"))),
 					"Copy",
 					0,
 					this,
@@ -439,7 +461,7 @@ void FunctionManager::initToolbar()
 	m_deleteButton = new QToolButton(
 					QIconSet(QPixmap(
 						QString(PIXMAPS) +
-						QString("/remove.xpm"))),
+						QString("/editdelete.png"))),
 					"Delete",
 					0,
 					this,
@@ -454,7 +476,7 @@ void FunctionManager::initToolbar()
 	m_editButton = new QToolButton(
 					QIconSet(QPixmap(
 						QString(PIXMAPS) +
-						QString("/edit.xpm"))),
+						QString("/edit.png"))),
 					"Edit",
 					0,
 					this,
@@ -577,7 +599,7 @@ void FunctionManager::updateFixtureTree()
 	item->setText(KColumnName, QString("Global"));
 	item->setText(KColumnID, devid);
 	item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
-				     QString("/global.xpm")));
+				     QString("/global.png")));
 	// item->setOpen(m_alwaysOpen->isChecked());
 
 	//
@@ -596,7 +618,7 @@ void FunctionManager::updateFixtureTree()
 		item->setText(KColumnName, device->name());
 		item->setText(KColumnID, devid);
 		item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
-					     QString("/device.xpm")));
+					     QString("/fixture.png")));
 	}
 
 	m_selectedFunctions.clear();

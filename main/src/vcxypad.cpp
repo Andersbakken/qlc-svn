@@ -77,7 +77,7 @@ void VCXYPad::init()
 
 	setBackgroundColor(white);
 
-	m_pixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.xpm"));
+	m_pixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.png"));
 
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);

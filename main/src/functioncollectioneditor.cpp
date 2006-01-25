@@ -61,8 +61,8 @@ FunctionCollectionEditor::~FunctionCollectionEditor()
 
 void FunctionCollectionEditor::init()
 {
-  m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/add.xpm")));
-  m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")));
+  m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
+  m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
 
   m_nameEdit->setText(m_fc->name());
   updateFunctionList();

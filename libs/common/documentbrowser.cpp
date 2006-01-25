@@ -53,12 +53,12 @@ void DocumentBrowser::init()
   //
   m_toolbar = new QToolBar("Document Browser", m_appMainWindow, m_dockArea);
 
-  m_prevTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/left.xpm")),
+  m_prevTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/back.png")),
 			     "Previous", 0, this, SLOT(slotPrev()), m_toolbar);
   m_prevTB->setUsesTextLabel(true);
   m_prevTB->setEnabled(false);
 
-  m_nextTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/right.xpm")),
+  m_nextTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/forward.png")),
 			     "Next", 0, this, SLOT(slotNext()), m_toolbar);
   m_nextTB->setUsesTextLabel(true);
   m_nextTB->setEnabled(false);

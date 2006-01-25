@@ -190,7 +190,7 @@ void VirtualConsole::initDrawArea()
 
 void VirtualConsole::initMenuBar()
 {
-  setIcon(QString(PIXMAPS) + QString("/virtualconsole.xpm"));
+  setIcon(QString(PIXMAPS) + QString("/virtualconsole.png"));
 
   m_layout = new QHBoxLayout(this);
   m_layout->setAutoAdd(false);
@@ -202,19 +202,19 @@ void VirtualConsole::initMenuBar()
   // Add menu
   //
   m_addMenu = new QPopupMenu();
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.xpm")),
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.png")),
 			"&Button", this, SLOT(slotAddButton()),
 			0, KVCMenuAddButton);
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")),
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.png")),
 			"&Slider", this, SLOT(slotAddSlider()),
 			0, KVCMenuAddSlider);
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")),
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.png")),
 			"&Frame", this, SLOT(slotAddFrame()),
 			0, KVCMenuAddFrame);
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/xypad.xpm")),
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/xypad.png")),
                         "&XY-Pad", this, SLOT(slotAddXYPad()),
                         0, KVCMenuAddXYPad);
-  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/label.xpm")),
+  m_addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/label.png")),
 			"L&abel", this, SLOT(slotAddLabel()),
 			0, KVCMenuAddLabel);
 
@@ -222,14 +222,14 @@ void VirtualConsole::initMenuBar()
   // Tools menu
   //
   m_toolsMenu = new QPopupMenu();
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
 			  "&Settings...", this, SLOT(slotToolsSettings()),
 			  0, KVCMenuToolsSettings);
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.xpm")),
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.png")),
 			  "&Default Sliders", this, SLOT(slotToolsSliders()),
 			  0, KVCMenuToolsSliders);
   m_toolsMenu->insertSeparator();
-  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/panic.xpm")),
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/panic.png")),
 			  "&Panic!", this, SLOT(slotToolsPanic()),
 			  0, KVCMenuToolsPanic);
 
@@ -238,13 +238,13 @@ void VirtualConsole::initMenuBar()
   // Foreground menu
   //
   QPopupMenu* fgMenu = new QPopupMenu();
-  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.xpm")),
+  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.png")),
 		     "&Color...", this, SLOT(slotForegroundColor()),
 		     0, KVCMenuForegroundColor);
-  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")),
+  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fonts.png")),
 		     "&Font...", this, SLOT(slotForegroundFont()),
 		     0, KVCMenuForegroundFont);
-  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")),
+  fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
 		     "&Default", this, SLOT(slotForegroundNone()),
 		     0, KVCMenuForegroundNone);
 
@@ -252,17 +252,17 @@ void VirtualConsole::initMenuBar()
   // Background Menu
   //
   QPopupMenu* bgMenu = new QPopupMenu();
-  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.xpm")),
+  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.png")),
 		     "&Color...", this, SLOT(slotBackgroundColor()),
 		     0, KVCMenuBackgroundColor);
-  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.xpm")),
+  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.png")),
 		     "&Image...", this, SLOT(slotBackgroundImage()),
 		     0, KVCMenuBackgroundPixmap);
-  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileclose.xpm")),
+  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
 		     "&Default", this, SLOT(slotBackgroundNone()),
 		     0, KVCMenuBackgroundNone);
   bgMenu->insertSeparator();
-  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.xpm")),
+  bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.png")),
 		     "Toggle &Frame", this, SLOT(slotBackgroundFrame()),
 		     0, KVCMenuBackgroundFrame);
 
@@ -270,10 +270,10 @@ void VirtualConsole::initMenuBar()
   // Stacking order menu
   //
   QPopupMenu* stackMenu = new QPopupMenu();
-  stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.xpm")),
+  stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.png")),
 			"Bring to &Front", this, SLOT(slotStackingRaise()),
 			0, KVCMenuStackingRaise);
-  stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.xpm")),
+  stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.png")),
 			"Send to &Back", this, SLOT(slotStackingLower()),
 			0, KVCMenuStackingLower);
 
@@ -281,28 +281,28 @@ void VirtualConsole::initMenuBar()
   // Edit menu
   //
   m_editMenu = new QPopupMenu();
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcut.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcut.png")),
 			 "Cut", this, SLOT(slotEditCut()),
 			 0, KVCMenuEditCut);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
 			 "Copy", this, SLOT(slotEditCopy()),
 			 0, KVCMenuEditCopy);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.png")),
 			 "Paste", this, SLOT(slotEditPaste()),
 			 0, KVCMenuEditPaste);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/remove.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
 			 "Delete", this, SLOT(slotEditDelete()),
 			 0, KVCMenuEditDelete);
 
   m_editMenu->insertSeparator();
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/settings.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
 			 "&Properties...", this, SLOT(slotEditProperties()),
 			 0, KVCMenuEditProperties);
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/rename.xpm")),
+  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editclear.png")),
 			 "&Rename...", this, SLOT(slotEditRename()),
 			 0, KVCMenuEditRename);
 
