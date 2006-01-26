@@ -393,6 +393,7 @@ void Scene::disarm()
 void Scene::init()
 {
   m_removeAfterEmpty = false;
+  m_stopped = false;
 
   for (t_channel i = 0; i < m_channels; i++)
     {
