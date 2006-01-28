@@ -1,2 +1,1 @@
-SUBDIRS = common dmx4linuxout midiout usbdmxout soundtolight
-
+SUBDIRS = common dmx4linuxout midiout soundtolight usbdmxout
