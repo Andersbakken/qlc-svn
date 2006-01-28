@@ -59,6 +59,7 @@ class Settings : public QObject
 
  signals:
   void outputPluginChanged(const QString&);
+  void inputPluginChanged(const QString&);
 
  protected:
   QPtrList <ConfigItem> m_items;

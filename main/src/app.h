@@ -25,6 +25,7 @@
 #include <qmainwindow.h>
 #include <qstring.h>
 #include <qptrlist.h>
+#include "common/inputplugin.h"
 #include "common/outputplugin.h"
 
 class QWorkspace;
@@ -44,10 +45,12 @@ class QTimer;
 class DeviceManagerView;
 class Settings;
 class Doc;
+class InputPlugin;
 class OutputPlugin;
 class FunctionConsumer;
 class VirtualConsole;
 class Plugin;
+class DummyInPlugin;
 class DummyOutPlugin;
 class DeviceClass;
 class FunctionManager;
@@ -80,6 +83,7 @@ class App : public QMainWindow
   //
   // Plugin Stuff
   //
+  InputPlugin* inputPlugin() { return m_inputPlugin; }
   OutputPlugin* outputPlugin() { return m_outputPlugin; }
   QPtrList <Plugin> *pluginList() { return &m_pluginList; }
   Plugin* searchPlugin(QString name);
@@ -129,6 +133,7 @@ class App : public QMainWindow
   float submasterValue(t_channel);
 
  private slots:
+  void slotChangeInputPlugin(const QString& name);
   void slotChangeOutputPlugin(const QString& name);
   void slotPluginActivated(Plugin* plugin);
 
@@ -228,7 +233,9 @@ class App : public QMainWindow
   QLabel* m_blackOutIndicator;
   QTimer* m_blackOutIndicatorTimer;
 
+  InputPlugin* m_inputPlugin;
   OutputPlugin* m_outputPlugin;
+  DummyInPlugin* m_dummyInPlugin;
   DummyOutPlugin* m_dummyOutPlugin;
   QPtrList <Plugin> m_pluginList;
 

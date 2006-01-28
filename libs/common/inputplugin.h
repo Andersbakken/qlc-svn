@@ -1,9 +1,9 @@
 /*
   Q Light Controller
-  settingsui.h
-  
-  Copyright (C) Heikki Junnila
-  
+  outputplugin.h
+
+  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -13,40 +13,33 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#ifndef INPUTPLUGIN_H
+#define INPUTPLUGIN_H
 
-#include "uic_settings.h"
+#include "plugin.h"
+#include "../../main/src/types.h"
 
-class SettingsUI : public UI_Settings
+class InputPlugin : public Plugin
 {
   Q_OBJECT
 
  public:
-  SettingsUI(QWidget* parent);
-  ~SettingsUI();
+  InputPlugin(int id);
+  virtual ~InputPlugin();
 
-  void init();
+//  virtual int writeChannel(t_channel channel, t_value) = 0;
+//  virtual int writeRange(t_channel address, t_value* values,
+//                	 t_channel num) = 0;
 
- private slots:
-  void slotBackgroundBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotConfigureOutputPluginClicked();
-  void slotConfigureInputPluginClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
-
- private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-  void fillInputPluginCombo();
-  void fillAdvancedSettingsList();
+//  virtual int readChannel(t_channel channel, t_value &value) = 0;
+//  virtual int readRange(t_channel address, t_value* values,
+//                        t_channel num) = 0;
 };
 
 #endif

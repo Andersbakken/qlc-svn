@@ -59,8 +59,10 @@
 #include "busproperties.h"
 #include "aboutbox.h"
 #include "dummyoutplugin.h"
+#include "dummyinplugin.h"
 
 #include "common/settings.h"
+#include "common/inputplugin.h"
 #include "common/outputplugin.h"
 #include "common/plugin.h"
 #include "common/filehandler.h"
@@ -151,7 +153,9 @@ App::App() : QMainWindow(),
 	m_doc              ( NULL ),
 	m_workspace        ( NULL ),
 	m_functionConsumer ( NULL ),
+	m_inputPlugin      ( NULL ),
 	m_outputPlugin     ( NULL ),
+	m_dummyInPlugin    ( NULL ),
 	m_dummyOutPlugin   ( NULL ),
 	m_settings         ( NULL ),
 	m_mode             ( Design ),
@@ -234,7 +238,8 @@ App::~App()
 	{
 		plugin = m_pluginList.take(0);
 
-		if (plugin->name() != DummyOutPlugin::PluginName)
+		if (plugin->name() != DummyOutPlugin::PluginName
+			&& plugin->name() != DummyInPlugin::PluginName)
 		{
 			handle = plugin->handle();
 			delete plugin;
@@ -244,10 +249,14 @@ App::~App()
 		}
 	}
 
-	// Delete dummy output "plugin"
+	// Delete dummy input/output "plugin"
 	if (m_dummyOutPlugin)
 		delete m_dummyOutPlugin;
 	m_dummyOutPlugin = NULL;
+
+	if (m_dummyInPlugin)
+		delete m_dummyInPlugin;
+	m_dummyInPlugin = NULL;
 
 	// Delete settings
 	if (m_settings)
@@ -1441,6 +1450,11 @@ void App::initPlugins()
 	connect(m_dummyOutPlugin, SIGNAL(activated(Plugin*)),
 		this, SLOT(slotPluginActivated(Plugin*)));
 	addPlugin(m_dummyOutPlugin);
+	
+	m_dummyInPlugin = new DummyInPlugin(NextPluginID++);
+	connect(m_dummyInPlugin, SIGNAL(activated(Plugin*)),
+		this, SLOT(slotPluginActivated(Plugin*)));
+	addPlugin(m_dummyInPlugin);
 
 	QDir d(PLUGINS);
 	d.setFilter(QDir::Files);
@@ -1485,12 +1499,27 @@ void App::initPlugins()
 			m_outputPlugin = m_dummyOutPlugin;
 		}
 	}
+	if (settings()->get(KEY_INPUT_PLUGIN, config) != -1
+    		&& config != "")
+    	{
+      	  	Plugin* plugin = searchPlugin(config, Plugin::InputType);
+      	  	if (plugin != NULL)
+		{
+	  		m_inputPlugin = static_cast<InputPlugin*> (plugin);
+		}
+      	  	else
+        	{
+	  		m_inputPlugin = m_dummyInPlugin;
+		}
+    	}
 	else
 	{
 		m_outputPlugin = m_dummyOutPlugin;
+		m_inputPlugin = m_dummyInPlugin;
 	}
 
 	slotPluginActivated(m_outputPlugin);
+	slotPluginActivated(m_inputPlugin);
 }
 
 
@@ -1636,6 +1665,12 @@ void App::slotPluginActivated(Plugin* plugin)
       settings()->set("OutputPlugin", plugin->name());
       settings()->save();
     }
+  if (plugin && plugin->type() == Plugin::InputType)
+    {
+      slotChangeInputPlugin(plugin->name());
+      settings()->set("InputPlugin", plugin->name());
+      settings()->save();
+    }
 }
 
 
@@ -1660,6 +1695,22 @@ void App::slotChangeOutputPlugin(const QString& name)
   m_outputPlugin->open();
 }
 
+void App::slotChangeInputPlugin(const QString& name)
+{
+  if (m_inputPlugin != NULL)
+    {
+      m_inputPlugin->close();
+    }
+
+  m_inputPlugin = (InputPlugin*) searchPlugin(name, Plugin::InputType);
+  if (m_inputPlugin == NULL)
+    {
+      // If an input plugin cannot be found, use the dummy plugin
+      m_inputPlugin = m_dummyInPlugin;
+    }
+
+  m_inputPlugin->open();
+}
 
 //
 // Create joystick plugin contents... now what the heck is this

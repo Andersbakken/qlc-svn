@@ -34,6 +34,7 @@
 
 // General settings
 const QString KEY_OUTPUT_PLUGIN        (       "OutputPlugin" );
+const QString KEY_INPUT_PLUGIN         (        "InputPlugin" );
 const QString KEY_WIDGET_STYLE         (        "WidgetStyle" );
 const QString KEY_OPEN_LAST_WORKSPACE  (  "OpenLastWorkspace" );
 const QString KEY_LAST_WORKSPACE_NAME  (  "LastWorkspaceName" );

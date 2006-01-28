@@ -1,13 +1,13 @@
 /*
   Q Light Controller
-  settingsui.h
+  configuremidiout.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-
+  
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,34 +19,31 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#ifndef CONFIGURESOUNDTOLIGHT_H
+#define CONFIGURESOUNDTOLIGHT_H
 
-#include "uic_settings.h"
+#include "uic_configuresoundtolight.h"
 
-class SettingsUI : public UI_Settings
+class SoundToLight;
+
+class ConfigureSoundToLight : public UI_ConfigureSoundToLight
 {
   Q_OBJECT
 
  public:
-  SettingsUI(QWidget* parent);
-  ~SettingsUI();
+  ConfigureSoundToLight(SoundToLight* plugin);
+  virtual ~ConfigureSoundToLight();
 
-  void init();
+  void setDevice(QString deviceName);
+  QString device();
+
+  void updateStatus();
 
  private slots:
-  void slotBackgroundBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotConfigureOutputPluginClicked();
-  void slotConfigureInputPluginClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
+  void slotActivateClicked();
 
  private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-  void fillInputPluginCombo();
-  void fillAdvancedSettingsList();
+  SoundToLight* m_plugin;
 };
 
 #endif

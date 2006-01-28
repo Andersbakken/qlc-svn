@@ -1,13 +1,13 @@
 /*
   Q Light Controller
-  settingsui.h
+  dummyoutplugin.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-
+  
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,34 +19,46 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SETTINGSUI_H
-#define SETTINGSUI_H
+#ifndef DUMMYINPLUGIN_H
+#define DUMMYINPLUGIN_H
 
-#include "uic_settings.h"
+#include <qthread.h>
+#include "common/inputplugin.h"
+#include "types.h"
 
-class SettingsUI : public UI_Settings
+class DummyInPlugin : public InputPlugin
 {
   Q_OBJECT
 
+    friend class ConfigureDummyInPlugin;
+
  public:
-  SettingsUI(QWidget* parent);
-  ~SettingsUI();
+  DummyInPlugin(int id);
+  virtual ~DummyInPlugin();
 
-  void init();
+  int open();
+  int close();
+  bool isOpen();
+  int configure();
+  QString infoText();
+  void contextMenu(QPoint pos);
 
- private slots:
-  void slotBackgroundBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotConfigureOutputPluginClicked();
-  void slotConfigureInputPluginClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
+  int setConfigDirectory(QString dir);
+  int saveSettings();
+  int loadSettings();
 
+  void activate();
+
+ public:
+  static const QString PluginName;
+
+ protected slots:
+  void slotContextMenuCallback(int);
+  
  private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-  void fillInputPluginCombo();
-  void fillAdvancedSettingsList();
+  bool m_open;
+
+  QMutex m_mutex;
 };
 
 #endif
