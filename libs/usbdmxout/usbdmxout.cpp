@@ -321,9 +321,10 @@ int UsbDmxOut::writeChannel(t_channel channel, t_value value)
 /* read in for testing purpose
    ioctl(m_device, DMX_BLOCKING_SET, 0);
    ioctl(m_device, DMX_MEM_MAP_SET, DMX_RX_MEM);
-   lseek(m_device, 0, SEEK_SET);
+   lseek(m_device, 0, SEEK_SET);   */
+
   /* read data */
-  read(m_device, buf, sizeof(buf));
+/*  read(m_device, buf, sizeof(buf));
   QString txt;
   
   txt.sprintf("Channel %d   value %d",channel, buf[channel]);
