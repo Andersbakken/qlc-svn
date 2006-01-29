@@ -2,14 +2,14 @@ Source: qlc
 Section: Electronics
 Priority: optional
 Maintainer: Heikki Junnila <hjunnila@users.sf.net>
-Build-Depends: debhelper (>= 4.0.0)
+Build-Depends: debhelper (>= 4.0.0), libqt3-mt-dev (>= 3.3.0)
 Standards-Version: 3.6.0
 
 Package: qlc
 Section: Electronics
 Architecture: i386
-Depends: ${shlibs:Depends}
-Suggests: dmx4linux
+Depends: libqt3-mt (>= 3.3.0)
+Suggests: dmx4linux (>= 2.4.0)
 Description: Software DMX lighting desk
   Software DMX lighting desk
 
