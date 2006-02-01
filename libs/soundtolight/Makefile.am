@@ -9,7 +9,7 @@ INCLUDES = @QT_CFLAGS@ \
 noinst_HEADERS = \
 	uic_configuresoundtolight.h \
 	\
-	configuresoundtolight.h
+	configuresoundtolight.h \
 	soundtolight.h
 
 libsoundtolight_la_SOURCES = \
