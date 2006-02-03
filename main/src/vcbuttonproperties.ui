@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>481</width>
-            <height>372</height>
+            <width>373</width>
+            <height>438</height>
         </rect>
     </property>
     <property name="caption">
@@ -237,6 +237,75 @@
                     </property>
                 </widget>
             </hbox>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>m_keyboardHotkeyGroup_2</cstring>
+            </property>
+            <property name="title">
+                <string>External Input/Output settings</string>
+            </property>
+            <grid>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLineEdit" row="0" column="1">
+                    <property name="name">
+                        <cstring>m_keyEdit_2</cstring>
+                    </property>
+                    <property name="focusPolicy">
+                        <enum>NoFocus</enum>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The output device ID. This can be set in the plugin configuration dialog.</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit" row="1" column="1">
+                    <property name="name">
+                        <cstring>m_keyEdit_2_2</cstring>
+                    </property>
+                    <property name="focusPolicy">
+                        <enum>NoFocus</enum>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The controller channel or command number. Eg. for a midi controller change.</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>m_keyLabel_2</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>80</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>ID</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>m_keyLabel_2_2</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>80</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Channel</string>
+                    </property>
+                </widget>
+            </grid>
         </widget>
         <widget class="QButtonGroup">
             <property name="name">
