@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>443</width>
-            <height>560</height>
+            <height>629</height>
         </rect>
     </property>
     <property name="caption">
@@ -35,11 +35,11 @@
             <property name="selectedId" stdset="0">
                 <number>-1</number>
             </property>
-            <grid>
+            <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QRadioButton" row="0" column="0">
+                <widget class="QRadioButton">
                     <property name="name">
                         <cstring>m_speedRadio</cstring>
                     </property>
@@ -56,7 +56,7 @@
                         <string>Use this slider to set fade or hold time for functions</string>
                     </property>
                 </widget>
-                <widget class="QGroupBox" row="1" column="0">
+                <widget class="QGroupBox">
                     <property name="name">
                         <cstring>m_busGroup</cstring>
                     </property>
@@ -197,7 +197,24 @@
                         </widget>
                     </vbox>
                 </widget>
-                <widget class="QRadioButton" row="3" column="0">
+                <widget class="QRadioButton">
+                    <property name="name">
+                        <cstring>m_levelRadio</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Level...</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+L</string>
+                    </property>
+                    <property name="buttonGroupId">
+                        <number>1</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Use this slider to set the value for individual channels</string>
+                    </property>
+                </widget>
+                <widget class="QRadioButton">
                     <property name="name">
                         <cstring>m_submasterRadio</cstring>
                     </property>
@@ -211,7 +228,7 @@
                         <string>Use this slider to set the maximum value limit for selected channels</string>
                     </property>
                 </widget>
-                <widget class="QGroupBox" row="4" column="0">
+                <widget class="QGroupBox">
                     <property name="name">
                         <cstring>m_channelGroup</cstring>
                     </property>
@@ -446,24 +463,7 @@
                         </widget>
                     </hbox>
                 </widget>
-                <widget class="QRadioButton" row="2" column="0">
-                    <property name="name">
-                        <cstring>m_levelRadio</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Level...</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+L</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>1</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Use this slider to set the value for individual channels</string>
-                    </property>
-                </widget>
-                <widget class="QGroupBox" row="5" column="0">
+                <widget class="QGroupBox">
                     <property name="name">
                         <cstring>m_keybourdHotkeyGroup</cstring>
                     </property>
@@ -542,7 +542,75 @@
                         </widget>
                     </grid>
                 </widget>
-            </grid>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>m_IDLabel</cstring>
+                    </property>
+                    <property name="title">
+                        <string>External Input/Output settings</string>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>m_keyLabel_2</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>80</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>ID</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="0" column="1">
+                            <item>
+                                <property name="text">
+                                    <string>Midi 1 - ControlChange</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>m_IDCombo</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The device and type of control.</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>m_channelLabel</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>80</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>Channel</string>
+                            </property>
+                        </widget>
+                        <widget class="QSpinBox" row="1" column="1">
+                            <property name="name">
+                                <cstring>spinBox1</cstring>
+                            </property>
+                            <property name="maxValue">
+                                <number>127</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The control change number.</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+            </vbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>373</width>
-            <height>438</height>
+            <width>310</width>
+            <height>428</height>
         </rect>
     </property>
     <property name="caption">
@@ -240,7 +240,7 @@
         </widget>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>m_keyboardHotkeyGroup_2</cstring>
+                <cstring>m_IDLabel</cstring>
             </property>
             <property name="title">
                 <string>External Input/Output settings</string>
@@ -249,34 +249,6 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLineEdit" row="0" column="1">
-                    <property name="name">
-                        <cstring>m_keyEdit_2</cstring>
-                    </property>
-                    <property name="focusPolicy">
-                        <enum>NoFocus</enum>
-                    </property>
-                    <property name="readOnly">
-                        <bool>true</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>The output device ID. This can be set in the plugin configuration dialog.</string>
-                    </property>
-                </widget>
-                <widget class="QLineEdit" row="1" column="1">
-                    <property name="name">
-                        <cstring>m_keyEdit_2_2</cstring>
-                    </property>
-                    <property name="focusPolicy">
-                        <enum>NoFocus</enum>
-                    </property>
-                    <property name="readOnly">
-                        <bool>true</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>The controller channel or command number. Eg. for a midi controller change.</string>
-                    </property>
-                </widget>
                 <widget class="QLabel" row="0" column="0">
                     <property name="name">
                         <cstring>m_keyLabel_2</cstring>
@@ -291,9 +263,25 @@
                         <string>ID</string>
                     </property>
                 </widget>
+                <widget class="QComboBox" row="0" column="1">
+                    <item>
+                        <property name="text">
+                            <string>Midi 1 - ControlChange</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>m_IDCombo</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The device and type of control.</string>
+                    </property>
+                </widget>
                 <widget class="QLabel" row="1" column="0">
                     <property name="name">
-                        <cstring>m_keyLabel_2_2</cstring>
+                        <cstring>m_channelLabel</cstring>
                     </property>
                     <property name="minimumSize">
                         <size>
@@ -303,6 +291,17 @@
                     </property>
                     <property name="text">
                         <string>Channel</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>spinBox1</cstring>
+                    </property>
+                    <property name="maxValue">
+                        <number>127</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The control change number.</string>
                     </property>
                 </widget>
             </grid>
