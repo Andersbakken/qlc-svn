@@ -22,8 +22,32 @@
 #ifndef INPUTPLUGIN_H
 #define INPUTPLUGIN_H
 
+#include <qevent.h>
+
 #include "plugin.h"
 #include "../../main/src/types.h"
+
+const int KInputEvent        ( QEvent::User + 10 );
+
+
+
+class InputEvent : public QCustomEvent
+{ 
+  public:
+       InputEvent(int id, int channel, int value) 
+          : QCustomEvent( KInputEvent )
+         { m_id = id; m_channel=channel; m_value=value; }
+
+        //virtual ~InputEvent();
+        int m_id;
+        int m_channel;
+        int m_value;
+        int id(){return m_id;}
+        int channel(){return m_channel;}
+        int value(){return m_value;}
+};
+
+
 
 class InputPlugin : public Plugin
 {

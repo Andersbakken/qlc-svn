@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  dmx4linuxout.cpp
+  midi-inout.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) 2000, 2001, 2002-2006 Heikki Junnila, Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -35,14 +35,22 @@
 #include <qpoint.h>
 #include <qpopupmenu.h>
 #include <qfile.h>
+#include <qapplication.h>
 #include <assert.h>
 #include <errno.h>
 #include <linux/errno.h>
 
-#define CONF_FILE "usbdmxout.conf"
+#define CONF_FILE "midi-inout.conf"
 
 #define ID_CONFIGURE      10
 #define ID_ACTIVATE       20
+
+
+//@heikki: that lead to a nested loop with app.h including inputplugin.h
+//#include "../../main/src/app.h"
+
+//extern  App* _app;
+
 
 static QMutex _mutex;
 
@@ -59,6 +67,93 @@ extern "C" void destroy(InputPlugin* object)
   delete object;
 }
 
+
+//
+// the input thread class
+//
+
+void MidiInThread::run()
+{
+  unsigned int channel, command, value;
+  struct timeval  timeout;
+    timeout.tv_sec = 2;
+    timeout.tv_usec = 0;
+
+  qDebug("Thread started: Midi Input");
+
+  fd_set fs;
+  FD_ZERO(&fs);
+  FD_SET(m_device, &fs);
+
+  QString txt;
+  unsigned char buf[3]={176,48,70};
+  
+  do{
+    //all the initializing stuff MUST be inside of the loop!!!!!!
+    //else you will spend another half a day looking for wired errors!
+   // SK         ;-)
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+    fd_set fs;
+    FD_ZERO(&fs);  
+    FD_SET(m_device, &fs);
+
+    int i=select(m_device+1, &fs, NULL,NULL,NULL);
+    if(i)
+ {
+      buf[0]=0;
+      buf[1]=0;
+      buf[2]=0;
+    
+      read(m_device, buf, 3);//sizeof(buf));
+      //txt.sprintf(" %d %d %d",buf[0],buf[1],buf[2]);
+      //qDebug(txt);
+      InputEvent ie(0,buf[1],buf[2]);
+
+
+      // extract midi command and channel from first byte
+      if((176 & buf[0])==176)
+      {
+          channel = buf[0] ^ 176;
+          value = buf[2];
+          txt.sprintf("ControlChange event on Midi channel %u, controller = %u, value = %u", channel, buf[1],value);
+          qDebug(txt);
+      }else
+      if((192 & buf[0])==192)
+      {
+          channel = buf[1];
+          value = 1;
+          txt.sprintf("ProgramChange event on channel %u, value = %u", channel, value);
+          qDebug(txt);
+      }else
+      {
+      txt.sprintf("Not supported midi sequence: %d %d %d",buf[0],buf[1],buf[2]);
+      qDebug(txt);
+      }
+
+//Heikki: can you help on that?
+      //postEvent(parent, ie);
+//QApplication::sendEvent( QApplication::mainWidget(), ie);
+    }else
+    {
+       qDebug("Timeout on Midi device");
+    }
+  }while(1);
+  
+}
+
+void MidiInThread::stop()
+{
+    mutex.lock();
+    stopped = TRUE;
+    mutex.unlock();
+}
+
+void MidiInThread::setDevice(int device)
+{
+   m_device  = device;
+}
+
 //
 // Class implementation
 //
@@ -70,11 +165,12 @@ MidiInOut::MidiInOut(t_plugin_id id) : InputPlugin(id)
   m_version = 0x00010000;
   m_deviceName = QString("/dev/midi1");    
   m_configDir = QString("~/.qlc/");
-
-  for (t_channel i = 0; i < KChannelMax; i++)
-    {
-      m_values[i] = 0;
-    }
+  m_inThread = new MidiInThread();
+  qDebug(" Midi Input/Output created");
+//
+// @Heikki: is this a good place to have open() and activate() ?
+  open();
+  activate();
 }
 
 MidiInOut::~MidiInOut()
@@ -86,7 +182,7 @@ int MidiInOut::open()
 {
   if (m_device != -1)
     {
-      qDebug("DMX4Linux already open");
+      qDebug("Midi Input/Output already open");
       return false;
     }
 
@@ -94,7 +190,7 @@ int MidiInOut::open()
   if (m_device == -1)
     {
       perror("open");
-      qDebug("USB-DMX output is not available");
+      qDebug(" Midi Input/Output is not available");
     }
 
   return errno;
@@ -294,7 +390,15 @@ void MidiInOut::slotContextMenuCallback(int item)
 
 void MidiInOut::activate()
 {
-  emit activated(this);
+  open();
+  if(!isOpen())
+    qDebug("Device is not open but shall be activated");
+  else
+  {
+    m_inThread->setDevice(m_device);
+    m_inThread->start();
+    emit activated(this);
+  }
 }
 
 //

@@ -1506,6 +1506,7 @@ void App::initPlugins()
       	  	if (plugin != NULL)
 		{
 	  		m_inputPlugin = static_cast<InputPlugin*> (plugin);
+                 //       m_inputPlugin->setParentApp(virtualConsole());
 		}
       	  	else
         	{
@@ -1708,7 +1709,7 @@ void App::slotChangeInputPlugin(const QString& name)
       // If an input plugin cannot be found, use the dummy plugin
       m_inputPlugin = m_dummyInPlugin;
     }
-
+  //m_inputPlugin->setParentApp(this);
   m_inputPlugin->open();
 }
 

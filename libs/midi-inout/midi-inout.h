@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  dmx4linuxout.h
+  midid-inout.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) 2006 Heikki Junnila, Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@
 
 #include <qptrlist.h>
 #include <qstring.h>
-
+#include <qthread.h>
 
 
 
@@ -39,6 +39,26 @@ class QPoint;
 
 extern "C" InputPlugin* create(t_plugin_id id);
 extern "C" void destroy(InputPlugin* object);
+
+
+class MidiInThread : public QThread
+{
+public:
+    MidiInThread()
+    { ; }
+
+    void run();
+    void stop();
+    void setDevice(int device);
+    void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
+
+private:
+    QMutex mutex;
+    bool stopped;
+    int m_device;
+    QWidget* m_eventReceiver;
+};
+
 
 class MidiInOut : public InputPlugin
 {
@@ -72,6 +92,7 @@ class MidiInOut : public InputPlugin
   // Own methods
   QString deviceName() { return m_deviceName; }
   void setDeviceName(QString name) { m_deviceName = name; }
+  void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
 
  private slots:
   void slotContextMenuCallback(int item);
@@ -85,6 +106,8 @@ class MidiInOut : public InputPlugin
   QString m_configDir;
   int m_device;
   t_value m_values[KChannelMax];
+  MidiInThread* m_inThread;
+  QWidget* m_eventReceiver;
 };
 
 #endif

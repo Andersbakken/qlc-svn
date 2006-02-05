@@ -64,6 +64,8 @@ class Plugin : public QObject
   PluginType type() { return m_type; }
   void setHandle(void* handle) { m_handle = handle; }
   void* handle() { return m_handle; }
+  void setParentApp(QObject Parent){ m_parentApp = &Parent;}
+  QObject* m_parentApp;
 
  signals:
   void activated(Plugin*);
@@ -74,6 +76,7 @@ class Plugin : public QObject
   unsigned long m_version;
   t_plugin_id m_id;
   void* m_handle;
+
 };
 
 #endif

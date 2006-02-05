@@ -21,6 +21,22 @@
 
 #include "inputplugin.h"
 
+
+/*InputEvent::InputEvent(int id, int channel, int value) 
+         :  QEvent()
+{
+     m_id = id;
+     m_channel = channel;
+     m_value = value; 
+}
+
+InputEvent::~InputEvent();
+{
+}*/
+
+
+
+
 InputPlugin::InputPlugin(int id) : Plugin(id)
 {
   m_type = Plugin::InputType;
