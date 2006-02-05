@@ -64,6 +64,22 @@ void ConfigureMidiInOut::slotActivateClicked()
   updateStatus();
 }
 
+
+void ConfigureMidiInOut::slotDeactivateClicked()
+{
+  if (m_plugin->deviceName() != m_deviceEdit->text())
+    {
+      m_plugin->setDeviceName(m_deviceEdit->text());
+    }
+
+  m_plugin->close();
+
+  ::usleep(10);  // Allow the activation signal get passed to doc
+
+  updateStatus();
+}
+
+
 void ConfigureMidiInOut::updateStatus()
 {
   if (m_plugin->isOpen())

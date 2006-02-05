@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>323</width>
-            <height>244</height>
+            <height>281</height>
         </rect>
     </property>
     <property name="caption">
@@ -54,7 +54,10 @@
                 </widget>
                 <widget class="QSpinBox" row="1" column="1">
                     <property name="name">
-                        <cstring>spinBox7</cstring>
+                        <cstring>m_channelSpinBox</cstring>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Define the Midid channel we are listening to. "0" will listen on all channels.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
@@ -87,7 +90,7 @@
                         </property>
                     </item>
                     <property name="name">
-                        <cstring>comboBox4</cstring>
+                        <cstring>m_controlCombo</cstring>
                     </property>
                 </widget>
                 <widget class="QLabel" row="2" column="0">
@@ -100,10 +103,44 @@
                 </widget>
                 <widget class="QCheckBox" row="3" column="0" rowspan="1" colspan="2">
                     <property name="name">
-                        <cstring>checkBox1</cstring>
+                        <cstring>m_feedbackCheckBox</cstring>
                     </property>
                     <property name="text">
                         <string>Activate Parameter Feedback To Control Unit</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>If checked, actions in the Virtual Console will be send back to the control device. Useful if you have motor faders or something like that.</string>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="4" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Debug</string>
+                    </property>
+                </widget>
+                <widget class="QComboBox" row="4" column="1">
+                    <item>
+                        <property name="text">
+                            <string>Off</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>Midid Messages</string>
+                        </property>
+                    </item>
+                    <item>
+                        <property name="text">
+                            <string>Full Input</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>m_debugLevelCombo</cstring>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Gives some debugging information and tells what is going on at the midid device.</string>
                     </property>
                 </widget>
             </grid>
@@ -150,6 +187,20 @@
                     </property>
                     <property name="accel">
                         <string>Alt+A</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Activate the interface. Pressing this button also saves settings.</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_deactivate</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Deactivate</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+D</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Activate the interface. Pressing this button also saves settings.</string>
@@ -230,6 +281,12 @@
         <receiver>UI_ConfigureMidiInOut</receiver>
         <slot>slotActivateClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_deactivate</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_ConfigureMidiInOut</receiver>
+        <slot>slotDeactivateClicked()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_cancel</tabstop>
@@ -239,6 +296,7 @@
 </tabstops>
 <slots>
     <slot>slotActivateClicked()</slot>
+    <slot>slotDeactivateClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

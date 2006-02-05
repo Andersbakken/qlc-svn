@@ -38,6 +38,7 @@ class ConfigureUsbDmxOut : public UI_ConfigureUsbDmxOut
   QString device();
 
   void updateStatus();
+  int firstDeviceID();
 
  private slots:
   void slotActivateClicked();

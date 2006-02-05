@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>272</width>
-            <height>193</height>
+            <width>255</width>
+            <height>192</height>
         </rect>
     </property>
     <property name="caption">
@@ -32,11 +32,11 @@
             <property name="title">
                 <string>Device</string>
             </property>
-            <vbox>
+            <grid>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLineEdit">
+                <widget class="QLineEdit" row="0" column="1">
                     <property name="name">
                         <cstring>m_deviceEdit</cstring>
                     </property>
@@ -44,7 +44,37 @@
                         <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
                     </property>
                 </widget>
-            </vbox>
+                <widget class="QLabel" row="0" column="0">
+                    <property name="name">
+                        <cstring>textLabel1</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Name</string>
+                    </property>
+                </widget>
+                <widget class="QSpinBox" row="1" column="1">
+                    <property name="name">
+                        <cstring>m_firstNumberSpinBox</cstring>
+                    </property>
+                    <property name="maxValue">
+                        <number>8</number>
+                    </property>
+                    <property name="minValue">
+                        <number>0</number>
+                    </property>
+                    <property name="value">
+                        <number>0</number>
+                    </property>
+                </widget>
+                <widget class="QLabel" row="1" column="0">
+                    <property name="name">
+                        <cstring>textLabel1_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Instance Number</string>
+                    </property>
+                </widget>
+            </grid>
         </widget>
         <widget class="QGroupBox">
             <property name="name">
@@ -175,9 +205,6 @@
     <tabstop>m_activate</tabstop>
     <tabstop>m_ok</tabstop>
 </tabstops>
-<includes>
-    <include location="local" impldecl="in implementation">configureusbdmxout.ui.h</include>
-</includes>
 <slots>
     <slot>slotActivateClicked()</slot>
 </slots>

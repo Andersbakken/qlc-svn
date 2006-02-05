@@ -26,6 +26,7 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qspinbox.h>
 
 #include <unistd.h>
 
@@ -36,7 +37,7 @@ ConfigureUsbDmxOut::ConfigureUsbDmxOut(UsbDmxOut* plugin)
   m_plugin = plugin;
 
   m_deviceEdit->setText(m_plugin->deviceName());
-
+  m_firstNumberSpinBox->setValue(m_plugin->firstDeviceID());
   updateStatus();
 }
 
@@ -48,6 +49,11 @@ ConfigureUsbDmxOut::~ConfigureUsbDmxOut()
 QString ConfigureUsbDmxOut::device()
 {
   return m_deviceEdit->text();
+}
+
+int ConfigureUsbDmxOut::firstDeviceID()
+{
+  return m_firstNumberSpinBox->value();
 }
 
 void ConfigureUsbDmxOut::slotActivateClicked()

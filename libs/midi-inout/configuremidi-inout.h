@@ -41,6 +41,7 @@ class ConfigureMidiInOut : public UI_ConfigureMidiInOut
 
  private slots:
   void slotActivateClicked();
+  void slotDeactivateClicked();
 
  private:
   MidiInOut* m_plugin;

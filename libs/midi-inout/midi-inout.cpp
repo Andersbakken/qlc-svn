@@ -199,6 +199,7 @@ int MidiInOut::open()
 int MidiInOut::close()
 {
   int r = 0;
+  m_inThread->start();
   r = ::close(m_device);
   if (r == -1)
     {

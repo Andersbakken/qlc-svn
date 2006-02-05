@@ -28,6 +28,8 @@
 #include <qptrlist.h>
 #include <qstring.h>
 
+#define MAXINTERFACES 
+
 
 /*
  * include file for the USBDMX driver module and client software
@@ -151,6 +153,7 @@ class UsbDmxOut : public OutputPlugin
 
   // Own methods
   QString deviceName() { return m_deviceName; }
+  int firstDeviceID(){ return m_firstDeviceID; }
   void setDeviceName(QString name) { m_deviceName = name; }
 
  private slots:
@@ -164,6 +167,7 @@ class UsbDmxOut : public OutputPlugin
   QString m_deviceName;
   QString m_configDir;
   int m_device;
+  int m_firstDeviceID;
   t_value m_values[KChannelMax];
 };
 

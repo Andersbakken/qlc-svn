@@ -68,7 +68,8 @@ UsbDmxOut::UsbDmxOut(t_plugin_id id) : OutputPlugin(id)
   m_name = QString("USB DMX Rodin Output");
   m_type = OutputType;
   m_version = 0x00010000;
-  m_deviceName = QString("/dev/dmx");    
+  m_deviceName = QString("/dev/usbdmx");    
+  m_firstDeviceID = 0;
   m_configDir = QString("~/.qlc/");
 
   for (t_channel i = 0; i < KChannelMax; i++)
@@ -89,8 +90,11 @@ int UsbDmxOut::open()
       qDebug("DMX4Linux already open");
       return false;
     }
-
-  m_device = ::open((const char*) m_deviceName, O_RDWR | O_NONBLOCK);
+ QString txt;
+ txt.sprintf("%d",m_firstDeviceID);
+txt = m_deviceName +txt;
+  qDebug("First USB2DMX Device:  "+ txt);
+  m_device = ::open((const char*) txt, O_RDWR | O_NONBLOCK);
   if (m_device == -1)
     {
       perror("open");
@@ -135,6 +139,7 @@ int UsbDmxOut::configure()
   if (conf->exec() == QDialog::Accepted)
     {
       m_deviceName = conf->device();
+      m_firstDeviceID = conf->firstDeviceID();
       saveSettings();
     }
 
@@ -211,6 +216,11 @@ int UsbDmxOut::saveSettings()
       s = QString("Device = ") + m_deviceName + QString("\n");
       file.writeBlock((const char*) s, s.length());
 
+      t.sprintf("%d",m_firstDeviceID);
+      s = QString("DeviceFirstID = ") + t + QString("\n");
+      file.writeBlock((const char*) s, s.length());
+
+
       file.close();
     }
   else
@@ -258,6 +268,10 @@ void UsbDmxOut::createContents(QPtrList <QString> &list)
       else if (*s == QString("Device"))
 	{
 	  m_deviceName = *(list.next());
+	}
+       else if (*s == QString("DeviceFirstID"))
+	{
+	  m_firstDeviceID = list.next()->toInt();
 	}
     }
 }
@@ -324,13 +338,13 @@ int UsbDmxOut::writeChannel(t_channel channel, t_value value)
    lseek(m_device, 0, SEEK_SET);   */
 
   /* read data */
-/*  read(m_device, buf, sizeof(buf));
-  QString txt;
+/*  read(m_device, buf, sizeof(buf));*/
+ /* QString txt;
   
-  txt.sprintf("Channel %d   value %d",channel, buf[channel]);
-  qDebug(txt);
+  txt.sprintf("Channel %d   value %d",channel,value);
+  qDebug(txt);*/
 
- */
+
 	 
   _mutex.unlock();
 
