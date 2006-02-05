@@ -316,7 +316,7 @@ int SoundToLight::configure()
       m_deviceName = conf->device();
       saveSettings();
     }
-
+  delete conf;
   return 0;
 }
 
