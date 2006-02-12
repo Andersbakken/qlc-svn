@@ -1410,11 +1410,15 @@ void App::slotToggleBlackOut()
       connect(m_blackOutIndicatorTimer, SIGNAL(timeout()),
 	      this, SLOT(slotFlashBlackOutIndicator()));
       m_blackOutIndicatorTimer->start(KBlackOutIndicatorFlashInterval);
+ 
+      t_value tmpValues[KChannelMax] = {0.0};
+      m_outputPlugin->writeRange(0, tmpValues, KChannelMax);
 
-      for (t_channel ch = 0; ch < KChannelMax; ch++)
-	{
-	  m_outputPlugin->writeChannel(ch, 0);
-	}
+	// old stuff that was too slow for the USB2DMX code
+	//      for (t_channel ch = 0; ch < KChannelMax; ch++)
+	//	{
+	//	  m_outputPlugin->writeChannel(ch, 0);
+	//	}
 
       //
       // Set the channel writer function to blackout writer
