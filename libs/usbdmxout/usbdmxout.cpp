@@ -64,12 +64,14 @@ extern "C" void destroy(OutputPlugin* object)
 //
 UsbDmxOut::UsbDmxOut(t_plugin_id id) : OutputPlugin(id)
 {
-  m_device = -1;
-  m_name = QString("USB DMX Rodin Output");
+  for(int n=0; n< MAXINTERFACES; n++)
+      m_device[n] = -1;
+  m_name = QString("USB DMX Peperoni Output");
   m_type = OutputType;
   m_version = 0x00010000;
   m_deviceName = QString("/dev/usbdmx");    
   m_firstDeviceID = 0;
+  m_numOfDevices = 0;
   m_configDir = QString("~/.qlc/");
 
   for (t_channel i = 0; i < KChannelMax; i++)
@@ -85,44 +87,73 @@ UsbDmxOut::~UsbDmxOut()
 /* Attempt to open dmx device */
 int UsbDmxOut::open()
 {
-  if (m_device != -1)
-    {
-      qDebug("DMX4Linux already open");
-      return false;
-    }
- QString txt;
- txt.sprintf("%d",m_firstDeviceID);
-txt = m_deviceName +txt;
-  qDebug("First USB2DMX Device:  "+ txt);
-  m_device = ::open((const char*) txt, O_RDWR | O_NONBLOCK);
-  if (m_device == -1)
-    {
-      perror("open");
-      qDebug("USB-DMX output is not available");
-    }
+  QString txt;
+  int n =0;
 
-  return errno;
+  m_lastDeviceID = m_firstDeviceID - 1;
+  
+  for(n=0; n< MAXINTERFACES; n++){
+
+    //check if device is already open:
+    if (m_device[n] != -1)
+      {
+         txt.sprintf("Peperoni USB2DMX already open%d",m_firstDeviceID+n);
+         qDebug("Peperoni USB2DMX already open");
+         return false;
+      }
+
+   txt.sprintf("%d",m_firstDeviceID+n);
+   txt = m_deviceName +txt;
+   qDebug("Try to open USB2DMX Device:  "+ txt);
+   m_device[n] = ::open((const char*) txt, O_RDWR | O_NONBLOCK);
+   if (m_device[n] == -1)
+     {
+        //perror("open");
+        //qDebug("USB-DMX output is not available");
+     }
+     else
+     {
+         m_lastDeviceID++;
+     }
+  }
+
+  if(m_lastDeviceID < m_firstDeviceID)
+    {
+       qDebug("Error: no valid USB2DMX devices could be opened! USB-DMX output is not available!");
+    }
+    else 
+    {
+       for(n = m_firstDeviceID; n <= m_lastDeviceID; n++)
+         {
+	    txt.sprintf("USB2DMX Interface %d available for output!",n); 
+            qDebug(txt);
+         }
+        m_numOfDevices = m_lastDeviceID - m_firstDeviceID +1;
+    }
+    return errno;
 }
 
 int UsbDmxOut::close()
 {
+ int n;
+ for(n=0; n< MAXINTERFACES; n++){
   int r = 0;
-  r = ::close(m_device);
+  r = ::close(m_device[n]);
   if (r == -1)
     {
       perror("close");
     }
   else
     {
-      m_device = -1;
+      m_device[n] = -1;
     }
-
-  return r;
+}
+  return 0;//r;
 }
 
 bool UsbDmxOut::isOpen()
 {
-  if (m_device == -1)
+  if (m_device[0] == -1)
     {
       return false;
     }
@@ -318,20 +349,31 @@ int UsbDmxOut::writeChannel(t_channel channel, t_value value)
 {
   int r = 0;
   unsigned char buf[512];
-
+  QString txt;
   _mutex.lock();
 
   m_values[channel] = value;
 
-  ioctl(m_device, DMX_MEM_MAP_SET, DMX_TX_MEM);
-  lseek(m_device, channel, SEEK_SET);
-  r = write(m_device, &value, 1);
-  if (r == -1)
+  //which interface should we write to?
+  int ifaceNo = int(channel / 512);
+  int channelNo = channel % 512;
+
+  if(ifaceNo >= m_numOfDevices)
     {
-      perror("write channel");
+         //qDebug(txt.sprintf("Error: Universe #%d  is not active on USB2DMX!",ifaceNo + 1));
     }
+  else
+    {
+	//qDebug(txt.sprintf("Write to IFACE %d  on channel %d",ifaceNo, channelNo));
+	ioctl(m_device[ifaceNo], DMX_MEM_MAP_SET, DMX_TX_MEM);
+	lseek(m_device[ifaceNo], channelNo, SEEK_SET);
+	r = write(m_device[ifaceNo], &value, 1);
+	if (r == -1)
+	  {
+	      perror("write channel");
+ 	   }
 
-
+    }
 /* read in for testing purpose
    ioctl(m_device, DMX_BLOCKING_SET, 0);
    ioctl(m_device, DMX_MEM_MAP_SET, DMX_RX_MEM);
@@ -356,26 +398,62 @@ int UsbDmxOut::writeChannel(t_channel channel, t_value value)
 //
 int UsbDmxOut::writeRange(t_channel address, t_value* values, t_channel num)
 {
-/*
+
   assert(values);
   int r = 0;
+  QString txt;
 
   _mutex.lock();
 
+  // which one is the first universe to write to?
+  int device = int(address / 512) + m_firstDeviceID;
+  //what is the first channel on that device?
+  // eg. address is 512, it would be channel 0 on device 1
+  int firstChannel = address % 512;
+  // how many unverses?
+
+
+
   memcpy(m_values + address, values, num * sizeof(t_value));
 
-  lseek(m_device, address, SEEK_SET);
-  r = write(m_device, values, num);
-  if (r == -1)
-    {
-      perror("write");
-    }
+   //write the first chunk
+   int numToWrite = 512 - firstChannel;
 
+   while(num > 0)
+     {
+
+         qDebug(txt.sprintf("writeRange:Universe #%d   FirstChannel #%d   Num #%d ", device, firstChannel, num));
+
+         if(device > (m_lastDeviceID - m_firstDeviceID -1))
+           {
+              qDebug("Error: UsbDmxOut::writeRange() tried to write to a non-existing device!");
+              _mutex.unlock();
+              return -1;
+           }
+         else
+           {
+              lseek(m_device[device], firstChannel, SEEK_SET);
+              r = write(m_device[device], values, numToWrite);
+              if (r == -1)
+                {
+                    perror("write");
+                }
+              firstChannel = 0;
+              device ++;
+             num -= numToWrite;
+             values += numToWrite;
+             if(num >= 512)
+                  numToWrite = 512;
+             else
+                  numToWrite = num;
+	   }
+      }
+
+  
   _mutex.unlock();
   return r;
 
-*/
-  return 0;
+
 }
 
 //

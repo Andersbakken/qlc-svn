@@ -28,7 +28,7 @@
 #include <qptrlist.h>
 #include <qstring.h>
 
-#define MAXINTERFACES 
+#define MAXINTERFACES 8
 
 
 /*
@@ -154,6 +154,7 @@ class UsbDmxOut : public OutputPlugin
   // Own methods
   QString deviceName() { return m_deviceName; }
   int firstDeviceID(){ return m_firstDeviceID; }
+  int lastDeviceID(){ return m_lastDeviceID; }
   void setDeviceName(QString name) { m_deviceName = name; }
 
  private slots:
@@ -166,8 +167,10 @@ class UsbDmxOut : public OutputPlugin
  private:
   QString m_deviceName;
   QString m_configDir;
-  int m_device;
+  int m_device[MAXINTERFACES];
   int m_firstDeviceID;
+  int m_lastDeviceID;
+  int m_numOfDevices;
   t_value m_values[KChannelMax];
 };
 
