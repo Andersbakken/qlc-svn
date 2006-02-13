@@ -89,12 +89,14 @@ class VCDockSlider : public UI_VCDockSlider
  public slots:
   void pressUp();
   void pressDown();
+  void slotInputEvent(const int);
 
  private slots:
-  void slotSliderValueChanged(int);
+  void slotSliderValueChanged(const int);
   void slotTapInButtonClicked();
   void slotModeChanged();
-
+ // void slotInputEvent(int id, int channel, int value);
+  
   void slotBusNameChanged(t_bus_id, const QString&);
   void slotBusValueChanged(t_bus_id, t_bus_value);
 

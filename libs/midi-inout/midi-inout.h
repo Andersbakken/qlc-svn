@@ -33,9 +33,10 @@
 
 
 
-
+class MidiInOut;
 class ConfigureMidiInOut;
 class QPoint;
+
 
 extern "C" InputPlugin* create(t_plugin_id id);
 extern "C" void destroy(InputPlugin* object);
@@ -44,19 +45,21 @@ extern "C" void destroy(InputPlugin* object);
 class MidiInThread : public QThread
 {
 public:
-    MidiInThread()
-    { ; }
+    MidiInThread(MidiInOut* parent)
+    { m_parent = parent; }
 
     void run();
     void stop();
     void setDevice(int device);
     void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
+    //void setParent(MidiInOut parent){ m_parent = parent*);
 
 private:
     QMutex mutex;
     bool stopped;
     int m_device;
     QWidget* m_eventReceiver;
+    MidiInOut* m_parent;
 };
 
 
@@ -65,6 +68,7 @@ class MidiInOut : public InputPlugin
   Q_OBJECT
 
   friend class ConfigureMidiInOut;
+  friend class MidiInThread;
 
  public:
   MidiInOut(t_plugin_id id);
@@ -93,6 +97,9 @@ class MidiInOut : public InputPlugin
   QString deviceName() { return m_deviceName; }
   void setDeviceName(QString name) { m_deviceName = name; }
   void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
+
+ signals:
+   void InputEvent(const int);
 
  private slots:
   void slotContextMenuCallback(int item);

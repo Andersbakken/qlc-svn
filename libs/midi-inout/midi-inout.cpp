@@ -108,7 +108,7 @@ void MidiInThread::run()
       read(m_device, buf, 3);//sizeof(buf));
       //txt.sprintf(" %d %d %d",buf[0],buf[1],buf[2]);
       //qDebug(txt);
-      InputEvent ie(0,buf[1],buf[2]);
+      //InputEvent ie(0,buf[1],buf[2]);
 
 
       // extract midi command and channel from first byte
@@ -131,6 +131,8 @@ void MidiInThread::run()
       qDebug(txt);
       }
 
+
+      emit m_parent->InputEvent(value);
 //Heikki: can you help on that?
       //postEvent(parent, ie);
 //QApplication::sendEvent( QApplication::mainWidget(), ie);
@@ -165,7 +167,7 @@ MidiInOut::MidiInOut(t_plugin_id id) : InputPlugin(id)
   m_version = 0x00010000;
   m_deviceName = QString("/dev/midi1");    
   m_configDir = QString("~/.qlc/");
-  m_inThread = new MidiInThread();
+  m_inThread = new MidiInThread(this);
   qDebug(" Midi Input/Output created");
 //
 // @Heikki: is this a good place to have open() and activate() ?
@@ -199,7 +201,7 @@ int MidiInOut::open()
 int MidiInOut::close()
 {
   int r = 0;
-  m_inThread->start();
+  m_inThread->stop();
   r = ::close(m_device);
   if (r == -1)
     {
@@ -391,6 +393,8 @@ void MidiInOut::slotContextMenuCallback(int item)
 
 void MidiInOut::activate()
 {
+
+  emit InputEvent(444);
   open();
   if(!isOpen())
     qDebug("Device is not open but shall be activated");

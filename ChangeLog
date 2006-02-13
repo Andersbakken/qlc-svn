@@ -1,3 +1,9 @@
+2006-Feb-12  Stefan Krumm <stefankrumm@users.sf.net>
+	* usb2dmx driver for the Peperoni-Light interfaces should be
+	  complete. Still missing is a capability for reading from the device.
+	* Changed the black-out function in app.cpp to send a writeRange()
+	  because sending "0" to individual channels was too slow.
+
 2006-Jan-28  Christin Sühs  <dance-or-die@users.sf.net>
 	* Added support for Input Plugins
 	* Output Plugin for Peperoni Lighting DMX Dongle with Kernel 2.6

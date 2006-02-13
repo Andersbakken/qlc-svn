@@ -54,6 +54,7 @@
 #include "configkeys.h"
 
 #include "common/outputplugin.h"
+#include "common/inputplugin.h"
 #include "common/minmax.h"
 
 extern App* _app;
@@ -113,6 +114,8 @@ void VCDockSlider::init()
   m_slider->setValue(0);
 
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+
+  connect(_app->inputPlugin(), SIGNAL(InputEvent(const int)), this, SLOT(slotInputEvent(const int)));
 
   assert(m_sliderKeyBind == NULL);
   m_sliderKeyBind = new SliderKeyBind();
@@ -703,7 +706,7 @@ void VCDockSlider::pressDown()
 //
 // Slider has been moved
 //
-void VCDockSlider::slotSliderValueChanged(int value)
+void VCDockSlider::slotSliderValueChanged(const int value)
 {
   if (m_mode == Speed)
     {
@@ -1106,3 +1109,16 @@ void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
       mousePressEvent(e);
     }
 }
+
+
+void VCDockSlider::slotInputEvent(const int value)
+{
+   QString t;
+    t.sprintf("Slider: InputEvent %d", value);
+   qDebug(t);
+slotSliderValueChanged(value);
+slotBusValueChanged(m_busID, value);
+}
+
+
+

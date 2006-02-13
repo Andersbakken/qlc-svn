@@ -30,7 +30,7 @@
 const int KInputEvent        ( QEvent::User + 10 );
 
 
-
+/*
 class InputEvent : public QCustomEvent
 { 
   public:
@@ -46,7 +46,7 @@ class InputEvent : public QCustomEvent
         int channel(){return m_channel;}
         int value(){return m_value;}
 };
-
+*/
 
 
 class InputPlugin : public Plugin
@@ -56,6 +56,9 @@ class InputPlugin : public Plugin
  public:
   InputPlugin(int id);
   virtual ~InputPlugin();
+
+ signals:
+   void InputEvent(const int id, const int channel, const int value);
 
 //  virtual int writeChannel(t_channel channel, t_value) = 0;
 //  virtual int writeRange(t_channel address, t_value* values,
