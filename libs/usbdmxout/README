@@ -1,0 +1,48 @@
+Feb. 14. 2006
+
+This file describes the output plugin that can be used to handle the
+Peperoni Light USB interfaces directly in QLC. There is no need to have the dmx4linux 
+package installed.
+This is ment as a solution to run QLC on kernels 2.6 and above as long as no
+dmx4linux drivers are available for the 2.6 kernels.
+However, dmx4linus IS the primary driver architecture that should be used
+with QLC.
+
+
+Getting things working:
+
+1) Download the Peperoni driver from:
+http://qlc.sourceforge.net/packages/PeperoniDriver.tar.gz
+
+2) Do the usual tar -xzf Peperoni*
+
+3) Change into the driver directory
+
+4) Make sure you have the headers of your 
+   currently running kernel installed.
+
+5) In the driver directory type: 
+   make k26
+
+6) If all went well, load the driver with
+   insmod usbdmx.ko
+
+7) A "tail -f /var/log/messages" in a separate console
+   is a good idea to see what is going on.
+
+8) the /dev/usbdmx0 device node will be created on the fly.
+   It will have permissions set to allow only root accessing 
+   the /dev/usbdmx 
+   If you are working as normal user, you have to add an entry to
+   /etc/udev/permissions.rules
+   like
+   KERNEL=="usbdmx[0-16]*", MODE="0666"
+
+9) In the new QLC version go to File->Settings and select usb2dmx Rodin from the 
+output plugin setting and activate it.
+
+
+The plugin is still somewhat experimental, please tell me about any problems. 
+
+Stefan Krumm
+krumm@geol.uni-erlangen.de
