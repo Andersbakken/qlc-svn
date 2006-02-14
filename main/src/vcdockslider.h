@@ -89,7 +89,9 @@ class VCDockSlider : public UI_VCDockSlider
  public slots:
   void pressUp();
   void pressDown();
-  void slotInputEvent(const int);
+
+  void slotInputEvent(const int,const int,const int);
+
 
  private slots:
   void slotSliderValueChanged(const int);

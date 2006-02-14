@@ -115,7 +115,10 @@ void VCDockSlider::init()
 
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
-  connect(_app->inputPlugin(), SIGNAL(InputEvent(const int)), this, SLOT(slotInputEvent(const int)));
+
+  connect(_app->inputPlugin(), SIGNAL(InputEvent(const int, const int, const int)), 
+                       this, SLOT(slotInputEvent(const int, const int, const int)));
+
 
   assert(m_sliderKeyBind == NULL);
   m_sliderKeyBind = new SliderKeyBind();
@@ -1111,14 +1114,16 @@ void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
 }
 
 
-void VCDockSlider::slotInputEvent(const int value)
+
+void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
 {
    QString t;
-    t.sprintf("Slider: InputEvent %d", value);
+    t.sprintf("Slider: InputEvent  %d  %d  %d", id, channel, value);
    qDebug(t);
 slotSliderValueChanged(value);
 slotBusValueChanged(m_busID, value);
 }
+
 
 
 

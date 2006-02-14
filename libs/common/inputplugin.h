@@ -58,7 +58,7 @@ class InputPlugin : public Plugin
   virtual ~InputPlugin();
 
  signals:
-   void InputEvent(const int id, const int channel, const int value);
+   void InputEvent(const int, const int, const int);
 
 //  virtual int writeChannel(t_channel channel, t_value) = 0;
 //  virtual int writeRange(t_channel address, t_value* values,

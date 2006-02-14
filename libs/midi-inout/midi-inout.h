@@ -98,8 +98,10 @@ class MidiInOut : public InputPlugin
   void setDeviceName(QString name) { m_deviceName = name; }
   void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
 
+/*
  signals:
-   void InputEvent(const int);
+   void InputEvent(const int, const int, const int);
+*/
 
  private slots:
   void slotContextMenuCallback(int item);

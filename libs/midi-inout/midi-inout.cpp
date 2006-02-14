@@ -131,8 +131,8 @@ void MidiInThread::run()
       qDebug(txt);
       }
 
+      emit m_parent->InputEvent(1, 2, value);
 
-      emit m_parent->InputEvent(value);
 //Heikki: can you help on that?
       //postEvent(parent, ie);
 //QApplication::sendEvent( QApplication::mainWidget(), ie);
@@ -394,7 +394,9 @@ void MidiInOut::slotContextMenuCallback(int item)
 void MidiInOut::activate()
 {
 
-  emit InputEvent(444);
+
+  emit InputEvent(444, 555, 666);
+
   open();
   if(!isOpen())
     qDebug("Device is not open but shall be activated");
