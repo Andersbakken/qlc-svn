@@ -44,6 +44,7 @@
 #include "app.h"
 #include "doc.h"
 #include "common/settings.h"
+#include "common/inputplugin.h"
 #include "vcdockslider.h"
 #include "vcbutton.h"
 #include "vcframe.h"
@@ -1078,3 +1079,21 @@ void VirtualConsole::setSelectedWidget(QWidget* w)
     {
     }
 }
+
+
+void VirtualConsole::customEvent(QCustomEvent* e)
+{
+   // There is something the InputPlugin want's to telll
+   //
+  if (e->type() == KInputEvent)
+    {
+   //   QString t;
+      InputEvent* ie = (InputEvent*)e;
+   //   t.sprintf("Slider: InputEvent  %d  %d  %d", ie->id(), ie->channel(), ie->value());
+  //    qDebug(t);
+     emit InpEvent( ie->id(), ie->channel(), ie->value());
+    }
+
+}
+
+

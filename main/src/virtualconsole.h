@@ -187,6 +187,7 @@ class VirtualConsole : public QWidget
 
  signals:
   void closed();
+  void InpEvent(const int, const int, const int);
 
   void keyPressed(QKeyEvent*);
   void keyReleased(QKeyEvent*);
@@ -195,6 +196,7 @@ class VirtualConsole : public QWidget
   void closeEvent(QCloseEvent* e);
   void keyPressEvent(QKeyEvent* e);
   void keyReleaseEvent(QKeyEvent* e);
+  void customEvent(QCustomEvent*);
 
  private:
   void createVirtualConsole(QPtrList <QString>& list);

@@ -116,8 +116,8 @@ void VCDockSlider::init()
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
 
- // connect(_app->inputPlugin(), SIGNAL(InputEvent(const int, const int, const int)), 
- //                      this, SLOT(slotInputEvent(const int, const int, const int)));
+  connect(_app->virtualConsole(), SIGNAL(InpEvent(const int, const int, const int)), 
+                       this, SLOT(slotInputEvent(const int, const int, const int)));
 
 
   assert(m_sliderKeyBind == NULL);
@@ -1132,11 +1132,11 @@ void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
 
 void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
 {
-   QString t;
-    t.sprintf("Slider: InputEvent  %d  %d  %d", id, channel, value);
-   qDebug(t);
-slotSliderValueChanged(value);
-slotBusValueChanged(m_busID, value);
+ //  QString t;
+   // t.sprintf("Virtual Console Slider: InputEvent  %d  %d  %d", id, channel, value);
+ //qDebug(t);
+     m_slider->setValue(value);
+//slotBusValueChanged(m_busID, value);
 }
 
 

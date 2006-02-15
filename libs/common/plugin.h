@@ -65,8 +65,8 @@ class Plugin : public QObject
   PluginType type() { return m_type; }
   void setHandle(void* handle) { m_handle = handle; }
   void* handle() { return m_handle; }
-  const void setParentApp(QObject* Parent){ m_parentApp =  Parent;}
-  QObject* m_parentApp;
+  const void setEventReceiver(QObject* Parent){ m_eventReceiver =  Parent;}
+  QObject*  eventReceiver() const { return m_eventReceiver;}
 
  signals:
   void activated(Plugin*);
@@ -77,7 +77,7 @@ class Plugin : public QObject
   unsigned long m_version;
   t_plugin_id m_id;
   void* m_handle;
-
+  QObject* m_eventReceiver;
 };
 
 #endif

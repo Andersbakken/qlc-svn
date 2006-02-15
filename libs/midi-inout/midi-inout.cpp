@@ -99,8 +99,9 @@ void MidiInThread::run()
     FD_SET(m_device, &fs);
 
     int i=select(m_device+1, &fs, NULL,NULL,NULL);
+
     if(i)
- {
+    {
       buf[0]=0;
       buf[1]=0;
       buf[2]=0;
@@ -131,16 +132,16 @@ void MidiInThread::run()
       qDebug(txt);
       }
 
-     // emit m_parent->InputEvent(1, 2, value);
-
-//Heikki: can you help on that?
       InputEvent* ie = new InputEvent(buf[0], buf[1],buf[2]);
-      QApplication::postEvent(m_parent->m_parentApp, ie);
+      assert(m_parent->eventReceiver());
+      QApplication::postEvent(m_parent->eventReceiver(), ie);
 //QApplication::sendEvent( QApplication::mainWidget(), ie);
+       
     }else
     {
        qDebug("Timeout on Midi device");
     }
+
   }while(1);
   
 }
@@ -172,8 +173,10 @@ MidiInOut::MidiInOut(t_plugin_id id) : InputPlugin(id)
   qDebug(" Midi Input/Output created");
 //
 // @Heikki: is this a good place to have open() and activate() ?
- // open();
- // activate();
+
+  //open();
+  //activate();
+
 }
 
 MidiInOut::~MidiInOut()

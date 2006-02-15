@@ -295,7 +295,7 @@ void App::init(QString openFile)
 	//
 	// Plugins
 	//
-	initPlugins();
+//	initPlugins();
 
 	//
 	// Device classes
@@ -329,7 +329,10 @@ void App::init(QString openFile)
 	initDeviceManagerView();
 	initVirtualConsole();
 
-
+	//
+	// Plugins
+	//
+	initPlugins();
 	// Trying to load workspace files
 	// Either specified on command line or the last active workspace
 	if (openFile != QString::null)
@@ -1510,7 +1513,7 @@ void App::initPlugins()
       	  	if (plugin != NULL)
 		{
 	  		m_inputPlugin = static_cast<InputPlugin*> (plugin);
-                        m_inputPlugin->setParentApp(_app->virtualConsole());
+                        m_inputPlugin->setEventReceiver(_app->virtualConsole());
 		}
       	  	else
         	{

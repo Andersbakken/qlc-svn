@@ -96,7 +96,7 @@ class MidiInOut : public InputPlugin
   // Own methods
   QString deviceName() { return m_deviceName; }
   void setDeviceName(QString name) { m_deviceName = name; }
-  void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
+
 
 /*
  signals:
@@ -116,7 +116,7 @@ class MidiInOut : public InputPlugin
   int m_device;
   t_value m_values[KChannelMax];
   MidiInThread* m_inThread;
-  QWidget* m_eventReceiver;
+  
 };
 
 #endif
