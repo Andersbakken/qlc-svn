@@ -65,8 +65,8 @@ class Plugin : public QObject
   PluginType type() { return m_type; }
   void setHandle(void* handle) { m_handle = handle; }
   void* handle() { return m_handle; }
-  const void setParentApp(QMainWindow* Parent){ m_parentApp =  Parent;}
-  QMainWindow* m_parentApp;
+  const void setParentApp(QObject* Parent){ m_parentApp =  Parent;}
+  QObject* m_parentApp;
 
  signals:
   void activated(Plugin*);
