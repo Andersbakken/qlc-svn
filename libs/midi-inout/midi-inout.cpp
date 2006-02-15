@@ -116,8 +116,8 @@ void MidiInThread::run()
       {
           channel = buf[0] ^ 176;
           value = buf[2];
-          txt.sprintf("ControlChange event on Midi channel %u, controller = %u, value = %u", channel, buf[1],value);
-          qDebug(txt);
+          //txt.sprintf("ControlChange event on Midi channel %u, controller = %u, value = %u", channel, buf[1],value);
+          //qDebug(txt);
       }else
       if((192 & buf[0])==192)
       {
@@ -131,10 +131,11 @@ void MidiInThread::run()
       qDebug(txt);
       }
 
-      emit m_parent->InputEvent(1, 2, value);
+     // emit m_parent->InputEvent(1, 2, value);
 
 //Heikki: can you help on that?
-      //postEvent(parent, ie);
+      InputEvent* ie = new InputEvent(buf[0], buf[1],buf[2]);
+      QApplication::postEvent(m_parent->m_parentApp, ie);
 //QApplication::sendEvent( QApplication::mainWidget(), ie);
     }else
     {
@@ -171,8 +172,8 @@ MidiInOut::MidiInOut(t_plugin_id id) : InputPlugin(id)
   qDebug(" Midi Input/Output created");
 //
 // @Heikki: is this a good place to have open() and activate() ?
-  open();
-  activate();
+ // open();
+ // activate();
 }
 
 MidiInOut::~MidiInOut()

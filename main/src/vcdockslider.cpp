@@ -116,8 +116,8 @@ void VCDockSlider::init()
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
 
-  connect(_app->inputPlugin(), SIGNAL(InputEvent(const int, const int, const int)), 
-                       this, SLOT(slotInputEvent(const int, const int, const int)));
+ // connect(_app->inputPlugin(), SIGNAL(InputEvent(const int, const int, const int)), 
+ //                      this, SLOT(slotInputEvent(const int, const int, const int)));
 
 
   assert(m_sliderKeyBind == NULL);
@@ -1022,10 +1022,25 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
 
 void VCDockSlider::customEvent(QCustomEvent* e)
 {
+qDebug("******** Custom event!");
+
   if (e->type() == KVCMenuEvent)
     {
       parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
     }
+
+   // There is something the InputPlugin want's to telll
+   //
+  if (e->type() == KInputEvent)
+    {
+      QString t;
+      InputEvent* ie = (InputEvent*)e;
+      t.sprintf("Slider: InputEvent  %d  %d  %d", ie->id(), ie->channel(), ie->value());
+      qDebug(t);
+      m_slider->setValue(ie->value());
+    }
+
+
 }
 
 void VCDockSlider::resizeTo(QPoint p)

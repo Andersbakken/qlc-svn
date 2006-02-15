@@ -1510,7 +1510,7 @@ void App::initPlugins()
       	  	if (plugin != NULL)
 		{
 	  		m_inputPlugin = static_cast<InputPlugin*> (plugin);
-                 //       m_inputPlugin->setParentApp(virtualConsole());
+                        m_inputPlugin->setParentApp(_app);
 		}
       	  	else
         	{
