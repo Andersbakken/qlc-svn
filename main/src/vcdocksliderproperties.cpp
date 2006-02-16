@@ -101,6 +101,8 @@ void VCDockSliderProperties::init()
   m_keyUpEdit->setText(keyStringUp);
   m_keyDownEdit->setText(keyStringDown);
 
+  m_channelSpinBox->setValue(m_slider->channel());
+
   //
   // Pixmaps
   //
@@ -446,6 +448,8 @@ void VCDockSliderProperties::slotOKClicked()
   // Reset all non-assigned submaster channels back to 100%
   //
   _app->resetSubmasters();
+
+  m_slider->setChannel(m_channelSpinBox->value());
 
   accept();
 }

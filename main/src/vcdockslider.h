@@ -54,6 +54,8 @@ class VCDockSlider : public UI_VCDockSlider
 
   SliderKeyBind* sliderKeyBind() { return m_sliderKeyBind; }
   void setSliderKeyBind(const SliderKeyBind* skb);
+  void setChannel(int channel){ m_channel = channel;}
+  int channel() const { return m_channel; }
 
   //
   // Mode stuff
@@ -127,6 +129,9 @@ class VCDockSlider : public UI_VCDockSlider
 
   int m_levelLowLimit;
   int m_levelHighLimit;
+
+
+  int m_channel;
 
   bool m_static;
   bool m_updateOnly;

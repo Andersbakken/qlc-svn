@@ -599,7 +599,7 @@
                         </widget>
                         <widget class="QSpinBox" row="1" column="1">
                             <property name="name">
-                                <cstring>spinBox1</cstring>
+                                <cstring>m_channelSpinBox</cstring>
                             </property>
                             <property name="maxValue">
                                 <number>127</number>

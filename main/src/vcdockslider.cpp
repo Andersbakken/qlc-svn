@@ -109,6 +109,7 @@ void VCDockSlider::init()
 
   setCaption("No Name");
   setMode(Speed);
+  m_channel = 0;
 
   m_slider->setPageStep(1);
   m_slider->setValue(0);
@@ -1132,11 +1133,14 @@ void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
 
 void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
 {
- //  QString t;
-   // t.sprintf("Virtual Console Slider: InputEvent  %d  %d  %d", id, channel, value);
- //qDebug(t);
-     m_slider->setValue(value);
-//slotBusValueChanged(m_busID, value);
+ //QString t;
+  //t.sprintf("Virtual Console Slider: InputEvent  %d  %d  %d", id, channel, value);
+  //qDebug(t);
+    if( channel == m_channel)
+      {
+         m_slider->setValue(value);
+      }
+   //slotBusValueChanged(m_busID, value);
 }
 
 
