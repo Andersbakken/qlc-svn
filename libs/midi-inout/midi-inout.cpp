@@ -92,6 +92,7 @@ void MidiInThread::run()
     //all the initializing stuff MUST be inside of the loop!!!!!!
     //else you will spend another half a day looking for wired errors!
    // SK         ;-)
+    int id = 0;
     timeout.tv_sec = 0;
     timeout.tv_usec = 0;
     fd_set fs;
@@ -110,29 +111,35 @@ void MidiInThread::run()
       //txt.sprintf(" %d %d %d",buf[0],buf[1],buf[2]);
       //qDebug(txt);
       //InputEvent ie(0,buf[1],buf[2]);
-
+      //txt.sprintf("***Midi sequence: %d %d %d",buf[0],buf[1],buf[2]);
+      //qDebug(txt);
 
       // extract midi command and channel from first byte
+
+      // This is a ControlChange event
       if((176 & buf[0])==176)
       {
           channel = buf[0] ^ 176;
           value = buf[2];
+          id = 1;
           //txt.sprintf("ControlChange event on Midi channel %u, controller = %u, value = %u", channel, buf[1],value);
           //qDebug(txt);
       }else
+      // What about a ProgramChange?
       if((192 & buf[0])==192)
       {
-          channel = buf[1];
-          value = 1;
+          channel = buf[0] ^ 192;
+          value = buf[1];
           txt.sprintf("ProgramChange event on channel %u, value = %u", channel, value);
           qDebug(txt);
+          id = 0;
       }else
       {
-      txt.sprintf("Not supported midi sequence: %d %d %d",buf[0],buf[1],buf[2]);
-      qDebug(txt);
+      // txt.sprintf("Not supported midi sequence: %d %d %d",buf[0],buf[1],buf[2]);
+      //qDebug(txt);
       }
-
-      InputEvent* ie = new InputEvent(buf[0], buf[1],buf[2]);
+ 
+      InputEvent* ie = new InputEvent( id, buf[1],buf[2] );
       assert(m_parent->eventReceiver());
       QApplication::postEvent(m_parent->eventReceiver(), ie);
 //QApplication::sendEvent( QApplication::mainWidget(), ie);
@@ -150,6 +157,8 @@ void MidiInThread::stop()
 {
     mutex.lock();
     stopped = TRUE;
+    terminate();
+    qDebug("Thread stopped: Midi Input");
     mutex.unlock();
 }
 
@@ -164,13 +173,13 @@ void MidiInThread::setDevice(int device)
 MidiInOut::MidiInOut(t_plugin_id id) : InputPlugin(id)
 {
   m_device = -1;
-  m_name = QString("Midi Input Output");
+  m_name = QString("Midi Input-Output");
   m_type = InputType;
   m_version = 0x00010000;
   m_deviceName = QString("/dev/midi1");    
   m_configDir = QString("~/.qlc/");
   m_inThread = new MidiInThread(this);
-  qDebug(" Midi Input/Output created");
+  //qDebug("Midi Input/Output created");
 //
 // @Heikki: is this a good place to have open() and activate() ?
 
@@ -186,6 +195,8 @@ MidiInOut::~MidiInOut()
 /* Attempt to open dmx device */
 int MidiInOut::open()
 {
+
+  qDebug("Trying to open Midi In/Out!");
   if (m_device != -1)
     {
       qDebug("Midi Input/Output already open");
@@ -196,20 +207,27 @@ int MidiInOut::open()
   if (m_device == -1)
     {
       perror("open");
-      qDebug(" Midi Input/Output is not available");
+      qDebug(" Midi Input/Output is not available at: " + m_deviceName);
     }
+  else
+   {
+     qDebug("Opened Midi In/Out: " + m_deviceName);
+     m_inThread->setDevice(m_device);
+     m_inThread->start();
+   }
 
   return errno;
 }
 
 int MidiInOut::close()
 {
+  qDebug("Closing Midi In/Out!");
   int r = 0;
   m_inThread->stop();
   r = ::close(m_device);
   if (r == -1)
     {
-      perror("close");
+      perror("Closing midi ");
     }
   else
     {
@@ -398,16 +416,15 @@ void MidiInOut::slotContextMenuCallback(int item)
 void MidiInOut::activate()
 {
 
-
-  emit InputEvent(444, 555, 666);
+  qDebug("Trying to activate midi inout!");
 
   open();
   if(!isOpen())
     qDebug("Device is not open but shall be activated");
   else
   {
-    m_inThread->setDevice(m_device);
-    m_inThread->start();
+  //  m_inThread->setDevice(m_device);
+    //m_inThread->start();
     emit activated(this);
   }
 }

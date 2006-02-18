@@ -51,16 +51,18 @@ public:
     void run();
     void stop();
     void setDevice(int device);
-    void set_eventReceiver( QWidget &obj){m_eventReceiver = &obj;}
-    //void setParent(MidiInOut parent){ m_parent = parent*);
+    const void setEventReceiver(QObject* Parent){ m_eventReceiver =  Parent;}
+
 
 private:
     QMutex mutex;
     bool stopped;
     int m_device;
-    QWidget* m_eventReceiver;
+    QObject* m_eventReceiver;
     MidiInOut* m_parent;
 };
+
+
 
 
 class MidiInOut : public InputPlugin
@@ -96,7 +98,8 @@ class MidiInOut : public InputPlugin
   // Own methods
   QString deviceName() { return m_deviceName; }
   void setDeviceName(QString name) { m_deviceName = name; }
-
+  const MidiInThread* inThread() const { return m_inThread; }
+  const void setEventReceiver(QObject* Parent){ m_eventReceiver =  Parent; m_inThread->setEventReceiver(m_eventReceiver);}
 
 /*
  signals:

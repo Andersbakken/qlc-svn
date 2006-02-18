@@ -823,7 +823,8 @@ void App::newDocument()
   initDoc();
   initDeviceManagerView();
   initVirtualConsole();
-
+  m_inputPlugin->setEventReceiver(_app->virtualConsole());
+  
   //
   // Set the last workspace name
   //

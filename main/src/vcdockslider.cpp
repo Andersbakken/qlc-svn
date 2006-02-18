@@ -109,7 +109,7 @@ void VCDockSlider::init()
 
   setCaption("No Name");
   setMode(Speed);
-  m_channel = 0;
+  m_channel = -1;
 
   m_slider->setPageStep(1);
   m_slider->setValue(0);
@@ -515,6 +515,11 @@ void VCDockSlider::createContents(QPtrList <QString> &list)
 	  QString t = *(list.next());
 	  m_sliderKeyBind->setModDown(t.toInt());
 	}
+	else if (*s == QString("InputChannel"))
+        {
+	  QString t = *(list.next());
+	  m_channel = t.toInt();
+	}
       else
 	{
 	  // Unknown keyword, ignore
@@ -684,6 +689,11 @@ void VCDockSlider::saveToFile(QFile &file, t_vc_id parentID)
 
   t.setNum(m_sliderKeyBind->modDown());
   s = QString("BindModDown = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // Midi stuff
+  t.setNum(m_channel);
+  s = QString("InputChannel = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 }
 
@@ -1133,12 +1143,25 @@ void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
 
 void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
 {
- //QString t;
+ QString t;
   //t.sprintf("Virtual Console Slider: InputEvent  %d  %d  %d", id, channel, value);
   //qDebug(t);
-    if( channel == m_channel)
+    if( id ==1 && channel == m_channel)
       {
-         m_slider->setValue(value);
+         if (m_mode == Submaster)
+            {
+               m_slider->setValue(100 - value * 100 / 127);
+            }
+         if (m_mode == Speed)
+            {
+              int range = m_busHighLimit - m_busLowLimit;//m_levelHighLimit - m_levelLowLimit;
+              m_slider->setValue(m_busLowLimit* KFrequency + (range*value* KFrequency)/127 );
+            }
+         if (m_mode == Level)
+            {
+               int range = m_levelHighLimit - m_levelLowLimit;
+               m_slider->setValue(255 - (m_levelLowLimit/127  + (range*value+1)/127));
+            }
       }
    //slotBusValueChanged(m_busID, value);
 }
