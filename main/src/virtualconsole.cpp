@@ -981,6 +981,7 @@ void VirtualConsole::createContents(QPtrList <QString> &list)
       hide();
       _app->slotVirtualConsoleClosed();
     }
+   emit sendFeedBack();
 }
 
 void VirtualConsole::saveToFile(QFile& file)

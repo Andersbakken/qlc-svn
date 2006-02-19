@@ -115,7 +115,7 @@ void VCDockSlider::init()
   m_slider->setValue(0);
 
   connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
-
+  connect(_app->virtualConsole(), SIGNAL(sendFeedBack()), this, SLOT(slotFeedBack()));
 
   connect(_app->virtualConsole(), SIGNAL(InpEvent(const int, const int, const int)), 
                        this, SLOT(slotInputEvent(const int, const int, const int)));
@@ -172,6 +172,7 @@ void VCDockSlider::setMode(Mode m)
 	m_time.start();
 
 	slotBusValueChanged(m_busID, value);
+
       }
       break;
 
@@ -722,6 +723,7 @@ void VCDockSlider::pressDown()
 //
 void VCDockSlider::slotSliderValueChanged(const int value)
 {
+  QString t;
   if (m_mode == Speed)
     {
       if (!m_updateOnly)
@@ -736,7 +738,13 @@ void VCDockSlider::slotSliderValueChanged(const int value)
       QString num;
       num.sprintf("%.2fs", ((float) value / (float) KFrequency));
       m_valueLabel->setText(num);
-    }
+      int range = m_busHighLimit - m_busLowLimit;//m_levelHighLimit - m_levelLowLimit;
+              //m_slider->setValue(m_busHighLimit* KFrequency - (range*value* KFrequency)/127 );
+      float f = ((float) value / (float) KFrequency );
+      //t.sprintf("%f", f);
+      //qDebug(t);
+       _app->inputPlugin()->feedBack( 1,m_channel, 127 - int( (f * 127) / range));
+    } 
   else if (m_mode == Level)
     {
       QString num;
@@ -748,6 +756,8 @@ void VCDockSlider::slotSliderValueChanged(const int value)
 	{
 	  _app->setValue(*it, m_levelHighLimit - value + m_levelLowLimit);
 	}
+
+       _app->inputPlugin()->feedBack( 1, m_channel, 127 - (value*127)/255);
     }
   else
     {
@@ -760,6 +770,8 @@ void VCDockSlider::slotSliderValueChanged(const int value)
 	{
 	  _app->setSubmasterValue(*it, 100 - value);
 	}
+
+       _app->inputPlugin()->feedBack( 1, m_channel, 127 - (value*127) / 100);
     }
 }
 
@@ -781,6 +793,8 @@ void VCDockSlider::slotBusNameChanged(t_bus_id id, const QString &name)
 //
 void VCDockSlider::slotBusValueChanged(t_bus_id id, t_bus_value value)
 {
+QString t;
+qDebug(t.sprintf("Bus: %d",id));
   if (id == m_busID)
     {
       m_updateOnly = true;
@@ -1033,24 +1047,10 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
 
 void VCDockSlider::customEvent(QCustomEvent* e)
 {
-qDebug("******** Custom event!");
-
   if (e->type() == KVCMenuEvent)
     {
       parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
     }
-
-   // There is something the InputPlugin want's to telll
-   //
-  if (e->type() == KInputEvent)
-    {
-      QString t;
-      InputEvent* ie = (InputEvent*)e;
-      t.sprintf("Slider: InputEvent  %d  %d  %d", ie->id(), ie->channel(), ie->value());
-      qDebug(t);
-      m_slider->setValue(ie->value());
-    }
-
 
 }
 
@@ -1155,7 +1155,7 @@ void VCDockSlider::slotInputEvent(const int id, const int channel, const int val
          if (m_mode == Speed)
             {
               int range = m_busHighLimit - m_busLowLimit;//m_levelHighLimit - m_levelLowLimit;
-              m_slider->setValue(m_busLowLimit* KFrequency + (range*value* KFrequency)/127 );
+              m_slider->setValue(m_busHighLimit* KFrequency - (range*value* KFrequency)/127 );
             }
          if (m_mode == Level)
             {
@@ -1168,4 +1168,26 @@ void VCDockSlider::slotInputEvent(const int id, const int channel, const int val
 
 
 
+void VCDockSlider::slotFeedBack()
+{
+     int value = m_slider->value();
+  if (m_mode == Speed)
+    {
+      
+      int range = m_busHighLimit - m_busLowLimit;//m_levelHighLimit - m_levelLowLimit;
+      //m_slider->setValue(m_busHighLimit* KFrequency - (range*value* KFrequency)/127 );
+      float f = ((float) value / (float) KFrequency );
+      //t.sprintf("%f", f);
+      //qDebug(t);
+       _app->inputPlugin()->feedBack( 1,m_channel, 127 - int( (f * 127) / range));
+    } 
+  else if (m_mode == Level)
+    {
+       _app->inputPlugin()->feedBack( 1, m_channel, 127 - (value*127)/255);
+    }
+  else
+    {
+       _app->inputPlugin()->feedBack( 1, m_channel, 127 - (value*127) / 100);
+    }
+}
 

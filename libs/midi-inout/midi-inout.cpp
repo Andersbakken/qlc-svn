@@ -139,15 +139,13 @@ void MidiInThread::run()
       //qDebug(txt);
       }
  
-      InputEvent* ie = new InputEvent( id, buf[1],buf[2] );
-      assert(m_parent->eventReceiver());
-      QApplication::postEvent(m_parent->eventReceiver(), ie);
-//QApplication::sendEvent( QApplication::mainWidget(), ie);
-       
-    }else
-    {
-       qDebug("Timeout on Midi device");
-    }
+        InputEvent* ie = new InputEvent( id, buf[1],buf[2] );
+        assert(m_parent->eventReceiver());
+        QApplication::postEvent(m_parent->eventReceiver(), ie);
+      }else
+      {
+        qDebug("Timeout on Midi device");
+      }
 
   }while(1);
   
@@ -521,3 +519,35 @@ int MidiInOut::readRange(t_channel address, t_value* values, t_channel num)
 
   return 0;
 }
+
+
+void MidiInOut::feedBack(int id, int channel, int value)
+{
+
+  QString txt;
+  unsigned char buf[3]={0,0,0};
+  if(id == 1)
+    {
+       buf[0] = (unsigned char) 176;
+       buf[1] = (unsigned char) channel;
+       buf[2] = (unsigned char) value;
+    }
+txt.sprintf("*** Feedback Midi sequence: %d %d %d",buf[0],buf[1],buf[2]);
+      qDebug(txt);
+  int r = write(m_device, buf, 3);
+  if (r == -1)
+    {
+      perror("write");
+    }
+
+
+}
+
+
+
+
+
+
+
+
+

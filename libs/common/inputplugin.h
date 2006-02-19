@@ -38,6 +38,7 @@ class InputEvent : public QCustomEvent
           : QCustomEvent( KInputEvent )
          { m_id = id; m_channel=channel; m_value=value; }
 
+
         //virtual ~InputEvent();
         int m_id;
         int m_channel;
@@ -56,6 +57,7 @@ class InputPlugin : public Plugin
  public:
   InputPlugin(int id);
   virtual ~InputPlugin();
+  virtual void feedBack(int id, int channel, int value){};
 
  signals:
    //void InputEvent(const int, const int, const int);

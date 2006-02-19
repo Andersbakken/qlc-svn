@@ -88,7 +88,8 @@ class MidiInOut : public InputPlugin
   int saveSettings();
   int loadSettings();
 
-  // OutputPlugin methods
+  // tPlugin methods
+  void feedBack(int id, int channel, int value);
   int writeChannel(t_channel channel, t_value value);
   int writeRange(t_channel address, t_value* values, t_channel num);
 

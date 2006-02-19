@@ -188,6 +188,7 @@ class VirtualConsole : public QWidget
  signals:
   void closed();
   void InpEvent(const int, const int, const int);
+  void sendFeedBack();
 
   void keyPressed(QKeyEvent*);
   void keyReleased(QKeyEvent*);
