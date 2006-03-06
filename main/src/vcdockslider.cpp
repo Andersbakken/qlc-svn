@@ -793,8 +793,8 @@ void VCDockSlider::slotBusNameChanged(t_bus_id id, const QString &name)
 //
 void VCDockSlider::slotBusValueChanged(t_bus_id id, t_bus_value value)
 {
-QString t;
-qDebug(t.sprintf("Bus: %d",id));
+//QString t;
+//qDebug(t.sprintf("Bus: %d",id));
   if (id == m_busID)
     {
       m_updateOnly = true;

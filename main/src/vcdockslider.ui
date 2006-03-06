@@ -6,10 +6,10 @@
     </property>
     <property name="geometry">
         <rect>
-            <x>35</x>
+            <x>34</x>
             <y>0</y>
             <width>55</width>
-            <height>212</height>
+            <height>254</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -144,6 +144,11 @@
             <property name="name">
                 <cstring>m_tapInButton</cstring>
             </property>
+            <property name="font">
+                <font>
+                    <pointsize>9</pointsize>
+                </font>
+            </property>
             <property name="text">
                 <string></string>
             </property>
@@ -162,6 +167,11 @@
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                 </sizepolicy>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>9</pointsize>
+                </font>
             </property>
             <property name="text">
                 <string>No Name</string>

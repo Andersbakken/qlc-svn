@@ -81,6 +81,7 @@ class MidiInOut : public InputPlugin
   int close();
   bool isOpen();
   int configure();
+  int debugLevel()  const { return m_debugLevel; }
   QString infoText();
   void contextMenu(QPoint pos);
 
@@ -120,7 +121,7 @@ class MidiInOut : public InputPlugin
   int m_device;
   t_value m_values[KChannelMax];
   MidiInThread* m_inThread;
-  
+  int m_debugLevel;
 };
 
 #endif

@@ -23,9 +23,11 @@
 #include <qbuttongroup.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
+#include <qspinbox.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <qmessagebox.h>
+#include <qcheckbox.h>
 
 #include "vcbuttonproperties.h"
 #include "deviceclass.h"
@@ -76,6 +78,12 @@ void VCButtonProperties::initView()
   // Set press action
   m_onButtonPressGroup->setButton(m_keyBind->pressAction());
   slotPressGroupClicked(m_keyBind->pressAction());
+  m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
+  //
+  // Midi stuff
+  //
+  m_channelSpinBox->setValue(m_button->channel());
+
 
   //
   // Pixmaps
@@ -206,6 +214,8 @@ void VCButtonProperties::slotAttachKeyClicked()
 	delete a;
 }
 
+
+
 void VCButtonProperties::slotDetachKeyClicked()
 {
 	QString keyString;
@@ -217,11 +227,15 @@ void VCButtonProperties::slotDetachKeyClicked()
 	m_keyEdit->setText(keyString);
 }
 
+
+
 void VCButtonProperties::slotOKClicked()
 {
 	m_button->setCaption(m_nameEdit->text());
 	m_button->attachFunction(m_functionID);
 	m_button->setKeyBind(m_keyBind);
+	m_button->setChannel(m_channelSpinBox->value());
+        m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());  
 
 	_app->doc()->setModified(true);
 

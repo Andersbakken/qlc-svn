@@ -101,6 +101,10 @@ void VCDockSliderProperties::init()
   m_keyUpEdit->setText(keyStringUp);
   m_keyDownEdit->setText(keyStringDown);
 
+
+  //
+  // Midi stuff
+  //
   m_channelSpinBox->setValue(m_slider->channel());
 
   //

@@ -61,6 +61,12 @@ class VCButton : public QPushButton
   void setExclusive(bool exclusive = true);
   bool isExclusive() { return m_isExclusive; }
 
+  void setChannel(int channel){ m_channel = channel;}
+  int channel() const { return m_channel; }
+
+  void setStopFunctions(bool state){ m_stopFunctions = state;}
+  bool stopFunctions()  { return m_stopFunctions; }
+
  private:
   void invokeMenu(QPoint);
   void parseWidgetMenu(int);
@@ -70,6 +76,9 @@ class VCButton : public QPushButton
 
  public slots:
   void setCaption(const QString& text);
+
+  void slotFeedBack();
+  void slotInputEvent(const int,const int,const int);
 
   void pressFunction();
   void releaseFunction();
@@ -90,9 +99,11 @@ class VCButton : public QPushButton
  private:
   t_function_id m_functionID;
   KeyBind* m_keyBind;
+  int m_channel;
 
   QPoint m_mousePressPoint;
   bool m_resizeMode;
+  bool m_stopFunctions;
 };
 
 #endif

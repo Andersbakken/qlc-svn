@@ -128,12 +128,12 @@
                     </item>
                     <item>
                         <property name="text">
-                            <string>Midid Messages</string>
+                            <string>Midi Messages</string>
                         </property>
                     </item>
                     <item>
                         <property name="text">
-                            <string>Full Input</string>
+                            <string>Full Midi Input</string>
                         </property>
                     </item>
                     <property name="name">

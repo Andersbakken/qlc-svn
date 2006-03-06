@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>310</width>
-            <height>428</height>
+            <height>493</height>
         </rect>
     </property>
     <property name="caption">
@@ -243,7 +243,7 @@
                 <cstring>m_IDLabel</cstring>
             </property>
             <property name="title">
-                <string>External Input/Output settings</string>
+                <string>External Input/Output Settings</string>
             </property>
             <grid>
                 <property name="name">
@@ -295,7 +295,7 @@
                 </widget>
                 <widget class="QSpinBox" row="1" column="1">
                     <property name="name">
-                        <cstring>spinBox1</cstring>
+                        <cstring>m_channelSpinBox</cstring>
                     </property>
                     <property name="maxValue">
                         <number>127</number>
@@ -313,73 +313,121 @@
             <property name="title">
                 <string>On Button/Key Press...</string>
             </property>
+            <widget class="QRadioButton">
+                <property name="name">
+                    <cstring>m_toggle</cstring>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>11</x>
+                        <y>20</y>
+                        <width>266</width>
+                        <height>19</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Toggle Function on/off</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>1</number>
+                </property>
+                <property name="toolTip" stdset="0">
+                    <string>Every other key press starts and every other press stops the attached function.</string>
+                </property>
+            </widget>
+            <widget class="QRadioButton">
+                <property name="name">
+                    <cstring>m_flash</cstring>
+                </property>
+                <property name="enabled">
+                    <bool>true</bool>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>11</x>
+                        <y>45</y>
+                        <width>266</width>
+                        <height>19</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Flash</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>2</number>
+                </property>
+                <property name="toolTip" stdset="0">
+                    <string>Flash the selected function</string>
+                </property>
+            </widget>
+            <widget class="QRadioButton">
+                <property name="name">
+                    <cstring>m_forward</cstring>
+                </property>
+                <property name="enabled">
+                    <bool>false</bool>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>11</x>
+                        <y>70</y>
+                        <width>266</width>
+                        <height>19</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Step Forward (Chaser only)</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>3</number>
+                </property>
+                <property name="toolTip" stdset="0">
+                    <string>Signal the function to take one step forward (available only for chasers)</string>
+                </property>
+            </widget>
+            <widget class="QRadioButton">
+                <property name="name">
+                    <cstring>m_backward</cstring>
+                </property>
+                <property name="enabled">
+                    <bool>false</bool>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>11</x>
+                        <y>95</y>
+                        <width>266</width>
+                        <height>19</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Step Backward (Chaser only)</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>4</number>
+                </property>
+                <property name="toolTip" stdset="0">
+                    <string>Signal the function to take one step backward (available only for chasers)</string>
+                </property>
+            </widget>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>m_experimental</cstring>
+            </property>
+            <property name="title">
+                <string>Experimental Stuff</string>
+            </property>
             <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QRadioButton">
+                <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>m_toggle</cstring>
+                        <cstring>m_stopFunctionsCheck</cstring>
                     </property>
                     <property name="text">
-                        <string>Toggle Function on/off</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>1</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Every other key press starts and every other press stops the attached function.</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton">
-                    <property name="name">
-                        <cstring>m_flash</cstring>
-                    </property>
-                    <property name="enabled">
-                        <bool>true</bool>
-                    </property>
-                    <property name="text">
-                        <string>Flash</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>2</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Flash the selected function</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton">
-                    <property name="name">
-                        <cstring>m_forward</cstring>
-                    </property>
-                    <property name="enabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="text">
-                        <string>Step Forward (Chaser only)</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>3</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Signal the function to take one step forward (available only for chasers)</string>
-                    </property>
-                </widget>
-                <widget class="QRadioButton">
-                    <property name="name">
-                        <cstring>m_backward</cstring>
-                    </property>
-                    <property name="enabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="text">
-                        <string>Step Backward (Chaser only)</string>
-                    </property>
-                    <property name="buttonGroupId">
-                        <number>4</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Signal the function to take one step backward (available only for chasers)</string>
+                        <string>Stop all running functions</string>
                     </property>
                 </widget>
             </vbox>

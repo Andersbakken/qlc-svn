@@ -26,6 +26,7 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qcombobox.h>
 
 #include <unistd.h>
 
@@ -49,6 +50,14 @@ QString ConfigureMidiInOut::device()
 {
   return m_deviceEdit->text();
 }
+
+
+
+int ConfigureMidiInOut::debugLevel()
+{
+	return m_debugLevelCombo->currentItem();
+}
+
 
 void ConfigureMidiInOut::slotActivateClicked()
 {

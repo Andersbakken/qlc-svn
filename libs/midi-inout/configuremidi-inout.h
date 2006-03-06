@@ -36,7 +36,8 @@ class ConfigureMidiInOut : public UI_ConfigureMidiInOut
 
   void setDevice(QString deviceName);
   QString device();
-
+  int debugLevel();
+  
   void updateStatus();
 
  private slots:

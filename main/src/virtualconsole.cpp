@@ -1086,7 +1086,7 @@ void VirtualConsole::customEvent(QCustomEvent* e)
 {
    // There is something the InputPlugin want's to telll
    //
-  if (e->type() == KInputEvent)
+  if ((e->type() == KInputEvent) && (_app->mode() != App::Design))
     {
    //   QString t;
       InputEvent* ie = (InputEvent*)e;
