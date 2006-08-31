@@ -37,6 +37,7 @@
 #include <qevent.h>
 #include <qcheckbox.h>
 #include <assert.h>
+#include <qmessagebox.h>
 
 extern App* _app;
 
@@ -145,9 +146,11 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
       m_selectionOK = true;
       m_modelValue = item->text(0);
       m_manufacturerValue = item->parent()->text(0);
-      if (m_nameEdit->text() == QString::null)
+      if (m_nameEdit->isModified() == false)
 	{
-	  m_nameEdit->setText("New device");
+	  /* Set the name to the model name ONLY if the user hasn't
+	     modified the name field. */
+	  m_nameEdit->setText(m_modelValue);
 	}
 
       m_nameEdit->setSelection(0, m_nameEdit->text().length());
@@ -166,7 +169,11 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
       m_selectionOK = false;
       m_manufacturerValue = QString("");
       m_modelValue = QString("");
-      m_nameEdit->setText(QString(""));
+      if (m_nameEdit->isModified() == false)
+	{
+		m_nameEdit->setText(QString::null);
+	}
+
       m_channelsSpin->setValue(0);
     }
 }
@@ -177,8 +184,6 @@ void NewDevice::fillTree()
   QListViewItem* newItem = NULL;
 
   QPtrList <DeviceClass> *dl = _app->deviceClassList();
-
-  /* QPixmap pm(PIXMAPS + QString("/fixture.png")); */
 
   QString config;
   bool treeOpen = false;
@@ -194,6 +199,7 @@ void NewDevice::fillTree()
 
   m_tree->clear();
 
+  /* Add all known device classes */
   for (DeviceClass* dc = dl->first(); dc != NULL; dc = dl->next())
     {
       bool alreadyAdded = false;
@@ -215,17 +221,20 @@ void NewDevice::fillTree()
 	  parent->setOpen(treeOpen);
 	}
 
-      /* parent->setPixmap(0, QPixmap(PIXMAPS + QString("/global.png"))); */
-
       newItem = new QListViewItem(parent, dc->model());
-      /* newItem->setPixmap(0, pm); */
       newItem->setText(1,dc->type());
     }
 }
 
 void NewDevice::slotNameChanged(const QString &text)
 {
-  m_nameValue = text;
+	m_nameValue = text;
+	if (text.length() == 0)
+	{
+		/* If the user clears the text in the name field,
+		   start substituting the name with the model again. */
+		m_nameEdit->clearModified();
+	}
 }
 
 void NewDevice::show()
