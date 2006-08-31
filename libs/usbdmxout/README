@@ -3,9 +3,9 @@ Feb. 14. 2006
 This file describes the output plugin that can be used to handle the
 Peperoni Light USB interfaces directly in QLC. There is no need to have the dmx4linux 
 package installed.
-This is ment as a solution to run QLC on kernels 2.6 and above as long as no
+This is meant as a solution to run QLC on kernels 2.6 and above as long as no
 dmx4linux drivers are available for the 2.6 kernels.
-However, dmx4linus IS the primary driver architecture that should be used
+However, dmx4linux IS the primary driver architecture that should be used
 with QLC.
 
 
@@ -18,8 +18,8 @@ http://qlc.sourceforge.net/packages/PeperoniDriver.tar.gz
 
 3) Change into the driver directory
 
-4) Make sure you have the headers of your 
-   currently running kernel installed.
+4) Make sure you have the headers of your currently running kernel installed.
+   The driver assumes they are in /lib/modules/<kernel version>/build
 
 5) In the driver directory type: 
    make k26
@@ -38,11 +38,47 @@ http://qlc.sourceforge.net/packages/PeperoniDriver.tar.gz
    like
    KERNEL=="usbdmx[0-16]*", MODE="0666"
 
-9) In the new QLC version go to File->Settings and select usb2dmx Rodin from the 
-output plugin setting and activate it.
+8.1) On Fedora Core (5), there is a /etc/udev/rules.d/ directory. Create
+     a new file called "usbdmx.rules" in that directory, and put the above
+     line in that file, instead of the "permissions.rules" file (it doesn't
+     probably even exist on Fedora boxes). Make sure the file is owned
+     by root.root with permissions 644 (chown root.root * ; chmod 644 *).
+
+9) In the new QLC version go to File->Settings and select usb2dmx Rodin from
+   the output plugin setting and activate it.
+
+10) If you wish the driver to load automatically, type (as root):
+    "cp usbdmx.ko /lib/modules/`uname -r`/kernel/drivers/usb/misc"
+    and also "depmod -a" to make sure the driver is correctly compiled etc.
+
+ERRORS
+
+1) At least on Fedora Core 5 (2.6.16-2122-FC5smp) the driver doesn't compile
+   without problems. So, you might get an error message that looks like this:
+
+   /home/hjunnila/usbdmx-driver-v2.0/usbdmx.c:636: error: unknown field
+   'owner' specified in initializer
+   /home/hjunnila/usbdmx-driver-v2.0/usbdmx.c:636: warning: initialization
+   from incompatible pointer type
+
+Solution:
+   You should edit the usbdmx.c file at line number 636 (almost at the end):
+--------------
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0)
+  .owner      = THIS_MODULE,
+#endif
+--------------
+  Comment the line with /* and */ or just remove it and then recompile.
+--------------
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0)
+  /* .owner      = THIS_MODULE, */
+#endif
+-------------
 
 
 The plugin is still somewhat experimental, please tell me about any problems. 
 
 Stefan Krumm
 krumm@geol.uni-erlangen.de
+
+Fedora Core additions by Heikki Junnila <hjunnila@users.sf.net>

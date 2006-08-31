@@ -1,4 +1,7 @@
 2006-Aug-31  Heikki Junnila <hjunnila@users.sf.net>
+	* Added Fedora-specific stuff & error solution to libs/usbdmx/README
+
+2006-Aug-31  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed a double value in app.cpp to t_value (int) to get rid of
 	  the compiler warning.
 	* Changed newdevice.cpp so that if the user has not touched the
