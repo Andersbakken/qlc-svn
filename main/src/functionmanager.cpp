@@ -156,7 +156,7 @@ void FunctionManager::init()
 	}
 
 	// Icon
-	setIcon(QPixmap(QString(PIXMAPS) + QString("/chaser.png")));
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/function.png")));
 
 	// Window size
 	resize(640, 480);
@@ -263,6 +263,14 @@ void FunctionManager::initMenu()
 	//
 	m_editMenu = new QPopupMenu();
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				QString("/edit.png")),
+				"Edit...",
+				this, SLOT(slotEdit()),
+				CTRL+Key_E, KMenuEdit);
+
+	m_editMenu->insertSeparator();
+
+	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
 				QString("/editcut.png")),
 				"Cut",
 				this, SLOT(slotCut()),
@@ -291,14 +299,6 @@ void FunctionManager::initMenu()
 				"Select All",
 				this, SLOT(slotSelectAll()),
 				CTRL+Key_A, KMenuSelectAll);
-
-	m_editMenu->insertSeparator();
-
-	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/edit.png")),
-				"Edit...",
-				this, SLOT(slotEdit()),
-				CTRL+Key_E, KMenuEdit);
 
 	//
 	// Bus menu
@@ -548,14 +548,14 @@ void FunctionManager::initFunctionTree()
 	m_functionTree->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
 	m_functionTree->header()->setClickEnabled(true);
-	m_functionTree->header()->setResizeEnabled(false);
+	m_functionTree->header()->setResizeEnabled(true);
 	m_functionTree->header()->setMovingEnabled(false);
 	m_functionTree->header()->setSortIndicator(KColumnName, Ascending);
 
 	// Add two columns for function and bus
 	m_functionTree->addColumn("Function");
 	m_functionTree->addColumn("Bus");
-	m_functionTree->setResizeMode(QListView::AllColumns);
+	m_functionTree->setResizeMode(QListView::LastColumn);
 
 	// Catch header clicks
 	connect(m_functionTree->header(), SIGNAL(clicked(int)),
@@ -564,6 +564,12 @@ void FunctionManager::initFunctionTree()
 	// Catch selection changes
 	connect(m_functionTree, SIGNAL(selectionChanged()),
 		this, SLOT(slotFunctionTreeSelectionChanged()));
+
+	// Catch mouse double clicks
+	connect(m_functionTree,
+		SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)),
+		this,
+		SLOT(slotFunctionTreeDoubleClicked(QListViewItem*, const QPoint&, int)));
 
 	if (m_selectionMode == false)
 	{
@@ -1113,6 +1119,21 @@ void FunctionManager::slotAddMenuCallback(int type)
 	}
 }
 
+/**
+ * Callback for function tree double clicks
+ */
+void FunctionManager::slotFunctionTreeDoubleClicked(QListViewItem* item,
+						    const QPoint& pos, int col)
+{
+  if (m_selectionMode == true)
+    {
+      slotOKClicked();
+    }
+  else
+    {
+      slotEdit();
+    }
+}
 
 /**
  * Callback for Scene tool button

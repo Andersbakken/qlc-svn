@@ -79,6 +79,9 @@
                     <property name="name">
                         <cstring>m_functionList</cstring>
                     </property>
+                    <property name="allColumnsShowFocus">
+                        <bool>true</bool>
+                    </property>
                     <property name="resizeMode">
                         <enum>AllColumns</enum>
                     </property>

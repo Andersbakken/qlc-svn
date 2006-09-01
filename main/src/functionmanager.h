@@ -107,6 +107,9 @@ protected slots:
 	void slotFunctionTreeContextMenuRequested(QListViewItem* item,
 					         const QPoint& pos, int col);
 
+	void slotFunctionTreeDoubleClicked(QListViewItem* item,
+					   const QPoint& pos, int col);
+
 	void slotBusActivated(int busID);
 
 	void slotAddScene();

@@ -1,3 +1,9 @@
+2006-Sep-01  Heikki Junnila <hjunnila@users.sf.net>
+	* Added double click as a default action for "Edit" in function
+	  manager's editing mode, and "Select" as the default action in
+	  selection mode.
+	* Changed all columns to show focus in collection editor.
+
 2006-Aug-31  Heikki Junnila <hjunnila@users.sf.net>
 	* Added Fedora-specific stuff & error solution to libs/usbdmx/README
 
