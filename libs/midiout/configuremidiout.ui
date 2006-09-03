@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>269</width>
+            <width>263</width>
             <height>282</height>
         </rect>
     </property>
@@ -41,7 +41,7 @@
                         <cstring>m_deviceEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+                        <string>The device file that is the interface for DMX-MIDI. Usually /dev/midi00.</string>
                     </property>
                 </widget>
             </vbox>
@@ -78,6 +78,9 @@
                     <property name="alignment">
                         <set>AlignCenter</set>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Current interface status</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -85,6 +88,9 @@
                     </property>
                     <property name="text">
                         <string>&amp;Activate</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+A</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Activate the interface. Pressing this button also saves settings.</string>
@@ -123,11 +129,22 @@
                             <property name="name">
                                 <cstring>m_midiChannelSpin</cstring>
                             </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
                             <property name="maxValue">
                                 <number>16</number>
                             </property>
                             <property name="minValue">
                                 <number>1</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The MIDI channel that receives DMX commands from QLC.</string>
                             </property>
                         </widget>
                     </hbox>
@@ -152,8 +169,19 @@
                             <property name="name">
                                 <cstring>m_firstNoteSpin</cstring>
                             </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
                             <property name="maxValue">
                                 <number>127</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Each MIDI note represents a DMX channel</string>
                             </property>
                         </widget>
                     </hbox>
@@ -192,8 +220,14 @@
                     <property name="text">
                         <string>&amp;OK</string>
                     </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
+                    </property>
                     <property name="default">
                         <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close the dialog</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -202,6 +236,12 @@
                     </property>
                     <property name="text">
                         <string>&amp;Cancel</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close the dialog</string>
                     </property>
                 </widget>
             </hbox>

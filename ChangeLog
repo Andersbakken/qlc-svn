@@ -1,3 +1,10 @@
+2006-Sep-03  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed a bug in efxeditor: correct start & stop scenes were not
+	  selected when the dialog was opened a second time.
+	* --> Changed combos to listviews so that the function ID can
+	  be hidden from the user.
+	* Fixed some tooltips in plugin config dialogs.
+
 2006-Sep-01  Heikki Junnila <hjunnila@users.sf.net>
 	* Added double click as a default action for "Edit" in function
 	  manager's editing mode, and "Select" as the default action in

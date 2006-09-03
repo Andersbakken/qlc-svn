@@ -35,6 +35,7 @@
 #include "eventbuffer.h"
 #include "efx.h"
 #include "functionconsumer.h"
+#include "common/settings.h"
 
 extern App* _app;
 
@@ -74,7 +75,10 @@ EFX::EFX() :
   m_modulationBus     ( KBusIDDefaultHold ),
 
   m_startSceneID      ( KNoID ),
+  m_startSceneEnabled ( false ),
+
   m_stopSceneID       ( KNoID ),
+  m_stopSceneEnabled  ( false ),
 
   m_previewPointArray ( NULL ),
 
@@ -631,6 +635,24 @@ t_function_id EFX::startScene()
   return m_startSceneID;
 }
 
+/**
+ * Start scene enabled
+ *
+ */
+void EFX::setStartSceneEnabled(bool set)
+{
+  m_startSceneEnabled = set;
+}
+
+/**
+ * Get start scene enabled status
+ *
+ */
+bool EFX::startSceneEnabled()
+{
+  return m_startSceneEnabled;
+}
+
 void EFX::setStopScene(t_function_id scene)
 {
   if (scene >= KNoID && scene <= KFunctionArraySize)
@@ -646,6 +668,24 @@ void EFX::setStopScene(t_function_id scene)
 t_function_id EFX::stopScene()
 {
   return m_stopSceneID;
+}
+
+/**
+ * Stop scene enabled
+ *
+ */
+void EFX::setStopSceneEnabled(bool set)
+{
+  m_stopSceneEnabled = set;
+}
+
+/**
+ * Get stop scene enabled status
+ *
+ */
+bool EFX::stopSceneEnabled()
+{
+  return m_stopSceneEnabled;
 }
 
 /**
@@ -682,7 +722,10 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
 	m_modulationBus = efx->modulationBus();
 
 	m_startSceneID = efx->startScene();
+	m_startSceneEnabled = efx-startSceneEnabled();
+
 	m_stopSceneID = efx->stopScene();
+	m_stopSceneEnabled = efx-stopSceneEnabled();
 
 	m_previewPointArray = NULL;
 
@@ -819,9 +862,31 @@ void EFX::saveToFile(QFile &file)
   s = QString("StartScene = ") + t + QString("\n");
   file.writeBlock((const char*) s, s.length());
 
+  // StartScene Enabled
+  if (startSceneEnabled())
+    {
+      s = QString("StartSceneEnabled = ") + Settings::trueValue() + QString("\n");
+    }
+  else
+    {
+      s = QString("StartSceneEnabled = ") + Settings::falseValue() + QString("\n");
+    }
+  file.writeBlock((const char*) s, s.length());
+
   // Stop Scene
   t.setNum(stopScene());
   s = QString("StopScene = ") + t + QString("\n");
+  file.writeBlock((const char*) s, s.length());
+
+  // StopScene Enabled
+  if (stopSceneEnabled())
+    {
+      s = QString("StopSceneEnabled = ") + Settings::trueValue() + QString("\n");
+    }
+  else
+    {
+      s = QString("StopSceneEnabled = ") + Settings::falseValue() + QString("\n");
+    }
   file.writeBlock((const char*) s, s.length());
 }
 
@@ -905,10 +970,34 @@ void EFX::createContents(QPtrList <QString> &list)
       else if (*s == QString("StartScene"))
 	{
 	  setStartScene(list.next()->toInt());
+	  setStartSceneEnabled(true); // Backwards compatibility
+	}
+      else if (*s == QString("StartSceneEnabled"))
+	{
+	  if (*(list.next()) == Settings::trueValue())
+	    {
+	      setStartSceneEnabled(true);
+	    }
+	  else
+	    {
+	      setStartSceneEnabled(false);
+	    }
 	}
       else if (*s == QString("StopScene"))
 	{
 	  setStopScene(list.next()->toInt());
+	  setStopSceneEnabled(true); // Backwards compatibility
+	}
+      else if (*s == QString("StopSceneEnabled"))
+	{
+	  if (*(list.next()) == Settings::trueValue())
+	    {
+	      setStopSceneEnabled(true);
+	    }
+	  else
+	    {
+	      setStopSceneEnabled(false);
+	    }
 	}
       else
         {
@@ -1078,25 +1167,17 @@ void EFX::init()
 void EFX::run()
 {
   float i = 0;
-  float* x = new float;
-  float* y = new float;
+  float x = 0;
+  float y = 0;
 
   // Initialize this function for running
   init();
 
   if (!m_stopped)
     {
-      if (startScene() > KNoID)
+      if (startScene() != KNoID && startSceneEnabled())
         {
-	  Function*f = _app->doc()->function(startScene());
-	  if (!f)
-	    {
-	      qDebug("Selected start scene deleted!");
-	    }
-	  if (f->engage(this))
-	    {
-
-	    }
+	  _app->doc()->function(startScene())->engage(this);
 	}
     }
 
@@ -1105,33 +1186,18 @@ void EFX::run()
       for (i = 0; i < (M_PI * 2.0) && !m_stopped; i += m_stepSize)
 	{
 	  /* Calculate the next point */
-	  pointFunc(this, i, x, y);
+	  pointFunc(this, i, &x, &y);
 
 	  /* Write the point to event buffer */
-	  setPoint(static_cast<t_value> (*x), static_cast<t_value> (*y));
+	  setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
 	}
     }
 
-  /* These are no longer needed */
-  delete x;
-  delete y;
-
-  if (m_stopped)
+  if (stopScene() != KNoID && stopSceneEnabled())
     {
-      if (stopScene() > KNoID)
-        {
-	  Function*f = _app->doc()->function(stopScene());
-	  if (!f)
-	    {
-	      qDebug("Selected stop scene deleted!");
-	    }
-	  if (f->engage(this))
-	    {
-
-	    }
-	}
-      m_eventBuffer->purge();
+      _app->doc()->function(stopScene())->engage(this);
     }
+
   /* Finished */
   m_removeAfterEmpty = true;
 }

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>494</width>
-            <height>547</height>
+            <width>468</width>
+            <height>550</height>
         </rect>
     </property>
     <property name="caption">
@@ -678,6 +678,133 @@
                             </widget>
                         </hbox>
                     </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout21</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QGroupBox">
+                                <property name="name">
+                                    <cstring>m_blackoutFeatureGroup</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="title">
+                                    <string></string>
+                                </property>
+                                <vbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>m_startSceneCheckbox</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Initialise fixture with:</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Initialise the fixture with the selected scene values before the EFX starts</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QListView">
+                                        <column>
+                                            <property name="text">
+                                                <string>Scene</string>
+                                            </property>
+                                            <property name="clickable">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="resizable">
+                                                <bool>true</bool>
+                                            </property>
+                                        </column>
+                                        <property name="name">
+                                            <cstring>m_startSceneList</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="resizeMode">
+                                            <enum>LastColumn</enum>
+                                        </property>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                            <widget class="QGroupBox">
+                                <property name="name">
+                                    <cstring>m_blackoutFeatureGroup_2</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="title">
+                                    <string></string>
+                                </property>
+                                <vbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>m_stopSceneCheckbox</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>De-initialise fixture with:</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>De-initialise the fixture with the selected scene values after the EFX stops</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QListView">
+                                        <column>
+                                            <property name="text">
+                                                <string>Scene</string>
+                                            </property>
+                                            <property name="clickable">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="resizable">
+                                                <bool>true</bool>
+                                            </property>
+                                        </column>
+                                        <property name="name">
+                                            <cstring>m_stopSceneList</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="resizeMode">
+                                            <enum>LastColumn</enum>
+                                        </property>
+                                    </widget>
+                                </vbox>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>TabPage</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Modulation</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
                     <widget class="QButtonGroup">
                         <property name="name">
                             <cstring>m_modulationParametersGroup</cstring>
@@ -794,89 +921,6 @@
                                         </property>
                                         <property name="toolTip" stdset="0">
                                             <string>The bus that adjusts the parameter modulation speed</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>m_blackoutFeatureGroup</cstring>
-                        </property>
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="title">
-                            <string>Start/stop values</string>
-                        </property>
-                        <vbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout20</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QCheckBox">
-                                        <property name="name">
-                                            <cstring>m_startSceneCheckbox</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="text">
-                                            <string>Start Scene</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Initialise the fixture with the selected scene values before the EFX starts</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QComboBox">
-                                        <property name="name">
-                                            <cstring>m_startSceneCombo</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>The scene used to initialise the fixture before the EFX starts</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout21</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QCheckBox">
-                                        <property name="name">
-                                            <cstring>m_stopSceneCheckbox</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Stop Scene</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>De-initialise the fixture with the selected scene values after the EFX has stopped</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QComboBox">
-                                        <property name="name">
-                                            <cstring>m_stopSceneCombo</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>The scene used to de-initialise the fixture after the EFX stops</string>
                                         </property>
                                     </widget>
                                 </hbox>
@@ -1069,12 +1113,6 @@
         <slot>slotRotationSpinChanged(int)</slot>
     </connection>
     <connection>
-        <sender>m_stopSceneCombo</sender>
-        <signal>activated(int)</signal>
-        <receiver>UI_EFXEditor</receiver>
-        <slot>slotStopSceneComboSelected(int)</slot>
-    </connection>
-    <connection>
         <sender>m_testRunButton</sender>
         <signal>toggled(bool)</signal>
         <receiver>UI_EFXEditor</receiver>
@@ -1087,16 +1125,22 @@
         <slot>slotTestRunSpeedSliderValueChanged(int)</slot>
     </connection>
     <connection>
-        <sender>m_startSceneCombo</sender>
-        <signal>activated(int)</signal>
-        <receiver>UI_EFXEditor</receiver>
-        <slot>slotStartSceneComboSelected(int)</slot>
-    </connection>
-    <connection>
         <sender>m_startSceneCheckbox</sender>
         <signal>toggled(bool)</signal>
         <receiver>UI_EFXEditor</receiver>
         <slot>slotStartSceneCheckboxToggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>m_startSceneList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotStartSceneListSelectionChanged(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>m_stopSceneList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotStopSceneListSelectionChanged(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>m_stopSceneCheckbox</sender>
@@ -1120,15 +1164,6 @@
     <tabstop>m_verticalCombo</tabstop>
     <tabstop>m_loopModeButton</tabstop>
     <tabstop>m_forwardsDirectionButton</tabstop>
-    <tabstop>m_widthButton</tabstop>
-    <tabstop>m_heightButton</tabstop>
-    <tabstop>m_xOffsetButton</tabstop>
-    <tabstop>m_yOffsetButton</tabstop>
-    <tabstop>m_xFrequencyButton</tabstop>
-    <tabstop>m_yFrequencyButton</tabstop>
-    <tabstop>m_xPhaseButton</tabstop>
-    <tabstop>m_yPhaseButton</tabstop>
-    <tabstop>m_modulationBusCombo</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
     <tabstop>m_tab</tabstop>
@@ -1149,10 +1184,10 @@
     <slot>slotRotationSpinChanged(int)</slot>
     <slot>slotTestRunToggled(bool)</slot>
     <slot>slotTestRunSpeedSliderValueChanged(int)</slot>
-    <slot>slotStartSceneComboSelected(int)</slot>
-    <slot>slotStopSceneComboSelected(int)</slot>
     <slot>slotStartSceneCheckboxToggled( bool )</slot>
     <slot>slotStopSceneCheckboxToggled( bool )</slot>
+    <slot>slotStartSceneListSelectionChanged(QListViewItem*)</slot>
+    <slot>slotStopSceneListSelectionChanged(QListViewItem*)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

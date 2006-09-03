@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>269</width>
-            <height>236</height>
+            <height>175</height>
         </rect>
     </property>
     <property name="caption">
@@ -51,6 +51,9 @@
                     <property name="alignment">
                         <set>AlignCenter</set>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Current interface status</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton" row="0" column="1">
                     <property name="name">
@@ -90,7 +93,7 @@
                         <cstring>m_deviceEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+                        <string></string>
                     </property>
                 </widget>
             </vbox>
@@ -127,8 +130,14 @@
                     <property name="text">
                         <string>&amp;OK</string>
                     </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
+                    </property>
                     <property name="default">
                         <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close the dialog</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -137,6 +146,12 @@
                     </property>
                     <property name="text">
                         <string>&amp;Cancel</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close the dialog</string>
                     </property>
                 </widget>
             </hbox>

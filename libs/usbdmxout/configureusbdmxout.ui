@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>255</width>
-            <height>192</height>
+            <height>198</height>
         </rect>
     </property>
     <property name="caption">
@@ -32,6 +32,9 @@
             <property name="title">
                 <string>Device</string>
             </property>
+            <property name="toolTip" stdset="0">
+                <string></string>
+            </property>
             <grid>
                 <property name="name">
                     <cstring>unnamed</cstring>
@@ -41,7 +44,7 @@
                         <cstring>m_deviceEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+                        <string>The device file that is the interface for the USB-DMX. Usually /dev/usbdmx.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="0" column="0">
@@ -64,6 +67,9 @@
                     </property>
                     <property name="value">
                         <number>0</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The USB-DMX instance (if you have multiple interfaces in the same computer)</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
@@ -107,6 +113,9 @@
                     </property>
                     <property name="alignment">
                         <set>AlignCenter</set>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Current interface status</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -163,6 +172,9 @@
                     <property name="default">
                         <bool>true</bool>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close the dialog</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -173,6 +185,9 @@
                     </property>
                     <property name="accel">
                         <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close the dialog</string>
                     </property>
                 </widget>
             </hbox>

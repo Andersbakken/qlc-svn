@@ -8,12 +8,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>323</width>
-            <height>281</height>
+            <width>332</width>
+            <height>283</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Configure Midi InnnputOutput Plugin</string>
+        <string>Configure Midi Input/Output Plugin</string>
     </property>
     <vbox>
         <property name="name">
@@ -49,7 +49,7 @@
                         <cstring>m_deviceEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+                        <string>The device file that is the interface for MIDI. Usually /dev/midi00.</string>
                     </property>
                 </widget>
                 <widget class="QSpinBox" row="1" column="1">
@@ -57,7 +57,7 @@
                         <cstring>m_channelSpinBox</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Define the Midid channel we are listening to. "0" will listen on all channels.</string>
+                        <string>The MIDI channel to listen to. "0" will listen to all channels.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
@@ -92,6 +92,9 @@
                     <property name="name">
                         <cstring>m_controlCombo</cstring>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The MIDI control type to use for communication.</string>
+                    </property>
                 </widget>
                 <widget class="QLabel" row="2" column="0">
                     <property name="name">
@@ -109,7 +112,7 @@
                         <string>Activate Parameter Feedback To Control Unit</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>If checked, actions in the Virtual Console will be send back to the control device. Useful if you have motor faders or something like that.</string>
+                        <string>Move motorized faders when a slider is dragged in Virtual Console.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="4" column="0">
@@ -140,7 +143,7 @@
                         <cstring>m_debugLevelCombo</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Gives some debugging information and tells what is going on at the midid device.</string>
+                        <string>Use only if something is wrong.</string>
                     </property>
                 </widget>
             </grid>
@@ -177,6 +180,9 @@
                     <property name="alignment">
                         <set>AlignCenter</set>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Current interface status.</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -203,7 +209,7 @@
                         <string>Alt+D</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Activate the interface. Pressing this button also saves settings.</string>
+                        <string>Deactivate the interface.</string>
                     </property>
                 </widget>
             </hbox>

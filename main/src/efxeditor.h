@@ -57,9 +57,9 @@ class EFXEditor : public UI_EFXEditor
 
   /**
    * Get sceness from the EFX function's device
-   * and fill the combos with them.
+   * and fill the list views with them.
    */
-  void fillSceneCombos();
+  void fillSceneLists();
 
   /**
    * Update the list of available buses
@@ -87,8 +87,9 @@ class EFXEditor : public UI_EFXEditor
   
   void slotStartSceneCheckboxToggled(bool);
   void slotStopSceneCheckboxToggled(bool);
-  void slotStartSceneComboSelected(int index);
-  void slotStopSceneComboSelected(int index);
+
+  void slotStartSceneListSelectionChanged(QListViewItem* item);
+  void slotStopSceneListSelectionChanged(QListViewItem* item);
 
  protected:
   EFXPreviewArea* m_previewArea;

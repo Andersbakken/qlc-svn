@@ -287,7 +287,6 @@ class EFX : public Function
    * Set the start scene if Enabled
    *
    */
-  
   void setStartScene(t_function_id id);
   
   /**
@@ -297,10 +296,21 @@ class EFX : public Function
   t_function_id startScene();
   
   /**
+   * Start scene enabled
+   *
+   */
+  void setStartSceneEnabled(bool set);
+
+  /**
+   * Get start scene enabled status
+   *
+   */
+  bool startSceneEnabled();
+
+  /**
    * Set the stop scene if Enabled
    *
    */
-  
   void setStopScene(t_function_id id);
   
   /**
@@ -309,6 +319,18 @@ class EFX : public Function
    */
   t_function_id stopScene();
   
+  /**
+   * Stop scene enabled
+   *
+   */
+  void setStopSceneEnabled(bool set);
+
+  /**
+   * Get stop scene enabled status
+   *
+   */
+  bool stopSceneEnabled();
+
   /**
    * Copy function contents from another function
    *
@@ -561,8 +583,19 @@ class EFX : public Function
    */
   t_bus_id m_modulationBus;
 
+  /**
+   * Start (initialisation) scene
+   *
+   */
   t_function_id m_startSceneID;
+  bool m_startSceneEnabled;
+
+  /**
+   * Stop (de-initialisation) scene
+   *
+   */
   t_function_id m_stopSceneID;
+  bool m_stopSceneEnabled;
     
   /**
    * The point array which holds a preview of the pattern

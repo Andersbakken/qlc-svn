@@ -41,7 +41,7 @@
                         <cstring>m_deviceEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The device file that is the interface for DMX4Linux. For example /dev/dmx.</string>
+                        <string>The device file that is the interface for DMX4Linux. Usually /dev/dmx.</string>
                     </property>
                 </widget>
             </vbox>
@@ -78,6 +78,9 @@
                     <property name="alignment">
                         <set>AlignCenter</set>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Current interface status</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -85,6 +88,9 @@
                     </property>
                     <property name="text">
                         <string>&amp;Activate</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+A</string>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Activate the interface. Pressing this button also saves settings.</string>
@@ -130,6 +136,9 @@
                     <property name="default">
                         <bool>true</bool>
                     </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close the dialog</string>
+                    </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
@@ -137,6 +146,12 @@
                     </property>
                     <property name="text">
                         <string>&amp;Cancel</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+C</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close the dialog</string>
                     </property>
                 </widget>
             </hbox>

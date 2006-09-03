@@ -33,6 +33,7 @@
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
 #include <qlineedit.h>
+#include <qlistview.h>
 #include <qspinbox.h>
 #include <qlabel.h>
 #include <assert.h>
@@ -128,7 +129,7 @@ void EFXEditor::setEFX(EFX* efx)
   m_modulationBusCombo->setCurrentItem(m_efx->modulationBus());
 
   fillChannelCombos();
-  fillSceneCombos();
+  fillSceneLists();
 }
 
 void EFXEditor::fillChannelCombos()
@@ -199,68 +200,88 @@ void EFXEditor::fillChannelCombos()
     }
 }
 
-void EFXEditor::fillSceneCombos()
+void EFXEditor::fillSceneLists()
 {
+  Function* function = NULL;
+  QListViewItem* item = NULL;
+  QListViewItem* startItem = NULL;
+  QListViewItem* stopItem = NULL;
+  QString s;
+
   assert(m_efx);
   
-//  Device* device = _app->doc()->device(m_efx->device());
-//  assert(device);
-  
-  QString s;
   for (t_function_id id = 0; id < KFunctionArraySize; id++)
     {
-      Function* f = _app->doc()->function(id);
-      if (!f)
-        continue;
+      function = _app->doc()->function(id);
+
+      if (function == NULL)
+	{
+	  continue;
+	}
 	
-      if (f->type() == Function::Scene && f->device() == m_efx->device())
+      if (function->type() == Function::Scene && 
+	  function->device() == m_efx->device())
         {
-      
-      // Insert id:name strings to combos
-          s.sprintf("%d:" + f->name(), id);
-          m_startSceneCombo->insertItem(s);
-          m_stopSceneCombo->insertItem(s);
+	  s.sprintf("%d", function->id());
+
+	  /* Insert the function to start scene list */
+	  item = new QListViewItem(m_startSceneList);
+	  item->setText(0, function->name());
+	  item->setText(1, s);
+
+	  /* Select the scene from the start scene list */
+	  if (m_efx->startScene() == function->id())
+	    {
+	      m_startSceneList->setSelected(item, TRUE);
+	      startItem = item;
+	    }
+
+	  /* Insert the function to stop scene list */
+	  item = new QListViewItem(m_stopSceneList);
+	  item->setText(0, function->name());
+	  item->setText(1, s);
+
+	  /* Select the scene from the stop scene list */
+	  if (m_efx->stopScene() == function->id())
+	    {
+	      m_stopSceneList->setSelected(item, TRUE);
+	      stopItem = item;
+	    }
         }
     }
-    
-  if (m_efx->startScene() > KNoID)
+  
+  if (startItem)
+    {
+      /* Make sure that the selected item is visible */
+      m_startSceneList->ensureItemVisible(startItem);
+    }
+
+  if (stopItem)
+    {
+      /* Make sure that the selected item is visible */
+      m_stopSceneList->ensureItemVisible(stopItem);
+    }
+
+  if (m_efx->startSceneEnabled())
     {
       m_startSceneCheckbox->setChecked(true);
-      /* If the EFX already has a valid start function, select it instead */
-      for (int i = 0; i < m_startSceneCombo->count(); i++)
-	{
-	  QString cvs = m_startSceneCombo->text(i);
-          if (cvs.section(':', 0, 0).toInt() == m_efx->startScene())
-	    {
-	      m_startSceneCombo->setCurrentItem(i);
-	      break;
-	    }
-	}
+      m_startSceneList->setEnabled(true);
     }
   else
     {
       m_startSceneCheckbox->setChecked(false);
-      m_startSceneCombo->setEnabled(false);
+      m_startSceneList->setEnabled(false);
     }
 
-  if (m_efx->stopScene() > KNoID)
+  if (m_efx->stopSceneEnabled())
     {
       m_stopSceneCheckbox->setChecked(true);
-      /* If the EFX already has a valid stop function, select it instead */
-      for (int i = 0; i < m_stopSceneCombo->count(); i++)
-	{
-	  QString cvs = m_stopSceneCombo->text(i);
-          if (cvs.section(':', 0, 0).toInt() == m_efx->stopScene())
-	    {
-	      m_stopSceneCombo->setCurrentItem(i);
-	      break;
-	    }
-	}
+      m_stopSceneList->setEnabled(true);
     }
   else
     {
       m_stopSceneCheckbox->setChecked(false);
-      m_stopSceneCombo->setEnabled(false);
+      m_stopSceneList->setEnabled(false);
     }
 }
 
@@ -433,53 +454,36 @@ void EFXEditor::slotStartSceneCheckboxToggled(bool state)
 {
   assert(m_efx);
 
-  if (state)
-    {
-      m_startSceneCombo->setEnabled(true);
-      slotStartSceneComboSelected(m_startSceneCombo->currentItem());
-    }
-  else
-    {
-      m_startSceneCombo->setEnabled(false);
-      t_function_id scene = KNoID;
-      m_efx->setStartScene(static_cast<t_function_id> (scene));
-    }
-}
+  m_startSceneList->setEnabled(state);
+  m_efx->setStartSceneEnabled(state);
 
+  slotStartSceneListSelectionChanged(m_startSceneList->selectedItem());
+}
 
 void EFXEditor::slotStopSceneCheckboxToggled(bool state)
 {
   assert(m_efx);
 
-  if (state)
-    {
-      m_stopSceneCombo->setEnabled(true);
-      slotStopSceneComboSelected(m_stopSceneCombo->currentItem());
-    }
-  else
-    {
-      m_stopSceneCombo->setEnabled(false);
-      t_function_id scene = KNoID;
-      m_efx->setStopScene(static_cast<t_function_id> (scene));
-    }
+  m_stopSceneList->setEnabled(state);
+  m_efx->setStopSceneEnabled(state);
+
+  slotStopSceneListSelectionChanged(m_stopSceneList->selectedItem());
 }
 
-void EFXEditor::slotStartSceneComboSelected(int scene)
+void EFXEditor::slotStartSceneListSelectionChanged(QListViewItem* item)
 {
   assert(m_efx);
 
-  QString csv = m_startSceneCombo->currentText();
-  QString s = csv.section(':', 0, 0);
-  m_efx->setStartScene(s.toInt());
+  if (item)
+    m_efx->setStartScene(item->text(1).toInt());
 }
 
-void EFXEditor::slotStopSceneComboSelected(int scene)
+void EFXEditor::slotStopSceneListSelectionChanged(QListViewItem* item)
 {
   assert(m_efx);
-  
-  QString csv = m_stopSceneCombo->currentText();
-  QString s = csv.section(':', 0, 0);
-  m_efx->setStopScene(s.toInt());
+   
+  if (item)
+    m_efx->setStopScene(item->text(1).toInt());
 }
 
 /*****************************************************************************
