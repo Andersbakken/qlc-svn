@@ -1148,6 +1148,18 @@
         <receiver>UI_EFXEditor</receiver>
         <slot>slotStopSceneCheckboxToggled(bool)</slot>
     </connection>
+    <connection>
+        <sender>m_directionGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotDirectionClicked(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_runOrderGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_EFXEditor</receiver>
+        <slot>slotRunOrderClicked(int)</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>m_nameEdit</tabstop>
@@ -1188,6 +1200,8 @@
     <slot>slotStopSceneCheckboxToggled( bool )</slot>
     <slot>slotStartSceneListSelectionChanged(QListViewItem*)</slot>
     <slot>slotStopSceneListSelectionChanged(QListViewItem*)</slot>
+    <slot>slotDirectionClicked(int)</slot>
+    <slot>slotRunOrderClicked(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

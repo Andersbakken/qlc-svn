@@ -486,6 +486,20 @@ void EFXEditor::slotStopSceneListSelectionChanged(QListViewItem* item)
     m_efx->setStopScene(item->text(1).toInt());
 }
 
+void EFXEditor::slotDirectionClicked(int item)
+{
+  assert(m_efx);
+
+  m_efx->setDirection((EFX::Direction) item);
+}
+
+void EFXEditor::slotRunOrderClicked(int item)
+{
+  assert(m_efx);
+
+  m_efx->setRunOrder((EFX::RunOrder) item);
+}
+
 /*****************************************************************************
  * EFX Preview Area implementation
  *****************************************************************************/

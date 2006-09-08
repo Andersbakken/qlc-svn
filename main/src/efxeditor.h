@@ -91,6 +91,9 @@ class EFXEditor : public UI_EFXEditor
   void slotStartSceneListSelectionChanged(QListViewItem* item);
   void slotStopSceneListSelectionChanged(QListViewItem* item);
 
+  void slotDirectionClicked(int item);
+  void slotRunOrderClicked(int item);
+
  protected:
   EFXPreviewArea* m_previewArea;
   QPointArray* m_pointArray;

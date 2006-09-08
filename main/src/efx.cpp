@@ -1169,6 +1169,7 @@ void EFX::run()
   float i = 0;
   float x = 0;
   float y = 0;
+  Direction dir = direction();
 
   // Initialize this function for running
   init();
@@ -1183,13 +1184,39 @@ void EFX::run()
 
   while (!m_stopped)
     {
-      for (i = 0; i < (M_PI * 2.0) && !m_stopped; i += m_stepSize)
+      if (dir == Forward)
 	{
-	  /* Calculate the next point */
-	  pointFunc(this, i, &x, &y);
+	  for (i = 0; i < (M_PI * 2.0) && !m_stopped; i += m_stepSize)
+	    {
+	      /* Calculate the next point */
+	      pointFunc(this, i, &x, &y);
+	      
+	      /* Write the point to event buffer */
+	      setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
+	    }
+	}
+      else
+	{
+	  for (i = (M_PI * 2.0); i > 0 && !m_stopped; i -= m_stepSize)
+	    {
+	      /* Calculate the next point */
+	      pointFunc(this, i, &x, &y);
+	      
+	      /* Write the point to event buffer */
+	      setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
+	    }
+	}
 
-	  /* Write the point to event buffer */
-	  setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
+      if (runOrder() == PingPong)
+	{
+	  if (dir == Forward)
+	    dir = Backward;
+	  else
+	    dir = Forward;
+	}
+      else if (runOrder() == SingleShot)
+	{
+	  m_stopped = true;
 	}
     }
 
