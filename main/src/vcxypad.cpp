@@ -114,22 +114,22 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 	{
 		++xit;
 
+		s.sprintf("ChannelEntryX = %d,%d,%d,%d,",
+			  xyc->deviceID(),
+			  xyc->channel(),
+			  xyc->lo(),
+			  xyc->hi());
+
 		if (xyc->reverse() == true)
-		{
-			s.sprintf("ChannelEntryX = %d,%d,%d,%d,true\n",
-				xyc->deviceID(),
-				xyc->channel(),
-				xyc->lo(),
-				xyc->hi());
-		}
+		  {
+		    s += Settings::trueValue();
+		  }
 		else
-		{
-			s.sprintf("ChannelEntryX = %d,%d,%d,%d,false\n",
-				xyc->deviceID(),
-				xyc->channel(),
-				xyc->lo(),
-				xyc->hi());
-		}
+		  {
+		    s += Settings::falseValue();
+		  }
+
+		s += "\n";
 
 		file.writeBlock((const char*) s, s.length());
 	}
@@ -140,22 +140,22 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 	{
 		++yit;
 
+		s.sprintf("ChannelEntryY = %d,%d,%d,%d,",
+			  xyc->deviceID(),
+			  xyc->channel(),
+			  xyc->lo(),
+			  xyc->hi());
+
 		if (xyc->reverse() == true)
-		{
-			s.sprintf("ChannelEntryY = %d,%d,%d,%d,true\n",
-				xyc->deviceID(),
-				xyc->channel(),
-				xyc->lo(),
-				xyc->hi());
-		}
+		  {
+		    s += Settings::trueValue();
+		  }
 		else
-		{
-			s.sprintf("ChannelEntryY = %d,%d,%d,%d,false\n",
-				xyc->deviceID(),
-				xyc->channel(),
-				xyc->lo(),
-				xyc->hi());
-		}
+		  {
+		    s += Settings::falseValue();
+		  }
+
+		s += "\n";
 
 		file.writeBlock((const char*) s, s.length());
 	}
@@ -337,8 +337,7 @@ void VCXYPad::createChannelUnitFromString(QString string, bool isX)
 				lst[XYChannelUnit::FileElementChannel].toInt(),
 				lst[XYChannelUnit::FileElementLo].toInt(),
 				lst[XYChannelUnit::FileElementHi].toInt(),
-				lst[XYChannelUnit::FileElementReverse]
-					== Settings::trueValue())
+				(lst[XYChannelUnit::FileElementReverse] == Settings::trueValue()) ? true : false)
 			);
 	}
 	else
@@ -349,8 +348,7 @@ void VCXYPad::createChannelUnitFromString(QString string, bool isX)
 				lst[XYChannelUnit::FileElementChannel].toInt(),
 				lst[XYChannelUnit::FileElementLo].toInt(),
 				lst[XYChannelUnit::FileElementHi].toInt(),
-				lst[XYChannelUnit::FileElementReverse]
-					== Settings::trueValue())
+				(lst[XYChannelUnit::FileElementReverse] == Settings::trueValue()) ? true : false)
 			);
 	}
 }
