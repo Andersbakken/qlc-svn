@@ -74,6 +74,7 @@ noinst_HEADERS = \
 	src/monitor.h \
 	src/newdevice.h \
 	src/patterngenerator.h \
+	src/pluginmanager.h \
 	src/sceneeditor.h \
 	src/scene.h \
 	src/settingsui.h \
@@ -186,6 +187,7 @@ qlc_SOURCES = \
 	src/monitor.cpp \
 	src/newdevice.cpp \
 	src/patterngenerator.cpp \
+	src/pluginmanager.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
 	src/settingsui.cpp \
@@ -245,6 +247,7 @@ qlc_SOURCES = \
 	src/moc_monitor.cpp \
 	src/moc_newdevice.cpp \
 	src/moc_patterngenerator.cpp \
+	src/moc_pluginmanager.cpp \
 	src/moc_scene.cpp \
 	src/moc_sceneeditor.cpp \
 	src/moc_settingsui.cpp \

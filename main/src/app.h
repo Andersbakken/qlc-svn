@@ -56,6 +56,7 @@ class DeviceClass;
 class FunctionManager;
 class BusProperties;
 class DocumentBrowser;
+class PluginManager;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -145,6 +146,7 @@ class App : public QMainWindow
   void slotFileSave();
   void slotFileSaveAs();
   void slotFileSettings();
+  void slotFilePlugins();
   void slotFileQuit();
 
   void slotViewDeviceManager();
@@ -226,6 +228,7 @@ class App : public QMainWindow
   FunctionManager* m_functionManager;
   BusProperties* m_busProperties;
   DocumentBrowser* m_documentBrowser;
+  PluginManager* m_pluginManager;
 
   FunctionConsumer* m_functionConsumer;
 

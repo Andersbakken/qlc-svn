@@ -60,6 +60,7 @@
 #include "aboutbox.h"
 #include "dummyoutplugin.h"
 #include "dummyinplugin.h"
+#include "pluginmanager.h"
 
 #include "common/settings.h"
 #include "common/inputplugin.h"
@@ -90,7 +91,8 @@ t_plugin_id App::NextPluginID (KPluginIDMin);
 #define ID_FILE_CLOSE               	10050
 #define ID_FILE_PRINT               	10060
 #define ID_FILE_SETTINGS                10070
-#define ID_FILE_QUIT                	10080
+#define ID_FILE_PLUGINS                 10080
+#define ID_FILE_QUIT                	10090
 
 ///////////////////////////////////////////////////////////////////
 // Tools menu entries
@@ -230,6 +232,11 @@ App::~App()
 	{
 		delete m_deviceClassList.take(0);
 	}
+
+	// Delete plugin manager
+	if (m_pluginManager)
+	    delete m_pluginManager;
+	m_pluginManager = NULL;
 
 	// Delete plugins
 	Plugin* plugin = NULL;
@@ -548,6 +555,9 @@ void App::initMenuBar()
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
 			 "Se&ttings...", this, SLOT(slotFileSettings()),
 			 0, ID_FILE_SETTINGS);
+  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/plugin.png")),
+			 "&Plugins...", this, SLOT(slotFilePlugins()),
+			 0, ID_FILE_PLUGINS);
   m_fileMenu->insertSeparator();
   m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.png")),
 			 "E&xit", this, SLOT(slotFileQuit()),
@@ -939,6 +949,20 @@ void App::slotFileSettings()
   delete sui;
 }
 
+//
+// Open plugin manager
+//
+void App::slotFilePlugins()
+{
+  if (m_pluginManager == NULL)
+    {
+      m_pluginManager = new PluginManager(workspace());
+      m_pluginManager->initView();
+    }
+
+  m_pluginManager->show();
+  m_pluginManager->setGeometry(0, 0, 600, 400);
+}
 
 //
 // Quit the program

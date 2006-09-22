@@ -1,3 +1,6 @@
+2006-Sep-22  Heikki Junnila <hjunnila@users.sf.net>
+	* Added a preliminary plugin manager to File menu.
+
 2006-Sep-13  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a bug in XYPad, which didn't save the channels' reverse state
 

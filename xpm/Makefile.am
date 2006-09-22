@@ -42,6 +42,7 @@ dist_images_DATA = \
 	label.png \
 	monitor.png \
 	panic.png \
+	plugin.png \
 	player_play.png \
 	player_stop.png \
 	qlc-big.png \
