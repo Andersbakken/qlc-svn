@@ -66,13 +66,6 @@ const int KMenuItemConsole    ( 4 );
 const int KMenuItemClone      ( 5 );
 const int KMenuItemAutoFunction      ( 6 );
 
-const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
-const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
-const QString KEY_DEVICE_MANAGER_Y     ( "DeviceManagerRectY" );
-const QString KEY_DEVICE_MANAGER_W     ( "DeviceManagerRectW" );
-const QString KEY_DEVICE_MANAGER_H     ( "DeviceManagerRectH" );
-const QString KEY_DEVICE_MANAGER_SPLITTER ( "DeviceManagerSplitter" );
-
 const int KDefaultWidth  ( 500 );
 const int KDefaultHeight ( 300 );
 
@@ -205,19 +198,6 @@ void DeviceManagerView::initView()
 	}
 
 	m_splitter->setSizes(list);
-
-	// Check if DM should be open
-	QString config;
-	if (_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config) != -1
-		&& config == Settings::trueValue())
-	{
-		_app->slotViewDeviceManager();
-	}
-	else
-	{
-		hide();
-		_app->slotDeviceManagerViewClosed();
-	}
 }
 
 
@@ -387,6 +367,8 @@ void DeviceManagerView::slotUpdate()
 	    }
 	}
     }
+
+  slotSelectionChanged(m_listView->currentItem());
 }
 
 

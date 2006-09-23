@@ -34,6 +34,8 @@ class QListView;
 class QListViewItem;
 class QTextView;
 
+class Plugin;
+
 class PluginManager : public QWidget
 {
   Q_OBJECT
@@ -47,17 +49,27 @@ class PluginManager : public QWidget
  protected:
   void initTitle();
   void initToolBar();
+  void initMenuBar();
   void initDataView();
   
   void fillPlugins();
-  void fillInputPlugins(QListViewItem* parent);
-  void fillOutputPlugins(QListViewItem* parent);
+
+  void updateActivePlugins();
+  void updateActiveStatus(QListViewItem* parent);
   
  public slots:
   void slotDoubleClicked(QListViewItem* item);
   void slotConfigure();
   void slotSelectionChanged(QListViewItem* item);
-  
+  void slotPluginActivated(Plugin* plugin);
+  void slotRightButtonClicked(QListViewItem* item, const QPoint& point, int col);
+
+ signals:
+  void closed();
+
+ protected slots:
+  void closeEvent(QCloseEvent* e);
+
  protected:
   QVBoxLayout* m_layout;
   QToolBar* m_toolbar;
@@ -67,7 +79,6 @@ class PluginManager : public QWidget
   QTextView* m_textView;
   
   QToolButton* m_configureButton;
-  QToolButton* m_activateButton;
 };
 
 #endif

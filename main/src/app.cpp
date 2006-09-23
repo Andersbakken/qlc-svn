@@ -148,30 +148,36 @@ void blackOutWriter(t_channel, t_value);
 void normalWriter(t_channel, t_value);
 
 App::App() : QMainWindow(),
-	m_functionManager  ( NULL ),
-	m_busProperties    ( NULL ),
-	m_dmView           ( NULL ),
-	m_virtualConsole   ( NULL ),
-	m_doc              ( NULL ),
-	m_workspace        ( NULL ),
-	m_functionConsumer ( NULL ),
-	m_inputPlugin      ( NULL ),
-	m_outputPlugin     ( NULL ),
-	m_dummyInPlugin    ( NULL ),
-	m_dummyOutPlugin   ( NULL ),
-	m_settings         ( NULL ),
-	m_mode             ( Design ),
-	m_blackOut         ( false ),
-	m_modeIndicator    ( NULL ),
-	m_blackOutIndicator ( NULL ),
-	m_blackOutIndicatorTimer ( NULL ),
-	m_documentBrowser  ( NULL )
+	     m_functionManager  ( NULL ),
+	     m_busProperties    ( NULL ),
+	     m_dmView           ( NULL ),
+	     m_virtualConsole   ( NULL ),
+	     m_doc              ( NULL ),
+	     m_workspace        ( NULL ),
+	     m_functionConsumer ( NULL ),
+	     m_inputPlugin      ( NULL ),
+	     m_outputPlugin     ( NULL ),
+	     m_dummyInPlugin    ( NULL ),
+	     m_dummyOutPlugin   ( NULL ),
+	     m_settings         ( NULL ),
+	     m_mode             ( Design ),
+	     m_blackOut         ( false ),
+	     m_modeIndicator    ( NULL ),
+	     m_blackOutIndicator ( NULL ),
+	     m_blackOutIndicatorTimer ( NULL ),
+	     m_documentBrowser  ( NULL ),
+	     m_pluginManager    ( NULL )
 {
-	writer = normalWriter;
+  writer = normalWriter;
 }
 
 App::~App()
 {
+	// Delete plugin manager
+	if (m_pluginManager)
+	        delete m_pluginManager;
+	m_pluginManager = NULL;
+
 	// Delete function tree
 	if (m_functionManager)
 		delete m_functionManager;
@@ -232,11 +238,6 @@ App::~App()
 	{
 		delete m_deviceClassList.take(0);
 	}
-
-	// Delete plugin manager
-	if (m_pluginManager)
-	    delete m_pluginManager;
-	m_pluginManager = NULL;
 
 	// Delete plugins
 	Plugin* plugin = NULL;
@@ -300,11 +301,6 @@ void App::init(QString openFile)
 	initWorkspace();
 
 	//
-	// Plugins
-	//
-//	initPlugins();
-
-	//
 	// Device classes
 	//
 	initDeviceClasses();
@@ -331,9 +327,8 @@ void App::init(QString openFile)
 	initDoc();
 
 	//
-	// Views
+	// Virtual Console
 	//
-	initDeviceManagerView();
 	initVirtualConsole();
 
 	//
@@ -382,6 +377,16 @@ void App::init(QString openFile)
 				}
 			}
 		}
+	}
+
+	//
+	// Check if DM should be open
+	//
+	QString config;
+	if (_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config) != -1
+		&& config == Settings::trueValue())
+	{
+		_app->slotViewDeviceManager();
 	}
 }
 
@@ -746,28 +751,6 @@ void App::initDoc()
 
 
 //
-// Device manager
-//
-void App::initDeviceManagerView()
-{
-  if (m_dmView)
-    {
-      delete m_dmView;
-    }
-
-  // Create device manager view
-  m_dmView = new DeviceManagerView(workspace());
-  m_dmView->initView();
-
-  connect(m_dmView, SIGNAL(closed()),
-  	  this, SLOT(slotDeviceManagerViewClosed()));
-
-  connect(m_doc, SIGNAL(deviceListChanged()),
-  	  m_dmView, SLOT(slotUpdate()));
-}
-
-
-//
 // Create virtual console
 //
 void App::initVirtualConsole(void)
@@ -831,7 +814,7 @@ void App::newDocument()
   setCaption(KApplicationNameLong);
 
   initDoc();
-  initDeviceManagerView();
+  deviceManagerView()->slotUpdate();
   initVirtualConsole();
   m_inputPlugin->setEventReceiver(_app->virtualConsole());
   
@@ -960,8 +943,20 @@ void App::slotFilePlugins()
       m_pluginManager->initView();
     }
 
+  connect(m_pluginManager, SIGNAL(closed()),
+  	  this, SLOT(slotPluginManagerClosed()));
+
   m_pluginManager->show();
   m_pluginManager->setGeometry(0, 0, 600, 400);
+}
+
+//
+// Plugin manager was closed
+//
+void App::slotPluginManagerClosed()
+{
+  delete m_pluginManager;
+  m_pluginManager = NULL;
 }
 
 //
@@ -978,6 +973,20 @@ void App::slotFileQuit()
 //
 void App::slotViewDeviceManager()
 {
+  if (m_dmView == NULL)
+    {
+      // Create device manager view
+      m_dmView = new DeviceManagerView(workspace());
+      assert(m_dmView);
+      m_dmView->initView();
+      
+      connect(m_dmView, SIGNAL(closed()),
+	      this, SLOT(slotDeviceManagerViewClosed()));
+      
+      connect(m_doc, SIGNAL(deviceListChanged()),
+	      m_dmView, SLOT(slotUpdate()));
+    }
+
   m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
   m_dmView->show();
   m_dmView->setFocus();
@@ -990,6 +999,9 @@ void App::slotViewDeviceManager()
 void App::slotDeviceManagerViewClosed()
 {
   m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
+
+  delete m_dmView;
+  m_dmView = NULL;
 }
 
 
@@ -1407,6 +1419,9 @@ void App::slotSetMode()
 
       // Close function tree if it's open
       slotFunctionManagerClosed();
+
+      // Close plugin manager if it's open
+      slotPluginManagerClosed();
 
       m_mode = Operate;
     }

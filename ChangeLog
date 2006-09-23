@@ -1,3 +1,8 @@
+2006-Sep-23  Heikki Junnila <hjunnila@users.sf.net>
+	* Improved the plugin manager to show active plugins with an icon
+	* Device manager is only created when it is open, unlike previously,
+	  when it consumed memory even though it was not open nor used.
+
 2006-Sep-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Added a preliminary plugin manager to File menu.
 

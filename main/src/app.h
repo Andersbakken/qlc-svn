@@ -147,6 +147,7 @@ class App : public QMainWindow
   void slotFileSaveAs();
   void slotFileSettings();
   void slotFilePlugins();
+  void slotPluginManagerClosed();
   void slotFileQuit();
 
   void slotViewDeviceManager();
@@ -185,7 +186,7 @@ class App : public QMainWindow
   void initSettings();
   void initDoc();
   void initWorkspace();
-  void initDeviceManagerView();
+
   void initVirtualConsole();
   void initFunctionConsumer();
 

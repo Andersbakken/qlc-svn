@@ -24,14 +24,6 @@
 
 #include <qstring.h>
 
-/*
- * This file should contain ONLY such configuration keys,
- * that absolutely don't fit anywhere else. In other words,
- * only those keys that can't be set anywhere else than
- * settings UI (or indirectly, like app window geometry)
- * and are "get" somewhere else.
- */
-
 // General settings
 const QString KEY_OUTPUT_PLUGIN        (       "OutputPlugin" );
 const QString KEY_INPUT_PLUGIN         (        "InputPlugin" );
@@ -46,6 +38,13 @@ const QString KEY_APP_H                (      "ApplicationRectH" );
 const QString KEY_APP_MAXIMIZED        (  "ApplicationMaximized" );
 const QString KEY_APP_BACKGROUND       ( "ApplicationBackground" );
 const QString KEY_APP_SHOW_TOOLTIPS    (          "ShowTooltips" );
+
+const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
+const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
+const QString KEY_DEVICE_MANAGER_Y     ( "DeviceManagerRectY" );
+const QString KEY_DEVICE_MANAGER_W     ( "DeviceManagerRectW" );
+const QString KEY_DEVICE_MANAGER_H     ( "DeviceManagerRectH" );
+const QString KEY_DEVICE_MANAGER_SPLITTER ( "DeviceManagerSplitter" );
 
 // These aren't actually settings keys, but I wanted to get rid of
 // the compile-time defines, so I moved them here.
