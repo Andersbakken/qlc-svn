@@ -93,6 +93,8 @@ Doc::~Doc()
 	{
 	  delete m_functionArray[i];
 	  m_functionArray[i] = NULL;
+
+	  emit functionRemoved(i);
 	}
     }
 
@@ -107,6 +109,8 @@ Doc::~Doc()
 	{
 	  delete m_deviceArray[i];
 	  m_deviceArray[i] = NULL;
+
+	  emit deviceRemoved(i);
 	}
     }
 
@@ -233,9 +237,6 @@ bool Doc::loadWorkspaceAs(QString &fileName)
       // Set the last workspace name
       //
       _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
-
-      emit deviceListChanged();
-      emit functionListChanged();
     }
 
   setModified(false);
@@ -363,7 +364,7 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 	      d = NULL;
 	    }
 	}
-      else if (id >= 0 && id < KFunctionArraySize)
+      else if (id >= 0 && id < KDeviceArraySize)
 	{
 	  if (m_deviceArray[id] == NULL)
 	    {
@@ -391,7 +392,15 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 	}
 
       setModified(true);
-      emit deviceListChanged();
+    }
+
+  if (d)
+    {
+      // Patch device change events thru Doc
+      connect(d, SIGNAL(changed(t_device_id)),
+	      this, SIGNAL(deviceChanged(t_device_id)));
+
+      emit deviceAdded(d->id());
     }
 
   return d;
@@ -408,6 +417,7 @@ void Doc::deleteDevice(t_device_id id)
       delete m_deviceArray[id];
       m_deviceArray[id] = NULL;
 
+      // Delete all functions associated to removed device
       for (int i = 0; i < KFunctionArraySize; i++)
 	{
 	  if (m_functionArray[i] && m_functionArray[i]->device() == id)
@@ -416,8 +426,9 @@ void Doc::deleteDevice(t_device_id id)
 	    }
 	}
 
-      setModified(true);
-      emit deviceListChanged();
+      emit deviceRemoved(id);
+
+      setModified(true);      
     }
   else
     {
@@ -448,7 +459,9 @@ Device* Doc::device(t_device_id id)
 //
 // Create a new function
 //
-Function* Doc::newFunction(Function::Type type, t_function_id id)
+Function* Doc::newFunction(Function::Type type,
+			   t_device_id device,
+			   t_function_id id)
 {
   Function* f = NULL;
 
@@ -496,6 +509,7 @@ Function* Doc::newFunction(Function::Type type, t_function_id id)
 		{
 		  m_functionArray[i] = f;
 		  f->setID(i);
+		  f->setDevice(device);
 		  break;
 		}
 	    }
@@ -506,6 +520,7 @@ Function* Doc::newFunction(Function::Type type, t_function_id id)
 	    {
 	      m_functionArray[id] = f;
 	      f->setID(id);
+	      f->setDevice(device);
 	    }
 	  else
 	    {
@@ -520,9 +535,12 @@ Function* Doc::newFunction(Function::Type type, t_function_id id)
 			       "Function ID out of bounds!");
 	}
     }
-
-  emit functionListChanged();
-
+  
+  if (f)
+    {
+      emit functionAdded(f->id());
+    }
+  
   return f;
 }
 
@@ -536,9 +554,9 @@ void Doc::deleteFunction(t_function_id id)
     {
       delete m_functionArray[id];
       m_functionArray[id] = NULL;
+      
+      emit functionRemoved(id);
     }
-
-  emit functionListChanged();
 }
 
 
@@ -555,4 +573,16 @@ Function* Doc::function(t_function_id id)
     {
       return NULL;
     }
+}
+
+//
+// Emit a functionChanged() signal.
+//
+// Because Function is not a QObject, it cannot emit signals itself.
+// So, it must call this function manually to make Doc emit the function
+// change signal.
+//
+void Doc::emitFunctionChanged(t_function_id fid)
+{
+  emit functionChanged(fid);
 }

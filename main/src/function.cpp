@@ -167,6 +167,9 @@ bool Function::setName(QString name)
       m_name = QString(name);
       _app->doc()->setModified(true);
       m_startMutex.unlock();
+
+      _app->doc()->emitFunctionChanged(m_id);
+
       return true;
     }
 }
@@ -189,6 +192,9 @@ bool Function::setDevice(t_device_id id)
       m_deviceID = id;
       _app->doc()->setModified(true);
       m_startMutex.unlock();
+
+      _app->doc()->emitFunctionChanged(m_id);
+
       return true;
     }
 }
@@ -245,7 +251,11 @@ bool Function::setBus(t_bus_id id)
 	{
 	  m_busID = id;
 	}
+
       _app->doc()->setModified(true);
+
+      _app->doc()->emitFunctionChanged(m_id);
+      
       m_startMutex.unlock();
       return true;
     }
@@ -373,38 +383,12 @@ Function* Function::create(QPtrList <QString> &list)
   //
   // Create the function and its contents
   //
-  function = _app->doc()->newFunction(type, fid);
+  function = _app->doc()->newFunction(type, did, fid);
   if (function)
     {
-      if ((function->type() == Function::Scene ||
-	   function->type() == Function::Sequence ||
-	   function->type() == Function::EFX) &&
-	  function->setDevice(did) == false)
-	{
-	  //
-	  // Unable to find a device for scene or sequence function
-	  //
-	  _app->doc()->deleteFunction(fid);
-	  function = NULL;
-
-	  QString msg, num;
-	  msg = QString("Unable to create function!\n");
-	  msg += QString("Name:   ") + name + QString("\n");
-	  msg += QString("Type:   ") + typeToString(type) + QString("\n");
-	  num.setNum(busid);
-	  msg += QString("Bus:    ") + num + QString("\n");
-	  num.setNum(fid);
-	  msg += QString("ID:     ") + num + QString("\n");
-	  num.setNum(did);
-	  msg += QString("Device: ") + num + QString(" (MISSING!)");
-	  QMessageBox::critical(_app, KApplicationNameShort, msg);
-	}
-      else
-	{
-	  function->setName(name);
-	  function->setBus(busid);
-	  function->createContents(list);
-	}
+      function->setName(name);
+      function->setBus(busid);
+      function->createContents(list);
     }
   else
     {

@@ -29,6 +29,7 @@
 #include "functioncollection.h"
 #include "scene.h"
 #include "sequence.h"
+#include "efx.h"
 #include "consolechannel.h"
 #include "logicalchannel.h"
 #include "capability.h"
@@ -149,8 +150,8 @@ void DeviceManagerView::initView()
 	// Connect to know when to enable/disable buttons
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
-	// Update view
-	update();
+	// Update the list of devices
+	updateView();
 
 	//
 	// Set widget proportions
@@ -322,11 +323,72 @@ void DeviceManagerView::initDataView()
   slotSelectionChanged(NULL);
 }
 
+//
+// Signal handler for deviceAdded() signals from Doc
+//
+void DeviceManagerView::slotDeviceAdded(t_device_id id)
+{
+  Device* dev = NULL;
+  QListViewItem* item = NULL;
+
+  QString s;
+
+  dev = _app->doc()->device(id);
+  if (dev != NULL)
+    {
+      item = new QListViewItem(m_listView);
+
+      // Universe column
+      s.sprintf("%d", dev->universe() + 1); // Don't start from 0
+      item->setText(KColumnUniverse, s);
+
+      // Name column
+      item->setText(KColumnName, dev->name());
+      
+      // ID column
+      s.setNum(id);
+      item->setText(KColumnID, s);
+    }
+}
 
 //
-// Update List View
+// Signal handler for deviceRemoved() signals from Doc
 //
-void DeviceManagerView::slotUpdate()
+void DeviceManagerView::slotDeviceRemoved(t_device_id id)
+{
+  QListViewItemIterator it(m_listView);
+  QListViewItem* item = NULL;
+  QListViewItem* nextItem = NULL;
+  Device* device = NULL;
+
+  while ((item = it.current()) != NULL)
+    {
+      if (item->text(KColumnID).toInt() == id)
+	{
+	  if (item->isSelected())
+	    {
+	      // Try to select the closest neighbour
+	      if (item->itemAbove())
+		nextItem = item->itemAbove();
+	      else
+		nextItem = item->itemBelow();
+
+	      // Select the neighbour
+	      m_listView->setSelected(nextItem, true);
+	      slotSelectionChanged(nextItem);
+	    }
+
+	  delete item;
+	}
+
+      ++it;
+    }
+}
+
+//
+// Update the list view completely
+//
+void DeviceManagerView::updateView()
 {
   t_device_id currentId = 0;
   QListViewItem* newItem = NULL;
@@ -370,7 +432,6 @@ void DeviceManagerView::slotUpdate()
 
   slotSelectionChanged(m_listView->currentItem());
 }
-
 
 //
 // Add a device
@@ -476,15 +537,6 @@ void DeviceManagerView::slotRemove()
 
       _app->doc()->deleteDevice(id);
     }
-
-  if (m_listView->currentItem())
-    {
-      m_listView->setSelected(m_listView->currentItem(), true);
-    }
-  else
-    {
-      slotSelectionChanged(NULL);
-    }
 }
 
 void DeviceManagerView::slotDoubleClicked(QListViewItem* item)
@@ -534,38 +586,57 @@ void DeviceManagerView::slotMonitor()
 
 void DeviceManagerView::slotAutoFunction()
 {
-  QListViewItem* item = m_listView->currentItem();
+  Scene* sc = NULL;
+  Device* device = NULL;
+  LogicalChannel* channel = NULL;
+  Capability* capability = NULL;
 
-  t_device_id id = item->text(KColumnID).toInt();
-  Device* device = _app->doc()->device(id);
+  QListViewItem* item = NULL;
 
-  ASSERT(device);
+  t_device_id did = KNoID;
+  unsigned int i = 0;
 
-  unsigned int n = 0;
+  item = m_listView->currentItem();
+  if (item == NULL)
+    return;
+
+  did = item->text(KColumnID).toInt();
+
+  device = _app->doc()->device(did);
+  assert(device);
+  
+  QPtrListIterator<LogicalChannel> ch_it(*device->deviceClass()->channels());
+
   // Loop over all channels
-  while(n < device->deviceClass()->channels()->count())
+  while ((channel = ch_it.current()) != NULL)
     {
-      unsigned int i = 0;
+      QPtrListIterator<Capability> cap_it(*channel->capabilities());
+
       // Loop over all capabilities
-      for (Capability* c = device->deviceClass()->channels()->at(n)->capabilities()->first(); c != NULL;
-                        c = device->deviceClass()->channels()->at(n)->capabilities()->next())
-         {
-               Scene* sc = static_cast<Scene*>	(_app->doc()->newFunction(Function::Scene));
-	       sc->setDevice(id);
-               sc->setName(device->deviceClass()->channels()->at(n)->name()+"-"+c->name());
-	       unsigned int nn = 0;
-	       // Set the unused channels to NoSet and zero.
-               while(nn < device->deviceClass()->channels()->count())
-	         {
-		   sc->set(nn, 0, Scene::NoSet);
-		   nn++;
-		 }
-	       // Create function
-	       sc->set(n, c->lo(), Scene::Set);
-	       i++;
-         }
-      n++;
+      while ((capability = cap_it.current()) != NULL)
+	{
+	  sc = static_cast<Scene*> 
+	    (_app->doc()->newFunction(Function::Scene, did));
+	  
+	  sc->setName(channel->name() + " - " + capability->name());
+
+	  // Set the unused channels to NoSet and zero.
+	  for (i = 0; i < device->deviceClass()->channels()->count(); i++)
+	    {
+	      sc->set(i, 0, Scene::NoSet);
+	    }
+
+	  // Set only the capability
+	  sc->set(channel->channel(),
+		  (t_value) ((capability->lo() + capability->hi()) / 2),
+		  Scene::Set);
+
+	  ++cap_it;
+	}
+
+      ++ch_it;
     }
+
   device->slotConsoleClosed();
   device->viewConsole();
 }
@@ -756,7 +827,7 @@ void DeviceManagerView::copyFunction(Function* function, Device* device)
     case Function::Scene:
       {
 	Scene* scene = static_cast<Scene*>
-	  (_app->doc()->newFunction(Function::Scene));
+	  (_app->doc()->newFunction(Function::Scene, device->id()));
 
 	scene->copyFrom(static_cast<Scene*> (function), device->id());
       }
@@ -765,7 +836,7 @@ void DeviceManagerView::copyFunction(Function* function, Device* device)
     case Function::Chaser:
       {
 	Chaser* chaser = static_cast<Chaser*>
-	  (_app->doc()->newFunction(Function::Chaser));
+	  (_app->doc()->newFunction(Function::Chaser, KNoID));
 
 	chaser->copyFrom(static_cast<Chaser*> (function));
 	assert(device == NULL);
@@ -775,7 +846,7 @@ void DeviceManagerView::copyFunction(Function* function, Device* device)
     case Function::Collection:
       {
 	FunctionCollection* fc = static_cast<FunctionCollection*>
-	  (_app->doc()->newFunction(Function::Collection));
+	  (_app->doc()->newFunction(Function::Collection, KNoID));
 
 	fc->copyFrom(static_cast<FunctionCollection*> (function));
 	assert(device == NULL);
@@ -785,9 +856,18 @@ void DeviceManagerView::copyFunction(Function* function, Device* device)
     case Function::Sequence:
       {
 	Sequence* sequence = static_cast<Sequence*>
-	  (_app->doc()->newFunction(Function::Sequence));
+	  (_app->doc()->newFunction(Function::Sequence, KNoID));
 
 	sequence->copyFrom(static_cast<Sequence*> (function), device->id());
+      }
+      break;
+
+    case Function::EFX:
+      {
+	EFX* efx = static_cast<EFX*>
+	  (_app->doc()->newFunction(Function::EFX, KNoID));
+
+	efx->copyFrom(static_cast<EFX*> (function), device->id());
       }
       break;
 

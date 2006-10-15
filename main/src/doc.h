@@ -65,16 +65,26 @@ class Doc : public QObject
   //
   // Functions
   //
-  Function* newFunction(Function::Type, t_function_id = KNoID);
+  Function* newFunction(Function::Type,
+			t_device_id device,
+			t_function_id id = KNoID);
   void deleteFunction(t_function_id);
   Function* function(t_function_id);
+
+  // Emit a functionChanged() signal
+  void emitFunctionChanged(t_function_id);
 
  private slots:
   void slotModeChanged();
 
  signals:
-  void deviceListChanged();
-  void functionListChanged();
+  void deviceAdded(t_device_id);
+  void deviceRemoved(t_device_id);
+  void deviceChanged(t_device_id);
+
+  void functionAdded(t_function_id);
+  void functionRemoved(t_function_id);
+  void functionChanged(t_function_id);
 
  private:
   QString m_fileName;

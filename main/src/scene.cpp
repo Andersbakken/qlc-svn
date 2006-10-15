@@ -61,10 +61,10 @@ void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 {
   assert(sc);
 
-  setDevice(toDevice);
+  Function::setName(sc->name());
+  Function::setBus(sc->busID());
 
-  m_name = QString(sc->m_name);
-  m_busID = sc->m_busID;
+  setDevice(toDevice);
 
   if (m_values) delete [] m_values;
   m_values = new SceneValue[m_channels];
@@ -108,6 +108,8 @@ bool Scene::setDevice(t_device_id id)
     }
 
   m_deviceID = id;
+  
+  _app->doc()->emitFunctionChanged(m_id);
 
   return true;
 }

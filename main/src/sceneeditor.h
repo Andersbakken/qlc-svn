@@ -39,6 +39,7 @@ class QLabel;
 class QPushButton;
 class QRadioButton;
 class QPopupMenu;
+class ListBoxIDItem;
 
 class Device;
 
@@ -68,7 +69,12 @@ class SceneEditor : public UI_SceneEditor
   void slotRemove();
   void slotRename();
 
+  void slotFunctionAdded(t_function_id);
+  void slotFunctionRemoved(t_function_id);
+  void slotFunctionChanged(t_function_id);
+
  protected:
+  ListBoxIDItem* getItem(t_function_id id);
   void fillFunctions();
   void selectFunction(t_function_id fid);
   void setStatusText(QString text, QColor color);

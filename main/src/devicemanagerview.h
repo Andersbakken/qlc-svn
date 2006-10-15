@@ -48,16 +48,18 @@ class DeviceManagerView : public QWidget
   void initView();
 
  public slots:
-  void slotUpdate();
+  void slotDeviceAdded(t_device_id);
+  void slotDeviceRemoved(t_device_id);
 
- private:
+ protected:
   void initTitle();
   void initToolBar();
   void initDataView();
+  void updateView();
   
   void copyFunction(Function* function, Device* device);
 
- private slots:
+ protected slots:
   void slotAdd();
   void slotRemove();
   void slotClone();

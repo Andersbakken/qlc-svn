@@ -95,20 +95,20 @@ void SceneEditor::initMenu()
   if (m_menu) delete m_menu;
   m_menu = new QPopupMenu();
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/apply.png")),
-		     "Activate Selected", this, SLOT(slotActivate()),
+		     "Activate", this, SLOT(slotActivate()),
 		     0, KMenuActivate);
   m_menu->insertSeparator();
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/wizard.png")),
-		     "Create New...", this, SLOT(slotNew()),
+		     "New scene...", this, SLOT(slotNew()),
 		     0, KMenuNew);
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.png")),
 		     "Overwrite", this, SLOT(slotStore()),
 		     0, KMenuStore);
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/editdelete.png")),
-		     "Remove Selected...", this, SLOT(slotRemove()),
+		     "Remove", this, SLOT(slotRemove()),
 		     0, KMenuRemove);
   m_menu->insertItem(QPixmap(PIXMAPS + QString("/editclear.png")),
-		     "Rename Selected...", this, SLOT(slotRename()),
+		     "Rename...", this, SLOT(slotRename()),
 		     0, KMenuRename);
 
   m_tools->setPopup(m_menu);
@@ -129,8 +129,8 @@ void SceneEditor::slotActivate()
 
   if (s != NULL)
     {
-      setScene(s);
       m_tempScene->copyFrom(s, s->device());
+      setScene(s);
     }
 
   setStatusText(KStatusUnchanged, KStatusColorUnchanged);
@@ -202,15 +202,10 @@ void SceneEditor::slotNew()
   if (ok && !text.isEmpty())
     {
       Scene* sc = static_cast<Scene*>
-	(_app->doc()->newFunction(Function::Scene));
+	(_app->doc()->newFunction(Function::Scene, m_tempScene->device()));
 
       sc->copyFrom(m_tempScene, m_tempScene->device());
       sc->setName(text);
-
-      ListBoxIDItem* item = new ListBoxIDItem();
-      item->setText(sc->name());
-      item->setRtti(sc->id());
-      m_sceneList->insertItem(item);
 
       m_sceneList->sort();
       selectFunction(sc->id());
@@ -239,6 +234,101 @@ void SceneEditor::slotStore()
   sc->setBus(bus);
 
   setStatusText(KStatusStored, KStatusColorStored);
+}
+
+//
+// Signal handler for Doc::functionAdded() signal
+//
+void SceneEditor::slotFunctionAdded(t_function_id id)
+{
+  Function* function = NULL;
+  Scene* scene = NULL;
+  ListBoxIDItem* item = NULL;
+
+  function = _app->doc()->function(id);
+  assert(function);
+
+  item = getItem(id);
+
+  // We are interested only in scenes that are members of this
+  // console's device
+  if (item == NULL &&
+      function->type() == Function::Scene &&
+      function->device() == m_deviceID)
+    {
+      item = new ListBoxIDItem();
+      item->setText(function->name());
+      item->setRtti(id);
+      m_sceneList->insertItem(item);
+    }
+}
+
+//
+// Signal handler for Doc::functionRemoved() signal
+//
+void SceneEditor::slotFunctionRemoved(t_function_id id)
+{
+  QListBoxItem* item = NULL;
+  QListBoxItem* nextItem = NULL;
+
+  item = getItem(id);
+  if (item)
+    {
+      if (item->isCurrent())
+	{
+	  // Select an item below or above if the current item
+	  // was removed.
+	  if (item->next())
+	    nextItem = item->next();
+	  else
+	    nextItem = item->prev();
+	  
+	  m_sceneList->setCurrentItem(nextItem);
+	}
+      
+      delete item;
+    }
+}
+
+//
+// Signal handler for Doc::functionChanged() signal
+//
+void SceneEditor::slotFunctionChanged(t_function_id id)
+{
+  ListBoxIDItem* item = NULL;
+  Function* function = NULL;
+
+  item = getItem(id);
+  if (item)
+    {
+      function = _app->doc()->function(id);
+      if (function && function->type() == Function::Scene)
+	{
+	  item->setText(function->name());
+	  item->setRtti(function->id());
+	}
+    }
+}
+
+//
+// Get a list box item from the list view
+//
+ListBoxIDItem* SceneEditor::getItem(t_function_id id)
+{
+  ListBoxIDItem* item = NULL;
+
+  // Check, whether a function was removed from this console's device
+  for (item = (ListBoxIDItem*) m_sceneList->firstItem();
+       item != NULL;
+       item = (ListBoxIDItem*) item->next())
+    {
+      if (static_cast <ListBoxIDItem*> (item)->rtti() == id)
+	{
+	  break;
+	}
+    }
+  
+  return item;
 }
 
 Scene* SceneEditor::currentScene()

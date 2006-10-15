@@ -82,8 +82,7 @@ class Device : public QObject
   void slotMonitorClosed();
 
  signals:
-  void valueChanged(int chnum, int value);
-  void functionsListChanged(const QString &, bool);
+  void changed(t_device_id);
 
  protected:
   DeviceClass* m_deviceClass;

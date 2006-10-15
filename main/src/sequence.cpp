@@ -90,10 +90,10 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
   if (toDevice == KNoID || toDevice == m_deviceID)
     {
       // Same device
-      m_deviceID = sc->m_deviceID;
+      Function::setName(sc->name());
+      Function::setBus(sc->busID());
+      setDevice(sc->device());
       m_channels = sc->m_channels;
-      m_name = QString(sc->m_name);
-      m_busID = sc->m_busID;
 
       m_steps.setAutoDelete(true);
       m_steps.clear();
@@ -118,10 +118,10 @@ bool Sequence::copyFrom(Sequence* sc, t_device_id toDevice)
       Device* device = _app->doc()->device(toDevice);
       assert(device);
 
-      m_deviceID = toDevice;
+      Function::setName(sc->name());
+      Function::setBus(sc->busID());
+      setDevice(toDevice);
       m_channels = device->deviceClass()->channels()->count();
-      m_name = QString(sc->m_name);
-      m_busID = sc->m_busID;
 
       m_steps.setAutoDelete(true);
       m_steps.clear();

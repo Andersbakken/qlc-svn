@@ -198,6 +198,8 @@ Device* Device::create(QPtrList <QString> &list)
 void Device::setID(t_device_id id)
 {
   m_id = id;
+
+  emit changed(m_id);
 }
 
 
@@ -209,7 +211,10 @@ t_device_id Device::id()
 void Device::setName(QString name)
 {
   m_name = name;
+
   _app->doc()->setModified(true);
+
+  emit changed(m_id);
 
   if (m_console)
     m_console->setCaption(m_name + " Console");
@@ -247,6 +252,8 @@ void Device::setAddress(t_channel address)
     }
 
   _app->doc()->setModified(true);
+
+  emit changed(m_id);
 }
 
 /**
@@ -283,6 +290,8 @@ void Device::setUniverse(t_channel universe)
     }
 
   _app->doc()->setModified(true);
+
+  emit changed(m_id);
 }
 
 
@@ -309,6 +318,8 @@ t_channel Device::universeAddress()
 void Device::setDeviceClass(DeviceClass* dc)
 {
   m_deviceClass = dc;
+  
+  emit changed(m_id);
 }
 
 
@@ -409,7 +420,7 @@ void Device::viewConsole()
       connect(m_console, SIGNAL(closed()), this, SLOT(slotConsoleClosed()));
 
       m_console->show();
-      //m_console->resize(m_console->minimumSizeHint().width(), 300);
+
       m_console->resize(m_console->width() + 100, 300);
     }
   else

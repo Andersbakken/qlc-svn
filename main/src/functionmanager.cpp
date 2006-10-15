@@ -79,23 +79,25 @@ extern App* _app;
  * selection mode. Otherwise the dialog is in normal edit mode.
  */
 FunctionManager::FunctionManager(QWidget* parent, WFlags flags)
-	: QWidget(parent, "Function Manager", flags),
-	m_addMenu  ( NULL ),
-	m_editMenu ( NULL ),
-	m_busMenu  ( NULL ),
+  : QWidget(parent, "Function Manager", flags),
+    m_addMenu  ( NULL ),
+    m_editMenu ( NULL ),
+    m_busMenu  ( NULL ),
+    
+    m_fixtureTree  ( NULL ),
+    m_functionTree ( NULL ),
+    
+    m_treeViewSplitter ( NULL ),
+    m_clipboardAction ( ClipboardNone ),
+    
+    m_inactiveID ( KNoID ),
+    m_buttonLayout ( NULL ),
+    m_result ( QDialog::Rejected ),
+    m_ok ( NULL ),
+    m_cancel ( NULL ),
 
-	m_fixtureTree  ( NULL ),
-	m_functionTree ( NULL ),
-
-	m_treeViewSplitter ( NULL ),
-	m_clipboardAction ( ClipboardNone ),
-
-	m_inactiveID ( KNoID ),
-	m_buttonLayout ( NULL ),
-	m_result ( QDialog::Rejected ),
-	m_ok ( NULL ),
-	m_cancel ( NULL )
-
+    m_blockAddFunctionSignal ( false ),
+    m_blockRemoveFunctionSignal ( false )
 {
 	if (flags == FunctionManager::SelectionMode)
 	{
@@ -248,6 +250,182 @@ int FunctionManager::selection(FunctionIDList& list)
 	}
 
 	return m_result;
+}
+
+//
+// Signal handler for deviceAdded() signals from Doc
+//
+void FunctionManager::slotDeviceAdded(t_device_id id)
+{
+  Device* device = NULL;
+  QListViewItem* item = NULL;
+  QString s;
+
+  device = _app->doc()->device(id);
+  if (device != NULL)
+    {
+      item = new QListViewItem(m_fixtureTree);
+      
+      // Pixmap column
+      item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
+					   QString("/fixture.png")));
+      // Name column
+      item->setText(KColumnName, device->name());
+      
+      // ID column
+      s.setNum(id);
+      item->setText(KColumnID, s);
+    }
+}
+
+//
+// Signal handler for deviceRemoved() signals from Doc
+//
+void FunctionManager::slotDeviceRemoved(t_device_id id)
+{
+  QListViewItem* item = NULL;
+  QListViewItem* nextItem = NULL;
+
+  item = getItem(id, m_fixtureTree);
+  if (item)
+    {
+      if (item->isSelected())
+	{
+	  // Try to select the closest neighbour
+	  if (item->itemAbove())
+	    nextItem = item->itemAbove();
+	  else
+	    nextItem = item->itemBelow();
+	  
+	  // Select the neighbour
+	  m_fixtureTree->setSelected(nextItem, true);
+	}
+
+      delete item;
+    }
+}
+
+//
+// Signal handler for deviceChanged() signals from Doc
+//
+void FunctionManager::slotDeviceChanged(t_device_id id)
+{
+  QListViewItem* item = NULL;
+  Device* device = NULL;
+
+  item = getItem(id, m_fixtureTree);
+  if (item)
+    {
+      device = _app->doc()->device(id);
+      ASSERT(device);
+
+      item->setText(KColumnName, device->name());
+    }
+}
+
+//
+// Signal handler for functionAdded() signals from Doc
+//
+void FunctionManager::slotFunctionAdded(t_function_id id)
+{
+  QListViewItem* deviceItem = NULL;
+  QListViewItem* item = NULL;
+  Function* function = NULL;
+
+  // The function manager has its own routines for functions that are
+  // created with it.
+  if (m_blockAddFunctionSignal)
+    return;
+
+  deviceItem = m_fixtureTree->currentItem();
+
+  if (deviceItem == NULL)
+    return; // Function tree should be empty, nothing to do
+
+  function = _app->doc()->function(id);
+  if (function)
+    {
+      // Check if the selected device is the one that the newly added
+      // function belongs to.
+      if (deviceItem->text(KColumnID).toInt() == function->device())
+	{
+	  // Create a new item for the function
+	  item = new QListViewItem(m_functionTree);
+	  updateFunctionItem(item, function);
+	}
+    }
+}
+
+//
+// Signal handler for functionRemoved() signals from Doc
+//
+void FunctionManager::slotFunctionRemoved(t_function_id id)
+{
+  QListViewItem* item = NULL;
+  QListViewItem* nextItem = NULL;
+
+  // The function manager has its own routines for functions that are
+  // removed with it.
+  if (m_blockRemoveFunctionSignal)
+    return;
+
+  item = getItem(id, m_functionTree);
+  if (item)
+    {
+      if (item->isSelected())
+	{
+	  // Try to select the closest neighbour
+	  if (item->itemAbove())
+	    nextItem = item->itemAbove();
+	  else
+	    nextItem = item->itemBelow();
+	  
+	  // Select the neighbour
+	  m_functionTree->setSelected(nextItem, true);
+	}
+      
+      delete item;
+    }
+}
+
+//
+// Signal handler for functionChanged() signals from Doc
+//
+void FunctionManager::slotFunctionChanged(t_function_id id)
+{
+  QListViewItem* item = NULL;
+  Function* function = NULL;
+
+  item = getItem(id, m_functionTree);
+  if (item)
+    {
+      function = _app->doc()->function(id);
+      ASSERT(function);
+
+      updateFunctionItem(item, function);
+    }
+}
+
+//
+// Get an item from the given listview by the given id
+//
+QListViewItem* FunctionManager::getItem(t_function_id id, QListView* listView)
+{
+  ASSERT(listView);
+
+  QListViewItemIterator it(listView);
+  QListViewItem* item = NULL;
+
+  while ((item = it.current()) != NULL)
+    {
+      if (item->text(KColumnID).toInt() == id)
+	{
+	  break;
+	}
+      ++it;
+    }
+
+  return item;
 }
 
 /**
@@ -666,16 +844,20 @@ void FunctionManager::updateFunctionItem(QListViewItem* item,
  */
 void FunctionManager::deleteSelectedFunctions()
 {
-	QListViewItem* item = NULL;
+  QListViewItem* item = NULL;
+  t_function_id fid = KNoID;
+  
+  // Delete functions and listview items
+  while ( (item = m_selectedFunctions.take(0)) != NULL)
+    {
+      fid = item->text(KColumnID).toInt();
 
-	// Delete functions and listview items
-	while ( (item = m_selectedFunctions.take(0)) != NULL)
-	{
-		_app->doc()->deleteFunction(
-				item->text(KColumnID).toInt());
-		delete item;
-	}
-
+      m_blockRemoveFunctionSignal = true;
+      _app->doc()->deleteFunction(fid);
+      m_blockRemoveFunctionSignal = false;
+      
+      delete item;
+    }
 }
 
 /**
@@ -866,7 +1048,7 @@ void FunctionManager::slotFixtureTreeSelectionChanged(QListViewItem* item)
 	// Get all functions belonging to the selected fixture
 	for (fid = 0; fid < KFunctionArraySize; fid++)
 	{
-		function = _app->doc()->function(fid);
+	        function = _app->doc()->function(fid);
 		if (function && function->device() == did)
 		{
 			item = new QListViewItem(m_functionTree);
@@ -1035,12 +1217,18 @@ void FunctionManager::slotAddMenuCallback(int type)
 {
 	QListViewItem* deviceItem = m_fixtureTree->currentItem();
 	QListViewItem* newItem = NULL;
+	t_device_id did = KNoID;
 	Function* f = NULL;
 
 	if (deviceItem == NULL)
 	{
 		return;
 	}
+
+	// We don't want the signal handler to add the function twice
+	m_blockAddFunctionSignal = true;
+
+	did = deviceItem->text(KColumnID).toInt();
 
 	//
 	// Create the function
@@ -1049,41 +1237,41 @@ void FunctionManager::slotAddMenuCallback(int type)
 	{
 		case Function::Scene:
 		{
-			f = _app->doc()->newFunction(Function::Scene);
-			assert(f);
-			f->setName("New Scene");
+		  f = _app->doc()->newFunction(Function::Scene, did);
+		  assert(f);
+		  f->setName("New Scene");
 		}
 		break;
 
 		case Function::Chaser:
 		{
-			f = _app->doc()->newFunction(Function::Chaser);
-			assert(f);
-			f->setName("New Chaser");
+		  f = _app->doc()->newFunction(Function::Chaser, KNoID);
+		  assert(f);
+		  f->setName("New Chaser");
 		}
 		break;
 
 		case Function::Collection:
 		{
-			f = _app->doc()->newFunction(Function::Collection);
-			assert(f);
-			f->setName("New Collection");
+		  f = _app->doc()->newFunction(Function::Collection, KNoID);
+		  assert(f);
+		  f->setName("New Collection");
 		}
 		break;
 
 		case Function::Sequence:
 		{
-			f = _app->doc()->newFunction(Function::Sequence);
-			assert(f);
-			f->setName("New Sequence");
+		  f = _app->doc()->newFunction(Function::Sequence, did);
+		  assert(f);
+		  f->setName("New Sequence");
 		}
 		break;
 
 		case Function::EFX:
 		{
-			f = _app->doc()->newFunction(Function::EFX);
-			assert(f);
-			f->setName("New EFX");
+		  f = _app->doc()->newFunction(Function::EFX, did);
+		  assert(f);
+		  f->setName("New EFX");
 		}
 		break;
 
@@ -1091,11 +1279,13 @@ void FunctionManager::slotAddMenuCallback(int type)
 		break;
 	}
 
+	// We don't want the signal handler to add the function twice
+	m_blockAddFunctionSignal = false;
+
+	// Create a new item for the function
 	newItem = new QListViewItem(m_functionTree);
 
-	// Set the function's relationships to device (if any)
-	f->setDevice(deviceItem->text(KColumnID).toInt());
-
+	// Update the item's contents based on the function itself
 	updateFunctionItem(newItem, f);
 
 	// Clear current selection so that slotEdit() behaves correctly
@@ -1387,7 +1577,7 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 		case Function::Scene:
 		{
 			newFunction =
-				_app->doc()->newFunction(Function::Scene);
+			  _app->doc()->newFunction(Function::Scene, did);
 
 			Scene* scene = static_cast<Scene*> (newFunction);
 
@@ -1398,7 +1588,7 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 		case Function::Chaser:
 		{
 			newFunction =
-				_app->doc()->newFunction(Function::Chaser);
+			  _app->doc()->newFunction(Function::Chaser, KNoID);
 
 			Chaser* chaser = static_cast<Chaser*> (newFunction);
 
@@ -1409,8 +1599,8 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 		case Function::Collection:
 		{
 			newFunction =
-				_app->doc()->newFunction(Function::Collection);
-
+			  _app->doc()->newFunction(Function::Collection, KNoID);
+			
 			FunctionCollection* fc =
 				static_cast<FunctionCollection*> (newFunction);
 
@@ -1421,7 +1611,7 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 		case Function::Sequence:
 		{
 			newFunction =
-				_app->doc()->newFunction(Function::Sequence);
+			  _app->doc()->newFunction(Function::Sequence, did);
 			Sequence* sequence =
 				static_cast<Sequence*> (newFunction);
 
@@ -1432,7 +1622,9 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 
 		case Function::EFX:
 		{
-			newFunction = _app->doc()->newFunction(Function::EFX);
+			newFunction = 
+			  _app->doc()->newFunction(Function::EFX, did);
+
 			EFX* efx = static_cast<EFX*> (newFunction);
 
 			efx->copyFrom(static_cast<EFX*> (function), did);

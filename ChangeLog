@@ -1,3 +1,10 @@
+2006-Oct-15  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed a number of bugs concerning adding, removing and renaming
+	  of functions and devices.
+	* Now scene editor, function manager and device manager are aware
+	  of functions/devices that are added/removed/renamed in another
+	  window than their own.
+
 2006-Sep-23  Heikki Junnila <hjunnila@users.sf.net>
 	* Improved the plugin manager to show active plugins with an icon
 	* Device manager is only created when it is open, unlike previously,

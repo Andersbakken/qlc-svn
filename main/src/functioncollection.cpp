@@ -58,7 +58,8 @@ void FunctionCollection::copyFrom(FunctionCollection* fc, bool append)
 
   if (!m_running)
     {
-      m_name = fc->m_name;
+      Function::setName(fc->name());
+      Function::setBus(fc->busID());
 
       if (!append)
 	{

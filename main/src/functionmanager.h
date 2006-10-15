@@ -62,6 +62,15 @@ public:
 	// Set a function to be inactive to prevent making direct loops
 	void setInactiveID(t_function_id id) { m_inactiveID = id; }
 
+public slots:
+	void slotDeviceAdded(t_device_id);
+	void slotDeviceRemoved(t_device_id);
+	void slotDeviceChanged(t_device_id);
+
+	void slotFunctionAdded(t_function_id);
+	void slotFunctionRemoved(t_function_id);
+	void slotFunctionChanged(t_function_id);
+
 public:
 	static const WFlags NormalMode = 0;
 	static const WFlags SelectionMode = WShowModal | WType_Dialog |
@@ -71,6 +80,9 @@ protected:
 	void closeEvent(QCloseEvent* e);
 
 protected:
+	// Get an item from the given listview by the given id
+	QListViewItem* getItem(t_function_id id, QListView* listView);
+
 	// Init menu
 	void initMenu();
 	// Init toolbar
@@ -179,6 +191,9 @@ protected:
 	QHBoxLayout* m_buttonLayout;
 	QPushButton* m_ok;
 	QPushButton* m_cancel;
+
+	bool m_blockAddFunctionSignal;
+	bool m_blockRemoveFunctionSignal;
 };
 
 #endif

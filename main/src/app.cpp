@@ -741,12 +741,36 @@ void App::initFunctionConsumer()
 //
 void App::initDoc()
 {
+  // Delete existing document object
   if (m_doc)
     {
       delete m_doc;
     }
 
+  // Create a new document object
   m_doc = new Doc();
+
+  // Connect the device list change signal from the new document object
+  if (m_dmView)
+    {
+      connect(m_doc, SIGNAL(deviceAdded(t_device_id)),
+	      m_dmView, SLOT(slotDeviceAdded(t_device_id)));
+      
+      connect(m_doc, SIGNAL(deviceRemoved(t_device_id)),
+	      m_dmView, SLOT(slotDeviceRemoved(t_device_id)));
+    }
+  
+  if (m_functionManager)
+    {
+      connect(m_doc, SIGNAL(deviceAdded(t_device_id)),
+	      m_functionManager, SLOT(slotDeviceAdded(t_device_id)));
+      
+      connect(m_doc, SIGNAL(deviceRemoved(t_device_id)),
+	      m_functionManager, SLOT(slotDeviceRemoved(t_device_id)));
+
+      connect(m_doc, SIGNAL(deviceChanged(t_device_id)),
+	      m_functionManager, SLOT(slotDeviceChanged(t_device_id)));
+    }
 }
 
 
@@ -814,10 +838,9 @@ void App::newDocument()
   setCaption(KApplicationNameLong);
 
   initDoc();
-  deviceManagerView()->slotUpdate();
   initVirtualConsole();
   m_inputPlugin->setEventReceiver(_app->virtualConsole());
-  
+
   //
   // Set the last workspace name
   //
@@ -983,8 +1006,11 @@ void App::slotViewDeviceManager()
       connect(m_dmView, SIGNAL(closed()),
 	      this, SLOT(slotDeviceManagerViewClosed()));
       
-      connect(m_doc, SIGNAL(deviceListChanged()),
-	      m_dmView, SLOT(slotUpdate()));
+      connect(m_doc, SIGNAL(deviceAdded(t_device_id)),
+	      m_dmView, SLOT(slotDeviceAdded(t_device_id)));
+
+      connect(m_doc, SIGNAL(deviceRemoved(t_device_id)),
+	      m_dmView, SLOT(slotDeviceRemoved(t_device_id)));
     }
 
   m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
@@ -1037,6 +1063,24 @@ void App::slotViewFunctionManager()
 
 		connect(m_functionManager, SIGNAL(closed()),
 			this, SLOT(slotFunctionManagerClosed()));
+
+		connect(m_doc, SIGNAL(deviceAdded(t_device_id)),
+			m_functionManager, SLOT(slotDeviceAdded(t_device_id)));
+		
+		connect(m_doc, SIGNAL(deviceRemoved(t_device_id)),
+			m_functionManager, SLOT(slotDeviceRemoved(t_device_id)));
+
+		connect(m_doc, SIGNAL(deviceChanged(t_device_id)),
+			m_functionManager, SLOT(slotDeviceChanged(t_device_id)));
+
+		connect(m_doc, SIGNAL(functionAdded(t_function_id)),
+			m_functionManager, SLOT(slotFunctionAdded(t_function_id)));
+
+		connect(m_doc, SIGNAL(functionRemoved(t_function_id)),
+			m_functionManager, SLOT(slotFunctionRemoved(t_function_id)));
+
+		connect(m_doc, SIGNAL(functionChanged(t_function_id)),
+			m_functionManager, SLOT(slotFunctionChanged(t_function_id)));
 	}
 	else
 	{

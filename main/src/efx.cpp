@@ -699,8 +699,8 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
 	assert(efx);
 
 	Function::setDevice(toDevice);
-	m_name = QString(efx->name());
-	m_busID = efx->busID();
+	Function::setName(efx->name());
+	Function::setBus(efx->busID());
 
 	m_width = efx->width();
 	m_height = efx->height();

@@ -36,7 +36,7 @@ class ListBoxIDItem : public QListBoxItem
   void setText(const QString & text);
 
  protected:
-  virtual int width(const QListBox* lb) const { return lb->width(); }
+  virtual int width(const QListBox* lb) const;
   virtual int height(const QListBox*) const;
   virtual void paint(QPainter* p);
 

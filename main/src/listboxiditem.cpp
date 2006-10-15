@@ -38,6 +38,14 @@ ListBoxIDItem::~ListBoxIDItem()
 {
 }
 
+int ListBoxIDItem::width(const QListBox* lb) const
+{
+  if (lb)
+    return lb->width();
+  else
+    return 0;
+}
+
 int ListBoxIDItem::height(const QListBox* lb) const
 {
   return QApplication::fontMetrics().height();

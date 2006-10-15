@@ -75,6 +75,18 @@ void DeviceConsole::setDevice(t_device_id id)
   m_sceneEditor->setDevice(m_deviceID);
   m_sceneEditor->show();
 
+  // Catch function add signals
+  connect(_app->doc(), SIGNAL(functionAdded(t_function_id)),
+	  m_sceneEditor, SLOT(slotFunctionAdded(t_function_id)));
+
+  // Catch function remove signals
+  connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
+	  m_sceneEditor, SLOT(slotFunctionRemoved(t_function_id)));
+
+  // Catch function change signals
+  connect(_app->doc(), SIGNAL(functionChanged(t_function_id)),
+	  m_sceneEditor, SLOT(slotFunctionChanged(t_function_id)));
+
   // Create channel units
   ConsoleChannel* unit = NULL;
   for (unsigned int i = 0; i < device->deviceClass()->channels()->count(); i++)
