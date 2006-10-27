@@ -48,6 +48,8 @@ class FunctionCollectionEditor : public UI_FunctionCollectionEditor
  private slots:
   void slotAddFunctionClicked();
   void slotFunctionManagerClosed();
+  void slotAddAnother();
+
   void slotRemoveFunctionClicked();
   void slotOKClicked();
   void slotCancelClicked();

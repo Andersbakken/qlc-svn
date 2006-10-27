@@ -35,6 +35,7 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <assert.h>
+#include <qtimer.h>
 
 extern App* _app;
 
@@ -73,19 +74,22 @@ void FunctionCollectionEditor::init()
  */
 void FunctionCollectionEditor::slotAddFunctionClicked()
 {
-	// Create the function manager in selection mode so it
-	// looks like a normal modal dialog
-	m_functionManager = new FunctionManager(this,
+	if (m_functionManager == NULL)
+	{
+		// Create the function manager in selection mode so it
+		// looks like a normal modal dialog
+		m_functionManager = new FunctionManager(this,
 					FunctionManager::SelectionMode);
 
-	// Prevent the user from selecting this function
-	m_functionManager->setInactiveID(m_original->id());
-	m_functionManager->init();
+		// Prevent the user from selecting this function
+		m_functionManager->setInactiveID(m_original->id());
+		m_functionManager->init();
 
-	// Catch the close event
-	connect(m_functionManager, SIGNAL(closed()),
+		// Catch the close event
+		connect(m_functionManager, SIGNAL(closed()),
 			this, SLOT(slotFunctionManagerClosed()));
-
+	}
+	
 	// Show the dialog
 	m_functionManager->show();
 }
@@ -115,12 +119,27 @@ void FunctionCollectionEditor::slotFunctionManagerClosed()
 		list.clear();
 
 		updateFunctionList();
-	}
 
-	delete m_functionManager;
-	m_functionManager = NULL;
+		// Hide the function manager for a while
+		m_functionManager->hide();
+
+		// Add another step after a delay (to show that the step was added)
+		QTimer::singleShot(250, this, SLOT(slotAddAnother()));
+	}
+	else
+	{
+		delete m_functionManager;
+		m_functionManager = NULL;
+	}
 }
 
+//
+// Add another step until Cancel is clicked
+//
+void FunctionCollectionEditor::slotAddAnother()
+{
+	m_functionManager->show();
+}
 
 //
 // Remove a function

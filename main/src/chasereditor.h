@@ -68,6 +68,8 @@ class ChaserEditor : public UI_ChaserEditor
   void slotRemoveClicked();
   void slotAddClicked();
   void slotFunctionManagerClosed();
+  void slotAddAnother();
+
   void slotPlayClicked();
   void slotRaiseClicked();
   void slotLowerClicked();

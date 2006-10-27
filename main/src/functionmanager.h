@@ -61,8 +61,10 @@ public:
 
 	// Set a function to be inactive to prevent making direct loops
 	void setInactiveID(t_function_id id) { m_inactiveID = id; }
-
+	
 public slots:
+	void show();
+
 	void slotDeviceAdded(t_device_id);
 	void slotDeviceRemoved(t_device_id);
 	void slotDeviceChanged(t_device_id);
@@ -186,8 +188,11 @@ protected:
 	// Selection mode stuff
 	bool m_selectionMode;
 	int m_result;
+	
 	t_function_id m_inactiveID;
+	
 	FunctionIDList m_selection;
+
 	QHBoxLayout* m_buttonLayout;
 	QPushButton* m_ok;
 	QPushButton* m_cancel;

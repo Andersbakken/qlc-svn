@@ -44,6 +44,7 @@
 #include <limits.h>
 #include <qmessagebox.h>
 #include <assert.h>
+#include <qtimer.h>
 
 extern App* _app;
 
@@ -52,25 +53,34 @@ extern App* _app;
 #define COL_FUNCTION 2
 #define COL_FID      3
 
+//
+// Constructor
+//
 ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
-  : UI_ChaserEditor(parent, "", true)
+	: UI_ChaserEditor(parent, "ChaserEditor", true)
 {
-  m_chaser = new Chaser();
-  m_chaser->copyFrom(function);
-  ASSERT(m_chaser != NULL);
+	m_chaser = new Chaser();
+	m_chaser->copyFrom(function);
+	ASSERT(m_chaser != NULL);
 
-  m_bus = NULL;
+	m_bus = NULL;
 
-  m_original = function;
+	m_original = function;
 
-  m_functionManager = NULL;
+	m_functionManager = NULL;
 }
 
+//
+// Destructor
+//
 ChaserEditor::~ChaserEditor()
 {
   delete m_chaser;
 }
 
+//
+// Insert chaser steps into the editor's list
+//
 void ChaserEditor::updateStepList()
 {
   QString device = QString::null;
@@ -117,6 +127,9 @@ void ChaserEditor::updateStepList()
   updateOrderNumbers();
 }
 
+//
+// Initialize the UI
+//
 void ChaserEditor::init()
 {
   m_nameEdit->setText(m_chaser->name());
@@ -136,6 +149,9 @@ void ChaserEditor::init()
   updateStepList();
 }
 
+//
+// Accept changes and exit
+//
 void ChaserEditor::slotOKClicked()
 {
   //
@@ -177,11 +193,17 @@ void ChaserEditor::slotOKClicked()
   accept();
 }
 
+//
+// Cancel editing
+//
 void ChaserEditor::slotCancelClicked()
 {
   reject();
 }
 
+//
+// Remove the selected step
+//
 void ChaserEditor::slotRemoveClicked()
 {
   QListViewItem* item = m_stepList->currentItem();
@@ -194,25 +216,37 @@ void ChaserEditor::slotRemoveClicked()
   updateStepList();
 }
 
+//
+// Add a step to the chaser function
+//
 void ChaserEditor::slotAddClicked()
 {
-	m_functionManager = new FunctionManager(this,
+	if (m_functionManager == NULL)
+	{
+		// Create a new function manager
+		m_functionManager = new FunctionManager(this,
 					FunctionManager::SelectionMode);
 
-	// Prevent the user from selecting this function
-	m_functionManager->setInactiveID(m_original->id());
-	m_functionManager->init();
-
-	connect(m_functionManager, SIGNAL(closed()),
+		connect(m_functionManager, SIGNAL(closed()),
 			this, SLOT(slotFunctionManagerClosed()));
+		// Prevent the user from selecting this function
+		m_functionManager->setInactiveID(m_original->id());
 
+		// Initialize the function manager UI
+		m_functionManager->init();
+	}
+	
 	m_functionManager->show();
 }
 
+//
+// Function manager was closed
+//
 void ChaserEditor::slotFunctionManagerClosed()
 {
 	FunctionIDList list;
 	FunctionIDList::iterator it;
+	Function* function = NULL;
 
 	assert(m_functionManager);
 
@@ -225,20 +259,44 @@ void ChaserEditor::slotFunctionManagerClosed()
 			m_chaser->addStep(*it);
 		}
 
+		// Clear the selection list
 		list.clear();
 
+		// Update steps to the list
 		updateStepList();
-	}
+		
+		// Hide the function manager for a while
+		m_functionManager->hide();
 
-	delete m_functionManager;
-	m_functionManager = NULL;
+		// Add another step after a delay (to show that the step was added)
+		QTimer::singleShot(250, this, SLOT(slotAddAnother()));
+	}
+	else
+	{
+		delete m_functionManager;
+		m_functionManager = NULL;
+	}
 }
 
+//
+// Add another step until Cancel is clicked
+//
+void ChaserEditor::slotAddAnother()
+{
+	m_functionManager->show();
+}
+
+//
+// Test run
+//
 void ChaserEditor::slotPlayClicked()
 {
   qDebug("Not implemented");
 }
 
+//
+// Update correct order numbers to each step
+//
 void ChaserEditor::updateOrderNumbers()
 {
   int i = 1;
@@ -258,6 +316,9 @@ void ChaserEditor::updateOrderNumbers()
     }
 }
 
+//
+// Raise a chaser step one position higher
+//
 void ChaserEditor::slotRaiseClicked()
 {
   QListViewItem* item = m_stepList->currentItem();
@@ -291,6 +352,9 @@ void ChaserEditor::slotRaiseClicked()
     }
 }
 
+//
+// Lower a chaser step one position lower
+//
 void ChaserEditor::slotLowerClicked()
 {
   QListViewItem* item = m_stepList->currentItem();

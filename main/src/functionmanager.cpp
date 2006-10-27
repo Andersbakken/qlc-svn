@@ -91,6 +91,7 @@ FunctionManager::FunctionManager(QWidget* parent, WFlags flags)
     m_clipboardAction ( ClipboardNone ),
     
     m_inactiveID ( KNoID ),
+    
     m_buttonLayout ( NULL ),
     m_result ( QDialog::Rejected ),
     m_ok ( NULL ),
@@ -128,6 +129,8 @@ FunctionManager::~FunctionManager()
 	{
 		delete m_editMenu;
 	}
+	
+	m_selection.clear();
 }
 
 
@@ -137,10 +140,24 @@ FunctionManager::~FunctionManager()
  */
 void FunctionManager::closeEvent(QCloseEvent* e)
 {
-	e->accept();
+	if (m_selectionMode)
+		e->ignore();
+	else
+		e->accept();
+	
 	emit closed();
 }
 
+//
+// Show the function manager
+//
+void FunctionManager::show()
+{
+	// This must be reset to rejected to handle brute window closing as rejection
+	m_result = QDialog::Rejected;
+
+	QWidget::show();
+}
 
 /**
  * Initialize the dialog, second stage construction

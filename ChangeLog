@@ -1,4 +1,9 @@
 2006-Oct-27  Heikki Junnila <hjunnila@users.sf.net>
+	* Chaser & collection editors work a bit faster now that the function-
+	  manager pops up again after an item has been added. This speeds up
+	  inserting multiple steps.
+
+2006-Oct-27  Heikki Junnila <hjunnila@users.sf.net>
 	* Added Eurolite-LED-PAR56.deviceclass
 	* Fixed a deadlock with collection creation in functionmanager
 	* Fixed double appearing of pasted chasers in functionmanager
