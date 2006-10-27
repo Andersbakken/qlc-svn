@@ -34,6 +34,7 @@
 #include <qfile.h>
 #include <sched.h>
 #include <qapplication.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -65,9 +66,11 @@ Chaser::Chaser() :
 //
 void Chaser::copyFrom(Chaser* ch, bool append)
 {
-  m_name = ch->name();
-  m_direction = ch->direction();
-  m_runOrder = ch->runOrder();
+  assert(ch);
+
+  Function::setName(ch->name());
+  setDirection(ch->direction());
+  setRunOrder(ch->runOrder());
 
   if (append == false)
     {

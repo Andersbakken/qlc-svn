@@ -1461,15 +1461,7 @@ void FunctionManager::slotPaste()
 		{
 			// Copy the function
 			newFunction = copyFunction(*it, did);
-			if (newFunction)
-			{
-				// Add the function to the current function tree
-				functionitem = new QListViewItem(m_functionTree);
-				updateFunctionItem(functionitem, newFunction);
-
-				_app->doc()->deleteFunction(*it);
-			}
-			else
+			if (newFunction == NULL)
 			{
 				// Stop pasting so we don't get the user
 				// too annoyed with a message box for each
@@ -1477,6 +1469,12 @@ void FunctionManager::slotPaste()
 				// the user can't select functions from more
 				// than one device (or global) at a time
 				break;
+			}
+			else
+			{
+			  // Delete the original function because we are
+			  // doing cut-paste
+			  _app->doc()->deleteFunction(*it);
 			}
 		}
 
@@ -1493,21 +1491,15 @@ void FunctionManager::slotPaste()
 		{
 			// Copy the function
 			newFunction = copyFunction(*it, did);
-			if (newFunction)
-			{
-				// Add the function to the current function tree
-				functionitem = new QListViewItem(m_functionTree);
-				updateFunctionItem(functionitem, newFunction);
-			}
-			else
-			{
-				// Stop pasting so we don't get the user
-				// too annoyed with a message box for each
-				// function. They all will fail, because
-				// the user can't select functions from more
-				// than one device (or global) at a time
-				break;
-			}
+			if (newFunction == NULL)
+			  {
+			    // Stop pasting so we don't get the user
+			    // too annoyed with a message box for each
+			    // function. They all will fail, because
+			    // the user can't select functions from more
+			    // than one device (or global) at a time
+			    break;
+			  }
 		}
 	}
 }

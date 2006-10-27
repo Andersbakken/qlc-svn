@@ -1,3 +1,9 @@
+2006-Oct-27  Heikki Junnila <hjunnila@users.sf.net>
+	* Added Eurolite-LED-PAR56.deviceclass
+	* Fixed a deadlock with collection creation in functionmanager
+	* Fixed double appearing of pasted chasers in functionmanager
+	* Fixed cutting of functions to really delete the original in fmanager
+
 2006-Oct-15  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a number of bugs concerning adding, removing and renaming
 	  of functions and devices.

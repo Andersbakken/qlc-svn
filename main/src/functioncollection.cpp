@@ -54,26 +54,21 @@ FunctionCollection::FunctionCollection()
 //
 void FunctionCollection::copyFrom(FunctionCollection* fc, bool append)
 {
-  m_startMutex.lock();
+  assert(fc);
 
-  if (!m_running)
+  Function::setName(fc->name());
+  Function::setBus(fc->busID());
+  
+  if (append == false)
     {
-      Function::setName(fc->name());
-      Function::setBus(fc->busID());
-
-      if (!append)
-	{
-	  m_steps.clear();
-	}
-
-      QValueList <t_function_id>::iterator it;
-      for (it = fc->m_steps.begin(); it != fc->m_steps.end(); ++it)
-	{
-	  m_steps.append(*it);
-	}
+      m_steps.clear();
     }
-
-  m_startMutex.unlock();
+  
+  QValueList <t_function_id>::iterator it;
+  for (it = fc->m_steps.begin(); it != fc->m_steps.end(); ++it)
+    {
+      m_steps.append(*it);
+    }
 }
 
 
