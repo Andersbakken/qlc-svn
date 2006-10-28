@@ -55,8 +55,9 @@ extern App* _app;
 
 // List view column numbers
 const int KColumnUniverse ( 0 );
-const int KColumnName     ( 1 );
-const int KColumnID       ( 2 );
+const int KColumnAddress  ( 1 );
+const int KColumnName     ( 2 );
+const int KColumnID       ( 3 );
 
 // List view item menu callback id's
 const int KMenuItemAdd        ( 0 );
@@ -283,44 +284,46 @@ void DeviceManagerView::initToolBar()
 //
 void DeviceManagerView::initDataView()
 {
-  // Create a splitter to divide list view and text view
-  m_splitter = new QSplitter(this);
-  m_splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  m_layout->addWidget(m_splitter);
-
-  // Create the list view
-  m_listView = new QListView(m_splitter);
-  m_splitter->setResizeMode(m_listView, QSplitter::Auto);
-
-  m_listView->setMultiSelection(false);
-  m_listView->setAllColumnsShowFocus(true);
-  m_listView->setSorting(KColumnUniverse, true);
-  m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-
-  m_listView->header()->setClickEnabled(true);
-  m_listView->header()->setResizeEnabled(true);
-  m_listView->header()->setMovingEnabled(false);
-
-  m_listView->addColumn("Universe");
-  m_listView->addColumn("Device Name");
-  m_listView->setResizeMode(QListView::LastColumn);
-
-  connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
-	  this, SLOT(slotSelectionChanged(QListViewItem*)));
-
-  connect(m_listView, SIGNAL(doubleClicked(QListViewItem*)),
-	  this, SLOT(slotDoubleClicked(QListViewItem*)));
-
-  connect(m_listView, SIGNAL(rightButtonClicked(QListViewItem*,
+	// Create a splitter to divide list view and text view
+	m_splitter = new QSplitter(this);
+	m_splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	m_layout->addWidget(m_splitter);
+	
+	// Create the list view
+	m_listView = new QListView(m_splitter);
+	m_splitter->setResizeMode(m_listView, QSplitter::Auto);
+	
+	m_listView->setMultiSelection(false);
+	m_listView->setAllColumnsShowFocus(true);
+	m_listView->setSorting(KColumnAddress, true);
+	m_listView->setShowSortIndicator(true);
+	m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+	
+	m_listView->header()->setClickEnabled(true);
+	m_listView->header()->setResizeEnabled(true);
+	m_listView->header()->setMovingEnabled(false);
+	
+	m_listView->addColumn("Universe");
+	m_listView->addColumn("Address");
+	m_listView->addColumn("Device Name");
+	m_listView->setResizeMode(QListView::LastColumn);
+	
+	connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
+		this, SLOT(slotSelectionChanged(QListViewItem*)));
+	
+	connect(m_listView, SIGNAL(doubleClicked(QListViewItem*)),
+		this, SLOT(slotDoubleClicked(QListViewItem*)));
+	
+	connect(m_listView, SIGNAL(rightButtonClicked(QListViewItem*,
 						const QPoint&, int)),
-	  this, SLOT(slotRightButtonClicked(QListViewItem*,
-					    const QPoint&, int)));
+		this, SLOT(slotRightButtonClicked(QListViewItem*,
+						const QPoint&, int)));
 
-  // Create the text view
-  m_textView = new QTextView(m_splitter);
-  m_splitter->setResizeMode(m_textView, QSplitter::Auto);
+	// Create the text view
+	m_textView = new QTextView(m_splitter);
+	m_splitter->setResizeMode(m_textView, QSplitter::Auto);
 
-  slotSelectionChanged(NULL);
+	slotSelectionChanged(NULL);
 }
 
 //
@@ -328,27 +331,18 @@ void DeviceManagerView::initDataView()
 //
 void DeviceManagerView::slotDeviceAdded(t_device_id id)
 {
-  Device* dev = NULL;
-  QListViewItem* item = NULL;
+	Device* dev = NULL;
+	QListViewItem* item = NULL;
 
-  QString s;
+	dev = _app->doc()->device(id);
+	if (dev != NULL)
+	{
+		// Create a new list view item
+		item = new QListViewItem(m_listView);
 
-  dev = _app->doc()->device(id);
-  if (dev != NULL)
-    {
-      item = new QListViewItem(m_listView);
-
-      // Universe column
-      s.sprintf("%d", dev->universe() + 1); // Don't start from 0
-      item->setText(KColumnUniverse, s);
-
-      // Name column
-      item->setText(KColumnName, dev->name());
-      
-      // ID column
-      s.setNum(id);
-      item->setText(KColumnID, s);
-    }
+		// Fill device information to the item
+		updateDeviceItem(item, dev);
+	}
 }
 
 //
@@ -390,47 +384,44 @@ void DeviceManagerView::slotDeviceRemoved(t_device_id id)
 //
 void DeviceManagerView::updateView()
 {
-  t_device_id currentId = 0;
-  QListViewItem* newItem = NULL;
+	t_device_id currentId = KNoID;
+	t_device_id id = KNoID;
+	QListViewItem* item = NULL;
+	Device* dev = NULL;
 
-  QString id;
-
-  if (m_listView->currentItem() != NULL)
-    {
-      currentId = m_listView->currentItem()->text(KColumnID).toInt();
-    }
-
-  m_listView->clear();
-
-  // Add output devices
-  for (t_device_id i = 0; i < KDeviceArraySize; i++)
-    {
-      Device* dev = _app->doc()->device(i);
-      if (!dev)
+	// Store the currently selected device's ID
+	if (m_listView->currentItem() != NULL)
 	{
-	  continue;
+		currentId = m_listView->currentItem()->text(KColumnID).toInt();
 	}
-      else
+
+	// Clear the view
+	m_listView->clear();
+
+	// Add all devices
+	for (id = 0; id < KDeviceArraySize; id++)
 	{
-	  QString universe;
-	  universe.sprintf("%d", dev->universe() + 1);
-	  newItem = new QListViewItem(m_listView);
-          newItem->setText(KColumnUniverse, universe);
-          newItem->setText(KColumnName, dev->name());
+		dev = _app->doc()->device(id);
+		if (dev == NULL)
+		{
+			continue;
+		}
+		else
+		{
+			item = new QListViewItem(m_listView);
+			
+			// Update device information to the item
+			updateDeviceItem(item, dev);
 
-	  // ID column
-	  id.setNum(dev->id());
-	  newItem->setText(KColumnID, id);
-
-	  // Select this if it was selected before update
-	  if (currentId == dev->id())
-	    {
-	      m_listView->setSelected(newItem, true);
-	    }
+			// Select this if it was selected before update
+			if (currentId == id)
+			{
+				m_listView->setSelected(item, true);
+			}
+		}
 	}
-    }
 
-  slotSelectionChanged(m_listView->currentItem());
+	slotSelectionChanged(m_listView->currentItem());
 }
 
 //
@@ -438,31 +429,45 @@ void DeviceManagerView::updateView()
 //
 void DeviceManagerView::slotAdd()
 {
-  NewDevice* ndlg = new NewDevice(_app);
-
-  if (ndlg->exec() == QDialog::Accepted)
-    {
-      int address = ndlg->address();
-      int universe = ndlg->universe();
-      QString name = ndlg->name();
-      QString manufacturer = ndlg->manufacturer();
-      QString model = ndlg->model();
-
-      if (name.stripWhiteSpace() == QString::null)
+	NewDevice* ndlg = NULL;
+	int i = 0;
+	
+	ndlg = new NewDevice(_app);
+	ndlg->initView();
+	
+	if (ndlg->exec() == QDialog::Accepted)
 	{
-	  name = QString("Noname");
+		int address = ndlg->address();
+		int universe = ndlg->universe();
+		int gap = ndlg->addressGap();
+		QString name = ndlg->name();
+		QString manufacturer = ndlg->manufacturer();
+		QString model = ndlg->model();
+		
+		if (name.stripWhiteSpace() == QString::null)
+		{
+			// Empty name was given, use the model name instead
+			name = ndlg->model();
+		}
+
+		// Search the actual device class instance to be associated
+		// with the new device
+		DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
+		assert(dc);
+
+		// Add the first device without gap
+		_app->doc()->newDevice(dc, name, address, universe);
+
+		// Add the rest (if any) with address gap
+		for (i = 1; i < ndlg->multipleNumber(); i++)
+		{
+			_app->doc()->newDevice(dc, name,
+				address + (i * dc->channels()->count()) + gap,
+				universe);
+		}
 	}
 
-      // Search the actual device class instance to be associated
-      // with the new device
-      DeviceClass* dc = _app->searchDeviceClass(manufacturer, model);
-      assert(dc);
-
-      // Add new device
-      _app->doc()->newDevice(dc, name, address, universe);
-    }
-
-  delete ndlg;
+	delete ndlg;
 }
 
 
@@ -552,22 +557,25 @@ void DeviceManagerView::slotDoubleClicked(QListViewItem* item)
 //
 void DeviceManagerView::slotProperties()
 {
-  QListViewItem* item = m_listView->currentItem();
+	QListViewItem* item = NULL;
+	Device* dev = NULL;
 
-  t_device_id id = item->text(KColumnID).toInt();
-  Device* device = _app->doc()->device(id);
+	item = m_listView->currentItem();
+	if (item != NULL)
+	{
+		dev = _app->doc()->device(item->text(KColumnID).toInt());
+		assert(dev);
+		
+		// View device properties dialog
+		dev->viewProperties();
 
-  ASSERT(device);
-
-  device->viewProperties();
-
-  QString universe;
-  universe.sprintf("%d", device->universe() + 1);
-  item->setText(KColumnUniverse, universe);
-  item->setText(KColumnName, device->name());
-  slotSelectionChanged(item);
+		// Then update device properties to view
+		updateDeviceItem(item, dev);
+		
+		// Cause an update to the device info view
+		slotSelectionChanged(item);
+	}
 }
-
 
 //
 // View Monitor
@@ -876,3 +884,30 @@ void DeviceManagerView::copyFunction(Function* function, Device* device)
     }
 }
 
+//
+// Fill item's data fields with device information
+//
+void DeviceManagerView::updateDeviceItem(QListViewItem* item, Device* dev)
+{
+	QString s;
+	
+	assert(item);
+	assert(dev);
+	
+	// Universe column
+	s.sprintf("%d", dev->universe() + 1);
+	item->setText(KColumnUniverse, s);
+
+	// Address column
+	s.sprintf("%.3d - %.3d", dev->address() + 1,
+		dev->address() + 
+		dev->deviceClass()->channels()->count());
+	item->setText(KColumnAddress, s);
+	
+	// Name column
+	item->setText(KColumnName, dev->name());
+
+	// ID column
+	s.setNum(dev->id());
+	item->setText(KColumnID, s);
+}

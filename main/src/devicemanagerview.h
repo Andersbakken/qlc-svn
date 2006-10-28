@@ -58,6 +58,7 @@ class DeviceManagerView : public QWidget
   void updateView();
   
   void copyFunction(Function* function, Device* device);
+  void updateDeviceItem(QListViewItem* item, Device* dev);
 
  protected slots:
   void slotAdd();

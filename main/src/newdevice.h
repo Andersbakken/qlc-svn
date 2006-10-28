@@ -35,14 +35,19 @@ class NewDevice : public UI_NewDevice
   NewDevice(QWidget *parent = 0, const char *name = 0);
   ~NewDevice();
 
+  void initView();
+
   QString manufacturer() const { return m_manufacturerValue; }
   QString model() const { return m_modelValue; }
+  QString name() const { return m_nameValue; }
+  
   t_channel address() const { return m_addressValue; }
   t_channel universe() const { return m_universeValue; }
-  QString name() const { return m_nameValue; }
-
+  
+  int multipleNumber() const { return m_multipleNumberValue; }
+  t_channel addressGap() const { return m_addressGapValue; }
+  
  protected:
-  void initView();
   void show();
 
   void fillTree();
@@ -52,10 +57,14 @@ class NewDevice : public UI_NewDevice
   QString m_typeValue;
   QString m_manufacturerValue;
   QString m_modelValue;
+
   t_channel m_addressValue;
   t_channel m_universeValue;
-  bool m_selectionOK;
+  int m_multipleNumberValue;
+  t_channel m_addressGapValue;
 
+  bool m_selectionOK;
+ 
  private slots:
   void slotOKClicked();
   void slotCancelClicked();

@@ -44,6 +44,7 @@
 #include <qdir.h>
 #include <qptrlist.h>
 #include <qmessagebox.h>
+#include <assert.h>
 
 extern App* _app;
 
@@ -325,85 +326,101 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 		       t_channel address, t_channel universe,
 		       t_device_id id)
 {
-  Device* d = new Device();
-
-  //
-  // If the device was created successfully, save it to device
-  // array and set its position in the array as its ID
-  //
-  if (d)
-    {
-      if (id == KNoID)
+	Device* device = NULL;
+	
+	if (dc == NULL)
 	{
-	  bool ok = false;
-
-	  for (t_device_id i = 0; i < KDeviceArraySize; i++)
-	    {
-	      if (m_deviceArray[i] == NULL)
+		QMessageBox::warning(_app, KApplicationNameShort,
+			"Unknown device class, can't create device \"" +
+			name + "\".");
+	}
+	else if (address > 512 || universe > KUniverseCount ||
+		(address + dc->channels()->count()) > 512)
+	{
+		QMessageBox::warning(_app, KApplicationNameShort,
+				"Device \"" + name +
+				"\" address space is out of DMX bounds.");
+	}
+  	else if (id == KNoID)
+	{
+		// Assign ID automatically, this is run time creation,
+		// because ID was not given (as it would be from a file).
+		for (t_device_id i = 0; i < KDeviceArraySize; i++)
 		{
-		  m_deviceArray[i] = d;
-		  d->setID(i);
-		  d->setDeviceClass(dc);
-		  d->setAddress(address);
-		  d->setUniverse(universe);
-		  d->setName(name);
+			if (m_deviceArray[i] == NULL)
+			{
+				device = new Device();
+				assert(device);
 
-		  ok = true;
-		  break;
+				m_deviceArray[i] = device;
+				device->setID(i);
+				device->setDeviceClass(dc);
+				device->setAddress(address);
+				device->setUniverse(universe);
+				device->setName(name);
+
+				// Patch device change events thru Doc
+				connect(device,
+					SIGNAL(changed(t_device_id)),
+					this,
+					SIGNAL(deviceChanged(t_device_id)));
+
+				emit deviceAdded(i);
+				break;
+			}
 		}
-	    }
 
-	  if (!ok)
-	    {
-	      QString num;
-	      num.setNum(KDeviceArraySize);
-	      QMessageBox::warning(_app, KApplicationNameShort,
-				   "You cannot add more than " + num +
-				   " devices.");
-	      delete d;
-	      d = NULL;
-	    }
+		if (device == NULL)
+		{
+			QString num;
+			num.setNum(KDeviceArraySize);
+			QMessageBox::warning(_app, KApplicationNameShort,
+				"You cannot add more than " + num +
+				" devices.");
+		}
 	}
-      else if (id >= 0 && id < KDeviceArraySize)
+	else if (id >= 0 && id < KDeviceArraySize)
 	{
-	  if (m_deviceArray[id] == NULL)
-	    {
-	      m_deviceArray[id] = d;
-	      d->setID(id);
-	      d->setDeviceClass(dc);
-	      d->setAddress(address);
-	      d->setUniverse(universe);
-	      d->setName(name);
-	    }
-	  else
-	    {
-	      delete d;
-	      d = NULL;
-	      QMessageBox::critical(_app, KApplicationNameShort,
-				 "Unable to create device; ID already taken!");
-	    }
+		// ID was given, we're loading a workspace file, so set the
+		// device ID to the one found from the file.
+		if (m_deviceArray[id] == NULL)
+		{
+			device = new Device();
+			assert(device);
+
+			m_deviceArray[id] = device;
+			device->setID(id);
+			device->setDeviceClass(dc);
+			device->setAddress(address);
+			device->setUniverse(universe);
+			device->setName(name);
+
+			setModified(true);
+			
+			// Patch device change events thru Doc
+			connect(device,
+				SIGNAL(changed(t_device_id)),
+				this,
+				SIGNAL(deviceChanged(t_device_id)));
+
+			emit deviceAdded(id);
+		}
+		else
+		{
+			QMessageBox::critical(_app, KApplicationNameShort,
+				"Unable to create device " + name + 
+				"\nbecause its ID is already taken!");
+		}
 	}
-      else
+	else
 	{
-	  delete d;
-	  d = NULL;
-	  QMessageBox::warning(_app, KApplicationNameShort,
-			       "Function ID out of bounds!");
+		QString num;
+		num.setNum(KDeviceArraySize);
+		QMessageBox::warning(_app, KApplicationNameShort,
+			"You cannot add more than " + num + " devices.");
 	}
 
-      setModified(true);
-    }
-
-  if (d)
-    {
-      // Patch device change events thru Doc
-      connect(d, SIGNAL(changed(t_device_id)),
-	      this, SIGNAL(deviceChanged(t_device_id)));
-
-      emit deviceAdded(d->id());
-    }
-
-  return d;
+	return device;
 }
 
 

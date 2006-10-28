@@ -41,24 +41,36 @@
 
 extern App* _app;
 
+//
 // Keys for settings
+//
 const QString KEY_NEWDEVICE_TREE_OPEN = "NewDeviceTreeOpen";
 
+//
+// Constructor
+//
 NewDevice::NewDevice(QWidget *parent, const char *name)
-  : UI_NewDevice(parent, name, true)
+	: UI_NewDevice(parent, name, true),
+	
+	m_addressValue        ( 0 ),
+	m_universeValue       ( 0 ),
+	m_multipleNumberValue ( 1 ),
+	m_addressGapValue     ( 0 ),
+	m_selectionOK         ( false )
 {
-  m_nameValue = QString("");
-  m_addressValue = 0;
-  m_selectionOK = false;
-
-  initView();
 }
 
+//
+// Destructor
+//
 NewDevice::~NewDevice()
 {
 
 }
 
+//
+// Initialize view components
+//
 void NewDevice::initView()
 {
   QString config;
@@ -81,10 +93,12 @@ void NewDevice::initView()
 	m_treeOpenCheckBox->setChecked(false);
   }
 
-  m_nameEdit->setText("New device");
   m_ok->setEnabled(false);
 }
 
+//
+// Set address with mockup DIP switches
+//
 void NewDevice::slotDIPClicked()
 {
   DMXAddressTool* dat = new DMXAddressTool(_app);
@@ -104,6 +118,9 @@ void NewDevice::slotDIPClicked()
   delete dat;
 }
 
+//
+// Open/close all manufacturer nodes
+//
 void NewDevice::slotTreeOpenCheckBoxClicked()
 {
   if (m_treeOpenCheckBox->isChecked() == true)
@@ -132,13 +149,19 @@ void NewDevice::slotTreeOpenCheckBoxClicked()
     }
 }
 
+//
+// An item has been doubleclicked, same thing as pressing OK
+//
 void NewDevice::slotTreeDoubleClicked(QListViewItem* item)
 {
-  slotSelectionChanged(item);
+	slotSelectionChanged(item);
 
-  slotOKClicked();
+	slotOKClicked();
 }
 
+//
+// Selection has changed in the device tree view
+//
 void NewDevice::slotSelectionChanged(QListViewItem* item)
 {
   if (item->parent() != NULL)
@@ -178,6 +201,9 @@ void NewDevice::slotSelectionChanged(QListViewItem* item)
     }
 }
 
+//
+// Fill all known deviceclasses to the tree
+//
 void NewDevice::fillTree()
 {
   QListViewItem* parent = NULL;
@@ -187,7 +213,7 @@ void NewDevice::fillTree()
 
   QString config;
   bool treeOpen = false;
-  if (_app->settings()->get("NewDeviceTreeOpen", config) != -1 &&
+  if (_app->settings()->get(KEY_NEWDEVICE_TREE_OPEN, config) != -1 &&
 	config == Settings::trueValue())
   {
 	treeOpen = true;
@@ -226,6 +252,9 @@ void NewDevice::fillTree()
     }
 }
 
+//
+// User has edited the name field
+//
 void NewDevice::slotNameChanged(const QString &text)
 {
 	m_nameValue = text;
@@ -237,24 +266,35 @@ void NewDevice::slotNameChanged(const QString &text)
 	}
 }
 
+//
+// Show the dialog
+//
 void NewDevice::show()
 {
-  QDialog::show();
+	QDialog::show();
 }
 
+//
+// OK button was clicked
+//
 void NewDevice::slotOKClicked()
 {
-  m_addressValue = m_addressSpin->value() - 1;
-
-  m_universeValue = m_universeSpin->value() - 1;
-
-  if (m_selectionOK == true)
-    {
-      accept();
-    }
+	m_addressValue = m_addressSpin->value() - 1;
+	m_universeValue = m_universeSpin->value() - 1;
+	
+	m_multipleNumberValue = m_multipleNumberSpin->value();
+	m_addressGapValue = m_addressGapSpin->value();
+	
+	if (m_selectionOK == true)
+	{
+		accept();
+	}
 }
 
+//
+// Cancel was clicked
+//
 void NewDevice::slotCancelClicked()
 {
-  reject();
+	reject();
 }

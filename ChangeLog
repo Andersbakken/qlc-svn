@@ -1,3 +1,10 @@
+2006-Oct-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Added address column to device manager
+	* Added capability to create multiple devices at once.
+	* Improved Doc::newDevice() so that the device is not created
+	  at all if parameters are not correct. Previously it was created
+	  and then destroyed if parameters were incorrect..
+
 2006-Oct-27  Heikki Junnila <hjunnila@users.sf.net>
 	* Created a bigger application icon (Q.png)
 

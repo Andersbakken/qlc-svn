@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>482</width>
-            <height>515</height>
+            <width>494</width>
+            <height>520</height>
         </rect>
     </property>
     <property name="caption">
@@ -163,7 +163,7 @@
                                                 <number>1</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>The device's address</string>
+                                                <string>The first device's DMX address</string>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -206,7 +206,7 @@
                                                 <number>1</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>The device's universe</string>
+                                                <string>The device's DMX universe</string>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -266,7 +266,103 @@
                                                 <number>0</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>Number of channels taken by the device</string>
+                                                <string>Number of channels used by the device</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
+                                </widget>
+                            </vbox>
+                        </widget>
+                        <widget class="QGroupBox">
+                            <property name="name">
+                                <cstring>groupBox2</cstring>
+                            </property>
+                            <property name="title">
+                                <string>Multiple Devices</string>
+                            </property>
+                            <vbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout8</cstring>
+                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>textLabel1</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Number</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_multipleNumberSpin</cstring>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>4</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
+                                            <property name="buttonSymbols">
+                                                <enum>UpDownArrows</enum>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>100</number>
+                                            </property>
+                                            <property name="minValue">
+                                                <number>1</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Number of devices to add</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout9</cstring>
+                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>textLabel2</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Address gap</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QSpinBox">
+                                            <property name="name">
+                                                <cstring>m_addressGapSpin</cstring>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>4</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
+                                            <property name="wrapping">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="maxValue">
+                                                <number>512</number>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Leave a gap between each device's address space</string>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -305,7 +401,7 @@
                             <property name="sizeHint">
                                 <size>
                                     <width>20</width>
-                                    <height>214</height>
+                                    <height>150</height>
                                 </size>
                             </property>
                         </spacer>
