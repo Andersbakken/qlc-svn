@@ -36,30 +36,30 @@ class SceneEditor;
 
 class DeviceConsole : public QWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public: 
-  DeviceConsole(QWidget *parent = 0, const char *name = 0);
-  ~DeviceConsole();
+public: 
+	DeviceConsole(QWidget *parent);
+	~DeviceConsole();
 
-  void setDevice(t_device_id);
+	void setDevice(t_device_id);
 
-  QPtrList <ConsoleChannel> unitList() { return m_unitList; }
-  SceneEditor* sceneEditor() { return m_sceneEditor; }
+	QPtrList <ConsoleChannel> unitList() { return m_unitList; }
+	SceneEditor* sceneEditor() { return m_sceneEditor; }
 
- signals:
-  void closed();
+signals:
+	void closed();
 
- protected:
-  void closeEvent(QCloseEvent*);
+protected:
+	void closeEvent(QCloseEvent*);
 
- protected:
-  QHBoxLayout* m_layout;
+protected:
+	QHBoxLayout* m_layout;
 
-  SceneEditor* m_sceneEditor;
-  t_device_id m_deviceID;
+	SceneEditor* m_sceneEditor;
+	t_device_id m_deviceID;
 
-  QPtrList <ConsoleChannel> m_unitList;
+	QPtrList <ConsoleChannel> m_unitList;
 };
 
 #endif

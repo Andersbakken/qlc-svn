@@ -1,4 +1,7 @@
 2006-Oct-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Added a preset menu button to console channel
+
+2006-Oct-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Added address column to device manager
 	* Added capability to create multiple devices at once.
 	* Improved Doc::newDevice() so that the device is not created

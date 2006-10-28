@@ -30,6 +30,7 @@ class QSlider;
 class QLabel;
 class QPushButton;
 class QContextMenuEvent;
+class QPopupMenu;
 class Device;
 
 class ConsoleChannel : public UI_ConsoleChannel
@@ -37,12 +38,11 @@ class ConsoleChannel : public UI_ConsoleChannel
   Q_OBJECT
 
  public:
-  ConsoleChannel(QWidget *parent, const char* name = NULL);
-  ~ConsoleChannel();
+  ConsoleChannel(QWidget *parent, t_device_id deviceID, t_channel channel);
+ ~ConsoleChannel();
 
-  void setDevice(t_device_id);
-  void setChannel(t_channel);
-
+  void init();
+ 
   int getSliderValue(void);
   void update(void);
 
@@ -70,10 +70,11 @@ class ConsoleChannel : public UI_ConsoleChannel
  protected:
   void contextMenuEvent(QContextMenuEvent*);
 
- private:
-  void initMenu(void);
+ protected:
+  void initMenu();
   void updateStatusButton();
 
+ protected:
   t_channel m_channel;
   t_value m_value;
   Scene::ValueType m_status;
@@ -83,6 +84,8 @@ class ConsoleChannel : public UI_ConsoleChannel
   bool m_fadeStatusEnabled;
 
   bool m_updateOnly;
+ 
+  QPopupMenu* m_menu;
 };
 
 #endif

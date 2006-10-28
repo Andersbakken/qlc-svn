@@ -45,266 +45,346 @@
 
 extern App* _app;
 
+//
+// Status button's colors
+//
 const QColor KStatusButtonColorFade  (  80, 151, 222 );
 const QColor KStatusButtonColorSet   ( 222,  80,  82 );
 const QColor KStatusButtonColorOff   (  28,  52,  77 );
 
+//
+// The preset menu title
+//
 const int KMenuTitle          ( INT_MAX );
 
-ConsoleChannel::ConsoleChannel(QWidget* parent, const char* name)
-  : UI_ConsoleChannel(parent, name),
-    m_channel    (           0 ),
-    m_value      (           0 ),
-    m_status     ( Scene::Fade ),
-    m_deviceID   (       KNoID ),
-    m_fadeStatusEnabled ( true ),
-    m_updateOnly (       false )
+//
+// Constructor
+//
+ConsoleChannel::ConsoleChannel(QWidget* parent, t_device_id deviceID,
+						t_channel channel)
+	: UI_ConsoleChannel(parent, "ConsoleChannel"),
+
+	m_channel    ( channel ),
+	m_value      ( 0 ),
+	m_status     ( Scene::Fade ),
+	m_deviceID   ( deviceID ),
+	m_fadeStatusEnabled ( true ),
+	m_updateOnly ( false ),
+	m_menu       ( NULL )
 {
-  m_statusButton->setBackgroundMode(FixedColor);
-
-  connect(m_valueSlider, SIGNAL(valueChanged(int)),
-	  this, SLOT(slotValueChange(int)));
-
-  connect(m_valueSlider, SIGNAL(sliderPressed()),
-	  this, SLOT(slotSetFocus()));
-
-  connect(m_statusButton, SIGNAL(clicked()),
-	  this, SLOT(slotStatusButtonClicked()));
+	assert(deviceID != KNoID);
+	assert(channel != KChannelInvalid);
 }
 
+//
+// Destructor
+//
 ConsoleChannel::~ConsoleChannel()
 {
+	if (m_menu)
+	{
+		delete m_menu;
+	}
 }
 
-void ConsoleChannel::setDevice(t_device_id id)
+//
+// Initialize the UI
+//
+void ConsoleChannel::init()
 {
-  m_deviceID = id;
-  assert(_app->doc()->device(id));
+	Device* device = NULL;
+	QString num;
+
+	// Check that we have an actual device
+	device = _app->doc()->device(m_deviceID);
+	assert(device);
+	
+	// Check that the given channel is valid
+	assert(m_channel < device->deviceClass()->channels()->count());
+	
+	// Set the channel's name as the tooltip
+	QToolTip::add(this, 
+		device->deviceClass()->channels()->at(m_channel)->name());
+
+	// Set channel label
+	num.sprintf("%.3d", m_channel + 1);
+	m_numberLabel->setText(num);
+	
+	m_statusButton->setBackgroundMode(FixedColor);
+
+	connect(m_valueSlider, SIGNAL(valueChanged(int)),
+		this, SLOT(slotValueChange(int)));
+
+	connect(m_valueSlider, SIGNAL(sliderPressed()),
+		this, SLOT(slotSetFocus()));
+
+	connect(m_statusButton, SIGNAL(clicked()),
+		this, SLOT(slotStatusButtonClicked()));
+
+	updateStatusButton();
+
+	// Initialize the preset menu
+	initMenu();
 }
 
-void ConsoleChannel::setChannel(t_channel channel)
+//
+// Initialize the preset menu
+//
+void ConsoleChannel::initMenu()
 {
-  QString num;
+	Capability* c = NULL;
+	LogicalChannel* ch = NULL;
+	Device* device = NULL;
+	QPopupMenu* valueMenu = NULL;
+	QString s;
+	QString t;
+	
+	device = _app->doc()->device(m_deviceID);
+	assert(device);
 
-  m_channel = channel;
+	ch = device->deviceClass()->channels()->at(m_channel);
+	assert(ch);
+	
+	// Get rid of a possible previous menu
+	if (m_menu)
+	{
+		delete m_menu;
+	}
+	
+	// Create a popup menu and set the channel name as the title
+	m_menu = new QPopupMenu();
+	m_menu->insertItem(ch->name(), KMenuTitle);
+	m_menu->setItemEnabled(KMenuTitle, false);
+	m_menu->insertSeparator();
 
-  num.sprintf("%.3d", channel + 1);
-  m_numberLabel->setText(num);
+	QPtrListIterator<Capability> it(*ch->capabilities());
 
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
+	while (it.current())
+	{
+		c = it.current();
 
-  QToolTip::add(this, device->deviceClass()->channels()->at(channel)->name());
+		// Set the value range and name as menu item's name
+		s.sprintf("%s: %.3d - %.3d", (const char*) c->name(), 
+						c->lo(), c->hi());
 
-  updateStatusButton();
+		// Create submenu for ranges that contain more than one value
+		if (c->hi() - c->lo() > 0)
+		{
+			valueMenu = new QPopupMenu(m_menu);
+			
+			connect(valueMenu, SIGNAL(activated(int)),
+				this, SLOT(slotContextMenuActivated(int)));
+
+			for (int i = c->lo(); i <= c->hi(); i++)
+			{
+				t.sprintf("%.3d", i);
+				valueMenu->insertItem(t, i);
+			}
+			
+			m_menu->insertItem(s, valueMenu);
+		}
+		else
+		{
+			// Just one value in this range, don't create submenu
+			m_menu->insertItem(s, c->lo());
+		}
+
+		++it;
+	}
+
+	// Connect menu item activation signal to this
+	connect(m_menu, SIGNAL(activated(int)),
+		this, SLOT(slotContextMenuActivated(int)));
+	
+	// Set the menu also as the preset button's popup menu
+	m_presetButton->setPopup(m_menu);
 }
 
+//
+// Set the status button's.. well.. status
+//
 void ConsoleChannel::setStatusButton(Scene::ValueType status)
 {
-  m_status = status;
-  updateStatusButton();
+	m_status = status;
+	updateStatusButton();
 }
 
-// For sequence editor doesn't like fade values
+//
+// Sequence editor doesn't like fade values
+//
 void ConsoleChannel::setFadeStatusEnabled(bool enable)
 {
-  m_fadeStatusEnabled = enable;
-  if (m_status == Scene::Fade)
-    {
-      setStatusButton(Scene::Set);
-    }
+	m_fadeStatusEnabled = enable;
+	if (m_status == Scene::Fade)
+	{
+		setStatusButton(Scene::Set);
+	}
 
-  updateStatusButton();
+	updateStatusButton();
 }
 
+//
+// Status button was clicked by the user
+//
 void ConsoleChannel::slotStatusButtonClicked()
 {
-  if (m_fadeStatusEnabled)
-    {
-      m_status = (Scene::ValueType) ((m_status + 1) % 3);
-    }
-  else
-    {
-      if (m_status == Scene::Set)
+	if (m_fadeStatusEnabled)
 	{
-	  m_status = Scene::NoSet;
+		m_status = (Scene::ValueType) ((m_status + 1) % 3);
 	}
-      else
+	else
 	{
-	  m_status = Scene::Set;
+		if (m_status == Scene::Set)
+		{
+			m_status = Scene::NoSet;
+		}
+		else
+		{
+			m_status = Scene::Set;
+		}
 	}
-    }
 
-  updateStatusButton();
-  emit changed(m_channel, m_value, m_status);
+	updateStatusButton();
+
+	emit changed(m_channel, m_value, m_status);
 }
 
+//
+// Update the button's color, label and tooltip to reflect channel status
+//
 void ConsoleChannel::updateStatusButton()
 {
-  if (m_status == Scene::Fade)
-    {
-      m_statusButton->setPaletteBackgroundColor(KStatusButtonColorFade);
-      m_statusButton->setText("F");
-      QToolTip::add(m_statusButton, "Fade");
-    }
-  else if (m_status == Scene::Set)
-    {
-      m_statusButton->setPaletteBackgroundColor(KStatusButtonColorSet);
-      m_statusButton->setText("S");
-      QToolTip::add(m_statusButton, "Set");
-    }
-  else
-    {
-      m_statusButton->setPaletteBackgroundColor(KStatusButtonColorOff);
-      m_statusButton->setText("X");
-      QToolTip::add(m_statusButton, "Off");
-    }
+	if (m_status == Scene::Fade)
+	{
+		m_statusButton->setPaletteBackgroundColor(
+						KStatusButtonColorFade);
+		m_statusButton->setText("F");
+		QToolTip::add(m_statusButton, "Fade");
+	}
+	else if (m_status == Scene::Set)
+	{
+		m_statusButton->setPaletteBackgroundColor(
+						KStatusButtonColorSet);
+		m_statusButton->setText("S");
+		QToolTip::add(m_statusButton, "Set");
+	}
+	else
+	{
+		m_statusButton->setPaletteBackgroundColor(
+						KStatusButtonColorOff);
+		m_statusButton->setText("X");
+		QToolTip::add(m_statusButton, "Off");
+	}
 }
 
+//
+// Set channel's focus
+//
 void ConsoleChannel::slotSetFocus()
 {
-  t_value value = 0;
+	t_value value = 0;
 
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
+	Device* device = _app->doc()->device(m_deviceID);
+	assert(device);
 
-  // In case someone else has set the value for this channel, animate
-  // the slider to the correct position
-  value = _app->value(device->universeAddress() + m_channel);
+	// In case someone else has set the value for this channel, animate
+	// the slider to the correct position
+	value = _app->value(device->universeAddress() + m_channel);
 
-  slotAnimateValueChange(value);
+	slotAnimateValueChange(value);
 
-  // Set focus to this slider
-  m_valueSlider->setFocus();
+	// Set focus to this slider
+	m_valueSlider->setFocus();
 }
 
+//
+// Update the UI to match the channel's real status & value
+//
 void ConsoleChannel::update()
 {
-  t_value value = 0;
-
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
-
-  value = _app->value(device->universeAddress() + m_channel);
-
-  m_valueLabel->setNum(value);
-  slotAnimateValueChange(value);
+	t_value value = 0;
+	
+	Device* device = _app->doc()->device(m_deviceID);
+	assert(device);
+	
+	value = _app->value(device->universeAddress() + m_channel);
+	
+	m_valueLabel->setNum(value);
+	slotAnimateValueChange(value);
 }
 
+//
+// Slider value was changed
+//
 void ConsoleChannel::slotValueChange(int value)
 {
-  value = KChannelValueMax - value;
+	value = KChannelValueMax - value;
 
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
-
-  _app->setValue(device->universeAddress() + m_channel, (t_value) value);
-
-  m_valueLabel->setNum(value);
-
-  m_value = value;
-  emit changed(m_channel, m_value, m_status);
+	Device* device = _app->doc()->device(m_deviceID);
+	assert(device);
+	
+	_app->setValue(device->universeAddress() + m_channel, (t_value) value);
+	
+	m_valueLabel->setNum(value);
+	
+	m_value = value;
+	emit changed(m_channel, m_value, m_status);
 }
 
+//
+// Get the channel's value
+//
 int ConsoleChannel::getSliderValue()
 {
-  return KChannelValueMax - m_valueSlider->value();
+	return KChannelValueMax - m_valueSlider->value();
 }
 
-// This slot emulates the user dragging the value slider
+//
+// Emulate the user dragging the value slider
+//
 void ConsoleChannel::slotAnimateValueChange(t_value value)
 {
-  m_valueSlider->setValue(static_cast<int> (KChannelValueMax - value));
+	m_valueSlider->setValue(static_cast<int> (KChannelValueMax - value));
 }
 
 void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
 {
-  QString s;
-  QString t;
-  Capability* c = NULL;
-
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
-
-  LogicalChannel* ch = device->deviceClass()->channels()->at(m_channel);
-
-  QPopupMenu* menu = new QPopupMenu();
-  menu->insertItem(ch->name(), KMenuTitle);
-  menu->setItemEnabled(KMenuTitle, false);
-  menu->insertSeparator();
-
-  QPtrListIterator<Capability> it(*ch->capabilities());
-
-  QPopupMenu* valueMenu = NULL;
-
-  while (it.current())
-    {
-      c = it.current();
-
-      // Set the value range and name as menu item's name
-      s.sprintf("%.3d - %.3d:", c->lo(), c->hi());
-      s += c->name();
-
-      // Create a submenu for ranges that contain more than one value
-      if (c->hi() - c->lo() > 0)
-	{
-	  valueMenu = new QPopupMenu(menu);
-	  connect(valueMenu, SIGNAL(activated(int)),
-		  this, SLOT(slotContextMenuActivated(int)));
-
-	  for (int i = c->lo(); i <= c->hi(); i++)
-	    {
-	      t.sprintf("%.3d", i);
-	      valueMenu->insertItem(t, i);
-	    }
-	  menu->insertItem(s, valueMenu);
-	}
-      else
-	{
-	  // Just one value in this range, don't create a submenu
-	  menu->insertItem(s, c->lo());
-	}
-
-      ++it;
-    }
-
-  connect(menu, SIGNAL(activated(int)),
-	  this, SLOT(slotContextMenuActivated(int)));
-
-  menu->exec(e->globalPos()); // Synchronous call
-
-  delete menu; // QT deletes also submenus automatically
-
-  e->accept();
+	// Show the preset menu
+	m_menu->exec(e->globalPos());
+	e->accept();
 }
 
 void ConsoleChannel::slotContextMenuActivated(int value)
 {
-  if (value == KMenuTitle)
-    {
-      return;
-    }
-  else
-    {
-      // The menuitem contains a valid DMX value
-      slotAnimateValueChange(value);
-    }
+	if (value == KMenuTitle)
+	{
+		return;
+	}
+	else
+	{
+		// The menuitem contains a valid DMX value
+		slotAnimateValueChange(value);
+	}
 }
 
+//
+// Device console's scene editor activated a scene, which is reflected
+// here. So set the value and status to UI.
+//
 void ConsoleChannel::slotSceneActivated(SceneValue* values,
 					t_channel channels)
 {
-  assert(values);
+	assert(values);
 
-  if (m_channel <= channels)
-    {
-      setStatusButton(values[m_channel].type);
-
-      if (values[m_channel].type == Scene::Set ||
-	  values[m_channel].type == Scene::Fade)
+	if (m_channel <= channels)
 	{
-	  slotAnimateValueChange(values[m_channel].value);
-	  emit changed(m_channel, m_value, m_status);
+		setStatusButton(values[m_channel].type);
+
+		if (values[m_channel].type == Scene::Set ||
+		    values[m_channel].type == Scene::Fade)
+		{
+			slotAnimateValueChange(values[m_channel].value);
+			emit changed(m_channel, m_value, m_status);
+		}
 	}
-    }
 }

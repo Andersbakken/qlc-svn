@@ -111,9 +111,8 @@ void SequenceEditor::setDevice(t_device_id id)
       s.sprintf("%.3d", ch + 1);
       m_list->addColumn(s);
 
-      unit = new ConsoleChannel(m_sliderContainer);
-      unit->setDevice(id);
-      unit->setChannel(ch);
+      unit = new ConsoleChannel(m_sliderContainer, id, ch);
+      unit->init();
       unit->setFadeStatusEnabled(false);
       m_unitList.append(unit);
       unit->update();

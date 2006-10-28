@@ -35,79 +35,91 @@
 
 extern App* _app;
 
-DeviceConsole::DeviceConsole(QWidget *parent, const char *name)
-  : QWidget(parent, name),
-    m_layout      ( NULL ),
-    m_sceneEditor ( NULL )
+DeviceConsole::DeviceConsole(QWidget *parent)
+	: QWidget(parent, "DeviceConsole"),
+	
+	m_layout      ( NULL ),
+	m_sceneEditor ( NULL )
 {
 }
 
 DeviceConsole::~DeviceConsole()
 {
-  while (!m_unitList.isEmpty())
-    {
-      delete m_unitList.take(0);
-    }
+	while (!m_unitList.isEmpty())
+	{
+		delete m_unitList.take(0);
+	}
+	
+	if (m_sceneEditor)
+	{
+		delete m_sceneEditor;
+		m_sceneEditor = NULL;
+	}
 }
 
 void DeviceConsole::closeEvent(QCloseEvent* e)
 {
-  emit closed();
+	emit closed();
 }
 
 void DeviceConsole::setDevice(t_device_id id)
 {
-  m_deviceID = id;
+	unsigned int i = 0;
+	Device* device = NULL;
+	ConsoleChannel* unit = NULL;
+	
+	m_deviceID = id;
 
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
+	device = _app->doc()->device(m_deviceID);
+	assert(device);
 
-  // Set an icon
-  setIcon(QPixmap(PIXMAPS + QString("/console.png")));
+	// Set an icon
+	setIcon(QPixmap(PIXMAPS + QString("/console.png")));
 
-  // Set the main horizontal layout
-  m_layout = new QHBoxLayout(this);
-  m_layout->setAutoAdd(true);
+	// Set the main horizontal layout
+	m_layout = new QHBoxLayout(this);
+	m_layout->setAutoAdd(true);
 
-  // Create scene editor widget
-  if (m_sceneEditor) delete m_sceneEditor;
-  m_sceneEditor = new SceneEditor(this);
-  m_sceneEditor->setDevice(m_deviceID);
-  m_sceneEditor->show();
+	// Create scene editor widget
+	if (m_sceneEditor) delete m_sceneEditor;
+	m_sceneEditor = new SceneEditor(this);
+	m_sceneEditor->setDevice(m_deviceID);
+	m_sceneEditor->show();
 
-  // Catch function add signals
-  connect(_app->doc(), SIGNAL(functionAdded(t_function_id)),
-	  m_sceneEditor, SLOT(slotFunctionAdded(t_function_id)));
+	// Catch function add signals
+	connect(_app->doc(), SIGNAL(functionAdded(t_function_id)),
+		m_sceneEditor, SLOT(slotFunctionAdded(t_function_id)));
 
-  // Catch function remove signals
-  connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
-	  m_sceneEditor, SLOT(slotFunctionRemoved(t_function_id)));
+	// Catch function remove signals
+	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
+		m_sceneEditor, SLOT(slotFunctionRemoved(t_function_id)));
 
-  // Catch function change signals
-  connect(_app->doc(), SIGNAL(functionChanged(t_function_id)),
-	  m_sceneEditor, SLOT(slotFunctionChanged(t_function_id)));
+	// Catch function change signals
+	connect(_app->doc(), SIGNAL(functionChanged(t_function_id)),
+		m_sceneEditor, SLOT(slotFunctionChanged(t_function_id)));
 
-  // Create channel units
-  ConsoleChannel* unit = NULL;
-  for (unsigned int i = 0; i < device->deviceClass()->channels()->count(); i++)
-    {
-      unit = new ConsoleChannel(this);
-      unit->setDevice(m_deviceID);
-      unit->setChannel(i);
-      unit->update();
+	// Create channel units
+	for (i = 0; i < device->deviceClass()->channels()->count(); i++)
+	{
+		unit = new ConsoleChannel(this, m_deviceID, i);
+		unit->init();
+		unit->update();
 
-      // Channel updates to scene editor
-      connect(unit, SIGNAL(changed(t_channel, t_value, Scene::ValueType)),
-	      m_sceneEditor, SLOT(slotChannelChanged(t_channel, t_value,
-						     Scene::ValueType)));
+		// Channel updates to scene editor
+		connect(unit, 
+			SIGNAL(changed(t_channel, t_value, Scene::ValueType)),
+			m_sceneEditor,
+			SLOT(slotChannelChanged(t_channel, t_value, Scene::ValueType)));
 
-      // Scene editor updates to channels
-      connect(m_sceneEditor, SIGNAL(sceneActivated(SceneValue*,t_channel)),
-	      unit, SLOT(slotSceneActivated(SceneValue*, t_channel)));
+		// Scene editor updates to channels
+		connect(m_sceneEditor,
+			SIGNAL(sceneActivated(SceneValue*,t_channel)),
+			unit, 
+			SLOT(slotSceneActivated(SceneValue*, t_channel)));
 
-      m_unitList.append(unit);
-    }
+		m_unitList.append(unit);
+	}
 
-  // Update scene editor (also causes an update to channelunits)
-  m_sceneEditor->update();
+	// Update scene editor (also causes an update to channelunits)
+	m_sceneEditor->update();
 }
