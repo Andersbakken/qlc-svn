@@ -61,6 +61,7 @@
 #include "dummyoutplugin.h"
 #include "dummyinplugin.h"
 #include "pluginmanager.h"
+#include "monitor.h"
 
 #include "common/settings.h"
 #include "common/inputplugin.h"
@@ -101,7 +102,7 @@ t_plugin_id App::NextPluginID (KPluginIDMin);
 
 #define ID_VIEW_DEVICE_MANAGER		12030
 #define ID_VIEW_VIRTUAL_CONSOLE         12040
-#define ID_VIEW_SEQUENCE_EDITOR         12050
+#define ID_VIEW_MONITOR                 12050
 #define ID_VIEW_DMXADDRESSTOOL          12060
 #define ID_VIEW_INPUT_DEVICES           12070
 #define ID_VIEW_FUNCTION_TREE           12080
@@ -166,9 +167,10 @@ App::App() : QMainWindow(),
 	     m_blackOutIndicator ( NULL ),
 	     m_blackOutIndicatorTimer ( NULL ),
 	     m_documentBrowser  ( NULL ),
-	     m_pluginManager    ( NULL )
+	     m_pluginManager    ( NULL ),
+	     m_monitor          ( NULL )
 {
-  writer = normalWriter;
+	writer = normalWriter;
 }
 
 App::~App()
@@ -188,6 +190,11 @@ App::~App()
 		delete m_busProperties;
 	m_busProperties = NULL;
 
+	// Delete monitor
+	if (m_monitor)
+		delete m_monitor;
+	m_monitor = NULL;
+	
 	// Delete device manager view
 	if (m_dmView)
 		delete m_dmView;
@@ -396,8 +403,8 @@ void App::init(QString openFile)
 //
 void App::initSettings()
 {
-  m_settings = new Settings();
-  m_settings->load();
+	m_settings = new Settings();
+	m_settings->load();
 }
 
 
@@ -578,7 +585,7 @@ void App::initMenuBar()
   m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fixture.png")),
 			  "Device Manager", this,
 			  SLOT(slotViewDeviceManager()),
-			  CTRL + Key_M, ID_VIEW_DEVICE_MANAGER);
+			  CTRL + Key_D, ID_VIEW_DEVICE_MANAGER);
   m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.png")),
 			  "Virtual Console", this,
 			  SLOT(slotViewVirtualConsole()),
@@ -592,6 +599,10 @@ void App::initMenuBar()
 			  "Bus Properties", this,
 			  SLOT(slotViewBusProperties()), CTRL + Key_B,
 			  ID_VIEW_BUS_PROPERTIES);
+  m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.png")),
+			  "Monitor", this,
+			  SLOT(slotViewMonitor()),
+			  CTRL + Key_M, ID_VIEW_MONITOR);
   m_toolsMenu->insertSeparator();
   m_toolsMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/panic.png")),
 			  "Panic!", this, SLOT(slotPanic()), CTRL + Key_P,
@@ -683,43 +694,83 @@ void App::initStatusBar()
 //
 void App::initToolBar()
 {
-  m_toolbar = new QToolBar(this, "Workspace");
+	m_toolbar = new QToolBar(this, "Workspace");
 
-  m_newTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.png")),
-			    "New workspace", 0,
-			    this, SLOT(slotFileNew()), m_toolbar);
+	m_newTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+					QString("/filenew.png")),
+				"New workspace",
+				0,
+				this,
+				SLOT(slotFileNew()),
+				m_toolbar);
 
-  m_openTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")),
-			     "Open existing workspace", 0,
-			     this, SLOT(slotFileOpen()), m_toolbar);
+	m_openTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+					QString("/fileopen.png")),
+				"Open existing workspace",
+				0,
+				this,
+				SLOT(slotFileOpen()),
+				m_toolbar);
 
-  m_saveTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.png")),
-			     "Save current workspace", 0,
-			     this, SLOT(slotFileSave()), m_toolbar);
+	m_saveTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+						QString("/filesave.png")),
+				"Save current workspace",
+				0,
+				this,
+				SLOT(slotFileSave()),
+				m_toolbar);
 
-  m_toolbar->addSeparator();
+	m_toolbar->addSeparator();
 
-  m_dmTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fixture.png")),
-			   "Device manager", 0,
-			   this, SLOT(slotViewDeviceManager()), m_toolbar);
+	m_dmTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+					QString("/fixture.png")),
+				"Device manager",
+				0,
+				this,
+				SLOT(slotViewDeviceManager()),
+				m_toolbar);
 
-  m_vcTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/virtualconsole.png")),
-			   "Virtual console", 0,
-			   this, SLOT(slotViewVirtualConsole()), m_toolbar);
+	m_vcTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+					QString("/virtualconsole.png")),
+				"Virtual console",
+				0,
+				this,
+				SLOT(slotViewVirtualConsole()),
+				m_toolbar);
 
-  m_ftTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/function.png")),
-			   "Function manager", 0,
-			   this, SLOT(slotViewFunctionManager()), m_toolbar);
+	m_ftTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+					QString("/function.png")),
+				"Function manager",
+				0,
+				this,
+				SLOT(slotViewFunctionManager()),
+				m_toolbar);
 
-  m_toolbar->addSeparator();
+	m_toolbar->addSeparator();
 
-  m_blackOutTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileclose.png")),
-				 "Blackout", 0, this,
-				 SLOT(slotToggleBlackOut()), m_toolbar);
+	m_monitorTB = new QToolButton(QPixmap(QString(PIXMAPS) +
+						QString("/monitor.png")),
+					"Monitor",
+					0,
+					this,
+					SLOT(slotViewMonitor()),
+					m_toolbar);
+					
+	m_blackOutTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+						QString("/fileclose.png")),
+					"Blackout",
+					0,
+					this,
+					SLOT(slotToggleBlackOut()),
+					m_toolbar);
 
-  m_modeTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/player_play.png")),
-                             "Design Mode; All editing features enabled",
-                             0, this, SLOT(slotSetMode()), m_toolbar);
+	m_modeTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
+					QString("/player_play.png")),
+				"Design Mode; All editing features enabled",
+				0,
+				this,
+				SLOT(slotSetMode()),
+				m_toolbar);
 }
 
 
@@ -996,26 +1047,26 @@ void App::slotFileQuit()
 //
 void App::slotViewDeviceManager()
 {
-  if (m_dmView == NULL)
-    {
-      // Create device manager view
-      m_dmView = new DeviceManagerView(workspace());
-      assert(m_dmView);
-      m_dmView->initView();
+	if (m_dmView == NULL)
+	{
+		// Create device manager view
+		m_dmView = new DeviceManagerView(workspace());
+		assert(m_dmView);
+		m_dmView->initView();
       
-      connect(m_dmView, SIGNAL(closed()),
-	      this, SLOT(slotDeviceManagerViewClosed()));
+		connect(m_dmView, SIGNAL(closed()),
+			this, SLOT(slotDeviceManagerViewClosed()));
       
-      connect(m_doc, SIGNAL(deviceAdded(t_device_id)),
-	      m_dmView, SLOT(slotDeviceAdded(t_device_id)));
+		connect(m_doc, SIGNAL(deviceAdded(t_device_id)),
+			m_dmView, SLOT(slotDeviceAdded(t_device_id)));
 
-      connect(m_doc, SIGNAL(deviceRemoved(t_device_id)),
-	      m_dmView, SLOT(slotDeviceRemoved(t_device_id)));
-    }
+		connect(m_doc, SIGNAL(deviceRemoved(t_device_id)),
+			m_dmView, SLOT(slotDeviceRemoved(t_device_id)));
+	}
 
-  m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
-  m_dmView->show();
-  m_dmView->setFocus();
+	m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, true);
+	m_dmView->show();
+	m_dmView->setFocus();
 }
 
 
@@ -1024,10 +1075,13 @@ void App::slotViewDeviceManager()
 //
 void App::slotDeviceManagerViewClosed()
 {
-  m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
+	m_toolsMenu->setItemChecked(ID_VIEW_DEVICE_MANAGER, false);
 
-  delete m_dmView;
-  m_dmView = NULL;
+	if (m_dmView != NULL)
+	{
+		delete m_dmView;
+		m_dmView = NULL;
+	}
 }
 
 
@@ -1036,9 +1090,9 @@ void App::slotDeviceManagerViewClosed()
 //
 void App::slotViewVirtualConsole()
 {
-  m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, true);
-  m_virtualConsole->show();
-  m_virtualConsole->setFocus();
+	m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, true);
+	m_virtualConsole->show();
+	m_virtualConsole->setFocus();
 }
 
 
@@ -1047,7 +1101,7 @@ void App::slotViewVirtualConsole()
 //
 void App::slotVirtualConsoleClosed()
 {
-  m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, false);
+	m_toolsMenu->setItemChecked(ID_VIEW_VIRTUAL_CONSOLE, false);
 }
 
 
@@ -1138,6 +1192,43 @@ void App::slotBusPropertiesClosed()
       m_busProperties = NULL;
     }
 }
+
+
+//
+// View DMX monitor
+//
+void App::slotViewMonitor()
+{
+	if (m_monitor == NULL)
+	{
+		m_monitor = new Monitor(workspace());
+		assert(m_monitor);
+		m_monitor->init();
+		
+		connect(m_monitor, SIGNAL(closed()),
+			this, SLOT(slotMonitorClosed()));
+	}
+
+	m_toolsMenu->setItemChecked(ID_VIEW_MONITOR, true);
+	m_monitor->show();
+	m_monitor->setFocus();
+}
+
+
+//
+// DMX monitor was closed
+//
+void App::slotMonitorClosed()
+{
+	m_toolsMenu->setItemChecked(ID_VIEW_MONITOR, true);
+	
+	if (m_monitor != NULL)
+	{
+		delete m_monitor;
+		m_monitor = NULL;
+	}
+}
+
 
 //
 // Refresh menu items' status depending on system mode

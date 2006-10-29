@@ -33,7 +33,6 @@ class QString;
 class DeviceClass;
 class Function;
 class DeviceConsole;
-class Monitor;
 
 class Device : public QObject
 {
@@ -69,7 +68,6 @@ class Device : public QObject
   const t_device_id id() const { return m_id; }
 
   void viewConsole();
-  void viewMonitor();
   void viewProperties();
 
   /* Save this device's properties to a file */
@@ -77,9 +75,6 @@ class Device : public QObject
 
  public slots:
   void slotConsoleClosed();
-
- private slots:
-  void slotMonitorClosed();
 
  signals:
   void changed(t_device_id);
@@ -91,7 +86,6 @@ class Device : public QObject
   QString m_name;
 
   DeviceConsole* m_console;
-  Monitor* m_monitor;
 };
 
 #endif

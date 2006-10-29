@@ -66,7 +66,6 @@ class DeviceManagerView : public QWidget
   void slotClone();
   void slotDoubleClicked(QListViewItem*);
   void slotProperties();
-  void slotMonitor();
   void slotConsole();
   void slotAutoFunction();
 
@@ -88,7 +87,6 @@ class DeviceManagerView : public QWidget
   QToolButton* m_removeButton;
   QToolButton* m_propertiesButton;
   QToolButton* m_consoleButton;
-  QToolButton* m_monitorButton;
 
  signals:
   void closed();

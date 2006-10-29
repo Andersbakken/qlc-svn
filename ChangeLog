@@ -1,3 +1,10 @@
+2006-Oct-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed the DMX monitor to show all channels from the first universe
+	  (rest of the universes to follow later). 
+	* Monitor saves its position & size
+	* Monitor displays devices over their channels, but there is a bug
+	  that doesn't draw the device rectangle to a second row.
+
 2006-Oct-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Added a preset menu button to console channel
 

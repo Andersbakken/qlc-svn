@@ -40,57 +40,48 @@ class QTimer;
 
 class Monitor : public QWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  Monitor(QWidget* parent, t_channel fromChannel, t_channel toChannel);
-  ~Monitor();
+public:
+	Monitor(QWidget* parent);
+	~Monitor();
 
-  void init();
+	void init();
 
- protected slots:
-  void slotTimeOut();
-  void slotResizeSquare();
-  void slotMenuCallback(int);
+protected slots:
+	void slotTimeOut();
+	void slotMenuCallback(int);
 
- protected:
-  void paintEvent(QPaintEvent* e);
-  void mousePressEvent(QMouseEvent* e);
-  void closeEvent(QCloseEvent* e);
+protected:
+	void connectTimer();
 
-  void paint(void);
-  void paintAll(void);
+	void paintEvent(QPaintEvent* e);
+	void mousePressEvent(QMouseEvent* e);
+	void closeEvent(QCloseEvent* e);
 
-  void connectTimer();
-  void disconnectTimer();
+	void paint(QPaintEvent* e);
+	void paintAll(QPaintEvent* e);
 
- signals:
-  void closed();
+	void loadGeometry();
+	void saveGeometry();
 
- private:
-  t_channel m_fromChannel;
-  t_channel m_toChannel;
-  t_channel m_units;
+signals:
+	void closed();
 
-  t_value* m_oldValues;
-  t_value* m_newValues;
+protected:
+	t_channel m_fromChannel;
+	t_channel m_toChannel;
+	t_channel m_units;
 
-  QPainter m_painter;
+	t_value* m_oldValues;
+	t_value* m_newValues;
+	QMutex m_valueMutex;
+  
+	QTimer* m_timer;
+	int m_updateFrequency;
 
-  QFont m_font;
-
-  QMutex m_mutex;
-
- private:
-  static const QString KEY_MONITOR_FONT;
-  static const QString KEY_MONITOR_DISPLAY_STYLE;
-  static const QString KEY_MONITOR_UPDATE_FREQUENCY;
-
-  static QTimer* s_timer;
-  static int s_monitors;
-  static QMutex* s_monitorsMutex;
-  static int s_updateFrequency;
-  static int s_displayStyle;
+	QPainter m_painter;
+	QFont m_font;
 };
 
 #endif

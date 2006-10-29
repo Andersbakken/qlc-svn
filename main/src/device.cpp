@@ -25,7 +25,6 @@
 #include "scene.h"
 #include "common/settings.h"
 #include "deviceconsole.h"
-#include "monitor.h"
 #include "deviceproperties.h"
 #include "configkeys.h"
 #include "deviceclass.h"
@@ -47,14 +46,12 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-Device::Device()
-  : QObject(),
-    m_deviceClass (            NULL ),
-    m_address     ( KChannelInvalid ),
-    m_id          (           KNoID ),
-    m_name        (   QString::null ),
-    m_console     (            NULL ),
-    m_monitor     (            NULL )
+Device::Device() : QObject(),
+	m_deviceClass ( NULL ),
+	m_address     ( KChannelInvalid ),
+	m_id          ( KNoID ),
+	m_name        ( QString::null ),
+	m_console     ( NULL )
 {
 }
 
@@ -64,11 +61,6 @@ Device::~Device()
   if (m_console != NULL)
     {
       slotConsoleClosed();
-    }
-
-  if (m_monitor != NULL)
-    {
-      slotMonitorClosed();
     }
 }
 
@@ -218,9 +210,6 @@ void Device::setName(QString name)
 
   if (m_console)
     m_console->setCaption(m_name + " Console");
-
-  if (m_monitor)
-    m_monitor->setCaption(m_name + " Monitor");
 }
 
 
@@ -243,12 +232,6 @@ void Device::setAddress(t_channel address)
     {
       slotConsoleClosed();
       viewConsole();
-    }
-
-  if (m_monitor)
-    {
-      slotMonitorClosed();
-      viewMonitor();
     }
 
   _app->doc()->setModified(true);
@@ -281,12 +264,6 @@ void Device::setUniverse(t_channel universe)
     {
       slotConsoleClosed();
       viewConsole();
-    }
-
-  if (m_monitor)
-    {
-      slotMonitorClosed();
-      viewMonitor();
     }
 
   _app->doc()->setModified(true);
@@ -436,36 +413,6 @@ void Device::slotConsoleClosed()
   disconnect(m_console);
   delete m_console;
   m_console = NULL;
-}
-
-
-void Device::viewMonitor()
-{
-  t_channel channels = deviceClass()->channels()->count();
-
-  if (m_monitor == NULL)
-    {
-      m_monitor = new Monitor(_app->workspace(), universeAddress(),
-                              universeAddress() + channels - 1);
-      m_monitor->init();
-      m_monitor->setCaption(m_name + " Monitor");
-      m_monitor->setIcon(PIXMAPS + QString("monitor.png"));
-
-      connect(m_monitor, SIGNAL(closed()), this, SLOT(slotMonitorClosed()));
-      m_monitor->show();
-    }
-  else
-    {
-      m_monitor->hide();
-      m_monitor->show();
-    }
-}
-
-
-void Device::slotMonitorClosed()
-{
-  delete m_monitor;
-  m_monitor = NULL;
 }
 
 

@@ -60,15 +60,14 @@ const int KColumnName     ( 2 );
 const int KColumnID       ( 3 );
 
 // List view item menu callback id's
-const int KMenuItemAdd        ( 0 );
-const int KMenuItemRemove     ( 1 );
-const int KMenuItemProperties ( 2 );
-const int KMenuItemMonitor    ( 3 );
-const int KMenuItemConsole    ( 4 );
-const int KMenuItemClone      ( 5 );
-const int KMenuItemAutoFunction      ( 6 );
+const int KMenuItemAdd          ( 0 );
+const int KMenuItemRemove       ( 1 );
+const int KMenuItemProperties   ( 2 );
+const int KMenuItemConsole      ( 3 );
+const int KMenuItemClone        ( 4 );
+const int KMenuItemAutoFunction ( 5 );
 
-const int KDefaultWidth  ( 500 );
+const int KDefaultWidth  ( 600 );
 const int KDefaultHeight ( 300 );
 
 //
@@ -262,13 +261,6 @@ void DeviceManagerView::initToolBar()
 		    SLOT(slotProperties()), m_toolbar);
   m_propertiesButton->setUsesTextLabel(true);
   QToolTip::add( m_propertiesButton,   "Device properties");
-
-  m_monitorButton =
-    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/monitor.png"))),
-		    "Monitor", 0, this,
-		    SLOT(slotMonitor()), m_toolbar);
-  m_monitorButton->setUsesTextLabel(true);
-  QToolTip::add(m_monitorButton, "Monitor device");
 
   m_consoleButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/console.png"))),
@@ -578,20 +570,8 @@ void DeviceManagerView::slotProperties()
 }
 
 //
-// View Monitor
+// Autocreate functions
 //
-void DeviceManagerView::slotMonitor()
-{
-  QListViewItem* item = m_listView->currentItem();
-
-  t_device_id id = item->text(KColumnID).toInt();
-  Device* device = _app->doc()->device(id);
-
-  ASSERT(device);
-
-  device->viewMonitor();
-}
-
 void DeviceManagerView::slotAutoFunction()
 {
   Scene* sc = NULL;
@@ -694,7 +674,6 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
 	}
       m_removeButton->setEnabled(false);
       m_propertiesButton->setEnabled(false);
-      m_monitorButton->setEnabled(false);
       m_consoleButton->setEnabled(false);
       m_cloneButton->setEnabled(false);
 
@@ -714,9 +693,8 @@ void DeviceManagerView::slotSelectionChanged(QListViewItem* item)
       dev->infoText(info);
       m_textView->setText(info);
 
-      // Enable console & monitor always
+      // Enable console always
       m_consoleButton->setEnabled(true);
-      m_monitorButton->setEnabled(true);
 
       if (_app->mode() == App::Design)
 	{
@@ -754,8 +732,6 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
   menu->insertSeparator();
   menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
 		   "Properties...", KMenuItemProperties);
-  menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/monitor.png")),
-		   "View Monitor...", KMenuItemMonitor);
   menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/console.png")),
 		   "View Console...", KMenuItemConsole);
   menu->insertSeparator();
@@ -777,7 +753,6 @@ void DeviceManagerView::slotRightButtonClicked(QListViewItem* item,
     {
       menu->setItemEnabled(KMenuItemRemove, false);
       menu->setItemEnabled(KMenuItemConsole, false);
-      menu->setItemEnabled(KMenuItemMonitor, false);
       menu->setItemEnabled(KMenuItemProperties, false);
       menu->setItemEnabled(KMenuItemClone, false);
       menu->setItemEnabled(KMenuItemAutoFunction, false);
@@ -816,9 +791,6 @@ void DeviceManagerView::slotMenuCallBack(int item)
       slotConsole();
       break;
 
-    case KMenuItemMonitor:
-      slotMonitor();
-      break;
     case KMenuItemAutoFunction:
       slotAutoFunction();
       break;
