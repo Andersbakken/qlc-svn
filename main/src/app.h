@@ -61,7 +61,7 @@ class Monitor;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
-const QString KApplicationVersion   = "Version 2.5.1";
+const QString KApplicationVersion   = QString("Version ") + QString(VERSION);
 
 //////////////////////////////////////////////////////////////////
 // Class definition

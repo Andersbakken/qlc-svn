@@ -5,6 +5,7 @@ INCLUDES = @QT_CFLAGS@ \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
 	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
 	-DPLUGINS=\"$(PLUGINS)\" \
+	-DVERSION=\"$(VERSION)\" \
 	\
 	-I$(top_srcdir)/libs
 

@@ -1,4 +1,9 @@
 2006-Oct-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Promoted version to 2.6.0
+	* Changed the version number to be taken from the version parameter
+	  given in configure.in.
+
+2006-Oct-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed the DMX monitor to show all channels from the first universe
 	  (rest of the universes to follow later). 
 	* Monitor saves its position & size
