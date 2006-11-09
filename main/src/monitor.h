@@ -37,6 +37,7 @@ class QPixmap;
 class QApplication;
 class QFont;
 class QTimer;
+class QRegion;
 
 class Monitor : public QWidget
 {
@@ -59,8 +60,20 @@ protected:
 	void mousePressEvent(QMouseEvent* e);
 	void closeEvent(QCloseEvent* e);
 
-	void paint(QPaintEvent* e);
-	void paintAll(QPaintEvent* e);
+	// Device label painting
+	void paintDeviceLabelAll(QRegion region, short unitW, short unitH,
+				 short unitsX);
+	void paintDeviceLabel(int x, int y, int w, int h, QString label);
+
+	// Channel label painting
+	void paintChannelLabelAll(QRegion region, short unitW, short unitH,
+				  short unitsX);
+	void paintChannelLabel(short x, short y, short w, short h, QString s);
+
+	// Channel value painting
+	void paintChannelValueAll(QRegion region, short unitW, short unitH,
+				  short unitsX, bool onlyDelta);
+	void paintChannelValue(short x, short y, short w, short h, QString s);
 
 	void loadGeometry();
 	void saveGeometry();

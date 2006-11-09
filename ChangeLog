@@ -1,3 +1,6 @@
+2006-Nov-09  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed monitor to display device labels on as many rows as necessary.
+
 2006-Oct-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Promoted version to 2.6.0
 	* Changed the version number to be taken from the version parameter

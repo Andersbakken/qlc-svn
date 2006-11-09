@@ -22,8 +22,9 @@
 #include "monitor.h"
 #include "app.h"
 #include "doc.h"
-#include "common/settings.h"
 #include "configkeys.h"
+#include "common/settings.h"
+#include "common/minmax.h"
 
 #include <qapplication.h>
 #include <qcolor.h>
@@ -272,196 +273,249 @@ void Monitor::slotTimeOut()
 	repaint(false);
 }
 
+/****************************************************************************
+ * Label & value painting
+ ****************************************************************************/
+
 //
 // Paint event has been received
 //
 void Monitor::paintEvent(QPaintEvent* e)
 {
-	// Paint the generic graphics
-	QWidget::paintEvent(e);
-
-	if (e->erased())
-	{
-		// Wait until previous painter is finished
-		while (m_painter.isActive());
-		
-		// Everything needs to be repainted
-		paintAll(e);
-	}
-	else
-	{
-		// Wait until previous painter is finished
-		while (m_painter.isActive());
-		
-		// Paint only changed values
-		paint(e);
-	}
-}
-
-//
-// Paint only changed channel values
-//
-void Monitor::paint(QPaintEvent* e)
-{
 	QFontMetrics metrics(m_font);
 	short unitW = metrics.width(QString("000")) + X_OFFSET;
 	short unitH = metrics.height();
 	short unitsX = rect().width() / (unitW);
-	
-	short x = 0;
-	short y = 0;
-	short value = 0;
-	
-	QString valueString;
-	
+
+	// Paint the generic graphics
+	QWidget::paintEvent(e);
+
+	// Wait until previous painter is finished
+	while (m_painter.isActive());
+
+	// Begin painting
 	m_painter.begin(this);
-	
+
+	// Set the font used for drawing text
 	m_painter.setFont(m_font);
-	m_painter.setPen(colorGroup().text());
-	
-	for (short i = 0; i < m_units; i++)
+
+	if (e->erased())
 	{
-		m_valueMutex.lock();
-	
-		if (m_oldValues[i] != m_newValues[i])
-		{
-			m_oldValues[i] = m_newValues[i];
-
-			// Get channel value from array;
-			value = m_newValues[i];
-			m_valueMutex.unlock(); // Unlock array
-		
-			valueString.sprintf("%.3d", value);
-		
-			// Calculate x and y positions for this channel
-			x = ((i % unitsX) * (unitW));
-			y = unitH + static_cast<short> 
-			    (floor((i / unitsX)) * (unitH * 3));
-
-			// Draw only those values that are visible
-			if (y < height())
-			{
-				_qapp->lock();
-				m_painter.eraseRect(x, y + unitH, unitW, unitH);
-				m_painter.drawText(x, y + unitH, unitW, unitH,
-						AlignBottom, valueString);
-				_qapp->unlock();
-			}
-			else
-			{
-				m_valueMutex.unlock();
-				
-				// Rest of the values are not visible either
-				break;
-			}
-		}
-		else
-		{
-			m_valueMutex.unlock();
-		}
+		// Draw everything that is inside the invalidated region
+		paintDeviceLabelAll(e->region(), unitW, unitH, unitsX);
+		paintChannelLabelAll(e->region(), unitW, unitH, unitsX);
+		paintChannelValueAll(e->region(), unitW, unitH, unitsX, false);
+	}
+	else
+	{
+		// Draw only changed values
+		paintChannelValueAll(e->region(), unitW, unitH, unitsX, true);
 	}
 
 	m_painter.end();
 }
 
 //
-// Paint everything
+// Paint all visible device labels
 //
-void Monitor::paintAll(QPaintEvent* e)
+void Monitor::paintDeviceLabelAll(QRegion region,
+				  short unitW, short unitH, short unitsX)
 {
-	QFontMetrics metrics(m_font);
-	short unitW = metrics.width(QString("000")) + X_OFFSET;
-	short unitH = metrics.height();
-	short unitsX = rect().width() / (unitW);
-
 	short x = 0;
 	short y = 0;
 	short w = 0;
+	short wcur = 0;
 	short h = 0;
-	
-	QString channelString;
-	QString valueString;
 	
 	t_device_id id = KNoID;
 	Device* dev = NULL;
-	
-	m_painter.begin(this);
-	m_painter.setFont(m_font);
 	
 	// Draw device names and their channel spaces
 	for (id = 0; id < KDeviceArraySize; id++)
 	{
 		dev = _app->doc()->device(id);
-		if (dev == NULL)
-		{
+		if (dev == NULL) continue;
+		
+		// Calculate x and y positions for this device label
+		x = ((dev->address() % unitsX) * unitW);
+		y = static_cast<short> 
+			(floor((dev->address() / unitsX)) * (unitH * 3));
+
+		// Get width and height for this device label
+		w = (dev->deviceClass()->channels()->count() * unitW)
+			- X_OFFSET;
+		h = unitH;
+			
+		// Check if this label needs to be painted at all
+		if (region.contains(QRect(x, y, w, h)) == false)
 			continue;
+
+		if ((x + w) <= width())
+		{
+			// The label fits to one line, just draw it
+			paintDeviceLabel(x, y, w, h, dev->name());
 		}
 		else
 		{
-			// Calculate x and y positions for this device label
-			x = ((dev->address() % unitsX) * unitW);
-			y = static_cast<short> 
-			    (floor((dev->address() / unitsX)) * (unitH * 3));
-
-			w = (dev->deviceClass()->channels()->count() * unitW)
-				- X_OFFSET;
-			h = unitH;
-
-			if (e->region().contains(QRect(x, y, w, h)))
-			{
-				_qapp->lock();
+			// The label needs to be drawn on at least two lines
+			while (w > 0)
+			{	
+				wcur = min(w, (unitsX * unitW) - (x + X_OFFSET));
+				
+				// Draw the label
+				paintDeviceLabel(x, y, wcur, h, dev->name());
 			
-				m_painter.fillRect(x, y, w, h, 
-						colorGroup().highlight());
+				// Calculate remaining width
+				w = w - wcur - X_OFFSET;
 			
-				m_painter.setPen(colorGroup().shadow());
-				m_painter.drawRect(x, y, w, h);
-			
-				m_painter.setPen(colorGroup().highlightedText());
-				m_painter.drawText(x + X_OFFSET, y,
-						w, h, 
-						AlignLeft | AlignVCenter,
-						dev->name());
-				_qapp->unlock();
+				// Next line
+				y += (unitH * 3);
+				x = 0;
 			}
 		}
 	}
+}
+
+//
+// Draw the device label to the given coordinates
+//
+void Monitor::paintDeviceLabel(int x, int y, int w, int h, QString label)
+{
+	_qapp->lock();
 		
-	for (short i = 0; i < m_units; i++)
+	m_painter.fillRect(x, y, w, h, colorGroup().highlight());
+		
+	m_painter.setPen(colorGroup().shadow());
+	m_painter.drawRect(x, y, w, h);
+
+	m_painter.setPen(colorGroup().highlightedText());
+	m_painter.drawText(x, y, w, h, AlignLeft | AlignVCenter, label);
+
+	_qapp->unlock();
+}
+
+//
+// Paint all channel labels
+//
+void Monitor::paintChannelLabelAll(QRegion region,
+				   short unitW, short unitH, short unitsX)
+{
+	short x = 0;
+	short y = 0;
+	short i = 0;
+
+	QString s;
+	
+	for (i = 0; i < m_units; i++)
 	{
-		channelString.sprintf("%.3d", (m_fromChannel & 0x1FF) + i + 1);
-		valueString.sprintf("%.3d", m_newValues[i]);
+		s.sprintf("%.3d", (m_fromChannel & 0x1FF) + i + 1);
 
 		// Calculate x and y positions for this channel
 		x = ((i % unitsX) * (unitW));
 		y = unitH + static_cast<short> 
-		    (floor((i / unitsX)) * (unitH * 3));
+			(floor((i / unitsX)) * (unitH * 3));
 
-		if (e->region().contains(QRect(x, y, unitW, unitH * 3)))
+		if (region.contains(QRect(x, y, unitW, unitH)))
 		{
-			_qapp->lock();
-		
-			// Draw channel number text
-			m_painter.setPen(colorGroup().dark());
-			m_painter.eraseRect(x, y, unitW, unitH);
-			m_painter.drawText(x, y, unitW, unitH,
-					AlignBottom,
-					channelString);
-
-			// Draw value text
-			m_painter.setPen(colorGroup().text());
-			m_painter.eraseRect(x, y + unitH, unitW, unitH);
-			m_painter.drawText(x, y + unitH, unitW, unitH,
-					AlignBottom,
-					valueString);
-		
-			_qapp->unlock();
+			// Paint channel label
+			paintChannelLabel(x, y, unitW, unitH, s);
 		}
 	}
-
-	m_painter.end();
 }
 
+//
+// Paint channel label
+//
+void Monitor::paintChannelLabel(short x, short y, short w, short h, QString s)
+{
+	_qapp->lock();
+	
+	m_painter.setPen(colorGroup().dark());
+	m_painter.eraseRect(x, y, w, h);
+	m_painter.drawText(x, y, w, h, AlignBottom, s);
+	
+	_qapp->unlock();
+}
+
+//
+// Paint all channel values
+//
+void Monitor::paintChannelValueAll(QRegion region,
+				   short unitW, short unitH, short unitsX,
+				   bool onlyDelta)
+{
+	short x = 0;
+	short y = 0;
+	short value = 0;
+	short i = 0;
+	
+	QString s;
+
+	// Set normal text color to painter
+	m_painter.setPen(colorGroup().text());
+	
+	for (i = 0; i < m_units; i++)
+	{
+		// Lock value array
+		m_valueMutex.lock();
+	
+		if (onlyDelta && m_oldValues[i] == m_newValues[i])
+		{
+			m_valueMutex.unlock();
+			continue;
+		}
+		
+		m_oldValues[i] = m_newValues[i];
+
+		// Get channel value from array;
+		value = m_newValues[i];
+		
+		// Unlock array
+		m_valueMutex.unlock();
+		
+		// Calculate xy position for this channel
+		x = ((i % unitsX) * (unitW));
+		y = (unitH * 2) + static_cast<short>
+			(floor((i / unitsX)) * (unitH * 3));
+
+		// If all values must be drawn, draw only those that are
+		// inside the invalidated area, otherwise draw the delta values
+		if (!onlyDelta && !region.contains(QRect(x, y, unitW, unitH)))
+			continue;
+					
+		// Draw only those values that are visible
+		if (y < height())
+		{
+			// Convert the value to a string
+			s.sprintf("%.3d", value);
+		
+			// Paint the value
+			paintChannelValue(x, y, unitW, unitH, s);
+		}
+		else
+		{
+			// Rest of the values are not visible either
+			break;
+		}
+	}
+}
+
+//
+// Paint one channel value
+//
+void Monitor::paintChannelValue(short x, short y, short w, short h, QString s)
+{
+	_qapp->lock();
+
+	m_painter.eraseRect(x, y, w, h);
+	m_painter.drawText(x, y, w, h, AlignBottom, s);
+
+	_qapp->unlock();
+}
+
+/****************************************************************************
+ * Window geometry load/save
+ ****************************************************************************/
 
 //
 // Load window geometry
