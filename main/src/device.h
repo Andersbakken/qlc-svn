@@ -54,7 +54,8 @@ class Device : public QObject
   t_channel universe();
 
   t_channel universeAddress();
-
+  t_channel channels();
+ 
   void setName(QString);
   QString name();
 

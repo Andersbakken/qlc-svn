@@ -82,10 +82,6 @@ signals:
 	void closed();
 
 protected:
-	t_channel m_fromChannel;
-	t_channel m_toChannel;
-	t_channel m_units;
-
 	t_value* m_oldValues;
 	t_value* m_newValues;
 	QMutex m_valueMutex;

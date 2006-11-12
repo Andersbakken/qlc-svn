@@ -292,6 +292,17 @@ t_channel Device::universeAddress()
   return m_address;
 }
 
+/**
+ * Return the number of channels taken by this device
+ */
+t_channel Device::channels()
+{
+	if (m_deviceClass == NULL)
+		return 0;
+	else
+		return m_deviceClass->channels()->count();
+}
+
 void Device::setDeviceClass(DeviceClass* dc)
 {
   m_deviceClass = dc;
@@ -308,78 +319,156 @@ DeviceClass* Device::deviceClass()
 
 void Device::infoText(QString &info)
 {
-  assert(m_deviceClass);
+	QString t;
 
-  QString t;
-  info = QString::null;
+	assert(m_deviceClass);
 
-  //
-  // General Info
-  //
-  info += QString("<HTML><HEAD><TITLE>Device Info</TITLE></HEAD><BODY>");
-  info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-  info += QString("<TR><TD BGCOLOR=\"darkblue\"><FONT COLOR=\"white\" SIZE=5>");
-  info += name() + QString("</FONT></TD></TR></TABLE>");
-  info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-  info += QString("<TR>\n");
-  info += QString("<TD><B>Manufacturer</B></TD>");
-  info += QString("<TD>") + m_deviceClass->manufacturer() + QString("</TD>");
-  info += QString("</TR>");
-  info += QString("<TR>");
-  info += QString("<TD><B>Model</B></TD>");
-  info += QString("<TD>") + m_deviceClass->model() + QString("</TD>");
-  info += QString("</TR>");
-  info += QString("<TR>");
-  info += QString("<TD><B>Type</B></TD>");
-  info += QString("<TD>") + m_deviceClass->type() + QString("</TD>");
-  info += QString("</TR>");
-  info += QString("<TR>");
-  info += QString("<TD><B>Universe</B></TD>");
-  t.sprintf("%d", universe() + 1);
-  info += QString("<TD>") + t + QString("</TD>");
-  info += QString("</TR>");
-  info += QString("<TR>");
-  info += QString("<TD><B>Address space</B></TD>");
-  t.sprintf("%d - %d",
-	    address() + 1, address() + m_deviceClass->channels()->count());
-  info += QString("<TD>") + t + QString("</TD>");
-  info += QString("</TR>");
-  info += QString("</TABLE>");
+	info = QString::null;
 
-  //
-  // Channels
-  //
-  info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
-  info += QString("<TR>");
-  info += QString("<TD BGCOLOR=\"darkblue\">");
-  info += QString("<FONT COLOR=\"white\" SIZE=\"3\">Channel</FONT>");
-  info += QString("</TD>");
-  info += QString("<TD BGCOLOR=\"darkblue\">");
-  info += QString("<FONT COLOR=\"white\" SIZE=\"3\">DMX</FONT>");
-  info += QString("</TD>");
-  info += QString("</TR>");
-  info += QString("<TD BGCOLOR=\"darkblue\">");
-  info += QString("<FONT COLOR=\"white\" SIZE=\"3\">Name</FONT>");
-  info += QString("</TD>");
-  info += QString("</TR>");
+	// HTML header
+	info += QString("<HTML>");
+	info += QString("<HEAD>");
+	info += QString("<TITLE>Device Info</TITLE>");
+	info += QString("</HEAD>");
+	info += QString("<BODY>");
 
-  for (t_channel ch = 0; ch < (t_channel) m_deviceClass->channels()->count();
-       ch++)
-    {
-      t.setNum(ch + 1);
-      info += QString("<TR>");
-      info += QString("<TD>" + t + "</TD>");
-      t.setNum(address() + ch + 1);
-      info += QString("<TD>" + t + "</TD>");
-      info += QString("<TD>");
-      info += m_deviceClass->channels()->at(ch)->name();
-      info += QString("</TD>");
-    }
+	//
+	// Device info
+	//
+	
+	// Device title
+	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
+	info += QString("<TR>");
+	info += QString("<TD BGCOLOR=\"");
+	info += _app->colorGroup().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += _app->colorGroup().highlightedText().name();
+	info += QString("\" SIZE=\"5\">");
+	info += name();
+	info += QString("</FONT>");
+	info += QString("</TD>");
+	info += QString("</TR>");
+	info += QString("</TABLE>");
+	
+	// Manufacturer
+	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+	info += QString("<TR>");
+	info += QString("<TD>");
+	info += QString("<B>Manufacturer</B>");
+	info += QString("</TD>");
+	info += QString("<TD>");
+	info += m_deviceClass->manufacturer();
+	info += QString("</TD>");
+	info += QString("</TR>");
 
-  info += QString("</TR>");
-  info += QString("</TABLE>");
+	// Model
+	info += QString("<TR>");
+	info += QString("<TD>");
+	info += QString("<B>Model</B>");
+	info += QString("</TD>");
+	info += QString("<TD>");
+	info += m_deviceClass->model();
+	info += QString("</TD>");
+	info += QString("</TR>");
+	
+	// Type
+	info += QString("<TR>");
+	info += QString("<TD>");
+	info += QString("<B>Type</B>");
+	info += QString("</TD>");
+	info += QString("<TD>");
+	info += m_deviceClass->type();
+	info += QString("</TD>");
+	info += QString("</TR>");
 
-  info += QString("</BODY></HTML>");
+	// Universe
+	info += QString("<TR>");
+	info += QString("<TD>");
+	info += QString("<B>Universe</B>");
+	info += QString("</TD>");
+	info += QString("<TD>");
+	info += t.sprintf("%d", universe() + 1);
+	info += QString("</TD>");
+	info += QString("</TR>");
+	
+	// Address
+	info += QString("<TR>");
+	info += QString("<TD>");
+	info += QString("<B>Address space</B>");
+	info += QString("</TD>");
+	info += QString("<TD>");
+	info += t.sprintf("%d - %d", address() + 1, address() + channels());
+	info += QString("</TD>");
+	info += QString("</TR>");
+	info += QString("</TABLE>");
+	
+	//
+	// Channels
+	//
+	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
+	info += QString("<TR>");
+	
+	// Relative channel column title
+	info += QString("<TD BGCOLOR=\"");
+	info += _app->colorGroup().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += _app->colorGroup().highlightedText().name();
+	info += QString("\" SIZE=\"3\">");
+	info += QString("Channel");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+	
+	// DMX channel column title
+	info += QString("<TD BGCOLOR=\"");
+	info += _app->colorGroup().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += _app->colorGroup().highlightedText().name();
+	info += QString("\" SIZE=\"3\">");
+	info += QString("DMX");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+	info += QString("</TR>");
+
+	// Channel name column title
+	info += QString("<TD BGCOLOR=\"");
+	info += _app->colorGroup().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += _app->colorGroup().highlightedText().name();
+	info += QString("\" SIZE=\"3\">");
+	info += QString("Name");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+	info += QString("</TR>");
+	
+	// Fill table with device's channels
+	for (t_channel ch = 0; ch < channels();	ch++)
+	{
+		info += QString("<TR>");
+
+		// Relative channel
+		info += QString("<TD>");
+		info += t.setNum(ch + 1);
+		info += QString("</TD>");
+
+		// DMX channel
+		info += QString("<TD>");
+		info += t.setNum(address() + ch + 1);
+		info += QString("</TD>");
+		
+		// Channel name
+		info += QString("<TD>");
+		info += m_deviceClass->channels()->at(ch)->name();
+		info += QString("</TD>");
+	}
+
+	info += QString("</TR>");
+	info += QString("</TABLE>");
+	info += QString("</BODY>");
+	info += QString("</HTML>");
 }
 
 

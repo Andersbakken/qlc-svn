@@ -43,7 +43,7 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-#define X_OFFSET            5
+#define X_OFFSET            10
 #define Y_OFFSET            5
 
 #define ID_16HZ             16
@@ -61,9 +61,6 @@ static const QString KEY_MONITOR_GEOMETRY         ( "MonitorGeometry" );
 // Constructor
 //
 Monitor::Monitor(QWidget* parent) : QWidget(parent, "Monitor"),
-	m_fromChannel ( 0 ),
-	m_toChannel ( 511 ),
-	m_units ( 512 ),
 	m_newValues ( NULL ),
 	m_oldValues ( NULL ),
 	m_timer ( NULL ),
@@ -116,10 +113,10 @@ void Monitor::init()
 	
 	//
 	// Init the arrays that hold the values
-	m_newValues = new t_value[m_units];
-	m_oldValues = new t_value[m_units];
+	m_newValues = new t_value[512];
+	m_oldValues = new t_value[512];
 	
-	for (t_channel i = 0; i < m_units; i++)
+	for (t_channel i = 0; i < 512; i++)
 	{
 		m_newValues[i] = m_oldValues[i] = 0;
 	}
@@ -267,7 +264,7 @@ void Monitor::slotMenuCallback(int item)
 //
 void Monitor::slotTimeOut()
 {
-	_app->outputPlugin()->readRange(m_fromChannel, m_newValues, m_units);
+	_app->outputPlugin()->readRange(0, m_newValues, 512);
 
 	// Paint only changed values
 	repaint(false);
@@ -406,9 +403,9 @@ void Monitor::paintChannelLabelAll(QRegion region,
 
 	QString s;
 	
-	for (i = 0; i < m_units; i++)
+	for (i = 0; i < 512; i++)
 	{
-		s.sprintf("%.3d", (m_fromChannel & 0x1FF) + i + 1);
+		s.sprintf("%.3d", i + 1);
 
 		// Calculate x and y positions for this channel
 		x = ((i % unitsX) * (unitW));
@@ -454,7 +451,7 @@ void Monitor::paintChannelValueAll(QRegion region,
 	// Set normal text color to painter
 	m_painter.setPen(colorGroup().text());
 	
-	for (i = 0; i < m_units; i++)
+	for (i = 0; i < 512; i++)
 	{
 		// Lock value array
 		m_valueMutex.lock();
@@ -506,10 +503,8 @@ void Monitor::paintChannelValueAll(QRegion region,
 void Monitor::paintChannelValue(short x, short y, short w, short h, QString s)
 {
 	_qapp->lock();
-
 	m_painter.eraseRect(x, y, w, h);
 	m_painter.drawText(x, y, w, h, AlignBottom, s);
-
 	_qapp->unlock();
 }
 
