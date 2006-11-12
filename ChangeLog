@@ -1,4 +1,8 @@
 2006-Nov-12  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed a small graphics bug in monitor that extended the device label
+	  a bit too far only when the last channel was drawn on the next line.
+
+2006-Nov-12  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed device manager to use themed colors in device info
 	* Changed the X gap between two channels in monitor from 5px to 10px
 	* Removed channel variables from monitor

@@ -347,7 +347,7 @@ void Monitor::paintDeviceLabelAll(QRegion region,
 		if (region.contains(QRect(x, y, w, h)) == false)
 			continue;
 
-		if ((x + w) <= width())
+		if ((x + w + X_OFFSET) <= width())
 		{
 			// The label fits to one line, just draw it
 			paintDeviceLabel(x, y, w, h, dev->name());
