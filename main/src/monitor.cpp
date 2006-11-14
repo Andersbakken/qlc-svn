@@ -37,6 +37,7 @@
 #include <qtimer.h>
 #include <math.h>
 #include <qpopupmenu.h>
+#include <qmenubar.h>
 #include <qfontdialog.h>
 #include <qevent.h>
 #include <assert.h>
@@ -65,7 +66,11 @@ Monitor::Monitor(QWidget* parent) : QWidget(parent, "Monitor"),
 	m_newValues       ( NULL ),
 	m_oldValues       ( NULL ),
 	m_timer           ( NULL ),
-	m_updateFrequency ( ID_16HZ )
+	m_updateFrequency ( ID_16HZ ),
+	m_menuBar         ( NULL ),
+	m_universeMenu    ( NULL ),
+	m_displayMenu     ( NULL ),
+	m_speedMenu       ( NULL )
 {
 }
 
@@ -78,15 +83,15 @@ Monitor::~Monitor()
 	saveGeometry();
 	
 	if (m_timer != NULL)
-	{
 		delete m_timer;
-		m_timer = NULL;
-	}
 
 	while (m_painter.isActive());
 		
 	delete [] m_newValues;
 	delete [] m_oldValues;
+	
+	if (m_menuBar != NULL)
+		delete m_menuBar;
 }
 
 
@@ -154,10 +159,11 @@ void Monitor::init()
 	
 	// Set background color
 	setBackgroundColor(colorGroup().base());
+
+	// Create the menu bar
+	initMenu();
 	
-	//
 	// Connect and start the update timer
-	//
 	connectTimer();
 }
 
@@ -167,7 +173,9 @@ void Monitor::setUniverse(t_channel universe)
 	
 	assert(universe < KUniverseCount);
 
+	m_universeMenu->setItemChecked(m_universe, false);
 	m_universe = universe;
+	m_universeMenu->setItemChecked(m_universe, true);
 
 	setCaption(s.sprintf("DMX Monitor - Universe %d", universe + 1));
 
@@ -186,64 +194,57 @@ void Monitor::connectTimer()
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
 }
 
-
 //
-// Invoke a menu
+// Create a menu bar
 //
-void Monitor::mousePressEvent(QMouseEvent* e)
+void Monitor::initMenu()
 {
-	QPopupMenu* menu = NULL;
-	QPopupMenu* universeMenu = NULL;
-	QPopupMenu* speedMenu = NULL;
 	QString s;
 
-	if (e->button() & RightButton)
+	m_menuBar = new QMenuBar(this);
+	m_menuBar->show();
+	
+	// Universe
+	m_universeMenu = new QPopupMenu();
+	m_universeMenu->setCheckable(true);
+	m_menuBar->insertItem("&Universe", m_universeMenu);
+	connect(m_universeMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+
+	for (t_channel i = 0; i < KUniverseCount; i++)
 	{
-		menu = new QPopupMenu;
-		menu->setCheckable(false);
-		connect(menu, SIGNAL(activated(int)),
-			this, SLOT(slotMenuCallback(int)));
-
-		// Universe
-		universeMenu = new QPopupMenu();
-		universeMenu->setCheckable(true);
-		menu->insertItem("&Universe", universeMenu);
-
-		connect(universeMenu, SIGNAL(activated(int)),
-			this, SLOT(slotMenuCallback(int)));
-
-		for (t_channel i = 0; i < KUniverseCount; i++)
-		{
-			s.sprintf("Universe %d", i + 1);
-			universeMenu->insertItem(s, i);
-			
-			if (m_universe == i)
-				universeMenu->setItemChecked(i, true);
-		}
+		s.sprintf("Universe %d", i + 1);
+		m_universeMenu->insertItem(s, i);
 		
-		// Update speed
-		speedMenu = new QPopupMenu();
-		speedMenu->setCheckable(true);
-		menu->insertItem(QPixmap(QString(PIXMAPS) + 
-				 QString("/clock.png")),
-				"Update &Speed", speedMenu);
-		connect(speedMenu, SIGNAL(activated(int)),
-			this, SLOT(slotMenuCallback(int)));
-
-		speedMenu->insertItem("16Hz", ID_16HZ);
-		speedMenu->insertItem("32Hz", ID_32HZ);
-		speedMenu->insertItem("64Hz", ID_64HZ);
-		speedMenu->setItemChecked(m_updateFrequency, true);
-		
-		// Font
-		menu->insertItem(QPixmap(QString(PIXMAPS) + 
-				 QString("/fonts.png")),
-				"Choose &Font", ID_CHOOSE_FONT);
-
-		menu->exec(mapToGlobal(e->pos()));
-
-		delete menu;
+		if (m_universe == i)
+			m_universeMenu->setItemChecked(i, true);
 	}
+
+	// Display menu
+	m_displayMenu = new QPopupMenu();
+	m_displayMenu->setCheckable(false);
+	m_menuBar->insertItem("&Display", m_displayMenu);
+	connect(m_displayMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	
+	// Update speed
+	m_speedMenu = new QPopupMenu();
+	m_speedMenu->setCheckable(true);
+	m_displayMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				  QString("/clock.png")), 
+				  "&Update Speed", m_speedMenu);
+	connect(m_speedMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+
+	m_speedMenu->insertItem("16Hz", ID_16HZ);
+	m_speedMenu->insertItem("32Hz", ID_32HZ);
+	m_speedMenu->insertItem("64Hz", ID_64HZ);
+	m_speedMenu->setItemChecked(m_updateFrequency, true);
+		
+	// Font
+	m_displayMenu->insertItem(QPixmap(QString(PIXMAPS) +
+				  QString("/fonts.png")), 
+				  "Choose &Font", ID_CHOOSE_FONT);
 }
 
 //
@@ -262,22 +263,28 @@ void Monitor::slotMenuCallback(int item)
 		case ID_16HZ:
 			m_timer->stop();
 			m_timer->start(1000 / item);
+			m_speedMenu->setItemChecked(m_updateFrequency, false);
 			m_updateFrequency = item;
 			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 16);
+			m_speedMenu->setItemChecked(m_updateFrequency, true);
 			break;
 
 		case ID_32HZ:
 			m_timer->stop();
 			m_timer->start(1000 / item);
+			m_speedMenu->setItemChecked(m_updateFrequency, false);
 			m_updateFrequency = item;
 			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 32);
+			m_speedMenu->setItemChecked(m_updateFrequency, true);
 			break;
 	
 		case ID_64HZ:
 			m_timer->stop();
 			m_timer->start(1000 / item);
+			m_speedMenu->setItemChecked(m_updateFrequency, false);
 			m_updateFrequency = item;
 			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 64);
+			m_speedMenu->setItemChecked(m_updateFrequency, true);
 			break;
 	
 		case ID_CHOOSE_FONT:
@@ -322,13 +329,12 @@ void Monitor::slotTimeOut()
 void Monitor::paintEvent(QPaintEvent* e)
 {
 	QFontMetrics metrics(m_font);
-	short unitW = metrics.width(QString("000")) + X_OFFSET;
-	short unitH = metrics.height();
-	short unitsX = rect().width() / (unitW);
-
-	// Paint the generic graphics
-	QWidget::paintEvent(e);
-
+	int unitW = metrics.width(QString("000")) + X_OFFSET;
+	int unitH = metrics.height();
+	int unitsX = (rect().width() - X_OFFSET) / (unitW);
+	int y_offset = m_menuBar->height() + Y_OFFSET;
+	int x_offset = X_OFFSET; // Doesn't work yet with anything else than 0
+	
 	// Wait until previous painter is finished
 	while (m_painter.isActive());
 
@@ -341,30 +347,37 @@ void Monitor::paintEvent(QPaintEvent* e)
 	if (e->erased())
 	{
 		// Draw everything that is inside the invalidated region
-		paintDeviceLabelAll(e->region(), unitW, unitH, unitsX);
-		paintChannelLabelAll(e->region(), unitW, unitH, unitsX);
-		paintChannelValueAll(e->region(), unitW, unitH, unitsX, false);
+		paintDeviceLabelAll(e->region(), x_offset, y_offset,
+				    unitW, unitH, unitsX);
+		paintChannelLabelAll(e->region(), x_offset, y_offset,
+				     unitW, unitH, unitsX);
+		paintChannelValueAll(e->region(), x_offset, y_offset,
+				     unitW, unitH, unitsX, false);
 	}
 	else
 	{
 		// Draw only changed values
-		paintChannelValueAll(e->region(), unitW, unitH, unitsX, true);
+		paintChannelValueAll(e->region(), x_offset, y_offset,
+				     unitW, unitH, unitsX, true);
 	}
 
 	m_painter.end();
+	
+	// Paint the generic graphics
+	QWidget::paintEvent(e);
 }
 
 //
 // Paint all visible device labels
 //
-void Monitor::paintDeviceLabelAll(QRegion region,
-				  short unitW, short unitH, short unitsX)
+void Monitor::paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
+				  int unitW, int unitH, int unitsX)
 {
-	short x = 0;
-	short y = 0;
-	short w = 0;
-	short wcur = 0;
-	short h = 0;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int wcur = 0;
+	int h = 0;
 	
 	t_device_id id = KNoID;
 	Device* dev = NULL;
@@ -378,12 +391,15 @@ void Monitor::paintDeviceLabelAll(QRegion region,
 		
 		// Calculate x and y positions for this device label
 		x = ((dev->address() % unitsX) * unitW);
-		y = static_cast<short> 
+		x += x_offset;
+		
+		y = static_cast<int> 
 			(floor((dev->address() / unitsX)) * (unitH * 3));
-
+		y += y_offset;
+		
 		// Get width and height for this device label
 		w = (dev->deviceClass()->channels()->count() * unitW)
-			- X_OFFSET;
+		    - X_OFFSET;
 		h = unitH;
 			
 		// Check if this label needs to be painted at all
@@ -400,7 +416,7 @@ void Monitor::paintDeviceLabelAll(QRegion region,
 			// The label needs to be drawn on at least two lines
 			while (w > 0)
 			{	
-				wcur = min(w, (unitsX * unitW) - (x + X_OFFSET));
+				wcur = min(w, (unitsX * unitW) - (x));
 				
 				// Draw the label
 				paintDeviceLabel(x, y, wcur, h, dev->name());
@@ -410,7 +426,7 @@ void Monitor::paintDeviceLabelAll(QRegion region,
 			
 				// Next line
 				y += (unitH * 3);
-				x = 0;
+				x = x_offset;
 			}
 		}
 	}
@@ -437,12 +453,12 @@ void Monitor::paintDeviceLabel(int x, int y, int w, int h, QString label)
 //
 // Paint all channel labels
 //
-void Monitor::paintChannelLabelAll(QRegion region,
-				   short unitW, short unitH, short unitsX)
+void Monitor::paintChannelLabelAll(QRegion region, int x_offset, int y_offset,
+				   int unitW, int unitH, int unitsX)
 {
-	short x = 0;
-	short y = 0;
-	short i = 0;
+	int x = 0;
+	int y = 0;
+	int i = 0;
 
 	QString s;
 	
@@ -452,9 +468,12 @@ void Monitor::paintChannelLabelAll(QRegion region,
 
 		// Calculate x and y positions for this channel
 		x = ((i % unitsX) * (unitW));
-		y = unitH + static_cast<short> 
+		x += x_offset;
+		
+		y = unitH + static_cast<int> 
 			(floor((i / unitsX)) * (unitH * 3));
-
+		y += y_offset;
+		
 		if (region.contains(QRect(x, y, unitW, unitH)))
 		{
 			// Paint channel label
@@ -466,7 +485,7 @@ void Monitor::paintChannelLabelAll(QRegion region,
 //
 // Paint channel label
 //
-void Monitor::paintChannelLabel(short x, short y, short w, short h, QString s)
+void Monitor::paintChannelLabel(int x, int y, int w, int h, QString s)
 {
 	_qapp->lock();
 	
@@ -480,14 +499,14 @@ void Monitor::paintChannelLabel(short x, short y, short w, short h, QString s)
 //
 // Paint all channel values
 //
-void Monitor::paintChannelValueAll(QRegion region,
-				   short unitW, short unitH, short unitsX,
+void Monitor::paintChannelValueAll(QRegion region, int x_offset, int y_offset,
+				   int unitW, int unitH, int unitsX,
 				   bool onlyDelta)
 {
-	short x = 0;
-	short y = 0;
-	short value = 0;
-	short i = 0;
+	int x = 0;
+	int y = 0;
+	int value = 0;
+	int i = 0;
 	
 	QString s;
 
@@ -515,9 +534,12 @@ void Monitor::paintChannelValueAll(QRegion region,
 		
 		// Calculate xy position for this channel
 		x = ((i % unitsX) * (unitW));
-		y = (unitH * 2) + static_cast<short>
-			(floor((i / unitsX)) * (unitH * 3));
-
+		x += x_offset;
+		
+		y = (unitH * 2) + 
+		    static_cast<int> (floor((i / unitsX)) * (unitH * 3));
+		y += y_offset;
+		
 		// If all values must be drawn, draw only those that are
 		// inside the invalidated area, otherwise draw the delta values
 		if (!onlyDelta && !region.contains(QRect(x, y, unitW, unitH)))
@@ -543,7 +565,7 @@ void Monitor::paintChannelValueAll(QRegion region,
 //
 // Paint one channel value
 //
-void Monitor::paintChannelValue(short x, short y, short w, short h, QString s)
+void Monitor::paintChannelValue(int x, int y, int w, int h, QString s)
 {
 	_qapp->lock();
 	m_painter.eraseRect(x, y, w, h);

@@ -38,6 +38,8 @@ class QApplication;
 class QFont;
 class QTimer;
 class QRegion;
+class QMenuBar;
+class QPopupMenu;
 
 class Monitor : public QWidget
 {
@@ -57,25 +59,26 @@ protected slots:
 
 protected:
 	void connectTimer();
+	void initMenu();
 
 	void paintEvent(QPaintEvent* e);
-	void mousePressEvent(QMouseEvent* e);
 	void closeEvent(QCloseEvent* e);
 
 	// Device label painting
-	void paintDeviceLabelAll(QRegion region, short unitW, short unitH,
-				 short unitsX);
+	void paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
+				 int unitW, int unitH, int unitsX);
 	void paintDeviceLabel(int x, int y, int w, int h, QString label);
 
 	// Channel label painting
-	void paintChannelLabelAll(QRegion region, short unitW, short unitH,
-				  short unitsX);
-	void paintChannelLabel(short x, short y, short w, short h, QString s);
+	void paintChannelLabelAll(QRegion region, int x_offset, int y_offset,
+				  int unitW, int unitH, int unitsX);
+	void paintChannelLabel(int x, int y, int w, int h, QString s);
 
 	// Channel value painting
-	void paintChannelValueAll(QRegion region, short unitW, short unitH,
-				  short unitsX, bool onlyDelta);
-	void paintChannelValue(short x, short y, short w, short h, QString s);
+	void paintChannelValueAll(QRegion region, int x_offset, int y_offset,
+				  int unitW, int unitH, int unitsX,
+				  bool onlyDelta);
+	void paintChannelValue(int x, int y, int w, int h, QString s);
 
 	void loadGeometry();
 	void saveGeometry();
@@ -95,6 +98,12 @@ protected:
 
 	QPainter m_painter;
 	QFont m_font;
+
+	QMenuBar* m_menuBar;
+	QPopupMenu* m_universeMenu;
+	QPopupMenu* m_displayMenu;
+	QPopupMenu* m_speedMenu;
+
 };
 
 #endif
