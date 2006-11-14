@@ -39,6 +39,7 @@
 #include <qpopupmenu.h>
 #include <qfontdialog.h>
 #include <qevent.h>
+#include <assert.h>
 
 extern App* _app;
 extern QApplication* _qapp;
@@ -50,8 +51,7 @@ extern QApplication* _qapp;
 #define ID_32HZ             32
 #define ID_64HZ             64
 
-#define ID_RESIZE_SQUARE    1000
-#define ID_CHOOSE_FONT      2000
+#define ID_CHOOSE_FONT      1000
 
 static const QString KEY_MONITOR_FONT             ( "MonitorFont" );
 static const QString KEY_MONITOR_UPDATE_FREQUENCY ( "MonitorUpdateFrequency" );
@@ -61,9 +61,10 @@ static const QString KEY_MONITOR_GEOMETRY         ( "MonitorGeometry" );
 // Constructor
 //
 Monitor::Monitor(QWidget* parent) : QWidget(parent, "Monitor"),
-	m_newValues ( NULL ),
-	m_oldValues ( NULL ),
-	m_timer ( NULL ),
+	m_universe        ( 0 ),
+	m_newValues       ( NULL ),
+	m_oldValues       ( NULL ),
+	m_timer           ( NULL ),
 	m_updateFrequency ( ID_16HZ )
 {
 }
@@ -160,6 +161,19 @@ void Monitor::init()
 	connectTimer();
 }
 
+void Monitor::setUniverse(t_channel universe)
+{
+	QString s;
+	
+	assert(universe < KUniverseCount);
+
+	m_universe = universe;
+
+	setCaption(s.sprintf("DMX Monitor - Universe %d", universe + 1));
+
+	repaint(true);
+}
+
 
 //
 // Connect and start the update timer
@@ -178,33 +192,54 @@ void Monitor::connectTimer()
 //
 void Monitor::mousePressEvent(QMouseEvent* e)
 {
+	QPopupMenu* menu = NULL;
+	QPopupMenu* universeMenu = NULL;
+	QPopupMenu* speedMenu = NULL;
+	QString s;
+
 	if (e->button() & RightButton)
 	{
-		QPopupMenu* menu;
 		menu = new QPopupMenu;
 		menu->setCheckable(false);
+		connect(menu, SIGNAL(activated(int)),
+			this, SLOT(slotMenuCallback(int)));
 
-		QPopupMenu* speedMenu;
+		// Universe
+		universeMenu = new QPopupMenu();
+		universeMenu->setCheckable(true);
+		menu->insertItem("&Universe", universeMenu);
+
+		connect(universeMenu, SIGNAL(activated(int)),
+			this, SLOT(slotMenuCallback(int)));
+
+		for (t_channel i = 0; i < KUniverseCount; i++)
+		{
+			s.sprintf("Universe %d", i + 1);
+			universeMenu->insertItem(s, i);
+			
+			if (m_universe == i)
+				universeMenu->setItemChecked(i, true);
+		}
+		
+		// Update speed
 		speedMenu = new QPopupMenu();
 		speedMenu->setCheckable(true);
+		menu->insertItem(QPixmap(QString(PIXMAPS) + 
+				 QString("/clock.png")),
+				"Update &Speed", speedMenu);
+		connect(speedMenu, SIGNAL(activated(int)),
+			this, SLOT(slotMenuCallback(int)));
+
 		speedMenu->insertItem("16Hz", ID_16HZ);
 		speedMenu->insertItem("32Hz", ID_32HZ);
 		speedMenu->insertItem("64Hz", ID_64HZ);
 		speedMenu->setItemChecked(m_updateFrequency, true);
 		
-		menu->insertItem(QPixmap(QString(PIXMAPS) + 
-				 QString("/clock.png")),
-				"&Update Speed", speedMenu);
+		// Font
 		menu->insertItem(QPixmap(QString(PIXMAPS) + 
 				 QString("/fonts.png")),
 				"Choose &Font", ID_CHOOSE_FONT);
-		
-		connect(menu, SIGNAL(activated(int)),
-			this, SLOT(slotMenuCallback(int)));
-			
-		connect(speedMenu, SIGNAL(activated(int)),
-			this, SLOT(slotMenuCallback(int)));
-		
+
 		menu->exec(mapToGlobal(e->pos()));
 
 		delete menu;
@@ -216,55 +251,62 @@ void Monitor::mousePressEvent(QMouseEvent* e)
 //
 void Monitor::slotMenuCallback(int item)
 {
-	switch (item)
+	if (item >= 0 && item < KUniverseCount)
 	{
-	case ID_16HZ:
-		m_timer->stop();
-		m_timer->start(1000 / item);
-		m_updateFrequency = item;
-		_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item);
-		break;
-
-	case ID_32HZ:
-		m_timer->stop();
-		m_timer->start(1000 / item);
-		m_updateFrequency = item;
-		_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item);
-		break;
-
-	case ID_64HZ:
-		m_timer->stop();
-		m_timer->start(1000 / item);
-		m_updateFrequency = item;
-		_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, item);
-		break;
-
-	case ID_CHOOSE_FONT:
-	{
-		bool ok = false;
-		QFont font = QFontDialog::getFont(&ok, m_font, this);
-		if (ok)
-		{
-			m_font = font;
-			_app->settings()->set(KEY_MONITOR_FONT,
-						font.toString());
-			repaint(true); // Paint all
-		}
-		break;
+		setUniverse(item);
 	}
+	else
+	{
+		switch (item)
+		{
+		case ID_16HZ:
+			m_timer->stop();
+			m_timer->start(1000 / item);
+			m_updateFrequency = item;
+			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 16);
+			break;
 
-	default:
-		break;
+		case ID_32HZ:
+			m_timer->stop();
+			m_timer->start(1000 / item);
+			m_updateFrequency = item;
+			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 32);
+			break;
+	
+		case ID_64HZ:
+			m_timer->stop();
+			m_timer->start(1000 / item);
+			m_updateFrequency = item;
+			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 64);
+			break;
+	
+		case ID_CHOOSE_FONT:
+		{
+			bool ok = false;
+			QFont font = QFontDialog::getFont(&ok, m_font, this);
+			
+			if (ok)
+			{
+				m_font = font;
+				_app->settings()->set(KEY_MONITOR_FONT,
+						      font.toString());
+				repaint(true); // Paint all
+			}
+			break;
+		}
+	
+		default:
+			break;
+		}
 	}
 }
-
 
 //
 // Timer expiration handler
 //
 void Monitor::slotTimeOut()
 {
-	_app->outputPlugin()->readRange(0, m_newValues, 512);
+	_app->outputPlugin()->readRange(512 * m_universe, m_newValues, 512);
 
 	// Paint only changed values
 	repaint(false);
@@ -332,6 +374,7 @@ void Monitor::paintDeviceLabelAll(QRegion region,
 	{
 		dev = _app->doc()->device(id);
 		if (dev == NULL) continue;
+		if (dev->universe() != m_universe) continue;
 		
 		// Calculate x and y positions for this device label
 		x = ((dev->address() % unitsX) * unitW);

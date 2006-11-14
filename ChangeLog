@@ -1,3 +1,6 @@
+2006-Nov-14  Heikki Junnila <hjunnila@users.sf.net>
+	* Added support for universes to monitor.
+
 2006-Nov-12  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a small graphics bug in monitor that extended the device label
 	  a bit too far only when the last channel was drawn on the next line.

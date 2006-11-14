@@ -49,6 +49,8 @@ public:
 
 	void init();
 
+	void setUniverse(t_channel universe);
+
 protected slots:
 	void slotTimeOut();
 	void slotMenuCallback(int);
@@ -82,6 +84,8 @@ signals:
 	void closed();
 
 protected:
+	t_channel m_universe;
+
 	t_value* m_oldValues;
 	t_value* m_newValues;
 	QMutex m_valueMutex;
