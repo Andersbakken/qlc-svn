@@ -1,4 +1,7 @@
 2006-Nov-26  Heikki Junnila <hjunnila@users.sf.net>
+	* CVS didn't add files under etc/... Fixed...
+
+2006-Nov-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Added normal desktop entries for qlc and dce under etc for
 	  non-debian installations.
 	* Promoted debian release to version 2.6-0.

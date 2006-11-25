@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=QLC Fixture Editor
+GenericName=QLC Fixture Editor
+GenericName[de]=QLC-Geräte Bearbeiten
+GenericName[fi]=QLC valaisin-editori
+Exec=qlcfixtureeditor
+Icon=qlc-fixtureeditor
+Terminal=false
+Categories=Qt;AudioVideo;Multimedia;
