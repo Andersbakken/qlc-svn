@@ -1,4 +1,4 @@
-bin_PROGRAMS = dce
+bin_PROGRAMS = qlcfixtureeditor
 
 INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
@@ -17,7 +17,7 @@ noinst_HEADERS = \
 	src/deviceclasseditor.h \
 	src/editpresetvalue.h
 
-dce_SOURCES = \
+qlcfixtureeditor_SOURCES = \
 	src/uic_deviceclasseditor.cpp \
 	src/uic_editpresetvalue.cpp \
 	\
@@ -43,7 +43,7 @@ dce_SOURCES = \
 	../main/src/moc_deviceclass.cpp \
 	../main/src/moc_logicalchannel.cpp
 
-dce_LDADD = ../libs/common/libqlccommon.la @QT_LIBS@
+qlcfixtureeditor_LDADD = ../libs/common/libqlccommon.la @QT_LIBS@
 
 # MOCS
 moc_%.cpp: %.h

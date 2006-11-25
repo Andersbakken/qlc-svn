@@ -1,3 +1,14 @@
+2006-Nov-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Added normal desktop entries for qlc and dce under etc for
+	  non-debian installations.
+	* Promoted debian release to version 2.6-0.
+	* Modified normal desktop entries to go under Multimedia.
+	* Modified debian desktop entries to go under Lighting.
+	* Renamed Q.png to qlc.png.
+	* Renamed fixtureeditor.png to qlc-fixtureeditor.png.
+	* Changed the default debian package command to exclude CVS dirs.
+	* Fixed DMX monitor menu entry to reset after close.
+
 2006-Nov-14  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed the context menu in monitor to a menu bar for better
 	  accessibility on touch screens.

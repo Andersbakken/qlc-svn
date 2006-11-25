@@ -1,5 +1,11 @@
-imagesdir = $(datadir)/$(PIXMAPS)
+# Icons for desktop menu
+iconsdir = $(datadir)/pixmaps
+dist_icons_DATA = \
+	qlc-fixtureeditor.png \
+	qlc.png
 
+# Application icons
+imagesdir = $(datadir)/$(PIXMAPS)
 dist_images_DATA = \
 	apply.png \
 	attach.png \
@@ -29,7 +35,6 @@ dist_images_DATA = \
 	fileopen.png \
 	filesave.png \
 	fixture.png \
-	fixtureeditor.png \
 	fonts.png \
 	forward.png \
 	frame.png \
@@ -46,7 +51,8 @@ dist_images_DATA = \
 	player_play.png \
 	player_stop.png \
 	qlc-big.png \
-	Q.png \
+	qlc-fixtureeditor.png \
+	qlc.png \
 	scene.png \
 	sequence.png \
 	slider.png \

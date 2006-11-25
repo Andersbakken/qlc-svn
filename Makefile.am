@@ -1,1 +1,1 @@
-SUBDIRS = libs dce main xpm docs devices
+SUBDIRS = libs dce main xpm docs devices etc

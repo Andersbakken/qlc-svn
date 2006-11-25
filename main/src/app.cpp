@@ -530,7 +530,7 @@ void App::initWorkspace()
 	//
 	// Main application icon
 	//
-	setIcon(QString(PIXMAPS) + QString("/Q.png"));
+	setIcon(QString(PIXMAPS) + QString("/qlc.png"));
 
 	//
 	// Get the widget style from settings
@@ -645,7 +645,7 @@ void App::initMenuBar()
 			 "Index...", this, SLOT(slotHelpIndex()),
 			 SHIFT + Key_F1, ID_HELP_INDEX);
   m_helpMenu->insertSeparator();
-  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.png")),
+  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/qlc.png")),
 			 "About...", this, SLOT(slotHelpAbout()),
 			 0, ID_HELP_ABOUT);
   m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()),
@@ -1220,7 +1220,7 @@ void App::slotViewMonitor()
 //
 void App::slotMonitorClosed()
 {
-	m_toolsMenu->setItemChecked(ID_VIEW_MONITOR, true);
+	m_toolsMenu->setItemChecked(ID_VIEW_MONITOR, false);
 	
 	if (m_monitor != NULL)
 	{

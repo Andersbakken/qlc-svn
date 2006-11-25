@@ -135,7 +135,7 @@ void App::initView(void)
 {
 	initSettings();
 
-	setIcon(QPixmap(QString(PIXMAPS) + QString("/fixtureeditor.png")));
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/qlc-fixtureeditor.png")));
 
 	initWorkspace();
 

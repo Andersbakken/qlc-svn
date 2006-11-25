@@ -99,7 +99,7 @@ void PluginManager::initView()
 void PluginManager::initTitle()
 {
   // Set the name
-  setCaption(QString("Plugin Manager - Just a prototype for now, don't use!!"));
+  setCaption(QString("Plugin Manager"));
   
   // Set an icon TODO: better icon for plugin idiom
   setIcon(QString(PIXMAPS) + QString("/plugin.png"));
