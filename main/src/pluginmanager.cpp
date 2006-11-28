@@ -191,16 +191,19 @@ void PluginManager::fillPlugins()
 
   m_listView->clear();
 
+  /* Common ID for plugin parent nodes */
+  id.setNum(KPluginID);
+
   /* Input plugins' parent node */
   inputParent = new QListViewItem(m_listView);
   inputParent->setText(KColumnName, "Input");
-  inputParent->setText(KColumnID, KPluginID);
+  inputParent->setText(KColumnID, id);
   inputParent->setOpen(true);
 
   /* Output plugins' parent node */
   outputParent = new QListViewItem(m_listView);
   outputParent->setText(KColumnName, "Output");
-  outputParent->setText(KColumnID, KPluginID);
+  outputParent->setText(KColumnID, id);
   outputParent->setOpen(true);
 
   while ((plugin = it.current()) != NULL)
