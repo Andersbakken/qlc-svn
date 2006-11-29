@@ -695,6 +695,7 @@ void App::initStatusBar()
 void App::initToolBar()
 {
 	m_toolbar = new QToolBar(this, "Workspace");
+	m_toolbar->setMovingEnabled(false);
 
 	m_newTB = new QToolButton(QPixmap(QString(PIXMAPS) + 
 					QString("/filenew.png")),
@@ -2039,9 +2040,7 @@ void App::initSubmasters()
 void App::initValues()
 {
   if (m_outputPlugin)
-	m_outputPlugin->readRange(0, m_values, KChannelMax);
-  else
-	qDebug("vitut");
+    m_outputPlugin->readRange(0, m_values, KChannelMax);
 }
 
 //

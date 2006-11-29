@@ -552,6 +552,7 @@ void FunctionManager::initToolbar()
 
 	// Add a toolbar to the dock area
 	m_toolbar = new QToolBar("Function Manager", _app, m_dockArea);
+	m_toolbar->setMovingEnabled(false);
 
 	// Scene
 	m_addSceneButton = new QToolButton(

@@ -52,6 +52,7 @@ void DocumentBrowser::init()
   // Toolbar
   //
   m_toolbar = new QToolBar("Document Browser", m_appMainWindow, m_dockArea);
+  m_toolbar->setMovingEnabled(false);
 
   m_prevTB = new QToolButton(QPixmap(QString(PIXMAPS) + QString("/back.png")),
 			     "Previous", 0, this, SLOT(slotPrev()), m_toolbar);

@@ -123,6 +123,7 @@ void PluginManager::initToolBar()
   // Add a toolbar to the dock area
   //
   m_toolbar = new QToolBar("Plugin Manager", _app, m_dockArea);
+  m_toolbar->setMovingEnabled(false);
 
   m_configureButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/configure.png"))),

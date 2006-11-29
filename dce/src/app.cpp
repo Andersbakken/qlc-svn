@@ -154,6 +154,7 @@ void App::initStatusBar()
 void App::initToolBar()
 {
 	m_toolbar = new QToolBar(this, "Workspace");
+	m_toolbar->setMovingEnabled(false);
 
 	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.png")), "New...",
 			0, this, SLOT(slotFileNew()), m_toolbar);

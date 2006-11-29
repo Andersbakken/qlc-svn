@@ -231,6 +231,7 @@ void DeviceManagerView::initToolBar()
   // Add a toolbar to the dock area
   //
   m_toolbar = new QToolBar("Device Manager", _app, m_dockArea);
+  m_toolbar->setMovingEnabled(false);
 
   m_addButton =
     new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/wizard.png"))),
