@@ -1,3 +1,14 @@
+qlc (2.6-1) stable; urgency=low
+
+  * Added m_toolbar->setMovingEnabled(false) to all toolbars to prevent
+    them from being dragged all over the place.
+  * Fixed a bug in pluginmanager.cpp that tried to give an integer
+    to a function that actually takes a QString. Since newer QT versions
+    contain a QString implementation that accepts also integers, this
+    isn't a problem to them. Rather, it's a problem to older QT's
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Thu, 30 Nov 2006 01:13:17 +0200
+
 qlc (2.6-0) stable; urgency=high
 
   * Added normal desktop entries for qlc and dce under etc for non-debian

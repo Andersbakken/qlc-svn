@@ -1,4 +1,7 @@
 2006-Nov-30  Heikki Junnila <hjunnila@users.sf.net>
+	* Created release 2.6-1
+
+2006-Nov-30  Heikki Junnila <hjunnila@users.sf.net>
 	* Added m_toolbar->setMovingEnabled(false) to all toolbars to prevent
 	  them from being dragged all over the place.
 
