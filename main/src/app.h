@@ -74,7 +74,9 @@ public:
 	~App();
 
 public:
-	void init(QString openFile);
+	void init();
+	void newDocument();
+	void saveSettings();
 
 	DeviceManagerView* deviceManagerView() { return m_dmView; }
 	VirtualConsole* virtualConsole() { return m_virtualConsole; }
@@ -199,9 +201,6 @@ private:
 	void initMenuBar();
 	void initStatusBar();
 	void initToolBar();
-	
-	void saveSettings();
-	void newDocument();
 	
 	void createJoystickContents(QPtrList <QString> &list);
 	

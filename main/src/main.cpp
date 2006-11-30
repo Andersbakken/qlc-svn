@@ -26,6 +26,7 @@
 #include <assert.h>
 
 #include "app.h"
+#include "doc.h"
 
 #include <X11/Xlib.h>
 
@@ -49,81 +50,90 @@ void print_usage()
 	qDebug("  qlc [options]");
         qDebug("\nOptions:");
         qDebug("  -o <file> or --open <file>    Open the specified workspace file");
+	qDebug("  -p or --operate               Start in operate mode");
         qDebug("  -h or --help                  Print this help");
         qDebug("  -v or --version               Print version information");
 	qDebug(" ");
 }
 
-/*
+/**
  * Parse command line arguments
+ *
+ * @param argc Number of arguments in array argv
+ * @param argv Arguments array
+ *
+ * @return true to continue application init; otherwise false
  */
-int parseArgs(int argc, char **argv, QString* openFile)
+bool parseArgs(int argc, char **argv)
 {
-	int ret = 0;
+	bool result = true;
+	int i = 0;
+	QString s;
 
-	if (argc < 2)
+	for (i = 1; i < argc; i++)
 	{
-		// No args
-		ret = 0;
-	}
-	else
-	{
-		for (int i = 1; i < argc; i++)
+		if (::strcmp(argv[i], "-v") == 0 ||
+		    ::strcmp(argv[i], "--version") == 0)
 		{
-			if (::strcmp(argv[i], "-v") == 0 ||
-			    ::strcmp(argv[i], "--version") == 0)
-			{
-				print_version();
-				ret = 1;
-			}
-			else if (::strcmp(argv[i], "-o") == 0 ||
-				 ::strcmp(argv[i], "--open") == 0)
-			{
-				openFile->setAscii(argv[i+1]);
-				ret = 0;
-			}
-			else if (::strcmp(argv[i], "-h") == 0 ||
-				 ::strcmp(argv[i], "--help") == 0)
-			{
-				print_usage();
-				ret = 1;
-			}
-			else
-			{
-				ret = 0;
-			}
+			print_version();
+			result = false;
+		}
+		else if (::strcmp(argv[i], "-h") == 0 ||
+			 ::strcmp(argv[i], "--help") == 0)
+		{
+			print_usage();
+			result = false;
+		}
+		else if (::strcmp(argv[i], "-p") == 0 ||
+			 ::strcmp(argv[i], "--operate") == 0)
+		{
+			_app->slotSetOperateMode();
+			result = true;
+		}
+		else if (::strcmp(argv[i], "-o") == 0 ||
+			 ::strcmp(argv[i], "--open") == 0)
+		{
+			s = QString((const char*) argv[++i]);
+			_app->newDocument();
+			_app->doc()->loadWorkspaceAs(s);
+			result = true;
+		}
+		else
+		{
+			result = true;
 		}
 	}
 
-	return ret;
+	return result;
 }
 
 
-/*
- * main; entry point for program
+/**
+ * THE entry point for the application
+ *
+ * @param argc Number of arguments in array argv
+ * @param argv Arguments array
+ *
  */
 int main(int argc, char **argv)
 {
 	int result = 0;
-	QString openFile;
 
-	//
-	// Parse any command line arguments
-	if (parseArgs(argc, argv, &openFile) == 1)
+	/* Initialize QApplication object */
+	_qapp = new QApplication(argc, argv);
+
+	/* Construct the main application class */
+	_app = new App();
+	_qapp->setMainWidget(_app);
+	_app->setCaption(KApplicationNameLong);
+	_app->init();
+
+	/* Parse command line arguments */
+	if (parseArgs(argc, argv) == false)
 	{
 		return 0;
 	}
 
-	//
-	// Initialize QApplication object
-	_qapp = new QApplication(argc, argv);
-
-	//
-	// Construct the main application class
-	_app = new App();
-	_qapp->setMainWidget(_app);
-	_app->setCaption(KApplicationNameLong);
-	_app->init(openFile);
 	_app->show();
 
 	//

@@ -1,4 +1,8 @@
 2006-Nov-30  Heikki Junnila <hjunnila@users.sf.net>
+	* Added a new command line option -p with which the user can switch
+	  directly to operate mode during startup.
+
+2006-Nov-30  Heikki Junnila <hjunnila@users.sf.net>
 	* Created release 2.6-1
 
 2006-Nov-30  Heikki Junnila <hjunnila@users.sf.net>

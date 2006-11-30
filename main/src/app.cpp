@@ -285,10 +285,10 @@ App::~App()
 //                                                                  //
 // This creates all items that are not saved in workspace files     //
 //////////////////////////////////////////////////////////////////////
-void App::init(QString openFile)
+void App::init()
 {
 	QString msg;
-	bool success = false;
+	QString config;
 
 	//
 	// Settings has to be first
@@ -342,46 +342,21 @@ void App::init(QString openFile)
 	// Plugins
 	//
 	initPlugins();
-	// Trying to load workspace files
-	// Either specified on command line or the last active workspace
-	if (openFile != QString::null)
-	{
-		success = doc()->loadWorkspaceAs(openFile);
-		if (!success)
-		{
-			msg = "Unable to open workspace \""
-				+ openFile + "\".\n";
-			msg += "Please check the file's name and path.";
-			QMessageBox::warning(this, KApplicationNameShort, msg);
-
-			newDocument();
-		}
-	}
 
 	//
 	// Load the previous workspace
 	//
-	if (!success)
+	settings()->get(KEY_OPEN_LAST_WORKSPACE, config);
+	if (config == Settings::trueValue())
 	{
-		QString config;
-		if (settings()->get(KEY_OPEN_LAST_WORKSPACE, config) != -1
-		    && config == Settings::trueValue())
+		config = QString::null;
+
+		settings()->get(KEY_LAST_WORKSPACE_NAME, config);
+		if (config.length() > 0)
 		{
-			config = QString::null;
-
-			if (settings()->get(KEY_LAST_WORKSPACE_NAME, config) != -1
-			    && config.length() > 0)
+			if (doc()->loadWorkspaceAs(config) == false)
 			{
-				success = doc()->loadWorkspaceAs(config);
-				if (!success)
-				{
-					msg = "Unable to open workspace \""
-						+ config + "\".\n";
-					QMessageBox::warning(this,
-						KApplicationNameShort, msg);
-
-					newDocument();
-				}
+				newDocument();
 			}
 		}
 	}
@@ -389,9 +364,8 @@ void App::init(QString openFile)
 	//
 	// Check if DM should be open
 	//
-	QString config;
-	if (_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config) != -1
-		&& config == Settings::trueValue())
+	_app->settings()->get(KEY_DEVICE_MANAGER_OPEN, config);
+	if (config == Settings::trueValue())
 	{
 		_app->slotViewDeviceManager();
 	}
@@ -444,17 +418,16 @@ void App::initWorkspace()
 	}
 	else
 	{
-		QMessageBox::warning(this, KApplicationNameShort,
-				"XOpenDisplay failed!");
-		wmax = 800;
-		hmax = 600;
+		// VGA resolution should be a safe fallback
+		wmax = 640;
+		hmax = 480;
 	}
 
 	//
 	// Check that the window isn't positioned out of screen
 	//
 	if (settings()->get(KEY_APP_X, config) == -1
-		|| config.toInt() < 0 || config.toInt() >= wmax)
+	    || config.toInt() < 0 || config.toInt() >= wmax)
 	{
 		x = 0;
 	}
@@ -464,7 +437,7 @@ void App::initWorkspace()
 	}
 
 	if (settings()->get(KEY_APP_Y, config) == -1
-		|| config.toInt() < 0 || config.toInt() >= hmax)
+	    || config.toInt() < 0 || config.toInt() >= hmax)
 	{
 		y = 0;
 	}
@@ -477,7 +450,7 @@ void App::initWorkspace()
 	// Check that the window isn't going to be too big
 	//
 	if (settings()->get(KEY_APP_W, config) == -1
-		|| config.toInt() <= 0 || config.toInt() > wmax)
+	    || config.toInt() <= 0 || config.toInt() > wmax)
 	{
 		w = wmax - 100; // Heretic
 	}
@@ -487,7 +460,7 @@ void App::initWorkspace()
 	}
 
 	if (settings()->get(KEY_APP_H, config) == -1
-		|| config.toInt() <= 0 || config.toInt() > hmax)
+	    || config.toInt() <= 0 || config.toInt() > hmax)
 	{
 		h = hmax - 100; // Heretic
 	}
@@ -495,7 +468,7 @@ void App::initWorkspace()
 	{
 		h = config.toInt();
 	}
-
+	
 	XCloseDisplay(display);
 
 	//
