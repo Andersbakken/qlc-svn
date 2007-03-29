@@ -45,6 +45,7 @@
 #include <qptrlist.h>
 #include <qmessagebox.h>
 #include <assert.h>
+#include <qdom.h>
 
 extern App* _app;
 
@@ -53,30 +54,30 @@ extern App* _app;
 //
 Doc::Doc() : QObject()
 {
-  m_fileName = QString::null;
+	m_fileName = QString::null;
 
-  //
-  // Allocate function array
-  //
-  m_functionArray = (Function**)
-    malloc(sizeof(Function*) * KFunctionArraySize);
-  for (t_function_id i = 0; i < KFunctionArraySize; i++)
-    {
-      m_functionArray[i] = NULL;
-    }
+	//
+	// Allocate function array
+	//
+	m_functionArray = (Function**)
+		malloc(sizeof(Function*) * KFunctionArraySize);
+	for (t_function_id i = 0; i < KFunctionArraySize; i++)
+	{
+		m_functionArray[i] = NULL;
+	}
 
-  //
-  // Allocate device array
-  //
-  m_deviceArray = (Device**) malloc(sizeof(Device*) * KDeviceArraySize);
-  for (t_device_id i = 0; i < KDeviceArraySize; i++)
-    {
-      m_deviceArray[i] = NULL;
-    }
+	//
+	// Allocate device array
+	//
+	m_deviceArray = (Device**) malloc(sizeof(Device*) * KDeviceArraySize);
+	for (t_device_id i = 0; i < KDeviceArraySize; i++)
+	{
+		m_deviceArray[i] = NULL;
+	}
 
-  setModified(false);
+	setModified(false);
 
-  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
 
@@ -85,37 +86,37 @@ Doc::Doc() : QObject()
 //
 Doc::~Doc()
 {
-  //
-  // Delete all functions
-  //
-  for (t_function_id i = 0; i < KFunctionArraySize; i++)
-    {
-      if (m_functionArray[i])
+	//
+	// Delete all functions
+	//
+	for (t_function_id i = 0; i < KFunctionArraySize; i++)
 	{
-	  delete m_functionArray[i];
-	  m_functionArray[i] = NULL;
+		if (m_functionArray[i])
+		{
+			delete m_functionArray[i];
+			m_functionArray[i] = NULL;
 
-	  emit functionRemoved(i);
+			emit functionRemoved(i);
+		}
 	}
-    }
 
-  delete [] m_functionArray;
+	delete [] m_functionArray;
 
-  //
-  // Delete all devices
-  //
-  for (t_device_id i = 0; i < KDeviceArraySize; i++)
-    {
-      if (m_deviceArray[i])
+	//
+	// Delete all devices
+	//
+	for (t_device_id i = 0; i < KDeviceArraySize; i++)
 	{
-	  delete m_deviceArray[i];
-	  m_deviceArray[i] = NULL;
+		if (m_deviceArray[i])
+		{
+			delete m_deviceArray[i];
+			m_deviceArray[i] = NULL;
 
-	  emit deviceRemoved(i);
+			emit deviceRemoved(i);
+		}
 	}
-    }
 
-  delete [] m_deviceArray;
+	delete [] m_deviceArray;
 }
 
 
@@ -124,37 +125,37 @@ Doc::~Doc()
 //
 void Doc::slotModeChanged()
 {
-  Function* f = NULL;
-  if (_app->mode() == App::Operate)
-    {
-      //
-      // Arm all functions, allocate anything that is needed
-      // during run-time.
-      //
-      for (int i = 0; i < KFunctionArraySize; i++)
+	Function* f = NULL;
+	if (_app->mode() == App::Operate)
 	{
-	  f = m_functionArray[i];
-	  if (f)
-	    {
-	      f->arm();
-	    }
+		//
+		// Arm all functions, allocate anything that is needed
+		// during run-time.
+		//
+		for (int i = 0; i < KFunctionArraySize; i++)
+		{
+			f = m_functionArray[i];
+			if (f)
+			{
+				f->arm();
+			}
+		}
 	}
-    }
-  else
-    {
-      //
-      // Disarm all functions, delete anything that was
-      // allocated above.
-      //
-      for (int i = 0; i < KFunctionArraySize; i++)
+	else
 	{
-	  f = m_functionArray[i];
-	  if (f)
-	    {
-	      f->disarm();
-	    }
+		//
+		// Disarm all functions, delete anything that was
+		// allocated above.
+		//
+		for (int i = 0; i < KFunctionArraySize; i++)
+		{
+			f = m_functionArray[i];
+			if (f)
+			{
+				f->disarm();
+			}
+		}
 	}
-    }
 }
 
 
@@ -163,22 +164,22 @@ void Doc::slotModeChanged()
 //
 void Doc::setModified(bool modified)
 {
-  m_modified = modified;
+	m_modified = modified;
 
-  QString caption(KApplicationNameLong);
-  if (fileName() != QString::null)
-    {
-      caption += QString(" - ") + fileName();
-    }
+	QString caption(KApplicationNameLong);
+	if (fileName() != QString::null)
+	{
+		caption += QString(" - ") + fileName();
+	}
 
-  if (modified == true)
-    {
-      _app->setCaption(caption + QString(" *"));
-    }
-  else
-    {
-      _app->setCaption(caption);
-    }
+	if (modified == true)
+	{
+		_app->setCaption(caption + QString(" *"));
+	}
+	else
+	{
+		_app->setCaption(caption);
+	}
 }
 
 
@@ -187,62 +188,62 @@ void Doc::setModified(bool modified)
 //
 bool Doc::loadWorkspaceAs(QString &fileName)
 {
-  QString buf;
-  QString s;
-  QString t;
-  QPtrList <QString> list;
+	QString buf;
+	QString s;
+	QString t;
+	QPtrList <QString> list;
 
-  bool result = false;
+	bool result = false;
 
-  if (FileHandler::readFileToList(fileName, list) == true)
-    {
-      result = true;
-      m_fileName = QString(fileName);
-
-      // Create devices and functions from the list
-      for (QString* string = list.first(); string != NULL;
-	   string = list.next())
+	if (FileHandler::readFileToList(fileName, list) == true)
 	{
-	  if (*string == QString("Entry"))
-	    {
-	      string = list.next();
+		result = true;
+		m_fileName = QString(fileName);
 
-	      if (*string == QString("Device"))
+		// Create devices and functions from the list
+		for (QString* string = list.first(); string != NULL;
+		     string = list.next())
 		{
-		  Device::create(list);
-		}
-	      else if (*string == QString("Function"))
-		{
-		  Function::create(list);
-		}
-	      else if (*string == QString("Bus"))
-		{
-		  Bus::createContents(list);
-		}
-	      else if (*string == QString("Virtual Console"))
-		{
-		  // Virtual console wants it all, go to "Entry"
-		  list.prev();
-		  list.prev();
+			if (*string == QString("Entry"))
+			{
+				string = list.next();
 
-		  _app->virtualConsole()->createContents(list);
+				if (*string == QString("Device"))
+				{
+					Device::create(list);
+				}
+				else if (*string == QString("Function"))
+				{
+					Function::create(list);
+				}
+				else if (*string == QString("Bus"))
+				{
+					Bus::createContents(list);
+				}
+				else if (*string == QString("Virtual Console"))
+				{
+					// Virtual console wants it all, go to "Entry"
+					list.prev();
+					list.prev();
+
+					_app->virtualConsole()->createContents(list);
+				}
+				else
+				{
+					// Unknown keyword, do nothing
+				}
+			}
 		}
-	      else
-		{
-		  // Unknown keyword, do nothing
-		}
-	    }
+
+		//
+		// Set the last workspace name
+		//
+		_app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
 	}
 
-      //
-      // Set the last workspace name
-      //
-      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
-    }
+	setModified(false);
 
-  setModified(false);
-
-  return result;
+	return result;
 }
 
 
@@ -251,7 +252,8 @@ bool Doc::loadWorkspaceAs(QString &fileName)
 //
 bool Doc::saveWorkspace()
 {
-  return saveWorkspaceAs(m_fileName);
+	saveXML(m_fileName);
+	return saveWorkspaceAs(m_fileName);
 }
 
 
@@ -260,62 +262,101 @@ bool Doc::saveWorkspace()
 //
 bool Doc::saveWorkspaceAs(QString &fileName)
 {
-  QFile file(fileName);
-  if (file.open(IO_WriteOnly))
-    {
-      //////////////////////////
-      // Devices              //
-      //////////////////////////
-      for (t_device_id i = 0; i < KDeviceArraySize; i++)
-        {
-	  if (m_deviceArray[i])
-	    {
-	      m_deviceArray[i]->saveToFile(file);
-	    }
-	}
-
-      //////////////////////////
-      // Functions            //
-      //////////////////////////
-      for (t_function_id i = 0; i < KFunctionArraySize; i++)
+	QFile file(fileName);
+	if (file.open(IO_WriteOnly))
 	{
-	  if (m_functionArray[i])
-	    {
-	      m_functionArray[i]->saveToFile(file);
-	    }
+		//////////////////////////
+		// Devices              //
+		//////////////////////////
+		for (t_device_id i = 0; i < KDeviceArraySize; i++)
+		{
+			if (m_deviceArray[i])
+			{
+				m_deviceArray[i]->saveToFile(file);
+			}
+		}
+
+		//////////////////////////
+		// Functions            //
+		//////////////////////////
+		for (t_function_id i = 0; i < KFunctionArraySize; i++)
+		{
+			if (m_functionArray[i])
+			{
+				m_functionArray[i]->saveToFile(file);
+			}
+		}
+
+		///////////
+		// Buses //
+		///////////
+		Bus::saveToFile(file);
+
+		/////////////////////
+		// Virtual Console //
+		/////////////////////
+		_app->virtualConsole()->saveToFile(file);
+
+		// Mark the document unmodified
+		setModified(false);
+
+		// Current workspace file
+		m_fileName = QString(fileName);
+
+		//
+		// Set the last workspace name
+		//
+		_app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
+
+		file.close();
+	}
+	else
+	{
+		QMessageBox::critical(_app, KApplicationNameShort,
+				      QString("Unable to open file for writing."));
+		return false;
 	}
 
-      ///////////
-      // Buses //
-      ///////////
-      Bus::saveToFile(file);
+	return true;
+}
 
-      /////////////////////
-      // Virtual Console //
-      /////////////////////
-      _app->virtualConsole()->saveToFile(file);
+//
+// Save the workspace to an XML file
+//
+bool Doc::saveXML(QString& filename)
+{
+	QDomDocument* doc = NULL;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
 
-      // Mark the document unmodified
-      setModified(false);
+	/* TODO: Create some really useful structure and save it to a file */
 
-      // Current workspace file
-      m_fileName = QString(fileName);
+	if (FileHandler::getXMLHeader("Workspace", &doc) == true)
+	{
+		/* Write devices to an XML document */
+		for (t_device_id i = 0; i < KDeviceArraySize; i++)
+		{
+			if (m_deviceArray[i])
+			{
+				m_deviceArray[i]->saveXML(doc);
+			}
+		}
 
-      //
-      // Set the last workspace name
-      //
-      _app->settings()->set(KEY_LAST_WORKSPACE_NAME, m_fileName);
+		/* Write functions to an XML document */
+		for (t_function_id i = 0; i < KFunctionArraySize; i++)
+		{
+			if (m_functionArray[i] != NULL)
+			{
+				m_functionArray[i]->saveXML(doc);
+			}
+		}
 
-      file.close();
-    }
-  else
-    {
-      QMessageBox::critical(_app, KApplicationNameShort,
-			    QString("Unable to open file for writing."));
-      return false;
-    }
+		qDebug("Just testing XML output...");
+		fprintf(stderr, "%s\n", doc->toString().ascii());
+	}
 
-  return true;
+	delete doc;
 }
 
 
@@ -331,15 +372,15 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 	if (dc == NULL)
 	{
 		QMessageBox::warning(_app, KApplicationNameShort,
-			"Unknown device class, can't create device \"" +
-			name + "\".");
+				     "Unknown device class, can't create device \"" +
+				     name + "\".");
 	}
 	else if (address > 512 || universe > KUniverseCount ||
-		(address + dc->channels()->count()) > 512)
+		 (address + dc->channels()->count()) > 512)
 	{
 		QMessageBox::warning(_app, KApplicationNameShort,
-				"Device \"" + name +
-				"\" address space is out of DMX bounds.");
+				     "Device \"" + name +
+				     "\" address space is out of DMX bounds.");
 	}
   	else if (id == KNoID)
 	{
@@ -375,8 +416,8 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 			QString num;
 			num.setNum(KDeviceArraySize);
 			QMessageBox::warning(_app, KApplicationNameShort,
-				"You cannot add more than " + num +
-				" devices.");
+					     "You cannot add more than " + num +
+					     " devices.");
 		}
 	}
 	else if (id >= 0 && id < KDeviceArraySize)
@@ -408,8 +449,8 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 		else
 		{
 			QMessageBox::critical(_app, KApplicationNameShort,
-				"Unable to create device " + name + 
-				"\nbecause its ID is already taken!");
+					      "Unable to create device " + name + 
+					      "\nbecause its ID is already taken!");
 		}
 	}
 	else
@@ -417,7 +458,7 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 		QString num;
 		num.setNum(KDeviceArraySize);
 		QMessageBox::warning(_app, KApplicationNameShort,
-			"You cannot add more than " + num + " devices.");
+				     "You cannot add more than " + num + " devices.");
 	}
 
 	return device;
@@ -429,28 +470,28 @@ Device* Doc::newDevice(DeviceClass* dc, QString name,
 //
 void Doc::deleteDevice(t_device_id id)
 {
-  if (m_deviceArray[id])
-    {
-      delete m_deviceArray[id];
-      m_deviceArray[id] = NULL;
-
-      // Delete all functions associated to removed device
-      for (int i = 0; i < KFunctionArraySize; i++)
+	if (m_deviceArray[id])
 	{
-	  if (m_functionArray[i] && m_functionArray[i]->device() == id)
-	    {
-	      deleteFunction(i);
-	    }
+		delete m_deviceArray[id];
+		m_deviceArray[id] = NULL;
+
+		// Delete all functions associated to removed device
+		for (int i = 0; i < KFunctionArraySize; i++)
+		{
+			if (m_functionArray[i] && m_functionArray[i]->device() == id)
+			{
+				deleteFunction(i);
+			}
+		}
+
+		emit deviceRemoved(id);
+
+		setModified(true);      
 	}
-
-      emit deviceRemoved(id);
-
-      setModified(true);      
-    }
-  else
-    {
-      qDebug("No such device ID:%d", id);
-    }
+	else
+	{
+		qDebug("No such device ID:%d", id);
+	}
 }
 
 
@@ -459,14 +500,14 @@ void Doc::deleteDevice(t_device_id id)
 //
 Device* Doc::device(t_device_id id)
 {
-  if (id >= 0 && id < KDeviceArraySize)
-    {
-      return m_deviceArray[id];
-    }
-  else
-    {
-      return NULL;
-    }
+	if (id >= 0 && id < KDeviceArraySize)
+	{
+		return m_deviceArray[id];
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 
@@ -480,85 +521,85 @@ Function* Doc::newFunction(Function::Type type,
 			   t_device_id device,
 			   t_function_id id)
 {
-  Function* f = NULL;
+	Function* f = NULL;
 
-  //
-  // Create the function
-  //
-  switch(type)
-    {
-    case Function::Scene:
-      f = new Scene();
-      break;
-
-    case Function::Chaser:
-      f = new Chaser();
-      break;
-
-    case Function::Collection:
-      f = new FunctionCollection();
-      break;
-
-    case Function::Sequence:
-      f = new Sequence();
-      break;
-
-    case Function::EFX:
-      f = new EFX();
-      break;
-
-    case Function::Undefined:
-    default:
-      f = NULL;
-    }
-
-  //
-  // If the function was created successfully, save it to function
-  // array and set its position in the array as its ID
-  //
-  if (f)
-    {
-      if (id == KNoID)
+	//
+	// Create the function
+	//
+	switch(type)
 	{
-	  for (t_function_id i = 0; i < KFunctionArraySize; i++)
-	    {
-	      if (m_functionArray[i] == NULL)
+	case Function::Scene:
+		f = new Scene();
+		break;
+
+	case Function::Chaser:
+		f = new Chaser();
+		break;
+
+	case Function::Collection:
+		f = new FunctionCollection();
+		break;
+
+	case Function::Sequence:
+		f = new Sequence();
+		break;
+
+	case Function::EFX:
+		f = new EFX();
+		break;
+
+	case Function::Undefined:
+	default:
+		f = NULL;
+	}
+
+	//
+	// If the function was created successfully, save it to function
+	// array and set its position in the array as its ID
+	//
+	if (f)
+	{
+		if (id == KNoID)
 		{
-		  m_functionArray[i] = f;
-		  f->setID(i);
-		  f->setDevice(device);
-		  break;
+			for (t_function_id i = 0; i < KFunctionArraySize; i++)
+			{
+				if (m_functionArray[i] == NULL)
+				{
+					m_functionArray[i] = f;
+					f->setID(i);
+					f->setDevice(device);
+					break;
+				}
+			}
 		}
-	    }
+		else if (id >= 0 && id < KFunctionArraySize)
+		{
+			if (m_functionArray[id] == NULL)
+			{
+				m_functionArray[id] = f;
+				f->setID(id);
+				f->setDevice(device);
+			}
+			else
+			{
+				delete f;
+				QMessageBox::critical(_app, KApplicationNameShort,
+						      "Unable to add function; ID already taken!");
+			}
+		}
+		else
+		{
+			QMessageBox::warning(_app, KApplicationNameShort,
+					     "Function ID out of bounds!");
+		}
 	}
-      else if (id >= 0 && id < KFunctionArraySize)
-	{
-	  if (m_functionArray[id] == NULL)
-	    {
-	      m_functionArray[id] = f;
-	      f->setID(id);
-	      f->setDevice(device);
-	    }
-	  else
-	    {
-	      delete f;
-	      QMessageBox::critical(_app, KApplicationNameShort,
-		     "Unable to add function; ID already taken!");
-	    }
-	}
-      else
-	{
-	  QMessageBox::warning(_app, KApplicationNameShort,
-			       "Function ID out of bounds!");
-	}
-    }
   
-  if (f)
-    {
-      emit functionAdded(f->id());
-    }
+	if (f)
+	{
+		emit functionAdded(f->id());
+	}
   
-  return f;
+	return f;
 }
 
 
@@ -567,13 +608,13 @@ Function* Doc::newFunction(Function::Type type,
 //
 void Doc::deleteFunction(t_function_id id)
 {
-  if (m_functionArray[id])
-    {
-      delete m_functionArray[id];
-      m_functionArray[id] = NULL;
+	if (m_functionArray[id])
+	{
+		delete m_functionArray[id];
+		m_functionArray[id] = NULL;
       
-      emit functionRemoved(id);
-    }
+		emit functionRemoved(id);
+	}
 }
 
 
@@ -582,14 +623,14 @@ void Doc::deleteFunction(t_function_id id)
 //
 Function* Doc::function(t_function_id id)
 {
-  if (id >= 0 && id < KFunctionArraySize)
-    {
-      return m_functionArray[id];
-    }
-  else
-    {
-      return NULL;
-    }
+	if (id >= 0 && id < KFunctionArraySize)
+	{
+		return m_functionArray[id];
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 //
@@ -601,5 +642,5 @@ Function* Doc::function(t_function_id id)
 //
 void Doc::emitFunctionChanged(t_function_id fid)
 {
-  emit functionChanged(fid);
+	emit functionChanged(fid);
 }

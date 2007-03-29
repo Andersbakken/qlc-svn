@@ -175,7 +175,7 @@ void SettingsUI::fillAdvancedSettingsList()
 
   for (ConfigItem* i = items->first(); i != NULL; i = items->next())
     {
-      item = new QListViewItem(m_advancedList, *(i->key()), *(i->text()));
+      item = new QListViewItem(m_advancedList, i->key(), i->text());
       item->setRenameEnabled(1, false);
     }
 }

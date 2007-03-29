@@ -28,6 +28,7 @@
 #include "device.h"
 #include "functionconsumer.h"
 #include "eventbuffer.h"
+#include "common/filehandler.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,20 +43,20 @@ extern App* _app;
 // Standard constructor
 //
 Chaser::Chaser() : 
-  Function(Function::Chaser),
+	Function(Function::Chaser),
   
-  m_runOrder     (   Loop ),
-  m_direction    ( Forward ),
-  m_childRunning (  false ),
+	m_runOrder     (   Loop ),
+	m_direction    ( Forward ),
+	m_childRunning (  false ),
 
-  m_holdTime     (       0 ),
-  m_holdStart    (       0 ),
-  m_timeCode     (       0 ),
+	m_holdTime     (       0 ),
+	m_holdStart    (       0 ),
+	m_timeCode     (       0 ),
 
-  m_runTimeDirection ( Forward ),
-  m_runTimePosition  (      0 )
+	m_runTimeDirection ( Forward ),
+	m_runTimePosition  (      0 )
 {
-  setBus(KBusIDDefaultHold);
+	setBus(KBusIDDefaultHold);
 }
 
 
@@ -66,22 +67,22 @@ Chaser::Chaser() :
 //
 void Chaser::copyFrom(Chaser* ch, bool append)
 {
-  assert(ch);
+	assert(ch);
 
-  Function::setName(ch->name());
-  setDirection(ch->direction());
-  setRunOrder(ch->runOrder());
+	Function::setName(ch->name());
+	setDirection(ch->direction());
+	setRunOrder(ch->runOrder());
 
-  if (append == false)
-    {
-      m_steps.clear();
-    }
+	if (append == false)
+	{
+		m_steps.clear();
+	}
 
-  QValueList <t_function_id>::iterator it;
-  for (it = ch->m_steps.begin(); it != ch->m_steps.end(); ++it)
-    {
-      m_steps.append(*it);
-    }
+	QValueList <t_function_id>::iterator it;
+	for (it = ch->m_steps.begin(); it != ch->m_steps.end(); ++it)
+	{
+		m_steps.append(*it);
+	}
 }
 
 
@@ -90,8 +91,8 @@ void Chaser::copyFrom(Chaser* ch, bool append)
 //
 Chaser::~Chaser()
 {
-  stop();
-  m_steps.clear();
+	stop();
+	m_steps.clear();
 }
 
 
@@ -100,56 +101,56 @@ Chaser::~Chaser()
 //
 void Chaser::saveToFile(QFile &file)
 {
-  QString s;
-  QString t;
+	QString s;
+	QString t;
 
-  // Comment line
-  s = QString("# Function entry\n");
-  file.writeBlock((const char*) s, s.length());
+	// Comment line
+	s = QString("# Function entry\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Entry type
-  s = QString("Entry = Function") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Entry type
+	s = QString("Entry = Function") + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Name
-  s = QString("Name = ") + name() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Name
+	s = QString("Name = ") + name() + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Type
-  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Type
+	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // ID
-  s.sprintf("ID = %d\n", m_id);
-  file.writeBlock((const char*) s, s.length());
+	// ID
+	s.sprintf("ID = %d\n", m_id);
+	file.writeBlock((const char*) s, s.length());
 
-  // Bus ID
-  t.setNum(m_busID);
-  s = QString("Bus = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Bus ID
+	t.setNum(m_busID);
+	s = QString("Bus = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Device
-  s = QString("Device = 0\n");
-  file.writeBlock((const char*) s, s.length());
+	// Device
+	s = QString("Device = 0\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Steps
-  s = QString("# Step entries") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Steps
+	s = QString("# Step entries") + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  QValueList <t_function_id>::iterator it;
-  for (it = m_steps.begin(); it != m_steps.end(); ++it)
-    {
-      s.sprintf("Function = %d\n", *it);
-      file.writeBlock((const char*) s, s.length());
-    }
+	QValueList <t_function_id>::iterator it;
+	for (it = m_steps.begin(); it != m_steps.end(); ++it)
+	{
+		s.sprintf("Function = %d\n", *it);
+		file.writeBlock((const char*) s, s.length());
+	}
 
-  // Direction
-  s.sprintf("Direction = %d\n", (int) m_direction);
-  file.writeBlock((const char*) s, s.length());
+	// Direction
+	s.sprintf("Direction = %d\n", (int) m_direction);
+	file.writeBlock((const char*) s, s.length());
 
-  // Run order
-  s.sprintf("RunOrder = %d\n", (int) m_runOrder);
-  file.writeBlock((const char*) s, s.length());
+	// Run order
+	s.sprintf("RunOrder = %d\n", (int) m_runOrder);
+	file.writeBlock((const char*) s, s.length());
 }
 
 
@@ -158,35 +159,84 @@ void Chaser::saveToFile(QFile &file)
 //
 void Chaser::createContents(QPtrList <QString> &list)
 {
-  t_function_id fid = KNoID;
+	t_function_id fid = KNoID;
   
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+	for (QString* s = list.next(); s != NULL; s = list.next())
 	{
-	  s = list.prev();
-	  break;
+		if (*s == QString("Entry"))
+		{
+			s = list.prev();
+			break;
+		}
+		else if (*s == QString("Function"))
+		{
+			fid = list.next()->toInt();
+			addStep(fid);
+			fid = KNoID;
+		}
+		else if (*s == QString("Direction"))
+		{
+			m_direction = (Direction) list.next()->toInt();
+		}
+		else if (*s == QString("RunOrder"))
+		{
+			m_runOrder = (RunOrder) list.next()->toInt();
+		}
+		else
+		{
+			// Unknown keyword
+			list.next();
+		}
 	}
-      else if (*s == QString("Function"))
+}
+
+// Save this function to an XML document
+void Chaser::saveXML(QDomDocument* doc)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+	int i = 0;
+	
+	assert(doc);
+
+	/* Function tag */
+	root = doc->createElement(KXMLFunctionNode);
+	doc->appendChild(root);
+
+	root.setAttribute(KXMLFunctionID, id());
+	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLFunctionName, name());
+
+	/* Direction */
+	tag = doc->createElement(KXMLFunctionDirection);
+	root.appendChild(tag);
+	text = doc->createTextNode(Function::directionToString(m_direction));
+	tag.appendChild(text);
+
+	/* Run order */
+	tag = doc->createElement(KXMLFunctionRunOrder);
+	root.appendChild(tag);
+	text = doc->createTextNode(Function::runOrderToString(m_runOrder));
+	tag.appendChild(text);
+
+	/* Steps */
+	QValueList <t_function_id>::iterator it;
+	for (it = m_steps.begin(); it != m_steps.end(); ++it)
 	{
-	  fid = list.next()->toInt();
-	  addStep(fid);
-	  fid = KNoID;
+		/* Step tag */
+		tag = doc->createElement(KXMLFunctionStep);
+		root.appendChild(tag);
+
+		/* Step number */
+		tag.setAttribute(KXMLFunctionNumber, i++);
+
+		/* Step Function ID */
+		str.setNum(*it);
+		text = doc->createTextNode(str);
+		tag.appendChild(text);
 	}
-      else if (*s == QString("Direction"))
-	{
-	  m_direction = (Direction) list.next()->toInt();
-	}
-      else if (*s == QString("RunOrder"))
-	{
-	  m_runOrder = (RunOrder) list.next()->toInt();
-	}
-      else
-	{
-	  // Unknown keyword
-	  list.next();
-	}
-    }
 }
 
 
@@ -195,19 +245,19 @@ void Chaser::createContents(QPtrList <QString> &list)
 //
 void Chaser::addStep(t_function_id id)
 {
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  if (m_running == false)
-    {
-      m_steps.append(id);
-      _app->doc()->setModified(true);
-    }
-  else
-    {
-      qDebug("Chaser is running. Cannot modify steps!");
-    }  
+	if (m_running == false)
+	{
+		m_steps.append(id);
+		_app->doc()->setModified(true);
+	}
+	else
+	{
+		qDebug("Chaser is running. Cannot modify steps!");
+	}  
 
-  m_startMutex.unlock();
+	m_startMutex.unlock();
 }
 
 
@@ -216,21 +266,21 @@ void Chaser::addStep(t_function_id id)
 //
 void Chaser::removeStep(int index)
 {
-  ASSERT(((unsigned int)index) < m_steps.count());
+	ASSERT(((unsigned int)index) < m_steps.count());
 
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  if (m_running == false)
-    {
-      m_steps.remove(m_steps.at(index));
-      _app->doc()->setModified(true);
-    }
-  else
-    {
-      qDebug("Chaser is running. Cannot modify steps!");
-    }
+	if (m_running == false)
+	{
+		m_steps.remove(m_steps.at(index));
+		_app->doc()->setModified(true);
+	}
+	else
+	{
+		qDebug("Chaser is running. Cannot modify steps!");
+	}
 
-  m_startMutex.unlock();
+	m_startMutex.unlock();
 }
 
 
@@ -239,32 +289,32 @@ void Chaser::removeStep(int index)
 //
 bool Chaser::raiseStep(unsigned int index)
 {
-  bool result = false;
+	bool result = false;
 
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  if (m_running == false)
-    {
-      if (index > 0)
+	if (m_running == false)
 	{
-	  QValueList <t_function_id>::iterator it;
-	  it = m_steps.at(index);
-	  m_steps.remove(it);
-	  m_steps.insert(m_steps.at(index - 1), *it);
+		if (index > 0)
+		{
+			QValueList <t_function_id>::iterator it;
+			it = m_steps.at(index);
+			m_steps.remove(it);
+			m_steps.insert(m_steps.at(index - 1), *it);
 	  
-	  _app->doc()->setModified(true);
+			_app->doc()->setModified(true);
 
-	  result = true;
+			result = true;
+		}
 	}
-    }
-  else
-    {
-      qDebug("Chaser is running. Cannot modify steps!");
-    }
+	else
+	{
+		qDebug("Chaser is running. Cannot modify steps!");
+	}
 
-  m_startMutex.unlock();
+	m_startMutex.unlock();
 
-  return result;
+	return result;
 }
 
 
@@ -273,32 +323,32 @@ bool Chaser::raiseStep(unsigned int index)
 //
 bool Chaser::lowerStep(unsigned int index)
 {
-  bool result = false;
+	bool result = false;
 
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  if (m_running == false)
-    {
-      if (index < m_steps.count() - 1)
+	if (m_running == false)
 	{
-	  QValueList <t_function_id>::iterator it;
-	  it = m_steps.at(index);
-	  m_steps.remove(it);
-	  m_steps.insert(m_steps.at(index + 1), *it);
+		if (index < m_steps.count() - 1)
+		{
+			QValueList <t_function_id>::iterator it;
+			it = m_steps.at(index);
+			m_steps.remove(it);
+			m_steps.insert(m_steps.at(index + 1), *it);
 
-	  _app->doc()->setModified(true);
+			_app->doc()->setModified(true);
 
-	  result = true;
+			result = true;
+		}
 	}
-    }
-  else
-    {
-      qDebug("Chaser is running. Cannot modify steps!");
-    }
+	else
+	{
+		qDebug("Chaser is running. Cannot modify steps!");
+	}
 
-  m_startMutex.unlock();
+	m_startMutex.unlock();
 
-  return result;
+	return result;
 }
 
 
@@ -307,7 +357,7 @@ bool Chaser::lowerStep(unsigned int index)
 //
 void Chaser::setRunOrder(RunOrder ro)
 {
-  m_runOrder = ro;
+	m_runOrder = ro;
 }
 
 
@@ -316,7 +366,7 @@ void Chaser::setRunOrder(RunOrder ro)
 //
 void Chaser::setDirection(Direction dir)
 {
-  m_direction = dir;
+	m_direction = dir;
 }
 
 //
@@ -324,10 +374,10 @@ void Chaser::setDirection(Direction dir)
 //
 void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
 {
-  if (id == m_busID)
-    {
-      m_holdTime = value;
-    }
+	if (id == m_busID)
+	{
+		m_holdTime = value;
+	}
 }
 
 
@@ -336,11 +386,11 @@ void Chaser::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Chaser::arm()
 {
-  // There's actually no need for an eventbuffer, but
-  // because FunctionConsumer does EventBuffer::get() calls, it must be
-  // there... So allocate a zero length buffer.
-  if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(0, 0);
+	// There's actually no need for an eventbuffer, but
+	// because FunctionConsumer does EventBuffer::get() calls, it must be
+	// there... So allocate a zero length buffer.
+	if (m_eventBuffer == NULL)
+		m_eventBuffer = new EventBuffer(0, 0);
 }
 
 
@@ -349,8 +399,8 @@ void Chaser::arm()
 //
 void Chaser::disarm()
 {
-  if (m_eventBuffer) delete m_eventBuffer;
-  m_eventBuffer = NULL;
+	if (m_eventBuffer) delete m_eventBuffer;
+	m_eventBuffer = NULL;
 }
 
 //
@@ -358,15 +408,15 @@ void Chaser::disarm()
 //
 void Chaser::init()
 {
-  m_childRunning = false;
-  m_removeAfterEmpty = false;
-  m_stopped = false;
+	m_childRunning = false;
+	m_removeAfterEmpty = false;
+	m_stopped = false;
 
-  // Get speed
-  Bus::value(m_busID, m_holdTime);
+	// Get speed
+	Bus::value(m_busID, m_holdTime);
 
-  // Add this to function consumer
-  _app->functionConsumer()->cue(this);
+	// Add this to function consumer
+	_app->functionConsumer()->cue(this);
 }
 
 
@@ -375,107 +425,107 @@ void Chaser::init()
 //
 void Chaser::run()
 {
-  // Calculate starting values
-  init();
+	// Calculate starting values
+	init();
 
-  m_runTimeDirection = m_direction;
+	m_runTimeDirection = m_direction;
 
-  if (m_runTimeDirection == Forward)
-    {
-      m_runTimePosition = 0;
-    }
-  else
-    {
-      m_runTimePosition = m_steps.count() - 1;
-    }
-
-  while ( !m_stopped )
-    {
-      //
-      // Run thru either normal or reverse
-      //
-      if (m_runTimeDirection == Forward)
+	if (m_runTimeDirection == Forward)
 	{
-	  while (m_runTimePosition < (int) m_steps.count() && !m_stopped)
-	    {
-	      m_childRunning = startMemberAt(m_runTimePosition);
+		m_runTimePosition = 0;
+	}
+	else
+	{
+		m_runTimePosition = m_steps.count() - 1;
+	}
+
+	while ( !m_stopped )
+	{
+		//
+		// Run thru either normal or reverse
+		//
+		if (m_runTimeDirection == Forward)
+		{
+			while (m_runTimePosition < (int) m_steps.count() && !m_stopped)
+			{
+				m_childRunning = startMemberAt(m_runTimePosition);
 	      
-	      // Wait for child to complete or stop signal
-	      while (m_childRunning && !m_stopped) sched_yield();
+				// Wait for child to complete or stop signal
+				while (m_childRunning && !m_stopped) sched_yield();
 
-	      if (m_stopped)
-		{
-		  stopMemberAt(m_runTimePosition);
-		  break;
+				if (m_stopped)
+				{
+					stopMemberAt(m_runTimePosition);
+					break;
+				}
+				else
+				{
+					// Wait for m_holdTime
+					hold();
+					m_runTimePosition++;
+				}
+			}
 		}
-	      else
+		else
 		{
-		  // Wait for m_holdTime
-		  hold();
-		  m_runTimePosition++;
-		}
-	    }
-	}
-      else
-	{
-	  while (m_runTimePosition >= 0 && !m_stopped)
-	    {
-	      m_childRunning = startMemberAt(m_runTimePosition);
+			while (m_runTimePosition >= 0 && !m_stopped)
+			{
+				m_childRunning = startMemberAt(m_runTimePosition);
 
-	      // Wait for child to complete or stop signal
-	      while (m_childRunning && !m_stopped) sched_yield();
+				// Wait for child to complete or stop signal
+				while (m_childRunning && !m_stopped) sched_yield();
 
-	      if (m_stopped)
-		{
-		  stopMemberAt(m_runTimePosition);
-		  break;
+				if (m_stopped)
+				{
+					stopMemberAt(m_runTimePosition);
+					break;
+				}
+				else
+				{
+					// Wait for m_holdTime
+					hold();
+					m_runTimePosition--;
+				}
+			}
 		}
-	      else
-		{
-		  // Wait for m_holdTime
-		  hold();
-		  m_runTimePosition--;
-		}
-	    }
-	}
 
-      //
-      // Check what should be done after a round
-      //
-      if (m_runOrder == SingleShot)
-	{
-	  // That's it
-	  break;
-	}
-      else if (m_runOrder == Loop)
-	{
-	  // Just continue as before
-	  m_runTimePosition = 0;
-	  continue;
-	}
-      else // if (m_runOrder == PingPong)
-	{
-	  // Change run order
-	  if (m_runTimeDirection == Forward)
-	    {
-	      m_runTimeDirection = Backward;
+		//
+		// Check what should be done after a round
+		//
+		if (m_runOrder == SingleShot)
+		{
+			// That's it
+			break;
+		}
+		else if (m_runOrder == Loop)
+		{
+			// Just continue as before
+			m_runTimePosition = 0;
+			continue;
+		}
+		else // if (m_runOrder == PingPong)
+		{
+			// Change run order
+			if (m_runTimeDirection == Forward)
+			{
+				m_runTimeDirection = Backward;
 	      
-	      // -2: Don't run the last function again
-	      m_runTimePosition = m_steps.count() - 2; 
-	    }
-	  else
-	    {
-	      m_runTimeDirection = Forward;
+				// -2: Don't run the last function again
+				m_runTimePosition = m_steps.count() - 2; 
+			}
+			else
+			{
+				m_runTimeDirection = Forward;
 
-	      // 1: Don't run the first function again
-	      m_runTimePosition = 1; 
-	    }
+				// 1: Don't run the first function again
+				m_runTimePosition = 1; 
+			}
+		}
 	}
-    }
 
-  // This chaser can be removed from the list after the buffer is empty.
-  // (meaning immediately because this doesn't produce any events).
-  m_removeAfterEmpty = true;
+	// This chaser can be removed from the list after the buffer is empty.
+	// (meaning immediately because this doesn't produce any events).
+	m_removeAfterEmpty = true;
 }
 
 
@@ -484,24 +534,24 @@ void Chaser::run()
 //
 bool Chaser::startMemberAt(int index)
 {
-  t_function_id id = *m_steps.at(index);
+	t_function_id id = *m_steps.at(index);
   
-  Function* f = _app->doc()->function(id);
-  if (!f)
-    {
-      qDebug("Chaser step function <id:%d> deleted!", id);
-      return false;
-    }
+	Function* f = _app->doc()->function(id);
+	if (!f)
+	{
+		qDebug("Chaser step function <id:%d> deleted!", id);
+		return false;
+	}
   
-  if (f->engage(this))
-    {
-      return true;
-    }
-  else
-    {
-      qDebug("Chaser step function <id:%d> is already running!", id);
-      return false;
-    }
+	if (f->engage(this))
+	{
+		return true;
+	}
+	else
+	{
+		qDebug("Chaser step function <id:%d> is already running!", id);
+		return false;
+	}
 }
 
 
@@ -510,17 +560,17 @@ bool Chaser::startMemberAt(int index)
 //
 void Chaser::stopMemberAt(int index)
 {
-  t_function_id id = *m_steps.at(index);
+	t_function_id id = *m_steps.at(index);
   
-  Function* f = _app->doc()->function(id);
-  if (!f)
-    {
-      qDebug("Chaser step function <id:%d> deleted!", id);
-    }
-  else
-    {
-      f->stop();
-    }
+	Function* f = _app->doc()->function(id);
+	if (!f)
+	{
+		qDebug("Chaser step function <id:%d> deleted!", id);
+	}
+	else
+	{
+		f->stop();
+	}
 }
 
 
@@ -529,23 +579,23 @@ void Chaser::stopMemberAt(int index)
 //
 void Chaser::hold()
 {
-  // Don't engage sleeping at all if holdtime is zero.
-  if (m_holdTime > 0)
-    {
-      _app->functionConsumer()->timeCode(m_holdStart);
-      while (!m_stopped)
+	// Don't engage sleeping at all if holdtime is zero.
+	if (m_holdTime > 0)
 	{
-	  _app->functionConsumer()->timeCode(m_timeCode);
-	  if ((m_timeCode - m_holdStart) >= m_holdTime)
-	    {
-	      break;
-	    }
-	  else
-	    {
-	      sched_yield();
-	    }
+		_app->functionConsumer()->timeCode(m_holdStart);
+		while (!m_stopped)
+		{
+			_app->functionConsumer()->timeCode(m_timeCode);
+			if ((m_timeCode - m_holdStart) >= m_holdTime)
+			{
+				break;
+			}
+			else
+			{
+				sched_yield();
+			}
+		}
 	}
-    }
 }
 
 
@@ -554,7 +604,7 @@ void Chaser::hold()
 //
 void Chaser::stop()
 {
-  Function::stop();
+	Function::stop();
 }
 
 
@@ -563,25 +613,25 @@ void Chaser::stop()
 //
 void Chaser::cleanup()
 {
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
+	if (m_virtualController)
+	{
+		QApplication::postEvent(m_virtualController,
+					new FunctionStopEvent(m_id));
 
-      m_virtualController = NULL;
-    }
+		m_virtualController = NULL;
+	}
 
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
+	if (m_parentFunction)
+	{
+		m_parentFunction->childFinished();
+		m_parentFunction = NULL;
+	}
 
-  m_stopped = false;
+	m_stopped = false;
 
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
+	m_startMutex.lock();
+	m_running = false;
+	m_startMutex.unlock();
 }
 
 
@@ -592,5 +642,5 @@ void Chaser::cleanup()
 //
 void Chaser::childFinished()
 {
-  m_childRunning = false;
+	m_childRunning = false;
 }

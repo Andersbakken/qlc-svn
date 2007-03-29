@@ -33,72 +33,74 @@ class SceneValue;
 class Scene : public Function
 {
  public:
-  Scene();
-  ~Scene();
-  
-  enum ValueType
-    {
-      Set   = 0, // Normal value
-      Fade  = 1, // Fade value
-      NoSet = 2  // Ignored value
-    };
-
-  void copyFrom(Scene* sc, t_device_id toDevice);
-  bool setDevice(t_device_id);
-
-  SceneValue* values() { return m_values; }
-
-  bool set(t_channel ch, t_value value, ValueType type);
-  SceneValue channelValue(t_channel ch);
-  
-  ValueType valueType(t_channel ch);
-  QString valueTypeString(t_channel ch);
-
-  void saveToFile(QFile &file);
-  void createContents(QPtrList <QString> &list);
-
-  void busValueChanged(t_bus_id, t_bus_value);
-  void speedChange(t_bus_value);
-
-  void arm();
-  void disarm();
-  void cleanup();
-
+	Scene();
+	~Scene();
+	
+	enum ValueType
+		{
+			Set   = 0, // Normal value
+			Fade  = 1, // Fade value
+			NoSet = 2  // Ignored value
+		};
+	
+	void copyFrom(Scene* sc, t_device_id toDevice);
+	bool setDevice(t_device_id);
+	
+	SceneValue* values() { return m_values; }
+	
+	bool set(t_channel ch, t_value value, ValueType type);
+	SceneValue channelValue(t_channel ch);
+	
+	ValueType valueType(t_channel ch);
+	QString valueTypeString(t_channel ch);
+	
+	void saveToFile(QFile &file);
+	void createContents(QPtrList <QString> &list);
+	
+	void saveXML(QDomDocument* doc);
+	
+	void busValueChanged(t_bus_id, t_bus_value);
+	void speedChange(t_bus_value);
+	
+	void arm();
+	void disarm();
+	void cleanup();
+	
  protected:
-  void init();
-  void run();
-
+	void init();
+	void run();
+	
  private:
-  SceneValue* m_values;
-
-  t_bus_value m_timeSpan;
-  t_bus_value m_elapsedTime;
-
-  RunTimeData* m_runTimeData;
-  t_buffer_data* m_channelData;
-
-  // This mutex is locked when the run time data is accessed
-  QMutex m_dataMutex;
-
-  // Use ONLY at run time to prevent allocating a local variable
-  t_channel m_address;
+	SceneValue* m_values;
+	
+	t_bus_value m_timeSpan;
+	t_bus_value m_elapsedTime;
+	
+	RunTimeData* m_runTimeData;
+	t_buffer_data* m_channelData;
+	
+	// This mutex is locked when the run time data is accessed
+	QMutex m_dataMutex;
+	
+	// Use ONLY at run time to prevent allocating a local variable
+	t_channel m_address;
 };
 
 class RunTimeData
 {
  public:
-  float start;
-  float current;
-  float target;
-
-  bool ready;
+	float start;
+	float current;
+	float target;
+	
+	bool ready;
 };
 
 class SceneValue
 {
  public:
-  Scene::ValueType type;
-  t_value value;
+	Scene::ValueType type;
+	t_value value;
 };
 
 #endif

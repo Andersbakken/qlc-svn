@@ -35,20 +35,6 @@ class QPointArray;
 class EFX : public Function
 {
  public:
-  enum RunOrder
-    {
-      Loop = 0,
-      SingleShot = 1,
-      PingPong = 2
-    };
-  
-  enum Direction
-    {
-      Forward = 0,
-      Backward = 1
-    };
-
- public:
   EFX();
   ~EFX();
   

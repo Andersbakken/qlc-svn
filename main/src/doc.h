@@ -51,6 +51,7 @@ class Doc : public QObject
   bool loadWorkspaceAs(QString &);
   bool saveWorkspaceAs(QString &);
   bool saveWorkspace();
+  bool saveXML(QString &);
 
   //
   // Devices

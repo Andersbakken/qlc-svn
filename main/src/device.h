@@ -29,6 +29,7 @@
 
 class QFile;
 class QString;
+class QDomDocument;
 
 class DeviceClass;
 class Function;
@@ -73,6 +74,9 @@ class Device : public QObject
 
   /* Save this device's properties to a file */
   void saveToFile(QFile &file);
+
+  /* Save this device's properties to an XML document */
+  void saveXML(QDomDocument* doc);
 
  public slots:
   void slotConsoleClosed();

@@ -33,24 +33,24 @@
 #include "eventbuffer.h"
 #include "scene.h"
 #include "functionconsumer.h"
+#include "common/filehandler.h"
 
 extern App* _app;
 
 //
 // Standard constructor
 //
-Scene::Scene() :
-  Function      ( Function::Scene ),
-
-  m_values      (            NULL ),
-  m_timeSpan    (             255 ),
-  m_elapsedTime (               0 ),
-  m_runTimeData (            NULL ),
-  m_channelData (            NULL ),
-  m_dataMutex   (           false ),
-  m_address     ( KChannelInvalid )
+Scene::Scene() : 
+	Function      ( Function::Scene ),
+	m_values      (            NULL ),
+	m_timeSpan    (             255 ),
+	m_elapsedTime (               0 ),
+	m_runTimeData (            NULL ),
+	m_channelData (            NULL ),
+	m_dataMutex   (           false ),
+	m_address     ( KChannelInvalid )
 {
-  setBus(KBusIDDefaultFade);
+	setBus(KBusIDDefaultFade);
 }
 
 
@@ -59,21 +59,21 @@ Scene::Scene() :
 //
 void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 {
-  assert(sc);
-
-  Function::setName(sc->name());
-  Function::setBus(sc->busID());
-
-  setDevice(toDevice);
-
-  if (m_values) delete [] m_values;
-  m_values = new SceneValue[m_channels];
-
-  for (t_channel ch = 0; ch < m_channels; ch++)
-    {
-      m_values[ch].value = sc->m_values[ch].value;
-      m_values[ch].type = sc->m_values[ch].type;
-    }
+	assert(sc);
+	
+	Function::setName(sc->name());
+	Function::setBus(sc->busID());
+	
+	setDevice(toDevice);
+	
+	if (m_values) delete [] m_values;
+	m_values = new SceneValue[m_channels];
+	
+	for (t_channel ch = 0; ch < m_channels; ch++)
+	{
+		m_values[ch].value = sc->m_values[ch].value;
+		m_values[ch].type = sc->m_values[ch].type;
+	}
 }
 
 
@@ -82,36 +82,36 @@ void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 //
 bool Scene::setDevice(t_device_id id)
 {
-  Device* device = _app->doc()->device(id);
-  if (!device)
-    {
-      return false;
-    }
-
-  t_channel newChannels = device->deviceClass()->channels()->count();
-
-  if (m_channels == 0)
-    {
-      m_channels = newChannels;
-
-      m_values = new SceneValue[m_channels];
-
-      for (t_channel i = 0; i < m_channels; i++)
+	Device* device = _app->doc()->device(id);
+	if (!device)
 	{
-	  m_values[i].value = 0;
-	  m_values[i].type = Fade;
+		return false;
 	}
-    }
-  else
-    {
-      assert(m_channels == newChannels);
-    }
-
-  m_deviceID = id;
-  
-  _app->doc()->emitFunctionChanged(m_id);
-
-  return true;
+	
+	t_channel newChannels = device->deviceClass()->channels()->count();
+	
+	if (m_channels == 0)
+	{
+		m_channels = newChannels;
+		
+		m_values = new SceneValue[m_channels];
+		
+		for (t_channel i = 0; i < m_channels; i++)
+		{
+			m_values[i].value = 0;
+			m_values[i].type = Fade;
+		}
+	}
+	else
+	{
+		assert(m_channels == newChannels);
+	}
+	
+	m_deviceID = id;
+	
+	_app->doc()->emitFunctionChanged(m_id);
+	
+	return true;
 }
 
 
@@ -120,24 +120,24 @@ bool Scene::setDevice(t_device_id id)
 //
 Scene::~Scene()
 {
-  stop();
-
-  m_startMutex.lock();
-  while (m_running)
-    {
-      m_startMutex.unlock();
-      sched_yield();
-      m_startMutex.lock();
-    }
-  m_startMutex.unlock();
-
-  if (m_values) delete [] m_values;
+	stop();
+	
+	m_startMutex.lock();
+	while (m_running)
+	{
+		m_startMutex.unlock();
+		sched_yield();
+		m_startMutex.lock();
+	}
+	m_startMutex.unlock();
+	
+	if (m_values) delete [] m_values;
 }
 
 Scene::ValueType Scene::valueType(t_channel ch)
 {
-  assert(ch < m_channels);
-  return m_values[ch].type;
+	assert(ch < m_channels);
+	return m_values[ch].type;
 }
 
 //
@@ -145,21 +145,21 @@ Scene::ValueType Scene::valueType(t_channel ch)
 //
 QString Scene::valueTypeString(t_channel ch)
 {
-  switch(m_values[ch].type)
-    {
-    case Set:
-      return QString("Set");
-      break;
-
-    case Fade:
-      return QString("Fade");
-      break;
-
-    default:
-    case NoSet:
-      return QString("NoSet");
-      break;
-    }
+	switch(m_values[ch].type)
+	{
+	case Set:
+		return QString("Set");
+		break;
+		
+	case Fade:
+		return QString("Fade");
+		break;
+		
+	default:
+	case NoSet:
+		return QString("NoSet");
+		break;
+	}
 }
 
 
@@ -168,55 +168,56 @@ QString Scene::valueTypeString(t_channel ch)
 //
 void Scene::saveToFile(QFile &file)
 {
-  QString s;
-  QString t;
-
-  // Comment line
-  s = QString("# Function entry\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Entry type
-  s = QString("Entry = Function") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Name
-  s = QString("Name = ") + name() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Type
-  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // ID
-  t.setNum(m_id);
-  s = QString("ID = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Bus ID
-  t.setNum(m_busID);
-  s = QString("Bus = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Device ID
-  t.setNum(m_deviceID);
-  s = QString("Device = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  if (m_deviceID != KNoID)
-    {
-      // Data
-      for (t_channel i = 0; i < m_channels; i++)
-        {
-          t.setNum(i);
-          s = t + QString(" = ");
-          t.setNum(m_values[i].value);
-          s += t + QString("\n");
-          file.writeBlock((const char*) s, s.length());
-
-          s = QString("ValueType = ") + valueTypeString(i) + QString("\n");
-          file.writeBlock((const char*) s, s.length());
-        }
-    }
+	QString s;
+	QString t;
+	
+	// Comment line
+	s = QString("# Function entry\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	// Entry type
+	s = QString("Entry = Function") + QString("\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	// Name
+	s = QString("Name = ") + name() + QString("\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	// Type
+	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	// ID
+	t.setNum(m_id);
+	s = QString("ID = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	// Bus ID
+	t.setNum(m_busID);
+	s = QString("Bus = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	// Device ID
+	t.setNum(m_deviceID);
+	s = QString("Device = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
+	
+	if (m_deviceID != KNoID)
+	{
+		// Data
+		for (t_channel i = 0; i < m_channels; i++)
+		{
+			t.setNum(i);
+			s = t + QString(" = ");
+			t.setNum(m_values[i].value);
+			s += t + QString("\n");
+			file.writeBlock((const char*) s, s.length());
+			
+			s = QString("ValueType = ") + valueTypeString(i) + 
+				QString("\n");
+			file.writeBlock((const char*) s, s.length());
+		}
+	}
 }
 
 //
@@ -224,50 +225,87 @@ void Scene::saveToFile(QFile &file)
 //
 void Scene::createContents(QPtrList <QString> &list)
 {
-  QString t;
+	QString t;
+	
+	t_value ch = 0;
+	
+	for (QString* s = list.next(); s != NULL; s = list.next())
+	{
+		if (*s == QString("Entry"))
+		{
+			s = list.prev();
+			break;
+		}
+		else if (s->at(0).isNumber() == true)
+		{
+			ch = static_cast<t_value> (s->toInt());
+			t = *(list.next());
+			m_values[ch].value = t.toInt();
+			m_values[ch].type = Set;
+		}
+		else if (*s == QString("ValueType"))
+		{
+			t = *(list.next());
+			if (t == QString("Set"))
+			{
+				m_values[ch].type = Set;
+			}
+			else if (t == QString("Fade"))
+			{
+				m_values[ch].type = Fade;
+			}
+			else if (t == QString("NoSet"))
+			{
+				m_values[ch].type = NoSet;
+			}
+			else
+			{
+				list.next();
+			}
+		}
+		else
+		{
+			// Unknown keyword, skip
+			list.next();
+		}
+	}
+}
 
-  t_value ch = 0;
 
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-        {
-          s = list.prev();
-          break;
-        }
-      else if (s->at(0).isNumber() == true)
-        {
-          ch = static_cast<t_value> (s->toInt());
-          t = *(list.next());
-          m_values[ch].value = t.toInt();
-          m_values[ch].type = Set;
-        }
-      else if (*s == QString("ValueType"))
-        {
-          t = *(list.next());
-          if (t == QString("Set"))
-            {
-              m_values[ch].type = Set;
-            }
-          else if (t == QString("Fade"))
-            {
-              m_values[ch].type = Fade;
-            }
-          else if (t == QString("NoSet"))
-            {
-              m_values[ch].type = NoSet;
-            }
-          else
-            {
-              list.next();
-            }
-        }
-      else
-        {
-          // Unknown keyword, skip
-          list.next();
-        }
-    }
+// Save this function to an XML document
+void Scene::saveXML(QDomDocument* doc)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+	
+	assert(doc);
+
+	/* Function tag */
+	root = doc->createElement(KXMLFunctionNode);
+	doc->appendChild(root);
+
+	root.setAttribute(KXMLFunctionID, id());
+	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLFunctionName, name());
+	root.setAttribute(KXMLFunctionDevice, device());
+
+	for (t_channel i = 0; i < m_channels; i++)
+	{
+		/* Value tag */
+		tag = doc->createElement(KXMLFunctionValue);
+		root.appendChild(tag);
+		
+		/* Value type & channel */
+		tag.setAttribute(KXMLFunctionChannel, i);
+		tag.setAttribute(KXMLFunctionType, valueTypeString(i));
+
+		/* Value contents */
+		str.setNum(m_values[i].value);
+		text = doc->createTextNode(str);
+		tag.appendChild(text);
+	}
 }
 
 
@@ -276,25 +314,25 @@ void Scene::createContents(QPtrList <QString> &list)
 //
 bool Scene::set(t_channel ch, t_value value, ValueType type)
 {
-  m_startMutex.lock();
-  if (m_running)
-    {
-      m_startMutex.unlock();
-      return false;
-    }
-  else if (ch < m_channels)
-    {
-      m_values[ch].value = value;
-      m_values[ch].type = type;
-
-      m_startMutex.unlock();
-      return true;
-    }
-  else
-    {
-      m_startMutex.unlock();
-      return false;
-    }
+	m_startMutex.lock();
+	if (m_running)
+	{
+		m_startMutex.unlock();
+		return false;
+	}
+	else if (ch < m_channels)
+	{
+		m_values[ch].value = value;
+		m_values[ch].type = type;
+		
+		m_startMutex.unlock();
+		return true;
+	}
+	else
+	{
+		m_startMutex.unlock();
+		return false;
+	}
 }
 
 
@@ -303,7 +341,7 @@ bool Scene::set(t_channel ch, t_value value, ValueType type)
 //
 SceneValue Scene::channelValue(t_channel ch)
 {
-  return m_values[ch];
+	return m_values[ch];
 }
 
 
@@ -312,23 +350,23 @@ SceneValue Scene::channelValue(t_channel ch)
 //
 void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 {
-  if (id != m_busID)
-    {
-      return;
-    }
-
-  m_startMutex.lock();
-
-  if (m_running)
-    {
-      speedChange(value);
-    }
-  else
-    {
-      m_timeSpan = value;
-    }
-
-  m_startMutex.unlock();
+	if (id != m_busID)
+	{
+		return;
+	}
+	
+	m_startMutex.lock();
+	
+	if (m_running)
+	{
+		speedChange(value);
+	}
+	else
+	{
+		m_timeSpan = value;
+	}
+	
+	m_startMutex.unlock();
 }
 
 
@@ -337,16 +375,12 @@ void Scene::busValueChanged(t_bus_id id, t_bus_value value)
 //
 void Scene::speedChange(t_bus_value newTimeSpan)
 {
-  //m_dataMutex.lock();
-
-  m_timeSpan = newTimeSpan;
-  if (m_timeSpan == 0)
-    {
-      m_timeSpan = static_cast<t_bus_value>
-	(1.0 / static_cast<float> (KFrequency));
-    }
-
-  //m_dataMutex.unlock();
+	m_timeSpan = newTimeSpan;
+	if (m_timeSpan == 0)
+	{
+		m_timeSpan = static_cast<t_bus_value>
+			(1.0 / static_cast<float> (KFrequency));
+	}
 }
 
 
@@ -355,18 +389,18 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 //
 void Scene::arm()
 {
-  // Fetch the device address for run time access.
-  // It cannot change when functions have been armed for running
-  m_address = _app->doc()->device(m_deviceID)->universeAddress();
-
-  if (m_runTimeData == NULL)
-    m_runTimeData = new RunTimeData[m_channels];
-
-  if (m_channelData == NULL)
-    m_channelData = new t_buffer_data[m_channels];
-
-  if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(m_channels, KFrequency >> 1);
+	// Fetch the device address for run time access.
+	// It cannot change when functions have been armed for running
+	m_address = _app->doc()->device(m_deviceID)->universeAddress();
+	
+	if (m_runTimeData == NULL)
+		m_runTimeData = new RunTimeData[m_channels];
+	
+	if (m_channelData == NULL)
+		m_channelData = new t_buffer_data[m_channels];
+	
+	if (m_eventBuffer == NULL)
+		m_eventBuffer = new EventBuffer(m_channels, KFrequency >> 1);
 }
 
 
@@ -375,17 +409,17 @@ void Scene::arm()
 //
 void Scene::disarm()
 {
-  // Just a nuisance to prevent using this at non-run-time :)
-  m_address = KChannelInvalid;
-
-  if (m_runTimeData) delete [] m_runTimeData;
-  m_runTimeData = NULL;
-
-  if (m_channelData) delete [] m_channelData;
-  m_channelData = NULL;
-
-  if (m_eventBuffer) delete m_eventBuffer;
-  m_eventBuffer = NULL;
+	// Just a nuisance to prevent using this at non-run-time :)
+	m_address = KChannelInvalid;
+	
+	if (m_runTimeData) delete [] m_runTimeData;
+	m_runTimeData = NULL;
+	
+	if (m_channelData) delete [] m_channelData;
+	m_channelData = NULL;
+	
+	if (m_eventBuffer) delete m_eventBuffer;
+	m_eventBuffer = NULL;
 }
 
 
@@ -394,31 +428,32 @@ void Scene::disarm()
 //
 void Scene::init()
 {
-  m_removeAfterEmpty = false;
-  m_stopped = false;
+	m_removeAfterEmpty = false;
+	m_stopped = false;
+	
+	for (t_channel i = 0; i < m_channels; i++)
+	{
+		m_runTimeData[i].current =
+			m_runTimeData[i].start =
+			static_cast<float> (_app->value(m_address + i));
+		
+		m_runTimeData[i].target = 
+			static_cast<float> (m_values[i].value);
+		
+		m_runTimeData[i].ready = false;
+	}
+	
+	// No time has yet passed for this scene.
+	m_elapsedTime = 0;
+	
+	// Get speed
+	Bus::value(m_busID, m_timeSpan);
+	
+	// Set speed
+	speedChange(m_timeSpan);
 
-  for (t_channel i = 0; i < m_channels; i++)
-    {
-      m_runTimeData[i].current =
-	m_runTimeData[i].start =
-	static_cast<float> (_app->value(m_address + i));
-
-      m_runTimeData[i].target = static_cast<float> (m_values[i].value);
-
-      m_runTimeData[i].ready = false;
-    }
-
-  // No time has yet passed for this scene.
-  m_elapsedTime = 0;
-
-  // Get speed
-  Bus::value(m_busID, m_timeSpan);
-
-  // Set speed
-  speedChange(m_timeSpan);
-
-  // Append this function to running functions' list
-  _app->functionConsumer()->cue(this);
+	// Append this function to running functions' list
+	_app->functionConsumer()->cue(this);
 }
 
 
@@ -427,129 +462,123 @@ void Scene::init()
 //
 void Scene::run()
 {
-  t_channel ch = 0;
-  t_channel ready = 0;
-
-  // Initialize this scene for running
-  init();
-
-  // Check if this scene needs to play
-  for (t_channel i = 0; i < m_channels; i++)
-    {
-      if (m_values[i].type == Set ||
-	  m_values[i].type == Fade)
+	t_channel ch = 0;
+	t_channel ready = 0;
+	
+	// Initialize this scene for running
+	init();
+	
+	// Check if this scene needs to play
+	for (t_channel i = 0; i < m_channels; i++)
 	{
-	  if (m_values[i].value == (int) m_runTimeData[i].current)
-	    {
-	      ready++;
-	    }
+		if (m_values[i].type == Set ||
+		    m_values[i].type == Fade)
+		{
+			if (m_values[i].value == (int) m_runTimeData[i].current)
+			{
+				ready++;
+			}
+		}
+		else
+		{
+			// NoSet values are treated as ready
+			ready++;
+		}
 	}
-      else
+	
+	// This scene does not need to be played because all target
+	// values are already where they are supposed to be.
+	if (ready == m_channels)
 	{
-	  // NoSet values are treated as ready
-	  ready++;
+		m_stopped = true;
 	}
-    }
-
-  // This scene does not need to be played because all target
-  // values are already where they are supposed to be.
-  if (ready == m_channels)
-    {
-      m_stopped = true;
-    }
-
-  //m_dataMutex.lock();
-
-  for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan && !m_stopped;
-       m_elapsedTime++)
-    {
-      //m_dataMutex.unlock();
-
-      for (ch = 0; ch < m_channels; ch++)
+	
+	for (m_elapsedTime = 0; m_elapsedTime < m_timeSpan && !m_stopped;
+	     m_elapsedTime++)
 	{
-	  if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
-	    {
-	      m_channelData[ch] = KChannelInvalid << 8;
-	      m_channelData[ch] |= 0;
-
-	      // This channel contains a value that is not supposed
-	      // to be written (anymore, in case of ready value, which
-	      // comes from "set" type values)
-	      continue;
-	    }
-	  else if (m_values[ch].type == Set)
-	    {
-	      // Just set the target value
-	      m_channelData[ch] = (m_address + ch) << 8;
-	      m_channelData[ch] |=
-		static_cast<t_buffer_data> (m_values[ch].value);
-
-	      // ...and don't touch this channel anymore
-	      m_runTimeData[ch].ready = true;
-	    }
-	  else if (m_values[ch].type == Fade)
-	    {
-	      //m_dataMutex.lock();
-
-	      // Calculate the current value based on what it should
-	      // be after m_elapsedTime to be ready at m_timeSpan
-	      m_runTimeData[ch].current = m_runTimeData[ch].start
-		+ (m_runTimeData[ch].target - m_runTimeData[ch].start)
-		* ((float)m_elapsedTime / m_timeSpan);
-
-	      m_channelData[ch] = (m_address + ch) << 8;
-
-	      m_channelData[ch] |=
-		static_cast<t_buffer_data> (m_runTimeData[ch].current);
-	    }
-
-	  //m_dataMutex.unlock();
+		for (ch = 0; ch < m_channels; ch++)
+		{
+			if (m_values[ch].type == NoSet || 
+			    m_runTimeData[ch].ready)
+			{
+				m_channelData[ch] = KChannelInvalid << 8;
+				m_channelData[ch] |= 0;
+				
+				// This channel contains a value that is not
+				// supposed to be written (anymore, in case of
+				// a ready value, which comes from "set" type)
+				continue;
+			}
+			else if (m_values[ch].type == Set)
+			{
+				// Just set the target value
+				m_channelData[ch] = (m_address + ch) << 8;
+				m_channelData[ch] |= static_cast<t_buffer_data>
+					(m_values[ch].value);
+				
+				// ...and don't touch this channel anymore
+				m_runTimeData[ch].ready = true;
+			}
+			else if (m_values[ch].type == Fade)
+			{
+				// Calculate the current value based on what
+				// it should be after m_elapsedTime to be
+				// ready at m_timeSpan
+				m_runTimeData[ch].current = 
+					m_runTimeData[ch].start
+					+ (m_runTimeData[ch].target 
+					   - m_runTimeData[ch].start)
+					* ((float)m_elapsedTime / m_timeSpan);
+				
+				m_channelData[ch] = (m_address + ch) << 8;
+				
+				m_channelData[ch] |= static_cast<t_buffer_data>
+					(m_runTimeData[ch].current);
+			}
+		}
+		
+		m_eventBuffer->put(m_channelData);
 	}
-
-      m_eventBuffer->put(m_channelData);
-      //m_dataMutex.lock();
-    }
-
-  //m_dataMutex.unlock();
-
-  // Write the last step exactly to target because timespan might have
-  // been set to a smaller amount than what has elapsed. Also, because
-  // floats are NEVER exact numbers, it might be that we never quite reach
-  // the target within the given timespan (in case the values don't add up).
-  for (ch = 0; ch < m_channels; ch++)
-    {
-      if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
+	
+	// Write the last step exactly to target because timespan might have
+	// been set to a smaller amount than what has elapsed. Also, because
+	// floats are NEVER exact numbers, it might be that we never quite reach
+	// the target within the given timespan (in case values don't add up).
+	for (ch = 0; ch < m_channels; ch++)
 	{
-	  m_channelData[ch] = KChannelInvalid << 8;
-	  m_channelData[ch] |= 0;
+		if (m_values[ch].type == NoSet || m_runTimeData[ch].ready)
+		{
+			m_channelData[ch] = KChannelInvalid << 8;
+			m_channelData[ch] |= 0;
+		}
+		else
+		{
+			// Just set the target value
+			m_channelData[ch] = (m_address + ch) << 8;
+			m_channelData[ch] |= 
+				static_cast<t_buffer_data> (m_values[ch].value);
+			
+			// ...and don't touch this channel anymore
+			m_runTimeData[ch].ready = true;
+		}
 	}
-      else
+	
+	if (!m_stopped)
 	{
-	  // Just set the target value
-	  m_channelData[ch] = (m_address + ch) << 8;
-	  m_channelData[ch] |= static_cast<t_buffer_data> (m_values[ch].value);
-
-	  // ...and don't touch this channel anymore
-	  m_runTimeData[ch].ready = true;
+		m_eventBuffer->put(m_channelData);
 	}
-    }
-
-  if (!m_stopped)
-    {
-      m_eventBuffer->put(m_channelData);
-    }
-  else
-    {
-      //
-      // This scene was stopped. Clear buffer so that this function
-      // can finish as quickly as possible
-      //
-      m_eventBuffer->purge();
-    }
-
-  // No more items produced -> this scene can be removed from
-  // the list after the buffer is empty.
-  m_removeAfterEmpty = true;
+	else
+	{
+		//
+		// This scene was stopped. Clear buffer so that this function
+		// can finish as quickly as possible
+		//
+		m_eventBuffer->purge();
+	}
+	
+	// No more items produced -> this scene can be removed from
+	// the list after the buffer is empty.
+	m_removeAfterEmpty = true;
 }
 
 
@@ -559,22 +588,22 @@ void Scene::run()
 //
 void Scene::cleanup()
 {
-  m_stopped = false;
-
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
-      m_virtualController = NULL;
-    }
-
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
-
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
+	m_stopped = false;
+	
+	if (m_virtualController)
+	{
+		QApplication::postEvent(m_virtualController,
+					new FunctionStopEvent(m_id));
+		m_virtualController = NULL;
+	}
+	
+	if (m_parentFunction)
+	{
+		m_parentFunction->childFinished();
+		m_parentFunction = NULL;
+	}
+	
+	m_startMutex.lock();
+	m_running = false;
+	m_startMutex.unlock();
 }

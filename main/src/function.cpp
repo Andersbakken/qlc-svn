@@ -24,6 +24,7 @@
 #include <qmessagebox.h>
 #include <assert.h>
 #include <qpixmap.h>
+#include <qdom.h>
 
 #include "bus.h"
 #include "app.h"
@@ -32,6 +33,7 @@
 #include "functioncollection.h"
 #include "chaser.h"
 #include "scene.h"
+#include "common/filehandler.h"
 
 extern App* _app;
 
@@ -42,25 +44,32 @@ const QString KSequenceString   (   "Sequence" );
 const QString KEFXString        (        "EFX" );
 const QString KUndefinedString  (  "Undefined" );
 
+const QString KLoopString       (       "Loop" );
+const QString KPingPongString   (   "PingPong" );
+const QString KSingleShotString ( "SingleShot" );
+
+const QString KBackwardString   (   "Backward" );
+const QString KForwardString    (    "Forward" );
+
 //
 // Standard constructor (protected)
 //
 Function::Function(Type type) :
-  QThread(),
-  m_name              ( QString::null ),
-  m_type              (          type ),
-  m_id                (         KNoID ),
-  m_deviceID          (         KNoID ),
-  m_busID             ( KBusIDInvalid ),
-  m_channels          (             0 ),
-  m_eventBuffer       (          NULL ),
-  m_virtualController (          NULL ),
-  m_parentFunction    (          NULL ),
-  m_running           (         false ),
-  m_stopped           (         false ),
-  m_removeAfterEmpty  (         false ),
-  m_startMutex        (         false ),
-  m_listener          (          NULL )
+	QThread(),
+	m_name              ( QString::null ),
+	m_type              (          type ),
+	m_id                (         KNoID ),
+	m_deviceID          (         KNoID ),
+	m_busID             ( KBusIDInvalid ),
+	m_channels          (             0 ),
+	m_eventBuffer       (          NULL ),
+	m_virtualController (          NULL ),
+	m_parentFunction    (          NULL ),
+	m_running           (         false ),
+	m_stopped           (         false ),
+	m_removeAfterEmpty  (         false ),
+	m_startMutex        (         false ),
+	m_listener          (          NULL )
 {
 }
 
@@ -70,8 +79,8 @@ Function::Function(Type type) :
 //
 Function::~Function()
 {
-  delete m_listener;
-  m_listener = NULL;
+	delete m_listener;
+	m_listener = NULL;
 }
 
 //
@@ -79,10 +88,58 @@ Function::~Function()
 //
 void Function::setID(t_function_id id)
 {
-  m_id = id;
+	m_id = id;
+	
+	if (m_listener)
+		delete m_listener;
 
-  if (m_listener) delete m_listener;
-  m_listener = new FunctionNS::BusListener(m_id);
+	m_listener = new FunctionNS::BusListener(m_id);
+}
+
+//
+// Convert a RunOrder to string
+//
+QString Function::runOrderToString(RunOrder order)
+{
+	switch (order)
+	{
+	case Loop:
+		return KLoopString;
+		break;
+
+	case PingPong:
+		return KPingPongString;
+		break;
+
+	case SingleShot:
+		return KSingleShotString;
+		break;
+
+	default:
+		return KUndefinedString;
+		break;
+	}
+}
+
+//
+// Convert a Direction to string
+//
+QString Function::directionToString(Direction dir)
+{
+	switch (dir)
+	{
+	case Forward:
+		return KForwardString;
+		break;
+
+	case Backward:
+		return KBackwardString;
+		break;
+
+	default:
+		return KUndefinedString;
+		break;
+	}
 }
 
 //
@@ -90,33 +147,33 @@ void Function::setID(t_function_id id)
 //
 QString Function::typeToString(Type type)
 {
-  switch (type)
-    {
-    case Collection:
-      return KCollectionString;
-      break;
-
-    case Scene:
-      return KSceneString;
-      break;
-
-    case Chaser:
-      return KChaserString;
-      break;
-
-    case Sequence:
-      return KSequenceString;
-      break;
-
-    case EFX:
-      return KEFXString;
-      break;
-
-    case Undefined:
-    default:
-      return KUndefinedString;
-      break;
-    }
+	switch (type)
+	{
+	case Collection:
+		return KCollectionString;
+		break;
+		
+	case Scene:
+		return KSceneString;
+		break;
+		
+	case Chaser:
+		return KChaserString;
+		break;
+		
+	case Sequence:
+		return KSequenceString;
+		break;
+		
+	case EFX:
+		return KEFXString;
+		break;
+		
+	case Undefined:
+	default:
+		return KUndefinedString;
+		break;
+	}
 }
 
 
@@ -125,30 +182,30 @@ QString Function::typeToString(Type type)
 //
 Function::Type Function::stringToType(QString string)
 {
-  if (string == KCollectionString)
-    {
-      return Collection;
-    }
-  else if (string == KSceneString)
-    {
-      return Scene;
-    }
-  else if (string == KChaserString)
-    {
-      return Chaser;
-    }
-  else if (string == KSequenceString)
-    {
-      return Sequence;
-    }
-  else if (string == KEFXString)
-    {
-      return EFX;
-    }
-  else
-    {
-      return Undefined;
-    }
+	if (string == KCollectionString)
+	{
+		return Collection;
+	}
+	else if (string == KSceneString)
+	{
+		return Scene;
+	}
+	else if (string == KChaserString)
+	{
+		return Chaser;
+	}
+	else if (string == KSequenceString)
+	{
+		return Sequence;
+	}
+	else if (string == KEFXString)
+	{
+		return EFX;
+	}
+	else
+	{
+		return Undefined;
+	}
 }
 
 //
@@ -156,22 +213,22 @@ Function::Type Function::stringToType(QString string)
 //
 bool Function::setName(QString name)
 {
-  m_startMutex.lock();
-  if (m_running)
-    {
-      m_startMutex.unlock();
-      return false;
-    }
-  else
-    {
-      m_name = QString(name);
-      _app->doc()->setModified(true);
-      m_startMutex.unlock();
-
-      _app->doc()->emitFunctionChanged(m_id);
-
-      return true;
-    }
+	m_startMutex.lock();
+	if (m_running)
+	{
+		m_startMutex.unlock();
+		return false;
+	}
+	else
+	{
+		m_name = QString(name);
+		_app->doc()->setModified(true);
+		m_startMutex.unlock();
+		
+		_app->doc()->emitFunctionChanged(m_id);
+		
+		return true;
+	}
 }
 
 
@@ -181,22 +238,22 @@ bool Function::setName(QString name)
 //
 bool Function::setDevice(t_device_id id)
 {
-  m_startMutex.lock();
-  if (m_running)
-    {
-      m_startMutex.unlock();
-      return false;
-    }
-  else
-    {
-      m_deviceID = id;
-      _app->doc()->setModified(true);
-      m_startMutex.unlock();
-
-      _app->doc()->emitFunctionChanged(m_id);
-
-      return true;
-    }
+	m_startMutex.lock();
+	if (m_running)
+	{
+		m_startMutex.unlock();
+		return false;
+	}
+	else
+	{
+		m_deviceID = id;
+		_app->doc()->setModified(true);
+		m_startMutex.unlock();
+		
+		_app->doc()->emitFunctionChanged(m_id);
+		
+		return true;
+	}
 }
 
 //
@@ -205,7 +262,7 @@ bool Function::setDevice(t_device_id id)
 QString Function::busName()
 {
 	QString text;
-
+	
 	if (busID() != KNoID)
 	{
 		text.sprintf("%.2d: ", busID() + 1);
@@ -224,41 +281,41 @@ QString Function::busName()
 //
 bool Function::setBus(t_bus_id id)
 {
-  m_startMutex.lock();
-  if (m_running)
-    {
-      m_startMutex.unlock();
-      return false;
-    }
-  else
-    {
-      if (id < KBusIDMin || id >= KBusCount)
+	m_startMutex.lock();
+	if (m_running)
 	{
-	  if (m_type == Scene)
-	    {
-	      m_busID = KBusIDDefaultFade;
-	    }
-	  else if (m_type == Chaser || m_type == Sequence)
-	    {
-	      m_busID = KBusIDDefaultHold;
-	    }
-	  else
-	    {
-	      m_busID = KNoID;
-	    }
+		m_startMutex.unlock();
+		return false;
 	}
-      else
+	else
 	{
-	  m_busID = id;
+		if (id < KBusIDMin || id >= KBusCount)
+		{
+			if (m_type == Scene)
+			{
+				m_busID = KBusIDDefaultFade;
+			}
+			else if (m_type == Chaser || m_type == Sequence)
+			{
+				m_busID = KBusIDDefaultHold;
+			}
+			else
+			{
+				m_busID = KNoID;
+			}
+		}
+		else
+		{
+			m_busID = id;
+		}
+		
+		_app->doc()->setModified(true);
+		
+		_app->doc()->emitFunctionChanged(m_id);
+		
+		m_startMutex.unlock();
+		return true;
 	}
-
-      _app->doc()->setModified(true);
-
-      _app->doc()->emitFunctionChanged(m_id);
-      
-      m_startMutex.unlock();
-      return true;
-    }
 }
 
 
@@ -272,24 +329,24 @@ bool Function::setBus(t_bus_id id)
 //
 bool Function::engage(QObject* virtualController)
 {
-  ASSERT(virtualController);
-
-  m_startMutex.lock();
-  if (m_running)
-    {
-      m_startMutex.unlock();
-      qDebug("Function " + name() + " is already running!");
-      return false;
-    }
-  else
-    {
-      m_virtualController = virtualController;
-      m_running = true;
-      start();
-      m_startMutex.unlock();
-
-      return true;
-    }
+	ASSERT(virtualController);
+	
+	m_startMutex.lock();
+	if (m_running)
+	{
+		m_startMutex.unlock();
+		qDebug("Function " + name() + " is already running!");
+		return false;
+	}
+	else
+	{
+		m_virtualController = virtualController;
+		m_running = true;
+		start();
+		m_startMutex.unlock();
+		
+		return true;
+	}
 }
 
 //
@@ -299,24 +356,24 @@ bool Function::engage(QObject* virtualController)
 //
 bool Function::engage(Function* parentFunction)
 {
-  ASSERT(parentFunction);
-
-  m_startMutex.lock();
-  if (m_running)
-    {
-      m_startMutex.unlock();
-      qDebug("Function " + name() + " is already running!");
-      return false;
-    }
-  else
-    {
-      m_parentFunction = parentFunction;
-      m_running = true;
-      start();
-      m_startMutex.unlock();
-
-      return true;
-    }
+	ASSERT(parentFunction);
+	
+	m_startMutex.lock();
+	if (m_running)
+	{
+		m_startMutex.unlock();
+		qDebug("Function " + name() + " is already running!");
+		return false;
+	}
+	else
+	{
+		m_parentFunction = parentFunction;
+		m_running = true;
+		start();
+		m_startMutex.unlock();
+		
+		return true;
+	}
 }
 
 
@@ -325,7 +382,7 @@ bool Function::engage(Function* parentFunction)
 //
 void Function::stop()
 {
-  m_stopped = true;
+	m_stopped = true;
 }
 
 
@@ -334,71 +391,111 @@ void Function::stop()
 //
 Function* Function::create(QPtrList <QString> &list)
 {
-  Function* function = NULL;
-
-  QString name;
-  Type type = Undefined;
-  t_function_id fid = KNoID;
-  t_device_id did = KNoID;
-  t_bus_id busid = KNoID;
-
-  //
-  // Read basic information
-  //
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+	Function* function = NULL;
+	
+	QString name;
+	Type type = Undefined;
+	t_function_id fid = KNoID;
+	t_device_id did = KNoID;
+	t_bus_id busid = KNoID;
+	
+	//
+	// Read basic information
+	//
+	for (QString* s = list.next(); s != NULL; s = list.next())
 	{
-	  s = list.prev();
-	  break;
+		if (*s == QString("Entry"))
+		{
+			s = list.prev();
+			break;
+		}
+		else if (*s == QString("Name"))
+		{
+			name = *(list.next());
+		}
+		else if (*s == QString("Type"))
+		{
+			type = Function::stringToType(*(list.next()));
+		}
+		else if (*s == QString("ID"))
+		{
+			fid = list.next()->toInt();
+		}
+		else if (*s == QString("Bus"))
+		{
+			busid = list.next()->toInt();
+		}
+		else if (*s == QString("Device"))
+		{
+			did = list.next()->toInt();
+			break;
+		}
+		else
+		{
+			// Unknown keyword (at this time)
+			list.next();
+		}
 	}
-      else if (*s == QString("Name"))
+	
+	//
+	// Create the function and its contents
+	//
+	function = _app->doc()->newFunction(type, did, fid);
+	if (function)
 	{
-	  name = *(list.next());
+		function->setName(name);
+		function->setBus(busid);
+		function->createContents(list);
 	}
-      else if (*s == QString("Type"))
+	else
 	{
-	  type = Function::stringToType(*(list.next()));
+		QString msg;
+		msg = QString("Unable to create function:\n");
+		msg += QString("No more free function slots!");
 	}
-      else if (*s == QString("ID"))
-	{
-	  fid = list.next()->toInt();
-	}
-      else if (*s == QString("Bus"))
-	{
-	  busid = list.next()->toInt();
-	}
-      else if (*s == QString("Device"))
-	{
-	  did = list.next()->toInt();
-	  break;
-	}
-      else
-	{
-	  // Unknown keyword (at this time)
-	  list.next();
-	}
-    }
-
-  //
-  // Create the function and its contents
-  //
-  function = _app->doc()->newFunction(type, did, fid);
-  if (function)
-    {
-      function->setName(name);
-      function->setBus(busid);
-      function->createContents(list);
-    }
-  else
-    {
-      QString msg;
-      msg = QString("Unable to create function:\n");
-      msg += QString("No more free function slots!");
-    }
-
-  return function;
+	
+	return function;
 }
+
+// Save this function to an XML document
+void Function::saveXML(QDomDocument* doc)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+	
+	assert(doc);
+
+	/* Function entry */
+	root = doc->createElement(KXMLFunctionNode);
+	doc->appendChild(root);
+
+	/* Name */
+	tag = doc->createElement(KXMLFunctionName);
+	root.appendChild(tag);
+	text = doc->createTextNode(name());
+	tag.appendChild(text);
+
+	/* ID */
+	tag = doc->createElement(KXMLFunctionID);
+	root.appendChild(tag);
+	str.setNum(id());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Type */
+	tag = doc->createElement(KXMLFunctionType);
+	root.appendChild(tag);
+	text = doc->createTextNode(Function::typeToString(m_type));
+	tag.appendChild(text);
+}
+
+// Read this function's contents from an XML document
+void Function::loadXML(QDomDocument* doc)
+{
+}
+
 
 //
 // Get a pixmap representing the function's type to be used in lists etc.
@@ -438,10 +535,10 @@ QPixmap Function::pixmap()
 // Bus Listener Constructor
 //
 FunctionNS::BusListener::BusListener(t_function_id id)
-  : m_functionID(id)
+	: m_functionID(id)
 {
-  connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	  this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+	connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+		this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 }
 
 //
@@ -449,8 +546,8 @@ FunctionNS::BusListener::BusListener(t_function_id id)
 //
 FunctionNS::BusListener::~BusListener()
 {
-  disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-	     this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+	disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
+		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 }
 
 
@@ -460,7 +557,7 @@ FunctionNS::BusListener::~BusListener()
 void FunctionNS::BusListener::slotBusValueChanged(t_bus_id id,
 						  t_bus_value value)
 {
-  Function* f = _app->doc()->function(m_functionID);
-  assert(f);
-  f->busValueChanged(id, value);
+	Function* f = _app->doc()->function(m_functionID);
+	assert(f);
+	f->busValueChanged(id, value);
 }

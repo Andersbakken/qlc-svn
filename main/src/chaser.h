@@ -32,74 +32,62 @@ class QString;
 class Chaser : public Function
 {
  public:
-  enum RunOrder
-    {
-      Loop = 0,
-      SingleShot = 1,
-      PingPong = 2
-    };
+	Chaser();
+	virtual ~Chaser();
 
-  enum Direction
-    {
-      Forward = 0,
-      Backward = 1
-    };
+	void copyFrom(Chaser* ch, bool append = false);
 
- public:
-  Chaser();
-  virtual ~Chaser();
+	bool setDevice(t_device_id) { return false; }
 
-  void copyFrom(Chaser* ch, bool append = false);
+	void addStep(t_function_id);
+	void removeStep(int index = 0);
 
-  bool setDevice(t_device_id) { return false; }
+	bool raiseStep(unsigned int index);
+	bool lowerStep(unsigned int index);
 
-  void addStep(t_function_id);
-  void removeStep(int index = 0);
+	void setRunOrder(RunOrder ro);
+	RunOrder runOrder() { return m_runOrder; }
 
-  bool raiseStep(unsigned int index);
-  bool lowerStep(unsigned int index);
+	void setDirection(Direction dir);
+	Direction direction() { return m_direction; }
 
-  void setRunOrder(RunOrder ro);
-  RunOrder runOrder() { return m_runOrder; }
+	QValueList <t_function_id> *steps() { return &m_steps; }
 
-  void setDirection(Direction dir);
-  Direction direction() { return m_direction; }
+	void saveToFile(QFile &file);
+	void createContents(QPtrList <QString> &list);
 
-  QValueList <t_function_id> *steps() { return &m_steps; }
+	void saveXML(QDomDocument* doc);
 
-  void saveToFile(QFile &file);
-  void createContents(QPtrList <QString> &list);
+	void busValueChanged(t_bus_id, t_bus_value);
 
-  void busValueChanged(t_bus_id, t_bus_value);
-
-  void arm();
-  void disarm();
-  void cleanup();
-  void stop();
-  void childFinished();
+	void arm();
+	void disarm();
+	void cleanup();
+	void stop();
+	void childFinished();
 
  protected:
-  void init();
-  void run();
+	void init();
+	void run();
 
-  bool startMemberAt(int);
-  void stopMemberAt(int);
-  void hold();
+	bool startMemberAt(int);
+	void stopMemberAt(int);
+	void hold();
 
  protected:
-  QValueList <t_function_id> m_steps;
+	QValueList <t_function_id> m_steps;
 
-  RunOrder m_runOrder;
-  Direction m_direction;
+	RunOrder m_runOrder;
+	Direction m_direction;
 
-  bool m_childRunning;
+	bool m_childRunning;
 
-  t_bus_value m_holdTime;
-  t_bus_value m_holdStart;
-  t_bus_value m_timeCode;
+	t_bus_value m_holdTime;
+	t_bus_value m_holdStart;
+	t_bus_value m_timeCode;
 
-  Direction m_runTimeDirection;
-  int m_runTimePosition;
+	Direction m_runTimeDirection;
+	int m_runTimePosition;
 };
 
 #endif
