@@ -8,4 +8,4 @@ GenericName[fi]=QLC valaisin-editori
 Exec=qlcfixtureeditor
 Icon=qlc-fixtureeditor
 Terminal=false
-Categories=Qt;AudioVideo;Multimedia;
+Categories=Application;Lighting;

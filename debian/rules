@@ -35,7 +35,10 @@ major=`ls lib/unix/.libs/lib*.so.* | \
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --datadir=\$${prefix}/share
+	./configure --host=$(DEB_HOST_GNU_TYPE) \
+		    --build=$(DEB_BUILD_GNU_TYPE) \
+		    --prefix=/usr \
+		    --datadir=\$${prefix}/share
 
 
 build: build-stamp

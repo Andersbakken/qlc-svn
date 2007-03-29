@@ -8,4 +8,4 @@ GenericName[fi]=DMX Valo-ohjain
 Exec=qlc
 Icon=qlc
 Terminal=false
-Categories=Qt;AudioVideo;Multimedia;
+Categories=Application;Lighting;

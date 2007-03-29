@@ -1,3 +1,7 @@
+2007-Mar-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Added preliminary functions for saving workspace data in XML format.
+	* Added configure options for plugin enable/disable.
+
 2006-Nov-30  Heikki Junnila <hjunnila@users.sf.net>
 	* Added a new command line option -p with which the user can switch
 	  directly to operate mode during startup.

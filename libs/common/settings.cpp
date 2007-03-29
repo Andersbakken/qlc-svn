@@ -22,138 +22,152 @@
 #include <qfile.h>
 #include <stdlib.h>
 #include <qdir.h>
+#include <qdom.h>
 
 #include "settings.h"
 #include "configitem.h"
 #include "filehandler.h"
 
+/**
+ * Standard constructor
+ *
+ */
 Settings::Settings()
 {
 }
 
-
+/**
+ * Standard destructor
+ *
+ */
 Settings::~Settings()
 {
-  save();
-
-  //
-  // Delete all items from list
-  while (!m_items.isEmpty())
-    {
-      delete m_items.take(0);
-    }
+	save();
+	
+	//
+	// Delete all items from list
+	while (m_items.isEmpty() == false)
+	{
+		delete m_items.take(0);
+	}
 }
 
-/*
+/**
  * Set a "key = value" to config items
+ *
+ * @param key The name of the key to set
+ * @param value The value to set
  */
-int Settings::set(QString key, QString text)
+int Settings::set(QString key, QString value)
 {
-  QPtrListIterator<ConfigItem> it(m_items);
-
-  // Search for existing key
-  while (it.current() != NULL)
-    {
-      if (*(it.current()->key()) == key)
+	QPtrListIterator<ConfigItem> it(m_items);
+	
+	// Search for existing key
+	while (it.current() != NULL)
 	{
-	  // Replace existing
-	  ASSERT(it.current());
-	  it.current()->setText(text);
-
-	  return m_items.count();
+		if (it.current()->key() == key)
+		{
+			// Replace existing
+			it.current()->setText(value);
+			
+			return m_items.count();
+		}
+		else
+		{
+			++it;
+		}
 	}
-      else
-	{
-	  ++it;
-	}
-    }
-
-  //
-  // If we come here, it means the key was not found so we must create new
-  ConfigItem* item = new ConfigItem;
-  item->setKey(key);
-  item->setText(text);
-  m_items.append(item);
-
-  return m_items.count();
+	
+	//
+	// If we come here, it means the key was not found so we must create new
+	ConfigItem* item = new ConfigItem;
+	item->setKey(key);
+	item->setText(value);
+	m_items.append(item);
+	
+	return m_items.count();
 }
 
-/*
- * Overloaded function, behaves just like the one above, but takes an int
- * as value (text)
+/**
+ * Overloaded member that behaves just like the one above, but takes an int
+ * as the value.
+ *
+ * @param key The name of the key to set
+ * @param value The value to set
  */
 int Settings::set(QString key, int value)
 {
-  QString str;
-  str.setNum(value);
-
-  return set(key, str);
+	QString str;
+	str.setNum(value);
+	
+	return set(key, str);
 }
 
-/*
- * Get a "key = value" from config items
+/**
+ * Get a "key = value" from config items.
+ *
+ * @param key The key to get
+ * @param value The value of the key
  */
 int Settings::get(QString key, QString &text)
 {
-  QPtrListIterator<ConfigItem> it(m_items);
-
-  //
-  // Search for the key and set &text to its value
-  while (it.current() != NULL)
-    {
-      if (*(it.current()->key()) == key)
+	int result = -1;
+	QPtrListIterator<ConfigItem> it(m_items);
+	
+	/* Search for the key and set &text to its value */
+	while (it.current() != NULL)
 	{
-	  text = *(it.current()->text());
-	  return m_items.at();
-	}
-      else
-	{
-	  ++it;
-	}
-    }
+		if (it.current()->key() == key)
+		{
+			text = it.current()->text();
+			result = 1;
+			break;
+		}
 
-  //
-  // If execution comes here, it means that the key was not found
-  text = QString::null;
-  return -1;
+		++it;
+	}
+	
+	return result;
 }
 
-/*
- * Remove a key from config items and delete it
+/**
+ * Remove a key (as well as its value) from config items and delete it
+ *
+ * @param key The key to remove
  */
 int Settings::remove(QString key)
 {
-  QPtrListIterator<ConfigItem> it(m_items);
-  int compare = INT_MAX;
-
-  // Search for existing key
-  while (it.current() != NULL &&
-	 (compare = (QString::compare(*(it.current()->key()), key) != 0)))
-    {
-      ++it;
-    }
-
-  if (compare == 0)
-    {
-      delete m_items.take();
-    }
-  else
-    {
-      return -1;
-    }
-
-  return m_items.count();
+	QPtrListIterator<ConfigItem> it(m_items);
+	int compare = INT_MAX;
+	
+	// Search for existing key
+	while (it.current() != NULL &&
+	       (compare = (QString::compare(it.current()->key(), key) != 0)))
+	{
+		++it;
+	}
+	
+	if (compare == 0)
+	{
+		delete m_items.take();
+	}
+	else
+	{
+		return -1;
+	}
+	
+	return m_items.count();
 }
 
 
-/*
+/**
  * Load settings from file
  */
 void Settings::load()
 {
 	// Search for a file from user's home directory
 	QString path = QString(getenv("HOME")) +
-			QString("/") + QString(KQLCUserDir);
+		QString("/") + QString(KQLCUserDir);
 
 	QString fileName = path + QString("/") + QString(KConfigFile);
 	QPtrList <QString> list;
@@ -183,18 +197,18 @@ void Settings::load()
  */
 void Settings::createContents(QPtrList <QString> &list)
 {
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+	for (QString* s = list.next(); s != NULL; s = list.next())
 	{
-	  s = list.prev();
-	  break;
+		if (*s == QString("Entry"))
+		{
+			s = list.prev();
+			break;
+		}
+		else
+		{
+			set(*s, *(list.next()));
+		}
 	}
-      else
-	{
-	  set(*s, *(list.next()));
-	}
-    }
 }
 
 /*
@@ -202,88 +216,75 @@ void Settings::createContents(QPtrList <QString> &list)
  */
 void Settings::save()
 {
-  QString path = QString(getenv("HOME")) + QString("/") + QString(KQLCUserDir);
-  QDir dir(path);
-
-  if (dir.exists() == false)
-    {
-      dir.mkdir(path);
-    }
-
-  // Save file to user's home directory
-  QString fileName = path + QString("/") + QString(KConfigFile);
-
-  QFile file(fileName);
-  if ( file.open(IO_WriteOnly | IO_Truncate) )
-    {
-      QString buf;
-
-      // Comment header
-      buf = QString("# QLC Config file\n");
-      file.writeBlock(buf, buf.length());
-
-      // Entry name
-      buf = QString("Entry = General\n");
-      file.writeBlock(buf, buf.length());
-
-      QPtrListIterator<ConfigItem> it(m_items);
-
-      // Search for existing key
-      it.toFirst();
-      while (it.current() != NULL)
+	QString path = QString(getenv("HOME")) + QString("/") + 
+		QString(KQLCUserDir);
+	QDir dir(path);
+	
+	if (dir.exists() == false)
 	{
-	  buf = QString(*(it.current()->key())) + QString(" = ") +
-	    QString(*(it.current()->text())) + QString("\n");
-	  file.writeBlock(buf, buf.length());
-
-	  ++it;
+		dir.mkdir(path);
 	}
-    }
-
-  file.close();
+	
+	// Save file to user's home directory
+	QString fileName = path + QString("/") + QString(KConfigFile);
+	
+	QFile file(fileName);
+	if ( file.open(IO_WriteOnly | IO_Truncate) )
+	{
+		QString buf;
+		
+		// Comment header
+		buf = QString("# QLC Config file\n");
+		file.writeBlock(buf, buf.length());
+		
+		// Entry name
+		buf = QString("Entry = General\n");
+		file.writeBlock(buf, buf.length());
+		
+		QPtrListIterator<ConfigItem> it(m_items);
+		
+		// Search for existing key
+		it.toFirst();
+		while (it.current() != NULL)
+		{
+			buf = QString(it.current()->key()) + QString(" = ") +
+				QString(it.current()->text()) + QString("\n");
+			file.writeBlock(buf, buf.length());
+			
+			++it;
+		}
+	}
+	
+	file.close();
 }
-
-
 
 /*
  * Class ConfigItem implementation
  */
 ConfigItem::ConfigItem()
 {
-  m_text = NULL;
-  m_key = NULL;
 }
 
 ConfigItem::~ConfigItem()
 {
 }
 
-void ConfigItem::setKey(const QString &key)
+void ConfigItem::setKey(const QString key)
 {
-  if (m_key != NULL)
-    {
-      delete m_key;
-    }
-
-  m_key = new QString(key);
+	m_key = key;
 }
 
-void ConfigItem::setText(const QString &text)
+void ConfigItem::setText(const QString text)
 {
-  if (m_text != NULL)
-    {
-      delete m_text;
-    }
-
-  m_text = new QString(text);
+	m_text = text;
 }
 
-const QString* ConfigItem::key() const
+const QString ConfigItem::key() const
 {
-  return m_key;
+	return m_key;
 }
 
-const QString* ConfigItem::text() const
+const QString ConfigItem::text() const
 {
-  return m_text;
+	return m_text;
 }

@@ -4,7 +4,8 @@ INCLUDES = @QT_CFLAGS@ \
 	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
 	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
 	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\"
+	-DPLUGINS=\"$(PLUGINS)\" \
+        -DVERSION=\"$(VERSION)\"
 
 noinst_HEADERS = \
 	configitem.h \

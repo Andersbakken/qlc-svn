@@ -24,19 +24,19 @@
 
 class ConfigItem
 {
- public:
-  ConfigItem();
-  ~ConfigItem();
-
-  void setKey(const QString &key);
-  void setText(const QString &text);
-
-  const QString* key() const;
-  const QString* text() const;
-
- private:
-  QString* m_key;
-  QString* m_text;
+public:
+	ConfigItem();
+	~ConfigItem();
+	
+	void setKey(const QString key);
+	void setText(const QString text);
+	
+	const QString key() const;
+	const QString text() const;
+	
+private:
+	QString m_key;
+	QString m_text;
 };
 
 #endif
