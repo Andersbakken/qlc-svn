@@ -1,3 +1,6 @@
+2007-Mar-30  Heikki Junnila <hjunnila@users.sf.net>
+	* Added libs/lla to CVS. Not sure, whether they work.
+
 2007-Mar-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Added preliminary functions for saving workspace data in XML format.
 	* Added configure options for plugin enable/disable.
