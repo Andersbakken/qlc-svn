@@ -28,6 +28,7 @@
 class Event;
 class QFile;
 class QString;
+class QDomDocument;
 
 class Chaser : public Function
 {

@@ -26,6 +26,7 @@
 #include "doc.h"
 #include "functionconsumer.h"
 #include "eventbuffer.h"
+#include "common/filehandler.h"
 
 #include <qapplication.h>
 #include <qstring.h>
@@ -41,10 +42,10 @@ extern App* _app;
 // Standard constructor
 //
 FunctionCollection::FunctionCollection()
-  : Function(Function::Collection),
+	: Function(Function::Collection),
 
-    m_childCount      (     0 ),
-    m_childCountMutex ( false )
+	  m_childCount      (     0 ),
+	  m_childCountMutex ( false )
 {
 }
 
@@ -54,21 +55,21 @@ FunctionCollection::FunctionCollection()
 //
 void FunctionCollection::copyFrom(FunctionCollection* fc, bool append)
 {
-  assert(fc);
+	assert(fc);
 
-  Function::setName(fc->name());
-  Function::setBus(fc->busID());
+	Function::setName(fc->name());
+	Function::setBus(fc->busID());
   
-  if (append == false)
-    {
-      m_steps.clear();
-    }
+	if (append == false)
+	{
+		m_steps.clear();
+	}
   
-  QValueList <t_function_id>::iterator it;
-  for (it = fc->m_steps.begin(); it != fc->m_steps.end(); ++it)
-    {
-      m_steps.append(*it);
-    }
+	QValueList <t_function_id>::iterator it;
+	for (it = fc->m_steps.begin(); it != fc->m_steps.end(); ++it)
+	{
+		m_steps.append(*it);
+	}
 }
 
 
@@ -77,10 +78,10 @@ void FunctionCollection::copyFrom(FunctionCollection* fc, bool append)
 //
 FunctionCollection::~FunctionCollection()
 {
-  stop();
-  while(m_running) sched_yield();
+	stop();
+	while(m_running) pthread_yield();
 
-  m_steps.clear();
+	m_steps.clear();
 }
 
 
@@ -89,40 +90,40 @@ FunctionCollection::~FunctionCollection()
 //
 void FunctionCollection::saveToFile(QFile &file)
 {
-  QString s;
-  QString t;
+	QString s;
+	QString t;
 
-  // Comment line
-  s = QString("# Function entry\n");
-  file.writeBlock((const char*) s, s.length());
+	// Comment line
+	s = QString("# Function entry\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Entry type
-  s = QString("Entry = Function") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Entry type
+	s = QString("Entry = Function") + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Name
-  s = QString("Name = ") + name() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Name
+	s = QString("Name = ") + name() + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Type
-  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Type
+	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // ID
-  s.sprintf("ID = %d\n", id());
-  file.writeBlock((const char*) s, s.length());
+	// ID
+	s.sprintf("ID = %d\n", id());
+	file.writeBlock((const char*) s, s.length());
 
-  // Device
-  s.sprintf("Device = %d\n", m_deviceID);
-  file.writeBlock((const char*) s, s.length());
+	// Device
+	s.sprintf("Device = %d\n", m_deviceID);
+	file.writeBlock((const char*) s, s.length());
 
-  // Steps
-  QValueList <t_function_id>::iterator it;
-  for (it = m_steps.begin(); it != m_steps.end(); ++it)
-    {
-      s.sprintf("Function = %d\n", *it);
-      file.writeBlock((const char*) s, s.length());
-    }
+	// Steps
+	QValueList <t_function_id>::iterator it;
+	for (it = m_steps.begin(); it != m_steps.end(); ++it)
+	{
+		s.sprintf("Function = %d\n", *it);
+		file.writeBlock((const char*) s, s.length());
+	}
 }
 
 
@@ -131,30 +132,70 @@ void FunctionCollection::saveToFile(QFile &file)
 //
 void FunctionCollection::createContents(QPtrList <QString> &list)
 {
-  t_function_id fid = KNoID;
+	t_function_id fid = KNoID;
   
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+	for (QString* s = list.next(); s != NULL; s = list.next())
 	{
-	  s = list.prev();
-	  break;
+		if (*s == QString("Entry"))
+		{
+			s = list.prev();
+			break;
+		}
+		else if (*s == QString("Device"))
+		{
+			list.next();
+		}
+		else if (*s == QString("Function"))
+		{
+			fid = list.next()->toInt();
+			addItem(fid);
+		}
+		else
+		{
+			// Unknown keyword (at this time)
+			list.next();
+		}
 	}
-      else if (*s == QString("Device"))
-	{
-	  list.next();
-	}
-      else if (*s == QString("Function"))
-	{
-	  fid = list.next()->toInt();
-	  addItem(fid);
-	}
-      else
-	{
-	  // Unknown keyword (at this time)
-	  list.next();
-	}
-    }
+}
+
+
+//
+// Save function's contents to an XML document
+//
+void FunctionCollection::saveXML(QDomDocument* doc)
+{
+        QDomElement root;
+        QDomElement tag;
+        QDomText text;
+        QString str;
+        int i = 0;
+
+        assert(doc);
+
+        /* Function tag */
+        root = doc->createElement(KXMLFunctionNode);
+        doc->appendChild(root);
+
+        root.setAttribute(KXMLFunctionID, id());
+        root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
+        root.setAttribute(KXMLFunctionName, name());
+
+	/* Steps */
+        QValueList <t_function_id>::iterator it;
+        for (it = m_steps.begin(); it != m_steps.end(); ++it)
+        {
+                /* Step tag */
+                tag = doc->createElement(KXMLFunctionStep);
+                root.appendChild(tag);
+		
+                /* Step number */
+                tag.setAttribute(KXMLFunctionNumber, i++);
+
+                /* Step Function ID */
+                str.setNum(*it);
+                text = doc->createTextNode(str);
+                tag.appendChild(text);
+        }
 }
 
 
@@ -163,18 +204,18 @@ void FunctionCollection::createContents(QPtrList <QString> &list)
 //
 bool FunctionCollection::addItem(t_function_id id)
 {
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  if (!m_running)
-    {
-      m_steps.append(id);
+	if (!m_running)
+	{
+		m_steps.append(id);
 
-      m_startMutex.unlock();
-      return true;
-    }
+		m_startMutex.unlock();
+		return true;
+	}
 
-  m_startMutex.unlock();
-  return false;
+	m_startMutex.unlock();
+	return false;
 }
 
 
@@ -183,18 +224,18 @@ bool FunctionCollection::addItem(t_function_id id)
 //
 bool FunctionCollection::removeItem(t_function_id id)
 {
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  if (!m_running)
-    {
-      m_steps.remove(id);
+	if (!m_running)
+	{
+		m_steps.remove(id);
       
-      m_startMutex.unlock();
-      return true;
-    }
+		m_startMutex.unlock();
+		return true;
+	}
 
-  m_startMutex.unlock();
-  return false;
+	m_startMutex.unlock();
+	return false;
 }
 
 
@@ -211,8 +252,8 @@ void FunctionCollection::speedChange()
 //
 void FunctionCollection::arm()
 {
-  if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(0, 0);
+	if (m_eventBuffer == NULL)
+		m_eventBuffer = new EventBuffer(0, 0);
 }
 
 
@@ -221,8 +262,8 @@ void FunctionCollection::arm()
 //
 void FunctionCollection::disarm()
 {
-  if (m_eventBuffer) delete m_eventBuffer;
-  m_eventBuffer = NULL;
+	if (m_eventBuffer) delete m_eventBuffer;
+	m_eventBuffer = NULL;
 }
 
 
@@ -231,15 +272,15 @@ void FunctionCollection::disarm()
 //
 void FunctionCollection::stop()
 {
-  QValueList <t_function_id>::iterator it;
-  for (it = m_steps.begin(); it != m_steps.end(); ++it)
-    {
-      Function* f = _app->doc()->function(*it);
-      if (f)
+	QValueList <t_function_id>::iterator it;
+	for (it = m_steps.begin(); it != m_steps.end(); ++it)
 	{
-	  f->stop();
+		Function* f = _app->doc()->function(*it);
+		if (f)
+		{
+			f->stop();
+		}
 	}
-    }
 }
 
 
@@ -248,15 +289,15 @@ void FunctionCollection::stop()
 //
 void FunctionCollection::init()
 {
-  m_childCountMutex.lock();
-  m_childCount = 0;
-  m_childCountMutex.unlock();
+	m_childCountMutex.lock();
+	m_childCount = 0;
+	m_childCountMutex.unlock();
 
-  m_stopped = false;
-  m_removeAfterEmpty = false;
+	m_stopped = false;
+	m_removeAfterEmpty = false;
 
-  // Append this function to running functions list
-  _app->functionConsumer()->cue(this);
+	// Append this function to running functions list
+	_app->functionConsumer()->cue(this);
 }
 
 
@@ -265,35 +306,35 @@ void FunctionCollection::init()
 //
 void FunctionCollection::run()
 {
-  QValueList <t_function_id>::iterator it;
+	QValueList <t_function_id>::iterator it;
 
-  // Calculate starting values
-  init();
+	// Calculate starting values
+	init();
   
-  for (it = m_steps.begin(); it != m_steps.end() && !m_stopped; ++it)
-    {
-      Function* f = _app->doc()->function(*it);
-      if (f && f->engage(this))
+	for (it = m_steps.begin(); it != m_steps.end() && !m_stopped; ++it)
 	{
-	  m_childCountMutex.lock();
-	  m_childCount++;
-	  m_childCountMutex.unlock();
+		Function* f = _app->doc()->function(*it);
+		if (f && f->engage(this))
+		{
+			m_childCountMutex.lock();
+			m_childCount++;
+			m_childCountMutex.unlock();
+		}
+		else
+		{
+			qDebug("Collection unable to start function <id:%d>", *it);
+		}
 	}
-      else
+
+	// Wait for all children to stop
+	//m_childCountMutex.lock();
+	while (m_childCount > 0)
 	{
-	  qDebug("Collection unable to start function <id:%d>", *it);
+		//m_childCountMutex.unlock();
+		pthread_yield();
 	}
-    }
 
-  // Wait for all children to stop
-  //m_childCountMutex.lock();
-  while (m_childCount > 0)
-    {
-      //m_childCountMutex.unlock();
-      sched_yield();
-    }
-
-  m_removeAfterEmpty = true;
+	m_removeAfterEmpty = true;
 }
 
 //
@@ -301,33 +342,33 @@ void FunctionCollection::run()
 //
 void FunctionCollection::cleanup()
 {
-  ASSERT(m_childCount == 0);
+	ASSERT(m_childCount == 0);
 
-  m_stopped = false;
+	m_stopped = false;
 
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
-      m_virtualController = NULL;
-    }
+	if (m_virtualController)
+	{
+		QApplication::postEvent(m_virtualController,
+					new FunctionStopEvent(m_id));
+		m_virtualController = NULL;
+	}
 
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
+	if (m_parentFunction)
+	{
+		m_parentFunction->childFinished();
+		m_parentFunction = NULL;
+	}
 
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
+	m_startMutex.lock();
+	m_running = false;
+	m_startMutex.unlock();
 }
 
 
 void FunctionCollection::childFinished()
 {
-  m_childCountMutex.lock();
-  m_childCount--;
-  m_childCountMutex.unlock();
+	m_childCountMutex.lock();
+	m_childCount--;
+	m_childCountMutex.unlock();
 }
 

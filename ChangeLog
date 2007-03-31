@@ -1,3 +1,6 @@
+2007-Mar-31  Heikki Junnila <hjunnila@users.sf.net>
+	* Added XML stuff to EFX & functioncollection
+
 2007-Mar-30  Heikki Junnila <hjunnila@users.sf.net>
 	* Added libs/lla to CVS. Not sure, whether they work.
 

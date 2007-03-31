@@ -45,6 +45,13 @@ const QString KXMLFunctionNumber    ( "Number" );
 const QString KXMLFunctionDirection ( "Direction" );
 const QString KXMLFunctionRunOrder  ( "RunOrder" );
 
+const QString KXMLBus               ( "Bus" );
+const QString KXMLBusRole           ( "Role" );
+const QString KXMLBusFade           ( "Fade" );
+const QString KXMLBusHold           ( "Hold" );
+
+const QString KXMLFunctionEnabled   ( "Enabled" );
+
 class FileHandler : public QObject
 {
 	Q_OBJECT

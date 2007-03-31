@@ -40,6 +40,7 @@ class QFile;
 class VirtualController;
 class Bus;
 class Function;
+class QDomDocument;
 
 //
 // Weird namespace, wouldn't work without...

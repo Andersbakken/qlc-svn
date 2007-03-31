@@ -36,63 +36,78 @@
 #include "efx.h"
 #include "functionconsumer.h"
 #include "common/settings.h"
+#include "common/filehandler.h"
 
 extern App* _app;
 
 /* Supported EFX algorithms */
-static const char* KCircleAlgorithmName    ( "Circle"    );
-static const char* KEightAlgorithmName     ( "Eight"     );
-static const char* KLineAlgorithmName      ( "Line"      );
-static const char* KDiamondAlgorithmName   ( "Diamond"   );
-static const char* KTriangleAlgorithmName  ( "Triangle"  );
+static const char* KCircleAlgorithmName    ( "Circle" );
+static const char* KEightAlgorithmName     ( "Eight" );
+static const char* KLineAlgorithmName      ( "Line" );
+static const char* KDiamondAlgorithmName   ( "Diamond" );
+static const char* KTriangleAlgorithmName  ( "Triangle" );
 static const char* KLissajousAlgorithmName ( "Lissajous" );
+
+const QString KXMLFunctionEFXAlgorithm     ( "Algorithm" );
+const QString KXMLFunctionEFXWidth         ( "Width" );
+const QString KXMLFunctionEFXHeight        ( "Height" );
+const QString KXMLFunctionEFXRotation      ( "Rotation" );
+const QString KXMLFunctionEFXAxis          ( "Axis" );
+const QString KXMLFunctionEFXOffset        ( "Offset" );
+const QString KXMLFunctionEFXFrequency     ( "Frequency" );
+const QString KXMLFunctionEFXPhase         ( "Phase" );
+const QString KXMLFunctionEFXChannel       ( "Channel" );
+const QString KXMLFunctionEFXX             ( "X" );
+const QString KXMLFunctionEFXY             ( "Y" );
+const QString KXMLFunctionEFXStartScene    ( "StartScene" );
+const QString KXMLFunctionEFXStopScene     ( "StopScene" );
 
 /**
  * Standard constructor
  */
 EFX::EFX() :
-  Function            ( Function::EFX ),
+	Function            ( Function::EFX ),
 
-  pointFunc           ( NULL ),
+	pointFunc           ( NULL ),
 
-  m_width             ( 127 ),
-  m_height            ( 127 ),
-  m_xOffset           ( 127 ),
-  m_yOffset           ( 127 ),
-  m_rotation	      ( 0 ),
+	m_width             ( 127 ),
+	m_height            ( 127 ),
+	m_xOffset           ( 127 ),
+	m_yOffset           ( 127 ),
+	m_rotation	      ( 0 ),
 
-  m_xFrequency        ( 2 ),
-  m_yFrequency        ( 3 ),
-  m_xPhase            ( 1.5707963267 ),
-  m_yPhase            ( 0 ),
+	m_xFrequency        ( 2 ),
+	m_yFrequency        ( 3 ),
+	m_xPhase            ( 1.5707963267 ),
+	m_yPhase            ( 0 ),
 
-  m_xChannel          ( KChannelInvalid ),
-  m_yChannel          ( KChannelInvalid ),
+	m_xChannel          ( KChannelInvalid ),
+	m_yChannel          ( KChannelInvalid ),
 
-  m_runOrder          ( EFX::Loop ),
-  m_direction         ( EFX::Forward ),
+	m_runOrder          ( EFX::Loop ),
+	m_direction         ( EFX::Forward ),
 
-  m_modulationBus     ( KBusIDDefaultHold ),
+	m_modulationBus     ( KBusIDDefaultHold ),
 
-  m_startSceneID      ( KNoID ),
-  m_startSceneEnabled ( false ),
+	m_startSceneID      ( KNoID ),
+	m_startSceneEnabled ( false ),
 
-  m_stopSceneID       ( KNoID ),
-  m_stopSceneEnabled  ( false ),
+	m_stopSceneID       ( KNoID ),
+	m_stopSceneEnabled  ( false ),
 
-  m_previewPointArray ( NULL ),
+	m_previewPointArray ( NULL ),
 
-  m_algorithm         ( KCircleAlgorithmName ),
+	m_algorithm         ( KCircleAlgorithmName ),
 
-  m_stepSize          ( 0 ),
-  m_cycleDuration     ( KFrequency ),
+	m_stepSize          ( 0 ),
+	m_cycleDuration     ( KFrequency ),
 
-  m_channelData       ( NULL ),
+	m_channelData       ( NULL ),
 
-  m_address           ( KChannelInvalid )
+	m_address           ( KChannelInvalid )
 {
-  /* Set Default Fade as the speed bus */
-  setBus(KBusIDDefaultFade);
+	/* Set Default Fade as the speed bus */
+	setBus(KBusIDDefaultFade);
 }
 
 /**
@@ -100,16 +115,16 @@ EFX::EFX() :
  */
 EFX::~EFX()
 {
-  stop();
+	stop();
 
-  m_startMutex.lock();
-  while (m_running)
-    {
-      m_startMutex.unlock();
-      sched_yield();
-      m_startMutex.lock();
-    }
-  m_startMutex.unlock();
+	m_startMutex.lock();
+	while (m_running)
+	{
+		m_startMutex.unlock();
+		sched_yield();
+		m_startMutex.lock();
+	}
+	m_startMutex.unlock();
 }
 
 /**
@@ -122,7 +137,7 @@ EFX::~EFX()
  */
 void EFX::setPreviewPointArray(QPointArray* array)
 {
-  m_previewPointArray = array;
+	m_previewPointArray = array;
 }
 
 /**
@@ -131,95 +146,95 @@ void EFX::setPreviewPointArray(QPointArray* array)
  */
 void EFX::updatePreview()
 {
-  if (m_previewPointArray == NULL)
-    {
-      return;
-    }
+	if (m_previewPointArray == NULL)
+	{
+		return;
+	}
 
-  int stepCount = 128;
-  int step = 0;
-  float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2.0));
+	int stepCount = 128;
+	int step = 0;
+	float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2.0));
 
-  float i = 0;
-  float *x = new float;
-  float *y = new float;
+	float i = 0;
+	float *x = new float;
+	float *y = new float;
 
-  /* Resize the array to contain stepCount points */
-  m_previewPointArray->resize(stepCount);
+	/* Resize the array to contain stepCount points */
+	m_previewPointArray->resize(stepCount);
 
-  if (m_algorithm == KCircleAlgorithmName)
-    {
-      /* Draw a preview of a circle */
-      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	if (m_algorithm == KCircleAlgorithmName)
 	{
-	  circlePoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++,
-					static_cast<int> (*x),
-					static_cast<int> (*y));
+		/* Draw a preview of a circle */
+		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		{
+			circlePoint(this, i, x, y);
+			m_previewPointArray->setPoint(step++,
+						      static_cast<int> (*x),
+						      static_cast<int> (*y));
+		}
 	}
-    }
-  else if (m_algorithm == KEightAlgorithmName)
-    {
-      /* Draw a preview of a eight */
-      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	else if (m_algorithm == KEightAlgorithmName)
 	{
-	  eightPoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++,
-					static_cast<int> (*x),
-					static_cast<int> (*y));
+		/* Draw a preview of a eight */
+		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		{
+			eightPoint(this, i, x, y);
+			m_previewPointArray->setPoint(step++,
+						      static_cast<int> (*x),
+						      static_cast<int> (*y));
+		}
 	}
-    }
-  else if (m_algorithm == KLineAlgorithmName)
-    {
-      /* Draw a preview of a line */
-      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	else if (m_algorithm == KLineAlgorithmName)
 	{
-	  linePoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++,
-					static_cast<int> (*x),
-					static_cast<int> (*y));
+		/* Draw a preview of a line */
+		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		{
+			linePoint(this, i, x, y);
+			m_previewPointArray->setPoint(step++,
+						      static_cast<int> (*x),
+						      static_cast<int> (*y));
+		}
 	}
-    }
-  else if (m_algorithm == KDiamondAlgorithmName)
-    {
-      /* Draw a preview of a diamond */
-      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	else if (m_algorithm == KDiamondAlgorithmName)
 	{
-	  diamondPoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++,
-					static_cast<int> (*x),
-					static_cast<int> (*y));
+		/* Draw a preview of a diamond */
+		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		{
+			diamondPoint(this, i, x, y);
+			m_previewPointArray->setPoint(step++,
+						      static_cast<int> (*x),
+						      static_cast<int> (*y));
+		}
 	}
-    }
-  else if (m_algorithm == KTriangleAlgorithmName)
-    {
-      /* Draw a preview of a triangle */
-      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	else if (m_algorithm == KTriangleAlgorithmName)
 	{
-	  trianglePoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++,
-					static_cast<int> (*x),
-					static_cast<int> (*y));
+		/* Draw a preview of a triangle */
+		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		{
+			trianglePoint(this, i, x, y);
+			m_previewPointArray->setPoint(step++,
+						      static_cast<int> (*x),
+						      static_cast<int> (*y));
+		}
 	}
-    }
-  else if (m_algorithm == KLissajousAlgorithmName)
-    {
-      /* Draw a preview of a lissajous */
-      for (i = 0; i < (M_PI * 2.0); i += stepSize)
+	else if (m_algorithm == KLissajousAlgorithmName)
 	{
-	  lissajousPoint(this, i, x, y);
-	  m_previewPointArray->setPoint(step++,
-					static_cast<int> (*x),
-					static_cast<int> (*y));
+		/* Draw a preview of a lissajous */
+		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		{
+			lissajousPoint(this, i, x, y);
+			m_previewPointArray->setPoint(step++,
+						      static_cast<int> (*x),
+						      static_cast<int> (*y));
+		}
 	}
-    }
-  else
-    {
-      m_previewPointArray->resize(0);
-    }
+	else
+	{
+		m_previewPointArray->resize(0);
+	}
 
-  delete x;
-  delete y;
+	delete x;
+	delete y;
 }
 
 
@@ -232,13 +247,13 @@ void EFX::updatePreview()
  */
 void EFX::algorithmList(QStringList& list)
 {
-  list.clear();
-  list.append(KCircleAlgorithmName);
-  list.append(KEightAlgorithmName);
-  list.append(KLineAlgorithmName);
-  list.append(KDiamondAlgorithmName);
-  /* list.append(KTriangleAlgorithmName); */
-  list.append(KLissajousAlgorithmName);
+	list.clear();
+	list.append(KCircleAlgorithmName);
+	list.append(KEightAlgorithmName);
+	list.append(KLineAlgorithmName);
+	list.append(KDiamondAlgorithmName);
+	/* list.append(KTriangleAlgorithmName); */
+	list.append(KLissajousAlgorithmName);
 }
 
 /**
@@ -248,7 +263,7 @@ void EFX::algorithmList(QStringList& list)
  */
 QString EFX::algorithm()
 {
-  return m_algorithm;
+	return m_algorithm;
 }
 
 /**
@@ -258,22 +273,22 @@ QString EFX::algorithm()
  */
 void EFX::setAlgorithm(QString algorithm)
 {
-  QStringList list;
+	QStringList list;
 
-  EFX::algorithmList(list);
+	EFX::algorithmList(list);
 
-  list = list.grep(algorithm);
-  if (list.isEmpty())
-    {
-      qDebug("Invalid algorithm for EFX: " + algorithm);
-      m_algorithm = KCircleAlgorithmName;
-    }
-  else
-    {
-      m_algorithm = QString(algorithm);
-    }
+	list = list.grep(algorithm);
+	if (list.isEmpty())
+	{
+		qDebug("Invalid algorithm for EFX: " + algorithm);
+		m_algorithm = KCircleAlgorithmName;
+	}
+	else
+	{
+		m_algorithm = QString(algorithm);
+	}
 
-  updatePreview();
+	updatePreview();
 }
 
 /**
@@ -283,8 +298,8 @@ void EFX::setAlgorithm(QString algorithm)
  */
 void EFX::setWidth(int width)
 {
-  m_width = static_cast<double> (width);
-  updatePreview();
+	m_width = static_cast<double> (width);
+	updatePreview();
 }
 
 /**
@@ -294,7 +309,7 @@ void EFX::setWidth(int width)
  */
 int EFX::width()
 {
-  return static_cast<int> (m_width);
+	return static_cast<int> (m_width);
 }
 
 /**
@@ -304,8 +319,8 @@ int EFX::width()
  */
 void EFX::setHeight(int height)
 {
-  m_height = static_cast<double> (height);
-  updatePreview();
+	m_height = static_cast<double> (height);
+	updatePreview();
 }
 
 /**
@@ -315,18 +330,18 @@ void EFX::setHeight(int height)
  */
 int EFX::height()
 {
-  return static_cast<int> (m_height);
+	return static_cast<int> (m_height);
 }
 
-  /**
-   * Set the pattern rotation
-   *
-   * @param rot Pattern rotation (0-359)
-   */
- void EFX::setRotation(int rot)
+/**
+ * Set the pattern rotation
+ *
+ * @param rot Pattern rotation (0-359)
+ */
+void EFX::setRotation(int rot)
 {
-  m_rotation = static_cast<int> (rot);
-  updatePreview();
+	m_rotation = static_cast<int> (rot);
+	updatePreview();
 }
 
 /**
@@ -336,7 +351,7 @@ int EFX::height()
  */
 int EFX::rotation()
 {
-  return static_cast<int> (m_rotation);
+	return static_cast<int> (m_rotation);
 }
 
 
@@ -347,8 +362,8 @@ int EFX::rotation()
  */
 void EFX::setXOffset(int offset)
 {
-  m_xOffset = static_cast<double> (offset);
-  updatePreview();
+	m_xOffset = static_cast<double> (offset);
+	updatePreview();
 }
 
 /**
@@ -358,7 +373,7 @@ void EFX::setXOffset(int offset)
  */
 int EFX::xOffset()
 {
-  return static_cast<int> (m_xOffset);
+	return static_cast<int> (m_xOffset);
 }
 
 /**
@@ -368,8 +383,8 @@ int EFX::xOffset()
  */
 void EFX::setYOffset(int offset)
 {
-  m_yOffset = static_cast<double> (offset);
-  updatePreview();
+	m_yOffset = static_cast<double> (offset);
+	updatePreview();
 }
 
 /**
@@ -379,7 +394,7 @@ void EFX::setYOffset(int offset)
  */
 int EFX::yOffset()
 {
-  return static_cast<int> (m_yOffset);
+	return static_cast<int> (m_yOffset);
 }
 
 /**
@@ -389,8 +404,8 @@ int EFX::yOffset()
  */
 void EFX::setXFrequency(int freq)
 {
-  m_xFrequency = freq;
-  updatePreview();
+	m_xFrequency = freq;
+	updatePreview();
 }
 
 /**
@@ -400,7 +415,7 @@ void EFX::setXFrequency(int freq)
  */
 int EFX::xFrequency()
 {
-  return static_cast<int> (m_xFrequency);
+	return static_cast<int> (m_xFrequency);
 }
 
 /**
@@ -410,8 +425,8 @@ int EFX::xFrequency()
  */
 void EFX::setYFrequency(int freq)
 {
-  m_yFrequency = freq;
-  updatePreview();
+	m_yFrequency = freq;
+	updatePreview();
 }
 
 /**
@@ -421,7 +436,7 @@ void EFX::setYFrequency(int freq)
  */
 int EFX::yFrequency()
 {
-  return static_cast<int> (m_yFrequency);
+	return static_cast<int> (m_yFrequency);
 }
 
 /**
@@ -431,8 +446,8 @@ int EFX::yFrequency()
  */
 void EFX::setXPhase(int phase)
 {
-  m_xPhase = static_cast<float> (phase * M_PI / 180.0);
-  updatePreview();
+	m_xPhase = static_cast<float> (phase * M_PI / 180.0);
+	updatePreview();
 }
 
 /**
@@ -442,7 +457,7 @@ void EFX::setXPhase(int phase)
  */
 int EFX::xPhase()
 {
-  return static_cast<int> (m_xPhase * 180.0 / M_PI);
+	return static_cast<int> (m_xPhase * 180.0 / M_PI);
 }
 
 /**
@@ -452,8 +467,8 @@ int EFX::xPhase()
  */
 void EFX::setYPhase(int phase)
 {
-  m_yPhase = static_cast<float> (phase * M_PI) / 180.0;
-  updatePreview();
+	m_yPhase = static_cast<float> (phase * M_PI) / 180.0;
+	updatePreview();
 }
 
 /**
@@ -463,7 +478,7 @@ void EFX::setYPhase(int phase)
  */
 int EFX::yPhase()
 {
-  return static_cast<int> (m_yPhase * 180.0 / M_PI);
+	return static_cast<int> (m_yPhase * 180.0 / M_PI);
 }
 
 /**
@@ -471,14 +486,14 @@ int EFX::yPhase()
  */
 bool EFX::isFrequencyEnabled()
 {
-  if (m_algorithm == KLissajousAlgorithmName)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+	if (m_algorithm == KLissajousAlgorithmName)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /**
@@ -486,14 +501,14 @@ bool EFX::isFrequencyEnabled()
  */
 bool EFX::isPhaseEnabled()
 {
-  if (m_algorithm == KLissajousAlgorithmName)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+	if (m_algorithm == KLissajousAlgorithmName)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /**
@@ -503,19 +518,19 @@ bool EFX::isPhaseEnabled()
  */
 void EFX::setXChannel(t_channel channel)
 {
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
+	Device* device = _app->doc()->device(m_deviceID);
+	assert(device);
 
-  if (channel < (t_channel) device->deviceClass()->channels()->count())
-    {
-      m_xChannel = channel;
-      updatePreview();
-    }
-  else
-    {
-      qDebug("Invalid channel number!");
-      assert(false);
-    }
+	if (channel < (t_channel) device->deviceClass()->channels()->count())
+	{
+		m_xChannel = channel;
+		updatePreview();
+	}
+	else
+	{
+		qDebug("Invalid channel number!");
+		assert(false);
+	}
 }
 
 /**
@@ -525,19 +540,19 @@ void EFX::setXChannel(t_channel channel)
  */
 void EFX::setYChannel(t_channel channel)
 {
-  Device* device = _app->doc()->device(m_deviceID);
-  assert(device);
+	Device* device = _app->doc()->device(m_deviceID);
+	assert(device);
 
-  if (channel < (t_channel) device->deviceClass()->channels()->count())
-    {
-      m_yChannel = channel;
-      updatePreview();
-    }
-  else
-    {
-      qDebug("Invalid channel number!");
-      assert(false);
-    }
+	if (channel < (t_channel) device->deviceClass()->channels()->count())
+	{
+		m_yChannel = channel;
+		updatePreview();
+	}
+	else
+	{
+		qDebug("Invalid channel number!");
+		assert(false);
+	}
 }
 
 /**
@@ -546,7 +561,7 @@ void EFX::setYChannel(t_channel channel)
  */
 t_channel EFX::xChannel()
 {
-  return m_xChannel;
+	return m_xChannel;
 }
 
 /**
@@ -555,7 +570,7 @@ t_channel EFX::xChannel()
  */
 t_channel EFX::yChannel()
 {
-  return m_yChannel;
+	return m_yChannel;
 }
 
 /**
@@ -565,7 +580,7 @@ t_channel EFX::yChannel()
  */
 void EFX::setRunOrder(EFX::RunOrder runOrder)
 {
-  m_runOrder = runOrder;
+	m_runOrder = runOrder;
 }
 
 /**
@@ -574,7 +589,7 @@ void EFX::setRunOrder(EFX::RunOrder runOrder)
  */
 EFX::RunOrder EFX::runOrder()
 {
-  return m_runOrder;
+	return m_runOrder;
 }
 
 /**
@@ -584,7 +599,7 @@ EFX::RunOrder EFX::runOrder()
  */
 void EFX::setDirection(EFX::Direction dir)
 {
-  m_direction = dir;
+	m_direction = dir;
 }
 
 /**
@@ -593,7 +608,7 @@ void EFX::setDirection(EFX::Direction dir)
  */
 EFX::Direction EFX::direction()
 {
-  return m_direction;
+	return m_direction;
 }
 
 /**
@@ -602,10 +617,10 @@ EFX::Direction EFX::direction()
  */
 void EFX::setModulationBus(t_bus_id bus)
 {
-  if (bus > KBusIDMin && bus < KBusCount)
-    {
-      m_modulationBus = bus;
-    }
+	if (bus > KBusIDMin && bus < KBusCount)
+	{
+		m_modulationBus = bus;
+	}
 }
 
 /**
@@ -614,16 +629,16 @@ void EFX::setModulationBus(t_bus_id bus)
  */
 t_bus_id EFX::modulationBus()
 {
-  return m_modulationBus;
+	return m_modulationBus;
 }
 
 
 void EFX::setStartScene(t_function_id scene)
 {
-  if (scene >= KNoID && scene <= KFunctionArraySize)
-    {
-      m_startSceneID = scene;
-    }
+	if (scene >= KNoID && scene <= KFunctionArraySize)
+	{
+		m_startSceneID = scene;
+	}
 }
 
 /**
@@ -632,7 +647,7 @@ void EFX::setStartScene(t_function_id scene)
  */
 t_function_id EFX::startScene()
 {
-  return m_startSceneID;
+	return m_startSceneID;
 }
 
 /**
@@ -641,7 +656,7 @@ t_function_id EFX::startScene()
  */
 void EFX::setStartSceneEnabled(bool set)
 {
-  m_startSceneEnabled = set;
+	m_startSceneEnabled = set;
 }
 
 /**
@@ -650,15 +665,15 @@ void EFX::setStartSceneEnabled(bool set)
  */
 bool EFX::startSceneEnabled()
 {
-  return m_startSceneEnabled;
+	return m_startSceneEnabled;
 }
 
 void EFX::setStopScene(t_function_id scene)
 {
-  if (scene >= KNoID && scene <= KFunctionArraySize)
-    {
-      m_stopSceneID = scene;
-    }
+	if (scene >= KNoID && scene <= KFunctionArraySize)
+	{
+		m_stopSceneID = scene;
+	}
 }
 
 /**
@@ -667,7 +682,7 @@ void EFX::setStopScene(t_function_id scene)
  */
 t_function_id EFX::stopScene()
 {
-  return m_stopSceneID;
+	return m_stopSceneID;
 }
 
 /**
@@ -676,7 +691,7 @@ t_function_id EFX::stopScene()
  */
 void EFX::setStopSceneEnabled(bool set)
 {
-  m_stopSceneEnabled = set;
+	m_stopSceneEnabled = set;
 }
 
 /**
@@ -685,7 +700,7 @@ void EFX::setStopSceneEnabled(bool set)
  */
 bool EFX::stopSceneEnabled()
 {
-  return m_stopSceneEnabled;
+	return m_stopSceneEnabled;
 }
 
 /**
@@ -749,145 +764,145 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
  */
 void EFX::saveToFile(QFile &file)
 {
-  QString s;
-  QString t;
+	QString s;
+	QString t;
 
-  // Comment line
-  s = QString("# Function entry\n");
-  file.writeBlock((const char*) s, s.length());
+	// Comment line
+	s = QString("# Function entry\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Entry type
-  s = QString("Entry = Function") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Entry type
+	s = QString("Entry = Function") + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Name
-  s = QString("Name = ") + name() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Name
+	s = QString("Name = ") + name() + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Type
-  s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Type
+	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // ID
-  t.setNum(m_id);
-  s = QString("ID = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// ID
+	t.setNum(m_id);
+	s = QString("ID = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Bus ID
-  t.setNum(m_busID);
-  s = QString("Bus = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Bus ID
+	t.setNum(m_busID);
+	s = QString("Bus = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Device ID
-  t.setNum(m_deviceID);
-  s = QString("Device = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Device ID
+	t.setNum(m_deviceID);
+	s = QString("Device = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Algorithm
-  s = QString("Algorithm = ") + algorithm() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Algorithm
+	s = QString("Algorithm = ") + algorithm() + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Width
-  t.setNum(width());
-  s = QString("Width = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Width
+	t.setNum(width());
+	s = QString("Width = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Height
-  t.setNum(height());
-  s = QString("Height = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Height
+	t.setNum(height());
+	s = QString("Height = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Rotation
-  t.setNum(rotation());
-  s = QString("Rotation = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Rotation
+	t.setNum(rotation());
+	s = QString("Rotation = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // X Offset
-  t.setNum(xOffset());
-  s = QString("XOffset = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// X Offset
+	t.setNum(xOffset());
+	s = QString("XOffset = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Y Offset
-  t.setNum(yOffset());
-  s = QString("YOffset = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Y Offset
+	t.setNum(yOffset());
+	s = QString("YOffset = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // X Frequency
-  t.setNum(xFrequency());
-  s = QString("XFrequency = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// X Frequency
+	t.setNum(xFrequency());
+	s = QString("XFrequency = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Y Frequency
-  t.setNum(yFrequency());
-  s = QString("YFrequency = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Y Frequency
+	t.setNum(yFrequency());
+	s = QString("YFrequency = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // X Phase
-  t.setNum(xPhase());
-  s = QString("XPhase = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// X Phase
+	t.setNum(xPhase());
+	s = QString("XPhase = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Y Phase
-  t.setNum(yPhase());
-  s = QString("YPhase = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Y Phase
+	t.setNum(yPhase());
+	s = QString("YPhase = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // X Channel
-  t.setNum(xChannel());
-  s = QString("XChannel = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// X Channel
+	t.setNum(xChannel());
+	s = QString("XChannel = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Y Channel
-  t.setNum(yChannel());
-  s = QString("YChannel = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Y Channel
+	t.setNum(yChannel());
+	s = QString("YChannel = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Run Order
-  t.setNum((int) runOrder());
-  s = QString("RunOrder = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Run Order
+	t.setNum((int) runOrder());
+	s = QString("RunOrder = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Direction
-  t.setNum((int) direction());
-  s = QString("Direction = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Direction
+	t.setNum((int) direction());
+	s = QString("Direction = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // Modulation Bus
-  t.setNum((int) modulationBus());
-  s = QString("ModulationBus = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Modulation Bus
+	t.setNum((int) modulationBus());
+	s = QString("ModulationBus = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // StartScene
-  t.setNum(startScene());
-  s = QString("StartScene = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// StartScene
+	t.setNum(startScene());
+	s = QString("StartScene = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // StartScene Enabled
-  if (startSceneEnabled())
-    {
-      s = QString("StartSceneEnabled = ") + Settings::trueValue() + QString("\n");
-    }
-  else
-    {
-      s = QString("StartSceneEnabled = ") + Settings::falseValue() + QString("\n");
-    }
-  file.writeBlock((const char*) s, s.length());
+	// StartScene Enabled
+	if (startSceneEnabled())
+	{
+		s = QString("StartSceneEnabled = ") + Settings::trueValue() + QString("\n");
+	}
+	else
+	{
+		s = QString("StartSceneEnabled = ") + Settings::falseValue() + QString("\n");
+	}
+	file.writeBlock((const char*) s, s.length());
 
-  // Stop Scene
-  t.setNum(stopScene());
-  s = QString("StopScene = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
+	// Stop Scene
+	t.setNum(stopScene());
+	s = QString("StopScene = ") + t + QString("\n");
+	file.writeBlock((const char*) s, s.length());
 
-  // StopScene Enabled
-  if (stopSceneEnabled())
-    {
-      s = QString("StopSceneEnabled = ") + Settings::trueValue() + QString("\n");
-    }
-  else
-    {
-      s = QString("StopSceneEnabled = ") + Settings::falseValue() + QString("\n");
-    }
-  file.writeBlock((const char*) s, s.length());
+	// StopScene Enabled
+	if (stopSceneEnabled())
+	{
+		s = QString("StopSceneEnabled = ") + Settings::trueValue() + QString("\n");
+	}
+	else
+	{
+		s = QString("StopSceneEnabled = ") + Settings::falseValue() + QString("\n");
+	}
+	file.writeBlock((const char*) s, s.length());
 }
 
 /**
@@ -898,114 +913,280 @@ void EFX::saveToFile(QFile &file)
  */
 void EFX::createContents(QPtrList <QString> &list)
 {
-  QString t;
+	QString t;
 
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-        {
-          s = list.prev();
-          break;
-        }
-      else if (*s == QString("Algorithm"))
+	for (QString* s = list.next(); s != NULL; s = list.next())
 	{
-	  setAlgorithm(*(list.next()));
+		if (*s == QString("Entry"))
+		{
+			s = list.prev();
+			break;
+		}
+		else if (*s == QString("Algorithm"))
+		{
+			setAlgorithm(*(list.next()));
+		}
+		else if (*s == QString("Width"))
+		{
+			setWidth(list.next()->toInt());
+		}
+		else if (*s == QString("Height"))
+		{
+			setHeight(list.next()->toInt());
+		}
+		else if (*s == QString("Rotation"))
+		{
+			setRotation(list.next()->toInt());
+		}
+		else if (*s == QString("XOffset"))
+		{
+			setXOffset(list.next()->toInt());
+		}
+		else if (*s == QString("YOffset"))
+		{
+			setYOffset(list.next()->toInt());
+		}
+		else if (*s == QString("XFrequency"))
+		{
+			setXFrequency(list.next()->toInt());
+		}
+		else if (*s == QString("YFrequency"))
+		{
+			setYFrequency(list.next()->toInt());
+		}
+		else if (*s == QString("XPhase"))
+		{
+			setXPhase(list.next()->toInt());
+		}
+		else if (*s == QString("YPhase"))
+		{
+			setYPhase(list.next()->toInt());
+		}
+		else if (*s == QString("XChannel"))
+		{
+			setXChannel(list.next()->toInt());
+		}
+		else if (*s == QString("YChannel"))
+		{
+			setYChannel(list.next()->toInt());
+		}
+		else if (*s == QString("RunOrder"))
+		{
+			setRunOrder((RunOrder) list.next()->toInt());
+		}
+		else if (*s == QString("Direction"))
+		{
+			setDirection((Direction) list.next()->toInt());
+		}
+		else if (*s == QString("ModulationBus"))
+		{
+			setModulationBus((t_bus_id) list.next()->toInt());
+		}
+		else if (*s == QString("StartScene"))
+		{
+			setStartScene(list.next()->toInt());
+			setStartSceneEnabled(true); // Backwards compatibility
+		}
+		else if (*s == QString("StartSceneEnabled"))
+		{
+			if (*(list.next()) == Settings::trueValue())
+			{
+				setStartSceneEnabled(true);
+			}
+			else
+			{
+				setStartSceneEnabled(false);
+			}
+		}
+		else if (*s == QString("StopScene"))
+		{
+			setStopScene(list.next()->toInt());
+			setStopSceneEnabled(true); // Backwards compatibility
+		}
+		else if (*s == QString("StopSceneEnabled"))
+		{
+			if (*(list.next()) == Settings::trueValue())
+			{
+				setStopSceneEnabled(true);
+			}
+			else
+			{
+				setStopSceneEnabled(false);
+			}
+		}
+		else
+		{
+			// Unknown keyword, skip
+			list.next();
+		}
 	}
-      else if (*s == QString("Width"))
-	{
-	  setWidth(list.next()->toInt());
-	}
-      else if (*s == QString("Height"))
-	{
-	  setHeight(list.next()->toInt());
-	}
-      else if (*s == QString("Rotation"))
-	{
-	  setRotation(list.next()->toInt());
-	}
-      else if (*s == QString("XOffset"))
-	{
-	  setXOffset(list.next()->toInt());
-	}
-      else if (*s == QString("YOffset"))
-	{
-	  setYOffset(list.next()->toInt());
-	}
-      else if (*s == QString("XFrequency"))
-	{
-	  setXFrequency(list.next()->toInt());
-	}
-      else if (*s == QString("YFrequency"))
-	{
-	  setYFrequency(list.next()->toInt());
-	}
-      else if (*s == QString("XPhase"))
-	{
-	  setXPhase(list.next()->toInt());
-	}
-      else if (*s == QString("YPhase"))
-	{
-	  setYPhase(list.next()->toInt());
-	}
-      else if (*s == QString("XChannel"))
-	{
-	  setXChannel(list.next()->toInt());
-	}
-      else if (*s == QString("YChannel"))
-	{
-	  setYChannel(list.next()->toInt());
-	}
-      else if (*s == QString("RunOrder"))
-	{
-	  setRunOrder((RunOrder) list.next()->toInt());
-	}
-      else if (*s == QString("Direction"))
-	{
-	  setDirection((Direction) list.next()->toInt());
-	}
-      else if (*s == QString("ModulationBus"))
-	{
-	  setModulationBus((t_bus_id) list.next()->toInt());
-	}
-      else if (*s == QString("StartScene"))
-	{
-	  setStartScene(list.next()->toInt());
-	  setStartSceneEnabled(true); // Backwards compatibility
-	}
-      else if (*s == QString("StartSceneEnabled"))
-	{
-	  if (*(list.next()) == Settings::trueValue())
-	    {
-	      setStartSceneEnabled(true);
-	    }
-	  else
-	    {
-	      setStartSceneEnabled(false);
-	    }
-	}
-      else if (*s == QString("StopScene"))
-	{
-	  setStopScene(list.next()->toInt());
-	  setStopSceneEnabled(true); // Backwards compatibility
-	}
-      else if (*s == QString("StopSceneEnabled"))
-	{
-	  if (*(list.next()) == Settings::trueValue())
-	    {
-	      setStopSceneEnabled(true);
-	    }
-	  else
-	    {
-	      setStopSceneEnabled(false);
-	    }
-	}
-      else
-        {
-          // Unknown keyword, skip
-          list.next();
-        }
-    }
 }
+
+/**
+ * Save the function's contents to an XML document
+ *
+ * @param doc The QDomDocument to save to
+ */
+void EFX::saveXML(QDomDocument* doc)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomElement subtag;
+	QDomText text;
+	QString str;
+	int i = 0;
+
+	assert(doc);
+
+	/* Function tag */
+	root = doc->createElement(KXMLFunctionNode);
+	doc->appendChild(root);
+
+	root.setAttribute(KXMLFunctionID, id());
+	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLFunctionName, name());
+	root.setAttribute(KXMLFunctionDevice, device());
+
+	/* Speed bus */
+	tag = doc->createElement(KXMLBus);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLBusRole, KXMLBusFade);
+	str.setNum(busID());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Direction */
+	tag = doc->createElement(KXMLFunctionDirection);
+	root.appendChild(tag);
+	text = doc->createTextNode(Function::directionToString(m_direction));
+	tag.appendChild(text);
+
+	/* Run order */
+	tag = doc->createElement(KXMLFunctionRunOrder);
+	root.appendChild(tag);
+	text = doc->createTextNode(Function::runOrderToString(m_runOrder));
+	tag.appendChild(text);
+
+	/* Algorithm */
+	tag = doc->createElement(KXMLFunctionEFXAlgorithm);
+	root.appendChild(tag);
+	text = doc->createTextNode(algorithm());
+	tag.appendChild(text);
+
+	/* Width */
+	tag = doc->createElement(KXMLFunctionEFXWidth);
+	root.appendChild(tag);
+	str.setNum(width());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Height */
+	tag = doc->createElement(KXMLFunctionEFXHeight);
+	root.appendChild(tag);
+	str.setNum(height());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Rotation */
+	tag = doc->createElement(KXMLFunctionEFXRotation);
+	root.appendChild(tag);
+	str.setNum(rotation());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Start function */
+	tag = doc->createElement(KXMLFunctionEFXStartScene);
+	root.appendChild(tag);
+	str.setNum(startScene());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+	if (startSceneEnabled() == TRUE)
+		tag.setAttribute(KXMLFunctionEnabled, Settings::trueValue());
+	else
+		tag.setAttribute(KXMLFunctionEnabled, Settings::falseValue());
+
+	/* Stop function */
+	tag = doc->createElement(KXMLFunctionEFXStopScene);
+	root.appendChild(tag);
+	str.setNum(stopScene());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+	if (stopSceneEnabled() == TRUE)
+		tag.setAttribute(KXMLFunctionEnabled, Settings::trueValue());
+	else
+		tag.setAttribute(KXMLFunctionEnabled, Settings::falseValue());
+
+	/********************************************
+	 * X-Axis 
+	 ********************************************/
+	tag = doc->createElement(KXMLFunctionEFXAxis);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLFunctionName, KXMLFunctionEFXX);
+
+	/* Offset */
+	subtag = doc->createElement(KXMLFunctionEFXOffset);
+	tag.appendChild(subtag);
+	str.setNum(xOffset());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+        /* Frequency */
+	subtag = doc->createElement(KXMLFunctionEFXFrequency);
+	tag.appendChild(subtag);
+	str.setNum(xFrequency());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+        /* Phase */
+	subtag = doc->createElement(KXMLFunctionEFXPhase);
+	tag.appendChild(subtag);
+	str.setNum(xPhase());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+        /* Channel */
+	subtag = doc->createElement(KXMLFunctionEFXChannel);
+	tag.appendChild(subtag);
+	str.setNum(xChannel());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+	/********************************************
+	 * Y-Axis 
+	 ********************************************/
+	tag = doc->createElement(KXMLFunctionEFXAxis);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLFunctionName, KXMLFunctionEFXY);
+
+	/* Offset */
+	subtag = doc->createElement(KXMLFunctionEFXOffset);
+	tag.appendChild(subtag);
+	str.setNum(yOffset());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+	/* Frequency */
+	subtag = doc->createElement(KXMLFunctionEFXFrequency);
+	tag.appendChild(subtag);
+	str.setNum(yFrequency());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+        /* Phase */
+	subtag = doc->createElement(KXMLFunctionEFXPhase);
+	tag.appendChild(subtag);
+	str.setNum(yPhase());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+
+        /* Channel */
+	subtag = doc->createElement(KXMLFunctionEFXChannel);
+	tag.appendChild(subtag);
+	str.setNum(yChannel());
+	text = doc->createTextNode(str);
+	subtag.appendChild(text);
+}
+
 
 /**
  * This is called by buses for each function when the
@@ -1016,21 +1197,21 @@ void EFX::createContents(QPtrList <QString> &list)
  */
 void EFX::busValueChanged(t_bus_id id, t_bus_value value)
 {
-  if (id != m_busID)
-    {
-      /* Not our bus */
-      return;
-    }
+	if (id != m_busID)
+	{
+		/* Not our bus */
+		return;
+	}
 
-  m_startMutex.lock();
+	m_startMutex.lock();
 
-  /* Basically number of steps required to complete a full cycle */
-  m_cycleDuration = static_cast<double> (value);
+	/* Basically number of steps required to complete a full cycle */
+	m_cycleDuration = static_cast<double> (value);
 
-  /* Size of one step */
-  m_stepSize = (double)(1) / ((double)(m_cycleDuration) / (M_PI * 2));
+	/* Size of one step */
+	m_stepSize = (double)(1) / ((double)(m_cycleDuration) / (M_PI * 2));
 
-  m_startMutex.unlock();
+	m_startMutex.unlock();
 }
 
 /**
@@ -1040,63 +1221,63 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
  */
 void EFX::arm()
 {
-  /* Allocate space for channel data set to eventbuffer.
-   * There are only two channels to set.
-   */
-  if (m_channelData == NULL)
-    m_channelData = new unsigned int[2];
+	/* Allocate space for channel data set to eventbuffer.
+	 * There are only two channels to set.
+	 */
+	if (m_channelData == NULL)
+		m_channelData = new unsigned int[2];
 
-  /* Allocate space for the event buffer.
-   * There are only two channels to set.
-   */
-  if (m_eventBuffer == NULL)
-    m_eventBuffer = new EventBuffer(2, KFrequency >> 1);
+	/* Allocate space for the event buffer.
+	 * There are only two channels to set.
+	 */
+	if (m_eventBuffer == NULL)
+		m_eventBuffer = new EventBuffer(2, KFrequency >> 1);
 
-  /* Set the run time address for channel data */
-  if (_app->doc()->device(m_deviceID))
-    {
-      m_address = _app->doc()->device(m_deviceID)->universeAddress();
-    }
-  else
-    {
-      qDebug("No device for EFX: " + Function::name());
-    }
+	/* Set the run time address for channel data */
+	if (_app->doc()->device(m_deviceID))
+	{
+		m_address = _app->doc()->device(m_deviceID)->universeAddress();
+	}
+	else
+	{
+		qDebug("No device for EFX: " + Function::name());
+	}
 
-  m_stopped = false;
+	m_stopped = false;
 
-  /* Choose a point calculation function depending on the algorithm */
-  if (m_algorithm == KCircleAlgorithmName)
-    {
-      pointFunc = circlePoint;
-    }
-  else if (m_algorithm == KEightAlgorithmName)
-    {
-      pointFunc = eightPoint;
-    }
-  else if (m_algorithm == KLineAlgorithmName)
-    {
-      pointFunc = linePoint;
-    }
-  else if (m_algorithm == KTriangleAlgorithmName)
-    {
-      pointFunc = trianglePoint;
-    }
-  else if (m_algorithm == KDiamondAlgorithmName)
-    {
-      pointFunc = diamondPoint;
-    }
-  else if (m_algorithm == KLissajousAlgorithmName)
-    {
-      pointFunc = lissajousPoint;
-    }
-  else
-    {
-      /* There's something wrong, don't run this function */
-      pointFunc = NULL;
-      m_stopped = true;
+	/* Choose a point calculation function depending on the algorithm */
+	if (m_algorithm == KCircleAlgorithmName)
+	{
+		pointFunc = circlePoint;
+	}
+	else if (m_algorithm == KEightAlgorithmName)
+	{
+		pointFunc = eightPoint;
+	}
+	else if (m_algorithm == KLineAlgorithmName)
+	{
+		pointFunc = linePoint;
+	}
+	else if (m_algorithm == KTriangleAlgorithmName)
+	{
+		pointFunc = trianglePoint;
+	}
+	else if (m_algorithm == KDiamondAlgorithmName)
+	{
+		pointFunc = diamondPoint;
+	}
+	else if (m_algorithm == KLissajousAlgorithmName)
+	{
+		pointFunc = lissajousPoint;
+	}
+	else
+	{
+		/* There's something wrong, don't run this function */
+		pointFunc = NULL;
+		m_stopped = true;
 
-      qDebug("Unknown algorithm used in EFX: " + m_name);
-    }
+		qDebug("Unknown algorithm used in EFX: " + m_name);
+	}
 }
 
 /**
@@ -1105,15 +1286,15 @@ void EFX::arm()
  */
 void EFX::disarm()
 {
-  if (m_channelData) delete [] m_channelData;
-  m_channelData = NULL;
+	if (m_channelData) delete [] m_channelData;
+	m_channelData = NULL;
 
-  if (m_eventBuffer) delete m_eventBuffer;
-  m_eventBuffer = NULL;
+	if (m_eventBuffer) delete m_eventBuffer;
+	m_eventBuffer = NULL;
 
-  m_address = KChannelInvalid;
+	m_address = KChannelInvalid;
 
-  pointFunc = NULL;
+	pointFunc = NULL;
 }
 
 /**
@@ -1123,24 +1304,24 @@ void EFX::disarm()
  */
 void EFX::cleanup()
 {
-  m_stopped = false;
+	m_stopped = false;
 
-  if (m_virtualController)
-    {
-      QApplication::postEvent(m_virtualController,
-			      new FunctionStopEvent(m_id));
-      m_virtualController = NULL;
-    }
+	if (m_virtualController)
+	{
+		QApplication::postEvent(m_virtualController,
+					new FunctionStopEvent(m_id));
+		m_virtualController = NULL;
+	}
 
-  if (m_parentFunction)
-    {
-      m_parentFunction->childFinished();
-      m_parentFunction = NULL;
-    }
+	if (m_parentFunction)
+	{
+		m_parentFunction->childFinished();
+		m_parentFunction = NULL;
+	}
 
-  m_startMutex.lock();
-  m_running = false;
-  m_startMutex.unlock();
+	m_startMutex.lock();
+	m_running = false;
+	m_startMutex.unlock();
 }
 
 /**
@@ -1148,16 +1329,16 @@ void EFX::cleanup()
  */
 void EFX::init()
 {
-  t_bus_value speed;
+	t_bus_value speed;
 
-  m_removeAfterEmpty = false;
+	m_removeAfterEmpty = false;
 
-  // Get speed
-  Bus::value(m_busID, speed);
-  busValueChanged(m_busID, speed);
+	// Get speed
+	Bus::value(m_busID, speed);
+	busValueChanged(m_busID, speed);
 
-  // Append this function to running functions' list
-  _app->functionConsumer()->cue(this);
+	// Append this function to running functions' list
+	_app->functionConsumer()->cue(this);
 }
 
 /**
@@ -1166,67 +1347,67 @@ void EFX::init()
  */
 void EFX::run()
 {
-  float i = 0;
-  float x = 0;
-  float y = 0;
-  Direction dir = direction();
+	float i = 0;
+	float x = 0;
+	float y = 0;
+	Direction dir = direction();
 
-  // Initialize this function for running
-  init();
+	// Initialize this function for running
+	init();
 
-  if (!m_stopped)
-    {
-      if (startScene() != KNoID && startSceneEnabled())
-        {
-	  _app->doc()->function(startScene())->engage(this);
-	}
-    }
-
-  while (!m_stopped)
-    {
-      if (dir == Forward)
+	if (!m_stopped)
 	{
-	  for (i = 0; i < (M_PI * 2.0) && !m_stopped; i += m_stepSize)
-	    {
-	      /* Calculate the next point */
-	      pointFunc(this, i, &x, &y);
+		if (startScene() != KNoID && startSceneEnabled())
+		{
+			_app->doc()->function(startScene())->engage(this);
+		}
+	}
+
+	while (!m_stopped)
+	{
+		if (dir == Forward)
+		{
+			for (i = 0; i < (M_PI * 2.0) && !m_stopped; i += m_stepSize)
+			{
+				/* Calculate the next point */
+				pointFunc(this, i, &x, &y);
 	      
-	      /* Write the point to event buffer */
-	      setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
-	    }
-	}
-      else
-	{
-	  for (i = (M_PI * 2.0); i > 0 && !m_stopped; i -= m_stepSize)
-	    {
-	      /* Calculate the next point */
-	      pointFunc(this, i, &x, &y);
+				/* Write the point to event buffer */
+				setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
+			}
+		}
+		else
+		{
+			for (i = (M_PI * 2.0); i > 0 && !m_stopped; i -= m_stepSize)
+			{
+				/* Calculate the next point */
+				pointFunc(this, i, &x, &y);
 	      
-	      /* Write the point to event buffer */
-	      setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
-	    }
+				/* Write the point to event buffer */
+				setPoint(static_cast<t_value> (x), static_cast<t_value> (y));
+			}
+		}
+
+		if (runOrder() == PingPong)
+		{
+			if (dir == Forward)
+				dir = Backward;
+			else
+				dir = Forward;
+		}
+		else if (runOrder() == SingleShot)
+		{
+			m_stopped = true;
+		}
 	}
 
-      if (runOrder() == PingPong)
+	if (stopScene() != KNoID && stopSceneEnabled())
 	{
-	  if (dir == Forward)
-	    dir = Backward;
-	  else
-	    dir = Forward;
+		_app->doc()->function(stopScene())->engage(this);
 	}
-      else if (runOrder() == SingleShot)
-	{
-	  m_stopped = true;
-	}
-    }
 
-  if (stopScene() != KNoID && stopSceneEnabled())
-    {
-      _app->doc()->function(stopScene())->engage(this);
-    }
-
-  /* Finished */
-  m_removeAfterEmpty = true;
+	/* Finished */
+	m_removeAfterEmpty = true;
 }
 
 /**
@@ -1242,9 +1423,9 @@ void EFX::run()
  */
 void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = cos(iterator + M_PI_2);
-  *y = cos(iterator);
-  efx->rotateAndScale(efx, x, y, efx->m_rotation);
+	*x = cos(iterator + M_PI_2);
+	*y = cos(iterator);
+	efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1260,9 +1441,9 @@ void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = cos((iterator * 2) + M_PI_2);
-  *y = cos(iterator);
-  efx->rotateAndScale(efx, x, y, efx->m_rotation);
+	*x = cos((iterator * 2) + M_PI_2);
+	*y = cos(iterator);
+	efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1278,10 +1459,10 @@ void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO: It's a simple line, I don't think we need cos() :) */
-  *x = cos(iterator);
-  *y = cos(iterator);
-  efx->rotateAndScale(efx, x, y, efx->m_rotation);
+	/* TODO: It's a simple line, I don't think we need cos() :) */
+	*x = cos(iterator);
+	*y = cos(iterator);
+	efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1297,10 +1478,10 @@ void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 {
-  /* TODO !!! */
-  *x = cos(iterator);
-  *y = sin(iterator);
-  efx->rotateAndScale(efx, x, y, efx->m_rotation);
+	/* TODO !!! */
+	*x = cos(iterator);
+	*y = sin(iterator);
+	efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1316,9 +1497,9 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = pow(cos(iterator - M_PI_2), 3);
-  *y = pow(cos(iterator), 3);
-  efx->rotateAndScale(efx, x, y, efx->m_rotation);
+	*x = pow(cos(iterator - M_PI_2), 3);
+	*y = pow(cos(iterator), 3);
+	efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1334,9 +1515,9 @@ void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 {
-  *x = cos((efx->m_xFrequency * iterator) - efx->m_xPhase);
-  *y = cos((efx->m_yFrequency * iterator) - efx->m_yPhase);
-  efx->rotateAndScale(efx, x, y, efx->m_rotation);
+	*x = cos((efx->m_xFrequency * iterator) - efx->m_xPhase);
+	*y = cos((efx->m_yFrequency * iterator) - efx->m_yPhase);
+	efx->rotateAndScale(efx, x, y, efx->m_rotation);
 }
 
 /**
@@ -1345,13 +1526,13 @@ void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
  */
 void EFX::setPoint(t_value x, t_value y)
 {
-  m_channelData[0] = (m_address + m_xChannel) << 8;
-  m_channelData[0] |= x;
+	m_channelData[0] = (m_address + m_xChannel) << 8;
+	m_channelData[0] |= x;
 
-  m_channelData[1] = (m_address + m_yChannel) << 8;
-  m_channelData[1] |= y;
+	m_channelData[1] = (m_address + m_yChannel) << 8;
+	m_channelData[1] |= y;
 
-  m_eventBuffer->put(m_channelData);
+	m_eventBuffer->put(m_channelData);
 }
 
 
@@ -1366,12 +1547,12 @@ void EFX::setPoint(t_value x, t_value y)
  */
 void EFX::rotateAndScale(EFX* efx, float* x, float* y, int rot)
 {
-  float xx, yy;
-  xx = *x;
-  yy = *y;
-  float r = M_PI/180 * float (rot);
-  *x = efx->m_xOffset + (xx * cos(r) + yy  * sin(r)) * efx->m_width ;
-  *y = efx->m_yOffset + (-xx * sin(r) + yy * cos(r))  * efx->m_height;
+	float xx, yy;
+	xx = *x;
+	yy = *y;
+	float r = M_PI/180 * float (rot);
+	*x = efx->m_xOffset + (xx * cos(r) + yy  * sin(r)) * efx->m_width ;
+	*y = efx->m_yOffset + (-xx * sin(r) + yy * cos(r))  * efx->m_height;
 }
 
 

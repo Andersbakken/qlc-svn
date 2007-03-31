@@ -29,6 +29,7 @@ class EventBuffer;
 class Device;
 class RunTimeData;
 class SceneValue;
+class QDomDocument;
 
 class Scene : public Function
 {
@@ -37,11 +38,11 @@ class Scene : public Function
 	~Scene();
 	
 	enum ValueType
-		{
-			Set   = 0, // Normal value
-			Fade  = 1, // Fade value
-			NoSet = 2  // Ignored value
-		};
+	{
+		Set   = 0, // Normal value
+		Fade  = 1, // Fade value
+		NoSet = 2  // Ignored value
+	};
 	
 	void copyFrom(Scene* sc, t_device_id toDevice);
 	bool setDevice(t_device_id);

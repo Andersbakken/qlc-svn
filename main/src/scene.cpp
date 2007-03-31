@@ -291,6 +291,15 @@ void Scene::saveXML(QDomDocument* doc)
 	root.setAttribute(KXMLFunctionName, name());
 	root.setAttribute(KXMLFunctionDevice, device());
 
+	/* Speed bus */
+	tag = doc->createElement(KXMLBus);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLBusRole, KXMLBusFade);
+	str.setNum(busID());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Scene contents */
 	for (t_channel i = 0; i < m_channels; i++)
 	{
 		/* Value tag */

@@ -25,41 +25,45 @@
 #include <qvaluelist.h>
 #include "function.h"
 
+class QDomDocument;
+
 class FunctionCollection : public Function
 {
  public:
-  FunctionCollection();
-  virtual ~FunctionCollection();
+	FunctionCollection();
+	virtual ~FunctionCollection();
 
-  void copyFrom(FunctionCollection* fc, bool append = false);
+	void copyFrom(FunctionCollection* fc, bool append = false);
 
-  QValueList <t_function_id> *steps() { return &m_steps; }
+	QValueList <t_function_id> *steps() { return &m_steps; }
 
-  bool setDevice(t_device_id) { return false; }
+	bool setDevice(t_device_id) { return false; }
 
-  bool addItem(t_function_id);
-  bool removeItem(t_function_id);
+	bool addItem(t_function_id);
+	bool removeItem(t_function_id);
 
-  void saveToFile(QFile &file);
-  void createContents(QPtrList <QString> &list);
+	void saveToFile(QFile &file);
+	void createContents(QPtrList <QString> &list);
 
-  void speedChange();
+	void saveXML(QDomDocument* doc);
 
-  void arm();
-  void disarm();
-  void cleanup();
-  void stop();
-  void childFinished();
+	void speedChange();
+
+	void arm();
+	void disarm();
+	void cleanup();
+	void stop();
+	void childFinished();
 
  protected:
-  void init();
-  void run();
+	void init();
+	void run();
 
  private:
-  QValueList <t_function_id> m_steps;
+	QValueList <t_function_id> m_steps;
 
-  int m_childCount;
-  QMutex m_childCountMutex;
+	int m_childCount;
+	QMutex m_childCountMutex;
 };
 
 #endif

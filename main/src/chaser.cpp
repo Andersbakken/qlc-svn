@@ -209,6 +209,14 @@ void Chaser::saveXML(QDomDocument* doc)
 	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
 	root.setAttribute(KXMLFunctionName, name());
 
+	/* Speed bus */
+	tag = doc->createElement(KXMLBus);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLBusRole, KXMLBusHold);
+	str.setNum(busID());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
 	/* Direction */
 	tag = doc->createElement(KXMLFunctionDirection);
 	root.appendChild(tag);
