@@ -1,11 +1,10 @@
 lib_LTLIBRARIES = libllaout.la
 
-INCLUDES = @QT_CFLAGS@ \
-	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
-	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\" \
-	$(LIBLLA_CFLAGS)
+INCLUDES = @QT_CFLAGS@ @LIBLLA_CFLAGS@
+INCLUDES += -DFIXTURES=\"$(datadir)/$(FIXTURES)\"
+INCLUDES += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
+INCLUDES += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
+INCLUDES += -DPLUGINS=\"$(PLUGINS)\"
 
 noinst_HEADERS = \
 	uic_configurellaout.h \
@@ -24,8 +23,7 @@ libllaout_la_SOURCES = \
 	moc_llaout.cpp \
 	moc_configurellaout.cpp
 
-libllaout_la_LIBADD = @QT_LIBS@ $(LIBLLA_LDFLAGS)
-
+libllaout_la_LDFLAGS = @QT_LIBS@ @LIBLLA_LDFLAGS@
 libdir = $(PLUGINS)
 
 moc_%.cpp: %.h

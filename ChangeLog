@@ -1,3 +1,6 @@
+2007-Apr-10  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed LLA plugin compilation
+
 2007-Mar-31  Heikki Junnila <hjunnila@users.sf.net>
 	* Added XML stuff to EFX & functioncollection
 

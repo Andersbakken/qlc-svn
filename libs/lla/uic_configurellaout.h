@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Form interface generated from reading ui file 'configurellaout.ui'
 **
-** Created: Mon Jan 8 19:21:03 2007
+** Created: Tue Apr 10 18:47:35 2007
 **      by: The User Interface Compiler ($Id$)
 **
 ** WARNING! All changes made in this file will be lost!

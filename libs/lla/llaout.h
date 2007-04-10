@@ -27,7 +27,7 @@
 
 #include <qptrlist.h>
 #include <qstring.h>
-#include <LlaClient.h>
+#include <lla/LlaClient.h>
 
 #define MAXINTERFACES 8
 
