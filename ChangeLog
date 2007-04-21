@@ -1,4 +1,7 @@
 2007-Apr-22  Heikki Junnila <hjunnila@users.sf.net>
+	* Added forgotten configkeys.h to dce/src
+
+2007-Apr-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Moved deviceclass.h&cpp, logicalchannel.h&cpp, capability.h&cpp and
 	  types.h from main/src to libs/common to make things more sensible.
 
