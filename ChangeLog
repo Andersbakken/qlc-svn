@@ -1,4 +1,7 @@
 2007-Apr-22  Heikki Junnila <hjunnila@users.sf.net>
+	* Renamed bootstrap to autogen.sh in create-debian-package.sh
+
+2007-Apr-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Added forgotten configkeys.h to dce/src
 
 2007-Apr-22  Heikki Junnila <hjunnila@users.sf.net>
