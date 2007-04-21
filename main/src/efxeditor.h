@@ -25,8 +25,8 @@
 #include <qpointarray.h>
 #include <qframe.h>
 
+#include "common/types.h"
 #include "uic_efxeditor.h"
-#include "types.h"
 #include "efx.h"
 
 class QPaintEvent;

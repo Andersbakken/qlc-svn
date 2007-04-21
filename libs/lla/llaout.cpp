@@ -19,10 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "llaout.h"
-#include "configurellaout.h"
-#include "../common/filehandler.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
@@ -37,6 +33,10 @@
 #include <assert.h>
 #include <errno.h>
 #include <linux/errno.h>
+
+#include "common/filehandler.h"
+#include "llaout.h"
+#include "configurellaout.h"
 
 #define CONF_FILE "llaout.conf"
 

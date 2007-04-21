@@ -26,9 +26,9 @@
 #include <qinputdialog.h>
 #include <qpixmap.h>
 
+#include "common/types.h"
 #include "app.h"
 #include "bus.h"
-#include "types.h"
 #include "busproperties.h"
 
 const int KColumnID                   ( 0 );

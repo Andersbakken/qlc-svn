@@ -26,11 +26,11 @@
 #include <qpointarray.h>
 #include <assert.h>
 
+#include "common/deviceclass.h"
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "eventbuffer.h"
 #include "sequence.h"
 #include "functionconsumer.h"

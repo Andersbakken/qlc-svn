@@ -25,7 +25,7 @@
 #include <qwidget.h>
 #include <qvaluelist.h>
 #include <qptrlist.h>
-#include "types.h"
+#include "common/types.h"
 
 class QPopupMenu;
 class QDockArea;

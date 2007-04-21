@@ -24,12 +24,11 @@
 #include <qspinbox.h>
 #include <qcombobox.h>
 #include <qptrlist.h>
-
 #include <math.h>
 
+#include "common/logicalchannel.h"
+#include "common/capability.h"
 #include "editscenevalue.h"
-#include "logicalchannel.h"
-#include "capability.h"
 
 EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
 			       SceneValue &currentValue)

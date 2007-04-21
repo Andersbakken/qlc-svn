@@ -23,7 +23,7 @@
 #define EVENTBUFFER_H
 
 #include <pthread.h>
-#include "types.h"
+#include "common/types.h"
 
 class EventBuffer
 {

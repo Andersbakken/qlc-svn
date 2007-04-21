@@ -22,9 +22,9 @@
 #ifndef SEQUENCE_H
 #define SEQUENCE_H
 
+#include "common/types.h"
 #include "function.h"
 #include "scene.h"
-#include "types.h"
 
 class Sequence : public Function
 {

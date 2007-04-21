@@ -33,14 +33,14 @@
 #include <string.h>
 
 #include "app.h"
+#include "configkeys.h"
 #include "deviceclasseditor.h"
 #include "editpresetvalue.h"
 
 #include "common/settings.h"
-#include "../../main/src/configkeys.h"
-#include "../../main/src/deviceclass.h"
-#include "../../main/src/logicalchannel.h"
-#include "../../main/src/capability.h"
+#include "common/deviceclass.h"
+#include "common/logicalchannel.h"
+#include "common/capability.h"
 
 extern App* _app;
 extern int errno;

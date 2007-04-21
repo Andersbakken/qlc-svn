@@ -25,15 +25,15 @@
 #include <qapplication.h>
 #include <assert.h>
 
+#include "common/deviceclass.h"
+#include "common/filehandler.h"
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "eventbuffer.h"
 #include "scene.h"
 #include "functionconsumer.h"
-#include "common/filehandler.h"
 
 extern App* _app;
 

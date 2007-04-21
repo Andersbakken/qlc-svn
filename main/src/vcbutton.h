@@ -24,7 +24,7 @@
 
 #include <qpushbutton.h>
 #include <qptrlist.h>
-#include "types.h"
+#include "common/types.h"
 
 class QLineEdit;
 class QMouseEvent;

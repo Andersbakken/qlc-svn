@@ -19,11 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "usbdmxout.h"
-#include "configureusbdmxout.h"
-#include "../common/filehandler.h"
-//#include "usbdmx.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
@@ -38,6 +33,10 @@
 #include <assert.h>
 #include <errno.h>
 #include <linux/errno.h>
+
+#include "usbdmxout.h"
+#include "configureusbdmxout.h"
+#include "common/filehandler.h"
 
 #define CONF_FILE "usbdmxout.conf"
 

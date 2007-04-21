@@ -30,7 +30,7 @@
 #include <qevent.h>
 #include <qdom.h>
 
-#include "types.h"
+#include "common/types.h"
 
 const int KFunctionStopEvent        ( QEvent::User + 1 );
 

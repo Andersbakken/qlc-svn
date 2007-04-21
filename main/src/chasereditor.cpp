@@ -19,18 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "chasereditor.h"
-#include "deviceclass.h"
-#include "function.h"
-#include "device.h"
-#include "app.h"
-#include "doc.h"
-#include "functionmanager.h"
-#include "bus.h"
-#include "chaser.h"
-#include "configkeys.h"
-#include "common/settings.h"
-
 #include <stdlib.h>
 #include <qlistview.h>
 #include <qlabel.h>
@@ -45,6 +33,18 @@
 #include <qmessagebox.h>
 #include <assert.h>
 #include <qtimer.h>
+
+#include "common/deviceclass.h"
+#include "common/settings.h"
+#include "chasereditor.h"
+#include "function.h"
+#include "device.h"
+#include "app.h"
+#include "doc.h"
+#include "functionmanager.h"
+#include "bus.h"
+#include "chaser.h"
+#include "configkeys.h"
 
 extern App* _app;
 

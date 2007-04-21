@@ -19,8 +19,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <stdlib.h>
+#include <unistd.h>
+#include <qfile.h>
+#include <sched.h>
+#include <qapplication.h>
+#include <assert.h>
+
+#include "common/deviceclass.h"
+#include "common/filehandler.h"
 #include "chaser.h"
-#include "deviceclass.h"
 #include "doc.h"
 #include "app.h"
 #include "bus.h"
@@ -28,14 +36,6 @@
 #include "device.h"
 #include "functionconsumer.h"
 #include "eventbuffer.h"
-#include "common/filehandler.h"
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <qfile.h>
-#include <sched.h>
-#include <qapplication.h>
-#include <assert.h>
 
 extern App* _app;
 

@@ -24,7 +24,7 @@
 
 #include <qthread.h>
 #include "common/inputplugin.h"
-#include "types.h"
+#include "common/types.h"
 
 class DummyInPlugin : public InputPlugin
 {

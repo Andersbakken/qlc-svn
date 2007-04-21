@@ -27,16 +27,16 @@
 #include <assert.h>
 #include <math.h>
 
+#include "common/settings.h"
+#include "common/filehandler.h"
+#include "common/deviceclass.h"
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "eventbuffer.h"
 #include "efx.h"
 #include "functionconsumer.h"
-#include "common/settings.h"
-#include "common/filehandler.h"
 
 extern App* _app;
 

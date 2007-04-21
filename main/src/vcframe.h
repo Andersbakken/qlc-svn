@@ -25,7 +25,7 @@
 #include <qframe.h>
 #include <qptrlist.h>
 
-#include "types.h"
+#include "common/types.h"
 
 class QFile;
 class QString;

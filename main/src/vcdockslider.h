@@ -26,8 +26,8 @@
 #include <qstring.h>
 #include <qdatetime.h>
 
+#include "common/types.h"
 #include "uic_vcdockslider.h"
-#include "types.h"
 
 class QMouseEvent;
 class QFile;

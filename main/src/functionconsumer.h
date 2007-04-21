@@ -25,7 +25,7 @@
 #include <qthread.h>
 #include <qptrlist.h>
 
-#include "types.h"
+#include "common/types.h"
 #include "function.h"
 
 class FunctionConsumer : public QThread

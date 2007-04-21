@@ -22,11 +22,11 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 
+#include "common/settings.h"
 #include "vcdockarea.h"
 #include "vcdockslider.h"
 #include "bus.h"
 #include "app.h"
-#include "common/settings.h"
 #include "configkeys.h"
 
 extern App* _app;

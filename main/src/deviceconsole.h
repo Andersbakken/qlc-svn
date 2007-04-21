@@ -25,8 +25,8 @@
 #include <qwidget.h>
 #include <qptrlist.h>
 
+#include "common/types.h"
 #include "consolechannel.h"
-#include "types.h"
 
 class QCloseEvent;
 class QHBoxLayout;

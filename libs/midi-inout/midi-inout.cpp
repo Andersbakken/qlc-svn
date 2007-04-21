@@ -19,11 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "midi-inout.h"
-#include "configuremidi-inout.h"
-#include "../common/filehandler.h"
-//#include "usbdmx.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
@@ -40,6 +35,10 @@
 #include <assert.h>
 #include <errno.h>
 #include <linux/errno.h>
+
+#include "common/filehandler.h"
+#include "midi-inout.h"
+#include "configuremidi-inout.h"
 
 #define CONF_FILE "midi-inout.conf"
 
@@ -87,7 +86,7 @@ void MidiInThread::run()
     FD_SET(m_device, &fs);
 
     QString txt;
-    unsigned char buf[10]={999,999,999,999,999,999,999,999,999,999};
+    unsigned char buf[10] = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 };
     QTime time;
     time.start();
     static int old_channel=0, old_value=0;
@@ -111,9 +110,9 @@ void MidiInThread::run()
         if(i)
         {
             //msleep(50);
-            buf[0]=999;
-            buf[1]=999;
-            buf[2]=999;
+            buf[0] = 255;
+            buf[1] = 255;
+            buf[2] = 255;
 
             read(m_device, buf, 1);//sizeof(buf));
             

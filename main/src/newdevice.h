@@ -22,7 +22,7 @@
 #ifndef NEWDEVICE_H
 #define NEWDEVICE_H
 
-#include "types.h"
+#include "common/types.h"
 #include "uic_newdevice.h"
 
 class QString;

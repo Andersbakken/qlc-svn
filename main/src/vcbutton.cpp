@@ -19,20 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "vcbutton.h"
-#include "app.h"
-#include "doc.h"
-#include "function.h"
-#include "floatingedit.h"
-#include "vcbuttonproperties.h"
-#include "vcframe.h"
-#include "virtualconsole.h"
-#include "keybind.h"
-#include "devicemanagerview.h"
-#include "common/settings.h"
-#include "configkeys.h"
-#include "common/minmax.h"
-
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
@@ -54,6 +40,20 @@
 #include <qpen.h>
 #include <qobjectlist.h>
 #include <assert.h>
+
+#include "common/settings.h"
+#include "common/minmax.h"
+#include "vcbutton.h"
+#include "app.h"
+#include "doc.h"
+#include "function.h"
+#include "floatingedit.h"
+#include "vcbuttonproperties.h"
+#include "vcframe.h"
+#include "virtualconsole.h"
+#include "keybind.h"
+#include "devicemanagerview.h"
+#include "configkeys.h"
 
 extern App* _app;
 

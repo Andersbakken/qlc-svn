@@ -19,14 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "newdevice.h"
-#include "deviceclass.h"
-#include "common/settings.h"
-#include "app.h"
-#include "doc.h"
-#include "dmxaddresstool.h"
-#include "configkeys.h"
-
 #include <qpixmap.h>
 #include <qheader.h>
 #include <qlistview.h>
@@ -38,6 +30,14 @@
 #include <qcheckbox.h>
 #include <assert.h>
 #include <qmessagebox.h>
+
+#include "common/settings.h"
+#include "common/deviceclass.h"
+#include "newdevice.h"
+#include "app.h"
+#include "doc.h"
+#include "dmxaddresstool.h"
+#include "configkeys.h"
 
 extern App* _app;
 

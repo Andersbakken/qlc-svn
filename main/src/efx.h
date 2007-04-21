@@ -22,9 +22,9 @@
 #ifndef EFX_H
 #define EFX_H
 
+#include "common/types.h"
 #include "function.h"
 #include "scene.h"
-#include "types.h"
 
 class QPointArray;
 class QDomDocument;

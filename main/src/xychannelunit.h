@@ -22,7 +22,7 @@
 #ifndef XYCHANNELUNIT_H
 #define XYCHANNELUNIT_H
 
-#include "types.h"
+#include "common/types.h"
 
 class Device;
 

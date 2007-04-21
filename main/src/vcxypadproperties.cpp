@@ -28,14 +28,14 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 
+#include "common/deviceclass.h"
+#include "common/logicalchannel.h"
+#include "common/settings.h"
 #include "vcxypad.h"
 #include "xychannelunit.h"
 #include "vcxypadproperties.h"
 #include "devicelist.h"
-#include "deviceclass.h"
-#include "logicalchannel.h"
 #include "device.h"
-#include "common/settings.h"
 #include "configkeys.h"
 #include "app.h"
 #include "doc.h"

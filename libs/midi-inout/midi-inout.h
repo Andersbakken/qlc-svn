@@ -22,16 +22,12 @@
 #ifndef MIDIINOUT_H
 #define MIDIINOUT_H
 
-#include "../common/inputplugin.h"
-#include "../../main/src/types.h"
+#include "common/inputplugin.h"
+#include "common/types.h"
 
 #include <qptrlist.h>
 #include <qstring.h>
 #include <qthread.h>
-
-
-
-
 
 class MidiInOut;
 class ConfigureMidiInOut;

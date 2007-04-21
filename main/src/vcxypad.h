@@ -26,7 +26,7 @@
 #include <qptrlist.h>
 #include <qpixmap.h>
 
-#include "types.h"
+#include "common/types.h"
 #include "device.h"
 
 class QFile;

@@ -22,8 +22,8 @@
 #ifndef LLAOUT_H
 #define LLAOUT_H
 
-#include "../common/outputplugin.h"
-#include "../../main/src/types.h"
+#include "common/outputplugin.h"
+#include "common/types.h"
 
 #include <qptrlist.h>
 #include <qstring.h>

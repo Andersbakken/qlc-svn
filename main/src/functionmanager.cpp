@@ -38,13 +38,13 @@
 #include <qptrlist.h>
 #include <assert.h>
 
+#include "common/deviceclass.h"
+#include "common/settings.h"
 #include "functionmanager.h"
 #include "function.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "app.h"
 #include "doc.h"
-#include "common/settings.h"
 #include "scene.h"
 #include "advancedsceneeditor.h"
 #include "chaser.h"

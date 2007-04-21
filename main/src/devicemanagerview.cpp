@@ -19,21 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "devicemanagerview.h"
-#include "common/settings.h"
-#include "app.h"
-#include "doc.h"
-#include "configkeys.h"
-#include "newdevice.h"
-#include "chaser.h"
-#include "functioncollection.h"
-#include "scene.h"
-#include "sequence.h"
-#include "efx.h"
-#include "consolechannel.h"
-#include "logicalchannel.h"
-#include "capability.h"
-
 #include <qwidget.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -50,6 +35,21 @@
 #include <qpopupmenu.h>
 #include <qtooltip.h>
 #include <assert.h>
+
+#include "common/settings.h"
+#include "common/logicalchannel.h"
+#include "common/capability.h"
+#include "devicemanagerview.h"
+#include "app.h"
+#include "doc.h"
+#include "configkeys.h"
+#include "newdevice.h"
+#include "chaser.h"
+#include "functioncollection.h"
+#include "scene.h"
+#include "sequence.h"
+#include "efx.h"
+#include "consolechannel.h"
 
 extern App* _app;
 

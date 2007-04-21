@@ -33,14 +33,14 @@
 #include <qpopupmenu.h>
 #include <qptrlist.h>
 
+#include "common/settings.h"
+#include "common/logicalchannel.h"
+#include "common/capability.h"
 #include "consolechannel.h"
 #include "app.h"
 #include "doc.h"
-#include "common/settings.h"
 #include "scene.h"
 #include "device.h"
-#include "logicalchannel.h"
-#include "capability.h"
 #include "configkeys.h"
 
 extern App* _app;

@@ -20,17 +20,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "app.h"
-#include "doc.h"
-#include "sceneeditor.h"
-#include "function.h"
-#include "deviceclass.h"
-#include "device.h"
-#include "scene.h"
-#include "consolechannel.h"
-#include "listboxiditem.h"
-#include "configkeys.h"
-
 #include <qlistbox.h>
 #include <qradiobutton.h>
 #include <qlabel.h>
@@ -42,7 +31,17 @@
 #include <qtoolbutton.h>
 #include <assert.h>
 
-#include <iostream>
+#include "common/deviceclass.h"
+#include "app.h"
+#include "doc.h"
+#include "sceneeditor.h"
+#include "function.h"
+#include "device.h"
+#include "scene.h"
+#include "consolechannel.h"
+#include "listboxiditem.h"
+#include "configkeys.h"
+
 using namespace std;
 
 extern App* _app;

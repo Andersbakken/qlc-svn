@@ -1,10 +1,12 @@
 lib_LTLIBRARIES = libmidiout.la
 
-INCLUDES = @QT_CFLAGS@ \
-	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
-	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\"
+INCLUDES  = @QT_CFLAGS@ -I$(top_srcdir)/libs
+INCLUDES += -DFIXTURES=\"$(datadir)/$(FIXTURES)\"
+INCLUDES += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
+INCLUDES += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
+INCLUDES += -DPLUGINS=\"$(PLUGINS)\"
+
+libmidiout_la_LIBADD = @QT_LIBS@
 
 noinst_HEADERS = \
 	uic_configuremidiout.h \
@@ -22,8 +24,6 @@ libmidiout_la_SOURCES = \
 	\
 	moc_midiout.cpp \
 	moc_configuremidiout.cpp
-
-libmidiout_la_LIBADD = @QT_LIBS@
 
 libdir = $(PLUGINS)
 

@@ -1984,23 +1984,6 @@ DeviceClass* App::searchDeviceClass(const QString &manufacturer,
 }
 
 
-//
-// Search for a deviceclass by its ID
-//
-DeviceClass* App::searchDeviceClass(const t_deviceclass_id id)
-{
-  for (DeviceClass* d = m_deviceClassList.first(); d != NULL;
-       d = m_deviceClassList.next())
-    {
-      if (d->id() == id)
-	{
-	  return d;
-	}
-    }
-
-  return NULL;
-}
-
 void App::initSubmasters()
 {
   for (t_channel i = 0; i < KChannelMax; i++)

@@ -1,12 +1,13 @@
 bin_PROGRAMS = qlcfixtureeditor
 
-INCLUDES = @QT_CFLAGS@ \
-	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
-	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\" \
-	\
-	-I$(top_srcdir)/libs
+qlcfixtureeditor_CXXFLAGS  = @QT_CFLAGS@ -I$(top_srcdir)/libs
+qlcfixtureeditor_CXXFLAGS += -DFIXTURES=\"$(datadir)/$(FIXTURES)\"
+qlcfixtureeditor_CXXFLAGS += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
+qlcfixtureeditor_CXXFLAGS += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
+qlcfixtureeditor_CXXFLAGS += -DPLUGINS=\"$(PLUGINS)\"
+
+qlcfixtureeditor_LDADD  = @QT_LIBS@
+qlcfixtureeditor_LDADD += $(top_srcdir)/libs/common/libqlccommon.la
 
 noinst_HEADERS = \
 	src/uic_deviceclasseditor.h \
@@ -14,6 +15,7 @@ noinst_HEADERS = \
 	\
 	src/aboutbox.h \
 	src/app.h \
+	src/configkeys.h \
 	src/deviceclasseditor.h \
 	src/editpresetvalue.h
 
@@ -33,17 +35,7 @@ qlcfixtureeditor_SOURCES = \
 	src/moc_aboutbox.cpp \
 	src/moc_app.cpp \
 	src/moc_deviceclasseditor.cpp \
-	src/moc_editpresetvalue.cpp \
-	\
-	../main/src/capability.cpp \
-	../main/src/deviceclass.cpp \
-	../main/src/logicalchannel.cpp \
-	\
-	../main/src/moc_capability.cpp \
-	../main/src/moc_deviceclass.cpp \
-	../main/src/moc_logicalchannel.cpp
-
-qlcfixtureeditor_LDADD = ../libs/common/libqlccommon.la @QT_LIBS@
+	src/moc_editpresetvalue.cpp
 
 # MOCS
 moc_%.cpp: %.h

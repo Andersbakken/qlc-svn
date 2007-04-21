@@ -22,9 +22,9 @@
 #ifndef CONSOLECHANNEL_H
 #define CONSOLECHANNEL_H
 
+#include "common/types.h"
 #include "uic_consolechannel.h"
 #include "scene.h"
-#include "types.h"
 
 class QSlider;
 class QLabel;

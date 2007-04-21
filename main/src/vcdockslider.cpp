@@ -45,7 +45,6 @@
 #include "virtualconsole.h"
 #include "sliderkeybind.h"
 #include "assignsliderhotkey.h"
-#include "types.h"
 #include "bus.h"
 #include "app.h"
 #include "doc.h"

@@ -19,17 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "app.h"
-#include "doc.h"
-#include "device.h"
-#include "scene.h"
-#include "common/settings.h"
-#include "deviceconsole.h"
-#include "deviceproperties.h"
-#include "configkeys.h"
-#include "deviceclass.h"
-#include "logicalchannel.h"
-
 #include <unistd.h>
 #include <qptrlist.h>
 #include <qtooltip.h>
@@ -43,6 +32,17 @@
 #include <qmessagebox.h>
 #include <assert.h>
 #include <qdom.h>
+
+#include "common/deviceclass.h"
+#include "common/logicalchannel.h"
+#include "common/settings.h"
+#include "app.h"
+#include "doc.h"
+#include "device.h"
+#include "scene.h"
+#include "deviceconsole.h"
+#include "deviceproperties.h"
+#include "configkeys.h"
 
 extern App* _app;
 extern QApplication* _qapp;

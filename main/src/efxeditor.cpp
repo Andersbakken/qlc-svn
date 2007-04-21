@@ -19,13 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "efxeditor.h"
-#include "app.h"
-#include "doc.h"
-#include "device.h"
-#include "logicalchannel.h"
-#include "deviceclass.h"
-
 #include <qpen.h>
 #include <qevent.h>
 #include <qpainter.h>
@@ -37,6 +30,13 @@
 #include <qspinbox.h>
 #include <qlabel.h>
 #include <assert.h>
+
+#include "common/logicalchannel.h"
+#include "common/deviceclass.h"
+#include "efxeditor.h"
+#include "app.h"
+#include "doc.h"
+#include "device.h"
 
 extern App* _app;
 

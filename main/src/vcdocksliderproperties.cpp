@@ -28,12 +28,12 @@
 #include <qspinbox.h>
 #include <assert.h>
 
+#include "common/deviceclass.h"
+#include "common/logicalchannel.h"
+#include "common/types.h"
 #include "vcdocksliderproperties.h"
 #include "vcdockslider.h"
 #include "device.h"
-#include "deviceclass.h"
-#include "logicalchannel.h"
-#include "types.h"
 #include "bus.h"
 #include "app.h"
 #include "doc.h"

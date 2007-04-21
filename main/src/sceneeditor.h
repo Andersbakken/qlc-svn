@@ -26,9 +26,9 @@
 #include <qvariant.h>
 #include <qwidget.h>
 
+#include "common/types.h"
 #include "uic_sceneeditor.h"
 #include "scene.h"
-#include "types.h"
 
 class QVBoxLayout;
 class QHBoxLayout;

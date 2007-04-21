@@ -27,7 +27,7 @@
 #include <qmutex.h>
 #include <qpainter.h>
 
-#include "types.h"
+#include "common/types.h"
 
 class QColor;
 class QBrush;

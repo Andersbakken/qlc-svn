@@ -30,9 +30,9 @@
 #include <qpopupmenu.h>
 #include <qfile.h>
 
-#include "../common/plugin.h"
-#include "../common/filehandler.h"
-#include "../../main/src/types.h"
+#include "common/plugin.h"
+#include "common/filehandler.h"
+#include "common/types.h"
 
 #include "midiout.h"
 #include "configuremidiout.h"

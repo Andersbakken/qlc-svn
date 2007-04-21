@@ -24,8 +24,8 @@
 
 #include <qpointarray.h>
 
+#include "common/types.h"
 #include "uic_patterngenerator.h"
-#include "types.h"
 
 class QPaintEvent;
 class GeneratorArea;

@@ -19,10 +19,21 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qobject.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qdir.h>
+#include <qptrlist.h>
+#include <qmessagebox.h>
+#include <assert.h>
+#include <qdom.h>
+
+#include "common/deviceclass.h"
+#include "common/filehandler.h"
+#include "common/settings.h"
 #include "doc.h"
 #include "app.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "function.h"
 #include "scene.h"
 #include "function.h"
@@ -34,18 +45,6 @@
 #include "devicemanagerview.h"
 #include "configkeys.h"
 #include "functionconsumer.h"
-
-#include "common/filehandler.h"
-#include "common/settings.h"
-
-#include <qobject.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qdir.h>
-#include <qptrlist.h>
-#include <qmessagebox.h>
-#include <assert.h>
-#include <qdom.h>
 
 extern App* _app;
 

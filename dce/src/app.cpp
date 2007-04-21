@@ -40,14 +40,13 @@
 #include "app.h"
 #include "aboutbox.h"
 
-#include "../../main/src/deviceclass.h"
-#include "../../main/src/configkeys.h"
-
+#include "common/deviceclass.h"
 #include "common/settings.h"
 #include "common/filehandler.h"
 #include "common/documentbrowser.h"
 
 #include "deviceclasseditor.h"
+#include "configkeys.h"
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries

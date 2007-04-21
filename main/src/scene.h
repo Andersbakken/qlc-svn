@@ -23,7 +23,7 @@
 #define SCENE_H
 
 #include "function.h"
-#include "types.h"
+#include "common/types.h"
 
 class EventBuffer;
 class Device;

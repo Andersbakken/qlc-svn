@@ -29,8 +29,8 @@
 #include <qmessagebox.h>
 #include <qcheckbox.h>
 
+#include "common/deviceclass.h"
 #include "vcbuttonproperties.h"
-#include "deviceclass.h"
 #include "function.h"
 #include "app.h"
 #include "doc.h"

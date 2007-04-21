@@ -22,12 +22,12 @@
 #include <qlistview.h>
 #include <qpushbutton.h>
 
+#include "common/logicalchannel.h"
 #include "devicelist.h"
 #include "app.h"
 #include "device.h"
 #include "doc.h"
 #include "consolechannel.h"
-#include "logicalchannel.h"
 
 extern App* _app;
 

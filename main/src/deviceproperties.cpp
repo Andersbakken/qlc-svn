@@ -19,13 +19,14 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qmessagebox.h>
+
+#include "common/deviceclass.h"
 #include "app.h"
 #include "doc.h"
 #include "deviceproperties.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "dmxaddresstool.h"
-#include "qmessagebox.h"
 
 extern App* _app;
 

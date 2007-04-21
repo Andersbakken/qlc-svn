@@ -24,7 +24,7 @@
 
 #include <qthread.h>
 #include "common/outputplugin.h"
-#include "types.h"
+#include "common/types.h"
 
 class DummyOutPlugin : public OutputPlugin
 {

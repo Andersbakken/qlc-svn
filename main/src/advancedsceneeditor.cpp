@@ -19,17 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "advancedsceneeditor.h"
-#include "app.h"
-#include "doc.h"
-#include "function.h"
-#include "device.h"
-#include "common/settings.h"
-#include "logicalchannel.h"
-#include "capability.h"
-#include "scene.h"
-#include "editscenevalue.h"
-
 #include <qlistbox.h>
 #include <qcombobox.h>
 #include <qlistview.h>
@@ -48,6 +37,18 @@
 #include <limits.h>
 #include <assert.h>
 #include <math.h>
+
+#include "common/settings.h"
+#include "common/logicalchannel.h"
+#include "common/capability.h"
+
+#include "advancedsceneeditor.h"
+#include "app.h"
+#include "doc.h"
+#include "function.h"
+#include "device.h"
+#include "scene.h"
+#include "editscenevalue.h"
 
 extern App* _app;
 

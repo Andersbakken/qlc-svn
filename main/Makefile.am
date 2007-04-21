@@ -1,13 +1,14 @@
 bin_PROGRAMS = qlc
 
-INCLUDES = @QT_CFLAGS@ \
-	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
-	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\" \
-	-DVERSION=\"$(VERSION)\" \
-	\
-	-I$(top_srcdir)/libs
+qlc_CXXFLAGS  = @QT_CFLAGS@ -I$(top_srcdir)/libs
+qlc_CXXFLAGS +=	-DFIXTURES=\"$(datadir)/$(FIXTURES)\"
+qlc_CXXFLAGS += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
+qlc_CXXFLAGS += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
+qlc_CXXFLAGS += -DPLUGINS=\"$(PLUGINS)\"
+qlc_CXXFLAGS += -DVERSION=\"$(VERSION)\"
+
+qlc_LDADD  = @QT_LIBS@
+qlc_LDADD += $(top_srcdir)/libs/common/libqlccommon.la
 
 noinst_HEADERS = \
 	src/uic_advancedsceneeditor.h \
@@ -42,12 +43,10 @@ noinst_HEADERS = \
 	src/assignsliderhotkey.h \
 	src/bus.h \
 	src/busproperties.h \
-	src/capability.h \
 	src/chasereditor.h \
 	src/chaser.h \
 	src/configkeys.h \
 	src/consolechannel.h \
-	src/deviceclass.h \
 	src/deviceconsole.h \
 	src/device.h \
 	src/devicelist.h \
@@ -71,7 +70,6 @@ noinst_HEADERS = \
 	src/imagecontentspreview.h \
 	src/keybind.h \
 	src/listboxiditem.h \
-	src/logicalchannel.h \
 	src/monitor.h \
 	src/newdevice.h \
 	src/patterngenerator.h \
@@ -82,7 +80,6 @@ noinst_HEADERS = \
 	src/sequenceeditor.h \
 	src/sequence.h \
 	src/sliderkeybind.h \
-	src/types.h \
 	src/vcbutton.h \
 	src/vcbuttonproperties.h \
 	src/vcdockarea.h \
@@ -155,11 +152,9 @@ qlc_SOURCES = \
 	src/assignsliderhotkey.cpp \
 	src/bus.cpp \
 	src/busproperties.cpp \
-	src/capability.cpp \
 	src/chaser.cpp \
 	src/chasereditor.cpp \
 	src/consolechannel.cpp \
-	src/deviceclass.cpp \
 	src/deviceconsole.cpp \
 	src/device.cpp \
 	src/devicelist.cpp \
@@ -183,7 +178,6 @@ qlc_SOURCES = \
 	src/imagecontentspreview.cpp \
 	src/keybind.cpp \
 	src/listboxiditem.cpp \
-	src/logicalchannel.cpp \
 	src/main.cpp \
 	src/monitor.cpp \
 	src/newdevice.cpp \
@@ -216,11 +210,9 @@ qlc_SOURCES = \
 	src/moc_assignsliderhotkey.cpp \
 	src/moc_bus.cpp \
 	src/moc_busproperties.cpp \
-	src/moc_capability.cpp \
 	src/moc_chaser.cpp \
 	src/moc_chasereditor.cpp \
 	src/moc_consolechannel.cpp \
-	src/moc_deviceclass.cpp \
 	src/moc_deviceconsole.cpp \
 	src/moc_device.cpp \
 	src/moc_devicelist.cpp \
@@ -244,7 +236,6 @@ qlc_SOURCES = \
 	src/moc_imagecontentspreview.cpp \
 	src/moc_keybind.cpp \
 	src/moc_listboxiditem.cpp \
-	src/moc_logicalchannel.cpp \
 	src/moc_monitor.cpp \
 	src/moc_newdevice.cpp \
 	src/moc_patterngenerator.cpp \
@@ -268,8 +259,6 @@ qlc_SOURCES = \
 	src/moc_virtualconsole.cpp \
 	src/moc_virtualconsoleproperties.cpp \
 	src/moc_xychannelunit.cpp
-
-qlc_LDADD = ../libs/common/libqlccommon.la @QT_LIBS@
 
 # MOCS
 moc_%.cpp: %.h

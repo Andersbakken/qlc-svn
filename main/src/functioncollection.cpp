@@ -19,15 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "functioncollection.h"
-#include "function.h"
-#include "deviceclass.h"
-#include "app.h"
-#include "doc.h"
-#include "functionconsumer.h"
-#include "eventbuffer.h"
-#include "common/filehandler.h"
-
 #include <qapplication.h>
 #include <qstring.h>
 #include <qthread.h>
@@ -35,6 +26,14 @@
 #include <qfile.h>
 #include <qptrlist.h>
 #include <assert.h>
+
+#include "common/filehandler.h"
+#include "functioncollection.h"
+#include "function.h"
+#include "app.h"
+#include "doc.h"
+#include "functionconsumer.h"
+#include "eventbuffer.h"
 
 extern App* _app;
 

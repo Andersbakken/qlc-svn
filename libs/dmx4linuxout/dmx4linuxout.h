@@ -22,11 +22,11 @@
 #ifndef DMX4LINUXOUT_H
 #define DMX4LINUXOUT_H
 
-#include "../common/outputplugin.h"
-#include "../../main/src/types.h"
-
 #include <qptrlist.h>
 #include <qstring.h>
+
+#include "common/outputplugin.h"
+#include "common/types.h"
 
 class ConfigureDMX4LinuxOut;
 class QPoint;

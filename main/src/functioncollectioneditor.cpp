@@ -19,16 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "functioncollectioneditor.h"
-#include "functioncollection.h"
-#include "function.h"
-#include "functionmanager.h"
-#include "app.h"
-#include "doc.h"
-#include "deviceclass.h"
-#include "device.h"
-#include "configkeys.h"
-
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlistview.h>
@@ -36,6 +26,16 @@
 #include <qmessagebox.h>
 #include <assert.h>
 #include <qtimer.h>
+
+#include "common/deviceclass.h"
+#include "functioncollectioneditor.h"
+#include "functioncollection.h"
+#include "function.h"
+#include "functionmanager.h"
+#include "app.h"
+#include "doc.h"
+#include "device.h"
+#include "configkeys.h"
 
 extern App* _app;
 

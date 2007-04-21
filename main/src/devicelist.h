@@ -22,7 +22,7 @@
 #ifndef DEVICELIST_H
 #define DEVICELIST_H
 
-#include "types.h"
+#include "common/types.h"
 #include "uic_devicelist.h"
 
 class DeviceList : public UI_DeviceList

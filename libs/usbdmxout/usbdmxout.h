@@ -22,14 +22,13 @@
 #ifndef USBDMXOUT_H
 #define USBDMXOUT_H
 
-#include "../common/outputplugin.h"
-#include "../../main/src/types.h"
-
 #include <qptrlist.h>
 #include <qstring.h>
 
-#define MAXINTERFACES 8
+#include "common/outputplugin.h"
+#include "common/types.h"
 
+#define MAXINTERFACES 8
 
 /*
  * include file for the USBDMX driver module and client software

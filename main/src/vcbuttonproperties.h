@@ -22,7 +22,7 @@
 #ifndef VCBUTTONPROPERTIES_H
 #define VCBUTTONPROPERTIES_H
 
-#include "types.h"
+#include "common/types.h"
 #include "vcbutton.h"
 #include "uic_vcbuttonproperties.h"
 

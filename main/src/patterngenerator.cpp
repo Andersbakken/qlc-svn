@@ -26,15 +26,15 @@
 #include <qcombobox.h>
 #include <qpointarray.h>
 
+#include "common/types.h"
+#include "common/deviceclass.h"
+#include "common/logicalchannel.h"
 #include "app.h"
 #include "doc.h"
-#include "types.h"
 #include "patterngenerator.h"
 #include "generatorarea.h"
 #include "sequence.h"
 #include "device.h"
-#include "deviceclass.h"
-#include "logicalchannel.h"
 
 extern App* _app;
 

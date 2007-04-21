@@ -25,9 +25,9 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
+#include "common/deviceclass.h"
 #include "function.h"
 #include "device.h"
-#include "deviceclass.h"
 #include "bus.h"
 
 class Doc : public QObject

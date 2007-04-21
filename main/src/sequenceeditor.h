@@ -26,10 +26,10 @@
 #include <qlayout.h>
 #include <qevent.h>
 
+#include "common/types.h"
 #include "uic_sequenceeditor.h"
 #include "sequence.h"
 #include "scene.h"
-#include "types.h"
 #include "consolechannel.h"
 
 class Sequence;

@@ -24,8 +24,8 @@
 
 #include <qevent.h>
 
-#include "plugin.h"
-#include "../../main/src/types.h"
+#include "common/plugin.h"
+#include "common/types.h"
 
 const int KInputEvent        ( QEvent::User + 10 );
 

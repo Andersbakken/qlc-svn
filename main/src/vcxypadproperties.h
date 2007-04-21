@@ -22,7 +22,7 @@
 #ifndef VCXYPADROPERTIES_H
 #define VCXYPADROPERTIES_H
 
-#include "types.h"
+#include "common/types.h"
 #include "uic_vcxypadproperties.h"
 
 class VCXYPad;

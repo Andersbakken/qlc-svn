@@ -1,28 +1,36 @@
 lib_LTLIBRARIES = libqlccommon.la
 
-INCLUDES = @QT_CFLAGS@ \
-	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
-	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\" \
-        -DVERSION=\"$(VERSION)\"
+libqlccommon_la_CXXFLAGS  = @QT_CFLAGS@ -I$(top_srcdir)/libs
+libqlccommon_la_CXXFLAGS += -DFIXTURES=\"$(datadir)/$(FIXTURES)\"
+libqlccommon_la_CXXFLAGS += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
+libqlccommon_la_CXXFLAGS += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
+libqlccommon_la_CXXFLAGS += -DPLUGINS=\"$(PLUGINS)\"
+libqlccommon_la_CXXFLAGS += -DVERSION=\"$(VERSION)\"
+
+libqlccommon_la_LIBS  = @QT_LIBS@
 
 noinst_HEADERS = \
+	capability.h \
 	configitem.h \
+	deviceclass.h \
 	documentbrowser.h \
 	filehandler.h \
 	inputplugin.h \
 	ledbar.h \
+	logicalchannel.h \
 	minmax.h \
 	outputplugin.h \
 	plugin.h \
 	settings.h
 
 libqlccommon_la_SOURCES = \
+	capability.cpp \
+	deviceclass.cpp \
 	documentbrowser.cpp \
 	filehandler.cpp \
 	inputplugin.cpp \
 	ledbar.cpp \
+	logicalchannel.cpp \
 	plugin.cpp \
 	outputplugin.cpp \
 	settings.cpp \
@@ -34,8 +42,6 @@ libqlccommon_la_SOURCES = \
 	moc_plugin.cpp \
 	moc_outputplugin.cpp \
 	moc_settings.cpp
-
-libqlccommon_la_LIBADD = @QT_LIBS@
 
 moc_%.cpp: %.h
 	$(MOC) $< -o $@

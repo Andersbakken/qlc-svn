@@ -1,10 +1,12 @@
 lib_LTLIBRARIES = libsoundtolight.la
 
-INCLUDES = @QT_CFLAGS@ \
-	-DFIXTURES=\"$(datadir)/$(FIXTURES)\" \
-	-DPIXMAPS=\"$(datadir)/$(PIXMAPS)\" \
-	-DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\" \
-	-DPLUGINS=\"$(PLUGINS)\"
+INCLUDES = @QT_CFLAGS@ -I$(top_srcdir)/libs
+INCLUDES += -DFIXTURES=\"$(datadir)/$(FIXTURES)\"
+INCLUDES += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
+INCLUDES += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
+INCLUDES += -DPLUGINS=\"$(PLUGINS)\"
+
+libsoundtolight_la_LIBADD = @QT_LIBS@
 
 noinst_HEADERS = \
 	uic_configuresoundtolight.h \
@@ -22,8 +24,6 @@ libsoundtolight_la_SOURCES = \
 	\
 	moc_soundtolight.cpp \
 	moc_configuresoundtolight.cpp
-
-libsoundtolight_la_LIBADD = @QT_LIBS@
 
 libdir = $(PLUGINS)
 
