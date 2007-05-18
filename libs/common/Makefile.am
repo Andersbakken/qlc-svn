@@ -21,6 +21,11 @@ noinst_HEADERS = \
 	minmax.h \
 	outputplugin.h \
 	plugin.h \
+	qlcfixturemode.h \
+	qlcfixture.h \
+	qlcchannel.h \
+	qlccapability.h \
+	qlcphysical.h \
 	settings.h
 
 libqlccommon_la_SOURCES = \
@@ -31,8 +36,13 @@ libqlccommon_la_SOURCES = \
 	inputplugin.cpp \
 	ledbar.cpp \
 	logicalchannel.cpp \
-	plugin.cpp \
 	outputplugin.cpp \
+	plugin.cpp \
+	qlcfixturemode.cpp \
+	qlcfixture.cpp \
+	qlcchannel.cpp \
+	qlccapability.cpp \
+	qlcphysical.cpp \
 	settings.cpp \
 	\
 	moc_documentbrowser.cpp \

@@ -27,6 +27,11 @@
 
 #include "common/types.h"
 
+#define KXMLQLCBus "Bus"
+#define KXMLQLCBusRole "Role"
+#define KXMLQLCBusFade "Fade"
+#define KXMLQLCBusHold "Hold"
+
 class QFile;
 class QString;
 class Function;

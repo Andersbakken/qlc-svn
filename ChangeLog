@@ -1,3 +1,12 @@
+2007-May-18  Heikki Junnila <hjunnila@users.sf.net>
+	* Added qlcfixture, qlcfixturemode, qlcphysical, qlcchannel and
+	  qlccapability to libs/common that should, in the future, replace
+	  old deviceclass, capability and logicalchannel.
+	* Changed deviceclasseditor accordingly. Don't use it any longer
+	  for editing old deviceclasses. Everything is converted to
+	  qlcfixture etc. classes. 
+	* Main has not been changed yet...
+
 2007-Apr-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Renamed bootstrap to autogen.sh in create-debian-package.sh
 

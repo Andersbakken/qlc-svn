@@ -30,6 +30,8 @@
 #include "device.h"
 #include "bus.h"
 
+#define KXMLQLCWorkspaceDocument "Workspace"
+
 class Doc : public QObject
 {
   Q_OBJECT

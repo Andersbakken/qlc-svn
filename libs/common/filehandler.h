@@ -28,29 +28,11 @@
 
 class QDomDocument;
 
-const QString KXMLFunctionNode      ( "Function" );
-const QString KXMLFunctionDevice    ( "Device" );
-const QString KXMLFunctionName      ( "Name" );
-const QString KXMLFunctionID        ( "ID" );
-const QString KXMLFunctionType      ( "Type" );
-const QString KXMLFunctionData      ( "Data" );
-const QString KXMLFunctionChannels  ( "Channels" );
-
-const QString KXMLFunctionValue     ( "Value" );
-const QString KXMLFunctionChannel   ( "Channel" );
-
-const QString KXMLFunctionStep      ( "Step" );
-const QString KXMLFunctionNumber    ( "Number" );
-
-const QString KXMLFunctionDirection ( "Direction" );
-const QString KXMLFunctionRunOrder  ( "RunOrder" );
-
-const QString KXMLBus               ( "Bus" );
-const QString KXMLBusRole           ( "Role" );
-const QString KXMLBusFade           ( "Fade" );
-const QString KXMLBusHold           ( "Hold" );
-
-const QString KXMLFunctionEnabled   ( "Enabled" );
+// Generic tags common for all documents
+#define KXMLQLCCreator "Creator"
+#define KXMLQLCCreatorName "Name"
+#define KXMLQLCCreatorVersion "Version"
+#define KXMLQLCCreatorAuthor "Author"
 
 class FileHandler : public QObject
 {

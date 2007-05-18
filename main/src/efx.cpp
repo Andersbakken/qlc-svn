@@ -48,20 +48,6 @@ static const char* KDiamondAlgorithmName   ( "Diamond" );
 static const char* KTriangleAlgorithmName  ( "Triangle" );
 static const char* KLissajousAlgorithmName ( "Lissajous" );
 
-const QString KXMLFunctionEFXAlgorithm     ( "Algorithm" );
-const QString KXMLFunctionEFXWidth         ( "Width" );
-const QString KXMLFunctionEFXHeight        ( "Height" );
-const QString KXMLFunctionEFXRotation      ( "Rotation" );
-const QString KXMLFunctionEFXAxis          ( "Axis" );
-const QString KXMLFunctionEFXOffset        ( "Offset" );
-const QString KXMLFunctionEFXFrequency     ( "Frequency" );
-const QString KXMLFunctionEFXPhase         ( "Phase" );
-const QString KXMLFunctionEFXChannel       ( "Channel" );
-const QString KXMLFunctionEFXX             ( "X" );
-const QString KXMLFunctionEFXY             ( "Y" );
-const QString KXMLFunctionEFXStartScene    ( "StartScene" );
-const QString KXMLFunctionEFXStopScene     ( "StopScene" );
-
 /**
  * Standard constructor
  */
@@ -1039,113 +1025,113 @@ void EFX::saveXML(QDomDocument* doc)
 	assert(doc);
 
 	/* Function tag */
-	root = doc->createElement(KXMLFunctionNode);
+	root = doc->createElement(KXMLQLCFunction);
 	doc->appendChild(root);
 
-	root.setAttribute(KXMLFunctionID, id());
-	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
-	root.setAttribute(KXMLFunctionName, name());
-	root.setAttribute(KXMLFunctionDevice, device());
+	root.setAttribute(KXMLQLCFunctionID, id());
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionName, name());
+	root.setAttribute(KXMLQLCFunctionDevice, device());
 
 	/* Speed bus */
-	tag = doc->createElement(KXMLBus);
+	tag = doc->createElement(KXMLQLCBus);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLBusRole, KXMLBusFade);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
 	str.setNum(busID());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Direction */
-	tag = doc->createElement(KXMLFunctionDirection);
+	tag = doc->createElement(KXMLQLCFunctionDirection);
 	root.appendChild(tag);
 	text = doc->createTextNode(Function::directionToString(m_direction));
 	tag.appendChild(text);
 
 	/* Run order */
-	tag = doc->createElement(KXMLFunctionRunOrder);
+	tag = doc->createElement(KXMLQLCFunctionRunOrder);
 	root.appendChild(tag);
 	text = doc->createTextNode(Function::runOrderToString(m_runOrder));
 	tag.appendChild(text);
 
 	/* Algorithm */
-	tag = doc->createElement(KXMLFunctionEFXAlgorithm);
+	tag = doc->createElement(KXMLQLCFunctionEFXAlgorithm);
 	root.appendChild(tag);
 	text = doc->createTextNode(algorithm());
 	tag.appendChild(text);
 
 	/* Width */
-	tag = doc->createElement(KXMLFunctionEFXWidth);
+	tag = doc->createElement(KXMLQLCFunctionEFXWidth);
 	root.appendChild(tag);
 	str.setNum(width());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Height */
-	tag = doc->createElement(KXMLFunctionEFXHeight);
+	tag = doc->createElement(KXMLQLCFunctionEFXHeight);
 	root.appendChild(tag);
 	str.setNum(height());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Rotation */
-	tag = doc->createElement(KXMLFunctionEFXRotation);
+	tag = doc->createElement(KXMLQLCFunctionEFXRotation);
 	root.appendChild(tag);
 	str.setNum(rotation());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Start function */
-	tag = doc->createElement(KXMLFunctionEFXStartScene);
+	tag = doc->createElement(KXMLQLCFunctionEFXStartScene);
 	root.appendChild(tag);
 	str.setNum(startScene());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 	if (startSceneEnabled() == TRUE)
-		tag.setAttribute(KXMLFunctionEnabled, Settings::trueValue());
+		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::trueValue());
 	else
-		tag.setAttribute(KXMLFunctionEnabled, Settings::falseValue());
+		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::falseValue());
 
 	/* Stop function */
-	tag = doc->createElement(KXMLFunctionEFXStopScene);
+	tag = doc->createElement(KXMLQLCFunctionEFXStopScene);
 	root.appendChild(tag);
 	str.setNum(stopScene());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 	if (stopSceneEnabled() == TRUE)
-		tag.setAttribute(KXMLFunctionEnabled, Settings::trueValue());
+		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::trueValue());
 	else
-		tag.setAttribute(KXMLFunctionEnabled, Settings::falseValue());
+		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::falseValue());
 
 	/********************************************
 	 * X-Axis 
 	 ********************************************/
-	tag = doc->createElement(KXMLFunctionEFXAxis);
+	tag = doc->createElement(KXMLQLCFunctionEFXAxis);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLFunctionName, KXMLFunctionEFXX);
+	tag.setAttribute(KXMLQLCFunctionName, KXMLQLCFunctionEFXX);
 
 	/* Offset */
-	subtag = doc->createElement(KXMLFunctionEFXOffset);
+	subtag = doc->createElement(KXMLQLCFunctionEFXOffset);
 	tag.appendChild(subtag);
 	str.setNum(xOffset());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
 
         /* Frequency */
-	subtag = doc->createElement(KXMLFunctionEFXFrequency);
+	subtag = doc->createElement(KXMLQLCFunctionEFXFrequency);
 	tag.appendChild(subtag);
 	str.setNum(xFrequency());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
 
         /* Phase */
-	subtag = doc->createElement(KXMLFunctionEFXPhase);
+	subtag = doc->createElement(KXMLQLCFunctionEFXPhase);
 	tag.appendChild(subtag);
 	str.setNum(xPhase());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
 
         /* Channel */
-	subtag = doc->createElement(KXMLFunctionEFXChannel);
+	subtag = doc->createElement(KXMLQLCFunctionEFXChannel);
 	tag.appendChild(subtag);
 	str.setNum(xChannel());
 	text = doc->createTextNode(str);
@@ -1154,33 +1140,33 @@ void EFX::saveXML(QDomDocument* doc)
 	/********************************************
 	 * Y-Axis 
 	 ********************************************/
-	tag = doc->createElement(KXMLFunctionEFXAxis);
+	tag = doc->createElement(KXMLQLCFunctionEFXAxis);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLFunctionName, KXMLFunctionEFXY);
+	tag.setAttribute(KXMLQLCFunctionName, KXMLQLCFunctionEFXY);
 
 	/* Offset */
-	subtag = doc->createElement(KXMLFunctionEFXOffset);
+	subtag = doc->createElement(KXMLQLCFunctionEFXOffset);
 	tag.appendChild(subtag);
 	str.setNum(yOffset());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
 
 	/* Frequency */
-	subtag = doc->createElement(KXMLFunctionEFXFrequency);
+	subtag = doc->createElement(KXMLQLCFunctionEFXFrequency);
 	tag.appendChild(subtag);
 	str.setNum(yFrequency());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
 
         /* Phase */
-	subtag = doc->createElement(KXMLFunctionEFXPhase);
+	subtag = doc->createElement(KXMLQLCFunctionEFXPhase);
 	tag.appendChild(subtag);
 	str.setNum(yPhase());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
 
         /* Channel */
-	subtag = doc->createElement(KXMLFunctionEFXChannel);
+	subtag = doc->createElement(KXMLQLCFunctionEFXChannel);
 	tag.appendChild(subtag);
 	str.setNum(yChannel());
 	text = doc->createTextNode(str);

@@ -38,9 +38,11 @@ class QWidgetList;
 class QLabel;
 
 class Settings;
-class DeviceClass;
-class DeviceClassEditor;
+class QLCFixture;
+class QLCFixtureEditor;
 class DocumentBrowser;
+
+class DeviceClass;
 
 const QString KApplicationNameLong  = "QLC Device Class Editor";
 const QString KApplicationNameShort = "DCE";
@@ -51,69 +53,69 @@ const QString KApplicationVersion   = "Version 2.3";
 
 class App : public QMainWindow
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  App(Settings* settings);
-  ~App();
+	App(Settings* settings);
+	~App();
 
  public:
-  void initView();
-  void initSettings();
+	void initView();
+	void initSettings();
 
-  QWorkspace* workspace() { return m_workspace; }
-  Settings* settings() { return m_settings; }
-
- private slots:
-  void slotEmpty();
-
-  void slotFileNew();
-  void slotFileOpen();
-  void slotFileSave();
-  void slotFileSaveAs();
-  void slotFileQuit();
-
-  void slotWindowCascade();
-  void slotWindowTile();
-
-  void slotEditMenuActivated(int);
-  void slotRefreshEditMenu();
-  void slotRefreshWindowMenu();
-
-  void slotHelpIndex();
-  void slotDocumentBrowserClosed();
-  void slotHelpAbout();
-  void slotHelpAboutQt();
-
-  void slotEditorClosed(DeviceClassEditor* editor);
-
- private:
-  void initWorkspace();
-
-  void initMenuBar();
-  void initStatusBar();
-  void initToolBar();
+	QWorkspace* workspace() { return m_workspace; }
+	Settings* settings() { return m_settings; }
 
  private slots:
-  void slotWindowMenuCallback(int item);
+	void slotEmpty();
+
+	void slotFileNew();
+	void slotFileOpen();
+	void slotFileSave();
+	void slotFileSaveAs();
+	void slotFileQuit();
+
+	void slotWindowCascade();
+	void slotWindowTile();
+
+	void slotRefreshWindowMenu();
+
+	void slotHelpIndex();
+	void slotDocumentBrowserClosed();
+	void slotHelpAbout();
+	void slotHelpAboutQt();
+
+	void slotEditorClosed(QLCFixtureEditor* editor);
 
  private:
-  QWorkspace* m_workspace;
-  Settings* m_settings;
-  DocumentBrowser* m_documentBrowser;
+	/** Open an old .deviceclass file */
+	DeviceClass* openLegacyFile(QString path);
 
-  QPopupMenu* m_fileMenu;
-  QPopupMenu* m_editMenu;
-  QPopupMenu* m_toolsMenu;
-  QPopupMenu* m_windowMenu;
-  QPopupMenu* m_helpMenu;
+	void initWorkspace();
 
-  QToolBar* m_toolbar;
-  QString m_lastPath;
+	void initMenuBar();
+	void initStatusBar();
+	void initToolBar();
+
+ private slots:
+	void slotWindowMenuCallback(int item);
+
+ private:
+	QWorkspace* m_workspace;
+	Settings* m_settings;
+	DocumentBrowser* m_documentBrowser;
+
+	QPopupMenu* m_fileMenu;
+	QPopupMenu* m_toolsMenu;
+	QPopupMenu* m_windowMenu;
+	QPopupMenu* m_helpMenu;
+
+	QToolBar* m_toolbar;
+	QString m_lastPath;
 
  protected:
-  void closeEvent(QCloseEvent*);
-  bool event(QEvent* e);
+	void closeEvent(QCloseEvent*);
+	bool event(QEvent* e);
 };
 
 #endif

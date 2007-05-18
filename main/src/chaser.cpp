@@ -202,29 +202,29 @@ void Chaser::saveXML(QDomDocument* doc)
 	assert(doc);
 
 	/* Function tag */
-	root = doc->createElement(KXMLFunctionNode);
+	root = doc->createElement(KXMLQLCFunction);
 	doc->appendChild(root);
 
-	root.setAttribute(KXMLFunctionID, id());
-	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
-	root.setAttribute(KXMLFunctionName, name());
+	root.setAttribute(KXMLQLCFunctionID, id());
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Speed bus */
-	tag = doc->createElement(KXMLBus);
+	tag = doc->createElement(KXMLQLCBus);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLBusRole, KXMLBusHold);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
 	str.setNum(busID());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Direction */
-	tag = doc->createElement(KXMLFunctionDirection);
+	tag = doc->createElement(KXMLQLCFunctionDirection);
 	root.appendChild(tag);
 	text = doc->createTextNode(Function::directionToString(m_direction));
 	tag.appendChild(text);
 
 	/* Run order */
-	tag = doc->createElement(KXMLFunctionRunOrder);
+	tag = doc->createElement(KXMLQLCFunctionRunOrder);
 	root.appendChild(tag);
 	text = doc->createTextNode(Function::runOrderToString(m_runOrder));
 	tag.appendChild(text);
@@ -234,11 +234,11 @@ void Chaser::saveXML(QDomDocument* doc)
 	for (it = m_steps.begin(); it != m_steps.end(); ++it)
 	{
 		/* Step tag */
-		tag = doc->createElement(KXMLFunctionStep);
+		tag = doc->createElement(KXMLQLCFunctionStep);
 		root.appendChild(tag);
 
 		/* Step number */
-		tag.setAttribute(KXMLFunctionNumber, i++);
+		tag.setAttribute(KXMLQLCFunctionNumber, i++);
 
 		/* Step Function ID */
 		str.setNum(*it);

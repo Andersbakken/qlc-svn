@@ -36,6 +36,7 @@
 #include "common/deviceclass.h"
 #include "common/logicalchannel.h"
 #include "common/settings.h"
+#include "common/qlcfixture.h"
 #include "app.h"
 #include "doc.h"
 #include "device.h"
@@ -46,14 +47,6 @@
 
 extern App* _app;
 extern QApplication* _qapp;
-
-const QString KXMLFixtureNode         (      "Fixture" );
-const QString KXMLFixtureName         (         "Name" );
-const QString KXMLFixtureManufacturer ( "Manufacturer" );
-const QString KXMLFixtureModel        (        "Model" );
-const QString KXMLFixtureID           (           "ID" );
-const QString KXMLFixtureUniverse     (     "Universe" );
-const QString KXMLFixtureAddress      (      "Address" );
 
 Device::Device() : QObject(),
 	m_deviceClass ( NULL ),
@@ -132,43 +125,43 @@ void Device::saveXML(QDomDocument* doc)
 	assert(doc);
 
 	/* Device entry */
-	root = doc->createElement(KXMLFixtureNode);
+	root = doc->createElement(KXMLQLCFixture);
 	doc->appendChild(root);
 
 	/* Name */
-	tag = doc->createElement(KXMLFixtureName);
+	tag = doc->createElement(KXMLQLCFixtureName);
 	root.appendChild(tag);
 	text = doc->createTextNode(name());
 	tag.appendChild(text);
 
 	/* Manufacturer */
-	tag = doc->createElement(KXMLFixtureManufacturer);
+	tag = doc->createElement(KXMLQLCFixtureManufacturer);
 	root.appendChild(tag);
 	text = doc->createTextNode(deviceClass()->manufacturer());
 	tag.appendChild(text);
 
 	/* Model */
-	tag = doc->createElement(KXMLFixtureModel);
+	tag = doc->createElement(KXMLQLCFixtureModel);
 	root.appendChild(tag);
 	text = doc->createTextNode(deviceClass()->model());
 	tag.appendChild(text);
 
 	/* ID */
-	tag = doc->createElement(KXMLFixtureID);
+	tag = doc->createElement(KXMLQLCFixtureID);
 	root.appendChild(tag);
 	str.setNum(id());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Universe */
-	tag = doc->createElement(KXMLFixtureUniverse);
+	tag = doc->createElement(KXMLQLCFixtureUniverse);
 	root.appendChild(tag);
 	str.setNum(universe());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Address */
-	tag = doc->createElement(KXMLFixtureAddress);
+	tag = doc->createElement(KXMLQLCFixtureAddress);
 	root.appendChild(tag);
 	str.setNum(address());
 	text = doc->createTextNode(str);

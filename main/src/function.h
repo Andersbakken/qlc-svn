@@ -32,6 +32,25 @@
 
 #include "common/types.h"
 
+#define KXMLQLCFunction "Function"
+#define KXMLQLCFunctionDevice "Device"
+#define KXMLQLCFunctionName "Name"
+#define KXMLQLCFunctionID "ID"
+#define KXMLQLCFunctionType "Type"
+#define KXMLQLCFunctionData "Data"
+#define KXMLQLCFunctionChannels "Channels"
+
+#define KXMLQLCFunctionValue "Value"
+#define KXMLQLCFunctionChannel "Channel"
+
+#define KXMLQLCFunctionStep "Step"
+#define KXMLQLCFunctionNumber "Number"
+
+#define KXMLQLCFunctionDirection "Direction"
+#define KXMLQLCFunctionRunOrder "RunOrder"
+
+#define KXMLQLCFunctionEnabled "Enabled"
+
 const int KFunctionStopEvent        ( QEvent::User + 1 );
 
 class Device;

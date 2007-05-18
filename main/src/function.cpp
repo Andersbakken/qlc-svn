@@ -468,24 +468,24 @@ void Function::saveXML(QDomDocument* doc)
 	assert(doc);
 
 	/* Function entry */
-	root = doc->createElement(KXMLFunctionNode);
+	root = doc->createElement(KXMLQLCFunction);
 	doc->appendChild(root);
 
 	/* Name */
-	tag = doc->createElement(KXMLFunctionName);
+	tag = doc->createElement(KXMLQLCFunctionName);
 	root.appendChild(tag);
 	text = doc->createTextNode(name());
 	tag.appendChild(text);
 
 	/* ID */
-	tag = doc->createElement(KXMLFunctionID);
+	tag = doc->createElement(KXMLQLCFunctionID);
 	root.appendChild(tag);
 	str.setNum(id());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Type */
-	tag = doc->createElement(KXMLFunctionType);
+	tag = doc->createElement(KXMLQLCFunctionType);
 	root.appendChild(tag);
 	text = doc->createTextNode(Function::typeToString(m_type));
 	tag.appendChild(text);

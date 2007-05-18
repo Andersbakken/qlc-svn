@@ -26,6 +26,20 @@
 #include "function.h"
 #include "scene.h"
 
+#define KXMLQLCFunctionEFXAlgorithm "Algorithm"
+#define KXMLQLCFunctionEFXWidth "Width"
+#define KXMLQLCFunctionEFXHeight "Height"
+#define KXMLQLCFunctionEFXRotation "Rotation"
+#define KXMLQLCFunctionEFXAxis "Axis"
+#define KXMLQLCFunctionEFXOffset "Offset"
+#define KXMLQLCFunctionEFXFrequency "Frequency"
+#define KXMLQLCFunctionEFXPhase "Phase"
+#define KXMLQLCFunctionEFXChannel "Channel"
+#define KXMLQLCFunctionEFXX "X"
+#define KXMLQLCFunctionEFXY "Y"
+#define KXMLQLCFunctionEFXStartScene "StartScene"
+#define KXMLQLCFunctionEFXStopScene "StopScene"
+
 class QPointArray;
 class QDomDocument;
 

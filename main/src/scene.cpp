@@ -283,18 +283,18 @@ void Scene::saveXML(QDomDocument* doc)
 	assert(doc);
 
 	/* Function tag */
-	root = doc->createElement(KXMLFunctionNode);
+	root = doc->createElement(KXMLQLCFunction);
 	doc->appendChild(root);
 
-	root.setAttribute(KXMLFunctionID, id());
-	root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
-	root.setAttribute(KXMLFunctionName, name());
-	root.setAttribute(KXMLFunctionDevice, device());
+	root.setAttribute(KXMLQLCFunctionID, id());
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionName, name());
+	root.setAttribute(KXMLQLCFunctionDevice, device());
 
 	/* Speed bus */
-	tag = doc->createElement(KXMLBus);
+	tag = doc->createElement(KXMLQLCBus);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLBusRole, KXMLBusFade);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
 	str.setNum(busID());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
@@ -303,12 +303,12 @@ void Scene::saveXML(QDomDocument* doc)
 	for (t_channel i = 0; i < m_channels; i++)
 	{
 		/* Value tag */
-		tag = doc->createElement(KXMLFunctionValue);
+		tag = doc->createElement(KXMLQLCFunctionValue);
 		root.appendChild(tag);
 		
 		/* Value type & channel */
-		tag.setAttribute(KXMLFunctionChannel, i);
-		tag.setAttribute(KXMLFunctionType, valueTypeString(i));
+		tag.setAttribute(KXMLQLCFunctionChannel, i);
+		tag.setAttribute(KXMLQLCFunctionType, valueTypeString(i));
 
 		/* Value contents */
 		str.setNum(m_values[i].value);

@@ -1,638 +1,594 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_DeviceClassEditor</class>
+<class>UI_QLCFixtureEditor</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>UI_DeviceClassEditor</cstring>
+        <cstring>UI_QLCFixtureEditor</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>466</width>
-            <height>595</height>
+            <width>630</width>
+            <height>466</height>
         </rect>
     </property>
     <property name="caption">
-        <string>UI_DeviceClassEditor</string>
+        <string>Fixture</string>
     </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
+        <widget class="QTabWidget">
             <property name="name">
-                <cstring>groupBox1</cstring>
+                <cstring>m_tab</cstring>
             </property>
-            <property name="title">
-                <string>General Information</string>
-            </property>
-            <vbox>
+            <widget class="QWidget">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                    <cstring>tab</cstring>
                 </property>
-                <widget class="QLayoutWidget">
+                <attribute name="title">
+                    <string>General</string>
+                </attribute>
+                <vbox>
                     <property name="name">
-                        <cstring>layout6</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <hbox>
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>layout6</cstring>
                         </property>
-                        <widget class="QLabel">
+                        <hbox>
                             <property name="name">
-                                <cstring>textLabel1</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>32767</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Manufacturer</string>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>m_manufacturerEdit</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Manufacturer of this device class (e.g. FooLight Ltd.)</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout8</cstring>
-                    </property>
-                    <hbox>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_manufacturerLabel</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>0</hsizetype>
+                                        <vsizetype>5</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>0</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>32767</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string>Manufacturer</string>
+                                </property>
+                            </widget>
+                            <widget class="QLineEdit">
+                                <property name="name">
+                                    <cstring>m_manufacturerEdit</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>150</width>
+                                        <height>0</height>
+                                    </size>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Manufacturer of this device class (e.g. FooLight Ltd.)</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>layout8</cstring>
                         </property>
-                        <widget class="QLabel">
+                        <hbox>
                             <property name="name">
-                                <cstring>textLabel2</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>32767</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Model</string>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>m_modelEdit</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>150</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Model of this device class (e.g. HyperZapper 2000)</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout5</cstring>
-                    </property>
-                    <hbox>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_modelLabel</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>0</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>32767</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string>Model</string>
+                                </property>
+                            </widget>
+                            <widget class="QLineEdit">
+                                <property name="name">
+                                    <cstring>m_modelEdit</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>150</width>
+                                        <height>0</height>
+                                    </size>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Model of this device class (e.g. HyperZapper 2000)</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>layout5</cstring>
                         </property>
-                        <widget class="QLabel">
+                        <hbox>
                             <property name="name">
-                                <cstring>textLabel1_2</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>100</width>
-                                    <height>32767</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Type</string>
-                            </property>
-                        </widget>
-                        <widget class="QComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>Color Changer</string>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_typeLabel</cstring>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Dimmer</string>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>0</hsizetype>
+                                        <vsizetype>5</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Effect</string>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>0</height>
+                                    </size>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Fan</string>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>32767</height>
+                                    </size>
                                 </property>
-                            </item>
-                            <item>
                                 <property name="text">
-                                    <string>Flower</string>
+                                    <string>Type</string>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Haze</string>
+                            </widget>
+                            <widget class="QComboBox">
+                                <item>
+                                    <property name="text">
+                                        <string>Color Changer</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Dimmer</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Effect</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Fan</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Flower</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Haze</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Laser</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Moving Head</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Other</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Scanner</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Smoke</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
+                                        <string>Strobe</string>
+                                    </property>
+                                </item>
+                                <property name="name">
+                                    <cstring>m_typeCombo</cstring>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Laser</string>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>7</hsizetype>
+                                        <vsizetype>0</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Moving Head</string>
+                                <property name="sizeLimit">
+                                    <number>15</number>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Other</string>
+                                <property name="toolTip" stdset="0">
+                                    <string>Type of this device class</string>
                                 </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Scanner</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Smoke</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Strobe</string>
-                                </property>
-                            </item>
-                            <property name="name">
-                                <cstring>m_typeCombo</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="sizeLimit">
-                                <number>15</number>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Type of this device class</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox2</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>5</hsizetype>
-                    <vsizetype>0</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="minimumSize">
-                <size>
-                    <width>0</width>
-                    <height>190</height>
-                </size>
-            </property>
-            <property name="maximumSize">
-                <size>
-                    <width>32767</width>
-                    <height>190</height>
-                </size>
-            </property>
-            <property name="title">
-                <string>Channels</string>
-            </property>
-            <hbox>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer3_2</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>31</width>
+                                <height>121</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                    <cstring>tab</cstring>
                 </property>
-                <widget class="QListView">
-                    <column>
-                        <property name="text">
-                            <string>Number</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Description</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
+                <attribute name="title">
+                    <string>Channels</string>
+                </attribute>
+                <hbox>
                     <property name="name">
-                        <cstring>m_channelList</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <property name="allColumnsShowFocus">
-                        <bool>true</bool>
-                    </property>
-                    <property name="resizeMode">
-                        <enum>LastColumn</enum>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout6</cstring>
-                    </property>
-                    <vbox>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>Name</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <column>
+                            <property name="text">
+                                <string>Group</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>m_channelList</cstring>
                         </property>
-                        <widget class="QToolButton">
+                        <property name="allColumnsShowFocus">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>AllColumns</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout33</cstring>
+                        </property>
+                        <vbox>
                             <property name="name">
-                                <cstring>m_addChannelButton</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Add a new channel</string>
-                            </property>
-                        </widget>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_removeChannelButton</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Remove the selected channel</string>
-                            </property>
-                        </widget>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_editChannelButton</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Edit the selected channel's name</string>
-                            </property>
-                        </widget>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_raiseChannelButton</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Raise the selected channel up by one</string>
-                            </property>
-                        </widget>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_lowerChannelButton</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Lower the selected channel down by one</string>
-                            </property>
-                        </widget>
-                    </vbox>
-                </widget>
-            </hbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox3</cstring>
-            </property>
-            <property name="title">
-                <string>Channel Capabilities</string>
-            </property>
-            <hbox>
+                            <widget class="QToolButton">
+                                <property name="name">
+                                    <cstring>m_addChannelButton</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Add a new channel</string>
+                                </property>
+                            </widget>
+                            <widget class="QToolButton">
+                                <property name="name">
+                                    <cstring>m_removeChannelButton</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Remove the selected channel</string>
+                                </property>
+                            </widget>
+                            <widget class="QToolButton">
+                                <property name="name">
+                                    <cstring>m_editChannelButton</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Edit the selected channel's name</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>210</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </vbox>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QWidget">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                    <cstring>TabPage</cstring>
                 </property>
-                <widget class="QListView">
-                    <column>
-                        <property name="text">
-                            <string>Minimum Value</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Maximum Value</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Description</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
+                <attribute name="title">
+                    <string>Modes</string>
+                </attribute>
+                <hbox>
                     <property name="name">
-                        <cstring>m_presetList</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <property name="allColumnsShowFocus">
-                        <bool>true</bool>
-                    </property>
-                    <property name="resizeMode">
-                        <enum>LastColumn</enum>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout4</cstring>
-                    </property>
-                    <vbox>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>Mode</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <column>
+                            <property name="text">
+                                <string>Channels</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>true</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>m_modeList</cstring>
                         </property>
-                        <widget class="QToolButton">
+                        <property name="allColumnsShowFocus">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>AllColumns</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout4_2</cstring>
+                        </property>
+                        <vbox>
                             <property name="name">
-                                <cstring>m_addPresetButton</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Add a new capability to the selected channel</string>
-                            </property>
-                        </widget>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_removePresetButton</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Remove the selected capability from the selected channel</string>
-                            </property>
-                        </widget>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_editPresetButton</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>25</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Edit the selected capability</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer3</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>30</width>
-                                    <height>124</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </vbox>
-                </widget>
-            </hbox>
+                            <widget class="QToolButton">
+                                <property name="name">
+                                    <cstring>m_addModeButton</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Add a new mode to the fixture</string>
+                                </property>
+                            </widget>
+                            <widget class="QToolButton">
+                                <property name="name">
+                                    <cstring>m_removeModeButton</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Remove the selected capability from the selected mode</string>
+                                </property>
+                            </widget>
+                            <widget class="QToolButton">
+                                <property name="name">
+                                    <cstring>m_editModeButton</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Edit the selected mode</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer3_3</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>30</width>
+                                        <height>124</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </vbox>
+                    </widget>
+                </hbox>
+            </widget>
         </widget>
     </vbox>
 </widget>
 <connections>
     <connection>
-        <sender>m_manufacturerEdit</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotManufacturerEditTextChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>m_modelEdit</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotModelEditTextChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>m_typeCombo</sender>
-        <signal>activated(const QString&amp;)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotTypeSelected(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>m_channelList</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotChannelListSelectionChanged(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>m_presetList</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotPresetListSelectionChanged(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>m_addChannelButton</sender>
+        <sender>m_editChannelButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotAddChannelClicked()</slot>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotEditChannelClicked()</slot>
     </connection>
     <connection>
         <sender>m_removeChannelButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
+        <receiver>UI_QLCFixtureEditor</receiver>
         <slot>slotRemoveChannelClicked()</slot>
     </connection>
     <connection>
-        <sender>m_editChannelButton</sender>
+        <sender>m_addChannelButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotEditChannelClicked()</slot>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotAddChannelClicked()</slot>
     </connection>
     <connection>
-        <sender>m_raiseChannelButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotRaiseChannelClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_lowerChannelButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotLowerChannelClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_addPresetButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotAddPresetClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_removePresetButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotRemovePresetClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_editPresetButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotEditPresetClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_presetList</sender>
-        <signal>doubleClicked(QListViewItem*)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
-        <slot>slotEditPresetClicked()</slot>
+        <sender>m_channelList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotChannelListSelectionChanged(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>m_channelList</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
-        <receiver>UI_DeviceClassEditor</receiver>
+        <receiver>UI_QLCFixtureEditor</receiver>
         <slot>slotEditChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_typeCombo</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotTypeSelected(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_modelEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotModelEditTextChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_manufacturerEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotManufacturerEditTextChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_addModeButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotAddModeClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_removeModeButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotRemoveModeClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_editModeButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotEditModeClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_modeList</sender>
+        <signal>doubleClicked(QListViewItem*)</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotEditModeClicked()</slot>
     </connection>
 </connections>
 <slots>
@@ -640,15 +596,13 @@
     <slot>slotModelEditTextChanged(const QString &amp;)</slot>
     <slot>slotTypeSelected(const QString &amp;)</slot>
     <slot>slotChannelListSelectionChanged(QListViewItem*)</slot>
-    <slot>slotPresetListSelectionChanged(QListViewItem*)</slot>
     <slot>slotAddChannelClicked()</slot>
     <slot>slotRemoveChannelClicked()</slot>
     <slot>slotEditChannelClicked()</slot>
-    <slot>slotRaiseChannelClicked()</slot>
-    <slot>slotLowerChannelClicked()</slot>
-    <slot>slotAddPresetClicked()</slot>
-    <slot>slotRemovePresetClicked()</slot>
     <slot>slotEditPresetClicked()</slot>
+    <slot>slotAddModeClicked()</slot>
+    <slot>slotRemoveModeClicked()</slot>
+    <slot>slotEditModeClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

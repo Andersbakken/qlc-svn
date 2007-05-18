@@ -1,6 +1,6 @@
 /*
-  Q Light Controller - Device Class Editor
-  deviceclasseditor.h
+  Q Light Controller - Fixture Editor
+  qlcfixtureeditor.h
   
   Copyright (C) 2000, 2001, 2002 Heikki Junnila
   
@@ -19,66 +19,65 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DEVICECLASSEDITOR_H
-#define DEVICECLASSEDITOR_H
+#ifndef QLC_FIXTURE_EDITOR_H
+#define QLC_FIXTURE_EDITOR_H
 
 #include "uic_deviceclasseditor.h"
 
 class QCloseEvent;
-class DeviceClass;
-class LogicalChannel;
-class Capability;
+class QLCFixture;
+class QLCChannel;
+class QLCFixtureMode;
 class QString;
 
-class DeviceClassEditor : public UI_DeviceClassEditor
+class QLCFixtureEditor : public UI_QLCFixtureEditor
 {
- Q_OBJECT
+	Q_OBJECT
 
  public:
-  DeviceClassEditor(QWidget* parent, DeviceClass* dc);
-  virtual ~DeviceClassEditor();
+	QLCFixtureEditor(QWidget* parent, QLCFixture* fixture);
+	virtual ~QLCFixtureEditor();
 
-  void init();
-  bool save();
-  bool saveAs();
+	void init();
+	bool save();
+	bool saveAs();
 
-  void setFileName(QString path) { m_fileName = path; }
-  QString fileName() const { return m_fileName; }
-  bool modified() const { return m_modified; }
+	void setFileName(QString path) { m_fileName = path; }
+	QString fileName() const { return m_fileName; }
+	bool modified() const { return m_modified; }
 
  public slots:
-  void slotManufacturerEditTextChanged(const QString &text);
-  void slotModelEditTextChanged(const QString &text);
-  void slotTypeSelected(const QString &text);
-  void slotChannelListSelectionChanged(QListViewItem* item);
-  void slotPresetListSelectionChanged(QListViewItem* item);
-  void slotAddChannelClicked();
-  void slotRemoveChannelClicked();
-  void slotEditChannelClicked();
-  void slotRaiseChannelClicked();
-  void slotLowerChannelClicked();
-  void slotAddPresetClicked();
-  void slotRemovePresetClicked();
-  void slotEditPresetClicked();
+	void slotManufacturerEditTextChanged(const QString &text);
+	void slotModelEditTextChanged(const QString &text);
+	void slotTypeSelected(const QString &text);
+
+	void slotChannelListSelectionChanged(QListViewItem* item);
+	void slotAddChannelClicked();
+	void slotRemoveChannelClicked();
+	void slotEditChannelClicked();
+
+	void slotAddModeClicked();
+	void slotRemoveModeClicked();
+	void slotEditModeClicked();
 
  protected:
-  void closeEvent(QCloseEvent* e);
+	void closeEvent(QCloseEvent* e);
 
  signals:
-  void closed(DeviceClassEditor*);
+	void closed(QLCFixtureEditor*);
 
  private:
-  void setModified(bool modified = true);
-  void updateChannelList();
-  void updatePresetValues();
-  
-  LogicalChannel* currentChannel();
-  Capability* currentCapability();
-  
+	void setModified(bool modified = true);
+	void refreshChannelList();
+	void refreshModeList();
+ 
+	QLCChannel* currentChannel();
+	QLCFixtureMode* currentMode();
+
  private:
-  DeviceClass* m_dc;
-  QString m_fileName;
-  bool m_modified;
+	QLCFixture* m_fixture;
+	QString m_fileName;
+	bool m_modified;
 };
 
 #endif

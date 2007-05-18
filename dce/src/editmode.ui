@@ -1,0 +1,1237 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>UI_EditMode</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_EditMode</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>568</width>
+            <height>430</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Edit Mode</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout21</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>m_modeNameLabel</cstring>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>130</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="text">
+                        <string>Mode Name</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>m_modeNameEdit</cstring>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The name of this mode</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QTabWidget">
+            <property name="name">
+                <cstring>tabWidget3</cstring>
+            </property>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Channels</string>
+                </attribute>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QListView">
+                        <column>
+                            <property name="text">
+                                <string>###</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>false</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <column>
+                            <property name="text">
+                                <string>Channel Name</string>
+                            </property>
+                            <property name="clickable">
+                                <bool>false</bool>
+                            </property>
+                            <property name="resizable">
+                                <bool>true</bool>
+                            </property>
+                        </column>
+                        <property name="name">
+                            <cstring>m_channelList</cstring>
+                        </property>
+                        <property name="allColumnsShowFocus">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizeMode">
+                            <enum>LastColumn</enum>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout34</cstring>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_addChannelButton</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>1</hsizetype>
+                                        <vsizetype>1</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>35</width>
+                                        <height>40</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Insert a channel to this mode (at current selection)</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_removeChannelButton</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>1</hsizetype>
+                                        <vsizetype>1</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>35</width>
+                                        <height>40</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Remove the selected channel from this mode</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_raiseChannelButton</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>1</hsizetype>
+                                        <vsizetype>1</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>35</width>
+                                        <height>40</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Raise the selected channel up by one</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_lowerChannelButton</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>1</hsizetype>
+                                        <vsizetype>1</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>30</width>
+                                        <height>25</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>35</width>
+                                        <height>40</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Lower the selected channel down by one</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer15</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>111</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </vbox>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Physical</string>
+                </attribute>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QGroupBox" row="1" column="1">
+                        <property name="name">
+                            <cstring>m_focusGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Focus</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout17</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_focusTypeLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Type</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QComboBox">
+                                        <item>
+                                            <property name="text">
+                                                <string>Fixed</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>Head</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>Mirror</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>Barrell</string>
+                                            </property>
+                                        </item>
+                                        <property name="name">
+                                            <cstring>m_focusTypeCombo</cstring>
+                                        </property>
+                                        <property name="editable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Fixture's beam focus type</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout18</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_panMaxLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Pan Max Degrees</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_panMaxSpin</cstring>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>999</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Maximum pan angle in degrees</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout19</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_tiltMaxLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Tilt Max Degrees</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_tiltMaxSpin</cstring>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>999</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Maximum tilt angle in degrees</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox" row="1" column="0">
+                        <property name="name">
+                            <cstring>m_lens</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Lens</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout14</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_lensNameLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Name</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QComboBox">
+                                        <item>
+                                            <property name="text">
+                                                <string>Other</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>PC</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>Fresnel</string>
+                                            </property>
+                                        </item>
+                                        <property name="name">
+                                            <cstring>m_lensNameCombo</cstring>
+                                        </property>
+                                        <property name="editable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Lens name</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout15</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_lensDegreesMinLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Min Degrees</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_lensMinDegreesSpin</cstring>
+                                        </property>
+                                        <property name="wrapping">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>359</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Lens' minimum beam angle</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout15_2</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_lensDegreesMaxLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Max Degrees</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_lensMaxDegreesSpin</cstring>
+                                        </property>
+                                        <property name="wrapping">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>359</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Lens' maximum beam angle</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox" row="0" column="0">
+                        <property name="name">
+                            <cstring>m_bulbGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Bulb</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout6</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_bulbTypeLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Type</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QComboBox">
+                                        <item>
+                                            <property name="text">
+                                                <string>CDM 70W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CDM 150W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP29 5000W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP41 2000W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP60 1000W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP61 1000W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP62 1000W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP86 500W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP87 500W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>CP88 500W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>EFP 100W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>EFP 150W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>EFR 100W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>EFR 150W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>ELC 250W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HMI 1200W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HMI 4000W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 150W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 250W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 300W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 400W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 575W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 700W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 1200W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>HTI 2500W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>MSD 200W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>MSD 250W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>MSD 275W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>MSD 575W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>MSR 700W</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>MSR 1200W</string>
+                                            </property>
+                                        </item>
+                                        <property name="name">
+                                            <cstring>m_bulbTypeCombo</cstring>
+                                        </property>
+                                        <property name="editable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Bulb type</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout7</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_bulbLumensLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Lumens</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_bulbLumensSpin</cstring>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>100000</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Maximum light output in lumens</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout8</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_bulbTempLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Colour Temperature</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QComboBox">
+                                        <item>
+                                            <property name="text">
+                                                <string>2000</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>2800</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>3200</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>4000</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>4500</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>5000</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>5500</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>6000</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>6500</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>9300</string>
+                                            </property>
+                                        </item>
+                                        <property name="name">
+                                            <cstring>m_bulbTempCombo</cstring>
+                                        </property>
+                                        <property name="editable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Beam colour temperature in degrees Kelvin</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox" row="0" column="1">
+                        <property name="name">
+                            <cstring>m_dimensionsGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Dimensions</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout9</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_weightLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Weight</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_weightSpin</cstring>
+                                        </property>
+                                        <property name="prefix">
+                                            <string></string>
+                                        </property>
+                                        <property name="suffix">
+                                            <string>kg</string>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>999</number>
+                                        </property>
+                                        <property name="minValue">
+                                            <number>0</number>
+                                        </property>
+                                        <property name="value">
+                                            <number>0</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Fixture weight in kilograms</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout10</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_widthLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Width</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_widthSpin</cstring>
+                                        </property>
+                                        <property name="suffix">
+                                            <string>mm</string>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>999</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Fixture width in millimeters</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout11</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_heightLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Height</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_heightSpin</cstring>
+                                        </property>
+                                        <property name="suffix">
+                                            <string>mm</string>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>999</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Fixture height in millimeters</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout11_2</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>m_depthLabel</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>130</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="text">
+                                            <string>Depth</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_depthSpin</cstring>
+                                        </property>
+                                        <property name="suffix">
+                                            <string>mm</string>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>999</number>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Fixture depth in millimeters</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                </grid>
+            </widget>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout20</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer4</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>271</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Accept changes and close the dialog</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Reject changes and close the dialog</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_addChannelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotAddChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_modeNameEdit</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotModeNameChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_removeChannelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotRemoveChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_raiseChannelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotRaiseChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_lowerChannelButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotLowerChannelClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_bulbTypeCombo</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotBulbTypeChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_bulbLumensSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotBulbLumensChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_bulbTempCombo</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotBulbColourTemperatureChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_weightSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotWeightChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_widthSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotWidthChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_heightSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotHeightChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_depthSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotDepthChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_lensNameCombo</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotLensNameChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_lensMinDegreesSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotLensDegreesMinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_lensMaxDegreesSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotLensDegreesMaxChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_focusTypeCombo</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotFocusTypeChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>m_panMaxSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotFocusPanMaxChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_tiltMaxSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_EditMode</receiver>
+        <slot>slotFocusTiltMaxChanged(int)</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotAddChannelClicked()</slot>
+    <slot>slotRemoveChannelClicked()</slot>
+    <slot>slotModeNameChanged(const QString&amp;)</slot>
+    <slot>slotRaiseChannelClicked()</slot>
+    <slot>slotLowerChannelClicked()</slot>
+    <slot>slotBulbTypeChanged(const QString&amp;)</slot>
+    <slot>slotBulbLumensChanged(int)</slot>
+    <slot>slotBulbColourTemperatureChanged(const QString&amp;)</slot>
+    <slot>slotWeightChanged(int)</slot>
+    <slot>slotWidthChanged(int)</slot>
+    <slot>slotHeightChanged(int)</slot>
+    <slot>slotDepthChanged(int)</slot>
+    <slot>slotLensNameChanged(const QString&amp;)</slot>
+    <slot>slotLensDegreesMinChanged(int)</slot>
+    <slot>slotLensDegreesMaxChanged(int)</slot>
+    <slot>slotFocusTypeChanged(const QString&amp;)</slot>
+    <slot>slotFocusPanMaxChanged(int)</slot>
+    <slot>slotFocusTiltMaxChanged(int)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

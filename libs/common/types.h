@@ -158,13 +158,14 @@ const t_bus_id KBusIDDefaultFade ( KBusIDMin     );
 const t_bus_id KBusIDDefaultHold ( KBusIDMin + 1 );
 
 /*****************************************************************************
- * Deviceclass
+ * Fixture
  *****************************************************************************/
 
 /**
- * Device Class ID type
+ * LogicalChannel's control byte for 16bit pan/tilt etc. (i.e. MSB/LSB)
+ * 0 = the first 8 bits, 1 = bits 9-16 ... 255 = bits 2033-2040 (yikes!)
  */
-typedef unsigned short t_deviceclass_id;
+typedef unsigned char t_controlbyte;
 
 /*****************************************************************************
  * Virtual console

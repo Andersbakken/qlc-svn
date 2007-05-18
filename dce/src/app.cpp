@@ -40,13 +40,15 @@
 #include "app.h"
 #include "aboutbox.h"
 
-#include "common/deviceclass.h"
 #include "common/settings.h"
-#include "common/filehandler.h"
 #include "common/documentbrowser.h"
-
+#include "common/qlcfixture.h"
 #include "deviceclasseditor.h"
 #include "configkeys.h"
+
+// Old headers that will be removed in the future
+#include "common/deviceclass.h"
+#include "common/filehandler.h"
 
 ///////////////////////////////////////////////////////////////////
 // File menu entries
@@ -59,19 +61,6 @@
 #define ID_FILE_PRINT               	10060
 #define ID_FILE_SETTINGS                10070
 #define ID_FILE_QUIT                	10080
-
-///////////////////////////////////////////////////////////////////
-// Edit menu entries
-#define ID_EDIT_ADD_CHANNEL             11000
-#define ID_EDIT_REMOVE_CHANNEL          11010
-#define ID_EDIT_CHANNEL                 11020
-
-#define ID_EDIT_RAISE_CHANNEL           11030
-#define ID_EDIT_LOWER_CHANNEL           11040
-
-#define ID_EDIT_ADD_CAPABILITY          11050
-#define ID_EDIT_REMOVE_CAPABILITY       11060
-#define ID_EDIT_CAPABILITY              11070
 
 ///////////////////////////////////////////////////////////////////
 // View menu entries
@@ -97,17 +86,19 @@
 
 //////////////////////////////////////////////////////////////////
 // Configuration keys
+
 const QString KApplicationRectX("DCE_ApplicationRectX");
 const QString KApplicationRectY("DCE_ApplicationRectY");
 const QString KApplicationRectW("DCE_ApplicationRectW");
 const QString KApplicationRectH("DCE_ApplicationRectH");
+
+const QString KFixtureFilter ( "Fixtures (*.qxf *.deviceclass)" );
 
 App::App(Settings* settings) :
 	m_settings         ( settings ),
 	m_workspace        ( NULL ),
 	m_documentBrowser  ( NULL ),
 	m_fileMenu         ( NULL ),
-	m_editMenu         ( NULL ),
 	m_toolsMenu        ( NULL ),
 	m_windowMenu       ( NULL ),
 	m_helpMenu         ( NULL ),
@@ -155,14 +146,14 @@ void App::initToolBar()
 	m_toolbar = new QToolBar(this, "Workspace");
 	m_toolbar->setMovingEnabled(false);
 
-	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.png")), "New...",
-			0, this, SLOT(slotFileNew()), m_toolbar);
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filenew.png")),
+			"New...", 0, this, SLOT(slotFileNew()), m_toolbar);
 
-	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")), "Load...",
-			0, this, SLOT(slotFileOpen()), m_toolbar);
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")),
+			"Load...", 0, this, SLOT(slotFileOpen()), m_toolbar);
 
-	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.png")), "Save",
-			0, this, SLOT(slotFileSave()), m_toolbar);
+	new QToolButton(QPixmap(QString(PIXMAPS) + QString("/filesave.png")),
+			"Save",	0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
 
@@ -212,104 +203,60 @@ void App::initWorkspace()
 
 void App::initMenuBar()
 {
-  ///////////////////////////////////////////////////////////////////
-  // File Menu
-  m_fileMenu = new QPopupMenu();
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.png")),
-			 "&New", this, SLOT(slotFileNew()),
-			 CTRL+Key_N, ID_FILE_NEW);
+	///////////////////////////////////////////////////////////////////
+	// File Menu
+	m_fileMenu = new QPopupMenu();
+	m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filenew.png")),
+			       "&New", this, SLOT(slotFileNew()),
+			       CTRL+Key_N, ID_FILE_NEW);
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")),
-			 "&Open...", this, SLOT(slotFileOpen()),
-			 CTRL+Key_O, ID_FILE_OPEN);
+	m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fileopen.png")),
+			       "&Open...", this, SLOT(slotFileOpen()),
+			       CTRL+Key_O, ID_FILE_OPEN);
 
-  m_fileMenu->insertSeparator();
+	m_fileMenu->insertSeparator();
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.png")),
-			 "&Save", this, SLOT(slotFileSave()),
-			 CTRL+Key_S, ID_FILE_SAVE);
+	m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/filesave.png")),
+			       "&Save", this, SLOT(slotFileSave()),
+			       CTRL+Key_S, ID_FILE_SAVE);
 
-  m_fileMenu->insertItem("Save As...", this, SLOT(slotFileSaveAs()),
-			 0, ID_FILE_SAVE_AS);
+	m_fileMenu->insertItem("Save As...", this, SLOT(slotFileSaveAs()),
+			       0, ID_FILE_SAVE_AS);
 
-  m_fileMenu->insertSeparator();
+	m_fileMenu->insertSeparator();
 
-  m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.png")),
-			 "E&xit", this, SLOT(slotFileQuit()),
-			 CTRL+Key_Q, ID_FILE_QUIT);
+	m_fileMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/exit.png")),
+			       "E&xit", this, SLOT(slotFileQuit()),
+			       CTRL+Key_Q, ID_FILE_QUIT);
 
-  ///////////////////////////////////////////////////////////////////
-  // Edit Menu
-  m_editMenu = new QPopupMenu();
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/wizard.png")),
-			 "Add &Channel...", this, SLOT(slotEmpty()),
-			 CTRL+Key_C, ID_EDIT_ADD_CHANNEL);
+	///////////////////////////////////////////////////////////////////
+	// Window Menu
+	m_windowMenu = new QPopupMenu();
+	connect(m_windowMenu, SIGNAL(aboutToShow()),
+		this, SLOT(slotRefreshWindowMenu()));
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
-			 "&Remove Channel", this, SLOT(slotEmpty()),
-			 CTRL+Key_R, ID_EDIT_REMOVE_CHANNEL);
+	///////////////////////////////////////////////////////////////////
+	// Help menu
+	m_helpMenu = new QPopupMenu();
+	m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.png")),
+			       "Index...", this, SLOT(slotHelpIndex()),
+			       SHIFT + Key_F1, ID_HELP_INDEX);
+	m_helpMenu->insertSeparator();
+	m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.png")),
+			       "About...", this, SLOT(slotHelpAbout()),
+			       0, ID_HELP_ABOUT);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
-			 "Edit C&hannel...", this, SLOT(slotEmpty()),
-			 CTRL+Key_H, ID_EDIT_CHANNEL);
+	m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()),
+			       0, ID_HELP_ABOUT_QT);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.png")),
-			 "Raise Channel", this, SLOT(slotEmpty()),
-			 CTRL+Key_Up, ID_EDIT_RAISE_CHANNEL);
+	///////////////////////////////////////////////////////////////////
+	// Menubar configuration
+	menuBar()->insertItem("File", m_fileMenu);
+	menuBar()->insertItem("Window", m_windowMenu);
+	menuBar()->insertSeparator();
+	menuBar()->insertItem("Help", m_helpMenu);
 
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.png")),
-			 "Lower Channel", this, SLOT(slotEmpty()),
-			 CTRL+Key_Down, ID_EDIT_LOWER_CHANNEL);
-
-  m_editMenu->insertSeparator();
-
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")),
-			 "&Add Capability...", this, SLOT(slotEmpty()),
-			 CTRL+Key_A, ID_EDIT_ADD_CAPABILITY);
-
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")),
-			 "R&emove Capability", this, SLOT(slotEmpty()),
-			 CTRL+Key_E, ID_EDIT_REMOVE_CAPABILITY);
-
-  m_editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
-			 "Ed&it Capability...", this, SLOT(slotEmpty()),
-			 CTRL+Key_I, ID_EDIT_CAPABILITY);
-
-  connect(m_editMenu, SIGNAL(activated(int)),
-	  this, SLOT(slotEditMenuActivated(int)));
-
-  connect(m_editMenu, SIGNAL(aboutToShow()),
-	  this, SLOT(slotRefreshEditMenu()));
-
-  ///////////////////////////////////////////////////////////////////
-  // Window Menu
-  m_windowMenu = new QPopupMenu();
-  connect(m_windowMenu, SIGNAL(aboutToShow()),
-	  this, SLOT(slotRefreshWindowMenu()));
-
-  ///////////////////////////////////////////////////////////////////
-  // Help menu
-  m_helpMenu = new QPopupMenu();
-  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/help.png")),
-			 "Index...", this, SLOT(slotHelpIndex()),
-			 SHIFT + Key_F1, ID_HELP_INDEX);
-  m_helpMenu->insertSeparator();
-  m_helpMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/Q.png")),
-			 "About...", this, SLOT(slotHelpAbout()),
-			 0, ID_HELP_ABOUT);
-
-  m_helpMenu->insertItem("About Qt...", this, SLOT(slotHelpAboutQt()),
-			 0, ID_HELP_ABOUT_QT);
-
-  ///////////////////////////////////////////////////////////////////
-  // Menubar configuration
-  menuBar()->insertItem("File", m_fileMenu);
-  menuBar()->insertItem("Edit", m_editMenu);
-  menuBar()->insertItem("Window", m_windowMenu);
-  menuBar()->insertSeparator();
-  menuBar()->insertItem("Help", m_helpMenu);
-
-  menuBar()->setSeparator(QMenuBar::InWindowsStyle);
+	menuBar()->setSeparator(QMenuBar::InWindowsStyle);
 }
 
 void App::slotEmpty()
@@ -318,235 +265,182 @@ void App::slotEmpty()
 
 void App::slotFileNew()
 {
-  DeviceClass* dc = new DeviceClass();
-  ASSERT(dc);
+	QLCFixture* fixture = new QLCFixture();
 
-  // Set default manufacturer and model
-  dc->setManufacturer(QString("Manufacturer"));
-  dc->setModel(QString("Model"));
+	// Set default manufacturer and model
+	fixture->setManufacturer("");
+	fixture->setModel("New Fixture");
 
-  DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
-  connect(editor, SIGNAL(closed(DeviceClassEditor*)),
-	  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
-  editor->init();
-  editor->setCaption("New Device Class*"); // Set temporary window caption
-  editor->show();
+	QLCFixtureEditor* editor = new QLCFixtureEditor(m_workspace, fixture);
+	connect(editor, SIGNAL(closed(QLCFixtureEditor*)),
+		this, SLOT(slotEditorClosed(QLCFixtureEditor*)));
+	editor->init();
+	editor->setCaption("New Fixture*");
+	editor->show();
 }
 
 
 void App::slotFileOpen()
 {
-  QPtrList <QString> list;
+	QLCFixtureEditor* editor = NULL;
+	QLCFixture* fixture = NULL;
+	QString path;
 
-  // Read name to last path so that the next file dialog starts from there
-  m_lastPath = QFileDialog::getOpenFileName(m_lastPath,
-					    "Device Classes (*.deviceclass)",
-					    this);
+	path = QFileDialog::getOpenFileName(m_lastPath, KFixtureFilter, this);
 
-  if (m_lastPath != QString::null)
-    {
-      FileHandler::readFileToList(m_lastPath, list);
-
-      // Attempt to read & create a device class from list
-      DeviceClass* dc = DeviceClass::createDeviceClass(list);
-
-      if (!dc)
+	// Save the last path so that the next file dialog starts from
+	// the same place, unless the path is empty
+	if (path == QString::null)
+		return;
+	else
+		m_lastPath = path;
+	
+	if (path.right(4) == ".qxf")
 	{
-	  QMessageBox::warning(this, KApplicationNameShort,
-			       "File didn't contain a valid device class.");
+		fixture = new QLCFixture(path);
 	}
-      else
+	else if (path.right(12) == ".deviceclass")
 	{
-	  DeviceClassEditor* editor = new DeviceClassEditor(m_workspace, dc);
-	  editor->setFileName(m_lastPath);
-	  connect(editor, SIGNAL(closed(DeviceClassEditor*)),
-		  this, SLOT(slotEditorClosed(DeviceClassEditor*)));
-	  editor->init();
-	  editor->show();
+		/* Open as an old DC but convert it to a QLCFixture */
+		DeviceClass* dc = openLegacyFile(path);
+		fixture = new QLCFixture(dc);
+		delete dc;
 	}
-    }
+
+	if (fixture == NULL)
+	{
+		QMessageBox::warning(this, KApplicationNameShort,
+				     "File didn't contain a valid fixture.");
+	}
+	else
+	{
+		editor = new QLCFixtureEditor(m_workspace, fixture);
+		editor->setFileName(path);
+		
+		connect(editor, SIGNAL(closed(QLCFixtureEditor*)),
+			this, SLOT(slotEditorClosed(QLCFixtureEditor*)));
+
+		editor->init();
+		editor->show();
+	}
+}
+
+DeviceClass* App::openLegacyFile(QString path)
+{
+	DeviceClass* dc = NULL; 
+	QPtrList <QString> list;
+
+	FileHandler::readFileToList(m_lastPath, list);
+
+	// Attempt to read & create a device class from list
+	dc = DeviceClass::createDeviceClass(list);
+
+	return dc;
 }
 
 
 void App::slotFileSave()
 {
-  DeviceClassEditor* editor = NULL;
-  editor = static_cast<DeviceClassEditor*> (m_workspace->activeWindow());
+	QLCFixtureEditor* editor = NULL;
+	editor = static_cast<QLCFixtureEditor*> (m_workspace->activeWindow());
 
-  if (editor && editor->save())
-    {
-      // Save the last path so that the next file dialog starts from there
-      m_lastPath = editor->fileName();
-    }
+	if (editor && editor->save())
+	{
+		// Save the last path so that the next file dialog starts from there
+		m_lastPath = editor->fileName();
+	}
 }
 
 
 void App::slotFileSaveAs()
 {
-  DeviceClassEditor* editor = NULL;
-  editor = static_cast<DeviceClassEditor*> (m_workspace->activeWindow());
+	QLCFixtureEditor* editor = NULL;
+	editor = static_cast<QLCFixtureEditor*> (m_workspace->activeWindow());
 
-  if (editor && editor->saveAs())
-    {
-      // Save the last path so that the next file dialog starts from there
-      m_lastPath = editor->fileName();
-    }
+	if (editor && editor->saveAs())
+	{
+		// Save the last path so that the next file dialog starts from there
+		m_lastPath = editor->fileName();
+	}
 }
 
 
 void App::slotFileQuit()
 {
-  close();
-}
-
-
-void App::slotEditMenuActivated(int id)
-{
-  DeviceClassEditor* editor = NULL;
-  editor = static_cast<DeviceClassEditor*> (m_workspace->activeWindow());
-
-  if (editor)
-    {
-      switch(id)
-	{
-	case ID_EDIT_ADD_CHANNEL:
-	  editor->slotAddChannelClicked();
-	  break;
-
-	case ID_EDIT_REMOVE_CHANNEL:
-	  editor->slotRemoveChannelClicked();
-	  break;
-
-	case ID_EDIT_CHANNEL:
-	  editor->slotEditChannelClicked();
-	  break;
-
-	case ID_EDIT_RAISE_CHANNEL:
-	  editor->slotRaiseChannelClicked();
-	  break;
-
-	case ID_EDIT_LOWER_CHANNEL:
-	  editor->slotLowerChannelClicked();
-	  break;
-
-	case ID_EDIT_ADD_CAPABILITY:
-	  editor->slotAddPresetClicked();
-	  break;
-
-	case ID_EDIT_REMOVE_CAPABILITY:
-	  editor->slotRemovePresetClicked();
-	  break;
-
-	case ID_EDIT_CAPABILITY:
-	  editor->slotEditPresetClicked();
-	  break;
-
-	default:
-	  break;
-	}
-    }
-
-}
-
-
-void App::slotRefreshEditMenu()
-{
-  // If there are no editor windows, disable edit menu items
-  if (workspace()->windowList().count() == 0)
-    {
-      m_editMenu->setItemEnabled(ID_EDIT_ADD_CHANNEL, false);
-      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CHANNEL, false);
-      m_editMenu->setItemEnabled(ID_EDIT_CHANNEL, false);
-      m_editMenu->setItemEnabled(ID_EDIT_RAISE_CHANNEL, false);
-      m_editMenu->setItemEnabled(ID_EDIT_LOWER_CHANNEL, false);
-      m_editMenu->setItemEnabled(ID_EDIT_ADD_CAPABILITY, false);
-      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CAPABILITY, false);
-      m_editMenu->setItemEnabled(ID_EDIT_CAPABILITY, false);
-    }
-  else
-    {
-      m_editMenu->setItemEnabled(ID_EDIT_ADD_CHANNEL, true);
-      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CHANNEL, true);
-      m_editMenu->setItemEnabled(ID_EDIT_CHANNEL, true);
-      m_editMenu->setItemEnabled(ID_EDIT_RAISE_CHANNEL, true);
-      m_editMenu->setItemEnabled(ID_EDIT_LOWER_CHANNEL, true);
-      m_editMenu->setItemEnabled(ID_EDIT_ADD_CAPABILITY, true);
-      m_editMenu->setItemEnabled(ID_EDIT_REMOVE_CAPABILITY, true);
-      m_editMenu->setItemEnabled(ID_EDIT_CAPABILITY, true);
-    }
+	close();
 }
 
 
 void App::slotRefreshWindowMenu()
 {
-  QWidget* widget;
-  int id = 0;
+	QWidget* widget;
+	int id = 0;
 
-  QPtrList <QWidget> wl = workspace()->windowList();
+	QPtrList <QWidget> wl = workspace()->windowList();
 
-  m_windowMenu->clear();
-  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/view_sidetree.png")),
-			   "Cascade", this, SLOT(slotWindowCascade()),
-			   0, ID_WINDOW_CASCADE);
-  m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/view_left_right.png")),
-			   "Tile", this, SLOT(slotWindowTile()),
-			   0, ID_WINDOW_TILE);
-  m_windowMenu->insertSeparator();
+	m_windowMenu->clear();
+	m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/view_sidetree.png")),
+				 "Cascade", this, SLOT(slotWindowCascade()),
+				 0, ID_WINDOW_CASCADE);
+	m_windowMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/view_left_right.png")),
+				 "Tile", this, SLOT(slotWindowTile()),
+				 0, ID_WINDOW_TILE);
+	m_windowMenu->insertSeparator();
 
-  for (widget = wl.first(); widget != NULL; widget = wl.next())
-    {
-      m_windowMenu->insertItem(widget->caption(), id);
-      if (widget->isVisible() == true)
+	for (widget = wl.first(); widget != NULL; widget = wl.next())
 	{
-	  m_windowMenu->setItemChecked(id, true);
+		m_windowMenu->insertItem(widget->caption(), id);
+		if (widget->isVisible() == true)
+		{
+			m_windowMenu->setItemChecked(id, true);
+		}
+		id++;
 	}
-      id++;
-    }
 
-  connect(m_windowMenu, SIGNAL(activated(int)),
-	  this, SLOT(slotWindowMenuCallback(int)));
+	connect(m_windowMenu, SIGNAL(activated(int)),
+		this, SLOT(slotWindowMenuCallback(int)));
 }
 
 
 void App::slotWindowMenuCallback(int item)
 {
-  QPtrList <QWidget> wl = workspace()->windowList();
+	QPtrList <QWidget> wl = workspace()->windowList();
 
-  if (item == ID_WINDOW_CASCADE || item == ID_WINDOW_TILE)
-    {
-      return;
-    }
-
-  if (wl.count())
-    {
-      QWidget* widget;
-
-      widget = wl.at(item);
-      if (widget != NULL)
+	if (item == ID_WINDOW_CASCADE || item == ID_WINDOW_TILE)
 	{
-	  widget->show();
-	  widget->setFocus();
-	}
-      else
-	{
-	  QMessageBox::critical(this, KApplicationNameShort,
-				"Unable to focus window! Handle not found.");
+		return;
 	}
 
-      disconnect(m_windowMenu);
-    }
+	if (wl.count())
+	{
+		QWidget* widget;
+
+		widget = wl.at(item);
+		if (widget != NULL)
+		{
+			widget->show();
+			widget->setFocus();
+		}
+		else
+		{
+			QMessageBox::critical(this, KApplicationNameShort,
+					      "Unable to focus window! Handle not found.");
+		}
+
+		disconnect(m_windowMenu);
+	}
 }
 
 
 void App::slotWindowCascade()
 {
-  workspace()->cascade();
+	workspace()->cascade();
 }
 
 
 void App::slotWindowTile()
 {
-  workspace()->tile();
+	workspace()->tile();
 }
 
 //
@@ -604,7 +498,7 @@ void App::slotHelpAboutQt()
 //
 // An editor window has been closed
 //
-void App::slotEditorClosed(DeviceClassEditor* editor)
+void App::slotEditorClosed(QLCFixtureEditor* editor)
 {
 	delete editor;
 }
@@ -614,28 +508,28 @@ void App::slotEditorClosed(DeviceClassEditor* editor)
 //
 void App::closeEvent(QCloseEvent* e)
 {
-  DeviceClassEditor* editor = NULL;
+	QLCFixtureEditor* editor = NULL;
 
-  e->accept();
+	e->accept();
 
-  QWidgetList wl = workspace()->windowList();
-  for (unsigned int i = 0; i < wl.count(); i++)
-    {
-      editor = static_cast<DeviceClassEditor*> (wl.at(i));
-      assert(editor);
-
-      editor->show();
-      editor->setFocus();
-      if ( !editor->close() )
+	QWidgetList wl = workspace()->windowList();
+	for (unsigned int i = 0; i < wl.count(); i++)
 	{
-	  e->ignore();
-	}
-    }
+		editor = static_cast<QLCFixtureEditor*> (wl.at(i));
+		assert(editor);
 
-  // Save main window geometry for next session
-  m_settings->set(KApplicationRectX, rect().x());
-  m_settings->set(KApplicationRectY, rect().y());
-  m_settings->set(KApplicationRectW, rect().width());
-  m_settings->set(KApplicationRectH, rect().height());
-  m_settings->save();
+		editor->show();
+		editor->setFocus();
+		if ( !editor->close() )
+		{
+			e->ignore();
+		}
+	}
+
+	// Save main window geometry for next session
+	m_settings->set(KApplicationRectX, rect().x());
+	m_settings->set(KApplicationRectY, rect().y());
+	m_settings->set(KApplicationRectW, rect().width());
+	m_settings->set(KApplicationRectH, rect().height());
+	m_settings->save();
 }

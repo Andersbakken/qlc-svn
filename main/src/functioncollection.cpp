@@ -172,23 +172,23 @@ void FunctionCollection::saveXML(QDomDocument* doc)
         assert(doc);
 
         /* Function tag */
-        root = doc->createElement(KXMLFunctionNode);
+        root = doc->createElement(KXMLQLCFunction);
         doc->appendChild(root);
 
-        root.setAttribute(KXMLFunctionID, id());
-        root.setAttribute(KXMLFunctionType, Function::typeToString(m_type));
-        root.setAttribute(KXMLFunctionName, name());
+        root.setAttribute(KXMLQLCFunctionID, id());
+        root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+        root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Steps */
         QValueList <t_function_id>::iterator it;
         for (it = m_steps.begin(); it != m_steps.end(); ++it)
         {
                 /* Step tag */
-                tag = doc->createElement(KXMLFunctionStep);
+                tag = doc->createElement(KXMLQLCFunctionStep);
                 root.appendChild(tag);
 		
                 /* Step number */
-                tag.setAttribute(KXMLFunctionNumber, i++);
+                tag.setAttribute(KXMLQLCFunctionNumber, i++);
 
                 /* Step Function ID */
                 str.setNum(*it);

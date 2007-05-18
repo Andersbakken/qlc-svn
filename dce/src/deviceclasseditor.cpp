@@ -1,6 +1,6 @@
 /*
-  Q Light Controller - Device Class Editor
-  deviceclasseditor.cpp
+  Q Light Controller - Fixture Editor
+  qlcfixtureeditor.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -32,568 +32,416 @@
 #include <errno.h>
 #include <string.h>
 
+#include "common/settings.h"
+#include "common/qlcfixture.h"
+#include "common/qlcfixturemode.h"
+#include "common/qlcchannel.h"
+#include "common/qlcphysical.h"
+
 #include "app.h"
 #include "configkeys.h"
 #include "deviceclasseditor.h"
 #include "editpresetvalue.h"
-
-#include "common/settings.h"
-#include "common/deviceclass.h"
-#include "common/logicalchannel.h"
-#include "common/capability.h"
+#include "editchannel.h"
+#include "editmode.h"
 
 extern App* _app;
 extern int errno;
 
-const int KChannelNumberColumn(0);
-const int KChannelNameColumn(1);
+static const int KChannelsColumnName     ( 0 );
+static const int KChannelsColumnGroup    ( 1 );
+static const int KChannelsColumnPointer  ( 2 );
 
-const int KCapabilityMinimumColumn(0);
-const int KCapabilityMaximumColumn(1);
-const int KCapabilityDescriptionColumn(2);
+static const int KModesColumnName     ( 0 );
+static const int KModesColumnChannels ( 1 );
+static const int KModesColumnPointer  ( 2 );
 
-DeviceClassEditor::DeviceClassEditor(QWidget* parent, DeviceClass* dc)
-  : UI_DeviceClassEditor(parent)
+QLCFixtureEditor::QLCFixtureEditor(QWidget* parent, QLCFixture* fixture)
+	: UI_QLCFixtureEditor(parent),
+	  m_fixture(fixture),
+	  m_modified(false)
 {
-  m_dc = dc;
-  m_modified = false;
 }
 
-DeviceClassEditor::~DeviceClassEditor()
+QLCFixtureEditor::~QLCFixtureEditor()
 {
-  delete m_dc;
+	delete m_fixture;
 }
 
-void DeviceClassEditor::init()
+void QLCFixtureEditor::init()
 {
-  setIcon(QPixmap(QString(PIXMAPS) + QString("/fixture.png")));
-  m_addChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/wizard.png")));
-  m_removeChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")));
-  m_editChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.png")));
-  m_raiseChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/up.png")));
-  m_lowerChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/down.png")));
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/fixture.png")));
 
-  m_addPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
-  m_removePresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
-  m_editPresetButton->setIconSet(QPixmap(QString(PIXMAPS) + QString("/edit.png")));
+	/* Channel buttons */
+	m_addChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + 
+				       QString("/edit_add.png")));
+	m_removeChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + 
+					  QString("/edit_remove.png")));
+	m_editChannelButton->setIconSet(QPixmap(QString(PIXMAPS) + 
+					QString("/edit.png")));
 
-  setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
+	/* Mode buttons */
+	m_removeModeButton->setIconSet(QPixmap(QString(PIXMAPS) + 
+				       QString("/edit_remove.png")));
+	m_addModeButton->setIconSet(QPixmap(QString(PIXMAPS) + 
+				    QString("/edit_add.png")));
+	m_editModeButton->setIconSet(QPixmap(QString(PIXMAPS) + 
+				     QString("/edit.png")));
 
-  m_manufacturerEdit->setText(m_dc->manufacturer());
-  m_modelEdit->setText(m_dc->model());
+	setCaption(m_fixture->manufacturer() + QString(" - ") + 
+			m_fixture->model());
 
-  m_typeCombo->setCurrentText(m_dc->type());
+	m_manufacturerEdit->setText(m_fixture->manufacturer());
+	m_modelEdit->setText(m_fixture->model());
 
-  updateChannelList();
-  updatePresetValues();
+	m_typeCombo->setCurrentText(m_fixture->type());
 
-  setModified(false);
+	refreshChannelList();
+	refreshModeList();
+
+	setModified(false);
 }
 
-void DeviceClassEditor::closeEvent(QCloseEvent* e)
+void QLCFixtureEditor::closeEvent(QCloseEvent* e)
 {
-  if (m_modified)
-    {
-      int r = QMessageBox::information(this, KApplicationNameShort,
-			      "Do you want to save changes to device class\n\""
-			      + m_dc->name() + "\"\nbefore closing?",
-			      QMessageBox::Yes, QMessageBox::No,
-				       QMessageBox::Cancel);
-      if (r == QMessageBox::Yes)
+	int r = 0;
+
+	if (m_modified)
 	{
-	  if (save())
-	    {
-	      e->accept();
-	      emit closed(this);
-	    }
+		r = QMessageBox::information(this, KApplicationNameShort,
+				"Do you want to save changes to fixture\n\""
+				+ m_fixture->name() + "\"\nbefore closing?",
+				QMessageBox::Yes,
+				QMessageBox::No,
+				QMessageBox::Cancel);
+		if (r == QMessageBox::Yes)
+		{
+			if (save())
+			{
+				e->accept();
+				emit closed(this);
+			}
+		}
+		else if (r == QMessageBox::No)
+		{
+			e->accept();
+			emit closed(this);
+		}
+		else
+		{
+			e->ignore();
+		}
 	}
-      else if (r == QMessageBox::No)
+	else
 	{
-	  e->accept();
-	  emit closed(this);
+		e->accept();
+		emit closed(this);
 	}
-      else
+}
+
+bool QLCFixtureEditor::save()
+{
+	if (m_fileName == QString::null)
 	{
-	  e->ignore();
+		return saveAs();
 	}
-    }
-  else
-    {
-      e->accept();
-      emit closed(this);
-    }
-}
-
-bool DeviceClassEditor::save()
-{
-  if (m_fileName == QString::null)
-    {
-      return saveAs();
-    }
-  else
-    {
-      if (m_dc->saveToFile(m_fileName) == IO_Ok)
+	else
 	{
-	  setModified(false);
-	  return true;
+		if (m_fixture->saveXML(m_fileName) == true)
+		{
+			setModified(false);
+			return true;
+		}
+		else
+		{
+			QMessageBox::critical(this, "Unable to save file",
+					      QString("Error: ") +
+					      strerror(errno));
+			return false;
+		}
 	}
-      else
+}
+
+bool QLCFixtureEditor::saveAs()
+{
+	QString path;
+
+	if (m_fileName == QString::null)
 	{
-	  QMessageBox::critical(this, KApplicationNameShort,
-				QString("Unable to save file!\nReason: ") +
-				strerror(errno));
-	  return false;
+		path = QString(FIXTURES) + QString("/");
+		path += m_fixture->manufacturer() + QString("-");
+		path += m_fixture->model() + QString(".qxf");
 	}
-    }
-}
-
-bool DeviceClassEditor::saveAs()
-{
-  QString path;
-
-  if (m_fileName == QString::null)
-    {
-      path = QString(FIXTURES) + QString("/");
-      path += m_dc->manufacturer() + QString("-");
-      path += m_dc->model() + QString(".deviceclass");
-    }
-  else
-    {
-      path = m_fileName;
-    }
-
-  path = QFileDialog::getSaveFileName(path, "Device Classes (*.deviceclass)",
-				      this);
-
-  if (path != QString::null)
-    {
-      if (path.right(12) != QString(".deviceclass"))
+	else
 	{
-	  path += QString(".deviceclass");
+		path = m_fileName;
 	}
 
-      if (m_dc->saveToFile(path) == IO_Ok)
+	path = QFileDialog::getSaveFileName(path, "Fixtures (*.qxf)", this);
+	if (path != QString::null)
 	{
-	  m_fileName = QString(path);
-	  setModified(false);
-	  return true;
+		if (path.right(4) != QString(".qxf"))
+			path += QString(".qxf");
+
+		if (m_fixture->saveXML(path) == true)
+		{
+			m_fileName = path;
+			setModified(false);
+			return true;
+		}
+		else
+		{
+			QMessageBox::critical(this,"Unable to save file: ",
+					      QString("Error: ") +
+					      strerror(errno));
+			return false;
+		}
 	}
-      else
+	else
 	{
-	  QMessageBox::critical(this, KApplicationNameShort,
-				QString("Unable to save file!\nReason: ") +
-				strerror(errno));
-	  return false;
+		return false;
 	}
-    }
-  else
-    {
-      return false;
-    }
 }
 
-void DeviceClassEditor::setModified(bool modified)
+void QLCFixtureEditor::setModified(bool modified)
 {
-  if (modified == true)
-    {
-      setCaption(m_fileName + QString(" *"));
-    }
-  else
-    {
-      setCaption(m_fileName);
-    }
+	if (modified == true)
+		setCaption(m_fileName + QString(" *"));
+	else
+		setCaption(m_fileName);
 
-  m_modified = modified;
+	m_modified = modified;
 }
 
-void DeviceClassEditor::slotManufacturerEditTextChanged(const QString &text)
+/*****************************************************************************
+ * General tab functions
+ *****************************************************************************/
+
+void QLCFixtureEditor::slotManufacturerEditTextChanged(const QString &text)
 {
-  m_dc->setManufacturer(text);
-  setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
+	m_fixture->setManufacturer(text);
+	setCaption(m_fixture->manufacturer() + QString(" - ") + m_fixture->model());
 
-  setModified();
+	setModified();
 }
 
-void DeviceClassEditor::slotModelEditTextChanged(const QString &text)
+void QLCFixtureEditor::slotModelEditTextChanged(const QString &text)
 {
-  m_dc->setModel(text);
-  setCaption(m_dc->manufacturer() + QString(" - ") + m_dc->model());
+	m_fixture->setModel(text);
+	setCaption(m_fixture->manufacturer() + QString(" - ") + m_fixture->model());
 
-  setModified();
+	setModified();
 }
 
-void DeviceClassEditor::slotTypeSelected(const QString &text)
+void QLCFixtureEditor::slotTypeSelected(const QString &text)
 {
-  m_dc->setType(text);
-  setModified();
+	m_fixture->setType(text);
+	setModified();
 }
 
-void DeviceClassEditor::slotChannelListSelectionChanged(QListViewItem* item)
-{
-  updatePresetValues();
-}
+/*****************************************************************************
+ * Channels tab functions
+ *****************************************************************************/
 
-void DeviceClassEditor::slotPresetListSelectionChanged(QListViewItem* item)
+void QLCFixtureEditor::slotChannelListSelectionChanged(QListViewItem* item)
 {
 }
 
-void DeviceClassEditor::slotAddChannelClicked()
+void QLCFixtureEditor::slotAddChannelClicked()
 {
-  bool ok = false;
-  QString text = QInputDialog::getText(KApplicationNameShort,
-                                  QString("Enter description for new channel"),
-                                  QLineEdit::Normal, QString::null,
-				  &ok, this);
-  if (ok == true && text.isEmpty() == false)
-    {
-      LogicalChannel* lc = new LogicalChannel();
-      lc->setName(text);
-      lc->setChannel(m_dc->channels()->count()); // 0, 1, 2...
+	EditChannel* ec = NULL;
 
-      Capability* c = new Capability();
-      c->setLo(0);
-      c->setHi(255);
-      c->setName(QString("Channel Level"));
-      lc->capabilities()->append(c);
+	ec = new EditChannel(this);
+	ec->init();
+	ec->exec();
 
-      m_dc->channels()->append(lc);
-
-      updateChannelList();
-
-      for (QListViewItem* item = m_channelList->firstChild(); item != NULL;
-           item = item->nextSibling())
-        {
-          if (item->text(KChannelNameColumn) == text)
-            {
-              m_channelList->setSelected(item, true);
-              break;
-            }
-        }
-
-      setModified();
-    }
+	delete ec;
 }
 
-void DeviceClassEditor::slotRemoveChannelClicked()
+void QLCFixtureEditor::slotRemoveChannelClicked()
 {
-  QPtrList <LogicalChannel> *cl = m_dc->channels();
-
-  LogicalChannel* ch = currentChannel();
-
-  cl->remove( currentChannel() );
-  delete ch;
-  ch = NULL;
-
-  // Reorganise channel numbers
-  int i = 0;
-  for (LogicalChannel* c = cl->first(); c != NULL; c = cl->next())
-    {
-      c->setChannel(i++);
-    }
-
-  updateChannelList();
-  updatePresetValues();
-
-  setModified();
+	// Remove the selected channel from the fixture (also deleted)
+	m_fixture->removeChannel(currentChannel());
+	
+	// Remove the selected listview item
+	delete m_channelList->currentItem();
 }
 
-void DeviceClassEditor::slotEditChannelClicked()
+void QLCFixtureEditor::slotEditChannelClicked()
 {
-  LogicalChannel* ch = currentChannel();
+	EditChannel* ec = NULL;
+	QLCChannel* real = NULL;
+	QListViewItem* item = NULL;
 
-  if (ch == NULL)
-    {
-      return;
-    }
-
-  bool ok = false;
-  QString text = QInputDialog::getText(KApplicationNameShort,
-                                       QString("Enter channel description"),
-                                       QLineEdit::Normal,
-                                       ch->name(), &ok, this);
-  if (ok == true && text.isEmpty() == false)
-    {
-      ch->setName(text);
-      updateChannelList();
-
-      setModified();
-    }
-}
-
-void DeviceClassEditor::slotRaiseChannelClicked()
-{
-  LogicalChannel* ch = currentChannel();
-
-  if (ch == NULL)
-    {
-      return;
-    }
-
-  unsigned int i = m_dc->channels()->find(ch);
-  if (i == 0)
-    {
-      return;
-    }
-  else
-    {
-      m_dc->channels()->at(i - 1)->setChannel(i);
-      m_dc->channels()->take(i);
-      i--;
-      ch->setChannel(i);
-      m_dc->channels()->insert(i, ch);
-      updateChannelList();
-
-      setModified();
-
-      for (QListViewItem* item = m_channelList->firstChild(); item != NULL;
-	   item = item->nextSibling())
-        {
-          QString num;
-          num.sprintf("%03d", i + 1);
-          if (item->text(KChannelNumberColumn) == num)
-            {
-              m_channelList->setSelected(item, true);
-              slotChannelListSelectionChanged(item);
-              break;
-            }
-        }
-    }
-}
-
-void DeviceClassEditor::slotLowerChannelClicked()
-{
-  LogicalChannel* ch = currentChannel();
-
-  if (ch == NULL)
-    {
-      return;
-    }
-
-  unsigned int i = m_dc->channels()->find(ch);
-  if (i == m_dc->channels()->count() - 1)
-    {
-      return;
-    }
-  else
-    {
-      m_dc->channels()->at(i + 1)->setChannel(i);
-      m_dc->channels()->take(i);
-      i++;
-      ch->setChannel(i);
-      m_dc->channels()->insert(i, ch);
-      updateChannelList();
-
-      setModified();
-
-      for (QListViewItem* item = m_channelList->firstChild(); item != NULL;
-	   item = item->nextSibling())
-        {
-          QString num;
-          num.sprintf("%03d", i + 1);
-          if (item->text(KChannelNumberColumn) == num)
-            {
-              m_channelList->setSelected(item, true);
-              slotChannelListSelectionChanged(item);
-              break;
-            }
-        }
-    }
-}
-
-void DeviceClassEditor::slotAddPresetClicked()
-{
-  LogicalChannel* ch = currentChannel();
-
-  if (ch == NULL)
-    {
-      return;
-    }
-
-  EditPresetValue* epv = new EditPresetValue(this);
-
-  while (1)
-    {
-      if (epv->exec() == QDialog::Accepted)
+	// Initialize the dialog with the selected logical channel
+	real = currentChannel();
+	ec = new EditChannel(this, real);
+	ec->init();
+	
+	if (ec->exec() == QDialog::Accepted)
 	{
-	  int min = epv->m_minSpin->value();
-	  int max = epv->m_maxSpin->value();
-	  QString description = epv->m_descriptionEdit->text();
+		// Copy the channel's contents to the real channel
+		*real = *ec->channel();
 
-	  if (ch->searchCapability(min) != NULL ||
-	      ch->searchCapability(max) != NULL)
-	    {
-	      QMessageBox::information(this, KApplicationNameShort,
-		    "Overlapping value range! Unable to add value.");
-
-	      continue;
-	    }
-	  else
-	    {
-	      Capability* cap = new Capability();
-	      cap->setLo(min);
-	      cap->setHi(max);
-	      cap->setName(description);
-
-	      ch->capabilities()->append(cap);
-
-	      setModified();
-
-	      updatePresetValues();
-	      break;
-	    }
+		item = m_channelList->currentItem();
+		item->setText(KChannelsColumnName, real->name());
+		item->setText(KChannelsColumnGroup, real->group());
 	}
-      else
+
+	delete ec;
+}
+
+void QLCFixtureEditor::refreshChannelList()
+{
+	QPtrListIterator <QLCChannel> it(*m_fixture->channels());
+	QLCChannel* ch = NULL;
+	QListViewItem* item = NULL;
+	QString str;
+
+	m_channelList->clear();
+
+	// Fill channels list
+	while ( (ch = it.current()) != 0)
 	{
-	  break;
+		item = new QListViewItem(m_channelList);
+		item->setText(KChannelsColumnName, ch->name());
+		item->setText(KChannelsColumnGroup, ch->group());
+
+		// Store the channel pointer to the listview as a string
+		str.sprintf("%d", (unsigned long) ch);
+		item->setText(KChannelsColumnPointer, str);
+		
+		++it;
 	}
-    }
-
-  delete epv;
 }
 
-void DeviceClassEditor::slotRemovePresetClicked()
+QLCChannel* QLCFixtureEditor::currentChannel()
 {
-  Capability* cap = currentCapability();
-  if (cap == NULL)
-    {
-      return;
-    }
+	QLCChannel* ch = NULL;
+	QListViewItem* item = NULL;
 
-  currentChannel()->capabilities()->remove(cap);
-  delete cap;
+	// Convert the string-form ulong to a QLCChannel pointer and return it
+	item = m_channelList->currentItem();
+	if (item != NULL)
+		ch = (QLCChannel*) item->text(KChannelsColumnPointer).toULong();
 
-  updatePresetValues();
-
-  setModified();
+	return ch;
 }
 
-void DeviceClassEditor::slotEditPresetClicked()
+/*****************************************************************************
+ * Modes tab functions
+ *****************************************************************************/
+
+void QLCFixtureEditor::slotAddModeClicked()
 {
-  LogicalChannel* ch = currentChannel();
-  Capability* orig = currentCapability();
+	QLCFixtureMode* mode = NULL;
+	EditMode* em = NULL;
+	bool ok = false;
+	
+	em = new EditMode(_app);
+	em->init();
 
-  if (ch == NULL || orig == NULL)
-    {
-      return;
-    }
-
-  EditPresetValue* epv = new EditPresetValue(this);
-  epv->m_minSpin->setValue(orig->lo());
-  epv->m_maxSpin->setValue(orig->hi());
-  epv->m_descriptionEdit->setText(orig->name());
-
-  while(1)
-    {
-      if (epv->exec() == QDialog::Accepted)
+	while (ok == false)
 	{
-	  int min = epv->m_minSpin->value();
-	  int max = epv->m_maxSpin->value();
-	  QString description = epv->m_descriptionEdit->text();
-
-	  Capability* minCap = ch->searchCapability(min);
-	  Capability* maxCap = ch->searchCapability(max);
-
-	  if (minCap != NULL && minCap != orig)
-	    {
-	      QMessageBox::information(this, KApplicationNameShort,
-				       "Overlapping value range! Unable to change min value.");
-	      continue;
-	    }
-	  else if (maxCap != NULL && maxCap != orig)
-	    {
-	      QMessageBox::information(this, KApplicationNameShort,
-				       "Overlapping value range! Unable to change max value.");
-	      continue;;
-	    }
-	  else
-	    {
-	      orig->setLo(min);
-	      orig->setHi(max);
-	      orig->setName(description);
-	    }
-
-	  setModified();
-
-	  updatePresetValues();
-
-	  break;
+		if (em->exec() == QDialog::Accepted)
+		{
+			if (m_fixture->searchMode(em->mode()->name()) != NULL)
+			{
+				QMessageBox::warning(this, 
+					QString("Mode already exists"),
+					QString("A mode by the name \"") + 
+					em->mode()->name() + 
+					QString("\" already exists!"));
+				
+				// User must rename the mode to continue
+				ok = false;
+			}
+			else
+			{
+				ok = true;
+				m_fixture->addMode(new QLCFixtureMode(em->mode()));
+				refreshModeList();
+			}
+		}
+		else
+		{
+			ok = true;
+		}
 	}
-      else
+	
+	delete em;
+}
+
+void QLCFixtureEditor::slotRemoveModeClicked()
+{
+	QLCFixtureMode* mode = currentMode();
+	
+	if (QMessageBox::question(this, "Remove Mode?",
+		QString("Are you sure you wish to remove mode: ") + mode->name(),
+			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 	{
-	  break;
+		m_fixture->removeMode(mode);
+		refreshModeList();
 	}
-    }
-
-  delete epv;
 }
 
-void DeviceClassEditor::updateChannelList()
+void QLCFixtureEditor::slotEditModeClicked()
 {
-  QPtrList <LogicalChannel> *cl = m_dc->channels();
-  QString ch;
+	QLCFixtureMode* mode = currentMode();
+	EditMode* em = NULL;
+	QString str;
+	
+	em = new EditMode(_app, mode);
+	em->init();
 
-  m_channelList->clear();
-
-  // Fill channels list
-  for (LogicalChannel* c = cl->first(); c != NULL; c = cl->next())
-    {
-      ch.sprintf("%03d", c->channel() + 1);
-      new QListViewItem(m_channelList, ch, c->name());
-    }
+	if (em->exec() == QDialog::Accepted)
+	{
+		QListViewItem* item = NULL;
+		*mode = *em->mode();
+		
+		item = m_modeList->currentItem();
+		item->setText(KModesColumnName, mode->name());
+		str.sprintf("%d", mode->channels());
+		item->setText(KModesColumnChannels, str);
+	}
+	
+	delete em;
 }
 
-void DeviceClassEditor::updatePresetValues()
+void QLCFixtureEditor::refreshModeList()
 {
-  m_presetList->clear();
+	QPtrListIterator <QLCFixtureMode> it(*m_fixture->modes());
+	QLCFixtureMode* mode = NULL;
+	QListViewItem* item = NULL;
+	QString str;
 
-  if (currentChannel() == NULL)
-    {
-      return;
-    }
-  else
-    {
-      QPtrList <Capability> *cl = currentChannel()->capabilities();
-      Capability* cap = NULL;
+	m_modeList->clear();
 
-      for (cap = cl->first(); cap != NULL; cap = cl->next())
-        {
-          QString lo, hi;
-          lo.sprintf("%03d", cap->lo());
-          hi.sprintf("%03d", cap->hi());
-          new QListViewItem(m_presetList, lo, hi, cap->name());
-        }
-    }
+	// Fill channels list
+	while ( (mode = it.current()) != 0)
+	{
+		item = new QListViewItem(m_modeList);
+		item->setText(KModesColumnName, mode->name());
+		str.sprintf("%d", mode->channels());
+		item->setText(KModesColumnChannels, str);
+
+		// Store the channel pointer to the listview as a string
+		str.sprintf("%d", (unsigned long) mode);
+		item->setText(KModesColumnPointer, str);
+		
+		++it;
+	}
 }
 
-LogicalChannel* DeviceClassEditor::currentChannel()
+QLCFixtureMode* QLCFixtureEditor::currentMode()
 {
-  if (m_channelList->currentItem() == NULL)
-    {
-      return NULL;
-    }
+	QLCFixtureMode* mode = NULL;
+	QListViewItem* item = NULL;
 
-  unsigned int channel = 0;
-  channel = m_channelList->currentItem()->text(KChannelNumberColumn).toInt()-1;
-  ASSERT(channel < m_dc->channels()->count());
+	// Convert the string-form ulong to a QLCChannel pointer and return it
+	item = m_modeList->currentItem();
+	if (item != NULL)
+		mode = (QLCFixtureMode*) item->text(KModesColumnPointer).toULong();
 
-  return m_dc->channels()->at(channel);
-}
-
-Capability* DeviceClassEditor::currentCapability()
-{
-  QListViewItem* item = m_presetList->currentItem();
-  if (item == NULL)
-    {
-      return NULL;
-    }
-
-  LogicalChannel* channel = currentChannel();
-  if (channel != NULL)
-    {
-      return channel->searchCapability(item->text(KCapabilityMinimumColumn).toInt());
-    }
-  else
-    {
-      return NULL;
-    }
+	return mode;
 }

@@ -19,14 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "filehandler.h"
 #include <qfile.h>
 #include <qdom.h>
-
-const QString KXMLCreatorNode    ( "Creator" );
-const QString KXMLCreatorName    (    "Name" );
-const QString KXMLCreatorVersion ( "Version" );
-const QString KXMLCreatorAuthor  (  "Author" );
+#include <assert.h>
+#include "filehandler.h"
 
 /**
  * Read an old QLC-style file to a list of key-value pairs
@@ -97,19 +93,36 @@ bool FileHandler::readFileToList(QString &fileName, QPtrList <QString> &list)
  *
  * @return true if succesful, otherwise false
  */
-bool FileHandler::readXML(QString path, QDomDocument** document)
+bool FileHandler::readXML(const QString path, QDomDocument** document)
 {
 	QFile file(path);
 	bool result = false;
+	QString error;
+	int line = 0;
+	int col = 0;
 
-	if (document != NULL && file.open(IO_ReadOnly) == true)
+	assert(document != NULL);
+	assert(path != QString::null);
+
+	if (file.open(IO_ReadOnly) == true)
 	{
 		*document = new QDomDocument();
-		result = (*document)->setContent(&file, false);
+		result = (*document)->setContent(&file, false,
+						 &error, &line, &col);
 		file.close();
+
+		if (result == false)
+		{
+			QString str;
+
+			str.sprintf("%s: %s, line %d, col %d", path.ascii(),
+				    error.ascii(), line, col);
+			qDebug(str);
+		}
 	}
 	else
 	{
+		qDebug(QString("Unable to open file: ") + path);
 		result = false;
 	}
 
@@ -127,36 +140,43 @@ bool FileHandler::readXML(QString path, QDomDocument** document)
  */
 bool FileHandler::getXMLHeader(QString content, QDomDocument** doc)
 {
+	QDomImplementation dom;
+	QDomDocumentType doctype;
 	QDomElement root;
 	QDomElement tag;
+	QDomElement subtag;
 	QDomText text;
 
 	if (doc == NULL || content == NULL)
 		return false;
 
-	*doc = new QDomDocument("QLCFile Content=\"" + content + "\"");
+	doctype = dom.createDocumentType(content, QString::null, QString::null);
+	*doc = new QDomDocument(doctype);
 
-	/* Creator tag */
-	root = (*doc)->createElement(KXMLCreatorNode);
+	root = (*doc)->createElement(content);
 	(*doc)->appendChild(root);
 
-	/* Creator name */
-	tag = (*doc)->createElement(KXMLCreatorName);
+	/* Creator tag */
+	tag = (*doc)->createElement(KXMLQLCCreator);
 	root.appendChild(tag);
+
+	/* Creator name */
+	subtag = (*doc)->createElement(KXMLQLCCreatorName);
+	tag.appendChild(subtag);
 	text = (*doc)->createTextNode("Q Light Controller");
-	tag.appendChild(text);
+	subtag.appendChild(text);
 
 	/* Creator version */
-	tag = (*doc)->createElement(KXMLCreatorVersion);
-	root.appendChild(tag);
+	subtag = (*doc)->createElement(KXMLQLCCreatorVersion);
+	tag.appendChild(subtag);
 	text = (*doc)->createTextNode(QString(VERSION));
-	tag.appendChild(text);
+	subtag.appendChild(text);
 
 	/* Author */
-	tag = (*doc)->createElement(KXMLCreatorAuthor);
-	root.appendChild(tag);
+	subtag = (*doc)->createElement(KXMLQLCCreatorAuthor);
+	tag.appendChild(subtag);
 	text = (*doc)->createTextNode(QString(getenv("USER")));
-	tag.appendChild(text);
+	subtag.appendChild(text);
 	
 	return true;
 }

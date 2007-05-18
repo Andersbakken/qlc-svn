@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  capability.h
+  qlccapability.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,42 +19,53 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CAPABILITY_H
-#define CAPABILITY_H
+#ifndef QLC_CAPABILITY_H
+#define QLC_CAPABILITY_H
 
 #include <qptrlist.h>
 
 #include "common/types.h"
 
-#define KXMLCapability     "Capability"
-#define KXMLCapabilityLow  "Low"
-#define KXMLCapabilityHigh "High"
+#define KXMLQLCCapability    "Capability"
+#define KXMLQLCCapabilityMin "Min"
+#define KXMLQLCCapabilityMax "Max"
 
 class QString;
 class QFile;
 class QDomDocument;
 class QDomElement;
 class Capability;
+class QLCCapability;
 
-class Capability
+class QLCCapability
 {
  public:
-	Capability();
-	Capability(Capability* cap);
-	virtual ~Capability();
+	/** Default constructor */
+	QLCCapability();
+
+	/** Copy constructor */
+	QLCCapability(QLCCapability* cap);
+
+	/** Create contents from an XML tag */
+	QLCCapability(QDomElement* tag);
+
+	/** Create contents from an old Capability */
+	QLCCapability(Capability* cap);
+ 
+	/** Destructor */
+	virtual ~QLCCapability();
   
-	t_value lo() { return m_lo; }
-	t_value hi() { return m_hi; }
+	/** Assignment operator */
+	QLCCapability& operator=(QLCCapability& capability);
+
+	t_value min() { return m_min; }
+	t_value max() { return m_max; }
 	QString name() { return m_name; }
 
-	void setLo(const t_value &value) { m_lo = value; }
-	void setHi(const t_value &value) { m_hi = value; }
-	void setName(const QString &name) { m_name = QString(name); }
+	void setMin(const t_value &value) { m_min = value; }
+	void setMax(const t_value &value) { m_max = value; }
+	void setName(const QString &name) { m_name = name; }
   
-	void createInfo(QPtrList <QString> &list);
-
-	void saveToFile(QFile &file);
-
 	/** Save the capability to a QDomDocument, under the given element */
 	int saveXML(QDomDocument* doc, QDomElement* root);
 
@@ -62,15 +73,9 @@ class Capability
 	bool loadXML(QDomElement* root);
 
  private:
-	t_value m_lo;
-	t_value m_hi;
-
+	t_value m_min;
+	t_value m_max;
 	QString m_name;
-
- public:
-	/* Create a new Capability from an XML element */
-	static Capability* createFromElement(QDomElement* tag);
-
 };
 
 #endif
