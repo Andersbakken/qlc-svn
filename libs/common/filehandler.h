@@ -28,7 +28,13 @@
 
 class QDomDocument;
 
-// Generic tags common for all documents
+// File extensions
+#define KExtLegacyDeviceClass ".deviceclass"
+#define KExtLegacyWorkspace   ".qlc"
+#define KExtFixture           ".qxf" // 'Q'lc 'X'ml 'F'ixture
+#define KExtWorkspace         ".qxw" // 'Q'lc 'X'ml 'W'orkspace
+
+// Generic XML tags common for all documents
 #define KXMLQLCCreator "Creator"
 #define KXMLQLCCreatorName "Name"
 #define KXMLQLCCreatorVersion "Version"

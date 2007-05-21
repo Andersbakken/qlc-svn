@@ -267,15 +267,10 @@ void App::slotFileNew()
 {
 	QLCFixture* fixture = new QLCFixture();
 
-	// Set default manufacturer and model
-	fixture->setManufacturer("");
-	fixture->setModel("New Fixture");
-
 	QLCFixtureEditor* editor = new QLCFixtureEditor(m_workspace, fixture);
 	connect(editor, SIGNAL(closed(QLCFixtureEditor*)),
 		this, SLOT(slotEditorClosed(QLCFixtureEditor*)));
 	editor->init();
-	editor->setCaption("New Fixture*");
 	editor->show();
 }
 
@@ -295,11 +290,12 @@ void App::slotFileOpen()
 	else
 		m_lastPath = path;
 	
-	if (path.right(4) == ".qxf")
+	if (path.right(strlen(KExtFixture)) == KExtFixture)
 	{
 		fixture = new QLCFixture(path);
 	}
-	else if (path.right(12) == ".deviceclass")
+	else if (path.right(strlen(KExtLegacyDeviceClass)) 
+		 == KExtLegacyDeviceClass)
 	{
 		/* Open as an old DC but convert it to a QLCFixture */
 		DeviceClass* dc = openLegacyFile(path);
@@ -343,10 +339,10 @@ void App::slotFileSave()
 {
 	QLCFixtureEditor* editor = NULL;
 	editor = static_cast<QLCFixtureEditor*> (m_workspace->activeWindow());
-
-	if (editor && editor->save())
+	if (editor != NULL && editor->save() == true)
 	{
-		// Save the last path so that the next file dialog starts from there
+		// Save the last path so that the next file
+		// dialog starts from the same place
 		m_lastPath = editor->fileName();
 	}
 }
@@ -356,7 +352,6 @@ void App::slotFileSaveAs()
 {
 	QLCFixtureEditor* editor = NULL;
 	editor = static_cast<QLCFixtureEditor*> (m_workspace->activeWindow());
-
 	if (editor && editor->saveAs())
 	{
 		// Save the last path so that the next file dialog starts from there

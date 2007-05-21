@@ -1,4 +1,7 @@
 2007-May-21  Heikki Junnila <hjunnila@users.sf.net>
+	* Added file extension checks and conversions for the new .qxf format.
+
+2007-May-21  Heikki Junnila <hjunnila@users.sf.net>
 	* Added dce/src/editchannel.* to cvs
 
 2007-May-18  Heikki Junnila <hjunnila@users.sf.net>

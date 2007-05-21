@@ -67,7 +67,11 @@ class QLCFixtureEditor : public UI_QLCFixtureEditor
 	void closed(QLCFixtureEditor*);
 
  private:
+	bool checkManufacturerModel();
+	void setCaption();
 	void setModified(bool modified = true);
+	void ensureNewExtension();
+	bool newExtensionReminder();
 	void refreshChannelList();
 	void refreshModeList();
  

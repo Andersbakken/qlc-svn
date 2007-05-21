@@ -28,6 +28,7 @@
 #include <qfiledialog.h>
 #include <qinputdialog.h>
 #include <qspinbox.h>
+#include <qtabwidget.h>
 
 #include <errno.h>
 #include <string.h>
@@ -37,6 +38,7 @@
 #include "common/qlcfixturemode.h"
 #include "common/qlcchannel.h"
 #include "common/qlcphysical.h"
+#include "common/filehandler.h"
 
 #include "app.h"
 #include "configkeys.h"
@@ -88,9 +90,6 @@ void QLCFixtureEditor::init()
 	m_editModeButton->setIconSet(QPixmap(QString(PIXMAPS) + 
 				     QString("/edit.png")));
 
-	setCaption(m_fixture->manufacturer() + QString(" - ") + 
-			m_fixture->model());
-
 	m_manufacturerEdit->setText(m_fixture->manufacturer());
 	m_modelEdit->setText(m_fixture->model());
 
@@ -139,14 +138,53 @@ void QLCFixtureEditor::closeEvent(QCloseEvent* e)
 	}
 }
 
+bool QLCFixtureEditor::checkManufacturerModel()
+{
+	/* Check that the fixture has a manufacturer and a model for
+	   unique identification */
+	if (m_fixture->manufacturer().length() == 0)
+	{
+		QMessageBox::warning(this, 
+				     "Missing important information",
+				     "Missing manufacturer name.\n" \
+				     "Unable to save fixture.");
+		m_tab->setCurrentPage(0);
+		m_manufacturerEdit->setFocus();
+		return false;
+	}
+	else if (m_fixture->model().length() == 0)
+	{
+		QMessageBox::warning(this, 
+				     "Missing important information",
+				     "Missing fixture model name.\n" \
+				     "Unable to save fixture.");
+		m_tab->setCurrentPage(0);
+		m_modelEdit->setFocus();
+		return false;
+	}
+
+	return true;
+}
+
 bool QLCFixtureEditor::save()
 {
-	if (m_fileName == QString::null)
+	if (checkManufacturerModel() == false)
+		return false;
+
+	if (m_fileName.length() == 0)
 	{
 		return saveAs();
 	}
 	else
 	{
+		/* If the current filename has .deviceclass extension, remind
+		   the user that the new extension & format will be .qxf */
+		if (newExtensionReminder() == false)
+			return false;
+
+		/* Ensure that the file will have the .qxf extension */
+		ensureNewExtension();
+		
 		if (m_fixture->saveXML(m_fileName) == true)
 		{
 			setModified(false);
@@ -166,7 +204,10 @@ bool QLCFixtureEditor::saveAs()
 {
 	QString path;
 
-	if (m_fileName == QString::null)
+	if (checkManufacturerModel() == false)
+		return false;
+
+	if (m_fileName.length() == 0)
 	{
 		path = QString(FIXTURES) + QString("/");
 		path += m_fixture->manufacturer() + QString("-");
@@ -174,14 +215,22 @@ bool QLCFixtureEditor::saveAs()
 	}
 	else
 	{
+		/* If the current filename has .deviceclass extension, remind
+		   the user that the new extension & format will be .qxf */
+		if (newExtensionReminder() == FALSE)
+			return false;
+
+		/* Ensure that the file will have the .qxf extension */
+		ensureNewExtension();
+
 		path = m_fileName;
 	}
 
 	path = QFileDialog::getSaveFileName(path, "Fixtures (*.qxf)", this);
-	if (path != QString::null)
+	if (path.length() == 0)
 	{
-		if (path.right(4) != QString(".qxf"))
-			path += QString(".qxf");
+		if (path.right(strlen(KExtFixture)) != QString(KExtFixture))
+			path += QString(KExtFixture);
 
 		if (m_fixture->saveXML(path) == true)
 		{
@@ -203,14 +252,57 @@ bool QLCFixtureEditor::saveAs()
 	}
 }
 
+void QLCFixtureEditor::setCaption()
+{
+	/* If the document is modified, append an asterisk after the
+	   filename. Otherwise the caption is just the current filename */
+	QString caption;
+	if (m_modified == true)
+		caption = m_fileName + QString(" *");
+	else
+		caption = m_fileName;
+	
+	UI_QLCFixtureEditor::setCaption(caption);
+}
+
 void QLCFixtureEditor::setModified(bool modified)
 {
-	if (modified == true)
-		setCaption(m_fileName + QString(" *"));
-	else
-		setCaption(m_fileName);
-
 	m_modified = modified;
+	setCaption();
+}
+
+void QLCFixtureEditor::ensureNewExtension()
+{
+	if (m_fileName.right(strlen(KExtLegacyDeviceClass))
+		== KExtLegacyDeviceClass)
+	{
+		/* Rename the file extension to the new one */
+		m_fileName = m_fileName.left(m_fileName.length() -
+			strlen(KExtLegacyDeviceClass)) +
+			QString(KExtFixture);
+		setCaption();
+	}
+}
+
+bool QLCFixtureEditor::newExtensionReminder()
+{
+	int res = QMessageBox::Ok;
+	
+	if (m_fileName.right(strlen(KExtLegacyDeviceClass))
+		== KExtLegacyDeviceClass)
+	{
+		if (QMessageBox::question(this, "Convert file",
+			"The old file format will be converted " \
+			"to the new QXF format\nand the file extension " \
+			"will be changed to " KExtFixture ". OK to continue?",
+			QMessageBox::Ok, QMessageBox::Cancel) 
+			== QMessageBox::Cancel)
+		{
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 /*****************************************************************************
@@ -220,16 +312,12 @@ void QLCFixtureEditor::setModified(bool modified)
 void QLCFixtureEditor::slotManufacturerEditTextChanged(const QString &text)
 {
 	m_fixture->setManufacturer(text);
-	setCaption(m_fixture->manufacturer() + QString(" - ") + m_fixture->model());
-
 	setModified();
 }
 
 void QLCFixtureEditor::slotModelEditTextChanged(const QString &text)
 {
 	m_fixture->setModel(text);
-	setCaption(m_fixture->manufacturer() + QString(" - ") + m_fixture->model());
-
 	setModified();
 }
 
