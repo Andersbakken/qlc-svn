@@ -1,3 +1,6 @@
+2007-May-21  Heikki Junnila <hjunnila@users.sf.net>
+	* Added dce/src/editchannel.* to cvs
+
 2007-May-18  Heikki Junnila <hjunnila@users.sf.net>
 	* Added qlcfixture, qlcfixturemode, qlcphysical, qlcchannel and
 	  qlccapability to libs/common that should, in the future, replace
