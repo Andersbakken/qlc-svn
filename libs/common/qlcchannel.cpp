@@ -166,8 +166,8 @@ bool QLCChannel::removeCapability(QLCCapability* cap)
 
 void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 {
-	QDomElement tag;
-	QDomElement grp;
+	QDomElement chtag;
+	QDomElement grptag;
 	QDomText text;
 	QString str;
 
@@ -175,24 +175,26 @@ void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 	assert(root);
 
 	/* Channel entry */
-	tag = doc->createElement(KXMLQLCChannel);
-	/* str.setNum(m_channel);
-	   tag.setAttribute(KXMLQLCChannelNumber, str); */
-	tag.setAttribute(KXMLQLCChannelName, m_name);
-	root->appendChild(tag);
+	chtag = doc->createElement(KXMLQLCChannel);
+	chtag.setAttribute(KXMLQLCChannelName, m_name);
+	root->appendChild(chtag);
 
 	/* Group */
-	grp = doc->createElement(KXMLQLCChannelGroup);
-	str.setNum(m_controlByte);
-	tag.setAttribute(KXMLQLCChannelGroupByte, str);
+	grptag = doc->createElement(KXMLQLCChannelGroup);
 	text = doc->createTextNode(m_group);
-	tag.appendChild(grp);
+	grptag.appendChild(text);
+	
+	/* Group control byte */
+	str.setNum(m_controlByte);
+	grptag.setAttribute(KXMLQLCChannelGroupByte, str);
+
+	chtag.appendChild(grptag);
 
 	/* Capabilities */
 	for (QLCCapability* c = m_capabilities.first(); c != NULL;
 	     c = m_capabilities.next())
 	{
-		c->saveXML(doc, &tag);
+		c->saveXML(doc, &chtag);
 	}
 }
 

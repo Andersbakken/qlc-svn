@@ -1,3 +1,7 @@
+2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed dce's save as to actually save the file
+	* Fixed qlcchannel's saveXML to write group stuff correctly
+
 2007-May-21  Heikki Junnila <hjunnila@users.sf.net>
 	* Added file extension checks and conversions for the new .qxf format.
 

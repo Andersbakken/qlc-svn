@@ -227,7 +227,7 @@ bool QLCFixtureEditor::saveAs()
 	}
 
 	path = QFileDialog::getSaveFileName(path, "Fixtures (*.qxf)", this);
-	if (path.length() == 0)
+	if (path.length() != 0)
 	{
 		if (path.right(strlen(KExtFixture)) != QString(KExtFixture))
 			path += QString(KExtFixture);
@@ -235,6 +235,7 @@ bool QLCFixtureEditor::saveAs()
 		if (m_fixture->saveXML(path) == true)
 		{
 			m_fileName = path;
+			setCaption();
 			setModified(false);
 			return true;
 		}
