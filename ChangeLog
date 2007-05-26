@@ -1,4 +1,8 @@
 2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Migrated all code from CVS to SVN
+	* Added config dir to root
+
+2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed dce's save as to actually save the file
 	* Fixed qlcchannel's saveXML to write group stuff correctly
 
