@@ -1,1 +1,1 @@
-SUBDIRS = libs dce main docs devices etc
+SUBDIRS = libs dce main gfx docs devices etc

@@ -1,4 +1,7 @@
 2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Re-added graphics under gfx
+
+2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Removed broken (during migration) xpm directory
 
 2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
