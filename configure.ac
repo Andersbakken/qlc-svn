@@ -234,7 +234,7 @@ AC_OUTPUT([
 	dce/Makefile
 	main/Makefile
 	devices/Makefile
-	xpm/Makefile
+	gfx/Makefile
 	docs/Makefile
 	etc/Makefile
 ])

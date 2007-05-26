@@ -145,7 +145,7 @@ t_channel QLCFixtureMode::channelNumber(QLCChannel* channel)
 	int i = 0;
 	
 	if (channel == NULL)
-		return -1;
+		return KChannelInvalid;
 	
 	while ( (ch = it.current()) != 0 )
 	{
@@ -155,7 +155,7 @@ t_channel QLCFixtureMode::channelNumber(QLCChannel* channel)
 		++it;
 	}
 
-	return -1;
+	return KChannelInvalid;
 }
 
 void QLCFixtureMode::setPhysical(const QLCPhysical &physical)

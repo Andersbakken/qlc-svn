@@ -98,6 +98,8 @@ bool QLCPhysical::loadXML(QDomElement* root)
 
 		node = node.nextSibling();
 	}
+	
+	return true;
 }
 
 bool QLCPhysical::saveXML(QDomDocument* doc, QDomElement* root)

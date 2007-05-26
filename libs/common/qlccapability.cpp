@@ -67,6 +67,8 @@ QLCCapability& QLCCapability::operator=(QLCCapability& capability)
 		m_max = capability.m_max;
 		m_name = capability.m_name;
 	}
+	
+	return *this;
 }
 
 int QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
