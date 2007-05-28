@@ -20,18 +20,18 @@ noinst_HEADERS = \
 	src/configkeys.h \
 	src/deviceclasseditor.h \
 	src/editchannel.h \
-	src/editpresetvalue.h \
+	src/editcapability.h \
 	src/editmode.h
 
 qlcfixtureeditor_SOURCES = \
 	src/uic_deviceclasseditor.cpp \
 	src/uic_editchannel.cpp \
-	src/uic_editpresetvalue.cpp \
+	src/uic_editcapability.cpp \
 	src/uic_editmode.cpp \
 	\
 	src/moc_uic_deviceclasseditor.cpp \
 	src/moc_uic_editchannel.cpp \
-	src/moc_uic_editpresetvalue.cpp \
+	src/moc_uic_editcapability.cpp \
 	src/moc_uic_editmode.cpp \
 	\
 	src/aboutbox.cpp \
@@ -39,14 +39,14 @@ qlcfixtureeditor_SOURCES = \
 	src/main.cpp \
 	src/deviceclasseditor.cpp \
 	src/editchannel.cpp \
-	src/editpresetvalue.cpp \
+	src/editcapability.cpp \
 	src/editmode.cpp \
 	\
 	src/moc_aboutbox.cpp \
 	src/moc_app.cpp \
 	src/moc_deviceclasseditor.cpp \
 	src/moc_editchannel.cpp \
-	src/moc_editpresetvalue.cpp \
+	src/moc_editcapability.cpp \
 	src/moc_editmode.cpp
 
 # MOCS

@@ -37,13 +37,14 @@
 #include "common/qlcfixture.h"
 #include "common/qlcfixturemode.h"
 #include "common/qlcchannel.h"
+#include "common/qlccapability.h"
 #include "common/qlcphysical.h"
 #include "common/filehandler.h"
 
 #include "app.h"
 #include "configkeys.h"
 #include "deviceclasseditor.h"
-#include "editpresetvalue.h"
+#include "editcapability.h"
 #include "editchannel.h"
 #include "editmode.h"
 
@@ -97,6 +98,7 @@ void QLCFixtureEditor::init()
 
 	refreshChannelList();
 	refreshModeList();
+	setCaption();
 
 	setModified(false);
 }
@@ -255,14 +257,20 @@ bool QLCFixtureEditor::saveAs()
 
 void QLCFixtureEditor::setCaption()
 {
+	QString caption;
+	QString fileName;
+	
+	fileName = m_fileName;
+	if (fileName == QString::null)
+		fileName = QString("New Fixture");
+	
 	/* If the document is modified, append an asterisk after the
 	   filename. Otherwise the caption is just the current filename */
-	QString caption;
 	if (m_modified == true)
-		caption = m_fileName + QString(" *");
+		caption = fileName + QString(" *");
 	else
-		caption = m_fileName;
-	
+		caption = fileName;
+
 	UI_QLCFixtureEditor::setCaption(caption);
 }
 
@@ -334,26 +342,80 @@ void QLCFixtureEditor::slotTypeSelected(const QString &text)
 
 void QLCFixtureEditor::slotChannelListSelectionChanged(QListViewItem* item)
 {
+	if (item == NULL)
+	{
+		m_removeChannelButton->setEnabled(false);
+		m_editChannelButton->setEnabled(false);
+	}
+	else
+	{
+		m_removeChannelButton->setEnabled(true);
+		m_editChannelButton->setEnabled(true);
+	}
 }
 
 void QLCFixtureEditor::slotAddChannelClicked()
 {
 	EditChannel* ec = NULL;
-
+	bool ok = false;
+	
 	ec = new EditChannel(this);
 	ec->init();
-	ec->exec();
+	
+	while (ok == false)
+	{
+		if (ec->exec() == QDialog::Accepted)
+		{
+			if (m_fixture->searchChannel(ec->channel()->name()) != NULL)
+			{
+				QMessageBox::warning(this, 
+					QString("Channel already exists"),
+					QString("A channel by the name \"") + 
+					ec->channel()->name() + 
+					QString("\" already exists!"));
+				
+				ok = false;
+			}
+			else if (ec->channel()->name().length() == 0)
+			{
+				QMessageBox::warning(this, 
+					QString("Channel has no name"),
+					QString("You must give the channel a descriptive name!"));
+				
+				ok = false;
+			}
+			else
+			{
+				/* Create a new channel to the fixture */
+				m_fixture->addChannel(new QLCChannel(ec->channel()));
+				refreshChannelList();
+				setModified();
+				
+				ok = true;
+			}
+		}
+		else
+		{
+			ok = true;
+		}
+	}
 
 	delete ec;
 }
 
 void QLCFixtureEditor::slotRemoveChannelClicked()
 {
-	// Remove the selected channel from the fixture (also deleted)
-	m_fixture->removeChannel(currentChannel());
+	QLCChannel* channel = currentChannel();
 	
-	// Remove the selected listview item
-	delete m_channelList->currentItem();
+	if (QMessageBox::question(this, "Remove Channel",
+		QString("Are you sure you wish to remove channel: ") + channel->name(),
+			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+	{
+		// Remove the selected channel from the fixture (also deleted)
+		m_fixture->removeChannel(currentChannel());
+		refreshChannelList();
+		setModified();
+	}
 }
 
 void QLCFixtureEditor::slotEditChannelClicked()
@@ -362,8 +424,12 @@ void QLCFixtureEditor::slotEditChannelClicked()
 	QLCChannel* real = NULL;
 	QListViewItem* item = NULL;
 
-	// Initialize the dialog with the selected logical channel
+	// Initialize the dialog with the selected logical channel or
+	// bail out if there is no current selection
 	real = currentChannel();
+	if (real == NULL)
+		return;
+	
 	ec = new EditChannel(this, real);
 	ec->init();
 	
@@ -375,6 +441,8 @@ void QLCFixtureEditor::slotEditChannelClicked()
 		item = m_channelList->currentItem();
 		item->setText(KChannelsColumnName, real->name());
 		item->setText(KChannelsColumnGroup, real->group());
+		
+		setModified();
 	}
 
 	delete ec;
@@ -402,6 +470,8 @@ void QLCFixtureEditor::refreshChannelList()
 		
 		++it;
 	}
+	
+	slotChannelListSelectionChanged(m_channelList->currentItem());
 }
 
 QLCChannel* QLCFixtureEditor::currentChannel()
@@ -421,13 +491,27 @@ QLCChannel* QLCFixtureEditor::currentChannel()
  * Modes tab functions
  *****************************************************************************/
 
+void QLCFixtureEditor::slotModeListSelectionChanged(QListViewItem* item)
+{
+	if (item == NULL)
+	{
+		m_removeModeButton->setEnabled(false);
+		m_editModeButton->setEnabled(false);
+	}
+	else
+	{
+		m_removeModeButton->setEnabled(true);
+		m_editModeButton->setEnabled(true);
+	}
+}
+
 void QLCFixtureEditor::slotAddModeClicked()
 {
 	QLCFixtureMode* mode = NULL;
 	EditMode* em = NULL;
 	bool ok = false;
 	
-	em = new EditMode(_app);
+	em = new EditMode(_app, m_fixture);
 	em->init();
 
 	while (ok == false)
@@ -445,11 +529,20 @@ void QLCFixtureEditor::slotAddModeClicked()
 				// User must rename the mode to continue
 				ok = false;
 			}
+			else if (em->mode()->name().length() == 0)
+			{
+				QMessageBox::warning(this, 
+					QString("Mode has no name"),
+					QString("You must give the mode a name!"));
+				
+				ok = false;
+			}
 			else
 			{
 				ok = true;
 				m_fixture->addMode(new QLCFixtureMode(em->mode()));
 				refreshModeList();
+				setModified();
 			}
 		}
 		else
@@ -465,12 +558,13 @@ void QLCFixtureEditor::slotRemoveModeClicked()
 {
 	QLCFixtureMode* mode = currentMode();
 	
-	if (QMessageBox::question(this, "Remove Mode?",
+	if (QMessageBox::question(this, "Remove Mode",
 		QString("Are you sure you wish to remove mode: ") + mode->name(),
 			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 	{
 		m_fixture->removeMode(mode);
 		refreshModeList();
+		setModified();
 	}
 }
 
@@ -492,6 +586,8 @@ void QLCFixtureEditor::slotEditModeClicked()
 		item->setText(KModesColumnName, mode->name());
 		str.sprintf("%d", mode->channels());
 		item->setText(KModesColumnChannels, str);
+		
+		setModified();
 	}
 	
 	delete em;
@@ -520,6 +616,8 @@ void QLCFixtureEditor::refreshModeList()
 		
 		++it;
 	}
+	
+	slotModeListSelectionChanged(m_modeList->currentItem());
 }
 
 QLCFixtureMode* QLCFixtureEditor::currentMode()

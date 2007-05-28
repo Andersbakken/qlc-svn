@@ -29,30 +29,46 @@
 // Old header that will be removed in the future
 #include "common/capability.h"
 
-QLCCapability::QLCCapability()
+QLCCapability::QLCCapability(t_value min, t_value max, QString name)
 {
-	m_min = KChannelValueMin;
-	m_max = KChannelValueMax;
-	m_name = QString::null;
+	m_min = min;
+	m_max = max;
+	m_name = name;
 }
 
 QLCCapability::QLCCapability(QLCCapability* capability)
 {
+	m_min = KChannelValueMin;
+	m_max = KChannelValueMax;
+	m_name = QString::null;
+	
 	if (capability != NULL)
 		*this = *capability;
 }
 
 QLCCapability::QLCCapability(QDomElement* tag)
 {
-	ASSERT(tag != NULL);
+	Q_ASSERT(tag != NULL);
+	
+	m_min = KChannelValueMin;
+	m_max = KChannelValueMax;
+	m_name = QString::null;
+	
 	loadXML(tag);
 }
 
 QLCCapability::QLCCapability(Capability* cap)
 {
-	m_min = cap->lo();
-	m_max = cap->hi();
-	m_name = cap->name();
+	m_min = KChannelValueMin;
+	m_max = KChannelValueMax;
+	m_name = QString::null;
+
+	if (cap != NULL)
+	{
+		m_min = cap->lo();
+		m_max = cap->hi();
+		m_name = cap->name();
+	}
 }
 
 QLCCapability::~QLCCapability()

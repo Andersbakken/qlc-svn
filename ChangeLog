@@ -1,3 +1,6 @@
+2007-May-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed lots of crash problems with fixture editor
+
 2007-May-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed QLCCapability::operator=() to return *this
 	* Fixed QLCFixtureMode::channelNumber() to return KChannelInvalid

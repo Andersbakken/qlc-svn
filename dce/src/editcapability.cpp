@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  editpresetvalue.cpp
+  editcapability.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -24,15 +24,41 @@
 #include <qframe.h>
 #include <qspinbox.h>
 #include <qlineedit.h>
-#include "editpresetvalue.h"
 
+#include "editcapability.h"
+#include "common/qlccapability.h"
 
-EditPresetValue::EditPresetValue(QWidget* parent, const char* name)
-  : UI_EditPresetValue(parent, name, true)
+EditCapability::EditCapability(QWidget* parent, QLCCapability* cap)
+	: UI_EditCapability(parent)
 {
-
+	m_capability = new QLCCapability(cap);
 }
 
-EditPresetValue::~EditPresetValue()
+EditCapability::~EditCapability()
 {
+	if (m_capability != NULL)
+		delete m_capability;
 }
+
+void EditCapability::init()
+{
+	m_minSpin->setValue(m_capability->min());
+	m_maxSpin->setValue(m_capability->max());
+	m_nameEdit->setText(m_capability->name());
+}
+
+void EditCapability::slotMinSpinChanged(int value)
+{
+	m_capability->setMin(value);
+}
+
+void EditCapability::slotMaxSpinChanged(int value)
+{
+	m_capability->setMax(value);
+}
+
+void EditCapability::slotNameChanged(const QString& text)
+{
+	m_capability->setName(text);
+}
+

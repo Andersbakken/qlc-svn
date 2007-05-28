@@ -208,6 +208,9 @@
                             <property name="allColumnsShowFocus">
                                 <bool>true</bool>
                             </property>
+                            <property name="showSortIndicator">
+                                <bool>true</bool>
+                            </property>
                             <property name="resizeMode">
                                 <enum>LastColumn</enum>
                             </property>
@@ -241,6 +244,9 @@
                                     <property name="name">
                                         <cstring>m_removeCapabilityButton</cstring>
                                     </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
                                     <property name="minimumSize">
                                         <size>
                                             <width>30</width>
@@ -257,6 +263,9 @@
                                 <widget class="QToolButton">
                                     <property name="name">
                                         <cstring>m_editCapabilityButton</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
                                     </property>
                                     <property name="minimumSize">
                                         <size>
@@ -370,11 +379,39 @@
         <receiver>UI_EditChannel</receiver>
         <slot>slotNameChanged(const QString&amp;)</slot>
     </connection>
+    <connection>
+        <sender>m_addCapabilityButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditChannel</receiver>
+        <slot>slotAddCapabilityClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_removeCapabilityButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditChannel</receiver>
+        <slot>slotRemoveCapabilityClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_editCapabilityButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_EditChannel</receiver>
+        <slot>slotEditCapabilityClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_capabilityList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_EditChannel</receiver>
+        <slot>slotCapabilityListSelectionChanged(QListViewItem*)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotGroupActivated(const QString&amp;)</slot>
     <slot>slotControlByteActivated(int)</slot>
     <slot>slotNameChanged(const QString&amp;)</slot>
+    <slot>slotAddCapabilityClicked()</slot>
+    <slot>slotRemoveCapabilityClicked()</slot>
+    <slot>slotEditCapabilityClicked()</slot>
+    <slot>slotCapabilityListSelectionChanged(QListViewItem*)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

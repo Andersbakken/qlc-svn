@@ -106,11 +106,15 @@ class QLCChannel
 	QLCCapability* searchCapability(QString name);
 
 	/** Add a new capability to the channel */
-	void addCapability(QLCCapability* cap);
+	bool addCapability(QLCCapability* cap);
 
 	/** Remove a capability from the channel */
 	bool removeCapability(QLCCapability* cap);
 
+ protected:
+	void sortCapabilities();
+
+ public:
 	/*********************************************************************
 	 * File operations
 	 *********************************************************************/

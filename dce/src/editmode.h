@@ -25,17 +25,26 @@
 #include "uic_editmode.h"
 
 class QLCFixtureMode;
+class QLCFixture;
 class QLCChannel;
 
 class EditMode : public UI_EditMode
 {
 	Q_OBJECT
 public:
-	EditMode(QWidget* parent, QLCFixtureMode* mode = NULL);
+	/** Use this constructor to edit an existing mode */
+	EditMode(QWidget* parent, QLCFixtureMode* mode);
+
+	/** Use this constructor to create a new mode for the fixture */
+	EditMode(QWidget* parent, QLCFixture* fixture);
+
+	/** Destructor */
 	~EditMode();
 
+	/** Initialize the dialog */
 	void init();
 
+	/** Get the mode that was being edited. Don't save the pointer! */
 	QLCFixtureMode* mode() { return m_mode; }
 
 public slots:

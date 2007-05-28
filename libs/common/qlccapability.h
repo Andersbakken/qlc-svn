@@ -41,7 +41,9 @@ class QLCCapability
 {
  public:
 	/** Default constructor */
-	QLCCapability();
+	QLCCapability(t_value min = KChannelValueMin,
+		      t_value max = KChannelValueMax,
+		      QString name = QString::null);
 
 	/** Copy constructor */
 	QLCCapability(QLCCapability* cap);
@@ -71,7 +73,7 @@ class QLCCapability
 
 	/** Load capability contents from an XML element */
 	bool loadXML(QDomElement* root);
-
+ 
  private:
 	t_value m_min;
 	t_value m_max;

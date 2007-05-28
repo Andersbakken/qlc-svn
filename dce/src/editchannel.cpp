@@ -25,14 +25,17 @@
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 #include <qlistview.h>
+#include <qmessagebox.h>
 
 #include "common/qlcchannel.h"
 #include "common/qlccapability.h"
 #include "editchannel.h"
+#include "editcapability.h"
 
-static const int KColumnMin    ( 0 );
-static const int KColumnMax    ( 1 );
-static const int KColumnName   ( 2 );
+#define KColumnMin 0
+#define KColumnMax 1
+#define KColumnName 2
+#define KColumnPointer 3
 
 EditChannel::EditChannel(QWidget* parent, QLCChannel* channel)
 	: UI_EditChannel(parent)
@@ -48,14 +51,10 @@ EditChannel::~EditChannel()
 
 void EditChannel::init()
 {
+	QStringList groupList;
+
 	Q_ASSERT(m_channel != NULL);
 	
-	QPtrListIterator<QLCCapability> it(*m_channel->capabilities());
-	QLCCapability* cap = NULL;
-	QListViewItem* item = NULL;
-	QStringList groupList;
-	QString str;
-
 	/* Set some button pixmaps */
 	m_addCapabilityButton->setIconSet(QPixmap(QString(PIXMAPS) +
 					  QString("/edit_add.png")));
@@ -67,14 +66,14 @@ void EditChannel::init()
 	/* Get available groups */
 	QLCChannel::groups(groupList);
 
-	/* Insert groups into the combo */
-	m_groupCombo->insertStringList(groupList);
-
-	/* Set edit window caption */
+	/* Set window caption */
 	setCaption(QString("Edit Channel: ") + m_channel->name());
 
 	/* Set name edit */
 	m_nameEdit->setText(m_channel->name());
+
+	/* Insert groups into the combo */
+	m_groupCombo->insertStringList(groupList);
 
 	/* Select group */
 	for (int i = 0; i < m_groupCombo->count(); i++)
@@ -85,21 +84,8 @@ void EditChannel::init()
 			break;
 		}
 	}
-
-	/* Fill capabilities */
-	while ( (cap = it.current()) != 0)
-	{
-		++it;
-
-		item = new QListViewItem(m_capabilityList);
-		item->setText(KColumnName, cap->name());
-		
-		str.sprintf("%.3d", cap->min());
-		item->setText(KColumnMin, str);
-
-		str.sprintf("%.3d", cap->max());
-		item->setText(KColumnMax, str);
-	}
+	
+	refreshCapabilities();
 }
 
 void EditChannel::slotNameChanged(const QString& name)
@@ -126,4 +112,162 @@ void EditChannel::slotGroupActivated(const QString& group)
 void EditChannel::slotControlByteActivated(int button)
 {
 	m_channel->setControlByte(button);
+}
+
+/****************************************************************************
+ * Capability list functions
+ ****************************************************************************/
+
+void EditChannel::slotCapabilityListSelectionChanged(QListViewItem* item)
+{
+	if (item == NULL)
+	{
+		m_removeCapabilityButton->setEnabled(false);
+		m_editCapabilityButton->setEnabled(false);
+	}
+	else
+	{
+		m_removeCapabilityButton->setEnabled(true);
+		m_editCapabilityButton->setEnabled(true);
+	}
+}
+
+void EditChannel::slotAddCapabilityClicked()
+{
+	EditCapability* ec = NULL;
+	QLCCapability* cap = NULL;
+	bool ok = false;
+	
+	ec = new EditCapability(this);
+	ec->init();
+
+	while (ok == false)
+	{
+		if (ec->exec() == QDialog::Accepted)
+		{
+			cap = new QLCCapability(ec->capability());
+
+			if (m_channel->addCapability(cap) == false)
+			{
+				QMessageBox::warning(this, 
+					QString("Overlapping values"),
+					QString("The capability's values overlap with another capability!"));
+				delete cap;
+				ok = false;
+			}
+			else
+			{
+				refreshCapabilities();
+				ok = true;
+			}
+		}
+		else
+		{
+			ok = true;
+		}
+	}
+	
+	delete ec;
+}
+
+void EditChannel::slotRemoveCapabilityClicked()
+{
+	// This also deletes the capability
+	m_channel->removeCapability(currentCapability());
+	
+	refreshCapabilities();
+	slotCapabilityListSelectionChanged(m_capabilityList->currentItem());
+}
+
+void EditChannel::slotEditCapabilityClicked()
+{
+	EditCapability* ec = NULL;
+	QLCCapability* real = NULL;
+	QLCCapability* min = NULL;
+	QLCCapability* max = NULL;
+	bool ok = false;
+	
+	real = currentCapability();
+	if (real == NULL)
+		return;
+
+	ec = new EditCapability(this, real);
+	ec->init();
+	
+	while (ok == false)
+	{
+		if (ec->exec() == QDialog::Accepted)
+		{
+			min = m_channel->searchCapability(ec->capability()->min());
+			max = m_channel->searchCapability(ec->capability()->max());
+			if ((min != NULL && min != real) ||
+			    (max != NULL && max != real))
+			{
+				QMessageBox::warning(this, 
+					QString("Overlapping values"),
+					QString("The capability's values overlap with another capability!"));
+				ok = false;
+			}
+			else
+			{
+				*real = *ec->capability();
+				refreshCapabilities();
+				ok = true;
+			}
+		}
+		else
+		{
+			ok = true;
+		}
+	}
+	
+	delete ec;
+}
+
+void EditChannel::refreshCapabilities()
+{
+	QPtrListIterator<QLCCapability> it(*m_channel->capabilities());
+	QLCCapability* cap = NULL;
+	QListViewItem* item = NULL;
+	QString str;
+	
+	m_capabilityList->clear();
+	
+	/* Fill capabilities */
+	while ( (cap = it.current()) != 0)
+	{
+		++it;
+
+		item = new QListViewItem(m_capabilityList);
+		
+		// Min
+		str.sprintf("%.3d", cap->min());
+		item->setText(KColumnMin, str);
+
+		// Max
+		str.sprintf("%.3d", cap->max());
+		item->setText(KColumnMax, str);
+		
+		// Name
+		item->setText(KColumnName, cap->name());
+		
+		// Store the capability pointer to the listview as a string
+		str.sprintf("%d", (unsigned long) cap);
+		item->setText(KColumnPointer, str);
+	}
+	
+	slotCapabilityListSelectionChanged(m_capabilityList->currentItem());
+}
+
+QLCCapability* EditChannel::currentCapability()
+{
+	QLCCapability* cap = NULL;
+	QListViewItem* item = NULL;
+
+	// Convert the string-form ulong to a QLCChannel pointer and return it
+	item = m_capabilityList->currentItem();
+	if (item != NULL)
+		cap = (QLCCapability*) item->text(KColumnPointer).toULong();
+
+	return cap;
 }

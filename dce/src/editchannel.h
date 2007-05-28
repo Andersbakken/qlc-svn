@@ -25,6 +25,7 @@
 #include "uic_editchannel.h"
 
 class QLCChannel;
+class QLCCapability;
 
 class EditChannel : public UI_EditChannel
 {
@@ -43,7 +44,16 @@ class EditChannel : public UI_EditChannel
 	void slotNameChanged(const QString& name);
 	void slotGroupActivated(const QString& group);
 	void slotControlByteActivated(int button);
-
+ 
+	void slotCapabilityListSelectionChanged(QListViewItem* item);
+	void slotAddCapabilityClicked();
+	void slotRemoveCapabilityClicked();
+	void slotEditCapabilityClicked();
+ 
+ protected:
+	void refreshCapabilities();
+	QLCCapability* currentCapability();
+ 
  private:
 	QLCChannel* m_channel;
 };

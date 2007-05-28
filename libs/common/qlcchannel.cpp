@@ -39,14 +39,14 @@ QLCChannel::QLCChannel()
 	m_controlByte = 0;
 }
 
-QLCChannel::QLCChannel(QLCChannel* lc)
+QLCChannel::QLCChannel(QLCChannel* channel)
 {
 	m_name = QString::null;
 	m_group = QString(KIntensityGroup);
 	m_controlByte = 0;
 
-	if (lc != NULL)
-		*this = *lc;
+	if (channel != NULL)
+		*this = *channel;
 }
 
 QLCChannel::QLCChannel(QDomElement* tag)
@@ -137,15 +137,33 @@ QLCCapability* QLCChannel::searchCapability(QString name)
 	return NULL;
 }
 
-void QLCChannel::addCapability(QLCCapability* cap)
+bool QLCChannel::addCapability(QLCCapability* cap)
 {
-	ASSERT(cap != NULL);
+	QPtrListIterator<QLCCapability> it(m_capabilities);
+	QLCCapability* temp = NULL;
+	
+	Q_ASSERT(cap != NULL);
+	
+	/* Check for overlapping values */
+	while ( (temp = it.current()) != 0 )
+	{
+		if ((temp->min() <= cap->min() && temp->max() > cap->min()) ||
+		    (temp->min() < cap->max() && temp->max() >= cap->max()) ||
+		    (temp->min() >= cap->min() && temp->max() <= cap->max()))
+		{
+			return false;
+		}
+		
+		++it;
+	}
+	
 	m_capabilities.append(cap);
+	return true;
 }
 
 bool QLCChannel::removeCapability(QLCCapability* cap)
 {
-	ASSERT(cap != NULL);
+	Q_ASSERT(cap != NULL);
 
 	for (QLCCapability* c = m_capabilities.first(); c != NULL;
 	     c = m_capabilities.next())

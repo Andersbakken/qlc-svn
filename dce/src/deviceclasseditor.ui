@@ -339,6 +339,9 @@
                                 <property name="name">
                                     <cstring>m_removeChannelButton</cstring>
                                 </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
                                 <property name="minimumSize">
                                     <size>
                                         <width>30</width>
@@ -355,6 +358,9 @@
                             <widget class="QToolButton">
                                 <property name="name">
                                     <cstring>m_editChannelButton</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
                                 </property>
                                 <property name="minimumSize">
                                     <size>
@@ -463,6 +469,9 @@
                                 <property name="name">
                                     <cstring>m_removeModeButton</cstring>
                                 </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
                                 <property name="minimumSize">
                                     <size>
                                         <width>30</width>
@@ -479,6 +488,9 @@
                             <widget class="QToolButton">
                                 <property name="name">
                                     <cstring>m_editModeButton</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
                                 </property>
                                 <property name="minimumSize">
                                     <size>
@@ -590,6 +602,12 @@
         <receiver>UI_QLCFixtureEditor</receiver>
         <slot>slotEditModeClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_modeList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>UI_QLCFixtureEditor</receiver>
+        <slot>slotModeListSelectionChanged(QListViewItem*)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotManufacturerEditTextChanged(const QString &amp;)</slot>
@@ -603,6 +621,7 @@
     <slot>slotAddModeClicked()</slot>
     <slot>slotRemoveModeClicked()</slot>
     <slot>slotEditModeClicked()</slot>
+    <slot>slotModeListSelectionChanged(QListViewItem*)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

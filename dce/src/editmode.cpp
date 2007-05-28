@@ -40,7 +40,18 @@
 
 EditMode::EditMode(QWidget* parent, QLCFixtureMode* mode)
 {
+	Q_ASSERT(mode != NULL);
+	
+	/* Edit the given mode */
 	m_mode = new QLCFixtureMode(mode);
+}
+
+EditMode::EditMode(QWidget* parent, QLCFixture* fixture)
+{
+	Q_ASSERT(fixture != NULL);
+	
+	/* Create a new mode for the given fixture */
+	m_mode = new QLCFixtureMode(fixture);
 }
 
 EditMode::~EditMode()
@@ -106,7 +117,7 @@ void EditMode::slotAddChannelClicked()
 	bool ok = false;
 	QString name;
 	int index = 0;
-	
+
 	/* Create a list of channels that have not been added to this mode yet */
 	while ( (ch = it.current()) != 0 )
 	{

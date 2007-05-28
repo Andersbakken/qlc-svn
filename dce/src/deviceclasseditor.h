@@ -56,6 +56,7 @@ class QLCFixtureEditor : public UI_QLCFixtureEditor
 	void slotRemoveChannelClicked();
 	void slotEditChannelClicked();
 
+	void slotModeListSelectionChanged(QListViewItem* item);
 	void slotAddModeClicked();
 	void slotRemoveModeClicked();
 	void slotEditModeClicked();

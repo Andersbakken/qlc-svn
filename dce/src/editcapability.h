@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  editpresetvalue.h
+  editcapability.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,20 +19,33 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef EDITPRESETVALUE_H
-#define EDITPRESETVALUE_H
+#ifndef EDITCAPABILITY_H
+#define EDITCAPABILITY_H
 
-#include "uic_editpresetvalue.h"
+#include "uic_editcapability.h"
 
 class QWidget;
+class QLCCapability;
 
-class EditPresetValue : public UI_EditPresetValue
+class EditCapability : public UI_EditCapability
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  EditPresetValue(QWidget* parent, const char* name = NULL);
-  virtual ~EditPresetValue();
+	EditCapability(QWidget* parent, QLCCapability* capability = NULL);
+	~EditCapability();
+ 
+	void init();
+ 
+	QLCCapability* capability() const { return m_capability; }
+
+ public slots:
+	void slotMinSpinChanged(int value);
+	void slotMaxSpinChanged(int value);
+	void slotNameChanged(const QString& text);
+
+ private:
+	QLCCapability* m_capability;
 };
 
 #endif
