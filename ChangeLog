@@ -1,3 +1,6 @@
+2007-Jun-03  Heikki Junnila <hjunnila@users.sf.net>
+	* Removed uic_editpresetvalue.cpp from dce/Makefile.am
+
 2007-May-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed lots of crash problems with fixture editor
 

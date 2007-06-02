@@ -12,7 +12,6 @@ qlcfixtureeditor_LDADD += $(top_srcdir)/libs/common/libqlccommon.la
 noinst_HEADERS = \
 	src/uic_deviceclasseditor.h \
 	src/uic_editchannel.h \
-	src/uic_editpresetvalue.h \
 	src/uic_editmode.h \
 	\
 	src/aboutbox.h \
