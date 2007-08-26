@@ -231,8 +231,8 @@ AC_OUTPUT([
 	libs/midi-inout/Makefile
 	libs/soundtolight/Makefile
 	libs/lla/Makefile
-	dce/Makefile
 	main/Makefile
+	fixtureeditor/Makefile
 	devices/Makefile
 	gfx/Makefile
 	docs/Makefile

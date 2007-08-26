@@ -1,4 +1,7 @@
 2007-Aug-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Renamed dce directory to fixtureeditor
+
+2007-Aug-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Once again: HUUUGE commit
 	* Workspace background is changed thru workspace context menu
 	* Changed file format for workspaces completely to XML
