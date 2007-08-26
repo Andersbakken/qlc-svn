@@ -25,8 +25,9 @@
 #include "function.h"
 #include "common/types.h"
 
+class Scene;
 class EventBuffer;
-class Device;
+class Fixture;
 class RunTimeData;
 class SceneValue;
 class QDomDocument;
@@ -34,18 +35,25 @@ class QDomDocument;
 class Scene : public Function
 {
  public:
-	Scene();
-	~Scene();
-	
 	enum ValueType
 	{
 		Set   = 0, // Normal value
 		Fade  = 1, // Fade value
 		NoSet = 2  // Ignored value
 	};
+
+ public:
+	/** Standard constructor */
+	Scene();
+
+	/** Destructor */
+	~Scene();
 	
-	void copyFrom(Scene* sc, t_device_id toDevice);
-	bool setDevice(t_device_id);
+	/** Copy scene contents and assign it to a fixture */
+	void copyFrom(Scene* sc, t_fixture_id to);
+
+	/** Set the fixture that this scene is assigned to */
+	bool setFixture(t_fixture_id id);
 	
 	SceneValue* values() { return m_values; }
 	
@@ -54,11 +62,10 @@ class Scene : public Function
 	
 	ValueType valueType(t_channel ch);
 	QString valueTypeString(t_channel ch);
+	static ValueType stringToValueType(QString type);
 	
-	void saveToFile(QFile &file);
-	void createContents(QPtrList <QString> &list);
-	
-	void saveXML(QDomDocument* doc);
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
 	
 	void busValueChanged(t_bus_id, t_bus_value);
 	void speedChange(t_bus_value);

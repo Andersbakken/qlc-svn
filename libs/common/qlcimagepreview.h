@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  imagecontentspreview.cpp
+  qlcimagepreview.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,40 +19,20 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "imagecontentspreview.h"
+#ifndef QLC_IMAGE_PREVIEW_H
+#define QLC_IMAGE_PREVIEW_H
 
 #include <qfiledialog.h>
 #include <qlabel.h>
-#include <qpixmap.h>
 #include <qstring.h>
-#include <qimage.h>
 
-ImageContentsPreview::ImageContentsPreview(QWidget* parent) 
-  : QLabel(parent)
+class QLCImagePreview : public QLabel, public QFilePreview
 {
-}
+ public:
+	QLCImagePreview(QWidget* parent = 0);
+	~QLCImagePreview();
+	
+	void previewUrl(const QUrl &url);
+};
 
-ImageContentsPreview::~ImageContentsPreview()
-{
-}
-
-void ImageContentsPreview::previewUrl(const QUrl &u)
-{
-  QPixmap pix(u.path());
-  if (pix.isNull())
-    {
-      setText("Not a valid image file");
-    }
-  else
-    {
-      /* Resize all larger images to 200x200 */
-      if (pix.width() > 200 || pix.height() > 200)
-	{
-	  QImage image = pix.convertToImage();
-	  image = image.smoothScale(200, 200);
-	  pix.convertFromImage(image);
-	}
-
-      setPixmap(pix);
-    }
-}
+#endif

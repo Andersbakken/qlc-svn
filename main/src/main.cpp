@@ -95,7 +95,7 @@ bool parseArgs(int argc, char **argv)
 		{
 			s = QString((const char*) argv[++i]);
 			_app->newDocument();
-			_app->doc()->loadWorkspaceAs(s);
+			//_app->doc()->loadWorkspaceAs(s);
 			result = true;
 		}
 		else

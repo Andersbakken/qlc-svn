@@ -25,7 +25,7 @@
 #include "uic_editmode.h"
 
 class QLCFixtureMode;
-class QLCFixture;
+class QLCFixtureDef;
 class QLCChannel;
 
 class EditMode : public UI_EditMode
@@ -36,7 +36,7 @@ public:
 	EditMode(QWidget* parent, QLCFixtureMode* mode);
 
 	/** Use this constructor to create a new mode for the fixture */
-	EditMode(QWidget* parent, QLCFixture* fixture);
+	EditMode(QWidget* parent, QLCFixtureDef* fixtureDef);
 
 	/** Destructor */
 	~EditMode();

@@ -38,11 +38,11 @@
 #include <qptrlist.h>
 #include <assert.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "common/settings.h"
 #include "functionmanager.h"
 #include "function.h"
-#include "device.h"
+#include "fixture.h"
 #include "app.h"
 #include "doc.h"
 #include "scene.h"
@@ -51,8 +51,6 @@
 #include "chasereditor.h"
 #include "functioncollection.h"
 #include "functioncollectioneditor.h"
-#include "sequence.h"
-#include "sequenceeditor.h"
 #include "configkeys.h"
 #include "efx.h"
 #include "efxeditor.h"
@@ -79,26 +77,26 @@ extern App* _app;
  * selection mode. Otherwise the dialog is in normal edit mode.
  */
 FunctionManager::FunctionManager(QWidget* parent, WFlags flags)
-  : QWidget(parent, "Function Manager", flags),
-    m_addMenu  ( NULL ),
-    m_editMenu ( NULL ),
-    m_busMenu  ( NULL ),
+	: QWidget(parent, "Function Manager", flags),
+	  m_addMenu  ( NULL ),
+	  m_editMenu ( NULL ),
+	  m_busMenu  ( NULL ),
     
-    m_fixtureTree  ( NULL ),
-    m_functionTree ( NULL ),
+	  m_fixtureTree  ( NULL ),
+	  m_functionTree ( NULL ),
     
-    m_treeViewSplitter ( NULL ),
-    m_clipboardAction ( ClipboardNone ),
+	  m_treeViewSplitter ( NULL ),
+	  m_clipboardAction ( ClipboardNone ),
     
-    m_inactiveID ( KNoID ),
+	  m_inactiveID ( KNoID ),
     
-    m_buttonLayout ( NULL ),
-    m_result ( QDialog::Rejected ),
-    m_ok ( NULL ),
-    m_cancel ( NULL ),
+	  m_buttonLayout ( NULL ),
+	  m_result ( QDialog::Rejected ),
+	  m_ok ( NULL ),
+	  m_cancel ( NULL ),
 
-    m_blockAddFunctionSignal ( false ),
-    m_blockRemoveFunctionSignal ( false )
+	  m_blockAddFunctionSignal ( false ),
+	  m_blockRemoveFunctionSignal ( false )
 {
 	if (flags == FunctionManager::SelectionMode)
 	{
@@ -218,7 +216,7 @@ void FunctionManager::init()
 		layout()->add(frame);
 		frame->setFrameStyle(QFrame::Panel | QFrame::Raised);
 		frame->setSizePolicy(QSizePolicy::Expanding,
-				    QSizePolicy::Minimum);
+				     QSizePolicy::Minimum);
 
 		m_buttonLayout = new QHBoxLayout(layout());
 		m_buttonLayout->setSpacing(10);
@@ -270,74 +268,74 @@ int FunctionManager::selection(FunctionIDList& list)
 }
 
 //
-// Signal handler for deviceAdded() signals from Doc
+// Signal handler for fixtureAdded() signals from Doc
 //
-void FunctionManager::slotDeviceAdded(t_device_id id)
+void FunctionManager::slotFixtureAdded(t_fixture_id id)
 {
-  Device* device = NULL;
-  QListViewItem* item = NULL;
-  QString s;
+	Fixture* fxi = NULL;
+	QListViewItem* item = NULL;
+	QString s;
 
-  device = _app->doc()->device(id);
-  if (device != NULL)
-    {
-      item = new QListViewItem(m_fixtureTree);
-      
-      // Pixmap column
-      item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
-					   QString("/fixture.png")));
-      // Name column
-      item->setText(KColumnName, device->name());
-      
-      // ID column
-      s.setNum(id);
-      item->setText(KColumnID, s);
-    }
-}
-
-//
-// Signal handler for deviceRemoved() signals from Doc
-//
-void FunctionManager::slotDeviceRemoved(t_device_id id)
-{
-  QListViewItem* item = NULL;
-  QListViewItem* nextItem = NULL;
-
-  item = getItem(id, m_fixtureTree);
-  if (item)
-    {
-      if (item->isSelected())
+	fxi = _app->doc()->fixture(id);
+	if (fxi != NULL)
 	{
-	  // Try to select the closest neighbour
-	  if (item->itemAbove())
-	    nextItem = item->itemAbove();
-	  else
-	    nextItem = item->itemBelow();
-	  
-	  // Select the neighbour
-	  m_fixtureTree->setSelected(nextItem, true);
+		item = new QListViewItem(m_fixtureTree);
+      
+		// Pixmap column
+		item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
+						     QString("/fixture.png")));
+		// Name column
+		item->setText(KColumnName, fxi->name());
+      
+		// ID column
+		s.setNum(id);
+		item->setText(KColumnID, s);
 	}
-
-      delete item;
-    }
 }
 
 //
-// Signal handler for deviceChanged() signals from Doc
+// Signal handler for fixtureRemoved() signals from Doc
 //
-void FunctionManager::slotDeviceChanged(t_device_id id)
+void FunctionManager::slotFixtureRemoved(t_fixture_id id)
 {
-  QListViewItem* item = NULL;
-  Device* device = NULL;
+	QListViewItem* item = NULL;
+	QListViewItem* nextItem = NULL;
 
-  item = getItem(id, m_fixtureTree);
-  if (item)
-    {
-      device = _app->doc()->device(id);
-      ASSERT(device);
+	item = getItem(id, m_fixtureTree);
+	if (item != NULL)
+	{
+		if (item->isSelected() == true)
+		{
+			// Try to select the closest neighbour
+			if (item->itemAbove() != NULL)
+				nextItem = item->itemAbove();
+			else
+				nextItem = item->itemBelow();
+	  
+			// Select the neighbour
+			m_fixtureTree->setSelected(nextItem, true);
+		}
 
-      item->setText(KColumnName, device->name());
-    }
+		delete item;
+	}
+}
+
+//
+// Signal handler for fixtureChanged() signals from Doc
+//
+void FunctionManager::slotFixtureChanged(t_fixture_id id)
+{
+	QListViewItem* item = NULL;
+	Fixture* fxi = NULL;
+
+	item = getItem(id, m_fixtureTree);
+	if (item != NULL)
+	{
+		fxi = _app->doc()->fixture(id);
+		Q_ASSERT(fxi != NULL);
+
+		item->setText(KColumnName, fxi->name());
+	}
 }
 
 //
@@ -345,32 +343,32 @@ void FunctionManager::slotDeviceChanged(t_device_id id)
 //
 void FunctionManager::slotFunctionAdded(t_function_id id)
 {
-  QListViewItem* deviceItem = NULL;
-  QListViewItem* item = NULL;
-  Function* function = NULL;
+	QListViewItem* fixtureItem = NULL;
+	QListViewItem* item = NULL;
+	Function* function = NULL;
 
-  // The function manager has its own routines for functions that are
-  // created with it.
-  if (m_blockAddFunctionSignal)
-    return;
+	// The function manager has its own routines for functions that are
+	// created with it.
+	if (m_blockAddFunctionSignal)
+		return;
 
-  deviceItem = m_fixtureTree->currentItem();
+	fixtureItem = m_fixtureTree->currentItem();
 
-  if (deviceItem == NULL)
-    return; // Function tree should be empty, nothing to do
+	if (fixtureItem == NULL)
+		return; // Function tree should be empty, nothing to do
 
-  function = _app->doc()->function(id);
-  if (function)
-    {
-      // Check if the selected device is the one that the newly added
-      // function belongs to.
-      if (deviceItem->text(KColumnID).toInt() == function->device())
+	function = _app->doc()->function(id);
+	if (function)
 	{
-	  // Create a new item for the function
-	  item = new QListViewItem(m_functionTree);
-	  updateFunctionItem(item, function);
+		// Check if the selected fixture is the one that the newly added
+		// function belongs to.
+		if (fixtureItem->text(KColumnID).toInt() == function->fixture())
+		{
+			// Create a new item for the function
+			item = new QListViewItem(m_functionTree);
+			updateFunctionItem(item, function);
+		}
 	}
-    }
 }
 
 //
@@ -378,31 +376,31 @@ void FunctionManager::slotFunctionAdded(t_function_id id)
 //
 void FunctionManager::slotFunctionRemoved(t_function_id id)
 {
-  QListViewItem* item = NULL;
-  QListViewItem* nextItem = NULL;
+	QListViewItem* item = NULL;
+	QListViewItem* nextItem = NULL;
 
-  // The function manager has its own routines for functions that are
-  // removed with it.
-  if (m_blockRemoveFunctionSignal)
-    return;
+	// The function manager has its own routines for functions that are
+	// removed with it.
+	if (m_blockRemoveFunctionSignal)
+		return;
 
-  item = getItem(id, m_functionTree);
-  if (item)
-    {
-      if (item->isSelected())
+	item = getItem(id, m_functionTree);
+	if (item)
 	{
-	  // Try to select the closest neighbour
-	  if (item->itemAbove())
-	    nextItem = item->itemAbove();
-	  else
-	    nextItem = item->itemBelow();
+		if (item->isSelected())
+		{
+			// Try to select the closest neighbour
+			if (item->itemAbove())
+				nextItem = item->itemAbove();
+			else
+				nextItem = item->itemBelow();
 	  
-	  // Select the neighbour
-	  m_functionTree->setSelected(nextItem, true);
-	}
+			// Select the neighbour
+			m_functionTree->setSelected(nextItem, true);
+		}
       
-      delete item;
-    }
+		delete item;
+	}
 }
 
 //
@@ -410,17 +408,17 @@ void FunctionManager::slotFunctionRemoved(t_function_id id)
 //
 void FunctionManager::slotFunctionChanged(t_function_id id)
 {
-  QListViewItem* item = NULL;
-  Function* function = NULL;
+	QListViewItem* item = NULL;
+	Function* function = NULL;
 
-  item = getItem(id, m_functionTree);
-  if (item)
-    {
-      function = _app->doc()->function(id);
-      ASSERT(function);
+	item = getItem(id, m_functionTree);
+	if (item)
+	{
+		function = _app->doc()->function(id);
+		ASSERT(function);
 
-      updateFunctionItem(item, function);
-    }
+		updateFunctionItem(item, function);
+	}
 }
 
 //
@@ -428,21 +426,21 @@ void FunctionManager::slotFunctionChanged(t_function_id id)
 //
 QListViewItem* FunctionManager::getItem(t_function_id id, QListView* listView)
 {
-  ASSERT(listView);
+	ASSERT(listView);
 
-  QListViewItemIterator it(listView);
-  QListViewItem* item = NULL;
+	QListViewItemIterator it(listView);
+	QListViewItem* item = NULL;
 
-  while ((item = it.current()) != NULL)
-    {
-      if (item->text(KColumnID).toInt() == id)
+	while ((item = it.current()) != NULL)
 	{
-	  break;
+		if (item->text(KColumnID).toInt() == id)
+		{
+			break;
+		}
+		++it;
 	}
-      ++it;
-    }
 
-  return item;
+	return item;
 }
 
 /**
@@ -458,42 +456,42 @@ void FunctionManager::initMenu()
 	//
 	m_editMenu = new QPopupMenu();
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/edit.png")),
-				"Edit...",
-				this, SLOT(slotEdit()),
-				CTRL+Key_E, KMenuEdit);
+				       QString("/edit.png")),
+			       "Edit...",
+			       this, SLOT(slotEdit()),
+			       CTRL+Key_E, KMenuEdit);
 
 	m_editMenu->insertSeparator();
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/editcut.png")),
-				"Cut",
-				this, SLOT(slotCut()),
-				CTRL+Key_X, KMenuCut);
+				       QString("/editcut.png")),
+			       "Cut",
+			       this, SLOT(slotCut()),
+			       CTRL+Key_X, KMenuCut);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/editcopy.png")),
-				"Copy",
-				this, SLOT(slotCopy()),
-				CTRL+Key_C, KMenuCopy);
+				       QString("/editcopy.png")),
+			       "Copy",
+			       this, SLOT(slotCopy()),
+			       CTRL+Key_C, KMenuCopy);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/editpaste.png")),
-				"Paste",
-				this, SLOT(slotPaste()),
-				CTRL+Key_V, KMenuPaste);
+				       QString("/editpaste.png")),
+			       "Paste",
+			       this, SLOT(slotPaste()),
+			       CTRL+Key_V, KMenuPaste);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/editdelete.png")),
-				"Delete",
-				this, SLOT(slotDelete()),
-				Key_Delete, KMenuDelete);
+				       QString("/editdelete.png")),
+			       "Delete",
+			       this, SLOT(slotDelete()),
+			       Key_Delete, KMenuDelete);
 
 	m_editMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/selectall.png")),
-				"Select All",
-				this, SLOT(slotSelectAll()),
-				CTRL+Key_A, KMenuSelectAll);
+				       QString("/selectall.png")),
+			       "Select All",
+			       this, SLOT(slotSelectAll()),
+			       CTRL+Key_A, KMenuSelectAll);
 
 	//
 	// Bus menu
@@ -506,29 +504,24 @@ void FunctionManager::initMenu()
 	//
 	m_addMenu = new QPopupMenu();
 	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/scene.png")),
-				"Scene...",
-				Function::Scene);
+				      QString("/scene.png")),
+			      "Scene...",
+			      Function::Scene);
 
 	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/chaser.png")),
-				"Chaser...",
-				Function::Chaser);
+				      QString("/chaser.png")),
+			      "Chaser...",
+			      Function::Chaser);
 
 	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/collection.png")),
-				"Collection...",
-				Function::Collection);
+				      QString("/collection.png")),
+			      "Collection...",
+			      Function::Collection);
 
 	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/sequence.png")),
-				"Sequence...",
-				Function::Sequence);
-
-	m_addMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				QString("/efx.png")),
-				"EFX...",
-				Function::EFX);
+				      QString("/efx.png")),
+			      "EFX...",
+			      Function::EFX);
 
 	menubar->insertItem("Add", m_addMenu);
 	menubar->insertItem("Edit", m_editMenu);
@@ -556,62 +549,50 @@ void FunctionManager::initToolbar()
 
 	// Scene
 	m_addSceneButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/scene.png"))),
-					"Scene",
-					0,
-					this,
-					SLOT(slotAddScene()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/scene.png"))),
+		"Scene",
+		0,
+		this,
+		SLOT(slotAddScene()),
+		m_toolbar);
 	QToolTip::add(m_addSceneButton, "Add new scene");
 
 	// Chaser
 	m_addChaserButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/chaser.png"))),
-					"Chaser",
-					0,
-					this,
-					SLOT(slotAddChaser()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/chaser.png"))),
+		"Chaser",
+		0,
+		this,
+		SLOT(slotAddChaser()),
+		m_toolbar);
 	QToolTip::add(m_addChaserButton, "Add new chaser");
 
 	// Collection
 	m_addCollectionButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/collection.png"))),
-					"Collection",
-					0,
-					this,
-					SLOT(slotAddCollection()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/collection.png"))),
+		"Collection",
+		0,
+		this,
+		SLOT(slotAddCollection()),
+		m_toolbar);
 	QToolTip::add(m_addCollectionButton, "Add new collection");
-
-	// Sequence
-	m_addSequenceButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/sequence.png"))),
-					"Sequence",
-					0,
-					this,
-					SLOT(slotAddSequence()),
-					m_toolbar);
-	QToolTip::add(m_addSequenceButton, "Add new sequence");
 
 	// EFX
 	m_addEFXButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/efx.png"))),
-					"EFX",
-					0,
-					this,
-					SLOT(slotAddEFX()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/efx.png"))),
+		"EFX",
+		0,
+		this,
+		SLOT(slotAddEFX()),
+		m_toolbar);
 	QToolTip::add(m_addEFXButton, "Add new EFX");
 
 	// Separator
@@ -619,50 +600,50 @@ void FunctionManager::initToolbar()
 
 	// Cut
 	m_cutButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/editcut.png"))),
-					"Cut",
-					0,
-					this,
-					SLOT(slotCut()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/editcut.png"))),
+		"Cut",
+		0,
+		this,
+		SLOT(slotCut()),
+		m_toolbar);
 	QToolTip::add(m_cutButton, "Cut selected function(s)");
 
 	// Copy
 	m_copyButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/editcopy.png"))),
-					"Copy",
-					0,
-					this,
-					SLOT(slotCopy()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/editcopy.png"))),
+		"Copy",
+		0,
+		this,
+		SLOT(slotCopy()),
+		m_toolbar);
 	QToolTip::add(m_copyButton, "Copy selected function(s)");
 
 	// Paste
 	m_pasteButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/editpaste.png"))),
-					"Paste",
-					0,
-					this,
-					SLOT(slotPaste()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/editpaste.png"))),
+		"Paste",
+		0,
+		this,
+		SLOT(slotPaste()),
+		m_toolbar);
 	QToolTip::add(m_pasteButton, "Paste cut/copied function(s)");
 
 	// Delete
 	m_deleteButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/editdelete.png"))),
-					"Delete",
-					0,
-					this,
-					SLOT(slotDelete()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/editdelete.png"))),
+		"Delete",
+		0,
+		this,
+		SLOT(slotDelete()),
+		m_toolbar);
 	QToolTip::add(m_deleteButton, "Delete selected function(s)");
 
 	// Separator
@@ -670,14 +651,14 @@ void FunctionManager::initToolbar()
 
 	// Edit
 	m_editButton = new QToolButton(
-					QIconSet(QPixmap(
-						QString(PIXMAPS) +
-						QString("/edit.png"))),
-					"Edit",
-					0,
-					this,
-					SLOT(slotEdit()),
-					m_toolbar);
+		QIconSet(QPixmap(
+				 QString(PIXMAPS) +
+				 QString("/edit.png"))),
+		"Edit",
+		0,
+		this,
+		SLOT(slotEdit()),
+		m_toolbar);
 	QToolTip::add(m_editButton, "Edit selected function");
 }
 
@@ -717,12 +698,12 @@ void FunctionManager::initFixtureTree()
 		// Catch right-mouse clicks
 		connect(m_fixtureTree,
 			SIGNAL(contextMenuRequested(QListViewItem*,
-						const QPoint&,
-						int)),
+						    const QPoint&,
+						    int)),
 			this,
 			SLOT(slotFixtureTreeContextMenuRequested(QListViewItem*,
-								const QPoint&,
-								int)));
+								 const QPoint&,
+								 int)));
 	}
 
 	updateFixtureTree();
@@ -772,12 +753,12 @@ void FunctionManager::initFunctionTree()
 		// Catch right-mouse clicks
 		connect(m_functionTree,
 			SIGNAL(contextMenuRequested(QListViewItem*,
-					    const QPoint&,
-					    int)),
+						    const QPoint&,
+						    int)),
 			this,
 			SLOT(slotFunctionTreeContextMenuRequested(QListViewItem*,
-							  const QPoint&,
-							  int)));
+								  const QPoint&,
+								  int)));
 	}
 }
 
@@ -788,8 +769,8 @@ void FunctionManager::initFunctionTree()
 void FunctionManager::updateFixtureTree()
 {
 	QString devid;
-	t_device_id id = KNoID;
-	Device* device = NULL;
+	t_fixture_id id = KNoID;
+	Fixture* fxi = NULL;
 
 	m_fixtureTree->clear();
 
@@ -801,26 +782,24 @@ void FunctionManager::updateFixtureTree()
 	item->setText(KColumnName, QString("Global"));
 	item->setText(KColumnID, devid);
 	item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
-				     QString("/global.png")));
+					     QString("/global.png")));
 	// item->setOpen(m_alwaysOpen->isChecked());
 
 	//
-	// Device root nodes
+	// Fixture root nodes
 	//
-	for (id = 0; id < KDeviceArraySize; id++)
+	for (id = 0; id < KFixtureArraySize; id++)
 	{
-		device = _app->doc()->device(id);
-		if (device == NULL)
-		{
+		fxi = _app->doc()->fixture(id);
+		if (fxi == NULL)
 			continue;
-		}
 
 		devid.setNum(id);
 		item = new QListViewItem(m_fixtureTree);
-		item->setText(KColumnName, device->name());
+		item->setText(KColumnName, fxi->name());
 		item->setText(KColumnID, devid);
 		item->setPixmap(KColumnName, QPixmap(QString(PIXMAPS) +
-					     QString("/fixture.png")));
+						     QString("/fixture.png")));
 	}
 
 	m_selectedFunctions.clear();
@@ -862,20 +841,20 @@ void FunctionManager::updateFunctionItem(QListViewItem* item,
  */
 void FunctionManager::deleteSelectedFunctions()
 {
-  QListViewItem* item = NULL;
-  t_function_id fid = KNoID;
+	QListViewItem* item = NULL;
+	t_function_id fid = KNoID;
   
-  // Delete functions and listview items
-  while ( (item = m_selectedFunctions.take(0)) != NULL)
-    {
-      fid = item->text(KColumnID).toInt();
+	// Delete functions and listview items
+	while ( (item = m_selectedFunctions.take(0)) != NULL)
+	{
+		fid = item->text(KColumnID).toInt();
 
-      m_blockRemoveFunctionSignal = true;
-      _app->doc()->deleteFunction(fid);
-      m_blockRemoveFunctionSignal = false;
+		m_blockRemoveFunctionSignal = true;
+		_app->doc()->deleteFunction(fid);
+		m_blockRemoveFunctionSignal = false;
       
-      delete item;
-    }
+		delete item;
+	}
 }
 
 /**
@@ -883,9 +862,9 @@ void FunctionManager::deleteSelectedFunctions()
  */
 void FunctionManager::updateMenuItems()
 {
-	QListViewItem* deviceitem = m_fixtureTree->currentItem();
+	QListViewItem* fixtureitem = m_fixtureTree->currentItem();
 
-	t_device_id did = KNoID;
+	t_fixture_id fxi_id = KNoID;
 	t_function_id fid = KNoID;
 
 	if (m_selectionMode == true)
@@ -893,9 +872,9 @@ void FunctionManager::updateMenuItems()
 		return;
 	}
 
-	if (deviceitem == NULL)
+	if (fixtureitem == NULL)
 	{
-		// There are no devices (at least none is selected)
+		// There are no fixtures (at least none is selected)
 		// so nothing can be done in function manager
 		m_addMenu->setEnabled(false);
 		m_editMenu->setEnabled(false);
@@ -911,10 +890,10 @@ void FunctionManager::updateMenuItems()
 
 		m_toolbar->setEnabled(true);
 
-		// Get the selected device
-		did = deviceitem->text(KColumnID).toInt();
+		// Get the selected fixture
+		fxi_id = fixtureitem->text(KColumnID).toInt();
 
-		if (did == KNoID)
+		if (fxi_id == KNoID)
 		{
 			// Global has been selected
 
@@ -922,30 +901,26 @@ void FunctionManager::updateMenuItems()
 			m_addMenu->setItemEnabled(Function::Scene, false);
 			m_addMenu->setItemEnabled(Function::Chaser, true);
 			m_addMenu->setItemEnabled(Function::Collection, true);
-			m_addMenu->setItemEnabled(Function::Sequence, false);
 			m_addMenu->setItemEnabled(Function::EFX, false);
 
 			m_addSceneButton->setEnabled(false);
 			m_addChaserButton->setEnabled(true);
 			m_addCollectionButton->setEnabled(true);
-			m_addSequenceButton->setEnabled(false);
 			m_addEFXButton->setEnabled(false);
 		}
 		else
 		{
-			// A regular device has been selected
+			// A regular fixture has been selected
 
 			// Disable global functions, enable others
 			m_addMenu->setItemEnabled(Function::Scene, true);
 			m_addMenu->setItemEnabled(Function::Chaser, false);
 			m_addMenu->setItemEnabled(Function::Collection, false);
-			m_addMenu->setItemEnabled(Function::Sequence, true);
 			m_addMenu->setItemEnabled(Function::EFX, true);
 
 			m_addSceneButton->setEnabled(true);
 			m_addChaserButton->setEnabled(false);
 			m_addCollectionButton->setEnabled(false);
-			m_addSequenceButton->setEnabled(true);
 			m_addEFXButton->setEnabled(true);
 		}
 
@@ -1045,7 +1020,7 @@ void FunctionManager::slotFunctionHeaderClicked(int section)
  */
 void FunctionManager::slotFixtureTreeSelectionChanged(QListViewItem* item)
 {
-	t_device_id did = KNoID;
+	t_fixture_id fxi_id = KNoID;
 	t_function_id fid = KNoID;
 	Function* function = NULL;
 
@@ -1054,8 +1029,8 @@ void FunctionManager::slotFixtureTreeSelectionChanged(QListViewItem* item)
 		return;
 	}
 
-	// Get the selected device's ID
-	did = item->text(KColumnID).toInt();
+	// Get the selected fixture's ID
+	fxi_id = item->text(KColumnID).toInt();
 
 	// Clear the current list of selected functions
 	m_selectedFunctions.clear();
@@ -1067,7 +1042,7 @@ void FunctionManager::slotFixtureTreeSelectionChanged(QListViewItem* item)
 	for (fid = 0; fid < KFunctionArraySize; fid++)
 	{
 	        function = _app->doc()->function(fid);
-		if (function && function->device() == did)
+		if (function && function->fixture() == fxi_id)
 		{
 			item = new QListViewItem(m_functionTree);
 			updateFunctionItem(item, function);
@@ -1113,7 +1088,7 @@ void FunctionManager::slotFunctionTreeSelectionChanged()
  * User has clicked the right mouse button in the fixture tree
  */
 void FunctionManager::slotFixtureTreeContextMenuRequested(QListViewItem* item,
-					      const QPoint& pos, int col)
+							  const QPoint& pos, int col)
 {
 	// Append the "Add" menu to the end of "Edit" menu
 	int separatorIndex = m_editMenu->insertSeparator();
@@ -1143,7 +1118,7 @@ void FunctionManager::slotFixtureTreeContextMenuRequested(QListViewItem* item,
  * User has clicked the right mouse button in the function tree
  */
 void FunctionManager::slotFunctionTreeContextMenuRequested(QListViewItem* item,
-					      const QPoint& pos, int col)
+							   const QPoint& pos, int col)
 {
 	// Append the "Add" menu to the end of "Edit" menu
 	int separatorIndex = m_editMenu->insertSeparator();
@@ -1186,7 +1161,7 @@ void FunctionManager::slotUpdateBusMenu()
 
 	// Disconnect first to prevent double callbacks
 	disconnect(m_busMenu, SIGNAL(activated(int)),
-		this, SLOT(slotBusActivated(int)));
+		   this, SLOT(slotBusActivated(int)));
 
 	connect(m_busMenu, SIGNAL(activated(int)),
 		this, SLOT(slotBusActivated(int)));
@@ -1197,14 +1172,14 @@ void FunctionManager::slotUpdateBusMenu()
 		SIGNAL(nameChanged(t_bus_id, const QString&)),
 		this,
 		SLOT(slotUpdateBusMenu())
-	);
+		);
 
 	connect(
 		Bus::emitter(),
 		SIGNAL(nameChanged(t_bus_id, const QString&)),
 		this,
 		SLOT(slotUpdateBusMenu())
-	);
+		);
 }
 
 
@@ -1233,12 +1208,12 @@ void FunctionManager::slotBusActivated(int busID)
  */
 void FunctionManager::slotAddMenuCallback(int type)
 {
-	QListViewItem* deviceItem = m_fixtureTree->currentItem();
+	QListViewItem* fixtureItem = m_fixtureTree->currentItem();
 	QListViewItem* newItem = NULL;
-	t_device_id did = KNoID;
+	t_fixture_id fxi_id = KNoID;
 	Function* f = NULL;
 
-	if (deviceItem == NULL)
+	if (fixtureItem == NULL)
 	{
 		return;
 	}
@@ -1246,54 +1221,46 @@ void FunctionManager::slotAddMenuCallback(int type)
 	// We don't want the signal handler to add the function twice
 	m_blockAddFunctionSignal = true;
 
-	did = deviceItem->text(KColumnID).toInt();
+	fxi_id = fixtureItem->text(KColumnID).toInt();
 
 	//
 	// Create the function
 	//
 	switch(type)
 	{
-		case Function::Scene:
-		{
-		  f = _app->doc()->newFunction(Function::Scene, did);
-		  assert(f);
-		  f->setName("New Scene");
-		}
-		break;
+	case Function::Scene:
+	{
+		f = _app->doc()->newFunction(Function::Scene, fxi_id);
+		assert(f);
+		f->setName("New Scene");
+	}
+	break;
 
-		case Function::Chaser:
-		{
-		  f = _app->doc()->newFunction(Function::Chaser, KNoID);
-		  assert(f);
-		  f->setName("New Chaser");
-		}
-		break;
+	case Function::Chaser:
+	{
+		f = _app->doc()->newFunction(Function::Chaser, KNoID);
+		assert(f);
+		f->setName("New Chaser");
+	}
+	break;
 
-		case Function::Collection:
-		{
-		  f = _app->doc()->newFunction(Function::Collection, KNoID);
-		  assert(f);
-		  f->setName("New Collection");
-		}
-		break;
+	case Function::Collection:
+	{
+		f = _app->doc()->newFunction(Function::Collection, KNoID);
+		assert(f);
+		f->setName("New Collection");
+	}
+	break;
 
-		case Function::Sequence:
-		{
-		  f = _app->doc()->newFunction(Function::Sequence, did);
-		  assert(f);
-		  f->setName("New Sequence");
-		}
-		break;
+	case Function::EFX:
+	{
+		f = _app->doc()->newFunction(Function::EFX, fxi_id);
+		assert(f);
+		f->setName("New EFX");
+	}
+	break;
 
-		case Function::EFX:
-		{
-		  f = _app->doc()->newFunction(Function::EFX, did);
-		  assert(f);
-		  f->setName("New EFX");
-		}
-		break;
-
-		default:
+	default:
 		break;
 	}
 
@@ -1333,14 +1300,14 @@ void FunctionManager::slotAddMenuCallback(int type)
 void FunctionManager::slotFunctionTreeDoubleClicked(QListViewItem* item,
 						    const QPoint& pos, int col)
 {
-  if (m_selectionMode == true)
-    {
-      slotOKClicked();
-    }
-  else
-    {
-      slotEdit();
-    }
+	if (m_selectionMode == true)
+	{
+		slotOKClicked();
+	}
+	else
+	{
+		slotEdit();
+	}
 }
 
 /**
@@ -1367,15 +1334,6 @@ void FunctionManager::slotAddChaser()
 void FunctionManager::slotAddCollection()
 {
 	slotAddMenuCallback(Function::Collection);
-}
-
-
-/**
- * Callback for Sequence tool button
- */
-void FunctionManager::slotAddSequence()
-{
-	slotAddMenuCallback(Function::Sequence);
 }
 
 
@@ -1458,41 +1416,41 @@ void FunctionManager::slotCopy()
  */
 void FunctionManager::slotPaste()
 {
-	t_device_id did = KNoID;
-	QListViewItem* deviceitem = NULL;
+	t_fixture_id fxi_id = KNoID;
+	QListViewItem* fixtureitem = NULL;
 	QListViewItem* functionitem = NULL;
 	FunctionIDList::iterator it;
 	Function* newFunction = NULL;
 
-	deviceitem = m_fixtureTree->currentItem();
-	if (deviceitem == NULL)
+	fixtureitem = m_fixtureTree->currentItem();
+	if (fixtureitem == NULL)
 	{
 		return;
 	}
 
 	if (m_clipboardAction == ClipboardCut)
 	{
-		// Get the currently selected device item
-		did = deviceitem->text(KColumnID).toInt();
+		// Get the currently selected fixture item
+		fxi_id = fixtureitem->text(KColumnID).toInt();
 
 		for (it = m_clipboard.begin(); it != m_clipboard.end(); ++it)
 		{
 			// Copy the function
-			newFunction = copyFunction(*it, did);
+			newFunction = copyFunction(*it, fxi_id);
 			if (newFunction == NULL)
 			{
 				// Stop pasting so we don't get the user
 				// too annoyed with a message box for each
 				// function. They all will fail, because
 				// the user can't select functions from more
-				// than one device (or global) at a time
+				// than one fixture (or global) at a time
 				break;
 			}
 			else
 			{
-			  // Delete the original function because we are
-			  // doing cut-paste
-			  _app->doc()->deleteFunction(*it);
+				// Delete the original function because we are
+				// doing cut-paste
+				_app->doc()->deleteFunction(*it);
 			}
 		}
 
@@ -1502,30 +1460,30 @@ void FunctionManager::slotPaste()
 	}
 	else if (m_clipboardAction == ClipboardCopy)
 	{
-		// Get the currently selected device item
-		did = deviceitem->text(KColumnID).toInt();
+		// Get the currently selected fixture item
+		fxi_id = fixtureitem->text(KColumnID).toInt();
 
 		for (it = m_clipboard.begin(); it != m_clipboard.end(); ++it)
 		{
 			// Copy the function
-			newFunction = copyFunction(*it, did);
+			newFunction = copyFunction(*it, fxi_id);
 			if (newFunction == NULL)
-			  {
-			    // Stop pasting so we don't get the user
-			    // too annoyed with a message box for each
-			    // function. They all will fail, because
-			    // the user can't select functions from more
-			    // than one device (or global) at a time
-			    break;
-			  }
+			{
+				// Stop pasting so we don't get the user
+				// too annoyed with a message box for each
+				// function. They all will fail, because
+				// the user can't select functions from more
+				// than one fixture (or global) at a time
+				break;
+			}
 		}
 	}
 }
 
 /**
- * Copy the given function to the given device (or global)
+ * Copy the given function to the given fixture (or global)
  */
-Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
+Function* FunctionManager::copyFunction(t_function_id fid, t_fixture_id fxi_id)
 {
 	Function* newFunction = NULL;
 	QString msg;
@@ -1533,9 +1491,9 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 	Function* function = _app->doc()->function(fid);
 	assert(function);
 
-	// Check that we are not trying to copy global functions to a device
+	// Check that we are not trying to copy global functions to a fixture
 	// or vice versa
-	if (did == KNoID)
+	if (fxi_id == KNoID)
 	{
 		if (function->type() == Function::Scene)
 		{
@@ -1547,17 +1505,12 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 			msg = "EFX's cannot be created to global space.\n";
 			msg += "Paste aborted.\n";
 		}
-		else if (function->type() == Function::Sequence)
-		{
-			msg = "Sequences cannot be created to global space.\n";
-			msg += "Paste aborted.\n";
-		}
 		else
 		{
 			msg = QString::null;
 		}
 	}
-	else if (did != KNoID)
+	else if (fxi_id != KNoID)
 	{
 		if (function->type() == Function::Chaser)
 		{
@@ -1584,65 +1537,53 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_device_id did)
 
 	switch(function->type())
 	{
-		case Function::Scene:
-		{
-			newFunction =
-			  _app->doc()->newFunction(Function::Scene, did);
+	case Function::Scene:
+	{
+		newFunction =
+			_app->doc()->newFunction(Function::Scene, fxi_id);
 
-			Scene* scene = static_cast<Scene*> (newFunction);
+		Scene* scene = static_cast<Scene*> (newFunction);
 
-			scene->copyFrom(static_cast<Scene*> (function), did);
-		}
-		break;
+		scene->copyFrom(static_cast<Scene*> (function), fxi_id);
+	}
+	break;
 
-		case Function::Chaser:
-		{
-			newFunction =
-			  _app->doc()->newFunction(Function::Chaser, KNoID);
+	case Function::Chaser:
+	{
+		newFunction =
+			_app->doc()->newFunction(Function::Chaser, KNoID);
 
-			Chaser* chaser = static_cast<Chaser*> (newFunction);
+		Chaser* chaser = static_cast<Chaser*> (newFunction);
 
-			chaser->copyFrom(static_cast<Chaser*> (function));
-		}
-		break;
+		chaser->copyFrom(static_cast<Chaser*> (function));
+	}
+	break;
 
-		case Function::Collection:
-		{
-			newFunction =
-			  _app->doc()->newFunction(Function::Collection, KNoID);
+	case Function::Collection:
+	{
+		newFunction =
+			_app->doc()->newFunction(Function::Collection, KNoID);
 			
-			FunctionCollection* fc =
-				static_cast<FunctionCollection*> (newFunction);
+		FunctionCollection* fc =
+			static_cast<FunctionCollection*> (newFunction);
 
-			fc->copyFrom(static_cast<FunctionCollection*> (function));
-		}
-		break;
+		fc->copyFrom(static_cast<FunctionCollection*> (function));
+	}
+	break;
 
-		case Function::Sequence:
-		{
-			newFunction =
-			  _app->doc()->newFunction(Function::Sequence, did);
-			Sequence* sequence =
-				static_cast<Sequence*> (newFunction);
+	case Function::EFX:
+	{
+		newFunction = 
+			_app->doc()->newFunction(Function::EFX, fxi_id);
 
-			sequence->copyFrom(static_cast<Sequence*> (function),
-					   did);
-		}
-		break;
+		EFX* efx = static_cast<EFX*> (newFunction);
 
-		case Function::EFX:
-		{
-			newFunction = 
-			  _app->doc()->newFunction(Function::EFX, did);
+		efx->copyFrom(static_cast<EFX*> (function), fxi_id);
+	}
+	break;
 
-			EFX* efx = static_cast<EFX*> (newFunction);
-
-			efx->copyFrom(static_cast<EFX*> (function), did);
-		}
-		break;
-
-		default:
-			newFunction = NULL;
+	default:
+		newFunction = NULL;
 		break;
 	}
 
@@ -1677,58 +1618,48 @@ int FunctionManager::slotEdit()
 	//
 	switch (function->type())
 	{
-		case Function::Scene:
-		{
-			AdvancedSceneEditor* ase = NULL;
-			ase = new AdvancedSceneEditor(this, (Scene*) function);
-			ase->init();
-			result = ase->exec();
-			delete ase;
-		}
-		break;
+	case Function::Scene:
+	{
+		AdvancedSceneEditor* ase = NULL;
+		ase = new AdvancedSceneEditor(this, (Scene*) function);
+		ase->init();
+		result = ase->exec();
+		delete ase;
+	}
+	break;
 
-		case Function::Chaser:
-		{
-			ChaserEditor* ce = new ChaserEditor(
-					(Chaser*) function, NULL);
-			ce->init();
-			result = ce->exec();
-			delete ce;
-		}
-		break;
+	case Function::Chaser:
+	{
+		ChaserEditor* ce = new ChaserEditor(
+			(Chaser*) function, NULL);
+		ce->init();
+		result = ce->exec();
+		delete ce;
+	}
+	break;
 
-		case Function::Collection:
-		{
-			FunctionCollectionEditor* fce = NULL;
-			fce = new FunctionCollectionEditor(
-					(FunctionCollection*) function, NULL);
-			result = fce->exec();
-			delete fce;
-		}
-		break;
+	case Function::Collection:
+	{
+		FunctionCollectionEditor* fce = NULL;
+		fce = new FunctionCollectionEditor(
+			(FunctionCollection*) function, NULL);
+		result = fce->exec();
+		delete fce;
+	}
+	break;
 
-		case Function::Sequence:
-		{
-			SequenceEditor* se = NULL;
-			se = new SequenceEditor((Sequence*) function);
-			se->init();
-			result = se->exec();
-			delete se;
-		}
-		break;
+	case Function::EFX:
+	{
+		EFXEditor* ee = NULL;
+		ee = new EFXEditor((EFX*) function);
+		ee->init();
+		result = ee->exec();
+		delete ee;
+	}
+	break;
 
-		case Function::EFX:
-		{
-			EFXEditor* ee = NULL;
-			ee = new EFXEditor((EFX*) function);
-			ee->init();
-			result = ee->exec();
-			delete ee;
-		}
-		break;
-
-		default:
-			result = QDialog::Rejected;
+	default:
+		result = QDialog::Rejected;
 		break;
 	}
 
@@ -1771,7 +1702,7 @@ void FunctionManager::slotDelete()
 	// Ask for user's confirmation
 	if (QMessageBox::information(this, KApplicationNameShort, msg,
 				     QMessageBox::Yes, QMessageBox::No)
-		== QMessageBox::Yes)
+	    == QMessageBox::Yes)
 	{
 		deleteSelectedFunctions();
 		updateMenuItems();

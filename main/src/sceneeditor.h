@@ -2,8 +2,7 @@
   Q Light Controller
   sceneeditor.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
-                            2002 Stefan Krumm
+  Copyright (c) Heikki Junnila, Stefan Krumm
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -41,49 +40,49 @@ class QRadioButton;
 class QPopupMenu;
 class ListBoxIDItem;
 
-class Device;
+class Fixture;
 
 class SceneEditor : public UI_SceneEditor
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  SceneEditor(QWidget* parent, const char* name = NULL);
-  ~SceneEditor();
+	SceneEditor(QWidget* parent);
+	~SceneEditor();
 
-  void setDevice(t_device_id);
-  void initMenu();
+	void setFixture(t_fixture_id id);
+	void initMenu();
 
-  Scene* currentScene();
+	Scene* currentScene();
 
  signals:
-  void sceneActivated(SceneValue* values, t_channel channels);
+	void sceneActivated(SceneValue* values, t_channel channels);
 
  public slots:
-  void slotSceneListContextMenu(QListBoxItem*, const QPoint&);
-  void slotChannelChanged(t_channel, t_value, Scene::ValueType);
+	void slotSceneListContextMenu(QListBoxItem*, const QPoint&);
+	void slotChannelChanged(t_channel, t_value, Scene::ValueType);
 
-  void slotActivate();
-  void slotNew();
-  void slotStore();
-  void slotRemove();
-  void slotRename();
+	void slotActivate();
+	void slotNew();
+	void slotStore();
+	void slotRemove();
+	void slotRename();
 
-  void slotFunctionAdded(t_function_id);
-  void slotFunctionRemoved(t_function_id);
-  void slotFunctionChanged(t_function_id);
-
- protected:
-  ListBoxIDItem* getItem(t_function_id id);
-  void fillFunctions();
-  void selectFunction(t_function_id fid);
-  void setStatusText(QString text, QColor color);
-  void setScene(Scene* scene);
+	void slotFunctionAdded(t_function_id);
+	void slotFunctionRemoved(t_function_id);
+	void slotFunctionChanged(t_function_id);
 
  protected:
-  t_device_id m_deviceID;
-  QPopupMenu* m_menu;
-  Scene* m_tempScene;
+	ListBoxIDItem* getItem(t_function_id id);
+	void fillFunctions();
+	void selectFunction(t_function_id fid);
+	void setStatusText(QString text, QColor color);
+	void setScene(Scene* scene);
+
+ protected:
+	t_fixture_id m_fixture;
+	QPopupMenu* m_menu;
+	Scene* m_tempScene;
 };
 
 #endif

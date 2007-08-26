@@ -2,7 +2,7 @@
   Q Light Controller
   chaser.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,14 +26,14 @@
 #include <qapplication.h>
 #include <assert.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "common/filehandler.h"
 #include "chaser.h"
 #include "doc.h"
 #include "app.h"
 #include "bus.h"
 #include "scene.h"
-#include "device.h"
+#include "fixture.h"
 #include "functionconsumer.h"
 #include "eventbuffer.h"
 
@@ -95,103 +95,8 @@ Chaser::~Chaser()
 	m_steps.clear();
 }
 
-
-//
-// Save this chaser's contents into the given file
-//
-void Chaser::saveToFile(QFile &file)
-{
-	QString s;
-	QString t;
-
-	// Comment line
-	s = QString("# Function entry\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Entry type
-	s = QString("Entry = Function") + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Name
-	s = QString("Name = ") + name() + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Type
-	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// ID
-	s.sprintf("ID = %d\n", m_id);
-	file.writeBlock((const char*) s, s.length());
-
-	// Bus ID
-	t.setNum(m_busID);
-	s = QString("Bus = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Device
-	s = QString("Device = 0\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Steps
-	s = QString("# Step entries") + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	QValueList <t_function_id>::iterator it;
-	for (it = m_steps.begin(); it != m_steps.end(); ++it)
-	{
-		s.sprintf("Function = %d\n", *it);
-		file.writeBlock((const char*) s, s.length());
-	}
-
-	// Direction
-	s.sprintf("Direction = %d\n", (int) m_direction);
-	file.writeBlock((const char*) s, s.length());
-
-	// Run order
-	s.sprintf("RunOrder = %d\n", (int) m_runOrder);
-	file.writeBlock((const char*) s, s.length());
-}
-
-
-//
-// Create this chaser's contents from a file that has been read into list
-//
-void Chaser::createContents(QPtrList <QString> &list)
-{
-	t_function_id fid = KNoID;
-  
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.prev();
-			break;
-		}
-		else if (*s == QString("Function"))
-		{
-			fid = list.next()->toInt();
-			addStep(fid);
-			fid = KNoID;
-		}
-		else if (*s == QString("Direction"))
-		{
-			m_direction = (Direction) list.next()->toInt();
-		}
-		else if (*s == QString("RunOrder"))
-		{
-			m_runOrder = (RunOrder) list.next()->toInt();
-		}
-		else
-		{
-			// Unknown keyword
-			list.next();
-		}
-	}
-}
-
 // Save this function to an XML document
-void Chaser::saveXML(QDomDocument* doc)
+bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
 	QDomElement root;
 	QDomElement tag;
@@ -199,14 +104,16 @@ void Chaser::saveXML(QDomDocument* doc)
 	QString str;
 	int i = 0;
 	
-	assert(doc);
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
 
 	/* Function tag */
 	root = doc->createElement(KXMLQLCFunction);
-	doc->appendChild(root);
+	wksp_root->appendChild(root);
 
 	root.setAttribute(KXMLQLCFunctionID, id());
 	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionFixture, fixture());
 	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Speed bus */
@@ -245,8 +152,76 @@ void Chaser::saveXML(QDomDocument* doc)
 		text = doc->createTextNode(str);
 		tag.appendChild(text);
 	}
+
+	return true;
 }
 
+bool Chaser::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	t_fixture_id step_fxi = KNoID;
+	int step_number = 0;
+	QString str;
+	
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFunction)
+	{
+		qWarning("Function node not found!");
+		return false;
+	}
+
+	/* Load chaser contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCBus)
+		{
+			/* Bus */
+			str = tag.attribute(KXMLQLCBusRole);
+			Q_ASSERT(str == KXMLQLCBusHold);
+
+			Q_ASSERT(setBus(tag.text().toInt()) == true);
+		}
+		else if (tag.tagName() == KXMLQLCFunctionDirection)
+		{
+			/* Direction */
+			setDirection(Function::stringToDirection(tag.text()));
+		}
+		else if (tag.tagName() == KXMLQLCFunctionRunOrder)
+		{
+			/* Run Order */
+			setRunOrder(Function::stringToRunOrder(tag.text()));
+		}
+		else if (tag.tagName() == KXMLQLCFunctionStep)
+		{
+			step_number = 
+				tag.attribute(KXMLQLCFunctionNumber).toInt();
+			step_fxi = tag.text().toInt();
+
+			if (step_number > m_steps.size())
+				m_steps.append(step_fxi);
+			else
+				m_steps.insert(m_steps.at(step_number),
+					       step_fxi);
+			
+		}
+		else
+		{
+			qWarning("Unknown chaser tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
+}
 
 //
 // Add a new step into the end
@@ -258,7 +233,7 @@ void Chaser::addStep(t_function_id id)
 	if (m_running == false)
 	{
 		m_steps.append(id);
-		_app->doc()->setModified(true);
+		_app->doc()->setModified();
 	}
 	else
 	{
@@ -281,7 +256,7 @@ void Chaser::removeStep(int index)
 	if (m_running == false)
 	{
 		m_steps.remove(m_steps.at(index));
-		_app->doc()->setModified(true);
+		_app->doc()->setModified();
 	}
 	else
 	{
@@ -310,7 +285,7 @@ bool Chaser::raiseStep(unsigned int index)
 			m_steps.remove(it);
 			m_steps.insert(m_steps.at(index - 1), *it);
 	  
-			_app->doc()->setModified(true);
+			_app->doc()->setModified();
 
 			result = true;
 		}
@@ -344,7 +319,7 @@ bool Chaser::lowerStep(unsigned int index)
 			m_steps.remove(it);
 			m_steps.insert(m_steps.at(index + 1), *it);
 
-			_app->doc()->setModified(true);
+			_app->doc()->setModified();
 
 			result = true;
 		}

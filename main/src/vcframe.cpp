@@ -550,7 +550,7 @@ void VCFrame::slotAddButton(QPoint p)
 
   b->move(p);
 
-  _app->doc()->setModified(true);
+  _app->doc()->setModified();
 }
 
 void VCFrame::slotAddSlider(QPoint p)
@@ -564,7 +564,7 @@ void VCFrame::slotAddSlider(QPoint p)
 
   s->move(p);
 
-  _app->doc()->setModified(true);
+  _app->doc()->setModified();
 }
 
 void VCFrame::slotAddFrame(QPoint p)
@@ -576,7 +576,7 @@ void VCFrame::slotAddFrame(QPoint p)
 
   f->move(p);
 
-  _app->doc()->setModified(true);
+  _app->doc()->setModified();
 }
 
 void VCFrame::slotAddXYPad(QPoint p)
@@ -588,7 +588,7 @@ void VCFrame::slotAddXYPad(QPoint p)
 
   x->move(p);
 
-  _app->doc()->setModified(true);
+  _app->doc()->setModified();
 }
 
 void VCFrame::slotAddLabel(QPoint p)
@@ -600,7 +600,7 @@ void VCFrame::slotAddLabel(QPoint p)
 
   l->move(p);
 
-  _app->doc()->setModified(true);
+  _app->doc()->setModified();
 }
 
 
@@ -616,7 +616,7 @@ void VCFrame::parseWidgetMenu(int item)
 	vcfp->init();
 	if (vcfp->exec() == QDialog::Accepted)
 	  {
-	    _app->doc()->setModified(true);
+	    _app->doc()->setModified();
 	  }
 
 	delete vcfp;
@@ -633,7 +633,7 @@ void VCFrame::parseWidgetMenu(int item)
 	  {
 	    setFrameStyle(KFrameStyle);
 	  }
-	_app->doc()->setModified(true);
+	_app->doc()->setModified();
       }
       break;
 
@@ -664,7 +664,7 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
 	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
@@ -673,7 +673,7 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
 	  p.setY(p.y() - m_mousePressPoint.y());
 
 	  moveTo(p);
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
     }
   else

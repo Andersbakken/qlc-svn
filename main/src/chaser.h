@@ -38,7 +38,7 @@ class Chaser : public Function
 
 	void copyFrom(Chaser* ch, bool append = false);
 
-	bool setDevice(t_device_id) { return false; }
+	bool setFixtureInstance(t_fixture_id) { return false; }
 
 	void addStep(t_function_id);
 	void removeStep(int index = 0);
@@ -54,10 +54,8 @@ class Chaser : public Function
 
 	QValueList <t_function_id> *steps() { return &m_steps; }
 
-	void saveToFile(QFile &file);
-	void createContents(QPtrList <QString> &list);
-
-	void saveXML(QDomDocument* doc);
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
 
 	void busValueChanged(t_bus_id, t_bus_value);
 

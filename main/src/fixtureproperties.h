@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  devicelist.h
+  fixtureproperties.h
   
-  Copyright (C) 2005, Stefan Krumm, Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,39 +19,94 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DEVICELIST_H
-#define DEVICELIST_H
+#ifndef FIXTUREPROPERTIES_H
+#define FIXTUREPROPERTIES_H
 
+#include "uic_fixtureproperties.h"
 #include "common/types.h"
-#include "uic_devicelist.h"
 
-class DeviceList : public UI_DeviceList
+class Fixture;
+
+class FixtureProperties : public UI_FixtureProperties
 {
 	Q_OBJECT
 
-public:
-	DeviceList(QWidget* parent = 0, const char* name = 0);
-	~DeviceList();
+ public:
+	/** Constructor */
+	FixtureProperties(QWidget* parent, t_fixture_id fixture);
 
+	/** Destructor */
+	~FixtureProperties();
+   
+	/** Dialog pre-initialisation */
 	void init();
-	
-	/**
-	* Return the ID of the selected channel's device
-	*/
-	t_device_id selectedDeviceID() const { return m_deviceID; }
+   
+ protected slots:
+	 /** Callback for OK button click */
+	void slotOKClicked();
 
-	/**
-	* Return the selected channel
-	*/
-	t_channel selectedChannel() const { return m_channel; }
-
-public slots:
-	void slotSelectionChanged(QListViewItem* item);
-	void slotItemDoubleClicked(QListViewItem* item);
-
-protected:
-	t_device_id m_deviceID;
-	t_channel m_channel;
+ protected:
+	t_fixture_id m_fixture;
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

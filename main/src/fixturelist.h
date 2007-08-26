@@ -1,13 +1,13 @@
 /*
   Q Light Controller
-  editscenevalue.h
-
-  Copyright (c) Heikki Junnila
-
+  fixturelist.h
+  
+  Copyright (c) Stefan Krumm, Heikki Junnila
+  
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-
+  
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,40 +19,35 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef EDITSCENEVALUE_H
-#define EDITSCENEVALUE_H
+#ifndef FIXTURELIST_H
+#define FIXTURELIST_H
 
-#include "uic_editscenevalue.h"
-#include "scene.h"
 #include "common/types.h"
+#include "uic_fixturelist.h"
 
-class QWidget;
-class QLCChannel;
-
-class EditSceneValue : public UI_EditSceneValue
+class FixtureList : public UI_FixtureList
 {
 	Q_OBJECT
 
  public:
-	EditSceneValue(QWidget* parent, QLCChannel* ch,
-		       SceneValue &currentValue);
-	virtual ~EditSceneValue();
+	FixtureList(QWidget* parent);
+	~FixtureList();
 
-	t_value value() { return m_value; }
-	QString type() { return m_type; }
+	void init();
+	
+	/** Return the ID of the selected channel's fixture */
+	t_fixture_id selectedFixtureID() const { return m_fixture; }
 
- private slots:
-	void slotValueChanged(int);
-	void slotPresetComboActivated(const QString &);
-	void slotTypeActivated(const QString &text);
+	/** Return the selected channel number */
+	t_channel selectedChannel() const { return m_channel; }
 
- private:
-	bool m_updateValue;
+ public slots:
+	void slotSelectionChanged(QListViewItem* item);
+        void slotItemDoubleClicked(QListViewItem* item);
 
-	QLCChannel* m_channel;
-
-	t_value m_value;
-	QString m_type;
+ protected:
+	t_fixture_id m_fixture;
+	t_channel m_channel;
 };
 
 #endif

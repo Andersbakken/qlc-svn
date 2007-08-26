@@ -21,6 +21,7 @@
 
 #include <qfile.h>
 #include <qstring.h>
+#include <assert.h>
 
 #include "bus.h"
 #include "app.h"
@@ -30,179 +31,162 @@ t_bus_id Bus::s_nextID               ( KBusIDMin );
 Bus* Bus::s_busArray                 (      NULL );
 BusEmitter* Bus::s_busEmitter        (      NULL );
 
-//
-// Constructor (private)
-//
 Bus::Bus()
 {
-  m_id = s_nextID++;
-  m_value = 0;
-  m_name = QString::null;
+	m_id = s_nextID++;
+	m_value = 0;
+	m_name = QString::null;
 }
 
-
-//
-// Destructor
-//
 Bus::~Bus()
 {
 }
 
-
-//
-// Allocate all buses (static)
-//
 void Bus::init()
 {
-  if (s_busArray) delete s_busArray;
-  s_busArray = new Bus[KBusCount];
+	if (s_busArray) delete s_busArray;
+	s_busArray = new Bus[KBusCount];
 
-  s_busArray[KBusIDDefaultFade].m_name = QString("Fade");
-  s_busArray[KBusIDDefaultHold].m_name = QString("Hold");
+	s_busArray[KBusIDDefaultFade].m_name = QString("Fade");
+	s_busArray[KBusIDDefaultHold].m_name = QString("Hold");
 
-  if (s_busEmitter) delete s_busEmitter;
-  s_busEmitter = new BusEmitter();
+	if (s_busEmitter) delete s_busEmitter;
+	s_busEmitter = new BusEmitter();
 }
 
-
-//
-// Set bus name (static)
-//
 bool Bus::setName(t_bus_id id, QString name)
 {
-  if (id >= KBusIDMin && id < KBusCount)
-    {
-      s_busArray[id].m_name = name;
-      s_busEmitter->emitNameChanged(id, name);
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+	if (id >= KBusIDMin && id < KBusCount)
+	{
+		s_busArray[id].m_name = name;
+		s_busEmitter->emitNameChanged(id, name);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-
-//
-// Set bus value (static)
-//
 bool Bus::setValue(t_bus_id id, t_bus_value value)
 {
-  if (id >= KBusIDMin && id < KBusCount)
-    {
-      s_busArray[id].m_value = value;
-      s_busEmitter->emitValueChanged(id, value);
+	if (id >= KBusIDMin && id < KBusCount)
+	{
+		s_busArray[id].m_value = value;
+		s_busEmitter->emitValueChanged(id, value);
 
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-
-//
-// Return bus value (static)
-//
 const bool Bus::value(t_bus_id id, t_bus_value& value)
 {
-  if (id >= KBusIDMin && id < KBusCount)
-    {
-      value = s_busArray[id].m_value;
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+	if (id >= KBusIDMin && id < KBusCount)
+	{
+		value = s_busArray[id].m_value;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-
-//
-// Return bus name (static)
-//
 const QString Bus::name(t_bus_id id)
 {
-  if (id >= KBusIDMin && id < KBusCount)
-    {
-      return s_busArray[id].m_name;
-    }
-  else
-    {
-      return QString::null;
-    }
+	if (id >= KBusIDMin && id < KBusCount)
+	{
+		return s_busArray[id].m_name;
+	}
+	else
+	{
+		return QString::null;
+	}
 }
 
-
-//
-// Save bus to a file (static)
-//
-void Bus::saveToFile(QFile &file)
+bool Bus::loadXML(QDomDocument* doc, QDomElement* root)
 {
-  QString s;
-  t_bus_value value;
+	QDomNode node;
+	QDomElement tag;
+	t_bus_id id;
+	QString name;
+	t_bus_value value;
+	bool retval = false;
 
-  // Comment
-  s = QString("# Bus Entries\n");
-  file.writeBlock((const char*) s, s.length());
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
 
-  // Entry type
-  s = QString("Entry = Bus") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
-    {
-      Bus::value(i, value);
-      if (value != 0 || Bus::name(i) != QString::null)
+	if (root->tagName() == KXMLQLCBus)
 	{
-	  // Write only non-nil values
+		id = root->attribute(KXMLQLCBusID).toInt();
 
-	  // Another comment
-	  s = QString("# Bus ID, its value and its name\n");
-	  file.writeBlock((const char*) s, s.length());
-	  
-	  // ID
-	  s.sprintf("ID = %d\n", i);
-	  file.writeBlock((const char*) s, s.length());
-	  
-	  // Value
-	  s.sprintf("Value = %ld\n", value);
-	  file.writeBlock((const char*) s, s.length());
-	  
-	  // Name
-	  s = QString("Name = ") + Bus::name(i) + QString("\n");
-	  file.writeBlock((const char*) s, s.length());
+		node = root->firstChild();
+		while (node.isNull() == false)
+		{
+			tag = node.toElement();
+
+			if (tag.tagName() == KXMLQLCBusName)
+				name = tag.text();
+			else if (tag.tagName() == KXMLQLCBusValue)
+				value = tag.text().toULong();
+			else
+				qDebug("Unknown Bus tag: %s",
+				       (const char*) tag.tagName());
+
+			node = node.nextSibling();
+		}
+
+		Bus::setName(id, name);
+		Bus::setValue(id, value);
+
+		retval = true;
 	}
-    }
+	else
+	{
+		qWarning("Bus node not found in file!");
+		retval = false;
+	}
+
+	return retval;
 }
 
-
-//
-// Load bus from file (static)
-//
-void Bus::createContents(QPtrList <QString> &list)
+bool Bus::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-  t_bus_id id = KBusIDInvalid;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+	t_bus_value value;
 
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
+
+	for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
 	{
-	  s = list.prev();
-	  break;
+		/* Bus entry */
+		root = doc->createElement(KXMLQLCBus);
+		str.sprintf("%d", i);
+		root.setAttribute(KXMLQLCBusID, str);
+		wksp_root->appendChild(root);
+
+		/* Name */
+		tag = doc->createElement(KXMLQLCBusName);
+		root.appendChild(tag);
+		text = doc->createTextNode(Bus::name(i));
+		tag.appendChild(text);
+
+		/* Value */
+		tag = doc->createElement(KXMLQLCBusValue);
+		root.appendChild(tag);
+		Bus::value(i, value);
+		str.sprintf("%ld", value);
+		text = doc->createTextNode(str);
+		tag.appendChild(text);
 	}
-      else if (*s == QString("ID"))
-	{
-	  id = list.next()->toInt();
-	}
-      else if (*s == QString("Value"))
-	{
-	  Bus::setValue(id, list.next()->toInt());
-	}
-      else if (*s == QString("Name"))
-	{
-	  Bus::setName(id, *(list.next()));
-	}
-    }
+
+	return true;
 }

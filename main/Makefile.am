@@ -11,23 +11,21 @@ qlc_LDADD  = @QT_LIBS@
 qlc_LDADD += $(top_srcdir)/libs/common/libqlccommon.la
 
 noinst_HEADERS = \
+	src/uic_addfixture.h \
 	src/uic_advancedsceneeditor.h \
 	src/uic_assignhotkey.h \
 	src/uic_assignsliderhotkey.h \
 	src/uic_busproperties.h \
 	src/uic_chasereditor.h \
 	src/uic_consolechannel.h \
-	src/uic_devicelist.h \
-	src/uic_deviceproperties.h \
 	src/uic_dmxaddresstool.h \
 	src/uic_editscenevalue.h \
 	src/uic_editsettingskey.h \
 	src/uic_efxeditor.h \
+	src/uic_fixturelist.h \
+	src/uic_fixtureproperties.h \
 	src/uic_functioncollectioneditor.h \
-	src/uic_newdevice.h \
-	src/uic_patterngenerator.h \
 	src/uic_sceneeditor.h \
-	src/uic_sequenceeditor.h \
 	src/uic_settings.h \
 	src/uic_vcbuttonproperties.h \
 	src/uic_vcdocksliderproperties.h \
@@ -37,6 +35,7 @@ noinst_HEADERS = \
 	src/uic_virtualconsoleproperties.h \
 	\
 	src/aboutbox.h \
+	src/addfixture.h \
 	src/advancedsceneeditor.h \
 	src/app.h \
 	src/assignhotkey.h \
@@ -47,11 +46,6 @@ noinst_HEADERS = \
 	src/chaser.h \
 	src/configkeys.h \
 	src/consolechannel.h \
-	src/deviceconsole.h \
-	src/device.h \
-	src/devicelist.h \
-	src/devicemanagerview.h \
-	src/deviceproperties.h \
 	src/dmxaddresstool.h \
 	src/doc.h \
 	src/dummyinplugin.h \
@@ -60,6 +54,11 @@ noinst_HEADERS = \
 	src/efxeditor.h \
 	src/efx.h \
 	src/eventbuffer.h \
+	src/fixture.h \
+	src/fixtureconsole.h \
+	src/fixturelist.h \
+	src/fixturemanager.h \
+	src/fixtureproperties.h \
 	src/floatingedit.h \
 	src/functioncollectioneditor.h \
 	src/functioncollection.h \
@@ -67,18 +66,13 @@ noinst_HEADERS = \
 	src/function.h \
 	src/functionmanager.h \
 	src/generatorarea.h \
-	src/imagecontentspreview.h \
 	src/keybind.h \
 	src/listboxiditem.h \
 	src/monitor.h \
-	src/newdevice.h \
-	src/patterngenerator.h \
 	src/pluginmanager.h \
 	src/sceneeditor.h \
 	src/scene.h \
 	src/settingsui.h \
-	src/sequenceeditor.h \
-	src/sequence.h \
 	src/sliderkeybind.h \
 	src/vcbutton.h \
 	src/vcbuttonproperties.h \
@@ -95,23 +89,21 @@ noinst_HEADERS = \
 	src/xychannelunit.h
 
 qlc_SOURCES = \
+	src/uic_addfixture.cpp \
 	src/uic_advancedsceneeditor.cpp \
 	src/uic_assignhotkey.cpp \
 	src/uic_assignsliderhotkey.cpp \
 	src/uic_busproperties.cpp \
 	src/uic_chasereditor.cpp \
 	src/uic_consolechannel.cpp \
-	src/uic_devicelist.cpp \
-	src/uic_deviceproperties.cpp \
 	src/uic_dmxaddresstool.cpp \
 	src/uic_editscenevalue.cpp \
 	src/uic_editsettingskey.cpp \
 	src/uic_efxeditor.cpp \
+	src/uic_fixturelist.cpp \
+	src/uic_fixtureproperties.cpp \
 	src/uic_functioncollectioneditor.cpp \
-	src/uic_newdevice.cpp \
-	src/uic_patterngenerator.cpp \
 	src/uic_sceneeditor.cpp \
-	src/uic_sequenceeditor.cpp \
 	src/uic_settings.cpp \
 	src/uic_vcbuttonproperties.cpp \
 	src/uic_vcdocksliderproperties.cpp \
@@ -120,23 +112,21 @@ qlc_SOURCES = \
 	src/uic_vcxypadproperties.cpp \
 	src/uic_virtualconsoleproperties.cpp \
 	\
+	src/moc_uic_addfixture.cpp \
 	src/moc_uic_advancedsceneeditor.cpp \
 	src/moc_uic_assignhotkey.cpp \
 	src/moc_uic_assignsliderhotkey.cpp \
 	src/moc_uic_busproperties.cpp \
 	src/moc_uic_chasereditor.cpp \
 	src/moc_uic_consolechannel.cpp \
-	src/moc_uic_devicelist.cpp \
-	src/moc_uic_deviceproperties.cpp \
 	src/moc_uic_dmxaddresstool.cpp \
 	src/moc_uic_editscenevalue.cpp \
 	src/moc_uic_editsettingskey.cpp \
 	src/moc_uic_efxeditor.cpp \
+	src/moc_uic_fixturelist.cpp \
+	src/moc_uic_fixtureproperties.cpp \
 	src/moc_uic_functioncollectioneditor.cpp \
-	src/moc_uic_newdevice.cpp \
-	src/moc_uic_patterngenerator.cpp \
 	src/moc_uic_sceneeditor.cpp \
-	src/moc_uic_sequenceeditor.cpp \
 	src/moc_uic_settings.cpp \
 	src/moc_uic_vcbuttonproperties.cpp \
 	src/moc_uic_vcdocksliderproperties.cpp \
@@ -146,6 +136,7 @@ qlc_SOURCES = \
 	src/moc_uic_virtualconsoleproperties.cpp \
 	\
 	src/aboutbox.cpp \
+	src/addfixture.cpp \
 	src/advancedsceneeditor.cpp \
 	src/app.cpp \
 	src/assignhotkey.cpp \
@@ -155,11 +146,6 @@ qlc_SOURCES = \
 	src/chaser.cpp \
 	src/chasereditor.cpp \
 	src/consolechannel.cpp \
-	src/deviceconsole.cpp \
-	src/device.cpp \
-	src/devicelist.cpp \
-	src/devicemanagerview.cpp \
-	src/deviceproperties.cpp \
 	src/dmxaddresstool.cpp \
 	src/doc.cpp \
 	src/dummyinplugin.cpp \
@@ -168,6 +154,11 @@ qlc_SOURCES = \
 	src/efx.cpp \
 	src/efxeditor.cpp \
 	src/eventbuffer.cpp \
+	src/fixture.cpp \
+	src/fixtureconsole.cpp \
+	src/fixturelist.cpp \
+	src/fixturemanager.cpp \
+	src/fixtureproperties.cpp \
 	src/floatingedit.cpp \
 	src/functioncollection.cpp \
 	src/functioncollectioneditor.cpp \
@@ -175,19 +166,14 @@ qlc_SOURCES = \
 	src/function.cpp \
 	src/functionmanager.cpp \
 	src/generatorarea.cpp \
-	src/imagecontentspreview.cpp \
 	src/keybind.cpp \
 	src/listboxiditem.cpp \
 	src/main.cpp \
 	src/monitor.cpp \
-	src/newdevice.cpp \
-	src/patterngenerator.cpp \
 	src/pluginmanager.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
 	src/settingsui.cpp \
-	src/sequence.cpp \
-	src/sequenceeditor.cpp \
 	src/sliderkeybind.cpp \
 	src/vcbutton.cpp \
 	src/vcbuttonproperties.cpp \
@@ -204,6 +190,7 @@ qlc_SOURCES = \
 	src/xychannelunit.cpp \
 	\
 	src/moc_aboutbox.cpp \
+	src/moc_addfixture.cpp \
 	src/moc_advancedsceneeditor.cpp \
 	src/moc_app.cpp \
 	src/moc_assignhotkey.cpp \
@@ -213,11 +200,6 @@ qlc_SOURCES = \
 	src/moc_chaser.cpp \
 	src/moc_chasereditor.cpp \
 	src/moc_consolechannel.cpp \
-	src/moc_deviceconsole.cpp \
-	src/moc_device.cpp \
-	src/moc_devicelist.cpp \
-	src/moc_devicemanagerview.cpp \
-	src/moc_deviceproperties.cpp \
 	src/moc_dmxaddresstool.cpp \
 	src/moc_doc.cpp \
 	src/moc_dummyinplugin.cpp \
@@ -226,6 +208,11 @@ qlc_SOURCES = \
 	src/moc_efx.cpp \
 	src/moc_efxeditor.cpp \
 	src/moc_eventbuffer.cpp \
+	src/moc_fixture.cpp \
+	src/moc_fixtureconsole.cpp \
+	src/moc_fixturelist.cpp \
+	src/moc_fixturemanager.cpp \
+	src/moc_fixtureproperties.cpp \
 	src/moc_floatingedit.cpp \
 	src/moc_functioncollection.cpp \
 	src/moc_functioncollectioneditor.cpp \
@@ -233,18 +220,13 @@ qlc_SOURCES = \
 	src/moc_function.cpp \
 	src/moc_functionmanager.cpp \
 	src/moc_generatorarea.cpp \
-	src/moc_imagecontentspreview.cpp \
 	src/moc_keybind.cpp \
 	src/moc_listboxiditem.cpp \
 	src/moc_monitor.cpp \
-	src/moc_newdevice.cpp \
-	src/moc_patterngenerator.cpp \
 	src/moc_pluginmanager.cpp \
 	src/moc_scene.cpp \
 	src/moc_sceneeditor.cpp \
 	src/moc_settingsui.cpp \
-	src/moc_sequence.cpp \
-	src/moc_sequenceeditor.cpp \
 	src/moc_sliderkeybind.cpp \
 	src/moc_vcbutton.cpp \
 	src/moc_vcbuttonproperties.cpp \

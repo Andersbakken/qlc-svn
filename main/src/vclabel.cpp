@@ -314,7 +314,7 @@ void VCLabel::parseWidgetMenu(int item)
 	  {
 	    setFrameStyle(KFrameStyle);
 	  }
-	_app->doc()->setModified(true);
+	_app->doc()->setModified();
       }
       break;
 
@@ -382,7 +382,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
@@ -391,7 +391,7 @@ void VCLabel::mouseMoveEvent(QMouseEvent* e)
 	  p.setY(p.y() - m_mousePressPoint.y());
 
 	  moveTo(p);
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
     }
   else

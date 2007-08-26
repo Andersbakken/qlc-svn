@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  deviceconsole.cpp
+  fixtureconsole.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,52 +26,46 @@
 
 #include "app.h"
 #include "doc.h"
-#include "device.h"
 #include "sceneeditor.h"
-#include "deviceconsole.h"
+#include "fixtureconsole.h"
 #include "consolechannel.h"
 #include "configkeys.h"
 #include "common/settings.h"
 
 extern App* _app;
 
-DeviceConsole::DeviceConsole(QWidget *parent)
-	: QWidget(parent, "DeviceConsole"),
+FixtureConsole::FixtureConsole(QWidget *parent)
+	: QWidget(parent, "Fixture Console"),
 	
 	m_layout      ( NULL ),
 	m_sceneEditor ( NULL )
 {
 }
 
-DeviceConsole::~DeviceConsole()
+FixtureConsole::~FixtureConsole()
 {
-	while (!m_unitList.isEmpty())
+	while (m_unitList.isEmpty() == false)
 	{
 		delete m_unitList.take(0);
 	}
 	
-	if (m_sceneEditor)
+	if (m_sceneEditor != NULL)
 	{
 		delete m_sceneEditor;
 		m_sceneEditor = NULL;
 	}
 }
 
-void DeviceConsole::closeEvent(QCloseEvent* e)
-{
-	emit closed();
-}
-
-void DeviceConsole::setDevice(t_device_id id)
+void FixtureConsole::setFixture(t_fixture_id id)
 {
 	unsigned int i = 0;
-	Device* device = NULL;
+	Fixture* fxi = NULL;
 	ConsoleChannel* unit = NULL;
 	
-	m_deviceID = id;
+	m_fixture = id;
 
-	device = _app->doc()->device(m_deviceID);
-	assert(device);
+	fxi = _app->doc()->fixture(m_fixture);
+	assert(fxi);
 
 	// Set an icon
 	setIcon(QPixmap(PIXMAPS + QString("/console.png")));
@@ -83,7 +77,7 @@ void DeviceConsole::setDevice(t_device_id id)
 	// Create scene editor widget
 	if (m_sceneEditor) delete m_sceneEditor;
 	m_sceneEditor = new SceneEditor(this);
-	m_sceneEditor->setDevice(m_deviceID);
+	m_sceneEditor->setFixture(m_fixture);
 	m_sceneEditor->show();
 
 	// Catch function add signals
@@ -99,9 +93,9 @@ void DeviceConsole::setDevice(t_device_id id)
 		m_sceneEditor, SLOT(slotFunctionChanged(t_function_id)));
 
 	// Create channel units
-	for (i = 0; i < device->deviceClass()->channels()->count(); i++)
+	for (i = 0; i < fxi->channels(); i++)
 	{
-		unit = new ConsoleChannel(this, m_deviceID, i);
+		unit = new ConsoleChannel(this, m_fixture, i);
 		unit->init();
 		unit->update();
 
@@ -113,7 +107,7 @@ void DeviceConsole::setDevice(t_device_id id)
 
 		// Scene editor updates to channels
 		connect(m_sceneEditor,
-			SIGNAL(sceneActivated(SceneValue*,t_channel)),
+			SIGNAL(sceneActivated(SceneValue*, t_channel)),
 			unit, 
 			SLOT(slotSceneActivated(SceneValue*, t_channel)));
 
@@ -122,4 +116,9 @@ void DeviceConsole::setDevice(t_device_id id)
 
 	// Update scene editor (also causes an update to channelunits)
 	m_sceneEditor->update();
+}
+
+void FixtureConsole::closeEvent(QCloseEvent* e)
+{
+	emit closed();
 }

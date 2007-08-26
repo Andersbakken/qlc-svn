@@ -1,69 +1,56 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_DeviceList</class>
+<class>UI_FixtureList</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>UI_DeviceList</cstring>
+        <cstring>UI_FixtureList</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>502</width>
-            <height>385</height>
+            <width>475</width>
+            <height>379</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Device List</string>
+        <string>Fixture List</string>
     </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox9</cstring>
-            </property>
-            <property name="title">
-                <string>Devices</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
+        <widget class="QListView">
+            <column>
+                <property name="text">
+                    <string>Fixture</string>
                 </property>
-                <widget class="QListView" row="0" column="0">
-                    <column>
-                        <property name="text">
-                            <string>Device</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <column>
-                        <property name="text">
-                            <string>Channel</string>
-                        </property>
-                        <property name="clickable">
-                            <bool>true</bool>
-                        </property>
-                        <property name="resizable">
-                            <bool>true</bool>
-                        </property>
-                    </column>
-                    <property name="name">
-                        <cstring>m_listView</cstring>
-                    </property>
-                    <property name="allColumnsShowFocus">
-                        <bool>true</bool>
-                    </property>
-                    <property name="resizeMode">
-                        <enum>AllColumns</enum>
-                    </property>
-                </widget>
-            </grid>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Channel</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>m_listView</cstring>
+            </property>
+            <property name="allColumnsShowFocus">
+                <bool>true</bool>
+            </property>
+            <property name="resizeMode">
+                <enum>AllColumns</enum>
+            </property>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -129,25 +116,25 @@
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceList</receiver>
+        <receiver>UI_FixtureList</receiver>
         <slot>accept()</slot>
     </connection>
     <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceList</receiver>
+        <receiver>UI_FixtureList</receiver>
         <slot>reject()</slot>
     </connection>
     <connection>
         <sender>m_listView</sender>
         <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>UI_DeviceList</receiver>
+        <receiver>UI_FixtureList</receiver>
         <slot>slotSelectionChanged(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>m_listView</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
-        <receiver>UI_DeviceList</receiver>
+        <receiver>UI_FixtureList</receiver>
         <slot>slotItemDoubleClicked(QListViewItem*)</slot>
     </connection>
 </connections>

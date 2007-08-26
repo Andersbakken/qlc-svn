@@ -2,7 +2,7 @@
   Q Light Controller
   xychannelunit.cpp
   
-  Copyright (C) 2005 Heikki Junnila, Stefan Krumm
+  Copyright (c) Stefan Krumm, Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@
 
 #include "app.h"
 #include "doc.h"
-#include "device.h"
+#include "fixture.h"
 
 extern App* _app;
 
@@ -31,13 +31,13 @@ XYChannelUnit::XYChannelUnit()
 {
 }
 
-XYChannelUnit::XYChannelUnit(const t_device_id deviceID,
+XYChannelUnit::XYChannelUnit(const t_fixture_id fixtureID,
 	const t_channel channel,
 	const t_value lo,
 	const t_value hi,
 	const bool reverse) :
 
-	m_deviceID	( deviceID ),
+	m_fixtureID	( fixtureID ),
 	m_channel	( channel  ),
 	m_lo 		( lo       ),
 	m_hi		( hi       ),
@@ -74,22 +74,22 @@ void XYChannelUnit::setHi(t_value hi) { m_hi = hi; }
 t_value XYChannelUnit::hi() const { return m_hi; }
 	
 /**
- * Set the device id
+ * Set the fixture id
  *
- * @param deviceID The device id
+ * @param fixtureID The fixture id
  */
-void XYChannelUnit::setDeviceID(t_device_id deviceID) { m_deviceID = deviceID; }
+void XYChannelUnit::setFixtureID(t_fixture_id fixtureID) { m_fixtureID = fixtureID; }
 
 /**
- * Get the device ID
+ * Get the fixture ID
  */
-t_device_id XYChannelUnit::deviceID() const { return m_deviceID; }
+t_fixture_id XYChannelUnit::fixtureID() const { return m_fixtureID; }
 
 /**
- * Convenience function to get the device associated
- * with the device ID
+ * Convenience function to get the fixture associated
+ * with the fixture ID
  */
-Device* XYChannelUnit::device() const { return _app->doc()->device(m_deviceID); }
+Fixture* XYChannelUnit::fixture() const { return _app->doc()->fixture(m_fixtureID); }
 	
 /**
  * Set the relative channel number

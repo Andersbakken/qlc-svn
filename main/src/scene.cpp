@@ -2,7 +2,7 @@
   Q Light Controller
   scene.cpp
 
-  Copyright (C) 2004 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,21 +25,17 @@
 #include <qapplication.h>
 #include <assert.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "common/filehandler.h"
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
-#include "device.h"
 #include "eventbuffer.h"
 #include "scene.h"
 #include "functionconsumer.h"
 
 extern App* _app;
 
-//
-// Standard constructor
-//
 Scene::Scene() : 
 	Function      ( Function::Scene ),
 	m_values      (            NULL ),
@@ -53,18 +49,30 @@ Scene::Scene() :
 	setBus(KBusIDDefaultFade);
 }
 
-
-//
-// Copy sequence contents
-//
-void Scene::copyFrom(Scene* sc, t_device_id toDevice)
+Scene::~Scene()
 {
-	assert(sc);
+	stop();
+	
+	m_startMutex.lock();
+	while (m_running)
+	{
+		m_startMutex.unlock();
+		sched_yield();
+		m_startMutex.lock();
+	}
+	m_startMutex.unlock();
+	
+	if (m_values) delete [] m_values;
+}
+
+void Scene::copyFrom(Scene* sc, t_fixture_id to)
+{
+	Q_ASSERT(sc != NULL);
 	
 	Function::setName(sc->name());
 	Function::setBus(sc->busID());
 	
-	setDevice(toDevice);
+	setFixture(to);
 	
 	if (m_values) delete [] m_values;
 	m_values = new SceneValue[m_channels];
@@ -76,19 +84,17 @@ void Scene::copyFrom(Scene* sc, t_device_id toDevice)
 	}
 }
 
-
-//
-// Assign this scene to a device
-//
-bool Scene::setDevice(t_device_id id)
+bool Scene::setFixture(t_fixture_id id)
 {
-	Device* device = _app->doc()->device(id);
-	if (!device)
+	Fixture* fxi = NULL;
+
+	fxi = _app->doc()->fixture(id);
+	if (fxi == NULL)
 	{
 		return false;
 	}
 	
-	t_channel newChannels = device->deviceClass()->channels()->count();
+	t_channel newChannels = fxi->channels();
 	
 	if (m_channels == 0)
 	{
@@ -104,34 +110,14 @@ bool Scene::setDevice(t_device_id id)
 	}
 	else
 	{
-		assert(m_channels == newChannels);
+		Q_ASSERT(m_channels == newChannels);
 	}
 	
-	m_deviceID = id;
+	m_fixture = id;
 	
 	_app->doc()->emitFunctionChanged(m_id);
 	
 	return true;
-}
-
-
-//
-// Standard destructor
-//
-Scene::~Scene()
-{
-	stop();
-	
-	m_startMutex.lock();
-	while (m_running)
-	{
-		m_startMutex.unlock();
-		sched_yield();
-		m_startMutex.lock();
-	}
-	m_startMutex.unlock();
-	
-	if (m_values) delete [] m_values;
 }
 
 Scene::ValueType Scene::valueType(t_channel ch)
@@ -162,134 +148,40 @@ QString Scene::valueTypeString(t_channel ch)
 	}
 }
 
-
-//
-// Save this scene's contents to given file
-//
-void Scene::saveToFile(QFile &file)
+Scene::ValueType Scene::stringToValueType(QString type)
 {
-	QString s;
-	QString t;
-	
-	// Comment line
-	s = QString("# Function entry\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	// Entry type
-	s = QString("Entry = Function") + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	// Name
-	s = QString("Name = ") + name() + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	// Type
-	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	// ID
-	t.setNum(m_id);
-	s = QString("ID = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	// Bus ID
-	t.setNum(m_busID);
-	s = QString("Bus = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	// Device ID
-	t.setNum(m_deviceID);
-	s = QString("Device = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-	
-	if (m_deviceID != KNoID)
-	{
-		// Data
-		for (t_channel i = 0; i < m_channels; i++)
-		{
-			t.setNum(i);
-			s = t + QString(" = ");
-			t.setNum(m_values[i].value);
-			s += t + QString("\n");
-			file.writeBlock((const char*) s, s.length());
-			
-			s = QString("ValueType = ") + valueTypeString(i) + 
-				QString("\n");
-			file.writeBlock((const char*) s, s.length());
-		}
-	}
-}
-
-//
-// Create the scene's contents from file that has been read into list
-//
-void Scene::createContents(QPtrList <QString> &list)
-{
-	QString t;
-	
-	t_value ch = 0;
-	
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.prev();
-			break;
-		}
-		else if (s->at(0).isNumber() == true)
-		{
-			ch = static_cast<t_value> (s->toInt());
-			t = *(list.next());
-			m_values[ch].value = t.toInt();
-			m_values[ch].type = Set;
-		}
-		else if (*s == QString("ValueType"))
-		{
-			t = *(list.next());
-			if (t == QString("Set"))
-			{
-				m_values[ch].type = Set;
-			}
-			else if (t == QString("Fade"))
-			{
-				m_values[ch].type = Fade;
-			}
-			else if (t == QString("NoSet"))
-			{
-				m_values[ch].type = NoSet;
-			}
-			else
-			{
-				list.next();
-			}
-		}
-		else
-		{
-			// Unknown keyword, skip
-			list.next();
-		}
-	}
+	if (type == QString("Set"))
+		return Scene::Set;
+	else if (type == QString("Fade"))
+		return Scene::Fade;
+	else
+		return Scene::NoSet;
 }
 
 
 // Save this function to an XML document
-void Scene::saveXML(QDomDocument* doc)
+bool Scene::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
+	Fixture* fxi = NULL;
 	QDomElement root;
 	QDomElement tag;
 	QDomText text;
 	QString str;
 	
-	assert(doc);
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
+
+	fxi = _app->doc()->fixture(m_fixture);
+	Q_ASSERT(fxi != NULL);
 
 	/* Function tag */
 	root = doc->createElement(KXMLQLCFunction);
-	doc->appendChild(root);
+	wksp_root->appendChild(root);
 
 	root.setAttribute(KXMLQLCFunctionID, id());
 	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
 	root.setAttribute(KXMLQLCFunctionName, name());
-	root.setAttribute(KXMLQLCFunctionDevice, device());
+	root.setAttribute(KXMLQLCFunctionFixture, fixture());
 
 	/* Speed bus */
 	tag = doc->createElement(KXMLQLCBus);
@@ -300,15 +192,15 @@ void Scene::saveXML(QDomDocument* doc)
 	tag.appendChild(text);
 
 	/* Scene contents */
-	for (t_channel i = 0; i < m_channels; i++)
+	for (t_channel i = 0; i < fxi->channels(); i++)
 	{
 		/* Value tag */
 		tag = doc->createElement(KXMLQLCFunctionValue);
-		root.appendChild(tag);
 		
 		/* Value type & channel */
 		tag.setAttribute(KXMLQLCFunctionChannel, i);
-		tag.setAttribute(KXMLQLCFunctionType, valueTypeString(i));
+		tag.setAttribute(KXMLQLCFunctionValueType, valueTypeString(i));
+		root.appendChild(tag);
 
 		/* Value contents */
 		str.setNum(m_values[i].value);
@@ -317,6 +209,58 @@ void Scene::saveXML(QDomDocument* doc)
 	}
 }
 
+bool Scene::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	t_value value = 0;
+	t_channel ch = 0;
+	Scene::ValueType value_type;
+	QString str;
+	
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFunction)
+	{
+		qWarning("Function node not found!");
+		return false;
+	}
+
+	/* Load scene contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCBus)
+		{
+			/* Bus */
+			str = tag.attribute(KXMLQLCBusRole);
+			Q_ASSERT(str == KXMLQLCBusFade);
+
+			Q_ASSERT(setBus(tag.text().toInt()) == true);
+		}
+		else if (tag.tagName() == KXMLQLCFunctionValue)
+		{
+			/* Channel value */
+			str = tag.attribute(KXMLQLCFunctionValueType);
+			value_type = stringToValueType(str);
+			ch = tag.attribute(KXMLQLCFunctionChannel).toInt();
+			value = tag.text().toInt();
+
+			Q_ASSERT(set(ch, value, value_type) == true);
+		}
+		else
+			qWarning("Unknown scene tag: %s",
+				 (const char*) tag.tagName());
+		
+		node = node.nextSibling();
+	}
+
+	return true;
+}
 
 //
 // Set one channel value for this scene
@@ -398,9 +342,9 @@ void Scene::speedChange(t_bus_value newTimeSpan)
 //
 void Scene::arm()
 {
-	// Fetch the device address for run time access.
+	// Fetch the fixture address for run time access.
 	// It cannot change when functions have been armed for running
-	m_address = _app->doc()->device(m_deviceID)->universeAddress();
+	m_address = _app->doc()->fixture(fixture())->universeAddress();
 	
 	if (m_runTimeData == NULL)
 		m_runTimeData = new RunTimeData[m_channels];

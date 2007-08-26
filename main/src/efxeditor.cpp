@@ -31,473 +31,471 @@
 #include <qlabel.h>
 #include <assert.h>
 
-#include "common/logicalchannel.h"
-#include "common/deviceclass.h"
+#include "common/qlcchannel.h"
+#include "common/qlcfixturedef.h"
 #include "efxeditor.h"
 #include "app.h"
 #include "doc.h"
-#include "device.h"
+#include "fixture.h"
 
 extern App* _app;
 
 EFXEditor::EFXEditor(EFX* efx, QWidget* parent)
-  : UI_EFXEditor(parent, "EFXEditor", true),
+	: UI_EFXEditor(parent, "EFXEditor", true),
 
-    m_previewArea ( new EFXPreviewArea(m_previewFrame) ),
-    m_efx         ( efx )
+	  m_previewArea ( new EFXPreviewArea(m_previewFrame) ),
+	  m_efx         ( efx )
 {
 }
 
 EFXEditor::~EFXEditor()
 {
-  m_efx->setPreviewPointArray(NULL);
+	m_efx->setPreviewPointArray(NULL);
 }
 
 void EFXEditor::init()
 {
-  /* Get supported algorithms and fill the algorithm combo with them */
-  QStringList list;
-  EFX::algorithmList(list);
-  m_algorithmCombo->clear();
-  m_algorithmCombo->insertStringList(list);
+	/* Get supported algorithms and fill the algorithm combo with them */
+	QStringList list;
+	EFX::algorithmList(list);
+	m_algorithmCombo->clear();
+	m_algorithmCombo->insertStringList(list);
 
-  /* Get a list of buses and insert them into the bus combo */
-  updateModulationBusCombo();
+	/* Get a list of buses and insert them into the bus combo */
+	updateModulationBusCombo();
 
-  /* Set the algorithm's name to the name field */
-  m_nameEdit->setText(m_efx->name());
+	/* Set the algorithm's name to the name field */
+	m_nameEdit->setText(m_efx->name());
 
-  /* Resize the preview area to fill its frame */
-  m_previewArea->resize(m_previewFrame->width(),
-			m_previewFrame->height());
+	/* Resize the preview area to fill its frame */
+	m_previewArea->resize(m_previewFrame->width(),
+			      m_previewFrame->height());
 
-  /* Set the currently edited EFX function */
-  setEFX(m_efx);
+	/* Set the currently edited EFX function */
+	setEFX(m_efx);
 
-  /* Draw the points */
-  m_previewArea->repaint();
+	/* Draw the points */
+	m_previewArea->repaint();
 }
 
 void EFXEditor::setEFX(EFX* efx)
 {
-  assert(efx);
+	assert(efx);
 
-  if (m_efx)
-    {
-      /* If another EFX function has been edited with this dialog,
-       * set its preview point array NULL so it doesn't try to
-       * update its preview anymore
-       */
-      m_efx->setPreviewPointArray(NULL);
-    }
-
-  /* Causes the EFX function to update the preview point array */
-  slotAlgorithmSelected(m_efx->algorithm());
-
-  /* Take the new EFX function for editing */
-  m_efx = efx;
-
-  /* Set the preview point array for the new EFX */
-  m_efx->setPreviewPointArray(m_previewArea->pointArray());
-
-  /* Select the EFX's algorithm from the algorithm combo */
-  for (int i = 0; i < m_algorithmCombo->count(); i++)
-    {
-      if (m_algorithmCombo->text(i) == m_efx->algorithm())
+	if (m_efx)
 	{
-	  m_algorithmCombo->setCurrentItem(i);
-	  break;
+		/* If another EFX function has been edited with this dialog,
+		 * set its preview point array NULL so it doesn't try to
+		 * update its preview anymore
+		 */
+		m_efx->setPreviewPointArray(NULL);
 	}
-    }
 
-  /* Get the algorithm parameters */
-  m_widthSpin->setValue(m_efx->width());
-  m_heightSpin->setValue(m_efx->height());
-  m_xOffsetSpin->setValue(m_efx->xOffset());
-  m_yOffsetSpin->setValue(m_efx->yOffset());
-  m_rotationSpin->setValue(m_efx->rotation());
+	/* Causes the EFX function to update the preview point array */
+	slotAlgorithmSelected(m_efx->algorithm());
+
+	/* Take the new EFX function for editing */
+	m_efx = efx;
+
+	/* Set the preview point array for the new EFX */
+	m_efx->setPreviewPointArray(m_previewArea->pointArray());
+
+	/* Select the EFX's algorithm from the algorithm combo */
+	for (int i = 0; i < m_algorithmCombo->count(); i++)
+	{
+		if (m_algorithmCombo->text(i) == m_efx->algorithm())
+		{
+			m_algorithmCombo->setCurrentItem(i);
+			break;
+		}
+	}
+
+	/* Get the algorithm parameters */
+	m_widthSpin->setValue(m_efx->width());
+	m_heightSpin->setValue(m_efx->height());
+	m_xOffsetSpin->setValue(m_efx->xOffset());
+	m_yOffsetSpin->setValue(m_efx->yOffset());
+	m_rotationSpin->setValue(m_efx->rotation());
   
-  m_xFrequencySpin->setValue(m_efx->xFrequency());
-  m_yFrequencySpin->setValue(m_efx->yFrequency());
-  m_xPhaseSpin->setValue(m_efx->xPhase());
-  m_yPhaseSpin->setValue(m_efx->yPhase());
+	m_xFrequencySpin->setValue(m_efx->xFrequency());
+	m_yFrequencySpin->setValue(m_efx->yFrequency());
+	m_xPhaseSpin->setValue(m_efx->xPhase());
+	m_yPhaseSpin->setValue(m_efx->yPhase());
 
-  /* Get advanced parameters */
-  m_runOrderGroup->setButton(m_efx->runOrder());
-  m_directionGroup->setButton(m_efx->direction());
+	/* Get advanced parameters */
+	m_runOrderGroup->setButton(m_efx->runOrder());
+	m_directionGroup->setButton(m_efx->direction());
 
-  m_modulationBusCombo->setCurrentItem(m_efx->modulationBus());
+	m_modulationBusCombo->setCurrentItem(m_efx->modulationBus());
 
-  fillChannelCombos();
-  fillSceneLists();
+	fillChannelCombos();
+	fillSceneLists();
 }
 
 void EFXEditor::fillChannelCombos()
 {
-  assert(m_efx);
+	Fixture* fxi = NULL;
+	QString s;
 
-  Device* device = _app->doc()->device(m_efx->device());
-  assert(device);
+	fxi = _app->doc()->fixture(m_efx->fixture());
+	Q_ASSERT(fxi != NULL);
 
-  t_channel channels = device->deviceClass()->channels()->count();
-
-  QString s;
-  for (t_channel ch = 0; ch < channels; ch++)
-    {
-      LogicalChannel* c = device->deviceClass()->channels()->at(ch);
-      assert(c);
-      
-      // Insert ch:name strings to combos
-      s.sprintf("%d:" + c->name(), ch + 1); /* Display channels as 1-based */
-      m_horizontalCombo->insertItem(s);
-      m_verticalCombo->insertItem(s);
-    }
-
-  /* Select a channel as the X axis */
-  if (m_efx->xChannel() != KChannelInvalid)
-    {
-      /* If the EFX already has a valid x channel, select it instead */
-      m_horizontalCombo->setCurrentItem(m_efx->xChannel());
-    }
-  else
-    {
-      for (t_channel ch = 0; ch < channels; ch++)
+	for (t_channel i = 0; i < fxi->channels(); i++)
 	{
-	  LogicalChannel* c = device->deviceClass()->channels()->at(ch);
-	  assert(c);
+		QLCChannel* ch = fxi->channel(i);
+		Q_ASSERT(ch != NULL);
       
-	  // Select the first channel that contains the word "pan"
-	  if (c->name().contains("pan", false))
-	    {
-	      m_horizontalCombo->setCurrentItem(ch);
-	      m_efx->setXChannel(ch);
-	      break;
-	    }
+		// Insert ch:name strings to combos
+		s.sprintf("%d:" + ch->name(), i + 1);
+		m_horizontalCombo->insertItem(s);
+		m_verticalCombo->insertItem(s);
 	}
-    }
 
-  /* Select a channel as the X axis */
-  if (m_efx->yChannel() != KChannelInvalid)
-    {
-      /* If the EFX already has a valid y channel, select it instead */
-      m_verticalCombo->setCurrentItem(m_efx->yChannel());
-    }
-  else
-    {  
-      for (t_channel ch = 0; ch < channels; ch++)
+	/* Select a channel as the X axis */
+	if (m_efx->xChannel() != KChannelInvalid)
 	{
-	  LogicalChannel* c = device->deviceClass()->channels()->at(ch);
-	  assert(c);
-      
-	  // Select the first channel that contains the word "tilt"
-	  if (c->name().contains("tilt", false))
-	    {
-	      m_verticalCombo->setCurrentItem(ch);
-	      m_efx->setYChannel(ch);
-	      break;
-	    }
+		/* If the EFX already has a valid x channel, select it instead */
+		m_horizontalCombo->setCurrentItem(m_efx->xChannel());
 	}
-    }
+	else
+	{
+		for (t_channel i = 0; i < fxi->channels(); i++)
+		{
+			QLCChannel* ch = fxi->channel(i);
+			Q_ASSERT(ch != NULL);
+      
+			// Select the first channel that contains the word "pan"
+			if (ch->name().contains("pan", false))
+			{
+				m_horizontalCombo->setCurrentItem(i);
+				m_efx->setXChannel(i);
+				break;
+			}
+		}
+	}
+
+	/* Select a channel as the X axis */
+	if (m_efx->yChannel() != KChannelInvalid)
+	{
+		/* If the EFX already has a valid y channel, select it instead */
+		m_verticalCombo->setCurrentItem(m_efx->yChannel());
+	}
+	else
+	{  
+		for (t_channel i = 0; i < fxi->channels(); i++)
+		{
+			QLCChannel* ch = fxi->channel(i);
+			Q_ASSERT(ch != NULL);
+      
+			// Select the first channel that contains the word "tilt"
+			if (ch->name().contains("tilt", false))
+			{
+				m_verticalCombo->setCurrentItem(i);
+				m_efx->setYChannel(i);
+				break;
+			}
+		}
+	}
 }
 
 void EFXEditor::fillSceneLists()
 {
-  Function* function = NULL;
-  QListViewItem* item = NULL;
-  QListViewItem* startItem = NULL;
-  QListViewItem* stopItem = NULL;
-  QString s;
+	Function* function = NULL;
+	QListViewItem* item = NULL;
+	QListViewItem* startItem = NULL;
+	QListViewItem* stopItem = NULL;
+	QString s;
 
-  assert(m_efx);
+	assert(m_efx);
   
-  for (t_function_id id = 0; id < KFunctionArraySize; id++)
-    {
-      function = _app->doc()->function(id);
-
-      if (function == NULL)
+	for (t_function_id id = 0; id < KFunctionArraySize; id++)
 	{
-	  continue;
-	}
+		function = _app->doc()->function(id);
+
+		if (function == NULL)
+		{
+			continue;
+		}
 	
-      if (function->type() == Function::Scene && 
-	  function->device() == m_efx->device())
-        {
-	  s.sprintf("%d", function->id());
+		if (function->type() == Function::Scene && 
+		    function->fixture() == m_efx->fixture())
+		{
+			s.sprintf("%d", function->id());
 
-	  /* Insert the function to start scene list */
-	  item = new QListViewItem(m_startSceneList);
-	  item->setText(0, function->name());
-	  item->setText(1, s);
+			/* Insert the function to start scene list */
+			item = new QListViewItem(m_startSceneList);
+			item->setText(0, function->name());
+			item->setText(1, s);
 
-	  /* Select the scene from the start scene list */
-	  if (m_efx->startScene() == function->id())
-	    {
-	      m_startSceneList->setSelected(item, TRUE);
-	      startItem = item;
-	    }
+			/* Select the scene from the start scene list */
+			if (m_efx->startScene() == function->id())
+			{
+				m_startSceneList->setSelected(item, TRUE);
+				startItem = item;
+			}
 
-	  /* Insert the function to stop scene list */
-	  item = new QListViewItem(m_stopSceneList);
-	  item->setText(0, function->name());
-	  item->setText(1, s);
+			/* Insert the function to stop scene list */
+			item = new QListViewItem(m_stopSceneList);
+			item->setText(0, function->name());
+			item->setText(1, s);
 
-	  /* Select the scene from the stop scene list */
-	  if (m_efx->stopScene() == function->id())
-	    {
-	      m_stopSceneList->setSelected(item, TRUE);
-	      stopItem = item;
-	    }
-        }
-    }
+			/* Select the scene from the stop scene list */
+			if (m_efx->stopScene() == function->id())
+			{
+				m_stopSceneList->setSelected(item, TRUE);
+				stopItem = item;
+			}
+		}
+	}
   
-  if (startItem)
-    {
-      /* Make sure that the selected item is visible */
-      m_startSceneList->ensureItemVisible(startItem);
-    }
+	if (startItem)
+	{
+		/* Make sure that the selected item is visible */
+		m_startSceneList->ensureItemVisible(startItem);
+	}
 
-  if (stopItem)
-    {
-      /* Make sure that the selected item is visible */
-      m_stopSceneList->ensureItemVisible(stopItem);
-    }
+	if (stopItem)
+	{
+		/* Make sure that the selected item is visible */
+		m_stopSceneList->ensureItemVisible(stopItem);
+	}
 
-  if (m_efx->startSceneEnabled())
-    {
-      m_startSceneCheckbox->setChecked(true);
-      m_startSceneList->setEnabled(true);
-    }
-  else
-    {
-      m_startSceneCheckbox->setChecked(false);
-      m_startSceneList->setEnabled(false);
-    }
+	if (m_efx->startSceneEnabled())
+	{
+		m_startSceneCheckbox->setChecked(true);
+		m_startSceneList->setEnabled(true);
+	}
+	else
+	{
+		m_startSceneCheckbox->setChecked(false);
+		m_startSceneList->setEnabled(false);
+	}
 
-  if (m_efx->stopSceneEnabled())
-    {
-      m_stopSceneCheckbox->setChecked(true);
-      m_stopSceneList->setEnabled(true);
-    }
-  else
-    {
-      m_stopSceneCheckbox->setChecked(false);
-      m_stopSceneList->setEnabled(false);
-    }
+	if (m_efx->stopSceneEnabled())
+	{
+		m_stopSceneCheckbox->setChecked(true);
+		m_stopSceneList->setEnabled(true);
+	}
+	else
+	{
+		m_stopSceneCheckbox->setChecked(false);
+		m_stopSceneList->setEnabled(false);
+	}
 }
 
 void EFXEditor::updateModulationBusCombo()
 {
-  m_modulationBusCombo->clear();
+	m_modulationBusCombo->clear();
 
-  for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
-    {
-      QString bus;
-      bus.sprintf("%.2d:", i + 1);
-      bus += Bus::name(i);
-      m_modulationBusCombo->insertItem(bus, i);
-    }
+	for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
+	{
+		QString bus;
+		bus.sprintf("%.2d:", i + 1);
+		bus += Bus::name(i);
+		m_modulationBusCombo->insertItem(bus, i);
+	}
 }
 
 void EFXEditor::slotNameChanged(const QString &text)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  setCaption(QString("EFX Editor - ") + text);
+	setCaption(QString("EFX Editor - ") + text);
 
-  m_efx->setName(text);
+	m_efx->setName(text);
 }
 
 void EFXEditor::slotAlgorithmSelected(const QString &text)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setAlgorithm(text);
+	m_efx->setAlgorithm(text);
 
-  if (m_efx->isFrequencyEnabled())
-    {
-      m_xFrequencyLabel->setEnabled(true);
-      m_yFrequencyLabel->setEnabled(true);
+	if (m_efx->isFrequencyEnabled())
+	{
+		m_xFrequencyLabel->setEnabled(true);
+		m_yFrequencyLabel->setEnabled(true);
 
-      m_xFrequencySpin->setEnabled(true);
-      m_yFrequencySpin->setEnabled(true);
-    }
-  else
-    {
-      m_xFrequencyLabel->setEnabled(false);
-      m_yFrequencyLabel->setEnabled(false);
+		m_xFrequencySpin->setEnabled(true);
+		m_yFrequencySpin->setEnabled(true);
+	}
+	else
+	{
+		m_xFrequencyLabel->setEnabled(false);
+		m_yFrequencyLabel->setEnabled(false);
 
-      m_xFrequencySpin->setEnabled(false);
-      m_yFrequencySpin->setEnabled(false);
-    }
+		m_xFrequencySpin->setEnabled(false);
+		m_yFrequencySpin->setEnabled(false);
+	}
 
-  if (m_efx->isPhaseEnabled())
-    {
-      m_xPhaseLabel->setEnabled(true);
-      m_yPhaseLabel->setEnabled(true);
+	if (m_efx->isPhaseEnabled())
+	{
+		m_xPhaseLabel->setEnabled(true);
+		m_yPhaseLabel->setEnabled(true);
 
-      m_xPhaseSpin->setEnabled(true);
-      m_yPhaseSpin->setEnabled(true);
-    }
-  else
-    {
-      m_xPhaseLabel->setEnabled(false);
-      m_yPhaseLabel->setEnabled(false);
+		m_xPhaseSpin->setEnabled(true);
+		m_yPhaseSpin->setEnabled(true);
+	}
+	else
+	{
+		m_xPhaseLabel->setEnabled(false);
+		m_yPhaseLabel->setEnabled(false);
 
-      m_xPhaseSpin->setEnabled(false);
-      m_yPhaseSpin->setEnabled(false);
-    }
+		m_xPhaseSpin->setEnabled(false);
+		m_yPhaseSpin->setEnabled(false);
+	}
 
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotWidthSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setWidth(value);
+	m_efx->setWidth(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotHeightSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setHeight(value);
+	m_efx->setHeight(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotRotationSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setRotation(value);
+	m_efx->setRotation(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotXOffsetSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setXOffset(value);
+	m_efx->setXOffset(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotYOffsetSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setYOffset(value);
+	m_efx->setYOffset(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotXFrequencySpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setXFrequency(value);
+	m_efx->setXFrequency(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotYFrequencySpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setYFrequency(value);
+	m_efx->setYFrequency(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotXPhaseSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setXPhase(value);
+	m_efx->setXPhase(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotYPhaseSpinChanged(int value)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setYPhase(value);
+	m_efx->setYPhase(value);
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotHorizontalChannelSelected(int channel)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setXChannel(static_cast<t_channel> (channel));
+	m_efx->setXChannel(static_cast<t_channel> (channel));
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotVerticalChannelSelected(int channel)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setYChannel(static_cast<t_channel> (channel));
+	m_efx->setYChannel(static_cast<t_channel> (channel));
 
-  m_previewArea->repaint();
+	m_previewArea->repaint();
 }
 
 void EFXEditor::slotStartSceneCheckboxToggled(bool state)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_startSceneList->setEnabled(state);
-  m_efx->setStartSceneEnabled(state);
+	m_startSceneList->setEnabled(state);
+	m_efx->setStartSceneEnabled(state);
 
-  slotStartSceneListSelectionChanged(m_startSceneList->selectedItem());
+	slotStartSceneListSelectionChanged(m_startSceneList->selectedItem());
 }
 
 void EFXEditor::slotStopSceneCheckboxToggled(bool state)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_stopSceneList->setEnabled(state);
-  m_efx->setStopSceneEnabled(state);
+	m_stopSceneList->setEnabled(state);
+	m_efx->setStopSceneEnabled(state);
 
-  slotStopSceneListSelectionChanged(m_stopSceneList->selectedItem());
+	slotStopSceneListSelectionChanged(m_stopSceneList->selectedItem());
 }
 
 void EFXEditor::slotStartSceneListSelectionChanged(QListViewItem* item)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  if (item)
-    m_efx->setStartScene(item->text(1).toInt());
+	if (item)
+		m_efx->setStartScene(item->text(1).toInt());
 }
 
 void EFXEditor::slotStopSceneListSelectionChanged(QListViewItem* item)
 {
-  assert(m_efx);
+	assert(m_efx);
    
-  if (item)
-    m_efx->setStopScene(item->text(1).toInt());
+	if (item)
+		m_efx->setStopScene(item->text(1).toInt());
 }
 
 void EFXEditor::slotDirectionClicked(int item)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setDirection((EFX::Direction) item);
+	m_efx->setDirection((EFX::Direction) item);
 }
 
 void EFXEditor::slotRunOrderClicked(int item)
 {
-  assert(m_efx);
+	assert(m_efx);
 
-  m_efx->setRunOrder((EFX::RunOrder) item);
+	m_efx->setRunOrder((EFX::RunOrder) item);
 }
 
 /*****************************************************************************
@@ -508,12 +506,12 @@ void EFXEditor::slotRunOrderClicked(int item)
  * Constructor
  */
 EFXPreviewArea::EFXPreviewArea(QWidget* parent, const char* name)
-  : QFrame (parent, name),
+	: QFrame (parent, name),
     
-    m_pointArray ( new QPointArray )
+	  m_pointArray ( new QPointArray )
 {
-  setPaletteBackgroundColor(white);
-  setFrameStyle(StyledPanel | Sunken);
+	setPaletteBackgroundColor(white);
+	setFrameStyle(StyledPanel | Sunken);
 }
 
 /**
@@ -521,10 +519,10 @@ EFXPreviewArea::EFXPreviewArea(QWidget* parent, const char* name)
  */
 EFXPreviewArea::~EFXPreviewArea()
 {
-  setUpdatesEnabled(false);
+	setUpdatesEnabled(false);
 
-  delete m_pointArray;
-  m_pointArray = NULL;
+	delete m_pointArray;
+	m_pointArray = NULL;
 }
 
 /**
@@ -535,7 +533,7 @@ EFXPreviewArea::~EFXPreviewArea()
  */
 QPointArray* EFXPreviewArea::pointArray()
 {
-  return m_pointArray;
+	return m_pointArray;
 }
 
 /**
@@ -543,40 +541,40 @@ QPointArray* EFXPreviewArea::pointArray()
  */
 void EFXPreviewArea::paintEvent(QPaintEvent* e)
 {
-  QFrame::paintEvent(e);
+	QFrame::paintEvent(e);
 
-  QPainter painter(this);
-  QPen pen;
-  QPoint point;
-  //QPoint prevPoint;
+	QPainter painter(this);
+	QPen pen;
+	QPoint point;
+	//QPoint prevPoint;
 
-  // Draw crosshairs
-  painter.setPen(lightGray);
-  painter.drawLine(127, 0, 127, 255);
-  painter.drawLine(0, 127, 255, 127);
+	// Draw crosshairs
+	painter.setPen(lightGray);
+	painter.drawLine(127, 0, 127, 255);
+	painter.drawLine(0, 127, 255, 127);
 
-  // Set pen color to black
-  pen.setColor(black);
+	// Set pen color to black
+	pen.setColor(black);
 
-  // Use the black pen as the painter
-  painter.setPen(pen);
+	// Use the black pen as the painter
+	painter.setPen(pen);
 
-  painter.drawPolygon(*m_pointArray);
+	painter.drawPolygon(*m_pointArray);
 
-  // Take the last point so that the first line is drawn
-  // from the last to the first
-  // prevPoint = m_pointArray->point(m_pointArray->size() - 1);
+	// Take the last point so that the first line is drawn
+	// from the last to the first
+	// prevPoint = m_pointArray->point(m_pointArray->size() - 1);
 
-  // Draw the points from the point array
-  for (unsigned int i = 0; isUpdatesEnabled() && i < m_pointArray->size(); i++)
-    {
-      point = m_pointArray->point(i);
-      //painter.drawPoint(point);
-      //painter.drawLine(prevPoint, point);
+	// Draw the points from the point array
+	for (unsigned int i = 0; isUpdatesEnabled() && i < m_pointArray->size(); i++)
+	{
+		point = m_pointArray->point(i);
+		//painter.drawPoint(point);
+		//painter.drawLine(prevPoint, point);
 
-      // Draw a small ellipse around each point
-      painter.drawEllipse(point.x() - 2, point.y() - 2, 4, 4);
+		// Draw a small ellipse around each point
+		painter.drawEllipse(point.x() - 2, point.y() - 2, 4, 4);
 
-      //prevPoint = point;
-    }
+		//prevPoint = point;
+	}
 }

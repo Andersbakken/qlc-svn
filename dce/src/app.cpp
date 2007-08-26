@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qworkspace.h>
 #include <qapplication.h>
 #include <qmessagebox.h>
 #include <qmenubar.h>
@@ -40,10 +39,11 @@
 #include "app.h"
 #include "aboutbox.h"
 
+#include "common/qlcworkspace.h"
 #include "common/settings.h"
 #include "common/documentbrowser.h"
-#include "common/qlcfixture.h"
-#include "deviceclasseditor.h"
+#include "common/qlcfixturedef.h"
+#include "fixtureeditor.h"
 #include "configkeys.h"
 
 // Old headers that will be removed in the future
@@ -190,14 +190,16 @@ void App::initSettings()
 
 void App::initWorkspace()
 {
-	m_workspace = new QWorkspace(this, "Main Workspace");
+	m_workspace = new QLCWorkspace(this);
 	setCentralWidget(m_workspace);
 
 	QString path;
 	settings()->get(KEY_APP_BACKGROUND, path);
 
-	// Set background picture
-	m_workspace->setBackgroundPixmap(QPixmap(path));
+	m_workspace->setBackground(path);
+
+	connect(m_workspace, SIGNAL(backgroundChanged(const QString&)),
+		this, SLOT(slotBackgroundChanged(const QString&)));
 }
 
 
@@ -265,9 +267,9 @@ void App::slotEmpty()
 
 void App::slotFileNew()
 {
-	QLCFixture* fixture = new QLCFixture();
+	QLCFixtureDef* fixtureDef = new QLCFixtureDef();
 
-	QLCFixtureEditor* editor = new QLCFixtureEditor(m_workspace, fixture);
+	QLCFixtureEditor* editor = new QLCFixtureEditor(m_workspace, fixtureDef);
 	connect(editor, SIGNAL(closed(QLCFixtureEditor*)),
 		this, SLOT(slotEditorClosed(QLCFixtureEditor*)));
 	editor->init();
@@ -278,7 +280,7 @@ void App::slotFileNew()
 void App::slotFileOpen()
 {
 	QLCFixtureEditor* editor = NULL;
-	QLCFixture* fixture = NULL;
+	QLCFixtureDef* fixtureDef = NULL;
 	QString path;
 
 	path = QFileDialog::getOpenFileName(m_lastPath, KFixtureFilter, this);
@@ -292,25 +294,25 @@ void App::slotFileOpen()
 	
 	if (path.right(strlen(KExtFixture)) == KExtFixture)
 	{
-		fixture = new QLCFixture(path);
+		fixtureDef = new QLCFixtureDef(path);
 	}
 	else if (path.right(strlen(KExtLegacyDeviceClass)) 
 		 == KExtLegacyDeviceClass)
 	{
 		/* Open as an old DC but convert it to a QLCFixture */
 		DeviceClass* dc = openLegacyFile(path);
-		fixture = new QLCFixture(dc);
+		fixtureDef = new QLCFixtureDef(dc);
 		delete dc;
 	}
 
-	if (fixture == NULL)
+	if (fixtureDef == NULL)
 	{
 		QMessageBox::warning(this, KApplicationNameShort,
 				     "File didn't contain a valid fixture.");
 	}
 	else
 	{
-		editor = new QLCFixtureEditor(m_workspace, fixture);
+		editor = new QLCFixtureEditor(m_workspace, fixtureDef);
 		editor->setFileName(path);
 		
 		connect(editor, SIGNAL(closed(QLCFixtureEditor*)),
@@ -496,6 +498,11 @@ void App::slotHelpAboutQt()
 void App::slotEditorClosed(QLCFixtureEditor* editor)
 {
 	delete editor;
+}
+
+void App::slotBackgroundChanged(const QString& path)
+{
+	m_settings->set(KEY_APP_BACKGROUND, path);
 }
 
 //

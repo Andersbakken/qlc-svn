@@ -34,18 +34,18 @@
 const int KNoID ( -1 );
 
 /*****************************************************************************
- * Device
+ * Fixtures
  *****************************************************************************/
 
 /**
- * Device ID type
+ * Fixture ID type
  */
-typedef int t_device_id;
+typedef int t_fixture_id;
 
 /**
- * Maximum number of devices
+ * Maximum number of fixtures
  */
-const t_device_id KDeviceArraySize ( 128 );
+const t_fixture_id KFixtureArraySize ( 128 );
 
 /*****************************************************************************
  * Function
@@ -135,22 +135,22 @@ typedef unsigned long t_bus_value;
 /**
  * Smallest bus ID
  */
-const t_bus_id KBusIDMin         (             0 );
+const t_bus_id KBusIDMin         ( 0 );
 
 /**
  * Number of buses
  */
-const t_bus_id KBusCount         (            32 );
+const t_bus_id KBusCount         ( 32 );
 
 /**
  * Invalid bus ID
  */
-const t_bus_id KBusIDInvalid     (            -1 );
+const t_bus_id KBusIDInvalid     ( -1 );
 
 /**
  * The default fade bus ID
  */
-const t_bus_id KBusIDDefaultFade ( KBusIDMin     );
+const t_bus_id KBusIDDefaultFade ( KBusIDMin );
 
 /**
  * The default hold bus ID

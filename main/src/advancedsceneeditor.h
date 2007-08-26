@@ -27,56 +27,57 @@
 #include "function.h"
 
 class Scene;
-class LogicalChannel;
-class DeviceClass;
+class QLCChannel;
+class QLCFixtureDef;
 
 class AdvancedSceneEditor : public UI_AdvancedSceneEditor
 {
-  Q_OBJECT
+	Q_OBJECT
     
  public:
-  AdvancedSceneEditor(QWidget* parent, Scene* scene);
-  virtual ~AdvancedSceneEditor();
+	AdvancedSceneEditor(QWidget* parent, Scene* scene);
+	virtual ~AdvancedSceneEditor();
 
-  void init();
+	void init();
 
  public slots:
-  void slotSceneNameTextChanged(const QString& text);
+	void slotSceneNameTextChanged(const QString& text);
 
-  void slotEditValueClicked();
-  void slotContentsClicked(QListViewItem* item);
-  void slotContentsDoubleClicked(QListViewItem*);
-  void slotChannelsContextMenuRequested(QListViewItem*, const QPoint &, int);
+	void slotEditValueClicked();
+	void slotContentsClicked(QListViewItem* item);
+	void slotContentsDoubleClicked(QListViewItem*);
+	void slotChannelsContextMenuRequested(QListViewItem*, const QPoint &, int);
 
-  void slotApplyClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
+	void slotApplyClicked();
+	void slotOKClicked();
+	void slotCancelClicked();
 
-  void slotDeviceFunctionsListChanged(t_function_id fid);
+	void slotDeviceFunctionsListChanged(t_function_id fid);
 
  signals:
-  void closed();
+	void closed();
 
  private:
-  void updateChannelList();
-  void setDirty(bool dirty);
-  bool dirtyCheck();
+	void updateChannelList();
+	void setDirty(bool dirty);
+	bool dirtyCheck();
 
-  void invokePresetMenu(const QPoint &);
-  void invokeValueMenu(const QPoint &);
-  void invokeTypeMenu(const QPoint &);
+	void invokePresetMenu(const QPoint &);
+	void invokeValueMenu(const QPoint &);
+	void invokeTypeMenu(const QPoint &);
 
  private slots:
-  void slotPresetMenuActivated(int);
-  void slotValueMenuActivated(int);
-  void slotTypeMenuActivated(int);
+	void slotPresetMenuActivated(int);
+	void slotValueMenuActivated(int);
+	void slotTypeMenuActivated(int);
 
  private:
-  bool m_dirty; // Indicates whether we need to save changes (dirty) or not
+	bool m_dirty; // Indicates whether we need to save changes (dirty) or not
 
-  Scene* m_scene;
-  Scene* m_original;
-  LogicalChannel* m_currentChannel;
+	Scene* m_scene;
+	Scene* m_original;
+	QLCChannel* m_currentChannel;
+	t_channel m_currentChannelNum;
 };
 
 #endif

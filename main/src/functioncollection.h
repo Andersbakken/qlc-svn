@@ -2,7 +2,7 @@
   Q Light Controller
   functioncollection.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -37,15 +37,13 @@ class FunctionCollection : public Function
 
 	QValueList <t_function_id> *steps() { return &m_steps; }
 
-	bool setDevice(t_device_id) { return false; }
+	bool setFixtureInstance(t_fixture_id) { return false; }
 
 	bool addItem(t_function_id);
 	bool removeItem(t_function_id);
 
-	void saveToFile(QFile &file);
-	void createContents(QPtrList <QString> &list);
-
-	void saveXML(QDomDocument* doc);
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
 
 	void speedChange();
 

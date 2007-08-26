@@ -1,65 +1,58 @@
 /*
   Q Light Controller
-  deviceconsole.h
-  
-  Copyright (C) Heikki Junnila
-  
+  qlcorkspace.h
+
+  Copyright (c) Heikki Junnila
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DEVICECONSOLE_H
-#define DEVICECONSOLE_H
+#ifndef WORKSPACE_H
+#define WORKSPACE_H
 
-#include <qwidget.h>
-#include <qptrlist.h>
+#include <qworkspace.h>
+#include <qevent.h>
 
-#include "common/types.h"
-#include "consolechannel.h"
-
-class QCloseEvent;
-class QHBoxLayout;
-
-class Device;
-class SceneEditor;
-
-class DeviceConsole : public QWidget
+class QLCWorkspace : public QWorkspace
 {
 	Q_OBJECT
 
-public: 
-	DeviceConsole(QWidget *parent);
-	~DeviceConsole();
+ public:
+	QLCWorkspace(QWidget* parent);
+	~QLCWorkspace();
 
-	void setDevice(t_device_id);
+	/** Set the background image from the given file name */
+	void setBackground(const QString& path);
 
-	QPtrList <ConsoleChannel> unitList() { return m_unitList; }
-	SceneEditor* sceneEditor() { return m_sceneEditor; }
+	/** Set the background image with a file selection dialog */
+	void setBackground();
 
-signals:
-	void closed();
+ signals:
+	void rightMouseButtonClicked(const QPoint& pos);
+	void backgroundChanged(const QString& path);
 
-protected:
-	void closeEvent(QCloseEvent*);
+ protected slots:
+	void slotRightMouseButtonClicked(const QPoint& pos);
+	void slotMenuCallback(int item);
 
-protected:
-	QHBoxLayout* m_layout;
+ protected:
+	void mousePressEvent(QMouseEvent* event);
 
-	SceneEditor* m_sceneEditor;
-	t_device_id m_deviceID;
+ protected:
+	QString m_backgroundPath;
 
-	QPtrList <ConsoleChannel> m_unitList;
 };
 
 #endif

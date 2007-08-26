@@ -2,7 +2,7 @@
   Q Light Controller
   xychannelunit.h
   
-  Copyright (C) 2005 Heikki Junnila, Stefan Krumm
+  Copyright (c) Stefan Krumm, Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -24,22 +24,22 @@
 
 #include "common/types.h"
 
-class Device;
+class Fixture;
 
 class XYChannelUnit
 {
 public:
 	XYChannelUnit();
-	XYChannelUnit(const t_device_id deviceID,
-		const t_channel channel,
-		const t_value lo,
-		const t_value hi,
-		const bool reverse);
+	XYChannelUnit(const t_fixture_id fixtureID,
+		      const t_channel channel,
+		      const t_value lo,
+		      const t_value hi,
+		      const bool reverse);
 	
 	~XYChannelUnit();
 	
 	enum {
-		FileElementDevice = 0,
+		FileElementFixture = 0,
 		FileElementChannel,
 		FileElementLo,
 		FileElementHi,
@@ -71,22 +71,22 @@ public:
 	t_value hi() const;
 	
 	/**
-	 * Set the device id
+	 * Set the fixture id
 	 *
-	 * @param deviceID The device id
+	 * @param fixtureID The fixture id
 	 */
-	void setDeviceID(t_device_id deviceID);
+	void setFixtureID(t_fixture_id fixtureID);
 
 	/**
-	 * Get the device ID
+	 * Get the fixture ID
 	 */
-	t_device_id deviceID() const;
+	t_fixture_id fixtureID() const;
 
 	/**
-	 * Convenience function to get the device associated
-	 * with the device ID
+	 * Convenience function to get the fixture associated
+	 * with the fixture ID
 	 */
-	Device* device() const;
+	Fixture* fixture() const;
 	
 	/**
 	 * Set the relative channel number
@@ -113,7 +113,7 @@ public:
 	bool reverse() const;
 
 protected:
-	t_device_id m_deviceID;
+	t_fixture_id m_fixtureID;
 	t_channel m_channel;	
 	
 	t_value m_lo;

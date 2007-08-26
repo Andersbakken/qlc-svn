@@ -28,26 +28,27 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 
-#include "common/deviceclass.h"
-#include "common/logicalchannel.h"
+#include "common/qlcfixturedef.h"
+#include "common/qlcchannel.h"
 #include "common/settings.h"
+
 #include "vcxypad.h"
 #include "xychannelunit.h"
 #include "vcxypadproperties.h"
-#include "devicelist.h"
-#include "device.h"
+#include "fixturelist.h"
+#include "fixture.h"
 #include "configkeys.h"
 #include "app.h"
 #include "doc.h"
 
 extern App* _app;
 
-const int KColumnDeviceName    ( 0 );
+const int KColumnFixtureName    ( 0 );
 const int KColumnChannelName   ( 1 );
 const int KColumnLo            ( 2 );
 const int KColumnHi            ( 3 );
 const int KColumnReverse       ( 4 );
-const int KColumnDeviceID      ( 5 );
+const int KColumnFixtureID      ( 5 );
 const int KColumnChannelNumber ( 6 );
 
 const int KComboItemReverse    ( 0 );
@@ -98,18 +99,19 @@ void VCXYPadProperties::init()
 void VCXYPadProperties::fillChannelList(QListView *list,
 					QPtrList<XYChannelUnit>* channels)
 {
-	QPtrListIterator<XYChannelUnit> it( *channels );
-	XYChannelUnit *e;
+	QPtrListIterator<XYChannelUnit> it(*channels);
+	XYChannelUnit *unit = NULL;
 
-	while ( (e = *it) != NULL)
+	while ( (unit = *it) != NULL)
 	{
 		++it;
 
-		createChannelEntry(list, e->deviceID(),
-				e->channel(),
-				e->lo(),
-				e->hi(),
-				e->reverse());
+		createChannelEntry(list,
+				   unit->fixtureID(),
+				   unit->channel(),
+				   unit->lo(),
+				   unit->hi(),
+				   unit->reverse());
 	}
 }
 
@@ -117,34 +119,34 @@ void VCXYPadProperties::fillChannelList(QListView *list,
  * Create a channel entry to the given parent listview
  */
 QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
-						t_device_id deviceID,
-						t_channel channel,
-						t_value lo,
-						t_value hi,
-						bool reverse)
+						     t_fixture_id fixtureID,
+						     t_channel channel,
+						     t_value lo,
+						     t_value hi,
+						     bool reverse)
 {
-	Device* device;
-	LogicalChannel* log_ch;
-	QListViewItem* item;
+	Fixture* fxi = NULL;
+	QLCChannel* ch = NULL;
+	QListViewItem* item = NULL;
 	QString s;
 
-	device = _app->doc()->device(deviceID);
-	if (device == NULL)
+	fxi = _app->doc()->fixture(fixtureID);
+	if (fxi == NULL)
 	{
 		return NULL;
 	}
 
 	item = new QListViewItem(parent);
 
-	// Device name
-	item->setText(KColumnDeviceName, device->name());
+	// Fixture name
+	item->setText(KColumnFixtureName, fxi->name());
 
 	// Channel name
-	log_ch = device->deviceClass()->channels()->at(channel);
-	if (log_ch)
+	ch = fxi->channel(channel);
+	if (ch != NULL)
 	{
 		s.sprintf("%.3d: ", channel + 1);
-		s += log_ch->name();
+		s += ch->name();
 		item->setText(KColumnChannelName, s);
 	}
 	else
@@ -162,7 +164,7 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 	item->setText(KColumnLo, s);
 
 	// Reverse
-	if (reverse)
+	if (reverse == true)
 	{
 		item->setText(KColumnReverse, Settings::trueValue());
 	}
@@ -171,9 +173,9 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 		item->setText(KColumnReverse, Settings::falseValue());
 	}
 
-	// Device ID
-	s.setNum(deviceID);
-	item->setText(KColumnDeviceID, s);
+	// Fixture ID
+	s.setNum(fixtureID);
+	item->setText(KColumnFixtureID, s);
 
 	// Channel number
 	s.sprintf("%.3d", channel);
@@ -204,32 +206,33 @@ void VCXYPadProperties::slotRemoveY()
 
 void VCXYPadProperties::slotAdd(QListView *list)
 {
-	DeviceList* dl = new DeviceList(this);
-	dl->init();
+	FixtureList* fl = new FixtureList(this);
+	fl->init();
+
 	if (list == m_listX)
 	{
-		dl->setCaption("Add a channel to the list of horizontal axes");
+		fl->setCaption("Add a channel to the list of horizontal axes");
 	}
 	else
 	{
-		dl->setCaption("Add a channel to the list of vertical axes");
+		fl->setCaption("Add a channel to the list of vertical axes");
 	}
 
-	if (dl->exec() == QDialog::Accepted)
+	if (fl->exec() == QDialog::Accepted)
 	{
-		t_device_id did = dl->selectedDeviceID();
-		t_channel ch = dl->selectedChannel();
+		t_fixture_id fxi_id = fl->selectedFixtureID();
+		t_channel ch = fl->selectedChannel();
 
-		if (did != KNoID && ch != KChannelInvalid)
+		if (fxi_id != KNoID && ch != KChannelInvalid)
 		{
-			createChannelEntry(list, did, ch,
-					KChannelValueMin,
-					KChannelValueMax,
-					false);
+			createChannelEntry(list, fxi_id, ch,
+					   KChannelValueMin,
+					   KChannelValueMax,
+					   false);
 		}
 	}
 
-	delete dl;
+	delete fl;
 }
 
 void VCXYPadProperties::slotMaxXChanged(const QString& text)
@@ -477,7 +480,7 @@ XYChannelUnit* VCXYPadProperties::createChannelUnit(QListViewItem* item)
 	else
 	{
 		return new XYChannelUnit(
-			item->text(KColumnDeviceID).toInt(),
+			item->text(KColumnFixtureID).toInt(),
 			item->text(KColumnChannelNumber).toInt(),
 			item->text(KColumnLo).toInt(),
 			item->text(KColumnHi).toInt(),

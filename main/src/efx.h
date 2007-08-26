@@ -2,7 +2,7 @@
   Q Light Controller
   efx.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -24,7 +24,6 @@
 
 #include "common/types.h"
 #include "function.h"
-#include "scene.h"
 
 #define KXMLQLCFunctionEFXAlgorithm "Algorithm"
 #define KXMLQLCFunctionEFXWidth "Width"
@@ -221,7 +220,7 @@ class EFX : public Function
 	bool isPhaseEnabled();
 
 	/**
-	 * Set a channel from a device to be used as the X axis.
+	 * Set a channel from a fixture to be used as the X axis.
 	 *
 	 * @param channel Relative number of the channel used as the X axis
 	 */
@@ -234,7 +233,7 @@ class EFX : public Function
 	t_channel xChannel();
 
 	/**
-	 * Set a channel from a device to be used as the Y axis.
+	 * Set a channel from a fixture to be used as the Y axis.
 	 *
 	 * @param channel Relative number of the channel used as the Y axis
 	 */
@@ -336,33 +335,37 @@ class EFX : public Function
 	 * Copy function contents from another function
 	 *
 	 * @param efx EFX function from which to copy contents to this function
-	 * @param toDevice The new parent for this function
+	 * @param to The new parent fixture for this function
 	 */
-	bool copyFrom(EFX* efx, t_device_id toDevice = KNoID);
+	bool copyFrom(EFX* efx, t_fixture_id to);
 
-	/**
-	 * Called by Doc when saving the workspace file. Saves this function's
-	 * contents to the given file.
-	 *
-	 * @param file File to save to
-	 */
-	void saveToFile(QFile &file);
-
-	/**
-	 * Parse function contents from a list of string tokens. This is
-	 * called by Doc when loading a workspace file.
-	 *
-	 * @param list List of string tokens (item,value,item,value,item...)
-	 */
-	void createContents(QPtrList <QString> &list);
-
+ public:
 	/**
 	 * Save the function's contents to an XML document
 	 *
 	 * @param doc The QDomDocument to save to
+	 * @param wksp_root The workspace root XML element
 	 */
-	void saveXML(QDomDocument* doc);
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
+	/**
+	 * Load the function's contents from an XML document
+	 *
+	 * @param doc The QDomDocument to load from
+	 * @param root The EFX root XML element
+	 */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+ protected:
+	/**
+	 * Load an axis' contents from an XML document
+	 *
+	 * @param doc The QDomDocument to load from
+	 * @param root An EFX Axis root XML element
+	 */
+	bool loadXMLAxis(QDomDocument* doc, QDomElement* root);
+
+ public:
 	/**
 	 * This is called by buses for each function when the
 	 * bus value is changed.
@@ -638,7 +641,7 @@ class EFX : public Function
 	t_buffer_data* m_channelData;
 
 	/**
-	 * Run-time device address. Don't use for anything else!
+	 * RUNTIME ONLY fixture address. Don't use for anything else!
 	 */
 	t_channel m_address;
 };

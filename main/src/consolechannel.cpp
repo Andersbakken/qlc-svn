@@ -2,7 +2,7 @@
   Q Light Controller
   consolechannel.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -34,13 +34,13 @@
 #include <qptrlist.h>
 
 #include "common/settings.h"
-#include "common/logicalchannel.h"
-#include "common/capability.h"
+#include "common/qlcchannel.h"
+#include "common/qlccapability.h"
 #include "consolechannel.h"
 #include "app.h"
 #include "doc.h"
 #include "scene.h"
-#include "device.h"
+#include "fixture.h"
 #include "configkeys.h"
 
 extern App* _app;
@@ -60,19 +60,19 @@ const int KMenuTitle          ( INT_MAX );
 //
 // Constructor
 //
-ConsoleChannel::ConsoleChannel(QWidget* parent, t_device_id deviceID,
-						t_channel channel)
-	: UI_ConsoleChannel(parent, "ConsoleChannel"),
+ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
+			       t_channel channel)
+	: UI_ConsoleChannel(parent, "Console Channel"),
 
 	m_channel    ( channel ),
 	m_value      ( 0 ),
 	m_status     ( Scene::Fade ),
-	m_deviceID   ( deviceID ),
+	m_fixtureID  ( fixtureID ),
 	m_fadeStatusEnabled ( true ),
 	m_updateOnly ( false ),
 	m_menu       ( NULL )
 {
-	assert(deviceID != KNoID);
+	assert(fixtureID != KNoID);
 	assert(channel != KChannelInvalid);
 }
 
@@ -92,19 +92,18 @@ ConsoleChannel::~ConsoleChannel()
 //
 void ConsoleChannel::init()
 {
-	Device* device = NULL;
+	Fixture* fixture = NULL;
 	QString num;
 
-	// Check that we have an actual device
-	device = _app->doc()->device(m_deviceID);
-	assert(device);
+	// Check that we have an actual fixture
+	fixture = _app->doc()->fixture(m_fixtureID);
+	Q_ASSERT(fixture != NULL);
 	
 	// Check that the given channel is valid
-	assert(m_channel < device->deviceClass()->channels()->count());
+	Q_ASSERT(m_channel < fixture->channels());
 	
 	// Set the channel's name as the tooltip
-	QToolTip::add(this, 
-		device->deviceClass()->channels()->at(m_channel)->name());
+	QToolTip::add(this, fixture->channel(m_channel)->name());
 
 	// Set channel label
 	num.sprintf("%.3d", m_channel + 1);
@@ -132,23 +131,24 @@ void ConsoleChannel::init()
 //
 void ConsoleChannel::initMenu()
 {
-	Capability* c = NULL;
-	LogicalChannel* ch = NULL;
-	Device* device = NULL;
+	QLCCapability* c = NULL;
+	QLCChannel* ch = NULL;
+	Fixture* fixture = NULL;
 	QPopupMenu* valueMenu = NULL;
 	QString s;
 	QString t;
 	
-	device = _app->doc()->device(m_deviceID);
-	assert(device);
+	fixture = _app->doc()->fixture(m_fixtureID);
+	Q_ASSERT(fixture != NULL);
 
-	ch = device->deviceClass()->channels()->at(m_channel);
-	assert(ch);
+	ch = fixture->channel(m_channel);
+	Q_ASSERT(ch != NULL);
 	
 	// Get rid of a possible previous menu
-	if (m_menu)
+	if (m_menu != NULL)
 	{
 		delete m_menu;
+		m_menu = NULL;
 	}
 	
 	// Create a popup menu and set the channel name as the title
@@ -157,25 +157,25 @@ void ConsoleChannel::initMenu()
 	m_menu->setItemEnabled(KMenuTitle, false);
 	m_menu->insertSeparator();
 
-	QPtrListIterator<Capability> it(*ch->capabilities());
+	QPtrListIterator<QLCCapability> it(*ch->capabilities());
 
-	while (it.current())
+	while (it.current() != NULL)
 	{
 		c = it.current();
 
 		// Set the value range and name as menu item's name
 		s.sprintf("%s: %.3d - %.3d", (const char*) c->name(), 
-						c->lo(), c->hi());
+			  c->min(), c->max());
 
 		// Create submenu for ranges that contain more than one value
-		if (c->hi() - c->lo() > 0)
+		if (c->max() - c->min() > 0)
 		{
 			valueMenu = new QPopupMenu(m_menu);
 			
 			connect(valueMenu, SIGNAL(activated(int)),
 				this, SLOT(slotContextMenuActivated(int)));
 
-			for (int i = c->lo(); i <= c->hi(); i++)
+			for (int i = c->min(); i <= c->max(); i++)
 			{
 				t.sprintf("%.3d", i);
 				valueMenu->insertItem(t, i);
@@ -186,7 +186,7 @@ void ConsoleChannel::initMenu()
 		else
 		{
 			// Just one value in this range, don't create submenu
-			m_menu->insertItem(s, c->lo());
+			m_menu->insertItem(s, c->min());
 		}
 
 		++it;
@@ -284,12 +284,12 @@ void ConsoleChannel::slotSetFocus()
 {
 	t_value value = 0;
 
-	Device* device = _app->doc()->device(m_deviceID);
-	assert(device);
+	Fixture* fixture = _app->doc()->fixture(m_fixtureID);
+	Q_ASSERT(fixture != NULL);
 
 	// In case someone else has set the value for this channel, animate
 	// the slider to the correct position
-	value = _app->value(device->universeAddress() + m_channel);
+	value = _app->value(fixture->universeAddress() + m_channel);
 
 	slotAnimateValueChange(value);
 
@@ -304,10 +304,10 @@ void ConsoleChannel::update()
 {
 	t_value value = 0;
 	
-	Device* device = _app->doc()->device(m_deviceID);
-	assert(device);
+	Fixture* fixture = _app->doc()->fixture(m_fixtureID);
+	Q_ASSERT(fixture != NULL);
 	
-	value = _app->value(device->universeAddress() + m_channel);
+	value = _app->value(fixture->universeAddress() + m_channel);
 	
 	m_valueLabel->setNum(value);
 	slotAnimateValueChange(value);
@@ -320,10 +320,10 @@ void ConsoleChannel::slotValueChange(int value)
 {
 	value = KChannelValueMax - value;
 
-	Device* device = _app->doc()->device(m_deviceID);
-	assert(device);
+	Fixture* fixture = _app->doc()->fixture(m_fixtureID);
+	Q_ASSERT(fixture != NULL);
 	
-	_app->setValue(device->universeAddress() + m_channel, (t_value) value);
+	_app->setValue(fixture->universeAddress() + m_channel, (t_value) value);
 	
 	m_valueLabel->setNum(value);
 	
@@ -368,7 +368,7 @@ void ConsoleChannel::slotContextMenuActivated(int value)
 }
 
 //
-// Device console's scene editor activated a scene, which is reflected
+// Fixture console's scene editor activated a scene, which is reflected
 // here. So set the value and status to UI.
 //
 void ConsoleChannel::slotSceneActivated(SceneValue* values,

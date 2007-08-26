@@ -2,7 +2,7 @@
   Q Light Controller
   vcbuttonproperties.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -29,15 +29,14 @@
 #include <qmessagebox.h>
 #include <qcheckbox.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "vcbuttonproperties.h"
 #include "function.h"
 #include "app.h"
 #include "doc.h"
 #include "assignhotkey.h"
 #include "keybind.h"
-#include "devicemanagerview.h"
-#include "device.h"
+#include "fixture.h"
 #include "virtualconsole.h"
 #include "functionmanager.h"
 
@@ -45,12 +44,12 @@ extern App* _app;
 
 VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent,
                                        const char* name)
-  : UI_VCButtonProperties(parent, name, true),
+	: UI_VCButtonProperties(parent, name, true),
 
-    m_button     ( button ),
-    m_keyBind    ( new KeyBind(button->keyBind()) ),
-    m_functionID ( button->functionID() ),
-    m_functionManager ( NULL )
+	  m_button     ( button ),
+	  m_keyBind    ( new KeyBind(button->keyBind()) ),
+	  m_functionID ( button->functionID() ),
+	  m_functionManager ( NULL )
 {
 }
 
@@ -63,103 +62,107 @@ VCButtonProperties::~VCButtonProperties()
 
 void VCButtonProperties::initView()
 {
-  QString keyString;
+	QString keyString;
 
-  // Set name
-  m_nameEdit->setText(m_button->text());
+	// Set name
+	m_nameEdit->setText(m_button->text());
 
-  // Set function name
-  setFunctionName();
+	// Set function name
+	setFunctionName();
 
-  // KeyBind key
-  m_keyBind->keyString(keyString);
-  m_keyEdit->setText(keyString);
+	// KeyBind key
+	m_keyBind->keyString(keyString);
+	m_keyEdit->setText(keyString);
 
-  // Set press action
-  m_onButtonPressGroup->setButton(m_keyBind->pressAction());
-  slotPressGroupClicked(m_keyBind->pressAction());
-  m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
-  //
-  // Midi stuff
-  //
-  m_channelSpinBox->setValue(m_button->channel());
+	// Set press action
+	m_onButtonPressGroup->setButton(m_keyBind->pressAction());
+	slotPressGroupClicked(m_keyBind->pressAction());
+	m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
+	//
+	// Midi stuff
+	//
+	m_channelSpinBox->setValue(m_button->channel());
 
 
-  //
-  // Pixmaps
-  //
-  m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/attach.png")));
-  m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/detach.png")));
+	//
+	// Pixmaps
+	//
+	m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/attach.png")));
+	m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/detach.png")));
 
-  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
-  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
+	m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
+	m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
 }
 
 
 void VCButtonProperties::setFunctionName()
 {
-  QString fname;
+	Fixture* fxi = NULL;
+	Function* func = NULL;
+	QString func_name;
 
-  Function* f = _app->doc()->function(m_functionID);
-  if (f == NULL)
-    {
-      fname = "No Function";
-    }
-  else
-    {
-      Device* d = _app->doc()->device(f->device());
-      if (d)
+	func = _app->doc()->function(m_functionID);
+	if (func == NULL)
 	{
-	  fname = d->name() + QString(" / ") + f->name();
+		func_name = "No Function";
 	}
-      else
+	else
 	{
-	  fname = QString("Global") + QString(" / ") + f->name();
+		fxi = _app->doc()->fixture(func->fixture());
+		if (fxi != NULL)
+		{
+			func_name = fxi->name() +
+				QString(" / ") + func->name();
+		}
+		else
+		{
+			func_name = QString("Global") +
+				QString(" / ") + func->name();
+		}
 	}
-    }
 
-  m_functionEdit->setText(fname);
+	m_functionEdit->setText(func_name);
 }
 
 void VCButtonProperties::slotPressGroupClicked(int id)
 {
-  ASSERT(m_keyBind != NULL);
+	ASSERT(m_keyBind != NULL);
 
-  switch (id)
-    {
-    case 1:
-      m_keyBind->setPressAction(KeyBind::PressToggle);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
-      break;
+	switch (id)
+	{
+	case 1:
+		m_keyBind->setPressAction(KeyBind::PressToggle);
+		m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+		break;
 
-    case 2:
-      m_keyBind->setPressAction(KeyBind::PressFlash);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseStop);
-      break;
+	case 2:
+		m_keyBind->setPressAction(KeyBind::PressFlash);
+		m_keyBind->setReleaseAction(KeyBind::ReleaseStop);
+		break;
 
-    case 3:
-      m_keyBind->setPressAction(KeyBind::PressStepForward);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
-      break;
+	case 3:
+		m_keyBind->setPressAction(KeyBind::PressStepForward);
+		m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+		break;
 
-    case 4:
-      m_keyBind->setPressAction(KeyBind::PressStepBackward);
-      m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
-      break;
+	case 4:
+		m_keyBind->setPressAction(KeyBind::PressStepBackward);
+		m_keyBind->setReleaseAction(KeyBind::ReleaseNothing);
+		break;
 
-    default:
-      break;
-    }
+	default:
+		break;
+	}
 }
 
 void VCButtonProperties::slotAttachFunctionClicked()
 {
 	m_functionManager = new FunctionManager(this,
-					FunctionManager::SelectionMode);
+						FunctionManager::SelectionMode);
 	m_functionManager->init();
 
 	connect(m_functionManager, SIGNAL(closed()),
-			this, SLOT(slotFunctionManagerClosed()));
+		this, SLOT(slotFunctionManagerClosed()));
 
 	m_functionManager->show();
 }
@@ -237,7 +240,7 @@ void VCButtonProperties::slotOKClicked()
 	m_button->setChannel(m_channelSpinBox->value());
         m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());  
 
-	_app->doc()->setModified(true);
+	_app->doc()->setModified();
 
 	accept();
 }

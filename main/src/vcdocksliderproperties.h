@@ -2,7 +2,7 @@
   Q Light Controller
   vcdocksliderproperties.h
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -29,38 +29,38 @@ class SliderKeyBind;
 
 class VCDockSliderProperties : public UI_VCDockSliderProperties
 {
-  Q_OBJECT
+	Q_OBJECT
 
-    public:
-  VCDockSliderProperties(VCDockSlider* parent, const char* name = NULL);
-  ~VCDockSliderProperties();
+ public:
+	VCDockSliderProperties(VCDockSlider* parent);
+	~VCDockSliderProperties();
 
-  void init();
+	void init();
 
  protected:
-  void fillBusCombo();
-  void fillChannelList();
+	void fillBusCombo();
+	void fillChannelList();
 
-  void extractChannels();
+	void extractChannels();
 
  public slots:
-  void slotBehaviourSelected(int);
-  void slotAllChannelsClicked();
-  void slotInvertChannelsClicked();
-  void slotClearChannelsClicked();
-  void slotDeviceChannelsClicked();
-  void slotRoleChannelsClicked();
-  void slotAttachKeyClicked();
-  void slotDetachKeyClicked();
+	void slotBehaviourSelected(int);
+	void slotAllChannelsClicked();
+	void slotInvertChannelsClicked();
+	void slotClearChannelsClicked();
+	void slotFixtureChannelsClicked();
+	void slotRoleChannelsClicked();
+	void slotAttachKeyClicked();
+	void slotDetachKeyClicked();
 
-  void slotOKClicked();
-  void slotCancelClicked();
+	void slotOKClicked();
+	void slotCancelClicked();
 
  protected:
-  VCDockSlider* m_slider;
-  VCDockSlider::Mode m_mode;
+	VCDockSlider* m_slider;
+	VCDockSlider::Mode m_mode;
 
-  SliderKeyBind* m_sliderKeyBind;
+	SliderKeyBind* m_sliderKeyBind;
 };
 
 #endif

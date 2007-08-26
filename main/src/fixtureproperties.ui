@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_DeviceProperties</class>
+<class>UI_FixtureProperties</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>UI_DeviceProperties</cstring>
+        <cstring>UI_FixtureProperties</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -13,7 +13,7 @@
         </rect>
     </property>
     <property name="caption">
-        <string>Device Properties</string>
+        <string>Fixture Properties</string>
     </property>
     <vbox>
         <property name="name">
@@ -29,7 +29,7 @@
                 </property>
                 <widget class="QLabel">
                     <property name="name">
-                        <cstring>m_deviceNameLabel</cstring>
+                        <cstring>m_nameLabel</cstring>
                     </property>
                     <property name="text">
                         <string>Name</string>
@@ -37,10 +37,10 @@
                 </widget>
                 <widget class="QLineEdit">
                     <property name="name">
-                        <cstring>m_deviceNameEdit</cstring>
+                        <cstring>m_nameEdit</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Device's name</string>
+                        <string>The fixture's friendly name</string>
                     </property>
                 </widget>
             </hbox>
@@ -72,7 +72,7 @@
                         <number>1</number>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Device's DMX address</string>
+                        <string>The fixture's DMX address</string>
                     </property>
                 </widget>
             </hbox>
@@ -98,10 +98,13 @@
                         <cstring>m_universeSpin</cstring>
                     </property>
                     <property name="maxValue">
-                        <number>128</number>
+                        <number>8</number>
                     </property>
                     <property name="minValue">
                         <number>1</number>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>The fixture's DMX Universe</string>
                     </property>
                 </widget>
             </hbox>
@@ -164,18 +167,18 @@
     <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceProperties</receiver>
+        <receiver>UI_FixtureProperties</receiver>
         <slot>reject()</slot>
     </connection>
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
-        <receiver>UI_DeviceProperties</receiver>
+        <receiver>UI_FixtureProperties</receiver>
         <slot>slotOKClicked()</slot>
     </connection>
 </connections>
 <tabstops>
-    <tabstop>m_deviceNameEdit</tabstop>
+    <tabstop>m_nameEdit</tabstop>
     <tabstop>m_addressSpin</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>

@@ -2,7 +2,7 @@
   Q Light Controller
   functioncollection.cpp
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -85,116 +85,86 @@ FunctionCollection::~FunctionCollection()
 
 
 //
-// Save this function's contents to given file
-//
-void FunctionCollection::saveToFile(QFile &file)
-{
-	QString s;
-	QString t;
-
-	// Comment line
-	s = QString("# Function entry\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Entry type
-	s = QString("Entry = Function") + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Name
-	s = QString("Name = ") + name() + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Type
-	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// ID
-	s.sprintf("ID = %d\n", id());
-	file.writeBlock((const char*) s, s.length());
-
-	// Device
-	s.sprintf("Device = %d\n", m_deviceID);
-	file.writeBlock((const char*) s, s.length());
-
-	// Steps
-	QValueList <t_function_id>::iterator it;
-	for (it = m_steps.begin(); it != m_steps.end(); ++it)
-	{
-		s.sprintf("Function = %d\n", *it);
-		file.writeBlock((const char*) s, s.length());
-	}
-}
-
-
-//
-// Create this function's contents from a list
-//
-void FunctionCollection::createContents(QPtrList <QString> &list)
-{
-	t_function_id fid = KNoID;
-  
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.prev();
-			break;
-		}
-		else if (*s == QString("Device"))
-		{
-			list.next();
-		}
-		else if (*s == QString("Function"))
-		{
-			fid = list.next()->toInt();
-			addItem(fid);
-		}
-		else
-		{
-			// Unknown keyword (at this time)
-			list.next();
-		}
-	}
-}
-
-
-//
 // Save function's contents to an XML document
 //
-void FunctionCollection::saveXML(QDomDocument* doc)
+bool FunctionCollection::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-        QDomElement root;
-        QDomElement tag;
-        QDomText text;
-        QString str;
-        int i = 0;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+	int i = 0;
 
-        assert(doc);
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
 
         /* Function tag */
         root = doc->createElement(KXMLQLCFunction);
-        doc->appendChild(root);
+        wksp_root->appendChild(root);
 
-        root.setAttribute(KXMLQLCFunctionID, id());
-        root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
-        root.setAttribute(KXMLQLCFunctionName, name());
+	root.setAttribute(KXMLQLCFunctionID, id());
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionFixture, fixture());
+	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Steps */
-        QValueList <t_function_id>::iterator it;
-        for (it = m_steps.begin(); it != m_steps.end(); ++it)
-        {
-                /* Step tag */
-                tag = doc->createElement(KXMLQLCFunctionStep);
-                root.appendChild(tag);
+	QValueList <t_function_id>::iterator it;
+	for (it = m_steps.begin(); it != m_steps.end(); ++it)
+	{
+		/* Step tag */
+		tag = doc->createElement(KXMLQLCFunctionStep);
+		root.appendChild(tag);
 		
-                /* Step number */
-                tag.setAttribute(KXMLQLCFunctionNumber, i++);
+		/* Step number */
+		tag.setAttribute(KXMLQLCFunctionNumber, i++);
 
-                /* Step Function ID */
-                str.setNum(*it);
-                text = doc->createTextNode(str);
-                tag.appendChild(text);
-        }
+		/* Step Function ID */
+		str.setNum(*it);
+		text = doc->createTextNode(str);
+		tag.appendChild(text);
+	}
+
+	return true;
+}
+
+
+bool FunctionCollection::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	t_fixture_id step_fxi = KNoID;
+	
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFunction)
+	{
+		qWarning("Function node not found!");
+		return false;
+	}
+
+	/* Load collection contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCFunctionStep)
+		{
+			step_fxi = tag.text().toInt();
+			m_steps.append(step_fxi);
+		}
+		else
+		{
+			qWarning("Unknown collection tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
 }
 
 

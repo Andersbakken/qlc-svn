@@ -10,43 +10,43 @@ qlcfixtureeditor_LDADD  = @QT_LIBS@
 qlcfixtureeditor_LDADD += $(top_srcdir)/libs/common/libqlccommon.la
 
 noinst_HEADERS = \
-	src/uic_deviceclasseditor.h \
 	src/uic_editchannel.h \
 	src/uic_editmode.h \
+	src/uic_fixtureeditor.h \
 	\
 	src/aboutbox.h \
 	src/app.h \
 	src/configkeys.h \
-	src/deviceclasseditor.h \
 	src/editchannel.h \
 	src/editcapability.h \
-	src/editmode.h
+	src/editmode.h \
+	src/fixtureeditor.h
 
 qlcfixtureeditor_SOURCES = \
-	src/uic_deviceclasseditor.cpp \
 	src/uic_editchannel.cpp \
 	src/uic_editcapability.cpp \
 	src/uic_editmode.cpp \
+	src/uic_fixtureeditor.cpp \
 	\
-	src/moc_uic_deviceclasseditor.cpp \
 	src/moc_uic_editchannel.cpp \
 	src/moc_uic_editcapability.cpp \
 	src/moc_uic_editmode.cpp \
+	src/moc_uic_fixtureeditor.cpp \
 	\
 	src/aboutbox.cpp \
 	src/app.cpp \
 	src/main.cpp \
-	src/deviceclasseditor.cpp \
 	src/editchannel.cpp \
 	src/editcapability.cpp \
 	src/editmode.cpp \
+	src/fixtureeditor.cpp \
 	\
 	src/moc_aboutbox.cpp \
 	src/moc_app.cpp \
-	src/moc_deviceclasseditor.cpp \
 	src/moc_editchannel.cpp \
 	src/moc_editcapability.cpp \
-	src/moc_editmode.cpp
+	src/moc_editmode.cpp \
+	src/moc_fixtureeditor.cpp
 
 # MOCS
 moc_%.cpp: %.h

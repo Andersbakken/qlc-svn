@@ -1,3 +1,12 @@
+2007-Aug-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Once again: HUUUGE commit
+	* Workspace background is changed thru workspace context menu
+	* Changed file format for workspaces completely to XML
+	  -> TODO: .qlc -> .qxf converter
+	* Replaced Device class with Fixture class
+	* Replaced all strings speaking of "device" to "fixture".
+	* TODO: Virtualconsole doesn't get saved/loaded yet...
+
 2007-Jun-03  Heikki Junnila <hjunnila@users.sf.net>
 	* Removed uic_editpresetvalue.cpp from dce/Makefile.am
 

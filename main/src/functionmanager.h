@@ -38,7 +38,7 @@ class QSplitter;
 class QPushButton;
 
 class Function;
-class Device;
+class Fixture;
 
 typedef QValueList<t_function_id> FunctionIDList;
 
@@ -65,9 +65,9 @@ public:
 public slots:
 	void show();
 
-	void slotDeviceAdded(t_device_id);
-	void slotDeviceRemoved(t_device_id);
-	void slotDeviceChanged(t_device_id);
+	void slotFixtureAdded(t_fixture_id);
+	void slotFixtureRemoved(t_fixture_id);
+	void slotFixtureChanged(t_fixture_id);
 
 	void slotFunctionAdded(t_function_id);
 	void slotFunctionRemoved(t_function_id);
@@ -106,8 +106,8 @@ protected:
 	// Update menu/tool item's enabled status
 	void updateMenuItems();
 
-	// Copy the given function to the given device
-	Function* copyFunction(t_function_id, t_device_id);
+	// Copy the given function to the given fixture
+	Function* copyFunction(t_function_id, t_fixture_id);
 
 protected slots:
 	void slotFixtureHeaderClicked(int section);
@@ -129,7 +129,6 @@ protected slots:
 	void slotAddScene();
 	void slotAddChaser();
 	void slotAddCollection();
-	void slotAddSequence();
 	void slotAddEFX();
 
 	void slotCut();
@@ -167,7 +166,6 @@ protected:
 	QToolButton* m_addSceneButton;
 	QToolButton* m_addChaserButton;
 	QToolButton* m_addCollectionButton;
-	QToolButton* m_addSequenceButton;
 	QToolButton* m_addEFXButton;
 
 	QToolButton* m_cutButton;

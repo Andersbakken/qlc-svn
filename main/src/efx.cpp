@@ -29,11 +29,12 @@
 
 #include "common/settings.h"
 #include "common/filehandler.h"
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
+
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
-#include "device.h"
+#include "fixture.h"
 #include "eventbuffer.h"
 #include "efx.h"
 #include "functionconsumer.h"
@@ -498,16 +499,18 @@ bool EFX::isPhaseEnabled()
 }
 
 /**
- * Set a channel from a device to be used as the X axis.
+ * Set a channel from a fixture instance to be used as the X axis.
  *
  * @param channel Relative number of the channel used as the X axis
  */
 void EFX::setXChannel(t_channel channel)
 {
-	Device* device = _app->doc()->device(m_deviceID);
-	assert(device);
+	Fixture* fxi = NULL;
 
-	if (channel < (t_channel) device->deviceClass()->channels()->count())
+	fxi = _app->doc()->fixture(fixture());
+	Q_ASSERT(fxi != NULL);
+
+	if (channel < (t_channel) fxi->channels())
 	{
 		m_xChannel = channel;
 		updatePreview();
@@ -520,16 +523,18 @@ void EFX::setXChannel(t_channel channel)
 }
 
 /**
- * Set a channel from a device to be used as the Y axis.
+ * Set a channel from a fixture instance to be used as the Y axis.
  *
  * @param channel Relative number of the channel used as the Y axis
  */
 void EFX::setYChannel(t_channel channel)
 {
-	Device* device = _app->doc()->device(m_deviceID);
-	assert(device);
+	Fixture* fxi = NULL;
 
-	if (channel < (t_channel) device->deviceClass()->channels()->count())
+	fxi = _app->doc()->fixture(fixture());
+	Q_ASSERT(fxi != NULL);
+
+	if (channel < (t_channel) fxi->channels())
 	{
 		m_yChannel = channel;
 		updatePreview();
@@ -693,13 +698,13 @@ bool EFX::stopSceneEnabled()
  * Copy function contents from another function
  *
  * @param efx EFX function from which to copy contents to this function
- * @param toDevice The new parent for this function
+ * @param to The new parent fixture instance for this function
  */
-bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
+bool EFX::copyFrom(EFX* efx, t_fixture_id to)
 {
 	assert(efx);
 
-	Function::setDevice(toDevice);
+	Function::setFixture(to);
 	Function::setName(efx->name());
 	Function::setBus(efx->busID());
 
@@ -743,277 +748,11 @@ bool EFX::copyFrom(EFX* efx, t_device_id toDevice)
 }
 
 /**
- * Called by Doc when saving the workspace file. Saves this function's
- * contents to the given file.
- *
- * @param file File to save to
- */
-void EFX::saveToFile(QFile &file)
-{
-	QString s;
-	QString t;
-
-	// Comment line
-	s = QString("# Function entry\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Entry type
-	s = QString("Entry = Function") + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Name
-	s = QString("Name = ") + name() + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Type
-	s = QString("Type = ") + Function::typeToString(m_type) + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// ID
-	t.setNum(m_id);
-	s = QString("ID = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Bus ID
-	t.setNum(m_busID);
-	s = QString("Bus = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Device ID
-	t.setNum(m_deviceID);
-	s = QString("Device = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Algorithm
-	s = QString("Algorithm = ") + algorithm() + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Width
-	t.setNum(width());
-	s = QString("Width = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Height
-	t.setNum(height());
-	s = QString("Height = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Rotation
-	t.setNum(rotation());
-	s = QString("Rotation = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// X Offset
-	t.setNum(xOffset());
-	s = QString("XOffset = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Y Offset
-	t.setNum(yOffset());
-	s = QString("YOffset = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// X Frequency
-	t.setNum(xFrequency());
-	s = QString("XFrequency = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Y Frequency
-	t.setNum(yFrequency());
-	s = QString("YFrequency = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// X Phase
-	t.setNum(xPhase());
-	s = QString("XPhase = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Y Phase
-	t.setNum(yPhase());
-	s = QString("YPhase = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// X Channel
-	t.setNum(xChannel());
-	s = QString("XChannel = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Y Channel
-	t.setNum(yChannel());
-	s = QString("YChannel = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Run Order
-	t.setNum((int) runOrder());
-	s = QString("RunOrder = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Direction
-	t.setNum((int) direction());
-	s = QString("Direction = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Modulation Bus
-	t.setNum((int) modulationBus());
-	s = QString("ModulationBus = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// StartScene
-	t.setNum(startScene());
-	s = QString("StartScene = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// StartScene Enabled
-	if (startSceneEnabled())
-	{
-		s = QString("StartSceneEnabled = ") + Settings::trueValue() + QString("\n");
-	}
-	else
-	{
-		s = QString("StartSceneEnabled = ") + Settings::falseValue() + QString("\n");
-	}
-	file.writeBlock((const char*) s, s.length());
-
-	// Stop Scene
-	t.setNum(stopScene());
-	s = QString("StopScene = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// StopScene Enabled
-	if (stopSceneEnabled())
-	{
-		s = QString("StopSceneEnabled = ") + Settings::trueValue() + QString("\n");
-	}
-	else
-	{
-		s = QString("StopSceneEnabled = ") + Settings::falseValue() + QString("\n");
-	}
-	file.writeBlock((const char*) s, s.length());
-}
-
-/**
- * Parse function contents from a list of string tokens. This is
- * called by Doc when loading a workspace file.
- *
- * @param list List of string tokens (item,value,item,value,item...)
- */
-void EFX::createContents(QPtrList <QString> &list)
-{
-	QString t;
-
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.prev();
-			break;
-		}
-		else if (*s == QString("Algorithm"))
-		{
-			setAlgorithm(*(list.next()));
-		}
-		else if (*s == QString("Width"))
-		{
-			setWidth(list.next()->toInt());
-		}
-		else if (*s == QString("Height"))
-		{
-			setHeight(list.next()->toInt());
-		}
-		else if (*s == QString("Rotation"))
-		{
-			setRotation(list.next()->toInt());
-		}
-		else if (*s == QString("XOffset"))
-		{
-			setXOffset(list.next()->toInt());
-		}
-		else if (*s == QString("YOffset"))
-		{
-			setYOffset(list.next()->toInt());
-		}
-		else if (*s == QString("XFrequency"))
-		{
-			setXFrequency(list.next()->toInt());
-		}
-		else if (*s == QString("YFrequency"))
-		{
-			setYFrequency(list.next()->toInt());
-		}
-		else if (*s == QString("XPhase"))
-		{
-			setXPhase(list.next()->toInt());
-		}
-		else if (*s == QString("YPhase"))
-		{
-			setYPhase(list.next()->toInt());
-		}
-		else if (*s == QString("XChannel"))
-		{
-			setXChannel(list.next()->toInt());
-		}
-		else if (*s == QString("YChannel"))
-		{
-			setYChannel(list.next()->toInt());
-		}
-		else if (*s == QString("RunOrder"))
-		{
-			setRunOrder((RunOrder) list.next()->toInt());
-		}
-		else if (*s == QString("Direction"))
-		{
-			setDirection((Direction) list.next()->toInt());
-		}
-		else if (*s == QString("ModulationBus"))
-		{
-			setModulationBus((t_bus_id) list.next()->toInt());
-		}
-		else if (*s == QString("StartScene"))
-		{
-			setStartScene(list.next()->toInt());
-			setStartSceneEnabled(true); // Backwards compatibility
-		}
-		else if (*s == QString("StartSceneEnabled"))
-		{
-			if (*(list.next()) == Settings::trueValue())
-			{
-				setStartSceneEnabled(true);
-			}
-			else
-			{
-				setStartSceneEnabled(false);
-			}
-		}
-		else if (*s == QString("StopScene"))
-		{
-			setStopScene(list.next()->toInt());
-			setStopSceneEnabled(true); // Backwards compatibility
-		}
-		else if (*s == QString("StopSceneEnabled"))
-		{
-			if (*(list.next()) == Settings::trueValue())
-			{
-				setStopSceneEnabled(true);
-			}
-			else
-			{
-				setStopSceneEnabled(false);
-			}
-		}
-		else
-		{
-			// Unknown keyword, skip
-			list.next();
-		}
-	}
-}
-
-/**
  * Save the function's contents to an XML document
  *
  * @param doc The QDomDocument to save to
  */
-void EFX::saveXML(QDomDocument* doc)
+bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
 	QDomElement root;
 	QDomElement tag;
@@ -1022,16 +761,17 @@ void EFX::saveXML(QDomDocument* doc)
 	QString str;
 	int i = 0;
 
-	assert(doc);
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
 
 	/* Function tag */
 	root = doc->createElement(KXMLQLCFunction);
-	doc->appendChild(root);
+	wksp_root->appendChild(root);
 
 	root.setAttribute(KXMLQLCFunctionID, id());
 	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
 	root.setAttribute(KXMLQLCFunctionName, name());
-	root.setAttribute(KXMLQLCFunctionDevice, device());
+	root.setAttribute(KXMLQLCFunctionFixture, fixture());
 
 	/* Speed bus */
 	tag = doc->createElement(KXMLQLCBus);
@@ -1171,8 +911,182 @@ void EFX::saveXML(QDomDocument* doc)
 	str.setNum(yChannel());
 	text = doc->createTextNode(str);
 	subtag.appendChild(text);
+
+	return true;
 }
 
+
+bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	QString str;
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFunction)
+	{
+		qWarning("Function node not found!");
+		return false;
+	}
+
+	/* Load EFX contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCBus)
+		{
+			/* Bus */
+			str = tag.attribute(KXMLQLCBusRole);
+			Q_ASSERT(setBus(tag.text().toInt()) == true);
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXAlgorithm)
+		{
+			/* Algorithm */
+			setAlgorithm(tag.text());
+		}
+		else if (tag.tagName() == KXMLQLCFunctionDirection)
+		{
+			/* Direction */
+			setDirection(Function::stringToDirection(tag.text()));
+		}
+		else if (tag.tagName() == KXMLQLCFunctionRunOrder)
+		{
+			/* Run Order */
+			setRunOrder(Function::stringToRunOrder(tag.text()));
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXWidth)
+		{
+			/* Width */
+			setWidth(tag.text().toInt());
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXHeight)
+		{
+			/* Height */
+			setHeight(tag.text().toInt());
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXRotation)
+		{
+			/* Rotation */
+			setRotation(tag.text().toInt());
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXStartScene)
+		{
+			/* Start scene */
+			setStartScene(tag.text().toInt());
+
+			if (tag.attribute(KXMLQLCFunctionEnabled) ==
+			    Settings::trueValue())
+				setStartSceneEnabled(true);
+			else
+				setStartSceneEnabled(false);
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXStopScene)
+		{
+			/* Stop scene */
+			setStopScene(tag.text().toInt());
+
+			if (tag.attribute(KXMLQLCFunctionEnabled) ==
+			    Settings::trueValue())
+				setStopSceneEnabled(true);
+			else
+				setStopSceneEnabled(false);
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXAxis)
+		{
+			/* Axes */
+			loadXMLAxis(doc, &tag);
+		}
+		else
+		{
+			qDebug("Unknown EFX tag: %s",
+			       (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
+}
+
+bool EFX::loadXMLAxis(QDomDocument* doc, QDomElement* root)
+{
+	QString axis;
+	int offset = 0;
+	int frequency = 0;
+	int phase = 0;
+	t_channel channel = 0;
+
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFunctionEFXAxis)
+	{
+		qWarning("EFX axis node not found!");
+		return false;
+	}
+
+	/* Get the axis name */
+	axis = root->attribute(KXMLQLCFunctionName);
+
+	/* Load axis contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCFunctionEFXOffset)
+		{
+			offset = tag.text().toInt();
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXFrequency)
+		{
+			frequency = tag.text().toInt();
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXPhase)
+		{
+			phase = tag.text().toInt();
+		}
+		else if (tag.tagName() == KXMLQLCFunctionEFXChannel)
+		{
+			channel = tag.text().toInt();
+		}
+		else
+		{
+			qWarning("Unknown EFX axis tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	if (axis == KXMLQLCFunctionEFXY)
+	{
+		setYOffset(offset);
+		setYFrequency(frequency);
+		setYPhase(phase);
+		setYChannel(channel);
+	}
+	else if (axis == KXMLQLCFunctionEFXX)
+	{
+		setXOffset(offset);
+		setXFrequency(frequency);
+		setXPhase(phase);
+		setXChannel(channel);
+	}
+	else
+	{
+		qWarning("Unknown EFX axis: %s", (const char*) axis);
+	}
+	
+	return true;
+}
 
 /**
  * This is called by buses for each function when the
@@ -1207,6 +1121,8 @@ void EFX::busValueChanged(t_bus_id id, t_bus_value value)
  */
 void EFX::arm()
 {
+	Fixture* fxi = NULL;
+
 	/* Allocate space for channel data set to eventbuffer.
 	 * There are only two channels to set.
 	 */
@@ -1220,13 +1136,14 @@ void EFX::arm()
 		m_eventBuffer = new EventBuffer(2, KFrequency >> 1);
 
 	/* Set the run time address for channel data */
-	if (_app->doc()->device(m_deviceID))
+	fxi = _app->doc()->fixture(fixture());
+	if (fxi != NULL)
 	{
-		m_address = _app->doc()->device(m_deviceID)->universeAddress();
+		m_address = fxi->universeAddress();
 	}
 	else
 	{
-		qDebug("No device for EFX: " + Function::name());
+		qDebug("No fixture instance for EFX: " + Function::name());
 	}
 
 	m_stopped = false;

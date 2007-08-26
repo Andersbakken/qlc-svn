@@ -33,8 +33,6 @@
 #include "functionconsumer.h"
 #include "function.h"
 #include "eventbuffer.h"
-#include "scene.h"
-#include "sequence.h"
 #include "app.h"
 #include "doc.h"
 

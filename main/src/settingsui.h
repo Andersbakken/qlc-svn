@@ -26,27 +26,26 @@
 
 class SettingsUI : public UI_Settings
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  SettingsUI(QWidget* parent);
-  ~SettingsUI();
+	SettingsUI(QWidget* parent);
+	~SettingsUI();
 
-  void init();
+	void init();
 
  private slots:
-  void slotBackgroundBrowseClicked();
-  void slotStyleChanged(const QString &);
-  void slotConfigureOutputPluginClicked();
-  void slotConfigureInputPluginClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
+	void slotStyleChanged(const QString &);
+	void slotConfigureOutputPluginClicked();
+	void slotConfigureInputPluginClicked();
+	void slotOKClicked();
+	void slotCancelClicked();
 
  private:
-  void fillStyleCombo();
-  void fillOutputPluginCombo();
-  void fillInputPluginCombo();
-  void fillAdvancedSettingsList();
+	void fillStyleCombo();
+	void fillOutputPluginCombo();
+	void fillInputPluginCombo();
+	void fillAdvancedSettingsList();
 };
 
 #endif

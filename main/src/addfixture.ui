@@ -1,19 +1,19 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_NewDevice</class>
+<class>UI_AddFixture</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>UI_NewDevice</cstring>
+        <cstring>UI_AddFixture</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>494</width>
-            <height>520</height>
+            <width>603</width>
+            <height>478</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Add a new device to the workspace</string>
+        <string>Add fixture</string>
     </property>
     <vbox>
         <property name="name">
@@ -21,7 +21,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout11</cstring>
+                <cstring>layout12</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -68,7 +68,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout10</cstring>
+                        <cstring>layout11</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -79,7 +79,7 @@
                                 <cstring>groupBox1</cstring>
                             </property>
                             <property name="title">
-                                <string>Device Properties</string>
+                                <string>Fixture Properties</string>
                             </property>
                             <vbox>
                                 <property name="name">
@@ -105,6 +105,9 @@
                                             <property name="name">
                                                 <cstring>m_nameEdit</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
                                                     <hsizetype>4</hsizetype>
@@ -120,7 +123,39 @@
                                                 </size>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>Give the device a descriptive name</string>
+                                                <string>The fixture's friendly name</string>
+                                            </property>
+                                        </widget>
+                                    </hbox>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout10</cstring>
+                                    </property>
+                                    <hbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>m_modeLabel</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Mode</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QComboBox">
+                                            <property name="name">
+                                                <cstring>m_modeCombo</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>150</width>
+                                                    <height>0</height>
+                                                </size>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -145,6 +180,9 @@
                                             <property name="name">
                                                 <cstring>m_addressSpin</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
                                                     <hsizetype>4</hsizetype>
@@ -163,7 +201,7 @@
                                                 <number>1</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>The first device's DMX address</string>
+                                                <string>The DMX address of the first fixture</string>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -188,6 +226,9 @@
                                             <property name="name">
                                                 <cstring>m_universeSpin</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
                                                     <hsizetype>4</hsizetype>
@@ -200,13 +241,13 @@
                                                 <bool>true</bool>
                                             </property>
                                             <property name="maxValue">
-                                                <number>128</number>
+                                                <number>8</number>
                                             </property>
                                             <property name="minValue">
                                                 <number>1</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>The device's DMX universe</string>
+                                                <string>The fixture's DMX universe</string>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -266,19 +307,36 @@
                                                 <number>0</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>Number of channels used by the device</string>
+                                                <string>Number of channels used by the fixture</string>
                                             </property>
                                         </widget>
                                     </hbox>
                                 </widget>
                             </vbox>
                         </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer3_2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>31</height>
+                                </size>
+                            </property>
+                        </spacer>
                         <widget class="QGroupBox">
                             <property name="name">
                                 <cstring>groupBox2</cstring>
                             </property>
                             <property name="title">
-                                <string>Multiple Devices</string>
+                                <string>Multiple Fixtures</string>
                             </property>
                             <vbox>
                                 <property name="name">
@@ -304,6 +362,9 @@
                                             <property name="name">
                                                 <cstring>m_multipleNumberSpin</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
                                                     <hsizetype>4</hsizetype>
@@ -322,7 +383,7 @@
                                                 <number>1</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>Number of devices to add</string>
+                                                <string>Number of fixtures to add</string>
                                             </property>
                                         </widget>
                                     </hbox>
@@ -347,6 +408,9 @@
                                             <property name="name">
                                                 <cstring>m_addressGapSpin</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
                                                     <hsizetype>4</hsizetype>
@@ -362,31 +426,12 @@
                                                 <number>512</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>Leave a gap between each device's address space</string>
+                                                <string>Leave a gap between each fixture's address space</string>
                                             </property>
                                         </widget>
                                     </hbox>
                                 </widget>
                             </vbox>
-                        </widget>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>m_treeOpenCheckBox</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>4</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="text">
-                                <string>Keep folders open</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Keep all devices visible by opening all folders</string>
-                            </property>
                         </widget>
                         <spacer>
                             <property name="name">
@@ -401,7 +446,7 @@
                             <property name="sizeHint">
                                 <size>
                                     <width>20</width>
-                                    <height>150</height>
+                                    <height>100</height>
                                 </size>
                             </property>
                         </spacer>
@@ -478,38 +523,38 @@
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
-        <receiver>UI_NewDevice</receiver>
+        <receiver>UI_AddFixture</receiver>
         <slot>slotOKClicked()</slot>
     </connection>
     <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
-        <receiver>UI_NewDevice</receiver>
+        <receiver>UI_AddFixture</receiver>
         <slot>slotCancelClicked()</slot>
     </connection>
     <connection>
         <sender>m_tree</sender>
         <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>UI_NewDevice</receiver>
+        <receiver>UI_AddFixture</receiver>
         <slot>slotSelectionChanged(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>m_nameEdit</sender>
         <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_NewDevice</receiver>
+        <receiver>UI_AddFixture</receiver>
         <slot>slotNameChanged(const QString&amp;)</slot>
     </connection>
     <connection>
         <sender>m_tree</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
-        <receiver>UI_NewDevice</receiver>
+        <receiver>UI_AddFixture</receiver>
         <slot>slotTreeDoubleClicked(QListViewItem*)</slot>
     </connection>
     <connection>
-        <sender>m_treeOpenCheckBox</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_NewDevice</receiver>
-        <slot>slotTreeOpenCheckBoxClicked()</slot>
+        <sender>m_modeCombo</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>UI_AddFixture</receiver>
+        <slot>slotModeActivated(const QString&amp;)</slot>
     </connection>
 </connections>
 <slots>
@@ -518,7 +563,7 @@
     <slot>slotSelectionChanged(QListViewItem*)</slot>
     <slot>slotNameChanged(const QString&amp;)</slot>
     <slot>slotTreeDoubleClicked(QListViewItem*)</slot>
-    <slot>slotTreeOpenCheckBoxClicked()</slot>
+    <slot>slotModeActivated(const QString&amp;)</slot>
     <slot>slotDIPClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>

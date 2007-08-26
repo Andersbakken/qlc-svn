@@ -2,7 +2,7 @@
   Q Light Controller
   editscenevalue.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,52 +26,53 @@
 #include <qptrlist.h>
 #include <math.h>
 
-#include "common/logicalchannel.h"
-#include "common/capability.h"
+#include "common/qlcchannel.h"
+#include "common/qlccapability.h"
 #include "editscenevalue.h"
 
-EditSceneValue::EditSceneValue(QWidget* parent, LogicalChannel* ch,
+EditSceneValue::EditSceneValue(QWidget* parent, QLCChannel* ch,
 			       SceneValue &currentValue)
-  : UI_EditSceneValue(parent, "", true)
+	: UI_EditSceneValue(parent, "Edit Scene Value", true)
 {
-  ASSERT(ch != NULL);
+	Q_ASSERT(ch != NULL);
 
-  m_channel = ch;
-  m_updateValue = true;
+	m_channel = ch;
+	m_updateValue = true;
 
-  for (Capability* c = m_channel->capabilities()->first(); 
-       c != NULL; c = m_channel->capabilities()->next())
-    {
-      m_presetCombo->insertItem(c->name());
-    }
+	QPtrListIterator <QLCCapability> it(*m_channel->capabilities());
+	while ( *it != NULL )
+	{
+		m_presetCombo->insertItem((*it)->name());
+		++it;
+	}
 
-  m_typeCombo->insertItem("Fade");
-  m_typeCombo->insertItem("Set");
-  m_typeCombo->insertItem("NoSet");
+	m_typeCombo->insertItem("Fade");
+	m_typeCombo->insertItem("Set");
+	m_typeCombo->insertItem("NoSet");
 
-  if (currentValue.type == Scene::Fade)
-    {
-      m_typeCombo->setCurrentItem(0);
-      m_type = QString("Fade");
-    }
-  else if (currentValue.type == Scene::Set)
-    {
-      m_typeCombo->setCurrentItem(1);
-      m_type = QString("Set");
-    }
-  else
-    {
-      m_typeCombo->setCurrentItem(2);
-      m_type = QString("NoSet");
-    }
+	if (currentValue.type == Scene::Fade)
+	{
+		m_typeCombo->setCurrentItem(0);
+		m_type = QString("Fade");
+	}
+	else if (currentValue.type == Scene::Set)
+	{
+		m_typeCombo->setCurrentItem(1);
+		m_type = QString("Set");
+	}
+	else
+	{
+		m_typeCombo->setCurrentItem(2);
+		m_type = QString("NoSet");
+	}
 
-  connect(m_valueSpin, SIGNAL(valueChanged(int)), 
-	  this, SLOT(slotValueChanged(int)));
-  connect(m_presetCombo, SIGNAL(activated(const QString &)), 
-	  this, SLOT(slotPresetComboActivated(const QString &)));
+	connect(m_valueSpin, SIGNAL(valueChanged(int)), 
+		this, SLOT(slotValueChanged(int)));
+	connect(m_presetCombo, SIGNAL(activated(const QString &)), 
+		this, SLOT(slotPresetComboActivated(const QString &)));
 
-  m_valueSpin->setValue(currentValue.value);
-  m_value = currentValue.value;
+	m_valueSpin->setValue(currentValue.value);
+	m_value = currentValue.value;
 }
 
 EditSceneValue::~EditSceneValue()
@@ -80,50 +81,50 @@ EditSceneValue::~EditSceneValue()
 
 void EditSceneValue::slotValueChanged(int value)
 {
-  if (m_updateValue == false)
-    {
-      return;
-    }
-
-  m_updateValue = false;
-
-  Capability* c = m_channel->searchCapability(value);
-  ASSERT(c != NULL);
-
-  for (int i = 0; i < m_presetCombo->count(); i++)
-    {
-      if (m_presetCombo->text(i) == c->name())
+	if (m_updateValue == false)
 	{
-	  m_presetCombo->setCurrentItem(i);
-	  break;
+		return;
 	}
-    }
 
-  m_value = value;
+	m_updateValue = false;
 
-  m_updateValue = true;
+	QLCCapability* c = m_channel->searchCapability(value);
+	ASSERT(c != NULL);
+
+	for (int i = 0; i < m_presetCombo->count(); i++)
+	{
+		if (m_presetCombo->text(i) == c->name())
+		{
+			m_presetCombo->setCurrentItem(i);
+			break;
+		}
+	}
+
+	m_value = value;
+
+	m_updateValue = true;
 }
 
 void EditSceneValue::slotPresetComboActivated(const QString &text)
 {
-  if (m_updateValue == false)
-    {
-      return;
-    }
+	if (m_updateValue == false)
+	{
+		return;
+	}
 
-  m_updateValue = false;
+	m_updateValue = false;
 
-  Capability* c = m_channel->searchCapability(text);
-  ASSERT(c != NULL);
+	QLCCapability* c = m_channel->searchCapability(text);
+	Q_ASSERT(c != NULL);
 
-  int value = (int) floor((c->lo() + c->hi()) / 2);
-  m_valueSpin->setValue(value);
-  m_value = value;
+	int value = (int) floor((c->min() + c->max()) / 2);
+	m_valueSpin->setValue(value);
+	m_value = value;
 
-  m_updateValue = true;
+	m_updateValue = true;
 }
 
 void EditSceneValue::slotTypeActivated(const QString &text)
 {
-  m_type = text;
+	m_type = text;
 }

@@ -33,7 +33,7 @@
 #include "common/types.h"
 
 #define KXMLQLCFunction "Function"
-#define KXMLQLCFunctionDevice "Device"
+#define KXMLQLCFunctionFixture "Fixture"
 #define KXMLQLCFunctionName "Name"
 #define KXMLQLCFunctionID "ID"
 #define KXMLQLCFunctionType "Type"
@@ -41,6 +41,7 @@
 #define KXMLQLCFunctionChannels "Channels"
 
 #define KXMLQLCFunctionValue "Value"
+#define KXMLQLCFunctionValueType "Type"
 #define KXMLQLCFunctionChannel "Channel"
 
 #define KXMLQLCFunctionStep "Step"
@@ -53,7 +54,7 @@
 
 const int KFunctionStopEvent        ( QEvent::User + 1 );
 
-class Device;
+class Fixture;
 class EventBuffer;
 class QFile;
 class VirtualController;
@@ -134,8 +135,14 @@ class Function : public QThread
 	// Convert a RunOrder to string
 	static QString runOrderToString(Function::RunOrder);
 
+	// Convert a string to RunOrder
+	static Function::RunOrder stringToRunOrder(QString str);
+
 	// Convert a Direction to string
 	static QString directionToString(Function::Direction);
+
+	// Convert a string to Direction
+	static Function::Direction stringToDirection(QString str);
 
 	// Convert a type to string
 	static QString typeToString(Function::Type);
@@ -143,8 +150,8 @@ class Function : public QThread
 	// Convert a string to type enum
 	static Type stringToType(QString);
 	
-	// Create one function from list
-	static Function* create(QPtrList <QString> &list);
+	// Get a pixmap representing the function's type to be used in lists etc.
+	virtual QPixmap pixmap();
 	
 	// Return the name of this function
 	virtual QString name() { return m_name; }
@@ -152,11 +159,11 @@ class Function : public QThread
 	// Set a name for this function
 	virtual bool setName(QString name);
 	
-	// Return the device that this function is associated to
-	virtual t_device_id device() { return m_deviceID; }
+	// Return the fixture instance that this function is associated to
+	virtual t_fixture_id fixture() { return m_fixture; }
 	
-	// Set the device that this function is associated to
-	virtual bool setDevice(t_device_id);
+	// Set the fixture instance that this function is associated to
+	virtual bool setFixture(t_fixture_id id);
 	
 	// Get the bus used for speed setting
 	t_bus_id busID() const { return m_busID; }
@@ -176,17 +183,14 @@ class Function : public QThread
 	// for setting the channel count.
 	virtual t_channel channels() const { return m_channels; }
 	
-	// Save this function to a file
-	virtual void saveToFile(QFile &file) = 0;
-	
-	// Read this function's characteristics from a string list
-	virtual void createContents(QPtrList <QString> &list) = 0;
-
 	// Save this function to an XML document
-	virtual void saveXML(QDomDocument* doc);
+	virtual bool saveXML(QDomDocument* doc, QDomElement* wksp_root) = 0;
 
 	// Read this function's contents from an XML document
-	virtual void loadXML(QDomDocument* doc);
+	virtual bool loadXML(QDomDocument* doc, QDomElement* root) = 0;
+
+	// Load any function from an XML tag
+	static Function* loader(QDomDocument* doc, QDomElement* root);
 	
 	// When the mode is changed to Operate, this is called to make all mem
 	// allocations so they are not done during run-time (and thus creating
@@ -224,15 +228,12 @@ class Function : public QThread
 	// Return the eventbuffer object. Only for FunctionFonsumer's use.
 	EventBuffer* eventBuffer() const { return m_eventBuffer; }
 	
-	// Get a pixmap representing the function's type to be used in lists etc.
-	virtual QPixmap pixmap();
-	
  protected:
 	// Semi-permanent function data
 	QString m_name;
 	Type m_type;
 	t_function_id m_id;
-	t_device_id m_deviceID;
+	t_fixture_id m_fixture;
 	t_bus_id m_busID;
 	t_channel m_channels;
 	

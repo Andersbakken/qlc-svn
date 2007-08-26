@@ -2,7 +2,7 @@
   Q Light Controller
   qlcfixture.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLC_FIXTURE_H
-#define QLC_FIXTURE_H
+#ifndef QLC_FIXTURE_DEF_H
+#define QLC_FIXTURE_DEF_H
 
 #include <qobject.h>
 #include <qptrlist.h>
@@ -29,13 +29,13 @@
 #include "types.h"
 
 // Fixture document type
-#define KXMLQLCFixtureDocument "Fixture"
+#define KXMLQLCFixtureDefDocument "FixtureDefinition"
 
 // Fixture definition XML tags
-#define KXMLQLCFixture "Fixture"
-#define KXMLQLCFixtureManufacturer "Manufacturer"
-#define KXMLQLCFixtureModel "Model"
-#define KXMLQLCFixtureType "Type"
+#define KXMLQLCFixtureDef "FixtureDefinition"
+#define KXMLQLCFixtureDefManufacturer "Manufacturer"
+#define KXMLQLCFixtureDefModel "Model"
+#define KXMLQLCFixtureDefType "Type"
 
 // Fixture instance XML tags
 #define KXMLQLCFixtureName "Name"
@@ -46,29 +46,29 @@
 class QDomDocument;
 class QLCChannel;
 class QLCFixtureMode;
-class QLCFixture;
+class QLCFixtureDef;
 class DeviceClass;
 
-class QLCFixture
+class QLCFixtureDef
 {
  public:
 	/** Default constructor */
-	QLCFixture();
+	QLCFixtureDef();
 
 	/** Copy constructor */
-	QLCFixture(QLCFixture *dc);
+	QLCFixtureDef(QLCFixtureDef *dc);
 
 	/** Create contents from an XML file */
-	QLCFixture(const QString &fileName);
+	QLCFixtureDef(const QString &fileName);
 
 	/** Create contents from an old DeviceClass */
-	QLCFixture(DeviceClass* dc);
+	QLCFixtureDef(DeviceClass* dc);
  
 	/** Destructor */
-	~QLCFixture();
-	
+	~QLCFixtureDef();
+
 	/** Assignment operator */
-	QLCFixture& operator=(QLCFixture& fixture);
+	QLCFixtureDef& operator=(QLCFixtureDef& fixture);
  
 	/** Get the fixture's name string (=="manufacturer model") */
 	QString name() { return m_manufacturer + QString(" ") + m_model; }
@@ -98,7 +98,7 @@ class QLCFixture
 	bool removeChannel(QLCChannel* channel);
 
 	/** Search for a channel by its name */
-	QLCChannel* searchChannel(const QString &name);
+	QLCChannel* channel(const QString &name);
 	
 	/** Get all channels */
 	QPtrList <QLCChannel> *channels() { return &m_channels; }
@@ -109,8 +109,8 @@ class QLCFixture
 	/** Remove a certain mode from this fixture */
 	bool removeMode(QLCFixtureMode* mode);
 
-	/** Search for a certain mode by its name */
-	QLCFixtureMode* searchMode(const QString& name);
+	/** Get a certain mode by its name */
+	QLCFixtureMode* mode(const QString& name);
 	
 	/** Get all modes */
 	QPtrList <QLCFixtureMode> *modes() { return &m_modes; }

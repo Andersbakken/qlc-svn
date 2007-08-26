@@ -33,20 +33,20 @@
 #define KXMLQLCFixtureModeChannel       "Channel"
 #define KXMLQLCFixtureModeChannelNumber "Number"
 
-class QLCFixture;
+class QLCFixtureDef;
 class QLCFixtureMode;
 
 class QLCFixtureMode
 {
  public:
 	/** Default constructor */
-	QLCFixtureMode(QLCFixture* fixture);
+	QLCFixtureMode(QLCFixtureDef* fixtureDef);
 
 	/** Copy constructor */
 	QLCFixtureMode(QLCFixtureMode* mode);
 
 	/** Create contents from an XML tag */
-	QLCFixtureMode(QLCFixture* fixture, QDomElement* tag);
+	QLCFixtureMode(QLCFixtureDef* fixtureDef, QDomElement* tag);
 
 	/** Destructor */
 	~QLCFixtureMode();
@@ -55,7 +55,7 @@ class QLCFixtureMode
 	QLCFixtureMode& operator=(QLCFixtureMode& mode);
  
 	/** Get the fixture that this mode is associated to */
-	QLCFixture* fixture() const { return m_fixture; }
+	QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
  
 	void setName(const QString &name) { m_name = name; }
 	QString name() const { return m_name; }
@@ -91,7 +91,7 @@ class QLCFixtureMode
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 		
  private:
-	QLCFixture* m_fixture;
+	QLCFixtureDef* m_fixtureDef;
 	QString m_name;
 	QLCPhysical m_physical;
  

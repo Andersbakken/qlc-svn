@@ -2,7 +2,7 @@
   Q Light Controller
   vcdocksliderproperties.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -28,12 +28,12 @@
 #include <qspinbox.h>
 #include <assert.h>
 
-#include "common/deviceclass.h"
-#include "common/logicalchannel.h"
+#include "common/qlcfixturedef.h"
+#include "common/qlcchannel.h"
 #include "common/types.h"
 #include "vcdocksliderproperties.h"
 #include "vcdockslider.h"
-#include "device.h"
+#include "fixture.h"
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
@@ -42,76 +42,75 @@
 
 extern App* _app;
 
-const int KColumnDevice         ( 0 );
-const int KColumnDeviceChannel  ( 1 );
+const int KColumnFixture         ( 0 );
+const int KColumnFixtureChannel  ( 1 );
 const int KColumnDMXChannel     ( 2 );
 
-VCDockSliderProperties::VCDockSliderProperties(VCDockSlider* parent,
-					       const char* name)
-  : UI_VCDockSliderProperties(_app, name, true)
+VCDockSliderProperties::VCDockSliderProperties(VCDockSlider* parent)
+	: UI_VCDockSliderProperties(_app, "Slider Properties", true)
 {
-  assert(parent);
-  m_slider = parent;
-  m_sliderKeyBind = new SliderKeyBind(parent->sliderKeyBind());
+	assert(parent);
+	m_slider = parent;
+	m_sliderKeyBind = new SliderKeyBind(parent->sliderKeyBind());
 }
 
 VCDockSliderProperties::~VCDockSliderProperties()
 {
-  delete m_sliderKeyBind;
+	delete m_sliderKeyBind;
 }
 
 void VCDockSliderProperties::init()
 {
-  //
-  // Fill elements
-  //
-  fillBusCombo();
-  fillChannelList();
+	//
+	// Fill elements
+	//
+	fillBusCombo();
+	fillChannelList();
 
-  //
-  // Bus stuff
-  //
-  t_bus_value buslo, bushi;
-  m_slider->busRange(buslo, bushi);
-  m_lowBusValueSpin->setValue(buslo);
-  m_highBusValueSpin->setValue(bushi);
+	//
+	// Bus stuff
+	//
+	t_bus_value buslo, bushi;
+	m_slider->busRange(buslo, bushi);
+	m_lowBusValueSpin->setValue(buslo);
+	m_highBusValueSpin->setValue(bushi);
 
-  //
-  // Level stuff
-  //
-  t_value levello, levelhi;
-  m_slider->levelRange(levello, levelhi);
-  m_lowChannelValueSpin->setValue(levello);
-  m_highChannelValueSpin->setValue(levelhi);
+	//
+	// Level stuff
+	//
+	t_value levello, levelhi;
+	m_slider->levelRange(levello, levelhi);
+	m_lowChannelValueSpin->setValue(levello);
+	m_highChannelValueSpin->setValue(levelhi);
 
-  //
-  // Mode
-  //
-  m_behaviourGroup->setButton(m_slider->mode());
-  slotBehaviourSelected(m_slider->mode());
+	//
+	// Mode
+	//
+	m_behaviourGroup->setButton(m_slider->mode());
+	slotBehaviourSelected(m_slider->mode());
 
-  //
-  // Slider key bind
-  //
-  QString keyStringUp;
-  QString keyStringDown;
+	//
+	// Slider key bind
+	//
+	QString keyStringUp;
+	QString keyStringDown;
 
-  m_sliderKeyBind->keyStringUp(keyStringUp);
-  m_sliderKeyBind->keyStringDown(keyStringDown);
-  m_keyUpEdit->setText(keyStringUp);
-  m_keyDownEdit->setText(keyStringDown);
+	m_sliderKeyBind->keyStringUp(keyStringUp);
+	m_sliderKeyBind->keyStringDown(keyStringDown);
+	m_keyUpEdit->setText(keyStringUp);
+	m_keyDownEdit->setText(keyStringDown);
 
 
-  //
-  // Midi stuff
-  //
-  m_channelSpinBox->setValue(m_slider->channel());
+	//
+	// Midi stuff
+	//
+	m_channelSpinBox->setValue(m_slider->channel());
 
-  //
-  // Pixmaps
-  //
-  m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
-  m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
+	//
+	// Pixmaps
+	//
+	m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
+	m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
 
 }
 
@@ -121,21 +120,21 @@ void VCDockSliderProperties::init()
 //
 void VCDockSliderProperties::fillBusCombo()
 {
-  QString s;
+	QString s;
 
-  m_busCombo->clear();
+	m_busCombo->clear();
 
-  for (t_bus_id i = 0; i < KBusCount; i++)
-    {
-      s.sprintf("%.2d:", i+1);
-      s += Bus::name(i);
-      m_busCombo->insertItem(s);
-    }
+	for (t_bus_id i = 0; i < KBusCount; i++)
+	{
+		s.sprintf("%.2d:", i+1);
+		s += Bus::name(i);
+		m_busCombo->insertItem(s);
+	}
 
-  //
-  // Select the bus that has been assigned to the slider
-  //
-  m_busCombo->setCurrentItem(m_slider->busID());
+	//
+	// Select the bus that has been assigned to the slider
+	//
+	m_busCombo->setCurrentItem(m_slider->busID());
 }
 
 
@@ -144,60 +143,52 @@ void VCDockSliderProperties::fillBusCombo()
 //
 void VCDockSliderProperties::fillChannelList()
 {
-  QString s;
-  t_channel ch;
-  t_channel channels;
-  QCheckListItem* item = NULL;
+	QCheckListItem* item = NULL;
+	Fixture* fxi = NULL;
+	t_channel ch = 0;
+	QString s;
 
-  //
-  // Fill the list view with available channels. Put only
-  // those channels that are occupied by existing devices.
-  //
-  for (t_device_id i = 0; i < KDeviceArraySize; i++)
-    {
-      Device* d = _app->doc()->device(i);
-      if (!d)
+	//
+	// Fill the list view with available channels. Put only
+	// those channels that are occupied by existing fixtures.
+	//
+	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 	{
-	  continue;
+		fxi = _app->doc()->fixture(i);
+		if (fxi == NULL)
+			continue;
+
+		for (ch = 0; ch < fxi->channels(); ch++)
+		{
+			// Fixture name
+			item = new QCheckListItem(m_channelList, fxi->name(),
+						  QCheckListItem::CheckBox);
+			
+			// Fixture channel
+			s.sprintf("%.3d:" + fxi->channel(ch)->name(), ch + 1);
+			item->setText(KColumnFixtureChannel, s);
+			
+			// DMX Channel & Universe
+			s.sprintf("%d", fxi->universeAddress() + ch);
+			item->setText(KColumnDMXChannel, s);
+		}
 	}
-      else
+
+	//
+	// Check those channels that are found from slider's channel list
+	//
+	QValueList <t_channel>::iterator it;
+	for (it = m_slider->channels()->begin();
+	     it != m_slider->channels()->end(); ++it)
 	{
-	  channels = (t_channel) d->deviceClass()->channels()->count();
-
-	  for (ch = 0; ch < channels; ch++)
-	    {
-		// DMX Channel
-		// Device name
-		item = new QCheckListItem(m_channelList, d->name(),
-		    QCheckListItem::CheckBox);
-
-		// Device channel
-		s.sprintf("%.3d:" +
-		   d->deviceClass()->channels()->at(ch)->name(), ch + 1);
-		item->setText(KColumnDeviceChannel, s);
-
-		// DMX & Universe Channel
-		s.sprintf("%d", d->universeAddress() + ch);
-		item->setText(KColumnDMXChannel, s);
-	    }
+		s.sprintf("%d", (*it));
+		item = static_cast<QCheckListItem*> (
+			m_channelList->findItem(s, KColumnDMXChannel));
+		if (item != NULL)
+		{
+			item->setOn(true);
+		}
 	}
-    }
-
-  //
-  // Check those channels that are found from slider's channel list
-  //
-  QValueList <t_channel>::iterator it;
-  for (it = m_slider->channels()->begin();
-       it != m_slider->channels()->end(); ++it)
-    {
-      s.sprintf("%d", (*it));
-      item = static_cast<QCheckListItem*> (m_channelList
-				   ->findItem(s, KColumnDMXChannel));
-      if (item)
-	{
-	  item->setOn(true);
-	}
-    }
 }
 
 
@@ -206,7 +197,7 @@ void VCDockSliderProperties::fillChannelList()
 //
 void VCDockSliderProperties::slotBehaviourSelected(int id)
 {
-  switch (id)
+	switch (id)
 	{
 	default:
 	case VCDockSlider::Speed:
@@ -216,12 +207,12 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
 		m_allChannels->setEnabled(false);
 		m_invertChannels->setEnabled(false);
 		m_clearChannels->setEnabled(false);
-		m_deviceChannels->setEnabled(false);
+		m_fixtureChannels->setEnabled(false);
 		m_roleChannels->setEnabled(false);
 
 		m_lowChannelValueSpin->setEnabled(false);
 		m_highChannelValueSpin->setEnabled(false);
-	break;
+		break;
 
 	case VCDockSlider::Level:
 		m_busGroup->setEnabled(false);
@@ -230,12 +221,12 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
 		m_allChannels->setEnabled(true);
 		m_invertChannels->setEnabled(true);
 		m_clearChannels->setEnabled(true);
-		m_deviceChannels->setEnabled(true);
+		m_fixtureChannels->setEnabled(true);
 		m_roleChannels->setEnabled(true);
 
 		m_lowChannelValueSpin->setEnabled(true);
 		m_highChannelValueSpin->setEnabled(true);
-	break;
+		break;
 
 	case VCDockSlider::Submaster:
 		m_busGroup->setEnabled(false);
@@ -244,15 +235,15 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
 		m_allChannels->setEnabled(true);
 		m_invertChannels->setEnabled(true);
 		m_clearChannels->setEnabled(true);
-		m_deviceChannels->setEnabled(true);
+		m_fixtureChannels->setEnabled(true);
 		m_roleChannels->setEnabled(true);
 
 		m_lowChannelValueSpin->setEnabled(false);
 		m_highChannelValueSpin->setEnabled(false);
-	break;
-    }
+		break;
+	}
 
-  m_mode = static_cast<VCDockSlider::Mode> (id);
+	m_mode = static_cast<VCDockSlider::Mode> (id);
 }
 
 /**
@@ -277,7 +268,7 @@ void VCDockSliderProperties::slotInvertChannelsClicked()
 	while (it.current())
 	{
 		static_cast<QCheckListItem*> (it.current())->setOn(
-		    !(static_cast<QCheckListItem*> (it.current())->isOn()));
+			!(static_cast<QCheckListItem*> (it.current())->isOn()));
 		it++;
 	}
 }
@@ -296,9 +287,9 @@ void VCDockSliderProperties::slotClearChannelsClicked()
 }
 
 /**
- * Select all channels from the selected device
+ * Select all channels from the selected fixture
  */
-void VCDockSliderProperties::slotDeviceChannelsClicked()
+void VCDockSliderProperties::slotFixtureChannelsClicked()
 {
 	QCheckListItem* item;
 	QListViewItemIterator it(m_channelList->currentItem());
@@ -306,10 +297,10 @@ void VCDockSliderProperties::slotDeviceChannelsClicked()
 
 	if (it.current())
 	{
-		name = it.current()->text(KColumnDevice);
+		name = it.current()->text(KColumnFixture);
 	}
 
-	while (it.current() && it.current()->text(KColumnDevice) == name)
+	while (it.current() && it.current()->text(KColumnFixture) == name)
 	{
 		item = static_cast<QCheckListItem*> (it.current());
 		item->setOn(!item->isOn());
@@ -329,7 +320,7 @@ void VCDockSliderProperties::slotRoleChannelsClicked()
 
 	if (it.current())
 	{
-		role = it.current()->text(KColumnDeviceChannel);
+		role = it.current()->text(KColumnFixtureChannel);
 		role = role.right(role.length() - role.find(':', 0, FALSE) - 1);
 		qDebug(role);
 	}
@@ -337,7 +328,7 @@ void VCDockSliderProperties::slotRoleChannelsClicked()
 	while (it.current())
 	{
 		item = static_cast<QCheckListItem*> (it.current());
-		itrole = item->text(KColumnDeviceChannel);
+		itrole = item->text(KColumnFixtureChannel);
 		itrole = itrole.right(itrole.length() - itrole.find(':', 0, FALSE) - 1);
 
 		if (itrole == role)
@@ -351,44 +342,44 @@ void VCDockSliderProperties::slotRoleChannelsClicked()
 
 void VCDockSliderProperties::slotAttachKeyClicked()
 {
-  QString keyStringUp;
-  QString keyStringDown;
+	QString keyStringUp;
+	QString keyStringDown;
 
-  AssignSliderHotKey* a = new AssignSliderHotKey(this);
+	AssignSliderHotKey* a = new AssignSliderHotKey(this);
 
-  if (a->exec() == QDialog::Accepted)
-    {
-      assert(a->sliderKeyBind());
+	if (a->exec() == QDialog::Accepted)
+	{
+		assert(a->sliderKeyBind());
 
-      if (m_sliderKeyBind)
-        {
-	  delete m_sliderKeyBind;
+		if (m_sliderKeyBind)
+		{
+			delete m_sliderKeyBind;
+		}
+
+		m_sliderKeyBind = new SliderKeyBind(a->sliderKeyBind());
+		m_sliderKeyBind->keyStringUp(keyStringUp);
+		m_keyUpEdit->setText(keyStringUp);
+		m_sliderKeyBind->keyStringDown(keyStringDown);
+		m_keyDownEdit->setText(keyStringDown);
 	}
 
-      m_sliderKeyBind = new SliderKeyBind(a->sliderKeyBind());
-      m_sliderKeyBind->keyStringUp(keyStringUp);
-      m_keyUpEdit->setText(keyStringUp);
-      m_sliderKeyBind->keyStringDown(keyStringDown);
-      m_keyDownEdit->setText(keyStringDown);
-    }
-
-  delete a;
+	delete a;
 }
 
 void VCDockSliderProperties::slotDetachKeyClicked()
 {
-  QString keyStringUp;
-  QString keyStringDown;
+	QString keyStringUp;
+	QString keyStringDown;
 
-  m_sliderKeyBind->setKeyUp(Key_unknown);
-  m_sliderKeyBind->setModUp(NoButton);
-  m_sliderKeyBind->setKeyDown(Key_unknown);
-  m_sliderKeyBind->setModDown(NoButton);
+	m_sliderKeyBind->setKeyUp(Key_unknown);
+	m_sliderKeyBind->setModUp(NoButton);
+	m_sliderKeyBind->setKeyDown(Key_unknown);
+	m_sliderKeyBind->setModDown(NoButton);
 
-  m_sliderKeyBind->keyStringUp(keyStringUp);
-  m_keyUpEdit->setText(keyStringUp);
-  m_sliderKeyBind->keyStringDown(keyStringDown);
-  m_keyDownEdit->setText(keyStringDown);
+	m_sliderKeyBind->keyStringUp(keyStringUp);
+	m_keyUpEdit->setText(keyStringUp);
+	m_sliderKeyBind->keyStringDown(keyStringDown);
+	m_keyDownEdit->setText(keyStringDown);
 }
 
 //
@@ -396,66 +387,66 @@ void VCDockSliderProperties::slotDetachKeyClicked()
 //
 void VCDockSliderProperties::slotOKClicked()
 {
-  //
-  // Set the keyBinds
-  //
-  m_slider->setSliderKeyBind(m_sliderKeyBind);
-  //
-  // Resign previous submasters, if any
-  //
-  if (m_slider->mode() == VCDockSlider::Submaster)
-    {
-      m_slider->assignSubmasters(false);
-    }
+	//
+	// Set the keyBinds
+	//
+	m_slider->setSliderKeyBind(m_sliderKeyBind);
+	//
+	// Resign previous submasters, if any
+	//
+	if (m_slider->mode() == VCDockSlider::Submaster)
+	{
+		m_slider->assignSubmasters(false);
+	}
 
-  //
-  // Check new mode
-  //
-  if (m_mode == VCDockSlider::Speed)
-    {
-      m_slider->setBusRange(m_lowBusValueSpin->value(),
-			    m_highBusValueSpin->value());
-      m_slider->setBusID(m_busCombo->currentItem());
-    }
-  else if (m_mode == VCDockSlider::Level)
-    {
-      //
-      // Extract selected channels from channel list
-      //
-     extractChannels();
+	//
+	// Check new mode
+	//
+	if (m_mode == VCDockSlider::Speed)
+	{
+		m_slider->setBusRange(m_lowBusValueSpin->value(),
+				      m_highBusValueSpin->value());
+		m_slider->setBusID(m_busCombo->currentItem());
+	}
+	else if (m_mode == VCDockSlider::Level)
+	{
+		//
+		// Extract selected channels from channel list
+		//
+		extractChannels();
 
-     //
-     // Set range
-     //
-     m_slider->setLevelRange(m_lowChannelValueSpin->value(),
-			     m_highChannelValueSpin->value());
-    }
-  else if (m_mode == VCDockSlider::Submaster)
-    {
-      //
-      // Extract selected channels from channel list
-      //
-      extractChannels();
+		//
+		// Set range
+		//
+		m_slider->setLevelRange(m_lowChannelValueSpin->value(),
+					m_highChannelValueSpin->value());
+	}
+	else if (m_mode == VCDockSlider::Submaster)
+	{
+		//
+		// Extract selected channels from channel list
+		//
+		extractChannels();
 
-      //
-      // Assign submasters
-      //
-      m_slider->assignSubmasters(true);
-    }
+		//
+		// Assign submasters
+		//
+		m_slider->assignSubmasters(true);
+	}
 
-  //
-  // Set the actual mode last
-  //
-  m_slider->setMode(m_mode);
+	//
+	// Set the actual mode last
+	//
+	m_slider->setMode(m_mode);
 
-  //
-  // Reset all non-assigned submaster channels back to 100%
-  //
-  _app->resetSubmasters();
+	//
+	// Reset all non-assigned submaster channels back to 100%
+	//
+	_app->resetSubmasters();
 
-  m_slider->setChannel(m_channelSpinBox->value());
+	m_slider->setChannel(m_channelSpinBox->value());
 
-  accept();
+	accept();
 }
 
 
@@ -465,33 +456,33 @@ void VCDockSliderProperties::slotOKClicked()
 //
 void VCDockSliderProperties::extractChannels()
 {
-  QCheckListItem* item = NULL;
-  t_channel ch = 0;
+	QCheckListItem* item = NULL;
+	t_channel ch = 0;
 
-  //
-  // Clear channel list
-  //
-  m_slider->channels()->clear();
+	//
+	// Clear channel list
+	//
+	m_slider->channels()->clear();
 
-  //
-  // Then, add the new submaster channels
-  //
-  QListViewItemIterator it(m_channelList);
-  while (it.current())
-    {
-      item = static_cast<QCheckListItem*> (it.current());
-
-      ch = static_cast<t_channel>
-	(item->text(KColumnDMXChannel).toInt());
-
-      if (item->isOn() &&
-	  m_slider->channels()->find(ch) == m_slider->channels()->end())
+	//
+	// Then, add the new submaster channels
+	//
+	QListViewItemIterator it(m_channelList);
+	while (it.current())
 	{
-	  m_slider->channels()->append(ch);
-	}
+		item = static_cast<QCheckListItem*> (it.current());
 
-      ++it;
-    }
+		ch = static_cast<t_channel>
+			(item->text(KColumnDMXChannel).toInt());
+
+		if (item->isOn() &&
+		    m_slider->channels()->find(ch) == m_slider->channels()->end())
+		{
+			m_slider->channels()->append(ch);
+		}
+
+		++it;
+	}
 }
 
 
@@ -500,6 +491,6 @@ void VCDockSliderProperties::extractChannels()
 //
 void VCDockSliderProperties::slotCancelClicked()
 {
-  reject();
+	reject();
 }
 

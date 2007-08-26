@@ -22,7 +22,7 @@
 #include "vcxypad.h"
 #include "xychannelunit.h"
 #include "vcbutton.h"
-#include "device.h"
+#include "fixture.h"
 #include "vclabel.h"
 #include "vcdockslider.h"
 #include "floatingedit.h"
@@ -115,7 +115,7 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 		++xit;
 
 		s.sprintf("ChannelEntryX = %d,%d,%d,%d,",
-			  xyc->deviceID(),
+			  xyc->fixtureID(),
 			  xyc->channel(),
 			  xyc->lo(),
 			  xyc->hi());
@@ -141,7 +141,7 @@ void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
 		++yit;
 
 		s.sprintf("ChannelEntryY = %d,%d,%d,%d,",
-			  xyc->deviceID(),
+			  xyc->fixtureID(),
 			  xyc->channel(),
 			  xyc->lo(),
 			  xyc->hi());
@@ -333,7 +333,7 @@ void VCXYPad::createChannelUnitFromString(QString string, bool isX)
 	{
 		m_channelsX.append(
 			new XYChannelUnit(
-				lst[XYChannelUnit::FileElementDevice].toInt(),
+				lst[XYChannelUnit::FileElementFixture].toInt(),
 				lst[XYChannelUnit::FileElementChannel].toInt(),
 				lst[XYChannelUnit::FileElementLo].toInt(),
 				lst[XYChannelUnit::FileElementHi].toInt(),
@@ -344,7 +344,7 @@ void VCXYPad::createChannelUnitFromString(QString string, bool isX)
 	{
 		m_channelsY.append(
 			new XYChannelUnit(
-				lst[XYChannelUnit::FileElementDevice].toInt(),
+				lst[XYChannelUnit::FileElementFixture].toInt(),
 				lst[XYChannelUnit::FileElementChannel].toInt(),
 				lst[XYChannelUnit::FileElementLo].toInt(),
 				lst[XYChannelUnit::FileElementHi].toInt(),
@@ -455,7 +455,7 @@ void VCXYPad::parseWidgetMenu(int item)
 
 			if (p->exec() == QDialog::Accepted)
 			{
-				_app->doc()->setModified(true);
+				_app->doc()->setModified();
 			}
 
 			delete p;
@@ -472,7 +472,7 @@ void VCXYPad::parseWidgetMenu(int item)
 			{
 				setFrameStyle(KFrameStyle);
 			}
-			_app->doc()->setModified(true);
+			_app->doc()->setModified();
 		}
 		break;
 
@@ -505,7 +505,7 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
@@ -514,7 +514,7 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	  p.setY(p.y() - m_mousePressPoint.y());
 
 	  moveTo(p);
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
     }
   else
@@ -557,13 +557,13 @@ void VCXYPad::outputDMX(int x, int y)
 		if (xyc->reverse() == false)
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() +
+				xyc->fixture()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() +
+				xyc->fixture()->universeAddress() +
 				xyc->channel(),
 				(t_value) KChannelValueMax - xx);
 		}
@@ -578,13 +578,13 @@ void VCXYPad::outputDMX(int x, int y)
 		if (xyc->reverse() == false)
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() +
+				xyc->fixture()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
 			_app->outputPlugin()->writeChannel(
-				xyc->device()->universeAddress() +
+				xyc->fixture()->universeAddress() +
 				xyc->channel(),
 				(t_value) KChannelValueMax - xx);
 		}

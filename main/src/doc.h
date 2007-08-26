@@ -2,7 +2,7 @@
   Q Light Controller
   doc.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,76 +25,192 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
-#include "common/deviceclass.h"
 #include "function.h"
-#include "device.h"
+#include "fixture.h"
 #include "bus.h"
 
+class QDomDocument;
+class QLCFixtureDef;
+class QLCFixtureMode;
+
 #define KXMLQLCWorkspaceDocument "Workspace"
+#define KXMLQLCWorkspace "Workspace"
 
 class Doc : public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  Doc();
-  ~Doc();
+	Doc();
+	~Doc();
 
-  //
-  // Modified status
-  //
-  bool isModified() { return m_modified; }
-  void setModified(bool modified);
+	/*********************************************************************
+	 * Modified status
+	 *********************************************************************/
+	/**
+	 * Check, whether Doc has been modified (and is in need of saving)
+	 */
+	bool isModified() { return m_modified; }
 
-  //
-  // Load & Save
-  //
-  QString fileName() { return m_fileName; }
-  bool loadWorkspaceAs(QString &);
-  bool saveWorkspaceAs(QString &);
-  bool saveWorkspace();
-  bool saveXML(QString &);
+	/**
+	 * Set Doc into modified state (i.e. it is in need of saving)
+	 */
+	void setModified();
 
-  //
-  // Devices
-  //
-  Device* newDevice(DeviceClass* dc, QString name,
-		    t_channel address, t_channel universe,
-		    t_device_id id = KNoID);
+ protected:
+	/**
+	 * Reset Doc's modified state (i.e. it is no longer in need of saving)
+	 */
+	void resetModified();
 
-  void deleteDevice(t_device_id);
-  Device* device(t_device_id);
+ public:
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+	/**
+	 * Get the name of the current workspace file
+	 */
+	QString fileName() { return m_fileName; }
 
-  //
-  // Functions
-  //
-  Function* newFunction(Function::Type,
-			t_device_id device,
-			t_function_id id = KNoID);
-  void deleteFunction(t_function_id);
-  Function* function(t_function_id);
+	/**
+	 * Load the Doc's contents from the given XML file
+	 *
+	 * @param fileName The name of the file to load from
+	 * @return TRUE if successful, otherwise FALSE
+	 */
+	bool loadXML(const QString& fileName);
 
-  // Emit a functionChanged() signal
-  void emitFunctionChanged(t_function_id);
+	/**
+	 * Load the Doc's contents from the given XML document
+	 *
+	 * @param doc The XML document to read from
+	 * @return TRUE if successful, otherwise FALSE
+	 */
+	bool loadXML(QDomDocument* doc);
+
+	/**
+	 * Save the Doc's contents to the given XML file. Also resets
+	 * the doc's modified status.
+	 *
+	 * @param fileName The name of the file to save to
+	 * @return TRUE if successful, otherwise FALSE
+	 */
+	bool saveXML(const QString& fileName);
+
+	/*********************************************************************
+	 * Fixture Instances
+	 *********************************************************************/
+ public:
+	/**
+	 * Create a new fixture instance from the given fixture definition
+	 *
+	 * @param fixture A fixture definition from which to create the instance
+	 * @param name The friendly name of the fixture instance
+	 * @param address The fixture's DMX address
+	 * @param universe The fixture's DMX universe
+	 * @param id The fixture's ID (used only when loading from a file)
+	 */
+	Fixture* newFixture(QLCFixtureDef* fixtureDef,
+			    QLCFixtureMode* mode,
+			    t_channel address,
+			    t_channel universe,
+			    QString name);
+ protected:
+	/**
+	 * Insert a new fixture instance into Doc's fixture array. Use this
+	 * ONLY when loading a workspace from a file.
+	 *
+	 * @param fxi The fixture instance to insert
+	 * @return TRUE if successful, otherwise FALSE
+	 */
+	bool newFixture(Fixture* fxi);
+
+ public:	
+	/**
+	 * Delete the given fixture instance from Doc
+	 *
+	 * @param id The ID of the fixture instance to delete
+	 */
+	bool deleteFixture(t_fixture_id id);
+
+	/**
+	 * Get the fixture instance that has the given ID
+	 *
+	 * @param id The ID of the fixture to get
+	 */
+	Fixture* fixture(t_fixture_id id);
+
+	/*********************************************************************
+	 * Functions
+	 *********************************************************************/
+ public:
+	/**
+	 * Create a new function
+	 *
+	 * @param type The type of the new function
+	 * @param fxi_id The ID of the fixture instance that owns the function
+	 */
+	Function* newFunction(Function::Type type, t_fixture_id fxi_id);
+
+	/**
+	 * Insert a new function instance into Doc's function array. Use this
+	 * ONLY when loading a workspace from a file.
+	 *
+	 * @param func_type The type of the new function
+	 * @param func_id The ID of the function (as loaded from a file)
+	 * @param func_name The name of the function
+	 * @param fxi_id The ID of the fixture instance that owns the function
+	 * @param doc An XML document to load the function from
+	 * @param root An XML "Function" tag to load the function contents from
+	 */
+	Function* newFunction(Function::Type func_type, t_function_id func_id,
+			      QString func_name, t_fixture_id fxi_id,
+			      QDomDocument* doc, QDomElement* root);
+
+ public:
+	/**
+	 * Delete the given function
+	 *
+	 * @param id The ID of the function to delete
+	 */
+	void deleteFunction(t_function_id id);
+
+	/**
+	 * Get a function that has the given ID
+	 *
+	 * @param id The ID of the function to get
+	 */
+	Function* function(t_function_id id);
+
+ public:
+	/**
+	 * Emit a functionChanged() signal
+	 *
+	 * @param id The ID of the function that needs to be signalled
+	 */
+	void emitFunctionChanged(t_function_id id);
 
  private slots:
-  void slotModeChanged();
+	void slotModeChanged();
+	void slotFixtureChanged(t_fixture_id);
 
  signals:
-  void deviceAdded(t_device_id);
-  void deviceRemoved(t_device_id);
-  void deviceChanged(t_device_id);
+	void modified(bool state);
 
-  void functionAdded(t_function_id);
-  void functionRemoved(t_function_id);
-  void functionChanged(t_function_id);
+	void fixtureAdded(t_fixture_id);
+	void fixtureRemoved(t_fixture_id);
+	void fixtureChanged(t_fixture_id);
 
- private:
-  QString m_fileName;
-  bool m_modified;
+	void functionAdded(t_function_id);
+	void functionRemoved(t_function_id);
+	void functionChanged(t_function_id);
 
-  Function** m_functionArray;
-  Device** m_deviceArray;
+ protected:
+	QString m_fileName;
+	bool m_modified;
+
+	Function** m_functionArray;
+	Fixture** m_fixtureArray;
 };
 
 #endif

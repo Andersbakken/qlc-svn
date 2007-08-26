@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  qlcfixture.cpp
+  qlcfixturedef.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 #include <qdom.h>
 #include <assert.h>
 
-#include "common/qlcfixture.h"
+#include "common/qlcfixturedef.h"
 #include "common/qlcfixturemode.h"
 #include "common/qlcchannel.h"
 #include "common/qlccapability.h"
@@ -36,14 +36,14 @@
 #include "common/deviceclass.h"
 #include "common/logicalchannel.h"
 
-QLCFixture::QLCFixture()
+QLCFixtureDef::QLCFixtureDef()
 {
 	m_manufacturer = QString::null;
 	m_model = QString::null;
 	m_type = QString("Dimmer");
 }
 
-QLCFixture::QLCFixture(QLCFixture *fixture)
+QLCFixtureDef::QLCFixtureDef(QLCFixtureDef *fixture)
 {
 	m_manufacturer = QString::null;
 	m_model = QString::null;
@@ -53,7 +53,7 @@ QLCFixture::QLCFixture(QLCFixture *fixture)
 		*this = *fixture;
 }
 
-QLCFixture::QLCFixture(const QString &fileName)
+QLCFixtureDef::QLCFixtureDef(const QString &fileName)
 {
 	QDomDocument* doc = NULL;
 	QDomDocumentType doctype;
@@ -67,7 +67,7 @@ QLCFixture::QLCFixture(const QString &fileName)
 	
 	if (FileHandler::readXML(fileName, &doc) == true)
 	{
-		if (doc->doctype().name() == KXMLQLCFixtureDocument)
+		if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
 		{
 			if (loadXML(doc) == false)
 			{
@@ -87,7 +87,7 @@ QLCFixture::QLCFixture(const QString &fileName)
 	}
 }
 
-QLCFixture::QLCFixture(DeviceClass* dc)
+QLCFixtureDef::QLCFixtureDef(DeviceClass* dc)
 {
 	QPtrListIterator<LogicalChannel> it(*dc->channels());
 	LogicalChannel* lch = NULL;
@@ -113,7 +113,7 @@ QLCFixture::QLCFixture(DeviceClass* dc)
 	}
 }
 
-QLCFixture::~QLCFixture()
+QLCFixtureDef::~QLCFixtureDef()
 {
 	while (m_channels.isEmpty() == false)
 		delete m_channels.take(0);
@@ -123,7 +123,7 @@ QLCFixture::~QLCFixture()
 
 }
 
-QLCFixture& QLCFixture::operator=(QLCFixture& fixture)
+QLCFixtureDef& QLCFixtureDef::operator=(QLCFixtureDef& fixture)
 {
 	if (this != &fixture)
 	{
@@ -166,17 +166,17 @@ QLCFixture& QLCFixture::operator=(QLCFixture& fixture)
  * General properties
  ****************************************************************************/
 
-void QLCFixture::setManufacturer(const QString mfg)
+void QLCFixtureDef::setManufacturer(const QString mfg)
 {
 	m_manufacturer = QString(mfg);
 }
 
-void QLCFixture::setModel(const QString model)
+void QLCFixtureDef::setModel(const QString model)
 {
 	m_model = QString(model);
 }
 
-void QLCFixture::setType(const QString &type)
+void QLCFixtureDef::setType(const QString &type)
 {
 	m_type = QString(type);
 }
@@ -185,12 +185,12 @@ void QLCFixture::setType(const QString &type)
  * Channels
  ****************************************************************************/
 
-void QLCFixture::addChannel(QLCChannel* channel)
+void QLCFixtureDef::addChannel(QLCChannel* channel)
 {
 	m_channels.append(channel);
 }
 
-bool QLCFixture::removeChannel(QLCChannel* channel)
+bool QLCFixtureDef::removeChannel(QLCChannel* channel)
 {
 	for (QLCChannel* ch = m_channels.first(); ch != NULL;
 	     ch = m_channels.next())
@@ -205,7 +205,7 @@ bool QLCFixture::removeChannel(QLCChannel* channel)
 	return false;
 }
 
-QLCChannel* QLCFixture::searchChannel(const QString &name)
+QLCChannel* QLCFixtureDef::channel(const QString &name)
 {
 	QPtrListIterator<QLCChannel> it(m_channels);
 	QLCChannel* ch = NULL;
@@ -224,12 +224,12 @@ QLCChannel* QLCFixture::searchChannel(const QString &name)
  * Modes
  ****************************************************************************/
 
-void QLCFixture::addMode(QLCFixtureMode* mode)
+void QLCFixtureDef::addMode(QLCFixtureMode* mode)
 {
 	m_modes.append(mode);
 }
 
-bool QLCFixture::removeMode(QLCFixtureMode* mode)
+bool QLCFixtureDef::removeMode(QLCFixtureMode* mode)
 {
 	for (QLCFixtureMode* m = m_modes.first(); m != NULL; m = m_modes.next())
 	{
@@ -243,7 +243,7 @@ bool QLCFixture::removeMode(QLCFixtureMode* mode)
 	return false;
 }
 
-QLCFixtureMode* QLCFixture::searchMode(const QString& name)
+QLCFixtureMode* QLCFixtureDef::mode(const QString& name)
 {
 	QPtrListIterator<QLCFixtureMode> it(m_modes);
 	QLCFixtureMode* mode = NULL;
@@ -262,7 +262,7 @@ QLCFixtureMode* QLCFixture::searchMode(const QString& name)
  * XML operations
  ****************************************************************************/
 
-bool QLCFixture::saveXML(const QString &fileName)
+bool QLCFixtureDef::saveXML(const QString &fileName)
 {
 	bool retval = false;
 	QDomDocument* doc = NULL;
@@ -276,7 +276,7 @@ bool QLCFixture::saveXML(const QString &fileName)
 	if (file.open(IO_WriteOnly) == false)
 		return false;
 
-	if (FileHandler::getXMLHeader(KXMLQLCFixtureDocument, &doc) == true)
+	if (FileHandler::getXMLHeader(KXMLQLCFixtureDefDocument, &doc) == true)
 	{
 		/* Create a text stream for the file */
 		QTextStream stream(&file);
@@ -285,19 +285,19 @@ bool QLCFixture::saveXML(const QString &fileName)
 		root = doc->documentElement();
 
 		/* Manufacturer */
-		tag = doc->createElement(KXMLQLCFixtureManufacturer);
+		tag = doc->createElement(KXMLQLCFixtureDefManufacturer);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_manufacturer);
 		tag.appendChild(text);
 		
 		/* Model */
-		tag = doc->createElement(KXMLQLCFixtureModel);
+		tag = doc->createElement(KXMLQLCFixtureDefModel);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_model);
 		tag.appendChild(text);
 		
 		/* Type */
-		tag = doc->createElement(KXMLQLCFixtureType);
+		tag = doc->createElement(KXMLQLCFixtureDefType);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_type);
 		tag.appendChild(text);
@@ -323,8 +323,6 @@ bool QLCFixture::saveXML(const QString &fileName)
 		/* Write the document into the stream */
 		stream << doc->toString() << "\n";
 
-		fprintf(stderr, "%s\n", doc->toString().ascii());
-
 		delete doc;
 
 		retval = true;
@@ -339,7 +337,7 @@ bool QLCFixture::saveXML(const QString &fileName)
 	return retval;
 }
 
-bool QLCFixture::loadXML(QDomDocument* doc)
+bool QLCFixtureDef::loadXML(QDomDocument* doc)
 {
 	QDomElement root;
 	QDomNode node;
@@ -349,7 +347,7 @@ bool QLCFixture::loadXML(QDomDocument* doc)
 	assert(doc);
 
 	root = doc->documentElement();
-	if (root.tagName() == KXMLQLCFixture)
+	if (root.tagName() == KXMLQLCFixtureDef)
 	{
 		node = root.firstChild();
 		while (node.isNull() == false)
@@ -358,11 +356,11 @@ bool QLCFixture::loadXML(QDomDocument* doc)
 
 			if (tag.tagName() == KXMLQLCCreator)
 				;
-			else if (tag.tagName() == KXMLQLCFixtureManufacturer)
+			else if (tag.tagName() == KXMLQLCFixtureDefManufacturer)
 				setManufacturer(tag.text());
-			else if (tag.tagName() == KXMLQLCFixtureModel)
+			else if (tag.tagName() == KXMLQLCFixtureDefModel)
 				setModel(tag.text());
-			else if (tag.tagName() == KXMLQLCFixtureType)
+			else if (tag.tagName() == KXMLQLCFixtureDefType)
 				setType(tag.text());
 			else if (tag.tagName() == KXMLQLCChannel)
 				addChannel(new QLCChannel(&tag));

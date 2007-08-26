@@ -2,7 +2,7 @@
   Q Light Controller
   monitor.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -347,8 +347,8 @@ void Monitor::paintEvent(QPaintEvent* e)
 	if (e->erased())
 	{
 		// Draw everything that is inside the invalidated region
-		paintDeviceLabelAll(e->region(), x_offset, y_offset,
-				    unitW, unitH, unitsX);
+		paintFixtureLabelAll(e->region(), x_offset, y_offset,
+				     unitW, unitH, unitsX);
 		paintChannelLabelAll(e->region(), x_offset, y_offset,
 				     unitW, unitH, unitsX);
 		paintChannelValueAll(e->region(), x_offset, y_offset,
@@ -368,10 +368,10 @@ void Monitor::paintEvent(QPaintEvent* e)
 }
 
 //
-// Paint all visible device labels
+// Paint all visible fixture labels
 //
-void Monitor::paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
-				  int unitW, int unitH, int unitsX)
+void Monitor::paintFixtureLabelAll(QRegion region, int x_offset, int y_offset,
+				   int unitW, int unitH, int unitsX)
 {
 	int x = 0;
 	int y = 0;
@@ -379,27 +379,26 @@ void Monitor::paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
 	int wcur = 0;
 	int h = 0;
 	
-	t_device_id id = KNoID;
-	Device* dev = NULL;
+	t_fixture_id id = KNoID;
+	Fixture* fxi = NULL;
 	
-	// Draw device names and their channel spaces
-	for (id = 0; id < KDeviceArraySize; id++)
+	// Draw fixture names and their channel spaces
+	for (id = 0; id < KFixtureArraySize; id++)
 	{
-		dev = _app->doc()->device(id);
-		if (dev == NULL) continue;
-		if (dev->universe() != m_universe) continue;
+		fxi = _app->doc()->fixture(id);
+		if (fxi == NULL) continue;
+		if (fxi->universe() != m_universe) continue;
 		
-		// Calculate x and y positions for this device label
-		x = ((dev->address() % unitsX) * unitW);
+		// Calculate x and y positions for this fixture label
+		x = ((fxi->address() % unitsX) * unitW);
 		x += x_offset;
 		
 		y = static_cast<int> 
-			(floor((dev->address() / unitsX)) * (unitH * 3));
+			(floor((fxi->address() / unitsX)) * (unitH * 3));
 		y += y_offset;
 		
-		// Get width and height for this device label
-		w = (dev->deviceClass()->channels()->count() * unitW)
-		    - X_OFFSET;
+		// Get width and height for this fixture label
+		w = (fxi->channels() * unitW) - X_OFFSET;
 		h = unitH;
 			
 		// Check if this label needs to be painted at all
@@ -409,7 +408,7 @@ void Monitor::paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
 		if ((x + w + X_OFFSET) <= width())
 		{
 			// The label fits to one line, just draw it
-			paintDeviceLabel(x, y, w, h, dev->name());
+			paintFixtureLabel(x, y, w, h, fxi->name());
 		}
 		else
 		{
@@ -419,11 +418,11 @@ void Monitor::paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
 				wcur = min(w, (unitsX * unitW) - (x));
 				
 				// Draw the label
-				paintDeviceLabel(x, y, wcur, h, dev->name());
+				paintFixtureLabel(x, y, wcur, h, fxi->name());
 			
 				// Calculate remaining width
 				w = w - wcur - X_OFFSET;
-			
+				
 				// Next line
 				y += (unitH * 3);
 				x = x_offset;
@@ -433,9 +432,9 @@ void Monitor::paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
 }
 
 //
-// Draw the device label to the given coordinates
+// Draw the fixture label to the given coordinates
 //
-void Monitor::paintDeviceLabel(int x, int y, int w, int h, QString label)
+void Monitor::paintFixtureLabel(int x, int y, int w, int h, QString label)
 {
 	_qapp->lock();
 		

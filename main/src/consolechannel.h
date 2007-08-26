@@ -2,7 +2,7 @@
   Q Light Controller
   consolechannel.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -31,61 +31,61 @@ class QLabel;
 class QPushButton;
 class QContextMenuEvent;
 class QPopupMenu;
-class Device;
+class Fixture;
 
 class ConsoleChannel : public UI_ConsoleChannel
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  ConsoleChannel(QWidget *parent, t_device_id deviceID, t_channel channel);
- ~ConsoleChannel();
+	ConsoleChannel(QWidget *parent, t_fixture_id fixtureID, t_channel channel);
+	~ConsoleChannel();
 
-  void init();
+	void init();
  
-  int getSliderValue(void);
-  void update(void);
+	int getSliderValue(void);
+	void update(void);
 
-  void setStatusButton(Scene::ValueType);
+	void setStatusButton(Scene::ValueType);
 
-  Scene::ValueType status() const { return m_status; }
+	Scene::ValueType status() const { return m_status; }
 
-  // For sequence editor doesn't like fade values
-  void setFadeStatusEnabled(bool enable); 
+	// For sequence editor doesn't like fade values
+	void setFadeStatusEnabled(bool enable); 
   
  signals:
-  void changed(t_channel, t_value, Scene::ValueType);
+	void changed(t_channel, t_value, Scene::ValueType);
 
  public slots:
-  void slotValueChange(int);
-  void slotAnimateValueChange(t_value);
+	void slotValueChange(int);
+	void slotAnimateValueChange(t_value);
 
-  void slotSceneActivated(SceneValue* values, t_channel channels);
+	void slotSceneActivated(SceneValue* values, t_channel channels);
 
  private slots:
-  void slotStatusButtonClicked();
-  void slotSetFocus();
-  void slotContextMenuActivated(int);
+	void slotStatusButtonClicked();
+	void slotSetFocus();
+	void slotContextMenuActivated(int);
 
  protected:
-  void contextMenuEvent(QContextMenuEvent*);
+	void contextMenuEvent(QContextMenuEvent*);
 
  protected:
-  void initMenu();
-  void updateStatusButton();
+	void initMenu();
+	void updateStatusButton();
 
  protected:
-  t_channel m_channel;
-  t_value m_value;
-  Scene::ValueType m_status;
+	t_channel m_channel;
+	t_value m_value;
+	Scene::ValueType m_status;
 
-  t_device_id m_deviceID;
+	t_fixture_id m_fixtureID;
 
-  bool m_fadeStatusEnabled;
+	bool m_fadeStatusEnabled;
 
-  bool m_updateOnly;
+	bool m_updateOnly;
  
-  QPopupMenu* m_menu;
+	QPopupMenu* m_menu;
 };
 
 #endif

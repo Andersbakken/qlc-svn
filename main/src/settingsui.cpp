@@ -2,7 +2,7 @@
   Q Light Controller
   settingsui.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,7 +25,6 @@
 #include "common/settings.h"
 #include "common/configitem.h"
 #include "configkeys.h"
-#include "imagecontentspreview.h"
 
 #include <qlistview.h>
 #include <qapplication.h>
@@ -35,7 +34,6 @@
 #include <qcheckbox.h>
 #include <qstylefactory.h>
 #include <qpixmap.h>
-#include <qworkspace.h>
 #include <qlabel.h>
 #include <qspinbox.h>
 
@@ -53,190 +51,156 @@ SettingsUI::~SettingsUI()
 
 void SettingsUI::init()
 {
-  QString str;
+	QString str;
 
-  m_MRUSizeLabel->setEnabled(false);
-  m_MRUSizeSpin->setEnabled(false);
+	m_MRUSizeLabel->setEnabled(false);
+	m_MRUSizeSpin->setEnabled(false);
 
-  _app->settings()->get(KEY_APP_BACKGROUND, str);
-  m_backgroundEdit->setText(str);
+	fillStyleCombo();
 
-  fillStyleCombo();
+	_app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str);
+	m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) 
+						? true : false);
+	fillOutputPluginCombo();
+	fillInputPluginCombo();
 
-  _app->settings()->get(KEY_OPEN_LAST_WORKSPACE, str);
-  m_openLastWorkspaceCheckBox->setChecked((str == Settings::trueValue()) 
-					  ? true : false);
-  fillOutputPluginCombo();
-  fillInputPluginCombo();
-
-  fillAdvancedSettingsList();
+	fillAdvancedSettingsList();
 }
 
 void SettingsUI::fillStyleCombo()
 {
-  QStyleFactory f;
-  QStringList l = f.keys();
+	QStyleFactory f;
+	QStringList l = f.keys();
 
-  QString widgetStyle;
-  _app->settings()->get(KEY_WIDGET_STYLE, widgetStyle);
+	QString widgetStyle;
+	_app->settings()->get(KEY_WIDGET_STYLE, widgetStyle);
 
-  for (QStringList::Iterator it = l.begin(); it != l.end(); ++it)
-    {
-      m_widgetStyleCombo->insertItem(*it);
-    }
-
-  for (int i = 0; i < m_widgetStyleCombo->count(); i++)
-    {
-      if (m_widgetStyleCombo->text(i) == widgetStyle)
+	for (QStringList::Iterator it = l.begin(); it != l.end(); ++it)
 	{
-	  m_widgetStyleCombo->setCurrentItem(i);
-	  break;
+		m_widgetStyleCombo->insertItem(*it);
 	}
-    }
+
+	for (int i = 0; i < m_widgetStyleCombo->count(); i++)
+	{
+		if (m_widgetStyleCombo->text(i) == widgetStyle)
+		{
+			m_widgetStyleCombo->setCurrentItem(i);
+			break;
+		}
+	}
 }
 
 
 void SettingsUI::fillOutputPluginCombo()
 {
-  QPtrListIterator <Plugin> it(*_app->pluginList());
-  int i = 0;
+	QPtrListIterator <Plugin> it(*_app->pluginList());
+	int i = 0;
 
-  QString plugin;
-  _app->settings()->get(KEY_OUTPUT_PLUGIN, plugin);
+	QString plugin;
+	_app->settings()->get(KEY_OUTPUT_PLUGIN, plugin);
 
-  while (it.current() != NULL)
-    {
-      if (it.current()->type() == Plugin::OutputType)
+	while (it.current() != NULL)
 	{
-	  m_outputPluginCombo->insertItem(it.current()->name(), i);
-	  if (it.current()->name() == plugin)
-	    {
-	      m_outputPluginCombo->setCurrentItem(i);
-	    }
+		if (it.current()->type() == Plugin::OutputType)
+		{
+			m_outputPluginCombo->insertItem(it.current()->name(), i);
+			if (it.current()->name() == plugin)
+			{
+				m_outputPluginCombo->setCurrentItem(i);
+			}
 
-	  i++;
+			i++;
+		}
+
+		++it;
 	}
-
-      ++it;
-    }
 }
 
 void SettingsUI::fillInputPluginCombo()
 {
-  QPtrListIterator <Plugin> it(*_app->pluginList());
-  int i = 0;
+	QPtrListIterator <Plugin> it(*_app->pluginList());
+	int i = 0;
 
-  QString plugin;
-  _app->settings()->get(KEY_INPUT_PLUGIN, plugin);
+	QString plugin;
+	_app->settings()->get(KEY_INPUT_PLUGIN, plugin);
 
-  while (it.current() != NULL)
-    {
-      if (it.current()->type() == Plugin::InputType)
+	while (it.current() != NULL)
 	{
-	  m_inputPluginCombo->insertItem(it.current()->name(), i);
-	  if (it.current()->name() == plugin)
-	    {
-	      m_inputPluginCombo->setCurrentItem(i);
-	    }
+		if (it.current()->type() == Plugin::InputType)
+		{
+			m_inputPluginCombo->insertItem(it.current()->name(), i);
+			if (it.current()->name() == plugin)
+			{
+				m_inputPluginCombo->setCurrentItem(i);
+			}
 
-	  i++;
+			i++;
+		}
+
+		++it;
 	}
-
-      ++it;
-    }
 }
 
 void SettingsUI::slotConfigureOutputPluginClicked()
 {
-  OutputPlugin* p = static_cast<OutputPlugin*>
-    (_app->searchPlugin(m_outputPluginCombo->currentText(),
-			Plugin::OutputType));
-  ASSERT(p);
+	OutputPlugin* p = static_cast<OutputPlugin*>
+		(_app->searchPlugin(m_outputPluginCombo->currentText(),
+				    Plugin::OutputType));
+	ASSERT(p);
 
-  p->configure();
+	p->configure();
 }
 
 void SettingsUI::slotConfigureInputPluginClicked()
 {
-  InputPlugin* p = static_cast<InputPlugin*>
-    (_app->searchPlugin(m_inputPluginCombo->currentText(),
-			Plugin::InputType));
-  ASSERT(p);
+	InputPlugin* p = static_cast<InputPlugin*>
+		(_app->searchPlugin(m_inputPluginCombo->currentText(),
+				    Plugin::InputType));
+	ASSERT(p);
 
-  p->configure();
+	p->configure();
 }
 
 void SettingsUI::fillAdvancedSettingsList()
 {
-  QListViewItem* item = NULL;
-  QPtrList <ConfigItem>* items = _app->settings()->items();
+	QListViewItem* item = NULL;
+	QPtrList <ConfigItem>* items = _app->settings()->items();
 
-  m_advancedList->clear();
+	m_advancedList->clear();
 
-  for (ConfigItem* i = items->first(); i != NULL; i = items->next())
-    {
-      item = new QListViewItem(m_advancedList, i->key(), i->text());
-      item->setRenameEnabled(1, false);
-    }
-}
-
-void SettingsUI::slotBackgroundBrowseClicked()
-{
-  QString path;
-
-  ImageContentsPreview* p = new ImageContentsPreview;
-  
-  QFileDialog* fd = new QFileDialog( this );
-  fd->setCaption("Choose the workspace background image");
-  fd->setContentsPreviewEnabled( true );
-  fd->setContentsPreview( p, p );
-  fd->setPreviewMode( QFileDialog::Contents );
-  fd->setFilter("Images (*.png *.xpm *.jpg *.gif)");
-  fd->setSelection(m_backgroundEdit->text());
-  
-  if (fd->exec() == QDialog::Accepted)
-    {
-      path = fd->selectedFile();
-    
-      if (path.isEmpty() == false)
-        {
-          m_backgroundEdit->setText(path);
-        }
-    }
-
-  delete p;
-  delete fd;
+	for (ConfigItem* i = items->first(); i != NULL; i = items->next())
+	{
+		item = new QListViewItem(m_advancedList, i->key(), i->text());
+		item->setRenameEnabled(1, false);
+	}
 }
 
 void SettingsUI::slotStyleChanged(const QString &)
 {
-  _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
-  _qapp->setStyle(m_widgetStyleCombo->currentText());
+	_app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
+	_qapp->setStyle(m_widgetStyleCombo->currentText());
 }
 
 
 void SettingsUI::slotOKClicked()
 {
-  _app->settings()->set(KEY_APP_BACKGROUND, m_backgroundEdit->text());
-  _app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
-  _app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());
-  _app->settings()->set(KEY_INPUT_PLUGIN, m_inputPluginCombo->currentText());
+	_app->settings()->set(KEY_WIDGET_STYLE, m_widgetStyleCombo->currentText());
+	_app->settings()->set(KEY_OUTPUT_PLUGIN, m_outputPluginCombo->currentText());
+	_app->settings()->set(KEY_INPUT_PLUGIN, m_inputPluginCombo->currentText());
   
-  if (m_openLastWorkspaceCheckBox->isChecked())
-    {
-      _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::trueValue());
-    }
-  else
-    {
-      _app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::falseValue());
-    }
+	if (m_openLastWorkspaceCheckBox->isChecked())
+	{
+		_app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::trueValue());
+	}
+	else
+	{
+		_app->settings()->set(KEY_OPEN_LAST_WORKSPACE, Settings::falseValue());
+	}
     
-  _app->workspace()->setBackgroundPixmap(QPixmap(m_backgroundEdit->text()));
-
-  accept();
+	accept();
 }
 
 void SettingsUI::slotCancelClicked()
 {
-  reject();
+	reject();
 }

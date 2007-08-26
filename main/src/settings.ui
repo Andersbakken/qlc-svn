@@ -27,99 +27,6 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox" row="0" column="0">
-            <property name="name">
-                <cstring>m_backgroundGroupBox</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>3</hsizetype>
-                    <vsizetype>0</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="frameShape">
-                <enum>Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="title">
-                <string>Background Wallpaper</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout9</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>m_backgroundEdit</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>3</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>200</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>The workspace background image.</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>m_backgroundBrowse</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>0</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>23</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>23</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>...</string>
-                            </property>
-                            <property name="flat">
-                                <bool>false</bool>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Browse the workspace background image.</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
         <widget class="QGroupBox" row="1" column="0">
             <property name="name">
                 <cstring>GroupBox4</cstring>
@@ -551,12 +458,6 @@
         <slot>slotStyleChanged(const QString&amp;)</slot>
     </connection>
     <connection>
-        <sender>m_backgroundBrowse</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_Settings</receiver>
-        <slot>slotBackgroundBrowseClicked()</slot>
-    </connection>
-    <connection>
         <sender>m_configureOutputPlugin</sender>
         <signal>clicked()</signal>
         <receiver>UI_Settings</receiver>
@@ -570,8 +471,6 @@
     </connection>
 </connections>
 <tabstops>
-    <tabstop>m_backgroundEdit</tabstop>
-    <tabstop>m_backgroundBrowse</tabstop>
     <tabstop>m_widgetStyleCombo</tabstop>
     <tabstop>m_openLastWorkspaceCheckBox</tabstop>
     <tabstop>m_ok</tabstop>
@@ -581,7 +480,6 @@
     <slot>slotCancelClicked()</slot>
     <slot>slotOKClicked()</slot>
     <slot>slotStyleChanged( const QString &amp; )</slot>
-    <slot>slotBackgroundBrowseClicked()</slot>
     <slot>slotConfigureOutputPluginClicked()</slot>
     <slot>slotConfigureInputPluginClicked()</slot>
 </slots>

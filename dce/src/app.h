@@ -24,7 +24,6 @@
 
 #include <qmainwindow.h>
 
-class QWorkspace;
 class QApp;
 class QMessageBox;
 class QMenuBar;
@@ -38,9 +37,10 @@ class QWidgetList;
 class QLabel;
 
 class Settings;
+class DocumentBrowser;
 class QLCFixture;
 class QLCFixtureEditor;
-class DocumentBrowser;
+class QLCWorkspace;
 
 class DeviceClass;
 
@@ -63,7 +63,7 @@ class App : public QMainWindow
 	void initView();
 	void initSettings();
 
-	QWorkspace* workspace() { return m_workspace; }
+	QLCWorkspace* workspace() { return m_workspace; }
 	Settings* settings() { return m_settings; }
 
  private slots:
@@ -87,6 +87,8 @@ class App : public QMainWindow
 
 	void slotEditorClosed(QLCFixtureEditor* editor);
 
+	void slotBackgroundChanged(const QString& path);
+
  private:
 	/** Open an old .deviceclass file */
 	DeviceClass* openLegacyFile(QString path);
@@ -101,7 +103,7 @@ class App : public QMainWindow
 	void slotWindowMenuCallback(int item);
 
  private:
-	QWorkspace* m_workspace;
+	QLCWorkspace* m_workspace;
 	Settings* m_settings;
 	DocumentBrowser* m_documentBrowser;
 

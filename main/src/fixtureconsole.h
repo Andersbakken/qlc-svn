@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  deviceproperties.h
+  fixtureconsole.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,94 +19,47 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DEVICEPROPERTIES_H
-#define DEVICEPROPERTIES_H
+#ifndef FIXTURECONSOLE_H
+#define FIXTURECONSOLE_H
 
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qspinbox.h>
-#include <qpushbutton.h>
+#include <qwidget.h>
+#include <qptrlist.h>
 
-#include "uic_deviceproperties.h"
+#include "common/types.h"
+#include "consolechannel.h"
+
+class QCloseEvent;
+class QHBoxLayout;
 
 class Device;
+class SceneEditor;
 
-class DeviceProperties : public UI_DeviceProperties
+class FixtureConsole : public QWidget
 {
-   Q_OBJECT
+	Q_OBJECT
 
  public:
-   DeviceProperties(Device* device);
-   ~DeviceProperties();
-   
-   void init();
-   
- protected slots:
-   void slotDIPClicked();
-   void slotOKClicked();
+	FixtureConsole(QWidget *parent);
+	~FixtureConsole();
 
- private:
-   Device* m_device;
+	void setFixture(t_fixture_id id);
+
+	QPtrList <ConsoleChannel> unitList() { return m_unitList; }
+	SceneEditor* sceneEditor() { return m_sceneEditor; }
+
+ signals:
+	void closed();
+
+ protected:
+	void closeEvent(QCloseEvent*);
+
+ protected:
+	QHBoxLayout* m_layout;
+	
+	SceneEditor* m_sceneEditor;
+	t_fixture_id m_fixture;
+	
+	QPtrList <ConsoleChannel> m_unitList;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

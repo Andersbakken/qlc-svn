@@ -28,7 +28,6 @@
 #include "common/inputplugin.h"
 #include "common/outputplugin.h"
 
-class QWorkspace;
 class QApp;
 class QMessageBox;
 class QMenuBar;
@@ -42,7 +41,7 @@ class QWidgetList;
 class QLabel;
 class QTimer;
 
-class DeviceManagerView;
+class FixtureManager;
 class Settings;
 class Doc;
 class InputPlugin;
@@ -58,6 +57,8 @@ class BusProperties;
 class DocumentBrowser;
 class PluginManager;
 class Monitor;
+class QLCFixtureDef;
+class QLCWorkspace;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -78,9 +79,9 @@ public:
 	void newDocument();
 	void saveSettings();
 
-	DeviceManagerView* deviceManagerView() { return m_dmView; }
+	FixtureManager* fixtureManager() { return m_fixtureManager; }
 	VirtualConsole* virtualConsole() { return m_virtualConsole; }
-	QWorkspace* workspace() { return m_workspace; }
+	QLCWorkspace* workspace() { return m_workspace; }
 	Settings* settings() { return m_settings; }
 	FunctionConsumer* functionConsumer() { return m_functionConsumer; }
 	Doc* doc() { return m_doc; }
@@ -100,18 +101,16 @@ public:
 	void initPlugins();
 	bool probePlugin(QString path);
 	
-	//
-	// Device class stuff
-	//
-	void initDeviceClasses();
-	void addDeviceClass(DeviceClass*);
-	QPtrList <DeviceClass> *deviceClassList() { return &m_deviceClassList; }
-	DeviceClass* searchDeviceClass(const QString &manufacturer,
-					const QString &model);
+	/*********************************************************************
+	 * Fixture definitions
+	 *********************************************************************/
+	bool loadFixtureDefinitions();
+	QLCFixtureDef* fixtureDef(const QString& manufacturer, const QString& model);
+	QPtrList <QLCFixtureDef> *fixtureDefList() { return &m_fixtureDefList; }
 
-	//
-	// Mode: operate or design
-	//
+	/*********************************************************************
+	 * Mode: operate or design
+	 *********************************************************************/
 	enum Mode { Operate, Design };
 	bool mode() { return m_mode; }
 
@@ -144,6 +143,10 @@ private slots:
 
 	void slotFlashBlackOutIndicator();
 
+	void slotBackgroundChanged(const QString&);
+
+	void slotDocModified(bool state);
+
 public slots:
 	bool slotFileNew();
 	void slotFileOpen();
@@ -154,8 +157,8 @@ public slots:
 	void slotPluginManagerClosed();
 	void slotFileQuit();
 	
-	void slotViewDeviceManager();
-	void slotDeviceManagerViewClosed();
+	void slotViewFixtureManager();
+	void slotFixtureManagerClosed();
 	
 	void slotViewVirtualConsole();
 	void slotVirtualConsoleClosed();
@@ -201,8 +204,6 @@ private:
 	void initStatusBar();
 	void initToolBar();
 	
-	void createJoystickContents(QPtrList <QString> &list);
-	
 private slots:
 	void slotWindowMenuCallback(int item);
 	void slotRefreshMenus();
@@ -228,10 +229,10 @@ private:
 	
 	Doc* m_doc;
 	Settings* m_settings;
-	DeviceManagerView* m_dmView;
-	VirtualConsole* m_virtualConsole;
-	QWorkspace* m_workspace;
+	FixtureManager* m_fixtureManager;
 	FunctionManager* m_functionManager;
+	VirtualConsole* m_virtualConsole;
+	QLCWorkspace* m_workspace;
 	BusProperties* m_busProperties;
 	DocumentBrowser* m_documentBrowser;
 	PluginManager* m_pluginManager;
@@ -252,15 +253,15 @@ private:
 	// Main operating mode
 	Mode m_mode;
 	
-	// Device classes
-	QPtrList <DeviceClass> m_deviceClassList;
+	// Fixture definitions
+	QPtrList <QLCFixtureDef> m_fixtureDefList;
 	
 	t_value m_values[KChannelMax];
 	float m_submasterValues[KChannelMax];
 	int m_submasters[KChannelMax];
 	
 	bool m_blackOut;
-	
+
 protected:
 	void closeEvent(QCloseEvent*);
 	

@@ -29,7 +29,7 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 
-#include "common/qlcfixture.h"
+#include "common/qlcfixturedef.h"
 #include "common/qlcphysical.h"
 #include "common/qlcfixturemode.h"
 #include "editmode.h"
@@ -46,12 +46,12 @@ EditMode::EditMode(QWidget* parent, QLCFixtureMode* mode)
 	m_mode = new QLCFixtureMode(mode);
 }
 
-EditMode::EditMode(QWidget* parent, QLCFixture* fixture)
+EditMode::EditMode(QWidget* parent, QLCFixtureDef* fixtureDef)
 {
-	Q_ASSERT(fixture != NULL);
+	Q_ASSERT(fixtureDef != NULL);
 	
 	/* Create a new mode for the given fixture */
-	m_mode = new QLCFixtureMode(fixture);
+	m_mode = new QLCFixtureMode(fixtureDef);
 }
 
 EditMode::~EditMode()
@@ -111,7 +111,7 @@ void EditMode::slotModeNameChanged(const QString& text)
 
 void EditMode::slotAddChannelClicked()
 {
-	QPtrListIterator<QLCChannel> it(*m_mode->fixture()->channels());
+	QPtrListIterator<QLCChannel> it(*m_mode->fixtureDef()->channels());
 	QLCChannel* ch = NULL;
 	QStringList list;
 	bool ok = false;
@@ -137,7 +137,7 @@ void EditMode::slotAddChannelClicked()
 		QListViewItem* item = NULL;
 		int insertat = 0;
 		
-		ch = m_mode->fixture()->searchChannel(name);
+		ch = m_mode->fixtureDef()->channel(name);
 
 		// Find out the current channel number
 		item = m_channelList->currentItem();

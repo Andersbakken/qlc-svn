@@ -2,8 +2,7 @@
   Q Light Controller
   sceneeditor.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
-                            2002 Stefan Krumm
+  Copyright (c) Heikki Junnila, Stefan Krumm
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -31,12 +30,12 @@
 #include <qtoolbutton.h>
 #include <assert.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "app.h"
 #include "doc.h"
 #include "sceneeditor.h"
 #include "function.h"
-#include "device.h"
+#include "fixture.h"
 #include "scene.h"
 #include "consolechannel.h"
 #include "listboxiditem.h"
@@ -60,179 +59,180 @@ static const QColor KStatusColorStored    ( 100, 255, 100 );
 static const QColor KStatusColorUnchanged ( 255, 255, 255 );
 static const QColor KStatusColorModified  ( 255, 100, 100 );
 
-SceneEditor::SceneEditor(QWidget* parent, const char* name)
-  : UI_SceneEditor(parent, name),
-    m_deviceID  ( KNoID ),
-    m_menu      (  NULL ),
-    m_tempScene (  NULL )
+SceneEditor::SceneEditor(QWidget* parent)
+	: UI_SceneEditor(parent, "Scene Editor"),
+	  m_fixture   ( KNoID ),
+	  m_menu      (  NULL ),
+	  m_tempScene (  NULL )
 {
-  m_sceneList->setHScrollBarMode(QScrollView::AlwaysOff);
-  initMenu();
+	m_sceneList->setHScrollBarMode(QScrollView::AlwaysOff);
+	initMenu();
 }
 
 SceneEditor::~SceneEditor()
 {
-  if (m_tempScene) delete m_tempScene;
+	if (m_tempScene) delete m_tempScene;
 }
 
-void SceneEditor::setDevice(t_device_id id)
+void SceneEditor::setFixture(t_fixture_id id)
 {
-  m_deviceID = id;
+	m_fixture = id;
 
-  // The scene that contains all the edited values
-  if (m_tempScene) delete m_tempScene;
-  m_tempScene = new Scene();
-  m_tempScene->setDevice(id);
+	// The scene that contains all the edited values
+	if (m_tempScene) delete m_tempScene;
+	m_tempScene = new Scene();
+	m_tempScene->setFixture(id);
 
-  fillFunctions();
+	fillFunctions();
 }
 
 void SceneEditor::initMenu()
 {
-  m_tools->setPixmap(QPixmap(PIXMAPS + QString("/scene.png")));
+	m_tools->setPixmap(QPixmap(PIXMAPS + QString("/scene.png")));
 
-  if (m_menu) delete m_menu;
-  m_menu = new QPopupMenu();
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/apply.png")),
-		     "Activate", this, SLOT(slotActivate()),
-		     0, KMenuActivate);
-  m_menu->insertSeparator();
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/wizard.png")),
-		     "New scene...", this, SLOT(slotNew()),
-		     0, KMenuNew);
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.png")),
-		     "Overwrite", this, SLOT(slotStore()),
-		     0, KMenuStore);
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/editdelete.png")),
-		     "Remove", this, SLOT(slotRemove()),
-		     0, KMenuRemove);
-  m_menu->insertItem(QPixmap(PIXMAPS + QString("/editclear.png")),
-		     "Rename...", this, SLOT(slotRename()),
-		     0, KMenuRename);
+	if (m_menu) delete m_menu;
+	m_menu = new QPopupMenu();
+	m_menu->insertItem(QPixmap(PIXMAPS + QString("/apply.png")),
+			   "Activate", this, SLOT(slotActivate()),
+			   0, KMenuActivate);
+	m_menu->insertSeparator();
+	m_menu->insertItem(QPixmap(PIXMAPS + QString("/wizard.png")),
+			   "New scene...", this, SLOT(slotNew()),
+			   0, KMenuNew);
+	m_menu->insertItem(QPixmap(PIXMAPS + QString("/filesave.png")),
+			   "Overwrite", this, SLOT(slotStore()),
+			   0, KMenuStore);
+	m_menu->insertItem(QPixmap(PIXMAPS + QString("/editdelete.png")),
+			   "Remove", this, SLOT(slotRemove()),
+			   0, KMenuRemove);
+	m_menu->insertItem(QPixmap(PIXMAPS + QString("/editclear.png")),
+			   "Rename...", this, SLOT(slotRename()),
+			   0, KMenuRename);
 
-  m_tools->setPopup(m_menu);
+	m_tools->setPopup(m_menu);
 }
 
 void SceneEditor::slotChannelChanged(t_channel channel, t_value value,
 				     Scene::ValueType status)
 {
-  assert(m_tempScene);
-  m_tempScene->set(channel, value, status);
+	assert(m_tempScene);
+	m_tempScene->set(channel, value, status);
 
-  setStatusText(KStatusModified, KStatusColorModified);
+	setStatusText(KStatusModified, KStatusColorModified);
 }
 
 void SceneEditor::slotActivate()
 {
-  Scene* s = currentScene();
+	Scene* s = currentScene();
 
-  if (s != NULL)
-    {
-      m_tempScene->copyFrom(s, s->device());
-      setScene(s);
-    }
+	if (s != NULL)
+	{
+		m_tempScene->copyFrom(s, s->fixture());
+		setScene(s);
+	}
 
-  setStatusText(KStatusUnchanged, KStatusColorUnchanged);
+	setStatusText(KStatusUnchanged, KStatusColorUnchanged);
 }
 
 
 void SceneEditor::setScene(Scene* scene)
 {
-  assert(scene);
+	assert(scene);
 
-  emit sceneActivated(scene->values(), scene->channels());
+	emit sceneActivated(scene->values(), scene->channels());
 }
 
 void SceneEditor::slotSceneListContextMenu(QListBoxItem* item,
 					   const QPoint &point)
 {
-  m_menu->exec(point);
+	m_menu->exec(point);
 }
 
 void SceneEditor::slotRemove()
 {
-  Scene* s = currentScene();
+	Scene* s = currentScene();
 
-  if (s == NULL)
-    {
-      return;
-    }
+	if (s == NULL)
+	{
+		return;
+	}
 
-  if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
-			   QMessageBox::Yes, QMessageBox::No)
-      == QMessageBox::Yes)
-    {
-      _app->doc()->deleteFunction(s->id());
-      fillFunctions();
-    }
+	if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
+				 QMessageBox::Yes, QMessageBox::No)
+	    == QMessageBox::Yes)
+	{
+		_app->doc()->deleteFunction(s->id());
+		fillFunctions();
+	}
 }
 
 void SceneEditor::slotRename()
 {
-  bool ok = false;
-  Scene* s = currentScene();
+	bool ok = false;
+	Scene* s = currentScene();
 
-  if (s == NULL)
-    {
-      return;
-    }
+	if (s == NULL)
+	{
+		return;
+	}
 
-  QString text = QInputDialog::getText("Scene editor - Rename Scene",
-				       "Enter scene name",
-				       QLineEdit::Normal,
-				       s->name(), &ok, this);
-  if (ok && !text.isEmpty())
-    {
-      s->setName(text);
-      fillFunctions();
+	QString text = QInputDialog::getText("Scene editor - Rename Scene",
+					     "Enter scene name",
+					     QLineEdit::Normal,
+					     s->name(), &ok, this);
+	if (ok && !text.isEmpty())
+	{
+		s->setName(text);
+		fillFunctions();
 
-      selectFunction(s->id());
-    }
+		selectFunction(s->id());
+	}
 }
 
 void SceneEditor::slotNew()
 {
-  bool ok = false;
-  QString text = QInputDialog::getText(tr("Scene editor - New Scene"),
-				       tr("Enter scene name"),
-				       QLineEdit::Normal,
-				       QString::null, &ok, this);
+	bool ok = false;
+	QString text = QInputDialog::getText(tr("Scene editor - New Scene"),
+					     tr("Enter scene name"),
+					     QLineEdit::Normal,
+					     QString::null, &ok, this);
 
-  if (ok && !text.isEmpty())
-    {
-      Scene* sc = static_cast<Scene*>
-	(_app->doc()->newFunction(Function::Scene, m_tempScene->device()));
+	if (ok && !text.isEmpty())
+	{
+		Scene* sc = static_cast<Scene*>
+			(_app->doc()->newFunction(Function::Scene,
+						  m_tempScene->fixture()));
 
-      sc->copyFrom(m_tempScene, m_tempScene->device());
-      sc->setName(text);
+		sc->copyFrom(m_tempScene, m_tempScene->fixture());
+		sc->setName(text);
 
-      m_sceneList->sort();
-      selectFunction(sc->id());
-      m_sceneList->ensureCurrentVisible();
+		m_sceneList->sort();
+		selectFunction(sc->id());
+		m_sceneList->ensureCurrentVisible();
 
-      setStatusText(KStatusStored, KStatusColorStored);
-    }
+		setStatusText(KStatusStored, KStatusColorStored);
+	}
 }
 
 void SceneEditor::slotStore()
 {
-  Scene* sc = currentScene();
-  if (sc == NULL)
-    {
-      return;
-    }
+	Scene* sc = currentScene();
+	if (sc == NULL)
+	{
+		return;
+	}
 
-  // Save name & bus because copyFrom overwrites them
-  QString name = sc->name();
-  t_bus_id bus = sc->busID();
+	// Save name & bus because copyFrom overwrites them
+	QString name = sc->name();
+	t_bus_id bus = sc->busID();
 
-  sc->copyFrom(m_tempScene, m_tempScene->device());
+	sc->copyFrom(m_tempScene, m_tempScene->fixture());
 
-  // Set these again
-  sc->setName(name);
-  sc->setBus(bus);
+	// Set these again
+	sc->setName(name);
+	sc->setBus(bus);
 
-  setStatusText(KStatusStored, KStatusColorStored);
+	setStatusText(KStatusStored, KStatusColorStored);
 }
 
 //
@@ -240,26 +240,26 @@ void SceneEditor::slotStore()
 //
 void SceneEditor::slotFunctionAdded(t_function_id id)
 {
-  Function* function = NULL;
-  Scene* scene = NULL;
-  ListBoxIDItem* item = NULL;
+	Function* function = NULL;
+	Scene* scene = NULL;
+	ListBoxIDItem* item = NULL;
 
-  function = _app->doc()->function(id);
-  assert(function);
+	function = _app->doc()->function(id);
+	assert(function);
 
-  item = getItem(id);
+	item = getItem(id);
 
-  // We are interested only in scenes that are members of this
-  // console's device
-  if (item == NULL &&
-      function->type() == Function::Scene &&
-      function->device() == m_deviceID)
-    {
-      item = new ListBoxIDItem();
-      item->setText(function->name());
-      item->setRtti(id);
-      m_sceneList->insertItem(item);
-    }
+	// We are interested only in scenes that are members of this
+	// console's fixture
+	if (item == NULL &&
+	    function->type() == Function::Scene &&
+	    function->fixture() == m_fixture)
+	{
+		item = new ListBoxIDItem();
+		item->setText(function->name());
+		item->setRtti(id);
+		m_sceneList->insertItem(item);
+	}
 }
 
 //
@@ -267,26 +267,26 @@ void SceneEditor::slotFunctionAdded(t_function_id id)
 //
 void SceneEditor::slotFunctionRemoved(t_function_id id)
 {
-  QListBoxItem* item = NULL;
-  QListBoxItem* nextItem = NULL;
+	QListBoxItem* item = NULL;
+	QListBoxItem* nextItem = NULL;
 
-  item = getItem(id);
-  if (item)
-    {
-      if (item->isCurrent())
+	item = getItem(id);
+	if (item)
 	{
-	  // Select an item below or above if the current item
-	  // was removed.
-	  if (item->next())
-	    nextItem = item->next();
-	  else
-	    nextItem = item->prev();
+		if (item->isCurrent())
+		{
+			// Select an item below or above if the current item
+			// was removed.
+			if (item->next())
+				nextItem = item->next();
+			else
+				nextItem = item->prev();
 	  
-	  m_sceneList->setCurrentItem(nextItem);
-	}
+			m_sceneList->setCurrentItem(nextItem);
+		}
       
-      delete item;
-    }
+		delete item;
+	}
 }
 
 //
@@ -294,19 +294,19 @@ void SceneEditor::slotFunctionRemoved(t_function_id id)
 //
 void SceneEditor::slotFunctionChanged(t_function_id id)
 {
-  ListBoxIDItem* item = NULL;
-  Function* function = NULL;
+	ListBoxIDItem* item = NULL;
+	Function* function = NULL;
 
-  item = getItem(id);
-  if (item)
-    {
-      function = _app->doc()->function(id);
-      if (function && function->type() == Function::Scene)
+	item = getItem(id);
+	if (item)
 	{
-	  item->setText(function->name());
-	  item->setRtti(function->id());
+		function = _app->doc()->function(id);
+		if (function && function->type() == Function::Scene)
+		{
+			item->setText(function->name());
+			item->setRtti(function->id());
+		}
 	}
-    }
 }
 
 //
@@ -314,77 +314,77 @@ void SceneEditor::slotFunctionChanged(t_function_id id)
 //
 ListBoxIDItem* SceneEditor::getItem(t_function_id id)
 {
-  ListBoxIDItem* item = NULL;
+	ListBoxIDItem* item = NULL;
 
-  // Check, whether a function was removed from this console's device
-  for (item = (ListBoxIDItem*) m_sceneList->firstItem();
-       item != NULL;
-       item = (ListBoxIDItem*) item->next())
-    {
-      if (static_cast <ListBoxIDItem*> (item)->rtti() == id)
+	// Check, whether a function was removed from this console's fixture
+	for (item = (ListBoxIDItem*) m_sceneList->firstItem();
+	     item != NULL;
+	     item = (ListBoxIDItem*) item->next())
 	{
-	  break;
+		if (static_cast <ListBoxIDItem*> (item)->rtti() == id)
+		{
+			break;
+		}
 	}
-    }
   
-  return item;
+	return item;
 }
 
 Scene* SceneEditor::currentScene()
 {
-  t_function_id fid = 0;
+	t_function_id fid = 0;
 
-  if (m_sceneList->selectedItem() == NULL)
-    {
-      return NULL;
-    }
+	if (m_sceneList->selectedItem() == NULL)
+	{
+		return NULL;
+	}
 
-  fid = static_cast<ListBoxIDItem*> (m_sceneList->selectedItem())->rtti();
+	fid = static_cast<ListBoxIDItem*> (m_sceneList->selectedItem())->rtti();
 
-  return static_cast<Scene*> (_app->doc()->function(fid));
+	return static_cast<Scene*> (_app->doc()->function(fid));
 }
 
 void SceneEditor::fillFunctions()
 {
-  m_sceneList->clear();
+	m_sceneList->clear();
 
-  for (t_function_id id = 0; id < KFunctionArraySize; id++)
-    {
-      Function* f = _app->doc()->function(id);
-      if (!f)
-	continue;
-
-      if (f->type() == Function::Scene && f->device() == m_deviceID)
+	for (t_function_id id = 0; id < KFunctionArraySize; id++)
 	{
-	  ListBoxIDItem* item = new ListBoxIDItem();
-	  item->setText(f->name());
-	  item->setRtti(f->id());
-	  m_sceneList->insertItem(item);
+		Function* f = _app->doc()->function(id);
+		if (!f)
+			continue;
+
+		if (f->type() == Function::Scene && f->fixture() == m_fixture)
+		{
+			ListBoxIDItem* item = new ListBoxIDItem();
+			item->setText(f->name());
+			item->setRtti(f->id());
+			m_sceneList->insertItem(item);
+		}
 	}
-    }
 
-  m_sceneList->sort();
+	m_sceneList->sort();
 
-  setStatusText(KStatusUnchanged, KStatusColorUnchanged);
+	setStatusText(KStatusUnchanged, KStatusColorUnchanged);
 }
 
 void SceneEditor::selectFunction(t_function_id fid)
 {
-  for (unsigned int i = 0; i < m_sceneList->count(); i++)
-    {
-      ListBoxIDItem* item = static_cast<ListBoxIDItem*> (m_sceneList->item(i));
-      if (static_cast<t_function_id> (item->rtti()) == fid)
+	for (unsigned int i = 0; i < m_sceneList->count(); i++)
 	{
-	  m_sceneList->setSelected(item, true);
-	  m_sceneList->ensureCurrentVisible();
-	  break;
+		ListBoxIDItem* item = static_cast<ListBoxIDItem*> (m_sceneList->item(i));
+		if (static_cast<t_function_id> (item->rtti()) == fid)
+		{
+			m_sceneList->setSelected(item, true);
+			m_sceneList->ensureCurrentVisible();
+			break;
+		}
 	}
-    }
 }
 
 
 void SceneEditor::setStatusText(QString text, QColor color)
 {
-  m_statusLabel->setPaletteForegroundColor(color);
-  m_statusLabel->setText(text);
+	m_statusLabel->setPaletteForegroundColor(color);
+	m_statusLabel->setText(text);
 }

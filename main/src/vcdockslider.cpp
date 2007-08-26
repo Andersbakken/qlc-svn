@@ -944,7 +944,7 @@ void VCDockSlider::parseWidgetMenu(int item)
 	sp->init();
 	if (sp->exec() == QDialog::Accepted)
 	  {
-	    _app->doc()->setModified(true);
+	    _app->doc()->setModified();
 	  }
 
 	delete sp;
@@ -962,7 +962,7 @@ void VCDockSlider::parseWidgetMenu(int item)
 	    setFrameStyle(KFrameStyle);
 	  }
 
-	_app->doc()->setModified(true);
+	_app->doc()->setModified();
       }
       break;
 
@@ -1026,7 +1026,7 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
 	{
 	  QPoint p(QCursor::pos());
 	  resizeTo(mapFromGlobal(p));
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
       else if (e->state() & LeftButton || e->state() & MidButton)
 	{
@@ -1035,7 +1035,7 @@ void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
 	  p.setY(p.y() - m_mousePressPoint.y());
 
 	  moveTo(p);
-	  _app->doc()->setModified(true);
+	  _app->doc()->setModified();
 	}
     }
   else

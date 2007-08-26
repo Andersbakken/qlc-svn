@@ -27,7 +27,6 @@
 #include <qpixmap.h>
 
 #include "common/types.h"
-#include "device.h"
 
 class QFile;
 class QString;
@@ -37,54 +36,54 @@ class XYChannelUnit;
 
 class VCXYPad : public QFrame
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  VCXYPad(QWidget* parent);
-  virtual ~VCXYPad();
+	VCXYPad(QWidget* parent);
+	virtual ~VCXYPad();
 
-  void init();
+	void init();
 
-  void saveToFile(QFile& file, t_vc_id parentID = 0);
-  virtual void createContents(QPtrList <QString> &list);
+	void saveToFile(QFile& file, t_vc_id parentID = 0);
+	virtual void createContents(QPtrList <QString> &list);
 
-  QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
-  QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }
+	QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
+	QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }
   
  private slots:
-  void slotModeChanged();
+	void slotModeChanged();
 
  signals:
-  void backgroundChanged();
+	void backgroundChanged();
 
  protected:
-  void invokeMenu(QPoint point);
-  void parseWidgetMenu(int item);
+	void invokeMenu(QPoint point);
+	void parseWidgetMenu(int item);
 
-  void mousePressEvent(QMouseEvent* e);
-  void mouseReleaseEvent(QMouseEvent* e);
-  void mouseMoveEvent(QMouseEvent* e);
-  void paintEvent(QPaintEvent* e);
-  void customEvent(QCustomEvent* e);
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
+	void paintEvent(QPaintEvent* e);
+	void customEvent(QCustomEvent* e);
 
-  void resizeTo(QPoint p);
-  void moveTo(QPoint p);
-  void outputDMX(int x, int y);
+	void resizeTo(QPoint p);
+	void moveTo(QPoint p);
+	void outputDMX(int x, int y);
 
-  void createChannelUnitFromString(QString string, bool isX);
+	void createChannelUnitFromString(QString string, bool isX);
  
  protected:
-  int m_xpos;
-  int m_ypos;
+	int m_xpos;
+	int m_ypos;
 
-  QPoint m_mousePressPoint;
-  bool m_resizeMode;
+	QPoint m_mousePressPoint;
+	bool m_resizeMode;
  
-  QPoint m_currentXYPosition;
-  QPixmap m_pixmap;
+	QPoint m_currentXYPosition;
+	QPixmap m_pixmap;
 
-  QPtrList<XYChannelUnit> m_channelsX;
-  QPtrList<XYChannelUnit> m_channelsY;
+	QPtrList<XYChannelUnit> m_channelsX;
+	QPtrList<XYChannelUnit> m_channelsY;
 };
 
 #endif

@@ -50,13 +50,13 @@ class EFXEditor : public UI_EFXEditor
   void setEFX(EFX* efx);
   
   /**
-   * Get channels from the EFX function's device
+   * Get channels from the EFX function's fixture
    * and fill the combos with them.
    */
   void fillChannelCombos();
 
   /**
-   * Get sceness from the EFX function's device
+   * Get sceness from the EFX function's fixture
    * and fill the list views with them.
    */
   void fillSceneLists();

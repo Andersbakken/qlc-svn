@@ -22,20 +22,20 @@
 #ifndef QLC_FIXTURE_EDITOR_H
 #define QLC_FIXTURE_EDITOR_H
 
-#include "uic_deviceclasseditor.h"
+#include "uic_fixtureeditor.h"
 
 class QCloseEvent;
-class QLCFixture;
+class QLCFixtureDef;
 class QLCChannel;
 class QLCFixtureMode;
 class QString;
 
-class QLCFixtureEditor : public UI_QLCFixtureEditor
+class QLCFixtureEditor : public UI_FixtureEditor
 {
 	Q_OBJECT
 
  public:
-	QLCFixtureEditor(QWidget* parent, QLCFixture* fixture);
+	QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef);
 	virtual ~QLCFixtureEditor();
 
 	void init();
@@ -80,7 +80,7 @@ class QLCFixtureEditor : public UI_QLCFixtureEditor
 	QLCFixtureMode* currentMode();
 
  private:
-	QLCFixture* m_fixture;
+	QLCFixtureDef* m_fixtureDef;
 	QString m_fileName;
 	bool m_modified;
 };

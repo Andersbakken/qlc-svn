@@ -39,13 +39,6 @@ const QString KEY_APP_MAXIMIZED        (  "ApplicationMaximized" );
 const QString KEY_APP_BACKGROUND       ( "ApplicationBackground" );
 const QString KEY_APP_SHOW_TOOLTIPS    (          "ShowTooltips" );
 
-const QString KEY_DEVICE_MANAGER_OPEN  (  "DeviceManagerOpen" );
-const QString KEY_DEVICE_MANAGER_X     ( "DeviceManagerRectX" );
-const QString KEY_DEVICE_MANAGER_Y     ( "DeviceManagerRectY" );
-const QString KEY_DEVICE_MANAGER_W     ( "DeviceManagerRectW" );
-const QString KEY_DEVICE_MANAGER_H     ( "DeviceManagerRectH" );
-const QString KEY_DEVICE_MANAGER_SPLITTER ( "DeviceManagerSplitter" );
-
 // These aren't actually settings keys, but I wanted to get rid of
 // the compile-time defines, so I moved them here.
 const QString CONFIGFILE               (           "qlc.conf" );

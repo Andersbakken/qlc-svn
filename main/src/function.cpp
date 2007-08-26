@@ -2,7 +2,7 @@
   Q Light Controller
   function.cpp
 
-  Copyright (C) 2004 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,14 +26,14 @@
 #include <qpixmap.h>
 #include <qdom.h>
 
+#include "common/filehandler.h"
+#include "function.h"
+#include "scene.h"
+#include "chaser.h"
+#include "functioncollection.h"
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
-#include "function.h"
-#include "functioncollection.h"
-#include "chaser.h"
-#include "scene.h"
-#include "common/filehandler.h"
 
 extern App* _app;
 
@@ -59,7 +59,7 @@ Function::Function(Type type) :
 	m_name              ( QString::null ),
 	m_type              (          type ),
 	m_id                (         KNoID ),
-	m_deviceID          (         KNoID ),
+	m_fixture           (         KNoID ),
 	m_busID             ( KBusIDInvalid ),
 	m_channels          (             0 ),
 	m_eventBuffer       (          NULL ),
@@ -122,6 +122,21 @@ QString Function::runOrderToString(RunOrder order)
 }
 
 //
+// Convert a string to RunOrder
+//
+Function::RunOrder Function::stringToRunOrder(QString str)
+{
+	if (str == KLoopString)
+		return Loop;
+	else if (str == KPingPongString)
+		return PingPong;
+	else if (str == KSingleShotString)
+		return SingleShot;
+	else
+		return Loop;
+}
+
+//
 // Convert a Direction to string
 //
 QString Function::directionToString(Direction dir)
@@ -140,6 +155,19 @@ QString Function::directionToString(Direction dir)
 		return KUndefinedString;
 		break;
 	}
+}
+
+//
+// Convert a string to Direction
+//
+Function::Direction Function::stringToDirection(QString str)
+{
+	if (str == KForwardString)
+		return Forward;
+	else if (str == KBackwardString)
+		return Backward;
+	else
+		return Forward;
 }
 
 //
@@ -209,6 +237,35 @@ Function::Type Function::stringToType(QString string)
 }
 
 //
+// Get a pixmap representing the function's type to be used in lists etc.
+//
+QPixmap Function::pixmap()
+{
+	switch (m_type)
+	{
+		case Scene:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/scene.png"));
+		case Chaser:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/chaser.png"));
+		case Collection:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/collection.png"));
+		case Sequence:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/sequence.png"));
+		case EFX:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/efx.png"));
+		default:
+			return QPixmap(QString(PIXMAPS) +
+					QString("/function.png"));
+	}
+}
+
+
+//
 // Set a name to this function
 //
 bool Function::setName(QString name)
@@ -222,7 +279,7 @@ bool Function::setName(QString name)
 	else
 	{
 		m_name = QString(name);
-		_app->doc()->setModified(true);
+		_app->doc()->setModified();
 		m_startMutex.unlock();
 		
 		_app->doc()->emitFunctionChanged(m_id);
@@ -233,10 +290,10 @@ bool Function::setName(QString name)
 
 
 //
-// Assign a device to this function (or vice versa, whichever feels
-// familiar to you)
+// Assign a fixture instance to this function (or vice versa, whichever
+// sounds right)
 //
-bool Function::setDevice(t_device_id id)
+bool Function::setFixture(t_fixture_id id)
 {
 	m_startMutex.lock();
 	if (m_running)
@@ -246,8 +303,8 @@ bool Function::setDevice(t_device_id id)
 	}
 	else
 	{
-		m_deviceID = id;
-		_app->doc()->setModified(true);
+		m_fixture = id;
+		_app->doc()->setModified();
 		m_startMutex.unlock();
 		
 		_app->doc()->emitFunctionChanged(m_id);
@@ -309,7 +366,7 @@ bool Function::setBus(t_bus_id id)
 			m_busID = id;
 		}
 		
-		_app->doc()->setModified(true);
+		_app->doc()->setModified();
 		
 		_app->doc()->emitFunctionChanged(m_id);
 		
@@ -318,6 +375,41 @@ bool Function::setBus(t_bus_id id)
 	}
 }
 
+Function* Function::loader(QDomDocument* doc, QDomElement* root)
+{
+	Function* function = NULL;
+	t_fixture_id fxi_id = 0;
+	t_function_id func_id = 0;
+	Type func_type;
+	QString func_name;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFunction)
+	{
+		qWarning("Function node not found!");
+		return NULL;
+	}
+
+	/* Extract function ID */
+	func_id = root->attribute(KXMLQLCFunctionID).toInt();
+	Q_ASSERT(func_id >= 0 && func_id < KFunctionArraySize);
+
+	/* Extract fixture ID (might be also invalid) */
+	fxi_id = root->attribute(KXMLQLCFunctionFixture).toInt();
+
+	/* Extract function name */
+	func_name = root->attribute(KXMLQLCFunctionName);
+
+	/* Extract function type */
+	func_type = Function::stringToType(root->attribute(KXMLQLCFunctionType));
+
+	/* Create a new function into Doc using the loaded information 
+	   and continue loading the specific function contents from Doc */
+	return _app->doc()->newFunction(func_type, func_id, func_name, 
+					fxi_id, doc, root);
+}
 
 ////////////////////////
 // Start the function //
@@ -386,146 +478,6 @@ void Function::stop()
 }
 
 
-//
-// Create a function from a file entry
-//
-Function* Function::create(QPtrList <QString> &list)
-{
-	Function* function = NULL;
-	
-	QString name;
-	Type type = Undefined;
-	t_function_id fid = KNoID;
-	t_device_id did = KNoID;
-	t_bus_id busid = KNoID;
-	
-	//
-	// Read basic information
-	//
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.prev();
-			break;
-		}
-		else if (*s == QString("Name"))
-		{
-			name = *(list.next());
-		}
-		else if (*s == QString("Type"))
-		{
-			type = Function::stringToType(*(list.next()));
-		}
-		else if (*s == QString("ID"))
-		{
-			fid = list.next()->toInt();
-		}
-		else if (*s == QString("Bus"))
-		{
-			busid = list.next()->toInt();
-		}
-		else if (*s == QString("Device"))
-		{
-			did = list.next()->toInt();
-			break;
-		}
-		else
-		{
-			// Unknown keyword (at this time)
-			list.next();
-		}
-	}
-	
-	//
-	// Create the function and its contents
-	//
-	function = _app->doc()->newFunction(type, did, fid);
-	if (function)
-	{
-		function->setName(name);
-		function->setBus(busid);
-		function->createContents(list);
-	}
-	else
-	{
-		QString msg;
-		msg = QString("Unable to create function:\n");
-		msg += QString("No more free function slots!");
-	}
-	
-	return function;
-}
-
-// Save this function to an XML document
-void Function::saveXML(QDomDocument* doc)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-	
-	assert(doc);
-
-	/* Function entry */
-	root = doc->createElement(KXMLQLCFunction);
-	doc->appendChild(root);
-
-	/* Name */
-	tag = doc->createElement(KXMLQLCFunctionName);
-	root.appendChild(tag);
-	text = doc->createTextNode(name());
-	tag.appendChild(text);
-
-	/* ID */
-	tag = doc->createElement(KXMLQLCFunctionID);
-	root.appendChild(tag);
-	str.setNum(id());
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
-
-	/* Type */
-	tag = doc->createElement(KXMLQLCFunctionType);
-	root.appendChild(tag);
-	text = doc->createTextNode(Function::typeToString(m_type));
-	tag.appendChild(text);
-}
-
-// Read this function's contents from an XML document
-void Function::loadXML(QDomDocument* doc)
-{
-}
-
-
-//
-// Get a pixmap representing the function's type to be used in lists etc.
-//
-QPixmap Function::pixmap()
-{
-	switch (m_type)
-	{
-		case Scene:
-			return QPixmap(QString(PIXMAPS) +
-					QString("/scene.png"));
-		case Chaser:
-			return QPixmap(QString(PIXMAPS) +
-					QString("/chaser.png"));
-		case Collection:
-			return QPixmap(QString(PIXMAPS) +
-					QString("/collection.png"));
-		case Sequence:
-			return QPixmap(QString(PIXMAPS) +
-					QString("/sequence.png"));
-		case EFX:
-			return QPixmap(QString(PIXMAPS) +
-					QString("/efx.png"));
-		default:
-			return QPixmap(QString(PIXMAPS) +
-					QString("/function.png"));
-	}
-}
-
-
 
 ///////////////////////////
 // namespace FunctionNS ///
@@ -557,7 +509,7 @@ FunctionNS::BusListener::~BusListener()
 void FunctionNS::BusListener::slotBusValueChanged(t_bus_id id,
 						  t_bus_value value)
 {
-	Function* f = _app->doc()->function(m_functionID);
-	assert(f);
-	f->busValueChanged(id, value);
+	Function* function = _app->doc()->function(m_functionID);
+	Q_ASSERT(function != NULL);
+	function->busValueChanged(id, value);
 }

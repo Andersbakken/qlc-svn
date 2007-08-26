@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_QLCFixtureEditor</class>
+<class>UI_FixtureEditor</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>UI_QLCFixtureEditor</cstring>
+        <cstring>UI_FixtureEditor</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -533,79 +533,79 @@
     <connection>
         <sender>m_editChannelButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotEditChannelClicked()</slot>
     </connection>
     <connection>
         <sender>m_removeChannelButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotRemoveChannelClicked()</slot>
     </connection>
     <connection>
         <sender>m_addChannelButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotAddChannelClicked()</slot>
     </connection>
     <connection>
         <sender>m_channelList</sender>
         <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotChannelListSelectionChanged(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>m_channelList</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotEditChannelClicked()</slot>
     </connection>
     <connection>
         <sender>m_typeCombo</sender>
         <signal>activated(const QString&amp;)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotTypeSelected(const QString&amp;)</slot>
     </connection>
     <connection>
         <sender>m_modelEdit</sender>
         <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotModelEditTextChanged(const QString&amp;)</slot>
     </connection>
     <connection>
         <sender>m_manufacturerEdit</sender>
         <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotManufacturerEditTextChanged(const QString&amp;)</slot>
     </connection>
     <connection>
         <sender>m_addModeButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotAddModeClicked()</slot>
     </connection>
     <connection>
         <sender>m_removeModeButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotRemoveModeClicked()</slot>
     </connection>
     <connection>
         <sender>m_editModeButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotEditModeClicked()</slot>
     </connection>
     <connection>
         <sender>m_modeList</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotEditModeClicked()</slot>
     </connection>
     <connection>
         <sender>m_modeList</sender>
         <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>UI_QLCFixtureEditor</receiver>
+        <receiver>UI_FixtureEditor</receiver>
         <slot>slotModeListSelectionChanged(QListViewItem*)</slot>
     </connection>
 </connections>

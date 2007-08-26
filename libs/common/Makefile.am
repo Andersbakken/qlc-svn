@@ -22,10 +22,12 @@ noinst_HEADERS = \
 	outputplugin.h \
 	plugin.h \
 	qlcfixturemode.h \
-	qlcfixture.h \
+	qlcfixturedef.h \
 	qlcchannel.h \
 	qlccapability.h \
+	qlcimagepreview.h \
 	qlcphysical.h \
+	qlcworkspace.h \
 	settings.h
 
 libqlccommon_la_SOURCES = \
@@ -39,18 +41,22 @@ libqlccommon_la_SOURCES = \
 	outputplugin.cpp \
 	plugin.cpp \
 	qlcfixturemode.cpp \
-	qlcfixture.cpp \
+	qlcfixturedef.cpp \
 	qlcchannel.cpp \
 	qlccapability.cpp \
+	qlcimagepreview.cpp \
 	qlcphysical.cpp \
+	qlcworkspace.cpp \
 	settings.cpp \
 	\
 	moc_documentbrowser.cpp \
 	moc_filehandler.cpp \
 	moc_inputplugin.cpp \
 	moc_ledbar.cpp \
-	moc_plugin.cpp \
 	moc_outputplugin.cpp \
+	moc_plugin.cpp \
+	moc_qlcimagepreview.cpp \
+	moc_qlcworkspace.cpp \
 	moc_settings.cpp
 
 moc_%.cpp: %.h

@@ -23,13 +23,13 @@
 #include <qdom.h>
 
 #include "common/qlcfixturemode.h"
-#include "common/qlcfixture.h"
+#include "common/qlcfixturedef.h"
 #include "common/qlcchannel.h"
 #include "common/qlcphysical.h"
 
-QLCFixtureMode::QLCFixtureMode(QLCFixture* fixture)
+QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef)
 {
-	m_fixture = fixture;
+	m_fixtureDef = fixtureDef;
 	
 	m_physical.setBulbType(QString::null);
 	m_physical.setBulbLumens(0);
@@ -55,9 +55,9 @@ QLCFixtureMode::QLCFixtureMode(QLCFixtureMode* mode)
 		*this = *mode;
 }
 
-QLCFixtureMode::QLCFixtureMode(QLCFixture* fixture, QDomElement* tag)
+QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef, QDomElement* tag)
 {
-	m_fixture = fixture;
+	m_fixtureDef = fixtureDef;
 	
 	if (tag != NULL)
 		loadXML(tag);
@@ -78,7 +78,7 @@ QLCFixtureMode& QLCFixtureMode::operator=(QLCFixtureMode& mode)
 		
 		m_name = mode.name();
 		m_physical = mode.physical();
-		m_fixture = mode.fixture();
+		m_fixtureDef = mode.fixtureDef();
 		
 		m_channels.clear();
 		while ( (ch = it.current()) != 0 )
@@ -191,8 +191,8 @@ bool QLCFixtureMode::loadXML(QDomElement* root)
 		if (tag.tagName() == KXMLQLCFixtureModeChannel)
 		{
 			str = tag.attribute(KXMLQLCFixtureModeChannelNumber);
-			insertChannel(m_fixture->searchChannel(tag.text()),
-					str.toInt());
+			insertChannel(m_fixtureDef->channel(tag.text()),
+				      str.toInt());
 		}
 		else if (tag.tagName() == KXMLQLCPhysical)
 		{

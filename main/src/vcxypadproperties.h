@@ -2,7 +2,7 @@
   Q Light Controller
   vcxypadproperties.h
   
-  Copyright (C) 2005, Stefan Krumm, Heikki Junnila
+  Copyright (c) Stefan Krumm, Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -49,7 +49,7 @@ protected:
 	* Create a channel entry to the given parent listview
 	*/
 	QListViewItem* createChannelEntry(QListView* parent,
-					t_device_id deviceID,
+					t_fixture_id fixtureID,
 					t_channel channel,
 					t_value lo,
 					t_value hi,

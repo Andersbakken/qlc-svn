@@ -34,7 +34,7 @@
 #include <string.h>
 
 #include "common/settings.h"
-#include "common/qlcfixture.h"
+#include "common/qlcfixturedef.h"
 #include "common/qlcfixturemode.h"
 #include "common/qlcchannel.h"
 #include "common/qlccapability.h"
@@ -43,7 +43,7 @@
 
 #include "app.h"
 #include "configkeys.h"
-#include "deviceclasseditor.h"
+#include "fixtureeditor.h"
 #include "editcapability.h"
 #include "editchannel.h"
 #include "editmode.h"
@@ -59,16 +59,17 @@ static const int KModesColumnName     ( 0 );
 static const int KModesColumnChannels ( 1 );
 static const int KModesColumnPointer  ( 2 );
 
-QLCFixtureEditor::QLCFixtureEditor(QWidget* parent, QLCFixture* fixture)
-	: UI_QLCFixtureEditor(parent),
-	  m_fixture(fixture),
+QLCFixtureEditor::QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef)
+	: UI_FixtureEditor(parent, "Fixture Editor"),
+
+	  m_fixtureDef(fixtureDef),
 	  m_modified(false)
 {
 }
 
 QLCFixtureEditor::~QLCFixtureEditor()
 {
-	delete m_fixture;
+	delete m_fixtureDef;
 }
 
 void QLCFixtureEditor::init()
@@ -91,10 +92,10 @@ void QLCFixtureEditor::init()
 	m_editModeButton->setIconSet(QPixmap(QString(PIXMAPS) + 
 				     QString("/edit.png")));
 
-	m_manufacturerEdit->setText(m_fixture->manufacturer());
-	m_modelEdit->setText(m_fixture->model());
+	m_manufacturerEdit->setText(m_fixtureDef->manufacturer());
+	m_modelEdit->setText(m_fixtureDef->model());
 
-	m_typeCombo->setCurrentText(m_fixture->type());
+	m_typeCombo->setCurrentText(m_fixtureDef->type());
 
 	refreshChannelList();
 	refreshModeList();
@@ -111,7 +112,7 @@ void QLCFixtureEditor::closeEvent(QCloseEvent* e)
 	{
 		r = QMessageBox::information(this, KApplicationNameShort,
 				"Do you want to save changes to fixture\n\""
-				+ m_fixture->name() + "\"\nbefore closing?",
+				+ m_fixtureDef->name() + "\"\nbefore closing?",
 				QMessageBox::Yes,
 				QMessageBox::No,
 				QMessageBox::Cancel);
@@ -144,7 +145,7 @@ bool QLCFixtureEditor::checkManufacturerModel()
 {
 	/* Check that the fixture has a manufacturer and a model for
 	   unique identification */
-	if (m_fixture->manufacturer().length() == 0)
+	if (m_fixtureDef->manufacturer().length() == 0)
 	{
 		QMessageBox::warning(this, 
 				     "Missing important information",
@@ -154,7 +155,7 @@ bool QLCFixtureEditor::checkManufacturerModel()
 		m_manufacturerEdit->setFocus();
 		return false;
 	}
-	else if (m_fixture->model().length() == 0)
+	else if (m_fixtureDef->model().length() == 0)
 	{
 		QMessageBox::warning(this, 
 				     "Missing important information",
@@ -187,7 +188,7 @@ bool QLCFixtureEditor::save()
 		/* Ensure that the file will have the .qxf extension */
 		ensureNewExtension();
 		
-		if (m_fixture->saveXML(m_fileName) == true)
+		if (m_fixtureDef->saveXML(m_fileName) == true)
 		{
 			setModified(false);
 			return true;
@@ -212,8 +213,8 @@ bool QLCFixtureEditor::saveAs()
 	if (m_fileName.length() == 0)
 	{
 		path = QString(FIXTURES) + QString("/");
-		path += m_fixture->manufacturer() + QString("-");
-		path += m_fixture->model() + QString(".qxf");
+		path += m_fixtureDef->manufacturer() + QString("-");
+		path += m_fixtureDef->model() + QString(".qxf");
 	}
 	else
 	{
@@ -234,7 +235,7 @@ bool QLCFixtureEditor::saveAs()
 		if (path.right(strlen(KExtFixture)) != QString(KExtFixture))
 			path += QString(KExtFixture);
 
-		if (m_fixture->saveXML(path) == true)
+		if (m_fixtureDef->saveXML(path) == true)
 		{
 			m_fileName = path;
 			setCaption();
@@ -271,7 +272,7 @@ void QLCFixtureEditor::setCaption()
 	else
 		caption = fileName;
 
-	UI_QLCFixtureEditor::setCaption(caption);
+	UI_FixtureEditor::setCaption(caption);
 }
 
 void QLCFixtureEditor::setModified(bool modified)
@@ -320,19 +321,19 @@ bool QLCFixtureEditor::newExtensionReminder()
 
 void QLCFixtureEditor::slotManufacturerEditTextChanged(const QString &text)
 {
-	m_fixture->setManufacturer(text);
+	m_fixtureDef->setManufacturer(text);
 	setModified();
 }
 
 void QLCFixtureEditor::slotModelEditTextChanged(const QString &text)
 {
-	m_fixture->setModel(text);
+	m_fixtureDef->setModel(text);
 	setModified();
 }
 
 void QLCFixtureEditor::slotTypeSelected(const QString &text)
 {
-	m_fixture->setType(text);
+	m_fixtureDef->setType(text);
 	setModified();
 }
 
@@ -366,7 +367,7 @@ void QLCFixtureEditor::slotAddChannelClicked()
 	{
 		if (ec->exec() == QDialog::Accepted)
 		{
-			if (m_fixture->searchChannel(ec->channel()->name()) != NULL)
+			if (m_fixtureDef->channel(ec->channel()->name()) != NULL)
 			{
 				QMessageBox::warning(this, 
 					QString("Channel already exists"),
@@ -387,7 +388,7 @@ void QLCFixtureEditor::slotAddChannelClicked()
 			else
 			{
 				/* Create a new channel to the fixture */
-				m_fixture->addChannel(new QLCChannel(ec->channel()));
+				m_fixtureDef->addChannel(new QLCChannel(ec->channel()));
 				refreshChannelList();
 				setModified();
 				
@@ -412,7 +413,7 @@ void QLCFixtureEditor::slotRemoveChannelClicked()
 			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 	{
 		// Remove the selected channel from the fixture (also deleted)
-		m_fixture->removeChannel(currentChannel());
+		m_fixtureDef->removeChannel(currentChannel());
 		refreshChannelList();
 		setModified();
 	}
@@ -450,7 +451,7 @@ void QLCFixtureEditor::slotEditChannelClicked()
 
 void QLCFixtureEditor::refreshChannelList()
 {
-	QPtrListIterator <QLCChannel> it(*m_fixture->channels());
+	QPtrListIterator <QLCChannel> it(*m_fixtureDef->channels());
 	QLCChannel* ch = NULL;
 	QListViewItem* item = NULL;
 	QString str;
@@ -511,14 +512,14 @@ void QLCFixtureEditor::slotAddModeClicked()
 	EditMode* em = NULL;
 	bool ok = false;
 	
-	em = new EditMode(_app, m_fixture);
+	em = new EditMode(_app, m_fixtureDef);
 	em->init();
 
 	while (ok == false)
 	{
 		if (em->exec() == QDialog::Accepted)
 		{
-			if (m_fixture->searchMode(em->mode()->name()) != NULL)
+			if (m_fixtureDef->mode(em->mode()->name()) != NULL)
 			{
 				QMessageBox::warning(this, 
 					QString("Mode already exists"),
@@ -540,7 +541,7 @@ void QLCFixtureEditor::slotAddModeClicked()
 			else
 			{
 				ok = true;
-				m_fixture->addMode(new QLCFixtureMode(em->mode()));
+				m_fixtureDef->addMode(new QLCFixtureMode(em->mode()));
 				refreshModeList();
 				setModified();
 			}
@@ -562,7 +563,7 @@ void QLCFixtureEditor::slotRemoveModeClicked()
 		QString("Are you sure you wish to remove mode: ") + mode->name(),
 			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 	{
-		m_fixture->removeMode(mode);
+		m_fixtureDef->removeMode(mode);
 		refreshModeList();
 		setModified();
 	}
@@ -595,7 +596,7 @@ void QLCFixtureEditor::slotEditModeClicked()
 
 void QLCFixtureEditor::refreshModeList()
 {
-	QPtrListIterator <QLCFixtureMode> it(*m_fixture->modes());
+	QPtrListIterator <QLCFixtureMode> it(*m_fixtureDef->modes());
 	QLCFixtureMode* mode = NULL;
 	QListViewItem* item = NULL;
 	QString str;

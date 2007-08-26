@@ -2,7 +2,7 @@
   Q Light Controller
   monitor.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -64,10 +64,10 @@ protected:
 	void paintEvent(QPaintEvent* e);
 	void closeEvent(QCloseEvent* e);
 
-	// Device label painting
-	void paintDeviceLabelAll(QRegion region, int x_offset, int y_offset,
-				 int unitW, int unitH, int unitsX);
-	void paintDeviceLabel(int x, int y, int w, int h, QString label);
+	// Fixture label painting
+	void paintFixtureLabelAll(QRegion region, int x_offset, int y_offset,
+				  int unitW, int unitH, int unitsX);
+	void paintFixtureLabel(int x, int y, int w, int h, QString label);
 
 	// Channel label painting
 	void paintChannelLabelAll(QRegion region, int x_offset, int y_offset,

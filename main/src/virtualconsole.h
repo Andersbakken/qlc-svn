@@ -38,6 +38,8 @@ class Bus;
 class VCDockArea;
 class FloatingEdit;
 
+#define KXMLQLCVirtualConsole "VirtualConsole"
+
 const QString KEY_VIRTUAL_CONSOLE_OPEN      (         "VirtualConsoleOpen" );
 const QString KEY_VIRTUAL_CONSOLE_GRABKB    ( "VirtualConsoleGrabKeyboard" );
 const QString KEY_VIRTUAL_CONSOLE_KEYREPEAT (    "VirtualConsoleKeyRepeat" );

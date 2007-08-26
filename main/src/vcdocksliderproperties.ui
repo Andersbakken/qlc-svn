@@ -416,16 +416,16 @@
                                 </widget>
                                 <widget class="QPushButton">
                                     <property name="name">
-                                        <cstring>m_deviceChannels</cstring>
+                                        <cstring>m_fixtureChannels</cstring>
                                     </property>
                                     <property name="enabled">
                                         <bool>false</bool>
                                     </property>
                                     <property name="text">
-                                        <string>Device</string>
+                                        <string>By Fixture</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>Toggle selection on all channels from the current device</string>
+                                        <string>Toggle selection on all channels from the current fixture</string>
                                     </property>
                                 </widget>
                                 <widget class="QPushButton">
@@ -436,7 +436,7 @@
                                         <bool>false</bool>
                                     </property>
                                     <property name="text">
-                                        <string>Role</string>
+                                        <string>By Role</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
                                         <string>Toggle selection on such channels, whose roles (names) match the selected channel</string>
@@ -710,10 +710,10 @@
         <slot>slotClearChannelsClicked()</slot>
     </connection>
     <connection>
-        <sender>m_deviceChannels</sender>
+        <sender>m_fixtureChannels</sender>
         <signal>clicked()</signal>
         <receiver>UI_VCDockSliderProperties</receiver>
-        <slot>slotDeviceChannelsClicked()</slot>
+        <slot>slotFixtureChannelsClicked()</slot>
     </connection>
     <connection>
         <sender>m_roleChannels</sender>
@@ -748,7 +748,7 @@
     <slot>slotAllChannelsClicked()</slot>
     <slot>slotClearChannelsClicked()</slot>
     <slot>slotInvertChannelsClicked()</slot>
-    <slot>slotDeviceChannelsClicked()</slot>
+    <slot>slotFixtureChannelsClicked()</slot>
     <slot>slotRoleChannelsClicked()</slot>
     <slot>slotAttachKeyClicked()</slot>
     <slot>slotDetachKeyClicked()</slot>

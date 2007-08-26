@@ -2,7 +2,7 @@
   Q Light Controller
   chasereditor.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -34,11 +34,12 @@
 #include <assert.h>
 #include <qtimer.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "common/settings.h"
+
 #include "chasereditor.h"
 #include "function.h"
-#include "device.h"
+#include "fixture.h"
 #include "app.h"
 #include "doc.h"
 #include "functionmanager.h"
@@ -49,7 +50,7 @@
 extern App* _app;
 
 #define COL_NUM      0
-#define COL_DEVICE   1
+#define COL_FIXTURE  1
 #define COL_FUNCTION 2
 #define COL_FID      3
 
@@ -61,7 +62,8 @@ ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
 {
 	m_chaser = new Chaser();
 	m_chaser->copyFrom(function);
-	ASSERT(m_chaser != NULL);
+
+	Q_ASSERT(m_chaser != NULL);
 
 	m_bus = NULL;
 
@@ -75,7 +77,7 @@ ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
 //
 ChaserEditor::~ChaserEditor()
 {
-  delete m_chaser;
+	delete m_chaser;
 }
 
 //
@@ -83,48 +85,49 @@ ChaserEditor::~ChaserEditor()
 //
 void ChaserEditor::updateStepList()
 {
-  QString device = QString::null;
-  QString function = QString::null;
+	QString fxi_name = QString::null;
+	QString func_name = QString::null;
+	Fixture* fxi = NULL;
 
-  m_stepList->clear();
+	m_stepList->clear();
 
-  QValueList<t_function_id>::iterator it;
-  it = m_chaser->steps()->end();
-  for (unsigned int i = 0; i < m_chaser->steps()->count(); i++)
-    {
-      --it;
-      Function* f = _app->doc()->function(*it);
-      if (!f)
+	QValueList<t_function_id>::iterator it;
+	it = m_chaser->steps()->end();
+	for (unsigned int i = 0; i < m_chaser->steps()->count(); i++)
 	{
-	  device = QString("Invalid");
-	  function = QString("Invalid");
-	}
-      else if (f->device() != KNoID)
-	{
-	  function = f->name();
+		--it;
+		Function* f = _app->doc()->function(*it);
+		if (f == NULL)
+		{
+			fxi_name = QString("Invalid");
+			func_name = QString("Invalid");
+		}
+		else if (f->fixture() != KNoID)
+		{
+			func_name = f->name();
 
-	  Device* d = _app->doc()->device(f->device());
-	  if (!d)
-	    {
-	      device = QString("Invalid");
-	    }
-	  else
-	    {
-	      device = d->name();
-	    }
-	}
-      else
-	{
-	  function = f->name();
-	  device = QString("Global");
+			fxi = _app->doc()->fixture(f->fixture());
+			if (fxi == NULL)
+			{
+				fxi_name = QString("Invalid");
+			}
+			else
+			{
+				fxi_name = fxi->name();
+			}
+		}
+		else
+		{
+			func_name = f->name();
+			fxi_name = QString("Global");
+		}
+
+		QString fid;
+		fid.setNum(*it);
+		new QListViewItem(m_stepList, "###", fxi_name, func_name, fid);
 	}
 
-      QString fid;
-      fid.setNum(*it);
-      new QListViewItem(m_stepList, "###", device, function, fid);
-    }
-
-  updateOrderNumbers();
+	updateOrderNumbers();
 }
 
 //
@@ -132,21 +135,21 @@ void ChaserEditor::updateStepList()
 //
 void ChaserEditor::init()
 {
-  m_nameEdit->setText(m_chaser->name());
-  m_nameEdit->setSelection(0, m_nameEdit->text().length());
+	m_nameEdit->setText(m_chaser->name());
+	m_nameEdit->setSelection(0, m_nameEdit->text().length());
 
-  m_addStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
-  m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
+	m_addStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
+	m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
 
-  m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/up.png")));
-  m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/down.png")));
+	m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/up.png")));
+	m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/down.png")));
 
-  m_runOrderGroup->setButton((int) m_chaser->runOrder());
-  m_directionGroup->setButton((int) m_chaser->direction());
+	m_runOrderGroup->setButton((int) m_chaser->runOrder());
+	m_directionGroup->setButton((int) m_chaser->direction());
 
-  m_stepList->setSorting(-1);
+	m_stepList->setSorting(-1);
 
-  updateStepList();
+	updateStepList();
 }
 
 //
@@ -154,43 +157,43 @@ void ChaserEditor::init()
 //
 void ChaserEditor::slotOKClicked()
 {
-  //
-  // Name
-  //
-  m_chaser->setName(m_nameEdit->text());
+	//
+	// Name
+	//
+	m_chaser->setName(m_nameEdit->text());
 
-  //
-  // Run Order
-  //
-  if (m_runOrderGroup->selected() == m_singleShot)
-    {
-       m_chaser->setRunOrder(Chaser::SingleShot);
-    }
-  else if (m_runOrderGroup->selected() == m_pingPong)
-    {
-      m_chaser->setRunOrder(Chaser::PingPong);
-    }
-  else
-    {
-      m_chaser->setRunOrder(Chaser::Loop);
-    }
+	//
+	// Run Order
+	//
+	if (m_runOrderGroup->selected() == m_singleShot)
+	{
+		m_chaser->setRunOrder(Chaser::SingleShot);
+	}
+	else if (m_runOrderGroup->selected() == m_pingPong)
+	{
+		m_chaser->setRunOrder(Chaser::PingPong);
+	}
+	else
+	{
+		m_chaser->setRunOrder(Chaser::Loop);
+	}
 
-  //
-  // Direction
-  //
-  if (m_directionGroup->selected() == m_backward)
-    {
-      m_chaser->setDirection(Chaser::Backward);
-    }
-  else
-    {
-      m_chaser->setDirection(Chaser::Forward);
-    }
+	//
+	// Direction
+	//
+	if (m_directionGroup->selected() == m_backward)
+	{
+		m_chaser->setDirection(Chaser::Backward);
+	}
+	else
+	{
+		m_chaser->setDirection(Chaser::Forward);
+	}
 
-  m_original->copyFrom(m_chaser, false);
+	m_original->copyFrom(m_chaser, false);
 
-  _app->doc()->setModified(true);
-  accept();
+	_app->doc()->setModified();
+	accept();
 }
 
 //
@@ -198,7 +201,7 @@ void ChaserEditor::slotOKClicked()
 //
 void ChaserEditor::slotCancelClicked()
 {
-  reject();
+	reject();
 }
 
 //
@@ -206,14 +209,14 @@ void ChaserEditor::slotCancelClicked()
 //
 void ChaserEditor::slotRemoveClicked()
 {
-  QListViewItem* item = m_stepList->currentItem();
+	QListViewItem* item = m_stepList->currentItem();
 
-  if (item != NULL)
-    {
-      m_chaser->removeStep(item->text(COL_NUM).toInt() - 1);
-    }
+	if (item != NULL)
+	{
+		m_chaser->removeStep(item->text(COL_NUM).toInt() - 1);
+	}
 
-  updateStepList();
+	updateStepList();
 }
 
 //
@@ -225,7 +228,7 @@ void ChaserEditor::slotAddClicked()
 	{
 		// Create a new function manager
 		m_functionManager = new FunctionManager(this,
-					FunctionManager::SelectionMode);
+							FunctionManager::SelectionMode);
 
 		connect(m_functionManager, SIGNAL(closed()),
 			this, SLOT(slotFunctionManagerClosed()));
@@ -291,7 +294,7 @@ void ChaserEditor::slotAddAnother()
 //
 void ChaserEditor::slotPlayClicked()
 {
-  qDebug("Not implemented");
+	qDebug("Not implemented");
 }
 
 //
@@ -299,21 +302,21 @@ void ChaserEditor::slotPlayClicked()
 //
 void ChaserEditor::updateOrderNumbers()
 {
-  int i = 1;
-  QString size;
-  QString num;
+	int i = 1;
+	QString size;
+	QString num;
 
-  size.setNum(m_chaser->steps()->count());
+	size.setNum(m_chaser->steps()->count());
 
-  // Create an iterator and give the listview as argument
-  QListViewItemIterator it(m_stepList);
+	// Create an iterator and give the listview as argument
+	QListViewItemIterator it(m_stepList);
 
-  // Iterate through all items of the listview
-  for (; it.current() != NULL; ++it)
-    {
-      num.sprintf("%.03d", i++);
-      it.current()->setText(COL_NUM, num);
-    }
+	// Iterate through all items of the listview
+	for (; it.current() != NULL; ++it)
+	{
+		num.sprintf("%.03d", i++);
+		it.current()->setText(COL_NUM, num);
+	}
 }
 
 //
@@ -321,35 +324,35 @@ void ChaserEditor::updateOrderNumbers()
 //
 void ChaserEditor::slotRaiseClicked()
 {
-  QListViewItem* item = m_stepList->currentItem();
-  t_function_id fid = 0;
-  int index = 0;
-  int newIndex = 0;
+	QListViewItem* item = m_stepList->currentItem();
+	t_function_id fid = 0;
+	int index = 0;
+	int newIndex = 0;
 
-  if (item != NULL)
-    {
-      index = item->text(COL_NUM).toInt() - 1;
-      fid = item->text(COL_FID).toInt();
-
-      if (m_chaser->raiseStep(index))
+	if (item != NULL)
 	{
-	  updateStepList();
+		index = item->text(COL_NUM).toInt() - 1;
+		fid = item->text(COL_FID).toInt();
 
-	  // Select the item again, now it's one step above
-	  QListViewItemIterator it(m_stepList);
-	  while (it.current() != NULL)
-	    {
-	      if (newIndex == index - 1)
+		if (m_chaser->raiseStep(index))
 		{
-		  m_stepList->setSelected(it.current(), true);
-		  break;
-		}
+			updateStepList();
 
-	      newIndex++;
-	      ++it;
-	    }
+			// Select the item again, now it's one step above
+			QListViewItemIterator it(m_stepList);
+			while (it.current() != NULL)
+			{
+				if (newIndex == index - 1)
+				{
+					m_stepList->setSelected(it.current(), true);
+					break;
+				}
+
+				newIndex++;
+				++it;
+			}
+		}
 	}
-    }
 }
 
 //
@@ -357,33 +360,33 @@ void ChaserEditor::slotRaiseClicked()
 //
 void ChaserEditor::slotLowerClicked()
 {
-  QListViewItem* item = m_stepList->currentItem();
-  t_function_id fid = 0;
-  int index = 0;
-  int newIndex = 0;
+	QListViewItem* item = m_stepList->currentItem();
+	t_function_id fid = 0;
+	int index = 0;
+	int newIndex = 0;
 
-  if (item != NULL)
-    {
-      index = item->text(COL_NUM).toInt() - 1;
-      fid = item->text(COL_FID).toInt();
-
-      if (m_chaser->lowerStep(index))
+	if (item != NULL)
 	{
-	  updateStepList();
+		index = item->text(COL_NUM).toInt() - 1;
+		fid = item->text(COL_FID).toInt();
 
-	  // Select the item again, now it's one step below
-	  QListViewItemIterator it(m_stepList);
-	  while (it.current() != NULL)
-	    {
-	      if (newIndex == index + 1)
+		if (m_chaser->lowerStep(index))
 		{
-		  m_stepList->setSelected(it.current(), true);
-		  break;
-		}
+			updateStepList();
 
-	      newIndex++;
-	      ++it;
-	    }
+			// Select the item again, now it's one step below
+			QListViewItemIterator it(m_stepList);
+			while (it.current() != NULL)
+			{
+				if (newIndex == index + 1)
+				{
+					m_stepList->setSelected(it.current(), true);
+					break;
+				}
+
+				newIndex++;
+				++it;
+			}
+		}
 	}
-    }
 }

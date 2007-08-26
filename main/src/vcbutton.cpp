@@ -52,7 +52,6 @@
 #include "vcframe.h"
 #include "virtualconsole.h"
 #include "keybind.h"
-#include "devicemanagerview.h"
 #include "configkeys.h"
 
 extern App* _app;
@@ -485,7 +484,7 @@ void VCButton::parseWidgetMenu(int item)
             bt->copyFrom(this);
             bt->show();
 
-            _app->doc()->setModified(true);
+            _app->doc()->setModified();
         }
         break;
 
@@ -516,7 +515,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
         {
             QPoint p(QCursor::pos());
             resizeTo(mapFromGlobal(p));
-            _app->doc()->setModified(true);
+            _app->doc()->setModified();
         }
         else if (e->state() & LeftButton || e->state() & MidButton)
         {
@@ -525,7 +524,7 @@ void VCButton::mouseMoveEvent(QMouseEvent* e)
             p.setY(p.y() - m_mousePressPoint.y());
 
             moveTo(p);
-            _app->doc()->setModified(true);
+            _app->doc()->setModified();
         }
     }
     else
@@ -787,7 +786,7 @@ void VCButton::attachFunction(t_function_id id)
         QToolTip::add(this, "No function");
     }
 
-    _app->doc()->setModified(true);
+    _app->doc()->setModified();
 }
 
 void VCButton::customEvent(QCustomEvent* e)

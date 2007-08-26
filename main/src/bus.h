@@ -2,7 +2,7 @@
   Q Light Controller
   bus.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -27,52 +27,73 @@
 
 #include "common/types.h"
 
-#define KXMLQLCBus "Bus"
-#define KXMLQLCBusRole "Role"
-#define KXMLQLCBusFade "Fade"
-#define KXMLQLCBusHold "Hold"
-
 class QFile;
 class QString;
+class QDomDocument;
+class QDomElement;
 class Function;
 class BusEmitter;
+
+#define KXMLQLCBus "Bus"
+#define KXMLQLCBusID "ID"
+#define KXMLQLCBusName "Name"
+#define KXMLQLCBusValue "Value"
+
+#define KXMLQLCBusRole "Role"
+#define KXMLQLCBusHold "Hold"
+#define KXMLQLCBusFade "Fade"
 
 class Bus
 {
  private:
-  Bus();
-
+	/** Constructor */
+	Bus();
+	
+	/** Destructor */
+	~Bus();
+	
  public:
-  ~Bus();
+	/** Initialize buses */
+	static void init();
 
- public:
-  static void init();
+	/** Get the BusEmitter singleton */
+	static const BusEmitter* emitter() { return s_busEmitter; }
 
-  static const BusEmitter* emitter() { return s_busEmitter; }
+	/** Get the value of a bus */
+	static const bool value(t_bus_id, t_bus_value&);
 
-  static const bool value(t_bus_id, t_bus_value&);
-  static bool setValue(t_bus_id, t_bus_value);
+	/** Set the value of a bus (emits the value as well) */
+	static bool setValue(t_bus_id, t_bus_value);
 
-  static const QString name(t_bus_id);
-  static bool setName(t_bus_id, QString);
+	/** Get the name of a bus */
+	static const QString name(t_bus_id);
 
-  static bool addListener(t_bus_id, Function*);
-  static bool removeListener(t_bus_id, Function*);
+	/** Set the name of a bus */
+	static bool setName(t_bus_id, QString);
 
-  static void createContents(QPtrList <QString> &list);
-  static void saveToFile(QFile &file);
+	/** Add a new listener for bus value changes */
+	static bool addListener(t_bus_id, Function*);
+
+	/** Remove a bus listener */
+	static bool removeListener(t_bus_id, Function*);
+
+	/** Load all buses from an XML document */
+	static bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/** Save all buses to an XML document */
+	static bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
  private:
-  t_bus_id m_id;
-  t_bus_value m_value;
-  QString m_name;
+	t_bus_id m_id;
+	t_bus_value m_value;
+	QString m_name;
 
-  QPtrList <Function> m_listeners;
+	QPtrList <Function> m_listeners;
 
  private:
-  static Bus* s_busArray;
-  static t_bus_id s_nextID;
-  static BusEmitter* s_busEmitter;
+	static Bus* s_busArray;
+	static t_bus_id s_nextID;
+	static BusEmitter* s_busEmitter;
 };
 
 //
@@ -80,24 +101,24 @@ class Bus
 //
 class BusEmitter : public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
-  friend class Bus;
+		friend class Bus;
 
  public:
-  BusEmitter() {};
-  ~BusEmitter() {};
+	BusEmitter() {};
+	~BusEmitter() {};
 
  protected:
-  void emitValueChanged(t_bus_id id, t_bus_value value)
-    { emit valueChanged(id, value); }
+	void emitValueChanged(t_bus_id id, t_bus_value value)
+		{ emit valueChanged(id, value); }
 
-  void emitNameChanged(t_bus_id id, QString name)
-    { emit nameChanged(id, name); }
+	void emitNameChanged(t_bus_id id, QString name)
+		{ emit nameChanged(id, name); }
 
  signals:
-  void valueChanged(t_bus_id, t_bus_value);
-  void nameChanged(t_bus_id, const QString&);
+	void valueChanged(t_bus_id, t_bus_value);
+	void nameChanged(t_bus_id, const QString&);
 };
 
 #endif

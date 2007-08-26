@@ -27,46 +27,46 @@
 #include <assert.h>
 #include <qtimer.h>
 
-#include "common/deviceclass.h"
+#include "common/qlcfixturedef.h"
 #include "functioncollectioneditor.h"
 #include "functioncollection.h"
 #include "function.h"
 #include "functionmanager.h"
 #include "app.h"
 #include "doc.h"
-#include "device.h"
+#include "fixture.h"
 #include "configkeys.h"
 
 extern App* _app;
 
 FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* fc,
 						   QWidget* parent)
-  : UI_FunctionCollectionEditor(parent, "FunctionCollectionEditor", true)
+	: UI_FunctionCollectionEditor(parent, "FunctionCollectionEditor", true)
 {
-  ASSERT(fc);
-  m_original = fc;
+	ASSERT(fc);
+	m_original = fc;
 
-  m_fc = new FunctionCollection();
-  m_fc->copyFrom(fc);
+	m_fc = new FunctionCollection();
+	m_fc->copyFrom(fc);
 
-  m_functionManager = NULL;
+	m_functionManager = NULL;
 
-  init();
+	init();
 }
 
 FunctionCollectionEditor::~FunctionCollectionEditor()
 {
-  delete m_fc;
-  m_fc = NULL;
+	delete m_fc;
+	m_fc = NULL;
 }
 
 void FunctionCollectionEditor::init()
 {
-  m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
-  m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
+	m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
+	m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
 
-  m_nameEdit->setText(m_fc->name());
-  updateFunctionList();
+	m_nameEdit->setText(m_fc->name());
+	updateFunctionList();
 }
 
 /**
@@ -79,7 +79,7 @@ void FunctionCollectionEditor::slotAddFunctionClicked()
 		// Create the function manager in selection mode so it
 		// looks like a normal modal dialog
 		m_functionManager = new FunctionManager(this,
-					FunctionManager::SelectionMode);
+							FunctionManager::SelectionMode);
 
 		// Prevent the user from selecting this function
 		m_functionManager->setInactiveID(m_original->id());
@@ -146,21 +146,21 @@ void FunctionCollectionEditor::slotAddAnother()
 //
 void FunctionCollectionEditor::slotRemoveFunctionClicked()
 {
-  if (m_functionList->selectedItem() != NULL)
-    {
-      t_function_id id = 0;
-
-      id = m_functionList->selectedItem()->text(2).toInt();
-
-      if (m_fc->removeItem(id))
+	if (m_functionList->selectedItem() != NULL)
 	{
-	  m_functionList->takeItem(m_functionList->selectedItem());
+		t_function_id id = 0;
+
+		id = m_functionList->selectedItem()->text(2).toInt();
+
+		if (m_fc->removeItem(id))
+		{
+			m_functionList->takeItem(m_functionList->selectedItem());
+		}
+		else
+		{
+			ASSERT(false);
+		}
 	}
-      else
-	{
-	  ASSERT(false);
-	}
-    }
 }
 
 
@@ -169,13 +169,13 @@ void FunctionCollectionEditor::slotRemoveFunctionClicked()
 //
 void FunctionCollectionEditor::slotOKClicked()
 {
-  m_fc->setName(m_nameEdit->text());
+	m_fc->setName(m_nameEdit->text());
 
-  m_original->copyFrom(m_fc);
+	m_original->copyFrom(m_fc);
 
-  _app->doc()->setModified(true);
+	_app->doc()->setModified();
 
-  QDialog::accept();
+	QDialog::accept();
 }
 
 
@@ -184,7 +184,7 @@ void FunctionCollectionEditor::slotOKClicked()
 //
 void FunctionCollectionEditor::slotCancelClicked()
 {
-  reject();
+	reject();
 }
 
 
@@ -193,46 +193,46 @@ void FunctionCollectionEditor::slotCancelClicked()
 //
 void FunctionCollectionEditor::updateFunctionList()
 {
-  assert(m_fc);
-  QString device = QString::null;
-  QString function = QString::null;
+	QString fxi_name = QString::null;
+	QString func_name = QString::null;
+	Fixture* fxi = NULL;
+	Function* function = NULL;
+	QValueList<t_function_id>::iterator it;
+	QString fid;
 
-  QValueList<t_function_id>::iterator it;
+	m_functionList->clear();
 
-  m_functionList->clear();
-
-  for (it = m_fc->steps()->begin(); it != m_fc->steps()->end(); ++it)
-    {
-      Function* f = _app->doc()->function(*it);
-      if (!f)
+	for (it = m_fc->steps()->begin(); it != m_fc->steps()->end(); ++it)
 	{
-	  function = QString("Invalid");
-	  device = QString("Invalid");
-	}
-      else if (f->device() != KNoID)
-	{
-	  function = f->name();
+		function = _app->doc()->function(*it);
+		if (function == NULL)
+		{
+			func_name = QString("Invalid");
+			fxi_name = QString("Invalid");
+		}
+		else if (function->fixture() != KNoID)
+		{
+			func_name = function->name();
 
-	  Device* d = _app->doc()->device(f->device());
-	  if (!d)
-	    {
-	      device = QString("Invalid");
-	    }
-	  else
-	    {
-	      device = d->name();
-	    }
-	}
-      else
-	{
-	  function = f->name();
-	  device = QString("Global");
-	}
+			fxi = _app->doc()->fixture(function->fixture());
+			if (fxi == NULL)
+			{
+				fxi_name = QString("Invalid");
+			}
+			else
+			{
+				fxi_name = fxi->name();
+			}
+		}
+		else
+		{
+			func_name = function->name();
+			fxi_name = QString("Global");
+		}
 
-      QString fid;
-      fid.setNum(*it);
-      new QListViewItem(m_functionList, device, function, fid);
-    }
+		fid.setNum(*it);
+		new QListViewItem(m_functionList, fxi_name, func_name, fid);
+	}
 }
 
 
@@ -241,15 +241,15 @@ void FunctionCollectionEditor::updateFunctionList()
 //
 bool FunctionCollectionEditor::isAlreadyMember(t_function_id id)
 {
-  QValueList<t_function_id>::iterator it;
+	QValueList<t_function_id>::iterator it;
 
-  for (it = m_fc->steps()->begin(); it != m_fc->steps()->end(); ++it)
-    {
-      if (*it == id)
+	for (it = m_fc->steps()->begin(); it != m_fc->steps()->end(); ++it)
 	{
-	  return true;
+		if (*it == id)
+		{
+			return true;
+		}
 	}
-    }
 
-  return false;
+	return false;
 }
