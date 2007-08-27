@@ -315,14 +315,51 @@ Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
 {
 	Fixture* fxi = NULL;
 	
-	// Assign ID automatically. This is runtime creation,
-	// because ID was not given (as it would be from a file).
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 	{
 		if (m_fixtureArray[i] == NULL)
 		{
 			fxi = new Fixture(fixtureDef, mode, address, universe,
 					  name, i);
+			Q_ASSERT(fxi != NULL);
+
+			m_fixtureArray[i] = fxi;
+			setModified();
+
+			// Patch fixture change events thru Doc
+			connect(fxi, SIGNAL(changed(t_fixture_id)),
+				this, SLOT(slotFixtureChanged(t_fixture_id)));
+
+			emit fixtureAdded(i);
+			break;
+		}
+	}
+
+	if (fxi == NULL)
+	{
+		QString num;
+		num.setNum(KFixtureArraySize);
+		QMessageBox::warning(_app, 
+				     "Unable to create fixture instance",
+				     "You cannot create more than "
+				     + num + " fixtures.");
+	}
+
+	return fxi;
+}
+
+Fixture* Doc::newGenericFixture(t_channel address,
+				t_channel universe,
+				t_channel channels,
+				QString name)
+{
+	Fixture* fxi = NULL;
+	
+	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+	{
+		if (m_fixtureArray[i] == NULL)
+		{
+			fxi = new Fixture(address, universe, channels, name, i);
 			Q_ASSERT(fxi != NULL);
 
 			m_fixtureArray[i] = fxi;

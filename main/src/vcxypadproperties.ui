@@ -41,7 +41,7 @@
                         <widget class="QListView">
                             <column>
                                 <property name="text">
-                                    <string>Device</string>
+                                    <string>Fixture</string>
                                 </property>
                                 <property name="clickable">
                                     <bool>true</bool>
@@ -234,7 +234,7 @@
                         <widget class="QListView">
                             <column>
                                 <property name="text">
-                                    <string>Device</string>
+                                    <string>Fixture</string>
                                 </property>
                                 <property name="clickable">
                                     <bool>true</bool>

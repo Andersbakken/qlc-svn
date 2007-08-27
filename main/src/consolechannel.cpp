@@ -92,6 +92,7 @@ ConsoleChannel::~ConsoleChannel()
 //
 void ConsoleChannel::init()
 {
+	QLCChannel* ch = NULL;
 	Fixture* fixture = NULL;
 	QString num;
 
@@ -102,8 +103,12 @@ void ConsoleChannel::init()
 	// Check that the given channel is valid
 	Q_ASSERT(m_channel < fixture->channels());
 	
-	// Set the channel's name as the tooltip
-	QToolTip::add(this, fixture->channel(m_channel)->name());
+	// Generic fixtures don't have channel objects
+	ch = fixture->channel(m_channel);
+	if (ch != NULL)
+		QToolTip::add(this, ch->name());
+	else
+		QToolTip::add(this, "Level");
 
 	// Set channel label
 	num.sprintf("%.3d", m_channel + 1);
@@ -122,8 +127,12 @@ void ConsoleChannel::init()
 
 	updateStatusButton();
 
-	// Initialize the preset menu
-	initMenu();
+	// Initialize the preset menu only for normal fixtures,
+	// i.e. not for Generic dimmer fixtures
+	if (fixture->fixtureDef() != NULL && fixture->fixtureMode() != NULL)
+		initMenu();
+	else
+		delete m_presetButton;
 }
 
 //
@@ -349,9 +358,14 @@ void ConsoleChannel::slotAnimateValueChange(t_value value)
 
 void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
 {
-	// Show the preset menu
-	m_menu->exec(e->globalPos());
-	e->accept();
+	// Show the preset menu only of it has been created.
+	// Generic dimmer fixtures don't have capabilities and so
+	// they will not have these menus either.
+	if (m_menu != NULL)
+	{
+		m_menu->exec(e->globalPos());
+		e->accept();
+	}
 }
 
 void ConsoleChannel::slotContextMenuActivated(int value)
@@ -374,7 +388,7 @@ void ConsoleChannel::slotContextMenuActivated(int value)
 void ConsoleChannel::slotSceneActivated(SceneValue* values,
 					t_channel channels)
 {
-	assert(values);
+	Q_ASSERT(values != NULL);
 
 	if (m_channel <= channels)
 	{

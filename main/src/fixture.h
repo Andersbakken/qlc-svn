@@ -32,6 +32,8 @@
 #define KXMLFixtureUniverse "Universe"
 #define KXMLFixtureAddress "Address"
 #define KXMLFixtureID "ID"
+#define KXMLFixtureGeneric "Generic"
+#define KXMLFixtureChannels "Channels"
 
 class QFile;
 class QString;
@@ -55,10 +57,10 @@ class Fixture : public QObject
 	 * @param fixture A QLCFixture definition that the fixture instance is
 	 *                based on.
 	 * @param mode One of the modes specified for the fixture
-	 * @param id A unique fixture ID assigned by class @ref Doc
 	 * @param address This instance's DMX address
 	 * @param universe This instance's DMX universe
 	 * @param name Friendly name that identifies the new instance
+	 * @param id A unique fixture ID assigned by class @ref Doc
 	 */
 	Fixture(QLCFixtureDef* fixtureDef,
 		QLCFixtureMode* mode,
@@ -67,6 +69,19 @@ class Fixture : public QObject
 		QString name,
 		t_fixture_id id);
 	
+	/**
+	 * Create a generic dimmer-style fixture instance, that has no special
+	 * abilities, except channels that can have normal DMX values.
+	 *
+	 * @param address This instance's DMX address
+	 * @param universe This instance's DMX universe
+	 * @param channels Number of channels to use for the fixture
+	 * @param name Friendly name that identifies the new instance
+	 * @param id A unique fixture ID assigned by class @ref Doc
+	 */
+	Fixture(t_channel address, t_channel universe, t_channel channels,
+		QString name, t_fixture_id id);
+
 	/**
 	 * Create a new fixture instance from an XML substructure.
 	 *
@@ -246,6 +261,9 @@ class Fixture : public QObject
 
 	/** The fixture's console */
 	FixtureConsole* m_console;
+
+	/** Number of channels (ONLY for dimmer fixtures!) */
+	t_channel m_channels;
 };
 
 #endif

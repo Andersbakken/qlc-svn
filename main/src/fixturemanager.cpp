@@ -337,31 +337,31 @@ void FixtureManager::updateView()
 	slotSelectionChanged(m_listView->currentItem());
 }
 
-void FixtureManager::updateItem(QListViewItem* item, Fixture* fxt)
+void FixtureManager::updateItem(QListViewItem* item, Fixture* fxi)
 {
 	QString s;
 	
 	Q_ASSERT(item != NULL);
-	Q_ASSERT(fxt != NULL);
+	Q_ASSERT(fxi != NULL);
 	
 	// Universe column
-	s.sprintf("%d", fxt->universe() + 1);
+	s.sprintf("%d", fxi->universe() + 1);
 	item->setText(KColumnUniverse, s);
 
 	// Address column
-	s.sprintf("%.3d - %.3d", fxt->address() + 1,
-		  fxt->address() + fxt->channels());
+	s.sprintf("%.3d - %.3d", fxi->address() + 1,
+		  fxi->address() + fxi->channels());
 	item->setText(KColumnAddress, s);
 	
 	// Name column
-	item->setText(KColumnName, fxt->name());
+	item->setText(KColumnName, fxi->name());
 
 	// ID column
-	s.setNum(fxt->id());
+	s.setNum(fxi->id());
 	item->setText(KColumnID, s);
 }
 
-void FixtureManager::copyFunction(Function* function, Fixture* fxt)
+void FixtureManager::copyFunction(Function* function, Fixture* fxi)
 {
 	switch(function->type())
 	{
@@ -369,9 +369,9 @@ void FixtureManager::copyFunction(Function* function, Fixture* fxt)
 	{
 		Scene* scene = static_cast<Scene*>
 			(_app->doc()->newFunction(Function::Scene, 
-						  fxt->id()));
+						  fxi->id()));
 
-		scene->copyFrom(static_cast<Scene*> (function), fxt->id());
+		scene->copyFrom(static_cast<Scene*> (function), fxi->id());
 	}
 	break;
 
@@ -398,7 +398,7 @@ void FixtureManager::copyFunction(Function* function, Fixture* fxt)
 		EFX* efx = static_cast<EFX*>
 			(_app->doc()->newFunction(Function::EFX, KNoID));
 
-		efx->copyFrom(static_cast<EFX*> (function), fxt->id());
+		efx->copyFrom(static_cast<EFX*> (function), fxi->id());
 	}
 	break;
 
@@ -413,17 +413,17 @@ void FixtureManager::copyFunction(Function* function, Fixture* fxt)
 
 void FixtureManager::slotFixtureAdded(t_fixture_id id)
 {
-	Fixture* fxt = NULL;
+	Fixture* fxi = NULL;
 	QListViewItem* item = NULL;
 
-	fxt = _app->doc()->fixture(id);
-	if (fxt != NULL)
+	fxi = _app->doc()->fixture(id);
+	if (fxi != NULL)
 	{
 		// Create a new list view item
 		item = new QListViewItem(m_listView);
 
 		// Fill fixture information to the item
-		updateItem(item, fxt);
+		updateItem(item, fxi);
 	}
 }
 
@@ -480,24 +480,51 @@ void FixtureManager::slotAdd()
 		t_channel address = af->address();
 		t_channel universe = af->universe();
 		int gap = af->addressGap();
+		t_channel channels = af->channels();
 
 		QLCFixtureDef* fixtureDef = af->fixtureDef();
 		QLCFixtureMode* mode = af->mode();
 		
-		/* If an empty name was given use the model name instead */
-		if (name.stripWhiteSpace() == QString::null)
-			name = fixtureDef->model();
-
-		// Add the first fixture without gap
-		_app->doc()->newFixture(fixtureDef, mode, address, universe, name);
-
-		// Add the rest (if any) with address gap
-		for (i = 1; i < af->multipleNumber(); i++)
+		if (fixtureDef != NULL && mode != NULL)
 		{
-			_app->doc()->newFixture(fixtureDef, mode, address + 
-						(i * mode->channels()) + gap,
-						universe,
-						name);
+			/* Add a normal fixture with an existing definition */
+
+			/* If an empty name was given use the model name instead */
+			if (name.stripWhiteSpace() == QString::null)
+				name = fixtureDef->model();
+			
+			// Add the first fixture without gap
+			_app->doc()->newFixture(fixtureDef, mode, address,
+						universe, name);
+			
+			// Add the rest (if any) with address gap
+			for (i = 1; i < af->multipleNumber(); i++)
+			{
+				_app->doc()->newFixture(
+					fixtureDef, mode, 
+					address + (i * channels) + gap,
+					universe, name);
+			}
+		}
+		else
+		{
+			/* Add a generic fixture without definition */
+
+			/* If an empty name was given use Generic instead */
+			if (name.stripWhiteSpace() == QString::null)
+				name = KXMLFixtureGeneric;
+
+			// Add the first fixture without gap
+			_app->doc()->newGenericFixture(address, universe,
+						       channels, name);
+
+			// Add the rest (if any) with address gap
+			for (i = 1; i < af->multipleNumber(); i++)
+			{
+				_app->doc()->newGenericFixture(
+					address + (i * channels) + gap,
+					universe, channels, name);
+			}
 		}
 	}
 
@@ -683,7 +710,7 @@ void FixtureManager::slotAutoFunction()
 
 void FixtureManager::slotSelectionChanged(QListViewItem* item)
 {
-	Fixture* fxt = NULL;
+	Fixture* fxi = NULL;
 	t_fixture_id id = 0;
 	QString info;
 
@@ -716,10 +743,10 @@ void FixtureManager::slotSelectionChanged(QListViewItem* item)
 	{
 		// Set the text view's contents
 		id = item->text(KColumnID).toInt();
-		fxt = _app->doc()->fixture(id);
-		Q_ASSERT(fxt != NULL);
+		fxi = _app->doc()->fixture(id);
+		Q_ASSERT(fxi != NULL);
 
-		info = fxt->status();
+		info = fxi->status();
 		m_textView->setText(info);
 
 		// Enable console always

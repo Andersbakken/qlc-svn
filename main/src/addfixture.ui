@@ -30,7 +30,7 @@
                 <widget class="QListView">
                     <column>
                         <property name="text">
-                            <string>Device</string>
+                            <string>Fixture</string>
                         </property>
                         <property name="clickable">
                             <bool>true</bool>
@@ -63,7 +63,7 @@
                         <enum>AllColumns</enum>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>List of available devices</string>
+                        <string>List of available fixtures</string>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">
@@ -191,9 +191,6 @@
                                                     <verstretch>0</verstretch>
                                                 </sizepolicy>
                                             </property>
-                                            <property name="wrapping">
-                                                <bool>true</bool>
-                                            </property>
                                             <property name="maxValue">
                                                 <number>512</number>
                                             </property>
@@ -236,9 +233,6 @@
                                                     <horstretch>0</horstretch>
                                                     <verstretch>0</verstretch>
                                                 </sizepolicy>
-                                            </property>
-                                            <property name="wrapping">
-                                                <bool>true</bool>
                                             </property>
                                             <property name="maxValue">
                                                 <number>8</number>
@@ -297,14 +291,11 @@
                                                     <verstretch>0</verstretch>
                                                 </sizepolicy>
                                             </property>
-                                            <property name="wrapping">
-                                                <bool>true</bool>
-                                            </property>
                                             <property name="maxValue">
                                                 <number>128</number>
                                             </property>
                                             <property name="minValue">
-                                                <number>0</number>
+                                                <number>1</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
                                                 <string>Number of channels used by the fixture</string>
@@ -377,7 +368,7 @@
                                                 <enum>UpDownArrows</enum>
                                             </property>
                                             <property name="maxValue">
-                                                <number>100</number>
+                                                <number>128</number>
                                             </property>
                                             <property name="minValue">
                                                 <number>1</number>
@@ -419,11 +410,8 @@
                                                     <verstretch>0</verstretch>
                                                 </sizepolicy>
                                             </property>
-                                            <property name="wrapping">
-                                                <bool>false</bool>
-                                            </property>
                                             <property name="maxValue">
-                                                <number>512</number>
+                                                <number>128</number>
                                             </property>
                                             <property name="toolTip" stdset="0">
                                                 <string>Leave a gap between each fixture's address space</string>
@@ -501,7 +489,7 @@
                         <string>OK</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Add the device to the workspace</string>
+                        <string>Add the fixture to the workspace</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -512,7 +500,7 @@
                         <string>Cancel</string>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Do not add the device to the workspace</string>
+                        <string>Do not add the fixture to the workspace</string>
                     </property>
                 </widget>
             </hbox>
@@ -556,6 +544,12 @@
         <receiver>UI_AddFixture</receiver>
         <slot>slotModeActivated(const QString&amp;)</slot>
     </connection>
+    <connection>
+        <sender>m_channelsSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_AddFixture</receiver>
+        <slot>slotChannelsChanged(int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotOKClicked()</slot>
@@ -565,6 +559,7 @@
     <slot>slotTreeDoubleClicked(QListViewItem*)</slot>
     <slot>slotModeActivated(const QString&amp;)</slot>
     <slot>slotDIPClicked()</slot>
+    <slot>slotChannelsChanged(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

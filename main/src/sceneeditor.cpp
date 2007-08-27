@@ -59,7 +59,7 @@ static const QColor KStatusColorStored    ( 100, 255, 100 );
 static const QColor KStatusColorUnchanged ( 255, 255, 255 );
 static const QColor KStatusColorModified  ( 255, 100, 100 );
 
-SceneEditor::SceneEditor(QWidget* parent)
+SceneEditor::SceneEditor(QWidget* parent) 
 	: UI_SceneEditor(parent, "Scene Editor"),
 	  m_fixture   ( KNoID ),
 	  m_menu      (  NULL ),

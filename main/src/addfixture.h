@@ -64,18 +64,24 @@ class AddFixture : public UI_AddFixture
 
 	/** Get the number of channels to leave between two fixtures */
 	t_channel addressGap() const { return m_addressGapValue; }
+
+	/** Get the number of channels to use (ONLY for generic dimmers) */
+	t_channel channels() const { return m_channelsValue; }
   
  protected:
 	/** Fill all known fixture definitions to the tree view */
 	void fillTree();
 
 	/** Fill all modes of the current fixture to the mode combo */
-	void fillModeCombo();
+	void fillModeCombo(const QString& text = QString::null);
 
 	/** Get the currently selected fixture pointer */
 	QLCFixtureDef* selectedFixtureDef();
 
  protected slots:
+	 /** Callback for channels spin value changes */
+	 void slotChannelsChanged(int value);
+
 	 /** Callback for mode selection changes */
 	 void slotModeActivated(const QString& modeName);
 
@@ -114,6 +120,7 @@ class AddFixture : public UI_AddFixture
 	t_channel m_universeValue;
 	int m_multipleNumberValue;
 	t_channel m_addressGapValue;
+	t_channel m_channelsValue;
 };
 
 #endif

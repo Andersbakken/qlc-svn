@@ -40,10 +40,24 @@ Fixture::Fixture(QLCFixtureDef* fixtureDef,
 		 t_fixture_id id)
 {
 	m_fixtureDef = fixtureDef;
-
 	m_fixtureMode = mode;
 	m_name = name;
 	m_id = id;
+
+	m_address = (m_address & 0xFE00) | (address & 0x01FF);
+	m_address = (m_address & 0x01FF) | (universe << 9);
+
+	m_console = NULL;
+}
+
+Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
+		 QString name, t_fixture_id id)
+{
+	m_fixtureDef = NULL;
+	m_fixtureMode = NULL;
+	m_name = name;
+	m_id = id;
+	m_channels = channels;
 
 	m_address = (m_address & 0xFE00) | (address & 0x01FF);
 	m_address = (m_address & 0x01FF) | (universe << 9);
@@ -128,12 +142,18 @@ t_channel Fixture::universeAddress()
 
 t_channel Fixture::channels()
 {
-	return m_fixtureMode->channels();
+	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+		return m_fixtureMode->channels();
+	else
+		return m_channels;
 }
 
 QLCChannel* Fixture::channel(t_channel channel)
 {
-	return m_fixtureMode->channel(channel);
+	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+		return m_fixtureMode->channel(channel);
+	else
+		return NULL;
 }
 
 Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
@@ -148,6 +168,7 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 	t_fixture_id id = KNoID;
 	t_channel universe = 0;
 	t_channel address = 0;
+	t_channel channels = 0;
 	
 	QDomNode node;
 	QDomElement tag;
@@ -180,6 +201,8 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 			universe = tag.text().toInt();
 		else if (tag.tagName() == KXMLFixtureAddress)
 			address = tag.text().toInt();
+		else if (tag.tagName() == KXMLFixtureChannels)
+			channels = tag.text().toInt();
 		else
 			qDebug("Unknown fixture instance tag: %s",
 			       (const char*) tag.tagName());
@@ -187,37 +210,50 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 		node = node.nextSibling();
 	}
 
+	/* Find the given fixture definition */
 	fixtureDef = _app->fixtureDef(manufacturer, model);
 	if (fixtureDef == NULL)
 	{
 		qWarning("Fixture definition for [%s - %s] not found!",
 			 (const char*) manufacturer, (const char*) model);
-		return NULL;
 	}
-
-	fixtureMode = fixtureDef->mode(modeName);
-	if (fixtureMode == NULL)
+	else
 	{
-		qWarning("Fixture mode [%s] for [%s - %s] not found!",
-			 (const char*) modeName, (const char*) manufacturer,
-			 (const char*) model);
-		return NULL;
+		/* Find the given fixture mode */
+		fixtureMode = fixtureDef->mode(modeName);
+		if (fixtureMode == NULL)
+		{
+			qWarning("Fixture mode [%s] for [%s - %s] not found!",
+				 (const char*) modeName, (const char*) manufacturer,
+				 (const char*) model);
+		}
 	}
 
-	if (address > 511)
+	/* Number of channels */
+	if (channels <= 0 || channels > KFixtureChannelsMax)
+	{
+		qWarning("Fixture channels %d out of bounds (%d - %d)!",
+			 id, 1, KFixtureChannelsMax);
+		channels = 1;
+	}
+
+	/* Make sure that address is something sensible */
+	if (address > 511 || address + channels > 511)
 	{
 		qWarning("Fixture address %d out of DMX bounds (%d - %d)!",
 			 address, 0, 511);
-		return NULL;
+		address = 0;
 	}
 
+	/* Make sure that universe is something sensible */
 	if (universe > KUniverseCount)
 	{
 		qWarning("Fixture universe %d out of bounds (%d - %d)!",
 			 universe, 0, KUniverseCount);
-		return NULL;
+		universe = 0;
 	}
 
+	/* Check that we have a sensible ID, otherwise we can't continue */
 	if (id < 0 || id > KFixtureArraySize)
 	{
 		qWarning("Fixture ID %d out of bounds (%d - %d)!",
@@ -225,7 +261,17 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 		return NULL;
 	}
 
-	fxi = new Fixture(fixtureDef, fixtureMode, address, universe, name, id);
+	if (fixtureDef != NULL && fixtureMode != NULL)
+	{
+		/* Create a normal fixture */
+		fxi = new Fixture(fixtureDef, fixtureMode, address, universe,
+				  name, id);
+	}
+	else
+	{
+		/* Create a generic fixture */
+		fxi = new Fixture(address, universe, channels, name, id);
+	}
 
 	return fxi;
 }
@@ -246,19 +292,34 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	/* Manufacturer */
 	tag = doc->createElement(KXMLQLCFixtureDefManufacturer);
 	root.appendChild(tag);
-	text = doc->createTextNode(m_fixtureDef->manufacturer());
+
+	if (m_fixtureDef != NULL)
+		text = doc->createTextNode(m_fixtureDef->manufacturer());
+	else
+		text = doc->createTextNode(KXMLFixtureGeneric);
+
 	tag.appendChild(text);
 
 	/* Model */
 	tag = doc->createElement(KXMLQLCFixtureDefModel);
 	root.appendChild(tag);
-	text = doc->createTextNode(m_fixtureDef->model());
+
+	if (m_fixtureDef != NULL)
+		text = doc->createTextNode(m_fixtureDef->model());
+	else
+		text = doc->createTextNode(KXMLFixtureGeneric);
+
 	tag.appendChild(text);
 
 	/* Fixture mode */
 	tag = doc->createElement(KXMLQLCFixtureMode);
 	root.appendChild(tag);
-	text = doc->createTextNode(m_fixtureMode->name());
+
+	if (m_fixtureMode != NULL)
+		text = doc->createTextNode(m_fixtureMode->name());
+	else
+		text = doc->createTextNode(KXMLFixtureGeneric);
+		
 	tag.appendChild(text);
 
 	/* ID */
@@ -288,6 +349,13 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
+	/* Channel count */
+	tag = doc->createElement(KXMLFixtureChannels);
+	root.appendChild(tag);
+	str.setNum(channels());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
 	return true;
 }
 
@@ -299,15 +367,11 @@ QString Fixture::status()
 	// HTML header
 	info += QString("<HTML>");
 	info += QString("<HEAD>");
-	info += QString("<TITLE>Device Info</TITLE>");
+	info += QString("<TITLE>Fixture Information</TITLE>");
 	info += QString("</HEAD>");
 	info += QString("<BODY>");
 
-	//
-	// Device info
-	//
-	
-	// Device title
+	// Fixture title
 	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
 	info += QString("<TR>");
 	info += QString("<TD BGCOLOR=\"");
@@ -329,7 +393,12 @@ QString Fixture::status()
 	info += QString("<B>Manufacturer</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += m_fixtureDef->manufacturer();
+	
+	if (m_fixtureDef != NULL)
+		info += m_fixtureDef->manufacturer();
+	else
+		info += KXMLFixtureGeneric;
+
 	info += QString("</TD>");
 	info += QString("</TR>");
 
@@ -339,7 +408,12 @@ QString Fixture::status()
 	info += QString("<B>Model</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += m_fixtureDef->model();
+
+	if (m_fixtureDef != NULL)
+		info += m_fixtureDef->model();
+	else
+		info += KXMLFixtureGeneric;
+
 	info += QString("</TD>");
 	info += QString("</TR>");
 	
@@ -349,7 +423,12 @@ QString Fixture::status()
 	info += QString("<B>Mode</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += m_fixtureMode->name();
+
+	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+		info += m_fixtureMode->name();
+	else
+		info += KXMLFixtureGeneric;
+		
 	info += QString("</TD>");
 	info += QString("</TR>");
 
@@ -359,7 +438,12 @@ QString Fixture::status()
 	info += QString("<B>Type</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += m_fixtureDef->type();
+
+	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+		info += m_fixtureDef->type();
+	else
+		info += "Dimmer";
+
 	info += QString("</TD>");
 	info += QString("</TR>");
 
@@ -442,7 +526,12 @@ QString Fixture::status()
 		
 		// Channel name
 		info += QString("<TD>");
-		info += channel(ch)->name();
+		
+		if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+			info += channel(ch)->name();
+		else
+			info += "Level";
+
 		info += QString("</TD>");
 	}
 

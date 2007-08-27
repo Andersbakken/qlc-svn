@@ -49,7 +49,8 @@ AddFixture::AddFixture(QWidget *parent)
 	  m_addressValue        ( 0 ),
 	  m_universeValue       ( 0 ),
 	  m_multipleNumberValue ( 1 ),
-	  m_addressGapValue     ( 0 )
+	  m_addressGapValue     ( 0 ),
+	  m_channelsValue       ( 0 )
 {
 }
 
@@ -63,6 +64,10 @@ void AddFixture::init()
 
 	m_ok->setEnabled(false);
 }
+
+/*****************************************************************************
+ * Fillers
+ *****************************************************************************/
 
 void AddFixture::fillTree()
 {
@@ -113,9 +118,17 @@ void AddFixture::fillTree()
 
 		++it;
 	}
+
+	/* Create a node & parent for generic dimmers */
+	parent = new QListViewItem(m_tree);
+	parent->setText(KColumnName, KXMLFixtureGeneric);
+	node = new QListViewItem(parent);
+	node->setText(KColumnName, KXMLFixtureGeneric);
+	node->setText(KColumnType, KXMLFixtureGeneric);
+	node->setText(KColumnPointer, "0");
 }
 
-void AddFixture::fillModeCombo()
+void AddFixture::fillModeCombo(const QString& text)
 {
 	QLCFixtureMode* mode = NULL;
 
@@ -124,21 +137,33 @@ void AddFixture::fillModeCombo()
 	if (m_fixtureDef == NULL)
 	{
 		m_modeCombo->setEnabled(false);
-		return;
+		m_modeCombo->insertItem(text);
+		m_modeCombo->setCurrentItem(0);
 	}
-	
-	m_modeCombo->setEnabled(true);
-
-	QPtrListIterator <QLCFixtureMode> it(*m_fixtureDef->modes());
-	while ( (mode = *it) != NULL )
+	else
 	{
-		m_modeCombo->insertItem(mode->name());
-		++it;
-	}
+		m_modeCombo->setEnabled(true);
 
-	/* Select the first mode by default */
-	m_modeCombo->setCurrentItem(0);
-	slotModeActivated(m_modeCombo->currentText());
+		QPtrListIterator <QLCFixtureMode> it(*m_fixtureDef->modes());
+		while ( (mode = *it) != NULL )
+		{
+			m_modeCombo->insertItem(mode->name());
+			++it;
+		}
+
+		/* Select the first mode by default */
+		m_modeCombo->setCurrentItem(0);
+		slotModeActivated(m_modeCombo->currentText());
+	}
+}
+
+/*****************************************************************************
+ * Slots
+ *****************************************************************************/
+
+void AddFixture::slotChannelsChanged(int value)
+{
+	m_addressSpin->setRange(1, 513 - value);
 }
 
 void AddFixture::slotModeActivated(const QString& modeName)
@@ -146,13 +171,15 @@ void AddFixture::slotModeActivated(const QString& modeName)
 	QLCFixtureMode* mode = NULL;
 
 	if (m_fixtureDef == NULL)
-		slotSelectionChanged(NULL);
+		return;
 
 	m_mode = m_fixtureDef->mode(modeName);
 	if (m_mode == NULL)
+	{
 		slotSelectionChanged(NULL);
+		return;
+	}
 
-	m_addressSpin->setRange(1, 513 - m_mode->channels());
 	m_channelsSpin->setValue(m_mode->channels());
 }
 
@@ -168,31 +195,50 @@ void AddFixture::slotSelectionChanged(QListViewItem* item)
 		/* Reset the selected fixture pointer */
 		m_fixtureDef = NULL;
 		fillModeCombo();
-
+		
 		if (m_nameEdit->isModified() == false)
 			m_nameEdit->setText(QString::null);
 		m_nameEdit->setEnabled(false);
-
+		
 		m_channelsSpin->setValue(0);
 		m_addressSpin->setEnabled(false);
 		m_universeSpin->setEnabled(false);
 		m_multipleNumberSpin->setEnabled(false);
 		m_addressGapSpin->setEnabled(false);
-
+		m_channelsSpin->setEnabled(false);
+		
 		m_ok->setEnabled(false);
 	}
 	else
 	{
-		/* Get the selected fixture pointer */
-		m_fixtureDef = (QLCFixtureDef*) item->text(KColumnPointer).toULong();
-		fillModeCombo();
-		
-		/* Set the model name as the fixture's friendly name ONLY
-		   if the user hasn't modified the friendly name field. */	
-		if (m_nameEdit->isModified() == false)
-			m_nameEdit->setText(m_fixtureDef->model());
-		m_nameEdit->setEnabled(true);
-		
+		if (item->text(KColumnName) == KXMLFixtureGeneric &&
+		    item->text(KColumnType) == KXMLFixtureGeneric)
+		{
+			m_fixtureDef = NULL;
+			fillModeCombo(KXMLFixtureGeneric);
+			m_channelsSpin->setEnabled(true);
+
+			/* Set the model name as the fixture's friendly name ONLY
+			   if the user hasn't modified the friendly name field. */	
+			if (m_nameEdit->isModified() == false)
+				m_nameEdit->setText(KXMLFixtureGeneric);
+			m_nameEdit->setEnabled(true);
+		}
+		else
+		{
+			/* Get the selected fixture pointer */
+			m_fixtureDef = (QLCFixtureDef*) 
+				item->text(KColumnPointer).toULong();
+			fillModeCombo();
+			m_channelsSpin->setEnabled(false);
+			
+			/* Set the model name as the fixture's friendly name ONLY
+			   if the user hasn't modified the friendly name field. */	
+			if (m_nameEdit->isModified() == false)
+				m_nameEdit->setText(m_fixtureDef->model());
+			m_nameEdit->setEnabled(true);
+		}
+
 		/* Guide the user to edit the friendly name field */
 		m_nameEdit->setSelection(0, m_nameEdit->text().length());
 		m_nameEdit->setFocus();
@@ -201,7 +247,7 @@ void AddFixture::slotSelectionChanged(QListViewItem* item)
 		m_universeSpin->setEnabled(true);
 		m_multipleNumberSpin->setEnabled(true);
 		m_addressGapSpin->setEnabled(true);
-
+		
 		m_ok->setEnabled(true);
 	}
 }
@@ -210,7 +256,7 @@ void AddFixture::slotTreeDoubleClicked(QListViewItem* item)
 {
 	slotSelectionChanged(item);
 
-	if (m_fixtureDef != NULL)
+	if (item != NULL && item->parent() != NULL)
 		slotOKClicked();
 }
 
@@ -232,6 +278,8 @@ void AddFixture::slotOKClicked()
 	
 	m_multipleNumberValue = m_multipleNumberSpin->value();
 	m_addressGapValue = m_addressGapSpin->value();
+
+	m_channelsValue = m_channelsSpin->value();
 	
 	accept();
 }

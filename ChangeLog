@@ -1,3 +1,9 @@
+2007-Aug-27  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented support for generic fixtures so we don't have to
+	  create fixture definitions for simple dimmers.
+	* Added function type column to chaser & collection editors.
+	* Replaced some remaining "device" texts with "fixture"
+
 2007-Aug-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Renamed dce directory to fixtureeditor
 

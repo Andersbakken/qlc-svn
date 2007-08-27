@@ -52,7 +52,8 @@ extern App* _app;
 #define COL_NUM      0
 #define COL_FIXTURE  1
 #define COL_FUNCTION 2
-#define COL_FID      3
+#define COL_TYPE     3
+#define COL_FID      4
 
 //
 // Constructor
@@ -85,8 +86,9 @@ ChaserEditor::~ChaserEditor()
 //
 void ChaserEditor::updateStepList()
 {
-	QString fxi_name = QString::null;
-	QString func_name = QString::null;
+	QString fxi_name;
+	QString func_name;
+	QString func_type;
 	Fixture* fxi = NULL;
 
 	m_stepList->clear();
@@ -101,30 +103,30 @@ void ChaserEditor::updateStepList()
 		{
 			fxi_name = QString("Invalid");
 			func_name = QString("Invalid");
+			func_type = QString("Invalid");
 		}
 		else if (f->fixture() != KNoID)
 		{
 			func_name = f->name();
+			func_type = Function::typeToString(f->type());
 
 			fxi = _app->doc()->fixture(f->fixture());
 			if (fxi == NULL)
-			{
 				fxi_name = QString("Invalid");
-			}
 			else
-			{
 				fxi_name = fxi->name();
-			}
 		}
 		else
 		{
-			func_name = f->name();
 			fxi_name = QString("Global");
+			func_name = f->name();
+			func_type = Function::typeToString(f->type());
 		}
 
 		QString fid;
 		fid.setNum(*it);
-		new QListViewItem(m_stepList, "###", fxi_name, func_name, fid);
+		new QListViewItem(m_stepList, "###", fxi_name,
+				  func_name, func_type, fid);
 	}
 
 	updateOrderNumbers();

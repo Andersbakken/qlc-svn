@@ -134,6 +134,7 @@ void EFXEditor::setEFX(EFX* efx)
 
 void EFXEditor::fillChannelCombos()
 {
+	QLCChannel* ch = NULL;
 	Fixture* fxi = NULL;
 	QString s;
 
@@ -142,13 +143,23 @@ void EFXEditor::fillChannelCombos()
 
 	for (t_channel i = 0; i < fxi->channels(); i++)
 	{
-		QLCChannel* ch = fxi->channel(i);
-		Q_ASSERT(ch != NULL);
-      
-		// Insert ch:name strings to combos
-		s.sprintf("%d:" + ch->name(), i + 1);
-		m_horizontalCombo->insertItem(s);
-		m_verticalCombo->insertItem(s);
+		ch = fxi->channel(i);
+		if (ch != NULL)
+		{
+			// Insert ch:name strings to combos for
+			// normal fixtures
+			s.sprintf("%d:" + ch->name(), i + 1);
+			m_horizontalCombo->insertItem(s);
+			m_verticalCombo->insertItem(s);
+		}
+		else
+		{
+			// Insert ch:Level strings to combos
+			// for generic dimmer fixtures
+			s.sprintf("%d: Level", i + 1);
+			m_horizontalCombo->insertItem(s);
+			m_verticalCombo->insertItem(s);
+		}
 	}
 
 	/* Select a channel as the X axis */
@@ -157,12 +168,13 @@ void EFXEditor::fillChannelCombos()
 		/* If the EFX already has a valid x channel, select it instead */
 		m_horizontalCombo->setCurrentItem(m_efx->xChannel());
 	}
-	else
+	else if (fxi->fixtureDef() != NULL && fxi->fixtureMode() != NULL)
 	{
+		/* Try to select a "pan" channel as the Y axis for
+		   normal fixtures */
 		for (t_channel i = 0; i < fxi->channels(); i++)
 		{
-			QLCChannel* ch = fxi->channel(i);
-			Q_ASSERT(ch != NULL);
+			ch = fxi->channel(i);
       
 			// Select the first channel that contains the word "pan"
 			if (ch->name().contains("pan", false))
@@ -173,6 +185,11 @@ void EFXEditor::fillChannelCombos()
 			}
 		}
 	}
+	else
+	{
+		m_horizontalCombo->setCurrentItem(0);
+		m_efx->setXChannel(0);
+	}
 
 	/* Select a channel as the X axis */
 	if (m_efx->yChannel() != KChannelInvalid)
@@ -180,8 +197,10 @@ void EFXEditor::fillChannelCombos()
 		/* If the EFX already has a valid y channel, select it instead */
 		m_verticalCombo->setCurrentItem(m_efx->yChannel());
 	}
-	else
-	{  
+	else if (fxi->fixtureDef() != NULL && fxi->fixtureMode() != NULL)
+	{
+		/* Try to select a "tilt" channel as the Y axis for
+		   normal fixtures */
 		for (t_channel i = 0; i < fxi->channels(); i++)
 		{
 			QLCChannel* ch = fxi->channel(i);
@@ -195,6 +214,11 @@ void EFXEditor::fillChannelCombos()
 				break;
 			}
 		}
+	}
+	else
+	{
+		m_horizontalCombo->setCurrentItem(0);
+		m_efx->setXChannel(0);
 	}
 }
 

@@ -108,13 +108,26 @@ class Doc : public QObject
 	 * @param name The friendly name of the fixture instance
 	 * @param address The fixture's DMX address
 	 * @param universe The fixture's DMX universe
-	 * @param id The fixture's ID (used only when loading from a file)
+	 * @param name The fixture's friendly name
 	 */
 	Fixture* newFixture(QLCFixtureDef* fixtureDef,
 			    QLCFixtureMode* mode,
 			    t_channel address,
 			    t_channel universe,
 			    QString name);
+
+	/**
+	 * Create a new generic fixture instance
+	 *
+	 * @param address The fixture's DMX address
+	 * @param universe The fixture's DMX universe
+	 * @param channels Number of channels to use for the fixture
+	 * @param name The fixture's friendly name
+	 */
+	Fixture* newGenericFixture(t_channel address,
+				   t_channel universe,
+				   t_channel channels,
+				   QString name);
  protected:
 	/**
 	 * Insert a new fixture instance into Doc's fixture array. Use this

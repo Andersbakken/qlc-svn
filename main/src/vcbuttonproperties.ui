@@ -95,7 +95,7 @@
                                 <bool>true</bool>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>Attached function and its device</string>
+                                <string>Attached function and its fixture</string>
                             </property>
                         </widget>
                         <widget class="QPushButton">
@@ -276,7 +276,7 @@
                         <bool>true</bool>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The device and type of control.</string>
+                        <string>The fixture and type of control.</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">

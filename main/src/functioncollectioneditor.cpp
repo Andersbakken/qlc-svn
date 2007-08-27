@@ -2,7 +2,7 @@
   Q Light Controller
   functioncollectioneditor.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -193,8 +193,9 @@ void FunctionCollectionEditor::slotCancelClicked()
 //
 void FunctionCollectionEditor::updateFunctionList()
 {
-	QString fxi_name = QString::null;
-	QString func_name = QString::null;
+	QString fxi_name;
+	QString func_name;
+	QString func_type;
 	Fixture* fxi = NULL;
 	Function* function = NULL;
 	QValueList<t_function_id>::iterator it;
@@ -209,29 +210,29 @@ void FunctionCollectionEditor::updateFunctionList()
 		{
 			func_name = QString("Invalid");
 			fxi_name = QString("Invalid");
+			func_type = QString("Invalid");
 		}
 		else if (function->fixture() != KNoID)
 		{
 			func_name = function->name();
+			func_type = Function::typeToString(function->type());
 
 			fxi = _app->doc()->fixture(function->fixture());
 			if (fxi == NULL)
-			{
 				fxi_name = QString("Invalid");
-			}
 			else
-			{
 				fxi_name = fxi->name();
-			}
 		}
 		else
 		{
-			func_name = function->name();
 			fxi_name = QString("Global");
+			func_name = function->name();
+			func_type = Function::typeToString(function->type());
 		}
 
 		fid.setNum(*it);
-		new QListViewItem(m_functionList, fxi_name, func_name, fid);
+		new QListViewItem(m_functionList, fxi_name, func_name,
+				  func_type, fid);
 	}
 }
 

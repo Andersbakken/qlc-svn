@@ -67,7 +67,7 @@
                     </column>
                     <column>
                         <property name="text">
-                            <string>Device</string>
+                            <string>Fixture</string>
                         </property>
                         <property name="clickable">
                             <bool>false</bool>
@@ -82,6 +82,17 @@
                         </property>
                         <property name="clickable">
                             <bool>false</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
+                    <column>
+                        <property name="text">
+                            <string>Type</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>true</bool>
                         </property>
                         <property name="resizable">
                             <bool>true</bool>
