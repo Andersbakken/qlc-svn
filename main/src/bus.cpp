@@ -25,7 +25,10 @@
 
 #include "bus.h"
 #include "app.h"
+#include "doc.h"
 #include "function.h"
+
+extern App* _app;
 
 t_bus_id Bus::s_nextID               ( KBusIDMin );
 Bus* Bus::s_busArray                 (      NULL );
@@ -60,6 +63,7 @@ bool Bus::setName(t_bus_id id, QString name)
 	{
 		s_busArray[id].m_name = name;
 		s_busEmitter->emitNameChanged(id, name);
+		_app->doc()->setModified();
 		return true;
 	}
 	else

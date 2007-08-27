@@ -1137,6 +1137,7 @@ void App::slotViewBusProperties()
 	if (m_busProperties == NULL)
 	{
 		m_busProperties = new BusProperties(workspace());
+		m_busProperties->init();
 		connect(m_busProperties, SIGNAL(closed()),
 			this, SLOT(slotBusPropertiesClosed()));
 	}

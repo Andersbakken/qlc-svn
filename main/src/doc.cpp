@@ -175,7 +175,7 @@ bool Doc::loadXML(const QString& fileName)
 		retval = false;
 	}
 
-	return true;
+	return retval;
 }
 
 bool Doc::loadXML(QDomDocument* doc)

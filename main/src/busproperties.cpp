@@ -2,7 +2,7 @@
   Q Light Controller
   busproperties.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,14 +19,12 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qwidget.h>
-#include <qevent.h>
 #include <qlistview.h>
+#include <qwidget.h>
 #include <qstring.h>
-#include <qinputdialog.h>
 #include <qpixmap.h>
+#include <qevent.h>
 
-#include "common/types.h"
 #include "app.h"
 #include "bus.h"
 #include "busproperties.h"
@@ -34,55 +32,61 @@
 const int KColumnID                   ( 0 );
 const int KColumnName                 ( 1 );
 
-BusProperties::BusProperties(QWidget* parent, const char* name)
-  : UI_BusProperties(parent, name)
+BusProperties::BusProperties(QWidget* parent) 
+	: UI_BusProperties(parent, "Bus Properties")
 {
-  fillTree();
-  setIcon(QPixmap(QString(PIXMAPS) + QString("/bus.png")));
 }
 
 BusProperties::~BusProperties()
 {
 }
 
+void BusProperties::init()
+{
+	fillTree();
+	setIcon(QPixmap(QString(PIXMAPS) + QString("/bus.png")));
+}
+
+void BusProperties::slotItemRenamed(QListViewItem* item, int col,
+				    const QString &text)
+{
+	if (col != KColumnName || item == NULL)
+		return;
+	else
+		Bus::setName(item->text(KColumnID).toInt() - 1, text);
+}
+
+void BusProperties::slotItemDoubleClicked(QListViewItem* item)
+{
+	if (item != NULL)
+		item->startRename(KColumnName);
+}
+
 void BusProperties::slotEditClicked()
 {
-  QListViewItem* item = m_list->currentItem();
-  if (item)
-    {
-      bool ok;
-      QString text =
-	QInputDialog::getText(KApplicationNameShort,
-			      "Bus name:",
-			      QLineEdit::Normal,
-			      Bus::name(item->text(KColumnID).toInt() - 1),
-			      &ok, this);
+	QListViewItem* item = m_list->currentItem();
 
-      if ( ok )
-	{
-	  Bus::setName(item->text(KColumnID).toInt() - 1, text);
-	  item->setText(KColumnName, text);
-	}
-    }
+	if (item != NULL)
+		item->startRename(KColumnName);
 }
 
 void BusProperties::closeEvent(QCloseEvent* e)
 {
-  emit closed();
+	emit closed();
 }
 
 void BusProperties::fillTree()
 {
-  QListViewItem* item = NULL;
-  QString text;
+	QListViewItem* item = NULL;
+	QString text;
 
-  for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
-    {
-      item = new QListViewItem(m_list);
-      text.sprintf("%.2d", i + 1);
-      item->setText(KColumnID, text);
-      item->setText(KColumnName, Bus::name(i));
+	for (t_bus_id i = KBusIDMin; i < KBusCount; i++)
+	{
+		item = new QListViewItem(m_list);
+		text.sprintf("%.2d", i + 1);
+		item->setText(KColumnID, text);
+		item->setText(KColumnName, Bus::name(i));
 
-      item->setRenameEnabled(KColumnName, false);
-    }
+		item->setRenameEnabled(KColumnName, true);
+	}
 }

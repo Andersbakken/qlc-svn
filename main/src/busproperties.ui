@@ -67,6 +67,9 @@
                     <property name="text">
                         <string>&amp;Edit...</string>
                     </property>
+                    <property name="accel">
+                        <string>Alt+E</string>
+                    </property>
                 </widget>
                 <spacer>
                     <property name="name">
@@ -88,14 +91,6 @@
                 <widget class="QPushButton">
                     <property name="name">
                         <cstring>m_close</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>5</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
                     </property>
                     <property name="text">
                         <string>&amp;Close</string>
@@ -125,11 +120,19 @@
         <sender>m_list</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
         <receiver>UI_BusProperties</receiver>
-        <slot>slotEditClicked()</slot>
+        <slot>slotItemDoubleClicked(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>m_list</sender>
+        <signal>itemRenamed(QListViewItem*,int,const QString&amp;)</signal>
+        <receiver>UI_BusProperties</receiver>
+        <slot>slotItemRenamed(QListViewItem*,int,const QString&amp;)</slot>
     </connection>
 </connections>
 <slots>
     <slot>slotEditClicked()</slot>
+    <slot>slotItemRenamed(QListViewItem*, int, const QString &amp;)</slot>
+    <slot>slotItemDoubleClicked(QListViewItem*)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

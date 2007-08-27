@@ -2,7 +2,7 @@
   Q Light Controller
   busproperties.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -28,23 +28,27 @@ class QCloseEvent;
 
 class BusProperties : public UI_BusProperties
 {
-  Q_OBJECT
+	Q_OBJECT
 
  public:
-  BusProperties(QWidget* parent, const char* name = NULL);
-  ~BusProperties();
+	BusProperties(QWidget* parent);
+	~BusProperties();
+
+	void init();
 
  signals:
-  void closed();
+	void closed();
 
  private slots:
-  void slotEditClicked();
+	void slotEditClicked();
+	void slotItemRenamed(QListViewItem* item, int col, const QString &text);
+	void slotItemDoubleClicked(QListViewItem* item);
 
  protected:
-  void closeEvent(QCloseEvent* e);
+	void closeEvent(QCloseEvent* e);
 
  private:
-  void fillTree();
+	void fillTree();
 };
 
 #endif

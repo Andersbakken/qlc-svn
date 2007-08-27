@@ -1,4 +1,9 @@
 2007-Aug-27  Heikki Junnila <hjunnila@users.sf.net>
+	* Got rid of the QInputDialog in BusProperties dialog and
+	  switched to QListViewItem renaming.
+	* Editing the name of a bus will do Doc::setModified()
+
+2007-Aug-27  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented support for generic fixtures so we don't have to
 	  create fixture definitions for simple dimmers.
 	* Added function type column to chaser & collection editors.
