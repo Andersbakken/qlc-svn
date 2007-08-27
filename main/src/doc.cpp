@@ -202,9 +202,7 @@ bool Doc::loadXML(QDomDocument* doc)
 			}
 			else if (tag.tagName() == KXMLFixture)
 			{
-				fxi = Fixture::loadXML(doc, &tag);
-				if (newFixture(fxi) == false)
-					delete fxi;
+				Fixture::loader(doc, &tag);
 			}
 			else if (tag.tagName() == KXMLQLCFunction)
 			{

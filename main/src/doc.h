@@ -128,7 +128,7 @@ class Doc : public QObject
 				   t_channel universe,
 				   t_channel channels,
 				   QString name);
- protected:
+
 	/**
 	 * Insert a new fixture instance into Doc's fixture array. Use this
 	 * ONLY when loading a workspace from a file.

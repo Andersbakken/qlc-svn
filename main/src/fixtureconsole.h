@@ -34,6 +34,11 @@ class QHBoxLayout;
 class Device;
 class SceneEditor;
 
+class QDomDocument;
+class QDomElement;
+
+#define KXMLQLCFixtureConsole "Console"
+
 class FixtureConsole : public QWidget
 {
 	Q_OBJECT
@@ -46,6 +51,9 @@ class FixtureConsole : public QWidget
 
 	QPtrList <ConsoleChannel> unitList() { return m_unitList; }
 	SceneEditor* sceneEditor() { return m_sceneEditor; }
+
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* fxi_root);
 
  signals:
 	void closed();

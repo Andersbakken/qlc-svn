@@ -22,7 +22,10 @@
 #include <qfile.h>
 #include <qdom.h>
 #include <assert.h>
+#include <qwidget.h>
+
 #include "filehandler.h"
+#include "settings.h"
 
 /**
  * Read an old QLC-style file to a list of key-value pairs
@@ -181,4 +184,47 @@ bool FileHandler::getXMLHeader(QString content, QDomDocument** doc)
 	return true;
 }
 
+bool FileHandler::saveXMLWindowState(QDomDocument* doc, QDomElement* root,
+				     QWidget* window)
+{
+	QDomElement tag;
+	QDomText text;
+	QString str;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+	Q_ASSERT(window != NULL);
 
+	if (doc == NULL || root == NULL || window == NULL)
+		return false;
+
+	/* Window state tag */
+	tag = doc->createElement(KXMLQLCWindowState);
+	root->appendChild(tag);
+
+	/* Visible status */
+	if (window->isVisible() == true)
+		tag.setAttribute(KXMLQLCWindowStateVisible,
+				 Settings::trueValue());
+	else
+		tag.setAttribute(KXMLQLCWindowStateVisible,
+				 Settings::falseValue());
+
+	/* X Coordinate */
+	str.setNum(window->x());
+	tag.setAttribute(KXMLQLCWindowStateX, str);
+
+	/* Y Coordinate */
+	str.setNum(window->y());
+	tag.setAttribute(KXMLQLCWindowStateY, str);
+
+	/* Width */
+	str.setNum(window->width());
+	tag.setAttribute(KXMLQLCWindowStateWidth, str);
+
+	/* Height */
+	str.setNum(window->height());
+	tag.setAttribute(KXMLQLCWindowStateHeight, str);
+
+	return true;
+}

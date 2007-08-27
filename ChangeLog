@@ -1,4 +1,7 @@
 2007-Aug-27  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented window position load/save to fixture console.
+
+2007-Aug-27  Heikki Junnila <hjunnila@users.sf.net>
 	* Got rid of the QInputDialog in BusProperties dialog and
 	  switched to QListViewItem renaming.
 	* Editing the name of a bus will do Doc::setModified()

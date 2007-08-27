@@ -27,6 +27,7 @@
 #include <qptrlist.h>
 
 class QDomDocument;
+class QDomElement;
 
 // File extensions
 #define KExtLegacyDeviceClass ".deviceclass"
@@ -40,10 +41,18 @@ class QDomDocument;
 #define KXMLQLCCreatorVersion "Version"
 #define KXMLQLCCreatorAuthor "Author"
 
+// Generic window state tags
+#define KXMLQLCWindowState "WindowState"
+#define KXMLQLCWindowStateVisible "Visible"
+#define KXMLQLCWindowStateX "X"
+#define KXMLQLCWindowStateY "Y"
+#define KXMLQLCWindowStateWidth "Width"
+#define KXMLQLCWindowStateHeight "Height"
+
 class FileHandler : public QObject
 {
 	Q_OBJECT
-		
+
 public:
 	/**
 	 * Read an old QLC-style file to a list of key-value pairs
@@ -74,6 +83,19 @@ public:
 	 * @return true if succesful, otherwise false
 	 */
 	static bool getXMLHeader(QString content, QDomDocument** doc);
+
+	/**
+	 * Write generic window status (x, y, w, h, visible) to an XML document
+	 *
+	 * @param doc A QDomDocument to save the tag to
+	 * @param root A QDomElement under which to save the window state
+	 * @param window The window, whose state to save
+	 *
+	 * @return true if succesful, otherwise false
+	 */
+	static bool saveXMLWindowState(QDomDocument* doc, QDomElement* root,
+				       QWidget* window);
+
 };
 		
 #endif

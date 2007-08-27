@@ -210,7 +210,7 @@ class Fixture : public QObject
 	 * @param root An XML subtree containing a single fixture instance
 	 * @return A newly-created Fixture instance or NULL if loading failed
 	 */
-	static Fixture* loadXML(QDomDocument* doc, QDomElement* root);
+	static Fixture* loader(QDomDocument* doc, QDomElement* root);
 
 	/**
 	 * Save the fixture instance into an XML document, under the given
@@ -229,8 +229,12 @@ class Fixture : public QObject
 	 */
 	QString status();
 
+ protected:
+	/** Create a console view for the fixture but don't show it */
+	bool createConsole();
+	
  public:
-	/** View the fixture's console */
+	/** View the fixture's console (i.e. show the console) */
 	void viewConsole();
 
  public slots:

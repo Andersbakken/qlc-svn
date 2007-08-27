@@ -84,8 +84,6 @@ static const QColor KModeColorDesign (0, 255, 0);
 
 t_plugin_id App::NextPluginID (KPluginIDMin);
 
-#define KQLCWorkspaceFileExt QString(".qxw")
-
 ///////////////////////////////////////////////////////////////////
 // File menu entries
 #define ID_FILE                         10000
@@ -896,7 +894,7 @@ void App::slotFileOpen()
 	}
 
 	fileName = QFileDialog::getOpenFileName(m_doc->fileName(), 
-				QString("*") + KQLCWorkspaceFileExt, this);
+				QString("*") + KExtWorkspace, this);
 	
 	if (fileName.isEmpty() == false)
 	{
@@ -936,14 +934,14 @@ void App::slotFileSave()
 void App::slotFileSaveAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(
-		m_doc->fileName(), QString("*") + KQLCWorkspaceFileExt, this);
+		m_doc->fileName(), QString("*") + KExtWorkspace, this);
 
 	if (fileName.isEmpty() == false)
 	{
 		// Use the suffix ".qxw" always
-		if (fileName.right(4) != KQLCWorkspaceFileExt)
+		if (fileName.right(4) != KExtWorkspace)
 		{
-			fileName += KQLCWorkspaceFileExt;
+			fileName += KExtWorkspace;
 		}
 
 		if (m_doc->saveXML(fileName) == true)

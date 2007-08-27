@@ -29,7 +29,8 @@
 #include "sceneeditor.h"
 #include "fixtureconsole.h"
 #include "consolechannel.h"
-#include "configkeys.h"
+
+#include "common/filehandler.h"
 #include "common/settings.h"
 
 extern App* _app;
@@ -116,6 +117,79 @@ void FixtureConsole::setFixture(t_fixture_id id)
 
 	// Update scene editor (also causes an update to channelunits)
 	m_sceneEditor->update();
+}
+
+bool FixtureConsole::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFixtureConsole)
+	{
+		qWarning("Fixture console node not found!");
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			x = tag.attribute(KXMLQLCWindowStateX).toInt();
+			y = tag.attribute(KXMLQLCWindowStateY).toInt();
+			w = tag.attribute(KXMLQLCWindowStateWidth).toInt();
+			h = tag.attribute(KXMLQLCWindowStateHeight).toInt();
+			
+			if (tag.attribute(KXMLQLCWindowStateVisible) == 
+			    Settings::trueValue())
+				visible = true;
+			else
+				visible = false;
+		}
+		else
+		{
+			qDebug("Unknown fixture console tag: %s",
+			       (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	hide();
+	setGeometry(x, y, w, h);
+	if (visible == false)
+		showMinimized();
+	else
+		showNormal();
+
+}
+
+bool FixtureConsole::saveXML(QDomDocument* doc, QDomElement* fxi_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(fxi_root != NULL);
+
+	/* Fixture Console entry */
+	root = doc->createElement(KXMLQLCFixtureConsole);
+	fxi_root->appendChild(root);
+
+	/* Save window state */
+	FileHandler::saveXMLWindowState(doc, &root, parentWidget());
 }
 
 void FixtureConsole::closeEvent(QCloseEvent* e)

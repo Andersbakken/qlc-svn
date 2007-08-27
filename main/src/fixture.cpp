@@ -156,7 +156,7 @@ QLCChannel* Fixture::channel(t_channel channel)
 		return NULL;
 }
 
-Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
+Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 {
 	Fixture* fxi = NULL;
 	QLCFixtureDef* fixtureDef = NULL;
@@ -172,6 +172,7 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 	
 	QDomNode node;
 	QDomElement tag;
+	QDomElement consoletag;
 	
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
@@ -188,24 +189,46 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 		tag = node.toElement();
 		
 		if (tag.tagName() == KXMLQLCFixtureDefManufacturer)
+		{
 			manufacturer = tag.text();
+		}
 		else if (tag.tagName() == KXMLQLCFixtureDefModel)
+		{
 			model = tag.text();
+		}
 		else if (tag.tagName() == KXMLQLCFixtureMode)
+		{
 			modeName = tag.text();
+		}
 		else if (tag.tagName() == KXMLFixtureID)
+		{
 			id = tag.text().toInt();
+		}
 		else if (tag.tagName() == KXMLFixtureName)
+		{
 			name = tag.text();
+		}
 		else if (tag.tagName() == KXMLFixtureUniverse)
+		{
 			universe = tag.text().toInt();
+		}
 		else if (tag.tagName() == KXMLFixtureAddress)
+		{
 			address = tag.text().toInt();
+		}
 		else if (tag.tagName() == KXMLFixtureChannels)
+		{
 			channels = tag.text().toInt();
+		}
+		else if (tag.tagName() == KXMLQLCFixtureConsole)
+		{
+			consoletag = tag;
+		}
 		else
+		{
 			qDebug("Unknown fixture instance tag: %s",
 			       (const char*) tag.tagName());
+		}
 		
 		node = node.nextSibling();
 	}
@@ -261,6 +284,7 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 		return NULL;
 	}
 
+	/* Create the fixture */
 	if (fixtureDef != NULL && fixtureMode != NULL)
 	{
 		/* Create a normal fixture */
@@ -271,6 +295,22 @@ Fixture* Fixture::loadXML(QDomDocument* doc, QDomElement* root)
 	{
 		/* Create a generic fixture */
 		fxi = new Fixture(address, universe, channels, name, id);
+	}
+
+	/* Insert the fixture to Doc's fixture array */
+	if (_app->doc()->newFixture(fxi) == false)
+	{
+		delete fxi;
+		fxi = NULL;
+	}
+	else
+	{
+		/* Load the fixture's console settings */
+		if (consoletag.isElement() == true)
+		{
+			if (fxi->createConsole() == true)
+				fxi->m_console->loadXML(doc, &tag);
+		}
 	}
 
 	return fxi;
@@ -355,6 +395,9 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	str.setNum(channels());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
+
+	if (m_console != NULL)
+		m_console->saveXML(doc, &root);
 
 	return true;
 }
@@ -543,11 +586,16 @@ QString Fixture::status()
 	return info;
 }
 
-void Fixture::viewConsole()
+bool Fixture::createConsole()
 {
 	if (m_console == NULL)
 	{
 		m_console = new FixtureConsole((QWidget*) _app->workspace());
+
+		Q_ASSERT(m_console != NULL);
+		if (m_console == NULL)
+			return false;
+
 		m_console->setFixture(m_id);
 		
 		// Set window title
@@ -556,10 +604,20 @@ void Fixture::viewConsole()
 		// Catch close event
 		connect(m_console, SIGNAL(closed()),
 			this, SLOT(slotConsoleClosed()));
-		
-		m_console->show();
-		
-		m_console->resize(m_console->width() + 100, 300);
+	}
+	else
+	{
+		return true;
+	}
+}
+
+void Fixture::viewConsole()
+{
+	if (m_console == NULL)
+	{
+		if (createConsole() == true)
+			m_console->show();
+		Q_ASSERT(m_console != NULL);
 	}
 	else
 	{
