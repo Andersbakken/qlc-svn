@@ -364,15 +364,6 @@ void App::init()
 			}
 		}
 	}
-
-	//
-	// Check if FixtureManager should be open
-	//
-	_app->settings()->get(KEY_FIXTURE_MANAGER_OPEN, config);
-	if (config == Settings::trueValue())
-	{
-		_app->slotViewFixtureManager();
-	}
 }
 
 /*****************************************************************************

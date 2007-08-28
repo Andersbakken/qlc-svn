@@ -80,7 +80,7 @@ const int KDefaultHeight ( 300 );
 
 FixtureManager::FixtureManager(QWidget* parent)
 	: QWidget(parent, "Fixture Manager"),
-
+	  
 	  m_layout   ( NULL ),
 	  m_dockArea ( NULL ),
 	  m_toolbar  ( NULL ),
@@ -92,32 +92,6 @@ FixtureManager::FixtureManager(QWidget* parent)
 
 FixtureManager::~FixtureManager()
 {
-	QString config;
-
-	if (isShown())
-	{
-		config = Settings::trueValue();
-	}
-	else
-	{
-		config = Settings::falseValue();
-	}
-
-	_app->settings()->set(KEY_FIXTURE_MANAGER_OPEN, config);
-
-	//
-	// Save rect
-	//
-	_app->settings()->set(KEY_FIXTURE_MANAGER_X, rect().x());
-	_app->settings()->set(KEY_FIXTURE_MANAGER_Y, rect().y());
-	_app->settings()->set(KEY_FIXTURE_MANAGER_W, rect().width());
-	_app->settings()->set(KEY_FIXTURE_MANAGER_H, rect().height());
-
-	// Save the splitter position
-	config.truncate(0);
-	QValueList<int> list = m_splitter->sizes();
-	QValueList<int>::Iterator it = list.begin();
-	_app->settings()->set(KEY_FIXTURE_MANAGER_SPLITTER, *it);
 }
 
 /*****************************************************************************
@@ -140,53 +114,6 @@ void FixtureManager::initView()
 
 	// Update the list of fixtures
 	updateView();
-
-	//
-	// Set widget proportions
-	//
-	QString x, y, w, h;
-
-	if (_app->settings()->get(KEY_FIXTURE_MANAGER_X, x) == -1
-	    || x.toInt() <= 0 || x.toInt() >= _app->width())
-	{
-		x.setNum(0);
-	}
-
-	if (_app->settings()->get(KEY_FIXTURE_MANAGER_Y, y) == -1
-	    || y.toInt() <= 0 || y.toInt() >= _app->height())
-	{
-		y.setNum(0);
-	}
-
-	if (_app->settings()->get(KEY_FIXTURE_MANAGER_W, w) == -1
-	    || w.toInt() <= 0 || w.toInt() >= _app->width())
-	{
-		w.setNum(KDefaultWidth);
-	}
-
-	if (_app->settings()->get(KEY_FIXTURE_MANAGER_H, h) == -1
-	    || h.toInt() <= 0 || w.toInt() >= _app->height())
-	{
-		h.setNum(KDefaultHeight);
-	}
-
-	setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
-
-	// Set the splitter position
-	QValueList<int> list;
-	if (_app->settings()->get(KEY_FIXTURE_MANAGER_SPLITTER, w) != -1
-	    && w.toInt() >= 0)
-	{
-		list.append(w.toInt());
-		list.append(width() - w.toInt());
-	}
-	else
-	{
-		list.append(width() / 2);
-		list.append(width() / 2);
-	}
-
-	m_splitter->setSizes(list);
 }
 
 void FixtureManager::initTitle()
@@ -425,7 +352,10 @@ bool FixtureManager::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+	int splitter_left = 0;
+	int splitter_right = 0;
+	QValueList<int> list;
+
 	QDomNode node;
 	QDomElement tag;
 	
@@ -437,6 +367,10 @@ bool FixtureManager::loadXML(QDomDocument* doc, QDomElement* root)
 		qWarning("Fixture Manager node not found!");
 		return false;
 	}
+
+	// Splitter sizes
+	list.append(root->attribute(KXMLQLCFixtureManagerSplitterLeft).toInt());
+	list.append(root->attribute(KXMLQLCFixtureManagerSplitterRight).toInt());
 
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -463,6 +397,8 @@ bool FixtureManager::loadXML(QDomDocument* doc, QDomElement* root)
 	else
 		showNormal();
 
+	m_splitter->setSizes(list);
+
 	return true;
 }
 
@@ -479,6 +415,19 @@ bool FixtureManager::saveXML(QDomDocument* doc, QDomElement* fxi_root)
 	/* Fixture Manager entry */
 	root = doc->createElement(KXMLQLCFixtureManager);
 	fxi_root->appendChild(root);
+
+	/* Splitter sizes */
+	QValueList<int> list = m_splitter->sizes();
+	QValueList<int>::Iterator it = list.begin();
+
+	// Left side
+	str.setNum(*it);
+	root.setAttribute(KXMLQLCFixtureManagerSplitterLeft, str);
+
+	// Right side
+	++it;
+	str.setNum(*it);
+	root.setAttribute(KXMLQLCFixtureManagerSplitterRight, str);
 
 	/* Save window state. parentWidget() should be used for all
 	   widgets within the workspace. */

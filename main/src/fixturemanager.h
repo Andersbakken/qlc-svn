@@ -39,14 +39,9 @@ class QTextView;
 
 class Fixture;
 
-#define KEY_FIXTURE_MANAGER_OPEN "FixtureManagerOpen"
-#define KEY_FIXTURE_MANAGER_X "FixtureManagerRectX"
-#define KEY_FIXTURE_MANAGER_Y "FixtureManagerRectY"
-#define KEY_FIXTURE_MANAGER_W "FixtureManagerRectW"
-#define KEY_FIXTURE_MANAGER_H "FixtureManagerRectH"
-#define KEY_FIXTURE_MANAGER_SPLITTER "FixtureManagerSplitter"
-
 #define KXMLQLCFixtureManager "FixtureManager"
+#define KXMLQLCFixtureManagerSplitterLeft "SplitterLeft"
+#define KXMLQLCFixtureManagerSplitterRight "SplitterRight"
 
 class FixtureManager : public QWidget
 {
