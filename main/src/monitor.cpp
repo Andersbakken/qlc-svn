@@ -108,86 +108,26 @@ void Monitor::closeEvent(QCloseEvent* e)
 //
 void Monitor::init()
 {
-	QString config;
-
 	// Set the window icon
 	setIcon(QString(PIXMAPS) + QString("/monitor.png"));
 
 	// Set the window title
 	setCaption("DMX Monitor - Universe 1");
 	
-	//
+	// Set background color
+	setBackgroundColor(colorGroup().base());
+
 	// Init the arrays that hold the values
 	m_newValues = new t_value[512];
 	m_oldValues = new t_value[512];
-	
 	for (t_channel i = 0; i < 512; i++)
-	{
 		m_newValues[i] = m_oldValues[i] = 0;
-	}
-
-	//
-	// Set font
-	if (_app->settings()->get(KEY_MONITOR_FONT, config) != -1 && 
-		config != "")
-	{
-		m_font.fromString(config);
-	}
-	else
-	{
-		m_font = QApplication::font();
-	}
-
-	//
-	// Set display update frequency
-	if (_app->settings()->get(KEY_MONITOR_UPDATE_FREQUENCY, config) != -1)
-	{
-		m_updateFrequency = config.toInt();
-		if (m_updateFrequency > ID_64HZ)
-		{
-			m_updateFrequency = ID_64HZ;
-		}
-		else if (m_updateFrequency < ID_16HZ)
-		{
-			m_updateFrequency = ID_16HZ;
-		}
-	}
-
-	// Set background color
-	setBackgroundColor(colorGroup().base());
 
 	// Create the menu bar
 	initMenu();
 	
 	// Connect and start the update timer
-	connectTimer();
-}
-
-void Monitor::setUniverse(t_channel universe)
-{
-	QString s;
-	
-	assert(universe < KUniverseCount);
-
-	m_universeMenu->setItemChecked(m_universe, false);
-	m_universe = universe;
-	m_universeMenu->setItemChecked(m_universe, true);
-
-	setCaption(s.sprintf("DMX Monitor - Universe %d", universe + 1));
-
-	repaint(true);
-}
-
-
-//
-// Connect and start the update timer
-//
-void Monitor::connectTimer()
-{
-	m_timer = new QTimer();
-	m_timer->start(1000 / m_updateFrequency);
-
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
+	setFrequency(ID_16HZ);
 }
 
 //
@@ -239,8 +179,46 @@ void Monitor::initMenu()
 		
 	// Font
 	m_displayMenu->insertItem(QPixmap(QString(PIXMAPS) +
-				  QString("/fonts.png")), 
+					  QString("/fonts.png")),
 				  "Choose &Font", ID_CHOOSE_FONT);
+}
+
+void Monitor::setUniverse(t_channel universe)
+{
+	QString s;
+	
+	assert(universe < KUniverseCount);
+
+	m_universeMenu->setItemChecked(m_universe, false);
+	m_universe = universe;
+	m_universeMenu->setItemChecked(m_universe, true);
+
+	setCaption(s.sprintf("DMX Monitor - Universe %d", universe + 1));
+
+	repaint(true);
+}
+
+void Monitor::setFrequency(int freq)
+{
+	if (m_speedMenu != NULL)
+	{
+		m_speedMenu->setItemChecked(m_updateFrequency, false);
+		m_speedMenu->setItemChecked(freq, true);
+	}
+
+	m_updateFrequency = freq;
+
+	if (m_timer == NULL)
+	{
+		m_timer = new QTimer();
+		connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
+	}
+	else
+	{
+		m_timer->stop();
+	}
+
+	m_timer->start(1000 / m_updateFrequency);
 }
 
 //
@@ -257,47 +235,23 @@ void Monitor::slotMenuCallback(int item)
 		switch (item)
 		{
 		case ID_16HZ:
-			m_timer->stop();
-			m_timer->start(1000 / item);
-			m_speedMenu->setItemChecked(m_updateFrequency, false);
-			m_updateFrequency = item;
-			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 16);
-			m_speedMenu->setItemChecked(m_updateFrequency, true);
+		case ID_32HZ:
+		case ID_64HZ:
+			setFrequency(item);
 			break;
 
-		case ID_32HZ:
-			m_timer->stop();
-			m_timer->start(1000 / item);
-			m_speedMenu->setItemChecked(m_updateFrequency, false);
-			m_updateFrequency = item;
-			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 32);
-			m_speedMenu->setItemChecked(m_updateFrequency, true);
-			break;
-	
-		case ID_64HZ:
-			m_timer->stop();
-			m_timer->start(1000 / item);
-			m_speedMenu->setItemChecked(m_updateFrequency, false);
-			m_updateFrequency = item;
-			_app->settings()->set(KEY_MONITOR_UPDATE_FREQUENCY, 64);
-			m_speedMenu->setItemChecked(m_updateFrequency, true);
-			break;
-	
 		case ID_CHOOSE_FONT:
 		{
 			bool ok = false;
 			QFont font = QFontDialog::getFont(&ok, m_font, this);
-			
-			if (ok)
+			if (ok == true)
 			{
 				m_font = font;
-				_app->settings()->set(KEY_MONITOR_FONT,
-						      font.toString());
 				repaint(true); // Paint all
 			}
 			break;
 		}
-	
+
 		default:
 			break;
 		}
@@ -313,6 +267,113 @@ void Monitor::slotTimeOut()
 
 	// Paint only changed values
 	repaint(false);
+}
+
+/****************************************************************************
+ * Load/save settings
+ ****************************************************************************/
+
+bool Monitor::loader(QDomDocument* doc, QDomElement* root)
+{
+	_app->createMonitor();
+	_app->monitor()->loadXML(doc, root);
+}
+
+bool Monitor::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+	
+	if (root->tagName() != KXMLQLCMonitor)
+	{
+		qWarning("Monitor node not found!");
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			x = tag.attribute(KXMLQLCWindowStateX).toInt();
+			y = tag.attribute(KXMLQLCWindowStateY).toInt();
+			w = tag.attribute(KXMLQLCWindowStateWidth).toInt();
+			h = tag.attribute(KXMLQLCWindowStateHeight).toInt();
+			
+			if (tag.attribute(KXMLQLCWindowStateVisible) == 
+			    Settings::trueValue())
+				visible = true;
+			else
+				visible = false;
+		}
+		else if (tag.tagName() == KXMLQLCMonitorFont)
+		{
+			m_font.fromString(tag.text());
+			repaint(true); // Repaint all
+		}
+		else if (tag.tagName() == KXMLQLCMonitorUpdateFrequency)
+		{
+			setFrequency(tag.text().toInt());
+		}
+		else
+		{
+			qDebug("Unknown monitor tag: %s",
+			       (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	hide();
+	setGeometry(x, y, w, h);
+	if (visible == false)
+		showMinimized();
+	else
+		showNormal();
+
+	return true;
+}
+
+bool Monitor::saveXML(QDomDocument* doc, QDomElement* fxi_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(fxi_root != NULL);
+
+	/* Fixture Console entry */
+	root = doc->createElement(KXMLQLCMonitor);
+	fxi_root->appendChild(root);
+
+	/* Font */
+	tag = doc->createElement(KXMLQLCMonitorFont);
+	root.appendChild(tag);
+	text = doc->createTextNode(m_font.toString());
+	tag.appendChild(text);
+
+	/* Update frequency */
+	tag = doc->createElement(KXMLQLCMonitorUpdateFrequency);
+	root.appendChild(tag);
+	str.setNum(m_updateFrequency);
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Save window state. parentWidget() should be used for all
+	   widgets within the workspace. */
+	return FileHandler::saveXMLWindowState(doc, &root, parentWidget());
 }
 
 /****************************************************************************
@@ -566,89 +627,4 @@ void Monitor::paintChannelValue(int x, int y, int w, int h, QString s)
 	m_painter.eraseRect(x, y, w, h);
 	m_painter.drawText(x, y, w, h, AlignBottom, s);
 	_qapp->unlock();
-}
-
-/****************************************************************************
- * Window geometry load/save
- ****************************************************************************/
-
-bool Monitor::loader(QDomDocument* doc, QDomElement* root)
-{
-	_app->createMonitor();
-	_app->monitor()->loadXML(doc, root);
-}
-
-bool Monitor::loadXML(QDomDocument* doc, QDomElement* root)
-{
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
-	
-	QDomNode node;
-	QDomElement tag;
-	
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
-	
-	if (root->tagName() != KXMLQLCMonitor)
-	{
-		qWarning("Monitor node not found!");
-		return false;
-	}
-
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			x = tag.attribute(KXMLQLCWindowStateX).toInt();
-			y = tag.attribute(KXMLQLCWindowStateY).toInt();
-			w = tag.attribute(KXMLQLCWindowStateWidth).toInt();
-			h = tag.attribute(KXMLQLCWindowStateHeight).toInt();
-			
-			if (tag.attribute(KXMLQLCWindowStateVisible) == 
-			    Settings::trueValue())
-				visible = true;
-			else
-				visible = false;
-		}
-		else
-		{
-			qDebug("Unknown monitor tag: %s",
-			       (const char*) tag.tagName());
-		}
-		
-		node = node.nextSibling();
-	}
-
-	hide();
-	setGeometry(x, y, w, h);
-	if (visible == false)
-		showMinimized();
-	else
-		showNormal();
-
-	return true;
-}
-
-bool Monitor::saveXML(QDomDocument* doc, QDomElement* fxi_root)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(fxi_root != NULL);
-
-	/* Fixture Console entry */
-	root = doc->createElement(KXMLQLCMonitor);
-	fxi_root->appendChild(root);
-
-	/* Save window state. parentWidget() should be used for all
-	   widgets within the workspace. */
-	return FileHandler::saveXMLWindowState(doc, &root, parentWidget());
 }

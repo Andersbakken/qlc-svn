@@ -44,6 +44,8 @@ class QDomDocument;
 class QDomElement;
 
 #define KXMLQLCMonitor "Monitor"
+#define KXMLQLCMonitorFont "Font"
+#define KXMLQLCMonitorUpdateFrequency "UpdateFrequency"
 
 class Monitor : public QWidget
 {
@@ -56,6 +58,7 @@ public:
 	void init();
 
 	void setUniverse(t_channel universe);
+	void setFrequency(int freq);
 
 	static bool loader(QDomDocument* doc, QDomElement* root);
 	bool loadXML(QDomDocument* doc, QDomElement* root);

@@ -1,4 +1,7 @@
 2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented font & frequency save/load to Monitor.
+
+2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented window position load/save to monitor.
 	* Reorganized App into logical groups.
 	* Changed blackout indicator to invert the text color as well.
