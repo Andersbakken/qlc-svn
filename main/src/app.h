@@ -124,6 +124,7 @@ class App : public QMainWindow
 	 *********************************************************************/
  public:
 	FixtureManager* fixtureManager() { return m_fixtureManager; }
+	void createFixtureManager();
 
  public slots:
 	void slotViewFixtureManager();

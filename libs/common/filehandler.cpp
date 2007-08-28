@@ -228,3 +228,34 @@ bool FileHandler::saveXMLWindowState(QDomDocument* doc, QDomElement* root,
 
 	return true;
 }
+
+bool FileHandler::loadXMLWindowState(QDomElement* tag,
+				     int* x, int* y,
+				     int* w, int* h,
+				     bool* visible)
+{
+	if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL || 
+	    visible == NULL)
+		return false;
+
+	if (tag->tagName() == KXMLQLCWindowState)
+	{
+		*x = tag->attribute(KXMLQLCWindowStateX).toInt();
+		*y = tag->attribute(KXMLQLCWindowStateY).toInt();
+		*w = tag->attribute(KXMLQLCWindowStateWidth).toInt();
+		*h = tag->attribute(KXMLQLCWindowStateHeight).toInt();
+		
+		if (tag->attribute(KXMLQLCWindowStateVisible) ==
+		    Settings::trueValue())
+			*visible = true;
+		else
+			*visible = false;
+
+		return true;
+	}
+	else
+	{
+		qWarning("Window state not found!");
+		return false;
+	}
+}

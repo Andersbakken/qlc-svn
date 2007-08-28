@@ -96,6 +96,23 @@ public:
 	static bool saveXMLWindowState(QDomDocument* doc, QDomElement* root,
 				       QWidget* window);
 
+
+	/**
+	 * Read generic window status (x, y, w, h, visible) from an XML tag
+	 *
+	 * @param tag A QDomElement under which the window state is saved
+	 * @param x Loaded x position
+	 * @param y Loaded y position
+	 * @param w Loaded w position
+	 * @param h Loaded h position
+	 * @param visible Loaded visible status
+	 *
+	 * @return true if succesful, otherwise false
+	 */
+	static bool loadXMLWindowState(QDomElement* tag,
+				       int* x, int* y,
+				       int* w, int* h,
+				       bool* visible);
 };
 		
 #endif

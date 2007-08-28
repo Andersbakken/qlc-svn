@@ -43,6 +43,7 @@
 #include "common/settings.h"
 #include "common/logicalchannel.h"
 #include "common/capability.h"
+#include "common/filehandler.h"
 
 #include "fixturemanager.h"
 #include "fixtureproperties.h"
@@ -405,6 +406,83 @@ void FixtureManager::copyFunction(Function* function, Fixture* fxi)
 	default:
 		break;
 	}
+}
+
+/*****************************************************************************
+ * Load & save
+ *****************************************************************************/
+
+void FixtureManager::loader(QDomDocument* doc, QDomElement* root)
+{
+	_app->createFixtureManager();
+	_app->fixtureManager()->loadXML(doc, root);
+}
+
+bool FixtureManager::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+	
+	if (root->tagName() != KXMLQLCFixtureManager)
+	{
+		qWarning("Fixture Manager node not found!");
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
+		}
+		else
+		{
+			qDebug("Unknown fixture manager tag: %s",
+			       (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	hide();
+	setGeometry(x, y, w, h);
+	if (visible == false)
+		showMinimized();
+	else
+		showNormal();
+
+	return true;
+}
+
+bool FixtureManager::saveXML(QDomDocument* doc, QDomElement* fxi_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(fxi_root != NULL);
+
+	/* Fixture Manager entry */
+	root = doc->createElement(KXMLQLCFixtureManager);
+	fxi_root->appendChild(root);
+
+	/* Save window state. parentWidget() should be used for all
+	   widgets within the workspace. */
+	return FileHandler::saveXMLWindowState(doc, &root, parentWidget());
 }
 
 /*****************************************************************************

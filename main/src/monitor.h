@@ -60,7 +60,7 @@ public:
 	void setUniverse(t_channel universe);
 	void setFrequency(int freq);
 
-	static bool loader(QDomDocument* doc, QDomElement* root);
+	static void loader(QDomDocument* doc, QDomElement* root);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* fxi_root);
 

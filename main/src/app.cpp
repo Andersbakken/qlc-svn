@@ -745,7 +745,7 @@ void App::closeEvent(QCloseEvent* e)
  * Fixture Manager
  *****************************************************************************/
 
-void App::slotViewFixtureManager()
+void App::createFixtureManager()
 {
 	if (m_fixtureManager == NULL)
 	{
@@ -753,19 +753,25 @@ void App::slotViewFixtureManager()
 		m_fixtureManager = new FixtureManager(workspace());
 		assert(m_fixtureManager);
 		m_fixtureManager->initView();
-      
+		
 		connect(m_fixtureManager, SIGNAL(closed()),
 			this, SLOT(slotFixtureManagerClosed()));
-      
+		
 		connect(m_doc, SIGNAL(fixtureAdded(t_fixture_id)),
 			m_fixtureManager, SLOT(slotFixtureAdded(t_fixture_id)));
-
+		
 		connect(m_doc, SIGNAL(fixtureRemoved(t_fixture_id)),
 			m_fixtureManager, SLOT(slotFixtureRemoved(t_fixture_id)));
-
+		
 		connect(_app, SIGNAL(modeChanged()),
 			m_fixtureManager, SLOT(slotModeChanged()));
 	}
+}
+
+void App::slotViewFixtureManager()
+{
+	if (m_fixtureManager == NULL)
+		createFixtureManager();
 
 	m_toolsMenu->setItemChecked(ID_VIEW_FIXTURE_MANAGER, true);
 	m_fixtureManager->show();

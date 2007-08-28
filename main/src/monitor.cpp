@@ -273,7 +273,7 @@ void Monitor::slotTimeOut()
  * Load/save settings
  ****************************************************************************/
 
-bool Monitor::loader(QDomDocument* doc, QDomElement* root)
+void Monitor::loader(QDomDocument* doc, QDomElement* root)
 {
 	_app->createMonitor();
 	_app->monitor()->loadXML(doc, root);
@@ -305,16 +305,8 @@ bool Monitor::loadXML(QDomDocument* doc, QDomElement* root)
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCWindowState)
 		{
-			x = tag.attribute(KXMLQLCWindowStateX).toInt();
-			y = tag.attribute(KXMLQLCWindowStateY).toInt();
-			w = tag.attribute(KXMLQLCWindowStateWidth).toInt();
-			h = tag.attribute(KXMLQLCWindowStateHeight).toInt();
-			
-			if (tag.attribute(KXMLQLCWindowStateVisible) == 
-			    Settings::trueValue())
-				visible = true;
-			else
-				visible = false;
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
 		}
 		else if (tag.tagName() == KXMLQLCMonitorFont)
 		{

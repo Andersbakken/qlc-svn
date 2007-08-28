@@ -1,4 +1,7 @@
 2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented font & frequency save/load to Fixture Manager.
+
+2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented font & frequency save/load to Monitor.
 
 2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>

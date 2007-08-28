@@ -46,6 +46,8 @@ class Fixture;
 #define KEY_FIXTURE_MANAGER_H "FixtureManagerRectH"
 #define KEY_FIXTURE_MANAGER_SPLITTER "FixtureManagerSplitter"
 
+#define KXMLQLCFixtureManager "FixtureManager"
+
 class FixtureManager : public QWidget
 {
 	Q_OBJECT
@@ -59,6 +61,10 @@ class FixtureManager : public QWidget
 
 	/** Second-stage initialization */
 	void initView();
+
+	static void loader(QDomDocument* doc, QDomElement* root);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* fxi_root);
 
  protected:
 	/** Set the window title and set an icon */

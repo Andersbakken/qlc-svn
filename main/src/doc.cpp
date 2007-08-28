@@ -45,6 +45,7 @@
 #include "virtualconsole.h"
 #include "functionconsumer.h"
 #include "configkeys.h"
+#include "fixturemanager.h"
 
 extern App* _app;
 
@@ -217,6 +218,10 @@ bool Doc::loadXML(QDomDocument* doc)
 			{
 				Monitor::loader(doc, &tag);
 			}
+			else if (tag.tagName() == KXMLQLCFixtureManager)
+			{
+				FixtureManager::loader(doc, &tag);
+			}
 			else if (tag.tagName() == KXMLQLCVirtualConsole)
 			{
 			}
@@ -279,9 +284,13 @@ bool Doc::saveXML(const QString& fileName)
 		/* Save buses */
 		Bus::saveXML(doc, &root);
 
-		/* Save monitor window state */
+		/* Save Monitor state */
 		if (_app->monitor() != NULL)
 			_app->monitor()->saveXML(doc, &root);
+
+		/* Save Fixture Manager state */
+		if (_app->fixtureManager() != NULL)
+			_app->fixtureManager()->saveXML(doc, &root);
 
 		/* Save virtual console */
 		// _app->virtualConsole()->saveXML(doc, &root);
