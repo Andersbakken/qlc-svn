@@ -43,6 +43,7 @@
 #include "common/settings.h"
 #include "common/documentbrowser.h"
 #include "common/qlcfixturedef.h"
+#include "common/qlcchannel.h"
 #include "fixtureeditor.h"
 #include "configkeys.h"
 
@@ -102,7 +103,8 @@ App::App(Settings* settings) :
 	m_toolsMenu        ( NULL ),
 	m_windowMenu       ( NULL ),
 	m_helpMenu         ( NULL ),
-	m_toolbar          ( NULL )
+	m_toolbar          ( NULL ),
+	m_copyChannel      ( NULL )
 {
 }
 
@@ -119,6 +121,10 @@ App::~App()
 	if (m_settings)
 		delete m_settings;
 	m_settings = NULL;
+
+	if (m_copyChannel)
+		delete m_copyChannel;
+	m_copyChannel = NULL;
 }
 
 void App::initView(void)
@@ -156,6 +162,16 @@ void App::initToolBar()
 			"Save",	0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
+
+void App::setCopyChannel(QLCChannel* ch)
+{
+	if (m_copyChannel != NULL)
+		delete m_copyChannel;
+	m_copyChannel = NULL;
+
+	if (ch != NULL)
+		m_copyChannel = new QLCChannel(ch);
+}
 
 bool App::event(QEvent* e)
 {

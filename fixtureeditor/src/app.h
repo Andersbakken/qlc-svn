@@ -39,6 +39,7 @@ class QLabel;
 class Settings;
 class DocumentBrowser;
 class QLCFixture;
+class QLCChannel;
 class QLCFixtureEditor;
 class QLCWorkspace;
 
@@ -65,6 +66,9 @@ class App : public QMainWindow
 
 	QLCWorkspace* workspace() { return m_workspace; }
 	Settings* settings() { return m_settings; }
+
+	void setCopyChannel(QLCChannel* ch);
+	QLCChannel* copyChannel() { return m_copyChannel; }
 
  private slots:
 	void slotEmpty();
@@ -114,6 +118,8 @@ class App : public QMainWindow
 
 	QToolBar* m_toolbar;
 	QString m_lastPath;
+
+	QLCChannel* m_copyChannel;
 
  protected:
 	void closeEvent(QCloseEvent*);

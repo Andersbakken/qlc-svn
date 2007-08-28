@@ -29,6 +29,7 @@
 #include <qinputdialog.h>
 #include <qspinbox.h>
 #include <qtabwidget.h>
+#include <qpopupmenu.h>
 
 #include <errno.h>
 #include <string.h>
@@ -58,6 +59,10 @@ static const int KChannelsColumnPointer  ( 2 );
 static const int KModesColumnName     ( 0 );
 static const int KModesColumnChannels ( 1 );
 static const int KModesColumnPointer  ( 2 );
+
+static const int KMenuCopy ( 0 );
+static const int KMenuPaste ( 1 );
+static const int KMenuRemove ( 2 );
 
 QLCFixtureEditor::QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef)
 	: UI_FixtureEditor(parent, "Fixture Editor"),
@@ -486,6 +491,72 @@ QLCChannel* QLCFixtureEditor::currentChannel()
 		ch = (QLCChannel*) item->text(KChannelsColumnPointer).toULong();
 
 	return ch;
+}
+
+void QLCFixtureEditor::slotChannelListContextMenuRequested(QListViewItem* item,
+							   const QPoint& pos,
+							   int col)
+{
+	QPopupMenu* menu = NULL;
+
+	menu = new QPopupMenu();
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
+			 "Copy", KMenuCopy);
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.png")),
+			 "Paste", KMenuPaste);
+	menu->insertSeparator();
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
+			 "Remove", KMenuRemove);
+
+	if (item == NULL)
+	{
+		menu->setItemEnabled(KMenuCopy, false);
+		menu->setItemEnabled(KMenuRemove, false);
+	}
+
+	if (_app->copyChannel() == NULL)
+	{
+		menu->setItemEnabled(KMenuPaste, false);
+	}
+
+	connect(menu, SIGNAL(activated(int)),
+		this, SLOT(slotChannelListMenuActivated(int)));
+
+	menu->exec(pos);
+	delete menu;
+}
+
+void QLCFixtureEditor::slotChannelListMenuActivated(int item)
+{
+	switch (item)
+	{
+
+	case KMenuCopy:
+	{
+		_app->setCopyChannel(currentChannel());
+	}
+	break;
+
+	case KMenuPaste:
+	{
+		QLCChannel* ch = _app->copyChannel();
+		if (ch != NULL && m_fixtureDef != NULL)
+		{
+			m_fixtureDef->addChannel(new QLCChannel(ch));
+			refreshChannelList();
+		}
+	}
+	break;
+
+	case KMenuRemove:
+	{
+		slotRemoveChannelClicked();
+	}
+	break;
+
+	default:
+		break;
+	}
 }
 
 /*****************************************************************************

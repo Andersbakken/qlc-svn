@@ -1,4 +1,7 @@
 2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented channel copying for fixture editor.
+
+2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixture console gets deleted again when its fixture is deleted.
 	* New fixtures are selected immediately in fixture manager.
 
