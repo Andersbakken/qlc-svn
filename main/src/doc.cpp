@@ -32,18 +32,19 @@
 #include "common/qlcfixturemode.h"
 #include "common/filehandler.h"
 #include "common/settings.h"
-#include "doc.h"
-#include "app.h"
 
+#include "app.h"
+#include "doc.h"
+#include "fixture.h"
 #include "function.h"
 #include "scene.h"
 #include "functioncollection.h"
 #include "chaser.h"
 #include "efx.h"
+#include "monitor.h"
 #include "virtualconsole.h"
-#include "configkeys.h"
 #include "functionconsumer.h"
-#include "fixture.h"
+#include "configkeys.h"
 
 extern App* _app;
 
@@ -212,6 +213,10 @@ bool Doc::loadXML(QDomDocument* doc)
 			{
 				Bus::loadXML(doc, &tag);
 			}
+			else if (tag.tagName() == KXMLQLCMonitor)
+			{
+				Monitor::loader(doc, &tag);
+			}
 			else if (tag.tagName() == KXMLQLCVirtualConsole)
 			{
 			}
@@ -273,6 +278,10 @@ bool Doc::saveXML(const QString& fileName)
 
 		/* Save buses */
 		Bus::saveXML(doc, &root);
+
+		/* Save monitor window state */
+		if (_app->monitor() != NULL)
+			_app->monitor()->saveXML(doc, &root);
 
 		/* Save virtual console */
 		// _app->virtualConsole()->saveXML(doc, &root);

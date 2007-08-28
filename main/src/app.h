@@ -70,26 +70,140 @@ const QString KApplicationVersion   = QString("Version ") + QString(VERSION);
 class App : public QMainWindow
 {
 	Q_OBJECT
-public:
+
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+ public:
 	App();
 	~App();
 
-public:
+ public:
 	void init();
+
+	/*********************************************************************
+	 * Doc
+	 *********************************************************************/
+ public:
+	Doc* doc() { return m_doc; }
 	void newDocument();
+
+ protected slots:
+	void slotDocModified(bool state);
+
+ protected:
+	void initDoc();
+
+ protected:
+	Doc* m_doc;
+	
+	/*********************************************************************
+	 * Workspace
+	 *********************************************************************/
+ public:
+	QLCWorkspace* workspace() { return m_workspace; }
+
+ public slots:
+	void slotWindowCascade();
+	void slotWindowTile();
+
+ protected slots:
+	void slotBackgroundChanged(const QString&);
+	void slotWindowMenuCallback(int item);
+	void slotRefreshMenus();
+
+ protected:
+	void initWorkspace();
+	void closeEvent(QCloseEvent*);
+
+ protected:
+	QLCWorkspace* m_workspace;
+	
+	/*********************************************************************
+	 * Fixture Manager
+	 *********************************************************************/
+ public:
+	FixtureManager* fixtureManager() { return m_fixtureManager; }
+
+ public slots:
+	void slotViewFixtureManager();
+	void slotFixtureManagerClosed();
+
+ protected:
+	FixtureManager* m_fixtureManager;
+	
+	/*********************************************************************
+	 * Function Manager
+	 *********************************************************************/
+ public:
+	FunctionManager* functionManager() { return m_functionManager; }
+
+ public slots:
+	void slotViewFunctionManager();
+	void slotFunctionManagerClosed();
+
+ protected:
+	FunctionManager* m_functionManager;
+	
+	/*********************************************************************
+	 * Virtual Console
+	 *********************************************************************/
+ public:
+	VirtualConsole* virtualConsole() { return m_virtualConsole; }
+
+ public slots:
+	void slotViewVirtualConsole();
+	void slotVirtualConsoleClosed();
+
+ protected:
+	void initVirtualConsole();
+
+ protected:
+	VirtualConsole* m_virtualConsole;
+
+	/*********************************************************************
+	 * Function Consumer
+	 *********************************************************************/
+ public:
+	FunctionConsumer* functionConsumer() { return m_functionConsumer; }
+
+ protected:
+	void initFunctionConsumer();
+  
+ protected:
+	FunctionConsumer* m_functionConsumer;
+
+	/*********************************************************************
+	 * Monitor
+	 *********************************************************************/
+ public:
+	Monitor* monitor() { return m_monitor; }
+	void createMonitor();
+
+ public slots:
+	void slotViewMonitor();
+	void slotMonitorClosed();
+
+ protected:
+	Monitor* m_monitor;
+
+	/*********************************************************************
+	 * Settings
+	 *********************************************************************/
+ public:
+	Settings* settings() { return m_settings; }
 	void saveSettings();
 
-	FixtureManager* fixtureManager() { return m_fixtureManager; }
-	VirtualConsole* virtualConsole() { return m_virtualConsole; }
-	QLCWorkspace* workspace() { return m_workspace; }
-	Settings* settings() { return m_settings; }
-	FunctionConsumer* functionConsumer() { return m_functionConsumer; }
-	Doc* doc() { return m_doc; }
-	Monitor* monitor() { return m_monitor; }
-  
-	//
-	// Plugin Stuff
-	//
+ protected:
+	void initSettings();
+
+ protected:
+	Settings* m_settings;
+
+	/*********************************************************************
+	 * Plugins
+	 *********************************************************************/
+ public:
 	InputPlugin* inputPlugin() { return m_inputPlugin; }
 	OutputPlugin* outputPlugin() { return m_outputPlugin; }
 	QPtrList <Plugin> *pluginList() { return &m_pluginList; }
@@ -100,34 +214,93 @@ public:
 	void removePlugin(Plugin*);
 	void initPlugins();
 	bool probePlugin(QString path);
+
+ protected slots:
+	void slotChangeInputPlugin(const QString& name);
+	void slotChangeOutputPlugin(const QString& name);
+	void slotPluginActivated(Plugin* plugin);
+
+ protected:
+	PluginManager* m_pluginManager;
+
+	InputPlugin* m_inputPlugin;
+	OutputPlugin* m_outputPlugin;
+	DummyInPlugin* m_dummyInPlugin;
+	DummyOutPlugin* m_dummyOutPlugin;
+	QPtrList <Plugin> m_pluginList;
 	
+	static t_plugin_id NextPluginID;
+
 	/*********************************************************************
 	 * Fixture definitions
 	 *********************************************************************/
+ public:
+	/** Load all fixture definitions */
 	bool loadFixtureDefinitions();
+
+	/** Get a fixture definition by its manufacturer & model */
 	QLCFixtureDef* fixtureDef(const QString& manufacturer, const QString& model);
+
+	/** Get a list of fixture definitions */
 	QPtrList <QLCFixtureDef> *fixtureDefList() { return &m_fixtureDefList; }
+
+ protected:
+	/** List of fixture definitions */
+	QPtrList <QLCFixtureDef> m_fixtureDefList;
 
 	/*********************************************************************
 	 * Mode: operate or design
 	 *********************************************************************/
+ public:
 	enum Mode { Operate, Design };
 	bool mode() { return m_mode; }
 
-	//
-	// Value read & write
-	//
+ public slots:
+	void slotSetDesignMode();
+	void slotSetOperateMode();
+	void slotSetMode();
+
+ signals:
+	void modeChanged();
+
+ protected:
+	/** Main operating mode */
+	Mode m_mode;
+
+	/** Mode indicator on the status bar */
+	QLabel* m_modeIndicator;
+
+	/*********************************************************************
+	 * Value read & write
+	 *********************************************************************/
+ public:
 	void initValues();
 	void setValue(t_channel, t_value);
 	t_value value(t_channel);
 	void valueRange(t_channel address, t_value* values, t_channel num);
-	
 	bool isBlackOut() { return m_blackOut; }
 
-public:
-	//
-	// Submasters
-	//
+ public slots:
+	void slotPanic();
+	void slotToggleBlackOut();
+
+ protected slots:
+	void slotFlashBlackOutIndicator();
+
+ protected:
+	/** Blackout status */
+	bool m_blackOut;
+
+	/** Flashing indicator on the status bar */
+	QLabel* m_blackOutIndicator;
+
+	/** Timer object for the flashing indicator */
+	QTimer* m_blackOutIndicatorTimer;
+
+	/*********************************************************************
+	 * Submasters
+	 *********************************************************************/
+ public:
 	void initSubmasters();
 	bool assignSubmaster(t_channel);
 	bool resignSubmaster(t_channel);
@@ -135,19 +308,49 @@ public:
 	void resetSubmasters();
 	void setSubmasterValue(t_channel, int);
 	float submasterValue(t_channel);
+
+	/** DMX value buffer */
+	t_value m_values[KChannelMax];
+
+	/** Submaster value buffer */
+	float m_submasterValues[KChannelMax];
+
+	/** Submasters */
+	int m_submasters[KChannelMax];
 	
-private slots:
-	void slotChangeInputPlugin(const QString& name);
-	void slotChangeOutputPlugin(const QString& name);
-	void slotPluginActivated(Plugin* plugin);
+	/*********************************************************************
+	 * Buses
+	 *********************************************************************/
+ public:
+	void slotViewBusProperties();
+	void slotBusPropertiesClosed();
 
-	void slotFlashBlackOutIndicator();
+ protected:
+	BusProperties* m_busProperties;
 
-	void slotBackgroundChanged(const QString&);
+	/*********************************************************************
+	 * Help & About
+	 *********************************************************************/	
+ public slots:
+	void slotHelpIndex();
+	void slotDocumentBrowserClosed();
+	
+	void slotHelpAbout();
+	void slotHelpAboutQt();
+	void slotHelpTooltips();
 
-	void slotDocModified(bool state);
+ protected:
+	DocumentBrowser* m_documentBrowser;
 
-public slots:
+	/*********************************************************************
+	 * Menus & toolbars
+	 *********************************************************************/	
+ protected:
+	void initMenuBar();
+	void initStatusBar();
+	void initToolBar();
+
+ public slots:
 	bool slotFileNew();
 	void slotFileOpen();
 	void slotFileSave();
@@ -157,58 +360,7 @@ public slots:
 	void slotPluginManagerClosed();
 	void slotFileQuit();
 	
-	void slotViewFixtureManager();
-	void slotFixtureManagerClosed();
-	
-	void slotViewVirtualConsole();
-	void slotVirtualConsoleClosed();
-	
-	void slotViewFunctionManager();
-	void slotFunctionManagerClosed();
-	
-	void slotViewBusProperties();
-	void slotBusPropertiesClosed();
-	
-	void slotViewMonitor();
-	void slotMonitorClosed();
-
-	void slotWindowCascade();
-	void slotWindowTile();
-	
-	void slotHelpIndex();
-	void slotDocumentBrowserClosed();
-	
-	void slotHelpAbout();
-	void slotHelpAboutQt();
-	void slotHelpTooltips();
-	
-	void slotPanic();
-	void slotSetDesignMode();
-	void slotSetOperateMode();
-	void slotSetMode();
-	
-	void slotToggleBlackOut();
-	
-signals:
-	void modeChanged();
-
-private:
-	void initSettings();
-	void initDoc();
-	void initWorkspace();
-	
-	void initVirtualConsole();
-	void initFunctionConsumer();
-	
-	void initMenuBar();
-	void initStatusBar();
-	void initToolBar();
-	
-private slots:
-	void slotWindowMenuCallback(int item);
-	void slotRefreshMenus();
-	
-private:
+ protected:
 	QPopupMenu* m_fileMenu;
 	QPopupMenu* m_toolsMenu;
 	QPopupMenu* m_modeMenu;
@@ -226,47 +378,6 @@ private:
 	QToolButton* m_modeTB;
 	QToolButton* m_blackOutTB;
 	QToolButton* m_monitorTB;
-	
-	Doc* m_doc;
-	Settings* m_settings;
-	FixtureManager* m_fixtureManager;
-	FunctionManager* m_functionManager;
-	VirtualConsole* m_virtualConsole;
-	QLCWorkspace* m_workspace;
-	BusProperties* m_busProperties;
-	DocumentBrowser* m_documentBrowser;
-	PluginManager* m_pluginManager;
-	Monitor* m_monitor;
-
-	FunctionConsumer* m_functionConsumer;
-
-	QLabel* m_modeIndicator;
-	QLabel* m_blackOutIndicator;
-	QTimer* m_blackOutIndicatorTimer;
-	
-	InputPlugin* m_inputPlugin;
-	OutputPlugin* m_outputPlugin;
-	DummyInPlugin* m_dummyInPlugin;
-	DummyOutPlugin* m_dummyOutPlugin;
-	QPtrList <Plugin> m_pluginList;
-	
-	// Main operating mode
-	Mode m_mode;
-	
-	// Fixture definitions
-	QPtrList <QLCFixtureDef> m_fixtureDefList;
-	
-	t_value m_values[KChannelMax];
-	float m_submasterValues[KChannelMax];
-	int m_submasters[KChannelMax];
-	
-	bool m_blackOut;
-
-protected:
-	void closeEvent(QCloseEvent*);
-	
-private:
-	static t_plugin_id NextPluginID;
 };
 
 #endif

@@ -19,13 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "monitor.h"
-#include "app.h"
-#include "doc.h"
-#include "configkeys.h"
-#include "common/settings.h"
-#include "common/minmax.h"
-
 #include <qapplication.h>
 #include <qcolor.h>
 #include <qbrush.h>
@@ -41,6 +34,14 @@
 #include <qfontdialog.h>
 #include <qevent.h>
 #include <assert.h>
+
+#include "app.h"
+#include "doc.h"
+#include "monitor.h"
+#include "configkeys.h"
+#include "common/settings.h"
+#include "common/minmax.h"
+#include "common/filehandler.h"
 
 extern App* _app;
 extern QApplication* _qapp;
@@ -80,8 +81,6 @@ Monitor::Monitor(QWidget* parent) : QWidget(parent, "Monitor"),
 //
 Monitor::~Monitor()
 {
-	saveGeometry();
-	
 	if (m_timer != NULL)
 		delete m_timer;
 
@@ -154,9 +153,6 @@ void Monitor::init()
 		}
 	}
 
-	// Set window geometry
-	loadGeometry();
-	
 	// Set background color
 	setBackgroundColor(colorGroup().base());
 
@@ -576,53 +572,83 @@ void Monitor::paintChannelValue(int x, int y, int w, int h, QString s)
  * Window geometry load/save
  ****************************************************************************/
 
-//
-// Load window geometry
-//
-void Monitor::loadGeometry()
+bool Monitor::loader(QDomDocument* doc, QDomElement* root)
 {
-	QString s;
-	QStringList list;
-	QStringList::Iterator it;
+	_app->createMonitor();
+	_app->monitor()->loadXML(doc, root);
+}
 
+bool Monitor::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	bool visible = false;
 	int x = 0;
 	int y = 0;
-	int w = 400;
-	int h = 300;
+	int w = 0;
+	int h = 0;
 	
-	_app->settings()->get(KEY_MONITOR_GEOMETRY, s);
-	list = QStringList::split(',', s);
+	QDomNode node;
+	QDomElement tag;
 	
-	// X
-	it = list.begin();
-	if (it != list.end())
-		x = (*it).toInt();
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
 	
-	// Y
-	if (++it != list.end())
-		y = (*it).toInt();
-	
-	// Width
-	if (++it != list.end())
-		w = (*it).toInt();
-	
-	// Height
-	if (++it != list.end())
-		h = (*it).toInt();
-	
-	// Set window geometry
+	if (root->tagName() != KXMLQLCMonitor)
+	{
+		qWarning("Monitor node not found!");
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			x = tag.attribute(KXMLQLCWindowStateX).toInt();
+			y = tag.attribute(KXMLQLCWindowStateY).toInt();
+			w = tag.attribute(KXMLQLCWindowStateWidth).toInt();
+			h = tag.attribute(KXMLQLCWindowStateHeight).toInt();
+			
+			if (tag.attribute(KXMLQLCWindowStateVisible) == 
+			    Settings::trueValue())
+				visible = true;
+			else
+				visible = false;
+		}
+		else
+		{
+			qDebug("Unknown monitor tag: %s",
+			       (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	hide();
 	setGeometry(x, y, w, h);
+	if (visible == false)
+		showMinimized();
+	else
+		showNormal();
+
+	return true;
 }
 
-
-//
-// Save window geometry
-//
-void Monitor::saveGeometry()
+bool Monitor::saveXML(QDomDocument* doc, QDomElement* fxi_root)
 {
-	QString s;
-	
-	s.sprintf("%d,%d,%d,%d", x(), y(), rect().width(), rect().height());
-	_app->settings()->set(KEY_MONITOR_GEOMETRY, s);
-}
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
 
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(fxi_root != NULL);
+
+	/* Fixture Console entry */
+	root = doc->createElement(KXMLQLCMonitor);
+	fxi_root->appendChild(root);
+
+	/* Save window state. parentWidget() should be used for all
+	   widgets within the workspace. */
+	return FileHandler::saveXMLWindowState(doc, &root, parentWidget());
+}

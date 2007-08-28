@@ -40,6 +40,10 @@ class QTimer;
 class QRegion;
 class QMenuBar;
 class QPopupMenu;
+class QDomDocument;
+class QDomElement;
+
+#define KXMLQLCMonitor "Monitor"
 
 class Monitor : public QWidget
 {
@@ -52,6 +56,10 @@ public:
 	void init();
 
 	void setUniverse(t_channel universe);
+
+	static bool loader(QDomDocument* doc, QDomElement* root);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* fxi_root);
 
 protected slots:
 	void slotTimeOut();
@@ -79,9 +87,6 @@ protected:
 				  int unitW, int unitH, int unitsX,
 				  bool onlyDelta);
 	void paintChannelValue(int x, int y, int w, int h, QString s);
-
-	void loadGeometry();
-	void saveGeometry();
 
 signals:
 	void closed();

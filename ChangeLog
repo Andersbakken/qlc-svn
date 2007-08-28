@@ -1,3 +1,9 @@
+2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented window position load/save to monitor.
+	* Reorganized App into logical groups.
+	* Changed blackout indicator to invert the text color as well.
+	* Capitalized blackout indicator text completely.
+
 2007-Aug-27  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented window position load/save to fixture console.
 

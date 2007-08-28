@@ -172,6 +172,7 @@ bool FixtureConsole::loadXML(QDomDocument* doc, QDomElement* root)
 	else
 		showNormal();
 
+	return true;
 }
 
 bool FixtureConsole::saveXML(QDomDocument* doc, QDomElement* fxi_root)
@@ -189,7 +190,7 @@ bool FixtureConsole::saveXML(QDomDocument* doc, QDomElement* fxi_root)
 	fxi_root->appendChild(root);
 
 	/* Save window state */
-	FileHandler::saveXMLWindowState(doc, &root, parentWidget());
+	return FileHandler::saveXMLWindowState(doc, &root, parentWidget());
 }
 
 void FixtureConsole::closeEvent(QCloseEvent* e)
