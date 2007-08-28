@@ -376,7 +376,7 @@ void App::init()
 void App::initDoc()
 {
 	// Delete existing document object
-	if (m_doc)
+	if (m_doc != NULL)
 	{
 		delete m_doc;
 	}

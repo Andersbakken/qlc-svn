@@ -451,6 +451,9 @@ void FixtureManager::slotFixtureAdded(t_fixture_id id)
 
 		// Fill fixture information to the item
 		updateItem(item, fxi);
+
+		// Select the item
+		m_listView->setSelected(item, true);
 	}
 }
 

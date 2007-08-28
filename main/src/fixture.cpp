@@ -67,6 +67,8 @@ Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
 
 Fixture::~Fixture()
 {
+	if (m_console != NULL)
+		delete m_console;
 }
 
 void Fixture::setID(t_fixture_id id)
