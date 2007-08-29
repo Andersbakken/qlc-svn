@@ -614,6 +614,12 @@
         <receiver>UI_FixtureEditor</receiver>
         <slot>slotChannelListContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
     </connection>
+    <connection>
+        <sender>m_modeList</sender>
+        <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>UI_FixtureEditor</receiver>
+        <slot>slotModeListContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotManufacturerEditTextChanged(const QString &amp;)</slot>
@@ -629,6 +635,7 @@
     <slot>slotEditModeClicked()</slot>
     <slot>slotModeListSelectionChanged(QListViewItem*)</slot>
     <slot>slotChannelListContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    <slot>slotModeListContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

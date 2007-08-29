@@ -1,3 +1,9 @@
+2007-Aug-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Converted .deviceclass' to .qxf's.
+	* Created fixtures directory.
+	* Removed devices directory.
+	* Implemented mode cloning for fixture editor.
+
 2007-Aug-28  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented channel copying for fixture editor.
 

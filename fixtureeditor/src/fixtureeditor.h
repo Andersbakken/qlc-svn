@@ -44,13 +44,28 @@ class QLCFixtureEditor : public UI_FixtureEditor
 
 	void setFileName(QString path) { m_fileName = path; }
 	QString fileName() const { return m_fileName; }
-	bool modified() const { return m_modified; }
 
+	bool modified() const { return m_modified; }
+	void setModified(bool modified = true);
+
+	/*********************************************************************
+	 * General
+	 *********************************************************************/
  public slots:
 	void slotManufacturerEditTextChanged(const QString &text);
 	void slotModelEditTextChanged(const QString &text);
 	void slotTypeSelected(const QString &text);
 
+ protected:
+	bool checkManufacturerModel();
+	void setCaption();
+	void ensureNewExtension();
+	bool newExtensionReminder();
+
+	/*********************************************************************
+	 * Channels
+	 *********************************************************************/
+ public slots:
 	void slotChannelListSelectionChanged(QListViewItem* item);
 	void slotAddChannelClicked();
 	void slotRemoveChannelClicked();
@@ -60,28 +75,37 @@ class QLCFixtureEditor : public UI_FixtureEditor
 						 int col);
 	void slotChannelListMenuActivated(int item);
 
+ protected:
+	QLCChannel* currentChannel();
+	void refreshChannelList();
+	void pasteChannel();
+
+	/*********************************************************************
+	 * Modes
+	 *********************************************************************/
+ public slots:
 	void slotModeListSelectionChanged(QListViewItem* item);
 	void slotAddModeClicked();
 	void slotRemoveModeClicked();
 	void slotEditModeClicked();
+	void slotModeListContextMenuRequested(QListViewItem* item,
+					      const QPoint& pos,
+					      int col);
+	void slotModeListMenuActivated(int item);
 
+ protected:
+	QLCFixtureMode* currentMode();
+	void refreshModeList();
+	void cloneCurrentMode();
+
+	/*********************************************************************
+	 * Stuff
+	 *********************************************************************/
  protected:
 	void closeEvent(QCloseEvent* e);
 
  signals:
 	void closed(QLCFixtureEditor*);
-
- private:
-	bool checkManufacturerModel();
-	void setCaption();
-	void setModified(bool modified = true);
-	void ensureNewExtension();
-	bool newExtensionReminder();
-	void refreshChannelList();
-	void refreshModeList();
- 
-	QLCChannel* currentChannel();
-	QLCFixtureMode* currentMode();
 
  private:
 	QLCFixtureDef* m_fixtureDef;

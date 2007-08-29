@@ -1,1 +1,1 @@
-SUBDIRS = libs main fixtureeditor gfx docs devices etc
+SUBDIRS = libs main fixtureeditor gfx docs fixtures etc

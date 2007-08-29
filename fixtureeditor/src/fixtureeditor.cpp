@@ -60,9 +60,11 @@ static const int KModesColumnName     ( 0 );
 static const int KModesColumnChannels ( 1 );
 static const int KModesColumnPointer  ( 2 );
 
-static const int KMenuCopy ( 0 );
-static const int KMenuPaste ( 1 );
-static const int KMenuRemove ( 2 );
+static const int KMenuEdit ( 0 );
+static const int KMenuCopy ( 1 );
+static const int KMenuClone ( 1 );
+static const int KMenuPaste ( 3 );
+static const int KMenuRemove ( 4 );
 
 QLCFixtureEditor::QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef)
 	: UI_FixtureEditor(parent, "Fixture Editor"),
@@ -500,6 +502,8 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested(QListViewItem* item,
 	QPopupMenu* menu = NULL;
 
 	menu = new QPopupMenu();
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
+			 "Edit...", KMenuEdit);
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
 			 "Copy", KMenuCopy);
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.png")),
@@ -531,31 +535,34 @@ void QLCFixtureEditor::slotChannelListMenuActivated(int item)
 	switch (item)
 	{
 
+	case KMenuEdit:
+		slotEditChannelClicked();
+		break;
+
 	case KMenuCopy:
-	{
 		_app->setCopyChannel(currentChannel());
-	}
-	break;
+		break;
 
 	case KMenuPaste:
-	{
-		QLCChannel* ch = _app->copyChannel();
-		if (ch != NULL && m_fixtureDef != NULL)
-		{
-			m_fixtureDef->addChannel(new QLCChannel(ch));
-			refreshChannelList();
-		}
-	}
-	break;
+		pasteChannel();
+		break;
 
 	case KMenuRemove:
-	{
 		slotRemoveChannelClicked();
-	}
-	break;
+		break;
 
 	default:
 		break;
+	}
+}
+
+void QLCFixtureEditor::pasteChannel()
+{
+	QLCChannel* ch = _app->copyChannel();
+	if (ch != NULL && m_fixtureDef != NULL)
+	{
+		m_fixtureDef->addChannel(new QLCChannel(ch));
+		refreshChannelList();
 	}
 }
 
@@ -645,6 +652,9 @@ void QLCFixtureEditor::slotEditModeClicked()
 	QLCFixtureMode* mode = currentMode();
 	EditMode* em = NULL;
 	QString str;
+
+	if (mode == NULL)
+		return;
 	
 	em = new EditMode(_app, mode);
 	em->init();
@@ -663,6 +673,57 @@ void QLCFixtureEditor::slotEditModeClicked()
 	}
 	
 	delete em;
+}
+
+void QLCFixtureEditor::slotModeListContextMenuRequested(QListViewItem* item,
+							const QPoint& pos,
+							int col)
+{
+	QPopupMenu* menu = NULL;
+
+	menu = new QPopupMenu();
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
+			 "Edit...", KMenuEdit);
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
+			 "Clone", KMenuClone);
+	menu->insertSeparator();
+	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
+			 "Remove", KMenuRemove);
+
+	if (item == NULL)
+	{
+		menu->setItemEnabled(KMenuEdit, false);
+		menu->setItemEnabled(KMenuClone, false);
+		menu->setItemEnabled(KMenuRemove, false);
+	}
+
+	connect(menu, SIGNAL(activated(int)),
+		this, SLOT(slotModeListMenuActivated(int)));
+
+	menu->exec(pos);
+	delete menu;
+}
+
+void QLCFixtureEditor::slotModeListMenuActivated(int item)
+{
+	switch (item)
+	{
+
+	case KMenuEdit:
+		slotEditModeClicked();
+		break;
+
+	case KMenuClone:
+		cloneCurrentMode();
+		break;
+
+	case KMenuRemove:
+		slotRemoveModeClicked();
+		break;
+
+	default:
+		break;
+	}
 }
 
 void QLCFixtureEditor::refreshModeList()
@@ -703,4 +764,51 @@ QLCFixtureMode* QLCFixtureEditor::currentMode()
 		mode = (QLCFixtureMode*) item->text(KModesColumnPointer).toULong();
 
 	return mode;
+}
+
+void QLCFixtureEditor::cloneCurrentMode()
+{
+	QLCFixtureMode* mode = NULL;
+	QLCFixtureMode* clone = NULL;
+	bool ok = false;
+	QString text;
+	
+	mode = currentMode();
+	if (mode == NULL)
+		return;
+	
+	while (1)
+	{
+		text = QInputDialog::getText("Rename new mode",
+					     "Enter a UNIQUE name for the new mode",
+					     QLineEdit::Normal,
+					     "Copy of " + mode->name(),
+					     &ok,
+					     this);
+
+		if (ok == true && text.isEmpty() == false)
+		{
+			/* User entered a name that is already found from
+			   the fixture definition -> again */
+			if (mode->fixtureDef()->mode(text) != NULL)
+			{
+				QMessageBox::information(this, "Invalid name",
+					 "That name is already in use!\n" \
+					 "Try something else...");
+				ok = false;
+				continue;
+			}
+
+			clone = new QLCFixtureMode(mode);
+			clone->setName(text);
+			mode->fixtureDef()->addMode(clone);
+			refreshModeList();
+			break;
+		}
+		else
+		{
+			// User pressed cancel
+			break;
+		}
+	}
 }

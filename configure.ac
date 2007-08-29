@@ -233,8 +233,8 @@ AC_OUTPUT([
 	libs/lla/Makefile
 	main/Makefile
 	fixtureeditor/Makefile
-	devices/Makefile
 	gfx/Makefile
 	docs/Makefile
+	fixtures/Makefile
 	etc/Makefile
 ])
