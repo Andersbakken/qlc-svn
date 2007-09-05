@@ -2,7 +2,7 @@
   Q Light Controller
   keybind.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,57 +26,71 @@
 
 class QKeyEvent;
 
+class QDomDocument;
+class QDomElement;
+
+#define KXMLQLCKeyBind "KeyBind"
+#define KXMLQLCKeyBindKey "Key"
+#define KXMLQLCKeyBindModifier "Modifier"
+
 class KeyBind : public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  KeyBind();
-  KeyBind(const int key, const int mod);
-  KeyBind(const KeyBind* kb);
-  ~KeyBind();
+public:
+	KeyBind();
+	KeyBind(const int key, const int mod);
+	KeyBind(const KeyBind* kb);
+	~KeyBind();
 
-  enum PressAction { PressStart = 0, PressToggle = 1, PressStepForward = 6,
-		     PressStepBackward = 3, PressStop = 4, PressNothing = 5,
-		     PressFlash = 2 };
+	enum PressAction { PressStart = 0, PressToggle = 1, PressStepForward = 6,
+			   PressStepBackward = 3, PressStop = 4, PressNothing = 5,
+			   PressFlash = 2 };
 
-  enum ReleaseAction { ReleaseStop = 0, ReleaseNothing = 1 };
+	enum ReleaseAction { ReleaseStop = 0, ReleaseNothing = 1 };
 
-  static void keyString(int key, int mod, QString &string);
-  void keyString(QString &string) { return keyString(m_key, m_mod, string); }
+	static void keyString(int key, int mod, QString &string);
+	void keyString(QString &string) { return keyString(m_key, m_mod, string); }
 
-  int key() const { return m_key; }
-  void setKey(int key);
+	int key() const { return m_key; }
+	void setKey(int key);
 
-  int mod() const { return m_mod; }
-  void setMod(int mod);
+	int mod() const { return m_mod; }
+	void setMod(int mod);
 
-  void setPressAction(PressAction a) { m_pressAction = a; }
-  PressAction pressAction() const { return m_pressAction; }
+	void setPressAction(PressAction a) { m_pressAction = a; }
+	PressAction pressAction() const { return m_pressAction; }
 
-  void setReleaseAction(ReleaseAction a) { m_releaseAction = a; }
-  ReleaseAction releaseAction() const { return m_releaseAction; }
+	void setReleaseAction(ReleaseAction a) { m_releaseAction = a; }
+	ReleaseAction releaseAction() const { return m_releaseAction; }
 
-  bool valid() const { return m_valid; }
+	bool valid() const { return m_valid; }
 
-  bool operator==(KeyBind*);
+	bool operator==(KeyBind*);
 
- signals:
-  void pressed();
-  void released();
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
- public slots:
-  void slotKeyPressed(QKeyEvent* e);
-  void slotKeyReleased(QKeyEvent* e);
+signals:
+	void pressed();
+	void released();
 
- private:
-  int m_key; // Key
-  int m_mod; // Modifier [shift|alt|control]
+	public slots:
+	void slotKeyPressed(QKeyEvent* e);
+	void slotKeyReleased(QKeyEvent* e);
 
-  bool m_valid; // Does this object contain a valid key or not
+private:
+	int m_key; // Key
+	int m_mod; // Modifier [shift|alt|control]
 
-  PressAction m_pressAction;
-  ReleaseAction m_releaseAction;
+	bool m_valid; // Does this object contain a valid key or not
+
+	PressAction m_pressAction;
+	ReleaseAction m_releaseAction;
 };
 
 #endif

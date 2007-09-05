@@ -2,7 +2,7 @@
   Q Light Controller
   keybind.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,54 +26,72 @@
 
 class QKeyEvent;
 
+class QDomDocument;
+class QDomElement;
+
+#define KXMLQLCSliderKeyBind "KeyBind"
+#define KXMLQLCSliderKeyBindKey "Key"
+#define KXMLQLCSliderKeyBindAction "Action"
+#define KXMLQLCSliderKeyBindUp "Up"
+#define KXMLQLCSliderKeyBindDown "Down"
+#define KXMLQLCSliderKeyBindModifier "Modifier"
+
 class SliderKeyBind : public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  SliderKeyBind();
-  SliderKeyBind(const int keyUp, const int modUp, const int keyDown, const int modDown);
-  SliderKeyBind(const SliderKeyBind* skb);
-  ~SliderKeyBind();
+		public:
+	SliderKeyBind();
+	SliderKeyBind(const int keyUp, const int modUp,
+		      const int keyDown, const int modDown);
+	SliderKeyBind(const SliderKeyBind* skb);
+	~SliderKeyBind();
 
-  static void keyStringUp(int keyUp, int modUp, QString &string);
-  void keyStringUp(QString &string) { return keyStringUp(m_keyUp, m_modUp, string); }
+	static void keyStringUp(int keyUp, int modUp, QString &string);
+	void keyStringUp(QString &string) { return keyStringUp(m_keyUp, m_modUp, string); }
 
-  static void keyStringDown(int keyDown, int modDown, QString &string);
-  void keyStringDown(QString &string) { return keyStringDown(m_keyDown, m_modDown, string); }
+	static void keyStringDown(int keyDown, int modDown, QString &string);
+	void keyStringDown(QString &string) { return keyStringDown(m_keyDown, m_modDown, string); }
 
-  int keyUp() const { return m_keyUp; }
-  void setKeyUp(int keyUp);
+	int keyUp() const { return m_keyUp; }
+	void setKeyUp(int keyUp);
 
-  int keyDown() const { return m_keyDown; }
-  void setKeyDown(int keyDown);
+	int keyDown() const { return m_keyDown; }
+	void setKeyDown(int keyDown);
 
-  int modUp() const { return m_modUp; }
-  void setModUp(int modUp);
+	int modUp() const { return m_modUp; }
+	void setModUp(int modUp);
 
-  int modDown() const { return m_modDown; }
-  void setModDown(int modDown);
+	int modDown() const { return m_modDown; }
+	void setModDown(int modDown);
 
-  bool validUp() const { return m_validUp; }
-  bool validDown() const { return m_validDown; }
+	bool validUp() const { return m_validUp; }
+	bool validDown() const { return m_validDown; }
 
-  bool operator==(SliderKeyBind*);
+	bool operator==(SliderKeyBind*);
 
- signals:
-  void pressedUp();
-  void pressedDown();
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
- public slots:
-  void slotSliderKeyPressed(QKeyEvent* e);
+signals:
+	void pressedUp();
+	void pressedDown();
 
- private:
-  int m_keyUp; // Key
-  int m_keyDown;
-  int m_modUp; // Modifier [shift|alt|control]
-  int m_modDown;
+	public slots:
+	void slotSliderKeyPressed(QKeyEvent* e);
 
-  bool m_validUp; // Does this object contain a valid key or not
-  bool m_validDown;
+private:
+	int m_keyUp; // Key
+	int m_keyDown;
+	int m_modUp; // Modifier [shift|alt|control]
+	int m_modDown;
+
+	bool m_validUp; // Does this object contain a valid key or not
+	bool m_validDown;
 };
 
 #endif

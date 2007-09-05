@@ -243,7 +243,7 @@ void VCDockSliderProperties::slotBehaviourSelected(int id)
 		break;
 	}
 
-	m_mode = static_cast<VCDockSlider::Mode> (id);
+	m_mode = static_cast<VCDockSlider::SliderMode> (id);
 }
 
 /**

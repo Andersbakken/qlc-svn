@@ -2,7 +2,7 @@
   Q Light Controller
   virtualconsole.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -38,10 +38,12 @@
 #include <qcursor.h>
 #include <assert.h>
 #include <qobjectlist.h>
+#include <qdom.h>
 
 #include "common/settings.h"
 #include "common/inputplugin.h"
 #include "common/qlcimagepreview.h"
+#include "common/filehandler.h"
 
 #include "virtualconsole.h"
 #include "virtualconsoleproperties.h"
@@ -63,14 +65,19 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
-	: QWidget(parent, name)
+VirtualConsole::VirtualConsole(QWidget* parent) 
+	: QWidget(parent, "Virtual Console")
 {
 	m_dockArea = NULL;
 	m_drawArea = NULL;
-	m_gridEnabled = false;
-	m_gridX = 0;
-	m_gridY = 0;
+
+	m_gridEnabled = true;
+	m_gridX = 10;
+	m_gridY = 10;
+
+	m_keyRepeatOff = true;
+	m_grabKeyboard = true;
+
 	m_selectedWidget = NULL;
 	m_renameEdit = NULL;
 	m_editMenu = NULL;
@@ -78,21 +85,6 @@ VirtualConsole::VirtualConsole(QWidget* parent, const char* name)
 
 VirtualConsole::~VirtualConsole()
 {
-	QString config;
-
-	//
-	// Save visible status
-	//
-	if (isShown())
-	{
-		config = Settings::trueValue();
-	}
-	else
-	{
-		config = Settings::falseValue();
-	}
-
-	_app->settings()->set(KEY_VIRTUAL_CONSOLE_OPEN, config);
 }
 
 
@@ -102,92 +94,22 @@ VirtualConsole::~VirtualConsole()
 void VirtualConsole::initView(void)
 {
 	setCaption("Virtual Console");
-	resize(200, 400);
+	resize(300, 400);
 
+	// Init top menu bar
 	initMenuBar();
 
-	// Reset ID
-	VCFrame::ResetID();
-
-	// Dock & Draw Area
+	// Init left dock area
 	initDockArea();
+
+	// Init right drawing area
 	initDrawArea();
 
+	// Update this according to current mode
 	slotModeChanged();
+
+	// Connect to catch mode change events
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
-
-	// Check if VC should be open
-	QString config;
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config) != -1 &&
-	    config == Settings::trueValue())
-	{
-		_app->slotViewVirtualConsole();
-	}
-	else
-	{
-		hide();
-		_app->slotVirtualConsoleClosed();
-	}
-
-	// Grid
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_SNAPGRID, config) != -1 &&
-	    config == Settings::falseValue())
-	{
-		m_gridEnabled = false;
-	}
-	else
-	{
-		m_gridEnabled = true;
-	}
-
-	// Grid X
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDX, config) != -1)
-	{
-		m_gridX = config.toInt();
-	}
-	else
-	{
-		m_gridX = 10;
-	}
-
-	// Grid Y
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDY, config) != -1)
-	{
-		m_gridY = config.toInt();
-	}
-	else
-	{
-		m_gridY = 10;
-	}
-}
-
-//
-// Init the left dock area
-//
-void VirtualConsole::initDockArea()
-{
-	if (m_dockArea) delete m_dockArea;
-	m_dockArea = new VCDockArea(this);
-	connect(m_dockArea, SIGNAL(areaHidden(bool)),
-		this, SLOT(slotDockAreaHidden(bool)));
-	m_dockArea->init();
-
-	// Add the dock area into the master (horizontal) layout
-	m_layout->addWidget(m_dockArea, 0);
-}
-
-
-//
-// Init the main drawing area
-//
-void VirtualConsole::initDrawArea()
-{
-	if (m_drawArea) delete m_drawArea;
-	m_drawArea = new VCFrame(this);
-	m_drawArea->setBottomFrame(true);
-
-	// Add the draw area into the master (horizontal) layout
-	m_layout->addWidget(m_drawArea, 1);
 }
 
 void VirtualConsole::initMenuBar()
@@ -323,6 +245,158 @@ void VirtualConsole::initMenuBar()
 	m_menuBar->insertItem("&Edit", m_editMenu);
 }
 
+void VirtualConsole::initDockArea()
+{
+	if (m_dockArea != NULL)
+		delete m_dockArea;
+
+	m_dockArea = new VCDockArea(this);
+	connect(m_dockArea, SIGNAL(areaHidden(bool)),
+		this, SLOT(slotDockAreaHidden(bool)));
+	m_dockArea->init();
+
+	// Add the dock area into the master horizontal layout
+	m_layout->addWidget(m_dockArea, 0);
+}
+
+
+void VirtualConsole::initDrawArea()
+{
+	if (m_drawArea != NULL)
+		delete m_drawArea;
+
+	m_drawArea = new VCFrame(this);
+
+	/* Initialize as bottom frame */
+	m_drawArea->init(true);
+
+	/* Add the draw area into the master horizontal layout */
+	m_layout->addWidget(m_drawArea, 1);
+}
+
+/*********************************************************************
+ * Load & Save
+ *********************************************************************/
+
+bool VirtualConsole::loader(QDomDocument* doc, QDomElement* vc_root)
+{
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	/* TODO: Make sure that VC is really created anew */
+
+	return _app->virtualConsole()->loadXML(doc, vc_root);
+}
+
+bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+	
+	if (root->tagName() != KXMLQLCVirtualConsole)
+	{
+		qWarning("Virtual Console node not found!");
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
+		}
+		else if (tag.tagName() == KXMLQLCVirtualConsoleGrid)
+		{
+			str = tag.attribute(KXMLQLCVirtualConsoleGridXResolution);
+			setGridX(str.toInt());
+
+			str = tag.attribute(KXMLQLCVirtualConsoleGridYResolution);
+			setGridY(str.toInt());
+
+			str = tag.attribute(KXMLQLCVirtualConsoleGridEnabled);
+			setGridEnabled((bool) str.toInt());
+		}
+		else if (tag.tagName() == KXMLQLCVCFrame)
+		{
+			VCFrame::loader(doc, &tag, this);
+		}
+		else
+		{
+			qDebug("Unknown monitor tag: %s",
+			       (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	hide();
+	setGeometry(x, y, w, h);
+	if (visible == false)
+		showMinimized();
+	else
+		showNormal();
+
+	return true;
+}
+
+bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
+
+	/* Virtual Console entry */
+	root = doc->createElement(KXMLQLCVirtualConsole);
+	wksp_root->appendChild(root);
+
+	/* Save window state */
+	FileHandler::saveXMLWindowState(doc, &root, this);
+
+	/* Grid */
+	tag = doc->createElement(KXMLQLCVirtualConsoleGrid);
+	root.appendChild(tag);
+	str.setNum((m_gridEnabled) ? 1 : 0);
+	tag.setAttribute(KXMLQLCVirtualConsoleGridEnabled, str);
+	str.setNum(m_gridX);
+	tag.setAttribute(KXMLQLCVirtualConsoleGridXResolution, str);
+	str.setNum(m_gridY);
+	tag.setAttribute(KXMLQLCVirtualConsoleGridYResolution, str);
+
+	/* Keyboard settings */
+	tag = doc->createElement(KXMLQLCVirtualConsoleKeyboard);
+	str.setNum((m_grabKeyboard) ? 1 : 0);
+	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardGrab, str);
+	str.setNum((m_keyRepeatOff) ? 1 : 0);
+	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardRepeat, str);	
+
+	/* Save children */
+	if (m_drawArea != NULL)
+		m_drawArea->saveXML(doc, &root);
+
+	return true;
+}
+
+/*********************************************************************
+ * Add menu callbacks
+ *********************************************************************/
+
 void VirtualConsole::slotAddButton()
 {
 	m_drawArea->slotAddButton(QPoint(0, 0));
@@ -347,12 +421,15 @@ void VirtualConsole::slotAddXYPad()
 	_app->doc()->setModified();
 }
 
-
 void VirtualConsole::slotAddLabel()
 {
 	m_drawArea->slotAddLabel(QPoint(0, 0));
 	_app->doc()->setModified();
 }
+
+/*********************************************************************
+ * Tools menu callbacks
+ *********************************************************************/
 
 void VirtualConsole::slotToolsSettings()
 {
@@ -390,6 +467,10 @@ void VirtualConsole::slotToolsPanic()
 	// Panic button pressed: stop all running functions
 	_app->slotPanic();
 }
+
+/*********************************************************************
+ * Edit menu callbacks
+ *********************************************************************/
 
 void VirtualConsole::slotEditCut()
 {
@@ -514,6 +595,9 @@ void VirtualConsole::slotEditRenameCancelled()
 	m_renameEdit = NULL;
 }
 
+/*********************************************************************
+ * Foreground menu callbacks
+ *********************************************************************/
 
 void VirtualConsole::slotForegroundFont()
 {
@@ -562,6 +646,10 @@ void VirtualConsole::slotForegroundNone()
 		_app->doc()->setModified();
 	}
 }
+
+/*********************************************************************
+ * Background menu callbacks
+ *********************************************************************/
 
 void VirtualConsole::slotBackgroundColor()
 {
@@ -640,6 +728,10 @@ void VirtualConsole::slotBackgroundFrame()
 	}
 }
 
+/*********************************************************************
+ * Stacking menu callbacks
+ *********************************************************************/
+
 void VirtualConsole::slotStackingRaise()
 {
 	if (m_selectedWidget)
@@ -658,63 +750,45 @@ void VirtualConsole::slotStackingLower()
 	}
 }
 
+/*********************************************************************
+ * Misc callbacks
+ *********************************************************************/
 
 void VirtualConsole::slotDockAreaHidden(bool areaHidden)
 {
 	if (areaHidden == true)
-	{
 		m_menuBar->setItemChecked(KVCMenuToolsSliders, false);
-	}
 	else
-	{
 		m_menuBar->setItemChecked(KVCMenuToolsSliders, true);
-	}
 }
 
 
-//
-// Set the mode (Design/Operate)
-//
 void VirtualConsole::slotModeChanged()
 {
 	QString config;
 
-	//
-	// Key repeat
-	//
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_KEYREPEAT, config) != -1
-	    && config == Settings::trueValue())
+	/* Key repeat */
+	if (isKeyRepeatOff() == true)
 	{
 		Display* display;
 		display = XOpenDisplay(NULL);
 		ASSERT(display != NULL);
 
 		if (_app->mode() == App::Design)
-		{
 			XAutoRepeatOn(display);
-		}
 		else
-		{
 			XAutoRepeatOff(display);
-		}
 
 		XCloseDisplay(display);
 	}
 
-	//
-	// Grab keyboard
-	//
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRABKB, config) != -1
-	    && config == Settings::trueValue())
+	/* Grab keyboard */
+	if (isGrabKeyboard() == true)
 	{
 		if (_app->mode() == App::Design)
-		{
 			releaseKeyboard();
-		}
 		else
-		{
 			grabKeyboard();
-		}
 	}
 
 	if (_app->mode() == App::Operate)
@@ -733,306 +807,9 @@ void VirtualConsole::slotModeChanged()
 	}
 }
 
-
-// Search for a parent frame by the id number <id>
-// This is a recursive function and I have the feeling that it could
-// be done in a more sophisticated way. Anyway, it works now.
-VCFrame* VirtualConsole::getFrame(unsigned int id, VCFrame* widget)
-{
-	VCFrame* w = NULL;
-	QObjectList* ol = NULL;
-
-	if (widget != NULL)
-	{
-		if (id == widget->id())
-		{
-			return widget;
-		}
-
-		if (widget->children() != NULL)
-		{
-			ol = (QObjectList*) widget->children();
-		}
-		else
-		{
-			return NULL;
-		}
-	}
-	else
-	{
-		if (id == m_drawArea->id())
-		{
-			return m_drawArea;
-		}
-		else
-		{
-			ol = (QObjectList*) m_drawArea->children();
-		}
-	}
-
-	for (QObjectListIt it(*ol); it.current() != NULL; ++it)
-	{
-		//helphelphelp
-		if (QString(it.current()->className()) == QString("VCFrame") ||
-		    QString(it.current()->className()) == QString("VCXYPad"))
-		{
-			w = getFrame(id, (VCFrame*) it.current());
-			if (w != NULL)
-			{
-				break;
-			}
-		}
-	}
-
-	return w;
-}
-
-void VirtualConsole::createWidget(QPtrList <QString> &list)
-{
-	QString t;
-
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.prev();
-			break;
-		}
-		else if (*s == QString("Frame"))
-		{
-			if (m_drawArea == NULL)
-			{
-				m_drawArea = new VCFrame(this);
-				m_drawArea->init();
-				m_drawArea->setBottomFrame(true);
-				m_drawArea->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-
-				m_layout->addWidget(m_drawArea, 1);
-
-				m_drawArea->createContents(list);
-
-				m_drawArea->show();
-			}
-			else
-			{
-				VCFrame* w = new VCFrame(m_drawArea);
-				w->init();
-				w->createContents(list);
-			}
-		}
-		else if (*s == QString("Label"))
-		{
-			VCLabel* w = new VCLabel(m_drawArea);
-			w->init();
-			w->createContents(list);
-		}
-		else if (*s == QString("Button"))
-		{
-			VCButton* w = new VCButton(m_drawArea);
-			w->init();
-			w->createContents(list);
-		}
-		else if (*s == QString("Slider"))
-		{
-			VCDockSlider* s = new VCDockSlider(m_drawArea);
-			s->init();
-			s->createContents(list);
-		}
-		else if (*s == QString("VCXYPad") ||
-			 *s == QString("XYPad")) // Consistency...
-		{
-			VCXYPad* w = new VCXYPad(m_drawArea);
-			w->init();
-			w->createContents(list);
-		}
-		else
-		{
-			// Unknown keyword, skip
-			list.next();
-		}
-	}
-}
-
-void VirtualConsole::createVirtualConsole(QPtrList <QString>& list)
-{
-	QString t;
-	QRect rect(10, 10, 400, 400);
-
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			list.prev();
-			break;
-		}
-		else if (*s == QString("X"))
-		{
-			t = *(list.next());
-			rect.setX(t.toInt());
-		}
-		else if (*s == QString("Y"))
-		{
-			t = *(list.next());
-			rect.setY(t.toInt());
-		}
-		else if (*s == QString("Width"))
-		{
-			t = *(list.next());
-			rect.setWidth(t.toInt());
-		}
-		else if (*s == QString("Height"))
-		{
-			t = *(list.next());
-			rect.setHeight(t.toInt());
-		}
-		else if (*s == QString("DefaultSliders"))
-		{
-			if (*list.next() == Settings::trueValue())
-			{
-				m_dockArea->show();
-			}
-			else
-			{
-				m_dockArea->hide();
-			}
-		}
-		else
-		{
-			list.next();
-		}
-	}
-
-	setGeometry(rect);
-}
-
-void VirtualConsole::createContents(QPtrList <QString> &list)
-{
-	QString t;
-
-	VCFrame::ResetID();
-
-	if (m_drawArea != NULL)
-	{
-		delete m_drawArea;
-		m_drawArea = NULL;
-	}
-
-	for (QString* s = list.next(); s != NULL; s = list.next())
-	{
-		if (*s == QString("Entry"))
-		{
-			s = list.next();
-
-			if (*s == QString("Virtual Console"))
-			{
-				createVirtualConsole(list);
-			}
-			else if (*s == QString("Frame"))
-			{
-				list.prev();
-				createWidget(list);
-			}
-			else if (*s == QString("Button"))
-			{
-				list.prev();
-				createWidget(list);
-			}
-			else if (*s == QString("Label"))
-			{
-				list.prev();
-				createWidget(list);
-			}
-			else if (*s == QString("Slider"))
-			{
-				list.prev();
-				createWidget(list);
-			}
-			else if (*s == QString("VCXYPad") ||
-				 *s == QString("XYPad")) // Let's keep things consistent
-			{
-				list.prev();
-				createWidget(list);
-			}
-			else
-			{
-				// Unknown keyword, skip
-				list.next();
-			}
-		}
-		else
-		{
-			list.next();
-		}
-	}
-
-	// Virtual console sometimes loses its parent (or vice versa)
-	// when loading a new document... try to handle it with this.
-	reparent((QWidget*) _app->workspace(), 0, pos(), isVisible());
-
-	// Check if VC should be open
-	QString config;
-	if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_OPEN, config) != -1
-	    && config == Settings::trueValue())
-	{
-		_app->slotViewVirtualConsole();
-	}
-	else
-	{
-		hide();
-		_app->slotVirtualConsoleClosed();
-	}
-	emit sendFeedBack();
-}
-
-void VirtualConsole::saveToFile(QFile& file)
-{
-	QString s;
-	QString t;
-
-	// Comment
-	s = QString("# Virtual Console Master Entry\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Entry type
-	s = QString("Entry = Virtual Console") + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// X
-	t.setNum(rect().x());
-	s = QString("X = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Y
-	t.setNum(rect().y());
-	s = QString("Y = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Width
-	t.setNum(rect().width());
-	s = QString("Width = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Height
-	t.setNum(rect().height());
-	s = QString("Height = ") + t + QString("\n");
-	file.writeBlock((const char*) s, s.length());
-
-	// Default sliders
-	if (m_dockArea->isHidden())
-	{
-		s = QString("DefaultSliders = ") + Settings::falseValue() + QString("\n");
-	}
-	else
-	{
-		s = QString("DefaultSliders = ") + Settings::trueValue() + QString("\n");
-	}
-	file.writeBlock((const char*) s, s.length());
-
-	ASSERT(m_drawArea != NULL);
-
-	m_drawArea->saveFramesToFile(file);
-	m_drawArea->saveChildrenToFile(file);
-}
+/*********************************************************************
+ * Event handlers
+ *********************************************************************/
 
 void VirtualConsole::closeEvent(QCloseEvent* e)
 {
@@ -1058,7 +835,6 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 	}
 }
 
-
 void VirtualConsole::setSelectedWidget(QWidget* w)
 {
 	if (m_selectedWidget)
@@ -1081,20 +857,37 @@ void VirtualConsole::setSelectedWidget(QWidget* w)
 	}
 }
 
-
 void VirtualConsole::customEvent(QCustomEvent* e)
 {
-	// There is something the InputPlugin want's to telll
-	//
+	// There is something the InputPlugin wants to tell
 	if ((e->type() == KInputEvent) && (_app->mode() != App::Design))
 	{
-		//   QString t;
 		InputEvent* ie = (InputEvent*)e;
-		//   t.sprintf("Slider: InputEvent  %d  %d  %d", ie->id(), ie->channel(), ie->value());
-		//    qDebug(t);
-		emit InpEvent( ie->id(), ie->channel(), ie->value());
+		emit InpEvent(ie->id(), ie->channel(), ie->value());
 	}
-
 }
 
+/*****************************************************************************
+ * Frame style converters
+ *****************************************************************************/
+
+QString VirtualConsole::frameStyleToString(const int style)
+{
+	if (style == KFrameStyleSunken)
+		return "Sunken";
+	else if (style == KFrameStyleRaised)
+		return "Raised";
+	else
+		return "None";
+}
+
+int VirtualConsole::stringToFrameStyle(const QString& style)
+{
+	if (style == "Sunken")
+		return KFrameStyleSunken;
+	else if (style == "Raised")
+		return KFrameStyleRaised;
+	else
+		return KFrameStyleNone;
+}
 

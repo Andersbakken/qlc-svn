@@ -1301,8 +1301,7 @@ bool App::loadFixtureDefinitions()
 		path = QString(FIXTURES) + QString("/") + *it;
 		fixtureDef = new QLCFixtureDef(path);
 
-		qDebug("Loaded fixture definition from %s: %s-%s",
-		       (const char*) path, 
+		qDebug("Loaded fixture definition for %s %s",
 		       (const char*) fixtureDef->manufacturer(),
 		       (const char*) fixtureDef->model());
 

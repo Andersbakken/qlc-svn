@@ -2,7 +2,7 @@
   Q Light Controller
   keybind.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include <qnamespace.h>
 #include <qevent.h>
+#include <qdom.h>
 
 #include "sliderkeybind.h"
 #include "virtualconsole.h"
@@ -105,7 +106,6 @@ SliderKeyBind::SliderKeyBind(const SliderKeyBind* skb) : QObject()
 SliderKeyBind::~SliderKeyBind()
 {
 }
-
 
 //
 // Set the key up
@@ -627,4 +627,54 @@ void SliderKeyBind::slotSliderKeyPressed(QKeyEvent* e)
     {
       emit pressedDown();
     }
+}
+
+/*****************************************************************************
+ * Load & Save
+ *****************************************************************************/
+bool SliderKeyBind::loadXML(QDomDocument* doc, QDomElement* root)
+{
+}
+
+bool SliderKeyBind::saveXML(QDomDocument* doc, QDomElement* vc_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	/* SliderKeyBind entry */
+	root = doc->createElement(KXMLQLCSliderKeyBind);
+	vc_root->appendChild(root);
+
+	/* Up */
+	tag = doc->createElement(KXMLQLCSliderKeyBindKey);
+	tag.setAttribute(KXMLQLCSliderKeyBindAction, KXMLQLCSliderKeyBindUp);
+
+	/* Mod */
+	str.setNum(modUp());
+	tag.setAttribute(KXMLQLCSliderKeyBindModifier, str);
+
+	/* Key */
+	str.setNum(keyUp());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Down */
+	tag = doc->createElement(KXMLQLCSliderKeyBindKey);
+	tag.setAttribute(KXMLQLCSliderKeyBindAction, KXMLQLCSliderKeyBindDown);
+
+	/* Mod */
+	str.setNum(modDown());
+	tag.setAttribute(KXMLQLCSliderKeyBindModifier, str);
+
+	/* Key */
+	str.setNum(keyDown());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	return true;
 }

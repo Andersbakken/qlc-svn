@@ -2,7 +2,7 @@
   Q Light Controller
   vcframe.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -28,10 +28,8 @@
 #include "app.h"
 #include "doc.h"
 #include "virtualconsole.h"
-#include "common/settings.h"
-#include "common/minmax.h"
-#include "configkeys.h"
 #include "vcframeproperties.h"
+#include "common/filehandler.h"
 
 #include <qcursor.h>
 #include <qpoint.h>
@@ -45,24 +43,20 @@
 #include <qpainter.h>
 #include <qbuttongroup.h>
 #include <qobjectlist.h>
-
 #include <assert.h>
 
 extern App* _app;
 
-t_vc_id VCFrame::s_nextVCID = KVCIDMin;
-
-const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
-const int KColorMask       ( 0xff );
-
 VCFrame::VCFrame(QWidget* parent)
-  : QFrame(parent, "Frame"),
-    m_xpos             ( 0 ),
-    m_ypos             ( 0 ),
-    m_id               ( s_nextVCID++ ),
-    m_resizeMode       ( false ),
-    m_bottomFrame      ( false ),
-    m_buttonBehaviour  ( Normal )
+	: QFrame(parent, "VCFrame"),
+	  m_backgroundImage  ( QString::null ),
+	  m_hasCustomBackgroundColor ( false ),
+	  m_hasCustomForegroundColor ( false ),
+	  m_hasCustomFont ( false ),
+	  m_xpos ( 0 ),
+	  m_ypos ( 0 ),
+	  m_resizeMode ( false ),
+	  m_buttonBehaviour ( Normal )
 {
 }
 
@@ -70,412 +64,458 @@ VCFrame::~VCFrame()
 {
 }
 
-void VCFrame::init()
+void VCFrame::init(bool bottomFrame)
 {
-  setMinimumSize(20, 20);
+	if (bottomFrame == false)
+	{
+		setFrameStyle(KFrameStyleSunken);
+		setMinimumSize(20, 20);
+		resize(120, 120);
+	}
 
-  resize(120, 120);
-  setFrameStyle(QFrame::Panel | QFrame::Sunken);
-
-  connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	/* Listen to mode changes (operate/design) so menus can be en/disabled */
+	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
-void VCFrame::setBottomFrame(bool set)
+bool VCFrame::isBottomFrame()
 {
-  m_bottomFrame = set;
-  if (set)
-    {
-      setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-    }
-  else
-    {
-      setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    }
+	if (parentWidget() != NULL && parentWidget()->className() != "VCFrame")
+		return true;
+	else
+		return false;
 }
 
-void VCFrame::setID(t_vc_id newid)
+/*********************************************************************
+ * Background image
+ *********************************************************************/
+void VCFrame::setBackgroundImage(const QString& path)
 {
-  m_id = newid;
-  if (newid >= s_nextVCID)
-    {
-      // Set the biggest id number + 1 to be the next free id
-      s_nextVCID = newid + 1;
-    }
+	m_hasCustomBackgroundColor = false;
+	m_backgroundImage = path;
+	setPaletteBackgroundPixmap(QPixmap(path));
 }
+
+const QString& VCFrame::backgroundImage()
+{
+	return m_backgroundImage;
+}
+
+/*********************************************************************
+ * Background color
+ *********************************************************************/
+void VCFrame::setBackgroundColor(const QColor& color)
+{
+	m_hasCustomBackgroundColor = true;
+	m_backgroundImage = QString::null;
+	setPaletteBackgroundColor(color);
+}
+
+void VCFrame::resetBackgroundColor()
+{
+	m_hasCustomBackgroundColor = false;
+	/* TODO */
+}
+
+/*********************************************************************
+ * Foreground color
+ *********************************************************************/
+void VCFrame::setForegroundColor(const QColor& color)
+{
+	m_hasCustomForegroundColor = true;
+	setPaletteForegroundColor(color);
+}
+
+void VCFrame::resetForegroundColor()
+{
+	m_hasCustomForegroundColor = false;
+	/* TODO */
+}
+
+/*********************************************************************
+ * Font
+ *********************************************************************/
+
+void VCFrame::setFont(const QFont& font)
+{
+	m_hasCustomFont = true;
+	QWidget::setFont(font);
+}
+
+void VCFrame::resetFont()
+{
+	m_hasCustomFont = false;
+	/* TODO */
+}
+
+/*****************************************************************************
+ * Button Behaviour
+ *****************************************************************************/
 
 void VCFrame::setButtonBehaviour(ButtonBehaviour b)
 {
-  m_buttonBehaviour = b;
+	m_buttonBehaviour = b;
 
-  if (buttonBehaviour() == VCFrame::Exclusive)
-    {
-      if (_app->virtualConsole()->selectedWidget())
-        {
-	  QObjectList* l = _app->virtualConsole()->selectedWidget()->queryList("VCButton");
-          QObjectListIt it(*l);
-          QObject *obj;
-          while ((obj = it.current()) != 0) {
-    	    ++it;
-	    ((VCButton*)obj)->setExclusive(true);
-          }
-          delete l;
-          setFrameStyle(QFrame::GroupBoxPanel | QFrame::Sunken);
-          setLineWidth(2);
-	}
-      else
-        {
-	  setFrameStyle(QFrame::GroupBoxPanel | QFrame::Sunken);
-          setLineWidth(2);
-	}
-    }
-  else
-    {
-      if (_app->virtualConsole()->selectedWidget())
-        {
-	  QObjectList* l = _app->virtualConsole()->selectedWidget()->queryList("VCButton");
-          QObjectListIt it(*l);
-          QObject *obj;
-          while ((obj = it.current()) != 0) {
-    	    ++it;
-	    ((VCButton*)obj)->setExclusive(false);
-          }
-          delete l;
-      setFrameStyle(KFrameStyle);
-      setLineWidth(1);
-        }
-      else
-        {
-	  setFrameStyle(KFrameStyle);
-	  setLineWidth(1);
-	}
-    }
-}
-
-void VCFrame::saveFramesToFile(QFile& file, t_vc_id parentID)
-{
-  QString s;
-  QString t;
-
-  // Comment
-  s = QString("# Virtual Console Frame Entry\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Entry type
-  s = QString("Entry = Frame") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Name
-  s = QString("Name = ") + caption() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Parent ID
-  if (parentID != 0)
-    {
-      t.setNum(parentID);
-      s = QString("Parent = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-    }
-
-  // Geometry
-  if (m_bottomFrame == false)
-    {
-      // X
-      t.setNum(x());
-      s = QString("X = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      // Y
-      t.setNum(y());
-      s = QString("Y = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      // W
-      t.setNum(width());
-      s = QString("Width = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      // H
-      t.setNum(height());
-      s = QString("Height = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-    }
-
-  // Palette
-  if (ownPalette())
-    {
-      // Text color
-      t.setNum(qRgb(paletteForegroundColor().red(),
-		    paletteForegroundColor().green(),
-		    paletteForegroundColor().blue()));
-      s = QString("Textcolor = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      // Background color
-      t.setNum(qRgb(paletteBackgroundColor().red(),
-		    paletteBackgroundColor().green(),
-		    paletteBackgroundColor().blue()));
-      s = QString("Backgroundcolor = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-    }
-
-  // Background pixmap
-  if (paletteBackgroundPixmap())
-    {
-      s = QString("Pixmap = " + iconText() + QString("\n"));
-      file.writeBlock((const char*) s, s.length());
-    }
-
-  // Font
-  s = QString("Font = ") + font().toString() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // Frame
-  if (frameStyle() & KFrameStyle)
-    {
-      s = QString("Frame = ") + Settings::trueValue() + QString("\n");
-    }
-  else
-    {
-      s = QString("Frame = ") + Settings::falseValue() + QString("\n");
-    }
-  file.writeBlock((const char*) s, s.length());
-
-  // Button Behaviour
-  t.setNum(m_buttonBehaviour);
-  s = QString("ButtonBehaviour = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  // ID
-  t.setNum(id());
-  s = QString("ID = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-
-  if (children() != NULL)
-    {
-      QObjectList* ol = (QObjectList*) children();
-      QObjectListIt it(*ol);
-
-      // Child frames
-      for (; it.current() != NULL; ++it)
+	if (buttonBehaviour() == VCFrame::Exclusive)
 	{
-	  if (QString(it.current()->className()) == QString("VCFrame"))
-	    {
-	      VCFrame* w = (VCFrame*) it.current();
-	      w->saveFramesToFile(file, id());
-	    }
-	}
-    }
-}
-
-void VCFrame::saveChildrenToFile(QFile& file)
-{
-  if (children() != NULL)
-    {
-      QObjectList* ol = (QObjectList*) children();
-      QObjectListIt it(*ol);
-
-      // Child frames
-      while(it.current())
-	{
-	  if (QString(it.current()->className()) == QString("VCButton"))
-	    {
-	      ((VCButton*) it.current())->saveToFile(file, id());
-	    }
-	  else if (QString(it.current()->className()) == QString("VCLabel"))
-	    {
-	      ((VCLabel*) it.current())->saveToFile(file, id());
-	    }
-	  else if (QString(it.current()->className())==QString("VCDockSlider"))
-	    {
-	      ((VCDockSlider*) it.current())->saveToFile(file, id());
-	    }
-	  else if (QString(it.current()->className()) == QString("VCXYPad"))
-	    {
-	      ((VCXYPad*) it.current())->saveToFile(file, id());
-	    }
-	  else if (QString(it.current()->className()) == QString("VCFrame"))
-	    {
-	      ((VCFrame*) it.current())->saveChildrenToFile(file);
-	    }
-	  ++it;
-	}
-    }
-}
-
-void VCFrame::createContents(QPtrList <QString> &list)
-{
-  QRect rect(30, 30, 30, 30);
-
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
-	{
-	  s = list.prev();
-	  break;
-	}
-      else if (*s == QString("ID"))
-	{
-	  setID(list.next()->toInt());
-	}
-      else if (*s == QString("ButtonBehaviour"))
-	{
-	  setButtonBehaviour(static_cast<ButtonBehaviour>
-			     (list.next()->toInt()));
-	}
-      else if (*s == QString("Parent"))
-	{
-	  if (m_bottomFrame == false)
-	    {
-	      VCFrame* parent =
-		_app->virtualConsole()->getFrame(list.next()->toInt());
-
-	      if (parent != NULL)
+		if (_app->virtualConsole()->selectedWidget())
 		{
-		  reparent((QWidget*) parent, 0, QPoint(0, 0), true);
+			QObjectList* l = _app->virtualConsole()->selectedWidget()->queryList("VCButton");
+			QObjectListIt it(*l);
+			QObject *obj;
+			while ((obj = it.current()) != 0)
+			{
+				++it;
+				((VCButton*)obj)->setExclusive(true);
+			}
+
+			delete l;
+			setFrameStyle(QFrame::GroupBoxPanel | QFrame::Sunken);
+			setLineWidth(2);
 		}
-	    }
-	  else
-	    {
-	      list.next();
-	    }
+		else
+		{
+			setFrameStyle(QFrame::GroupBoxPanel | QFrame::Sunken);
+			setLineWidth(2);
+		}
 	}
-      else if (*s == QString("Textcolor"))
+	else
 	{
-	  QColor qc;
-	  qc.setRgb(list.next()->toUInt());
-	  setPaletteForegroundColor(qc);
-	}
-      else if (*s == QString("Backgroundcolor"))
-	{
-	  QColor qc;
-	  qc.setRgb(list.next()->toUInt());
-	  setPaletteBackgroundColor(qc);
-	}
-      else if (*s == QString("Color"))
-	{
-	  // Backwards compatibility for frame background color
-	  QString t = *(list.next());
-	  int i = t.find(QString(","));
-	  int r = t.left(i).toInt();
-	  int j = t.find(QString(","), i + 1);
-	  int g = t.mid(i+1, j-i-1).toInt();
-	  int b = t.mid(j+1).toInt();
-	  QColor qc(r, g, b);
-	  setPaletteBackgroundColor(qc);
-	}
-      else if (*s == QString("Pixmap"))
-	{
-	  QString t;
-	  t = *(list.next());
+		if (_app->virtualConsole()->selectedWidget())
+		{
+			QObjectList* l = _app->virtualConsole()->selectedWidget()->queryList("VCButton");
+			QObjectListIt it(*l);
+			QObject *obj;
+			while ((obj = it.current()) != 0)
+			{
+				++it;
+				((VCButton*)obj)->setExclusive(false);
+			}
 
-	  QPixmap pm(t);
-	  if (pm.isNull() == false)
-	    {
-	      setIconText(t);
-	      setPaletteBackgroundPixmap(pm);
-	    }
+			delete l;
+			setFrameStyle(KFrameStyleSunken);
+			setLineWidth(1);
+		}
+		else
+		{
+			setFrameStyle(KFrameStyleSunken);
+			setLineWidth(1);
+		}
 	}
-      else if (*s == QString("Font"))
-	{
-	  QFont f = font();
-	  QString q = *(list.next());
-	  f.fromString(q);
-	  setFont(f);
-	}
-      else if (*s == QString("X"))
-	{
-	  rect.setX(list.next()->toInt());
-	}
-      else if (*s == QString("Y"))
-	{
-	  rect.setY(list.next()->toInt());
-	}
-      else if (*s == QString("Width"))
-	{
-	  rect.setWidth(list.next()->toInt());
-	}
-      else if (*s == QString("Height"))
-	{
-	  rect.setHeight(list.next()->toInt());
-	}
-      else
-	{
-	  // Unknown keyword, ignore
-	  *list.next();
-	}
-    }
-
-  if (m_bottomFrame == false)
-    {
-      setGeometry(rect);
-    }
 }
 
+/*********************************************************************
+ * Load & Save
+ *********************************************************************/
+
+bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+{
+	VCFrame* frame = NULL;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+	Q_ASSERT(parent != NULL);
+
+	if (root->tagName() != KXMLQLCVCFrame)
+	{
+		qWarning("Frame node not found!");
+		return false;
+	}
+
+	/* Create a new frame into its parent */
+	frame = new VCFrame(parent);
+	frame->init();
+	frame->show();
+
+	/* Continue loading */
+	return frame->loadXML(doc, root);
+}
+
+bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCFrame)
+	{
+		qWarning("Frame node not found!");
+		return false;
+	}
+
+	/* Caption */
+	setCaption(root->attribute(KXMLQLCVCCaption));
+
+	/* Frame style */
+	str = root->attribute(KXMLQLCVirtualConsoleFrameStyle);
+	setFrameStyle(str.toInt());
+
+	/* Button Behaviour */
+	setButtonBehaviour(static_cast<ButtonBehaviour>
+	   (root->attribute(KXMLQLCVCFrameButtonBehaviour).toInt()));
+
+	/* Foreground Color */
+	str = root->attribute(KXMLQLCVCForegroundColor);
+	if (str.length() != 0 && str != KXMLQLCVCColorDefault)
+		setForegroundColor(QColor(str.toUInt()));
+
+	/* Background Color */
+	str = root->attribute(KXMLQLCVCBackgroundColor);
+	if (str.length() != 0 && str != KXMLQLCVCColorDefault)
+		setBackgroundColor(QColor(str.toUInt()));
+
+	/* Background Color */
+	str = root->attribute(KXMLQLCVCBackgroundImage);
+	if (str.length() != 0 && str != KXMLQLCVCBackgroundImageNone)
+		setBackgroundImage(str);
+
+	/* Font */
+	str = root->attribute(KXMLQLCVCFont);
+	if (str.length() != 0 && str != KXMLQLCVCFontDefault)
+	{
+		QFont font;
+		font.fromString(str);
+		setFont(font);
+	}
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
+			setGeometry(x, y, w, h);
+		}
+		else if (tag.tagName() == KXMLQLCVCFrame)
+		{
+			VCFrame::loader(doc, &tag, this);
+		}
+		else if (tag.tagName() == KXMLQLCVCLabel)
+		{
+			VCLabel::loader(doc, &tag, this);
+		}
+		else if (tag.tagName() == KXMLQLCVCButton)
+		{
+			VCButton::loader(doc, &tag, this);
+		}
+		else if (tag.tagName() == KXMLQLCVCXYPad)
+		{
+			VCXYPad::loader(doc, &tag, this);
+		}
+		else if (tag.tagName() == KXMLQLCVCDockSlider)
+		{
+			VCDockSlider::loader(doc, &tag, this);
+		}
+		else
+		{
+			qWarning("Unknown monitor tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
+}
+
+bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
+{
+	const QObjectList* objectList = NULL;
+	QObject* child = NULL;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	/* VC Frame entry */
+	root = doc->createElement(KXMLQLCVCFrame);
+	vc_root->appendChild(root);
+
+	/* Caption */
+	root.setAttribute(KXMLQLCVCCaption, caption());
+
+	/* Button Behaviour */
+	str.setNum(buttonBehaviour());
+	root.setAttribute(KXMLQLCVCFrameButtonBehaviour, str);
+
+	/* Save appearance */
+	saveXMLAppearance(doc, &root);
+
+	/* Save widget proportions only for child frames */
+	if (isBottomFrame() == false)
+		FileHandler::saveXMLWindowState(doc, &root, this);
+
+	/* Save children */
+	objectList = children();
+	if (objectList != NULL)
+	{
+		QObjectListIterator it(*objectList);
+		while ( (child = it.current()) != NULL )
+		{
+			if (child->className() == "VCFrame")
+				static_cast<VCFrame*> (child)->saveXML(doc, &root);
+			else if (child->className() == "VCButton")
+				static_cast<VCButton*> (child)->saveXML(doc, &root);
+			else if (child->className() == "VCDockSlider")
+				static_cast<VCDockSlider*> (child)->saveXML(doc, &root);
+			else if (child->className() == "VCLabel")
+				static_cast<VCLabel*> (child)->saveXML(doc, &root);
+			else if (child->className() == "VCXYPad")
+				static_cast<VCXYPad*> (child)->saveXML(doc, &root);
+			else
+				qWarning("Unknown widget class: %s", child->className());
+			
+			++it;
+		}
+	}
+
+	return true;
+}
+
+bool VCFrame::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(frame_root != NULL);
+
+	/* VC Label entry */
+	root = doc->createElement(KXMLQLCVCAppearance);
+	frame_root->appendChild(root);
+
+	/* Frame style */
+	tag = doc->createElement(KXMLQLCVirtualConsoleFrameStyle);
+	root.appendChild(tag);
+	text = doc->createTextNode(VirtualConsole::frameStyleToString(frameStyle()));
+	tag.appendChild(text);
+
+	/* Foreground color */
+	tag = doc->createElement(KXMLQLCVCForegroundColor);
+	root.appendChild(tag);
+	if (hasCustomForegroundColor() == true)
+		str.setNum(paletteForegroundColor().rgb());
+	else
+		str = KXMLQLCVCColorDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Background color */
+	tag = doc->createElement(KXMLQLCVCBackgroundColor);
+	root.appendChild(tag);
+	if (hasCustomBackgroundColor() == true)
+		str.setNum(paletteBackgroundColor().rgb());
+	else
+		str = KXMLQLCVCColorDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Background image */
+	tag = doc->createElement(KXMLQLCVCBackgroundImage);
+	root.appendChild(tag);
+	if (backgroundImage() != QString::null)
+		str = m_backgroundImage;
+	else
+		str = KXMLQLCVCBackgroundImageNone;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Font */
+	tag = doc->createElement(KXMLQLCVCFont);
+	root.appendChild(tag);
+	if (hasCustomFont() == true)
+		str = font().toString();
+	else
+		str = KXMLQLCVCFontDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);	
+
+	return true;
+}
+
+/*********************************************************************
+ *
+ *********************************************************************/
 
 void VCFrame::paintEvent(QPaintEvent* e)
 {
-  QFrame::paintEvent(e);
+	QFrame::paintEvent(e);
 
-  QPainter p(this);
+	QPainter p(this);
 
-  if (_app->mode() == App::Design &&
-      _app->virtualConsole()->selectedWidget() == this &&
-      m_bottomFrame == false)
-    {
-      // Draw a dotted line around the widget
-      QPen pen(DotLine);
-      pen.setWidth(2);
-      p.setPen(pen);
-      p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+	if (_app->mode() == App::Design &&
+	    _app->virtualConsole()->selectedWidget() == this)
+	{
+		// Draw a dotted line around the widget
+		QPen pen(DotLine);
+		pen.setWidth(2);
+		p.setPen(pen);
+		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
 
-      // Draw a resize handle
-      QBrush b(SolidPattern);
-      p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
-    }
+		// Draw a resize handle
+		QBrush b(SolidPattern);
+		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+	}
 }
 
 void VCFrame::slotModeChanged()
 {
-  repaint();
+	repaint();
 }
 
 void VCFrame::mousePressEvent(QMouseEvent* e)
 {
-  if (_app->mode() == App::Design)
-    {
-      _app->virtualConsole()->setSelectedWidget(this);
+	if (_app->mode() == App::Design)
+	{
+		_app->virtualConsole()->setSelectedWidget(this);
 
-      if (m_resizeMode == true && m_bottomFrame == false)
-	{
-	  setMouseTracking(false);
-	  m_resizeMode = false;
-	}
+		if (m_resizeMode == true && isBottomFrame() == false)
+		{
+			setMouseTracking(false);
+			m_resizeMode = false;
+		}
 
-      if ((e->button() & LeftButton || e->button() & MidButton)
-	  && m_bottomFrame == false)
-	{
-	  if (e->x() > rect().width() - 10 &&
-	      e->y() > rect().height() - 10)
-	    {
-	      m_resizeMode = true;
-	      setMouseTracking(true);
-	      setCursor(QCursor(SizeFDiagCursor));
-	    }
-	  else
-	    {
-	      m_mousePressPoint = QPoint(e->x(), e->y());
-	      setCursor(QCursor(SizeAllCursor));
-	    }
+		if ((e->button() & LeftButton || e->button() & MidButton)
+		    && isBottomFrame() == false)
+		{
+			if (e->x() > rect().width() - 10 &&
+			    e->y() > rect().height() - 10)
+			{
+				m_resizeMode = true;
+				setMouseTracking(true);
+				setCursor(QCursor(SizeFDiagCursor));
+			}
+			else
+			{
+				m_mousePressPoint = QPoint(e->x(), e->y());
+				setCursor(QCursor(SizeAllCursor));
+			}
+		}
+		else if (e->button() & RightButton)
+		{
+			invokeMenu(mapToGlobal(e->pos()));
+		}
 	}
-      else if (e->button() & RightButton)
+	else
 	{
-	  invokeMenu(mapToGlobal(e->pos()));
+		QFrame::mousePressEvent(e);
 	}
-    }
-  else
-    {
-      QFrame::mousePressEvent(e);
-    }
 }
 
 void VCFrame::invokeMenu(QPoint point)
@@ -485,15 +525,15 @@ void VCFrame::invokeMenu(QPoint point)
 	//
 	QPopupMenu* addMenu = new QPopupMenu();
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/button.png")),
-		"&Button", KVCMenuAddButton);
+			    "&Button", KVCMenuAddButton);
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/slider.png")),
-		"&Slider", KVCMenuAddSlider);
+			    "&Slider", KVCMenuAddSlider);
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.png")),
-		"&Frame", KVCMenuAddFrame);
+			    "&Frame", KVCMenuAddFrame);
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/xypad.png")),
-		"&XY-Pad", KVCMenuAddXYPad);
+			    "&XY-Pad", KVCMenuAddXYPad);
 	addMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/label.png")),
-		"L&abel", KVCMenuAddLabel);
+			    "L&abel", KVCMenuAddLabel);
 
 	QPopupMenu* menu = new QPopupMenu();
 	// Insert common stuff from virtual console (100% dirty hack)
@@ -504,28 +544,28 @@ void VCFrame::invokeMenu(QPoint point)
 
 	switch(menu->exec(point))
 	{
-		case KVCMenuAddButton:
-			slotAddButton(mapFromGlobal(point));
+	case KVCMenuAddButton:
+		slotAddButton(mapFromGlobal(point));
 		break;
 
-		case KVCMenuAddSlider:
-			slotAddSlider(mapFromGlobal(point));
+	case KVCMenuAddSlider:
+		slotAddSlider(mapFromGlobal(point));
 		break;
 
-		case KVCMenuAddFrame:
-			slotAddFrame(mapFromGlobal(point));
+	case KVCMenuAddFrame:
+		slotAddFrame(mapFromGlobal(point));
 		break;
 
-		case KVCMenuAddXYPad:
-			slotAddXYPad(mapFromGlobal(point));
+	case KVCMenuAddXYPad:
+		slotAddXYPad(mapFromGlobal(point));
 		break;
 
-		case KVCMenuAddLabel:
-			slotAddLabel(mapFromGlobal(point));
+	case KVCMenuAddLabel:
+		slotAddLabel(mapFromGlobal(point));
 		break;
 
-		default:
-			break;
+	default:
+		break;
 	}
 
 	delete addMenu;
@@ -534,73 +574,73 @@ void VCFrame::invokeMenu(QPoint point)
 
 void VCFrame::slotAddButton(QPoint p)
 {
-  VCButton* b = new VCButton(this);
-  assert(b);
-  b->init();
-  b->show();
+	VCButton* b = new VCButton(this);
+	assert(b);
+	b->init();
+	b->show();
 
-  if (buttonBehaviour() == VCFrame::Exclusive)
-    {
-      b->setExclusive(true);
-    }
-  else
-    {
-      b->setExclusive(false);
-    }
+	if (buttonBehaviour() == VCFrame::Exclusive)
+	{
+		b->setExclusive(true);
+	}
+	else
+	{
+		b->setExclusive(false);
+	}
 
-  b->move(p);
+	b->move(p);
 
-  _app->doc()->setModified();
+	_app->doc()->setModified();
 }
 
 void VCFrame::slotAddSlider(QPoint p)
 {
-  VCDockSlider* s = new VCDockSlider(this);
-  assert(s);
-  s->setBusID(KBusIDDefaultFade);
-  s->init();
-  s->resize(55, 200);
-  s->show();
+	VCDockSlider* s = new VCDockSlider(this);
+	assert(s);
+	s->setBusID(KBusIDDefaultFade);
+	s->init();
+	s->resize(55, 200);
+	s->show();
 
-  s->move(p);
+	s->move(p);
 
-  _app->doc()->setModified();
+	_app->doc()->setModified();
 }
 
 void VCFrame::slotAddFrame(QPoint p)
 {
-  VCFrame* f = new VCFrame(this);
-  assert(f);
-  f->init();
-  f->show();
+	VCFrame* f = new VCFrame(this);
+	assert(f);
+	f->init();
+	f->show();
 
-  f->move(p);
+	f->move(p);
 
-  _app->doc()->setModified();
+	_app->doc()->setModified();
 }
 
 void VCFrame::slotAddXYPad(QPoint p)
 {
-  VCXYPad* x = new VCXYPad(this);
-  assert(x);
-  x->init();
-  x->show();
+	VCXYPad* x = new VCXYPad(this);
+	assert(x);
+	x->init();
+	x->show();
 
-  x->move(p);
+	x->move(p);
 
-  _app->doc()->setModified();
+	_app->doc()->setModified();
 }
 
 void VCFrame::slotAddLabel(QPoint p)
 {
-  VCLabel* l = new VCLabel(this);
-  assert(l);
-  l->init();
-  l->show();
+	VCLabel* l = new VCLabel(this);
+	assert(l);
+	l->init();
+	l->show();
 
-  l->move(p);
+	l->move(p);
 
-  _app->doc()->setModified();
+	_app->doc()->setModified();
 }
 
 
@@ -608,170 +648,170 @@ void VCFrame::slotAddLabel(QPoint p)
 
 void VCFrame::parseWidgetMenu(int item)
 {
-  switch (item)
-    {
-    case KVCMenuEditProperties:
-      {
-	VCFrameProperties* vcfp = new VCFrameProperties(this);
-	vcfp->init();
-	if (vcfp->exec() == QDialog::Accepted)
-	  {
-	    _app->doc()->setModified();
-	  }
+	switch (item)
+	{
+	case KVCMenuEditProperties:
+	{
+		VCFrameProperties* vcfp = new VCFrameProperties(this);
+		vcfp->init();
+		if (vcfp->exec() == QDialog::Accepted)
+		{
+			_app->doc()->setModified();
+		}
 
-	delete vcfp;
-      }
-      break;
+		delete vcfp;
+	}
+	break;
 
-    case KVCMenuBackgroundFrame:
-      {
-	if (frameStyle() & KFrameStyle)
-	  {
-	    setFrameStyle(NoFrame);
-	  }
-	else
-	  {
-	    setFrameStyle(KFrameStyle);
-	  }
-	_app->doc()->setModified();
-      }
-      break;
+	case KVCMenuBackgroundFrame:
+	{
+		if (frameStyle() & KFrameStyleSunken)
+		{
+			setFrameStyle(NoFrame);
+		}
+		else
+		{
+			setFrameStyle(KFrameStyleSunken);
+		}
+		_app->doc()->setModified();
+	}
+	break;
 
-    default:
-      break;
-    }
+	default:
+		break;
+	}
 }
 
 void VCFrame::mouseReleaseEvent(QMouseEvent* e)
 {
-  if (_app->mode() == App::Design)
-    {
-      unsetCursor();
-      m_resizeMode = false;
-      setMouseTracking(false);
-    }
-  else
-    {
-      QFrame::mouseReleaseEvent(e);
-    }
+	if (_app->mode() == App::Design)
+	{
+		unsetCursor();
+		m_resizeMode = false;
+		setMouseTracking(false);
+	}
+	else
+	{
+		QFrame::mouseReleaseEvent(e);
+	}
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)
 {
-  if (_app->mode() == App::Design)
-    {
-      if (m_resizeMode == true)
+	if (_app->mode() == App::Design)
 	{
-	  QPoint p(QCursor::pos());
-	  resizeTo(mapFromGlobal(p));
-	  _app->doc()->setModified();
-	}
-      else if (e->state() & LeftButton || e->state() & MidButton)
-	{
-	  QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
-	  p.setX(p.x() - m_mousePressPoint.x());
-	  p.setY(p.y() - m_mousePressPoint.y());
+		if (m_resizeMode == true)
+		{
+			QPoint p(QCursor::pos());
+			resizeTo(mapFromGlobal(p));
+			_app->doc()->setModified();
+		}
+		else if (e->state() & LeftButton || e->state() & MidButton)
+		{
+			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+			p.setX(p.x() - m_mousePressPoint.x());
+			p.setY(p.y() - m_mousePressPoint.y());
 
-	  moveTo(p);
-	  _app->doc()->setModified();
+			moveTo(p);
+			_app->doc()->setModified();
+		}
 	}
-    }
-  else
-    {
-      QFrame::mouseMoveEvent(e);
-    }
+	else
+	{
+		QFrame::mouseMoveEvent(e);
+	}
 }
 
 void VCFrame::customEvent(QCustomEvent* e)
 {
-  if (e->type() == KVCMenuEvent)
-    {
-      parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
-    }
+	if (e->type() == KVCMenuEvent)
+	{
+		parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
+	}
 }
 
 
 void VCFrame::resizeTo(QPoint p)
 {
-  // Grid settings
-  if (_app->virtualConsole()->isGridEnabled())
-    {
-      p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-      p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-    }
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
 
-  // Map to parent coordinates so that they can be compared
-  p = mapToParent(p);
+	// Map to parent coordinates so that they can be compared
+	p = mapToParent(p);
 
-  // Don't move beyond left or right
-  if (p.x() < 0)
-    {
-      p.setX(0);
-    }
-  else if (p.x() > parentWidget()->width())
-    {
-      p.setX(parentWidget()->width());
-    }
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width());
+	}
 
-  // Don't move beyond top or bottom
-  if (p.y() < 0)
-    {
-      p.setY(0);
-    }
-  else if (p.y() > parentWidget()->height())
-    {
-      p.setY(parentWidget()->height());
-    }
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height());
+	}
 
-  // Map back so that this can be resized
-  p = mapFromParent(p);
+	// Map back so that this can be resized
+	p = mapFromParent(p);
 
-  // Do the resize
-  resize(p.x(), p.y());
+	// Do the resize
+	resize(p.x(), p.y());
 }
 
 
 void VCFrame::moveTo(QPoint p)
 {
-  // Grid settings
-  if (_app->virtualConsole()->isGridEnabled())
-    {
-      p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-      p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-    }
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
 
-  // Don't move beyond left or right
-  if (p.x() < 0)
-    {
-      p.setX(0);
-    }
-  else if (p.x() + rect().width() > parentWidget()->width())
-    {
-      p.setX(parentWidget()->width() - rect().width());
-    }
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() + rect().width() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width() - rect().width());
+	}
 
-  // Don't move beyond top or bottom
-  if (p.y() < 0)
-    {
-      p.setY(0);
-    }
-  else if (p.y() + rect().height() > parentWidget()->height())
-    {
-      p.setY(parentWidget()->height() - rect().height());
-    }
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() + rect().height() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height() - rect().height());
+	}
 
-  // Do the move
-  move(p);
+	// Do the move
+	move(p);
 }
 
 void VCFrame::mouseDoubleClickEvent(QMouseEvent* e)
 {
-  if (_app->mode() == App::Design)
-    {
-      invokeMenu(mapToGlobal(e->pos()));
-    }
-  else
-    {
-      mousePressEvent(e);
-    }
+	if (_app->mode() == App::Design)
+	{
+		invokeMenu(mapToGlobal(e->pos()));
+	}
+	else
+	{
+		mousePressEvent(e);
+	}
 }

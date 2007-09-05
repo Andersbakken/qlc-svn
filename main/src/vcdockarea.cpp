@@ -2,7 +2,7 @@
   Q Light Controller
   vcdockarea.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
 extern App* _app;
 
 VCDockArea::VCDockArea(QWidget* parent, const char* name)
-  : QFrame(parent, name)
+	: QFrame(parent, name)
 {
 }
 
@@ -42,105 +42,105 @@ VCDockArea::~VCDockArea()
 
 void VCDockArea::init()
 {
-  t_bus_value min, max;
-  QString value;
+	t_bus_value min, max;
+	QString value;
 
-  // Align widgets vertically in the area
-  m_layout = new QVBoxLayout(this);
+	// Align widgets vertically in the area
+	m_layout = new QVBoxLayout(this);
 
-  // Default fade time slider
-  m_defaultFadeSlider = new VCDockSlider(this, true, "Default Fade Slider");
-  m_defaultFadeSlider->init();
-  m_defaultFadeSlider->setBusID(KBusIDDefaultFade);
+	// Default fade time slider
+	m_defaultFadeSlider = new VCDockSlider(this, true);
+	m_defaultFadeSlider->init();
+	m_defaultFadeSlider->setBusID(KBusIDDefaultFade);
 
-  // Get value range
-  if (_app->settings()->get(KEY_DEFAULT_FADE_MIN, value) != -1
-	&& value != "")
-    {
-      min = value.toInt();
-    }
-  else
-    {
-      min = 0;
-    }
+	// Get value range
+	if (_app->settings()->get(KEY_DEFAULT_FADE_MIN, value) != -1
+	    && value != "")
+	{
+		min = value.toInt();
+	}
+	else
+	{
+		min = 0;
+	}
 
-  if (_app->settings()->get(KEY_DEFAULT_FADE_MAX, value) != -1
-	&& value != "")
-    {
-      max = value.toInt();
-    }
-  else
-    {
-      max = 5;
-    }
+	if (_app->settings()->get(KEY_DEFAULT_FADE_MAX, value) != -1
+	    && value != "")
+	{
+		max = value.toInt();
+	}
+	else
+	{
+		max = 5;
+	}
 
-  // If there are bogus values, default to 0-5
-  if (min >= max)
-    {
-      min = 0;
-      max = 5;
-    }
+	// If there are bogus values, default to 0-5
+	if (min >= max)
+	{
+		min = 0;
+		max = 5;
+	}
 
-  // Set value range
-  m_defaultFadeSlider->setBusRange(min, max);
+	// Set value range
+	m_defaultFadeSlider->setBusRange(min, max);
 
-  // Mode and add widget
-  m_defaultFadeSlider->setMode(VCDockSlider::Speed);
-  m_layout->addWidget(m_defaultFadeSlider);
+	// Mode and add widget
+	m_defaultFadeSlider->setMode(VCDockSlider::Speed);
+	m_layout->addWidget(m_defaultFadeSlider);
 
-  //
-  // Default hold time slider
-  //
-  m_defaultHoldSlider = new VCDockSlider(this, true, "Default Hold Slider");
-  m_defaultHoldSlider->init();
-  m_defaultHoldSlider->setBusID(KBusIDDefaultHold);
+	//
+	// Default hold time slider
+	//
+	m_defaultHoldSlider = new VCDockSlider(this, true);
+	m_defaultHoldSlider->init();
+	m_defaultHoldSlider->setBusID(KBusIDDefaultHold);
 
-  // Get value range
-  if (_app->settings()->get(KEY_DEFAULT_HOLD_MIN, value) != -1
-	&& value != "")
-    {
-      min = value.toInt();
-    }
-  else
-    {
-      min = 0;
-    }
+	// Get value range
+	if (_app->settings()->get(KEY_DEFAULT_HOLD_MIN, value) != -1
+	    && value != "")
+	{
+		min = value.toInt();
+	}
+	else
+	{
+		min = 0;
+	}
 
-  if (_app->settings()->get(KEY_DEFAULT_HOLD_MAX, value) != -1
-	&& value != "")
-    {
-      max = value.toInt();
-    }
-  else
-    {
-      max = 5;
-    }
+	if (_app->settings()->get(KEY_DEFAULT_HOLD_MAX, value) != -1
+	    && value != "")
+	{
+		max = value.toInt();
+	}
+	else
+	{
+		max = 5;
+	}
 
-  // If there are bogus values, default to 0-5
-  if (min >= max)
-    {
-      min = 0;
-      max = 5;
-    }
+	// If there are bogus values, default to 0-5
+	if (min >= max)
+	{
+		min = 0;
+		max = 5;
+	}
 
-  // Set value range
-  m_defaultHoldSlider->setBusRange(min, max);
+	// Set value range
+	m_defaultHoldSlider->setBusRange(min, max);
 
-  // Mode and add widget
-  m_defaultHoldSlider->setMode(VCDockSlider::Speed);
-  m_layout->addWidget(m_defaultHoldSlider);
+	// Mode and add widget
+	m_defaultHoldSlider->setMode(VCDockSlider::Speed);
+	m_layout->addWidget(m_defaultHoldSlider);
 }
 
 void VCDockArea::hide()
 {
-  emit areaHidden(true);
+	emit areaHidden(true);
 
-  QFrame::hide();
+	QFrame::hide();
 }
 
 void VCDockArea::show()
 {
-  emit areaHidden(false);
+	emit areaHidden(false);
 
-  QFrame::show();
+	QFrame::show();
 }

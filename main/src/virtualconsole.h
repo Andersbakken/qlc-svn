@@ -2,7 +2,7 @@
   Q Light Controller
   virtualconsole.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 #define VIRTUALCONSOLE_H
 
 #include <qwidget.h>
+#include <qframe.h>
 #include <qptrlist.h>
 
 class QMenuBar;
@@ -31,6 +32,8 @@ class QToolBar;
 class QHBoxLayout;
 class QFile;
 class QFrame;
+class QDomDocument;
+class QDomElement;
 
 class VCFrame;
 class KeyBind;
@@ -39,6 +42,33 @@ class VCDockArea;
 class FloatingEdit;
 
 #define KXMLQLCVirtualConsole "VirtualConsole"
+
+#define KXMLQLCVirtualConsoleGrid "Grid"
+#define KXMLQLCVirtualConsoleGridEnabled "Enabled"
+#define KXMLQLCVirtualConsoleGridXResolution "XResolution"
+#define KXMLQLCVirtualConsoleGridYResolution "YResolution"
+
+#define KXMLQLCVirtualConsoleKeyboard "Keyboard"
+#define KXMLQLCVirtualConsoleKeyboardGrab "Grab"
+#define KXMLQLCVirtualConsoleKeyboardRepeat "Repeat"
+
+#define KXMLQLCVirtualConsoleFrameStyle "FrameStyle"
+
+#define KXMLQLCVCForegroundColor "ForegroundColor"
+#define KXMLQLCVCBackgroundColor "BackgroundColor"
+#define KXMLQLCVCColorDefault "Default"
+
+#define KXMLQLCVCFont "Font"
+#define KXMLQLCVCFontDefault "Default"
+
+#define KXMLQLCVCBackgroundImage "BackgroundImage"
+#define KXMLQLCVCBackgroundImageNone "None"
+
+#define KXMLQLCVCCaption "Caption"
+
+const int KFrameStyleSunken ( QFrame::StyledPanel | QFrame::Sunken );
+const int KFrameStyleRaised ( QFrame::StyledPanel | QFrame::Raised );
+const int KFrameStyleNone ( QFrame::NoFrame );
 
 const QString KEY_VIRTUAL_CONSOLE_OPEN      (         "VirtualConsoleOpen" );
 const QString KEY_VIRTUAL_CONSOLE_GRABKB    ( "VirtualConsoleGrabKeyboard" );
@@ -106,134 +136,215 @@ const int KVCMenuStackingLower    ( 601 );
 class VCMenuEvent : public QCustomEvent
 {
  public:
-  VCMenuEvent( int item )
-    : QCustomEvent( KVCMenuEvent ),
-    m_menuItem( item ) 
-    {
-    }
+	VCMenuEvent(int item) : QCustomEvent(KVCMenuEvent), m_menuItem(item) {}
   
-  int menuItem() { return m_menuItem; }
+	int menuItem() { return m_menuItem; }
 
- private:
-  int m_menuItem;
+protected:
+	int m_menuItem;
 };
 
 
 class VirtualConsole : public QWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
  public:
-  VirtualConsole(QWidget* parent = 0, const char* name = 0);
-  ~VirtualConsole();
+	VirtualConsole(QWidget* parent);
+	~VirtualConsole();
 
-  void initView();
-  void initMenuBar();
-  void initDockArea();
-  void initDrawArea();
+	void initView();
+	void initMenuBar();
+	void initDockArea();
+	void initDrawArea();
 
-  // Create the vc from list
-  void createContents(QPtrList <QString>& file); 
+	/*********************************************************************
+	 * Grid
+	 *********************************************************************/
+public:
+	/** Set widget placement grid enabled/disabled */
+	void setGridEnabled(bool enable) { m_gridEnabled = enable; }
 
-  // Save all widgets and vc data to file
-  void saveToFile(QFile& file); 
+	/** Get widget placement grid state */
+	bool isGridEnabled() { return m_gridEnabled; }
 
-  // Used to get a correct parent frame for widgets
-  VCFrame* getFrame(unsigned int id, VCFrame* widget = NULL);
+	/** Set widget placement grid X resolution */
+	void setGridX(int x) { m_gridX = x; }
 
-  bool isGridEnabled() { return m_gridEnabled; }
-  int gridX() { return m_gridX; }
-  int gridY() { return m_gridY; }
+	/** Get widget placement grid X resolution */
+	int gridX() { return m_gridX; }
 
-  QWidget* selectedWidget() { return m_selectedWidget; }
-  void setSelectedWidget(QWidget*);
+	/** Set widget placement grid Y resolution */
+	void setGridY(int y) { m_gridY = y; }
 
-  QPopupMenu* toolsMenu() { return m_toolsMenu; }
-  QPopupMenu* editMenu() { return m_editMenu; }
-  QPopupMenu* addMenu() { return m_addMenu; }
+	/** Get widget placement grid Y resolution */
+	int gridY() { return m_gridY; }
 
+protected:
+	bool m_gridEnabled;
+	int m_gridX;
+	int m_gridY;
+
+	/*********************************************************************
+	 * Keyboard state
+	 *********************************************************************/
+public:
+	void setKeyRepeatOff(bool set) { m_keyRepeatOff = set; }
+	bool isKeyRepeatOff() { return m_keyRepeatOff; }
+
+	void setGrabKeyboard(bool grab) { m_grabKeyboard = grab; }
+	bool isGrabKeyboard() { return m_grabKeyboard; }
+
+protected:
+	bool m_keyRepeatOff;
+	bool m_grabKeyboard;
+
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	/** Load virtual console contents from a file */
+	static bool loader(QDomDocument* doc, QDomElement* vc_root);
+
+	/** Load Virtual Console contents from an XML document */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/** Load Virtual Console contents from an XML document */
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+
+	/*********************************************************************
+	 * Selected widget
+	 *********************************************************************/
+public:
+	/** Get the currently selected widget */
+	QWidget* selectedWidget() { return m_selectedWidget; }
+
+	/** Set the currently selected widget */
+	void setSelectedWidget(QWidget*);
+
+protected:
+	QWidget* m_selectedWidget;
+
+	/*********************************************************************
+	 * Menus
+	 *********************************************************************/
+public:
+	QPopupMenu* toolsMenu() { return m_toolsMenu; }
+	QPopupMenu* editMenu() { return m_editMenu; }
+	QPopupMenu* addMenu() { return m_addMenu; }
+
+protected:
+	QPopupMenu* m_toolsMenu;
+	QPopupMenu* m_addMenu;
+	QPopupMenu* m_editMenu;
+
+	/*********************************************************************
+	 * Misc slots
+	 *********************************************************************/
  public slots:
-  void slotDockAreaHidden(bool);
-  void slotModeChanged();
+	void slotDockAreaHidden(bool);
+	void slotModeChanged();
 
-  void slotAddButton();
-  void slotAddSlider();
-  void slotAddFrame();
-  void slotAddLabel();
-  void slotAddXYPad();
+	/*********************************************************************
+	 * Add menu callbacks
+	 *********************************************************************/
+	void slotAddButton();
+	void slotAddSlider();
+	void slotAddFrame();
+	void slotAddLabel();
+	void slotAddXYPad();
 
-  void slotToolsSliders();
-  void slotToolsSettings();
-  void slotToolsPanic();
+	/*********************************************************************
+	 * Tools menu callbacks
+	 *********************************************************************/
+	void slotToolsSliders();
+	void slotToolsSettings();
+	void slotToolsPanic();
 
-  void slotEditCut();
-  void slotEditCopy();
-  void slotEditPaste();
-  void slotEditDelete();
-  void slotEditProperties();
-  void slotEditRename();
-  void slotEditRenameReturnPressed();
-  void slotEditRenameCancelled();
+	/*********************************************************************
+	 * Edit menu callbacks
+	 *********************************************************************/
+	void slotEditCut();
+	void slotEditCopy();
+	void slotEditPaste();
+	void slotEditDelete();
+	void slotEditProperties();
+	void slotEditRename();
+	void slotEditRenameReturnPressed();
+	void slotEditRenameCancelled();
 
-  void slotForegroundFont();
-  void slotForegroundColor();
-  void slotForegroundNone();
+	/*********************************************************************
+	 * Foreground menu callbacks
+	 *********************************************************************/
+	void slotForegroundFont();
+	void slotForegroundColor();
+	void slotForegroundNone();
 
-  void slotBackgroundColor();
-  void slotBackgroundImage();
-  void slotBackgroundNone();
-  void slotBackgroundFrame();
+	/*********************************************************************
+	 * Background menu callbacks
+	 *********************************************************************/
+	void slotBackgroundColor();
+	void slotBackgroundImage();
+	void slotBackgroundNone();
+	void slotBackgroundFrame();
 
-  void slotStackingRaise();
-  void slotStackingLower();
+	/*********************************************************************
+	 * Stacking menu callbacks
+	 *********************************************************************/
+	void slotStackingRaise();
+	void slotStackingLower();
 
- signals:
-  void closed();
-  void InpEvent(const int, const int, const int);
-  void sendFeedBack();
+	/*********************************************************************
+	 * Signals
+	 *********************************************************************/
+signals:
+	void closed();
+	void InpEvent(const int, const int, const int);
+	void sendFeedBack();
 
-  void keyPressed(QKeyEvent*);
-  void keyReleased(QKeyEvent*);
+	void keyPressed(QKeyEvent*);
+	void keyReleased(QKeyEvent*);
 
- protected:
-  void closeEvent(QCloseEvent* e);
-  void keyPressEvent(QKeyEvent* e);
-  void keyReleaseEvent(QKeyEvent* e);
-  void customEvent(QCustomEvent*);
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
+protected:
+	void closeEvent(QCloseEvent* e);
+	void keyPressEvent(QKeyEvent* e);
+	void keyReleaseEvent(QKeyEvent* e);
+	void customEvent(QCustomEvent*);
 
- private:
-  void createVirtualConsole(QPtrList <QString>& list);
-  void createWidget(QPtrList <QString> &list);
+	/*********************************************************************
+	 * Frame style converters
+	 *********************************************************************/
+public:
+	static QString frameStyleToString(const int style);
+	static int stringToFrameStyle(const QString& style);
 
- private:
-  // Virtual console menu bar
-  QMenuBar* m_menuBar;
-  QPopupMenu* m_toolsMenu;
-  QPopupMenu* m_addMenu;
-  QPopupMenu* m_editMenu;
+	/*********************************************************************
+	 * Misc member attributes
+	 *********************************************************************/
+protected:
+	// Master layout
+	QHBoxLayout* m_layout; 
 
-  // Master layout
-  QHBoxLayout* m_layout; 
+	// Virtual console menu bar
+	QMenuBar* m_menuBar;
 
-  // Dock area
-  VCDockArea* m_dockArea;
+	// Dock area
+	VCDockArea* m_dockArea;
 
-  // Draw area
-  VCFrame* m_drawArea;
+	// Draw area
+	VCFrame* m_drawArea;
 
-  // Key receiver bind objects
-  QPtrList <KeyBind> m_keyReceivers;
+	// Key receiver bind objects
+	QPtrList <KeyBind> m_keyReceivers;
 
-  // Grid
-  bool m_gridEnabled;
-  int m_gridX;
-  int m_gridY;
-
-  // Currently selected widget
-  QWidget* m_selectedWidget;
-
-  // Rename edit
-  FloatingEdit* m_renameEdit;
+	// Rename edit
+	FloatingEdit* m_renameEdit;
 };
 
 #endif

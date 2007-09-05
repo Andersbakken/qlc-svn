@@ -2,7 +2,7 @@
   Q Light Controller
   vcbutton.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -34,76 +34,84 @@ class QString;
 class QColor;
 class QPixmap;
 class QPoint;
+class QDomDocument;
+class QDomElement;
 
 class FloatingEdit;
 class KeyBind;
 
+#define KXMLQLCVCButton "Button"
+
 class VCButton : public QPushButton
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  VCButton(QWidget* parent);
-  ~VCButton();
+public:
+	VCButton(QWidget* parent);
+	~VCButton();
 
-  void init();
-  void copyFrom(VCButton* button);
+	void init();
+	void copyFrom(VCButton* button);
 
-  KeyBind* keyBind() { return m_keyBind; }
-  void setKeyBind(const KeyBind* kb);
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* root);
 
-  void saveToFile(QFile& file, unsigned int parentID);
-  void createContents(QPtrList <QString> &list);
+	KeyBind* keyBind() { return m_keyBind; }
+	void setKeyBind(const KeyBind* kb);
 
-  void attachFunction(t_function_id id);
-  t_function_id functionID() const { return m_functionID; }
+	void attachFunction(t_function_id id);
+	t_function_id functionID() const { return m_functionID; }
 
-  void setExclusive(bool exclusive = true);
-  bool isExclusive() { return m_isExclusive; }
+	void setExclusive(bool exclusive = true);
+	bool isExclusive() { return m_isExclusive; }
 
-  void setChannel(int channel){ m_channel = channel;}
-  int channel() const { return m_channel; }
+	void setChannel(int channel){ m_channel = channel;}
+	int channel() const { return m_channel; }
 
-  void setStopFunctions(bool state){ m_stopFunctions = state;}
-  bool stopFunctions()  { return m_stopFunctions; }
+	void setStopFunctions(bool state){ m_stopFunctions = state;}
+	bool stopFunctions()  { return m_stopFunctions; }
 
- private:
-  void invokeMenu(QPoint);
-  void parseWidgetMenu(int);
-  bool moveThreshold(int x, int y);
-  void resizeTo(QPoint p);
-  void moveTo(QPoint p);
+private:
+	void invokeMenu(QPoint);
+	void parseWidgetMenu(int);
+	bool moveThreshold(int x, int y);
+	void resizeTo(QPoint p);
+	void moveTo(QPoint p);
 
- public slots:
-  void setCaption(const QString& text);
+	public slots:
+	void setCaption(const QString& text);
 
-  void slotFeedBack();
-  void slotInputEvent(const int,const int,const int);
+	void slotFeedBack();
+	void slotInputEvent(const int,const int,const int);
 
-  void pressFunction();
-  void releaseFunction();
+	void pressFunction();
+	void releaseFunction();
 
- private slots:
-  void slotFlashReady();
-  void slotModeChanged();
+	private slots:
+	void slotFlashReady();
+	void slotModeChanged();
 
- protected:
-  void mousePressEvent(QMouseEvent* e);
-  void mouseReleaseEvent(QMouseEvent* e);
-  void mouseMoveEvent(QMouseEvent* e);
-  void mouseDoubleClickEvent(QMouseEvent* e);
-  void paintEvent(QPaintEvent* e);
-  void customEvent(QCustomEvent* e);
-  bool m_isExclusive;
+protected:
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
+	void mouseDoubleClickEvent(QMouseEvent* e);
+	void paintEvent(QPaintEvent* e);
+	void customEvent(QCustomEvent* e);
+	bool m_isExclusive;
 
- private:
-  t_function_id m_functionID;
-  KeyBind* m_keyBind;
-  int m_channel;
+private:
+	t_function_id m_functionID;
+	KeyBind* m_keyBind;
+	int m_channel;
 
-  QPoint m_mousePressPoint;
-  bool m_resizeMode;
-  bool m_stopFunctions;
+	QPoint m_mousePressPoint;
+	bool m_resizeMode;
+	bool m_stopFunctions;
 };
 
 #endif

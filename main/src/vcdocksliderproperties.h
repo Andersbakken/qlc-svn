@@ -58,7 +58,7 @@ class VCDockSliderProperties : public UI_VCDockSliderProperties
 
  protected:
 	VCDockSlider* m_slider;
-	VCDockSlider::Mode m_mode;
+	VCDockSlider::SliderMode m_mode;
 
 	SliderKeyBind* m_sliderKeyBind;
 };

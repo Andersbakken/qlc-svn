@@ -224,6 +224,7 @@ bool Doc::loadXML(QDomDocument* doc)
 			}
 			else if (tag.tagName() == KXMLQLCVirtualConsole)
 			{
+				VirtualConsole::loader(doc, &tag);
 			}
 			else
 				qDebug("Unknown Workspace tag: %s",
@@ -293,7 +294,7 @@ bool Doc::saveXML(const QString& fileName)
 			_app->fixtureManager()->saveXML(doc, &root);
 
 		/* Save virtual console */
-		// _app->virtualConsole()->saveXML(doc, &root);
+		_app->virtualConsole()->saveXML(doc, &root);
 
 		/* Set the current file name */
 		m_fileName = fileName;

@@ -2,7 +2,7 @@
   Q Light Controller
   vcxypad.h
   
-  Copyright (C) 2005 Heikki Junnila, Stefan Krumm
+  Copyright (c) Heikki Junnila, Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -32,7 +32,12 @@ class QFile;
 class QString;
 class QPaintEvent;
 class QMouseEvent;
+class QDomDocument;
+class QDomElement;
+
 class XYChannelUnit;
+
+#define KXMLQLCVCXYPad "XYPad"
 
 class VCXYPad : public QFrame
 {
@@ -44,8 +49,12 @@ class VCXYPad : public QFrame
 
 	void init();
 
-	void saveToFile(QFile& file, t_vc_id parentID = 0);
-	virtual void createContents(QPtrList <QString> &list);
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* root);
 
 	QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
 	QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }

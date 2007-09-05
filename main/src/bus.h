@@ -38,6 +38,8 @@ class BusEmitter;
 #define KXMLQLCBusID "ID"
 #define KXMLQLCBusName "Name"
 #define KXMLQLCBusValue "Value"
+#define KXMLQLCBusLowLimit "LowLimit"
+#define KXMLQLCBusHighLimit "HighLimit"
 
 #define KXMLQLCBusRole "Role"
 #define KXMLQLCBusHold "Hold"
