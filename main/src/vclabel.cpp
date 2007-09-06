@@ -24,8 +24,6 @@
 #include "doc.h"
 #include "floatingedit.h"
 #include "virtualconsole.h"
-#include "common/settings.h"
-#include "configkeys.h"
 #include "common/minmax.h"
 #include "common/filehandler.h"
 
@@ -45,9 +43,6 @@
 
 extern App* _app;
 
-const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
-const int KColorMask       ( 0xff ); // Produces opposite colors with XOR
-
 VCLabel::VCLabel(QWidget* parent)
 	: QLabel(parent, "Label"),
 	  m_resizeMode ( false )
@@ -66,7 +61,7 @@ void VCLabel::init()
 	setText("Label");
 	setAlignment(WordBreak | AlignCenter);
 
-	setFrameStyle(KFrameStyle);
+	setFrameStyle(KFrameStyleSunken);
 
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
@@ -134,7 +129,7 @@ void VCLabel::resetFont()
 }
 
 /*****************************************************************************
- * 
+ * Caption
  *****************************************************************************/
 
 void VCLabel::setCaption(const QString& text)
@@ -193,34 +188,6 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 	/* Caption */
 	setCaption(root->attribute(KXMLQLCVCCaption));
 
-	/* Frame style */
-	str = root->attribute(KXMLQLCVirtualConsoleFrameStyle);
-	setFrameStyle(str.toInt());
-
-	/* Foreground Color */
-	str = root->attribute(KXMLQLCVCForegroundColor);
-	if (str.length() != 0 && str != KXMLQLCVCColorDefault)
-		setForegroundColor(QColor(str.toUInt()));
-
-	/* Background Color */
-	str = root->attribute(KXMLQLCVCBackgroundColor);
-	if (str.length() != 0 && str != KXMLQLCVCColorDefault)
-		setBackgroundColor(QColor(str.toUInt()));
-
-	/* Background Color */
-	str = root->attribute(KXMLQLCVCBackgroundImage);
-	if (str.length() != 0 && str != KXMLQLCVCBackgroundImageNone)
-		setBackgroundImage(str);
-
-	/* Font */
-	str = root->attribute(KXMLQLCVCFont);
-	if (str.length() != 0 && str != KXMLQLCVCFontDefault)
-	{
-		QFont font;
-		font.fromString(str);
-		setFont(font);
-	}
-
 	/* Children */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -231,6 +198,10 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
 							&visible);
 			setGeometry(x, y, w, h);
+		}
+		else if (tag.tagName() == KXMLQLCVCAppearance)
+		{
+			/* TODO */
 		}
 		else
 		{
@@ -261,46 +232,73 @@ bool VCLabel::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Caption */
 	root.setAttribute(KXMLQLCVCCaption, caption());
 
-	/* Frame style */
-	str.setNum(frameStyle());
-	root.setAttribute(KXMLQLCVirtualConsoleFrameStyle, str);
-
-	/* Foreground color */
-	if (hasCustomForegroundColor() == true)
-	{
-		str.setNum(paletteForegroundColor().rgb());
-		root.setAttribute(KXMLQLCVCForegroundColor, str);
-	}
-	else
-	{
-		root.setAttribute(KXMLQLCVCForegroundColor,
-				  KXMLQLCVCColorDefault);
-	}
-
-	/* Background color */
-	if (hasCustomBackgroundColor() == true)
-	{
-		str.setNum(paletteBackgroundColor().rgb());
-		root.setAttribute(KXMLQLCVCBackgroundColor, str);
-	}
-	else
-	{
-		root.setAttribute(KXMLQLCVCBackgroundColor,
-				  KXMLQLCVCColorDefault);
-	}
-
-	/* Background image */
-	if (backgroundImage() != QString::null)
-	{
-		root.setAttribute(KXMLQLCVCBackgroundImage, m_backgroundImage);
-	}
-	else
-	{
-		root.setAttribute(KXMLQLCVCBackgroundImage,
-				  KXMLQLCVCBackgroundImageNone);
-	}
+	/* Save appearance */
+	saveXMLAppearance(doc, &root);
 
 	return FileHandler::saveXMLWindowState(doc, &root, this);
+}
+
+bool VCLabel::saveXMLAppearance(QDomDocument* doc, QDomElement* label_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(label_root != NULL);
+
+	/* VC Label entry */
+	root = doc->createElement(KXMLQLCVCAppearance);
+	label_root->appendChild(root);
+
+	/* Frame style */
+	tag = doc->createElement(KXMLQLCVirtualConsoleFrameStyle);
+	root.appendChild(tag);
+	text = doc->createTextNode(VirtualConsole::frameStyleToString(frameStyle()));
+	tag.appendChild(text);
+
+	/* Foreground color */
+	tag = doc->createElement(KXMLQLCVCForegroundColor);
+	root.appendChild(tag);
+	if (hasCustomForegroundColor() == true)
+		str.setNum(paletteForegroundColor().rgb());
+	else
+		str = KXMLQLCVCColorDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Background color */
+	tag = doc->createElement(KXMLQLCVCBackgroundColor);
+	root.appendChild(tag);
+	if (hasCustomBackgroundColor() == true)
+		str.setNum(paletteBackgroundColor().rgb());
+	else
+		str = KXMLQLCVCColorDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Background image */
+	tag = doc->createElement(KXMLQLCVCBackgroundImage);
+	root.appendChild(tag);
+	if (backgroundImage() != QString::null)
+		str = m_backgroundImage;
+	else
+		str = KXMLQLCVCBackgroundImageNone;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Font */
+	tag = doc->createElement(KXMLQLCVCFont);
+	root.appendChild(tag);
+	if (hasCustomFont() == true)
+		str = font().toString();
+	else
+		str = KXMLQLCVCFontDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);	
+
+	return true;
 }
 
 /*****************************************************************************
@@ -347,13 +345,13 @@ void VCLabel::parseWidgetMenu(int item)
 	{
 	case KVCMenuBackgroundFrame:
 	{
-		if (frameStyle() & KFrameStyle)
+		if (frameStyle() & KFrameStyleSunken)
 		{
 			setFrameStyle(NoFrame);
 		}
 		else
 		{
-			setFrameStyle(KFrameStyle);
+			setFrameStyle(KFrameStyleSunken);
 		}
 		_app->doc()->setModified();
 	}

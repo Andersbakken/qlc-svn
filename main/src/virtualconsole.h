@@ -43,6 +43,8 @@ class FloatingEdit;
 
 #define KXMLQLCVirtualConsole "VirtualConsole"
 
+#define KXMLQLCVCCaption "Caption"
+
 #define KXMLQLCVirtualConsoleGrid "Grid"
 #define KXMLQLCVirtualConsoleGridEnabled "Enabled"
 #define KXMLQLCVirtualConsoleGridXResolution "XResolution"
@@ -54,28 +56,18 @@ class FloatingEdit;
 
 #define KXMLQLCVirtualConsoleFrameStyle "FrameStyle"
 
+#define KXMLQLCVCAppearance "Appearance"
 #define KXMLQLCVCForegroundColor "ForegroundColor"
 #define KXMLQLCVCBackgroundColor "BackgroundColor"
 #define KXMLQLCVCColorDefault "Default"
-
 #define KXMLQLCVCFont "Font"
 #define KXMLQLCVCFontDefault "Default"
-
 #define KXMLQLCVCBackgroundImage "BackgroundImage"
 #define KXMLQLCVCBackgroundImageNone "None"
-
-#define KXMLQLCVCCaption "Caption"
 
 const int KFrameStyleSunken ( QFrame::StyledPanel | QFrame::Sunken );
 const int KFrameStyleRaised ( QFrame::StyledPanel | QFrame::Raised );
 const int KFrameStyleNone ( QFrame::NoFrame );
-
-const QString KEY_VIRTUAL_CONSOLE_OPEN      (         "VirtualConsoleOpen" );
-const QString KEY_VIRTUAL_CONSOLE_GRABKB    ( "VirtualConsoleGrabKeyboard" );
-const QString KEY_VIRTUAL_CONSOLE_KEYREPEAT (    "VirtualConsoleKeyRepeat" );
-const QString KEY_VIRTUAL_CONSOLE_SNAPGRID  (   "VirtualConsoleSnapToGrid" );
-const QString KEY_VIRTUAL_CONSOLE_GRIDX     (        "VirtualConsoleGridX" );
-const QString KEY_VIRTUAL_CONSOLE_GRIDY     (        "VirtualConsoleGridY" );
 
 // Menu stuff
 const int KVCMenuEvent            ( 2000 );
@@ -157,9 +149,10 @@ class VirtualConsole : public QWidget
 	~VirtualConsole();
 
 	void initView();
+
+ protected:
 	void initMenuBar();
 	void initDockArea();
-	void initDrawArea();
 
 	/*********************************************************************
 	 * Grid
@@ -227,6 +220,16 @@ public:
 
 protected:
 	QWidget* m_selectedWidget;
+
+	/*********************************************************************
+	 * Draw area
+	 *********************************************************************/
+ public:
+	void setDrawArea(VCFrame* drawArea);
+	VCFrame* drawArea() const { return m_drawArea; }
+
+ protected:
+	VCFrame* m_drawArea;
 
 	/*********************************************************************
 	 * Menus
@@ -336,9 +339,6 @@ protected:
 
 	// Dock area
 	VCDockArea* m_dockArea;
-
-	// Draw area
-	VCFrame* m_drawArea;
 
 	// Key receiver bind objects
 	QPtrList <KeyBind> m_keyReceivers;

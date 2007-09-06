@@ -128,6 +128,9 @@ void Monitor::init()
 	
 	// Connect and start the update timer
 	setFrequency(ID_16HZ);
+
+	// Set a reasonable default size
+	resize(280, 150);
 }
 
 //

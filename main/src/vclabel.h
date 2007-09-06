@@ -122,6 +122,13 @@ protected:
 	bool m_hasCustomFont;
 
 	/*********************************************************************
+	 * Caption
+	 *********************************************************************/
+public:
+	/** Set this label's caption text */
+	void setCaption(const QString& text);
+
+	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
 public:
@@ -129,8 +136,8 @@ public:
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
-public slots:
-	void setCaption(const QString&);
+protected:
+	bool saveXMLAppearance(QDomDocument* doc, QDomElement* label_root);
 
 private:
 	void invokeMenu(QPoint);

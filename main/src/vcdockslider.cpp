@@ -450,12 +450,12 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	root.setAttribute(KXMLQLCVCDockSliderMode,
 			  VCDockSlider::modeToString(mode()));
 
-	/* Appearance */
-	saveXMLAppearance(doc, &root);
-
 	/* Value */
 	str.setNum(m_slider->value());
 	root.setAttribute(KXMLQLCVCDockSliderValue, str);
+
+	/* Appearance */
+	saveXMLAppearance(doc, &root);
 
 	/* Bus */
 	tag = doc->createElement(KXMLQLCVCDockSliderBus);
@@ -814,6 +814,8 @@ void VCDockSlider::invokeMenu(QPoint point)
 					setBusRange(min.toInt(), max.toInt());
 					setMode(Speed);
 
+					/* TODO: Save these to workspace,
+					   not settings!! */
 					if (m_busID == KBusIDDefaultFade)
 					{
 						_app->settings()->set(KEY_DEFAULT_FADE_MIN, min.toInt());

@@ -2,7 +2,7 @@
   Q Light Controller
   virtualconsoleproperties.h
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,22 +26,64 @@
 
 class VirtualConsoleProperties : public UI_VirtualConsoleProperties
 {
-  Q_OBJECT
+	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	VirtualConsoleProperties(QWidget* parent);
+	~VirtualConsoleProperties();
+
+	void init();
+
+	/*********************************************************************
+	 * Grid
+	 *********************************************************************/
  public:
-  VirtualConsoleProperties(QWidget* parent, const char* name = NULL);
-  ~VirtualConsoleProperties();
+	void setGridEnabled(bool set) { m_gridEnabled = set; }
+	bool isGridEnabled() { return m_gridEnabled; }
 
-  void init();
+	void setGridX(int x) { m_gridX = x; }
+	int gridX() { return m_gridX; }
 
-  bool isGridEnabled();
-  int gridX();
-  int gridY();
+	void setGridY(int y) { m_gridY = y; }
+	int gridY() { return m_gridY; }
 
- public slots:
-  void slotSnapToGridToggled(bool);
-  void slotOKClicked();
-  void slotCancelClicked();
+ protected slots:
+	void slotGridEnabledCheckToggled(bool state);
+
+ protected:
+	bool m_gridEnabled;
+	int m_gridX;
+	int m_gridY;
+
+	/*********************************************************************
+	 * Key repeat
+	 *********************************************************************/
+ public:
+	void setKeyRepeatOff(bool set) { m_keyRepeatOff = set; }
+	bool isKeyRepeatOff() { return m_keyRepeatOff; }
+
+ protected:
+	bool m_keyRepeatOff;
+
+	/*********************************************************************
+	 * Key repeat
+	 *********************************************************************/
+ public:
+	void setGrabKeyboard(bool set) { m_grabKeyboard = set; }
+	bool isGrabKeyboard() { return m_grabKeyboard; }
+
+ protected:
+	bool m_grabKeyboard;
+
+	/*********************************************************************
+	 * OK/Cancel
+	 *********************************************************************/
+ protected slots:
+	void slotOKClicked();
+	void slotCancelClicked();
 };
 
 #endif

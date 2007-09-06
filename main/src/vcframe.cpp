@@ -74,6 +74,7 @@ void VCFrame::init(bool bottomFrame)
 	}
 
 	/* Listen to mode changes (operate/design) so menus can be en/disabled */
+	disconnect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
@@ -223,8 +224,14 @@ bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 	/* Create a new frame into its parent */
 	frame = new VCFrame(parent);
-	frame->init();
 	frame->show();
+
+	/* If the current parent widget is anything else than VCFrame,
+	   the currently loaded VCFrame is the parent of all VC widgets */
+	if (parent->className() != "VCFrame")
+		_app->virtualConsole()->setDrawArea(frame);
+	else
+		frame->init();
 
 	/* Continue loading */
 	return frame->loadXML(doc, root);
@@ -254,38 +261,6 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 	/* Caption */
 	setCaption(root->attribute(KXMLQLCVCCaption));
 
-	/* Frame style */
-	str = root->attribute(KXMLQLCVirtualConsoleFrameStyle);
-	setFrameStyle(str.toInt());
-
-	/* Button Behaviour */
-	setButtonBehaviour(static_cast<ButtonBehaviour>
-	   (root->attribute(KXMLQLCVCFrameButtonBehaviour).toInt()));
-
-	/* Foreground Color */
-	str = root->attribute(KXMLQLCVCForegroundColor);
-	if (str.length() != 0 && str != KXMLQLCVCColorDefault)
-		setForegroundColor(QColor(str.toUInt()));
-
-	/* Background Color */
-	str = root->attribute(KXMLQLCVCBackgroundColor);
-	if (str.length() != 0 && str != KXMLQLCVCColorDefault)
-		setBackgroundColor(QColor(str.toUInt()));
-
-	/* Background Color */
-	str = root->attribute(KXMLQLCVCBackgroundImage);
-	if (str.length() != 0 && str != KXMLQLCVCBackgroundImageNone)
-		setBackgroundImage(str);
-
-	/* Font */
-	str = root->attribute(KXMLQLCVCFont);
-	if (str.length() != 0 && str != KXMLQLCVCFontDefault)
-	{
-		QFont font;
-		font.fromString(str);
-		setFont(font);
-	}
-
 	/* Children */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -296,6 +271,10 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
 							&visible);
 			setGeometry(x, y, w, h);
+		}
+		else if (tag.tagName() == KXMLQLCVCAppearance)
+		{
+			/* TODO */
 		}
 		else if (tag.tagName() == KXMLQLCVCFrame)
 		{
@@ -319,7 +298,7 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			qWarning("Unknown monitor tag: %s",
+			qWarning("Unknown frame tag: %s",
 				 (const char*) tag.tagName());
 		}
 		

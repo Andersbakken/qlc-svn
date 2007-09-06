@@ -40,7 +40,7 @@
                         </property>
                         <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>m_grabKeyboard</cstring>
+                                <cstring>m_grabKeyboardCheck</cstring>
                             </property>
                             <property name="text">
                                 <string>Grab Keyboard in Operate Mode</string>
@@ -51,7 +51,7 @@
                         </widget>
                         <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>m_keyRepeat</cstring>
+                                <cstring>m_keyRepeatOffCheck</cstring>
                             </property>
                             <property name="text">
                                 <string>Turn Off Key Repeat in Operate Mode</string>
@@ -75,7 +75,7 @@
                         </property>
                         <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>m_snapToGrid</cstring>
+                                <cstring>m_gridEnabledCheck</cstring>
                             </property>
                             <property name="text">
                                 <string>Snap to Grid</string>
@@ -94,15 +94,15 @@
                                 </property>
                                 <widget class="QLabel">
                                     <property name="name">
-                                        <cstring>textLabel1</cstring>
+                                        <cstring>m_gridXLabel</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>Horizontal</string>
+                                        <string>Horizontal (X)</string>
                                     </property>
                                 </widget>
                                 <widget class="QSpinBox">
                                     <property name="name">
-                                        <cstring>m_xSpin</cstring>
+                                        <cstring>m_gridXSpin</cstring>
                                     </property>
                                     <property name="suffix">
                                         <string> px</string>
@@ -129,7 +129,7 @@
                                 </property>
                                 <widget class="QLabel">
                                     <property name="name">
-                                        <cstring>textLabel1_2</cstring>
+                                        <cstring>m_gridYLabel</cstring>
                                     </property>
                                     <property name="sizePolicy">
                                         <sizepolicy>
@@ -140,12 +140,12 @@
                                         </sizepolicy>
                                     </property>
                                     <property name="text">
-                                        <string>Vertical</string>
+                                        <string>Vertical (Y)</string>
                                     </property>
                                 </widget>
                                 <widget class="QSpinBox">
                                     <property name="name">
-                                        <cstring>m_ySpin</cstring>
+                                        <cstring>m_gridYSpin</cstring>
                                     </property>
                                     <property name="suffix">
                                         <string> px</string>
@@ -273,10 +273,10 @@
 </widget>
 <connections>
     <connection>
-        <sender>m_snapToGrid</sender>
+        <sender>m_gridEnabledCheck</sender>
         <signal>toggled(bool)</signal>
         <receiver>UI_VirtualConsoleProperties</receiver>
-        <slot>slotSnapToGridToggled(bool)</slot>
+        <slot>slotGridEnabledCheckToggled(bool)</slot>
     </connection>
     <connection>
         <sender>m_ok</sender>
@@ -292,7 +292,7 @@
     </connection>
 </connections>
 <slots>
-    <slot>slotSnapToGridToggled(bool)</slot>
+    <slot>slotGridEnabledCheckToggled(bool)</slot>
     <slot>slotOKClicked()</slot>
     <slot>slotCancelClicked()</slot>
 </slots>

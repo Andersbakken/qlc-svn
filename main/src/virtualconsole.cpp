@@ -40,7 +40,6 @@
 #include <qobjectlist.h>
 #include <qdom.h>
 
-#include "common/settings.h"
 #include "common/inputplugin.h"
 #include "common/qlcimagepreview.h"
 #include "common/filehandler.h"
@@ -54,7 +53,6 @@
 #include "vcframe.h"
 #include "keybind.h"
 #include "vclabel.h"
-#include "configkeys.h"
 #include "vcdockarea.h"
 #include "vcdockslider.h"
 #include "vcxypad.h"
@@ -103,7 +101,7 @@ void VirtualConsole::initView(void)
 	initDockArea();
 
 	// Init right drawing area
-	initDrawArea();
+	setDrawArea(new VCFrame(this));
 
 	// Update this according to current mode
 	slotModeChanged();
@@ -259,21 +257,6 @@ void VirtualConsole::initDockArea()
 	m_layout->addWidget(m_dockArea, 0);
 }
 
-
-void VirtualConsole::initDrawArea()
-{
-	if (m_drawArea != NULL)
-		delete m_drawArea;
-
-	m_drawArea = new VCFrame(this);
-
-	/* Initialize as bottom frame */
-	m_drawArea->init(true);
-
-	/* Add the draw area into the master horizontal layout */
-	m_layout->addWidget(m_drawArea, 1);
-}
-
 /*********************************************************************
  * Load & Save
  *********************************************************************/
@@ -393,9 +376,54 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-/*********************************************************************
+/*****************************************************************************
+ * Selected widget
+ *****************************************************************************/
+
+void VirtualConsole::setSelectedWidget(QWidget* w)
+{
+	if (m_selectedWidget)
+	{
+		QWidget* old = m_selectedWidget;
+		m_selectedWidget = w;
+		old->update();
+	}
+	else
+	{
+		m_selectedWidget = w;
+	}
+
+	if (m_selectedWidget)
+	{
+		m_selectedWidget->update();
+	}
+	else
+	{
+	}
+}
+
+/*****************************************************************************
+ * Draw area
+ *****************************************************************************/
+
+void VirtualConsole::setDrawArea(VCFrame* drawArea)
+{
+	Q_ASSERT(drawArea != NULL);
+
+	if (m_drawArea != NULL)
+		delete m_drawArea;
+	m_drawArea = drawArea;
+
+	/* Initialize as bottom frame */
+	m_drawArea->init(true);
+
+	/* Add the draw area into the master horizontal layout */
+	m_layout->addWidget(m_drawArea, 1);
+}
+
+/*****************************************************************************
  * Add menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotAddButton()
 {
@@ -433,19 +461,24 @@ void VirtualConsole::slotAddLabel()
 
 void VirtualConsole::slotToolsSettings()
 {
-	VirtualConsoleProperties* p = new VirtualConsoleProperties(this);
-	assert(p);
-	p->init();
-	if (p->exec() == QDialog::Accepted)
-	{
-		// Cache grid values so widgets don't have to get them
-		// from settings each time (which is slow)
-		m_gridEnabled = p->isGridEnabled();
-		m_gridX = p->gridX();
-		m_gridY = p->gridY();
-	}
+	VirtualConsoleProperties prop(this);
 
-	delete p;
+	prop.setGridEnabled(m_gridEnabled);
+	prop.setGridX(m_gridX);
+	prop.setGridY(m_gridY);
+	prop.setKeyRepeatOff(m_keyRepeatOff);
+	prop.setGrabKeyboard(m_grabKeyboard);
+	prop.init();
+
+	if (prop.exec() == QDialog::Accepted)
+	{
+		setGridEnabled(prop.isGridEnabled());
+		setGridX(prop.gridX());
+		setGridY(prop.gridY());
+		
+		setKeyRepeatOff(prop.isKeyRepeatOff());
+		setGrabKeyboard(prop.isGrabKeyboard());
+	}
 }
 
 void VirtualConsole::slotToolsSliders()
@@ -832,28 +865,6 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 	{
 		emit keyReleased(e);
 		e->accept();
-	}
-}
-
-void VirtualConsole::setSelectedWidget(QWidget* w)
-{
-	if (m_selectedWidget)
-	{
-		QWidget* old = m_selectedWidget;
-		m_selectedWidget = w;
-		old->update();
-	}
-	else
-	{
-		m_selectedWidget = w;
-	}
-
-	if (m_selectedWidget)
-	{
-		m_selectedWidget->update();
-	}
-	else
-	{
 	}
 }
 

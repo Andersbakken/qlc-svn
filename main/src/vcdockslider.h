@@ -52,8 +52,6 @@ class SliderKeyBind;
 #define KXMLQLCVCDockSliderLevelLowLimit "LowLimit"
 #define KXMLQLCVCDockSliderLevelHighLimit "HighLimit"
 
-#define KXMLQLCVCAppearance "Appearance"
-
 const QString KEY_DEFAULT_FADE_MIN ( "DefaultFadeMin" );
 const QString KEY_DEFAULT_FADE_MAX ( "DefaultFadeMax" );
 const QString KEY_DEFAULT_HOLD_MIN ( "DefaultHoldMin" );

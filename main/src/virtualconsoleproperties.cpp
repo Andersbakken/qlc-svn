@@ -2,7 +2,7 @@
   Q Light Controller
   virtualconsoleproperties.cpp
 
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -24,14 +24,14 @@
 
 #include "virtualconsoleproperties.h"
 #include "virtualconsole.h"
-#include "common/settings.h"
 #include "app.h"
 
 extern App* _app;
 
-VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent,
-						   const char* name)
-  : UI_VirtualConsoleProperties(parent, name, true)
+VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent)
+	: UI_VirtualConsoleProperties(parent,
+				      "Virtual Console Properties",
+				      true)
 {
 }
 
@@ -41,116 +41,35 @@ VirtualConsoleProperties::~VirtualConsoleProperties()
 
 void VirtualConsoleProperties::init()
 {
-  QString config;
+	m_grabKeyboardCheck->setChecked(m_grabKeyboard);
+	m_keyRepeatOffCheck->setChecked(m_keyRepeatOff);
 
-  // Grab keyboard
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRABKB, config) != -1
-	&& config == Settings::trueValue())
-    {
-      m_grabKeyboard->setChecked(true);
-    }
-  else
-    {
-      m_grabKeyboard->setChecked(false);
-    }
+	m_gridEnabledCheck->setChecked(m_gridEnabled);
+	m_gridXSpin->setValue(m_gridX);
+	m_gridYSpin->setValue(m_gridY);
 
-  // Key repeat
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_KEYREPEAT, config) != -1
-	&& config == Settings::trueValue())
-    {
-      m_keyRepeat->setChecked(true);
-    }
-  else
-    {
-      m_keyRepeat->setChecked(false);
-    }
-
-  // Snap to Grid
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_SNAPGRID, config) != -1
-	&& config == Settings::trueValue())
-    {
-      m_snapToGrid->setChecked(true);
-      slotSnapToGridToggled(true);
-    }
-  else
-    {
-      m_snapToGrid->setChecked(false);
-      slotSnapToGridToggled(false);
-    }
-
-  // Grid X
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDX, config) != -1
-	&& config != "")
-    {
-      m_xSpin->setValue(config.toInt());
-    }
-  else
-    {
-      m_xSpin->setValue(10);
-    }
-
-  // Grid Y
-  if (_app->settings()->get(KEY_VIRTUAL_CONSOLE_GRIDY, config) != -1
-	&& config != "")
-    {
-      m_ySpin->setValue(config.toInt());
-    }
-  else
-    {
-      m_ySpin->setValue(10);
-    }
+	slotGridEnabledCheckToggled(m_gridEnabled);
 }
 
-void VirtualConsoleProperties::slotSnapToGridToggled(bool state)
+void VirtualConsoleProperties::slotGridEnabledCheckToggled(bool state)
 {
-  m_xSpin->setEnabled(state);
-  m_ySpin->setEnabled(state);
+	m_gridXSpin->setEnabled(state);
+	m_gridYSpin->setEnabled(state);
 }
 
 void VirtualConsoleProperties::slotOKClicked()
 {
-  QString config;
+	m_grabKeyboard = m_grabKeyboardCheck->isChecked();
+	m_keyRepeatOff = m_keyRepeatOffCheck->isChecked();
 
-  // Grab keyboard
-  _app->settings()->set(KEY_VIRTUAL_CONSOLE_GRABKB,
-			(m_grabKeyboard->isChecked()) ? Settings::trueValue() :
-			Settings::falseValue());
+	m_gridEnabled = m_gridEnabledCheck->isChecked();
+	m_gridX = m_gridXSpin->value();
+	m_gridY = m_gridYSpin->value();
 
-  // Key repeat
-  _app->settings()->set(KEY_VIRTUAL_CONSOLE_KEYREPEAT,
-			(m_keyRepeat->isChecked()) ? Settings::trueValue() :
-			Settings::falseValue());
-
-  // Snap to Grid
-  _app->settings()->set(KEY_VIRTUAL_CONSOLE_SNAPGRID,
-			(m_snapToGrid->isChecked()) ? Settings::trueValue() :
-			Settings::falseValue());
-
-  // Grid X
-  _app->settings()->set(KEY_VIRTUAL_CONSOLE_GRIDX, m_xSpin->value());
-
-  // Grid Y
-  _app->settings()->set(KEY_VIRTUAL_CONSOLE_GRIDY, m_ySpin->value());
-
-  accept();
+	accept();
 }
 
 void VirtualConsoleProperties::slotCancelClicked()
 {
-  reject();
-}
-
-bool VirtualConsoleProperties::isGridEnabled()
-{
-  return m_snapToGrid->isChecked();
-}
-
-int VirtualConsoleProperties::gridX()
-{
-  return m_xSpin->value();
-}
-
-int VirtualConsoleProperties::gridY()
-{
-  return m_ySpin->value();
+	reject();
 }
