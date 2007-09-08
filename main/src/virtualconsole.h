@@ -54,9 +54,8 @@ class FloatingEdit;
 #define KXMLQLCVirtualConsoleKeyboardGrab "Grab"
 #define KXMLQLCVirtualConsoleKeyboardRepeat "Repeat"
 
-#define KXMLQLCVirtualConsoleFrameStyle "FrameStyle"
-
 #define KXMLQLCVCAppearance "Appearance"
+#define KXMLQLCVCFrameStyle "FrameStyle"
 #define KXMLQLCVCForegroundColor "ForegroundColor"
 #define KXMLQLCVCBackgroundColor "BackgroundColor"
 #define KXMLQLCVCColorDefault "Default"
@@ -74,55 +73,73 @@ const int KVCMenuEvent            ( 2000 );
 
 // Add Menu >>>
 const int KVCMenuAddMin           ( 100 );
-const int KVCMenuAddMax           ( 199 );
 const int KVCMenuAddButton        ( 101 );
 const int KVCMenuAddSlider        ( 102 );
 const int KVCMenuAddFrame         ( 103 );
 const int KVCMenuAddLabel         ( 104 );
 const int KVCMenuAddXYPad         ( 105 );
+const int KVCMenuAddMax           ( 199 );
 // <<< Add Menu
 
 // Tools Menu >>>
 const int KVCMenuToolsMin         ( 200 );
-const int KVCMenuToolsMax         ( 299 );
 const int KVCMenuToolsSettings    ( 200 );
 const int KVCMenuToolsSliders     ( 201 );
 const int KVCMenuToolsPanic       ( 202 );
+const int KVCMenuToolsMax         ( 299 );
 // <<< Tools Menu
 
 // Edit Menu >>>
 const int KVCMenuEditMin          ( 300 );
-const int KVCMenuEditMax          ( 399 );
 const int KVCMenuEditCut          ( 300 );
 const int KVCMenuEditCopy         ( 301 );
 const int KVCMenuEditPaste        ( 302 );
 const int KVCMenuEditDelete       ( 303 );
 const int KVCMenuEditProperties   ( 304 );
 const int KVCMenuEditRename       ( 305 );
+const int KVCMenuEditMax          ( 399 );
 // <<< Edit Menu
 
 // Foreground Menu >>>
 const int KVCMenuForegroundMin    ( 400 );
-const int KVCMenuForegroundMax    ( 499 );
 const int KVCMenuForegroundFont   ( 400 );
 const int KVCMenuForegroundColor  ( 401 );
 const int KVCMenuForegroundNone   ( 402 );
+const int KVCMenuForegroundDefault ( 499 );
+const int KVCMenuForegroundMax    ( 499 );
 // <<< Foreground Menu
 
 // Background Menu >>>
 const int KVCMenuBackgroundMin    ( 500 );
-const int KVCMenuBackgroundMax    ( 599 );
 const int KVCMenuBackgroundFrame  ( 500 );
 const int KVCMenuBackgroundColor  ( 501 );
 const int KVCMenuBackgroundPixmap ( 502 );
+const int KVCMenuBackgroundImage  ( 502 );
 const int KVCMenuBackgroundNone   ( 503 );
+const int KVCMenuBackgroundDefault ( 599 );
+const int KVCMenuBackgroundMax    ( 599 );
 // <<< Foreground Menu
 
+// Font Menu >>>
+const int KVCMenuFontMin          ( 600 );
+const int KVCMenuFont             ( 600 );
+const int KVCMenuFontDefault      ( 699 );
+const int KVCMenuFontMax          ( 699 );
+// <<< Font Menu
+
+// Frame Menu >>>
+const int KVCMenuFrameMin         ( 700 );
+const int KVCMenuFrameSunken      ( 700 );
+const int KVCMenuFrameRaised      ( 701 );
+const int KVCMenuFrameNone        ( 799 );
+const int KVCMenuFrameMax         ( 799 );
+// <<< Frame Menu
+
 // Stacking Menu >>>
-const int KVCMenuStackingMin      ( 600 );
-const int KVCMenuStackingMax      ( 699 );
-const int KVCMenuStackingRaise    ( 600 );
-const int KVCMenuStackingLower    ( 601 );
+const int KVCMenuStackingMin      ( 800 );
+const int KVCMenuStackingRaise    ( 800 );
+const int KVCMenuStackingLower    ( 801 );
+const int KVCMenuStackingMax      ( 899 );
 // <<< Stacking Menu
 
 class VCMenuEvent : public QCustomEvent

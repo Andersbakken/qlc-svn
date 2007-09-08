@@ -33,6 +33,7 @@
 #include "common/minmax.h"
 #include "configkeys.h"
 #include "vcxypadproperties.h"
+#include "common/filehandler.h"
 
 #include <qcursor.h>
 #include <qpoint.h>
@@ -49,23 +50,24 @@
 
 extern App* _app;
 
-const int KFrameStyle      ( QFrame::StyledPanel | QFrame::Sunken );
-const int KColorMask       ( 0xff );
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
 
-VCXYPad::VCXYPad(QWidget* parent) : QFrame(parent, "XYPad"),
-				    m_xpos             ( 0 ),
-				    m_ypos             ( 0 ),
-				    m_resizeMode       ( false )
+VCXYPad::VCXYPad(QWidget* parent) 
+	: QFrame(parent, "XYPad"),
+	  m_hasCustomForegroundColor ( false ),
+	  m_hasCustomBackgroundColor ( false ),
+	  m_hasCustomFont ( false ),
+	  m_xpos ( 0 ),
+	  m_ypos ( 0 ),
+	  m_resizeMode ( false )
 {
 }
 
 VCXYPad::~VCXYPad()
 {
-	m_channelsX.setAutoDelete(true);
-	m_channelsX.clear();
-
-	m_channelsY.setAutoDelete(true);
-	m_channelsY.clear();
+	clearChannels();
 }
 
 void VCXYPad::init()
@@ -73,7 +75,7 @@ void VCXYPad::init()
 	setMinimumSize(20, 20);
 
 	resize(120, 120);
-	setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	setFrameStyle(KFrameStyleSunken);
 
 	setBackgroundColor(white);
 
@@ -83,6 +85,138 @@ void VCXYPad::init()
 	m_currentXYPosition.setY(height() / 2);
 
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+}
+
+/*********************************************************************
+ * Background image
+ *********************************************************************/
+void VCXYPad::setBackgroundImage(const QString& path)
+{
+	m_hasCustomBackgroundColor = false;
+	m_backgroundImage = path;
+	setPaletteBackgroundPixmap(QPixmap(path));
+}
+
+const QString& VCXYPad::backgroundImage()
+{
+	return m_backgroundImage;
+}
+
+/*********************************************************************
+ * Background color
+ *********************************************************************/
+void VCXYPad::setBackgroundColor(const QColor& color)
+{
+	m_hasCustomBackgroundColor = true;
+	m_backgroundImage = QString::null;
+	setPaletteBackgroundColor(color);
+}
+
+void VCXYPad::resetBackgroundColor()
+{
+	m_hasCustomBackgroundColor = false;
+	/* TODO */
+}
+
+/*********************************************************************
+ * Foreground color
+ *********************************************************************/
+void VCXYPad::setForegroundColor(const QColor& color)
+{
+	m_hasCustomForegroundColor = true;
+	setPaletteForegroundColor(color);
+}
+
+void VCXYPad::resetForegroundColor()
+{
+	m_hasCustomForegroundColor = false;
+	/* TODO */
+}
+
+/*********************************************************************
+ * Font
+ *********************************************************************/
+
+void VCXYPad::setFont(const QFont& font)
+{
+	m_hasCustomFont = true;
+	QWidget::setFont(font);
+}
+
+void VCXYPad::resetFont()
+{
+	m_hasCustomFont = false;
+	/* TODO */
+}
+
+/*****************************************************************************
+ * Channels
+ *****************************************************************************/
+void VCXYPad::clearChannels()
+{
+	m_channelsX.setAutoDelete(true);
+	m_channelsX.clear();
+	m_channelsX.setAutoDelete(false);
+
+	m_channelsY.setAutoDelete(true);
+	m_channelsY.clear();
+	m_channelsY.setAutoDelete(false);
+}
+
+void VCXYPad::appendChannel(t_axis axis, t_fixture_id fixture, t_channel channel,
+			    t_value lowLimit, t_value highLimit, bool reverse)
+{
+	XYChannelUnit* xyc = NULL;
+
+	if (this->channel(axis, fixture, channel) == NULL)
+	{
+		xyc = new XYChannelUnit(fixture, channel,
+					lowLimit, highLimit, reverse);
+		if (axis == KAxisX)
+			m_channelsX.append(xyc);
+		else
+			m_channelsY.append(xyc);
+	}
+}
+
+void VCXYPad::removeChannel(t_axis axis, t_fixture_id fixture, t_channel channel)
+{
+}
+
+XYChannelUnit* VCXYPad::channel(t_axis axis, t_fixture_id fixture,
+				t_channel channel)
+{
+	XYChannelUnit* xyc = NULL;
+	QPtrList<XYChannelUnit>* list = NULL;
+
+	if (axis == KAxisX)
+		list = &m_channelsX;
+	else
+		list = &m_channelsY;
+		
+	QPtrListIterator<XYChannelUnit> it(*list);
+	while ( (xyc = it.current()) != 0 )
+	{
+		if (xyc->fixtureID() == fixture && xyc->channel() == channel)
+			break;
+		++it;
+	}
+
+	return xyc;
+}
+
+/*****************************************************************************
+ * Current XY position
+ *****************************************************************************/
+void VCXYPad::setCurrentXYPosition(const QPoint& point)
+{
+	m_currentXYPosition = point;;
+	repaint();
+}
+
+void VCXYPad::setCurrentXYPosition(int x, int y)
+{
+	setCurrentXYPosition(QPoint(x, y));
 }
 
 /*****************************************************************************
@@ -98,7 +232,7 @@ bool VCXYPad::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 	if (root->tagName() != KXMLQLCVCXYPad)
 	{
-		qWarning("XYPad node not found!");
+		qWarning("XY Pad node not found!");
 		return false;
 	}
 
@@ -113,153 +247,336 @@ bool VCXYPad::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 {
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+
+	int xpos = 0;
+	int ypos = 0;
+
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCXYPad)
+	{
+		qWarning("XY Pad node not found!");
+		return false;
+	}
+
+	/* Caption */
+	setCaption(root->attribute(KXMLQLCVCCaption));
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
+		}
+		else if (tag.tagName() == KXMLQLCVCAppearance)
+		{
+			loadXMLAppearance(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCVCXYPadPosition)
+		{
+			str = tag.attribute(KXMLQLCVCXYPadPositionX);
+			xpos = str.toInt();
+
+			str = tag.attribute(KXMLQLCVCXYPadPositionY);
+			ypos = str.toInt();
+		}
+		else if (tag.tagName() == KXMLQLCVCXYPadChannel)
+		{
+			QString axis;
+			t_fixture_id fixture = KNoID;
+			t_value lowLimit = 0;
+			t_value highLimit = 255;
+			bool reverse = false;
+			t_channel channel = 0;
+
+			/* Axis */
+			axis = tag.attribute(KXMLQLCVCXYPadChannelAxis);
+
+			/* Fixture ID */
+			str = tag.attribute(KXMLQLCVCXYPadChannelFixture);
+			fixture = str.toInt();
+
+			/* Low limit */
+			str = tag.attribute(KXMLQLCVCXYPadChannelLowLimit);
+			lowLimit = str.toInt();
+
+			/* High limit */
+			str = tag.attribute(KXMLQLCVCXYPadChannelHighLimit);
+			highLimit = str.toInt();
+
+			/* Reverse */
+			str = tag.attribute(KXMLQLCVCXYPadChannelReverse);
+			reverse = (bool) str.toInt();
+
+			/* Fixture channel number */
+			channel = tag.text().toInt();
+
+			if (axis == KXMLQLCVCXYPadChannelAxisX)
+				appendChannel(KAxisX, fixture, channel,
+					      lowLimit, highLimit, reverse);
+			else
+				appendChannel(KAxisY, fixture, channel,
+					      lowLimit, highLimit, reverse);
+		}
+		else
+		{
+			qWarning("Unknown XY Pad tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+	
+	/* First set window dimensions and AFTER that set the
+	   pointer's XY position */
+	setGeometry(x, y, w, h);
+	setCurrentXYPosition(xpos, ypos);
+
+	return true;
 }
 
-bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* root)
+bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
+	XYChannelUnit* xyc = NULL;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	/* VC XY Pad entry */
+	root = doc->createElement(KXMLQLCVCXYPad);
+	vc_root->appendChild(root);
+
+	/* Caption */
+	root.setAttribute(KXMLQLCVCCaption, caption());
+
+	/* Current XY Position */
+	tag = doc->createElement(KXMLQLCVCXYPadPosition);
+	str.setNum(currentXYPosition().x());
+	tag.setAttribute(KXMLQLCVCXYPadPositionX, str);
+	str.setNum(currentXYPosition().x());
+	tag.setAttribute(KXMLQLCVCXYPadPositionY, str);
+	root.appendChild(tag);
+
+	/* Window state */
+	FileHandler::saveXMLWindowState(doc, &root, this);
+
+	/* X Channels */
+	QPtrListIterator<XYChannelUnit> xit(m_channelsX);
+	while ( (xyc = xit.current()) != 0 )
+	{
+		tag = doc->createElement(KXMLQLCVCXYPadChannel);
+
+		/* This is an X axis channel */
+		tag.setAttribute(KXMLQLCVCXYPadChannelAxis,
+				 KXMLQLCVCXYPadChannelAxisX);
+
+		/* Fixture ID */
+		str.setNum(xyc->fixtureID());
+		tag.setAttribute(KXMLQLCVCXYPadChannelFixture, str);
+
+		/* Channel low value limit */
+		str.setNum(xyc->lo());
+		tag.setAttribute(KXMLQLCVCXYPadChannelLowLimit, str);
+
+		/* Channel high value limit */
+		str.setNum(xyc->hi());
+		tag.setAttribute(KXMLQLCVCXYPadChannelHighLimit, str);
+
+		/* Reverse */
+		str.setNum(xyc->reverse());
+		tag.setAttribute(KXMLQLCVCXYPadChannelReverse, str);
+
+		/* DMX Channel number */
+		str.setNum(xyc->channel());
+		text = doc->createTextNode(str);
+		tag.appendChild(text);
+
+		root.appendChild(tag);
+
+		++xit;
+	}
+
+	/* Y Channels */
+	QPtrListIterator<XYChannelUnit> yit(m_channelsY);
+	while ( (xyc = yit.current()) != 0 )
+	{
+		tag = doc->createElement(KXMLQLCVCXYPadChannel);
+
+		/* This is an Y axis channel */
+		tag.setAttribute(KXMLQLCVCXYPadChannelAxis,
+				 KXMLQLCVCXYPadChannelAxisY);
+
+		/* Fixture ID */
+		str.setNum(xyc->fixtureID());
+		tag.setAttribute(KXMLQLCVCXYPadChannelFixture, str);
+
+		/* Channel low value limit */
+		str.setNum(xyc->lo());
+		tag.setAttribute(KXMLQLCVCXYPadChannelLowLimit, str);
+
+		/* Channel high value limit */
+		str.setNum(xyc->hi());
+		tag.setAttribute(KXMLQLCVCXYPadChannelHighLimit, str);
+
+		/* Fixture channel number */
+		str.setNum(xyc->channel());
+		text = doc->createTextNode(str);
+		tag.appendChild(text);
+
+		root.appendChild(tag);
+
+		++yit;
+	}
+
+	/* Appearance */
+	saveXMLAppearance(doc, &root);
+
+	return true;
 }
 
-/*
-  void VCXYPad::saveToFile(QFile& file, t_vc_id parentID)
-  {
-  QString s;
-  QString t;
-  XYChannelUnit *xyc = NULL;
-  
-  // Comment
-  s = QString("# Virtual Console XYPad Entry\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Entry type
-  s = QString("Entry = XYPad") + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Name
-  s = QString("Name = ") + caption() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Parent ID
-  t.setNum(parentID);
-  s = QString("Parent = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // X Channels and limits
-  QPtrListIterator<XYChannelUnit> xit(m_channelsX);
-  while ( (xyc = xit.current()) != 0 )
-  {
-  ++xit;
-  
-  s.sprintf("ChannelEntryX = %d,%d,%d,%d,",
-  xyc->fixtureID(),
-  xyc->channel(),
-  xyc->lo(),
-  xyc->hi());
-  
-  if (xyc->reverse() == true)
-  {
-  s += Settings::trueValue();
-  }
-  else
-  {
-  s += Settings::falseValue();
-  }
-  
-  s += "\n";
-  
-  file.writeBlock((const char*) s, s.length());
-  }
-  
-  // Y Channels and limits
-  QPtrListIterator<XYChannelUnit> yit(m_channelsY);
-  while ( (xyc = yit.current()) != 0 )
-  {
-  ++yit;
-  
-  s.sprintf("ChannelEntryY = %d,%d,%d,%d,",
-  xyc->fixtureID(),
-  xyc->channel(),
-  xyc->lo(),
-  xyc->hi());
-  
-  if (xyc->reverse() == true)
-  {
-  s += Settings::trueValue();
-  }
-  else
-  {
-  s += Settings::falseValue();
-  }
-  
-  s += "\n";
-  
-  file.writeBlock((const char*) s, s.length());
-  }
-  
-  // X
-  t.setNum(x());
-  s = QString("X = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Y
-  t.setNum(y());
-  s = QString("Y = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // W
-  t.setNum(width());
-  s = QString("Width = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // H
-  t.setNum(height());
-  s = QString("Height = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Palette
-  if (ownPalette())
-  {
-  // Text color
-  t.setNum(qRgb(paletteForegroundColor().red(),
-  paletteForegroundColor().green(),
-  paletteForegroundColor().blue()));
-  
-  s = QString("Textcolor = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Background color
-  t.setNum(qRgb(paletteBackgroundColor().red(),
-  paletteBackgroundColor().green(),
-  paletteBackgroundColor().blue()));
-  
-  s = QString("Backgroundcolor = ") + t + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  }
-  
-  // Background pixmap
-  if (paletteBackgroundPixmap())
-  {
-  s = QString("Pixmap = " + iconText() + QString("\n"));
-  file.writeBlock((const char*) s, s.length());
-  }
-  
-  // Font
-  s = QString("Font = ") + font().toString() + QString("\n");
-  file.writeBlock((const char*) s, s.length());
-  
-  // Frame
-  if (frameStyle() & KFrameStyle)
-  {
-  s = QString("Frame = ") +
-  Settings::trueValue() + QString("\n");
-  }
-  else
-  {
-  s = QString("Frame = ") +
-  Settings::falseValue() + QString("\n");
-  }
-  file.writeBlock((const char*) s, s.length());
-  }
-*/
+bool VCXYPad::loadXMLAppearance(QDomDocument* doc, QDomElement* root)
+{
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCAppearance)
+	{
+		qWarning("Appearance node not found!");
+		return false;
+	}
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCVCFrameStyle)
+		{
+			int style = 0;
+			style = VirtualConsole::stringToFrameStyle(tag.text());
+			setFrameStyle(style);
+		}
+		else if (tag.tagName() == KXMLQLCVCForegroundColor)
+		{
+			if (tag.text() != KXMLQLCVCColorDefault)
+			{
+				QColor color(tag.text().toInt());
+				setForegroundColor(color);
+			}
+		}
+		else if (tag.tagName() == KXMLQLCVCBackgroundColor)
+		{
+			if (tag.text() != KXMLQLCVCColorDefault)
+				setBackgroundColor(QColor(tag.text().toInt()));
+		}
+		else if (tag.tagName() == KXMLQLCVCBackgroundImage)
+		{
+			if (tag.text() != KXMLQLCVCBackgroundImageNone)
+				setBackgroundImage(tag.text());
+		}
+		else if (tag.tagName() == KXMLQLCVCFont)
+		{
+			if (tag.text() != KXMLQLCVCFontDefault)
+			{
+				QFont font;
+				font.fromString(tag.text());
+				setFont(font);
+			}
+		}
+		else
+		{
+			qWarning("Unknown Appearance tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+}
+
+bool VCXYPad::saveXMLAppearance(QDomDocument* doc, QDomElement* xypad_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(xypad_root != NULL);
+
+	/* VC Label entry */
+	root = doc->createElement(KXMLQLCVCAppearance);
+	xypad_root->appendChild(root);
+
+	/* Frame style */
+	tag = doc->createElement(KXMLQLCVCFrameStyle);
+	root.appendChild(tag);
+	text = doc->createTextNode(VirtualConsole::frameStyleToString(frameStyle()));
+	tag.appendChild(text);
+
+	/* Foreground color */
+	tag = doc->createElement(KXMLQLCVCForegroundColor);
+	root.appendChild(tag);
+	if (hasCustomForegroundColor() == true)
+		str.setNum(paletteForegroundColor().rgb());
+	else
+		str = KXMLQLCVCColorDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Background color */
+	tag = doc->createElement(KXMLQLCVCBackgroundColor);
+	root.appendChild(tag);
+	if (hasCustomBackgroundColor() == true)
+		str.setNum(paletteBackgroundColor().rgb());
+	else
+		str = KXMLQLCVCColorDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Background image */
+	tag = doc->createElement(KXMLQLCVCBackgroundImage);
+	root.appendChild(tag);
+	if (backgroundImage() != QString::null)
+		str = m_backgroundImage;
+	else
+		str = KXMLQLCVCBackgroundImageNone;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Font */
+	tag = doc->createElement(KXMLQLCVCFont);
+	root.appendChild(tag);
+	if (hasCustomFont() == true)
+		str = font().toString();
+	else
+		str = KXMLQLCVCFontDefault;
+	text = doc->createTextNode(str);
+	tag.appendChild(text);	
+
+	return true;
+}
 
 /*****************************************************************************
  * Event handlers
@@ -339,10 +656,7 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 	}
 	else
 	{
-		m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
-		m_currentXYPosition.setX(e->x());
-		m_currentXYPosition.setY(e->y());
-		repaint();
+		setCurrentXYPosition(e->x(), e->y());
 
 		setMouseTracking(true);
 		setCursor(Qt::CrossCursor);
@@ -376,13 +690,13 @@ void VCXYPad::parseWidgetMenu(int item)
 
 	case KVCMenuBackgroundFrame:
 	{
-		if (frameStyle() & KFrameStyle)
+		if (frameStyle() & KFrameStyleSunken)
 		{
 			setFrameStyle(NoFrame);
 		}
 		else
 		{
-			setFrameStyle(KFrameStyle);
+			setFrameStyle(KFrameStyleSunken);
 		}
 		_app->doc()->setModified();
 	}

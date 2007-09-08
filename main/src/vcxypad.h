@@ -38,11 +38,27 @@ class QDomElement;
 class XYChannelUnit;
 
 #define KXMLQLCVCXYPad "XYPad"
+#define KXMLQLCVCXYPadPosition "Position"
+#define KXMLQLCVCXYPadPositionX "X"
+#define KXMLQLCVCXYPadPositionY "Y"
+
+#define KXMLQLCVCXYPadChannel "Channel"
+#define KXMLQLCVCXYPadChannelAxis "Axis"
+#define KXMLQLCVCXYPadChannelAxisX "X"
+#define KXMLQLCVCXYPadChannelAxisY "Y"
+
+#define KXMLQLCVCXYPadChannelFixture "Fixture"
+#define KXMLQLCVCXYPadChannelLowLimit "LowLimit"
+#define KXMLQLCVCXYPadChannelHighLimit "HighLimit"
+#define KXMLQLCVCXYPadChannelReverse "Reverse"
 
 class VCXYPad : public QFrame
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
  public:
 	VCXYPad(QWidget* parent);
 	virtual ~VCXYPad();
@@ -50,15 +66,122 @@ class VCXYPad : public QFrame
 	void init();
 
 	/*********************************************************************
+	 * Background image
+	 *********************************************************************/
+public:
+	/** Set the widget's background image */
+	void setBackgroundImage(const QString& path);
+	
+	/** Get the widget's background image */
+	const QString& backgroundImage();
+	
+protected:
+	QString m_backgroundImage;
+
+	/*********************************************************************
+	 * Background color
+	 *********************************************************************/
+public:
+	/** Set the widget's background color and invalidate background image */
+	void setBackgroundColor(const QColor& color);
+
+	/** Reset the widget's background color to whatever the platform uses */
+	void resetBackgroundColor();
+
+	/** Get the widget's background color. The color is invalid if the
+	    widget has a background image. */
+	const QColor& backgroundColor() const { return paletteBackgroundColor(); }
+
+	/** Check, whether the widget has a custom background color */
+	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
+
+	/*********************************************************************
+	 * Foreground color
+	 *********************************************************************/
+public:
+	/** Set the widget's foreground color */
+	void setForegroundColor(const QColor& color);
+
+	/** Reset the widget's background color to whatever the platform uses */
+	void resetForegroundColor();
+
+	/** Get the widget's foreground color */
+	const QColor& foregroundColor() const { return paletteForegroundColor(); }
+
+	/** Check, whether the widget has a custom foreground color */
+	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
+
+protected:
+	bool m_hasCustomBackgroundColor;
+	bool m_hasCustomForegroundColor;
+
+	/*********************************************************************
+	 * Font
+	 *********************************************************************/
+public:
+	/** Set the font used for the widget's caption */
+	void setFont(const QFont& font);
+
+	/** Get the font used for the widget's caption */
+	QFont font() const { return QWidget::font(); }
+
+	/** Reset the font used for the widget's caption to whatever the
+	    platform uses */
+	void resetFont();
+
+	/** Check, whether the widget has a custom font */
+	bool hasCustomFont() const { return m_hasCustomFont; }
+
+protected:
+	bool m_hasCustomFont;
+
+	/*********************************************************************
+	 * Channels
+	 *********************************************************************/
+public:
+	/* Append a new channel to this pad */
+	void appendChannel(t_axis axis, t_fixture_id fixture, t_channel channel,
+			   t_value lowLimit, t_value highLimit, bool reverse);
+
+	/* Remove a channel from this pad */
+	void removeChannel(t_axis axis, t_fixture_id fixture, t_channel channel);
+
+	/* Get a certain channel from this pad */
+	XYChannelUnit* channel(t_axis axis, t_fixture_id fixture,
+			       t_channel channel);
+	
+	/* Clear all channel lists from this pad */
+	void clearChannels();
+
+	QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
+	QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }
+
+protected:  
+	QPtrList<XYChannelUnit> m_channelsX;
+	QPtrList<XYChannelUnit> m_channelsY;
+	/*********************************************************************
+	 * Current position
+	 *********************************************************************/
+public:
+	const QPoint currentXYPosition() const { return m_currentXYPosition; }
+	void setCurrentXYPosition(const QPoint& point);
+	void setCurrentXYPosition(int x, int y);
+
+protected:
+	QPoint m_currentXYPosition;
+
+	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
+public:
 	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 
-	QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
-	QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }
-  
+protected:
+	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
+	bool saveXMLAppearance(QDomDocument* doc, QDomElement* xypad_root);
+
  private slots:
 	void slotModeChanged();
 
@@ -88,11 +211,7 @@ class VCXYPad : public QFrame
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
  
-	QPoint m_currentXYPosition;
 	QPixmap m_pixmap;
-
-	QPtrList<XYChannelUnit> m_channelsX;
-	QPtrList<XYChannelUnit> m_channelsY;
 };
 
 #endif

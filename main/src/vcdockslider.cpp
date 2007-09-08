@@ -59,9 +59,6 @@
 
 extern App* _app;
 
-const int KFrameStyle         ( QFrame::StyledPanel | QFrame::Sunken );
-const int KColorMask          ( 0xff ); // Produces opposite colors with XOR
-
 VCDockSlider::VCDockSlider(QWidget* parent, bool isStatic)
 	: UI_VCDockSlider(parent, "VCDockSlider"),
 	  m_mode ( Speed ),
@@ -103,7 +100,8 @@ void VCDockSlider::init()
 
 	setCaption("No Name");
 	setMode(Speed);
-	m_channel = -1;
+	m_inputChannel = -1;
+	m_channels.clear();
 
 	m_slider->setPageStep(1);
 	m_slider->setValue(0);
@@ -115,7 +113,7 @@ void VCDockSlider::init()
 	connect(_app->virtualConsole(), SIGNAL(InpEvent(const int, const int, const int)), 
 		this, SLOT(slotInputEvent(const int, const int, const int)));
 
-	assert(m_sliderKeyBind == NULL);
+	Q_ASSERT(m_sliderKeyBind == NULL);
 	m_sliderKeyBind = new SliderKeyBind();
 
 	connect(m_sliderKeyBind, SIGNAL(pressedUp()), this, SLOT(slotPressUp()));
@@ -200,17 +198,15 @@ void VCDockSlider::setCaption(const QString& text)
 
 void VCDockSlider::setSliderKeyBind(const SliderKeyBind* skb)
 {
-	assert(skb);
+	Q_ASSERT(skb != NULL);
 
 	if (m_sliderKeyBind)
-	{
 		delete m_sliderKeyBind;
-	}
 
 	m_sliderKeyBind = new SliderKeyBind(skb);
 
 	connect(m_sliderKeyBind, SIGNAL(pressedUp()), this, SLOT(slotPressUp()));
-	connect(m_sliderKeyBind, SIGNAL(pressedDown()), this, SLOT(sloPpressDown()));
+	connect(m_sliderKeyBind, SIGNAL(pressedDown()), this, SLOT(slotPressDown()));
 }
 
 /*****************************************************************************
@@ -398,6 +394,23 @@ void VCDockSlider::levelRange(t_value &lo, t_value &hi)
 	hi = m_levelHighLimit;
 }
 
+void VCDockSlider::appendChannel(t_channel channel)
+{
+	/* Append each channel only once to the list */
+	if (m_channels.contains(channel) == 0)
+		m_channels.append(channel);
+}
+
+void VCDockSlider::removeChannel(t_channel channel)
+{
+	m_channels.remove(m_channels.find(channel));
+}
+
+void VCDockSlider::clearChannels()
+{
+	m_channels.clear();
+}
+
 /*****************************************************************************
  * Load & Save
  *****************************************************************************/
@@ -427,6 +440,110 @@ bool VCDockSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 bool VCDockSlider::loadXML(QDomDocument* doc, QDomElement* root)
 {
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCDockSlider)
+	{
+		qWarning("Slider node not found!");
+		return false;
+	}
+
+	/* Caption */
+	setCaption(root->attribute(KXMLQLCVCCaption));
+
+	/* Slider mode */
+	setMode(VCDockSlider::stringToMode(
+			root->attribute(KXMLQLCVCDockSliderMode)));
+
+	/* Slider value */
+	str = root->attribute(KXMLQLCVCDockSliderValue);
+	m_slider->setValue(str.toInt());
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCWindowState)
+		{
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
+			setGeometry(x, y, w, h);
+		}
+		else if (tag.tagName() == KXMLQLCVCAppearance)
+		{
+			/* TODO */
+		}
+		else if (tag.tagName() == KXMLQLCVCDockSliderBus)
+		{
+			t_bus_id busID = KBusIDDefaultFade;
+			t_bus_value busLowLimit = 0;
+			t_bus_value busHighLimit = 5;
+
+			busID = tag.text().toInt();
+
+			str = tag.attribute(KXMLQLCVCDockSliderBusLowLimit);
+			busLowLimit = str.toInt();
+
+			str = tag.attribute(KXMLQLCVCDockSliderBusHighLimit);
+			busHighLimit = str.toInt();
+
+			setBusRange(busLowLimit, busHighLimit);
+			setBusID(busID);
+		}
+		else if (tag.tagName() == KXMLQLCVCDockSliderLevel)
+		{
+			t_value levelLowLimit = 0;
+			t_value levelHighLimit = 255;
+			
+			str = tag.attribute(KXMLQLCVCDockSliderLevelLowLimit);
+			levelLowLimit = str.toInt();
+
+			str = tag.attribute(KXMLQLCVCDockSliderLevelHighLimit);
+			levelHighLimit = str.toInt();
+
+			setLevelRange(levelLowLimit, levelHighLimit);
+		}
+		else if (tag.tagName() == KXMLQLCVCDockSliderInputChannel)
+		{
+			int inputChannel = -1;
+			inputChannel = tag.text().toInt();
+			setInputChannel(inputChannel);
+		}
+		else if (tag.tagName() == KXMLQLCVCDockSliderDMXChannel)
+		{
+			t_channel channel = 0;
+			channel = tag.text().toInt();
+			appendChannel(channel);
+		}
+		else if (tag.tagName() == KXMLQLCSliderKeyBind)
+		{
+			SliderKeyBind* skb = NULL;
+			skb = SliderKeyBind::loader(doc, &tag);
+			setSliderKeyBind(skb);
+			delete skb;
+		}
+		else
+		{
+			qWarning("Unknown slider tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
 }
 
 bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
@@ -439,7 +556,7 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(vc_root != NULL);
 
-	/* VC Label entry */
+	/* VC Slider entry */
 	root = doc->createElement(KXMLQLCVCDockSlider);
 	vc_root->appendChild(root);
 
@@ -457,13 +574,12 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
 
-	/* Bus */
+	/* Bus & Bus ID */
 	tag = doc->createElement(KXMLQLCVCDockSliderBus);
 	root.appendChild(tag);
-
-	/* Bus ID */
 	str.setNum(busID());
-	tag.setAttribute(KXMLQLCVCDockSliderBusID, str);
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
 
 	/* Bus low limit */
 	str.setNum(m_busLowLimit);
@@ -491,7 +607,7 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Midi input */
 	tag = doc->createElement(KXMLQLCVCDockSliderInputChannel);
 	root.appendChild(tag);
-	str.setNum(m_channel);
+	str.setNum(m_inputChannel);
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
@@ -506,6 +622,69 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	}
 
 	return FileHandler::saveXMLWindowState(doc, &root, this);
+}
+
+bool VCDockSlider::loadXMLAppearance(QDomDocument* doc, QDomElement* root)
+{
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCAppearance)
+	{
+		qWarning("Appearance node not found!");
+		return false;
+	}
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCVCFrameStyle)
+		{
+			int style = 0;
+			style = VirtualConsole::stringToFrameStyle(tag.text());
+			setFrameStyle(style);
+		}
+		else if (tag.tagName() == KXMLQLCVCForegroundColor)
+		{
+			if (tag.text() != KXMLQLCVCColorDefault)
+			{
+				QColor color(tag.text().toInt());
+				setForegroundColor(color);
+			}
+		}
+		else if (tag.tagName() == KXMLQLCVCBackgroundColor)
+		{
+			if (tag.text() != KXMLQLCVCColorDefault)
+				setBackgroundColor(QColor(tag.text().toInt()));
+		}
+		else if (tag.tagName() == KXMLQLCVCBackgroundImage)
+		{
+			if (tag.text() != KXMLQLCVCBackgroundImageNone)
+				setBackgroundImage(tag.text());
+		}
+		else if (tag.tagName() == KXMLQLCVCFont)
+		{
+			if (tag.text() != KXMLQLCVCFontDefault)
+			{
+				QFont font;
+				font.fromString(tag.text());
+				setFont(font);
+			}
+		}
+		else
+		{
+			qWarning("Unknown Appearance tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
 }
 
 bool VCDockSlider::saveXMLAppearance(QDomDocument* doc, QDomElement* slider_root)
@@ -523,7 +702,7 @@ bool VCDockSlider::saveXMLAppearance(QDomDocument* doc, QDomElement* slider_root
 	slider_root->appendChild(root);
 
 	/* Frame style */
-	tag = doc->createElement(KXMLQLCVirtualConsoleFrameStyle);
+	tag = doc->createElement(KXMLQLCVCFrameStyle);
 	root.appendChild(tag);
 	text = doc->createTextNode(VirtualConsole::frameStyleToString(frameStyle()));
 	tag.appendChild(text);
@@ -617,7 +796,7 @@ void VCDockSlider::slotSliderValueChanged(const int value)
 		m_valueLabel->setText(num);
 		int range = m_busHighLimit - m_busLowLimit;
 		float f = ((float) value / (float) KFrequency);
-		_app->inputPlugin()->feedBack(1, m_channel,
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
 					      127 - int((f * 127) / range));
 	} 
 	else if (m_mode == Level)
@@ -633,7 +812,7 @@ void VCDockSlider::slotSliderValueChanged(const int value)
 				       value + m_levelLowLimit);
 		}
 
-		_app->inputPlugin()->feedBack(1, m_channel, 
+		_app->inputPlugin()->feedBack(1, m_inputChannel, 
 					      127 - (value * 127) / 255);
 	}
 	else
@@ -648,7 +827,7 @@ void VCDockSlider::slotSliderValueChanged(const int value)
 			_app->setSubmasterValue(*it, 100 - value);
 		}
 
-		_app->inputPlugin()->feedBack(1, m_channel,
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
 					      127 - (value * 127) / 100);
 	}
 }
@@ -670,7 +849,7 @@ void VCDockSlider::slotModeChanged()
 
 void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
 {
-	if (id == 1 && channel == m_channel)
+	if (id == 1 && channel == m_inputChannel)
 	{
 		if (m_mode == Submaster)
 		{
@@ -698,17 +877,17 @@ void VCDockSlider::slotFeedBack()
 	{
 		t_bus_value range = m_busHighLimit - m_busLowLimit;
 		float f = ((float) value / (float) KFrequency);
-		_app->inputPlugin()->feedBack(1, m_channel, 
+		_app->inputPlugin()->feedBack(1, m_inputChannel, 
 					      127 - int((f * 127) / range));
 	}
 	else if (m_mode == Level)
 	{
-		_app->inputPlugin()->feedBack(1, m_channel,
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
 					      127 - (value * 127) / 255);
 	}
 	else
 	{
-		_app->inputPlugin()->feedBack(1, m_channel,
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
 					      127 - (value * 127) / 100);
 	}
 }
@@ -857,13 +1036,13 @@ void VCDockSlider::parseWidgetMenu(int item)
 
 	case KVCMenuBackgroundFrame:
 	{
-		if (frameStyle() & KFrameStyle)
+		if (frameStyle() & KFrameStyleSunken)
 		{
 			setFrameStyle(NoFrame);
 		}
 		else
 		{
-			setFrameStyle(KFrameStyle);
+			setFrameStyle(KFrameStyleSunken);
 		}
 
 		_app->doc()->setModified();

@@ -632,8 +632,84 @@ void SliderKeyBind::slotSliderKeyPressed(QKeyEvent* e)
 /*****************************************************************************
  * Load & Save
  *****************************************************************************/
+SliderKeyBind* SliderKeyBind::loader(QDomDocument* doc, QDomElement* root)
+{
+	SliderKeyBind* skb = NULL;
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCSliderKeyBind)
+	{
+		qWarning("Slider key binding node not found!");
+		return false;
+	}
+
+	skb = new SliderKeyBind();
+	Q_ASSERT(skb != NULL);
+
+	if (skb->loadXML(doc, root) == false)
+	{
+		delete skb;
+		skb = NULL;
+	}
+
+	return skb;
+}
+
 bool SliderKeyBind::loadXML(QDomDocument* doc, QDomElement* root)
 {
+	QString action;
+	QString mod;
+	QString key;
+
+	QDomNode node;
+	QDomElement tag;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCSliderKeyBind)
+	{
+		qWarning("Slider key binding node not found!");
+		return false;
+	}
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCSliderKeyBindKey)
+		{
+			action = tag.attribute(KXMLQLCSliderKeyBindAction);
+			mod = tag.attribute(KXMLQLCSliderKeyBindModifier);
+			key = tag.text();
+
+			if (action == KXMLQLCSliderKeyBindUp)
+			{
+				setKeyUp(key.toInt());
+				setModUp(mod.toInt());
+			}
+			else
+			{
+				setKeyDown(key.toInt());
+				setModDown(mod.toInt());
+			}
+		}
+		else
+		{
+			qWarning("Unknown slider key binding tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
 }
 
 bool SliderKeyBind::saveXML(QDomDocument* doc, QDomElement* vc_root)

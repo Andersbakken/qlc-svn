@@ -40,7 +40,7 @@ class SliderKeyBind : public QObject
 {
 	Q_OBJECT
 
-		public:
+public:
 	SliderKeyBind();
 	SliderKeyBind(const int keyUp, const int modUp,
 		      const int keyDown, const int modDown);
@@ -74,7 +74,8 @@ class SliderKeyBind : public QObject
 	 * Load & Save
 	 *********************************************************************/
 public:
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	static SliderKeyBind* loader(QDomDocument* doc, QDomElement* kb_root);
+	bool loadXML(QDomDocument* doc, QDomElement* kb_root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
 signals:

@@ -95,7 +95,7 @@ public:
 
 	/** Get the widget's background color. The color is invalid if the
 	    widget has a background image. */
-	const QColor& backgroundColor() { return paletteBackgroundColor(); }
+	const QColor& backgroundColor() const { return paletteBackgroundColor(); }
 
 	/** Check, whether the widget has a custom background color */
 	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
@@ -111,7 +111,7 @@ public:
 	void resetForegroundColor();
 
 	/** Get the widget's foreground color */
-	const QColor& foregroundColor() { return paletteForegroundColor(); }
+	const QColor& foregroundColor() const { return paletteForegroundColor(); }
 
 	/** Check, whether the widget has a custom foreground color */
 	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
@@ -150,14 +150,21 @@ public:
 	 * Key binding
 	 *********************************************************************/
 public:
-	SliderKeyBind* sliderKeyBind() { return m_sliderKeyBind; }
+	SliderKeyBind* sliderKeyBind() const { return m_sliderKeyBind; }
 	void setSliderKeyBind(const SliderKeyBind* skb);
-	void setChannel(t_channel channel){ m_channel = channel;}
-	int channel() const { return m_channel; }
 
 protected:
-	int m_channel;
 	SliderKeyBind* m_sliderKeyBind;
+
+	/*********************************************************************
+	 * Input channel
+	 *********************************************************************/
+public:
+	void setInputChannel(t_channel channel) { m_inputChannel = channel; }
+	int inputChannel() const { return m_inputChannel; }
+
+protected:
+	int m_inputChannel;
 
 	/*********************************************************************
 	 * SliderMode
@@ -202,9 +209,14 @@ protected:
 public:
 	QValueList <t_channel>* channels() { return &m_channels; }
 	void assignSubmasters(bool assign);
+
 	void setLevelRange(t_value low, t_value hi);
 	void levelRange(t_value& lo, t_value& hi);
 
+	void appendChannel(t_channel channel);
+	void removeChannel(t_channel channel);
+	void clearChannels();
+	
 protected:
 	QValueList<t_channel> m_channels;
 	int m_levelLowLimit;
@@ -219,6 +231,7 @@ public:
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
 protected:
+	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* slider_root);
 
 	/*********************************************************************

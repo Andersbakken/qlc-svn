@@ -104,7 +104,7 @@ void VCDockSliderProperties::init()
 	//
 	// Midi stuff
 	//
-	m_channelSpinBox->setValue(m_slider->channel());
+	m_channelSpinBox->setValue(m_slider->inputChannel());
 
 	//
 	// Pixmaps
@@ -444,7 +444,10 @@ void VCDockSliderProperties::slotOKClicked()
 	//
 	_app->resetSubmasters();
 
-	m_slider->setChannel(m_channelSpinBox->value());
+	//
+	// Midi stuff
+	//
+	m_slider->setInputChannel(m_channelSpinBox->value());
 
 	accept();
 }

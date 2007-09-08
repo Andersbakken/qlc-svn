@@ -95,14 +95,21 @@ const t_channel KFixtureChannelsMax ( 64 );
  */
 const t_channel KChannelInvalid ( USHRT_MAX );
 
-/*****************************************************************************
- * Event buffer
- *****************************************************************************/
+/**
+ * QLCChannel's control byte for 16bit pan/tilt etc. (i.e. MSB/LSB)
+ * 0 = the first 8 bits, 1 = bits 9-16 ... 255 = bits 2033-2040 (yikes!)
+ */
+typedef unsigned char t_controlbyte;
 
 /**
- * Event buffer data type
+ * Low control byte for 16bit DMX values
  */
-typedef unsigned int t_buffer_data;
+const t_controlbyte KControl16LSB ( 0 );
+
+/**
+ * High control byte for 16bit DMX values
+ */
+const t_controlbyte KControl16MSB ( 1 );
 
 /*****************************************************************************
  * DMX value
@@ -122,6 +129,15 @@ const t_value KChannelValueMin ( 0 );
  * Largest channel value
  */
 const t_value KChannelValueMax ( 255 );
+
+/*****************************************************************************
+ * Event buffer
+ *****************************************************************************/
+
+/**
+ * Event buffer data type
+ */
+typedef unsigned int t_buffer_data;
 
 /*****************************************************************************
  * Bus
@@ -163,28 +179,28 @@ const t_bus_id KBusIDDefaultFade ( KBusIDMin );
 const t_bus_id KBusIDDefaultHold ( KBusIDMin + 1 );
 
 /*****************************************************************************
- * Fixture
+ * Axes
  *****************************************************************************/
 
 /**
- * LogicalChannel's control byte for 16bit pan/tilt etc. (i.e. MSB/LSB)
- * 0 = the first 8 bits, 1 = bits 9-16 ... 255 = bits 2033-2040 (yikes!)
+ * Axis type
  */
-typedef unsigned char t_controlbyte;
-
-/*****************************************************************************
- * Virtual console
- *****************************************************************************/
+typedef unsigned char t_axis;
 
 /**
- * Virtual Console widget ID type
+ * X Axis
  */
-typedef unsigned long t_vc_id;
+const t_axis KAxisX ( 0 );
 
 /**
- * Smallest virtual console widget ID number
+ * Y Axis
  */
-const t_vc_id KVCIDMin ( 1 );
+const t_axis KAxisY ( 1 );
+
+/**
+ * Z Axis (you never know...)
+ */
+const t_axis KAxisZ ( 2 );
 
 /*****************************************************************************
  * Function consumer engine

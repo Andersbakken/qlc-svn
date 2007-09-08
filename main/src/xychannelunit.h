@@ -38,14 +38,15 @@ public:
 	
 	~XYChannelUnit();
 	
-	enum {
+	enum
+	{
 		FileElementFixture = 0,
 		FileElementChannel,
 		FileElementLo,
 		FileElementHi,
 		FileElementReverse
 	} ElementOrder;
-		
+
 	/**
 	 * Set the low limit for the channel
 	 *

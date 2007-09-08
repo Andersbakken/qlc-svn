@@ -151,6 +151,7 @@ public:
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
 protected:
+	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root);
 
  public slots:

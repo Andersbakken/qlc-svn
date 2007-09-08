@@ -51,6 +51,9 @@ public:
 
 	void init();
 
+	/** Destroy this widget */
+	void destroy();
+
 	/*********************************************************************
 	 * Background image
 	 *********************************************************************/
@@ -60,6 +63,9 @@ public:
 
 	/** Get the widget's background image */
 	const QString& backgroundImage();
+
+	/** Invoke an image choosing dialog */
+	void chooseBackgroundImage();
 
 protected:
 	QString m_backgroundImage;
@@ -78,6 +84,9 @@ public:
 	    widget has a background image. */
 	const QColor& backgroundColor() { return paletteBackgroundColor(); }
 
+	/** Invoke a color choosing dialog */
+	void chooseBackgroundColor();
+
 	/** Check, whether the widget has a custom background color */
 	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
 
@@ -93,6 +102,9 @@ public:
 
 	/** Get the widget's foreground color */
 	const QColor& foregroundColor() { return paletteForegroundColor(); }
+
+	/** Invoke a color choosing dialog */
+	void chooseForegroundColor();
 
 	/** Check, whether the widget has a custom foreground color */
 	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
@@ -115,6 +127,9 @@ public:
 	    platform uses */
 	void resetFont();
 
+	/** Invoke a font choosing dialog */
+	void chooseFont();
+
 	/** Check, whether the widget has a custom font */
 	bool hasCustomFont() const { return m_hasCustomFont; }
 
@@ -128,6 +143,9 @@ public:
 	/** Set this label's caption text */
 	void setCaption(const QString& text);
 
+	/** Invoke a renaming edit */
+	void rename();
+
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
@@ -137,17 +155,34 @@ public:
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
 protected:
+	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* label_root);
 
-private:
-	void invokeMenu(QPoint);
-	void parseWidgetMenu(int);
-	void resizeTo(QPoint);
-	void moveTo(QPoint);
-
-	private slots:
+	/*********************************************************************
+	 * QLC Mode change
+	 *********************************************************************/
+protected slots:
 	void slotModeChanged();
 
+	/*********************************************************************
+	 * Widget menu
+	 *********************************************************************/
+protected:
+	void invokeMenu(QPoint);
+
+protected slots:
+	void slotMenuCallback(int item);
+
+	/*********************************************************************
+	 * Widget moving / resizing
+	 *********************************************************************/
+protected:
+	void resizeTo(QPoint point);
+	void moveTo(QPoint point);
+
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
 protected:
 	void mousePressEvent(QMouseEvent*);
 	void mouseReleaseEvent(QMouseEvent*);
@@ -156,7 +191,7 @@ protected:
 	void paintEvent(QPaintEvent*);
 	void customEvent(QCustomEvent*);
 
-private:
+protected:
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
 };

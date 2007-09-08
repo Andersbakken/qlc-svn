@@ -1,3 +1,6 @@
+2007-Sep-08  Heikki Junnila <hjunnila@users.sf.net>
+	* VC widgets continued...
+
 2007-Sep-06  Heikki Junnila <hjunnila@users.sf.net>
 	* VCProperties dialog no longer uses Settings class for load/save.
 	* Implemented appearance saving for VCLabel.

@@ -274,7 +274,7 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			/* TODO */
+			loadXMLAppearance(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCFrame)
 		{
@@ -365,6 +365,69 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	return true;
 }
 
+bool VCFrame::loadXMLAppearance(QDomDocument* doc, QDomElement* root)
+{
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCAppearance)
+	{
+		qWarning("Appearance node not found!");
+		return false;
+	}
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCVCFrameStyle)
+		{
+			int style = 0;
+			style = VirtualConsole::stringToFrameStyle(tag.text());
+			setFrameStyle(style);
+		}
+		else if (tag.tagName() == KXMLQLCVCForegroundColor)
+		{
+			if (tag.text() != KXMLQLCVCColorDefault)
+			{
+				QColor color(tag.text().toInt());
+				setForegroundColor(color);
+			}
+		}
+		else if (tag.tagName() == KXMLQLCVCBackgroundColor)
+		{
+			if (tag.text() != KXMLQLCVCColorDefault)
+				setBackgroundColor(QColor(tag.text().toInt()));
+		}
+		else if (tag.tagName() == KXMLQLCVCBackgroundImage)
+		{
+			if (tag.text() != KXMLQLCVCBackgroundImageNone)
+				setBackgroundImage(tag.text());
+		}
+		else if (tag.tagName() == KXMLQLCVCFont)
+		{
+			if (tag.text() != KXMLQLCVCFontDefault)
+			{
+				QFont font;
+				font.fromString(tag.text());
+				setFont(font);
+			}
+		}
+		else
+		{
+			qWarning("Unknown Appearance tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+}
+
 bool VCFrame::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 {
 	QDomElement root;
@@ -380,7 +443,7 @@ bool VCFrame::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 	frame_root->appendChild(root);
 
 	/* Frame style */
-	tag = doc->createElement(KXMLQLCVirtualConsoleFrameStyle);
+	tag = doc->createElement(KXMLQLCVCFrameStyle);
 	root.appendChild(tag);
 	text = doc->createTextNode(VirtualConsole::frameStyleToString(frameStyle()));
 	tag.appendChild(text);

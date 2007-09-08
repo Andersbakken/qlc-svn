@@ -38,6 +38,8 @@ dist_appicons_DATA = \
 	fonts.png \
 	forward.png \
 	frame.png \
+	framesunken.png \
+	frameraised.png \
 	function.png \
 	global.png \
 	help.png \
