@@ -46,17 +46,44 @@
 
 extern App* _app;
 
-VCLabel::VCLabel(QWidget* parent)
-	: QLabel(parent, "Label"),
-	  m_hasCustomForegroundColor ( false ),
-	  m_hasCustomBackgroundColor ( false ),
-	  m_hasCustomFont ( false ),
-	  m_resizeMode ( false )
+VCLabel::VCLabel(QWidget* parent) : QLabel(parent, "Label")
 {
+	m_hasCustomForegroundColor = false;
+	m_hasCustomBackgroundColor = false;
+	m_hasCustomFont = false;
+	m_resizeMode = false;
 }
 
 VCLabel::~VCLabel()
 {
+}
+
+VCLabel::VCLabel(QWidget* parent, VCLabel* label) : QLabel(parent, "Label")
+{
+	m_hasCustomForegroundColor = false;
+	m_hasCustomBackgroundColor = false;
+	m_hasCustomFont = false;
+	m_resizeMode = false;
+
+	if (label != NULL)
+		*this = *label;
+}
+
+VCLabel& VCLabel::operator=(VCLabel& label)
+{
+	if ((m_hasCustomForegroundColor = label.hasCustomForegroundColor()))
+		setForegroundColor(label.foregroundColor());
+
+	if ((m_hasCustomBackgroundColor = label.hasCustomBackgroundColor()))
+		setBackgroundColor(label.backgroundColor());
+
+	if ((m_hasCustomFont = label.hasCustomFont()))
+		setFont(label.font());
+
+	setCaption(label.caption());
+	resize(label.size());
+
+	return *this;
 }
 
 void VCLabel::init()
@@ -134,8 +161,21 @@ void VCLabel::setBackgroundColor(const QColor& color)
 
 void VCLabel::resetBackgroundColor()
 {
+	QColor fg;
+
 	m_hasCustomBackgroundColor = false;
-	/* TODO */
+
+	/* Store foreground color */
+	if (m_hasCustomForegroundColor == true)
+		fg = paletteForegroundColor();
+
+	/* Reset the whole palette */
+	unsetPalette();
+
+	/* Restore foreground color */
+	if (fg.isValid() == true)
+		setPaletteForegroundColor(fg);
+
 	_app->doc()->setModified();
 }
 
@@ -159,8 +199,23 @@ void VCLabel::setForegroundColor(const QColor& color)
 
 void VCLabel::resetForegroundColor()
 {
+	QColor bg;
+
 	m_hasCustomForegroundColor = false;
-	/* TODO */
+
+	/* Store background color */
+	if (m_hasCustomBackgroundColor == true)
+		bg = paletteBackgroundColor();
+
+	/* Reset the whole palette */
+	unsetPalette();
+
+	/* Restore foreground color */
+	if (bg.isValid() == true)
+		setPaletteBackgroundColor(bg);
+	else if (m_backgroundImage.isEmpty() == false)
+		setPaletteBackgroundPixmap(QPixmap(m_backgroundImage));
+
 	_app->doc()->setModified();
 }
 
@@ -186,7 +241,7 @@ void VCLabel::setFont(const QFont& font)
 void VCLabel::resetFont()
 {
 	m_hasCustomFont = false;
-	/* TODO */
+	unsetFont();
 	_app->doc()->setModified();
 }
 
@@ -760,7 +815,7 @@ void VCLabel::slotMenuCallback(int item)
 		break;
 
 	case KVCMenuForegroundDefault:
-		resetBackgroundColor();
+		resetForegroundColor();
 		break;
 
 	case KVCMenuBackgroundColor:
@@ -781,6 +836,18 @@ void VCLabel::slotMenuCallback(int item)
 
 	case KVCMenuFontDefault:
 		resetFont();
+		break;
+
+	case KVCMenuFrameSunken:
+		setFrameStyle(KFrameStyleSunken);
+		break;
+
+	case KVCMenuFrameRaised:
+		setFrameStyle(KFrameStyleRaised);
+		break;
+
+	case KVCMenuFrameNone:
+		setFrameStyle(KFrameStyleNone);
 		break;
 
 	case KVCMenuStackingRaise:

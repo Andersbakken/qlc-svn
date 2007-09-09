@@ -65,6 +65,8 @@ class VCXYPad : public QFrame
 
 	void init();
 
+	void destroy();
+
 	/*********************************************************************
 	 * Background image
 	 *********************************************************************/
@@ -75,6 +77,8 @@ public:
 	/** Get the widget's background image */
 	const QString& backgroundImage();
 	
+	void chooseBackgroundImage();
+
 protected:
 	QString m_backgroundImage;
 
@@ -88,12 +92,17 @@ public:
 	/** Reset the widget's background color to whatever the platform uses */
 	void resetBackgroundColor();
 
+	void chooseBackgroundColor();
+
 	/** Get the widget's background color. The color is invalid if the
 	    widget has a background image. */
 	const QColor& backgroundColor() const { return paletteBackgroundColor(); }
 
 	/** Check, whether the widget has a custom background color */
 	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
+
+protected:
+	bool m_hasCustomBackgroundColor;
 
 	/*********************************************************************
 	 * Foreground color
@@ -105,6 +114,8 @@ public:
 	/** Reset the widget's background color to whatever the platform uses */
 	void resetForegroundColor();
 
+	void chooseForegroundColor();
+
 	/** Get the widget's foreground color */
 	const QColor& foregroundColor() const { return paletteForegroundColor(); }
 
@@ -112,7 +123,6 @@ public:
 	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
 
 protected:
-	bool m_hasCustomBackgroundColor;
 	bool m_hasCustomForegroundColor;
 
 	/*********************************************************************
@@ -125,6 +135,8 @@ public:
 	/** Get the font used for the widget's caption */
 	QFont font() const { return QWidget::font(); }
 
+	void chooseFont();
+
 	/** Reset the font used for the widget's caption to whatever the
 	    platform uses */
 	void resetFont();
@@ -134,6 +146,22 @@ public:
 
 protected:
 	bool m_hasCustomFont;
+
+	/*********************************************************************
+	 * Caption
+	 *********************************************************************/
+public:
+	/** Set this label's caption text */
+	void setCaption(const QString& text);
+
+	/** Invoke a renaming edit */
+	void rename();
+
+	/*********************************************************************
+	 * Properties
+	 *********************************************************************/
+public:
+	void editProperties();
 
 	/*********************************************************************
 	 * Channels
@@ -159,6 +187,7 @@ public:
 protected:  
 	QPtrList<XYChannelUnit> m_channelsX;
 	QPtrList<XYChannelUnit> m_channelsY;
+
 	/*********************************************************************
 	 * Current position
 	 *********************************************************************/
@@ -169,6 +198,7 @@ public:
 
 protected:
 	QPoint m_currentXYPosition;
+	QPixmap m_xyPosPixmap;
 
 	/*********************************************************************
 	 * Load & Save
@@ -182,36 +212,50 @@ protected:
 	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* xypad_root);
 
- private slots:
+	/*********************************************************************
+	 * QLC Mode change
+	 *********************************************************************/
+protected slots:
 	void slotModeChanged();
 
- signals:
-	void backgroundChanged();
+	/*********************************************************************
+	 * DMX writer
+	 *********************************************************************/
+protected:
+	void outputDMX(int x, int y);
 
- protected:
+	/*********************************************************************
+	 * Widget menu
+	 *********************************************************************/
+protected:
 	void invokeMenu(QPoint point);
-	void parseWidgetMenu(int item);
 
+protected slots:
+	void slotMenuCallback(int item);
+
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
+protected:
 	void mousePressEvent(QMouseEvent* e);
 	void mouseReleaseEvent(QMouseEvent* e);
 	void mouseMoveEvent(QMouseEvent* e);
 	void paintEvent(QPaintEvent* e);
 	void customEvent(QCustomEvent* e);
 
+	/*********************************************************************
+	 * Widget move / resize
+	 *********************************************************************/
+protected:
 	void resizeTo(QPoint p);
 	void moveTo(QPoint p);
-	void outputDMX(int x, int y);
 
-	void createChannelUnitFromString(QString string, bool isX);
- 
- protected:
+protected:
 	int m_xpos;
 	int m_ypos;
 
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
- 
-	QPixmap m_pixmap;
 };
 
 #endif

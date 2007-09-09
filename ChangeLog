@@ -1,3 +1,11 @@
+2007-Sep-09  Heikki Junnila <hjunnila@users.sf.net>
+	* Started to move from the weird shared menu system in VC
+	  to individually-managed menus for each widget.
+	* -> TODO: A common base class for VC widgets that contains
+	  the shared stuff. BUT the base class MUST NOT inherit QObject
+	  because QT doesn't like it. This seems to be quite
+	  difficult actually...
+
 2007-Sep-08  Heikki Junnila <hjunnila@users.sf.net>
 	* VC widgets continued...
 

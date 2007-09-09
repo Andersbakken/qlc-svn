@@ -46,7 +46,16 @@ class VCLabel : public QLabel
 	 * Initialization
 	 *********************************************************************/
 public:
+	/** Normal constructor */
 	VCLabel(QWidget* parent);
+
+	/** Copy constructor */
+	VCLabel(QWidget* parent, VCLabel* label);
+
+	/** Assignment operator */
+	VCLabel& operator=(VCLabel& label);
+
+	/** Destructor */
 	~VCLabel();
 
 	void init();
@@ -90,6 +99,9 @@ public:
 	/** Check, whether the widget has a custom background color */
 	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
 
+protected:
+	bool m_hasCustomBackgroundColor;
+
 	/*********************************************************************
 	 * Foreground color
 	 *********************************************************************/
@@ -110,7 +122,6 @@ public:
 	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
 
 protected:
-	bool m_hasCustomBackgroundColor;
 	bool m_hasCustomForegroundColor;
 
 	/*********************************************************************

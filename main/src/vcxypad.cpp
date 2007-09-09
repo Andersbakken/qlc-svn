@@ -29,24 +29,26 @@
 #include "app.h"
 #include "doc.h"
 #include "virtualconsole.h"
-#include "common/settings.h"
-#include "common/minmax.h"
 #include "configkeys.h"
 #include "vcxypadproperties.h"
+
 #include "common/filehandler.h"
+#include "common/qlcimagepreview.h"
 
 #include <qcursor.h>
 #include <qpoint.h>
 #include <qpixmap.h>
 #include <qpopupmenu.h>
 #include <qptrlist.h>
-#include <stdio.h>
-#include <qcolordialog.h>
 #include <qfiledialog.h>
 #include <qobjectlist.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
 #include <qlistview.h>
+#include <qcolordialog.h>
+#include <qfontdialog.h>
+#include <qfiledialog.h>
+#include <qinputdialog.h>
 
 extern App* _app;
 
@@ -77,14 +79,28 @@ void VCXYPad::init()
 	resize(120, 120);
 	setFrameStyle(KFrameStyleSunken);
 
-	setBackgroundColor(white);
-
-	m_pixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.png"));
+	m_xyPosPixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.png"));
 
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
 
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+}
+
+void VCXYPad::destroy()
+{
+	int result = QMessageBox::warning(this,
+					  QString(caption()),
+					  QString("Remove selected XY pad?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No);
+
+	if (result == QMessageBox::Yes)
+	{
+		_app->virtualConsole()->setSelectedWidget(NULL);
+		_app->doc()->setModified();
+		deleteLater();
+	}
 }
 
 /*********************************************************************
@@ -102,6 +118,23 @@ const QString& VCXYPad::backgroundImage()
 	return m_backgroundImage;
 }
 
+void VCXYPad::chooseBackgroundImage()
+{
+	QLCImagePreview* preview = new QLCImagePreview();
+	QFileDialog* fd = new QFileDialog(this);
+	fd->setContentsPreviewEnabled(true);
+	fd->setContentsPreview(preview, preview);
+	fd->setPreviewMode(QFileDialog::Contents);
+	fd->setFilter("Images (*.png *.xpm *.jpg *.gif)");
+	fd->setSelection(backgroundImage());
+	
+	if (fd->exec() == QDialog::Accepted)
+		setBackgroundImage(fd->selectedFile());
+	
+	delete preview;
+	delete fd;
+}
+
 /*********************************************************************
  * Background color
  *********************************************************************/
@@ -114,8 +147,30 @@ void VCXYPad::setBackgroundColor(const QColor& color)
 
 void VCXYPad::resetBackgroundColor()
 {
+	QColor fg;
+
 	m_hasCustomBackgroundColor = false;
-	/* TODO */
+
+	/* Store foreground color */
+	if (m_hasCustomForegroundColor == true)
+		fg = paletteForegroundColor();
+
+	/* Reset the whole palette */
+	unsetPalette();
+
+	/* Restore foreground color */
+	if (fg.isValid() == true)
+		setPaletteForegroundColor(fg);
+
+	_app->doc()->setModified();
+}
+
+void VCXYPad::chooseBackgroundColor()
+{
+	QColor color;
+	color = QColorDialog::getColor(backgroundColor());
+	if (color.isValid())
+		setBackgroundColor(color);
 }
 
 /*********************************************************************
@@ -129,8 +184,32 @@ void VCXYPad::setForegroundColor(const QColor& color)
 
 void VCXYPad::resetForegroundColor()
 {
+	QColor bg;
+
 	m_hasCustomForegroundColor = false;
-	/* TODO */
+
+	/* Store background color */
+	if (m_hasCustomBackgroundColor == true)
+		bg = paletteBackgroundColor();
+
+	/* Reset the whole palette */
+	unsetPalette();
+
+	/* Restore foreground color */
+	if (bg.isValid() == true)
+		setPaletteBackgroundColor(bg);
+	else if (m_backgroundImage.isEmpty() == false)
+		setPaletteBackgroundPixmap(QPixmap(m_backgroundImage));
+
+	_app->doc()->setModified();
+}
+
+void VCXYPad::chooseForegroundColor()
+{
+	QColor color;
+	color = QColorDialog::getColor(foregroundColor());
+	if (color.isValid())
+		setForegroundColor(color);
 }
 
 /*********************************************************************
@@ -146,7 +225,52 @@ void VCXYPad::setFont(const QFont& font)
 void VCXYPad::resetFont()
 {
 	m_hasCustomFont = false;
-	/* TODO */
+	unsetFont();
+	_app->doc()->setModified();
+}
+
+void VCXYPad::chooseFont()
+{
+	bool ok = false;
+	QFont f = QFontDialog::getFont(&ok, font());
+	if (ok == true)
+		setFont(f);
+}
+
+/*****************************************************************************
+ * Caption
+ *****************************************************************************/
+
+void VCXYPad::setCaption(const QString& text)
+{
+	QWidget::setCaption(text);
+	_app->doc()->setModified();
+}
+
+void VCXYPad::rename()
+{
+	QString text;
+	bool ok = false;
+
+	text = QInputDialog::getText("Rename XY Pad",
+				     "Set XY Pad caption:", QLineEdit::Normal,
+				     QString::null, &ok, this );
+	if (ok == true && text.isEmpty() == false)
+		setCaption(text);
+}
+
+/*****************************************************************************
+ * Properties
+ *****************************************************************************/
+void VCXYPad::editProperties()
+{
+	VCXYPadProperties* p = new VCXYPadProperties(this);
+	p->init();
+	
+	if (p->exec() == QDialog::Accepted)
+		_app->doc()->setModified();
+	
+	delete p;
 }
 
 /*****************************************************************************
@@ -181,6 +305,25 @@ void VCXYPad::appendChannel(t_axis axis, t_fixture_id fixture, t_channel channel
 
 void VCXYPad::removeChannel(t_axis axis, t_fixture_id fixture, t_channel channel)
 {
+	XYChannelUnit* xyc = NULL;
+	QPtrList<XYChannelUnit>* list = NULL;
+
+	if (axis == KAxisX)
+		list = &m_channelsX;
+	else
+		list = &m_channelsY;
+
+	for (int i = 0; i < list->count(); i++)
+	{
+		xyc = list->at(i);
+		if (xyc != NULL &&
+		    xyc->fixtureID() == fixture && xyc->channel() == channel)
+		{
+			list->remove(i);
+			delete xyc;
+			break;
+		}
+	}
 }
 
 XYChannelUnit* VCXYPad::channel(t_axis axis, t_fixture_id fixture,
@@ -579,6 +722,15 @@ bool VCXYPad::saveXMLAppearance(QDomDocument* doc, QDomElement* xypad_root)
 }
 
 /*****************************************************************************
+ * QLC Mode change
+ *****************************************************************************/
+
+void VCXYPad::slotModeChanged()
+{
+	repaint();
+}
+
+/*****************************************************************************
  * Event handlers
  *****************************************************************************/
 
@@ -610,14 +762,9 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 	p.drawLine(width() / 2, 0, width() / 2, height());
 	p.drawLine(0, height() / 2, width(), height() / 2);
 
-	p.drawPixmap(m_currentXYPosition.x() - (m_pixmap.width() / 2),
-		     m_currentXYPosition.y() - (m_pixmap.height() / 2),
-		     m_pixmap);
-}
-
-void VCXYPad::slotModeChanged()
-{
-	repaint();
+	p.drawPixmap(m_currentXYPosition.x() - (m_xyPosPixmap.width() / 2),
+		     m_currentXYPosition.y() - (m_xyPosPixmap.height() / 2),
+		     m_xyPosPixmap);
 }
 
 void VCXYPad::mousePressEvent(QMouseEvent* e)
@@ -665,48 +812,6 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 	}
 }
 
-void VCXYPad::invokeMenu(QPoint point)
-{
-	_app->virtualConsole()->editMenu()->exec(point);
-}
-
-void VCXYPad::parseWidgetMenu(int item)
-{
-	switch (item)
-	{
-	case KVCMenuEditProperties:
-	{
-		VCXYPadProperties* p = new VCXYPadProperties(this);
-		p->init();
-
-		if (p->exec() == QDialog::Accepted)
-		{
-			_app->doc()->setModified();
-		}
-
-		delete p;
-	}
-	break;
-
-	case KVCMenuBackgroundFrame:
-	{
-		if (frameStyle() & KFrameStyleSunken)
-		{
-			setFrameStyle(NoFrame);
-		}
-		else
-		{
-			setFrameStyle(KFrameStyleSunken);
-		}
-		_app->doc()->setModified();
-	}
-	break;
-
-	default:
-		break;
-	}
-}
-
 void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 {
 	if (_app->mode() == App::Design)
@@ -744,7 +849,8 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 		}
 	}
 	else
-	{ // the following is NOT done by hasMouse() because that fails if
+	{
+		// the following is NOT done by hasMouse() because that fails if
 		// there are child widgets
 		if (e->x() > 0 &&  e->y() > 0 &&
 		    e->x() < rect().width() &&
@@ -766,6 +872,93 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 	}
 }
 
+void VCXYPad::customEvent(QCustomEvent* e)
+{
+	if (e->type() == KVCMenuEvent)
+	{
+		//parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
+	}
+}
+
+/*****************************************************************************
+ * Widget move / resize
+ *****************************************************************************/
+
+void VCXYPad::resizeTo(QPoint p)
+{
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
+
+	// Map to parent coordinates so that they can be compared
+	p = mapToParent(p);
+
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width());
+	}
+
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height());
+	}
+
+	// Map back so that this can be resized
+	p = mapFromParent(p);
+
+	// Do the resize
+	resize(p.x(), p.y());
+}
+
+void VCXYPad::moveTo(QPoint p)
+{
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
+
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() + rect().width() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width() - rect().width());
+	}
+
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() + rect().height() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height() - rect().height());
+	}
+
+	// Do the move
+	move(p);
+}
+
+/*****************************************************************************
+ * DMX writer
+ *****************************************************************************/
 
 void VCXYPad::outputDMX(int x, int y)
 {
@@ -818,85 +1011,174 @@ void VCXYPad::outputDMX(int x, int y)
 
 }
 
+/*****************************************************************************
+ * Widget menu
+ *****************************************************************************/
 
-void VCXYPad::customEvent(QCustomEvent* e)
+void VCXYPad::invokeMenu(QPoint point)
 {
-	if (e->type() == KVCMenuEvent)
-	{
-		parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
-	}
+	// Foreground menu
+	QPopupMenu* fgMenu = new QPopupMenu();
+	fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.png")),
+			   "&Color...", KVCMenuForegroundColor);
+	fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
+			   "&Default", KVCMenuForegroundDefault);
+
+	// Background menu
+	QPopupMenu* bgMenu = new QPopupMenu();
+	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.png")),
+			   "&Color...", KVCMenuBackgroundColor);
+	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.png")),
+			   "&Image...", KVCMenuBackgroundImage);
+	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
+			   "&Default", KVCMenuBackgroundDefault);
+
+	// Font menu
+	QPopupMenu* fontMenu = new QPopupMenu();
+	fontMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fonts.png")),
+			     "&Font...", KVCMenuFont);
+	fontMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
+			   "&Default", KVCMenuFontDefault);
+
+	// Frame menu
+	QPopupMenu* frameMenu = new QPopupMenu();
+	frameMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/framesunken.png")),
+			      "&Sunken", KVCMenuFrameSunken);
+	frameMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frameraised.png")),
+			      "&Raised", KVCMenuFrameRaised);
+	frameMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/framenone.png")),
+			      "&None", KVCMenuFrameNone);
+
+	// Stacking order menu
+	QPopupMenu* stackMenu = new QPopupMenu();
+	stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.png")),
+			      "Bring to &Front", KVCMenuStackingRaise);
+	stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.png")),
+			      "Send to &Back", KVCMenuStackingLower);
+
+	// Edit menu
+	QPopupMenu* editMenu = new QPopupMenu();
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcut.png")),
+			     "Cut", KVCMenuEditCut);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
+			     "Copy", KVCMenuEditCopy);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.png")),
+			     "Paste", KVCMenuEditPaste);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
+			     "Delete", KVCMenuEditDelete);
+
+	editMenu->insertSeparator();
+
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
+			       "&Properties...", KVCMenuEditProperties);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editclear.png")),
+			       "&Rename...", KVCMenuEditRename);
+
+	editMenu->setItemEnabled(KVCMenuEditCut, false);
+	editMenu->setItemEnabled(KVCMenuEditCopy, false);
+	editMenu->setItemEnabled(KVCMenuEditPaste, false);
+
+	editMenu->insertSeparator();
+
+	editMenu->insertItem("Background", bgMenu, 0);
+	editMenu->insertItem("Foreground", fgMenu, 0);
+	editMenu->insertItem("Font", fontMenu, 0);
+	editMenu->insertItem("Frame", frameMenu, 0);
+	editMenu->insertItem("Stacking Order", stackMenu, 0);
+
+	connect(editMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(bgMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(fgMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(fontMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(frameMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(stackMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	
+	editMenu->exec(point);
+	delete editMenu;
+	delete bgMenu;
+	delete fgMenu;
+	delete fontMenu;
+	delete frameMenu;
+	delete stackMenu;
 }
 
-
-void VCXYPad::resizeTo(QPoint p)
+void VCXYPad::slotMenuCallback(int item)
 {
-	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
+	switch (item)
 	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-	}
+	case KVCMenuEditCut:
+		break;
+	case KVCMenuEditCopy:
+		break;
+	case KVCMenuEditPaste:
+		break;
+	case KVCMenuEditDelete:
+		destroy();
+		break;
 
-	// Map to parent coordinates so that they can be compared
-	p = mapToParent(p);
+	case KVCMenuEditProperties:
+		editProperties();
+		break;
 
-	// Don't move beyond left or right
-	if (p.x() < 0)
-	{
-		p.setX(0);
-	}
-	else if (p.x() > parentWidget()->width())
-	{
-		p.setX(parentWidget()->width());
-	}
+	case KVCMenuEditRename:
+		rename();
+		break;
 
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-	{
-		p.setY(0);
-	}
-	else if (p.y() > parentWidget()->height())
-	{
-		p.setY(parentWidget()->height());
-	}
+	case KVCMenuForegroundColor:
+		chooseForegroundColor();
+		break;
 
-	// Map back so that this can be resized
-	p = mapFromParent(p);
+	case KVCMenuForegroundDefault:
+		resetForegroundColor();
+		break;
 
-	// Do the resize
-	resize(p.x(), p.y());
-}
+	case KVCMenuBackgroundColor:
+		chooseBackgroundColor();
+		break;
+	
+	case KVCMenuBackgroundImage:
+		chooseBackgroundImage();
+		break;
+	
+	case KVCMenuBackgroundDefault:
+		resetBackgroundColor();
+		break;
 
+	case KVCMenuFont:
+		chooseFont();
+		break;
 
-void VCXYPad::moveTo(QPoint p)
-{
-	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
-	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	case KVCMenuFontDefault:
+		resetFont();
+		break;
+
+	case KVCMenuFrameSunken:
+		setFrameStyle(KFrameStyleSunken);
+		break;
+
+	case KVCMenuFrameRaised:
+		setFrameStyle(KFrameStyleRaised);
+		break;
+
+	case KVCMenuFrameNone:
+		setFrameStyle(KFrameStyleNone);
+		break;
+
+	case KVCMenuStackingRaise:
+		raise();
+		break;
+
+	case KVCMenuStackingLower:
+		lower();
+		break;
+
+	default:
+		break;
 	}
-
-	// Don't move beyond left or right
-	if (p.x() < 0)
-	{
-		p.setX(0);
-	}
-	else if (p.x() + rect().width() > parentWidget()->width())
-	{
-		p.setX(parentWidget()->width() - rect().width());
-	}
-
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-	{
-		p.setY(0);
-	}
-	else if (p.y() + rect().height() > parentWidget()->height())
-	{
-		p.setY(parentWidget()->height() - rect().height());
-	}
-
-	// Do the move
-	move(p);
 }
