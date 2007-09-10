@@ -427,32 +427,27 @@ void VirtualConsole::setDrawArea(VCFrame* drawArea)
 
 void VirtualConsole::slotAddButton()
 {
-	m_drawArea->slotAddButton(QPoint(0, 0));
-	_app->doc()->setModified();
+	m_drawArea->addButton();
 }
 
 void VirtualConsole::slotAddSlider()
 {
-	m_drawArea->slotAddSlider(QPoint(0, 0));
-	_app->doc()->setModified();
+	m_drawArea->addSlider();
 }
 
 void VirtualConsole::slotAddFrame()
 {
-	m_drawArea->slotAddFrame(QPoint(0, 0));
-	_app->doc()->setModified();
+	m_drawArea->addFrame();
 }
 
 void VirtualConsole::slotAddXYPad()
 {
-	m_drawArea->slotAddXYPad(QPoint(0, 0));
-	_app->doc()->setModified();
+	m_drawArea->addXYPad();
 }
 
 void VirtualConsole::slotAddLabel()
 {
-	m_drawArea->slotAddLabel(QPoint(0, 0));
-	_app->doc()->setModified();
+	m_drawArea->addLabel();
 }
 
 /*********************************************************************

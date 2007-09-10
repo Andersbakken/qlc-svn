@@ -70,6 +70,8 @@ public:
 
 	void init();
 
+	void destroy();
+
 	/*********************************************************************
 	 * Background image
 	 *********************************************************************/
@@ -79,6 +81,9 @@ public:
 	
 	/** Get the widget's background image */
 	const QString& backgroundImage();
+
+	/** Invoke an image choosing dialog */
+	void chooseBackgroundImage();
 	
 protected:
 	QString m_backgroundImage;
@@ -93,12 +98,18 @@ public:
 	/** Reset the widget's background color to whatever the platform uses */
 	void resetBackgroundColor();
 
+	/** Invoke a color choosing dialog */
+	void chooseBackgroundColor();
+	
 	/** Get the widget's background color. The color is invalid if the
 	    widget has a background image. */
 	const QColor& backgroundColor() const { return paletteBackgroundColor(); }
 
 	/** Check, whether the widget has a custom background color */
 	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
+
+protected:
+	bool m_hasCustomBackgroundColor;
 
 	/*********************************************************************
 	 * Foreground color
@@ -110,6 +121,9 @@ public:
 	/** Reset the widget's background color to whatever the platform uses */
 	void resetForegroundColor();
 
+	/** Invoke a color choosing dialog */
+	void chooseForegroundColor();
+	
 	/** Get the widget's foreground color */
 	const QColor& foregroundColor() const { return paletteForegroundColor(); }
 
@@ -117,7 +131,6 @@ public:
 	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
 
 protected:
-	bool m_hasCustomBackgroundColor;
 	bool m_hasCustomForegroundColor;
 
 	/*********************************************************************
@@ -134,6 +147,9 @@ public:
 	    platform uses */
 	void resetFont();
 
+	/** Invoke a font choosing dialog */
+	void chooseFont();
+
 	/** Check, whether the widget has a custom font */
 	bool hasCustomFont() const { return m_hasCustomFont; }
 
@@ -145,6 +161,13 @@ protected:
 	 *********************************************************************/
 public:
 	void setCaption(const QString&);
+	void rename();
+
+	/*********************************************************************
+	 * Properties
+	 *********************************************************************/
+public:
+	void editProperties();
 
 	/*********************************************************************
 	 * Key binding
@@ -235,23 +258,39 @@ protected:
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* slider_root);
 
 	/*********************************************************************
+	 * QLC Mode change
+	 *********************************************************************/
+protected slots:
+	void slotModeChanged();
+
+	/*********************************************************************
+	 * Widget menu
+	 *********************************************************************/
+protected:
+	void invokeMenu(QPoint point);
+	void invokeStaticSliderMenu(QPoint point);
+	void invokeDynamicSliderMenu(QPoint point);
+
+protected slots:
+	void slotMenuCallback(int item);
+
+	/*********************************************************************
 	 * Slots
 	 *********************************************************************/
 public slots:
 	void slotPressUp();
 	void slotPressDown();
 	void slotFeedBack();
-	void slotInputEvent(const int,const int,const int);
+	void slotInputEvent(const int, const int, const int);
 
 protected slots:
 	void slotSliderValueChanged(const int);
 	void slotTapInButtonClicked();
-	void slotModeChanged();
 
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
 protected:
-	void invokeMenu(QPoint);
-	void parseWidgetMenu(int);
-
 	void mousePressEvent(QMouseEvent*);
 	void mouseReleaseEvent(QMouseEvent*);
 	void mouseMoveEvent(QMouseEvent*);
@@ -260,18 +299,23 @@ protected:
 	void contextMenuEvent(QContextMenuEvent*);
 	void customEvent(QCustomEvent*);
 
+	/*********************************************************************
+	 * Widget resize / move
+	 *********************************************************************/
+protected:
 	void resizeTo(QPoint);
 	void moveTo(QPoint);
 
 protected:
-	bool m_static;
-	bool m_updateOnly;
-
 	int m_xpos;
 	int m_ypos;
 	bool m_resizeMode;
 	QPoint m_mousePressPoint;
   
+protected:
+	bool m_static;
+	bool m_updateOnly;
+
 	QTime m_time;
 };
 

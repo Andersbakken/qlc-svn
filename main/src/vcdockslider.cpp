@@ -56,6 +56,7 @@
 #include "common/outputplugin.h"
 #include "common/inputplugin.h"
 #include "common/minmax.h"
+#include "common/qlcimagepreview.h"
 
 extern App* _app;
 
@@ -92,7 +93,6 @@ VCDockSlider::~VCDockSlider()
 	}
 }
 
-
 void VCDockSlider::init()
 {
 	m_valueLabel->setBackgroundOrigin(ParentOrigin);
@@ -120,6 +120,22 @@ void VCDockSlider::init()
 	connect(m_sliderKeyBind, SIGNAL(pressedDown()), this, SLOT(slotPressDown()));
 }
 
+void VCDockSlider::destroy()
+{
+	int result = QMessageBox::warning(this,
+					  QString(caption()),
+					  QString("Remove selected slider?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No);
+
+	if (result == QMessageBox::Yes)
+	{
+		_app->virtualConsole()->setSelectedWidget(NULL);
+		_app->doc()->setModified();
+		deleteLater();
+	}
+}
+
 /*********************************************************************
  * Background image
  *********************************************************************/
@@ -135,6 +151,23 @@ const QString& VCDockSlider::backgroundImage()
 	return m_backgroundImage;
 }
 
+void VCDockSlider::chooseBackgroundImage()
+{
+	QLCImagePreview* preview = new QLCImagePreview();
+	QFileDialog* fd = new QFileDialog(this);
+	fd->setContentsPreviewEnabled(true);
+	fd->setContentsPreview(preview, preview);
+	fd->setPreviewMode(QFileDialog::Contents);
+	fd->setFilter("Images (*.png *.xpm *.jpg *.gif)");
+	fd->setSelection(backgroundImage());
+	
+	if (fd->exec() == QDialog::Accepted)
+		setBackgroundImage(fd->selectedFile());
+	
+	delete preview;
+	delete fd;
+}
+
 /*********************************************************************
  * Background color
  *********************************************************************/
@@ -147,8 +180,31 @@ void VCDockSlider::setBackgroundColor(const QColor& color)
 
 void VCDockSlider::resetBackgroundColor()
 {
+	QColor fg;
+
 	m_hasCustomBackgroundColor = false;
-	/* TODO */
+	m_backgroundImage = QString::null;
+
+	/* Store foreground color */
+	if (m_hasCustomForegroundColor == true)
+		fg = paletteForegroundColor();
+
+	/* Reset the whole palette */
+	unsetPalette();
+
+	/* Restore foreground color */
+	if (fg.isValid() == true)
+		setPaletteForegroundColor(fg);
+
+	_app->doc()->setModified();
+}
+
+void VCDockSlider::chooseBackgroundColor()
+{
+	QColor color;
+	color = QColorDialog::getColor(backgroundColor());
+	if (color.isValid())
+		setBackgroundColor(color);
 }
 
 /*********************************************************************
@@ -162,8 +218,32 @@ void VCDockSlider::setForegroundColor(const QColor& color)
 
 void VCDockSlider::resetForegroundColor()
 {
+	QColor bg;
+
 	m_hasCustomForegroundColor = false;
-	/* TODO */
+
+	/* Store background color */
+	if (m_hasCustomBackgroundColor == true)
+		bg = paletteBackgroundColor();
+
+	/* Reset the whole palette */
+	unsetPalette();
+
+	/* Restore foreground color */
+	if (bg.isValid() == true)
+		setPaletteBackgroundColor(bg);
+	else if (m_backgroundImage.isEmpty() == false)
+		setPaletteBackgroundPixmap(QPixmap(m_backgroundImage));
+
+	_app->doc()->setModified();
+}
+
+void VCDockSlider::chooseForegroundColor()
+{
+	QColor color;
+	color = QColorDialog::getColor(foregroundColor());
+	if (color.isValid())
+		setForegroundColor(color);
 }
 
 /*********************************************************************
@@ -179,7 +259,16 @@ void VCDockSlider::setFont(const QFont& font)
 void VCDockSlider::resetFont()
 {
 	m_hasCustomFont = false;
-	/* TODO */
+	unsetFont();
+	_app->doc()->setModified();
+}
+
+void VCDockSlider::chooseFont()
+{
+	bool ok = false;
+	QFont f = QFontDialog::getFont(&ok, font());
+	if (ok == true)
+		setFont(f);
 }
 
 /*****************************************************************************
@@ -190,6 +279,31 @@ void VCDockSlider::setCaption(const QString& text)
 {
 	m_infoLabel->setText(text);
 	UI_VCDockSlider::setCaption(text);
+}
+
+void VCDockSlider::rename()
+{
+	QString text;
+	bool ok = false;
+
+	text = QInputDialog::getText("Rename slider",
+				     "Set slider caption:", QLineEdit::Normal,
+				     QString::null, &ok, this );
+	if (ok == true && text.isEmpty() == false)
+		setCaption(text);
+}
+
+/*****************************************************************************
+ * Properties
+ *****************************************************************************/
+void VCDockSlider::editProperties()
+{
+	VCDockSliderProperties* sp = new VCDockSliderProperties(this);
+	sp->init();
+	if (sp->exec() == QDialog::Accepted)
+		_app->doc()->setModified();
+	
+	delete sp;
 }
 
 /*****************************************************************************
@@ -751,6 +865,15 @@ bool VCDockSlider::saveXMLAppearance(QDomDocument* doc, QDomElement* slider_root
 }
 
 /*****************************************************************************
+ * QLC Mode change
+ *****************************************************************************/
+
+void VCDockSlider::slotModeChanged()
+{
+	repaint();
+}
+
+/*****************************************************************************
  * Slots
  *****************************************************************************/
 
@@ -840,11 +963,6 @@ void VCDockSlider::slotTapInButtonClicked()
 	int t = m_time.elapsed();
 	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
 	m_time.restart();
-}
-
-void VCDockSlider::slotModeChanged()
-{
-	repaint();
 }
 
 void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
@@ -950,110 +1068,245 @@ void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
 {
 	if (_app->mode() == App::Design && m_static == false)
 	{
-		invokeMenu(mapToGlobal(e->pos()));
+		// invokeMenu(mapToGlobal(e->pos()));
 	}
 }
 
+/*****************************************************************************
+ * Widget menu
+ *****************************************************************************/
 
-//
-// Invoke a menu at given point
-//
 void VCDockSlider::invokeMenu(QPoint point)
 {
-	if (m_static)
+	if (m_static == true)
+		invokeStaticSliderMenu(point);
+	else
+		invokeDynamicSliderMenu(point);
+}
+
+void VCDockSlider::invokeStaticSliderMenu(QPoint point)
+{
+	QPopupMenu menu;
+	menu.insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
+			QString("&Properties..."), KVCMenuEditProperties);
+	
+	if (menu.exec(point) == KVCMenuEditProperties)
 	{
-		QPopupMenu menu;
-		menu.insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
-				QString("&Properties..."), KVCMenuEditProperties);
-
-		if (menu.exec(point) == KVCMenuEditProperties)
+		bool ok = false;
+		QString current;
+		current.sprintf("%d-%d", m_busLowLimit, m_busHighLimit);
+		
+		QString text;
+		text = QInputDialog::getText("Edit slider value range",
+					     "Value range in seconds (for example 0-10):",
+					     QLineEdit::Normal, current, &ok, this);
+		
+		if (ok == true && text.isEmpty() == false)
 		{
-			bool ok = false;
-			QString current;
-			current.sprintf("%d-%d", m_busLowLimit, m_busHighLimit);
-
-			QString text =
-				QInputDialog::getText(KApplicationNameShort,
-						      "Slider value range (e.g. 0-10) in seconds:",
-						      QLineEdit::Normal, current, &ok, this);
-
-			if (ok && !text.isEmpty())
+			int dash = text.find('-');
+			QString min = text.left(dash);
+			QString max = text.mid(dash + 1);
+			
+			if (min.toInt() >= max.toInt())
 			{
-				int dash = text.find('-');
-				QString min = text.left(dash);
-				QString max = text.mid(dash + 1);
-
-				if (min.toInt() >= max.toInt())
+				QMessageBox::warning(this,
+						     "Invalid value range",
+						     "Minimum value cannot be " \
+						     "greater than or equal to " \
+						     "the maximum value");
+			}
+			else
+			{
+				setBusRange(min.toInt(), max.toInt());
+				setMode(Speed);
+				
+				/* TODO: Save these to workspace, not settings!! */
+				if (m_busID == KBusIDDefaultFade)
 				{
-					QMessageBox::warning(this, KApplicationNameShort,
-							     "Minimum value cannot be bigger than or equal to the maximum value");
+					_app->settings()->set(KEY_DEFAULT_FADE_MIN,
+							      min.toInt());
+					_app->settings()->set(KEY_DEFAULT_FADE_MAX,
+							      max.toInt());
 				}
 				else
 				{
-					setBusRange(min.toInt(), max.toInt());
-					setMode(Speed);
-
-					/* TODO: Save these to workspace,
-					   not settings!! */
-					if (m_busID == KBusIDDefaultFade)
-					{
-						_app->settings()->set(KEY_DEFAULT_FADE_MIN, min.toInt());
-						_app->settings()->set(KEY_DEFAULT_FADE_MAX, max.toInt());
-					}
-					else
-					{
-						_app->settings()->set(KEY_DEFAULT_HOLD_MIN, min.toInt());
-						_app->settings()->set(KEY_DEFAULT_HOLD_MAX, max.toInt());
-					}
+					_app->settings()->set(KEY_DEFAULT_HOLD_MIN,
+							      min.toInt());
+					_app->settings()->set(KEY_DEFAULT_HOLD_MAX,
+							      max.toInt());
 				}
 			}
 		}
 	}
-	else
-	{
-		_app->virtualConsole()->editMenu()->exec(point);
-	}
-
 }
 
+void VCDockSlider::invokeDynamicSliderMenu(QPoint point)
+{
+	// Foreground menu
+	QPopupMenu* fgMenu = new QPopupMenu();
+	fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.png")),
+			   "&Color...", KVCMenuForegroundColor);
+	fgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
+			   "&Default", KVCMenuForegroundDefault);
 
-void VCDockSlider::parseWidgetMenu(int item)
+	// Background menu
+	QPopupMenu* bgMenu = new QPopupMenu();
+	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/color.png")),
+			   "&Color...", KVCMenuBackgroundColor);
+	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.png")),
+			   "&Image...", KVCMenuBackgroundImage);
+	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
+			   "&Default", KVCMenuBackgroundDefault);
+
+	// Font menu
+	QPopupMenu* fontMenu = new QPopupMenu();
+	fontMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/fonts.png")),
+			     "&Font...", KVCMenuFont);
+	fontMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
+			   "&Default", KVCMenuFontDefault);
+
+	// Frame menu
+	QPopupMenu* frameMenu = new QPopupMenu();
+	frameMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/framesunken.png")),
+			      "&Sunken", KVCMenuFrameSunken);
+	frameMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frameraised.png")),
+			      "&Raised", KVCMenuFrameRaised);
+	frameMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/framenone.png")),
+			      "&None", KVCMenuFrameNone);
+
+	// Stacking order menu
+	QPopupMenu* stackMenu = new QPopupMenu();
+	stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/up.png")),
+			      "Bring to &Front", KVCMenuStackingRaise);
+	stackMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/down.png")),
+			      "Send to &Back", KVCMenuStackingLower);
+
+	// Edit menu
+	QPopupMenu* editMenu = new QPopupMenu();
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcut.png")),
+			     "Cut", KVCMenuEditCut);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
+			     "Copy", KVCMenuEditCopy);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editpaste.png")),
+			     "Paste", KVCMenuEditPaste);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
+			     "Delete", KVCMenuEditDelete);
+
+	editMenu->insertSeparator();
+
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
+			       "&Properties...", KVCMenuEditProperties);
+	editMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editclear.png")),
+			       "&Rename...", KVCMenuEditRename);
+
+	editMenu->setItemEnabled(KVCMenuEditCut, false);
+	editMenu->setItemEnabled(KVCMenuEditCopy, false);
+	editMenu->setItemEnabled(KVCMenuEditPaste, false);
+
+	editMenu->insertSeparator();
+
+	editMenu->insertItem("Background", bgMenu, 0);
+	editMenu->insertItem("Foreground", fgMenu, 0);
+	editMenu->insertItem("Font", fontMenu, 0);
+	editMenu->insertItem("Frame", frameMenu, 0);
+	editMenu->insertItem("Stacking Order", stackMenu, 0);
+
+	connect(editMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(bgMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(fgMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(fontMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(frameMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	connect(stackMenu, SIGNAL(activated(int)),
+		this, SLOT(slotMenuCallback(int)));
+	
+	editMenu->exec(point);
+	delete editMenu;
+	delete bgMenu;
+	delete fgMenu;
+	delete fontMenu;
+	delete frameMenu;
+	delete stackMenu;
+}
+
+void VCDockSlider::slotMenuCallback(int item)
 {
 	switch (item)
 	{
+	case KVCMenuEditCut:
+		break;
+	case KVCMenuEditCopy:
+		break;
+	case KVCMenuEditPaste:
+		break;
+	case KVCMenuEditDelete:
+		destroy();
+		break;
+
 	case KVCMenuEditProperties:
-	{
-		VCDockSliderProperties* sp = new VCDockSliderProperties(this);
-		sp->init();
-		if (sp->exec() == QDialog::Accepted)
-		{
-			_app->doc()->setModified();
-		}
+		editProperties();
+		break;
 
-		delete sp;
-	}
-	break;
+	case KVCMenuEditRename:
+		rename();
+		break;
 
-	case KVCMenuBackgroundFrame:
-	{
-		if (frameStyle() & KFrameStyleSunken)
-		{
-			setFrameStyle(NoFrame);
-		}
-		else
-		{
-			setFrameStyle(KFrameStyleSunken);
-		}
+	case KVCMenuForegroundColor:
+		chooseForegroundColor();
+		break;
 
-		_app->doc()->setModified();
-	}
-	break;
+	case KVCMenuForegroundDefault:
+		resetForegroundColor();
+		break;
+
+	case KVCMenuBackgroundColor:
+		chooseBackgroundColor();
+		break;
+	
+	case KVCMenuBackgroundImage:
+		chooseBackgroundImage();
+		break;
+	
+	case KVCMenuBackgroundDefault:
+		resetBackgroundColor();
+		break;
+
+	case KVCMenuFont:
+		chooseFont();
+		break;
+
+	case KVCMenuFontDefault:
+		resetFont();
+		break;
+
+	case KVCMenuFrameSunken:
+		setFrameStyle(KFrameStyleSunken);
+		break;
+
+	case KVCMenuFrameRaised:
+		setFrameStyle(KFrameStyleRaised);
+		break;
+
+	case KVCMenuFrameNone:
+		setFrameStyle(KFrameStyleNone);
+		break;
+
+	case KVCMenuStackingRaise:
+		raise();
+		break;
+
+	case KVCMenuStackingLower:
+		lower();
+		break;
 
 	default:
 		break;
 	}
 }
-
 
 //
 // Mouse button released inside the widget
@@ -1124,7 +1377,7 @@ void VCDockSlider::customEvent(QCustomEvent* e)
 {
 	if (e->type() == KVCMenuEvent)
 	{
-		parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
+		// parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
 	}
 
 }

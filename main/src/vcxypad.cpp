@@ -150,6 +150,7 @@ void VCXYPad::resetBackgroundColor()
 	QColor fg;
 
 	m_hasCustomBackgroundColor = false;
+	m_backgroundImage = QString::null;
 
 	/* Store foreground color */
 	if (m_hasCustomForegroundColor == true)

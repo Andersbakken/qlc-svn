@@ -50,6 +50,8 @@ class VCFrame : public QFrame
 
 	void init(bool bottomFrame = false);
 
+	void destroy();
+
 	/* Check if this is the virtual console's draw area */
 	bool isBottomFrame();
 
@@ -62,6 +64,9 @@ public:
 
 	/** Get the widget's background image */
 	const QString& backgroundImage();
+
+	/** Invoke an image choosing dialog */
+	void chooseBackgroundImage();
 
 protected:
 	QString m_backgroundImage;
@@ -76,12 +81,18 @@ public:
 	/** Reset the widget's background color to whatever the platform uses */
 	void resetBackgroundColor();
 
+	/** Invoke a color choosing dialog */
+	void chooseBackgroundColor();
+
 	/** Get the widget's background color. The color is invalid if the
 	    widget has a background image. */
 	const QColor& backgroundColor() { return paletteBackgroundColor(); }
 
 	/** Check, whether the widget has a custom background color */
 	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
+
+protected:
+	bool m_hasCustomBackgroundColor;
 
 	/*********************************************************************
 	 * Foreground color
@@ -93,6 +104,9 @@ public:
 	/** Reset the widget's background color to whatever the platform uses */
 	void resetForegroundColor();
 
+	/** Invoke a color choosing dialog */
+	void chooseForegroundColor();
+
 	/** Get the widget's foreground color */
 	const QColor& foregroundColor() { return paletteForegroundColor(); }
 
@@ -100,7 +114,6 @@ public:
 	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
 
 protected:
-	bool m_hasCustomBackgroundColor;
 	bool m_hasCustomForegroundColor;
 
 	/*********************************************************************
@@ -117,11 +130,27 @@ public:
 	    platform uses */
 	void resetFont();
 
+	/** Invoke a font choosing dialog */
+	void chooseFont();
+
 	/** Check, whether the widget has a custom font */
 	bool hasCustomFont() const { return m_hasCustomFont; }
 
 protected:
 	bool m_hasCustomFont;
+
+	/*********************************************************************
+	 * Caption
+	 *********************************************************************/
+public:
+	void setCaption(const QString& text);
+	void rename();
+
+	/*********************************************************************
+	 * Properties
+	 *********************************************************************/
+public:
+	void editProperties();
 
 	/*********************************************************************
 	 * Button behaviour
@@ -154,23 +183,16 @@ protected:
 	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root);
 
- public slots:
-	void slotAddButton(QPoint p);
-	void slotAddSlider(QPoint p);
-	void slotAddFrame(QPoint p);
-	void slotAddXYPad(QPoint p);
-	void slotAddLabel(QPoint p);
-  
- private slots:
+	/*********************************************************************
+	 * QLC Mode change
+	 *********************************************************************/
+protected slots:
 	void slotModeChanged();
 
-signals:
-	void backgroundChanged();
-
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
 protected:
-	void invokeMenu(QPoint point);
-	void parseWidgetMenu(int item);
-
 	void mousePressEvent(QMouseEvent* e);
 	void mouseReleaseEvent(QMouseEvent* e);
 	void mouseMoveEvent(QMouseEvent* e);
@@ -178,6 +200,10 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent* e);
 	void customEvent(QCustomEvent* e);
 
+	/*********************************************************************
+	 * Widget move & resize
+	 *********************************************************************/
+protected:
 	void resizeTo(QPoint p);
 	void moveTo(QPoint p);
 
@@ -187,6 +213,25 @@ protected:
 
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
+
+	/*********************************************************************
+	 * Widget menu
+	 *********************************************************************/
+protected:
+	void invokeMenu(QPoint point);
+
+protected slots:
+	void slotMenuCallback(int item);
+
+	/*********************************************************************
+	 * Widget adding
+	 *********************************************************************/
+public:
+	void addButton(QPoint at = QPoint());
+	void addSlider(QPoint at = QPoint());
+	void addFrame(QPoint at = QPoint());
+	void addXYPad(QPoint at = QPoint());
+	void addLabel(QPoint at = QPoint());
 };
 
 #endif
