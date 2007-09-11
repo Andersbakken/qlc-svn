@@ -76,7 +76,7 @@ void VCXYPad::init()
 {
 	setMinimumSize(20, 20);
 
-	resize(120, 120);
+	resize(QPoint(120, 120));
 	setFrameStyle(KFrameStyleSunken);
 
 	m_xyPosPixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.png"));
@@ -87,7 +87,7 @@ void VCXYPad::init()
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
-void VCXYPad::destroy()
+void VCXYPad::scram()
 {
 	int result = QMessageBox::warning(this,
 					  QString(caption()),
@@ -732,287 +732,6 @@ void VCXYPad::slotModeChanged()
 }
 
 /*****************************************************************************
- * Event handlers
- *****************************************************************************/
-
-void VCXYPad::paintEvent(QPaintEvent* e)
-{
-	QFrame::paintEvent(e);
-	QPainter p(this);
-	QPen pen;
-
-	if (_app->mode() == App::Design &&
-	    _app->virtualConsole()->selectedWidget() == this)
-	{
-		// Draw a dotted line around the widget
-		pen.setStyle(DotLine);
-		pen.setWidth(2);
-		p.setPen(pen);
-		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
-
-		// Draw a resize handle
-		QBrush b(SolidPattern);
-		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
-	}
-
-	// Draw crosshairs
-	pen.setStyle(DotLine);
-	pen.setColor(paletteForegroundColor());
-	pen.setWidth(1);
-	p.setPen(pen);
-	p.drawLine(width() / 2, 0, width() / 2, height());
-	p.drawLine(0, height() / 2, width(), height() / 2);
-
-	p.drawPixmap(m_currentXYPosition.x() - (m_xyPosPixmap.width() / 2),
-		     m_currentXYPosition.y() - (m_xyPosPixmap.height() / 2),
-		     m_xyPosPixmap);
-}
-
-void VCXYPad::mousePressEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		_app->virtualConsole()->setSelectedWidget(this);
-
-		if (m_resizeMode == true)
-		{
-			setMouseTracking(false);
-			m_resizeMode = false;
-		}
-
-		if ((e->button() & LeftButton ||
-		     e->button() & MidButton))
-		{
-			if (e->x() > rect().width() - 10 &&
-			    e->y() > rect().height() - 10)
-			{
-				m_resizeMode = true;
-				setMouseTracking(true);
-				setCursor(QCursor(SizeFDiagCursor));
-			}
-			else
-			{
-				m_mousePressPoint = QPoint(e->x(), e->y());
-
-				setCursor(QCursor(SizeAllCursor));
-			}
-		}
-		else if (e->button() & RightButton)
-		{
-			invokeMenu(mapToGlobal(e->pos()));
-		}
-	}
-	else
-	{
-		setCurrentXYPosition(e->x(), e->y());
-
-		setMouseTracking(true);
-		setCursor(Qt::CrossCursor);
-
-		outputDMX(e->x(), e->y());
-	}
-}
-
-void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		unsetCursor();
-		m_resizeMode = false;
-		setMouseTracking(false);
-	}
-	else
-	{
-		setMouseTracking(false);
-		unsetCursor();
-		QFrame::mouseReleaseEvent(e);
-	}
-}
-
-void VCXYPad::mouseMoveEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		if (m_resizeMode == true)
-		{
-			QPoint p(QCursor::pos());
-			resizeTo(mapFromGlobal(p));
-			_app->doc()->setModified();
-		}
-		else if (e->state() & LeftButton || e->state() & MidButton)
-		{
-			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
-			p.setX(p.x() - m_mousePressPoint.x());
-			p.setY(p.y() - m_mousePressPoint.y());
-
-			moveTo(p);
-			_app->doc()->setModified();
-		}
-	}
-	else
-	{
-		// the following is NOT done by hasMouse() because that fails if
-		// there are child widgets
-		if (e->x() > 0 &&  e->y() > 0 &&
-		    e->x() < rect().width() &&
-		    e->y() < rect().height())
-		{
-			m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
-			m_currentXYPosition.setX(e->x());
-			m_currentXYPosition.setY(e->y());
-			repaint();
-
-			outputDMX( e->x(), e->y());
-			setCursor(Qt::CrossCursor);
-		}
-		else
-		{
-			unsetCursor();
-		}
-		QFrame::mouseMoveEvent(e);
-	}
-}
-
-void VCXYPad::customEvent(QCustomEvent* e)
-{
-	if (e->type() == KVCMenuEvent)
-	{
-		//parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
-	}
-}
-
-/*****************************************************************************
- * Widget move / resize
- *****************************************************************************/
-
-void VCXYPad::resizeTo(QPoint p)
-{
-	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
-	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-	}
-
-	// Map to parent coordinates so that they can be compared
-	p = mapToParent(p);
-
-	// Don't move beyond left or right
-	if (p.x() < 0)
-	{
-		p.setX(0);
-	}
-	else if (p.x() > parentWidget()->width())
-	{
-		p.setX(parentWidget()->width());
-	}
-
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-	{
-		p.setY(0);
-	}
-	else if (p.y() > parentWidget()->height())
-	{
-		p.setY(parentWidget()->height());
-	}
-
-	// Map back so that this can be resized
-	p = mapFromParent(p);
-
-	// Do the resize
-	resize(p.x(), p.y());
-}
-
-void VCXYPad::moveTo(QPoint p)
-{
-	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
-	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-	}
-
-	// Don't move beyond left or right
-	if (p.x() < 0)
-	{
-		p.setX(0);
-	}
-	else if (p.x() + rect().width() > parentWidget()->width())
-	{
-		p.setX(parentWidget()->width() - rect().width());
-	}
-
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-	{
-		p.setY(0);
-	}
-	else if (p.y() + rect().height() > parentWidget()->height())
-	{
-		p.setY(parentWidget()->height() - rect().height());
-	}
-
-	// Do the move
-	move(p);
-}
-
-/*****************************************************************************
- * DMX writer
- *****************************************************************************/
-
-void VCXYPad::outputDMX(int x, int y)
-{
-	int delta;
-	int xx;
-
-	QPtrListIterator<XYChannelUnit> xit(*channelsX());
-	XYChannelUnit *xyc;
-
-	while ( (xyc = xit.current()) != 0 )
-	{
-		++xit;
-		delta = xyc->hi() - xyc->lo();
-		xx = xyc->lo() + int(delta*x/rect().width());
-		if (xyc->reverse() == false)
-		{
-			_app->outputPlugin()->writeChannel(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(), (t_value) xx);
-		}
-		else
-		{
-			_app->outputPlugin()->writeChannel(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(),
-				(t_value) KChannelValueMax - xx);
-		}
-	}
-
-	QPtrListIterator<XYChannelUnit> yit(*channelsY());
-	while ( (xyc = yit.current()) != 0 )
-	{
-		++yit;
-		delta = xyc->hi() - xyc->lo();
-		xx = xyc->lo() + int(delta*y/rect().height());
-		if (xyc->reverse() == false)
-		{
-			_app->outputPlugin()->writeChannel(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(), (t_value) xx);
-		}
-		else
-		{
-			_app->outputPlugin()->writeChannel(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(),
-				(t_value) KChannelValueMax - xx);
-		}
-	}
-
-}
-
-/*****************************************************************************
  * Widget menu
  *****************************************************************************/
 
@@ -1120,7 +839,7 @@ void VCXYPad::slotMenuCallback(int item)
 	case KVCMenuEditPaste:
 		break;
 	case KVCMenuEditDelete:
-		destroy();
+		scram();
 		break;
 
 	case KVCMenuEditProperties:
@@ -1183,3 +902,283 @@ void VCXYPad::slotMenuCallback(int item)
 		break;
 	}
 }
+
+/*****************************************************************************
+ * Widget move / resize
+ *****************************************************************************/
+
+void VCXYPad::resize(QPoint p)
+{
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
+
+	// Map to parent coordinates so that they can be compared
+	p = mapToParent(p);
+
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width());
+	}
+
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height());
+	}
+
+	// Map back so that this can be resized
+	p = mapFromParent(p);
+
+	// Do the resize
+	QFrame::resize(p.x(), p.y());
+}
+
+void VCXYPad::move(QPoint p)
+{
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
+
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() + rect().width() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width() - rect().width());
+	}
+
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() + rect().height() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height() - rect().height());
+	}
+
+	// Do the move
+	QFrame::move(p);
+}
+
+/*****************************************************************************
+ * Event handlers
+ *****************************************************************************/
+
+void VCXYPad::paintEvent(QPaintEvent* e)
+{
+	QFrame::paintEvent(e);
+	QPainter p(this);
+	QPen pen;
+
+	if (_app->mode() == App::Design &&
+	    _app->virtualConsole()->selectedWidget() == this)
+	{
+		// Draw a dotted line around the widget
+		pen.setStyle(DotLine);
+		pen.setWidth(2);
+		p.setPen(pen);
+		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+		// Draw a resize handle
+		QBrush b(SolidPattern);
+		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+	}
+
+	// Draw crosshairs
+	pen.setStyle(DotLine);
+	pen.setColor(paletteForegroundColor());
+	pen.setWidth(1);
+	p.setPen(pen);
+	p.drawLine(width() / 2, 0, width() / 2, height());
+	p.drawLine(0, height() / 2, width(), height() / 2);
+
+	p.drawPixmap(m_currentXYPosition.x() - (m_xyPosPixmap.width() / 2),
+		     m_currentXYPosition.y() - (m_xyPosPixmap.height() / 2),
+		     m_xyPosPixmap);
+}
+
+void VCXYPad::mousePressEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		_app->virtualConsole()->setSelectedWidget(this);
+
+		if (m_resizeMode == true)
+		{
+			setMouseTracking(false);
+			m_resizeMode = false;
+		}
+
+		if ((e->button() & LeftButton ||
+		     e->button() & MidButton))
+		{
+			if (e->x() > rect().width() - 10 &&
+			    e->y() > rect().height() - 10)
+			{
+				m_resizeMode = true;
+				setMouseTracking(true);
+				setCursor(QCursor(SizeFDiagCursor));
+			}
+			else
+			{
+				m_mousePressPoint = QPoint(e->x(), e->y());
+
+				setCursor(QCursor(SizeAllCursor));
+			}
+		}
+		else if (e->button() & RightButton)
+		{
+			invokeMenu(mapToGlobal(e->pos()));
+		}
+	}
+	else
+	{
+		setCurrentXYPosition(e->x(), e->y());
+
+		setMouseTracking(true);
+		setCursor(Qt::CrossCursor);
+
+		outputDMX(e->x(), e->y());
+	}
+}
+
+void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		unsetCursor();
+		m_resizeMode = false;
+		setMouseTracking(false);
+	}
+	else
+	{
+		setMouseTracking(false);
+		unsetCursor();
+		QFrame::mouseReleaseEvent(e);
+	}
+}
+
+void VCXYPad::mouseDoubleClickEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+		slotMenuCallback(KVCMenuEditProperties);
+}
+
+void VCXYPad::mouseMoveEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		if (m_resizeMode == true)
+		{
+			QPoint p(QCursor::pos());
+			resize(mapFromGlobal(p));
+			_app->doc()->setModified();
+		}
+		else if (e->state() & LeftButton || e->state() & MidButton)
+		{
+			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+			p.setX(p.x() - m_mousePressPoint.x());
+			p.setY(p.y() - m_mousePressPoint.y());
+
+			move(p);
+			_app->doc()->setModified();
+		}
+	}
+	else
+	{
+		// the following is NOT done by hasMouse() because that fails if
+		// there are child widgets
+		if (e->x() > 0 &&  e->y() > 0 &&
+		    e->x() < rect().width() &&
+		    e->y() < rect().height())
+		{
+			m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
+			m_currentXYPosition.setX(e->x());
+			m_currentXYPosition.setY(e->y());
+			repaint();
+
+			outputDMX( e->x(), e->y());
+			setCursor(Qt::CrossCursor);
+		}
+		else
+		{
+			unsetCursor();
+		}
+		QFrame::mouseMoveEvent(e);
+	}
+}
+
+/*****************************************************************************
+ * DMX writer
+ *****************************************************************************/
+
+void VCXYPad::outputDMX(int x, int y)
+{
+	int delta;
+	int xx;
+
+	QPtrListIterator<XYChannelUnit> xit(*channelsX());
+	XYChannelUnit *xyc;
+
+	while ( (xyc = xit.current()) != 0 )
+	{
+		++xit;
+		delta = xyc->hi() - xyc->lo();
+		xx = xyc->lo() + int(delta*x/rect().width());
+		if (xyc->reverse() == false)
+		{
+			_app->outputPlugin()->writeChannel(
+				xyc->fixture()->universeAddress() +
+				xyc->channel(), (t_value) xx);
+		}
+		else
+		{
+			_app->outputPlugin()->writeChannel(
+				xyc->fixture()->universeAddress() +
+				xyc->channel(),
+				(t_value) KChannelValueMax - xx);
+		}
+	}
+
+	QPtrListIterator<XYChannelUnit> yit(*channelsY());
+	while ( (xyc = yit.current()) != 0 )
+	{
+		++yit;
+		delta = xyc->hi() - xyc->lo();
+		xx = xyc->lo() + int(delta*y/rect().height());
+		if (xyc->reverse() == false)
+		{
+			_app->outputPlugin()->writeChannel(
+				xyc->fixture()->universeAddress() +
+				xyc->channel(), (t_value) xx);
+		}
+		else
+		{
+			_app->outputPlugin()->writeChannel(
+				xyc->fixture()->universeAddress() +
+				xyc->channel(),
+				(t_value) KChannelValueMax - xx);
+		}
+	}
+
+}
+

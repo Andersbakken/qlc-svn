@@ -73,7 +73,7 @@ void VCFrame::init(bool bottomFrame)
 	{
 		setFrameStyle(KFrameStyleSunken);
 		setMinimumSize(20, 20);
-		resize(120, 120);
+		resize(QPoint(120, 120));
 	}
 
 	/* Listen to mode changes (operate/design) so menus can be en/disabled */
@@ -81,7 +81,7 @@ void VCFrame::init(bool bottomFrame)
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
-void VCFrame::destroy()
+void VCFrame::scram()
 {
 	int result = QMessageBox::warning(this,
 					  QString(caption()),
@@ -474,17 +474,30 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 		while ( (child = it.current()) != NULL )
 		{
 			if (child->className() == "VCFrame")
+			{
 				static_cast<VCFrame*> (child)->saveXML(doc, &root);
+			}
 			else if (child->className() == "VCButton")
+			{
 				static_cast<VCButton*> (child)->saveXML(doc, &root);
+			}
 			else if (child->className() == "VCDockSlider")
+			{
 				static_cast<VCDockSlider*> (child)->saveXML(doc, &root);
+			}
 			else if (child->className() == "VCLabel")
+			{
 				static_cast<VCLabel*> (child)->saveXML(doc, &root);
+			}
 			else if (child->className() == "VCXYPad")
+			{
 				static_cast<VCXYPad*> (child)->saveXML(doc, &root);
+			}
 			else
-				qWarning("Unknown widget class: %s", child->className());
+			{
+				qWarning("Unknown VC widget class: %s",
+					 child->className());
+			}
 			
 			++it;
 		}
@@ -628,208 +641,6 @@ void VCFrame::slotModeChanged()
 }
 
 /*****************************************************************************
- * Event handlers
- *****************************************************************************/
-
-void VCFrame::paintEvent(QPaintEvent* e)
-{
-	QFrame::paintEvent(e);
-
-	QPainter p(this);
-
-	if (_app->mode() == App::Design &&
-	    _app->virtualConsole()->selectedWidget() == this)
-	{
-		// Draw a dotted line around the widget
-		QPen pen(DotLine);
-		pen.setWidth(2);
-		p.setPen(pen);
-		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
-
-		// Draw a resize handle
-		QBrush b(SolidPattern);
-		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
-	}
-}
-
-void VCFrame::mousePressEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		_app->virtualConsole()->setSelectedWidget(this);
-
-		if (m_resizeMode == true && isBottomFrame() == false)
-		{
-			setMouseTracking(false);
-			m_resizeMode = false;
-		}
-
-		if ((e->button() & LeftButton || e->button() & MidButton)
-		    && isBottomFrame() == false)
-		{
-			if (e->x() > rect().width() - 10 &&
-			    e->y() > rect().height() - 10)
-			{
-				m_resizeMode = true;
-				setMouseTracking(true);
-				setCursor(QCursor(SizeFDiagCursor));
-			}
-			else
-			{
-				m_mousePressPoint = QPoint(e->x(), e->y());
-				setCursor(QCursor(SizeAllCursor));
-			}
-		}
-		else if (e->button() & RightButton)
-		{
-			m_mousePressPoint = QPoint(e->x(), e->y());
-			invokeMenu(mapToGlobal(e->pos()));
-		}
-	}
-	else
-	{
-		QFrame::mousePressEvent(e);
-	}
-}
-
-void VCFrame::mouseReleaseEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		unsetCursor();
-		m_resizeMode = false;
-		setMouseTracking(false);
-	}
-	else
-	{
-		QFrame::mouseReleaseEvent(e);
-	}
-}
-
-void VCFrame::mouseMoveEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		if (m_resizeMode == true)
-		{
-			QPoint p(QCursor::pos());
-			resizeTo(mapFromGlobal(p));
-			_app->doc()->setModified();
-		}
-		else if (e->state() & LeftButton || e->state() & MidButton)
-		{
-			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
-			p.setX(p.x() - m_mousePressPoint.x());
-			p.setY(p.y() - m_mousePressPoint.y());
-
-			moveTo(p);
-			_app->doc()->setModified();
-		}
-	}
-	else
-	{
-		QFrame::mouseMoveEvent(e);
-	}
-}
-
-void VCFrame::mouseDoubleClickEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		invokeMenu(mapToGlobal(e->pos()));
-	}
-	else
-	{
-		mousePressEvent(e);
-	}
-}
-
-void VCFrame::customEvent(QCustomEvent* e)
-{
-	if (e->type() == KVCMenuEvent)
-	{
-		// parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
-	}
-}
-
-/*****************************************************************************
- * Widget move & resize
- *****************************************************************************/
-
-void VCFrame::resizeTo(QPoint p)
-{
-	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
-	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-	}
-
-	// Map to parent coordinates so that they can be compared
-	p = mapToParent(p);
-
-	// Don't move beyond left or right
-	if (p.x() < 0)
-	{
-		p.setX(0);
-	}
-	else if (p.x() > parentWidget()->width())
-	{
-		p.setX(parentWidget()->width());
-	}
-
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-	{
-		p.setY(0);
-	}
-	else if (p.y() > parentWidget()->height())
-	{
-		p.setY(parentWidget()->height());
-	}
-
-	// Map back so that this can be resized
-	p = mapFromParent(p);
-
-	// Do the resize
-	resize(p.x(), p.y());
-}
-
-
-void VCFrame::moveTo(QPoint p)
-{
-	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
-	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
-	}
-
-	// Don't move beyond left or right
-	if (p.x() < 0)
-	{
-		p.setX(0);
-	}
-	else if (p.x() + rect().width() > parentWidget()->width())
-	{
-		p.setX(parentWidget()->width() - rect().width());
-	}
-
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-	{
-		p.setY(0);
-	}
-	else if (p.y() + rect().height() > parentWidget()->height())
-	{
-		p.setY(parentWidget()->height() - rect().height());
-	}
-
-	// Do the move
-	move(p);
-}
-
-/*****************************************************************************
  * Widget menu
  *****************************************************************************/
 
@@ -909,6 +720,9 @@ void VCFrame::invokeMenu(QPoint point)
 	editMenu->setItemEnabled(KVCMenuEditCopy, false);
 	editMenu->setItemEnabled(KVCMenuEditPaste, false);
 
+	if (isBottomFrame() == true)
+		editMenu->setItemEnabled(KVCMenuEditDelete, false);
+
 	editMenu->insertSeparator();
 
 	editMenu->insertItem("Add", addMenu);
@@ -975,7 +789,7 @@ void VCFrame::slotMenuCallback(int item)
 	case KVCMenuEditPaste:
 		break;
 	case KVCMenuEditDelete:
-		destroy();
+		scram();
 		break;
 
 	case KVCMenuEditProperties:
@@ -1065,7 +879,7 @@ void VCFrame::addSlider(QPoint at)
 	Q_ASSERT(slider != NULL);
 	slider->setBusID(KBusIDDefaultFade);
 	slider->init();
-	slider->resize(55, 200);
+	slider->resize(QPoint(55, 200));
 	slider->show();
 
 	if (at.isNull() == false)
@@ -1119,4 +933,192 @@ void VCFrame::addLabel(QPoint at)
 		label->move(m_mousePressPoint);
 
 	_app->doc()->setModified();
+}
+
+/*****************************************************************************
+ * Widget move & resize
+ *****************************************************************************/
+
+void VCFrame::resize(QPoint p)
+{
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
+
+	// Map to parent coordinates so that they can be compared
+	p = mapToParent(p);
+
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width());
+	}
+
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height());
+	}
+
+	// Map back so that this can be resized
+	p = mapFromParent(p);
+
+	// Do the resize
+	QFrame::resize(p.x(), p.y());
+}
+
+
+void VCFrame::move(QPoint p)
+{
+	// Grid settings
+	if (_app->virtualConsole()->isGridEnabled())
+	{
+		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
+		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+	}
+
+	// Don't move beyond left or right
+	if (p.x() < 0)
+	{
+		p.setX(0);
+	}
+	else if (p.x() + rect().width() > parentWidget()->width())
+	{
+		p.setX(parentWidget()->width() - rect().width());
+	}
+
+	// Don't move beyond top or bottom
+	if (p.y() < 0)
+	{
+		p.setY(0);
+	}
+	else if (p.y() + rect().height() > parentWidget()->height())
+	{
+		p.setY(parentWidget()->height() - rect().height());
+	}
+
+	// Do the move
+	QFrame::move(p);
+}
+
+/*****************************************************************************
+ * Event handlers
+ *****************************************************************************/
+
+void VCFrame::paintEvent(QPaintEvent* e)
+{
+	QFrame::paintEvent(e);
+
+	QPainter p(this);
+
+	if (_app->mode() == App::Design &&
+	    _app->virtualConsole()->selectedWidget() == this)
+	{
+		// Draw a dotted line around the widget
+		QPen pen(DotLine);
+		pen.setWidth(2);
+		p.setPen(pen);
+		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+		// Draw a resize handle
+		QBrush b(SolidPattern);
+		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+	}
+}
+
+void VCFrame::mousePressEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		_app->virtualConsole()->setSelectedWidget(this);
+
+		if (m_resizeMode == true && isBottomFrame() == false)
+		{
+			setMouseTracking(false);
+			m_resizeMode = false;
+		}
+
+		if ((e->button() & LeftButton || e->button() & MidButton)
+		    && isBottomFrame() == false)
+		{
+			if (e->x() > rect().width() - 10 &&
+			    e->y() > rect().height() - 10)
+			{
+				m_resizeMode = true;
+				setMouseTracking(true);
+				setCursor(QCursor(SizeFDiagCursor));
+			}
+			else
+			{
+				m_mousePressPoint = QPoint(e->x(), e->y());
+				setCursor(QCursor(SizeAllCursor));
+			}
+		}
+		else if (e->button() & RightButton)
+		{
+			m_mousePressPoint = QPoint(e->x(), e->y());
+			invokeMenu(mapToGlobal(e->pos()));
+		}
+	}
+	else
+	{
+		QFrame::mousePressEvent(e);
+	}
+}
+
+void VCFrame::mouseReleaseEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		unsetCursor();
+		m_resizeMode = false;
+		setMouseTracking(false);
+	}
+	else
+	{
+		QFrame::mouseReleaseEvent(e);
+	}
+}
+
+void VCFrame::mouseDoubleClickEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+		slotMenuCallback(KVCMenuEditProperties);
+}
+
+void VCFrame::mouseMoveEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		if (m_resizeMode == true)
+		{
+			QPoint p(QCursor::pos());
+			resize(mapFromGlobal(p));
+			_app->doc()->setModified();
+		}
+		else if (e->state() & LeftButton || e->state() & MidButton)
+		{
+			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+			p.setX(p.x() - m_mousePressPoint.x());
+			p.setY(p.y() - m_mousePressPoint.y());
+
+			move(p);
+			_app->doc()->setModified();
+		}
+	}
+	else
+	{
+		QFrame::mouseMoveEvent(e);
+	}
 }

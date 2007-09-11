@@ -70,7 +70,8 @@ public:
 
 	void init();
 
-	void destroy();
+	/** Destroy and delete were already taken, so... */
+	void scram();
 
 	/*********************************************************************
 	 * Background image
@@ -246,6 +247,27 @@ protected:
 	int m_levelHighLimit;
 
 	/*********************************************************************
+	 * Keyboard input
+	 *********************************************************************/
+public slots:
+	void slotPressUp();
+	void slotPressDown();
+
+	/*********************************************************************
+	 * External sliderboard input
+	 *********************************************************************/
+public slots:
+	void slotFeedBack();
+	void slotInputEvent(const int, const int, const int);
+
+	/*********************************************************************
+	 * Slider dragging & tap button clicks
+	 *********************************************************************/
+protected slots:
+	void slotSliderValueChanged(const int);
+	void slotTapInButtonClicked();
+
+	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
 public:
@@ -275,36 +297,11 @@ protected slots:
 	void slotMenuCallback(int item);
 
 	/*********************************************************************
-	 * Slots
-	 *********************************************************************/
-public slots:
-	void slotPressUp();
-	void slotPressDown();
-	void slotFeedBack();
-	void slotInputEvent(const int, const int, const int);
-
-protected slots:
-	void slotSliderValueChanged(const int);
-	void slotTapInButtonClicked();
-
-	/*********************************************************************
-	 * Event handlers
-	 *********************************************************************/
-protected:
-	void mousePressEvent(QMouseEvent*);
-	void mouseReleaseEvent(QMouseEvent*);
-	void mouseMoveEvent(QMouseEvent*);
-	void mouseDoubleClickEvent(QMouseEvent*);
-	void paintEvent(QPaintEvent*);
-	void contextMenuEvent(QContextMenuEvent*);
-	void customEvent(QCustomEvent*);
-
-	/*********************************************************************
 	 * Widget resize / move
 	 *********************************************************************/
-protected:
-	void resizeTo(QPoint);
-	void moveTo(QPoint);
+public:
+	void resize(QPoint p);
+	void move(QPoint p);
 
 protected:
 	int m_xpos;
@@ -312,6 +309,18 @@ protected:
 	bool m_resizeMode;
 	QPoint m_mousePressPoint;
   
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
+protected:
+	void paintEvent(QPaintEvent* e);
+
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void mouseDoubleClickEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
+	void contextMenuEvent(QContextMenuEvent* e);
+
 protected:
 	bool m_static;
 	bool m_updateOnly;

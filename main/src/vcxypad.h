@@ -65,7 +65,8 @@ class VCXYPad : public QFrame
 
 	void init();
 
-	void destroy();
+	/** Destroy and delete were already taken, so... */
+	void scram();
 
 	/*********************************************************************
 	 * Background image
@@ -234,21 +235,11 @@ protected slots:
 	void slotMenuCallback(int item);
 
 	/*********************************************************************
-	 * Event handlers
-	 *********************************************************************/
-protected:
-	void mousePressEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
-	void paintEvent(QPaintEvent* e);
-	void customEvent(QCustomEvent* e);
-
-	/*********************************************************************
 	 * Widget move / resize
 	 *********************************************************************/
-protected:
-	void resizeTo(QPoint p);
-	void moveTo(QPoint p);
+public:
+	void resize(QPoint p);
+	void move(QPoint p);
 
 protected:
 	int m_xpos;
@@ -256,6 +247,17 @@ protected:
 
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
+
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
+protected:
+	void paintEvent(QPaintEvent* e);
+
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void mouseDoubleClickEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
 };
 
 #endif

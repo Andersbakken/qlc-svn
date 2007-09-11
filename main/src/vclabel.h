@@ -60,8 +60,8 @@ public:
 
 	void init();
 
-	/** Destroy this widget */
-	void destroy();
+	/** Destroy and delete were already taken, so... */
+	void scram();
 
 	/*********************************************************************
 	 * Background image
@@ -187,24 +187,24 @@ protected slots:
 	/*********************************************************************
 	 * Widget moving / resizing
 	 *********************************************************************/
+public:
+	void resize(QPoint p);
+	void move(QPoint p);
+
 protected:
-	void resizeTo(QPoint point);
-	void moveTo(QPoint point);
+	QPoint m_mousePressPoint;
+	bool m_resizeMode;
 
 	/*********************************************************************
 	 * Event handlers
 	 *********************************************************************/
 protected:
-	void mousePressEvent(QMouseEvent*);
-	void mouseReleaseEvent(QMouseEvent*);
-	void mouseMoveEvent(QMouseEvent*);
-	void mouseDoubleClickEvent(QMouseEvent*);
-	void paintEvent(QPaintEvent*);
-	void customEvent(QCustomEvent*);
+	void paintEvent(QPaintEvent* e);
 
-protected:
-	QPoint m_mousePressPoint;
-	bool m_resizeMode;
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void mouseDoubleClickEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
 };
 
 #endif

@@ -50,7 +50,8 @@ class VCFrame : public QFrame
 
 	void init(bool bottomFrame = false);
 
-	void destroy();
+	/** Destroy and delete were already taken, so... */
+	void scram();
 
 	/* Check if this is the virtual console's draw area */
 	bool isBottomFrame();
@@ -190,31 +191,6 @@ protected slots:
 	void slotModeChanged();
 
 	/*********************************************************************
-	 * Event handlers
-	 *********************************************************************/
-protected:
-	void mousePressEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
-	void paintEvent(QPaintEvent* e);
-	void mouseDoubleClickEvent(QMouseEvent* e);
-	void customEvent(QCustomEvent* e);
-
-	/*********************************************************************
-	 * Widget move & resize
-	 *********************************************************************/
-protected:
-	void resizeTo(QPoint p);
-	void moveTo(QPoint p);
-
-protected:
-	int m_xpos;
-	int m_ypos;
-
-	QPoint m_mousePressPoint;
-	bool m_resizeMode;
-
-	/*********************************************************************
 	 * Widget menu
 	 *********************************************************************/
 protected:
@@ -232,6 +208,32 @@ public:
 	void addFrame(QPoint at = QPoint());
 	void addXYPad(QPoint at = QPoint());
 	void addLabel(QPoint at = QPoint());
+
+	/*********************************************************************
+	 * Widget move & resize
+	 *********************************************************************/
+public:
+	void resize(QPoint p);
+	void move(QPoint p);
+
+protected:
+	int m_xpos;
+	int m_ypos;
+
+	QPoint m_mousePressPoint;
+	bool m_resizeMode;
+
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
+protected:
+	void paintEvent(QPaintEvent* e);
+
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	void mouseDoubleClickEvent(QMouseEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
+
 };
 
 #endif

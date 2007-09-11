@@ -120,7 +120,7 @@ void VCDockSlider::init()
 	connect(m_sliderKeyBind, SIGNAL(pressedDown()), this, SLOT(slotPressDown()));
 }
 
-void VCDockSlider::destroy()
+void VCDockSlider::scram()
 {
 	int result = QMessageBox::warning(this,
 					  QString(caption()),
@@ -526,6 +526,139 @@ void VCDockSlider::clearChannels()
 }
 
 /*****************************************************************************
+ * Keyboard input
+ *****************************************************************************/
+
+void VCDockSlider::slotPressUp()
+{
+	assert(m_sliderKeyBind);
+	m_slider->setPageStep(5);
+	m_slider->addStep();
+}
+
+void VCDockSlider::slotPressDown()
+{
+	assert(m_sliderKeyBind);
+	m_slider->setPageStep(5);
+	m_slider->subtractStep();
+}
+
+/*****************************************************************************
+ * External sliderboard input
+ *****************************************************************************/
+
+void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
+{
+	if (id == 1 && channel == m_inputChannel)
+	{
+		if (m_mode == Submaster)
+		{
+			m_slider->setValue(100 - value * 100 / 127);
+		}
+		if (m_mode == Speed)
+		{
+			int range = m_busHighLimit - m_busLowLimit;
+			m_slider->setValue(m_busHighLimit * KFrequency - 
+					   (range * value * KFrequency) / 127);
+		}
+		if (m_mode == Level)
+		{
+			int range = m_levelHighLimit - m_levelLowLimit;
+			m_slider->setValue(255 - (m_levelLowLimit / 127 + 
+						  (range * value + 1) / 127));
+		}
+	}
+}
+
+void VCDockSlider::slotFeedBack()
+{
+	int value = m_slider->value();
+	if (m_mode == Speed)
+	{
+		t_bus_value range = m_busHighLimit - m_busLowLimit;
+		float f = ((float) value / (float) KFrequency);
+		_app->inputPlugin()->feedBack(1, m_inputChannel, 
+					      127 - int((f * 127) / range));
+	}
+	else if (m_mode == Level)
+	{
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
+					      127 - (value * 127) / 255);
+	}
+	else
+	{
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
+					      127 - (value * 127) / 100);
+	}
+}
+
+/*****************************************************************************
+ * Slider dragging & tap button clicks
+ *****************************************************************************/
+
+void VCDockSlider::slotSliderValueChanged(const int value)
+{
+	QString t;
+	if (m_mode == Speed)
+	{
+		if (m_updateOnly == false)
+		{
+			if (Bus::setValue(m_busID, m_slider->value()) == false)
+			{
+				m_valueLabel->setText("ERROR");
+				return;
+			}
+		}
+
+		QString num;
+		num.sprintf("%.2fs", ((float) value / (float) KFrequency));
+		m_valueLabel->setText(num);
+		int range = m_busHighLimit - m_busLowLimit;
+		float f = ((float) value / (float) KFrequency);
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
+					      127 - int((f * 127) / range));
+	} 
+	else if (m_mode == Level)
+	{
+		QString num;
+		num.sprintf("%.3d", m_levelHighLimit - value + m_levelLowLimit);
+		m_valueLabel->setText(num);
+
+		QValueList<t_channel>::iterator it;
+		for(it = m_channels.begin(); it != m_channels.end(); ++it)
+		{
+			_app->setValue(*it, m_levelHighLimit - 
+				       value + m_levelLowLimit);
+		}
+
+		_app->inputPlugin()->feedBack(1, m_inputChannel, 
+					      127 - (value * 127) / 255);
+	}
+	else
+	{
+		QString num;
+		num.sprintf("%d%%", 100 - value);
+		m_valueLabel->setText(num);
+
+		QValueList<t_channel>::iterator it;
+		for(it = m_channels.begin(); it != m_channels.end(); ++it)
+		{
+			_app->setSubmasterValue(*it, 100 - value);
+		}
+
+		_app->inputPlugin()->feedBack(1, m_inputChannel,
+					      127 - (value * 127) / 100);
+	}
+}
+
+void VCDockSlider::slotTapInButtonClicked()
+{
+	int t = m_time.elapsed();
+	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
+	m_time.restart();
+}
+
+/*****************************************************************************
  * Load & Save
  *****************************************************************************/
 
@@ -874,205 +1007,6 @@ void VCDockSlider::slotModeChanged()
 }
 
 /*****************************************************************************
- * Slots
- *****************************************************************************/
-
-//
-// Slider up Key has been pressed
-//
-void VCDockSlider::slotPressUp()
-{
-	assert(m_sliderKeyBind);
-	m_slider->setPageStep(5);
-	m_slider->addStep();
-}
-
-//
-// Slider down Key has been pressed
-//
-void VCDockSlider::slotPressDown()
-{
-	assert(m_sliderKeyBind);
-	m_slider->setPageStep(5);
-	m_slider->subtractStep();
-}
-
-//
-// Slider has been moved
-//
-void VCDockSlider::slotSliderValueChanged(const int value)
-{
-	QString t;
-	if (m_mode == Speed)
-	{
-		if (m_updateOnly == false)
-		{
-			if (Bus::setValue(m_busID, m_slider->value()) == false)
-			{
-				m_valueLabel->setText("ERROR");
-				return;
-			}
-		}
-
-		QString num;
-		num.sprintf("%.2fs", ((float) value / (float) KFrequency));
-		m_valueLabel->setText(num);
-		int range = m_busHighLimit - m_busLowLimit;
-		float f = ((float) value / (float) KFrequency);
-		_app->inputPlugin()->feedBack(1, m_inputChannel,
-					      127 - int((f * 127) / range));
-	} 
-	else if (m_mode == Level)
-	{
-		QString num;
-		num.sprintf("%.3d", m_levelHighLimit - value + m_levelLowLimit);
-		m_valueLabel->setText(num);
-
-		QValueList<t_channel>::iterator it;
-		for(it = m_channels.begin(); it != m_channels.end(); ++it)
-		{
-			_app->setValue(*it, m_levelHighLimit - 
-				       value + m_levelLowLimit);
-		}
-
-		_app->inputPlugin()->feedBack(1, m_inputChannel, 
-					      127 - (value * 127) / 255);
-	}
-	else
-	{
-		QString num;
-		num.sprintf("%d%%", 100 - value);
-		m_valueLabel->setText(num);
-
-		QValueList<t_channel>::iterator it;
-		for(it = m_channels.begin(); it != m_channels.end(); ++it)
-		{
-			_app->setSubmasterValue(*it, 100 - value);
-		}
-
-		_app->inputPlugin()->feedBack(1, m_inputChannel,
-					      127 - (value * 127) / 100);
-	}
-}
-
-//
-// Calculate speed from button tap intervals
-//
-void VCDockSlider::slotTapInButtonClicked()
-{
-	int t = m_time.elapsed();
-	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
-	m_time.restart();
-}
-
-void VCDockSlider::slotInputEvent(const int id, const int channel, const int value)
-{
-	if (id == 1 && channel == m_inputChannel)
-	{
-		if (m_mode == Submaster)
-		{
-			m_slider->setValue(100 - value * 100 / 127);
-		}
-		if (m_mode == Speed)
-		{
-			int range = m_busHighLimit - m_busLowLimit;
-			m_slider->setValue(m_busHighLimit * KFrequency - 
-					   (range * value * KFrequency) / 127);
-		}
-		if (m_mode == Level)
-		{
-			int range = m_levelHighLimit - m_levelLowLimit;
-			m_slider->setValue(255 - (m_levelLowLimit / 127 + 
-						  (range * value + 1) / 127));
-		}
-	}
-}
-
-void VCDockSlider::slotFeedBack()
-{
-	int value = m_slider->value();
-	if (m_mode == Speed)
-	{
-		t_bus_value range = m_busHighLimit - m_busLowLimit;
-		float f = ((float) value / (float) KFrequency);
-		_app->inputPlugin()->feedBack(1, m_inputChannel, 
-					      127 - int((f * 127) / range));
-	}
-	else if (m_mode == Level)
-	{
-		_app->inputPlugin()->feedBack(1, m_inputChannel,
-					      127 - (value * 127) / 255);
-	}
-	else
-	{
-		_app->inputPlugin()->feedBack(1, m_inputChannel,
-					      127 - (value * 127) / 100);
-	}
-}
-
-/*****************************************************************************
- * Event handlers
- *****************************************************************************/
-
-//
-// Mouse button pressed inside the widget
-//
-void VCDockSlider::mousePressEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design)
-	{
-		if (m_static == false)
-		{
-			// Can't delete or edit default fade & hold sliders
-			_app->virtualConsole()->setSelectedWidget(this);
-		}
-
-		if (m_resizeMode == true)
-		{
-			setMouseTracking(false);
-			m_resizeMode = false;
-		}
-
-		if ((e->button() & LeftButton || e->button() & MidButton) &&
-		    m_static == false)
-		{
-			if (e->x() > rect().width() - 10 &&
-			    e->y() > rect().height() - 10)
-			{
-				m_resizeMode = true;
-				setMouseTracking(true);
-				setCursor(QCursor(SizeFDiagCursor));
-			}
-			else
-			{
-				m_mousePressPoint = QPoint(e->x(), e->y());
-				setCursor(QCursor(SizeAllCursor));
-			}
-		}
-		else if (e->button() & RightButton)
-		{
-			invokeMenu(mapToGlobal(e->pos()));
-		}
-	}
-	else
-	{
-		QFrame::mousePressEvent(e);
-	}
-}
-
-
-//
-// QSlider passes this event thru, so grab it also
-//
-void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
-{
-	if (_app->mode() == App::Design && m_static == false)
-	{
-		// invokeMenu(mapToGlobal(e->pos()));
-	}
-}
-
-/*****************************************************************************
  * Widget menu
  *****************************************************************************/
 
@@ -1244,7 +1178,7 @@ void VCDockSlider::slotMenuCallback(int item)
 	case KVCMenuEditPaste:
 		break;
 	case KVCMenuEditDelete:
-		destroy();
+		scram();
 		break;
 
 	case KVCMenuEditProperties:
@@ -1308,81 +1242,11 @@ void VCDockSlider::slotMenuCallback(int item)
 	}
 }
 
-//
-// Mouse button released inside the widget
-//
-void VCDockSlider::mouseReleaseEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design && m_static == false)
-	{
-		unsetCursor();
-		m_resizeMode = false;
-		setMouseTracking(false);
-	}
-	else
-	{
-		QFrame::mouseReleaseEvent(e);
-	}
-}
+/*****************************************************************************
+ * Widget move & resize
+ *****************************************************************************/
 
-
-void VCDockSlider::paintEvent(QPaintEvent* e)
-{
-	QFrame::paintEvent(e);
-
-	if (_app->mode() == App::Design &&
-	    _app->virtualConsole()->selectedWidget() == this)
-	{
-		QPainter p(this);
-
-		// Draw a dotted line around the widget
-		QPen pen(DotLine);
-		pen.setWidth(2);
-		p.setPen(pen);
-		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
-
-		// Draw a resize handle
-		QBrush b(SolidPattern);
-		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
-	}
-}
-
-void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
-{
-	if (_app->mode() == App::Design && m_static == false)
-	{
-		if (m_resizeMode == true)
-		{
-			QPoint p(QCursor::pos());
-			resizeTo(mapFromGlobal(p));
-			_app->doc()->setModified();
-		}
-		else if (e->state() & LeftButton || e->state() & MidButton)
-		{
-			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
-			p.setX(p.x() - m_mousePressPoint.x());
-			p.setY(p.y() - m_mousePressPoint.y());
-
-			moveTo(p);
-			_app->doc()->setModified();
-		}
-	}
-	else
-	{
-		QFrame::mouseMoveEvent(e);
-	}
-}
-
-void VCDockSlider::customEvent(QCustomEvent* e)
-{
-	if (e->type() == KVCMenuEvent)
-	{
-		// parseWidgetMenu(((VCMenuEvent*) e)->menuItem());
-	}
-
-}
-
-void VCDockSlider::resizeTo(QPoint p)
+void VCDockSlider::resize(QPoint p)
 {
 	// Grid settings
 	if (_app->virtualConsole()->isGridEnabled())
@@ -1418,11 +1282,11 @@ void VCDockSlider::resizeTo(QPoint p)
 	p = mapFromParent(p);
 
 	// Do the resize
-	resize(p.x(), p.y());
+	QFrame::resize(p.x(), p.y());
 }
 
 
-void VCDockSlider::moveTo(QPoint p)
+void VCDockSlider::move(QPoint p)
 {
 	// Grid settings
 	if (_app->virtualConsole()->isGridEnabled())
@@ -1452,17 +1316,128 @@ void VCDockSlider::moveTo(QPoint p)
 	}
 
 	// Do the move
-	move(p);
+	QFrame::move(p);
+}
+
+/*****************************************************************************
+ * Event handlers
+ *****************************************************************************/
+
+void VCDockSlider::paintEvent(QPaintEvent* e)
+{
+	QFrame::paintEvent(e);
+
+	if (_app->mode() == App::Design &&
+	    _app->virtualConsole()->selectedWidget() == this)
+	{
+		QPainter p(this);
+
+		// Draw a dotted line around the widget
+		QPen pen(DotLine);
+		pen.setWidth(2);
+		p.setPen(pen);
+		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+		// Draw a resize handle
+		QBrush b(SolidPattern);
+		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+	}
+}
+
+void VCDockSlider::mousePressEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design)
+	{
+		if (m_static == false)
+		{
+			// Can't delete or edit default fade & hold sliders
+			_app->virtualConsole()->setSelectedWidget(this);
+		}
+
+		if (m_resizeMode == true)
+		{
+			setMouseTracking(false);
+			m_resizeMode = false;
+		}
+
+		if ((e->button() & LeftButton || e->button() & MidButton) &&
+		    m_static == false)
+		{
+			if (e->x() > rect().width() - 10 &&
+			    e->y() > rect().height() - 10)
+			{
+				m_resizeMode = true;
+				setMouseTracking(true);
+				setCursor(QCursor(SizeFDiagCursor));
+			}
+			else
+			{
+				m_mousePressPoint = QPoint(e->x(), e->y());
+				setCursor(QCursor(SizeAllCursor));
+			}
+		}
+		else if (e->button() & RightButton)
+		{
+			invokeMenu(mapToGlobal(e->pos()));
+		}
+	}
+	else
+	{
+		QFrame::mousePressEvent(e);
+	}
+}
+
+void VCDockSlider::mouseReleaseEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design && m_static == false)
+	{
+		unsetCursor();
+		m_resizeMode = false;
+		setMouseTracking(false);
+	}
+	else
+	{
+		QFrame::mouseReleaseEvent(e);
+	}
 }
 
 void VCDockSlider::mouseDoubleClickEvent(QMouseEvent* e)
 {
 	if (_app->mode() == App::Design)
+		slotMenuCallback(KVCMenuEditProperties);
+}
+
+void VCDockSlider::mouseMoveEvent(QMouseEvent* e)
+{
+	if (_app->mode() == App::Design && m_static == false)
 	{
-		invokeMenu(mapToGlobal(e->pos()));
+		if (m_resizeMode == true)
+		{
+			QPoint p(QCursor::pos());
+			resize(mapFromGlobal(p));
+			_app->doc()->setModified();
+		}
+		else if (e->state() & LeftButton || e->state() & MidButton)
+		{
+			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+			p.setX(p.x() - m_mousePressPoint.x());
+			p.setY(p.y() - m_mousePressPoint.y());
+
+			move(p);
+			_app->doc()->setModified();
+		}
 	}
 	else
 	{
-		mousePressEvent(e);
+		QFrame::mouseMoveEvent(e);
 	}
 }
+
+void VCDockSlider::contextMenuEvent(QContextMenuEvent* e)
+{
+	if (_app->mode() == App::Design && m_static == false)
+	{
+		invokeMenu(mapToGlobal(e->pos()));
+	}
+}
+
