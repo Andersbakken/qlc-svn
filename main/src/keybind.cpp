@@ -403,6 +403,45 @@ void KeyBind::slotKeyReleased(QKeyEvent* e)
  *****************************************************************************/
 bool KeyBind::loadXML(QDomDocument* doc, QDomElement* root)
 {
+	QString action;
+	QString mod;
+	QString key;
+
+	QDomNode node;
+	QDomElement tag;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCKeyBind)
+	{
+		qWarning("Key binding node not found!");
+		return false;
+	}
+
+	/* Children */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCKeyBindKey)
+		{
+			mod = tag.attribute(KXMLQLCKeyBindModifier);
+			key = tag.text();
+
+			setKey(key.toInt());
+			setMod(mod.toInt());
+		}
+		else
+		{
+			qWarning("Unknown key binding tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
 }
 
 bool KeyBind::saveXML(QDomDocument* doc, QDomElement* vc_root)
@@ -419,10 +458,11 @@ bool KeyBind::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	root = doc->createElement(KXMLQLCKeyBind);
 	vc_root->appendChild(root);
 
-	/* Up */
+	/* Key node */
 	tag = doc->createElement(KXMLQLCKeyBindKey);
+	root.appendChild(tag);
 
-	/* Mod */
+	/* Modifier */
 	str.setNum(mod());
 	tag.setAttribute(KXMLQLCKeyBindModifier, str);
 

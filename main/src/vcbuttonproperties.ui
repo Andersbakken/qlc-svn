@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>310</width>
-            <height>493</height>
+            <width>428</width>
+            <height>523</height>
         </rect>
     </property>
     <property name="caption">
@@ -276,7 +276,7 @@
                         <bool>true</bool>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The fixture and type of control.</string>
+                        <string>Type of control</string>
                     </property>
                 </widget>
                 <widget class="QLabel" row="1" column="0">
@@ -301,7 +301,7 @@
                         <number>127</number>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>The control change number.</string>
+                        <string>MIDI channel number</string>
                     </property>
                 </widget>
             </grid>
@@ -309,6 +309,14 @@
         <widget class="QButtonGroup">
             <property name="name">
                 <cstring>m_onButtonPressGroup</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
             <property name="title">
                 <string>On Button/Key Press...</string>

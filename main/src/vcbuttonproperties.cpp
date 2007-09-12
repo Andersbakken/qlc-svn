@@ -42,10 +42,9 @@
 
 extern App* _app;
 
-VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent,
-                                       const char* name)
-	: UI_VCButtonProperties(parent, name, true),
-
+VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
+	: UI_VCButtonProperties(parent, "ButtonProperties", true),
+	  
 	  m_button     ( button ),
 	  m_keyBind    ( new KeyBind(button->keyBind()) ),
 	  m_functionID ( button->functionID() ),
@@ -81,7 +80,7 @@ void VCButtonProperties::initView()
 	//
 	// Midi stuff
 	//
-	m_channelSpinBox->setValue(m_button->channel());
+	m_channelSpinBox->setValue(m_button->inputChannel());
 
 
 	//
@@ -237,7 +236,7 @@ void VCButtonProperties::slotOKClicked()
 	m_button->setCaption(m_nameEdit->text());
 	m_button->attachFunction(m_functionID);
 	m_button->setKeyBind(m_keyBind);
-	m_button->setChannel(m_channelSpinBox->value());
+	m_button->setInputChannel(m_channelSpinBox->value());
         m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());  
 
 	_app->doc()->setModified();

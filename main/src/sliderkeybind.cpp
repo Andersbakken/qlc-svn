@@ -729,6 +729,7 @@ bool SliderKeyBind::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Up */
 	tag = doc->createElement(KXMLQLCSliderKeyBindKey);
 	tag.setAttribute(KXMLQLCSliderKeyBindAction, KXMLQLCSliderKeyBindUp);
+	root.appendChild(tag);
 
 	/* Mod */
 	str.setNum(modUp());

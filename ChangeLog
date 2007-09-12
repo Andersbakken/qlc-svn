@@ -1,3 +1,7 @@
+2007-Sep-12  Heikki Junnila <hjunnila@users.sf.net>
+	* Modified VCButton to incorporate new XML scheme.
+	* Fixed keybind & sliderkeybind saving
+
 2007-Sep-11  Heikki Junnila <hjunnila@users.sf.net>
 	* VC widgets continued...
 

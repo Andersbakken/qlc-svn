@@ -2,7 +2,7 @@
   Q Light Controller
   vcbuttonproperties.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -31,35 +31,35 @@ class KeyBind;
 
 class VCButtonProperties : public UI_VCButtonProperties
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  VCButtonProperties(VCButton*, QWidget* parent = 0, const char* name = 0);
-  ~VCButtonProperties();
+public:
+	VCButtonProperties(VCButton* button, QWidget* parent);
+	~VCButtonProperties();
 
-  void initView();
+	void initView();
 
- public slots:
-  void slotPressGroupClicked(int);
+public slots:
+	void slotPressGroupClicked(int);
 
-  void slotAttachFunctionClicked();
-  void slotDetachFunctionClicked();
+	void slotAttachFunctionClicked();
+	void slotDetachFunctionClicked();
 
-  void slotAttachKeyClicked();
-  void slotFunctionManagerClosed();
-  void slotDetachKeyClicked();
+	void slotAttachKeyClicked();
+	void slotFunctionManagerClosed();
+	void slotDetachKeyClicked();
 
-  void slotOKClicked();
-  void slotCancelClicked();
+	void slotOKClicked();
+	void slotCancelClicked();
 
- private:
-  void setFunctionName();
+protected:
+	void setFunctionName();
 
- private:
-  VCButton* m_button;
-  KeyBind* m_keyBind;
-  t_function_id m_functionID;
-  FunctionManager* m_functionManager;
+protected:
+	VCButton* m_button;
+	KeyBind* m_keyBind;
+	t_function_id m_functionID;
+	FunctionManager* m_functionManager;
 };
 
 #endif
