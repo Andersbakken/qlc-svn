@@ -1,3 +1,7 @@
+2007-Sep-13  Heikki Junnila <hjunnila@users.sf.net>
+	* Created VCWidget master class for other VC widgets
+	* Changed VCLabel and VCFrame to inherit VCWidget
+
 2007-Sep-12  Heikki Junnila <hjunnila@users.sf.net>
 	* Modified VCButton to incorporate new XML scheme.
 	* Fixed keybind & sliderkeybind saving

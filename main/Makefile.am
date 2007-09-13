@@ -82,6 +82,7 @@ noinst_HEADERS = \
 	src/vcframe.h \
 	src/vcframeproperties.h \
 	src/vclabel.h \
+	src/vcwidget.h \
 	src/vcxypad.h \
 	src/vcxypadproperties.h \
 	src/virtualconsole.h \
@@ -184,6 +185,7 @@ qlc_SOURCES = \
 	src/vcframeproperties.cpp \
 	src/vclabel.cpp \
 	src/vcxypad.cpp \
+	src/vcwidget.cpp \
 	src/vcxypadproperties.cpp \
 	src/virtualconsole.cpp \
 	src/virtualconsoleproperties.cpp \
@@ -236,6 +238,7 @@ qlc_SOURCES = \
 	src/moc_vcframe.cpp \
 	src/moc_vcframeproperties.cpp \
 	src/moc_vclabel.cpp \
+	src/moc_vcwidget.cpp \
 	src/moc_vcxypad.cpp \
 	src/moc_vcxypadproperties.cpp \
 	src/moc_virtualconsole.cpp \

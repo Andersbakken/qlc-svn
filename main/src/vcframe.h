@@ -22,14 +22,10 @@
 #ifndef VCFRAME_H
 #define VCFRAME_H
 
-#include <qframe.h>
-#include <qptrlist.h>
-
+#include "vcwidget.h"
 #include "common/types.h"
 
-class QFile;
 class QString;
-class QPaintEvent;
 class QMouseEvent;
 class QDomDocument;
 class QDomElement;
@@ -37,7 +33,7 @@ class QDomElement;
 #define KXMLQLCVCFrame "Frame"
 #define KXMLQLCVCFrameButtonBehaviour "ButtonBehaviour"
 
-class VCFrame : public QFrame
+class VCFrame : public VCWidget
 {
 	Q_OBJECT
 
@@ -50,102 +46,14 @@ class VCFrame : public QFrame
 
 	void init(bool bottomFrame = false);
 
-	/** Destroy and delete were already taken, so... */
-	void scram();
-
 	/* Check if this is the virtual console's draw area */
 	bool isBottomFrame();
-
-	/*********************************************************************
-	 * Background image
-	 *********************************************************************/
-public:
-	/** Set the widget's background image */
-	void setBackgroundImage(const QString& path);
-
-	/** Get the widget's background image */
-	const QString& backgroundImage();
-
-	/** Invoke an image choosing dialog */
-	void chooseBackgroundImage();
-
-protected:
-	QString m_backgroundImage;
-
-	/*********************************************************************
-	 * Background color
-	 *********************************************************************/
-public:
-	/** Set the widget's background color and invalidate background image */
-	void setBackgroundColor(const QColor& color);
-
-	/** Reset the widget's background color to whatever the platform uses */
-	void resetBackgroundColor();
-
-	/** Invoke a color choosing dialog */
-	void chooseBackgroundColor();
-
-	/** Get the widget's background color. The color is invalid if the
-	    widget has a background image. */
-	const QColor& backgroundColor() { return paletteBackgroundColor(); }
-
-	/** Check, whether the widget has a custom background color */
-	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
-
-protected:
-	bool m_hasCustomBackgroundColor;
-
-	/*********************************************************************
-	 * Foreground color
-	 *********************************************************************/
-public:
-	/** Set the widget's foreground color */
-	void setForegroundColor(const QColor& color);
-
-	/** Reset the widget's background color to whatever the platform uses */
-	void resetForegroundColor();
-
-	/** Invoke a color choosing dialog */
-	void chooseForegroundColor();
-
-	/** Get the widget's foreground color */
-	const QColor& foregroundColor() { return paletteForegroundColor(); }
-
-	/** Check, whether the widget has a custom foreground color */
-	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
-
-protected:
-	bool m_hasCustomForegroundColor;
-
-	/*********************************************************************
-	 * Font
-	 *********************************************************************/
-public:
-	/** Set the font used for the widget's caption */
-	void setFont(const QFont& font);
-
-	/** Get the font used for the widget's caption */
-	QFont font() const { return QWidget::font(); }
-
-	/** Reset the font used for the widget's caption to whatever the
-	    platform uses */
-	void resetFont();
-
-	/** Invoke a font choosing dialog */
-	void chooseFont();
-
-	/** Check, whether the widget has a custom font */
-	bool hasCustomFont() const { return m_hasCustomFont; }
-
-protected:
-	bool m_hasCustomFont;
 
 	/*********************************************************************
 	 * Caption
 	 *********************************************************************/
 public:
 	void setCaption(const QString& text);
-	void rename();
 
 	/*********************************************************************
 	 * Properties
@@ -180,16 +88,6 @@ public:
 	bool loadXML(QDomDocument* doc, QDomElement* vc_root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
-protected:
-	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
-	bool saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root);
-
-	/*********************************************************************
-	 * QLC Mode change
-	 *********************************************************************/
-protected slots:
-	void slotModeChanged();
-
 	/*********************************************************************
 	 * Widget menu
 	 *********************************************************************/
@@ -210,30 +108,11 @@ public:
 	void addLabel(QPoint at = QPoint());
 
 	/*********************************************************************
-	 * Widget move & resize
-	 *********************************************************************/
-public:
-	void resize(QPoint p);
-	void move(QPoint p);
-
-protected:
-	int m_xpos;
-	int m_ypos;
-
-	QPoint m_mousePressPoint;
-	bool m_resizeMode;
-
-	/*********************************************************************
 	 * Event handlers
 	 *********************************************************************/
 protected:
-	void paintEvent(QPaintEvent* e);
-
 	void mousePressEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
 	void mouseDoubleClickEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
-
 };
 
 #endif
