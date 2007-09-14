@@ -35,7 +35,7 @@ extern App* _app;
 VCLabel::VCLabel(QWidget* parent) : VCWidget(parent, "Label")
 {
 	setCaption("Label");
-	//setAlignment(WordBreak | AlignCenter);
+	resize(QPoint(100, 30));
 }
 
 VCLabel::~VCLabel()
@@ -165,7 +165,7 @@ void VCLabel::paintEvent(QPaintEvent* e)
 				    (textSize.width() / 2.0)));
 	
 	y = static_cast<int> (floor((height() / 2.0) + 
-				    (textSize.height() / 2.0)));
+			    ((textSize.height() - metrics.leading()) / 2.0)));
 
 	painter.drawText(x, y, caption());
 }

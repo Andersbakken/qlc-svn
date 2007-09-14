@@ -375,6 +375,9 @@ void VCFrame::slotMenuCallback(int item)
 	case KVCMenuAddXYPad:
 		addXYPad();
 		break;
+	case KVCMenuAddLabel:
+		addLabel();
+		break;
 
 	case KVCMenuEditProperties:
 		editProperties();

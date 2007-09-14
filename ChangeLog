@@ -1,4 +1,10 @@
 2007-Sep-13  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed VCLabel's Y coordinate calcculation to take
+	  QFontMetrics::leading() into account.
+	* Changed VCLabel's default size.
+	* Added case handling for adding a VCLabel to a VCFrame.
+
+2007-Sep-13  Heikki Junnila <hjunnila@users.sf.net>
 	* Created VCWidget master class for other VC widgets
 	* Changed VCLabel and VCFrame to inherit VCWidget
 
