@@ -31,6 +31,7 @@ noinst_HEADERS = \
 	src/uic_vcdocksliderproperties.h \
 	src/uic_vcdockslider.h \
 	src/uic_vcframeproperties.h \
+	src/uic_vcsliderproperties.h \
 	src/uic_vcxypadproperties.h \
 	src/uic_virtualconsoleproperties.h \
 	\
@@ -82,6 +83,8 @@ noinst_HEADERS = \
 	src/vcframe.h \
 	src/vcframeproperties.h \
 	src/vclabel.h \
+	src/vcslider.h \
+	src/vcsliderproperties.h \
 	src/vcwidget.h \
 	src/vcxypad.h \
 	src/vcxypadproperties.h \
@@ -110,6 +113,7 @@ qlc_SOURCES = \
 	src/uic_vcdocksliderproperties.cpp \
 	src/uic_vcdockslider.cpp \
 	src/uic_vcframeproperties.cpp \
+	src/uic_vcsliderproperties.cpp \
 	src/uic_vcxypadproperties.cpp \
 	src/uic_virtualconsoleproperties.cpp \
 	\
@@ -133,6 +137,7 @@ qlc_SOURCES = \
 	src/moc_uic_vcdocksliderproperties.cpp \
 	src/moc_uic_vcdockslider.cpp \
 	src/moc_uic_vcframeproperties.cpp \
+	src/moc_uic_vcsliderproperties.cpp \
 	src/moc_uic_vcxypadproperties.cpp \
 	src/moc_uic_virtualconsoleproperties.cpp \
 	\
@@ -184,8 +189,10 @@ qlc_SOURCES = \
 	src/vcframe.cpp \
 	src/vcframeproperties.cpp \
 	src/vclabel.cpp \
-	src/vcxypad.cpp \
+	src/vcslider.cpp \
+	src/vcsliderproperties.cpp \
 	src/vcwidget.cpp \
+	src/vcxypad.cpp \
 	src/vcxypadproperties.cpp \
 	src/virtualconsole.cpp \
 	src/virtualconsoleproperties.cpp \
@@ -238,6 +245,8 @@ qlc_SOURCES = \
 	src/moc_vcframe.cpp \
 	src/moc_vcframeproperties.cpp \
 	src/moc_vclabel.cpp \
+	src/moc_vcslider.cpp \
+	src/moc_vcsliderproperties.cpp \
 	src/moc_vcwidget.cpp \
 	src/moc_vcxypad.cpp \
 	src/moc_vcxypadproperties.cpp \

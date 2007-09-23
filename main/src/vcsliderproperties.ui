@@ -1,0 +1,568 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>UI_VCSliderProperties</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_VCSliderProperties</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>511</width>
+            <height>555</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Slider Properties</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QTabWidget">
+            <property name="name">
+                <cstring>m_tab</cstring>
+            </property>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>General</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout2</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel1</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Name</string>
+                                </property>
+                            </widget>
+                            <widget class="QLineEdit">
+                                <property name="name">
+                                    <cstring>m_nameEdit</cstring>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Name of the slider</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QButtonGroup">
+                        <property name="name">
+                            <cstring>m_modeGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Slider Mode</string>
+                        </property>
+                        <property name="selectedId" stdset="0">
+                            <number>0</number>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QRadioButton">
+                                <property name="name">
+                                    <cstring>m_busRadio</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Bus</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Use the slider to control a bus that controls functions' running speed</string>
+                                </property>
+                            </widget>
+                            <widget class="QRadioButton">
+                                <property name="name">
+                                    <cstring>m_levelRadio</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Level</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Use the slider to control the level of selected channels</string>
+                                </property>
+                            </widget>
+                            <widget class="QRadioButton">
+                                <property name="name">
+                                    <cstring>m_submasterGroup</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Submaster</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Use the slider to control the relative value of selected channels</string>
+                                </property>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer2</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>21</width>
+                                <height>30</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Bus</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout12</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_busLabel</cstring>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>32767</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string>Bus</string>
+                                </property>
+                            </widget>
+                            <widget class="QComboBox">
+                                <property name="name">
+                                    <cstring>m_busCombo</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>1</hsizetype>
+                                        <vsizetype>0</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout13</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_lowLimitLabel</cstring>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>32767</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string>Low Limit</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_busLowLimitSpin</cstring>
+                                </property>
+                                <property name="suffix">
+                                    <string>s</string>
+                                </property>
+                                <property name="maxValue">
+                                    <number>998</number>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout14</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_highLimitLabel</cstring>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>100</width>
+                                        <height>32767</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string>High Limit</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_busHighLimitSpin</cstring>
+                                </property>
+                                <property name="suffix">
+                                    <string>s</string>
+                                </property>
+                                <property name="maxValue">
+                                    <number>999</number>
+                                </property>
+                                <property name="minValue">
+                                    <number>1</number>
+                                </property>
+                                <property name="value">
+                                    <number>15</number>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer6</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>21</width>
+                                <height>131</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>TabPage</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Level</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>m_levelLimitsGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Level Limits</string>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_levelLowLimitLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Low</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_levelLowLimitSpin</cstring>
+                                </property>
+                                <property name="maxValue">
+                                    <number>254</number>
+                                </property>
+                            </widget>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>m_levelHighLimitLabel</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>High</string>
+                                </property>
+                            </widget>
+                            <widget class="QSpinBox">
+                                <property name="name">
+                                    <cstring>m_levelHighLimitSpin</cstring>
+                                </property>
+                                <property name="maxValue">
+                                    <number>255</number>
+                                </property>
+                                <property name="minValue">
+                                    <number>1</number>
+                                </property>
+                                <property name="value">
+                                    <number>255</number>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer5</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>111</width>
+                                        <height>21</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_levelCapabilityButton</cstring>
+                                </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Capability</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Set slider level range according to a specific channel's capability</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QListView">
+                        <property name="name">
+                            <cstring>m_levelList</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout8</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_LevelAllButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>All</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Select all</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_levelNoneButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>None</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Clear the current selection</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_levelInvertButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Invert</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Invert the current selection</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer6_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>104</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>m_levelByGroupButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>By Group...</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Select all channels that belong to a group</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>TabPage</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Submaster</string>
+                </attribute>
+            </widget>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout1</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer1</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>341</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_busLowLimitSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotBusLowLimitSpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_busHighLimitSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotBusHighLimitSpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_levelByGroupButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelByGroupButtonClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_levelCapabilityButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelCapabilityButtonClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_levelLowLimitSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelLowSpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_levelHighLimitSpin</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelHighSpinChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_levelList</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelListClicked(QListViewItem*)</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotBusLowLimitSpinChanged(int)</slot>
+    <slot>slotBusHighLimitSpinChanged(int)</slot>
+    <slot>slotLevelByGroupButtonClicked()</slot>
+    <slot>slotLevelCapabilityButtonClicked()</slot>
+    <slot>slotLevelLowSpinChanged(int)</slot>
+    <slot>slotLevelHighSpinChanged(int)</slot>
+    <slot>slotLevelListClicked(QListViewItem*)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

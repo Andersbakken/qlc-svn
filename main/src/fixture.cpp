@@ -32,6 +32,10 @@
 extern App* _app;
 extern QApplication* _qapp;
 
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
+
 Fixture::Fixture(QLCFixtureDef* fixtureDef,
 		 QLCFixtureMode* mode,
 		 t_channel address,
@@ -71,6 +75,10 @@ Fixture::~Fixture()
 		delete m_console;
 }
 
+/*****************************************************************************
+ * Fixture ID
+ *****************************************************************************/
+
 void Fixture::setID(t_fixture_id id)
 {
 	m_id = id;
@@ -81,6 +89,10 @@ t_fixture_id Fixture::id()
 {
 	return m_id;
 }
+
+/*****************************************************************************
+ * Name
+ *****************************************************************************/
 
 void Fixture::setName(QString name)
 {
@@ -96,6 +108,21 @@ QString Fixture::name()
 {
 	return m_name;
 }
+
+/*****************************************************************************
+ * Fixture type
+ *****************************************************************************/
+QString Fixture::type()
+{
+	if (m_fixtureDef != NULL)
+		return m_fixtureDef->type();
+	else
+		return QString(KXMLFixtureDimmer);
+}
+
+/*****************************************************************************
+ * Universe
+ *****************************************************************************/
 
 void Fixture::setUniverse(t_channel universe)
 {
@@ -116,6 +143,10 @@ t_channel Fixture::universe()
 	/* The universe part is stored in the highest 7 bits */
 	return (m_address >> 9);
 }
+
+/*****************************************************************************
+ * Address
+ *****************************************************************************/
 
 void Fixture::setAddress(t_channel address)
 {
@@ -142,6 +173,10 @@ t_channel Fixture::universeAddress()
 	return m_address;
 }
 
+/*****************************************************************************
+ * Channels
+ *****************************************************************************/
+
 t_channel Fixture::channels()
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
@@ -157,6 +192,15 @@ QLCChannel* Fixture::channel(t_channel channel)
 	else
 		return NULL;
 }
+
+int Fixture::channelAddress(t_channel channel)
+{
+	return universeAddress() + channel;
+}
+
+/*****************************************************************************
+ * Load & Save
+ *****************************************************************************/
 
 Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 {
@@ -308,7 +352,7 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	else
 	{
 		/* Load the fixture's console settings */
-		if (consoletag.isElement() == true)
+		if (consoletag.tagName() == KXMLQLCFixtureConsole)
 		{
 			if (fxi->createConsole() == true)
 				fxi->m_console->loadXML(doc, &tag);
@@ -404,6 +448,10 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
+/*****************************************************************************
+ * Status
+ *****************************************************************************/
+
 QString Fixture::status()
 {
 	QString t;
@@ -487,7 +535,7 @@ QString Fixture::status()
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		info += m_fixtureDef->type();
 	else
-		info += "Dimmer";
+		info += KXMLFixtureDimmer;
 
 	info += QString("</TD>");
 	info += QString("</TR>");
@@ -587,6 +635,10 @@ QString Fixture::status()
 
 	return info;
 }
+
+/*****************************************************************************
+ * Console
+ *****************************************************************************/
 
 bool Fixture::createConsole()
 {

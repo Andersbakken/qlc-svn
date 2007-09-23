@@ -2,7 +2,7 @@
   Q Light Controller
   vcdockslider.h
 
-  Copyright () Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License

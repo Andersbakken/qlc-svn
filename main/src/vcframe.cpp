@@ -31,6 +31,7 @@
 #include "vclabel.h"
 #include "vcxypad.h"
 #include "vcdockslider.h"
+#include "vcslider.h"
 
 #include "app.h"
 #include "doc.h"
@@ -72,18 +73,9 @@ bool VCFrame::isBottomFrame()
 }
 
 /*****************************************************************************
- * Caption
- *****************************************************************************/
-
-void VCFrame::setCaption(const QString& text)
-{
-	QFrame::setCaption(text);
-	_app->doc()->setModified();
-}
-
-/*****************************************************************************
  * Properties
  *****************************************************************************/
+
 void VCFrame::editProperties()
 {
 	VCFrameProperties* prop = new VCFrameProperties(this);
@@ -379,10 +371,6 @@ void VCFrame::slotMenuCallback(int item)
 		addLabel();
 		break;
 
-	case KVCMenuEditProperties:
-		editProperties();
-		break;
-
 	default:
 		VCWidget::slotMenuCallback(item);
 		break;
@@ -415,11 +403,17 @@ void VCFrame::addButton(QPoint at)
 
 void VCFrame::addSlider(QPoint at)
 {
+/*
 	VCDockSlider* slider = new VCDockSlider(this);
 	Q_ASSERT(slider != NULL);
 	slider->setBusID(KBusIDDefaultFade);
 	slider->init();
 	slider->resize(QPoint(55, 200));
+	slider->show();
+*/
+	VCSlider* slider = new VCSlider(this);
+	Q_ASSERT(slider != NULL);
+	slider->init();
 	slider->show();
 
 	if (at.isNull() == false)

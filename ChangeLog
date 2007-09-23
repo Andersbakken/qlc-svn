@@ -1,3 +1,9 @@
+2007-Sep-23  Heikki Junnila <hjunnila@users.sf.net>
+	* Created VCSlider, a refactored version of VCDockSlider.
+	* Created properties dialog for VCSlider.
+	* Added type getter to Fixture.
+	* Added a grouplist getter to QLCChannel.
+
 2007-Sep-13  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed VCLabel's Y coordinate calcculation to take
 	  QFontMetrics::leading() into account.

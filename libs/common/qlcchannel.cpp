@@ -106,6 +106,25 @@ QLCChannel& QLCChannel::operator=(QLCChannel& channel)
 }
 
 /*****************************************************************************
+ * Channel groups
+ *****************************************************************************/
+QStringList QLCChannel::groupList()
+{
+	QStringList list;
+
+	list.append("Intensity");
+	list.append("Colour");
+	list.append("Gobo");
+	list.append("Speed");
+	list.append("Effect");
+	list.append("Beam");
+	list.append("Pan");
+	list.append("Tilt");
+
+	return list;
+}
+
+/*****************************************************************************
  * Capabilities
  *****************************************************************************/
 

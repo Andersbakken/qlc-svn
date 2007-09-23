@@ -246,9 +246,18 @@ void VCWidget::rename()
 		setCaption(text);
 }
 
-/*********************************************************************
+/*****************************************************************************
+ * Properties
+ *****************************************************************************/
+void VCWidget::editProperties()
+{
+	QMessageBox::information(_app, className(),
+				 "This widget has no properties");
+}
+
+/*****************************************************************************
  * Load & Save
- *********************************************************************/
+ *****************************************************************************/
 
 bool VCWidget::loadXMLAppearance(QDomDocument* doc, QDomElement* root)
 {
@@ -500,6 +509,10 @@ void VCWidget::slotMenuCallback(int item)
 
 	case KVCMenuEditRename:
 		rename();
+		break;
+
+	case KVCMenuEditProperties:
+		editProperties();
 		break;
 
 	case KVCMenuForegroundColor:

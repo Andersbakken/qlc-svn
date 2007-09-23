@@ -310,6 +310,7 @@ class App : public QMainWindow
 	void setSubmasterValue(t_channel, int);
 	float submasterValue(t_channel);
 
+protected:
 	/** DMX value buffer */
 	t_value m_values[KChannelMax];
 
@@ -322,7 +323,7 @@ class App : public QMainWindow
 	/*********************************************************************
 	 * Buses
 	 *********************************************************************/
- public:
+ public slots:
 	void slotViewBusProperties();
 	void slotBusPropertiesClosed();
 

@@ -34,6 +34,7 @@
 #define KXMLFixtureID "ID"
 #define KXMLFixtureGeneric "Generic"
 #define KXMLFixtureChannels "Channels"
+#define KXMLFixtureDimmer "Dimmer"
 
 class QFile;
 class QString;
@@ -49,7 +50,10 @@ class Fixture : public QObject
 {
 	Q_OBJECT
 
- public:
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
 	/** 
 	 * Create a new fixture instance using a fixture definition and
 	 * the given mode. Also, optionally assign the fixture a name.
@@ -95,7 +99,10 @@ class Fixture : public QObject
 	 */
 	~Fixture();
 
- protected:
+	/*********************************************************************
+	 * Fixture ID
+	 *********************************************************************/
+protected:
 	/**
 	 * Change the fixture instance's fixture ID. This is generally VERY
 	 * dangerous, since all functions will cease to work unless their
@@ -107,7 +114,7 @@ class Fixture : public QObject
 	 */
 	void setID(t_fixture_id id);
 
- public:
+public:
 	/**
 	 * Get the fixture instance's fixture ID.
 	 *
@@ -115,7 +122,14 @@ class Fixture : public QObject
 	 */
 	t_fixture_id id();
 
- public:
+protected:
+	/** Fixture ID */
+	t_fixture_id m_id;
+
+	/*********************************************************************
+	 * Name
+	 *********************************************************************/
+public:
 	/**
 	 * Change the fixture instance's friendly name.
 	 *
@@ -130,7 +144,24 @@ class Fixture : public QObject
 	 */
 	QString name();
 
- public:
+protected:
+	/** Friendly name */
+	QString m_name;
+
+	/*********************************************************************
+	 * Fixture type
+	 *********************************************************************/
+public:
+	/**
+	 * Get the fixture's type
+	 *
+	 */
+	QString type();
+
+	/*********************************************************************
+	 * Universe
+	 *********************************************************************/
+public:
 	/**
 	 * Set the fixture instance's DMX universe
 	 *
@@ -145,7 +176,10 @@ class Fixture : public QObject
 	 */
 	t_channel universe();
 
- public:
+	/*********************************************************************
+	 * Address
+	 *********************************************************************/
+public:
 	/**
 	 * Set the fixture instance's DMX address
 	 *
@@ -160,7 +194,7 @@ class Fixture : public QObject
 	 */
 	t_channel address();
 
- public:
+public:
 	/**
 	 * Get the fixture instance's DMX address & universe as one
 	 *
@@ -168,7 +202,10 @@ class Fixture : public QObject
 	 */
 	t_channel universeAddress();
 
- public:
+	/*********************************************************************
+	 * Channels
+	 *********************************************************************/
+public:
 	/**
 	 * Get the number of channels occupied by this fixture instance.
 	 * This takes also the selected mode into account, as different modes
@@ -186,7 +223,23 @@ class Fixture : public QObject
 	 */
 	QLCChannel* channel(t_channel channel);
 
- public:
+	/**
+	 * Get a fixture's channel's DMX address.
+	 *
+	 */
+	int channelAddress(t_channel channel);
+
+protected:
+	/** DMX address & universe */
+	t_channel m_address;
+
+	/** Number of channels (ONLY for dimmer fixtures!) */
+	t_channel m_channels;
+
+	/*********************************************************************
+	 * Fixture definition
+	 *********************************************************************/
+public:
 	/**
 	 * Get the fixture definition that this fixture instance is based on.
 	 *
@@ -201,7 +254,17 @@ class Fixture : public QObject
 	 */
 	QLCFixtureMode* fixtureMode() { return m_fixtureMode; }
 
- public:
+protected:
+	/** The fixture definition that this instance is based on */
+	QLCFixtureDef* m_fixtureDef;
+
+	/** The mode within the fixture definition that this instance uses */
+	QLCFixtureMode* m_fixtureMode;
+
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
 	/**
 	 * Load a single fixture instance from an XML document, under
 	 * the specified fixture tag.
@@ -221,7 +284,10 @@ class Fixture : public QObject
 	 */
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
- public:
+	/*********************************************************************
+	 * Status
+	 *********************************************************************/
+public:
 	/**
 	 * Get the fixture instance's status info for Fixture Manager
 	 *
@@ -229,45 +295,33 @@ class Fixture : public QObject
 	 */
 	QString status();
 
- protected:
+	/*********************************************************************
+	 * Console
+	 *********************************************************************/
+public:
+	/** View the fixture's console */
+	void viewConsole();
+
+public slots:
+	/**
+	 * Callback for console close signals. This has to be public because
+	 * this is used from fixture manager
+	 */
+	void slotConsoleClosed();
+
+protected:
 	/** Create a console view for the fixture but don't show it */
 	bool createConsole();
 	
- public:
-	/** View the fixture's console (i.e. show the console) */
-	void viewConsole();
-
- public slots:
-	 /** 
-	  * Callback for console close signals. This has to be public because
-	  * this is used from fixture manager
-	  */
-	void slotConsoleClosed();
-
- signals:
-	void changed(t_fixture_id);
-
- protected:
-	/** The fixture definition that this instance is based on */
-	QLCFixtureDef* m_fixtureDef;
-
-	/** The mode within the fixture definition that this instance uses */
-	QLCFixtureMode* m_fixtureMode;
-
-	/** DMX address & universe */
-	t_channel m_address;
-
-	/** Friendly name */
-	QString m_name;
-
-	/** Fixture ID */
-	t_fixture_id m_id;
-
+protected:
 	/** The fixture's console */
 	FixtureConsole* m_console;
 
-	/** Number of channels (ONLY for dimmer fixtures!) */
-	t_channel m_channels;
+	/*********************************************************************
+	 * Signals
+	 *********************************************************************/
+signals:
+	void changed(t_fixture_id);
 };
 
 #endif
