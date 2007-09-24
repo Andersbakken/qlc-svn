@@ -155,6 +155,20 @@ void VCSlider::scram()
 }
 
 /*****************************************************************************
+ * Caption
+ *****************************************************************************/
+
+void VCSlider::setCaption(const QString& text)
+{
+	VCWidget::setCaption(text);
+
+	/* Bottom label has not been created yet during VCWidget
+	   construction, so this would crash without this check */
+	if (m_bottomLabel != NULL)
+		setBottomLabelText(text);
+}
+
+/*****************************************************************************
  * Properties
  *****************************************************************************/
 
@@ -286,7 +300,7 @@ void VCSlider::setBus(t_bus_id bus)
 	if (name == QString::null)
 		name.sprintf("%.2d", bus + 1);
 
-	setTapButtonText(name);
+	setCaption(name);
 }
 
 t_bus_id VCSlider::bus()
@@ -524,7 +538,6 @@ void VCSlider::slotSliderReleased()
 void VCSlider::setBottomLabelText(const QString& text)
 {
 	m_bottomLabel->setText(text);
-	setCaption(text);
 }
 
 QString VCSlider::bottomLabelText()
@@ -539,7 +552,6 @@ QString VCSlider::bottomLabelText()
 void VCSlider::setTapButtonText(const QString& text)
 {
 	m_tapButton->setText(text);
-	setCaption(text);
 }
 
 QString VCSlider::tapButtonText()

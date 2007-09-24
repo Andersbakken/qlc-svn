@@ -71,6 +71,7 @@ void VCSliderProperties::init()
 	m_levelList->addColumn("Name");
 	m_levelList->addColumn("Type");
 	m_levelList->addColumn("Range");
+	m_levelList->setSorting(KColumnRange);
 	m_levelList->setRootIsDecorated(true);
 	m_levelList->setResizeMode(QListView::LastColumn);
 	levelUpdateFixtures();
@@ -317,14 +318,50 @@ void VCSliderProperties::slotLevelListClicked(QListViewItem* item)
 
 void VCSliderProperties::slotLevelAllClicked()
 {
+	QCheckListItem* fxi_item = NULL;
+
+	/* Set all fixture items selected, their children should get selected
+	   as well because the fixture items are Controller items. */
+	for (fxi_item = static_cast<QCheckListItem*> (m_levelList->firstChild());
+	     fxi_item != NULL;
+	     fxi_item = static_cast<QCheckListItem*> (fxi_item->nextSibling()))
+	{
+		fxi_item->setOn(true);
+	}
 }
 
 void VCSliderProperties::slotLevelNoneClicked()
 {
+	QCheckListItem* fxi_item = NULL;
+
+	/* Set all fixture items unselected, their children should get unselected
+	   as well because the fixture items are Controller items. */
+	for (fxi_item = static_cast<QCheckListItem*> (m_levelList->firstChild());
+	     fxi_item != NULL;
+	     fxi_item = static_cast<QCheckListItem*> (fxi_item->nextSibling()))
+	{
+		fxi_item->setOn(false);
+	}
 }
 
 void VCSliderProperties::slotLevelInvertClicked()
 {
+	QCheckListItem* fxi_item = NULL;
+	QCheckListItem* ch_item = NULL;
+
+	/* Go thru only channel items. Fixture items get (partially) selected 
+	   according to their children's state */
+	for (fxi_item = static_cast<QCheckListItem*> (m_levelList->firstChild());
+	     fxi_item != NULL;
+	     fxi_item = static_cast<QCheckListItem*> (fxi_item->nextSibling()))
+	{
+		for (ch_item = static_cast<QCheckListItem*> (fxi_item->firstChild());
+		     ch_item != NULL;
+		     ch_item = static_cast<QCheckListItem*> (ch_item->nextSibling()))
+		{
+			ch_item->setOn(!ch_item->isOn());
+		}
+	}
 }
 
 void VCSliderProperties::slotLevelByGroupButtonClicked()
@@ -345,13 +382,12 @@ void VCSliderProperties::slotLevelByGroupButtonClicked()
  * OK & Cancel
  *****************************************************************************/
 
+void VCSliderProperties::setLevelChannels()
+{
+}
+
 void VCSliderProperties::accept()
 {
-	/* General page */
-	m_slider->setCaption(m_nameEdit->text());
-	m_slider->setSliderMode(
-		(VCSlider::SliderMode) m_modeGroup->selectedId());
-
 	/* Bus page */
 	m_slider->setBus(m_busCombo->currentItem());
 	m_slider->setBusLowLimit(m_busLowLimitSpin->value());
@@ -360,6 +396,13 @@ void VCSliderProperties::accept()
 	/* Level page */
 	m_slider->setLevelLowLimit(m_levelLowLimitSpin->value());
 	m_slider->setLevelHighLimit(m_levelHighLimitSpin->value());
+	setLevelChannels();
+
+	/* Set general page stuff last so that name & mode don't get
+	   overridden by bus/value/submaster setters */
+	m_slider->setCaption(m_nameEdit->text());
+	m_slider->setSliderMode(
+		(VCSlider::SliderMode) m_modeGroup->selectedId());
 
 	UI_VCSliderProperties::accept();
 }

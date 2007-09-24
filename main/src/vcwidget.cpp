@@ -57,7 +57,6 @@ VCWidget::VCWidget(QWidget* parent, const char* name) : QFrame(parent, name)
 	m_ypos = 0;
 	m_resizeMode = false;
 
-	disconnect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
 	setFrameStyle(KVCWidgetFrameStyleSunken);
