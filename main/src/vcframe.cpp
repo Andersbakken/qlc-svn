@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <qbuttongroup.h>
 #include <qobjectlist.h>
+#include <qmessagebox.h>
 
 #include "vcframe.h"
 #include "vcbutton.h"
@@ -44,19 +45,31 @@ extern App* _app;
 VCFrame::VCFrame(QWidget* parent) : VCWidget(parent, "VCFrame")
 {
 	m_buttonBehaviour = Normal;
+
+	setFrameStyle(KVCWidgetFrameStyleSunken);
+	setMinimumSize(20, 20);
 }
 
 VCFrame::~VCFrame()
 {
 }
 
-void VCFrame::init(bool bottomFrame)
+void VCFrame::scram()
 {
-	if (bottomFrame == false)
+	if (isBottomFrame() == false)
 	{
-		setFrameStyle(KFrameStyleSunken);
-		setMinimumSize(20, 20);
-		resize(QPoint(120, 120));
+		int result = QMessageBox::warning(this,
+					  QString(caption()),
+					  QString("Remove the selected frame?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No);
+	
+		if (result == QMessageBox::Yes)
+		{
+			_app->virtualConsole()->setSelectedWidget(NULL);
+			_app->doc()->setModified();
+			deleteLater();
+		}
 	}
 }
 
@@ -170,8 +183,6 @@ bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	   the currently loaded VCFrame is the parent of all VC widgets */
 	if (parent->className() != "VCFrame")
 		_app->virtualConsole()->setDrawArea(frame);
-	else
-		frame->init();
 
 	/* Continue loading */
 	return frame->loadXML(doc, root);
@@ -428,7 +439,6 @@ void VCFrame::addFrame(QPoint at)
 {
 	VCFrame* frame = new VCFrame(this);
 	Q_ASSERT(frame != NULL);
-	frame->init();
 	frame->show();
 
 	if (at.isNull() == false)
@@ -458,7 +468,6 @@ void VCFrame::addLabel(QPoint at)
 {
 	VCLabel* label = new VCLabel(this);
 	Q_ASSERT(label != NULL);
-	//label->init();
 	label->show();
 
 	if (at.isNull() == false)

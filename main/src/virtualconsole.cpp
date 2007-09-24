@@ -414,9 +414,6 @@ void VirtualConsole::setDrawArea(VCFrame* drawArea)
 		delete m_drawArea;
 	m_drawArea = drawArea;
 
-	/* Initialize as bottom frame */
-	m_drawArea->init(true);
-
 	/* Add the draw area into the master horizontal layout */
 	m_layout->addWidget(m_drawArea, 1);
 }

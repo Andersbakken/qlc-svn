@@ -46,6 +46,9 @@ class VCFrame : public VCWidget
 
 	void init(bool bottomFrame = false);
 
+	/* Destroy and delete were already taken, so...*/
+	void scram();
+
 	/* Check if this is the virtual console's draw area */
 	bool isBottomFrame();
 
