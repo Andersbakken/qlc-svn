@@ -211,6 +211,9 @@
                                 <property name="maxValue">
                                     <number>998</number>
                                 </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>The lowest bus value that can be set with this slider</string>
+                                </property>
                             </widget>
                         </hbox>
                     </widget>
@@ -252,6 +255,9 @@
                                 <property name="value">
                                     <number>15</number>
                                 </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>The lowest bus value that can be set with this slider</string>
+                                </property>
                             </widget>
                         </hbox>
                     </widget>
@@ -290,7 +296,7 @@
                             <cstring>m_levelLimitsGroup</cstring>
                         </property>
                         <property name="title">
-                            <string>Level Limits</string>
+                            <string>Level Range</string>
                         </property>
                         <hbox>
                             <property name="name">
@@ -310,6 +316,9 @@
                                 </property>
                                 <property name="maxValue">
                                     <number>254</number>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>The lowest level that can be set with this slider</string>
                                 </property>
                             </widget>
                             <widget class="QLabel">
@@ -332,6 +341,9 @@
                                 </property>
                                 <property name="value">
                                     <number>255</number>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>The highest level that can be set with this slider</string>
                                 </property>
                             </widget>
                             <spacer>
@@ -362,7 +374,7 @@
                                     <string>Capability</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>Set slider level range according to a specific channel's capability</string>
+                                    <string>Set slider level range from the selected channel capability</string>
                                 </property>
                             </widget>
                         </hbox>
@@ -554,6 +566,24 @@
         <receiver>UI_VCSliderProperties</receiver>
         <slot>slotLevelListClicked(QListViewItem*)</slot>
     </connection>
+    <connection>
+        <sender>m_LevelAllButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelAllClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_levelNoneButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelNoneClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_levelInvertButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotLevelInvertClicked()</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotBusLowLimitSpinChanged(int)</slot>
@@ -563,6 +593,9 @@
     <slot>slotLevelLowSpinChanged(int)</slot>
     <slot>slotLevelHighSpinChanged(int)</slot>
     <slot>slotLevelListClicked(QListViewItem*)</slot>
+    <slot>slotLevelAllClicked()</slot>
+    <slot>slotLevelNoneClicked()</slot>
+    <slot>slotLevelInvertClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

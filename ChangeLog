@@ -1,3 +1,9 @@
+2007-Sep-24  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed Martin MiniMac Profile's channel groups
+	* Fixed Futurelight DJScan250's channel groups
+	* Added tooltips to spin boxes in VCSliderProperties dialog
+	* Added empty slots for All, None and Invert in VCSliderProperties
+
 2007-Sep-23  Heikki Junnila <hjunnila@users.sf.net>
 	* Added a check in VCFrame::scram() to prevent bottom frame deletion.
 	* Removed VCFrame::init()

@@ -250,7 +250,7 @@ void VCSliderProperties::levelUpdateCapabilityNode(QCheckListItem* parent,
 
 	item = new QListViewItem(parent);
 	item->setText(KColumnName, cap->name());
-	str.sprintf("%d - %d", cap->min(), cap->max());
+	str.sprintf("%.3d - %.3d", cap->min(), cap->max());
 	item->setText(KColumnRange, str);
 }
 
@@ -313,6 +313,18 @@ void VCSliderProperties::slotLevelListClicked(QListViewItem* item)
 		m_levelCapabilityButton->setEnabled(true);
 	else
 		m_levelCapabilityButton->setEnabled(false);
+}
+
+void VCSliderProperties::slotLevelAllClicked()
+{
+}
+
+void VCSliderProperties::slotLevelNoneClicked()
+{
+}
+
+void VCSliderProperties::slotLevelInvertClicked()
+{
 }
 
 void VCSliderProperties::slotLevelByGroupButtonClicked()

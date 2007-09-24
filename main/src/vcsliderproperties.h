@@ -95,6 +95,15 @@ protected:
 	void levelSelectChannelsByGroup(QString group);
 
 protected slots:
+	/** Callback for All button clicks */
+	void slotLevelAllClicked();
+
+	/** Callback for None button clicks */
+	void slotLevelNoneClicked();
+
+	/** Callback for Invert button clicks */
+	void slotLevelInvertClicked();
+
 	/** Callback for low level limit spin value changes */
 	void slotLevelLowSpinChanged(int value);
 

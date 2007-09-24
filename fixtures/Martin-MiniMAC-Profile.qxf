@@ -27,7 +27,7 @@
   <Capability Min="248" Max="255" >Lamp off</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="11" >White</Capability>
   <Capability Min="12" Max="23" >CTC 5500->3400</Capability>
   <Capability Min="24" Max="35" >Pink 312</Capability>
@@ -58,7 +58,7 @@
   <Capability Min="246" Max="255" >Random color, fast -> slow</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="20" >Open</Capability>
   <Capability Min="21" Max="35" >Fibroid texture glass</Capability>
   <Capability Min="36" Max="50" >Radial dashes</Capability>
@@ -76,7 +76,7 @@
   <Capability Min="246" Max="255" >Random gobo speed, fast -> slow</Capability>
  </Channel>
  <Channel Name="Gobo rotation/swing" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="2" >No rotation</Capability>
   <Capability Min="3" Max="117" >CW rotation, slow -> fast</Capability>
   <Capability Min="118" Max="232" >CCW rotation, fast -> slow</Capability>
@@ -84,23 +84,23 @@
   <Capability Min="240" Max="255" >Gobo swing, slow -> fast</Capability>
  </Channel>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="2" >Tracking mode</Capability>
   <Capability Min="3" Max="245" >Fast -> slow</Capability>
   <Capability Min="246" Max="248" >Tracking mode, slow</Capability>
@@ -108,7 +108,7 @@
   <Capability Min="252" Max="255" >Blackout while moving</Capability>
  </Channel>
  <Channel Name="Effect speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="2" >Tracking mode</Capability>
   <Capability Min="3" Max="251" >Fast -> slow</Capability>
   <Capability Min="252" Max="255" >Blackout while moving</Capability>
