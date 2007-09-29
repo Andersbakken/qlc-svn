@@ -103,11 +103,55 @@
                                 <property name="name">
                                     <cstring>m_submasterGroup</cstring>
                                 </property>
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
                                 <property name="text">
                                     <string>Submaster</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
                                     <string>Use the slider to control the relative value of selected channels</string>
+                                </property>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QButtonGroup">
+                        <property name="name">
+                            <cstring>m_valueDisplayStyleGroup</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Value Display Style</string>
+                        </property>
+                        <property name="selectedId" stdset="0">
+                            <number>0</number>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QRadioButton">
+                                <property name="name">
+                                    <cstring>m_valueExactRadio</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Exact</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Display exact values (i.e. seconds for speed, 0-255 for level)</string>
+                                </property>
+                            </widget>
+                            <widget class="QRadioButton">
+                                <property name="name">
+                                    <cstring>m_valuePercentageRadio</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Percentage</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Display the value as percentage (0-100%)</string>
                                 </property>
                             </widget>
                         </vbox>
@@ -125,7 +169,7 @@
                         <property name="sizeHint">
                             <size>
                                 <width>21</width>
-                                <height>30</height>
+                                <height>150</height>
                             </size>
                         </property>
                     </spacer>
@@ -144,7 +188,7 @@
                     </property>
                     <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>groupBox6</cstring>
+                            <cstring>m_busValueRangeGroup</cstring>
                         </property>
                         <property name="title">
                             <string>Value Range</string>
@@ -200,7 +244,7 @@
                                     <number>15</number>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>The lowest bus value that can be set with this slider</string>
+                                    <string>The highest bus value that can be set with this slider</string>
                                 </property>
                             </widget>
                         </hbox>
@@ -239,6 +283,9 @@
                                         <verstretch>0</verstretch>
                                     </sizepolicy>
                                 </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>The bus controlled by this slider</string>
+                                </property>
                             </widget>
                         </hbox>
                     </widget>
@@ -274,10 +321,10 @@
                     </property>
                     <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>m_levelLimitsGroup</cstring>
+                            <cstring>m_levelValueRangeGroup</cstring>
                         </property>
                         <property name="title">
-                            <string>Level Range</string>
+                            <string>Value Range</string>
                         </property>
                         <hbox>
                             <property name="name">
@@ -375,7 +422,7 @@
                             </property>
                             <widget class="QPushButton">
                                 <property name="name">
-                                    <cstring>m_LevelAllButton</cstring>
+                                    <cstring>m_levelAllButton</cstring>
                                 </property>
                                 <property name="text">
                                     <string>All</string>
@@ -431,7 +478,7 @@
                                     <string>By Group...</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>Select all channels that belong to a group</string>
+                                    <string>Select all channels that belong to a channel group</string>
                                 </property>
                             </widget>
                         </hbox>
@@ -564,7 +611,7 @@
         <slot>slotLevelListClicked(QListViewItem*)</slot>
     </connection>
     <connection>
-        <sender>m_LevelAllButton</sender>
+        <sender>m_levelAllButton</sender>
         <signal>clicked()</signal>
         <receiver>UI_VCSliderProperties</receiver>
         <slot>slotLevelAllClicked()</slot>
@@ -581,6 +628,18 @@
         <receiver>UI_VCSliderProperties</receiver>
         <slot>slotLevelInvertClicked()</slot>
     </connection>
+    <connection>
+        <sender>m_modeGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotSliderModeClicked(int)</slot>
+    </connection>
+    <connection>
+        <sender>m_valueDisplayStyleGroup</sender>
+        <signal>clicked(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotDisplayStyleClicked(int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotBusLowLimitSpinChanged(int)</slot>
@@ -593,6 +652,8 @@
     <slot>slotLevelAllClicked()</slot>
     <slot>slotLevelNoneClicked()</slot>
     <slot>slotLevelInvertClicked()</slot>
+    <slot>slotSliderModeClicked(int)</slot>
+    <slot>slotDisplayStyleClicked(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -31,7 +31,6 @@
 #include "vcbutton.h"
 #include "vclabel.h"
 #include "vcxypad.h"
-#include "vcdockslider.h"
 #include "vcslider.h"
 
 #include "app.h"
@@ -243,9 +242,9 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			VCXYPad::loader(doc, &tag, this);
 		}
-		else if (tag.tagName() == KXMLQLCVCDockSlider)
+		else if (tag.tagName() == KXMLQLCVCSlider)
 		{
-			VCDockSlider::loader(doc, &tag, this);
+			VCSlider::loader(doc, &tag, this);
 		}
 		else
 		{
@@ -296,6 +295,11 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 		QObjectListIterator it(*objectList);
 		while ( (child = it.current()) != NULL )
 		{
+			/* TODO: When all VC classes use VCWidget as their
+			   base class, these can be replaced by a single
+			   line: */
+			/* static_cast<VCWidget*> (child)->saveXML(doc, &root); */
+
 			if (child->className() == "VCFrame")
 			{
 				static_cast<VCFrame*> (child)->saveXML(doc, &root);
@@ -304,9 +308,9 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 			{
 				static_cast<VCButton*> (child)->saveXML(doc, &root);
 			}
-			else if (child->className() == "VCDockSlider")
+			else if (child->className() == "VCSlider")
 			{
-				static_cast<VCDockSlider*> (child)->saveXML(doc, &root);
+				static_cast<VCSlider*> (child)->saveXML(doc, &root);
 			}
 			else if (child->className() == "VCLabel")
 			{
@@ -414,14 +418,6 @@ void VCFrame::addButton(QPoint at)
 
 void VCFrame::addSlider(QPoint at)
 {
-/*
-	VCDockSlider* slider = new VCDockSlider(this);
-	Q_ASSERT(slider != NULL);
-	slider->setBusID(KBusIDDefaultFade);
-	slider->init();
-	slider->resize(QPoint(55, 200));
-	slider->show();
-*/
 	VCSlider* slider = new VCSlider(this);
 	Q_ASSERT(slider != NULL);
 	slider->init();

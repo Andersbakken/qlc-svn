@@ -21,10 +21,7 @@
 
 #include "vcxypad.h"
 #include "xychannelunit.h"
-#include "vcbutton.h"
 #include "fixture.h"
-#include "vclabel.h"
-#include "vcdockslider.h"
 #include "floatingedit.h"
 #include "app.h"
 #include "doc.h"

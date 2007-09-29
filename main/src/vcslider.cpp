@@ -27,6 +27,7 @@
 #include <qdatetime.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
+#include <qdom.h>
 #include <math.h>
 
 #include "app.h"
@@ -56,6 +57,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent, "Slider")
 	m_tapButton = NULL;
 
 	m_sliderMode = Bus;
+	m_valueDisplayStyle = ExactValue;
 
 	m_levelLowLimit = 0;
 	m_levelHighLimit = 255;
@@ -121,6 +123,7 @@ void VCSlider::init()
 	/* Bottom label */
 	m_bottomLabel = new QLabel(this);
 	m_vbox->addWidget(m_bottomLabel);
+	m_bottomLabel->setAlignment(AlignCenter);
 	m_bottomLabel->hide();
 
 	resize(QPoint(60, 220));
@@ -134,7 +137,7 @@ void VCSlider::init()
 	/* Catch QLC mode changes*/
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotQLCModeChanged()));
 
-	/* Update this according to current mode */
+	/* Update the slider according to current mode */
 	slotQLCModeChanged();
 }
 
@@ -206,6 +209,43 @@ void VCSlider::slotQLCModeChanged()
 }
 
 /*****************************************************************************
+ * Value display style
+ *****************************************************************************/
+
+QString VCSlider::valueDisplayStyleToString(VCSlider::ValueDisplayStyle style)
+{
+	switch (style)
+	{
+	case ExactValue:
+		return KXMLQLCVCSliderValueDisplayStyleExact;
+	case PercentageValue:
+		return KXMLQLCVCSliderValueDisplayStylePercentage;
+	default:
+		return QString("Unknown");
+	};
+}
+
+VCSlider::ValueDisplayStyle VCSlider::stringToValueDisplayStyle(QString style)
+{
+	if (style == KXMLQLCVCSliderValueDisplayStyleExact)
+		return ExactValue;
+	else if (style == KXMLQLCVCSliderValueDisplayStylePercentage)
+		return PercentageValue;
+	else
+		return ExactValue;
+}
+
+void VCSlider::setValueDisplayStyle(VCSlider::ValueDisplayStyle style)
+{
+	m_valueDisplayStyle = style;
+}
+
+VCSlider::ValueDisplayStyle VCSlider::valueDisplayStyle()
+{
+	return m_valueDisplayStyle;
+}
+
+/*****************************************************************************
  * Slider Mode
  *****************************************************************************/
 
@@ -263,6 +303,10 @@ void VCSlider::setSliderMode(SliderMode mode)
 
 	if (mode == Bus)
 	{
+		/* Set the slider range */
+		m_slider->setRange(busLowLimit() * KFrequency, 
+				   busHighLimit() * KFrequency);
+
 		/* Reconnect to bus emitter */
 		connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
 			this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
@@ -276,6 +320,9 @@ void VCSlider::setSliderMode(SliderMode mode)
 	}
 	else if (mode == Level)
 	{
+		/* Set the slider range */
+		m_slider->setRange(levelLowLimit(), levelHighLimit());
+
 		m_bottomLabel->show();
 		m_tapButton->hide();
 	}
@@ -369,8 +416,10 @@ t_fixture_id VCSlider::splitCombinedValue(int combined,
 					  t_fixture_id* fixture,
 					  t_channel* channel)
 {
-	*channel = combined & 0xFF800000;
+	/* Split a combined value into fixture id and channel number */
+	*channel = combined >> 23;
 	*fixture = combined & 0x007FFFFF;
+	
 	return *fixture;
 }
 
@@ -416,9 +465,19 @@ void VCSlider::setLevelLowLimit(t_value value)
 	m_levelLowLimit = value;
 }
 
+t_value VCSlider::levelLowLimit()
+{
+	return m_levelLowLimit;
+}
+
 void VCSlider::setLevelHighLimit(t_value value)
 {
 	m_levelHighLimit = value;
+}
+
+t_value VCSlider::levelHighLimit()
+{
+	return m_levelHighLimit;
 }
 
 QValueList<int>::iterator VCSlider::levelChannel(int combined)
@@ -453,7 +512,8 @@ void VCSlider::setLevelValue(t_value value)
 
 	}
 
-	//_app->inputPlugin()->feedBack(1, m_inputChannel, 
+	// TODO
+	// _app->inputPlugin()->feedBack(1, m_inputChannel, 
 	//		      127 - (value * 127) / 255);
 }
 
@@ -507,7 +567,12 @@ void VCSlider::slotSliderValueChanged(int value)
 			setBusValue(value);
 		
 		/* Set text for the top label */
-		num.sprintf("%.2fs", ((float) value / (float) KFrequency));
+		if (valueDisplayStyle() == ExactValue)
+			num.sprintf("%.2fs", ((float) value / (float) KFrequency));
+		else
+			num.sprintf("%.3d%%", static_cast<int> 
+				    (((float) ((m_busHighLimit * KFrequency) - value) / (float) ((m_busHighLimit - m_busLowLimit) * (float) KFrequency)) * 100.0));
+
 		setTopLabelText(num);
 	}
 	break;
@@ -519,7 +584,12 @@ void VCSlider::slotSliderValueChanged(int value)
 			setLevelValue(value);
 		
 		/* Set text for the top label */
-		num.sprintf("%.3d", m_levelHighLimit - value + m_levelLowLimit);
+		if (valueDisplayStyle() == ExactValue)
+			num.sprintf("%.3d", 
+				    m_levelHighLimit - value + m_levelLowLimit);
+		else
+			num.sprintf("%.3d%%", static_cast<int>
+				    ((((float) (m_levelHighLimit - value)) / (float) (m_levelHighLimit - m_levelLowLimit)) * 100.0));
 		setTopLabelText(num);
 	}
 	break;
@@ -622,7 +692,7 @@ bool VCSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 	/* Create a new slider into its parent */
 	slider = new VCSlider(parent);
-	//slider->init();
+	slider->init();
 	slider->show();
 
 	/* Continue loading */
@@ -640,6 +710,8 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomNode node;
 	QDomElement tag;
 	QString str;
+	SliderMode sliderMode = Bus;
+	ValueDisplayStyle valueDisplayStyle = ExactValue;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
@@ -668,9 +740,79 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			loadXMLAppearance(doc, &tag);
 		}
+		else if (tag.tagName() == KXMLQLCVCSliderMode)
+		{
+			sliderMode = stringToSliderMode(tag.text());
+
+			str = tag.attribute(KXMLQLCVCSliderValueDisplayStyle);
+			setValueDisplayStyle(stringToValueDisplayStyle(str));
+		}
+		else if (tag.tagName() == KXMLQLCVCSliderBus)
+		{
+			str = tag.attribute(KXMLQLCVCSliderBusLowLimit);
+			setBusLowLimit(str.toInt());
+
+			str = tag.attribute(KXMLQLCVCSliderBusHighLimit);
+			setBusHighLimit(str.toInt());
+		}
+		else if (tag.tagName() == KXMLQLCVCSliderLevel)
+		{
+			loadXMLLevel(doc, &tag);
+		}
 		else
 		{
 			qWarning("Unknown slider tag: %s",
+				 (const char*) tag.tagName());
+		}
+		
+		node = node.nextSibling();
+	}
+
+	/* Set the mode last, after everything else has been set */
+	setSliderMode(sliderMode);
+
+	return true;
+}
+
+bool VCSlider::loadXMLLevel(QDomDocument* doc, QDomElement* level_root)
+{
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(level_root != NULL);
+
+	if (level_root->tagName() != KXMLQLCVCSliderLevel)
+	{
+		qWarning("Slider level node not found!");
+		return false;
+	}
+
+	/* Level low limit */
+	str = level_root->attribute(KXMLQLCVCSliderLevelLowLimit);
+	setLevelLowLimit(str.toInt());
+
+	/* Level high limit */
+	str = level_root->attribute(KXMLQLCVCSliderLevelHighLimit);
+	setLevelHighLimit(str.toInt());
+
+	/* Children */
+	node = level_root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCVCSliderChannel)
+		{
+			/* Fixture & channel */
+			str = tag.attribute(KXMLQLCVCSliderChannelFixture);
+			addLevelChannel(
+				static_cast<t_fixture_id>(str.toInt()),
+				static_cast<t_channel> (tag.text().toInt()));
+		}
+		else
+		{
+			qWarning("Unknown slider level tag: %s",
 				 (const char*) tag.tagName());
 		}
 		
@@ -684,8 +826,12 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
 	QDomElement root;
 	QDomElement tag;
+	QDomElement chtag;
 	QDomText text;
 	QString str;
+	QValueList<int>::iterator it;
+	t_fixture_id fxi_id = KNoID;
+	t_channel ch = 0;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(vc_root != NULL);
@@ -702,6 +848,59 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
+
+	/* Mode */
+	tag = doc->createElement(KXMLQLCVCSliderMode);
+	root.appendChild(tag);
+	text = doc->createTextNode(sliderModeToString(m_sliderMode));
+	tag.appendChild(text);
+
+	/* Value display style */
+	str = valueDisplayStyleToString(valueDisplayStyle());
+	tag.setAttribute(KXMLQLCVCSliderValueDisplayStyle, str);
+
+	/* Bus */
+	tag = doc->createElement(KXMLQLCVCSliderBus);
+	root.appendChild(tag);
+	str.setNum(bus());
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	/* Bus low limit */
+	str.setNum(busLowLimit());
+	tag.setAttribute(KXMLQLCVCSliderBusLowLimit, str);
+
+	/* Bus high limit */
+	str.setNum(busHighLimit());
+	tag.setAttribute(KXMLQLCVCSliderBusHighLimit, str);
+
+	/* Level */
+	tag = doc->createElement(KXMLQLCVCSliderLevel);
+	root.appendChild(tag);
+
+	/* Level low limit */
+	str.setNum(levelLowLimit());
+	tag.setAttribute(KXMLQLCVCSliderLevelLowLimit, str);
+
+	/* Level high limit */
+	str.setNum(levelHighLimit());
+	tag.setAttribute(KXMLQLCVCSliderLevelHighLimit, str);
+
+	/* Level channels */
+	for (it = m_levelChannels.begin(); it != m_levelChannels.end(); ++it)
+	{
+		splitCombinedValue(*it, &fxi_id, &ch);
+
+		chtag = doc->createElement(KXMLQLCVCSliderChannel);
+		tag.appendChild(chtag);
+
+		str.setNum(fxi_id);
+		chtag.setAttribute(KXMLQLCVCSliderChannelFixture, str);
+
+		str.setNum(ch);
+		text = doc->createTextNode(str);
+		chtag.appendChild(text);
+	}
 
 	return true;
 }

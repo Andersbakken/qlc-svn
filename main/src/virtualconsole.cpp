@@ -48,14 +48,10 @@
 #include "virtualconsoleproperties.h"
 #include "app.h"
 #include "doc.h"
-#include "vcdockslider.h"
-#include "vcbutton.h"
-#include "vcframe.h"
 #include "keybind.h"
-#include "vclabel.h"
+#include "vcframe.h"
 #include "vcdockarea.h"
 #include "vcdockslider.h"
-#include "vcxypad.h"
 #include "floatingedit.h"
 
 #include <X11/Xlib.h>

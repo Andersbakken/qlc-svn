@@ -35,7 +35,23 @@ class QDomDocument;
 class QDomElement;
 class QTime;
 
-#define KXMLQLCVCSlider "Slider"
+#define KXMLQLCVCSlider QString("Slider")
+#define KXMLQLCVCSliderMode QString("SliderMode")
+
+#define KXMLQLCVCSliderValueDisplayStyle QString("ValueDisplayStyle")
+#define KXMLQLCVCSliderValueDisplayStyleExact QString("Exact")
+#define KXMLQLCVCSliderValueDisplayStylePercentage QString("Percentage")
+
+#define KXMLQLCVCSliderBus QString("Bus")
+#define KXMLQLCVCSliderBusLowLimit QString("LowLimit")
+#define KXMLQLCVCSliderBusHighLimit QString("HighLimit")
+
+#define KXMLQLCVCSliderLevel QString("Level")
+#define KXMLQLCVCSliderLevelLowLimit QString("LowLimit")
+#define KXMLQLCVCSliderLevelHighLimit QString("HighLimit")
+
+#define KXMLQLCVCSliderChannel QString("Channel")
+#define KXMLQLCVCSliderChannelFixture QString("Fixture")
 
 class VCSlider : public VCWidget
 {
@@ -76,7 +92,7 @@ public slots:
 	void slotQLCModeChanged();
 
 	/*********************************************************************
-	 * Mode
+	 * Slider Mode
 	 *********************************************************************/
 public:
 	enum SliderMode
@@ -116,6 +132,25 @@ public:
 
 protected:
 	SliderMode m_sliderMode;
+
+	/*********************************************************************
+	 * Value display style
+	 *********************************************************************/
+public:
+	enum ValueDisplayStyle
+	{
+		ExactValue,
+		PercentageValue
+	};
+
+	static QString valueDisplayStyleToString(ValueDisplayStyle style);
+	static ValueDisplayStyle stringToValueDisplayStyle(QString style);
+
+	void setValueDisplayStyle(ValueDisplayStyle style);
+	ValueDisplayStyle valueDisplayStyle();
+
+protected:
+	ValueDisplayStyle m_valueDisplayStyle;
 
 	/*********************************************************************
 	 * Bus
@@ -242,11 +277,23 @@ public:
 	void setLevelLowLimit(t_value value);
 
 	/**
+	 * Get low limit for levels set thru the slider
+	 *
+	 */
+	t_value levelLowLimit();
+
+	/**
 	 * Set high limit for levels set thru the slider
 	 *
 	 * @param value High limit
 	 */
 	void setLevelHighLimit(t_value value);
+
+	/**
+	 * Get high limit for levels set thru the slider
+	 *
+	 */
+	t_value levelHighLimit();
 
 protected:
 	/**
@@ -387,7 +434,10 @@ protected:
 	 *********************************************************************/
 public:
 	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
+
 	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXMLLevel(QDomDocument* doc, QDomElement* level_root);
+
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 };
 

@@ -28,6 +28,7 @@
 #include <qradiobutton.h>
 #include <qlistview.h>
 #include <qpushbutton.h>
+#include <qlabel.h>
 
 #include "vcsliderproperties.h"
 #include "vcslider.h"
@@ -61,6 +62,9 @@ void VCSliderProperties::init()
 	/* Generic page */
 	m_nameEdit->setText(m_slider->caption());
 	m_modeGroup->setButton(m_slider->sliderMode());
+	slotSliderModeClicked(static_cast<int> (m_slider->sliderMode()));
+	m_valueDisplayStyleGroup->setButton(static_cast<int>
+					    (m_slider->valueDisplayStyle()));
 
 	/* Bus page */
 	fillBusCombo();
@@ -68,6 +72,9 @@ void VCSliderProperties::init()
 	m_busHighLimitSpin->setValue(m_slider->busHighLimit());
 
 	/* Level page */
+	m_levelLowLimitSpin->setValue(m_slider->levelLowLimit());
+	m_levelHighLimitSpin->setValue(m_slider->levelHighLimit());
+
 	m_levelList->addColumn("Name");
 	m_levelList->addColumn("Type");
 	m_levelList->addColumn("Range");
@@ -76,6 +83,44 @@ void VCSliderProperties::init()
 	m_levelList->setResizeMode(QListView::LastColumn);
 	levelUpdateFixtures();
 	levelUpdateChannelSelections();
+}
+
+/*****************************************************************************
+ * General page
+ *****************************************************************************/
+
+void VCSliderProperties::slotSliderModeClicked(int button)
+{
+	if (button == VCSlider::Bus)
+	{
+		m_busValueRangeGroup->setEnabled(true);
+		m_busLabel->setEnabled(true);
+		m_busCombo->setEnabled(true);
+
+		m_levelValueRangeGroup->setEnabled(false);
+		m_levelList->setEnabled(false);
+		m_levelAllButton->setEnabled(false);
+		m_levelNoneButton->setEnabled(false);
+		m_levelInvertButton->setEnabled(false);
+		m_levelByGroupButton->setEnabled(false);
+	}
+	else if (button == VCSlider::Level)
+	{
+		m_busValueRangeGroup->setEnabled(false);
+		m_busLabel->setEnabled(false);
+		m_busCombo->setEnabled(false);
+
+		m_levelValueRangeGroup->setEnabled(true);
+		m_levelList->setEnabled(true);
+		m_levelAllButton->setEnabled(true);
+		m_levelNoneButton->setEnabled(true);
+		m_levelInvertButton->setEnabled(true);
+		m_levelByGroupButton->setEnabled(true);
+	}
+}
+
+void VCSliderProperties::slotDisplayStyleClicked(int button)
+{
 }
 
 /*****************************************************************************
@@ -261,9 +306,28 @@ void VCSliderProperties::levelUpdateChannelSelections()
 	QValueListIterator<int> it;
 	QValueList<int> list = m_slider->levelChannels();
 
+	t_fixture_id fxi_id = KNoID;
+	t_channel ch = 0;
+
+	QCheckListItem* fxi_node = NULL;
+	QCheckListItem* ch_node = NULL;
+
+	/* Check all items that are present in the slider's list of
+	   controlled channels. We don't need to set other items off, 
+	   because this function is run only during init when everything
+	   is off. */
 	for (it = list.begin(); it != list.end(); ++it)
 	{
-		/* TODO */
+		VCSlider::splitCombinedValue(*it, &fxi_id, &ch);
+		qDebug("%d=%d->%d", *it, fxi_id, ch);
+
+		fxi_node = levelFixtureNode(fxi_id);
+		Q_ASSERT(fxi_node != NULL);
+
+		ch_node = levelChannelNode(fxi_node, ch);
+		Q_ASSERT(ch_node != NULL);
+
+		ch_node->setOn(true);
 	}
 }
 
@@ -437,8 +501,10 @@ void VCSliderProperties::accept()
 	/* Set general page stuff last so that name & mode don't get
 	   overridden by bus/value/submaster setters */
 	m_slider->setCaption(m_nameEdit->text());
-	m_slider->setSliderMode(
-		(VCSlider::SliderMode) m_modeGroup->selectedId());
+	m_slider->setSliderMode(static_cast<VCSlider::SliderMode>
+				(m_modeGroup->selectedId()));
+	m_slider->setValueDisplayStyle(static_cast<VCSlider::ValueDisplayStyle>
+			       (m_valueDisplayStyleGroup->selectedId()));
 
 	UI_VCSliderProperties::accept();
 }

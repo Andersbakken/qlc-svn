@@ -1,4 +1,9 @@
 2007-Sep-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Finished VCSlider saveXML
+	* Finished VCSlider loadXML
+	* Fixed non-updating level low&high spins in VCSliderPropertiesx
+
+2007-Sep-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Added new channel groups: Prism, Maintenance, Shutter & Nothing
 	* Updated all fixture defs' channel groupings
 	* Fixed control byte setting in QLCChannel::operator=
