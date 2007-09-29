@@ -75,6 +75,7 @@ void VCSliderProperties::init()
 	m_levelList->setRootIsDecorated(true);
 	m_levelList->setResizeMode(QListView::LastColumn);
 	levelUpdateFixtures();
+	levelUpdateChannelSelections();
 }
 
 /*****************************************************************************
@@ -255,6 +256,17 @@ void VCSliderProperties::levelUpdateCapabilityNode(QCheckListItem* parent,
 	item->setText(KColumnRange, str);
 }
 
+void VCSliderProperties::levelUpdateChannelSelections()
+{
+	QValueListIterator<int> it;
+	QValueList<int> list = m_slider->levelChannels();
+
+	for (it = list.begin(); it != list.end(); ++it)
+	{
+		/* TODO */
+	}
+}
+
 void VCSliderProperties::levelSelectChannelsByGroup(QString group)
 {
 	QCheckListItem* fxiNode = NULL;
@@ -382,8 +394,32 @@ void VCSliderProperties::slotLevelByGroupButtonClicked()
  * OK & Cancel
  *****************************************************************************/
 
-void VCSliderProperties::setLevelChannels()
+void VCSliderProperties::storeLevelChannels()
 {
+	QCheckListItem* fxi_item = NULL;
+	QCheckListItem* ch_item = NULL;
+	t_fixture_id fxi_id = KNoID;
+	t_channel ch_num = 0;
+	
+	m_slider->clearLevelChannels();
+
+	for (fxi_item = static_cast<QCheckListItem*> (m_levelList->firstChild());
+	     fxi_item != NULL;
+	     fxi_item = static_cast<QCheckListItem*> (fxi_item->nextSibling()))
+	{
+		fxi_id = fxi_item->text(KColumnID).toInt();
+
+		for (ch_item = static_cast<QCheckListItem*> (fxi_item->firstChild());
+		     ch_item != NULL;
+		     ch_item = static_cast<QCheckListItem*> (ch_item->nextSibling()))
+		{
+			if (ch_item->isOn() == true)
+			{
+				ch_num = ch_item->text(KColumnID).toInt();
+				m_slider->addLevelChannel(fxi_id, ch_num);
+			}
+		}
+	}
 }
 
 void VCSliderProperties::accept()
@@ -396,7 +432,7 @@ void VCSliderProperties::accept()
 	/* Level page */
 	m_slider->setLevelLowLimit(m_levelLowLimitSpin->value());
 	m_slider->setLevelHighLimit(m_levelHighLimitSpin->value());
-	setLevelChannels();
+	storeLevelChannels();
 
 	/* Set general page stuff last so that name & mode don't get
 	   overridden by bus/value/submaster setters */

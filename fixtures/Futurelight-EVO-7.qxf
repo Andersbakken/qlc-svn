@@ -9,14 +9,14 @@
  <Model>EVO-7</Model>
  <Type>Color Changer</Type>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="127" >Color/gobo indexing</Capability>
   <Capability Min="128" Max="187" >Rainbow forward slow to fast</Capability>
   <Capability Min="188" Max="193" >No rotation</Capability>
   <Capability Min="194" Max="255" >Rainbow backward slow to fast</Capability>
  </Channel>
  <Channel Name="Prism rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Prism</Group>
   <Capability Min="0" Max="7" >No rotation</Capability>
   <Capability Min="8" Max="127" >Forward speed</Capability>
   <Capability Min="128" Max="135" >No rotation</Capability>
@@ -36,7 +36,7 @@
   <Capability Min="224" Max="255" >Shutter open</Capability>
  </Channel>
  <Channel Name="Auto program" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="23" >Normal</Capability>
   <Capability Min="24" Max="47" >Program 1</Capability>
   <Capability Min="48" Max="71" >Program 2</Capability>

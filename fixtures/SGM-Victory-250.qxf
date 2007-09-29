@@ -13,7 +13,7 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="9" >White</Capability>
   <Capability Min="10" Max="19" >White + Yellow</Capability>
   <Capability Min="20" Max="29" >Yellow</Capability>
@@ -34,7 +34,7 @@
   <Capability Min="245" Max="255" >Music hard change</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="20" >Open</Capability>
   <Capability Min="21" Max="40" >Gobo 1</Capability>
   <Capability Min="41" Max="60" >Gobo 2</Capability>
@@ -50,7 +50,7 @@
   <Capability Min="230" Max="255" >Music hard change</Capability>
  </Channel>
  <Channel Name="Shutter" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="9" >Closed</Capability>
   <Capability Min="10" Max="19" >Strobe 1.00 Hz</Capability>
   <Capability Min="20" Max="29" >Strobe 1.39 Hz</Capability>
@@ -76,25 +76,25 @@
   <Capability Min="238" Max="255" >Open</Capability>
  </Channel>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Reset" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="49" >Off</Capability>
   <Capability Min="50" Max="234" >Lamp hysteresis</Capability>
   <Capability Min="235" Max="255" >Reset</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Mode Name="Mode 1" >

@@ -49,7 +49,7 @@
   <Capability Min="136" Max="255" >Backward Gobo Rotation Speed</Capability>
  </Channel>
  <Channel Name="Shutter" >
-  <Group Byte="0" >Beam</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="5" >Shutter Closed</Capability>
   <Capability Min="6" Max="128" >Dimmer Control</Capability>
   <Capability Min="129" Max="131" >Reset after 3-5 seconds</Capability>

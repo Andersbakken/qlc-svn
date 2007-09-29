@@ -117,7 +117,8 @@ void QLCFixtureEditor::closeEvent(QCloseEvent* e)
 
 	if (m_modified)
 	{
-		r = QMessageBox::information(this, KApplicationNameShort,
+		r = QMessageBox::information(this,
+					     "Closing...",
 				"Do you want to save changes to fixture\n\""
 				+ m_fixtureDef->name() + "\"\nbefore closing?",
 				QMessageBox::Yes,
@@ -499,8 +500,12 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested(QListViewItem* item,
 							   const QPoint& pos,
 							   int col)
 {
+	QStringList::Iterator it;
+	QStringList groups;
 	QPopupMenu* menu = NULL;
+	QPopupMenu* groupMenu = NULL;
 
+	/* Master edit menu */
 	menu = new QPopupMenu();
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/edit.png")),
 			 "Edit...", KMenuEdit);
@@ -511,6 +516,15 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested(QListViewItem* item,
 	menu->insertSeparator();
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
 			 "Remove", KMenuRemove);
+
+	/* Group menu */
+	groupMenu = new QPopupMenu();
+	groups = QLCChannel::groupList();
+	for (it = groups.begin(); it != groups.end(); ++it)
+		groupMenu->insertItem(*it,
+				      10000 + QLCChannel::groupToIndex(*it));
+	menu->insertSeparator();
+	menu->insertItem("Set group", groupMenu);
 
 	if (item == NULL)
 	{
@@ -525,8 +539,12 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested(QListViewItem* item,
 
 	connect(menu, SIGNAL(activated(int)),
 		this, SLOT(slotChannelListMenuActivated(int)));
+	connect(groupMenu, SIGNAL(activated(int)),
+		this, SLOT(slotChannelListMenuActivated(int)));
 
 	menu->exec(pos);
+
+	delete groupMenu;
 	delete menu;
 }
 
@@ -552,7 +570,20 @@ void QLCFixtureEditor::slotChannelListMenuActivated(int item)
 		break;
 
 	default:
-		break;
+	{
+		QString group;
+		QLCChannel* ch = NULL;
+		QListViewItem* node = NULL;
+
+		group = QLCChannel::indexToGroup(item - 10000);
+		ch = currentChannel();
+		if (ch != NULL)
+			ch->setGroup(group);
+		node = m_channelList->currentItem();
+		if (node != NULL)
+			node->setText(KChannelsColumnGroup, group);
+		setModified();
+	}
 	}
 }
 
@@ -563,6 +594,7 @@ void QLCFixtureEditor::pasteChannel()
 	{
 		m_fixtureDef->addChannel(new QLCChannel(ch));
 		refreshChannelList();
+		setModified();
 	}
 }
 

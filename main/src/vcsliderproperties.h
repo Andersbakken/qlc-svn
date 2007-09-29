@@ -88,6 +88,9 @@ protected:
 	/** Get a fixture channel node from the listview on the level page */
 	QCheckListItem* levelChannelNode(QCheckListItem* parent, t_channel ch);
 
+	/** Update channel selections from the slider's level channel list */
+	void levelUpdateChannelSelections();
+
 	/** 
 	 * Select all channels matching the given group name from the listview
 	 * on the level page
@@ -122,6 +125,10 @@ protected slots:
 	/*********************************************************************
 	 * OK & Cancel
 	 *********************************************************************/
+protected:
+	/** Store selected channels to the slider */
+	void storeLevelChannels();
+
 protected slots:
 	/** Callback for OK button clicks */
 	void accept();

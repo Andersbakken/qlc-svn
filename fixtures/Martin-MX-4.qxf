@@ -9,7 +9,7 @@
  <Model>MX-4</Model>
  <Type>Scanner</Type>
  <Channel Name="Dimmer, strobe, reset" >
-  <Group Byte="0" >Effect</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="9" >Shutter closed</Capability>
   <Capability Min="230" Max="239" >Shutter closed</Capability>
   <Capability Min="240" Max="249" >Reset</Capability>
@@ -93,12 +93,12 @@
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="2" >Tracking mode</Capability>
   <Capability Min="3" Max="255" >Vector mode speed fast to slow</Capability>
  </Channel>
  <Channel Name="Color/gobo speed" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="255" >Fast to slow</Capability>
  </Channel>
  <Mode Name="Mode 1" >

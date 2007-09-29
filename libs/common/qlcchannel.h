@@ -26,20 +26,24 @@
 #include <qptrlist.h>
 #include "common/types.h"
 
-#define KXMLQLCChannel          "Channel"
-#define KXMLQLCChannelNumber    "Number"
-#define KXMLQLCChannelName      "Name"
-#define KXMLQLCChannelGroup     "Group"
-#define KXMLQLCChannelGroupByte "Byte"
+#define KXMLQLCChannel          QString("Channel")
+#define KXMLQLCChannelNumber    QString("Number")
+#define KXMLQLCChannelName      QString("Name")
+#define KXMLQLCChannelGroup     QString("Group")
+#define KXMLQLCChannelGroupByte QString("Byte")
 
-#define KIntensityGroup "Intensity"
-#define KColourGroup    "Colour"
-#define KGoboGroup      "Gobo"
-#define KSpeedGroup     "Speed"
-#define KEffectGroup    "Effect"
-#define KBeamGroup      "Beam"
-#define KPanGroup       "Pan"
-#define KTiltGroup      "Tilt"
+#define KQLCChannelGroupIntensity   QString("Intensity")
+#define KQLCChannelGroupColour      QString("Colour")
+#define KQLCChannelGroupGobo        QString("Gobo")
+#define KQLCChannelGroupPrism       QString("Prism")
+#define KQLCChannelGroupShutter     QString("Shutter")
+#define KQLCChannelGroupBeam        QString("Beam")
+#define KQLCChannelGroupSpeed       QString("Speed")
+#define KQLCChannelGroupEffect      QString("Effect")
+#define KQLCChannelGroupPan         QString("Pan")
+#define KQLCChannelGroupTilt        QString("Tilt")
+#define KQLCChannelGroupMaintenance QString("Maintenance")
+#define KQLCChannelGroupNothing     QString("Nothing")
 
 class QFile;
 class QDomDocument;
@@ -73,7 +77,14 @@ class QLCChannel
 	/*********************************************************************
 	 * Channel groups
 	 *********************************************************************/
+	/** Get a list of possible channel groups */
 	static QStringList groupList();
+
+	/** Convert a group name to an index, to be used with menus etc. */
+	static int groupToIndex(QString group);
+
+	/** Convert an index to a group name, to be used with menus etc. */
+	static QString indexToGroup(int index);
 
 	/*********************************************************************
 	 * Properties
@@ -141,10 +152,6 @@ class QLCChannel
 	QString m_group;
 
 	t_controlbyte m_controlByte;
-
- public:
-	/** Get all available channel groups into a list (cleared first) */
-	static void groups(QStringList &list);
 };
 
 #endif

@@ -9,7 +9,7 @@
  <Model>MiniMAC Wash</Model>
  <Type>Moving Head</Type>
  <Channel Name="Shutter, strobe, reset, lamp" >
-  <Group Byte="0" >Effect</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="19" >Shutter closed</Capability>
   <Capability Min="20" Max="38" >Shutter open</Capability>
   <Capability Min="39" Max="49" >Shutter open</Capability>
@@ -66,21 +66,21 @@
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Channel Name="Effect speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="2" >Tracking mode</Capability>
   <Capability Min="3" Max="251" >Fast -> slow</Capability>
   <Capability Min="252" Max="255" >Blackout while moving</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="2" >Tracking mode</Capability>
   <Capability Min="3" Max="245" >Fast -> slow</Capability>
   <Capability Min="246" Max="248" >Tracking, slow</Capability>

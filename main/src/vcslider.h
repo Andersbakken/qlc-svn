@@ -223,6 +223,18 @@ public:
 	void removeLevelChannel(t_fixture_id fixture, t_channel channel);
 
 	/**
+	 * Clear the list of level channels
+	 *
+	 */
+	void clearLevelChannels();
+
+	/**
+	 * Get the list of channels that this slider controls
+	 *
+	 */
+	QValueList<int> levelChannels();
+
+	/**
 	 * Set low limit for levels set thru the slider
 	 *
 	 * @param value Low limit

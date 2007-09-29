@@ -401,6 +401,16 @@ void VCSlider::removeLevelChannel(t_fixture_id fixture, t_channel channel)
 	}
 }
 
+void VCSlider::clearLevelChannels()
+{
+	m_levelChannels.clear();
+}
+
+QValueList<int> VCSlider::levelChannels()
+{
+	return m_levelChannels;
+}
+
 void VCSlider::setLevelLowLimit(t_value value)
 {
 	m_levelLowLimit = value;

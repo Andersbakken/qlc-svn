@@ -9,7 +9,7 @@
  <Model>PCC-1200</Model>
  <Type>Color Changer</Type>
  <Channel Name="Colour 1" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="21" >White</Capability>
   <Capability Min="22" Max="43" >Red</Capability>
   <Capability Min="44" Max="65" >Blue</Capability>
@@ -21,7 +21,7 @@
   <Capability Min="194" Max="255" >Rainbow backward slow to fast</Capability>
  </Channel>
  <Channel Name="Colour 2" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="42" >White</Capability>
   <Capability Min="43" Max="85" >Purple</Capability>
   <Capability Min="86" Max="128" >Green</Capability>
@@ -34,7 +34,7 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Lamp switch, reset, fan speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="15" >Normal colour change, shortest distance</Capability>
   <Capability Min="16" Max="31" >Normal colour change, search clockwise</Capability>
   <Capability Min="32" Max="47" >Colour change at every position, shortest distance</Capability>

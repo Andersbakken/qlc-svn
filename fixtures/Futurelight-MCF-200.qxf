@@ -9,14 +9,14 @@
  <Model>MCF-200</Model>
  <Type>Flower</Type>
  <Channel Name="Rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="19" >No rotation</Capability>
   <Capability Min="20" Max="135" >Clockwise rotation speed</Capability>
   <Capability Min="136" Max="139" >No rotation</Capability>
   <Capability Min="140" Max="255" >Anti-clockwise rotation speed</Capability>
  </Channel>
  <Channel Name="Gobo, Reset, Strobe" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="7" >Closed</Capability>
   <Capability Min="8" Max="15" >Open</Capability>
   <Capability Min="16" Max="23" >Gobo 1</Capability>

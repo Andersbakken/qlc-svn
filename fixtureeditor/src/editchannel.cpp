@@ -64,7 +64,7 @@ void EditChannel::init()
 					   QString("/edit.png")));
 
 	/* Get available groups */
-	QLCChannel::groups(groupList);
+	groupList = QLCChannel::groupList();
 
 	/* Set window caption */
 	setCaption(QString("Edit Channel: ") + m_channel->name());
@@ -81,6 +81,7 @@ void EditChannel::init()
 		if (m_groupCombo->text(i) == m_channel->group())
 		{
 			m_groupCombo->setCurrentItem(i);
+			slotGroupActivated(m_channel->group());
 			break;
 		}
 	}
@@ -96,17 +97,12 @@ void EditChannel::slotNameChanged(const QString& name)
 void EditChannel::slotGroupActivated(const QString& group)
 {
 	m_channel->setGroup(group);
+	m_controlByteGroup->setButton(m_channel->controlByte());
 
-	if (group == QString(KPanGroup) || group == QString(KTiltGroup))
-	{
+	if (group == KQLCChannelGroupPan || group == KQLCChannelGroupTilt)
 		m_controlByteGroup->setEnabled(true);
-		m_controlByteGroup->setButton(m_channel->controlByte());
-	}
 	else
-	{
 		m_controlByteGroup->setEnabled(false);
-		m_controlByteGroup->setButton(m_channel->controlByte());
-	}
 }
 
 void EditChannel::slotControlByteActivated(int button)

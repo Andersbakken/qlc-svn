@@ -323,7 +323,7 @@ void App::slotFileOpen()
 
 	if (fixtureDef == NULL)
 	{
-		QMessageBox::warning(this, KApplicationNameShort,
+		QMessageBox::warning(this, "Fixture loading failed",
 				     "File didn't contain a valid fixture.");
 	}
 	else
@@ -436,8 +436,9 @@ void App::slotWindowMenuCallback(int item)
 		}
 		else
 		{
-			QMessageBox::critical(this, KApplicationNameShort,
-					      "Unable to focus window! Handle not found.");
+			QMessageBox::critical(this,
+					      "Unable to select window",
+					      "Handle not found");
 		}
 
 		disconnect(m_windowMenu);
@@ -505,7 +506,7 @@ void App::slotHelpAbout()
 //
 void App::slotHelpAboutQt()
 {
-	QMessageBox::aboutQt(this, KApplicationNameShort);
+	QMessageBox::aboutQt(this, KApplicationNameLong);
 }
 
 //

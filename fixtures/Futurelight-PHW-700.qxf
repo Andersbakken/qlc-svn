@@ -9,22 +9,22 @@
  <Model>PHW-700</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Tracking mode</Capability>
   <Capability Min="1" Max="249" >Vector speed fast to slow</Capability>
   <Capability Min="250" Max="252" >Tracking mode BO color changes</Capability>
   <Capability Min="253" Max="255" >Max vector speed, BO pan/tilt/color change</Capability>
  </Channel>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="15" >White</Capability>
   <Capability Min="16" Max="31" >Deep red</Capability>
   <Capability Min="32" Max="47" >Blue</Capability>
@@ -38,23 +38,23 @@
   <Capability Min="193" Max="255" >Rainbow backward slow to fast</Capability>
  </Channel>
  <Channel Name="Cyan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Cyan mix</Capability>
  </Channel>
  <Channel Name="Magenta" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Magenta mix</Capability>
  </Channel>
  <Channel Name="Yellow" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Yellow mix</Capability>
  </Channel>
  <Channel Name="Speed of CMY and dimmer" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="255" >Fast to slow</Capability>
  </Channel>
  <Channel Name="Colour macros" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="7" >Off</Capability>
   <Capability Min="8" Max="15" >Macro 1</Capability>
   <Capability Min="16" Max="23" >Macro 2</Capability>
@@ -89,17 +89,17 @@
   <Capability Min="248" Max="255" >Random CMY</Capability>
  </Channel>
  <Channel Name="Effect" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="70" >Full beam</Capability>
   <Capability Min="71" Max="230" >Beam shaper</Capability>
   <Capability Min="231" Max="255" >Frost filter</Capability>
  </Channel>
  <Channel Name="Zoom" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >28 to 7 degrees</Capability>
  </Channel>
  <Channel Name="Shutter, strobe" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="31" >Shutter closed</Capability>
   <Capability Min="32" Max="63" >Shutter open</Capability>
   <Capability Min="64" Max="95" >Strobe speed</Capability>
@@ -114,7 +114,7 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Lamp switch, reset, fan speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="15" >Normal colour change, shortest distance</Capability>
   <Capability Min="16" Max="31" >Normal colour change, search clockwise</Capability>
   <Capability Min="32" Max="47" >Colour change at every position, shortest distance</Capability>
@@ -133,11 +133,11 @@
   <Capability Min="240" Max="255" >No function</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt file" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Mode Name="Mode 1" >

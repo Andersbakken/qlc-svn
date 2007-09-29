@@ -9,30 +9,30 @@
  <Model>Color Spot 150</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
-  <Capability Min="0" Max="255" >Pan movement by 530°</Capability>
+  <Group Byte="0" >Pan</Group>
+  <Capability Min="0" Max="255" >Pan movement by 530deg</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
-  <Capability Min="0" Max="255" >Tilt movement by 280°</Capability>
+  <Group Byte="0" >Tilt</Group>
+  <Capability Min="0" Max="255" >Tilt movement by 280deg</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Fine control of pan movement</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Fine control of tilt</Capability>
  </Channel>
  <Channel Name="Speed of pan/tilt movement" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Max. speed (tracking mode)</Capability>
   <Capability Min="1" Max="249" >From max. speed to min speed (vector mode)</Capability>
   <Capability Min="250" Max="252" >Max. speed, blackout while color or gobo change</Capability>
   <Capability Min="253" Max="255" >Max speed, vector mode, black-out while any change</Capability>
  </Channel>
  <Channel Name="Colours" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="0" >Open, white</Capability>
   <Capability Min="10" Max="20" >Turquoise</Capability>
   <Capability Min="21" Max="31" >Red</Capability>
@@ -50,7 +50,7 @@
   <Capability Min="194" Max="255" >Backwards rainbow effect from slow to fast</Capability>
  </Channel>
  <Channel Name="Rotating gobos; shaking gobos" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="11" >Open position (hole)</Capability>
   <Capability Min="12" Max="23" >Gobo 1</Capability>
   <Capability Min="24" Max="35" >Gobo 2</Capability>
@@ -69,7 +69,7 @@
   <Capability Min="236" Max="255" >Gobo wheel rotation from slow to fast</Capability>
  </Channel>
  <Channel Name="Rotating gobo rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="127" >Gobo rotation</Capability>
   <Capability Min="128" Max="189" >Forwards gobo rotation from fast to slow</Capability>
   <Capability Min="190" Max="193" >No rotation</Capability>

@@ -45,9 +45,8 @@ class QLCWorkspace;
 
 class DeviceClass;
 
-const QString KApplicationNameLong  = "QLC Device Class Editor";
-const QString KApplicationNameShort = "DCE";
-const QString KApplicationVersion   = "Version 2.3";
+const QString KApplicationNameLong  = "QLC Fixture Definition Editor";
+const QString KApplicationVersion   = "Version 2.4";
 
 //////////////////////////////////////////////////////////////////
 // Class definition

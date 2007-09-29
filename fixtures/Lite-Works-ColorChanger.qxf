@@ -13,13 +13,13 @@
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="20" >Red</Capability>
   <Capability Min="21" Max="40" >Yellow</Capability>
  </Channel>
  <Channel Name="Fade time" >
-  <Group Byte="0" >Intensity</Group>
-  <Capability Min="0" Max="255" >Channel Level</Capability>
+  <Group Byte="0" >Speed</Group>
+  <Capability Min="0" Max="255" >Fade time</Capability>
  </Channel>
  <Mode Name="Mode 1" >
   <Physical>

@@ -9,19 +9,19 @@
  <Model>Varyscan2</Model>
  <Type>Scanner</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Dimmer" >

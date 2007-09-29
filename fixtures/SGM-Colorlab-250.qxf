@@ -13,7 +13,7 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="12" >White</Capability>
   <Capability Min="13" Max="24" >Amber</Capability>
   <Capability Min="25" Max="36" >Pale green</Capability>
@@ -36,7 +36,7 @@
   <Capability Min="229" Max="255" >Violet</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="20" >Open</Capability>
   <Capability Min="21" Max="40" >Gobo 1</Capability>
   <Capability Min="41" Max="60" >Gobo 2</Capability>
@@ -52,7 +52,7 @@
   <Capability Min="230" Max="255" >Music hard change</Capability>
  </Channel>
  <Channel Name="Shutter" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="9" >Closed</Capability>
   <Capability Min="10" Max="19" >Strobe 1.00 Hz</Capability>
   <Capability Min="20" Max="29" >Strobe 1.39 Hz</Capability>
@@ -78,14 +78,14 @@
   <Capability Min="238" Max="255" >Open</Capability>
  </Channel>
  <Channel Name="Palette" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="63" >Off</Capability>
   <Capability Min="64" Max="127" >Colour conversion filter</Capability>
   <Capability Min="128" Max="191" >Frost filter</Capability>
   <Capability Min="192" Max="255" >Colour conversion and frost filter</Capability>
  </Channel>
  <Channel Name="Colour mode" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="42" >Colour Hard</Capability>
   <Capability Min="43" Max="85" >Colour soft</Capability>
   <Capability Min="86" Max="127" >Colour soft cyan</Capability>

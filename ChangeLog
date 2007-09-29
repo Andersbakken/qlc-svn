@@ -1,3 +1,11 @@
+2007-Sep-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Added new channel groups: Prism, Maintenance, Shutter & Nothing
+	* Updated all fixture defs' channel groupings
+	* Fixed control byte setting in QLCChannel::operator=
+	* Updated VCSlider's channel saving
+	* Removed KApplicationNameShort from fixture editor
+	* Updated fixture editor's about box
+
 2007-Sep-24  Heikki Junnila <hjunnila@users.sf.net>
 	* Created implementation for All, None & Invert slots to VCSliderProperties
 	* Set level list sorting by range in VCSliderProperties

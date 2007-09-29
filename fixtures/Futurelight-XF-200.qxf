@@ -9,7 +9,7 @@
  <Model>XF-200</Model>
  <Type>Flower</Type>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="10" >Blackout</Capability>
   <Capability Min="11" Max="21" >Open</Capability>
   <Capability Min="22" Max="32" >Gobo 1</Capability>
@@ -26,13 +26,13 @@
   <Capability Min="194" Max="255" >Forward gobo rainbow speed</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="240" >Color combinations</Capability>
   <Capability Min="241" Max="250" >Rainbow</Capability>
   <Capability Min="251" Max="255" >Sound activation</Capability>
  </Channel>
  <Channel Name="Flower reflector" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="15" >Stop</Capability>
   <Capability Min="16" Max="130" >Clockwise rotation speed</Capability>
   <Capability Min="131" Max="245" >Anti-clockwise rotation speed</Capability>

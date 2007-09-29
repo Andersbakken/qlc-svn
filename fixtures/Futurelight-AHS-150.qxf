@@ -9,15 +9,15 @@
  <Model>AHS-150</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="4" >Tracking mode</Capability>
   <Capability Min="5" Max="225" >Vector mode speed</Capability>
   <Capability Min="226" Max="235" >BO with pan/tilt</Capability>
@@ -25,11 +25,11 @@
   <Capability Min="246" Max="255" >No function</Capability>
  </Channel>
  <Channel Name="Focus" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Near to far</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="9" >Open</Capability>
   <Capability Min="10" Max="19" >Gobo 1</Capability>
   <Capability Min="20" Max="29" >Gobo 2</Capability>
@@ -46,11 +46,11 @@
   <Capability Min="190" Max="255" >Gobo rainbow speed</Capability>
  </Channel>
  <Channel Name="Gobo index" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="255" >Gobo indexing</Capability>
  </Channel>
  <Channel Name="Gobo rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="11" >Gobo indexing</Capability>
   <Capability Min="12" Max="130" >Forwards rotation speed fast to slow</Capability>
   <Capability Min="131" Max="144" >No rotation</Capability>
@@ -68,7 +68,7 @@
   <Capability Min="128" Max="159" >Pulse sequence</Capability>
  </Channel>
  <Channel Name="Lamp switch, reset, programs" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="15" >Normal colour change, shortest distance</Capability>
   <Capability Min="32" Max="47" >Colour change at every position, shortest distance</Capability>
   <Capability Min="64" Max="79" >Lamp on</Capability>
@@ -87,11 +87,11 @@
   <Capability Min="240" Max="255" >No function</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Mode Name="Mode 1" >

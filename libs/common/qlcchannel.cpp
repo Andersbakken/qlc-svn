@@ -35,14 +35,14 @@
 QLCChannel::QLCChannel()
 {
 	m_name = QString::null;
-	m_group = QString(KIntensityGroup);
+	m_group = QString(KQLCChannelGroupIntensity);
 	m_controlByte = 0;
 }
 
 QLCChannel::QLCChannel(QLCChannel* channel)
 {
 	m_name = QString::null;
-	m_group = QString(KIntensityGroup);
+	m_group = QString(KQLCChannelGroupIntensity);
 	m_controlByte = 0;
 
 	if (channel != NULL)
@@ -52,7 +52,7 @@ QLCChannel::QLCChannel(QLCChannel* channel)
 QLCChannel::QLCChannel(QDomElement* tag)
 {
 	m_name = QString::null;
-	m_group = QString(KIntensityGroup);
+	m_group = QString(KQLCChannelGroupIntensity);
 	m_controlByte = 0;
 
 	loadXML(tag);
@@ -64,7 +64,7 @@ QLCChannel::QLCChannel(LogicalChannel* lch)
 	QPtrListIterator<Capability> it(*lch->capabilities());
 	
 	m_name = lch->name();
-	m_group = QString(KIntensityGroup);
+	m_group = QString(KQLCChannelGroupIntensity);
 	m_controlByte = 0;
 	
 	while ((cap = it.current()) != 0)
@@ -89,6 +89,7 @@ QLCChannel& QLCChannel::operator=(QLCChannel& channel)
 
 		m_name = channel.m_name;
 		m_group = channel.m_group;
+		m_controlByte = channel.m_controlByte;
 
 		/* Clear old capabilities */
 		while (m_capabilities.isEmpty() == false)
@@ -112,16 +113,69 @@ QStringList QLCChannel::groupList()
 {
 	QStringList list;
 
-	list.append("Intensity");
-	list.append("Colour");
-	list.append("Gobo");
-	list.append("Speed");
-	list.append("Effect");
-	list.append("Beam");
-	list.append("Pan");
-	list.append("Tilt");
+	list.append(KQLCChannelGroupBeam);
+	list.append(KQLCChannelGroupColour);
+	list.append(KQLCChannelGroupEffect);
+	list.append(KQLCChannelGroupGobo);
+	list.append(KQLCChannelGroupIntensity);
+	list.append(KQLCChannelGroupMaintenance);
+	list.append(KQLCChannelGroupNothing);
+	list.append(KQLCChannelGroupPan);
+	list.append(KQLCChannelGroupPrism);
+	list.append(KQLCChannelGroupShutter);
+	list.append(KQLCChannelGroupSpeed);
+	list.append(KQLCChannelGroupTilt);
 
 	return list;
+}
+
+int QLCChannel::groupToIndex(QString group)
+{
+	if (group == KQLCChannelGroupBeam)
+		return 0;
+	else if (group == KQLCChannelGroupColour)
+		return 1;
+	else if (group == KQLCChannelGroupEffect)
+		return 2;
+	else if (group == KQLCChannelGroupGobo)
+		return 3;
+	else if (group == KQLCChannelGroupIntensity)
+		return 4;
+	else if (group == KQLCChannelGroupMaintenance)
+		return 5;
+	else if (group == KQLCChannelGroupNothing)
+		return 6;
+	else if (group == KQLCChannelGroupPan)
+		return 7;
+	else if (group == KQLCChannelGroupPrism)
+		return 8;
+	else if (group == KQLCChannelGroupShutter)
+		return 9;
+	else if (group == KQLCChannelGroupSpeed)
+		return 10;
+	else if (group == KQLCChannelGroupTilt)
+		return 11;
+	else
+		return -1;
+}
+
+QString QLCChannel::indexToGroup(int index)
+{
+	switch (index)
+	{
+	case 0: return KQLCChannelGroupBeam;
+	case 1: return KQLCChannelGroupColour;
+	case 2: return KQLCChannelGroupEffect;
+	case 3: return KQLCChannelGroupGobo;
+	case 4: return KQLCChannelGroupIntensity;
+	case 5: return KQLCChannelGroupMaintenance;
+	default: case 6: return KQLCChannelGroupNothing;
+	case 7: return KQLCChannelGroupPan;
+	case 8: return KQLCChannelGroupPrism;
+	case 9: return KQLCChannelGroupShutter;
+	case 10: return KQLCChannelGroupSpeed;
+	case 11: return KQLCChannelGroupTilt;
+	}
 }
 
 /*****************************************************************************
@@ -279,21 +333,3 @@ bool QLCChannel::loadXML(QDomElement* root)
 
 	return true;
 }
-
-/*****************************************************************************
- * Groups 
- *****************************************************************************/
-
-void QLCChannel::groups(QStringList& list)
-{
-	list.clear();
-	list.append(KIntensityGroup);
-	list.append(KColourGroup);
-	list.append(KGoboGroup);
-	list.append(KSpeedGroup);
-	list.append(KEffectGroup);
-	list.append(KBeamGroup);
-	list.append(KPanGroup);
-	list.append(KTiltGroup);
-}
-

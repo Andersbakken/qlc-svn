@@ -9,27 +9,27 @@
  <Model>Giotto Spot 250</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Channel Name="Iris" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Iris</Capability>
  </Channel>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="24" >White</Capability>
   <Capability Min="25" Max="49" >Red</Capability>
   <Capability Min="50" Max="74" >Yellow</Capability>
@@ -42,7 +42,7 @@
   <Capability Min="226" Max="255" >Orange</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="20" >Open</Capability>
   <Capability Min="21" Max="41" >Gobo 1</Capability>
   <Capability Min="42" Max="62" >Gobo 2</Capability>
@@ -56,7 +56,7 @@
   <Capability Min="246" Max="255" >Music change</Capability>
  </Channel>
  <Channel Name="Shutter" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="7" >Closed</Capability>
   <Capability Min="8" Max="15" >Strobe 1.00 Hz</Capability>
   <Capability Min="16" Max="23" >Strobe 1.38 Hz</Capability>
@@ -85,33 +85,33 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Gobo rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="111" >Rotate CW</Capability>
   <Capability Min="112" Max="144" >No rotation</Capability>
   <Capability Min="145" Max="255" >Rotate CCW</Capability>
  </Channel>
  <Channel Name="Prism" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Prism</Group>
   <Capability Min="0" Max="84" >Off</Capability>
   <Capability Min="85" Max="170" >Comet</Capability>
   <Capability Min="171" Max="255" >4-facet prism</Capability>
  </Channel>
  <Channel Name="Prism rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Prism</Group>
   <Capability Min="0" Max="111" >Rotate CW</Capability>
   <Capability Min="112" Max="143" >No rotation</Capability>
   <Capability Min="144" Max="255" >Rotate CCW</Capability>
  </Channel>
  <Channel Name="Focus" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Focus</Capability>
  </Channel>
  <Channel Name="Zoom" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Zoom 9 - 24 degrees</Capability>
  </Channel>
  <Channel Name="Effects" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="31" >Open</Capability>
   <Capability Min="32" Max="62" >Tunnel</Capability>
   <Capability Min="63" Max="93" >Stripped texture</Capability>
@@ -122,16 +122,16 @@
   <Capability Min="218" Max="255" >Filter CTO</Capability>
  </Channel>
  <Channel Name="Frost" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Frost adjustment</Capability>
  </Channel>
  <Channel Name="Movement speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="3" >Tracking mode</Capability>
   <Capability Min="4" Max="255" >Speed, slow -> fast</Capability>
  </Channel>
  <Channel Name="Reset" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="60" >Off</Capability>
   <Capability Min="61" Max="129" >Hysteresis</Capability>
   <Capability Min="130" Max="179" >On</Capability>
@@ -139,11 +139,11 @@
   <Capability Min="240" Max="255" >Reset</Capability>
  </Channel>
  <Channel Name="Gobo shake speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="255" >Shake speed</Capability>
  </Channel>
  <Channel Name="Colour mode" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="50" >Full colour</Capability>
   <Capability Min="51" Max="101" >Half colour</Capability>
   <Capability Min="102" Max="152" >Soft colour</Capability>
@@ -151,12 +151,12 @@
   <Capability Min="204" Max="255" >Hard music change</Capability>
  </Channel>
  <Channel Name="Gobo mode" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="127" >Indexing mode</Capability>
   <Capability Min="128" Max="255" >Normal mode</Capability>
  </Channel>
  <Channel Name="Macro" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="7" >No macro</Capability>
   <Capability Min="8" Max="15" >Macro 1, dimmer, shutter</Capability>
   <Capability Min="16" Max="23" >Macro 2, dimmer, shutter</Capability>

@@ -9,22 +9,22 @@
  <Model>PHS-200</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Tracking mode</Capability>
   <Capability Min="1" Max="225" >Vector mode speed</Capability>
   <Capability Min="226" Max="235" >BO with pan/tilt</Capability>
   <Capability Min="236" Max="245" >BO with colour/gobo change</Capability>
  </Channel>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="19" >White</Capability>
   <Capability Min="20" Max="39" >Red</Capability>
   <Capability Min="40" Max="59" >Dark blue</Capability>
@@ -38,7 +38,7 @@
   <Capability Min="180" Max="199" >Light blue</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="13" >Open</Capability>
   <Capability Min="14" Max="27" >Gobo 1</Capability>
   <Capability Min="28" Max="41" >Gobo 2</Capability>
@@ -56,7 +56,7 @@
   <Capability Min="236" Max="255" >Gobo 7 shake speed</Capability>
  </Channel>
  <Channel Name="Gobo rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="7" >No rotation</Capability>
   <Capability Min="8" Max="127" >Forwards rotation speed fast to slow</Capability>
   <Capability Min="128" Max="135" >No rotation</Capability>
@@ -72,7 +72,7 @@
   <Capability Min="224" Max="255" >Shutter open</Capability>
  </Channel>
  <Channel Name="Lamp switch, reset, programs" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="31" >Normal colour change</Capability>
   <Capability Min="32" Max="63" >Colour change at every position</Capability>
   <Capability Min="64" Max="79" >Lamp on</Capability>

@@ -9,22 +9,22 @@
  <Model>PHS-250</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="14" >Tracking mode</Capability>
   <Capability Min="15" Max="225" >Vector mode speed fast to slow</Capability>
   <Capability Min="226" Max="235" >BO with pan/tilt</Capability>
   <Capability Min="236" Max="245" >BO with color/gobo change</Capability>
  </Channel>
  <Channel Name="Colour" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="13" >White</Capability>
   <Capability Min="14" Max="27" >Light blue</Capability>
   <Capability Min="28" Max="41" >Red</Capability>
@@ -39,7 +39,7 @@
   <Capability Min="194" Max="255" >Rainbow backward slow to fast</Capability>
  </Channel>
  <Channel Name="Static gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="13" >Open</Capability>
   <Capability Min="14" Max="27" >Gobo 1</Capability>
   <Capability Min="28" Max="41" >Gobo 2</Capability>
@@ -58,7 +58,7 @@
   <Capability Min="224" Max="255" >Gobo rainbow speed</Capability>
  </Channel>
  <Channel Name="Rotating gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="9" >Open</Capability>
   <Capability Min="10" Max="19" >Gobo 1</Capability>
   <Capability Min="20" Max="29" >Gobo 2</Capability>
@@ -75,14 +75,14 @@
   <Capability Min="190" Max="255" >Gobo rainbow speed</Capability>
  </Channel>
  <Channel Name="Rotating gobo index, rotation" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="127" >Gobo indexing</Capability>
   <Capability Min="128" Max="187" >Forward speed fast to slow</Capability>
   <Capability Min="188" Max="193" >No rotation</Capability>
   <Capability Min="194" Max="255" >Backward speed slow to fast</Capability>
  </Channel>
  <Channel Name="Prism" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Prism</Group>
   <Capability Min="0" Max="3" >Open</Capability>
   <Capability Min="4" Max="63" >Forward rotation fast to slow</Capability>
   <Capability Min="64" Max="67" >No rotation</Capability>
@@ -105,11 +105,11 @@
   <Capability Min="248" Max="255" >Macro 16</Capability>
  </Channel>
  <Channel Name="Focus" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Near to far</Capability>
  </Channel>
  <Channel Name="Shutter, strobe" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="31" >Shutter closed</Capability>
   <Capability Min="32" Max="63" >Dimmer activation</Capability>
   <Capability Min="64" Max="159" >Strobe speed</Capability>
@@ -122,7 +122,7 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Lamp switch, reset, programs" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="15" >Normal color change, shortest distance</Capability>
   <Capability Min="16" Max="31" >Normal colour change, search clockwise</Capability>
   <Capability Min="32" Max="47" >Colour change at every position, shortest distance</Capability>
@@ -140,11 +140,11 @@
   <Capability Min="224" Max="239" >Lamp off</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Mode Name="Mode 1" >

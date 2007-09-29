@@ -9,7 +9,7 @@
  <Model>MiniMAC Profile</Model>
  <Type>Moving Head</Type>
  <Channel Name="Shutter, strobe, reset, lamp" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="19" >Shutter closed</Capability>
   <Capability Min="20" Max="38" >Shutter open</Capability>
   <Capability Min="39" Max="49" >Shutter open</Capability>
@@ -92,11 +92,11 @@
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Pan</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Tilt</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Channel Level</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >

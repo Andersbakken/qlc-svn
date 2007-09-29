@@ -9,23 +9,23 @@
  <Model>Giotto Wash 400</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="20" >White</Capability>
   <Capability Min="21" Max="40" >Red</Capability>
   <Capability Min="41" Max="60" >Blue</Capability>
@@ -37,15 +37,15 @@
   <Capability Min="161" Max="255" >Rainbow speed</Capability>
  </Channel>
  <Channel Name="Cyan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Cyan mix</Capability>
  </Channel>
  <Channel Name="Magenta" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Magenta mix</Capability>
  </Channel>
  <Channel Name="Yellow" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Yellow mix</Capability>
  </Channel>
  <Channel Name="Dimmer" >
@@ -53,7 +53,7 @@
   <Capability Min="0" Max="255" >Dimmer intensity</Capability>
  </Channel>
  <Channel Name="Shutter" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="17" >Closed</Capability>
   <Capability Min="18" Max="36" >Strobe 1.80 Hz</Capability>
   <Capability Min="37" Max="54" >Strobe 2.00 Hz</Capability>
@@ -70,16 +70,16 @@
   <Capability Min="239" Max="255" >Open</Capability>
  </Channel>
  <Channel Name="Zoom" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Zoom 9 - 24 degrees</Capability>
  </Channel>
  <Channel Name="Movement speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="3" >Tracking mode</Capability>
   <Capability Min="4" Max="255" >Speed, slow -> fast</Capability>
  </Channel>
  <Channel Name="Reset" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Maintenance</Group>
   <Capability Min="0" Max="60" >Off</Capability>
   <Capability Min="61" Max="129" >Hysteresis</Capability>
   <Capability Min="130" Max="179" >On</Capability>
@@ -87,15 +87,15 @@
   <Capability Min="240" Max="255" >Reset</Capability>
  </Channel>
  <Channel Name="CTO" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >White to 3200K</Capability>
  </Channel>
  <Channel Name="Colour Map" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="255" >Colour map</Capability>
  </Channel>
  <Channel Name="Macro" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="7" >No macro</Capability>
   <Capability Min="8" Max="15" >Macro 1, dimmer, shutter</Capability>
   <Capability Min="16" Max="23" >Macro 2, dimmer, shutter</Capability>
@@ -115,11 +115,11 @@
   <Capability Min="128" Max="135" >Macro 15, frost</Capability>
  </Channel>
  <Channel Name="Beam shaper" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >Beam shaper</Capability>
  </Channel>
  <Channel Name="Beam shaper indexing" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Beam</Group>
   <Capability Min="0" Max="255" >0 - 180 degrees</Capability>
  </Channel>
  <Mode Name="Mode 1" >

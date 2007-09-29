@@ -9,7 +9,7 @@
  <Model>Roboscan 812</Model>
  <Type>Scanner</Type>
  <Channel Name="Strobe, SA, Reset, Lamp ON" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="10" >No strobe</Capability>
   <Capability Min="11" Max="74" >Gobo strobe (fast->slow)</Capability>
   <Capability Min="75" Max="138" >Color strobe (fast->slow)</Capability>
@@ -19,7 +19,7 @@
   <Capability Min="236" Max="255" >Lamp power ON</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="15" >Black -> white</Capability>
   <Capability Min="16" Max="30" >White -> Color 1</Capability>
   <Capability Min="31" Max="45" >Color 1 -> Color 2</Capability>
@@ -47,7 +47,7 @@
   <Capability Min="240" Max="255" >Black</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="15" >Closed -> Open</Capability>
   <Capability Min="16" Max="30" >Open -> Gobo 1</Capability>
   <Capability Min="31" Max="45" >Gobo 1 -> Gobo 2</Capability>
@@ -75,20 +75,20 @@
   <Capability Min="240" Max="255" >Closed</Capability>
  </Channel>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Left -> Center -> Right</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Up -> Center -> Down</Capability>
  </Channel>
  <Channel Name="Movement Speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Tracking mode enabled</Capability>
   <Capability Min="1" Max="255" >Fast -> Slow</Capability>
  </Channel>
  <Channel Name="Color / Gobo speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Tracking mode enabled</Capability>
   <Capability Min="1" Max="255" >Fast -> Slow</Capability>
  </Channel>

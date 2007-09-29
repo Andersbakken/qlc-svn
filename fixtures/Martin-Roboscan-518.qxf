@@ -9,7 +9,7 @@
  <Model>Roboscan 518</Model>
  <Type>Scanner</Type>
  <Channel Name="Strobe, Stand-alone, Reset, Lamp" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Shutter</Group>
   <Capability Min="0" Max="5" >Default</Capability>
   <Capability Min="6" Max="10" >Fan low</Capability>
   <Capability Min="11" Max="138" >Strobe speed</Capability>
@@ -26,7 +26,7 @@
   <Capability Min="240" Max="255" >No dimming</Capability>
  </Channel>
  <Channel Name="Color" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="3" >White</Capability>
   <Capability Min="4" Max="7" >White / Pink</Capability>
   <Capability Min="8" Max="11" >Pink</Capability>
@@ -66,7 +66,7 @@
   <Capability Min="198" Max="255" >CCW rotation, slow -> fast</Capability>
  </Channel>
  <Channel Name="Gobo" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="0" >Open</Capability>
   <Capability Min="1" Max="24" >Gobo 1, CCW, fast -> slow</Capability>
   <Capability Min="25" Max="27" >Gobo 1, static</Capability>
@@ -85,38 +85,38 @@
   <Capability Min="232" Max="255" >Gobo 5, CW, slow -> fast</Capability>
  </Channel>
  <Channel Name="Effect" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Effect</Group>
   <Capability Min="0" Max="63" >Open</Capability>
   <Capability Min="64" Max="127" >5500 -> 3400K CTC filter</Capability>
   <Capability Min="128" Max="191" >Frost filter</Capability>
   <Capability Min="192" Max="255" >Prism</Capability>
  </Channel>
  <Channel Name="Pan" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Pan</Group>
   <Capability Min="0" Max="255" >Pan</Capability>
  </Channel>
  <Channel Name="Tilt" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt</Capability>
  </Channel>
  <Channel Name="Color/dimmer speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Tracking mode</Capability>
   <Capability Min="1" Max="251" >Fast -> slow</Capability>
   <Capability Min="252" Max="255" >Blackout while moving, fast dimmer</Capability>
  </Channel>
  <Channel Name="Pan/tilt speed" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="0" >Tracking mode</Capability>
   <Capability Min="1" Max="251" >Fast -> slow</Capability>
   <Capability Min="252" Max="255" >Blackout while moving</Capability>
  </Channel>
  <Channel Name="Pan fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Pan</Group>
   <Capability Min="0" Max="255" >Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Tilt</Group>
   <Capability Min="0" Max="255" >Tilt fine</Capability>
  </Channel>
  <Mode Name="Mode 2" >
