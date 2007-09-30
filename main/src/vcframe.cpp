@@ -478,48 +478,18 @@ void VCFrame::addLabel(QPoint at)
  * Event handlers
  *****************************************************************************/
 
-void VCFrame::mousePressEvent(QMouseEvent* e)
+void VCFrame::paintEvent(QPaintEvent* e)
 {
-	if (_app->mode() == App::Design)
-	{
-		_app->virtualConsole()->setSelectedWidget(this);
-
-		if (m_resizeMode == true && isBottomFrame() == false)
-		{
-			setMouseTracking(false);
-			m_resizeMode = false;
-		}
-
-		if ((e->button() & LeftButton || e->button() & MidButton)
-		    && isBottomFrame() == false)
-		{
-			if (e->x() > rect().width() - 10 &&
-			    e->y() > rect().height() - 10)
-			{
-				m_resizeMode = true;
-				setMouseTracking(true);
-				setCursor(QCursor(SizeFDiagCursor));
-			}
-			else
-			{
-				m_mousePressPoint = QPoint(e->x(), e->y());
-				setCursor(QCursor(SizeAllCursor));
-			}
-		}
-		else if (e->button() & RightButton)
-		{
-			m_mousePressPoint = QPoint(e->x(), e->y());
-			invokeMenu(mapToGlobal(e->pos()));
-		}
-	}
+	if (isBottomFrame() == false)
+		VCWidget::paintEvent(e);
 	else
-	{
-		QFrame::mousePressEvent(e);
-	}
+		QFrame::paintEvent(e);
 }
 
-void VCFrame::mouseDoubleClickEvent(QMouseEvent* e)
+void VCFrame::mouseMoveEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
-		slotMenuCallback(KVCMenuEditProperties);
+	if (isBottomFrame() == false)
+		VCWidget::mouseMoveEvent(e);
+	else
+		QFrame::mouseMoveEvent(e);
 }

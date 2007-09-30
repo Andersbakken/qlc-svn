@@ -1,4 +1,9 @@
 2007-Sep-30  Heikki Junnila <hjunnila@users.sf.net>
+	* Removed VCFrame::mousePressEvent()
+	* Added VCFrame::paintEvent() and ::mouseMoveEvent() for bottom
+	  frame handling.
+
+2007-Sep-30  Heikki Junnila <hjunnila@users.sf.net>
 	* Converted VCXYPad to use VCWidget as parent instead of QFrame.
 
 2007-Sep-29  Heikki Junnila <hjunnila@users.sf.net>

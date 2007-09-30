@@ -108,8 +108,8 @@ public:
 	 * Event handlers
 	 *********************************************************************/
 protected:
-	void mousePressEvent(QMouseEvent* e);
-	void mouseDoubleClickEvent(QMouseEvent* e);
+	void paintEvent(QPaintEvent* e);
+	void mouseMoveEvent(QMouseEvent* e);
 };
 
 #endif
