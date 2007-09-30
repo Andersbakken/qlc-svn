@@ -59,6 +59,7 @@ VCWidget::VCWidget(QWidget* parent, const char* name) : QFrame(parent, name)
 
 	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 
+	setCaption("Widget");
 	setFrameStyle(KVCWidgetFrameStyleSunken);
 	setMinimumSize(20, 20);
 	resize(QPoint(120, 120));
@@ -673,7 +674,8 @@ void VCWidget::paintEvent(QPaintEvent* e)
 
 		// Draw a resize handle
 		QBrush b(SolidPattern);
-		p.fillRect(rect().width() - 10, rect().height() - 10, 10, 10, b);
+		p.fillRect(rect().width() - 10,
+			   rect().height() - 10, 10, 10, b);
 	}
 }
 

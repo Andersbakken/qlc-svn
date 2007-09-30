@@ -1,3 +1,6 @@
+2007-Sep-30  Heikki Junnila <hjunnila@users.sf.net>
+	* Converted VCXYPad to use VCWidget as parent instead of QFrame.
+
 2007-Sep-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Finished VCSlider saveXML
 	* Finished VCSlider loadXML

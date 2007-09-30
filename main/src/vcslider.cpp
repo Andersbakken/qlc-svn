@@ -85,6 +85,8 @@ VCSlider::~VCSlider()
 
 void VCSlider::init()
 {
+	setCaption("Slider");
+
 	/* Main VBox */
 	m_vbox = new QVBoxLayout(this);
 	m_vbox->setMargin(10);

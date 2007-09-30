@@ -22,10 +22,10 @@
 #ifndef VCXYPAD_H
 #define VCXYPAD_H
 
-#include <qframe.h>
 #include <qptrlist.h>
 #include <qpixmap.h>
 
+#include "vcwidget.h"
 #include "common/types.h"
 
 class QFile;
@@ -52,7 +52,7 @@ class XYChannelUnit;
 #define KXMLQLCVCXYPadChannelHighLimit "HighLimit"
 #define KXMLQLCVCXYPadChannelReverse "Reverse"
 
-class VCXYPad : public QFrame
+class VCXYPad : public VCWidget
 {
 	Q_OBJECT
 
@@ -69,120 +69,55 @@ class VCXYPad : public QFrame
 	void scram();
 
 	/*********************************************************************
-	 * Background image
-	 *********************************************************************/
-public:
-	/** Set the widget's background image */
-	void setBackgroundImage(const QString& path);
-	
-	/** Get the widget's background image */
-	const QString& backgroundImage();
-	
-	void chooseBackgroundImage();
-
-protected:
-	QString m_backgroundImage;
-
-	/*********************************************************************
-	 * Background color
-	 *********************************************************************/
-public:
-	/** Set the widget's background color and invalidate background image */
-	void setBackgroundColor(const QColor& color);
-
-	/** Reset the widget's background color to whatever the platform uses */
-	void resetBackgroundColor();
-
-	void chooseBackgroundColor();
-
-	/** Get the widget's background color. The color is invalid if the
-	    widget has a background image. */
-	const QColor& backgroundColor() const { return paletteBackgroundColor(); }
-
-	/** Check, whether the widget has a custom background color */
-	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
-
-protected:
-	bool m_hasCustomBackgroundColor;
-
-	/*********************************************************************
-	 * Foreground color
-	 *********************************************************************/
-public:
-	/** Set the widget's foreground color */
-	void setForegroundColor(const QColor& color);
-
-	/** Reset the widget's background color to whatever the platform uses */
-	void resetForegroundColor();
-
-	void chooseForegroundColor();
-
-	/** Get the widget's foreground color */
-	const QColor& foregroundColor() const { return paletteForegroundColor(); }
-
-	/** Check, whether the widget has a custom foreground color */
-	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
-
-protected:
-	bool m_hasCustomForegroundColor;
-
-	/*********************************************************************
-	 * Font
-	 *********************************************************************/
-public:
-	/** Set the font used for the widget's caption */
-	void setFont(const QFont& font);
-
-	/** Get the font used for the widget's caption */
-	QFont font() const { return QWidget::font(); }
-
-	void chooseFont();
-
-	/** Reset the font used for the widget's caption to whatever the
-	    platform uses */
-	void resetFont();
-
-	/** Check, whether the widget has a custom font */
-	bool hasCustomFont() const { return m_hasCustomFont; }
-
-protected:
-	bool m_hasCustomFont;
-
-	/*********************************************************************
-	 * Caption
-	 *********************************************************************/
-public:
-	/** Set this label's caption text */
-	void setCaption(const QString& text);
-
-	/** Invoke a renaming edit */
-	void rename();
-
-	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
 public:
+	/** Display a properties dialog */
 	void editProperties();
 
 	/*********************************************************************
 	 * Channels
 	 *********************************************************************/
 public:
-	/* Append a new channel to this pad */
+	/** 
+	 * Append a new channel to this pad
+	 *
+	 * @param axis X or Y axis channel
+	 * @param fixture The ID of the fixture, whose channel to append
+	 * @param channel The fixture channel to append
+	 * @lowLimit The lowest value that the channel can have with this pad
+	 * @param highLimit The highest value that the channel can have with this pad
+	 * @param reverse Treat the axis reversed (up<->down,left<->right)
+	 */
 	void appendChannel(t_axis axis, t_fixture_id fixture, t_channel channel,
 			   t_value lowLimit, t_value highLimit, bool reverse);
 
-	/* Remove a channel from this pad */
+	/**
+	 * Remove a channel from this pad
+	 *
+	 * @param axis X or Y axis channel
+	 * @param fixture The ID of the fixture, whose channel to remove
+	 * @param channel The fixture channel to remove
+	 **/
 	void removeChannel(t_axis axis, t_fixture_id fixture, t_channel channel);
 
-	/* Get a certain channel from this pad */
+	/**
+	 * Get a certain channel unit from this pad
+	 *
+	 * @param axis X or Y axis channel
+	 * @param fixture The ID of the fixture to look up
+	 * @param channel The fixture channel to get
+	 **/
 	XYChannelUnit* channel(t_axis axis, t_fixture_id fixture,
 			       t_channel channel);
 	
-	/* Clear all channel lists from this pad */
+	/** Clear all channel lists from this pad */
 	void clearChannels();
 
+	/** Get the pad's list of X axis channels */
 	QPtrList<XYChannelUnit>* channelsX() { return &m_channelsX; }
+
+	/** Get the pad's list of Y axis channels */
 	QPtrList<XYChannelUnit>* channelsY() { return &m_channelsY; }
 
 protected:  
@@ -193,8 +128,13 @@ protected:
 	 * Current position
 	 *********************************************************************/
 public:
+	/** Get the pad's current position (i.e. where the point is) */
 	const QPoint currentXYPosition() const { return m_currentXYPosition; }
+
+	/** Set the pad's current position (i.e. move the point) */
 	void setCurrentXYPosition(const QPoint& point);
+
+	/** Same stuff as above, but with separate x & y integers */
 	void setCurrentXYPosition(int x, int y);
 
 protected:
@@ -205,48 +145,43 @@ protected:
 	 * Load & Save
 	 *********************************************************************/
 public:
+	/** Create & load a VCXYPad from the given XML node
+	 *
+	 * @param doc A QDomDocument containing a QLC workspace
+	 * @param root A QDomElement containing a VCXYPad node tree
+	 * @param parent The parent widget that the loaded pad belongs to 
+	 */
 	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* root);
 
-protected:
-	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
-	bool saveXMLAppearance(QDomDocument* doc, QDomElement* xypad_root);
+	/**
+	 * Load a VCXYPad's contents from the given XML node
+	 *
+	 * @param doc A QDomDocument containing a QLC workspace
+	 * @param root A QDomElement containing a VCXYPad node tree
+	 */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/**
+	 * Save a VCXYPad's contents to the given XML node
+	 *
+	 * @param doc A QDomDocument containing a QLC workspace
+	 * @param root A QDomElement where to create this pad's VCXYPad node
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* root);
 
 	/*********************************************************************
 	 * QLC Mode change
 	 *********************************************************************/
 protected slots:
+	/** Catch QLC mode changes */
 	void slotModeChanged();
 
 	/*********************************************************************
 	 * DMX writer
 	 *********************************************************************/
 protected:
+	/** Write DMX data according to the given XY position */
 	void outputDMX(int x, int y);
-
-	/*********************************************************************
-	 * Widget menu
-	 *********************************************************************/
-protected:
-	void invokeMenu(QPoint point);
-
-protected slots:
-	void slotMenuCallback(int item);
-
-	/*********************************************************************
-	 * Widget move / resize
-	 *********************************************************************/
-public:
-	void resize(QPoint p);
-	void move(QPoint p);
-
-protected:
-	int m_xpos;
-	int m_ypos;
-
-	QPoint m_mousePressPoint;
-	bool m_resizeMode;
 
 	/*********************************************************************
 	 * Event handlers
@@ -256,7 +191,6 @@ protected:
 
 	void mousePressEvent(QMouseEvent* e);
 	void mouseReleaseEvent(QMouseEvent* e);
-	void mouseDoubleClickEvent(QMouseEvent* e);
 	void mouseMoveEvent(QMouseEvent* e);
 };
 
