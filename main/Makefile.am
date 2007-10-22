@@ -19,16 +19,14 @@ noinst_HEADERS = \
 	src/uic_chasereditor.h \
 	src/uic_consolechannel.h \
 	src/uic_dmxaddresstool.h \
+	src/uic_dmxmapeditor.h \
 	src/uic_editscenevalue.h \
-	src/uic_editsettingskey.h \
 	src/uic_efxeditor.h \
 	src/uic_fixturelist.h \
 	src/uic_fixtureproperties.h \
 	src/uic_functioncollectioneditor.h \
 	src/uic_sceneeditor.h \
-	src/uic_settings.h \
 	src/uic_vcbuttonproperties.h \
-	src/uic_vcdocksliderproperties.h \
 	src/uic_vcdockslider.h \
 	src/uic_vcframeproperties.h \
 	src/uic_vcsliderproperties.h \
@@ -45,9 +43,10 @@ noinst_HEADERS = \
 	src/busproperties.h \
 	src/chasereditor.h \
 	src/chaser.h \
-	src/configkeys.h \
 	src/consolechannel.h \
 	src/dmxaddresstool.h \
+	src/dmxmap.h \
+	src/dmxmapeditor.h \
 	src/doc.h \
 	src/dummyinplugin.h \
 	src/dummyoutplugin.h \
@@ -60,7 +59,6 @@ noinst_HEADERS = \
 	src/fixturelist.h \
 	src/fixturemanager.h \
 	src/fixtureproperties.h \
-	src/floatingedit.h \
 	src/functioncollectioneditor.h \
 	src/functioncollection.h \
 	src/functionconsumer.h \
@@ -70,16 +68,13 @@ noinst_HEADERS = \
 	src/keybind.h \
 	src/listboxiditem.h \
 	src/monitor.h \
-	src/pluginmanager.h \
 	src/sceneeditor.h \
 	src/scene.h \
-	src/settingsui.h \
 	src/sliderkeybind.h \
 	src/vcbutton.h \
 	src/vcbuttonproperties.h \
 	src/vcdockarea.h \
 	src/vcdockslider.h \
-	src/vcdocksliderproperties.h \
 	src/vcframe.h \
 	src/vcframeproperties.h \
 	src/vclabel.h \
@@ -101,16 +96,14 @@ qlc_SOURCES = \
 	src/uic_chasereditor.cpp \
 	src/uic_consolechannel.cpp \
 	src/uic_dmxaddresstool.cpp \
+	src/uic_dmxmapeditor.cpp \
 	src/uic_editscenevalue.cpp \
-	src/uic_editsettingskey.cpp \
 	src/uic_efxeditor.cpp \
 	src/uic_fixturelist.cpp \
 	src/uic_fixtureproperties.cpp \
 	src/uic_functioncollectioneditor.cpp \
 	src/uic_sceneeditor.cpp \
-	src/uic_settings.cpp \
 	src/uic_vcbuttonproperties.cpp \
-	src/uic_vcdocksliderproperties.cpp \
 	src/uic_vcdockslider.cpp \
 	src/uic_vcframeproperties.cpp \
 	src/uic_vcsliderproperties.cpp \
@@ -125,16 +118,14 @@ qlc_SOURCES = \
 	src/moc_uic_chasereditor.cpp \
 	src/moc_uic_consolechannel.cpp \
 	src/moc_uic_dmxaddresstool.cpp \
+	src/moc_uic_dmxmapeditor.cpp \
 	src/moc_uic_editscenevalue.cpp \
-	src/moc_uic_editsettingskey.cpp \
 	src/moc_uic_efxeditor.cpp \
 	src/moc_uic_fixturelist.cpp \
 	src/moc_uic_fixtureproperties.cpp \
 	src/moc_uic_functioncollectioneditor.cpp \
 	src/moc_uic_sceneeditor.cpp \
-	src/moc_uic_settings.cpp \
 	src/moc_uic_vcbuttonproperties.cpp \
-	src/moc_uic_vcdocksliderproperties.cpp \
 	src/moc_uic_vcdockslider.cpp \
 	src/moc_uic_vcframeproperties.cpp \
 	src/moc_uic_vcsliderproperties.cpp \
@@ -153,6 +144,8 @@ qlc_SOURCES = \
 	src/chasereditor.cpp \
 	src/consolechannel.cpp \
 	src/dmxaddresstool.cpp \
+	src/dmxmap.cpp \
+	src/dmxmapeditor.cpp \
 	src/doc.cpp \
 	src/dummyinplugin.cpp \
 	src/dummyoutplugin.cpp \
@@ -165,7 +158,6 @@ qlc_SOURCES = \
 	src/fixturelist.cpp \
 	src/fixturemanager.cpp \
 	src/fixtureproperties.cpp \
-	src/floatingedit.cpp \
 	src/functioncollection.cpp \
 	src/functioncollectioneditor.cpp \
 	src/functionconsumer.cpp \
@@ -176,16 +168,13 @@ qlc_SOURCES = \
 	src/listboxiditem.cpp \
 	src/main.cpp \
 	src/monitor.cpp \
-	src/pluginmanager.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
-	src/settingsui.cpp \
 	src/sliderkeybind.cpp \
 	src/vcbutton.cpp \
 	src/vcbuttonproperties.cpp \
 	src/vcdockarea.cpp \
 	src/vcdockslider.cpp \
-	src/vcdocksliderproperties.cpp \
 	src/vcframe.cpp \
 	src/vcframeproperties.cpp \
 	src/vclabel.cpp \
@@ -210,6 +199,7 @@ qlc_SOURCES = \
 	src/moc_chasereditor.cpp \
 	src/moc_consolechannel.cpp \
 	src/moc_dmxaddresstool.cpp \
+	src/moc_dmxmapeditor.cpp \
 	src/moc_doc.cpp \
 	src/moc_dummyinplugin.cpp \
 	src/moc_dummyoutplugin.cpp \
@@ -222,7 +212,6 @@ qlc_SOURCES = \
 	src/moc_fixturelist.cpp \
 	src/moc_fixturemanager.cpp \
 	src/moc_fixtureproperties.cpp \
-	src/moc_floatingedit.cpp \
 	src/moc_functioncollection.cpp \
 	src/moc_functioncollectioneditor.cpp \
 	src/moc_functionconsumer.cpp \
@@ -232,16 +221,13 @@ qlc_SOURCES = \
 	src/moc_keybind.cpp \
 	src/moc_listboxiditem.cpp \
 	src/moc_monitor.cpp \
-	src/moc_pluginmanager.cpp \
 	src/moc_scene.cpp \
 	src/moc_sceneeditor.cpp \
-	src/moc_settingsui.cpp \
 	src/moc_sliderkeybind.cpp \
 	src/moc_vcbutton.cpp \
 	src/moc_vcbuttonproperties.cpp \
 	src/moc_vcdockarea.cpp \
 	src/moc_vcdockslider.cpp \
-	src/moc_vcdocksliderproperties.cpp \
 	src/moc_vcframe.cpp \
 	src/moc_vcframeproperties.cpp \
 	src/moc_vclabel.cpp \

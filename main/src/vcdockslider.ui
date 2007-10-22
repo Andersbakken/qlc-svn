@@ -9,7 +9,7 @@
             <x>34</x>
             <y>0</y>
             <width>55</width>
-            <height>254</height>
+            <height>249</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -142,7 +142,7 @@
         </widget>
         <widget class="QPushButton">
             <property name="name">
-                <cstring>m_tapInButton</cstring>
+                <cstring>m_tapButton</cstring>
             </property>
             <property name="font">
                 <font>
@@ -156,30 +156,6 @@
                 <string>Tap Speed</string>
             </property>
         </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>m_infoLabel</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>5</hsizetype>
-                    <vsizetype>5</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>9</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>No Name</string>
-            </property>
-            <property name="alignment">
-                <set>WordBreak|AlignCenter</set>
-            </property>
-        </widget>
     </vbox>
 </widget>
 <connections>
@@ -190,17 +166,15 @@
         <slot>slotSliderValueChanged(int)</slot>
     </connection>
     <connection>
-        <sender>m_tapInButton</sender>
+        <sender>m_tapButton</sender>
         <signal>clicked()</signal>
         <receiver>UI_VCDockSlider</receiver>
-        <slot>slotTapInButtonClicked()</slot>
+        <slot>slotTapButtonClicked()</slot>
     </connection>
 </connections>
 <slots>
     <slot>slotSliderValueChanged(int)</slot>
-    <slot>slotPropertiesButtonClicked()</slot>
-    <slot>slotFunctionButtonClicked()</slot>
-    <slot>slotTapInButtonClicked()</slot>
+    <slot>slotTapButtonClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -1,3 +1,9 @@
+2007-Oct-22  Heikki Junnila <hjunnila@users.sf.net>
+	* Created DMXMap & DMXMapEditor objects to handle universe mapping
+	  to plugins and their universe outputs.
+	* Modified lots of components that the change above had effect on.
+	* DMXMap doesn't necessarily work yet...
+
 2007-Sep-30  Heikki Junnila <hjunnila@users.sf.net>
 	* Removed VCFrame::mousePressEvent()
 	* Added VCFrame::paintEvent() and ::mouseMoveEvent() for bottom

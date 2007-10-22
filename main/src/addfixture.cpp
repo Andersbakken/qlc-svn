@@ -29,7 +29,6 @@
 #include <assert.h>
 #include <qmessagebox.h>
 
-#include "common/settings.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlcfixturemode.h"
 

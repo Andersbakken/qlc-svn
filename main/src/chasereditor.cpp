@@ -35,7 +35,6 @@
 #include <qtimer.h>
 
 #include "common/qlcfixturedef.h"
-#include "common/settings.h"
 
 #include "chasereditor.h"
 #include "function.h"
@@ -45,7 +44,6 @@
 #include "functionmanager.h"
 #include "bus.h"
 #include "chaser.h"
-#include "configkeys.h"
 
 extern App* _app;
 

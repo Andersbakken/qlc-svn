@@ -42,7 +42,6 @@ class QLabel;
 class QTimer;
 
 class FixtureManager;
-class Settings;
 class Doc;
 class InputPlugin;
 class OutputPlugin;
@@ -59,13 +58,13 @@ class PluginManager;
 class Monitor;
 class QLCFixtureDef;
 class QLCWorkspace;
+class DMXMap;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
 const QString KApplicationVersion   = QString("Version ") + QString(VERSION);
-
-//////////////////////////////////////////////////////////////////
-// Class definition
+const int KApplicationDefaultWidth  = 800;
+const int KApplicationDefaultHeight = 600;
 
 class App : public QMainWindow
 {
@@ -108,7 +107,6 @@ class App : public QMainWindow
 	void slotWindowTile();
 
  protected slots:
-	void slotBackgroundChanged(const QString&);
 	void slotWindowMenuCallback(int item);
 	void slotRefreshMenus();
 
@@ -189,50 +187,6 @@ class App : public QMainWindow
 	Monitor* m_monitor;
 
 	/*********************************************************************
-	 * Settings
-	 *********************************************************************/
- public:
-	Settings* settings() { return m_settings; }
-	void saveSettings();
-
- protected:
-	void initSettings();
-
- protected:
-	Settings* m_settings;
-
-	/*********************************************************************
-	 * Plugins
-	 *********************************************************************/
- public:
-	InputPlugin* inputPlugin() { return m_inputPlugin; }
-	OutputPlugin* outputPlugin() { return m_outputPlugin; }
-	QPtrList <Plugin> *pluginList() { return &m_pluginList; }
-	Plugin* searchPlugin(QString name);
-	Plugin* searchPlugin(QString name, Plugin::PluginType type);
-	Plugin* searchPlugin(const t_plugin_id id);
-	void addPlugin(Plugin*);
-	void removePlugin(Plugin*);
-	void initPlugins();
-	bool probePlugin(QString path);
-
- protected slots:
-	void slotChangeInputPlugin(const QString& name);
-	void slotChangeOutputPlugin(const QString& name);
-	void slotPluginActivated(Plugin* plugin);
-
- protected:
-	PluginManager* m_pluginManager;
-
-	InputPlugin* m_inputPlugin;
-	OutputPlugin* m_outputPlugin;
-	DummyInPlugin* m_dummyInPlugin;
-	DummyOutPlugin* m_dummyOutPlugin;
-	QPtrList <Plugin> m_pluginList;
-	
-	static t_plugin_id NextPluginID;
-
-	/*********************************************************************
 	 * Fixture definitions
 	 *********************************************************************/
  public:
@@ -272,54 +226,63 @@ class App : public QMainWindow
 	QLabel* m_modeIndicator;
 
 	/*********************************************************************
-	 * Value read & write
+	 * Output mapping
 	 *********************************************************************/
  public:
-	void initValues();
-	void setValue(t_channel, t_value);
-	t_value value(t_channel);
-	void valueRange(t_channel address, t_value* values, t_channel num);
-	bool isBlackOut() { return m_blackOut; }
-
- public slots:
-	void slotPanic();
-	void slotToggleBlackOut();
-
- protected slots:
-	void slotFlashBlackOutIndicator();
+	DMXMap* dmxMap() const { return m_dmxMap; }
 
  protected:
-	/** Blackout status */
-	bool m_blackOut;
+	void initDMXMap();
 
-	/** Flashing indicator on the status bar */
-	QLabel* m_blackOutIndicator;
+ protected slots:
+	void slotViewOutputManager();
 
-	/** Timer object for the flashing indicator */
-	QTimer* m_blackOutIndicatorTimer;
+ protected:
+	DMXMap* m_dmxMap;
 
 	/*********************************************************************
-	 * Submasters
+	 * Input mapping
 	 *********************************************************************/
  public:
-	void initSubmasters();
-	bool assignSubmaster(t_channel);
-	bool resignSubmaster(t_channel);
-	int hasSubmaster(t_channel);
-	void resetSubmasters();
-	void setSubmasterValue(t_channel, int);
-	float submasterValue(t_channel);
 
-protected:
-	/** DMX value buffer */
-	t_value m_values[KChannelMax];
+ protected:
 
-	/** Submaster value buffer */
-	float m_submasterValues[KChannelMax];
+ protected slots:
+	void slotViewInputManager();
 
-	/** Submasters */
-	int m_submasters[KChannelMax];
-	
+ protected:
+
+	/*********************************************************************
+	 * Blackout
+	 *********************************************************************/
+ public slots:
+	/**
+	 * Stop all running functions
+	 */
+	void slotPanic();
+
+	/**
+	 * Toggle blackout on/off
+	 */
+	void slotToggleBlackout();
+
+	/**
+	 * Set blackout state
+	 *
+	 * @param state true to set blackout ON, false for OFF
+	 */
+	void slotSetBlackout(bool state);
+
+ protected slots:
+	void slotFlashBlackoutIndicator();
+
+ protected:
+	/** Flashing blackout indicator on the status bar */
+	QLabel* m_blackoutIndicator;
+
+	/** Periodic timer object for the flashing indicator */
+	QTimer* m_blackoutIndicatorTimer;
+
 	/*********************************************************************
 	 * Buses
 	 *********************************************************************/
@@ -339,7 +302,6 @@ protected:
 	
 	void slotHelpAbout();
 	void slotHelpAboutQt();
-	void slotHelpTooltips();
 
  protected:
 	DocumentBrowser* m_documentBrowser;
@@ -357,29 +319,27 @@ protected:
 	void slotFileOpen();
 	void slotFileSave();
 	void slotFileSaveAs();
-	void slotFileSettings();
-	void slotFilePlugins();
-	void slotPluginManagerClosed();
 	void slotFileQuit();
 	
  protected:
 	QPopupMenu* m_fileMenu;
-	QPopupMenu* m_toolsMenu;
+	QPopupMenu* m_managerMenu;
+	QPopupMenu* m_controlMenu;
 	QPopupMenu* m_modeMenu;
 	QPopupMenu* m_windowMenu;
 	QPopupMenu* m_helpMenu;
 	
 	QToolBar* m_toolbar;
-	QToolButton* m_newTB;
-	QToolButton* m_openTB;
-	QToolButton* m_saveTB;
-	QToolButton* m_dmTB;
-	QToolButton* m_vcTB;
-	QToolButton* m_ftTB;
-	QToolButton* m_panicTB;
-	QToolButton* m_modeTB;
-	QToolButton* m_blackOutTB;
-	QToolButton* m_monitorTB;
+	QToolButton* m_newToolButton;
+	QToolButton* m_openToolButton;
+	QToolButton* m_saveToolButton;
+	QToolButton* m_fixtureManagerToolButton;
+	QToolButton* m_virtualConsoleToolButton;
+	QToolButton* m_functionManagerToolButton;
+	QToolButton* m_panicToolButton;
+	QToolButton* m_modeToolButton;
+	QToolButton* m_blackoutToolButton;
+	QToolButton* m_monitorToolButton;
 };
 
 #endif

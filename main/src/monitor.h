@@ -43,6 +43,8 @@ class QPopupMenu;
 class QDomDocument;
 class QDomElement;
 
+class DMXMap;
+
 #define KXMLQLCMonitor "Monitor"
 #define KXMLQLCMonitorFont "Font"
 #define KXMLQLCMonitorUpdateFrequency "UpdateFrequency"
@@ -52,7 +54,7 @@ class Monitor : public QWidget
 	Q_OBJECT
 
 public:
-	Monitor(QWidget* parent);
+	Monitor(QWidget* parent, DMXMap* dmxMap);
 	~Monitor();
 
 	void init();
@@ -100,6 +102,8 @@ protected:
 	t_value* m_oldValues;
 	t_value* m_newValues;
 	QMutex m_valueMutex;
+
+	DMXMap* m_dmxMap;
   
 	QTimer* m_timer;
 	int m_updateFrequency;

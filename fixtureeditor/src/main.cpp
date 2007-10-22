@@ -25,7 +25,6 @@
 #include <sys/types.h>
 
 #include "app.h"
-#include "common/settings.h"
 
 App* _app;
 QApplication* _qapp;
@@ -107,12 +106,9 @@ int main(int argc, char **argv)
 	// Initialize QApplication object
 	_qapp = new QApplication(argc, argv);
 
-	Settings* settings = new Settings();
-	settings->load();
-
 	//
 	// Construct the main application class
-	_app = new App(settings);
+	_app = new App();
 	_qapp->setMainWidget(_app);
 	_app->setCaption(KApplicationNameLong);
 	_app->initView();

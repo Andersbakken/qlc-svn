@@ -41,6 +41,10 @@ class QDomElement;
 #define KXMLQLCCreatorVersion "Version"
 #define KXMLQLCCreatorAuthor "Author"
 
+// True and false
+#define KXMLQLCTrue "True"
+#define KXMLQLCFalse "False"
+
 // Generic window state tags
 #define KXMLQLCWindowState "WindowState"
 #define KXMLQLCWindowStateVisible "Visible"

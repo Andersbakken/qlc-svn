@@ -22,7 +22,6 @@
 #include "app.h"
 #include "doc.h"
 #include "common/plugin.h"
-#include "settings.h"
 #include "newinputdevice.h"
 #include "joystick/joystickplugin.h"
 

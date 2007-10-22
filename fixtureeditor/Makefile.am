@@ -16,7 +16,6 @@ noinst_HEADERS = \
 	\
 	src/aboutbox.h \
 	src/app.h \
-	src/configkeys.h \
 	src/editchannel.h \
 	src/editcapability.h \
 	src/editmode.h \

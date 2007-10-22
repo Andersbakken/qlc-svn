@@ -27,9 +27,11 @@
 
 #include "common/qlcfixturedef.h"
 #include "common/filehandler.h"
+
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
+#include "dmxmap.h"
 #include "eventbuffer.h"
 #include "scene.h"
 #include "functionconsumer.h"
@@ -386,9 +388,9 @@ void Scene::init()
 	
 	for (t_channel i = 0; i < m_channels; i++)
 	{
-		m_runTimeData[i].current =
-			m_runTimeData[i].start =
-			static_cast<float> (_app->value(m_address + i));
+		m_runTimeData[i].current = m_runTimeData[i].start =
+			static_cast<float> 
+			(_app->dmxMap()->getValue(m_address + i));
 		
 		m_runTimeData[i].target = 
 			static_cast<float> (m_values[i].value);

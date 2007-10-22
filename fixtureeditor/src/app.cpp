@@ -36,16 +36,14 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "app.h"
-#include "aboutbox.h"
-
 #include "common/qlcworkspace.h"
-#include "common/settings.h"
 #include "common/documentbrowser.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlcchannel.h"
+
+#include "app.h"
+#include "aboutbox.h"
 #include "fixtureeditor.h"
-#include "configkeys.h"
 
 // Old headers that will be removed in the future
 #include "common/deviceclass.h"
@@ -60,8 +58,7 @@
 #define ID_FILE_SAVE_AS             	10040
 #define ID_FILE_CLOSE               	10050
 #define ID_FILE_PRINT               	10060
-#define ID_FILE_SETTINGS                10070
-#define ID_FILE_QUIT                	10080
+#define ID_FILE_QUIT                	10070
 
 ///////////////////////////////////////////////////////////////////
 // View menu entries
@@ -95,16 +92,15 @@ const QString KApplicationRectH("DCE_ApplicationRectH");
 
 const QString KFixtureFilter ( "Fixtures (*.qxf *.deviceclass)" );
 
-App::App(Settings* settings) :
-	m_settings         ( settings ),
-	m_workspace        ( NULL ),
-	m_documentBrowser  ( NULL ),
-	m_fileMenu         ( NULL ),
-	m_toolsMenu        ( NULL ),
-	m_windowMenu       ( NULL ),
-	m_helpMenu         ( NULL ),
-	m_toolbar          ( NULL ),
-	m_copyChannel      ( NULL )
+App::App() : QMainWindow(),
+	     m_workspace        ( NULL ),
+	     m_documentBrowser  ( NULL ),
+	     m_fileMenu         ( NULL ),
+	     m_toolsMenu        ( NULL ),
+	     m_windowMenu       ( NULL ),
+	     m_helpMenu         ( NULL ),
+	     m_toolbar          ( NULL ),
+	     m_copyChannel      ( NULL )
 {
 }
 
@@ -118,10 +114,6 @@ App::~App()
 		delete m_documentBrowser;
 	m_documentBrowser = NULL;
 
-	if (m_settings)
-		delete m_settings;
-	m_settings = NULL;
-
 	if (m_copyChannel)
 		delete m_copyChannel;
 	m_copyChannel = NULL;
@@ -129,8 +121,6 @@ App::~App()
 
 void App::initView(void)
 {
-	initSettings();
-
 	setIcon(QPixmap(QString(PIXMAPS) + QString("/qlc-fixtureeditor.png")));
 
 	initWorkspace();
@@ -140,12 +130,13 @@ void App::initView(void)
 	initToolBar();
 
 	m_lastPath = QString(FIXTURES);
+
+	resize(800, 600);
 }
 
 void App::initStatusBar()
 {
 }
-
 
 void App::initToolBar()
 {
@@ -162,62 +153,11 @@ void App::initToolBar()
 			"Save",	0, this, SLOT(slotFileSave()), m_toolbar);
 }
 
-
-void App::setCopyChannel(QLCChannel* ch)
-{
-	if (m_copyChannel != NULL)
-		delete m_copyChannel;
-	m_copyChannel = NULL;
-
-	if (ch != NULL)
-		m_copyChannel = new QLCChannel(ch);
-}
-
-bool App::event(QEvent* e)
-{
-	return QWidget::event(e);
-}
-
-
-void App::initSettings()
-{
-	QString x, y, w, h;
-	if (settings()->get(KApplicationRectX, x) == -1)
-	{
-		x = QString("0");
-	}
-	if (settings()->get(KApplicationRectY, y) == -1)
-	{
-		y = QString("0");
-	}
-	if (settings()->get(KApplicationRectW, w) == -1)
-	{
-		w = QString("640");
-	}
-	if (settings()->get(KApplicationRectH, h) == -1)
-	{
-		h = QString("480");
-	}
-
-	// Set the main window geometry
-	setGeometry(x.toInt(), y.toInt(), w.toInt(), h.toInt());
-}
-
-
 void App::initWorkspace()
 {
 	m_workspace = new QLCWorkspace(this);
 	setCentralWidget(m_workspace);
-
-	QString path;
-	settings()->get(KEY_APP_BACKGROUND, path);
-
-	m_workspace->setBackground(path);
-
-	connect(m_workspace, SIGNAL(backgroundChanged(const QString&)),
-		this, SLOT(slotBackgroundChanged(const QString&)));
 }
-
 
 void App::initMenuBar()
 {
@@ -275,6 +215,21 @@ void App::initMenuBar()
 	menuBar()->insertItem("Help", m_helpMenu);
 
 	menuBar()->setSeparator(QMenuBar::InWindowsStyle);
+}
+
+void App::setCopyChannel(QLCChannel* ch)
+{
+	if (m_copyChannel != NULL)
+		delete m_copyChannel;
+	m_copyChannel = NULL;
+
+	if (ch != NULL)
+		m_copyChannel = new QLCChannel(ch);
+}
+
+bool App::event(QEvent* e)
+{
+	return QWidget::event(e);
 }
 
 void App::slotEmpty()
@@ -517,11 +472,6 @@ void App::slotEditorClosed(QLCFixtureEditor* editor)
 	delete editor;
 }
 
-void App::slotBackgroundChanged(const QString& path)
-{
-	m_settings->set(KEY_APP_BACKGROUND, path);
-}
-
 //
 // File -> Exit or Window destroyed
 //
@@ -544,11 +494,4 @@ void App::closeEvent(QCloseEvent* e)
 			e->ignore();
 		}
 	}
-
-	// Save main window geometry for next session
-	m_settings->set(KApplicationRectX, rect().x());
-	m_settings->set(KApplicationRectY, rect().y());
-	m_settings->set(KApplicationRectW, rect().width());
-	m_settings->set(KApplicationRectH, rect().height());
-	m_settings->save();
 }

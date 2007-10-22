@@ -32,6 +32,7 @@
 
 #include "app.h"
 #include "doc.h"
+#include "dmxmap.h"
 #include "vcslider.h"
 #include "vcsliderproperties.h"
 #include "virtualconsole.h"
@@ -509,8 +510,9 @@ void VCSlider::setLevelValue(t_value value)
 		if (fxi != NULL)
 			dmx_ch = fxi->channelAddress(ch);
 		
-		_app->setValue(dmx_ch,
-			       m_levelHighLimit - value + m_levelLowLimit);
+		_app->dmxMap()->setValue(dmx_ch,
+					 m_levelHighLimit - value +
+					 m_levelLowLimit);
 
 	}
 
@@ -664,14 +666,16 @@ int VCSlider::feedbackChannel()
 
 void VCSlider::sendFeedback(int value)
 {
-	int range = 0;
-	float f = 0;
-
-	range = m_busHighLimit - m_busLowLimit;
-	f = ((float) value / (float) KFrequency);
-
-	_app->inputPlugin()->feedBack(1, feedbackChannel(),
-				      127 - int((f * 127) / range));
+	/* TODO
+	  int range = 0;
+	  float f = 0;
+	  
+	  range = m_busHighLimit - m_busLowLimit;
+	  f = ((float) value / (float) KFrequency);
+	  
+	  _app->inputPlugin()->feedBack(1, feedbackChannel(),
+	  127 - int((f * 127) / range));
+	*/
 }
 
 /*****************************************************************************

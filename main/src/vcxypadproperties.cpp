@@ -30,14 +30,13 @@
 
 #include "common/qlcfixturedef.h"
 #include "common/qlcchannel.h"
-#include "common/settings.h"
+#include "common/filehandler.h"
 
 #include "vcxypad.h"
 #include "xychannelunit.h"
 #include "vcxypadproperties.h"
 #include "fixturelist.h"
 #include "fixture.h"
-#include "configkeys.h"
 #include "app.h"
 #include "doc.h"
 
@@ -80,11 +79,11 @@ void VCXYPadProperties::init()
 	m_maxYSpin->setValue(255);
 	m_maxXSpin->setValue(255);
 
-	m_reverseXCombo->insertItem(Settings::trueValue(), KComboItemReverse);
-	m_reverseXCombo->insertItem(Settings::falseValue(), KComboItemNormal);
+	m_reverseXCombo->insertItem(KXMLQLCTrue, KComboItemReverse);
+	m_reverseXCombo->insertItem(KXMLQLCFalse, KComboItemNormal);
 
-	m_reverseYCombo->insertItem(Settings::trueValue(), KComboItemReverse);
-	m_reverseYCombo->insertItem(Settings::falseValue(), KComboItemNormal);
+	m_reverseYCombo->insertItem(KXMLQLCTrue, KComboItemReverse);
+	m_reverseYCombo->insertItem(KXMLQLCFalse, KComboItemNormal);
 
 	m_listX->setSelected(m_listX->firstChild(), true);
 	slotSelectionXChanged(m_listX->firstChild());
@@ -166,11 +165,11 @@ QListViewItem* VCXYPadProperties::createChannelEntry(QListView* parent,
 	// Reverse
 	if (reverse == true)
 	{
-		item->setText(KColumnReverse, Settings::trueValue());
+		item->setText(KColumnReverse, KXMLQLCTrue);
 	}
 	else
 	{
-		item->setText(KColumnReverse, Settings::falseValue());
+		item->setText(KColumnReverse, KXMLQLCFalse);
 	}
 
 	// Fixture ID
@@ -296,7 +295,7 @@ void VCXYPadProperties::slotSelectionXChanged(QListViewItem* item)
 	{
 		m_minXSpin->setValue(item->text(KColumnLo).toInt());
 		m_maxXSpin->setValue(item->text(KColumnHi).toInt());
-		if (item->text(KColumnReverse) == Settings::trueValue())
+		if (item->text(KColumnReverse) == KXMLQLCTrue)
 		{
 			m_reverseXCombo->setCurrentItem(KComboItemReverse);
 		}
@@ -313,7 +312,7 @@ void VCXYPadProperties::slotSelectionYChanged(QListViewItem* item)
 	{
 		m_minYSpin->setValue(item->text(KColumnLo).toInt());
 		m_maxYSpin->setValue(item->text(KColumnHi).toInt());
-		if (item->text(KColumnReverse) == Settings::trueValue())
+		if (item->text(KColumnReverse) == KXMLQLCTrue)
 		{
 			m_reverseYCombo->setCurrentItem(KComboItemReverse);
 		}
@@ -367,17 +366,17 @@ void VCXYPadProperties::slotContextMenuRequested(QListViewItem* item,
 		QPopupMenu* menu = new QPopupMenu();
 		menu->insertItem("Reverse", KNoID);
 		menu->insertSeparator();
-		menu->insertItem(Settings::trueValue(), KComboItemReverse);
-		menu->insertItem(Settings::falseValue(), KComboItemNormal);
+		menu->insertItem(KXMLQLCTrue, KComboItemReverse);
+		menu->insertItem(KXMLQLCFalse, KComboItemNormal);
 
 		result = menu->exec(point);
 		if (result == KComboItemNormal)
 		{
-			item->setText(KColumnReverse, Settings::falseValue());
+			item->setText(KColumnReverse, KXMLQLCFalse);
 		}
 		else if (result == KComboItemReverse)
 		{
-			item->setText(KColumnReverse, Settings::trueValue());
+			item->setText(KColumnReverse, KXMLQLCTrue);
 		}
 
 		slotSelectionXChanged(m_listX->currentItem());
@@ -484,7 +483,7 @@ XYChannelUnit* VCXYPadProperties::createChannelUnit(QListViewItem* item)
 			item->text(KColumnChannelNumber).toInt(),
 			item->text(KColumnLo).toInt(),
 			item->text(KColumnHi).toInt(),
-			item->text(KColumnReverse) == Settings::trueValue()
+			item->text(KColumnReverse) == KXMLQLCTrue
 		);
 	}
 }

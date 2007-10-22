@@ -34,7 +34,6 @@
 #include <errno.h>
 #include <string.h>
 
-#include "common/settings.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlcfixturemode.h"
 #include "common/qlcchannel.h"
@@ -43,7 +42,6 @@
 #include "common/filehandler.h"
 
 #include "app.h"
-#include "configkeys.h"
 #include "fixtureeditor.h"
 #include "editcapability.h"
 #include "editchannel.h"

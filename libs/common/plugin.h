@@ -2,7 +2,7 @@
   Q Light Controller
   plugin.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -34,50 +34,162 @@ const t_plugin_id KPluginIDMax = USHRT_MAX;
 
 class Plugin : public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  Plugin(t_plugin_id id);
-  virtual ~Plugin();
+public:
+	/**
+	 * Construct a new plugin
+	 *
+	 * @param id Plugin ID (assigned by the application, maybe obsolete)
+	 */
+	Plugin(t_plugin_id id);
 
-  enum PluginType
-    {
-      OutputType,
-      InputType
-    };
+	/**
+	 * Destroy the plugin
+	 */
+	virtual ~Plugin();
+	
+	/**
+	 * Plugin type
+	 */
+	enum PluginType
+	{
+		OutputType,
+		InputType
+	};
+	
+	/**
+	 * Open (initialize for operation) the plugin.
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 *
+	 */
+	virtual int open() = 0;
 
-  // These functions have to be overwritten
-  virtual int open() = 0; // Generic open function
-  virtual int close() = 0; // Generic close function
-  virtual bool isOpen() = 0; // Generic open-or-not? function
-  virtual int configure() = 0; // Generic configure function
-  virtual QString infoText() = 0; // Text that is displayed in device manager
-  virtual void contextMenu(QPoint pos) = 0; // Invoke a context menu
+	/**
+	 * Close (de-initialize) the plugin
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 */
+	virtual int close() = 0;
 
-  virtual int setConfigDirectory(QString dir) = 0; // Set the config file dir
-  virtual int saveSettings() = 0; // Save settings to a file in config dir
-  virtual int loadSettings() = 0; // Load settings from a file in config dir
+	/**
+	 * Open or not?
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 */
+	virtual bool isOpen() = 0;
 
-  // Standard functions that don't have to be overwritten
-  QString name() { return m_name; }
-  t_plugin_id id() { return m_id; }
-  unsigned long version() { return m_version; }
-  PluginType type() { return m_type; }
-  void setHandle(void* handle) { m_handle = handle; }
-  void* handle() { return m_handle; }
-  const void setEventReceiver(QObject* Parent){ m_eventReceiver =  Parent;}
-  QObject*  eventReceiver() const { return m_eventReceiver;}
+	/**
+	 * Invoke a configuration dialog for the plugin
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 */
+	virtual int configure() = 0;
 
- signals:
-  void activated(Plugin*);
+	/**
+	 * Provide an information text to be displayed in the plugin manager
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 */
+	virtual QString infoText() = 0;
 
- protected:
-  QString m_name;
-  PluginType m_type;
-  unsigned long m_version;
-  t_plugin_id m_id;
-  void* m_handle;
-  QObject* m_eventReceiver;
+	/**
+	 * Invoke a context menu
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 *
+	 * @param pos The position to invoke the menu at
+	 */
+	virtual void contextMenu(QPoint pos) = 0;
+	
+	/**
+	 * Set the plugin's configuration directory (i.e. the dir where the
+	 * plugin should save/load its configuration to/from)
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 *
+	 * @param dir The directory path
+	 */	 
+	virtual int setConfigDirectory(QString dir) = 0;
+
+	/**
+	 * Save the plugin's settings into a file inside the config directory.
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 */
+	virtual int saveSettings() = 0;
+
+	/**
+	 * Load the plugin's settings from a file inside the config directory.
+	 *
+	 * This is a pure virtual function that must be implemented
+	 * in all plugins.
+	 */
+	virtual int loadSettings() = 0;
+
+	/*********************************************************************
+	 * Standard functions that should not be overwritten
+	 *********************************************************************/
+	
+	/**
+	 * Get the plugin's name
+	 */
+	QString name();
+
+	/**
+	 * Get the plugin's ID (possibly obsolete)
+	 */
+	t_plugin_id id();
+
+	/**
+	 * Get the plugin's version (possibly obsolete)
+	 */
+	unsigned long version();
+
+	/**
+	 * Get the plugin's type
+	 */
+	PluginType type();
+
+	/**
+	 * Set the plugin's library handle (returned by dlopen())
+	 */
+	void setHandle(void* handle);
+
+	/**
+	 * Get the plugin's library handle
+	 */
+	void* handle();
+
+	/**
+	 * @todo
+	 */
+	void setEventReceiver(QObject* parent);
+
+	/**
+	 * @todo
+	 */
+	QObject* eventReceiver() const;
+
+signals:
+	void activated(Plugin* plugin);
+	
+protected:
+	QString m_name;
+	PluginType m_type;
+	unsigned long m_version;
+	t_plugin_id m_id;
+	void* m_handle;
+	QObject* m_eventReceiver;
 };
 
 #endif

@@ -1,0 +1,150 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>UI_DMXMapEditor</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>UI_DMXMapEditor</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>524</width>
+            <height>324</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>DMX Mapper</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QListView">
+            <column>
+                <property name="text">
+                    <string>Universe</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Plugin</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Output</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>m_listView</cstring>
+            </property>
+            <property name="allColumnsShowFocus">
+                <bool>true</bool>
+            </property>
+            <property name="resizeMode">
+                <enum>AllColumns</enum>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout2</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_editMappingButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Edit Mapping...</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer1</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>180</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_ok</cstring>
+                    </property>
+                    <property name="text">
+                        <string>OK</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_cancel</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>m_ok</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXMapEditor</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>m_cancel</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXMapEditor</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>m_editMappingButton</sender>
+        <signal>clicked()</signal>
+        <receiver>UI_DMXMapEditor</receiver>
+        <slot>slotEditMappingButtonClicked()</slot>
+    </connection>
+    <connection>
+        <sender>m_listView</sender>
+        <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>UI_DMXMapEditor</receiver>
+        <slot>slotListViewContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotEditMappingButtonClicked()</slot>
+    <slot>slotListViewContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

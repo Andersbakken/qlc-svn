@@ -31,6 +31,7 @@
 #include <assert.h>
 
 #include "common/qlcfixturedef.h"
+
 #include "app.h"
 #include "doc.h"
 #include "sceneeditor.h"
@@ -39,7 +40,6 @@
 #include "scene.h"
 #include "consolechannel.h"
 #include "listboxiditem.h"
-#include "configkeys.h"
 
 using namespace std;
 

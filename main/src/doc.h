@@ -33,9 +33,6 @@ class QDomDocument;
 class QLCFixtureDef;
 class QLCFixtureMode;
 
-#define KXMLQLCWorkspaceDocument "Workspace"
-#define KXMLQLCWorkspace "Workspace"
-
 class Doc : public QObject
 {
 	Q_OBJECT

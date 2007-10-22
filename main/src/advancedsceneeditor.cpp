@@ -38,7 +38,6 @@
 #include <assert.h>
 #include <math.h>
 
-#include "common/settings.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlcchannel.h"
 #include "common/qlccapability.h"

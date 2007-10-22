@@ -34,18 +34,17 @@
 #include <qfiledialog.h>
 #include <qinputdialog.h>
 
-#include "vcxypad.h"
-#include "xychannelunit.h"
-#include "fixture.h"
-#include "floatingedit.h"
-#include "app.h"
-#include "doc.h"
-#include "virtualconsole.h"
-#include "configkeys.h"
-#include "vcxypadproperties.h"
-
 #include "common/filehandler.h"
 #include "common/qlcimagepreview.h"
+
+#include "app.h"
+#include "doc.h"
+#include "dmxmap.h"
+#include "vcxypad.h"
+#include "vcxypadproperties.h"
+#include "xychannelunit.h"
+#include "fixture.h"
+#include "virtualconsole.h"
 
 extern App* _app;
 
@@ -556,13 +555,13 @@ void VCXYPad::outputDMX(int x, int y)
 		xx = xyc->lo() + int(delta*x/rect().width());
 		if (xyc->reverse() == false)
 		{
-			_app->outputPlugin()->writeChannel(
+			_app->dmxMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
-			_app->outputPlugin()->writeChannel(
+			_app->dmxMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(),
 				(t_value) KChannelValueMax - xx);
@@ -577,13 +576,13 @@ void VCXYPad::outputDMX(int x, int y)
 		xx = xyc->lo() + int(delta*y/rect().height());
 		if (xyc->reverse() == false)
 		{
-			_app->outputPlugin()->writeChannel(
+			_app->dmxMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
-			_app->outputPlugin()->writeChannel(
+			_app->dmxMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(),
 				(t_value) KChannelValueMax - xx);

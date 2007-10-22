@@ -2,7 +2,7 @@
   Q Light Controller
   dummyoutplugin.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -28,45 +28,45 @@
 
 class DummyOutPlugin : public OutputPlugin
 {
-  Q_OBJECT
+	Q_OBJECT
 
-    friend class ConfigureDummyOutPlugin;
+public:
+	DummyOutPlugin(int id);
+	virtual ~DummyOutPlugin();
 
- public:
-  DummyOutPlugin(int id);
-  virtual ~DummyOutPlugin();
+	int open();
+	int close();
+	bool isOpen();
+	int configure();
+	QString infoText();
+	void contextMenu(QPoint pos);
 
-  int open();
-  int close();
-  bool isOpen();
-  int configure();
-  QString infoText();
-  void contextMenu(QPoint pos);
+	int setConfigDirectory(QString dir);
+	int saveSettings();
+	int loadSettings();
 
-  int setConfigDirectory(QString dir);
-  int saveSettings();
-  int loadSettings();
+	// OutputPlugin functions
+	int writeChannel(t_channel channel, t_value value);
+	int writeRange(t_channel address, t_value* values, t_channel num);
 
-  // OutputPlugin functions
-  int writeChannel(t_channel channel, t_value value);
-  int writeRange(t_channel address, t_value* values, t_channel num);
+	int readChannel(t_channel channel, t_value &value);
+	int readRange(t_channel address, t_value* values, t_channel num);
 
-  int readChannel(t_channel channel, t_value &value);
-  int readRange(t_channel address, t_value* values, t_channel num);
+	void activate();
 
-  void activate();
+	int outputs();
 
- public:
-  static const QString PluginName;
+public:
+	static const QString PluginName;
 
- protected slots:
-  void slotContextMenuCallback(int);
+	protected slots:
+	void slotContextMenuCallback(int);
 
- private:
-  bool m_open;
-  t_value m_values[KChannelMax];
+private:
+	bool m_open;
+	t_value m_values[KChannelMax];
 
-  QMutex m_mutex;
+	QMutex m_mutex;
 };
 
 #endif

@@ -28,6 +28,7 @@
 #include <qtimer.h>
 
 #include "common/qlcfixturedef.h"
+
 #include "functioncollectioneditor.h"
 #include "functioncollection.h"
 #include "function.h"
@@ -35,7 +36,6 @@
 #include "app.h"
 #include "doc.h"
 #include "fixture.h"
-#include "configkeys.h"
 
 extern App* _app;
 

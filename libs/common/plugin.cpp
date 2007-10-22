@@ -23,10 +23,51 @@
 
 Plugin::Plugin(t_plugin_id id) : QObject()
 {
-  m_id = id;
-  m_handle = NULL;
+	m_id = id;
+	m_handle = NULL;
 }
 
 Plugin::~Plugin()
 {
 }
+
+QString Plugin::name()
+{
+	return m_name;
+}
+
+t_plugin_id Plugin::id()
+{
+	return m_id;
+}
+
+unsigned long Plugin::version()
+{
+	return m_version;
+}
+
+Plugin::PluginType Plugin::type()
+{
+	return m_type;
+}
+
+void Plugin::setHandle(void* handle)
+{
+	m_handle = handle;
+}
+
+void* Plugin::handle()
+{
+	return m_handle;
+}
+
+void Plugin::setEventReceiver(QObject* parent)
+{
+	m_eventReceiver = parent;
+}
+
+QObject* Plugin::eventReceiver() const
+{
+	return m_eventReceiver;
+}
+	

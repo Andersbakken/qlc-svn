@@ -33,15 +33,15 @@
 #include <qpopupmenu.h>
 #include <qptrlist.h>
 
-#include "common/settings.h"
 #include "common/qlcchannel.h"
 #include "common/qlccapability.h"
-#include "consolechannel.h"
+
 #include "app.h"
 #include "doc.h"
 #include "scene.h"
+#include "dmxmap.h"
 #include "fixture.h"
-#include "configkeys.h"
+#include "consolechannel.h"
 
 extern App* _app;
 
@@ -298,7 +298,8 @@ void ConsoleChannel::slotSetFocus()
 
 	// In case someone else has set the value for this channel, animate
 	// the slider to the correct position
-	value = _app->value(fixture->universeAddress() + m_channel);
+	value = _app->dmxMap()->getValue(fixture->universeAddress() +
+					 m_channel);
 
 	slotAnimateValueChange(value);
 
@@ -316,7 +317,8 @@ void ConsoleChannel::update()
 	Fixture* fixture = _app->doc()->fixture(m_fixtureID);
 	Q_ASSERT(fixture != NULL);
 	
-	value = _app->value(fixture->universeAddress() + m_channel);
+	value = _app->dmxMap()->getValue(fixture->universeAddress() +
+					 m_channel);
 	
 	m_valueLabel->setNum(value);
 	slotAnimateValueChange(value);
@@ -332,7 +334,8 @@ void ConsoleChannel::slotValueChange(int value)
 	Fixture* fixture = _app->doc()->fixture(m_fixtureID);
 	Q_ASSERT(fixture != NULL);
 	
-	_app->setValue(fixture->universeAddress() + m_channel, (t_value) value);
+	_app->dmxMap()->setValue(fixture->universeAddress() + m_channel,
+				 (t_value) value);
 	
 	m_valueLabel->setNum(value);
 	

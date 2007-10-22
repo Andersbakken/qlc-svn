@@ -40,6 +40,7 @@
 
 #include "common/qlcfixturedef.h"
 #include "common/settings.h"
+
 #include "functionmanager.h"
 #include "function.h"
 #include "fixture.h"
@@ -51,7 +52,6 @@
 #include "chasereditor.h"
 #include "functioncollection.h"
 #include "functioncollectioneditor.h"
-#include "configkeys.h"
 #include "efx.h"
 #include "efxeditor.h"
 

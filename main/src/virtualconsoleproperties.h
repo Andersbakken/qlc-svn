@@ -23,6 +23,7 @@
 #define VIRTUALCONSOLEPROPERTIES_H
 
 #include "uic_virtualconsoleproperties.h"
+#include "common/types.h"
 
 class VirtualConsoleProperties : public UI_VirtualConsoleProperties
 {
@@ -79,11 +80,26 @@ public:
 	bool m_grabKeyboard;
 
 	/*********************************************************************
+	 * Slider value ranges
+	 *********************************************************************/
+public:
+	void setFadeLimits(t_bus_value low, t_bus_value high);
+	void fadeLimits(t_bus_value& low, t_bus_value& high);
+
+	void setHoldLimits(t_bus_value low, t_bus_value high);
+	void holdLimits(t_bus_value& low, t_bus_value& high);
+
+protected:
+	t_bus_value m_fadeLowLimit;
+	t_bus_value m_fadeHighLimit;
+	t_bus_value m_holdLowLimit;
+	t_bus_value m_holdHighLimit;
+
+	/*********************************************************************
 	 * OK/Cancel
 	 *********************************************************************/
  protected slots:
-	void slotOKClicked();
-	void slotCancelClicked();
+	void accept();
 };
 
 #endif

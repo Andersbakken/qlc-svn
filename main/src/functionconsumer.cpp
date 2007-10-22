@@ -28,213 +28,180 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-#include <assert.h>
 
-#include "functionconsumer.h"
-#include "function.h"
-#include "eventbuffer.h"
 #include "app.h"
 #include "doc.h"
+#include "dmxmap.h"
+#include "function.h"
+#include "eventbuffer.h"
+#include "functionconsumer.h"
 
-extern App* _app;
-
-
-//
-// Constructor
-//
-FunctionConsumer::FunctionConsumer() 
-  : QThread(),
-    m_running  (    0 ),
-    m_fd       (    0 ),
-    m_timeCode (    0 ),
-    m_event    ( new t_buffer_data[512] ),
-    m_function ( NULL ),
-    m_channel  (    0 )
+FunctionConsumer::FunctionConsumer(DMXMap* dmxMap) : QThread()
 {
+	Q_ASSERT(dmxMap != NULL);
+	m_dmxMap = dmxMap;
+
+	m_running = 0;
+	m_fd = 0;
+	m_timeCode = 0;
+
+	/* Each fixture should fit inside one universe -> 512 values */
+	m_event = new t_buffer_data[512];
+	m_function = NULL;
+	m_channel = 0;
 }
 
 
-//
-// Destructor
-//
 FunctionConsumer::~FunctionConsumer()
 {
-  stop();
-  delete [] m_event;
+	stop();
+	delete [] m_event;
 }
 
 
-//
-// Get the number of running functions
-//
 int FunctionConsumer::runningFunctions()
 {
-  int n = 0;
-  m_functionListMutex.lock();
-  n = m_functionList.count();
-  m_functionListMutex.unlock();
-  return n;
+	int n = 0;
+	m_functionListMutex.lock();
+	n = m_functionList.count();
+	m_functionListMutex.unlock();
+	return n;
 }
 
-//
-// Add a function producer to producer list to run it
-//
-void FunctionConsumer::cue(Function* f)
+
+void FunctionConsumer::cue(Function* function)
 {
-  assert(f);
-
-  m_functionListMutex.lock(); // Lock before access
-  m_functionList.append(f);
-  m_functionListMutex.unlock(); // Unlock after append
+	Q_ASSERT(function != NULL);
+	
+	m_functionListMutex.lock();
+	m_functionList.append(function);
+	m_functionListMutex.unlock();
 }
 
 
-//
-// Stop all running functions
-//
 void FunctionConsumer::purge()
 {
-  QPtrListIterator <Function> it(m_functionList);
-
-  m_functionListMutex.lock();
-  it.toFirst();
-  while (it.current())
-    {
-      m_functionListMutex.unlock();
-      it.current()->stop();
-    
-      m_functionListMutex.lock();
-      ++it;
-    }
-   m_functionListMutex.unlock();
-
-   //
-   // Wait until all functions have been stopped
-   //
-   while (m_functionList.count())
-     {
-       sched_yield();
-     }
+	QPtrListIterator <Function> it(m_functionList);
+	
+	m_functionListMutex.lock();
+	it.toFirst();
+	while (it.current())
+	{
+		m_functionListMutex.unlock();
+		it.current()->stop();
+		
+		m_functionListMutex.lock();
+		++it;
+	}
+	m_functionListMutex.unlock();
+	
+	/* Wait until all functions have been stopped */
+	while (m_functionList.count())
+		pthread_yield();
 }
 
 
 void FunctionConsumer::timeCode(t_bus_value& timeCode)
 {
-  //m_timeCodeMutex.lock();
-  timeCode = m_timeCode;
-  //m_timeCodeMutex.unlock();
+	timeCode = m_timeCode;
 }
 
 
-void FunctionConsumer::incrementTimeCode()
-{
-  //m_timeCodeMutex.lock();
-  m_timeCode++;
-  //m_timeCodeMutex.unlock();
-}
-
-//
-// Stop the function consumer
-//
 void FunctionConsumer::stop()
 {
-  m_running = false;
-
-  while (running());
+	m_running = false;
+	
+	while (running())
+		pthread_yield();
 }
 
 
-//
-// Set up the consumer's timer etc.
-//
 void FunctionConsumer::init()
 {
-  int retval = -1;
-  unsigned long tmp = 0;
-
-  m_fd = open("/dev/rtc", O_RDONLY);
-  if (m_fd < 0)
-    {
-      // open failed
-      perror("open /dev/rtc");
-      
-      // but we try an alternate location of the device
-      m_fd = open("/dev/misc/rtc", O_RDONLY);
-      if (m_fd < 0)
-        {
-          // failed again, we give up and exit
-          perror("open /dev/misc/rtc");
-          ::exit(errno);
-        }
-    }
-
-  retval = ioctl(m_fd, RTC_IRQP_SET, KFrequency);
-  if (retval == -1)
-    {
-      perror("ioctl");
-      ::exit(errno);
-    }
-
-  retval = ioctl(m_fd, RTC_IRQP_READ, &tmp);
-  if (retval == -1)
-    {
-      perror("ioctl");
-    }
-  else
-    {
-      qDebug("\nPeriodic IRQ rate is %ldHz.", tmp);
-    }
-
-  retval = ioctl(m_fd, RTC_PIE_ON, 0);
-  if (retval == -1)
-    {
-      perror("ioctl");
-      ::exit(errno);
-    }
-  else
-    {
-      qDebug("Started RTC interrupt");
-    }
+	int retval = -1;
+	unsigned long tmp = 0;
+	
+	m_fd = open("/dev/rtc", O_RDONLY);
+	if (m_fd < 0)
+	{
+		// open failed
+		perror("open /dev/rtc");
+		
+		// but we try an alternate location of the device
+		m_fd = open("/dev/misc/rtc", O_RDONLY);
+		if (m_fd < 0)
+		{
+			// failed again, we give up and exit
+			perror("open /dev/misc/rtc");
+			::exit(errno);
+		}
+	}
+	
+	retval = ioctl(m_fd, RTC_IRQP_SET, KFrequency);
+	if (retval == -1)
+	{
+		perror("ioctl");
+		::exit(errno);
+	}
+	
+	retval = ioctl(m_fd, RTC_IRQP_READ, &tmp);
+	if (retval == -1)
+	{
+		perror("ioctl");
+	}
+	else
+	{
+		qDebug("\nPeriodic IRQ rate is %ldHz.", tmp);
+	}
+	
+	retval = ioctl(m_fd, RTC_PIE_ON, 0);
+	if (retval == -1)
+	{
+		perror("ioctl");
+		::exit(errno);
+	}
+	else
+	{
+		qDebug("Started RTC interrupt");
+	}
 }
 
 
-//
-// Timer thread
-//
 void FunctionConsumer::run()
 {
-  int retval = -1;
-  unsigned long data = 0;
-
-  m_running = true;
-
-  while (m_running == true)
-    {
-      retval = read(m_fd, &data, sizeof(unsigned long));
-      if (retval == -1)
-        {
-          perror("read");
-          ::exit(errno);
-        }
-      else
-        {
-	  incrementTimeCode();
-          event(data);
-        }
-    }
-
-  // Set interrupts off
-  retval = ioctl(m_fd, RTC_PIE_OFF, 0);
-  if (retval == -1)
-    {
-      perror("RTC_PIE_OFF");
-    }
-  else
-    {
-      qDebug("Stopped RTC interrupt");
-    }
-
-  close(m_fd);
+	int retval = -1;
+	unsigned long data = 0;
+	m_timeCode = 0;
+	
+	m_running = true;
+	
+	while (m_running == true)
+	{
+		retval = read(m_fd, &data, sizeof(unsigned long));
+		if (retval == -1)
+		{
+			perror("read");
+			::exit(errno);
+		}
+		else
+		{
+			m_timeCode++;
+			event(data);
+		}
+	}
+	
+	// Set interrupts off
+	retval = ioctl(m_fd, RTC_PIE_OFF, 0);
+	if (retval == -1)
+	{
+		perror("RTC_PIE_OFF");
+	}
+	else
+	{
+		qDebug("Stopped RTC interrupt");
+	}
+	
+	close(m_fd);
 }
 
 
@@ -244,41 +211,51 @@ void FunctionConsumer::run()
  */
 void FunctionConsumer::event(time_t)
 {
-  m_functionListMutex.lock(); // First lock
+	/* Lock before accessing the running functions list */
+	m_functionListMutex.lock();
+	
+	for (m_function = m_functionList.first();
+	     m_function != NULL;
+	     m_function = m_functionList.next())
+	{
+		/* Unlock after accessing the running functions list */
+		m_functionListMutex.unlock(); 
+		
+		if (m_function->eventBuffer()->get(m_event) == -1)
+		{
+			if (m_function->removeAfterEmpty())
+			{
+				/* Lock before remove */
+				m_functionListMutex.lock(); 
 
-  for (m_function = m_functionList.first(); m_function != NULL;
-       m_function = m_functionList.next())
-    {
-      m_functionListMutex.unlock(); // Unlock after accessing list
+				/* Remove the current function */
+				m_functionList.remove();
 
-      if ( m_function->eventBuffer()->get(m_event) == -1)
-        {
-          if (m_function->removeAfterEmpty())
-            {
-              m_functionListMutex.lock(); // Lock before remove
-              m_functionList.remove();
-	      m_function->cleanup();
-              m_functionListMutex.unlock(); // Unlock after remove
-            }
-        }
-      else
-        {
-	  /* Each event contains a channel and a value, making eventSize()
-	   * twice as big (for example 6 channels and 6 values). So divide
-	   * the eventSize() by two (x >> 1 == x/2) */
-	  for (m_channel = 0;
-	       m_channel < m_function->eventBuffer()->eventSize();
-	       m_channel++)
-	    {
-	      // Write also invalid values; let _app->setValue() take
-	      // care of them
-	      _app->setValue(m_event[m_channel] >> 8,
-			     m_event[m_channel] & 0xFF);
-	    }
-        }
+				/* Cleanup after removal */
+				m_function->cleanup();
 
-      m_functionListMutex.lock(); // Lock for next round
-    }
-
-  m_functionListMutex.unlock(); // No more loops, unlock and get out
+				/* Unlock after remove */
+				m_functionListMutex.unlock();
+			}
+		}
+		else
+		{
+			/* Each event contains a channel and a value, making
+			   eventSize() twice as big (for example 6 channels and
+			   6 values) */
+			for (m_channel = 0;
+			     m_channel < m_function->eventBuffer()->eventSize();
+			     m_channel++)
+			{
+				// Write also invalid values; let setValue()
+				// take care of them
+				m_dmxMap->setValue(m_event[m_channel] >> 8,
+						   m_event[m_channel] & 0xFF);
+			}
+		}
+		
+		m_functionListMutex.lock(); // Lock for next round
+	}
+	
+	m_functionListMutex.unlock(); // No more loops, unlock and get out
 }

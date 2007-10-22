@@ -51,7 +51,6 @@
 #include "app.h"
 #include "doc.h"
 #include "function.h"
-#include "floatingedit.h"
 #include "vcbuttonproperties.h"
 #include "vcframe.h"
 #include "virtualconsole.h"

@@ -24,19 +24,9 @@
 
 #include <qmainwindow.h>
 
-class QApp;
-class QMessageBox;
-class QMenuBar;
 class QToolBar;
-class QStatusBar;
 class QPopupMenu;
-class QPixmap;
-class QToolButton;
-class QFileDialog;
-class QWidgetList;
-class QLabel;
 
-class Settings;
 class DocumentBrowser;
 class QLCFixture;
 class QLCChannel;
@@ -56,15 +46,13 @@ class App : public QMainWindow
 	Q_OBJECT
 
  public:
-	App(Settings* settings);
+	App();
 	~App();
 
  public:
 	void initView();
-	void initSettings();
 
 	QLCWorkspace* workspace() { return m_workspace; }
-	Settings* settings() { return m_settings; }
 
 	void setCopyChannel(QLCChannel* ch);
 	QLCChannel* copyChannel() { return m_copyChannel; }
@@ -90,8 +78,6 @@ class App : public QMainWindow
 
 	void slotEditorClosed(QLCFixtureEditor* editor);
 
-	void slotBackgroundChanged(const QString& path);
-
  private:
 	/** Open an old .deviceclass file */
 	DeviceClass* openLegacyFile(QString path);
@@ -107,7 +93,6 @@ class App : public QMainWindow
 
  private:
 	QLCWorkspace* m_workspace;
-	Settings* m_settings;
 	DocumentBrowser* m_documentBrowser;
 
 	QPopupMenu* m_fileMenu;

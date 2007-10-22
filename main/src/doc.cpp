@@ -28,10 +28,10 @@
 #include <assert.h>
 #include <qdom.h>
 
+#include "common/qlcworkspace.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlcfixturemode.h"
 #include "common/filehandler.h"
-#include "common/settings.h"
 
 #include "app.h"
 #include "doc.h"
@@ -44,7 +44,6 @@
 #include "monitor.h"
 #include "virtualconsole.h"
 #include "functionconsumer.h"
-#include "configkeys.h"
 #include "fixturemanager.h"
 
 extern App* _app;
@@ -146,7 +145,7 @@ bool Doc::loadXML(const QString& fileName)
 
 	if (FileHandler::readXML(fileName, &doc) == true)
 	{
-		if (doc->doctype().name() == KXMLQLCWorkspaceDocument)
+		if (doc->doctype().name() == KXMLQLCWorkspace)
 		{
 			if (loadXML(doc) == false)
 			{
@@ -187,61 +186,73 @@ bool Doc::loadXML(QDomDocument* doc)
 	QDomElement root;
 	QDomNode node;
 	QDomElement tag;
-	bool retval = false;
+
+	bool visible = false;
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
 
 	Q_ASSERT(doc != NULL);
 
 	root = doc->documentElement();
-	if (root.tagName() == KXMLQLCWorkspace)
-	{
-		node = root.firstChild();
-		while (node.isNull() == false)
-		{
-			tag = node.toElement();
+	
+	/* Load workspace background & theme */
+	_app->workspace()->loadXML(doc, &root);
 
-			if (tag.tagName() == KXMLQLCCreator)
-			{
-			}
-			else if (tag.tagName() == KXMLFixture)
-			{
-				Fixture::loader(doc, &tag);
-			}
-			else if (tag.tagName() == KXMLQLCFunction)
-			{
-				Function::loader(doc, &tag);
-			}
-			else if (tag.tagName() == KXMLQLCBus)
-			{
-				Bus::loadXML(doc, &tag);
-			}
-			else if (tag.tagName() == KXMLQLCMonitor)
-			{
-				Monitor::loader(doc, &tag);
-			}
-			else if (tag.tagName() == KXMLQLCFixtureManager)
-			{
-				FixtureManager::loader(doc, &tag);
-			}
-			else if (tag.tagName() == KXMLQLCVirtualConsole)
-			{
-				VirtualConsole::loader(doc, &tag);
-			}
-			else
-				qDebug("Unknown Workspace tag: %s",
-					(const char*) tag.tagName());
-
-			node = node.nextSibling();
-		}
-
-		retval = true;
-	}
-	else
+	if (root.tagName() != KXMLQLCWorkspace)
 	{
 		qWarning("Workspace node not found in file!");
-		retval = false;
+		return false;
 	}
 
-	return retval;
+	node = root.firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCCreator)
+		{
+		}
+		else if (tag.tagName() == KXMLQLCWindowState)
+		{
+			FileHandler::loadXMLWindowState(&tag, &x, &y, &w, &h,
+							&visible);
+		}
+		else if (tag.tagName() == KXMLFixture)
+		{
+			Fixture::loader(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCFunction)
+		{
+			Function::loader(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCBus)
+		{
+			Bus::loadXML(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCMonitor)
+		{
+			Monitor::loader(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCFixtureManager)
+		{
+			FixtureManager::loader(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCVirtualConsole)
+		{
+			VirtualConsole::loader(doc, &tag);
+		}
+		else
+			qDebug("Unknown Workspace tag: %s",
+			       (const char*) tag.tagName());
+		
+		node = node.nextSibling();
+	}
+
+	_app->setGeometry(x, y, w, h);
+	
+	return true;
 }
 
 bool Doc::saveXML(const QString& fileName)
@@ -257,13 +268,19 @@ bool Doc::saveXML(const QString& fileName)
 	if (file.open(IO_WriteOnly) == false)
 		return false;
 
-	if (FileHandler::getXMLHeader(KXMLQLCWorkspaceDocument, &doc) == true)
+	if (FileHandler::getXMLHeader(KXMLQLCWorkspace, &doc) == true)
 	{
 		/* Create a text stream for the file */
 		QTextStream stream(&file);
 
 		root = doc->documentElement();
 		
+		/* Save background image and theme */
+		_app->workspace()->saveXML(doc, &root);
+
+		/* Save window state & size */
+		FileHandler::saveXMLWindowState(doc, &root, _app);
+
 		/* Write fixtures into an XML document */
 		for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 		{

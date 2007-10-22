@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>496</width>
-            <height>178</height>
+            <width>510</width>
+            <height>279</height>
         </rect>
     </property>
     <property name="caption">
@@ -64,7 +64,7 @@
                 </widget>
                 <widget class="QGroupBox">
                     <property name="name">
-                        <cstring>m_gridBox</cstring>
+                        <cstring>m_gridGroup</cstring>
                     </property>
                     <property name="title">
                         <string>Grid</string>
@@ -81,7 +81,7 @@
                                 <string>Snap to Grid</string>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>Align widgets in a grid</string>
+                                <string>Align virtual console widgets in a grid</string>
                             </property>
                         </widget>
                         <widget class="QLayoutWidget">
@@ -95,6 +95,12 @@
                                 <widget class="QLabel">
                                     <property name="name">
                                         <cstring>m_gridXLabel</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>100</width>
+                                            <height>0</height>
+                                        </size>
                                     </property>
                                     <property name="text">
                                         <string>Horizontal (X)</string>
@@ -114,7 +120,7 @@
                                         <number>1</number>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>X resolution in pixels</string>
+                                        <string>Grid X resolution in pixels</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -139,6 +145,12 @@
                                             <verstretch>0</verstretch>
                                         </sizepolicy>
                                     </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>100</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
                                     <property name="text">
                                         <string>Vertical (Y)</string>
                                     </property>
@@ -157,7 +169,7 @@
                                         <number>1</number>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>Y resolution in pixels</string>
+                                        <string>Grid Y resolution in pixels</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -165,6 +177,189 @@
                     </vbox>
                 </widget>
             </hbox>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>m_defaultSlidersGroup</cstring>
+            </property>
+            <property name="title">
+                <string>Default Sliders</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout7</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_fadeSliderLabel</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>100</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>Fade Slider</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_fadeLowLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Low Limit</string>
+                            </property>
+                        </widget>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>m_fadeLowSpin</cstring>
+                            </property>
+                            <property name="suffix">
+                                <string> s</string>
+                            </property>
+                            <property name="maxValue">
+                                <number>999</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The lowest time in seconds that can be set with the default fade slider</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer3</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>50</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_fadeHighLimit</cstring>
+                            </property>
+                            <property name="text">
+                                <string>High Limit</string>
+                            </property>
+                        </widget>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>m_fadeHighSpin</cstring>
+                            </property>
+                            <property name="suffix">
+                                <string> s</string>
+                            </property>
+                            <property name="maxValue">
+                                <number>999</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The highest time in seconds that can be set with the default fade slider</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout8</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_holdSliderLabel</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>100</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="text">
+                                <string>Hold Slider</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_holdLowLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Low Limit</string>
+                            </property>
+                        </widget>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>m_holdLowSpin</cstring>
+                            </property>
+                            <property name="suffix">
+                                <string> s</string>
+                            </property>
+                            <property name="maxValue">
+                                <number>999</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The lowest time in seconds that can be set with the default hold slider</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer3_2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>50</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>m_holdHighLabel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>High Limit</string>
+                            </property>
+                        </widget>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>m_holdHighSpin</cstring>
+                            </property>
+                            <property name="suffix">
+                                <string> s</string>
+                            </property>
+                            <property name="maxValue">
+                                <number>999</number>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>The highest time in seconds that can be set with the default hold slider</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -222,23 +417,6 @@
                         <string>Accept settings and close</string>
                     </property>
                 </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Minimum</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>16</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
                 <widget class="QPushButton">
                     <property name="name">
                         <cstring>m_cancel</cstring>
@@ -282,19 +460,17 @@
         <sender>m_ok</sender>
         <signal>clicked()</signal>
         <receiver>UI_VirtualConsoleProperties</receiver>
-        <slot>slotOKClicked()</slot>
+        <slot>accept()</slot>
     </connection>
     <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
         <receiver>UI_VirtualConsoleProperties</receiver>
-        <slot>slotCancelClicked()</slot>
+        <slot>reject()</slot>
     </connection>
 </connections>
 <slots>
     <slot>slotGridEnabledCheckToggled(bool)</slot>
-    <slot>slotOKClicked()</slot>
-    <slot>slotCancelClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

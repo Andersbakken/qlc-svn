@@ -28,8 +28,6 @@
 
 #include "aboutbox.h"
 #include "app.h"
-#include "common/settings.h"
-#include "../../main/src/configkeys.h"
 
 extern App* _app;
 

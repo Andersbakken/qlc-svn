@@ -39,7 +39,6 @@ class VCFrame;
 class KeyBind;
 class Bus;
 class VCDockArea;
-class FloatingEdit;
 
 #define KXMLQLCVirtualConsole "VirtualConsole"
 
@@ -161,13 +160,13 @@ class VirtualConsole : public QWidget
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
- public:
+public:
 	VirtualConsole(QWidget* parent);
 	~VirtualConsole();
 
 	void initView();
 
- protected:
+protected:
 	void initMenuBar();
 	void initDockArea();
 
@@ -194,58 +193,109 @@ public:
 	int gridY() { return m_gridY; }
 
 protected:
+	/** Widget placement grid enabled? */
 	bool m_gridEnabled;
+
+	/** Widget placement grid X resolution */
 	int m_gridX;
+
+	/** Widget placement grid Y resolution */
 	int m_gridY;
 
 	/*********************************************************************
 	 * Keyboard state
 	 *********************************************************************/
 public:
+	/** Turn key repeat off or not when in operate mode */
 	void setKeyRepeatOff(bool set) { m_keyRepeatOff = set; }
+
+	/** Get the status of turning key repeat off */
 	bool isKeyRepeatOff() { return m_keyRepeatOff; }
 
+	/** Grab all keyboard input when in operate mode */
 	void setGrabKeyboard(bool grab) { m_grabKeyboard = grab; }
+
+	/** Get the status of grabbing keyboard input */
 	bool isGrabKeyboard() { return m_grabKeyboard; }
 
 protected:
+	/** Key repeat off status */
 	bool m_keyRepeatOff;
+
+	/** Keyboard grabbing status */
 	bool m_grabKeyboard;
 
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
 public:
-	/** Load virtual console contents from a file */
+	/**
+	 * Load and initialize virtual console from an XML document
+	 *
+	 * @param doc An XML document to load from
+	 * @param vc_root A VirtualConsole root node to start loading from
+	 */
 	static bool loader(QDomDocument* doc, QDomElement* vc_root);
 
-	/** Load Virtual Console contents from an XML document */
+	/**
+	 * Load Virtual Console contents from an XML document (already
+	 * initialized with VirtualConsole::loader())
+	 *
+	 * @param doc An XML document to load from
+	 * @param root A VirtualConsole root node to start loading from
+	 */
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 
-	/** Load Virtual Console contents from an XML document */
+	/**
+	 * Save Virtual Console contents to an XML document
+	 *
+	 * @param doc An XML Document to save to
+	 * @param wksp_root A WorkSpace root node to save under
+	 */
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
 	/*********************************************************************
 	 * Selected widget
 	 *********************************************************************/
 public:
-	/** Get the currently selected widget */
+	/**
+	 * Get the currently selected widget. The selected widget is the one
+	 * that has been clicked by the user and is being edited.
+	 *
+	 * @return The selected widget or NULL if none is selected
+	 */
 	QWidget* selectedWidget() { return m_selectedWidget; }
 
-	/** Set the currently selected widget */
-	void setSelectedWidget(QWidget*);
+	/**
+	 * Set the currently selected widget. This is called by individual
+	 * widgets when they are clicked. They always set themselves as the
+	 * selected widget.
+	 *
+	 * @param widget The widget that was last clicked
+	 */
+	void setSelectedWidget(QWidget* widget);
 
 protected:
+	/** The widget that currently has the "edit focus" in virtual console */
 	QWidget* m_selectedWidget;
 
 	/*********************************************************************
 	 * Draw area
 	 *********************************************************************/
- public:
+public:
+	/**
+	 * Set the bottom-most VCFrame that acts as the "drawing area" housing
+	 * all other vc widgets.
+	 *
+	 * @param drawArea The VCFrame to set as the bottom-most widget
+	 */
 	void setDrawArea(VCFrame* drawArea);
+
+	/** Get the virtual console's bottom-most widget */
 	VCFrame* drawArea() const { return m_drawArea; }
 
- protected:
+protected:
+	/** The bottom-most widget in virtual console */
 	VCFrame* m_drawArea;
 
 	/*********************************************************************
@@ -265,7 +315,7 @@ protected:
 	 * Misc slots
 	 *********************************************************************/
  public slots:
-	void slotDockAreaHidden(bool);
+	void slotDockAreaVisibilityChanged(bool isVisible);
 	void slotModeChanged();
 
 	/*********************************************************************
@@ -291,10 +341,8 @@ protected:
 	void slotEditCopy();
 	void slotEditPaste();
 	void slotEditDelete();
-	void slotEditProperties();
 	void slotEditRename();
-	void slotEditRenameReturnPressed();
-	void slotEditRenameCancelled();
+	void slotEditProperties();
 
 	/*********************************************************************
 	 * Foreground menu callbacks
@@ -329,6 +377,17 @@ signals:
 	void keyReleased(QKeyEvent*);
 
 	/*********************************************************************
+	 * Dock Area
+	 *********************************************************************/
+public:
+	/** Get a pointer to the dock area that holds the default sliders */
+	VCDockArea* dockArea() { return m_dockArea; }
+
+protected:
+	/** Dock area that holds the default fade & hold sliders */
+	VCDockArea* m_dockArea;
+
+	/*********************************************************************
 	 * Event handlers
 	 *********************************************************************/
 protected:
@@ -336,13 +395,6 @@ protected:
 	void keyPressEvent(QKeyEvent* e);
 	void keyReleaseEvent(QKeyEvent* e);
 	void customEvent(QCustomEvent*);
-
-	/*********************************************************************
-	 * Frame style converters
-	 *********************************************************************/
-public:
-	static QString frameStyleToString(const int style);
-	static int stringToFrameStyle(const QString& style);
 
 	/*********************************************************************
 	 * Misc member attributes
@@ -354,14 +406,8 @@ protected:
 	// Virtual console menu bar
 	QMenuBar* m_menuBar;
 
-	// Dock area
-	VCDockArea* m_dockArea;
-
 	// Key receiver bind objects
 	QPtrList <KeyBind> m_keyReceivers;
-
-	// Rename edit
-	FloatingEdit* m_renameEdit;
 };
 
 #endif

@@ -37,9 +37,8 @@
 
 #include "app.h"
 #include "doc.h"
+#include "dmxmap.h"
 #include "monitor.h"
-#include "configkeys.h"
-#include "common/settings.h"
 #include "common/minmax.h"
 #include "common/filehandler.h"
 
@@ -62,10 +61,12 @@ static const QString KEY_MONITOR_GEOMETRY         ( "MonitorGeometry" );
 //
 // Constructor
 //
-Monitor::Monitor(QWidget* parent) : QWidget(parent, "Monitor"),
+Monitor::Monitor(QWidget* parent, DMXMap* dmxMap) :
+	QWidget(parent, "Monitor"),
 	m_universe        ( 0 ),
 	m_newValues       ( NULL ),
 	m_oldValues       ( NULL ),
+	m_dmxMap          ( dmxMap ),
 	m_timer           ( NULL ),
 	m_updateFrequency ( ID_16HZ ),
 	m_menuBar         ( NULL ),
@@ -266,7 +267,7 @@ void Monitor::slotMenuCallback(int item)
 //
 void Monitor::slotTimeOut()
 {
-	_app->outputPlugin()->readRange(512 * m_universe, m_newValues, 512);
+	m_dmxMap->getValueRange(512 * m_universe, m_newValues, 512);
 
 	// Paint only changed values
 	repaint(false);

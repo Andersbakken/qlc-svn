@@ -50,9 +50,9 @@
 #include "doc.h"
 #include "keybind.h"
 #include "vcframe.h"
+#include "vcbutton.h"
 #include "vcdockarea.h"
 #include "vcdockslider.h"
-#include "floatingedit.h"
 
 #include <X11/Xlib.h>
 
@@ -73,7 +73,6 @@ VirtualConsole::VirtualConsole(QWidget* parent)
 	m_grabKeyboard = true;
 
 	m_selectedWidget = NULL;
-	m_renameEdit = NULL;
 	m_editMenu = NULL;
 }
 
@@ -245,8 +244,8 @@ void VirtualConsole::initDockArea()
 		delete m_dockArea;
 
 	m_dockArea = new VCDockArea(this);
-	connect(m_dockArea, SIGNAL(areaHidden(bool)),
-		this, SLOT(slotDockAreaHidden(bool)));
+	connect(m_dockArea, SIGNAL(visibilityChanged(bool)),
+		this, SLOT(slotDockAreaVisibilityChanged(bool)));
 	m_dockArea->init();
 
 	// Add the dock area into the master horizontal layout
@@ -308,13 +307,17 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 			str = tag.attribute(KXMLQLCVirtualConsoleGridEnabled);
 			setGridEnabled((bool) str.toInt());
 		}
+		else if (tag.tagName() == KXMLQLCVCDockArea)
+		{
+			m_dockArea->loadXML(doc, &tag);
+		}
 		else if (tag.tagName() == KXMLQLCVCFrame)
 		{
 			VCFrame::loader(doc, &tag, this);
 		}
 		else
 		{
-			qDebug("Unknown monitor tag: %s",
+			qDebug("Unknown virtual console tag: %s",
 			       (const char*) tag.tagName());
 		}
 		
@@ -365,6 +368,9 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	str.setNum((m_keyRepeatOff) ? 1 : 0);
 	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardRepeat, str);	
 
+	/* Dock Area */
+	m_dockArea->saveXML(doc, &root);
+
 	/* Save children */
 	if (m_drawArea != NULL)
 		m_drawArea->saveXML(doc, &root);
@@ -378,7 +384,7 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
 void VirtualConsole::setSelectedWidget(QWidget* w)
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		QWidget* old = m_selectedWidget;
 		m_selectedWidget = w;
@@ -389,12 +395,9 @@ void VirtualConsole::setSelectedWidget(QWidget* w)
 		m_selectedWidget = w;
 	}
 
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		m_selectedWidget->update();
-	}
-	else
-	{
 	}
 }
 
@@ -450,14 +453,22 @@ void VirtualConsole::slotAddLabel()
 void VirtualConsole::slotToolsSettings()
 {
 	VirtualConsoleProperties prop(this);
+	t_bus_value lo = 0;
+	t_bus_value hi = 0;
+
+	Q_ASSERT(m_dockArea != NULL);
 
 	prop.setGridEnabled(m_gridEnabled);
 	prop.setGridX(m_gridX);
 	prop.setGridY(m_gridY);
 	prop.setKeyRepeatOff(m_keyRepeatOff);
 	prop.setGrabKeyboard(m_grabKeyboard);
-	prop.init();
+	m_dockArea->defaultFadeSlider()->busRange(lo, hi);
+	prop.setFadeLimits(lo, hi);
+	m_dockArea->defaultHoldSlider()->busRange(lo, hi);
+	prop.setHoldLimits(lo, hi);
 
+	prop.init();
 	if (prop.exec() == QDialog::Accepted)
 	{
 		setGridEnabled(prop.isGridEnabled());
@@ -466,6 +477,12 @@ void VirtualConsole::slotToolsSettings()
 		
 		setKeyRepeatOff(prop.isKeyRepeatOff());
 		setGrabKeyboard(prop.isGrabKeyboard());
+
+		prop.fadeLimits(lo, hi);
+		m_dockArea->defaultFadeSlider()->setBusRange(lo, hi);
+
+		prop.holdLimits(lo, hi);
+		m_dockArea->defaultHoldSlider()->setBusRange(lo, hi);
 	}
 }
 
@@ -510,110 +527,53 @@ void VirtualConsole::slotEditPaste()
 
 void VirtualConsole::slotEditDelete()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
-		if (m_selectedWidget->className() == QString("VCFrame") &&
-		    ((VCFrame*) m_selectedWidget)->isBottomFrame() == true)
+		if (m_selectedWidget->inherits("VCWidget") == true)
 		{
-			//
-			// Bottom frame should not be deleted!
-			//
-			// Maybe the menu item should be removed,
-			// too, but it's a bit complicated. Darn
-			// shared-menu-system-I-had-to-do-one-day
-			//
+			static_cast<VCWidget*> 
+				(m_selectedWidget)->scram();
 		}
-		else
+		else if (m_selectedWidget->isA("VCButton") == true)
 		{
-			int result = QMessageBox::warning(this,
-							  QString(m_selectedWidget->name()),
-							  QString("Remove selected widget?"),
-							  QMessageBox::Yes,
-							  QMessageBox::No);
-
-			if (result == QMessageBox::Yes)
-			{
-				_app->doc()->setModified();
-				delete m_selectedWidget;
-				m_selectedWidget = NULL;
-			}
+			static_cast<VCButton*> 
+				(m_selectedWidget)->scram();
 		}
 	}
 }
 
 void VirtualConsole::slotEditProperties()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
-		//
-		// By sending an event we don't need to know
-		// what class m_selectedWidget is when this is called.
-		// sendEvent is also synchronous call, so this is almost
-		// the same thing as calling the function directly.
-		//
-		QApplication::sendEvent(m_selectedWidget,
-					new VCMenuEvent(KVCMenuEditProperties));
+		if (m_selectedWidget->inherits("VCWidget") == true)
+		{
+			static_cast<VCWidget*> 
+				(m_selectedWidget)->editProperties();
+		}
+		else if (m_selectedWidget->isA("VCButton") == true)
+		{
+			static_cast<VCButton*> 
+				(m_selectedWidget)->editProperties();
+		}
 	}
 }
 
 void VirtualConsole::slotEditRename()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
-		//
-		// Delete if there already is a rename edit somewhere
-		// (a previous rename action...?)
-		//
-		if (m_renameEdit) delete m_renameEdit;
-
-		// Create new QLineEdit widget.
-		m_renameEdit = new FloatingEdit(m_selectedWidget->parentWidget());
-
-		// See the two function declarations below
-		connect(m_renameEdit, SIGNAL(returnPressed()),
-			this, SLOT(slotEditRenameReturnPressed()));
-		connect(m_renameEdit, SIGNAL(cancelled()),
-			this, SLOT(slotEditRenameCancelled()));
-
-		//
-		// Draw a QLineEdit the size of the selected widget and start rename.
-		// (might look ugly with big widgets, but who cares :)
-		//
-		m_renameEdit->setMinimumSize(60, 25);
-		m_renameEdit->setGeometry(m_selectedWidget->x() + 3,
-					  m_selectedWidget->y() + 3,
-					  m_selectedWidget->width() - 6,
-					  m_selectedWidget->height() - 6);
-		m_renameEdit->setText(m_selectedWidget->caption());
-		m_renameEdit->setFont(m_selectedWidget->font());
-		m_renameEdit->setSelection(0,m_selectedWidget->caption().length());
-		m_renameEdit->show();
-		m_renameEdit->setFocus();
+		if (m_selectedWidget->inherits("VCWidget") == true)
+		{
+			static_cast<VCWidget*> 
+				(m_selectedWidget)->rename();
+		}
+		else if (m_selectedWidget->isA("VCButton") == true)
+		{
+			static_cast<VCButton*> 
+				(m_selectedWidget)->rename();
+		}
 	}
-}
-
-void VirtualConsole::slotEditRenameReturnPressed()
-{
-	// Rename action was ok
-	if (m_selectedWidget)
-	{
-		m_selectedWidget->setCaption(m_renameEdit->text());
-	}
-
-	assert(m_renameEdit);
-	m_renameEdit->deleteLater(); // QT 3.1 crashes with normal delete
-	m_renameEdit = NULL;
-
-	_app->doc()->setModified();
-}
-
-
-void VirtualConsole::slotEditRenameCancelled()
-{
-	// Rename action was cancelled
-	assert(m_renameEdit);
-	m_renameEdit->deleteLater(); // QT 3.1 crashes with normal delete
-	m_renameEdit = NULL;
 }
 
 /*********************************************************************
@@ -775,12 +735,9 @@ void VirtualConsole::slotStackingLower()
  * Misc callbacks
  *********************************************************************/
 
-void VirtualConsole::slotDockAreaHidden(bool areaHidden)
+void VirtualConsole::slotDockAreaVisibilityChanged(bool isVisible)
 {
-	if (areaHidden == true)
-		m_menuBar->setItemChecked(KVCMenuToolsSliders, false);
-	else
-		m_menuBar->setItemChecked(KVCMenuToolsSliders, true);
+	m_menuBar->setItemChecked(KVCMenuToolsSliders, isVisible);
 }
 
 
@@ -865,28 +822,3 @@ void VirtualConsole::customEvent(QCustomEvent* e)
 		emit InpEvent(ie->id(), ie->channel(), ie->value());
 	}
 }
-
-/*****************************************************************************
- * Frame style converters
- *****************************************************************************/
-
-QString VirtualConsole::frameStyleToString(const int style)
-{
-	if (style == KFrameStyleSunken)
-		return "Sunken";
-	else if (style == KFrameStyleRaised)
-		return "Raised";
-	else
-		return "None";
-}
-
-int VirtualConsole::stringToFrameStyle(const QString& style)
-{
-	if (style == "Sunken")
-		return KFrameStyleSunken;
-	else if (style == "Raised")
-		return KFrameStyleRaised;
-	else
-		return KFrameStyleNone;
-}
-

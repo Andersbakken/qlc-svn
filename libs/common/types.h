@@ -71,9 +71,9 @@ const t_function_id KFunctionArraySize ( 4096 );
 typedef unsigned short t_channel;
 
 /**
- * Largest number of universes (optimistic)
+ * Number of supported universes
  */
-const t_channel KUniverseCount ( 8 );
+const t_channel KUniverseCount ( 4 );
 
 /**
  * Smallest channel number

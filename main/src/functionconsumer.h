@@ -28,47 +28,108 @@
 #include "common/types.h"
 #include "function.h"
 
+class DMXMap;
+
 class FunctionConsumer : public QThread
 {
- public:
-  FunctionConsumer();
-  virtual ~FunctionConsumer();
+public:
+	/** Create a new FunctionConsumer instance
+	 *
+	 * @param dmxMap A DMXMap instance used to write function values
+	 */
+	FunctionConsumer(DMXMap* dmxMap);
 
-  // Number of running functions
-  int runningFunctions();
+	/** Destroy a FunctionConsumer instance */
+	virtual ~FunctionConsumer();
+	
+	/**
+	 * Get the number of currently running functions
+	 *
+	 * @return Number of functions
+	 */
+	int runningFunctions();
+	
+	/**
+	 * Append the given function to the FunctionConsumer's list of
+	 * running functions.
+	 *
+	 * @param function The function to start running
+	 */
+	void cue(Function* function);
+	
+	/**
+	 * Clear the list of running functions. This will stop all functions.
+	 */
+	void purge();
+	
+	/**
+	 * Get the elapsed time since FunctionConsumer was started. This is
+	 * used by, for example, chasers to calculate their hold time.
+	 *
+	 * @return The current timecode
+	 */
+	void timeCode(t_bus_value& timeCode);
+	
+	/** 
+	 * Stop the FunctionConsumer alltogether. No functions will be run
+	 * if FC is stopped.
+	 */
+	void stop();
 
-  // Run a function
-  void cue(Function* f);
+	/**
+	 * Initialize the FunctionConsumer prior to starting it.
+	 */
+	void init();
+	
+protected:
+	/**
+	 * Thhe main thread function that reads periodical interrupts
+	 * from /dev/rtc.
+	 */
+	virtual void run();
 
-  // Stop all functions
-  void purge();
+	/**
+	 * The main thread function calls this function to handle all running
+	 * functions on each periodic pass.
+	 */
+	void event(time_t);
+	
+protected:
+	/** A DMXMap instance that routes all values to correct plugins */
+	DMXMap* m_dmxMap;
 
-  // Get current timecode
-  void timeCode(t_bus_value& timeCode);
+	/** Running status, telling, whether the FC has been started or not */
+	bool m_running;
 
-  // Functions that control the consumer
-  void stop();
-  void init();
+	/** The file descriptor to /dev/rtc. */
+	int m_fd;
+	
+	/** List of currently running functions */
+	QPtrList <Function> m_functionList;
 
- protected:
-  virtual void run();
-  void event(time_t);
+	/** Mutex that guards access to m_functionList */
+	QMutex m_functionListMutex;
+	
+	/** Elapsed time since FC start */
+	t_bus_value m_timeCode;
+	
+	/** Buffer that holds the values of each function */
+	t_buffer_data* m_event;
 
-  void incrementTimeCode();
+	/** 
+	 * The current function, whose values are being handled. Normally,
+	 * this would be defined in event() function, but since it is called
+	 * 64 times per second, there's no point in allocating space for it
+	 * every time from the stack. It is slightly more efficient to have
+	 * it as a member variable.
+	 */
+	Function* m_function;
 
- protected:
-  bool m_running;
-  int m_fd;
-
-  QPtrList <Function> m_functionList;
-  QMutex m_functionListMutex;
-
-  t_bus_value m_timeCode;
-  QMutex m_timeCodeMutex;
-
-  t_buffer_data* m_event;
-  Function* m_function;
-  t_channel m_channel;
+	/** 
+	 * The currently evaluated channel. The same applies to this variable
+	 * as to m_function.
+	 */
+	t_channel m_channel;
 };
 
 #endif

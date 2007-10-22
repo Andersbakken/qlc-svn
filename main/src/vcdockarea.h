@@ -23,32 +23,71 @@
 #define VCDOCKAREA_H
 
 #include <qframe.h>
+#include <qevent.h>
 
 class QVBoxLayout;
+class QDomDocument;
+class QDomElement;
+
 class VCDockSlider;
+
+#define KXMLQLCVCDockArea "DockArea"
+#define KXMLQLCVCDockAreaVisible "Visible"
 
 class VCDockArea : public QFrame
 {
-  Q_OBJECT
+	Q_OBJECT
     
- public:
-  VCDockArea(QWidget* parent, const char* name = NULL);
-  ~VCDockArea();
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	VCDockArea(QWidget* parent);
+	~VCDockArea();
 
-  void init();
+	void init();
+	
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	/**
+	 * Load this slider's settings
+	 *
+	 * @param doc An XML document to load from
+	 * @param root A VCDockSlider XML root node to load from
+	 */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
 
- signals:
-  void areaHidden(bool);
+	/**
+	 * Save this slider's settings
+	 *
+	 * @param doc An XML document to save to
+	 * @param vc_root VirtualConsole XML root node to save to
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
- public slots:
-  void show();
-  void hide();
+	/*********************************************************************
+	 * Event Handlers & Signals
+	 *********************************************************************/
+protected:
+	void showEvent(QShowEvent* event);
+	void hideEvent(QHideEvent* event);
 
- protected:
-  QVBoxLayout* m_layout;
+signals:
+	void visibilityChanged(bool isVisible);
 
-  VCDockSlider* m_defaultFadeSlider;
-  VCDockSlider* m_defaultHoldSlider;
+	/*********************************************************************
+	 * Widgets
+	 *********************************************************************/
+public:
+	VCDockSlider* defaultFadeSlider() { return m_defaultFadeSlider; }
+	VCDockSlider* defaultHoldSlider() { return m_defaultHoldSlider; }
+
+protected:
+	QVBoxLayout* m_layout;
+	VCDockSlider* m_defaultFadeSlider;
+	VCDockSlider* m_defaultHoldSlider;
 };
 
 #endif

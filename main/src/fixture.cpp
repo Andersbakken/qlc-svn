@@ -645,10 +645,7 @@ bool Fixture::createConsole()
 	if (m_console == NULL)
 	{
 		m_console = new FixtureConsole((QWidget*) _app->workspace());
-
 		Q_ASSERT(m_console != NULL);
-		if (m_console == NULL)
-			return false;
 
 		m_console->setFixture(m_id);
 		

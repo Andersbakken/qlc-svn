@@ -24,14 +24,13 @@
 #include <assert.h>
 #include <qpixmap.h>
 
+#include "common/filehandler.h"
+
 #include "app.h"
 #include "doc.h"
 #include "sceneeditor.h"
 #include "fixtureconsole.h"
 #include "consolechannel.h"
-
-#include "common/filehandler.h"
-#include "common/settings.h"
 
 extern App* _app;
 

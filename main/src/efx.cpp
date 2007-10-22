@@ -27,16 +27,15 @@
 #include <assert.h>
 #include <math.h>
 
-#include "common/settings.h"
 #include "common/filehandler.h"
 #include "common/qlcfixturedef.h"
 
 #include "app.h"
 #include "doc.h"
+#include "efx.h"
 #include "bus.h"
 #include "fixture.h"
 #include "eventbuffer.h"
-#include "efx.h"
 #include "functionconsumer.h"
 
 extern App* _app;
@@ -826,10 +825,10 @@ bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	str.setNum(startScene());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
-	if (startSceneEnabled() == TRUE)
-		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::trueValue());
+	if (startSceneEnabled() == true)
+		tag.setAttribute(KXMLQLCFunctionEnabled, KXMLQLCTrue);
 	else
-		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::falseValue());
+		tag.setAttribute(KXMLQLCFunctionEnabled, KXMLQLCFalse);
 
 	/* Stop function */
 	tag = doc->createElement(KXMLQLCFunctionEFXStopScene);
@@ -837,10 +836,10 @@ bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	str.setNum(stopScene());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
-	if (stopSceneEnabled() == TRUE)
-		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::trueValue());
+	if (stopSceneEnabled() == true)
+		tag.setAttribute(KXMLQLCFunctionEnabled, KXMLQLCTrue);
 	else
-		tag.setAttribute(KXMLQLCFunctionEnabled, Settings::falseValue());
+		tag.setAttribute(KXMLQLCFunctionEnabled, KXMLQLCFalse);
 
 	/********************************************
 	 * X-Axis 
@@ -979,7 +978,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 			setStartScene(tag.text().toInt());
 
 			if (tag.attribute(KXMLQLCFunctionEnabled) ==
-			    Settings::trueValue())
+			    KXMLQLCTrue)
 				setStartSceneEnabled(true);
 			else
 				setStartSceneEnabled(false);
@@ -990,7 +989,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 			setStopScene(tag.text().toInt());
 
 			if (tag.attribute(KXMLQLCFunctionEnabled) ==
-			    Settings::trueValue())
+			    KXMLQLCTrue)
 				setStopSceneEnabled(true);
 			else
 				setStopSceneEnabled(false);
