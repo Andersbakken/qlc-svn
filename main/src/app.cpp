@@ -223,6 +223,118 @@ void App::init()
 
 	// Virtual Console
 	initVirtualConsole();
+
+	// Start up in non-modified state
+	m_doc->resetModified();
+}
+
+/*****************************************************************************
+ * Output mapping
+ *****************************************************************************/
+
+void App::initDMXMap()
+{
+	m_dmxMap = new DMXMap(KUniverseCount);
+	Q_ASSERT(m_dmxMap != NULL);
+
+	connect(m_dmxMap, SIGNAL(blackoutChanged(bool)),
+		this, SLOT(slotDMXMapBlackoutChanged(bool)));
+}
+
+void App::slotViewOutputManager()
+{
+	Q_ASSERT(m_dmxMap != NULL);
+	m_dmxMap->openEditor(workspace());
+}
+
+void App::slotDMXMapBlackoutChanged(bool state)
+{
+	if (state == true)
+	{
+		m_blackoutIndicator->setText("Blackout");
+
+		connect(m_blackoutIndicatorTimer, SIGNAL(timeout()),
+			this, SLOT(slotFlashBlackoutIndicator()));
+		m_blackoutIndicatorTimer->start(500);
+ 	}
+	else
+	{
+		m_blackoutIndicator->setText(QString::null);
+
+		m_blackoutIndicatorTimer->stop();
+		disconnect(m_blackoutIndicatorTimer, SIGNAL(timeout()),
+			   this, SLOT(slotFlashBlackoutIndicator()));
+
+		m_blackoutIndicator->unsetPalette();
+	}
+
+	m_managerMenu->setItemChecked(MENU_CONTROL_BLACKOUT, state);
+	m_blackoutToolButton->setOn(state);
+}
+
+/*********************************************************************
+ * Input mapping
+ *********************************************************************/
+
+void App::slotViewInputManager()
+{
+	QMessageBox::information(workspace(), "TODO", "TODO");
+}
+
+/*********************************************************************
+ * Blackout
+ *********************************************************************/
+
+void App::slotToggleBlackout()
+{
+	Q_ASSERT(m_dmxMap != NULL);
+	if (m_dmxMap->blackout() == true)
+		m_dmxMap->setBlackout(false);
+	else
+		m_dmxMap->setBlackout(true);
+}
+
+void App::slotFlashBlackoutIndicator()
+{
+	int mask = 0xff;
+	QColor bg(m_blackoutIndicator->backgroundColor());
+	bg.setRgb(bg.red() ^ mask, bg.green() ^ mask, bg.blue() ^ mask);
+	m_blackoutIndicator->setPaletteBackgroundColor(bg);
+	
+	QColor fg(m_blackoutIndicator->foregroundColor());
+	fg.setRgb(fg.red() ^ mask, fg.green() ^ mask, fg.blue() ^ mask);
+	m_blackoutIndicator->setPaletteForegroundColor(fg);
+}
+
+/*****************************************************************************
+ * Buses
+ *****************************************************************************/
+
+void App::slotViewBusProperties()
+{
+	if (m_busProperties == NULL)
+	{
+		m_busProperties = new BusProperties(workspace());
+		m_busProperties->init();
+		connect(m_busProperties, SIGNAL(closed()),
+			this, SLOT(slotBusPropertiesClosed()));
+	}
+	else
+	{
+		m_busProperties->hide();
+	}
+
+	m_busProperties->show();
+}
+
+void App::slotBusPropertiesClosed()
+{
+	if (m_busProperties)
+	{
+		disconnect(m_busProperties);
+		delete m_busProperties;
+		m_busProperties = NULL;
+	}
 }
 
 /*****************************************************************************
@@ -236,6 +348,12 @@ void App::initFunctionConsumer()
 
 	m_functionConsumer->init();
 	m_functionConsumer->start();
+}
+
+void App::slotPanic()
+{
+	/* Shut down all running functions */
+	m_functionConsumer->purge();
 }
 
 /*****************************************************************************
@@ -320,34 +438,6 @@ void App::initWorkspace()
 //
 void App::slotRefreshMenus()
 {
-	//
-	// Refresh tools & mode menus
-	//
-	if (m_mode == Operate)
-	{
-		m_fileMenu->setItemEnabled(MENU_FILE_NEW, false);
-		m_fileMenu->setItemEnabled(MENU_FILE_OPEN, false);
-		m_fileMenu->setItemEnabled(MENU_FILE_SAVE_AS, false);
-		m_fileMenu->setItemEnabled(MENU_FILE_QUIT, false);
-
-		m_managerMenu->setItemEnabled(MENU_MANAGER_FUNCTION_MANAGER, false);
-
-		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, true);
-		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_DESIGN, false);
-	}
-	else
-	{
-		m_fileMenu->setItemEnabled(MENU_FILE_NEW, true);
-		m_fileMenu->setItemEnabled(MENU_FILE_OPEN, true);
-		m_fileMenu->setItemEnabled(MENU_FILE_SAVE_AS, true);
-		m_fileMenu->setItemEnabled(MENU_FILE_QUIT, true);
-
-		m_managerMenu->setItemEnabled(MENU_MANAGER_FUNCTION_MANAGER, true);
-
-		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, false);
-		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_DESIGN, true);
-	}
-
 	//
 	// Refresh window menu
 	//
@@ -434,20 +524,25 @@ void App::closeEvent(QCloseEvent* e)
 
 	if (m_mode == Operate)
 	{
-		QString msg;
-		msg = "Cannot close while in operate mode.\n";
-		msg += "Switch back to Design mode to close the application.";
-		QMessageBox::warning(this, KApplicationNameShort, msg);
+		QMessageBox::warning(this,
+				     "Cannot exit in Operate mode",
+				     "You must switch back to Design mode\n" \
+				     "to be able to close the application.");
 		e->ignore();
 		return;
 	}
 
 	if (m_doc->isModified())
 	{
-		result = QMessageBox::information(this, "Exit...",
-						  "Do you want to save before exit?",
-						  QMessageBox::Yes, QMessageBox::No,
-						  QMessageBox::Cancel);
+		result = QMessageBox::information(
+			this, 
+			"Close Q Light Controller...",
+			"Do you wish to save the current workspace \n"\
+			"before closing the application?",
+			QMessageBox::Yes,
+			QMessageBox::No,
+			QMessageBox::Cancel);
+
 		if (result == QMessageBox::Yes)
 		{
 			slotFileSave();
@@ -489,9 +584,6 @@ void App::createFixtureManager()
 		
 		connect(m_doc, SIGNAL(fixtureRemoved(t_fixture_id)),
 			m_fixtureManager, SLOT(slotFixtureRemoved(t_fixture_id)));
-		
-		connect(_app, SIGNAL(modeChanged()),
-			m_fixtureManager, SLOT(slotModeChanged()));
 	}
 }
 
@@ -501,6 +593,8 @@ void App::slotViewFixtureManager()
 		createFixtureManager();
 
 	m_managerMenu->setItemChecked(MENU_MANAGER_FIXTURE_MANAGER, true);
+	m_fixtureManagerToolButton->setOn(true);
+
 	m_fixtureManager->show();
 	m_fixtureManager->setFocus();
 }
@@ -512,6 +606,7 @@ void App::slotViewFixtureManager()
 void App::slotFixtureManagerClosed()
 {
 	m_managerMenu->setItemChecked(MENU_MANAGER_FIXTURE_MANAGER, false);
+	m_fixtureManagerToolButton->setOn(false);
 
 	if (m_fixtureManager != NULL)
 	{
@@ -561,6 +656,7 @@ void App::slotViewFunctionManager()
 		m_functionManager->hide();
 	}
 
+	m_functionManagerToolButton->setOn(true);
 	m_functionManager->show();
 }
 
@@ -570,12 +666,14 @@ void App::slotViewFunctionManager()
 //
 void App::slotFunctionManagerClosed()
 {
-	if (m_functionManager)
+	if (m_functionManager != NULL)
 	{
 		disconnect(m_functionManager);
 		delete m_functionManager;
 		m_functionManager = NULL;
 	}
+
+	m_functionManagerToolButton->setOn(false);
 }
 
 /*****************************************************************************
@@ -587,10 +685,8 @@ void App::slotFunctionManagerClosed()
 //
 void App::initVirtualConsole(void)
 {
-	if (m_virtualConsole)
-	{
+	if (m_virtualConsole != NULL)
 		delete m_virtualConsole;
-	}
 
 	m_virtualConsole = new VirtualConsole(workspace());
 	m_virtualConsole->initView();
@@ -599,6 +695,7 @@ void App::initVirtualConsole(void)
 		this, SLOT(slotVirtualConsoleClosed()));
 
 	m_virtualConsole->resize(300, 300);
+	m_virtualConsole->hide();
 }
 
 //
@@ -607,6 +704,7 @@ void App::initVirtualConsole(void)
 void App::slotViewVirtualConsole()
 {
 	m_managerMenu->setItemChecked(MENU_CONTROL_VIRTUAL_CONSOLE, true);
+	m_virtualConsoleToolButton->setOn(true);
 	m_virtualConsole->show();
 	m_virtualConsole->setFocus();
 }
@@ -618,6 +716,7 @@ void App::slotViewVirtualConsole()
 void App::slotVirtualConsoleClosed()
 {
 	m_managerMenu->setItemChecked(MENU_CONTROL_VIRTUAL_CONSOLE, false);
+	m_virtualConsoleToolButton->setOn(false);
 }
 
 /*****************************************************************************
@@ -649,6 +748,7 @@ void App::slotViewMonitor()
 		createMonitor();
 
 	m_managerMenu->setItemChecked(MENU_CONTROL_MONITOR, true);
+	m_monitorToolButton->setOn(true);
 	m_monitor->show();
 	m_monitor->setFocus();
 }
@@ -660,6 +760,7 @@ void App::slotViewMonitor()
 void App::slotMonitorClosed()
 {
 	m_managerMenu->setItemChecked(MENU_CONTROL_MONITOR, false);
+	m_monitorToolButton->setOn(false);
 	
 	if (m_monitor != NULL)
 	{
@@ -746,41 +847,28 @@ QLCFixtureDef* App::fixtureDef(const QString& manufacturer, const QString& model
 }
 
 /*****************************************************************************
- * Mode
+ * Main application Mode
  *****************************************************************************/
 
-void App::slotSetDesignMode()
+void App::setMode(Mode mode)
 {
-	if (m_mode == Operate)
-	{
-		slotSetMode();
-	}
-}
+	/* Nothing to do if we're already in the desired mode */
+	if (m_mode == mode)
+		return;
 
-
-void App::slotSetOperateMode()
-{
-	if (m_mode == Design)
-	{
-		slotSetMode();
-	}
-}
-
-
-//
-// The main operating mode has been changed, signal it to everyone
-//
-void App::slotSetMode()
-{
-	if (m_mode == Operate)
+	if (mode == Design)
 	{
 		if (m_functionConsumer->runningFunctions())
 		{
 			QString msg;
-			msg = "There are running functions. Do you really wish to stop\n";
-			msg += "them and change back to Design Mode?";
-			int result = QMessageBox::warning(this, KApplicationNameShort, msg,
-							  QMessageBox::Yes, QMessageBox::No);
+			msg = "There are running functions. Do you really\n";
+			msg += "wish to stop them and switch back to ";
+			msg += "Design mode?";
+			int result = QMessageBox::warning(this,
+							  "Switch to Design Mode",
+							  msg,
+							  QMessageBox::Yes,
+							  QMessageBox::No);
 			if (result == QMessageBox::No)
 			{
 				return;
@@ -792,145 +880,88 @@ void App::slotSetMode()
 		}
 
 		m_modeIndicator->setText(KModeTextDesign);
-		m_modeToolButton->setPixmap(QString(PIXMAPS) + QString("/player_play.png"));
+		m_modeToolButton->setPixmap(QString(PIXMAPS) +
+					    QString("/player_play.png"));
 		QToolTip::add(m_modeToolButton, "Switch to Operate mode");
 
 		m_newToolButton->setEnabled(true);
 		m_openToolButton->setEnabled(true);
+		m_fixtureManagerToolButton->setEnabled(true);
 		m_functionManagerToolButton->setEnabled(true);
 
-		m_mode = Design;
+		m_fileMenu->setItemEnabled(MENU_FILE_NEW, true);
+		m_fileMenu->setItemEnabled(MENU_FILE_OPEN, true);
+		m_fileMenu->setItemEnabled(MENU_FILE_SAVE_AS, true);
+		m_fileMenu->setItemEnabled(MENU_FILE_QUIT, true);
+
+		m_managerMenu->setItemEnabled(MENU_MANAGER_FIXTURE_MANAGER, true);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_FUNCTION_MANAGER, true);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_BUS_MANAGER, true);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_INPUT_MANAGER, true);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_OUTPUT_MANAGER, true);
+
+		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, false);
+		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_DESIGN, true);
 	}
 	else
 	{
 		m_modeIndicator->setText(KModeTextOperate);
-		m_modeToolButton->setPixmap(QString(PIXMAPS) + QString("/player_stop.png"));
-		QToolTip::add(m_modeToolButton, "Switch back to Design mode");
+		m_modeToolButton->setPixmap(QString(PIXMAPS) +
+					    QString("/player_stop.png"));
+		QToolTip::add(m_modeToolButton, "Switch to Design mode");
 
 		m_newToolButton->setEnabled(false);
 		m_openToolButton->setEnabled(false);
+		m_fixtureManagerToolButton->setEnabled(false);
 		m_functionManagerToolButton->setEnabled(false);
 
-		// Close function tree if it's open
+		m_fileMenu->setItemEnabled(MENU_FILE_NEW, false);
+		m_fileMenu->setItemEnabled(MENU_FILE_OPEN, false);
+		m_fileMenu->setItemEnabled(MENU_FILE_SAVE_AS, false);
+		m_fileMenu->setItemEnabled(MENU_FILE_QUIT, false);
+
+		m_managerMenu->setItemEnabled(MENU_MANAGER_FIXTURE_MANAGER, false);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_FUNCTION_MANAGER, false);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_BUS_MANAGER, false);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_INPUT_MANAGER, false);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_OUTPUT_MANAGER, false);
+
+		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, true);
+		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_DESIGN, false);
+
+		/* Close function manager if it's open */
 		slotFunctionManagerClosed();
 
+		/* Close fixture manager if it's open */
+		slotFixtureManagerClosed();
+
+		/* Close bus manager if it's open */
+		slotBusPropertiesClosed();
+
 		/* TODO: Close dmx mapper and input mapper */
-
-		m_mode = Operate;
 	}
 
-	emit modeChanged();
+	m_mode = mode;
+
+	emit modeChanged(m_mode);
 }
 
-/*****************************************************************************
- * Output mapping
- *****************************************************************************/
-
-void App::initDMXMap()
+void App::slotSetDesignMode()
 {
-	m_dmxMap = new DMXMap(KUniverseCount);
-	Q_ASSERT(m_dmxMap != NULL);
+	setMode(Design);
 }
 
-void App::slotViewOutputManager()
+void App::slotSetOperateMode()
 {
-	Q_ASSERT(m_dmxMap != NULL);
-	m_dmxMap->openEditor(workspace());
+	setMode(Operate);
 }
 
-/*********************************************************************
- * Input mapping
- *********************************************************************/
-
-void App::slotViewInputManager()
+void App::slotToggleMode()
 {
-	QMessageBox::information(workspace(), "TODO", "TODO");
-}
-
-/*********************************************************************
- * Blackout
- *********************************************************************/
-
-void App::slotPanic()
-{
-	/* Shut down all running functions */
-	m_functionConsumer->purge();
-}
-
-void App::slotToggleBlackout()
-{
-	Q_ASSERT(m_dmxMap != NULL);
-	if (m_dmxMap->blackout() == true)
-		slotSetBlackout(false);
+	if (m_mode == Design)
+		setMode(Operate);
 	else
-		slotSetBlackout(true);
-}
-
-void App::slotSetBlackout(bool state)
-{
-	m_dmxMap->setBlackout(state);
-
-	if (state == true)
-	{
-		m_blackoutIndicator->setText("Blackout");
-
-		connect(m_blackoutIndicatorTimer, SIGNAL(timeout()),
-			this, SLOT(slotFlashBlackoutIndicator()));
-		m_blackoutIndicatorTimer->start(500);
- 	}
-	else
-	{
-		m_blackoutIndicator->setText(QString::null);
-
-		m_blackoutIndicatorTimer->stop();
-		disconnect(m_blackoutIndicatorTimer, SIGNAL(timeout()),
-			   this, SLOT(slotFlashBlackoutIndicator()));
-
-		m_blackoutIndicator->unsetPalette();
-	}
-}
-
-void App::slotFlashBlackoutIndicator()
-{
-	int mask = 0xff;
-	QColor bg(m_blackoutIndicator->backgroundColor());
-	bg.setRgb(bg.red() ^ mask, bg.green() ^ mask, bg.blue() ^ mask);
-	m_blackoutIndicator->setPaletteBackgroundColor(bg);
-	
-	QColor fg(m_blackoutIndicator->foregroundColor());
-	fg.setRgb(fg.red() ^ mask, fg.green() ^ mask, fg.blue() ^ mask);
-	m_blackoutIndicator->setPaletteForegroundColor(fg);
-}
-
-/*****************************************************************************
- * Buses
- *****************************************************************************/
-
-void App::slotViewBusProperties()
-{
-	if (m_busProperties == NULL)
-	{
-		m_busProperties = new BusProperties(workspace());
-		m_busProperties->init();
-		connect(m_busProperties, SIGNAL(closed()),
-			this, SLOT(slotBusPropertiesClosed()));
-	}
-	else
-	{
-		m_busProperties->hide();
-	}
-
-	m_busProperties->show();
-}
-
-void App::slotBusPropertiesClosed()
-{
-	if (m_busProperties)
-	{
-		disconnect(m_busProperties);
-		delete m_busProperties;
-		m_busProperties = NULL;
-	}
+		setMode(Design);
 }
 
 /*****************************************************************************
@@ -1030,7 +1061,7 @@ void App::initMenuBar()
 	connect(m_fileMenu, SIGNAL(aboutToShow()),
 		this, SLOT(slotRefreshMenus()));
 
-	/* Tools Menu */
+	/* Manager Menu */
 	m_managerMenu = new QPopupMenu(menuBar());
 	m_managerMenu->setCheckable(true);
 	m_managerMenu->insertItem(
@@ -1102,7 +1133,6 @@ void App::initMenuBar()
 	m_controlMenu->setCheckable(true);
 
 	m_controlMenu->insertItem("&Mode", m_modeMenu);
-
 	m_controlMenu->insertSeparator();
 
 	m_controlMenu->insertItem(
@@ -1128,7 +1158,7 @@ void App::initMenuBar()
 		"&Stop all functions",
 		this,
 		SLOT(slotPanic()),
-		CTRL + Key_P,
+		CTRL + Key_Escape,
 		MENU_CONTROL_PANIC);
 
 	m_controlMenu->insertItem(
@@ -1240,6 +1270,7 @@ void App::initToolBar()
 		this,
 		SLOT(slotViewFixtureManager()),
 		m_toolbar);
+	m_fixtureManagerToolButton->setToggleButton(true);
 
 	m_virtualConsoleToolButton = new QToolButton(
 		QPixmap(QString(PIXMAPS) + QString("/virtualconsole.png")),
@@ -1248,6 +1279,7 @@ void App::initToolBar()
 		this,
 		SLOT(slotViewVirtualConsole()),
 		m_toolbar);
+	m_virtualConsoleToolButton->setToggleButton(true);
 	
 	m_functionManagerToolButton = new QToolButton(
 		QPixmap(QString(PIXMAPS) + QString("/function.png")),
@@ -1258,6 +1290,7 @@ void App::initToolBar()
 		m_toolbar);
 	
 	m_toolbar->addSeparator();
+	m_functionManagerToolButton->setToggleButton(true);
 	
 	m_monitorToolButton = new QToolButton(
 		QPixmap(QString(PIXMAPS) + QString("/monitor.png")),
@@ -1266,21 +1299,23 @@ void App::initToolBar()
 		this,
 		SLOT(slotViewMonitor()),
 		m_toolbar);
+	m_monitorToolButton->setToggleButton(true);
 	
 	m_blackoutToolButton = new QToolButton(
-		QPixmap(QString(PIXMAPS) + QString("/fileclose.png")),
+		QPixmap(QString(PIXMAPS) + QString("/blackout.png")),
 		"Blackout",
 		0,
 		this,
 		SLOT(slotToggleBlackout()),
 		m_toolbar);
+	m_blackoutToolButton->setToggleButton(true);
 
 	m_modeToolButton = new QToolButton(
 		QPixmap(QString(PIXMAPS) + QString("/player_play.png")),
 		"Design Mode; All editing features enabled",
 		0,
 		this,
-		SLOT(slotSetMode()),
+		SLOT(slotToggleMode()),
 		m_toolbar);
 }
 

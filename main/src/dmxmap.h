@@ -24,6 +24,7 @@
 
 #include <qptrvector.h>
 #include <qptrlist.h>
+#include <qobject.h>
 #include "common/types.h"
 
 class QString;
@@ -53,8 +54,10 @@ public:
  * DMXMap
  *****************************************************************************/
 
-class DMXMap
+class DMXMap : public QObject
 {
+	Q_OBJECT
+
 	friend class DMXMapEditor;
 
 	/*********************************************************************
@@ -103,9 +106,20 @@ public:
 	 */
 	bool blackout();
 
+signals:
+	/**
+	 * Signal that is sent when blackout state is changed. 
+	 *
+	 * @param state true if blackout has been turned on, otherwise false
+	 */
+	void blackoutChanged(bool state);
+
 protected:
 	/** Current blackout state */
 	bool m_blackout;
+
+	/** A temp place to store values to during blackout */
+	t_value* m_blackoutStore;
 
 	/*********************************************************************
 	 * Values
@@ -123,6 +137,10 @@ public:
 	/**
 	 * Get the value of a number of channels. Channels 0-511 are for the
 	 * first universe, 512-1023 for the second etc..
+	 *
+	 * You should limit the range to one universe. For example, don't
+	 * try to get values for channels 510-515. In any case, there are no
+	 * such fixtures in the world that could exist in two universes.
 	 *
 	 * @param address The address of the first channel
 	 * @param values An array that should contain the values
@@ -142,6 +160,10 @@ public:
 	/**
 	 * Set the value of a number of channels. Channels 0-511 are for the
 	 * first universe, 512-1023 for the second etc..
+	 *
+	 * You should limit the range to one universe. For example, don't
+	 * try to set values for channels 510-515. In any case, there are no
+	 * such fixtures in the world that could exist in two universes.
 	 *
 	 * @param address The address of the first channel
 	 * @param values The values to set

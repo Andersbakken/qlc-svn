@@ -413,6 +413,8 @@ void VCFrame::addButton(QPoint at)
 	else
 		button->move(m_mousePressPoint);
 
+	_app->virtualConsole()->setSelectedWidget(button);
+
 	_app->doc()->setModified();
 }
 
@@ -428,6 +430,8 @@ void VCFrame::addSlider(QPoint at)
 	else
 		slider->move(m_mousePressPoint);
 
+	_app->virtualConsole()->setSelectedWidget(slider);
+
 	_app->doc()->setModified();
 }
 
@@ -441,6 +445,8 @@ void VCFrame::addFrame(QPoint at)
 		frame->move(at);
 	else
 		frame->move(m_mousePressPoint);
+
+	_app->virtualConsole()->setSelectedWidget(frame);
 
 	_app->doc()->setModified();
 }
@@ -457,6 +463,8 @@ void VCFrame::addXYPad(QPoint at)
 	else
 		xypad->move(m_mousePressPoint);
 
+	_app->virtualConsole()->setSelectedWidget(xypad);
+
 	_app->doc()->setModified();
 }
 
@@ -470,6 +478,8 @@ void VCFrame::addLabel(QPoint at)
 		label->move(at);
 	else
 		label->move(m_mousePressPoint);
+
+	_app->virtualConsole()->setSelectedWidget(label);
 
 	_app->doc()->setModified();
 }

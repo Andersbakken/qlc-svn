@@ -137,11 +137,8 @@ void VCSlider::init()
 	setSliderValue(0);
 	slotSliderValueChanged(0);
 
-	/* Catch QLC mode changes*/
-	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotQLCModeChanged()));
-
 	/* Update the slider according to current mode */
-	slotQLCModeChanged();
+	slotModeChanged(_app->mode());
 }
 
 void VCSlider::scram()
@@ -193,9 +190,9 @@ void VCSlider::editProperties()
  * QLC Mode
  *****************************************************************************/
 
-void VCSlider::slotQLCModeChanged()
+void VCSlider::slotModeChanged(App::Mode mode)
 {
-	if (_app->mode() == App::Operate)
+	if (mode == App::Operate)
 	{
 		m_topLabel->setEnabled(true);
 		m_slider->setEnabled(true);
@@ -209,6 +206,8 @@ void VCSlider::slotQLCModeChanged()
 		m_bottomLabel->setEnabled(false);
 		m_tapButton->setEnabled(false);
 	}
+
+	VCWidget::slotModeChanged(mode);
 }
 
 /*****************************************************************************

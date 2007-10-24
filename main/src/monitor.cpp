@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  monitor.h
+  monitor.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -39,7 +39,8 @@
 #include "doc.h"
 #include "dmxmap.h"
 #include "monitor.h"
-#include "common/minmax.h"
+
+#include "common/types.h"
 #include "common/filehandler.h"
 
 extern App* _app;
@@ -468,7 +469,7 @@ void Monitor::paintFixtureLabelAll(QRegion region, int x_offset, int y_offset,
 			// The label needs to be drawn on at least two lines
 			while (w > 0)
 			{	
-				wcur = min(w, (unitsX * unitW) - (x));
+				wcur = MIN(w, (unitsX * unitW) - (x));
 				
 				// Draw the label
 				paintFixtureLabel(x, y, wcur, h, fxi->name());

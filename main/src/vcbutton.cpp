@@ -45,7 +45,6 @@
 
 #include "common/filehandler.h"
 #include "common/qlcimagepreview.h"
-#include "common/minmax.h"
 
 #include "vcbutton.h"
 #include "app.h"
@@ -106,7 +105,8 @@ void VCButton::init()
 
 	QToolTip::add(this, "No function");
 
-	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		this, SLOT(slotModeChanged(App::Mode)));
 }
 
 void VCButton::scram()
@@ -571,7 +571,7 @@ bool VCButton::saveXMLAppearance(QDomDocument* doc, QDomElement* btn_root)
  * QLC Mode change
  *****************************************************************************/
 
-void VCButton::slotModeChanged()
+void VCButton::slotModeChanged(App::Mode mode)
 {
 	repaint();
 }

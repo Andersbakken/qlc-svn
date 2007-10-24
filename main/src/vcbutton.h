@@ -24,7 +24,9 @@
 
 #include <qpushbutton.h>
 #include <qptrlist.h>
+
 #include "common/types.h"
+#include "app.h"
 
 class QLineEdit;
 class QMouseEvent;
@@ -197,7 +199,7 @@ public:
 
 protected slots:
 	void slotFlashReady();
-	void slotModeChanged();
+	void slotModeChanged(App::Mode mode);
 
 public slots:
 	void pressFunction();

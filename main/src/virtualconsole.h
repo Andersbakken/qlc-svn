@@ -26,6 +26,8 @@
 #include <qframe.h>
 #include <qptrlist.h>
 
+#include "app.h"
+
 class QMenuBar;
 class QPopupMenu;
 class QToolBar;
@@ -316,7 +318,7 @@ protected:
 	 *********************************************************************/
  public slots:
 	void slotDockAreaVisibilityChanged(bool isVisible);
-	void slotModeChanged();
+	void slotModeChanged(App::Mode mode);
 
 	/*********************************************************************
 	 * Add menu callbacks

@@ -18,7 +18,6 @@ noinst_HEADERS = \
 	inputplugin.h \
 	ledbar.h \
 	logicalchannel.h \
-	minmax.h \
 	outputplugin.h \
 	plugin.h \
 	qlcfixturemode.h \

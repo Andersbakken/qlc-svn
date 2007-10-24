@@ -81,6 +81,86 @@ class App : public QMainWindow
 	void init();
 
 	/*********************************************************************
+	 * Output mapping
+	 *********************************************************************/
+ public:
+	DMXMap* dmxMap() const { return m_dmxMap; }
+
+ protected:
+	void initDMXMap();
+
+ protected slots:
+	void slotViewOutputManager();
+	void slotDMXMapBlackoutChanged(bool state);
+
+ protected:
+	DMXMap* m_dmxMap;
+
+	/*********************************************************************
+	 * Input mapping
+	 *********************************************************************/
+ public:
+	// InputMap* inputMap() { return m_inputMap; }
+
+ protected:
+	// void initInputMap();
+
+ protected slots:
+	void slotViewInputManager();
+
+ protected:
+	// InputMap* m_inputMap;
+
+	/*********************************************************************
+	 * Blackout
+	 *********************************************************************/
+
+ public slots:
+	/**
+	 * Toggle blackout on/off
+	 */
+	void slotToggleBlackout();
+
+ protected slots:
+	void slotFlashBlackoutIndicator();
+
+ protected:
+	/** Flashing blackout indicator on the status bar */
+	QLabel* m_blackoutIndicator;
+
+	/** Periodic timer object for the flashing indicator */
+	QTimer* m_blackoutIndicatorTimer;
+
+	/*********************************************************************
+	 * Buses
+	 *********************************************************************/
+ public slots:
+	void slotViewBusProperties();
+	void slotBusPropertiesClosed();
+
+ protected:
+	BusProperties* m_busProperties;
+
+	/*********************************************************************
+	 * Function Consumer
+	 *********************************************************************/
+ public:
+	/** Get a pointer to the function runner object */
+	FunctionConsumer* functionConsumer() { return m_functionConsumer; }
+
+public slots:
+	/** Stop all running functions (in operate mode) */
+	void slotPanic();
+
+ protected:
+	/** Initialize the function runner object */
+	void initFunctionConsumer();
+  
+ protected:
+	/** The function runner object */
+	FunctionConsumer* m_functionConsumer;
+
+	/*********************************************************************
 	 * Doc
 	 *********************************************************************/
  public:
@@ -161,18 +241,6 @@ class App : public QMainWindow
 	VirtualConsole* m_virtualConsole;
 
 	/*********************************************************************
-	 * Function Consumer
-	 *********************************************************************/
- public:
-	FunctionConsumer* functionConsumer() { return m_functionConsumer; }
-
- protected:
-	void initFunctionConsumer();
-  
- protected:
-	FunctionConsumer* m_functionConsumer;
-
-	/*********************************************************************
 	 * Monitor
 	 *********************************************************************/
  public:
@@ -208,15 +276,17 @@ class App : public QMainWindow
 	 *********************************************************************/
  public:
 	enum Mode { Operate, Design };
-	bool mode() { return m_mode; }
+	Mode mode() { return m_mode; }
 
- public slots:
+	void setMode(App::Mode mode);
+
+ protected slots:
 	void slotSetDesignMode();
 	void slotSetOperateMode();
-	void slotSetMode();
+	void slotToggleMode();
 
  signals:
-	void modeChanged();
+	void modeChanged(App::Mode mode);
 
  protected:
 	/** Main operating mode */
@@ -224,74 +294,6 @@ class App : public QMainWindow
 
 	/** Mode indicator on the status bar */
 	QLabel* m_modeIndicator;
-
-	/*********************************************************************
-	 * Output mapping
-	 *********************************************************************/
- public:
-	DMXMap* dmxMap() const { return m_dmxMap; }
-
- protected:
-	void initDMXMap();
-
- protected slots:
-	void slotViewOutputManager();
-
- protected:
-	DMXMap* m_dmxMap;
-
-	/*********************************************************************
-	 * Input mapping
-	 *********************************************************************/
- public:
-
- protected:
-
- protected slots:
-	void slotViewInputManager();
-
- protected:
-
-	/*********************************************************************
-	 * Blackout
-	 *********************************************************************/
- public slots:
-	/**
-	 * Stop all running functions
-	 */
-	void slotPanic();
-
-	/**
-	 * Toggle blackout on/off
-	 */
-	void slotToggleBlackout();
-
-	/**
-	 * Set blackout state
-	 *
-	 * @param state true to set blackout ON, false for OFF
-	 */
-	void slotSetBlackout(bool state);
-
- protected slots:
-	void slotFlashBlackoutIndicator();
-
- protected:
-	/** Flashing blackout indicator on the status bar */
-	QLabel* m_blackoutIndicator;
-
-	/** Periodic timer object for the flashing indicator */
-	QTimer* m_blackoutIndicatorTimer;
-
-	/*********************************************************************
-	 * Buses
-	 *********************************************************************/
- public slots:
-	void slotViewBusProperties();
-	void slotBusPropertiesClosed();
-
- protected:
-	BusProperties* m_busProperties;
 
 	/*********************************************************************
 	 * Help & About

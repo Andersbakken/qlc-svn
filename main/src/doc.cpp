@@ -2,7 +2,7 @@
   Q Light Controller
   doc.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -74,9 +74,10 @@ Doc::Doc() : QObject()
 		m_functionArray[i] = NULL;
 	}
 
-	resetModified();
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		this, SLOT(slotModeChanged(App::Mode)));
 
-	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	resetModified();
 }
 
 
@@ -679,10 +680,10 @@ void Doc::emitFunctionChanged(t_function_id fid)
 //
 // Mode changed
 //
-void Doc::slotModeChanged()
+void Doc::slotModeChanged(App::Mode mode)
 {
 	Function* f = NULL;
-	if (_app->mode() == App::Operate)
+	if (mode == App::Operate)
 	{
 		//
 		// Arm all functions, allocate anything that is needed

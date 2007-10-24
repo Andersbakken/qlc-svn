@@ -37,11 +37,13 @@
  * Initialization
  *****************************************************************************/
 
-DMXMap::DMXMap(int universes)
+DMXMap::DMXMap(int universes) : QObject()
 {
-	m_blackout = false;
 	m_universes = universes;
 	m_dummyOut = NULL;
+
+	m_blackout = false;
+	m_blackoutStore = NULL;
 
 	initPatch();
 	loadPlugins(QString(PLUGINS));
@@ -68,26 +70,49 @@ bool DMXMap::toggleBlackout()
 
 void DMXMap::setBlackout(bool state)
 {
-	m_blackout = state;
+	/* Don't do blackout twice */
+	if (m_blackout == state)
+		return;
 
 	if (state == true)
 	{
-		/* TODO: Store real values somewhere during blackout */
-		/* TODO: Write zeros to all universes */
+		t_value zeros[512] = { 0 };
 
-		// t_value tmpValues[KChannelMax] = { 0 };
-		// m_outputPlugin->writeRange(0, tmpValues, KChannelMax);
+		Q_ASSERT(m_blackoutStore == NULL);
+		m_blackoutStore = new t_value[m_universes * 512];
 
-		// Below old stuff that was too slow for the USB2DMX code
-		//      for (t_channel ch = 0; ch < KChannelMax; ch++)
-		//	{
-		//	  m_outputPlugin->writeChannel(ch, 0);
-		//	}
+		/* Read the current values from all plugins */
+		for (int i = 0; i < m_universes; i++)
+		{
+			/* Get the whole universe into the blackout store */
+			getValueRange(i * 512,
+				      m_blackoutStore + (i * 512),
+				      512);
+			
+			/* Set all plugin outputs to zeros */
+			setValueRange(i * 512, zeros, 512);
+		}
 	}
 	else
 	{
-		/* TODO: Write real values to all universes */
+		Q_ASSERT(m_blackoutStore != NULL);
+
+		/* Write the values from the blackout store to all plugins */
+		for (int i = 0; i < m_universes; i++)
+		{
+			/* Set values from the blackout store back to
+			   plugin outputs */
+			setValueRange(i * 512,
+				      m_blackoutStore + (i * 512),
+				      512);
+		}
+
+		delete [] m_blackoutStore;
+		m_blackoutStore = NULL;
 	}
+
+	m_blackout = state;
+	emit blackoutChanged(m_blackout);
 }
 
 bool DMXMap::blackout()
@@ -101,8 +126,10 @@ bool DMXMap::blackout()
 
 t_value DMXMap::getValue(t_channel channel)
 {
+	Q_ASSERT(channel < (m_universes * 512));
+
 	if (m_blackout == true)
-		return 0;
+		return m_blackoutStore[channel];
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
@@ -129,10 +156,13 @@ t_value DMXMap::getValue(t_channel channel)
 
 bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
 {
+	Q_ASSERT(address < (m_universes * 512));
+	Q_ASSERT((address + num - 1) < (m_universes * 512));
+
 	if (m_blackout == true)
 	{
-		for (int i = 0; i < num; i++)
-			values[i] = 0;
+		/* Get the values from the temporary store when in blackout */
+		memcpy(values, m_blackoutStore + address, num * sizeof(t_value));
 		return true;
 	}
 
@@ -160,8 +190,14 @@ bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
 
 void DMXMap::setValue(t_channel channel, t_value value)
 {
+	Q_ASSERT(channel < (m_universes * 512));
+
 	if (m_blackout == true)
+	{
+		/* Just store the values when in blackout */
+		m_blackoutStore[channel] = value;
 		return;
+	}
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
@@ -185,8 +221,14 @@ void DMXMap::setValue(t_channel channel, t_value value)
 
 void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
 {
+	Q_ASSERT(address < (m_universes * 512));
+	Q_ASSERT((address + num - 1) < (m_universes * 512));
+
 	if (m_blackout == true)
+	{
+		memcpy(m_blackoutStore + address, values, num * sizeof(t_value));
 		return;
+	}
 	
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */

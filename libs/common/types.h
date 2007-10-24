@@ -25,6 +25,42 @@
 #include <limits.h>
 
 /*****************************************************************************
+ * Utils
+ *****************************************************************************/
+
+/**
+ * Ensure that x is between the limits set by low and high.
+ * If low is greater than high the result is undefined.
+ *
+ * This is copied from GLib sources 
+ *
+ * @param x The value to clamp
+ * @param low The minimum allowed value
+ * @param high The maximum allowed value
+ * @return The value of x clamped to the range between low and high
+ */
+#define CLAMP(x, low, high) \
+	(((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+
+/**
+ * Return the bigger value of the two given values
+ *
+ * @param x The first value to compare
+ * @param y The second value to compare
+ * @return The bigger one of the given values
+ */
+#define MAX(x, y) (x < y) ? y : x
+
+/**
+ * Return the smaller value of the two given values
+ *
+ * @param x The first value to compare
+ * @param y The second value to compare
+ * @return The smaller one of the given values
+ */
+#define MIN(x, y) (x < y) ? x : y
+
+/*****************************************************************************
  * Generic
  *****************************************************************************/
 

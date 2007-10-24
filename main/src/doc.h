@@ -27,6 +27,7 @@
 
 #include "function.h"
 #include "fixture.h"
+#include "app.h"
 #include "bus.h"
 
 class QDomDocument;
@@ -54,7 +55,6 @@ class Doc : public QObject
 	 */
 	void setModified();
 
- protected:
 	/**
 	 * Reset Doc's modified state (i.e. it is no longer in need of saving)
 	 */
@@ -201,25 +201,45 @@ class Doc : public QObject
 	void emitFunctionChanged(t_function_id id);
 
  private slots:
-	void slotModeChanged();
-	void slotFixtureChanged(t_fixture_id);
+	/** Catch QLC App mode changes */
+	void slotModeChanged(App::Mode mode);
+
+	/** Catch fixture property changes */
+	void slotFixtureChanged(t_fixture_id fxi_id);
 
  signals:
+	/** Signal that this Doc has been modified (or unmodified) */
 	void modified(bool state);
 
-	void fixtureAdded(t_fixture_id);
-	void fixtureRemoved(t_fixture_id);
-	void fixtureChanged(t_fixture_id);
+	/** Signal that a fixture has been added */
+	void fixtureAdded(t_fixture_id fxi_id);
 
-	void functionAdded(t_function_id);
-	void functionRemoved(t_function_id);
-	void functionChanged(t_function_id);
+	/** Signal that a fixture has been removed */
+	void fixtureRemoved(t_fixture_id fxi_id);
+
+	/** Signal that a fixture's properties have changed */
+	void fixtureChanged(t_fixture_id fxi_id);
+
+	/** Signal that a function has been added */
+	void functionAdded(t_function_id function);
+
+	/** Signal that a function has been removed */
+	void functionRemoved(t_function_id function);
+
+	/** Signal that a function has been changed */
+	void functionChanged(t_function_id function);
 
  protected:
+	/** Current Doc file name */
 	QString m_fileName;
+
+	/** Modified status (true; needs saving, false; does not) */
 	bool m_modified;
 
+	/** Array that holds all functions */
 	Function** m_functionArray;
+
+	/** Array that holds all fixtures */
 	Fixture** m_fixtureArray;
 };
 

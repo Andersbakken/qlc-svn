@@ -57,7 +57,8 @@ VCWidget::VCWidget(QWidget* parent, const char* name) : QFrame(parent, name)
 	m_ypos = 0;
 	m_resizeMode = false;
 
-	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	connect(_app, SIGNAL(modeChanged(App::Mode)), 
+		this, SLOT(slotModeChanged(App::Mode)));
 
 	setCaption("Widget");
 	setFrameStyle(KVCWidgetFrameStyleSunken);
@@ -388,7 +389,7 @@ bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 /*****************************************************************************
  * QLC Mode change
  *****************************************************************************/
-void VCWidget::slotModeChanged()
+void VCWidget::slotModeChanged(App::Mode mode)
 {
 	repaint();
 }

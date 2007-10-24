@@ -199,6 +199,7 @@ qlc_SOURCES = \
 	src/moc_chasereditor.cpp \
 	src/moc_consolechannel.cpp \
 	src/moc_dmxaddresstool.cpp \
+	src/moc_dmxmap.cpp \
 	src/moc_dmxmapeditor.cpp \
 	src/moc_doc.cpp \
 	src/moc_dummyinplugin.cpp \

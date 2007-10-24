@@ -74,8 +74,6 @@ void VCXYPad::init()
 	/* Set initial position to center */
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
-
-	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
 }
 
 void VCXYPad::scram()
@@ -433,15 +431,6 @@ bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	saveXMLAppearance(doc, &root);
 
 	return true;
-}
-
-/*****************************************************************************
- * QLC Mode change
- *****************************************************************************/
-
-void VCXYPad::slotModeChanged()
-{
-	repaint();
 }
 
 /*****************************************************************************

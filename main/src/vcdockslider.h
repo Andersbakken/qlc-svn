@@ -156,15 +156,6 @@ public:
 	 */
 	bool saveXML(QDomDocument* doc, QDomElement* da_root);
 
-	/*********************************************************************
-	 * QLC Mode change
-	 *********************************************************************/
-
-protected slots:
-	/**
-	 * Catch QLC mode change signals
-	 */
-	void slotModeChanged();
 };
 
 #endif

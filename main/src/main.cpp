@@ -87,7 +87,7 @@ bool parseArgs(int argc, char **argv)
 		else if (::strcmp(argv[i], "-p") == 0 ||
 			 ::strcmp(argv[i], "--operate") == 0)
 		{
-			_app->slotSetOperateMode();
+			_app->setMode(App::Operate);
 			result = true;
 		}
 		else if (::strcmp(argv[i], "-o") == 0 ||

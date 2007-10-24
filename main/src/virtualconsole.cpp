@@ -99,10 +99,11 @@ void VirtualConsole::initView(void)
 	setDrawArea(new VCFrame(this));
 
 	// Update this according to current mode
-	slotModeChanged();
+	slotModeChanged(_app->mode());
 
 	// Connect to catch mode change events
-	connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		this, SLOT(slotModeChanged(App::Mode)));
 }
 
 void VirtualConsole::initMenuBar()
@@ -741,7 +742,7 @@ void VirtualConsole::slotDockAreaVisibilityChanged(bool isVisible)
 }
 
 
-void VirtualConsole::slotModeChanged()
+void VirtualConsole::slotModeChanged(App::Mode mode)
 {
 	QString config;
 
@@ -752,24 +753,24 @@ void VirtualConsole::slotModeChanged()
 		display = XOpenDisplay(NULL);
 		ASSERT(display != NULL);
 
-		if (_app->mode() == App::Design)
+		if (mode == App::Design)
 			XAutoRepeatOn(display);
 		else
 			XAutoRepeatOff(display);
-
+		
 		XCloseDisplay(display);
 	}
-
+	
 	/* Grab keyboard */
 	if (isGrabKeyboard() == true)
 	{
-		if (_app->mode() == App::Design)
+		if (mode == App::Design)
 			releaseKeyboard();
 		else
 			grabKeyboard();
 	}
 
-	if (_app->mode() == App::Operate)
+	if (mode == App::Operate)
 	{
 		// Don't allow editing in operate mode
 		m_editMenu->setEnabled(false);

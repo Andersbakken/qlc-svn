@@ -26,6 +26,7 @@
 #include <qptrlist.h>
 
 #include "common/types.h"
+#include "app.h"
 
 class QFile;
 class QString;
@@ -179,7 +180,7 @@ protected:
 	 * QLC Mode change
 	 *********************************************************************/
 protected slots:
-	virtual void slotModeChanged();
+	virtual void slotModeChanged(App::Mode mode);
 
 	/*********************************************************************
 	 * Widget menu

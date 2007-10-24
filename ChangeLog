@@ -1,4 +1,14 @@
 2007-Oct-22  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed App::modeChanged() to include the new mode as its parameter
+	* Changed all respective slots regarding App::modeChanged signal
+	* Moved blackout stuff from App to DMXMap
+	* Changed most view buttons in the app toolbar to toggle buttons
+	* Changed blackout button in the app toolbar to a toggle button
+	* Changed blackout.png to black text on invisible background
+	* Made DMXMap into a QObject and set it to send blackout state signals
+	* Adding widgets thru VCFrame also selects the new widget
+
+2007-Oct-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Created DMXMap & DMXMapEditor objects to handle universe mapping
 	  to plugins and their universe outputs.
 	* Modified lots of components that the change above had effect on.

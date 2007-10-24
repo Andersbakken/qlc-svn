@@ -71,8 +71,6 @@ void VCDockSlider::init()
 	m_slider->setPageStep(1);
 	m_slider->setValue(0);
 
-	// connect(_app, SIGNAL(modeChanged()), this, SLOT(slotModeChanged()));
-
 	// Receive bus name change signals
 	connect(Bus::emitter(),
 		SIGNAL(nameChanged(t_bus_id, const QString&)),
@@ -241,12 +239,4 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* da_root)
 	/* Bus high limit */
 	str.setNum(m_busHighLimit);
 	root.setAttribute(KXMLQLCVCDockSliderBusHighLimit, str);
-}
-
-/*****************************************************************************
- * QLC Mode change
- *****************************************************************************/
-
-void VCDockSlider::slotModeChanged()
-{
 }

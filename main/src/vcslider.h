@@ -89,7 +89,7 @@ public:
 	 * QLC Mode
 	 *********************************************************************/
 public slots:
-	void slotQLCModeChanged();
+	void slotModeChanged(App::Mode mode);
 
 	/*********************************************************************
 	 * Slider Mode
