@@ -1,3 +1,8 @@
+2007-Oct-24  Heikki Junnila <hjunnila@users.sf.net>
+	* Updated some compilation requirements to README
+	* Fixed VC widgets' tendency to crash when they were destroyed thru
+	  the widgets' own menus. One must NOT put "this" as the menu parent.
+
 2007-Oct-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed App::modeChanged() to include the new mode as its parameter
 	* Changed all respective slots regarding App::modeChanged signal

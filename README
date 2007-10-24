@@ -24,18 +24,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-
 Requirements
 ------------
-* GNU auto tools (automake, autoconf)
 * QT/X11 3.1 or newer
 * /dev/rtc (Real-time clock, usually enabled by default)
 * Recommended: dmx4linux 2.4
 
 
-
 Compiling & Installation
 ------------------------
+
+You need these components to be able to compile QLC:
+* automake >= 1.9
+* autoconf >= 2.6
+* libtool >= 1.5
+* GCC (g++) 3.x
+* libstdc++6(.4.x)
+* GNU make
+
 See main/docs/compiling.html for more detailed information.
 In general, just say
 

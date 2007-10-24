@@ -408,7 +408,9 @@ void VCWidget::invokeMenu(QPoint point)
 QPopupMenu* VCWidget::createMenu()
 {
 	// Create edit menu here so that all submenus can be its children
-	QPopupMenu* editMenu = new QPopupMenu(this);
+	/* DO NOT set this as the menu's parent object. Otherwise deleting this
+	   thru the menu will crash the whole program. */
+	QPopupMenu* editMenu = new QPopupMenu(NULL);
 
 	// Foreground menu
 	QPopupMenu* fgMenu = new QPopupMenu(editMenu);
