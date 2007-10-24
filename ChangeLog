@@ -1,4 +1,11 @@
 2007-Oct-24  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed VCButton's default name to "" instead of QString::null as
+	  an empty string will show up nicer e.g. in its destroy dialog.
+	* Created a cut/copy/paste scheme to virtual console, but VCButton
+	  needs to be converted into a VCWidget-derivative first so that
+	  all widgets can use the clipboard.  So this is just a for-now-commit.
+
+2007-Oct-24  Heikki Junnila <hjunnila@users.sf.net>
 	* Updated some compilation requirements to README
 	* Fixed VC widgets' tendency to crash when they were destroyed thru
 	  the widgets' own menus. One must NOT put "this" as the menu parent.

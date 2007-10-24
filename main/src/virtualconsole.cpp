@@ -59,8 +59,8 @@
 extern App* _app;
 extern QApplication* _qapp;
 
-VirtualConsole::VirtualConsole(QWidget* parent) 
-	: QWidget(parent, "Virtual Console")
+VirtualConsole::VirtualConsole(QWidget* parent)
+  : QWidget(parent, "Virtual Console")
 {
 	m_dockArea = NULL;
 	m_drawArea = NULL;
@@ -73,6 +73,8 @@ VirtualConsole::VirtualConsole(QWidget* parent)
 	m_grabKeyboard = true;
 
 	m_selectedWidget = NULL;
+	m_clipboardAction = ClipboardNone;
+
 	m_editMenu = NULL;
 }
 
@@ -400,6 +402,74 @@ void VirtualConsole::setSelectedWidget(QWidget* w)
 	{
 		m_selectedWidget->update();
 	}
+	else
+	{
+		/* Usually the selected widget is NULL only when we have
+		   deleted some widget from virtual console. So, clear the
+		   clipboard as well so that we don't end up pasting an
+		   invalid object -> segfault. */
+		clearClipboard();
+	}
+}
+
+/*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+void VirtualConsole::cut(QPtrList<QWidget> *widgets)
+{
+	Q_ASSERT(widgets != NULL);
+
+	/* Clipboard will cut the widgets when paste is invoked */
+	m_clipboardAction = ClipboardCut;
+
+	/* Copy the contents of the widget list. Just pointers. */
+	m_clipboard = *widgets;
+}
+
+void VirtualConsole::copy(QPtrList<QWidget> *widgets)
+{
+	Q_ASSERT(widgets != NULL);
+
+	/* Clipboard will copy the widgets when paste is invoked */
+	m_clipboardAction = ClipboardCopy;
+
+	/* Copy the contents of the widget list. Just pointers. */
+	m_clipboard = *widgets;
+}
+
+void VirtualConsole::paste(VCFrame* parent, QPoint point)
+{
+	QPtrListIterator<QWidget> it(m_clipboard);
+	QWidget* widget = NULL;
+
+	while ( (widget = it.current()) != 0 )
+	{
+		if (m_clipboardAction == ClipboardCut)
+			widget->reparent(parent, point, true);
+		else if (m_clipboardAction == ClipboardCopy)
+			copyWidget(widget, parent, point);
+		else
+			qWarning("Paste attempt with an empty clipboard!");
+	}
+
+	/* If the action was about cutting something, the originals are removed
+	   by now and moved to another parent. From now on, paste actions just
+	   create copies of them, and not move them any further. */
+	m_clipboardAction = ClipboardCopy;
+}
+
+void VirtualConsole::copyWidget(QWidget* widget, VCFrame* parent, QPoint point)
+{
+	/* TODO: 
+	   Create a copy of the widget and place it into the parent,
+	   at the given point */
+}
+
+void VirtualConsole::clearClipboard()
+{
+	m_clipboard.clear();
+	m_clipboardAction = ClipboardNone;
 }
 
 /*****************************************************************************

@@ -89,6 +89,7 @@ void VCButton::init()
 	setToggleButton(true);
 	setInputChannel(0);
 	m_stopFunctions = FALSE;
+	setCaption("");
 
 	setMinimumSize(20, 20);
 	resize(QPoint(30, 30));

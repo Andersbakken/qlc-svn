@@ -282,6 +282,70 @@ protected:
 	QWidget* m_selectedWidget;
 
 	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/**
+	 * Cut the given widgets from their parents to get pasted to another
+	 * parent widget. This does not remove anything from anywhere, it just
+	 * marks these widgets "cut". Only when paste is invoked, are they
+	 * moved.
+	 *
+	 * @param widgets A list of widget pointers to cut
+	 */
+	void cut(QPtrList<QWidget> *widgets);
+
+	/**
+	 * Copy the given widgets from their parents to get pasted to another
+	 * parent widget. 
+	 *
+	 * @param widgets A list of widget pointers to copy
+	 */
+	void copy(QPtrList<QWidget> *widgets);
+
+	/**
+	 * Paste clipboard contents to the given parent widget. Items can be
+	 * pasted only to VCFrames since other VC widget types do not really
+	 * support children.
+	 *
+	 * @param parent The parent VCFrame to paste the widgets to
+	 * @param point Use this point as the top-left corner of the bounding
+	 *              box where the widgets are pasted to
+	 */
+	void paste(VCFrame* parent, QPoint point);
+
+protected:
+	/**
+	 * Copy a VCWidget into another parent VCFrame
+	 *
+	 * @param widget The widget to make a copy of
+	 * @param parent The parent frame for the copy
+	 * @param point The point in the parent to paste to
+	 */
+	void copyWidget(QWidget* widget, VCFrame* parent, QPoint point);
+
+	/**
+	 * Clear the contents of the widget clipboard. This should be done at
+	 * least when a widget is deleted to prevent the case where we try to
+	 * cut/copy/paste a deleted widget. Another alternative would be to
+	 * modify the clipboard contents, but... Delete could also be treated
+	 * as a clipboard operation; the selected item is cut from its place,
+	 * put into the clipboard and from there on to the trashcan.
+	 */
+	void clearClipboard();
+
+protected:
+	typedef enum _ClipboardAction
+	{
+		ClipboardNone = 0,
+		ClipboardCut,
+		ClipboardCopy
+	} ClipboardAction;
+
+	ClipboardAction m_clipboardAction;
+	QPtrList<QWidget> m_clipboard;
+
+	/*********************************************************************
 	 * Draw area
 	 *********************************************************************/
 public:
