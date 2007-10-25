@@ -1,4 +1,8 @@
 2007-Oct-25  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed VCSliderProperties' slider naming in bus mode: setting a name
+	  in bus mode is not possible.
+
+2007-Oct-25  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed VCButton to inherit VCWidget
 	* Added a function attaching menu item to VCButton's widget menu.
 	* Moved the text drawing routine from VCLabel to VCWidget so that

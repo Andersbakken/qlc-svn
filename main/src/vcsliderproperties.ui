@@ -640,6 +640,12 @@
         <receiver>UI_VCSliderProperties</receiver>
         <slot>slotDisplayStyleClicked(int)</slot>
     </connection>
+    <connection>
+        <sender>m_busCombo</sender>
+        <signal>activated(int)</signal>
+        <receiver>UI_VCSliderProperties</receiver>
+        <slot>slotBusComboActivated(int)</slot>
+    </connection>
 </connections>
 <slots>
     <slot>slotBusLowLimitSpinChanged(int)</slot>
@@ -654,6 +660,7 @@
     <slot>slotLevelInvertClicked()</slot>
     <slot>slotSliderModeClicked(int)</slot>
     <slot>slotDisplayStyleClicked(int)</slot>
+    <slot>slotBusComboActivated(int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

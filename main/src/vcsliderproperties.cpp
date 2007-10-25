@@ -93,6 +93,9 @@ void VCSliderProperties::slotSliderModeClicked(int button)
 {
 	if (button == VCSlider::Bus)
 	{
+		m_nameEdit->setText(Bus::name(m_slider->bus()));
+		m_nameEdit->setEnabled(false);
+
 		m_busValueRangeGroup->setEnabled(true);
 		m_busLabel->setEnabled(true);
 		m_busCombo->setEnabled(true);
@@ -106,6 +109,8 @@ void VCSliderProperties::slotSliderModeClicked(int button)
 	}
 	else if (button == VCSlider::Level)
 	{
+		m_nameEdit->setEnabled(true);
+
 		m_busValueRangeGroup->setEnabled(false);
 		m_busLabel->setEnabled(false);
 		m_busCombo->setEnabled(false);
@@ -141,6 +146,11 @@ void VCSliderProperties::fillBusCombo()
 	}
 
 	m_busCombo->setCurrentItem(m_slider->bus());
+}
+
+void VCSliderProperties::slotBusComboActivated(int item)
+{
+	m_nameEdit->setText(Bus::name(item));
 }
 
 void VCSliderProperties::slotBusLowLimitSpinChanged(int value)

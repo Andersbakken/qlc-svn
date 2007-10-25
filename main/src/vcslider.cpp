@@ -175,6 +175,22 @@ void VCSlider::setCaption(const QString& text)
 		setTapButtonText(text);
 }
 
+void VCSlider::rename()
+{
+	QString text;
+	bool ok = false;
+
+	if (m_sliderMode == Bus)
+		QMessageBox::information(_app->virtualConsole(),
+					 "Cannot rename a bus mode slider",
+					 "A slider cannot be renamed when it " \
+					 "is used to control a bus;\n" \
+					 "The bus' name is used as the " \
+					 "slider's name instead.");
+	else
+		VCWidget::rename();
+}
+
 /*****************************************************************************
  * Properties
  *****************************************************************************/

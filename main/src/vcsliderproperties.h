@@ -57,6 +57,9 @@ protected:
 	void fillBusCombo();
 
 protected slots:
+	/** Callback for bus combo item activations */
+	void slotBusComboActivated(int item);
+	
 	/** Callback for bus low limit spin value changes */
 	void slotBusLowLimitSpinChanged(int value);
 
