@@ -21,7 +21,6 @@
 
 #include <qstring.h>
 #include <qpainter.h>
-#include <math.h>
 
 #include "vclabel.h"
 #include "app.h"
@@ -32,6 +31,11 @@
 
 extern App* _app;
 
+/**
+ * TODO: VCLabel is pretty useless, because a VCFrame can do exactly
+ * the same stuff that a label does. VCFrame could have a "label" property
+ * which would make it impossible to add widgets to it...
+ */
 VCLabel::VCLabel(QWidget* parent) : VCWidget(parent, "Label")
 {
 	setCaption("Label");
@@ -62,7 +66,6 @@ bool VCLabel::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 	/* Create a new label into its parent */
 	label = new VCLabel(parent);
-	//label->init();
 	label->show();
 
 	/* Continue loading */
@@ -144,28 +147,4 @@ bool VCLabel::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	saveXMLAppearance(doc, &root);
 
 	return true;
-}
-
-/*****************************************************************************
- * Event handlers
- *****************************************************************************/
-
-void VCLabel::paintEvent(QPaintEvent* e)
-{
-	int x = 0;
-	int y = 0;
-
-	VCWidget::paintEvent(e);
-
-	QPainter painter(this);
-	QFontMetrics metrics = painter.fontMetrics();
-	QSize textSize = metrics.size(SingleLine, caption());
-
-	x = static_cast<int> (floor((width() / 2.0) -
-				    (textSize.width() / 2.0)));
-	
-	y = static_cast<int> (floor((height() / 2.0) + 
-			    ((textSize.height() - metrics.leading()) / 2.0)));
-
-	painter.drawText(x, y, caption());
 }

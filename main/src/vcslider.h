@@ -439,6 +439,12 @@ public:
 	bool loadXMLLevel(QDomDocument* doc, QDomElement* level_root);
 
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
+protected:
+	virtual void paintEvent(QPaintEvent* e);
 };
 
 #endif

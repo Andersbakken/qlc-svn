@@ -54,26 +54,22 @@ extern App* _app;
 
 VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent, "XYPad")
 {
+	setCaption("");
+	setMinimumSize(20, 20);
+	
+	resize(QPoint(120, 120));
+	setFrameStyle(KVCWidgetFrameStyleSunken);
+	
+	m_xyPosPixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.png"));
+	
+	/* Set initial position to center */
+	m_currentXYPosition.setX(width() / 2);
+	m_currentXYPosition.setY(height() / 2);
 }
 
 VCXYPad::~VCXYPad()
 {
 	clearChannels();
-}
-
-void VCXYPad::init()
-{
-	setCaption("XY Pad");
-	setMinimumSize(20, 20);
-
-	resize(QPoint(120, 120));
-	setFrameStyle(KVCWidgetFrameStyleSunken);
-
-	m_xyPosPixmap = QPixmap(QString(PIXMAPS) + QString("/xypad-point.png"));
-
-	/* Set initial position to center */
-	m_currentXYPosition.setX(width() / 2);
-	m_currentXYPosition.setY(height() / 2);
 }
 
 void VCXYPad::scram()
@@ -98,13 +94,11 @@ void VCXYPad::scram()
 
 void VCXYPad::editProperties()
 {
-	VCXYPadProperties* p = new VCXYPadProperties(this);
-	p->init();
+	VCXYPadProperties prop(this);
+	prop.init();
 	
-	if (p->exec() == QDialog::Accepted)
+	if (prop.exec() == QDialog::Accepted)
 		_app->doc()->setModified();
-	
-	delete p;
 }
 
 /*****************************************************************************
@@ -219,7 +213,6 @@ bool VCXYPad::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 	/* Create a new xy pad into its parent */
 	xypad = new VCXYPad(parent);
-	xypad->init();
 	xypad->show();
 
 	/* Continue loading */

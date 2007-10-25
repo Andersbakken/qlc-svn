@@ -22,9 +22,9 @@
 #ifndef VCBUTTON_H
 #define VCBUTTON_H
 
-#include <qpushbutton.h>
 #include <qptrlist.h>
 
+#include "vcwidget.h"
 #include "common/types.h"
 #include "app.h"
 
@@ -39,8 +39,9 @@ class QPoint;
 class QDomDocument;
 class QDomElement;
 
-class FloatingEdit;
 class KeyBind;
+class FunctionStopEvent;
+class FunctionManager;
 
 #define KXMLQLCVCButton "Button"
 
@@ -49,7 +50,7 @@ class KeyBind;
 
 #define KXMLQLCVCButtonInputChannel "InputChannel"
 
-class VCButton : public QPushButton
+class VCButton : public VCWidget
 {
 	Q_OBJECT
 
@@ -60,104 +61,8 @@ public:
 	VCButton(QWidget* parent);
 	~VCButton();
 
-	void init();
-
 	/** Destroy and delete were already taken, so... */
 	void scram();
-
-	/*********************************************************************
-	 * Background image
-	 *********************************************************************/
-public:
-	/** Set the widget's background image */
-	void setBackgroundImage(const QString& path);
-
-	/** Get the widget's background image */
-	const QString& backgroundImage();
-
-	/** Invoke an image choosing dialog */
-	void chooseBackgroundImage();
-
-protected:
-	QString m_backgroundImage;
-
-	/*********************************************************************
-	 * Background color
-	 *********************************************************************/
-public:
-	/** Set the widget's background color and invalidate background image */
-	void setBackgroundColor(const QColor& color);
-
-	/** Reset the widget's background color to whatever the platform uses */
-	void resetBackgroundColor();
-
-	/** Get the widget's background color. The color is invalid if the
-	    widget has a background image. */
-	const QColor& backgroundColor() { return paletteBackgroundColor(); }
-
-	/** Invoke a color choosing dialog */
-	void chooseBackgroundColor();
-
-	/** Check, whether the widget has a custom background color */
-	bool hasCustomBackgroundColor() { return m_hasCustomBackgroundColor; }
-
-protected:
-	bool m_hasCustomBackgroundColor;
-
-	/*********************************************************************
-	 * Foreground color
-	 *********************************************************************/
-public:
-	/** Set the widget's foreground color */
-	void setForegroundColor(const QColor& color);
-
-	/** Reset the widget's background color to whatever the platform uses */
-	void resetForegroundColor();
-
-	/** Get the widget's foreground color */
-	const QColor& foregroundColor() { return paletteForegroundColor(); }
-
-	/** Invoke a color choosing dialog */
-	void chooseForegroundColor();
-
-	/** Check, whether the widget has a custom foreground color */
-	bool hasCustomForegroundColor() const { return m_hasCustomForegroundColor; }
-
-protected:
-	bool m_hasCustomForegroundColor;
-
-	/*********************************************************************
-	 * Font
-	 *********************************************************************/
-public:
-	/** Set the font used for the widget's caption */
-	void setFont(const QFont& font);
-
-	/** Get the font used for the widget's caption */
-	QFont font() const { return QWidget::font(); }
-
-	/** Reset the font used for the widget's caption to whatever the
-	    platform uses */
-	void resetFont();
-
-	/** Invoke a font choosing dialog */
-	void chooseFont();
-
-	/** Check, whether the widget has a custom font */
-	bool hasCustomFont() const { return m_hasCustomFont; }
-
-protected:
-	bool m_hasCustomFont;
-
-	/*********************************************************************
-	 * Caption
-	 *********************************************************************/
-public:
-	/** Set this label's caption text */
-	void setCaption(const QString& text);
-
-	/** Invoke a renaming edit */
-	void rename();
 
 	/*********************************************************************
 	 * Properties
@@ -169,45 +74,159 @@ public:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+	/**
+	 * Create and load a new VCButton from an XML document
+	 *
+	 * @param doc An XML document to load from
+	 * @param btn_root A VCButton XML root node
+	 * @param parent A parent VCFrame for the new VCButton
+	 * @return true if successful; otherwise false
+	 */
+	static bool loader(QDomDocument* doc, QDomElement* btn_root,
+			   QWidget* parent);
+
+	/**
+	 * Load a VCButton's properties from an XML document node
+	 *
+	 * @param doc An XML document to load from
+	 * @param btn_root A VCButton XML root node containing button properties
+	 * @return true if successful; otherwise false
+	 */
+	bool loadXML(QDomDocument* doc, QDomElement* btn_root);
+
+	/**
+	 * Save a VCButton's properties to an XML document node
+	 *
+	 * @param doc The master XML document to save to
+	 * @param frame_root The button's VCFrame XML parent node to save to
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* frame_root);
+
+	/*********************************************************************
+	 * Button state
+	 *********************************************************************/
+public:
+	void setOn(bool on);
+	bool isOn() const { return m_on; }
+
+	void setFrameStyle(const int style);
 
 protected:
-	bool loadXMLAppearance(QDomDocument* doc, QDomElement* root);
-	bool saveXMLAppearance(QDomDocument* doc, QDomElement* btn_root);
-	
+	bool m_on;
+
 	/*********************************************************************
 	 * KeyBind
 	 *********************************************************************/
 public:
+	/**
+	 * Get the button's key binding object
+	 */
 	KeyBind* keyBind() { return m_keyBind; }
+
+	/**
+	 * Set the button's key binding object. This only makes a copy of the
+	 * object's contents.
+	 *
+	 * @param kb A key binding object
+	 */
 	void setKeyBind(const KeyBind* kb);
 
 protected:
+	/** 
+	 * This button's key binding object. This is present even when a
+	 * button does not have a key binding.
+	 */
 	KeyBind* m_keyBind;
+
+	/*********************************************************************
+	 * Function attachment
+	 *********************************************************************/
+protected:
+	/**
+	 * Invoke a function selection dialog to set (attach) a function to
+	 * this button.
+	 */
+	void selectFunction();
+
+protected slots:
+	/**
+	 * Slot that is called when OK/Cancel/Close has been clicked in the
+	 * function selection dialog.
+	 */
+	void slotFunctionManagerClosed();
+
+public:
+	/**
+	 * Attach a function to a VCButton. This function is started when the
+	 * button is pressed down.
+	 *
+	 * @param function An ID of a function to attach
+	 */
+	void setFunction(t_function_id function);
+
+	/**
+	 * Get the ID of the function attached to a VCButton
+	 *
+	 * @return The ID of the attached function or KNoID if there isn't one
+	 */
+	t_function_id function() const { return m_function; }
+
+	/**
+	 * Set the button to behave exclusively inside its VCFrame parent.
+	 * An exclusive button will, when pressed down, stop the functions
+	 * attached to other VCButtons in the same frame.
+	 *
+	 * @param exclusive true to set exclusive, otherwise false
+	 */
+	void setExclusive(bool exclusive = true);
+
+	/**
+	 * Get the button's exclusive status. 
+	 * See @ref setExclusive() for disambiguation.
+	 *
+	 * @return true if button is exclusive, false if it is not
+	 */
+	bool isExclusive() { return m_isExclusive; }
+
+protected:
+	/* Just a pointer to the function selection dialog. This is used
+	   only when the menu item for selecting a function is clicked */
+	FunctionManager* m_functionManager;
+
+	/** The function that this button is controlling */
+	t_function_id m_function;
+
+	/** Exclusive status */
+	bool m_isExclusive;
 
 	/*********************************************************************
 	 * Button press / release handlers
 	 *********************************************************************/
-public:
-	void attachFunction(t_function_id id);
-	t_function_id functionID() const { return m_functionID; }
-
-	void setExclusive(bool exclusive = true);
-	bool isExclusive() { return m_isExclusive; }
-
-protected slots:
-	void slotFlashReady();
-	void slotModeChanged(App::Mode mode);
-
 public slots:
+	/**
+	 * Handler for button press i.e. (mouse/key)button down, not click.
+	 */
 	void pressFunction();
+
+	/**
+	 * Handler for button release i.e. (mouse/key)button up, not click.
+	 */
 	void releaseFunction();
 
 protected:
-	t_function_id m_functionID;
-	bool m_isExclusive;
+	/** 
+	 * Event sent by the controlled function when it has (been) stopped
+	 *
+	 * @param e A FunctionStopEvent sent by the controlled function
+	 */
+	void functionStopEvent(FunctionStopEvent* e);
+
+protected slots:
+	/**
+	 * Slot for brief widget flashing when the controlled function has
+	 * (been) stopped
+	 */
+	void slotFlashReady();
 
 	/*********************************************************************
 	 * External sliderboard
@@ -231,24 +250,12 @@ protected:
 	 * Widget menu
 	 *********************************************************************/
 protected:
-	void invokeMenu(QPoint at);
+	/** Invoke the widget menu */
+	void invokeMenu(QPoint point);
 
 protected slots:
+	/** Menu items' callback slot */
 	void slotMenuCallback(int item);
-
-	/*********************************************************************
-	 * Widget move & resize
-	 *********************************************************************/
-public:
-	void resize(QPoint p);
-	void move(QPoint p);
-
-protected:
-	bool moveThreshold(int x, int y);
-
-protected:
-	QPoint m_mousePressPoint;
-	bool m_resizeMode;
 
 	/*********************************************************************
 	 * Event Handlers
@@ -258,8 +265,6 @@ protected:
 
 	void mousePressEvent(QMouseEvent* e);
 	void mouseReleaseEvent(QMouseEvent* e);
-	void mouseDoubleClickEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
 
 	void customEvent(QCustomEvent* e);
 };

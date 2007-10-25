@@ -19,15 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "vcwidget.h"
-
-#include "app.h"
-#include "doc.h"
-#include "virtualconsole.h"
-
-#include "common/filehandler.h"
-#include "common/qlcimagepreview.h"
-
 #include <qcursor.h>
 #include <qpoint.h>
 #include <qpixmap.h>
@@ -43,6 +34,15 @@
 #include <qfiledialog.h>
 #include <qfontdialog.h>
 #include <qinputdialog.h>
+#include <math.h>
+
+#include "common/filehandler.h"
+#include "common/qlcimagepreview.h"
+
+#include "vcwidget.h"
+#include "app.h"
+#include "doc.h"
+#include "virtualconsole.h"
 
 extern App* _app;
 
@@ -228,6 +228,7 @@ void VCWidget::chooseFont()
 void VCWidget::setCaption(const QString& text)
 {
 	QFrame::setCaption(text);
+	repaint();
 	_app->doc()->setModified();
 }
 
@@ -243,13 +244,14 @@ void VCWidget::rename()
 				     &ok,
 				     this);
 
-	if (ok == true && text.isEmpty() == false)
+	if (ok == true)
 		setCaption(text);
 }
 
 /*****************************************************************************
  * Properties
  *****************************************************************************/
+
 void VCWidget::editProperties()
 {
 	QMessageBox::information(_app, className(),
@@ -661,24 +663,38 @@ int VCWidget::stringToFrameStyle(const QString& style)
 
 void VCWidget::paintEvent(QPaintEvent* e)
 {
+	int caption_x = 0;
+	int caption_y = 0;
+
 	// First paint whatever QFrame wants to
 	QFrame::paintEvent(e);
 
-	QPainter p(this);
+	// Draw the widget's caption
+	QPainter painter(this);
+	QFontMetrics metrics = painter.fontMetrics();
+	QSize textSize = metrics.size(SingleLine, caption());
+	
+	caption_x = static_cast<int> (floor((width() / 2.0) -
+					   (textSize.width() / 2.0)));	
+	caption_y = static_cast<int> (floor((height() / 2.0) + 
+			    ((textSize.height() - metrics.leading()) / 2.0)));
+	
+	painter.drawText(caption_x, caption_y, caption());
 
+	/* Draw selection frame */
 	if (_app->mode() == App::Design &&
 	    _app->virtualConsole()->selectedWidget() == this)
 	{
 		// Draw a dotted line around the widget
 		QPen pen(DotLine);
 		pen.setWidth(2);
-		p.setPen(pen);
-		p.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+		painter.setPen(pen);
+		painter.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
 
 		// Draw a resize handle
 		QBrush b(SolidPattern);
-		p.fillRect(rect().width() - 10,
-			   rect().height() - 10, 10, 10, b);
+		painter.fillRect(rect().width() - 10,
+				 rect().height() - 10, 10, 10, b);
 	}
 }
 

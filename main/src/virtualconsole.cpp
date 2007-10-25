@@ -385,11 +385,11 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
  * Selected widget
  *****************************************************************************/
 
-void VirtualConsole::setSelectedWidget(QWidget* w)
+void VirtualConsole::setSelectedWidget(VCWidget* w)
 {
 	if (m_selectedWidget != NULL)
 	{
-		QWidget* old = m_selectedWidget;
+		VCWidget* old = m_selectedWidget;
 		m_selectedWidget = w;
 		old->update();
 	}
@@ -599,52 +599,19 @@ void VirtualConsole::slotEditPaste()
 void VirtualConsole::slotEditDelete()
 {
 	if (m_selectedWidget != NULL)
-	{
-		if (m_selectedWidget->inherits("VCWidget") == true)
-		{
-			static_cast<VCWidget*> 
-				(m_selectedWidget)->scram();
-		}
-		else if (m_selectedWidget->isA("VCButton") == true)
-		{
-			static_cast<VCButton*> 
-				(m_selectedWidget)->scram();
-		}
-	}
+		m_selectedWidget->scram();
 }
 
 void VirtualConsole::slotEditProperties()
 {
 	if (m_selectedWidget != NULL)
-	{
-		if (m_selectedWidget->inherits("VCWidget") == true)
-		{
-			static_cast<VCWidget*> 
-				(m_selectedWidget)->editProperties();
-		}
-		else if (m_selectedWidget->isA("VCButton") == true)
-		{
-			static_cast<VCButton*> 
-				(m_selectedWidget)->editProperties();
-		}
-	}
+		m_selectedWidget->editProperties();
 }
 
 void VirtualConsole::slotEditRename()
 {
 	if (m_selectedWidget != NULL)
-	{
-		if (m_selectedWidget->inherits("VCWidget") == true)
-		{
-			static_cast<VCWidget*> 
-				(m_selectedWidget)->rename();
-		}
-		else if (m_selectedWidget->isA("VCButton") == true)
-		{
-			static_cast<VCButton*> 
-				(m_selectedWidget)->rename();
-		}
-	}
+		m_selectedWidget->rename();
 }
 
 /*********************************************************************
@@ -653,21 +620,20 @@ void VirtualConsole::slotEditRename()
 
 void VirtualConsole::slotForegroundFont()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
-		m_selectedWidget->setFont(QFontDialog::
-					  getFont(0, m_selectedWidget->font()));
+		m_selectedWidget->setFont(
+			QFontDialog::getFont(0, m_selectedWidget->font()));
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotForegroundColor()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
-		QColor color =
-			QColorDialog::getColor(m_selectedWidget->paletteForegroundColor(),
-					       this);
+		QColor color = QColorDialog::getColor(
+			m_selectedWidget->paletteForegroundColor(), this);
 
 		if (color.isValid())
 		{
@@ -681,7 +647,7 @@ void VirtualConsole::slotForegroundColor()
 
 void VirtualConsole::slotForegroundNone()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		// Save the background color (note that we are resetting
 		// the foreground here!)
@@ -705,10 +671,10 @@ void VirtualConsole::slotForegroundNone()
 
 void VirtualConsole::slotBackgroundColor()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
-		QColor newcolor = QColorDialog::
-			getColor(m_selectedWidget->paletteBackgroundColor(), this);
+		QColor newcolor = QColorDialog::getColor(
+			m_selectedWidget->paletteBackgroundColor(), this);
 
 		if (newcolor.isValid() == true)
 		{
@@ -720,7 +686,7 @@ void VirtualConsole::slotBackgroundColor()
 
 void VirtualConsole::slotBackgroundImage()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		QString fileName;
 
@@ -755,7 +721,7 @@ void VirtualConsole::slotBackgroundImage()
 
 void VirtualConsole::slotBackgroundNone()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		// Save the foreground color (note that we are resetting
 		// the background here!)
@@ -773,7 +739,7 @@ void VirtualConsole::slotBackgroundNone()
 
 void VirtualConsole::slotBackgroundFrame()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		QApplication::sendEvent(m_selectedWidget,
 					new VCMenuEvent(KVCMenuBackgroundFrame));
@@ -786,7 +752,7 @@ void VirtualConsole::slotBackgroundFrame()
 
 void VirtualConsole::slotStackingRaise()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		m_selectedWidget->raise();
 		_app->doc()->setModified();
@@ -795,7 +761,7 @@ void VirtualConsole::slotStackingRaise()
 
 void VirtualConsole::slotStackingLower()
 {
-	if (m_selectedWidget)
+	if (m_selectedWidget != NULL)
 	{
 		m_selectedWidget->lower();
 		_app->doc()->setModified();

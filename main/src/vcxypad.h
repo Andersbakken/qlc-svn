@@ -63,8 +63,6 @@ class VCXYPad : public VCWidget
 	VCXYPad(QWidget* parent);
 	virtual ~VCXYPad();
 
-	void init();
-
 	/** Destroy and delete were already taken, so... */
 	void scram();
 

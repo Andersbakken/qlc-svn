@@ -37,6 +37,7 @@ class QFrame;
 class QDomDocument;
 class QDomElement;
 
+class VCWidget;
 class VCFrame;
 class KeyBind;
 class Bus;
@@ -98,27 +99,28 @@ const int KVCMenuEditPaste        ( 302 );
 const int KVCMenuEditDelete       ( 303 );
 const int KVCMenuEditProperties   ( 304 );
 const int KVCMenuEditRename       ( 305 );
+const int KVCMenuEditAttach       ( 306 );
 const int KVCMenuEditMax          ( 399 );
 // <<< Edit Menu
 
 // Foreground Menu >>>
-const int KVCMenuForegroundMin    ( 400 );
-const int KVCMenuForegroundFont   ( 400 );
-const int KVCMenuForegroundColor  ( 401 );
-const int KVCMenuForegroundNone   ( 402 );
+const int KVCMenuForegroundMin     ( 400 );
+const int KVCMenuForegroundFont    ( 400 );
+const int KVCMenuForegroundColor   ( 401 );
+const int KVCMenuForegroundNone    ( 402 );
 const int KVCMenuForegroundDefault ( 499 );
-const int KVCMenuForegroundMax    ( 499 );
+const int KVCMenuForegroundMax     ( 499 );
 // <<< Foreground Menu
 
 // Background Menu >>>
-const int KVCMenuBackgroundMin    ( 500 );
-const int KVCMenuBackgroundFrame  ( 500 );
-const int KVCMenuBackgroundColor  ( 501 );
-const int KVCMenuBackgroundPixmap ( 502 );
-const int KVCMenuBackgroundImage  ( 502 );
-const int KVCMenuBackgroundNone   ( 503 );
+const int KVCMenuBackgroundMin     ( 500 );
+const int KVCMenuBackgroundFrame   ( 500 );
+const int KVCMenuBackgroundColor   ( 501 );
+const int KVCMenuBackgroundPixmap  ( 502 );
+const int KVCMenuBackgroundImage   ( 502 );
+const int KVCMenuBackgroundNone    ( 503 );
 const int KVCMenuBackgroundDefault ( 599 );
-const int KVCMenuBackgroundMax    ( 599 );
+const int KVCMenuBackgroundMax     ( 599 );
 // <<< Foreground Menu
 
 // Font Menu >>>
@@ -266,7 +268,7 @@ public:
 	 *
 	 * @return The selected widget or NULL if none is selected
 	 */
-	QWidget* selectedWidget() { return m_selectedWidget; }
+	VCWidget* selectedWidget() { return m_selectedWidget; }
 
 	/**
 	 * Set the currently selected widget. This is called by individual
@@ -275,11 +277,11 @@ public:
 	 *
 	 * @param widget The widget that was last clicked
 	 */
-	void setSelectedWidget(QWidget* widget);
+	void setSelectedWidget(VCWidget* widget);
 
 protected:
 	/** The widget that currently has the "edit focus" in virtual console */
-	QWidget* m_selectedWidget;
+	VCWidget* m_selectedWidget;
 
 	/*********************************************************************
 	 * Clipboard

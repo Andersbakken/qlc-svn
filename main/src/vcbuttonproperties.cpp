@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
 #include <qcombobox.h>
@@ -47,7 +48,7 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	  
 	  m_button     ( button ),
 	  m_keyBind    ( new KeyBind(button->keyBind()) ),
-	  m_functionID ( button->functionID() ),
+	  m_functionID ( button->function() ),
 	  m_functionManager ( NULL )
 {
 }
@@ -64,7 +65,7 @@ void VCButtonProperties::initView()
 	QString keyString;
 
 	// Set name
-	m_nameEdit->setText(m_button->text());
+	m_nameEdit->setText(m_button->caption());
 
 	// Set function name
 	setFunctionName();
@@ -86,11 +87,15 @@ void VCButtonProperties::initView()
 	//
 	// Pixmaps
 	//
-	m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/attach.png")));
-	m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/detach.png")));
+	m_attachFunction->setPixmap(QPixmap(QString(PIXMAPS) +
+					    QString("/attach.png")));
+	m_detachFunction->setPixmap(QPixmap(QString(PIXMAPS) +
+					    QString("/detach.png")));
 
-	m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/key_bindings.png")));
-	m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) + QString("/keyboard.png")));
+	m_attachKey->setPixmap(QPixmap(QString(PIXMAPS) +
+				       QString("/key_bindings.png")));
+	m_detachKey->setPixmap(QPixmap(QString(PIXMAPS) +
+				       QString("/keyboard.png")));
 }
 
 
@@ -234,7 +239,7 @@ void VCButtonProperties::slotDetachKeyClicked()
 void VCButtonProperties::slotOKClicked()
 {
 	m_button->setCaption(m_nameEdit->text());
-	m_button->attachFunction(m_functionID);
+	m_button->setFunction(m_functionID);
 	m_button->setKeyBind(m_keyBind);
 	m_button->setInputChannel(m_channelSpinBox->value());
         m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());  

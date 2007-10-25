@@ -47,6 +47,7 @@ VCFrame::VCFrame(QWidget* parent) : VCWidget(parent, "VCFrame")
 
 	setFrameStyle(KVCWidgetFrameStyleSunken);
 	setMinimumSize(20, 20);
+	setCaption("");
 }
 
 VCFrame::~VCFrame()
@@ -90,12 +91,10 @@ bool VCFrame::isBottomFrame()
 
 void VCFrame::editProperties()
 {
-	VCFrameProperties* prop = new VCFrameProperties(this);
-	prop->init();
-	if (prop->exec() == QDialog::Accepted)
+	VCFrameProperties prop(this);
+	prop.init();
+	if (prop.exec() == QDialog::Accepted)
 		_app->doc()->setModified();
-
-	delete prop;
 }
 
 /*****************************************************************************
@@ -295,37 +294,8 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 		QObjectListIterator it(*objectList);
 		while ( (child = it.current()) != NULL )
 		{
-			/* TODO: When all VC classes use VCWidget as their
-			   base class, these can be replaced by a single
-			   line: */
-			/* static_cast<VCWidget*> (child)->saveXML(doc, &root); */
-
-			if (child->className() == "VCFrame")
-			{
-				static_cast<VCFrame*> (child)->saveXML(doc, &root);
-			}
-			else if (child->className() == "VCButton")
-			{
-				static_cast<VCButton*> (child)->saveXML(doc, &root);
-			}
-			else if (child->className() == "VCSlider")
-			{
-				static_cast<VCSlider*> (child)->saveXML(doc, &root);
-			}
-			else if (child->className() == "VCLabel")
-			{
-				static_cast<VCLabel*> (child)->saveXML(doc, &root);
-			}
-			else if (child->className() == "VCXYPad")
-			{
-				static_cast<VCXYPad*> (child)->saveXML(doc, &root);
-			}
-			else
-			{
-				qWarning("Unknown VC widget class: %s",
-					 child->className());
-			}
-			
+			Q_ASSERT(child->inherits("VCWidget"));
+			static_cast<VCWidget*> (child)->saveXML(doc, &root);
 			++it;
 		}
 	}
@@ -400,7 +370,6 @@ void VCFrame::addButton(QPoint at)
 {
 	VCButton* button = new VCButton(this);
 	Q_ASSERT(button != NULL);
-	button->init();
 	button->show();
 
 	if (this->buttonBehaviour() == VCFrame::Exclusive)
@@ -455,7 +424,6 @@ void VCFrame::addXYPad(QPoint at)
 {
 	VCXYPad* xypad = new VCXYPad(this);
 	Q_ASSERT(xypad != NULL);
-	xypad->init();
 	xypad->show();
 
 	if (at.isNull() == false)

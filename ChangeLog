@@ -1,3 +1,16 @@
+2007-Oct-25  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed VCButton to inherit VCWidget
+	* Added a function attaching menu item to VCButton's widget menu.
+	* Moved the text drawing routine from VCLabel to VCWidget so that
+	  everyone can draw their text if they want to.
+	* Made a custom paintEvent() handler for VCSlider because it doesn't
+	  want to draw text into its background.
+	* Moved everything from VCXYPad::init() to its constructor.
+	* Fixed renaming for VCWidget to accept also empty strings.
+	* Fixed VCSlider::setCaption() to also set the text to the tap button.
+	* TODO: VCSliderProperties still behaves in a weird way with buses,
+	  since the slider's name should always reflect the bus name...
+
 2007-Oct-24  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed VCButton's default name to "" instead of QString::null as
 	  an empty string will show up nicer e.g. in its destroy dialog.

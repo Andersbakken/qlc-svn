@@ -27,6 +27,9 @@
 #include <qdatetime.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
+#include <qevent.h>
+#include <qpainter.h>
+#include <qpen.h>
 #include <qdom.h>
 #include <math.h>
 
@@ -86,7 +89,7 @@ VCSlider::~VCSlider()
 
 void VCSlider::init()
 {
-	setCaption("Slider");
+	setCaption("");
 
 	/* Main VBox */
 	m_vbox = new QVBoxLayout(this);
@@ -165,10 +168,11 @@ void VCSlider::setCaption(const QString& text)
 {
 	VCWidget::setCaption(text);
 
-	/* Bottom label has not been created yet during VCWidget
-	   construction, so this would crash without this check */
 	if (m_bottomLabel != NULL)
 		setBottomLabelText(text);
+
+	if (m_tapButton != NULL)
+		setTapButtonText(text);
 }
 
 /*****************************************************************************
@@ -177,13 +181,9 @@ void VCSlider::setCaption(const QString& text)
 
 void VCSlider::editProperties()
 {
-	VCSliderProperties* prop = NULL;
-
-	prop = new VCSliderProperties(_app, this);
-	prop->init();
-	prop->exec();
-
-	delete prop;
+	VCSliderProperties prop(_app, this);
+	prop.init();
+	prop.exec();
 }
 
 /*****************************************************************************
@@ -908,4 +908,36 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	}
 
 	return true;
+}
+
+/*****************************************************************************
+ * Event handlers
+ *****************************************************************************/
+
+void VCSlider::paintEvent(QPaintEvent* e)
+{
+	// First paint whatever QFrame wants to
+	QFrame::paintEvent(e);
+
+	QPainter painter(this);
+
+	/* This paint event handler must be here because VCWidget would draw
+	   the caption into its background, which is not what we want for
+	   a slider */
+
+	/* Draw selection frame */
+	if (_app->mode() == App::Design &&
+	    _app->virtualConsole()->selectedWidget() == this)
+	{
+		// Draw a dotted line around the widget
+		QPen pen(DotLine);
+		pen.setWidth(2);
+		painter.setPen(pen);
+		painter.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+
+		// Draw a resize handle
+		QBrush b(SolidPattern);
+		painter.fillRect(rect().width() - 10,
+				 rect().height() - 10, 10, 10, b);
+	}
 }

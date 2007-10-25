@@ -50,12 +50,6 @@ public:
 	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
-
-	/*********************************************************************
-	 * Event handlers
-	 *********************************************************************/
-protected:
-	void paintEvent(QPaintEvent* e);
 };
 
 #endif
