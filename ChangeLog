@@ -1,3 +1,6 @@
+2007-Oct-26  Heikki Junnila <hjunnila@users.sf.net>
+	* FixtureConsole resizes itself a bit taller.
+
 2007-Oct-25  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed VCSliderProperties' slider naming in bus mode: setting a name
 	  in bus mode is not possible.

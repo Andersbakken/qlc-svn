@@ -114,6 +114,12 @@ void FixtureConsole::setFixture(t_fixture_id id)
 		m_unitList.append(unit);
 	}
 
+	/* Resize the console to some sensible proportions if at least
+	   one channel unit was inserted */
+	if (unit != NULL)
+		resize(m_sceneEditor->width() + 
+		       (fxi->channels() * unit->width()), 250);
+
 	// Update scene editor (also causes an update to channelunits)
 	m_sceneEditor->update();
 }
