@@ -65,6 +65,8 @@ static const QString KEY_MONITOR_GEOMETRY         ( "MonitorGeometry" );
 Monitor::Monitor(QWidget* parent, DMXMap* dmxMap) :
 	QWidget(parent, "Monitor"),
 	m_universe        ( 0 ),
+	m_visibleMin      ( 0 ),
+	m_visibleMax      ( 0 ),
 	m_newValues       ( NULL ),
 	m_oldValues       ( NULL ),
 	m_dmxMap          ( dmxMap ),
@@ -268,7 +270,10 @@ void Monitor::slotMenuCallback(int item)
 //
 void Monitor::slotTimeOut()
 {
-	m_dmxMap->getValueRange(512 * m_universe, m_newValues, 512);
+	/* Read only the visible range of values. There's no point in reading
+	   such values that aren't going to get drawn anyway. */
+	m_dmxMap->getValueRange(512 * m_universe + m_visibleMin,
+				m_newValues, m_visibleMax + 1);
 
 	// Paint only changed values
 	repaint(false);
@@ -597,7 +602,7 @@ void Monitor::paintChannelValueAll(QRegion region, int x_offset, int y_offset,
 		// inside the invalidated area, otherwise draw the delta values
 		if (!onlyDelta && !region.contains(QRect(x, y, unitW, unitH)))
 			continue;
-					
+		
 		// Draw only those values that are visible
 		if (y < height())
 		{
@@ -606,6 +611,12 @@ void Monitor::paintChannelValueAll(QRegion region, int x_offset, int y_offset,
 		
 			// Paint the value
 			paintChannelValue(x, y, unitW, unitH, s);
+
+			/* Update the biggest visible channel number only,
+			   when the visibility of all channels is being
+			   checked */
+			if (!onlyDelta)
+				m_visibleMax = i;
 		}
 		else
 		{

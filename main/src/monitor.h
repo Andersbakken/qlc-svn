@@ -97,7 +97,14 @@ signals:
 	void closed();
 
 protected:
+	/** The universe number under inspection */
 	t_channel m_universe;
+
+	/** The smaller visible channel number */
+	t_channel m_visibleMin;
+
+	/** The biggest visible channel number */
+	t_channel m_visibleMax;
 
 	t_value* m_oldValues;
 	t_value* m_newValues;

@@ -1,4 +1,7 @@
 2007-Oct-26  Heikki Junnila <hjunnila@users.sf.net>
+	* Optimized Monitor so that it reads only the visible range of values.
+
+2007-Oct-26  Heikki Junnila <hjunnila@users.sf.net>
 	* FixtureConsole resizes itself a bit taller.
 
 2007-Oct-25  Heikki Junnila <hjunnila@users.sf.net>
