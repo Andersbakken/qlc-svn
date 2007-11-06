@@ -2,7 +2,8 @@
   Q Light Controller
   app.cpp
 
-  Copyright (c) Heikki Junnila
+  Copyright (c) Heikki Junnila,
+                Christopher Staite
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -346,8 +347,9 @@ void App::initFunctionConsumer()
 	m_functionConsumer = new FunctionConsumer(m_dmxMap);
 	Q_ASSERT(m_functionConsumer != NULL);
 
-	m_functionConsumer->init();
-	m_functionConsumer->start();
+	/* TODO: Put this into some kind of a settings dialog */
+	// m_functionConsumer->setTimerType(FunctionConsumer::RTCTimer);
+	m_functionConsumer->setTimerType(FunctionConsumer::USleepTimer);
 }
 
 void App::slotPanic()
@@ -879,6 +881,9 @@ void App::setMode(Mode mode)
 			}
 		}
 
+		/* Stop function consumer */
+		m_functionConsumer->stop();
+
 		m_modeIndicator->setText(KModeTextDesign);
 		m_modeToolButton->setPixmap(QString(PIXMAPS) +
 					    QString("/player_play.png"));
@@ -938,7 +943,8 @@ void App::setMode(Mode mode)
 		/* Close bus manager if it's open */
 		slotBusPropertiesClosed();
 
-		/* TODO: Close dmx mapper and input mapper */
+		/* Start function consumer */
+		m_functionConsumer->start();
 	}
 
 	m_mode = mode;

@@ -1,4 +1,8 @@
 2007-Nov-06  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented RTC & USleep timer methods for FunctionConsumer
+	  as suggested by Christopher Staite.
+
+2007-Nov-06  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented saving/loading for DMXMap
 
 2007-Oct-26  Heikki Junnila <hjunnila@users.sf.net>

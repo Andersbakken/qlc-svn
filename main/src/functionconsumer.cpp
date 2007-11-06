@@ -36,13 +36,18 @@
 #include "eventbuffer.h"
 #include "functionconsumer.h"
 
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
+
 FunctionConsumer::FunctionConsumer(DMXMap* dmxMap) : QThread()
 {
 	Q_ASSERT(dmxMap != NULL);
 	m_dmxMap = dmxMap;
 
+	m_timerType = RTCTimer;
 	m_running = 0;
-	m_fd = 0;
+	m_fdRTC = -1;
 	m_timeCode = 0;
 
 	/* Each fixture should fit inside one universe -> 512 values */
@@ -58,6 +63,297 @@ FunctionConsumer::~FunctionConsumer()
 	delete [] m_event;
 }
 
+/*****************************************************************************
+ * Timer type
+ *****************************************************************************/
+
+bool FunctionConsumer::setTimerType(TimerType type)
+{
+	bool result = false;
+
+	switch (type)
+	{
+	case RTCTimer:
+		/* Test that we can use RTC */
+		result = openRTC();
+		if (result == true)
+			closeRTC();
+		m_timerType = type;
+		break;
+
+	default:
+	case USleepTimer:
+		/* Test that we can use USleep */
+		result = openUSleepTimer();
+		if (result == true)
+			closeUSleepTimer();
+		m_timerType = type;
+		break;
+	}
+
+	return result;
+}
+
+/*****************************************************************************
+ * RTC timer
+ *****************************************************************************/
+
+bool FunctionConsumer::openRTC()
+{
+	int retval = -1;
+	unsigned long tmp = 0;
+	
+	m_fdRTC = open("/dev/rtc", O_RDONLY);
+	if (m_fdRTC == -1)
+	{
+		/* open failed */
+		qWarning("Unable to open /dev/rtc: %s", strerror(errno));
+		
+		/* but we try an alternate location of the device */
+		m_fdRTC = open("/dev/misc/rtc", O_RDONLY);
+		if (m_fdRTC == -1)
+		{
+			/* failed again, we give up */
+			qWarning("Unable to open /dev/misc/rtc: %s",
+				 strerror(errno));
+			closeRTC();
+			return false;
+		}
+	}
+	
+	/* Attempt to set RTC frequency to KFrequency (64Hz) */
+	retval = ioctl(m_fdRTC, RTC_IRQP_SET, KFrequency);
+	if (retval == -1)
+	{
+		qWarning("Unable to set %ldHz to RTC: %s", strerror(errno));
+		closeRTC();
+		return false;
+	}
+	
+	/* Attempt to read RTC frequency (should now be 64Hz) */
+	retval = ioctl(m_fdRTC, RTC_IRQP_READ, &tmp);
+	if (retval == -1)
+	{
+		qWarning("Unable to read RTC timer frequency: %s",
+			 strerror(errno));
+		closeRTC();
+		return false;
+	}
+	else
+	{
+		qDebug("RTC timer frequency is %ldHz.", tmp);
+	}
+
+	/* Check that the frequency is correct */
+	if (tmp == KFrequency)
+	{
+		qDebug("RTC opened");
+		return true;
+	}
+	else
+	{
+		qWarning("Unable to set RTC frequency to %ldHz", KFrequency);
+		closeRTC();
+		return false;
+	}
+}
+
+bool FunctionConsumer::closeRTC()
+{
+	int retval = -1;
+
+	if (m_fdRTC == -1)
+		return true;
+
+	/* Attempt to close RTC file descriptor */
+	retval = close(m_fdRTC);
+	if (retval == -1)
+	{
+		qWarning("Unable to close RTC file descriptor: %s",
+			 strerror(errno));
+		return false;
+	}
+	else
+	{
+		qDebug("RTC closed");
+		m_fdRTC = -1;
+		return true;
+	}
+}
+
+bool FunctionConsumer::startRTC()
+{
+	int retval = -1;
+
+	if (m_fdRTC == -1)
+	{
+		qWarning("Unable to start RTC: Device is not open.");
+		return false;
+	}
+
+	/* Attempt to start periodic timer interrupts */
+	retval = ioctl(m_fdRTC, RTC_PIE_ON, 0);
+	if (retval == -1)
+	{
+		qWarning("Unable to switch RTC interrupts ON: %s",
+			 strerror(errno));
+		return false;
+	}
+	else
+	{
+		qDebug("RTC started");
+		return true;
+	}
+}
+
+bool FunctionConsumer::stopRTC()
+{
+	int retval = -1;
+
+	/* Attempt to stop periodic interrupts */
+	retval = ioctl(m_fdRTC, RTC_PIE_OFF, 0);
+	if (retval == -1)
+	{
+		qWarning("Unable to switch RTC interrupts OFF: %s",
+			 strerror(errno));
+		return false;
+	}
+	else
+	{
+		qDebug("RTC stopped");
+		return true;
+	}
+}
+
+void FunctionConsumer::runRTC()
+{
+	int retval = -1;
+	unsigned long data = 0;
+	
+	if (openRTC() == false)
+		return;
+
+	if (startRTC() == false)
+		return;
+
+	while (m_running == true)
+	{
+		retval = read(m_fdRTC, &data, sizeof(unsigned long));
+		if (retval == -1)
+		{
+			qWarning("Unable to read from RTC: %s",
+				 strerror(errno));
+			m_running = false;
+		}
+		else
+		{
+			m_timeCode++;
+			event(data);
+		}
+	}
+	
+	stopRTC();
+	closeRTC();
+}
+
+/*****************************************************************************
+ * USleep timer
+ *****************************************************************************/
+
+bool FunctionConsumer::openUSleepTimer()
+{
+	return true;
+}
+
+bool FunctionConsumer::closeUSleepTimer()
+{
+	return true;
+}
+
+bool FunctionConsumer::startUSleepTimer()
+{
+	return true;
+}
+
+bool FunctionConsumer::stopUSleepTimer()
+{
+	return true;
+}
+
+void FunctionConsumer::runUSleepTimer()
+{
+	/* How long to wait each loop */
+	int tickTime = 1000000 / KFrequency;
+
+	/* Allocate this from stack here so that GCC doesn't have
+	   to do it everytime implicitly when gettimeofday() is called */
+	int tod = 0;
+
+	/* Allocate all the memory at the start so we don't waste any time */
+	timeval* finish = static_cast<timeval*> (malloc(sizeof(timeval)));
+	timeval* current = static_cast<timeval*> (malloc(sizeof(timeval)));
+	timeval* prev = static_cast<timeval*> (malloc(sizeof(timeval)));
+	long sleepTime = 0;
+
+	/* This is the start time for the timer */
+	tod = gettimeofday(finish, NULL);
+	if (tod == -1)
+	{
+		qWarning("Unable to get the time accurately: %s",
+			 strerror(errno));
+		m_running = false;
+	}
+
+	memcpy(prev, finish, sizeof(timeval));
+
+	while (m_running == true)
+	{
+		/* Increment the finish time for this loop */
+		finish->tv_sec += (finish->tv_usec + tickTime) / 1000000;
+		finish->tv_usec = (finish->tv_usec + tickTime) % 1000000;
+		
+		tod = gettimeofday(current, NULL);
+		if (tod == -1)
+		{
+			qWarning("Unable to get the current time: %s",
+				 strerror(errno));
+			m_running = false;
+			break;
+		}
+		
+		/* Do a rough sleep using the kernel to return control */
+		sleepTime = finish->tv_usec - current->tv_usec +
+			(finish->tv_sec - current->tv_sec) * 1000000 - 1000;
+		if (sleepTime > 0)
+			usleep(sleepTime);
+
+		/* Now take full CPU for precision (only a few milliseconds,
+		   at maximum 1000 milliseconds) */
+		while (finish->tv_usec - current->tv_usec + 
+		       (finish->tv_sec - current->tv_sec) * 1000000 > 5)
+		{
+			tod = gettimeofday(current, NULL);
+			if (tod == -1)
+			{
+				qWarning("Unable to get the current time: %s",
+					 strerror(errno));
+				m_running = false;
+				break;
+			}
+		}
+
+		m_timeCode++;
+
+		event(current->tv_sec);
+	}
+
+	free(finish);
+	free(current);
+}
+
+/*****************************************************************************
+ * Functions
+ *****************************************************************************/
 
 int FunctionConsumer::runningFunctions()
 {
@@ -116,92 +412,22 @@ void FunctionConsumer::stop()
 }
 
 
-void FunctionConsumer::init()
-{
-	int retval = -1;
-	unsigned long tmp = 0;
-	
-	m_fd = open("/dev/rtc", O_RDONLY);
-	if (m_fd < 0)
-	{
-		// open failed
-		perror("open /dev/rtc");
-		
-		// but we try an alternate location of the device
-		m_fd = open("/dev/misc/rtc", O_RDONLY);
-		if (m_fd < 0)
-		{
-			// failed again, we give up and exit
-			perror("open /dev/misc/rtc");
-			::exit(errno);
-		}
-	}
-	
-	retval = ioctl(m_fd, RTC_IRQP_SET, KFrequency);
-	if (retval == -1)
-	{
-		perror("ioctl");
-		::exit(errno);
-	}
-	
-	retval = ioctl(m_fd, RTC_IRQP_READ, &tmp);
-	if (retval == -1)
-	{
-		perror("ioctl");
-	}
-	else
-	{
-		qDebug("\nPeriodic IRQ rate is %ldHz.", tmp);
-	}
-	
-	retval = ioctl(m_fd, RTC_PIE_ON, 0);
-	if (retval == -1)
-	{
-		perror("ioctl");
-		::exit(errno);
-	}
-	else
-	{
-		qDebug("Started RTC interrupt");
-	}
-}
-
-
 void FunctionConsumer::run()
 {
-	int retval = -1;
-	unsigned long data = 0;
 	m_timeCode = 0;
-	
 	m_running = true;
-	
-	while (m_running == true)
+
+	switch (m_timerType)
 	{
-		retval = read(m_fd, &data, sizeof(unsigned long));
-		if (retval == -1)
-		{
-			perror("read");
-			::exit(errno);
-		}
-		else
-		{
-			m_timeCode++;
-			event(data);
-		}
+	case RTCTimer:
+		runRTC();
+		break;
+		
+	default:
+	case USleepTimer:
+		runUSleepTimer();
+		break;
 	}
-	
-	// Set interrupts off
-	retval = ioctl(m_fd, RTC_PIE_OFF, 0);
-	if (retval == -1)
-	{
-		perror("RTC_PIE_OFF");
-	}
-	else
-	{
-		qDebug("Stopped RTC interrupt");
-	}
-	
-	close(m_fd);
 }
 
 
@@ -240,22 +466,21 @@ void FunctionConsumer::event(time_t)
 		}
 		else
 		{
-			/* Each event contains a channel and a value, making
-			   eventSize() twice as big (for example 6 channels and
-			   6 values) */
 			for (m_channel = 0;
 			     m_channel < m_function->eventBuffer()->eventSize();
 			     m_channel++)
 			{
-				// Write also invalid values; let setValue()
-				// take care of them
+				/* Write also invalid values; let setValue()
+				   take care of them */
 				m_dmxMap->setValue(m_event[m_channel] >> 8,
 						   m_event[m_channel] & 0xFF);
 			}
 		}
 		
-		m_functionListMutex.lock(); // Lock for next round
+		/* Lock for next round */
+		m_functionListMutex.lock(); 
 	}
 	
-	m_functionListMutex.unlock(); // No more loops, unlock and get out
+	/* No more loops, unlock and get out */
+	m_functionListMutex.unlock();
 }

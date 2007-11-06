@@ -2,7 +2,7 @@
   Q Light Controller
   functionconsumer.h
 
-  Copyright (C) 2000, 2001, 2002, 2003, 2004 Heikki Junnila
+  Copyright (C) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -33,7 +33,13 @@ class DMXMap;
 class FunctionConsumer : public QThread
 {
 public:
-	/** Create a new FunctionConsumer instance
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+
+	/** 
+	 * Create a new FunctionConsumer instance. A FunctionConsumer takes
+	 * care of running functions when the application is in operate mode.
 	 *
 	 * @param dmxMap A DMXMap instance used to write function values
 	 */
@@ -42,6 +48,101 @@ public:
 	/** Destroy a FunctionConsumer instance */
 	virtual ~FunctionConsumer();
 	
+	/**
+	 * Initialize the FunctionConsumer prior to starting it.
+	 */
+	void init();
+	
+	/*********************************************************************
+	 * Timer type
+	 *********************************************************************/
+public:
+	enum TimerType
+	{
+		RTCTimer,
+		USleepTimer
+	};
+
+	/**
+	 * Set the timer type for function consumer. Best results are achieved
+	 * with RTCTimer, which taps directly into your PC's Real Time Clock
+	 * chip. If such a chip is not available, try using USleepTimer.
+	 *
+	 * @param type The timer type to set. See enum @ref TimerType.
+	 * @return true if successful, otherwise false
+	 */
+	bool setTimerType(TimerType type);
+
+	/**
+	 * Get the currently used timer type
+	 *
+	 * @return enum @ref TimerType.
+	 */
+	TimerType timerType() const { return m_timerType; }
+
+protected:
+	/** Currently used timer type */
+	TimerType m_timerType;
+
+	/*********************************************************************
+	 * RTC timer
+	 *********************************************************************/
+protected:
+	/**
+	 * Open the RTC timer device and set its frequency
+	 *
+	 * @return true if successful, otherwise false
+	 */
+	bool openRTC();
+
+	/**
+	 * Close the RTC timer device
+	 *
+	 * @return true if successful, otherwise false
+	 */
+	bool closeRTC();
+
+	/**
+	 * Start receiving interrupts from the RTC timer
+	 *
+	 * @return true if successful, otherwise false
+	 */
+	bool startRTC();
+
+	/**
+	 * Stop RTC timer interrupts
+	 *
+	 * @return true if successful, otherwise false
+	 */
+	bool stopRTC();
+
+	/**
+	 * The main running thread function for RTC timer method.
+	 */
+	void runRTC();
+
+protected:
+	/** File descriptor for RTC timer device */
+	int m_fdRTC;
+	
+	/*********************************************************************
+	 * USleep timer
+	 *********************************************************************/
+protected:
+	bool openUSleepTimer();
+	bool closeUSleepTimer();
+	bool startUSleepTimer();
+	bool stopUSleepTimer();
+
+	/**
+	 * The main running thread function for USleep timer method.
+	 */
+	void runUSleepTimer();
+
+	/*********************************************************************
+	 * Functions
+	 *********************************************************************/
+public:
 	/**
 	 * Get the number of currently running functions
 	 *
@@ -76,11 +177,9 @@ public:
 	 */
 	void stop();
 
-	/**
-	 * Initialize the FunctionConsumer prior to starting it.
-	 */
-	void init();
-	
+	/*********************************************************************
+	 * Stuff
+	 *********************************************************************/
 protected:
 	/**
 	 * Thhe main thread function that reads periodical interrupts
@@ -101,9 +200,6 @@ protected:
 	/** Running status, telling, whether the FC has been started or not */
 	bool m_running;
 
-	/** The file descriptor to /dev/rtc. */
-	int m_fd;
-	
 	/** List of currently running functions */
 	QPtrList <Function> m_functionList;
 
