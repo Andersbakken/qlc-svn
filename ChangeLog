@@ -1,3 +1,6 @@
+2007-Nov-06  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented saving/loading for DMXMap
+
 2007-Oct-26  Heikki Junnila <hjunnila@users.sf.net>
 	* Optimized Monitor so that it reads only the visible range of values.
 

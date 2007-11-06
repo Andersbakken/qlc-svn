@@ -28,7 +28,11 @@
 #include "common/types.h"
 
 class QString;
+class QDomDocument;
+class QDomElement;
+
 class OutputPlugin;
+class DMXMap;
 class DMXPatch;
 class DMXMapEditor;
 
@@ -36,15 +40,45 @@ class DMXMapEditor;
  * DMXPatch
  *****************************************************************************/
 
+#define KXMLQLCDMXPatch "Patch"
+#define KXMLQLCDMXPatchUniverse "Universe"
+#define KXMLQLCDMXPatchPlugin "Plugin"
+#define KXMLQLCDMXPatchOutput "Output"
+
 /**
  * This is a simple container class that stores only the pointer to an
  * existing plugin and an output line provided by that plugin.
  */
 class DMXPatch
 {
+	friend class DMXMap;
+	friend class DMXMapEditor;
+
 public:
 	DMXPatch(OutputPlugin* p, int o) { plugin = p; output = o; }
 	virtual ~DMXPatch() {}
+
+protected:
+	/**
+	 * Save a DMXPatch's properties into an XML document
+	 *
+	 * @param doc An XML document to save to
+	 * @param map_root An XML root node (DMXMap) to save under
+	 * @param universe The internal universe number that the patch is
+	 *                 addressed to
+	 * @return true if successful, otherwise false
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* map_root, int universe);
+
+	/**
+	 * Create and load a DMXPatch's properties from an XML document
+	 *
+	 * @param doc An XML document to load from
+	 * @param root An XML node containing a DMXPatch to load from
+	 * @param universe The universe number that the DMXPatch is addressed to
+	 * @return true if successful, otherwise false
+	 */
+	static bool loader(QDomDocument* doc, QDomElement* root, DMXMap* dmxMap);
 
 	OutputPlugin* plugin;
 	int output;
@@ -54,10 +88,13 @@ public:
  * DMXMap
  *****************************************************************************/
 
+#define KXMLQLCDMXMap "DMXMap"
+
 class DMXMap : public QObject
 {
 	Q_OBJECT
 
+	friend class DMXPatch;
 	friend class DMXMapEditor;
 
 	/*********************************************************************
@@ -275,6 +312,28 @@ protected:
 
 	/** List containing all available plugins */
 	QPtrList<OutputPlugin> m_plugins;
+
+	/*********************************************************************
+	 * Save & Load
+	 *********************************************************************/
+public:
+	/**
+	 * Save DMXMap details into an XML document
+	 *
+	 * @param doc An XML document to save to
+	 * @param wksp_root A parent XML node to save to (workspace)
+	 * @return true if successful, otherwise false
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+
+	/**
+	 * Load DMXMap details from an XML document
+	 *
+	 * @param doc An XML document to load from
+	 * @param map_root A DMXMap root node to load from
+	 * @return true if successful, otherwise false
+	 */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
 };
 
 #endif

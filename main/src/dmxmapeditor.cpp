@@ -82,7 +82,6 @@ void DMXMapEditor::slotListViewContextMenuRequested(QListViewItem* item,
 						    const QPoint& point,
 						    int column)
 {
-	QStringList list;
 	QStringList::Iterator it;
 	QPopupMenu* pluginMenu = NULL;
 	QPopupMenu* outputMenu = NULL;
@@ -97,6 +96,8 @@ void DMXMapEditor::slotListViewContextMenuRequested(QListViewItem* item,
 		return;
 
 	pluginMenu = new QPopupMenu();
+	connect(pluginMenu, SIGNAL(activated(int)),
+		this, SLOT(slotPluginMenuActivated(int)));
 
 	str.sprintf("Route universe %s thru...",
 		    (const char*) item->text(KColumnUniverse));
@@ -116,14 +117,18 @@ void DMXMapEditor::slotListViewContextMenuRequested(QListViewItem* item,
 			/* Put the plugin's outputs into a sub menu and
 			   insert the output menu to the top level menu */
 			outputMenu = new QPopupMenu(pluginMenu);
-			pluginMenu->insertItem(pluginName, outputMenu);
-			for (i = 0; i < outputs; i++)
+			for (i = 0; i < outputs && i < 100; i++)
 			{
 				str.sprintf("Output %d", i + 1);
 				outputMenu->insertItem(str, menuid + i);
 			}
 
-			menuid += 1000;
+			connect(outputMenu, SIGNAL(activated(int)),
+				this, SLOT(slotPluginMenuActivated(int)));
+
+			pluginMenu->insertItem(pluginName, outputMenu);
+
+			menuid += 100;
 		}
 	}
 
@@ -132,11 +137,54 @@ void DMXMapEditor::slotListViewContextMenuRequested(QListViewItem* item,
 	delete pluginMenu;
 }
 
+void DMXMapEditor::slotPluginMenuActivated(int item)
+{
+	QListViewItem* lvitem = NULL;
+	QStringList::Iterator it;
+	QString pluginName;
+	int pluginIndex = 0;
+	int output = 0;
+	QString str;
+
+	lvitem = m_listView->currentItem();
+	Q_ASSERT(lvitem != NULL);
+
+	/* Get only the particular hundredth (154/100=1.54, cast to int = 1) */
+	pluginIndex = (int) (item / 100);
+
+	/* The correct plugin can be found with the index number, since the
+	   plugin menu was constructed from the same string list */
+	pluginName = m_pluginList[pluginIndex];
+	lvitem->setText(KColumnPlugin, pluginName);
+
+	/* Get only the output number (154/100=1.54 - 1 = .54 * 100 = 54) */
+	output = ((((float) item) / 100.0) - pluginIndex) * 100;
+	str.setNum(output + 1);
+	lvitem->setText(KColumnOutput, str);
+}
+
 /*****************************************************************************
  * OK & Cancel
  *****************************************************************************/
 
 void DMXMapEditor::accept()
 {
+	QListViewItemIterator it(m_listView);
+	QListViewItem* item = NULL;
+	int universe = 0;
+	int output = 0;
+	QString pluginName;
+
+	while ((item = it.current()) != NULL)
+	{
+		universe = item->text(KColumnUniverse).toInt() - 1;
+		pluginName = item->text(KColumnPlugin);
+		output = item->text(KColumnOutput).toInt() - 1;
+
+		m_dmxMap->setPatch(universe, pluginName, output);
+
+		++it;
+	}
+
 	UI_DMXMapEditor::accept();
 }

@@ -35,6 +35,7 @@
 
 #include "app.h"
 #include "doc.h"
+#include "dmxmap.h"
 #include "fixture.h"
 #include "function.h"
 #include "scene.h"
@@ -214,6 +215,11 @@ bool Doc::loadXML(QDomDocument* doc)
 		
 		if (tag.tagName() == KXMLQLCCreator)
 		{
+			/* Ignore creator information */
+		}
+		else if (tag.tagName() == KXMLQLCDMXMap)
+		{
+			_app->dmxMap()->loadXML(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCWindowState)
 		{
@@ -274,12 +280,16 @@ bool Doc::saveXML(const QString& fileName)
 		/* Create a text stream for the file */
 		QTextStream stream(&file);
 
+		/* THE MASTER XML ROOT NODE */
 		root = doc->documentElement();
 		
-		/* Save background image and theme */
+		/* Write DMX mapping */
+		_app->dmxMap()->saveXML(doc, &root);
+
+		/* Write background image and theme */
 		_app->workspace()->saveXML(doc, &root);
 
-		/* Save window state & size */
+		/* Write window state & size */
 		FileHandler::saveXMLWindowState(doc, &root, _app);
 
 		/* Write fixtures into an XML document */
@@ -300,27 +310,26 @@ bool Doc::saveXML(const QString& fileName)
 			}
 		}
 
-		/* Save buses */
+		/* Write buses */
 		Bus::saveXML(doc, &root);
 
-		/* Save Monitor state */
+		/* Write Monitor state */
 		if (_app->monitor() != NULL)
 			_app->monitor()->saveXML(doc, &root);
 
-		/* Save Fixture Manager state */
+		/* Write Fixture Manager state */
 		if (_app->fixtureManager() != NULL)
 			_app->fixtureManager()->saveXML(doc, &root);
 
-		/* Save virtual console */
+		/* Write virtual console */
 		_app->virtualConsole()->saveXML(doc, &root);
 
-		/* Set the current file name */
+		/* Set the current file name and write the document
+		   into the stream */
 		m_fileName = fileName;
-
-		/* Write the document into the stream */
 		stream << doc->toString() << "\n";
 
-		/* Mark the document as unmodified */
+		/* Mark this Doc object as unmodified */
 		resetModified();
 
 		/* Delete the XML document */

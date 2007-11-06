@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qptrvector.h>
 #include <qdir.h>
+#include <qdom.h>
 
 #include "common/plugin.h"
 #include "common/outputplugin.h"
@@ -32,6 +33,96 @@
 
 #include "dmxmap.h"
 #include "dmxmapeditor.h"
+
+/*****************************************************************************
+ * DMXPatch
+ *****************************************************************************/
+
+bool DMXPatch::saveXML(QDomDocument* doc, QDomElement* map_root, int universe)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(this->plugin != NULL);
+
+	/* Patch entry */
+	root = doc->createElement(KXMLQLCDMXPatch);
+	map_root->appendChild(root);
+
+	/* Universe */
+	str.setNum(universe);
+	root.setAttribute(KXMLQLCDMXPatchUniverse, str);
+
+	/* Plugin */
+	tag = doc->createElement(KXMLQLCDMXPatchPlugin);
+	root.appendChild(tag);
+	text = doc->createTextNode(this->plugin->name());
+	tag.appendChild(text);
+
+	/* Output */
+	tag = doc->createElement(KXMLQLCDMXPatchOutput);
+	root.appendChild(tag);
+	str.setNum(this->output);
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	return true;
+}
+
+bool DMXPatch::loader(QDomDocument* doc, QDomElement* root, DMXMap* dmxMap)
+{
+	OutputPlugin* plugin = NULL;
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+	QString pluginName;
+	int output = 0;
+	int universe = 0;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+	Q_ASSERT(dmxMap != NULL);
+
+	if (root->tagName() != KXMLQLCDMXPatch)
+	{
+		qWarning("Patch node not found!");
+		return false;
+	}
+
+	/* QLC universe that this patch has been made for */
+	universe = root->attribute(KXMLQLCDMXPatchUniverse).toInt();
+	universe = CLAMP(universe, 0, KUniverseCount);
+
+	/* Load patch contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCDMXPatchPlugin)
+		{
+			/* Plugin name */
+			pluginName = tag.text();
+		}
+		else if (tag.tagName() == KXMLQLCDMXPatchOutput)
+		{
+			/* Plugin output */
+			output = tag.text().toInt();
+		}
+		else
+			qWarning("Unknown Patch tag: %s",
+				 (const char*) tag.tagName());
+		
+		node = node.nextSibling();
+	}
+
+	dmxMap->setPatch(universe, pluginName, output);
+
+	return true;
+}
 
 /*****************************************************************************
  * Initialization
@@ -473,4 +564,61 @@ OutputPlugin* DMXMap::plugin(const QString& name)
 	}
 
 	return NULL;
+}
+
+/*****************************************************************************
+ * Save & Load
+ *****************************************************************************/
+
+bool DMXMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
+{
+	QDomElement root;
+	int i = 0;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
+
+	/* DMXMap entry */
+	root = doc->createElement(KXMLQLCDMXMap);
+	wksp_root->appendChild(root);
+
+	/* Patches */
+	for (i = 0; i < m_patch.count(); i++)
+		m_patch[i]->saveXML(doc, &root, i);
+
+	return true;
+}
+
+bool DMXMap::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCDMXMap)
+	{
+		qWarning("DMXMap node not found!");
+		return false;
+	}
+
+	/* Patches */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCDMXPatch)
+		{
+			DMXPatch::loader(doc, &tag, this);
+		}
+		else
+			qWarning("Unknown DMXMap tag: %s",
+				 (const char*) tag.tagName());
+		
+		node = node.nextSibling();
+	}
+
+	return true;
 }

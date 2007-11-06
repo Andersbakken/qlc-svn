@@ -47,6 +47,19 @@ protected slots:
 	/**
 	 * Slot for context menu requests (RMB clicks) on the mapping list view
 	 *
+	 * Since each selectable output has to have unique menu ID, the IDs
+	 * are organized by hundreds:
+	 *
+	 * The 1st plugin has ID 0
+	 * The 1st plugin's outputs can get IDs 0-99
+	 * The 2nd plugin has ID 100
+	 * The 2nd plugin's outputs can get IDs 100-199
+	 * etc.
+	 *
+	 * It is VERY unlikely that any plugin would have even ten outputs,
+	 * but since this method has no serious disadvantages, I suppose being
+	 * a bit future-proof wouldn't hurt anyone.
+	 *
 	 * @param item The clicked QListViewItem*
 	 * @param point The exact clicking point
 	 * @param column The clicked column
@@ -54,6 +67,15 @@ protected slots:
 	void slotListViewContextMenuRequested(QListViewItem* item,
 					      const QPoint& point,
 					      int column);
+
+	/**
+	 * Slot for context menu item activation signals. See the above
+	 * function (@ref slotListViewContextMenuRequested) for how the
+	 * menu IDs are organized.
+	 *
+	 * @param item The menu ID of the activated item
+	 */
+	void slotPluginMenuActivated(int item);
 
 	/*********************************************************************
 	 * OK & Cancel
