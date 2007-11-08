@@ -102,7 +102,7 @@ void AboutBox::initDialog()
 	m_people->insertItem("Heikki Junnila <hjunnila@users.sf.net>");
 	m_people->insertItem("Stefan Krumm <stefankrumm@users.sf.net>");
 	m_people->insertItem("Christian Sühs <dance-or-die@users.sf.net>");
-	m_people->insertItem("Christopher Staite <yourdreamnet.co.uk>");
+	m_people->insertItem("Christopher Staite <chris@yourdreamnet.co.uk>");
 	m_people->setBackgroundColor(white);
 
 	m_ok = new QPushButton(this);
