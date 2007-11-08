@@ -2,7 +2,7 @@
   Q Light Controller
   aboutbox.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -32,25 +32,25 @@ class QColor;
 
 class AboutBox : public QDialog
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  AboutBox(QWidget* parent = 0, const char* name = 0);
-  ~AboutBox();
+public:
+	AboutBox(QWidget* parent);
+	~AboutBox();
 
- public slots:
-  void slotOKClicked();
+protected slots:
+	void slotOKClicked();
   
- private:
-  void initDialog();
+protected:
+	void initDialog();
 
- protected:
-  QPixmap* m_pm;
-  QPushButton* m_ok;
-  QLabel* m_logo;
-  QLabel* m_version;
-  QLabel* m_copyright;
-  QListBox* m_people;
+protected:
+	QPixmap* m_pm;
+	QPushButton* m_ok;
+	QLabel* m_logo;
+	QLabel* m_version;
+	QLabel* m_copyright;
+	QListBox* m_people;
 };
 
 #endif

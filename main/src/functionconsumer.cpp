@@ -292,7 +292,6 @@ void FunctionConsumer::runUSleepTimer()
 	/* Allocate all the memory at the start so we don't waste any time */
 	timeval* finish = static_cast<timeval*> (malloc(sizeof(timeval)));
 	timeval* current = static_cast<timeval*> (malloc(sizeof(timeval)));
-	timeval* prev = static_cast<timeval*> (malloc(sizeof(timeval)));
 	long sleepTime = 0;
 
 	/* This is the start time for the timer */
@@ -303,8 +302,6 @@ void FunctionConsumer::runUSleepTimer()
 			 strerror(errno));
 		m_running = false;
 	}
-
-	memcpy(prev, finish, sizeof(timeval));
 
 	while (m_running == true)
 	{
