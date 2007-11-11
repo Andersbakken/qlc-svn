@@ -349,7 +349,7 @@ void App::initFunctionConsumer()
 
 	/* TODO: Put this into some kind of a settings dialog */
 	// m_functionConsumer->setTimerType(FunctionConsumer::RTCTimer);
-	m_functionConsumer->setTimerType(FunctionConsumer::USleepTimer);
+	m_functionConsumer->setTimerType(FunctionConsumer::NanoSleepTimer);
 }
 
 void App::slotPanic()

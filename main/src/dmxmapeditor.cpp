@@ -27,8 +27,9 @@
 
 #include "common/outputplugin.h"
 
-#include "dmxmapeditor.h"
 #include "dmxmap.h"
+#include "dmxmapeditor.h"
+#include "dmxpatcheditor.h"
 
 #define KColumnUniverse 0
 #define KColumnPlugin   1
@@ -76,6 +77,26 @@ void DMXMapEditor::init()
 
 void DMXMapEditor::slotEditMappingButtonClicked()
 {
+	QListViewItem* item = NULL;
+	int universe = -1;
+	QString pluginName;
+	int output = 0;
+
+	item = m_listView->currentItem();
+	if (item == NULL)
+		return;
+
+	universe = item->text(KColumnUniverse).toInt() - 1;
+	pluginName = item->text(KColumnPlugin);
+	output = item->text(KColumnOutput).remove("Output").toInt() - 1;
+
+	DMXPatchEditor dpe(static_cast<QWidget*>(parent()), m_dmxMap, universe,
+			   pluginName, output);
+	if (dpe.exec() == QDialog::Accepted)
+	{
+		m_dmxMap->setPatch(universe, dpe.pluginName(), dpe.output());
+		init();
+	}
 }
 
 void DMXMapEditor::slotListViewContextMenuRequested(QListViewItem* item,

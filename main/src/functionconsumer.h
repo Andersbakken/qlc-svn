@@ -60,13 +60,13 @@ public:
 	enum TimerType
 	{
 		RTCTimer,
-		USleepTimer
+		NanoSleepTimer
 	};
 
 	/**
 	 * Set the timer type for function consumer. Best results are achieved
 	 * with RTCTimer, which taps directly into your PC's Real Time Clock
-	 * chip. If such a chip is not available, try using USleepTimer.
+	 * chip.
 	 *
 	 * @param type The timer type to set. See enum @ref TimerType.
 	 * @return true if successful, otherwise false
@@ -126,18 +126,18 @@ protected:
 	int m_fdRTC;
 	
 	/*********************************************************************
-	 * USleep timer
+	 * NanoSleep timer
 	 *********************************************************************/
 protected:
-	bool openUSleepTimer();
-	bool closeUSleepTimer();
-	bool startUSleepTimer();
-	bool stopUSleepTimer();
+	bool openNanoSleepTimer();
+	bool closeNanoSleepTimer();
+	bool startNanoSleepTimer();
+	bool stopNanoSleepTimer();
 
 	/**
-	 * The main running thread function for USleep timer method.
+	 * The main running thread function for NanoSleep timer method.
 	 */
-	void runUSleepTimer();
+	void runNanoSleepTimer();
 
 	/*********************************************************************
 	 * Functions

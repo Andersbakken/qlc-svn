@@ -19,9 +19,12 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifndef __APPLE__
+#include <linux/rtc.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <linux/rtc.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -82,11 +85,11 @@ bool FunctionConsumer::setTimerType(TimerType type)
 		break;
 
 	default:
-	case USleepTimer:
-		/* Test that we can use USleep */
-		result = openUSleepTimer();
+	case NanoSleepTimer:
+		/* Test that we can use NanoSleep */
+		result = openNanoSleepTimer();
 		if (result == true)
-			closeUSleepTimer();
+			closeNanoSleepTimer();
 		m_timerType = type;
 		break;
 	}
@@ -257,30 +260,30 @@ void FunctionConsumer::runRTC()
 }
 
 /*****************************************************************************
- * USleep timer
+ * NanoSleep timer
  *****************************************************************************/
 
-bool FunctionConsumer::openUSleepTimer()
+bool FunctionConsumer::openNanoSleepTimer()
 {
 	return true;
 }
 
-bool FunctionConsumer::closeUSleepTimer()
+bool FunctionConsumer::closeNanoSleepTimer()
 {
 	return true;
 }
 
-bool FunctionConsumer::startUSleepTimer()
+bool FunctionConsumer::startNanoSleepTimer()
 {
 	return true;
 }
 
-bool FunctionConsumer::stopUSleepTimer()
+bool FunctionConsumer::stopNanoSleepTimer()
 {
 	return true;
 }
 
-void FunctionConsumer::runUSleepTimer()
+void FunctionConsumer::runNanoSleepTimer()
 {
 	/* How long to wait each loop */
 	int tickTime = 1000000 / KFrequency;
@@ -292,7 +295,10 @@ void FunctionConsumer::runUSleepTimer()
 	/* Allocate all the memory at the start so we don't waste any time */
 	timeval* finish = static_cast<timeval*> (malloc(sizeof(timeval)));
 	timeval* current = static_cast<timeval*> (malloc(sizeof(timeval)));
-	long sleepTime = 0;
+	timespec* sleepTime = static_cast<timespec*> (malloc(sizeof(timespec)));
+	timespec* remainingTime = static_cast<timespec*> (malloc(sizeof(timespec)));
+
+	sleepTime->tv_sec = 0;
 
 	/* This is the start time for the timer */
 	tod = gettimeofday(finish, NULL);
@@ -318,14 +324,23 @@ void FunctionConsumer::runUSleepTimer()
 			break;
 		}
 		
-		/* Do a rough sleep using the kernel to return control */
-		sleepTime = finish->tv_usec - current->tv_usec +
-			(finish->tv_sec - current->tv_sec) * 1000000 - 1000;
-		if (sleepTime > 0)
-			usleep(sleepTime);
+		/* Do a rough sleep using the kernel to return control.
+		   We know that this will never be seconds as we are dealing
+		   with jumps of under a second every time. */
+		sleepTime->tv_nsec = 
+			((finish->tv_usec - current->tv_usec) * 1000) +
+			((finish->tv_sec - current->tv_sec) * 1000000000) - 1000;
+		if (sleepTime->tv_nsec > 0)
+		{
+			tod = nanosleep(sleepTime, remainingTime);
+			while (tod == -1 && sleepTime->tv_nsec > 100) {
+				sleepTime->tv_nsec = remainingTime->tv_nsec;
+				tod = nanosleep(sleepTime, remainingTime);
+			}
+		}
 
-		/* Now take full CPU for precision (only a few milliseconds,
-		   at maximum 1000 milliseconds) */
+		/* Now take full CPU for precision (only a few nanoseconds,
+		   at maximum 1000 nanoseconds) */
 		while (finish->tv_usec - current->tv_usec + 
 		       (finish->tv_sec - current->tv_sec) * 1000000 > 5)
 		{
@@ -346,6 +361,8 @@ void FunctionConsumer::runUSleepTimer()
 
 	free(finish);
 	free(current);
+	free(sleepTime);
+	free(remainingTime);
 }
 
 /*****************************************************************************
@@ -390,7 +407,14 @@ void FunctionConsumer::purge()
 	
 	/* Wait until all functions have been stopped */
 	while (m_functionList.count())
+	{
+#ifndef __APPLE__
 		pthread_yield();
+#else
+		pthread_yield_np();
+#endif
+	}
+
 }
 
 
@@ -421,8 +445,8 @@ void FunctionConsumer::run()
 		break;
 		
 	default:
-	case USleepTimer:
-		runUSleepTimer();
+	case NanoSleepTimer:
+		runNanoSleepTimer();
 		break;
 	}
 }

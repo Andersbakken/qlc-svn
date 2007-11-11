@@ -20,6 +20,7 @@ noinst_HEADERS = \
 	src/uic_consolechannel.h \
 	src/uic_dmxaddresstool.h \
 	src/uic_dmxmapeditor.h \
+	src/uic_dmxpatcheditor.h \
 	src/uic_editscenevalue.h \
 	src/uic_efxeditor.h \
 	src/uic_fixturelist.h \
@@ -47,6 +48,7 @@ noinst_HEADERS = \
 	src/dmxaddresstool.h \
 	src/dmxmap.h \
 	src/dmxmapeditor.h \
+	src/dmxpatcheditor.h \
 	src/doc.h \
 	src/dummyinplugin.h \
 	src/dummyoutplugin.h \
@@ -97,6 +99,7 @@ qlc_SOURCES = \
 	src/uic_consolechannel.cpp \
 	src/uic_dmxaddresstool.cpp \
 	src/uic_dmxmapeditor.cpp \
+	src/uic_dmxpatcheditor.cpp \
 	src/uic_editscenevalue.cpp \
 	src/uic_efxeditor.cpp \
 	src/uic_fixturelist.cpp \
@@ -119,6 +122,7 @@ qlc_SOURCES = \
 	src/moc_uic_consolechannel.cpp \
 	src/moc_uic_dmxaddresstool.cpp \
 	src/moc_uic_dmxmapeditor.cpp \
+	src/moc_uic_dmxpatcheditor.cpp \
 	src/moc_uic_editscenevalue.cpp \
 	src/moc_uic_efxeditor.cpp \
 	src/moc_uic_fixturelist.cpp \
@@ -146,6 +150,7 @@ qlc_SOURCES = \
 	src/dmxaddresstool.cpp \
 	src/dmxmap.cpp \
 	src/dmxmapeditor.cpp \
+	src/dmxpatcheditor.cpp \
 	src/doc.cpp \
 	src/dummyinplugin.cpp \
 	src/dummyoutplugin.cpp \
@@ -201,6 +206,7 @@ qlc_SOURCES = \
 	src/moc_dmxaddresstool.cpp \
 	src/moc_dmxmap.cpp \
 	src/moc_dmxmapeditor.cpp \
+	src/moc_dmxpatcheditor.cpp \
 	src/moc_doc.cpp \
 	src/moc_dummyinplugin.cpp \
 	src/moc_dummyoutplugin.cpp \

@@ -1,3 +1,10 @@
+2007-Nov-11  Heikki Junnila <hjunnila@users.sf.net>
+	* Christopher Staite: Changed usleep() to nanosleep() in
+	  FunctionConsumer.
+	* Created DMXPatchEditor to DMXMapEditor for individual
+	  patch editing (as the primary edit method, context menu
+	  being the secondary method).
+
 2007-Nov-08  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a memory leak in FunctionConsumer's usleep timer code.
 	* Added Christopher Staite to AboutBox.

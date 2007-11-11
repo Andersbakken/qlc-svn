@@ -35,6 +35,7 @@ class OutputPlugin;
 class DMXMap;
 class DMXPatch;
 class DMXMapEditor;
+class DMXPatchEditor;
 
 /*****************************************************************************
  * DMXPatch
@@ -53,6 +54,7 @@ class DMXPatch
 {
 	friend class DMXMap;
 	friend class DMXMapEditor;
+	friend class DMXPatchEditor;
 
 public:
 	DMXPatch(OutputPlugin* p, int o) { plugin = p; output = o; }

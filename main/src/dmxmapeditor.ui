@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>524</width>
-            <height>324</height>
+            <height>213</height>
         </rect>
     </property>
     <property name="caption">
@@ -140,6 +140,12 @@
         <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
         <receiver>UI_DMXMapEditor</receiver>
         <slot>slotListViewContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
+    <connection>
+        <sender>m_listView</sender>
+        <signal>doubleClicked(QListViewItem*)</signal>
+        <receiver>UI_DMXMapEditor</receiver>
+        <slot>slotEditMappingButtonClicked()</slot>
     </connection>
 </connections>
 <slots>
