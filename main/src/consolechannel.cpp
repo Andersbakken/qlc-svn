@@ -114,8 +114,6 @@ void ConsoleChannel::init()
 	num.sprintf("%.3d", m_channel + 1);
 	m_numberLabel->setText(num);
 	
-	m_statusButton->setBackgroundMode(FixedColor);
-
 	connect(m_valueSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(slotValueChange(int)));
 
