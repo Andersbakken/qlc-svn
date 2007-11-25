@@ -2,7 +2,7 @@
   Q Light Controller
   pluginmanager.cpp
 
-  Copyright (C) 2006 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -18,9 +18,6 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
-#include "app.h"
-#include "pluginmanager.h"
 
 #include <qwidget.h>
 #include <qtoolbar.h>
@@ -39,378 +36,258 @@
 #include <qtooltip.h>
 #include <assert.h>
 
+#include "app.h"
+#include "dmxmap.h"
+#include "pluginmanager.h"
+
 extern App* _app;
 
-static const int KColumnName = 0;
-static const int KColumnID   = 1;
+static const QString KInputNode ("Input");
+static const QString KOutputNode ("Output");
 
-/**
- * Constructor
- *
- */
-PluginManager::PluginManager(QWidget* parent, const char* name)
-  : QWidget(parent, name),
+static const int KColumnName ( 0 );
 
-    m_layout   ( NULL ),
-    m_dockArea ( NULL ),
-    m_toolbar  ( NULL ),
-    m_splitter ( NULL ),
-    m_listView ( NULL ),
-    m_textView ( NULL )
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
+
+PluginManager::PluginManager(QWidget* parent) :
+	QWidget(parent, "Plugin Manager")
 {
+	m_layout = NULL;
+	m_dockArea = NULL;
+	m_toolbar = NULL;
+	m_splitter = NULL;
+	m_listView = NULL;
+	m_textView = NULL;
+
+	// Create a vertical layout to this widget
+	m_layout = new QVBoxLayout(this);
+  
+	// Init the title and icon
+	initTitle();
+  
+	// Set up toolbar
+	initToolBar();
+  
+	// Create the list and text views
+	initDataView();
+
+	// Update plugins to list view
+	fillPlugins();
+
+	// Update text view
+	slotSelectionChanged(NULL);
 }
 
-
-/**
- * Destructor
- *
- */
 PluginManager::~PluginManager()
 {
 }
 
-
-/**
- * Create the plugin manager view
- *
- */
-void PluginManager::initView()
-{
-  // Create a vertical layout to this widget
-  m_layout = new QVBoxLayout(this);
-  
-  // Init the title and icon
-  initTitle();
-  
-  // Set up toolbar
-  initToolBar();
-  
-  // Init the device view and text view
-  initDataView();
-
-  // Update the view
-  fillPlugins();
-}
-
-/**
- * Initialize the window title
- *
- */
 void PluginManager::initTitle()
 {
-  // Set the name
-  setCaption(QString("Plugin Manager"));
+	// Set the name
+	setCaption(QString("Plugin Manager"));
   
-  // Set an icon TODO: better icon for plugin idiom
-  setIcon(QString(PIXMAPS) + QString("/plugin.png"));
+	// Set an icon TODO: better icon for plugin idiom
+	setIcon(QString(PIXMAPS) + QString("/plugin.png"));
 }
 
-
-/**
- * Initialize the plugin manager toolbar
- *
- */
 void PluginManager::initToolBar()
 {
-  // Create a dock area for the toolbar
-  m_dockArea = new QDockArea(Horizontal, QDockArea::Normal, this);
-  m_dockArea->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	// Create a dock area for the toolbar
+	m_dockArea = new QDockArea(Horizontal, QDockArea::Normal, this);
+	m_dockArea->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   
-  // Add the dock area to the top of the vertical layout
-  m_layout->addWidget(m_dockArea);
+	// Add the dock area to the top of the vertical layout
+	m_layout->addWidget(m_dockArea);
 
-  //
-  // Add a toolbar to the dock area
-  //
-  m_toolbar = new QToolBar("Plugin Manager", _app, m_dockArea);
-  m_toolbar->setMovingEnabled(false);
+	// Add a toolbar to the dock area
+	m_toolbar = new QToolBar("Plugin Manager", _app, m_dockArea);
+	m_toolbar->setMovingEnabled(false);
 
-  m_configureButton =
-    new QToolButton(QIconSet(QPixmap(QString(PIXMAPS) + QString("/configure.png"))),
-		    "Configure", 0, this,
-		    SLOT(slotConfigure()), m_toolbar);
-  m_configureButton->setUsesTextLabel(true);
-  QToolTip::add(m_configureButton, "Configure the plugin");
+	// Configure button
+	m_configureButton =
+		new QToolButton(QPixmap(QString(PIXMAPS) +
+					QString("/configure.png")),
+				"Configure",
+				0,
+				this,
+				SLOT(slotConfigureClicked()),
+				m_toolbar);
+	m_configureButton->setUsesTextLabel(true);
+	QToolTip::add(m_configureButton, "Configure the plugin");
+
+	// Map button
+	m_mapButton = new QToolButton(QPixmap(QString(PIXMAPS) +
+					      QString("/attach.png")),
+				      "Connect",
+				      0,
+				      this,
+				      SLOT(slotConnectClicked()),
+				      m_toolbar);
+	m_mapButton->setUsesTextLabel(true);
+	QToolTip::add(m_mapButton, "Connect the plugin to various elements");
 }
 
-
-/**
- * Initialize the treeview and textview components
- *
- */
 void PluginManager::initDataView()
 {
-  // Create a splitter to divide list view and text view
-  m_splitter = new QSplitter(this);
-  m_splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  m_layout->addWidget(m_splitter);
+	// Create a splitter to divide list view and text view
+	m_splitter = new QSplitter(this);
+	m_splitter->setSizePolicy(QSizePolicy::Expanding,
+				  QSizePolicy::Expanding);
+	m_layout->addWidget(m_splitter);
 
-  // Create the list view
-  m_listView = new QListView(m_splitter);
-  m_splitter->setResizeMode(m_listView, QSplitter::Auto);
+	// Create the list view
+	m_listView = new QListView(m_splitter);
+	m_splitter->setResizeMode(m_listView, QSplitter::Auto);
 
-  m_listView->setRootIsDecorated(true);
-  m_listView->setMultiSelection(false);
-  m_listView->setAllColumnsShowFocus(true);
-  m_listView->setSorting(KColumnName, true);
-  m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+	m_listView->setRootIsDecorated(true);
+	m_listView->setMultiSelection(false);
+	m_listView->setAllColumnsShowFocus(true);
+	m_listView->setSorting(KColumnName, true);
+	m_listView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
-  m_listView->header()->setClickEnabled(true);
-  m_listView->header()->setResizeEnabled(false);
-  m_listView->header()->setMovingEnabled(false);
+	m_listView->header()->setClickEnabled(true);
+	m_listView->header()->setResizeEnabled(false);
+	m_listView->header()->setMovingEnabled(false);
 
-  m_listView->addColumn("Plugin");
-  m_listView->setResizeMode(QListView::LastColumn);
+	m_listView->addColumn("Plugins");
+	m_listView->setResizeMode(QListView::LastColumn);
 
-  connect(m_listView, SIGNAL(selectionChanged(QListViewItem*)),
-	  this, SLOT(slotSelectionChanged(QListViewItem*)));
+	connect(m_listView,
+		SIGNAL(selectionChanged(QListViewItem*)),
+		this,
+		SLOT(slotSelectionChanged(QListViewItem*)));
   
-  connect(m_listView, SIGNAL(doubleClicked(QListViewItem*)),
-	  this, SLOT(slotDoubleClicked(QListViewItem*)));
+	connect(m_listView,
+		SIGNAL(doubleClicked(QListViewItem*)),
+		this,
+		SLOT(slotConfigureClicked()));
 
-  connect(m_listView, SIGNAL(rightButtonClicked(QListViewItem*, const QPoint&, int)),
-	  this, SLOT(slotRightButtonClicked(QListViewItem*, const QPoint&, int)));
+	connect(m_listView,
+		SIGNAL(rightButtonClicked(QListViewItem*, const QPoint&, int)),
+		this,
+		SLOT(slotRightButtonClicked(QListViewItem*, const QPoint&, int)));
 
-  // Create the text view
-  m_textView = new QTextView(m_splitter);
-  m_splitter->setResizeMode(m_textView, QSplitter::Auto);
+	// Create the text view
+	m_textView = new QTextView(m_splitter);
+	m_splitter->setResizeMode(m_textView, QSplitter::Auto);
 }
 
-
-/**
- * Update the list view
- *
- */
 void PluginManager::fillPlugins()
 {
-  QPtrListIterator <Plugin> it(*_app->pluginList());
-  QListViewItem* item = NULL;
-  QListViewItem* inputParent = NULL;
-  QListViewItem* outputParent = NULL;
-  Plugin* plugin = NULL;
-  QString id;
+	QListViewItem* item = NULL;
+	QListViewItem* parent = NULL;
+	QStringList::iterator it;
 
-  m_listView->clear();
+	m_listView->clear();
 
-  /* Common ID for plugin parent nodes */
-  id.setNum(KPluginID);
+	/* Output plugins */
+	parent = new QListViewItem(m_listView, KOutputNode);
+	parent->setOpen(true);
 
-  /* Input plugins' parent node */
-  inputParent = new QListViewItem(m_listView);
-  inputParent->setText(KColumnName, "Input");
-  inputParent->setText(KColumnID, id);
-  inputParent->setOpen(true);
+	QStringList list = _app->dmxMap()->pluginNames();
+	for (it = list.begin(); it != list.end(); ++it)
+		new QListViewItem(parent, *it);
 
-  /* Output plugins' parent node */
-  outputParent = new QListViewItem(m_listView);
-  outputParent->setText(KColumnName, "Output");
-  outputParent->setText(KColumnID, id);
-  outputParent->setOpen(true);
-
-  while ((plugin = it.current()) != NULL)
-    {
-      if (plugin->type() == Plugin::InputType)
-	{
-	  item = new QListViewItem(inputParent);
-	}
-      else
-	{
-	  item = new QListViewItem(outputParent);
-	}
-      
-      assert(item);
-      item->setText(KColumnName, plugin->name());
-      
-      id.sprintf("%d", plugin->id());
-      item->setText(KColumnID, id);
-
-      /* Catch activation signals */
-      connect(plugin, SIGNAL(activated(Plugin*)),
-	      this, SLOT(slotPluginActivated(Plugin*)));
-
-      ++it;
-    }
-
-  updateActivePlugins();
+	/* Input plugins */
+	parent = new QListViewItem(m_listView, KInputNode);
+	parent->setOpen(true);
 }
 
+/*****************************************************************************
+ * Menu & tool button slots
+ *****************************************************************************/
 
-/**
- * Update all plugins' active status
- *
- */
-void PluginManager::updateActivePlugins()
+void PluginManager::slotConfigureClicked()
 {
-  QListViewItem* parent = NULL;
-
-  /* Input plugins */
-  parent = m_listView->firstChild();
-  updateActiveStatus(parent);
-
-  /* Output plugins */
-  parent = parent->nextSibling();
-  updateActiveStatus(parent);
-}
-
-
-/**
- * Update the active status of the plugins under the given parent item
- *
- */
-void PluginManager::updateActiveStatus(QListViewItem* parent)
-{
-  t_plugin_id id = 0;
-  Plugin* plugin = NULL;
-  QListViewItem* item = NULL;
-
-  if (parent == NULL)
-    return;
-
-  item = parent->firstChild();
-  if (item == NULL)
-      return;
-
-  do {
-      id = item->text(KColumnID).toInt();
-      plugin = _app->searchPlugin(id);
-      if (plugin)
+	QListViewItem* item = NULL;
+	QString pluginName;
+	
+	item = m_listView->currentItem();
+	if (item != NULL)
 	{
-	  if (plugin->isOpen() == true)
-	    {
-	      item->setPixmap(KColumnName,
-			      QPixmap(QString(PIXMAPS) +
-				      QString("/apply.png")));
-	    }
-	  else
-	    {
-	      item->setPixmap(KColumnName, NULL);
-	    }
+		pluginName = item->text(KColumnName);
+		if (pluginName == KOutputNode)
+			;
+		else if (pluginName == KInputNode)
+			;
+		else
+			_app->dmxMap()->configurePlugin(pluginName);
 	}
-    } while (item = item->nextSibling());
 }
 
 
-/**
- * Emit a closed() event so App* can delete plugin manager's pointer
- *
- */
-void PluginManager::closeEvent(QCloseEvent* e)
+void PluginManager::slotConnectClicked()
 {
-  emit closed();
 }
 
+/*****************************************************************************
+ * List view slots
+ *****************************************************************************/
 
-/**
- * Callback for double clicks on the list view
- *
- */
-void PluginManager::slotDoubleClicked(QListViewItem* item)
-{
-  slotConfigure();
-}
-
-
-/**
- * Configure the plugin
- *
- */
-void PluginManager::slotConfigure()
-{
-  QListViewItem* item = NULL;
-  Plugin* plugin = NULL;
-  t_plugin_id id = 0;
-
-  item = m_listView->currentItem();
-  if (item)
-    {
-      id = item->text(KColumnID).toInt();
-
-      if (id == KPluginID) // Root item
-	return;
-
-      plugin = _app->searchPlugin(id);
-
-      if (plugin)
-	{
-	  plugin->configure();
-	}
-      else
-	{
-	  QMessageBox::critical(this, KApplicationNameShort,
-				"Unable to access plugin!");
-	}
-    }
-}
-
-
-/**
- * A listview item has been selected. Update the info text
- *
- */
 void PluginManager::slotSelectionChanged(QListViewItem* item)
 {
-  Plugin* plugin = NULL;
-  t_plugin_id id = 0;
+	QString status;
+	QString name;
+	QString parent;
 
-  if (item)
-    {
-      id = item->text(KColumnID).toInt();
+	if (item != NULL)
+	{
+		name = item->text(KColumnName);
 
-      if (id == KPluginID) // Root item
-	{
-	  m_textView->setText("");
+		if (item->parent() == NULL)
+		{
+			if (name == KOutputNode)
+				status = _app->dmxMap()->pluginStatus();
+			else if (name == KInputNode)
+				status = QString("TODO"); // TODO
+		}
+		else
+		{
+			parent = item->parent()->text(KColumnName);
+
+			if (parent == KOutputNode)
+				status = _app->dmxMap()->pluginStatus(name);
+			else if (parent == KInputNode)
+				status = QString("TODO"); // TODO
+		}
 	}
-      else
+
+	if (status.length() == 0)
 	{
-	  plugin = _app->searchPlugin(id);
-	  if (plugin)
-	    {
-	      m_textView->setText(plugin->infoText());
-	    }
-	  else
-	    {
-	      m_textView->setText("");
-	    }
+		status = QString("<FONT SIZE=\"5\">No selection</FONT>\n");
+		status += QString("<BR>\n");
+		status += QString("Select a plugin to begin.");
 	}
-    }
+
+	m_textView->setText(status);
 }
 
-
-/**
- * A plugin has been activated
- *
- */
-void PluginManager::slotPluginActivated(Plugin* plugin)
-{
-  updateActivePlugins();
-}
-
-
-/**
- * Right mouse button has been pressed in the listview
- *
- */
 void PluginManager::slotRightButtonClicked(QListViewItem* item,
-					   const QPoint& point, int col)
+					   const QPoint& point,
+					   int col)
 {
-  QPopupMenu* menu = NULL;
-  int index = 0;
+	if (item == NULL)
+		return;
 
-  if (item == NULL)
-    return;
+	QPopupMenu menu;
+	menu.setCheckable(false);
+	menu.insertItem(QPixmap(QString(PIXMAPS) + 
+				QString("/configure.png")),
+			"Configure...",
+			this,
+			SLOT(slotConfigureClicked()));
 
-  menu = new QPopupMenu();
-  menu->setCheckable(false);
-
-  index = menu->insertItem(QPixmap(QString(PIXMAPS) + 
-				   QString("/configure.png")),
-			   "Configure...", this, SLOT(slotConfigure()));
-
-  /* Disable configure option for root items */
-  if (item->text(KColumnID).toInt() == KPluginID)
-    menu->setItemEnabled(index, false);
-
-  menu->exec(point, 0);
-  delete menu;
+	menu.exec(point, 0);
 }
 
+/*****************************************************************************
+ * Event handlers
+ *****************************************************************************/
+
+void PluginManager::closeEvent(QCloseEvent* e)
+{
+	emit closed();
+}

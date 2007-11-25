@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <qptrvector.h>
+#include <qmessagebox.h>
 #include <qdir.h>
 #include <qdom.h>
 
@@ -31,8 +32,11 @@
 #include "common/outputplugin.h"
 #include "dummyoutplugin.h"
 
+#include "app.h"
 #include "dmxmap.h"
 #include "dmxmapeditor.h"
+
+extern App* _app;
 
 /*****************************************************************************
  * DMXPatch
@@ -446,6 +450,97 @@ int DMXMap::pluginOutputs(const QString& pluginName)
 		return 0;
 	else
 		return op->outputs();
+}
+
+void DMXMap::configurePlugin(const QString& pluginName)
+{
+	OutputPlugin* outputPlugin = plugin(pluginName);
+	if (outputPlugin == NULL)
+		QMessageBox::warning(_app,
+				     "Unable to configure plugin",
+				     pluginName + " not found!");
+	else
+		outputPlugin->configure();
+}
+
+QString DMXMap::pluginStatus(const QString& pluginName)
+{
+	OutputPlugin* outputPlugin = NULL;
+	QString info;
+
+	if (pluginName != QString::null)
+		outputPlugin = plugin(pluginName);
+
+	if (outputPlugin == NULL)
+	{
+		DMXPatch* dmxPatch = NULL;
+		int i = 0;
+		QString str;
+
+		// HTML header
+		info += QString("<HTML>");
+		info += QString("<HEAD>");
+		info += QString("<TITLE>Universe mapping status</TITLE>");
+		info += QString("</HEAD>");
+		info += QString("<BODY>");
+
+		// Mapping status title
+		info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
+		info += QString("<TR>");
+		info += QString("<TD BGCOLOR=\"");
+		info += _app->colorGroup().highlight().name();
+		info += QString("\">");
+		info += QString("<FONT COLOR=\"");
+		info += _app->colorGroup().highlightedText().name();
+		info += QString("\" SIZE=\"5\">");
+		info += QString("Universe mapping status");
+		info += QString("</FONT>");
+		info += QString("</TD>");
+		info += QString("</TR>");
+		info += QString("</TABLE>");
+
+		// Universe mappings
+		info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+
+		for (i = 0; i < KUniverseCount; i++)
+		{
+			dmxPatch = patch(i);
+			Q_ASSERT(dmxPatch != NULL && dmxPatch->plugin != NULL);
+
+			if (i % 2 == 0)
+				info += QString("<TR>");
+			else
+			{
+				info += QString("<TR BGCOLOR=\"");
+				info += _app->colorGroup().midlight().name();
+				info += QString("\">");
+			}
+
+			info += QString("<TD>");
+			str.setNum(i + 1);
+			info += QString("<B>Universe " + str + "</B>");
+			info += QString("</TD>");
+
+			info += QString("<TD>");
+			info += dmxPatch->plugin->name();
+			info += QString("</TD>");
+
+			info += QString("<TD>");
+			str.sprintf("Output %d", dmxPatch->output + 1);
+			info += str;
+			info += QString("</TD>");
+
+			info += QString("</TR>");
+		}
+
+		info += QString("</TABLE>");
+	}
+	else
+	{
+		info = outputPlugin->infoText();
+	}
+
+	return info;
 }
 
 void DMXMap::loadPlugins(const QString& pluginPath)

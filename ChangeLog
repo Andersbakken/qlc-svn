@@ -1,3 +1,8 @@
+2007-Nov-25  Heikki Junnila <hjunnila@users.sf.net>
+	* Took plugin manager into circles again because plugins need to be
+	  configured from some common dialog. Output Manager might get
+	  somehow integrated into plugin manager.
+
 2007-Nov-11  Heikki Junnila <hjunnila@users.sf.net>
 	* Christopher Staite: Changed usleep() to nanosleep() in
 	  FunctionConsumer.

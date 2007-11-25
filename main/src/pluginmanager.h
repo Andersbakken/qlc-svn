@@ -2,7 +2,7 @@
   Q Light Controller
   pluginmanager.h
 
-  Copyright (C) 2006 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -38,47 +38,47 @@ class Plugin;
 
 class PluginManager : public QWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  PluginManager(QWidget* parent = NULL, const char* name = 0);
-  ~PluginManager();
+public:
+	PluginManager(QWidget* parent);
+	~PluginManager();
 
-  void initView();
-  
- protected:
-  void initTitle();
-  void initToolBar();
-  void initMenuBar();
-  void initDataView();
-  
-  void fillPlugins();
+	void initView();
 
-  void updateActivePlugins();
-  void updateActiveStatus(QListViewItem* parent);
-  
- public slots:
-  void slotDoubleClicked(QListViewItem* item);
-  void slotConfigure();
-  void slotSelectionChanged(QListViewItem* item);
-  void slotPluginActivated(Plugin* plugin);
-  void slotRightButtonClicked(QListViewItem* item, const QPoint& point, int col);
+protected:
+	void initTitle();
+	void initToolBar();
+	void initMenuBar();
+	void initDataView();
+	
+	void fillPlugins();
+	
+protected slots:
+	void slotConfigureClicked();
+	void slotConnectClicked();
 
- signals:
-  void closed();
+	void slotSelectionChanged(QListViewItem* item);
+	void slotRightButtonClicked(QListViewItem* item,
+				    const QPoint& point,
+				    int col);
 
- protected slots:
-  void closeEvent(QCloseEvent* e);
+protected:
+	void closeEvent(QCloseEvent* e);
 
- protected:
-  QVBoxLayout* m_layout;
-  QToolBar* m_toolbar;
-  QDockArea* m_dockArea;
-  QSplitter* m_splitter;
-  QListView* m_listView;
-  QTextView* m_textView;
-  
-  QToolButton* m_configureButton;
+signals:
+	void closed();
+	
+protected:
+	QVBoxLayout* m_layout;
+	QToolBar* m_toolbar;
+	QDockArea* m_dockArea;
+	QSplitter* m_splitter;
+	QListView* m_listView;
+	QTextView* m_textView;
+	
+	QToolButton* m_configureButton;
+	QToolButton* m_mapButton;
 };
 
 #endif

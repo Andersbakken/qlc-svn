@@ -70,6 +70,7 @@ noinst_HEADERS = \
 	src/keybind.h \
 	src/listboxiditem.h \
 	src/monitor.h \
+	src/pluginmanager.h \
 	src/sceneeditor.h \
 	src/scene.h \
 	src/sliderkeybind.h \
@@ -173,6 +174,7 @@ qlc_SOURCES = \
 	src/listboxiditem.cpp \
 	src/main.cpp \
 	src/monitor.cpp \
+	src/pluginmanager.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
 	src/sliderkeybind.cpp \
@@ -228,6 +230,7 @@ qlc_SOURCES = \
 	src/moc_keybind.cpp \
 	src/moc_listboxiditem.cpp \
 	src/moc_monitor.cpp \
+	src/moc_pluginmanager.cpp \
 	src/moc_scene.cpp \
 	src/moc_sceneeditor.cpp \
 	src/moc_sliderkeybind.cpp \

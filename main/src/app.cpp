@@ -54,6 +54,7 @@
 #include "virtualconsole.h"
 #include "functionmanager.h"
 #include "fixturemanager.h"
+#include "pluginmanager.h"
 #include "busproperties.h"
 #include "aboutbox.h"
 #include "monitor.h"
@@ -83,6 +84,7 @@ static const QString KModeTextDesign  ("Design");
 #define MENU_MANAGER_BUS_MANAGER        2030
 #define MENU_MANAGER_INPUT_MANAGER      2040
 #define MENU_MANAGER_OUTPUT_MANAGER     2050
+#define MENU_MANAGER_PLUGIN_MANAGER     2060
 
 /* Control menu entries */
 #define MENU_CONTROL                    3000
@@ -119,6 +121,7 @@ App::App() : QMainWindow()
 	m_doc = NULL;
 	m_workspace = NULL;
 
+	m_pluginManager = NULL;
 	m_functionManager = NULL;
 	m_busProperties = NULL;
 	m_fixtureManager = NULL;
@@ -273,18 +276,38 @@ void App::slotDMXMapBlackoutChanged(bool state)
 	m_blackoutToolButton->setOn(state);
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Input mapping
- *********************************************************************/
+ *****************************************************************************/
 
 void App::slotViewInputManager()
 {
 	QMessageBox::information(workspace(), "TODO", "TODO");
 }
 
-/*********************************************************************
+/*****************************************************************************
+ * Plugin manager
+ *****************************************************************************/
+
+void App::slotViewPluginManager()
+{
+	if (m_pluginManager == NULL)
+		m_pluginManager = new PluginManager(workspace());
+	else
+		m_pluginManager->hide();
+
+	m_pluginManager->show();
+}
+
+void App::slotPluginManagerClosed()
+{
+	delete m_pluginManager;
+	m_pluginManager = NULL;
+}
+
+/*****************************************************************************
  * Blackout
- *********************************************************************/
+ *****************************************************************************/
 
 void App::slotToggleBlackout()
 {
@@ -904,6 +927,7 @@ void App::setMode(Mode mode)
 		m_managerMenu->setItemEnabled(MENU_MANAGER_BUS_MANAGER, true);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_INPUT_MANAGER, true);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_OUTPUT_MANAGER, true);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_PLUGIN_MANAGER, true);
 
 		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, false);
 		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_DESIGN, true);
@@ -930,6 +954,7 @@ void App::setMode(Mode mode)
 		m_managerMenu->setItemEnabled(MENU_MANAGER_BUS_MANAGER, false);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_INPUT_MANAGER, false);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_OUTPUT_MANAGER, false);
+		m_managerMenu->setItemEnabled(MENU_MANAGER_PLUGIN_MANAGER, false);
 
 		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, true);
 		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_DESIGN, false);
@@ -1109,8 +1134,16 @@ void App::initMenuBar()
 		"Output Manager",
 		this,
 		SLOT(slotViewOutputManager()),
-		CTRL + Key_P,
+		CTRL + Key_T,
 		MENU_MANAGER_OUTPUT_MANAGER);
+
+	m_managerMenu->insertItem(
+		QPixmap(QString(PIXMAPS) + QString("/plugin.png")),
+		"Plugin Manager",
+		this,
+		SLOT(slotViewPluginManager()),
+		CTRL + Key_P,
+		MENU_MANAGER_PLUGIN_MANAGER);
 
 	/* Mode menu */
 	m_modeMenu = new QPopupMenu(menuBar());

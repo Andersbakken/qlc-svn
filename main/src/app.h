@@ -2,7 +2,7 @@
   Q Light Controller
   app.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@ class OutputPlugin;
 class FunctionConsumer;
 class VirtualConsole;
 class Plugin;
+class PluginManager;
 class DummyInPlugin;
 class DummyOutPlugin;
 class DeviceClass;
@@ -110,6 +111,18 @@ class App : public QMainWindow
 
  protected:
 	// InputMap* m_inputMap;
+
+	/*********************************************************************
+	 * Plugin manager
+	 *********************************************************************/
+public:
+
+protected slots:
+	void slotViewPluginManager();
+	void slotPluginManagerClosed();
+
+protected:
+	PluginManager* m_pluginManager;
 
 	/*********************************************************************
 	 * Blackout

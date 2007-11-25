@@ -276,6 +276,21 @@ public:
 	 */
 	int pluginOutputs(const QString& pluginName);
 
+	/**
+	 * Open a configuration dialog for the given plugin
+	 *
+	 * @param pluginName Name of the plugin to configure
+	 */
+	void configurePlugin(const QString& pluginName);
+
+	/**
+	 * Get a status text for the given plugin. If no plugin name is
+	 * given, an overall mapping status of all universes is returned.
+	 *
+	 * @param pluginName Name of the plugin, whose status to get
+	 */
+	QString pluginStatus(const QString& pluginName = QString::null);
+
 protected:
 	/**
 	 * Load output plugins from the given directory
