@@ -286,9 +286,16 @@ void App::slotViewInputManager()
 void App::slotViewPluginManager()
 {
 	if (m_pluginManager == NULL)
+	{
 		m_pluginManager = new PluginManager(workspace());
+		m_pluginManager->resize(500, 300);
+		connect(m_pluginManager, SIGNAL(closed()),
+			this, SLOT(slotPluginManagerClosed()));
+	}
 	else
+	{
 		m_pluginManager->hide();
+	}
 
 	m_pluginManager->show();
 }

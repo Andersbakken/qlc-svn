@@ -1,4 +1,7 @@
 2007-Nov-29  Heikki Junnila <hjunnila@users.sf.net>
+	* Connected to plugin manager's closed() signal to close the window
+
+2007-Nov-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Updated plugin manager to act as the access point for dmx mapper.
 
 2007-Nov-25  Heikki Junnila <hjunnila@users.sf.net>
