@@ -121,13 +121,13 @@ void PluginManager::initToolBar()
 	// Map button
 	m_mapButton = new QToolButton(QPixmap(QString(PIXMAPS) +
 					      QString("/attach.png")),
-				      "Connect",
+				      "Output Mapper",
 				      0,
 				      this,
-				      SLOT(slotConnectClicked()),
+				      SLOT(slotDMXMapperClicked()),
 				      m_toolbar);
 	m_mapButton->setUsesTextLabel(true);
-	QToolTip::add(m_mapButton, "Connect the plugin to various elements");
+	QToolTip::add(m_mapButton, "Patch QLC universes to output plugins");
 }
 
 void PluginManager::initDataView()
@@ -219,8 +219,10 @@ void PluginManager::slotConfigureClicked()
 }
 
 
-void PluginManager::slotConnectClicked()
+void PluginManager::slotDMXMapperClicked()
 {
+	_app->dmxMap()->openEditor(this);
+	slotSelectionChanged(m_listView->currentItem());
 }
 
 /*****************************************************************************
@@ -239,6 +241,7 @@ void PluginManager::slotSelectionChanged(QListViewItem* item)
 
 		if (item->parent() == NULL)
 		{
+			m_configureButton->setEnabled(false);
 			if (name == KOutputNode)
 				status = _app->dmxMap()->pluginStatus();
 			else if (name == KInputNode)
@@ -246,6 +249,7 @@ void PluginManager::slotSelectionChanged(QListViewItem* item)
 		}
 		else
 		{
+			m_configureButton->setEnabled(true);
 			parent = item->parent()->text(KColumnName);
 
 			if (parent == KOutputNode)
@@ -253,6 +257,10 @@ void PluginManager::slotSelectionChanged(QListViewItem* item)
 			else if (parent == KInputNode)
 				status = QString("TODO"); // TODO
 		}
+	}
+	else
+	{
+		m_configureButton->setEnabled(false);
 	}
 
 	if (status.length() == 0)

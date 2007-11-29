@@ -245,12 +245,6 @@ void App::initDMXMap()
 		this, SLOT(slotDMXMapBlackoutChanged(bool)));
 }
 
-void App::slotViewOutputManager()
-{
-	Q_ASSERT(m_dmxMap != NULL);
-	m_dmxMap->openEditor(workspace());
-}
-
 void App::slotDMXMapBlackoutChanged(bool state)
 {
 	if (state == true)
@@ -1128,14 +1122,6 @@ void App::initMenuBar()
 		SLOT(slotViewInputManager()),
 		CTRL + Key_I,
 		MENU_MANAGER_INPUT_MANAGER);
-
-	m_managerMenu->insertItem(
-		QPixmap(QString(PIXMAPS) + QString("/plugin.png")),
-		"Output Manager",
-		this,
-		SLOT(slotViewOutputManager()),
-		CTRL + Key_T,
-		MENU_MANAGER_OUTPUT_MANAGER);
 
 	m_managerMenu->insertItem(
 		QPixmap(QString(PIXMAPS) + QString("/plugin.png")),

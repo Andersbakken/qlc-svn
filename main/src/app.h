@@ -44,7 +44,6 @@ class QTimer;
 class FixtureManager;
 class Doc;
 class InputPlugin;
-class OutputPlugin;
 class FunctionConsumer;
 class VirtualConsole;
 class Plugin;
@@ -91,7 +90,6 @@ class App : public QMainWindow
 	void initDMXMap();
 
  protected slots:
-	void slotViewOutputManager();
 	void slotDMXMapBlackoutChanged(bool state);
 
  protected:

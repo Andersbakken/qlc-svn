@@ -36,7 +36,7 @@
 #define KColumnOutput   2
 
 DMXMapEditor::DMXMapEditor(QWidget* parent, DMXMap* dmxMap)
-	: UI_DMXMapEditor(parent, "DMX Map Editor", true),
+	: UI_DMXMapEditor(parent, "Output Mapper", true),
 	  m_dmxMap(dmxMap)
 {
 }

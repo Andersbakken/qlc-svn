@@ -56,7 +56,7 @@ protected:
 	
 protected slots:
 	void slotConfigureClicked();
-	void slotConnectClicked();
+	void slotDMXMapperClicked();
 
 	void slotSelectionChanged(QListViewItem* item);
 	void slotRightButtonClicked(QListViewItem* item,
