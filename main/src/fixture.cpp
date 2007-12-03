@@ -23,6 +23,8 @@
 
 #include "libs/common/qlcfixturedef.h"
 #include "libs/common/qlcfixturemode.h"
+#include "libs/common/qlcchannel.h"
+#include "libs/common/qlccapability.h"
 #include "fixture.h"
 #include "fixtureconsole.h"
 #include "libs/common/types.h"
@@ -52,6 +54,7 @@ Fixture::Fixture(QLCFixtureDef* fixtureDef,
 	m_address = (m_address & 0x01FF) | (universe << 9);
 
 	m_console = NULL;
+	m_genericChannel = NULL;
 }
 
 Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
@@ -190,12 +193,27 @@ QLCChannel* Fixture::channel(t_channel channel)
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		return m_fixtureMode->channel(channel);
 	else
-		return NULL;
+		return createGenericChannel();
 }
 
 int Fixture::channelAddress(t_channel channel)
 {
 	return universeAddress() + channel;
+}
+
+QLCChannel* Fixture::createGenericChannel()
+{
+	if (m_genericChannel == NULL)
+	{
+		m_genericChannel = new QLCChannel();
+		Q_ASSERT(m_genericChannel != NULL);
+		m_genericChannel->setGroup(KQLCChannelGroupIntensity);
+		m_genericChannel->setName(KQLCChannelGroupIntensity);
+		m_genericChannel->addCapability(
+			new QLCCapability(0, 255, KQLCChannelGroupIntensity));
+	}
+
+	return m_genericChannel;
 }
 
 /*****************************************************************************

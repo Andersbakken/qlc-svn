@@ -216,7 +216,8 @@ public:
 	t_channel channels();
 
 	/**
-	 * Get a specific channel object by the channel's number.
+	 * Get a specific channel object by the channel's number. For generic
+	 * dimmers, the returned QLCChannel is the same for all channel numbers.
 	 *
 	 * @param channel The channel number to get
 	 * @return A QLCChannel* instance that should not be modified
@@ -230,11 +231,23 @@ public:
 	int channelAddress(t_channel channel);
 
 protected:
+	/**
+	 * Create a QLCChannel for generic dimmers if such a channel doesn't
+	 * exist yet. Returns just the one channel.
+	 *
+	 * @return The generic QLCChannel 
+	 */
+	QLCChannel* createGenericChannel();
+
+protected:
 	/** DMX address & universe */
 	t_channel m_address;
 
 	/** Number of channels (ONLY for dimmer fixtures!) */
 	t_channel m_channels;
+
+	/** Generic intensity channel for dimmer fixtures */
+	QLCChannel* m_genericChannel;
 
 	/*********************************************************************
 	 * Fixture definition

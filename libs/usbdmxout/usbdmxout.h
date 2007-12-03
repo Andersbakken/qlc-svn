@@ -1,8 +1,10 @@
 /*
   Q Light Controller
-  dmx4linuxout.h
+  usbdmxout.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Christian Suehs
+		Stefan Krumm
+		Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -109,11 +111,9 @@
 #define RODIN2       (0x03)
 #define USBDMX21     (0x04)
 
-
-
-
-
-
+/*****************************************************************************
+ * USBDMX Class definition
+ *****************************************************************************/
 
 class ConfigureUsbDmxOut;
 class QPoint;
@@ -123,54 +123,54 @@ extern "C" void destroy(OutputPlugin* object);
 
 class UsbDmxOut : public OutputPlugin
 {
-  Q_OBJECT
+	Q_OBJECT
 
-  friend class ConfigureUsbDmxOut;
+		friend class ConfigureUsbDmxOut;
 
- public:
-  UsbDmxOut(t_plugin_id id);
-  ~UsbDmxOut();
+public:
+	UsbDmxOut(t_plugin_id id);
+	~UsbDmxOut();
 
-  // Plugin methods
-  int open();
-  int close();
-  bool isOpen();
-  int configure();
-  QString infoText();
-  void contextMenu(QPoint pos);
+	// Plugin methods
+	int open();
+	int close();
+	bool isOpen();
+	int configure();
+	QString infoText();
+	void contextMenu(QPoint pos);
 
-  int setConfigDirectory(QString dir);
-  int saveSettings();
-  int loadSettings();
+	int setConfigDirectory(QString dir);
+	int saveSettings();
+	int loadSettings();
 
-  // OutputPlugin methods
-  int writeChannel(t_channel channel, t_value value);
-  int writeRange(t_channel address, t_value* values, t_channel num);
+	// OutputPlugin methods
+	int writeChannel(t_channel channel, t_value value);
+	int writeRange(t_channel address, t_value* values, t_channel num);
 
-  int readChannel(t_channel channel, t_value &value);
-  int readRange(t_channel address, t_value* values, t_channel num);
+	int readChannel(t_channel channel, t_value &value);
+	int readRange(t_channel address, t_value* values, t_channel num);
 
-  // Own methods
-  QString deviceName() { return m_deviceName; }
-  int firstDeviceID(){ return m_firstDeviceID; }
-  int lastDeviceID(){ return m_lastDeviceID; }
-  void setDeviceName(QString name) { m_deviceName = name; }
+	// Own methods
+	QString deviceName() { return m_deviceName; }
+	int firstDeviceID(){ return m_firstDeviceID; }
+	int lastDeviceID(){ return m_lastDeviceID; }
+	void setDeviceName(QString name) { m_deviceName = name; }
 
- private slots:
-  void slotContextMenuCallback(int item);
+private slots:
+	void slotContextMenuCallback(int item);
 
- private:
-  void activate();
-  void createContents(QPtrList <QString> &list);
+private:
+	void activate();
+	void createContents(QPtrList <QString> &list);
 
- private:
-  QString m_deviceName;
-  QString m_configDir;
-  int m_device[MAXINTERFACES];
-  int m_firstDeviceID;
-  int m_lastDeviceID;
-  int m_numOfDevices;
-  t_value m_values[KChannelMax];
+private:
+	QString m_deviceName;
+	QString m_configDir;
+	int m_device[MAXINTERFACES];
+	int m_firstDeviceID;
+	int m_lastDeviceID;
+	int m_numOfDevices;
+	t_value m_values[KChannelMax];
 };
 
 #endif

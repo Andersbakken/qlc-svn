@@ -1,3 +1,10 @@
+2007-Dec-03  Heikki Junnila <hjunnila@users.sf.net>
+	* Added one common QLCChannel & QLCCapability to generic fixtures so
+	  that every component depending on them wouldn't crash.
+	* Started some work on making USBDMX plugin to support multiple
+	  universes (mainly just indenting :)
+	* Updated some documentation to speak about fixture instead of device.
+
 2007-Nov-29  Heikki Junnila <hjunnila@users.sf.net>
 	* Connected to plugin manager's closed() signal to close the window
 
