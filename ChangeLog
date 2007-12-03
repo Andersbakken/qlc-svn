@@ -1,4 +1,8 @@
 2007-Dec-03  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed the type of generic fixture to "Dimmer" and set its default
+	  name to "Dimmers" in class AddFixture.
+
+2007-Dec-03  Heikki Junnila <hjunnila@users.sf.net>
 	* Added one common QLCChannel & QLCCapability to generic fixtures so
 	  that every component depending on them wouldn't crash.
 	* Started some work on making USBDMX plugin to support multiple

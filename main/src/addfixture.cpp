@@ -123,7 +123,7 @@ void AddFixture::fillTree()
 	parent->setText(KColumnName, KXMLFixtureGeneric);
 	node = new QListViewItem(parent);
 	node->setText(KColumnName, KXMLFixtureGeneric);
-	node->setText(KColumnType, KXMLFixtureGeneric);
+	node->setText(KColumnType, KXMLFixtureDimmer);
 	node->setText(KColumnPointer, "0");
 }
 
@@ -211,7 +211,7 @@ void AddFixture::slotSelectionChanged(QListViewItem* item)
 	else
 	{
 		if (item->text(KColumnName) == KXMLFixtureGeneric &&
-		    item->text(KColumnType) == KXMLFixtureGeneric)
+		    item->parent()->text(KColumnName) == KXMLFixtureGeneric)
 		{
 			m_fixtureDef = NULL;
 			fillModeCombo(KXMLFixtureGeneric);
@@ -220,7 +220,8 @@ void AddFixture::slotSelectionChanged(QListViewItem* item)
 			/* Set the model name as the fixture's friendly name ONLY
 			   if the user hasn't modified the friendly name field. */	
 			if (m_nameEdit->isModified() == false)
-				m_nameEdit->setText(KXMLFixtureGeneric);
+				m_nameEdit->setText(KXMLFixtureDimmer +
+						    QString("s")); // Plural :)
 			m_nameEdit->setEnabled(true);
 		}
 		else
@@ -228,6 +229,8 @@ void AddFixture::slotSelectionChanged(QListViewItem* item)
 			/* Get the selected fixture pointer */
 			m_fixtureDef = (QLCFixtureDef*) 
 				item->text(KColumnPointer).toULong();
+			Q_ASSERT(m_fixtureDef != NULL);
+
 			fillModeCombo();
 			m_channelsSpin->setEnabled(false);
 			
