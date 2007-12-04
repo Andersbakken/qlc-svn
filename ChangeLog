@@ -1,5 +1,6 @@
 2007-Dec-04  Heikki Junnila <hjunnila@users.sf.net>
-	* Changed ConsoleChannel's value type button's maximum size to 32767.
+	* Changed ConsoleChannel's buttons' maximum sizes back to 32767.
+	* Changed "Preset" to "Capability" in ConsoleChannel.
 
 2007-Dec-04  Heikki Junnila <hjunnila@users.sf.net>
 	* Modified ASE so that it is possible to edit multiple channels
