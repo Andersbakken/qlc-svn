@@ -122,7 +122,7 @@
             <property name="maximumSize">
                 <size>
                     <width>32767</width>
-                    <height>20</height>
+                    <height>32767</height>
                 </size>
             </property>
             <property name="paletteForegroundColor">
