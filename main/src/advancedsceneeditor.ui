@@ -13,7 +13,7 @@
         </rect>
     </property>
     <property name="caption">
-        <string>Scene Editor</string>
+        <string>Advanced Scene Editor</string>
     </property>
     <vbox>
         <property name="name">
@@ -30,12 +30,6 @@
                 <widget class="QLabel">
                     <property name="name">
                         <cstring>m_sceneNameLabel</cstring>
-                    </property>
-                    <property name="frameShape">
-                        <enum>Panel</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>Sunken</enum>
                     </property>
                     <property name="text">
                         <string>Scene name:</string>
@@ -105,7 +99,10 @@
                 </property>
             </column>
             <property name="name">
-                <cstring>m_sceneContents</cstring>
+                <cstring>m_listView</cstring>
+            </property>
+            <property name="selectionMode">
+                <enum>Extended</enum>
             </property>
             <property name="allColumnsShowFocus">
                 <bool>true</bool>
@@ -155,17 +152,6 @@
                 </spacer>
                 <widget class="QPushButton">
                     <property name="name">
-                        <cstring>m_applyButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Apply</string>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
                         <cstring>m_ok</cstring>
                     </property>
                     <property name="text">
@@ -204,68 +190,39 @@
         <slot>slotOKClicked()</slot>
     </connection>
     <connection>
-        <sender>m_applyButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_AdvancedSceneEditor</receiver>
-        <slot>slotApplyClicked()</slot>
-    </connection>
-    <connection>
-        <sender>m_sceneContents</sender>
+        <sender>m_listView</sender>
         <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
         <receiver>UI_AdvancedSceneEditor</receiver>
-        <slot>slotChannelsContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+        <slot>slotContextMenu(QListViewItem*,const QPoint&amp;,int)</slot>
     </connection>
     <connection>
-        <sender>m_sceneContents</sender>
+        <sender>m_listView</sender>
         <signal>doubleClicked(QListViewItem*)</signal>
         <receiver>UI_AdvancedSceneEditor</receiver>
-        <slot>slotContentsDoubleClicked(QListViewItem*)</slot>
+        <slot>slotDoubleClicked(QListViewItem*)</slot>
     </connection>
     <connection>
-        <sender>m_sceneContents</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
+        <sender>m_listView</sender>
+        <signal>selectionChanged()</signal>
         <receiver>UI_AdvancedSceneEditor</receiver>
-        <slot>slotContentsClicked(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>m_sceneNameEdit</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>UI_AdvancedSceneEditor</receiver>
-        <slot>slotSceneNameTextChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>m_sceneContents</sender>
-        <signal>itemRenamed(QListViewItem*,int)</signal>
-        <receiver>UI_AdvancedSceneEditor</receiver>
-        <slot>slotItemRenamed(QListViewItem*,int)</slot>
+        <slot>slotSelectionChanged()</slot>
     </connection>
 </connections>
 <tabstops>
     <tabstop>m_sceneNameEdit</tabstop>
-    <tabstop>m_sceneContents</tabstop>
+    <tabstop>m_listView</tabstop>
     <tabstop>m_editValue</tabstop>
-    <tabstop>m_applyButton</tabstop>
     <tabstop>m_ok</tabstop>
     <tabstop>m_cancel</tabstop>
 </tabstops>
 <slots>
-    <slot>slotChannelsContextMenuRequested(QListViewItem*, const QPoint &amp;, int)</slot>
-    <slot>slotAddSceneClicked()</slot>
+    <slot>slotContextMenu(QListViewItem*, const QPoint &amp;, int)</slot>
     <slot>slotApplyClicked()</slot>
     <slot>slotCancelClicked()</slot>
-    <slot>slotContentsClicked(QListViewItem*)</slot>
-    <slot>slotContentsDoubleClicked(QListViewItem*)</slot>
-    <slot>slotEditSceneNameClicked()</slot>
+    <slot>slotSelectionChanged()</slot>
+    <slot>slotDoubleClicked(QListViewItem*)</slot>
     <slot>slotEditValueClicked()</slot>
     <slot>slotOKClicked()</slot>
-    <slot>slotOutputDeviceActivated(const QString&amp;)</slot>
-    <slot>slotRemoveSceneClicked()</slot>
-    <slot>slotSceneDoubleClicked(QListViewItem*)</slot>
-    <slot>slotSceneNameTextChanged(const QString&amp;)</slot>
-    <slot>slotSceneSelected(QListViewItem*)</slot>
-    <slot>slotStoreButtonClicked()</slot>
-    <slot>slotStoreSceneInGroupClicked(int)</slot>
-    <slot>slotItemRenamed(QListViewItem*, int)</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

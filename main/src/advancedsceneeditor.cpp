@@ -2,7 +2,7 @@
   Q Light Controller
   advancedsceneeditor.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -54,45 +54,41 @@ extern App* _app;
 
 const int KColumnNumber  ( 0 );
 const int KColumnChannel ( 1 );
-const int KColumnPreset  ( 2 );
+const int KColumnCapability  ( 2 );
 const int KColumnValue   ( 3 );
 const int KColumnType    ( 4 );
 
 AdvancedSceneEditor::AdvancedSceneEditor(QWidget* parent, Scene* scene)
 	: UI_AdvancedSceneEditor(parent, "Advanced Scene Editor", true)
 {
-	ASSERT(scene);
+	Q_ASSERT(scene != NULL);
 	m_original = scene;
 
 	m_scene = new Scene();
 	m_scene->copyFrom(scene, scene->fixture());
-	m_currentChannel = NULL;
 
-	m_dirty = false;
+	m_sceneNameEdit->setText(m_scene->name());
+	m_sceneNameEdit->setSelection(0, m_scene->name().length());
+	initListView();
 }
 
 AdvancedSceneEditor::~AdvancedSceneEditor()
 {
+	Q_ASSERT(m_scene != NULL);
+	delete m_scene;
+	m_scene = NULL;
 }
 
-void AdvancedSceneEditor::init()
+/*****************************************************************************
+ * Context Menu
+ *****************************************************************************/
+
+void AdvancedSceneEditor::slotContextMenu(QListViewItem* item,
+					  const QPoint &pos,
+					  int col)
 {
-	m_sceneNameEdit->setText(m_scene->name());
-	m_sceneNameEdit->setSelection(0, m_scene->name().length());
-
-	updateChannelList();
-
-	setDirty(false);
-}
-
-void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
-							   const QPoint &pos,
-							   int col)
-{
-	if (m_scene == NULL || m_sceneContents->isRenaming())
-	{
+	if (m_scene == NULL)
 		return;
-	}
 
 	switch (col)
 	{
@@ -102,8 +98,8 @@ void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
 	case KColumnChannel:
 		break;
 
-	case KColumnPreset:
-		invokePresetMenu(pos);
+	case KColumnCapability:
+		invokeCapabilityMenu(pos);
 		break;
 
 	case KColumnValue:
@@ -119,168 +115,157 @@ void AdvancedSceneEditor::slotChannelsContextMenuRequested(QListViewItem* item,
 	}
 }
 
-void AdvancedSceneEditor::invokePresetMenu(const QPoint &pos)
+/*****************************************************************************
+ * Capability Menu
+ *****************************************************************************/
+
+void AdvancedSceneEditor::invokeCapabilityMenu(const QPoint &pos)
 {
-	if (m_currentChannel == NULL)
-		return;
-
-	int i = 0;
-	QPtrListIterator <QLCCapability> it(*m_currentChannel->capabilities());
 	QLCCapability* cap = NULL;
-	QPopupMenu* menu = new QPopupMenu;
-	menu->insertItem("Preset");
-	menu->insertSeparator();
+	QLCChannel* channel = NULL;
+	Fixture* fxi = NULL;
+	QPopupMenu* menu = NULL;
+	QPopupMenu* chmenu = NULL;
+	QPopupMenu* capmenu = NULL;
+	t_value i = 0;
+	QString s;
+	ChannelList::iterator it;
 
-	while ( (cap = *it) != NULL )
-	{
-		menu->insertItem(cap->name(), i++);
-		++it;
-	}
+	fxi = _app->doc()->fixture(m_scene->fixture());
+	Q_ASSERT(fxi != NULL);
 
-	if (i > 0)
+	menu = new QPopupMenu();
+	connect(menu, SIGNAL(activated(int)),
+		this, SLOT(slotCapabilityMenuActivated(int)));
+
+	/* Put all selected channels into the top-level menu */
+	for (it = m_selection.begin(); it != m_selection.end(); ++it)
 	{
-		connect(menu, SIGNAL(activated(int)),
-			this, SLOT(slotPresetMenuActivated(int)));
+		channel = fxi->channel(*it);
+		Q_ASSERT(channel != NULL);
+
+		chmenu = new QPopupMenu(menu);
+		menu->insertItem(channel->name(), chmenu);
+		connect(chmenu, SIGNAL(activated(int)),
+			this, SLOT(slotCapabilityMenuActivated(int)));
+
+		QPtrListIterator <QLCCapability>
+			capit(*channel->capabilities());
+
+		/* Put each channel's capabilities into a 2nd level menu */
+		while (*capit != NULL)
+		{
+			capmenu = new QPopupMenu(chmenu);
+			chmenu->insertItem((*capit)->name(), capmenu);
+			connect(capmenu, SIGNAL(activated(int)),
+				this, SLOT(slotCapabilityMenuActivated(int)));
+			
+			/* Put each capability's values into a 3rd level menu */
+			for (i = (*capit)->min(); i < (*capit)->max(); i++)
+			{
+				s.sprintf("%.3d", i);
+				capmenu->insertItem(s, i);
+			}
+			
+			/* The maximum value has to be written manually because
+			   255 would cause an endless loop in the for-clause */
+			s.sprintf("%.3d", (*capit)->max());
+			capmenu->insertItem(s, i);
+
+			++capit;
+		}
 	}
 
 	menu->exec(pos);
-	disconnect(menu);
-
 	delete menu;
 }
 
-void AdvancedSceneEditor::slotPresetMenuActivated(int preset)
+void AdvancedSceneEditor::slotCapabilityMenuActivated(int value)
 {
 	QLCCapability* c = NULL;
+	ChannelList::iterator it;
 
-	if (preset < 0)
+	if (value < 0 || value > 255)
 		return;
 
-	c = m_currentChannel->capabilities()->at(preset);
-	ASSERT(c);
+	for (it = m_selection.begin(); it != m_selection.end(); ++it)
+		m_scene->set(*it, value, m_scene->channelValue(*it).type);
 
-	int channel = m_currentChannelNum;
-	int value = (int) floor((c->min() + c->max()) / 2);
-
-	m_scene->set(channel, value, m_scene->channelValue(channel).type);
-
-	m_sceneContents->currentItem()->setText(KColumnPreset, c->name());
-
-	QString s;
-	s.setNum(value);
-	m_sceneContents->currentItem()->setText(KColumnValue, s);
-
-	setDirty(true);
+	updateSelectedItems();
 }
+
+/*****************************************************************************
+ * Value Menu
+ *****************************************************************************/
 
 void AdvancedSceneEditor::invokeValueMenu(const QPoint &pos)
 {
-	QPopupMenu* menu = new QPopupMenu;
-	QPtrList <QPopupMenu> deleteList;
+	QPopupMenu* menu = NULL;
+	QPopupMenu* sub = NULL;
+	QString top;
+	QString num;
 
-	menu->insertItem("Value", KNoID);
+	/* Insert common min & max values to the top of the menu */
+	menu = new QPopupMenu();
+	menu->insertItem("Off", 0);
+	menu->insertItem("Full", 255);
 	menu->insertSeparator();
 	connect(menu, SIGNAL(activated(int)),
 		this, SLOT(slotValueMenuActivated(int)));
 
-	menu->insertItem("0", 0);
-	menu->insertItem("255", 255);
+	/* Insert all values in sub-menus containing 15 values each */
 	for (t_value i = 0; i != 255; i += 15)
 	{
-		QPopupMenu* sub = new QPopupMenu();
-		deleteList.append(sub);
-
-		QString top;
-		top.sprintf("%d - %d", i+1, i + 15);
-
+		sub = new QPopupMenu(menu);
 		for (t_value j = 1; j < 16; j++)
 		{
-			QString num;
 			num.setNum(i + j);
 			sub->insertItem(num, i + j);
 		}
 
+		top.sprintf("%d - %d", i+1, i + 15);
 		menu->insertItem(top, sub);
 		connect(sub, SIGNAL(activated(int)),
 			this, SLOT(slotValueMenuActivated(int)));
 	}
 
 	menu->exec(pos);
-
-	while (deleteList.isEmpty() == false)
-	{
-		delete deleteList.take(0);
-	}
-
 	delete menu;
 }
 
 void AdvancedSceneEditor::slotValueMenuActivated(int value)
 {
-	if (m_scene == NULL)
+	if (value < 0 || value > 255)
 	{
 		return;
-	}
-
-	if (value < 0)
-	{
-		return;
-	}
-
-	if (value == KNoID)
-	{
-		slotEditValueClicked();
 	}
 	else
 	{
-		int channel = m_currentChannelNum;
-
-		m_scene->set(channel, value, m_scene->channelValue(channel).type);
-
-		QString s;
-		s.sprintf("%.3d", value);
-		m_sceneContents->currentItem()->setText(KColumnValue, s);
-
-		QLCCapability* c = m_currentChannel->searchCapability(value);
-		if (c == NULL)
+		/* Set the selected value to all selected scene channels */
+		ChannelList::iterator it;
+		for (it = m_selection.begin(); it != m_selection.end(); ++it)
 		{
-			s = QString("<Unknown>");
-		}
-		else
-		{
-			s = c->name();
+			m_scene->set(*it, value,
+				     m_scene->valueType(*it));
 		}
 
-		m_sceneContents->currentItem()->setText(KColumnPreset, s);
-		setDirty(true);
+		/* Update scene contents to list view */
+		updateSelectedItems();
 	}
 }
+
+/*****************************************************************************
+ * Value Type Menu
+ *****************************************************************************/
 
 void AdvancedSceneEditor::invokeTypeMenu(const QPoint &pos)
 {
 	QPopupMenu* menu = new QPopupMenu;
+	menu->setCheckable(false);
 
-	menu->insertItem("Type");
-	menu->insertSeparator();
 	menu->insertItem("Fade", Scene::Fade);
 	menu->insertItem("Set", Scene::Set);
 	menu->insertItem("NoSet", Scene::NoSet);
-
-	t_channel channel = m_currentChannelNum;
-	SceneValue v = m_scene->channelValue(channel);
-
-	if (v.type == Scene::Fade)
-	{
-		menu->setItemChecked(Scene::Fade, true);
-	}
-	else if (v.type == Scene::Set)
-	{
-		menu->setItemChecked(Scene::Set, true);
-	}
-	else
-	{
-		menu->setItemChecked(Scene::NoSet, true);
-	}
 
 	connect(menu, SIGNAL(activated(int)),
 		this, SLOT(slotTypeMenuActivated(int)));
@@ -293,250 +278,141 @@ void AdvancedSceneEditor::invokeTypeMenu(const QPoint &pos)
 
 void AdvancedSceneEditor::slotTypeMenuActivated(int type)
 {
-	if (m_scene == NULL)
+	if (type == Scene::Fade || type == Scene::Set || type == Scene::NoSet)
 	{
-		return;
-	}
-
-	t_channel channel = m_currentChannelNum;
-
-	m_scene->set(channel, m_scene->channelValue(channel).value,
-		     static_cast<Scene::ValueType> (type));
-
-	switch (type)
-	{
-	case Scene::Fade:
-		m_sceneContents->currentItem()->setText(KColumnType, "Fade");
-		setDirty(true);
-		break;
-
-	case Scene::Set:
-		m_sceneContents->currentItem()->setText(KColumnType, "Set");
-		setDirty(true);
-		break;
-
-	case Scene::NoSet:
-		m_sceneContents->currentItem()->setText(KColumnType, "NoSet");
-		setDirty(true);
-		break;
-
-	default:
-		break;
-	}
-}
-
-void AdvancedSceneEditor::setDirty(bool dirty)
-{
-	m_applyButton->setEnabled(dirty);
-	m_dirty = dirty;
-}
-
-bool AdvancedSceneEditor::dirtyCheck()
-{
-	if (m_dirty == true)
-	{
-		int result = QMessageBox::information(this, "Advanced Scene Editor",
-						      "Do you want to save changes?",
-						      QMessageBox::Yes,
-						      QMessageBox::No,
-						      QMessageBox::Cancel);
-		if (result == QMessageBox::Yes)
+		/* Update the selected type to all selected scene channels */
+		ChannelList::iterator it;
+		for (it = m_selection.begin(); it != m_selection.end(); ++it)
 		{
-			m_original->copyFrom(m_scene, m_original->fixture());
-			setDirty(false);
-			return true;
+			m_scene->set(*it,
+				     m_scene->channelValue(*it).value,
+				     static_cast<Scene::ValueType> (type));
 		}
-		else if (result == QMessageBox::No)
-		{
-			setDirty(false);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return true;
+
+		/* Update scene contents to list view */
+		updateSelectedItems();
 	}
 }
 
-void AdvancedSceneEditor::slotSceneNameTextChanged(const QString& text)
-{
-	if (m_scene->name() != text)
-	{
-		m_scene->setName(text);
+/*****************************************************************************
+ * List view
+ *****************************************************************************/
 
-		setDirty(true);
-	}
+void AdvancedSceneEditor::initListView()
+{
+	m_listView->clear();
+
+	/* Create channel items into listview and update their contents */
+	for (t_channel ch = 0; ch < m_scene->channels(); ch++)
+		updateChannelItem(new QListViewItem(m_listView), ch);
 }
 
-void AdvancedSceneEditor::slotContentsClicked(QListViewItem* item)
+void AdvancedSceneEditor::updateSelectedItems()
 {
-	Fixture* fxi = NULL;
+	QListViewItemIterator lvit(m_listView);
+	ChannelList::iterator chit;
 	t_channel ch = 0;
-	t_fixture_id fxi_id = 0;
-	
-	if (item == NULL)
-		return;
 
-	fxi_id = m_scene->fixture();
-	fxi = _app->doc()->fixture(fxi_id);
-	Q_ASSERT(fxi != NULL);
-	
-	ch = item->text(KColumnNumber).toInt() - 1;
-	m_currentChannel = fxi->channel(ch);
-	m_currentChannelNum = ch;
+	/* Update the contents of all selected items */
+	while ((*lvit) != NULL)
+	{
+		ch = (*lvit)->text(KColumnNumber).toInt() - 1;
+		chit = m_selection.find(ch);
+
+		if (chit != m_selection.end())
+			updateChannelItem((*lvit), ch);
+
+		++lvit;
+	}
 }
 
-void AdvancedSceneEditor::slotContentsDoubleClicked(QListViewItem* item)
+void AdvancedSceneEditor::updateChannelItem(QListViewItem* item, t_channel ch)
 {
-	slotContentsClicked(item);
+	QLCChannel* channel = NULL;
+	QLCCapability* cap = NULL;
+	Fixture* fxi = NULL;
+	QString s;
 
+	Q_ASSERT(item != NULL);
+
+	/* Get the fixture object of the scene */
+	fxi = _app->doc()->fixture(m_scene->fixture());
+	Q_ASSERT(fxi != NULL);
+
+	/* Get channel number and set it to the item */
+	s.sprintf("%.3d", ch + 1);
+	item->setText(KColumnNumber, s);
+
+	/* Get a channel object from the fixture and set its name to the item */
+	channel = fxi->channel(ch);
+	Q_ASSERT(channel != NULL);
+	item->setText(KColumnChannel, channel->name());
+
+	/* Get a capability object that matches the channel value and set the
+	   capability's name to the item */
+	cap = channel->searchCapability(m_scene->channelValue(ch).value);
+	if (cap == NULL)
+		s = QString("Unknown");
+	else
+		s = cap->name();
+	item->setText(KColumnCapability, s);
+
+	/* Get channel value from the scene and set its value to the item */
+	s.sprintf("%.3d", m_scene->channelValue(ch).value);
+	item->setText(KColumnValue, s);
+
+	/* Get the channel's value type from the scene and set it to the item */
+	item->setText(KColumnType, m_scene->valueTypeString(ch));
+}
+
+void AdvancedSceneEditor::slotSelectionChanged()
+{
+	QListViewItem* item = NULL;
+	t_channel ch = 0;
+
+	for (item = m_listView->firstChild(); item != NULL;
+	     item = item->nextSibling())
+	{
+		ch = item->text(KColumnNumber).toInt() - 1;
+
+		/* Remove such channel numbers that are not selected in the
+		   listview and append those that are selected (but not yet
+		   found from the selection list) */
+		if (item->isSelected() == false)
+			m_selection.remove(ch);
+		else if (m_selection.find(ch) == m_selection.end())
+			m_selection.append(ch);
+	}
+}
+
+void AdvancedSceneEditor::slotDoubleClicked(QListViewItem* item)
+{
+	slotSelectionChanged();
 	slotEditValueClicked();
 }
 
-void AdvancedSceneEditor::slotApplyClicked()
+/*****************************************************************************
+ * Control buttons
+ *****************************************************************************/
+
+void AdvancedSceneEditor::slotEditValueClicked()
 {
-	if (m_scene == NULL)
-	{
-		return;
-	}
-
-	_app->doc()->setModified();
-	setDirty(false);
-
-	m_original->copyFrom(m_scene, m_original->fixture());
+	QMessageBox::information(this, "TODO",
+				 "Use right-mouse over different columns to\n"\
+				 "edit scene values for now...");
 }
 
 void AdvancedSceneEditor::slotOKClicked()
 {
-	slotApplyClicked();
+	m_scene->setName(m_sceneNameEdit->text());
 
-	if (m_scene != NULL)
-	{
-		delete m_scene;
-		m_scene = NULL;
-	}
+	m_original->copyFrom(m_scene, m_original->fixture());
+	_app->doc()->setModified();
 
 	accept();
 }
 
 void AdvancedSceneEditor::slotCancelClicked()
 {
-	if (dirtyCheck() == false)
-	{
-		return;
-	}
-
-	if (m_scene != NULL)
-	{
-		delete m_scene;
-		m_scene = NULL;
-	}
-
 	reject();
-}
-
-void AdvancedSceneEditor::slotEditValueClicked()
-{
-	if (m_currentChannel == NULL)
-	{
-		return;
-	}
-
-	int ch = m_currentChannelNum;
-
-	SceneValue value = m_scene->channelValue(ch);
-
-	EditSceneValue* esv = new EditSceneValue((QWidget*) this,
-						 m_currentChannel, value);
-
-	if (esv->exec() == QDialog::Accepted)
-	{
-		Scene::ValueType type;
-
-		if (esv->type() == QString("Set"))
-		{
-			type = Scene::Set;
-		}
-		else if (esv->type() == QString("Fade"))
-		{
-			type = Scene::Fade;
-		}
-		else
-		{
-			type = Scene::NoSet;
-		}
-
-		m_scene->set(ch, esv->value(), type);
-		setDirty(true);
-	}
-
-	delete esv;
-
-	updateChannelList();
-
-	for (QListViewItem* item = m_sceneContents->firstChild();
-	     item != NULL; item = item->nextSibling())
-	{
-		if (item->text(KColumnNumber).toInt() - 1 == ch)
-		{
-			m_sceneContents->setSelected(item, true);
-			break;
-		}
-	}
-}
-
-void AdvancedSceneEditor::slotDeviceFunctionsListChanged(t_function_id fid)
-{
-	// If the currently edited scene was deleted, exit immediately
-	if (m_scene && m_scene->id() == fid)
-	{
-		slotCancelClicked();
-	}
-}
-
-void AdvancedSceneEditor::updateChannelList()
-{
-	QLCChannel* ch = NULL;
-	t_fixture_id fxi_id = KNoID;
-	Fixture* fxi = NULL;
-	QString num;
-	QString val;
-	QString cap_name;
-
-	t_value value = 0;
-	QLCCapability* cap = NULL;
-
-	m_sceneContents->clear();
-	m_currentChannel = NULL;
-
-	fxi_id = m_scene->fixture();
-	fxi = _app->doc()->fixture(fxi_id);
-	Q_ASSERT(fxi != NULL);
-
-	for (int i = 0; i < fxi->channels(); i++)
-	{
-		ch = fxi->channel(i);
-		Q_ASSERT(ch != NULL);
-
-		value = m_scene->channelValue(i).value;
-		cap = ch->searchCapability(value);
-
-		if (cap == NULL)
-		{
-			cap_name = QString("<Unknown>");
-		}
-		else
-		{
-			cap_name = cap->name();
-		}
-
-		num.sprintf("%03d", i + 1);
-		val.sprintf("%03d", m_scene->channelValue(i).value);
-		new QListViewItem(m_sceneContents, num, ch->name(), cap_name,
-				  val, m_scene->valueTypeString(i));
-	}
 }

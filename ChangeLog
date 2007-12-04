@@ -1,3 +1,7 @@
+2007-Dec-04  Heikki Junnila <hjunnila@users.sf.net>
+	* Modified ASE so that it is possible to edit multiple channels
+	  at a time with RMB. EditSceneValue dialog doesn't work yet though...
+
 2007-Dec-03  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed the type of generic fixture to "Dimmer" and set its default
 	  name to "Dimmers" in class AddFixture.

@@ -2,7 +2,7 @@
   Q Light Controller
   advancedsceneeditor.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -30,54 +30,68 @@ class Scene;
 class QLCChannel;
 class QLCFixtureDef;
 
+typedef QValueList<t_channel> ChannelList;
+
 class AdvancedSceneEditor : public UI_AdvancedSceneEditor
 {
 	Q_OBJECT
     
- public:
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
 	AdvancedSceneEditor(QWidget* parent, Scene* scene);
 	virtual ~AdvancedSceneEditor();
 
-	void init();
+protected:
+	Scene* m_scene;
+	Scene* m_original;
 
- public slots:
-	void slotSceneNameTextChanged(const QString& text);
+	/*********************************************************************
+	 * Menu
+	 *********************************************************************/
+protected slots:
+	void slotContextMenu(QListViewItem* item, const QPoint &point, int col);
 
-	void slotEditValueClicked();
-	void slotContentsClicked(QListViewItem* item);
-	void slotContentsDoubleClicked(QListViewItem*);
-	void slotChannelsContextMenuRequested(QListViewItem*, const QPoint &, int);
-
-	void slotApplyClicked();
-	void slotOKClicked();
-	void slotCancelClicked();
-
-	void slotDeviceFunctionsListChanged(t_function_id fid);
-
- signals:
-	void closed();
-
- private:
-	void updateChannelList();
-	void setDirty(bool dirty);
-	bool dirtyCheck();
-
-	void invokePresetMenu(const QPoint &);
-	void invokeValueMenu(const QPoint &);
-	void invokeTypeMenu(const QPoint &);
-
- private slots:
-	void slotPresetMenuActivated(int);
+	void slotCapabilityMenuActivated(int);
 	void slotValueMenuActivated(int);
 	void slotTypeMenuActivated(int);
 
- private:
-	bool m_dirty; // Indicates whether we need to save changes (dirty) or not
+protected:
+	void invokeCapabilityMenu(const QPoint &);
+	void invokeValueMenu(const QPoint &);
+	void invokeTypeMenu(const QPoint &);
 
-	Scene* m_scene;
-	Scene* m_original;
-	QLCChannel* m_currentChannel;
-	t_channel m_currentChannelNum;
+	/*********************************************************************
+	 * Listview
+	 *********************************************************************/
+protected:
+	/** Clear the list and create its contents anew */
+	void initListView();
+
+	/** Update only selected list view items (after an edit operation) */
+	void updateSelectedItems();
+
+	/** Update the given list view item to reflect the given channel value
+	    in the currently edited scene */
+	void updateChannelItem(QListViewItem* item, t_channel ch);
+
+protected slots:
+	void slotSelectionChanged();
+	void slotDoubleClicked(QListViewItem*);
+
+protected:
+	/** List of selected channel numbers */
+	ChannelList m_selection;
+
+	/*********************************************************************
+	 * Control buttons
+	 *********************************************************************/
+protected slots:
+	void slotEditValueClicked();
+
+	void slotOKClicked();
+	void slotCancelClicked();
 };
 
 #endif
