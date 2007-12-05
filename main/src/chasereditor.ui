@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>524</width>
-            <height>391</height>
+            <width>533</width>
+            <height>457</height>
         </rect>
     </property>
     <property name="caption">
@@ -47,7 +47,7 @@
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout9</cstring>
+                <cstring>layout6</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -123,11 +123,13 @@
                             <property name="name">
                                 <cstring>m_addStep</cstring>
                             </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="text">
                                 <string>+</string>
@@ -143,11 +145,13 @@
                             <property name="name">
                                 <cstring>m_removeStep</cstring>
                             </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="text">
                                 <string>X</string>
@@ -163,11 +167,13 @@
                             <property name="name">
                                 <cstring>m_raiseButton</cstring>
                             </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="text">
                                 <string>/\</string>
@@ -183,11 +189,13 @@
                             <property name="name">
                                 <cstring>m_lowerButton</cstring>
                             </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="text">
                                 <string>\/</string>
@@ -294,7 +302,7 @@
                         <string>Direction</string>
                     </property>
                     <property name="selectedId" stdset="0">
-                        <number>-1</number>
+                        <number>0</number>
                     </property>
                     <hbox>
                         <property name="name">

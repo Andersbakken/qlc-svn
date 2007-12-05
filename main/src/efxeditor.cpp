@@ -2,7 +2,7 @@
   Q Light Controller
   efxeditor.cpp
   
-  Copyright (C) Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -40,21 +40,13 @@
 
 extern App* _app;
 
-EFXEditor::EFXEditor(EFX* efx, QWidget* parent)
-	: UI_EFXEditor(parent, "EFXEditor", true),
-
-	  m_previewArea ( new EFXPreviewArea(m_previewFrame) ),
-	  m_efx         ( efx )
+EFXEditor::EFXEditor(QWidget* parent, EFX* efx)
+	: UI_EFXEditor(parent, "EFX Editor", true)
 {
-}
+	Q_ASSERT(efx != NULL);
 
-EFXEditor::~EFXEditor()
-{
-	m_efx->setPreviewPointArray(NULL);
-}
+	m_previewArea = new EFXPreviewArea(m_previewFrame);
 
-void EFXEditor::init()
-{
 	/* Get supported algorithms and fill the algorithm combo with them */
 	QStringList list;
 	EFX::algorithmList(list);
@@ -64,38 +56,32 @@ void EFXEditor::init()
 	/* Get a list of buses and insert them into the bus combo */
 	updateModulationBusCombo();
 
-	/* Set the algorithm's name to the name field */
-	m_nameEdit->setText(m_efx->name());
-
 	/* Resize the preview area to fill its frame */
 	m_previewArea->resize(m_previewFrame->width(),
 			      m_previewFrame->height());
 
 	/* Set the currently edited EFX function */
-	setEFX(m_efx);
+	setEFX(efx);
 
 	/* Draw the points */
 	m_previewArea->repaint();
 }
 
+EFXEditor::~EFXEditor()
+{
+	m_efx->setPreviewPointArray(NULL);
+}
+
 void EFXEditor::setEFX(EFX* efx)
 {
-	assert(efx);
+	/* Take the new EFX function for editing */
+	m_efx = efx;
 
-	if (m_efx)
-	{
-		/* If another EFX function has been edited with this dialog,
-		 * set its preview point array NULL so it doesn't try to
-		 * update its preview anymore
-		 */
-		m_efx->setPreviewPointArray(NULL);
-	}
+	/* Set the algorithm's name to the name field */
+	m_nameEdit->setText(m_efx->name());
 
 	/* Causes the EFX function to update the preview point array */
 	slotAlgorithmSelected(m_efx->algorithm());
-
-	/* Take the new EFX function for editing */
-	m_efx = efx;
 
 	/* Set the preview point array for the new EFX */
 	m_efx->setPreviewPointArray(m_previewArea->pointArray());
@@ -529,8 +515,8 @@ void EFXEditor::slotRunOrderClicked(int item)
 /**
  * Constructor
  */
-EFXPreviewArea::EFXPreviewArea(QWidget* parent, const char* name)
-	: QFrame (parent, name),
+EFXPreviewArea::EFXPreviewArea(QWidget* parent)
+	: QFrame (parent, "EFX Preview Area"),
     
 	  m_pointArray ( new QPointArray )
 {
@@ -590,7 +576,8 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
 	// prevPoint = m_pointArray->point(m_pointArray->size() - 1);
 
 	// Draw the points from the point array
-	for (unsigned int i = 0; isUpdatesEnabled() && i < m_pointArray->size(); i++)
+	for (unsigned int i = 0;
+	     isUpdatesEnabled() && i < m_pointArray->size(); i++)
 	{
 		point = m_pointArray->point(i);
 		//painter.drawPoint(point);

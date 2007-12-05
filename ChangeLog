@@ -1,3 +1,9 @@
+2007-Dec-05  Heikki Junnila <hjunnila@users.sf.net>
+	* Modified EFXEditor, FCEditor & ChaserEditor constructors to
+	  comply with QT conventions (parent first).
+	* Modified the UIs for the editors to have slightly more size-adaptive
+	  buttons.
+
 2007-Dec-04  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed ConsoleChannel's buttons' maximum sizes back to 32767.
 	* Changed "Preset" to "Capability" in ConsoleChannel.

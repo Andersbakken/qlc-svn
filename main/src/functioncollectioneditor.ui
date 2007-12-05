@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>500</width>
-            <height>392</height>
+            <width>534</width>
+            <height>457</height>
         </rect>
     </property>
     <property name="caption">
@@ -112,11 +112,13 @@
                             <property name="name">
                                 <cstring>m_addFunction</cstring>
                             </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="text">
                                 <string>+</string>
@@ -132,11 +134,13 @@
                             <property name="name">
                                 <cstring>m_removeFunction</cstring>
                             </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="text">
                                 <string>X</string>
@@ -211,12 +215,6 @@
                 <widget class="QPushButton">
                     <property name="name">
                         <cstring>m_ok</cstring>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>70</width>
-                            <height>0</height>
-                        </size>
                     </property>
                     <property name="text">
                         <string>&amp;OK</string>

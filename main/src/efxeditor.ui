@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>468</width>
-            <height>550</height>
+            <width>560</width>
+            <height>565</height>
         </rect>
     </property>
     <property name="caption">
@@ -200,14 +200,6 @@
                                     <widget class="QComboBox">
                                         <property name="name">
                                             <cstring>m_algorithmCombo</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>7</hsizetype>
-                                                <vsizetype>0</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
                                         </property>
                                         <property name="toolTip" stdset="0">
                                             <string>Selected EFX algorithm</string>
@@ -585,7 +577,7 @@
                                     <string>Run Order</string>
                                 </property>
                                 <property name="selectedId" stdset="0">
-                                    <number>-1</number>
+                                    <number>0</number>
                                 </property>
                                 <vbox>
                                     <property name="name">
@@ -646,7 +638,7 @@
                                     <string>Direction</string>
                                 </property>
                                 <property name="selectedId" stdset="0">
-                                    <number>-1</number>
+                                    <number>0</number>
                                 </property>
                                 <vbox>
                                     <property name="name">

@@ -1620,31 +1620,28 @@ int FunctionManager::slotEdit()
 	{
 	case Function::Scene:
 	{
-		AdvancedSceneEditor ase(this, (Scene*) function);
+		AdvancedSceneEditor ase(this, static_cast<Scene*> (function));
 		result = ase.exec();
 	}
 	break;
 
 	case Function::Chaser:
 	{
-		ChaserEditor ce((Chaser*) function, NULL);
-		ce.init();
+		ChaserEditor ce(this, static_cast<Chaser*> (function));
 		result = ce.exec();
 	}
 	break;
 
 	case Function::Collection:
 	{
-		FunctionCollectionEditor fce((FunctionCollection*) function,
-					     NULL);
+		FunctionCollectionEditor fce(this, static_cast<FunctionCollection*> (function));
 		result = fce.exec();
 	}
 	break;
 
 	case Function::EFX:
 	{
-		EFXEditor ee((EFX*) function, this);
-		ee.init();
+		EFXEditor ee(this, static_cast<EFX*> (function));
 		result = ee.exec();
 	}
 	break;

@@ -39,16 +39,19 @@
 
 extern App* _app;
 
-FunctionCollectionEditor::FunctionCollectionEditor(FunctionCollection* fc,
-						   QWidget* parent)
-	: UI_FunctionCollectionEditor(parent, "FunctionCollectionEditor", true)
+FunctionCollectionEditor::FunctionCollectionEditor(QWidget* parent,
+						   FunctionCollection* fc)
+	: UI_FunctionCollectionEditor(parent,
+				      "Function Collection Editor",
+				      true)
 {
-	ASSERT(fc);
-	m_original = fc;
+	Q_ASSERT(fc != NULL);
 
 	m_fc = new FunctionCollection();
 	m_fc->copyFrom(fc);
+	Q_ASSERT(m_fc != NULL);
 
+	m_original = fc;
 	m_functionManager = NULL;
 
 	init();
@@ -62,8 +65,10 @@ FunctionCollectionEditor::~FunctionCollectionEditor()
 
 void FunctionCollectionEditor::init()
 {
-	m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
-	m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
+	m_addFunction->setPixmap(QPixmap(QString(PIXMAPS) +
+					 QString("/edit_add.png")));
+	m_removeFunction->setPixmap(QPixmap(QString(PIXMAPS) +
+					    QString("/edit_remove.png")));
 
 	m_nameEdit->setText(m_fc->name());
 	updateFunctionList();
@@ -78,8 +83,8 @@ void FunctionCollectionEditor::slotAddFunctionClicked()
 	{
 		// Create the function manager in selection mode so it
 		// looks like a normal modal dialog
-		m_functionManager = new FunctionManager(this,
-							FunctionManager::SelectionMode);
+		m_functionManager = new FunctionManager(
+			this, FunctionManager::SelectionMode);
 
 		// Prevent the user from selecting this function
 		m_functionManager->setInactiveID(m_original->id());

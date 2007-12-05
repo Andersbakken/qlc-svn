@@ -2,7 +2,7 @@
   Q Light Controller
   chasereditor.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,54 +25,38 @@
 #include <qdialog.h>
 #include "uic_chasereditor.h"
 
-#include "function.h"
-
-class QListView;
-class QListViewItem;
-class QLineEdit;
-class QLabel;
-class QPushButton;
-class QToolButton;
-
 class Chaser;
-class Function;
-class Bus;
 class FunctionManager;
 
 class ChaserEditor : public UI_ChaserEditor
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  ChaserEditor(Chaser* function, QWidget* parent = NULL);
-  ~ChaserEditor();
+public:
+	ChaserEditor(QWidget* parent, Chaser* chaser);
+	~ChaserEditor();
 
-  void init();
+protected:
+	void updateStepList();
+	void updateOrderNumbers();
 
- private:
-  void updateStepList();
-  void updateOrderNumbers();
+protected slots:
+	void slotOKClicked();
+	void slotCancelClicked();
 
- private:
-  Chaser* m_chaser;
-  Chaser* m_original;
+	void slotAddClicked();
+	void slotAddAnother();
+	void slotRemoveClicked();
+	void slotFunctionManagerClosed();
 
-  Bus* m_bus;
+	void slotPlayClicked();
+	void slotRaiseClicked();
+	void slotLowerClicked();
 
-  FunctionManager* m_functionManager;
-
- private slots:
-  void slotCancelClicked();
-  void slotOKClicked();
-
-  void slotRemoveClicked();
-  void slotAddClicked();
-  void slotFunctionManagerClosed();
-  void slotAddAnother();
-
-  void slotPlayClicked();
-  void slotRaiseClicked();
-  void slotLowerClicked();
+protected:
+	Chaser* m_chaser;
+	Chaser* m_original;
+	FunctionManager* m_functionManager;
 };
 
 #endif

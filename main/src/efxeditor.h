@@ -34,71 +34,70 @@ class EFXPreviewArea;
 
 class EFXEditor : public UI_EFXEditor
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  EFXEditor(EFX* efx, QWidget* parent = NULL);
-  ~EFXEditor();
+public:
+	EFXEditor(QWidget* parent, EFX* efx);
+	~EFXEditor();
 
-  void init();
+protected:
+	/**
+	 * Set the EFX function to edit
+	 *
+	 * @param efx The EFX function to edit
+	 */
+	void setEFX(EFX* efx);
 
-  /**
-   * Set the EFX function to edit
-   *
-   * @param efx The EFX function to edit
-   */
-  void setEFX(EFX* efx);
+	/**
+	 * Get channels from the EFX function's fixture
+	 * and fill the combos with them.
+	 */
+	void fillChannelCombos();
+
+	/**
+	 * Get sceness from the EFX function's fixture
+	 * and fill the list views with them.
+	 */
+	void fillSceneLists();
+
+	/**
+	 * Update the list of available buses
+	 *
+	 */
+	void updateModulationBusCombo();
+
+protected slots:
+	void slotNameChanged(const QString &text);
+
+	void slotAlgorithmSelected(const QString &text);
+	void slotWidthSpinChanged(int value);
+	void slotHeightSpinChanged(int value);
+	void slotXOffsetSpinChanged(int value);
+	void slotYOffsetSpinChanged(int value);
+	void slotRotationSpinChanged(int value);
+
+	void slotXFrequencySpinChanged(int value);
+	void slotYFrequencySpinChanged(int value);
+	void slotXPhaseSpinChanged(int value);
+	void slotYPhaseSpinChanged(int value);
+
+	void slotHorizontalChannelSelected(int index);
+	void slotVerticalChannelSelected(int index);
   
-  /**
-   * Get channels from the EFX function's fixture
-   * and fill the combos with them.
-   */
-  void fillChannelCombos();
+	void slotStartSceneCheckboxToggled(bool);
+	void slotStopSceneCheckboxToggled(bool);
 
-  /**
-   * Get sceness from the EFX function's fixture
-   * and fill the list views with them.
-   */
-  void fillSceneLists();
+	void slotStartSceneListSelectionChanged(QListViewItem* item);
+	void slotStopSceneListSelectionChanged(QListViewItem* item);
 
-  /**
-   * Update the list of available buses
-   *
-   */
-  void updateModulationBusCombo();
+	void slotDirectionClicked(int item);
+	void slotRunOrderClicked(int item);
 
- public:
-  void slotNameChanged(const QString &text);
+protected:
+	EFXPreviewArea* m_previewArea;
+	QPointArray* m_pointArray;
 
-  void slotAlgorithmSelected(const QString &text);
-  void slotWidthSpinChanged(int value);
-  void slotHeightSpinChanged(int value);
-  void slotXOffsetSpinChanged(int value);
-  void slotYOffsetSpinChanged(int value);
-  void slotRotationSpinChanged(int value);
-
-  void slotXFrequencySpinChanged(int value);
-  void slotYFrequencySpinChanged(int value);
-  void slotXPhaseSpinChanged(int value);
-  void slotYPhaseSpinChanged(int value);
-
-  void slotHorizontalChannelSelected(int index);
-  void slotVerticalChannelSelected(int index);
-  
-  void slotStartSceneCheckboxToggled(bool);
-  void slotStopSceneCheckboxToggled(bool);
-
-  void slotStartSceneListSelectionChanged(QListViewItem* item);
-  void slotStopSceneListSelectionChanged(QListViewItem* item);
-
-  void slotDirectionClicked(int item);
-  void slotRunOrderClicked(int item);
-
- protected:
-  EFXPreviewArea* m_previewArea;
-  QPointArray* m_pointArray;
-
-  EFX* m_efx;
+	EFX* m_efx;
 };
 
 /**
@@ -107,30 +106,30 @@ class EFXEditor : public UI_EFXEditor
  */
 class EFXPreviewArea : public QFrame
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  EFXPreviewArea(QWidget* parent = NULL, const char* name = NULL);
-  ~EFXPreviewArea();
+public:
+	EFXPreviewArea(QWidget* parent);
+	~EFXPreviewArea();
 
-  /**
-   * Get the pointer for the point array that is used
-   * to draw the preview
-   *
-   * @return The point array
-   */
-  QPointArray* pointArray();
+	/**
+	 * Get the pointer for the point array that is used
+	 * to draw the preview
+	 *
+	 * @return The point array
+	 */
+	QPointArray* pointArray();
 
- protected:
-  /**
-   * QT Framework calls this when the widget needs
-   * to be repainted.
-   *
-   * @param e QPaintEvent
-   */
-  void paintEvent(QPaintEvent* e);
+protected:
+	/**
+	 * QT Framework calls this when the widget needs
+	 * to be repainted.
+	 *
+	 * @param e QPaintEvent
+	 */
+	void paintEvent(QPaintEvent* e);
 
-  QPointArray* m_pointArray;
+	QPointArray* m_pointArray;
 };
 
 

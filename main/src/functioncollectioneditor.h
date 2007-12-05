@@ -2,7 +2,7 @@
   Q Light Controller
   functioncollectioneditor.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -37,31 +37,31 @@ class FunctionCollection;
 
 class FunctionCollectionEditor : public UI_FunctionCollectionEditor
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  FunctionCollectionEditor(FunctionCollection* fc, QWidget* parent = NULL);
-  ~FunctionCollectionEditor();
+public:
+	FunctionCollectionEditor(QWidget* parent, FunctionCollection* fc);
+	~FunctionCollectionEditor();
 
-  void init();
+	void init();
 
- private slots:
-  void slotAddFunctionClicked();
-  void slotFunctionManagerClosed();
-  void slotAddAnother();
+protected slots:
+	void slotAddFunctionClicked();
+	void slotFunctionManagerClosed();
+	void slotAddAnother();
 
-  void slotRemoveFunctionClicked();
-  void slotOKClicked();
-  void slotCancelClicked();
+	void slotRemoveFunctionClicked();
+	void slotOKClicked();
+	void slotCancelClicked();
 
- private:
-  bool isAlreadyMember(t_function_id id);
-  void updateFunctionList();
+protected:
+	bool isAlreadyMember(t_function_id id);
+	void updateFunctionList();
 
- protected:
-  FunctionCollection* m_fc;
-  FunctionCollection* m_original;
-  FunctionManager* m_functionManager;
+protected:
+	FunctionCollection* m_fc;
+	FunctionCollection* m_original;
+	FunctionManager* m_functionManager;
 };
 
 #endif

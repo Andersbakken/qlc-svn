@@ -42,7 +42,6 @@
 #include "app.h"
 #include "doc.h"
 #include "functionmanager.h"
-#include "bus.h"
 #include "chaser.h"
 
 extern App* _app;
@@ -56,19 +55,37 @@ extern App* _app;
 //
 // Constructor
 //
-ChaserEditor::ChaserEditor(Chaser* function, QWidget* parent)
+ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser)
 	: UI_ChaserEditor(parent, "ChaserEditor", true)
 {
-	m_chaser = new Chaser();
-	m_chaser->copyFrom(function);
+	Q_ASSERT(chaser != NULL);
 
+	m_chaser = new Chaser();
+	m_chaser->copyFrom(chaser);
 	Q_ASSERT(m_chaser != NULL);
 
-	m_bus = NULL;
-
-	m_original = function;
-
+	m_original = chaser;
 	m_functionManager = NULL;
+
+	m_nameEdit->setText(m_chaser->name());
+	m_nameEdit->setSelection(0, m_nameEdit->text().length());
+
+	m_addStep->setPixmap(QPixmap(QString(PIXMAPS) +
+				     QString("/edit_add.png")));
+	m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) +
+					QString("/edit_remove.png")));
+
+	m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) +
+					 QString("/up.png")));
+	m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) +
+					 QString("/down.png")));
+
+	m_runOrderGroup->setButton(static_cast<int> (m_chaser->runOrder()));
+	m_directionGroup->setButton(static_cast<int> (m_chaser->direction()));
+
+	m_stepList->setSorting(-1);
+
+	updateStepList();
 }
 
 //
@@ -128,28 +145,6 @@ void ChaserEditor::updateStepList()
 	}
 
 	updateOrderNumbers();
-}
-
-//
-// Initialize the UI
-//
-void ChaserEditor::init()
-{
-	m_nameEdit->setText(m_chaser->name());
-	m_nameEdit->setSelection(0, m_nameEdit->text().length());
-
-	m_addStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_add.png")));
-	m_removeStep->setPixmap(QPixmap(QString(PIXMAPS) + QString("/edit_remove.png")));
-
-	m_raiseButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/up.png")));
-	m_lowerButton->setPixmap(QPixmap(QString(PIXMAPS) + QString("/down.png")));
-
-	m_runOrderGroup->setButton((int) m_chaser->runOrder());
-	m_directionGroup->setButton((int) m_chaser->direction());
-
-	m_stepList->setSorting(-1);
-
-	updateStepList();
 }
 
 //
