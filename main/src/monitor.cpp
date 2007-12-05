@@ -547,7 +547,7 @@ void Monitor::paintChannelLabel(int x, int y, int w, int h, QString s)
 {
 	_qapp->lock();
 	
-	m_painter.setPen(colorGroup().dark());
+	m_painter.setPen(colorGroup().midlight());
 	m_painter.eraseRect(x, y, w, h);
 	m_painter.drawText(x, y, w, h, AlignBottom, s);
 	

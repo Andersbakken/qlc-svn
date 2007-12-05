@@ -1,4 +1,7 @@
 2007-Dec-05  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed Monitor's channel label color to QColorGroup::midlight().
+
+2007-Dec-05  Heikki Junnila <hjunnila@users.sf.net>
 	* Unified most QMessageBoxes to use questions when appropriate and
 	  the essence of the question as the title instead of plain "QLC".
 	* Removed VCDockSliderProperties as obsolete.
