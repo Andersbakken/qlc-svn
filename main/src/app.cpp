@@ -890,11 +890,13 @@ void App::setMode(Mode mode)
 			msg = "There are running functions. Do you really\n";
 			msg += "wish to stop them and switch back to ";
 			msg += "Design mode?";
-			int result = QMessageBox::warning(this,
-							  "Switch to Design Mode",
-							  msg,
-							  QMessageBox::Yes,
-							  QMessageBox::No);
+			int result = QMessageBox::warning(
+				this,
+				"Switch to Design Mode",
+				msg,
+				QMessageBox::Yes,
+				QMessageBox::No);
+
 			if (result == QMessageBox::No)
 			{
 				return;
@@ -1358,14 +1360,26 @@ bool App::slotFileNew()
 	if (doc()->isModified())
 	{
 		QString msg;
-		msg = "Are you sure you want to clear the current workspace?\n";
-		msg += "There are unsaved changes.";
-		if (QMessageBox::warning(this, KApplicationNameShort, msg,
-					 QMessageBox::Yes, QMessageBox::No)
-		    == QMessageBox::Yes)
+		msg = "Do you wish to save the current workspace?\n";
+		msg += "Changes will be lost if you don't save them.";
+		int result = QMessageBox::warning(this, "New Workspace", msg,
+						  QMessageBox::Yes,
+						  QMessageBox::No,
+						  QMessageBox::Cancel);
+		if (result == QMessageBox::Yes)
+		{
+			slotFileSave();
+			newDocument();
+			result = true;
+		}
+		else if (result == QMessageBox::No)
 		{
 			newDocument();
 			result = true;
+		}
+		else
+		{
+			result = false;
 		}
 	}
 	else
@@ -1383,6 +1397,7 @@ void App::newDocument()
 
 	initDoc();
 	initVirtualConsole();
+	doc()->resetModified();
 }
 
 void App::slotFileOpen()
@@ -1393,18 +1408,31 @@ void App::slotFileOpen()
 	if (doc()->isModified())
 	{
 		QString msg;
-		msg = "Are you sure you want to clear the current workspace?\n";
-		msg += "There are unsaved changes.";
-		if (QMessageBox::warning(this, KApplicationNameShort, msg,
-					 QMessageBox::Yes, QMessageBox::No)
-		    == QMessageBox::No)
+		msg = "Do you wish to save the current workspace?\n";
+		msg += "Changes will be lost if you don't save them.";
+		int result = QMessageBox::warning(this, "Open Workspace", msg,
+						  QMessageBox::Yes,
+						  QMessageBox::No,
+						  QMessageBox::Cancel);
+		if (result == QMessageBox::Yes)
 		{
+			/* Save first */
+			slotFileSave();
+		}
+		else if (result == QMessageBox::No)
+		{
+			/* Nah, who cares? */
+		}
+		else
+		{
+			/* Whoops, go back! */
 			return;
 		}
 	}
 
 	fileName = QFileDialog::getOpenFileName(m_doc->fileName(), 
-				QString("*") + KExtWorkspace, this);
+						QString("*") + KExtWorkspace,
+						this);
 	
 	if (fileName.isEmpty() == false)
 	{
@@ -1412,10 +1440,13 @@ void App::slotFileOpen()
 		
 		if (doc()->loadXML(fileName) == false)
 		{
-			QMessageBox::critical(this, KApplicationNameShort,
-				      "Errors occurred while reading file.");
+			QMessageBox::critical(this,
+					      "Unable to open file!",
+					      "The file seems to be corrupt.");
 		}
 	}
+
+	doc()->resetModified();
 }
 
 void App::slotFileSave()

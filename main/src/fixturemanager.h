@@ -93,8 +93,8 @@ class FixtureManager : public QWidget
 	 /** Callback for menu/tool item to add a fixture */
 	void slotAdd();
 
-	 /** Callback for menu/tool item to remove a fixture */
-	void slotRemove();
+	 /** Callback for menu/tool item to delete a fixture */
+	void slotDelete();
 
 	 /** Callback for menu/tool item to clone a fixture */
 	void slotClone();
@@ -125,7 +125,7 @@ class FixtureManager : public QWidget
 
 	QToolButton* m_addButton;
 	QToolButton* m_cloneButton;
-	QToolButton* m_removeButton;
+	QToolButton* m_deleteButton;
 	QToolButton* m_propertiesButton;
 	QToolButton* m_consoleButton;
 

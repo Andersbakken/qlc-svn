@@ -67,10 +67,10 @@ const int KColumnID       ( 3 );
 
 // List view item menu callback id's
 const int KMenuItemAdd          ( 0 );
-const int KMenuItemRemove       ( 1 );
-const int KMenuItemProperties   ( 2 );
-const int KMenuItemConsole      ( 3 );
-const int KMenuItemClone        ( 4 );
+const int KMenuItemClone        ( 1 );
+const int KMenuItemDelete       ( 2 );
+const int KMenuItemProperties   ( 3 );
+const int KMenuItemConsole      ( 4 );
 const int KMenuItemAutoFunction ( 5 );
 
 const int KDefaultWidth  ( 600 );
@@ -152,12 +152,12 @@ void FixtureManager::initToolBar()
 	m_cloneButton->setUsesTextLabel(true);
 	QToolTip::add(m_cloneButton, "Clone a fixture and its functions" );
 
-	m_removeButton = new QToolButton(
+	m_deleteButton = new QToolButton(
 		QIconSet(QPixmap(QString(PIXMAPS) + QString("/editdelete.png"))),
-		"Remove", 0, this,
-		SLOT(slotRemove()), m_toolbar);
-	m_removeButton->setUsesTextLabel(true);
-	QToolTip::add(m_removeButton, "Remove fixture");
+		"Delete", 0, this,
+		SLOT(slotDelete()), m_toolbar);
+	m_deleteButton->setUsesTextLabel(true);
+	QToolTip::add(m_deleteButton, "Delete fixture");
 
 	m_toolbar->addSeparator();
 
@@ -559,7 +559,7 @@ void FixtureManager::slotAdd()
 	delete af;
 }
 
-void FixtureManager::slotRemove()
+void FixtureManager::slotDelete()
 {
 	QListViewItem* item = m_listView->currentItem();
 
@@ -568,10 +568,11 @@ void FixtureManager::slotRemove()
 
 	// Display a warning
 	QString msg;
-	msg = ("Do you want to remove \"");
+	msg = ("Do you want to delete fixture \"");
 	msg += item->text(KColumnName) + QString("\"?");
-	if (QMessageBox::warning(this, KApplicationNameShort, msg,
-				 QMessageBox::Yes, QMessageBox::No)
+	if (QMessageBox::question(this, "Delete", msg,
+				  QMessageBox::Yes,
+				  QMessageBox::No)
 	    == QMessageBox::No)
 	{
 		return;
@@ -754,7 +755,7 @@ void FixtureManager::slotSelectionChanged(QListViewItem* item)
 			m_addButton->setEnabled(false);
 		}
 
-		m_removeButton->setEnabled(false);
+		m_deleteButton->setEnabled(false);
 		m_propertiesButton->setEnabled(false);
 		m_consoleButton->setEnabled(false);
 		m_cloneButton->setEnabled(false);
@@ -783,14 +784,14 @@ void FixtureManager::slotSelectionChanged(QListViewItem* item)
 		if (_app->mode() == App::Design)
 		{
 			m_addButton->setEnabled(true);
-			m_removeButton->setEnabled(true);
+			m_deleteButton->setEnabled(true);
 			m_propertiesButton->setEnabled(true);
 			m_cloneButton->setEnabled(true);
 		}
 		else
 		{
 			m_addButton->setEnabled(false);
-			m_removeButton->setEnabled(false);
+			m_deleteButton->setEnabled(false);
 			m_propertiesButton->setEnabled(false);
 			m_cloneButton->setEnabled(false);
 		}
@@ -812,9 +813,9 @@ void FixtureManager::slotRightButtonClicked(QListViewItem* item,
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/wizard.png")),
 			 "Add...", KMenuItemAdd);
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editcopy.png")),
-			 "Clone...", KMenuItemClone);
+			 "Clone", KMenuItemClone);
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/editdelete.png")),
-			 "Remove", KMenuItemRemove);
+			 "Delete", KMenuItemDelete);
 	menu->insertSeparator();
 	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/configure.png")),
 			 "Properties...", KMenuItemProperties);
@@ -826,9 +827,9 @@ void FixtureManager::slotRightButtonClicked(QListViewItem* item,
 
 	if (_app->mode() == App::Operate)
 	{
-		// Operate mode, remove and edit impossible
+		// Operate mode, delete and edit impossible
 		menu->setItemEnabled(KMenuItemAdd, false);
-		menu->setItemEnabled(KMenuItemRemove, false);
+		menu->setItemEnabled(KMenuItemDelete, false);
 		menu->setItemEnabled(KMenuItemProperties, false);
 		menu->setItemEnabled(KMenuItemClone, false);
 		menu->setItemEnabled(KMenuItemAutoFunction, false);
@@ -837,7 +838,7 @@ void FixtureManager::slotRightButtonClicked(QListViewItem* item,
 	// No item selected, unable to do other things either
 	if (!item)
 	{
-		menu->setItemEnabled(KMenuItemRemove, false);
+		menu->setItemEnabled(KMenuItemDelete, false);
 		menu->setItemEnabled(KMenuItemConsole, false);
 		menu->setItemEnabled(KMenuItemProperties, false);
 		menu->setItemEnabled(KMenuItemClone, false);
@@ -858,8 +859,8 @@ void FixtureManager::slotMenuCallBack(int item)
 		slotAdd();
 		break;
 
-	case KMenuItemRemove:
-		slotRemove();
+	case KMenuItemDelete:
+		slotDelete();
 		break;
 
 	case KMenuItemClone:

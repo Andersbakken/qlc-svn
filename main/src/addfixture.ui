@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>603</width>
+            <width>549</width>
             <height>478</height>
         </rect>
     </property>
@@ -52,6 +52,14 @@
                     </column>
                     <property name="name">
                         <cstring>m_tree</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>7</vsizetype>
+                            <horstretch>1</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
                     </property>
                     <property name="allColumnsShowFocus">
                         <bool>true</bool>
@@ -108,20 +116,6 @@
                                             <property name="enabled">
                                                 <bool>false</bool>
                                             </property>
-                                            <property name="sizePolicy">
-                                                <sizepolicy>
-                                                    <hsizetype>4</hsizetype>
-                                                    <vsizetype>0</vsizetype>
-                                                    <horstretch>0</horstretch>
-                                                    <verstretch>0</verstretch>
-                                                </sizepolicy>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>150</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
                                             <property name="toolTip" stdset="0">
                                                 <string>The fixture's friendly name</string>
                                             </property>
@@ -151,11 +145,13 @@
                                             <property name="enabled">
                                                 <bool>false</bool>
                                             </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>150</width>
-                                                    <height>0</height>
-                                                </size>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>3</hsizetype>
+                                                    <vsizetype>0</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
                                             </property>
                                         </widget>
                                     </hbox>

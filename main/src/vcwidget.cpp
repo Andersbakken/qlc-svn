@@ -72,11 +72,12 @@ VCWidget::~VCWidget()
 
 void VCWidget::scram()
 {
-	int result = QMessageBox::warning(this,
-					  QString(caption()),
-					  QString("Remove the selected widget?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No);
+	QString msg;
+
+	msg = "Do you wish to delete this widget?\n" + caption();
+	int result = QMessageBox::question(this, "Delete", msg,
+					   QMessageBox::Yes,
+					   QMessageBox::No);
 	
 	if (result == QMessageBox::Yes)
 	{

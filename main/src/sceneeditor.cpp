@@ -151,14 +151,18 @@ void SceneEditor::slotSceneListContextMenu(QListBoxItem* item,
 void SceneEditor::slotRemove()
 {
 	Scene* s = currentScene();
+	QString msg;
 
 	if (s == NULL)
 	{
 		return;
 	}
 
-	if (QMessageBox::warning(this, "Scene Editor", "Remove selected scene?",
-				 QMessageBox::Yes, QMessageBox::No)
+	msg = "Do you want to delete scene: " + s->name() + "?";
+
+	if (QMessageBox::question(this, "Delete", msg,
+				  QMessageBox::Yes,
+				  QMessageBox::No)
 	    == QMessageBox::Yes)
 	{
 		_app->doc()->deleteFunction(s->id());
@@ -176,7 +180,7 @@ void SceneEditor::slotRename()
 		return;
 	}
 
-	QString text = QInputDialog::getText("Scene editor - Rename Scene",
+	QString text = QInputDialog::getText("Rename Scene",
 					     "Enter scene name",
 					     QLineEdit::Normal,
 					     s->name(), &ok, this);

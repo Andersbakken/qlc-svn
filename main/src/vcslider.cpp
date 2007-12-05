@@ -146,12 +146,13 @@ void VCSlider::init()
 
 void VCSlider::scram()
 {
-	int result = QMessageBox::warning(this,
-					  QString(caption()),
-					  QString("Remove selected slider?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No);
+	QString msg;
 
+	msg = "Do you wish to delete this slider?\n" + caption();
+	int result = QMessageBox::question(this, "Delete", msg,
+					   QMessageBox::Yes,
+					   QMessageBox::No);
+	
 	if (result == QMessageBox::Yes)
 	{
 		_app->virtualConsole()->setSelectedWidget(NULL);

@@ -1489,7 +1489,7 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_fixture_id fxi_id)
 	QString msg;
 
 	Function* function = _app->doc()->function(fid);
-	assert(function);
+	Q_ASSERT(function != NULL);
 
 	// Check that we are not trying to copy global functions to a fixture
 	// or vice versa
@@ -1528,10 +1528,10 @@ Function* FunctionManager::copyFunction(t_function_id fid, t_fixture_id fxi_id)
 		}
 	}
 
-	if (msg)
+	if (msg != QString::null)
 	{
 		// Display error message and exit without creating functions
-		QMessageBox::warning(this, KApplicationNameShort, msg);
+		QMessageBox::warning(this, "Unable to paste functions", msg);
 		return NULL;
 	}
 
@@ -1672,7 +1672,12 @@ void FunctionManager::slotDelete()
 		return;
 	}
 
-	msg = "Do you want to delete function(s):\n\n";
+	/* Check whether to use plural form */
+	msg = "Do you want to delete function";
+	if (m_selectedFunctions.count() > 1)
+		msg += "s:\n";
+	else
+		msg += ":\n";
 
 	// Append functions' names to the message
 	while ( (item = it.current()) != NULL)
@@ -1685,11 +1690,9 @@ void FunctionManager::slotDelete()
 		++it;
 	}
 
-	msg += QString("\n");
-
 	// Ask for user's confirmation
-	if (QMessageBox::information(this, KApplicationNameShort, msg,
-				     QMessageBox::Yes, QMessageBox::No)
+	if (QMessageBox::question(this, "Delete", msg,
+				  QMessageBox::Yes, QMessageBox::No)
 	    == QMessageBox::Yes)
 	{
 		deleteSelectedFunctions();

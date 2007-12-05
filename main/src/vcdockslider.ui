@@ -56,7 +56,7 @@
                 <cstring>m_valueLabel</cstring>
             </property>
             <property name="text">
-                <string>000</string>
+                <string>-</string>
             </property>
             <property name="alignment">
                 <set>AlignCenter</set>
@@ -143,11 +143,6 @@
         <widget class="QPushButton">
             <property name="name">
                 <cstring>m_tapButton</cstring>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>9</pointsize>
-                </font>
             </property>
             <property name="text">
                 <string></string>

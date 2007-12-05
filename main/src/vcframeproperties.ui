@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>243</width>
-            <height>144</height>
+            <width>282</width>
+            <height>155</height>
         </rect>
     </property>
     <property name="caption">
@@ -28,6 +28,9 @@
             </property>
             <property name="title">
                 <string>Button Behaviour</string>
+            </property>
+            <property name="selectedId" stdset="0">
+                <number>0</number>
             </property>
             <vbox>
                 <property name="name">

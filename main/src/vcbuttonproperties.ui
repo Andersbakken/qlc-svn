@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>428</width>
-            <height>523</height>
+            <height>556</height>
         </rect>
     </property>
     <property name="caption">
@@ -102,18 +102,6 @@
                             <property name="name">
                                 <cstring>m_attachFunction</cstring>
                             </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
                             <property name="text">
                                 <string></string>
                             </property>
@@ -127,18 +115,6 @@
                         <widget class="QPushButton">
                             <property name="name">
                                 <cstring>m_detachFunction</cstring>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>30</width>
-                                    <height>30</height>
-                                </size>
                             </property>
                             <property name="text">
                                 <string></string>
@@ -194,18 +170,6 @@
                     <property name="name">
                         <cstring>m_attachKey</cstring>
                     </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>30</width>
-                            <height>30</height>
-                        </size>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>30</width>
-                            <height>30</height>
-                        </size>
-                    </property>
                     <property name="text">
                         <string></string>
                     </property>
@@ -216,18 +180,6 @@
                 <widget class="QPushButton">
                     <property name="name">
                         <cstring>m_detachKey</cstring>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>30</width>
-                            <height>30</height>
-                        </size>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>30</width>
-                            <height>30</height>
-                        </size>
                     </property>
                     <property name="text">
                         <string></string>
@@ -436,6 +388,9 @@
                     </property>
                     <property name="text">
                         <string>Stop all running functions</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Make this button behave as a panic button, which stops all running functions when pressed</string>
                     </property>
                 </widget>
             </vbox>

@@ -56,20 +56,21 @@ VCFrame::~VCFrame()
 
 void VCFrame::scram()
 {
-	if (isBottomFrame() == false)
-	{
-		int result = QMessageBox::warning(this,
-					  QString(caption()),
-					  QString("Remove the selected frame?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No);
+	if (isBottomFrame() == true)
+		return;
+
+	QString msg;
 	
-		if (result == QMessageBox::Yes)
-		{
-			_app->virtualConsole()->setSelectedWidget(NULL);
-			_app->doc()->setModified();
-			deleteLater();
-		}
+	msg = "Do you wish to delete this frame?\n" + caption();
+	int result = QMessageBox::question(this, "Delete", msg,
+					   QMessageBox::Yes,
+					   QMessageBox::No);
+	
+	if (result == QMessageBox::Yes)
+	{
+		_app->virtualConsole()->setSelectedWidget(NULL);
+		_app->doc()->setModified();
+		deleteLater();
 	}
 }
 
