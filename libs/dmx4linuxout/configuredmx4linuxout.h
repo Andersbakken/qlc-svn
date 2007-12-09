@@ -2,7 +2,7 @@
   Q Light Controller
   configuredmx4linuxout.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -28,22 +28,56 @@ class DMX4LinuxOut;
 
 class ConfigureDMX4LinuxOut : public UI_ConfigureDMX4LinuxOut
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  ConfigureDMX4LinuxOut(DMX4LinuxOut* plugin);
-  virtual ~ConfigureDMX4LinuxOut();
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	ConfigureDMX4LinuxOut(QWidget* parent, DMX4LinuxOut* plugin);
+	virtual ~ConfigureDMX4LinuxOut();
 
-  void setDevice(QString deviceName);
-  QString device();
+protected:
+	DMX4LinuxOut* m_plugin;
 
-  void updateStatus();
+	/*********************************************************************
+	 * Universe testing
+	 *********************************************************************/
+protected slots:
+	/**
+	 * Start/stop flashing all channel values of one universe
+	 *
+	 * @param state true to start flashing, false to stop flashing
+	 */
+	void slotTestToggled(bool state);
+	
+	/**
+	 * Flash all channels of one universe between 0 and 255
+	 */
+	void slotTestTimeout();
 
- private slots:
-  void slotActivateClicked();
+protected:
+	/** Timer that drives universe testing */
+	QTimer* m_timer;
 
- private:
-  DMX4LinuxOut* m_plugin;
+	/** Modulo var that changes state between [0|1] on each timer pass */
+	int m_testMod;
+
+	/** The universe to test output on */
+	int m_testUniverse;
+
+	/*********************************************************************
+	 * Refresh
+	 *********************************************************************/
+protected slots:
+	/**
+	 * Invoke refresh for the interface list
+	 */
+	void slotRefreshClicked();
+
+protected:
+	/** Refresh the interface list */
+	void refreshList();
 };
 
 #endif

@@ -2,7 +2,7 @@
   Q Light Controller
   outputplugin.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@
 
 #include "inputplugin.h"
 
-
 /*InputEvent::InputEvent(int id, int channel, int value) 
          :  QEvent()
 {
@@ -34,12 +33,9 @@ InputEvent::~InputEvent();
 {
 }*/
 
-
-
-
-InputPlugin::InputPlugin(int id) : Plugin(id)
+InputPlugin::InputPlugin(int id) : Plugin()
 {
-  m_type = Plugin::InputType;
+	m_type = Plugin::InputType;
 }
 
 InputPlugin::~InputPlugin()

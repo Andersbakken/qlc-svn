@@ -1,15 +1,15 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_ConfigureUsbDmxOut</class>
+<class>UI_ConfigureUSBDMXOut</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>UI_ConfigureUsbDmxOut</cstring>
+        <cstring>UI_ConfigureUSBDMXOut</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>255</width>
-            <height>198</height>
+            <width>416</width>
+            <height>258</height>
         </rect>
     </property>
     <property name="caption">
@@ -19,129 +19,75 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>m_deviceGroup</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="title">
-                <string>Device</string>
-            </property>
-            <property name="toolTip" stdset="0">
-                <string></string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
+        <widget class="QListView">
+            <column>
+                <property name="text">
+                    <string>Output Line</string>
                 </property>
-                <widget class="QLineEdit" row="0" column="1">
-                    <property name="name">
-                        <cstring>m_deviceEdit</cstring>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>The device file that is the interface for the USB-DMX. Usually /dev/usbdmx.</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="0" column="0">
-                    <property name="name">
-                        <cstring>textLabel1</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Name</string>
-                    </property>
-                </widget>
-                <widget class="QSpinBox" row="1" column="1">
-                    <property name="name">
-                        <cstring>m_firstNumberSpinBox</cstring>
-                    </property>
-                    <property name="maxValue">
-                        <number>8</number>
-                    </property>
-                    <property name="minValue">
-                        <number>0</number>
-                    </property>
-                    <property name="value">
-                        <number>0</number>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>The USB-DMX instance (if you have multiple interfaces in the same computer)</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="1" column="0">
-                    <property name="name">
-                        <cstring>textLabel1_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Instance Number</string>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <widget class="QGroupBox">
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Device</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
             <property name="name">
-                <cstring>m_statusGroup</cstring>
+                <cstring>m_listView</cstring>
             </property>
-            <property name="title">
-                <string>Status</string>
+            <property name="resizeMode">
+                <enum>LastColumn</enum>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout2</cstring>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLabel">
+                <widget class="QPushButton">
                     <property name="name">
-                        <cstring>m_statusLabel</cstring>
-                    </property>
-                    <property name="font">
-                        <font>
-                            <bold>1</bold>
-                        </font>
-                    </property>
-                    <property name="frameShape">
-                        <enum>StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>Sunken</enum>
+                        <cstring>m_testButton</cstring>
                     </property>
                     <property name="text">
-                        <string>Not Active</string>
+                        <string>&amp;Test output</string>
                     </property>
-                    <property name="alignment">
-                        <set>AlignCenter</set>
+                    <property name="accel">
+                        <string>Alt+T</string>
                     </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Current interface status</string>
+                    <property name="toggleButton">
+                        <bool>true</bool>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>Test the output of the selected output line</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
                     <property name="name">
-                        <cstring>m_activate</cstring>
+                        <cstring>m_refreshButton</cstring>
                     </property>
                     <property name="text">
-                        <string>&amp;Activate</string>
+                        <string>&amp;Refresh</string>
                     </property>
                     <property name="accel">
-                        <string>Alt+A</string>
+                        <string>Alt+R</string>
                     </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Activate the interface. Pressing this button also saves settings.</string>
+                    <property name="whatsThis" stdset="0">
+                        <string>Refresh the list of available USB2DMX devices</string>
                     </property>
                 </widget>
-            </hbox>
-        </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout6</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
                 <spacer>
                     <property name="name">
                         <cstring>spacer2</cstring>
@@ -198,30 +144,35 @@
     <connection>
         <sender>m_cancel</sender>
         <signal>clicked()</signal>
-        <receiver>UI_ConfigureUsbDmxOut</receiver>
+        <receiver>UI_ConfigureUSBDMXOut</receiver>
         <slot>reject()</slot>
     </connection>
     <connection>
         <sender>m_ok</sender>
         <signal>clicked()</signal>
-        <receiver>UI_ConfigureUsbDmxOut</receiver>
+        <receiver>UI_ConfigureUSBDMXOut</receiver>
         <slot>accept()</slot>
     </connection>
     <connection>
-        <sender>m_activate</sender>
+        <sender>m_testButton</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>UI_ConfigureUSBDMXOut</receiver>
+        <slot>slotTestToggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>m_refreshButton</sender>
         <signal>clicked()</signal>
-        <receiver>UI_ConfigureUsbDmxOut</receiver>
-        <slot>slotActivateClicked()</slot>
+        <receiver>UI_ConfigureUSBDMXOut</receiver>
+        <slot>slotRefreshClicked()</slot>
     </connection>
 </connections>
 <tabstops>
     <tabstop>m_cancel</tabstop>
-    <tabstop>m_deviceEdit</tabstop>
-    <tabstop>m_activate</tabstop>
     <tabstop>m_ok</tabstop>
 </tabstops>
 <slots>
-    <slot>slotActivateClicked()</slot>
+    <slot>slotTestToggled(bool)</slot>
+    <slot>slotRefreshClicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

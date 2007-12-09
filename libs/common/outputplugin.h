@@ -32,10 +32,8 @@ class OutputPlugin : public Plugin
 public:
 	/**
 	 * Create a new output plugin
-	 *
-	 * @param id Plugin ID assigned by the application (maybe obsolete)
 	 */
-	OutputPlugin(int id);
+	OutputPlugin();
 
 	/**
 	 * Destroy an output plugin

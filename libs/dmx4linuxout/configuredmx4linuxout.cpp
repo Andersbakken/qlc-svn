@@ -2,7 +2,7 @@
   Q Light Controller
   configuredmx4linuxout.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -23,59 +23,116 @@
 #include "dmx4linuxout.h"
 
 #include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
+#include <qlistview.h>
 #include <qpushbutton.h>
+#include <qtimer.h>
 
-#include <unistd.h>
-
-ConfigureDMX4LinuxOut::ConfigureDMX4LinuxOut(DMX4LinuxOut* plugin) 
-  : UI_ConfigureDMX4LinuxOut(NULL, NULL, true)
+ConfigureDMX4LinuxOut::ConfigureDMX4LinuxOut(QWidget* parent,
+					     DMX4LinuxOut* plugin) 
+	: UI_ConfigureDMX4LinuxOut(parent, "Configure DMX4Linux Output", true)
 {
-  ASSERT(plugin != NULL);
-  m_plugin = plugin;
+	Q_ASSERT(plugin != NULL);
+	m_plugin = plugin;
 
-  m_deviceEdit->setText(m_plugin->deviceName());
+	m_timer = NULL;
+	m_testMod = 1;
+	m_testUniverse = -1;
 
-  updateStatus();
+	refreshList();
 }
 
 ConfigureDMX4LinuxOut::~ConfigureDMX4LinuxOut()
 {
-
 }
 
-QString ConfigureDMX4LinuxOut::device()
+void ConfigureDMX4LinuxOut::slotTestToggled(bool state)
 {
-  return m_deviceEdit->text();
+	QListViewItem* item = NULL;
+
+	if (state == true)
+	{
+		item = m_listView->currentItem();
+		if (item == NULL)
+		{
+			/* If there is no selection, don't toggle the button */
+			m_testButton->setOn(false);
+		}
+		else
+		{
+			/* Get the number of the universe to test */
+			m_testUniverse = item->text(0).toInt() - 1;
+
+			/* Disable the listview so that the selection cannot
+			   be changed during testing */
+			m_listView->setEnabled(false);
+			
+			/* Start a 1sec timer that blinks all channels of the
+			   selected universe on and off */
+			m_timer = new QTimer(this);
+			connect(m_timer, SIGNAL(timeout()),
+				this, SLOT(slotTestTimeout()));
+			m_timer->start(1000, false);
+
+			/* Do the first cycle already here, since the first
+			   timeout occurs after one second */
+			slotTestTimeout();
+		}
+	}
+	else
+	{
+		delete m_timer;
+		m_timer = NULL;
+		
+		m_listView->setEnabled(true);
+
+		/* Reset channel values to zero */
+		if (m_testMod == 1)
+		{
+			m_testMod = 0;
+			slotTestTimeout();
+			m_testMod = 0;
+		}
+		
+		m_testUniverse = -1;
+	}
 }
 
-void ConfigureDMX4LinuxOut::slotActivateClicked()
+void ConfigureDMX4LinuxOut::slotTestTimeout()
 {
-  if (m_plugin->deviceName() != m_deviceEdit->text())
-    {
-      m_plugin->setDeviceName(m_deviceEdit->text());
-    }
+	t_value values[512];
 
-  m_plugin->activate();
+	if (m_testUniverse < 0)
+		return;
 
-  ::usleep(10);  // Allow the activation signal get passed to doc
+	if (m_testMod == 0)
+		for (t_channel i = 0; i < 512; i++)
+			values[i] = 0;
+	else
+		for (t_channel i = 0; i < 512; i++)
+			values[i] = 255;
 
-  updateStatus();
+	m_plugin->writeRange(m_testUniverse, values, 512);
+
+	m_testMod = (m_testMod + 1) % 2;
 }
 
-void ConfigureDMX4LinuxOut::updateStatus()
+void ConfigureDMX4LinuxOut::slotRefreshClicked()
 {
-  if (m_plugin->isOpen())
-    {
-      m_statusLabel->setText("Active");
-      m_deviceEdit->setEnabled(false);
-      m_activate->setEnabled(false);
-    }
-  else
-    {
-      m_statusLabel->setText("Not Active");
-      m_deviceEdit->setEnabled(true);
-      m_activate->setEnabled(true);
-    }
+	m_plugin->open();
+	refreshList();
+}
+
+void ConfigureDMX4LinuxOut::refreshList()
+{
+	QString t;
+
+	m_listView->clear();
+
+	for (int i = 0; i < m_plugin->m_dmxInfo.used_out_universes; i++)
+	{
+		new QListViewItem(m_listView,
+				  t.sprintf("%.2d", i + 1),
+				  t.sprintf("%s", m_plugin->m_dmxCaps[i].driver),
+				  t.sprintf("%.3d", m_plugin->m_dmxCaps[i].maxSlots));
+	}
 }

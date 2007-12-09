@@ -39,10 +39,8 @@ class Plugin : public QObject
 public:
 	/**
 	 * Construct a new plugin
-	 *
-	 * @param id Plugin ID (assigned by the application, maybe obsolete)
 	 */
-	Plugin(t_plugin_id id);
+	Plugin();
 
 	/**
 	 * Destroy the plugin
@@ -76,20 +74,14 @@ public:
 	virtual int close() = 0;
 
 	/**
-	 * Open or not?
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
-	 */
-	virtual bool isOpen() = 0;
-
-	/**
 	 * Invoke a configuration dialog for the plugin
 	 *
 	 * This is a pure virtual function that must be implemented
 	 * in all plugins.
+	 *
+	 * @param parentWidget A parent QWidget for the configuration dialog
 	 */
-	virtual int configure() = 0;
+	virtual int configure(QWidget* parentWidget) = 0;
 
 	/**
 	 * Provide an information text to be displayed in the plugin manager
@@ -99,43 +91,6 @@ public:
 	 */
 	virtual QString infoText() = 0;
 
-	/**
-	 * Invoke a context menu
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
-	 *
-	 * @param pos The position to invoke the menu at
-	 */
-	virtual void contextMenu(QPoint pos) = 0;
-	
-	/**
-	 * Set the plugin's configuration directory (i.e. the dir where the
-	 * plugin should save/load its configuration to/from)
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
-	 *
-	 * @param dir The directory path
-	 */	 
-	virtual int setConfigDirectory(QString dir) = 0;
-
-	/**
-	 * Save the plugin's settings into a file inside the config directory.
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
-	 */
-	virtual int saveSettings() = 0;
-
-	/**
-	 * Load the plugin's settings from a file inside the config directory.
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
-	 */
-	virtual int loadSettings() = 0;
-
 	/*********************************************************************
 	 * Standard functions that should not be overwritten
 	 *********************************************************************/
@@ -144,11 +99,6 @@ public:
 	 * Get the plugin's name
 	 */
 	QString name();
-
-	/**
-	 * Get the plugin's ID (possibly obsolete)
-	 */
-	t_plugin_id id();
 
 	/**
 	 * Get the plugin's version (possibly obsolete)
@@ -180,14 +130,10 @@ public:
 	 */
 	QObject* eventReceiver() const;
 
-signals:
-	void activated(Plugin* plugin);
-	
 protected:
 	QString m_name;
 	PluginType m_type;
 	unsigned long m_version;
-	t_plugin_id m_id;
 	void* m_handle;
 	QObject* m_eventReceiver;
 };

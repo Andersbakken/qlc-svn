@@ -28,37 +28,34 @@
 
 class DummyInPlugin : public InputPlugin
 {
-  Q_OBJECT
+	Q_OBJECT
 
-    friend class ConfigureDummyInPlugin;
+	friend class ConfigureDummyInPlugin;
 
- public:
-  DummyInPlugin(int id);
-  virtual ~DummyInPlugin();
+public:
+	DummyInPlugin(int id);
+	virtual ~DummyInPlugin();
+	
+	int open();
+	int close();
+	bool isOpen();
+	int configure();
+	QString infoText();
+	void contextMenu(QPoint pos);
+	
+	int setConfigDirectory(QString dir);
+	int saveSettings();
+	int loadSettings();
+	
+public:
+	static const QString PluginName;
+	
+protected slots:
+	void slotContextMenuCallback(int);
 
-  int open();
-  int close();
-  bool isOpen();
-  int configure();
-  QString infoText();
-  void contextMenu(QPoint pos);
-
-  int setConfigDirectory(QString dir);
-  int saveSettings();
-  int loadSettings();
-
-  void activate();
-
- public:
-  static const QString PluginName;
-
- protected slots:
-  void slotContextMenuCallback(int);
-  
- private:
-  bool m_open;
-
-  QMutex m_mutex;
+protected:
+	bool m_open;
+	QMutex m_mutex;
 };
 
 #endif

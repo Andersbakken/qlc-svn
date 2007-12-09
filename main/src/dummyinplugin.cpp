@@ -127,17 +127,11 @@ void DummyInPlugin::slotContextMenuCallback(int item)
   switch(item)
     {
     case ID_ACTIVATE:
-      activate();
       break;
 
     default:
       break;
     }
-}
-
-void DummyInPlugin::activate()
-{
-  emit activated(this);
 }
 
 int DummyInPlugin::setConfigDirectory(QString dir)

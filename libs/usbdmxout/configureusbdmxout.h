@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  configuredmx4linuxout.h
+  configureusbdmxout.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -24,27 +24,61 @@
 
 #include "uic_configureusbdmxout.h"
 
-class UsbDmxOut;
+class USBDMXOut;
+class QTimer;
 
-class ConfigureUsbDmxOut : public UI_ConfigureUsbDmxOut
+class ConfigureUSBDMXOut : public UI_ConfigureUSBDMXOut
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  ConfigureUsbDmxOut(UsbDmxOut* plugin);
-  virtual ~ConfigureUsbDmxOut();
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	ConfigureUSBDMXOut(QWidget* parent, USBDMXOut* plugin);
+	virtual ~ConfigureUSBDMXOut();
 
-  void setDevice(QString deviceName);
-  QString device();
+protected:
+	USBDMXOut* m_plugin;
 
-  void updateStatus();
-  int firstDeviceID();
+	/*********************************************************************
+	 * Universe testing
+	 *********************************************************************/
+protected slots:
+	/**
+	 * Start/stop flashing all channel values of one universe
+	 *
+	 * @param state true to start flashing, false to stop flashing
+	 */
+	void slotTestToggled(bool state);
 
- private slots:
-  void slotActivateClicked();
+	/**
+	 * Flash all channels of one universe between 0 and 255
+	 */
+	void slotTestTimeout();
 
- private:
-  UsbDmxOut* m_plugin;
+protected:
+	/** Timer that drives universe testing */
+	QTimer* m_timer;
+
+	/** Modulo var that changes state between [0|1] on each timer pass */
+	int m_testMod;
+
+	/** The universe to test output on */
+	int m_testUniverse;
+
+	/*********************************************************************
+	 * Refresh
+	 *********************************************************************/
+protected slots:
+	/**
+	 * Invoke refresh for the interface list
+	 */
+	void slotRefreshClicked();
+
+protected:
+	/** Refresh the interface list */
+	void refreshList();
 };
 
 #endif

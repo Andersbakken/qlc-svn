@@ -31,19 +31,16 @@ class DummyOutPlugin : public OutputPlugin
 	Q_OBJECT
 
 public:
-	DummyOutPlugin(int id);
+	DummyOutPlugin();
 	virtual ~DummyOutPlugin();
 
 	int open();
 	int close();
-	bool isOpen();
-	int configure();
-	QString infoText();
-	void contextMenu(QPoint pos);
 
-	int setConfigDirectory(QString dir);
-	int saveSettings();
-	int loadSettings();
+	int configure(QWidget* parentWidget);
+	QString infoText();
+
+	int outputs();
 
 	// OutputPlugin functions
 	int writeChannel(t_channel channel, t_value value);
@@ -52,15 +49,8 @@ public:
 	int readChannel(t_channel channel, t_value &value);
 	int readRange(t_channel address, t_value* values, t_channel num);
 
-	void activate();
-
-	int outputs();
-
 public:
 	static const QString PluginName;
-
-	protected slots:
-	void slotContextMenuCallback(int);
 
 private:
 	bool m_open;

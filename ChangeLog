@@ -1,3 +1,11 @@
+2007-Dec-09  Heikki Junnila <hjunnila@users.sf.net>
+	* Revised the (output)plugin interface a bit by removing saveSettings,
+	  loadSettings, isOpen, setConfigDir and contextMenu methods.
+	* Modified USBDMX and DMX4Linux plugins to use the revised plugin
+	  interface and changed their configuration dialogs to actually not
+	  configure anything, but test output.
+	* TODO: LLA plugin does not work/compile now...
+
 2007-Dec-05  Heikki Junnila <hjunnila@users.sf.net>
 	* Changed Monitor's channel label color to QColorGroup::midlight().
 

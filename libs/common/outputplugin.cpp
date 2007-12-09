@@ -21,7 +21,7 @@
 
 #include "outputplugin.h"
 
-OutputPlugin::OutputPlugin(int id) : Plugin(id)
+OutputPlugin::OutputPlugin() : Plugin()
 {
 	m_type = Plugin::OutputType;
 }

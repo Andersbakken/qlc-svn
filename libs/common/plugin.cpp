@@ -2,7 +2,7 @@
   Q Light Controller
   plugin.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -21,10 +21,10 @@
 
 #include "plugin.h"
 
-Plugin::Plugin(t_plugin_id id) : QObject()
+Plugin::Plugin() : QObject()
 {
-	m_id = id;
 	m_handle = NULL;
+	m_eventReceiver = NULL;
 }
 
 Plugin::~Plugin()
@@ -34,11 +34,6 @@ Plugin::~Plugin()
 QString Plugin::name()
 {
 	return m_name;
-}
-
-t_plugin_id Plugin::id()
-{
-	return m_id;
 }
 
 unsigned long Plugin::version()

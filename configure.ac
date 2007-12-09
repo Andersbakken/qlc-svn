@@ -123,6 +123,10 @@ AC_ARG_ENABLE(dmx4linux,
 )
 AM_CONDITIONAL(USE_DMX4LINUX, test $dmx4linux = yes)
 
+if [ test $dmx4linux = yes ]; then
+   AC_CHECK_HEADERS([dmx/dmx.h dmx/dmxioctl.h])
+fi
+
 ##############################################################################
 # Peperoni USB2DMX
 ##############################################################################

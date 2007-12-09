@@ -2,7 +2,7 @@
   Q Light Controller
   dmx4linuxout.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -24,61 +24,84 @@
 
 #include <qptrlist.h>
 #include <qstring.h>
+#include <dmx/dmx.h>
+#include <dmx/dmxioctl.h>
 
 #include "common/outputplugin.h"
 #include "common/types.h"
 
 class ConfigureDMX4LinuxOut;
-class QPoint;
 
-extern "C" OutputPlugin* create(t_plugin_id id);
-extern "C" void destroy(OutputPlugin* object);
+extern "C" OutputPlugin* create();
 
 class DMX4LinuxOut : public OutputPlugin
 {
-  Q_OBJECT
+	Q_OBJECT
 
-  friend class ConfigureDMX4LinuxOut;
+	friend class ConfigureDMX4LinuxOut;
 
- public:
-  DMX4LinuxOut(t_plugin_id id);
-  ~DMX4LinuxOut();
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	DMX4LinuxOut();
+	~DMX4LinuxOut();
 
-  // Plugin methods
-  int open();
-  int close();
-  bool isOpen();
-  int configure();
-  QString infoText();
-  void contextMenu(QPoint pos);
+	/*********************************************************************
+	 * Open/close
+	 *********************************************************************/
+public:
+	/** (Re-)open the plugin */
+	int open();
 
-  int setConfigDirectory(QString dir);
-  int saveSettings();
-  int loadSettings();
+	/** Close the plugin */
+	int close();
 
-  // OutputPlugin methods
-  int writeChannel(t_channel channel, t_value value);
-  int writeRange(t_channel address, t_value* values, t_channel num);
+	/** Number of output lines (universes) */
+	int outputs();
 
-  int readChannel(t_channel channel, t_value &value);
-  int readRange(t_channel address, t_value* values, t_channel num);
+protected:
+	/** File handle for /dev/dmx */
+	int m_fd;
 
-  // Own methods
-  QString deviceName() { return m_deviceName; }
-  void setDeviceName(QString name) { m_deviceName = name; }
+	/** Error code for /dev/dmx open() */
+	int m_openError;
 
- private slots:
-  void slotContextMenuCallback(int item);
+	/** Generic information on DMX4Linux */
+	struct dmx_info m_dmxInfo;
 
- private:
-  void activate();
-  void createContents(QPtrList <QString> &list);
+	/** Error code for DMX information ioctl() */
+	int m_dmxInfoError;
 
- private:
-  QString m_deviceName;
-  QString m_configDir;
-  int m_device;
-  t_value m_values[KChannelMax];
+	/** Capabilities for each output line (universe) */
+	struct dmx_capabilities* m_dmxCaps;
+
+	/*********************************************************************
+	 * Configuration
+	 *********************************************************************/
+public:
+	/** Invoke a configuration dialog */
+	int configure(QWidget* parentWidget);
+
+	/*********************************************************************
+	 * Status
+	 *********************************************************************/
+public:
+	/** Get an information text blob to be displayed in plugin manager */
+	QString infoText();
+
+	/*********************************************************************
+	 * Value read/write
+	 *********************************************************************/
+public:
+	int writeChannel(t_channel channel, t_value value);
+	int writeRange(t_channel address, t_value* values, t_channel num);
+
+	int readChannel(t_channel channel, t_value &value);
+	int readRange(t_channel address, t_value* values, t_channel num);
+
+protected:
+	t_value m_values[KChannelMax];
 };
 
 #endif

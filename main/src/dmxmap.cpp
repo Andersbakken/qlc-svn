@@ -371,7 +371,7 @@ void DMXMap::initPatch()
 	int i = 0;
 
 	/* Create a dummy output plugin and put it to the plugins list */
-	m_dummyOut = new DummyOutPlugin(0);
+	m_dummyOut = new DummyOutPlugin();
 	appendPlugin(m_dummyOut);
 
 	m_patch.resize(m_universes);
@@ -460,7 +460,7 @@ void DMXMap::configurePlugin(const QString& pluginName)
 				     "Unable to configure plugin",
 				     pluginName + " not found!");
 	else
-		outputPlugin->configure();
+		outputPlugin->configure(_app);
 }
 
 QString DMXMap::pluginStatus(const QString& pluginName)
@@ -625,8 +625,6 @@ OutputPlugin* DMXMap::createPlugin(const QString& path)
 
 	/* Setup the plugin */
 	plugin->setHandle(pluginHandle);
-	plugin->setConfigDirectory(QString(getenv("HOME")) + QString("/.qlc/"));
-	plugin->loadSettings();
 
 	return static_cast<OutputPlugin*> (plugin);
 }

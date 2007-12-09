@@ -2,7 +2,7 @@
   Q Light Controller
   outputplugin.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -29,46 +29,34 @@
 
 const int KInputEvent        ( QEvent::User + 10 );
 
-
-
 class InputEvent : public QCustomEvent
 { 
-  public:
-       InputEvent(int id, int channel, int value) 
-          : QCustomEvent( KInputEvent )
-         { m_id = id; m_channel=channel; m_value=value; }
+public:
+        InputEvent(int id, int channel, int value) 
+	: QCustomEvent( KInputEvent )
+	{ m_id = id; m_channel=channel; m_value=value; }
 
 
-        //virtual ~InputEvent();
-        int m_id;
-        int m_channel;
-        int m_value;
-        int id() const {return m_id;}
-        int channel() const {return m_channel;}
-        int value() const {return m_value;}
+	//virtual ~InputEvent();
+	int m_id;
+	int m_channel;
+	int m_value;
+	int id() const {return m_id;}
+	int channel() const {return m_channel;}
+	int value() const {return m_value;}
 };
 
 
 
 class InputPlugin : public Plugin
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  InputPlugin(int id);
-  virtual ~InputPlugin();
-  virtual void feedBack(int id, int channel, int value){};
+public:
+	InputPlugin(int id);
+	virtual ~InputPlugin();
+	virtual void feedBack(int id, int channel, int value){};
 
- signals:
-   //void InputEvent(const int, const int, const int);
-
-//  virtual int writeChannel(t_channel channel, t_value) = 0;
-//  virtual int writeRange(t_channel address, t_value* values,
-//                	 t_channel num) = 0;
-
-//  virtual int readChannel(t_channel channel, t_value &value) = 0;
-//  virtual int readRange(t_channel address, t_value* values,
-//                        t_channel num) = 0;
 };
 
 #endif

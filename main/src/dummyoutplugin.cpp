@@ -21,15 +21,13 @@
 
 #include <qstring.h>
 #include <qpopupmenu.h>
-#include <assert.h>
+#include <qmessagebox.h>
 
 #include "dummyoutplugin.h"
 
-#define ID_ACTIVATE        20
-
 const QString DummyOutPlugin::PluginName = QString("Dummy Output");
 
-DummyOutPlugin::DummyOutPlugin(int id) : OutputPlugin(id)
+DummyOutPlugin::DummyOutPlugin() : OutputPlugin()
 {
 	m_open = false;
 	m_version = 0x00010000;
@@ -61,14 +59,11 @@ int DummyOutPlugin::close()
 	return 0;
 }
 
-bool DummyOutPlugin::isOpen()
+int DummyOutPlugin::configure(QWidget* parentWidget)
 {
-	return m_open;
-}
-
-int DummyOutPlugin::configure()
-{
-	return 0;
+	QMessageBox::information(parentWidget,
+				 "Dummy Output Configuration",
+				 "This plugin has no configurable options");
 }
 
 QString DummyOutPlugin::infoText()
@@ -94,14 +89,7 @@ QString DummyOutPlugin::infoText()
 	str += QString("<TR>\n");
 	str += QString("<TD><B>Status</B></TD>");
 	str += QString("<TD>");
-	if (isOpen() == true)
-	{
-		str += QString("<I>Active</I></TD>");
-	}
-	else
-	{
-		str += QString("Not Active</TD>");
-	}
+	str += QString("<I>Active</I></TD>");
 	str += QString("</TR>");
 	str += QString("</TABLE>");
 
@@ -115,53 +103,9 @@ QString DummyOutPlugin::infoText()
 	return str;
 }
 
-void DummyOutPlugin::contextMenu(QPoint pos)
-{
-	QPopupMenu* menu = new QPopupMenu();
-	menu->insertItem("Activate", ID_ACTIVATE);
-
-	connect(menu, SIGNAL(activated(int)),
-		this, SLOT(slotContextMenuCallback(int)));
-	menu->exec(pos, 0);
-	delete menu;
-}
-
-void DummyOutPlugin::slotContextMenuCallback(int item)
-{
-	switch(item)
-	{
-	case ID_ACTIVATE:
-		activate();
-		break;
-
-	default:
-		break;
-	}
-}
-
-void DummyOutPlugin::activate()
-{
-	emit activated(this);
-}
-
 int DummyOutPlugin::outputs()
 {
 	return KUniverseCount;
-}
-
-int DummyOutPlugin::setConfigDirectory(QString dir)
-{
-	return 0;
-}
-
-int DummyOutPlugin::saveSettings()
-{
-	return -1;
-}
-
-int DummyOutPlugin::loadSettings()
-{
-	return -1;
 }
 
 int DummyOutPlugin::writeChannel(t_channel channel, t_value value)
@@ -175,7 +119,7 @@ int DummyOutPlugin::writeChannel(t_channel channel, t_value value)
 int DummyOutPlugin::writeRange(t_channel address, t_value* values,
 			       t_channel num)
 {
-	assert(values);
+	Q_ASSERT(values != NULL);
 
 	m_mutex.lock();
 	memcpy(m_values + address, values, num * sizeof(t_value));
@@ -196,7 +140,7 @@ int DummyOutPlugin::readChannel(t_channel channel, t_value &value)
 int DummyOutPlugin::readRange(t_channel address, t_value* values,
 			      t_channel num)
 {
-	assert(values);
+	Q_ASSERT(values != NULL);
 
 	m_mutex.lock();
 	memcpy(values, m_values + address, num * sizeof(t_value));
