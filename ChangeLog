@@ -1,4 +1,8 @@
 2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed a crash problem with ConfigureLlaOut, which was caused by
+	  uninitialized variables.
+
+2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>
 	* Modified LLA plugin to compile and start up.
 
 2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>

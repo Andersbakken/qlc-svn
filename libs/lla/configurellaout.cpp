@@ -36,7 +36,10 @@ ConfigureLlaOut::ConfigureLlaOut(QWidget* parent, LlaOut* plugin)
 {
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
+
+	m_timer = NULL;
 	m_testUniverse = -1;
+	m_testMod = 0;
 }
 
 ConfigureLlaOut::~ConfigureLlaOut()
@@ -78,6 +81,7 @@ void ConfigureLlaOut::slotTestToggled(bool state)
 
 			/* Do the first cycle already here, since the first
 			   timeout occurs after one second */
+			m_testMod = 1;
 			slotTestTimeout();
 		}
 	}
