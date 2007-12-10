@@ -1,3 +1,9 @@
+2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>
+	* Changed "Universe" to "Output" in DMX4Linux plugin's infoText().
+	* Added an array of errors for each usbdmx device in usbdmx plugin.
+	  These errors are displayed in infoText().
+	* Renamed "Output line" to "Output" in usbdmx plugin.
+
 2007-Dec-09  Heikki Junnila <hjunnila@users.sf.net>
 	* Revised the (output)plugin interface a bit by removing saveSettings,
 	  loadSettings, isOpen, setConfigDir and contextMenu methods.

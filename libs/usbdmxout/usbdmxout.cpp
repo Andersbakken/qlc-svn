@@ -160,7 +160,10 @@ USBDMXOut::USBDMXOut() : OutputPlugin()
 	m_version = 0x00010100;
 
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+	{
 		m_devices[i] = -1;
+		m_errors[i] = 0;
+	}
 
 	for (t_channel ch = 0; ch < MAX_USBDMX_DEVICES * 512; ch++)
 		m_values[ch] = 0;
@@ -188,6 +191,7 @@ int USBDMXOut::open()
 	{
 		path.sprintf("/dev/usbdmx%d", i);
 		m_devices[i] = ::open(static_cast<const char*> (path), O_RDWR);
+		m_errors[i] = errno;
 		if (m_devices[i] >= 0)
 			qDebug(QString("Found USB2DMX device from ") + path);
 	}
@@ -280,8 +284,8 @@ QString USBDMXOut::infoText()
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
 	info += QApplication::palette().active().highlightedText().name();
-	info += QString("\" SIZE=\"5\">");
-	info += QString("Output line");
+	info += QString("\">");
+	info += QString("Output");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 
@@ -290,7 +294,7 @@ QString USBDMXOut::infoText()
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
 	info += QApplication::palette().active().highlightedText().name();
-	info += QString("\" SIZE=\"5\">");
+	info += QString("\">");
 	info += QString("Device name");
 	info += QString("</FONT>");
 	info += QString("</TD>");
@@ -299,16 +303,25 @@ QString USBDMXOut::infoText()
 	/* Output lines */
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
-		if (m_devices[i] >= 0)
+		info += QString("<TR>");
+
+		s.sprintf("%d", i + 1);
+		info += QString("<TD>" + s + "</TD>");
+
+		if (m_devices[i] >= 0 && m_errors[i] == 0)
 		{
-			info += QString("<TR>");
-			s.sprintf("%d", i + 1);
-			info += QString("<TD>" + s + "</TD>");
 			s.sprintf("/dev/usbdmx%d", i);
 			info += QString("<TD>" + s + "</TD>");
-			info += QString("</TR>");
 		}
+		else
+		{
+			s.sprintf("<I>/dev/usbdmx%d: %s</I>",
+				  i, strerror(m_errors[i]));
+			info += QString("<TD>" + s + "</TD>");
+		}
+		info += QString("</TR>");
 	}
+
 	info += QString("</TABLE>");
 
 	info += QString("</BODY>");

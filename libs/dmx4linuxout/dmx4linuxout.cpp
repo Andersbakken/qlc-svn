@@ -246,7 +246,7 @@ QString DMX4LinuxOut::infoText()
 	info += QString("<FONT COLOR=\"");
 	info += QApplication::palette().active().highlightedText().name();
 	info += QString("\">");
-	info += QString("Universe");
+	info += QString("Output");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 

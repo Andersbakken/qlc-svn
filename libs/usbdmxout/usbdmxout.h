@@ -66,6 +66,7 @@ public:
 
 protected:
 	int m_devices[MAX_USBDMX_DEVICES];
+	int m_errors[MAX_USBDMX_DEVICES];
 
 	/*********************************************************************
 	 * Configuration
