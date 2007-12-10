@@ -22,42 +22,49 @@
 #include <qstring.h>
 #include <qpopupmenu.h>
 #include <qmessagebox.h>
+#include <qapplication.h>
 
 #include "dummyoutplugin.h"
 
-const QString DummyOutPlugin::PluginName = QString("Dummy Output");
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
 
 DummyOutPlugin::DummyOutPlugin() : OutputPlugin()
 {
-	m_open = false;
-	m_version = 0x00010000;
-	m_name = DummyOutPlugin::PluginName;
+	m_version = 0x00010100;
+	m_name = QString("Dummy Output");
 
 	for (t_channel i = 0; i < KChannelMax; i++)
-	{
 		m_values[i] = 0;
-	}
 }
 
 DummyOutPlugin::~DummyOutPlugin()
 {
 }
 
+/*****************************************************************************
+ * Open/close
+ *****************************************************************************/
+
 int DummyOutPlugin::open()
 {
-	qDebug("DummyOut Plugin opened");
-
-	m_open = true;
 	return 0;
 }
 
 int DummyOutPlugin::close()
 {
-	qDebug("DummyOut Plugin closed");
-
-	m_open = false;
 	return 0;
 }
+
+int DummyOutPlugin::outputs()
+{
+	return KUniverseCount;
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
 
 int DummyOutPlugin::configure(QWidget* parentWidget)
 {
@@ -66,47 +73,67 @@ int DummyOutPlugin::configure(QWidget* parentWidget)
 				 "This plugin has no configurable options");
 }
 
+/*****************************************************************************
+ * Status
+ *****************************************************************************/
+
 QString DummyOutPlugin::infoText()
 {
+	QString str;
 	QString t;
-	QString str = QString::null;
-	str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
+
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>Plugin Info</TITLE>");
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
+
+	/* Title */
 	str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	str += QString("<TR><TD BGCOLOR=\"black\">");
-	str += QString("<FONT COLOR=\"white\" SIZE=\"5\">");
-	str += name() + QString("</FONT></TD></TR></TABLE>");
-	str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-
-	str += QString("<TR><TD><B>Version</B></TD>");
-	str += QString("<TD>");
-	t.setNum((version() >> 16) & 0xff);
-	str += t + QString(".");
-	t.setNum((version() >> 8) & 0xff);
-	str += t + QString(".");
-	t.setNum(version() & 0xff);
-	str += t + QString("</TD></TR>");
-
-	str += QString("<TR>\n");
-	str += QString("<TD><B>Status</B></TD>");
-	str += QString("<TD>");
-	str += QString("<I>Active</I></TD>");
+	str += QString("<TR>");
+	str += QString("<TD BGCOLOR=\"");
+	str += QApplication::palette().active().highlight().name();
+	str += QString("\">");
+	str += QString("<FONT COLOR=\"");
+	str += QApplication::palette().active().highlightedText().name();
+	str += QString("\" SIZE=\"5\">");
+	str += name();
+	str += QString("</FONT>");
+	str += QString("</TD>");
 	str += QString("</TR>");
 	str += QString("</TABLE>");
 
+	/* Version */
+	str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+	str += QString("<TR>");
+	str += QString("<TD><B>Version</B></TD>");
+	t.sprintf("%d.%d.%d", (version() >> 16) & 0xff,
+		  (version() >> 8) & 0xff, version() & 0xff);
+	str += QString("<TD>" + t +"</TD>");
+	str += QString("</TR>");
+
+	str += QString("<TR>");
+	str += QString("<TD><B>Outputs</B></TD>");
+	t.sprintf("%d", outputs());
+	str += QString("<TD><I>" + t + "</I></TD>");
+	str += QString("</TR>");
+	str += QString("</TABLE>");
+
+	/* Note */
 	str += QString("<H3>NOTE</H3>");
 	str += QString("<P>This plugin does absolutely nothing; ");
 	str += QString("you can use this if you don't have ");
 	str += QString("the necessary hardware for real control.</P>");
 
-	str += QString("</BODY></HTML>");
+	str += QString("</BODY>");
+	str += QString("</HTML>");
 
 	return str;
 }
 
-int DummyOutPlugin::outputs()
-{
-	return KUniverseCount;
-}
+/*****************************************************************************
+ * Value read/write
+ *****************************************************************************/
 
 int DummyOutPlugin::writeChannel(t_channel channel, t_value value)
 {

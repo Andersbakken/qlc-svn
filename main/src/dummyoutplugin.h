@@ -29,33 +29,46 @@
 class DummyOutPlugin : public OutputPlugin
 {
 	Q_OBJECT
-
+		
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
 	DummyOutPlugin();
 	virtual ~DummyOutPlugin();
 
+	/*********************************************************************
+	 * Open/close
+	 *********************************************************************/
+public:
 	int open();
 	int close();
-
-	int configure(QWidget* parentWidget);
-	QString infoText();
-
 	int outputs();
 
-	// OutputPlugin functions
+	/*********************************************************************
+	 * Configuration
+	 *********************************************************************/
+public:
+	int configure(QWidget* parentWidget);
+
+	/*********************************************************************
+	 * Status
+	 *********************************************************************/
+public:
+	QString infoText();
+
+	/*********************************************************************
+	 * Value Read/Write
+	 *********************************************************************/
+public:
 	int writeChannel(t_channel channel, t_value value);
 	int writeRange(t_channel address, t_value* values, t_channel num);
 
 	int readChannel(t_channel channel, t_value &value);
 	int readRange(t_channel address, t_value* values, t_channel num);
 
-public:
-	static const QString PluginName;
-
-private:
-	bool m_open;
+protected:
 	t_value m_values[KChannelMax];
-
 	QMutex m_mutex;
 };
 
