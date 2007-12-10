@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Form interface generated from reading ui file 'configurellaout.ui'
 **
-** Created: Tue Apr 10 18:47:35 2007
+** Created: Mon Dec 10 13:23:31 2007
 **      by: The User Interface Compiler ($Id$)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -17,9 +17,8 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QGridLayout;
 class QSpacerItem;
-class QGroupBox;
-class QSpinBox;
-class QLabel;
+class QListView;
+class QListViewItem;
 class QPushButton;
 
 class UI_ConfigureLlaOut : public QDialog
@@ -30,23 +29,19 @@ public:
     UI_ConfigureLlaOut( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
     ~UI_ConfigureLlaOut();
 
-    QGroupBox* m_deviceGroup;
-    QSpinBox* m_firstNumberSpinBox;
-    QLabel* textLabel1_2;
-    QGroupBox* m_statusGroup;
-    QLabel* m_statusLabel;
-    QPushButton* m_activate;
+    QListView* m_listView;
+    QPushButton* m_testButton;
+    QPushButton* m_refreshButton;
     QPushButton* m_ok;
     QPushButton* m_cancel;
 
 public slots:
-    virtual void slotActivateClicked();
+    virtual void slotTestToggled(bool);
+    virtual void slotRefreshClicked();
 
 protected:
     QVBoxLayout* UI_ConfigureLlaOutLayout;
-    QGridLayout* m_deviceGroupLayout;
-    QHBoxLayout* m_statusGroupLayout;
-    QHBoxLayout* layout6;
+    QHBoxLayout* layout2;
     QSpacerItem* spacer2;
 
 protected slots:

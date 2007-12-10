@@ -23,53 +23,112 @@
 #include "llaout.h"
 
 #include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
 #include <qpushbutton.h>
-#include <qspinbox.h>
+#include <qlistview.h>
+#include <qtimer.h>
 
-#include <unistd.h>
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
 
-ConfigureLlaOut::ConfigureLlaOut(LlaOut* plugin) 
-	: UI_ConfigureLlaOut(NULL, NULL, true)
+ConfigureLlaOut::ConfigureLlaOut(QWidget* parent, LlaOut* plugin) 
+	: UI_ConfigureLlaOut(parent, "Configure LLA Out", true)
 {
-	ASSERT(plugin != NULL);
+	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
-	
-	m_firstNumberSpinBox->setValue(m_plugin->firstUni());
-	updateStatus();
+	m_testUniverse = -1;
 }
 
 ConfigureLlaOut::~ConfigureLlaOut()
 {
-	
+	slotTestToggled(false);
 }
 
+/*****************************************************************************
+ * Universe testing
+ *****************************************************************************/
 
-int ConfigureLlaOut::firstDeviceID()
+void ConfigureLlaOut::slotTestToggled(bool state)
 {
-	return m_firstNumberSpinBox->value();
-}
+	QListViewItem* item = NULL;
 
-void ConfigureLlaOut::slotActivateClicked()
-{
-	m_plugin->activate();
-	
-	::usleep(10);  // Allow the activation signal get passed to doc
-	
-	updateStatus();
-}
-
-void ConfigureLlaOut::updateStatus()
-{
-	if (m_plugin->isOpen())
+	if (state == true)
 	{
-		m_statusLabel->setText("Active");
-		m_activate->setEnabled(false);
+		item = m_listView->currentItem();
+		if (item == NULL)
+		{
+			/* If there is no selection, don't toggle the button */
+			m_testButton->setOn(false);
+		}
+		else
+		{
+			/* Get the number of the universe to test */
+			m_testUniverse = item->text(0).toInt() - 1;
+
+			/* Disable the listview so that the selection cannot
+			   be changed during testing */
+			m_listView->setEnabled(false);
+			
+			/* Start a 1sec timer that blinks all channels of the
+			   selected universe on and off */
+			m_timer = new QTimer(this);
+			connect(m_timer, SIGNAL(timeout()),
+				this, SLOT(slotTestTimeout()));
+			m_timer->start(1000, false);
+
+			/* Do the first cycle already here, since the first
+			   timeout occurs after one second */
+			slotTestTimeout();
+		}
 	}
 	else
 	{
-		m_statusLabel->setText("Not Active");
-		m_activate->setEnabled(true);
+		delete m_timer;
+		m_timer = NULL;
+		
+		m_listView->setEnabled(true);
+
+		/* Reset channel values to zero */
+		if (m_testMod == 1)
+		{
+			m_testMod = 0;
+			slotTestTimeout();
+			m_testMod = 0;
+		}
+		
+		m_testUniverse = -1;
 	}
+}
+
+void ConfigureLlaOut::slotTestTimeout()
+{
+	t_value values[512];
+
+	if (m_testUniverse < 0)
+		return;
+
+	if (m_testMod == 0)
+		for (t_channel i = 0; i < 512; i++)
+			values[i] = 0;
+	else
+		for (t_channel i = 0; i < 512; i++)
+			values[i] = 255;
+
+	m_plugin->writeRange(m_testUniverse, values, 512);
+
+	m_testMod = (m_testMod + 1) % 2;
+}
+
+/*****************************************************************************
+ * Refresh
+ *****************************************************************************/
+
+void ConfigureLlaOut::slotRefreshClicked()
+{
+	m_plugin->open();
+	refreshList();
+}
+
+void ConfigureLlaOut::refreshList()
+{
 }

@@ -2,7 +2,8 @@
   Q Light Controller
   llaout.h
   
-  Copyright (C) Simon Newton, Heikki Junnila
+  Copyright (c) Simon Newton
+                Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,17 +26,10 @@
 #include "common/outputplugin.h"
 #include "common/types.h"
 
-#include <qptrlist.h>
-#include <qstring.h>
-#include <lla/LlaClient.h>
-
-#define MAXINTERFACES 8
-
 class ConfigureLlaOut;
-class QPoint;
+class LlaClient;
 
-extern "C" OutputPlugin* create(t_plugin_id id);
-extern "C" void destroy(OutputPlugin* object);
+extern "C" OutputPlugin* create();
 
 class LlaOut : public OutputPlugin
 {
@@ -43,45 +37,50 @@ class LlaOut : public OutputPlugin
 		
 	friend class ConfigureLlaOut;
 	
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
  public:
-	LlaOut(t_plugin_id id);
+	LlaOut();
 	~LlaOut();
 	
+	/*********************************************************************
+	 * Open/close
+	 *********************************************************************/
+public:
 	int open();
 	int close();
-	bool isOpen();
+	int outputs();
+
+protected:
+	LlaClient *m_lla;
 	
-	// Plugin methods
-	int configure();
+	/*********************************************************************
+	 * Configuration
+	 *********************************************************************/
+public:
+	int configure(QWidget* parentWidget);
+
+protected:
+	QString m_configDir;
+
+	/*********************************************************************
+	 * Status
+	 *********************************************************************/
+public:
 	QString infoText();
-	void contextMenu(QPoint pos);
 	
-	
-	int setConfigDirectory(QString dir);
-	int saveSettings();
-	int loadSettings();
-	
-	// OutputPlugin methods
+	/*********************************************************************
+	 * Value read/write
+	 *********************************************************************/
+public:
 	int writeChannel(t_channel channel, t_value value);
 	int writeRange(t_channel address, t_value* values, t_channel num);
 	
 	int readChannel(t_channel channel, t_value &value);
 	int readRange(t_channel address, t_value* values, t_channel num);
 	
-	int firstUni() { return m_firstUni; }
-	
- private slots:
-	void activate();
-	
-	void slotContextMenuCallback(int item);
-	
- private:
-	void createContents(QPtrList <QString> &list);
-	
- private:
-	QString m_configDir;
-	LlaClient *m_lla;
-	int m_firstUni;
+protected:
 	t_value m_values[KChannelMax];
 };
 

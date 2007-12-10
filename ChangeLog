@@ -1,4 +1,7 @@
 2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>
+	* Modified LLA plugin to compile and start up.
+
+2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>
 	* Modified dummy out plugin to look like usbdmxout and dmx4linuxout.
 
 2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>

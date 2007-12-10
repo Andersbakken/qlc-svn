@@ -6,7 +6,7 @@ INCLUDES += -DPIXMAPS=\"$(datadir)/$(PIXMAPS)\"
 INCLUDES += -DDOCUMENTS=\"$(datadir)/$(DOCUMENTS)/$(PACKAGE)\"
 INCLUDES += -DPLUGINS=\"$(PLUGINS)\"
 
-libllaout_la_LIBADD = @QT_LIBS@ @LIBLLA_LDFLAGS@
+libllaout_la_LIBADD = @QT_LIBS@ @LIBLLA_LIBS@
 
 noinst_HEADERS = \
 	uic_configurellaout.h \
@@ -24,6 +24,8 @@ libllaout_la_SOURCES = \
 	\
 	moc_llaout.cpp \
 	moc_configurellaout.cpp
+
+libdir = $(PLUGINS)
 
 moc_%.cpp: %.h
 	$(MOC) $< -o $@

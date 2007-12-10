@@ -219,7 +219,7 @@ AC_ARG_ENABLE(lla,
 AM_CONDITIONAL(USE_LLA, test $lla = yes)
 
 AC_SUBST(LIBLLA_CFLAGS)
-AC_SUBST(LIBLLA_LDFLAGS)
+AC_SUBST(LIBLLA_LIBS)
 
 ##############################################################################
 # Generated Makefiles

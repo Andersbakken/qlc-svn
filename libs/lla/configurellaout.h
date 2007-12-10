@@ -2,7 +2,8 @@
   Q Light Controller
   configurellaout.h
   
-  Copyright (C) Simon Newton, Heikki Junnila
+  Copyright (c) Simon Newton
+                Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -29,19 +30,55 @@ class LlaOut;
 class ConfigureLlaOut : public UI_ConfigureLlaOut
 {
 	Q_OBJECT
-		
- public:
-	ConfigureLlaOut(LlaOut* plugin);
+
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	ConfigureLlaOut(QWidget* parent, LlaOut* plugin);
 	virtual ~ConfigureLlaOut();
-	
-	void updateStatus();
-	int firstDeviceID();
- 
- private slots:
-	void slotActivateClicked();
-	
- private:
+
+protected:
 	LlaOut* m_plugin;
+
+	/*********************************************************************
+	 * Universe testing
+	 *********************************************************************/
+protected slots:
+	/**
+	 * Start/stop flashing all channel values of one universe
+	 *
+	 * @param state true to start flashing, false to stop flashing
+	 */
+	void slotTestToggled(bool state);
+
+	/**
+	 * Flash all channels of one universe between 0 and 255
+	 */
+	void slotTestTimeout();
+
+protected:
+	/** Timer that drives universe testing */
+	QTimer* m_timer;
+
+	/** Modulo var that changes state between [0|1] on each timer pass */
+	int m_testMod;
+
+	/** The universe to test output on */
+	int m_testUniverse;
+
+	/*********************************************************************
+	 * Refresh
+	 *********************************************************************/
+protected slots:
+	/**
+	 * Invoke refresh for the interface list
+	 */
+	void slotRefreshClicked();
+
+protected:
+	/** Refresh the interface list */
+	void refreshList();
 };
 
 #endif

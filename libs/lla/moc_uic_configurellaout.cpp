@@ -1,7 +1,7 @@
 /****************************************************************************
 ** UI_ConfigureLlaOut meta object code from reading C++ file 'uic_configurellaout.h'
 **
-** Created: Tue Apr 10 18:50:28 2007
+** Created: Mon Dec 10 13:23:33 2007
 **      by: The Qt MOC ($Id$)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -52,15 +52,20 @@ QMetaObject* UI_ConfigureLlaOut::staticMetaObject()
     if ( metaObj )
 	return metaObj;
     QMetaObject* parentObject = QDialog::staticMetaObject();
-    static const QUMethod slot_0 = {"slotActivateClicked", 0, 0 };
-    static const QUMethod slot_1 = {"languageChange", 0, 0 };
+    static const QUParameter param_slot_0[] = {
+	{ 0, &static_QUType_bool, 0, QUParameter::In }
+    };
+    static const QUMethod slot_0 = {"slotTestToggled", 1, param_slot_0 };
+    static const QUMethod slot_1 = {"slotRefreshClicked", 0, 0 };
+    static const QUMethod slot_2 = {"languageChange", 0, 0 };
     static const QMetaData slot_tbl[] = {
-	{ "slotActivateClicked()", &slot_0, QMetaData::Public },
-	{ "languageChange()", &slot_1, QMetaData::Protected }
+	{ "slotTestToggled(bool)", &slot_0, QMetaData::Public },
+	{ "slotRefreshClicked()", &slot_1, QMetaData::Public },
+	{ "languageChange()", &slot_2, QMetaData::Protected }
     };
     metaObj = QMetaObject::new_metaobject(
 	"UI_ConfigureLlaOut", parentObject,
-	slot_tbl, 2,
+	slot_tbl, 3,
 	0, 0,
 #ifndef QT_NO_PROPERTIES
 	0, 0,
@@ -81,8 +86,9 @@ void* UI_ConfigureLlaOut::qt_cast( const char* clname )
 bool UI_ConfigureLlaOut::qt_invoke( int _id, QUObject* _o )
 {
     switch ( _id - staticMetaObject()->slotOffset() ) {
-    case 0: slotActivateClicked(); break;
-    case 1: languageChange(); break;
+    case 0: slotTestToggled((bool)static_QUType_bool.get(_o+1)); break;
+    case 1: slotRefreshClicked(); break;
+    case 2: languageChange(); break;
     default:
 	return QDialog::qt_invoke( _id, _o );
     }
