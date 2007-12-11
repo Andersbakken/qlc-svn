@@ -311,7 +311,8 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 		if (fixtureMode == NULL)
 		{
 			qWarning("Fixture mode [%s] for [%s - %s] not found!",
-				 (const char*) modeName, (const char*) manufacturer,
+				 (const char*) modeName,
+				 (const char*) manufacturer,
 				 (const char*) model);
 		}
 	}
@@ -319,16 +320,17 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	/* Number of channels */
 	if (channels <= 0 || channels > KFixtureChannelsMax)
 	{
-		qWarning("Fixture channels %d out of bounds (%d - %d)!",
-			 id, 1, KFixtureChannelsMax);
+		qWarning("Fixture <%s> channels %d out of bounds (%d - %d)!",
+			 (const char*) name, channels, 1, KFixtureChannelsMax);
 		channels = 1;
 	}
 
 	/* Make sure that address is something sensible */
-	if (address > 511 || address + channels > 511)
+	if (address > 511 || address + (channels - 1) > 511)
 	{
-		qWarning("Fixture address %d out of DMX bounds (%d - %d)!",
-			 address, 0, 511);
+		qWarning("Fixture channel range %d - %d out of DMX " \
+			 "bounds (%d - %d)!",
+			 address + 1, address + channels, 1, 512);
 		address = 0;
 	}
 

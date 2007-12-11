@@ -1,3 +1,7 @@
+2007-Dec-11  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed a major problem in DMXMap, which calculated channels and
+	  universes totally wrong.
+
 2007-Dec-10  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a crash problem with ConfigureLlaOut, which was caused by
 	  uninitialized variables.

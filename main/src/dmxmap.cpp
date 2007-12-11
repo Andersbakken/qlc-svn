@@ -187,10 +187,20 @@ void DMXMap::setBlackout(bool state)
 			/* Set all plugin outputs to zeros */
 			setValueRange(i * 512, zeros, 512);
 		}
+
+		/* Set blackout AFTER the zero write operation so that
+		   DMXMap::setValueRange() doesn't write the zeros to
+		   m_blackoutstore */
+		m_blackout = true;
 	}
 	else
 	{
 		Q_ASSERT(m_blackoutStore != NULL);
+
+		/* Toggle blackout off BEFORE the operation so that
+		   DMXMap::setValueRange() writes the blackoutstore contents
+		   back to universes. */
+		m_blackout = false;
 
 		/* Write the values from the blackout store to all plugins */
 		for (int i = 0; i < m_universes; i++)
@@ -206,7 +216,6 @@ void DMXMap::setBlackout(bool state)
 		m_blackoutStore = NULL;
 	}
 
-	m_blackout = state;
 	emit blackoutChanged(m_blackout);
 }
 
@@ -228,7 +237,7 @@ t_value DMXMap::getValue(t_channel channel)
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (channel / 511);
+	t_channel universe = static_cast<t_channel> (channel / 512);
 	DMXPatch* dmxPatch = NULL;
 	t_value value = 0;
 
@@ -243,8 +252,8 @@ t_value DMXMap::getValue(t_channel channel)
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	dmxPatch->plugin->readChannel((channel % 511) * 
-				      (dmxPatch->output + 1), value);
+	dmxPatch->plugin->readChannel((channel % 512) +
+				      (dmxPatch->output * 512), value);
 
 	return value;
 }
@@ -257,13 +266,14 @@ bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
 	if (m_blackout == true)
 	{
 		/* Get the values from the temporary store when in blackout */
-		memcpy(values, m_blackoutStore + address, num * sizeof(t_value));
+		memcpy(values, m_blackoutStore + address,
+		       num * sizeof(t_value));
 		return true;
 	}
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (address / 511);
+	t_channel universe = static_cast<t_channel> (address / 512);
 	DMXPatch* dmxPatch = NULL;
 	t_value value = 0;
 
@@ -278,8 +288,9 @@ bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	return dmxPatch->plugin->readRange((address % 511) *
-					   (dmxPatch->output + 1), values, num);
+	return dmxPatch->plugin->readRange((address % 512) +
+					   (dmxPatch->output * 512),
+					   values, num);
 
 }
 
@@ -296,7 +307,7 @@ void DMXMap::setValue(t_channel channel, t_value value)
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (channel / 511);
+	t_channel universe = static_cast<t_channel> (channel / 512);
 	DMXPatch* dmxPatch = NULL;
 
 	if (universe >= m_universes)
@@ -310,8 +321,8 @@ void DMXMap::setValue(t_channel channel, t_value value)
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	dmxPatch->plugin->writeChannel((channel % 511) * 
-				       (dmxPatch->output + 1), value);
+	dmxPatch->plugin->writeChannel((channel % 512) + 
+				       (dmxPatch->output * 512), value);
 }
 
 void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
@@ -321,13 +332,14 @@ void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
 
 	if (m_blackout == true)
 	{
-		memcpy(m_blackoutStore + address, values, num * sizeof(t_value));
+		memcpy(m_blackoutStore + address, values, 
+		       num * sizeof(t_value));
 		return;
 	}
 	
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (address / 511);
+	t_channel universe = static_cast<t_channel> (address / 512);
 	DMXPatch* dmxPatch = NULL;
 	t_value value = 0;
 
@@ -342,8 +354,8 @@ void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	dmxPatch->plugin->writeRange((address % 511) * 
-				     (dmxPatch->output + 1), values, num);
+	dmxPatch->plugin->writeRange((address % 512) + 
+				     (dmxPatch->output * 512), values, num);
 
 }
 

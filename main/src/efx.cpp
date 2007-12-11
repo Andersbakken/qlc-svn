@@ -24,7 +24,6 @@
 #include <time.h>
 #include <qapplication.h>
 #include <qpointarray.h>
-#include <assert.h>
 #include <math.h>
 
 #include "common/filehandler.h"
@@ -516,8 +515,7 @@ void EFX::setXChannel(t_channel channel)
 	}
 	else
 	{
-		qDebug("Invalid channel number!");
-		assert(false);
+		qDebug("EFX: Invalid channel number %d", channel);
 	}
 }
 
@@ -540,8 +538,7 @@ void EFX::setYChannel(t_channel channel)
 	}
 	else
 	{
-		qDebug("Invalid channel number!");
-		assert(false);
+		qDebug("EFX: Invalid channel number %d", channel);
 	}
 }
 
@@ -701,7 +698,7 @@ bool EFX::stopSceneEnabled()
  */
 bool EFX::copyFrom(EFX* efx, t_fixture_id to)
 {
-	assert(efx);
+	Q_ASSERT(efx != NULL);
 
 	Function::setFixture(to);
 	Function::setName(efx->name());
