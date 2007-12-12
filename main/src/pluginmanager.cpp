@@ -215,6 +215,8 @@ void PluginManager::slotConfigureClicked()
 			;
 		else
 			_app->dmxMap()->configurePlugin(pluginName);
+
+		slotSelectionChanged(item);
 	}
 }
 

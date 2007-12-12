@@ -1,3 +1,7 @@
+2007-Dec-12  Heikki Junnila <hjunnila@users.sf.net>
+	* PluginManager updates its info view when returning from a
+	  configuration dialog.
+
 2007-Dec-11  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a major problem in DMXMap, which calculated channels and
 	  universes totally wrong.
