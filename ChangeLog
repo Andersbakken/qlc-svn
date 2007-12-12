@@ -1,4 +1,10 @@
 2007-Dec-12  Heikki Junnila <hjunnila@users.sf.net>
+	* Fixed a bug in dmxmapeditor's context menu, which used wrong
+	  output numbers as item ids.
+	* If an output plugin had no outputs, it was left out of dmxmap's
+	  context menu, which resulted in wrong plugin selection.
+
+2007-Dec-12  Heikki Junnila <hjunnila@users.sf.net>
 	* PluginManager updates its info view when returning from a
 	  configuration dialog.
 

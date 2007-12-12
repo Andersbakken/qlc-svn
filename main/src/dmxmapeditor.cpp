@@ -129,11 +129,8 @@ void DMXMapEditor::slotListViewContextMenuRequested(QListViewItem* item,
 	for (it = m_pluginList.begin(); it != m_pluginList.end(); ++it)
 	{
 		pluginName = *it;
-
-		/* Find out, how many outputs the plugin has. Skip if it has
-		   none (i.e. its probably an invalid plugin) */
-		outputs = m_dmxMap->pluginOutputs(*it);
-		if (outputs > 0)
+		outputs = m_dmxMap->pluginOutputs(pluginName);
+		if (outputs >= 0)
 		{
 			/* Put the plugin's outputs into a sub menu and
 			   insert the output menu to the top level menu */
@@ -178,8 +175,8 @@ void DMXMapEditor::slotPluginMenuActivated(int item)
 	pluginName = m_pluginList[pluginIndex];
 	lvitem->setText(KColumnPlugin, pluginName);
 
-	/* Get only the output number (154/100=1.54 - 1 = .54 * 100 = 54) */
-	output = ((((float) item) / 100.0) - pluginIndex) * 100;
+	/* Get only the output number */
+	output = item - (100 * pluginIndex);
 	str.setNum(output + 1);
 	lvitem->setText(KColumnOutput, str);
 }
