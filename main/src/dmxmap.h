@@ -351,6 +351,13 @@ public:
 	 * @return true if successful, otherwise false
 	 */
 	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/*********************************************************************
+	 * Defaults
+	 *********************************************************************/
+public:
+	void loadDefaults(const QString& path);
+	void saveDefaults(const QString& path);
 };
 
 #endif

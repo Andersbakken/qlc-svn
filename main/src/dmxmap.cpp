@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qptrvector.h>
 #include <qmessagebox.h>
+#include <qsettings.h>
 #include <qdir.h>
 #include <qdom.h>
 
@@ -726,4 +727,61 @@ bool DMXMap::loadXML(QDomDocument* doc, QDomElement* root)
 	}
 
 	return true;
+}
+
+/*****************************************************************************
+ * Defaults
+ *****************************************************************************/
+
+void DMXMap::loadDefaults(const QString& path)
+{
+	QSettings settings;
+	QString key;
+	QString plugin;
+	QString output;
+
+	settings.setPath("qlc.sf.net", "qlc");
+
+	for (int i = 0; i < KUniverseCount; i++)
+	{
+		/* Plugin name */
+		key.sprintf("%s/dmxmap/universe%d/plugin/",
+			    (const char*) path, i);
+		plugin = settings.readEntry(key);
+
+		/* Plugin output */
+		key.sprintf("%s/dmxmap/universe%d/output/",
+			    (const char*) path, i);
+		output = settings.readEntry(key);
+		
+		if (plugin.length() > 0 && output.length() > 0)
+			setPatch(i, plugin, output.toInt());
+	}
+}
+
+void DMXMap::saveDefaults(const QString& path)
+{
+	DMXPatch* dmxPatch = NULL;
+	QSettings settings;
+	QString key;
+	QString str;
+
+	settings.setPath("qlc.sf.net", "qlc");
+
+	for (int i = 0; i < KUniverseCount; i++)
+	{
+		dmxPatch = patch(i);
+		Q_ASSERT(dmxPatch != NULL);
+		Q_ASSERT(dmxPatch->plugin != NULL);
+
+		/* Plugin name */
+		key.sprintf("%s/dmxmap/universe%d/plugin/",
+			    (const char*) path, i);
+		settings.writeEntry(key, dmxPatch->plugin->name());
+
+		/* Plugin output */
+		key.sprintf("%s/dmxmap/universe%d/output/",
+			    (const char*) path, i);
+		settings.writeEntry(key, str.setNum(dmxPatch->output));
+	}
 }

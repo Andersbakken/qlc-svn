@@ -24,6 +24,7 @@
 #include <qpixmap.h>
 #include <qfiledialog.h>
 #include <qstylefactory.h>
+#include <qsettings.h>
 #include <qdom.h>
 
 #include "common/settings.h"
@@ -155,6 +156,43 @@ bool QLCWorkspace::saveXML(QDomDocument*doc, QDomElement* wksp_root)
 	wksp_root->setAttribute(KXMLQLCWorkspaceTheme, m_theme);
 
 	return true;
+}
+
+/*****************************************************************************
+ * Defaults
+ *****************************************************************************/
+
+void QLCWorkspace::loadDefaults(const QString& path)
+{
+	QSettings settings;
+	QString key;
+	QString value;
+
+	settings.setPath("qlc.sf.net", "qlc");
+
+	key = path + QString("/workspace/background/");
+	value = settings.readEntry(key);
+	if (value.length() > 0)
+		setBackgroundImage(value);
+
+	key = path + QString("/workspace/theme/");
+	value = settings.readEntry(key);
+	if (value.length() > 0)
+		setTheme(value);
+}
+
+void QLCWorkspace::saveDefaults(const QString& path)
+{
+	QSettings settings;
+	QString key;
+
+	settings.setPath("qlc.sf.net", "qlc");
+
+	key = path + QString("/workspace/background/");
+	settings.writeEntry(key, backgroundImage());
+
+	key = path + QString("/workspace/theme/");
+	settings.writeEntry(key, theme());
 }
 
 /*****************************************************************************

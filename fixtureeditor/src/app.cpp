@@ -107,7 +107,10 @@ App::App() : QMainWindow(),
 App::~App()
 {
 	if (m_workspace)
+	{
+		m_workspace->saveDefaults(KApplicationNameLong);
 		delete m_workspace;
+	}
 	m_workspace = NULL;
 
 	if (m_documentBrowser)
@@ -156,6 +159,7 @@ void App::initToolBar()
 void App::initWorkspace()
 {
 	m_workspace = new QLCWorkspace(this);
+	m_workspace->loadDefaults(KApplicationNameLong);
 	setCentralWidget(m_workspace);
 }
 

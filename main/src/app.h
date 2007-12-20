@@ -332,6 +332,7 @@ public slots:
 	void slotFileOpen();
 	void slotFileSave();
 	void slotFileSaveAs();
+	void slotFileSaveDefaults();
 	void slotFileQuit();
 	
  protected:

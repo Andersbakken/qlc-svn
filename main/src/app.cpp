@@ -75,6 +75,7 @@ static const QString KModeTextDesign  ("Design");
 #define MENU_FILE_OPEN                	1020
 #define MENU_FILE_SAVE                	1030
 #define MENU_FILE_SAVE_AS             	1040
+#define MENU_FILE_SAVE_DEFAULTS         1050
 #define MENU_FILE_QUIT                	1090
 
 /* Manager menu entries */
@@ -240,6 +241,7 @@ void App::initDMXMap()
 {
 	m_dmxMap = new DMXMap(KUniverseCount);
 	Q_ASSERT(m_dmxMap != NULL);
+	m_dmxMap->loadDefaults(KApplicationNameLong);
 
 	connect(m_dmxMap, SIGNAL(blackoutChanged(bool)),
 		this, SLOT(slotDMXMapBlackoutChanged(bool)));
@@ -445,6 +447,7 @@ void App::initWorkspace()
 
 	/* Create a workspace object and set it as the central widget */
 	m_workspace = new QLCWorkspace(this);
+	m_workspace->loadDefaults(KApplicationNameLong);
 	m_workspace->setScrollBarsEnabled(true);
 	setCentralWidget(m_workspace);
 
@@ -1085,6 +1088,16 @@ void App::initMenuBar()
 	m_fileMenu->insertSeparator();
 
 	m_fileMenu->insertItem(
+		QPixmap(QString(PIXMAPS) + QString("/configure.png")),
+		"Save &Defaults...",
+		this,
+		SLOT(slotFileSaveDefaults()),
+		0,
+		MENU_FILE_SAVE_DEFAULTS);
+
+	m_fileMenu->insertSeparator();
+
+	m_fileMenu->insertItem(
 		QPixmap(QString(PIXMAPS) + QString("/exit.png")),
 		"E&xit",
 		this,
@@ -1483,6 +1496,22 @@ void App::slotFileSaveAs()
 			setCaption(KApplicationNameLong + QString(" - ") +
 				   doc()->fileName());
 		}
+	}
+}
+
+void App::slotFileSaveDefaults()
+{
+	int r = 0;
+
+	r = QMessageBox::question(this, "Save Defaults?",
+				  QString("Do you wish to save defaults for:\n")
+				  + QString("* Workspace background & theme\n")
+				  + QString("* Universe mapping"),
+				  QMessageBox::Yes, QMessageBox::No);
+	if (r == QMessageBox::Yes)
+	{
+		m_workspace->saveDefaults(KApplicationNameLong);
+		m_dmxMap->saveDefaults(KApplicationNameLong);
 	}
 }
 

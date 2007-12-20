@@ -84,6 +84,13 @@ public:
 	bool saveXML(QDomDocument*doc, QDomElement* wksp_root);
 
 	/*********************************************************************
+	 * Defaults
+	 *********************************************************************/
+public:
+	void loadDefaults(const QString& path);
+	void saveDefaults(const QString& path);
+
+	/*********************************************************************
 	 * Menu
 	 *********************************************************************/
 signals:

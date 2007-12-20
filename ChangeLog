@@ -1,3 +1,6 @@
+2007-Dec-20  Heikki Junnila <hjunnila@users.sf.net>
+	* Implemented default settings for DMXMap and workspace (qlc & dce)
+
 2007-Dec-12  Heikki Junnila <hjunnila@users.sf.net>
 	* Fixed a bug in dmxmapeditor's context menu, which used wrong
 	  output numbers as item ids.
