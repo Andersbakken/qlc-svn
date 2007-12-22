@@ -26,11 +26,20 @@
 #include <qmainwindow.h>
 #include <limits.h>
 
-typedef unsigned short t_plugin_id;
+class Plugin;
 
-const t_plugin_id KPluginID    = 0;
-const t_plugin_id KPluginIDMin = 1;
-const t_plugin_id KPluginIDMax = USHRT_MAX;
+/** 
+ * Type definition for the only C-style exported function for plugins.
+ * Define a function called "create" that is of this type and use it to
+ * invoke new for your plugin and return the newly-created object, like this:
+ *
+ * extern "C" [Output|Input]Plugin* create()
+ * {
+ *         return new MyPlugin;
+ * }
+ *
+ */
+typedef Plugin* (*QLCPluginCreateFunction)();
 
 class Plugin : public QObject
 {
@@ -120,22 +129,11 @@ public:
 	 */
 	void* handle();
 
-	/**
-	 * @todo
-	 */
-	void setEventReceiver(QObject* parent);
-
-	/**
-	 * @todo
-	 */
-	QObject* eventReceiver() const;
-
 protected:
 	QString m_name;
 	PluginType m_type;
 	unsigned long m_version;
 	void* m_handle;
-	QObject* m_eventReceiver;
 };
 
 #endif

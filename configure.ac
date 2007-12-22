@@ -222,6 +222,24 @@ AC_SUBST(LIBLLA_CFLAGS)
 AC_SUBST(LIBLLA_LIBS)
 
 ##############################################################################
+# HID Input
+##############################################################################
+AC_ARG_ENABLE(hidinput,
+	AS_HELP_STRING([--enable-hidinput],
+		[enable HID Input plugin support (default = yes)]),
+	[
+		if [ test $enableval = no ]; then
+			hidinput=no
+		else
+			hidinput=yes
+		fi
+	],[
+		hidinput=yes
+	]
+)
+AM_CONDITIONAL(USE_HIDINPUT, test $hidinput = yes)
+
+##############################################################################
 # Generated Makefiles
 ##############################################################################
 
@@ -235,6 +253,7 @@ AC_OUTPUT([
 	libs/midi-inout/Makefile
 	libs/soundtolight/Makefile
 	libs/lla/Makefile
+	libs/hidinput/Makefile
 	main/Makefile
 	fixtureeditor/Makefile
 	gfx/Makefile

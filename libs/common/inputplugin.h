@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  outputplugin.h
+  inputplugin.h
 
   Copyright (c) Heikki Junnila
 
@@ -22,41 +22,63 @@
 #ifndef INPUTPLUGIN_H
 #define INPUTPLUGIN_H
 
-#include <qevent.h>
-
 #include "common/plugin.h"
 #include "common/types.h"
 
-const int KInputEvent        ( QEvent::User + 10 );
-
-class InputEvent : public QCustomEvent
-{ 
-public:
-        InputEvent(int id, int channel, int value) 
-	: QCustomEvent( KInputEvent )
-	{ m_id = id; m_channel=channel; m_value=value; }
-
-
-	//virtual ~InputEvent();
-	int m_id;
-	int m_channel;
-	int m_value;
-	int id() const {return m_id;}
-	int channel() const {return m_channel;}
-	int value() const {return m_value;}
-};
-
-
+/*****************************************************************************
+ * InputPlugin
+ *****************************************************************************/
 
 class InputPlugin : public Plugin
 {
 	Q_OBJECT
 
 public:
-	InputPlugin(int id);
+	InputPlugin();
 	virtual ~InputPlugin();
-	virtual void feedBack(int id, int channel, int value){};
 
+	/**
+	 * Get the number of inputs provided by the plugin
+	 *
+	 * @todo Make pure virtual
+	 *
+	 * @return Number of inputs provided by the plugin
+	 */
+	virtual t_input inputs();
+
+	/**
+	 * Get the number of channels provided by a plugin input
+	 *
+	 * @todo Make pure virtual
+	 *
+	 * @param input An input line whose number of channels to get
+	 * @return Number of input channels in the given input
+	 */
+	virtual t_input_channel channels(t_input input);
+
+	/**
+	 * Send a value back to an input line's channel. This method can be
+	 * used for example to move motorized sliders with QLC sliders.
+	 *
+	 * @param input The input line to send feedback to
+	 * @param channel A channel in the input line to send feedback to
+	 * @param value An input value to send back to the input channel
+	 */
+	virtual void feedBack(t_input input, t_input_channel channel,
+			      t_input_value value);
+	
+signals:
+	/**
+	 * Signal a value change in an input's channel. This is THE signal that
+	 * sends input values to QLC components.
+	 *
+	 * @param input An input line whose channel's value has changed
+	 * @param channel A channel whose value has changed
+	 * @param value The changed value
+	 */
+	void valueChanged(t_input input,
+			  t_input_channel channel,
+			  t_input_value value);
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  outputplugin.h
+  inputplugin.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -21,23 +21,26 @@
 
 #include "inputplugin.h"
 
-/*InputEvent::InputEvent(int id, int channel, int value) 
-         :  QEvent()
-{
-     m_id = id;
-     m_channel = channel;
-     m_value = value; 
-}
-
-InputEvent::~InputEvent();
-{
-}*/
-
-InputPlugin::InputPlugin(int id) : Plugin()
+InputPlugin::InputPlugin() : Plugin()
 {
 	m_type = Plugin::InputType;
 }
 
 InputPlugin::~InputPlugin()
+{
+}
+
+t_input InputPlugin::inputs()
+{
+	return 1;
+}
+
+t_input_channel InputPlugin::channels(t_input input)
+{
+	return 1;
+}
+
+void InputPlugin::feedBack(t_input input, t_input_channel channel,
+			   t_input_value value)
 {
 }

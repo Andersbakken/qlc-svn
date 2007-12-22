@@ -1,3 +1,8 @@
+2007-Dec-22  Heikki Junnila <hjunnila@users.sf.net>
+	* Added a draft for HID input plugin
+	* Modified the input plugin scheme to incorporate input lines,
+	  channels and values -> midi input doesn't probably work..
+
 2007-Dec-20  Heikki Junnila <hjunnila@users.sf.net>
 	* Implemented default settings for DMXMap and workspace (qlc & dce)
 

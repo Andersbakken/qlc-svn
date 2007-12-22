@@ -23,3 +23,7 @@ endif
 if USE_LLA
 SUBDIRS += lla
 endif
+
+if USE_HIDINPUT
+SUBDIRS += hidinput
+endif

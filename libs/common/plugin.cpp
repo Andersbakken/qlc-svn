@@ -24,7 +24,6 @@
 Plugin::Plugin() : QObject()
 {
 	m_handle = NULL;
-	m_eventReceiver = NULL;
 }
 
 Plugin::~Plugin()
@@ -55,14 +54,3 @@ void* Plugin::handle()
 {
 	return m_handle;
 }
-
-void Plugin::setEventReceiver(QObject* parent)
-{
-	m_eventReceiver = parent;
-}
-
-QObject* Plugin::eventReceiver() const
-{
-	return m_eventReceiver;
-}
-	

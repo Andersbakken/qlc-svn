@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  dummyoutplugin.h
+  dummyinplugin.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -33,29 +33,18 @@ class DummyInPlugin : public InputPlugin
 	friend class ConfigureDummyInPlugin;
 
 public:
-	DummyInPlugin(int id);
+	DummyInPlugin();
 	virtual ~DummyInPlugin();
 	
-	int open();
-	int close();
-	bool isOpen();
-	int configure();
-	QString infoText();
-	void contextMenu(QPoint pos);
-	
-	int setConfigDirectory(QString dir);
-	int saveSettings();
-	int loadSettings();
-	
-public:
-	static const QString PluginName;
-	
-protected slots:
-	void slotContextMenuCallback(int);
+	virtual int open();
+	virtual int close();
 
-protected:
-	bool m_open;
-	QMutex m_mutex;
+	virtual t_input inputs();
+	virtual t_input_channel channels(t_input input);
+
+	virtual int configure(QWidget* parentWidget);
+
+	virtual QString infoText();
 };
 
 #endif

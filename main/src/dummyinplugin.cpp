@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  dummyoutplugin.cpp
+  dummyinplugin.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -20,21 +20,16 @@
 */
 
 #include <qstring.h>
-#include <qpopupmenu.h>
-#include <assert.h>
+#include <qmessagebox.h>
+#include <qapplication.h>
 
 #include "dummyinplugin.h"
 
-#define ID_ACTIVATE        20
-
-const QString DummyInPlugin::PluginName = QString("Dummy Input");
-
-DummyInPlugin::DummyInPlugin(int id) : InputPlugin(id)
+DummyInPlugin::DummyInPlugin() : InputPlugin()
 {
-  m_open = false;
-  m_version = 0x00010000;
-  m_name = DummyInPlugin::PluginName;
-  m_type = InputType;
+	m_version = 0x00010000;
+	m_name = QString("Dummy Input");
+	m_type = InputType;
 }
 
 DummyInPlugin::~DummyInPlugin()
@@ -43,108 +38,82 @@ DummyInPlugin::~DummyInPlugin()
 
 int DummyInPlugin::open()
 {
-  qDebug("DummyIn Plugin opened");
-
-  m_open = true;
-  return 0;
+	return 0;
 }
 
 int DummyInPlugin::close()
 {
-  qDebug("DummyIn Plugin closed");
-
-  m_open = false;
-  return 0;
+	return 0;
 }
 
-bool DummyInPlugin::isOpen()
+t_input DummyInPlugin::inputs()
 {
-  return m_open;
+	return 0;
 }
 
-int DummyInPlugin::configure()
+t_input_channel DummyInPlugin::channels(t_input input)
 {
-  return 0;
+	return 0;
+}
+
+int DummyInPlugin::configure(QWidget* parentWidget)
+{
+	QMessageBox::information(parentWidget,
+				 "Dummy Output Configuration",
+				 "This plugin has no configurable options");
+	return 0;
 }
 
 QString DummyInPlugin::infoText()
 {
-  QString t;
-  QString str = QString::null;
-  str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-  str += QString("<TR><TD BGCOLOR=\"black\">");
-  str += QString("<FONT COLOR=\"white\" SIZE=\"5\">"); 
-  str += name() + QString("</FONT></TD></TR></TABLE>");
-  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+	QString str;
+	QString t;
 
-  str += QString("<TR><TD><B>Version</B></TD>");
-  str += QString("<TD>");
-  t.setNum((version() >> 16) & 0xff);
-  str += t + QString(".");
-  t.setNum((version() >> 8) & 0xff);
-  str += t + QString(".");
-  t.setNum(version() & 0xff);
-  str += t + QString("</TD></TR>");
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>Plugin Info</TITLE>");
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
 
-  str += QString("<TR>\n");
-  str += QString("<TD><B>Status</B></TD>");
-  str += QString("<TD>");
-  if (isOpen() == true)
-    {
-      str += QString("<I>Active</I></TD>");
-    }
-  else
-    {
-      str += QString("Not Active</TD>");
-    }
-  str += QString("</TR>");
-  str += QString("</TABLE>");
+	/* Title */
+	str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
+	str += QString("<TR>");
+	str += QString("<TD BGCOLOR=\"");
+	str += QApplication::palette().active().highlight().name();
+	str += QString("\">");
+	str += QString("<FONT COLOR=\"");
+	str += QApplication::palette().active().highlightedText().name();
+	str += QString("\" SIZE=\"5\">");
+	str += name();
+	str += QString("</FONT>");
+	str += QString("</TD>");
+	str += QString("</TR>");
+	str += QString("</TABLE>");
 
-  str += QString("<H3>NOTE</H3>");
-  str += QString("<P>This plugin does absolutely nothing; ");
-  str += QString("you can use this if you don't have ");
-  str += QString("the necessary hardware for real control.</P>");
+	/* Version */
+	str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+	str += QString("<TR>");
+	str += QString("<TD><B>Version</B></TD>");
+	t.sprintf("%d.%d.%d", (version() >> 16) & 0xff,
+		  (version() >> 8) & 0xff, version() & 0xff);
+	str += QString("<TD>" + t +"</TD>");
+	str += QString("</TR>");
 
-  str += QString("</BODY></HTML>");
+	str += QString("<TR>");
+	str += QString("<TD><B>Inputs</B></TD>");
+	t.sprintf("%d", inputs());
+	str += QString("<TD><I>" + t + "</I></TD>");
+	str += QString("</TR>");
+	str += QString("</TABLE>");
 
-  return str;
-}
+	/* Note */
+	str += QString("<H3>NOTE</H3>");
+	str += QString("<P>This plugin does absolutely nothing; ");
+	str += QString("you can use this if you don't have ");
+	str += QString("the necessary hardware for real control.</P>");
 
-void DummyInPlugin::contextMenu(QPoint pos)
-{
-  QPopupMenu* menu = new QPopupMenu();
-  menu->insertItem("Activate", ID_ACTIVATE);
+	str += QString("</BODY>");
+	str += QString("</HTML>");
 
-  connect(menu, SIGNAL(activated(int)), 
-	this, SLOT(slotContextMenuCallback(int)));
-  menu->exec(pos, 0);
-  delete menu;
-}
-
-void DummyInPlugin::slotContextMenuCallback(int item)
-{
-  switch(item)
-    {
-    case ID_ACTIVATE:
-      break;
-
-    default:
-      break;
-    }
-}
-
-int DummyInPlugin::setConfigDirectory(QString dir)
-{
-  return 0;
-}
-
-int DummyInPlugin::saveSettings()
-{
-  return -1;
-}
-
-int DummyInPlugin::loadSettings()
-{
-  return -1;
+	return str;
 }

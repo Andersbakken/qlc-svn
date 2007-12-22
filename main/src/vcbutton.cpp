@@ -80,18 +80,6 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent, "Button")
 	m_keyBind = new KeyBind();
 	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
 	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
-
-	/* External input stuff */
-	setInputChannel(0);
-	connect(_app->virtualConsole(),
-		SIGNAL(sendFeedBack()),
-		this,
-		SLOT(slotFeedBack()));
-
-	connect(_app->virtualConsole(),
-		SIGNAL(InpEvent(const int, const int, const int)),
-		this,
-		SLOT(slotInputEvent(const int, const int, const int)));
 }
 
 VCButton::~VCButton()
@@ -203,7 +191,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCButtonInputChannel)
 		{
-			setInputChannel(tag.text().toInt());
+			/* TODO */
 		}
 		else if (tag.tagName() == KXMLQLCKeyBind)
 		{
@@ -247,12 +235,9 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	str.setNum(function());
 	tag.setAttribute(KXMLQLCVCButtonFunctionID, str);
 
-	/* Input */
+	/* TODO: Input */
 	tag = doc->createElement(KXMLQLCVCButtonInputChannel);
 	root.appendChild(tag);
-	str.setNum(m_inputChannel);
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
 
 	/* Window state */
 	FileHandler::saveXMLWindowState(doc, &root, this);
@@ -515,21 +500,6 @@ void VCButton::slotFlashReady()
 	QColor c(backgroundColor());
 	c.setRgb(c.red() ^ 0xff, c.green() ^ 0xff, c.blue() ^ 0xff);
 	setPaletteBackgroundColor(c);
-}
-
-/*****************************************************************************
- * External sliderboard input
- *****************************************************************************/
-
-void VCButton::slotInputEvent(const int id, const int channel, const int value)
-{
-	if (id == 0 && channel == inputChannel())
-		pressFunction();
-}
-
-void VCButton::slotFeedBack()
-{
-	/* TODO? */
 }
 
 /*****************************************************************************

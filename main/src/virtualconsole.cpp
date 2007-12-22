@@ -40,7 +40,6 @@
 #include <qobjectlist.h>
 #include <qdom.h>
 
-#include "common/inputplugin.h"
 #include "common/qlcimagepreview.h"
 #include "common/filehandler.h"
 
@@ -181,10 +180,6 @@ void VirtualConsole::initMenuBar()
 	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/undo.png")),
 			   "&Default", this, SLOT(slotBackgroundNone()),
 			   0, KVCMenuBackgroundNone);
-	bgMenu->insertSeparator();
-	bgMenu->insertItem(QPixmap(QString(PIXMAPS) + QString("/frame.png")),
-			   "Toggle &Frame", this, SLOT(slotBackgroundFrame()),
-			   0, KVCMenuBackgroundFrame);
 
 	//
 	// Stacking order menu
@@ -737,15 +732,6 @@ void VirtualConsole::slotBackgroundNone()
 	}
 }
 
-void VirtualConsole::slotBackgroundFrame()
-{
-	if (m_selectedWidget != NULL)
-	{
-		QApplication::sendEvent(m_selectedWidget,
-					new VCMenuEvent(KVCMenuBackgroundFrame));
-	}
-}
-
 /*********************************************************************
  * Stacking menu callbacks
  *********************************************************************/
@@ -847,15 +833,5 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
 	{
 		emit keyReleased(e);
 		e->accept();
-	}
-}
-
-void VirtualConsole::customEvent(QCustomEvent* e)
-{
-	// There is something the InputPlugin wants to tell
-	if ((e->type() == KInputEvent) && (_app->mode() != App::Design))
-	{
-		InputEvent* ie = (InputEvent*)e;
-		emit InpEvent(ie->id(), ie->channel(), ie->value());
 	}
 }

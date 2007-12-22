@@ -145,18 +145,6 @@ const int KVCMenuStackingLower    ( 801 );
 const int KVCMenuStackingMax      ( 899 );
 // <<< Stacking Menu
 
-class VCMenuEvent : public QCustomEvent
-{
- public:
-	VCMenuEvent(int item) : QCustomEvent(KVCMenuEvent), m_menuItem(item) {}
-  
-	int menuItem() { return m_menuItem; }
-
-protected:
-	int m_menuItem;
-};
-
-
 class VirtualConsole : public QWidget
 {
 	Q_OBJECT
@@ -425,7 +413,6 @@ protected:
 	void slotBackgroundColor();
 	void slotBackgroundImage();
 	void slotBackgroundNone();
-	void slotBackgroundFrame();
 
 	/*********************************************************************
 	 * Stacking menu callbacks
@@ -438,8 +425,6 @@ protected:
 	 *********************************************************************/
 signals:
 	void closed();
-	void InpEvent(const int, const int, const int);
-	void sendFeedBack();
 
 	void keyPressed(QKeyEvent*);
 	void keyReleased(QKeyEvent*);
@@ -462,7 +447,6 @@ protected:
 	void closeEvent(QCloseEvent* e);
 	void keyPressEvent(QKeyEvent* e);
 	void keyReleaseEvent(QKeyEvent* e);
-	void customEvent(QCustomEvent*);
 
 	/*********************************************************************
 	 * Misc member attributes

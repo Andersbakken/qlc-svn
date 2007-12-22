@@ -167,6 +167,63 @@ const t_value KChannelValueMin ( 0 );
 const t_value KChannelValueMax ( 255 );
 
 /*****************************************************************************
+ * Input lines
+ *****************************************************************************/
+
+/**
+ * Input line type
+ */
+typedef unsigned short t_input;
+
+/**
+ * Smallest input line number
+ */
+const t_input KInputMin ( 0 );
+
+/**
+ * Largest input line number
+ */
+const t_input KInputMax ( USHRT_MAX );
+
+/*****************************************************************************
+ * Input channels
+ *****************************************************************************/
+
+/**
+ * Input channel type
+ */
+typedef unsigned short t_input_channel;
+
+/**
+ * Smallest input channel
+ */
+const t_input_channel KInputChannelMin ( 0 );
+
+/**
+ * Largest input channel
+ */
+const t_input_channel KInputChannelMax ( USHRT_MAX );
+
+/*****************************************************************************
+ * Input values
+ *****************************************************************************/
+
+/**
+ * Input channel value type
+ */
+typedef unsigned short t_input_value;
+
+/**
+ * Smallest input channel value
+ */
+const t_input_value KInputValueMin ( 0 );
+
+/**
+ * Largest input channel value
+ */
+const t_input_value KInputValueMax ( USHRT_MAX );
+
+/*****************************************************************************
  * Event buffer
  *****************************************************************************/
 

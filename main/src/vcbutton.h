@@ -229,21 +229,13 @@ protected slots:
 	void slotFlashReady();
 
 	/*********************************************************************
-	 * External sliderboard
+	 * Stop functions
 	 *********************************************************************/
 public:
-	void setInputChannel(int channel) { m_inputChannel = channel; }
-	int inputChannel() const { return m_inputChannel; }
-
 	void setStopFunctions(bool stop) { m_stopFunctions = stop; }
 	bool stopFunctions() const { return m_stopFunctions; }
 
-public slots:
-	void slotInputEvent(const int,const int,const int);
-	void slotFeedBack();
-
 protected:
-	int m_inputChannel;
 	bool m_stopFunctions;
 
 	/*********************************************************************

@@ -582,7 +582,7 @@ void DMXMap::loadPlugins(const QString& pluginPath)
 	for (it = dirlist.begin(); it != dirlist.end(); ++it)
 	{
 		outputPlugin = createPlugin(pluginPath + QString("/") + *it);
-		if (appendPlugin(outputPlugin) == true)
+		if (outputPlugin != NULL && appendPlugin(outputPlugin) == true)
 		{
 			qDebug("DMX output available thru %s (%d outputs)",
 			       (const char*) outputPlugin->name(),
@@ -598,8 +598,7 @@ void DMXMap::loadPlugins(const QString& pluginPath)
 
 OutputPlugin* DMXMap::createPlugin(const QString& path)
 {
-	typedef Plugin* create_t(int);
-	create_t* create = NULL;
+	QLCPluginCreateFunction create;
 
 	void* pluginHandle = NULL;
 	Plugin* plugin = NULL;
@@ -610,22 +609,22 @@ OutputPlugin* DMXMap::createPlugin(const QString& path)
 	if (pluginHandle == NULL)
 	{
 		qDebug("Unable to open %s with dlopen(): %s\n", 
-		       (const char*) path, dlerror());
+		       (const char*) path, ::dlerror());
 		return NULL;
 	}
 
 	/* Attempt to resolve "create" symbol from the shared object */
-	create = (create_t*) ::dlsym(pluginHandle, "create");
+	create = (QLCPluginCreateFunction) ::dlsym(pluginHandle, "create");
 	if (create == NULL)
 	{
-		dlclose(pluginHandle);
+		::dlclose(pluginHandle);
 		qDebug("Unable to resolve symbols for %s. dlsym(): %s", 
-		       (const char*) path, dlerror());
+		       (const char*) path, ::dlerror());
 		return NULL;
 	}
 
 	/* Attempt to use the "create" symbol to create a Plugin instance */
-	plugin = create(0);
+	plugin = create();
 	Q_ASSERT(plugin != NULL);
 
 	/* We accept only output plugins here */
