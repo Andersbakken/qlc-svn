@@ -142,12 +142,15 @@ DMXMap::DMXMap(int universes) : QObject()
 	m_blackoutStore = NULL;
 
 	initPatch();
-	loadPlugins(QString(PLUGINS));
 }
 
 DMXMap::~DMXMap()
 {
-	delete m_dummyOut;
+	OutputPlugin* outputPlugin = NULL;
+
+	while ((outputPlugin = m_plugins.take(0)) != NULL)
+		delete outputPlugin;
+	m_dummyOut = NULL;
 }
 
 /*****************************************************************************
@@ -556,103 +559,19 @@ QString DMXMap::pluginStatus(const QString& pluginName)
 	return info;
 }
 
-void DMXMap::loadPlugins(const QString& pluginPath)
-{
-	OutputPlugin* outputPlugin = NULL;
-
-	QDir pluginDir(pluginPath);
-	pluginDir.setFilter(QDir::Files);
-	pluginDir.setNameFilter("*.so");
-
-	/* Check that we can access the directory */
-	if (pluginDir.exists() == false)
-	{
-		qDebug(pluginPath + QString(" doesn't exist"));
-		return;
-	}
-	else if (pluginDir.isReadable() == false)
-	{
-		qDebug(pluginPath + QString(" is not accessible"));
-		return;
-	}
-
-	/* Loop thru all files in the directory */
-	QStringList dirlist(pluginDir.entryList());
-	QStringList::Iterator it;
-	for (it = dirlist.begin(); it != dirlist.end(); ++it)
-	{
-		outputPlugin = createPlugin(pluginPath + QString("/") + *it);
-		if (outputPlugin != NULL && appendPlugin(outputPlugin) == true)
-		{
-			qDebug("DMX output available thru %s (%d outputs)",
-			       (const char*) outputPlugin->name(),
-			       outputPlugin->outputs());
-		}
-		else
-		{
-			qDebug("%s doesn't contain an output plugin\n",
-			       (const char*) (pluginPath + *it));
-		}
-	}
-}
-
-OutputPlugin* DMXMap::createPlugin(const QString& path)
-{
-	QLCPluginCreateFunction create;
-
-	void* pluginHandle = NULL;
-	Plugin* plugin = NULL;
-
-	/* Load the (presumed) shared object into memory. Don't resolve
-	   symbols until they're needed */
-	pluginHandle = ::dlopen(static_cast<const char*> (path), RTLD_LAZY);
-	if (pluginHandle == NULL)
-	{
-		qDebug("Unable to open %s with dlopen(): %s\n", 
-		       (const char*) path, ::dlerror());
-		return NULL;
-	}
-
-	/* Attempt to resolve "create" symbol from the shared object */
-	create = (QLCPluginCreateFunction) ::dlsym(pluginHandle, "create");
-	if (create == NULL)
-	{
-		::dlclose(pluginHandle);
-		qDebug("Unable to resolve symbols for %s. dlsym(): %s", 
-		       (const char*) path, ::dlerror());
-		return NULL;
-	}
-
-	/* Attempt to use the "create" symbol to create a Plugin instance */
-	plugin = create();
-	Q_ASSERT(plugin != NULL);
-
-	/* We accept only output plugins here */
-	if (plugin->type() != Plugin::OutputType)
-	{
-		delete plugin;
-		dlclose(pluginHandle);
-		return NULL;
-	}
-
-	/* Setup the plugin */
-	plugin->setHandle(pluginHandle);
-
-	return static_cast<OutputPlugin*> (plugin);
-}
-
 bool DMXMap::appendPlugin(OutputPlugin* outputPlugin)
 {
-	Q_ASSERT(outputPlugin);
+	Q_ASSERT(outputPlugin != NULL);
 
 	if (plugin(outputPlugin->name()) == NULL)
 	{
+		qDebug("Found output plugin: " + outputPlugin->name());
 		m_plugins.append(outputPlugin);
 		return true;
 	}
 	else
 	{
-		qDebug(outputPlugin->name() + " is already loaded!");
+		qDebug(outputPlugin->name() + QString(" is already loaded."));
 		return false;
 	}
 }

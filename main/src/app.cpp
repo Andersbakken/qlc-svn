@@ -59,7 +59,10 @@
 #include "aboutbox.h"
 #include "monitor.h"
 #include "bus.h"
+
 #include "dmxmap.h"
+#include "inputmap.h"
+#include "pluginloader.h"
 
 #include "common/qlcworkspace.h"
 #include "common/filehandler.h"
@@ -83,9 +86,7 @@ static const QString KModeTextDesign  ("Design");
 #define MENU_MANAGER_FIXTURE_MANAGER	2010
 #define MENU_MANAGER_FUNCTION_MANAGER   2020
 #define MENU_MANAGER_BUS_MANAGER        2030
-#define MENU_MANAGER_INPUT_MANAGER      2040
-#define MENU_MANAGER_OUTPUT_MANAGER     2050
-#define MENU_MANAGER_PLUGIN_MANAGER     2060
+#define MENU_MANAGER_PLUGIN_MANAGER     2040
 
 /* Control menu entries */
 #define MENU_CONTROL                    3000
@@ -118,6 +119,7 @@ extern App* _app;
 App::App() : QMainWindow()
 {
 	m_dmxMap = NULL;
+	m_inputMap = NULL;
 	m_functionConsumer = NULL;
 	m_doc = NULL;
 	m_workspace = NULL;
@@ -202,6 +204,16 @@ App::~App()
 	// Delete fixture definitions
 	while (m_fixtureDefList.isEmpty() == false)
 		delete m_fixtureDefList.take(0);
+
+	// Delete output mapper
+	if (m_dmxMap)
+		delete m_dmxMap;
+	m_dmxMap = NULL;
+	
+	// Delete input mapper
+	if (m_inputMap)
+		delete m_inputMap;
+	m_inputMap = NULL;
 }
 
 
@@ -210,11 +222,20 @@ App::~App()
  */
 void App::init()
 {
-	/* Initialize engine components first */
+	/* Input & output mappers and their plugins */
 	initDMXMap();
-	// initInputMap();
+	initInputMap();
+	PluginLoader::load(QString(PLUGINS), m_dmxMap, m_inputMap);
+	m_dmxMap->loadDefaults(KApplicationNameLong);
+	m_inputMap->loadDefaults(KApplicationNameLong);
+
+	/* Function running engine */
 	initFunctionConsumer();
+
+	/* Buses */
 	Bus::init();
+
+	/* Fixture definitions */
 	loadFixtureDefinitions();
 
 	// The main view
@@ -241,7 +262,6 @@ void App::initDMXMap()
 {
 	m_dmxMap = new DMXMap(KUniverseCount);
 	Q_ASSERT(m_dmxMap != NULL);
-	m_dmxMap->loadDefaults(KApplicationNameLong);
 
 	connect(m_dmxMap, SIGNAL(blackoutChanged(bool)),
 		this, SLOT(slotDMXMapBlackoutChanged(bool)));
@@ -276,9 +296,11 @@ void App::slotDMXMapBlackoutChanged(bool state)
  * Input mapping
  *****************************************************************************/
 
-void App::slotViewInputManager()
+void App::initInputMap()
 {
-	QMessageBox::information(workspace(), "TODO", "TODO");
+	m_inputMap = new InputMap();
+	Q_ASSERT(m_inputMap != NULL);
+	m_inputMap->loadDefaults(KApplicationNameLong);
 }
 
 /*****************************************************************************
@@ -290,7 +312,7 @@ void App::slotViewPluginManager()
 	if (m_pluginManager == NULL)
 	{
 		m_pluginManager = new PluginManager(workspace());
-		m_pluginManager->resize(500, 300);
+		m_pluginManager->resize(700, 400);
 		connect(m_pluginManager, SIGNAL(closed()),
 			this, SLOT(slotPluginManagerClosed()));
 	}
@@ -931,8 +953,6 @@ void App::setMode(Mode mode)
 		m_managerMenu->setItemEnabled(MENU_MANAGER_FIXTURE_MANAGER, true);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_FUNCTION_MANAGER, true);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_BUS_MANAGER, true);
-		m_managerMenu->setItemEnabled(MENU_MANAGER_INPUT_MANAGER, true);
-		m_managerMenu->setItemEnabled(MENU_MANAGER_OUTPUT_MANAGER, true);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_PLUGIN_MANAGER, true);
 
 		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, false);
@@ -958,8 +978,6 @@ void App::setMode(Mode mode)
 		m_managerMenu->setItemEnabled(MENU_MANAGER_FIXTURE_MANAGER, false);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_FUNCTION_MANAGER, false);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_BUS_MANAGER, false);
-		m_managerMenu->setItemEnabled(MENU_MANAGER_INPUT_MANAGER, false);
-		m_managerMenu->setItemEnabled(MENU_MANAGER_OUTPUT_MANAGER, false);
 		m_managerMenu->setItemEnabled(MENU_MANAGER_PLUGIN_MANAGER, false);
 
 		m_modeMenu->setItemChecked(MENU_CONTROL_MODE_OPERATE, true);
@@ -1136,14 +1154,6 @@ void App::initMenuBar()
 		MENU_MANAGER_BUS_MANAGER);
 
 	m_managerMenu->insertSeparator();
-
-	m_managerMenu->insertItem(
-		QPixmap(QString(PIXMAPS) + QString("/plugin.png")),
-		"Input Manager",
-		this,
-		SLOT(slotViewInputManager()),
-		CTRL + Key_I,
-		MENU_MANAGER_INPUT_MANAGER);
 
 	m_managerMenu->insertItem(
 		QPixmap(QString(PIXMAPS) + QString("/plugin.png")),

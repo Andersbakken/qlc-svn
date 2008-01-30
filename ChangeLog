@@ -1,3 +1,33 @@
+2008-01-30  Heikki Junnila  <heikki.junnila@users.sf.net>
+
+	* libs/common/plugin.cpp:
+	* libs/hidinput/Makefile.am:
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/configurehidinput.h:
+	* libs/hidinput/configurehidinput.ui:
+	* libs/hidinput/hiddevice.cpp:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/lla/moc_uic_configurellaout.cpp:
+	* libs/lla/uic_configurellaout.cpp:
+	* libs/lla/uic_configurellaout.h:
+	* main/Makefile.am:
+	* main/src/app.cpp:
+	* main/src/app.h:
+	* main/src/dmxmap.cpp:
+	* main/src/dmxmap.h:
+	* main/src/inputmap.cpp:
+	* main/src/inputmap.h:
+	* main/src/pluginloader.cpp:
+	* main/src/pluginloader.h:
+	* main/src/pluginmanager.cpp:
+	* main/src/pluginmanager.h:
+
+	Preliminary stuff for HID Input plugin and some input mapper stuff..x
+
 2007-Dec-22  Heikki Junnila <hjunnila@users.sf.net>
 	* Added a draft for HID input plugin
 	* Modified the input plugin scheme to incorporate input lines,

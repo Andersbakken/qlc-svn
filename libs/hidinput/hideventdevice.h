@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  hidinput.h
+  hideventdevice.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,76 +19,93 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef HIDINPUT_H
-#define HIDINPUT_H
+#ifndef HIDEVENTDEVICE_H
+#define HIDEVENTDEVICE_H
 
-#include "common/inputplugin.h"
+#include <qobject.h>
+#include <qfile.h>
+
+#include <sys/ioctl.h>
+#include <linux/input.h>
+#include <linux/types.h>
+
 #include "common/types.h"
-
 #include "hiddevice.h"
 
-/**
- * This lib's only exported function that is used to create instances of
- * class HIDInput
- */
-extern "C" InputPlugin* create();
+class HIDInput;
 
 /*****************************************************************************
- * HIDInput
+ * HIDEventDevice
  *****************************************************************************/
 
-class HIDInput : public InputPlugin
+class HIDEventDevice : public HIDDevice
 {
 	Q_OBJECT
-
-	friend class ConfigureHIDInput;
+		
+public:
+	HIDEventDevice(HIDInput* parent, const QString& path);
+	virtual ~HIDEventDevice();
 
 	/*********************************************************************
-	 * Initialization
+	 * File operations
 	 *********************************************************************/
 public:
-	HIDInput();
-	virtual ~HIDInput();
+	/**
+	 * Attempt to open the HID device in RW mode and fall back to RO
+	 * if that fails.
+	 *
+	 * @return true if the file was opened RW/RO
+	 */
+	bool open();
 
-	/*********************************************************************
-	 * Open/close
-	 *********************************************************************/
-public:
-	virtual int open();
-	virtual int close();
+	/**
+	 * Find out the HID device's capabilities
+	 */
+	void getCapabilities();
+
+	/**
+	 * Close the HID device
+	 */
+	void close();
+
+	/**
+	 * Get the full path of this HID device
+	 */
+	QString path() const;
+
+	/**
+	 * Get number of channels provided by the given device
+	 */
+	t_input_channel channels();
 
 protected:
-	HIDDevice* device(const QString& path);
-	HIDDevice* device(const unsigned int index);
-
-protected:
-	QPtrList <HIDDevice> m_devices;
+	struct input_id m_deviceInfo;
+	uint8_t m_eventTypes[(EV_MAX/8) + 1];
 
 	/*********************************************************************
-	 * Inputs & channels
+	 * Device info
 	 *********************************************************************/
 public:
-	virtual t_input inputs();
-	virtual t_input_channel channels(t_input input);
-
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
-public:
-	virtual int configure(QWidget* parentWidget);
-
-	/*********************************************************************
-	 * Status
-	 *********************************************************************/
-public:
-	virtual QString infoText();
+	/**
+	 * Get HID device information string to be used in plugin manager
+	 */
+	QString infoText();
 
 	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
+signals:
+	/**
+	 * Signal that is emitted when an input channel's value is changed
+	 */
+	void valueChanged(t_input_channel channel, t_input_value value);
+
 public:
-	virtual void feedBack(t_input input, t_input_channel channel,
-			      t_input_value value);
+	/**
+	 * Send an input value back the HID device to move motorized sliders
+	 * and such.
+	 */
+	void feedBack(t_input_channel channel, t_input_value value);
 };
 
 #endif

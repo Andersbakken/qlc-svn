@@ -40,6 +40,9 @@ class PluginManager : public QWidget
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
 	PluginManager(QWidget* parent);
 	~PluginManager();
@@ -54,18 +57,35 @@ protected:
 	
 	void fillPlugins();
 	
+	/*********************************************************************
+	 * Slots
+	 *********************************************************************/
 protected slots:
 	void slotConfigureClicked();
-	void slotDMXMapperClicked();
+	void slotOutputMapClicked();
+	void slotInputMapClicked();
 
 	void slotSelectionChanged(QListViewItem* item);
 	void slotRightButtonClicked(QListViewItem* item,
 				    const QPoint& point,
 				    int col);
 
+	/*********************************************************************
+	 * Default settings
+	 *********************************************************************/
+public:
+	void saveDefaults(const QString& path);
+	void loadDefaults(const QString& path);
+
+	/*********************************************************************
+	 * Event handlers
+	 *********************************************************************/
 protected:
 	void closeEvent(QCloseEvent* e);
 
+	/*********************************************************************
+	 * Signals
+	 *********************************************************************/
 signals:
 	void closed();
 	
@@ -78,7 +98,8 @@ protected:
 	QTextView* m_textView;
 	
 	QToolButton* m_configureButton;
-	QToolButton* m_mapButton;
+	QToolButton* m_outputMapButton;
+	QToolButton* m_inputMapButton;
 };
 
 #endif

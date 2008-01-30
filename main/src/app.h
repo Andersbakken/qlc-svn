@@ -59,6 +59,7 @@ class Monitor;
 class QLCFixtureDef;
 class QLCWorkspace;
 class DMXMap;
+class InputMap;
 
 const QString KApplicationNameLong  = "Q Light Controller";
 const QString KApplicationNameShort = "QLC";
@@ -99,16 +100,13 @@ class App : public QMainWindow
 	 * Input mapping
 	 *********************************************************************/
  public:
-	// InputMap* inputMap() { return m_inputMap; }
+	InputMap* inputMap() { return m_inputMap; }
 
  protected:
-	// void initInputMap();
-
- protected slots:
-	void slotViewInputManager();
+	void initInputMap();
 
  protected:
-	// InputMap* m_inputMap;
+	InputMap* m_inputMap;
 
 	/*********************************************************************
 	 * Plugin manager

@@ -38,6 +38,7 @@
 
 #include "app.h"
 #include "dmxmap.h"
+#include "inputmap.h"
 #include "pluginmanager.h"
 
 extern App* _app;
@@ -51,8 +52,8 @@ static const int KColumnName ( 0 );
  * Initialization
  *****************************************************************************/
 
-PluginManager::PluginManager(QWidget* parent) :
-	QWidget(parent, "Plugin Manager")
+PluginManager::PluginManager(QWidget* parent)
+	: QWidget(parent, "Plugin Manager")
 {
 	m_layout = NULL;
 	m_dockArea = NULL;
@@ -118,16 +119,27 @@ void PluginManager::initToolBar()
 	m_configureButton->setUsesTextLabel(true);
 	QToolTip::add(m_configureButton, "Configure the plugin");
 
-	// Map button
-	m_mapButton = new QToolButton(QPixmap(QString(PIXMAPS) +
-					      QString("/attach.png")),
-				      "Output Mapper",
-				      0,
-				      this,
-				      SLOT(slotDMXMapperClicked()),
-				      m_toolbar);
-	m_mapButton->setUsesTextLabel(true);
-	QToolTip::add(m_mapButton, "Patch QLC universes to output plugins");
+	// Output Map button
+	m_outputMapButton = new QToolButton(QPixmap(QString(PIXMAPS) +
+						    QString("/attach.png")),
+					    "Output Map",
+					    0,
+					    this,
+					    SLOT(slotOutputMapClicked()),
+					    m_toolbar);
+	m_outputMapButton->setUsesTextLabel(true);
+	QToolTip::add(m_outputMapButton, "Patch QLC universes to output plugins");
+
+	// Output Map button
+	m_inputMapButton = new QToolButton(QPixmap(QString(PIXMAPS) +
+						   QString("/attach.png")),
+					   "Input Map",
+					   0,
+					   this,
+					   SLOT(slotInputMapClicked()),
+					   m_toolbar);
+	m_inputMapButton->setUsesTextLabel(true);
+	QToolTip::add(m_inputMapButton, "Patch input events to QLC components");
 }
 
 void PluginManager::initDataView()
@@ -179,6 +191,7 @@ void PluginManager::fillPlugins()
 {
 	QListViewItem* item = NULL;
 	QListViewItem* parent = NULL;
+	QStringList list;
 	QStringList::iterator it;
 
 	m_listView->clear();
@@ -186,14 +199,16 @@ void PluginManager::fillPlugins()
 	/* Output plugins */
 	parent = new QListViewItem(m_listView, KOutputNode);
 	parent->setOpen(true);
-
-	QStringList list = _app->dmxMap()->pluginNames();
+	list = _app->dmxMap()->pluginNames();
 	for (it = list.begin(); it != list.end(); ++it)
 		new QListViewItem(parent, *it);
 
 	/* Input plugins */
 	parent = new QListViewItem(m_listView, KInputNode);
 	parent->setOpen(true);
+	list = _app->inputMap()->pluginNames();
+	for (it = list.begin(); it != list.end(); ++it)
+		new QListViewItem(parent, *it);
 }
 
 /*****************************************************************************
@@ -203,28 +218,39 @@ void PluginManager::fillPlugins()
 void PluginManager::slotConfigureClicked()
 {
 	QListViewItem* item = NULL;
-	QString pluginName;
+	QString parentName;
 	
 	item = m_listView->currentItem();
-	if (item != NULL)
+	if (item != NULL && item->parent() != NULL)
 	{
-		pluginName = item->text(KColumnName);
-		if (pluginName == KOutputNode)
-			;
-		else if (pluginName == KInputNode)
-			;
-		else
-			_app->dmxMap()->configurePlugin(pluginName);
+		/* Find out the parent node name to determine, whether
+		   the plugin belongs to the input map or output map */
+		parentName = item->parent()->text(KColumnName);
+
+		if (parentName == KOutputNode)
+		{
+			_app->dmxMap()->configurePlugin(
+				item->text(KColumnName));
+		}
+		else if (parentName == KInputNode)
+		{
+			_app->inputMap()->configurePlugin(
+				item->text(KColumnName));
+		}
 
 		slotSelectionChanged(item);
 	}
 }
 
 
-void PluginManager::slotDMXMapperClicked()
+void PluginManager::slotOutputMapClicked()
 {
 	_app->dmxMap()->openEditor(this);
 	slotSelectionChanged(m_listView->currentItem());
+}
+
+void PluginManager::slotInputMapClicked()
+{
 }
 
 /*****************************************************************************
@@ -247,7 +273,7 @@ void PluginManager::slotSelectionChanged(QListViewItem* item)
 			if (name == KOutputNode)
 				status = _app->dmxMap()->pluginStatus();
 			else if (name == KInputNode)
-				status = QString("TODO"); // TODO
+				status = _app->inputMap()->pluginStatus();
 		}
 		else
 		{
@@ -257,7 +283,7 @@ void PluginManager::slotSelectionChanged(QListViewItem* item)
 			if (parent == KOutputNode)
 				status = _app->dmxMap()->pluginStatus(name);
 			else if (parent == KInputNode)
-				status = QString("TODO"); // TODO
+				status = _app->inputMap()->pluginStatus(name);
 		}
 	}
 	else
@@ -291,6 +317,18 @@ void PluginManager::slotRightButtonClicked(QListViewItem* item,
 			SLOT(slotConfigureClicked()));
 
 	menu.exec(point, 0);
+}
+
+/*****************************************************************************
+ * Default settings
+ *****************************************************************************/
+
+void PluginManager::saveDefaults(const QString& path)
+{
+}
+
+void PluginManager::loadDefaults(const QString& path)
+{
 }
 
 /*****************************************************************************

@@ -67,9 +67,11 @@ noinst_HEADERS = \
 	src/function.h \
 	src/functionmanager.h \
 	src/generatorarea.h \
+	src/inputmap.h \
 	src/keybind.h \
 	src/listboxiditem.h \
 	src/monitor.h \
+	src/pluginloader.h \
 	src/pluginmanager.h \
 	src/sceneeditor.h \
 	src/scene.h \
@@ -170,10 +172,12 @@ qlc_SOURCES = \
 	src/function.cpp \
 	src/functionmanager.cpp \
 	src/generatorarea.cpp \
+	src/inputmap.cpp \
 	src/keybind.cpp \
 	src/listboxiditem.cpp \
 	src/main.cpp \
 	src/monitor.cpp \
+	src/pluginloader.cpp \
 	src/pluginmanager.cpp \
 	src/scene.cpp \
 	src/sceneeditor.cpp \
@@ -227,6 +231,7 @@ qlc_SOURCES = \
 	src/moc_function.cpp \
 	src/moc_functionmanager.cpp \
 	src/moc_generatorarea.cpp \
+	src/moc_inputmap.cpp \
 	src/moc_keybind.cpp \
 	src/moc_listboxiditem.cpp \
 	src/moc_monitor.cpp \

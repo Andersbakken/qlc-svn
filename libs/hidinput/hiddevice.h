@@ -23,11 +23,12 @@
 #define HIDDEVICE_H
 
 #include <qobject.h>
+#include <qfile.h>
+
+#include <sys/ioctl.h>
+#include <linux/types.h>
 
 #include "common/types.h"
-
-class QFile;
-class QString;
 
 class HIDInput;
 
@@ -40,7 +41,7 @@ class HIDDevice : public QObject
 	Q_OBJECT
 		
 public:
-	HIDDevice(HIDInput* parent, const QString& path);
+	HIDDevice(HIDInput* parent, const char* name, const QString& path);
 	virtual ~HIDDevice();
 
 	/*********************************************************************
@@ -53,20 +54,42 @@ public:
 	 *
 	 * @return true if the file was opened RW/RO
 	 */
-	bool open();
+	virtual bool open();
 
 	/**
 	 * Close the HID device
 	 */
-	void close();
+	virtual void close();
 
 	/**
 	 * Get the full path of this HID device
 	 */
-	QString path() const;
+	virtual QString path() const;
 
 protected:
 	QFile m_file;
+
+	/*********************************************************************
+	 * Device info
+	 *********************************************************************/
+public:
+	/**
+	 * Get HID device information string to be used in plugin manager
+	 */
+	virtual QString infoText();
+
+	/**
+	 * Get the device's name
+	 */
+	virtual QString name();
+
+	/**
+	 * Get number of channels provided by the given device
+	 */
+	virtual t_input_channel channels();
+
+protected:
+	QString m_name;
 
 	/*********************************************************************
 	 * Input data
@@ -75,14 +98,14 @@ signals:
 	/**
 	 * Signal that is emitted when an input channel's value is changed
 	 */
-	void valueChanged(t_input_channel channel, t_input_value value);
+	virtual void valueChanged(t_input_channel channel, t_input_value value);
 
 public:
 	/**
 	 * Send an input value back the HID device to move motorized sliders
 	 * and such.
 	 */
-	void feedBack(t_input_channel channel, t_input_value value);
+	virtual void feedBack(t_input_channel channel, t_input_value value);
 };
 
 #endif

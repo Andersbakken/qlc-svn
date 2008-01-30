@@ -55,6 +55,7 @@ class DMXPatch
 	friend class DMXMap;
 	friend class DMXMapEditor;
 	friend class DMXPatchEditor;
+	friend class PluginLoader;
 
 public:
 	DMXPatch(OutputPlugin* p, int o) { plugin = p; output = o; }
@@ -291,21 +292,6 @@ public:
 	 */
 	QString pluginStatus(const QString& pluginName = QString::null);
 
-protected:
-	/**
-	 * Load output plugins from the given directory
-	 *
-	 * @param pluginPath A path pointing to QLC plugin directory
-	 */
-	void loadPlugins(const QString& pluginPath);
-	
-	/**
-	 * Attempt to create a plugin from the given filename
-	 *
-	 * @param path A filename to a shared object plugin
-	 */
-	OutputPlugin* createPlugin(const QString& path);
-
 	/**
 	 * Append the given plugin to our list of plugins. Will fail if
 	 * a plugin with the same name already exists.
@@ -315,6 +301,7 @@ protected:
 	 */
 	bool appendPlugin(OutputPlugin* outputPlugin);
 
+protected:
 	/**
 	 * Get a plugin instance by the plugin's name
 	 *
@@ -356,7 +343,18 @@ public:
 	 * Defaults
 	 *********************************************************************/
 public:
+	/**
+	 * Load default settings for output mapper from QLC global settings
+	 *
+	 * @param path Domain path of global settings (KApplicationNameLong)
+	 */
 	void loadDefaults(const QString& path);
+
+	/**
+	 * Save default settings for output mapper into QLC global settings
+	 *
+	 * @param path Domain path of global settings (KApplicationNameLong)
+	 */
 	void saveDefaults(const QString& path);
 };
 

@@ -25,6 +25,8 @@
 #include <qdir.h>
 
 #include "hidinput.h"
+#include "hideventdevice.h"
+#include "configurehidinput.h"
 
 extern "C" InputPlugin* create()
 {
@@ -40,6 +42,8 @@ HIDInput::HIDInput() : InputPlugin()
 	m_version = 0x00010000;
 	m_name = QString("HID Input");
 	m_type = InputType;
+
+	open();
 }
 
 HIDInput::~HIDInput()
@@ -54,25 +58,22 @@ int HIDInput::open()
 {
 	HIDDevice* hidDevice = NULL;
 	QDir dir("/dev/input/");
-	QStringList entries = dir.entryList(QDir::Files | QDir::System);
+	QStringList entries;
 	QStringList::iterator it;
 	QString path;
 
 	close();
 
+	entries = dir.entryList("event*", QDir::Files | QDir::System);
 	for (it = entries.begin(); it != entries.end(); ++it)
 	{
 		path = dir.absPath() + QString("/") + *it;
 		hidDevice = device(path);
 		if (hidDevice == NULL)
-		{
-			hidDevice = new HIDDevice(this, path);
-
-			if (hidDevice->open() == true)
-				m_devices.append(hidDevice);
-			else
-				delete hidDevice;
-			hidDevice = NULL;
+	{
+			hidDevice = new HIDEventDevice(this, path);
+			hidDevice->open();
+			m_devices.append(hidDevice);
 		}
 	}
 }
@@ -102,6 +103,14 @@ HIDDevice* HIDInput::device(const QString& path)
 	return NULL;
 }
 
+HIDDevice* HIDInput::device(const unsigned int index)
+{
+	if (index > m_devices.count())
+		return NULL;
+	else
+		return m_devices.at(index);
+}
+
 t_input HIDInput::inputs()
 {
 	return m_devices.count();
@@ -109,7 +118,10 @@ t_input HIDInput::inputs()
 
 t_input_channel HIDInput::channels(t_input input)
 {
-	return 0;
+	if (input >= m_devices.count())
+		return NULL;
+	else
+		return m_devices.at(input)->channels();
 }
 
 /*****************************************************************************
@@ -118,9 +130,8 @@ t_input_channel HIDInput::channels(t_input input)
 
 int HIDInput::configure(QWidget* parentWidget)
 {
-	QMessageBox::information(parentWidget,
-				 "Configure HID Input",
-				 "This plugin has no configurable options");
+	ConfigureHIDInput conf(parentWidget, this);
+	conf.exec();
 }
 
 /*****************************************************************************
@@ -129,6 +140,8 @@ int HIDInput::configure(QWidget* parentWidget)
 
 QString HIDInput::infoText()
 {
+	QPtrListIterator<HIDDevice> it(m_devices);
+	HIDDevice* device = NULL;
 	QString info = QString::null;
 	QString t;
 
@@ -144,7 +157,7 @@ QString HIDInput::infoText()
 	info += QString("<TR>");
 	info += QString("<TD BGCOLOR=\"");
 	info += QApplication::palette().active().highlight().name();
-	info += QString("\">");
+	info += QString("\" COLSPAN=\"3\">");
 	info += QString("<FONT COLOR=\"");
 	info += QApplication::palette().active().highlightedText().name();
 	info += QString("\" SIZE=\"5\">");
@@ -152,6 +165,63 @@ QString HIDInput::infoText()
 	info += QString("</FONT>");
 	info += QString("</TD>");
 	info += QString("</TR>");
+	info += QString("</TABLE>");
+
+	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
+	info += QString("<TR>");
+
+	/* Device title */
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().active().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().active().highlightedText().name();
+	info += QString("\" SIZE=\"5\">");
+	info += QString("Device");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+
+	/* Name title */
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().active().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().active().highlightedText().name();
+	info += QString("\" SIZE=\"5\">");
+	info += QString("Name");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+
+	/* Mode title */
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().active().highlight().name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().active().highlightedText().name();
+	info += QString("\" SIZE=\"5\">");
+	info += QString("Mode");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+	info += QString("</TR>");
+
+	/* Devices */
+	if (m_devices.count() == 0)
+	{
+		info += QString("<TR>");
+		info += QString("<TD COLSPAN=\"3\">");
+		info += QString("No HID devices found under /dev/input/");
+		info += QString("</TD>");
+		info += QString("</TR>");
+	}
+	else
+	{
+		while ((device = it.current()) != NULL)
+		{
+			info += it.current()->infoText();
+			++it;
+		}
+	}
+
 	info += QString("</TABLE>");
 
 	return info;

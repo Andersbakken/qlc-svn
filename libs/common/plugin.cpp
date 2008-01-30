@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <dlfcn.h>
 #include "plugin.h"
 
 Plugin::Plugin() : QObject()
@@ -47,6 +48,7 @@ Plugin::PluginType Plugin::type()
 
 void Plugin::setHandle(void* handle)
 {
+	Q_ASSERT(handle != NULL);
 	m_handle = handle;
 }
 
