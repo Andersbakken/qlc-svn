@@ -22,11 +22,14 @@
 #ifndef CONFIGUREDMX4LINUXOUT_H
 #define CONFIGUREDMX4LINUXOUT_H
 
-#include "uic_configuredmx4linuxout.h"
+#include <QDialog>
 
+#include "ui_configuredmx4linuxout.h"
+
+class QWidget;
 class DMX4LinuxOut;
 
-class ConfigureDMX4LinuxOut : public UI_ConfigureDMX4LinuxOut
+class ConfigureDMX4LinuxOut : public QDialog, public Ui_ConfigureDMX4LinuxOut
 {
 	Q_OBJECT
 

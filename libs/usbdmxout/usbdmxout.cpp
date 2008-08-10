@@ -29,23 +29,14 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <qptrlist.h>
-#include <qapplication.h>
-#include <qthread.h>
-#include <qstring.h>
-#include <qpoint.h>
-#include <qpopupmenu.h>
-#include <qfile.h>
-#include <qdir.h>
+#include <QApplication>
+#include <QPalette>
+#include <QDebug>
+#include <QString>
+#include <QColor>
 
 #include "usbdmxout.h"
 #include "configureusbdmxout.h"
-#include "common/filehandler.h"
-
-static QMutex _mutex;
-
-#define CONF_FILE "usbdmxout.conf"
-#define DEVICE_DIR "/dev/"
 
 /*****************************************************************************
  * Peperoni Rodin interface macro definitions
@@ -141,39 +132,24 @@ static QMutex _mutex;
 #define USBDMX21     (0x04)
 
 /*****************************************************************************
- * UsbDmxOut plugin implementation
- *****************************************************************************/
-
-extern "C" OutputPlugin* create()
-{
-	return new USBDMXOut();
-}
-
-/*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-USBDMXOut::USBDMXOut() : OutputPlugin()
+void USBDMXOut::init()
 {
-	m_name = QString("USB DMX Output");
-	m_type = OutputType;
-	m_version = 0x00010100;
-
+	/* Initialize all devices as non-opened */
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
 		m_devices[i] = -1;
 		m_errors[i] = 0;
 	}
 
+	/* Initialize value buffer */
 	for (t_channel ch = 0; ch < MAX_USBDMX_DEVICES * 512; ch++)
 		m_values[ch] = 0;
 
-	open();
-}
-
-USBDMXOut::~USBDMXOut()
-{
-	close();
+	/* Nobody uses this plugin yet */
+	m_refCount = 0;
 }
 
 /*****************************************************************************
@@ -182,18 +158,28 @@ USBDMXOut::~USBDMXOut()
 
 int USBDMXOut::open()
 {
-	QString path;
+	/* Count the number of times open() has been called so that the devices
+	   are opened only once. This is basically reference counting. */
+	m_refCount++;
+	if (m_refCount > 1)
+		return 0;
 
-	/* Close all connections first */
-	close();
-
+	/* Attempt to find USBDMX devices */
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
-		path.sprintf("/dev/usbdmx%d", i);
-		m_devices[i] = ::open(static_cast<const char*> (path), O_RDWR);
-		m_errors[i] = errno;
+		QString path("/dev/usbdmx%1");
+		m_devices[i] = ::open(path.arg(i).toUtf8(), O_RDWR);
 		if (m_devices[i] >= 0)
-			qDebug(QString("Found USB2DMX device from ") + path);
+		{
+			qDebug() << "Found a USB2DMX device in" << path.arg(i);
+			m_errors[i] = 0;
+		}
+		else
+		{
+			qDebug() << "No USB2DMX device in" << path.arg(i);
+			m_errors[i] = errno;
+			m_devices[i] = -1;
+		}
 	}
 
 	return 0;
@@ -201,6 +187,14 @@ int USBDMXOut::open()
 
 int USBDMXOut::close()
 {
+	/* Count the number of times close() has been called so that the devices
+	   are closed only after the last user closes this plugin. This is
+	   basically reference counting. */
+	m_refCount--;
+	if (m_refCount > 0)
+		return 0;
+	Q_ASSERT(m_refCount == 0);
+
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
 		if (m_devices[i] != -1)
@@ -217,14 +211,30 @@ int USBDMXOut::outputs()
 }
 
 /*****************************************************************************
+ * Name
+ *****************************************************************************/
+
+QString USBDMXOut::name()
+{
+	return QString("USB DMX Output");
+}
+
+/*****************************************************************************
  * Configuration
  *****************************************************************************/
 
-int USBDMXOut::configure(QWidget* parentWidget)
+int USBDMXOut::configure()
 {
-	ConfigureUSBDMXOut conf(parentWidget, this);
-	conf.exec();
-	return 0;
+	int r;
+
+	open();
+
+	ConfigureUSBDMXOut conf(NULL, this);
+	r = conf.exec();
+
+	close();
+
+	return r;
 }
 
 /*****************************************************************************
@@ -247,28 +257,14 @@ QString USBDMXOut::infoText()
 	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
 	info += QString("<TR>");
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
 	info += QString("\" SIZE=\"5\">");
 	info += name();
 	info += QString("</FONT>");
 	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
-
-	/* Version information */
-	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD><B>Version</B></TD>");
-	info += QString("<TD>");
-	s.setNum((version() >> 16) & 0xff);
-	info += s + QString(".");
-	s.setNum((version() >> 8) & 0xff);
-	info += s + QString(".");
-	s.setNum(version() & 0xff);
-	info += s + QString("</TD>");
 	info += QString("</TR>");
 	info += QString("</TABLE>");
 
@@ -280,25 +276,27 @@ QString USBDMXOut::infoText()
 	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
 	info += QString("<TR>");
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
 	info += QString("\">");
 	info += QString("Output");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
 	info += QString("\">");
 	info += QString("Device name");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 	info += QString("</TR>");
+
+	open();
 
 	/* Output lines */
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
@@ -322,6 +320,8 @@ QString USBDMXOut::infoText()
 		info += QString("</TR>");
 	}
 
+	close();
+
 	info += QString("</TABLE>");
 
 	info += QString("</BODY>");
@@ -340,7 +340,7 @@ int USBDMXOut::writeChannel(t_channel channel, t_value value)
 	int channelNo = channel % 512;
 	int r = 0;
 	
-	_mutex.lock();
+	m_mutex.lock();
 
 	m_values[channel] = value;
 	
@@ -354,7 +354,7 @@ int USBDMXOut::writeChannel(t_channel channel, t_value value)
 			::perror("USBDMXOut::writeChannel");
 	}
 
-	_mutex.unlock();
+	m_mutex.unlock();
 
 	return r;
 }
@@ -367,7 +367,7 @@ int USBDMXOut::writeRange(t_channel address, t_value* values, t_channel num)
 	int firstChannel = address % 512;
 	int r = 0;
 	
-	_mutex.lock();
+	m_mutex.lock();
 
 	memcpy(m_values + address, values, num * sizeof(t_value));
 
@@ -381,16 +381,16 @@ int USBDMXOut::writeRange(t_channel address, t_value* values, t_channel num)
 			perror("USBDMXOut::writeRange");
 	}
   
-	_mutex.unlock();
+	m_mutex.unlock();
 
 	return r;
 }
 
 int USBDMXOut::readChannel(t_channel channel, t_value &value)
 {
-	_mutex.lock();
+	m_mutex.lock();
 	value = m_values[channel];
-	_mutex.unlock();
+	m_mutex.unlock();
 
 	return 0;
 }
@@ -399,9 +399,15 @@ int USBDMXOut::readRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(values != NULL);
 
-	_mutex.lock();
+	m_mutex.lock();
 	memcpy(values, m_values + address, num * sizeof(t_value));
-	_mutex.unlock();
+	m_mutex.unlock();
 
 	return 0;
 }
+
+/*****************************************************************************
+ * Plugin export
+ ****************************************************************************/
+
+Q_EXPORT_PLUGIN2(usbdmxout, USBDMXOut)

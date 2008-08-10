@@ -2,7 +2,7 @@
 <FixtureDefinition>
  <Creator>
   <Name>Q Light Controller</Name>
-  <Version>2.6.1</Version>
+  <Version>3.0.0</Version>
   <Author>hjunnila</Author>
  </Creator>
  <Manufacturer>Eurolite</Manufacturer>
@@ -24,7 +24,7 @@
   <Capability Min="1" Max="255" >Blue Mix</Capability>
  </Channel>
  <Channel Name="Macro" >
-  <Group Byte="0" >Effect</Group>
+  <Group Byte="0" >Colour</Group>
   <Capability Min="0" Max="15" >Macro OFF</Capability>
   <Capability Min="16" Max="255" >Macro ON</Capability>
  </Channel>
@@ -45,10 +45,10 @@
  </Channel>
  <Mode Name="Mode 1" >
   <Physical>
-   <Bulb ColourTemperature="0" Lumens="0" Type="" />
-   <Dimensions Width="0" Height="0" Weight="0" Depth="0" />
-   <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
-   <Focus TiltMax="0" PanMax="0" Type="Fixed" />
+   <Bulb Lumens="0" Type="LED" ColourTemperature="4500" />
+   <Dimensions Width="40" Height="40" Weight="2" Depth="30" />
+   <Lens DegreesMax="15" Name="Other" DegreesMin="15" />
+   <Focus PanMax="0" Type="Fixed" TiltMax="0" />
   </Physical>
   <Channel Number="0" >Red</Channel>
   <Channel Number="1" >Green</Channel>

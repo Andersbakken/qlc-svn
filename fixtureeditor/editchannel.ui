@@ -1,0 +1,213 @@
+<ui version="4.0" >
+ <class>EditChannel</class>
+ <widget class="QDialog" name="EditChannel" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>627</width>
+    <height>457</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Edit Channel</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QLabel" name="m_nameLabel" >
+       <property name="text" >
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_nameEdit" />
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QLabel" name="m_groupLabel" >
+       <property name="text" >
+        <string>Group</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="m_groupCombo" />
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_controlByteGroup" >
+     <property name="title" >
+      <string>Control Byte</string>
+     </property>
+     <layout class="QHBoxLayout" >
+      <item>
+       <widget class="QRadioButton" name="m_msbRadio" >
+        <property name="text" >
+         <string>Coarse (MSB)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="m_lsbRadio" >
+        <property name="text" >
+         <string>Fine (LSB)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2" >
+     <property name="title" >
+      <string>Capabilities</string>
+     </property>
+     <layout class="QHBoxLayout" >
+      <item>
+       <widget class="QTreeWidget" name="m_capabilityList" >
+        <property name="alternatingRowColors" >
+         <bool>true</bool>
+        </property>
+        <property name="rootIsDecorated" >
+         <bool>false</bool>
+        </property>
+        <property name="itemsExpandable" >
+         <bool>false</bool>
+        </property>
+        <property name="allColumnsShowFocus" >
+         <bool>true</bool>
+        </property>
+        <property name="expandsOnDoubleClick" >
+         <bool>false</bool>
+        </property>
+        <column>
+         <property name="text" >
+          <string>Minimum value</string>
+         </property>
+        </column>
+        <column>
+         <property name="text" >
+          <string>Maximum value</string>
+         </property>
+        </column>
+        <column>
+         <property name="text" >
+          <string>Description</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" >
+        <item>
+         <widget class="QToolButton" name="m_addCapabilityButton" >
+          <property name="text" >
+           <string>...</string>
+          </property>
+          <property name="iconSize" >
+           <size>
+            <width>26</width>
+            <height>26</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_removeCapabilityButton" >
+          <property name="text" >
+           <string>...</string>
+          </property>
+          <property name="iconSize" >
+           <size>
+            <width>26</width>
+            <height>26</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_editCapabilityButton" >
+          <property name="text" >
+           <string>...</string>
+          </property>
+          <property name="iconSize" >
+           <size>
+            <width>26</width>
+            <height>26</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>EditChannel</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>257</x>
+     <y>447</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>EditChannel</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>325</x>
+     <y>447</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

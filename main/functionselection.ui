@@ -1,0 +1,129 @@
+<ui version="4.0" >
+ <class>FunctionSelection</class>
+ <widget class="QDialog" name="FunctionSelection" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>528</width>
+    <height>399</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Select Function</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QTreeWidget" name="m_tree" >
+     <property name="alternatingRowColors" >
+      <bool>true</bool>
+     </property>
+     <property name="rootIsDecorated" >
+      <bool>false</bool>
+     </property>
+     <property name="itemsExpandable" >
+      <bool>false</bool>
+     </property>
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+     <property name="allColumnsShowFocus" >
+      <bool>true</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Type</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_filterGroup" >
+     <property name="title" >
+      <string>Filter</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" >
+      <item>
+       <widget class="QCheckBox" name="m_sceneCheck" >
+        <property name="text" >
+         <string>Scenes</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_chaserCheck" >
+        <property name="text" >
+         <string>Chasers</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_efxCheck" >
+        <property name="text" >
+         <string>EFX's</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_collectionCheck" >
+        <property name="text" >
+         <string>Collections</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>FunctionSelection</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>FunctionSelection</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

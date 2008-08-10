@@ -1,0 +1,80 @@
+<ui version="4.0" >
+ <class>BusProperties</class>
+ <widget class="QWidget" name="BusProperties" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>391</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Bus manager</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QTreeWidget" name="m_list" >
+     <property name="rootIsDecorated" >
+      <bool>false</bool>
+     </property>
+     <property name="itemsExpandable" >
+      <bool>false</bool>
+     </property>
+     <property name="allColumnsShowFocus" >
+      <bool>true</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Bus ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Bus Name</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QPushButton" name="m_edit" >
+       <property name="toolTip" >
+        <string>Edit the name of the selected bus</string>
+       </property>
+       <property name="text" >
+        <string>Edit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>201</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_close" >
+       <property name="toolTip" >
+        <string>Close the bus manager</string>
+       </property>
+       <property name="text" >
+        <string>Close</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,4 +1,1524 @@
-2008-01-30  Heikki Junnila  <heikki.junnila@users.sf.net>
+2008-08-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+
+	Created route for data from input plugins to input map.
+
+2008-08-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h:
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/hiddevice.cpp:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/hidinput/hidpoller.cpp:
+	* libs/hidinput/hidpoller.h:
+	* main/inputmap.cpp:
+
+	Fixed a crash with HID plugin during app shutdown.
+	Refactored input plugin construct/destruct scheme.
+	
+2008-08-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/configurehidinput.h:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+
+	Changed HID plugin to open/close devices on demand.
+
+2008-08-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/hidinput/hidpoller.cpp:
+	* libs/hidinput/hidpoller.h:
+
+	Continued on the HID input plugin.
+	
+2008-08-08  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/chasereditor.cpp:
+	* main/collectioneditor.cpp:
+	* main/fixtureselection.ui:
+	* main/function.h:
+	* main/functionselection.cpp:
+	* main/functionselection.h:
+	* main/functionselection.ui:
+	* main/vcbutton.cpp:
+	* main/vcbuttonproperties.cpp:
+	* main/vccuelistproperties.cpp:
+
+	Added user-editable function type filtering to function selection.
+
+2008-08-08  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	* libs/common/qlcphysical.h:
+
+	Changed private members to protected and set loadXML virtual.
+
+2008-08-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/common.pro:
+	* libs/common/qlccapability.h:
+	* libs/common/qlcchannel.cpp:
+	* libs/common/qlcchannel.h:
+	* libs/common/qlcfixturedef.h:
+	* libs/common/qlcfixturemode.h:
+
+	Added some virtual keywords to core classes.
+
+2008-08-05  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/consolechannel.cpp:
+
+	Added red/green/blue/cyan/magenta/yellow background color to
+	console channel button where appropriate.
+	
+2008-08-05  Heikki Junnila  <hjunnila@users.sf.net
+
+	* fixtureeditor/editcapability.cpp
+	* fixtureeditor/editcapability.ui
+	* fixtureeditor/editchannel.cpp
+	* fixtureeditor/editmode.ui
+	* fixtureeditor/fixtureeditor.cpp
+	* libs/common/qlcfixturedef.cpp
+
+	Fixed a crash in qlcchannel removal
+	Added next item selection during channel, mode and capabilit
+	removal in fixture editor.
+
+2008-08-04  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/chasereditor.ui
+	* main/collectioneditor.ui
+	* main/efxeditor.ui
+	* main/sceneeditor.cpp
+	* main/sceneeditor.h
+	* main/sceneeditor.ui
+	* main/vcbuttonproperties.ui
+	* main/vccuelistproperties.ui
+	* main/vcsliderproperties.ui
+	* main/vcxypadproperties.ui
+
+	Modified all tool buttons in dialogs to 26x26px since 16x16px is
+	too small in windows.
+	
+2008-08-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtureeditor/fixtureeditor.pro
+	* fixtures/fixtures.pro
+	* libs/common/common.pro
+	* libs/dmx4linuxout/dmx4linuxout.pro
+	* libs/hidinput/hidinput.pro
+	* libs/llaout/llaout.pro
+	* libs/usbdmxout/usbdmxout.pro
+	* main/main.pro
+
+	Added "release" to all .pro files' CONFIG tag.
+	Added Movitec SL250 to fixtures install files.
+
+2008-08-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/keybind.h:
+	* main/vcframeproperties.cpp:
+
+	Fixed crash bug with VCFrame properties.
+	Fixed compile error in KeyBind.
+	
+2008-08-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* ChangeLog
+	* main/keybind.cpp
+	* main/keybind.h
+	* main/vcbutton.cpp
+	* main/vcbuttonproperties.cpp
+
+	Fixed a bug that caused KeyBind to forget its action and signal
+	connections between workspace loads.
+
+2008-08-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtureeditor/editchannel.cpp
+	* fixtureeditor/editmode.cpp
+	* fixtureeditor/editmode.ui
+	* fixtureeditor/fixtureeditor.cpp
+	* fixtures/Movitec-SL-250.qxf
+	* ChangeLog
+
+	Set all fixtureeditor's tree widgets to resize to contents.
+	Changed mode channel adding to append instead of insert.
+	Added Movitec SL-250 definition.
+
+2008-08-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtureeditor/editmode.cpp
+	* ChangeLog
+	
+	Dialog controls were not initialized when a new mode was being edited.
+
+2008-07-31  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/configureusbdmxout.cpp
+	* libs/usbdmxout/usbdmxout-win32.cpp
+	* libs/usbdmxout/usbdmxout-win32.h
+	* ChangeLog
+
+	Fixed usbdmx device names to be shown correctly on win32.
+	
+2008-07-31  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/usbdmxout-win32.cpp
+	* libs/usbdmxout/usbdmxout-win32.h
+	* main/dummyoutplugin.cpp
+	* ChangeLog
+	
+	Win32 version of USBDMX works.
+	Added plugin export to dummyout.
+	
+2008-07-30  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/scene.cpp:
+
+	Fixed (again) the bug in scene that left some channel values untouched.
+
+2008-07-30  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/usbdmxout-win32.h
+	* ChangeLog
+
+	Added missing m_refCount param to usbdmx win32 class.
+
+2008-07-30  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h:
+	* libs/common/qlcoutplugin.h:
+	* libs/dmx4linuxout/dmx4linuxout.cpp:
+	* libs/dmx4linuxout/dmx4linuxout.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/llaout/llaout.cpp:
+	* libs/llaout/llaout.h:
+	* libs/usbdmxout/usbdmxout-win32.cpp:
+	* libs/usbdmxout/usbdmxout-win32.h:
+	* libs/usbdmxout/usbdmxout.cpp:
+	* libs/usbdmxout/usbdmxout.h:
+	* main/dmxmap.cpp:
+	* main/dummyoutplugin.cpp:
+	* main/dummyoutplugin.h:
+	* main/inputmap.cpp:
+
+	Implemented a one-time init and reference counted open/close scheme
+	for plugins.
+	
+2008-07-30  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtureeditor/editmode.cpp:
+	* main/dmxmap.cpp:
+	* main/scene.cpp:
+
+	Fixed a bug in scene that left some channel values untouched.
+	Added QDialog construction to fixtureeditor's editmode dialog.
+	Changed win32 plugin dir to C:\... instead of SystemRoot/...
+
+2008-07-29  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* editcapability.ui
+	* editchannel.cpp
+	* editchannel.ui
+	* editmode.ui
+	* fixtureeditor.cpp
+	* fixtureeditor.ui
+	* ChangeLog
+	
+	Fixed forgotten spin box max limits from 99 to 360, 255, etc...
+	
+2008-07-29  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* ChangeLog
+	* fixtureeditor/fixtureeditor.pro
+	* fixtureeditor/fixtureeditor.rc
+	* gfx/qlc-fixtureeditor.ico
+	* gfx/qlc.ico
+	* main/main.pro
+	* main/main.rc
+
+	Added windows application icons to qlc and fixture editor binaries.
+	
+2008-07-29  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtureeditor/fixtureeditor.pro
+	* libs/common/common.pro
+	* libs/libs.pro
+	* libs/usbdmxout/usbdmx-dynamic.cpp
+	* libs/usbdmxout/usbdmx-dynamic.h
+	* libs/usbdmxout/usbdmx.h
+	* libs/usbdmxout/usbdmxout-win32.cpp
+	* libs/usbdmxout/usbdmxout-win32.h
+	* libs/usbdmxout/usbdmxout.pro
+	* main/main.pro
+	* ChangeLog
+	
+	Made a windows port for usbdmx plugin (not tested yet).
+	Fixated windows installation directories to c:\qlc\.
+
+2008-07-29  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* libs/common/common.pro:
+	* libs/common/qlcinplugin.cpp:
+	* libs/common/qlcinplugin.h:
+	* libs/common/qlcoutplugin.cpp:
+	* libs/common/qlcoutplugin.h:
+	* libs/common/qlcplugin.cpp:
+	* libs/common/qlcplugin.h:
+	* libs/dmx4linuxout/configuredmx4linuxout.cpp:
+	* libs/dmx4linuxout/configuredmx4linuxout.ui:
+	* libs/dmx4linuxout/dmx4linuxout.cpp:
+	* libs/dmx4linuxout/dmx4linuxout.h:
+	* libs/dmx4linuxout/dmx4linuxout.pro:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/hidinput/hidinput.pro:
+	* libs/libs.pro:
+	* libs/llaout/llaout.cpp:
+	* libs/llaout/llaout.h:
+	* libs/llaout/llaout.pro:
+	* libs/usbdmxout/usbdmxout.cpp:
+	* libs/usbdmxout/usbdmxout.h:
+	* libs/usbdmxout/usbdmxout.pro:
+	* main/app.cpp:
+	* main/dmxmap.cpp:
+	* main/dmxmap.h:
+	* main/dummyoutplugin.cpp:
+	* main/dummyoutplugin.h:
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+	* main/keybind.cpp:
+	* main/main.pro:
+	* main/pluginloader.cpp:
+	* main/pluginloader.h:
+
+	Changed plugin system to use QtPlugin stuff, which should make it
+	possible to load plugins in win32 & unix with almost the same code.
+	
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* debian/control:
+	* debian/files:
+	* debian/qlc.install:
+	* debian/rules:
+
+	Updated debian rules to pass but package creation doesn't work yet.
+
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* INSTALL:
+	* README:
+
+	Removed INSTALL and updated instructions in README.
+	
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* docs/Makefile.am:
+	* etc/Makefile.am:
+	* etc/etc.pro:
+	* etc/qlc-fixtureeditor.desktop:
+	* fixtureeditor/fixtureeditor.pro:
+	* fixtures/fixtures.pro:
+	* qlc.pro:
+
+	Changed etc t use qmake. Fixed fixtures.pro to use subdirs template
+	instead of lib.
+
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/dmx4linuxout/Makefile.am:
+	* libs/dmx4linuxout/configuredmx4linuxout.h:
+	* libs/dmx4linuxout/dmx4linuxout.pro:
+
+	Changed DMX4Linux to use qmake.
+	
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/libs.pro:
+	* libs/usbdmxout/Makefile.am:
+	* libs/usbdmxout/configureusbdmxout.h:
+	* libs/usbdmxout/usbdmxout.pro:
+
+	Changed usbdmx to use qmake.
+
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/app.cpp:
+
+	Added more sophisticated fixture path resolving.
+	
+2008-07-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtures/fixtures.pro:
+	* qlc.pro:
+
+	Added fixtures/ to qmake rules.
+	
+2008-07-27  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtureeditor/fixtureeditor.pro:
+	* libs/Makefile.am:
+	* libs/common/common.pro:
+	* libs/hidinput/Makefile.am:
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/configurehidinput.h:
+	* libs/hidinput/configurehidinput.ui:
+	* libs/hidinput/hiddevice.cpp:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/hidinput/hidinput.pro:
+	* libs/hidinput/hidpoller.cpp:
+	* libs/hidinput/hidpoller.h:
+	* libs/libs.pro:
+	* main/main.pro:
+	* main/qlc.pro:
+	* main/qlc.qrc:
+	* qlc.pro:
+
+	Added some .pro files to enable compiling from topdir level.
+	Continued a bit on HID input plugin.
+	
+2008-07-25  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* Makefile.am:
+	* autogen.sh:
+	* configure.ac:
+	* fixtureeditor/Makefile.am:
+	* fixtureeditor/aboutbox.cpp:
+	* fixtureeditor/aboutbox.h:
+	* fixtureeditor/app.cpp:
+	* fixtureeditor/app.h:
+	* fixtureeditor/editcapability.cpp:
+	* fixtureeditor/editcapability.h:
+	* fixtureeditor/editcapability.ui:
+	* fixtureeditor/editchannel.cpp:
+	* fixtureeditor/editchannel.h:
+	* fixtureeditor/editchannel.ui:
+	* fixtureeditor/editmode.cpp:
+	* fixtureeditor/editmode.h:
+	* fixtureeditor/editmode.ui:
+	* fixtureeditor/fixtureeditor.cpp:
+	* fixtureeditor/fixtureeditor.h:
+	* fixtureeditor/fixtureeditor.pro:
+	* fixtureeditor/fixtureeditor.qrc:
+	* fixtureeditor/fixtureeditor.ui:
+	* fixtureeditor/main.cpp:
+	* fixtureeditor/src/aboutbox.cpp:
+	* fixtureeditor/src/aboutbox.h:
+	* fixtureeditor/src/app.cpp:
+	* fixtureeditor/src/app.h:
+	* fixtureeditor/src/editcapability.cpp:
+	* fixtureeditor/src/editcapability.h:
+	* fixtureeditor/src/editcapability.ui:
+	* fixtureeditor/src/editchannel.cpp:
+	* fixtureeditor/src/editchannel.h:
+	* fixtureeditor/src/editchannel.ui:
+	* fixtureeditor/src/editmode.cpp:
+	* fixtureeditor/src/editmode.h:
+	* fixtureeditor/src/editmode.ui:
+	* fixtureeditor/src/fixtureeditor.cpp:
+	* fixtureeditor/src/fixtureeditor.h:
+	* fixtureeditor/src/fixtureeditor.ui:
+	* fixtureeditor/src/main.cpp:
+	* fixtures/Makefile.am:
+	* gfx/Makefile.am:
+	* libs/common/Makefile.am:
+	* libs/common/common.pro:
+	* libs/common/common.qrc:
+	* libs/common/qlccapability.cpp:
+	* libs/common/qlccapability.h:
+	* libs/common/qlcchannel.cpp:
+	* libs/common/qlcchannel.h:
+	* libs/common/qlcdocbrowser.cpp:
+	* libs/common/qlcdocbrowser.h:
+	* libs/common/qlcfile.cpp:
+	* libs/common/qlcfile.h:
+	* libs/common/qlcfixturedef.cpp:
+	* libs/common/qlcfixturedef.h:
+	* libs/common/qlcfixturemode.cpp:
+	* libs/common/qlcfixturemode.h:
+	* libs/common/qlcinplugin.cpp:
+	* libs/common/qlcinplugin.h:
+	* libs/common/qlcoutplugin.h:
+	* libs/common/qlcphysical.cpp:
+	* libs/common/qlcphysical.h:
+	* libs/common/qlcplugin.cpp:
+	* libs/common/qlcplugin.h:
+	* libs/common/qlctypes.h:
+	* main/Makefile.am:
+	* main/aboutbox.cpp:
+	* main/aboutbox.h:
+	* main/addfixture.cpp:
+	* main/addfixture.h:
+	* main/addfixture.ui:
+	* main/app.cpp:
+	* main/app.h:
+	* main/appdirectories.cpp:
+	* main/appdirectories.h:
+	* main/appdirectories.ui:
+	* main/assignhotkey.cpp:
+	* main/assignhotkey.h:
+	* main/assignhotkey.ui:
+	* main/bus.cpp:
+	* main/bus.h:
+	* main/busproperties.cpp:
+	* main/busproperties.h:
+	* main/busproperties.ui:
+	* main/chaser.cpp:
+	* main/chaser.h:
+	* main/chasereditor.cpp:
+	* main/chasereditor.h:
+	* main/chasereditor.ui:
+	* main/collection.cpp:
+	* main/collection.h:
+	* main/collectioneditor.cpp:
+	* main/collectioneditor.h:
+	* main/collectioneditor.ui:
+	* main/consolechannel.cpp:
+	* main/consolechannel.h:
+	* main/dmxaddresstool.cpp:
+	* main/dmxaddresstool.h:
+	* main/dmxaddresstool.ui:
+	* main/dmxmap.cpp:
+	* main/dmxmap.h:
+	* main/dmxmapeditor.cpp:
+	* main/dmxmapeditor.h:
+	* main/dmxmapeditor.ui:
+	* main/dmxpatcheditor.cpp:
+	* main/dmxpatcheditor.h:
+	* main/dmxpatcheditor.ui:
+	* main/doc.cpp:
+	* main/doc.h:
+	* main/dummyoutplugin.cpp:
+	* main/dummyoutplugin.h:
+	* main/editscenevalue.cpp:
+	* main/editscenevalue.h:
+	* main/editscenevalue.ui:
+	* main/efx.cpp:
+	* main/efx.h:
+	* main/efxeditor.cpp:
+	* main/efxeditor.h:
+	* main/efxeditor.ui:
+	* main/efxfixture.cpp:
+	* main/efxfixture.h:
+	* main/eventbuffer.cpp:
+	* main/eventbuffer.h:
+	* main/fixture.cpp:
+	* main/fixture.h:
+	* main/fixtureconsole.cpp:
+	* main/fixtureconsole.h:
+	* main/fixturelist.cpp:
+	* main/fixturelist.h:
+	* main/fixturelist.ui:
+	* main/fixturemanager.cpp:
+	* main/fixturemanager.h:
+	* main/fixtureproperties.cpp:
+	* main/fixtureproperties.h:
+	* main/fixtureproperties.ui:
+	* main/fixtureselection.cpp:
+	* main/fixtureselection.h:
+	* main/fixtureselection.ui:
+	* main/function.cpp:
+	* main/function.h:
+	* main/functionconsumer.cpp:
+	* main/functionconsumer.h:
+	* main/functionmanager.cpp:
+	* main/functionmanager.h:
+	* main/functionselection.cpp:
+	* main/functionselection.h:
+	* main/functionselection.ui:
+	* main/generatorarea.cpp:
+	* main/generatorarea.h:
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+	* main/keybind.cpp:
+	* main/keybind.h:
+	* main/main.cpp:
+	* main/monitor.cpp:
+	* main/monitor.h:
+	* main/pluginloader.cpp:
+	* main/pluginloader.h:
+	* main/pluginmanager.cpp:
+	* main/pluginmanager.h:
+	* main/qlc.pro:
+	* main/qlc.qrc:
+	* main/scene.cpp:
+	* main/scene.h:
+	* main/sceneeditor.cpp:
+	* main/sceneeditor.h:
+	* main/sceneeditor.ui:
+	* main/src/aboutbox.cpp:
+	* main/src/aboutbox.h:
+	* main/src/addfixture.cpp:
+	* main/src/addfixture.h:
+	* main/src/addfixture.ui:
+	* main/src/advancedsceneeditor.cpp:
+	* main/src/advancedsceneeditor.h:
+	* main/src/advancedsceneeditor.ui:
+	* main/src/app.cpp:
+	* main/src/app.h:
+	* main/src/assignhotkey.cpp:
+	* main/src/assignhotkey.h:
+	* main/src/assignhotkey.ui:
+	* main/src/bus.cpp:
+	* main/src/bus.h:
+	* main/src/busproperties.cpp:
+	* main/src/busproperties.h:
+	* main/src/busproperties.ui:
+	* main/src/chaser.cpp:
+	* main/src/chaser.h:
+	* main/src/chasereditor.cpp:
+	* main/src/chasereditor.h:
+	* main/src/chasereditor.ui:
+	* main/src/collection.cpp:
+	* main/src/collection.h:
+	* main/src/collectioneditor.cpp:
+	* main/src/collectioneditor.h:
+	* main/src/collectioneditor.ui:
+	* main/src/consolechannel.cpp:
+	* main/src/consolechannel.h:
+	* main/src/dmxaddresstool.cpp:
+	* main/src/dmxaddresstool.h:
+	* main/src/dmxaddresstool.ui:
+	* main/src/dmxmap.cpp:
+	* main/src/dmxmap.h:
+	* main/src/dmxmapeditor.cpp:
+	* main/src/dmxmapeditor.h:
+	* main/src/dmxmapeditor.ui:
+	* main/src/dmxpatcheditor.cpp:
+	* main/src/dmxpatcheditor.h:
+	* main/src/dmxpatcheditor.ui:
+	* main/src/doc.cpp:
+	* main/src/doc.h:
+	* main/src/dummyinplugin.cpp:
+	* main/src/dummyinplugin.h:
+	* main/src/dummyoutplugin.cpp:
+	* main/src/dummyoutplugin.h:
+	* main/src/editscenevalue.cpp:
+	* main/src/editscenevalue.h:
+	* main/src/editscenevalue.ui:
+	* main/src/efx.cpp:
+	* main/src/efx.h:
+	* main/src/efxeditor.cpp:
+	* main/src/efxeditor.h:
+	* main/src/efxeditor.ui:
+	* main/src/efxfixture.cpp:
+	* main/src/efxfixture.h:
+	* main/src/eventbuffer.cpp:
+	* main/src/eventbuffer.h:
+	* main/src/fixture.cpp:
+	* main/src/fixture.h:
+	* main/src/fixtureconsole.cpp:
+	* main/src/fixtureconsole.h:
+	* main/src/fixturelist.cpp:
+	* main/src/fixturelist.h:
+	* main/src/fixturelist.ui:
+	* main/src/fixturemanager.cpp:
+	* main/src/fixturemanager.h:
+	* main/src/fixtureproperties.cpp:
+	* main/src/fixtureproperties.h:
+	* main/src/fixtureproperties.ui:
+	* main/src/fixtureselection.cpp:
+	* main/src/fixtureselection.h:
+	* main/src/fixtureselection.ui:
+	* main/src/function.cpp:
+	* main/src/function.h:
+	* main/src/functionconsumer.cpp:
+	* main/src/functionconsumer.h:
+	* main/src/functionmanager.cpp:
+	* main/src/functionmanager.h:
+	* main/src/functionselection.cpp:
+	* main/src/functionselection.h:
+	* main/src/functionselection.ui:
+	* main/src/generatorarea.cpp:
+	* main/src/generatorarea.h:
+	* main/src/inputmap.cpp:
+	* main/src/inputmap.h:
+	* main/src/keybind.cpp:
+	* main/src/keybind.h:
+	* main/src/listboxiditem.cpp:
+	* main/src/listboxiditem.h:
+	* main/src/main.cpp:
+	* main/src/monitor.cpp:
+	* main/src/monitor.h:
+	* main/src/newinputdevice.cpp:
+	* main/src/newinputdevice.h:
+	* main/src/pluginloader.cpp:
+	* main/src/pluginloader.h:
+	* main/src/pluginmanager.cpp:
+	* main/src/pluginmanager.h:
+	* main/src/scene.cpp:
+	* main/src/scene.h:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.h:
+	* main/src/sceneeditor.ui:
+	* main/src/vcbutton.cpp:
+	* main/src/vcbutton.h:
+	* main/src/vcbuttonproperties.cpp:
+	* main/src/vcbuttonproperties.h:
+	* main/src/vcbuttonproperties.ui:
+	* main/src/vccuelist.cpp:
+	* main/src/vccuelist.h:
+	* main/src/vccuelistproperties.cpp:
+	* main/src/vccuelistproperties.h:
+	* main/src/vccuelistproperties.ui:
+	* main/src/vcdockarea.cpp:
+	* main/src/vcdockarea.h:
+	* main/src/vcdockslider.cpp:
+	* main/src/vcdockslider.h:
+	* main/src/vcdockslider.ui:
+	* main/src/vcframe.cpp:
+	* main/src/vcframe.h:
+	* main/src/vcframeproperties.cpp:
+	* main/src/vcframeproperties.h:
+	* main/src/vcframeproperties.ui:
+	* main/src/vclabel.cpp:
+	* main/src/vclabel.h:
+	* main/src/vcslider.cpp:
+	* main/src/vcslider.h:
+	* main/src/vcsliderproperties.cpp:
+	* main/src/vcsliderproperties.h:
+	* main/src/vcsliderproperties.ui:
+	* main/src/vcwidget.cpp:
+	* main/src/vcwidget.h:
+	* main/src/vcxypad.cpp:
+	* main/src/vcxypad.h:
+	* main/src/vcxypadproperties.cpp:
+	* main/src/vcxypadproperties.h:
+	* main/src/vcxypadproperties.ui:
+	* main/src/virtualconsole.cpp:
+	* main/src/virtualconsole.h:
+	* main/src/virtualconsoleproperties.cpp:
+	* main/src/virtualconsoleproperties.h:
+	* main/src/virtualconsoleproperties.ui:
+	* main/src/xychannelunit.cpp:
+	* main/src/xychannelunit.h:
+	* main/vcbutton.cpp:
+	* main/vcbutton.h:
+	* main/vcbuttonproperties.cpp:
+	* main/vcbuttonproperties.h:
+	* main/vcbuttonproperties.ui:
+	* main/vccuelist.cpp:
+	* main/vccuelist.h:
+	* main/vccuelistproperties.cpp:
+	* main/vccuelistproperties.h:
+	* main/vccuelistproperties.ui:
+	* main/vcdockarea.cpp:
+	* main/vcdockarea.h:
+	* main/vcdockslider.cpp:
+	* main/vcdockslider.h:
+	* main/vcdockslider.ui:
+	* main/vcframe.cpp:
+	* main/vcframe.h:
+	* main/vcframeproperties.cpp:
+	* main/vcframeproperties.h:
+	* main/vcframeproperties.ui:
+	* main/vclabel.cpp:
+	* main/vclabel.h:
+	* main/vcslider.cpp:
+	* main/vcslider.h:
+	* main/vcsliderproperties.cpp:
+	* main/vcsliderproperties.h:
+	* main/vcsliderproperties.ui:
+	* main/vcwidget.cpp:
+	* main/vcwidget.h:
+	* main/vcxypad.cpp:
+	* main/vcxypad.h:
+	* main/vcxypadproperties.cpp:
+	* main/vcxypadproperties.h:
+	* main/vcxypadproperties.ui:
+	* main/virtualconsole.cpp:
+	* main/virtualconsole.h:
+	* main/virtualconsoleproperties.cpp:
+	* main/virtualconsoleproperties.h:
+	* main/virtualconsoleproperties.ui:
+	* main/xychannelunit.cpp:
+	* main/xychannelunit.h:
+
+	Changed make system to use qmake so that QLC can be compiled for
+	win32 target as well. Plugins are not yet within qmake scope, and
+	libs/common, fixtureeditor and main have to be compiled manually
+	for now.
+
+2008-07-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/app.cpp:
+	* main/src/app.h:
+
+	Implemented workspace background setting.
+	
+2008-07-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/vcslider.cpp:
+
+	Fixed bus ID loading.
+	
+2008-07-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/vccuelist.cpp:
+
+	Fixed keybind loading and initial key press to start from the beginning.
+	
+2008-07-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* gfx/Makefile.am:
+	* gfx/cuelist.png:
+	* main/Makefile.am:
+	* main/src/assignhotkey.cpp:
+	* main/src/functionselection.cpp:
+	* main/src/functionselection.h:
+	* main/src/vccuelist.cpp:
+	* main/src/vccuelist.h:
+	* main/src/vccuelistproperties.cpp:
+	* main/src/vccuelistproperties.h:
+	* main/src/vccuelistproperties.ui:
+	* main/src/vcframe.cpp:
+	* main/src/vcframe.h:
+	* main/src/virtualconsole.cpp:
+	* main/src/virtualconsole.h:
+
+	Added a cue list widget to virtual console for theatrical applications.
+	
+2008-07-08  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/efxeditor.cpp:
+
+	Fixed start/stop scene enable/disable.
+	
+2008-07-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* gfx/chaser.png:
+	* gfx/collection.png:
+	* gfx/function.png:
+	* gfx/scene.png:
+	* main/src/collectioneditor.cpp:
+	* main/src/functionmanager.cpp:
+	* main/src/functionmanager.h:
+
+	Changed function icons to slightly better ones.
+	Set the collection being edited to be disabled in selection dialog.
+	Changed copy-paste in function manager to clone.
+
+2008-07-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/configureusbdmxout.ui:
+	* libs/usbdmxout/usbdmxout.cpp:
+
+	An error was displayed for a successfully initialized usbdmx device,
+	fixed. Changed alternating row colors, root is decorated, all cols
+	show focus etc.. for usbdmx configuration window.
+	
+2008-07-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/consolechannel.cpp:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.ui:
+
+	Changed console channel's inverted appearance to normal.
+	Removed the "All" tab from scene editor.
+
+2008-07-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/consolechannel.cpp:
+	* main/src/sceneeditor.cpp:
+
+	Fixed fixture removal in scene editor.
+	Fixed initial value of a channel in scene editor.
+	
+2008-07-06  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/functionconsumer.cpp:
+	* main/src/functionconsumer.h:
+	* main/src/scene.cpp:
+
+	Fixed some weirdness in scene behaviour.
+	Changed QMutableListIterator to int in functionconsumer, since
+	it could be somewhat lighter.
+
+2008-07-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/doc.cpp:
+	* main/src/efx.cpp:
+	* main/src/efx.h:
+	* main/src/efxfixture.cpp:
+	* main/src/efxfixture.h:
+	* main/src/function.cpp:
+	* main/src/function.h:
+	* main/src/scene.cpp:
+	* main/src/scene.h:
+
+	Added slotFixtureRemoved() for Scene & EFX functions.
+	Changed serial mode EFX initialization to happen similarly in serial.	
+
+2008-06-25  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efxeditor.cpp:
+	* main/src/efxfixture.cpp:
+
+	Added starting point indicator to EFX preview.
+	
+2008-06-24  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/vcdockslider.cpp:
+	* main/src/vcslider.cpp:
+	* main/src/vcsliderproperties.cpp:
+	* main/src/vcsliderproperties.ui:
+
+	Fixed crash problems in vcsliderproperties.
+	Fixed slider name issues with vcslider & dockslider.
+	
+2008-06-24  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/configureusbdmxout.ui:
+
+	Fixed test button.
+	
+2008-06-17  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/hidinput/hidinput.cpp:
+
+	Fixed info view colors.
+
+2008-06-17  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/scene.h:
+
+	Implemented EFX start & stop scene setting.
+
+2008-06-16  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/scene.cpp:
+
+	Fixed value duplication bug in Scene::copyFrom().
+	
+2008-06-16  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/efxfixture.cpp:
+	* main/src/efxfixture.h:
+
+	Fixed EFX serial propagation mode.
+	
+2008-06-15  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/dmxmap.cpp:
+	* main/src/efx.cpp:
+	* main/src/efx.h:
+	* main/src/efxeditor.ui:
+	* main/src/efxfixture.cpp:
+	* main/src/efxfixture.h:
+	* main/src/functionselection.ui:
+	* main/src/scene.cpp:
+	* main/src/scene.h:
+
+	First real attempt at EFX serial propagation mode. Not too good.
+	Renamed RunTimeData to SceneChannel.
+	Added Scene::writeValues() that is supposed to write the scene
+	contents to DMXMap during EFX init/deinit, but EFX doesn't seem to
+	like using any Scene* objects within... Dammit.
+	
+2008-06-12  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/efxeditor.cpp:
+	* main/src/efxeditor.h:
+	* main/src/functionmanager.cpp:
+
+	Fixed crash bug in functionmanager slotFunctionAdded().
+	Added propagation mode stuff to EFX::save&load functions.
+	Added propagation mode updating to EFXEditor.
+
+2008-06-12  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/efx.h:
+	* main/src/efxeditor.cpp:
+	* main/src/efxeditor.h:
+
+	Added stuff for pattern propagation mode.
+
+2008-06-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/efx.cpp:
+	* main/src/efxfixture.cpp:
+
+	Fixed EFX to work in parallel mode.
+
+2008-06-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* main/Makefile.am:
+	* main/src/app.cpp:
+	* main/src/chaser.cpp:
+	* main/src/chaser.h:
+	* main/src/chasereditor.cpp:
+	* main/src/chasereditor.ui:
+	* main/src/collection.cpp:
+	* main/src/collectioneditor.cpp:
+	* main/src/doc.cpp:
+	* main/src/doc.h:
+	* main/src/efx.cpp:
+	* main/src/efx.h:
+	* main/src/efxeditor.cpp:
+	* main/src/efxeditor.h:
+	* main/src/efxeditor.ui:
+	* main/src/efxfixture.cpp:
+	* main/src/efxfixture.h:
+	* main/src/function.cpp:
+	* main/src/function.h:
+	* main/src/functionmanager.cpp:
+	* main/src/functionselection.cpp:
+	* main/src/vcbuttonproperties.cpp:
+	* main/src/vcsliderproperties.ui:
+
+	Removed fixture property from Function class.
+	Made EFX a global function (doesn't work yet).
+	
+2008-06-06  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/functionmanager.cpp:
+	* main/src/functionmanager.h:
+
+	Flattened function manager, since all functions are about to get global.
+	
+2008-06-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/fixturemanager.cpp:
+
+	Changed fixture manager's "no fixtures" text to display the add icon.
+
+2008-06-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/sceneeditor.ui:
+
+	Changed scene editor layouts to one master QBoxLayout.
+
+2008-06-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/functionconsumer.cpp:
+	* main/src/functionconsumer.h:
+	* main/src/virtualconsoleproperties.cpp:
+
+	Disabled hardware timer from APPLE target completely.
+
+2008-06-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/scene.cpp:
+
+	Fixed scene running logic.
+
+2008-06-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/consolechannel.cpp:
+	* main/src/consolechannel.h:
+	* main/src/consolechannel.ui:
+	* main/src/fixtureconsole.cpp:
+	* main/src/fixtureconsole.h:
+	* main/src/fixtureselection.cpp:
+	* main/src/scene.cpp:
+	* main/src/scene.h:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.h:
+	* main/src/sceneeditor.ui:
+
+	Updated and fixed scene editor to work with global scenes.
+
+2008-05-29  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/Makefile.am:
+	* main/src/consolechannel.cpp:
+	* main/src/consolechannel.h:
+	* main/src/consolechannel.ui:
+	* main/src/fixtureconsole.cpp:
+	* main/src/fixtureconsole.h:
+	* main/src/fixturemanager.cpp:
+	* main/src/fixtureselection.cpp:
+	* main/src/fixtureselection.h:
+	* main/src/fixtureselection.ui:
+	* main/src/functionmanager.cpp:
+	* main/src/scene.cpp:
+	* main/src/scene.h:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.h:
+	* main/src/sceneeditor.ui:
+
+	Made the first move towards global scenes.
+	
+2008-05-26  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* main/src/virtualconsole.cpp:
+	* main/src/virtualconsole.h:
+	* main/src/virtualconsoleproperties.cpp:
+	* main/src/virtualconsoleproperties.h:
+	* main/src/virtualconsoleproperties.ui:
+
+	Updated some TODO items. Added timer type selection to virtual console
+	settings dialog. Changed all VC menu items to actions and disabled
+	tools during operate mode.
+	
+2008-05-24  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/doc.cpp:
+	* main/src/virtualconsole.cpp:
+
+	Fixed virtual console keyboard settings saving.
+	Moved bus loading as the last thing in Doc::saveXML() to fix
+	vcslider's initial position.
+
+2008-05-24  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/chaser.cpp:
+	* main/src/chaser.h:
+	* main/src/collection.cpp:
+	* main/src/efx.cpp:
+	* main/src/function.h:
+	* main/src/functionconsumer.cpp:
+	* main/src/scene.cpp:
+	* main/src/vcslider.cpp:
+	* main/src/vcslider.h:
+	* main/src/vcsliderproperties.cpp:
+	* main/src/vcsliderproperties.h:
+	* main/src/vcsliderproperties.ui:
+	* main/src/virtualconsole.cpp:
+
+	Fixed function running stuff. At least scenes and chasers should
+	work. Removed FunctionNS and all event stuff from functions since
+	they are now QObjects with normal signal-slot-connections.
+
+2008-05-19  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/app.cpp:
+	* main/src/vcdockslider.cpp:
+	* main/src/vcdockslider.ui:
+	* main/src/vcslider.cpp:
+
+	Fixed vcdockslider's bus value setting and removed its
+	invertedControls property. Fixed app's quit icon. Made vcdockslider's
+	margins considerably smaller.
+
+2008-05-19  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/functionselection.cpp:
+	* main/src/functionselection.h:
+
+	Added double click handler to function selection dialog.
+	Changed all my addresses in ChangeLog to hjunnila@users.sf.net.
+
+2008-05-19  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/chaser.cpp:
+	* main/src/chaser.h:
+	* main/src/chasereditor.cpp:
+	* main/src/collection.cpp:
+	* main/src/collection.h:
+	* main/src/collectioneditor.cpp:
+	* main/src/doc.cpp:
+	* main/src/efx.cpp:
+	* main/src/efx.h:
+	* main/src/function.cpp:
+	* main/src/function.h:
+	* main/src/functionconsumer.cpp:
+	* main/src/functionconsumer.h:
+	* main/src/main.cpp:
+	* main/src/scene.cpp:
+	* main/src/scene.h:
+	* main/src/sceneeditor.cpp:
+	* main/src/vcbutton.cpp:
+	* main/src/vcbutton.h:
+	* main/src/vcbuttonproperties.cpp:
+
+	Revised the function running system (not working yet, though).
+	Everything works with signals and slots now, no more weird FunctionNS
+	or FunctionStopEvents etc...
+
+2008-05-18  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/app.cpp:
+	* main/src/doc.cpp:
+	* main/src/doc.h:
+	* main/src/vcbutton.cpp:
+	* main/src/vcwidget.cpp:
+	* main/src/vcwidget.h:
+	* main/src/virtualconsole.cpp:
+	* main/src/virtualconsole.h:
+
+	Fixed connect() asserts during application initialization.
+	Changed VCButton's panel style from StyledPanel to Panel, since
+	StyledPanel behavior is quite nonexistent in some QT styles
+	(cleanlooks for example).
+	
+2008-05-18  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/fixturemanager.cpp:
+
+	Adding multiple fixtures at a time will now append a number to the
+	end of the fixture name.
+	
+2008-05-18  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/addfixture.ui:
+	* main/src/busproperties.ui:
+	* main/src/chasereditor.ui:
+	* main/src/collectioneditor.ui:
+	* main/src/dmxmapeditor.ui:
+	* main/src/dmxpatcheditor.ui:
+	* main/src/efxeditor.ui:
+	* main/src/fixtureproperties.ui:
+	* main/src/sceneeditor.ui:
+	* main/src/vcbuttonproperties.ui:
+	* main/src/vcsliderproperties.ui:
+	* main/src/vcxypadproperties.ui:
+	* main/src/virtualconsoleproperties.ui:
+
+	Updated tooltips for dialogs.
+	
+2008-05-16  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/vcdockarea.cpp:
+	* main/src/vcdockslider.cpp:
+	* main/src/vcdockslider.h:
+	* main/src/vcdockslider.ui:
+	* main/src/virtualconsole.cpp:
+	* main/src/virtualconsoleproperties.cpp:
+	* main/src/virtualconsoleproperties.h:
+	* main/src/virtualconsoleproperties.ui:
+
+	Fixed vcdockslider and virtual console properties.
+
+2008-05-16  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/virtualconsole.cpp:
+
+	Fixed virtual console visible state and geometry loading.
+
+2008-05-15  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/vcframe.cpp:
+
+	Fixed virtual console save bug, which caused all widgets to get
+	saved multiple times.
+
+2008-05-13  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/hidinput/hidinput.cpp:
+	* main/src/inputmap.cpp:
+
+	Fixed two crash bugs resulting from using QList::takeFirst() in
+	while() conditional clause.
+
+2008-05-13  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/addfixture.cpp:
+	* main/src/addfixture.ui:
+
+	Added a channel list to AddFixture UI, since plain mode names
+	("Mode 1", "Mode 2" etc...) don't tell anything of their contents. 
+
+2008-05-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* docs/Makefile.am:
+	* docs/advancedsceneeditor-pic.html:
+	* docs/advancedsceneeditor.html:
+	* docs/busproperties-pic.html:
+	* docs/busproperties.html:
+	* docs/coding-convention.html:
+	* docs/compiling.html:
+	* docs/concept.html:
+	* docs/console-pic.html:
+	* docs/console.html:
+	* docs/deviceclasseditor-pic.html:
+	* docs/deviceclasseditor.html:
+	* docs/devicemanager-pic.html:
+	* docs/devicemanager.html:
+	* docs/errata.html:
+	* docs/faq.html:
+	* docs/functionmanager-pic.html:
+	* docs/functionmanager.html:
+	* docs/getting-started.html:
+	* docs/index.html:
+	* docs/mainwindow-pic.html:
+	* docs/mainwindow.html:
+	* docs/monitor-pic.html:
+	* docs/monitor.html:
+	* docs/selectfunction-pic.html:
+	* docs/settings-pic.html:
+	* docs/settings.html:
+	* docs/virtualconsole.html:
+	* libs/common/qlcdocbrowser.cpp:
+	* libs/common/qlcdocbrowser.h:
+
+	Fixed documentbrowser to open up as a separate main window.
+	Changed qlc-logo.jpg to qlc-logo.png and made the appropriate
+	changes in documentation files.
+
+2008-05-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/app.cpp:
+
+	Fixed fixture loading messages (there was no space between
+	manufacturer and model).
+
+2008-05-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/app.cpp:
+	* main/src/fixturemanager.cpp:
+	* main/src/functionmanager.cpp:
+	* main/src/vcbutton.cpp:
+	* main/src/vcdockslider.ui:
+	* main/src/vcwidget.cpp:
+	* main/src/virtualconsole.cpp:
+
+	Fixed crash during VCButton::slotDelete().
+	Set app & function & fixture manager toolbars non-movable and
+	non-floatable.
+	Changed "Bus" menu name in function manager to "Assign bus".
+	Fixed VC widget adding to the selected frame thru main menu.
+	Set all VCWidgets to have an opaque background.
+
+2008-05-06  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/addfixture.cpp:
+	* main/src/app.cpp:
+	* main/src/fixturemanager.cpp:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.h:
+	* main/src/vcbuttonproperties.ui:
+
+	Fixed initial name of a fixture.
+	Fixed fixture manager's & scene editor's context menu positions.
+	Fixed crashing scene editor when an empty scene was stored.
+	Scene editor actions are enabled/disabled according to selection.
+
+2008-05-06  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/fixture.cpp:
+
+	Fixed generic fixtures' channel to be initially NULL until
+	it is requested for the first time. This caused ConsoleChannel to
+	crash with generic dimmers.
+
+2008-05-05  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* main/src/functionmanager.cpp:
+	* main/src/functionmanager.h:
+
+	Fixed bus menus and context menus in function manager.
+
+2008-05-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/usbdmxout.cpp:
+	* libs/usbdmxout/usbdmxout.h:
+	* main/src/consolechannel.cpp:
+	* main/src/dmxmap.cpp:
+	* main/src/dmxmap.h:
+	* main/src/dummyoutplugin.cpp:
+	* main/src/fixturemanager.cpp:
+	* main/src/fixturemanager.h:
+	* main/src/pluginmanager.cpp:
+	* main/src/pluginmanager.h:
+	* main/src/sceneeditor.cpp:
+
+	Fixed plugin manager's info view colors.
+	Fixed DMXPatch save/load and setPatch.
+	Set fixture console's layout margins smaller.
+	
+2008-05-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* gfx/Makefile.am:
+	* main/src/app.cpp:
+	* main/src/dmxmap.cpp:
+	* main/src/dmxmap.h:
+	* main/src/dmxmapeditor.cpp:
+	* main/src/dmxmapeditor.h:
+	* main/src/dmxmapeditor.ui:
+	* main/src/dmxpatcheditor.ui:
+	* main/src/pluginmanager.cpp:
+	* main/src/pluginmanager.h:
+
+	Fixed some basic issues in plugin manager and added icons for
+	input and output map.
+	
+2008-05-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* gfx/Makefile.am:
+	* main/src/app.cpp:
+	* main/src/fixturemanager.cpp:
+	* main/src/fixturemanager.h:
+	* main/src/fixtureproperties.cpp:
+	* main/src/fixtureproperties.h:
+	* main/src/fixtureproperties.ui:
+
+	Changed most of the icons to 32x32.
+	Fixed fixture manager's mode change handling.
+
+2008-05-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* main/Makefile.am:
+	* main/src/addfixture.ui:
+	* main/src/chasereditor.ui:
+	* main/src/collection.cpp:
+	* main/src/collection.h:
+	* main/src/collectioneditor.cpp:
+	* main/src/collectioneditor.h:
+	* main/src/collectioneditor.ui:
+	* main/src/doc.cpp:
+	* main/src/fixturemanager.cpp:
+	* main/src/function.cpp:
+	* main/src/functioncollection.cpp:
+	* main/src/functioncollection.h:
+	* main/src/functioncollectioneditor.cpp:
+	* main/src/functioncollectioneditor.h:
+	* main/src/functioncollectioneditor.ui:
+	* main/src/functionmanager.cpp:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.ui:
+
+	Renamed FunctionCollection* to Collection* and fixed CollectionEditor.
+	Added scene icon to scene editor (hmm.. is it really necessary?)
+	Fixed function editor dialogs' tree widgets to have no decorated roots
+	and all columns to show focus.
+
+2008-05-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* main/src/chaser.cpp:
+	* main/src/chaser.h:
+	* main/src/chasereditor.cpp:
+	* main/src/chasereditor.h:
+	* main/src/chasereditor.ui:
+	* main/src/functionmanager.cpp:
+	* main/src/functionselection.cpp:
+
+	Fixed ChaserEditor and FunctionManager::remove.
+	
+2008-04-30  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* TODO:
+	* main/src/app.cpp:
+	* main/src/efxeditor.cpp:
+	* main/src/efxeditor.h:
+	* main/src/efxeditor.ui:
+	* main/src/fixturemanager.cpp:
+
+	Fixed EFXEditor.
+	
+2008-04-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* gfx/Makefile.am:
+	* main/src/consolechannel.cpp:
+
+	Added an icon (bad one) for beam group.
+
+2008-04-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* gfx/Makefile.am:
+	* main/src/addfixture.cpp:
+	* main/src/addfixture.ui:
+	* main/src/app.cpp:
+	* main/src/efxeditor.ui:
+	* main/src/fixturemanager.cpp:
+	* main/src/functionmanager.cpp:
+	* main/src/functionmanager.h:
+
+	Renamed player_play.png to operate.png and player_stop.png to design.png
+	Fixed some very basic things in function manager.
+	Fixed addfixture dialog's initial size and header widths.
+	
+2008-04-28  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/busproperties.cpp:
+	* main/src/busproperties.h:
+	* main/src/busproperties.ui:
+
+	Fixed porting mistakes in busproperties dialog.
+
+2008-04-27  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/dmxmap.cpp:
+
+	Fixed porting mistakes and omissions in dmxmap.
+
+2008-04-27  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/monitor.cpp:
+	* main/src/monitor.h:
+
+	Fixed porting mistakes and omissions in monitor.
+
+2008-04-27  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/sceneeditor.cpp:
+
+	Fixed scene editor to work as previously.
+	
+2008-04-27  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* fixtures/Futurelight-DJScan250.qxf:
+	* gfx/Makefile.am:
+	* main/src/addfixture.cpp:
+	* main/src/addfixture.h:
+	* main/src/addfixture.ui:
+	* main/src/app.cpp:
+	* main/src/consolechannel.cpp:
+	* main/src/consolechannel.ui:
+	* main/src/fixture.cpp:
+	* main/src/fixture.h:
+	* main/src/fixtureconsole.cpp:
+	* main/src/fixtureconsole.h:
+	* main/src/fixturemanager.cpp:
+	* main/src/fixturemanager.h:
+	* main/src/sceneeditor.cpp:
+	* main/src/sceneeditor.ui:
+
+	FixtureManager works 99%.
+	FixtureConsole works 50% (lacking scene editor and is too big).
+
+2008-04-27  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/src/app.cpp:
+	* main/src/app.h:
+	* main/src/main.cpp:
+	* main/src/vcframe.cpp:
+	* main/src/vcwidget.cpp:
+	* main/src/virtualconsole.cpp:
+	* main/src/virtualconsole.h:
+	* main/src/virtualconsoleproperties.cpp:
+
+	QLC doesn't crash instantly, but there's LOTS of crashes, missing
+	signal-slot-connections etc.
+	
+2008-01-30  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/plugin.cpp:
 	* libs/hidinput/Makefile.am:

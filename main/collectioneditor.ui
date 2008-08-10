@@ -1,0 +1,165 @@
+<ui version="4.0" >
+ <class>CollectionEditor</class>
+ <widget class="QDialog" name="CollectionEditor" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>349</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Collection editor</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QLabel" name="m_nameLabel" >
+       <property name="text" >
+        <string>Collection name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_nameEdit" >
+       <property name="toolTip" >
+        <string>Name of the function being edited</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QTreeWidget" name="m_tree" >
+       <property name="rootIsDecorated" >
+        <bool>false</bool>
+       </property>
+       <property name="itemsExpandable" >
+        <bool>false</bool>
+       </property>
+       <property name="sortingEnabled" >
+        <bool>true</bool>
+       </property>
+       <property name="allColumnsShowFocus" >
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text" >
+         <string>Fixture</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Function</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Function Type</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" >
+       <item>
+        <widget class="QToolButton" name="m_add" >
+         <property name="toolTip" >
+          <string>Add function(s) to the collection</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_remove" >
+         <property name="toolTip" >
+          <string>Remove the selected function</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation" >
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>CollectionEditor</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>CollectionEditor</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

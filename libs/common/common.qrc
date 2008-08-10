@@ -1,0 +1,7 @@
+﻿<RCC>
+    <qresource>
+        <file alias="back.png">../../gfx/back.png</file>
+        <file alias="forward.png">../../gfx/forward.png</file>
+	<file alias="help.png">../../gfx/help.png</file>
+    </qresource>
+</RCC>

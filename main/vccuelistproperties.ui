@@ -1,0 +1,252 @@
+<ui version="4.0" >
+ <class>VCCueListProperties</class>
+ <widget class="QDialog" name="VCCueListProperties" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>459</width>
+    <height>346</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Cue list properties</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" >
+     <item>
+      <widget class="QLabel" name="m_nameLabel" >
+       <property name="text" >
+        <string>Cue list name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_nameEdit" >
+       <property name="toolTip" >
+        <string>The name of the cue list widget</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" >
+     <item>
+      <widget class="QTreeWidget" name="m_list" >
+       <property name="toolTip" >
+        <string>List of scenes that can be activated with this cue list</string>
+       </property>
+       <property name="showDropIndicator" stdset="0" >
+        <bool>false</bool>
+       </property>
+       <property name="alternatingRowColors" >
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode" >
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="rootIsDecorated" >
+        <bool>false</bool>
+       </property>
+       <property name="itemsExpandable" >
+        <bool>false</bool>
+       </property>
+       <property name="allColumnsShowFocus" >
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text" >
+         <string>Number</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Scene</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout" >
+       <item>
+        <widget class="QToolButton" name="m_addButton" >
+         <property name="toolTip" >
+          <string>Add scene(s) to the cue list</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_removeButton" >
+         <property name="toolTip" >
+          <string>Remove selected scene(s) from the cue list</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_raiseButton" >
+         <property name="toolTip" >
+          <string>Raise the selected scene</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_lowerButton" >
+         <property name="toolTip" >
+          <string>Lower the selected scene</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer" >
+         <property name="orientation" >
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox" >
+     <property name="title" >
+      <string>Next cue key combination</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" >
+      <item>
+       <widget class="QLineEdit" name="m_keyEdit" >
+        <property name="toolTip" >
+         <string>The key combination used to step to the next cue</string>
+        </property>
+        <property name="readOnly" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_attachButton" >
+        <property name="toolTip" >
+         <string>Bind a key combination to skip to the next cue</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_detachButton" >
+        <property name="toolTip" >
+         <string>Clear the key binding</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>VCCueListProperties</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>257</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>VCCueListProperties</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>325</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -19,18 +19,14 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qstring.h>
-#include <qfile.h>
-#include <qdom.h>
-#include <qstringlist.h>
-#include <assert.h>
+#include <QStringList>
+#include <iostream>
+#include <QString>
+#include <QFile>
+#include <QtXml>
 
-#include "common/qlcchannel.h"
-#include "common/qlccapability.h"
-
-// Old headers that will be removed in the future
-#include "common/logicalchannel.h"
-#include "common/capability.h"
+#include "qlcchannel.h"
+#include "qlccapability.h"
 
 QLCChannel::QLCChannel()
 {
@@ -58,34 +54,17 @@ QLCChannel::QLCChannel(QDomElement* tag)
 	loadXML(tag);
 }
 
-QLCChannel::QLCChannel(LogicalChannel* lch)
-{
-	Capability* cap = NULL;
-	QPtrListIterator<Capability> it(*lch->capabilities());
-	
-	m_name = lch->name();
-	m_group = QString(KQLCChannelGroupIntensity);
-	m_controlByte = 0;
-	
-	while ((cap = it.current()) != 0)
-	{
-		addCapability(new QLCCapability(cap));
-		++it;
-	}
-}
-
 QLCChannel::~QLCChannel()
 {
 	while (m_capabilities.isEmpty() == false)
-		delete m_capabilities.take(0);
+		delete m_capabilities.takeFirst();
 }
 
 QLCChannel& QLCChannel::operator=(QLCChannel& channel)
 {
 	if (this != &channel)
 	{
-		QPtrListIterator<QLCCapability> it(channel.m_capabilities);
-		QLCCapability* cap = NULL;
+		QListIterator<QLCCapability*> it(channel.m_capabilities);
 
 		m_name = channel.m_name;
 		m_group = channel.m_group;
@@ -93,14 +72,11 @@ QLCChannel& QLCChannel::operator=(QLCChannel& channel)
 
 		/* Clear old capabilities */
 		while (m_capabilities.isEmpty() == false)
-			delete m_capabilities.take(0);
+			delete m_capabilities.takeFirst();
 		
 		/* Copy new capabilities from the other channel */
-		while ((cap = it.current()) != 0)
-		{
-			++it;
-			m_capabilities.append(new QLCCapability(cap));
-		}
+		while (it.hasNext() == true)
+			m_capabilities.append(new QLCCapability(it.next()));
 	}
 
 	return *this;
@@ -184,13 +160,12 @@ QString QLCChannel::indexToGroup(int index)
 
 QLCCapability* QLCChannel::searchCapability(t_value value)
 {
-	for (QLCCapability* c = m_capabilities.first(); c != NULL; 
-	     c = m_capabilities.next())
+	QListIterator <QLCCapability*> it(m_capabilities);
+	while (it.hasNext() == true)
 	{
-		if (c->min() <= value && c->max() >= value)
-		{
-			return c;
-		}
+		QLCCapability* capability = it.next();
+		if (capability->min() <= value && capability->max() >= value)
+			return capability;
 	}
 
 	return NULL;
@@ -198,13 +173,12 @@ QLCCapability* QLCChannel::searchCapability(t_value value)
 
 QLCCapability* QLCChannel::searchCapability(QString name)
 {
-	for (QLCCapability* c = m_capabilities.first(); c != NULL;
-	     c = m_capabilities.next())
+	QListIterator <QLCCapability*> it(m_capabilities);
+	while (it.hasNext() == true)
 	{
-		if (c->name() == name)
-		{
-			return c;
-		}
+		QLCCapability* capability = it.next();
+		if (capability->name() == name)
+			return capability;
 	}
 
 	return NULL;
@@ -212,22 +186,21 @@ QLCCapability* QLCChannel::searchCapability(QString name)
 
 bool QLCChannel::addCapability(QLCCapability* cap)
 {
-	QPtrListIterator<QLCCapability> it(m_capabilities);
+	QListIterator <QLCCapability*> it(m_capabilities);
 	QLCCapability* temp = NULL;
 	
 	Q_ASSERT(cap != NULL);
 	
 	/* Check for overlapping values */
-	while ( (temp = it.current()) != 0 )
+	while (it.hasNext() == true)
 	{
+		temp = it.next();
 		if ((temp->min() <= cap->min() && temp->max() > cap->min()) ||
 		    (temp->min() < cap->max() && temp->max() >= cap->max()) ||
 		    (temp->min() >= cap->min() && temp->max() <= cap->max()))
 		{
 			return false;
 		}
-		
-		++it;
 	}
 	
 	m_capabilities.append(cap);
@@ -236,14 +209,16 @@ bool QLCChannel::addCapability(QLCCapability* cap)
 
 bool QLCChannel::removeCapability(QLCCapability* cap)
 {
+	QMutableListIterator <QLCCapability*> it(m_capabilities);
+
 	Q_ASSERT(cap != NULL);
 
-	for (QLCCapability* c = m_capabilities.first(); c != NULL;
-	     c = m_capabilities.next())
+	while (it.hasNext() == true)
 	{
-		if (c == cap)
+		if (it.next() == cap)
 		{
-			delete m_capabilities.take();
+			it.remove();
+			delete cap;
 			return true;
 		}
 	}
@@ -262,8 +237,8 @@ void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 	QDomText text;
 	QString str;
 
-	assert(doc);
-	assert(root);
+	Q_ASSERT(doc);
+	Q_ASSERT(root);
 
 	/* Channel entry */
 	chtag = doc->createElement(KXMLQLCChannel);
@@ -282,21 +257,18 @@ void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 	chtag.appendChild(grptag);
 
 	/* Capabilities */
-	for (QLCCapability* c = m_capabilities.first(); c != NULL;
-	     c = m_capabilities.next())
-	{
-		c->saveXML(doc, &chtag);
-	}
+	QListIterator <QLCCapability*> it(m_capabilities);
+	while (it.hasNext() == true)
+		it.next()->saveXML(doc, &chtag);
 }
 
 bool QLCChannel::loadXML(QDomElement* root)
 {
-	QLCCapability* cap = NULL;
 	QDomNode node;
 	QDomElement tag;
 	QString str;
 
-	ASSERT(root != NULL);
+	Q_ASSERT(root != NULL);
 
 	/* Get channel name */
 	str = root->attribute(KXMLQLCChannelName);
@@ -313,8 +285,7 @@ bool QLCChannel::loadXML(QDomElement* root)
 		
 		if (tag.tagName() == KXMLQLCCapability)
 		{
-			cap = new QLCCapability(&tag);
-			addCapability(cap);
+			addCapability(new QLCCapability(&tag));
 		}
 		else if (tag.tagName() == KXMLQLCChannelGroup)
 		{
@@ -324,8 +295,7 @@ bool QLCChannel::loadXML(QDomElement* root)
 		}
 		else
 		{
-			qDebug("Unknown Channel tag: %s",
-				(const char*) tag.tagName());
+			qDebug() << "Unknown Channel tag: " << tag.tagName();
 		}
 
 		node = node.nextSibling();

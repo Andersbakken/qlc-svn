@@ -43,7 +43,7 @@
   <Capability Min="192" Max="255" >Backward Gobo Change Speed</Capability>
  </Channel>
  <Channel Name="Gobo Rotation" >
-  <Group Byte="0" >Gobo</Group>
+  <Group Byte="0" >Speed</Group>
   <Capability Min="0" Max="15" >No Rotation</Capability>
   <Capability Min="16" Max="135" >Forward Gobo Rotation Speed</Capability>
   <Capability Min="136" Max="255" >Backward Gobo Rotation Speed</Capability>

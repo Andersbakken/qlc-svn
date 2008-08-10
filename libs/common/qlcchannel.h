@@ -22,9 +22,9 @@
 #ifndef QLC_CHANNEL_H
 #define QLC_CHANNEL_H
 
-#include <qstring.h>
-#include <qptrlist.h>
-#include "common/types.h"
+#include <QList>
+
+#include "qlctypes.h"
 
 #define KXMLQLCChannel          QString("Channel")
 #define KXMLQLCChannelNumber    QString("Number")
@@ -46,16 +46,16 @@
 #define KQLCChannelGroupNothing     QString("Nothing")
 
 class QFile;
+class QString;
 class QDomDocument;
 class QDomElement;
 class QStringList;
-class LogicalChannel;
 class QLCCapability;
 class QLCChannel;
 
-class QLCChannel
+class QLC_DECLSPEC QLCChannel
 {
- public:
+public:
 	/** Standard constructor */
 	QLCChannel();
 	
@@ -65,11 +65,8 @@ class QLCChannel
 	/** Create contents from an XML tag */
 	QLCChannel(QDomElement* tag);
 
-	/** Create contents from an old LogicalChannel */
-	QLCChannel(LogicalChannel* lch);
- 
 	/** Destructor */
-	~QLCChannel();
+	virtual ~QLCChannel();
 
 	/** Assignment operator */
 	QLCChannel& operator=(QLCChannel& lc);
@@ -77,6 +74,7 @@ class QLCChannel
 	/*********************************************************************
 	 * Channel groups
 	 *********************************************************************/
+public:
 	/** Get a list of possible channel groups */
 	static QStringList groupList();
 
@@ -89,7 +87,7 @@ class QLCChannel
 	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
-
+public:
 	/** Get the channel's name */
 	QString name() const { return m_name; }
 
@@ -111,9 +109,9 @@ class QLCChannel
 	/*********************************************************************
 	 * Capabilities
 	 *********************************************************************/
-
+public:
 	/** Get a list of channel's capabilities */
-	QPtrList <QLCCapability> *capabilities() { return &m_capabilities; }
+	QList <QLCCapability*> *capabilities() { return &m_capabilities; }
 
 	/** Search for a particular capability by its channel value */
 	QLCCapability* searchCapability(t_value value);
@@ -127,26 +125,25 @@ class QLCChannel
 	/** Remove a capability from the channel */
 	bool removeCapability(QLCCapability* cap);
 
- protected:
+protected:
 	void sortCapabilities();
 
- public:
 	/*********************************************************************
 	 * File operations
 	 *********************************************************************/
-
+public:
 	/** Save the channel to a QDomDocument, under the given element */
 	void saveXML(QDomDocument* doc, QDomElement* root);
 
 	/** Load channel contents from an XML element */
-	bool loadXML(QDomElement* tag);
+	virtual bool loadXML(QDomElement* tag);
 
- private:
+protected:
 	/** Name */
 	QString m_name;
 
 	/** List of channel's capabilities */
-	QPtrList <QLCCapability> m_capabilities;
+	QList <QLCCapability*> m_capabilities;
 
 	/** Channel's group */
 	QString m_group;

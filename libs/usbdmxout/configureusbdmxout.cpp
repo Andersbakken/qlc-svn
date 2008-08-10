@@ -19,30 +19,41 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qspinbox.h>
-#include <qptrlist.h>
-#include <qlistview.h>
-#include <qtimer.h>
+#include <QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QPushButton>
+#include <QString>
+#include <QTimer>
 
 #include "configureusbdmxout.h"
+
+#ifdef WIN32
+#include "usbdmxout-win32.h"
+#else
 #include "usbdmxout.h"
+#endif
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
 ConfigureUSBDMXOut::ConfigureUSBDMXOut(QWidget* parent, USBDMXOut* plugin)
-	: UI_ConfigureUSBDMXOut(parent, "Configure USBDMX", true)
+	: QDialog(parent)
 {
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
 	m_timer = NULL;
 	m_testMod = 1;
 	m_testUniverse = -1;
+
+	setupUi(this);
+
+	connect(m_testButton, SIGNAL(toggled(bool)),
+		this, SLOT(slotTestToggled(bool)));
+	connect(m_refreshButton, SIGNAL(clicked()),
+		this, SLOT(slotRefreshClicked()));
+	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
+	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 	refreshList();
 }
@@ -58,15 +69,15 @@ ConfigureUSBDMXOut::~ConfigureUSBDMXOut()
 
 void ConfigureUSBDMXOut::slotTestToggled(bool state)
 {
-	QListViewItem* item = NULL;
+	QTreeWidgetItem* item = NULL;
 
 	if (state == true)
 	{
-		item = m_listView->currentItem();
+		item = m_list->currentItem();
 		if (item == NULL)
 		{
 			/* If there is no selection, don't toggle the button */
-			m_testButton->setOn(false);
+			m_testButton->setDown(false);
 		}
 		else
 		{
@@ -75,14 +86,14 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 
 			/* Disable the listview so that the selection cannot
 			   be changed during testing */
-			m_listView->setEnabled(false);
+			m_list->setEnabled(false);
 			
 			/* Start a 1sec timer that blinks all channels of the
 			   selected universe on and off */
 			m_timer = new QTimer(this);
 			connect(m_timer, SIGNAL(timeout()),
 				this, SLOT(slotTestTimeout()));
-			m_timer->start(1000, false);
+			m_timer->start(1000);
 
 			/* Do the first cycle already here, since the first
 			   timeout occurs after one second */
@@ -94,7 +105,7 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 		delete m_timer;
 		m_timer = NULL;
 		
-		m_listView->setEnabled(true);
+		m_list->setEnabled(true);
 
 		/* Reset channel values to zero */
 		if (m_testMod == 1)
@@ -133,7 +144,6 @@ void ConfigureUSBDMXOut::slotTestTimeout()
 
 void ConfigureUSBDMXOut::slotRefreshClicked()
 {
-	m_plugin->open();
 	refreshList();
 }
 
@@ -141,15 +151,19 @@ void ConfigureUSBDMXOut::refreshList()
 {
 	QString s;
 
-	m_listView->clear();
+	m_list->clear();
 
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
-		if (m_plugin->m_devices[i] >= 0)
+		if (m_plugin->m_devices[i] > 0)
 		{
-			new QListViewItem(m_listView,
-					  s.sprintf("%.2d", i + 1),
-					  s.sprintf("/dev/usbdmx%d", i));
+			QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
+			item->setText(0, QString("%1").arg(i + 1));
+#ifdef WIN32
+			item->setText(1, m_plugin->m_names[i]);
+#else
+			item->setText(1, QString("/dev/usbdmx%1").arg(i));
+#endif
 		}
 	}
 }

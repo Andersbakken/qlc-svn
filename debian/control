@@ -1,21 +1,20 @@
 Source: qlc
-Section: Multimedia
+Section: Other
 Priority: optional
 Maintainer: Heikki Junnila <hjunnila@users.sf.net>
-Build-Depends: debhelper (>= 4.0.0), libqt3-mt-dev (>= 3.3.0)
+Build-Depends: debhelper (>= 4.0.0), libqt4-dev (>= 4.3.0)
 Standards-Version: 3.6.0
 
 Package: qlc
-Section: Multimedia
+Section: Other
 Architecture: i386
-Depends: libqt3-mt (>= 3.3.0)
-Suggests: dmx4linux (>= 2.4.0)
+Depends: ${shlib:Depends}
 Description: Software DMX lighting desk
   Software DMX lighting desk
 
 Package: qlc-fixtures
-Section: Multimedia
+Section: Other
 Architecture: any
 Depends: qlc
-Description: Additional fixtures for Q Light Controller
-  Additional fixtures for Q Light Controller
+Description: Fixture definitions for Q Light Controller
+  Fixture definitions for Q Light Controller

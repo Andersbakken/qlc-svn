@@ -19,17 +19,18 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QTreeWidgetItem>
+#include <QPushButton>
+#include <QTreeWidget>
+#include <QString>
+#include <QTimer>
+
 #include "configuredmx4linuxout.h"
 #include "dmx4linuxout.h"
 
-#include <qstring.h>
-#include <qlistview.h>
-#include <qpushbutton.h>
-#include <qtimer.h>
-
 ConfigureDMX4LinuxOut::ConfigureDMX4LinuxOut(QWidget* parent,
-					     DMX4LinuxOut* plugin) 
-	: UI_ConfigureDMX4LinuxOut(parent, "Configure DMX4Linux Output", true)
+					     DMX4LinuxOut* plugin)
+	: QDialog(parent)
 {
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
@@ -37,6 +38,15 @@ ConfigureDMX4LinuxOut::ConfigureDMX4LinuxOut(QWidget* parent,
 	m_timer = NULL;
 	m_testMod = 1;
 	m_testUniverse = -1;
+
+	setupUi(this);
+
+	connect(m_testButton, SIGNAL(toggled(bool)),
+		this, SLOT(slotTestToggled(bool)));
+	connect(m_refreshButton, SIGNAL(clicked()),
+		this, SLOT(slotRefreshClicked()));
+	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
+	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 	refreshList();
 }
@@ -47,15 +57,15 @@ ConfigureDMX4LinuxOut::~ConfigureDMX4LinuxOut()
 
 void ConfigureDMX4LinuxOut::slotTestToggled(bool state)
 {
-	QListViewItem* item = NULL;
+	QTreeWidgetItem* item = NULL;
 
 	if (state == true)
 	{
-		item = m_listView->currentItem();
+		item = m_list->currentItem();
 		if (item == NULL)
 		{
 			/* If there is no selection, don't toggle the button */
-			m_testButton->setOn(false);
+			m_testButton->setDown(false);
 		}
 		else
 		{
@@ -64,14 +74,14 @@ void ConfigureDMX4LinuxOut::slotTestToggled(bool state)
 
 			/* Disable the listview so that the selection cannot
 			   be changed during testing */
-			m_listView->setEnabled(false);
+			m_list->setEnabled(false);
 			
 			/* Start a 1sec timer that blinks all channels of the
 			   selected universe on and off */
 			m_timer = new QTimer(this);
 			connect(m_timer, SIGNAL(timeout()),
 				this, SLOT(slotTestTimeout()));
-			m_timer->start(1000, false);
+			m_timer->start(1000);
 
 			/* Do the first cycle already here, since the first
 			   timeout occurs after one second */
@@ -83,7 +93,7 @@ void ConfigureDMX4LinuxOut::slotTestToggled(bool state)
 		delete m_timer;
 		m_timer = NULL;
 		
-		m_listView->setEnabled(true);
+		m_list->setEnabled(true);
 
 		/* Reset channel values to zero */
 		if (m_testMod == 1)
@@ -126,13 +136,12 @@ void ConfigureDMX4LinuxOut::refreshList()
 {
 	QString t;
 
-	m_listView->clear();
+	m_list->clear();
 
-	for (int i = 0; i < m_plugin->m_dmxInfo.used_out_universes; i++)
+	for (int i = 0; i < MAX_DMX4LINUX_DEVICES; i++)
 	{
-		new QListViewItem(m_listView,
-				  t.sprintf("%.2d", i + 1),
-				  t.sprintf("%s", m_plugin->m_dmxCaps[i].driver),
-				  t.sprintf("%.3d", m_plugin->m_dmxCaps[i].maxSlots));
+		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
+		item->setText(0, t.sprintf("%.2d", i + 1));
+		item->setText(1, "Unknown");
 	}
 }

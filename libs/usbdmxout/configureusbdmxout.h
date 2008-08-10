@@ -22,12 +22,14 @@
 #ifndef CONFIGUREUSBDMXOUT_H
 #define CONFIGUREUSBDMXOUT_H
 
-#include "uic_configureusbdmxout.h"
+#include <QDialog>
+
+#include "ui_configureusbdmxout.h"
 
 class USBDMXOut;
 class QTimer;
 
-class ConfigureUSBDMXOut : public UI_ConfigureUSBDMXOut
+class ConfigureUSBDMXOut : public QDialog, public Ui_ConfigureUSBDMXOut
 {
 	Q_OBJECT
 

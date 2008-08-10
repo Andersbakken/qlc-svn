@@ -19,15 +19,13 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qstring.h>
-#include <qfile.h>
-#include <qdom.h>
+#include <iostream>
+#include <QString>
+#include <QFile>
+#include <QtXml>
 
-#include "common/types.h"
-#include "common/qlccapability.h"
-
-// Old header that will be removed in the future
-#include "common/capability.h"
+#include "qlccapability.h"
+#include "qlctypes.h"
 
 QLCCapability::QLCCapability(t_value min, t_value max, QString name)
 {
@@ -57,20 +55,6 @@ QLCCapability::QLCCapability(QDomElement* tag)
 	loadXML(tag);
 }
 
-QLCCapability::QLCCapability(Capability* cap)
-{
-	m_min = KChannelValueMin;
-	m_max = KChannelValueMax;
-	m_name = QString::null;
-
-	if (cap != NULL)
-	{
-		m_min = cap->lo();
-		m_max = cap->hi();
-		m_name = cap->name();
-	}
-}
-
 QLCCapability::~QLCCapability()
 {
 }
@@ -92,6 +76,9 @@ int QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QDomText text;
 	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
 
 	/* QLCCapability entry */
 	tag = doc->createElement(KXMLQLCCapability);
@@ -116,13 +103,13 @@ bool QLCCapability::loadXML(QDomElement* root)
 {
 	QString str;
 
-	ASSERT(root != NULL);
+	Q_ASSERT(root != NULL);
 
 	/* Get low limit attribute (critical) */
 	str = root->attribute(KXMLQLCCapabilityMin);
 	if (str == QString::null)
 	{
-		qWarning("QLCCapability has no min limit");
+		qDebug() << "QLCCapability has no min limit.";
 		return false;
 	}
 	else
@@ -134,7 +121,7 @@ bool QLCCapability::loadXML(QDomElement* root)
 	str = root->attribute(KXMLQLCCapabilityMax);
 	if (str == QString::null)
 	{
-		qWarning("QLCCapability has no max limit");
+		qDebug() << "QLCCapability has no max limit.";
 		return false;
 	}
 	else

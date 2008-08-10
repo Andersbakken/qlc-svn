@@ -32,38 +32,17 @@ version=`ls lib/unix/.libs/lib*.so.* | \
 major=`ls lib/unix/.libs/lib*.so.* | \
  awk '{if (match($$0,/\.so\.[0-9]+$$/)) print substr($$0,RSTART+4)}'`
 
-config.status: configure
-	dh_testdir
-	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) \
-		    --build=$(DEB_BUILD_GNU_TYPE) \
-		    --prefix=/usr
-
-
-build: build-stamp
-build-stamp:  config.status
-	dh_testdir
-
-	# Add here commands to compile the package.
+build:
+	qmake
+	lrelease qlc.pro
 	$(MAKE)
-
-	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp 
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-
-
 	dh_clean 
 
 install: build
@@ -75,7 +54,6 @@ install: build
 	# Add here commands to install the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
-
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.
@@ -85,7 +63,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 #	dh_installchangelogs debian/changelog
-	dh_installdocs
+#	dh_installdocs
 #	dh_installexamples
 	dh_install -v --sourcedir=debian/tmp
 	dh_installmenu

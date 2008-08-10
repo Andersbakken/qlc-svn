@@ -22,73 +22,110 @@
 #ifndef HIDINPUT_H
 #define HIDINPUT_H
 
-#include "common/inputplugin.h"
-#include "common/types.h"
+#include <QEvent>
+#include <QList>
+
+#include "common/qlcinplugin.h"
+#include "common/qlctypes.h"
 
 #include "hiddevice.h"
+#include "hidpoller.h"
 
-/**
- * This lib's only exported function that is used to create instances of
- * class HIDInput
- */
-extern "C" InputPlugin* create();
+/*****************************************************************************
+ * HIDInputEvent
+ *****************************************************************************/
+
+class HIDInputEvent : public QEvent
+{
+public:
+	HIDInputEvent(t_input input, t_input_channel channel,
+		      t_input_value value);
+	~HIDInputEvent();
+
+	t_input m_input;
+	t_input_channel m_channel;
+	t_input_value m_value;
+};
 
 /*****************************************************************************
  * HIDInput
  *****************************************************************************/
 
-class HIDInput : public InputPlugin
+class HIDInput : public QObject, public QLCInPlugin
 {
 	Q_OBJECT
+	Q_INTERFACES(QLCInPlugin)
 
 	friend class ConfigureHIDInput;
+	friend class HIDPoller;
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
-	HIDInput();
-	virtual ~HIDInput();
+	void init();
+	~HIDInput();
 
 	/*********************************************************************
-	 * Open/close
+	 * Devices
 	 *********************************************************************/
-public:
-	virtual int open();
-	virtual int close();
-
 protected:
 	HIDDevice* device(const QString& path);
 	HIDDevice* device(const unsigned int index);
 
 protected:
-	QPtrList <HIDDevice> m_devices;
+	QList <HIDDevice*> m_devices;
+
+	/*********************************************************************
+	 * Name
+	 *********************************************************************/
+public:
+	QString name();
 
 	/*********************************************************************
 	 * Inputs & channels
 	 *********************************************************************/
 public:
-	virtual t_input inputs();
-	virtual t_input_channel channels(t_input input);
+	t_input inputs();
+	t_input_channel channels(t_input input);
 
 	/*********************************************************************
 	 * Configuration
 	 *********************************************************************/
 public:
-	virtual int configure(QWidget* parentWidget);
+	void configure();
 
 	/*********************************************************************
 	 * Status
 	 *********************************************************************/
 public:
-	virtual QString infoText();
+	QString infoText();
+
+	/*********************************************************************
+	 * Device poller
+	 *********************************************************************/
+public:
+	void addPollDevice(HIDDevice* device);
+	void removePollDevice(HIDDevice* device);
+
+protected:
+	HIDPoller* m_poller;
 
 	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
+protected:
+	void customEvent(QEvent* event);
+
+signals:
+	void valueChanged(QLCInPlugin* plugin, t_input line,
+			  t_input_channel channel, t_input_value value);
+
 public:
-	virtual void feedBack(t_input input, t_input_channel channel,
-			      t_input_value value);
+	void connectInputData(QObject* listener);
+
+	void feedBack(t_input input, t_input_channel channel,
+		      t_input_value value);
 };
 
 #endif

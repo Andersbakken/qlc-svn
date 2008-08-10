@@ -20,20 +20,19 @@
 */
 
 #include <linux/input.h>
-
-#include <qobject.h>
-#include <qstring.h>
-#include <qfile.h>
 #include <errno.h>
+
+#include <QString>
 
 #include "hiddevice.h"
 #include "hidinput.h"
 
-HIDDevice::HIDDevice(HIDInput* parent, const char* name, const QString& path)
-	: QObject(parent, name)
+HIDDevice::HIDDevice(HIDInput* parent, t_input line, const QString& path) 
+	: QObject(parent)
 {
 	Q_ASSERT(path.length() > 0);
-	m_file.setName(path);
+	m_file.setFileName(path);
+	m_line = line;
 }
 
 HIDDevice::~HIDDevice()
@@ -59,6 +58,24 @@ QString HIDDevice::path() const
 	return QString::null;
 }
 
+int HIDDevice::handle() const
+{
+	return m_file.handle();
+}
+
+/*****************************************************************************
+ * Enabled status
+ *****************************************************************************/
+
+bool HIDDevice::isEnabled()
+{
+	return false;
+}
+
+void HIDDevice::setEnabled(bool /*state*/)
+{
+}
+
 /*****************************************************************************
  * Device info
  *****************************************************************************/
@@ -82,6 +99,6 @@ t_input_channel HIDDevice::channels()
  * Input data
  *****************************************************************************/
 
-void HIDDevice::feedBack(t_input_channel channel, t_input_value value)
+void HIDDevice::feedBack(t_input_channel /*channel*/, t_input_value /*value*/)
 {
 }

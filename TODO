@@ -1,0 +1,115 @@
+* Remove "QDomDocument* doc" param from all *::loadXML functions not using it.
+
+* Automatic fixture address assignment to fixture manager, to find the
+  next adequate address space for selected fixture(s).
+* Multiple selection to fixture manager.
+
+* "Delete something" and "Remove something" are used here and there,
+   without consistency. Pick either one and update all dialogs to use
+   the same term. i.e. "Do you want to delete/remove these fixtures?"
+
+* Change Function classes' copyFrom() contents to copy constructors.
+
+* Editor dialogs should put an asterisk (*) after the title to signify
+  modified state when appropriate: "<Editor name> - <Edited object>(*)"
+  e.g. "EFXEditor - New EFX*"
+
+* AssignHotKey, AssignSliderHotkey, KeyBind, SliderKeyBind
+	-> Change them to something faster and rational
+
+* Put back old shortcut keys (application menus)
+
+* Rename BusProperties to BusManager
+* Enable BusManager item renaming (i.e. remove QInputDialog)
+* Change Bus concept so that everybody can just connect() to buses.
+
+* Rename DMXMapEditor to OutputManager
+
+* FunctionCollection::stop() stops all of its member functions, regardless of
+  whether they have been started by the collection or some other (user,chaser,
+  another collection). Should be fixed somehow, if possible.
+
+* Workspace background & theme. Also saving & loading of.
+
+* REMOVE COMPLETELY dummyinplugin; it's completely useless now that
+  there is no "default" input plugin.
+
+* Preview point array away from EFX and into EFXEditor
+* Phase parameter to EFX's so that multiple fixtures can do cooler effects.
+  -> Elie Roux:
+   Let's say for example you have 4 MAC in the back of the scene in a
+   concert, and the four of them make a circle (or an ellipse or
+   something). If the 4 do the same movement at the same time, you'll get
+   the feeling that it's "cheap". If, on the other side, you have the first
+   mac doing the circle, the next mac doing the circle but in advance of
+   Pi/2, the third in advance of Pi and the fourth in advance of 3Pi/2,
+   you'll still have the circle effect, but also a wave effect, which is
+   really sexy, and used a lot by all lighting engineers, at least in the
+   west of France. For this you have to give a phase to every movement (the
+   movement of the first mac will have a phase of 0, the second 90, the
+   third 180 and the fourth 270). I admit it is quite boring to use, but
+   with the actual state of qlc, I couldn't really do it another way. In
+   tables like GrandMa or Martin Case, you have a window in which you
+   represent physically  (and very basically, no ray tracing or other
+   complicated stuff) where you fixtures will be, with that the table
+   automatically generates the phases. That would be the kind of patches we
+   may create for qlc.
+
+* Should Fixture inherit QLCFixtureDef? Would it be nicer, are there any
+  benefits?
+
+* Put all gfx into a .qrc file and compile that into the binary with qmake
+
+* FixtureManager::loader()
+* Removal of multiple fixtures from FixtureManager should be easier. Maybe
+  multiple selection?
+* FixtureManager's automatic function generation should be made smarter and
+  incorporated into FunctionManager. So that user can select, which groups
+  of functions to generate etc.. NEEDS MORE SPECS.
+
+* FunctionManager shortcut keys
+* Check that FunctionManager tracks bus name changes correctly
+* FunctionManager::addFunction() -> check function creation failure when
+  maximum number of functions is reached.
+
+* Monitor loading doesn't work. Put its settings into a separate class 
+  inside Monitor and deal with them. The monitor itself can then be 
+  created and destroyed at will.
+* Multiple monitors for different universes?
+* Monitor scrolling - so that the display doesn't always start from channel 1
+* Monitor drawing should be optimized so that slotTimeout() updates only
+  values and not labels at all, since they dont change unless something
+  passes over them (like another window).
+
+* Tooltips to ALL widgets.
+
+* VC* widgets to use input mapping: BIG TODO
+
+* HTP channels to DMXMap. Maybe limit the number, since they are needed
+  only for dimmer fixtures. Or bind somehow to the generic fixture def.
+
+* Change VCWidget's moving threshold checks to use QPoint::manhattanLength()
+
+* Add message boxes to all editor windows to indicate if there are no
+  fixtures or functions, whichever is appropriate.
+  -> XYPad crashes if there are no fixtures.
+
+* Some way of printing an address map to printer to help fixture patching.
+* Graphical view of stage and fixture layout. Plain top view will do for now.
+* Fixture type icons (head, scanner and also: 6-bar, 12-bar etc. for dimmers)
+* Gobo icons (from vendor's websites)
+
+* VCSliderProperties & VCSlider value display style setting doesn't work.
+
+* VCXYPadProperties - possibility to add/select/edit multiple channels
+
+* Cut, copy paste to virtual console
+
+* Move the contents of Function::setBus() to subclasses and leave only the
+  common parts.
+
+* Connect functions to doc::fixtureRemoved so that fixture
+   associations can be removed.
+
+* Connect chaser & collection functions to doc::functionRemoved so that 
+   function associations can be removed.

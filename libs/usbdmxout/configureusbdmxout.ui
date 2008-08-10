@@ -1,178 +1,97 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UI_ConfigureUSBDMXOut</class>
-<widget class="QDialog">
-    <property name="name">
-        <cstring>UI_ConfigureUSBDMXOut</cstring>
-    </property>
-    <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>416</width>
-            <height>258</height>
-        </rect>
-    </property>
-    <property name="caption">
-        <string>Configure USB-DMX Plugin</string>
-    </property>
-    <vbox>
-        <property name="name">
-            <cstring>unnamed</cstring>
-        </property>
-        <widget class="QListView">
-            <column>
-                <property name="text">
-                    <string>Output Line</string>
-                </property>
-                <property name="clickable">
-                    <bool>true</bool>
-                </property>
-                <property name="resizable">
-                    <bool>true</bool>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Device</string>
-                </property>
-                <property name="clickable">
-                    <bool>true</bool>
-                </property>
-                <property name="resizable">
-                    <bool>true</bool>
-                </property>
-            </column>
-            <property name="name">
-                <cstring>m_listView</cstring>
-            </property>
-            <property name="resizeMode">
-                <enum>LastColumn</enum>
-            </property>
-        </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout2</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>m_testButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Test output</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+T</string>
-                    </property>
-                    <property name="toggleButton">
-                        <bool>true</bool>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Test the output of the selected output line</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>m_refreshButton</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Refresh</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+R</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>Refresh the list of available USB2DMX devices</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>m_ok</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;OK</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+O</string>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Accept changes and close the dialog</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>m_cancel</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;Cancel</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+C</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Reject changes and close the dialog</string>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-    </vbox>
-</widget>
-<connections>
-    <connection>
-        <sender>m_cancel</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_ConfigureUSBDMXOut</receiver>
-        <slot>reject()</slot>
-    </connection>
-    <connection>
-        <sender>m_ok</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_ConfigureUSBDMXOut</receiver>
-        <slot>accept()</slot>
-    </connection>
-    <connection>
-        <sender>m_testButton</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>UI_ConfigureUSBDMXOut</receiver>
-        <slot>slotTestToggled(bool)</slot>
-    </connection>
-    <connection>
-        <sender>m_refreshButton</sender>
-        <signal>clicked()</signal>
-        <receiver>UI_ConfigureUSBDMXOut</receiver>
-        <slot>slotRefreshClicked()</slot>
-    </connection>
-</connections>
-<tabstops>
-    <tabstop>m_cancel</tabstop>
-    <tabstop>m_ok</tabstop>
-</tabstops>
-<slots>
-    <slot>slotTestToggled(bool)</slot>
-    <slot>slotRefreshClicked()</slot>
-</slots>
-<layoutdefaults spacing="6" margin="11"/>
-</UI>
+<ui version="4.0" >
+ <class>ConfigureUSBDMXOut</class>
+ <widget class="QDialog" name="ConfigureUSBDMXOut" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>422</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Configure USB-DMX Plugin</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QTreeWidget" name="m_list" >
+     <property name="alternatingRowColors" >
+      <bool>true</bool>
+     </property>
+     <property name="rootIsDecorated" >
+      <bool>false</bool>
+     </property>
+     <property name="itemsExpandable" >
+      <bool>false</bool>
+     </property>
+     <property name="allColumnsShowFocus" >
+      <bool>true</bool>
+     </property>
+     <property name="expandsOnDoubleClick" >
+      <bool>false</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Output Line</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Device</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QPushButton" name="m_testButton" >
+       <property name="text" >
+        <string>Test output</string>
+       </property>
+       <property name="checkable" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_refreshButton" >
+       <property name="text" >
+        <string>Refresh</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_okButton" >
+       <property name="text" >
+        <string>OK</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_cancelButton" >
+       <property name="text" >
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

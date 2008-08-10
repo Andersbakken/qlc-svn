@@ -19,13 +19,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qstring.h>
-#include <qdom.h>
+#include <iostream>
+#include <QString>
+#include <QDebug>
+#include <QList>
+#include <QtXml>
 
-#include "common/qlcfixturemode.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlcchannel.h"
-#include "common/qlcphysical.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlcchannel.h"
+#include "qlcphysical.h"
 
 QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef)
 {
@@ -72,8 +75,7 @@ QLCFixtureMode& QLCFixtureMode::operator=(QLCFixtureMode& mode)
 {
 	if (this != &mode)
 	{
-		QLCChannel* ch = NULL;
-		QPtrListIterator<QLCChannel> it(mode.m_channels);
+		QListIterator <QLCChannel*> it(mode.m_channels);
 		int i = 0;
 		
 		m_name = mode.name();
@@ -81,11 +83,8 @@ QLCFixtureMode& QLCFixtureMode::operator=(QLCFixtureMode& mode)
 		m_fixtureDef = mode.fixtureDef();
 		
 		m_channels.clear();
-		while ( (ch = it.current()) != 0 )
-		{
-			++it;
-			insertChannel(ch, i++);
-		}
+		while (it.hasNext() == true)
+			insertChannel(it.next(), i++);
 	}
 
 	return *this;
@@ -102,12 +101,14 @@ void QLCFixtureMode::insertChannel(QLCChannel* channel, t_channel index)
 
 bool QLCFixtureMode::removeChannel(QLCChannel* channel)
 {
-	for (QLCChannel* ch = m_channels.first(); ch != NULL;
-	     ch = m_channels.next())
+	QMutableListIterator <QLCChannel*> it(m_channels);
+	while (it.hasNext() == true)
 	{
-		if (ch == channel)
+		if (it.next() == channel)
 		{
-			m_channels.take();
+			/* Don't delete the channel since QLCFixtureModes
+			   don't own them. QLCFixtureDefs do. */
+			it.remove();
 			return true;
 		}
 	}
@@ -115,16 +116,16 @@ bool QLCFixtureMode::removeChannel(QLCChannel* channel)
 	return false;
 }
 
-QLCChannel* QLCFixtureMode::searchChannel(const QString& name)
+QLCChannel* QLCFixtureMode::channel(const QString& name)
 {
-	QPtrListIterator<QLCChannel> it(m_channels);
+	QListIterator <QLCChannel*> it(m_channels);
 	QLCChannel* ch = NULL;
 	
-	while ( (ch = it.current()) != 0 )
+	while (it.hasNext() == true)
 	{
+		ch = it.next();
 		if (ch->name() == name)
 			return ch;
-		++it;
 	}
 	
 	return NULL;
@@ -140,19 +141,17 @@ QLCChannel* QLCFixtureMode::channel(t_channel ch)
 
 t_channel QLCFixtureMode::channelNumber(QLCChannel* channel)
 {
-	QPtrListIterator<QLCChannel> it(m_channels);
-	QLCChannel* ch = NULL;
+	QListIterator <QLCChannel*> it(m_channels);
 	int i = 0;
 	
 	if (channel == NULL)
 		return KChannelInvalid;
 	
-	while ( (ch = it.current()) != 0 )
+	while (it.hasNext() == true)
 	{
-		if (ch->name() == channel->name())
+		if (it.next()->name() == channel->name())
 			return i;
 		++i;
-		++it;
 	}
 
 	return KChannelInvalid;
@@ -202,8 +201,7 @@ bool QLCFixtureMode::loadXML(QDomElement* root)
 		}
 		else
 		{
-			qDebug("Unknown Mode tag: %s",
-				(const char*) tag.tagName());
+			qDebug() << "Unknown Mode tag: " << tag.tagName();
 		}
 
 		node = node.nextSibling();
@@ -214,8 +212,6 @@ bool QLCFixtureMode::loadXML(QDomElement* root)
 
 bool QLCFixtureMode::saveXML(QDomDocument* doc, QDomElement* root)
 {
-	QPtrListIterator<QLCChannel> it(m_channels);
-	QLCChannel* ch = NULL;
 	QDomElement tag;
 	QDomElement chtag;
 	QDomText text;
@@ -233,7 +229,8 @@ bool QLCFixtureMode::saveXML(QDomDocument* doc, QDomElement* root)
 	m_physical.saveXML(doc, &tag);
 	
 	/* Channels */
-	while ( (ch = it.current()) != 0 )
+	QListIterator <QLCChannel*> it(m_channels);
+	while (it.hasNext() == true)
 	{
 		chtag = doc->createElement(KXMLQLCFixtureModeChannel);
 		tag.appendChild(chtag);
@@ -241,10 +238,8 @@ bool QLCFixtureMode::saveXML(QDomDocument* doc, QDomElement* root)
 		str.setNum(i++);
 		chtag.setAttribute(KXMLQLCFixtureModeChannelNumber, str);
 
-		text = doc->createTextNode(ch->name());
+		text = doc->createTextNode(it.next()->name());
 		chtag.appendChild(text);
-		
-		++it;
 	}
 
 	return true;

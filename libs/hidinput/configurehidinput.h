@@ -22,12 +22,12 @@
 #ifndef CONFIGUREHIDINPUT_H
 #define CONFIGUREHIDINPUT_H
 
-#include "uic_configurehidinput.h"
+#include "ui_configurehidinput.h"
 
 class HIDInput;
 class HIDDevice;
 
-class ConfigureHIDInput : public UI_ConfigureHIDInput
+class ConfigureHIDInput : public QDialog, public Ui_ConfigureHIDInput
 {
 	Q_OBJECT
 
@@ -49,6 +49,11 @@ protected slots:
 	 * Invoke refresh for the interface list
 	 */
 	void slotRefreshClicked();
+
+	/**
+	 *
+	 */
+	void slotItemChanged(QTreeWidgetItem* item, int column);
 
 protected:
 	/** Refresh the interface list */

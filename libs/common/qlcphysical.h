@@ -1,28 +1,30 @@
 /*
   Q Light Controller
   qlcphysical.h
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLC_PHYSICAL_H
-#define QLC_PHYSICAL_H
+#ifndef QLCPHYSICAL_H
+#define QLCPHYSICAL_H
 
-class QString;
+#include <QString>
+#include "qlctypes.h"
+
 class QDomElement;
 class QDomDocument;
 
@@ -49,7 +51,7 @@ class QDomDocument;
 #define KXMLQLCPhysicalFocusPanMax "PanMax"
 #define KXMLQLCPhysicalFocusTiltMax "TiltMax"
 
-class QLCPhysical
+class QLC_DECLSPEC QLCPhysical
 {
 public:
 	/** Assignment operator */
@@ -58,13 +60,13 @@ public:
 public:
 	void setBulbType(const QString& type) { m_bulbType = type; }
 	QString bulbType() const { return m_bulbType; }
-	
+
 	void setBulbLumens(const int lumens) { m_bulbLumens = lumens; }
 	int bulbLumens() const { return m_bulbLumens; }
-	
+
 	void setBulbColourTemperature(const int temp) { m_bulbColourTemperature = temp; }
 	int bulbColourTemperature() const { return m_bulbColourTemperature; }
-	
+
 	void setWeight(const int weight) { m_weight = weight; }
 	int weight() const { return m_weight; }
 
@@ -76,10 +78,10 @@ public:
 
 	void setDepth(const int depth) { m_depth = depth; }
 	int depth() const { return m_depth; }
-	
+
 	void setLensName(const QString& name) { m_lensName = name; }
 	QString lensName() const { return m_lensName; }
-	
+
 	void setLensDegreesMin(const int degrees) { m_lensDegreesMin = degrees; }
 	int lensDegreesMin() const { return m_lensDegreesMin; }
 
@@ -88,30 +90,30 @@ public:
 
 	void setFocusType(const QString& type) { m_focusType = type; }
 	QString focusType() const { return m_focusType; }
-	
+
 	void setFocusPanMax(const int pan) { m_focusPanMax = pan; }
 	int focusPanMax() const { return m_focusPanMax; }
 
 	void setFocusTiltMax(const int tilt) { m_focusTiltMax = tilt; }
 	int focusTiltMax() const { return m_focusTiltMax; }
 
-	bool loadXML(QDomElement* root);
+	virtual bool loadXML(QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* root);
-	
-private:
+
+protected:
 	QString m_bulbType;
 	int m_bulbLumens;
 	int m_bulbColourTemperature;
- 
+
 	int m_weight;
 	int m_width;
 	int m_height;
 	int m_depth;
- 
+
 	QString m_lensName;
 	int m_lensDegreesMin;
 	int m_lensDegreesMax;
- 
+
 	QString m_focusType;
 	int m_focusPanMax;
 	int m_focusTiltMax;

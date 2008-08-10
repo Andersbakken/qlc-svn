@@ -19,85 +19,84 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qapplication.h>
-#include <qmessagebox.h>
-#include <qstringlist.h>
-#include <qdir.h>
+#include <QApplication>
+#include <QMessageBox>
+#include <QStringList>
+#include <QDebug>
+#include <QDir>
 
-#include "hidinput.h"
-#include "hideventdevice.h"
 #include "configurehidinput.h"
+#include "hideventdevice.h"
+#include "hidpoller.h"
+#include "hidinput.h"
 
-extern "C" InputPlugin* create()
+/*****************************************************************************
+ * HIDInputEvent
+ *****************************************************************************/
+
+static const QEvent::Type _HIDInputEventType = static_cast<QEvent::Type>
+	(QEvent::registerEventType());
+
+HIDInputEvent::HIDInputEvent(t_input input, t_input_channel channel,
+			     t_input_value value) : QEvent(_HIDInputEventType)
 {
-	return new HIDInput;
+	m_input = input;
+	m_channel = channel;
+	m_value = value;
+}
+
+HIDInputEvent::~HIDInputEvent()
+{
 }
 
 /*****************************************************************************
- * Initialization
+ * HIDInput Initialization
  *****************************************************************************/
 
-HIDInput::HIDInput() : InputPlugin()
+void HIDInput::init()
 {
-	m_version = 0x00010000;
-	m_name = QString("HID Input");
-	m_type = InputType;
+	QDir dir("/dev/input/");
+	QStringList nameFilters;
+	QStringList entries;
+	QStringList::iterator it;
+	HIDDevice* device;
+	QString path;
+	t_input line = 0;
 
-	open();
+	nameFilters << "event*";
+	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
+	for (it = entries.begin(); it != entries.end(); ++it)
+	{
+		path = dir.absolutePath() + QDir::separator() + *it;
+		device = new HIDEventDevice(this, line++, path);
+		m_devices.append(device);
+	}
+
+	m_poller = new HIDPoller(this);
 }
 
 HIDInput::~HIDInput()
 {
+	while (m_devices.isEmpty() == false)
+		delete m_devices.takeFirst();
+
+	m_poller->stop();
+	delete m_poller;
 }
 
 /*****************************************************************************
- * Open/close
+ * Devices
  *****************************************************************************/
-
-int HIDInput::open()
-{
-	HIDDevice* hidDevice = NULL;
-	QDir dir("/dev/input/");
-	QStringList entries;
-	QStringList::iterator it;
-	QString path;
-
-	close();
-
-	entries = dir.entryList("event*", QDir::Files | QDir::System);
-	for (it = entries.begin(); it != entries.end(); ++it)
-	{
-		path = dir.absPath() + QString("/") + *it;
-		hidDevice = device(path);
-		if (hidDevice == NULL)
-	{
-			hidDevice = new HIDEventDevice(this, path);
-			hidDevice->open();
-			m_devices.append(hidDevice);
-		}
-	}
-}
-
-int HIDInput::close()
-{
-	HIDDevice* hidDevice = NULL;
-
-	while ((hidDevice = m_devices.take(0)) != NULL)
-	{
-		hidDevice->close();
-		delete hidDevice;
-	}
-}
 
 HIDDevice* HIDInput::device(const QString& path)
 {
-	QPtrListIterator<HIDDevice> it(m_devices);
+	QListIterator <HIDDevice*> it(m_devices);
 
-	while (it.current() != NULL)
+	while (it.hasNext() == true)
 	{
-		if (it.current()->path() == path)
-			return it.current();
-		++it;
+		HIDDevice* dev = it.next();
+		if (dev->path() == path)
+			return dev;
 	}
 
 	return NULL;
@@ -105,11 +104,24 @@ HIDDevice* HIDInput::device(const QString& path)
 
 HIDDevice* HIDInput::device(const unsigned int index)
 {
-	if (index > m_devices.count())
+	if (index > static_cast<unsigned int> (m_devices.count()))
 		return NULL;
 	else
 		return m_devices.at(index);
 }
+
+/*****************************************************************************
+ * Name
+ *****************************************************************************/
+
+QString HIDInput::name()
+{
+	return QString("HID Input");
+}
+
+/*****************************************************************************
+ * Inputs
+ *****************************************************************************/
 
 t_input HIDInput::inputs()
 {
@@ -128,9 +140,9 @@ t_input_channel HIDInput::channels(t_input input)
  * Configuration
  *****************************************************************************/
 
-int HIDInput::configure(QWidget* parentWidget)
+void HIDInput::configure()
 {
-	ConfigureHIDInput conf(parentWidget, this);
+	ConfigureHIDInput conf(NULL, this);
 	conf.exec();
 }
 
@@ -140,9 +152,7 @@ int HIDInput::configure(QWidget* parentWidget)
 
 QString HIDInput::infoText()
 {
-	QPtrListIterator<HIDDevice> it(m_devices);
-	HIDDevice* device = NULL;
-	QString info = QString::null;
+	QString info;
 	QString t;
 
 	/* HTML Title */
@@ -156,10 +166,10 @@ QString HIDInput::infoText()
 	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
 	info += QString("<TR>");
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\" COLSPAN=\"3\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
 	info += QString("\" SIZE=\"5\">");
 	info += name();
 	info += QString("</FONT>");
@@ -172,34 +182,34 @@ QString HIDInput::infoText()
 
 	/* Device title */
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
-	info += QString("\" SIZE=\"5\">");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\" SIZE=\"4\">");
 	info += QString("Device");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 
 	/* Name title */
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
-	info += QString("\" SIZE=\"5\">");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\" SIZE=\"4\">");
 	info += QString("Name");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 
 	/* Mode title */
 	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().active().highlight().name();
+	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
 	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().active().highlightedText().name();
-	info += QString("\" SIZE=\"5\">");
-	info += QString("Mode");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\" SIZE=\"4\">");
+	info += QString("Channels");
 	info += QString("</FONT>");
 	info += QString("</TD>");
 	info += QString("</TR>");
@@ -215,11 +225,9 @@ QString HIDInput::infoText()
 	}
 	else
 	{
-		while ((device = it.current()) != NULL)
-		{
-			info += it.current()->infoText();
-			++it;
-		}
+		QListIterator <HIDDevice*> it(m_devices);
+		while (it.hasNext() == true)
+			info += it.next()->infoText();
 	}
 
 	info += QString("</TABLE>");
@@ -227,7 +235,56 @@ QString HIDInput::infoText()
 	return info;
 }
 
-void HIDInput::feedBack(t_input input, t_input_channel channel,
-			t_input_value value)
+/*****************************************************************************
+ * Device poller
+ *****************************************************************************/
+
+void HIDInput::addPollDevice(HIDDevice* device)
+{
+	Q_ASSERT(device != NULL);
+	m_poller->addDevice(device);
+}
+
+void HIDInput::removePollDevice(HIDDevice* device)
+{
+	Q_ASSERT(device != NULL);
+	m_poller->removeDevice(device);
+}
+
+/*****************************************************************************
+ * Input data
+ *****************************************************************************/
+
+void HIDInput::customEvent(QEvent* event)
+{
+	if (event->type() == _HIDInputEventType)
+	{
+		HIDInputEvent* e = static_cast<HIDInputEvent*> (event);
+		emit valueChanged(this, e->m_input, e->m_channel, e->m_value);
+		event->accept();
+	}
+}
+
+void HIDInput::connectInputData(QObject* listener)
+{
+	Q_ASSERT(listener != NULL);
+
+	qDebug() << "Connect" << listener;
+
+	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
+					  t_input_value)),
+		listener,
+		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
+				      t_input_value)));
+}
+
+void HIDInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
+			t_input_value /*value*/)
 {
 }
+
+/*****************************************************************************
+ * Plugin export
+ ****************************************************************************/
+
+Q_EXPORT_PLUGIN2(hidinput, HIDInput)

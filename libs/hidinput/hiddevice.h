@@ -22,13 +22,13 @@
 #ifndef HIDDEVICE_H
 #define HIDDEVICE_H
 
-#include <qobject.h>
-#include <qfile.h>
+#include <QObject>
+#include <QFile>
 
 #include <sys/ioctl.h>
 #include <linux/types.h>
 
-#include "common/types.h"
+#include "common/qlctypes.h"
 
 class HIDInput;
 
@@ -41,7 +41,7 @@ class HIDDevice : public QObject
 	Q_OBJECT
 		
 public:
-	HIDDevice(HIDInput* parent, const char* name, const QString& path);
+	HIDDevice(HIDInput* parent, t_input line, const QString& path);
 	virtual ~HIDDevice();
 
 	/*********************************************************************
@@ -66,8 +66,41 @@ public:
 	 */
 	virtual QString path() const;
 
+	/**
+	 * Get the device's file descriptor
+	 */
+	virtual int handle() const;
+
+	/**
+	 * Read one event and emit it
+	 */
+	virtual void readEvent() = 0;
+
 protected:
 	QFile m_file;
+
+	/*********************************************************************
+	 * Line
+	 *********************************************************************/
+public:
+	t_input line() const { return m_line; }
+
+protected:
+	t_input m_line;
+
+	/*********************************************************************
+	 * Enabled status
+	 *********************************************************************/
+public:
+	/**
+	 * Get the device's enabled state (whether it sends events to QLC)
+	 */
+	virtual bool isEnabled();
+
+	/**
+	 * Set the device's enabled state (whether it sends events to QLC)
+	 */
+	virtual void setEnabled(bool state);
 
 	/*********************************************************************
 	 * Device info
@@ -97,8 +130,13 @@ protected:
 signals:
 	/**
 	 * Signal that is emitted when an input channel's value is changed
+	 *
+	 * @param device The eventing HIDDevice
+	 * @param channel The channel whose value has changed
+	 * @param value The changed value
 	 */
-	virtual void valueChanged(t_input_channel channel, t_input_value value);
+	void valueChanged(HIDDevice* device, t_input_channel channel,
+			  t_input_value value);
 
 public:
 	/**

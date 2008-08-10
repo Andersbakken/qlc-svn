@@ -19,11 +19,11 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef WORKSPACE_H
-#define WORKSPACE_H
+#ifndef QLCWORKSPACE_H
+#define QLCWORKSPACE_H
 
-#include <qworkspace.h>
-#include <qevent.h>
+#include <QWorkspace>
+#include <QEvent>
 
 #define KXMLQLCWorkspace "Workspace"
 #define KXMLQLCWorkspaceBackgroundImage "BackgroundImage"
@@ -50,9 +50,9 @@ public:
 	/** Set the background image from the given file name */
 	void setBackgroundImage(const QString& path);
 
-protected:
+protected slots:
 	/** Set the background image using a file selection dialog */
-	void setBackgroundImage();
+	void slotSetBackgroundImage();
 
 signals:
 	void backgroundChanged(const QString& path);
@@ -60,22 +60,6 @@ signals:
 protected:
 	QString m_backgroundImage;
 	
-	/*********************************************************************
-	 * Theme
-	 *********************************************************************/
-public:
-	/** Get the global theme name */
-	QString theme();
-
-	/** Set the global theme by name */
-	void setTheme(const QString& theme);
-	
-signals:
-	void themeChanged(const QString& theme);
-
-protected:
-	QString m_theme;
-
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/

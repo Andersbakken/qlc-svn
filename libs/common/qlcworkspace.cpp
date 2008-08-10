@@ -19,23 +19,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <qapplication.h>
-#include <qpopupmenu.h>
-#include <qpixmap.h>
-#include <qfiledialog.h>
-#include <qstylefactory.h>
-#include <qsettings.h>
-#include <qdom.h>
+#include <QMouseEvent>
+#include <QFileDialog>
+#include <iostream>
+#include <QMenu>
+#include <QIcon>
+#include <QtXml>
 
-#include "common/settings.h"
 #include "common/qlcworkspace.h"
-#include "common/qlcimagepreview.h"
 
-#define KMenuItemTitle            0
-#define KMenuItemChangeBackground 1000
-#define KMenuItemChangeTheme      2000
-
-QLCWorkspace::QLCWorkspace(QWidget* parent) : QWorkspace(parent, "Workspace")
+QLCWorkspace::QLCWorkspace(QWidget* parent) : QWorkspace(parent)
 {
 	connect(this, SIGNAL(rightMouseButtonClicked(const QPoint&)),
 		this, SLOT(slotRightMouseButtonClicked(const QPoint&)));
@@ -56,18 +49,22 @@ QString QLCWorkspace::backgroundImage()
 
 void QLCWorkspace::setBackgroundImage(const QString& path)
 {
+	std::cout << "Not implemented" << endl;
+/*
 	if (path.isEmpty() == false)
 		setBackgroundPixmap(QPixmap(path));
 	else
 		setBackgroundPixmap(NULL);
 
 	m_backgroundImage = path;
-	
+*/
 	emit backgroundChanged(path);
 }
 
-void QLCWorkspace::setBackgroundImage()
+void QLCWorkspace::slotSetBackgroundImage()
 {
+	std::cout << "Not implemented" << endl;
+/*
 	QString path;
 
 	QLCImagePreview* preview = new QLCImagePreview;
@@ -90,24 +87,7 @@ void QLCWorkspace::setBackgroundImage()
 
 	delete preview;
 	delete fd;
-}
-
-/*****************************************************************************
- * Theme
- *****************************************************************************/
-
-QString QLCWorkspace::theme()
-{
-	return m_theme;
-}
-
-void QLCWorkspace::setTheme(const QString& theme)
-{
-	if (theme.isEmpty() == false)
-		QApplication::setStyle(theme);
-	m_theme = theme;
-
-	emit themeChanged(theme);
+*/
 }
 
 /*****************************************************************************
@@ -123,17 +103,13 @@ bool QLCWorkspace::loadXML(QDomDocument* doc, QDomElement* wksp_root)
 
 	if (wksp_root->tagName() != KXMLQLCWorkspace)
 	{
-		qWarning("Workspace node not found!");
+		std::cout << "Workspace node not found!" << endl;
 		return false;
 	}
 
 	/* Background image */
 	str = wksp_root->attribute(KXMLQLCWorkspaceBackgroundImage);
 	setBackgroundImage(str);
-
-	/* Theme */
-	str = wksp_root->attribute(KXMLQLCWorkspaceTheme);
-	setTheme(str);
 
 	return true;
 }
@@ -152,9 +128,6 @@ bool QLCWorkspace::saveXML(QDomDocument*doc, QDomElement* wksp_root)
 	wksp_root->setAttribute(KXMLQLCWorkspaceBackgroundImage,
 				m_backgroundImage);
 
-	/* Theme */
-	wksp_root->setAttribute(KXMLQLCWorkspaceTheme, m_theme);
-
 	return true;
 }
 
@@ -164,35 +137,18 @@ bool QLCWorkspace::saveXML(QDomDocument*doc, QDomElement* wksp_root)
 
 void QLCWorkspace::loadDefaults(const QString& path)
 {
-	QSettings settings;
-	QString key;
+	QSettings settings(path, path);
 	QString value;
 
-	settings.setPath("qlc.sf.net", "qlc");
-
-	key = path + QString("/workspace/background/");
-	value = settings.readEntry(key);
+	value = settings.value(path + "/workspace/background/").toString();
 	if (value.length() > 0)
 		setBackgroundImage(value);
-
-	key = path + QString("/workspace/theme/");
-	value = settings.readEntry(key);
-	if (value.length() > 0)
-		setTheme(value);
 }
 
 void QLCWorkspace::saveDefaults(const QString& path)
 {
-	QSettings settings;
-	QString key;
-
-	settings.setPath("qlc.sf.net", "qlc");
-
-	key = path + QString("/workspace/background/");
-	settings.writeEntry(key, backgroundImage());
-
-	key = path + QString("/workspace/theme/");
-	settings.writeEntry(key, theme());
+	QSettings settings(path, path);
+	settings.setValue(path + "/workspace/background/", backgroundImage());
 }
 
 /*****************************************************************************
@@ -201,55 +157,16 @@ void QLCWorkspace::saveDefaults(const QString& path)
 
 void QLCWorkspace::slotRightMouseButtonClicked(const QPoint& pos)
 {
-	QPopupMenu* menu = NULL;
-	QPopupMenu* themeMenu = NULL;
-	QStyleFactory styleFactory;
-	QStringList themeList = styleFactory.keys();
-	QStringList::Iterator it;
-	int i = 0;
+	QMenu menu(this);
+	QAction bgAction(QIcon(PIXMAPS "/image.png"), "Background image", this);
 
-	/* Master menu */
-	menu = new QPopupMenu();
-	menu->insertItem(QString("Workspace"), KMenuItemTitle);
-	menu->insertSeparator();
-	menu->insertItem(QPixmap(QString(PIXMAPS) + QString("/image.png")),
-			 "Background image", KMenuItemChangeBackground);
+	connect(&bgAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotSetBackground()));
 
-	/* Disable title */
-	menu->setItemEnabled(KMenuItemTitle, false);
+	menu.setTitle("Workspace");
+	menu.addAction(&bgAction);
 
-	/* Theme menu */
-	themeMenu = new QPopupMenu();
-	for (it = themeList.begin(); it != themeList.end(); ++it)
-		themeMenu->insertItem(*it, KMenuItemChangeTheme + (i++));
-	menu->insertItem("Visual Style", themeMenu);
-
-	connect(menu, SIGNAL(activated(int)), 
-		this, SLOT(slotMenuCallback(int)));
-	connect(themeMenu, SIGNAL(activated(int)), 
-		this, SLOT(slotMenuCallback(int)));
-
-	menu->exec(pos);
-
-	delete themeMenu;
-	delete menu;
-}
-
-void QLCWorkspace::slotMenuCallback(int item)
-{
-	if (item == KMenuItemChangeBackground)
-	{
-		setBackgroundImage();
-	}
-	else if (item >= KMenuItemChangeTheme)
-	{
-		QStyleFactory styleFactory;
-		QStringList themeList = styleFactory.keys();
-		QString theme = themeList[item - KMenuItemChangeTheme];
-
-		if (theme.isEmpty() == false)
-			setTheme(theme);
-	}
+	menu.exec(pos);
 }
 
 /*****************************************************************************
@@ -258,6 +175,6 @@ void QLCWorkspace::slotMenuCallback(int item)
 
 void QLCWorkspace::mousePressEvent(QMouseEvent* event)
 {
-	if (event->button() & RightButton)
+	if (event->button() & Qt::RightButton)
 		emit rightMouseButtonClicked(mapToGlobal(event->pos()));
 }

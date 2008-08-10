@@ -1,0 +1,145 @@
+<ui version="4.0" >
+ <class>AppDirectories</class>
+ <widget class="QDialog" name="AppDirectories" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Application directories</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <widget class="QGroupBox" name="m_bgGroup" >
+     <property name="locale" >
+      <locale country="UnitedStates" language="English" />
+     </property>
+     <property name="title" >
+      <string>Workspace background</string>
+     </property>
+     <property name="checkable" >
+      <bool>true</bool>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" >
+      <item>
+       <widget class="QLineEdit" name="m_bgEdit" />
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_bgButton" >
+        <property name="text" >
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_fixturesGroup" >
+     <property name="title" >
+      <string>Fixture definitions</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2" >
+      <item>
+       <widget class="QLineEdit" name="m_fixturesEdit" />
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_fixturesButton" >
+        <property name="text" >
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_pluginsGroup" >
+     <property name="title" >
+      <string>Plugins</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3" >
+      <item>
+       <widget class="QLineEdit" name="m_pluginsEdit" />
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_pluginsButton" >
+        <property name="text" >
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_docsGroup" >
+     <property name="title" >
+      <string>Documentation</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4" >
+      <item>
+       <widget class="QLineEdit" name="m_docsEdit" />
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_docsButton" >
+        <property name="text" >
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AppDirectories</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>AppDirectories</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

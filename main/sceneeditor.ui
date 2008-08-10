@@ -1,0 +1,234 @@
+<ui version="4.0" >
+ <class>SceneEditor</class>
+ <widget class="QDialog" name="SceneEditor" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>554</width>
+    <height>364</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Scene editor</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" colspan="2" >
+    <widget class="QTabWidget" name="m_tab" >
+     <property name="currentIndex" >
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="General" >
+      <attribute name="title" >
+       <string>General</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2" >
+       <item row="0" column="0" >
+        <widget class="QLabel" name="m_nameLabel" >
+         <property name="text" >
+          <string>Scene name</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="3" >
+        <widget class="QLineEdit" name="m_nameEdit" >
+         <property name="toolTip" >
+          <string>Name of this scene</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="4" >
+        <widget class="QTreeWidget" name="m_tree" >
+         <property name="alternatingRowColors" >
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode" >
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="rootIsDecorated" >
+          <bool>false</bool>
+         </property>
+         <property name="itemsExpandable" >
+          <bool>false</bool>
+         </property>
+         <property name="sortingEnabled" >
+          <bool>true</bool>
+         </property>
+         <property name="allColumnsShowFocus" >
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text" >
+           <string>Fixtures used in this scene</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="1" column="4" >
+        <layout class="QVBoxLayout" name="verticalLayout" >
+         <item>
+          <widget class="QToolButton" name="m_addFixtureButton" >
+           <property name="toolTip" >
+            <string>Add a new fixture to this scene</string>
+           </property>
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_removeFixtureButton" >
+           <property name="toolTip" >
+            <string>Remove the selected fixture(s) from this scene</string>
+           </property>
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer" >
+           <property name="orientation" >
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0" colspan="2" >
+        <widget class="QPushButton" name="m_enableChannelsButton" >
+         <property name="toolTip" >
+          <string>Enable all channels in currently selected fixtures</string>
+         </property>
+         <property name="text" >
+          <string>Enable channels</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" >
+        <widget class="QPushButton" name="m_disableChannelsButton" >
+         <property name="toolTip" >
+          <string>Disable all channels in currently selected fixtures</string>
+         </property>
+         <property name="text" >
+          <string>Disable channels</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3" >
+        <spacer name="horizontalSpacer" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>261</width>
+           <height>23</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SceneEditor</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>442</x>
+     <y>355</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>158</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SceneEditor</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>544</x>
+     <y>355</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>308</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_enableChannelsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SceneEditor</receiver>
+   <slot>slotEnableChannelsClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>3</x>
+     <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_disableChannelsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SceneEditor</receiver>
+   <slot>slotDisableChannelsClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>184</x>
+     <y>287</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>76</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotEnableChannelsClicked()</slot>
+  <slot>slotDisableChannelsClicked()</slot>
+  <slot>slotUpdateValuesChecked(bool)</slot>
+ </slots>
+</ui>

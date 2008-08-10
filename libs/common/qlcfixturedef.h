@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcfixture.h
+  qlcfixturedef.h
   
   Copyright (c) Heikki Junnila
   
@@ -19,14 +19,13 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLC_FIXTURE_DEF_H
-#define QLC_FIXTURE_DEF_H
+#ifndef QLCFIXTUREDEF_H
+#define QLCFIXTUREDEF_H
 
-#include <qobject.h>
-#include <qptrlist.h>
-#include <qstring.h>
+#include <QString>
+#include <QList>
 
-#include "types.h"
+#include "qlctypes.h"
 
 // Fixture document type
 #define KXMLQLCFixtureDefDocument "FixtureDefinition"
@@ -44,14 +43,14 @@
 #define KXMLQLCFixtureAddress "Address"
 
 class QDomDocument;
+class QDomElement;
 class QLCChannel;
 class QLCFixtureMode;
 class QLCFixtureDef;
-class DeviceClass;
 
-class QLCFixtureDef
+class QLC_DECLSPEC QLCFixtureDef
 {
- public:
+public:
 	/** Default constructor */
 	QLCFixtureDef();
 
@@ -61,15 +60,16 @@ class QLCFixtureDef
 	/** Create contents from an XML file */
 	QLCFixtureDef(const QString &fileName);
 
-	/** Create contents from an old DeviceClass */
-	QLCFixtureDef(DeviceClass* dc);
- 
 	/** Destructor */
-	~QLCFixtureDef();
+	virtual ~QLCFixtureDef();
 
 	/** Assignment operator */
 	QLCFixtureDef& operator=(QLCFixtureDef& fixture);
  
+	/*********************************************************************
+	 * Fixture information
+	 *********************************************************************/
+public:
 	/** Get the fixture's name string (=="manufacturer model") */
 	QString name() { return m_manufacturer + QString(" ") + m_model; }
 	
@@ -90,7 +90,16 @@ class QLCFixtureDef
 
 	/** Get the fixture's type string */
 	QString type() const { return m_type; }
-	
+
+protected:
+	QString m_manufacturer;
+	QString m_model;
+	QString m_type;
+
+	/*********************************************************************
+	 * Channels
+	 *********************************************************************/
+public:
 	/** Add a new channel to this fixture */
 	void addChannel(QLCChannel* channel);
 
@@ -101,8 +110,16 @@ class QLCFixtureDef
 	QLCChannel* channel(const QString &name);
 	
 	/** Get all channels */
-	QPtrList <QLCChannel> *channels() { return &m_channels; }
+	QList <QLCChannel*> *channels() { return &m_channels; }
 	
+protected:
+	/** Available channels */
+	QList <QLCChannel*> m_channels;
+
+	/*********************************************************************
+	 * Modes
+	 *********************************************************************/
+public:
 	/** Add a new mode to this fixture */
 	void addMode(QLCFixtureMode* mode);
 
@@ -113,24 +130,17 @@ class QLCFixtureDef
 	QLCFixtureMode* mode(const QString& name);
 	
 	/** Get all modes */
-	QPtrList <QLCFixtureMode> *modes() { return &m_modes; }
+	QList <QLCFixtureMode*> *modes() { return &m_modes; }
 	
 	/** Save the fixture into an XML file */
 	bool saveXML(const QString &fileName);
 	
 	/** Load fixture contents from an XML document */
-	bool loadXML(QDomDocument* doc); 
+	virtual bool loadXML(QDomDocument* doc); 
 
- private:
-	QString m_manufacturer;
-	QString m_model;
-	QString m_type;
-
-	/** Available channels */
-	QPtrList <QLCChannel> m_channels;
-
+protected:
 	/** Modes (i.e. particular collections of channels) */
-	QPtrList <QLCFixtureMode> m_modes;
+	QList <QLCFixtureMode*> m_modes;
 };
 
 #endif
