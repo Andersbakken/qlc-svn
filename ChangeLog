@@ -1,5 +1,14 @@
 2008-08-11  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* main/fixturelist.cpp:
+	* main/vcxypadproperties.cpp:
+	* TODO
+	
+	Fixed crash bug in xypad properties and fixture list dialogs.
+	Added a new idea for XYPad properties dialog to TODO.
+	
+2008-08-11  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* README:
 	* TODO:
 	* fixtureeditor/fixtureeditor.pro:

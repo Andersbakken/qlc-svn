@@ -45,6 +45,8 @@ FixtureList::FixtureList(QWidget* parent) : QDialog(parent)
 	m_fixture = KNoID;
 	m_channel = KChannelInvalid;
 
+	setupUi(this);
+
 	init();
 }
 
@@ -60,7 +62,7 @@ void FixtureList::init()
 
 	connect(m_listView, SIGNAL(itemSelectionChanged()),
 		this, SLOT(slotSelectionChanged()));
-	connect(m_listView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*)),
+	connect(m_listView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotItemDoubleClicked()));
 	
 	for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)

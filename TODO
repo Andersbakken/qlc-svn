@@ -81,3 +81,9 @@
 
 * Connect chaser & collection functions to doc::functionRemoved so that 
    function associations can be removed.
+
+* Change XYPad properties dialog to make use of Pan&Tilt group information.
+   Change the layout to contain one tree widget, from which the user can
+   select (with checkable/radio items), which channels belong to X axis,
+   which to Y axis or not at all. Maybe also belong to both axes, for some 
+   weird pseudocreative dimmer applications??

@@ -55,6 +55,8 @@ VCXYPadProperties::VCXYPadProperties(QWidget* parent, VCXYPad* xypad)
 {
 	m_xypad = xypad;
 
+	setupUi(this);
+
 	/* Add X axis */
 	m_addX->setIcon(QIcon(":/edit_add.png"));
 	connect(m_addX, SIGNAL(clicked()), this, SLOT(slotAddX()));
