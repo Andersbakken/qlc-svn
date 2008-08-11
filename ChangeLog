@@ -1,3 +1,15 @@
+2008-08-11  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* README:
+	* TODO:
+	* fixtureeditor/fixtureeditor.pro:
+	* libs/common/common.pro:
+	* main/main.pro:
+
+	Updated QT version requirement in README.
+	Updated TODO list.
+	Updated VERSION tags to common lib & both apps' project files.
+
 2008-08-10  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/qlcinplugin.h:
