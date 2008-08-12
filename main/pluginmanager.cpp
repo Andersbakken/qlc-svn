@@ -32,6 +32,7 @@
 #include <QMenu>
 #include <QIcon>
 
+#include "inputmapeditor.h"
 #include "pluginmanager.h"
 #include "dmxmapeditor.h"
 #include "inputmap.h"
@@ -199,7 +200,9 @@ void PluginManager::slotOutputMap()
 
 void PluginManager::slotInputMap()
 {
-	QMessageBox::information(this, "TODO", "TODO");
+	InputMapEditor editor(this, _app->inputMap());
+	if (editor.exec() == QDialog::Accepted)
+		slotSelectionChanged();
 }
 
 /*****************************************************************************

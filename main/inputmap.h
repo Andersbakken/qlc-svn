@@ -33,6 +33,8 @@ class QDomElement;
 class QLCInPlugin;
 class InputMap;
 
+#define KInputNone QObject::tr("None")
+
 /*****************************************************************************
  * InputPatch
  *****************************************************************************/
@@ -41,6 +43,7 @@ class InputMap;
 #define KXMLQLCInputPatchUniverse "Universe"
 #define KXMLQLCInputPatchPlugin "Plugin"
 #define KXMLQLCInputPatchInput "Input"
+#define KXMLQLCInputPatchPluginNone "None"
 
 /**
  * This is a simple container class that stores only the pointer to an
@@ -49,6 +52,8 @@ class InputMap;
 class InputPatch
 {
 	friend class InputMap;
+	friend class InputMapEditor;
+	friend class InputPatchEditor;
 
 public:
 	InputPatch(QLCInPlugin* p, int i) { plugin = p; input = i; }
@@ -85,11 +90,14 @@ protected:
  * InputMap
  *****************************************************************************/
 
+#define KXMLQLCInputMap "InputMap"
+
 class InputMap : public QObject
 {
 	Q_OBJECT
 
 	friend class InputPatch;
+	friend class InputMapEditor;
 
 	/*********************************************************************
 	 * Initialization
@@ -110,6 +118,13 @@ public:
 	 * Load all input plugins from the input plugin directory
 	 */
 	void load();
+
+	/*********************************************************************
+	 * Input data
+	 *********************************************************************/
+public slots:
+	void slotValueChanged(QLCInPlugin* plugin, t_input input,
+			      t_input_channel channel, t_input_value value);
 
 	/*********************************************************************
 	 * Patch
@@ -211,11 +226,26 @@ protected:
 	QList <QLCInPlugin*> m_plugins;
 
 	/*********************************************************************
-	 * Input data
+	 * Save & Load
 	 *********************************************************************/
-public slots:
-	void slotValueChanged(QLCInPlugin* plugin, t_input input,
-			      t_input_channel channel, t_input_value value);
+public:
+	/**
+	 * Save InputMap details into an XML document
+	 *
+	 * @param doc An XML document to save to
+	 * @param wksp_root A parent XML node to save to (workspace)
+	 * @return true if successful, otherwise false
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+
+	/**
+	 * Load InputMap details from an XML document
+	 *
+	 * @param doc An XML document to load from
+	 * @param map_root A DMXMap root node to load from
+	 * @return true if successful, otherwise false
+	 */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
 
 	/*********************************************************************
 	 * Defaults

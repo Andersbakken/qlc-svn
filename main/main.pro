@@ -51,6 +51,8 @@ HEADERS += aboutbox.h \
            functionselection.h \
            generatorarea.h \
            inputmap.h \
+           inputmapeditor.h \
+           inputpatcheditor.h \
            keybind.h \
            monitor.h \
            pluginmanager.h \
@@ -87,6 +89,8 @@ FORMS += addfixture.ui \
          fixtureproperties.ui \
          fixtureselection.ui \
          functionselection.ui \
+         inputmapeditor.ui \
+         inputpatcheditor.ui \
          sceneeditor.ui \
          vcbuttonproperties.ui \
          vccuelistproperties.ui \
@@ -129,6 +133,8 @@ SOURCES += aboutbox.cpp \
            functionselection.cpp \
            generatorarea.cpp \
            inputmap.cpp \
+           inputmapeditor.cpp \
+           inputpatcheditor.cpp \
            keybind.cpp \
            main.cpp \
            monitor.cpp \

@@ -1,3 +1,19 @@
+2008-08-12  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/doc.cpp:
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+	* main/inputmapeditor.cpp:
+	* main/inputmapeditor.h:
+	* main/inputmapeditor.ui:
+	* main/inputpatcheditor.cpp:
+	* main/inputpatcheditor.h:
+	* main/inputpatcheditor.ui:
+	* main/main.pro:
+	* main/pluginmanager.cpp:
+
+	Copied DMXMap* dialog stuff to InputMap* dialogs.
+
 2008-08-12  Heikki Junnila  <ext-heikki.junnila@nokia.com>
 
 	* libs/common/qlctypes.h:

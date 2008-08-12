@@ -36,6 +36,7 @@
 #include "fixturemanager.h"
 #include "collection.h"
 #include "function.h"
+#include "inputmap.h"
 #include "fixture.h"
 #include "monitor.h"
 #include "chaser.h"
@@ -199,6 +200,10 @@ bool Doc::loadXML(QDomDocument* doc)
 		{
 			_app->dmxMap()->loadXML(doc, &tag);
 		}
+		else if (tag.tagName() == KXMLQLCInputMap)
+		{
+			_app->inputMap()->loadXML(doc, &tag);
+		}
 		else if (tag.tagName() == KXMLQLCWindowState)
 		{
 			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
@@ -262,6 +267,9 @@ bool Doc::saveXML(const QString& fileName)
 		
 		/* Write DMX mapping */
 		_app->dmxMap()->saveXML(doc, &root);
+
+		/* Write input mapping */
+		_app->inputMap()->saveXML(doc, &root);
 
 		/* Write background image and theme */
 		// _app->workspace()->saveXML(doc, &root);

@@ -20,6 +20,7 @@
 */
 
 #include <QPluginLoader>
+#include <QApplication>
 #include <QMessageBox>
 #include <QStringList>
 #include <QSettings>
@@ -63,7 +64,10 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root, int universe)
 	/* Plugin */
 	tag = doc->createElement(KXMLQLCInputPatchPlugin);
 	root.appendChild(tag);
-	text = doc->createTextNode(this->plugin->name());
+	if (this->plugin != NULL)
+		text = doc->createTextNode(this->plugin->name());
+	else
+		text = doc->createTextNode(KXMLQLCInputPatchPluginNone);
 	tag.appendChild(text);
 
 	/* Input */
@@ -90,7 +94,7 @@ bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
 
 	if (root->tagName() != KXMLQLCInputPatch)
 	{
-		qWarning() << "Patch node not found!";
+		qWarning() << "Input patch node not found!";
 		return false;
 	}
 
@@ -115,7 +119,8 @@ bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
 		}
 		else
 		{
-			qWarning() << "Unknown InputPatch tag: " << tag.tagName();
+			qWarning() << "Unknown Input patch tag: "
+				   << tag.tagName();
 		}
 		
 		node = node.nextSibling();
@@ -204,6 +209,16 @@ void InputMap::load()
 }
 
 /*****************************************************************************
+ * Input data
+ *****************************************************************************/
+
+void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
+				t_input_channel channel, t_input_value value)
+{
+	qDebug() << plugin->name() << input << channel << value;
+}
+
+/*****************************************************************************
  * Patch
  *****************************************************************************/
 
@@ -214,7 +229,7 @@ void InputMap::initPatch()
 
 	for (i = 0; i < m_universes; i++)
 	{
-		inputPatch = new InputPatch(NULL, i);
+		inputPatch = new InputPatch(NULL, -1);
 		m_patch.insert(i, inputPatch);
 	}
 }
@@ -230,21 +245,12 @@ bool InputMap::setPatch(unsigned int universe, const QString& pluginName,
 	}
 
 	QLCInPlugin* inputPlugin = plugin(pluginName);
-	if (inputPlugin == NULL)
-	{
-		qWarning() << "Plugin" << pluginName << "for universe number"
-			   << universe << "not found.";
-		return false;
-	}
-	else
-	{
-		//m_patch[universe]->plugin->close();
-		m_patch[universe]->plugin = inputPlugin;
-		m_patch[universe]->input = input;
-		//m_patch[universe]->plugin->open();
+	//m_patch[universe]->plugin->close();
+	m_patch[universe]->plugin = inputPlugin;
+	m_patch[universe]->input = input;
+	//m_patch[universe]->plugin->open();
 
-		return true;
-	}
+	return true;
 }
 
 InputPatch* InputMap::patch(int universe)
@@ -268,10 +274,15 @@ QStringList InputMap::pluginNames()
 	return list;
 }
 
-int InputMap::pluginInputs(const QString&)
+int InputMap::pluginInputs(const QString& pluginName)
 {
-	/* TODO */
-	return 0;
+	QLCInPlugin* ip = NULL;
+
+	ip = plugin(pluginName);
+	if (ip == NULL)
+		return 0;
+	else
+		return ip->inputs();
 }
 
 void InputMap::configurePlugin(const QString& pluginName)
@@ -297,7 +308,8 @@ QString InputMap::pluginStatus(const QString& pluginName)
 	
 	if (inputPlugin == NULL)
 	{
-		/* Overall plugin info */
+		InputPatch* inputPatch = NULL;
+		int i = 0;
 
 		// HTML header
 		info += QString("<HTML>");
@@ -310,10 +322,12 @@ QString InputMap::pluginStatus(const QString& pluginName)
 		info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
 		info += QString("<TR>");
 		info += QString("<TD BGCOLOR=\"");
-		//info += _app->colorGroup().highlight().name();
+		info += QApplication::palette()
+			.color(QPalette::Highlight).name();
 		info += QString("\">");
 		info += QString("<FONT COLOR=\"");
-		//info += _app->colorGroup().highlightedText().name();
+		info += QApplication::palette()
+			.color(QPalette::HighlightedText).name();
 		info += QString("\" SIZE=\"5\">");
 		info += QString("Input mapping status");
 		info += QString("</FONT>");
@@ -321,7 +335,49 @@ QString InputMap::pluginStatus(const QString& pluginName)
 		info += QString("</TR>");
 		info += QString("</TABLE>");
 
-		info += QString("TODO...");
+		// Universe mappings
+		info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+
+		for (i = 0; i < KInputUniverseCount; i++)
+		{
+			inputPatch = patch(i);
+			Q_ASSERT(inputPatch != NULL);
+
+			if (i % 2 == 0)
+				info += QString("<TR>");
+			else
+			{
+				info += QString("<TR BGCOLOR=\"");
+				info += QApplication::palette()
+					.color(QPalette::Midlight).name();
+				info += QString("\">");
+			}
+
+			info += QString("<TD>");
+			info += QString("<B>Universe %1</B>").arg(i + 1);
+			info += QString("</TD>");
+
+			/* Plugin name */
+			info += QString("<TD>");
+			if (inputPatch->plugin != NULL)
+				info += inputPatch->plugin->name();
+			else
+				info += KInputNone;
+			info += QString("</TD>");
+
+			/* Input */
+			info += QString("<TD>");
+			if (inputPatch->input >= 0)
+				info += QString("Input %1")
+					.arg(inputPatch->input + 1);
+			else
+				info += KInputNone;
+			info += QString("</TD>");
+
+			info += QString("</TR>");
+		}
+
+		info += QString("</TABLE>");
 	}
 	else
 	{
@@ -365,13 +421,61 @@ QLCInPlugin* InputMap::plugin(const QString& name)
 }
 
 /*****************************************************************************
- * Input data
+ * Save & Load
  *****************************************************************************/
 
-void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
-				t_input_channel channel, t_input_value value)
+bool InputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-	qDebug() << plugin->name() << input << channel << value;
+	QDomElement root;
+	int i = 0;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
+
+	/* InputMap entry */
+	root = doc->createElement(KXMLQLCInputMap);
+	wksp_root->appendChild(root);
+
+	/* Patches */
+	for (i = 0; i < m_patch.size(); i++)
+		m_patch[i]->saveXML(doc, &root, i);
+
+	return true;
+}
+
+bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	QDomNode node;
+	QDomElement tag;
+	
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCInputMap)
+	{
+		qWarning() << "InputMap node not found!";
+		return false;
+	}
+
+	/* Patches */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCInputPatch)
+		{
+			InputPatch::loader(doc, &tag, this);
+		}
+		else
+		{
+			qWarning() << "Unknown InputMap tag:" << tag.tagName();
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return true;
 }
 
 /*****************************************************************************
