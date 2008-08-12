@@ -23,24 +23,83 @@
 #define INPUTMAP_H
 
 #include <QObject>
+#include <QVector>
 #include <QList>
 
 #include "common/qlctypes.h"
 
+class QDomDocument;
+class QDomElement;
 class QLCInPlugin;
+class InputMap;
+
+/*****************************************************************************
+ * InputPatch
+ *****************************************************************************/
+
+#define KXMLQLCInputPatch "Patch"
+#define KXMLQLCInputPatchUniverse "Universe"
+#define KXMLQLCInputPatchPlugin "Plugin"
+#define KXMLQLCInputPatchInput "Input"
+
+/**
+ * This is a simple container class that stores only the pointer to an
+ * existing plugin and an input line provided by that plugin.
+ */
+class InputPatch
+{
+	friend class InputMap;
+
+public:
+	InputPatch(QLCInPlugin* p, int i) { plugin = p; input = i; }
+	virtual ~InputPatch() {}
+
+protected:
+	/**
+	 * Save an InputPatch's properties into an XML document
+	 *
+	 * @param doc An XML document to save to
+	 * @param map_root An XML root node (InputMap) to save under
+	 * @param universe The internal universe number that the patch is
+	 *                 addressed to
+	 * @return true if successful, otherwise false
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* map_root, int universe);
+
+	/**
+	 * Create and load an InputPatch's properties from an XML document
+	 *
+	 * @param doc An XML document to load from
+	 * @param root An XML node containing an InputPatch to load from
+	 * @param inputMap InputMap object that contains the loaded patch
+	 * @return true if successful, otherwise false
+	 */
+	static bool loader(QDomDocument* doc, QDomElement* root,
+			   InputMap* inputMap);
+
+	QLCInPlugin* plugin;
+	int input;
+};
+
+/*****************************************************************************
+ * InputMap
+ *****************************************************************************/
 
 class InputMap : public QObject
 {
 	Q_OBJECT
+
+	friend class InputPatch;
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new InputMap object
+	 * Create a new InputMap object, with the given amount of input
+	 * universes.
 	 */
-	InputMap();
+	InputMap(int universes = 4);
 
 	/**
 	 * Destroy an InputMap object
@@ -51,6 +110,48 @@ public:
 	 * Load all input plugins from the input plugin directory
 	 */
 	void load();
+
+	/*********************************************************************
+	 * Patch
+	 *********************************************************************/
+public:
+	/**
+	 * Get the total number of supported input universes
+	 *
+	 * @return Input universe count supported by QLC
+	 */
+	int universes() { return m_universes; }
+
+protected:
+	/**
+	 * Initialize the patching table
+	 */
+	void initPatch();
+
+	/**
+	 * Patch the given universe to go thru the given plugin
+	 *
+	 * @param universe The input universe to patch
+	 * @param pluginName The name of the plugin to patch to the universe
+	 * @param input An input universe provided by the plugin to patch to
+	 * @return true if successful, otherwise false
+	 */
+	bool setPatch(unsigned int universe, const QString& pluginName,
+		      unsigned int input = 0);
+
+	/**
+	 * Get mapping for an input universe.
+	 *
+	 * @param universe The internal input universe to get mapping for
+	 */
+	InputPatch* patch(int universe);
+
+protected:
+	/** Vector containing all active input plugins */
+	QVector <InputPatch*> m_patch;
+
+	/** Total number of supported input universes */
+	int m_universes;
 
 	/*********************************************************************
 	 * Plugins
@@ -108,7 +209,6 @@ protected:
 protected:
 	/** List containing all available input plugins */
 	QList <QLCInPlugin*> m_plugins;
-
 
 	/*********************************************************************
 	 * Input data

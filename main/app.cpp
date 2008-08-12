@@ -345,7 +345,7 @@ void App::slotFlashBlackoutIndicator()
 
 void App::initInputMap()
 {
-	m_inputMap = new InputMap();
+	m_inputMap = new InputMap(KInputUniverseCount);
 	Q_ASSERT(m_inputMap != NULL);
 	m_inputMap->loadDefaults();
 }

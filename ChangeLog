@@ -1,3 +1,19 @@
+2008-08-12  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	* libs/common/qlctypes.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* main/app.cpp:
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+
+	Created the same kind of patch structure for InputMap that is
+	currently in DMXMap.
+
+2008-08-12  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	* fixtures/fixtures.pro:
+	* libs/hidinput/hideventdevice.cpp:
+
 2008-08-11  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/fixturelist.cpp:

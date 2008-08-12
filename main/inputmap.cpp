@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QList>
+#include <QtXml>
 #include <QDir>
 
 #include "common/qlcinplugin.h"
@@ -38,11 +39,100 @@ using namespace std;
 extern App* _app;
 
 /*****************************************************************************
+ * InputPatch
+ *****************************************************************************/
+
+bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root, int universe)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(this->plugin != NULL);
+
+	/* Patch entry */
+	root = doc->createElement(KXMLQLCInputPatch);
+	map_root->appendChild(root);
+
+	/* Universe */
+	str.setNum(universe);
+	root.setAttribute(KXMLQLCInputPatchUniverse, str);
+
+	/* Plugin */
+	tag = doc->createElement(KXMLQLCInputPatchPlugin);
+	root.appendChild(tag);
+	text = doc->createTextNode(this->plugin->name());
+	tag.appendChild(text);
+
+	/* Input */
+	tag = doc->createElement(KXMLQLCInputPatchInput);
+	root.appendChild(tag);
+	str.setNum(this->input);
+	text = doc->createTextNode(str);
+	tag.appendChild(text);
+
+	return true;
+}
+
+bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
+{
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+	QString pluginName;
+	int input = 0;
+	int universe = 0;
+	
+	Q_ASSERT(root != NULL);
+	Q_ASSERT(dmxMap != NULL);
+
+	if (root->tagName() != KXMLQLCInputPatch)
+	{
+		qWarning() << "Patch node not found!";
+		return false;
+	}
+
+	/* QLC input universe that this patch has been made for */
+	universe = root->attribute(KXMLQLCInputPatchUniverse).toInt();
+
+	/* Load patch contents */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		
+		if (tag.tagName() == KXMLQLCInputPatchPlugin)
+		{
+			/* Plugin name */
+			pluginName = tag.text();
+		}
+		else if (tag.tagName() == KXMLQLCInputPatchInput)
+		{
+			/* Plugin input */
+			input = tag.text().toInt();
+		}
+		else
+		{
+			qWarning() << "Unknown InputPatch tag: " << tag.tagName();
+		}
+		
+		node = node.nextSibling();
+	}
+
+	return inputMap->setPatch(universe, pluginName, input);
+}
+
+/*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-InputMap::InputMap()
+InputMap::InputMap(int universes)
 {
+	m_universes = universes;
+
+	initPatch();
 	load();
 }
 
@@ -111,6 +201,56 @@ void InputMap::load()
 			plugin->connectInputData(this);
 		}
 	}
+}
+
+/*****************************************************************************
+ * Patch
+ *****************************************************************************/
+
+void InputMap::initPatch()
+{
+	InputPatch* inputPatch = NULL;
+	int i = 0;
+
+	for (i = 0; i < m_universes; i++)
+	{
+		inputPatch = new InputPatch(NULL, i);
+		m_patch.insert(i, inputPatch);
+	}
+}
+
+bool InputMap::setPatch(unsigned int universe, const QString& pluginName,
+			unsigned int input)
+{
+	if (int(universe) >= m_patch.size())
+	{
+		qWarning() << "Universe number out of bounds:" << universe
+			   << "Unable to set patch.";
+		return false;
+	}
+
+	QLCInPlugin* inputPlugin = plugin(pluginName);
+	if (inputPlugin == NULL)
+	{
+		qWarning() << "Plugin" << pluginName << "for universe number"
+			   << universe << "not found.";
+		return false;
+	}
+	else
+	{
+		//m_patch[universe]->plugin->close();
+		m_patch[universe]->plugin = inputPlugin;
+		m_patch[universe]->input = input;
+		//m_patch[universe]->plugin->open();
+
+		return true;
+	}
+}
+
+InputPatch* InputMap::patch(int universe)
+{
+	Q_ASSERT(universe >= 0 && universe < KInputUniverseCount);
+	return m_patch[universe];
 }
 
 /*****************************************************************************

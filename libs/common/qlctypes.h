@@ -182,6 +182,20 @@ const t_value KChannelValueMin ( 0 );
 const t_value KChannelValueMax ( 255 );
 
 /*****************************************************************************
+ * Input universes
+ *****************************************************************************/
+
+/**
+ * Input universe type
+ */
+typedef unsigned short t_input_universe;
+
+/**
+ * Number of input universes
+ */
+const t_input_universe KInputUniverseCount ( 4 );
+
+/*****************************************************************************
  * Input lines
  *****************************************************************************/
 

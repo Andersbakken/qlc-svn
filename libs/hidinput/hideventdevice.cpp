@@ -33,13 +33,13 @@
 
 /**
  * This macro is used to tell if "bit" is set in "array".
- * It selects a byte from the array, and does a boolean AND 
- * operation with a byte that only has the relevant bit set. 
+ * It selects a byte from the array, and does a boolean AND
+ * operation with a byte that only has the relevant bit set.
  * eg. to check for the 12th bit, we do (array[1] & 1<<4)
  */
 #define test_bit(bit, array)    (array[bit / 8] & (1 << (bit % 8)))
 
-HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line, 
+HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line,
 			       const QString& path)
 	: HIDDevice(parent, line, path)
 {
@@ -49,7 +49,7 @@ HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line,
 HIDEventDevice::~HIDEventDevice()
 {
 	setEnabled(false);
-	
+
 	while (m_channels.isEmpty() == false)
 		delete m_channels.takeFirst();
 }
@@ -58,7 +58,7 @@ void HIDEventDevice::init()
 {
 	if (open() == false)
 		return;
-	
+
 	qDebug() << "*******************************************************";
 	qDebug() << "Device file: " << m_file.fileName();
 
@@ -74,13 +74,13 @@ void HIDEventDevice::init()
 		m_name = QString(name);
 		qDebug() << "Device name:" << m_name;
 	}
-	
+
 	/* Device info */
 	if (ioctl(m_file.handle(), EVIOCGID, &m_deviceInfo))
 	{
 		perror("ioctl EVIOCGID");
 	}
-	
+
 	/* Supported event types */
 	if (ioctl(m_file.handle(), EVIOCGBIT(0, sizeof(m_eventTypes)),
 		  m_eventTypes) <= 0)
@@ -138,7 +138,7 @@ void HIDEventDevice::getAbsoluteAxesCapabilities()
 	int r;
 
 	Q_ASSERT(m_file.isOpen() == true);
-	
+
 	memset(mask, 0, sizeof(mask));
 	r = ioctl(m_file.handle(), EVIOCGBIT(EV_ABS, sizeof(mask)), mask);
 	if (r < 0)
@@ -188,15 +188,16 @@ bool HIDEventDevice::open()
 	result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadWrite);
 	if (result == false)
 	{
-		qWarning() << "Unable to open" << m_file.fileName()
-			   << "in Read/Write mode:" << m_file.errorString();
-		
 		result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadOnly);
 		if (result == false)
 		{
 			qWarning() << "Unable to open" << m_file.fileName()
-				   << "in Read Only mode:"
 				   << m_file.errorString();
+		}
+		else
+		{
+			qDebug() << "Opened" << m_file.fileName()
+				 << "in read only mode";
 		}
 	}
 
@@ -221,7 +222,7 @@ t_input_channel HIDEventDevice::channels()
 void HIDEventDevice::readEvent()
 {
 	struct input_event ev;
-	
+
 	Q_ASSERT(m_file.isOpen() == true);
 
 	if (read(m_file.handle(), &ev, sizeof(struct input_event)) > 0)
@@ -293,7 +294,7 @@ QString HIDEventDevice::infoText()
 	info += QString("<TD>");
 	info += m_name;
 	info += QString("</TD>");
-	
+
 	/* Mode */
 	info += QString("<TD ALIGN=\"CENTER\">");
 	info += QString("%1").arg(channels());
