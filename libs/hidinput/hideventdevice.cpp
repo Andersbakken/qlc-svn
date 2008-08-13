@@ -75,45 +75,48 @@ void HIDEventDevice::init()
 		qDebug() << "Device name:" << m_name;
 	}
 
-	/* Device info */
-	if (ioctl(m_file.handle(), EVIOCGID, &m_deviceInfo))
-	{
-		perror("ioctl EVIOCGID");
-	}
-
 	/* Supported event types */
-	if (ioctl(m_file.handle(), EVIOCGBIT(0, sizeof(m_eventTypes)),
-		  m_eventTypes) <= 0)
+	uint8_t mask[EV_MAX/8 + 1];
+	if (ioctl(m_file.handle(), EVIOCGBIT(0, sizeof(mask)), mask) <= 0)
 	{
-		perror("ioctl EVIOCGBIT");
+		qDebug() << "Unable to get device features:"
+			 << strerror(errno);
 	}
 	else
 	{
-		getCapabilities();
+		getCapabilities(mask);
 	}
 
 	close();
 }
 
-void HIDEventDevice::getCapabilities()
+void HIDEventDevice::getCapabilities(uint8_t* mask)
 {
+	Q_ASSERT(mask != NULL);
 	Q_ASSERT(m_file.isOpen() == true);
 
 	qDebug() << "Supported event types:";
 
 	for (int i = 0; i < EV_MAX; i++)
 	{
-		if (test_bit(i, m_eventTypes))
+		if (test_bit(i, mask))
 		{
 			switch (i)
 			{
-			case EV_KEY:
-				qDebug() << "\tKeys or Buttons";
+			case EV_SYN:
 				break;
 
 			case EV_ABS:
 				qDebug() << "\tAbsolute Axes";
 				getAbsoluteAxesCapabilities();
+				break;
+
+			case EV_REL:
+				qDebug() << "\tRelative axes";
+				break;
+
+			case EV_KEY:
+				qDebug() << "\tKeys or Buttons";
 				break;
 
 			case EV_LED:
@@ -124,8 +127,33 @@ void HIDEventDevice::getCapabilities()
 				qDebug() << "\tRepeat";
 				break;
 
+			case EV_SW:
+				qDebug() << "\tSwitches";
+				break;
+
+			case EV_SND:
+				qDebug() << "\tSounds";
+				break;
+
+			case EV_MSC:
+				qDebug() << "\tMiscellaneous";
+				break;
+
+			case EV_FF:
+				qDebug() << "\tForce feedback";
+				break;
+
+			case EV_FF_STATUS:
+				qDebug() << "\tForce feedback status";
+				break;
+
+			case EV_PWR:
+				qDebug() << "\tPower";
+				break;
+				
 			default:
 				qDebug() << "\tUnknown event type: " << i;
+				break;
 			}
 		}
 	}
@@ -143,36 +171,37 @@ void HIDEventDevice::getAbsoluteAxesCapabilities()
 	r = ioctl(m_file.handle(), EVIOCGBIT(EV_ABS, sizeof(mask)), mask);
 	if (r < 0)
 	{
-		perror("evdev ioctl");
+		qWarning() << "\t\tUnable to get axes:" << strerror(errno);
 		return;
 	}
 
 	for (int i = 0; i < ABS_MAX; i++)
 	{
-		if (test_bit(i, mask) != 0)
+		if (test_bit(i, mask) == 0)
+			continue;
+
+		r = ioctl(m_file.handle(), EVIOCGABS(i), &feats);
+		if (r != 0)
 		{
-			r = ioctl(m_file.handle(), EVIOCGABS(i), &feats);
-			if (r != 0)
-			{
-				perror("evdev EVIOCGABS ioctl");
-			}
-			else
-			{
-				if (feats.maximum <= 0)
-					continue;
-
-				HIDEventDeviceChannel* channel;
-				channel = new HIDEventDeviceChannel(i, EV_ABS,
-								 feats.minimum,
-								 feats.maximum);
-				m_channels.append(channel);
-
-				qDebug() << "\t\tChannel:" << i
-					 << "min:" << feats.minimum
-					 << "max:" << feats.maximum
-					 << "flatness:" << feats.flat
-					 << "fuzz:" << feats.fuzz;
-			}
+			qWarning() << "\t\tUnable to get axes' features:"
+				   << strerror(errno);
+		}
+		else
+		{
+			if (feats.maximum <= 0)
+				continue;
+			
+			HIDEventDeviceChannel* channel;
+			channel = new HIDEventDeviceChannel(i, EV_ABS,
+							    feats.minimum,
+							    feats.maximum);
+			m_channels.append(channel);
+			
+			qDebug() << "\t\tChannel:" << i
+				 << "min:" << feats.minimum
+				 << "max:" << feats.maximum
+				 << "flatness:" << feats.flat
+				 << "fuzz:" << feats.fuzz;
 		}
 	}
 }
@@ -219,13 +248,14 @@ t_input_channel HIDEventDevice::channels()
 	return m_channels.count();
 }
 
-void HIDEventDevice::readEvent()
+bool HIDEventDevice::readEvent()
 {
 	struct input_event ev;
+	HIDInputEvent* e;
+	int r;
 
-	Q_ASSERT(m_file.isOpen() == true);
-
-	if (read(m_file.handle(), &ev, sizeof(struct input_event)) > 0)
+	r = read(m_file.handle(), &ev, sizeof(struct input_event));
+	if (r > 0)
 	{
 		if (ev.type != 0 && ev.code < m_channels.count())
 		{
@@ -245,10 +275,19 @@ void HIDEventDevice::readEvent()
 			   we can switch context away from the poller thread
 			   and into the main application thread. This is
 			   caught in HIDInput::customEvent(). */
-			QApplication::postEvent(
-				parent(),
-				new HIDInputEvent(m_line, ch->m_channel, val));
+			e = new HIDInputEvent(this, m_line, ch->m_channel,
+					      val, true);
+			QApplication::postEvent(parent(), e);
 		}
+
+		return true;
+	}
+	else
+	{
+		e = new HIDInputEvent(this, 0, 0, 0, false);
+		QApplication::postEvent(parent(), e);
+
+		return false;
 	}
 }
 

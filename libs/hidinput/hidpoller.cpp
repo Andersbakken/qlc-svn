@@ -91,10 +91,6 @@ bool HIDPoller::removeDevice(HIDDevice* device)
 	{
 		device->close();
 		m_changed = true;
-
-		if (m_devices.isEmpty() == true)
-			m_running = false;
-
 		r = true;
 	}
 
@@ -116,10 +112,11 @@ void HIDPoller::stop()
 void HIDPoller::run()
 {
 	struct pollfd* fds = NULL;
-	HIDDevice* device;
 	int num = 0;
 	int r;
 	int i;
+
+	m_mutex.lock();
 
 	while (m_running == true)
 	{
@@ -131,6 +128,9 @@ void HIDPoller::run()
 				delete [] fds;
 
 			num = m_devices.count();
+			if (num == 0)
+				break;
+
 			fds = new struct pollfd[num];
 			memset(fds, 0, num);
 			i = 0;
@@ -148,17 +148,17 @@ void HIDPoller::run()
 		}
 
 		m_mutex.unlock();
-
 		r = poll(fds, num, KPollTimeout);
+		m_mutex.lock();
+
 		if (r < 0)
 		{
 			/* Error occurred */
 			perror("poll");
+			return;
 		}
 		else if (r != 0)
 		{
-			m_mutex.lock();
-
 			/* If the device map has changed, we can't trust
 			   that any of the devices are valid. */
 			if (m_changed == false)
@@ -166,16 +166,27 @@ void HIDPoller::run()
 				for (i = 0; i < num; i++)
 				{
 					if (fds[i].revents != 0)
-					{
-						device = m_devices[fds[i].fd];
-						Q_ASSERT(device != NULL);
-						
-						device->readEvent();
-					}
+						readEvent(fds[i]);
 				}
 			}
+		}
+	}
 
-			m_mutex.unlock();
+	m_running = false;
+	m_mutex.unlock();
+}
+
+void HIDPoller::readEvent(struct pollfd pfd)
+{
+	HIDDevice* device = m_devices[pfd.fd];
+	Q_ASSERT(device != NULL);
+
+	if (device->readEvent() == false)
+	{
+		if (m_devices.remove(device->handle()) > 0)
+		{
+			device->close();
+			m_changed = true;
 		}
 	}
 }

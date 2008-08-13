@@ -1,3 +1,19 @@
+2008-08-13  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/configurehidinput.h:
+	* libs/hidinput/configurehidinput.ui:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* libs/hidinput/hidpoller.cpp:
+	* libs/hidinput/hidpoller.h:
+
+	Fixed a crash bug that came up when a HID device was removed
+	while being polled.
+	
 2008-08-12  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/doc.cpp:

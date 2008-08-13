@@ -51,9 +51,19 @@ protected slots:
 	void slotRefreshClicked();
 
 	/**
-	 *
+	 * Callback for check box state changes
 	 */
 	void slotItemChanged(QTreeWidgetItem* item, int column);
+
+	/**
+	 * Callback for HIDInput::deviceAdded() signals.
+	 */
+	void slotDeviceAdded(HIDDevice* device);
+
+	/**
+	 * Callback for HIDInput::deviceRemoved() signals.
+	 */
+	void slotDeviceRemoved(HIDDevice* device);
 
 protected:
 	/** Refresh the interface list */

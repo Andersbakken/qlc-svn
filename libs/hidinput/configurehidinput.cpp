@@ -44,14 +44,18 @@ ConfigureHIDInput::ConfigureHIDInput(QWidget* parent, HIDInput* plugin)
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
 
+	/* Setup UI controls */
 	setupUi(this);
 	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	connect(m_refreshButton, SIGNAL(clicked()),
 		this, SLOT(slotRefreshClicked()));
 
-	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
-	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+	/* Listen to device additions/removals */
+	connect(plugin, SIGNAL(deviceRemoved(HIDDevice*)),
+		this, SLOT(slotDeviceRemoved(HIDDevice*)));
+	connect(plugin, SIGNAL(deviceAdded(HIDDevice*)),
+		this, SLOT(slotDeviceAdded(HIDDevice*)));
 
 	refreshList();
 }
@@ -66,7 +70,8 @@ ConfigureHIDInput::~ConfigureHIDInput()
 
 void ConfigureHIDInput::slotRefreshClicked()
 {
-	refreshList();
+	Q_ASSERT(m_plugin != NULL);
+	m_plugin->rescanDevices();
 }
 
 void ConfigureHIDInput::refreshList()
@@ -109,5 +114,31 @@ void ConfigureHIDInput::slotItemChanged(QTreeWidgetItem* item, int column)
 		dev = m_plugin->device(item->text(KColumnNumber).toInt() - 1);
 		Q_ASSERT(dev != NULL);
 		dev->setEnabled(item->checkState(column));
+	}
+}
+
+void ConfigureHIDInput::slotDeviceAdded(HIDDevice*)
+{
+	refreshList();
+}
+
+void ConfigureHIDInput::slotDeviceRemoved(HIDDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	QTreeWidgetItemIterator it(m_list);
+	while (*it != NULL)
+	{
+		HIDDevice* dev;
+		dev = m_plugin->device((*it)->text(KColumnNumber).toInt() - 1);
+		Q_ASSERT(dev != NULL);
+
+		if (dev->name() == device->name())
+		{
+			delete *it;
+			break;
+		}
+
+		++it;
 	}
 }

@@ -61,6 +61,7 @@ public:
 
 protected:
 	virtual void run();
+	void readEvent(struct pollfd pfd);
 
 protected:
 	bool m_running;

@@ -37,12 +37,15 @@
 static const QEvent::Type _HIDInputEventType = static_cast<QEvent::Type>
 	(QEvent::registerEventType());
 
-HIDInputEvent::HIDInputEvent(t_input input, t_input_channel channel,
-			     t_input_value value) : QEvent(_HIDInputEventType)
+HIDInputEvent::HIDInputEvent(HIDDevice* device, t_input input,
+			     t_input_channel channel, t_input_value value,
+			     bool alive) : QEvent(_HIDInputEventType)
 {
+	m_device = device;
 	m_input = input;
 	m_channel = channel;
 	m_value = value;
+	m_alive = alive;
 }
 
 HIDInputEvent::~HIDInputEvent()
@@ -55,24 +58,8 @@ HIDInputEvent::~HIDInputEvent()
 
 void HIDInput::init()
 {
-	QDir dir("/dev/input/");
-	QStringList nameFilters;
-	QStringList entries;
-	QStringList::iterator it;
-	HIDDevice* device;
-	QString path;
-	t_input line = 0;
-
-	nameFilters << "event*";
-	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
-	for (it = entries.begin(); it != entries.end(); ++it)
-	{
-		path = dir.absolutePath() + QDir::separator() + *it;
-		device = new HIDEventDevice(this, line++, path);
-		m_devices.append(device);
-	}
-
 	m_poller = new HIDPoller(this);
+	rescanDevices();
 }
 
 HIDInput::~HIDInput()
@@ -87,6 +74,26 @@ HIDInput::~HIDInput()
 /*****************************************************************************
  * Devices
  *****************************************************************************/
+
+void HIDInput::rescanDevices()
+{
+	QDir dir("/dev/input/");
+	QStringList nameFilters;
+	QStringList entries;
+	QStringList::iterator it;
+	t_input line = 0;
+	QString path;
+
+	nameFilters << "event*";
+	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
+	for (it = entries.begin(); it != entries.end(); ++it)
+	{
+		path = dir.absolutePath() + QDir::separator() + *it;
+
+		if (device(path) == NULL)
+			addDevice(new HIDEventDevice(this, line++, path));
+	}
+}
 
 HIDDevice* HIDInput::device(const QString& path)
 {
@@ -108,6 +115,26 @@ HIDDevice* HIDInput::device(const unsigned int index)
 		return NULL;
 	else
 		return m_devices.at(index);
+}
+
+void HIDInput::addDevice(HIDDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	m_devices.append(device);
+
+	emit deviceAdded(device);
+}
+
+void HIDInput::removeDevice(HIDDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	removePollDevice(device);
+	m_devices.removeAll(device);
+
+	emit deviceRemoved(device);
+	delete device;
 }
 
 /*****************************************************************************
@@ -260,7 +287,17 @@ void HIDInput::customEvent(QEvent* event)
 	if (event->type() == _HIDInputEventType)
 	{
 		HIDInputEvent* e = static_cast<HIDInputEvent*> (event);
-		emit valueChanged(this, e->m_input, e->m_channel, e->m_value);
+
+		if (e->m_alive == true)
+		{
+			emit valueChanged(this, e->m_input, e->m_channel,
+					  e->m_value);
+		}
+		else
+		{
+			removeDevice(e->m_device);
+		}
+
 		event->accept();
 	}
 }
@@ -268,8 +305,6 @@ void HIDInput::customEvent(QEvent* event)
 void HIDInput::connectInputData(QObject* listener)
 {
 	Q_ASSERT(listener != NULL);
-
-	qDebug() << "Connect" << listener;
 
 	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
 					  t_input_value)),

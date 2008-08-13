@@ -38,13 +38,15 @@
 class HIDInputEvent : public QEvent
 {
 public:
-	HIDInputEvent(t_input input, t_input_channel channel,
-		      t_input_value value);
+	HIDInputEvent(HIDDevice* device, t_input input, t_input_channel channel,
+		      t_input_value value, bool alive);
 	~HIDInputEvent();
 
+	HIDDevice* m_device;
 	t_input m_input;
 	t_input_channel m_channel;
 	t_input_value m_value;
+	bool m_alive;
 };
 
 /*****************************************************************************
@@ -69,9 +71,19 @@ public:
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/
+public:
+	void rescanDevices();
+
 protected:
 	HIDDevice* device(const QString& path);
 	HIDDevice* device(const unsigned int index);
+
+	void addDevice(HIDDevice* device);
+	void removeDevice(HIDDevice* device);
+
+signals:
+	void deviceAdded(HIDDevice* device);
+	void deviceRemoved(HIDDevice* device);
 
 protected:
 	QList <HIDDevice*> m_devices;

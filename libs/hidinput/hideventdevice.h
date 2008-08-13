@@ -87,7 +87,7 @@ protected:
 	/**
 	 * Find out the HID device's capabilities
 	 */
-	void getCapabilities();
+	void getCapabilities(uint8_t* mask);
 
 	/**
 	 * Find out the capabilities of absolute axes
@@ -124,11 +124,9 @@ public:
 	/**
 	 * Read one event and emit it
 	 */
-	void readEvent();
+	bool readEvent();
 
 protected:
-	struct input_id m_deviceInfo;
-	uint8_t m_eventTypes[(EV_MAX/8) + 1];
 	QList <HIDEventDeviceChannel*> m_channels;
 
 	/*********************************************************************

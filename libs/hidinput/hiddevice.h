@@ -72,9 +72,9 @@ public:
 	virtual int handle() const;
 
 	/**
-	 * Read one event and emit it
+	 * Read one event and emit it.
 	 */
-	virtual void readEvent() = 0;
+	virtual bool readEvent() = 0;
 
 protected:
 	QFile m_file;
