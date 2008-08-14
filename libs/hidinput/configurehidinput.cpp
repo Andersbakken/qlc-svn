@@ -126,19 +126,14 @@ void ConfigureHIDInput::slotDeviceRemoved(HIDDevice* device)
 {
 	Q_ASSERT(device != NULL);
 
-	QTreeWidgetItemIterator it(m_list);
-	while (*it != NULL)
+	for (int i = 0; i < m_list->topLevelItemCount(); i++)
 	{
-		HIDDevice* dev;
-		dev = m_plugin->device((*it)->text(KColumnNumber).toInt() - 1);
-		Q_ASSERT(dev != NULL);
-
-		if (dev->name() == device->name())
+		QTreeWidgetItem* item = m_list->topLevelItem(i);
+		Q_ASSERT(item != NULL);
+		if (item->text(KColumnName) == device->name())
 		{
-			delete *it;
+			delete item;
 			break;
 		}
-
-		++it;
 	}
 }

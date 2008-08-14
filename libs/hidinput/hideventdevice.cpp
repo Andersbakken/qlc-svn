@@ -49,9 +49,6 @@ HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line,
 HIDEventDevice::~HIDEventDevice()
 {
 	setEnabled(false);
-
-	while (m_channels.isEmpty() == false)
-		delete m_channels.takeFirst();
 }
 
 void HIDEventDevice::init()
@@ -188,20 +185,16 @@ void HIDEventDevice::getAbsoluteAxesCapabilities()
 		}
 		else
 		{
-			if (feats.maximum <= 0)
-				continue;
-			
-			HIDEventDeviceChannel* channel;
-			channel = new HIDEventDeviceChannel(i, EV_ABS,
-							    feats.minimum,
-							    feats.maximum);
-			m_channels.append(channel);
-			
 			qDebug() << "\t\tChannel:" << i
 				 << "min:" << feats.minimum
 				 << "max:" << feats.maximum
 				 << "flatness:" << feats.flat
 				 << "fuzz:" << feats.fuzz;
+
+			if (feats.maximum > 0)
+				m_scales[i] = feats;
+			else
+				continue;
 		}
 	}
 }
@@ -243,11 +236,6 @@ QString HIDEventDevice::path() const
 	return m_file.fileName();
 }
 
-t_input_channel HIDEventDevice::channels()
-{
-	return m_channels.count();
-}
-
 bool HIDEventDevice::readEvent()
 {
 	struct input_event ev;
@@ -257,29 +245,47 @@ bool HIDEventDevice::readEvent()
 	r = read(m_file.handle(), &ev, sizeof(struct input_event));
 	if (r > 0)
 	{
-		if (ev.type != 0 && ev.code < m_channels.count())
+		t_input_value val;
+
+		/* Accept only these kinds of events */
+		if (ev.type != EV_ABS && ev.type != EV_REL &&
+		    ev.type != EV_KEY && ev.type != EV_SW)
 		{
-			HIDEventDeviceChannel* ch;
-			t_input_value val;
-
-			ch = m_channels.at(ev.code);
-			Q_ASSERT(ch != NULL);
-
-			/* Scale the device's native value range to
-			   0 - KInputValueMax:
-			   y = (x - from_min) * (to_max / from_range) */
-			val = (ev.value - ch->m_min) * 
-				(KInputValueMax / (ch->m_max - ch->m_min));
-
-			/* Post the event to the global event loop so that
-			   we can switch context away from the poller thread
-			   and into the main application thread. This is
-			   caught in HIDInput::customEvent(). */
-			e = new HIDInputEvent(this, m_line, ch->m_channel,
-					      val, true);
-			QApplication::postEvent(parent(), e);
+			return true;
 		}
 
+		/* Find scaling data */
+		if (m_scales.contains(ev.code) == true)
+		{
+			/* Scaling data found, this is an abs/rel channel */
+			struct input_absinfo sc;
+			
+			sc = m_scales[ev.code];
+			
+			/* Scale the device's native value range to
+			   0 - KInputValueMax:
+			   y = (x - from_min) * (to_max / from_range)
+			*/
+			val = (ev.value - sc.minimum);
+			val *= (KInputValueMax / (sc.maximum - sc.minimum));
+		}
+		else
+		{
+			/* Buttons are either fully on or fully off */
+			if (ev.value != 0)
+				val = KInputValueMax;
+			else
+				val = 0;
+		}
+		
+		/* Post the event to the global event loop so
+		   that we can switch context away from the
+		   poller thread and into the main application
+		   thread. This is caught in
+		   HIDInput::customEvent(). */
+		e = new HIDInputEvent(this, m_line, ev.code, val, true);
+		QApplication::postEvent(parent(), e);
+		
 		return true;
 	}
 	else
@@ -334,9 +340,9 @@ QString HIDEventDevice::infoText()
 	info += m_name;
 	info += QString("</TD>");
 
-	/* Mode */
+	/* Channels */
 	info += QString("<TD ALIGN=\"CENTER\">");
-	info += QString("%1").arg(channels());
+	info += QString("N/A");
 	info += QString("</TD>");
 
 	info += QString("</TR>");

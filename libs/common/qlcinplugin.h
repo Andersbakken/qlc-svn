@@ -80,21 +80,9 @@ public:
 	/**
 	 * Get the number of inputs provided by the plugin
 	 *
-	 * @todo Make pure virtual
-	 *
 	 * @return Number of inputs provided by the plugin
 	 */
 	virtual t_input inputs() = 0;
-
-	/**
-	 * Get the number of channels provided by a plugin input
-	 *
-	 * @todo Make pure virtual
-	 *
-	 * @param input An input line whose number of channels to get
-	 * @return Number of input channels in the given input
-	 */
-	virtual t_input_channel channels(t_input input) = 0;
 
 	/*********************************************************************
 	 * Input data listener

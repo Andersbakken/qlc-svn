@@ -116,11 +116,6 @@ public:
 	 */
 	virtual QString name();
 
-	/**
-	 * Get number of channels provided by the given device
-	 */
-	virtual t_input_channel channels();
-
 protected:
 	QString m_name;
 

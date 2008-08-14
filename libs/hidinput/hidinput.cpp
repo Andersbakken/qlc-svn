@@ -155,14 +155,6 @@ t_input HIDInput::inputs()
 	return m_devices.count();
 }
 
-t_input_channel HIDInput::channels(t_input input)
-{
-	if (input >= m_devices.count())
-		return NULL;
-	else
-		return m_devices.at(input)->channels();
-}
-
 /*****************************************************************************
  * Configuration
  *****************************************************************************/

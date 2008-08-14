@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QFile>
+#include <QHash>
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -32,43 +33,12 @@
 #include "common/qlctypes.h"
 #include "hiddevice.h"
 
+class HIDEventDevice;
 class HIDInput;
-
-class HIDEventDeviceChannel
-{
-public:
-	HIDEventDeviceChannel(int channel, int type, int min, int max)
-	{
-		m_channel = channel;
-		m_type = type;
-		m_min = min;
-		m_max = max;
-	}
-
-	virtual ~HIDEventDeviceChannel() { }
-	
-	HIDEventDeviceChannel& operator=(const HIDEventDeviceChannel& channel)
-	{
-		if (this != &channel)
-		{
-			m_type = channel.m_type;
-			m_channel = channel.m_channel;
-			m_min = channel.m_min;
-			m_max = channel.m_max;
-		}
-		return *this;
-	}
-
-	int m_channel;
-	int m_type;
-	int m_min;
-	int m_max;
-};
 
 /*****************************************************************************
  * HIDEventDevice
  *****************************************************************************/
-class HIDEventDevice;
 
 class HIDEventDevice : public HIDDevice
 {
@@ -117,17 +87,13 @@ public:
 	QString path() const;
 
 	/**
-	 * Get number of channels provided by the given device
-	 */
-	t_input_channel channels();
-
-	/**
 	 * Read one event and emit it
 	 */
 	bool readEvent();
 
 protected:
-	QList <HIDEventDeviceChannel*> m_channels;
+	/** Scaling values for absolute/relative axes*/
+	QHash <int, struct input_absinfo> m_scales;
 
 	/*********************************************************************
 	 * Enabled status

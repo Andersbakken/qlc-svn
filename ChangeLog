@@ -1,3 +1,17 @@
+2008-08-14  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h:
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/hiddevice.cpp:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+
+	Changed HIDEventDevice to contain scaling data for absolute axes.
+	Fixed a crash bug in HID configuration dialog during hot-removal.
+
 2008-08-13  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/hidinput/configurehidinput.cpp:
