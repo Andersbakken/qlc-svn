@@ -1,3 +1,16 @@
+2008-08-15  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	* fixtures/Robe-ClubScan-150CT.qxf:
+	* fixtures/Robe-ClubScan-250CT.qxf:
+	* fixtures/Robe-ClubSpot-150CT.qxf:
+	* fixtures/Robe-ClubSpot-160CT.qxf:
+	* fixtures/Robe-ClubSpot-250CT.qxf:
+	* fixtures/Robe-ClubWash-250CT.qxf:
+	* fixtures/Robe-ClubWash-300CT.qxf:
+	* fixtures/fixtures.pro:
+
+	Added some Robe fixtures.
+
 2008-08-14  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/qlcinplugin.h:
