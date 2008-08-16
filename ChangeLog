@@ -1,3 +1,10 @@
+2008-08-16  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	libs/midi-inout:
+	libs/midiinput:
+	
+	Rename.
+
 2008-08-15  Heikki Junnila  <ext-heikki.junnila@nokia.com>
 
 	* fixtures/Robe-ClubScan-150CT.qxf:
