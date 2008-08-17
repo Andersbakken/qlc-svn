@@ -1,3 +1,21 @@
+2008-08-17  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h:
+	* libs/common/qlctypes.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* main/app.cpp:
+	* main/dmxmap.cpp:
+	* main/dmxmap.h:
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+	* main/inputmapeditor.cpp:
+	* main/inputmapeditor.h:
+	* main/inputpatcheditor.cpp:
+	* main/inputpatcheditor.h:
+
+	Fixes and updates to input universe mapping.
+	
 2008-08-16  Heikki Junnila  <ext-heikki.junnila@nokia.com>
 
 	libs/midi-inout:

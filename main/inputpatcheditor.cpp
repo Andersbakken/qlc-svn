@@ -23,51 +23,45 @@
 #include <QComboBox>
 #include <QDebug>
 
-#include "inputmap.h"
+#include "common/qlctypes.h"
+
 #include "inputpatcheditor.h"
+#include "inputmap.h"
 
 InputPatchEditor::InputPatchEditor(QWidget* parent, InputMap* inputMap,
-				   int universe, const QString& pluginName,
-				   int input) : QDialog(parent)
+				   t_input_universe universe,
+				   const QString& pluginName, t_input input)
+	: QDialog(parent)
 {
-	QStringList::iterator it;
-	QString str;
-
-	Q_ASSERT(inputMap != NULL);
-	Q_ASSERT(universe < KUniverseCount);
-
+	/* Setup UI controls */
 	setupUi(this);
-
-	m_inputMap = inputMap;
-	m_pluginList = m_inputMap->pluginNames();
-	m_pluginName = pluginName;
-	m_universe = universe;
-	setWindowTitle(str.sprintf("Route input universe %d thru...",
-				   universe + 1));
-
-	m_pluginCombo->addItem(KInputNone);
-
-	for (it = m_pluginList.begin(); it != m_pluginList.end(); ++it)
-	{
-		m_pluginCombo->addItem(*it);
-
-		if (*it == m_pluginName)
-		{
-			/* Set the given plugin name as selected */
-			m_pluginCombo->setCurrentIndex(
-				m_pluginCombo->count() - 1);
-			slotPluginActivated(m_pluginName);
-		}
-	}
-
-	/* Set the given input line number as selected */
-	m_input = input;
-	m_inputCombo->setCurrentIndex(m_input);
 
 	connect(m_pluginCombo, SIGNAL(currentIndexChanged(const QString&)),
 		this, SLOT(slotPluginActivated(const QString&)));
 	connect(m_inputCombo, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(slotInputActivated(int)));
+
+	/* InputMap */
+	Q_ASSERT(inputMap != NULL);
+	m_inputMap = inputMap;
+
+	/* Universe */
+	Q_ASSERT(universe < inputMap->universes());
+	m_universe = universe;
+	setWindowTitle(QString("Route input universe %1 thru...")
+		       .arg(universe + 1));
+	
+	m_pluginName = pluginName;
+	m_pluginCombo->addItem(KInputNone);
+	m_pluginCombo->addItems(inputMap->pluginNames());
+
+	/* Set the given plugin name as selected */
+	int index = m_pluginCombo->findText(pluginName);
+	m_pluginCombo->setCurrentIndex(index);
+
+	/* Set the given input line number as selected */
+	m_input = input;
+	m_inputCombo->setCurrentIndex(m_input);
 }
 
 InputPatchEditor::~InputPatchEditor()
@@ -76,6 +70,7 @@ InputPatchEditor::~InputPatchEditor()
 
 void InputPatchEditor::slotPluginActivated(const QString& pluginName)
 {
+	QStringList inputs;
 	QString str;
 
 	Q_ASSERT(pluginName.isEmpty() == false);
@@ -83,8 +78,8 @@ void InputPatchEditor::slotPluginActivated(const QString& pluginName)
 	m_inputCombo->clear();
 
 	/* Put the selected plugin's inputs to the input combo */
-	for (int i = 0; i < m_inputMap->pluginInputs(pluginName); i++)
-		m_inputCombo->addItem(str.sprintf("Input %d", i + 1));
+	inputs = m_inputMap->pluginInputs(pluginName);
+	m_inputCombo->addItems(inputs);
 	
 	m_pluginName = pluginName;
 
@@ -94,7 +89,8 @@ void InputPatchEditor::slotPluginActivated(const QString& pluginName)
 		m_input = -1;
 }
 
-void InputPatchEditor::slotInputActivated(int line)
+void InputPatchEditor::slotInputActivated(int input)
 {
-	m_input = line;
+	m_input = (t_input) input;
+	m_inputName = m_inputCombo->itemText(input);
 }

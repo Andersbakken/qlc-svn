@@ -195,6 +195,11 @@ typedef unsigned short t_input_universe;
  */
 const t_input_universe KInputUniverseCount ( 4 );
 
+/**
+ * Invalid input universe
+ */
+const t_input_universe KInputUniverseInvalid ( USHRT_MAX );
+
 /*****************************************************************************
  * Input lines
  *****************************************************************************/
@@ -212,7 +217,12 @@ const t_input KInputMin ( 0 );
 /**
  * Largest input line number
  */
-const t_input KInputMax ( USHRT_MAX );
+const t_input KInputMax ( USHRT_MAX - 1 );
+
+/**
+ * Invalid input line number
+ */
+const t_input KInputInvalid ( USHRT_MAX );
 
 /*****************************************************************************
  * Input channels
@@ -231,7 +241,12 @@ const t_input_channel KInputChannelMin ( 0 );
 /**
  * Largest input channel
  */
-const t_input_channel KInputChannelMax ( USHRT_MAX );
+const t_input_channel KInputChannelMax ( USHRT_MAX - 1);
+
+/**
+ * Largest input channel
+ */
+const t_input_channel KInputChannelInvalid ( USHRT_MAX );
 
 /*****************************************************************************
  * Input values

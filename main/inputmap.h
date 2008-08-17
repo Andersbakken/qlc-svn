@@ -56,7 +56,7 @@ class InputPatch
 	friend class InputPatchEditor;
 
 public:
-	InputPatch(QLCInPlugin* p, int i) { plugin = p; input = i; }
+	InputPatch(QLCInPlugin* p, t_input i) { plugin = p; input = i; }
 	virtual ~InputPatch() {}
 
 protected:
@@ -69,7 +69,8 @@ protected:
 	 *                 addressed to
 	 * @return true if successful, otherwise false
 	 */
-	bool saveXML(QDomDocument* doc, QDomElement* map_root, int universe);
+	bool saveXML(QDomDocument* doc, QDomElement* map_root,
+		     t_input_universe universe);
 
 	/**
 	 * Create and load an InputPatch's properties from an XML document
@@ -83,7 +84,7 @@ protected:
 			   InputMap* inputMap);
 
 	QLCInPlugin* plugin;
-	int input;
+	t_input input;
 };
 
 /*****************************************************************************
@@ -107,7 +108,8 @@ public:
 	 * Create a new InputMap object, with the given amount of input
 	 * universes.
 	 */
-	InputMap(int universes = 4);
+	InputMap(QObject* parent,
+		 t_input_universe universes = KInputUniverseCount);
 
 	/**
 	 * Destroy an InputMap object
@@ -135,7 +137,7 @@ public:
 	 *
 	 * @return Input universe count supported by QLC
 	 */
-	int universes() { return m_universes; }
+	t_input_universe universes() { return m_universes; }
 
 protected:
 	/**
@@ -151,22 +153,23 @@ protected:
 	 * @param input An input universe provided by the plugin to patch to
 	 * @return true if successful, otherwise false
 	 */
-	bool setPatch(unsigned int universe, const QString& pluginName,
-		      unsigned int input = 0);
+	bool setPatch(t_input_universe universe, const QString& pluginName,
+		      t_input input = 0);
 
 	/**
 	 * Get mapping for an input universe.
 	 *
 	 * @param universe The internal input universe to get mapping for
 	 */
-	InputPatch* patch(int universe);
+	InputPatch* patch(t_input_universe universe);
 
 protected:
-	/** Vector containing all active input plugins */
+	/** Vector containing all active input plugins and the internal
+	    universes that they are associated to. */
 	QVector <InputPatch*> m_patch;
 
 	/** Total number of supported input universes */
-	int m_universes;
+	t_input_universe m_universes;
 
 	/*********************************************************************
 	 * Plugins
@@ -181,13 +184,13 @@ public:
 	QStringList pluginNames();
 
 	/**
-	 * Get the number of input lines provided by the given plugin.
+	 * Get the names of all input lines provided by the given plugin.
 	 *
 	 * @param pluginName Name of the plugin, whose input count to get
-	 * @return Number of input lines provided by the plugin.
-	 *         Zero is returned if pluginName is invalid.
+	 * @return A QStringList containing the names of each input line
+	 *
 	 */
-	int pluginInputs(const QString& pluginName);
+	QStringList pluginInputs(const QString& pluginName);
 
 	/**
 	 * Open a configuration dialog for the given plugin

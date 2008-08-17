@@ -168,16 +168,6 @@ App::~App()
 	// Delete fixture definitions
 	while (m_fixtureDefList.isEmpty() == false)
 		delete m_fixtureDefList.takeFirst();
-
-	// Delete output mapper
-	if (m_dmxMap != NULL)
-		delete m_dmxMap;
-	m_dmxMap = NULL;
-	
-	// Delete input mapper
-	if (m_inputMap != NULL)
-		delete m_inputMap;
-	m_inputMap = NULL;
 }
 
 
@@ -211,9 +201,6 @@ void App::init()
 	initDMXMap();
 	initInputMap();
 	
-	m_dmxMap->loadDefaults();
-	m_inputMap->loadDefaults();
-
 	/* Function running engine */
 	initFunctionConsumer();
 
@@ -290,7 +277,7 @@ void App::closeEvent(QCloseEvent* e)
 
 void App::initDMXMap()
 {
-	m_dmxMap = new DMXMap(KUniverseCount);
+	m_dmxMap = new DMXMap(this, KUniverseCount);
 	Q_ASSERT(m_dmxMap != NULL);
 
 	connect(m_dmxMap, SIGNAL(blackoutChanged(bool)),
@@ -345,9 +332,8 @@ void App::slotFlashBlackoutIndicator()
 
 void App::initInputMap()
 {
-	m_inputMap = new InputMap(KInputUniverseCount);
+	m_inputMap = new InputMap(this, KInputUniverseCount);
 	Q_ASSERT(m_inputMap != NULL);
-	m_inputMap->loadDefaults();
 }
 
 /*****************************************************************************

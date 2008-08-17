@@ -130,7 +130,7 @@ bool DMXPatch::loader(QDomDocument*, QDomElement* root, DMXMap* dmxMap)
  * Initialization
  *****************************************************************************/
 
-DMXMap::DMXMap(int universes) : QObject()
+DMXMap::DMXMap(QObject* parent, int universes) : QObject(parent)
 {
 	m_universes = universes;
 	m_dummyOut = NULL;
@@ -141,6 +141,7 @@ DMXMap::DMXMap(int universes) : QObject()
 	initPatch();
 
 	load();
+	loadDefaults();
 }
 
 DMXMap::~DMXMap()

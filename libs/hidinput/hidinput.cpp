@@ -150,9 +150,15 @@ QString HIDInput::name()
  * Inputs
  *****************************************************************************/
 
-t_input HIDInput::inputs()
+QStringList HIDInput::inputs()
 {
-	return m_devices.count();
+	QStringList list;
+
+	QListIterator <HIDDevice*> it(m_devices);
+	while (it.hasNext() == true)
+		list << it.next()->name();
+
+	return list;
 }
 
 /*****************************************************************************

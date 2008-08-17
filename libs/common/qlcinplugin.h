@@ -22,7 +22,10 @@
 #ifndef QLCINPLUGIN_H
 #define QLCINPLUGIN_H
 
+#include <QStringList>
 #include <QtPlugin>
+#include <QString>
+#include <QObject>
 
 #include "qlctypes.h"
 
@@ -78,11 +81,13 @@ public:
 	 *********************************************************************/
 public:
 	/**
-	 * Get the number of inputs provided by the plugin
+	 * Get a list of input lines' names. The names must be always in the
+	 * same order i.e. the first name is the name of input line number 0,
+	 * the next one is input line number 1, etc..
 	 *
 	 * @return Number of inputs provided by the plugin
 	 */
-	virtual t_input inputs() = 0;
+	virtual QStringList inputs() = 0;
 
 	/*********************************************************************
 	 * Input data listener

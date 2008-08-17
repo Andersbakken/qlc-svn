@@ -23,6 +23,7 @@
 #define INPUTPATCHEDITOR_H
 
 #include <QDialog>
+#include "common/qlctypes.h"
 #include "ui_inputpatcheditor.h"
 
 class InputMap;
@@ -34,12 +35,14 @@ class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 	Q_OBJECT
 
 public:
-	InputPatchEditor(QWidget* parent, InputMap* inputMap, int universe,
-		       const QString& pluginName, int input);
+	InputPatchEditor(QWidget* parent, InputMap* inputMap,
+			 t_input_universe universe, const QString& pluginName,
+			 t_input input);
 	~InputPatchEditor();
 
 	const QString pluginName() const { return m_pluginName; }
-	int input() const { return m_input; }
+	const QString inputName() const { return m_inputName; }
+	t_input input() const { return m_input; }
 
 protected slots:
 	void slotPluginActivated(const QString& pluginName);
@@ -49,10 +52,11 @@ protected:
 	InputMap* m_inputMap;
 	QStringList m_pluginList;
 
-	int m_universe;
+	t_input_universe m_universe;
 
 	QString m_pluginName;
-	int m_input;
+	QString m_inputName;
+	t_input m_input;
 };
 
 #endif /* INPUTPATCHEDITOR_H */

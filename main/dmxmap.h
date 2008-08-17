@@ -108,7 +108,7 @@ public:
 	 *
 	 * @param universes Number of universes
 	 */
-	DMXMap(int universes = KUniverseCount);
+	DMXMap(QObject* parent, int universes = KUniverseCount);
 
 	/**
 	 * Destroy a DMXMap object
