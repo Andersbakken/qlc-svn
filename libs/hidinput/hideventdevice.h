@@ -92,22 +92,8 @@ public:
 	bool readEvent();
 
 protected:
-	/** Scaling values for absolute/relative axes*/
+	/** Scaling values for absolute/relative axes */
 	QHash <int, struct input_absinfo> m_scales;
-
-	/*********************************************************************
-	 * Enabled status
-	 *********************************************************************/
-public:
-	/**
-	 * Get the device's enabled state (whether it sends events to QLC)
-	 */
-	bool isEnabled();
-
-	/**
-	 * Set the device's enabled state (whether it sends events to QLC)
-	 */
-	void setEnabled(bool state);
 
 	/*********************************************************************
 	 * Device info

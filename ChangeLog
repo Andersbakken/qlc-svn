@@ -1,3 +1,19 @@
+2008-08-18  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h:
+	* libs/hidinput/configurehidinput.cpp:
+	* libs/hidinput/configurehidinput.h:
+	* libs/hidinput/configurehidinput.ui:
+	* libs/hidinput/hiddevice.cpp:
+	* libs/hidinput/hiddevice.h:
+	* libs/hidinput/hideventdevice.cpp:
+	* libs/hidinput/hideventdevice.h:
+	* libs/hidinput/hidinput.cpp:
+	* libs/hidinput/hidinput.h:
+	* main/inputmap.cpp:
+
+	Added open() & close() calls to QLCInPlugin interface.
+
 2008-08-17  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/qlcinplugin.h:

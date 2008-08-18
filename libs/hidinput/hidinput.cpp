@@ -71,6 +71,24 @@ HIDInput::~HIDInput()
 	delete m_poller;
 }
 
+void HIDInput::open(t_input input)
+{
+	HIDDevice* dev = device(input);
+	if (dev != NULL)
+		addPollDevice(dev);
+	else
+		qDebug() << name() << "has no input number:" << input;
+}
+
+void HIDInput::close(t_input input)
+{
+	HIDDevice* dev = device(input);
+	if (dev != NULL)
+		removePollDevice(dev);
+	else
+		qDebug() << name() << "has no input number:" << input;
+}
+
 /*****************************************************************************
  * Devices
  *****************************************************************************/

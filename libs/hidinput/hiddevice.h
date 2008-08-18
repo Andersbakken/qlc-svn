@@ -89,20 +89,6 @@ protected:
 	t_input m_line;
 
 	/*********************************************************************
-	 * Enabled status
-	 *********************************************************************/
-public:
-	/**
-	 * Get the device's enabled state (whether it sends events to QLC)
-	 */
-	virtual bool isEnabled();
-
-	/**
-	 * Set the device's enabled state (whether it sends events to QLC)
-	 */
-	virtual void setEnabled(bool state);
-
-	/*********************************************************************
 	 * Device info
 	 *********************************************************************/
 public:

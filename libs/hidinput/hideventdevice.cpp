@@ -48,7 +48,6 @@ HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line,
 
 HIDEventDevice::~HIDEventDevice()
 {
-	setEnabled(false);
 }
 
 void HIDEventDevice::init()
@@ -295,28 +294,6 @@ bool HIDEventDevice::readEvent()
 
 		return false;
 	}
-}
-
-/*****************************************************************************
- * Enabled status
- *****************************************************************************/
-
-bool HIDEventDevice::isEnabled()
-{
-	return m_file.isOpen();
-}
-
-void HIDEventDevice::setEnabled(bool state)
-{
-	Q_ASSERT(parent() != NULL);
-
-	if (isEnabled() == state)
-		return;
-
-	if (state == true)
-		qobject_cast <HIDInput*> (parent())->addPollDevice(this);
-	else
-		qobject_cast <HIDInput*> (parent())->removePollDevice(this);
 }
 
 /*****************************************************************************

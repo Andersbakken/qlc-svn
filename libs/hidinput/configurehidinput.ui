@@ -37,11 +37,6 @@
      </column>
      <column>
       <property name="text" >
-       <string>Enabled</string>
-      </property>
-     </column>
-     <column>
-      <property name="text" >
        <string>Name</string>
       </property>
      </column>

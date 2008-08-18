@@ -241,21 +241,33 @@ void InputMap::initPatch()
 bool InputMap::setPatch(t_input_universe universe,
 			const QString& pluginName, t_input input)
 {
-	QLCInPlugin* ip;
-
 	if (universe >= m_universes)
 	{
 		qWarning() << "Universe" << universe << "out of bounds.";
 		return false;
 	}
 
-	ip = plugin(pluginName);
-	Q_ASSERT(ip != NULL);
+	QLCInPlugin* ip = plugin(pluginName);
+	if (ip == NULL)
+	{
+		qWarning() << "Input plugin" << pluginName << "not found.";
+		return false;
+	}
 
-	//m_patch[universe]->plugin->close();
+	/* TODO: This closes the plugin line always, regardless of whether
+	   the line has been assigned to more than one input universe */
+
+	/* Close the previously-assigned plugin line (if any) */
+	if (m_patch[universe]->plugin != NULL)
+		m_patch[universe]->plugin->close(m_patch[universe]->input);
+
+	/* Assign the new plugin and its input line */
 	m_patch[universe]->plugin = ip;
 	m_patch[universe]->input = input;
-	//m_patch[universe]->plugin->open();
+
+	/* Open the new plugin line */
+	if (m_patch[universe]->plugin != NULL)
+		m_patch[universe]->plugin->open(input);
 
 	return true;
 }

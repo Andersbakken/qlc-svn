@@ -56,6 +56,22 @@ public:
 	virtual void init() = 0;
 
 	/**
+	 * Open the specified input line so that the plugin can start
+	 * sending input data from that line.
+	 *
+	 * @param input The input line to open
+	 */
+	virtual void open(t_input input = 0) = 0;
+
+	/**
+	 * Close the specified input line so that the plugin can stop
+	 * sending input data from that line.
+	 *
+	 * @param input The input line to close
+	 */
+	virtual void close(t_input input = 0) = 0;
+
+	/**
 	 * Invoke a configuration dialog for the plugin
 	 *
 	 * This is a pure virtual function that must be implemented

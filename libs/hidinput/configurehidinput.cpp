@@ -31,8 +31,7 @@
 #include "hidinput.h"
 
 #define KColumnNumber  0
-#define KColumnEnabled 1
-#define KColumnName    2
+#define KColumnName    1
 
 /*****************************************************************************
  * Initialization
@@ -80,9 +79,6 @@ void ConfigureHIDInput::refreshList()
 
 	m_list->clear();
 
-	disconnect(m_list, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		   this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
-
 	for (int i = 0; i < m_plugin->m_devices.count(); i++)
 	{
 		HIDDevice* dev;
@@ -95,25 +91,6 @@ void ConfigureHIDInput::refreshList()
 		item->setText(KColumnNumber, s.setNum(i + 1));
 		item->setText(KColumnName, dev->name());
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-
-		if (dev->isEnabled() == true)
-			item->setCheckState(KColumnEnabled, Qt::Checked);
-		else
-			item->setCheckState(KColumnEnabled, Qt::Unchecked);
-	}
-
-	connect(m_list, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
-}
-
-void ConfigureHIDInput::slotItemChanged(QTreeWidgetItem* item, int column)
-{
-	if (column == KColumnEnabled)
-	{
-		HIDDevice* dev;
-		dev = m_plugin->device(item->text(KColumnNumber).toInt() - 1);
-		Q_ASSERT(dev != NULL);
-		dev->setEnabled(item->checkState(column));
 	}
 }
 
