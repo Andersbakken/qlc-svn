@@ -1,5 +1,11 @@
 2008-08-18  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/hidinput/hideventdevice.cpp:
+
+	Fixed a segfault in HID plugin deletion (app shutdown).
+
+2008-08-18  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/common/qlcinplugin.h:
 	* libs/hidinput/configurehidinput.cpp:
 	* libs/hidinput/configurehidinput.h:

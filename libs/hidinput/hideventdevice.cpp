@@ -48,6 +48,7 @@ HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line,
 
 HIDEventDevice::~HIDEventDevice()
 {
+	static_cast<HIDInput*> (parent())->removePollDevice(this);
 }
 
 void HIDEventDevice::init()
