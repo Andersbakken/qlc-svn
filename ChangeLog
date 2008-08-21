@@ -1,3 +1,14 @@
+2008-08-21  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/inputmap.cpp:
+	* main/inputmap.h:
+	* main/vcslider.cpp:
+	* main/vcslider.h:
+	* main/vcsliderproperties.cpp:
+	* main/vcsliderproperties.ui:
+
+	Implemented preliminary input data acquisition to vcslider.
+	
 2008-08-18  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/hidinput/hideventdevice.cpp:

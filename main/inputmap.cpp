@@ -211,6 +211,39 @@ void InputMap::load()
 }
 
 /*****************************************************************************
+ * Universes
+ *****************************************************************************/
+
+t_input_universe InputMap::universes()
+{
+	return m_universes;
+}
+
+QStringList InputMap::universeNames()
+{	
+	QStringList inputs;
+	QStringList list;
+
+	for (t_input_universe i = 0; i < m_universes; i++)
+	{
+		if (m_patch[i]->plugin != NULL)
+		{
+			inputs = m_patch[i]->plugin->inputs();
+			list << QString("%1: %2/%3").arg(i + 1)
+				.arg(m_patch[i]->plugin->name())
+				.arg(inputs.at(m_patch[i]->input));
+		}
+		else
+		{
+			/* No assignment */
+			list << QString("%1: %2").arg(i + 1).arg(KInputNone);
+		}
+	}
+
+	return list;
+}
+
+/*****************************************************************************
  * Input data
  *****************************************************************************/
 
@@ -223,7 +256,7 @@ void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
 		if (m_patch[i]->plugin == plugin &&
 		    m_patch[i]->input == input)
 		{
-			qDebug() << i << channel << value;
+			emit inputValueChanged(i, channel, value);
 		}
 	}
 }

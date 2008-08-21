@@ -128,16 +128,25 @@ public slots:
 	void slotValueChanged(QLCInPlugin* plugin, t_input input,
 			      t_input_channel channel, t_input_value value);
 
+signals:
+	void inputValueChanged(t_input_universe universe,
+			       t_input_channel channel, t_input_value value);
+
 	/*********************************************************************
 	 * Patch
 	 *********************************************************************/
 public:
 	/**
-	 * Get the total number of supported input universes
-	 *
-	 * @return Input universe count supported by QLC
+	 * Get the number of supported input universes
 	 */
-	t_input_universe universes() { return m_universes; }
+	t_input_universe universes();
+
+	/**
+	 * Get the assigned input line names for supported input universes, to
+	 * be used in UI controls in the form "x: name", with universe numbers
+	 * start from 1 instead of 0.
+	 */
+	QStringList universeNames();
 
 protected:
 	/**

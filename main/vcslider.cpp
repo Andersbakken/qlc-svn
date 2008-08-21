@@ -37,6 +37,7 @@
 #include "vcsliderproperties.h"
 #include "virtualconsole.h"
 #include "vcslider.h"
+#include "inputmap.h"
 #include "dmxmap.h"
 #include "app.h"
 #include "doc.h"
@@ -80,8 +81,6 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_moveSliderOnly = false;
 
 	m_time = NULL;
-
-	m_feedbackChannel = -1;
 
 	setCaption(QString::null);
 
@@ -138,6 +137,10 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
 	/* Update the slider according to current mode */
 	slotModeChanged(_app->mode());
+
+	/* External input */
+	m_inputUniverse = KInputUniverseInvalid;
+	m_inputChannel = KInputChannelInvalid;
 }
 
 VCSlider::~VCSlider()
@@ -399,8 +402,6 @@ void VCSlider::setBusValue(int value)
 {
 	if (Bus::setValue(m_bus, value) == false)
 		setTopLabelText("No Bus");
-
-	sendFeedback(value);
 }
 
 void VCSlider::slotBusValueChanged(t_bus_id bus, t_bus_value value)
@@ -522,10 +523,6 @@ void VCSlider::setLevelValue(t_value value)
 					 m_levelLowLimit);
 
 	}
-
-	// TODO
-	// _app->inputPlugin()->feedBack(1, m_inputChannel, 
-	//		      127 - (value * 127) / 255);
 }
 
 /*****************************************************************************
@@ -653,31 +650,65 @@ void VCSlider::slotTapButtonClicked()
 }
 
 /*****************************************************************************
- * Feedback
+ * External input
  *****************************************************************************/
 
-void VCSlider::setFeedbackChannel(int channel)
+void VCSlider::setInputUniverse(t_input_universe uni)
 {
-	m_feedbackChannel = channel;
+	m_inputUniverse = uni;
+
+	disconnect(_app->inputMap(),
+		   SIGNAL(inputValueChanged(t_input_universe,
+					    t_input_channel,
+					    t_input_value)),
+		   this, SLOT(slotInputValueChanged(t_input_universe,
+						    t_input_channel,
+						    t_input_value)));
+
+	if (m_inputUniverse != KInputUniverseInvalid)
+	{
+		connect(_app->inputMap(),
+			SIGNAL(inputValueChanged(t_input_universe,
+						 t_input_channel,
+						 t_input_value)),
+			this,
+			SLOT(slotInputValueChanged(t_input_universe,
+						   t_input_channel,
+						   t_input_value)));
+	}
 }
 
-int VCSlider::feedbackChannel()
+void VCSlider::setInputChannel(t_input_channel ch)
 {
-	return m_feedbackChannel;
+	m_inputChannel = ch;
+
+	disconnect(_app->inputMap(),
+		   SIGNAL(inputValueChanged(t_input_universe,
+					    t_input_channel,
+					    t_input_value)),
+		   this,
+		   SLOT(slotInputValueChanged(t_input_universe,
+					      t_input_channel,
+					      t_input_value)));
+	
+	if (m_inputChannel != KInputChannelInvalid)
+	{
+		connect(_app->inputMap(),
+			SIGNAL(inputValueChanged(t_input_universe,
+						 t_input_channel,
+						 t_input_value)),
+			this,
+			SLOT(slotInputValueChanged(t_input_universe,
+						   t_input_channel,
+						   t_input_value)));
+	}
 }
 
-void VCSlider::sendFeedback(int)
+void VCSlider::slotInputValueChanged(t_input_universe universe,
+				     t_input_channel channel,
+				     t_input_value value)
 {
-	/* TODO
-	  int range = 0;
-	  float f = 0;
-	  
-	  range = m_busHighLimit - m_busLowLimit;
-	  f = ((float) value / (float) KFrequency);
-	  
-	  _app->inputPlugin()->feedBack(1, feedbackChannel(),
-	  127 - int((f * 127) / range));
-	*/
+	qDebug() << universe << channel << value;
 }
 
 /*****************************************************************************
@@ -766,6 +797,14 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		else if (tag.tagName() == KXMLQLCVCSliderLevel)
 		{
 			loadXMLLevel(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCVCSliderInputUniverse)
+		{
+			setInputUniverse(tag.text().toInt());
+		}
+		else if (tag.tagName() == KXMLQLCVCSliderInputChannel)
+		{
+			setInputChannel(tag.text().toInt());
 		}
 		else
 		{
@@ -866,6 +905,18 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Value display style */
 	str = valueDisplayStyleToString(valueDisplayStyle());
 	tag.setAttribute(KXMLQLCVCSliderValueDisplayStyle, str);
+
+	/* External input universe */
+	tag = doc->createElement(KXMLQLCVCSliderInputUniverse);
+	root.appendChild(tag);
+	text = doc->createTextNode(str.setNum(m_inputUniverse));
+	tag.appendChild(text);
+
+	/* External input channel */
+	tag = doc->createElement(KXMLQLCVCSliderInputChannel);
+	root.appendChild(tag);
+	text = doc->createTextNode(str.setNum(m_inputChannel));
+	tag.appendChild(text);
 
 	/* Bus */
 	tag = doc->createElement(KXMLQLCVCSliderBus);
