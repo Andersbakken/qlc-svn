@@ -5,69 +5,84 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>257</width>
-    <height>153</height>
+    <width>361</width>
+    <height>189</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Fixture properties</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <item>
-    <layout class="QHBoxLayout" >
-     <item>
-      <widget class="QLabel" name="m_nameLabel" >
-       <property name="text" >
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="m_nameEdit" >
-       <property name="toolTip" >
-        <string>Fixture's friendly name</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QLabel" name="m_nameLabel" >
+     <property name="text" >
+      <string>Name</string>
+     </property>
+    </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" >
-     <item>
-      <widget class="QLabel" name="m_addressLabel" >
-       <property name="text" >
-        <string>Address</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="m_addressSpin" >
-       <property name="toolTip" >
-        <string>Fixture's DMX address</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+   <item row="0" column="1" colspan="2" >
+    <widget class="QLineEdit" name="m_nameEdit" >
+     <property name="toolTip" >
+      <string>Fixture's friendly name</string>
+     </property>
+    </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" >
-     <item>
-      <widget class="QLabel" name="m_universeLabel" >
-       <property name="text" >
-        <string>Universe</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="m_universeSpin" >
-       <property name="toolTip" >
-        <string>The universe that the fixture is controlled through</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+   <item row="1" column="0" >
+    <widget class="QLabel" name="m_addressLabel" >
+     <property name="text" >
+      <string>Address</string>
+     </property>
+    </widget>
    </item>
-   <item>
+   <item row="1" column="1" colspan="2" >
+    <widget class="QSpinBox" name="m_addressSpin" >
+     <property name="toolTip" >
+      <string>Fixture's DMX address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" >
+    <widget class="QLabel" name="m_universeLabel" >
+     <property name="text" >
+      <string>Universe</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2" >
+    <widget class="QSpinBox" name="m_universeSpin" >
+     <property name="toolTip" >
+      <string>The universe that the fixture is controlled through</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" >
+    <widget class="QLabel" name="m_makeModelLabel" >
+     <property name="text" >
+      <string>Make &amp; Model</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" >
+    <widget class="QLineEdit" name="m_makeModelEdit" >
+     <property name="readOnly" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" >
+    <widget class="QToolButton" name="m_makeModelButton" >
+     <property name="text" >
+      <string>...</string>
+     </property>
+     <property name="iconSize" >
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="3" >
     <widget class="QDialogButtonBox" name="m_buttonBox" >
      <property name="orientation" >
       <enum>Qt::Horizontal</enum>

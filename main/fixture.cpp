@@ -82,6 +82,9 @@ Fixture::~Fixture()
 {
 	if (m_console != NULL)
 		delete m_console;
+
+	if (m_genericChannel != NULL)
+		delete m_genericChannel;
 }
 
 /*****************************************************************************
@@ -174,6 +177,12 @@ t_channel Fixture::universeAddress()
  * Channels
  *****************************************************************************/
 
+void Fixture::setChannels(t_channel channels)
+{
+	Q_ASSERT(m_fixtureDef == NULL && m_fixtureMode == NULL);
+	m_channels = channels;
+}
+
 t_channel Fixture::channels()
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
@@ -208,6 +217,28 @@ QLCChannel* Fixture::createGenericChannel()
 	}
 
 	return m_genericChannel;
+}
+
+/*****************************************************************************
+ * Fixture definition
+ *****************************************************************************/
+
+void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
+				   QLCFixtureMode* fixtureMode)
+{
+	m_fixtureDef = fixtureDef;
+	m_fixtureMode = fixtureMode;
+
+	if (m_console != NULL)
+		delete m_console;
+	m_console = NULL;
+
+	/* In case the old def was a dimmer and the new one is not, delete
+	   the generic channel as possibly useless. It is created automatically
+	   if it is again needed. */
+	if (m_genericChannel != NULL)
+		delete m_genericChannel;
+	m_genericChannel = NULL;
 }
 
 /*****************************************************************************

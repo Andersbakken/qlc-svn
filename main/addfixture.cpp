@@ -46,7 +46,8 @@ static const int KColumnName    ( 0 );
 static const int KColumnType    ( 1 );
 static const int KColumnPointer ( 2 );
 
-AddFixture::AddFixture(QWidget *parent) : QDialog(parent)
+AddFixture::AddFixture(QWidget *parent, QLCFixtureDef* select)
+	: QDialog(parent)
 {
 	m_addressValue = 0;
 	m_universeValue = 0;
@@ -72,7 +73,7 @@ AddFixture::AddFixture(QWidget *parent) : QDialog(parent)
 		this, SLOT(slotNameEdited(const QString&)));
 
 	/* Fill fixture definition tree */
-	fillTree();
+	fillTree(select);
 
 	/* Simulate the first selection change (none) */
 	slotSelectionChanged();
@@ -101,7 +102,7 @@ QTreeWidgetItem* AddFixture::findNode(const QString& text)
  * Fillers
  *****************************************************************************/
 
-void AddFixture::fillTree()
+void AddFixture::fillTree(QLCFixtureDef* select)
 {
 	QLCFixtureDef* fixtureDef;
 	QTreeWidgetItem* parent;
@@ -116,7 +117,6 @@ void AddFixture::fillTree()
 	while (it.hasNext() == true)
 	{
 		fixtureDef = it.next();
-		parent = NULL;
 
 		/* Find an existing manufacturer parent node */
 		parent = findNode(fixtureDef->manufacturer());
@@ -139,6 +139,13 @@ void AddFixture::fillTree()
 		/* Store the fixture pointer into the tree */
 		str.sprintf("%lu", (unsigned long) fixtureDef);
 		node->setText(KColumnPointer, str);
+
+		/* Select the specified node, if any */
+		if (fixtureDef == select)
+		{
+			parent->setExpanded(true);
+			m_tree->setCurrentItem(node);
+		}
 	}
 
 	/* Create a node & parent for generic dimmers */
@@ -148,6 +155,13 @@ void AddFixture::fillTree()
 	node->setText(KColumnName, KXMLFixtureGeneric);
 	node->setText(KColumnType, KXMLFixtureDimmer);
 	node->setText(KColumnPointer, "0");
+
+	/* Select generic dimmer by default */
+	if (select == NULL)
+	{
+		parent->setExpanded(true);
+		m_tree->setCurrentItem(node);
+	}
 }
 
 void AddFixture::fillModeCombo(const QString& text)

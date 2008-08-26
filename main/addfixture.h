@@ -36,8 +36,8 @@ class AddFixture : public QDialog, public Ui_AddFixture
 	Q_OBJECT
 
 public: 
-	/** Constructor */
-	AddFixture(QWidget *parent);
+	/** Constructor, pre-select $select, if not NULL */
+	AddFixture(QWidget *parent, QLCFixtureDef* select = NULL);
 
 	/** Destructor */
 	~AddFixture();
@@ -94,7 +94,7 @@ protected:
 	 *********************************************************************/
 protected:
 	/** Fill all known fixture definitions to the tree view */
-	void fillTree();
+	void fillTree(QLCFixtureDef* select);
 
 	/** Fill all modes of the current fixture to the mode combo */
 	void fillModeCombo(const QString& text = QString::null);

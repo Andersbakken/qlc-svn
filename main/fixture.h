@@ -203,6 +203,14 @@ public:
 	 *********************************************************************/
 public:
 	/**
+	 * Change the number of channels. Valid only for generic dimmers, whose
+	 * $fixtureDef == NULL && $fixtureMode == NULL.
+	 *
+	 * @param channels The new number of channels
+	 */
+	void setChannels(t_channel channels);
+
+	/**
 	 * Get the number of channels occupied by this fixture instance.
 	 * This takes also the selected mode into account, as different modes
 	 * can have different channel sets.
@@ -250,18 +258,28 @@ protected:
 	 *********************************************************************/
 public:
 	/**
+	 * Change the fixture's definition & mode. Use this when changing an
+	 * existing fixture to use another def.
+	 *
+	 * @param fixtureDef The new fixture definition
+	 * @param fixtureMode The new fixture mode (member of $fixtureDef)
+	 */
+	void setFixtureDefinition(QLCFixtureDef* fixtureDef,
+				  QLCFixtureMode* fixtureMode);
+
+	/**
 	 * Get the fixture definition that this fixture instance is based on.
 	 *
 	 * @return A QLCFixture definition
 	 */
-	QLCFixtureDef* fixtureDef() { return m_fixtureDef; }
+	QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
 
 	/**
 	 * Get the fixture mode that this fixture instance is based on.
 	 *
 	 * @return A QLCFixtureMode definition
 	 */
-	QLCFixtureMode* fixtureMode() { return m_fixtureMode; }
+	QLCFixtureMode* fixtureMode() const { return m_fixtureMode; }
 
 protected:
 	/** The fixture definition that this instance is based on */

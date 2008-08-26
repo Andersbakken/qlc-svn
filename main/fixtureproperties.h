@@ -27,6 +27,8 @@
 #include "ui_fixtureproperties.h"
 #include "common/qlctypes.h"
 
+class QLCFixtureMode;
+class QLCFixtureDef;
 class Fixture;
 
 class FixtureProperties : public QDialog, public Ui_FixtureProperties
@@ -44,11 +46,17 @@ protected slots:
 	/** Name edited */
 	void slotNameEdited(const QString& text);
 
+	/** Make & Model button clicked */
+	void slotMakeModelClicked();
+
 	/** QDialog accept() slot for OK button clicks */
 	void accept();
 
 protected:
 	Fixture* m_fxi;
+	QLCFixtureDef* m_fixtureDef;
+	QLCFixtureMode* m_fixtureMode;
+	t_channel m_channels;
 };
 
 #endif

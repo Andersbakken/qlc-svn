@@ -1,3 +1,15 @@
+2008-08-26  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	* main/addfixture.cpp:
+	* main/addfixture.h:
+	* main/fixture.cpp:
+	* main/fixture.h:
+	* main/fixtureproperties.cpp:
+	* main/fixtureproperties.h:
+	* main/fixtureproperties.ui:
+
+	Implemented fixture def & mode changing for an existing fixture.
+	
 2008-08-21  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/inputmap.cpp:
