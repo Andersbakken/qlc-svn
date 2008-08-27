@@ -46,32 +46,9 @@
 #define ID_ACTIVATE       20
 
 
-//@heikki: that lead to a nested loop with app.h including inputplugin.h
-//#include "../../main/src/app.h"
-
-//extern  App* _app;
-
-
-static QMutex _mutex;
-
-//
-// Exported functions
-//
-extern "C" InputPlugin* create(t_plugin_id id)
-{
-    return new MidiInOut(id);
-}
-
-extern "C" void destroy(InputPlugin* object)
-{
-    delete object;
-}
-
-
 //
 // the input thread class
 //
-
 void MidiInThread::run()
 {
     unsigned int channel, command, value;
