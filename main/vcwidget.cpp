@@ -373,14 +373,14 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 		{
 			if (tag.text() != KXMLQLCVCWidgetColorDefault)
 			{
-				QColor color(tag.text().toInt());
+				QColor color(tag.text().toUInt());
 				setForegroundColor(color);
 			}
 		}
 		else if (tag.tagName() == KXMLQLCVCWidgetBackgroundColor)
 		{
 			if (tag.text() != KXMLQLCVCWidgetColorDefault)
-				setBackgroundColor(QColor(tag.text().toInt()));
+				setBackgroundColor(QColor(tag.text().toUInt()));
 		}
 		else if (tag.tagName() == KXMLQLCVCWidgetBackgroundImage)
 		{
@@ -402,7 +402,7 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 			     << tag.tagName().toStdString()
 			     << endl;
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -467,7 +467,7 @@ bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 	else
 		str = KXMLQLCVCWidgetFontDefault;
 	text = doc->createTextNode(str);
-	tag.appendChild(text);	
+	tag.appendChild(text);
 
 	return true;
 }

@@ -1,4 +1,10 @@
-2008-08-26  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-09-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/vcwidget.cpp:
+
+	Fixed VCWidget background color saving/loading.
+
+2008-08-26  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/addfixture.cpp:
 	* main/addfixture.h:
@@ -61,14 +67,14 @@
 
 	Fixes and updates to input universe mapping.
 	
-2008-08-16  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-08-16  Heikki Junnila  <hjunnila@users.sf.net>
 
 	libs/midi-inout:
 	libs/midiinput:
 	
 	Rename.
 
-2008-08-15  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-08-15  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* fixtures/Robe-ClubScan-150CT.qxf:
 	* fixtures/Robe-ClubScan-250CT.qxf:
@@ -127,7 +133,7 @@
 
 	Copied DMXMap* dialog stuff to InputMap* dialogs.
 
-2008-08-12  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-08-12  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/qlctypes.h:
 	* libs/hidinput/hideventdevice.cpp:
@@ -138,7 +144,7 @@
 	Created the same kind of patch structure for InputMap that is
 	currently in DMXMap.
 
-2008-08-12  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-08-12  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* fixtures/fixtures.pro:
 	* libs/hidinput/hideventdevice.cpp:
@@ -231,7 +237,7 @@
 
 	Added user-editable function type filtering to function selection.
 
-2008-08-08  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-08-08  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/qlcphysical.h:
 
