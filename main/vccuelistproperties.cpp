@@ -98,7 +98,8 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
 
 VCCueListProperties::~VCCueListProperties()
 {
-	delete m_keyBind;
+	if (m_keyBind != NULL)
+		delete m_keyBind;
 }
 
 void VCCueListProperties::slotAddClicked()
@@ -139,11 +140,11 @@ void VCCueListProperties::slotRemoveClicked()
 		if (next == NULL)
 			next = m_list->itemAbove(item);
 		delete item;
-		
+
 		if (next != NULL)
 		{
 			m_list->setCurrentItem(next);
-			
+
 			for (int i = m_list->indexOfTopLevelItem(next);
 			     i < m_list->topLevelItemCount(); i++)
 			{
@@ -167,7 +168,7 @@ void VCCueListProperties::slotRaiseClicked()
 	index = m_list->indexOfTopLevelItem(item);
 	if (index == 0)
 		return;
-	
+
 	m_list->takeTopLevelItem(index);
 	m_list->insertTopLevelItem(index - 1, item);
 	m_list->setCurrentItem(item);
@@ -189,7 +190,7 @@ void VCCueListProperties::slotLowerClicked()
 	index = m_list->indexOfTopLevelItem(item);
 	if (index == m_list->topLevelItemCount() - 1)
 		return;
-	
+
 	m_list->takeTopLevelItem(index);
 	m_list->insertTopLevelItem(index + 1, item);
 	m_list->setCurrentItem(item);
@@ -213,6 +214,7 @@ void VCCueListProperties::slotAttachClicked()
 void VCCueListProperties::slotDetachClicked()
 {
 	delete m_keyBind;
+	m_keyBind = NULL;
 	m_keyEdit->setText(tr("No key binding"));
 }
 

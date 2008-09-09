@@ -1,3 +1,10 @@
+2008-09-09  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+
+	* main/vccuelistproperties.cpp:
+
+	Fixed a crash that occurred when the skip key was detached and then
+	delete was attempted in destructor on an already deleted m_keyBind.
+
 2008-09-02  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/vcwidget.cpp:
