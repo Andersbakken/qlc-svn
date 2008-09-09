@@ -230,7 +230,9 @@ void FixtureManager::updateView()
 			m_tree->setCurrentItem(item);
 	}
 
-	slotSelectionChanged();
+	/* Select the first fixture unless something else is wanted */
+	if (currentId == KNoID)
+		m_tree->setCurrentItem(m_tree->topLevelItem(0));
 }
 
 void FixtureManager::updateItem(QTreeWidgetItem* item, Fixture* fxi)

@@ -1,4 +1,11 @@
-2008-09-09  Heikki Junnila  <ext-heikki.junnila@nokia.com>
+2008-09-09  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/fixturemanager.cpp:
+
+	The first fixture is selected in fixture manager by default unless
+	something else is wanted.
+
+2008-09-09  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/vccuelistproperties.cpp:
 
