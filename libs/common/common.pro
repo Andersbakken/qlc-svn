@@ -3,7 +3,7 @@ LANGUAGE 	= C++
 TARGET 		= qlccommon
 VERSION 	= 3.0
 
-CONFIG          += qt warn_on release
+CONFIG          += qt warn_on debug_and_release build_all
 QT 		+= xml
 win32:DEFINES 	+= QLC_EXPORT
 

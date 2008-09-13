@@ -3,7 +3,7 @@ LANGUAGE	= C++
 TARGET		= usbdmxout
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on release
+CONFIG          += plugin warn_on debug_and_release build_all
 
 unix:target.path = /usr/lib/qlc/output
 win32:target.path = C:\QLC\Plugins\Output

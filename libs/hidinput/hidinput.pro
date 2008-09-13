@@ -3,7 +3,7 @@ LANGUAGE 	= C++
 TARGET 		= hidinput
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on release
+CONFIG          += plugin warn_on debug_and_release build_all
 
 target.path	= /usr/lib/qlc/input
 INSTALLS	+= target

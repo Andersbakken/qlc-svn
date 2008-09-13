@@ -56,10 +56,9 @@ void USBDMXOut::init()
 	usbdmx = usbdmx_init();
 	if (usbdmx == NULL)
 		qWarning() << "Loading USBDMX.DLL failed.";
-
-	/* verify USBDMX dll version */
-	if (USBDMX_DLL_VERSION_CHECK(usbdmx) == FALSE)
+	else if (USBDMX_DLL_VERSION_CHECK(usbdmx) == FALSE)
 	{
+		/* verify USBDMX dll version */
 		qWarning() << "USBDMX.DLL version does not match. Abort.";
 		qWarning() << "Found" << usbdmx->version << "but expected"
 			   << USBDMX_DLL_VERSION;

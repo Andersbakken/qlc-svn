@@ -91,7 +91,7 @@ bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
 	t_input input = 0;
 	
 	Q_ASSERT(root != NULL);
-	Q_ASSERT(dmxMap != NULL);
+	Q_ASSERT(inputMap != NULL);
 
 	if (root->tagName() != KXMLQLCInputPatch)
 	{

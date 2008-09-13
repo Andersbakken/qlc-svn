@@ -3,12 +3,17 @@ LANGUAGE 	= C++
 TARGET 		= qlc-fixtureeditor
 VERSION 	= 3.0
 
-CONFIG          += qt warn_on release
+CONFIG          += qt warn_on debug_and_release build_all
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
-win32:LIBS	+= -L../libs/common/release -lqlccommon
 unix:LIBS	+= -L../libs/common -lqlccommon
+win32:release {
+LIBS 	+= -L../libs/common/release/ -lqlccommon
+}
+win32:debug {
+LIBS 	+= -L../libs/common/debug/ -lqlccommon
+}
 
 unix:target.path = /usr/bin
 win32:target.path = C:\QLC

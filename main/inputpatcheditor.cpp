@@ -86,7 +86,7 @@ void InputPatchEditor::slotPluginActivated(const QString& pluginName)
 	if (m_inputCombo->count() > 0)
 		m_input = 0;
 	else
-		m_input = -1;
+		m_input = KInputInvalid;
 }
 
 void InputPatchEditor::slotInputActivated(int input)

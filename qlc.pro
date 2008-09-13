@@ -1,6 +1,6 @@
 TEMPLATE	= subdirs
 
-SUBDIRS		+= libs
+SUBDIRS		= libs
 SUBDIRS		+= main
 SUBDIRS		+= fixtures
 SUBDIRS		+= fixtureeditor
