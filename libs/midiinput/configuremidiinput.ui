@@ -32,12 +32,7 @@
      </property>
      <column>
       <property name="text" >
-       <string>Input Line</string>
-      </property>
-     </column>
-     <column>
-      <property name="text" >
-       <string>Enabled</string>
+       <string>Input</string>
       </property>
      </column>
      <column>

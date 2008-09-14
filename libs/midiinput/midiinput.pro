@@ -10,9 +10,13 @@ INSTALLS	+= target
 
 # Input
 HEADERS += configuremidiinput.h \
-           midiinput.h
+	   mididevice.h \
+           midiinput.h \
+	   midipoller.h
 
 FORMS += configuremidiinput.ui
 
-SOURCES += configuremidiinput.cpp \
-           midiinput.cpp
+unix:SOURCES += configuremidiinput.cpp \
+		unix-mididevice.cpp \
+		unix-midipoller.cpp \
+		unix-midiinput.cpp

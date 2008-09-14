@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  configuredmx4linuxout.cpp
+  configuremidiinput.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,88 +19,94 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "configuremidi-inout.h"
-#include "midi-inout.h"
+#include <QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QString>
+#include <QTimer>
+#include <QDebug>
 
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
+#include "configuremidiinput.h"
+#include "mididevice.h"
+#include "midiinput.h"
 
-#include <unistd.h>
+#define KColumnNumber  0
+#define KColumnName    1
 
-ConfigureMidiInOut::ConfigureMidiInOut(MidiInOut* plugin) 
-  : UI_ConfigureMidiInOut(NULL, NULL, true)
+ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
+	: QDialog(parent)
 {
-  ASSERT(plugin != NULL);
-  m_plugin = plugin;
+	Q_ASSERT(plugin != NULL);
+	m_plugin = plugin;
+	
+	/* Setup UI controls */
+	setupUi(this);
+	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-  m_deviceEdit->setText(m_plugin->deviceName());
+	connect(m_refreshButton, SIGNAL(clicked()),
+		this, SLOT(slotRefreshClicked()));
 
-  updateStatus();
+	/* Listen to device additions/removals */
+	connect(plugin, SIGNAL(deviceRemoved(MIDIDevice*)),
+		this, SLOT(slotDeviceRemoved(MIDIDevice*)));
+	connect(plugin, SIGNAL(deviceAdded(MIDIDevice*)),
+		this, SLOT(slotDeviceAdded(MIDIDevice*)));
+
+	refreshList();
 }
 
-ConfigureMidiInOut::~ConfigureMidiInOut()
+ConfigureMIDIInput::~ConfigureMIDIInput()
 {
-
 }
 
-QString ConfigureMidiInOut::device()
+/*****************************************************************************
+ * List of devices
+ *****************************************************************************/
+
+void ConfigureMIDIInput::slotRefreshClicked()
 {
-  return m_deviceEdit->text();
+	Q_ASSERT(m_plugin != NULL);
+	m_plugin->rescanDevices();
 }
 
-
-
-int ConfigureMidiInOut::debugLevel()
+void ConfigureMIDIInput::refreshList()
 {
-	return m_debugLevelCombo->currentItem();
+	QString s;
+
+	m_list->clear();
+
+	for (int i = 0; i < m_plugin->m_devices.count(); i++)
+	{
+		MIDIDevice* device;
+		QTreeWidgetItem* item;
+
+		device = m_plugin->device(i);
+		Q_ASSERT(device != NULL);
+
+		item = new QTreeWidgetItem(m_list);
+		item->setText(KColumnNumber, s.setNum(i + 1));
+		item->setText(KColumnName, device->name());
+	}
 }
 
-
-void ConfigureMidiInOut::slotActivateClicked()
+void ConfigureMIDIInput::slotDeviceAdded(MIDIDevice*)
 {
-  if (m_plugin->deviceName() != m_deviceEdit->text())
-    {
-      m_plugin->setDeviceName(m_deviceEdit->text());
-    }
-
-  m_plugin->activate();
-
-  ::usleep(10);  // Allow the activation signal get passed to doc
-
-  updateStatus();
+	refreshList();
 }
 
-
-void ConfigureMidiInOut::slotDeactivateClicked()
+void ConfigureMIDIInput::slotDeviceRemoved(MIDIDevice* device)
 {
-  if (m_plugin->deviceName() != m_deviceEdit->text())
-    {
-      m_plugin->setDeviceName(m_deviceEdit->text());
-    }
+	Q_ASSERT(device != NULL);
 
-  m_plugin->close();
-
-  ::usleep(10);  // Allow the activation signal get passed to doc
-
-  updateStatus();
-}
-
-
-void ConfigureMidiInOut::updateStatus()
-{
-  if (m_plugin->isOpen())
-    {
-      m_statusLabel->setText("Active");
-      m_deviceEdit->setEnabled(false);
-      m_activate->setEnabled(false);
-    }
-  else
-    {
-      m_statusLabel->setText("Not Active");
-      m_deviceEdit->setEnabled(true);
-      m_activate->setEnabled(true);
-    }
+	for (int i = 0; i < m_list->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* item = m_list->topLevelItem(i);
+		Q_ASSERT(item != NULL);
+		if (item->text(KColumnName) == device->name())
+		{
+			delete item;
+			break;
+		}
+	}
 }

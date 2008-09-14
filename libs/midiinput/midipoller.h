@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  configuremidiinput.h
+  midipoller.h
   
   Copyright (C) Heikki Junnila
   
@@ -19,50 +19,53 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONFIGUREMIDIINPUT_H
-#define CONFIGUREMIDIINPUT_H
+#ifndef MIDIPOLLER_H
+#define MIDIPOLLER_H
 
-#include "ui_configuremidiinput.h"
+#include <QThread>
+#include <QMutex>
+#include <QList>
 
 class MIDIDevice;
 class MIDIInput;
 
-class ConfigureMIDIInput : public QDialog, public Ui_ConfigureMIDIInput
+class MIDIPoller : public QThread
 {
 	Q_OBJECT
 
+public:
+	/**
+	 * Construct a new MIDIReader thread. The parent object will receive
+	 * all input events, so it must not be NULL.
+	 */
+	MIDIPoller(MIDIInput* parent);
+	virtual ~MIDIPoller();
+
 	/*********************************************************************
-	 * Initialization
+	 * Polled devices
 	 *********************************************************************/
 public:
-	ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin);
-	virtual ~ConfigureMIDIInput();
+	bool addDevice(MIDIDevice* device);
+	bool removeDevice(MIDIDevice* device);
+	int deviceCount() const { return m_devices.count(); }
 
 protected:
-	MIDIInput* m_plugin;
+	QMap <int, MIDIDevice*> m_devices;
+	bool m_changed;
+	QMutex m_mutex;
 	
 	/*********************************************************************
-	 * List of devices
+	 * Poller thread
 	 *********************************************************************/
-protected slots:
-	/**
-	 * Invoke refresh for the interface list
-	 */
-	void slotRefreshClicked();
-
-	/**
-	 * Callback for HIDInput::deviceAdded() signals.
-	 */
-	void slotDeviceAdded(MIDIDevice* device);
-
-	/**
-	 * Callback for HIDInput::deviceRemoved() signals.
-	 */
-	void slotDeviceRemoved(MIDIDevice* device);
+public:
+	virtual void stop();
 
 protected:
-	/** Refresh the interface list */
-	void refreshList();
+	virtual void run();
+	void readEvent(struct pollfd pfd);
+
+protected:
+	bool m_running;
 };
 
 #endif

@@ -1,8 +1,9 @@
 /*
   Q Light Controller
-  midid-inout.h
+  midiinput.h
   
-  Copyright (C) 2006 Heikki Junnila, Stefan Krumm
+  Copyright (C) Heikki Junnila
+		Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,105 +20,130 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MIDIINOUT_H
-#define MIDIINOUT_H
+#ifndef MIDIINPUT_H
+#define MIDIINPUT_H
 
-#include "common/inputplugin.h"
-#include "common/types.h"
+#include <QStringList>
+#include <QString>
 
-#include <qptrlist.h>
-#include <qstring.h>
-#include <qthread.h>
+#include "common/qlcinplugin.h"
+#include "common/qlctypes.h"
 
-class MidiInOut;
-class ConfigureMidiInOut;
-class QPoint;
+class ConfigureMIDIInput;
+class MIDIPoller;
+class MIDIDevice;
+class MIDIInput;
 
+/*****************************************************************************
+ * MIDIInputEvent
+ *****************************************************************************/
 
-extern "C" InputPlugin* create(t_plugin_id id);
-extern "C" void destroy(InputPlugin* object);
-
-
-class MidiInThread : public QThread
+class MIDIInputEvent : public QEvent
 {
 public:
-    MidiInThread(MidiInOut* parent)
-    { m_parent = parent; }
+	MIDIInputEvent(MIDIDevice* device, t_input input,
+		       t_input_channel channel, t_input_value value,
+		       bool alive);
+	~MIDIInputEvent();
 
-    void run();
-    void stop();
-    void setDevice(int device);
-    const void setEventReceiver(QObject* Parent){ m_eventReceiver =  Parent;}
-
-
-private:
-    QMutex mutex;
-    bool stopped;
-    int m_device;
-    QObject* m_eventReceiver;
-    MidiInOut* m_parent;
+	MIDIDevice* m_device;
+	t_input m_input;
+	t_input_channel m_channel;
+	t_input_value m_value;
+	bool m_alive;
 };
 
+/*****************************************************************************
+ * MIDIInput
+ *****************************************************************************/
 
-
-
-class MidiInOut : public InputPlugin
+class MIDIInput : public QObject, public QLCInPlugin
 {
-  Q_OBJECT
+	Q_OBJECT
+	Q_INTERFACES(QLCInPlugin)
+	
+	friend class ConfigureMIDIInput;
+	friend class MIDIPoller;
 
-  friend class ConfigureMidiInOut;
-  friend class MidiInThread;
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	void init();
+	~MIDIInput();
 
- public:
-  MidiInOut(t_plugin_id id);
-  ~MidiInOut();
+	void open(t_input input = 0);
+	void close(t_input input = 0);
 
-  // Plugin methods
-  int open();
-  int close();
-  bool isOpen();
-  int configure();
-  int debugLevel()  const { return m_debugLevel; }
-  QString infoText();
-  void contextMenu(QPoint pos);
+	/*********************************************************************
+	 * Devices
+	 *********************************************************************/
+public:
+	void rescanDevices();
 
-  int setConfigDirectory(QString dir);
-  int saveSettings();
-  int loadSettings();
+protected:
+	MIDIDevice* device(const QString& path);
+	MIDIDevice* device(unsigned int index);
 
-  // tPlugin methods
-  void feedBack(int id, int channel, int value);
-  int writeChannel(t_channel channel, t_value value);
-  int writeRange(t_channel address, t_value* values, t_channel num);
+	void addDevice(MIDIDevice* device);
+	void removeDevice(MIDIDevice* device);
 
-  int readChannel(t_channel channel, t_value &value);
-  int readRange(t_channel address, t_value* values, t_channel num);
+signals:
+	void deviceAdded(MIDIDevice* device);
+	void deviceRemoved(MIDIDevice* device);
 
-  // Own methods
-  QString deviceName() { return m_deviceName; }
-  void setDeviceName(QString name) { m_deviceName = name; }
-  const MidiInThread* inThread() const { return m_inThread; }
-  const void setEventReceiver(QObject* Parent){ m_eventReceiver =  Parent; m_inThread->setEventReceiver(m_eventReceiver);}
+protected:
+	QList <MIDIDevice*> m_devices;
 
-/*
- signals:
-   void InputEvent(const int, const int, const int);
-*/
+	/*********************************************************************
+	 * Name
+	 *********************************************************************/
+public:
+	QString name();
 
- private slots:
-  void slotContextMenuCallback(int item);
+	/*********************************************************************
+	 * Inputs
+	 *********************************************************************/
+public:
+	QStringList inputs();
 
- private:
-  void activate();
-  void createContents(QPtrList <QString> &list);
+	/*********************************************************************
+	 * Configuration
+	 *********************************************************************/
+public:
+	void configure();
 
- private:
-  QString m_deviceName;
-  QString m_configDir;
-  int m_device;
-  t_value m_values[KChannelMax];
-  MidiInThread* m_inThread;
-  int m_debugLevel;
+	/*********************************************************************
+	 * Status
+	 *********************************************************************/
+public:
+	QString infoText();
+
+	/*********************************************************************
+	 * Device poller
+	 *********************************************************************/
+public:
+	void addPollDevice(MIDIDevice* device);
+	void removePollDevice(MIDIDevice* device);
+
+protected:
+	MIDIPoller* m_poller;
+
+	/*********************************************************************
+	 * Input data
+	 *********************************************************************/
+protected:
+	void customEvent(QEvent* event);
+
+signals:
+	void valueChanged(QLCInPlugin* plugin, t_input line,
+			  t_input_channel channel, t_input_value value);
+
+public:
+	void connectInputData(QObject* listener);
+
+	void feedBack(t_input input, t_input_channel channel,
+		      t_input_value value);
 };
 
 #endif

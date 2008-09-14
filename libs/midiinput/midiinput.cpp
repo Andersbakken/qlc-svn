@@ -1,8 +1,9 @@
 /*
   Q Light Controller
-  midi-inout.cpp
+  midiinput.cpp
   
-  Copyright (C) 2000, 2001, 2002-2006 Heikki Junnila, Stefan Krumm
+  Copyright (C) Heikki Junnila
+		Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
