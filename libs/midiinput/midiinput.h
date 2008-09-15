@@ -25,6 +25,7 @@
 
 #include <QStringList>
 #include <QString>
+#include <QEvent>
 
 #include "common/qlcinplugin.h"
 #include "common/qlctypes.h"

@@ -71,7 +71,7 @@ public:
 	/**
 	 * Read one event and emit it.
 	 */
-	virtual bool readEvent() = 0;
+	virtual bool readEvent();
 
 protected:
 	QFile m_file;

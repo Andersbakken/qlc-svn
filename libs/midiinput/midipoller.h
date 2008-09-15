@@ -24,7 +24,7 @@
 
 #include <QThread>
 #include <QMutex>
-#include <QList>
+#include <QMap>
 
 class MIDIDevice;
 class MIDIInput;

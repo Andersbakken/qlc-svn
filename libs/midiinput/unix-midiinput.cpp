@@ -49,7 +49,7 @@ MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, t_input input,
 	m_alive = alive;
 }
 
-HIDInputEvent::~HIDInputEvent()
+MIDIInputEvent::~MIDIInputEvent()
 {
 }
 
@@ -74,18 +74,22 @@ MIDIInput::~MIDIInput()
 
 void MIDIInput::open(t_input input)
 {
-	QString path = m_devices.at(input);
-	if (path.isEmpty() == false)
-		m_poller.addDevice(path);
+	MIDIDevice* dev;
+
+	dev = device(input);
+	if (dev != NULL)
+		m_poller->addDevice(dev);
 	else
 		qDebug() << name() << "has no input number:" << input;
 }
 
 void MIDIInput::close(t_input input)
 {
-	QString path = m_devices.at(input);
-	if (path.isEmpty() == false)
-		m_poller.removeDevice(path);
+	MIDIDevice* dev;
+
+	dev = device(input);
+	if (dev != NULL)
+		m_poller->removeDevice(dev);
 	else
 		qDebug() << name() << "has no input number:" << input;
 }
@@ -186,7 +190,7 @@ QStringList MIDIInput::inputs()
 
 void MIDIInput::configure()
 {
-	ConfigureMIDIInput cmi(NULL);
+	ConfigureMIDIInput cmi(NULL, this);
 	cmi.exec();
 }
 
@@ -330,8 +334,8 @@ void MIDIInput::connectInputData(QObject* listener)
 				      t_input_value)));
 }
 
-void HIDInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
-			t_input_value /*value*/)
+void MIDIInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
+			 t_input_value /*value*/)
 {
 }
 
