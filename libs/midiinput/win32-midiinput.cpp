@@ -1,9 +1,8 @@
 /*
   Q Light Controller
-  unix-midiinput.cpp
+  win32-midiinput.cpp
   
   Copyright (C) Heikki Junnila
-		Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -21,37 +20,13 @@
 */
 
 #include <QApplication>
-#include <QMessageBox>
 #include <QStringList>
+#include <Windows.h>
+#include <QPalette>
 #include <QDebug>
-#include <QDir>
 
-#include "configuremidiinput.h"
-#include "mididevice.h"
-#include "midipoller.h"
-#include "midiinput.h"
-
-/*****************************************************************************
- * MIDIInputEvent
- *****************************************************************************/
-
-static const QEvent::Type _MIDIInputEventType = static_cast<QEvent::Type>
-	(QEvent::registerEventType());
-
-MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, t_input input,
-			       t_input_channel channel, t_input_value value,
-			       bool alive) : QEvent(_MIDIInputEventType)
-{
-	m_device = device;
-	m_input = input;
-	m_channel = channel;
-	m_value = value;
-	m_alive = alive;
-}
-
-MIDIInputEvent::~MIDIInputEvent()
-{
-}
+#include "win32-mididevice.h"
+#include "win32-midiinput.h"
 
 /*****************************************************************************
  * MIDIInput Initialization
@@ -59,7 +34,6 @@ MIDIInputEvent::~MIDIInputEvent()
 
 void MIDIInput::init()
 {
-	m_poller = new MIDIPoller(this);
 	rescanDevices();
 }
 
@@ -67,31 +41,46 @@ MIDIInput::~MIDIInput()
 {
 	while (m_devices.isEmpty() == false)
 		delete m_devices.takeFirst();
-
-		m_poller->stop();
-	delete m_poller;
 }
 
 void MIDIInput::open(t_input input)
 {
-	MIDIDevice* dev;
-
-	dev = device(input);
+	MIDIDevice* dev = device(input);
 	if (dev != NULL)
-		m_poller->addDevice(dev);
+	{
+		connect(dev, SIGNAL(valueChanged(MIDIDevice*,
+						 t_input_channel,
+						 t_input_value)),
+			this, SLOT(slotDeviceValueChanged(MIDIDevice*,
+							  t_input_channel,
+							  t_input_value)));
+
+		dev->open();
+	}
 	else
+	{
 		qDebug() << name() << "has no input number:" << input;
+	}
 }
 
 void MIDIInput::close(t_input input)
 {
-	MIDIDevice* dev;
-
-	dev = device(input);
+	MIDIDevice* dev = device(input);
 	if (dev != NULL)
-		m_poller->removeDevice(dev);
+	{
+		disconnect(dev, SIGNAL(valueChanged(MIDIDevice*,
+						    t_input_channel,
+						    t_input_value)),
+			this, SLOT(slotDeviceValueChanged(MIDIDevice*,
+							  t_input_channel,
+							  t_input_value)));
+
+		dev->close();
+	}
 	else
+	{
 		qDebug() << name() << "has no input number:" << input;
+	}
 }
 
 /*****************************************************************************
@@ -100,36 +89,11 @@ void MIDIInput::close(t_input input)
 
 void MIDIInput::rescanDevices()
 {
-	QDir dir("/dev/");
-	QStringList nameFilters;
-	QStringList entries;
-	QStringList::iterator it;
-	t_input line = 0;
-	QString path;
-
-	nameFilters << "midi*";
-	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
-	for (it = entries.begin(); it != entries.end(); ++it)
-	{
-		path = dir.absolutePath() + QDir::separator() + *it;
-
-		if (device(path) == NULL)
-			addDevice(new MIDIDevice(this, line++, path));
-	}
-}
-
-MIDIDevice* MIDIInput::device(const QString& path)
-{
-	QListIterator <MIDIDevice*> it(m_devices);
-
-	while (it.hasNext() == true)
-	{
-		MIDIDevice* dev = it.next();
-		if (dev->path() == path)
-			return dev;
-	}
-
-	return NULL;
+	UINT deviceCount;
+	
+	deviceCount = midiInGetNumDevs();
+	for (UINT id = 0; id < deviceCount; id++)
+		addDevice(new MIDIDevice(this, id));
 }
 
 MIDIDevice* MIDIInput::device(unsigned int index)
@@ -145,7 +109,6 @@ void MIDIInput::addDevice(MIDIDevice* device)
 	Q_ASSERT(device != NULL);
 
 	m_devices.append(device);
-
 	emit deviceAdded(device);
 }
 
@@ -153,10 +116,10 @@ void MIDIInput::removeDevice(MIDIDevice* device)
 {
 	Q_ASSERT(device != NULL);
 
-	removePollDevice(device);
+	device->close();
 	m_devices.removeAll(device);
-
 	emit deviceRemoved(device);
+
 	delete device;
 }
 
@@ -190,8 +153,8 @@ QStringList MIDIInput::inputs()
 
 void MIDIInput::configure()
 {
-	ConfigureMIDIInput cmi(NULL, this);
-	cmi.exec();
+	//ConfigureMIDIInput cmi(NULL, this);
+	//cmi.exec();
 }
 
 /*****************************************************************************
@@ -284,35 +247,17 @@ QString MIDIInput::infoText()
 }
 
 /*****************************************************************************
- * Device poller
- *****************************************************************************/
-
-void MIDIInput::addPollDevice(MIDIDevice* device)
-{
-	Q_ASSERT(device != NULL);
-	m_poller->addDevice(device);
-}
-
-void MIDIInput::removePollDevice(MIDIDevice* device)
-{
-	Q_ASSERT(device != NULL);
-	m_poller->removeDevice(device);
-}
-
-/*****************************************************************************
  * Input data
  *****************************************************************************/
 
-void MIDIInput::customEvent(QEvent* event)
+void MIDIInput::slotDeviceValueChanged(MIDIDevice* device,
+				       t_input_channel channel,
+				       t_input_value value)
 {
-	if (event->type() == MIDIInputEvent::eventType)
-	{
-		MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
+	qDebug() << QString("%1: C:%2 V:%3").arg(device->name())
+			.arg(channel).arg(value);
 
-		emit valueChanged(this, e->m_input, e->m_channel,
-				  e->m_value);
-		event->accept();
-	}
+	emit valueChanged(this, device->line(), channel, value);
 }
 
 void MIDIInput::connectInputData(QObject* listener)
@@ -329,6 +274,7 @@ void MIDIInput::connectInputData(QObject* listener)
 void MIDIInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
 			 t_input_value /*value*/)
 {
+	/* TODO */
 }
 
 /*****************************************************************************

@@ -1,9 +1,8 @@
 /*
   Q Light Controller
-  midiinput.h
+  win32-midiinput.h
   
   Copyright (C) Heikki Junnila
-		Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -25,14 +24,11 @@
 
 #include <QStringList>
 #include <QString>
-#include <QEvent>
+#include <QList>
 
 #include "common/qlcinplugin.h"
 #include "common/qlctypes.h"
 
-class ConfigureMIDIInput;
-class MIDIInputEvent;
-class MIDIPoller;
 class MIDIDevice;
 class MIDIInput;
 
@@ -44,16 +40,13 @@ class MIDIInput : public QObject, public QLCInPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCInPlugin)
-	
-	friend class ConfigureMIDIInput;
-	friend class MIDIPoller;
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
 	void init();
-	~MIDIInput();
+	virtual ~MIDIInput();
 
 	void open(t_input input = 0);
 	void close(t_input input = 0);
@@ -65,7 +58,6 @@ public:
 	void rescanDevices();
 
 protected:
-	MIDIDevice* device(const QString& path);
 	MIDIDevice* device(unsigned int index);
 
 	void addDevice(MIDIDevice* device);
@@ -103,20 +95,12 @@ public:
 	QString infoText();
 
 	/*********************************************************************
-	 * Device poller
-	 *********************************************************************/
-public:
-	void addPollDevice(MIDIDevice* device);
-	void removePollDevice(MIDIDevice* device);
-
-protected:
-	MIDIPoller* m_poller;
-
-	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
-protected:
-	void customEvent(QEvent* event);
+protected slots:
+	void slotDeviceValueChanged(MIDIDevice* device,
+				    t_input_channel channel,
+				    t_input_value value);
 
 signals:
 	void valueChanged(QLCInPlugin* plugin, t_input line,
