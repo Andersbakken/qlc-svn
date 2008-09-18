@@ -1,3 +1,11 @@
+2008-09-18  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/midiinput/midipoller.h:
+	* libs/midiinput/unix-mididevice.cpp:
+	* libs/midiinput/unix-midiinput.cpp:
+
+	Fixed unix midi plugin compilation problems.
+
 2008-09-15  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/midiinput/mididevice.h:

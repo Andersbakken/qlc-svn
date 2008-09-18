@@ -27,31 +27,10 @@
 #include <QDir>
 
 #include "configuremidiinput.h"
+#include "midiinputevent.h"
 #include "mididevice.h"
 #include "midipoller.h"
 #include "midiinput.h"
-
-/*****************************************************************************
- * MIDIInputEvent
- *****************************************************************************/
-
-static const QEvent::Type _MIDIInputEventType = static_cast<QEvent::Type>
-	(QEvent::registerEventType());
-
-MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, t_input input,
-			       t_input_channel channel, t_input_value value,
-			       bool alive) : QEvent(_MIDIInputEventType)
-{
-	m_device = device;
-	m_input = input;
-	m_channel = channel;
-	m_value = value;
-	m_alive = alive;
-}
-
-MIDIInputEvent::~MIDIInputEvent()
-{
-}
 
 /*****************************************************************************
  * MIDIInput Initialization

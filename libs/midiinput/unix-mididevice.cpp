@@ -26,6 +26,7 @@
 #include <QDebug>
 #include <QFile>
 
+#include "midiinputevent.h"
 #include "mididevice.h"
 #include "midiinput.h"
 
