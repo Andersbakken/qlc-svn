@@ -26,9 +26,9 @@
 #include <QDebug>
 #include <QFile>
 
+#include "unix-mididevice.h"
+#include "unix-midiinput.h"
 #include "midiinputevent.h"
-#include "mididevice.h"
-#include "midiinput.h"
 
 MIDIDevice::MIDIDevice(MIDIInput* parent, t_input line, const QString& path)
 	: QObject(parent)

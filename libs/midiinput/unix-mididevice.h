@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  mididevice.h
+  unix-mididevice.h
 
   Copyright (c) Heikki Junnila
 

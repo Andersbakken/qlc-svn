@@ -25,9 +25,9 @@
 #include <poll.h>
 #include <QMap>
 
-#include "midipoller.h"
-#include "mididevice.h"
-#include "midiinput.h"
+#include "unix-midipoller.h"
+#include "unix-mididevice.h"
+#include "unix-midiinput.h"
 
 #define KPollTimeout 1000
 

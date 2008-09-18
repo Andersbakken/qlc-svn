@@ -27,10 +27,10 @@
 #include <QDir>
 
 #include "configuremidiinput.h"
+#include "unix-mididevice.h"
+#include "unix-midipoller.h"
+#include "unix-midiinput.h"
 #include "midiinputevent.h"
-#include "mididevice.h"
-#include "midipoller.h"
-#include "midiinput.h"
 
 /*****************************************************************************
  * MIDIInput Initialization

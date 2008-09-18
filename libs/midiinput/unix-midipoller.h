@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  midipoller.h
+  unix-midipoller.h
   
   Copyright (C) Heikki Junnila
   

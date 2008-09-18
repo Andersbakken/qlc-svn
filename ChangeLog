@@ -1,5 +1,20 @@
 2008-09-18  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/midiinput/mididevice.h:
+	* libs/midiinput/midiinput.h:
+	* libs/midiinput/midiinput.pro:
+	* libs/midiinput/midipoller.h:
+	* libs/midiinput/unix-mididevice.cpp:
+	* libs/midiinput/unix-mididevice.h:
+	* libs/midiinput/unix-midiinput.cpp:
+	* libs/midiinput/unix-midiinput.h:
+	* libs/midiinput/unix-midipoller.cpp:
+	* libs/midiinput/unix-midipoller.h:
+
+	Renamed midi*.h files to unix-*.h.
+
+2008-09-18  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/midiinput/midipoller.h:
 	* libs/midiinput/unix-mididevice.cpp:
 	* libs/midiinput/unix-midiinput.cpp:

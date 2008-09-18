@@ -1,9 +1,9 @@
 /*
   Q Light Controller
-  midiinput.h
+  unix-midiinput.h
   
   Copyright (C) Heikki Junnila
-		Stefan Krumm
+                Stefan Krumm
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License

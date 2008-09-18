@@ -26,16 +26,16 @@ win32:LIBS	+= -lwinmm
 unix:FORMS	+= configuremidiinput.ui
 
 unix:HEADERS	+= configuremidiinput.h \
-		   mididevice.h \
-		   midiinput.h \
 		   midiinputevent.h \
-		   midipoller.h
+		   unix-mididevice.h \
+		   unix-midiinput.h \
+		   unix-midipoller.h
 
 unix:SOURCES 	+= configuremidiinput.cpp \
+		   midiinputevent.cpp \
 		   unix-mididevice.cpp \
-		   unix-midipoller.cpp \
 		   unix-midiinput.cpp \
-		   midiinputevent.cpp
+		   unix-midipoller.cpp
 
 ###############################################################################
 # WIN32 sources
