@@ -98,8 +98,7 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance
 		channel = static_cast<t_input_channel> (data1);
 		value = static_cast<t_input_value> (data2);
 
-		event = new MIDIInputEvent(self, self->line(), channel, value,
-					   true);
+		event = new MIDIInputEvent(self, self->line(), channel, value);
 		QApplication::postEvent(self, event);
 	}
 }

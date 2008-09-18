@@ -34,15 +34,13 @@ public:
 
 public:
 	MIDIInputEvent(MIDIDevice* device, t_input input,
-		       t_input_channel channel, t_input_value value,
-		       bool alive);
+		       t_input_channel channel, t_input_value value);
 	~MIDIInputEvent();
 
 	MIDIDevice* m_device;
 	t_input m_input;
 	t_input_channel m_channel;
 	t_input_value m_value;
-	bool m_alive;
 };
 
 #endif

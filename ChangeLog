@@ -1,5 +1,16 @@
 2008-09-18  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/midiinput/midiinputevent.cpp:
+	* libs/midiinput/midiinputevent.h:
+	* libs/midiinput/unix-mididevice.cpp:
+	* libs/midiinput/win32-mididevice.cpp:
+
+	Removed the "alive" flag from MIDIInputevent.
+	Moved some event reading stuff from midiinput.cpp to
+	unix-midiinput.cpp.
+	
+2008-09-18  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/midiinput/mididevice.h:
 	* libs/midiinput/midiinput.h:
 	* libs/midiinput/midiinput.pro:

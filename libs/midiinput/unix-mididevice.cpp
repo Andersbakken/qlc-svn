@@ -89,27 +89,43 @@ int MIDIDevice::handle() const
 
 bool MIDIDevice::readEvent()
 {
-	MIDIInputEvent* e;
+	int r;
+	unsigned char buf[10] = { 255, 255, 255, 255, 255,
+				  255, 255, 255, 255, 255 };
 
-	if (0)
+	r = ::read(handle(), buf, 1);
+	if (r == 0)
 	{
-		/* Post the event to the global event loop so
-		   that we can switch context away from the
-		   poller thread and into the main application
-		   thread. This is caught in MIDIInput::customEvent(). */
-/*
-		   e = new MIDIInputEvent(this, m_line, ev.code, val, true);
-		QApplication::postEvent(parent(), e);
-*/		
-		return true;
-	}
-	else
-	{
-		e = new MIDIInputEvent(this, 0, 0, 0, false);
-		QApplication::postEvent(parent(), e);
-
+		/* Unable to read from the MIDI device, although something
+		   should be there. Deem it dead. */
+		::perror("read");
 		return false;
 	}
+	else if ((buf[0] & 176) == 176)
+	{
+		MIDIInputEvent* e;
+		t_input_channel channel;
+		t_input_value value;
+
+		r = ::read(handle(), &buf[1], 2);
+		if (r == 2)
+		{
+			/* channel = buf[0] ^ 176; */
+			channel = buf[1];
+			value = buf[2];
+			
+			/* Post the event to the global event loop so that we
+			   can switch context away from the poller thread and
+			   into the main application thread. This is caught in
+			   MIDIInput::customEvent(). */
+			e = new MIDIInputEvent(this, m_line, channel, value);
+			QApplication::postEvent(parent(), e);
+		}
+	}
+
+	/* Return true, because the event might have just been something that
+	   we don't recognise/care about. */
+	return true;
 }
 
 /*****************************************************************************

@@ -22,7 +22,6 @@
 #include <QEvent>
 
 #include "midiinputevent.h"
-#include "mididevice.h"
 
 /*****************************************************************************
  * MIDIInputEvent type
@@ -36,14 +35,13 @@ const QEvent::Type MIDIInputEvent::eventType =
  *****************************************************************************/
 
 MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, t_input input,
-			       t_input_channel channel, t_input_value value,
-			       bool alive) : QEvent(MIDIInputEvent::eventType)
+			       t_input_channel channel, t_input_value value)
+	: QEvent(MIDIInputEvent::eventType)
 {
 	m_device = device;
 	m_input = input;
 	m_channel = channel;
 	m_value = value;
-	m_alive = alive;
 }
 
 MIDIInputEvent::~MIDIInputEvent()
