@@ -1,3 +1,9 @@
+2008-09-19  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/inputmap.cpp:
+
+	Fixed a crash bug during InputMap::saveXML().
+
 2008-09-18  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/midiinput/midiinputevent.cpp:

@@ -52,7 +52,6 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 	QString str;
 
 	Q_ASSERT(doc != NULL);
-	Q_ASSERT(this->plugin != NULL);
 
 	/* Patch entry */
 	root = doc->createElement(KXMLQLCInputPatch);
