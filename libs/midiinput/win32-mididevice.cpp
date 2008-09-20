@@ -28,6 +28,7 @@
 #include "win32-mididevice.h"
 #include "win32-midiinput.h"
 #include "midiinputevent.h"
+#include "midiprotocol.h"
 
 MIDIDevice::MIDIDevice(MIDIInput* parent, UINT id) : QObject(parent)
 {
@@ -94,12 +95,18 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance
 		BYTE data1 = (dwParam1 & 0xFF00) >> 8;
 		BYTE data2 = (dwParam1 & 0xFF0000) >> 16;
 		MIDIInputEvent* event;
+		QString str;
 
-		channel = static_cast<t_input_channel> (data1);
-		value = static_cast<t_input_value> (data2);
+		if (status == MIDI_NOTE_ON || status == MIDI_NOTE_OFF ||
+		    status == MIDI_CONTROL_CHANGE)
+		{
+			channel = static_cast<t_input_channel> (data1);
+			value = static_cast<t_input_value> (data2) * 2;
 
-		event = new MIDIInputEvent(self, self->line(), channel, value);
-		QApplication::postEvent(self, event);
+			event = new MIDIInputEvent(self, self->line(),
+						   channel, value);
+			QApplication::postEvent(self, event);
+		}
 	}
 }
 

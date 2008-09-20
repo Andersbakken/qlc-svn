@@ -179,7 +179,7 @@ const t_value KChannelValueMin ( 0 );
 /**
  * Largest channel value
  */
-const t_value KChannelValueMax ( 255 );
+const t_value KChannelValueMax ( UCHAR_MAX );
 
 /*****************************************************************************
  * Input universes
@@ -255,7 +255,7 @@ const t_input_channel KInputChannelInvalid ( USHRT_MAX );
 /**
  * Input channel value type
  */
-typedef unsigned short t_input_value;
+typedef unsigned char t_input_value;
 
 /**
  * Smallest input channel value
@@ -265,7 +265,7 @@ const t_input_value KInputValueMin ( 0 );
 /**
  * Largest input channel value
  */
-const t_input_value KInputValueMax ( USHRT_MAX );
+const t_input_value KInputValueMax ( UCHAR_MAX );
 
 /*****************************************************************************
  * Event buffer
