@@ -38,7 +38,7 @@ fixtures.files += GLP-Junior-Scan-2.qxf
 fixtures.files += GLP-PocketScan.qxf
 fixtures.files += JB-Lighting-Varyscan2.qxf
 fixtures.files += Lite-Works-ColorChanger.qxf
-fixtures.files += Martin-MAC250+.qxf
+fixtures.files += Martin-MAC250plus.qxf
 fixtures.files += Martin-MiniMAC-Maestro.qxf
 fixtures.files += Martin-MiniMAC-Profile.qxf
 fixtures.files += Martin-MiniMAC-Wash.qxf
@@ -64,5 +64,5 @@ fixtures.files += SGM-Victory-II-250.qxf
 fixtures.files += SGM-Victory-II-Pro150.qxf
 
 unix:fixtures.path = /usr/share/fixtures
-win32:fixtures.path = C:\QLC\Fixtures
+win32:fixtures.path = C:/QLC/Fixtures
 INSTALLS += fixtures
