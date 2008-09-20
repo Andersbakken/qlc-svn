@@ -409,13 +409,14 @@ void Chaser::startMemberAt(int index)
 	   m_childRunning is set false from FunctionConsumer's context. */
 	while (m_childRunning == true && m_stopped == false)
 	{
-#ifndef __APPLE__
-#ifndef WIN32
- 		pthread_yield();
-#endif
-#else
-		pthread_yield_np();
-#endif
+		/* Give away this process' time slot since it's just waiting */
+		#ifdef WIN32
+			QThread::msleep(1000/KFrequency);
+		#elif __APPLE__
+			pthread_yield_np();
+		#else
+			pthread_yield();
+		#endif
 	}
 	
 	if (m_stopped == true)
