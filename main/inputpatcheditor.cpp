@@ -19,78 +19,164 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QPushButton>
+#include <QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QToolButton>
 #include <QComboBox>
+#include <QGroupBox>
+#include <QVariant>
 #include <QDebug>
+#include <QIcon>
 
+#include "common/qlcinputdevice.h"
 #include "common/qlctypes.h"
 
 #include "inputpatcheditor.h"
 #include "inputmap.h"
+
+#define KColumnName 0
+#define KColumnInput 1
 
 InputPatchEditor::InputPatchEditor(QWidget* parent, InputMap* inputMap,
 				   t_input_universe universe,
 				   const QString& pluginName, t_input input)
 	: QDialog(parent)
 {
-	/* Setup UI controls */
-	setupUi(this);
-
-	connect(m_pluginCombo, SIGNAL(currentIndexChanged(const QString&)),
-		this, SLOT(slotPluginActivated(const QString&)));
-	connect(m_inputCombo, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(slotInputActivated(int)));
-
 	/* InputMap */
 	Q_ASSERT(inputMap != NULL);
 	m_inputMap = inputMap;
 
+	/* Setup UI controls */
+	setupUi(this);
+	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
+						  QTreeWidgetItem*)),
+		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
+	connect(m_deviceCombo, SIGNAL(activated(const QString&)),
+		this, SLOT(slotDeviceComboActivated(const QString&)));
+
+	m_configureDevicesButton->setIcon(QIcon(":/configure.png"));
+	//m_deviceGroup->setEnabled(false);
+	
 	/* Universe */
 	Q_ASSERT(universe < inputMap->universes());
 	m_universe = universe;
-	setWindowTitle(QString("Route input universe %1 thru...")
-		       .arg(universe + 1));
-	
+	this->setWindowTitle(tr("Mapping properties for input universe %1")
+			     .arg(universe + 1));
+	m_tree->setToolTip(tr("Patch input data from the selected plugin input"
+			      " to be available in input universe %1")
+			      .arg(universe + 1));
+
+	/* Selected plugin & input */
 	m_pluginName = pluginName;
-	m_pluginCombo->addItem(KInputNone);
-	m_pluginCombo->addItems(inputMap->pluginNames());
-
-	/* Set the given plugin name as selected */
-	int index = m_pluginCombo->findText(pluginName);
-	m_pluginCombo->setCurrentIndex(index);
-
-	/* Set the given input line number as selected */
 	m_input = input;
-	m_inputCombo->setCurrentIndex(m_input);
+	
+	fillTree();
+	fillCombo();
 }
 
 InputPatchEditor::~InputPatchEditor()
 {
 }
 
-void InputPatchEditor::slotPluginActivated(const QString& pluginName)
+void InputPatchEditor::fillTree()
 {
-	QStringList inputs;
-	QString str;
-
-	Q_ASSERT(pluginName.isEmpty() == false);
-
-	m_inputCombo->clear();
-
-	/* Put the selected plugin's inputs to the input combo */
-	inputs = m_inputMap->pluginInputs(pluginName);
-	m_inputCombo->addItems(inputs);
+	QTreeWidgetItem* pitem;
+	QTreeWidgetItem* iitem;
+	QString pluginName;
+	int i;
 	
-	m_pluginName = pluginName;
+	m_tree->clear();
 
-	if (m_inputCombo->count() > 0)
-		m_input = 0;
-	else
-		m_input = KInputInvalid;
+	/* Add an empty item so that user can choose not to assign any plugin
+	   to an input universe */
+	pitem = new QTreeWidgetItem(m_tree);
+	pitem->setText(KColumnName, KInputNone);
+	pitem->setText(KColumnInput, QString("%1").arg(KInputInvalid));
+	
+	/* Set "Nothing" selected if there is no valid input selected */
+	if (m_input == KInputInvalid)
+		m_tree->setCurrentItem(pitem);
+	
+	/* Go thru available plugins and put them as the tree's root nodes. */
+	QStringListIterator pit(m_inputMap->pluginNames());
+	while (pit.hasNext() == true)
+	{
+		i = 0;
+
+		pluginName = pit.next();
+		pitem = new QTreeWidgetItem(m_tree);
+		pitem->setText(KColumnName, pluginName);
+		pitem->setText(KColumnInput, QString("%1").arg(KInputInvalid));
+
+		/* Go thru available inputs provided by each plugin and put
+		   them as their parent plugin's leaf nodes. */
+		QStringListIterator iit(m_inputMap->pluginInputs(pluginName));
+		while (iit.hasNext() == true)
+		{
+			iitem = new QTreeWidgetItem(pitem);
+			iitem->setText(KColumnName, iit.next());
+			iitem->setText(KColumnInput, QString("%1").arg(i++));
+			
+			/* Select that plugin's line that is currently mapped */
+			if (m_pluginName == pluginName && m_input == i)
+				m_tree->setCurrentItem(iitem);
+		}
+		
+		/* If no inputs were appended to the plugin node, put a
+		   "Nothing" node there. */
+		if (i == 0)
+		{
+			iitem = new QTreeWidgetItem(pitem);
+			iitem->setText(KColumnName, KInputNone);
+			iitem->setText(KColumnInput,
+				       QString("%1").arg(KInputInvalid));
+		}
+	}
 }
 
-void InputPatchEditor::slotInputActivated(int input)
+void InputPatchEditor::fillCombo()
 {
-	m_input = (t_input) input;
-	m_inputName = m_inputCombo->itemText(input);
+	m_deviceCombo->clear();
+
+	/* Get a list of available input device templates & their file paths */
+	QStringList names, paths;
+	QLCInputDevice::availableTemplates(&names, &paths);
+	Q_ASSERT(names.count() == files.count());
+
+	/* Add an option to have no template at all */
+	m_deviceCombo->addItem(tr("Nothing"));
+
+	/* Insert available input device templates and their file paths
+	   to the device combo. */
+	QStringListIterator nit(names);
+	QStringListIterator pit(names);
+	while (nit.hasNext() == true && pit.hasNext() == true)
+		m_deviceCombo->addItem(nit.next(), QVariant(pit.next()));
+}
+
+void InputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
+{
+	if (item == NULL)
+	{
+		m_input = KInputInvalid;
+		m_inputName = QString::null;
+	}
+	else
+	{
+		m_input = item->text(KColumnInput).toInt();
+		if (m_input != KInputInvalid)
+		{
+			m_inputName = item->text(KColumnName);
+			m_pluginName = item->parent()->text(KColumnName);
+		}
+		else
+		{
+			m_inputName = QString::null;
+			m_pluginName = QString::null;
+		}
+	}
+}
+
+void InputPatchEditor::slotDeviceComboActivated(const QString& name)
+{
 }

@@ -1,19 +1,13 @@
 TEMPLATE 	= app
 LANGUAGE 	= C++
 TARGET 		= qlc
-VERSION 	= 3.0
 
-CONFIG          += qt warn_on debug_and_release build_all
+CONFIG          += qt warn_on release
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
-win32:release {
-LIBS 	+= -L../libs/common/release/ -lqlccommon
-}
-win32:debug {
-LIBS 	+= -L../libs/common/debug/ -lqlccommon
-}
+win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 
 unix:target.path = /usr/bin
 win32:target.path = C:\QLC
@@ -57,6 +51,7 @@ HEADERS += aboutbox.h \
            generatorarea.h \
            inputmap.h \
            inputmapeditor.h \
+	   inputpatch.h \
            inputpatcheditor.h \
            keybind.h \
            monitor.h \
@@ -139,6 +134,7 @@ SOURCES += aboutbox.cpp \
            generatorarea.cpp \
            inputmap.cpp \
            inputmapeditor.cpp \
+	   inputpatch.cpp \
            inputpatcheditor.cpp \
            keybind.cpp \
            main.cpp \

@@ -34,28 +34,49 @@ class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 {
 	Q_OBJECT
 
+	/********************************************************************
+	 * Initialization
+	 ********************************************************************/
 public:
 	InputPatchEditor(QWidget* parent, InputMap* inputMap,
 			 t_input_universe universe, const QString& pluginName,
 			 t_input input);
 	~InputPatchEditor();
 
+protected:
+	/** Initialize the tree to contain available plugins & their inputs */
+	void fillTree();
+	
+	/** Initialize the combo to contain available device templates */
+	void fillCombo();
+
+protected slots:
+	void slotCurrentItemChanged(QTreeWidgetItem* item);
+	void slotDeviceComboActivated(const QString& name);
+
+protected:
+	/** Our input map that contains the actual mapping */
+	InputMap* m_inputMap;
+
+	/** The input universe being edited */
+	t_input_universe m_universe;
+
+	/********************************************************************
+	 * Selection extraction
+	 ********************************************************************/
+public:
 	const QString pluginName() const { return m_pluginName; }
 	const QString inputName() const { return m_inputName; }
 	t_input input() const { return m_input; }
 
-protected slots:
-	void slotPluginActivated(const QString& pluginName);
-	void slotInputActivated(int line);
-
 protected:
-	InputMap* m_inputMap;
-	QStringList m_pluginList;
-
-	t_input_universe m_universe;
-
+	/** The selected plugin's name */
 	QString m_pluginName;
+
+	/** The selected input name */
 	QString m_inputName;
+	
+	/** The selected input line number */
 	t_input m_input;
 };
 

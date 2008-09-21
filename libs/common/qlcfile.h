@@ -31,6 +31,7 @@ class QString;
 // File extensions
 #define KExtFixture   ".qxf" // 'Q'lc 'X'ml 'F'ixture
 #define KExtWorkspace ".qxw" // 'Q'lc 'X'ml 'W'orkspace
+#define KExtInputTemplate ".qxi" // 'Q'lc 'X'ml 'I'nput template
 
 // Generic XML tags common for all documents
 #define KXMLQLCCreator "Creator"

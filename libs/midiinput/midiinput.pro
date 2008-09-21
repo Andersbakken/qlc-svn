@@ -3,7 +3,7 @@ LANGUAGE 	= C++
 TARGET 		= midiinput
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on debug_and_release build_all
+CONFIG          += plugin warn_on release
 
 ###############################################################################
 # Installation

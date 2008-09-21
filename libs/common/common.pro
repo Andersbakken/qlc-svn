@@ -3,8 +3,9 @@ LANGUAGE 	= C++
 TARGET 		= qlccommon
 VERSION 	= 3.0
 
-CONFIG          += qt warn_on debug_and_release build_all
+CONFIG          += qt warn_on release
 QT 		+= xml
+INCLUDEPATH	+= ../
 win32:DEFINES 	+= QLC_EXPORT
 
 # Sources
@@ -14,6 +15,8 @@ HEADERS += qlccapability.h \
            qlcfile.h \
            qlcfixturedef.h \
            qlcfixturemode.h \
+	   qlcinputchannel.h \
+	   qlcinputdevice.h \
            qlcphysical.h \
            qlctypes.h
 	   
@@ -23,6 +26,8 @@ SOURCES += qlccapability.cpp \
            qlcfile.cpp \
            qlcfixturedef.cpp \
            qlcfixturemode.cpp \
+	   qlcinputchannel.cpp \
+	   qlcinputdevice.cpp \
            qlcphysical.cpp
 
 # Installation
@@ -37,6 +42,8 @@ headers.files = qlccapability.h \
                 qlcfile.h \
                 qlcfixturedef.h \
                 qlcfixturemode.h \
+		qlcinputchannel.h \
+		qlcinputdevice.h \
                 qlcphysical.h \
                 qlctypes.h
 

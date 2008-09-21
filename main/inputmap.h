@@ -26,71 +26,17 @@
 #include <QVector>
 #include <QList>
 
+#include "common/qlcinputdevice.h"
 #include "common/qlctypes.h"
+
+class QLCInPlugin;
+class InputPatch;
+class InputMap;
 
 class QDomDocument;
 class QDomElement;
-class QLCInPlugin;
-class InputMap;
 
 #define KInputNone QObject::tr("None")
-
-/*****************************************************************************
- * InputPatch
- *****************************************************************************/
-
-#define KXMLQLCInputPatch "Patch"
-#define KXMLQLCInputPatchUniverse "Universe"
-#define KXMLQLCInputPatchPlugin "Plugin"
-#define KXMLQLCInputPatchInput "Input"
-#define KXMLQLCInputPatchPluginNone "None"
-
-/**
- * This is a simple container class that stores only the pointer to an
- * existing plugin and an input line provided by that plugin.
- */
-class InputPatch
-{
-	friend class InputMap;
-	friend class InputMapEditor;
-	friend class InputPatchEditor;
-
-public:
-	InputPatch(QLCInPlugin* p, t_input i) { plugin = p; input = i; }
-	virtual ~InputPatch() {}
-
-protected:
-	/**
-	 * Save an InputPatch's properties into an XML document
-	 *
-	 * @param doc An XML document to save to
-	 * @param map_root An XML root node (InputMap) to save under
-	 * @param universe The internal universe number that the patch is
-	 *                 addressed to
-	 * @return true if successful, otherwise false
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* map_root,
-		     t_input_universe universe);
-
-	/**
-	 * Create and load an InputPatch's properties from an XML document
-	 *
-	 * @param doc An XML document to load from
-	 * @param root An XML node containing an InputPatch to load from
-	 * @param inputMap InputMap object that contains the loaded patch
-	 * @return true if successful, otherwise false
-	 */
-	static bool loader(QDomDocument* doc, QDomElement* root,
-			   InputMap* inputMap);
-
-	QLCInPlugin* plugin;
-	t_input input;
-};
-
-/*****************************************************************************
- * InputMap
- *****************************************************************************/
-
 #define KXMLQLCInputMap "InputMap"
 
 class InputMap : public QObject
@@ -160,10 +106,13 @@ protected:
 	 * @param universe The input universe to patch
 	 * @param pluginName The name of the plugin to patch to the universe
 	 * @param input An input universe provided by the plugin to patch to
+	 * @param deviceTemplate A template describing the device that is
+	 *                       sending the input events.
 	 * @return true if successful, otherwise false
 	 */
-	bool setPatch(t_input_universe universe, const QString& pluginName,
-		      t_input input = 0);
+	bool setPatch(t_input_universe universe,
+		      const QString& pluginName, t_input input,
+		      const QString& deviceTemplate = QString::null);
 
 	/**
 	 * Get mapping for an input universe.

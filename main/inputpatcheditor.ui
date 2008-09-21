@@ -5,81 +5,78 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>407</width>
-    <height>108</height>
+    <width>521</width>
+    <height>311</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Input patch editor</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
-    <layout class="QHBoxLayout" >
-     <item>
-      <layout class="QVBoxLayout" >
-       <item>
-        <widget class="QLabel" name="m_pluginLabel" >
+    <widget class="QGroupBox" name="m_mappingGroup" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title" >
+      <string>Mapping</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout" >
+      <item row="0" column="0" >
+       <widget class="QTreeWidget" name="m_tree" >
+        <column>
          <property name="text" >
-          <string>Input Plugin</string>
+          <string>Inputs</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="m_pluginCombo" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip" >
-          <string>Input plugin</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation" >
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType" >
-        <enum>QSizePolicy::Maximum</enum>
-       </property>
-       <property name="sizeHint" stdset="0" >
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" >
-       <item>
-        <widget class="QLabel" name="m_inputLabel" >
-         <property name="text" >
-          <string>Input Line</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="m_inputCombo" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip" >
-          <string>Input universe provided by the selected plugin</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_deviceGroup" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title" >
+      <string>Device Template</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2" >
+      <item>
+       <widget class="QComboBox" name="m_deviceCombo" >
+        <property name="toolTip" >
+         <string>Select a device template that describes the functions of the selected input device</string>
+        </property>
+        <property name="whatsThis" >
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="m_configureDevicesButton" >
+        <property name="toolTip" >
+         <string>Configure device templates</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="m_buttonBox" >

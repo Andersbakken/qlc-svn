@@ -31,9 +31,8 @@
 
 #include "inputpatcheditor.h"
 #include "inputmapeditor.h"
+#include "inputpatch.h"
 #include "inputmap.h"
-
-using namespace std;
 
 #define KColumnUniverse 0
 #define KColumnPlugin   1
@@ -67,20 +66,18 @@ InputMapEditor::InputMapEditor(QWidget* parent, InputMap* inputMap)
 		item->setText(KColumnUniverse, str.setNum(i + 1));
 
 		/* Plugin name */
-		if (inputPatch->plugin != NULL)
+		if (inputPatch->plugin() != NULL &&
+		    inputPatch->input() != KInputInvalid)
 		{
 			/* Plugin name */
-			item->setText(KColumnPlugin,
-				      inputPatch->plugin->name());
+			item->setText(KColumnPlugin, inputPatch->pluginName());
 
 			/* Plugin's input name */
-			item->setText(KColumnInput,
-				      inputPatch->plugin->inputs()
-				      [inputPatch->input]);
+			item->setText(KColumnInput, inputPatch->inputName());
 
 			/* Plugin's input number */
 			item->setText(KColumnInputNum,
-				      str.setNum(inputPatch->input + 1));
+				      str.setNum(inputPatch->input() + 1));
 		}
 		else
 		{

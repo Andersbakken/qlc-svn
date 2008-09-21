@@ -32,102 +32,13 @@
 #include "common/qlcinplugin.h"
 #include "common/qlctypes.h"
 
+#include "inputpatch.h"
 #include "inputmap.h"
 #include "app.h"
 
 using namespace std;
 
 extern App* _app;
-
-/*****************************************************************************
- * InputPatch
- *****************************************************************************/
-
-bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
-			 t_input_universe universe)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-
-	/* Patch entry */
-	root = doc->createElement(KXMLQLCInputPatch);
-	map_root->appendChild(root);
-
-	/* Universe */
-	str.setNum(universe);
-	root.setAttribute(KXMLQLCInputPatchUniverse, str);
-
-	/* Plugin */
-	tag = doc->createElement(KXMLQLCInputPatchPlugin);
-	root.appendChild(tag);
-	if (this->plugin != NULL)
-		text = doc->createTextNode(this->plugin->name());
-	else
-		text = doc->createTextNode(KXMLQLCInputPatchPluginNone);
-	tag.appendChild(text);
-
-	/* Input */
-	tag = doc->createElement(KXMLQLCInputPatchInput);
-	root.appendChild(tag);
-	str.setNum(this->input);
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
-
-	return true;
-}
-
-bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
-{
-	QDomNode node;
-	QDomElement tag;
-	QString str;
-	QString pluginName;
-	t_input_universe universe = 0;
-	t_input input = 0;
-	
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(inputMap != NULL);
-
-	if (root->tagName() != KXMLQLCInputPatch)
-	{
-		qWarning() << "Input patch node not found!";
-		return false;
-	}
-
-	/* QLC input universe that this patch has been made for */
-	universe = root->attribute(KXMLQLCInputPatchUniverse).toInt();
-
-	/* Load patch contents */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		
-		if (tag.tagName() == KXMLQLCInputPatchPlugin)
-		{
-			/* Plugin name */
-			pluginName = tag.text();
-		}
-		else if (tag.tagName() == KXMLQLCInputPatchInput)
-		{
-			/* Plugin input */
-			input = tag.text().toInt();
-		}
-		else
-		{
-			qWarning() << "Unknown Input patch tag: "
-				   << tag.tagName();
-		}
-		
-		node = node.nextSibling();
-	}
-
-	return inputMap->setPatch(universe, pluginName, input);
-}
 
 /*****************************************************************************
  * Initialization
@@ -225,12 +136,12 @@ QStringList InputMap::universeNames()
 
 	for (t_input_universe i = 0; i < m_universes; i++)
 	{
-		if (m_patch[i]->plugin != NULL)
+		if (m_patch[i]->plugin() != NULL)
 		{
-			inputs = m_patch[i]->plugin->inputs();
+			inputs = m_patch[i]->plugin()->inputs();
 			list << QString("%1: %2/%3").arg(i + 1)
-				.arg(m_patch[i]->plugin->name())
-				.arg(inputs.at(m_patch[i]->input));
+				.arg(m_patch[i]->plugin()->name())
+				.arg(inputs.at(m_patch[i]->input()));
 		}
 		else
 		{
@@ -249,11 +160,10 @@ QStringList InputMap::universeNames()
 void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
 				t_input_channel channel, t_input_value value)
 {
-	/* TODO: Some QHash-based solution would be more efficient. */
 	for (t_input_universe i = 0; i < m_universes; i++)
 	{
-		if (m_patch[i]->plugin == plugin &&
-		    m_patch[i]->input == input)
+		if (m_patch[i]->plugin() == plugin &&
+		    m_patch[i]->input() == input)
 		{
 			emit inputValueChanged(i, channel, value);
 		}
@@ -267,11 +177,12 @@ void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
 void InputMap::initPatch()
 {
 	for (t_input_universe i = 0; i < m_universes; i++)
-		m_patch.insert(i, new InputPatch(NULL, 0));
+		m_patch.insert(i, new InputPatch(this));
 }
 
 bool InputMap::setPatch(t_input_universe universe,
-			const QString& pluginName, t_input input)
+			const QString& pluginName, t_input input,
+			const QString& deviceTemplate)
 {
 	if (universe >= m_universes)
 	{
@@ -286,20 +197,7 @@ bool InputMap::setPatch(t_input_universe universe,
 		return false;
 	}
 
-	/* TODO: This closes the plugin line always, regardless of whether
-	   the line has been assigned to more than one input universe */
-
-	/* Close the previously-assigned plugin line (if any) */
-	if (m_patch[universe]->plugin != NULL)
-		m_patch[universe]->plugin->close(m_patch[universe]->input);
-
-	/* Assign the new plugin and its input line */
-	m_patch[universe]->plugin = ip;
-	m_patch[universe]->input = input;
-
-	/* Open the new plugin line */
-	if (m_patch[universe]->plugin != NULL)
-		m_patch[universe]->plugin->open(input);
+	m_patch[universe]->set(ip, input);
 
 	return true;
 }
@@ -407,18 +305,18 @@ QString InputMap::pluginStatus(const QString& pluginName)
 
 			/* Plugin name */
 			info += QString("<TD>");
-			if (inputPatch->plugin != NULL)
-				info += inputPatch->plugin->name();
+			if (inputPatch->plugin() != NULL)
+				info += inputPatch->plugin()->name();
 			else
 				info += KInputNone;
 			info += QString("</TD>");
 
 			/* Input */
 			info += QString("<TD>");
-			if (inputPatch->plugin != NULL)
+			if (inputPatch->plugin() != NULL)
 			{
-				info += inputPatch->plugin->inputs()
-					.at(inputPatch->input);
+				info += inputPatch->plugin()->inputs()
+					.at(inputPatch->input());
 			}
 			else
 			{
@@ -562,15 +460,15 @@ void InputMap::saveDefaults()
 		InputPatch* pat = patch(i);
 		Q_ASSERT(pat != NULL);
 
-		if (pat->plugin != NULL)
+		if (pat->plugin() != NULL)
 		{
 			/* Plugin name */
 			key = QString("/inputmap/universe%2/plugin/").arg(i);
-			settings.setValue(key, pat->plugin->name());
+			settings.setValue(key, pat->plugin()->name());
 			
 			/* Plugin input */
 			key = QString("/inputmap/universe%2/input/").arg(i);
-			settings.setValue(key, str.setNum(pat->input));
+			settings.setValue(key, str.setNum(pat->input()));
 		}
 		else
 		{
