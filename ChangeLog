@@ -1,3 +1,9 @@
+2008-09-22  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/midiinput/configuremidiinput.cpp:
+
+	Fixed compile issues on unix target.	
+
 2008-09-19  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/inputmap.cpp:

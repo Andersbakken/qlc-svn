@@ -28,8 +28,13 @@
 #include <QDebug>
 
 #include "configuremidiinput.h"
-#include "mididevice.h"
-#include "midiinput.h"
+#ifdef WIN32
+#include "win32-mididevice.h"
+#include "win32-midiinput.h"
+#else
+#include "unix-mididevice.h"
+#include "unix-midiinput.h"
+#endif
 
 #define KColumnNumber  0
 #define KColumnName    1
