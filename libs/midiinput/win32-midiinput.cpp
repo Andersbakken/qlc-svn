@@ -230,7 +230,7 @@ QString MIDIInput::infoText()
 	{
 		info += QString("<TR>");
 		info += QString("<TD COLSPAN=\"3\">");
-		info += QString("No MIDI devices found under /dev/");
+		info += QString("Unable to find any MIDI inputs.");
 		info += QString("</TD>");
 		info += QString("</TR>");
 	}
