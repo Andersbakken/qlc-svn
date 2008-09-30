@@ -19,16 +19,17 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <windows.h>
-
 #include <QApplication>
 #include <QMessageBox>
+#include <QStringList>
+#include <windows.h>
 #include <QPalette>
 #include <QDebug>
 #include <QString>
 #include <QColor>
 
 #include "configureusbdmxout.h"
+#include "usbdmxdevice-win32.h"
 #include "usbdmxout-win32.h"
 #include "usbdmx-dynamic.h"
 
@@ -48,14 +49,13 @@ void USBDMXOut::init()
 			m_values[i][ch] = 0;
 
 	}
-	
-	/* Nobody is using the device yet */
-	m_refCount = 0;
-	
+
 	/* Load usbdmx.dll */
 	usbdmx = usbdmx_init();
 	if (usbdmx == NULL)
+	{
 		qWarning() << "Loading USBDMX.DLL failed.";
+	}
 	else if (USBDMX_DLL_VERSION_CHECK(usbdmx) == FALSE)
 	{
 		/* verify USBDMX dll version */
@@ -73,18 +73,12 @@ void USBDMXOut::init()
  * Plugin open/close
  *****************************************************************************/
 
-int USBDMXOut::open()
+void USBDMXOut::open(t_output output)
 {
 	if (usbdmx == NULL)
-		return -1;
+		return;
 
-	/* Count the number of times open() has been called so that the devices
-	   are opened only once. This is basically reference counting. */
-	m_refCount++;
-	if (m_refCount > 1)
-		return 0;
-
-	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
 		HANDLE handle;
 		
@@ -116,39 +110,35 @@ int USBDMXOut::open()
 		else
 		{
 			m_devices[i] = 0;
+			m_names[i] = QString::null;
 		}
 	}
-
-	return 0;
 }
 
-int USBDMXOut::close()
+void USBDMXOut::close(t_output output)
 {
 	if (usbdmx == NULL)
-		return -1;
+		return;
 
-	/* Count the number of times close() has been called so that the devices
-	   are closed only after the last user closes this plugin. This is
-	   basically reference counting. */
-	m_refCount--;
-	if (m_refCount > 0)
-		return 0;
-	Q_ASSERT(m_refCount == 0);
-
-	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
 		/* Close the interface if it exists */
 		if (m_devices[i] != 0)
 			usbdmx->close(m_devices[i]);
 		m_devices[i] = 0;
 	}
-
-	return 0;
 }
 
-int USBDMXOut::outputs()
+QStringList USBDMXOut::outputs()
 {
-	return MAX_USBDMX_DEVICES;
+	QStringList list;
+	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+	{
+		if (m_names[i].isEmpty() == false)
+			list << m_names[i];
+	}
+	
+	return list;
 }
 
 /*****************************************************************************
@@ -164,18 +154,10 @@ QString USBDMXOut::name()
  * Configuration
  *****************************************************************************/
 
-int USBDMXOut::configure()
+void USBDMXOut::configure()
 {
-	int r;
-
-	open();
-
 	ConfigureUSBDMXOut conf(NULL, this);
-	r = conf.exec();
-
-	close();
-
-	return r;
+	conf.exec();
 }
 
 /*****************************************************************************
@@ -237,8 +219,6 @@ QString USBDMXOut::infoText()
 	info += QString("</TD>");
 	info += QString("</TR>");
 
-	open();
-
 	bool atLeastOne = false;
 	
 	/* Output lines */
@@ -254,8 +234,6 @@ QString USBDMXOut::infoText()
 			info += QString("</TR>");
 		}
 	}
-
-	close();
 
 	if (atLeastOne == false)
 	{

@@ -94,7 +94,6 @@ public:
 	 */
 	QStringList universeNames();
 
-protected:
 	/**
 	 * Initialize the patching table
 	 */
@@ -203,7 +202,7 @@ public:
 	 * Load InputMap details from an XML document
 	 *
 	 * @param doc An XML document to load from
-	 * @param map_root A DMXMap root node to load from
+	 * @param map_root An OutputMap root node to load from
 	 * @return true if successful, otherwise false
 	 */
 	bool loadXML(QDomDocument* doc, QDomElement* root);

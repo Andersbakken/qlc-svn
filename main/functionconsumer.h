@@ -29,7 +29,7 @@
 #include "common/qlctypes.h"
 #include "function.h"
 
-class DMXMap;
+class OutputMap;
 
 class FunctionConsumer : public QThread
 {
@@ -43,9 +43,9 @@ public:
 	 * Create a new FunctionConsumer instance. A FunctionConsumer takes
 	 * care of running functions when the application is in operate mode.
 	 *
-	 * @param dmxMap A DMXMap instance used to write function values
+	 * @param outputMap A OutputMap instance used to write function values
 	 */
-	FunctionConsumer(DMXMap* dmxMap);
+	FunctionConsumer(OutputMap* outputMap);
 
 	/**
 	 * Destroy a FunctionConsumer instance
@@ -202,8 +202,8 @@ protected:
 	void event();
 	
 protected:
-	/** A DMXMap instance that routes all values to correct plugins */
-	DMXMap* m_dmxMap;
+	/** An OutputMap instance that routes all values to correct plugins */
+	OutputMap* m_outputMap;
 
 	/** Running status, telling, whether the FC has been started or not */
 	bool m_running;

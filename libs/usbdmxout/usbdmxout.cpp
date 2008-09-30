@@ -30,6 +30,7 @@
 #include <errno.h>
 
 #include <QApplication>
+#include <QStringList>
 #include <QPalette>
 #include <QDebug>
 #include <QString>
@@ -156,13 +157,13 @@ void USBDMXOut::init()
  * Plugin open/close
  *****************************************************************************/
 
-int USBDMXOut::open()
+void USBDMXOut::open(t_output output)
 {
 	/* Count the number of times open() has been called so that the devices
 	   are opened only once. This is basically reference counting. */
 	m_refCount++;
 	if (m_refCount > 1)
-		return 0;
+		return;
 
 	/* Attempt to find USBDMX devices */
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
@@ -181,18 +182,16 @@ int USBDMXOut::open()
 			m_devices[i] = -1;
 		}
 	}
-
-	return 0;
 }
 
-int USBDMXOut::close()
+void USBDMXOut::close(t_output output)
 {
 	/* Count the number of times close() has been called so that the devices
 	   are closed only after the last user closes this plugin. This is
 	   basically reference counting. */
 	m_refCount--;
 	if (m_refCount > 0)
-		return 0;
+		return;
 	Q_ASSERT(m_refCount == 0);
 
 	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
@@ -201,13 +200,16 @@ int USBDMXOut::close()
 			::close(m_devices[i]);
 		m_devices[i] = -1;
 	}
-
-	return 0;
 }
 
-int USBDMXOut::outputs()
+QStringList USBDMXOut::outputs()
 {
-	return MAX_USBDMX_DEVICES;
+	QStringList list;
+	
+	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+		list << QString("USBDMX %1").arg(i);
+
+	return list;
 }
 
 /*****************************************************************************

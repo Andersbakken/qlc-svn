@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  inputmapeditor.cpp
+  inputmanager.cpp
   
   Copyright (c) Heikki Junnila
   
@@ -30,20 +30,21 @@
 #include "common/qlcinplugin.h"
 
 #include "inputpatcheditor.h"
-#include "inputmapeditor.h"
+#include "inputmanager.h"
 #include "inputpatch.h"
 #include "inputmap.h"
+#include "app.h"
 
 #define KColumnUniverse 0
 #define KColumnPlugin   1
 #define KColumnInput    2
 #define KColumnInputNum 3
 
-InputMapEditor::InputMapEditor(QWidget* parent, InputMap* inputMap)
-	: QDialog(parent)
+extern App* _app;
+
+InputManager::InputManager(QWidget* parent) : QWidget(parent)
 {
-	Q_ASSERT(inputMap != NULL);
-	m_inputMap = inputMap;
+	Q_ASSERT(_app->inputMap() != NULL);
 
 	setupUi(this);
 
@@ -53,13 +54,13 @@ InputMapEditor::InputMapEditor(QWidget* parent, InputMap* inputMap)
 
 	/* Clear the mapping list just in case and fill with plugins */
 	m_tree->clear();
-	for (t_input_universe i = 0; i < inputMap->universes(); i++)
+	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
 	{
 		QTreeWidgetItem* item;
 		InputPatch* inputPatch;
 		QString str;
 		
-		inputPatch = m_inputMap->patch(i);
+		inputPatch = _app->inputMap()->patch(i);
 		Q_ASSERT(inputPatch != NULL);
 		
 		item = new QTreeWidgetItem(m_tree);
@@ -88,15 +89,15 @@ InputMapEditor::InputMapEditor(QWidget* parent, InputMap* inputMap)
 	}
 }
 
-InputMapEditor::~InputMapEditor()
+InputManager::~InputManager()
 {
 }
 
 /*****************************************************************************
- * Slots
+ * Tree widget
  *****************************************************************************/
 
-void InputMapEditor::slotEditClicked()
+void InputManager::slotEditClicked()
 {
 	QTreeWidgetItem* item;
 	int universe;
@@ -111,7 +112,8 @@ void InputMapEditor::slotEditClicked()
 	pluginName = item->text(KColumnPlugin);
 	input = item->text(KColumnInputNum).toInt() - 1;
 
-	InputPatchEditor ipe(this, m_inputMap, universe, pluginName, input);
+	InputPatchEditor ipe(this, _app->inputMap(), universe, pluginName,
+			     input);
 	if (ipe.exec() == QDialog::Accepted)
 	{
 		QString str;
@@ -123,37 +125,18 @@ void InputMapEditor::slotEditClicked()
 			item->setText(KColumnInput, ipe.inputName());
 			item->setText(KColumnInputNum,
 				      str.setNum(ipe.input() + 1));
+
+			_app->inputMap()->setPatch(universe, ipe.pluginName(),
+						   ipe.input());
 		}
 		else
 		{
 			item->setText(KColumnPlugin, KInputNone);
 			item->setText(KColumnInput, KInputNone);
 			item->setText(KColumnInputNum, KInputNone);
+
+			_app->inputMap()->setPatch(universe, QString::null,
+						   KInputInvalid);
 		}
 	}
-}
-
-/*****************************************************************************
- * OK & Cancel
- *****************************************************************************/
-
-void InputMapEditor::accept()
-{
-	QTreeWidgetItemIterator it(m_tree);
-	while (*it != NULL)
-	{
-		QString pluginName;
-		int universe;
-		int input;
-
-		universe = (*it)->text(KColumnUniverse).toInt() - 1;
-		pluginName = (*it)->text(KColumnPlugin);
-		input = (*it)->text(KColumnInputNum).toInt() - 1;
-
-		m_inputMap->setPatch(universe, pluginName, input);
-
-		++it;
-	}
-
-	QDialog::accept();
 }

@@ -39,8 +39,8 @@
 
 #include "functionconsumer.h"
 #include "eventbuffer.h"
+#include "outputmap.h"
 #include "function.h"
-#include "dmxmap.h"
 #include "app.h"
 #include "doc.h"
 
@@ -48,10 +48,10 @@
  * Initialization
  *****************************************************************************/
 
-FunctionConsumer::FunctionConsumer(DMXMap* dmxMap) : QThread()
+FunctionConsumer::FunctionConsumer(OutputMap* outputMap) : QThread()
 {
-	Q_ASSERT(dmxMap != NULL);
-	m_dmxMap = dmxMap;
+	Q_ASSERT(outputMap != NULL);
+	m_outputMap = outputMap;
 
 #ifdef X11
 	m_timerType = RTCTimer;
@@ -517,7 +517,7 @@ void FunctionConsumer::event()
 			{
 				/* Write also invalid values; let setValue()
 				   take care of them */
-				m_dmxMap->setValue(m_event[m_channel] >> 8,
+				m_outputMap->setValue(m_event[m_channel] >> 8,
 						   m_event[m_channel] & 0xFF);
 			}
 		}

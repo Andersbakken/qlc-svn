@@ -35,12 +35,12 @@
 #include "virtualconsole.h"
 #include "fixturemanager.h"
 #include "collection.h"
+#include "outputmap.h"
 #include "function.h"
 #include "inputmap.h"
 #include "fixture.h"
 #include "monitor.h"
 #include "chaser.h"
-#include "dmxmap.h"
 #include "scene.h"
 #include "efx.h"
 #include "app.h"
@@ -196,9 +196,9 @@ bool Doc::loadXML(QDomDocument* doc)
 		{
 			/* Ignore creator information */
 		}
-		else if (tag.tagName() == KXMLQLCDMXMap)
+		else if (tag.tagName() == KXMLQLCOutputMap)
 		{
-			_app->dmxMap()->loadXML(doc, &tag);
+			_app->outputMap()->loadXML(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCInputMap)
 		{
@@ -265,8 +265,8 @@ bool Doc::saveXML(const QString& fileName)
 		/* THE MASTER XML ROOT NODE */
 		root = doc->documentElement();
 		
-		/* Write DMX mapping */
-		_app->dmxMap()->saveXML(doc, &root);
+		/* Write output mapping */
+		_app->outputMap()->saveXML(doc, &root);
 
 		/* Write input mapping */
 		_app->inputMap()->saveXML(doc, &root);

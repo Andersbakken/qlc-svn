@@ -113,7 +113,7 @@ typedef int t_function_id;
 const t_function_id KFunctionArraySize ( 4096 );
 
 /*****************************************************************************
- * DMX channel
+ * Output universes & channels
  *****************************************************************************/
 
 /**
@@ -163,7 +163,31 @@ const t_controlbyte KControl16LSB ( 0 );
 const t_controlbyte KControl16MSB ( 1 );
 
 /*****************************************************************************
- * DMX value
+ * Output lines
+ *****************************************************************************/
+
+/**
+ * Output line type
+ */
+typedef unsigned short t_output;
+
+/**
+ * Smallest output line number
+ */
+const t_output KOutputMin ( 0 );
+
+/**
+ * Largest output line number
+ */
+const t_output KOutputMax ( USHRT_MAX - 1 );
+
+/**
+ * Invalid output line number
+ */
+const t_output KOutputInvalid ( USHRT_MAX );
+
+/*****************************************************************************
+ * Output values
  *****************************************************************************/
 
 /**

@@ -51,11 +51,13 @@ class PluginManager;
 class QLCDocBrowser;
 class BusProperties;
 class QLCFixtureDef;
+class OutputManager;
+class InputManager;
 class QLCInPlugin;
 class QLCPlugin;
+class OutputMap;
 class InputMap;
 class Monitor;
-class DMXMap;
 class Doc;
 class App;
 
@@ -84,28 +86,38 @@ protected:
 	 * Output mapping
 	 *********************************************************************/
 public:
-	DMXMap* dmxMap() const { return m_dmxMap; }
+	OutputManager* outputManager() const { return m_outputManager; }
+	OutputMap* outputMap() const { return m_outputMap; }
 
 protected:
-	void initDMXMap();
+	void initOutputMap();
 
 protected slots:
-	void slotDMXMapBlackoutChanged(bool state);
+	void slotOutputMapBlackoutChanged(bool state);
 	void slotFlashBlackoutIndicator();
+	void slotOutputManager();
+	void slotOutputManagerDestroyed(QObject* outputManager);
 
 protected:
-	DMXMap* m_dmxMap;
+	OutputManager* m_outputManager;
+	OutputMap* m_outputMap;
 
 	/*********************************************************************
 	 * Input mapping
 	 *********************************************************************/
 public:
+	InputManager* inputManager() const { return m_inputManager; }
 	InputMap* inputMap() { return m_inputMap; }
 
 protected:
 	void initInputMap();
 
+protected slots:
+	void slotInputManager();
+	void slotInputManagerDestroyed(QObject* inputManager);
+
 protected:
+	InputManager* m_inputManager;
 	InputMap* m_inputMap;
 
 	/*********************************************************************
@@ -198,7 +210,7 @@ protected:
 	 *********************************************************************/
 public:
 	BusProperties* busManager() const { return m_busManager; }
- 
+
 protected:
 	BusProperties* m_busManager;
 
@@ -224,7 +236,7 @@ protected:
 	VirtualConsole* m_virtualConsole;
 
 	/*********************************************************************
-	 * DMX Monitor
+	 * Monitor
 	 *********************************************************************/
 public:
 	Monitor* monitor() const { return m_monitor; }
@@ -306,6 +318,8 @@ protected:
 	QAction* m_fixtureManagerAction;
 	QAction* m_functionManagerAction;
 	QAction* m_busManagerAction;
+	QAction* m_inputManagerAction;
+	QAction* m_outputManagerAction;
 	QAction* m_pluginManagerAction;
 
 	QAction* m_modeOperateAction;

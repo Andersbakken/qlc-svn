@@ -1,9 +1,9 @@
 /*
   Q Light Controller
-  dmxpatcheditor.h
-
-  Copyright (C) Heikki Junnila
-
+  inputmanager.h
+  
+  Copyright (c) Heikki Junnila
+  
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -19,40 +19,30 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DMXPATCHEDITOR_H
-#define DMXPATCHEDITOR_H
+#ifndef INPUTMANAGER_H
+#define INPUTMANAGER_H
 
 #include <QDialog>
-#include "ui_dmxpatcheditor.h"
+#include "ui_inputmanager.h"
 
-class DMXMap;
-class DMXPatch;
-class QStringList;
+class InputMap;
 
-class DMXPatchEditor : public QDialog, public Ui_DMXPatchEditor
+class InputManager : public QWidget, public Ui_InputManager
 {
 	Q_OBJECT
-
+	
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
-	DMXPatchEditor(QWidget* parent, DMXMap* dmxMap, int universe,
-		       const QString& pluginName, int output);
-	~DMXPatchEditor();
+	InputManager(QWidget* parent);
+	~InputManager();
 
-	const QString pluginName() const { return m_pluginName; }
-	int output() const { return m_output; }
-
+	/*********************************************************************
+	 * Tree widget
+	 *********************************************************************/
 protected slots:
-	void slotPluginActivated(const QString& pluginName);
-	void slotOutputActivated(int line);
-
-protected:
-	DMXMap* m_dmxMap;
-	QStringList m_pluginList;
-
-	int m_universe;
-
-	QString m_pluginName;
-	int m_output;
+	void slotEditClicked();
 };
 
-#endif /* DMXPATCHEDITOR_H */
+#endif

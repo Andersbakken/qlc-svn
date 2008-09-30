@@ -29,9 +29,6 @@ HEADERS += aboutbox.h \
            collection.h \
            collectioneditor.h \
            consolechannel.h \
-           dmxmap.h \
-           dmxmapeditor.h \
-           dmxpatcheditor.h \
            doc.h \
            dummyoutplugin.h \
            efx.h \
@@ -49,12 +46,16 @@ HEADERS += aboutbox.h \
            functionmanager.h \
            functionselection.h \
            generatorarea.h \
+           inputmanager.h \
            inputmap.h \
-           inputmapeditor.h \
 	   inputpatch.h \
            inputpatcheditor.h \
            keybind.h \
            monitor.h \
+           outputmanager.h \
+           outputmap.h \
+	   outputpatch.h \
+           outputpatcheditor.h \
            pluginmanager.h \
            scene.h \
            sceneeditor.h \
@@ -82,15 +83,15 @@ FORMS += addfixture.ui \
          busproperties.ui \
          chasereditor.ui \
          collectioneditor.ui \
-         dmxmapeditor.ui \
-         dmxpatcheditor.ui \
          efxeditor.ui \
          fixturelist.ui \
          fixtureproperties.ui \
          fixtureselection.ui \
          functionselection.ui \
-         inputmapeditor.ui \
+         inputmanager.ui \
          inputpatcheditor.ui \
+         outputmanager.ui \
+         outputpatcheditor.ui \
          sceneeditor.ui \
          vcbuttonproperties.ui \
          vccuelistproperties.ui \
@@ -112,9 +113,6 @@ SOURCES += aboutbox.cpp \
            collection.cpp \
            collectioneditor.cpp \
            consolechannel.cpp \
-           dmxmap.cpp \
-           dmxmapeditor.cpp \
-           dmxpatcheditor.cpp \
            doc.cpp \
            dummyoutplugin.cpp \
            efx.cpp \
@@ -132,13 +130,17 @@ SOURCES += aboutbox.cpp \
            functionmanager.cpp \
            functionselection.cpp \
            generatorarea.cpp \
+           inputmanager.cpp \
            inputmap.cpp \
-           inputmapeditor.cpp \
 	   inputpatch.cpp \
            inputpatcheditor.cpp \
            keybind.cpp \
            main.cpp \
            monitor.cpp \
+           outputmanager.cpp \
+           outputmap.cpp \
+	   outputpatch.cpp \
+           outputpatcheditor.cpp \
            pluginmanager.cpp \
            scene.cpp \
            sceneeditor.cpp \

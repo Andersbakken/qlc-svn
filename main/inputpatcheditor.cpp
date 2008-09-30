@@ -115,11 +115,13 @@ void InputPatchEditor::fillTree()
 		{
 			iitem = new QTreeWidgetItem(pitem);
 			iitem->setText(KColumnName, iit.next());
-			iitem->setText(KColumnInput, QString("%1").arg(i++));
+			iitem->setText(KColumnInput, QString("%1").arg(i));
 			
 			/* Select that plugin's line that is currently mapped */
 			if (m_pluginName == pluginName && m_input == i)
 				m_tree->setCurrentItem(iitem);
+
+			i++;
 		}
 		
 		/* If no inputs were appended to the plugin node, put a

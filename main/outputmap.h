@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  dmxmap.h
+  outputmap.h
   
   Copyright (c) Heikki Junnila
   
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DMXMAP_H
-#define DMXMAP_H
+#ifndef OUTPUTMAP_H
+#define OUTPUTMAP_H
 
 #include <QObject>
 #include <QVector>
@@ -32,88 +32,33 @@ class QDomDocument;
 class QDomElement;
 
 class QLCOutPlugin;
-class DMXMap;
-class DMXPatch;
-class DMXMapEditor;
-class DMXPatchEditor;
+class OutputMap;
+class OutputPatch;
+class OutputMapEditor;
+class OutputPatchEditor;
 
-/*****************************************************************************
- * DMXPatch
- *****************************************************************************/
+#define KOutputNone QObject::tr("None")
+#define KXMLQLCOutputMap "OutputMap"
 
-#define KXMLQLCDMXPatch "Patch"
-#define KXMLQLCDMXPatchUniverse "Universe"
-#define KXMLQLCDMXPatchPlugin "Plugin"
-#define KXMLQLCDMXPatchOutput "Output"
-
-/**
- * This is a simple container class that stores only the pointer to an
- * existing plugin and an output line provided by that plugin.
- */
-class DMXPatch
-{
-	friend class DMXMap;
-	friend class DMXMapEditor;
-	friend class DMXPatchEditor;
-
-public:
-	DMXPatch(QLCOutPlugin* p, int o) { plugin = p; output = o; }
-	virtual ~DMXPatch() {}
-
-protected:
-	/**
-	 * Save a DMXPatch's properties into an XML document
-	 *
-	 * @param doc An XML document to save to
-	 * @param map_root An XML root node (DMXMap) to save under
-	 * @param universe The internal universe number that the patch is
-	 *                 addressed to
-	 * @return true if successful, otherwise false
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* map_root, int universe);
-
-	/**
-	 * Create and load a DMXPatch's properties from an XML document
-	 *
-	 * @param doc An XML document to load from
-	 * @param root An XML node containing a DMXPatch to load from
-	 * @param universe The universe number that the DMXPatch is addressed to
-	 * @return true if successful, otherwise false
-	 */
-	static bool loader(QDomDocument* doc, QDomElement* root, DMXMap* dmxMap);
-
-	QLCOutPlugin* plugin;
-	int output;
-};
-
-/*****************************************************************************
- * DMXMap
- *****************************************************************************/
-
-#define KXMLQLCDMXMap "DMXMap"
-
-class DMXMap : public QObject
+class OutputMap : public QObject
 {
 	Q_OBJECT
-
-	friend class DMXPatch;
-	friend class DMXMapEditor;
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new DMXMap object
+	 * Create a new OutputMap object
 	 *
 	 * @param universes Number of universes
 	 */
-	DMXMap(QObject* parent, int universes = KUniverseCount);
+	OutputMap(QObject* parent, int universes = KUniverseCount);
 
 	/**
-	 * Destroy a DMXMap object
+	 * Destroy a OutputMap object
 	 */
-	~DMXMap();
+	~OutputMap();
 
 	/**
 	 * Load all output plugins from the plugin directory.
@@ -217,6 +162,12 @@ public:
 	/*********************************************************************
 	 * Patch
 	 *********************************************************************/
+protected:
+	/**
+	 * Initialize the patching table
+	 */
+	void initPatch();
+
 public:
 	/**
 	 * Get the total number of supported universes
@@ -224,12 +175,6 @@ public:
 	 * @return Universe count supported by QLC
 	 */
 	int universes() { return m_universes; }
-
-protected:
-	/**
-	 * Initialize the patching table
-	 */
-	void initPatch();
 
 	/**
 	 * Patch the given universe to go thru the given plugin
@@ -247,18 +192,18 @@ protected:
 	 *
 	 * @param universe The internal universe to get mapping for
 	 */
-	DMXPatch* patch(int universe);
+	OutputPatch* patch(int universe);
 
 protected:
 	/** Vector containing all active plugins */
-	QVector <DMXPatch*> m_patch;
+	QVector <OutputPatch*> m_patch;
 
 	/*********************************************************************
 	 * Plugins
 	 *********************************************************************/
 public:
 	/**
-	 * Get a list of available DMX output plugins as a string list
+	 * Get a list of available Output output plugins as a string list
 	 * containing the plugins' names
 	 *
 	 * @return QStringList containing plugins' names
@@ -269,10 +214,9 @@ public:
 	 * Get the number of universes provided by the given plugin.
 	 *
 	 * @param pluginName Name of the plugin, whose output count to get
-	 * @return Number of DMX outputs provided by the plugin.
-	 *         Zero is returned if pluginName is invalid.
+	 * @return A list of output names provided by the plugin.
 	 */
-	int pluginOutputs(const QString& pluginName);
+	QStringList pluginOutputs(const QString& pluginName);
 
 	/**
 	 * Open a configuration dialog for the given plugin
@@ -319,7 +263,7 @@ protected:
 	 *********************************************************************/
 public:
 	/**
-	 * Save DMXMap details into an XML document
+	 * Save OutputMap details into an XML document
 	 *
 	 * @param doc An XML document to save to
 	 * @param wksp_root A parent XML node to save to (workspace)
@@ -328,10 +272,10 @@ public:
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
 	/**
-	 * Load DMXMap details from an XML document
+	 * Load OutputMap details from an XML document
 	 *
 	 * @param doc An XML document to load from
-	 * @param map_root A DMXMap root node to load from
+	 * @param map_root A OutputMap root node to load from
 	 * @return true if successful, otherwise false
 	 */
 	bool loadXML(QDomDocument* doc, QDomElement* root);

@@ -30,48 +30,39 @@ class QLCOutPlugin
 {
 public:
 	/**
-	 * Destroy the plugin
+	 * De-initialize the plugin. This is the last thing that is called
+	 * for the plugin so make sure nothing is lingering in the twilight
+	 * after this call.
 	 */
 	virtual ~QLCOutPlugin() {}
 	
 	/**
 	 * Initialize the plugin. Since plugins cannot have a user-defined
 	 * constructor, any initialization prior to opening any HW must be
-	 * done thru this second-stage initialization method. DMXMap calls
+	 * done thru this second-stage initialization method. OutputMap calls
 	 * this function for all plugins exactly once after loading, before
 	 * calling any other method from the plugin.
 	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
+	 * This is a pure virtual function that must be implemented in all
+	 * plugins.
 	 */
 	virtual void init() = 0;
 
 	/**
-	 * Open the plugin. DMXMap calls open() whenever the plugin is used by
-	 * QLC to send DMX data and when the plugin goes dormant, DMXMap calls
-	 * close(). If you need to open() the plugin for configuration or some
-	 * other activity, you should implement reference counting to ensure
-	 * that used plugins won't get closed after the configuration dialog
-	 * is closed.
+	 * Open the specified input line so that the plugin can start
+	 * sending output data thru that line.
 	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
-	 *
+	 * @param output The output line to open
 	 */
-	virtual int open() = 0;
+	virtual void open(t_output output = 0) = 0;
 
 	/**
-	 * Close the plugin. DMXMap calls open() whenever the plugin is used by
-	 * QLC to send DMX data and when the plugin goes dormant, DMXMap calls
-	 * close(). If you need to open() the plugin for configuration or some
-	 * other activity, you should implement reference counting to ensure
-	 * that used plugins won't get closed after the configuration dialog
-	 * is closed.
+	 * Close the specified output line so that the plugin can stop
+	 * sending output data thru that line.
 	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all plugins.
+	 * @param output The output line to close
 	 */
-	virtual int close() = 0;
+	virtual void close(t_output output = 0) = 0;
 
 	/**
 	 * Invoke a configuration dialog for the plugin
@@ -79,7 +70,7 @@ public:
 	 * This is a pure virtual function that must be implemented
 	 * in all plugins.
 	 */
-	virtual int configure() = 0;
+	virtual void configure() = 0;
 
 	/**
 	 * Provide an information text to be displayed in the plugin manager
@@ -99,14 +90,13 @@ public:
 	 *********************************************************************/
 public:	
 	/**
-	 * Get the number of outputs provided by the plugin.
-	 * Default implementation provides one output line.
-
-	 * One might call these outputs also universes, but because "universe"
-	 * is already used quite widely in QLC, "output" was chosen here
-	 * instead to prevent confusion.
+	 * Get a list of output lines' names. The names must be always in the
+	 * same order i.e. the first name is the name of output line number 0,
+	 * the next one is output line number 1, etc..
+	 *
+	 * @return Number of outputs provided by the plugin
 	 */
-	virtual int outputs() = 0;
+	virtual QStringList outputs() = 0;
 	
 	/**
 	 * Write the value of one channel. Channel numbers 0-511 are

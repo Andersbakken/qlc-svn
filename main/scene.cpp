@@ -33,7 +33,7 @@
 
 #include "functionconsumer.h"
 #include "eventbuffer.h"
-#include "dmxmap.h"
+#include "outputmap.h"
 #include "scene.h"
 #include "app.h"
 #include "doc.h"
@@ -218,8 +218,8 @@ void Scene::writeValues(t_fixture_id fxi_id)
 	{
 		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
 		{
-			_app->dmxMap()->setValue(m_channels[i].address,
-						 m_values[i].value);
+			_app->outputMap()->setValue(m_channels[i].address,
+						    m_values[i].value);
 		}
 	}
 }
@@ -431,7 +431,7 @@ void Scene::run()
 	{
 		m_channels[i].current = m_channels[i].start =
 			static_cast<float> 
-			(_app->dmxMap()->getValue(m_channels[i].address));
+			(_app->outputMap()->getValue(m_channels[i].address));
 
 		m_channels[i].target = 
 			static_cast<float> (m_values.at(i).value);

@@ -38,8 +38,8 @@
 
 #include <math.h>
 
+#include "outputmap.h"
 #include "monitor.h"
-#include "dmxmap.h"
 #include "app.h"
 #include "doc.h"
 
@@ -59,14 +59,13 @@ extern App* _app;
 /*****************************************************************************
  * Initialize
  *****************************************************************************/
-Monitor::Monitor(QWidget* parent, DMXMap* dmxMap) : QWidget(parent)
+Monitor::Monitor(QWidget* parent) : QWidget(parent)
 {
 	m_universe        = 0;
 	m_visibleMin      = 0;
 	m_visibleMax      = 0;
 	m_newValues       = NULL;
 	m_oldValues       = NULL;
-	m_dmxMap          = dmxMap;
 	m_timer           = NULL;
 	m_updateFrequency = 16;
 
@@ -272,8 +271,8 @@ void Monitor::slotTimeOut()
 {
 	/* Read only the visible range of values. There's no point in reading
 	   such values that aren't going to get drawn anyway. */
-	m_dmxMap->getValueRange(512 * m_universe + m_visibleMin,
-				m_newValues, m_visibleMax + 1);
+	_app->outputMap()->getValueRange(512 * m_universe + m_visibleMin,
+					 m_newValues, m_visibleMax + 1);
 
 	// Paint only changed values
 	//repaint(false); // This would have told to draw only VALUES

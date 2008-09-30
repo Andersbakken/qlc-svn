@@ -9,69 +9,69 @@
  <Manufacturer>Novation</Manufacturer>
  <Model>KS5</Model>
  
- <Channel Name="C0" Number="0"></Channel>
- <Channel Name="C#0" Number="1"></Channel>
- <Channel Name="D0" Number="2"></Channel>
- <Channel Name="D#0" Number="3"></Channel>
- <Channel Name="E0" Number="4"></Channel>
- <Channel Name="F0" Number="5"></Channel>
- <Channel Name="F#0" Number="6"></Channel>
- <Channel Name="G0" Number="7"></Channel>
- <Channel Name="G#0" Number="8"></Channel>
- <Channel Name="A0" Number="9"></Channel>
- <Channel Name="A#0" Number="10"></Channel>
- <Channel Name="B0" Number="11"></Channel>
+ <Channel Name="C0" Number="0" Type="AbsoluteFader"></Channel>
+ <Channel Name="C#0" Number="1" Type="AbsoluteFader"></Channel>
+ <Channel Name="D0" Number="2" Type="AbsoluteFader"></Channel>
+ <Channel Name="D#0" Number="3" Type="AbsoluteFader"></Channel>
+ <Channel Name="E0" Number="4" Type="AbsoluteFader"></Channel>
+ <Channel Name="F0" Number="5" Type="AbsoluteFader"></Channel>
+ <Channel Name="F#0" Number="6" Type="AbsoluteFader"></Channel>
+ <Channel Name="G0" Number="7" Type="AbsoluteFader"></Channel>
+ <Channel Name="G#0" Number="8" Type="AbsoluteFader"></Channel>
+ <Channel Name="A0" Number="9" Type="AbsoluteFader"></Channel>
+ <Channel Name="A#0" Number="10" Type="AbsoluteFader"></Channel>
+ <Channel Name="B0" Number="11" Type="AbsoluteFader"></Channel>
 
- <Channel Name="C1" Number="12"></Channel>
- <Channel Name="C#1" Number="13"></Channel>
- <Channel Name="D1" Number="14"></Channel>
- <Channel Name="D#1" Number="15"></Channel>
- <Channel Name="E1" Number="16"></Channel>
- <Channel Name="F1" Number="17"></Channel>
- <Channel Name="F#1" Number="18"></Channel>
- <Channel Name="G1" Number="19"></Channel>
- <Channel Name="G#1" Number="20"></Channel>
- <Channel Name="A1" Number="21"></Channel>
- <Channel Name="A#1" Number="22"></Channel>
- <Channel Name="B1" Number="23"></Channel>
+ <Channel Name="C1" Number="12" Type="AbsoluteFader"></Channel>
+ <Channel Name="C#1" Number="13" Type="AbsoluteFader"></Channel>
+ <Channel Name="D1" Number="14" Type="AbsoluteFader"></Channel>
+ <Channel Name="D#1" Number="15" Type="AbsoluteFader"></Channel>
+ <Channel Name="E1" Number="16" Type="AbsoluteFader"></Channel>
+ <Channel Name="F1" Number="17" Type="AbsoluteFader"></Channel>
+ <Channel Name="F#1" Number="18" Type="AbsoluteFader"></Channel>
+ <Channel Name="G1" Number="19" Type="AbsoluteFader"></Channel>
+ <Channel Name="G#1" Number="20" Type="AbsoluteFader"></Channel>
+ <Channel Name="A1" Number="21" Type="AbsoluteFader"></Channel>
+ <Channel Name="A#1" Number="22" Type="AbsoluteFader"></Channel>
+ <Channel Name="B1" Number="23" Type="AbsoluteFader"></Channel>
 
- <Channel Name="C2" Number="24"></Channel>
- <Channel Name="C#2" Number="25"></Channel>
- <Channel Name="D2" Number="26"></Channel>
- <Channel Name="D#2" Number="27"></Channel>
- <Channel Name="E2" Number="28"></Channel>
- <Channel Name="F2" Number="29"></Channel>
- <Channel Name="F#2" Number="30"></Channel>
- <Channel Name="G2" Number="31"></Channel>
- <Channel Name="G#2" Number="32"></Channel>
- <Channel Name="A2" Number="33"></Channel>
- <Channel Name="A#2" Number="34"></Channel>
- <Channel Name="B2" Number="35"></Channel>
+ <Channel Name="C2" Number="24" Type="AbsoluteFader"></Channel>
+ <Channel Name="C#2" Number="25" Type="AbsoluteFader"></Channel>
+ <Channel Name="D2" Number="26" Type="AbsoluteFader"></Channel>
+ <Channel Name="D#2" Number="27" Type="AbsoluteFader"></Channel>
+ <Channel Name="E2" Number="28" Type="AbsoluteFader"></Channel>
+ <Channel Name="F2" Number="29" Type="AbsoluteFader"></Channel>
+ <Channel Name="F#2" Number="30" Type="AbsoluteFader"></Channel>
+ <Channel Name="G2" Number="31" Type="AbsoluteFader"></Channel>
+ <Channel Name="G#2" Number="32" Type="AbsoluteFader"></Channel>
+ <Channel Name="A2" Number="33" Type="AbsoluteFader"></Channel>
+ <Channel Name="A#2" Number="34" Type="AbsoluteFader"></Channel>
+ <Channel Name="B2" Number="35" Type="AbsoluteFader"></Channel>
 
- <Channel Name="C3" Number="36"></Channel>
- <Channel Name="C#3" Number="37"></Channel>
- <Channel Name="D3" Number="38"></Channel>
- <Channel Name="D#3" Number="39"></Channel>
- <Channel Name="E3" Number="40"></Channel>
- <Channel Name="F3" Number="41"></Channel>
- <Channel Name="F#3" Number="42"></Channel>
- <Channel Name="G3" Number="43"></Channel>
- <Channel Name="G#3" Number="44"></Channel>
- <Channel Name="A3" Number="45"></Channel>
- <Channel Name="A#3" Number="46"></Channel>
- <Channel Name="B3" Number="47"></Channel>
+ <Channel Name="C3" Number="36" Type="AbsoluteFader"></Channel>
+ <Channel Name="C#3" Number="37" Type="AbsoluteFader"></Channel>
+ <Channel Name="D3" Number="38" Type="AbsoluteFader"></Channel>
+ <Channel Name="D#3" Number="39" Type="AbsoluteFader"></Channel>
+ <Channel Name="E3" Number="40" Type="AbsoluteFader"></Channel>
+ <Channel Name="F3" Number="41" Type="AbsoluteFader"></Channel>
+ <Channel Name="F#3" Number="42" Type="AbsoluteFader"></Channel>
+ <Channel Name="G3" Number="43" Type="AbsoluteFader"></Channel>
+ <Channel Name="G#3" Number="44" Type="AbsoluteFader"></Channel>
+ <Channel Name="A3" Number="45" Type="AbsoluteFader"></Channel>
+ <Channel Name="A#3" Number="46" Type="AbsoluteFader"></Channel>
+ <Channel Name="B3" Number="47" Type="AbsoluteFader"></Channel>
  
- <Channel Name="C4" Number="48"></Channel>
- <Channel Name="C#4" Number="49"></Channel>
- <Channel Name="D4" Number="50"></Channel>
- <Channel Name="D#4" Number="51"></Channel>
- <Channel Name="E4" Number="52"></Channel>
- <Channel Name="F4" Number="53"></Channel>
- <Channel Name="F#4" Number="54"></Channel>
- <Channel Name="G4" Number="55"></Channel>
- <Channel Name="G#4" Number="56"></Channel>
- <Channel Name="A4" Number="57"></Channel>
- <Channel Name="A#4" Number="58"></Channel>
- <Channel Name="B4" Number="59"></Channel>
+ <Channel Name="C4" Number="48" Type="AbsoluteFader"></Channel>
+ <Channel Name="C#4" Number="49" Type="AbsoluteFader"></Channel>
+ <Channel Name="D4" Number="50" Type="AbsoluteFader"></Channel>
+ <Channel Name="D#4" Number="51" Type="AbsoluteFader"></Channel>
+ <Channel Name="E4" Number="52" Type="AbsoluteFader"></Channel>
+ <Channel Name="F4" Number="53" Type="AbsoluteFader"></Channel>
+ <Channel Name="F#4" Number="54" Type="AbsoluteFader"></Channel>
+ <Channel Name="G4" Number="55" Type="AbsoluteFader"></Channel>
+ <Channel Name="G#4" Number="56" Type="AbsoluteFader"></Channel>
+ <Channel Name="A4" Number="57" Type="AbsoluteFader"></Channel>
+ <Channel Name="A#4" Number="58" Type="AbsoluteFader"></Channel>
+ <Channel Name="B4" Number="59" Type="AbsoluteFader"></Channel>
 </InputTemplate>
 

@@ -32,6 +32,7 @@
 QLCInputChannel::QLCInputChannel(QLCInputDevice* parent) : QObject(parent)
 {
 	Q_ASSERT(parent != NULL);
+	m_channel = 0;
 }
 
 QLCInputChannel::~QLCInputChannel()
@@ -44,11 +45,21 @@ QLCInputChannel& QLCInputChannel::operator=(QLCInputChannel& channel)
 	{
 		m_name = channel.m_name;
 		m_type = channel.m_type;
+		m_channel = channel.m_channel;
 	}
 
 	return *this;
 }
 	
+/****************************************************************************
+ * Channel number
+ ****************************************************************************/
+
+void QLCInputChannel::setChannel(t_input_channel channel)
+{
+	m_channel = channel;
+}
+
 /****************************************************************************
  * Type
  ****************************************************************************/
@@ -56,6 +67,30 @@ QLCInputChannel& QLCInputChannel::operator=(QLCInputChannel& channel)
 void QLCInputChannel::setType(Type type)
 {
 	m_type = type;
+}
+
+QString QLCInputChannel::typeToString(Type type)
+{
+	switch (type)
+	{
+	default:
+	case AbsoluteFader:
+		return QString(KXMLQLCInputChannelAbsoluteFader);
+	case RelativeFader:
+		return QString(KXMLQLCInputChannelRelativeFader);
+	case Button:
+		return QString(KXMLQLCInputChannelButton);
+	}
+}
+
+QLCInputChannel::Type QLCInputChannel::stringToType(const QString& type)
+{
+	if (type == KXMLQLCInputChannelButton)
+		return Button;
+	else if (type == KXMLQLCInputChannelRelativeFader)
+		return RelativeFader;
+	else
+		return AbsoluteFader;
 }
 
 /****************************************************************************
@@ -71,10 +106,12 @@ void QLCInputChannel::setName(const QString& name)
  * Load & Save
  ****************************************************************************/
 
-void QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
+bool QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
 {
+	return FALSE;
 }
 
-void QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* dev_root)
+bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* dev_root)
 {
+	return FALSE;
 }

@@ -23,9 +23,9 @@
 #include <QtXml>
 #include <QMap>
 
+#include <common/qlcinputchannel.h>
+#include <common/qlcinputdevice.h>
 #include <common/qlcfile.h>
-#include "qlcinputchannel.h"
-#include "qlcinputdevice.h"
 
 /****************************************************************************
  * Initialization
@@ -214,11 +214,26 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 		{
 			tag = node.toElement();
 			if (tag.tagName() == KXMLQLCCreator)
-				;
+			{
+				/* Ignore */
+			}
 			if (tag.tagName() == KXMLQLCInputTemplateManufacturer)
-				m_manufacturer = tag.text();
+			{
+				setManufacturer(tag.text());
+			}
 			else if (tag.tagName() == KXMLQLCInputTemplateModel)
-				m_model = tag.text();
+			{
+				setModel(tag.text());
+			}
+			else if (tag.tagName() == KXMLQLCInputChannel)
+			{
+				QLCInputChannel* ich;
+				ich = new QLCInputChannel(this);
+				if (ich->loadXML(doc, &tag) == TRUE)
+					addChannel(ich->channel(), ich);
+				else
+					delete ich;
+			}
 
 			node = node.nextSibling();
 		}

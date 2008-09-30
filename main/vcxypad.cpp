@@ -37,9 +37,9 @@
 #include "vcxypadproperties.h"
 #include "virtualconsole.h"
 #include "xychannelunit.h"
+#include "outputmap.h"
 #include "vcxypad.h"
 #include "fixture.h"
-#include "dmxmap.h"
 #include "app.h"
 #include "doc.h"
 
@@ -537,13 +537,13 @@ void VCXYPad::outputDMX(int x, int y)
 
 		if (xyc->reverse() == false)
 		{
-			_app->dmxMap()->setValue(
+			_app->outputMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
-			_app->dmxMap()->setValue(
+			_app->outputMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(),
 				(t_value) KChannelValueMax - xx);
@@ -560,13 +560,13 @@ void VCXYPad::outputDMX(int x, int y)
 
 		if (xyc->reverse() == false)
 		{
-			_app->dmxMap()->setValue(
+			_app->outputMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(), (t_value) xx);
 		}
 		else
 		{
-			_app->dmxMap()->setValue(
+			_app->outputMap()->setValue(
 				xyc->fixture()->universeAddress() +
 				xyc->channel(),
 				(t_value) KChannelValueMax - xx);

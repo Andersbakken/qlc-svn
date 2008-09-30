@@ -14,8 +14,12 @@ FORMS += configureusbdmxout.ui
 
 HEADERS += configureusbdmxout.h
 unix:HEADERS += usbdmxout.h
-win32:HEADERS += usbdmxout-win32.h usbdmx-dynamic.h
+win32:HEADERS += usbdmx-dynamic.h \
+		 usbdmxout-win32.h \
+		 usbdmxdevice-win32.h
 
 SOURCES += configureusbdmxout.cpp
 unix:SOURCES += usbdmxout.cpp
-win32:SOURCES += usbdmxout-win32.cpp usbdmx-dynamic.cpp
+win32:SOURCES += usbdmx-dynamic.cpp \
+		 usbdmxout-win32.cpp \
+		 usbdmxdevice-win32.cpp

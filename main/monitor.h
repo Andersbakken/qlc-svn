@@ -40,7 +40,7 @@ class QFont;
 class QMenu;
 class QIcon;
 
-class DMXMap;
+class OutputMap;
 
 #define KXMLQLCMonitor "Monitor"
 #define KXMLQLCMonitorFont "Font"
@@ -51,7 +51,7 @@ class Monitor : public QWidget
 	Q_OBJECT
 
 public:
-	Monitor(QWidget* parent, DMXMap* dmxMap);
+	Monitor(QWidget* parent);
 	~Monitor();
 
 protected:
@@ -85,9 +85,6 @@ protected:
 
 	/** Value buffer mutex */
 	QMutex m_valueMutex;
-
-	/** DMXMap to get the values from */
-	DMXMap* m_dmxMap;
   
 	/*********************************************************************
 	 * Menu

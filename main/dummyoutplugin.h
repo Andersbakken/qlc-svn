@@ -45,9 +45,9 @@ public:
 	 * Open/close
 	 *********************************************************************/
 public:
-	int open();
-	int close();
-	int outputs();
+	void open(t_output output = 0);
+	void close(t_output output = 0);
+	QStringList outputs();
 
 	/*********************************************************************
 	 * Name
@@ -59,7 +59,7 @@ public:
 	 * Configuration
 	 *********************************************************************/
 public:
-	int configure();
+	void configure();
 
 	/*********************************************************************
 	 * Status

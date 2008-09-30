@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  dmxmap.cpp
+  outputmap.cpp
   
   Copyright (c) Heikki Junnila
   
@@ -32,105 +32,18 @@
 #include "common/qlctypes.h"
 
 #include "dummyoutplugin.h"
-#include "dmxmapeditor.h"
-#include "dmxmap.h"
+#include "outputmanager.h"
+#include "outputpatch.h"
+#include "outputmap.h"
 #include "app.h"
 
 extern App* _app;
-
-using namespace std;
-
-/*****************************************************************************
- * DMXPatch
- *****************************************************************************/
-
-bool DMXPatch::saveXML(QDomDocument* doc, QDomElement* map_root, int universe)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(this->plugin != NULL);
-
-	/* Patch entry */
-	root = doc->createElement(KXMLQLCDMXPatch);
-	map_root->appendChild(root);
-
-	/* Universe */
-	str.setNum(universe);
-	root.setAttribute(KXMLQLCDMXPatchUniverse, str);
-
-	/* Plugin */
-	tag = doc->createElement(KXMLQLCDMXPatchPlugin);
-	root.appendChild(tag);
-	text = doc->createTextNode(this->plugin->name());
-	tag.appendChild(text);
-
-	/* Output */
-	tag = doc->createElement(KXMLQLCDMXPatchOutput);
-	root.appendChild(tag);
-	str.setNum(this->output);
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
-
-	return true;
-}
-
-bool DMXPatch::loader(QDomDocument*, QDomElement* root, DMXMap* dmxMap)
-{
-	QDomNode node;
-	QDomElement tag;
-	QString str;
-	QString pluginName;
-	int output = 0;
-	int universe = 0;
-	
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(dmxMap != NULL);
-
-	if (root->tagName() != KXMLQLCDMXPatch)
-	{
-		qWarning() << "Patch node not found!";
-		return false;
-	}
-
-	/* QLC universe that this patch has been made for */
-	universe = root->attribute(KXMLQLCDMXPatchUniverse).toInt();
-
-	/* Load patch contents */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		
-		if (tag.tagName() == KXMLQLCDMXPatchPlugin)
-		{
-			/* Plugin name */
-			pluginName = tag.text();
-		}
-		else if (tag.tagName() == KXMLQLCDMXPatchOutput)
-		{
-			/* Plugin output */
-			output = tag.text().toInt();
-		}
-		else
-		{
-			qWarning() << "Unknown Patch tag: " << tag.tagName();
-		}
-		
-		node = node.nextSibling();
-	}
-
-	return dmxMap->setPatch(universe, pluginName, output);
-}
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-DMXMap::DMXMap(QObject* parent, int universes) : QObject(parent)
+OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 {
 	m_universes = universes;
 	m_dummyOut = NULL;
@@ -144,15 +57,18 @@ DMXMap::DMXMap(QObject* parent, int universes) : QObject(parent)
 	loadDefaults();
 }
 
-DMXMap::~DMXMap()
+OutputMap::~OutputMap()
 {
+	for (int i = 0; i < m_universes; i++)
+		delete m_patch[i];
+
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
 
 	m_dummyOut = NULL;
 }
 
-void DMXMap::load()
+void OutputMap::load()
 {
 	QSettings s;
 	
@@ -213,7 +129,7 @@ void DMXMap::load()
  * Blackout
  *****************************************************************************/
 
-bool DMXMap::toggleBlackout()
+bool OutputMap::toggleBlackout()
 {
 	if (m_blackout == true)
 		setBlackout(false);
@@ -223,7 +139,7 @@ bool DMXMap::toggleBlackout()
 	return m_blackout;
 }
 
-void DMXMap::setBlackout(bool state)
+void OutputMap::setBlackout(bool state)
 {
 	/* Don't do blackout twice */
 	if (m_blackout == state)
@@ -249,7 +165,7 @@ void DMXMap::setBlackout(bool state)
 		}
 
 		/* Set blackout AFTER the zero write operation so that
-		   DMXMap::setValueRange() doesn't write the zeros to
+		   OutputMap::setValueRange() doesn't write the zeros to
 		   m_blackoutstore */
 		m_blackout = true;
 	}
@@ -258,7 +174,7 @@ void DMXMap::setBlackout(bool state)
 		Q_ASSERT(m_blackoutStore != NULL);
 
 		/* Toggle blackout off BEFORE the operation so that
-		   DMXMap::setValueRange() writes the blackoutstore contents
+		   OutputMap::setValueRange() writes the blackoutstore contents
 		   back to universes. */
 		m_blackout = false;
 
@@ -279,7 +195,7 @@ void DMXMap::setBlackout(bool state)
 	emit blackoutChanged(m_blackout);
 }
 
-bool DMXMap::blackout()
+bool OutputMap::blackout()
 {
 	return m_blackout;
 }
@@ -288,7 +204,7 @@ bool DMXMap::blackout()
  * Values
  *****************************************************************************/
 
-t_value DMXMap::getValue(t_channel channel)
+t_value OutputMap::getValue(t_channel channel)
 {
 	Q_ASSERT(channel < (m_universes * 512));
 
@@ -298,7 +214,6 @@ t_value DMXMap::getValue(t_channel channel)
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
 	t_channel universe = static_cast<t_channel> (channel / 512);
-	DMXPatch* dmxPatch = NULL;
 	t_value value = 0;
 
 	if (universe >= m_universes)
@@ -309,17 +224,20 @@ t_value DMXMap::getValue(t_channel channel)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	dmxPatch = m_patch[universe];
+	OutputPatch* outputPatch = m_patch[universe];
+	Q_ASSERT(outputPatch != NULL);
+	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	dmxPatch->plugin->readChannel((channel % 512) +
-				      (dmxPatch->output * 512), value);
+	outputPatch->plugin()->readChannel((channel % 512) +
+					   (outputPatch->output() * 512),
+					   value);
 
 	return value;
 }
 
-bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
+bool OutputMap::getValueRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address < (m_universes * 512));
 	Q_ASSERT((address + num - 1) < (m_universes * 512));
@@ -335,7 +253,6 @@ bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
 	t_channel universe = static_cast<t_channel> (address / 512);
-	DMXPatch* dmxPatch = NULL;
 
 	if (universe >= m_universes)
 	{
@@ -345,17 +262,18 @@ bool DMXMap::getValueRange(t_channel address, t_value* values, t_channel num)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	dmxPatch = m_patch[universe];
+	OutputPatch* outputPatch = m_patch[universe];
+	Q_ASSERT(outputPatch != NULL);
+	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	return dmxPatch->plugin->readRange((address % 512) +
-					   (dmxPatch->output * 512),
-					   values, num);
-
+	return outputPatch->plugin()->readRange((address % 512) +
+						(outputPatch->output() * 512),
+						values, num);
 }
 
-void DMXMap::setValue(t_channel channel, t_value value)
+void OutputMap::setValue(t_channel channel, t_value value)
 {
 	if (channel == KChannelInvalid)
 		return;
@@ -372,7 +290,6 @@ void DMXMap::setValue(t_channel channel, t_value value)
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
 	t_channel universe = static_cast<t_channel> (channel / 512);
-	DMXPatch* dmxPatch = NULL;
 
 	if (universe >= m_universes)
 	{
@@ -382,15 +299,18 @@ void DMXMap::setValue(t_channel channel, t_value value)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	dmxPatch = m_patch[universe];
+	OutputPatch* outputPatch = m_patch[universe];
+	Q_ASSERT(outputPatch != NULL);
+	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	dmxPatch->plugin->writeChannel((channel % 512) + 
-				       (dmxPatch->output * 512), value);
+	outputPatch->plugin()->writeChannel((channel % 512) + 
+					    (outputPatch->output() * 512),
+					    value);
 }
 
-void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
+void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address < (m_universes * 512));
 	Q_ASSERT((address + num - 1) < (m_universes * 512));
@@ -405,7 +325,6 @@ void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
 	t_channel universe = static_cast<t_channel> (address / 512);
-	DMXPatch* dmxPatch = NULL;
 
 	if (universe >= m_universes)
 	{
@@ -415,12 +334,15 @@ void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	dmxPatch = m_patch[universe];
+	OutputPatch* outputPatch = m_patch[universe];
+	Q_ASSERT(outputPatch != NULL);
+	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	dmxPatch->plugin->writeRange((address % 512) + 
-				     (dmxPatch->output * 512), values, num);
+	outputPatch->plugin()->writeRange((address % 512) +
+					  (outputPatch->output() * 512),
+					  values, num);
 
 }
 
@@ -428,27 +350,26 @@ void DMXMap::setValueRange(t_channel address, t_value* values, t_channel num)
  * Patch
  *****************************************************************************/
 
-void DMXMap::initPatch()
+void OutputMap::initPatch()
 {
-	DMXPatch* dmxPatch = NULL;
-	int i = 0;
-
 	/* Create a dummy output plugin and put it to the plugins list */
 	m_dummyOut = new DummyOutPlugin();
 	m_dummyOut->init();
 	appendPlugin(m_dummyOut);
 
-	for (i = 0; i < m_universes; i++)
+	for (int i = 0; i < m_universes; i++)
 	{
+		OutputPatch* outputPatch;
 		/* The dummy output plugin provides always as many outputs
 		   as QLC has supported universes. So, assign each of these
 		   outputs, by default, to each universe */
-		dmxPatch = new DMXPatch(m_dummyOut, i);
-		m_patch.insert(i, dmxPatch);
+		outputPatch = new OutputPatch(this);
+		outputPatch->set(m_dummyOut, i);
+		m_patch.insert(i, outputPatch);
 	}
 }
 
-bool DMXMap::setPatch(unsigned int universe, const QString& pluginName,
+bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
 		      unsigned int output)
 {
 	if (int(universe) >= m_patch.size())
@@ -465,18 +386,13 @@ bool DMXMap::setPatch(unsigned int universe, const QString& pluginName,
 			   << universe << "not found.";
 		return false;
 	}
-	else
-	{
-		m_patch[universe]->plugin->close();
-		m_patch[universe]->plugin = outputPlugin;
-		m_patch[universe]->output = output;
-		m_patch[universe]->plugin->open();
+	
+	m_patch[universe]->set(outputPlugin, output);
 
-		return true;
-	}
+	return true;
 }
 
-DMXPatch* DMXMap::patch(int universe)
+OutputPatch* OutputMap::patch(int universe)
 {
 	Q_ASSERT(universe >= 0 && universe < KUniverseCount);
 	return m_patch[universe];
@@ -486,7 +402,7 @@ DMXPatch* DMXMap::patch(int universe)
  * Plugins
  *****************************************************************************/
 
-QStringList DMXMap::pluginNames()
+QStringList OutputMap::pluginNames()
 {
 	QListIterator <QLCOutPlugin*> it(m_plugins);
 	QStringList list;
@@ -497,18 +413,18 @@ QStringList DMXMap::pluginNames()
 	return list;
 }
 
-int DMXMap::pluginOutputs(const QString& pluginName)
+QStringList OutputMap::pluginOutputs(const QString& pluginName)
 {
 	QLCOutPlugin* op = NULL;
 
 	op = plugin(pluginName);
 	if (op == NULL)
-		return 0;
+		return QStringList();
 	else
 		return op->outputs();
 }
 
-void DMXMap::configurePlugin(const QString& pluginName)
+void OutputMap::configurePlugin(const QString& pluginName)
 {
 	QLCOutPlugin* outputPlugin = plugin(pluginName);
 	if (outputPlugin == NULL)
@@ -518,7 +434,7 @@ void DMXMap::configurePlugin(const QString& pluginName)
 		outputPlugin->configure();
 }
 
-QString DMXMap::pluginStatus(const QString& pluginName)
+QString OutputMap::pluginStatus(const QString& pluginName)
 {
 	QLCOutPlugin* outputPlugin = NULL;
 	QString info;
@@ -528,8 +444,6 @@ QString DMXMap::pluginStatus(const QString& pluginName)
 
 	if (outputPlugin == NULL)
 	{
-		DMXPatch* dmxPatch = NULL;
-		int i = 0;
 		QString str;
 
 		// HTML header
@@ -559,10 +473,11 @@ QString DMXMap::pluginStatus(const QString& pluginName)
 		// Universe mappings
 		info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 
-		for (i = 0; i < KUniverseCount; i++)
+		for (int i = 0; i < KUniverseCount; i++)
 		{
-			dmxPatch = patch(i);
-			Q_ASSERT(dmxPatch != NULL && dmxPatch->plugin != NULL);
+			OutputPatch* outputPatch = patch(i);
+			Q_ASSERT(outputPatch != NULL);
+			Q_ASSERT(outputPatch->plugin() != NULL);
 
 			if (i % 2 == 0)
 				info += QString("<TR>");
@@ -580,11 +495,11 @@ QString DMXMap::pluginStatus(const QString& pluginName)
 			info += QString("</TD>");
 
 			info += QString("<TD>");
-			info += dmxPatch->plugin->name();
+			info += outputPatch->pluginName();
 			info += QString("</TD>");
 
 			info += QString("<TD>");
-			str.sprintf("Output %d", dmxPatch->output + 1);
+			str.sprintf("Output %d", outputPatch->output() + 1);
 			info += str;
 			info += QString("</TD>");
 
@@ -601,7 +516,7 @@ QString DMXMap::pluginStatus(const QString& pluginName)
 	return info;
 }
 
-bool DMXMap::appendPlugin(QLCOutPlugin* outputPlugin)
+bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
 {
 	Q_ASSERT(outputPlugin != NULL);
 
@@ -619,7 +534,7 @@ bool DMXMap::appendPlugin(QLCOutPlugin* outputPlugin)
 	}
 }
 
-QLCOutPlugin* DMXMap::plugin(const QString& name)
+QLCOutPlugin* OutputMap::plugin(const QString& name)
 {
 	QListIterator <QLCOutPlugin*> it(m_plugins);
 
@@ -637,7 +552,7 @@ QLCOutPlugin* DMXMap::plugin(const QString& name)
  * Save & Load
  *****************************************************************************/
 
-bool DMXMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
+bool OutputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
 	QDomElement root;
 	int i = 0;
@@ -645,8 +560,8 @@ bool DMXMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(wksp_root != NULL);
 
-	/* DMXMap entry */
-	root = doc->createElement(KXMLQLCDMXMap);
+	/* OutputMap entry */
+	root = doc->createElement(KXMLQLCOutputMap);
 	wksp_root->appendChild(root);
 
 	/* Patches */
@@ -656,7 +571,7 @@ bool DMXMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool DMXMap::loadXML(QDomDocument* doc, QDomElement* root)
+bool OutputMap::loadXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;
@@ -664,9 +579,9 @@ bool DMXMap::loadXML(QDomDocument* doc, QDomElement* root)
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCDMXMap)
+	if (root->tagName() != KXMLQLCOutputMap)
 	{
-		qWarning() << "DMXMap node not found!";
+		qWarning() << "OutputMap node not found!";
 		return false;
 	}
 
@@ -676,13 +591,13 @@ bool DMXMap::loadXML(QDomDocument* doc, QDomElement* root)
 	{
 		tag = node.toElement();
 		
-		if (tag.tagName() == KXMLQLCDMXPatch)
+		if (tag.tagName() == KXMLQLCOutputPatch)
 		{
-			DMXPatch::loader(doc, &tag, this);
+			OutputPatch::loader(doc, &tag, this);
 		}
 		else
 		{
-			qWarning() << "Unknown DMXMap tag:" << tag.tagName();
+			qWarning() << "Unknown OutputMap tag:" << tag.tagName();
 		}
 		
 		node = node.nextSibling();
@@ -695,7 +610,7 @@ bool DMXMap::loadXML(QDomDocument* doc, QDomElement* root)
  * Defaults
  *****************************************************************************/
 
-void DMXMap::loadDefaults()
+void OutputMap::loadDefaults()
 {
 	QSettings settings;
 	QString plugin;
@@ -705,11 +620,11 @@ void DMXMap::loadDefaults()
 	for (int i = 0; i < KUniverseCount; i++)
 	{
 		/* Plugin name */
-		key = QString("/dmxmap/universe%2/plugin/").arg(i);
+		key = QString("/outputmap/universe%2/plugin/").arg(i);
 		plugin = settings.value(key).toString();
 
 		/* Plugin output */
-		key = QString("/dmxmap/universe%2/output/").arg(i);
+		key = QString("/outputmap/universe%2/output/").arg(i);
 		output = settings.value(key).toString();
 
 		if (plugin.length() > 0 && output.length() > 0)
@@ -717,7 +632,7 @@ void DMXMap::loadDefaults()
 	}
 }
 
-void DMXMap::saveDefaults()
+void OutputMap::saveDefaults()
 {
 	QSettings settings;
 	QString key;
@@ -725,16 +640,16 @@ void DMXMap::saveDefaults()
 
 	for (int i = 0; i < KUniverseCount; i++)
 	{
-		DMXPatch* dmxPatch = patch(i);
-		Q_ASSERT(dmxPatch != NULL);
-		Q_ASSERT(dmxPatch->plugin != NULL);
+		OutputPatch* outputPatch = patch(i);
+		Q_ASSERT(outputPatch != NULL);
+		Q_ASSERT(outputPatch->plugin() != NULL);
 
 		/* Plugin name */
-		key = QString("/dmxmap/universe%2/plugin/").arg(i);
-		settings.setValue(key, dmxPatch->plugin->name());
+		key = QString("/outputmap/universe%2/plugin/").arg(i);
+		settings.setValue(key, outputPatch->pluginName());
 
 		/* Plugin output */
-		key = QString("/dmxmap/universe%2/output/").arg(i);
-		settings.setValue(key, str.setNum(dmxPatch->output));
+		key = QString("/outputmap/universe%2/output/").arg(i);
+		settings.setValue(key, str.setNum(outputPatch->output()));
 	}
 }

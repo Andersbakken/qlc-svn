@@ -32,11 +32,9 @@
 #include <QMenu>
 #include <QIcon>
 
-#include "inputmapeditor.h"
 #include "pluginmanager.h"
-#include "dmxmapeditor.h"
+#include "outputmap.h"
 #include "inputmap.h"
-#include "dmxmap.h"
 #include "app.h"
 
 extern App* _app;
@@ -140,7 +138,7 @@ void PluginManager::fillPlugins()
 	parent = new QTreeWidgetItem(m_tree);
 	parent->setText(0, KOutputNode);
 	parent->setExpanded(true);
-	list = _app->dmxMap()->pluginNames();
+	list = _app->outputMap()->pluginNames();
 	for (it = list.begin(); it != list.end(); ++it)
 	{
 		item = new QTreeWidgetItem(parent);
@@ -177,8 +175,8 @@ void PluginManager::slotConfigure()
 
 		if (parentName == KOutputNode)
 		{
-			_app->dmxMap()->configurePlugin(
-				item->text(KColumnName));
+			_app->outputMap()->configurePlugin(
+						item->text(KColumnName));
 		}
 		else if (parentName == KInputNode)
 		{
@@ -193,16 +191,20 @@ void PluginManager::slotConfigure()
 
 void PluginManager::slotOutputMap()
 {
-	DMXMapEditor editor(this, _app->dmxMap());
+/*
+	OutputMapEditor editor(this, _app->dmxMap());
 	if (editor.exec() == QDialog::Accepted)
 		slotSelectionChanged();
+*/
 }
 
 void PluginManager::slotInputMap()
 {
+/*
 	InputMapEditor editor(this, _app->inputMap());
 	if (editor.exec() == QDialog::Accepted)
 		slotSelectionChanged();
+*/
 }
 
 /*****************************************************************************
@@ -224,7 +226,7 @@ void PluginManager::slotSelectionChanged()
 		{
 			m_configureAction->setEnabled(false);
 			if (name == KOutputNode)
-				status = _app->dmxMap()->pluginStatus();
+				status = _app->outputMap()->pluginStatus();
 			else if (name == KInputNode)
 				status = _app->inputMap()->pluginStatus();
 		}
@@ -234,7 +236,7 @@ void PluginManager::slotSelectionChanged()
 			parent = item->parent()->text(KColumnName);
 
 			if (parent == KOutputNode)
-				status = _app->dmxMap()->pluginStatus(name);
+				status = _app->outputMap()->pluginStatus(name);
 			else if (parent == KInputNode)
 				status = _app->inputMap()->pluginStatus(name);
 		}

@@ -23,8 +23,8 @@
 #define USBDMXOUT_WIN32_H
 
 #define WIN32_LEAN_AND_MEAN
+#include <QStringList>
 #include <windows.h>
-
 #include <QtPlugin>
 #include <QMutex>
 
@@ -58,15 +58,14 @@ public:
 	 * Plugin open/close
 	 *********************************************************************/
 public:
-	int open();
-	int close();
-	int outputs();
+	void open(t_output output);
+	void close(t_output output);
+	QStringList outputs();
 
 protected:
 	HANDLE m_devices[MAX_USBDMX_DEVICES];
 	QString m_names[MAX_USBDMX_DEVICES];
 	struct usbdmx_functions *usbdmx;
-	int m_refCount;
 
 	/*********************************************************************
 	 * Name
@@ -78,7 +77,7 @@ public:
 	 * Configuration
 	 *********************************************************************/
 public:
-	int configure();
+	void configure();
 
 	/*********************************************************************
 	 * Plugin status

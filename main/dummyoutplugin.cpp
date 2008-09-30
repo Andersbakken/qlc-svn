@@ -56,31 +56,33 @@ QString DummyOutPlugin::name()
  * Open/close
  *****************************************************************************/
 
-int DummyOutPlugin::open()
+void DummyOutPlugin::open(t_output output)
 {
-	return 0;
 }
 
-int DummyOutPlugin::close()
+void DummyOutPlugin::close(t_output output)
 {
-	return 0;
 }
 
-int DummyOutPlugin::outputs()
+QStringList DummyOutPlugin::outputs()
 {
-	return KUniverseCount;
+	QStringList list;
+
+	for (int i = 0; i < KUniverseCount; i++)
+		list << QString("Dummy Out %1").arg(i + 1);
+
+	return list;
 }
 
 /*****************************************************************************
  * Configuration
  *****************************************************************************/
 
-int DummyOutPlugin::configure()
+void DummyOutPlugin::configure()
 {
 	QMessageBox::information(NULL,
 				 tr("Dummy output configuration"),
 				 tr("This plugin has no configurable options"));
-	return 0;
 }
 
 /*****************************************************************************
@@ -90,7 +92,6 @@ int DummyOutPlugin::configure()
 QString DummyOutPlugin::infoText()
 {
 	QString str;
-	QString t;
 
 	str += QString("<HTML>");
 	str += QString("<HEAD>");
@@ -117,8 +118,7 @@ QString DummyOutPlugin::infoText()
 	str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 	str += QString("<TR>");
 	str += QString("<TD><B>Outputs</B></TD>");
-	t.sprintf("%d", outputs());
-	str += QString("<TD><I>" + t + "</I></TD>");
+	str += QString("<TD><I>%1</I></TD>").arg(KUniverseCount);
 	str += QString("</TR>");
 	str += QString("</TABLE>");
 

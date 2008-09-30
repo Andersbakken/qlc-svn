@@ -36,9 +36,9 @@
 
 #include "vcsliderproperties.h"
 #include "virtualconsole.h"
+#include "outputmap.h"
 #include "vcslider.h"
 #include "inputmap.h"
-#include "dmxmap.h"
 #include "app.h"
 #include "doc.h"
 
@@ -518,9 +518,9 @@ void VCSlider::setLevelValue(t_value value)
 		if (fxi != NULL)
 			dmx_ch = fxi->channelAddress(ch);
 		
-		_app->dmxMap()->setValue(dmx_ch,
-					 m_levelHighLimit - value +
-					 m_levelLowLimit);
+		_app->outputMap()->setValue(dmx_ch,
+					    m_levelHighLimit - value +
+					    m_levelLowLimit);
 
 	}
 }

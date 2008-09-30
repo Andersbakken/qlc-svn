@@ -50,10 +50,12 @@
 #include "fixturemanager.h"
 #include "pluginmanager.h"
 #include "busproperties.h"
+#include "outputmanager.h"
+#include "inputmanager.h"
+#include "outputmap.h"
 #include "inputmap.h"
 #include "aboutbox.h"
 #include "monitor.h"
-#include "dmxmap.h"
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
@@ -81,11 +83,13 @@ using namespace std;
 
 App::App() : QMainWindow()
 {
-	m_dmxMap = NULL;
+	m_outputMap = NULL;
 	m_inputMap = NULL;
 	m_functionConsumer = NULL;
 	m_doc = NULL;
 
+	m_inputManager = NULL;
+	m_outputManager = NULL;
 	m_pluginManager = NULL;
 	m_functionManager = NULL;
 	m_busManager = NULL;
@@ -198,7 +202,7 @@ void App::init()
 	resize(KApplicationDefaultWidth, KApplicationDefaultHeight);
 
 	/* Input & output mappers and their plugins */
-	initDMXMap();
+	initOutputMap();
 	initInputMap();
 	
 	/* Function running engine */
@@ -275,16 +279,16 @@ void App::closeEvent(QCloseEvent* e)
  * Output mapping
  *****************************************************************************/
 
-void App::initDMXMap()
+void App::initOutputMap()
 {
-	m_dmxMap = new DMXMap(this, KUniverseCount);
-	Q_ASSERT(m_dmxMap != NULL);
+	m_outputMap = new OutputMap(this, KUniverseCount);
+	Q_ASSERT(m_outputMap != NULL);
 
-	connect(m_dmxMap, SIGNAL(blackoutChanged(bool)),
-		this, SLOT(slotDMXMapBlackoutChanged(bool)));
+	connect(m_outputMap, SIGNAL(blackoutChanged(bool)),
+		this, SLOT(slotOutputMapBlackoutChanged(bool)));
 }
 
-void App::slotDMXMapBlackoutChanged(bool state)
+void App::slotOutputMapBlackoutChanged(bool state)
 {
 	if (state == true)
 	{
@@ -326,6 +330,36 @@ void App::slotFlashBlackoutIndicator()
 	m_blackoutIndicator->setPalette(pal);
 }
 
+void App::slotOutputManager()
+{
+	if (m_outputManager == NULL)
+	{
+		QMdiSubWindow* sub;
+
+		sub = new QMdiSubWindow(centralWidget());
+		m_outputManager = new OutputManager(sub);
+		m_outputManager->show();
+
+		sub->setWidget(m_outputManager);
+		sub->setAttribute(Qt::WA_DeleteOnClose);
+		sub->setWindowTitle(tr("Output Manager"));
+		sub->setWindowIcon(QIcon(":/output.png"));
+
+		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
+
+		connect(m_outputManager, SIGNAL(destroyed(QObject*)),
+			this, SLOT(slotOutputManagerDestroyed(QObject*)));
+
+		sub->resize(600, 300);
+		sub->show();
+	}
+}
+
+void App::slotOutputManagerDestroyed(QObject*)
+{
+	m_outputManager = NULL;
+}
+
 /*****************************************************************************
  * Input mapping
  *****************************************************************************/
@@ -336,15 +370,45 @@ void App::initInputMap()
 	Q_ASSERT(m_inputMap != NULL);
 }
 
+void App::slotInputManager()
+{
+	if (m_inputManager == NULL)
+	{
+		QMdiSubWindow* sub;
+
+		sub = new QMdiSubWindow(centralWidget());
+		m_inputManager = new InputManager(sub);
+		m_inputManager->show();
+
+		sub->setWidget(m_inputManager);
+		sub->setAttribute(Qt::WA_DeleteOnClose);
+		sub->setWindowTitle(tr("Input Manager"));
+		sub->setWindowIcon(QIcon(":/input.png"));
+
+		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
+
+		connect(m_inputManager, SIGNAL(destroyed(QObject*)),
+			this, SLOT(slotInputManagerDestroyed(QObject*)));
+
+		sub->resize(600, 300);
+		sub->show();
+	}
+}
+
+void App::slotInputManagerDestroyed(QObject*)
+{
+	m_inputManager = NULL;
+}
+
 /*****************************************************************************
  * Function consumer
  *****************************************************************************/
 
 void App::initFunctionConsumer()
 {
-	Q_ASSERT(m_dmxMap != NULL);
+	Q_ASSERT(m_outputMap != NULL);
 
-	m_functionConsumer = new FunctionConsumer(m_dmxMap);
+	m_functionConsumer = new FunctionConsumer(m_outputMap);
 	Q_ASSERT(m_functionConsumer != NULL);
 
 	/* TODO: Put this into some kind of a settings dialog */
@@ -659,6 +723,16 @@ void App::initActions()
 	connect(m_busManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBusManager()));
 
+	m_inputManagerAction = new QAction(QIcon(":/input.png"),
+					   tr("Inputs"), this);
+	connect(m_inputManagerAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotInputManager()));
+
+	m_outputManagerAction = new QAction(QIcon(":/output.png"),
+					    tr("Outputs"), this);
+	connect(m_outputManagerAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotOutputManager()));
+
 	m_pluginManagerAction = new QAction(QIcon(":/plugin.png"),
 					    tr("Plugins"), this);
 	connect(m_pluginManagerAction, SIGNAL(triggered(bool)),
@@ -686,7 +760,7 @@ void App::initActions()
 		this, SLOT(slotControlVirtualConsole()));
 
 	m_controlMonitorAction = new QAction(QIcon(":/monitor.png"),
-					     tr("DMX Monitor"), this);
+					     tr("Monitor"), this);
 	connect(m_controlMonitorAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlMonitor()));
 
@@ -742,6 +816,8 @@ void App::initMenuBar()
 	m_managerMenu->addAction(m_functionManagerAction);
 	m_managerMenu->addAction(m_busManagerAction);
 	m_managerMenu->addSeparator();
+	m_managerMenu->addAction(m_inputManagerAction);
+	m_managerMenu->addAction(m_outputManagerAction);
 	m_managerMenu->addAction(m_pluginManagerAction);
 
 	/* Control Menu */
@@ -969,62 +1045,6 @@ void App::slotFileQuit()
  * Manager action slots
  *****************************************************************************/
 
-void App::slotPluginManager()
-{
-	if (m_pluginManager == NULL)
-	{
-		QMdiSubWindow* sub;
-
-		sub = new QMdiSubWindow(centralWidget());
-		m_pluginManager = new PluginManager(sub);
-		m_pluginManager->show();
-
-		sub->setWidget(m_pluginManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowTitle(tr("Plugin Manager"));
-		sub->setWindowIcon(QIcon(":/plugin.png"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_pluginManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotPluginManagerDestroyed(QObject*)));
-
-		sub->resize(700, 400);
-		sub->show();
-	}
-}
-
-void App::slotPluginManagerDestroyed(QObject*)
-{
-	m_pluginManager = NULL;
-}
-
-void App::slotBusManager()
-{
-	if (m_busManager == NULL)
-	{
-		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_busManager = new BusProperties(sub);
-
-		sub->setWidget(m_busManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowIcon(QIcon(":/bus.png"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_busManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotBusManagerDestroyed(QObject*)));
-
-		m_busManager->show();
-		sub->show();
-	}
-}
-
-void App::slotBusManagerDestroyed(QObject*)
-{
-	m_busManager = NULL;
-}
-
 void App::slotFixtureManager()
 {
 	if (m_fixtureManager == NULL)
@@ -1108,18 +1128,74 @@ void App::slotFunctionManagerDestroyed(QObject*)
 	m_functionManager = NULL;
 }
 
+void App::slotBusManager()
+{
+	if (m_busManager == NULL)
+	{
+		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
+		m_busManager = new BusProperties(sub);
+
+		sub->setWidget(m_busManager);
+		sub->setAttribute(Qt::WA_DeleteOnClose);
+		sub->setWindowIcon(QIcon(":/bus.png"));
+
+		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
+
+		connect(m_busManager, SIGNAL(destroyed(QObject*)),
+			this, SLOT(slotBusManagerDestroyed(QObject*)));
+
+		m_busManager->show();
+		sub->show();
+	}
+}
+
+void App::slotBusManagerDestroyed(QObject*)
+{
+	m_busManager = NULL;
+}
+
+void App::slotPluginManager()
+{
+	if (m_pluginManager == NULL)
+	{
+		QMdiSubWindow* sub;
+
+		sub = new QMdiSubWindow(centralWidget());
+		m_pluginManager = new PluginManager(sub);
+		m_pluginManager->show();
+
+		sub->setWidget(m_pluginManager);
+		sub->setAttribute(Qt::WA_DeleteOnClose);
+		sub->setWindowTitle(tr("Plugin Manager"));
+		sub->setWindowIcon(QIcon(":/plugin.png"));
+
+		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
+
+		connect(m_pluginManager, SIGNAL(destroyed(QObject*)),
+			this, SLOT(slotPluginManagerDestroyed(QObject*)));
+
+		sub->resize(700, 400);
+		sub->show();
+	}
+}
+
+void App::slotPluginManagerDestroyed(QObject*)
+{
+	m_pluginManager = NULL;
+}
+
 /*****************************************************************************
  * Control action slots
  *****************************************************************************/
 
 void App::slotControlBlackout()
 {
-	Q_ASSERT(m_dmxMap != NULL);
+	Q_ASSERT(m_outputMap != NULL);
 
-	if (m_dmxMap->blackout() == true)
-		m_dmxMap->setBlackout(false);
+	if (m_outputMap->blackout() == true)
+		m_outputMap->setBlackout(false);
 	else
-		m_dmxMap->setBlackout(true);
+		m_outputMap->setBlackout(true);
 }
 
 void App::slotControlVirtualConsole()
@@ -1139,10 +1215,10 @@ void App::slotControlMonitor()
 {
 	if (m_monitor == NULL)
 	{
-		Q_ASSERT(m_dmxMap != NULL);
+		Q_ASSERT(m_outputMap != NULL);
 
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_monitor = new Monitor(sub, m_dmxMap);
+		m_monitor = new Monitor(sub);
 
 		sub->setWidget(m_monitor);
 		sub->setAttribute(Qt::WA_DeleteOnClose);

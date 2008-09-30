@@ -35,8 +35,8 @@
 #include "app.h"
 #include "doc.h"
 #include "scene.h"
-#include "dmxmap.h"
 #include "fixture.h"
+#include "outputmap.h"
 #include "consolechannel.h"
 
 extern App* _app;
@@ -316,8 +316,8 @@ void ConsoleChannel::update()
 
 	Q_ASSERT(m_fixture != NULL);
 	
-	value = _app->dmxMap()->getValue(m_fixture->universeAddress() +
-					 m_channel);
+	value = _app->outputMap()->getValue(m_fixture->universeAddress() +
+					    m_channel);
 	
 	m_valueLabel->setNum(value);
 	setValue(value);
@@ -329,11 +329,11 @@ void ConsoleChannel::setOutputDMX(bool state)
 
 	/* When output is enabled again, update the current value to DMX */
 	if (state == true)
-		_app->dmxMap()->setValue(m_fixture->universeAddress() +
-					 m_channel, (t_value) m_value);
+		_app->outputMap()->setValue(m_fixture->universeAddress() +
+					    m_channel, (t_value) m_value);
 	else
-		_app->dmxMap()->setValue(m_fixture->universeAddress() +
-					 m_channel, 0); /* TODO: is this ok?? */
+		_app->outputMap()->setValue(m_fixture->universeAddress() +
+					    m_channel, 0); /* Nasty...? */
 }
 
 void ConsoleChannel::setValue(t_value value)
@@ -344,8 +344,8 @@ void ConsoleChannel::setValue(t_value value)
 void ConsoleChannel::slotValueChange(int value)
 {
 	if (m_outputDMX == true)
-		_app->dmxMap()->setValue(m_fixture->universeAddress() +
-					 m_channel, (t_value) value);
+		_app->outputMap()->setValue(m_fixture->universeAddress() +
+					    m_channel, (t_value) value);
 	
 	m_valueLabel->setNum(value);
 	
@@ -362,8 +362,8 @@ void ConsoleChannel::enable(bool state)
 {
 	setChecked(state);
 
-	m_value = _app->dmxMap()->getValue(m_fixture->universeAddress() +
-					   m_channel);
+	m_value = _app->outputMap()->getValue(m_fixture->universeAddress() +
+					      m_channel);
 
 	emit valueChanged(m_channel, m_value, isEnabled());
 }

@@ -24,6 +24,7 @@
 #ifndef USBDMXOUT_H
 #define USBDMXOUT_H
 
+#include <QStringList>
 #include <QtPlugin>
 #include <QMutex>
 
@@ -57,9 +58,9 @@ public:
 	 * Plugin open/close
 	 *********************************************************************/
 public:
-	int open();
-	int close();
-	int outputs();
+	void open(t_output output = 0);
+	void close(t_output output = 0);
+	QStringList outputs();
 
 protected:
 	/** /dev/usbdmx* devices */
@@ -81,7 +82,7 @@ public:
 	 * Configuration
 	 *********************************************************************/
 public:
-	int configure();
+	void configure();
 
 	/*********************************************************************
 	 * Plugin status

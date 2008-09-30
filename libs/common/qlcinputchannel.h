@@ -31,6 +31,12 @@ class QDomDocument;
 class QDomElement;
 class QString;
 
+#define KXMLQLCInputChannel "Channel"
+#define KXMLQLCInputChannelType "Type"
+#define KXMLQLCInputChannelAbsoluteFader "AbsoluteFader"
+#define KXMLQLCInputChannelRelativeFader "RelativeFader"
+#define KXMLQLCInputChannelButton "Button"
+
 class QLC_DECLSPEC QLCInputChannel : public QObject
 {
 	Q_OBJECT
@@ -45,17 +51,31 @@ public:
 	QLCInputChannel& operator=(QLCInputChannel& channel);
 	
 	/********************************************************************
+	 * Channel number
+	 ********************************************************************/
+public:
+	void setChannel(t_input_channel channel);
+	t_input_channel channel() const { return m_channel; }
+
+protected:
+	t_input_channel m_channel;
+
+	/********************************************************************
 	 * Type
 	 ********************************************************************/
 public:
 	enum Type
 	{
 		AbsoluteFader,
+		RelativeFader,
 		Button
 	};
 
 	void setType(Type type);
 	Type type() const { return m_type; }
+
+	static QString typeToString(Type type);
+	static Type stringToType(const QString& type);
 	
 protected:
 	Type m_type;
@@ -74,8 +94,8 @@ protected:
 	* Load & Save
 	********************************************************************/
 public:
-	void loadXML(QDomDocument* doc, QDomElement* root);
-	void saveXML(QDomDocument* doc, QDomElement* dev_root);
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* dev_root);
 };
 
 #endif
