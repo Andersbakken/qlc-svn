@@ -28,9 +28,11 @@
 #include "configureusbdmxout.h"
 
 #ifdef WIN32
+#include "usbdmxdevice-win32.h"
 #include "usbdmxout-win32.h"
 #else
-#include "usbdmxout.h"
+#include "usbdmxdevice-unix.h"
+#include "usbdmxout-unix.h"
 #endif
 
 /*****************************************************************************
@@ -149,21 +151,17 @@ void ConfigureUSBDMXOut::slotRefreshClicked()
 
 void ConfigureUSBDMXOut::refreshList()
 {
-	QString s;
+	int i = 0;
 
 	m_list->clear();
 
-	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+	QMapIterator <t_output, USBDMXDevice*> it(m_plugin->m_devices);
+	while (it.hasNext() == true)
 	{
-		if (m_plugin->m_devices[i] > 0)
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-			item->setText(0, QString("%1").arg(i + 1));
-#ifdef WIN32
-			item->setText(1, m_plugin->m_names[i]);
-#else
-			item->setText(1, QString("/dev/usbdmx%1").arg(i));
-#endif
-		}
+		it.next();
+		
+		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
+		item->setText(0, QString("%1").arg(i++));
+		item->setText(1, it.value()->name());
 	}
 }

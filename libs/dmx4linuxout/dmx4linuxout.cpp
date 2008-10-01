@@ -52,20 +52,19 @@ void DMX4LinuxOut::init()
 
 	for (t_channel i = 0; i < MAX_DMX4LINUX_DEVICES * 512; i++)
 		m_values[i] = 0;
-
 }
 
 /*****************************************************************************
  * Open/close
  *****************************************************************************/
 
-int DMX4LinuxOut::open()
+void DMX4LinuxOut::open(t_output /*output*/)
 {
 	/* Count the number of times open() has been called so that the devices
 	   are opened only once. This is basically reference counting. */
 	m_refCount++;
 	if (m_refCount > 1)
-		return 0;
+		return;
 
 	m_fd = ::open("/dev/dmx", O_WRONLY | O_NONBLOCK);
 	if (m_fd < 0)
@@ -78,18 +77,16 @@ int DMX4LinuxOut::open()
 	{
 		m_openError = 0;
 	}
-
-	return errno;
 }
 
-int DMX4LinuxOut::close()
+void DMX4LinuxOut::close(t_output /*output*/)
 {
 	/* Count the number of times close() has been called so that the devices
 	   are closed only after the last user closes this plugin. This is
 	   basically reference counting. */
 	m_refCount--;
 	if (m_refCount > 0)
-		return 0;
+		return;
 	Q_ASSERT(m_refCount == 0);
 
 	int r = ::close(m_fd);
@@ -98,13 +95,13 @@ int DMX4LinuxOut::close()
 	else
 		m_fd = -1;
 	m_openError = 0;
-
-	return r;
 }
 
-int DMX4LinuxOut::outputs()
+QStringList DMX4LinuxOut::outputs()
 {
-	return MAX_DMX4LINUX_DEVICES;
+	QStringList list;
+	list << QString("DMX4Linux 1");
+	return list;
 }
 
 /*****************************************************************************
@@ -120,18 +117,10 @@ QString DMX4LinuxOut::name()
  * Configuration
  *****************************************************************************/
 
-int DMX4LinuxOut::configure()
+void DMX4LinuxOut::configure()
 {
-	int r;
-
-	open();
-
 	ConfigureDMX4LinuxOut conf(NULL, this);
-	r = conf.exec();
-
-	close();
-
-	return r;
+	conf.exec();
 }
 
 /*****************************************************************************

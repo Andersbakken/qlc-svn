@@ -49,14 +49,9 @@ public:
 	 * Open/close
 	 *********************************************************************/
 public:
-	/** (Re-)open the plugin */
-	int open();
-
-	/** Close the plugin */
-	int close();
-
-	/** Number of output lines (universes) */
-	int outputs();
+	void open(t_output output = 0);
+	void close(t_output output = 0);
+	QStringList outputs();
 
 protected:
 	/** File handle for /dev/dmx */
@@ -79,7 +74,7 @@ public:
 	 *********************************************************************/
 public:
 	/** Invoke a configuration dialog */
-	int configure();
+	void configure();
 
 	/*********************************************************************
 	 * Status

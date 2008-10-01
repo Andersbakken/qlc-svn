@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  usbdmxout.h
+  usbdmxout-unix.h
   
   Copyright (c) Christian Sühs
 		Stefan Krumm
@@ -27,15 +27,14 @@
 #include <QStringList>
 #include <QtPlugin>
 #include <QMutex>
+#include <QMap>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
 class ConfigureUsbDmxOut;
+class USBDMXDevice;
 class QString;
-
-/* Maximum number of supported device entries (/dev/usbdmx*) */
-#define MAX_USBDMX_DEVICES 8
 
 /*****************************************************************************
  * USBDMXOut
@@ -53,24 +52,19 @@ class USBDMXOut : public QObject, public QLCOutPlugin
 	 *********************************************************************/
 public:
 	void init();
-
-	/*********************************************************************
-	 * Plugin open/close
-	 *********************************************************************/
-public:
 	void open(t_output output = 0);
 	void close(t_output output = 0);
+	
+	/*********************************************************************
+	 * Devices
+	 *********************************************************************/
+public:
+	void rescanDevices();
+	USBDMXDevice* device(const QString& path);
 	QStringList outputs();
 
 protected:
-	/** /dev/usbdmx* devices */
-	int m_devices[MAX_USBDMX_DEVICES];
-
-	/** Errors for each of the above devices */
-	int m_errors[MAX_USBDMX_DEVICES];
-
-	/** Reference count for open() & close() */
-	int m_refCount;
+	QMap <t_output, USBDMXDevice*> m_devices;
 
 	/*********************************************************************
 	 * Name
@@ -99,10 +93,6 @@ public:
 
 	int readChannel(t_channel channel, t_value &value);
 	int readRange(t_channel address, t_value* values, t_channel num);
-
-protected:
-	t_value m_values[MAX_USBDMX_DEVICES * 512];
-	QMutex m_mutex;
 };
 
 #endif

@@ -1,3 +1,20 @@
+2008-10-01  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/dmx4linuxout/dmx4linuxout.cpp:
+	* libs/dmx4linuxout/dmx4linuxout.h:
+	* libs/llaout/llaout.cpp:
+	* libs/llaout/llaout.h:
+	* libs/usbdmxout/configureusbdmxout.cpp:
+	* libs/usbdmxout/usbdmxdevice-unix.cpp:
+	* libs/usbdmxout/usbdmxdevice-unix.h:
+	* libs/usbdmxout/usbdmxout-unix.cpp:
+	* libs/usbdmxout/usbdmxout-unix.h:
+	* libs/usbdmxout/usbdmxout.cpp:
+	* libs/usbdmxout/usbdmxout.h:
+	* libs/usbdmxout/usbdmxout.pro:
+
+	Fixed plugins to compile in unix target.
+
 2008-09-22  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/midiinput/configuremidiinput.cpp:

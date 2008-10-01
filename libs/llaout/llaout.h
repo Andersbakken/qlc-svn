@@ -46,9 +46,9 @@ public:
 	 * Open/close
 	 *********************************************************************/
 public:
-	int open();
-	int close();
-	int outputs();
+	void open(t_output output = 0);
+	void close(t_output output = 0);
+	QStringList outputs();
 
 protected:
 	LlaClient *m_lla;
@@ -66,7 +66,7 @@ public:
 	 * Configuration
 	 *********************************************************************/
 public:
-	int configure();
+	void configure();
 
 protected:
 	QString m_configDir;

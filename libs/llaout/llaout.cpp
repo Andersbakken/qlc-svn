@@ -60,37 +60,35 @@ void LlaOut::init()
  * Open/close
  *****************************************************************************/
 
-int LlaOut::open()
+void LlaOut::open(t_output /*output*/)
 {
 	/* Count the number of times open() has been called so that the devices
 	   are opened only once. This is basically reference counting. */
 	m_refCount++;
 	if (m_refCount > 1)
-		return 0;
+		return;
 
 	m_lla = new LlaClient();
 	
 	if (m_lla == NULL)
-		return -1;
+		return;
 	
 	if (m_lla->start() < 0)
 	{
 		delete m_lla;
 		m_lla = NULL;
-		return -1;
 	}
-
-	return 0;
 }
 
-int LlaOut::close()
+void LlaOut::close(t_output /*output*/)
 {
 	/* Count the number of times close() has been called so that the devices
 	   are closed only after the last user closes this plugin. This is
 	   basically reference counting. */
 	m_refCount--;
 	if (m_refCount > 0)
-		return 0;
+		return;
+
 	Q_ASSERT(m_refCount == 0);
 
 	if (m_lla != NULL)
@@ -99,13 +97,16 @@ int LlaOut::close()
 		delete m_lla;
 		m_lla = NULL;
 	}
-	
-	return 0;
 }
 
-int LlaOut::outputs()
+QStringList LlaOut::outputs()
 {
-	return 1;
+	QStringList list;
+
+	for (t_output i = 0; i < KUniverseCount; i++)
+		list << QString("LLA Out %1").arg(i + 1);
+
+	return list;
 }
 
 /*****************************************************************************
@@ -121,18 +122,10 @@ QString LlaOut::name()
  * Configuration
  *****************************************************************************/
 
-int LlaOut::configure()
+void LlaOut::configure()
 {
-	int r;
-
-	open();
-
 	ConfigureLlaOut conf(NULL, this);
-	r = conf.exec();
-
-	close();
-
-	return r;
+	conf.exec();
 }
 
 /*****************************************************************************
@@ -165,33 +158,14 @@ QString LlaOut::infoText()
 	info += QString("</TR>");
 	info += QString("</TABLE>");
 
-	/*********************************************************************
-	 * DMX4Linux information
-	 *********************************************************************/
-
+	/* Output information */
 	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-
-	if (open() != 0)
-	{
-		info += QString("<TR>");
-		info += QString("<TD><B>Unable to open LLAOut</B></TD>");
-		info += QString("<TD>");
-		info += QString("No DMX output");
-		info += QString("</TD>");
-		info += QString("</TR>");
-	}
-	else
-	{
-		info += QString("<TR>");
-		info += QString("<TD><B>Available outputs</B></TD>");
-		t.sprintf("%d", KChannelMax / 512);
-		info += QString("<TD>" + t + "</TD>");
-		info += QString("</TR>");
-	}
-
+	info += QString("<TR>");
+	info += QString("<TD><B>Available outputs</B></TD>");
+	t.sprintf("%d", KChannelMax / 512);
+	info += QString("<TD>" + t + "</TD>");
+	info += QString("</TR>");
 	info += QString("</TABLE>");
-
-	close();
 
 	info += QString("</BODY>");
 	info += QString("</HTML>");
