@@ -132,7 +132,7 @@ void LlaOut::configure()
  * Status
  *****************************************************************************/
 
-QString LlaOut::infoText()
+QString LlaOut::infoText(t_output output)
 {
 	QString t;
 	QString info;

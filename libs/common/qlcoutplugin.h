@@ -73,12 +73,17 @@ public:
 	virtual void configure() = 0;
 
 	/**
-	 * Provide an information text to be displayed in the plugin manager
+	 * Provide an information text to be displayed in the output manager.
+	 * If @output is KOutputInvalid, the info text contains info regarding
+	 * the whole plugin. Otherwise it contains info on the specific output.
+	 * This information is meant to help users during output mapping.
 	 *
 	 * This is a pure virtual function that must be implemented
 	 * in all plugins.
+	 *
+	 * @param output The output to get info from
 	 */
-	virtual QString infoText() = 0;
+	virtual QString infoText(t_output output = KOutputInvalid) = 0;
 
 	/**
 	 * Get the plugin's name

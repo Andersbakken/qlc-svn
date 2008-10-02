@@ -73,15 +73,13 @@ public:
 	 * Configuration
 	 *********************************************************************/
 public:
-	/** Invoke a configuration dialog */
 	void configure();
 
 	/*********************************************************************
 	 * Status
 	 *********************************************************************/
 public:
-	/** Get an information text blob to be displayed in plugin manager */
-	QString infoText();
+	QString infoText(t_output output = KOutputInvalid);
 
 	/*********************************************************************
 	 * Value read/write

@@ -242,7 +242,6 @@ public:
 	 */
 	bool appendPlugin(QLCOutPlugin* outputPlugin);
 
-protected:
 	/**
 	 * Get a plugin instance by the plugin's name
 	 *

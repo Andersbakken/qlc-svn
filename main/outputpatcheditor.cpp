@@ -29,27 +29,30 @@
 
 #include "outputpatcheditor.h"
 #include "outputmap.h"
+#include "app.h"
 
 #define KColumnName   0
 #define KColumnOutput 1
 
-OutputPatchEditor::OutputPatchEditor(QWidget* parent, OutputMap* outputMap,
-				     int universe, const QString& pluginName,
-				     t_output output)
-	: QDialog(parent)
+extern App* _app;
+
+OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
+				     const QString& pluginName,
+				     t_output output) : QDialog(parent)
 {
 	/* OutputMap */
-	Q_ASSERT(outputMap != NULL);
-	m_outputMap = outputMap;
+	Q_ASSERT(_app->outputMap() != NULL);
 
 	/* Setup UI controls */
 	setupUi(this);
 	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						  QTreeWidgetItem*)),
 		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
+	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(accept()));
 
 	/* Universe */
-	Q_ASSERT(universe < outputMap->universes());
+	Q_ASSERT(universe < _app->outputMap()->universes());
 	m_universe = universe;
 	setWindowTitle(tr("Mapping properties for output universe %1")
 			.arg(universe + 1));
@@ -75,7 +78,7 @@ void OutputPatchEditor::fillTree()
 	m_tree->clear();
 	
 	/* Go thru available plugins and put them as the tree's root nodes. */
-	QStringListIterator pit(m_outputMap->pluginNames());
+	QStringListIterator pit(_app->outputMap()->pluginNames());
 	while (pit.hasNext() == true)
 	{
 		i = 0;
@@ -88,7 +91,8 @@ void OutputPatchEditor::fillTree()
 
 		/* Go thru available outputs provided by each plugin and put
 		   them as their parent plugin's leaf nodes. */
-		QStringListIterator iit(m_outputMap->pluginOutputs(pluginName));
+		QStringListIterator iit(_app->outputMap()->pluginOutputs(
+						pluginName));
 		while (iit.hasNext() == true)
 		{
 			oitem = new QTreeWidgetItem(pitem);
@@ -116,12 +120,28 @@ void OutputPatchEditor::fillTree()
 	}
 }
 
+void OutputPatchEditor::updateOutputInfo()
+{
+	QLCOutPlugin* plugin;
+
+	plugin = _app->outputMap()->plugin(m_pluginName);
+	if (plugin == NULL)
+	{
+		/* No plugin selected */
+	}
+	else
+	{
+		qDebug() << plugin->infoText(m_output);
+	}
+}
+
 void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 {
 	if (item == NULL)
 	{
 		m_output = KOutputInvalid;
 		m_outputName = QString::null;
+		m_pluginName = QString::null;
 	}
 	else
 	{
@@ -137,4 +157,6 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 			m_pluginName = QString::null;
 		}
 	}
+
+	updateOutputInfo();
 }

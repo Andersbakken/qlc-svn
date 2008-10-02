@@ -127,7 +127,7 @@ void DMX4LinuxOut::configure()
  * Status
  *****************************************************************************/
 
-QString DMX4LinuxOut::infoText()
+QString DMX4LinuxOut::infoText(t_output output)
 {
 	QString info = QString::null;
 	QString t;

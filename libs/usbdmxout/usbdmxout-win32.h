@@ -83,7 +83,7 @@ public:
 	 * Plugin status
 	 *********************************************************************/
 public:
-	QString infoText();
+	QString infoText(t_output output = KOutputInvalid);
 
 	/*********************************************************************
 	 * Value read/write methods

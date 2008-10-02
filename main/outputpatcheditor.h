@@ -39,21 +39,18 @@ class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	OutputPatchEditor(QWidget* parent, OutputMap* outputMap, int universe,
+	OutputPatchEditor(QWidget* parent, int universe,
 			  const QString& pluginName, t_output output);
 	~OutputPatchEditor();
 
 protected:
-	/** Initialize the tree to contain available plugins & their inputs */
 	void fillTree();
+	void updateOutputInfo();
 
 protected slots:
 	void slotCurrentItemChanged(QTreeWidgetItem* item);
 
 protected:
-	/** Our output map that contains the actual mapping */
-	OutputMap* m_outputMap;
-
 	/** The output universe being edited */
 	int m_universe;
 

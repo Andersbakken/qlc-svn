@@ -137,7 +137,7 @@ void USBDMXOut::configure()
  * Plugin status
  *****************************************************************************/
 
-QString USBDMXOut::infoText()
+QString USBDMXOut::infoText(t_output output)
 {
 	QString info;
 	QString s;

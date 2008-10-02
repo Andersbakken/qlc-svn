@@ -1,3 +1,23 @@
+2008-10-02  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcoutplugin.h:
+	* libs/dmx4linuxout/dmx4linuxout.cpp:
+	* libs/dmx4linuxout/dmx4linuxout.h:
+	* libs/llaout/llaout.cpp:
+	* libs/llaout/llaout.h:
+	* libs/usbdmxout/usbdmxout-unix.cpp:
+	* libs/usbdmxout/usbdmxout-unix.h:
+	* libs/usbdmxout/usbdmxout-win32.cpp:
+	* libs/usbdmxout/usbdmxout-win32.h:
+	* main/dummyoutplugin.cpp:
+	* main/dummyoutplugin.h:
+	* main/outputmanager.cpp:
+	* main/outputmap.h:
+	* main/outputpatcheditor.cpp:
+	* main/outputpatcheditor.h:
+
+	Added output parameter to QLCOutPlugin::infoText().
+
 2008-10-01  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/dmx4linuxout/dmx4linuxout.cpp:

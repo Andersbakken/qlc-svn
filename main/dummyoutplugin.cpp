@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QString>
+#include <QDebug>
 
 #include "dummyoutplugin.h"
 
@@ -58,10 +59,12 @@ QString DummyOutPlugin::name()
 
 void DummyOutPlugin::open(t_output output)
 {
+	qDebug() << "Opened dummy out" << output;
 }
 
 void DummyOutPlugin::close(t_output output)
 {
+	qDebug() << "Closed dummy out" << output;
 }
 
 QStringList DummyOutPlugin::outputs()
@@ -89,7 +92,7 @@ void DummyOutPlugin::configure()
  * Status
  *****************************************************************************/
 
-QString DummyOutPlugin::infoText()
+QString DummyOutPlugin::infoText(t_output output)
 {
 	QString str;
 

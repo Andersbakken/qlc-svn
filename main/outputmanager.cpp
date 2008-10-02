@@ -92,7 +92,7 @@ void OutputManager::slotEditClicked()
 	str = item->text(KColumnPlugin);
 	output = item->text(KColumnOutput).remove("Output").toInt() - 1;
 
-	OutputPatchEditor dpe(this, _app->outputMap(), universe, str, output);
+	OutputPatchEditor dpe(this, universe, str, output);
 	if (dpe.exec() == QDialog::Accepted)
 	{
 		if (dpe.output() != KOutputInvalid &&
