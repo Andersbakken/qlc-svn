@@ -235,7 +235,12 @@ int USBDMXOut::writeChannel(t_channel channel, t_value value)
 
 int USBDMXOut::writeRange(t_channel address, t_value* values, t_channel num)
 {
-	/* TODO */
+	t_output output = t_output(address / 512);
+	t_channel dmxAddress = address % 512;
+
+	if (m_devices.contains(output) == true)
+		m_devices[output]->writeRange(dmxAddress, values, num);
+
 	return 0;
 }
 
@@ -245,14 +250,19 @@ int USBDMXOut::readChannel(t_channel channel, t_value &value)
 	t_channel dmxChannel = channel % 512;
 
 	if (m_devices.contains(output) == true)
-		value = m_devices[output]->read(dmxChannel);
+		m_devices[output]->read(dmxChannel, &value);
 
 	return 0;
 }
 
 int USBDMXOut::readRange(t_channel address, t_value* values, t_channel num)
 {
-	/* TODO */
+	t_output output = t_output(address / 512);
+	t_channel dmxAddress = address % 512;
+
+	if (m_devices.contains(output) == true)
+		m_devices[output]->readRange(dmxAddress, values, num);
+
 	return 0;
 }
 

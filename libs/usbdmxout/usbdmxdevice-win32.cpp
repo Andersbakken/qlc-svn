@@ -148,13 +148,31 @@ void USBDMXDevice::write(t_channel channel, t_value value)
 	m_mutex.unlock();
 }
 
-t_value USBDMXDevice::read(t_channel channel)
+void USBDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
 {
-	t_value value = 0;
+	Q_ASSERT(address + num <= 512);
+	
+	m_mutex.lock();
+	memcpy(m_values + address, values, num);
+	if (m_handle != NULL)
+		m_usbdmx->tx_set(m_handle, values, num);
+	m_mutex.unlock();
+}
+
+void USBDMXDevice::read(t_channel channel, t_value* value)
+{
+	Q_ASSERT(value != NULL);
 
 	m_mutex.lock();
-	value = m_values[channel];
+	*value = m_values[channel];
 	m_mutex.unlock();
+}
 
-	return value;
+void USBDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
+{
+	Q_ASSERT(address + num <= 512);
+	
+	m_mutex.lock();
+	memcpy(values, m_values + address, num);
+	m_mutex.unlock();
 }

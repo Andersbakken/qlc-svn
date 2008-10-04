@@ -1,5 +1,13 @@
 2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/usbdmxout/usbdmxdevice-win32.cpp
+	* libs/usbdmxout/usbdmxdevice-win32.h
+	* libs/usbdmxout/usbdmxout-win32.cpp
+
+	Implemented read/writeRange methods.
+	
+2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/usbdmxout/configureusbdmxout.cpp
 	* libs/usbdmxout/usbdmxdevice-win32.cpp
 	* libs/usbdmxout/usbdmxdevice-win32.h
