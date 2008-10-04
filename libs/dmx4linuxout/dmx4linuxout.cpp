@@ -71,7 +71,7 @@ void DMX4LinuxOut::close(t_output output)
 QStringList DMX4LinuxOut::outputs()
 {
 	QStringList list;
-	list << QString("DMX4Linux 1");
+	list << QString("1: DMX4Linux");
 	return list;
 }
 
@@ -100,76 +100,33 @@ void DMX4LinuxOut::configure()
 
 QString DMX4LinuxOut::infoText(t_output output)
 {
-	QString info = QString::null;
-	QString t;
+	QString str;
 
-	/* HTML Title */
-	info += QString("<HTML>");
-	info += QString("<HEAD>");
-	info += QString("<TITLE>Plugin Info</TITLE>");
-	info += QString("</HEAD>");
-	info += QString("<BODY>");
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>%1</TITLE>").arg(name());
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
 
-	/* Plugin title */
-	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"5\">");
-	info += name();
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
-
-	/*********************************************************************
-	 * Outputs
-	 *********************************************************************/
-
-	/* Output */
-	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("Output");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	/* Device name */
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("Device name");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	int i = 0;
-	QStringListIterator it(outputs());
-	while (it.hasNext() == true)
+	if (output == KOutputInvalid)
 	{
-		info += QString("<TR>");
-		info += QString("<TD>%1</TD>").arg(i++);
-		info += QString("<TD>%1</TD>").arg(it.next());
-		info += QString("</TR>");
+		str += QString("<H3>%1</H3>").arg(name());
+		str += QString("<P>");
+		str += QString("This plugin provides DMX output support for ");
+		str += QString("devices supported by the DMX4Linux driver ");
+		str += QString("suite. See <address>llg.cubic.org</address> ");
+		str += QString("for more information.");
+		str += QString("</P>");
 	}
-	
-	info += QString("</TABLE>");
+	else if (output == 0)
+	{
+		str += QString("<H3>%1</H3>").arg(outputs()[output]);
+	}
 
-	info += QString("</BODY>");
-	info += QString("</HTML>");
+	str += QString("</BODY>");
+	str += QString("</HTML>");
 
-	return info;
+	return str;
 }
 
 /*****************************************************************************

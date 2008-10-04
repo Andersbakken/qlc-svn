@@ -26,7 +26,9 @@
 #include <QMutex>
 #include <QFile>
 
+#ifndef WIN32
 #include <lla/LlaClient.h>
+#endif
 
 #include "common/qlcfile.h"
 #include "configurellaout.h"
@@ -69,7 +71,7 @@ void LLAOut::close(t_output output)
 QStringList LLAOut::outputs()
 {
 	QStringList list;
-	list << QString("LLA Out 1");
+	list << QString("1: LLA Output 1");
 	return list;
 }
 
@@ -98,75 +100,32 @@ void LLAOut::configure()
 
 QString LLAOut::infoText(t_output output)
 {
-	QString t;
-	QString info;
+	QString str;
 
-	info += QString("<HTML>");
-	info += QString("<HEAD>");
-	info += QString("<TITLE>Plugin Info</TITLE>");
-	info += QString("</HEAD>");
-	info += QString("<BODY>");
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>%1</TITLE>").arg(name());
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
 
-	/* Title */
-	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"5\">");
-	info += name();
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
-
-	/*********************************************************************
-	 * Outputs
-	 *********************************************************************/
-
-	/* Output */
-	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("Output");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	/* Device name */
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("Device name");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	int i = 0;
-	QStringListIterator it(outputs());
-	while (it.hasNext() == true)
+	if (output == KOutputInvalid)
 	{
-		info += QString("<TR>");
-		info += QString("<TD>%1</TD>").arg(i++);
-		info += QString("<TD>%1</TD>").arg(it.next());
-		info += QString("</TR>");
+		str += QString("<H3>%1</H3>").arg(name());
+		str += QString("<P>");
+		str += QString("This plugin provides DMX output support for ");
+		str += QString("the Linux Lighting Architecture (LLA). ");
+		str += QString("See www.nomis52.net for more information.");
+		str += QString("</P>");
 	}
-	
-	info += QString("</TABLE>");
+	else if (output == 0)
+	{
+		str += QString("<H3>%1</H3>").arg(outputs()[output]);
+	}
 
-	info += QString("</BODY>");
-	info += QString("</HTML>");
-	
-	return info;
+	str += QString("</BODY>");
+	str += QString("</HTML>");
+
+	return str;
 }
 
 /*****************************************************************************

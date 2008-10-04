@@ -25,9 +25,24 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QDebug>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
+
+#ifdef WIN32
+class LlaClient
+{
+public:
+	LlaClient() {}
+	~LlaClient() {}
+	
+	int start() { qDebug() << "LLA Start"; return 0; }
+	void stop() { qDebug() << "LLA Stop"; }
+	void send_dmx(int u, int* v, int n) { qDebug() << u << v << n; }
+	void fd_action(int a) { qDebug() << a; }
+};
+#endif
 
 class ConfigureLlaOut;
 

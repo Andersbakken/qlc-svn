@@ -72,7 +72,7 @@ QStringList DummyOutPlugin::outputs()
 	QStringList list;
 
 	for (int i = 0; i < KUniverseCount; i++)
-		list << QString("Dummy Out %1").arg(i + 1);
+		list << QString("%1: Dummy Out %1").arg(i + 1);
 
 	return list;
 }
@@ -98,38 +98,17 @@ QString DummyOutPlugin::infoText(t_output output)
 
 	str += QString("<HTML>");
 	str += QString("<HEAD>");
-	str += QString("<TITLE>Plugin Info</TITLE>");
+	str += QString("<TITLE>%1</TITLE>").arg(name());
 	str += QString("</HEAD>");
 	str += QString("<BODY>");
 
-	/* Title */
-	str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	str += QString("<TR>");
-	str += QString("<TD BGCOLOR=\"");
-	str += QApplication::palette().color(QPalette::Highlight).name();
-	str += QString("\">");
-	str += QString("<FONT COLOR=\"");
-	str += QApplication::palette().color(QPalette::HighlightedText).name();
-	str += QString("\" SIZE=\"5\">");
-	str += name();
-	str += QString("</FONT>");
-	str += QString("</TD>");
-	str += QString("</TR>");
-	str += QString("</TABLE>");
-
-	/* Outputs */
-	str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-	str += QString("<TR>");
-	str += QString("<TD><B>Outputs</B></TD>");
-	str += QString("<TD><I>%1</I></TD>").arg(KUniverseCount);
-	str += QString("</TR>");
-	str += QString("</TABLE>");
-
-	/* Note */
-	str += QString("<H3>NOTE</H3>");
+	if (output == KOutputInvalid)
+		str += QString("<H3>%1</H3>").arg(name());
+	else
+		str += QString("<H3>%1</H3>").arg(outputs()[output]);
 	str += QString("<P>");
 	str += QString("This plugin does absolutely nothing; ");
-	str += QString("you can use this if you don't have ");
+	str += QString("you can use it if you don't have ");
 	str += QString("the necessary hardware for real control.");
 	str += QString("</P>");
 

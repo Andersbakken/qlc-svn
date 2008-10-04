@@ -49,32 +49,32 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	usbdmx->device_version(m_handle, &version);
 	if (m_usbdmx->is_xswitch(m_handle))
 	{
-		m_name = QString("%1: X-Switch Version %2")
+		m_name = QString("%1: X-Switch (version %2)")
 				.arg(m_output + 1).arg(version);
 	}
 	else if (m_usbdmx->is_rodin1(m_handle))
 	{
-		m_name = QString("%1: Rodin1 Version %2")
+		m_name = QString("%1: Rodin 1 (version %2)")
 				.arg(m_output + 1).arg(version);
 	}
 	else if (m_usbdmx->is_rodin2(m_handle))
 	{
-		m_name = QString("%1: Rodin2 Version %2")
+		m_name = QString("%1: Rodin 2 (version %2)")
 				.arg(m_output + 1).arg(version);
 	}
 	else if (m_usbdmx->is_rodint(m_handle))
 	{
-		m_name = QString("%1: RodinT Version %2")
+		m_name = QString("%1: Rodin T (version %2)")
 				.arg(m_output + 1).arg(version);
 	}
 	else if (m_usbdmx->is_usbdmx21(m_handle))
 	{
-		m_name = QString("%1: USBDMX21 Version %2")
+		m_name = QString("%1: USBDMX21 (version %2)")
 				.arg(m_output + 1).arg(version);
 	}
 	else
 	{
-		m_name = QString("%1: Unknown Version %2")
+		m_name = QString("%1: Unknown (version %2)")
 				.arg(m_output + 1).arg(version);
 	}
 

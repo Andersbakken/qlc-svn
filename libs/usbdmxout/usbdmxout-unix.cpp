@@ -139,76 +139,38 @@ void USBDMXOut::configure()
 
 QString USBDMXOut::infoText(t_output output)
 {
-	QString info;
-	QString s;
+	QString str;
 
-	/* HTML page Title */
-	info += QString("<HTML>");
-	info += QString("<HEAD>");
-	info += QString("<TITLE>Plugin Info</TITLE>");
-	info += QString("</HEAD>");
-	info += QString("<BODY>");
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>%1</TITLE>").arg(name());
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
 
-	/* Plugin title */
-	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"5\">");
-	info += name();
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
-
-	/*********************************************************************
-	 * Outputs
-	 *********************************************************************/
-
-	/* Title */
-	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("Output");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("Device name");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	/* Output lines */
-	QMapIterator <t_output, USBDMXDevice*> it(m_devices);
-	while (it.hasNext() == true)
+	if (output == KOutputInvalid)
 	{
-		it.next();
-		info += QString("<TR>");
-		info += QString("<TD>%1</TD>").arg(it.value()->output() + 1);
-		info += QString("<TD>%1</TD>").arg(it.value()->name());
-		info += QString("</TR>");
+		str += QString("<H3>%1</H3>").arg(name());
+		str += QString("<P>");
+		str += QString("This plugin provides DMX output support for ");
+		str += QString("devices manufactured by Peperoni Light: ");
+		str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
+		str += QString("USBDMX21. See ");
+		str += QString("<address>www.peperoni-light.de</address> for ");
+		str += QString("more information. ");
+		str += QString("</P>");
+	}
+	else if (m_devices.contains(output) == true)
+	{
+		str += QString("<H3>%1</H3>").arg(outputs()[output]);
+		str += QString("<P>");
+		str += QString("Device is operating correctly.");
+		str += QString("</P>");
 	}
 
-	info += QString("</TABLE>");
+	str += QString("</BODY>");
+	str += QString("</HTML>");
 
-	info += QString("</BODY>");
-	info += QString("</HTML>");
-
-	return info;
+	return str;
 }
 
 /*****************************************************************************

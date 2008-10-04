@@ -1,5 +1,23 @@
 2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/dmx4linuxout/dmx4linuxout.cpp
+	* libs/libs.pro
+	* libs/llaout/llaout.cpp
+	* libs/llaout/llaout.h
+	* libs/usbdmxout/usbdmxdevice-win32.cpp
+	* libs/usbdmxout/usbdmxout-unix.cpp
+	* libs/usbdmxout/usbdmxout-win32.cpp
+	* main/dummyoutplugin.cpp
+	* main/outputmap.cpp
+	* main/outputmap.h
+	* main/outputpatcheditor.cpp
+	* main/outputpatcheditor.ui
+
+	Added an information text viewer to OutputPatchEditor and made some
+	changes to output plugins to display more specific info.
+	
+2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* main/outputmanager.cpp
 
 	Changed output manager to display the output name instead of its ID.

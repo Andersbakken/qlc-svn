@@ -45,6 +45,7 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 
 	/* Setup UI controls */
 	setupUi(this);
+	m_configureButton->setIcon(QIcon(":/configure.png"));
 	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						  QTreeWidgetItem*)),
 		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
@@ -122,17 +123,12 @@ void OutputPatchEditor::fillTree()
 
 void OutputPatchEditor::updateOutputInfo()
 {
-	QLCOutPlugin* plugin;
-
-	plugin = _app->outputMap()->plugin(m_pluginName);
-	if (plugin == NULL)
-	{
-		/* No plugin selected */
-	}
+	QString status = _app->outputMap()->pluginStatus(m_pluginName,
+							 m_output);
+	if (status.length() == 0)
+		m_infoBrowser->setText("No selection");
 	else
-	{
-		qDebug() << plugin->infoText(m_output);
-	}
+		m_infoBrowser->setText(status);
 }
 
 void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
@@ -148,13 +144,13 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 		m_output = item->text(KColumnOutput).toInt();
 		if (m_output != KOutputInvalid)
 		{
-			m_outputName = item->text(KColumnName);
 			m_pluginName = item->parent()->text(KColumnName);
+			m_outputName = item->text(KColumnName);
 		}
 		else
 		{
+			m_pluginName = item->text(KColumnName);
 			m_outputName = QString::null;
-			m_pluginName = QString::null;
 		}
 	}
 

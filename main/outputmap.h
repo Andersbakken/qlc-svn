@@ -230,8 +230,10 @@ public:
 	 * given, an overall mapping status of all universes is returned.
 	 *
 	 * @param pluginName Name of the plugin, whose status to get
+	 * @param output Plugin's output line for getting more specific info
 	 */
-	QString pluginStatus(const QString& pluginName = QString::null);
+	QString pluginStatus(const QString& pluginName = QString::null,
+			     t_output output = KOutputInvalid);
 
 	/**
 	 * Append the given plugin to our list of plugins. Will fail if

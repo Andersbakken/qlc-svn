@@ -440,7 +440,7 @@ void OutputMap::configurePlugin(const QString& pluginName)
 		outputPlugin->configure();
 }
 
-QString OutputMap::pluginStatus(const QString& pluginName)
+QString OutputMap::pluginStatus(const QString& pluginName, t_output output)
 {
 	QLCOutPlugin* outputPlugin = NULL;
 	QString info;
@@ -448,76 +448,10 @@ QString OutputMap::pluginStatus(const QString& pluginName)
 	if (pluginName != QString::null)
 		outputPlugin = plugin(pluginName);
 
-	if (outputPlugin == NULL)
-	{
-		QString str;
-
-		// HTML header
-		info += QString("<HTML>");
-		info += QString("<HEAD>");
-		info += QString("<TITLE>Universe mapping status</TITLE>");
-		info += QString("</HEAD>");
-		info += QString("<BODY>");
-
-		// Mapping status title
-		info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-		info += QString("<TR>");
-		info += QString("<TD BGCOLOR=\"");
-		info += QApplication::palette()
-			.color(QPalette::Highlight).name();
-		info += QString("\">");
-		info += QString("<FONT COLOR=\"");
-		info += QApplication::palette()
-			.color(QPalette::HighlightedText).name();
-		info += QString("\" SIZE=\"5\">");
-		info += QString("Universe mapping status");
-		info += QString("</FONT>");
-		info += QString("</TD>");
-		info += QString("</TR>");
-		info += QString("</TABLE>");
-
-		// Universe mappings
-		info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-
-		for (int i = 0; i < KUniverseCount; i++)
-		{
-			OutputPatch* outputPatch = patch(i);
-			Q_ASSERT(outputPatch != NULL);
-			Q_ASSERT(outputPatch->plugin() != NULL);
-
-			if (i % 2 == 0)
-				info += QString("<TR>");
-			else
-			{
-				info += QString("<TR BGCOLOR=\"");
-				info += QApplication::palette()
-					.color(QPalette::Midlight).name();
-				info += QString("\">");
-			}
-
-			info += QString("<TD>");
-			str.setNum(i + 1);
-			info += QString("<B>Universe " + str + "</B>");
-			info += QString("</TD>");
-
-			info += QString("<TD>");
-			info += outputPatch->pluginName();
-			info += QString("</TD>");
-
-			info += QString("<TD>");
-			str.sprintf("Output %d", outputPatch->output() + 1);
-			info += str;
-			info += QString("</TD>");
-
-			info += QString("</TR>");
-		}
-
-		info += QString("</TABLE>");
-	}
+	if (outputPlugin != NULL)
+		info = outputPlugin->infoText(output);
 	else
-	{
-		info = outputPlugin->infoText();
-	}
+		info = tr("No information");
 
 	return info;
 }
