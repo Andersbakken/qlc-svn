@@ -1,5 +1,29 @@
 2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/common/qlcoutplugin.h
+	* libs/dmx4linuxout/configuredmx4linuxout.cpp
+	* libs/dmx4linuxout/dmx4linuxout.cpp
+	* libs/dmx4linuxout/dmx4linuxout.h
+	* libs/dmx4linuxout/dmx4linuxout.pro
+	* libs/libs.pro
+	* libs/llaout/configurellaout.cpp
+	* libs/llaout/configurellaout.h
+	* libs/llaout/configurellaout.ui
+	* libs/llaout/llaout.cpp
+	* libs/llaout/llaout.h
+	* libs/llaout/llaout.pro
+	* libs/usbdmxout/configureusbdmxout.cpp
+	* libs/usbdmxout/usbdmxout-win32.cpp
+	* libs/usbdmxout/usbdmxout-win32.h
+	* main/dummyoutplugin.cpp
+	* main/dummyoutplugin.h
+	* main/outputmap.cpp
+
+	Removed int return type from output plugin's read&write methods.
+	Added output parameter to output plugin's read&write methods.
+	
+2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/usbdmxout/usbdmxdevice-win32.cpp
 	* libs/usbdmxout/usbdmxdevice-win32.h
 	* libs/usbdmxout/usbdmxout-win32.cpp

@@ -20,17 +20,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <linux/errno.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
-
 #include <QApplication>
 #include <QString>
+#include <QDebug>
 #include <QMutex>
 #include <QFile>
 
@@ -40,72 +32,44 @@
 #include "configurellaout.h"
 #include "llaout.h"
 
-static QMutex _mutex;
-
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-void LlaOut::init()
+void LLAOut::init()
 {
-	m_lla = NULL;
+	m_lla = new LlaClient();
 
-	for (t_channel i = 0; i < KChannelMax; i++)
+	for (t_channel i = 0; i < 512; i++)
 		m_values[i] = 0;
-
-	m_refCount = 0;
 }
 
 /*****************************************************************************
  * Open/close
  *****************************************************************************/
 
-void LlaOut::open(t_output /*output*/)
+void LLAOut::open(t_output output)
 {
-	/* Count the number of times open() has been called so that the devices
-	   are opened only once. This is basically reference counting. */
-	m_refCount++;
-	if (m_refCount > 1)
-		return;
-
-	m_lla = new LlaClient();
-	
 	if (m_lla == NULL)
 		return;
-	
-	if (m_lla->start() < 0)
-	{
-		delete m_lla;
-		m_lla = NULL;
-	}
-}
 
-void LlaOut::close(t_output /*output*/)
-{
-	/* Count the number of times close() has been called so that the devices
-	   are closed only after the last user closes this plugin. This is
-	   basically reference counting. */
-	m_refCount--;
-	if (m_refCount > 0)
+	if (output != 0)
 		return;
 
-	Q_ASSERT(m_refCount == 0);
-
-	if (m_lla != NULL)
-	{
-		m_lla->stop();
-		delete m_lla;
-		m_lla = NULL;
-	}
+	if (m_lla->start() < 0)
+		qWarning() << "Unable to open LLA";
 }
 
-QStringList LlaOut::outputs()
+void LLAOut::close(t_output output)
+{
+	if (m_lla != NULL)
+		m_lla->stop();
+}
+
+QStringList LLAOut::outputs()
 {
 	QStringList list;
-
-	for (t_output i = 0; i < KUniverseCount; i++)
-		list << QString("LLA Out %1").arg(i + 1);
-
+	list << QString("LLA Out 1");
 	return list;
 }
 
@@ -113,7 +77,7 @@ QStringList LlaOut::outputs()
  * Name
  *****************************************************************************/
 
-QString LlaOut::name()
+QString LLAOut::name()
 {
 	return QString("LLA Output");
 }
@@ -122,9 +86,9 @@ QString LlaOut::name()
  * Configuration
  *****************************************************************************/
 
-void LlaOut::configure()
+void LLAOut::configure()
 {
-	ConfigureLlaOut conf(NULL, this);
+	ConfigureLLAOut conf(NULL, this);
 	conf.exec();
 }
 
@@ -132,7 +96,7 @@ void LlaOut::configure()
  * Status
  *****************************************************************************/
 
-QString LlaOut::infoText(t_output output)
+QString LLAOut::infoText(t_output output)
 {
 	QString t;
 	QString info;
@@ -158,13 +122,45 @@ QString LlaOut::infoText(t_output output)
 	info += QString("</TR>");
 	info += QString("</TABLE>");
 
-	/* Output information */
+	/*********************************************************************
+	 * Outputs
+	 *********************************************************************/
+
+	/* Output */
 	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 	info += QString("<TR>");
-	info += QString("<TD><B>Available outputs</B></TD>");
-	t.sprintf("%d", KChannelMax / 512);
-	info += QString("<TD>" + t + "</TD>");
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().color(QPalette::Highlight).name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\">");
+	info += QString("Output");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+
+	/* Device name */
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().color(QPalette::Highlight).name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\">");
+	info += QString("Device name");
+	info += QString("</FONT>");
+	info += QString("</TD>");
 	info += QString("</TR>");
+
+	int i = 0;
+	QStringListIterator it(outputs());
+	while (it.hasNext() == true)
+	{
+		info += QString("<TR>");
+		info += QString("<TD>%1</TD>").arg(i++);
+		info += QString("<TD>%1</TD>").arg(it.next());
+		info += QString("</TR>");
+	}
+	
 	info += QString("</TABLE>");
 
 	info += QString("</BODY>");
@@ -177,79 +173,64 @@ QString LlaOut::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-int LlaOut::writeChannel(t_channel channel, t_value value)
+void LLAOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-	int r = 0;
+	if (output != 0)
+		return;
 
-	_mutex.lock();
-	
+	m_mutex.lock();
 	m_values[channel] = value;
-	
-	//which interface should we write to?
-	int uniNo = int(channel / 512);
-	
 	if (m_lla != NULL)
 	{
-		m_lla->send_dmx(uniNo + 1, &m_values[uniNo * 512], 512);
+		m_lla->send_dmx(output + 1, (int*) m_values, 512);
 		m_lla->fd_action(0);
 	}
-	
-	_mutex.unlock();
-	
-	return r;
+	m_mutex.unlock();
 }
 
-int LlaOut::writeRange(t_channel address, t_value* values, t_channel num)
+void LLAOut::writeRange(t_output output, t_channel address, t_value* values,
+			t_channel num)
 {
-	int r = 0;
-	QString txt;
-	
+	if (output != 0)
+		return;
+
 	Q_ASSERT(values != NULL);
 
-	_mutex.lock();
-	
-	// which one is the first universe to write to?
-	int uni = int(address / 512);
-	
-	// how many universes?
-	int lastUni = (address + num) / 512;
-	
+	m_mutex.lock();	
 	memcpy(m_values + address, values, num * sizeof(t_value));
-	
 	if (m_lla != NULL)
 	{
-		for(int i = uni; i <= lastUni; i++)
-			m_lla->send_dmx(i + 1, &m_values[i * 512], 512);
+		m_lla->send_dmx(output + 1, (int*) m_values, 512);
+		m_lla->fd_action(0);
 	}
-	
-	m_lla->fd_action(0);
-	_mutex.unlock();
-	
-	return r;
+	m_mutex.unlock();
 }
 
-int LlaOut::readChannel(t_channel channel, t_value &value)
+void LLAOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-	_mutex.lock();
-	value = m_values[channel];
-	_mutex.unlock();
-	
-	return 0;
+	if (output != 0)
+		return;
+
+	m_mutex.lock();
+	*value = m_values[channel];
+	m_mutex.unlock();
 }
 
-int LlaOut::readRange(t_channel address, t_value* values, t_channel num)
+void LLAOut::readRange(t_output output, t_channel address, t_value* values,
+		       t_channel num)
 {
+	if (output != 0)
+		return;
+
 	Q_ASSERT(values != NULL);
 	
-	_mutex.lock();
-	memcpy(values, m_values + address, num * sizeof(t_value));
-	_mutex.unlock();
-	
-	return 0;
+	m_mutex.lock();
+	memcpy(values, m_values + address, num);
+	m_mutex.unlock();
 }
 
 /*****************************************************************************
  * Plugin export
  ****************************************************************************/
 
-Q_EXPORT_PLUGIN2(llaout, LlaOut)
+Q_EXPORT_PLUGIN2(llaout, LLAOut)

@@ -22,15 +22,15 @@
 #ifndef DMX4LINUXOUT_H
 #define DMX4LINUXOUT_H
 
-#include <QString>
 #include <QWidget>
+#include <QString>
+#include <QMutex>
+#include <QFile>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
 class ConfigureDMX4LinuxOut;
-
-#define MAX_DMX4LINUX_DEVICES 4
 
 class DMX4LinuxOut : public QObject, public QLCOutPlugin
 {
@@ -55,13 +55,7 @@ public:
 
 protected:
 	/** File handle for /dev/dmx */
-	int m_fd;
-
-	/** Error code for /dev/dmx open() */
-	int m_openError;
-
-	/** Reference count for open() & close() */
-	int m_refCount;
+	QFile m_file;
 
 	/*********************************************************************
 	 * Name
@@ -85,14 +79,17 @@ public:
 	 * Value read/write
 	 *********************************************************************/
 public:
-	int writeChannel(t_channel channel, t_value value);
-	int writeRange(t_channel address, t_value* values, t_channel num);
+	void writeChannel(t_output output, t_channel channel, t_value value);
+	void writeRange(t_output output, t_channel address, t_value* values,
+			t_channel num);
 
-	int readChannel(t_channel channel, t_value &value);
-	int readRange(t_channel address, t_value* values, t_channel num);
+	void readChannel(t_output output, t_channel channel, t_value* value);
+	void readRange(t_output output, t_channel address, t_value* values,
+		       t_channel num);
 
 protected:
-	t_value m_values[MAX_DMX4LINUX_DEVICES * 512];
+	t_value m_values[512];
+	QMutex m_mutex;
 };
 
 #endif

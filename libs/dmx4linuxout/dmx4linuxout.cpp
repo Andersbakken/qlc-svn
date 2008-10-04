@@ -19,14 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <linux/errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
-
 #include <QApplication>
 #include <QString>
 #include <QDebug>
@@ -38,19 +30,15 @@
 #include "configuredmx4linuxout.h"
 #include "dmx4linuxout.h"
 
-static QMutex _mutex;
-
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
 void DMX4LinuxOut::init()
 {
-	m_fd = 0;
-	m_openError = 0;
-	m_refCount = 0;
+	m_file.setFileName("/dev/dmx");
 
-	for (t_channel i = 0; i < MAX_DMX4LINUX_DEVICES * 512; i++)
+	for (t_channel i = 0; i < 512; i++)
 		m_values[i] = 0;
 }
 
@@ -58,43 +46,26 @@ void DMX4LinuxOut::init()
  * Open/close
  *****************************************************************************/
 
-void DMX4LinuxOut::open(t_output /*output*/)
+void DMX4LinuxOut::open(t_output output)
 {
-	/* Count the number of times open() has been called so that the devices
-	   are opened only once. This is basically reference counting. */
-	m_refCount++;
-	if (m_refCount > 1)
+	if (output != 0)
 		return;
 
-	m_fd = ::open("/dev/dmx", O_WRONLY | O_NONBLOCK);
-	if (m_fd < 0)
+	m_file.unsetError();
+	if (m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered) == false)
 	{
-		m_openError = errno;
 		qWarning() << "DMX4Linux output is not available:"
-			   << strerror(m_openError);
-	}
-	else
-	{
-		m_openError = 0;
+			   << m_file.errorString();
 	}
 }
 
-void DMX4LinuxOut::close(t_output /*output*/)
+void DMX4LinuxOut::close(t_output output)
 {
-	/* Count the number of times close() has been called so that the devices
-	   are closed only after the last user closes this plugin. This is
-	   basically reference counting. */
-	m_refCount--;
-	if (m_refCount > 0)
+	if (output != 0)
 		return;
-	Q_ASSERT(m_refCount == 0);
 
-	int r = ::close(m_fd);
-	if (r == -1)
-		perror("close");
-	else
-		m_fd = -1;
-	m_openError = 0;
+	m_file.close();
+	m_file.unsetError();
 }
 
 QStringList DMX4LinuxOut::outputs()
@@ -155,44 +126,45 @@ QString DMX4LinuxOut::infoText(t_output output)
 	info += QString("</TABLE>");
 
 	/*********************************************************************
-	 * DMX4Linux information
+	 * Outputs
 	 *********************************************************************/
 
+	/* Output */
 	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+	info += QString("<TR>");
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().color(QPalette::Highlight).name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\">");
+	info += QString("Output");
+	info += QString("</FONT>");
+	info += QString("</TD>");
 
-	open();
+	/* Device name */
+	info += QString("<TD BGCOLOR=\"");
+	info += QApplication::palette().color(QPalette::Highlight).name();
+	info += QString("\">");
+	info += QString("<FONT COLOR=\"");
+	info += QApplication::palette().color(QPalette::HighlightedText).name();
+	info += QString("\">");
+	info += QString("Device name");
+	info += QString("</FONT>");
+	info += QString("</TD>");
+	info += QString("</TR>");
+
+	int i = 0;
+	QStringListIterator it(outputs());
+	while (it.hasNext() == true)
+	{
+		info += QString("<TR>");
+		info += QString("<TD>%1</TD>").arg(i++);
+		info += QString("<TD>%1</TD>").arg(it.next());
+		info += QString("</TR>");
+	}
 	
-	/* Print error if /dev/dmx cannot be opened */
-	if (m_openError != 0)
-	{
-		info += QString("<TR>");
-		info += QString("<TD><B>Unable to open /dev/dmx:</B></TD>");
-		info += QString("<TD>");
-		info += QString(strerror(m_openError));
-		info += QString("</TD>");
-		info += QString("</TR>");
-	}
-
-	if (m_openError == 0)
-	{
-		info += QString("<TR>");
-		info += QString("<TD><B>Available outputs</B></TD>");
-		t.sprintf("%d", MAX_DMX4LINUX_DEVICES);
-		info += QString("<TD>" + t + "</TD>");
-		info += QString("</TR>");
-	}
-	else
-	{
-		info += QString("<TR>");
-		info += QString("<TD><B>Unable to read info:</B></TD>");
-		info += QString("<TD>");
-		info += QString(strerror(m_openError));
-		info += QString("</TD>");
-		info += QString("</TR>");
-	}
 	info += QString("</TABLE>");
-
-	close();
 
 	info += QString("</BODY>");
 	info += QString("</HTML>");
@@ -204,62 +176,56 @@ QString DMX4LinuxOut::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-int DMX4LinuxOut::writeChannel(t_channel channel, t_value value)
+void DMX4LinuxOut::writeChannel(t_output output, t_channel channel,
+			        t_value value)
 {
-	int r = 0;
+	if (output != 0)
+		return;
 
-	_mutex.lock();
-
+	m_mutex.lock();
 	m_values[channel] = value;
-
-	lseek(m_fd, channel, SEEK_SET);
-	r = write(m_fd, &value, 1);
-	if (r == -1)
-		perror("write");
-
-	_mutex.unlock();
-
-	return r;
+	m_file.seek(channel);
+	if (m_file.write((const char*) &value, 1) == -1)
+		qWarning() << "DMX4Linux: Unable to write:"
+			   << m_file.errorString();
+	m_mutex.unlock();
 }
 
-int DMX4LinuxOut::writeRange(t_channel address, t_value* values, t_channel num)
+void DMX4LinuxOut::writeRange(t_output output, t_channel address,
+			      t_value* values, t_channel num)
 {
-	Q_ASSERT(values != NULL);
+	if (output != 0)
+		return;
 
-	int r = 0;
-
-	_mutex.lock();
-
-	memcpy(m_values + address, values, num * sizeof(t_value));
-
-	lseek(m_fd, address, SEEK_SET);
-	r = write(m_fd, values, num);
-	if (r == -1)
-		perror("write");
-
-	_mutex.unlock();
-
-	return r;
+	m_mutex.lock();
+	memcpy(m_values + address, values, num);
+	m_file.seek(address);
+	if (m_file.write((const char*) values, num) == -1)
+		qWarning() << "DMX4Linux: Unable to write:"
+			   << m_file.errorString();
+	m_mutex.unlock();
 }
 
-int DMX4LinuxOut::readChannel(t_channel channel, t_value &value)
+void DMX4LinuxOut::readChannel(t_output output, t_channel channel,
+			       t_value* value)
 {
-	_mutex.lock();
-	value = m_values[channel];
-	_mutex.unlock();
+	if (output != 0)
+		return;
 
-	return 0;
+	m_mutex.lock();
+	*value = m_values[channel];
+	m_mutex.unlock();
 }
 
-int DMX4LinuxOut::readRange(t_channel address, t_value* values, t_channel num)
+void DMX4LinuxOut::readRange(t_output output, t_channel address,
+			     t_value* values, t_channel num)
 {
-	Q_ASSERT(values != NULL);
+	if (output != 0)
+		return;
 
-	_mutex.lock();
-	memcpy(values, m_values + address, num * sizeof(t_value));
-	_mutex.unlock();
-
-	return 0;
+	m_mutex.lock();
+	memcpy(values, m_values + address, num);
+	m_mutex.unlock();
 }
 
 /*****************************************************************************

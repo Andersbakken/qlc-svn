@@ -40,7 +40,7 @@ DummyOutPlugin::~DummyOutPlugin()
 
 void DummyOutPlugin::init()
 {
-	for (t_channel i = 0; i < KChannelMax; i++)
+	for (t_channel i = 0; i < sizeof(m_values); i++)
 		m_values[i] = 0;
 }
 
@@ -143,45 +143,40 @@ QString DummyOutPlugin::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-int DummyOutPlugin::writeChannel(t_channel channel, t_value value)
+void DummyOutPlugin::writeChannel(t_output output, t_channel channel,
+				  t_value value)
 {
 	m_mutex.lock();
-	m_values[channel] = value;
+	m_values[(512 * output) + channel] = value;
 	m_mutex.unlock();
-	return 0;
 }
 
-int DummyOutPlugin::writeRange(t_channel address, t_value* values,
-			       t_channel num)
+void DummyOutPlugin::writeRange(t_output output, t_channel address,
+				t_value* values, t_channel num)
 {
 	Q_ASSERT(values != NULL);
 
 	m_mutex.lock();
-	memcpy(m_values + address, values, num * sizeof(t_value));
+	memcpy(m_values + (address + (512 * output)), values, num);
 	m_mutex.unlock();
-
-	return 0;
 }
 
-int DummyOutPlugin::readChannel(t_channel channel, t_value &value)
+void DummyOutPlugin::readChannel(t_output output, t_channel channel,
+				 t_value* value)
 {
 	m_mutex.lock();
-	value = m_values[channel];
+	*value = m_values[(512 * output) + channel];
 	m_mutex.unlock();
-
-	return 0;
 }
 
-int DummyOutPlugin::readRange(t_channel address, t_value* values,
-			      t_channel num)
+void DummyOutPlugin::readRange(t_output output, t_channel address,
+			       t_value* values, t_channel num)
 {
 	Q_ASSERT(values != NULL);
 
 	m_mutex.lock();
-	memcpy(values, m_values + address, num * sizeof(t_value));
+	memcpy(values, m_values + (address + (512 * output)), num);
 	m_mutex.unlock();
-
-	return 0;
 }
 
 Q_EXPORT_PLUGIN2(dummyout, DummyOutPlugin)

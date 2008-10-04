@@ -34,7 +34,7 @@
  * Initialization
  *****************************************************************************/
 
-ConfigureLlaOut::ConfigureLlaOut(QWidget* parent, LlaOut* plugin) 
+ConfigureLLAOut::ConfigureLLAOut(QWidget* parent, LLAOut* plugin) 
 	: QDialog(parent)
 {
 	Q_ASSERT(plugin != NULL);
@@ -47,7 +47,7 @@ ConfigureLlaOut::ConfigureLlaOut(QWidget* parent, LlaOut* plugin)
 	m_testMod = 0;
 }
 
-ConfigureLlaOut::~ConfigureLlaOut()
+ConfigureLLAOut::~ConfigureLLAOut()
 {
 	slotTestToggled(false);
 }
@@ -56,7 +56,7 @@ ConfigureLlaOut::~ConfigureLlaOut()
  * Universe testing
  *****************************************************************************/
 
-void ConfigureLlaOut::slotTestToggled(bool state)
+void ConfigureLLAOut::slotTestToggled(bool state)
 {
 	QTreeWidgetItem* item;
 
@@ -109,7 +109,7 @@ void ConfigureLlaOut::slotTestToggled(bool state)
 	}
 }
 
-void ConfigureLlaOut::slotTestTimeout()
+void ConfigureLLAOut::slotTestTimeout()
 {
 	t_value values[512];
 
@@ -123,7 +123,7 @@ void ConfigureLlaOut::slotTestTimeout()
 		for (t_channel i = 0; i < 512; i++)
 			values[i] = 255;
 
-	m_plugin->writeRange(m_testUniverse, values, 512);
+	m_plugin->writeRange(m_testUniverse, 0, values, 512);
 
 	m_testMod = (m_testMod + 1) % 2;
 }
@@ -132,12 +132,12 @@ void ConfigureLlaOut::slotTestTimeout()
  * Refresh
  *****************************************************************************/
 
-void ConfigureLlaOut::slotRefreshClicked()
+void ConfigureLLAOut::slotRefreshClicked()
 {
 	m_plugin->open();
 	refreshList();
 }
 
-void ConfigureLlaOut::refreshList()
+void ConfigureLLAOut::refreshList()
 {
 }

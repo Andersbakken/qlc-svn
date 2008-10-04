@@ -206,6 +206,10 @@ bool OutputMap::blackout()
 
 t_value OutputMap::getValue(t_channel channel)
 {
+	OutputPatch* outputPatch;
+	t_channel universe;
+	t_value value = 0;
+	
 	Q_ASSERT(channel < (m_universes * 512));
 
 	if (m_blackout == true)
@@ -213,32 +217,32 @@ t_value OutputMap::getValue(t_channel channel)
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (channel / 512);
-	t_value value = 0;
-
+	universe = static_cast<t_channel> (channel / 512);
 	if (universe >= m_universes)
 	{
-		qWarning() << "Unable to set values. Invalid universe number:"
+		qWarning() << "Unable to get value. Invalid universe number:"
 			   << universe;
 		return 0;
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	OutputPatch* outputPatch = m_patch[universe];
+	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	outputPatch->plugin()->readChannel((channel % 512) +
-					   (outputPatch->output() * 512),
-					   value);
+	outputPatch->plugin()->readChannel(outputPatch->output(),
+					   (channel % 512), &value);
 
 	return value;
 }
 
 bool OutputMap::getValueRange(t_channel address, t_value* values, t_channel num)
 {
+	OutputPatch* outputPatch;
+	t_channel universe;
+
 	Q_ASSERT(address < (m_universes * 512));
 	Q_ASSERT((address + num - 1) < (m_universes * 512));
 
@@ -252,8 +256,7 @@ bool OutputMap::getValueRange(t_channel address, t_value* values, t_channel num)
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (address / 512);
-
+	universe = static_cast<t_channel> (address / 512);
 	if (universe >= m_universes)
 	{
 		qWarning() << "Unable to set values. Invalid universe number:"
@@ -262,19 +265,23 @@ bool OutputMap::getValueRange(t_channel address, t_value* values, t_channel num)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	OutputPatch* outputPatch = m_patch[universe];
+	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	return outputPatch->plugin()->readRange((address % 512) +
-						(outputPatch->output() * 512),
-						values, num);
+	outputPatch->plugin()->readRange(outputPatch->output(),
+					 (address % 512), values, num);
+
+	return true;
 }
 
 void OutputMap::setValue(t_channel channel, t_value value)
 {
+	OutputPatch* outputPatch;
+	t_channel universe;
+
 	if (channel == KChannelInvalid)
 		return;
 
@@ -289,8 +296,7 @@ void OutputMap::setValue(t_channel channel, t_value value)
 
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (channel / 512);
-
+	universe = static_cast<t_channel> (channel / 512);
 	if (universe >= m_universes)
 	{
 		qWarning() << "Unable to set values. Invalid universe number:"
@@ -299,19 +305,21 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	OutputPatch* outputPatch = m_patch[universe];
+	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	outputPatch->plugin()->writeChannel((channel % 512) + 
-					    (outputPatch->output() * 512),
-					    value);
+	outputPatch->plugin()->writeChannel(outputPatch->output(),
+					    (channel % 512), value);
 }
 
 void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
 {
+	OutputPatch* outputPatch;
+	t_channel universe;
+
 	Q_ASSERT(address < (m_universes * 512));
 	Q_ASSERT((address + num - 1) < (m_universes * 512));
 
@@ -324,8 +332,7 @@ void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
 	
 	/* Calculate universe from the channel number.
 	   0-511 are universe 1, 512-1022 are universe 2... */
-	t_channel universe = static_cast<t_channel> (address / 512);
-
+	universe = static_cast<t_channel> (address / 512);
 	if (universe >= m_universes)
 	{
 		qWarning() << "Unable to set values. Invalid universe number:"
@@ -334,15 +341,14 @@ void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
 	}
 
 	/* Get the plugin that is assigned to this universe */
-	OutputPatch* outputPatch = m_patch[universe];
+	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 	Q_ASSERT(outputPatch->plugin() != NULL);
 
 	/* Isolate just the channel number (0-511) and remap it to
 	   the universe output selected for this patch */
-	outputPatch->plugin()->writeRange((address % 512) +
-					  (outputPatch->output() * 512),
-					  values, num);
+	outputPatch->plugin()->writeRange(outputPatch->output(),
+					  (address % 512), values, num);
 
 }
 

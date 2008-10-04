@@ -23,17 +23,19 @@
 #ifndef LLAOUT_H
 #define LLAOUT_H
 
+#include <QObject>
+#include <QMutex>
+
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
 class ConfigureLlaOut;
-class LlaClient;
 
-class LlaOut : public QObject, public QLCOutPlugin
+class LLAOut : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
-		
+
 	friend class ConfigureLlaOut;
 
 	/*********************************************************************
@@ -52,9 +54,6 @@ public:
 
 protected:
 	LlaClient *m_lla;
-
-	/** Reference count for open() & close() */
-	int m_refCount;
 	
 	/*********************************************************************
 	 * Name
@@ -81,14 +80,17 @@ public:
 	 * Value read/write
 	 *********************************************************************/
 public:
-	int writeChannel(t_channel channel, t_value value);
-	int writeRange(t_channel address, t_value* values, t_channel num);
-	
-	int readChannel(t_channel channel, t_value &value);
-	int readRange(t_channel address, t_value* values, t_channel num);
-	
+	void writeChannel(t_output output, t_channel channel, t_value value);
+	void writeRange(t_output output, t_channel address, t_value* values,
+			t_channel num);
+
+	void readChannel(t_output output, t_channel channel, t_value* value);
+	void readRange(t_output output, t_channel address, t_value* values,
+		       t_channel num);
+
 protected:
-	t_value m_values[KChannelMax];
+	t_value m_values[512];
+	QMutex m_mutex;
 };
 
 #endif

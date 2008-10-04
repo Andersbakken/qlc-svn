@@ -164,8 +164,8 @@ QString USBDMXOut::infoText(t_output output)
 	 * Outputs
 	 *********************************************************************/
 
-	/* Title */
-	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
+	/* Output */
+	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 	info += QString("<TR>");
 	info += QString("<TD BGCOLOR=\"");
 	info += QApplication::palette().color(QPalette::Highlight).name();
@@ -177,6 +177,7 @@ QString USBDMXOut::infoText(t_output output)
 	info += QString("</FONT>");
 	info += QString("</TD>");
 
+	/* Device name */
 	info += QString("<TD BGCOLOR=\"");
 	info += QApplication::palette().color(QPalette::Highlight).name();
 	info += QString("\">");
@@ -222,48 +223,30 @@ QString USBDMXOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-int USBDMXOut::writeChannel(t_channel channel, t_value value)
+void USBDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-	t_output output = t_output(channel / 512);
-	t_channel dmxChannel = channel % 512;
-
 	if (m_devices.contains(output) == true)
-		m_devices[output]->write(dmxChannel, value);
-
-	return 0;
+		m_devices[output]->write(channel, value);
 }
 
-int USBDMXOut::writeRange(t_channel address, t_value* values, t_channel num)
+void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
+			   t_channel num)
 {
-	t_output output = t_output(address / 512);
-	t_channel dmxAddress = address % 512;
-
 	if (m_devices.contains(output) == true)
-		m_devices[output]->writeRange(dmxAddress, values, num);
-
-	return 0;
+		m_devices[output]->writeRange(address, values, num);
 }
 
-int USBDMXOut::readChannel(t_channel channel, t_value &value)
+void USBDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-	t_output output = t_output(channel / 512);
-	t_channel dmxChannel = channel % 512;
-
 	if (m_devices.contains(output) == true)
-		m_devices[output]->read(dmxChannel, &value);
-
-	return 0;
+		m_devices[output]->read(channel, value);
 }
 
-int USBDMXOut::readRange(t_channel address, t_value* values, t_channel num)
+void USBDMXOut::readRange(t_output output, t_channel address, t_value* values,
+			  t_channel num)
 {
-	t_output output = t_output(address / 512);
-	t_channel dmxAddress = address % 512;
-
 	if (m_devices.contains(output) == true)
-		m_devices[output]->readRange(dmxAddress, values, num);
-
-	return 0;
+		m_devices[output]->readRange(address, values, num);
 }
 
 /*****************************************************************************

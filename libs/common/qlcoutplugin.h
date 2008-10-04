@@ -110,10 +110,12 @@ public:
 	 * This is a pure virtual function that must be implemented
 	 * in all output plugins.
 	 *
-	 * @param channel The channel (and universe) to write to
+	 * @param output The output (universe) to write to
+	 * @param channel The channel within that universe to write to
 	 * @param value The value to write (0-255)
 	 */
-	virtual int writeChannel(t_channel channel, t_value value) = 0;
+	virtual void writeChannel(t_output output, t_channel channel,
+				  t_value value) = 0;
 
 	/**
 	 * Write the values of a number of channels
@@ -121,13 +123,14 @@ public:
 	 * This is a pure virtual function that must be implemented
 	 * in all output plugins.
 	 *
-	 * @param address The starting address to start writing from
+	 * @param output The output (universe) to write to
+	 * @param address The starting address in that universe
 	 * @param values An array of values that are written to all
-	 *               consequent channels starting from address.
+	 *               consequent channels starting from address
 	 * @param num The size of values array
 	 */
-	virtual int writeRange(t_channel address, t_value* values,
-			       t_channel num) = 0;
+	virtual void writeRange(t_output output, t_channel address,
+				t_value* values, t_channel num) = 0;
 	
 	/**
 	 * Get the value of one channel. Channel numbers 0-511 are
@@ -136,10 +139,12 @@ public:
 	 * This is a pure virtual function that must be implemented
 	 * in all output plugins.
 	 *
-	 * @param channel The channel (and universe) to read from
-	 * @param value A reference to a t_value holding the read value
+	 * @param output The output (universe) to read from
+	 * @param channel The channel to read
+	 * @param value A pointer to hold the read value
 	 */
-	virtual int readChannel(t_channel channel, t_value &value) = 0;
+	virtual void readChannel(t_output output, t_channel channel,
+				 t_value* value) = 0;
 
 	/**
 	 * Read the values of a number of channels.
@@ -147,12 +152,13 @@ public:
 	 * This is a pure virtual function that must be implemented
 	 * in all output plugins.
 	 *
+	 * @param output The output (universe) to read from
 	 * @param address The starting address to start reading from
 	 * @param values An array that holds the read values
 	 * @param num The size of values array
 	 */
-	virtual int readRange(t_channel address, t_value* values,
-			      t_channel num) = 0;
+	virtual void readRange(t_output output, t_channel address,
+			       t_value* values, t_channel num) = 0;
 };
 
 Q_DECLARE_INTERFACE(QLCOutPlugin, "QLCOutPlugin")

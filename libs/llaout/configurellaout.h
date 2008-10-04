@@ -25,9 +25,9 @@
 
 #include "ui_configurellaout.h"
 
-class LlaOut;
+class LLAOut;
 
-class ConfigureLlaOut : public QDialog, public Ui_ConfigureLlaOut
+class ConfigureLLAOut : public QDialog, public Ui_ConfigureLLAOut
 {
 	Q_OBJECT
 
@@ -35,11 +35,11 @@ class ConfigureLlaOut : public QDialog, public Ui_ConfigureLlaOut
 	 * Initialization
 	 *********************************************************************/
 public:
-	ConfigureLlaOut(QWidget* parent, LlaOut* plugin);
-	virtual ~ConfigureLlaOut();
+	ConfigureLLAOut(QWidget* parent, LLAOut* plugin);
+	virtual ~ConfigureLLAOut();
 
 protected:
-	LlaOut* m_plugin;
+	LLAOut* m_plugin;
 
 	/*********************************************************************
 	 * Universe testing

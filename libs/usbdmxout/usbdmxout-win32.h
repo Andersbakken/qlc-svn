@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef USBDMXOUT_WIN32_H
-#define USBDMXOUT_WIN32_H
+#ifndef USBDMXOUT_H
+#define USBDMXOUT_H
 
 #define WIN32_LEAN_AND_MEAN
 #include <QStringList>
@@ -91,11 +91,13 @@ public:
 	 * Value read/write methods
 	 *********************************************************************/
 public:
-	int writeChannel(t_channel channel, t_value value);
-	int writeRange(t_channel address, t_value* values, t_channel num);
+	void writeChannel(t_output output, t_channel channel, t_value value);
+	void writeRange(t_output output, t_channel address, t_value* values,
+			t_channel num);
 
-	int readChannel(t_channel channel, t_value &value);
-	int readRange(t_channel address, t_value* values, t_channel num);
+	void readChannel(t_output output, t_channel channel, t_value* value);
+	void readRange(t_output output, t_channel address, t_value* values,
+		       t_channel num);
 };
 
 #endif

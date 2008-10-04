@@ -136,10 +136,9 @@ void ConfigureUSBDMXOut::slotTestTimeout()
 	else
 		for (t_channel i = 0; i < 512; i++)
 			values[i] = 255;
-
-	m_plugin->writeRange(m_testUniverse, values, 512);
-
 	m_testMod = (m_testMod + 1) % 2;
+
+	m_plugin->writeRange(m_testUniverse, 0, values, 512);
 }
 
 /*****************************************************************************

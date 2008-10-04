@@ -1,9 +1,13 @@
 TEMPLATE	= subdirs
 
+# Common library
 SUBDIRS		+= common
-SUBDIRS         += usbdmxout
-SUBDIRS		+= midiinput
 
-unix:SUBDIRS    += hidinput
-unix:SUBDIRS	+= llaout
+# Output plugins
+SUBDIRS         += usbdmxout
 unix:SUBDIRS	+= dmx4linuxout
+unix:SUBDIRS	+= llaout
+
+# Input plugins
+SUBDIRS		+= midiinput
+unix:SUBDIRS    += hidinput

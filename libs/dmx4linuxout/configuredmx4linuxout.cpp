@@ -120,28 +120,26 @@ void ConfigureDMX4LinuxOut::slotTestTimeout()
 	else
 		for (t_channel i = 0; i < 512; i++)
 			values[i] = 255;
-
-	m_plugin->writeRange(m_testUniverse, values, 512);
-
 	m_testMod = (m_testMod + 1) % 2;
+
+	m_plugin->writeRange(m_testUniverse, 0, values, 512);
 }
 
 void ConfigureDMX4LinuxOut::slotRefreshClicked()
 {
-	m_plugin->open();
 	refreshList();
 }
 
 void ConfigureDMX4LinuxOut::refreshList()
 {
-	QString t;
+	int i = 0;
 
 	m_list->clear();
-
-	for (int i = 0; i < MAX_DMX4LINUX_DEVICES; i++)
+	QStringListIterator it(m_plugin->outputs());
+	while (it.hasNext() == true)
 	{
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-		item->setText(0, t.sprintf("%.2d", i + 1));
-		item->setText(1, "Unknown");
+		item->setText(0, QString("%1").arg(i + 1));
+		item->setText(1, it.next());
 	}
 }
