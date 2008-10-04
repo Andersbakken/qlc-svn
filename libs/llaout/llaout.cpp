@@ -64,6 +64,9 @@ void LLAOut::open(t_output output)
 
 void LLAOut::close(t_output output)
 {
+	if (output != 0)
+		return;
+
 	if (m_lla != NULL)
 		m_lla->stop();
 }
@@ -141,7 +144,7 @@ void LLAOut::writeChannel(t_output output, t_channel channel, t_value value)
 	m_values[channel] = value;
 	if (m_lla != NULL)
 	{
-		m_lla->send_dmx(output + 1, (int*) m_values, 512);
+		m_lla->send_dmx(output + 1, m_values, 512);
 		m_lla->fd_action(0);
 	}
 	m_mutex.unlock();
@@ -159,7 +162,7 @@ void LLAOut::writeRange(t_output output, t_channel address, t_value* values,
 	memcpy(m_values + address, values, num * sizeof(t_value));
 	if (m_lla != NULL)
 	{
-		m_lla->send_dmx(output + 1, (int*) m_values, 512);
+		m_lla->send_dmx(output + 1, m_values, 512);
 		m_lla->fd_action(0);
 	}
 	m_mutex.unlock();

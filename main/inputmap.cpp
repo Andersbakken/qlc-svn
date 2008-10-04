@@ -192,10 +192,7 @@ bool InputMap::setPatch(t_input_universe universe,
 
 	QLCInPlugin* ip = plugin(pluginName);
 	if (ip == NULL)
-	{
-		qWarning() << "Input plugin" << pluginName << "not found.";
 		return false;
-	}
 
 	m_patch[universe]->set(ip, input);
 

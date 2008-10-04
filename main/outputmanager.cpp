@@ -22,6 +22,7 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 #include <QStringList>
+#include <QHeaderView>
 #include <QAction>
 #include <QMenu>
 
@@ -45,7 +46,7 @@ OutputManager::OutputManager(QWidget* parent) : QWidget(parent)
 
 	setupUi(this);
 
-	m_tree->setContextMenuPolicy(Qt::CustomContextMenu);
+	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	connect(m_edit, SIGNAL(clicked()), this, SLOT(slotEditClicked()));
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),

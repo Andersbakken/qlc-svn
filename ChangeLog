@@ -1,5 +1,27 @@
 2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* libs/llaout/llaout.cpp:
+	* libs/llaout/llaout.h:
+	* libs/usbdmxout/configureusbdmxout.cpp:
+	* libs/usbdmxout/configureusbdmxout.h:
+	* libs/usbdmxout/configureusbdmxout.ui:
+	* libs/usbdmxout/usbdmxdevice-unix.cpp:
+	* libs/usbdmxout/usbdmxdevice-unix.h:
+	* libs/usbdmxout/usbdmxout-unix.cpp:
+	* libs/usbdmxout/usbdmxout-unix.h:
+	* main/dummyoutplugin.cpp:
+	* main/inputmap.cpp:
+	* main/outputmanager.cpp:
+	* main/outputmanager.ui:
+	* main/outputpatcheditor.cpp:
+	* main/outputpatcheditor.h:
+	* main/outputpatcheditor.ui:
+
+	Fixed things to compile and work on unix.
+	Implemented output patch editor's configure button.
+	
+2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/dmx4linuxout/dmx4linuxout.cpp
 	* libs/libs.pro
 	* libs/llaout/llaout.cpp

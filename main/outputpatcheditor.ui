@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>522</width>
-    <height>386</height>
+    <height>437</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -27,6 +27,9 @@
      <layout class="QVBoxLayout" name="verticalLayout" >
       <item>
        <widget class="QTreeWidget" name="m_tree" >
+        <property name="allColumnsShowFocus" >
+         <bool>true</bool>
+        </property>
         <column>
          <property name="text" >
           <string>Plugins/Outputs</string>

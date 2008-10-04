@@ -23,6 +23,7 @@
 #define CONFIGUREUSBDMXOUT_H
 
 #include <QDialog>
+#include "common/qlctypes.h"
 
 #include "ui_configureusbdmxout.h"
 
@@ -67,7 +68,7 @@ protected:
 	int m_testMod;
 
 	/** The universe to test output on */
-	int m_testUniverse;
+	t_output m_output;
 
 	/*********************************************************************
 	 * Refresh

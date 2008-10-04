@@ -88,11 +88,13 @@ public:
 	 * Value read/write methods
 	 *********************************************************************/
 public:
-	int writeChannel(t_channel channel, t_value value);
-	int writeRange(t_channel address, t_value* values, t_channel num);
+	void writeChannel(t_output output, t_channel channel, t_value value);
+	void writeRange(t_output output, t_channel address, t_value* values,
+			t_channel num);
 
-	int readChannel(t_channel channel, t_value &value);
-	int readRange(t_channel address, t_value* values, t_channel num);
+	void readChannel(t_output output, t_channel channel, t_value* value);
+	void readRange(t_output output, t_channel address, t_value* values,
+		       t_channel num);
 };
 
 #endif

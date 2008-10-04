@@ -49,6 +49,7 @@ protected:
 
 protected slots:
 	void slotCurrentItemChanged(QTreeWidgetItem* item);
+	void slotConfigureClicked();
 
 protected:
 	/** The output universe being edited */

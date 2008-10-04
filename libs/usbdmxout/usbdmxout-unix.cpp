@@ -177,38 +177,30 @@ QString USBDMXOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-int USBDMXOut::writeChannel(t_channel channel, t_value value)
+void USBDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-	t_output output = t_output(channel / 512);
-	t_channel dmxChannel = channel % 512;
-
 	if (m_devices.contains(output) == true)
-		m_devices[output]->write(dmxChannel, value);
-
-	return 0;
+		m_devices[output]->write(channel, value);
 }
 
-int USBDMXOut::writeRange(t_channel address, t_value* values, t_channel num)
+void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
+			   t_channel num)
 {
-	/* TODO */
-	return 0;
-}
-
-int USBDMXOut::readChannel(t_channel channel, t_value &value)
-{
-	t_output output = t_output(channel / 512);
-	t_channel dmxChannel = channel % 512;
-
 	if (m_devices.contains(output) == true)
-		value = m_devices[output]->read(dmxChannel);
-	
-	return 0;
+		m_devices[output]->writeRange(address, values, num);
 }
 
-int USBDMXOut::readRange(t_channel address, t_value* values, t_channel num)
+void USBDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-	/* TODO */
-	return 0;
+	if (m_devices.contains(output) == true)
+		m_devices[output]->read(channel, value);
+}
+
+void USBDMXOut::readRange(t_output output, t_channel address, t_value* values,
+			  t_channel num)
+{
+	if (m_devices.contains(output) == true)
+		m_devices[output]->readRange(address, values, num);
 }
 
 /*****************************************************************************

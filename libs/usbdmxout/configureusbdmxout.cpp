@@ -37,6 +37,9 @@
 #include "usbdmxout-unix.h"
 #endif
 
+#define KColumnName   0
+#define KColumnOutput 1
+
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
@@ -48,7 +51,7 @@ ConfigureUSBDMXOut::ConfigureUSBDMXOut(QWidget* parent, USBDMXOut* plugin)
 	m_plugin = plugin;
 	m_timer = NULL;
 	m_testMod = 1;
-	m_testUniverse = -1;
+	m_output = KOutputInvalid;
 
 	setupUi(this);
 
@@ -56,8 +59,6 @@ ConfigureUSBDMXOut::ConfigureUSBDMXOut(QWidget* parent, USBDMXOut* plugin)
 		this, SLOT(slotTestToggled(bool)));
 	connect(m_refreshButton, SIGNAL(clicked()),
 		this, SLOT(slotRefreshClicked()));
-	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
-	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
 	refreshList();
 }
@@ -86,11 +87,15 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 		else
 		{
 			/* Get the number of the universe to test */
-			m_testUniverse = item->text(0).toInt() - 1;
+			m_output = item->text(KColumnOutput).toInt();
+
+			/* Open the output line for testing */
+			m_plugin->open(m_output);
 
 			/* Disable the listview so that the selection cannot
 			   be changed during testing */
 			m_list->setEnabled(false);
+			m_buttonBox->setEnabled(false);
 			
 			/* Start a 1sec timer that blinks all channels of the
 			   selected universe on and off */
@@ -108,8 +113,12 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 	{
 		delete m_timer;
 		m_timer = NULL;
+
+		/* Open the output line for testing */
+		m_plugin->close(m_output);
 		
 		m_list->setEnabled(true);
+		m_buttonBox->setEnabled(true);
 
 		/* Reset channel values to zero */
 		if (m_testMod == 1)
@@ -119,7 +128,7 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 			m_testMod = 0;
 		}
 		
-		m_testUniverse = -1;
+		m_output = KOutputInvalid;
 	}
 }
 
@@ -127,7 +136,7 @@ void ConfigureUSBDMXOut::slotTestTimeout()
 {
 	t_value values[512];
 
-	if (m_testUniverse < 0)
+	if (m_output == KOutputInvalid)
 		return;
 
 	if (m_testMod == 0)
@@ -138,7 +147,7 @@ void ConfigureUSBDMXOut::slotTestTimeout()
 			values[i] = 255;
 	m_testMod = (m_testMod + 1) % 2;
 
-	m_plugin->writeRange(m_testUniverse, 0, values, 512);
+	m_plugin->writeRange(m_output, 0, values, 512);
 }
 
 /*****************************************************************************
@@ -152,7 +161,7 @@ void ConfigureUSBDMXOut::slotRefreshClicked()
 
 void ConfigureUSBDMXOut::refreshList()
 {
-	int i = 0;
+	t_output i = 0;
 
 	m_list->clear();
 
@@ -162,7 +171,7 @@ void ConfigureUSBDMXOut::refreshList()
 		it.next();
 		
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-		item->setText(0, QString("%1").arg(i++));
-		item->setText(1, it.value()->name());
+		item->setText(KColumnName, it.value()->name());
+		item->setText(KColumnOutput, QString("%1").arg(i++));
 	}
 }

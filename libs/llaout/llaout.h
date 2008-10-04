@@ -30,8 +30,10 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-#ifdef WIN32
 class LlaClient
+#ifndef WIN32
+;
+#else
 {
 public:
 	LlaClient() {}
@@ -39,8 +41,11 @@ public:
 	
 	int start() { qDebug() << "LLA Start"; return 0; }
 	void stop() { qDebug() << "LLA Stop"; }
-	void send_dmx(int u, int* v, int n) { qDebug() << u << v << n; }
-	void fd_action(int a) { qDebug() << a; }
+	void send_dmx(unsigned int u, t_value* v, unsigned int n)
+	{
+		qDebug() << "LLA Send: " << u << v << n;
+	}
+	void fd_action(unsigned int a) { qDebug() << "LLA FD: " << a; }
 };
 #endif
 

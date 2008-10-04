@@ -59,12 +59,12 @@ QString DummyOutPlugin::name()
 
 void DummyOutPlugin::open(t_output output)
 {
-	qDebug() << "Opened dummy out" << output;
+	Q_ASSERT(output < KUniverseCount);
 }
 
 void DummyOutPlugin::close(t_output output)
 {
-	qDebug() << "Closed dummy out" << output;
+	Q_ASSERT(output < KUniverseCount);
 }
 
 QStringList DummyOutPlugin::outputs()

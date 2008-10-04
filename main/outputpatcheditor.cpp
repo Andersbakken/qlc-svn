@@ -45,7 +45,11 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 
 	/* Setup UI controls */
 	setupUi(this);
+
 	m_configureButton->setIcon(QIcon(":/configure.png"));
+	connect(m_configureButton, SIGNAL(clicked()),
+		this, SLOT(slotConfigureClicked()));
+
 	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						  QTreeWidgetItem*)),
 		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
@@ -155,4 +159,9 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 	}
 
 	updateOutputInfo();
+}
+
+void OutputPatchEditor::slotConfigureClicked()
+{
+	_app->outputMap()->configurePlugin(m_pluginName);
 }
