@@ -27,15 +27,16 @@
 #include <windows.h>
 #include <QtPlugin>
 #include <QMutex>
+#include <QMap>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-class ConfigureUsbDmxOut;
-class QString;
+#define MAX_USBDMX_DEVICES 16
 
-/* Maximum number of supported device entries (/dev/usbdmx*) */
-#define MAX_USBDMX_DEVICES 8
+class ConfigureUsbDmxOut;
+class USBDMXDevice;
+class QString;
 
 /*****************************************************************************
  * USBDMXOut
@@ -53,19 +54,20 @@ class USBDMXOut : public QObject, public QLCOutPlugin
 	 *********************************************************************/
 public:
 	void init();
-
-	/*********************************************************************
-	 * Plugin open/close
-	 *********************************************************************/
-public:
 	void open(t_output output);
 	void close(t_output output);
+
+	/*********************************************************************
+	 * Devices
+	 *********************************************************************/
+public:
+	void rescanDevices();
+	USBDMXDevice* device(HANDLE handle);
 	QStringList outputs();
 
 protected:
-	HANDLE m_devices[MAX_USBDMX_DEVICES];
-	QString m_names[MAX_USBDMX_DEVICES];
-	struct usbdmx_functions *usbdmx;
+	QMap <t_output, USBDMXDevice*> m_devices;
+	struct usbdmx_functions *m_usbdmx;
 
 	/*********************************************************************
 	 * Name
@@ -94,13 +96,6 @@ public:
 
 	int readChannel(t_channel channel, t_value &value);
 	int readRange(t_channel address, t_value* values, t_channel num);
-
-protected:
-	int bulkWrite(int iFaceNo);
-
-protected:
-	t_value m_values[MAX_USBDMX_DEVICES][512];
-	QMutex m_mutex;
 };
 
 #endif

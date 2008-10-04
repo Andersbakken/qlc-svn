@@ -39,23 +39,44 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	m_handle = NULL;
 	m_output = output;
 	m_usbdmx = usbdmx;
+
+	for (t_channel i = 0; i < 512; i++)
+		m_values[i] = 0;
 	
 	if (open() == false)
-		m_name = QString("%1: Nothing").arg(m_output);
+		m_name = QString("%1: Nothing").arg(m_output + 1);
 
 	usbdmx->device_version(m_handle, &version);
 	if (m_usbdmx->is_xswitch(m_handle))
-		m_name = QString("%1: X-Switch V%2").arg(m_output).arg(version);
+	{
+		m_name = QString("%1: X-Switch Version %2")
+				.arg(m_output + 1).arg(version);
+	}
 	else if (m_usbdmx->is_rodin1(m_handle))
-		m_name = QString("%1: Rodin1 V%2").arg(m_output).arg(version);
+	{
+		m_name = QString("%1: Rodin1 Version %2")
+				.arg(m_output + 1).arg(version);
+	}
 	else if (m_usbdmx->is_rodin2(m_handle))
-		m_name = QString("%1: Rodin2 V%2").arg(m_output).arg(version);
+	{
+		m_name = QString("%1: Rodin2 Version %2")
+				.arg(m_output + 1).arg(version);
+	}
 	else if (m_usbdmx->is_rodint(m_handle))
-		m_name = QString("%1: RodinT V%2").arg(m_output).arg(version);
+	{
+		m_name = QString("%1: RodinT Version %2")
+				.arg(m_output + 1).arg(version);
+	}
 	else if (m_usbdmx->is_usbdmx21(m_handle))
-		m_name = QString("%1: USBDMX21 V%2").arg(m_output).arg(version);
+	{
+		m_name = QString("%1: USBDMX21 Version %2")
+				.arg(m_output + 1).arg(version);
+	}
 	else
-		m_name = QString("%1: Unknown V%2").arg(m_output).arg(version);
+	{
+		m_name = QString("%1: Unknown Version %2")
+				.arg(m_output + 1).arg(version);
+	}
 
 	close();
 }
@@ -85,8 +106,8 @@ int USBDMXDevice::output() const
 
 bool USBDMXDevice::open()
 {
-	if (m_handle == NULL)
-		return false;
+	if (m_handle != NULL)
+		return true;
 
 	/* Open the device */
 	if (m_usbdmx->open(m_output, &m_handle) == TRUE)
@@ -95,15 +116,16 @@ bool USBDMXDevice::open()
 	}
 	else
 	{
-		qWarning() << QString("Unable to open USBDMX %1").arg(m_output);
+		qWarning() << QString("Unable to open USBDMX %1")
+					.arg(m_output + 1);
 		return false;
 	}
 }
 
 bool USBDMXDevice::close()
 {
-	if (m_handle != NULL)
-		return false;
+	if (m_handle == NULL)
+		return true;
 
 	m_usbdmx->close(m_handle);
 	m_handle = NULL;
@@ -111,7 +133,28 @@ bool USBDMXDevice::close()
 	return true;
 }
 
-HANDLE USBDMXDevice::handle() const
+/****************************************************************************
+ * Read & write
+ ****************************************************************************/
+
+void USBDMXDevice::write(t_channel channel, t_value value)
 {
-	return m_handle;
+	m_mutex.lock();
+
+	m_values[channel] = value;
+	if (m_handle != NULL)
+		m_usbdmx->tx_set(m_handle, &value, 1);
+
+	m_mutex.unlock();
+}
+
+t_value USBDMXDevice::read(t_channel channel)
+{
+	t_value value = 0;
+
+	m_mutex.lock();
+	value = m_values[channel];
+	m_mutex.unlock();
+
+	return value;
 }

@@ -39,33 +39,42 @@
 
 void USBDMXOut::init()
 {
-	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
-	{
-		/* Initialize device handles */
-		m_devices[i] = 0;
-
-		/* Initialize value buffers */
-		for (t_channel ch = 0; ch < 512; ch++)
-			m_values[i][ch] = 0;
-
-	}
-
 	/* Load usbdmx.dll */
-	usbdmx = usbdmx_init();
-	if (usbdmx == NULL)
+	m_usbdmx = usbdmx_init();
+	if (m_usbdmx == NULL)
 	{
 		qWarning() << "Loading USBDMX.DLL failed.";
 	}
-	else if (USBDMX_DLL_VERSION_CHECK(usbdmx) == FALSE)
+	else if (USBDMX_DLL_VERSION_CHECK(m_usbdmx) == FALSE)
 	{
 		/* verify USBDMX dll version */
 		qWarning() << "USBDMX.DLL version does not match. Abort.";
-		qWarning() << "Found" << usbdmx->version << "but expected"
+		qWarning() << "Found" << m_usbdmx->version() << "but expected"
 			   << USBDMX_DLL_VERSION;
 	}
 	else
 	{
-		qDebug() << "Using USBDMX.DLL version" << usbdmx->version();
+		qDebug() << "Using USBDMX.DLL version" << m_usbdmx->version();
+	}
+	
+	rescanDevices();
+}
+
+void USBDMXOut::rescanDevices()
+{
+	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
+	{
+		HANDLE handle;
+		if (m_usbdmx->open(i, &handle) == TRUE)
+		{
+			m_usbdmx->close(handle);
+			if (m_devices.contains(i) == false)
+			{
+				USBDMXDevice* device;
+				device = new USBDMXDevice(this, m_usbdmx, i);
+				m_devices.insert(i, device);
+			}
+		}
 	}
 }
 
@@ -75,69 +84,29 @@ void USBDMXOut::init()
 
 void USBDMXOut::open(t_output output)
 {
-	if (usbdmx == NULL)
+	if (m_usbdmx == NULL)
 		return;
 
-	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
-	{
-		HANDLE handle;
-		
-		/* Open the device */
-		if (usbdmx->open(i, &handle) == TRUE)
-		{
-			USHORT version;
-			
-			m_devices[i] = handle;
-			
-			usbdmx->device_version(m_devices[i], &version);
-			if (usbdmx->is_xswitch(m_devices[i]))
-				m_names[i] = QString("X-Switch V%1")
-						.arg(version);
-			else if (usbdmx->is_rodin1(m_devices[i]))
-				m_names[i] = QString("Rodin1 V%1")
-						.arg(version);
-			else if (usbdmx->is_rodin2(m_devices[i]))
-				m_names[i] = QString("Rodin2 V%1")
-						.arg(version);
-			else if (usbdmx->is_rodint(m_devices[i]))
-				m_names[i] = QString("RodinT V%1")
-						.arg(version);
-			else if (usbdmx->is_usbdmx21(m_devices[i]))
-				m_names[i] = QString("USBDMX21 V%1")
-						.arg(version);
-
-		}
-		else
-		{
-			m_devices[i] = 0;
-			m_names[i] = QString::null;
-		}
-	}
+	if (m_devices.contains(output) == true)
+		m_devices[output]->open();
 }
 
 void USBDMXOut::close(t_output output)
 {
-	if (usbdmx == NULL)
+	if (m_usbdmx == NULL)
 		return;
 
-	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
-	{
-		/* Close the interface if it exists */
-		if (m_devices[i] != 0)
-			usbdmx->close(m_devices[i]);
-		m_devices[i] = 0;
-	}
+	if (m_devices.contains(output) == true)
+		m_devices[output]->close();
 }
 
 QStringList USBDMXOut::outputs()
 {
 	QStringList list;
-	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
-	{
-		if (m_names[i].isEmpty() == false)
-			list << m_names[i];
-	}
-	
+	QMapIterator <t_output, USBDMXDevice*> it(m_devices);
+	while (it.hasNext() == true)
+		list << it.next().value()->name();
+
 	return list;
 }
 
@@ -218,23 +187,22 @@ QString USBDMXOut::infoText(t_output output)
 	info += QString("</FONT>");
 	info += QString("</TD>");
 	info += QString("</TR>");
-
-	bool atLeastOne = false;
 	
 	/* Output lines */
-	for (int i = 0; i < MAX_USBDMX_DEVICES; i++)
+	QMapIterator <t_output, USBDMXDevice*> it(m_devices);
+	bool atLeastOne = false;
+	while (it.hasNext() == true)
 	{
-		if (m_devices[i] != NULL)
-		{
-			atLeastOne = true;
+		USBDMXDevice* device = it.next().value();
+		Q_ASSERT(device != NULL);
 
-			info += QString("<TR>");
-			info += QString("<TD>%1</TD>").arg(i + 1);
-			info += QString("<TD>%1</TD>").arg(m_names[i]);
-			info += QString("</TR>");
-		}
+		info += QString("<TR>");
+		info += QString("<TD>%1</TD>").arg(device->output());
+		info += QString("<TD>%1</TD>").arg(device->name());
+		info += QString("</TR>");
+		atLeastOne = true;
 	}
-
+	
 	if (atLeastOne == false)
 	{
 		info += QString("<TR>");
@@ -256,75 +224,36 @@ QString USBDMXOut::infoText(t_output output)
 
 int USBDMXOut::writeChannel(t_channel channel, t_value value)
 {
-	int iFaceNo = int(channel / 512);
-	int channelNo = channel % 512;
-	int r;
-	
-	m_mutex.lock();
-	
-	m_values[iFaceNo][channelNo] = value;
-	r = bulkWrite(iFaceNo);
-	
-	m_mutex.unlock();
-	
-	return r;
+	t_output output = t_output(channel / 512);
+	t_channel dmxChannel = channel % 512;
+
+	if (m_devices.contains(output) == true)
+		m_devices[output]->write(dmxChannel, value);
+
+	return 0;
 }
 
 int USBDMXOut::writeRange(t_channel address, t_value* values, t_channel num)
 {
-	int iFaceNo = int(address / 512);
-	int channelNo = address % 512;
-	int r;
-	
-	Q_ASSERT(values != NULL);
-
-	m_mutex.lock();
-	memcpy(m_values[iFaceNo] + channelNo, values, num * sizeof(t_value));
-	r = bulkWrite(iFaceNo);
-	m_mutex.unlock();
-
-	return r;
+	/* TODO */
+	return 0;
 }
 
 int USBDMXOut::readChannel(t_channel channel, t_value &value)
 {
-	int iFaceNo = int(channel / 512);
-	int channelNo = channel % 512;
+	t_output output = t_output(channel / 512);
+	t_channel dmxChannel = channel % 512;
 
-	m_mutex.lock();
-	value = m_values[iFaceNo][channelNo];
-	m_mutex.unlock();
+	if (m_devices.contains(output) == true)
+		value = m_devices[output]->read(dmxChannel);
 
 	return 0;
 }
 
 int USBDMXOut::readRange(t_channel address, t_value* values, t_channel num)
 {
-	int iFaceNo = int(address / 512);
-	int channelNo = address % 512;
-
-	Q_ASSERT(values != NULL);
-
-	m_mutex.lock();
-	memcpy(values, m_values[iFaceNo] + channelNo, num * sizeof(t_value));
-	m_mutex.unlock();
-
+	/* TODO */
 	return 0;
-}
-
-int USBDMXOut::bulkWrite(int iFaceNo)
-{
-	if (m_devices[iFaceNo] != 0)
-	{
-		if (usbdmx->tx_set(m_devices[iFaceNo], m_values[iFaceNo], 512))
-			return 0;
-		else
-			return -1;
-	}
-	else
-	{
-		return -1;
-	}
 }
 
 /*****************************************************************************

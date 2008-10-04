@@ -20,10 +20,12 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QMapIterator>
 #include <QTreeWidget>
 #include <QPushButton>
 #include <QString>
 #include <QTimer>
+#include <QMap>
 
 #include "configureusbdmxout.h"
 

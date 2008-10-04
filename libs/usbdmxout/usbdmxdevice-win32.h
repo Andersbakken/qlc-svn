@@ -26,6 +26,7 @@
 #include <common/qlctypes.h>
 #include <windows.h>
 #include <QObject>
+#include <QMutex>
 
 class USBDMXDevice : public QObject
 {
@@ -61,8 +62,19 @@ public:
 	bool close();
 	HANDLE handle() const;
 
-protected:	
+protected:
 	HANDLE m_handle;
+	
+	/********************************************************************
+	 * Read & write
+	 ********************************************************************/
+public:
+	void write(t_channel channel, t_value value);
+	t_value read(t_channel channel);
+
+protected:
+	t_value m_values[512];
+	QMutex m_mutex;
 };
 
 #endif

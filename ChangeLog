@@ -1,3 +1,13 @@
+2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/usbdmxout/configureusbdmxout.cpp
+	* libs/usbdmxout/usbdmxdevice-win32.cpp
+	* libs/usbdmxout/usbdmxdevice-win32.h
+	* libs/usbdmxout/usbdmxout-win32.cpp
+	* libs/usbdmxout/usbdmxout-win32.h
+
+	Fixed usbdmxout to work on windows with the modified output plugin arch
+	
 2008-10-02  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/common/qlcoutplugin.h:
