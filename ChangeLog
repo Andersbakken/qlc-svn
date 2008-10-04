@@ -1,5 +1,11 @@
 2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* main/outputmanager.cpp
+
+	Changed output manager to display the output name instead of its ID.
+
+2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/common/qlcoutplugin.h
 	* libs/dmx4linuxout/configuredmx4linuxout.cpp
 	* libs/dmx4linuxout/dmx4linuxout.cpp

@@ -32,9 +32,10 @@
 #include "outputmap.h"
 #include "app.h"
 
-#define KColumnUniverse 0
-#define KColumnPlugin   1
-#define KColumnOutput   2
+#define KColumnUniverse   0
+#define KColumnPlugin     1
+#define KColumnOutputName 2
+#define KColumnOutput     3
 
 extern App* _app;
 
@@ -64,6 +65,9 @@ OutputManager::OutputManager(QWidget* parent) : QWidget(parent)
 		item = new QTreeWidgetItem(m_tree);
 		item->setText(KColumnUniverse, str.setNum(i + 1));
 		item->setText(KColumnPlugin, outputPatch->plugin()->name());
+		item->setText(KColumnOutputName,
+			      outputPatch->plugin()->outputs()
+						[outputPatch->output()]);
 		item->setText(KColumnOutput,
 			      str.setNum(outputPatch->output() + 1));
 	}
@@ -92,20 +96,21 @@ void OutputManager::slotEditClicked()
 	str = item->text(KColumnPlugin);
 	output = item->text(KColumnOutput).remove("Output").toInt() - 1;
 
-	OutputPatchEditor dpe(this, universe, str, output);
-	if (dpe.exec() == QDialog::Accepted)
+	OutputPatchEditor ope(this, universe, str, output);
+	if (ope.exec() == QDialog::Accepted)
 	{
-		if (dpe.output() != KOutputInvalid &&
-		    dpe.pluginName().isEmpty() == false)
+		if (ope.output() != KOutputInvalid &&
+		    ope.pluginName().isEmpty() == false)
 		{
 			item->setText(KColumnUniverse,
 				      str.setNum(universe + 1));
-			item->setText(KColumnPlugin, dpe.pluginName());
+			item->setText(KColumnPlugin, ope.pluginName());
+			item->setText(KColumnOutputName, ope.outputName());
 			item->setText(KColumnOutput,
-				      str.setNum(dpe.output() + 1));
+				      str.setNum(ope.output() + 1));
 
-			_app->outputMap()->setPatch(universe, dpe.pluginName(),
-						    dpe.output());
+			_app->outputMap()->setPatch(universe, ope.pluginName(),
+						    ope.output());
 		}
 	}
 }
