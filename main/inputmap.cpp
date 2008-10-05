@@ -233,104 +233,28 @@ void InputMap::configurePlugin(const QString& pluginName)
 {
 	QLCInPlugin* inputPlugin = plugin(pluginName);
 	if (inputPlugin == NULL)
+	{
 		QMessageBox::warning(_app,
-				     "Unable to configure plugin",
-				     pluginName + QString(" not found!"));
+				     tr("Unable to configure plugin"),
+				     tr("Plugin \"%1\" not found!")
+				     .arg(pluginName));
+	}
 	else
 		inputPlugin->configure();
 }
 
-QString InputMap::pluginStatus(const QString& pluginName)
+QString InputMap::pluginStatus(const QString& pluginName, t_input input)
 {
-	QLCInPlugin* inputPlugin;
+	QLCInPlugin* inputPlugin = NULL;
 	QString info;
 
 	if (pluginName != QString::null)
 		inputPlugin = plugin(pluginName);
+
+	if (inputPlugin != NULL)
+		info = inputPlugin->infoText(input);
 	else
-		inputPlugin = NULL;
-	
-	if (inputPlugin == NULL)
-	{
-		InputPatch* inputPatch = NULL;
-
-		// HTML header
-		info += QString("<HTML>");
-		info += QString("<HEAD>");
-		info += QString("<TITLE>Input mapping status</TITLE>");
-		info += QString("</HEAD>");
-		info += QString("<BODY>");
-
-		// Mapping status title
-		info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-		info += QString("<TR>");
-		info += QString("<TD BGCOLOR=\"");
-		info += QApplication::palette()
-			.color(QPalette::Highlight).name();
-		info += QString("\">");
-		info += QString("<FONT COLOR=\"");
-		info += QApplication::palette()
-			.color(QPalette::HighlightedText).name();
-		info += QString("\" SIZE=\"5\">");
-		info += QString("Input mapping status");
-		info += QString("</FONT>");
-		info += QString("</TD>");
-		info += QString("</TR>");
-		info += QString("</TABLE>");
-
-		// Universe mappings
-		info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-
-		for (t_input_universe i = 0; i < m_universes; i++)
-		{
-			inputPatch = patch(i);
-			Q_ASSERT(inputPatch != NULL);
-
-			if (i % 2 == 0)
-				info += QString("<TR>");
-			else
-			{
-				info += QString("<TR BGCOLOR=\"");
-				info += QApplication::palette()
-					.color(QPalette::Midlight).name();
-				info += QString("\">");
-			}
-
-			info += QString("<TD>");
-			info += QString("<B>Universe %1</B>").arg(i + 1);
-			info += QString("</TD>");
-
-			/* Plugin name */
-			info += QString("<TD>");
-			if (inputPatch->plugin() != NULL)
-				info += inputPatch->plugin()->name();
-			else
-				info += KInputNone;
-			info += QString("</TD>");
-
-			/* Input */
-			info += QString("<TD>");
-			if (inputPatch->plugin() != NULL)
-			{
-				info += inputPatch->plugin()->inputs()
-					.at(inputPatch->input());
-			}
-			else
-			{
-				info += KInputNone;
-			}
-
-			info += QString("</TD>");
-			info += QString("</TR>");
-		}
-
-		info += QString("</TABLE>");
-	}
-	else
-	{
-		/* Plugin-specific info */
-		info = inputPlugin->infoText();
-	}
+		info = tr("No information");
 
 	return info;
 }

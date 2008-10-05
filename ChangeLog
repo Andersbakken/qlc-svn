@@ -1,3 +1,23 @@
+2008-10-05  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* libs/common/qlcinplugin.h
+	* libs/hidinput/hidinput.cpp
+	* libs/hidinput/hidinput.h
+	* libs/libs.pro
+	* libs/midiinput/unix-midiinput.cpp
+	* libs/midiinput/unix-midiinput.h
+	* libs/midiinput/win32-midiinput.cpp
+	* libs/midiinput/win32-midiinput.h
+	* main/inputmanager.cpp
+	* main/inputmap.cpp
+	* main/inputmap.h
+	* main/inputpatcheditor.cpp
+	* main/inputpatcheditor.h
+	* main/inputpatcheditor.ui
+
+	Implemented the same kind of status info scheme to input plugins as
+	output plugins.
+	
 2008-10-04  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* libs/llaout/llaout.cpp:

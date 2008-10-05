@@ -33,28 +33,31 @@
 
 #include "inputpatcheditor.h"
 #include "inputmap.h"
+#include "app.h"
 
-#define KColumnName 0
+extern App* _app;
+
+#define KColumnName  0
 #define KColumnInput 1
 
-InputPatchEditor::InputPatchEditor(QWidget* parent, InputMap* inputMap,
-				   t_input_universe universe,
+InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 				   const QString& pluginName, t_input input)
 	: QDialog(parent)
 {
-	/* InputMap */
-	Q_ASSERT(inputMap != NULL);
-	m_inputMap = inputMap;
-
 	/* Setup UI controls */
 	setupUi(this);
+
+	m_configureButton->setIcon(QIcon(":/configure.png"));
+	connect(m_configureButton, SIGNAL(clicked()),
+		this, SLOT(slotConfigureClicked()));
+
 	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						  QTreeWidgetItem*)),
 		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
 	connect(m_deviceCombo, SIGNAL(activated(const QString&)),
 		this, SLOT(slotDeviceComboActivated(const QString&)));
 
-	m_configureDevicesButton->setIcon(QIcon(":/configure.png"));
+	m_configureDevicesButton->setIcon(QIcon(":/input.png"));
 	//m_deviceGroup->setEnabled(false);
 	
 	/* Universe */
@@ -71,12 +74,16 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, InputMap* inputMap,
 	m_input = input;
 	
 	fillTree();
-	fillCombo();
+	fillDeviceCombo();
 }
 
 InputPatchEditor::~InputPatchEditor()
 {
 }
+
+/****************************************************************************
+ * Plugin tree
+ ****************************************************************************/
 
 void InputPatchEditor::fillTree()
 {
@@ -98,7 +105,7 @@ void InputPatchEditor::fillTree()
 		m_tree->setCurrentItem(pitem);
 	
 	/* Go thru available plugins and put them as the tree's root nodes. */
-	QStringListIterator pit(m_inputMap->pluginNames());
+	QStringListIterator pit(_app->inputMap()->pluginNames());
 	while (pit.hasNext() == true)
 	{
 		i = 0;
@@ -110,7 +117,8 @@ void InputPatchEditor::fillTree()
 
 		/* Go thru available inputs provided by each plugin and put
 		   them as their parent plugin's leaf nodes. */
-		QStringListIterator iit(m_inputMap->pluginInputs(pluginName));
+		QStringListIterator iit(_app->inputMap()->pluginInputs(
+								pluginName));
 		while (iit.hasNext() == true)
 		{
 			iitem = new QTreeWidgetItem(pitem);
@@ -136,7 +144,59 @@ void InputPatchEditor::fillTree()
 	}
 }
 
-void InputPatchEditor::fillCombo()
+void InputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
+{
+	if (item == NULL)
+	{
+		m_input = KInputInvalid;
+		m_inputName = QString::null;
+		m_pluginName = QString::null;
+		m_configureButton->setEnabled(false);
+	}
+	else
+	{
+		m_input = item->text(KColumnInput).toInt();
+		if (m_input != KInputInvalid)
+		{
+			m_inputName = item->text(KColumnName);
+			m_pluginName = item->parent()->text(KColumnName);
+		}
+		else
+		{
+			m_inputName = QString::null;
+			m_pluginName = item->text(KColumnName);
+		}
+		
+		if (m_pluginName == KInputNone)
+			m_configureButton->setEnabled(false);
+		else
+			m_configureButton->setEnabled(true);
+	}
+	
+	updateInputInfo();
+}
+
+/****************************************************************************
+ * Information view
+ ****************************************************************************/
+
+void InputPatchEditor::updateInputInfo()
+{
+	QString status;
+	status = _app->inputMap()->pluginStatus(m_pluginName, m_input);
+	m_infoBrowser->setText(status);
+}
+
+void InputPatchEditor::slotConfigureClicked()
+{
+	_app->inputMap()->configurePlugin(m_pluginName);
+}
+
+/****************************************************************************
+ * Templates
+ ****************************************************************************/
+
+void InputPatchEditor::fillDeviceCombo()
 {
 	m_deviceCombo->clear();
 
@@ -154,29 +214,6 @@ void InputPatchEditor::fillCombo()
 	QStringListIterator pit(names);
 	while (nit.hasNext() == true && pit.hasNext() == true)
 		m_deviceCombo->addItem(nit.next(), QVariant(pit.next()));
-}
-
-void InputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
-{
-	if (item == NULL)
-	{
-		m_input = KInputInvalid;
-		m_inputName = QString::null;
-	}
-	else
-	{
-		m_input = item->text(KColumnInput).toInt();
-		if (m_input != KInputInvalid)
-		{
-			m_inputName = item->text(KColumnName);
-			m_pluginName = item->parent()->text(KColumnName);
-		}
-		else
-		{
-			m_inputName = QString::null;
-			m_pluginName = QString::null;
-		}
-	}
 }
 
 void InputPatchEditor::slotDeviceComboActivated(const QString& name)

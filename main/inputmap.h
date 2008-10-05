@@ -160,8 +160,10 @@ public:
 	 * Get a status text for the given plugin. 
 	 *
 	 * @param pluginName Name of the plugin, whose status to get
+	 * @param input A specific input identifier
 	 */
-	QString pluginStatus(const QString& pluginName = QString::null);
+	QString pluginStatus(const QString& pluginName = QString::null,
+			     t_input input = KInputInvalid);
 
 	/**
 	 * Append the given plugin to our list of plugins. Will fail if

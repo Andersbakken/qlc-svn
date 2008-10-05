@@ -112,8 +112,7 @@ void InputManager::slotEditClicked()
 	pluginName = item->text(KColumnPlugin);
 	input = item->text(KColumnInputNum).toInt() - 1;
 
-	InputPatchEditor ipe(this, _app->inputMap(), universe, pluginName,
-			     input);
+	InputPatchEditor ipe(this, universe, pluginName, input);
 	if (ipe.exec() == QDialog::Accepted)
 	{
 		QString str;

@@ -161,89 +161,36 @@ void MIDIInput::configure()
  * Status
  *****************************************************************************/
 
-QString MIDIInput::infoText()
+QString MIDIInput::infoText(t_input input)
 {
-	QString info;
-	QString t;
+	QString str;
 
-	/* HTML Title */
-	info += QString("<HTML>");
-	info += QString("<HEAD>");
-	info += QString("<TITLE>Plugin Info</TITLE>");
-	info += QString("</HEAD>");
-	info += QString("<BODY>");
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>%1</TITLE>").arg(name());
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
 
-	/* Plugin title */
-	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\" COLSPAN=\"3\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"5\">");
-	info += name();
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
-
-	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-
-	/* Device title */
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"4\">");
-	info += QString("Device");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	/* Name title */
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"4\">");
-	info += QString("Name");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	/* Mode title */
-	info += QString("<TD BGCOLOR=\"");
-	info += QApplication::palette().color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += QApplication::palette().color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"4\">");
-	info += QString("Channels");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	/* Devices */
-	if (m_devices.count() == 0)
+	if (input == KInputInvalid)
 	{
-		info += QString("<TR>");
-		info += QString("<TD COLSPAN=\"3\">");
-		info += QString("Unable to find any MIDI inputs.");
-		info += QString("</TD>");
-		info += QString("</TR>");
+		str += QString("<H3>%1</H3>").arg(name());
+		str += QString("<P>");
+		str += QString("This plugin provides input support for ");
+		str += QString("various MIDI devices.");
+		str += QString("</P>");
 	}
-	else
+	else if (device(input) != NULL)
 	{
-		QListIterator <MIDIDevice*> it(m_devices);
-		while (it.hasNext() == true)
-			info += it.next()->infoText();
+		str += QString("<H3>%1</H3>").arg(inputs()[input]);
+		str += QString("<P>");
+		str += QString("Device is operating correctly.");
+		str += QString("</P>");
 	}
 
-	info += QString("</TABLE>");
+	str += QString("</BODY>");
+	str += QString("</HTML>");
 
-	return info;
+	return str;
 }
 
 /*****************************************************************************

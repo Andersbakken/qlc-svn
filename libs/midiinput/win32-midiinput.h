@@ -92,7 +92,7 @@ public:
 	 * Status
 	 *********************************************************************/
 public:
-	QString infoText();
+	QString infoText(t_input input = KInputInvalid);
 
 	/*********************************************************************
 	 * Input data

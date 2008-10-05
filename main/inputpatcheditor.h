@@ -38,28 +38,40 @@ class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	InputPatchEditor(QWidget* parent, InputMap* inputMap,
-			 t_input_universe universe, const QString& pluginName,
-			 t_input input);
+	InputPatchEditor(QWidget* parent, t_input_universe universe,
+			 const QString& pluginName, t_input input);
 	~InputPatchEditor();
 
 protected:
-	/** Initialize the tree to contain available plugins & their inputs */
+	/** The input universe being edited */
+	t_input_universe m_universe;
+
+	/********************************************************************
+	 * Plugin tree
+	 ********************************************************************/
+protected:
 	void fillTree();
-	
-	/** Initialize the combo to contain available device templates */
-	void fillCombo();
 
 protected slots:
 	void slotCurrentItemChanged(QTreeWidgetItem* item);
-	void slotDeviceComboActivated(const QString& name);
 
+	/********************************************************************
+	 * Information view
+	 ********************************************************************/
 protected:
-	/** Our input map that contains the actual mapping */
-	InputMap* m_inputMap;
+	void updateInputInfo();
 
-	/** The input universe being edited */
-	t_input_universe m_universe;
+protected slots:
+	void slotConfigureClicked();
+
+	/********************************************************************
+	 * Templates
+	 ********************************************************************/
+protected:
+	void fillDeviceCombo();
+
+protected slots:
+	void slotDeviceComboActivated(const QString& name);
 
 	/********************************************************************
 	 * Selection extraction

@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>311</height>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -33,6 +33,47 @@
          </property>
         </column>
        </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_infoGroup" >
+     <property name="title" >
+      <string>Input Information</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2" >
+      <item rowspan="2" row="0" column="0" >
+       <widget class="QTextBrowser" name="m_infoBrowser" />
+      </item>
+      <item row="0" column="1" >
+       <widget class="QToolButton" name="m_configureButton" >
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" >
+       <spacer name="verticalSpacer" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Maximum</enum>
+        </property>
+        <property name="sizeHint" stdset="0" >
+         <size>
+          <width>20</width>
+          <height>54</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>

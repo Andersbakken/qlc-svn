@@ -84,8 +84,11 @@ public:
 	 *
 	 * This is a pure virtual function that must be implemented
 	 * in all plugins.
+	 *
+	 * @param input If specified, information for the given input line is
+	 *              expected. Otherwise provides information for the plugin
 	 */
-	virtual QString infoText() = 0;
+	virtual QString infoText(t_input input = KInputInvalid) = 0;
 
 	/**
 	 * Get the plugin's name
