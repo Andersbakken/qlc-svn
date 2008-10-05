@@ -1,5 +1,16 @@
 2008-10-05  Heikki Junnila  <hjunnila@users.sf.net>
 
+	* main/app.cpp
+	* main/app.h
+	* main/main.pro
+	* main/pluginmanager.cpp
+	* main/pluginmanager.h
+
+	Removed plugin manager.
+	Added input/output manager closing when going to operate mode.
+	
+2008-10-05  Heikki Junnila  <hjunnila@users.sf.net>
+
 	* libs/common/qlcinplugin.h
 	* libs/hidinput/hidinput.cpp
 	* libs/hidinput/hidinput.h

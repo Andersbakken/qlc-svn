@@ -47,7 +47,6 @@ class FixtureManager;
 class VirtualConsole;
 class DummyOutPlugin;
 class DummyInPlugin;
-class PluginManager;
 class QLCDocBrowser;
 class BusProperties;
 class QLCFixtureDef;
@@ -215,15 +214,6 @@ protected:
 	BusProperties* m_busManager;
 
 	/*********************************************************************
-	 * Plugin Manager
-	 *********************************************************************/
-public:
-	PluginManager* pluginManager() const { return m_pluginManager; }
-
-protected:
-	PluginManager* m_pluginManager;
-
-	/*********************************************************************
 	 * Virtual Console
 	 *********************************************************************/
 public:
@@ -289,8 +279,6 @@ public slots:
 	void slotFunctionManagerDestroyed(QObject* object);
 	void slotBusManager();
 	void slotBusManagerDestroyed(QObject* object);
-	void slotPluginManager();
-	void slotPluginManagerDestroyed(QObject* object);
 
 	void slotControlVirtualConsole();
 	void slotVirtualConsoleClosed();
@@ -320,7 +308,6 @@ protected:
 	QAction* m_busManagerAction;
 	QAction* m_inputManagerAction;
 	QAction* m_outputManagerAction;
-	QAction* m_pluginManagerAction;
 
 	QAction* m_modeOperateAction;
 	QAction* m_modeDesignAction;

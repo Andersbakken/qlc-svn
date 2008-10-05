@@ -56,7 +56,6 @@ HEADERS += aboutbox.h \
            outputmap.h \
 	   outputpatch.h \
            outputpatcheditor.h \
-           pluginmanager.h \
            scene.h \
            sceneeditor.h \
            vcbutton.h \
@@ -141,7 +140,6 @@ SOURCES += aboutbox.cpp \
            outputmap.cpp \
 	   outputpatch.cpp \
            outputpatcheditor.cpp \
-           pluginmanager.cpp \
            scene.cpp \
            sceneeditor.cpp \
            vcbutton.cpp \

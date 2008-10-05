@@ -48,7 +48,6 @@
 #include "appdirectories.h"
 #include "virtualconsole.h"
 #include "fixturemanager.h"
-#include "pluginmanager.h"
 #include "busproperties.h"
 #include "outputmanager.h"
 #include "inputmanager.h"
@@ -90,7 +89,6 @@ App::App() : QMainWindow()
 
 	m_inputManager = NULL;
 	m_outputManager = NULL;
-	m_pluginManager = NULL;
 	m_functionManager = NULL;
 	m_busManager = NULL;
 	m_fixtureManager = NULL;
@@ -579,7 +577,8 @@ void App::slotModeOperate()
 	m_fileQuitAction->setEnabled(false);
 
 	m_functionManagerAction->setEnabled(false);
-	m_pluginManagerAction->setEnabled(false);
+	m_outputManagerAction->setEnabled(false);
+	m_inputManagerAction->setEnabled(false);
 	m_busManagerAction->setEnabled(false);
 	
 	/* Close function manager if it's open */
@@ -589,7 +588,15 @@ void App::slotModeOperate()
 	/* Close bus manager if it's open */
 	if (m_busManager != NULL)
 		m_busManager->parentWidget()->close();
-	
+
+	/* Close input manager if it's open */
+	if (m_inputManager != NULL)
+		m_inputManager->parentWidget()->close();
+
+	/* Close output manager if it's open */
+	if (m_outputManager != NULL)
+		m_outputManager->parentWidget()->close();
+
 	/* Start function consumer */
 	m_functionConsumer->start();
 
@@ -639,7 +646,8 @@ void App::slotModeDesign()
 	m_fileQuitAction->setEnabled(true);
 
 	m_functionManagerAction->setEnabled(true);
-	m_pluginManagerAction->setEnabled(true);
+	m_outputManagerAction->setEnabled(true);
+	m_inputManagerAction->setEnabled(true);
 	m_busManagerAction->setEnabled(true);
 
 	m_mode = Design;
@@ -733,11 +741,6 @@ void App::initActions()
 	connect(m_outputManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotOutputManager()));
 
-	m_pluginManagerAction = new QAction(QIcon(":/plugin.png"),
-					    tr("Plugins"), this);
-	connect(m_pluginManagerAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotPluginManager()));
-
 	/* Mode actions */
 	QActionGroup* modeGroup = new QActionGroup(this);
 	m_modeDesignAction = new QAction(tr("Design"), this);
@@ -818,7 +821,6 @@ void App::initMenuBar()
 	m_managerMenu->addSeparator();
 	m_managerMenu->addAction(m_inputManagerAction);
 	m_managerMenu->addAction(m_outputManagerAction);
-	m_managerMenu->addAction(m_pluginManagerAction);
 
 	/* Control Menu */
 	m_controlMenu = new QMenu(menuBar());
@@ -1152,36 +1154,6 @@ void App::slotBusManager()
 void App::slotBusManagerDestroyed(QObject*)
 {
 	m_busManager = NULL;
-}
-
-void App::slotPluginManager()
-{
-	if (m_pluginManager == NULL)
-	{
-		QMdiSubWindow* sub;
-
-		sub = new QMdiSubWindow(centralWidget());
-		m_pluginManager = new PluginManager(sub);
-		m_pluginManager->show();
-
-		sub->setWidget(m_pluginManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowTitle(tr("Plugin Manager"));
-		sub->setWindowIcon(QIcon(":/plugin.png"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_pluginManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotPluginManagerDestroyed(QObject*)));
-
-		sub->resize(700, 400);
-		sub->show();
-	}
-}
-
-void App::slotPluginManagerDestroyed(QObject*)
-{
-	m_pluginManager = NULL;
 }
 
 /*****************************************************************************
