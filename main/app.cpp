@@ -192,9 +192,7 @@ void App::init()
 		SLOT(slotCustomContextMenuRequested(const QPoint&)));
 
 	/* Workspace background */
-	setBackgroundImage(
-		settings.value(QString("%1/workspace/background")
-			       .arg(KApplicationNameLong)).toString());
+	setBackgroundImage(settings.value("/workspace/background").toString());
 
 	/* Resize the whole application to default size */
 	resize(KApplicationDefaultWidth, KApplicationDefaultHeight);

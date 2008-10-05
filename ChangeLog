@@ -1,6 +1,12 @@
 2008-10-05  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/app.cpp
+
+	Fixed application background restoration during startup.
+	
+2008-10-05  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/app.cpp
 	* main/app.h
 	* main/main.pro
 	* main/pluginmanager.cpp
