@@ -24,7 +24,9 @@
 
 #include <QDialog>
 #include "ui_inputmanager.h"
+#include "common/qlctypes.h"
 
+class InputPatch;
 class InputMap;
 
 class InputManager : public QWidget, public Ui_InputManager
@@ -41,6 +43,11 @@ public:
 	/*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
+protected:
+	void fillTree();
+	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
+			t_input_universe universe);
+
 protected slots:
 	void slotEditClicked();
 };

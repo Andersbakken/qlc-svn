@@ -47,18 +47,19 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 	/* Setup UI controls */
 	setupUi(this);
 
+	/* Plugin tree */
+	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
+						  QTreeWidgetItem*)),
+		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
+	
+	/* Information */
 	m_configureButton->setIcon(QIcon(":/configure.png"));
 	connect(m_configureButton, SIGNAL(clicked()),
 		this, SLOT(slotConfigureClicked()));
 
-	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
-						  QTreeWidgetItem*)),
-		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
-	connect(m_deviceCombo, SIGNAL(activated(const QString&)),
-		this, SLOT(slotDeviceComboActivated(const QString&)));
-
-	m_configureDevicesButton->setIcon(QIcon(":/input.png"));
-	//m_deviceGroup->setEnabled(false);
+	/* Device template */
+	connect(m_deviceCombo, SIGNAL(activated(int)),
+		this, SLOT(slotDeviceComboActivated(int)));
 	
 	/* Universe */
 	Q_ASSERT(universe < inputMap->universes());
@@ -203,10 +204,10 @@ void InputPatchEditor::fillDeviceCombo()
 	/* Get a list of available input device templates & their file paths */
 	QStringList names, paths;
 	QLCInputDevice::availableTemplates(&names, &paths);
-	Q_ASSERT(names.count() == files.count());
+	Q_ASSERT(names.count() == paths.count());
 
 	/* Add an option to have no template at all */
-	m_deviceCombo->addItem(tr("Nothing"));
+	m_deviceCombo->addItem(KInputNone);
 
 	/* Insert available input device templates and their file paths
 	   to the device combo. */
@@ -216,6 +217,8 @@ void InputPatchEditor::fillDeviceCombo()
 		m_deviceCombo->addItem(nit.next(), QVariant(pit.next()));
 }
 
-void InputPatchEditor::slotDeviceComboActivated(const QString& name)
+void InputPatchEditor::slotDeviceComboActivated(int index)
 {
+	m_templateName = m_deviceCombo->itemText(index);
+	m_templatePath = m_deviceCombo->itemData(index).toString();
 }

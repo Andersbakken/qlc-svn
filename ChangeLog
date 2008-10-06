@@ -1,3 +1,15 @@
+2008-10-06  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/inputmanager.cpp
+	* main/inputmanager.h
+	* main/inputmanager.ui
+	* main/inputpatcheditor.cpp
+	* main/inputpatcheditor.h
+	* main/inputpatcheditor.ui
+	
+	Removed the configuration button from input patch editor.
+	Added "template" column to input manager.
+
 2008-10-05  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/app.cpp

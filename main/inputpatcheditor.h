@@ -71,7 +71,7 @@ protected:
 	void fillDeviceCombo();
 
 protected slots:
-	void slotDeviceComboActivated(const QString& name);
+	void slotDeviceComboActivated(int index);
 
 	/********************************************************************
 	 * Selection extraction
@@ -80,6 +80,9 @@ public:
 	const QString pluginName() const { return m_pluginName; }
 	const QString inputName() const { return m_inputName; }
 	t_input input() const { return m_input; }
+
+	const QString templateName() const { return m_templateName; }
+	const QString templatePath() const { return m_templatePath; }
 
 protected:
 	/** The selected plugin's name */
@@ -90,6 +93,10 @@ protected:
 	
 	/** The selected input line number */
 	t_input m_input;
+	
+	/* The selected device template name & path */
+	QString m_templateName;
+	QString m_templatePath;
 };
 
 #endif /* INPUTPATCHEDITOR_H */
