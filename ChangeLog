@@ -1,3 +1,10 @@
+2008-10-07  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/main.cpp
+	* main/virtualconsole.cpp
+	
+	Removed key repeat code from apple builds.
+	
 2008-10-06  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/inputmanager.cpp

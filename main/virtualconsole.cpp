@@ -825,7 +825,7 @@ void VirtualConsole::slotModeChanged(App::Mode mode)
 	/* Key repeat */
 	if (isKeyRepeatOff() == true)
 	{
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__APPLE__)
 		Display* display;
 		display = XOpenDisplay(NULL);
 		Q_ASSERT(display != NULL);

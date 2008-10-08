@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 
 	delete _app;
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__APPLE__)
 	/* Set key repeat on in case QLC is set to turn it off in operate mode.
 	   It's safe to assume that most users have it always turned on. */
 	Display* display;
