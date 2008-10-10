@@ -28,7 +28,6 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
-#include <iostream>
 #include <QLabel>
 
 #include "common/qlcfixturemode.h"
@@ -37,8 +36,6 @@
 #include "addfixture.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 

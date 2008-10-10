@@ -21,8 +21,8 @@
 
 #include <QMetaObject>
 #include <QMessageBox>
-#include <iostream>
 #include <QAction>
+#include <QDebug>
 #include <QPoint>
 #include <QSize>
 #include <QMenu>
@@ -41,8 +41,6 @@
 #include "vcxypad.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -141,14 +139,14 @@ void VCFrame::setButtonBehaviour(ButtonBehaviour b)
 bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
 	VCFrame* frame = NULL;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
 	if (root->tagName() != KXMLQLCVCFrame)
 	{
-		cout << "Frame node not found!" << endl;
+		qDebug() << "Frame node not found!";
 		return false;
 	}
 
@@ -172,7 +170,7 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QString str;
@@ -182,7 +180,7 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCFrame)
 	{
-		cout << "Frame node not found!" << endl;
+		qDebug() << "Frame node not found!";
 		return false;
 	}
 
@@ -230,9 +228,7 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown frame tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown frame tag:" << tag.tagName();
 		}
 		
 		node = node.nextSibling();

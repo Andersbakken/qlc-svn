@@ -21,8 +21,8 @@
 
 #include <QMessageBox>
 #include <QStringList>
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QList>
 #include <QtXml>
 #include <QDir>
@@ -47,8 +47,6 @@
 #include "doc.h"
 
 extern App* _app;
-
-using namespace std;
 
 Doc::Doc() : QObject()
 {
@@ -177,7 +175,7 @@ bool Doc::loadXML(QDomDocument* doc)
 	Q_ASSERT(doc != NULL);
 
 	root = doc->documentElement();
-	
+
 	/* Load workspace background & theme */
 	// _app->workspace()->loadXML(doc, &root);
 
@@ -191,7 +189,7 @@ bool Doc::loadXML(QDomDocument* doc)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCCreator)
 		{
 			/* Ignore creator information */
@@ -234,9 +232,10 @@ bool Doc::loadXML(QDomDocument* doc)
 			VirtualConsole::loader(doc, &tag);
 		}
 		else
-			cout << QString("Unknown Workspace tag: %1")
-				.arg(tag.tagName()).toStdString() << endl;
-		
+		{
+			qDebug() << "Unknown Workspace tag:" <<tag.tagName();
+		}
+
 		node = node.nextSibling();
 	}
 
@@ -420,25 +419,23 @@ bool Doc::newFixture(Fixture* fxi)
 
 	if (id < 0 || id > KFixtureArraySize)
 	{
-		cout << QString("Fixture ID %1 out of bounds (%2 - %3)!")
-			.arg(id).arg(0).arg(KFixtureArraySize).toStdString()
-		     << endl;
+		qDebug() << QString("Fixture ID %1 out of bounds (%2 - %3)!")
+				    .arg(id).arg(0).arg(KFixtureArraySize);
 		return false;
 	}
 	else if (m_fixtureArray[id] != NULL)
 	{
-		cout << QString("Fixture ID %1 already taken!").arg(id)
-			.toStdString() << endl;
+		qDebug() << QString("Fixture ID %1 already taken!").arg(id);
 		return false;
 	}
 	else
 	{
 		m_fixtureArray[id] = fxi;
-		
+
 		// Patch fixture change events thru Doc
 		connect(fxi, SIGNAL(changed(t_fixture_id)),
 			this, SLOT(slotFixtureChanged(t_fixture_id)));
-		
+
 		emit fixtureAdded(id);
 
 		return true;
@@ -461,8 +458,7 @@ bool Doc::deleteFixture(t_fixture_id id)
 	}
 	else
 	{
-		cout << QString("No such fixture ID: %1").arg(id).toStdString()
-		     << endl;
+		qDebug() << QString("No such fixture ID: %1").arg(id);
 		return false;
 	}
 }
@@ -501,10 +497,8 @@ Function* Doc::newFunction(Function::Type type)
 
 	if (function == NULL)
 	{
-		cout << QString("Cannot add any more functions. All %1 slots "
-				"are taken.").arg(KFunctionArraySize)
-			.toStdString()
-		     << endl;
+		qDebug() << QString("Cannot add any more functions. All %1"
+				    " are occupied.").arg(KFunctionArraySize);
 	}
 	
 	return function;
@@ -541,8 +535,7 @@ Function* Doc::newFunction(Function::Type type, t_function_id fid, QString name,
 	}
 	else
 	{
-		cout << QString("Function ID %1 already taken.")
-			.arg(fid).toStdString() << endl;
+		qDebug() << QString("Function ID %1 already taken.").arg(fid);
 	}
 
 	return function;

@@ -32,7 +32,6 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QToolTip>
-#include <iostream>
 #include <QAction>
 #include <QDebug>
 #include <QLabel>
@@ -73,8 +72,6 @@
 #define KModeTextDesign tr("Design")
 
 extern App* _app;
-
-using namespace std;
 
 /*********************************************************************
  * Initialization

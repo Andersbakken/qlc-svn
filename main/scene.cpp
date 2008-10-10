@@ -20,7 +20,6 @@
 */
 
 #include <QApplication>
-#include <iostream>
 #include <QtDebug>
 #include <QList>
 #include <QFile>
@@ -38,8 +37,6 @@
 #include "app.h"
 #include "doc.h"
 #include "bus.h"
-
-using namespace std;
 
 extern App* _app;
 

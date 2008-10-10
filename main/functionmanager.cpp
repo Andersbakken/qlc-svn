@@ -30,7 +30,6 @@
 #include <QSplitter>
 #include <QToolBar>
 #include <QMenuBar>
-#include <iostream>
 #include <QPixmap>
 #include <QMenu>
 #include <QList>
@@ -51,8 +50,6 @@
 #define KColumnName 0
 #define KColumnBus  1
 #define KColumnID   2
-
-using namespace std;
 
 extern App* _app;
 

@@ -24,9 +24,9 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QMenuBar>
-#include <iostream>
 #include <QString>
 #include <QPoint>
+#include <QDebug>
 #include <QMenu>
 #include <QFile>
 #include <QList>
@@ -47,8 +47,6 @@
 #ifndef WIN32
 #include <X11/Xlib.h>
 #endif
-
-using namespace std;
 
 extern App* _app;
 extern QApplication* _qapp;
@@ -294,7 +292,7 @@ void VirtualConsole::initDockArea()
 	m_dockArea = new VCDockArea(this);
 	m_dockArea->setSizePolicy(QSizePolicy::Maximum,
 				  QSizePolicy::Expanding);
-	
+
 	// Add the dock area into the master horizontal layout
 	layout()->addWidget(m_dockArea);
 }
@@ -318,17 +316,17 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QString str;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVirtualConsole)
 	{
-		cout << "Virtual Console node not found!" << endl;
+		qDebug() << "Virtual Console node not found!";
 		return false;
 	}
 
@@ -383,9 +381,8 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown virtual console tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown virtual console tag:"
+				 << tag.tagName();
 		}
 		
 		node = node.nextSibling();
@@ -531,7 +528,7 @@ void VirtualConsole::paste(VCFrame* parent, QPoint point)
 		}
 		else
 		{
-			cout << "Cannot paste from an empty clipboard!" << endl;
+			qDebug() << "Cannot paste from an empty clipboard!";
 		}
 	}
 

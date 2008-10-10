@@ -27,7 +27,6 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QCheckBox>
-#include <iostream>
 #include <QLabel>
 #include <QTimer>
 #include <QIcon>
@@ -40,8 +39,6 @@
 #include "chaser.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 

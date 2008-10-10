@@ -23,8 +23,8 @@
 #include <QTreeWidget>
 #include <QHeaderView>
 #include <QVBoxLayout>
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QtXml>
 
 #include "common/qlcfile.h"
@@ -36,8 +36,6 @@
 #include "keybind.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -223,14 +221,14 @@ void VCCueList::slotProperties()
 bool VCCueList::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
 	VCCueList* cuelist = NULL;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
 	if (root->tagName() != KXMLQLCVCCueList)
 	{
-		cout << "CueList node not found!" << endl;
+		qDebug() << "CueList node not found!";
 		return false;
 	}
 
@@ -249,7 +247,7 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QString str;
@@ -259,7 +257,7 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCCueList)
 	{
-		cout << "CueList node not found!" << endl;
+		qDebug() << "CueList node not found!";
 		return false;
 	}
 
@@ -293,11 +291,9 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown cuelist tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown cuelist tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

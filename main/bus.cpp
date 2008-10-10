@@ -1,26 +1,26 @@
 /*
   Q Light Controller
   bus.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QFile>
 #include <QtXml>
 
@@ -34,8 +34,6 @@ extern App* _app;
 t_bus_id Bus::s_nextID ( KBusIDMin );
 Bus* Bus::s_busArray ( NULL );
 BusEmitter* Bus::s_busEmitter ( NULL );
-
-using namespace std;
 
 Bus::Bus()
 {
@@ -56,7 +54,7 @@ void Bus::init()
 
 	s_busArray[KBusIDDefaultFade].m_name = "Fade";
 	s_busArray[KBusIDDefaultHold].m_name = "Hold";
-	
+
 	if (s_busEmitter != NULL)
 		delete s_busEmitter;
 	s_busEmitter = new BusEmitter();
@@ -133,9 +131,7 @@ bool Bus::loadXML(QDomDocument*, QDomElement* root)
 			else if (tag.tagName() == KXMLQLCBusValue)
 				value = tag.text().toULong();
 			else
-				cout << "Unknown Bus tag: "
-				     << tag.tagName().toStdString()
-				     << endl;
+				qDebug() << "Unknown Bus tag:" << tag.tagName();
 
 			node = node.nextSibling();
 		}
@@ -147,7 +143,7 @@ bool Bus::loadXML(QDomDocument*, QDomElement* root)
 	}
 	else
 	{
-		cout << "Bus node not found in file!" << endl;
+		qDebug() << "Bus node not found in file!";
 		retval = false;
 	}
 

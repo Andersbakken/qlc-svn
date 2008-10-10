@@ -20,8 +20,8 @@
 */
 
 #include <QVBoxLayout>
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QtXml>
 
 #include "common/qlcfile.h"
@@ -29,8 +29,6 @@
 #include "vcdockarea.h"
 #include "bus.h"
 #include "app.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -70,14 +68,14 @@ bool VCDockArea::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCDockArea)
 	{
-		cout << "Virtual Console Dock Area node not found!" << endl;
+		qDebug() << "Virtual Console Dock Area node not found!";
 		return false;
 	}
-	
+
 	/* Visibility */
 	str = root->attribute(KXMLQLCVCDockAreaVisible);
 	visible = static_cast<bool> (str.toInt());
-	
+
 	/* Children */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -94,17 +92,14 @@ bool VCDockArea::loadXML(QDomDocument* doc, QDomElement* root)
 			else if (bus == KBusIDDefaultHold)
 				m_defaultHoldSlider->loadXML(doc, &tag);
 			else
-				cout << "Cannot bind default sliders to "
-				     << "other than Fade/Hold buses."
-				     << endl;
+				qDebug() << "Cannot bind default sliders to "
+				         << "other than Fade/Hold buses.";
 		}
 		else
 		{
-			cout << "Unknown dock slider tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown dock slider tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

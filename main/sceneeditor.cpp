@@ -25,7 +25,6 @@
 #include <QMessageBox>
 #include <QToolButton>
 #include <QTabWidget>
-#include <iostream>
 #include <QLayout>
 #include <QLabel>
 #include <QMenu>
@@ -39,8 +38,6 @@
 #include "scene.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 

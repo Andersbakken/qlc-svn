@@ -22,9 +22,9 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QMessageBox>
-#include <iostream>
 #include <QPainter>
 #include <QString>
+#include <QDebug>
 #include <QEvent>
 #include <QTimer>
 #include <QBrush>
@@ -45,8 +45,6 @@
 #include "keybind.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -119,14 +117,14 @@ void VCButton::slotProperties()
 bool VCButton::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
 	VCButton* button = NULL;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
 	if (root->tagName() != KXMLQLCVCButton)
 	{
-		cout << "Button node not found!" << endl;
+		qDebug() << "Button node not found!";
 		return false;
 	}
 
@@ -145,7 +143,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QString str;
@@ -155,7 +153,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCButton)
 	{
-		cout << "Button node not found!" << endl;
+		qDebug() << "Button node not found!";
 		return false;
 	}
 
@@ -195,11 +193,9 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown button tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown button tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -375,7 +371,7 @@ void VCButton::pressFunction()
 		}
 		else
 		{
-			cout << "Function has been deleted!" << endl;
+			qDebug() << "Function has been deleted!";
 			setFunction(KNoID);
 		}
 	}
@@ -405,7 +401,7 @@ void VCButton::pressFunction()
 		}
 		else
 		{
-			cout << "Function has been deleted!" << endl;
+			qDebug() << "Function has been deleted!";
 			setFunction(KNoID);
 		}
 	}
@@ -418,7 +414,7 @@ void VCButton::pressFunction()
 		}
 		else
 		{
-			cout << "Function has been deleted!" << endl;
+			qDebug() << "Function has been deleted!";
 			setFunction(KNoID);
 		}
 	}

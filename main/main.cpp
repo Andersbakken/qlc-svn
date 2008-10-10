@@ -22,7 +22,6 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QMetaType>
-#include <iostream>
 #include <QLocale>
 #include <QString>
 #include <QDebug>
@@ -37,32 +36,26 @@
 #include <X11/Xlib.h>
 #endif
 
-using namespace std;
-
 App* _app;
 
 void print_version()
 {
-	cout << endl;
-	cout << KApplicationNameLong.toStdString();
-	cout << " " << KApplicationVersion.toStdString() << endl;
-	cout << "This program is licensed under the terms of GNU GPL." << endl;
-	cout << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)" << endl;
-	cout << endl;
+	qDebug() << KApplicationNameLong << KApplicationVersion;
+	qDebug() << "This program is licensed under the terms of GNU GPL.";
+	qDebug() << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)";
 }
 
 void print_usage()
 {
 	print_version();
 
-	cout << "Usage:" << endl;
-	cout << "  qlc [options]" << endl;
-	cout << "\nOptions:" << endl;
-	cout << "  -o <file> or --open <file>    Open the specified workspace file" << endl;
-	cout << "  -p or --operate               Start in operate mode" << endl;
-	cout << "  -h or --help                  Print this help" << endl;
-	cout << "  -v or --version               Print version information" << endl;
-	cout << endl;
+	qDebug() << "Usage:";
+	qDebug() << "  qlc [options]";
+	qDebug() << "\nOptions:";
+	qDebug() << "  -o <file> or --open <file>    Open the specified workspace file";
+	qDebug() << "  -p or --operate               Start in operate mode";
+	qDebug() << "  -h or --help                  Print this help";
+	qDebug() << "  -v or --version               Print version information";
 }
 
 /**

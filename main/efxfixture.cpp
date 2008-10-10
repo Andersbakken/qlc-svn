@@ -1,25 +1,25 @@
 /*
   Q Light Controller
   efxfixture.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <iostream>
+#include <QDebug>
 #include <math.h>
 
 #include "eventbuffer.h"
@@ -27,8 +27,6 @@
 #include "function.h"
 #include "scene.h"
 #include "efx.h"
-
-using namespace std;
 
 /*****************************************************************************
  * Initialization
@@ -173,7 +171,7 @@ void EFXFixture::nextStep(t_buffer_data* data)
 	{
 		/* Reset iterator, since we've gone a full circle */
 		m_iterator = 0;
-		
+
 		if (m_parent->m_runOrder == Function::PingPong)
 		{
 			/* Reverse direction */
@@ -201,7 +199,7 @@ void EFXFixture::setPoint(t_buffer_data* data)
 
 	data[m_index + 1]  = m_msbTiltChannel << 8;
 	data[m_index + 1] |= static_cast <t_value> (m_tiltValue);
-	
+
 	/* Write fine point data to event buffer if applicable */
 	if (m_lsbPanChannel != KChannelInvalid)
 	{

@@ -25,9 +25,9 @@
 #include <QMessageBox>
 #include <QPaintEvent>
 #include <QPainter>
-#include <iostream>
 #include <QString>
 #include <QSlider>
+#include <QDebug>
 #include <QLabel>
 #include <QTime>
 #include <QSize>
@@ -43,8 +43,6 @@
 #include "doc.h"
 
 #include "common/qlcfile.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -88,7 +86,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	new QVBoxLayout(this);
 	layout()->setMargin(0);
 	layout()->setSpacing(0);
-	
+
 	/* Top label */
 	m_topLabel = new QLabel(this);
 	layout()->addWidget(m_topLabel);
@@ -111,7 +109,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 		this, SLOT(slotSliderValueChanged(int)));
 	connect(m_slider, SIGNAL(sliderReleased()),
 		this, SLOT(slotSliderReleased()));
-	
+
 	m_hbox->insertSpacing(-1, 10);
 
 	/* Tap button */
@@ -158,7 +156,7 @@ void VCSlider::slotDelete()
 	int result = QMessageBox::question(this, "Delete", msg,
 					   QMessageBox::Yes,
 					   QMessageBox::No);
-	
+
 	if (result == QMessageBox::Yes)
 	{
 		_app->virtualConsole()->setSelectedWidget(NULL);
@@ -318,7 +316,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 	/* Disconnect these to prevent double callbacks and non-essential
 	   signals (with Level & Submaster modes) */
 	disconnect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
-		   this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));	
+		   this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
 	disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
 		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
@@ -440,7 +438,7 @@ t_fixture_id VCSlider::splitCombinedValue(int combined,
 	/* Split a combined value into fixture id and channel number */
 	*channel = combined >> 23;
 	*fixture = combined & 0x007FFFFF;
-	
+
 	return *fixture;
 }
 
@@ -455,9 +453,8 @@ void VCSlider::addLevelChannel(t_fixture_id fixture, t_channel channel)
 	}
 	else
 	{
-		cout << QString("Fixture %1 and channel %2 already in list")
-			.arg(fixture).arg(channel).toStdString()
-		     << endl;
+		qDebug() << QString("Fixture %1 & channel %2 already in list")
+			.arg(fixture).arg(channel);
 	}
 }
 
@@ -467,9 +464,8 @@ void VCSlider::removeLevelChannel(t_fixture_id fixture, t_channel channel)
 
 	if (m_levelChannels.removeAll(combined) == 0)
 	{
-		cout << QString("Fixture %1 and channel %2 not found")
-			.arg(fixture).arg(channel).toStdString()
-		     << endl;
+		qDebug() << QString("Fixture %1 & channel %2 not found")
+			.arg(fixture).arg(channel);
 	}
 }
 
@@ -517,7 +513,7 @@ void VCSlider::setLevelValue(t_value value)
 		fxi = _app->doc()->fixture(fxi_id);
 		if (fxi != NULL)
 			dmx_ch = fxi->channelAddress(ch);
-		
+
 		_app->outputMap()->setValue(dmx_ch,
 					    m_levelHighLimit - value +
 					    m_levelLowLimit);
@@ -573,7 +569,7 @@ void VCSlider::slotSliderValueChanged(int value)
 		   user dragging the slider and slider tracking is on */
 		if (m_sliderPressed == true)
 			setBusValue(value);
-		
+
 		/* Set text for the top label */
 		if (valueDisplayStyle() == ExactValue)
 			num.sprintf("%.2fs", ((float) value / (float) KFrequency));
@@ -584,11 +580,11 @@ void VCSlider::slotSliderValueChanged(int value)
 		setTopLabelText(num);
 	}
 	break;
-	
+
 	case Level:
 	{
 		setLevelValue(value);
-		
+
 		/* Set text for the top label */
 		if (valueDisplayStyle() == ExactValue)
 			num.sprintf("%.3d", 
@@ -599,10 +595,10 @@ void VCSlider::slotSliderValueChanged(int value)
 		setTopLabelText(num);
 	}
 	break;
-	
+
 	case Submaster:
 		break;
-		
+
 	default:
 		break;
 	}
@@ -690,7 +686,7 @@ void VCSlider::setInputChannel(t_input_channel ch)
 		   SLOT(slotInputValueChanged(t_input_universe,
 					      t_input_channel,
 					      t_input_value)));
-	
+
 	if (m_inputChannel != KInputChannelInvalid)
 	{
 		connect(_app->inputMap(),
@@ -718,7 +714,7 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
 bool VCSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
 	VCSlider* slider = NULL;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
@@ -744,7 +740,7 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QString str;
@@ -755,7 +751,7 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCSlider)
 	{
-		cout << "Slider node not found!" << endl;
+		qDebug() << "Slider node not found!";
 		return false;
 	}
 
@@ -808,11 +804,9 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown slider tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown slider tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -859,11 +853,10 @@ bool VCSlider::loadXMLLevel(QDomDocument*, QDomElement* level_root)
 		}
 		else
 		{
-			cout << "Unknown slider level tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown slider level tag:"
+				 << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

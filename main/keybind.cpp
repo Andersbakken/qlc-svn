@@ -20,14 +20,12 @@
 */
 
 #include <QKeyEvent>
-#include <iostream>
+#include <QDebug>
 #include <QtXml>
 
 #include "virtualconsole.h"
 #include "keybind.h"
 #include "app.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -381,7 +379,7 @@ bool KeyBind::loadXML(QDomDocument*/* doc*/, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCKeyBind)
 	{
-		cout << "Key binding node not found!" << endl;
+		qDebug() << "Key binding node not found!";
 		return false;
 	}
 
@@ -404,9 +402,8 @@ bool KeyBind::loadXML(QDomDocument*/* doc*/, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown key binding tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown key binding tag:"
+				 << tag.tagName();
 		}
 
 		node = node.nextSibling();

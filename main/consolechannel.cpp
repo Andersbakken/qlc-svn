@@ -22,7 +22,6 @@
 #include <QContextMenuEvent>
 #include <QVBoxLayout>
 #include <QToolButton>
-#include <iostream>
 #include <QSlider>
 #include <QLabel>
 #include <QMenu>
@@ -40,8 +39,6 @@
 #include "consolechannel.h"
 
 extern App* _app;
-
-using namespace std;
 
 /*****************************************************************************
  * Initialization

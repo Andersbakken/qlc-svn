@@ -28,9 +28,9 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPalette>
-#include <iostream>
 #include <QCursor>
 #include <QPixmap>
+#include <QDebug>
 #include <QBrush>
 #include <QPoint>
 #include <QSize>
@@ -45,8 +45,6 @@
 #include "vcwidget.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -354,7 +352,7 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCAppearance)
 	{
-		cout << "Appearance node not found!" << endl;
+		qDebug() << "Appearance node not found!";
 		return false;
 	}
 
@@ -398,9 +396,7 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown appearance tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown appearance tag:" << tag.tagName();
 		}
 
 		node = node.nextSibling();

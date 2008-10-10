@@ -1,3 +1,41 @@
+2008-10-10  Heikki Junnila  <hjunnila@users.sf.net>
+
+	* main/addfixture.cpp:
+	* main/app.cpp:
+	* main/bus.cpp:
+	* main/chaser.cpp:
+	* main/chasereditor.cpp:
+	* main/collection.cpp:
+	* main/consolechannel.cpp:
+	* main/doc.cpp:
+	* main/efx.cpp:
+	* main/efxfixture.cpp:
+	* main/fixture.cpp:
+	* main/fixtureconsole.cpp:
+	* main/fixturemanager.cpp:
+	* main/function.cpp:
+	* main/functionmanager.cpp:
+	* main/inputmanager.cpp:
+	* main/inputmap.cpp:
+	* main/keybind.cpp:
+	* main/main.cpp:
+	* main/monitor.cpp:
+	* main/scene.cpp:
+	* main/sceneeditor.cpp:
+	* main/vcbutton.cpp:
+	* main/vccuelist.cpp:
+	* main/vcdockarea.cpp:
+	* main/vcdockslider.cpp:
+	* main/vcframe.cpp:
+	* main/vclabel.cpp:
+	* main/vcslider.cpp:
+	* main/vcwidget.cpp:
+	* main/vcxypad.cpp:
+	* main/virtualconsole.cpp:
+
+	Replaced cout with qDebug().
+	Removed some whitespace.
+
 2008-10-07  Heikki Junnila  <hjunnila@users.sf.net>
 
 	* main/main.cpp

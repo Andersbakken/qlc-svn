@@ -27,10 +27,10 @@
 #include <QByteArray>
 #include <QSplitter>
 #include <QToolBar>
-#include <iostream>
 #include <QAction>
 #include <QWidget>
 #include <QString>
+#include <QDebug>
 #include <QIcon>
 #include <QMenu>
 #include <QtXml>
@@ -54,8 +54,6 @@
 #include "efx.h"
 
 extern App* _app;
-
-using namespace std;
 
 // List view column numbers
 #define KColumnUniverse 0
@@ -589,7 +587,7 @@ bool FixtureManager::loadXML(QDomDocument*, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCFixtureManager)
 	{
-		cout << "Fixture Manager node not found!" << endl;
+		qDebug() << "Fixture Manager node not found!";
 		return false;
 	}
 
@@ -604,9 +602,8 @@ bool FixtureManager::loadXML(QDomDocument*, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown fixture manager tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown fixture manager tag:"
+				 << tag.tagName();
 		}
 
 		node = node.nextSibling();

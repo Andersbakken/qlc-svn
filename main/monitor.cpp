@@ -26,7 +26,6 @@
 #include <QVBoxLayout>
 #include <QMenuBar>
 #include <QPainter>
-#include <iostream>
 #include <QAction>
 #include <QTimer>
 #include <QColor>
@@ -45,8 +44,6 @@
 
 #include "common/qlctypes.h"
 #include "common/qlcfile.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -548,12 +545,12 @@ bool Monitor::loadXML(QDomDocument*, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
-	
+
 	Q_ASSERT(root != NULL);
-	
+
 	if (root->tagName() != KXMLQLCMonitor)
 	{
 		qWarning("Monitor node not found!");
@@ -581,11 +578,9 @@ bool Monitor::loadXML(QDomDocument*, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown monitor tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown monitor tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

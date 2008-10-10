@@ -24,9 +24,9 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QPainter>
-#include <iostream>
 #include <QPixmap>
 #include <QCursor>
+#include <QDebug>
 #include <QPoint>
 #include <QMenu>
 #include <QList>
@@ -42,8 +42,6 @@
 #include "fixture.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -199,14 +197,14 @@ void VCXYPad::setCurrentXYPosition(int x, int y)
 bool VCXYPad::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
 	VCXYPad* xypad = NULL;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
 	if (root->tagName() != KXMLQLCVCXYPad)
 	{
-		cout << "XY Pad node not found!" << endl;
+		qDebug() << "XY Pad node not found!";
 		return false;
 	}
 
@@ -238,7 +236,7 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCXYPad)
 	{
-		cout << "XY Pad node not found!" << endl;
+		qDebug() << "XY Pad node not found!";
 		return false;
 	}
 
@@ -307,9 +305,7 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown XY Pad tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown XY Pad tag:" << tag.tagName();
 		}
 		
 		node = node.nextSibling();

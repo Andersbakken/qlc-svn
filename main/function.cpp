@@ -21,8 +21,8 @@
 
 #include <QApplication>
 #include <QMessageBox>
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QIcon>
 #include <QtXml>
 
@@ -32,8 +32,6 @@
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 extern App* _app;
 
@@ -296,7 +294,7 @@ Function* Function::loader(QDomDocument* doc, QDomElement* root)
 	t_function_id func_id = 0;
 	Type func_type;
 	QString func_name;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
@@ -330,8 +328,7 @@ bool Function::start()
 {
 	if (isRunning() == true)
 	{
-		cout << "Function " << name().toStdString()
-		     << " is already running!" << endl;
+		qDebug() << "Function" << name() << "is already running!";
 		return false;
 	}
 	else

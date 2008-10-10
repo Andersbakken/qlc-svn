@@ -20,7 +20,7 @@
 */
 
 #include <QHBoxLayout>
-#include <iostream>
+#include <QDebug>
 #include <QIcon>
 #include <QtXml>
 
@@ -32,8 +32,6 @@
 #include "doc.h"
 
 extern App* _app;
-
-using namespace std;
 
 /*****************************************************************************
  * Initialization
@@ -144,12 +142,12 @@ bool FixtureConsole::loadXML(QDomDocument*, QDomElement* root)
 	int w = 0;
 	int h = 0;
 	bool visible = false;
-	
+
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCFixtureConsole)
 	{
-		cout << "Fixture console node not found!" << endl;
+		qWarning() << "Fixture console node not found!";
 		return false;
 	}
 
@@ -164,9 +162,8 @@ bool FixtureConsole::loadXML(QDomDocument*, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown fixture console tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown fixture console tag:"
+			     << tag.tagName();
 		}
 		
 		node = node.nextSibling();

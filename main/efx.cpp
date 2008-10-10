@@ -20,9 +20,8 @@
 */
 
 #include <QApplication>
-#include <iostream>
 #include <QPolygon>
-#include <QtDebug>
+#include <QDebug>
 #include <QList>
 #include <QtXml>
 
@@ -43,8 +42,6 @@
 #include "bus.h"
 
 extern App* _app;
-
-using namespace std;
 
 /* Supported EFX algorithms */
 static const char* KCircleAlgorithmName    ( "Circle" );

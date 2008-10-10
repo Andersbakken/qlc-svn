@@ -21,7 +21,6 @@
 
 #include <QMessageBox>
 #include <QPushButton>
-#include <iostream>
 #include <QSlider>
 #include <QString>
 #include <QLabel>

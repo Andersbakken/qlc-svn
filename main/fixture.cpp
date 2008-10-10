@@ -22,8 +22,8 @@
 #include <QMdiSubWindow>
 #include <QMdiArea>
 #include <QPalette>
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QtXml>
 #include <QIcon>
 
@@ -39,8 +39,6 @@
 #include "doc.h"
 
 extern App* _app;
-
-using namespace std;
 
 /*****************************************************************************
  * Initialization
@@ -258,17 +256,17 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	t_channel universe = 0;
 	t_channel address = 0;
 	t_channel channels = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QDomElement consoletag;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLFixture)
 	{
-		cout << "Fixture instance node not found!" << endl;
+		qDebug() << "Fixture instance node not found!";
 		return NULL;
 	}
 
@@ -315,11 +313,10 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown fixture instance tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown fixture instance tag:"
+				 << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -327,9 +324,8 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	fixtureDef = _app->fixtureDef(manufacturer, model);
 	if (fixtureDef == NULL)
 	{
-		cout << QString("Fixture definition for [%1 - %2] not found!")
-			.arg(manufacturer).arg(model).toStdString()
-		     << endl;
+		qDebug() << QString("No fixture definition for [%1 - %2]")
+					.arg(manufacturer).arg(model);
 	}
 	else
 	{
@@ -337,48 +333,44 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 		fixtureMode = fixtureDef->mode(modeName);
 		if (fixtureMode == NULL)
 		{
-			cout << QString("Fixture mode [%1] for [%2 - %3] "
-					"not found!").arg(modeName)
-				.arg(manufacturer).arg(model).toStdString()
-			     << endl;
+			qDebug() << QString("Fixture mode [%1] for [%2 - %3] "
+					    "not found!").arg(modeName)
+					    .arg(manufacturer).arg(model);
 		}
 	}
 
 	/* Number of channels */
 	if (channels <= 0 || channels > KFixtureChannelsMax)
 	{
-		cout << QString("Fixture [%1] channels %2 out of bounds "
+		qDebug() << QString("Fixture [%1] channels %2 out of bounds "
 				"(%3 - %4).").arg(name).arg(channels).arg(1)
-			.arg(KFixtureChannelsMax).toStdString()
-		     << endl;
+				.arg(KFixtureChannelsMax);
 		channels = 1;
 	}
 
 	/* Make sure that address is something sensible */
 	if (address > 511 || address + (channels - 1) > 511)
 	{
-		cout << QString("Fixture channel range %1 - %2 out of DMX "
-				"bounds (%3 - %4).").arg(address + 1)
-			.arg(address + channels).arg(1).arg(512).toStdString()
-		     << endl;
+		qDebug() << QString("Fixture channel range %1 - %2 out of DMX "
+				    "bounds (%3 - %4).").arg(address + 1)
+				    .arg(address + channels).arg(1).arg(512);
 		address = 0;
 	}
 
 	/* Make sure that universe is something sensible */
 	if (universe > KUniverseCount)
 	{
-		cout << QString("Fixture universe %1 out of bounds (%2 - %3).")
-			.arg(universe).arg(0).arg(KUniverseCount).toStdString()
-		     << endl;
+		qDebug() << QString("Fixture universe %1 out of bounds "
+				    "(%2 - %3).").arg(universe).arg(0)
+				    .arg(KUniverseCount);
 		universe = 0;
 	}
 
 	/* Check that we have a sensible ID, otherwise we can't continue */
 	if (id < 0 || id > KFixtureArraySize)
 	{
-		cout << QString("Fixture ID %1 out of bounds (%2 - %3).")
-			.arg(id).arg(0).arg(KFixtureArraySize).toStdString()
-		     << endl;
+		qDebug() << QString("Fixture ID %1 out of bounds (%2 - %3).")
+				    .arg(id).arg(0).arg(KFixtureArraySize);
 		return NULL;
 	}
 

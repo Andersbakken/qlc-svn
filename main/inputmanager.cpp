@@ -22,7 +22,6 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 #include <QStringList>
-#include <iostream>
 #include <QAction>
 #include <QDebug>
 #include <QMenu>

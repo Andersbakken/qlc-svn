@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <iostream>
 #include <QString>
+#include <QDebug>
 #include <QSize>
 #include <QtXml>
 
@@ -30,8 +30,6 @@
 #include "vclabel.h"
 #include "app.h"
 #include "doc.h"
-
-using namespace std;
 
 VCLabel::VCLabel(QWidget* parent) : VCWidget(parent)
 {
@@ -53,14 +51,14 @@ VCLabel::~VCLabel()
 bool VCLabel::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
 	VCLabel* label = NULL;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
 	if (root->tagName() != KXMLQLCVCLabel)
 	{
-		cout << "Label node not found!" << endl;
+		qDebug() << "Label node not found!";
 		return false;
 	}
 
@@ -79,7 +77,7 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 	int y = 0;
 	int w = 0;
 	int h = 0;
-	
+
 	QDomNode node;
 	QDomElement tag;
 	QString str;
@@ -89,7 +87,7 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCVCLabel)
 	{
-		cout << "Label node not found!" << endl;
+		qDebug() << "Label node not found!";
 		return false;
 	}
 
@@ -113,9 +111,7 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else
 		{
-			cout << "Unknown label tag: "
-			     << tag.tagName().toStdString()
-			     << endl;
+			qDebug() << "Unknown label tag:" << tag.tagName();
 		}
 		
 		node = node.nextSibling();
