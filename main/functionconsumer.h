@@ -63,9 +63,7 @@ public:
 public:
 	enum TimerType
 	{
-#ifndef __APPLE__
 		RTCTimer,
-#endif
 		NanoSleepTimer
 	};
 

@@ -11,7 +11,9 @@ CONFIG          += plugin warn_on release
 
 unix:target.path	= /usr/lib/qlc/input
 win32:target.path	= C:\QLC\plugins\Input
-INSTALLS	+= target
+!macx:INSTALLS	+= target
+
+macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
 
 ###############################################################################
 # Linking

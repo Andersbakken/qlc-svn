@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QApplication>
 #include <QTextBrowser>
 #include <QVBoxLayout>
 #include <QSettings>
@@ -70,9 +71,13 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 		m_browser, SLOT(home()));
 	
 	/* Set the documentation source */
+#ifdef __APPLE__
+	m_browser->setSource(QUrl(QApplication::applicationDirPath() + QString("/../docs/index.html")));
+#else
 	QSettings s;
 	QString docs = s.value("directories/documentation").toString();
 	m_browser->setSource(QUrl(docs + QString("/index.html")));
+#endif
 }
 
 QLCDocBrowser::~QLCDocBrowser()

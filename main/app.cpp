@@ -790,6 +790,17 @@ void App::initActions()
 		this, SLOT(slotHelpAboutQt()));
 }
 
+QMenuBar* App::menuBar() {
+#ifdef __APPLE__
+        static QMenuBar *mainMenuBar = NULL;
+	if (mainMenuBar == NULL)
+		mainMenuBar = new QMenuBar(0);
+	return mainMenuBar;
+#else
+	return QMainWindow::menuBar();
+#endif
+}
+
 void App::initMenuBar()
 {
 	/* File Menu */

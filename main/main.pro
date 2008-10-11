@@ -6,11 +6,15 @@ CONFIG          += qt warn_on release
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
+macx:LIBS 	+= -L./qlc.app/Contents/Frameworks -lqlccommon
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
 win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
+macx:ICON	= ../gfx/qlc.icns
+macx:QMAKE_INFO_PLIST = ./Info.plist
 
 unix:target.path = /usr/bin
 win32:target.path = C:\QLC
+macx:target.path = /Applications
 INSTALLS	+= target
 
 RESOURCES 	+= main.qrc
@@ -159,3 +163,10 @@ SOURCES += aboutbox.cpp \
            virtualconsole.cpp \
            virtualconsoleproperties.cpp \
            xychannelunit.cpp
+
+macx {
+        system(mkdir -p qlc.app/Contents/Frameworks)
+        LIBS_PATH = ../libs/common/libqlccommon*.dylib
+        system(cp $$LIBS_PATH qlc.app/Contents/Frameworks)
+	QMAKE_POST_LINK = install_name_tool -change libqlccommon.3.dylib @executable_path/../Frameworks/libqlccommon.3.dylib qlc.app/Contents/MacOS/qlc
+}

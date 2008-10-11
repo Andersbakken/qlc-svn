@@ -8,7 +8,8 @@ PKGCONFIG	+= liblla
 
 unix:target.path	= /usr/lib/qlc/output
 win32:target.path	= C:/QLC/Plugins/Output
-INSTALLS	+= target
+!macx:INSTALLS	+= target
+macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 
 # Source
 HEADERS += configurellaout.h \

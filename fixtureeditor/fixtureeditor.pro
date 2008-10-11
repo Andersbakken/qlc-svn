@@ -8,6 +8,7 @@ QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS	+= -L../libs/common -lqlccommon
+macx:LIBS	+= -L./qlc-fixtureeditor.app/Contents/Frameworks -lqlccommon
 win32:release {
 LIBS 	+= -L../libs/common/release/ -lqlccommon
 }
@@ -17,6 +18,7 @@ LIBS 	+= -L../libs/common/debug/ -lqlccommon
 
 unix:target.path = /usr/bin
 win32:target.path = C:\QLC
+macx:target.path = /Applications
 INSTALLS 	+= target
 
 # Sources
@@ -42,3 +44,10 @@ SOURCES += aboutbox.cpp \
            editmode.cpp \
            fixtureeditor.cpp \
            main.cpp
+
+macx {
+	system(mkdir -p qlc-fixtureeditor.app/Contents/Frameworks)
+	LIBS_PATH = ../libs/common/libqlccommon*.dylib
+	system(cp $$LIBS_PATH qlc-fixtureeditor.app/Contents/Frameworks)
+	QMAKE_POST_LINK = install_name_tool -change libqlccommon.3.dylib @executable_path/../Frameworks/libqlccommon.3.dylib qlc-fixtureeditor.app/Contents/MacOS/qlc-fixtureeditor
+}

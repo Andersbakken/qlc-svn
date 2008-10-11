@@ -23,7 +23,10 @@
 #include "eventbuffer.h"
 
 #include <qapplication.h>
+// I think this include could safely be removed on all platforms.
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 #include <string.h>
 
 EventBuffer::EventBuffer(unsigned int eventSize, unsigned int bufferSize) :

@@ -62,6 +62,9 @@ InputMap::~InputMap()
 
 void InputMap::load()
 {
+#ifdef __APPLE__
+	QDir dir(QApplication::applicationDirPath() + "/../Plugins/input", "*.dylib", QDir::Name, QDir::Files);
+#else
 	QSettings s;
 	
 	QString pluginPath = s.value("directories/plugins").toString();
@@ -80,6 +83,7 @@ void InputMap::load()
 #else
 	QDir dir(pluginPath + "/input", "*.so", QDir::Name, QDir::Files);
 #endif
+#endif // !__APPLE__
 
 	/* Check that we can access the directory */
 	if (dir.exists() == false)

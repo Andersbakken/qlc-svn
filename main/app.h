@@ -264,6 +264,7 @@ protected:
 	void initMenuBar();
 	void initToolBar();
 	void initStatusBar();
+	QMenuBar *menuBar();
 
 public slots:
 	bool slotFileNew();

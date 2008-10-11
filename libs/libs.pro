@@ -6,8 +6,8 @@ SUBDIRS		+= common
 # Output plugins
 SUBDIRS         += usbdmxout
 unix:SUBDIRS	+= dmx4linuxout
-unix:SUBDIRS	+= llaout
+!mac:unix:SUBDIRS	+= llaout
 
 # Input plugins
 SUBDIRS		+= midiinput
-unix:SUBDIRS    += hidinput
+!mac:unix:SUBDIRS    += hidinput

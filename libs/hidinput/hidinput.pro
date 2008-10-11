@@ -6,7 +6,8 @@ INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin warn_on debug_and_release build_all
 
 target.path	= /usr/lib/qlc/input
-INSTALLS	+= target
+!macx:INSTALLS	+= target
+macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
 
 # Input
 HEADERS += configurehidinput.h \

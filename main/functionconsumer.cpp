@@ -53,9 +53,13 @@ FunctionConsumer::FunctionConsumer(OutputMap* outputMap) : QThread()
 	Q_ASSERT(outputMap != NULL);
 	m_outputMap = outputMap;
 
+#ifndef __APPLE__
 #ifdef X11
 	m_timerType = RTCTimer;
 	m_fdRTC = -1;
+#else
+	m_timerType = NanoSleepTimer;
+#endif
 #else
 	m_timerType = NanoSleepTimer;
 #endif
@@ -85,6 +89,7 @@ bool FunctionConsumer::setTimerType(TimerType type)
 
 	switch (type)
 	{
+#ifndef __APPLE__
 #ifdef X11
 	case RTCTimer:
 		/* Test that we can use RTC */
@@ -93,6 +98,7 @@ bool FunctionConsumer::setTimerType(TimerType type)
 			closeRTC();
 		m_timerType = type;
 		break;
+#endif
 #endif
 	default:
 	case NanoSleepTimer:

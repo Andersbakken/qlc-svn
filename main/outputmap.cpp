@@ -70,6 +70,9 @@ OutputMap::~OutputMap()
 
 void OutputMap::load()
 {
+#ifdef __APPLE__
+	QDir dir(QApplication::applicationDirPath() + "/../Plugins/output", "*.dylib", QDir::Name, QDir::Files);
+#else
 	QSettings s;
 	
 	QString pluginPath = s.value("directories/plugins").toString();
@@ -88,6 +91,7 @@ void OutputMap::load()
 #else
 	QDir dir(pluginPath + "/output", "*.so", QDir::Name, QDir::Files);
 #endif
+#endif // !__APPLE__ 
 
 	/* Check that we can access the directory */
 	if (dir.exists() == false)
