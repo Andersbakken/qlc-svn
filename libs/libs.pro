@@ -4,9 +4,10 @@ TEMPLATE	= subdirs
 SUBDIRS		+= common
 
 # Output plugins
-SUBDIRS         += usbdmxout
-unix:SUBDIRS	+= dmx4linuxout
+!mac:SUBDIRS         	+= usbdmxout
+!mac:unix:SUBDIRS	+= dmx4linuxout
 !mac:unix:SUBDIRS	+= llaout
+!win32:SUBDIRS		+= serialdmx
 
 # Input plugins
 SUBDIRS		+= midiinput
