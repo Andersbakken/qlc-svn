@@ -45,6 +45,7 @@ class InputMap : public QObject
 
 	friend class InputPatch;
 	friend class InputMapEditor;
+	friend class InputPatchEditor;
 
 	/*********************************************************************
 	 * Initialization
@@ -61,11 +62,6 @@ public:
 	 * Destroy an InputMap object
 	 */
 	virtual ~InputMap();
-
-	/**
-	 * Load all input plugins from the input plugin directory
-	 */
-	void load();
 
 	/*********************************************************************
 	 * Input data
@@ -105,13 +101,13 @@ public:
 	 * @param universe The input universe to patch
 	 * @param pluginName The name of the plugin to patch to the universe
 	 * @param input An input universe provided by the plugin to patch to
-	 * @param deviceTemplate A template describing the device that is
-	 *                       sending the input events.
+	 * @param templateName The name of a template that describes the mapped
+	 *                     device
 	 * @return true if successful, otherwise false
 	 */
 	bool setPatch(t_input_universe universe,
 		      const QString& pluginName, t_input input,
-		      const QString& deviceTemplate = QString::null);
+		      const QString& templateName = QString::null);
 
 	/**
 	 * Get mapping for an input universe.
@@ -131,6 +127,16 @@ protected:
 	/*********************************************************************
 	 * Plugins
 	 *********************************************************************/
+public:
+	/** Get the directory used to store input plugins */
+	QString pluginPath() const;
+
+protected:
+	/**
+	 * Load all input plugins from the input plugin directory
+	 */
+	void loadPlugins();
+
 public:
 	/**
 	 * Get a list of available input plugins as a string list
@@ -186,6 +192,34 @@ protected:
 protected:
 	/** List containing all available input plugins */
 	QList <QLCInPlugin*> m_plugins;
+
+	/*********************************************************************
+	 * Device templates
+	 *********************************************************************/
+public:
+	/** Get the directory used to store input template files */
+	QString templatePath() const;
+
+protected:
+	/** Load all available device templates */
+	void loadTemplates();
+
+public:
+	/** Get a list of available device template names */
+	QStringList deviceTemplateNames();
+
+	/** Get a device template by its name */
+	QLCInputDevice* deviceTemplate(const QString& name);
+
+	/** Add a new device template */
+	void addDeviceTemplate(QLCInputDevice* deviceTemplate);
+
+	/** Remove an existing device template by its name and delete it */
+	void removeDeviceTemplate(const QString& name);
+	
+protected:
+	/** List that contains all available device templates */
+	QList <QLCInputDevice*> m_deviceTemplates;
 
 	/*********************************************************************
 	 * Save & Load

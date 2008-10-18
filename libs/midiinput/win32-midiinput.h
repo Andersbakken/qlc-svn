@@ -56,6 +56,7 @@ public:
 	 *********************************************************************/
 public:
 	void rescanDevices();
+	QStringList deviceNames() const;
 
 protected:
 	MIDIDevice* device(unsigned int index);

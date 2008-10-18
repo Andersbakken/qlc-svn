@@ -77,41 +77,30 @@ void ConfigureMIDIInput::slotRefreshClicked()
 
 void ConfigureMIDIInput::refreshList()
 {
-	QString s;
+	QTreeWidgetItem* item;
+	int i = 0;
 
 	m_list->clear();
 
-	for (int i = 0; i < m_plugin->m_devices.count(); i++)
+	QStringListIterator it(m_plugin->deviceNames());
+	while (it.hasNext() == true)
 	{
-		MIDIDevice* device;
-		QTreeWidgetItem* item;
-
-		device = m_plugin->device(i);
-		Q_ASSERT(device != NULL);
-
 		item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnNumber, s.setNum(i + 1));
-		item->setText(KColumnName, device->name());
+		item->setText(KColumnNumber, QString("%1").arg(i++));
+		item->setText(KColumnName, it.next());
 	}
 }
 
-void ConfigureMIDIInput::slotDeviceAdded(MIDIDevice*)
+void ConfigureMIDIInput::slotDeviceAdded(MIDIDevice* device)
 {
 	refreshList();
 }
 
 void ConfigureMIDIInput::slotDeviceRemoved(MIDIDevice* device)
 {
-	Q_ASSERT(device != NULL);
-
-	for (int i = 0; i < m_list->topLevelItemCount(); i++)
-	{
-		QTreeWidgetItem* item = m_list->topLevelItem(i);
-		Q_ASSERT(item != NULL);
-		if (item->text(KColumnName) == device->name())
-		{
-			delete item;
-			break;
-		}
-	}
+	QListIterator <QTreeWidgetItem*> it(m_list->findItems(device->name(),
+							      Qt::MatchExactly,
+							      KColumnName));
+	while (it.hasNext() == true)
+		delete it.next();
 }

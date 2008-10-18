@@ -22,14 +22,17 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
-#include <QDialog>
-#include "ui_inputmanager.h"
+#include <QWidget>
 #include "common/qlctypes.h"
+
+class QTreeWidgetItem;
+class QTreeWidget;
+class QToolBar;
 
 class InputPatch;
 class InputMap;
 
-class InputManager : public QWidget, public Ui_InputManager
+class InputManager : public QWidget
 {
 	Q_OBJECT
 	
@@ -38,9 +41,21 @@ class InputManager : public QWidget, public Ui_InputManager
 	 *********************************************************************/
 public:
 	InputManager(QWidget* parent);
-	~InputManager();
+	virtual ~InputManager();
+
+protected:
+	void setupUi();
 
 	/*********************************************************************
+	 * Toolbar
+	 *********************************************************************/
+protected slots:
+	void slotEditClicked();
+
+protected:
+	QToolBar* m_toolbar;
+
+	 /*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
 protected:
@@ -48,8 +63,8 @@ protected:
 	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
 			t_input_universe universe);
 
-protected slots:
-	void slotEditClicked();
+protected:
+	QTreeWidget* m_tree;
 };
 
 #endif

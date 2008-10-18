@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  inputpatcheditor.h
+  inputtemplateeditor.h
 
   Copyright (C) Heikki Junnila
 
@@ -19,21 +19,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef INPUTPATCHEDITOR_H
-#define INPUTPATCHEDITOR_H
+#ifndef INPUTTEMPLATEEDITOR_H
+#define INPUTTEMPLATEEDITOR_H
 
 #include <QDialog>
+#include "ui_inputtemplateeditor.h"
 
-#include <common/qlcinputdevice.h>
-#include <common/qlctypes.h>
+class QLCInputChannel;
+class QLCInputDevice;
 
-#include "ui_inputpatcheditor.h"
-
-class QStringList;
-class InputPatch;
-class InputMap;
-
-class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
+class InputTemplateEditor : public QDialog, public Ui_InputTemplateEditor
 {
 	Q_OBJECT
 
@@ -41,58 +36,36 @@ class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	InputPatchEditor(QWidget* parent, t_input_universe universe,
-			 InputPatch* patch);
-	~InputPatchEditor();
+	InputTemplateEditor(QWidget* parent, QLCInputDevice* deviceTemplate);
+	virtual ~InputTemplateEditor();
 
-protected slots:
+protected:
+	void fillTree();
+	void updateChannelItem(QTreeWidgetItem* item, QLCInputChannel* ch);
+
+	/********************************************************************
+	 * OK & Cancel
+	 ********************************************************************/
+public slots:
 	void accept();
 
-protected:
-	/** The input universe that is being edited */
-	t_input_universe m_universe;
-
-	/** The input patch that is being edited */
-	InputPatch* m_inputPatch;
-
 	/********************************************************************
-	 * Plugin page
+	 * Editing
 	 ********************************************************************/
-protected:
-	void setupMappingPage();
-	void fillMappingTree();
-
 protected slots:
-	void slotMappingCurrentItemChanged(QTreeWidgetItem* item);
-	void slotConfigureInputClicked();
+	void slotAddClicked();
+	void slotRemoveClicked();
+	void slotEditClicked();
+	void slotWizardClicked();
 
 	/********************************************************************
-	 * Template page
+	 * Template
 	 ********************************************************************/
+public:
+	const QLCInputDevice* deviceTemplate() const;
+
 protected:
-	void setupTemplatePage();
-	void fillTemplateTree();
-	void updateTemplateItem(const QString& name, QTreeWidgetItem* item);
-
-protected slots:
-	void slotTemplateItemChanged(QTreeWidgetItem* item, int column);
-	void slotAddTemplateClicked();
-	void slotRemoveTemplateClicked();
-	void slotEditTemplateClicked();
-
-	/********************************************************************
-	 * Selection
-	 ********************************************************************/
-protected:
-	/** Selected plugin */
-	QString m_pluginName;
-
-	/** Selected input */
-	QString m_inputName;
-	t_input m_input;
-	
-	/* Selected device template */
-	QString m_templateName;
+	QLCInputDevice* m_deviceTemplate;
 };
 
-#endif /* INPUTPATCHEDITOR_H */
+#endif

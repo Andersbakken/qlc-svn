@@ -43,8 +43,6 @@ InputPatch::~InputPatch()
 {
 	if (m_plugin != NULL && m_input != KInputInvalid)
 		m_plugin->close(m_input);
-
-	delete m_deviceTemplate;
 }
 
 /*****************************************************************************
@@ -52,26 +50,20 @@ InputPatch::~InputPatch()
  *****************************************************************************/
 
 void InputPatch::set(QLCInPlugin* plugin, t_input input,
-		     const QString& templatePath)
+		     QLCInputDevice* deviceTemplate)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
 	   the line has been assigned to more than one input universe */
 	if (m_plugin != NULL && m_input != KInputInvalid)
 		m_plugin->close(m_input);
 
-	delete m_deviceTemplate;
-
 	m_plugin = plugin;
 	m_input = input;
-	m_deviceTemplate = NULL;
+	m_deviceTemplate = deviceTemplate;
 
+	/* Open the assigned plugin input */
 	if (m_plugin != NULL && input != KInputInvalid)
 		m_plugin->open(m_input);
-
-	m_deviceTemplate = QLCInputDevice::load(
-		static_cast<InputMap*> (parent()), templatePath);
-	if (m_deviceTemplate != NULL)
-		m_deviceTemplate->setParent(this);
 }
 
 QString InputPatch::pluginName() const
@@ -90,9 +82,12 @@ QString InputPatch::inputName() const
 		return KInputNone;
 }
 
-QString InputPatch::deviceTemplateName() const
+QString InputPatch::templateName() const
 {
-	return KInputNone;
+	if (m_deviceTemplate != NULL)
+		return m_deviceTemplate->name();
+	else
+		return KInputNone;
 }
 
 /*****************************************************************************
@@ -130,6 +125,12 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
+	/* Device template */
+	tag = doc->createElement(KXMLQLCInputPatchDeviceTemplate);
+	root.appendChild(tag);
+	text = doc->createTextNode(templateName());
+	tag.appendChild(text);
+	
 	return true;
 }
 

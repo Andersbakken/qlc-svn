@@ -32,7 +32,9 @@ class QDomElement;
 class QString;
 
 #define KXMLQLCInputChannel "Channel"
+#define KXMLQLCInputChannelName "Name"
 #define KXMLQLCInputChannelType "Type"
+#define KXMLQLCInputChannelNumber "Number"
 #define KXMLQLCInputChannelAbsoluteFader "AbsoluteFader"
 #define KXMLQLCInputChannelRelativeFader "RelativeFader"
 #define KXMLQLCInputChannelButton "Button"
@@ -46,6 +48,7 @@ class QLC_DECLSPEC QLCInputChannel : public QObject
 	 ********************************************************************/
 public:
 	QLCInputChannel(QLCInputDevice* parent);
+	QLCInputChannel(const QLCInputChannel& channel);
 	virtual ~QLCInputChannel();
 
 	QLCInputChannel& operator=(QLCInputChannel& channel);
@@ -95,7 +98,7 @@ protected:
 	********************************************************************/
 public:
 	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* dev_root);
+	bool saveXML(QDomDocument* doc, QDomElement* root) const;
 };
 
 #endif

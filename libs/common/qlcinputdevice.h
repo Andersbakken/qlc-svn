@@ -44,10 +44,9 @@ class QLC_DECLSPEC QLCInputDevice : public QObject
 	/********************************************************************
 	 * Initialization
 	 ********************************************************************/
-protected:
-	 QLCInputDevice(QObject* parent);
-
 public:
+	QLCInputDevice(QObject* parent);
+	QLCInputDevice(const QLCInputDevice& inputDevice);
 	virtual ~QLCInputDevice();
 	
 	/********************************************************************
@@ -60,12 +59,18 @@ public:
 	void setModel(const QString& model);
 	QString model() const { return m_model; }
 
+	/** Get the device name (manufacturer - model) */
 	QString name() const;
+	
+	/** Get the path where the device template is stored in. Don't use
+	    this as a unique ID since this varies between platforms. */
+	QString path() const;
 
 protected:
 	QString m_manufacturer;
 	QString m_model;
-
+	QString m_path;
+	
 	/********************************************************************
 	 * Channels
 	 ********************************************************************/
@@ -73,20 +78,22 @@ public:
 	/**
 	 * Add a new channel to this device.
 	 *
-	 * @param channel The channel number that ich is attached to
-	 * @param ich The input channel to attach to the channel number
+	 * @param ich The input channel to add. The channel contains the channel
+	 *            number to map to. Any existing mapping is cleared.
 	 */
-	void addChannel(t_input_channel channel, QLCInputChannel* ich);
+	void addChannel(QLCInputChannel* ich);
 	
 	/**
-	 * Remove the given channel from this device
+	 * Remove the given channel mapping from this device. Does not delete
+	 * the instance.
 	 *
 	 * @param ich The channel object to remove
 	 */
 	void removeChannel(QLCInputChannel* ich);
 
 	/**
-	 * Remove a channel from the given channel number from this device
+	 * Remove a channel from the given channel number from this device.
+	 * Also deletes the instance.
 	 *
 	 * @param channel The channel number to remove
 	 */
@@ -112,17 +119,11 @@ protected:
 	 * Load & Save
 	 ********************************************************************/
 public:
-	/** Get all available input templates' names and file paths */
-	static void availableTemplates(QStringList* names, QStringList* paths);
-
-	/** Load an input template file just enough to get its name */
-	static QString loadXMLName(const QString& path);
-
 	/** Load an input template from the given path */
-	static QLCInputDevice* load(QObject* parent, const QString& path);
+	static QLCInputDevice* loader(QObject* parent, const QString& path);
 
-	/** Save an input template into the given file path */
-	bool saveXML(const QString& path);
+	/** Save an input template into a given file name */
+	bool saveXML(const QString& fileName);
 
 protected:
 	/** Load an input template from the given document */

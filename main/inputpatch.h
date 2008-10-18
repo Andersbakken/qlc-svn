@@ -54,7 +54,7 @@ public:
 	 ********************************************************************/
 public:
 	void set(QLCInPlugin* plugin, t_input input,
-		 const QString& templatePath = QString::null);
+		 QLCInputDevice* deviceTemplate);
 
 	QLCInPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
@@ -63,7 +63,7 @@ public:
 	QString inputName() const;
 
 	QLCInputDevice* deviceTemplate() const { return m_deviceTemplate; }
-	QString deviceTemplateName() const;
+	QString templateName() const;
 
 protected:
 	QLCInPlugin* m_plugin;

@@ -22,11 +22,14 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 #include <QStringList>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QToolBar>
 #include <QAction>
 #include <QDebug>
-#include <QMenu>
+#include <QIcon>
 
-#include "common/qlcinplugin.h"
+#include <common/qlcinplugin.h>
 
 #include "inputpatcheditor.h"
 #include "inputmanager.h"
@@ -37,24 +40,73 @@
 #define KColumnUniverse 0
 #define KColumnPlugin   1
 #define KColumnInput    2
-#define KColumnInputNum 3
-#define KColumnTemplate 4
+#define KColumnTemplate 3
+#define KColumnInputNum 4
 
 extern App* _app;
 
 InputManager::InputManager(QWidget* parent) : QWidget(parent)
 {
-	setupUi(this);
-
-	connect(m_edit, SIGNAL(clicked()), this, SLOT(slotEditClicked()));
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditClicked()));
-		
+	setupUi();
 	fillTree();
 }
 
 InputManager::~InputManager()
 {
+}
+
+void InputManager::setupUi()
+{
+	QStringList columns;
+
+	/* Create a new layout for this widget */
+	new QVBoxLayout(this);
+
+	/* Toolbar */
+	m_toolbar = new QToolBar(tr("Input Manager"), this);
+	m_toolbar->addAction(QIcon(":/edit.png"), tr("Edit Mapping"),
+			     this, SLOT(slotEditClicked()));
+	layout()->addWidget(m_toolbar);
+			     
+	/* Tree */
+	m_tree = new QTreeWidget(this);
+	layout()->addWidget(m_tree);
+	m_tree->setRootIsDecorated(false);
+	m_tree->setItemsExpandable(false);
+	m_tree->setSortingEnabled(false);
+	m_tree->setAllColumnsShowFocus(true);
+	columns << tr("Universe")
+		<< tr("Plugin")
+		<< tr("Input")
+		<< tr("Template");
+	m_tree->setHeaderLabels(columns);
+		
+	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditClicked()));
+	
+}
+
+/****************************************************************************
+ * Toolbar
+ ****************************************************************************/
+
+void InputManager::slotEditClicked()
+{
+	t_input_universe universe;
+	InputPatch* inputPatch;
+	QTreeWidgetItem* item;
+
+	item = m_tree->currentItem();
+	if (item == NULL)
+		return;
+
+	universe = item->text(KColumnUniverse).toInt() - 1;
+	inputPatch = _app->inputMap()->patch(universe);
+	Q_ASSERT(inputPatch != NULL);
+	
+	InputPatchEditor ipe(this, universe, inputPatch);
+	if (ipe.exec() == QDialog::Accepted)
+		updateItem(item, inputPatch, universe);
 }
 
 /*****************************************************************************
@@ -102,8 +154,7 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* inputPatch,
 			      QString("%1").arg(inputPatch->input() + 1));
 
 		/* Device template */
-		item->setText(KColumnTemplate,
-			      inputPatch->deviceTemplateName());
+		item->setText(KColumnTemplate, inputPatch->templateName());
 	}
 	else
 	{
@@ -111,33 +162,5 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* inputPatch,
 		item->setText(KColumnInput, KInputNone);
 		item->setText(KColumnInputNum, KInputNone);
 		item->setText(KColumnTemplate, KInputNone);
-	}
-}
- 
-void InputManager::slotEditClicked()
-{
-	t_input_universe universe;
-	InputPatch* inputPatch;
-	QTreeWidgetItem* item;
-
-	item = m_tree->currentItem();
-	if (item == NULL)
-		return;
-
-	universe = item->text(KColumnUniverse).toInt() - 1;
-	inputPatch = _app->inputMap()->patch(universe);
-	Q_ASSERT(inputPatch != NULL);
-	
-	InputPatchEditor ipe(this, universe, inputPatch->pluginName(),
-			     inputPatch->input());
-	if (ipe.exec() == QDialog::Accepted)
-	{
-		if (ipe.pluginName() != KInputNone &&
-		    ipe.pluginName().isEmpty() == false)
-		{
-			_app->inputMap()->setPatch(universe, ipe.pluginName(),
-						   ipe.input());
-			updateItem(item, inputPatch, universe);
-		}
 	}
 }

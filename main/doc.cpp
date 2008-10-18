@@ -300,8 +300,7 @@ bool Doc::saveXML(const QString& fileName)
 		/* Write buses */
 		Bus::saveXML(doc, &root);
 
-		/* Set the current file name and write the document
-		   into the stream */
+		/* Set file name and write the document to the stream */
 		m_fileName = fileName;
 		stream << doc->toString() << "\n";
 

@@ -29,14 +29,37 @@
 #include <QtXml>
 #include <QDir>
 
-#include "common/qlcinplugin.h"
-#include "common/qlctypes.h"
+#include <common/qlcinplugin.h>
+#include <common/qlctypes.h>
+#include <common/qlcfile.h>
 
 #include "inputpatch.h"
 #include "inputmap.h"
 #include "app.h"
 
 extern App* _app;
+
+/* These macros define platform-specific paths & extensions for input plugins */
+#ifdef WIN32
+	#define PLUGINPATH "%%SystemRoot%%\\QLC\\Plugins\\Input"
+	#define PLUGINEXT "*.dll"
+
+	#define TEMPLATEPATH "%%SystemRoot%%\\QLC\\InputTemplates"
+#endif
+
+#ifdef __APPLE__
+	#define PLUGINPATH "/../Plugins/Input"
+	#define PLUGINEXT "*.dylib"
+	
+	#define TEMPLATEPATH "/../InputTemplates"
+#endif
+
+#ifdef UNIX
+	#define PLUGINPATH "/usr/lib/qlc/input"
+	#define PLUGINEXT "*.so"
+	
+	#define TEMPLATEPATH "/usr/share/inputtemplates"
+#endif
 
 /*****************************************************************************
  * Initialization
@@ -47,7 +70,8 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 	m_universes = universes;
 
 	initPatch();
-	load();
+	loadPlugins();
+	loadTemplates();
 	loadDefaults();
 }
 
@@ -58,68 +82,6 @@ InputMap::~InputMap()
 
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
-}
-
-void InputMap::load()
-{
-#ifdef __APPLE__
-	QDir dir(QApplication::applicationDirPath() + "/../Plugins/input", "*.dylib", QDir::Name, QDir::Files);
-#else
-	QSettings s;
-	
-	QString pluginPath = s.value("directories/plugins").toString();
-	if (pluginPath.isEmpty() == true)
-	{
-#ifdef WIN32
-		pluginPath = "%%SystemRoot%%\\QLC\\Plugins";
-#else
-		pluginPath = "/usr/lib/qlc";
-#endif
-		s.setValue("directories/plugins", pluginPath);
-	}
-
-#ifdef WIN32
-	QDir dir(pluginPath + "\\Input", "*.dll", QDir::Name, QDir::Files);
-#else
-	QDir dir(pluginPath + "/input", "*.so", QDir::Name, QDir::Files);
-#endif
-#endif // !__APPLE__
-
-	/* Check that we can access the directory */
-	if (dir.exists() == false)
-	{
-		qWarning() << "Input plugin path" << dir.absolutePath()
-			   << "doesn't exist.";
-		return;
-	}
-	else if (dir.isReadable() == false)
-	{
-		qWarning() << "Input plugin path" << dir.absolutePath()
-			   << "is not accessible";
-		return;
-	}
-
-	/* Loop thru all files in the directory */
-	QStringList dirlist(dir.entryList());
-	QStringList::Iterator it;
-	for (it = dirlist.begin(); it != dirlist.end(); ++it)
-	{
-		QPluginLoader loader(dir.absoluteFilePath(*it), this);
-		QLCInPlugin* plugin;
-
-		plugin = qobject_cast<QLCInPlugin*> (loader.instance());
-		if (plugin == NULL)
-		{
-			qWarning() << "Unable to find an input plugin in"
-				   << dir.absoluteFilePath(*it);
-		}
-		else
-		{
-			plugin->init();
-			appendPlugin(plugin);
-			plugin->connectInputData(this);
-		}
-	}
 }
 
 /*****************************************************************************
@@ -184,19 +146,30 @@ void InputMap::initPatch()
 
 bool InputMap::setPatch(t_input_universe universe,
 			const QString& pluginName, t_input input,
-			const QString& deviceTemplate)
+			const QString& templateName)
 {
+	QLCInPlugin* ip;
+	QLCInputDevice* dev;
+
+	/* Check that the universe that we're doing mapping for is valid */
 	if (universe >= m_universes)
 	{
 		qWarning() << "Universe" << universe << "out of bounds.";
 		return false;
 	}
 
-	QLCInPlugin* ip = plugin(pluginName);
+	/* If the plugin is missing, mapping cannot be done */
+	ip = plugin(pluginName);
 	if (ip == NULL)
 		return false;
 
-	m_patch[universe]->set(ip, input);
+	/* If the template is missing, nothing disastrous happens */
+	dev = deviceTemplate(templateName);
+	if (dev == NULL)
+		qWarning() << "Input device template not found.";
+
+	/* Do the mapping */
+	m_patch[universe]->set(ip, input, dev);
 
 	return true;
 }
@@ -210,6 +183,53 @@ InputPatch* InputMap::patch(t_input_universe universe)
 /*****************************************************************************
  * Plugins
  *****************************************************************************/
+
+QString InputMap::pluginPath() const
+{
+	return QString(PLUGINPATH);
+}
+
+void InputMap::loadPlugins()
+{
+	/* Check that we can access the directory */
+	QDir dir(pluginPath(), PLUGINEXT, QDir::Name, QDir::Files);
+	if (dir.exists() == false)
+	{
+		qWarning() << "Input plugin path" << dir.absolutePath()
+			   << "doesn't exist.";
+		return;
+	}
+	else if (dir.isReadable() == false)
+	{
+		qWarning() << "Input plugin path" << dir.absolutePath()
+			   << "is not accessible";
+		return;
+	}
+
+	/* Loop thru all files in the directory */
+	QStringListIterator it(dir.entryList());
+	while (it.hasNext() == true)
+	{
+		QLCInPlugin* plugin;
+		QString path;
+
+		path = dir.absoluteFilePath(it.next());
+
+		QPluginLoader loader(path, this);
+		plugin = qobject_cast<QLCInPlugin*> (loader.instance());
+		if (plugin == NULL)
+		{
+			qWarning() << "Unable to find an input plugin from"
+				   << path;
+		}
+		else
+		{
+			plugin->init();
+			appendPlugin(plugin);
+			plugin->connectInputData(this);
+		}
+	}
+}
 
 QStringList InputMap::pluginNames()
 {
@@ -294,6 +314,95 @@ QLCInPlugin* InputMap::plugin(const QString& name)
 }
 
 /*****************************************************************************
+ * Device templates
+ *****************************************************************************/
+
+QString InputMap::templatePath() const
+{
+	return QString(TEMPLATEPATH);
+}
+
+void InputMap::loadTemplates()
+{
+	QDir dir(templatePath(), KExtInputTemplate, QDir::Name, QDir::Files);
+	if (dir.exists() == false)
+	{
+		qWarning() << "Input template path" << dir.absolutePath()
+			   << "doesn't exist.";
+		return;
+	}
+	else if (dir.isReadable() == false)
+	{
+		qWarning() << "Input template path" << dir.absolutePath()
+			   << "is not accessible";
+		return;
+	}
+
+	/* Go thru all found file entries and attempt to load an input
+	   template from each of them. */
+	QStringListIterator it(dir.entryList());
+	while (it.hasNext() == true)
+	{
+		QLCInputDevice* deviceTemplate;
+		QString path;
+
+		path = dir.absoluteFilePath(it.next());
+		deviceTemplate = QLCInputDevice::loader(this, path);
+
+		if (deviceTemplate != NULL)
+			m_deviceTemplates.append(deviceTemplate);
+		else
+			qWarning() << "Unable to find an input template from"
+				   << path;
+	}
+}
+
+QStringList InputMap::deviceTemplateNames()
+{
+	QStringList list;
+	QListIterator <QLCInputDevice*> it(m_deviceTemplates);
+	while (it.hasNext() == true)
+		list << it.next()->name();
+	return list;
+}
+
+QLCInputDevice* InputMap::deviceTemplate(const QString& name)
+{
+	QLCInputDevice* deviceTemplate;
+	QListIterator <QLCInputDevice*> it(m_deviceTemplates);
+	while (it.hasNext() == true)
+	{
+		deviceTemplate = it.next();
+		if (deviceTemplate->name() == name)
+			return deviceTemplate;
+	}
+	
+	return NULL;
+}
+
+void InputMap::addDeviceTemplate(QLCInputDevice* deviceTemplate)
+{
+	Q_ASSERT(deviceTemplate != NULL);
+	m_deviceTemplates.append(deviceTemplate);
+}
+
+void InputMap::removeDeviceTemplate(const QString& name)
+{
+	QLCInputDevice* deviceTemplate;
+	QMutableListIterator <QLCInputDevice*> it(m_deviceTemplates);
+	while (it.hasNext() == true)
+	{
+		deviceTemplate = it.next();
+		if (deviceTemplate->name() == name)
+		{
+			it.remove();
+			delete deviceTemplate;
+			break;
+		}
+	}
+}
+
+/*****************************************************************************
  * Save & Load
  *****************************************************************************/
 
@@ -352,6 +461,7 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 
 void InputMap::loadDefaults()
 {
+	QString templateName;
 	QSettings settings;
 	QString plugin;
 	QString input;
@@ -367,8 +477,13 @@ void InputMap::loadDefaults()
 		key = QString("/inputmap/universe%2/input/").arg(i);
 		input = settings.value(key).toString();
 
+		/* Input template */
+		key = QString("/inputmap/universe%2/template/").arg(i);
+		templateName = settings.value(key).toString();
+
+		/* Do the mapping */
 		if (plugin.length() > 0 && input.length() > 0)
-			setPatch(i, plugin, input.toInt());
+			setPatch(i, plugin, input.toInt(), templateName);
 	}
 }
 
@@ -383,24 +498,33 @@ void InputMap::saveDefaults()
 		InputPatch* pat = patch(i);
 		Q_ASSERT(pat != NULL);
 
+		/* Save empty values if the patch doesn't have a valid plugin */
 		if (pat->plugin() != NULL)
 		{
 			/* Plugin name */
 			key = QString("/inputmap/universe%2/plugin/").arg(i);
 			settings.setValue(key, pat->plugin()->name());
-			
+
 			/* Plugin input */
 			key = QString("/inputmap/universe%2/input/").arg(i);
 			settings.setValue(key, str.setNum(pat->input()));
+
+			/* Device template */
+			key = QString("/inputmap/universe%2/template/").arg(i);
+			settings.setValue(key, pat->templateName());
 		}
 		else
 		{
 			/* Plugin name */
 			key = QString("/inputmap/universe%2/plugin/").arg(i);
 			settings.setValue(key, "");
-			
+
 			/* Plugin input */
 			key = QString("/inputmap/universe%2/input/").arg(i);
+			settings.setValue(key, "");
+
+			/* Device template */
+			key = QString("/inputmap/universe%2/template/").arg(i);
 			settings.setValue(key, "");
 		}
 	}

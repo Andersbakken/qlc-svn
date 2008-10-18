@@ -35,10 +35,24 @@ QLCInputDevice::QLCInputDevice(QObject* parent) : QObject(parent)
 {
 }
 
+QLCInputDevice::QLCInputDevice(const QLCInputDevice& device)
+	: QObject (device.parent())
+{
+	setManufacturer(device.m_manufacturer);
+	setModel(device.m_model);
+	
+	QMapIterator <t_input_channel, QLCInputChannel*> it(device.m_channels);
+	while (it.hasNext() == true)
+	{
+		it.next();
+		addChannel(new QLCInputChannel(*(it.value())));
+	}
+}
+	
 QLCInputDevice::~QLCInputDevice()
 {
 }
-	
+
 /****************************************************************************
  * Device information
  ****************************************************************************/
@@ -58,35 +72,42 @@ QString QLCInputDevice::name() const
 	return QString("%1 - %2").arg(m_manufacturer).arg(m_model);
 }
 
+QString QLCInputDevice::path() const
+{
+	return m_path;
+}
+
 /****************************************************************************
  * Channels
  ****************************************************************************/
 
-void QLCInputDevice::addChannel(t_input_channel channel, QLCInputChannel* ich)
+void QLCInputDevice::addChannel(QLCInputChannel* ich)
 {
 	Q_ASSERT(ich != NULL);
-	m_channels.insert(channel, ich);
+
+	/* Remove & delete the previous mapping if such exists */
+	if (m_channels.contains(ich->channel()) == true)
+		removeChannel(ich->channel());
+
+	m_channels.insert(ich->channel(), ich);
 }
 	
 void QLCInputDevice::removeChannel(QLCInputChannel* ich)
 {
 	Q_ASSERT(ich != NULL);
 
-	QMapIterator <t_input_channel, QLCInputChannel*> it(m_channels);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		if (it.value() == ich)
-		{
-			m_channels.remove(it.key());
-			break;
-		}
-	}
+	/* Just remove the channel from the list, but don't delete */
+	if (m_channels.contains(ich->channel()) == true)
+		m_channels.remove(ich->channel());
 }
 
 void QLCInputDevice::removeChannel(t_input_channel channel)
 {
-	m_channels.remove(channel);
+	if (m_channels.contains(channel) == true)
+	{
+		QLCInputChannel* ich = m_channels.take(channel);
+		delete ich;
+	}
 }
 
 QLCInputChannel* QLCInputDevice::channel(t_input_channel channel)
@@ -101,84 +122,7 @@ QLCInputChannel* QLCInputDevice::channel(t_input_channel channel)
  * Load & Save
  ****************************************************************************/
 
-void QLCInputDevice::availableTemplates(QStringList* names, QStringList* paths)
-{
-#ifdef WIN32
-	QDir dir("C:/QLC/InputTemplates/");
-#else
-	QDir dir("/usr/share/inputtemplates/");
-#endif
-	QStringList nameFilters;
-	QStringList entries;
-	QStringList::iterator it;
-	QString name, path;
-
-	nameFilters << "*.qxi";
-	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
-	for (it = entries.begin(); it != entries.end(); ++it)
-	{
-		path = dir.absolutePath() + QDir::separator() + *it;
-		name = QLCInputDevice::loadXMLName(path);
-		
-		if (path.isEmpty() == false && name.isEmpty() == false)
-		{
-			*names << name;
-			*paths << path;
-		}
-	}
-}
-
-QString QLCInputDevice::loadXMLName(const QString& path)
-{
-	QDomDocument* doc = NULL;
-	QDomElement root;
-	QDomElement tag;
-	QDomNode node;
-	QString make;
-	QString model;
-	int i = 0;
-
-	if (QLCFile::readXML(path, &doc) == false)
-		return QString::null;
-	Q_ASSERT(doc != NULL);
-
-	root = doc->documentElement();
-	if (root.tagName() == KXMLQLCInputTemplate)
-	{
-		node = root.firstChild();
-		while (node.isNull() == false)
-		{
-			tag = node.toElement();
-			if (tag.tagName() == KXMLQLCInputTemplateManufacturer)
-			{
-				make = tag.text();
-				i |= 0x1;
-			}
-			else if (tag.tagName() == KXMLQLCInputTemplateModel)
-			{
-				model = tag.text();
-				i |= 0x2;
-			}
-
-			/* Bail out after we've had a make & model tag */
-			if (i == 0x3)
-				break;
-			else
-				node = node.nextSibling();
-		}
-		
-		delete doc;
-		return QString("%1 - %2").arg(make).arg(model);
-	}
-	else
-	{
-		qDebug() << "Input template node not found in file!";
-		delete doc;
-		return QString::null;
-	}
-}
-
-QLCInputDevice* QLCInputDevice::load(QObject* parent, const QString& path)
+QLCInputDevice* QLCInputDevice::loader(QObject* parent, const QString& path)
 {
 	QLCInputDevice* device = NULL;
 	QDomDocument* doc = NULL;
@@ -192,6 +136,10 @@ QLCInputDevice* QLCInputDevice::load(QObject* parent, const QString& path)
 	{
 		delete device;
 		device = NULL;
+	}
+	else
+	{
+		device->m_path = path;
 	}
 
 	delete doc;
@@ -230,7 +178,7 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 				QLCInputChannel* ich;
 				ich = new QLCInputChannel(this);
 				if (ich->loadXML(doc, &tag) == TRUE)
-					addChannel(ich->channel(), ich);
+					addChannel(ich);
 				else
 					delete ich;
 			}
@@ -246,7 +194,56 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 	return true;
 }
 
-bool QLCInputDevice::saveXML(const QString& path)
+bool QLCInputDevice::saveXML(const QString& fileName)
 {
-	return false;
+	QDomDocument* doc = NULL;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	bool retval = false;
+
+	QFile file(fileName);
+	if (file.open(QIODevice::WriteOnly) == false)
+		return false;
+
+	if (QLCFile::getXMLHeader(KXMLQLCInputTemplate, &doc) == true)
+	{
+		/* Create a text stream for the file */
+		QTextStream stream(&file);
+
+		/* THE MASTER XML ROOT NODE */
+		root = doc->documentElement();
+
+		/* Manufacturer */
+		tag = doc->createElement(KXMLQLCInputTemplateManufacturer);
+		text = doc->createTextNode(m_manufacturer);
+		tag.appendChild(text);
+
+		/* Model */
+		tag = doc->createElement(KXMLQLCInputTemplateModel);
+		text = doc->createTextNode(m_model);
+		tag.appendChild(text);
+
+		/* Write channels to the document */
+		QMapIterator <t_input_channel, QLCInputChannel*> it(m_channels);
+		while (it.hasNext() == true)
+			it.next().value()->saveXML(doc, &root);
+
+		/* Write the document into the stream */
+		m_path = fileName;
+		stream << doc->toString() << "\n";
+
+		/* Delete the XML document */
+		delete doc;
+
+		retval = true;
+	}
+	else
+	{
+		retval = false;
+	}
+
+	file.close();
+
+	return retval;
 }

@@ -35,6 +35,14 @@ QLCInputChannel::QLCInputChannel(QLCInputDevice* parent) : QObject(parent)
 	m_channel = 0;
 }
 
+QLCInputChannel::QLCInputChannel(const QLCInputChannel& channel)
+	: QObject(channel.parent())
+{
+	m_name = channel.m_name;
+	m_type = channel.m_type;
+	m_channel = channel.m_channel;
+}
+
 QLCInputChannel::~QLCInputChannel()
 {
 }
@@ -108,10 +116,75 @@ void QLCInputChannel::setName(const QString& name)
 
 bool QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
 {
-	return FALSE;
+	QDomElement tag;
+	QDomNode node;
+
+	Q_ASSERT(root != NULL);
+
+	/* Verify that the tag contains an input channel */
+	if (root->tagName() != KXMLQLCInputChannel)
+	{
+		qWarning() << "Channel node not found";
+		return false;
+	}
+	
+	/* Get the channel number */
+	setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
+
+	/* Go thru all sub tags */
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCInputChannelName)
+		{
+			setName(tag.text());
+		}
+		else if (tag.tagName() == KXMLQLCInputChannelType)
+		{
+			setType(stringToType(tag.text()));
+		}
+		else
+		{
+			qDebug() << "Unknown input channel tag"
+				 << tag.tagName();
+		}
+
+		node = node.nextSibling();
+	}
+	
+	return true;
 }
 
-bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* dev_root)
+bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 {
-	return FALSE;
+	QDomElement subtag;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	/* The channel tag */
+	tag = doc->createElement(KXMLQLCInputChannel);
+	root->appendChild(tag);
+
+	/* Channel number */
+	tag.setAttribute(KXMLQLCInputChannelNumber,
+			 QString("%1").arg(m_channel));
+
+	/* Name */
+	subtag = doc->createElement(KXMLQLCInputChannelName);
+	tag.appendChild(subtag);
+	text = doc->createTextNode(m_name);
+	subtag.appendChild(text);
+
+	/* Type */
+	subtag = doc->createElement(KXMLQLCInputChannelType);
+	tag.appendChild(subtag);
+	text = doc->createTextNode(typeToString(m_type));
+	subtag.appendChild(text);
+	
+	return true;
 }

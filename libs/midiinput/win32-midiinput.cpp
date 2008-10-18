@@ -25,6 +25,7 @@
 #include <QPalette>
 #include <QDebug>
 
+#include "configuremidiinput.h"
 #include "win32-mididevice.h"
 #include "win32-midiinput.h"
 
@@ -90,10 +91,24 @@ void MIDIInput::close(t_input input)
 void MIDIInput::rescanDevices()
 {
 	UINT deviceCount;
-	
+
+	/* Destroy existing devices in case something has changed */
+	while (m_devices.isEmpty() == false)
+		removeDevice(m_devices.takeFirst());
+
+	/* Create devices for each valid midi input */
 	deviceCount = midiInGetNumDevs();
 	for (UINT id = 0; id < deviceCount; id++)
 		addDevice(new MIDIDevice(this, id));
+}
+
+QStringList MIDIInput::deviceNames() const
+{
+	QStringList list;
+	QListIterator <MIDIDevice*> it(m_devices);
+	while (it.hasNext() == true)
+		list << it.next()->name();
+	return list;
 }
 
 MIDIDevice* MIDIInput::device(unsigned int index)
@@ -153,8 +168,8 @@ QStringList MIDIInput::inputs()
 
 void MIDIInput::configure()
 {
-	//ConfigureMIDIInput cmi(NULL, this);
-	//cmi.exec();
+	ConfigureMIDIInput cmi(NULL, this);
+	cmi.exec();
 }
 
 /*****************************************************************************

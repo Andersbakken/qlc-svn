@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>466</height>
+    <width>436</width>
+    <height>345</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -14,109 +14,169 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
-    <widget class="QGroupBox" name="m_mappingGroup" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QTabWidget" name="m_tab" >
+     <property name="currentIndex" >
+      <number>0</number>
      </property>
-     <property name="title" >
-      <string>Mapping</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout" >
-      <item row="0" column="0" >
-       <widget class="QTreeWidget" name="m_tree" >
-        <column>
-         <property name="text" >
-          <string>Inputs</string>
+     <widget class="QWidget" name="Mapping" >
+      <attribute name="title" >
+       <string>Mapping</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2" >
+       <item>
+        <widget class="QTreeWidget" name="m_mapTree" >
+         <column>
+          <property name="text" >
+           <string>Inputs</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="m_infoGroup" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-        </column>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="m_infoGroup" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title" >
-      <string>Input Information</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2" >
-      <item rowspan="2" row="0" column="0" >
-       <widget class="QTextBrowser" name="m_infoBrowser" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Ignored" hsizetype="Expanding" >
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" >
-       <widget class="QToolButton" name="m_configureButton" >
-        <property name="text" >
-         <string>...</string>
-        </property>
-        <property name="iconSize" >
-         <size>
-          <width>26</width>
-          <height>26</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" >
-       <spacer name="verticalSpacer" >
-        <property name="orientation" >
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType" >
-         <enum>QSizePolicy::Maximum</enum>
-        </property>
-        <property name="sizeHint" stdset="0" >
-         <size>
-          <width>20</width>
-          <height>54</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-     <zorder>m_infoBrowser</zorder>
-     <zorder>m_configureButton</zorder>
-     <zorder>m_deviceCombo</zorder>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="m_deviceGroup" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title" >
-      <string>Device Template</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2" >
-      <item>
-       <widget class="QComboBox" name="m_deviceCombo" >
-        <property name="toolTip" >
-         <string>Select a device template that describes the functions of the selected input device</string>
-        </property>
-        <property name="whatsThis" >
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
+         <property name="title" >
+          <string>Input Information</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2" >
+          <item row="1" column="1" >
+           <spacer name="verticalSpacer" >
+            <property name="orientation" >
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType" >
+             <enum>QSizePolicy::Maximum</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>20</width>
+              <height>54</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item rowspan="2" row="0" column="0" >
+           <widget class="QTextBrowser" name="m_infoBrowser" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Ignored" hsizetype="Expanding" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" >
+           <widget class="QToolButton" name="m_configureButton" >
+            <property name="text" >
+             <string>...</string>
+            </property>
+            <property name="iconSize" >
+             <size>
+              <width>26</width>
+              <height>26</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="Template" >
+      <attribute name="title" >
+       <string>Template</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout" >
+       <item rowspan="4" row="0" column="0" >
+        <widget class="QTreeWidget" name="m_templateTree" >
+         <property name="rootIsDecorated" >
+          <bool>false</bool>
+         </property>
+         <property name="itemsExpandable" >
+          <bool>false</bool>
+         </property>
+         <property name="allColumnsShowFocus" >
+          <bool>true</bool>
+         </property>
+         <property name="expandsOnDoubleClick" >
+          <bool>false</bool>
+         </property>
+         <column>
+          <property name="text" >
+           <string>Template</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="0" column="1" >
+        <widget class="QToolButton" name="m_addTemplateButton" >
+         <property name="toolTip" >
+          <string>Create a new input device template</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" >
+        <widget class="QToolButton" name="m_removeTemplateButton" >
+         <property name="toolTip" >
+          <string>Delete the selected device template</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" >
+        <widget class="QToolButton" name="m_editTemplateButton" >
+         <property name="toolTip" >
+          <string>Edit the selected device template</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" >
+        <spacer name="verticalSpacer_2" >
+         <property name="orientation" >
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>20</width>
+           <height>170</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
