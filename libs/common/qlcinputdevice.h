@@ -45,10 +45,18 @@ class QLC_DECLSPEC QLCInputDevice : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
+	/** Standard constructor */
 	QLCInputDevice(QObject* parent);
-	QLCInputDevice(const QLCInputDevice& inputDevice);
-	virtual ~QLCInputDevice();
 	
+	/** Copy constructor */
+	QLCInputDevice(const QLCInputDevice& inputDevice);
+	
+	/** Destructor */
+	virtual ~QLCInputDevice();
+
+	/** Assignment operator */
+	QLCInputDevice& operator=(const QLCInputDevice& inputDevice);
+
 	/********************************************************************
 	 * Device information
 	 ********************************************************************/
@@ -76,7 +84,7 @@ protected:
 	 ********************************************************************/
 public:
 	/**
-	 * Add a new channel to this device.
+	 * Add a new channel to this device and claim ownership of the channel.
 	 *
 	 * @param ich The input channel to add. The channel contains the channel
 	 *            number to map to. Any existing mapping is cleared.

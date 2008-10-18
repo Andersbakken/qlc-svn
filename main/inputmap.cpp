@@ -41,22 +41,22 @@ extern App* _app;
 
 /* These macros define platform-specific paths & extensions for input plugins */
 #ifdef WIN32
-	#define PLUGINPATH "%%SystemRoot%%\\QLC\\Plugins\\Input"
-	#define PLUGINEXT "*.dll"
+	#define PLUGINPATH "C:\\QLC\\Plugins\\Input"
+	#define PLUGINEXT ".dll"
 
-	#define TEMPLATEPATH "%%SystemRoot%%\\QLC\\InputTemplates"
+	#define TEMPLATEPATH "C:\\QLC\\InputTemplates"
 #endif
 
 #ifdef __APPLE__
 	#define PLUGINPATH "/../Plugins/Input"
-	#define PLUGINEXT "*.dylib"
+	#define PLUGINEXT ".dylib"
 	
 	#define TEMPLATEPATH "/../InputTemplates"
 #endif
 
 #ifdef UNIX
 	#define PLUGINPATH "/usr/lib/qlc/input"
-	#define PLUGINEXT "*.so"
+	#define PLUGINEXT ".so"
 	
 	#define TEMPLATEPATH "/usr/share/inputtemplates"
 #endif
@@ -191,8 +191,11 @@ QString InputMap::pluginPath() const
 
 void InputMap::loadPlugins()
 {
+	/* Find plugins from pluginPath(), sort by name, get regular files */
+	QDir dir(pluginPath(), QString("*%1").arg(PLUGINEXT),
+		 QDir::Name, QDir::Files);
+
 	/* Check that we can access the directory */
-	QDir dir(pluginPath(), PLUGINEXT, QDir::Name, QDir::Files);
 	if (dir.exists() == false)
 	{
 		qWarning() << "Input plugin path" << dir.absolutePath()
@@ -324,7 +327,11 @@ QString InputMap::templatePath() const
 
 void InputMap::loadTemplates()
 {
-	QDir dir(templatePath(), KExtInputTemplate, QDir::Name, QDir::Files);
+	/* Find *.qxi from templatePath(), sort by name, get regular files */
+	QDir dir(templatePath(), QString("*%1").arg(KExtInputTemplate),
+		 QDir::Name, QDir::Files);
+
+	/* Check that we can access the directory */
 	if (dir.exists() == false)
 	{
 		qWarning() << "Input template path" << dir.absolutePath()

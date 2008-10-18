@@ -38,19 +38,32 @@ QLCInputDevice::QLCInputDevice(QObject* parent) : QObject(parent)
 QLCInputDevice::QLCInputDevice(const QLCInputDevice& device)
 	: QObject (device.parent())
 {
-	setManufacturer(device.m_manufacturer);
-	setModel(device.m_model);
-	
-	QMapIterator <t_input_channel, QLCInputChannel*> it(device.m_channels);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		addChannel(new QLCInputChannel(*(it.value())));
-	}
+	/* Copy contents with operator=() */
+	*this = device;
 }
 	
 QLCInputDevice::~QLCInputDevice()
 {
+	/* No need to delete the channels in m_channels since they are
+	   QLCInputDevice class' children and will be deleted when this
+	   class is destroyed. */
+}
+
+QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
+{
+	if (this != &device)
+	{
+		m_manufacturer = device.m_manufacturer;
+		m_model = device.m_model;
+		m_path = device.m_path;
+
+		QMapIterator <t_input_channel,QLCInputChannel*> 
+			it(device.m_channels);
+		while (it.hasNext() == true)
+			addChannel(new QLCInputChannel(*(it.next().value())));
+	}
+
+	return *this;
 }
 
 /****************************************************************************
@@ -90,6 +103,9 @@ void QLCInputDevice::addChannel(QLCInputChannel* ich)
 		removeChannel(ich->channel());
 
 	m_channels.insert(ich->channel(), ich);
+	
+	/* Claim ownership of the channel */
+	ich->setParent(this);
 }
 	
 void QLCInputDevice::removeChannel(QLCInputChannel* ich)
@@ -216,11 +232,13 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 
 		/* Manufacturer */
 		tag = doc->createElement(KXMLQLCInputTemplateManufacturer);
+		root.appendChild(tag);
 		text = doc->createTextNode(m_manufacturer);
 		tag.appendChild(text);
 
 		/* Model */
 		tag = doc->createElement(KXMLQLCInputTemplateModel);
+		root.appendChild(tag);
 		text = doc->createTextNode(m_model);
 		tag.appendChild(text);
 

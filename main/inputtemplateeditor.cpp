@@ -26,6 +26,8 @@
 #include <QDialog>
 #include <QDebug>
 #include <QIcon>
+#include <QFile>
+#include <QDir>
 
 #include <common/qlcinputchannel.h>
 #include <common/qlcinputdevice.h>
@@ -45,11 +47,6 @@ InputTemplateEditor::InputTemplateEditor(QWidget* parent,
 					 QLCInputDevice* deviceTemplate)
 	: QDialog(parent)
 {
-	if (deviceTemplate == NULL)
-		m_deviceTemplate = new QLCInputDevice(this);
-	else
-		m_deviceTemplate = new QLCInputDevice(*deviceTemplate);
-
 	setupUi(this);
 	
 	/* Set icons to buttons */
@@ -67,6 +64,25 @@ InputTemplateEditor::InputTemplateEditor(QWidget* parent,
 		this, SLOT(slotEditClicked()));
 	connect(m_wizardButton, SIGNAL(clicked()),
 		this, SLOT(slotWizardClicked()));
+
+	if (deviceTemplate == NULL)
+	{
+		m_deviceTemplate = new QLCInputDevice(this);
+	}
+	else
+	{
+		m_deviceTemplate = new QLCInputDevice(*deviceTemplate);
+		if ((QFile::permissions(m_deviceTemplate->path()) &
+		     QFile::WriteUser) == 0)
+		{
+			QMessageBox::warning(this, tr("File not writable"),
+				tr("You do not have permission to write to "
+				   "the file %1. You might not be able to "
+				   "save your modifications to the template.")
+				   .arg(QDir::toNativeSeparators(
+						m_deviceTemplate->path())));
+		}
+	}
 
 	/* Device manufacturer & model */
 	m_manufacturerEdit->setText(m_deviceTemplate->manufacturer());

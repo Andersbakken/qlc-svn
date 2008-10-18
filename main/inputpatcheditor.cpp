@@ -334,14 +334,16 @@ edit:
 		{
 			r = QMessageBox::question(this, tr("Overwrite file?"),
 				tr("The file %1 already exists. Do you want "
-				   "to overwrite it?").arg(path),
+				   "to overwrite it?")
+				   .arg(QDir::toNativeSeparators(path)),
 				   QMessageBox::Yes | QMessageBox::No);
 		}
 		else
 		{
 			r = QMessageBox::question(this, tr("Write to file?"),
 				tr("The template will be saved to %1.\n"
-				   "Click OK to confirm.").arg(path),
+				   "Click OK to confirm.")
+				   .arg(QDir::toNativeSeparators(path)),
 				   QMessageBox::Ok | QMessageBox::Cancel);
 		}
 
@@ -362,7 +364,8 @@ edit:
 			if (dt->saveXML(path) == false)
 			{
 				QMessageBox::warning(this, tr("Saving failed"),
-					tr("Unable to save to %1").arg(path));
+					tr("Unable to save the template to %1")
+					.arg(QDir::toNativeSeparators(path)));
 				delete dt;
 				goto edit;
 			}
@@ -400,12 +403,11 @@ void InputPatchEditor::slotRemoveTemplateClicked()
 
 	/* Ask for user confirmation */
 	r = QMessageBox::question(this, tr("Delete template"),
-				  tr("Do you wish to completely delete input "
-				     "template \"%1\"?\n\n"
-				     "The file \"%2\" will also be deleted.")
-				     .arg(deviceTemplate->name())
-				     .arg(deviceTemplate->path()),
-				     QMessageBox::Yes, QMessageBox::No);
+		tr("Do you wish to permanently delete template \"%1\"? "
+		"The file %2 containing the template will also be deleted.")
+		.arg(deviceTemplate->name())
+		.arg(QDir::toNativeSeparators(deviceTemplate->path())),
+		QMessageBox::Yes, QMessageBox::No);
 	if (r == QMessageBox::Yes)
 	{
 		/* Attempt to delete the file first */
@@ -447,12 +449,28 @@ void InputPatchEditor::slotEditTemplateClicked()
 
 	/* Edit the template and update the item if OK was pressed */
 	InputTemplateEditor ite(this, deviceTemplate);
+edit:
 	if (ite.exec() == QDialog::Accepted)
 	{
-		/* Get the template's name from the template itself since it
-		   may have changed making local variable "name" invalid */
-		updateTemplateItem(deviceTemplate->name(), item);
-		
-		/* TODO: Save the file */
+		/* Copy the channel's contents from the editor's copy to
+		   the actual object (with QLCInputDevice::operator=()). */
+		*deviceTemplate = *ite.deviceTemplate();
+
+		if (deviceTemplate->saveXML(deviceTemplate->path()) == true)
+		{
+			/* Get the template's name from the template itself
+			   since it may have changed making local variable
+			   "name" invalid */
+			updateTemplateItem(deviceTemplate->name(), item);
+		}
+		else
+		{
+			QMessageBox::warning(this, tr("Saving failed"),
+				tr("Unable to save %1 to %2")
+				.arg(deviceTemplate->name())
+				.arg(QDir::toNativeSeparators(
+					deviceTemplate->path())));
+			goto edit;
+		}
 	}
 }

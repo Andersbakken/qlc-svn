@@ -38,16 +38,14 @@ QLCInputChannel::QLCInputChannel(QLCInputDevice* parent) : QObject(parent)
 QLCInputChannel::QLCInputChannel(const QLCInputChannel& channel)
 	: QObject(channel.parent())
 {
-	m_name = channel.m_name;
-	m_type = channel.m_type;
-	m_channel = channel.m_channel;
+	*this = channel;
 }
 
 QLCInputChannel::~QLCInputChannel()
 {
 }
 
-QLCInputChannel& QLCInputChannel::operator=(QLCInputChannel& channel)
+QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
 {
 	if (this != &channel)
 	{
@@ -170,7 +168,7 @@ bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 	tag = doc->createElement(KXMLQLCInputChannel);
 	root->appendChild(tag);
 
-	/* Channel number */
+	/* Channel number attribute */
 	tag.setAttribute(KXMLQLCInputChannelNumber,
 			 QString("%1").arg(m_channel));
 

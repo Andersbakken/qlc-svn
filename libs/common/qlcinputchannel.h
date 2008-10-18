@@ -47,17 +47,26 @@ class QLC_DECLSPEC QLCInputChannel : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
+	/** Standard constructor */
 	QLCInputChannel(QLCInputDevice* parent);
+	
+	/** Copy constructor */
 	QLCInputChannel(const QLCInputChannel& channel);
+	
+	/** Destructor */
 	virtual ~QLCInputChannel();
 
-	QLCInputChannel& operator=(QLCInputChannel& channel);
+	/** Assignment operator */
+	QLCInputChannel& operator=(const QLCInputChannel& channel);
 	
 	/********************************************************************
 	 * Channel number
 	 ********************************************************************/
 public:
+	/** Set the channel number that this object represents */
 	void setChannel(t_input_channel channel);
+	
+	/** Get the channel number that this object represents */
 	t_input_channel channel() const { return m_channel; }
 
 protected:
@@ -74,12 +83,18 @@ public:
 		Button
 	};
 
+	/** Set the type of this channel (see enum Type) */
 	void setType(Type type);
+	
+	/** Get the type of this channel */
 	Type type() const { return m_type; }
 
+	/** Convert the given QLCInputChannel::Type to a QString */
 	static QString typeToString(Type type);
+
+	/** Convert the given QString to a QLCInputChannel::Type */
 	static Type stringToType(const QString& type);
-	
+
 protected:
 	Type m_type;
 
@@ -87,7 +102,10 @@ protected:
 	 * Name
 	 ********************************************************************/
 public:
+	/** Set the name of this this channel */
 	void setName(const QString& name);
+
+	/** Get the name of this channel */
 	QString name() const { return m_name; }
 	
 protected:
@@ -97,7 +115,10 @@ protected:
 	* Load & Save
 	********************************************************************/
 public:
+	/** Load this channel's contents from the given XML document */
 	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/** Save this channel's contents to the given XML document */
 	bool saveXML(QDomDocument* doc, QDomElement* root) const;
 };
 
