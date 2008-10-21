@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  configureserialdmx.cpp
+  configureftdidmx.cpp
   
   Copyright (c) Christopher Staite
  
@@ -27,9 +27,9 @@
 #include <QTimer>
 #include <QMap>
 
-#include "serialdmx.h"
-#include "serialdmxdevice.h"
-#include "configureserialdmx.h"
+#include "ftdidmx.h"
+#include "ftdidmxdevice.h"
+#include "configureftdidmx.h"
 
 #define KColumnName   0
 #define KColumnOutput 1
@@ -38,7 +38,7 @@
  * Initialization
  *****************************************************************************/
 
-ConfigureSerialDMXOut::ConfigureSerialDMXOut(QWidget* parent, SerialDMXOut* plugin)
+ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 	: QDialog(parent)
 {
 	Q_ASSERT(plugin != NULL);
@@ -57,7 +57,7 @@ ConfigureSerialDMXOut::ConfigureSerialDMXOut(QWidget* parent, SerialDMXOut* plug
 	refreshList();
 }
 
-ConfigureSerialDMXOut::~ConfigureSerialDMXOut()
+ConfigureFTDIDMXOut::~ConfigureFTDIDMXOut()
 {
 	slotTestToggled(false);
 }
@@ -66,7 +66,7 @@ ConfigureSerialDMXOut::~ConfigureSerialDMXOut()
  * Universe testing
  *****************************************************************************/
 
-void ConfigureSerialDMXOut::slotTestToggled(bool state)
+void ConfigureFTDIDMXOut::slotTestToggled(bool state)
 {
 	QTreeWidgetItem* item = NULL;
 
@@ -126,7 +126,7 @@ void ConfigureSerialDMXOut::slotTestToggled(bool state)
 	}
 }
 
-void ConfigureSerialDMXOut::slotTestTimeout()
+void ConfigureFTDIDMXOut::slotTestTimeout()
 {
 	t_value values[512];
 
@@ -148,18 +148,18 @@ void ConfigureSerialDMXOut::slotTestTimeout()
  * Interface refresh
  *****************************************************************************/
 
-void ConfigureSerialDMXOut::slotRefreshClicked()
+void ConfigureFTDIDMXOut::slotRefreshClicked()
 {
 	refreshList();
 }
 
-void ConfigureSerialDMXOut::refreshList()
+void ConfigureFTDIDMXOut::refreshList()
 {
 	t_output i = 0;
 
 	m_list->clear();
 
-	QMapIterator <t_output, SerialDMXDevice*> it(m_plugin->m_devices);
+	QMapIterator <t_output, FTDIDMXDevice*> it(m_plugin->m_devices);
 	while (it.hasNext() == true)
 	{
 		it.next();

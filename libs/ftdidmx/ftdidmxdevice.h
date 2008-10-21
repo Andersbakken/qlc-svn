@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  serialdmxdevice.h
+  ftdidmxdevice.h
   
   Copyright (c) Christopher Staite
   
@@ -19,16 +19,17 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERIALDMXDEVICE_H
-#define SERIALDMXDEVICE_H
+#ifndef FTDIDMXDEVICE_H
+#define FTDIDMXDEVICE_H
 
+#include "ftd2xx.h"
 #include <common/qlctypes.h>
 #include <QObject>
 #include <QMutex>
 #include <QTimer>
 #include <QString>
 
-class SerialDMXDevice : public QObject
+class FTDIDMXDevice : public QObject
 {
 	Q_OBJECT
 
@@ -36,8 +37,8 @@ class SerialDMXDevice : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	SerialDMXDevice(QObject* parent, const QString &path, t_output output);
-	virtual ~SerialDMXDevice();
+	FTDIDMXDevice(QObject* parent, const QString &path, t_output output);
+	virtual ~FTDIDMXDevice();
 
 	/********************************************************************
 	 * Properties
@@ -52,40 +53,15 @@ protected:
 	QString m_path;
 	t_output m_output;
 
-	/*******************************************************************
-	 * Device code
-	 *******************************************************************/
-	
-public slots:
-	void performDeviceWrite();
-	
-private:
-	bool detectDeviceType(const QString &path);
-	void applyDeviceOptions();
-	void dataChanged();
-
-protected:
-	QTimer *m_updateTimer;
-	
-	// How long should I wait between updates if no data is changed
-	// in milliseconds set to < 0 to only update on data change
-	int m_updateTimeout;
-	// Force the update to wait for timer rather than new data
-	bool m_forceTimeoutWait;
-	// Which function should I run to write the data to the device
-	// NOTE: the mutex is LOCKED when this function is called, and
-	//       automatically unlocked on return.  Therefore the values
-	//       will not change during execution.
-	void (*m_updateFunction)(t_value values[]);
-	int  (*m_openFunction)(const char *path);
-	int  (*m_closeFunction)();
-	
 	/********************************************************************
 	 * Open & close
 	 ********************************************************************/
 public:
 	bool open();
 	bool close();
+
+protected:
+	FT_HANDLE m_handle;
 
 	/********************************************************************
 	 * Read & write
@@ -100,6 +76,7 @@ public:
 protected:
 	// Extra byte for start byte
 	t_value m_values[513];
+	bool m_dataChanged;
 	QMutex m_mutex;
 };
 

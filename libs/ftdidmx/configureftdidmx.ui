@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>ConfigureSerialDMXOut</class>
- <widget class="QDialog" name="ConfigureSerialDMXOut" >
+ <class>ConfigureFTDIDMXOut</class>
+ <widget class="QDialog" name="ConfigureFTDIDMXOut" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Configure Serial DMX Plugin</string>
+   <string>Configure FTDI DMX Plugin</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" >
    <item row="0" column="0" colspan="4" >
@@ -81,7 +81,7 @@
   <connection>
    <sender>m_buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ConfigureSerialDMXOut</receiver>
+   <receiver>ConfigureFTDIDMXOut</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -97,7 +97,7 @@
   <connection>
    <sender>m_buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ConfigureSerialDMXOut</receiver>
+   <receiver>ConfigureFTDIDMXOut</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

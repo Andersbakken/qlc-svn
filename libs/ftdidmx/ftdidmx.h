@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  serialdmx.h
+  ftdidmx.h
   
   Copyright (c) Christopher Staite
   
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERIALDMXOUT_H
-#define SERIALDMXOUT_H
+#ifndef FTIDDMXOUT_H
+#define FTDIDMXOUT_H
 
 #include <QStringList>
 #include <QtPlugin>
@@ -30,20 +30,20 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-class ConfigureSerialDMXOut;
-class SerialDMXDevice;
+class ConfigureFTDIDMXOut;
+class FTDIDMXDevice;
 class QString;
 
 /*****************************************************************************
- * SerialDMXOut
+ * FTDIDMXOut
  *****************************************************************************/
 
-class SerialDMXOut : public QObject, public QLCOutPlugin
+class FTDIDMXOut : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
 
-	friend class ConfigureSerialDMXOut;
+	friend class ConfigureFTDIDMXOut;
 
 	/*********************************************************************
 	 * Initialization
@@ -58,11 +58,11 @@ public:
 	 *********************************************************************/
 public:
 	void rescanDevices();
-	SerialDMXDevice* device(const QString& path);
+	FTDIDMXDevice* device(const QString& path);
 	QStringList outputs();
 
 protected:
-	QMap <t_output, SerialDMXDevice*> m_devices;
+	QMap <t_output, FTDIDMXDevice*> m_devices;
 
 	/*********************************************************************
 	 * Name

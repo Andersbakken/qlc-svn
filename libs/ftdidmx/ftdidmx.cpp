@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  serialdmx.cpp
+  ftdidmx.cpp
   
   Copyright (c) Christopher Staite
   
@@ -28,26 +28,26 @@
 #include <QList>
 #include <QDir>
 
-#include "configureserialdmx.h"
-#include "serialdmx.h"
-#include "serialdmxdevice.h"
+#include "configureftdidmx.h"
+#include "ftdidmx.h"
+#include "ftdidmxdevice.h"
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-void SerialDMXOut::init()
+void FTDIDMXOut::init()
 {
 	rescanDevices();
 }
 
-void SerialDMXOut::open(t_output output)
+void FTDIDMXOut::open(t_output output)
 {
 	if (m_devices.contains(output) == true)
 		m_devices[output]->open();
 }
 
-void SerialDMXOut::close(t_output output)
+void FTDIDMXOut::close(t_output output)
 {
 	if (m_devices.contains(output) == true)
 		m_devices[output]->close();
@@ -57,7 +57,7 @@ void SerialDMXOut::close(t_output output)
  * Devices
  *****************************************************************************/
 
-void SerialDMXOut::rescanDevices()
+void FTDIDMXOut::rescanDevices()
 {
 	QStringList nameFilters;
 	QDir dir("/dev/");
@@ -77,17 +77,17 @@ void SerialDMXOut::rescanDevices()
 
 		if (device(path) == NULL)
 		{
-			SerialDMXDevice* device;
-			device = new SerialDMXDevice(this, path, output);
+			FTDIDMXDevice* device;
+			device = new FTDIDMXDevice(this, path, output);
 			Q_ASSERT(device != NULL);
 			m_devices.insert(output, device);
 		}
 	}
 }
 
-SerialDMXDevice* SerialDMXOut::device(const QString& path)
+FTDIDMXDevice* FTDIDMXOut::device(const QString& path)
 {
-	QMapIterator <t_output, SerialDMXDevice*> it(m_devices);
+	QMapIterator <t_output, FTDIDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -99,11 +99,11 @@ SerialDMXDevice* SerialDMXOut::device(const QString& path)
 	return NULL;
 }
 
-QStringList SerialDMXOut::outputs()
+QStringList FTDIDMXOut::outputs()
 {
 	QStringList list;
 
-	QMapIterator <t_output, SerialDMXDevice*> it(m_devices);
+	QMapIterator <t_output, FTDIDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -118,7 +118,7 @@ QStringList SerialDMXOut::outputs()
  * Name
  *****************************************************************************/
 
-QString SerialDMXOut::name()
+QString FTDIDMXOut::name()
 {
 	return QString("Serial DMX Output");
 }
@@ -127,9 +127,9 @@ QString SerialDMXOut::name()
  * Configuration
  *****************************************************************************/
 
-void SerialDMXOut::configure()
+void FTDIDMXOut::configure()
 {
-	ConfigureSerialDMXOut conf(NULL, this);
+	ConfigureFTDIDMXOut conf(NULL, this);
 	conf.exec();
 }
 
@@ -137,7 +137,7 @@ void SerialDMXOut::configure()
  * Plugin status
  *****************************************************************************/
 
-QString SerialDMXOut::infoText(t_output output)
+QString FTDIDMXOut::infoText(t_output output)
 {
 	QString str;
 
@@ -177,26 +177,26 @@ QString SerialDMXOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void SerialDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
+void FTDIDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
 	if (m_devices.contains(output) == true)
 		m_devices[output]->write(channel, value);
 }
 
-void SerialDMXOut::writeRange(t_output output, t_channel address, t_value* values,
+void FTDIDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 			   t_channel num)
 {
 	if (m_devices.contains(output) == true)
 		m_devices[output]->writeRange(address, values, num);
 }
 
-void SerialDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
+void FTDIDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
 	if (m_devices.contains(output) == true)
 		m_devices[output]->read(channel, value);
 }
 
-void SerialDMXOut::readRange(t_output output, t_channel address, t_value* values,
+void FTDIDMXOut::readRange(t_output output, t_channel address, t_value* values,
 			  t_channel num)
 {
 	if (m_devices.contains(output) == true)
@@ -207,4 +207,4 @@ void SerialDMXOut::readRange(t_output output, t_channel address, t_value* values
  * Plugin export
  ****************************************************************************/
 
-Q_EXPORT_PLUGIN2(serialdmxout, SerialDMXOut)
+Q_EXPORT_PLUGIN2(FTDIDMXout, FTDIDMXOut)

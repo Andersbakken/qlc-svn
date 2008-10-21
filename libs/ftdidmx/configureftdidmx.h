@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  configureserialdmx.h
+  configureftdidmx.h
   
   Copyright (c) Christopher Staite
   
@@ -19,18 +19,18 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONFIGURESERIALDMX_H
-#define CONFIGURESERIALDMX_H
+#ifndef CONFIGUREFTDIDMX_H
+#define CONFIGUREFTDIDMX_H
 
 #include <QDialog>
 #include "common/qlctypes.h"
 
-#include "ui_configureserialdmx.h"
+#include "ui_configureftdidmx.h"
 
-class SerialDMXOut;
+class FTDIDMXOut;
 class QTimer;
 
-class ConfigureSerialDMXOut : public QDialog, public Ui_ConfigureSerialDMXOut
+class ConfigureFTDIDMXOut : public QDialog, public Ui_ConfigureFTDIDMXOut
 {
 	Q_OBJECT
 
@@ -38,11 +38,11 @@ class ConfigureSerialDMXOut : public QDialog, public Ui_ConfigureSerialDMXOut
 	 * Initialization
 	 *********************************************************************/
 public:
-	ConfigureSerialDMXOut(QWidget* parent, SerialDMXOut* plugin);
-	virtual ~ConfigureSerialDMXOut();
+	ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin);
+	virtual ~ConfigureFTDIDMXOut();
 
 protected:
-	SerialDMXOut* m_plugin;
+	FTDIDMXOut* m_plugin;
 
 	/*********************************************************************
 	 * Universe testing
