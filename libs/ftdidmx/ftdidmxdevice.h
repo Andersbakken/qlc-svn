@@ -37,7 +37,7 @@ class FTDIDMXDevice : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	FTDIDMXDevice(QObject* parent, const QString &path, t_output output);
+	FTDIDMXDevice(QObject* parent, char *description, int input_id, t_output output);
 	virtual ~FTDIDMXDevice();
 
 	/********************************************************************
@@ -51,6 +51,7 @@ public:
 protected:
 	QString m_name;
 	QString m_path;
+	int m_input_id;
 	t_output m_output;
 
 	/********************************************************************

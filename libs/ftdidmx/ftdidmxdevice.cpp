@@ -28,21 +28,22 @@
  * Initialization
  ****************************************************************************/
 
-FTDIDMXDevice::FTDIDMXDevice(QObject* parent, const QString &path,
+FTDIDMXDevice::FTDIDMXDevice(QObject* parent, char *description, int input_id,
 			   t_output output) : QObject(parent)
 {
 	Q_ASSERT(path.isEmpty() == false);
 	Q_ASSERT(output != KOutputInvalid);
 	
 	m_output = output;
-	m_path = path;
+	m_input_id = input_id;
+	m_path.setNum(m_input_id);
 
 	// Ensure we set everything to 0
 	for (t_channel i = 0; i < sizeof(m_values); i++)
 		m_values[i] = 0;
 	m_dataChanged = true;
 
-	m_name = QString("FTDI DMX Device");
+	m_name = QString("FTDI DMX Device: ") + QString(description);
 }
 
 FTDIDMXDevice::~FTDIDMXDevice()
@@ -75,11 +76,7 @@ t_output FTDIDMXDevice::output() const
 
 bool FTDIDMXDevice::open()
 {
-	// Nothing to open
-	if (m_path == "")
-		return false;
-	
-	if (true)
+	if (FT_Open(m_input_id, &m_handle) == FT_OK)
 	{
 		return true;
 	}
@@ -87,13 +84,13 @@ bool FTDIDMXDevice::open()
 	{
 		qWarning() << QString("Unable to open FTDIDMX %1: %2")
 			.arg(m_output).arg("Because the world is stupid");
+		return false;
 	}
-	return false;
 }
 
 bool FTDIDMXDevice::close()
 {
-	if (false)
+	if (FT_Close(m_handle) != FT_OK)
 	{
 		qWarning() << QString("Unable to close FTDIDMX %1: %2")
 			.arg(m_output).arg("Because it was never open");

@@ -31,6 +31,9 @@
 #include "configureftdidmx.h"
 #include "ftdidmx.h"
 #include "ftdidmxdevice.h"
+#include "ftd2xx.h"
+
+#define MAX_DEVICES 16
 
 /*****************************************************************************
  * Initialization
@@ -59,26 +62,20 @@ void FTDIDMXOut::close(t_output output)
 
 void FTDIDMXOut::rescanDevices()
 {
-	QStringList nameFilters;
-	QDir dir("/dev/");
-	t_output output;
-	QString path;
+	char devString[MAX_DEVICES][64];
+	char *devStringPtr[MAX_DEVICES + 1];
+	int devices;
 
-	output = 0;
+	for (int i = 0; i < MAX_DEVICES; i++)
+		devStringPtr[i] = devString[i];
+	devStringPtr[MAX_DEVICES] = NULL;
 
-	// What names could there be?
-	// This should be cross-referenced with detectDeviceType
-	nameFilters << "tty*";
-	QStringListIterator it(dir.entryList(nameFilters,
-					     QDir::Files | QDir::System));
-	while (it.hasNext() == true)
-	{
-		path = dir.absolutePath() + QDir::separator() + it.next();
-
-		if (device(path) == NULL)
-		{
-			FTDIDMXDevice* device;
-			device = new FTDIDMXDevice(this, path, output);
+	FT_STATUS st = FT_ListDevices(devString, &devices, FT_LIST_ALL | FT_OPEN_BY_DESCRIPTION);
+	if (st == FT_OK) {
+		t_output output = 0;
+		while (devices > 0) {
+			devices--;
+			FTDIDMXDevice *device = new FTDIDMXDevice(this, devString[devices], devices, output);
 			Q_ASSERT(device != NULL);
 			m_devices.insert(output, device);
 		}
@@ -120,7 +117,7 @@ QStringList FTDIDMXOut::outputs()
 
 QString FTDIDMXOut::name()
 {
-	return QString("Serial DMX Output");
+	return QString("FTDI DMX Output");
 }
 
 /*****************************************************************************
@@ -152,11 +149,7 @@ QString FTDIDMXOut::infoText(t_output output)
 		str += QString("<H3>%1</H3>").arg(name());
 		str += QString("<P>");
 		str += QString("This plugin provides DMX output support for ");
-		str += QString("any device which runs though a serial port ");
-		str += QString("or emulated serial port (i.e. USB->Serial).  ");
-		str += QString("Key examples are homebrew devices using the FTDI chip ");
-		str += QString("see <address>http://www.telltronics.org/software/dmx/</address> for ");
-		str += QString("more information. ");
+		str += QString("any device which utilises the FTDI chip hardware.");
 		str += QString("</P>");
 	}
 	else if (m_devices.contains(output) == true)
