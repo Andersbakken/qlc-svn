@@ -48,7 +48,7 @@ extern App* _app;
 #endif
 
 #ifdef __APPLE__
-	#define PLUGINPATH "/../Plugins/Input"
+	#define PLUGINPATH "/../Plugins/input"
 	#define PLUGINEXT ".dylib"
 	
 	#define TEMPLATEPATH "/../InputTemplates"
