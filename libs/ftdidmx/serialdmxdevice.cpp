@@ -23,6 +23,7 @@
 #include <QDebug>
 
 #include "serialdmxdevice.h"
+#include "ftdidevice.h"
 
 /****************************************************************************
  * Initialization
@@ -39,6 +40,8 @@ SerialDMXDevice::SerialDMXDevice(QObject* parent, const QString &path,
 	m_updateTimeout = -1;
 	m_updateFunction = 0;
 	m_updateTimer = 0;
+	m_openFunction = 0;
+	m_closeFunction = 0;
 	
 	if (detectDeviceType(path)) {
 		// Only set this if valid device
@@ -83,13 +86,19 @@ t_output SerialDMXDevice::output() const
  ****************************************************************************/
 
 bool SerialDMXDevice::detectDeviceType(const QString &path) {
-	// Return false because we do not know what the device is
-	return false;
+	m_forceTimeoutWait = false;
+	m_updateTimeout = -1;
+	m_updateFunction = ftdiDeviceWrite;
+	m_openFunction = ftdiOpen;
+	m_closeFunction = ftdiClose;
+
+	// We can't do any detection at the moment, so we just return true.
+	return true;
 }
 
 void SerialDMXDevice::applyDeviceOptions() {
 	if (m_updateTimeout >= 0) {
-		if (m_updateTimer != 0) {
+		if (m_updateTimer == 0) {
 			m_updateTimer = new QTimer(this);
 			connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(performDeviceWrite()));
 		}
@@ -131,7 +140,7 @@ bool SerialDMXDevice::open()
 	if (m_path == "")
 		return false;
 	
-	if (true)
+	if (m_openFunction == 0 || m_openFunction(m_path.toLatin1()))
 	{
 		// Start up the device writing thread
 		applyDeviceOptions();
@@ -141,8 +150,8 @@ bool SerialDMXDevice::open()
 	{
 		qWarning() << QString("Unable to open SerialDMX %1: %2")
 			.arg(m_output).arg("Because the world is stupid");
-		return false;
 	}
+	return false;
 }
 
 bool SerialDMXDevice::close()
@@ -157,7 +166,7 @@ bool SerialDMXDevice::close()
 	m_mutex.lock();
 	m_mutex.unlock();
 	
-	if (false)
+	if (m_closeFunction != 0 && !m_closeFunction())
 	{
 		qWarning() << QString("Unable to close SerialDMX %1: %2")
 			.arg(m_output).arg("Because it was never open");

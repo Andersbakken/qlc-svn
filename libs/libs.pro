@@ -7,7 +7,8 @@ SUBDIRS		+= common
 !mac:SUBDIRS         	+= usbdmxout
 !mac:unix:SUBDIRS	+= dmx4linuxout
 !mac:unix:SUBDIRS	+= llaout
-!win32:SUBDIRS		+= serialdmx
+SUBDIRS			+= ftdidmx
+SUBDIRS			+= artnet
 
 # Input plugins
 SUBDIRS		+= midiinput

@@ -16,9 +16,13 @@ FORMS += configureserialdmx.ui
 # Headers
 unix:HEADERS += configureserialdmx.h \
                 serialdmx.h \
-		serialdmxdevice.h
+		serialdmxdevice.h \
+		ftdidevice.h
 
 # Sources
 unix:SOURCES += configureserialdmx.cpp \
                 serialdmx.cpp \
-		serialdmxdevice.cpp
+		serialdmxdevice.cpp \
+		ftdidevice.c
+
+macx:QMAKE_POST_LINK = cp libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/

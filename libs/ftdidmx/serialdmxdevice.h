@@ -26,8 +26,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QTimer>
-
-class QString;
+#include <QString>
 
 class SerialDMXDevice : public QObject
 {
@@ -78,6 +77,8 @@ protected:
 	//       automatically unlocked on return.  Therefore the values
 	//       will not change during execution.
 	void (*m_updateFunction)(t_value values[]);
+	int  (*m_openFunction)(const char *path);
+	int  (*m_closeFunction)();
 	
 	/********************************************************************
 	 * Open & close
