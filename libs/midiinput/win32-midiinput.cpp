@@ -102,15 +102,6 @@ void MIDIInput::rescanDevices()
 		addDevice(new MIDIDevice(this, id));
 }
 
-QStringList MIDIInput::deviceNames() const
-{
-	QStringList list;
-	QListIterator <MIDIDevice*> it(m_devices);
-	while (it.hasNext() == true)
-		list << it.next()->name();
-	return list;
-}
-
 MIDIDevice* MIDIInput::device(unsigned int index)
 {
 	if (index > static_cast<unsigned int> (m_devices.count()))

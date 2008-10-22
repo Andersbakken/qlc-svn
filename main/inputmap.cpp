@@ -45,20 +45,18 @@ extern App* _app;
 	#define PLUGINEXT ".dll"
 
 	#define TEMPLATEPATH "C:\\QLC\\InputTemplates"
-#endif
-
-#ifdef __APPLE__
+#else
+	#ifdef __APPLE__
 	#define PLUGINPATH "/../Plugins/input"
 	#define PLUGINEXT ".dylib"
-	
-	#define TEMPLATEPATH "/../InputTemplates"
-#endif
 
-#ifdef UNIX
+	#define TEMPLATEPATH "/../InputTemplates"
+	#else
 	#define PLUGINPATH "/usr/lib/qlc/input"
 	#define PLUGINEXT ".so"
-	
+
 	#define TEMPLATEPATH "/usr/share/inputtemplates"
+	#endif
 #endif
 
 /*****************************************************************************

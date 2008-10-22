@@ -82,7 +82,7 @@ void ConfigureMIDIInput::refreshList()
 
 	m_list->clear();
 
-	QStringListIterator it(m_plugin->deviceNames());
+	QStringListIterator it(m_plugin->inputs());
 	while (it.hasNext() == true)
 	{
 		item = new QTreeWidgetItem(m_list);
