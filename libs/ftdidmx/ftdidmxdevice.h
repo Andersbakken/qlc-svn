@@ -28,8 +28,9 @@
 #include <QMutex>
 #include <QTimer>
 #include <QString>
+#include <QThread>
 
-class FTDIDMXDevice : public QObject
+class FTDIDMXDevice : public QThread
 {
 	Q_OBJECT
 
@@ -53,6 +54,16 @@ protected:
 	QString m_path;
 	int m_input_id;
 	t_output m_output;
+
+	/********************************************************************
+	 * Threading
+	 ********************************************************************/
+
+public:
+	virtual void run();
+
+protected:
+	bool m_threadRunning;
 
 	/********************************************************************
 	 * Open & close
