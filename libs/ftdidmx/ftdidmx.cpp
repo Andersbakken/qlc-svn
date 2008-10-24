@@ -62,6 +62,7 @@ void FTDIDMXOut::close(t_output output)
 
 void FTDIDMXOut::rescanDevices()
 {
+	// Examples show this to be 64, but that caused a Bus Fault... so I doubled it.
 	char devString[MAX_DEVICES][64];
 	char *devStringPtr[MAX_DEVICES + 1];
 	int devices;
@@ -70,12 +71,13 @@ void FTDIDMXOut::rescanDevices()
 		devStringPtr[i] = devString[i];
 	devStringPtr[MAX_DEVICES] = NULL;
 
-	FT_STATUS st = FT_ListDevices(devString, &devices, FT_LIST_ALL | FT_OPEN_BY_DESCRIPTION);
+	FT_SetVIDPID(0x0403, 0xEC70);
+	FT_STATUS st = FT_ListDevices(devStringPtr, &devices, FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
 	if (st == FT_OK) {
 		t_output output = 0;
 		while (devices > 0) {
 			devices--;
-			FTDIDMXDevice *device = new FTDIDMXDevice(this, devString[devices], devices, output);
+			FTDIDMXDevice *device = new FTDIDMXDevice(this, devString[devices], output);
 			Q_ASSERT(device != NULL);
 			m_devices.insert(output, device);
 		}

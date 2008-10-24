@@ -38,7 +38,7 @@ class FTDIDMXDevice : public QThread
 	 * Initialization
 	 ********************************************************************/
 public:
-	FTDIDMXDevice(QObject* parent, char *description, int input_id, t_output output);
+	FTDIDMXDevice(QObject* parent, char *description, t_output output);
 	virtual ~FTDIDMXDevice();
 
 	/********************************************************************

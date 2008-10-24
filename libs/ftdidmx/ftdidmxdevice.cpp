@@ -29,22 +29,21 @@
  * Initialization
  ****************************************************************************/
 
-FTDIDMXDevice::FTDIDMXDevice(QObject* parent, char *description, int input_id,
+FTDIDMXDevice::FTDIDMXDevice(QObject* parent, char *description,
 			   t_output output) : QThread(parent)
 {
 	Q_ASSERT(path.isEmpty() == false);
 	Q_ASSERT(output != KOutputInvalid);
 	
 	m_output = output;
-	m_input_id = input_id;
-	m_path.setNum(m_input_id);
+	m_path = QString(description);
 
 	// Ensure we set everything to 0
 	for (t_channel i = 0; i < sizeof(m_values); i++)
 		m_values[i] = 0;
 	m_dataChanged = true;
 
-	m_name = QString("FTDI DMX Device: ") + QString(description);
+	m_name = QString("FTDI DMX Device: ") + m_path;
 }
 
 FTDIDMXDevice::~FTDIDMXDevice()
@@ -81,7 +80,7 @@ void FTDIDMXDevice::run() {
 	unsigned char startCode = 0;
 
 	// Wait for device to clear
-	sleep(1000);
+	sleep(1);
 
 	while (m_threadRunning) {
 		// Write data
@@ -89,7 +88,7 @@ void FTDIDMXDevice::run() {
 		FT_SetBreakOff(m_handle);
 		FT_Write(m_handle, &startCode, 1, &bytesWritten);
 		FT_Write(m_handle, m_values, 512, &bytesWritten);
-		sleep(30);
+		usleep(30);
 	}
 }
 
@@ -99,22 +98,39 @@ void FTDIDMXDevice::run() {
 
 bool FTDIDMXDevice::open()
 {
-	if (FT_Open(m_input_id, &m_handle) == FT_OK)
+	// Change QString to char* (not const char* note)
+
+	char *serial;
+	QByteArray a = m_path.toLatin1();
+	serial = (char*)malloc(sizeof(char) * (a.count() + 1));
+	memcpy(serial, a.constData(), a.count());
+	serial[a.count()] = 0;
+
+	if (FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
 	{
-		if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
+		free(serial);
+		if (!FT_SUCCESS(FT_ResetDevice(m_handle))) {
+			qWarning() << QString("Unable to reset FTDI device %1").arg(m_path);
 			return false;
+		}
 
 		// Set the baud rate 12 will give us 250Kbits
-		if (!FT_SUCCESS(FT_SetDivisor(m_handle,12))) 
+		if (!FT_SUCCESS(FT_SetDivisor(m_handle,12))) {
+			qWarning() << QString("Unable to set divisor on FTDI device %1").arg(m_path);
 			return false;
+		}
 
 		// Set the data characteristics
-		if (!FT_SUCCESS(FT_SetDataCharacteristics(m_handle,FT_BITS_8,FT_STOP_BITS_2,FT_PARITY_NONE))) 
+		if (!FT_SUCCESS(FT_SetDataCharacteristics(m_handle,FT_BITS_8,FT_STOP_BITS_2,FT_PARITY_NONE))) {
+			qWarning() << QString("Unable to set data characteristics on FTDI device %1").arg(m_path);
 			return false;
+		}
 
 		// Set flow control
-	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE, NULL, NULL )))
+	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE, NULL, NULL ))) {
+			qWarning() << QString("Unable to set flow control on FTDI device %1").arg(m_path);
 			return false;
+		}
 
 		// set RS485 for sendin
 		FT_ClrRts(m_handle);
@@ -129,8 +145,8 @@ bool FTDIDMXDevice::open()
 	}
 	else
 	{
-		qWarning() << QString("Unable to open FTDIDMX %1: %2")
-			.arg(m_output).arg("Because the world is stupid");
+		qWarning() << QString("Unable to open FTDIDMX %1: %2").arg(m_output).arg(serial);
+		free(serial);
 		return false;
 	}
 }
@@ -139,18 +155,10 @@ bool FTDIDMXDevice::close()
 {
 	// Kill thread
 	m_threadRunning = false;
-	wait();
+	wait(500);
 
-	if (FT_Close(m_handle) != FT_OK)
-	{
-		qWarning() << QString("Unable to close FTDIDMX %1: %2")
-			.arg(m_output).arg("Because it was never open");
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	FT_Close(m_handle);
+	return true;
 }
 
 /****************************************************************************
