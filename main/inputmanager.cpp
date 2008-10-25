@@ -26,6 +26,7 @@
 #include <QMessageBox>
 #include <QToolBar>
 #include <QAction>
+#include <QTimer>
 #include <QDebug>
 #include <QIcon>
 
@@ -41,7 +42,8 @@
 #define KColumnPlugin   1
 #define KColumnInput    2
 #define KColumnTemplate 3
-#define KColumnInputNum 4
+#define KColumnData	4
+#define KColumnInputNum 5
 
 extern App* _app;
 
@@ -49,6 +51,19 @@ InputManager::InputManager(QWidget* parent) : QWidget(parent)
 {
 	setupUi();
 	fillTree();
+
+	/* Timer that clears the input data icon after a while */
+	m_timer = new QTimer(this);
+	m_timer->setSingleShot(true);
+	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
+	
+	/* Listen to input map's input data signals */
+	connect(_app->inputMap(),
+		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
+					 t_input_value)),
+		this,
+		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
+					   t_input_value)));
 }
 
 InputManager::~InputManager()
@@ -78,7 +93,8 @@ void InputManager::setupUi()
 	columns << tr("Universe")
 		<< tr("Plugin")
 		<< tr("Input")
-		<< tr("Template");
+		<< tr("Template")
+		<< tr("Data");
 	m_tree->setHeaderLabels(columns);
 		
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
@@ -162,5 +178,33 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* inputPatch,
 		item->setText(KColumnInput, KInputNone);
 		item->setText(KColumnInputNum, KInputNone);
 		item->setText(KColumnTemplate, KInputNone);
+	}
+}
+
+void InputManager::slotInputValueChanged(t_input_universe universe,
+					 t_input_channel channel,
+					 t_input_value value)
+{
+	QTreeWidgetItem* item;
+	
+	item = m_tree->topLevelItem(universe);
+	if (item == NULL)
+		return;
+
+	/* Show an icon on a universe row that received input data */
+	QIcon icon(":/input.png");
+	item->setIcon(KColumnData, icon);
+	
+	/* Restart the timer */
+	m_timer->start(250);
+}
+
+void InputManager::slotTimerTimeout()
+{
+	QTreeWidgetItemIterator it(m_tree);
+	while (*it != NULL)
+	{
+		(*it)->setIcon(KColumnData, QIcon());
+		++it;
 	}
 }

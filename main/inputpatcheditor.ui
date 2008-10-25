@@ -200,8 +200,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>257</x>
-     <y>96</y>
+     <x>266</x>
+     <y>335</y>
     </hint>
     <hint type="destinationlabel" >
      <x>157</x>
@@ -216,12 +216,28 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>325</x>
-     <y>96</y>
+     <x>334</x>
+     <y>335</y>
     </hint>
     <hint type="destinationlabel" >
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_mapTree</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>InputPatchEditor</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>200</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>430</x>
+     <y>129</y>
     </hint>
    </hints>
   </connection>

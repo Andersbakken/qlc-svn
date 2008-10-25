@@ -148,12 +148,9 @@ void InputPatchEditor::fillMappingTree()
 			iitem->setText(KMapColumnName, iit.next());
 			iitem->setText(KMapColumnInput, QString("%1").arg(i));
 			
-			/* Select that plugin's line that is currently mapped,
-			   or the plugin itself if the line is not found */
+			/* Select the currently mapped plugin input */
 			if (m_pluginName == pluginName && m_input == i)
 				m_mapTree->setCurrentItem(iitem);
-			else if (m_pluginName == pluginName)
-				m_mapTree->setCurrentItem(pitem);
 
 			i++;
 		}

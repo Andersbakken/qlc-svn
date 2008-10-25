@@ -56,7 +56,7 @@ protected:
 	InputPatch* m_inputPatch;
 
 	/********************************************************************
-	 * Plugin page
+	 * Mapping page
 	 ********************************************************************/
 protected:
 	void setupMappingPage();

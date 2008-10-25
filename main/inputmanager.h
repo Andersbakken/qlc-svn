@@ -28,6 +28,7 @@
 class QTreeWidgetItem;
 class QTreeWidget;
 class QToolBar;
+class QTimer;
 
 class InputPatch;
 class InputMap;
@@ -63,8 +64,15 @@ protected:
 	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
 			t_input_universe universe);
 
+protected slots:
+	void slotInputValueChanged(t_input_universe universe,
+				   t_input_channel channel,
+				   t_input_value value);
+	void slotTimerTimeout();
+
 protected:
 	QTreeWidget* m_tree;
+	QTimer* m_timer;
 };
 
 #endif
