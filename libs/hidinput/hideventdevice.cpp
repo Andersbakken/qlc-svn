@@ -57,18 +57,19 @@ void HIDEventDevice::init()
 		return;
 
 	qDebug() << "*******************************************************";
-	qDebug() << "Device file: " << m_file.fileName();
+	qDebug() << "Device file:" << m_file.fileName();
 
 	/* Device name */
 	char name[128] = "Unknown";
 	if (ioctl(m_file.handle(), EVIOCGNAME(sizeof(name)), name) <= 0)
 	{
-		m_name = QString(strerror(errno));
+		m_name = QString("HID Input %1: %2").arg(m_line + 1)
+						    .arg(strerror(errno));
 		perror("ioctl EVIOCGNAME");
 	}
 	else
 	{
-		m_name = QString(name);
+		m_name = QString("HID Input %1: %2").arg(m_line + 1).arg(name);
 		qDebug() << "Device name:" << m_name;
 	}
 

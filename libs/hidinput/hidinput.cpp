@@ -95,22 +95,51 @@ void HIDInput::close(t_input input)
 
 void HIDInput::rescanDevices()
 {
-	QDir dir("/dev/input/");
-	QStringList nameFilters;
-	QStringList entries;
-	QStringList::iterator it;
 	t_input line = 0;
-	QString path;
 
-	nameFilters << "event*";
-	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
-	for (it = entries.begin(); it != entries.end(); ++it)
+	/* Copy the pointers from our devices list into a list of devices
+	   to destroy in case some of them have disappeared. */
+	QList <HIDDevice*> destroyList(m_devices);
+
+	/* Check all files matching filter "/dev/input/event*" */
+	QDir dir("/dev/input/", QString("event*"), QDir::Name, QDir::System);
+	QStringListIterator it(dir.entryList());
+	while (it.hasNext() == true)
 	{
-		path = dir.absolutePath() + QDir::separator() + *it;
+		/* Construct an absolute path for the file */
+		QString path(dir.absoluteFilePath(it.next()));
 
-		if (device(path) == NULL)
-			addDevice(new HIDEventDevice(this, line++, path));
+		/* Check that we can at least read from the device. Otherwise
+		   deem it to ge destroyed. */
+		if (QFile::permissions(path) & QFile::ReadOther)
+		{
+			HIDDevice* dev = device(path);
+			if (dev == NULL)
+			{
+				/* This device is unknown to us. Add it. */
+				dev = new HIDEventDevice(this, line++, path);
+				addDevice(dev);
+			}
+			else
+			{
+				/* Remove the device from our destroy list,
+				   since it is still available */
+				destroyList.removeAll(dev);
+			}
+		}
+		else
+		{
+			/* The file is not readable. If we have an entry for
+			   it, it must be destroyed. */
+			HIDDevice* dev = device(path);
+			if (dev != NULL)
+				removeDevice(dev);
+		}
 	}
+	
+	/* Destroy all devices that were not found during rescan */
+	while (destroyList.isEmpty() == false)
+		removeDevice(destroyList.takeFirst());
 }
 
 HIDDevice* HIDInput::device(const QString& path)
