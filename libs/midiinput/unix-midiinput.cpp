@@ -79,18 +79,13 @@ void MIDIInput::close(t_input input)
 
 void MIDIInput::rescanDevices()
 {
-	QDir dir("/dev/");
-	QStringList nameFilters;
-	QStringList entries;
-	QStringList::iterator it;
 	t_input line = 0;
-	QString path;
 
-	nameFilters << "midi*";
-	entries = dir.entryList(nameFilters, QDir::Files | QDir::System);
-	for (it = entries.begin(); it != entries.end(); ++it)
+	QDir dir("/dev/", QString("midi*"), QDir::Name, QDir::System);
+	QStringListIterator it(dir.entryList());
+	while (it.hasNext() == true)
 	{
-		path = dir.absolutePath() + QDir::separator() + *it;
+		QString path(dir.absoluteFilePath(it.next()));
 
 		if (device(path) == NULL)
 			addDevice(new MIDIDevice(this, line++, path));

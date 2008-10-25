@@ -36,7 +36,7 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, t_input line, const QString& path)
 	Q_ASSERT(path.length() > 0);
 	m_file.setFileName(path);
 	m_line = line;
-	m_name = QString("MIDI Input %1").arg(line);
+	m_name = QString("MIDI Input %1").arg(line + 1);
 }
 
 MIDIDevice::~MIDIDevice()
@@ -56,7 +56,8 @@ bool MIDIDevice::open()
 	result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadWrite);
 	if (result == false)
 	{
-		result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadOnly);
+		result = m_file.open(QIODevice::Unbuffered |
+				     QIODevice::ReadOnly);
 		if (result == false)
 		{
 			qWarning() << "Unable to open" << m_file.fileName()
@@ -65,7 +66,7 @@ bool MIDIDevice::open()
 		else
 		{
 			qDebug() << "Opened" << m_file.fileName()
-				 << "in read only mode";
+				 << "in read only mode";		
 		}
 	}
 
