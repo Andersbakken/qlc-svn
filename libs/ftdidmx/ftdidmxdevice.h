@@ -38,7 +38,7 @@ class FTDIDMXDevice : public QThread
 	 * Initialization
 	 ********************************************************************/
 public:
-	FTDIDMXDevice(QObject* parent, char *description, t_output output);
+	FTDIDMXDevice(QObject* parent, int vid, int pid, char *description, t_output output);
 	virtual ~FTDIDMXDevice();
 
 	/********************************************************************
@@ -52,7 +52,8 @@ public:
 protected:
 	QString m_name;
 	QString m_path;
-	int m_input_id;
+	int m_vid;
+	int m_pid;
 	t_output m_output;
 
 	/********************************************************************

@@ -52,7 +52,12 @@ public:
 	void init();
 	void open(t_output output = 0);
 	void close(t_output output = 0);
-	
+
+protected:
+	QMutex m_vidpid_mutex;
+	int m_scan_vid;
+	int m_scan_pid;	
+
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/

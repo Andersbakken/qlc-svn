@@ -33,14 +33,16 @@
 #include "ftdidmxdevice.h"
 #include "ftd2xx.h"
 
-#define MAX_DEVICES 16
-
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
 void FTDIDMXOut::init()
 {
+	m_vidpid_mutex.lock();
+	m_scan_vid = 0x0403;
+	m_scan_pid = 0xEC70;
+	m_vidpid_mutex.unlock();
 	rescanDevices();
 }
 
@@ -62,22 +64,32 @@ void FTDIDMXOut::close(t_output output)
 
 void FTDIDMXOut::rescanDevices()
 {
+	DWORD devices;
+	// Make sure we have a static vid/pid throughout the scanning process
+	m_vidpid_mutex.lock();
+	int vid = m_scan_vid;
+	int pid = m_scan_pid;
+	m_vidpid_mutex.unlock();
+
+	FT_SetVIDPID(vid, pid);
+
+	if (FT_CreateDeviceInfoList(&devices) != FT_OK)
+		devices = MAX_NUM_DEVICES;
+
 	// Examples show this to be 64, but that caused a Bus Fault... so I doubled it.
-	char devString[MAX_DEVICES][64];
-	char *devStringPtr[MAX_DEVICES + 1];
-	int devices;
+	char devString[devices][64];
+	char *devStringPtr[devices + 1];
 
-	for (int i = 0; i < MAX_DEVICES; i++)
+	for (unsigned int i = 0; i < devices; i++)
 		devStringPtr[i] = devString[i];
-	devStringPtr[MAX_DEVICES] = NULL;
+	devStringPtr[devices] = NULL;
 
-	FT_SetVIDPID(0x0403, 0xEC70);
 	FT_STATUS st = FT_ListDevices(devStringPtr, &devices, FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
 	if (st == FT_OK) {
 		t_output output = 0;
 		while (devices > 0) {
 			devices--;
-			FTDIDMXDevice *device = new FTDIDMXDevice(this, devString[devices], output);
+			FTDIDMXDevice *device = new FTDIDMXDevice(this, vid, pid, devString[devices], output);
 			Q_ASSERT(device != NULL);
 			m_devices.insert(output, device);
 		}

@@ -29,12 +29,14 @@
  * Initialization
  ****************************************************************************/
 
-FTDIDMXDevice::FTDIDMXDevice(QObject* parent, char *description,
+FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid, char *description,
 			   t_output output) : QThread(parent)
 {
 	Q_ASSERT(path.isEmpty() == false);
 	Q_ASSERT(output != KOutputInvalid);
 	
+	m_vid = vid;
+	m_pid = pid;
 	m_output = output;
 	m_path = QString(description);
 
@@ -43,7 +45,7 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, char *description,
 		m_values[i] = 0;
 	m_dataChanged = true;
 
-	m_name = QString("FTDI DMX Device: ") + m_path;
+	m_name = QString("FTDI DMX Device (0x%1/0x%2): %3").arg(QString::number(vid, 16)).arg(QString::number(pid, 16)).arg(m_path);
 }
 
 FTDIDMXDevice::~FTDIDMXDevice()
@@ -106,7 +108,7 @@ bool FTDIDMXDevice::open()
 	memcpy(serial, a.constData(), a.count());
 	serial[a.count()] = 0;
 
-	if (FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
+	if (FT_SetVIDPID(m_vid, m_pid) == FT_OK && FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
 	{
 		free(serial);
 		if (!FT_SUCCESS(FT_ResetDevice(m_handle))) {
