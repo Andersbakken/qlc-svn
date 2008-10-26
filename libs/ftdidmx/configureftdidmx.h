@@ -30,6 +30,20 @@
 class FTDIDMXOut;
 class QTimer;
 
+struct FTDIDevice {
+	char *name;
+	int vid;
+	int pid;	
+};
+// Now struct can be used as QVarient
+Q_DECLARE_METATYPE(FTDIDevice);
+
+static struct FTDIDevice known_devices[] = {
+	{"Homebrew USB -> DMX", 0x0403, 0xEC70},
+	{"EntTec Open DMX USB", 0x0403, 0x6001},
+	{"Other", 0x0000, 0x0000}
+};
+
 class ConfigureFTDIDMXOut : public QDialog, public Ui_ConfigureFTDIDMXOut
 {
 	Q_OBJECT
@@ -78,10 +92,15 @@ protected slots:
 	 * Invoke refresh for the interface list
 	 */
 	void slotRefreshClicked();
+	void slotDeviceChanged(int index);
 
 protected:
 	/** Refresh the interface list */
 	void refreshList();
+	int getIntHex(QLineEdit *e);
+
+	int m_current_vid;
+	int m_current_pid;
 };
 
 #endif

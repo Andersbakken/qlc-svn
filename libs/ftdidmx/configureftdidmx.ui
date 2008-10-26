@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>445</width>
+    <width>503</width>
     <height>300</height>
    </rect>
   </property>
@@ -13,7 +13,44 @@
    <string>Configure FTDI DMX Plugin</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" >
-   <item row="0" column="0" colspan="4" >
+   <item row="4" column="2" >
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="0" >
+    <widget class="QPushButton" name="m_testButton" >
+     <property name="text" >
+      <string>Test output</string>
+     </property>
+     <property name="checkable" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1" >
+    <widget class="QPushButton" name="m_refreshButton" >
+     <property name="text" >
+      <string>Refresh</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3" >
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4" >
     <widget class="QTreeWidget" name="m_list" >
      <property name="alternatingRowColors" >
       <bool>true</bool>
@@ -37,42 +74,68 @@
      </column>
     </widget>
    </item>
-   <item row="1" column="0" >
-    <widget class="QPushButton" name="m_testButton" >
-     <property name="text" >
-      <string>Test output</string>
-     </property>
-     <property name="checkable" >
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1" >
-    <widget class="QPushButton" name="m_refreshButton" >
-     <property name="text" >
-      <string>Refresh</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0" >
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="3" >
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="standardButtons" >
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+   <item rowspan="3" row="0" column="0" colspan="4" >
+    <layout class="QHBoxLayout" name="horizontalLayout" >
+     <item>
+      <widget class="QLabel" name="label" >
+       <property name="text" >
+        <string>Device Type</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="m_device" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize" >
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2" >
+       <property name="text" >
+        <string>VID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_vid" />
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3" >
+       <property name="text" >
+        <string>PID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_pid" />
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

@@ -49,11 +49,22 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 
 	setupUi(this);
 
+	for (unsigned int i = 0; i < sizeof(known_devices) / sizeof(FTDIDevice); i++) {
+		QVariant v;
+		v.setValue(known_devices[i]);
+		m_device->addItem(QString(known_devices[i].name), v);
+	}
+	m_current_pid = known_devices[0].pid;
+	m_current_vid = known_devices[0].vid;
+
 	connect(m_testButton, SIGNAL(toggled(bool)),
 		this, SLOT(slotTestToggled(bool)));
 	connect(m_refreshButton, SIGNAL(clicked()),
 		this, SLOT(slotRefreshClicked()));
+	connect(m_device, SIGNAL(currentIndexChanged(int)),
+		this, SLOT(slotDeviceChanged(int)));
 
+	m_plugin->setVIDPID(m_current_vid, m_current_pid);
 	refreshList();
 }
 
@@ -150,7 +161,43 @@ void ConfigureFTDIDMXOut::slotTestTimeout()
 
 void ConfigureFTDIDMXOut::slotRefreshClicked()
 {
+	if (m_current_vid == 0 || m_current_pid == 0) {
+		// Get the typed in VID/PID
+		int vid = getIntHex(m_vid);
+		int pid = getIntHex(m_pid);
+		m_plugin->setVIDPID(vid, pid);
+	}
 	refreshList();
+}
+
+int ConfigureFTDIDMXOut::getIntHex(QLineEdit *e) {
+	QString value = e->displayText();
+	if (value == QString(""))
+		return 0;
+	bool ok = false;
+	int ret = value.toInt(&ok, 0);
+	if (ok == false)
+		ret = 0;
+	return ret;
+}
+
+void ConfigureFTDIDMXOut::slotDeviceChanged(int index)
+{
+	QVariant d = m_device->itemData(index);
+	FTDIDevice device = d.value<FTDIDevice>();
+	m_current_vid = device.vid;
+	m_current_pid = device.pid;
+	if (m_current_vid == 0 || m_current_pid == 0) {
+		int vid = getIntHex(m_vid);
+		int pid = getIntHex(m_pid);
+		if (vid != 0 && pid != 0) {
+			m_plugin->setVIDPID(vid, pid);
+			refreshList();
+		}
+	} else if (m_current_vid != 0 && m_current_pid != 0) {
+		m_plugin->setVIDPID(m_current_vid, m_current_pid);
+		refreshList();
+	}
 }
 
 void ConfigureFTDIDMXOut::refreshList()

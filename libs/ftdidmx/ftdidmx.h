@@ -63,6 +63,7 @@ protected:
 	 *********************************************************************/
 public:
 	void rescanDevices();
+	void setVIDPID(int vid, int pid);
 	FTDIDMXDevice* device(const QString& path);
 	QStringList outputs();
 

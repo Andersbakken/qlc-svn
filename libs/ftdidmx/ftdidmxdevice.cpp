@@ -170,7 +170,7 @@ bool FTDIDMXDevice::close()
 void FTDIDMXDevice::write(t_channel channel, t_value value)
 {
 	m_mutex.lock();
-	m_values[channel + 1] = value;
+	m_values[channel] = value;
 	m_dataChanged = true;
 	m_mutex.unlock();
 }
@@ -180,7 +180,7 @@ void FTDIDMXDevice::writeRange(t_channel address, t_value* values, t_channel num
 	Q_ASSERT(address + num <= 512);
 
 	m_mutex.lock();
-	memcpy(m_values + address + 1, values, num);
+	memcpy(m_values + address, values, num);
 	m_dataChanged = true;
 	m_mutex.unlock();
 }
@@ -188,7 +188,7 @@ void FTDIDMXDevice::writeRange(t_channel address, t_value* values, t_channel num
 void FTDIDMXDevice::read(t_channel channel, t_value* value)
 {
 	m_mutex.lock();
-	*value = m_values[channel + 1];
+	*value = m_values[channel];
 	m_dataChanged = true;
 	m_mutex.unlock();
 }
@@ -198,7 +198,7 @@ void FTDIDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
 	Q_ASSERT(address + num <= 512);
 
 	m_mutex.lock();
-	memcpy(values, m_values + address + 1, num);
+	memcpy(values, m_values + address, num);
 	m_dataChanged = true;
 	m_mutex.unlock();
 }

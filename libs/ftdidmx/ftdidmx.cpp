@@ -39,10 +39,8 @@
 
 void FTDIDMXOut::init()
 {
-	m_vidpid_mutex.lock();
-	m_scan_vid = 0x0403;
-	m_scan_pid = 0xEC70;
-	m_vidpid_mutex.unlock();
+	// TODO: this should read from the configuration
+	setVIDPID(known_devices[0].vid, known_devices[1].pid);
 	rescanDevices();
 }
 
@@ -62,6 +60,14 @@ void FTDIDMXOut::close(t_output output)
  * Devices
  *****************************************************************************/
 
+void FTDIDMXOut::setVIDPID(int vid, int pid) {
+	m_vidpid_mutex.lock();
+	m_scan_vid = vid;
+	m_scan_pid = pid;
+	m_vidpid_mutex.unlock();
+	rescanDevices();
+}
+
 void FTDIDMXOut::rescanDevices()
 {
 	DWORD devices;
@@ -76,7 +82,7 @@ void FTDIDMXOut::rescanDevices()
 	if (FT_CreateDeviceInfoList(&devices) != FT_OK)
 		devices = MAX_NUM_DEVICES;
 
-	// Examples show this to be 64, but that caused a Bus Fault... so I doubled it.
+	// Array to store serial numbers in
 	char devString[devices][64];
 	char *devStringPtr[devices + 1];
 

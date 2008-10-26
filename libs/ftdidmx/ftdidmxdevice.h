@@ -87,8 +87,7 @@ public:
 	void readRange(t_channel channel, t_value* values, t_channel num);
 
 protected:
-	// Extra byte for start byte
-	t_value m_values[513];
+	t_value m_values[512];
 	bool m_dataChanged;
 	QMutex m_mutex;
 };
