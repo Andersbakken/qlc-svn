@@ -58,6 +58,5 @@ void BreakOutWindow::slotBreakOutWindow() {
 }
 
 void BreakOutWindow::slotWindowDestroyed(QObject *) {
-	delete boFrame;
 	delete this;
 }
