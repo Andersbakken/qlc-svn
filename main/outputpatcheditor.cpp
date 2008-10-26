@@ -164,4 +164,5 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 void OutputPatchEditor::slotConfigureClicked()
 {
 	_app->outputMap()->configurePlugin(m_pluginName);
+	fillTree();
 }
