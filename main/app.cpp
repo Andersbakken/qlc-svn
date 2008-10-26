@@ -42,7 +42,6 @@
 #include <QFile>
 #include <QIcon>
 
-#include "breakoutwindow.h"
 #include "functionconsumer.h"
 #include "functionmanager.h"
 #include "appdirectories.h"
@@ -334,9 +333,6 @@ void App::slotOutputManager()
 		m_outputManager = new OutputManager(sub);
 		m_outputManager->show();
 
-		// Setup the break out system menu item
-		new BreakOutWindow(m_outputManager, sub);
-
 		sub->setWidget(m_outputManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
 		sub->setWindowTitle(tr("Output Manager"));
@@ -376,9 +372,6 @@ void App::slotInputManager()
 		sub = new QMdiSubWindow(centralWidget());
 		m_inputManager = new InputManager(sub);
 		m_inputManager->show();
-
-		// Setup the break out system menu item
-		new BreakOutWindow(m_inputManager, sub);
 
 		sub->setWidget(m_inputManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
@@ -668,9 +661,6 @@ void App::initVirtualConsole(void)
 	QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 	m_virtualConsole = new VirtualConsole(sub);
 	m_virtualConsole->show();
-
-	// Setup the break out system menu item
-	new BreakOutWindow(m_virtualConsole, sub);
 
 	sub->setWidget(m_virtualConsole);
 
@@ -1207,9 +1197,6 @@ void App::slotControlMonitor()
 
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 		m_monitor = new Monitor(sub);
-
-		// Setup the break out system menu item
-		new BreakOutWindow(m_monitor, sub);
 
 		sub->setWidget(m_monitor);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
