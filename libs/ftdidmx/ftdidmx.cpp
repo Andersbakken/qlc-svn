@@ -40,7 +40,7 @@
 void FTDIDMXOut::init()
 {
 	// TODO: this should read from the configuration
-	setVIDPID(known_devices[0].vid, known_devices[1].pid);
+	setVIDPID(known_devices[0].vid, known_devices[0].pid);
 	rescanDevices();
 }
 
