@@ -26,6 +26,7 @@ HEADERS += aboutbox.h \
            app.h \
 	   appdirectories.h \
            assignhotkey.h \
+           breakoutwindow.h \
            bus.h \
            busproperties.h \
            chaser.h \
@@ -112,6 +113,7 @@ SOURCES += aboutbox.cpp \
            app.cpp \
 	   appdirectories.cpp \
            assignhotkey.cpp \
+           breakoutwindow.cpp \
            bus.cpp \
            busproperties.cpp \
            chaser.cpp \
