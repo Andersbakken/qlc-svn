@@ -251,7 +251,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		    ev->type == SND_SEQ_EVENT_CHANPRESS)
 		{
 			e = new MIDIInputEvent(device, device->input(),
-					       ev->data.control.channel,
+					       ev->data.control.param,
 					       ev->data.control.value);
 			QApplication::postEvent(parent(), e);
 		}
