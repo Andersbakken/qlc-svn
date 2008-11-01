@@ -75,11 +75,8 @@ InputPatchEditor::~InputPatchEditor()
 
 void InputPatchEditor::accept()
 {
-	if (m_pluginName != KInputNone && m_pluginName.isEmpty() == false)
-	{
-		_app->inputMap()->setPatch(m_universe, m_pluginName, m_input,
-					   m_templateName);
-	}
+	_app->inputMap()->setPatch(m_universe, m_pluginName, m_input,
+				   m_templateName);
 
 	QDialog::accept();
 }

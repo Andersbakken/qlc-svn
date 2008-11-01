@@ -146,9 +146,6 @@ bool InputMap::setPatch(t_input_universe universe,
 			const QString& pluginName, t_input input,
 			const QString& templateName)
 {
-	QLCInPlugin* ip;
-	QLCInputDevice* dev;
-
 	/* Check that the universe that we're doing mapping for is valid */
 	if (universe >= m_universes)
 	{
@@ -156,18 +153,9 @@ bool InputMap::setPatch(t_input_universe universe,
 		return false;
 	}
 
-	/* If the plugin is missing, mapping cannot be done */
-	ip = plugin(pluginName);
-	if (ip == NULL)
-		return false;
-
-	/* If the template is missing, nothing disastrous happens */
-	dev = deviceTemplate(templateName);
-	if (dev == NULL)
-		qWarning() << "Input device template not found.";
-
-	/* Do the mapping */
-	m_patch[universe]->set(ip, input, dev);
+	/* Don't care if plugin or template is NULL. */
+	m_patch[universe]->set(plugin(pluginName), input,
+			       deviceTemplate(templateName));
 
 	return true;
 }
