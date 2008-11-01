@@ -27,6 +27,8 @@
 #include <QString>
 #include <QEvent>
 
+#include <alsa/asoundlib.h>
+
 #include "common/qlcinplugin.h"
 #include "common/qlctypes.h"
 
@@ -52,11 +54,36 @@ class MIDIInput : public QObject, public QLCInPlugin
 	 * Initialization
 	 *********************************************************************/
 public:
-	void init();
 	~MIDIInput();
 
+	void init();
+
+	/** Open the given input for input data */
 	void open(t_input input = 0);
+	
+	/** Close the given input */
 	void close(t_input input = 0);
+
+	/*********************************************************************
+	 * ALSA
+	 *********************************************************************/
+protected:
+	/** Initialize ALSA for proper operation */
+	void initALSA();
+
+public:
+	/** Get the ALSA sequencer handle */
+	snd_seq_t* alsa() { return m_alsa; }
+	
+	/** Get the plugin's own ALSA port that collates all events */
+	const snd_seq_addr_t* address() { return m_address; }
+
+protected:
+	/** The plugin's ALSA sequencer interface handle */
+	snd_seq_t* m_alsa;
+
+	/** This sequencer client's port address */
+	snd_seq_addr_t* m_address;
 
 	/*********************************************************************
 	 * Devices
@@ -65,7 +92,7 @@ public:
 	void rescanDevices();
 
 protected:
-	MIDIDevice* device(const QString& path);
+	MIDIDevice* device(const snd_seq_addr_t* address);
 	MIDIDevice* device(unsigned int index);
 
 	void addDevice(MIDIDevice* device);
@@ -76,8 +103,9 @@ signals:
 	void deviceRemoved(MIDIDevice* device);
 
 protected:
+	/** The list of available MIDI devices */
 	QList <MIDIDevice*> m_devices;
-
+	
 	/*********************************************************************
 	 * Name
 	 *********************************************************************/

@@ -4,6 +4,7 @@ TARGET 		= midiinput
 
 INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin warn_on release
+unix:CONFIG	+= link_pkgconfig
 
 ###############################################################################
 # Installation
@@ -20,6 +21,7 @@ macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
 ###############################################################################
 
 win32:LIBS	+= -lwinmm
+unix:PKGCONFIG	+= alsa
 
 ###############################################################################
 # UNIX sources

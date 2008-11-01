@@ -19,15 +19,15 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QMapIterator>
+#include <QApplication>
 #include <QEvent>
 #include <QDebug>
 #include <poll.h>
-#include <QMap>
 
 #include "unix-midipoller.h"
 #include "unix-mididevice.h"
 #include "unix-midiinput.h"
+#include "midiinputevent.h"
 
 #define KPollTimeout 1000
 
@@ -39,6 +39,7 @@ MIDIPoller::MIDIPoller(MIDIInput* parent) : QThread(parent)
 {
 	Q_ASSERT(parent != NULL);
 	m_running = false;
+	m_changed = false;
 }
 
 MIDIPoller::~MIDIPoller()
@@ -51,30 +52,51 @@ MIDIPoller::~MIDIPoller()
  * Polled devices
  ****************************************************************************/
 
+quint64 MIDIPoller::addressHash(const snd_seq_addr_t* address) const
+{
+	quint64 hash = 0;
+
+	Q_ASSERT(address != NULL);
+
+	/* Put the client number to the third byte */
+	hash = static_cast<quint64> (address->client) << 32;
+
+	/* ...and the port number to the first byte (LSB) */
+	hash |= static_cast<quint64> (address->port);
+	
+	return hash;
+}
+
 bool MIDIPoller::addDevice(MIDIDevice* device)
 {
+	quint64 hash;
+
 	Q_ASSERT(device != NULL);
 
 	m_mutex.lock();
 
-	if (m_devices.contains(device->handle()) == true)
+	/* Check, whether the hash table already contains the device */
+	hash = addressHash(device->address());
+	if (m_devices.contains(hash) == true)
 	{
 		m_mutex.unlock();
 		return false;
 	}
 
-	if (device->open() == true)
-	{
-		m_devices[device->handle()] = device;
-		m_changed = true;
-	}
+	/* Subscribe the device's events */
+	subscribeDevice(device);
+	
+	/* Insert the device into the hash map for later retrieval */
+	m_devices.insert(hash, device);
+	m_changed = true;
 
-	if (m_running == false)
+	/* Start the poller thread in case it's not running */
+	if (m_running == false && isRunning() == false)
 	{
 		m_running = true;
 		start();
 	}
-
+	
 	m_mutex.unlock();
 
 	return true;
@@ -82,22 +104,67 @@ bool MIDIPoller::addDevice(MIDIDevice* device)
 
 bool MIDIPoller::removeDevice(MIDIDevice* device)
 {
-	bool r = false;
+	quint64 hash;
 
 	Q_ASSERT(device != NULL);
 
 	m_mutex.lock();
 
-	if (m_devices.remove(device->handle()) > 0)
+	hash = addressHash(device->address());
+	if (m_devices.remove(hash) > 0)
 	{
-		device->close();
+		unsubscribeDevice(device);
 		m_changed = true;
-		r = true;
+	}
+	
+	if (m_devices.count() == 0)
+	{
+		m_mutex.unlock();
+		stop();
+	}
+	else
+	{
+		m_mutex.unlock();
 	}
 
-	m_mutex.unlock();
+	return true;
+}
 
-	return r;
+void MIDIPoller::subscribeDevice(MIDIDevice* device)
+{
+	snd_seq_port_subscribe_t* sub = NULL;
+	MIDIInput* plugin;
+
+	/* Get the parent plugin pointer */
+	plugin = static_cast<MIDIInput*> (parent());
+	Q_ASSERT(plugin != NULL);
+	Q_ASSERT(plugin->alsa() != NULL);
+
+	/* Subscribe events coming from the the device's MIDI port to get
+	   patched to the plugin's own MIDI port */
+	snd_seq_port_subscribe_alloca(&sub);
+	snd_seq_port_subscribe_set_sender(sub, device->address());
+	snd_seq_port_subscribe_set_dest(sub, plugin->address());
+	snd_seq_subscribe_port(plugin->alsa(), sub);
+}
+
+void MIDIPoller::unsubscribeDevice(MIDIDevice* device)
+{
+	snd_seq_port_subscribe_t* sub = NULL;
+	MIDIInput* plugin = NULL;
+
+	Q_ASSERT(device != NULL);
+
+	/* Get the parent plugin pointer */
+	plugin = static_cast<MIDIInput*> (parent());
+	Q_ASSERT(plugin != NULL);
+	Q_ASSERT(plugin->alsa() != NULL);
+
+	/* Unsubscribe events from the device */
+	snd_seq_port_subscribe_alloca(&sub);
+	snd_seq_port_subscribe_set_sender(sub, device->address());
+	snd_seq_port_subscribe_set_dest(sub, plugin->address());
+	snd_seq_unsubscribe_port(plugin->alsa(), sub);
 }
 
 /*****************************************************************************
@@ -106,88 +173,109 @@ bool MIDIPoller::removeDevice(MIDIDevice* device)
 
 void MIDIPoller::stop()
 {
+	m_mutex.lock();
 	m_running = false;
+	m_mutex.unlock();
+
 	wait();
 }
 
 void MIDIPoller::run()
 {
-	struct pollfd* fds = NULL;
-	int num = 0;
-	int r;
-	int i;
+	MIDIInput* plugin = NULL;
+	struct pollfd *pfd = 0;
+	int npfd = 0;
+
+	/* Get the parent plugin pointer */
+	plugin = static_cast<MIDIInput*> (parent());
+	Q_ASSERT(plugin != NULL);
 
 	m_mutex.lock();
 
 	while (m_running == true)
 	{
-		/* If the list of polled devices has changed, reload all
-		   devices into the array of pollfd's */
+		Q_ASSERT(plugin->alsa() != NULL);
+
 		if (m_changed == true)
 		{
-			if (fds != NULL)
-				delete [] fds;
-
-			num = m_devices.count();
-			if (num == 0)
-				break;
-
-			fds = new struct pollfd[num];
-			memset(fds, 0, num);
-			i = 0;
-
-			QMapIterator<int, MIDIDevice*> it(m_devices);
-			while (it.hasNext() == true)
-			{
-				it.next();
-				fds[i].fd = it.key();
-				fds[i].events = POLLIN;
-				i++;
-			}
-
+			/* Poll descriptors must be re-evaluated When the
+			   polled devices hash contents change */
+			npfd = snd_seq_poll_descriptors_count(plugin->alsa(),
+							      POLLIN);
+			pfd = (struct pollfd*)
+					alloca(npfd * sizeof(struct pollfd));
+			snd_seq_poll_descriptors(plugin->alsa(), pfd, npfd,
+						 POLLIN);
 			m_changed = false;
 		}
 
 		m_mutex.unlock();
-		r = poll(fds, num, KPollTimeout);
+		/* Poll for MIDI events from the polled descriptors */
+		if (poll(pfd, npfd, KPollTimeout) > 0)
+			readEvent(plugin->alsa());
 		m_mutex.lock();
-
-		if (r < 0)
-		{
-			/* Error occurred */
-			perror("poll");
-			return;
-		}
-		else if (r != 0)
-		{
-			/* If the device map has changed, we can't trust
-			   that any of the devices are valid. */
-			if (m_changed == false)
-			{
-				for (i = 0; i < num; i++)
-				{
-					if (fds[i].revents != 0)
-						readEvent(fds[i]);
-				}
-			}
-		}
 	}
 
-	m_running = false;
 	m_mutex.unlock();
 }
 
-void MIDIPoller::readEvent(struct pollfd pfd)
+void MIDIPoller::readEvent(snd_seq_t* alsa)
 {
-	MIDIDevice* device = m_devices[pfd.fd];
-	Q_ASSERT(device != NULL);
+	m_mutex.lock();
 
-	if (device->readEvent() == false)
+	/* Wait for input data */
+	do
 	{
-		if (m_devices.remove(device->handle()) > 0)
+		snd_seq_event_t* ev = NULL;
+		MIDIDevice* device;
+		MIDIInputEvent* e;
+		quint64 hash;
+		int r;
+		
+		/* Receive an event */
+		r = snd_seq_event_input(alsa, &ev);
+		
+		/* Find a device matching the event's address. If one isn't
+		   found, skip this event, since we're not interested in it */
+		hash = addressHash(&ev->source);
+		if (m_devices.contains(hash) == true)
+			device = m_devices[hash];
+		else
+			continue;
+
+		/* Parse the MIDI event into an internal MIDIInputEvent */
+		if (ev->type == SND_SEQ_EVENT_CONTROLLER ||
+		    ev->type == SND_SEQ_EVENT_NONREGPARAM ||
+		    ev->type == SND_SEQ_EVENT_REGPARAM ||
+		    ev->type == SND_SEQ_EVENT_KEYPRESS ||
+		    ev->type == SND_SEQ_EVENT_CHANPRESS)
 		{
-			device->close();
-			m_changed = true;
+			e = new MIDIInputEvent(device, device->input(),
+					       ev->data.control.channel,
+					       ev->data.control.value);
+			QApplication::postEvent(parent(), e);
+		}
+		else if (ev->type == SND_SEQ_EVENT_NOTEON)
+		{
+			e = new MIDIInputEvent(device, device->input(),
+					       ev->data.note.note,
+					       ev->data.note.velocity);
+			QApplication::postEvent(parent(), e);
+		}
+		else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
+		{
+			e = new MIDIInputEvent(device, device->input(),
+					       ev->data.note.note,
+					       ev->data.note.velocity);
+			QApplication::postEvent(parent(), e);
+		}
+		else
+		{
+			qDebug() << "Unhandled MIDI event type:" << ev->type;
 		}
 	}
+	while (snd_seq_event_input_pending(alsa, 0) > 0);
+	
+	m_mutex.unlock();
 }
+

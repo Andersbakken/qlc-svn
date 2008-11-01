@@ -24,7 +24,9 @@
 
 #include <QThread>
 #include <QMutex>
-#include <QMap>
+#include <QHash>
+
+#include <alsa/asoundlib.h>
 
 class MIDIDevice;
 class MIDIInput;
@@ -39,33 +41,50 @@ public:
 	 * all input events, so it must not be NULL.
 	 */
 	MIDIPoller(MIDIInput* parent);
+	
+	/** Destructor */
 	virtual ~MIDIPoller();
 
 	/*********************************************************************
 	 * Polled devices
 	 *********************************************************************/
 public:
+	/** Convert an address into a quint64 that can be used as a hash key */
+	quint64 addressHash(const snd_seq_addr_t* address) const;
+
+	/** Add a new MIDI device to be polled for events */
 	bool addDevice(MIDIDevice* device);
+	
+	/** Remove the given device from the poller list */
 	bool removeDevice(MIDIDevice* device);
-	int deviceCount() const { return m_devices.count(); }
 
 protected:
-	QMap <int, MIDIDevice*> m_devices;
-	bool m_changed;
-	QMutex m_mutex;
+	/** Subscribe a device's events to come thru to the plugin's port */
+	void subscribeDevice(MIDIDevice* device);
+
+	/** Unsubscribe a device's events */
+	void unsubscribeDevice(MIDIDevice* device);
+
+protected:
+	QHash <quint64, MIDIDevice*> m_devices;
 	
 	/*********************************************************************
 	 * Poller thread
 	 *********************************************************************/
 public:
-	virtual void stop();
+	void stop();
 
 protected:
-	virtual void run();
-	void readEvent(struct pollfd pfd);
+	/** Poller thread method */
+	void run();
+	
+	/** Read events from the sequencer interface */
+	void readEvent(snd_seq_t* alsa);
 
 protected:
 	bool m_running;
+	bool m_changed;
+	QMutex m_mutex;
 };
 
 #endif

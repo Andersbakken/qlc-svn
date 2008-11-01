@@ -36,26 +36,38 @@
  * MIDIInput Initialization
  *****************************************************************************/
 
-void MIDIInput::init()
-{
-	m_poller = new MIDIPoller(this);
-	rescanDevices();
-}
-
 MIDIInput::~MIDIInput()
 {
+	/* Delete the poller. Removes the devices also from the hash table. */
+	delete m_poller;
+
+	/* Delete all MIDI devices. */
 	while (m_devices.isEmpty() == false)
 		delete m_devices.takeFirst();
 
-		m_poller->stop();
-	delete m_poller;
+	/* Close the ALSA sequencer interface */
+	snd_seq_close(m_alsa);
+	m_alsa = NULL;
+}
+
+void MIDIInput::init()
+{
+	m_alsa = NULL;
+	m_address = NULL;
+
+	/* Create the poller thread */
+	m_poller = new MIDIPoller(this);
+
+	/* Initialize ALSA stuff */
+	initALSA();
+
+	/* Find out what devices we have */
+	rescanDevices();
 }
 
 void MIDIInput::open(t_input input)
 {
-	MIDIDevice* dev;
-
-	dev = device(input);
+	MIDIDevice* dev = device(input);
 	if (dev != NULL)
 		m_poller->addDevice(dev);
 	else
@@ -64,13 +76,51 @@ void MIDIInput::open(t_input input)
 
 void MIDIInput::close(t_input input)
 {
-	MIDIDevice* dev;
-
-	dev = device(input);
+	MIDIDevice* dev = device(input);
 	if (dev != NULL)
 		m_poller->removeDevice(dev);
 	else
 		qDebug() << name() << "has no input number:" << input;
+}
+
+/*****************************************************************************
+ * ALSA
+ *****************************************************************************/
+
+void MIDIInput::initALSA()
+{
+	snd_seq_client_info_t* client = NULL;
+	
+	/* Destroy the old handle */
+	if (m_alsa != NULL)
+		snd_seq_close(m_alsa);
+	m_alsa = NULL;
+
+	/* Destroy the plugin's own address */
+	if (m_address != NULL)
+		delete m_address;
+	m_address = NULL;
+
+	/* Open the sequencer interface */
+	if (snd_seq_open(&m_alsa, "default", SND_SEQ_OPEN_DUPLEX, 0) != 0)
+	{
+		qWarning() << "Unable to open ALSA interface!";
+		m_alsa = NULL;
+		return;
+	}
+
+	/* Set current client information */
+	snd_seq_client_info_alloca(&client);
+	snd_seq_set_client_name(m_alsa, name().toAscii());
+	snd_seq_get_client_info(m_alsa, client);
+
+	/* Create an application-level port for receiving MIDI data from
+	   actual system clients' ports */
+	m_address = new snd_seq_addr_t;
+	m_address->port = snd_seq_create_simple_port(m_alsa, "Input Port",
+		   	SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
+			SND_SEQ_PORT_TYPE_MIDI_GENERIC);
+	m_address->client = snd_seq_client_info_get_client(client);
 }
 
 /*****************************************************************************
@@ -79,28 +129,81 @@ void MIDIInput::close(t_input input)
 
 void MIDIInput::rescanDevices()
 {
+	snd_seq_client_info_t* clientInfo = NULL;
+	snd_seq_port_info_t* portInfo = NULL;
 	t_input line = 0;
 
-	QDir dir("/dev/", QString("midi*"), QDir::Name, QDir::System);
-	QStringListIterator it(dir.entryList());
-	while (it.hasNext() == true)
-	{
-		QString path(dir.absoluteFilePath(it.next()));
+	/* Don't do anything if the ALSA sequencer interface is not open */
+	if (m_alsa == NULL)
+		return;
 
-		if (device(path) == NULL)
-			addDevice(new MIDIDevice(this, line++, path));
+	/* Copy all device pointers to a destroy list */
+	QList <MIDIDevice*> destroyList(m_devices);
+
+	/* Allocate these from stack */
+	snd_seq_client_info_alloca(&clientInfo);
+	snd_seq_port_info_alloca(&portInfo);
+
+	/* Find out what kinds of clients and ports there are */
+	snd_seq_client_info_set_client(clientInfo, 0); // TODO: -1 ?????
+	while (snd_seq_query_next_client(m_alsa, clientInfo) == 0)
+	{
+		int client;
+
+		/* Get the client ID */
+		client = snd_seq_client_info_get_client(clientInfo);
+
+		/* Ignore our own client */
+		if (m_address->client == client)
+			continue;
+
+		/* Go thru all available ports in the client */
+		snd_seq_port_info_set_client(portInfo, client);
+		snd_seq_port_info_set_port(portInfo, -1);
+		while (snd_seq_query_next_port(m_alsa, portInfo) == 0)
+		{
+			const snd_seq_addr_t* address;
+			MIDIDevice* dev;
+
+			address = snd_seq_port_info_get_addr(portInfo);
+			dev = device(address);
+			if (dev == NULL)
+			{
+				/* New address. Create a new device for it. */
+				dev = new MIDIDevice(this, line++, address);
+				addDevice(dev);
+			}
+			else
+			{
+				/* This device is still alive. Do not destroy
+				   it at the end of this function. */
+				destroyList.removeAll(dev);
+			}
+		}
 	}
+	
+	/* All devices that were not found during rescan are clearly no longer
+	   in our presence and must be destroyed. */
+	while (destroyList.isEmpty() == false)
+		removeDevice(destroyList.takeFirst());
 }
 
-MIDIDevice* MIDIInput::device(const QString& path)
+MIDIDevice* MIDIInput::device(const snd_seq_addr_t* address)
 {
 	QListIterator <MIDIDevice*> it(m_devices);
 
 	while (it.hasNext() == true)
 	{
 		MIDIDevice* dev = it.next();
-		if (dev->path() == path)
+
+		Q_ASSERT(dev != NULL);
+		Q_ASSERT(dev->address() != NULL);
+		
+		if (dev->address()->client == address->client &&
+		    dev->address()->port == address->port)
+		{
 			return dev;
+		}
 	}
 
 	return NULL;
@@ -190,12 +293,21 @@ QString MIDIInput::infoText(t_input input)
 		str += QString("various MIDI devices.");
 		str += QString("</P>");
 	}
-	else if (device(input) != NULL)
+	else
 	{
-		str += QString("<H3>%1</H3>").arg(inputs()[input]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		MIDIDevice* dev = device(input);
+		if (dev != NULL)
+		{
+			str += device(input)->infoText();
+		}
+		else
+		{
+			str += QString("<P><I>");
+			str += QString("Unable to find device. Please go to ");
+			str += QString("the configuration dialog and click ");
+			str += QString("the refresh button.");
+			str += QString("</I></P>");
+		}
 	}
 
 	str += QString("</BODY>");

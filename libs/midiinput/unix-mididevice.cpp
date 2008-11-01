@@ -3,7 +3,6 @@
   unix-mididevice.cpp
 
   Copyright (c) Heikki Junnila
-		Stefan Krumm
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -30,103 +29,41 @@
 #include "unix-midiinput.h"
 #include "midiinputevent.h"
 
-MIDIDevice::MIDIDevice(MIDIInput* parent, t_input line, const QString& path)
-	: QObject(parent)
+MIDIDevice::MIDIDevice(MIDIInput* parent, t_input input,
+		       const snd_seq_addr_t* address) : QObject(parent)
 {
-	Q_ASSERT(path.length() > 0);
-	m_file.setFileName(path);
-	m_line = line;
-	m_name = QString("MIDI Input %1").arg(line + 1);
+	Q_ASSERT(address != NULL);
+	m_address = NULL;
+
+	setInput(input);
+	setAddress(address);
+	extractName();
 }
 
 MIDIDevice::~MIDIDevice()
 {
-	static_cast<MIDIInput*> (parent())->removePollDevice(this);
-	close();
+	delete m_address;
 }
 
 /*****************************************************************************
- * File operations
+ * ALSA address
  *****************************************************************************/
 
-bool MIDIDevice::open()
+const snd_seq_addr_t* MIDIDevice::address() const
 {
-	bool result = false;
-
-	result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadWrite);
-	if (result == false)
-	{
-		result = m_file.open(QIODevice::Unbuffered |
-				     QIODevice::ReadOnly);
-		if (result == false)
-		{
-			qWarning() << "Unable to open" << m_file.fileName()
-				   << m_file.errorString();
-		}
-		else
-		{
-			qDebug() << "Opened" << m_file.fileName()
-				 << "in read only mode";		
-		}
-	}
-
-	return result;
+	return m_address;
 }
 
-void MIDIDevice::close()
+void MIDIDevice::setAddress(const snd_seq_addr_t* address)
 {
-	m_file.close();
-}
+	Q_ASSERT(address != NULL);
 
-QString MIDIDevice::path() const
-{
-	return m_file.fileName();
-}
-
-int MIDIDevice::handle() const
-{
-	return m_file.handle();
-}
-
-bool MIDIDevice::readEvent()
-{
-	int r;
-	unsigned char buf[10] = { 255, 255, 255, 255, 255,
-				  255, 255, 255, 255, 255 };
-
-	r = ::read(handle(), buf, 1);
-	if (r == 0)
-	{
-		/* Unable to read from the MIDI device, although something
-		   should be there. Deem it dead. */
-		::perror("read");
-		return false;
-	}
-	else if ((buf[0] & 176) == 176)
-	{
-		MIDIInputEvent* e;
-		t_input_channel channel;
-		t_input_value value;
-
-		r = ::read(handle(), &buf[1], 2);
-		if (r == 2)
-		{
-			/* channel = buf[0] ^ 176; */
-			channel = buf[1];
-			value = buf[2];
-			
-			/* Post the event to the global event loop so that we
-			   can switch context away from the poller thread and
-			   into the main application thread. This is caught in
-			   MIDIInput::customEvent(). */
-			e = new MIDIInputEvent(this, m_line, channel, value);
-			QApplication::postEvent(parent(), e);
-		}
-	}
-
-	/* Return true, because the event might have just been something that
-	   we don't recognise/care about. */
-	return true;
+	if (m_address != NULL)
+		delete m_address;
+	
+	m_address = new snd_seq_addr_t;
+	m_address->client = address->client;
+	m_address->port = address->port;
 }
 
 /*****************************************************************************
@@ -135,42 +72,61 @@ bool MIDIDevice::readEvent()
 
 QString MIDIDevice::infoText()
 {
+	MIDIInput* plugin;
 	QString info;
-	QString str;
 
-	info += QString("<TR>");
+	plugin = static_cast<MIDIInput*> (parent());
+	Q_ASSERT(plugin != NULL);
 
-	/* File name */
-	info += QString("<TD>");
-	info += m_file.fileName();
-	info += QString("</TD>");
-
-	/* Name */
-	info += QString("<TD>");
-	info += m_name;
-	info += QString("</TD>");
-
-	/* Channels */
-	info += QString("<TD ALIGN=\"CENTER\">");
-	info += QString("N/A");
-	info += QString("</TD>");
-
-	info += QString("</TR>");
+	if (plugin->alsa() != NULL)
+	{
+		info += QString("<B>%1</B>").arg(name());
+		info += QString("<P>");
+		info += QString("Device is working correctly.");
+		info += QString("</P>");
+	}
+	else
+	{
+		info += QString("<B>Unknown device</B>");
+		info += QString("<P>");
+		info += QString("ALSA sequencer interface is not available.");
+		info += QString("</P>");
+	}
 
 	return info;
 }
 
-QString MIDIDevice::name()
+QString MIDIDevice::name() const
 {
 	return m_name;
+}
+
+void MIDIDevice::extractName()
+{
+	snd_seq_port_info_t* portInfo = NULL;
+	MIDIInput* plugin;
+	int r;
+	
+	plugin = static_cast<MIDIInput*> (parent());
+	Q_ASSERT(plugin != NULL);
+	Q_ASSERT(plugin->alsa() != NULL);
+	Q_ASSERT(m_address != NULL);
+
+
+	snd_seq_port_info_alloca(&portInfo);
+	r = snd_seq_get_any_port_info(plugin->alsa(), m_address->client,
+				      m_address->port, portInfo);
+	if (r == 0)
+		m_name = QString(snd_seq_port_info_get_name(portInfo));
+	else
+		m_name = QString("ERROR");
 }
 
 /*****************************************************************************
  * Input data
  *****************************************************************************/
 
-void MIDIDevice::feedBack(t_input_channel /*channel*/,
-			      t_input_value /*value*/)
+void MIDIDevice::feedBack(t_input_channel /*channel*/, t_input_value /*value*/)
 {
 }
 
