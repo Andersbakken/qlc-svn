@@ -489,7 +489,7 @@ void Chaser::unsetTimer()
 void Chaser::setTimer(t_bus_value time)
 {
 	//This restarts the timer if necessary
-	m_timer->start(time * 1000 / 64);
+	m_timer->start(time * 1000 / KFrequency);
 }
 
 void Chaser::startTimer(t_bus_value time)
