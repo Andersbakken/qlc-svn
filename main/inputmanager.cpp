@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   inputmanager.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -21,6 +21,7 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
+#include <QHeaderView>
 #include <QStringList>
 #include <QVBoxLayout>
 #include <QMessageBox>
@@ -42,8 +43,7 @@
 #define KColumnPlugin   1
 #define KColumnInput    2
 #define KColumnTemplate 3
-#define KColumnData	4
-#define KColumnInputNum 5
+#define KColumnInputNum 4
 
 extern App* _app;
 
@@ -52,11 +52,13 @@ InputManager::InputManager(QWidget* parent) : QWidget(parent)
 	setupUi();
 	fillTree();
 
+        m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+
 	/* Timer that clears the input data icon after a while */
 	m_timer = new QTimer(this);
 	m_timer->setSingleShot(true);
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
-	
+
 	/* Listen to input map's input data signals */
 	connect(_app->inputMap(),
 		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
@@ -82,7 +84,7 @@ void InputManager::setupUi()
 	m_toolbar->addAction(QIcon(":/edit.png"), tr("Edit Mapping"),
 			     this, SLOT(slotEditClicked()));
 	layout()->addWidget(m_toolbar);
-			     
+
 	/* Tree */
 	m_tree = new QTreeWidget(this);
 	layout()->addWidget(m_tree);
@@ -93,13 +95,11 @@ void InputManager::setupUi()
 	columns << tr("Universe")
 		<< tr("Plugin")
 		<< tr("Input")
-		<< tr("Template")
-		<< tr("Data");
+		<< tr("Template");
 	m_tree->setHeaderLabels(columns);
-		
+
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
-	
 }
 
 /****************************************************************************
@@ -119,7 +119,7 @@ void InputManager::slotEditClicked()
 	universe = item->text(KColumnUniverse).toInt() - 1;
 	inputPatch = _app->inputMap()->patch(universe);
 	Q_ASSERT(inputPatch != NULL);
-	
+
 	InputPatchEditor ipe(this, universe, inputPatch);
 	if (ipe.exec() == QDialog::Accepted)
 		updateItem(item, inputPatch, universe);
@@ -186,15 +186,15 @@ void InputManager::slotInputValueChanged(t_input_universe universe,
 					 t_input_value value)
 {
 	QTreeWidgetItem* item;
-	
+
 	item = m_tree->topLevelItem(universe);
 	if (item == NULL)
 		return;
 
 	/* Show an icon on a universe row that received input data */
 	QIcon icon(":/input.png");
-	item->setIcon(KColumnData, icon);
-	
+	item->setIcon(KColumnUniverse, icon);
+
 	/* Restart the timer */
 	m_timer->start(250);
 }
@@ -204,7 +204,7 @@ void InputManager::slotTimerTimeout()
 	QTreeWidgetItemIterator it(m_tree);
 	while (*it != NULL)
 	{
-		(*it)->setIcon(KColumnData, QIcon());
+		(*it)->setIcon(KColumnUniverse, QIcon());
 		++it;
 	}
 }
