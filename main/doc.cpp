@@ -551,7 +551,7 @@ Function* Doc::createFunction(Function::Type type)
 		break;
 
 	case Function::Chaser:
-	        function = new Chaser(this);
+	        function = new Chaser();
 		break;
 
 	case Function::Collection:

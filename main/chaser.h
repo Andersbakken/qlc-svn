@@ -29,6 +29,7 @@ class Event;
 class QFile;
 class QString;
 class QDomDocument;
+class QTimer;
 
 class Chaser : public Function
 {
@@ -39,7 +40,7 @@ class Chaser : public Function
 	 *********************************************************************/
 public:
 	/** Constructor */
-	Chaser(QObject* parent);
+	Chaser();
 
 	/**
 	 * Copy the contents of the given chaser into this chaser.
@@ -117,19 +118,40 @@ protected:
 	/** Start a step function at the given index */
 	void startMemberAt(int index);
 
-	/** Stop a step function at the given index */
-	void stopMemberAt(int index);
+	/*********************************************************************
+	 * Internal threading
+	 *********************************************************************/
+protected slots:
+	/** Stop this function */
+	void slotStop();
 
-	/** Wait until m_holdTime ticks (1/Hz) have elapsed */
-	void hold();
+	/** The hold timer has timed out */
+	void slotTimerTimeout();
+
+signals:
+	/** Stop this function */
+	void stopping();
+
+protected:
+	/** Move on to the next function or end the thread if we are done */
+	void advance();
+
+	/** Stop the timer so that it won't timeout until set again */
+	void unsetTimer();
+
+	/** Set a time for the timer. time is the time from now. This doesn't change any internal state except for the timer, use startTimer if a timer isn't already running */
+	void setTimer(t_bus_value time);
+
+	/** Start the timer. This sets all internal state as well as starting the timer for the time specified */
+	void startTimer(t_bus_value time);
 
 protected:
 	bool m_childRunning;
-	bool m_stopped;
 
 	t_bus_value m_holdTime;
 	t_bus_value m_holdStart;
-	t_bus_value m_timeCode;
+
+	QTimer* m_timer;
 
 	Direction m_runTimeDirection;
 	int m_runTimePosition;

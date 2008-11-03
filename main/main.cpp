@@ -132,6 +132,10 @@ int main(int argc, char** argv)
 	   Function::stopped(t_function_id) meta-signals */
 	qRegisterMetaType <t_function_id>("t_function_id");
 
+	/* Registering needed for various chaser signals */
+	qRegisterMetaType <t_bus_id>("t_bus_id");
+	qRegisterMetaType <t_bus_value>("t_bus_value");
+
 	_app = new App();
 	_app->show();
 
