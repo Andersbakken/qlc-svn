@@ -1,3 +1,5 @@
+include(../vars.pro)
+
 TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= midiinput
@@ -10,8 +12,7 @@ unix:CONFIG	+= link_pkgconfig
 # Installation
 ###############################################################################
 
-unix:target.path	= /usr/lib/qlc/input
-win32:target.path	= C:\QLC\plugins\Input
+target.path	= $$INPUTPLUGINDIR
 !macx:INSTALLS	+= target
 
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input

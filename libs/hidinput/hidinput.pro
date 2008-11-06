@@ -3,10 +3,11 @@ LANGUAGE 	= C++
 TARGET 		= hidinput
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on debug_and_release build_all
+CONFIG          += plugin warn_on release
 
-target.path	= /usr/lib/qlc/input
+target.path	= $$INPUTPLUGINDIR
 !macx:INSTALLS	+= target
+
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
 
 # Input

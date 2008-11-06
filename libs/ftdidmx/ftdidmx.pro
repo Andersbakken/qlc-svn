@@ -6,7 +6,7 @@ INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin warn_on release
 LIBS		+= -L. -lftd2xx.0.1.4
 
-unix:target.path = /usr/lib/qlc/output
+target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
 
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output

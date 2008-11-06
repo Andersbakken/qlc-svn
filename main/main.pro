@@ -8,12 +8,18 @@ QT 		+= xml
 INCLUDEPATH 	+= . ../libs/
 macx:LIBS 	+= -L./qlc.app/Contents/Frameworks -lqlccommon
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
-win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
+win32:release {
+	LIBS 	+= -L../libs/common/release/ -lqlccommon
+}
+win32:debug {
+	LIBS 	+= -L../libs/common/debug/ -lqlccommon
+}
+
 macx:ICON	= ../gfx/qlc.icns
 macx:QMAKE_INFO_PLIST = ./Info.plist
 
 unix:target.path = /usr/bin
-win32:target.path = C:\QLC
+win32:target.path = $$(SystemDrive)/QLC
 macx:target.path = /Applications
 INSTALLS	+= target
 

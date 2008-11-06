@@ -1,23 +1,22 @@
 TEMPLATE 	= app
 LANGUAGE 	= C++
 TARGET 		= qlc-fixtureeditor
-VERSION 	= 3.0
 
-CONFIG          += qt warn_on debug_and_release build_all
+CONFIG          += qt warn_on release
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS	+= -L../libs/common -lqlccommon
 macx:LIBS	+= -L./qlc-fixtureeditor.app/Contents/Frameworks -lqlccommon
 win32:release {
-LIBS 	+= -L../libs/common/release/ -lqlccommon
+	LIBS 	+= -L../libs/common/release/ -lqlccommon
 }
 win32:debug {
-LIBS 	+= -L../libs/common/debug/ -lqlccommon
+	LIBS 	+= -L../libs/common/debug/ -lqlccommon
 }
 
 unix:target.path = /usr/bin
-win32:target.path = C:\QLC
+win32:target.path = $$(SystemDrive)/QLC
 macx:target.path = /Applications
 INSTALLS 	+= target
 

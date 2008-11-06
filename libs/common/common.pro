@@ -1,3 +1,5 @@
+include(../vars.pro)
+
 TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= qlccommon
@@ -31,11 +33,10 @@ SOURCES += qlccapability.cpp \
            qlcphysical.cpp
 
 # Installation
-unix:target.path = /usr/lib
-win32:target.path = C:\QLC
+target.path	= $$LIBSDIR
 
 unix:headers.path = /usr/include/qlc
-win32:headers.path = C:\QLC\include
+win32:headers.path = $$LIBSDIR/include
 headers.files = qlccapability.h \
                 qlcchannel.h \
                 qlcdocbrowser.h \

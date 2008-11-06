@@ -1,3 +1,5 @@
+include (../vars.pro)
+
 TEMPLATE	= lib
 LANGUAGE	= C++
 TARGET		= usbdmxout
@@ -5,8 +7,7 @@ TARGET		= usbdmxout
 INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin warn_on release
 
-unix:target.path = /usr/lib/qlc/output
-win32:target.path = C:/QLC/Plugins/Output
+target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
 
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output

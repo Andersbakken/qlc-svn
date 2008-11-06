@@ -64,5 +64,5 @@ fixtures.files += SGM-Victory-II-250.qxf
 fixtures.files += SGM-Victory-II-Pro150.qxf
 
 unix:fixtures.path = /usr/share/fixtures
-win32:fixtures.path = C:/QLC/Fixtures
+win32:fixtures.path = $$(SystemDrive)/QLC/Fixtures
 INSTALLS += fixtures
