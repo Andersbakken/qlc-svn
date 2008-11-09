@@ -433,12 +433,12 @@ void Chaser::startMemberAt(int index)
 void Chaser::advance()
 {
 	// Have we completed a run
-	boolean finishedForward = (m_runTimeDirection == Forward
-	                        && m_runTimePosition == m_steps.count() - 1)
-	boolean finishedBackwards = (m_runTimeDirection == Backward
-	                          && m_runTimePosition == 0)
+	bool finishedForward = (m_runTimeDirection == Forward
+	                     && m_runTimePosition == m_steps.count() - 1);
+	bool finishedBackward = (m_runTimeDirection == Backward
+	                       && m_runTimePosition == 0);
 
-	if (finishedForwards || finishedBackwards)
+	if (finishedForward || finishedBackward)
 	{
 		// Check what should be done after one round
 		if (m_runOrder == SingleShot)
