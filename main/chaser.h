@@ -139,11 +139,21 @@ protected:
 	/** Stop the timer so that it won't timeout until set again */
 	void unsetTimer();
 
-	/** Set a time for the timer. time is the time from now. This doesn't change any internal state except for the timer, use startTimer if a timer isn't already running */
+	/** 
+	 * Set a time for the timer. time is the time from now. 
+	 * This doesn't change any internal state except for the timer, 
+	 * use startTimer if a timer isn't already running
+	 */
 	void setTimer(t_bus_value time);
 
-	/** Start the timer. This sets all internal state as well as starting the timer for the time specified */
+	/** 
+	 * Start the timer. This sets all internal state as well as starting
+	 * the timer for the time specified
+	 */
 	void startTimer(t_bus_value time);
+
+	/** Updates the timer for a new value of m_holdTime.*/
+	void updateTimer();
 
 protected:
 	bool m_childRunning;

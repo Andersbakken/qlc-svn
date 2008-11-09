@@ -278,7 +278,7 @@ void Chaser::slotStop()
 {
 	m_timer->stop();
 
-	//If we are still running the chld, stop it. If we are holding (on a timer) leave it.
+	//If we are still running the child, stop it.
 	if (m_childRunning)
 	{
 		t_function_id id = m_steps.at(m_runTimePosition);
@@ -292,6 +292,7 @@ void Chaser::slotStop()
 
 void Chaser::slotBusValueChanged(t_bus_id id, t_bus_value value)
 {
+	//does this affect us?
 	if (id == m_busID)
 	{
 		m_holdTime = value;
@@ -299,28 +300,35 @@ void Chaser::slotBusValueChanged(t_bus_id id, t_bus_value value)
 		//if we have an active time we will have to change its length.
 		if (m_timer->isActive())
 		{
-			t_bus_value newEndTimeCode = m_holdStart + m_holdTime;
-			t_bus_value currentTimeCode = _app->functionConsumer()->timeCode();
-			if (currentTimeCode >= newEndTimeCode)
-			{
-				//we should already have finished. Don't bother with a timer.
-				unsetTimer();
-				advance();
-			}
-			else
-			{
-				bool advanceOnChange = false; //TODO make this a proper setting.
-				if (advanceOnChange)
-				{
-					advance();
-				}
-				else
-				{
-					setTimer(newEndTimeCode - currentTimeCode);
-				}
-			}
+			updateTimer();
 		}
 	}	
+}
+
+void Chaser::updateTimer()
+{
+	t_bus_value newEndTimeCode = m_holdStart + m_holdTime;
+	t_bus_value currentTimeCode = _app->functionConsumer()->timeCode();
+
+	//should we have finished already?
+	if (currentTimeCode >= newEndTimeCode)
+	{
+		//Don't bother with a timer, just advance.
+		unsetTimer();
+		advance();
+	}
+	else
+	{
+		bool advanceOnChange = false; //TODO make this a proper setting.
+		if (advanceOnChange)
+		{
+			advance();
+		}
+		else
+		{
+			setTimer(newEndTimeCode - currentTimeCode);
+		}
+	}
 }
 
 void Chaser::slotChildStopped(t_function_id id)
@@ -341,7 +349,8 @@ void Chaser::slotChildStopped(t_function_id id)
 		startTimer(m_holdTime);
 }
 
-void Chaser::slotTimerTimeout() {
+void Chaser::slotTimerTimeout() 
+{
 	advance();
 }
 
@@ -393,8 +402,8 @@ void Chaser::startMemberAt(int index)
 {
 	if (m_childRunning)
 	{
-		qDebug() << "Tried to start a function when we are already running";
-		return;
+		qDebug() << 
+		  "Tried to start a function when we are already running";
 	}
 
 	t_function_id id = m_steps.at(index);
@@ -417,13 +426,19 @@ void Chaser::startMemberAt(int index)
 }
 
 /**
- * If we have any more scenes to show, do so, if not terminate. Either way this returns quite quickly, we will be informed via a slot of the the next action to perform.
+ * If we have any more scenes to show, do so, if not terminate. 
+ * Either way this returns quite quickly, 
+ * we will be informed via a slot of the the next action to perform.
  */
 void Chaser::advance()
 {
 	// Have we completed a run
-	if ((m_runTimeDirection == Forward  && m_runTimePosition == m_steps.count() - 1) || 
-	    (m_runTimeDirection == Backward && m_runTimePosition == 0))
+	boolean finishedForward = (m_runTimeDirection == Forward
+	                        && m_runTimePosition == m_steps.count() - 1)
+	boolean finishedBackwards = (m_runTimeDirection == Backward
+	                          && m_runTimePosition == 0)
+
+	if (finishedForwards || finishedBackwards)
 	{
 		// Check what should be done after one round
 		if (m_runOrder == SingleShot)
