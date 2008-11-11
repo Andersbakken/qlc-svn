@@ -66,11 +66,12 @@ protected:
 	QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id);
 	QList <Fixture*> selectedFixtures();
 	void updateIndices(int from, int to);
-	void addFixtureItem(Fixture* fixture);
+	void addFixtureItem(Fixture* fixture, Function::Direction fxi_dir);
 	void removeFixtureItem(Fixture* fixture);
 
 protected slots:
 	void slotNameEdited(const QString &text);
+	void slotFixtureItemChanged(QTreeWidgetItem* item, int column);
 	void slotAddFixtureClicked();
 	void slotRemoveFixtureClicked();
 	void slotRaiseFixtureClicked();

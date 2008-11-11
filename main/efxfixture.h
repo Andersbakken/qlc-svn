@@ -22,27 +22,119 @@
 #ifndef EFXFIXTURE_H
 #define EFXFIXTURE_H
 
-#include "common/qlctypes.h"
+#include <common/qlctypes.h>
 #include "function.h"
 
-class EFX;
+class EFXFixture;
 class Scene;
+class EFX;
+
+#define KXMLQLCEFXFixture "Fixture"
+#define KXMLQLCEFXFixtureID "ID"
+#define KXMLQLCEFXFixtureDirection "Direction"
 
 class EFXFixture
 {
+	friend class EFX;
+
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
-	EFXFixture(EFX* parent, t_fixture_id fxi_id, int index, int order,
-		   Function::Direction direction, Scene* startScene,
-		   Scene* stopScene);
+	/** Constructor */
+	EFXFixture(EFX* parent);
+
+	/** Copy constructor */
+	EFXFixture(const EFXFixture* ef);
+
+	/** Destructor */
 	~EFXFixture();
+
+	/** Assignment operator */
+	EFXFixture& operator=(const EFXFixture& ef);
+
+	/** Comparing operator */
+	bool operator==(const EFXFixture& fxi) const;
+	
+	/********************************************************************
+	 * Public properties
+	 ********************************************************************/
+public:
+	/** Set the fixture that this EFXFixture represents */
+	void setFixture(t_fixture_id fxi_id);
+
+	/** Get the fixture that this EFXFixture represents */
+	t_fixture_id fixture() const;
+
+	/** Set this fixture's direction */
+	void setDirection(Function::Direction dir);
+	
+	/** Get this fixture's direction */
+	Function::Direction direction() const;
+
+protected:
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	/** Load public properties from an EFXFixture node */
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/** Save public properties under an EFX node */
+	bool saveXML(QDomDocument* doc, QDomElement* efx_root) const;
+
+	 /********************************************************************
+	 * Protected run-time-only properties
+	 ********************************************************************/
+protected:
+	/** Set starting index (place of first lsbPanCh) in m_channelData */
+	void setIndex(int number);
+
+	/** Get starting index (place of first lsbPanCh) in m_channelData */
+	int index() const;
+
+	/** Set the order number in serial propagation mode */
+	void setSerialNumber(int number);
+
+	/** Get the order number in serial propagation mode */
+	int serialNumber() const;
+
+	/** Set the scene that is used to initialize the fixture */
+	void setStartScene(Scene* scene);
+
+	/** Get the scene that is used to initialize the fixture */
+	Scene* startScene() const;
+
+	/** Set the scene that is used to de-initialize the fixture */
+	void setStopScene(Scene* scene);
+
+	/** Get the scene that is used to de-initialize the fixture */
+	Scene* stopScene() const;
+
+	/** Set the low byte channel for pan movement */
+	void setLsbPanChannel(t_channel ch);
+
+	/** Set the high byte channel for pan movement */
+	void setMsbPanChannel(t_channel ch);
+
+	/** Set the low byte channel for tilt movement */
+	void setLsbTiltChannel(t_channel ch);
+
+	/** Set the high byte channel for pan movement */
+	void setMsbTiltChannel(t_channel ch);
+
+	/** Update the waiting threshold value for serial operation */
+	void updateSkipThreshold();
+
+	/** Check that this object has a fixture ID and at least LSB channels
+	    for pan and tilt. */
+	bool isValid();
 
 	/** Reset the fixture when the EFX is stopped */
 	void reset();
 
-	/** Check, whether this EFXFixture is ready (no more events) */
+	/** Check, whether this EFXFixture is ready (no more events).
+	    This can happen basically only if SingleShot mode is enabled. */
 	bool isReady() const { return m_ready; }
 
 protected:
@@ -55,12 +147,15 @@ protected:
 	/** This fixture's starting index in m_channelData */
 	int m_index;
 
-	/** This fixture's order in serial propagation mode */
-	int m_order;
+	/** This fixture's order number in serial propagation mode */
+	int m_serialNumber;
 
-	/** This fixture's current direction */
+	/** This fixture's original direction */
 	Function::Direction m_direction;
 
+	/** This fixture's current run-time direction */
+	Function::Direction m_runTimeDirection;
+	
 	/** The scene that is used to initialize the fixtures involved */
 	Scene* m_startScene;
 
@@ -74,21 +169,6 @@ protected:
 	    after it has completed a full cycle. */
 	bool m_ready;
 
-	/*********************************************************************
-	 * Channels
-	 *********************************************************************/
-public:
-	void setLsbPanChannel(t_channel ch);
-	void setMsbPanChannel(t_channel ch);
-
-	void setLsbTiltChannel(t_channel ch);
-	void setMsbTiltChannel(t_channel ch);
-
-	void updateSkipThreshold();
-
-	bool isValid();
-
-protected:
 	/**
 	 * This fixture's current position in the pattern (a point on a
 	 * circle's circumference)
@@ -141,13 +221,12 @@ protected:
 	/*********************************************************************
 	 * Running
 	 *********************************************************************/
-public:
+protected:
 	/**
 	 * Calculate the next step for this fixture and put the values to $data
 	 */
 	void nextStep(t_buffer_data* data);
 
-protected:
 	/**
 	 * Write this EFXFixture's channel data to event buffer
 	 */

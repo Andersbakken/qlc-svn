@@ -35,7 +35,6 @@ class QPolygon;
 class QString;
 class Fixture;
 
-#define KXMLQLCEFXFixture "Fixture"
 #define KXMLQLCEFXPropagationMode "PropagationMode"
 #define KXMLQLCEFXPropagationModeParallel "Parallel"
 #define KXMLQLCEFXPropagationModeSerial "Serial"
@@ -110,31 +109,17 @@ protected:
 	 * Algorithm
 	 *********************************************************************/
 public:
-	/**
-	 * Get the supported algorithms as a string list
-	 *
-	 * @note This is a static function
-	 *
-	 * @param algorithms A QStringList that shall contain the algorithms
-	 */
-	static void algorithmList(QStringList& list);
+	/** Get the supported algorithms in a string list */
+	static QStringList algorithmList();
 
-	/**
-	 * Get the current algorithm
-	 *
-	 */
+	/** Get the current algorithm */
 	QString algorithm();
 
-	/**
-	 * Set the algorithm
-	 *
-	 */
+	/** Set the current algorithm */
 	void setAlgorithm(QString algorithm);
 
 protected:
-	/**
-	 * Algorithm used by the current EFX function
-	 */
+	/** Current algorithm used by the EFX */
 	QString m_algorithm;
 
 	/*********************************************************************
@@ -352,92 +337,95 @@ protected:
 	 * Fixtures
 	 *********************************************************************/
 public:
+	/**
+	 * Parallel mode means that all fixtures move exactly like others.
+	 * Serial mode means that fixtures start moving one after the other,
+	 * a bit delayed, creating a more dynamic effect.
+	 */
 	enum PropagationMode { Parallel, Serial };
 
 public:
+	/** Add a fixture to this EFX */
 	void addFixture(t_fixture_id fxi_id);
+
+	/** Remove the designated fixture from this EFX */
 	void removeFixture(t_fixture_id fxi_id);
+
+	/** Raise a fixture in the serial order to an earlier position */
 	void raiseFixture(t_fixture_id fxi_id);
+
+	/** Lower a fixture in the serial order to a later position */
 	void lowerFixture(t_fixture_id fxi_id);
-	int fixtureCount() const { return m_fixtures.count(); }
 
-	void setPropagationMode(PropagationMode mode);
-	PropagationMode propagationMode() const { return m_propagationMode; }
-	static QString propagationModeToString(PropagationMode mode);
-	static PropagationMode stringToPropagationMode(QString str);
+	/** Set a particular fixture's direction */
+	void setFixtureDirection(t_fixture_id fxi_id, Function::Direction dir);
 
-	QList <t_fixture_id>* fixtures() { return &m_fixtures; }
+	/** Get a particular fixture's direction */
+	Function::Direction fixtureDirection(t_fixture_id fxi_id);
+
+	/** Get a list of fixtures taking part in this EFX */
+	QList <t_fixture_id> fixtures() const;
 
 public slots:
 	/** Slot that captures Doc::fixtureRemoved signals */
 	void slotFixtureRemoved(t_fixture_id fxi_id);
 
 protected:
-	QList <t_fixture_id> m_fixtures;
+	QList <EFXFixture> m_fixtures;
+
+	/*********************************************************************
+	 * Fixture propagation mode
+	 *********************************************************************/
+public:
+	/** Set the EFX's fixture propagation mode (see the enum above) */
+	void setPropagationMode(PropagationMode mode);
+	
+	/** Get the EFX's fixture propagation mode */
+	PropagationMode propagationMode() const { return m_propagationMode; }
+	
+	/** Convert the propagation mode setting to a string */
+	static QString propagationModeToString(PropagationMode mode);
+
+	/** Convert a string to a propagation mode setting */
+	static PropagationMode stringToPropagationMode(QString str);
+
+protected:
 	PropagationMode m_propagationMode;
 
 	/*********************************************************************
 	 * Start & Stop Scenes
 	 *********************************************************************/
 public:
-	/**
-	 * Set the start scene if Enabled
-	 *
-	 */
+	/** Set the start scene */
 	void setStartScene(t_function_id id);
   
-	/**
-	 * Get the id for start scene
-	 *
-	 */
+	/** Get the start scene */
 	t_function_id startScene();
   
-	/**
-	 * Start scene enabled
-	 *
-	 */
+	/** Set start scene enabled status */
 	void setStartSceneEnabled(bool set);
 
-	/**
-	 * Get start scene enabled status
-	 *
-	 */
+	/** Get start scene enabled status */
 	bool startSceneEnabled();
 
-	/**
-	 * Set the stop scene if Enabled
-	 *
-	 */
+	/** Set the stop scene */
 	void setStopScene(t_function_id id);
   
-	/**
-	 * Get the id for stop scene
-	 *
-	 */
+	/** Get the stop scene */
 	t_function_id stopScene();
   
-	/**
-	 * Stop scene enabled
-	 *
-	 */
+	/** Set stop scene enabled status */
 	void setStopSceneEnabled(bool set);
 
-	/**
-	 * Get stop scene enabled status
-	 *
-	 */
+	/** Get stop scene enabled status */
 	bool stopSceneEnabled();
 
 protected:
-	/**
-	 * Start (initialisation) scene
-	 */
+	/** Start (initialisation) scene */
 	t_function_id m_startSceneID;
 	bool m_startSceneEnabled;
 
-	/**
-	 * Stop (de-initialisation) scene
-	 */
+	/** Stop (de-initialisation) scene */
 	t_function_id m_stopSceneID;
 	bool m_stopSceneEnabled;
     
@@ -646,7 +634,7 @@ protected:
 	/**
 	 * Run-time pan & tilt channels and their values
 	 */
-	QList <EFXFixture> m_runTimeData;
+	QList <EFXFixture> m_runTimeFixtures;
 };
 
 #endif

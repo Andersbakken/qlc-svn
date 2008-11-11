@@ -29,6 +29,7 @@
 #include <QSpinBox>
 #include <QPainter>
 #include <QLabel>
+#include <QDebug>
 #include <QPen>
 
 #include "common/qlcfixturedef.h"
@@ -42,11 +43,10 @@
 
 extern App* _app;
 
-#define KColumnNumber       0
-#define KColumnName         1
-#define KColumnManufacturer 2
-#define KColumnModel        3
-#define KColumnID           4
+#define KColumnNumber  0
+#define KColumnName    1
+#define KColumnReverse 2
+#define KColumnID      3
 
 #define KInitColumnName     0
 #define KInitColumnID       1
@@ -89,6 +89,9 @@ void EFXEditor::initGeneralPage()
 	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
 		this, SLOT(slotNameEdited(const QString&)));
 
+	connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotFixtureItemChanged(QTreeWidgetItem*,int)));
+
 	connect(m_addFixtureButton, SIGNAL(clicked()),
 		this, SLOT(slotAddFixtureClicked()));
 	connect(m_removeFixtureButton, SIGNAL(clicked()),
@@ -110,9 +113,14 @@ void EFXEditor::initGeneralPage()
 	slotNameEdited(m_efx->name());
 
 	/* Put all of the EFX's fixtures to the tree view */
-	QListIterator <t_fixture_id> it(*m_efx->fixtures());
+	QListIterator <t_fixture_id> it(m_efx->fixtures());
 	while (it.hasNext() == true)
-		addFixtureItem(_app->doc()->fixture(it.next()));
+	{
+		t_fixture_id fxi_id = it.next();
+		Function::Direction fxi_dir = m_efx->fixtureDirection(fxi_id);
+
+		addFixtureItem(_app->doc()->fixture(fxi_id), fxi_dir);
+	}
 
 	/* Set propagation mode */
 	if (m_efx->propagationMode() == EFX::Serial)
@@ -143,9 +151,7 @@ void EFXEditor::initMovementPage()
 	m_efx->setPreviewPointArray(m_previewArea->points());
 
 	/* Get supported algorithms and fill the algorithm combo with them */
-	QStringList list;
-	EFX::algorithmList(list);
-	m_algorithmCombo->addItems(list);
+	m_algorithmCombo->addItems(EFX::algorithmList());
 
 	connect(m_loop, SIGNAL(clicked()),
 		this, SLOT(slotLoopClicked()));
@@ -314,7 +320,7 @@ void EFXEditor::updateIndices(int from, int to)
 	}
 }
 
-void EFXEditor::addFixtureItem(Fixture* fixture)
+void EFXEditor::addFixtureItem(Fixture* fixture, Function::Direction fxi_dir)
 {
 	QTreeWidgetItem* item;
 
@@ -323,18 +329,12 @@ void EFXEditor::addFixtureItem(Fixture* fixture)
 	item = new QTreeWidgetItem(m_tree);
 	item->setText(KColumnName, fixture->name());
 	item->setText(KColumnID, QString("%1").arg(fixture->id()));
+	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
 
-	if (fixture->fixtureDef() == NULL)
-	{
-		item->setText(KColumnManufacturer, tr("Generic"));
-		item->setText(KColumnModel, tr("Generic"));
-	}
+	if (fxi_dir == Function::Backward)
+		item->setCheckState(KColumnReverse, Qt::Checked);
 	else
-	{
-		item->setText(KColumnManufacturer,
-			      fixture->fixtureDef()->manufacturer());
-		item->setText(KColumnModel, fixture->fixtureDef()->model());
-	}
+		item->setCheckState(KColumnReverse, Qt::Unchecked);
 
 	updateIndices(m_tree->indexOfTopLevelItem(item),
 		      m_tree->topLevelItemCount() - 1);
@@ -368,6 +368,19 @@ void EFXEditor::slotNameEdited(const QString &text)
 	m_efx->setName(text);
 }
 
+void EFXEditor::slotFixtureItemChanged(QTreeWidgetItem* item, int column)
+{
+	if (column == KColumnReverse)
+	{
+		t_fixture_id fxi_id = item->text(KColumnID).toInt();
+
+		if (item->checkState(column) == Qt::Checked)
+			m_efx->setFixtureDirection(fxi_id, Function::Backward);
+		else
+			m_efx->setFixtureDirection(fxi_id, Function::Forward);
+	}
+}
+
 void EFXEditor::slotAddFixtureClicked()
 {
 	/* Put all fixtures already present into a list of fixtures that
@@ -395,8 +408,8 @@ void EFXEditor::slotAddFixtureClicked()
 			fixture = _app->doc()->fixture(fxi_id);
 			Q_ASSERT(fixture != NULL);
 
-			addFixtureItem(fixture);
 			m_efx->addFixture(fxi_id);
+			addFixtureItem(fixture, Function::Forward);
 		}
 	}
 }

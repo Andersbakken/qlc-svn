@@ -70,12 +70,7 @@
          </column>
          <column>
           <property name="text" >
-           <string>Manufacturer</string>
-          </property>
-         </column>
-         <column>
-          <property name="text" >
-           <string>Model</string>
+           <string>Reverse</string>
           </property>
          </column>
         </widget>
