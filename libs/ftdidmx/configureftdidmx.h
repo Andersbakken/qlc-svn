@@ -31,7 +31,7 @@ class FTDIDMXOut;
 class QTimer;
 
 struct FTDIDevice {
-	char *name;
+	const char *name;
 	int vid;
 	int pid;	
 };
