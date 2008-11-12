@@ -91,7 +91,6 @@ HEADERS += aboutbox.h \
 FORMS += addfixture.ui \
 	 appdirectories.ui \
          assignhotkey.ui \
-         busmanager.ui \
          chasereditor.ui \
          collectioneditor.ui \
          efxeditor.ui \

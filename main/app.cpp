@@ -1146,6 +1146,7 @@ void App::slotBusManager()
 
 		sub->setWidget(m_busManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
+		sub->setWindowTitle(tr("Bus Manager"));
 		sub->setWindowIcon(QIcon(":/bus.png"));
 
 		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);

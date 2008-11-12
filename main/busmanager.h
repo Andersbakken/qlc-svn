@@ -23,23 +23,42 @@
 #define BUSMANAGER_H
 
 #include <QWidget>
-#include "ui_busmanager.h"
 
-class QCloseEvent;
+class QTreeWidgetItem;
+class QTreeWidget;
+class QToolBar;
 
-class BusManager : public QWidget, public Ui_BusManager
+class BusManager : public QWidget
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
 	BusManager(QWidget* parent);
 	~BusManager();
 
+protected:
+	void setupUi();
+
+	/*********************************************************************
+	 * Toolbar
+	 *********************************************************************/
 protected slots:
-	void slotEdit();
+	void slotEditClicked();
 
 protected:
+	QToolBar* m_toolbar;
+
+	/*********************************************************************
+	 * Tree widget
+	 *********************************************************************/
+protected:
 	void fillTree();
+
+protected:
+	QTreeWidget* m_tree;
 };
 
 #endif

@@ -22,6 +22,11 @@
 #include <QTreeWidgetItem>
 #include <QInputDialog>
 #include <QTreeWidget>
+#include <QVBoxLayout>
+#include <QStringList>
+#include <QHeaderView>
+#include <QToolBar>
+#include <QAction>
 #include <QString>
 #include <QIcon>
 
@@ -34,15 +39,9 @@
 
 BusManager::BusManager(QWidget* parent) : QWidget(parent)
 {
-	Q_ASSERT(parentWidget() != NULL);
+	Q_ASSERT(parent != NULL);
 
-	setupUi(this);
-
-	connect(m_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEdit()));
-	connect(m_edit, SIGNAL(clicked()), this, SLOT(slotEdit()));
-	connect(m_close, SIGNAL(clicked()), parentWidget(), SLOT(close()));
-
+	setupUi();
 	fillTree();
 }
 
@@ -50,9 +49,42 @@ BusManager::~BusManager()
 {
 }
 
-void BusManager::slotEdit()
+void BusManager::setupUi()
 {
-	QTreeWidgetItem* item = m_list->currentItem();
+	QStringList columns;
+
+	/* Create a new layout for this widget */
+	new QVBoxLayout(this);
+
+	/* Toolbar */
+	m_toolbar = new QToolBar(tr("Bus Manager"), this);
+	m_toolbar->addAction(QIcon(":/edit.png"), tr("Edit bus name"),
+			     this, SLOT(slotEditClicked()));
+	layout()->addWidget(m_toolbar);
+
+	/* Tree */
+	m_tree = new QTreeWidget(this);
+	layout()->addWidget(m_tree);
+	m_tree->setRootIsDecorated(false);
+	m_tree->setItemsExpandable(false);
+	m_tree->setSortingEnabled(false);
+	m_tree->setAllColumnsShowFocus(true);
+	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+
+	columns << tr("Bus ID") << tr("Name");
+	m_tree->setHeaderLabels(columns);
+
+	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditClicked()));
+}
+
+/****************************************************************************
+ * Toolbar
+ ****************************************************************************/
+
+void BusManager::slotEditClicked()
+{
+	QTreeWidgetItem* item = m_tree->currentItem();
 
 	if (item != NULL)
 	{
@@ -62,8 +94,8 @@ void BusManager::slotEdit()
 		bool ok = false;
 
 		id = item->text(KColumnID).toInt() - 1;
-		label.sprintf("Bus #%d name:", id + 1);
-		name = QInputDialog::getText(this, "Rename bus", label,
+		label = tr("Bus #%1 name:").arg(id + 1);
+		name = QInputDialog::getText(this, tr("Rename bus"), label,
 					     QLineEdit::Normal, Bus::name(id),
 					     &ok);
 		if (ok == true)
@@ -74,15 +106,19 @@ void BusManager::slotEdit()
 	}
 }
 
+/****************************************************************************
+ * Tree widget
+ ****************************************************************************/
+
 void BusManager::fillTree()
 {
+	QTreeWidgetItem* item;
+	QString str;
+
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
-		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-		QString str;
-
-		str.sprintf("%.2d", id + 1);
-		item->setText(KColumnID, str);
+		item = new QTreeWidgetItem(m_tree);
+		item->setText(KColumnID, str.sprintf("%.2d", id + 1));
 		item->setText(KColumnName, Bus::name(id));
 	}
 }
