@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>BusProperties</class>
- <widget class="QWidget" name="BusProperties" >
+ <class>BusManager</class>
+ <widget class="QWidget" name="BusManager" >
   <property name="geometry" >
    <rect>
     <x>0</x>

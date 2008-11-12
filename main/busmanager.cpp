@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  busproperties.cpp
+  busmanager.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -25,14 +25,14 @@
 #include <QString>
 #include <QIcon>
 
+#include "busmanager.h"
 #include "app.h"
 #include "bus.h"
-#include "busproperties.h"
 
 #define KColumnID   0
 #define KColumnName 1
 
-BusProperties::BusProperties(QWidget* parent) : QWidget(parent)
+BusManager::BusManager(QWidget* parent) : QWidget(parent)
 {
 	Q_ASSERT(parentWidget() != NULL);
 
@@ -46,11 +46,11 @@ BusProperties::BusProperties(QWidget* parent) : QWidget(parent)
 	fillTree();
 }
 
-BusProperties::~BusProperties()
+BusManager::~BusManager()
 {
 }
 
-void BusProperties::slotEdit()
+void BusManager::slotEdit()
 {
 	QTreeWidgetItem* item = m_list->currentItem();
 
@@ -74,7 +74,7 @@ void BusProperties::slotEdit()
 	}
 }
 
-void BusProperties::fillTree()
+void BusManager::fillTree()
 {
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
@@ -86,3 +86,4 @@ void BusProperties::fillTree()
 		item->setText(KColumnName, Bus::name(id));
 	}
 }
+

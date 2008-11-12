@@ -47,9 +47,9 @@
 #include "appdirectories.h"
 #include "virtualconsole.h"
 #include "fixturemanager.h"
-#include "busproperties.h"
 #include "outputmanager.h"
 #include "inputmanager.h"
+#include "busmanager.h"
 #include "outputmap.h"
 #include "inputmap.h"
 #include "aboutbox.h"
@@ -790,7 +790,8 @@ void App::initActions()
 		this, SLOT(slotHelpAboutQt()));
 }
 
-QMenuBar* App::menuBar() {
+QMenuBar* App::menuBar()
+{
 #ifdef __APPLE__
         static QMenuBar *mainMenuBar = NULL;
 	if (mainMenuBar == NULL)
@@ -1141,7 +1142,7 @@ void App::slotBusManager()
 	if (m_busManager == NULL)
 	{
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_busManager = new BusProperties(sub);
+		m_busManager = new BusManager(sub);
 
 		sub->setWidget(m_busManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);

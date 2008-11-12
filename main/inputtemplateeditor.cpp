@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QIcon>
 #include <QFile>
+#include <QList>
 #include <QDir>
 
 #include <common/qlcinputchannel.h>
@@ -34,10 +35,15 @@
 
 #include "inputtemplateeditor.h"
 #include "inputchanneleditor.h"
+#include "inputmap.h"
+#include "app.h"
+
+extern App* _app;
 
 #define KColumnNumber 0
 #define KColumnName   1
 #define KColumnType   2
+#define KColumnValues 3
 
 /****************************************************************************
  * Initialization
@@ -203,6 +209,62 @@ void InputTemplateEditor::slotWizardClicked()
 	   template that send data while the wizard dialog is open. i.e. the
 	   user can just wiggle his sliders and buttons and all of them are
 	   added to the template. */
+
+	connect(_app->inputMap(),
+		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
+					 t_input_value)),
+		this,
+		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
+					   t_input_value)));
+}
+
+void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
+						t_input_channel channel,
+						t_input_value value)
+{
+	QList <QTreeWidgetItem*> list(m_tree->findItems(
+					QString("%1").arg(channel + 1),
+					Qt::MatchExactly, KColumnNumber));
+	if (list.count() == 0)
+	{
+		QTreeWidgetItem* item;
+		QLCInputChannel* ch;
+
+		ch = new QLCInputChannel(m_deviceTemplate);
+		ch->setChannel(channel);
+		ch->setName(tr("Channel %1").arg(channel + 1));
+		ch->setType(QLCInputChannel::Button);
+		m_deviceTemplate->addChannel(ch);
+
+		item = new QTreeWidgetItem(m_tree);
+		updateChannelItem(item, ch);
+		m_tree->scrollToItem(item);
+	}
+	else
+	{
+		QStringList values;
+		values = list.first()->text(KColumnValues).split(",");
+		
+		if (values.contains(QString("%1").arg(value)) == false)
+		{
+			values << QString("%1").arg(value);
+			values.sort();
+			list.first()->setText(KColumnValues, values.join(","));
+		}
+		
+		/* Change the channel type only the one time when its value
+		   count goes over 2. I.e. when a channel can have more than
+		   two distinct values, it can no longer be a button. */
+		if (values.count() == 3)
+		{
+			QLCInputChannel* ch;
+			ch = m_deviceTemplate->channel(channel);
+			Q_ASSERT(ch != NULL);
+
+			ch->setType(QLCInputChannel::AbsoluteFader);
+			updateChannelItem(list.first(), ch);
+		}
+	}
 }
 
 /****************************************************************************

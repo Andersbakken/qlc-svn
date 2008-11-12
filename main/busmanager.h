@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  busproperties.h
+  busmanager.h
   
   Copyright (c) Heikki Junnila
   
@@ -19,21 +19,21 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef BUSPROPERTIES_H
-#define BUSPROPERTIES_H
+#ifndef BUSMANAGER_H
+#define BUSMANAGER_H
 
 #include <QWidget>
-#include "ui_busproperties.h"
+#include "ui_busmanager.h"
 
 class QCloseEvent;
 
-class BusProperties : public QWidget, public Ui_BusProperties
+class BusManager : public QWidget, public Ui_BusManager
 {
 	Q_OBJECT
 
 public:
-	BusProperties(QWidget* parent);
-	~BusProperties();
+	BusManager(QWidget* parent);
+	~BusManager();
 
 protected slots:
 	void slotEdit();

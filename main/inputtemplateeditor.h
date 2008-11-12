@@ -22,7 +22,9 @@
 #ifndef INPUTTEMPLATEEDITOR_H
 #define INPUTTEMPLATEEDITOR_H
 
+#include <common/qlctypes.h>
 #include <QDialog>
+
 #include "ui_inputtemplateeditor.h"
 
 class QLCInputChannel;
@@ -57,6 +59,10 @@ protected slots:
 	void slotRemoveClicked();
 	void slotEditClicked();
 	void slotWizardClicked();
+
+	void slotInputValueChanged(t_input_universe universe,
+				   t_input_channel channel,
+				   t_input_value value);
 
 	/********************************************************************
 	 * Template

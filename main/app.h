@@ -48,11 +48,11 @@ class VirtualConsole;
 class DummyOutPlugin;
 class DummyInPlugin;
 class QLCDocBrowser;
-class BusProperties;
 class QLCFixtureDef;
 class OutputManager;
 class InputManager;
 class QLCInPlugin;
+class BusManager;
 class QLCPlugin;
 class OutputMap;
 class InputMap;
@@ -208,10 +208,10 @@ protected:
 	 * Bus Manager
 	 *********************************************************************/
 public:
-	BusProperties* busManager() const { return m_busManager; }
+	BusManager* busManager() const { return m_busManager; }
 
 protected:
-	BusProperties* m_busManager;
+	BusManager* m_busManager;
 
 	/*********************************************************************
 	 * Virtual Console

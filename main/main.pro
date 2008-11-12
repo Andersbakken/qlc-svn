@@ -33,7 +33,7 @@ HEADERS += aboutbox.h \
 	   appdirectories.h \
            assignhotkey.h \
            bus.h \
-           busproperties.h \
+           busmanager.h \
            chaser.h \
            chasereditor.h \
            collection.h \
@@ -91,7 +91,7 @@ HEADERS += aboutbox.h \
 FORMS += addfixture.ui \
 	 appdirectories.ui \
          assignhotkey.ui \
-         busproperties.ui \
+         busmanager.ui \
          chasereditor.ui \
          collectioneditor.ui \
          efxeditor.ui \
@@ -119,7 +119,7 @@ SOURCES += aboutbox.cpp \
 	   appdirectories.cpp \
            assignhotkey.cpp \
            bus.cpp \
-           busproperties.cpp \
+           busmanager.cpp \
            chaser.cpp \
            chasereditor.cpp \
            collection.cpp \
