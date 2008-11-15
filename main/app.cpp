@@ -779,13 +779,12 @@ void App::initActions()
 	connect(m_helpIndexAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpIndex()));
 
-	m_helpAboutAction = new QAction(QIcon(":/Q.png"),
+	m_helpAboutAction = new QAction(QIcon(":/qlc.png"),
 					tr("About QLC"), this);
 	connect(m_helpAboutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAbout()));
 
-	m_helpAboutQtAction = new QAction(QIcon(":/qt.png"),
-					  tr("About Qt"), this);
+	m_helpAboutQtAction = new QAction(tr("About Qt"), this);
 	connect(m_helpAboutQtAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAboutQt()));
 }
@@ -855,6 +854,7 @@ void App::initMenuBar()
 	m_helpMenu->setTitle(tr("Help"));
 	menuBar()->addMenu(m_helpMenu);
 	m_helpMenu->addAction(m_helpIndexAction);
+	m_helpMenu->addSeparator();
 	m_helpMenu->addAction(m_helpAboutAction);
 	m_helpMenu->addAction(m_helpAboutQtAction);
 }

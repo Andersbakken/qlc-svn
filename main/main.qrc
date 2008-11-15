@@ -57,8 +57,6 @@
         <file alias="panic.png">../gfx/panic.png</file>
         <file alias="plugin.png">../gfx/plugin.png</file>
 	<file alias="prism.png">../gfx/prism.png</file>
-        <file alias="qlc-big.png">../gfx/qlc-big.png</file>
-        <file alias="qlc-fixtureeditor.png">../gfx/qlc-fixtureeditor.png</file>
 	<file alias="qlc.png">../gfx/qlc.png</file>
         <file alias="scene.png">../gfx/scene.png</file>
         <file alias="sequence.png">../gfx/sequence.png</file>

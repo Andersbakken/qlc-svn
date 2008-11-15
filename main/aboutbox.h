@@ -22,7 +22,8 @@
 #ifndef ABOUTBOX_H
 #define ABOUTBOX_H
 
-#include <qdialog.h>
+#include <QDialog>
+
 #include "ui_aboutbox.h"
 
 class AboutBox : public QDialog, public Ui_AboutBox

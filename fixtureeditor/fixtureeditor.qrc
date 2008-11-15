@@ -1,6 +1,5 @@
 <RCC>
     <qresource>
-        <file alias="qlc-big.png">../gfx/qlc-big.png</file>
         <file alias="qlc-fixtureeditor.png">../gfx/qlc-fixtureeditor.png</file>
         <file alias="filenew.png">../gfx/filenew.png</file>
         <file alias="fileopen.png">../gfx/fileopen.png</file>

@@ -20,6 +20,7 @@
 */
 
 #include <QLabel>
+
 #include "aboutbox.h"
 #include "app.h"
 

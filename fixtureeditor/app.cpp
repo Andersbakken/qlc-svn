@@ -190,7 +190,7 @@ void App::initActions()
 		this, SLOT(slotHelpIndex()));
 
 	m_helpAboutAction = new QAction(QIcon(":/qlc.png"),
-					tr("About..."), this);
+					tr("About Fixture Editor..."), this);
 	connect(m_helpAboutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAbout()));
 
@@ -226,6 +226,7 @@ void App::initMenuBar()
 	m_helpMenu = new QMenu(menuBar());
 	m_helpMenu->setTitle(tr("Help"));
 	m_helpMenu->addAction(m_helpIndexAction);
+	m_helpMenu->addSeparator();
 	m_helpMenu->addAction(m_helpAboutAction);
 	m_helpMenu->addAction(m_helpAboutQtAction);
 

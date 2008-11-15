@@ -31,7 +31,8 @@ HEADERS += aboutbox.h \
            editmode.h \
            fixtureeditor.h
 
-FORMS += editcapability.ui \
+FORMS += aboutbox.ui \
+	 editcapability.ui \
 	 editchannel.ui \
 	 editmode.ui \
 	 fixtureeditor.ui
