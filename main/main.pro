@@ -88,7 +88,8 @@ HEADERS += aboutbox.h \
            virtualconsoleproperties.h \
            xychannelunit.h
 
-FORMS += addfixture.ui \
+FORMS += aboutbox.ui \
+	 addfixture.ui \
 	 appdirectories.ui \
          assignhotkey.ui \
          chasereditor.ui \

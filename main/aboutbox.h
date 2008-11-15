@@ -23,30 +23,15 @@
 #define ABOUTBOX_H
 
 #include <qdialog.h>
+#include "ui_aboutbox.h"
 
-class QPushButton;
-class QListWidget;
-class QPixmap;
-class QLabel;
-
-class AboutBox : public QDialog
+class AboutBox : public QDialog, public Ui_AboutBox
 {
 	Q_OBJECT
 
 public:
 	AboutBox(QWidget* parent);
 	~AboutBox();
-  
-protected:
-	void initDialog();
-
-protected:
-	QPixmap* m_pm;
-	QLabel* m_logo;
-	QLabel* m_version;
-	QLabel* m_copyright;
-	QListWidget* m_people;
-	QPushButton* m_ok;
 };
 
 #endif
