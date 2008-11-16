@@ -39,6 +39,14 @@
 
 extern App* _app;
 
+#ifdef WIN32
+	#define PLUGINEXT ".dll"
+#elif __APPLE__
+	#define PLUGINEXT ".dylib"
+#else
+	#define PLUGINEXT ".so"
+#endif
+
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
@@ -70,61 +78,55 @@ OutputMap::~OutputMap()
 
 void OutputMap::load()
 {
-#ifdef __APPLE__
-	QDir dir(QApplication::applicationDirPath() + "/../Plugins/output", "*.dylib", QDir::Name, QDir::Files);
-#else
-	QSettings s;
-	
-	QString pluginPath = s.value("directories/plugins").toString();
-	if (pluginPath.isEmpty() == true)
-	{
-#ifdef WIN32
-		pluginPath = "C:\\QLC\\Plugins";
-#else
-		pluginPath = "/usr/lib/qlc";
-#endif
-		s.setValue("directories/plugins", pluginPath);
-	}
+	QString path;
 
-#ifdef WIN32
-	QDir dir(pluginPath + "\\Output", "*.dll", QDir::Name, QDir::Files);
+#ifdef __APPLE__
+	path = QString("%1/%2").arg(QApplication::applicationDirPath())
+				.arg(OUTPUTPLUGINDIR);
 #else
-	QDir dir(pluginPath + "/output", "*.so", QDir::Name, QDir::Files);
+	path = QString(OUTPUTPLUGINDIR);
 #endif
-#endif // !__APPLE__ 
+
+	QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
 
 	/* Check that we can access the directory */
-	if (dir.exists() == false)
+	if (dir.exists() == false || dir.isReadable() == false)
 	{
-		qWarning() << "Output plugin path" << dir.absolutePath()
-			   << "doesn't exist.";
-		return;
-	}
-	else if (dir.isReadable() == false)
-	{
-		qWarning() << "Output plugin path" << dir.absolutePath()
-			   << "is not accessible";
+		qWarning() << "Unable to load output plugins from" << path;
 		return;
 	}
 
 	/* Loop thru all files in the directory */
-	QStringList dirlist(dir.entryList());
-	QStringList::Iterator it;
-	for (it = dirlist.begin(); it != dirlist.end(); ++it)
+	QStringListIterator it(dir.entryList());
+	while (it.hasNext() == true)
 	{
-		QPluginLoader loader(dir.absoluteFilePath(*it), this);
-		QLCOutPlugin* plugin;
+		QLCOutPlugin* p;
+		QString path;
 
-		plugin = qobject_cast<QLCOutPlugin*> (loader.instance());
-		if (plugin == NULL)
+		/* Attempt to load a plugin from the path */
+		path = dir.absoluteFilePath(it.next());
+		QPluginLoader loader(path, this);
+		p = qobject_cast<QLCOutPlugin*> (loader.instance());
+		if (p != NULL)
 		{
-			qWarning() << "Unable to find an output plugin in"
-				   << dir.absoluteFilePath(*it);
+			/* Check for duplicates */
+			if (plugin(p->name()) == NULL)
+			{
+				/* New plugin. Append and init. */
+				p->init();
+				appendPlugin(p);
+			}
+			else
+			{
+				/* Duplicate plugin. Unload it. */
+				qWarning() << "Discarded duplicate plugin"
+					   << path;
+				loader.unload();
+			}
 		}
 		else
 		{
-			plugin->init();
-			appendPlugin(plugin);
+			qWarning() << "No output plugin in" << path;
 		}
 	}
 }

@@ -127,10 +127,6 @@ protected:
 	/*********************************************************************
 	 * Plugins
 	 *********************************************************************/
-public:
-	/** Get the directory used to store input plugins */
-	QString pluginPath() const;
-
 protected:
 	/**
 	 * Load all input plugins from the input plugin directory

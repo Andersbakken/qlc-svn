@@ -39,18 +39,12 @@
 
 extern App* _app;
 
-/* These macros define platform-specific paths & extensions for input plugins */
 #ifdef WIN32
-	#define PLUGINPATH "C:\\QLC\\Plugins\\Input"
 	#define PLUGINEXT ".dll"
-#else
-	#ifdef __APPLE__
-	#define PLUGINPATH "/../Plugins/input"
+#elif __APPLE__
 	#define PLUGINEXT ".dylib"
-	#else
-	#define PLUGINPATH "/usr/lib/qlc/input"
+#else
 	#define PLUGINEXT ".so"
-	#endif
 #endif
 
 /*****************************************************************************
@@ -172,28 +166,25 @@ InputPatch* InputMap::patch(t_input_universe universe)
  * Plugins
  *****************************************************************************/
 
-QString InputMap::pluginPath() const
-{
-	return QString(PLUGINPATH);
-}
-
 void InputMap::loadPlugins()
 {
-	/* Find plugins from pluginPath(), sort by name, get regular files */
-	QDir dir(pluginPath(), QString("*%1").arg(PLUGINEXT),
-		 QDir::Name, QDir::Files);
+	QString path;
+
+#ifdef __APPLE__
+	path = QString("%1/%2").arg(QApplication::applicationDirPath())
+				.arg(INPUTPLUGINDIR);
+#else
+	path = QString(INPUTPLUGINDIR);
+#endif
+
+	/* Find plugins from INPUTPLUGINDIR, sort by name, get regular files */
+	QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
 
 	/* Check that we can access the directory */
-	if (dir.exists() == false)
+	if (dir.exists() == false || dir.isReadable() == false)
 	{
-		qWarning() << "Input plugin path" << dir.absolutePath()
-			   << "doesn't exist.";
-		return;
-	}
-	else if (dir.isReadable() == false)
-	{
-		qWarning() << "Input plugin path" << dir.absolutePath()
-			   << "is not accessible";
+		qWarning() << "Unable to load input plugins from"
+			   << dir.absolutePath();
 		return;
 	}
 
@@ -201,23 +192,34 @@ void InputMap::loadPlugins()
 	QStringListIterator it(dir.entryList());
 	while (it.hasNext() == true)
 	{
-		QLCInPlugin* plugin;
+		QLCInPlugin* p;
 		QString path;
 
+		/* Attempt to load a plugin from the path */
 		path = dir.absoluteFilePath(it.next());
-
 		QPluginLoader loader(path, this);
-		plugin = qobject_cast<QLCInPlugin*> (loader.instance());
-		if (plugin == NULL)
+		p = qobject_cast<QLCInPlugin*> (loader.instance());
+		if (p != NULL)
 		{
-			qWarning() << "Unable to find an input plugin from"
-				   << path;
+			/* Check for duplicates */
+			if (plugin(p->name()) == NULL)
+			{
+				/* New plugin. Append and init. */
+				p->init();
+				appendPlugin(p);
+				p->connectInputData(this);
+			}
+			else
+			{
+				/* Duplicate plugin. Unload it. */
+				qWarning() << "Discarded duplicate plugin"
+					   << path;
+				loader.unload();
+			}
 		}
 		else
 		{
-			plugin->init();
-			appendPlugin(plugin);
-			plugin->connectInputData(this);
+			qWarning() << "No input plugin in" << path;
 		}
 	}
 }
