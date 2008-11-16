@@ -43,19 +43,13 @@ extern App* _app;
 #ifdef WIN32
 	#define PLUGINPATH "C:\\QLC\\Plugins\\Input"
 	#define PLUGINEXT ".dll"
-
-	#define TEMPLATEPATH "C:\\QLC\\InputTemplates"
 #else
 	#ifdef __APPLE__
 	#define PLUGINPATH "/../Plugins/input"
 	#define PLUGINEXT ".dylib"
-
-	#define TEMPLATEPATH "/../InputTemplates"
 	#else
 	#define PLUGINPATH "/usr/lib/qlc/input"
 	#define PLUGINEXT ".so"
-
-	#define TEMPLATEPATH "/usr/share/inputtemplates"
 	#endif
 #endif
 
@@ -69,7 +63,15 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 
 	initPatch();
 	loadPlugins();
-	loadTemplates();
+
+#ifdef Q_WS_X11
+	/* First, load user templates (overrides system templates) */
+	QDir dir(QString(getenv("HOME")));
+	loadTemplates(dir.absoluteFilePath(QString(USERINPUTTEMPLATEDIR)));
+#endif
+	/* Then, load system templates */
+	loadTemplates(INPUTTEMPLATEDIR);
+	
 	loadDefaults();
 }
 
@@ -306,28 +308,15 @@ QLCInPlugin* InputMap::plugin(const QString& name)
  * Device templates
  *****************************************************************************/
 
-QString InputMap::templatePath() const
-{
-	return QString(TEMPLATEPATH);
-}
-
-void InputMap::loadTemplates()
+void InputMap::loadTemplates(QString templatePath)
 {
 	/* Find *.qxi from templatePath(), sort by name, get regular files */
-	QDir dir(templatePath(), QString("*%1").arg(KExtInputTemplate),
+	QDir dir(templatePath, QString("*%1").arg(KExtInputTemplate),
 		 QDir::Name, QDir::Files);
-
-	/* Check that we can access the directory */
-	if (dir.exists() == false)
+	if (dir.exists() == false || dir.isReadable() == false)
 	{
-		qWarning() << "Input template path" << dir.absolutePath()
-			   << "doesn't exist.";
-		return;
-	}
-	else if (dir.isReadable() == false)
-	{
-		qWarning() << "Input template path" << dir.absolutePath()
-			   << "is not accessible";
+		qWarning() << "Unable to load input templates from"
+			   << templatePath;
 		return;
 	}
 
@@ -336,17 +325,24 @@ void InputMap::loadTemplates()
 	QStringListIterator it(dir.entryList());
 	while (it.hasNext() == true)
 	{
-		QLCInputDevice* deviceTemplate;
+		QLCInputDevice* dt;
 		QString path;
 
 		path = dir.absoluteFilePath(it.next());
-		deviceTemplate = QLCInputDevice::loader(this, path);
-
-		if (deviceTemplate != NULL)
-			m_deviceTemplates.append(deviceTemplate);
+		dt = QLCInputDevice::loader(this, path);
+		if (dt != NULL)
+		{
+			/* Check for duplicates */
+			if (deviceTemplate(dt->name()) == NULL)
+				m_deviceTemplates.append(dt);
+			else
+				delete dt;
+		}
 		else
+		{
 			qWarning() << "Unable to find an input template from"
 				   << path;
+		}
 	}
 }
 

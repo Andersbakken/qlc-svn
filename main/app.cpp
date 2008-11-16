@@ -933,13 +933,21 @@ void App::slotFileOpen()
 	}
 
 	/* Create a file open dialog */
+	QFileDialog dialog(this);
+	dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	dialog.selectFile(m_doc->fileName());
+
+	/* Append file filters to the dialog */
 	QStringList filters;
 	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
 	filters << QString("All Files (*)");
-	QFileDialog dialog(this);
 	dialog.setNameFilters(filters);
-	dialog.setAcceptMode(QFileDialog::AcceptOpen);
-	dialog.selectFile(m_doc->fileName());
+
+	/* Append useful URLs to the dialog */
+	QList <QUrl> sidebar;
+	sidebar.append(QUrl::fromLocalFile(QDir::homePath()));
+	sidebar.append(QUrl::fromLocalFile(QDir::rootPath()));
+	dialog.setSidebarUrls(sidebar);
 
 	/* Get file name */
 	if (dialog.exec() != QDialog::Accepted)
@@ -974,13 +982,21 @@ void App::slotFileSaveAs()
 	QString fileName;
 
 	/* Create a file save dialog */
+	QFileDialog dialog(this);
+	dialog.setAcceptMode(QFileDialog::AcceptSave);
+	dialog.selectFile(m_doc->fileName());
+
+	/* Append file filters to the dialog */
 	QStringList filters;
 	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
 	filters << QString("All Files (*)");
-	QFileDialog dialog(this);
 	dialog.setNameFilters(filters);
-	dialog.setAcceptMode(QFileDialog::AcceptSave);
-	dialog.selectFile(m_doc->fileName());
+	
+	/* Append useful URLs to the dialog */
+	QList <QUrl> sidebar;
+	sidebar.append(QUrl::fromLocalFile(QDir::homePath()));
+	sidebar.append(QUrl::fromLocalFile(QDir::rootPath()));
+	dialog.setSidebarUrls(sidebar);
 
 	/* Get file name */
 	if (dialog.exec() != QDialog::Accepted)

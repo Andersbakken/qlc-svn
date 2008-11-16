@@ -196,13 +196,9 @@ protected:
 	/*********************************************************************
 	 * Device templates
 	 *********************************************************************/
-public:
-	/** Get the directory used to store input template files */
-	QString templatePath() const;
-
 protected:
-	/** Load all available device templates */
-	void loadTemplates();
+	/** Load all device templates from the given path */
+	void loadTemplates(QString templatePath);
 
 public:
 	/** Get a list of available device template names */
