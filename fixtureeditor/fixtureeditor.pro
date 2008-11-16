@@ -1,3 +1,5 @@
+include(../variables.pri)
+
 TEMPLATE 	= app
 LANGUAGE 	= C++
 TARGET 		= qlc-fixtureeditor
@@ -8,16 +10,10 @@ QT 		+= xml
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS	+= -L../libs/common -lqlccommon
 macx:LIBS	+= -L./qlc-fixtureeditor.app/Contents/Frameworks -lqlccommon
-win32:release {
-	LIBS 	+= -L../libs/common/release/ -lqlccommon
-}
-win32:debug {
-	LIBS 	+= -L../libs/common/debug/ -lqlccommon
-}
+win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 
-unix:target.path = /usr/bin
-win32:target.path = $$(SystemDrive)/QLC
-macx:target.path = /Applications
+# Installation
+target.path 	= $$BINDIR
 INSTALLS 	+= target
 
 # Sources

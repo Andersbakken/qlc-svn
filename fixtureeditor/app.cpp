@@ -33,20 +33,18 @@
 #include <QAction>
 #include <QLabel>
 #include <QColor>
+#include <QDebug>
 #include <QMenu>
 #include <QIcon>
+#include <QUrl>
 
-#include <iostream>
-
-#include "common/qlcdocbrowser.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlcchannel.h"
+#include <common/qlcdocbrowser.h>
+#include <common/qlcfixturedef.h>
+#include <common/qlcchannel.h>
 
 #include "app.h"
 #include "aboutbox.h"
 #include "fixtureeditor.h"
-
-const QString KFixtureFilter ("Fixtures (*.qxf)");
 
 App::App(QWidget* parent) : QMainWindow(parent)
 {
@@ -59,9 +57,6 @@ App::App(QWidget* parent) : QMainWindow(parent)
 	m_toolBar = NULL;
 
 	m_copyChannel = NULL;
-
-	QSettings s;
-	m_lastPath = s.value("directories/fixtures").toString();
 
 	setWindowTitle(KApplicationName);
 	setWindowIcon(QIcon(":/qlc-fixtureeditor.png"));
@@ -258,19 +253,43 @@ void App::slotFileNew()
 
 void App::slotFileOpen()
 {
-	QLCFixtureEditor* editor;
 	QLCFixtureDef* fixtureDef;	
-	QMdiSubWindow* sub;
-	QString path;
 
-	path = QFileDialog::getOpenFileName(this,
-					    tr("Open a fixture definition"),
-					    m_lastPath, KFixtureFilter);
+	/* Create a file open dialog */
+	QFileDialog dialog(this);
+	dialog.setWindowTitle(tr("Open a fixture definition"));
+	dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	dialog.setDirectory(QString(FIXTUREDIR));
+	dialog.setNameFilter(KFixtureFilter);
+
+#ifdef Q_WS_X11
+	QString path(QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR));
+	QList <QUrl> sidebar;
+
+	/* Append the system and user fixture dirs to the sidebar. This is
+	   done on Linux only, because WIN32 & MAC ports save fixtures in
+	   a user-writable directory. */
+	sidebar.append(QUrl::fromLocalFile(FIXTUREDIR));
+
+	/* Ensure that there is a directory for user fixtures and append that
+	   to the sidebar. */
+	QDir dir(path);
+	if (dir.exists() == false)
+		dir.mkpath(".");
+	sidebar.append(QUrl::fromLocalFile(path));
+	dialog.setSidebarUrls(sidebar);
+#endif
+
+	/* Execute the dialog */
+	if (dialog.exec() != QDialog::Accepted)
+		return;
+
+	/* Get a file name */
+	path = dialog.selectedFiles().first();
 	if (path == QString::null)
 		return;
-	else
-		m_lastPath = path;
-	
+
+	/* Attempt to create a fixture definition from the selected file */
 	fixtureDef = new QLCFixtureDef(path);
 	if (fixtureDef == NULL)
 	{
@@ -279,6 +298,11 @@ void App::slotFileOpen()
 	}
 	else
 	{
+		QLCFixtureEditor* editor;
+		QMdiSubWindow* sub;
+
+		/* Create a new sub window and put a fixture editor widget
+		   in that sub window with the newly-created fixture def */
 		sub = new QMdiSubWindow(centralWidget());
 		editor = new QLCFixtureEditor(sub, fixtureDef, path);
 		
@@ -304,8 +328,7 @@ void App::slotFileSave()
 	if (editor == NULL)
 		return;
 	
-	if (editor->save() == true)
-		m_lastPath = editor->fileName();
+	editor->save();
 }
 
 void App::slotFileSaveAs()
@@ -321,8 +344,7 @@ void App::slotFileSaveAs()
 	if (editor == NULL)
 		return;
 	
-	if (editor->saveAs() == true)
-		m_lastPath = editor->fileName();
+	editor->saveAs();
 }
 
 void App::slotFileQuit()

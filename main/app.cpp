@@ -44,7 +44,6 @@
 
 #include "functionconsumer.h"
 #include "functionmanager.h"
-#include "appdirectories.h"
 #include "virtualconsole.h"
 #include "fixturemanager.h"
 #include "outputmanager.h"
@@ -105,6 +104,8 @@ App::App() : QMainWindow()
      
 	init();
 	slotModeDesign();
+	
+	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
 }
 
 App::~App()
@@ -205,7 +206,13 @@ void App::init()
 	Bus::init();
 
 	/* Fixture definitions */
-	initFixtureDefinitions();
+#ifdef Q_WS_X11
+	/* First, load user fixtures (overrides system fixtures) */
+	QDir dir(QString(getenv("HOME")));
+	loadFixtureDefinitions(dir.absoluteFilePath(QString(USERFIXTUREDIR)));
+#endif
+	/* Then, load system fixtures */
+	loadFixtureDefinitions(FIXTUREDIR);
 
 	// The main view
 	initStatusBar();
@@ -458,40 +465,18 @@ void App::slotDocModified(bool state)
  * Fixture definitions
  *****************************************************************************/
 
-bool App::initFixtureDefinitions()
+bool App::loadFixtureDefinitions(QString fixturePath)
 {
-	QSettings s;
-	QString fixturePath = s.value("directories/fixtures").toString();
-
-	if (fixturePath.isEmpty() == true)
+	QDir dir(fixturePath, QString("*%1").arg(KExtFixture),
+		 QDir::Name, QDir::Files);
+	if (dir.exists() == false || dir.isReadable() == false)
 	{
-#ifdef WIN32
-		fixturePath = "C:\\QLC\\Fixtures";
-#else
-		fixturePath = "/usr/share/fixtures";
-		s.setValue("directories/fixtures", fixturePath);
-#endif
-	}
-
-	QDir dir(fixturePath, "*.qxf", QDir::Name, QDir::Files);
-	if (dir.exists() == false)
-	{
-		QMessageBox::critical(this, 
-				      tr("Unable to load fixture definitions"), 
-				      fixturePath + 
-				      tr(" does not exist!"));
+		qWarning() << "Unable to load fixture definitions from"
+			   << fixturePath;
 		return false;
 	}
-	else if (dir.isReadable() == false)
-	{
-		QMessageBox::critical(this,
-				      tr("Unable to load fixture definitions"), 
-				      fixturePath + 
-				      tr(" cannot be read by user!"));
-		return false;
-	}
-	
-	/* Attempt to read all specified files from the fixture directory */
+
+	/* Attempt to read all specified files from the given directory */
 	QStringList dirlist(dir.entryList());
 	QStringList::Iterator it;
 	for (it = dirlist.begin(); it != dirlist.end(); ++it)
@@ -501,31 +486,18 @@ bool App::initFixtureDefinitions()
 
 		if (fxi != NULL)
 		{
-			if (fixtureDef(fxi->manufacturer(), fxi->model())
-			    == NULL)
-			{
+			/* Check that there are no duplicates */
+			QLCFixtureDef* prev;
+			prev = fixtureDef(fxi->manufacturer(), fxi->model());
+			if (prev == NULL)
 				m_fixtureDefList.append(fxi);
-
-				qDebug() << "Loaded fixture definition for"
-					 << fxi->manufacturer()
-					 << "-"
-					 << fxi->model();
-			}
 			else
-			{
-				qWarning() << "Fixture"
-					   << fxi->manufacturer()
-					   << "-"
-					   << fxi->model()
-					   << "already exists. Skipping.";
 				delete fxi;
-			}
 		}
 		else
 		{
 			qWarning() << "Fixture definition loading from"
-				   << path
-				   << "failed. Skipping.";
+				   << path << "failed. Skipping.";
 		}
 	}
 
@@ -700,11 +672,6 @@ void App::initActions()
 	connect(m_fileSaveAsAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSaveAs()));
 
-	m_fileDirectoriesAction = new QAction(QIcon(":/maintenance.png"),
-					       tr("Directories..."), this);
-	connect(m_fileDirectoriesAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotFileDirectories()));
-
 	m_fileQuitAction = new QAction(QIcon(":/exit.png"),
 				       tr("Quit"), this);
 	connect(m_fileQuitAction, SIGNAL(triggered(bool)),
@@ -809,11 +776,9 @@ void App::initMenuBar()
 	menuBar()->addMenu(m_fileMenu);
 	m_fileMenu->addAction(m_fileNewAction);
 	m_fileMenu->addAction(m_fileOpenAction);
+	m_fileMenu->addSeparator();
 	m_fileMenu->addAction(m_fileSaveAction);
 	m_fileMenu->addAction(m_fileSaveAsAction);
-	m_fileMenu->addAction(m_fileSaveAction);
-	m_fileMenu->addSeparator();
-	m_fileMenu->addAction(m_fileDirectoriesAction);
 	m_fileMenu->addSeparator();
 	m_fileMenu->addAction(m_fileQuitAction);
 
@@ -941,11 +906,11 @@ bool App::slotFileNew()
 
 void App::newDocument()
 {
-	setWindowTitle(KApplicationNameLong);
-
 	initDoc();
 	initVirtualConsole();
 	doc()->resetModified();
+
+	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
 }
 
 void App::slotFileOpen()
@@ -953,96 +918,85 @@ void App::slotFileOpen()
 	QString fileName;
 
 	/* Check that the user is aware of losing previous changes */
-	if (doc()->isModified())
+	if (doc()->isModified() == true)
 	{
-		QString msg;
-		msg = "Do you wish to save the current workspace?\n";
-		msg += "Changes will be lost if you don't save them.";
+		QString msg = tr("Do you wish to save the current workspace?\n"
+				 "Otherwise you will lose changes.");
 		int result = QMessageBox::warning(this, "Open Workspace", msg,
 						  QMessageBox::Yes,
 						  QMessageBox::No,
 						  QMessageBox::Cancel);
 		if (result == QMessageBox::Yes)
-		{
-			/* Save first */
-			slotFileSave();
-		}
-		else if (result == QMessageBox::No)
-		{
-			/* Nah, who cares? */
-		}
-		else
-		{
-			/* Whoops, go back! */
-			return;
-		}
+			slotFileSave(); /* Save first */
+		else if (result == QMessageBox::Cancel)
+			return; /* Whoops, go back! */
 	}
 
-	fileName = QFileDialog::getOpenFileName(this, m_doc->fileName(), 
-						QString("*") + KExtWorkspace);
-	if (fileName.isEmpty() == false)
-	{
-		newDocument();
-		
-		if (doc()->loadXML(fileName) == false)
-		{
-			QMessageBox::critical(this,
-					      "Unable to open file!",
-					      "The file seems to be corrupt.");
-		}
-	}
+	/* Create a file open dialog */
+	QStringList filters;
+	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
+	filters << QString("All Files (*)");
+	QFileDialog dialog(this);
+	dialog.setNameFilters(filters);
+	dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	dialog.selectFile(m_doc->fileName());
 
-	doc()->resetModified();
+	/* Get file name */
+	if (dialog.exec() != QDialog::Accepted)
+		return;
+	fileName = dialog.selectedFiles().first();
+	if (fileName.isEmpty() == true)
+		return;
+
+	/* Clear existing document data */
+	newDocument();
+	
+	/* Load the file */
+	if (doc()->loadXML(fileName) == false)
+		QMessageBox::critical(this, tr("Unable to open file"),
+				      tr("Workspace file might be corrupt."));
+	else
+		doc()->resetModified();
 }
 
 void App::slotFileSave()
 {
-	if (m_doc->fileName().isEmpty())
-	{
+	/* Attempt to save with the existing name. Fall back to Save As. */
+	if (m_doc->fileName().isEmpty() == true)
 		slotFileSaveAs();
-	}
-	else
-	{
-		if (m_doc->saveXML(m_doc->fileName()) == true)
-		{
-			setWindowTitle(KApplicationNameLong + " - " +
-				       doc()->fileName());
-		}
-	}
+	else if (m_doc->saveXML(m_doc->fileName()) == true)
+		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
+						 .arg(doc()->fileName()));
 }
 
 void App::slotFileSaveAs()
 {
 	QString fileName;
 
-	fileName = QFileDialog::getSaveFileName(this, m_doc->fileName(),
-						QString("*") + KExtWorkspace);
-	if (fileName.isEmpty() == false)
-	{
-		// Use the suffix ".qxw" always
-		if (fileName.right(4) != KExtWorkspace)
-		{
-			fileName += KExtWorkspace;
-		}
+	/* Create a file save dialog */
+	QStringList filters;
+	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
+	filters << QString("All Files (*)");
+	QFileDialog dialog(this);
+	dialog.setNameFilters(filters);
+	dialog.setAcceptMode(QFileDialog::AcceptSave);
+	dialog.selectFile(m_doc->fileName());
 
-		if (m_doc->saveXML(fileName) == true)
-		{
-			setWindowTitle(KApplicationNameLong + QString(" - ") +
-				       doc()->fileName());
-		}
-	}
-}
+	/* Get file name */
+	if (dialog.exec() != QDialog::Accepted)
+		return;
+	fileName = dialog.selectedFiles().first();
+	if (fileName.isEmpty() == true)
+		return;
 
-void App::slotFileDirectories()
-{
-	AppDirectories ad(this);
-	if (ad.exec() == QDialog::Accepted)
-	{
-		QSettings s;
-		setBackgroundImage(s.value("/workspace/background").toString());
+	/* Always use the workspace suffix */
+	if (fileName.right(4) != KExtWorkspace)
+		fileName += KExtWorkspace;
 
-		initFixtureDefinitions();
-	}
+	/* Save the document and set workspace name */
+	if (m_doc->saveXML(fileName) == true)
+		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
+						 .arg(doc()->fileName()));
 }
 
 void App::slotFileQuit()

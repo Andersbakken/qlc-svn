@@ -32,9 +32,7 @@ class QLCChannel;
 
 const QString KApplicationName = "QLC Fixture Definition Editor";
 const QString KApplicationVersion = "Version 3.0.0";
-
-//////////////////////////////////////////////////////////////////
-// Class definition
+const QString KFixtureFilter ("Fixtures (*.qxf)");
 
 class App : public QMainWindow
 {
@@ -49,9 +47,6 @@ protected:
 	void saveDefaults();
 
 	void closeEvent(QCloseEvent*);
-
-protected:
-	QString m_lastPath;
 
 	/*********************************************************************
 	 * Copy channel

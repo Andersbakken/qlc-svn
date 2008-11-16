@@ -1,3 +1,5 @@
+include(variables.pri)
+
 TEMPLATE	= subdirs
 
 SUBDIRS		= libs
@@ -19,13 +21,13 @@ macx {
 
 # Win32 additional DLL installation
 win32 {
-	qtlibs.path	= $$(SystemDrive)/QLC/
+	qtlibs.path	= $$LIBSDIR
 	qtlibs.files	= $$(QTDIR)/bin/QtCore4.dll \
 			  $$(QTDIR)/bin/QtGui4.dll \
 			  $$(QTDIR)/bin/QtXml4.dll
 
 	# TODO: MinGW might be elsewhere, but there's no easy way to find it
-	mingw.path	= $$(SystemDrive)/QLC/
+	mingw.path	= $$LIBSDIR
 	mingw.files	= $$(SystemDrive)/MinGW/bin/mingwm10.dll
 
 	INSTALLS	+= qtlibs mingw

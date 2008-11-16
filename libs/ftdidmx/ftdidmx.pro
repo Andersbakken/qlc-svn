@@ -1,4 +1,5 @@
-include(../vars.pro)
+include(../../variables.pri)
+
 TEMPLATE	= lib
 LANGUAGE	= C++
 TARGET		= ftdidmx

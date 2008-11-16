@@ -1,3 +1,5 @@
+include(../variables.pri)
+
 TEMPLATE 	= app
 LANGUAGE 	= C++
 TARGET 		= qlc
@@ -8,21 +10,17 @@ QT 		+= xml
 INCLUDEPATH 	+= . ../libs/
 macx:LIBS 	+= -L./qlc.app/Contents/Frameworks -lqlccommon
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
-win32:release {
-	LIBS 	+= -L../libs/common/release/ -lqlccommon
-}
-win32:debug {
-	LIBS 	+= -L../libs/common/debug/ -lqlccommon
-}
+win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 
+# MAC Icon (TODO: Move under ../etc)
 macx:ICON	= ../gfx/qlc.icns
 macx:QMAKE_INFO_PLIST = ./Info.plist
 
-unix:target.path = /usr/bin
-win32:target.path = $$(SystemDrive)/QLC
-macx:target.path = /Applications
+# Installation
+target.path	= $$BINDIR
 INSTALLS	+= target
 
+# Resources
 RESOURCES 	+= main.qrc
 win32:RC_FILE	= main.rc
 
@@ -30,7 +28,6 @@ win32:RC_FILE	= main.rc
 HEADERS += aboutbox.h \
            addfixture.h \
            app.h \
-	   appdirectories.h \
            assignhotkey.h \
            bus.h \
            busmanager.h \
@@ -90,7 +87,6 @@ HEADERS += aboutbox.h \
 
 FORMS += aboutbox.ui \
 	 addfixture.ui \
-	 appdirectories.ui \
          assignhotkey.ui \
          chasereditor.ui \
          collectioneditor.ui \
@@ -116,7 +112,6 @@ FORMS += aboutbox.ui \
 SOURCES += aboutbox.cpp \
            addfixture.cpp \
            app.cpp \
-	   appdirectories.cpp \
            assignhotkey.cpp \
            bus.cpp \
            busmanager.cpp \

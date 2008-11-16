@@ -34,16 +34,22 @@
 #include <QTabWidget>
 #include <QMenu>
 #include <QIcon>
+#include <QList>
+#include <QUrl>
 
-#include "common/qlcfixturedef.h"
-#include "common/qlcfixturemode.h"
-#include "common/qlcchannel.h"
-#include "common/qlccapability.h"
-#include "common/qlcphysical.h"
-#include "common/qlcfile.h"
+#include <common/qlcfixturemode.h>
+#include <common/qlcfixturedef.h>
+#include <common/qlccapability.h>
+#include <common/qlcphysical.h>
+#include <common/qlcchannel.h>
+#include <common/qlctypes.h>
+#include <common/qlcfile.h>
 
-#include "errno.h"
-#include "string.h"
+#ifdef Q_WS_X11
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+#endif
 
 #include "app.h"
 #include "fixtureeditor.h"
@@ -246,23 +252,72 @@ bool QLCFixtureEditor::save()
 bool QLCFixtureEditor::saveAs()
 {
 	QString path;
+	QDir dir;
 
+	/* Bail out if there is no manufacturer or model */
 	if (checkManufacturerModel() == false)
 		return false;
 
-	if (m_fileName.length() == 0)
+	/* Create a file save dialog */
+	QFileDialog dialog(this);
+	dialog.setWindowTitle(tr("Save fixture definition"));
+	dialog.setAcceptMode(QFileDialog::AcceptSave);
+	dialog.setNameFilter(KFixtureFilter);
+
+#ifdef Q_WS_X11
+	/* Set the dialog's default directory to system fixture directory if
+	   user is root (UID == 0). If UID != 0 set it to user fixture dir */
+	uid_t uid = geteuid();
+	if (uid == 0)
 	{
-		QSettings s;
-		path = s.value("directories/fixtures").toString() + "/";
-		path += m_fixtureDef->manufacturer() + QString("-");
-		path += m_fixtureDef->model() + QString(".qxf");
+		/* User is root. Use the system fixture directory. */
+		path = QString(FIXTUREDIR);
+		dir = QDir(path);
 	}
 	else
 	{
-		path = m_fileName;
+		path = QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR);
+		
+		/* Ensure there is a directory for user fixtures */
+		dir = QDir(path);
+		if (dir.exists() == false)
+			dir.mkpath(".");
+
+		/* Append the system and user fixture dirs to the sidebar. This
+		   is done on Linux only, because WIN32 & OSX ports save
+		   fixtures in a user-writable directory. */
+		QList <QUrl> sidebar;
+		sidebar.append(QUrl::fromLocalFile(FIXTUREDIR));
+		sidebar.append(QUrl::fromLocalFile(path));
+		dialog.setSidebarUrls(sidebar);
+	}
+#else
+	/* Win32 & OSX keep fixtures in a user-writable directory. Use that. */
+	path = QString(FIXTUREDIR);
+	dir = QDir(path);
+#endif
+
+	if (m_fileName.isEmpty() == true)
+	{
+		/* Construct a new path for the (yet) unnamed file */
+		path = QString("%1-%2%3").arg(m_fixtureDef->manufacturer())
+					 .arg(m_fixtureDef->model())
+					 .arg(KExtFixture);
+		dialog.setDirectory(dir);
+		dialog.selectFile(path);
+	}
+	else
+	{
+		/* The fixture already has a file name. Use that then. */
+		dialog.setDirectory(QDir(m_fileName));
+		dialog.selectFile(m_fileName);
 	}
 
-	path = QFileDialog::getSaveFileName(this, path, "Fixtures (*.qxf)");
+	/* Execute the dialog */
+	if (dialog.exec() != QDialog::Accepted)
+		return false;
+		
+	path = dialog.selectedFiles().first();
 	if (path.length() != 0)
 	{
 		if (path.right(strlen(KExtFixture)) != QString(KExtFixture))

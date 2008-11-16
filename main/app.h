@@ -154,8 +154,8 @@ protected:
 	 * Fixture definitions
 	 *********************************************************************/
 public:
-	/** Load all fixture definitions */
-	bool initFixtureDefinitions();
+	/** Load all fixture definitions from the given directory */
+	bool loadFixtureDefinitions(QString fixturePath);
 
 	/** Get a fixture definition by its manufacturer & model */
 	QLCFixtureDef* fixtureDef(const QString& manufacturer,
@@ -271,7 +271,6 @@ public slots:
 	void slotFileOpen();
 	void slotFileSave();
 	void slotFileSaveAs();
-	void slotFileDirectories();
 	void slotFileQuit();
 
 	void slotFixtureManager();
@@ -300,8 +299,6 @@ protected:
 	QAction* m_fileOpenAction;
 	QAction* m_fileSaveAction;
 	QAction* m_fileSaveAsAction;
-	QAction* m_fileDirectoriesAction;
-	QAction* m_fileSaveDefaultsAction;
 	QAction* m_fileQuitAction;
 
 	QAction* m_fixtureManagerAction;

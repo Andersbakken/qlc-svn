@@ -1,3 +1,5 @@
+include(../variables.pri)
+
 TEMPLATE = subdirs
 TARGET = fixtures
 
@@ -63,6 +65,5 @@ fixtures.files += SGM-Victory-250.qxf
 fixtures.files += SGM-Victory-II-250.qxf
 fixtures.files += SGM-Victory-II-Pro150.qxf
 
-unix:fixtures.path = /usr/share/fixtures
-win32:fixtures.path = $$(SystemDrive)/QLC/Fixtures
+fixtures.path = $$FIXTUREDIR
 INSTALLS += fixtures

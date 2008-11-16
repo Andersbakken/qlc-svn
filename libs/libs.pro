@@ -1,3 +1,5 @@
+include(../variables.pri)
+
 TEMPLATE		= subdirs
 
 # Common library
