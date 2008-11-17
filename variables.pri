@@ -4,7 +4,7 @@ unix:BINDIR		= /usr/bin
 macx:BINDIR		= /Applications
 
 # Libraries
-win32:LIBSDIR		= $$QLCDIR
+win32:LIBSDIR		= $$BINDIR
 unix:LIBSDIR		= /usr/lib
 
 # Data

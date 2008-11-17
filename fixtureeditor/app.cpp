@@ -254,7 +254,8 @@ void App::slotFileNew()
 void App::slotFileOpen()
 {
 	QLCFixtureDef* fixtureDef;	
-
+	QString path;
+	
 	/* Create a file open dialog */
 	QFileDialog dialog(this);
 	dialog.setWindowTitle(tr("Open a fixture definition"));
@@ -263,7 +264,7 @@ void App::slotFileOpen()
 	dialog.setNameFilter(KFixtureFilter);
 
 #ifdef Q_WS_X11
-	QString path(QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR));
+	path = QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR);
 	QList <QUrl> sidebar;
 
 	/* Append the system and user fixture dirs to the sidebar. This is
