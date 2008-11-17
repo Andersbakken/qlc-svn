@@ -123,25 +123,8 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 		break;
 	}
 
-	/* External input. TODO: finish input templates and put real channel
-	   names and amounts instead of dumb Channel xx */
-	m_inputUniverseCombo->addItem(KInputNone);
-	m_inputUniverseCombo->addItems(_app->inputMap()->universeNames());
-	m_inputChannelCombo->addItem(KInputNone);
-	for (t_input_channel i = 0; i < 32; i++)
-		m_inputChannelCombo->addItem(QString("Channel %1").arg(i + 1));
-
-	/* Since "None" is the first item in the combos, use + 1 */
-	if (m_slider->inputUniverse() == KInputUniverseInvalid)
-		m_inputUniverseCombo->setCurrentIndex(0);
-	else
-		m_inputUniverseCombo->setCurrentIndex(m_slider->inputUniverse() + 1);
-
-	/* Since "None" is the first item in the combos, use + 1 */
-	if (m_slider->inputChannel() == KInputChannelInvalid)
-		m_inputChannelCombo->setCurrentIndex(0);
-	else
-		m_inputChannelCombo->setCurrentIndex(m_slider->inputChannel() + 1);
+	/* Under construction... */
+	m_externalInputGroup->setEnabled(false);
 
 	/*********************************************************************
 	 * Bus page
@@ -649,19 +632,6 @@ void VCSliderProperties::accept()
 		m_slider->setValueDisplayStyle(VCSlider::ExactValue);
 	else
 		m_slider->setValueDisplayStyle(VCSlider::PercentageValue);
-
-	/* External input universe */
-	if (m_inputUniverseCombo->currentIndex() == 0)
-		m_slider->setInputUniverse(KInputUniverseInvalid);
-	else
-		m_slider->setInputUniverse(m_inputUniverseCombo->currentIndex() - 1);
-
-	/* External input channel */
-	if (m_inputChannelCombo->currentIndex() == 0)
-		m_slider->setInputChannel(KInputChannelInvalid);
-	else
-		m_slider->setInputChannel(m_inputChannelCombo->currentIndex() - 1);
-
 
 	/* Close dialog */
 	QDialog::accept();
