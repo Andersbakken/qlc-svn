@@ -745,6 +745,7 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 	SliderMode sliderMode = Bus;
+	QString caption;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
@@ -756,7 +757,7 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	}
 
 	/* Caption */
-	setCaption(root->attribute(KXMLQLCVCCaption));
+	caption = root->attribute(KXMLQLCVCCaption);
 
 	/* Children */
 	node = root->firstChild();
@@ -812,7 +813,8 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 
 	/* Set the mode last, after everything else has been set */
 	setSliderMode(sliderMode);
-
+	setCaption(caption);
+	
 	return true;
 }
 
