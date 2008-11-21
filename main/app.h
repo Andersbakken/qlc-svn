@@ -332,10 +332,17 @@ protected:
 	 * Workspace background
 	 *********************************************************************/	
 public:
+	/** Set workspace background image from the given path */
 	void setBackgroundImage(QString path);
+	
+	/** Get the current workspace background image path */
+	QString backgroundImage() const { return m_backgroundImage; }
 
 public slots:
+	/** Open a file dialog to browse an image for workspace background */
 	void slotSetBackgroundImage();
+
+	/** Clear the current workspace background */
 	void slotClearBackgroundImage();
 
 protected:

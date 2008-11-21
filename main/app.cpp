@@ -1249,14 +1249,22 @@ void App::setBackgroundImage(QString path)
 {
 	if (path.isEmpty() == true)
 	{
-		slotClearBackgroundImage();
+		/* TODO: Is there some better way to "reset" the palette
+		   instead of explicitly specifying a color? */
+		qobject_cast<QMdiArea*> (centralWidget())->setBackground(
+			QBrush(QApplication::palette().color(QPalette::Dark)));
 	}
-	else
+	else if (path != m_backgroundImage)
 	{
-		qobject_cast<QMdiArea*>
-			(centralWidget())->setBackground(QPixmap(path));
-		m_backgroundImage = path;
+		/* Set background image only if it's not already there */
+		qobject_cast<QMdiArea*>	(centralWidget())->setBackground(
+								QPixmap(path));
 	}
+
+	/* Save workspace background setting */
+	QSettings settings;
+	settings.setValue("/workspace/background", path);
+	m_backgroundImage = path;
 }
 
 void App::slotSetBackgroundImage()
@@ -1264,16 +1272,12 @@ void App::slotSetBackgroundImage()
 	QString path = QFileDialog::getOpenFileName(
 		this, tr("Open an image file"), getenv("HOME"),
 		tr("Images (*.png *.xpm *.jpg *.gif)"));
-	
-	if (path.isEmpty() == true)
-		return;
 
-	setBackgroundImage(path);
+	if (path.isEmpty() == false)
+		setBackgroundImage(path);
 }
 
 void App::slotClearBackgroundImage()
 {
-	qobject_cast<QMdiArea*> (centralWidget())->setBackground(
-		QBrush(QApplication::palette().color(QPalette::Dark)));
-	m_backgroundImage = QString::null;
+	setBackgroundImage(QString::null);
 }
