@@ -691,7 +691,9 @@ void Fixture::viewConsole()
 		QMdiSubWindow* sub;
 
 		sub = new QMdiSubWindow(_app->centralWidget());
-		m_console = new FixtureConsole(_app, m_id);
+		m_console = new FixtureConsole(_app);
+		m_console->setChannelsCheckable(false);
+		m_console->setFixture(m_id);
 
 		sub->setWidget(m_console);
 		sub->setAttribute(Qt::WA_DeleteOnClose);

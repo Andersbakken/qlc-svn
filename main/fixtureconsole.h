@@ -23,6 +23,7 @@
 #define FIXTURECONSOLE_H
 
 #include <QWidget>
+#include <QList>
 
 #include "common/qlctypes.h"
 #include "consolechannel.h"
@@ -40,13 +41,14 @@ class FixtureConsole : public QWidget
 	 * Initialization
 	 *********************************************************************/
 public:
-	FixtureConsole(QWidget* parent, t_fixture_id fxi_id);
+	FixtureConsole(QWidget* parent);
 	~FixtureConsole();
 
 	/*********************************************************************
 	 * Fixture
 	 *********************************************************************/
-protected:
+public:
+	/** Set the fixture that this console is controlling */
 	void setFixture(t_fixture_id id);
 
 protected:
@@ -56,6 +58,9 @@ protected:
 	 * Channels
 	 *********************************************************************/
 public:
+	/** Set channel group boxes to have/not have a checkbox */
+	void setChannelsCheckable(bool checkable);
+
 	/** Set all channels enabled/disabled */
 	void enableAllChannels(bool enable);
 
@@ -66,11 +71,17 @@ public:
 	void setSceneValue(const SceneValue& scv);
 
 protected slots:
+	/** Slot that captures individual channel value changes */
 	void slotValueChanged(t_channel channel, t_value value, bool enabled);
 
 signals:
+	/** Signal telling one of this console's channels has changed value */
 	void valueChanged(t_fixture_id fxi, t_channel channel, t_value value,
 			  bool enabled);
+
+protected:
+	bool m_channelsCheckable;
+	QList<ConsoleChannel*> m_channels;
 
 	/*********************************************************************
 	 * Save / Load

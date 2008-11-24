@@ -22,6 +22,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QIcon>
+#include <QList>
 #include <QtXml>
 
 #include "common/qlcfile.h"
@@ -37,12 +38,12 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-FixtureConsole::FixtureConsole(QWidget* parent, t_fixture_id fxi_id)
-	: QWidget(parent)
+FixtureConsole::FixtureConsole(QWidget* parent) : QWidget(parent)
 {
-	new QHBoxLayout(this);
+	m_fixture = KNoID;
+	m_channelsCheckable = false;
 
-	setFixture(fxi_id);
+	new QHBoxLayout(this);
 }
 
 FixtureConsole::~FixtureConsole()
@@ -57,7 +58,11 @@ void FixtureConsole::setFixture(t_fixture_id id)
 {
 	ConsoleChannel* cc = NULL;
 	Fixture* fxi = NULL;
-	
+
+	/* Get rid of any previous channels */
+	while (m_channels.isEmpty() == false)
+		delete m_channels.takeFirst();
+
 	m_fixture = id;
 
 	fxi = _app->doc()->fixture(m_fixture);
@@ -67,10 +72,13 @@ void FixtureConsole::setFixture(t_fixture_id id)
 	for (unsigned int i = 0; i < fxi->channels(); i++)
 	{
 		cc = new ConsoleChannel(this, m_fixture, i);
+		cc->setCheckable(m_channelsCheckable);
 		layout()->addWidget(cc);
 
 		connect(cc, SIGNAL(valueChanged(t_channel,t_value,bool)),
 			this, SLOT(slotValueChanged(t_channel,t_value,bool)));
+
+		m_channels.append(cc);
 	}
 
 	/* Resize the console to some sensible proportions if at least
@@ -82,6 +90,15 @@ void FixtureConsole::setFixture(t_fixture_id id)
 /*****************************************************************************
  * Channels
  *****************************************************************************/
+
+void FixtureConsole::setChannelsCheckable(bool checkable)
+{
+	m_channelsCheckable = checkable;
+
+	QMutableListIterator <ConsoleChannel*> it(m_channels);
+	while (it.hasNext() == true)
+		it.next()->setCheckable(checkable);
+}
 
 void FixtureConsole::enableAllChannels(bool enable)
 {
@@ -165,7 +182,7 @@ bool FixtureConsole::loadXML(QDomDocument*, QDomElement* root)
 			qDebug() << "Unknown fixture console tag:"
 			     << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

@@ -320,7 +320,9 @@ void SceneEditor::addFixtureTab(Fixture* fixture)
 
 	Q_ASSERT(fixture != NULL);
 
-	console = new FixtureConsole(this, fixture->id());
+	console = new FixtureConsole(this);
+	console->setChannelsCheckable(true);
+	console->setFixture(fixture->id());
 	m_tab->addTab(console, fixture->name());
 
 	/* Start off with all channels disabled */
