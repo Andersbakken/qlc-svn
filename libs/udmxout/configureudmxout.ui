@@ -1,0 +1,345 @@
+<ui version="4.0" >
+ <class>Configure_uDMXOut</class>
+ <widget class="QDialog" name="Configure_uDMXOut" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>269</width>
+    <height>272</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Configure uDMX Plugin</string>
+  </property>
+  <layout class="QGridLayout" >
+   <item row="2" column="1" >
+    <layout class="QGridLayout" >
+     <item row="1" column="0" >
+      <layout class="QGridLayout" >
+       <item row="1" column="0" >
+        <spacer name="spacer2" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType" >
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>103</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="2" >
+        <widget class="QPushButton" name="m_cancel" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip" >
+          <string>Reject changes and close the dialog</string>
+         </property>
+         <property name="text" >
+          <string>&amp;Cancel</string>
+         </property>
+         <property name="shortcut" >
+          <string>Alt+C</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" >
+        <widget class="QPushButton" name="m_ok" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip" >
+          <string>Accept changes and close the dialog</string>
+         </property>
+         <property name="text" >
+          <string>&amp;OK</string>
+         </property>
+         <property name="shortcut" >
+          <string>Alt+O</string>
+         </property>
+         <property name="default" >
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0" >
+      <widget class="QGroupBox" name="groupBox" >
+       <property name="title" >
+        <string>Active</string>
+       </property>
+       <widget class="QLabel" name="m_statusLabel" >
+        <property name="geometry" >
+         <rect>
+          <x>20</x>
+          <y>20</y>
+          <width>81</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="font" >
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="toolTip" >
+         <string>Current interface status</string>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text" >
+         <string>Not Active</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap" >
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="m_activate" >
+        <property name="geometry" >
+         <rect>
+          <x>140</x>
+          <y>20</y>
+          <width>101</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="toolTip" >
+         <string>Activate the interface. Pressing this button also saves settings.</string>
+        </property>
+        <property name="text" >
+         <string>&amp;Activate</string>
+        </property>
+        <property name="shortcut" >
+         <string>Alt+A</string>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QGroupBox" name="groupBox_2" >
+     <property name="title" >
+      <string>Device</string>
+     </property>
+     <widget class="QLabel" name="textLabel1_2" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>227</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>First Universe</string>
+      </property>
+      <property name="wordWrap" >
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="m_firstUnivSpinBox" >
+      <property name="geometry" >
+       <rect>
+        <x>100</x>
+        <y>20</y>
+        <width>110</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="toolTip" >
+       <string>first number added to &lt;Name></string>
+      </property>
+      <property name="minimum" >
+       <number>0</number>
+      </property>
+      <property name="maximum" >
+       <number>8</number>
+      </property>
+      <property name="value" >
+       <number>0</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_Chan" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>111</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>Channels</string>
+      </property>
+      <property name="wordWrap" >
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="m_spnChannel" >
+      <property name="geometry" >
+       <rect>
+        <x>100</x>
+        <y>50</y>
+        <width>110</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="toolTip" >
+       <string>refer to uDMX documentation</string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>512</number>
+      </property>
+      <property name="value" >
+       <number>1</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="textLabel2" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>Debug</string>
+      </property>
+      <property name="wordWrap" >
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="m_cmbDebug" >
+      <property name="geometry" >
+       <rect>
+        <x>100</x>
+        <y>80</y>
+        <width>110</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="toolTip" >
+       <string>write to console output ?</string>
+      </property>
+      <item>
+       <property name="text" >
+        <string>0 | Errors</string>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>1 | Warnings</string>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>2 | Infos</string>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>3 | All</string>
+       </property>
+      </item>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="1" >
+    <widget class="QLabel" name="label" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text" >
+      <string>see http://www.ilLUTZminator.de for more infos</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <tabstops>
+  <tabstop>m_ok</tabstop>
+  <tabstop>m_cancel</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>Configure_uDMXOut</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_ok</sender>
+   <signal>clicked()</signal>
+   <receiver>Configure_uDMXOut</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_activate</sender>
+   <signal>clicked()</signal>
+   <receiver>Configure_uDMXOut</receiver>
+   <slot>slotActivateClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
