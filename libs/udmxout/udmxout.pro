@@ -6,10 +6,11 @@ TARGET		= udmxout
 
 CONFIG          += plugin warn_on release
 
-INCLUDEPATH		+= . ../../libs/
+INCLUDEPATH	+= . ../../libs/
+LIBS		+= -lusb
 
-win32:INCLUDEPATH	+= C:/Projekte/Libs/libusb-win32\src
-win32:LIBS 		+= -LC:/Projekte/Libs/libusb-win32 -lusb
+#win32:INCLUDEPATH	+= C:/Projekte/Libs/libusb-win32\src
+#win32:LIBS 		+= -LC:/Projekte/Libs/libusb-win32 -lusb
 
 target.path 	= $$OUTPUTPLUGINDIR
 INSTALLS	+= target

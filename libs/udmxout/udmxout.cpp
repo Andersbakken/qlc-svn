@@ -517,4 +517,4 @@ bool uDMXOut::Debug(int debuglevel, char * format, ...)
  * Plugin export
  ****************************************************************************/
 
-Q_EXPORT_PLUGIN2(uDMXout, uDMXOut)
+Q_EXPORT_PLUGIN2(udmxout, uDMXOut)
