@@ -43,6 +43,9 @@
  * Utils
  *****************************************************************************/
 
+#ifdef CLAMP
+#undef CLAMP
+#endif
 /**
  * Ensure that x is between the limits set by low and high.
  * If low is greater than high the result is undefined.
@@ -57,6 +60,9 @@
 #define CLAMP(x, low, high) \
 	(((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
+#ifdef MAX
+#undef MAX
+#endif
 /**
  * Return the bigger value of the two given values
  *
@@ -66,6 +72,9 @@
  */
 #define MAX(x, y) (x < y) ? y : x
 
+#ifdef MIN
+#undef MIN
+#endif
 /**
  * Return the smaller value of the two given values
  *

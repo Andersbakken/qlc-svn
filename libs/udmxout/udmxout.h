@@ -25,6 +25,9 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "libusb_dyn.h"
+#else
+#include <usb.h>
 #endif
 
 #include <QStringList>
@@ -36,7 +39,6 @@
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
-#include "libusb_dyn.h"
 
 enum DebugLevel {DEBUG_ERROR, DEBUG_WARN, DEBUG_INFO, DEBUG_ALL} ;
 
