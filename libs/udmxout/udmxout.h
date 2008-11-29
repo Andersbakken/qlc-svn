@@ -36,22 +36,15 @@
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
-
+#include "libusb_dyn.h"
 
 enum DebugLevel {DEBUG_ERROR, DEBUG_WARN, DEBUG_INFO, DEBUG_ALL} ;
-
-
-#include <usb.h>    /* this is libusb, see http://libusb.sourceforge.net/ */
 
 #define USBDEV_SHARED_VENDOR    0x16C0  /* VOTI */
 #define USBDEV_SHARED_PRODUCT   0x05DC  /* Obdev's free shared PID */
 /* Use obdev's generic shared VID/PID pair and follow the rules outlined
- * in firmware/usbdrv/USBID-License.txt.
- */
+ * in firmware/usbdrv/USBID-License.txt. */
 #define cmd_SetChannelRange 2
-
-
-
 #define MAX_UDMX_DEVICES 1
 
 class ConfigureUDmxOut;

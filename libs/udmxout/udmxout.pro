@@ -7,10 +7,7 @@ TARGET		= udmxout
 CONFIG          += plugin warn_on release
 
 INCLUDEPATH	+= . ../../libs/
-LIBS		+= -lusb
-
-#win32:INCLUDEPATH	+= C:/Projekte/Libs/libusb-win32\src
-#win32:LIBS 		+= -LC:/Projekte/Libs/libusb-win32 -lusb
+unix:LIBS	+= -lusb
 
 target.path 	= $$OUTPUTPLUGINDIR
 INSTALLS	+= target
@@ -22,6 +19,11 @@ FORMS += configureudmxout.ui
 HEADERS += configureudmxout.h \
 	   udmxout.h
 
+win32:HEADERS += libusb_dyn.h
+
 # Sources
 SOURCES += configureudmxout.cpp \
 	   udmxout.cpp
+
+win32:SOURCES += libusb_dyn.c
+
