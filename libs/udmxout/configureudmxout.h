@@ -30,26 +30,18 @@ class uDMXOut;
 
 class Configure_uDMXOut : public QDialog, public Ui_Configure_uDMXOut
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  Configure_uDMXOut(QWidget* parent, uDMXOut* plugin);
-  virtual ~Configure_uDMXOut();
+public:
+	Configure_uDMXOut(QWidget* parent, uDMXOut* plugin);
+	virtual ~Configure_uDMXOut();
 
-  void setDevice(QString deviceName);
-  QString device();
+	int firstUniverse();
+	int channels();
+	int debug();
 
-  void updateStatus();
-  int  firstUniverse();
-
-  int  Channels() ;
-  int  Debug() ;
-
- private slots:
-  void slotActivateClicked();
-
- private:
-  uDMXOut* m_plugin;
+protected:
+	uDMXOut* m_plugin;
 };
 
 #endif

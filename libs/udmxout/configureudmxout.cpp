@@ -32,73 +32,44 @@
 #include <QCheckBox>
 #include <QMessageBox>
 
-#include <unistd.h>
-
 Configure_uDMXOut::Configure_uDMXOut(QWidget* parent, uDMXOut* plugin)
 	: QDialog(parent)
 {
-  m_plugin = plugin ;
+	m_plugin = plugin;
 
-  //m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;  
+	// m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__);  
   
-  setupUi(this);
+	setupUi(this);
 
-  m_firstUnivSpinBox->setValue(m_plugin->firstUniverse());
-  m_spnChannel->setValue(m_plugin->Channels()) ;
-  m_cmbDebug->setCurrentIndex(m_plugin->Debug()) ;
+	m_firstUniverseSpin->setValue(m_plugin->firstUniverse());
+	m_channelsSpin->setValue(m_plugin->channels());
+	m_debugCombo->setCurrentIndex(m_plugin->debug());
 
-  updateStatus();
+	/* TODO: Make some use of these controls or remove them */
+	m_firstUniverseSpin->hide();
+	m_firstUniverseLabel->hide();
+	m_debugCombo->hide();
+	m_debugLabel->hide();
 }
 
 Configure_uDMXOut::~Configure_uDMXOut()
 {
-  //m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ; 
-}
-
-QString Configure_uDMXOut::device()
-{
-  //m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ; 
-  
-  return "uDMX";
+	// m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__); 
 }
 
 int Configure_uDMXOut::firstUniverse()
 {
-  //m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ; 
-
-  return m_firstUnivSpinBox->value();
+	// m_plugin->Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__);
+	return m_firstUniverseSpin->value();
 }
 
-int Configure_uDMXOut::Channels()
+int Configure_uDMXOut::channels()
 {
-  return m_spnChannel->value();
+	return m_channelsSpin->value();
 }
 
-int Configure_uDMXOut::Debug()
+int Configure_uDMXOut::debug()
 {
-  return m_cmbDebug->currentIndex() ;
-  //return 0 ;
+	return m_debugCombo->currentIndex();
 }
 
-void Configure_uDMXOut::slotActivateClicked()
-{
-  m_plugin->activate();
-
-  //::usleep(10);  // Allow the activation signal get passed to doc
-
-  updateStatus();
-}
-
-void Configure_uDMXOut::updateStatus()
-{
-  if (m_plugin->isOpen())
-  {
-    m_statusLabel->setText("Active");
-    m_activate->setEnabled(false);
-  }
-  else
-  {
-    m_statusLabel->setText("Not Active");
-    m_activate->setEnabled(true);
-  }
-}

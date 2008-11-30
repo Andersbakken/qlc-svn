@@ -72,34 +72,34 @@ public:
 	void open(t_output output);
 	void close(t_output output);
 
+	int usbStringGet(usb_dev_handle *dev, int index, int langid,
+			 char *buf, int buflen);
+
+	int debug() const { return m_debug; }
+	//bool uDMXOut::debug(int debuglevel, char* format, ...);
+
+protected:
+	int  m_debug;
+	// QFile *m_hLog;
+
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/
 public:
 	void rescanDevices();
-	//uDMXDevice* device(HANDLE handle);
 	QStringList outputs();
   
-  // Own methods
-  QString deviceName() { return m_deviceName; }
-  void setDeviceName(QString name) { m_deviceName = name; }
-  int firstUniverse(){ return m_firstUniverse; }
-  int Channels()     { return m_Channels ; }
-  int Debug()        { return m_Debug ; }  
-  
-  void activate();  
-  bool isOpen();  
-  
-  int saveSettings();
-  int loadSettings();  
-  
-  QFile  *m_hLog ;  
-  
-   //bool Debug(int debuglevel, char * format, ...) ;   
+	int firstUniverse() const { return m_firstUniverse; }
+	int channels() const { return m_channels; }
 
 protected:
-	//QMap <t_output, uDMXDevice*> m_devices;
-	//struct uDMX_functions *m_uDMX ;
+	QString m_deviceName;
+	QString m_configDir;
+	usb_dev_handle* m_device[MAX_UDMX_DEVICES];
+
+	int m_firstUniverse;
+	int m_numOfDevices;
+	int m_LastInvalidDevice;
 
 	/*********************************************************************
 	 * Name
@@ -112,6 +112,8 @@ public:
 	 *********************************************************************/
 public:
 	void configure();
+	int saveSettings();
+	int loadSettings();  
 
 	/*********************************************************************
 	 * Plugin status
@@ -130,27 +132,10 @@ public:
 	void readChannel(t_output output, t_channel channel, t_value* value);
 	void readRange(t_output output, t_channel address, t_value* values,
 		       t_channel num);
-           
- private:
-  QString m_deviceName;
-  QString m_configDir;
-  usb_dev_handle *m_device[MAX_UDMX_DEVICES];
 
-  int m_firstUniverse;
-  int m_numOfDevices;
-  
-  t_value m_values[KChannelMax];
-
-  t_channel  m_Channels ;
-  int  m_Debug ;
-  
-  int  m_LastInvalidDevice ;        
-  
- 
-  int usbStringGet(usb_dev_handle *dev, int index, 
-                   int langid, char *buf, int buflen) ;  
-
-
+protected:
+	t_value m_values[KChannelMax];
+	t_channel m_channels;
 };
 
 #endif
