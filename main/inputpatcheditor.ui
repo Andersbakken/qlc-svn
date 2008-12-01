@@ -104,9 +104,6 @@
          <property name="allColumnsShowFocus" >
           <bool>true</bool>
          </property>
-         <property name="expandsOnDoubleClick" >
-          <bool>false</bool>
-         </property>
          <column>
           <property name="text" >
            <string>Template</string>
