@@ -25,8 +25,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 Requirements
-------------
-* QT 4.4 or newer
+--------------------
+* QT >= 4.4 development libraries & tools
+
+Requirements - Linux
+--------------------
+* g++ >= 4.3
+
+* FTDIDMX Output plugin: ?
+* HID Input plugin: No additional requirements
+* MIDI Input plugin: libasound, libasound-dev, pkg-config
+* LLA Output plugin: liblla, liblla-dev, pkg-config (see libs/llaout/README)
+* uDMX Output plugin: libusb, libusb-dev
+* USBDMX Output plugin: No additional requirements
+
+Requirements - Windows
+----------------------
+* MinGW environment (installd with Qt)
+
+* FTDIDMX Output plugin: ?
+* HID Input plugin: Not available for Windows
+* MIDI Input plugin: No additional requirements
+* LLA Output plugin: Not available for Windows
+* uDMX Output plugin: No additional requirements
+* USBDMX Output plugin: No additional requirements
+
+Requirements - OSX
+----------------------
+* HID Input plugin: ?
+* MIDI Input plugin: Not available for OSX
+* LLA Output plugin: Not available for OSX
+* uDMX Output plugin: Not available for OSX
+* FTDIDMX Output plugin: ?
 
 
 Compiling & Installation
