@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   usbdmxdevice-win32.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,14 +35,14 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	USHORT version;
 
 	Q_ASSERT(usbdmx != NULL);
-	
+
 	m_handle = NULL;
 	m_output = output;
 	m_usbdmx = usbdmx;
 
 	for (t_channel i = 0; i < 512; i++)
 		m_values[i] = 0;
-	
+
 	if (open() == false)
 		m_name = QString("%1: Nothing").arg(m_output + 1);
 
@@ -143,7 +143,7 @@ void USBDMXDevice::write(t_channel channel, t_value value)
 
 	m_values[channel] = value;
 	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, &value, 1);
+		m_usbdmx->tx_set(m_handle, m_values, 512);
 
 	m_mutex.unlock();
 }
@@ -151,11 +151,11 @@ void USBDMXDevice::write(t_channel channel, t_value value)
 void USBDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
-	
+
 	m_mutex.lock();
 	memcpy(m_values + address, values, num);
 	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, values, num);
+		m_usbdmx->tx_set(m_handle, m_values, 512);
 	m_mutex.unlock();
 }
 
@@ -171,7 +171,7 @@ void USBDMXDevice::read(t_channel channel, t_value* value)
 void USBDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
-	
+
 	m_mutex.lock();
 	memcpy(values, m_values + address, num);
 	m_mutex.unlock();
