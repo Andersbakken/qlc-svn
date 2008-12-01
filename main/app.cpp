@@ -567,6 +567,9 @@ void App::slotModeOperate()
 	/* Start function consumer */
 	m_functionConsumer->start();
 
+	/* Prevent opening a context menu */
+	centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
+
 	m_mode = Operate;
 	emit modeChanged(Operate);
 }
@@ -616,6 +619,9 @@ void App::slotModeDesign()
 	m_outputManagerAction->setEnabled(true);
 	m_inputManagerAction->setEnabled(true);
 	m_busManagerAction->setEnabled(true);
+
+	/* Allow opening a context menu */
+	centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	m_mode = Design;
 	emit modeChanged(Design);
