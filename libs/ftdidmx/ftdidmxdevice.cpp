@@ -29,8 +29,9 @@
  * Initialization
  ****************************************************************************/
 
-FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid, char *description,
-			   t_output output) : QThread(parent)
+FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid,
+			     char *description, t_output output)
+	: QThread(parent)
 {
 	Q_ASSERT(path.isEmpty() == false);
 	Q_ASSERT(output != KOutputInvalid);
@@ -43,9 +44,13 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid, char *descriptio
 	// Ensure we set everything to 0
 	for (t_channel i = 0; i < sizeof(m_values); i++)
 		m_values[i] = 0;
+
 	m_dataChanged = true;
 
-	m_name = QString("FTDI DMX Device (0x%1/0x%2): %3").arg(QString::number(vid, 16)).arg(QString::number(pid, 16)).arg(m_path);
+	m_name = QString("FTDI DMX Device (0x%1/0x%2): %3")
+			 .arg(QString::number(vid, 16))
+			 .arg(QString::number(pid, 16))
+			 .arg(m_path);
 }
 
 FTDIDMXDevice::~FTDIDMXDevice()
@@ -76,7 +81,8 @@ t_output FTDIDMXDevice::output() const
  * Threading class
  ****************************************************************************/
 
-void FTDIDMXDevice::run() {
+void FTDIDMXDevice::run()
+{
 	// Write the data to the device
 	ULONG bytesWritten;
 	unsigned char startCode = 0;
@@ -84,7 +90,8 @@ void FTDIDMXDevice::run() {
 	// Wait for device to clear
 	sleep(1);
 
-	while (m_threadRunning) {
+	while (m_threadRunning == true)
+	{
 		// Write data
 		FT_SetBreakOn(m_handle);
 		FT_SetBreakOff(m_handle);
@@ -104,33 +111,46 @@ bool FTDIDMXDevice::open()
 
 	char *serial;
 	QByteArray a = m_path.toLatin1();
+
 	serial = (char*)malloc(sizeof(char) * (a.count() + 1));
 	memcpy(serial, a.constData(), a.count());
 	serial[a.count()] = 0;
 
-	if (FT_SetVIDPID(m_vid, m_pid) == FT_OK && FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
+	if (FT_SetVIDPID(m_vid, m_pid) == FT_OK && 
+	    FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
 	{
 		free(serial);
-		if (!FT_SUCCESS(FT_ResetDevice(m_handle))) {
-			qWarning() << QString("Unable to reset FTDI device %1").arg(m_path);
+		if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
+		{
+			qWarning() << "Unable to reset FTDI device" << m_path;
 			return false;
 		}
 
 		// Set the baud rate 12 will give us 250Kbits
-		if (!FT_SUCCESS(FT_SetDivisor(m_handle,12))) {
-			qWarning() << QString("Unable to set divisor on FTDI device %1").arg(m_path);
+		if (!FT_SUCCESS(FT_SetDivisor(m_handle, 12)))
+		{
+			qWarning() << "Unable to set divisor on FTDI device"
+				   << m_path;
 			return false;
 		}
 
 		// Set the data characteristics
-		if (!FT_SUCCESS(FT_SetDataCharacteristics(m_handle,FT_BITS_8,FT_STOP_BITS_2,FT_PARITY_NONE))) {
-			qWarning() << QString("Unable to set data characteristics on FTDI device %1").arg(m_path);
+		if (!FT_SUCCESS(FT_SetDataCharacteristics(m_handle,
+							  FT_BITS_8,
+							  FT_STOP_BITS_2,
+							  FT_PARITY_NONE)))
+		{
+			qWarning() << "Unable to set data characteristics on"
+				   << "FTDI device" << m_path;
 			return false;
 		}
 
 		// Set flow control
-	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE, NULL, NULL ))) {
-			qWarning() << QString("Unable to set flow control on FTDI device %1").arg(m_path);
+	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE,
+	 			NULL, NULL)))
+	 	{
+			qWarning() << "Unable to set flow control on"
+				   << "FTDI device" << m_path;
 			return false;
 		}
 
@@ -147,7 +167,8 @@ bool FTDIDMXDevice::open()
 	}
 	else
 	{
-		qWarning() << QString("Unable to open FTDIDMX %1: %2").arg(m_output).arg(serial);
+		qWarning() << "Unable to open FTDIDMX"
+			   << m_output << ":" << serial;
 		free(serial);
 		return false;
 	}
@@ -175,7 +196,8 @@ void FTDIDMXDevice::write(t_channel channel, t_value value)
 	m_mutex.unlock();
 }
 
-void FTDIDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
+void FTDIDMXDevice::writeRange(t_channel address, t_value* values,
+			       t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
 
@@ -193,7 +215,8 @@ void FTDIDMXDevice::read(t_channel channel, t_value* value)
 	m_mutex.unlock();
 }
 
-void FTDIDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
+void FTDIDMXDevice::readRange(t_channel address, t_value* values,
+			      t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
 
@@ -202,3 +225,4 @@ void FTDIDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
 	m_dataChanged = true;
 	m_mutex.unlock();
 }
+

@@ -60,7 +60,8 @@ void FTDIDMXOut::close(t_output output)
  * Devices
  *****************************************************************************/
 
-void FTDIDMXOut::setVIDPID(int vid, int pid) {
+void FTDIDMXOut::setVIDPID(int vid, int pid)
+{
 	m_vidpid_mutex.lock();
 	m_scan_vid = vid;
 	m_scan_pid = pid;
@@ -90,12 +91,17 @@ void FTDIDMXOut::rescanDevices()
 		devStringPtr[i] = devString[i];
 	devStringPtr[devices] = NULL;
 
-	FT_STATUS st = FT_ListDevices(devStringPtr, &devices, FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
-	if (st == FT_OK) {
+	FT_STATUS st = FT_ListDevices(devStringPtr, &devices,
+				      FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
+	if (st == FT_OK)
+	{
 		t_output output = 0;
-		while (devices > 0) {
+		while (devices > 0)
+		{
 			devices--;
-			FTDIDMXDevice *device = new FTDIDMXDevice(this, vid, pid, devString[devices], output);
+			FTDIDMXDevice* device;
+			device = new FTDIDMXDevice(this, vid, pid,
+						   devString[devices], output);
 			Q_ASSERT(device != NULL);
 			m_devices.insert(output, device);
 		}
@@ -169,7 +175,8 @@ QString FTDIDMXOut::infoText(t_output output)
 		str += QString("<H3>%1</H3>").arg(name());
 		str += QString("<P>");
 		str += QString("This plugin provides DMX output support for ");
-		str += QString("any device which utilises the FTDI chip hardware.");
+		str += QString("any device which utilises the FTDI chip ");
+		str += QString("hardware.");
 		str += QString("</P>");
 	}
 	else if (m_devices.contains(output) == true)
@@ -221,3 +228,4 @@ void FTDIDMXOut::readRange(t_output output, t_channel address, t_value* values,
  ****************************************************************************/
 
 Q_EXPORT_PLUGIN2(FTDIDMXout, FTDIDMXOut)
+

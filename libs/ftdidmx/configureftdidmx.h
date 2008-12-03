@@ -30,7 +30,8 @@
 class FTDIDMXOut;
 class QTimer;
 
-struct FTDIDevice {
+struct FTDIDevice
+{
 	const char *name;
 	int vid;
 	int pid;	
@@ -38,7 +39,8 @@ struct FTDIDevice {
 // Now struct can be used as QVarient
 Q_DECLARE_METATYPE(FTDIDevice);
 
-static struct FTDIDevice known_devices[] = {
+static struct FTDIDevice known_devices[] =
+{
 	{"Homebrew USB -> DMX", 0x0403, 0xEC70},
 	{"EntTec Open DMX USB", 0x0403, 0x6001},
 	{"Other", 0x0000, 0x0000}
