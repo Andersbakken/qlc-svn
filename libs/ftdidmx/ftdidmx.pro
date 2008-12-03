@@ -7,6 +7,7 @@ TARGET		= ftdidmx
 INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin warn_on release
 macx:LIBS	+= -L. -lftd2xx.0.1.4
+unix:LIBS	+= libftd2xx.a.0.4.16
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
