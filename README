@@ -26,13 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements
 --------------------
-* QT >= 4.4 development libraries & tools
+* Qt >= 4.3 development libraries & tools
 
 Requirements - Linux
 --------------------
 * g++ >= 4.3
 
-* FTDIDMX Output plugin: ?
+* FTDIDMX Output plugin: No additional requirements
 * HID Input plugin: No additional requirements
 * MIDI Input plugin: libasound, libasound-dev, pkg-config
 * LLA Output plugin: liblla, liblla-dev, pkg-config (see libs/llaout/README)
@@ -51,35 +51,27 @@ Requirements - Windows
 * USBDMX Output plugin: No additional requirements
 
 Requirements - OSX
-----------------------
+------------------
+* FTDIDMX Output plugin: ?
 * HID Input plugin: ?
 * MIDI Input plugin: Not available for OSX
 * LLA Output plugin: Not available for OSX
 * uDMX Output plugin: Not available for OSX
-* FTDIDMX Output plugin: ?
 
 
 Compiling & Installation
 ------------------------
 
-For windows, just install the latest QT package from Trolltech and
-start the QT command prompt. For Linux or OSX, in addition to the QT
-libraries, you need also qt development package.
+For windows, just install the latest Qt package from Trolltech along with the
+default MinGW setup and start the Qt command prompt. For Linux or OSX, in
+addition to the Qt libraries, you need also Qt development packages.
 
-See main/docs/compiling.html for more detailed information.
-In general, just say:
-
+As normal user, type to your X terminal:
 	qmake
-
 and then:
-
 	make
-
-as a regular user in the qlc root directory and then finally:
-
+and then (as administrator/root):
 	make install
-
-as root to install QLC.
 
 
 Support & Bug Reports
@@ -88,7 +80,7 @@ In general, support requests and bug reports should be sent to
 qlc-devel@lists.sf.net.
 
 For TODO-lists, known bugs and other related information, go to
-http://www.sf.net/projects/qlc
+http://www.sf.net/projects/qlc -> Tracker -> Feature Requests
 
 
 List of people who have contributed to this piece of software
@@ -97,3 +89,6 @@ Heikki Junnila (Author) <hjunnila@users.sf.net>
 Stefan Krumm <stefankrumm@users.sf.net>
 Christian Suehs <dance-or-die@users.sf.net>
 Simon Newton <newtons@iinet.net>
+Christopher Staite <chris_staite@users.sf.net>
+Andrew Shirley <ashirley@users.sf.net>
+Lutz Hillebrand <lutz.h@hagen.de>
