@@ -2,7 +2,7 @@
   Q Light Controller
   configuremidiout.h
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -22,31 +22,45 @@
 #ifndef CONFIGUREMIDIOUT_H
 #define CONFIGUREMIDIOUT_H
 
-#include "uic_configuremidiout.h"
+#include <QDialog>
+#include "ui_configuremidiout.h"
 
-class MidiOut;
+class MIDIDevice;
+class MIDIOut;
 
-class ConfigureMidiOut : public UI_ConfigureMidiOut
+class ConfigureMIDIOut : public QDialog, public Ui_ConfigureMIDIOut
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  ConfigureMidiOut(MidiOut* plugin);
-  virtual ~ConfigureMidiOut();
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	ConfigureMIDIOut(QWidget* parent, MIDIOut* plugin);
+	virtual ~ConfigureMIDIOut();
 
-  void setDevice(QString deviceName);
-  QString device();
+protected:
+	MIDIOut* m_plugin;
+	
+	/*********************************************************************
+	 * List of devices
+	 *********************************************************************/
+protected slots:
+	/** Invoke refresh for the interface list */
+	void slotRefreshClicked();
 
-  unsigned char midiChannel();
-  unsigned char firstNote();
+	/** Open an editor dialog for the selected MIDI device */
+	void slotEditClicked();
 
-  void updateStatus();
+	/** Callback for MIDIOut::deviceAdded() signals */
+	void slotDeviceAdded(MIDIDevice* device);
 
- private slots:
-  void slotActivateClicked();
+	/** Callback for MIDIOut::deviceRemoved() signals */
+	void slotDeviceRemoved(MIDIDevice* device);
 
- private:
-  MidiOut* m_plugin;
+protected:
+	/** Refresh the interface list */
+	void refreshList();
 };
 
 #endif

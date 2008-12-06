@@ -9,10 +9,9 @@ SUBDIRS			+= common
 !mac:SUBDIRS         	+= usbdmxout
 !mac:unix:SUBDIRS	+= dmx4linuxout
 !win32:SUBDIRS		+= ftdidmx
-
-# These have not been tested but they should compile at least on unix
-#!mac:unix:SUBDIRS	+= llaout
 !mac:SUBDIRS		+= udmxout
+unix:SUBDIRS		+= midiout
+unix:SUBDIRS		+= llaout
 
 # Input plugins
 SUBDIRS			+= midiinput

@@ -2,7 +2,7 @@
   Q Light Controller
   configuremidiout.cpp
   
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,77 +19,135 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QTreeWidgetItem>
+#include <QTreeWidget>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QSettings>
+#include <QString>
+#include <QTimer>
+#include <QDebug>
+
+#include "configuremididevice.h"
 #include "configuremidiout.h"
+#include "mididevice.h"
 #include "midiout.h"
 
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qspinbox.h>
+#define KColumnNumber      0
+#define KColumnName        1
+#define KColumnMIDIChannel 2
+#define KColumnMode        3
 
-#include <unistd.h>
-
-ConfigureMidiOut::ConfigureMidiOut(MidiOut* plugin) 
-  : UI_ConfigureMidiOut(NULL, NULL, true)
+ConfigureMIDIOut::ConfigureMIDIOut(QWidget* parent, MIDIOut* plugin)
+	: QDialog(parent)
 {
-  ASSERT(plugin != NULL);
-  m_plugin = plugin;
+	Q_ASSERT(plugin != NULL);
+	m_plugin = plugin;
+	
+	/* Setup UI controls */
+	setupUi(this);
+	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-  m_deviceEdit->setText(m_plugin->deviceName());
-  m_midiChannelSpin->setValue(plugin->midiChannel());
-  m_firstNoteSpin->setValue(plugin->firstNote());
+	connect(m_refreshButton, SIGNAL(clicked()),
+		this, SLOT(slotRefreshClicked()));
+	connect(m_editButton, SIGNAL(clicked()),
+		this, SLOT(slotEditClicked()));
+	connect(m_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditClicked()));
 
-  updateStatus();
+	/* Listen to device additions/removals */
+	connect(plugin, SIGNAL(deviceRemoved(MIDIDevice*)),
+		this, SLOT(slotDeviceRemoved(MIDIDevice*)));
+	connect(plugin, SIGNAL(deviceAdded(MIDIDevice*)),
+		this, SLOT(slotDeviceAdded(MIDIDevice*)));
+
+	refreshList();
 }
 
-ConfigureMidiOut::~ConfigureMidiOut()
+ConfigureMIDIOut::~ConfigureMIDIOut()
 {
-
 }
 
-QString ConfigureMidiOut::device()
+/*****************************************************************************
+ * List of devices
+ *****************************************************************************/
+
+void ConfigureMIDIOut::slotRefreshClicked()
 {
-  return m_deviceEdit->text();
+	Q_ASSERT(m_plugin != NULL);
+	m_plugin->rescanDevices();
 }
 
-void ConfigureMidiOut::slotActivateClicked()
+void ConfigureMIDIOut::refreshList()
 {
-  if (m_plugin->deviceName() != m_deviceEdit->text())
-    {
-      m_plugin->setDeviceName(m_deviceEdit->text());
-    }
+	QTreeWidgetItem* item;
+	MIDIDevice* dev;
 
-  m_plugin->activate();
+	m_list->clear();
 
-  ::usleep(10);  // Allow the activation signal get passed to doc
+	QListIterator <MIDIDevice*> it(m_plugin->m_devices);
+	while (it.hasNext() == true)
+	{
+		dev = it.next();
 
-  updateStatus();
+		item = new QTreeWidgetItem(m_list);
+		item->setText(KColumnNumber,
+			      QString("%1").arg(dev->output() + 1));
+		item->setText(KColumnName, dev->name());
+		item->setText(KColumnMIDIChannel,
+			      QString("%1").arg(dev->midiChannel() + 1));
+		item->setText(KColumnMode,
+			      MIDIDevice::modeToString(dev->mode()));
+	}
 }
 
-void ConfigureMidiOut::updateStatus()
+void ConfigureMIDIOut::slotEditClicked()
 {
-  if (m_plugin->isOpen())
-    {
-      m_statusLabel->setText("Active");
-      m_deviceEdit->setEnabled(false);
-      m_activate->setEnabled(false);
-    }
-  else
-    {
-      m_statusLabel->setText("Not Active");
-      m_deviceEdit->setEnabled(true);
-      m_activate->setEnabled(true);
-    }
+	QTreeWidgetItem* item;
+	MIDIDevice* device;
+	
+	item = m_list->currentItem();
+	if (item == NULL)
+		return;
+	
+	device = m_plugin->device(item->text(KColumnNumber).toInt() - 1);
+	if (device == NULL)
+		return;
+
+	ConfigureMIDIDevice cmd(this, device);
+	if (cmd.exec() == QDialog::Accepted)
+	{
+		QSettings settings;
+		QString key;
+		
+		/* Store MIDI channel to settings */
+		key = QString("/midiout/%1/midichannel").arg(device->name());
+		settings.setValue(key, device->midiChannel());
+		
+		/* Store mode to settings */
+		key = QString("/midiout/%1/mode").arg(device->name());
+		settings.setValue(key,
+				  MIDIDevice::modeToString(device->mode()));
+		
+		/* Update the tree item */
+		item->setText(KColumnMIDIChannel,
+			      QString("%1").arg(device->midiChannel() + 1));
+		item->setText(KColumnMode,
+			      MIDIDevice::modeToString(device->mode()));
+	}
 }
 
-unsigned char ConfigureMidiOut::midiChannel()
+void ConfigureMIDIOut::slotDeviceAdded(MIDIDevice* device)
 {
-  return m_midiChannelSpin->value();
+	Q_UNUSED(device);
+	refreshList();
 }
 
-unsigned char ConfigureMidiOut::firstNote()
+void ConfigureMIDIOut::slotDeviceRemoved(MIDIDevice* device)
 {
-  return m_firstNoteSpin->value();
+	QListIterator <QTreeWidgetItem*> it(m_list->findItems(device->name(),
+							      Qt::MatchExactly,
+							      KColumnName));
+	while (it.hasNext() == true)
+		delete it.next();
 }
-

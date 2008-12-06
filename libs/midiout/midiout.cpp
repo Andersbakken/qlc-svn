@@ -2,7 +2,7 @@
   Q Light Controller
   midiout.cpp
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (C) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,415 +19,346 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
+#include <QApplication>
+#include <QMessageBox>
+#include <QStringList>
+#include <QDebug>
+#include <QDir>
 
-#include <qstring.h>
-#include <qmessagebox.h>
-#include <qpopupmenu.h>
-#include <qfile.h>
+#include <alsa/asoundlib.h>
 
-#include "common/plugin.h"
-#include "common/filehandler.h"
-#include "common/types.h"
-
-#include "midiout.h"
 #include "configuremidiout.h"
+#include "mididevice.h"
+#include "midiout.h"
 
-#define MIDI_NOTEOFF 0x80
-#define MIDI_NOTEON  0x90
+/*****************************************************************************
+ * MIDIOut Initialization
+ *****************************************************************************/
 
-#define ID_CONFIGURE       10
-#define ID_ACTIVATE        20
-
-#define CONF_FILE          "midiout.conf"
-
-//
-// Exported functions
-//
-extern "C" OutputPlugin* create(t_plugin_id id)
+MIDIOut::~MIDIOut()
 {
-  return new MidiOut(id);
+	/* Delete all MIDI devices. */
+	while (m_devices.isEmpty() == false)
+		delete m_devices.takeFirst();
+
+	/* Close the ALSA sequencer interface */
+	snd_seq_close(m_alsa);
+	m_alsa = NULL;
 }
 
-extern "C" void destroy(OutputPlugin* object)
+void MIDIOut::init()
 {
-  delete object;
+	m_alsa = NULL;
+	m_address = NULL;
+
+	/* Initialize ALSA stuff */
+	initALSA();
+
+	/* Find out what devices we have */
+	rescanDevices();
 }
 
-//
-// Class implementation
-//
-MidiOut::MidiOut(t_plugin_id id) : OutputPlugin(id)
+void MIDIOut::open(t_output output)
 {
-  m_fd = -1;
-  m_midiChannel = 1;
-  m_firstNote = 0;
-  m_name = QString("Midi Output");
-  m_version = 0x00000100;
-  m_deviceName = QString("/dev/midi00");
-  m_configDirectory = QString("~/.qlc/");
-
-  for (t_channel i = 0; i < 512; i++)
-    {
-      m_values[i] = 0;
-    }
+	MIDIDevice* dev = device(output);
+	if (dev != NULL)
+		subscribeDevice(dev);		
+	else
+		qDebug() << name() << "has no output number:" << output;
 }
 
-MidiOut::~MidiOut()
+void MIDIOut::close(t_output output)
 {
-
+	MIDIDevice* dev = device(output);
+	if (dev != NULL)
+		unsubscribeDevice(dev);
+	else
+		qDebug() << name() << "has no output number:" << output;
 }
 
-void MidiOut::setFileName(QString fileName)
+void MIDIOut::subscribeDevice(MIDIDevice* device)
 {
-  m_deviceName = fileName;
+	snd_seq_port_subscribe_t* sub = NULL;
+	snd_seq_port_subscribe_alloca(&sub);
+	snd_seq_port_subscribe_set_sender(sub, m_address);
+	snd_seq_port_subscribe_set_dest(sub, device->address());
+	snd_seq_subscribe_port(m_alsa, sub);
 }
 
-int MidiOut::setDeviceName(QString name)
+void MIDIOut::unsubscribeDevice(MIDIDevice* device)
 {
-  m_deviceName = name;
-  return 0;
+	snd_seq_port_subscribe_t* sub = NULL;
+	snd_seq_port_subscribe_alloca(&sub);
+	snd_seq_port_subscribe_set_sender(sub, m_address);
+	snd_seq_port_subscribe_set_dest(sub, device->address());
+	snd_seq_unsubscribe_port(m_alsa, sub);
 }
+/*****************************************************************************
+ * ALSA
+ *****************************************************************************/
 
-int MidiOut::open()
+void MIDIOut::initALSA()
 {
-  int r = 0;
+	snd_seq_client_info_t* client = NULL;
+	
+	/* Destroy the old handle */
+	if (m_alsa != NULL)
+		snd_seq_close(m_alsa);
+	m_alsa = NULL;
 
-  m_mutex.lock();
+	/* Destroy the plugin's own address */
+	if (m_address != NULL)
+		delete m_address;
+	m_address = NULL;
 
-  r = ::open((const char*) m_deviceName, O_WRONLY | O_NONBLOCK);
-  if (r == -1)
-    {
-      perror("open");
-    }
-  else
-    {
-      m_fd = r;
-      r = 0;
-    }
-
-  m_mutex.unlock();
-
-  return r;
-}
-
-int MidiOut::close()
-{
-  int r = 0;
-
-  m_mutex.lock();
-
-  r = ::close(m_fd);
-  if (r == -1)
-    {
-      perror("close");
-    }
-  else
-    {
-      m_fd = -1;
-    }
-
-  m_mutex.unlock();
-
-  return r;
-}
-
-bool MidiOut::isOpen()
-{
-  if (m_fd == -1)
-    {
-      return false;
-    }
-  else
-    {
-      return true;
-    }
-}
-
-QString MidiOut::infoText()
-{
-  QString t;
-  QString str = QString::null;
-  str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
-  str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
-  str += name() + QString("</FONT></TD></TR></TABLE>");
-  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-
-  str += QString("<TR><TD><B>Version</B></TD>");
-  str += QString("<TD>");
-  t.setNum((version() >> 16) & 0xff);
-  str += t + QString(".");
-  t.setNum((version() >> 8) & 0xff);
-  str += t + QString(".");
-  t.setNum(version() & 0xff);
-  str += t + QString("</TD></TR>");
-
-  str += QString("<TR><TD><B>Midi Channel</B></TD>");
-  t.setNum(m_midiChannel);
-  str += QString("<TD>") + t + QString("</TD></TR>");
-
-  str += QString("<TR><TD><B>First Note Number</B></TD>");
-  t.setNum(m_firstNote);
-  str += QString("<TD>") + t + QString("</TD></TR>");
-
-  str += QString("<TR>\n");
-  str += QString("<TD><B>Status</B></TD>");
-  str += QString("<TD>");
-
-  if (isOpen() == true)
-    {
-      str += QString("<I>Active</I></TD>");
-    }
-  else
-    {
-      str += QString("Not Active</TD>");
-    }
-  str += QString("</TR>");
-
-  str += QString("</TABLE>");
-  str += QString("</BODY></HTML>");
-
-  return str;
-}
-
-int MidiOut::setConfigDirectory(QString dir)
-{
-  m_configDirectory = dir;
-  return 0;
-}
-
-int MidiOut::saveSettings()
-{
-  QString s;
-  QString t;
-  
-  QString fileName = m_configDirectory + QString(CONF_FILE);
-  qDebug(fileName);
-  QFile file(fileName);
-  
-  if (file.open(IO_WriteOnly))
-    {
-      // Comment
-      s = QString("# MidiOut Plugin Configuration\n");
-      file.writeBlock((const char*) s, s.length());
-      
-      // Entry type
-      s = QString("Entry = ") + name() + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      s = QString("Device = ") + m_deviceName + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      t.setNum(m_midiChannel);
-      s = QString("MidiChannel = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      t.setNum(m_firstNote);
-      s = QString("FirstNote = ") + t + QString("\n");
-      file.writeBlock((const char*) s, s.length());
-
-      file.close();
-    }
-  else
-    {
-      perror("file.open");
-    }
-
-  return -1;
-}
-
-int MidiOut::loadSettings()
-{
-  QString fileName;
-  QPtrList <QString> list;
-  
-  fileName = m_configDirectory + QString(CONF_FILE);
-  
-  FileHandler::readFileToList(fileName, list);
-  
-  for (QString* s = list.first(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+	/* Open the sequencer interface */
+	if (snd_seq_open(&m_alsa, "default", SND_SEQ_OPEN_DUPLEX, 0) != 0)
 	{
-	  s = list.next();
-	  if (*s == name())
-	    {
-	      createContents(list);
-	    }
+		qWarning() << "Unable to open ALSA interface!";
+		m_alsa = NULL;
+		return;
 	}
-    }
 
-  return 0;
+	/* Set current client information */
+	snd_seq_client_info_alloca(&client);
+	snd_seq_set_client_name(m_alsa, name().toAscii());
+	snd_seq_get_client_info(m_alsa, client);
+
+	/* Create an application-level port */
+	m_address = new snd_seq_addr_t;
+	m_address->port = snd_seq_create_simple_port(m_alsa, "MIDI Output",
+		   	SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ,
+			SND_SEQ_PORT_TYPE_MIDI_GENERIC);
+	m_address->client = snd_seq_client_info_get_client(client);
 }
 
-void MidiOut::createContents(QPtrList <QString> &list)
-{
-  QString t;
+/*****************************************************************************
+ * Devices
+ *****************************************************************************/
 
-  for (QString* s = list.next(); s != NULL; s = list.next())
-    {
-      if (*s == QString("Entry"))
+void MIDIOut::rescanDevices()
+{
+	snd_seq_client_info_t* clientInfo = NULL;
+	snd_seq_port_info_t* portInfo = NULL;
+	t_output line = 0;
+
+	/* Don't do anything if the ALSA sequencer interface is not open */
+	if (m_alsa == NULL)
+		return;
+
+	/* Copy all device pointers to a destroy list */
+	QList <MIDIDevice*> destroyList(m_devices);
+
+	/* Allocate these from stack */
+	snd_seq_client_info_alloca(&clientInfo);
+	snd_seq_port_info_alloca(&portInfo);
+
+	/* Find out what kinds of clients and ports there are */
+	snd_seq_client_info_set_client(clientInfo, 0); // TODO: -1 ?????
+	while (snd_seq_query_next_client(m_alsa, clientInfo) == 0)
 	{
-	  s = list.prev();
-	  break;
+		int client;
+
+		/* Get the client ID */
+		client = snd_seq_client_info_get_client(clientInfo);
+
+		/* Ignore our own client */
+		if (m_address->client == client)
+			continue;
+
+		/* Go thru all available ports in the client */
+		snd_seq_port_info_set_client(portInfo, client);
+		snd_seq_port_info_set_port(portInfo, -1);
+		while (snd_seq_query_next_port(m_alsa, portInfo) == 0)
+		{
+			const snd_seq_addr_t* address;
+			MIDIDevice* dev;
+
+			address = snd_seq_port_info_get_addr(portInfo);
+			dev = device(address);
+			if (dev == NULL)
+			{
+				/* New address. Create a new device for it. */
+				dev = new MIDIDevice(this, line++, address);
+				addDevice(dev);
+			}
+			else
+			{
+				/* This device is still alive. Do not destroy
+				   it at the end of this function. */
+				destroyList.removeAll(dev);
+			}
+		}
 	}
-      else if (*s == QString("Device"))
+	
+	/* All devices that were not found during rescan are clearly no longer
+	   in our presence and must be destroyed. */
+	while (destroyList.isEmpty() == false)
+		removeDevice(destroyList.takeFirst());
+}
+
+MIDIDevice* MIDIOut::device(const snd_seq_addr_t* address)
+{
+	QListIterator <MIDIDevice*> it(m_devices);
+
+	while (it.hasNext() == true)
 	{
-	  m_deviceName = *(list.next());
+		MIDIDevice* dev = it.next();
+
+		Q_ASSERT(dev != NULL);
+		Q_ASSERT(dev->address() != NULL);
+		
+		if (dev->address()->client == address->client &&
+		    dev->address()->port == address->port)
+		{
+			return dev;
+		}
 	}
-      else if (*s == QString("MidiChannel"))
+
+	return NULL;
+}
+
+MIDIDevice* MIDIOut::device(unsigned int index)
+{
+	if (index > static_cast<unsigned int> (m_devices.count()))
+		return NULL;
+	else
+		return m_devices.at(index);
+}
+
+void MIDIOut::addDevice(MIDIDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	m_devices.append(device);
+	emit deviceAdded(device);
+}
+
+void MIDIOut::removeDevice(MIDIDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	m_devices.removeAll(device);
+	emit deviceRemoved(device);
+	delete device;
+}
+
+/*****************************************************************************
+ * Name
+ *****************************************************************************/
+
+QString MIDIOut::name()
+{
+	return QString("MIDI Output");
+}
+
+/*****************************************************************************
+ * Outputs
+ *****************************************************************************/
+
+QStringList MIDIOut::outputs()
+{
+	QStringList list;
+
+	QListIterator <MIDIDevice*> it(m_devices);
+	while (it.hasNext() == true)
+		list << it.next()->name();
+
+	return list;
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void MIDIOut::configure()
+{
+	ConfigureMIDIOut cmo(NULL, this);
+	cmo.exec();
+}
+
+/*****************************************************************************
+ * Status
+ *****************************************************************************/
+
+QString MIDIOut::infoText(t_output output)
+{
+	QString str;
+
+	str += QString("<HTML>");
+	str += QString("<HEAD>");
+	str += QString("<TITLE>%1</TITLE>").arg(name());
+	str += QString("</HEAD>");
+	str += QString("<BODY>");
+
+	if (output == KOutputInvalid)
 	{
-	  t = *(list.next());
-	  m_midiChannel = t.toInt();
+		str += QString("<H3>%1</H3>").arg(name());
+		str += QString("<P>");
+		str += QString("This plugin provides DMX output support ");
+		str += QString("through various MIDI devices.");
+		str += QString("</P>");
 	}
-      else if (*s == QString("FirstNote"))
+	else
 	{
-	  t = *(list.next());
-	  m_firstNote = t.toInt();
+		MIDIDevice* dev = device(output);
+		if (dev != NULL)
+		{
+			str += device(output)->infoText();
+		}
+		else
+		{
+			str += QString("<P><I>");
+			str += QString("Unable to find device. Please go to ");
+			str += QString("the configuration dialog and click ");
+			str += QString("the refresh button.");
+			str += QString("</I></P>");
+		}
 	}
-    }
+
+	str += QString("</BODY>");
+	str += QString("</HTML>");
+
+	return str;
 }
 
-void MidiOut::setMidiChannel(t_channel channel)
+/*****************************************************************************
+ * Value read/write methods
+ *****************************************************************************/
+
+void MIDIOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-  if (channel <= 16 && channel > 0)
-    {
-      m_midiChannel = channel;
-    }
+	MIDIDevice* dev = device(output);
+	if (dev != NULL)
+		dev->write(channel, value);
 }
 
-int MidiOut::writeChannel(t_channel channel, t_value value)
+void MIDIOut::writeRange(t_output output, t_channel address, t_value* values,
+		t_channel num)
 {
-  t_value buf[3];
-
-  if (channel >= (MAX_MIDIOUT_DMX_CHANNELS - m_firstNote))
-    {
-      return -1;
-    }
-
-  m_mutex.lock();
-
-  // Convert [0|255] values to [0|127]
-  m_values[channel] = value;
-  value = value / 2;
-
-  if (value == 0)
-    {
-      buf[0] = MIDI_NOTEOFF + m_midiChannel - 1;
-      buf[1] = m_firstNote + channel;
-      buf[2] = 0xFF;
-    }
-  else
-    {
-      buf[0] = MIDI_NOTEON + m_midiChannel - 1;
-      buf[1] = m_firstNote + channel;
-      buf[2] = value;
-    }
-
-  ssize_t num = ::write(m_fd, buf, sizeof(buf));
-  if (num == sizeof(buf))
-    {
-      m_mutex.unlock();
-      return 0;
-    }
-  else
-    {
-      m_mutex.unlock();
-      perror("write");
-      return -1;
-    }
+	MIDIDevice* dev = device(output);
+	if (dev != NULL)
+		dev->writeRange(address, values, num);
 }
 
-int MidiOut::writeRange(t_channel address, t_value* values, t_channel num)
+void MIDIOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-  for (t_channel i = 0; i < num; i++)
-    {
-      if (writeChannel(address + i, values[i]) == -1)
-	{
-	  return -1;
-	}
-    }
-
-  return 0;
+	MIDIDevice* dev = device(output);
+	if (dev != NULL)
+		dev->read(channel, value);
 }
 
-int MidiOut::readChannel(t_channel channel, t_value &value)
+void MIDIOut::readRange(t_output output, t_channel address, t_value* values,
+	       t_channel num)
 {
-  m_mutex.lock();
-
-  value = m_values[channel];
-
-  m_mutex.unlock();
-
-  return 0;
+	MIDIDevice* dev = device(output);
+	if (dev != NULL)
+		dev->readRange(address, values, num);
 }
 
-int MidiOut::readRange(t_channel address, t_value* values, t_channel num)
-{
-  m_mutex.lock();
+/*****************************************************************************
+ * Plugin export
+ ****************************************************************************/
 
-  for (t_channel i = 0; i < num; i++)
-    {
-      values[i] = m_values[i];
-    }
+Q_EXPORT_PLUGIN2(midiout, MIDIOut)
 
-  m_mutex.unlock();
-
-  return 0;
-}
-
-int MidiOut::configure()
-{
-  ConfigureMidiOut* conf = new ConfigureMidiOut(this);
-
-  if (conf->exec() == QDialog::Accepted)
-    {
-      m_deviceName = conf->device();
-      m_midiChannel = conf->midiChannel();
-      m_firstNote = conf->firstNote();
-      saveSettings();
-    }
-
-  return 0;
-}
-
-void MidiOut::activate()
-{
-  emit activated(this);
-}
-
-void MidiOut::contextMenu(QPoint pos)
-{
-  QPopupMenu* menu = new QPopupMenu();
-  menu->insertItem("Configure...", ID_CONFIGURE);
-  menu->insertSeparator();
-  menu->insertItem("Activate", ID_ACTIVATE);
-
-  connect(menu, SIGNAL(activated(int)),
-	  this, SLOT(slotContextMenuCallback(int)));
-
-  menu->exec(pos, 0);
-  delete menu;
-}
-
-void MidiOut::slotContextMenuCallback(int item)
-{
-  switch(item)
-    {
-    case ID_CONFIGURE:
-      configure();
-      break;
-
-    case ID_ACTIVATE:
-      activate();
-      break;
-
-    default:
-      break;
-    }
-}

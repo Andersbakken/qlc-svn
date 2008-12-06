@@ -2,7 +2,7 @@
   Q Light Controller
   midiout.h
 
-  Copyright (C) 2000, 2001, 2002 Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -22,71 +22,141 @@
 #ifndef MIDIOUT_H
 #define MIDIOUT_H
 
-#include "../common/outputplugin.h"
-#include <qthread.h>
-#include <qptrlist.h>
+#include <QStringList>
+#include <QtPlugin>
+#include <QList>
 
+#include <alsa/asoundlib.h>
+
+#include "common/qlcoutplugin.h"
+#include "common/qlctypes.h"
+
+class ConfigureMIDIOut;
+class MIDIDevice;
 class QString;
 
-extern "C" OutputPlugin* create(t_plugin_id id);
-extern "C" void destroy(OutputPlugin* object);
+/*****************************************************************************
+ * MIDIOut
+ *****************************************************************************/
 
-#define MAX_MIDIOUT_DMX_CHANNELS 128
-
-class ConfigureMidiOut;
-
-class MidiOut : public OutputPlugin
+class MIDIOut : public QObject, public QLCOutPlugin
 {
-  Q_OBJECT
+	Q_OBJECT
+	Q_INTERFACES(QLCOutPlugin)
 
-    friend class ConfigureMidiOut;
+	friend class ConfigureMIDIOut;
 
- public:
-  MidiOut(t_plugin_id id);
-  virtual ~MidiOut();
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
+public:
+	/** Destructor */
+	~MIDIOut();
 
-  int open();
-  int close();
-  bool isOpen();
-  int configure();
-  QString infoText();
-  void contextMenu(QPoint pos);
+	/** Second-stage constructor */
+	void init();
+	
+	/** Open the given output */
+	void open(t_output output = 0);
 
-  int setConfigDirectory(QString dir);
-  int saveSettings();
-  int loadSettings();
+	/** Close the given output */
+	void close(t_output output = 0);
 
-  // OutputPlugin functions
-  int writeChannel(t_channel channel, t_value value);
-  int writeRange(t_channel address, t_value* values, t_channel num);
+protected:
+	void subscribeDevice(MIDIDevice* device);
+	void unsubscribeDevice(MIDIDevice* device);
 
-  int readChannel(t_channel channel, t_value &value);
-  int readRange(t_channel address, t_value* values, t_channel num);
+	/*********************************************************************
+	 * ALSA
+	 *********************************************************************/
+protected:
+	/** Initialize ALSA for proper operation */
+	void initALSA();
 
-  // Own functions
-  int setDeviceName(QString name);
-  QString deviceName() { return m_deviceName; }
+public:
+	/** Get the ALSA sequencer handle */
+	snd_seq_t* alsa() { return m_alsa; }
+	
+	/** Get the plugin's own ALSA port that collates all events */
+	const snd_seq_addr_t* address() { return m_address; }
 
- protected:
-  void setFileName(QString);
-  void setMidiChannel(t_channel channel);
-  t_channel midiChannel() { return m_midiChannel; }
-  t_value firstNote() { return m_firstNote; }
-  void activate();
-  void createContents(QPtrList <QString> &list);
+protected:
+	/** The plugin's ALSA sequencer interface handle */
+	snd_seq_t* m_alsa;
 
- protected slots:
-  void slotContextMenuCallback(int);
+	/** This sequencer client's port address */
+	snd_seq_addr_t* m_address;
 
- private:
-  QString m_deviceName;
-  QString m_configDirectory;
-  int m_fd;
-  t_channel m_midiChannel;
-  t_channel m_firstNote;
+	/*********************************************************************
+	 * Devices
+	 *********************************************************************/
+public:
+	/** Find out what kinds of MIDI devices there are available */
+	void rescanDevices();
 
-  QMutex m_mutex;
-  t_value m_values[512];
+protected:
+	/** Get a MIDIDevice by its ALSA address */
+	MIDIDevice* device(const snd_seq_addr_t* address);
+	
+	/** Get a MIDIDevice by its index in the QList */
+	MIDIDevice* device(unsigned int index);
+
+	/** Add a new MIDIDevice and associate it with the given output */
+	void addDevice(MIDIDevice* device);
+
+	/** Remove the MIDIDevice associated with the output from the QMap */
+	void removeDevice(MIDIDevice* device);
+
+signals:
+	/** Configuration dialog listens to this signal to refill its list */
+	void deviceAdded(MIDIDevice* device);
+
+	/** Configuration dialog listens to this signal to refill its list */
+	void deviceRemoved(MIDIDevice* device);
+
+protected:
+	/** A map of available MIDI devices */
+	QList <MIDIDevice*> m_devices;
+
+	/*********************************************************************
+	 * Name
+	 *********************************************************************/
+public:
+	/** Get the name of this plugin */
+	QString name();
+
+	/*********************************************************************
+	 * Oututs
+	 *********************************************************************/
+public:
+	/** Get the number of outputs provided by this plugin */
+	QStringList outputs();
+
+	/*********************************************************************
+	 * Configuration
+	 *********************************************************************/
+public:
+	/** Configure this plugin */
+	void configure();
+
+	/*********************************************************************
+	 * Status
+	 *********************************************************************/
+public:
+	/** Get a short information snippet on the given output's state */
+	QString infoText(t_output output = KOutputInvalid);
+
+	/*********************************************************************
+	 * Value read/write methods
+	 *********************************************************************/
+public:
+	void writeChannel(t_output output, t_channel channel, t_value value);
+	void writeRange(t_output output, t_channel address, t_value* values,
+			t_channel num);
+
+	void readChannel(t_output output, t_channel channel, t_value* value);
+	void readRange(t_output output, t_channel address, t_value* values,
+		       t_channel num);
 };
 
 #endif

@@ -9,21 +9,31 @@ This is a simple plugin to convert QLC's internal DMX data into MIDI data.
 
 PROTOCOL
 --------
-The plugin supports 128 channels used at least in Botex & GLP devices, maybe
-others, too. Basically the protocol used by Botex & GLP in their MIDI-capable
-devices is as follows:
+The plugin supports 128 channels thru any MIDI-to-DMX device that operates
+on the following protocol description:
 
 * MIDI channel has nothing to do with DMX channels. You can set any MIDI
   channel for the plugin from 1 to 16, which should be the same as in your
-  MIDI-to-DMX-device (for example GLP DC1224).
+  MIDI-to-DMX device (for example GLP DC1224).
 
-* MIDI note NUMBERS from 0 to 127 correspond directly to DMX channels: Note 
-  number 0 == DMX channel 1 and MIDI 127 == DMX 128.
+* There are two operational modes:
 
-* MIDI note VELOCITY sets the intensity for the corresponding channel. Since
-  MIDI data is represented only with 7 bits, values from 0 thru 127 are
-  available. The given DMX value is just divided by two so that 
-  255DMX == 127MIDI, 127DMX = 63MIDI, 0DMX == 0MIDI.
+  * Note: MIDI note NUMBERS from 0 to 127 correspond directly to DMX channels:
+	C0 = DMX ch 1, C#0 = DMX ch 2 ... G9(127) = DMX ch 128.
 
-* MIDI note ON message is sent whenever velocities 1-127 (DMX values 1-255)
-  are used and MIDI note OFF message is sent when velocity/value 0 is used.
+	MIDI note VELOCITY sets the intensity for the corresponding channel.
+	Since MIDI data is represented only with 7 bits, only values 0-127
+	available. The given DMX value is just divided by two so that
+	255DMX = 127MIDI, 127DMX = 63MIDI, 0DMX = 0MIDI.
+
+	MIDI note ON message is sent whenever velocities 1-127 (DMX 1-255)
+	are used and MIDI note OFF message is sent when velocity/value is 0.
+
+  * Control Change: MIDI controller numbers 0 to 127 correspond directly to
+	DMX channels: CC0 = 1, CC1 = 2 ... CC127 = 128.
+
+	The CONTROL VALUE sets the intensity for the corresponding channel.
+	Since MIDI data is represented only with 7 bits, only values 0-127
+	available. The given DMX value is just divided by two so that
+	255DMX = 127MIDI, 127DMX = 63MIDI, 0DMX = 0MIDI.
+
