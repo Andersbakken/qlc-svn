@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  mididevice.h
+  mididevice-win32.h
 
   Copyright (c) Heikki Junnila
 
@@ -22,10 +22,8 @@
 #ifndef MIDIDEVICE_H
 #define MIDIDEVICE_H
 
+#include <Windows.h>
 #include <QObject>
-#include <QFile>
-
-#include <alsa/asoundlib.h>
 
 #include "common/qlctypes.h"
 
@@ -40,38 +38,41 @@ class QString;
 class MIDIDevice : public QObject
 {
 	Q_OBJECT
-		
+
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
-	MIDIDevice(MIDIOut* parent, t_output output,
-		   const snd_seq_addr_t* address);
+	MIDIDevice(MIDIOut* parent, UINT id);
 	virtual ~MIDIDevice();
+
+	/** Load global settings */
+	void loadSettings();
+
+	/** Save global settings */
+	void saveSettings();
+
+	/*********************************************************************
+	 * File operations
+	 *********************************************************************/
+public:
+	/** Attempt to open the device in write-only mode */
+	bool open();
+
+	/** Close the device */
+	void close();
+
+protected:
+	HMIDIOUT m_handle;
 
 	/*********************************************************************
 	 * Output
 	 *********************************************************************/
 public:
-	/** Get the output line number that this device represents */
-	t_output output() const { return m_output; }
-	
-	/** Set the output line number that this device represents */
-	void setOutput(t_output output) { m_output = output; }
+	t_output output() const { return static_cast<t_output> (m_id); }
 
 protected:
-	/** The output line number that this device represents */
-	t_output m_output;
-
-	/*********************************************************************
- 	 * ALSA address
-	 *********************************************************************/
-public:
-	/** Get the device's ALSA client:port address */
-	const snd_seq_addr_t* address() const;
-
-	/** Set the device's ALSA client:port address */
-	void setAddress(const snd_seq_addr_t* address);
-
-protected:
-	snd_seq_addr_t* m_address;
+	UINT m_id;
 
 	/*********************************************************************
 	 * Device info
@@ -84,11 +85,11 @@ public:
 	QString name() const;
 
 protected:
-	/** Extract the name of this device from ALSA */
+	/** Extract the name of this device */
 	void extractName();
 
 protected:
-	/** The name of this ALSA MIDI device */
+	/** The name of this MIDI device */
 	QString m_name;
 
 	/*********************************************************************

@@ -30,8 +30,14 @@
 
 #include "configuremididevice.h"
 #include "configuremidiout.h"
-#include "mididevice.h"
-#include "midiout.h"
+
+#ifdef WIN32
+#include "mididevice-win32.h"
+#include "midiout-win32.h"
+#else
+#include "mididevice-unix.h"
+#include "midiout-unix.h"
+#endif
 
 #define KColumnNumber      0
 #define KColumnName        1
@@ -117,23 +123,14 @@ void ConfigureMIDIOut::slotEditClicked()
 	ConfigureMIDIDevice cmd(this, device);
 	if (cmd.exec() == QDialog::Accepted)
 	{
-		QSettings settings;
-		QString key;
-		
-		/* Store MIDI channel to settings */
-		key = QString("/midiout/%1/midichannel").arg(device->name());
-		settings.setValue(key, device->midiChannel());
-		
-		/* Store mode to settings */
-		key = QString("/midiout/%1/mode").arg(device->name());
-		settings.setValue(key,
-				  MIDIDevice::modeToString(device->mode()));
-		
 		/* Update the tree item */
 		item->setText(KColumnMIDIChannel,
 			      QString("%1").arg(device->midiChannel() + 1));
 		item->setText(KColumnMode,
 			      MIDIDevice::modeToString(device->mode()));
+
+		/* Save as global settings */
+		device->saveSettings();
 	}
 }
 

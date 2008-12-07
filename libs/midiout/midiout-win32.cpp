@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  midiout.cpp
+  midiout-win32.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -20,16 +20,13 @@
 */
 
 #include <QApplication>
-#include <QMessageBox>
 #include <QStringList>
+#include <Windows.h>
 #include <QDebug>
-#include <QDir>
-
-#include <alsa/asoundlib.h>
 
 #include "configuremidiout.h"
-#include "mididevice.h"
-#include "midiout.h"
+#include "mididevice-win32.h"
+#include "midiout-win32.h"
 
 /*****************************************************************************
  * MIDIOut Initialization
@@ -40,20 +37,10 @@ MIDIOut::~MIDIOut()
 	/* Delete all MIDI devices. */
 	while (m_devices.isEmpty() == false)
 		delete m_devices.takeFirst();
-
-	/* Close the ALSA sequencer interface */
-	snd_seq_close(m_alsa);
-	m_alsa = NULL;
 }
 
 void MIDIOut::init()
 {
-	m_alsa = NULL;
-	m_address = NULL;
-
-	/* Initialize ALSA stuff */
-	initALSA();
-
 	/* Find out what devices we have */
 	rescanDevices();
 }
@@ -62,7 +49,7 @@ void MIDIOut::open(t_output output)
 {
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
-		subscribeDevice(dev);		
+		dev->open();
 	else
 		qDebug() << name() << "has no output number:" << output;
 }
@@ -71,65 +58,9 @@ void MIDIOut::close(t_output output)
 {
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
-		unsubscribeDevice(dev);
+		dev->open();
 	else
 		qDebug() << name() << "has no output number:" << output;
-}
-
-void MIDIOut::subscribeDevice(MIDIDevice* device)
-{
-	snd_seq_port_subscribe_t* sub = NULL;
-	snd_seq_port_subscribe_alloca(&sub);
-	snd_seq_port_subscribe_set_sender(sub, m_address);
-	snd_seq_port_subscribe_set_dest(sub, device->address());
-	snd_seq_subscribe_port(m_alsa, sub);
-}
-
-void MIDIOut::unsubscribeDevice(MIDIDevice* device)
-{
-	snd_seq_port_subscribe_t* sub = NULL;
-	snd_seq_port_subscribe_alloca(&sub);
-	snd_seq_port_subscribe_set_sender(sub, m_address);
-	snd_seq_port_subscribe_set_dest(sub, device->address());
-	snd_seq_unsubscribe_port(m_alsa, sub);
-}
-/*****************************************************************************
- * ALSA
- *****************************************************************************/
-
-void MIDIOut::initALSA()
-{
-	snd_seq_client_info_t* client = NULL;
-	
-	/* Destroy the old handle */
-	if (m_alsa != NULL)
-		snd_seq_close(m_alsa);
-	m_alsa = NULL;
-
-	/* Destroy the plugin's own address */
-	if (m_address != NULL)
-		delete m_address;
-	m_address = NULL;
-
-	/* Open the sequencer interface */
-	if (snd_seq_open(&m_alsa, "default", SND_SEQ_OPEN_DUPLEX, 0) != 0)
-	{
-		qWarning() << "Unable to open ALSA interface!";
-		m_alsa = NULL;
-		return;
-	}
-
-	/* Set current client information */
-	snd_seq_client_info_alloca(&client);
-	snd_seq_set_client_name(m_alsa, name().toAscii());
-	snd_seq_get_client_info(m_alsa, client);
-
-	/* Create an application-level port */
-	m_address = new snd_seq_addr_t;
-	m_address->port = snd_seq_create_simple_port(m_alsa, "MIDI Output",
-		   	SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ,
-			SND_SEQ_PORT_TYPE_MIDI_GENERIC);
-	m_address->client = snd_seq_client_info_get_client(client);
 }
 
 /*****************************************************************************
@@ -138,84 +69,16 @@ void MIDIOut::initALSA()
 
 void MIDIOut::rescanDevices()
 {
-	snd_seq_client_info_t* clientInfo = NULL;
-	snd_seq_port_info_t* portInfo = NULL;
-	t_output line = 0;
+	UINT deviceCount;
 
-	/* Don't do anything if the ALSA sequencer interface is not open */
-	if (m_alsa == NULL)
-		return;
+	/* Destroy existing devices in case something has changed */
+	while (m_devices.isEmpty() == false)
+		removeDevice(m_devices.takeFirst());
 
-	/* Copy all device pointers to a destroy list */
-	QList <MIDIDevice*> destroyList(m_devices);
-
-	/* Allocate these from stack */
-	snd_seq_client_info_alloca(&clientInfo);
-	snd_seq_port_info_alloca(&portInfo);
-
-	/* Find out what kinds of clients and ports there are */
-	snd_seq_client_info_set_client(clientInfo, 0); // TODO: -1 ?????
-	while (snd_seq_query_next_client(m_alsa, clientInfo) == 0)
-	{
-		int client;
-
-		/* Get the client ID */
-		client = snd_seq_client_info_get_client(clientInfo);
-
-		/* Ignore our own client */
-		if (m_address->client == client)
-			continue;
-
-		/* Go thru all available ports in the client */
-		snd_seq_port_info_set_client(portInfo, client);
-		snd_seq_port_info_set_port(portInfo, -1);
-		while (snd_seq_query_next_port(m_alsa, portInfo) == 0)
-		{
-			const snd_seq_addr_t* address;
-			MIDIDevice* dev;
-
-			address = snd_seq_port_info_get_addr(portInfo);
-			dev = device(address);
-			if (dev == NULL)
-			{
-				/* New address. Create a new device for it. */
-				dev = new MIDIDevice(this, line++, address);
-				addDevice(dev);
-			}
-			else
-			{
-				/* This device is still alive. Do not destroy
-				   it at the end of this function. */
-				destroyList.removeAll(dev);
-			}
-		}
-	}
-	
-	/* All devices that were not found during rescan are clearly no longer
-	   in our presence and must be destroyed. */
-	while (destroyList.isEmpty() == false)
-		removeDevice(destroyList.takeFirst());
-}
-
-MIDIDevice* MIDIOut::device(const snd_seq_addr_t* address)
-{
-	QListIterator <MIDIDevice*> it(m_devices);
-
-	while (it.hasNext() == true)
-	{
-		MIDIDevice* dev = it.next();
-
-		Q_ASSERT(dev != NULL);
-		Q_ASSERT(dev->address() != NULL);
-		
-		if (dev->address()->client == address->client &&
-		    dev->address()->port == address->port)
-		{
-			return dev;
-		}
-	}
-
-	return NULL;
+	/* Create devices for each valid midi input */
+	deviceCount = midiOutGetNumDevs();
+	for (UINT id = 0; id < deviceCount; id++)
+		addDevice(new MIDIDevice(this, id));
 }
 
 MIDIDevice* MIDIOut::device(unsigned int index)
@@ -238,8 +101,10 @@ void MIDIOut::removeDevice(MIDIDevice* device)
 {
 	Q_ASSERT(device != NULL);
 
+	device->close();
 	m_devices.removeAll(device);
 	emit deviceRemoved(device);
+
 	delete device;
 }
 
@@ -361,4 +226,3 @@ void MIDIOut::readRange(t_output output, t_channel address, t_value* values,
  ****************************************************************************/
 
 Q_EXPORT_PLUGIN2(midiout, MIDIOut)
-

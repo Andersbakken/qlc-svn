@@ -24,7 +24,11 @@
 #include <QDialog>
 
 #include "configuremididevice.h"
-#include "mididevice.h"
+#ifdef WIN32
+#include "mididevice-win32.h"
+#else
+#include "mididevice-unix.h"
+#endif
 
 ConfigureMIDIDevice::ConfigureMIDIDevice(QWidget* parent, MIDIDevice* device)
 	: QDialog(parent)

@@ -33,13 +33,13 @@ unix:FORMS	+= configuremididevice.ui \
 
 unix:HEADERS	+= configuremididevice.h \
 		   configuremidiout.h \
-		   mididevice.h \
-		   midiout.h
+		   mididevice-unix.h \
+		   midiout-unix.h
 
 unix:SOURCES	+= configuremididevice.cpp \
 		   configuremidiout.cpp \
-		   mididevice.cpp \
-		   midiout.cpp
+		   mididevice-unix.cpp \
+		   midiout-unix.cpp
 
 ###############################################################################
 # Win32 sources
@@ -48,10 +48,12 @@ unix:SOURCES	+= configuremididevice.cpp \
 win32:FORMS	+= configuremididevice.ui \
 		   configuremidiout.ui
 
-#win32:SOURCES += configuremidiout.cpp \
-#		 mididevice-win32.cpp \#		 midiout-win32.cpp
+win32:SOURCES	+= configuremididevice.cpp \
+		   configuremidiout.cpp \
+		   mididevice-win32.cpp \
+		   midiout-win32.cpp
 
-#win32:HEADERS += configuremidiout.h \
-#		  mididevice-win32.h \
-#		  midiout-win32.h
-
+win32:HEADERS	+= configuremididevice.h \
+		   configuremidiout.h \
+		   mididevice-win32.h \
+		   midiout-win32.h
