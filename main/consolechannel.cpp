@@ -228,6 +228,10 @@ void ConsoleChannel::initPlainMenu()
 		action = m_menu->addAction(s);
 		action->setData(i);
 	}
+	
+	// Connect menu item activation signal to this
+	connect(m_menu, SIGNAL(triggered(QAction*)),
+		this, SLOT(slotContextMenuTriggered(QAction*)));
 }
 
 void ConsoleChannel::initCapabilityMenu(QLCChannel* ch)
