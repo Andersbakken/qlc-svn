@@ -35,6 +35,7 @@ Requirements - Linux
 * FTDIDMX Output plugin: No additional requirements
 * HID Input plugin: No additional requirements
 * MIDI Input plugin: libasound, libasound-dev, pkg-config
+* MIDI Output plugin: libasound, libasound-dev, pkg-config
 * LLA Output plugin: liblla, lla-dev, pkg-config (see libs/llaout/README)
 * uDMX Output plugin: libusb, libusb-dev
 * USBDMX Output plugin: No additional requirements
@@ -46,17 +47,20 @@ Requirements - Windows
 * FTDIDMX Output plugin: ?
 * HID Input plugin: Not available for Windows
 * MIDI Input plugin: No additional requirements
+* MIDI Output plugin: No additional requirements
 * LLA Output plugin: Not available for Windows
 * uDMX Output plugin: No additional requirements
 * USBDMX Output plugin: No additional requirements
 
 Requirements - OSX
 ------------------
-* FTDIDMX Output plugin: ?
-* HID Input plugin: ?
+* FTDIDMX Output plugin: No additional requirements
+* HID Input plugin: Not available for OSX
 * MIDI Input plugin: Not available for OSX
+* MIDI Output plugin: Not available for OSX
 * LLA Output plugin: liblla, lla-dev, pkg-config (see libs/llaout/README)
 * uDMX Output plugin: Not available for OSX
+* USBDMX Output plugin: Not available for OSX
 
 
 Compiling & Installation
