@@ -56,4 +56,5 @@ win32:SOURCES	+= configuremididevice.cpp \
 win32:HEADERS	+= configuremididevice.h \
 		   configuremidiout.h \
 		   mididevice-win32.h \
-		   midiout-win32.h
+		   midiout-win32.h \
+		   midiprotocol.h
