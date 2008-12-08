@@ -36,32 +36,13 @@
 MIDIDevice::MIDIDevice(MIDIOut* parent, t_output output,
 		       const snd_seq_addr_t* address) : QObject(parent)
 {
-	QSettings settings;
-	QVariant value;
-	QString key;
-
 	Q_ASSERT(address != NULL);
 	m_address = NULL;
 
 	setOutput(output);
 	setAddress(address);
 	extractName();
-
-	/* Attempt to get a MIDI channel from settings */
-	key = QString("/midiout/%1/midichannel").arg(m_name);
-	value = settings.value(key);
-	if (value.isValid() == true)
-		setMidiChannel(value.toInt());
-	else
-		setMidiChannel(0);
-	
-	/* Attempt to get the mode from settings */
-	key = QString("/midiout/%1/mode").arg(m_name);
-	value = settings.value(key);
-	if (value.isValid() == true)
-		setMode(stringToMode(value.toString()));
-	else
-		setMode(ControlChange);
+	loadSettings();
 
 	/* Start with all values zeroed */
 	memset(m_values, 0, sizeof(m_values));
@@ -101,12 +82,12 @@ void MIDIDevice::saveSettings()
 	QString key;
 
 	/* Store MIDI channel to settings */
-	key = QString("/midiout/%1/midichannel").arg(device->name());
-	settings.setValue(key, device->midiChannel());
+	key = QString("/midiout/%1/midichannel").arg(m_name);
+	settings.setValue(key, m_midiChannel);
 
 	/* Store mode to settings */
-	key = QString("/midiout/%1/mode").arg(device->name());
-	settings.setValue(key, MIDIDevice::modeToString(device->mode()));
+	key = QString("/midiout/%1/mode").arg(m_name);
+	settings.setValue(key, MIDIDevice::modeToString(m_mode));
 }
 
 /*****************************************************************************
