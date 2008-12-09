@@ -62,7 +62,7 @@ void MIDIOut::open(t_output output)
 {
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
-		subscribeDevice(dev);		
+		subscribeDevice(dev);
 	else
 		qDebug() << name() << "has no output number:" << output;
 }
@@ -79,6 +79,10 @@ void MIDIOut::close(t_output output)
 void MIDIOut::subscribeDevice(MIDIDevice* device)
 {
 	snd_seq_port_subscribe_t* sub = NULL;
+
+	Q_ASSERT(device != NULL);
+	Q_ASSERT(m_address != NULL);
+
 	snd_seq_port_subscribe_alloca(&sub);
 	snd_seq_port_subscribe_set_sender(sub, m_address);
 	snd_seq_port_subscribe_set_dest(sub, device->address());
@@ -88,6 +92,10 @@ void MIDIOut::subscribeDevice(MIDIDevice* device)
 void MIDIOut::unsubscribeDevice(MIDIDevice* device)
 {
 	snd_seq_port_subscribe_t* sub = NULL;
+
+	Q_ASSERT(device != NULL);
+	Q_ASSERT(m_address != NULL);
+
 	snd_seq_port_subscribe_alloca(&sub);
 	snd_seq_port_subscribe_set_sender(sub, m_address);
 	snd_seq_port_subscribe_set_dest(sub, device->address());
@@ -175,6 +183,9 @@ void MIDIOut::rescanDevices()
 			MIDIDevice* dev;
 
 			address = snd_seq_port_info_get_addr(portInfo);
+			if (address == NULL)
+				continue;
+
 			dev = device(address);
 			if (dev == NULL)
 			{
@@ -220,7 +231,7 @@ MIDIDevice* MIDIOut::device(const snd_seq_addr_t* address)
 
 MIDIDevice* MIDIOut::device(unsigned int index)
 {
-	if (index > static_cast<unsigned int> (m_devices.count()))
+	if (index >= static_cast<unsigned int> (m_devices.count()))
 		return NULL;
 	else
 		return m_devices.at(index);
