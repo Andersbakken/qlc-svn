@@ -340,6 +340,9 @@ void App::slotOutputManager()
 		m_outputManager = new OutputManager(sub);
 		m_outputManager->show();
 
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
+
 		sub->setWidget(m_outputManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
 		sub->setWindowTitle(tr("Output Manager"));
@@ -379,6 +382,9 @@ void App::slotInputManager()
 		sub = new QMdiSubWindow(centralWidget());
 		m_inputManager = new InputManager(sub);
 		m_inputManager->show();
+
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
 
 		sub->setWidget(m_inputManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
@@ -639,6 +645,9 @@ void App::initVirtualConsole(void)
 	QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 	m_virtualConsole = new VirtualConsole(sub);
 	m_virtualConsole->show();
+
+	/* Prevent right-clicks from getting propagated to workspace */
+	sub->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	sub->setWidget(m_virtualConsole);
 
@@ -1037,6 +1046,9 @@ void App::slotFixtureManager()
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 		m_fixtureManager = new FixtureManager(sub);
 
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
+
 		sub->setWidget(m_fixtureManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
 		sub->setWindowIcon(QIcon(":/fixture.png"));
@@ -1080,6 +1092,9 @@ void App::slotFunctionManager()
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 		m_functionManager = new FunctionManager(sub);
 
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
+
 		sub->setWidget(m_functionManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
 		sub->setWindowIcon(QIcon(":/function.png"));
@@ -1119,6 +1134,9 @@ void App::slotBusManager()
 	{
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 		m_busManager = new BusManager(sub);
+
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
 
 		sub->setWidget(m_busManager);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
@@ -1175,6 +1193,9 @@ void App::slotControlMonitor()
 
 		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
 		m_monitor = new Monitor(sub);
+
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
 
 		sub->setWidget(m_monitor);
 		sub->setAttribute(Qt::WA_DeleteOnClose);

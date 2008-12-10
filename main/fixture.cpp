@@ -684,6 +684,7 @@ QString Fixture::status()
  * Console
  *****************************************************************************/
 
+/* TODO: WTF is this actually doing in a model-class that has no UI??? */
 void Fixture::viewConsole()
 {
 	if (m_console == NULL)
@@ -694,6 +695,9 @@ void Fixture::viewConsole()
 		m_console = new FixtureConsole(_app);
 		m_console->setChannelsCheckable(false);
 		m_console->setFixture(m_id);
+
+		/* Prevent right-clicks from getting propagated to workspace */
+		sub->setContextMenuPolicy(Qt::CustomContextMenu);
 
 		sub->setWidget(m_console);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
