@@ -93,7 +93,7 @@ void ConfigureMIDIInput::refreshList()
 
 void ConfigureMIDIInput::slotDeviceAdded(MIDIDevice* device)
 {
-	Q_ASSERT(device != NULL);
+	Q_UNUSED(device);
 	refreshList();
 }
 

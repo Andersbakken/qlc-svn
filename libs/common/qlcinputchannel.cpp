@@ -117,6 +117,7 @@ bool QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QDomNode node;
 
+	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	/* Verify that the tag contains an input channel */
@@ -125,7 +126,7 @@ bool QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
 		qWarning() << "Channel node not found";
 		return false;
 	}
-	
+
 	/* Get the channel number */
 	setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
 
