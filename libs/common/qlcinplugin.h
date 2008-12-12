@@ -42,7 +42,7 @@ public:
 	 * after this call.
 	 */
 	virtual ~QLCInPlugin() {}
-	
+
 	/**
 	 * Initialize the plugin. Since plugins cannot have a user-defined
 	 * constructor, any initialization prior to opening any HW must be

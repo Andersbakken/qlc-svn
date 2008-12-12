@@ -35,7 +35,7 @@ public:
 	 * after this call.
 	 */
 	virtual ~QLCOutPlugin() {}
-	
+
 	/**
 	 * Initialize the plugin. Since plugins cannot have a user-defined
 	 * constructor, any initialization prior to opening any HW must be
@@ -93,7 +93,7 @@ public:
 	/*********************************************************************
 	 * Outputs
 	 *********************************************************************/
-public:	
+public:
 	/**
 	 * Get a list of output lines' names. The names must be always in the
 	 * same order i.e. the first name is the name of output line number 0,
@@ -102,7 +102,7 @@ public:
 	 * @return Number of outputs provided by the plugin
 	 */
 	virtual QStringList outputs() = 0;
-	
+
 	/**
 	 * Write the value of one channel. Channel numbers 0-511 are
 	 * for the first universe, 512-1023 for the second, etc...
@@ -131,7 +131,7 @@ public:
 	 */
 	virtual void writeRange(t_output output, t_channel address,
 				t_value* values, t_channel num) = 0;
-	
+
 	/**
 	 * Get the value of one channel. Channel numbers 0-511 are
 	 * for the first universe, 512-1023 for the second, etc...
