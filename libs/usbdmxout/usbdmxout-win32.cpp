@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   usbdmxout-win32.cpp
-  
+
   Copyright (c)	Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -55,13 +55,15 @@ void USBDMXOut::init()
 	else
 	{
 		qDebug() << "Using USBDMX.DLL version" << m_usbdmx->version();
+		rescanDevices();
 	}
-	
-	rescanDevices();
 }
 
 void USBDMXOut::rescanDevices()
 {
+	if (m_usbdmx == NULL)
+		return;
+
 	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
 	{
 		HANDLE handle;
@@ -143,7 +145,18 @@ QString USBDMXOut::infoText(t_output output)
 	str += QString("</HEAD>");
 	str += QString("<BODY>");
 
-	if (output == KOutputInvalid)
+	if (m_usbdmx == NULL)
+	{
+		str += QString("<H3>%1</H3>").arg(name());
+		str += QString("<P>");
+		str += QString("The shared library usbdmx.dll could not be ");
+		str += QString("found or is too old to be used with QLC. ");
+		str += QString("You can request a driver package from ");
+		str += QString("<address>www.peperoni-light.de</address> ");
+		str += QString("for your Peperoni lighting products.");
+		str += QString("</P>");
+	}
+	else if (output == KOutputInvalid)
 	{
 		str += QString("<H3>%1</H3>").arg(name());
 		str += QString("<P>");
