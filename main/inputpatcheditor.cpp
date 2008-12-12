@@ -270,6 +270,8 @@ void InputPatchEditor::updateTemplateItem(const QString& name,
 void InputPatchEditor::slotTemplateItemChanged(QTreeWidgetItem* item,
 					       int column)
 {
+	Q_UNUSED(column);
+
 	if (item->checkState(KTemplateColumnName) == Qt::Checked)
 	{
 		/* Temporarily disable this signal to prevent an endless loop */

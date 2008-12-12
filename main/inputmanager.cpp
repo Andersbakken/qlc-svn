@@ -187,6 +187,9 @@ void InputManager::slotInputValueChanged(t_input_universe universe,
 {
 	QTreeWidgetItem* item;
 
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
+
 	item = m_tree->topLevelItem(universe);
 	if (item == NULL)
 		return;

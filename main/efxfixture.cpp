@@ -138,9 +138,10 @@ bool EFXFixture::loadXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
-	
+
+	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
-	
+
 	if (root->tagName() != KXMLQLCEFXFixture)
 	{
 		qWarning("Fixture node not found!");

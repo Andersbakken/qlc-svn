@@ -222,6 +222,8 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 						t_input_channel channel,
 						t_input_value value)
 {
+	Q_UNUSED(universe);
+
 	QList <QTreeWidgetItem*> list(m_tree->findItems(
 					QString("%1").arg(channel + 1),
 					Qt::MatchExactly, KColumnNumber));
@@ -244,14 +246,14 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 	{
 		QStringList values;
 		values = list.first()->text(KColumnValues).split(",");
-		
+
 		if (values.contains(QString("%1").arg(value)) == false)
 		{
 			values << QString("%1").arg(value);
 			values.sort();
 			list.first()->setText(KColumnValues, values.join(","));
 		}
-		
+
 		/* Change the channel type only the one time when its value
 		   count goes over 2. I.e. when a channel can have more than
 		   two distinct values, it can no longer be a button. */

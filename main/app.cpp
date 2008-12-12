@@ -63,7 +63,6 @@
 
 #include "common/qlcdocbrowser.h"
 #include "common/qlcfixturedef.h"
-#include "common/qlcworkspace.h"
 #include "common/qlctypes.h"
 #include "common/qlcfile.h"
 
@@ -358,8 +357,9 @@ void App::slotOutputManager()
 	}
 }
 
-void App::slotOutputManagerDestroyed(QObject*)
+void App::slotOutputManagerDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_outputManager = NULL;
 }
 
@@ -401,8 +401,9 @@ void App::slotInputManager()
 	}
 }
 
-void App::slotInputManagerDestroyed(QObject*)
+void App::slotInputManagerDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_inputManager = NULL;
 }
 
@@ -1080,8 +1081,9 @@ void App::slotFixtureManager()
 	}
 }
 
-void App::slotFixtureManagerDestroyed(QObject*)
+void App::slotFixtureManagerDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_fixtureManager = NULL;
 }
 
@@ -1123,8 +1125,9 @@ void App::slotFunctionManager()
 	}
 }
 
-void App::slotFunctionManagerDestroyed(QObject*)
+void App::slotFunctionManagerDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_functionManager = NULL;
 }
 
@@ -1153,8 +1156,9 @@ void App::slotBusManager()
 	}
 }
 
-void App::slotBusManagerDestroyed(QObject*)
+void App::slotBusManagerDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_busManager = NULL;
 }
 
@@ -1212,8 +1216,9 @@ void App::slotControlMonitor()
 	}
 }
 
-void App::slotMonitorDestroyed(QObject*)
+void App::slotMonitorDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_monitor = NULL;
 }
 
@@ -1241,8 +1246,9 @@ void App::slotHelpIndex()
 	}
 }
 
-void App::slotDocBrowserDestroyed(QObject*)
+void App::slotDocBrowserDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_docBrowser = NULL;
 }
 

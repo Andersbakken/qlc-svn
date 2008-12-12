@@ -715,7 +715,8 @@ void Fixture::viewConsole()
 	}
 }
 
-void Fixture::slotConsoleDestroyed(QObject*)
+void Fixture::slotConsoleDestroyed(QObject* object)
 {
+	Q_UNUSED(object);
 	m_console = NULL;
 }
