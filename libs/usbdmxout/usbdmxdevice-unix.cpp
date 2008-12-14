@@ -212,6 +212,10 @@ bool USBDMXDevice::open()
 	{
 		/* Set writing mode */
 		::ioctl(m_file.handle(), DMX_MEM_MAP_SET, DMX_TX_MEM);
+
+		/* Set DMX startcode */
+		::ioctl(m_file.handle(), DMX_TX_STARTCODE_SET, 0);
+
 		return true;
 	}
 	else
