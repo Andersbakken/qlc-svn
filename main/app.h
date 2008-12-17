@@ -218,12 +218,14 @@ protected:
 	 *********************************************************************/
 public:
 	VirtualConsole* virtualConsole() const { return m_virtualConsole; }
+	static QStyle* sliderStyle();
 
 protected:
 	void initVirtualConsole();
 
 protected:
 	VirtualConsole* m_virtualConsole;
+	static QStyle* s_sliderStyle;
 
 	/*********************************************************************
 	 * Monitor

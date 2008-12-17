@@ -46,6 +46,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 	m_busHighLimit = 5;
 
 	setupUi(this);
+	m_slider->setStyle(App::sliderStyle());
 	layout()->setMargin(0);
 
 	setBusID(bus);

@@ -79,7 +79,7 @@ void ConsoleChannel::init()
 	QLCChannel* ch;
 	QString num;
 
-	this->setCheckable(true);
+	setCheckable(true);
 	connect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled(bool)));
 
 	new QVBoxLayout(this);
@@ -95,6 +95,7 @@ void ConsoleChannel::init()
 	m_valueLabel->setAlignment(Qt::AlignCenter);
 
 	m_valueSlider = new QSlider(this);
+	m_valueSlider->setStyle(App::sliderStyle());
 	layout()->addWidget(m_valueSlider);
 	m_valueSlider->setInvertedAppearance(false);
 	m_valueSlider->setRange(0, 255);

@@ -22,6 +22,7 @@
 
 #include <QCoreApplication>
 #include <QMdiSubWindow>
+#include <QStyleFactory>
 #include <QApplication>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -37,6 +38,7 @@
 #include <QLabel>
 #include <QColor>
 #include <QTimer>
+#include <QStyle>
 #include <QMenu>
 #include <QRect>
 #include <QFile>
@@ -659,6 +661,19 @@ void App::initVirtualConsole(void)
 		m_virtualConsole, SLOT(slotModeChanged(App::Mode)));
 
 	sub->hide();
+}
+
+QStyle* App::s_sliderStyle = NULL;
+QStyle* App::sliderStyle()
+{
+#ifdef WIN32
+	/* A better style to replace crappy windows sliders */
+	if (s_sliderStyle == NULL)
+		s_sliderStyle = QStyleFactory::create("Cleanlooks");
+	return s_sliderStyle;
+#else
+	return QApplication::style();
+#endif
 }
 
 /*****************************************************************************
