@@ -77,7 +77,6 @@ public:
 
 protected:
 	t_value m_values[512];
-	QMutex m_mutex;
 };
 
 #endif

@@ -32,50 +32,30 @@
 USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 			   int output) : QObject(parent)
 {
-	USHORT version;
-
 	Q_ASSERT(usbdmx != NULL);
 
 	m_handle = NULL;
 	m_output = output;
 	m_usbdmx = usbdmx;
 
-	for (t_channel i = 0; i < 512; i++)
-		m_values[i] = 0;
+	memset(m_values, 0, 512 * sizeof(t_value));
 
 	if (open() == false)
-		m_name = QString("%1: Nothing").arg(m_output + 1);
-
-	usbdmx->device_version(m_handle, &version);
-	if (m_usbdmx->is_xswitch(m_handle))
-	{
-		m_name = QString("%1: X-Switch (version %2)")
-				.arg(m_output + 1).arg(version);
-	}
-	else if (m_usbdmx->is_rodin1(m_handle))
-	{
-		m_name = QString("%1: Rodin 1 (version %2)")
-				.arg(m_output + 1).arg(version);
-	}
-	else if (m_usbdmx->is_rodin2(m_handle))
-	{
-		m_name = QString("%1: Rodin 2 (version %2)")
-				.arg(m_output + 1).arg(version);
-	}
-	else if (m_usbdmx->is_rodint(m_handle))
-	{
-		m_name = QString("%1: Rodin T (version %2)")
-				.arg(m_output + 1).arg(version);
-	}
-	else if (m_usbdmx->is_usbdmx21(m_handle))
-	{
-		m_name = QString("%1: USBDMX21 (version %2)")
-				.arg(m_output + 1).arg(version);
-	}
+		m_name = QString("%1: Unable to open device").arg(m_output + 1);
 	else
 	{
-		m_name = QString("%1: Unknown (version %2)")
-				.arg(m_output + 1).arg(version);
+		if (m_usbdmx->is_xswitch(m_handle))
+			m_name = QString("%1: X-Switch").arg(m_output + 1);
+		else if (m_usbdmx->is_rodin1(m_handle))
+			m_name = QString("%1: Rodin 1").arg(m_output + 1);
+		else if (m_usbdmx->is_rodin2(m_handle))
+			m_name = QString("%1: Rodin 2").arg(m_output + 1);
+		else if (m_usbdmx->is_rodint(m_handle))
+			m_name = QString("%1: Rodin T").arg(m_output + 1);
+		else if (m_usbdmx->is_usbdmx21(m_handle))
+			m_name = QString("%1: USBDMX21").arg(m_output + 1);
+		else
+			m_name = QString("%1: Unknown").arg(m_output + 1);
 	}
 
 	close();
@@ -112,6 +92,17 @@ bool USBDMXDevice::open()
 	/* Open the device */
 	if (m_usbdmx->open(m_output, &m_handle) == TRUE)
 	{
+		USHORT version;
+		
+		/* Check the device version against driver version */
+		m_usbdmx->device_version(m_handle, &version);
+		if (USBDMX_DLL_VERSION_CHECK(m_usbdmx) == FALSE)
+			return false;
+
+		/* DMX512 specifies 0 as the official startcode */
+		if (m_usbdmx->tx_startcode_set(m_handle, 0) == FALSE)
+			return false;
+
 		return true;
 	}
 	else
@@ -139,40 +130,28 @@ bool USBDMXDevice::close()
 
 void USBDMXDevice::write(t_channel channel, t_value value)
 {
-	m_mutex.lock();
-
+	Q_ASSERT(channel < 512);
 	m_values[channel] = value;
 	if (m_handle != NULL)
 		m_usbdmx->tx_set(m_handle, m_values, 512);
-
-	m_mutex.unlock();
 }
 
 void USBDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
-
-	m_mutex.lock();
 	memcpy(m_values + address, values, num);
 	if (m_handle != NULL)
 		m_usbdmx->tx_set(m_handle, m_values, 512);
-	m_mutex.unlock();
 }
 
 void USBDMXDevice::read(t_channel channel, t_value* value)
 {
 	Q_ASSERT(value != NULL);
-
-	m_mutex.lock();
 	*value = m_values[channel];
-	m_mutex.unlock();
 }
 
 void USBDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
-
-	m_mutex.lock();
 	memcpy(values, m_values + address, num);
-	m_mutex.unlock();
 }
