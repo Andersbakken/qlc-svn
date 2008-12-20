@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   unix-midipoller.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -63,7 +63,7 @@ quint64 MIDIPoller::addressHash(const snd_seq_addr_t* address) const
 
 	/* ...and the port number to the first byte (LSB) */
 	hash |= static_cast<quint64> (address->port);
-	
+
 	return hash;
 }
 
@@ -85,7 +85,7 @@ bool MIDIPoller::addDevice(MIDIDevice* device)
 
 	/* Subscribe the device's events */
 	subscribeDevice(device);
-	
+
 	/* Insert the device into the hash map for later retrieval */
 	m_devices.insert(hash, device);
 	m_changed = true;
@@ -96,7 +96,7 @@ bool MIDIPoller::addDevice(MIDIDevice* device)
 		m_running = true;
 		start();
 	}
-	
+
 	m_mutex.unlock();
 
 	return true;
@@ -116,7 +116,7 @@ bool MIDIPoller::removeDevice(MIDIDevice* device)
 		unsubscribeDevice(device);
 		m_changed = true;
 	}
-	
+
 	if (m_devices.count() == 0)
 	{
 		m_mutex.unlock();
@@ -231,10 +231,10 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		MIDIInputEvent* e;
 		quint64 hash;
 		int r;
-		
+
 		/* Receive an event */
 		r = snd_seq_event_input(alsa, &ev);
-		
+
 		/* Find a device matching the event's address. If one isn't
 		   found, skip this event, since we're not interested in it */
 		hash = addressHash(&ev->source);
@@ -250,32 +250,30 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		    ev->type == SND_SEQ_EVENT_KEYPRESS ||
 		    ev->type == SND_SEQ_EVENT_CHANPRESS)
 		{
+			/* "<< 1" == "times two", but 255 is never reached */
 			e = new MIDIInputEvent(device, device->input(),
 					       ev->data.control.param,
-					       ev->data.control.value);
+					       ev->data.control.value << 1);
 			QApplication::postEvent(parent(), e);
 		}
 		else if (ev->type == SND_SEQ_EVENT_NOTEON)
 		{
+			/* "<< 1" == "times two", but 255 is never reached */
 			e = new MIDIInputEvent(device, device->input(),
 					       ev->data.note.note,
-					       ev->data.note.velocity);
+					       ev->data.note.velocity << 1);
 			QApplication::postEvent(parent(), e);
 		}
 		else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
 		{
+			/* "<< 1" == "times two", but 255 is never reached */
 			e = new MIDIInputEvent(device, device->input(),
 					       ev->data.note.note,
-					       ev->data.note.velocity);
+					       ev->data.note.velocity << 1);
 			QApplication::postEvent(parent(), e);
-		}
-		else
-		{
-			qDebug() << "Unhandled MIDI event type:" << ev->type;
 		}
 	}
 	while (snd_seq_event_input_pending(alsa, 0) > 0);
-	
+
 	m_mutex.unlock();
 }
-

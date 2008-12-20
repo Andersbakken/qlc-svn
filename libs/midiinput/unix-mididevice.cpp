@@ -60,7 +60,7 @@ void MIDIDevice::setAddress(const snd_seq_addr_t* address)
 
 	if (m_address != NULL)
 		delete m_address;
-	
+
 	m_address = new snd_seq_addr_t;
 	m_address->client = address->client;
 	m_address->port = address->port;
@@ -106,12 +106,11 @@ void MIDIDevice::extractName()
 	snd_seq_port_info_t* portInfo = NULL;
 	MIDIInput* plugin;
 	int r;
-	
+
 	plugin = static_cast<MIDIInput*> (parent());
 	Q_ASSERT(plugin != NULL);
 	Q_ASSERT(plugin->alsa() != NULL);
 	Q_ASSERT(m_address != NULL);
-
 
 	snd_seq_port_info_alloca(&portInfo);
 	r = snd_seq_get_any_port_info(plugin->alsa(), m_address->client,
