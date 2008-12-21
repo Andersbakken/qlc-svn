@@ -36,6 +36,9 @@ public:
 	QLCDocBrowser(QWidget* parent);
 	~QLCDocBrowser();
 
+private:
+	Q_DISABLE_COPY(QLCDocBrowser)
+
 protected slots:
 	void slotBackwardAvailable(bool);
 	void slotForwardAvailable(bool);

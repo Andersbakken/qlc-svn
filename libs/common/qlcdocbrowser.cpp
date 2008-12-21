@@ -32,12 +32,12 @@
 #include "qlctypes.h"
 
 QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
-{	
+{
 	setWindowTitle("Q Light Controller - Document Browser");
 	resize(600, 600);
 
 	/* Actions */
-	m_backwardAction = new QAction(QIcon(":/back.png"), 
+	m_backwardAction = new QAction(QIcon(":/back.png"),
 				       tr("Backward"), this);
 	m_backwardAction->setEnabled(false);
 
@@ -67,9 +67,9 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 		m_browser, SLOT(backward()));
 	connect(m_forwardAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(forward()));
-	connect(m_homeAction, SIGNAL(triggered(bool)), 
+	connect(m_homeAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(home()));
-	
+
 	/* Set the documentation source */
 #ifdef __APPLE__
 	m_browser->setSource(QUrl(QApplication::applicationDirPath() + QString("/../docs/index.html")));
