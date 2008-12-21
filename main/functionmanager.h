@@ -49,6 +49,8 @@ public:
 	FunctionManager(QWidget* parent);
 	~FunctionManager();
 
+	void update();
+
 private:
 	Q_DISABLE_COPY(FunctionManager)
 

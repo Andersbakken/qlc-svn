@@ -989,13 +989,21 @@ void App::slotFileOpen()
 
 	/* Clear existing document data */
 	newDocument();
-	
+
 	/* Load the file */
 	if (doc()->loadXML(fileName) == false)
 		QMessageBox::critical(this, tr("Unable to open file"),
 				      tr("Workspace file might be corrupt."));
 	else
 		doc()->resetModified();
+
+	/* Update these in case they are open */
+	if (m_inputManager != NULL)
+		m_inputManager->update();
+	if (m_outputManager != NULL)
+		m_outputManager->update();
+	if (m_functionManager != NULL)
+		m_functionManager->update();
 }
 
 void App::slotFileSave()

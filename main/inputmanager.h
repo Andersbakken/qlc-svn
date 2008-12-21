@@ -44,6 +44,8 @@ public:
 	InputManager(QWidget* parent);
 	virtual ~InputManager();
 
+	void update();
+
 private:
 	Q_DISABLE_COPY(InputManager)
 
@@ -63,7 +65,6 @@ protected:
 	 * Tree widget
 	 *********************************************************************/
 protected:
-	void fillTree();
 	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
 			t_input_universe universe);
 

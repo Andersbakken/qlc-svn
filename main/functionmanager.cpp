@@ -79,6 +79,11 @@ FunctionManager::~FunctionManager()
 {
 }
 
+void FunctionManager::update()
+{
+	updateFunctionTree();
+}
+
 /*****************************************************************************
  * Doc signal handlers
  *****************************************************************************/
@@ -92,7 +97,7 @@ void FunctionManager::slotFunctionAdded(t_function_id fid)
 	// created with it.
 	if (m_blockAddFunctionSignal == true)
 		return;
-	
+
 	// Create a new item for the function
 	item = new QTreeWidgetItem(m_functionTree);
 	function = _app->doc()->function(fid);
@@ -120,7 +125,7 @@ void FunctionManager::slotFunctionRemoved(t_function_id id)
 				nextItem = m_functionTree->itemAbove(item);
 			else
 				nextItem = m_functionTree->itemBelow(item);
-	  
+  
 			if (nextItem != NULL)
 				nextItem->setSelected(true);
 		}
@@ -427,7 +432,7 @@ void FunctionManager::updateActionStatus()
 		   editing is possible. */
 		m_editAction->setEnabled(true);
 		m_cloneAction->setEnabled(true);
-		
+
 		m_deleteAction->setEnabled(true);
 		m_selectAllAction->setEnabled(true);
 	}
@@ -436,11 +441,11 @@ void FunctionManager::updateActionStatus()
 		/* No functions selected */
 		m_editAction->setEnabled(false);
 		m_cloneAction->setEnabled(false);
-		
+
 		m_deleteAction->setEnabled(false);
 		m_selectAllAction->setEnabled(false);
 	}
-	
+
 	/* Update bus menu actions in both cases */
 	updateBusActions();
 }
@@ -521,6 +526,7 @@ void FunctionManager::initFunctionTree()
 
 void FunctionManager::updateFunctionTree()
 {
+	m_functionTree->clear();
 	for (t_function_id fid = 0; fid < KFunctionArraySize; fid++)
 	{
 		Function* function = _app->doc()->function(fid);

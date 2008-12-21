@@ -41,6 +41,8 @@ public:
 	OutputManager(QWidget* parent);
 	virtual ~OutputManager();
 
+	void update();
+
 private:
 	Q_DISABLE_COPY(OutputManager)
 

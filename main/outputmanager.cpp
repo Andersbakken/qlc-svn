@@ -52,7 +52,15 @@ OutputManager::OutputManager(QWidget* parent) : QWidget(parent)
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
 
-	/* Clear the mapping list just in case and fill with plugins */
+	update();
+}
+
+OutputManager::~OutputManager()
+{
+}
+
+void OutputManager::update()
+{
 	m_tree->clear();
 	for (int i = 0; i < KUniverseCount; i++)
 	{
@@ -72,10 +80,6 @@ OutputManager::OutputManager(QWidget* parent) : QWidget(parent)
 		item->setText(KColumnOutput,
 			      str.setNum(outputPatch->output() + 1));
 	}
-}
-
-OutputManager::~OutputManager()
-{
 }
 
 /*****************************************************************************

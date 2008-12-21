@@ -50,7 +50,6 @@ extern App* _app;
 InputManager::InputManager(QWidget* parent) : QWidget(parent)
 {
 	setupUi();
-	fillTree();
 
         m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
@@ -66,6 +65,8 @@ InputManager::InputManager(QWidget* parent) : QWidget(parent)
 		this,
 		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
 					   t_input_value)));
+
+	update();
 }
 
 InputManager::~InputManager()
@@ -102,6 +103,22 @@ void InputManager::setupUi()
 		this, SLOT(slotEditClicked()));
 }
 
+void InputManager::update()
+{
+	m_tree->clear();
+	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
+	{
+		InputPatch* inputPatch;
+		QTreeWidgetItem* item;
+
+		inputPatch = _app->inputMap()->patch(i);
+		Q_ASSERT(inputPatch != NULL);
+
+		item = new QTreeWidgetItem(m_tree);
+		updateItem(item, inputPatch, i);
+	}
+}
+
 /****************************************************************************
  * Toolbar
  ****************************************************************************/
@@ -128,23 +145,6 @@ void InputManager::slotEditClicked()
 /*****************************************************************************
  * Tree widget
  *****************************************************************************/
-
-void InputManager::fillTree()
-{
-	/* Clear the mapping list just in case and fill with plugins */
-	m_tree->clear();
-	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
-	{
-		InputPatch* inputPatch;
-		QTreeWidgetItem* item;
-
-		inputPatch = _app->inputMap()->patch(i);
-		Q_ASSERT(inputPatch != NULL);
-
-		item = new QTreeWidgetItem(m_tree);
-		updateItem(item, inputPatch, i);
-	}
-}
 
 void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* inputPatch,
 			      t_input_universe universe)
