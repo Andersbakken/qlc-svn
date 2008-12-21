@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   outputmap.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -64,6 +64,9 @@ public:
 	 * Load all output plugins from the plugin directory.
 	 */
 	void load();
+
+private:
+	Q_DISABLE_COPY(OutputMap)
 
 protected:
 	/** Total number of supported universes */

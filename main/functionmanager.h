@@ -49,6 +49,9 @@ public:
 	FunctionManager(QWidget* parent);
 	~FunctionManager();
 
+private:
+	Q_DISABLE_COPY(FunctionManager)
+
 	/*********************************************************************
 	 * Doc signal handlers
 	 *********************************************************************/

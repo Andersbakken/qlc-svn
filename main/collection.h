@@ -41,11 +41,15 @@ public:
 	virtual ~Collection();
 
 	/** Copy given function's contents to this */
-	void copyFrom(Collection* fc, bool append = false);
+	void copyFrom(const Collection* fc, bool append = false);
 
 	/** Collections don't belong to any particular fixture */
 	void setFixture(t_fixture_id) { /* NOP */ }
-	
+
+private:
+	/* Disable copying with a copy constructor & operator= */
+	Q_DISABLE_COPY(Collection)
+
 	/*********************************************************************
 	 * Contents
 	 *********************************************************************/

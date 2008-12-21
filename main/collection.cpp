@@ -46,7 +46,7 @@ Collection::Collection(QObject* parent) : Function(parent, Function::Collection)
 	m_childCount = 0;
 }
 
-void Collection::copyFrom(Collection* fc, bool append)
+void Collection::copyFrom(const Collection* fc, bool append)
 {
 	Q_ASSERT(fc != NULL);
 
@@ -55,10 +55,7 @@ void Collection::copyFrom(Collection* fc, bool append)
 
 	if (append == false)
 		m_steps.clear();
-
-	QListIterator <t_function_id> it(fc->m_steps);
-	while (it.hasNext() == true)
-		m_steps.append(it.next());
+	m_steps = fc->m_steps;
 }
 
 Collection::~Collection()

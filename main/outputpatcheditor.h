@@ -43,6 +43,9 @@ public:
 			  const QString& pluginName, t_output output);
 	~OutputPatchEditor();
 
+private:
+	Q_DISABLE_COPY(OutputPatchEditor)
+
 protected:
 	void fillTree();
 	void updateOutputInfo();

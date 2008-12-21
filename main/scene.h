@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   scene.h
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -107,21 +107,22 @@ class Scene : public Function
 	 * Initialization
 	 *********************************************************************/
 public:
-	/**
-	 * Construct a new scene function, with parent object (Doc)
-	 */
+	/** Construct a new scene function, with parent object (Doc) */
 	Scene(QObject* parent);
-	
-	/**
-	 * Destroy the scene
-	 */
+
+	/** Destroy the scene */
 	~Scene();
 
 	/**
-	 * Copy all contents (except ID) from another scene function
+	 * Copy all contents (except ID and object relationships) from
+	 * another scene function.
 	 */
-	void copyFrom(Scene* scene);
-	
+	void copyFrom(const Scene* scene);
+
+private:
+	/* Disable copying with a copy constructor & operator= */
+	Q_DISABLE_COPY(Scene)
+
 	/*********************************************************************
 	 * Values
 	 *********************************************************************/

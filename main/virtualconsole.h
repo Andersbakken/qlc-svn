@@ -81,6 +81,9 @@ public:
 	VirtualConsole(QWidget* parent);
 	~VirtualConsole();
 
+private:
+	Q_DISABLE_COPY(VirtualConsole)
+
 protected:
 	void initActions();
 	void initMenuBar();

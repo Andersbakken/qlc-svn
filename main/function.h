@@ -85,7 +85,10 @@ public:
 	 * Destroy this function
 	 */
 	virtual ~Function();
-	
+
+private:
+	Q_DISABLE_COPY(Function)
+
 	/*********************************************************************
 	 * ID
 	 *********************************************************************/
@@ -101,10 +104,10 @@ public:
 	 * Get this function's unique ID
 	 */
 	t_function_id id() const { return m_id; }
-	
+
 protected:
 	t_function_id m_id;
-	
+
 	/*********************************************************************
 	 * Name
 	 *********************************************************************/
@@ -115,12 +118,12 @@ public:
 	 * @param name The function's new name
 	 */
 	virtual void setName(QString name);
-	
+
 	/**
 	 * Return the name of this function
 	 */
 	virtual QString name() const { return m_name; }
-	
+
 protected:
 	QString m_name;
 
@@ -137,21 +140,21 @@ public:
 	 * Return the type of this function as a string
 	 */
 	QString typeString() const;
-	
+
 	/**
 	 * Convert a type to string
 	 *
 	 * @param type The type to convert
 	 */
 	static QString typeToString(Function::Type type);
-	
+
 	/**
 	 * Convert a string to Type
 	 *
 	 * @param str The string to convert
 	 */
 	static Type stringToType(QString str);
-	
+
 	/**
 	 * Get an icon (representing the function's type) to be used in lists
 	 */
@@ -159,13 +162,13 @@ public:
 
 protected:
 	Type m_type;
-	
+
 	/*********************************************************************
 	 * Running order
 	 *********************************************************************/
 public:
 	enum RunOrder {	Loop, SingleShot, PingPong };
-  
+
 public:
 	/**
 	 * Set this function's running order
@@ -247,7 +250,7 @@ public:
 	 * Get the bus used for setting the speed of this function
 	 */
 	t_bus_id busID() const { return m_busID; }
-	
+
 	/**
 	 * Get a textual representation of the function's bus (ID: Name)
 	 */
@@ -265,7 +268,7 @@ public slots:
 
 protected:
 	t_bus_id m_busID;
-	
+
 	/*********************************************************************
 	 * Fixtures
 	 *********************************************************************/
@@ -312,7 +315,7 @@ public:
 	 * huge overhead)
 	 */
 	virtual void arm() { /* NOP */ }
-	
+
 	/**
 	 * When the mode is changed back to Design, this is called to free
 	 * any run-time allocations.
@@ -323,7 +326,7 @@ public:
 	 * Start the function
 	 */
 	virtual bool start();
-	
+
 	/**
 	 * Stop the function
 	 */

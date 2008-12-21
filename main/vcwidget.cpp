@@ -576,6 +576,8 @@ bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
 		tag.setAttribute(KXMLQLCVCWidgetInputChannel,
 				 QString("%1").arg(inputChannel()));
 	}
+
+	return true;
 }
 
 /*****************************************************************************

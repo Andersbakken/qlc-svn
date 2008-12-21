@@ -56,12 +56,12 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 
 	setCaption(QString::null);
 	setMinimumSize(20, 20);
-	
+
 	resize(QPoint(120, 120));
 	setFrameStyle(KVCWidgetFrameStyleSunken);
-	
+
 	m_xyPosPixmap = QPixmap(":/xypad-point.png");
-	
+
 	/* Set initial position to center */
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
@@ -307,10 +307,10 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			qDebug() << "Unknown XY Pad tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
-	
+
 	/* First set window dimensions and AFTER that set the
 	   pointer's XY position */
 	setGeometry(x, y, w, h);

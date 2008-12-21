@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   inputmap.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -62,6 +62,9 @@ public:
 	 * Destroy an InputMap object
 	 */
 	virtual ~InputMap();
+
+private:
+	Q_DISABLE_COPY(InputMap)
 
 	/*********************************************************************
 	 * Input data

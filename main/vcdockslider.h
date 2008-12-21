@@ -42,13 +42,16 @@ class QFile;
 class VCDockSlider : public QFrame, public Ui_VCDockSlider
 {
 	Q_OBJECT
-    
+
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
 	VCDockSlider(QWidget* parent, t_bus_id bus);
 	~VCDockSlider();
+
+private:
+	Q_DISABLE_COPY(VCDockSlider)
 
 	/*********************************************************************
 	 * Bus

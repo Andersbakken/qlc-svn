@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   vcxypad.h
-  
-  Copyright (c) Heikki Junnila, Stefan Krumm
-  
+
+  Copyright (c) Stefan Krumm, Heikki Junnila
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -63,6 +63,9 @@ public:
 	VCXYPad(QWidget* parent);
 	virtual ~VCXYPad();
 
+private:
+	Q_DISABLE_COPY(VCXYPad)
+
 public slots:
 	/** Delete this widget */
 	void slotDelete();
@@ -78,14 +81,14 @@ public slots:
 	 * Channels
 	 *********************************************************************/
 public:
-	/** 
+	/**
 	 * Append a new channel to this pad
 	 *
 	 * @param axis X or Y axis channel
 	 * @param fixture The ID of the fixture, whose channel to append
 	 * @param channel The fixture channel to append
 	 * @lowLimit The lowest value that the channel can have with this pad
-	 * @param highLimit The highest value that the channel can have with this pad
+	 * @param highLimit The highest value the channel can get with this pad
 	 * @param reverse Treat the axis reversed (up<->down,left<->right)
 	 */
 	void appendChannel(t_axis axis, t_fixture_id fixture, t_channel channel,
@@ -109,7 +112,7 @@ public:
 	 **/
 	XYChannelUnit* channel(t_axis axis, t_fixture_id fixture,
 			       t_channel channel);
-	
+
 	/** Clear all channel lists from this pad */
 	void clearChannels();
 

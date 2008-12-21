@@ -42,7 +42,8 @@ public:
 	VCSliderProperties(QWidget* parent, VCSlider* slider);
 	~VCSliderProperties();
 
-	void init();
+private:
+	Q_DISABLE_COPY(VCSliderProperties)
 
 	/*********************************************************************
 	 * General page

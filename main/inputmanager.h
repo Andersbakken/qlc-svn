@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   inputmanager.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -36,13 +36,16 @@ class InputMap;
 class InputManager : public QWidget
 {
 	Q_OBJECT
-	
+
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
 	InputManager(QWidget* parent);
 	virtual ~InputManager();
+
+private:
+	Q_DISABLE_COPY(InputManager)
 
 protected:
 	void setupUi();

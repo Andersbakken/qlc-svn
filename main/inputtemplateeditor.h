@@ -41,6 +41,9 @@ public:
 	InputTemplateEditor(QWidget* parent, QLCInputDevice* deviceTemplate);
 	virtual ~InputTemplateEditor();
 
+private:
+	Q_DISABLE_COPY(InputTemplateEditor)
+
 protected:
 	void fillTree();
 	void updateChannelItem(QTreeWidgetItem* item, QLCInputChannel* ch);

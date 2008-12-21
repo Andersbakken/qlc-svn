@@ -51,12 +51,15 @@ public:
 	 * Destroy a FunctionConsumer instance
 	 */
 	virtual ~FunctionConsumer();
-	
+
 	/**
 	 * Initialize the FunctionConsumer prior to starting it.
 	 */
 	void init();
-	
+
+private:
+	Q_DISABLE_COPY(FunctionConsumer)
+
 	/*********************************************************************
 	 * Timer type
 	 *********************************************************************/
@@ -155,7 +158,7 @@ public:
 	 * @return Number of functions
 	 */
 	int runningFunctions();
-	
+
 	/**
 	 * Append the given function to the FunctionConsumer's list of
 	 * running functions.
@@ -168,7 +171,7 @@ public:
 	 * Clear the list of running functions. This will stop all functions.
 	 */
 	void purge();
-	
+
 	/**
 	 * Get the elapsed time since FunctionConsumer was started. This is
 	 * used by, for example, chasers to calculate their hold time.
@@ -176,7 +179,7 @@ public:
 	 * @return The current timecode
 	 */
 	t_bus_value timeCode();
-	
+
 	/**
 	 * Stop the FunctionConsumer alltogether. No functions will be run
 	 * if FC is stopped.
@@ -198,7 +201,7 @@ protected:
 	 * functions on each periodic pass.
 	 */
 	void event();
-	
+
 protected:
 	/** An OutputMap instance that routes all values to correct plugins */
 	OutputMap* m_outputMap;
@@ -211,10 +214,10 @@ protected:
 
 	/** Mutex that guards access to m_functionList */
 	QMutex m_functionListMutex;
-	
+
 	/** Elapsed time since FC start */
 	t_bus_value m_timeCode;
-	
+
 	/** Buffer that holds the values of each function */
 	t_buffer_data* m_event;
 

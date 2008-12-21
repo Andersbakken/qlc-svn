@@ -36,6 +36,9 @@ public:
 	ChaserEditor(QWidget* parent, Chaser* chaser);
 	~ChaserEditor();
 
+private:
+	Q_DISABLE_COPY(ChaserEditor)
+
 protected:
 	/**
 	 * Insert chaser steps into the editor's view and select an item

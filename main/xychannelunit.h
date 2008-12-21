@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   xychannelunit.h
-  
+
   Copyright (c) Stefan Krumm, Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,9 +35,12 @@ public:
 		      const t_value lo,
 		      const t_value hi,
 		      const bool reverse);
-	
+	XYChannelUnit(const XYChannelUnit& unit);
 	~XYChannelUnit();
-	
+
+	/** Assignment operator */
+	XYChannelUnit& operator=(const XYChannelUnit& unit);
+
 	enum
 	{
 		FileElementFixture = 0,
@@ -58,7 +61,7 @@ public:
 	 * Get the low limit
 	 */
 	t_value lo() const;
-	
+
 	/**
 	 * Set the high limit for the channel
 	 *
@@ -70,7 +73,7 @@ public:
 	 * Get the high limit
 	 */
 	t_value hi() const;
-	
+
 	/**
 	 * Set the fixture id
 	 *
@@ -88,7 +91,7 @@ public:
 	 * with the fixture ID
 	 */
 	Fixture* fixture() const;
-	
+
 	/**
 	 * Set the relative channel number
 	 *
@@ -115,11 +118,11 @@ public:
 
 protected:
 	t_fixture_id m_fixtureID;
-	t_channel m_channel;	
-	
+	t_channel m_channel;
+
 	t_value m_lo;
 	t_value m_hi;
-	
+
 	bool m_reverse;
 };
 

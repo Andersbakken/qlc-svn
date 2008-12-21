@@ -54,6 +54,9 @@ public:
 	Monitor(QWidget* parent);
 	~Monitor();
 
+private:
+	Q_DISABLE_COPY(Monitor)
+
 protected:
 	void init();
 
@@ -85,7 +88,7 @@ protected:
 
 	/** Value buffer mutex */
 	QMutex m_valueMutex;
-  
+
 	/*********************************************************************
 	 * Menu
 	 *********************************************************************/

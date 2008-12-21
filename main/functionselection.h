@@ -70,6 +70,9 @@ public:
 	 */
 	QList <t_function_id> selection;
 
+private:
+	Q_DISABLE_COPY(FunctionSelection)
+
 	/*********************************************************************
 	 * Internal
 	 *********************************************************************/

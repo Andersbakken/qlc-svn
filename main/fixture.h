@@ -53,7 +53,7 @@ class Fixture : public QObject
 	 * Initialization
 	 *********************************************************************/
 public:
-	/** 
+	/**
 	 * Create a new fixture instance using a fixture definition and
 	 * the given mode. Also, optionally assign the fixture a name.
 	 *
@@ -68,7 +68,7 @@ public:
 	Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
 		t_channel address, t_channel universe, QString name,
 		t_fixture_id id);
-	
+
 	/**
 	 * Create a generic dimmer-style fixture instance, that has no special
 	 * abilities, except channels that can have normal DMX values.
@@ -90,10 +90,13 @@ public:
 	 */
 	Fixture(QDomDocument* doc, QDomElement* tag);
 
-	/** 
+	/**
 	 * Destructor
 	 */
 	~Fixture();
+
+private:
+	Q_DISABLE_COPY(Fixture)
 
 	/*********************************************************************
 	 * Fixture ID

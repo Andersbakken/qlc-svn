@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   doc.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -40,13 +40,20 @@ class Doc : public QObject
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
 	Doc();
 	~Doc();
 
+private:
+	Q_DISABLE_COPY(Doc)
+
 	/*********************************************************************
 	 * Modified status
 	 *********************************************************************/
+public:
 	/**
 	 * Check, whether Doc has been modified (and is in need of saving)
 	 */
@@ -62,10 +69,10 @@ public:
 	 */
 	void resetModified();
 
-public:
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
+public:
 	/**
 	 * Get the name of the current workspace file
 	 */
@@ -137,7 +144,6 @@ public:
 	 */
 	bool newFixture(Fixture* fxi);
 
-public:	
 	/**
 	 * Delete the given fixture instance from Doc
 	 *

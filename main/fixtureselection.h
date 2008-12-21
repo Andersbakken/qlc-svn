@@ -60,6 +60,9 @@ public:
 	 */
 	QList <t_fixture_id> selection;
 
+private:
+	Q_DISABLE_COPY(FixtureSelection)
+
 protected slots:
 	/**
 	 * Item double clicks

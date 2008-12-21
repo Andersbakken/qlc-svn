@@ -36,6 +36,9 @@ public:
 	VCCueListProperties(QWidget* parent, VCCueList* cueList);
 	~VCCueListProperties();
 
+private:
+	Q_DISABLE_COPY(VCCueListProperties)
+
 protected slots:
 	void slotAddClicked();
 	void slotRemoveClicked();

@@ -88,7 +88,7 @@ void SceneEditor::init()
 	while (it.hasNext() == true)
 	{
 		SceneValue scv(it.next());
-		
+
 		if (fixtureItem(scv.fxi) == NULL)
 		{
 			Fixture* fixture = _app->doc()->fixture(scv.fxi);
@@ -153,7 +153,7 @@ QList <Fixture*> SceneEditor::selectedFixtures()
 {
 	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
 	QList <Fixture*> list;
-	
+
 	while (it.hasNext() == true)
 	{
 		QTreeWidgetItem* item;
@@ -180,7 +180,7 @@ void SceneEditor::addFixtureItem(Fixture* fixture)
 	item = new QTreeWidgetItem(m_tree);
 	item->setText(KColumnName, fixture->name());
 	item->setText(KColumnID, QString("%1").arg(fixture->id()));
-	
+
 	if (fixture->fixtureDef() == NULL)
 	{
 		item->setText(KColumnManufacturer, tr("Generic"));
@@ -225,7 +225,7 @@ void SceneEditor::slotAddFixtureClicked()
 	if (fs.exec() == QDialog::Accepted)
 	{
 		Fixture* fixture;
-		
+
 		QListIterator <t_fixture_id> it(fs.selection);
 		while (it.hasNext() == true)
 		{
@@ -276,7 +276,7 @@ void SceneEditor::slotEnableChannelsClicked()
 
 		fc = fixtureConsole(fixture);
 		Q_ASSERT(fc != NULL);
-		
+
 		fc->enableAllChannels(true);
 	}
 }

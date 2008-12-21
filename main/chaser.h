@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   chaser.h
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -39,7 +39,7 @@ class Chaser : public Function
 	 * Initialization
 	 *********************************************************************/
 public:
-	/** Constructor */
+	/** Constructor -- without a parent because of... umm.. */
 	Chaser();
 
 	/**
@@ -50,10 +50,14 @@ public:
 	 *               new steps appear after existing steps. If false,
 	 *               the existing steps of this chaser are cleared.
 	 */
-	void copyFrom(Chaser* ch, bool append = false);
+	void copyFrom(const Chaser* ch, bool append = false);
 
 	/** Destructor */
 	virtual ~Chaser();
+
+private:
+	/* Disable copying with a copy constructor & operator= */
+	Q_DISABLE_COPY(Chaser)
 
 	/*********************************************************************
 	 * Chaser contents
@@ -139,14 +143,14 @@ protected:
 	/** Stop the timer so that it won't timeout until set again */
 	void unsetTimer();
 
-	/** 
-	 * Set a time for the timer. time is the time from now. 
-	 * This doesn't change any internal state except for the timer, 
+	/**
+	 * Set a time for the timer. time is the time from now.
+	 * This doesn't change any internal state except for the timer,
 	 * use startTimer if a timer isn't already running
 	 */
 	void setTimer(t_bus_value time);
 
-	/** 
+	/**
 	 * Start the timer. This sets all internal state as well as starting
 	 * the timer for the time specified
 	 */

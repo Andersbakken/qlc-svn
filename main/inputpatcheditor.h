@@ -45,6 +45,9 @@ public:
 			 InputPatch* patch);
 	~InputPatchEditor();
 
+private:
+	Q_DISABLE_COPY(InputPatchEditor)
+
 protected slots:
 	void accept();
 

@@ -31,7 +31,7 @@ class DummyOutPlugin : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
-		
+
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
@@ -40,6 +40,9 @@ public:
 	virtual ~DummyOutPlugin();
 
 	void init();
+
+private:
+	Q_DISABLE_COPY(DummyOutPlugin)
 
 	/*********************************************************************
 	 * Open/close

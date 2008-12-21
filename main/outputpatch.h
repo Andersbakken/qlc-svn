@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   outputpatch.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -46,6 +46,9 @@ class OutputPatch : public QObject
 public:
 	OutputPatch(QObject* parent);
 	virtual ~OutputPatch();
+
+private:
+	Q_DISABLE_COPY(OutputPatch)
 
 	/********************************************************************
 	 * Properties

@@ -108,7 +108,7 @@ bool SceneValue::saveXML(QDomDocument* doc, QDomElement* scene_root) const
 	/* The actual value as node text */
 	text = doc->createTextNode(QString("%1").arg(value));
 	tag.appendChild(text);
-	
+
 	return true;
 }
 
@@ -149,7 +149,7 @@ Scene::Scene(QObject* parent) : Function(parent, Function::Scene)
 	m_elapsedTime = 0;
 	m_channels = NULL;
 	m_channelData = NULL;
-	
+
 	setBus(KBusIDDefaultFade);
 }
 
@@ -157,7 +157,7 @@ Scene::~Scene()
 {
 }
 
-void Scene::copyFrom(Scene* scene)
+void Scene::copyFrom(const Scene* scene)
 {
 	Q_ASSERT(scene != NULL);
 

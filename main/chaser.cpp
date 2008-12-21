@@ -55,11 +55,10 @@ Chaser::Chaser() : Function(0, Function::Chaser)
 
 	setBus(KBusIDDefaultHold);
 
-	connect(this, SIGNAL(stopping()),
-	        this, SLOT(slotStop()));
+	connect(this, SIGNAL(stopping()), this, SLOT(slotStop()));
 }
 
-void Chaser::copyFrom(Chaser* ch, bool append)
+void Chaser::copyFrom(const Chaser* ch, bool append)
 {
 	Q_ASSERT(ch != NULL);
 
@@ -69,15 +68,11 @@ void Chaser::copyFrom(Chaser* ch, bool append)
 
 	if (append == false)
 		m_steps.clear();
-
-	QListIterator <t_function_id> it(ch->m_steps);
-	while (it.hasNext() == true)
-		m_steps.append(it.next());
+	m_steps = ch->m_steps;
 }
 
 Chaser::~Chaser()
 {
-	m_steps.clear();
 }
 
 /*****************************************************************************
@@ -106,7 +101,7 @@ bool Chaser::raiseStep(unsigned int index)
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index - 1, fid);
-		
+
 		_app->doc()->setModified();
 		_app->doc()->emitFunctionChanged(m_id);
 
@@ -124,7 +119,7 @@ bool Chaser::lowerStep(unsigned int index)
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index + 1, fid);
-		
+
 		_app->doc()->setModified();
 		_app->doc()->emitFunctionChanged(m_id);
 
@@ -147,7 +142,7 @@ bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	QDomText text;
 	QString str;
 	int i = 0;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(wksp_root != NULL);
 
@@ -256,7 +251,7 @@ bool Chaser::loadXML(QDomDocument*, QDomElement* root)
 		{
 			qDebug() << "Unknown chaser tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -268,8 +263,8 @@ bool Chaser::loadXML(QDomDocument*, QDomElement* root)
  *****************************************************************************/
 
 void Chaser::stop()
-{ 
-	//pass control to the thread the chaser is running in.
+{
+	/* Pass control to the thread the chaser is running in. */
 	emit stopping();
 }
 
@@ -278,7 +273,7 @@ void Chaser::slotStop()
 {
 	m_timer->stop();
 
-	//If we are still running the child, stop it.
+	/* If we are still running the child, stop it. */
 	if (m_childRunning)
 	{
 		t_function_id id = m_steps.at(m_runTimePosition);
@@ -292,17 +287,18 @@ void Chaser::slotStop()
 
 void Chaser::slotBusValueChanged(t_bus_id id, t_bus_value value)
 {
-	//does this affect us?
+	/* Check, whether the bus value change affects this chaser */
 	if (id == m_busID)
 	{
 		m_holdTime = value;
 
-		//if we have an active time we will have to change its length.
-		if (m_timer->isActive())
+		/* If we have an active timer we will have to change
+		   its duration */
+		if (m_timer->isActive() == true)
 		{
 			updateTimer();
 		}
-	}	
+	}
 }
 
 void Chaser::updateTimer()
@@ -310,17 +306,18 @@ void Chaser::updateTimer()
 	t_bus_value newEndTimeCode = m_holdStart + m_holdTime;
 	t_bus_value currentTimeCode = _app->functionConsumer()->timeCode();
 
-	//should we have finished already?
+	/* Should this have finished already? */
 	if (currentTimeCode >= newEndTimeCode)
 	{
-		//Don't bother with a timer, just advance.
+		/* Don't bother with a timer, just advance. */
 		unsetTimer();
 		advance();
 	}
 	else
 	{
-		bool advanceOnChange = false; //TODO make this a proper setting.
-		if (advanceOnChange)
+		/* TODO: make this a proper setting. */
+		bool advanceOnChange = false; 
+		if (advanceOnChange == true)
 		{
 			advance();
 		}
@@ -333,14 +330,14 @@ void Chaser::updateTimer()
 
 void Chaser::slotChildStopped(t_function_id id)
 {
-	//finish with child function
+	/* finish with child function */
 	Function* function = _app->doc()->function(id);
 	Q_ASSERT(function != NULL);
 
 	disconnect(function, SIGNAL(stopped(t_function_id)),
 		   this, SLOT(slotChildStopped(t_function_id)));
 
-	//now we hold this function for m_holdTime
+	/* Now we hold this function for m_holdTime */
 	m_childRunning = false;
 
 	if (m_holdTime == 0)
@@ -349,16 +346,16 @@ void Chaser::slotChildStopped(t_function_id id)
 		startTimer(m_holdTime);
 }
 
-void Chaser::slotTimerTimeout() 
+void Chaser::slotTimerTimeout()
 {
 	advance();
 }
 
 void Chaser::arm()
 {
-	// There's actually no need for an eventbuffer, but
-	// because FunctionConsumer does EventBuffer::get() calls, it must be
-	// there... So allocate a zero length buffer.
+	/* There's actually no need for an eventbuffer, but
+	 * because FunctionConsumer does EventBuffer::get() calls, it must be
+	 * there... So allocate a zero length buffer. */
 	if (m_eventBuffer == NULL)
 		m_eventBuffer = new EventBuffer(0, 0);
 }
@@ -380,7 +377,7 @@ void Chaser::run()
 
 	m_childRunning = false;
 
-	// Get speed
+	/* Get speed */
 	m_holdTime = Bus::value(m_busID);
 
 	m_runTimeDirection = m_direction;
@@ -390,7 +387,7 @@ void Chaser::run()
 	else
 		m_runTimePosition = m_steps.count() - 1;
 
-	// Add this to function consumer
+	/* Add this to function consumer */
 	_app->functionConsumer()->cue(this);
 
 	startMemberAt(m_runTimePosition);
@@ -400,12 +397,6 @@ void Chaser::run()
 
 void Chaser::startMemberAt(int index)
 {
-	if (m_childRunning)
-	{
-		qDebug() << 
-		  "Tried to start a function when we are already running";
-	}
-
 	t_function_id id = m_steps.at(index);
   	Function* function = _app->doc()->function(id);
 
@@ -426,29 +417,29 @@ void Chaser::startMemberAt(int index)
 }
 
 /**
- * If we have any more scenes to show, do so, if not terminate. 
- * Either way this returns quite quickly, 
+ * If we have any more scenes to show, do so, if not terminate.
+ * Either way this returns quite quickly,
  * we will be informed via a slot of the the next action to perform.
  */
 void Chaser::advance()
 {
-	// Have we completed a run
+	/* Check, whether the chaser has completed a run */
 	bool finishedForward = (m_runTimeDirection == Forward
 	                     && m_runTimePosition == m_steps.count() - 1);
 	bool finishedBackward = (m_runTimeDirection == Backward
 	                       && m_runTimePosition == 0);
 
-	if (finishedForward || finishedBackward)
+	if (finishedForward == true || finishedBackward == true)
 	{
-		// Check what should be done after one round
+		/* Check what should be done after each round */
 		if (m_runOrder == SingleShot)
 		{
-			// That's it
+			/* That's it. Stop. */
 			exit();
 		}
 		else if (m_runOrder == Loop)
 		{
-			// Just continue as before, start from the beginning
+			/* Continue as before, start from the beginning */
 			if (m_runTimeDirection == Forward)
 			{
 				m_runTimePosition = 0;
@@ -458,28 +449,28 @@ void Chaser::advance()
 				m_runTimePosition = m_steps.count() - 1;
 			}
 		}
-		else // if (m_runOrder == PingPong)
+		else /* if (m_runOrder == PingPong) */
 		{
-			// Change run order
+			/* Change run order */
 			if (m_runTimeDirection == Forward)
 			{
 				m_runTimeDirection = Backward;
-	      
-				// -2: Don't run the last function again
+
+				/* -2: Don't run the last function again */
 				m_runTimePosition = m_steps.count() - 2;
 			}
 			else
 			{
 				m_runTimeDirection = Forward;
 
-				// 1: Don't run the first function again
-				m_runTimePosition = 1; 
+				/* 1: Don't run the first function again */
+				m_runTimePosition = 1;
 			}
 		}
 	}
 	else
 	{
-		//we havn't finished, so advance.
+		/* Chaser hasn't finished -> advance */
 		if (m_runTimeDirection == Forward)
 		{
 			/* Going forwards, next step */
@@ -492,7 +483,7 @@ void Chaser::advance()
 		}
 	}
 
-	//we want to continue, otherwise we would have returned/exited.
+	/* We want to continue, otherwise we would have returned/exited. */
 	startMemberAt(m_runTimePosition);
 }
 
@@ -503,7 +494,7 @@ void Chaser::unsetTimer()
 
 void Chaser::setTimer(t_bus_value time)
 {
-	//This restarts the timer if necessary
+	/* This restarts the timer if necessary */
 	m_timer->start(time * 1000 / KFrequency);
 }
 

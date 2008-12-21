@@ -38,6 +38,9 @@ public:
 	CollectionEditor(QWidget* parent, Collection* fc);
 	~CollectionEditor();
 
+private:
+	Q_DISABLE_COPY(CollectionEditor)
+
 protected slots:
 	void slotNameEdited(const QString& text);
 	void slotAdd();

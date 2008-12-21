@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   xychannelunit.cpp
-  
+
   Copyright (c) Stefan Krumm, Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -47,11 +47,30 @@ XYChannelUnit::XYChannelUnit(const t_fixture_id fixtureID,
 	m_reverse	( reverse  )
 {
 }
-	
+
 XYChannelUnit::~XYChannelUnit()
 {
 }
-	
+
+XYChannelUnit::XYChannelUnit(const XYChannelUnit& unit)
+{
+	*this = unit;
+}
+
+XYChannelUnit& XYChannelUnit::operator=(const XYChannelUnit& unit)
+{
+	if (this != &unit)
+	{
+		m_fixtureID = unit.m_fixtureID;
+		m_channel = unit.m_channel;
+		m_lo = unit.m_lo;
+		m_hi = unit.m_hi;
+		m_reverse = unit.m_reverse;
+	}
+
+	return *this;
+}
+
 void XYChannelUnit::setLo(t_value lo)
 {
 	m_lo = lo;
@@ -71,7 +90,7 @@ t_value XYChannelUnit::hi() const
 {
 	return m_hi;
 }
-	
+
 void XYChannelUnit::setFixtureID(t_fixture_id fixtureID)
 {
 	m_fixtureID = fixtureID;
@@ -86,7 +105,7 @@ Fixture* XYChannelUnit::fixture() const
 {
 	return _app->doc()->fixture(m_fixtureID);
 }
-	
+
 void XYChannelUnit::setChannel(t_channel ch)
 {
 	m_channel = ch;

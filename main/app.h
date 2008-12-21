@@ -77,6 +77,9 @@ public:
 	App();
 	~App();
 
+private:
+	Q_DISABLE_COPY(App)
+
 protected:
 	void init();
 	void closeEvent(QCloseEvent*);

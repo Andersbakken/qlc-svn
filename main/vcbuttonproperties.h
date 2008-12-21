@@ -39,6 +39,9 @@ public:
 	VCButtonProperties(VCButton* button, QWidget* parent);
 	~VCButtonProperties();
 
+private:
+	Q_DISABLE_COPY(VCButtonProperties)
+
 protected slots:
 	void slotAttachFunction();
 	void slotSetFunction(t_function_id fid = KNoID);

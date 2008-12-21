@@ -41,14 +41,21 @@ public:
 	SelectInputChannel(QWidget* parent);
 	~SelectInputChannel();
 
+private:
+	Q_DISABLE_COPY(SelectInputChannel)
+
+protected slots:
+	void accept();
+
+	/********************************************************************
+	 * Selection
+	 ********************************************************************/
+public:
 	/** Get the selected universe */
 	t_input_universe universe() const { return m_universe; }
 
 	/** Get the selected channel within the selected universe */
 	t_input_channel channel() const { return m_channel; }
-
-protected slots:
-	void accept();
 
 protected:
 	t_input_universe m_universe;
@@ -60,7 +67,7 @@ protected:
 protected:
 	/** Fill the tree with available input universes & channels */
 	void fillTree();
-	
+
 	/** Update the contents of a universe item */
 	void updateUniverseItem(QTreeWidgetItem* item,
 				t_input_universe uni,
@@ -77,4 +84,3 @@ protected slots:
 };
 
 #endif
-

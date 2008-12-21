@@ -51,7 +51,7 @@ public:
 	 * Destroy an EventBuffer instance
 	 */
 	~EventBuffer();
-	
+
 	/**
 	 * Put data to the front of the ring buffer. This call will block
 	 * (without busy waiting) if the buffer is full.
@@ -60,7 +60,7 @@ public:
 	 *              eventSize parameter given during construction.
 	 */
 	void put(t_buffer_data* event);
-	
+
 	/**
 	 * Get the next value from rear of ring buffer if it is not empty
 	 *
@@ -68,7 +68,7 @@ public:
 	 * @return 0 for success, -1 if the list is empty
 	 */
 	int get(t_buffer_data* event);
-	
+
 	/**
 	 * Make the ring buffer appear empty by setting the put and get
 	 * positions (i.e. front & read, head & tail) to zero. This doesn't
@@ -76,7 +76,7 @@ public:
 	 * the same: the buffer appears empty.
 	 */
 	void purge();
-	
+
 	/**
 	 * Get the buffer's event size i.e the number of channel values held
 	 * in one event position.
@@ -84,13 +84,13 @@ public:
 	 * @return The buffer's event size
 	 */
 	unsigned int eventSize() const { return m_eventSize; }
-	
+
 protected:
 	t_buffer_data* m_ring;
-	
+
 	unsigned int m_size;
 	unsigned int m_eventSize;
-	
+
 	unsigned int m_filled; // Number of objects in the buffer
 	unsigned int m_in; // Next token is stored here
 	unsigned int m_out; // Next token is taken from here

@@ -34,10 +34,20 @@ class InputChannelEditor : public QDialog, public Ui_InputChannelEditor
 {
 	Q_OBJECT
 
+	/********************************************************************
+	 * Initialization
+	 ********************************************************************/
 public:
 	InputChannelEditor(QWidget* parent, const QLCInputChannel* channel);
 	virtual ~InputChannelEditor();
 
+private:
+	Q_DISABLE_COPY(InputChannelEditor)
+
+	/********************************************************************
+	 * Properties
+	 ********************************************************************/
+public:
 	t_input_channel channel() const { return m_channel; }
 	QString name() const { return m_name; }
 	QLCInputChannel::Type type() const { return m_type; }

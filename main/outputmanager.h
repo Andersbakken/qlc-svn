@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   outputmanager.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -40,6 +40,9 @@ class OutputManager : public QWidget, public Ui_OutputManager
 public:
 	OutputManager(QWidget* parent);
 	virtual ~OutputManager();
+
+private:
+	Q_DISABLE_COPY(OutputManager)
 
 	/*********************************************************************
 	 * Tree widget
