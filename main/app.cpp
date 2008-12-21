@@ -942,6 +942,14 @@ void App::newDocument()
 	doc()->resetModified();
 
 	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
+
+        /* Update these in case they are open */
+        if (m_inputManager != NULL)
+                m_inputManager->update();
+        if (m_outputManager != NULL)
+                m_outputManager->update();
+        if (m_functionManager != NULL)
+                m_functionManager->update();
 }
 
 void App::slotFileOpen()
