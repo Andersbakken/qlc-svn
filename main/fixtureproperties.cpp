@@ -23,7 +23,6 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QLabel>
-#include <QIcon>
 
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
@@ -63,7 +62,6 @@ FixtureProperties::FixtureProperties(QWidget* parent, t_fixture_id fxi_id)
 	m_universeSpin->setValue(m_fxi->universe() + 1);
 
 	// Make & Model
-	m_makeModelButton->setIcon(QIcon(":/edit.png"));
 	connect(m_makeModelButton, SIGNAL(clicked()),
 		this, SLOT(slotMakeModelClicked()));
 

@@ -25,7 +25,6 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QTimer>
-#include <QIcon>
 
 #include "common/qlcfixturedef.h"
 
@@ -49,9 +48,6 @@ CollectionEditor::CollectionEditor(QWidget* parent, Collection* fc)
 	m_original = fc;
 
 	setupUi(this);
-
-	m_add->setIcon(QIcon(":/edit_add.png"));
-	m_remove->setIcon(QIcon(":/edit_remove.png"));
 
 	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
 		this, SLOT(slotNameEdited(const QString&)));

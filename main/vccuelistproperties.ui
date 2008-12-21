@@ -78,6 +78,10 @@
          <property name="text" >
           <string>...</string>
          </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
+         </property>
          <property name="iconSize" >
           <size>
            <width>26</width>
@@ -93,6 +97,10 @@
          </property>
          <property name="text" >
           <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
          </property>
          <property name="iconSize" >
           <size>
@@ -110,6 +118,10 @@
          <property name="text" >
           <string>...</string>
          </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/up.png</normaloff>:/up.png</iconset>
+         </property>
          <property name="iconSize" >
           <size>
            <width>26</width>
@@ -125,6 +137,10 @@
          </property>
          <property name="text" >
           <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/down.png</normaloff>:/down.png</iconset>
          </property>
          <property name="iconSize" >
           <size>
@@ -175,6 +191,10 @@
         <property name="text" >
          <string>...</string>
         </property>
+        <property name="icon" >
+         <iconset resource="main.qrc" >
+          <normaloff>:/key_bindings.png</normaloff>:/key_bindings.png</iconset>
+        </property>
         <property name="iconSize" >
          <size>
           <width>26</width>
@@ -190,6 +210,10 @@
         </property>
         <property name="text" >
          <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="main.qrc" >
+          <normaloff>:/fileclose.png</normaloff>:/fileclose.png</iconset>
         </property>
         <property name="iconSize" >
          <size>
@@ -214,7 +238,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="main.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>m_buttonBox</sender>

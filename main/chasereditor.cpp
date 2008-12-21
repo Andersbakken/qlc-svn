@@ -29,7 +29,6 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QTimer>
-#include <QIcon>
 
 #include "common/qlcfixturedef.h"
 
@@ -62,12 +61,6 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 	connect(m_remove, SIGNAL(clicked()), this, SLOT(slotRemoveClicked()));
 	connect(m_raise, SIGNAL(clicked()), this, SLOT(slotRaiseClicked()));
 	connect(m_lower, SIGNAL(clicked()), this, SLOT(slotLowerClicked()));
-
-	/* Button pixmaps */
-	m_add->setIcon(QIcon(":/edit_add.png"));
-	m_remove->setIcon(QIcon(":/edit_remove.png"));
-	m_raise->setIcon(QIcon(":/up.png"));
-	m_lower->setIcon(QIcon(":/down.png"));
 
 	/* Create a copy of the original chaser so that we can freely modify
 	   it and keep a pointer to the original so that we can move the

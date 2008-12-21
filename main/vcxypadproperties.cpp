@@ -26,7 +26,6 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QMenu>
-#include <QIcon>
 
 #include "common/qlcfixturedef.h"
 #include "common/qlcchannel.h"
@@ -57,20 +56,9 @@ VCXYPadProperties::VCXYPadProperties(QWidget* parent, VCXYPad* xypad)
 
 	setupUi(this);
 
-	/* Add X axis */
-	m_addX->setIcon(QIcon(":/edit_add.png"));
 	connect(m_addX, SIGNAL(clicked()), this, SLOT(slotAddX()));
-
-	/* Add Y axis */
-	m_addY->setIcon(QIcon(":/edit_add.png"));
-	connect(m_addY, SIGNAL(clicked()), this, SLOT(slotAddY()));
-
-	/* Remove X axis */
-	m_removeX->setIcon(QIcon(":/edit_remove.png"));
 	connect(m_removeX, SIGNAL(clicked()), this, SLOT(slotRemoveX()));
-
-	/* Remove Y axis */
-	m_removeY->setIcon(QIcon(":/edit_remove.png"));
+	connect(m_addY, SIGNAL(clicked()), this, SLOT(slotAddY()));
 	connect(m_removeY, SIGNAL(clicked()), this, SLOT(slotRemoveY()));
 
 	/* Min X spin */

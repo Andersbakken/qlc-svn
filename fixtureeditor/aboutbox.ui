@@ -13,7 +13,7 @@
    <string>About Q Light Controller</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="main.qrc" >
+   <iconset resource="fixtureeditor.qrc" >
     <normaloff>:/qlc.png</normaloff>:/qlc.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
@@ -31,7 +31,7 @@
         <string/>
        </property>
        <property name="pixmap" >
-        <pixmap resource="main.qrc" >:/qlc.png</pixmap>
+        <pixmap resource="fixtureeditor.qrc" >:/qlc.png</pixmap>
        </property>
        <property name="scaledContents" >
         <bool>false</bool>
@@ -159,6 +159,7 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
+  <include location="fixtureeditor.qrc" />
   <include location="main.qrc" />
  </resources>
  <connections>

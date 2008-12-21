@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>554</width>
+    <width>555</width>
     <height>364</height>
    </rect>
   </property>
@@ -74,6 +74,10 @@
            <property name="text" >
             <string>...</string>
            </property>
+           <property name="icon" >
+            <iconset resource="main.qrc" >
+             <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
+           </property>
            <property name="iconSize" >
             <size>
              <width>26</width>
@@ -89,6 +93,10 @@
            </property>
            <property name="text" >
             <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="main.qrc" >
+             <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
            </property>
            <property name="iconSize" >
             <size>
@@ -115,6 +123,12 @@
        </item>
        <item row="2" column="0" colspan="2" >
         <widget class="QPushButton" name="m_enableChannelsButton" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip" >
           <string>Enable all channels in currently selected fixtures</string>
          </property>
@@ -125,6 +139,12 @@
        </item>
        <item row="2" column="2" >
         <widget class="QPushButton" name="m_disableChannelsButton" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip" >
           <string>Disable all channels in currently selected fixtures</string>
          </property>
@@ -159,7 +179,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="main.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>m_buttonBox</sender>

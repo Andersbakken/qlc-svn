@@ -28,7 +28,6 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QIcon>
 
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
@@ -43,7 +42,7 @@
 EditMode::EditMode(QWidget* parent, QLCFixtureMode* mode) : QDialog(parent)
 {
 	Q_ASSERT(mode != NULL);
-	
+
 	/* Edit the given mode */
 	m_mode = new QLCFixtureMode(mode);
 
@@ -71,21 +70,14 @@ void EditMode::init()
 {
 	QString str;
 	QLCPhysical physical = m_mode->physical();
-	
+
 	/* Channels page */
-	m_addChannelButton->setIcon(QIcon(":/edit_add.png"));
 	connect(m_addChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotAddChannelClicked()));
-
-	m_removeChannelButton->setIcon(QIcon(":/edit_remove.png"));
 	connect(m_removeChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotRemoveChannelClicked()));
-
-	m_raiseChannelButton->setIcon(QIcon(":/up.png"));
 	connect(m_raiseChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotRaiseChannelClicked()));
-
-	m_lowerChannelButton->setIcon(QIcon(":/down.png"));
 	connect(m_lowerChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotLowerChannelClicked()));
 
@@ -97,7 +89,7 @@ void EditMode::init()
 	m_bulbTypeCombo->setEditText(physical.bulbType());
 	m_bulbLumensSpin->setValue(physical.bulbLumens());
 	m_bulbTempCombo->setEditText(str.setNum(physical.bulbColourTemperature()));
-	
+
 	m_weightSpin->setValue(physical.weight());
 	m_widthSpin->setValue(physical.width());
 	m_heightSpin->setValue(physical.height());
@@ -106,7 +98,7 @@ void EditMode::init()
 	m_lensNameCombo->setEditText(physical.lensName());
 	m_lensDegreesMinSpin->setValue(physical.lensDegreesMin());
 	m_lensDegreesMaxSpin->setValue(physical.lensDegreesMax());
-	
+
 	m_focusTypeCombo->setEditText(physical.focusType());
 	m_panMaxSpin->setValue(physical.focusPanMax());
 	m_tiltMaxSpin->setValue(physical.focusTiltMax());
@@ -117,7 +109,7 @@ void EditMode::init()
  ****************************************************************************/
 
 void EditMode::slotAddChannelClicked()
-{	
+{
 	QLCChannel* ch;
 
 	/* Create a list of channels that haven't been added to this mode yet */

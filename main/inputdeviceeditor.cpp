@@ -26,7 +26,6 @@
 #include <QMessageBox>
 #include <QDialog>
 #include <QDebug>
-#include <QIcon>
 #include <QFile>
 #include <QList>
 #include <QDir>
@@ -54,12 +53,6 @@ InputDeviceEditor::InputDeviceEditor(QWidget* parent, QLCInputDevice* device)
 	: QDialog(parent)
 {
 	setupUi(this);
-
-	/* Set icons to buttons */
-	m_addButton->setIcon(QIcon(":/edit_add.png"));
-	m_removeButton->setIcon(QIcon(":/edit_remove.png"));
-	m_editButton->setIcon(QIcon(":/edit.png"));
-	m_wizardButton->setIcon(QIcon(":/wizard.png"));
 
 	/* Connect the buttons to slots */
 	connect(m_addButton, SIGNAL(clicked()),

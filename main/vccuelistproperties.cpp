@@ -45,14 +45,6 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
 	m_nameEdit->setText(cueList->caption());
 	m_nameEdit->setSelection(0, cueList->caption().length());
 
-	/* Button icons */
-	m_addButton->setIcon(QIcon(":/edit_add.png"));
-	m_removeButton->setIcon(QIcon(":/edit_remove.png"));
-	m_raiseButton->setIcon(QIcon(":/up.png"));
-	m_lowerButton->setIcon(QIcon(":/down.png"));
-	m_attachButton->setIcon(QIcon(":/key_bindings.png"));
-	m_detachButton->setIcon(QIcon(":/fileclose.png"));
-
 	/* Connections */
 	connect(m_addButton, SIGNAL(clicked()),
 		this, SLOT(slotAddClicked()));

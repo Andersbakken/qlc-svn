@@ -32,8 +32,8 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QTabWidget>
-#include <QMenu>
 #include <QIcon>
+#include <QMenu>
 #include <QList>
 #include <QUrl>
 
@@ -110,15 +110,10 @@ void QLCFixtureEditor::init()
 		this, SLOT(slotTypeActivated(const QString&)));
 
 	/* Channel page */
-	m_addChannelButton->setIcon(QIcon(":/edit_add.png"));
 	connect(m_addChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotAddChannel()));
-
-	m_removeChannelButton->setIcon(QIcon(":/edit_remove.png"));
 	connect(m_removeChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotRemoveChannel()));
-
-	m_editChannelButton->setIcon(QIcon(":/edit.png"));
 	connect(m_editChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotEditChannel()));
 
@@ -133,20 +128,15 @@ void QLCFixtureEditor::init()
 		SIGNAL(itemActivated(QTreeWidgetItem*,int)),
 		this,
 		SLOT(slotEditChannel()));
-	
+
 	m_channelList->header()->setResizeMode(QHeaderView::ResizeToContents);
 	refreshChannelList();
 
 	/* Mode page */
-	m_addModeButton->setIcon(QIcon(":/edit_add.png"));
 	connect(m_addModeButton, SIGNAL(clicked()),
 		this, SLOT(slotAddMode()));
-
-	m_removeModeButton->setIcon(QIcon(":/edit_remove.png"));
 	connect(m_removeModeButton, SIGNAL(clicked()),
 		this, SLOT(slotRemoveMode()));
-
-	m_editModeButton->setIcon(QIcon(":/edit.png"));
 	connect(m_editModeButton, SIGNAL(clicked()),
 		this, SLOT(slotEditMode()));
 
@@ -492,7 +482,7 @@ void QLCFixtureEditor::slotEditChannel()
 	real = currentChannel();
 	if (real == NULL)
 		return;
-	
+
 	EditChannel ec(this, real);
 	if (ec.exec() == QDialog::Accepted)
 	{
@@ -502,7 +492,7 @@ void QLCFixtureEditor::slotEditChannel()
 		item = m_channelList->currentItem();
 		item->setText(KChannelsColumnName, real->name());
 		item->setText(KChannelsColumnGroup, real->group());
-		
+
 		setModified();
 	}
 }
@@ -545,7 +535,7 @@ void QLCFixtureEditor::refreshChannelList()
 		str.sprintf("%lu", (unsigned long) ch);
 		item->setText(KChannelsColumnPointer, str);
 	}
-	
+
 	slotChannelListSelectionChanged(m_channelList->currentItem());
 }
 

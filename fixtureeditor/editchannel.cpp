@@ -57,7 +57,7 @@ EditChannel::~EditChannel()
 void EditChannel::init()
 {
 	Q_ASSERT(m_channel != NULL);
-	
+
 	/* Set window title */
 	setWindowTitle(QString("Edit Channel: ") + m_channel->name());
 
@@ -86,10 +86,6 @@ void EditChannel::init()
 		}
 	}
 
-	/* Set some button icons */
-	m_addCapabilityButton->setIcon(QIcon(":/edit_add.png"));
-	m_removeCapabilityButton->setIcon(QIcon(":/edit_remove.png"));
-	m_editCapabilityButton->setIcon(QIcon(":/edit.png"));
 	connect(m_addCapabilityButton, SIGNAL(clicked()),
 		this, SLOT(slotAddCapabilityClicked()));
 	connect(m_removeCapabilityButton, SIGNAL(clicked()),

@@ -72,11 +72,8 @@ SceneEditor::~SceneEditor()
 
 void SceneEditor::init()
 {
-	m_addFixtureButton->setIcon(QIcon(":/edit_add.png"));
 	connect(m_addFixtureButton, SIGNAL(clicked()),
 		this, SLOT(slotAddFixtureClicked()));
-
-	m_removeFixtureButton->setIcon(QIcon(":/edit_remove.png"));
 	connect(m_removeFixtureButton, SIGNAL(clicked()),
 		this, SLOT(slotRemoveFixtureClicked()));
 

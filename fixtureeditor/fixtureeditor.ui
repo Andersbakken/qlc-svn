@@ -19,14 +19,6 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="General" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>568</width>
-        <height>498</height>
-       </rect>
-      </property>
       <attribute name="title" >
        <string>General</string>
       </attribute>
@@ -176,14 +168,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="Channels" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>568</width>
-        <height>498</height>
-       </rect>
-      </property>
       <attribute name="title" >
        <string>Channels</string>
       </attribute>
@@ -221,6 +205,10 @@
            <property name="text" >
             <string>...</string>
            </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
+           </property>
            <property name="iconSize" >
             <size>
              <width>26</width>
@@ -234,6 +222,10 @@
            <property name="text" >
             <string>...</string>
            </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
+           </property>
            <property name="iconSize" >
             <size>
              <width>26</width>
@@ -246,6 +238,10 @@
           <widget class="QToolButton" name="m_editChannelButton" >
            <property name="text" >
             <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
            </property>
            <property name="iconSize" >
             <size>
@@ -273,14 +269,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="Modes" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>568</width>
-        <height>498</height>
-       </rect>
-      </property>
       <attribute name="title" >
        <string>Modes</string>
       </attribute>
@@ -318,6 +306,10 @@
            <property name="text" >
             <string>...</string>
            </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
+           </property>
            <property name="iconSize" >
             <size>
              <width>26</width>
@@ -331,6 +323,10 @@
            <property name="text" >
             <string>...</string>
            </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
+           </property>
            <property name="iconSize" >
             <size>
              <width>26</width>
@@ -343,6 +339,10 @@
           <widget class="QToolButton" name="m_editModeButton" >
            <property name="text" >
             <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
            </property>
            <property name="iconSize" >
             <size>
@@ -373,6 +373,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="fixtureeditor.qrc" />
+ </resources>
  <connections/>
 </ui>

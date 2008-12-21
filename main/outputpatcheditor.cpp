@@ -25,7 +25,6 @@
 #include <QGroupBox>
 #include <QVariant>
 #include <QDebug>
-#include <QIcon>
 
 #include "outputpatcheditor.h"
 #include "outputmap.h"
@@ -46,7 +45,6 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 	/* Setup UI controls */
 	setupUi(this);
 
-	m_configureButton->setIcon(QIcon(":/configure.png"));
 	connect(m_configureButton, SIGNAL(clicked()),
 		this, SLOT(slotConfigureClicked()));
 

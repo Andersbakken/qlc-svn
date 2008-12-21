@@ -27,7 +27,6 @@
 #include <QGroupBox>
 #include <QVariant>
 #include <QDebug>
-#include <QIcon>
 #include <QFile>
 #include <QDir>
 
@@ -92,8 +91,7 @@ void InputPatchEditor::setupMappingPage()
 						     QTreeWidgetItem*)),
 		this, SLOT(slotMappingCurrentItemChanged(QTreeWidgetItem*)));
 
-	/* Plugin/input information */
-	m_configureButton->setIcon(QIcon(":/configure.png"));
+	/* Configure plugin/input */
 	connect(m_configureButton, SIGNAL(clicked()),
 		this, SLOT(slotConfigureInputClicked()));
 
@@ -210,14 +208,9 @@ void InputPatchEditor::slotConfigureInputClicked()
 /****************************************************************************
  * Device tree
  ****************************************************************************/
- 
+
 void InputPatchEditor::setupDevicePage()
 {
-	/* Buttons */
-	m_addDeviceButton->setIcon(QIcon(":/edit_add.png"));
-	m_removeDeviceButton->setIcon(QIcon(":/edit_remove.png"));
-	m_editDeviceButton->setIcon(QIcon(":/edit.png"));
-
 	connect(m_addDeviceButton, SIGNAL(clicked()),
 		this, SLOT(slotAddDeviceClicked()));
 	connect(m_removeDeviceButton, SIGNAL(clicked()),
