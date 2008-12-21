@@ -104,13 +104,12 @@ public:
 	 * @param universe The input universe to patch
 	 * @param pluginName The name of the plugin to patch to the universe
 	 * @param input An input universe provided by the plugin to patch to
-	 * @param templateName The name of a template that describes the mapped
-	 *                     device
+	 * @param deviceName The name of an input device
 	 * @return true if successful, otherwise false
 	 */
 	bool setPatch(t_input_universe universe,
 		      const QString& pluginName, t_input input,
-		      const QString& templateName = QString::null);
+		      const QString& deviceName = QString::null);
 
 	/**
 	 * Get mapping for an input universe.
@@ -193,28 +192,28 @@ protected:
 	QList <QLCInPlugin*> m_plugins;
 
 	/*********************************************************************
-	 * Device templates
+	 * Input devices
 	 *********************************************************************/
 protected:
-	/** Load all device templates from the given path */
-	void loadTemplates(QString templatePath);
+	/** Load all device devices from the given path */
+	void loadDevices(const QString& devicePath);
 
 public:
-	/** Get a list of available device template names */
-	QStringList deviceTemplateNames();
+	/** Get a list of available device names */
+	QStringList deviceNames();
 
-	/** Get a device template by its name */
-	QLCInputDevice* deviceTemplate(const QString& name);
+	/** Get a device by its name */
+	QLCInputDevice* device(const QString& name);
 
-	/** Add a new device template */
-	void addDeviceTemplate(QLCInputDevice* deviceTemplate);
+	/** Add a new device */
+	void addDevice(QLCInputDevice* device);
 
-	/** Remove an existing device template by its name and delete it */
-	void removeDeviceTemplate(const QString& name);
+	/** Remove an existing device by its name and delete it */
+	void removeDevice(const QString& name);
 
 protected:
-	/** List that contains all available device templates */
-	QList <QLCInputDevice*> m_deviceTemplates;
+	/** List that contains all available devices */
+	QList <QLCInputDevice*> m_devices;
 
 	/*********************************************************************
 	 * Save & Load

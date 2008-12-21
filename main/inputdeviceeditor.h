@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  inputtemplateeditor.h
+  inputdeviceeditor.h
 
   Copyright (C) Heikki Junnila
 
@@ -19,18 +19,18 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef INPUTTEMPLATEEDITOR_H
-#define INPUTTEMPLATEEDITOR_H
+#ifndef INPUTDEVICEEDITOR_H
+#define INPUTDEVICEEDITOR_H
 
 #include <common/qlctypes.h>
 #include <QDialog>
 
-#include "ui_inputtemplateeditor.h"
+#include "ui_inputdeviceeditor.h"
 
 class QLCInputChannel;
 class QLCInputDevice;
 
-class InputTemplateEditor : public QDialog, public Ui_InputTemplateEditor
+class InputDeviceEditor : public QDialog, public Ui_InputDeviceEditor
 {
 	Q_OBJECT
 
@@ -38,11 +38,11 @@ class InputTemplateEditor : public QDialog, public Ui_InputTemplateEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	InputTemplateEditor(QWidget* parent, QLCInputDevice* deviceTemplate);
-	virtual ~InputTemplateEditor();
+	InputDeviceEditor(QWidget* parent, QLCInputDevice* device);
+	virtual ~InputDeviceEditor();
 
 private:
-	Q_DISABLE_COPY(InputTemplateEditor)
+	Q_DISABLE_COPY(InputDeviceEditor)
 
 protected:
 	void fillTree();
@@ -68,13 +68,13 @@ protected slots:
 				   t_input_value value);
 
 	/********************************************************************
-	 * Template
+	 * Device
 	 ********************************************************************/
 public:
-	const QLCInputDevice* deviceTemplate() const;
+	const QLCInputDevice* device() const;
 
 protected:
-	QLCInputDevice* m_deviceTemplate;
+	QLCInputDevice* m_device;
 };
 
 #endif

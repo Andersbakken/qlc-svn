@@ -75,6 +75,10 @@
             <property name="text" >
              <string>...</string>
             </property>
+            <property name="icon" >
+             <iconset resource="main.qrc" >
+              <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
+            </property>
             <property name="iconSize" >
              <size>
               <width>26</width>
@@ -88,13 +92,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Template" >
+     <widget class="QWidget" name="Device" >
       <attribute name="title" >
-       <string>Template</string>
+       <string>Device</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout" >
        <item rowspan="4" row="0" column="0" >
-        <widget class="QTreeWidget" name="m_templateTree" >
+        <widget class="QTreeWidget" name="m_deviceTree" >
          <property name="rootIsDecorated" >
           <bool>false</bool>
          </property>
@@ -106,18 +110,22 @@
          </property>
          <column>
           <property name="text" >
-           <string>Template</string>
+           <string>Device</string>
           </property>
          </column>
         </widget>
        </item>
        <item row="0" column="1" >
-        <widget class="QToolButton" name="m_addTemplateButton" >
+        <widget class="QToolButton" name="m_addDeviceButton" >
          <property name="toolTip" >
-          <string>Create a new input device template</string>
+          <string>Create a new input device</string>
          </property>
          <property name="text" >
           <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
          </property>
          <property name="iconSize" >
           <size>
@@ -128,12 +136,16 @@
         </widget>
        </item>
        <item row="1" column="1" >
-        <widget class="QToolButton" name="m_removeTemplateButton" >
+        <widget class="QToolButton" name="m_removeDeviceButton" >
          <property name="toolTip" >
-          <string>Delete the selected device template</string>
+          <string>Delete the selected input device</string>
          </property>
          <property name="text" >
           <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
          </property>
          <property name="iconSize" >
           <size>
@@ -144,12 +156,16 @@
         </widget>
        </item>
        <item row="2" column="1" >
-        <widget class="QToolButton" name="m_editTemplateButton" >
+        <widget class="QToolButton" name="m_editDeviceButton" >
          <property name="toolTip" >
-          <string>Edit the selected device template</string>
+          <string>Edit the selected input device</string>
          </property>
          <property name="text" >
           <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="main.qrc" >
+           <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
          </property>
          <property name="iconSize" >
           <size>
@@ -188,7 +204,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="main.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>m_buttonBox</sender>

@@ -59,12 +59,12 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 	loadPlugins();
 
 #ifdef Q_WS_X11
-	/* First, load user templates (overrides system templates) */
+	/* First, load user devices (overrides system devices) */
 	QDir dir(QString(getenv("HOME")));
-	loadTemplates(dir.absoluteFilePath(QString(USERINPUTTEMPLATEDIR)));
+	loadDevices(dir.absoluteFilePath(QString(USERINPUTDEVICEDIR)));
 #endif
-	/* Then, load system templates */
-	loadTemplates(INPUTTEMPLATEDIR);
+	/* Then, load system devices */
+	loadDevices(INPUTDEVICEDIR);
 
 	loadDefaults();
 }
@@ -77,8 +77,8 @@ InputMap::~InputMap()
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
 
-	while (m_deviceTemplates.isEmpty() == false)
-		delete m_deviceTemplates.takeFirst();
+	while (m_devices.isEmpty() == false)
+		delete m_devices.takeFirst();
 }
 
 /*****************************************************************************
@@ -143,7 +143,7 @@ void InputMap::initPatch()
 
 bool InputMap::setPatch(t_input_universe universe,
 			const QString& pluginName, t_input input,
-			const QString& templateName)
+			const QString& deviceName)
 {
 	/* Check that the universe that we're doing mapping for is valid */
 	if (universe >= m_universes)
@@ -152,9 +152,9 @@ bool InputMap::setPatch(t_input_universe universe,
 		return false;
 	}
 
-	/* Don't care if plugin or template is NULL. */
+	/* Don't care if plugin or device is NULL. */
 	m_patch[universe]->set(plugin(pluginName), input,
-			       deviceTemplate(templateName));
+			       device(deviceName));
 
 	return true;
 }
@@ -310,87 +310,86 @@ QLCInPlugin* InputMap::plugin(const QString& name)
 }
 
 /*****************************************************************************
- * Device templates
+ * Devices
  *****************************************************************************/
 
-void InputMap::loadTemplates(QString templatePath)
+void InputMap::loadDevices(const QString& devicePath)
 {
-	/* Find *.qxi from templatePath(), sort by name, get regular files */
-	QDir dir(templatePath, QString("*%1").arg(KExtInputDevice),
+	/* Find *.qxi from devicePath, sort by name, get regular files */
+	QDir dir(devicePath, QString("*%1").arg(KExtInputDevice),
 		 QDir::Name, QDir::Files);
 	if (dir.exists() == false || dir.isReadable() == false)
 	{
-		qWarning() << "Unable to load input templates from"
-			   << templatePath;
+		qWarning() << "Unable to load input devices from"
+			   << devicePath;
 		return;
 	}
 
 	/* Go thru all found file entries and attempt to load an input
-	   template from each of them. */
+	   device from each of them. */
 	QStringListIterator it(dir.entryList());
 	while (it.hasNext() == true)
 	{
-		QLCInputDevice* dt;
+		QLCInputDevice* dev;
 		QString path;
 
 		path = dir.absoluteFilePath(it.next());
-		dt = QLCInputDevice::loader(path);
-		if (dt != NULL)
+		dev = QLCInputDevice::loader(path);
+		if (dev != NULL)
 		{
 			/* Check for duplicates */
-			if (deviceTemplate(dt->name()) == NULL)
-				m_deviceTemplates.append(dt);
+			if (device(dev->name()) == NULL)
+				m_devices.append(dev);
 			else
-				delete dt;
+				delete dev;
 		}
 		else
 		{
-			qWarning() << "Unable to find an input template from"
+			qWarning() << "Unable to find an input device from"
 				   << path;
 		}
 	}
 }
 
-QStringList InputMap::deviceTemplateNames()
+QStringList InputMap::deviceNames()
 {
 	QStringList list;
-	QListIterator <QLCInputDevice*> it(m_deviceTemplates);
+	QListIterator <QLCInputDevice*> it(m_devices);
 	while (it.hasNext() == true)
 		list << it.next()->name();
 	return list;
 }
 
-QLCInputDevice* InputMap::deviceTemplate(const QString& name)
+QLCInputDevice* InputMap::device(const QString& name)
 {
-	QLCInputDevice* deviceTemplate;
-	QListIterator <QLCInputDevice*> it(m_deviceTemplates);
+	QListIterator <QLCInputDevice*> it(m_devices);
 	while (it.hasNext() == true)
 	{
-		deviceTemplate = it.next();
-		if (deviceTemplate->name() == name)
-			return deviceTemplate;
+		QLCInputDevice* dev = it.next();
+		if (dev->name() == name)
+			return dev;
 	}
-	
+
 	return NULL;
 }
 
-void InputMap::addDeviceTemplate(QLCInputDevice* deviceTemplate)
+void InputMap::addDevice(QLCInputDevice* device)
 {
-	Q_ASSERT(deviceTemplate != NULL);
-	m_deviceTemplates.append(deviceTemplate);
+	Q_ASSERT(device != NULL);
+	m_devices.append(device);
 }
 
-void InputMap::removeDeviceTemplate(const QString& name)
+void InputMap::removeDevice(const QString& name)
 {
-	QLCInputDevice* deviceTemplate;
-	QMutableListIterator <QLCInputDevice*> it(m_deviceTemplates);
+	QLCInputDevice* device;
+	QMutableListIterator <QLCInputDevice*> it(m_devices);
 	while (it.hasNext() == true)
 	{
-		deviceTemplate = it.next();
-		if (deviceTemplate->name() == name)
+		device = it.next();
+		if (device->name() == name)
 		{
 			it.remove();
-			delete deviceTemplate;
+			delete device;
 			break;
 		}
 	}
@@ -422,7 +421,7 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
@@ -437,12 +436,12 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCInputPatch)
 			InputPatch::loader(doc, &tag, this);
 		else
 			qWarning() << "Unknown InputMap tag:" << tag.tagName();
-		
+
 		node = node.nextSibling();
 	}
 
@@ -455,7 +454,7 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 
 void InputMap::loadDefaults()
 {
-	QString templateName;
+	QString deviceName;
 	QSettings settings;
 	QString plugin;
 	QString input;
@@ -471,13 +470,13 @@ void InputMap::loadDefaults()
 		key = QString("/inputmap/universe%2/input/").arg(i);
 		input = settings.value(key).toString();
 
-		/* Input template */
-		key = QString("/inputmap/universe%2/template/").arg(i);
-		templateName = settings.value(key).toString();
+		/* Input device */
+		key = QString("/inputmap/universe%2/device/").arg(i);
+		deviceName = settings.value(key).toString();
 
 		/* Do the mapping */
 		if (plugin.length() > 0 && input.length() > 0)
-			setPatch(i, plugin, input.toInt(), templateName);
+			setPatch(i, plugin, input.toInt(), deviceName);
 	}
 }
 
@@ -503,9 +502,9 @@ void InputMap::saveDefaults()
 			key = QString("/inputmap/universe%2/input/").arg(i);
 			settings.setValue(key, str.setNum(pat->input()));
 
-			/* Device template */
-			key = QString("/inputmap/universe%2/template/").arg(i);
-			settings.setValue(key, pat->templateName());
+			/* Input device */
+			key = QString("/inputmap/universe%2/device/").arg(i);
+			settings.setValue(key, pat->deviceName());
 		}
 		else
 		{
@@ -517,8 +516,8 @@ void InputMap::saveDefaults()
 			key = QString("/inputmap/universe%2/input/").arg(i);
 			settings.setValue(key, "");
 
-			/* Device template */
-			key = QString("/inputmap/universe%2/template/").arg(i);
+			/* Input device */
+			key = QString("/inputmap/universe%2/device/").arg(i);
 			settings.setValue(key, "");
 		}
 	}

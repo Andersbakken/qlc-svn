@@ -35,7 +35,7 @@
 #include <common/qlctypes.h>
 #include <common/qlcfile.h>
 
-#include "inputtemplateeditor.h"
+#include "inputdeviceeditor.h"
 #include "inputpatcheditor.h"
 #include "inputpatch.h"
 #include "inputmap.h"
@@ -47,8 +47,8 @@ extern App* _app;
 #define KMapColumnName  0
 #define KMapColumnInput 1
 
-/* Template column structure */
-#define KTemplateColumnName 0
+/* Device column structure */
+#define KDeviceColumnName 0
 
 InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 				   InputPatch* inputPatch) : QDialog(parent)
@@ -61,12 +61,12 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 
 	m_pluginName = inputPatch->pluginName();
 	m_input = inputPatch->input();
-	m_templateName = inputPatch->templateName();
+	m_deviceName = inputPatch->deviceName();
 
 	/* Setup UI controls */
 	setupUi(this);
 	setupMappingPage();
-	setupTemplatePage();
+	setupDevicePage();
 }
 
 InputPatchEditor::~InputPatchEditor()
@@ -76,7 +76,7 @@ InputPatchEditor::~InputPatchEditor()
 void InputPatchEditor::accept()
 {
 	_app->inputMap()->setPatch(m_universe, m_pluginName, m_input,
-				   m_templateName);
+				   m_deviceName);
 
 	QDialog::accept();
 }
@@ -208,153 +208,153 @@ void InputPatchEditor::slotConfigureInputClicked()
 }
 
 /****************************************************************************
- * Template tree
+ * Device tree
  ****************************************************************************/
  
-void InputPatchEditor::setupTemplatePage()
+void InputPatchEditor::setupDevicePage()
 {
 	/* Buttons */
-	m_addTemplateButton->setIcon(QIcon(":/edit_add.png"));
-	m_removeTemplateButton->setIcon(QIcon(":/edit_remove.png"));
-	m_editTemplateButton->setIcon(QIcon(":/edit.png"));
+	m_addDeviceButton->setIcon(QIcon(":/edit_add.png"));
+	m_removeDeviceButton->setIcon(QIcon(":/edit_remove.png"));
+	m_editDeviceButton->setIcon(QIcon(":/edit.png"));
 
-	connect(m_addTemplateButton, SIGNAL(clicked()),
-		this, SLOT(slotAddTemplateClicked()));
-	connect(m_removeTemplateButton, SIGNAL(clicked()),
-		this, SLOT(slotRemoveTemplateClicked()));
-	connect(m_editTemplateButton, SIGNAL(clicked()),
-		this, SLOT(slotEditTemplateClicked()));
+	connect(m_addDeviceButton, SIGNAL(clicked()),
+		this, SLOT(slotAddDeviceClicked()));
+	connect(m_removeDeviceButton, SIGNAL(clicked()),
+		this, SLOT(slotRemoveDeviceClicked()));
+	connect(m_editDeviceButton, SIGNAL(clicked()),
+		this, SLOT(slotEditDeviceClicked()));
 
-	/* Fill the template tree with available templates */
-	fillTemplateTree();
+	/* Fill the device tree with available device names */
+	fillDeviceTree();
 
 	/* Listen to itemChanged() signals to catch check state changes */
-	connect(m_templateTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		this, SLOT(slotTemplateItemChanged(QTreeWidgetItem*,int)));
+	connect(m_deviceTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotDeviceItemChanged(QTreeWidgetItem*,int)));
 
 	/* Double click acts as edit button click */
-	connect(m_templateTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditTemplateClicked()));
+	connect(m_deviceTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditDeviceClicked()));
 }
 
-void InputPatchEditor::fillTemplateTree()
+void InputPatchEditor::fillDeviceTree()
 {
 	QTreeWidgetItem* item;
 
-	m_templateTree->clear();
+	m_deviceTree->clear();
 
-	/* Add an option for having no template at all */
-	item = new QTreeWidgetItem(m_templateTree);
-	updateTemplateItem(KInputNone, item);
+	/* Add an option for having no device at all */
+	item = new QTreeWidgetItem(m_deviceTree);
+	updateDeviceItem(KInputNone, item);
 
-	/* Insert available input device templates to the tree */
-	QStringListIterator it(_app->inputMap()->deviceTemplateNames());
+	/* Insert available input devices to the tree */
+	QStringListIterator it(_app->inputMap()->deviceNames());
 	while (it.hasNext() == true)
 	{
-		item = new QTreeWidgetItem(m_templateTree);
-		updateTemplateItem(it.next(), item);
+		item = new QTreeWidgetItem(m_deviceTree);
+		updateDeviceItem(it.next(), item);
 	}
 }
 
-void InputPatchEditor::updateTemplateItem(const QString& name,
+void InputPatchEditor::updateDeviceItem(const QString& name,
 					  QTreeWidgetItem* item)
 {
 	Q_ASSERT(item != NULL);
 
-	item->setText(KTemplateColumnName, name);
+	item->setText(KDeviceColumnName, name);
 
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	if (m_templateName == name)
-		item->setCheckState(KTemplateColumnName, Qt::Checked);
+	if (m_deviceName == name)
+		item->setCheckState(KDeviceColumnName, Qt::Checked);
 	else
-		item->setCheckState(KTemplateColumnName, Qt::Unchecked);
+		item->setCheckState(KDeviceColumnName, Qt::Unchecked);
 }
 
-void InputPatchEditor::slotTemplateItemChanged(QTreeWidgetItem* item,
+void InputPatchEditor::slotDeviceItemChanged(QTreeWidgetItem* item,
 					       int column)
 {
 	Q_UNUSED(column);
 
-	if (item->checkState(KTemplateColumnName) == Qt::Checked)
+	if (item->checkState(KDeviceColumnName) == Qt::Checked)
 	{
 		/* Temporarily disable this signal to prevent an endless loop */
-		disconnect(m_templateTree,
+		disconnect(m_deviceTree,
 			   SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 			   this,
-			   SLOT(slotTemplateItemChanged(QTreeWidgetItem*,int)));
+			   SLOT(slotDeviceItemChanged(QTreeWidgetItem*,int)));
 
 		/* Set all other items unchecked... */
-		for (int i = 0; i < m_templateTree->topLevelItemCount(); i++)
+		for (int i = 0; i < m_deviceTree->topLevelItemCount(); i++)
 		{
 			QTreeWidgetItem* another;
-			another = m_templateTree->topLevelItem(i);
+			another = m_deviceTree->topLevelItem(i);
 
 			if (another != item)
 			{
 				/* ...except the one that was just checked */
-				another->setCheckState(KTemplateColumnName,
+				another->setCheckState(KDeviceColumnName,
 							Qt::Unchecked);
 			}
 		}
 
-		/* Store the selected template name */
-		m_templateName = item->text(KTemplateColumnName);
+		/* Store the selected device name */
+		m_deviceName = item->text(KDeviceColumnName);
 
 		/* Start listening to this signal once again */
-		connect(m_templateTree,
+		connect(m_deviceTree,
 			SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 			this,
-			SLOT(slotTemplateItemChanged(QTreeWidgetItem*,int)));
+			SLOT(slotDeviceItemChanged(QTreeWidgetItem*,int)));
 	}
 	else
 	{
 		/* Don't allow unchecking an item by clicking it. Only allow
 		   changing the check state by checking another item. */
-		item->setCheckState(KTemplateColumnName, Qt::Checked);
+		item->setCheckState(KDeviceColumnName, Qt::Checked);
 	}
 }
 
-void InputPatchEditor::slotAddTemplateClicked()
+void InputPatchEditor::slotAddDeviceClicked()
 {
-	/* Create a new input template and start editing it */
-	InputTemplateEditor ite(this, NULL);
+	/* Create a new input device and start editing it */
+	InputDeviceEditor ite(this, NULL);
 edit:
 	if (ite.exec() == QDialog::Accepted)
 	{
-		QLCInputDevice* dt;
+		QLCInputDevice* dev;
 		QString path;
 		QDir dir;
 
 #ifdef Q_WS_X11
-		/* If the current user is root, use the system template dir
-		   for saving templates. Otherwise use the user's home dir.
+		/* If the current user is root, use the system device dir
+		   for saving devices. Otherwise use the user's home dir.
 		   This is done on Linux only, because Win32 & OSX save
-		   system templates in a user-writable directory. */
+		   system devices in a user-writable directory. */
 		if (geteuid() == 0)
 		{
-			dir = QDir(INPUTTEMPLATEDIR);
+			dir = QDir(INPUTDEVICEDIR);
 		}
 		else
 		{
 			path = QString("%1/%2").arg(getenv("HOME"))
-					       .arg(USERINPUTTEMPLATEDIR);
+					       .arg(USERINPUTDEVICEDIR);
 			dir = QDir(path);
 		}
 
-		/* Ensure that the selected template directory exists */
+		/* Ensure that the selected device directory exists */
 		if (dir.exists() == false)
 			dir.mkpath(".");
 #else
-		/* Use the system input template dir for Win32/OSX */
-		dir = QDir(INPUTTEMPLATEDIR);
+		/* Use the system input device dir for Win32/OSX */
+		dir = QDir(INPUTDEVICEDIR);
 #endif
-		/* Construct a descriptive file name for the template */
+		/* Construct a descriptive file name for the device */
 		path = QString("%1/%2-%3")
 				.arg(dir.absolutePath())
-				.arg(ite.deviceTemplate()->manufacturer())
-				.arg(ite.deviceTemplate()->model());
+				.arg(ite.device()->manufacturer())
+				.arg(ite.device()->model());
 
-		/* Ensure that creating a new input template won't overwrite
+		/* Ensure that creating a new input device won't overwrite
 		   an existing file. */
 		if (QFile::exists(path + KExtInputDevice) == true)
 		{
@@ -374,64 +374,64 @@ edit:
 			}
 		}
 
-		/* Create a new non-const copy of the template and
+		/* Create a new non-const copy of the device and
 		   reparent it to the input map */
-		dt = new QLCInputDevice(*ite.deviceTemplate());
+		dev = new QLCInputDevice(*ite.device());
 
 		/* Save it to a file, go back to edit if save failed */
-		if (dt->saveXML(path) == false)
+		if (dev->saveXML(path) == false)
 		{
 			QMessageBox::warning(this, tr("Saving failed"),
-				tr("Unable to save the template to %1")
+				tr("Unable to save the device to %1")
 				.arg(QDir::toNativeSeparators(path)));
-			delete dt;
+			delete dev;
 			goto edit;
 		}
 		else
 		{
-			/* Add the new template to input map */
-			_app->inputMap()->addDeviceTemplate(dt);
+			/* Add the new device to input map */
+			_app->inputMap()->addDevice(dev);
 
-			/* Add the new template to our tree widget */
+			/* Add the new device to our tree widget */
 			QTreeWidgetItem* item;
-			item = new QTreeWidgetItem(m_templateTree);
-			updateTemplateItem(dt->name(), item);
+			item = new QTreeWidgetItem(m_deviceTree);
+			updateDeviceItem(dev->name(), item);
 		}
 	}
 }
 
-void InputPatchEditor::slotRemoveTemplateClicked()
+void InputPatchEditor::slotRemoveDeviceClicked()
 {
-	QLCInputDevice* deviceTemplate;
+	QLCInputDevice* device;
 	QTreeWidgetItem* item;
 	QString name;
 	int r;
 
 	/* Find out the currently selected item */
-	item = m_templateTree->currentItem();
+	item = m_deviceTree->currentItem();
 	if (item == NULL)
 		return;
 
-	/* Get the currently selected template object by its name */
-	name = item->text(KTemplateColumnName);
-	deviceTemplate = _app->inputMap()->deviceTemplate(name);
-	if (deviceTemplate == NULL)
+	/* Get the currently selected device object by its name */
+	name = item->text(KDeviceColumnName);
+	device = _app->inputMap()->device(name);
+	if (device == NULL)
 		return;
 
 	/* Ask for user confirmation */
-	r = QMessageBox::question(this, tr("Delete template"),
-		tr("Do you wish to permanently delete template \"%1\"?")
-		.arg(deviceTemplate->name()),
+	r = QMessageBox::question(this, tr("Delete device"),
+		tr("Do you wish to permanently delete device \"%1\"?")
+		.arg(device->name()),
 		QMessageBox::Yes, QMessageBox::No);
 	if (r == QMessageBox::Yes)
 	{
 		/* Attempt to delete the file first */
-		QFile file(deviceTemplate->path());
+		QFile file(device->path());
 		if (file.remove() == true)
 		{
-			/* Successful deletion. Remove the template from
+			/* Successful deletion. Remove the device from
 			   input map and our tree widget */
-			_app->inputMap()->removeDeviceTemplate(name);
+			_app->inputMap()->removeDevice(name);
 			delete item;
 		}
 		else
@@ -444,26 +444,26 @@ void InputPatchEditor::slotRemoveTemplateClicked()
 	}
 }
 
-void InputPatchEditor::slotEditTemplateClicked()
+void InputPatchEditor::slotEditDeviceClicked()
 {
-	QLCInputDevice* deviceTemplate;
+	QLCInputDevice* device;
 	QTreeWidgetItem* item;
 	QString name;
 
 	/* Get the currently selected item and bail out if nothing or "None"
 	   is selected */
-	item = m_templateTree->currentItem();
-	if (item == NULL || item->text(KTemplateColumnName) == KInputNone)
+	item = m_deviceTree->currentItem();
+	if (item == NULL || item->text(KDeviceColumnName) == KInputNone)
 		return;
 
-	/* Get the currently selected template by its name */
-	name = item->text(KTemplateColumnName);
-	deviceTemplate = _app->inputMap()->deviceTemplate(name);
-	if (deviceTemplate == NULL)
+	/* Get the currently selected device by its name */
+	name = item->text(KDeviceColumnName);
+	device = _app->inputMap()->device(name);
+	if (device == NULL)
 		return;
 
-	/* Edit the template and update the item if OK was pressed */
-	InputTemplateEditor ite(this, deviceTemplate);
+	/* Edit the device and update the item if OK was pressed */
+	InputDeviceEditor ite(this, device);
 edit:
 	if (ite.exec() == QDialog::Rejected)
 		return;
@@ -472,38 +472,38 @@ edit:
 
 	/* Copy the channel's contents from the editor's copy to
 	   the actual object (with QLCInputDevice::operator=()). */
-	*deviceTemplate = *ite.deviceTemplate();
+	*device = *ite.device();
 
 #ifdef Q_WS_X11
-	/* If the current user is root, save the template to its old path.
+	/* If the current user is root, save the device to its old path.
 	   Otherwise use the user's home dir and generate a new file name
 	   if necessary. This is done on Linux only, because Win32 & OSX save
-	   templates always in a user-writable directory. */
+	   devices always in a user-writable directory. */
 	if (geteuid() == 0)
 	{
-		path = deviceTemplate->path();
+		path = device->path();
 	}
 	else
 	{
-		/* Ensure that user template directory exists */
+		/* Ensure that user device directory exists */
 		path = QString("%1/%2").arg(getenv("HOME"))
-				       .arg(USERINPUTTEMPLATEDIR);
+				       .arg(USERINPUTDEVICEDIR);
 		QDir dir = QDir(path);
 		if (dir.exists() == false)
 			dir.mkpath(".");
 
-		/* Check, whether the template was originally saved
+		/* Check, whether the device was originally saved
 		   in the system directory. If it is, construct a
-		   new name for it into the user's template dir. */
-		path = deviceTemplate->path();
+		   new name for it into the user's device dir. */
+		path = device->path();
 		if (path.contains(getenv("HOME")) == false)
 		{
 			/* Construct a descriptive file name for
-			   the template under user's HOME dir */
+			   the device under user's HOME dir */
 			path = QString("%1/%2-%3")
 				.arg(dir.absolutePath())
-				.arg(deviceTemplate->manufacturer())
-				.arg(deviceTemplate->model());
+				.arg(device->manufacturer())
+				.arg(device->model());
 
 			/* Ensure that creating a new file won't
 			   overwrite an existing file. */
@@ -526,23 +526,23 @@ edit:
 		}
 	}
 #else
-	/* Win32 & OSX save input templates in a user-writable directory,
+	/* Win32 & OSX save input devices in a user-writable directory,
 	   so we can use that directly. */
-	path = deviceTemplate->path();
+	path = device->path();
 #endif
-	/* Save the template */
-	if (deviceTemplate->saveXML(path) == true)
+	/* Save the device */
+	if (device->saveXML(path) == true)
 	{
-		/* Get the template's name from the template itself
+		/* Get the device's name from the device itself
 		   since it may have changed making local variable
 		   "name" invalid */
-		updateTemplateItem(deviceTemplate->name(), item);
+		updateDeviceItem(device->name(), item);
 	}
 	else
 	{
 		QMessageBox::warning(this, tr("Saving failed"),
 			tr("Unable to save %1 to %2")
-			.arg(deviceTemplate->name())
+			.arg(device->name())
 			.arg(QDir::toNativeSeparators(path)));
 		goto edit;
 	}

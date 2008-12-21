@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   inputpatch.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -36,7 +36,7 @@ InputPatch::InputPatch(InputMap* parent) : QObject(parent)
 {
 	m_plugin = NULL;
 	m_input = KInputInvalid;
-	m_deviceTemplate = NULL;
+	m_device = NULL;
 }
 
 InputPatch::~InputPatch()
@@ -49,8 +49,7 @@ InputPatch::~InputPatch()
  * Properties
  *****************************************************************************/
 
-void InputPatch::set(QLCInPlugin* plugin, t_input input,
-		     QLCInputDevice* deviceTemplate)
+void InputPatch::set(QLCInPlugin* plugin, t_input input, QLCInputDevice* device)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
 	   the line has been assigned to more than one input universe */
@@ -59,7 +58,7 @@ void InputPatch::set(QLCInPlugin* plugin, t_input input,
 
 	m_plugin = plugin;
 	m_input = input;
-	m_deviceTemplate = deviceTemplate;
+	m_device = device;
 
 	/* Open the assigned plugin input */
 	if (m_plugin != NULL && input != KInputInvalid)
@@ -82,10 +81,10 @@ QString InputPatch::inputName() const
 		return KInputNone;
 }
 
-QString InputPatch::templateName() const
+QString InputPatch::deviceName() const
 {
-	if (m_deviceTemplate != NULL)
-		return m_deviceTemplate->name();
+	if (m_device != NULL)
+		return m_device->name();
 	else
 		return KInputNone;
 }
@@ -125,25 +124,25 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
-	/* Device template */
-	tag = doc->createElement(KXMLQLCInputPatchDeviceTemplate);
+	/* Device */
+	tag = doc->createElement(KXMLQLCInputPatchDevice);
 	root.appendChild(tag);
-	text = doc->createTextNode(templateName());
+	text = doc->createTextNode(deviceName());
 	tag.appendChild(text);
-	
+
 	return true;
 }
 
 bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
 {
 	t_input_universe universe = 0;
-	QString templateName;
+	QString deviceName;
 	QString pluginName;
 	QDomElement tag;
 	QDomNode node;
 	t_input input = 0;
 	QString str;
-	
+
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(inputMap != NULL);
 
@@ -161,7 +160,7 @@ bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCInputPatchPlugin)
 		{
 			/* Plugin name */
@@ -172,19 +171,19 @@ bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
 			/* Plugin input */
 			input = tag.text().toInt();
 		}
-		else if (tag.tagName() == KXMLQLCInputPatchDeviceTemplate)
+		else if (tag.tagName() == KXMLQLCInputPatchDevice)
 		{
-			/* Device template */
-			templateName = tag.text();
+			/* Device */
+			deviceName = tag.text();
 		}
 		else
 		{
 			qWarning() << "Unknown Input patch tag: "
 				   << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
-	return inputMap->setPatch(universe, pluginName, input, templateName);
+	return inputMap->setPatch(universe, pluginName, input, deviceName);
 }

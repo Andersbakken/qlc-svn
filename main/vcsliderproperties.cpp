@@ -253,17 +253,17 @@ void VCSliderProperties::updateInputUniverseChannel()
 		}
 		else
 		{
-			dev = patch->deviceTemplate();
+			dev = patch->device();
 			if (dev == NULL)
 			{
-				/* There is no device template. Display plugin
+				/* There is no device. Display plugin
 				   name and channel number. Boring. */
 				uniName = patch->plugin()->name();
 				chName = tr("%1: Unknown").arg(m_inputChannel);
 			}
 			else
 			{
-				/* Display template name for universe */
+				/* Display device name for universe */
 				uniName = QString("%1: %2")
 						.arg(m_inputUniverse + 1)
 						.arg(dev->name());

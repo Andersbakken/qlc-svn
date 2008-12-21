@@ -11,13 +11,13 @@ unix:LIBSDIR		= /usr/lib
 win32:DATADIR		= $$(SystemDrive)/QLC
 unix:DATADIR		= /usr/share/qlc
 
-# Input Templates
-win32:INPUTTEMPLATEDIR	= $$DATADIR/InputTemplates
-unix:INPUTTEMPLATEDIR	= $$DATADIR/inputtemplates
-DEFINES			+= INPUTTEMPLATEDIR=\\\"$$INPUTTEMPLATEDIR\\\"
+# Input devices
+win32:INPUTDEVICEDIR	= $$DATADIR/InputDevices
+unix:INPUTDEVICEDIR	= $$DATADIR/inputdevices
+DEFINES			+= INPUTDEVICEDIR=\\\"$$INPUTDEVICEDIR\\\"
 
-unix:USERINPUTTEMPLATEDIR	= .qlc/inputtemplates
-unix:DEFINES		+= USERINPUTTEMPLATEDIR=\\\"$$USERINPUTTEMPLATEDIR\\\"
+unix:USERINPUTDEVICEDIR	= .qlc/inputdevices
+unix:DEFINES		+= USERINPUTDEVICEDIR=\\\"$$USERINPUTDEVICEDIR\\\"
 
 # Fixtures
 win32:FIXTUREDIR	= $$DATADIR/Fixtures

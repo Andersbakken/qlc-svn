@@ -44,7 +44,7 @@
      </column>
      <column>
       <property name="text" >
-       <string>Template</string>
+       <string>Device</string>
       </property>
      </column>
     </widget>

@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   inputpatch.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -33,7 +33,7 @@ class InputMap;
 class QDomDocument;
 class QDomElement;
 
-#define KXMLQLCInputPatchDeviceTemplate "Template"
+#define KXMLQLCInputPatchDevice "Device"
 #define KXMLQLCInputPatchUniverse "Universe"
 #define KXMLQLCInputPatchPluginNone "None"
 #define KXMLQLCInputPatchPlugin "Plugin"
@@ -53,8 +53,7 @@ public:
 	 * Properties
 	 ********************************************************************/
 public:
-	void set(QLCInPlugin* plugin, t_input input,
-		 QLCInputDevice* deviceTemplate);
+	void set(QLCInPlugin* plugin, t_input input, QLCInputDevice* device);
 
 	QLCInPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
@@ -62,13 +61,13 @@ public:
 	t_input input() const { return m_input; }
 	QString inputName() const;
 
-	QLCInputDevice* deviceTemplate() const { return m_deviceTemplate; }
-	QString templateName() const;
+	QLCInputDevice* device() const { return m_device; }
+	QString deviceName() const;
 
 protected:
 	QLCInPlugin* m_plugin;
 	t_input m_input;
-	QLCInputDevice* m_deviceTemplate;
+	QLCInputDevice* m_device;
 
 	/********************************************************************
 	 * Load & Save

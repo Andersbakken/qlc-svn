@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  inputtemplateeditor.cpp
+  inputdeviceeditor.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -34,8 +34,8 @@
 #include <common/qlcinputchannel.h>
 #include <common/qlcinputdevice.h>
 
-#include "inputtemplateeditor.h"
 #include "inputchanneleditor.h"
+#include "inputdeviceeditor.h"
 #include "inputmap.h"
 #include "app.h"
 
@@ -50,8 +50,7 @@ extern App* _app;
  * Initialization
  ****************************************************************************/
 
-InputTemplateEditor::InputTemplateEditor(QWidget* parent,
-					 QLCInputDevice* deviceTemplate)
+InputDeviceEditor::InputDeviceEditor(QWidget* parent, QLCInputDevice* device)
 	: QDialog(parent)
 {
 	setupUi(this);
@@ -74,44 +73,44 @@ InputTemplateEditor::InputTemplateEditor(QWidget* parent,
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
 
-	if (deviceTemplate == NULL)
+	if (device == NULL)
 	{
-		m_deviceTemplate = new QLCInputDevice();
+		m_device = new QLCInputDevice();
 	}
 	else
 	{
-		m_deviceTemplate = new QLCInputDevice(*deviceTemplate);
-		if ((QFile::permissions(m_deviceTemplate->path()) &
+		m_device = new QLCInputDevice(*device);
+		if ((QFile::permissions(m_device->path()) &
 		     QFile::WriteUser) == 0)
 		{
 			QMessageBox::warning(this, tr("File not writable"),
 				tr("You do not have permission to write to "
 				   "the file %1. You might not be able to "
-				   "save your modifications to the template.")
+				   "save your modifications to the device.")
 				   .arg(QDir::toNativeSeparators(
-						m_deviceTemplate->path())));
+						m_device->path())));
 		}
 	}
 
 	/* Device manufacturer & model */
-	m_manufacturerEdit->setText(m_deviceTemplate->manufacturer());
-	m_modelEdit->setText(m_deviceTemplate->model());
+	m_manufacturerEdit->setText(m_device->manufacturer());
+	m_modelEdit->setText(m_device->model());
 
-	/* Fill up the tree with template channels */
+	/* Fill up the tree with device's channels */
 	fillTree();
 }
 
-InputTemplateEditor::~InputTemplateEditor()
+InputDeviceEditor::~InputDeviceEditor()
 {
-	delete m_deviceTemplate;
+	delete m_device;
 }
 
-void InputTemplateEditor::fillTree()
+void InputDeviceEditor::fillTree()
 {
 	m_tree->clear();
 
 	QMapIterator <t_channel, QLCInputChannel*>
-		it(m_deviceTemplate->channels());
+		it(m_device->channels());
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -119,7 +118,7 @@ void InputTemplateEditor::fillTree()
 	}
 }
 
-void InputTemplateEditor::updateChannelItem(QTreeWidgetItem* item,
+void InputDeviceEditor::updateChannelItem(QTreeWidgetItem* item,
 					    QLCInputChannel* ch)
 {
 	Q_ASSERT(item != NULL);
@@ -142,13 +141,13 @@ void InputTemplateEditor::updateChannelItem(QTreeWidgetItem* item,
  * OK & Cancel
  ****************************************************************************/
 
-void InputTemplateEditor::accept()
+void InputDeviceEditor::accept()
 {
-	m_deviceTemplate->setManufacturer(m_manufacturerEdit->text());
-	m_deviceTemplate->setModel(m_modelEdit->text());
+	m_device->setManufacturer(m_manufacturerEdit->text());
+	m_device->setModel(m_modelEdit->text());
 
-	if (m_deviceTemplate->manufacturer().isEmpty() == true ||
-	    m_deviceTemplate->model().isEmpty() == true)
+	if (m_device->manufacturer().isEmpty() == true ||
+	    m_device->model().isEmpty() == true)
 	{
 		QMessageBox::warning(this, tr("Missing information"),
 			     tr("Manufacturer and/or model name is missing."));
@@ -163,13 +162,13 @@ void InputTemplateEditor::accept()
  * Editing
  ****************************************************************************/
 
-void InputTemplateEditor::slotAddClicked()
+void InputDeviceEditor::slotAddClicked()
 {
 	QLCInputChannel* channel = new QLCInputChannel();
 	InputChannelEditor ice(this, channel);
 	if (ice.exec() == QDialog::Accepted)
 	{
-		m_deviceTemplate->addChannel(channel);
+		m_device->addChannel(channel);
 		updateChannelItem(new QTreeWidgetItem(m_tree), channel);
 	}
 	else
@@ -178,7 +177,7 @@ void InputTemplateEditor::slotAddClicked()
 	}
 }
 
-void InputTemplateEditor::slotRemoveClicked()
+void InputDeviceEditor::slotRemoveClicked()
 {
 	QList <QTreeWidgetItem*> selected;
 	QTreeWidgetItem* next = NULL;
@@ -208,7 +207,7 @@ void InputTemplateEditor::slotRemoveClicked()
 
 		/* Delete the channel object */
 		chnum = item->text(KColumnNumber).toInt() - 1;
-		m_deviceTemplate->removeChannel(chnum);
+		m_device->removeChannel(chnum);
 
 		/* Choose the closest item below or above the removed items
 		   as the one that is selected after the removal */
@@ -222,7 +221,7 @@ void InputTemplateEditor::slotRemoveClicked()
 	m_tree->setCurrentItem(next);
 }
 
-void InputTemplateEditor::slotEditClicked()
+void InputDeviceEditor::slotEditClicked()
 {
 	QLCInputChannel* channel;
 	t_input_channel chnum;
@@ -237,7 +236,7 @@ void InputTemplateEditor::slotEditClicked()
 
 		/* Find the channel object associated to the selected item */
 		chnum = item->text(KColumnNumber).toInt() - 1;
-		channel = m_deviceTemplate->channel(chnum);
+		channel = m_device->channel(chnum);
 		Q_ASSERT(channel != NULL);
 
 		/* Edit the channel and update its item if necessary */
@@ -268,7 +267,7 @@ void InputTemplateEditor::slotEditClicked()
 				Q_ASSERT(item != NULL);
 
 				chnum = item->text(KColumnNumber).toInt() - 1;
-				channel = m_deviceTemplate->channel(chnum);
+				channel = m_device->channel(chnum);
 				Q_ASSERT(channel != NULL);
 
 				/* Set only name and type and only if they
@@ -284,7 +283,7 @@ void InputTemplateEditor::slotEditClicked()
 	}
 }
 
-void InputTemplateEditor::slotWizardClicked(bool checked)
+void InputDeviceEditor::slotWizardClicked(bool checked)
 {
 	if (checked == true)
 	{
@@ -310,7 +309,7 @@ void InputTemplateEditor::slotWizardClicked(bool checked)
 	}
 }
 
-void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
+void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,
 						t_input_channel channel,
 						t_input_value value)
 {
@@ -324,7 +323,7 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 	if (list.count() == 0)
 	{
 		/* No channel items found. Create a new channel to the
-		   template and display it also in the tree widget */
+		   device and display it also in the tree widget */
 		QTreeWidgetItem* item;
 		QLCInputChannel* ch;
 
@@ -332,7 +331,7 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 		ch->setChannel(channel);
 		ch->setName(tr("Button %1").arg(channel + 1));
 		ch->setType(QLCInputChannel::Button);
-		m_deviceTemplate->addChannel(ch);
+		m_device->addChannel(ch);
 
 		item = new QTreeWidgetItem(m_tree);
 		updateChannelItem(item, ch);
@@ -357,7 +356,7 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 		if (values.count() == 3)
 		{
 			QLCInputChannel* ch;
-			ch = m_deviceTemplate->channel(channel);
+			ch = m_device->channel(channel);
 			Q_ASSERT(ch != NULL);
 
 			ch->setType(QLCInputChannel::Slider);
@@ -368,10 +367,10 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 }
 
 /****************************************************************************
- * Device template
+ * Device
  ****************************************************************************/
 
-const QLCInputDevice* InputTemplateEditor::deviceTemplate() const
+const QLCInputDevice* InputDeviceEditor::device() const
 {
-	return m_deviceTemplate;
+	return m_device;
 }

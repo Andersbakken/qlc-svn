@@ -54,11 +54,11 @@ HEADERS += aboutbox.h \
            functionselection.h \
            generatorarea.h \
 	   inputchanneleditor.h \
+	   inputdeviceeditor.h \
            inputmanager.h \
            inputmap.h \
 	   inputpatch.h \
            inputpatcheditor.h \
-	   inputtemplateeditor.h \
            keybind.h \
            monitor.h \
            outputmanager.h \
@@ -97,8 +97,8 @@ FORMS += aboutbox.ui \
          fixtureselection.ui \
          functionselection.ui \
 	 inputchanneleditor.ui \
+	 inputdeviceeditor.ui \
          inputpatcheditor.ui \
-	 inputtemplateeditor.ui \
          outputmanager.ui \
          outputpatcheditor.ui \
          sceneeditor.ui \
@@ -140,11 +140,11 @@ SOURCES += aboutbox.cpp \
            functionselection.cpp \
            generatorarea.cpp \
 	   inputchanneleditor.cpp \
+	   inputdeviceeditor.cpp \
            inputmanager.cpp \
            inputmap.cpp \
 	   inputpatch.cpp \
            inputpatcheditor.cpp \
-	   inputtemplateeditor.cpp \
            keybind.cpp \
            main.cpp \
            monitor.cpp \

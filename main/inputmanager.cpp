@@ -42,7 +42,7 @@
 #define KColumnUniverse 0
 #define KColumnPlugin   1
 #define KColumnInput    2
-#define KColumnTemplate 3
+#define KColumnDevice   3
 #define KColumnInputNum 4
 
 extern App* _app;
@@ -95,7 +95,7 @@ void InputManager::setupUi()
 	columns << tr("Universe")
 		<< tr("Plugin")
 		<< tr("Input")
-		<< tr("Template");
+		<< tr("Device");
 	m_tree->setHeaderLabels(columns);
 
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
@@ -169,15 +169,15 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* inputPatch,
 		item->setText(KColumnInputNum,
 			      QString("%1").arg(inputPatch->input() + 1));
 
-		/* Device template */
-		item->setText(KColumnTemplate, inputPatch->templateName());
+		/* Input device */
+		item->setText(KColumnDevice, inputPatch->deviceName());
 	}
 	else
 	{
 		item->setText(KColumnPlugin, KInputNone);
 		item->setText(KColumnInput, KInputNone);
 		item->setText(KColumnInputNum, KInputNone);
-		item->setText(KColumnTemplate, KInputNone);
+		item->setText(KColumnDevice, KInputNone);
 	}
 }
 

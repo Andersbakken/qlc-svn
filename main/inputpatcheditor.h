@@ -70,18 +70,18 @@ protected slots:
 	void slotConfigureInputClicked();
 
 	/********************************************************************
-	 * Template page
+	 * Device page
 	 ********************************************************************/
 protected:
-	void setupTemplatePage();
-	void fillTemplateTree();
-	void updateTemplateItem(const QString& name, QTreeWidgetItem* item);
+	void setupDevicePage();
+	void fillDeviceTree();
+	void updateDeviceItem(const QString& name, QTreeWidgetItem* item);
 
 protected slots:
-	void slotTemplateItemChanged(QTreeWidgetItem* item, int column);
-	void slotAddTemplateClicked();
-	void slotRemoveTemplateClicked();
-	void slotEditTemplateClicked();
+	void slotDeviceItemChanged(QTreeWidgetItem* item, int column);
+	void slotAddDeviceClicked();
+	void slotRemoveDeviceClicked();
+	void slotEditDeviceClicked();
 
 	/********************************************************************
 	 * Selection
@@ -93,9 +93,9 @@ protected:
 	/** Selected input */
 	QString m_inputName;
 	t_input m_input;
-	
-	/* Selected device template */
-	QString m_templateName;
+
+	/* Selected device */
+	QString m_deviceName;
 };
 
 #endif /* INPUTPATCHEDITOR_H */

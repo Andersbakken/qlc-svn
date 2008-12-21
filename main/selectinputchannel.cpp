@@ -98,8 +98,8 @@ void SelectInputChannel::fillTree()
 			updateChannelItem(chItem, uni, NULL);
 		}
 
-		/* Add known channels from device template (if any) */
-		device = patch->deviceTemplate();
+		/* Add known channels from device (if any) */
+		device = patch->device();
 		if (device != NULL)
 		{
 			QMapIterator <t_input_channel, QLCInputChannel*>
@@ -172,11 +172,11 @@ void SelectInputChannel::updateUniverseItem(QTreeWidgetItem* item,
 	else
 	{
 		/* The current universe has something assigned to it. Check,
-		   whether it has an input template. */
-		if (patch->deviceTemplate() != NULL)
+		   whether it has an input device. */
+		if (patch->device() != NULL)
 		{
 			name = QString("%1: %2").arg(universe + 1)
-						.arg(patch->templateName());
+						.arg(patch->deviceName());
 		}
 		else
 		{

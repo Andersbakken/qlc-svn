@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>InputTemplateEditor</class>
- <widget class="QDialog" name="InputTemplateEditor" >
+ <class>InputDeviceEditor</class>
+ <widget class="QDialog" name="InputDeviceEditor" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Input Template Editor</string>
+   <string>Input Device Editor</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
@@ -237,7 +237,7 @@
   <connection>
    <sender>m_buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>InputTemplateEditor</receiver>
+   <receiver>InputDeviceEditor</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -253,7 +253,7 @@
   <connection>
    <sender>m_buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>InputTemplateEditor</receiver>
+   <receiver>InputDeviceEditor</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
