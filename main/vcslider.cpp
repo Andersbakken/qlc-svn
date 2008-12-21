@@ -665,6 +665,10 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
 				     t_input_channel channel,
 				     t_input_value value)
 {
+	/* Don't let input data thru in design mode */
+	if (_app->mode() == App::Design)
+		return;
+
 	if (universe == m_inputUniverse && channel == m_inputChannel)
 	{
 		/* Scale the from input value range to this slider's range */
