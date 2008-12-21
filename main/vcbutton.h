@@ -56,6 +56,11 @@ public slots:
 	/** Delete this widget */
 	void slotDelete();
 
+private:
+	/** Prevent copying thru operator= or copy constructor since QObject's
+	    parental properties get confused when copied. */
+	Q_DISABLE_COPY(VCButton)
+
 	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
@@ -130,6 +135,14 @@ protected:
 	 * button does not have a key binding.
 	 */
 	KeyBind* m_keyBind;
+
+	/*********************************************************************
+	 * External input
+	 *********************************************************************/
+protected slots:
+	void slotInputValueChanged(t_input_universe universe,
+				   t_input_channel channel,
+				   t_input_value value);
 
 	/*********************************************************************
 	 * Function attachment

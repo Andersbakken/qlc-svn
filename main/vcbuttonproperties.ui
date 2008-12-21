@@ -6,13 +6,13 @@
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>540</height>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Button properties</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
     <widget class="QGroupBox" name="groupBox" >
      <property name="title" >
@@ -36,7 +36,7 @@
       <item row="1" column="0" >
        <widget class="QLabel" name="m_functionLabel" >
         <property name="text" >
-         <string>Function name</string>
+         <string>Function</string>
         </property>
        </widget>
       </item>
@@ -58,6 +58,10 @@
         <property name="text" >
          <string>...</string>
         </property>
+        <property name="icon" >
+         <iconset resource="main.qrc" >
+          <normaloff>:/attach.png</normaloff>:/attach.png</iconset>
+        </property>
         <property name="iconSize" >
          <size>
           <width>26</width>
@@ -73,6 +77,10 @@
         </property>
         <property name="text" >
          <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="main.qrc" >
+          <normaloff>:/detach.png</normaloff>:/detach.png</iconset>
         </property>
         <property name="iconSize" >
          <size>
@@ -116,6 +124,10 @@
         <property name="text" >
          <string>...</string>
         </property>
+        <property name="icon" >
+         <iconset resource="main.qrc" >
+          <normaloff>:/key_bindings.png</normaloff>:/key_bindings.png</iconset>
+        </property>
         <property name="iconSize" >
          <size>
           <width>26</width>
@@ -131,6 +143,10 @@
         </property>
         <property name="text" >
          <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="main.qrc" >
+          <normaloff>:/fileclose.png</normaloff>:/fileclose.png</iconset>
         </property>
         <property name="iconSize" >
          <size>
@@ -148,21 +164,22 @@
      <property name="title" >
       <string>External Input</string>
      </property>
-     <layout class="QGridLayout" >
+     <layout class="QGridLayout" name="gridLayout" >
       <item row="0" column="0" >
        <widget class="QLabel" name="label_4" >
         <property name="text" >
-         <string>Input ID</string>
+         <string>Input Universe</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" >
-       <widget class="QComboBox" name="m_IDCombo" >
-        <item>
-         <property name="text" >
-          <string>Midi 1 - ControlChange</string>
-         </property>
-        </item>
+      <item row="0" column="1" colspan="2" >
+       <widget class="QLineEdit" name="m_inputUniverseEdit" >
+        <property name="toolTip" >
+         <string>The input universe that sends data to this widget</string>
+        </property>
+        <property name="readOnly" >
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="0" >
@@ -172,10 +189,42 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1" >
-       <widget class="QSpinBox" name="m_channelSpinBox" >
-        <property name="maximum" >
-         <number>127</number>
+      <item row="1" column="1" colspan="2" >
+       <widget class="QLineEdit" name="m_inputChannelEdit" >
+        <property name="toolTip" >
+         <string>The particular input channel within the input universe that sends data to this widget</string>
+        </property>
+        <property name="readOnly" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2" >
+       <spacer name="horizontalSpacer" >
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0" >
+         <size>
+          <width>268</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="2" >
+       <widget class="QPushButton" name="m_chooseInputButton" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="Maximum" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip" >
+         <string>Choose the external input universe &amp; channel that this widget should listen to</string>
+        </property>
+        <property name="text" >
+         <string>Choose...</string>
         </property>
        </widget>
       </item>
@@ -208,26 +257,6 @@
         </property>
         <property name="text" >
          <string>Flash function</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="m_forward" >
-        <property name="enabled" >
-         <bool>false</bool>
-        </property>
-        <property name="text" >
-         <string>Step forward (Chaser)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="m_backward" >
-        <property name="enabled" >
-         <bool>false</bool>
-        </property>
-        <property name="text" >
-         <string>Step backward (Chaser)</string>
         </property>
        </widget>
       </item>
@@ -265,7 +294,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="main.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>m_buttonBox</sender>

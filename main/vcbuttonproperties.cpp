@@ -27,11 +27,17 @@
 #include <QCheckBox>
 #include <QSpinBox>
 
+#include "common/qlcinputchannel.h"
+#include "common/qlcinputdevice.h"
 #include "common/qlcfixturedef.h"
+
 #include "vcbuttonproperties.h"
+#include "selectinputchannel.h"
 #include "functionselection.h"
 #include "virtualconsole.h"
 #include "assignhotkey.h"
+#include "inputpatch.h"
+#include "inputmap.h"
 #include "function.h"
 #include "keybind.h"
 #include "fixture.h"
@@ -54,7 +60,15 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	m_keyBind = new KeyBind(button->keyBind());
 	m_keyEdit->setText(m_keyBind->keyString());
 
-	/* press action */
+	/* External input */
+	m_inputUniverse = m_button->inputUniverse();
+	m_inputChannel = m_button->inputChannel();
+	updateInputSource();
+
+	connect(m_chooseInputButton, SIGNAL(clicked()),
+		this, SLOT(slotChooseInputClicked()));
+
+	/* Press action */
 	switch(m_keyBind->action())
 	{
 	default:
@@ -64,22 +78,10 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	case KeyBind::Flash:
 		m_flash->setChecked(true);
 		break;
-	case KeyBind::StepForward:
-		m_forward->setChecked(true);
-		break;
-	case KeyBind::StepBackward:
-		m_backward->setChecked(true);
-		break;
 	}
 
 	/* Panic operation */
 	m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
-
-	/* Button icons */
-	m_attachFunction->setIcon(QIcon(":/attach.png"));
-	m_detachFunction->setIcon(QIcon(":/detach.png"));
-	m_attachKey->setIcon(QIcon(":/key_bindings.png"));
-	m_detachKey->setIcon(QIcon(":/keyboard.png"));
 
 	/* Button connections */
 	connect(m_attachFunction, SIGNAL(clicked()),
@@ -141,6 +143,77 @@ void VCButtonProperties::slotDetachKey()
 	m_keyEdit->setText(m_keyBind->keyString());
 }
 
+void VCButtonProperties::slotChooseInputClicked()
+{
+        SelectInputChannel sic(this);
+        if (sic.exec() == QDialog::Accepted)
+        {
+                m_inputUniverse = sic.universe();
+                m_inputChannel = sic.channel();
+
+                updateInputSource();
+        }
+}
+
+void VCButtonProperties::updateInputSource()
+{
+	QLCInputDevice* dev;
+	InputPatch* patch;
+	QString uniName;
+	QString chName;
+
+	if (m_inputUniverse == KInputUniverseInvalid ||
+	    m_inputChannel == KInputChannelInvalid)
+	{
+		/* Nothing selected for input universe and/or channel */
+		uniName = KInputNone;
+		chName = KInputNone;
+	}
+	else
+	{
+		patch = _app->inputMap()->patch(m_inputUniverse);
+		if (patch == NULL || patch->plugin() == NULL)
+		{
+			/* There is no patch for the given universe */
+			uniName = KInputNone;
+			chName = KInputNone;
+		}
+		else
+		{
+			dev = patch->deviceTemplate();
+			if (dev == NULL)
+			{
+				/* There is no device template. Display plugin
+				   name and channel number. Boring. */
+				uniName = patch->plugin()->name();
+				chName = tr("%1: Unknown").arg(m_inputChannel);
+			}
+			else
+			{
+				/* Display template name for universe */
+				uniName = QString("%1: %2")
+						.arg(m_inputUniverse + 1)
+						.arg(dev->name());
+
+				/* User can input the channel number by hand,
+				   so put something rational to the channel
+				   name in those cases as well. */
+				QString name = dev->channelName(m_inputChannel);
+				if (name == QString::null)
+					name = tr("Unknown");
+
+				/* Display channel name */
+				chName = QString("%1: %2")
+					.arg(m_inputChannel + 1).arg(name);
+			}
+		}
+	}
+
+	/* Display the gathered information */
+	m_inputUniverseEdit->setText(uniName);
+	m_inputChannelEdit->setText(chName);
+}
+
 void VCButtonProperties::accept()
 {
 	m_button->setCaption(m_nameEdit->text());
@@ -148,17 +221,14 @@ void VCButtonProperties::accept()
 
 	Q_ASSERT(m_keyBind != NULL);
 
-	if (m_toggle->isChecked() == true)
-		m_keyBind->setAction(KeyBind::Toggle);
-	else if (m_flash->isChecked() == true)
+	if (m_flash->isChecked() == true)
 		m_keyBind->setAction(KeyBind::Flash);
-	else if (m_forward->isChecked() == true)
-		m_keyBind->setAction(KeyBind::StepForward);
-	else if (m_backward->isChecked() == true)
-		m_keyBind->setAction(KeyBind::StepBackward);
+	else
+		m_keyBind->setAction(KeyBind::Toggle);
 
 	m_button->setKeyBind(m_keyBind);
-        m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());  
+	m_button->setInputSource(m_inputUniverse, m_inputChannel);
+        m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());
 
 	_app->doc()->setModified();
 

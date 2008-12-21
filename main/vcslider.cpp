@@ -136,10 +136,6 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
 	/* Update the slider according to current mode */
 	slotModeChanged(_app->mode());
-
-	/* External input */
-	m_inputUniverse = KInputUniverseInvalid;
-	m_inputChannel = KInputChannelInvalid;
 }
 
 VCSlider::~VCSlider()
@@ -650,55 +646,6 @@ void VCSlider::slotTapButtonClicked()
  * External input
  *****************************************************************************/
 
-void VCSlider::setInputSource(t_input_universe uni, t_input_channel ch)
-{
-	if (uni == KInputUniverseInvalid || ch == KInputChannelInvalid)
-	{
-		/* If either one of the new values is invalid we end up here
-		   to disconnect from inputmap and setting both of the values
-		   invalid. */
-		m_inputUniverse = KInputUniverseInvalid;
-		m_inputChannel = KInputChannelInvalid;
-
-		/* Even though we might not be connected, it is safe to do a
-		   disconnect in any case. */
-		disconnect(_app->inputMap(),
-			   SIGNAL(inputValueChanged(t_input_universe,
-						    t_input_channel,
-						    t_input_value)),
-			   this, SLOT(slotInputValueChanged(t_input_universe,
-							    t_input_channel,
-							    t_input_value)));
-	}
-	else if (m_inputUniverse == KInputUniverseInvalid ||
-		 m_inputChannel == KInputChannelInvalid)
-	{
-		/* Execution comes here only if both of the new values
-		   are valid and the existing values are invalid, in which
-		   case a new connection must be made. */
-		m_inputUniverse = uni;
-		m_inputChannel = ch;
-
-		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)),
-			this,
-			SLOT(slotInputValueChanged(t_input_universe,
-						   t_input_channel,
-						   t_input_value)));
-	}
-	else
-	{
-		/* Execution comes here only if the current uni & channel are
-		 * valid and the new ones are valid as well. So we don't do a
-		 * new connection, which would end up in duplicate values.
-		 * Just update the new values and get it over with. */
-		 m_inputUniverse = uni;
-		 m_inputChannel = ch;
-	}
-}
-
 void VCSlider::slotInputValueChanged(t_input_universe universe,
 				     t_input_channel channel,
 				     t_input_value value)
@@ -746,8 +693,6 @@ bool VCSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 {
-	t_input_universe inputUniverse = KInputUniverseInvalid;
-	t_input_channel inputChannel = KInputChannelInvalid;
 	bool visible = false;
 	int x = 0;
 	int y = 0;
@@ -808,13 +753,9 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			loadXMLLevel(doc, &tag);
 		}
-		else if (tag.tagName() == KXMLQLCVCSliderInputUniverse)
+		else if (tag.tagName() == KXMLQLCVCWidgetInput)
 		{
-			inputUniverse = tag.text().toInt();
-		}
-		else if (tag.tagName() == KXMLQLCVCSliderInputChannel)
-		{
-			inputChannel = tag.text().toInt();
+			loadXMLInput(doc, &tag);
 		}
 		else
 		{
@@ -827,7 +768,6 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	/* Set the mode last, after everything else has been set */
 	setSliderMode(sliderMode);
 	setCaption(caption);
-	setInputSource(inputUniverse, inputChannel);
 
 	return true;
 }
@@ -905,6 +845,9 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
 
+	/* External input */
+	saveXMLInput(doc, &root);
+
 	/* Mode */
 	tag = doc->createElement(KXMLQLCVCSliderMode);
 	root.appendChild(tag);
@@ -914,18 +857,6 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Value display style */
 	str = valueDisplayStyleToString(valueDisplayStyle());
 	tag.setAttribute(KXMLQLCVCSliderValueDisplayStyle, str);
-
-	/* External input universe */
-	tag = doc->createElement(KXMLQLCVCSliderInputUniverse);
-	root.appendChild(tag);
-	text = doc->createTextNode(str.setNum(m_inputUniverse));
-	tag.appendChild(text);
-
-	/* External input channel */
-	tag = doc->createElement(KXMLQLCVCSliderInputChannel);
-	root.appendChild(tag);
-	text = doc->createTextNode(str.setNum(m_inputChannel));
-	tag.appendChild(text);
 
 	/* Bus */
 	tag = doc->createElement(KXMLQLCVCSliderBus);

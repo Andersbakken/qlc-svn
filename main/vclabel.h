@@ -43,6 +43,11 @@ public:
 	/** Destructor */
 	~VCLabel();
 
+private:
+	/** Prevent copying thru operator= or copy constructor since QObject's
+	    parental properties get confused when copied. */
+	Q_DISABLE_COPY(VCLabel)
+
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/

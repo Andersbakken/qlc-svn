@@ -79,6 +79,11 @@ public slots:
 	/** Delete this widget */
 	virtual void slotDelete();
 
+private:
+	/** Prevent copying thru operator= or copy constructor since QObject's
+	    parental properties get confused when copied. */
+	Q_DISABLE_COPY(VCWidget)
+
 	/*********************************************************************
 	 * Background image
 	 *********************************************************************/
@@ -212,14 +217,19 @@ public slots:
 	 *********************************************************************/
 public:
 	/** Set external input universe & channel number to listen to */
-	virtual void setInputSource(t_input_universe universe,
-				    t_input_channel channel);
+	void setInputSource(t_input_universe uni, t_input_channel ch);
 
 	/** Get the assigned external input universe */
-	virtual t_input_universe inputUniverse() const;
+	t_input_universe inputUniverse() const { return m_inputUniverse; }
 
 	/** Get the assigned external input channel within inputUniverse() */
-	virtual t_input_channel inputChannel() const;
+	t_input_channel inputChannel() const { return m_inputChannel; }
+
+protected slots:
+	/** Slot that receives external input data */
+	virtual void slotInputValueChanged(t_input_universe universe,
+					   t_input_channel channel,
+					   t_input_value value);
 
 protected:
 	t_input_universe m_inputUniverse;
@@ -231,10 +241,13 @@ protected:
 public:
 	virtual bool loadXML(QDomDocument* doc, QDomElement* vc_root) = 0;
 	virtual bool saveXML(QDomDocument* doc, QDomElement* vc_root) = 0;
-	
+
 protected:
 	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
+	bool loadXMLInput(QDomDocument* doc, QDomElement* root);
+
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* widget_root);
+	bool saveXMLInput(QDomDocument* doc, QDomElement* root);
 
 	/*********************************************************************
 	 * QLC Mode change

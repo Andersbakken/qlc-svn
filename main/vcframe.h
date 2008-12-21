@@ -53,6 +53,11 @@ public slots:
 	/* Delete this widget */
 	void slotDelete();
 
+private:
+	/** Prevent copying thru operator= or copy constructor since QObject's
+	    parental properties get confused when copied. */
+	Q_DISABLE_COPY(VCFrame)
+
 	/*********************************************************************
 	 * Properties
 	 *********************************************************************/

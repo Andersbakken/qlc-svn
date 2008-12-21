@@ -180,9 +180,9 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 			str = tag.attribute(KXMLQLCVCButtonFunctionID);
 			setFunction(str.toInt());
 		}
-		else if (tag.tagName() == KXMLQLCVCButtonInputChannel)
+		else if (tag.tagName() == KXMLQLCVCWidgetInput)
 		{
-			/* TODO */
+			loadXMLInput(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCKeyBind)
 		{
@@ -228,9 +228,8 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	str.setNum(function());
 	tag.setAttribute(KXMLQLCVCButtonFunctionID, str);
 
-	/* TODO: Input */
-	tag = doc->createElement(KXMLQLCVCButtonInputChannel);
-	root.appendChild(tag);
+	/* External input */
+	saveXMLInput(doc, &root);
 
 	/* Window state */
 	QLCFile::saveXMLWindowState(doc, &root, this);
@@ -280,6 +279,27 @@ void VCButton::setKeyBind(const KeyBind* kb)
 
 	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
 	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
+}
+
+/*****************************************************************************
+ * External input
+ *****************************************************************************/
+
+void VCButton::slotInputValueChanged(t_input_universe universe,
+				     t_input_channel channel,
+				     t_input_value value)
+{
+	/* Don't allow operation during design mode */
+	if (_app->mode() == App::Design)
+		return;
+
+	if (universe == m_inputUniverse && channel == m_inputChannel)
+	{
+		if (isOn() == false && value > 0)
+			pressFunction();
+		else if (isOn() == false)
+			releaseFunction();
+	}
 }
 
 /*****************************************************************************
@@ -464,7 +484,7 @@ void VCButton::invokeMenu(QPoint point)
 	attachAction = menu->addAction(QIcon(":/attach.png"),
 				       "Set function...", this,
 				       SLOT(slotAttachFunction()));
-	
+
 	menu->exec(point);
 	delete menu;
 }
@@ -488,7 +508,7 @@ void VCButton::paintEvent(QPaintEvent* e)
 	{
 		/* TODO: Something better for marking a flash button */
 		QPainter p(this);
-		
+
 		QPen pen(Qt::red);
 		p.setPen(pen);
 		p.drawEllipse(rect().width() - 14, rect().height() - 14,

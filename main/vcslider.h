@@ -55,9 +55,6 @@ class VCSliderProperties;
 #define KXMLQLCVCSliderChannel "Channel"
 #define KXMLQLCVCSliderChannelFixture "Fixture"
 
-#define KXMLQLCVCSliderInputUniverse "Universe"
-#define KXMLQLCVCSliderInputChannel "Channel"
-
 class VCSlider : public VCWidget
 {
 	Q_OBJECT
@@ -77,6 +74,11 @@ public:
 public slots:
 	/** Delete this widget */
 	void slotDelete();
+
+private:
+	/** Prevent copying thru operator= or copy constructor since QObject's
+	    parental properties get confused when copied. */
+	Q_DISABLE_COPY(VCSlider)
 
 	/*********************************************************************
 	 * Caption
@@ -406,20 +408,10 @@ protected:
 	/*********************************************************************
 	 * External input
 	 *********************************************************************/
-public:
-	void setInputSource(t_input_universe uni, t_input_channel ch);
-
-	t_input_universe inputUniverse() const { return m_inputUniverse; }
-	t_input_channel inputChannel() const { return m_inputChannel; }
-
 protected slots:
 	void slotInputValueChanged(t_input_universe universe,
 				   t_input_channel channel,
 				   t_input_value value);
-
-protected:
-	t_input_universe m_inputUniverse;
-	t_input_channel m_inputChannel;
 
 	/*********************************************************************
 	 * Load & Save
