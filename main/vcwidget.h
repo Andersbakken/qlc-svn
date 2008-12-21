@@ -37,13 +37,20 @@ class QFile;
 
 #define KXMLQLCVCWidgetAppearance "Appearance"
 #define KXMLQLCVCWidgetFrameStyle "FrameStyle"
+
 #define KXMLQLCVCWidgetForegroundColor "ForegroundColor"
 #define KXMLQLCVCWidgetBackgroundColor "BackgroundColor"
 #define KXMLQLCVCWidgetColorDefault "Default"
+
 #define KXMLQLCVCWidgetFont "Font"
 #define KXMLQLCVCWidgetFontDefault "Default"
+
 #define KXMLQLCVCWidgetBackgroundImage "BackgroundImage"
 #define KXMLQLCVCWidgetBackgroundImageNone "None"
+
+#define KXMLQLCVCWidgetInput "Input"
+#define KXMLQLCVCWidgetInputUniverse "Universe"
+#define KXMLQLCVCWidgetInputChannel "Channel"
 
 const int KVCWidgetFrameStyleSunken ( QFrame::StyledPanel | QFrame::Sunken );
 const int KVCWidgetFrameStyleRaised ( QFrame::StyledPanel | QFrame::Raised );
@@ -199,6 +206,24 @@ public slots:
 	 *********************************************************************/
 public slots:
 	virtual void slotProperties();
+
+	/*********************************************************************
+	 * External input
+	 *********************************************************************/
+public:
+	/** Set external input universe & channel number to listen to */
+	virtual void setInputSource(t_input_universe universe,
+				    t_input_channel channel);
+
+	/** Get the assigned external input universe */
+	virtual t_input_universe inputUniverse() const;
+
+	/** Get the assigned external input channel within inputUniverse() */
+	virtual t_input_channel inputChannel() const;
+
+protected:
+	t_input_universe m_inputUniverse;
+	t_input_channel m_inputChannel;
 
 	/*********************************************************************
 	 * Load & Save

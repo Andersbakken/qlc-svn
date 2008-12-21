@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcinputchannel.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -35,8 +35,8 @@ class QString;
 #define KXMLQLCInputChannelName "Name"
 #define KXMLQLCInputChannelType "Type"
 #define KXMLQLCInputChannelNumber "Number"
-#define KXMLQLCInputChannelAbsoluteFader "AbsoluteFader"
-#define KXMLQLCInputChannelRelativeFader "RelativeFader"
+#define KXMLQLCInputChannelSlider "Slider"
+#define KXMLQLCInputChannelKnob "Knob"
 #define KXMLQLCInputChannelButton "Button"
 
 class QLC_DECLSPEC QLCInputChannel : public QObject
@@ -49,23 +49,23 @@ class QLC_DECLSPEC QLCInputChannel : public QObject
 public:
 	/** Standard constructor */
 	QLCInputChannel(QLCInputDevice* parent);
-	
+
 	/** Copy constructor */
 	QLCInputChannel(const QLCInputChannel& channel);
-	
+
 	/** Destructor */
 	virtual ~QLCInputChannel();
 
 	/** Assignment operator */
 	QLCInputChannel& operator=(const QLCInputChannel& channel);
-	
+
 	/********************************************************************
 	 * Channel number
 	 ********************************************************************/
 public:
 	/** Set the channel number that this object represents */
 	void setChannel(t_input_channel channel);
-	
+
 	/** Get the channel number that this object represents */
 	t_input_channel channel() const { return m_channel; }
 
@@ -78,14 +78,15 @@ protected:
 public:
 	enum Type
 	{
-		AbsoluteFader,
-		RelativeFader,
-		Button
+		Slider,
+		Knob,
+		Button,
+		NoType
 	};
 
 	/** Set the type of this channel (see enum Type) */
 	void setType(Type type);
-	
+
 	/** Get the type of this channel */
 	Type type() const { return m_type; }
 
@@ -94,6 +95,9 @@ public:
 
 	/** Convert the given QString to a QLCInputChannel::Type */
 	static Type stringToType(const QString& type);
+
+	/** Get a list of available channel types */
+	static QStringList types();
 
 protected:
 	Type m_type;
@@ -107,10 +111,10 @@ public:
 
 	/** Get the name of this channel */
 	QString name() const { return m_name; }
-	
+
 protected:
 	QString m_name;
-	
+
 	/********************************************************************
 	* Load & Save
 	********************************************************************/

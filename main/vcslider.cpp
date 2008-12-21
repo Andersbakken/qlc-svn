@@ -650,20 +650,35 @@ void VCSlider::slotTapButtonClicked()
  * External input
  *****************************************************************************/
 
-void VCSlider::setInputUniverse(t_input_universe uni)
+void VCSlider::setInputSource(t_input_universe uni, t_input_channel ch)
 {
-	m_inputUniverse = uni;
-
-	disconnect(_app->inputMap(),
-		   SIGNAL(inputValueChanged(t_input_universe,
-					    t_input_channel,
-					    t_input_value)),
-		   this, SLOT(slotInputValueChanged(t_input_universe,
-						    t_input_channel,
-						    t_input_value)));
-
-	if (m_inputUniverse != KInputUniverseInvalid)
+	if (uni == KInputUniverseInvalid || ch == KInputChannelInvalid)
 	{
+		/* If either one of the new values is invalid we end up here
+		   to disconnect from inputmap and setting both of the values
+		   invalid. */
+		m_inputUniverse = KInputUniverseInvalid;
+		m_inputChannel = KInputChannelInvalid;
+
+		/* Even though we might not be connected, it is safe to do a
+		   disconnect in any case. */
+		disconnect(_app->inputMap(),
+			   SIGNAL(inputValueChanged(t_input_universe,
+						    t_input_channel,
+						    t_input_value)),
+			   this, SLOT(slotInputValueChanged(t_input_universe,
+							    t_input_channel,
+							    t_input_value)));
+	}
+	else if (m_inputUniverse == KInputUniverseInvalid ||
+		 m_inputChannel == KInputChannelInvalid)
+	{
+		/* Execution comes here only if both of the new values
+		   are valid and the existing values are invalid, in which
+		   case a new connection must be made. */
+		m_inputUniverse = uni;
+		m_inputChannel = ch;
+
 		connect(_app->inputMap(),
 			SIGNAL(inputValueChanged(t_input_universe,
 						 t_input_channel,
@@ -673,31 +688,14 @@ void VCSlider::setInputUniverse(t_input_universe uni)
 						   t_input_channel,
 						   t_input_value)));
 	}
-}
-
-void VCSlider::setInputChannel(t_input_channel ch)
-{
-	m_inputChannel = ch;
-
-	disconnect(_app->inputMap(),
-		   SIGNAL(inputValueChanged(t_input_universe,
-					    t_input_channel,
-					    t_input_value)),
-		   this,
-		   SLOT(slotInputValueChanged(t_input_universe,
-					      t_input_channel,
-					      t_input_value)));
-
-	if (m_inputChannel != KInputChannelInvalid)
+	else
 	{
-		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)),
-			this,
-			SLOT(slotInputValueChanged(t_input_universe,
-						   t_input_channel,
-						   t_input_value)));
+		/* Execution comes here only if the current uni & channel are
+		 * valid and the new ones are valid as well. So we don't do a
+		 * new connection, which would end up in duplicate values.
+		 * Just update the new values and get it over with. */
+		 m_inputUniverse = uni;
+		 m_inputChannel = ch;
 	}
 }
 
@@ -705,7 +703,19 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
 				     t_input_channel channel,
 				     t_input_value value)
 {
-	qDebug() << universe << channel << value;
+	if (universe == m_inputUniverse && channel == m_inputChannel)
+	{
+		/* Scale the from input value range to this slider's range */
+		float val;
+		val = SCALE((float) value, (float) 0, (float) KInputValueMax,
+			    (float) m_slider->minimum(),
+			    (float) m_slider->maximum());
+
+		if (m_slider->invertedAppearance() == true)
+			m_slider->setValue(m_slider->maximum() - (int) val);
+		else
+			m_slider->setValue((int) val);
+	}
 }
 
 /*****************************************************************************
@@ -736,6 +746,8 @@ bool VCSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 
 bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 {
+	t_input_universe inputUniverse = KInputUniverseInvalid;
+	t_input_channel inputChannel = KInputChannelInvalid;
 	bool visible = false;
 	int x = 0;
 	int y = 0;
@@ -798,11 +810,11 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCSliderInputUniverse)
 		{
-			setInputUniverse(tag.text().toInt());
+			inputUniverse = tag.text().toInt();
 		}
 		else if (tag.tagName() == KXMLQLCVCSliderInputChannel)
 		{
-			setInputChannel(tag.text().toInt());
+			inputChannel = tag.text().toInt();
 		}
 		else
 		{
@@ -815,7 +827,8 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	/* Set the mode last, after everything else has been set */
 	setSliderMode(sliderMode);
 	setCaption(caption);
-	
+	setInputSource(inputUniverse, inputChannel);
+
 	return true;
 }
 

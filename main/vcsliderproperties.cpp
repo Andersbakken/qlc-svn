@@ -35,6 +35,8 @@
 #include "common/qlcchannel.h"
 
 #include "vcsliderproperties.h"
+#include "selectinputchannel.h"
+#include "inputpatch.h"
 #include "vcslider.h"
 #include "inputmap.h"
 #include "fixture.h"
@@ -123,8 +125,15 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 		break;
 	}
 
-	/* Under construction... */
-	m_externalInputGroup->setEnabled(false);
+	/********************************************************************
+	 * External input
+	 ********************************************************************/
+	m_inputUniverse = m_slider->inputUniverse();
+	m_inputChannel = m_slider->inputChannel();
+	updateInputUniverseChannel();
+
+	connect(m_chooseInputButton, SIGNAL(clicked()),
+		this, SLOT(slotChooseInputClicked()));
 
 	/*********************************************************************
 	 * Bus page
@@ -171,7 +180,7 @@ void VCSliderProperties::slotModeBusClicked()
 
 	m_busValueRangeGroup->setEnabled(true);
 	m_busGroup->setEnabled(true);
-	
+
 	m_levelValueRangeGroup->setEnabled(false);
 	m_levelList->setEnabled(false);
 	m_levelAllButton->setEnabled(false);
@@ -183,10 +192,10 @@ void VCSliderProperties::slotModeBusClicked()
 void VCSliderProperties::slotModeLevelClicked()
 {
 	m_nameEdit->setEnabled(true);
-	
+
 	m_busValueRangeGroup->setEnabled(false);
 	m_busGroup->setEnabled(false);
-	
+
 	m_levelValueRangeGroup->setEnabled(true);
 	m_levelList->setEnabled(true);
 	m_levelAllButton->setEnabled(true);
@@ -205,6 +214,77 @@ void VCSliderProperties::slotValueExactClicked()
 
 void VCSliderProperties::slotValuePercentageClicked()
 {
+}
+
+void VCSliderProperties::slotChooseInputClicked()
+{
+	SelectInputChannel sic(this);
+	if (sic.exec() == QDialog::Accepted)
+	{
+		m_inputUniverse = sic.universe();
+		m_inputChannel = sic.channel();
+
+		updateInputUniverseChannel();
+	}
+}
+
+void VCSliderProperties::updateInputUniverseChannel()
+{
+	QLCInputDevice* dev;
+	InputPatch* patch;
+	QString uniName;
+	QString chName;
+
+	if (m_inputUniverse == KInputUniverseInvalid ||
+	    m_inputChannel == KInputChannelInvalid)
+	{
+		/* Nothing selected for input universe and/or channel */
+		uniName = KInputNone;
+		chName = KInputNone;
+	}
+	else
+	{
+		patch = _app->inputMap()->patch(m_inputUniverse);
+		if (patch == NULL || patch->plugin() == NULL)
+		{
+			/* There is no patch for the given universe */
+			uniName = KInputNone;
+			chName = KInputNone;
+		}
+		else
+		{
+			dev = patch->deviceTemplate();
+			if (dev == NULL)
+			{
+				/* There is no device template. Display plugin
+				   name and channel number. Boring. */
+				uniName = patch->plugin()->name();
+				chName = tr("%1: Unknown").arg(m_inputChannel);
+			}
+			else
+			{
+				/* Display template name for universe */
+				uniName = QString("%1: %2")
+						.arg(m_inputUniverse + 1)
+						.arg(dev->name());
+
+				/* User can input the channel number by hand,
+				   so put something rational to the channel
+				   name in those cases as well. */
+				QString name = dev->channelName(m_inputChannel);
+				if (name == QString::null)
+					name = tr("Unknown");
+
+				/* Display channel name */
+				chName = QString("%1: %2")
+					.arg(m_inputChannel + 1).arg(name);
+			}
+		}
+	}
+
+	/* Display the gathered information */
+	m_inputUniverseEdit->setText(uniName);
+	m_inputChannelEdit->setText(chName);
 }
 
 /*****************************************************************************
@@ -285,7 +365,7 @@ void VCSliderProperties::levelUpdateFixtureNode(t_fixture_id id)
 
 	item->setText(KColumnName, fxi->name());
 	item->setText(KColumnType, fxi->type());
-	
+
 	levelUpdateChannels(item, fxi);
 }
 
@@ -424,7 +504,7 @@ void VCSliderProperties::levelSelectChannelsByGroup(QString group)
 	int i;
 	int j;
 
-	/* Go thru only channel items. Fixture items get (partially) selected 
+	/* Go thru only channel items. Fixture items get (partially) selected
 	   according to their children's state */
 	for (i = 0; i < m_levelList->topLevelItemCount(); i++)
 	{
@@ -574,7 +654,7 @@ void VCSliderProperties::storeLevelChannels()
 	t_channel ch_num;
 	int i;
 	int j;
-	
+
 	/* Clear all channels from the slider first */
 	m_slider->clearLevelChannels();
 
@@ -632,6 +712,9 @@ void VCSliderProperties::accept()
 		m_slider->setValueDisplayStyle(VCSlider::ExactValue);
 	else
 		m_slider->setValueDisplayStyle(VCSlider::PercentageValue);
+
+	/* External input */
+	m_slider->setInputSource(m_inputUniverse, m_inputChannel);
 
 	/* Close dialog */
 	QDialog::accept();

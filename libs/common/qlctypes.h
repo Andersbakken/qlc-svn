@@ -84,6 +84,17 @@
  */
 #define MIN(x, y) (x < y) ? x : y
 
+#ifdef SCALE
+#undef SCALE
+#endif
+/**
+ * Scale a value within a source range to an equal value within the
+ * destination range. I.e. 5 on a scale of 0 - 10 would be 10 on a scale
+ * of 0 - 20.
+ */
+#define SCALE(x, src_min, src_max, dest_min, dest_max) \
+	(x - src_min) * (dest_max / (src_max - src_min))
+
 /*****************************************************************************
  * Generic
  *****************************************************************************/

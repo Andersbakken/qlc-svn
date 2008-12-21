@@ -23,23 +23,34 @@
 #define INPUTCHANNELEDITOR_H
 
 #include <QDialog>
+
+#include "common/qlcinputchannel.h"
 #include "ui_inputchanneleditor.h"
+#include "common/qlctypes.h"
 
 class QLCInputChannel;
 
 class InputChannelEditor : public QDialog, public Ui_InputChannelEditor
 {
 	Q_OBJECT
-	
+
 public:
-	InputChannelEditor(QWidget* parent, QLCInputChannel* channel);
+	InputChannelEditor(QWidget* parent, const QLCInputChannel* channel);
 	virtual ~InputChannelEditor();
-	
+
+	t_input_channel channel() const { return m_channel; }
+	QString name() const { return m_name; }
+	QLCInputChannel::Type type() const { return m_type; }
+
 protected slots:
-	void accept();
-	
+	void slotNumberChanged(int number);
+	void slotNameEdited(const QString& text);
+	void slotTypeActivated(const QString& text);
+
 protected:
-	QLCInputChannel* m_channel;
+	t_input_channel m_channel;
+	QString m_name;
+	QLCInputChannel::Type m_type;
 };
 
 #endif

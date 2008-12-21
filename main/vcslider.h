@@ -407,10 +407,9 @@ protected:
 	 * External input
 	 *********************************************************************/
 public:
-	void setInputUniverse(t_input_universe uni);
-	t_input_universe inputUniverse() const { return m_inputUniverse; }
+	void setInputSource(t_input_universe uni, t_input_channel ch);
 
-	void setInputChannel(t_input_channel ch);
+	t_input_universe inputUniverse() const { return m_inputUniverse; }
 	t_input_channel inputChannel() const { return m_inputChannel; }
 
 protected slots:

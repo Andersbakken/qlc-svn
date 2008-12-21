@@ -230,6 +230,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		MIDIDevice* device;
 		MIDIInputEvent* e;
 		quint64 hash;
+		float value;
 		int r;
 
 		/* Receive an event */
@@ -250,26 +251,30 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		    ev->type == SND_SEQ_EVENT_KEYPRESS ||
 		    ev->type == SND_SEQ_EVENT_CHANPRESS)
 		{
-			/* "<< 1" == "times two", but 255 is never reached */
+			/* Scale the value from [0-127] to [0-255] */
+			value = SCALE((float) ev->data.control.value,
+				      0.0, 127.0, 0.0, 255.0);
+
 			e = new MIDIInputEvent(device, device->input(),
 					       ev->data.control.param,
-					       ev->data.control.value << 1);
+					       (t_input_value) value);
 			QApplication::postEvent(parent(), e);
 		}
 		else if (ev->type == SND_SEQ_EVENT_NOTEON)
 		{
-			/* "<< 1" == "times two", but 255 is never reached */
+			/* Scale the value from [0-127] to [0-255] */
+			value = SCALE((float) ev->data.note.velocity,
+				      0.0, 127.0, 0.0, 255.0);
+
 			e = new MIDIInputEvent(device, device->input(),
-					       ev->data.note.note,
-					       ev->data.note.velocity << 1);
+					       ev->data.note.note, value);
 			QApplication::postEvent(parent(), e);
 		}
 		else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
 		{
-			/* "<< 1" == "times two", but 255 is never reached */
+			/* It's a note off message -> send a zero value */
 			e = new MIDIInputEvent(device, device->input(),
-					       ev->data.note.note,
-					       ev->data.note.velocity << 1);
+					       ev->data.note.note, 0);
 			QApplication::postEvent(parent(), e);
 		}
 	}

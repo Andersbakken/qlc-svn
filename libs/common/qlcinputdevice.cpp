@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcinputdevice.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -41,7 +41,7 @@ QLCInputDevice::QLCInputDevice(const QLCInputDevice& device)
 	/* Copy contents with operator=() */
 	*this = device;
 }
-	
+
 QLCInputDevice::~QLCInputDevice()
 {
 	/* No need to delete the channels in m_channels since they are
@@ -57,6 +57,14 @@ QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
 		m_model = device.m_model;
 		m_path = device.m_path;
 
+		/* Delete existing channels */
+		QMutableMapIterator <t_input_channel,QLCInputChannel*>
+			old_it(m_channels);
+		while (old_it.hasNext() == true)
+			delete old_it.next().value();
+		m_channels.clear();
+
+		/* Copy the other device's channels */
 		QMapIterator <t_input_channel,QLCInputChannel*> 
 			it(device.m_channels);
 		while (it.hasNext() == true)
@@ -103,11 +111,11 @@ void QLCInputDevice::addChannel(QLCInputChannel* ich)
 		removeChannel(ich->channel());
 
 	m_channels.insert(ich->channel(), ich);
-	
+
 	/* Claim ownership of the channel */
 	ich->setParent(this);
 }
-	
+
 void QLCInputDevice::removeChannel(QLCInputChannel* ich)
 {
 	Q_ASSERT(ich != NULL);
@@ -132,6 +140,14 @@ QLCInputChannel* QLCInputDevice::channel(t_input_channel channel)
 		return m_channels[channel];
 	else
 		return NULL;
+}
+
+QString QLCInputDevice::channelName(t_input_channel channel)
+{
+	if (m_channels.contains(channel) == true)
+		return m_channels[channel]->name();
+	else
+		return QString::null;
 }
 
 /****************************************************************************
@@ -169,7 +185,7 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 	QDomNode node;
 
 	Q_ASSERT(doc != NULL);
-	
+
 	root = doc->documentElement();
 	if (root.tagName() == KXMLQLCInputTemplate)
 	{
@@ -206,7 +222,7 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 	{
 		qDebug() << "Input template node not found in file!";
 	}
-	
+
 	return true;
 }
 

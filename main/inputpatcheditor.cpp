@@ -23,7 +23,6 @@
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QMessageBox>
-#include <QFileDialog>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QVariant>
@@ -59,7 +58,7 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 
 	Q_ASSERT(inputPatch != NULL);
 	m_inputPatch = inputPatch;
-	
+
 	m_pluginName = inputPatch->pluginName();
 	m_input = inputPatch->input();
 	m_templateName = inputPatch->templateName();
@@ -112,7 +111,7 @@ void InputPatchEditor::fillMappingTree()
 	QTreeWidgetItem* iitem;
 	QString pluginName;
 	int i;
-	
+
 	m_mapTree->clear();
 
 	/* Add an empty item so that user can choose not to assign any plugin
@@ -120,11 +119,11 @@ void InputPatchEditor::fillMappingTree()
 	pitem = new QTreeWidgetItem(m_mapTree);
 	pitem->setText(KMapColumnName, KInputNone);
 	pitem->setText(KMapColumnInput, QString("%1").arg(KInputInvalid));
-	
+
 	/* Set "Nothing" selected if there is no valid input selected */
 	if (m_input == KInputInvalid)
 		m_mapTree->setCurrentItem(pitem);
-	
+
 	/* Go thru available plugins and put them as the tree's root nodes. */
 	QStringListIterator pit(_app->inputMap()->pluginNames());
 	while (pit.hasNext() == true)
@@ -145,14 +144,14 @@ void InputPatchEditor::fillMappingTree()
 			iitem = new QTreeWidgetItem(pitem);
 			iitem->setText(KMapColumnName, iit.next());
 			iitem->setText(KMapColumnInput, QString("%1").arg(i));
-			
+
 			/* Select the currently mapped plugin input */
 			if (m_pluginName == pluginName && m_input == i)
 				m_mapTree->setCurrentItem(iitem);
 
 			i++;
 		}
-		
+
 		/* If no inputs were appended to the plugin node, put a
 		   "Nothing" node there. */
 		if (i == 0)
@@ -187,13 +186,13 @@ void InputPatchEditor::slotMappingCurrentItemChanged(QTreeWidgetItem* item)
 			m_inputName = QString::null;
 			m_pluginName = item->text(KMapColumnName);
 		}
-		
+
 		if (m_pluginName == KInputNone)
 			m_configureButton->setEnabled(false);
 		else
 			m_configureButton->setEnabled(true);
 	}
-	
+
 	/* Update plugin/input information */
 	QString info;
 	info = _app->inputMap()->pluginStatus(m_pluginName, m_input);
@@ -203,7 +202,7 @@ void InputPatchEditor::slotMappingCurrentItemChanged(QTreeWidgetItem* item)
 void InputPatchEditor::slotConfigureInputClicked()
 {
 	_app->inputMap()->configurePlugin(m_pluginName);
-	
+
 	/* Refill the mapping tree in case configuration changed something */
 	fillMappingTree();
 }
@@ -228,10 +227,14 @@ void InputPatchEditor::setupTemplatePage()
 
 	/* Fill the template tree with available templates */
 	fillTemplateTree();
-	
+
 	/* Listen to itemChanged() signals to catch check state changes */
 	connect(m_templateTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 		this, SLOT(slotTemplateItemChanged(QTreeWidgetItem*,int)));
+
+	/* Double click acts as edit button click */
+	connect(m_templateTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditTemplateClicked()));
 }
 
 void InputPatchEditor::fillTemplateTree()
@@ -296,7 +299,7 @@ void InputPatchEditor::slotTemplateItemChanged(QTreeWidgetItem* item,
 
 		/* Store the selected template name */
 		m_templateName = item->text(KTemplateColumnName);
-		
+
 		/* Start listening to this signal once again */
 		connect(m_templateTree,
 			SIGNAL(itemChanged(QTreeWidgetItem*,int)),
@@ -313,83 +316,75 @@ void InputPatchEditor::slotTemplateItemChanged(QTreeWidgetItem* item,
 
 void InputPatchEditor::slotAddTemplateClicked()
 {
+	/* Create a new input template and start editing it */
 	InputTemplateEditor ite(this, NULL);
 edit:
 	if (ite.exec() == QDialog::Accepted)
 	{
+		QLCInputDevice* dt;
 		QString path;
 		QDir dir;
 
-		QFileDialog dialog(this);
-		dialog.setWindowTitle(tr("Save Input Template to a file"));
-		dialog.setAcceptMode(QFileDialog::AcceptSave);
-
 #ifdef Q_WS_X11
-		/* Ensure there is a directory for user templates */
-		path = QString("%1/%2").arg(getenv("HOME"))
-				       .arg(USERINPUTTEMPLATEDIR);
-		dir = QDir(path);
-		if (dir.exists() == false)
-			dir.mkpath(".");
-
-		/* If the current user is root, offer the system template dir
-		   as the first choice. Otherwise use the user template dir. 
-		   This is done on Linux only, because Win32 & OSX save the
+		/* If the current user is root, use the system template dir
+		   for saving templates. Otherwise use the user's home dir.
+		   This is done on Linux only, because Win32 & OSX save
 		   system templates in a user-writable directory. */
 		if (geteuid() == 0)
+		{
 			dir = QDir(INPUTTEMPLATEDIR);
+		}
 		else
-			dir = QDir(QString("%1/%2").arg(getenv("HOME"))
-						   .arg(USERINPUTTEMPLATEDIR));
-		
-		/* Append useful URLs to the dialog */
-		QList <QUrl> sidebar;
-		sidebar.append(QUrl::fromLocalFile(INPUTTEMPLATEDIR));
-		sidebar.append(QUrl::fromLocalFile(QString("%1/%2")
-						.arg(getenv("HOME"))
-						.arg(USERINPUTTEMPLATEDIR)));
-		dialog.setSidebarUrls(sidebar);
+		{
+			path = QString("%1/%2").arg(getenv("HOME"))
+					       .arg(USERINPUTTEMPLATEDIR);
+			dir = QDir(path);
+		}
+
+		/* Ensure that the selected template directory exists */
+		if (dir.exists() == false)
+			dir.mkpath(".");
 #else
-		/* Use the system input template dir */
+		/* Use the system input template dir for Win32/OSX */
 		dir = QDir(INPUTTEMPLATEDIR);
 #endif
-		/* Set the dialog to start in the selected directory */
-		dialog.setDirectory(dir);
-
-		/* Add file filters to the dialog */
-		QStringList filters;
-		filters << QString("Input Templates (*%1)")
-				   .arg(KExtInputTemplate);
-		filters << QString("All Files (*)");
-		dialog.setNameFilters(filters);
-
-		/* Construct an nice file name for the template and selec it */
-		path = QString("%1-%2%3")
+		/* Construct a descriptive file name for the template */
+		path = QString("%1/%2-%3")
+				.arg(dir.absolutePath())
 				.arg(ite.deviceTemplate()->manufacturer())
-				.arg(ite.deviceTemplate()->model())
-				.arg(KExtInputTemplate);
-		dialog.selectFile(path);
+				.arg(ite.deviceTemplate()->model());
 
-		/* Get the file name to save to */
-		if (dialog.exec() != QDialog::Accepted)
-			goto edit;
-		path = dialog.selectedFiles().first();
-		if (path.isEmpty() == true)
-			goto edit;
+		/* Ensure that creating a new input template won't overwrite
+		   an existing file. */
+		if (QFile::exists(path + KExtInputTemplate) == true)
+		{
+			for (int i = 1; i < INT_MAX; i++)
+			{
+				/* Start adding a number suffix to the file
+				   name and stop when a unique file name is
+				   found. */
+				QString s;
+				s = QString("%1-%2%3").arg(path).arg(i)
+						      .arg(KExtInputTemplate);
+				if (QFile::exists(s) == false)
+				{
+					path = s;
+					break;
+				}
+			}
+		}
 
-		QLCInputDevice* dt;
-			
 		/* Create a new non-const copy of the template and
-		   reparent it to input map */
+		   reparent it to the input map */
 		dt = new QLCInputDevice(*ite.deviceTemplate());
 		dt->setParent(_app->inputMap());
-			
+
 		/* Save it to a file, go back to edit if save failed */
 		if (dt->saveXML(path) == false)
 		{
 			QMessageBox::warning(this, tr("Saving failed"),
-					tr("Unable to save the template to %1")
-					.arg(QDir::toNativeSeparators(path)));
+				tr("Unable to save the template to %1")
+				.arg(QDir::toNativeSeparators(path)));
 			delete dt;
 			goto edit;
 		}
@@ -426,10 +421,8 @@ void InputPatchEditor::slotRemoveTemplateClicked()
 
 	/* Ask for user confirmation */
 	r = QMessageBox::question(this, tr("Delete template"),
-		tr("Do you wish to permanently delete template \"%1\"? "
-		"The file %2 containing the template will also be deleted.")
-		.arg(deviceTemplate->name())
-		.arg(QDir::toNativeSeparators(deviceTemplate->path())),
+		tr("Do you wish to permanently delete template \"%1\"?")
+		.arg(deviceTemplate->name()),
 		QMessageBox::Yes, QMessageBox::No);
 	if (r == QMessageBox::Yes)
 	{
@@ -446,9 +439,9 @@ void InputPatchEditor::slotRemoveTemplateClicked()
 		{
 			/* Annoy the user even more after deletion failure */
 			QMessageBox::warning(this, tr("File deletion failed"),
-					     file.errorString());
+						tr("Unable to delete file %1")
+						.arg(file.errorString()));
 		}
-		
 	}
 }
 
@@ -473,84 +466,85 @@ void InputPatchEditor::slotEditTemplateClicked()
 	/* Edit the template and update the item if OK was pressed */
 	InputTemplateEditor ite(this, deviceTemplate);
 edit:
-	if (ite.exec() == QDialog::Accepted)
-	{
-		QString path;
-		QDir dir;
+	if (ite.exec() == QDialog::Rejected)
+		return;
 
-		/* Copy the channel's contents from the editor's copy to
-		   the actual object (with QLCInputDevice::operator=()). */
-		*deviceTemplate = *ite.deviceTemplate();
+	QString path;
 
-		QFileDialog dialog(this);
-		dialog.setWindowTitle(tr("Save Input Template to a file"));
-		dialog.setAcceptMode(QFileDialog::AcceptSave);
+	/* Copy the channel's contents from the editor's copy to
+	   the actual object (with QLCInputDevice::operator=()). */
+	*deviceTemplate = *ite.deviceTemplate();
 
 #ifdef Q_WS_X11
-		if (geteuid() == 0)
-		{
-			/* User is root and can edit system templates. */
-			dir = QDir(INPUTTEMPLATEDIR);
-		}
-		else
-		{
-			/* Ensure there is a directory for user templates. */
-			path = QString("%1/%2").arg(getenv("HOME"))
-					       .arg(USERINPUTTEMPLATEDIR);
-			dir = QDir(path);
-			if (dir.exists() == false)
-				dir.mkpath(".");
+	/* If the current user is root, save the template to its old path.
+	   Otherwise use the user's home dir and generate a new file name
+	   if necessary. This is done on Linux only, because Win32 & OSX save
+	   templates always in a user-writable directory. */
+	if (geteuid() == 0)
+	{
+		path = deviceTemplate->path();
+	}
+	else
+	{
+		/* Ensure that user template directory exists */
+		path = QString("%1/%2").arg(getenv("HOME"))
+				       .arg(USERINPUTTEMPLATEDIR);
+		QDir dir = QDir(path);
+		if (dir.exists() == false)
+			dir.mkpath(".");
 
-			/* Append useful URLs to the dialog's sidebar. */
-			QList <QUrl> sidebar;
-			sidebar.append(QUrl::fromLocalFile(INPUTTEMPLATEDIR));
-			sidebar.append(QUrl::fromLocalFile(QString("%1/%2")
-						.arg(getenv("HOME"))
-						.arg(USERINPUTTEMPLATEDIR)));
-			dialog.setSidebarUrls(sidebar);
+		/* Check, whether the template was originally saved
+		   in the system directory. If it is, construct a
+		   new name for it into the user's template dir. */
+		path = deviceTemplate->path();
+		if (path.contains(getenv("HOME")) == false)
+		{
+			/* Construct a descriptive file name for
+			   the template under user's HOME dir */
+			path = QString("%1/%2-%3")
+				.arg(dir.absolutePath())
+				.arg(deviceTemplate->manufacturer())
+				.arg(deviceTemplate->model());
+
+			/* Ensure that creating a new file won't
+			   overwrite an existing file. */
+			if (QFile::exists(path + KExtInputTemplate))
+			{
+				/* Add an increasing number suffix to the name
+				   and stop when a unique name is found. */
+				for (int i = 1; i < INT_MAX; i++)
+				{
+					QString s;
+					s = QString("%1-%2%3").arg(path)
+						.arg(i).arg(KExtInputTemplate);
+					if (QFile::exists(s) == false)
+					{
+						path = s;
+						break;
+					}
+				}
+			}
 		}
+	}
 #else
-		/* Win32 & OSX save input templates in a user-writable
-		   directory, so we can use that directly. */
-		dir = QDir(INPUTTEMPLATEDIR);
+	/* Win32 & OSX save input templates in a user-writable directory,
+	   so we can use that directly. */
+	path = deviceTemplate->path();
 #endif
-
-		/* Add file filters to the dialog */
-		QStringList filters;
-		filters << QString("Input Templates (*%1)")
-				   .arg(KExtInputTemplate);
-		filters << QString("All Files (*)");
-		dialog.setNameFilters(filters);
-
-		/* Set the dialog to start with the existing file name */
-		QString file = deviceTemplate->path();
-		file = file.split(QDir::separator()).last();
-		dialog.setDirectory(dir);
-		dialog.selectFile(file);
-
-		/* Get the file name to save to */
-		if (dialog.exec() != QDialog::Accepted)
-			goto edit;
-		path = dialog.selectedFiles().first();
-		if (path.isEmpty() == true)
-			goto edit;
-
-		/* Save the template */
-		if (deviceTemplate->saveXML(path) == true)
-		{
-			/* Get the template's name from the template itself
-			   since it may have changed making local variable
-			   "name" invalid */
-			updateTemplateItem(deviceTemplate->name(), item);
-		}
-		else
-		{
-			QMessageBox::warning(this, tr("Saving failed"),
-				tr("Unable to save %1 to %2")
-				.arg(deviceTemplate->name())
-				.arg(QDir::toNativeSeparators(
-					deviceTemplate->path())));
-			goto edit;
-		}
+	/* Save the template */
+	if (deviceTemplate->saveXML(path) == true)
+	{
+		/* Get the template's name from the template itself
+		   since it may have changed making local variable
+		   "name" invalid */
+		updateTemplateItem(deviceTemplate->name(), item);
+	}
+	else
+	{
+		QMessageBox::warning(this, tr("Saving failed"),
+			tr("Unable to save %1 to %2")
+			.arg(deviceTemplate->name())
+			.arg(QDir::toNativeSeparators(path)));
+		goto edit;
 	}
 }

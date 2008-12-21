@@ -58,7 +58,7 @@ protected slots:
 	void slotAddClicked();
 	void slotRemoveClicked();
 	void slotEditClicked();
-	void slotWizardClicked();
+	void slotWizardClicked(bool checked);
 
 	void slotInputValueChanged(t_input_universe universe,
 				   t_input_channel channel,

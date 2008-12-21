@@ -20,6 +20,7 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QTextBrowser>
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QMessageBox>
@@ -54,7 +55,7 @@ InputTemplateEditor::InputTemplateEditor(QWidget* parent,
 	: QDialog(parent)
 {
 	setupUi(this);
-	
+
 	/* Set icons to buttons */
 	m_addButton->setIcon(QIcon(":/edit_add.png"));
 	m_removeButton->setIcon(QIcon(":/edit_remove.png"));
@@ -68,8 +69,10 @@ InputTemplateEditor::InputTemplateEditor(QWidget* parent,
 		this, SLOT(slotRemoveClicked()));
 	connect(m_editButton, SIGNAL(clicked()),
 		this, SLOT(slotEditClicked()));
-	connect(m_wizardButton, SIGNAL(clicked()),
-		this, SLOT(slotWizardClicked()));
+	connect(m_wizardButton, SIGNAL(clicked(bool)),
+		this, SLOT(slotWizardClicked(bool)));
+	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditClicked()));
 
 	if (deviceTemplate == NULL)
 	{
@@ -105,19 +108,14 @@ InputTemplateEditor::~InputTemplateEditor()
 
 void InputTemplateEditor::fillTree()
 {
-	QTreeWidgetItem* item;
-	QLCInputChannel* ch;
 	m_tree->clear();
 
-	for (t_input_channel i = 0; i < m_deviceTemplate->channels(); i++)
+	QMapIterator <t_channel, QLCInputChannel*>
+		it(m_deviceTemplate->channels());
+	while (it.hasNext() == true)
 	{
-		ch = m_deviceTemplate->channel(i);
-		Q_ASSERT(ch != NULL);
-
-		item = new QTreeWidgetItem(m_tree);
-		Q_ASSERT(item != NULL);
-
-		updateChannelItem(item, ch);
+		it.next();
+		updateChannelItem(new QTreeWidgetItem(m_tree), it.value());
 	}
 }
 
@@ -130,6 +128,14 @@ void InputTemplateEditor::updateChannelItem(QTreeWidgetItem* item,
 	item->setText(KColumnNumber, QString("%1").arg(ch->channel() + 1));
 	item->setText(KColumnName, ch->name());
 	item->setText(KColumnType, QLCInputChannel::typeToString(ch->type()));
+
+	/* Display nice icons to indicate channel type */
+	if (ch->type() == QLCInputChannel::Slider)
+		item->setIcon(KColumnType, QIcon(":/slider.png"));
+	else if (ch->type() == QLCInputChannel::Knob)
+		item->setIcon(KColumnType, QIcon(":/knob.png"));
+	else if (ch->type() == QLCInputChannel::Button)
+		item->setIcon(KColumnType, QIcon(":/button.png"));
 }
 
 /****************************************************************************
@@ -162,24 +168,58 @@ void InputTemplateEditor::slotAddClicked()
 	QLCInputChannel* channel = new QLCInputChannel(m_deviceTemplate);
 	InputChannelEditor ice(this, channel);
 	if (ice.exec() == QDialog::Accepted)
+	{
 		m_deviceTemplate->addChannel(channel);
+		updateChannelItem(new QTreeWidgetItem(m_tree), channel);
+	}
 	else
+	{
 		delete channel;
+	}
 }
 
 void InputTemplateEditor::slotRemoveClicked()
 {
+	QList <QTreeWidgetItem*> selected;
+	QTreeWidgetItem* next = NULL;
 	t_input_channel chnum;
-	
+
+	/* Ask for confirmation if we're deleting more than one channel */
+	selected = m_tree->selectedItems();
+	if (selected.count() > 1)
+	{
+		int r;
+		r = QMessageBox::question(this, tr("Delete channels"),
+		      tr("Delete all %1 selected channels?")
+		      .arg(selected.count()),
+		      QMessageBox::Yes | QMessageBox::No);
+		if (r == QMessageBox::No)
+			return;
+	}
+
 	/* Remove all selected channels */
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());	
+	QMutableListIterator <QTreeWidgetItem*> it(selected);
 	while (it.hasNext() == true)
 	{
-		chnum = it.next()->text(KColumnNumber).toInt() - 1;
+		QTreeWidgetItem* item;
 
-		/* Deletes also the channel object */
+		item = it.next();
+		Q_ASSERT(item != NULL);
+
+		/* Delete the channel object */
+		chnum = item->text(KColumnNumber).toInt() - 1;
 		m_deviceTemplate->removeChannel(chnum);
+
+		/* Choose the closest item below or above the removed items
+		   as the one that is selected after the removal */
+		next = m_tree->itemBelow(item);
+		if (next == NULL)
+			next = m_tree->itemAbove(item);
+
+		delete item;
 	}
+
+	m_tree->setCurrentItem(next);
 }
 
 void InputTemplateEditor::slotEditClicked()
@@ -187,35 +227,87 @@ void InputTemplateEditor::slotEditClicked()
 	QLCInputChannel* channel;
 	t_input_channel chnum;
 	QTreeWidgetItem* item;
-	
-	item = m_tree->currentItem();
-	if (item == NULL)
-		return;
 
-	/* Find the channel object associated to the selected tree item */
-	chnum = item->text(KColumnNumber).toInt() - 1;
-	channel = m_deviceTemplate->channel(chnum);
-	Q_ASSERT(channel != NULL);
+	if (m_tree->selectedItems().count() == 1)
+	{
+		/* Just one item selected. Edit that. */
+		item = m_tree->currentItem();
+		if (item == NULL)
+			return;
 
-	/* Edit the channel and update its item if modifications were made */
-	InputChannelEditor ice(this, channel);
-	if (ice.exec() == QDialog::Accepted)
-		updateChannelItem(item, channel);
+		/* Find the channel object associated to the selected item */
+		chnum = item->text(KColumnNumber).toInt() - 1;
+		channel = m_deviceTemplate->channel(chnum);
+		Q_ASSERT(channel != NULL);
+
+		/* Edit the channel and update its item if necessary */
+		InputChannelEditor ice(this, channel);
+		if (ice.exec() == QDialog::Accepted)
+		{
+			if (ice.channel() != KInputChannelInvalid)
+				channel->setChannel(ice.channel());
+			if (ice.name() != QString::null)
+				channel->setName(ice.name());
+			if (ice.type() != QLCInputChannel::NoType)
+				channel->setType(ice.type());
+
+                        updateChannelItem(item, channel);
+		}
+	}
+	else if (m_tree->selectedItems().count() > 1)
+	{
+		/* Multiple channels selected. Apply changes to all of them */
+		InputChannelEditor ice(this, NULL);
+		if (ice.exec() == QDialog::Accepted)
+		{
+			QListIterator <QTreeWidgetItem*> 
+						it(m_tree->selectedItems());
+			while (it.hasNext() == true)
+			{
+				item = it.next();
+				Q_ASSERT(item != NULL);
+
+				chnum = item->text(KColumnNumber).toInt() - 1;
+				channel = m_deviceTemplate->channel(chnum);
+				Q_ASSERT(channel != NULL);
+
+				/* Set only name and type and only if they
+				   have been modified. */
+				if (ice.name() != QString::null)
+					channel->setName(ice.name());
+				if (ice.type() != QLCInputChannel::NoType)
+					channel->setType(ice.type());
+
+				updateChannelItem(item, channel);
+			}
+		}
+	}
 }
 
-void InputTemplateEditor::slotWizardClicked()
+void InputTemplateEditor::slotWizardClicked(bool checked)
 {
-	/* TODO: A simple wizard that adds all such channels to the current
-	   template that send data while the wizard dialog is open. i.e. the
-	   user can just wiggle his sliders and buttons and all of them are
-	   added to the template. */
-
-	connect(_app->inputMap(),
-		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
-					 t_input_value)),
-		this,
-		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
-					   t_input_value)));
+	if (checked == true)
+	{
+		connect(_app->inputMap(),
+			SIGNAL(inputValueChanged(t_input_universe,
+						 t_input_channel,
+						 t_input_value)),
+			this,
+			SLOT(slotInputValueChanged(t_input_universe,
+						   t_input_channel,
+						   t_input_value)));
+	}
+	else
+	{
+		disconnect(_app->inputMap(),
+			SIGNAL(inputValueChanged(t_input_universe,
+						 t_input_channel,
+						 t_input_value)),
+			this,
+			SLOT(slotInputValueChanged(t_input_universe,
+						   t_input_channel,
+						   t_input_value)));
+	}
 }
 
 void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
@@ -224,17 +316,21 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 {
 	Q_UNUSED(universe);
 
+	/* Get a list of items that represent the given channel. Basically
+	   the list should always contain just one item. */
 	QList <QTreeWidgetItem*> list(m_tree->findItems(
 					QString("%1").arg(channel + 1),
 					Qt::MatchExactly, KColumnNumber));
 	if (list.count() == 0)
 	{
+		/* No channel items found. Create a new channel to the
+		   template and display it also in the tree widget */
 		QTreeWidgetItem* item;
 		QLCInputChannel* ch;
 
 		ch = new QLCInputChannel(m_deviceTemplate);
 		ch->setChannel(channel);
-		ch->setName(tr("Channel %1").arg(channel + 1));
+		ch->setName(tr("Button %1").arg(channel + 1));
 		ch->setType(QLCInputChannel::Button);
 		m_deviceTemplate->addChannel(ch);
 
@@ -244,6 +340,7 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 	}
 	else
 	{
+		/* Existing channel & item found. Modify their contents. */
 		QStringList values;
 		values = list.first()->text(KColumnValues).split(",");
 
@@ -263,7 +360,8 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 			ch = m_deviceTemplate->channel(channel);
 			Q_ASSERT(ch != NULL);
 
-			ch->setType(QLCInputChannel::AbsoluteFader);
+			ch->setType(QLCInputChannel::Slider);
+			ch->setName(tr("Slider %1").arg(channel + 1));
 			updateChannelItem(list.first(), ch);
 		}
 	}

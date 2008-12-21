@@ -72,6 +72,8 @@ VCWidget::VCWidget(QWidget* parent) : QFrame(parent)
 	setMinimumSize(20, 20);
 	QFrame::resize(QSize(120, 120));
 
+	setInputSource(KInputUniverseInvalid, KInputChannelInvalid);
+
 	connect(parent, SIGNAL(modeChanged(App::Mode)), 
 		this, SLOT(slotModeChanged(App::Mode)));
 }
@@ -339,6 +341,41 @@ void VCWidget::slotProperties()
 }
 
 /*****************************************************************************
+ * External input
+ *****************************************************************************/
+
+void VCWidget::setInputSource(t_input_universe universe,
+			      t_input_channel channel)
+{
+	if (universe == KInputUniverseInvalid ||
+	    channel == KInputChannelInvalid)
+	{
+		/* If either one is invalid, then both are invalid */
+		m_inputUniverse = KInputUniverseInvalid;
+		m_inputChannel = KInputChannelInvalid;
+
+		/* TODO: Disconnect from InputMap */
+	}
+	else
+	{
+		m_inputUniverse = universe;
+		m_inputChannel = channel;
+		
+		/* TODO: Connect to InputMap */
+	}
+}
+
+t_input_universe VCWidget::inputUniverse() const
+{
+	return m_inputUniverse;
+}
+
+t_input_channel VCWidget::inputChannel() const
+{
+	return m_inputChannel;
+}
+
+/*****************************************************************************
  * Load & Save
  *****************************************************************************/
 
@@ -393,6 +430,18 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 				font.fromString(tag.text());
 				setFont(font);
 			}
+		}
+		else if (tag.tagName() == KXMLQLCVCWidgetInput)
+		{
+			t_input_universe universe;
+			t_input_channel channel;
+			
+			universe = tag.attribute(KXMLQLCVCWidgetInputUniverse)
+						.toInt();
+			channel = tag.attribute(KXMLQLCVCWidgetInputChannel)
+						.toInt();
+			
+			setInputSource(universe, channel);
 		}
 		else
 		{
@@ -464,6 +513,18 @@ bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 		str = KXMLQLCVCWidgetFontDefault;
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
+
+	/* External input */
+	if (m_inputUniverse != KInputUniverseInvalid &&
+	    m_inputChannel != KInputChannelInvalid)
+	{
+		tag = doc->createElement(KXMLQLCVCWidgetInput);
+		root.appendChild(tag);
+		tag.setAttribute(KXMLQLCVCWidgetInputUniverse,
+				 QString("%1").arg(m_inputUniverse));
+		tag.setAttribute(KXMLQLCVCWidgetInputChannel,
+				 QString("%1").arg(m_inputChannel));
+	}
 
 	return true;
 }

@@ -55,6 +55,15 @@ protected slots:
 	void slotValueExactClicked();
 	void slotValuePercentageClicked();
 
+	void slotChooseInputClicked();
+
+protected:
+	void updateInputUniverseChannel();
+
+protected:
+	t_input_universe m_inputUniverse;
+	t_input_channel m_inputChannel;
+
 	/*********************************************************************
 	 * Bus page
 	 *********************************************************************/

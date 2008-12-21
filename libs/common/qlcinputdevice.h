@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcinputdevice.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -47,10 +47,10 @@ class QLC_DECLSPEC QLCInputDevice : public QObject
 public:
 	/** Standard constructor */
 	QLCInputDevice(QObject* parent);
-	
+
 	/** Copy constructor */
 	QLCInputDevice(const QLCInputDevice& inputDevice);
-	
+
 	/** Destructor */
 	virtual ~QLCInputDevice();
 
@@ -69,7 +69,7 @@ public:
 
 	/** Get the device name (manufacturer - model) */
 	QString name() const;
-	
+
 	/** Get the path where the device template is stored in. Don't use
 	    this as a unique ID since this varies between platforms. */
 	QString path() const;
@@ -78,7 +78,7 @@ protected:
 	QString m_manufacturer;
 	QString m_model;
 	QString m_path;
-	
+
 	/********************************************************************
 	 * Channels
 	 ********************************************************************/
@@ -90,7 +90,7 @@ public:
 	 *            number to map to. Any existing mapping is cleared.
 	 */
 	void addChannel(QLCInputChannel* ich);
-	
+
 	/**
 	 * Remove the given channel mapping from this device. Does not delete
 	 * the instance.
@@ -108,19 +108,30 @@ public:
 	void removeChannel(t_input_channel channel);
 
 	/**
-	 * Get the number of channels present in this device
-	 */
-	t_input_channel channels() const { return m_channels.count(); }
-
-	/**
-	 * Get the channel object from the given channel number
+	 * Get a channel object by a channel number.
 	 *
-	 * @param channel The channel number of the object
+	 * @param channel The number of the channel to get
+	 * @return A QLCInputChannel* or NULL if not found
 	 */
 	QLCInputChannel* channel(t_input_channel channel);
 
+	/**
+	 * Get the name of the given channel.
+	 *
+	 * @param channel The number of the channel, whose name to get
+	 * @return The name of the channel or QString::null if not found
+	 */
+	QString channelName(t_input_channel channel);
+
+	/**
+	 * Get available channels in a non-modifiable map
+	 */
+	const QMap <t_input_channel, QLCInputChannel*> channels()
+		{ return m_channels; }
+
 protected:
-	/** Channel objects present in this device */
+	/** Channel objects present in this device. This is a QMap and not a
+	    QList because not all channels might be present. */
 	QMap <t_input_channel, QLCInputChannel*> m_channels;
 
 	/********************************************************************

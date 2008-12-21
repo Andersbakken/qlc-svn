@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>432</width>
-    <height>123</height>
+    <height>139</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -54,23 +54,7 @@
        <widget class="QLineEdit" name="m_nameEdit" />
       </item>
       <item row="1" column="2" >
-       <widget class="QComboBox" name="m_typeCombo" >
-        <item>
-         <property name="text" >
-          <string>Absolute Fader</string>
-         </property>
-        </item>
-        <item>
-         <property name="text" >
-          <string>Relative Fader</string>
-         </property>
-        </item>
-        <item>
-         <property name="text" >
-          <string>Button</string>
-         </property>
-        </item>
-       </widget>
+       <widget class="QComboBox" name="m_typeCombo" />
       </item>
      </layout>
     </widget>

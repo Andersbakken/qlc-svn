@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcinputchannel.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -56,7 +56,7 @@ QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
 
 	return *this;
 }
-	
+
 /****************************************************************************
  * Channel number
  ****************************************************************************/
@@ -77,26 +77,42 @@ void QLCInputChannel::setType(Type type)
 
 QString QLCInputChannel::typeToString(Type type)
 {
+	QString str;
+
 	switch (type)
 	{
-	default:
-	case AbsoluteFader:
-		return QString(KXMLQLCInputChannelAbsoluteFader);
-	case RelativeFader:
-		return QString(KXMLQLCInputChannelRelativeFader);
 	case Button:
-		return QString(KXMLQLCInputChannelButton);
+		str = QString(KXMLQLCInputChannelButton);
+		break;
+	case Knob:
+		str = QString(KXMLQLCInputChannelKnob);
+		break;
+	default:
+	case Slider:
+		str = QString(KXMLQLCInputChannelSlider);
+		break;
 	}
+
+	return str;
 }
 
 QLCInputChannel::Type QLCInputChannel::stringToType(const QString& type)
 {
 	if (type == KXMLQLCInputChannelButton)
 		return Button;
-	else if (type == KXMLQLCInputChannelRelativeFader)
-		return RelativeFader;
+	else if (type == KXMLQLCInputChannelKnob)
+		return Knob;
 	else
-		return AbsoluteFader;
+		return Slider;
+}
+
+QStringList QLCInputChannel::types()
+{
+	QStringList list;
+	list << KXMLQLCInputChannelSlider;
+	list << KXMLQLCInputChannelKnob;
+	list << KXMLQLCInputChannelButton;
+	return list;
 }
 
 /****************************************************************************
@@ -151,7 +167,7 @@ bool QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
 
 		node = node.nextSibling();
 	}
-	
+
 	return true;
 }
 
@@ -184,6 +200,6 @@ bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 	tag.appendChild(subtag);
 	text = doc->createTextNode(typeToString(m_type));
 	subtag.appendChild(text);
-	
+
 	return true;
 }
