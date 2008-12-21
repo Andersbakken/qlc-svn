@@ -40,7 +40,7 @@ class QString;
 class MIDIDevice : public QObject
 {
 	Q_OBJECT
-		
+
 public:
 	MIDIDevice(MIDIInput* parent, t_input input,
 		   const snd_seq_addr_t* address);
@@ -52,7 +52,7 @@ public:
 public:
 	/** Get the input line number that this device represents */
 	t_input input() const { return m_input; }
-	
+
 	/** Set the input line number that this device represents */
 	void setInput(t_input input) { m_input = input; }
 
@@ -110,7 +110,7 @@ public:
 	 * Send an input value back the device to move motorized sliders
 	 * and such.
 	 */
-	virtual void feedBack(t_input_channel channel, t_input_value value);
+	void feedBack(t_input_channel channel, t_input_value value);
 };
 
 #endif

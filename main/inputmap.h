@@ -70,10 +70,18 @@ private:
 	 * Input data
 	 *********************************************************************/
 public slots:
+	/** Slot that catches input plugins' value changes */
 	void slotValueChanged(QLCInPlugin* plugin, t_input input,
 			      t_input_channel channel, t_input_value value);
 
+public:
+	/** Send feedback value to the input device e.g. to move a motorized
+	    sliders & knobs, set indicator leds etc. */
+	void feedBack(t_input_universe universe, t_input_channel channel,
+		      t_input_value value);
+
 signals:
+	/** Everyone interested in input data should connect to this signal */
 	void inputValueChanged(t_input_universe universe,
 			       t_input_channel channel, t_input_value value);
 

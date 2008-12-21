@@ -142,7 +142,9 @@ public:
 public:
 	/**
 	 * Send a value back to an input line's channel. This method can be
-	 * used for example to move motorized sliders with QLC sliders.
+	 * used for example to move motorized sliders with QLC sliders. If the
+	 * hardware /that the plugin provides access to) doesn't support this,
+	 * the function can be left empty.
 	 *
 	 * @param input The input line to send feedback to
 	 * @param channel A channel in the input line to send feedback to

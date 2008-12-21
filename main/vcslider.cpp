@@ -599,6 +599,21 @@ void VCSlider::slotSliderValueChanged(int value)
 	default:
 		break;
 	}
+
+	/* Send input feedback */
+	if (m_inputUniverse != KInputUniverseInvalid &&
+	    m_inputChannel != KInputChannelInvalid)
+	{
+		if (m_slider->invertedAppearance() == true)
+			value = m_slider->maximum() - value;
+
+		float fb = SCALE(float(value), float(m_slider->minimum()),
+				 float(m_slider->maximum()), float(0),
+				 float(KInputValueMax));
+
+		_app->inputMap()->feedBack(m_inputUniverse, m_inputChannel,
+								int(fb));
+	}
 }
 
 void VCSlider::slotSliderReleased()
@@ -658,10 +673,12 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
 			    (float) m_slider->minimum(),
 			    (float) m_slider->maximum());
 
+		m_sliderPressed = true;
 		if (m_slider->invertedAppearance() == true)
 			m_slider->setValue(m_slider->maximum() - (int) val);
 		else
 			m_slider->setValue((int) val);
+		m_sliderPressed = false;
 	}
 }
 

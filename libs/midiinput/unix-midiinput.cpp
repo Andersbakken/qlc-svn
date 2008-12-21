@@ -1,20 +1,20 @@
 /*
   Q Light Controller
   unix-midiinput.cpp
-  
+
   Copyright (C) Heikki Junnila
 		Stefan Krumm
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -90,7 +90,7 @@ void MIDIInput::close(t_input input)
 void MIDIInput::initALSA()
 {
 	snd_seq_client_info_t* client = NULL;
-	
+
 	/* Destroy the old handle */
 	if (m_alsa != NULL)
 		snd_seq_close(m_alsa);
@@ -118,6 +118,7 @@ void MIDIInput::initALSA()
 	   actual system clients' ports */
 	m_address = new snd_seq_addr_t;
 	m_address->port = snd_seq_create_simple_port(m_alsa, "Input Port",
+			SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ |
 		   	SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
 			SND_SEQ_PORT_TYPE_MIDI_GENERIC);
 	m_address->client = snd_seq_client_info_get_client(client);
@@ -181,7 +182,7 @@ void MIDIInput::rescanDevices()
 			}
 		}
 	}
-	
+
 	/* All devices that were not found during rescan are clearly no longer
 	   in our presence and must be destroyed. */
 	while (destroyList.isEmpty() == false)
@@ -198,7 +199,7 @@ MIDIDevice* MIDIInput::device(const snd_seq_addr_t* address)
 
 		Q_ASSERT(dev != NULL);
 		Q_ASSERT(dev->address() != NULL);
-		
+
 		if (dev->address()->client == address->client &&
 		    dev->address()->port == address->port)
 		{
@@ -359,9 +360,16 @@ void MIDIInput::connectInputData(QObject* listener)
 				      t_input_value)));
 }
 
-void MIDIInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
-			 t_input_value /*value*/)
+void MIDIInput::feedBack(t_input input, t_input_channel channel,
+			 t_input_value value)
 {
+	MIDIDevice* dev;
+
+	dev = device(input);
+	if (dev == NULL)
+		return;
+	else
+		dev->feedBack(channel, value);
 }
 
 /*****************************************************************************

@@ -38,6 +38,7 @@
 #include "vcbuttonproperties.h"
 #include "functionselection.h"
 #include "virtualconsole.h"
+#include "inputmap.h"
 #include "vcbutton.h"
 #include "function.h"
 #include "vcframe.h"
@@ -257,6 +258,24 @@ void VCButton::setOn(bool on)
 		VCWidget::setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	else
 		VCWidget::setFrameStyle(QFrame::Panel | QFrame::Raised);
+
+	/* Send input feedback */
+	if (m_inputUniverse != KInputUniverseInvalid &&
+	    m_inputChannel != KInputChannelInvalid)
+	{
+		if (on == true)
+		{
+			_app->inputMap()->feedBack(m_inputUniverse,
+						   m_inputChannel,
+						   KInputValueMax);
+		}
+		else
+		{
+			_app->inputMap()->feedBack(m_inputUniverse,
+						   m_inputChannel,
+						   0);
+		}
+	}
 }
 
 void VCButton::setFrameStyle(const int)
@@ -294,12 +313,7 @@ void VCButton::slotInputValueChanged(t_input_universe universe,
 		return;
 
 	if (universe == m_inputUniverse && channel == m_inputChannel)
-	{
-		if (isOn() == false && value > 0)
-			pressFunction();
-		else if (isOn() == false)
-			releaseFunction();
-	}
+		pressFunction();
 }
 
 /*****************************************************************************

@@ -1,20 +1,20 @@
 /*
   Q Light Controller
   unix-midiinput.h
-  
+
   Copyright (C) Heikki Junnila
                 Stefan Krumm
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -46,7 +46,7 @@ class MIDIInput : public QObject, public QLCInPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCInPlugin)
-	
+
 	friend class ConfigureMIDIInput;
 	friend class MIDIPoller;
 
@@ -60,7 +60,7 @@ public:
 
 	/** Open the given input for input data */
 	void open(t_input input = 0);
-	
+
 	/** Close the given input */
 	void close(t_input input = 0);
 
@@ -74,7 +74,7 @@ protected:
 public:
 	/** Get the ALSA sequencer handle */
 	snd_seq_t* alsa() { return m_alsa; }
-	
+
 	/** Get the plugin's own ALSA port that collates all events */
 	const snd_seq_addr_t* address() { return m_address; }
 
@@ -105,7 +105,7 @@ signals:
 protected:
 	/** The list of available MIDI devices */
 	QList <MIDIDevice*> m_devices;
-	
+
 	/*********************************************************************
 	 * Name
 	 *********************************************************************/

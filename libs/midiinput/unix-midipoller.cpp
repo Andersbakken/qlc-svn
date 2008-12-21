@@ -146,6 +146,12 @@ void MIDIPoller::subscribeDevice(MIDIDevice* device)
 	snd_seq_port_subscribe_set_sender(sub, device->address());
 	snd_seq_port_subscribe_set_dest(sub, plugin->address());
 	snd_seq_subscribe_port(plugin->alsa(), sub);
+
+	/* Subscribe feedback events towards the device */
+	snd_seq_port_subscribe_alloca(&sub);
+	snd_seq_port_subscribe_set_sender(sub, plugin->address());
+	snd_seq_port_subscribe_set_dest(sub, device->address());
+	snd_seq_subscribe_port(plugin->alsa(), sub);
 }
 
 void MIDIPoller::unsubscribeDevice(MIDIDevice* device)
@@ -164,6 +170,12 @@ void MIDIPoller::unsubscribeDevice(MIDIDevice* device)
 	snd_seq_port_subscribe_alloca(&sub);
 	snd_seq_port_subscribe_set_sender(sub, device->address());
 	snd_seq_port_subscribe_set_dest(sub, plugin->address());
+	snd_seq_unsubscribe_port(plugin->alsa(), sub);
+
+	/* Unsubscribe feedback events towards the device */
+	snd_seq_port_subscribe_alloca(&sub);
+	snd_seq_port_subscribe_set_sender(sub, plugin->address());
+	snd_seq_port_subscribe_set_dest(sub, device->address());
 	snd_seq_unsubscribe_port(plugin->alsa(), sub);
 }
 

@@ -125,7 +125,37 @@ void MIDIDevice::extractName()
  * Input data
  *****************************************************************************/
 
-void MIDIDevice::feedBack(t_input_channel /*channel*/, t_input_value /*value*/)
+void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 {
+	/* MIDI devices can have only 128 notes or controllers */
+	if (channel < 128)
+	{
+		snd_seq_event_t ev;
+		MIDIInput* plugin;
+
+		plugin = static_cast<MIDIInput*> (parent());
+		Q_ASSERT(plugin != NULL);
+		Q_ASSERT(plugin->alsa() != NULL);
+		Q_ASSERT(m_address != NULL);
+
+		/* Setup an event structure */
+		snd_seq_ev_clear(&ev);
+		snd_seq_ev_set_dest(&ev, m_address->client, m_address->port);
+		snd_seq_ev_set_subs(&ev);
+		snd_seq_ev_set_direct(&ev);
+
+		/* Send control change, channel 1 (0) */
+		snd_seq_ev_set_controller(&ev, 0, channel, value >> 1);
+		snd_seq_event_output(plugin->alsa(), &ev);
+		snd_seq_drain_output(plugin->alsa());
+
+		/* Send note on/off, channel 1 (0) */
+		if (value == 0)
+			snd_seq_ev_set_noteoff(&ev, 0, channel, 0);
+		else
+			snd_seq_ev_set_noteon(&ev, 0, channel, value >> 1);
+		snd_seq_event_output(plugin->alsa(), &ev);
+		snd_seq_drain_output(plugin->alsa());
+	}
 }
 

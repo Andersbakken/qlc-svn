@@ -131,6 +131,19 @@ void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
 	}
 }
 
+void InputMap::feedBack(t_input_universe universe, t_input_channel channel,
+			t_input_value value)
+{
+	InputPatch* patch;
+	Q_ASSERT(universe < m_patch.size());
+
+	patch = m_patch[universe];
+	Q_ASSERT(patch != NULL);
+
+	if (patch->plugin() != NULL)
+		patch->plugin()->feedBack(patch->input(), channel, value);
+}
+
 /*****************************************************************************
  * Patch
  *****************************************************************************/
