@@ -65,7 +65,7 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 #endif
 	/* Then, load system templates */
 	loadTemplates(INPUTTEMPLATEDIR);
-	
+
 	loadDefaults();
 }
 
@@ -76,6 +76,9 @@ InputMap::~InputMap()
 
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
+
+	while (m_deviceTemplates.isEmpty() == false)
+		delete m_deviceTemplates.takeFirst();
 }
 
 /*****************************************************************************
@@ -88,7 +91,7 @@ t_input_universe InputMap::universes()
 }
 
 QStringList InputMap::universeNames()
-{	
+{
 	QStringList inputs;
 	QStringList list;
 
@@ -231,7 +234,7 @@ QStringList InputMap::pluginNames()
 
 	while (it.hasNext() == true)
 		list.append(it.next()->name());
-	
+
 	return list;
 }
 
@@ -302,7 +305,7 @@ QLCInPlugin* InputMap::plugin(const QString& name)
 		if (plugin->name() == name)
 			return plugin;
 	}
-	
+
 	return NULL;
 }
 
@@ -313,7 +316,7 @@ QLCInPlugin* InputMap::plugin(const QString& name)
 void InputMap::loadTemplates(QString templatePath)
 {
 	/* Find *.qxi from templatePath(), sort by name, get regular files */
-	QDir dir(templatePath, QString("*%1").arg(KExtInputTemplate),
+	QDir dir(templatePath, QString("*%1").arg(KExtInputDevice),
 		 QDir::Name, QDir::Files);
 	if (dir.exists() == false || dir.isReadable() == false)
 	{
@@ -331,7 +334,7 @@ void InputMap::loadTemplates(QString templatePath)
 		QString path;
 
 		path = dir.absoluteFilePath(it.next());
-		dt = QLCInputDevice::loader(this, path);
+		dt = QLCInputDevice::loader(path);
 		if (dt != NULL)
 		{
 			/* Check for duplicates */

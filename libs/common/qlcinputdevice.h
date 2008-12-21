@@ -24,29 +24,27 @@
 
 #include <QStringList>
 #include <QString>
-#include <QObject>
 #include <QMap>
 
 #include <common/qlctypes.h>
 
 class QLCInputChannel;
+class QLCInputDevice;
 class QDomDocument;
 class QDomElement;
 
-#define KXMLQLCInputTemplate "InputTemplate"
-#define KXMLQLCInputTemplateManufacturer "Manufacturer"
-#define KXMLQLCInputTemplateModel "Model"
+#define KXMLQLCInputDevice "InputDevice"
+#define KXMLQLCInputDeviceManufacturer "Manufacturer"
+#define KXMLQLCInputDeviceModel "Model"
 
-class QLC_DECLSPEC QLCInputDevice : public QObject
+class QLC_DECLSPEC QLCInputDevice
 {
-	Q_OBJECT
-
 	/********************************************************************
 	 * Initialization
 	 ********************************************************************/
 public:
 	/** Standard constructor */
-	QLCInputDevice(QObject* parent);
+	QLCInputDevice();
 
 	/** Copy constructor */
 	QLCInputDevice(const QLCInputDevice& inputDevice);
@@ -70,7 +68,7 @@ public:
 	/** Get the device name (manufacturer - model) */
 	QString name() const;
 
-	/** Get the path where the device template is stored in. Don't use
+	/** Get the path where the device is stored in. Don't use
 	    this as a unique ID since this varies between platforms. */
 	QString path() const;
 
@@ -138,14 +136,14 @@ protected:
 	 * Load & Save
 	 ********************************************************************/
 public:
-	/** Load an input template from the given path */
-	static QLCInputDevice* loader(QObject* parent, const QString& path);
+	/** Load an input device from the given path */
+	static QLCInputDevice* loader(const QString& path);
 
-	/** Save an input template into a given file name */
+	/** Save an input device into a given file name */
 	bool saveXML(const QString& fileName);
 
 protected:
-	/** Load an input template from the given document */
+	/** Load an input device from the given document */
 	bool loadXML(QDomDocument* doc);
 };
 

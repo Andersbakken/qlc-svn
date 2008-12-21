@@ -76,7 +76,7 @@ InputTemplateEditor::InputTemplateEditor(QWidget* parent,
 
 	if (deviceTemplate == NULL)
 	{
-		m_deviceTemplate = new QLCInputDevice(this);
+		m_deviceTemplate = new QLCInputDevice();
 	}
 	else
 	{
@@ -165,7 +165,7 @@ void InputTemplateEditor::accept()
 
 void InputTemplateEditor::slotAddClicked()
 {
-	QLCInputChannel* channel = new QLCInputChannel(m_deviceTemplate);
+	QLCInputChannel* channel = new QLCInputChannel();
 	InputChannelEditor ice(this, channel);
 	if (ice.exec() == QDialog::Accepted)
 	{
@@ -328,7 +328,7 @@ void InputTemplateEditor::slotInputValueChanged(t_input_universe universe,
 		QTreeWidgetItem* item;
 		QLCInputChannel* ch;
 
-		ch = new QLCInputChannel(m_deviceTemplate);
+		ch = new QLCInputChannel();
 		ch->setChannel(channel);
 		ch->setName(tr("Button %1").arg(channel + 1));
 		ch->setType(QLCInputChannel::Button);

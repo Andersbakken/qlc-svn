@@ -356,7 +356,7 @@ edit:
 
 		/* Ensure that creating a new input template won't overwrite
 		   an existing file. */
-		if (QFile::exists(path + KExtInputTemplate) == true)
+		if (QFile::exists(path + KExtInputDevice) == true)
 		{
 			for (int i = 1; i < INT_MAX; i++)
 			{
@@ -365,7 +365,7 @@ edit:
 				   found. */
 				QString s;
 				s = QString("%1-%2%3").arg(path).arg(i)
-						      .arg(KExtInputTemplate);
+						      .arg(KExtInputDevice);
 				if (QFile::exists(s) == false)
 				{
 					path = s;
@@ -377,7 +377,6 @@ edit:
 		/* Create a new non-const copy of the template and
 		   reparent it to the input map */
 		dt = new QLCInputDevice(*ite.deviceTemplate());
-		dt->setParent(_app->inputMap());
 
 		/* Save it to a file, go back to edit if save failed */
 		if (dt->saveXML(path) == false)
@@ -508,7 +507,7 @@ edit:
 
 			/* Ensure that creating a new file won't
 			   overwrite an existing file. */
-			if (QFile::exists(path + KExtInputTemplate))
+			if (QFile::exists(path + KExtInputDevice))
 			{
 				/* Add an increasing number suffix to the name
 				   and stop when a unique name is found. */
@@ -516,7 +515,7 @@ edit:
 				{
 					QString s;
 					s = QString("%1-%2%3").arg(path)
-						.arg(i).arg(KExtInputTemplate);
+						.arg(i).arg(KExtInputDevice);
 					if (QFile::exists(s) == false)
 					{
 						path = s;

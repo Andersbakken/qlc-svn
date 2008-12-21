@@ -22,8 +22,6 @@
 #ifndef QLCINPUTCHANNEL_H
 #define QLCINPUTCHANNEL_H
 
-#include <QObject>
-
 #include <common/qlctypes.h>
 
 class QLCInputDevice;
@@ -39,16 +37,14 @@ class QString;
 #define KXMLQLCInputChannelKnob "Knob"
 #define KXMLQLCInputChannelButton "Button"
 
-class QLC_DECLSPEC QLCInputChannel : public QObject
+class QLC_DECLSPEC QLCInputChannel
 {
-	Q_OBJECT
-
 	/********************************************************************
 	 * Initialization
 	 ********************************************************************/
 public:
 	/** Standard constructor */
-	QLCInputChannel(QLCInputDevice* parent);
+	QLCInputChannel();
 
 	/** Copy constructor */
 	QLCInputChannel(const QLCInputChannel& channel);

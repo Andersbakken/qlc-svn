@@ -1,5 +1,5 @@
-<!DOCTYPE InputTemplate>
-<InputTemplate>
+<!DOCTYPE InputDevice>
+<InputDevice>
  <Creator>
   <Name>Q Light Controller</Name>
   <Version>3.0.0</Version>
@@ -151,5 +151,5 @@
   <Name>Button 10 Bottom</Name>
   <Type>Button</Type>
  </Channel>
-</InputTemplate>
+</InputDevice>
 

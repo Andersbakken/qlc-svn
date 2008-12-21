@@ -31,12 +31,11 @@
  * Initialization
  ****************************************************************************/
 
-QLCInputDevice::QLCInputDevice(QObject* parent) : QObject(parent)
+QLCInputDevice::QLCInputDevice()
 {
 }
 
 QLCInputDevice::QLCInputDevice(const QLCInputDevice& device)
-	: QObject (device.parent())
 {
 	/* Copy contents with operator=() */
 	*this = device;
@@ -44,9 +43,13 @@ QLCInputDevice::QLCInputDevice(const QLCInputDevice& device)
 
 QLCInputDevice::~QLCInputDevice()
 {
-	/* No need to delete the channels in m_channels since they are
-	   QLCInputDevice class' children and will be deleted when this
-	   class is destroyed. */
+	/* Delete existing channels but leave the pointers there */
+	QMutableMapIterator <t_input_channel,QLCInputChannel*> it(m_channels);
+	while (it.hasNext() == true)
+		delete it.next().value();
+
+	/* Clear the list of freed pointers */
+	m_channels.clear();
 }
 
 QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
@@ -62,10 +65,12 @@ QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
 			old_it(m_channels);
 		while (old_it.hasNext() == true)
 			delete old_it.next().value();
+
+		/* Clear the list of freed pointers */
 		m_channels.clear();
 
 		/* Copy the other device's channels */
-		QMapIterator <t_input_channel,QLCInputChannel*> 
+		QMapIterator <t_input_channel,QLCInputChannel*>
 			it(device.m_channels);
 		while (it.hasNext() == true)
 			addChannel(new QLCInputChannel(*(it.next().value())));
@@ -111,9 +116,6 @@ void QLCInputDevice::addChannel(QLCInputChannel* ich)
 		removeChannel(ich->channel());
 
 	m_channels.insert(ich->channel(), ich);
-
-	/* Claim ownership of the channel */
-	ich->setParent(this);
 }
 
 void QLCInputDevice::removeChannel(QLCInputChannel* ich)
@@ -154,7 +156,7 @@ QString QLCInputDevice::channelName(t_input_channel channel)
  * Load & Save
  ****************************************************************************/
 
-QLCInputDevice* QLCInputDevice::loader(QObject* parent, const QString& path)
+QLCInputDevice* QLCInputDevice::loader(const QString& path)
 {
 	QLCInputDevice* device = NULL;
 	QDomDocument* doc = NULL;
@@ -163,7 +165,7 @@ QLCInputDevice* QLCInputDevice::loader(QObject* parent, const QString& path)
 		return false;
 	Q_ASSERT(doc != NULL);
 
-	device = new QLCInputDevice(parent);
+	device = new QLCInputDevice();
 	if (device->loadXML(doc) == false)
 	{
 		delete device;
@@ -187,7 +189,7 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 	Q_ASSERT(doc != NULL);
 
 	root = doc->documentElement();
-	if (root.tagName() == KXMLQLCInputTemplate)
+	if (root.tagName() == KXMLQLCInputDevice)
 	{
 		node = root.firstChild();
 		while (node.isNull() == false)
@@ -197,19 +199,18 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 			{
 				/* Ignore */
 			}
-			if (tag.tagName() == KXMLQLCInputTemplateManufacturer)
+			if (tag.tagName() == KXMLQLCInputDeviceManufacturer)
 			{
 				setManufacturer(tag.text());
 			}
-			else if (tag.tagName() == KXMLQLCInputTemplateModel)
+			else if (tag.tagName() == KXMLQLCInputDeviceModel)
 			{
 				setModel(tag.text());
 			}
 			else if (tag.tagName() == KXMLQLCInputChannel)
 			{
-				QLCInputChannel* ich;
-				ich = new QLCInputChannel(this);
-				if (ich->loadXML(doc, &tag) == TRUE)
+				QLCInputChannel* ich = new QLCInputChannel();
+				if (ich->loadXML(doc, &tag) == true)
 					addChannel(ich);
 				else
 					delete ich;
@@ -220,7 +221,7 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 	}
 	else
 	{
-		qDebug() << "Input template node not found in file!";
+		qDebug() << "Input device node not found in file!";
 	}
 
 	return true;
@@ -238,7 +239,7 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 	if (file.open(QIODevice::WriteOnly) == false)
 		return false;
 
-	if (QLCFile::getXMLHeader(KXMLQLCInputTemplate, &doc) == true)
+	if (QLCFile::getXMLHeader(KXMLQLCInputDevice, &doc) == true)
 	{
 		/* Create a text stream for the file */
 		QTextStream stream(&file);
@@ -247,13 +248,13 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 		root = doc->documentElement();
 
 		/* Manufacturer */
-		tag = doc->createElement(KXMLQLCInputTemplateManufacturer);
+		tag = doc->createElement(KXMLQLCInputDeviceManufacturer);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_manufacturer);
 		tag.appendChild(text);
 
 		/* Model */
-		tag = doc->createElement(KXMLQLCInputTemplateModel);
+		tag = doc->createElement(KXMLQLCInputDeviceModel);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_model);
 		tag.appendChild(text);

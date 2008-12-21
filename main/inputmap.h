@@ -211,7 +211,7 @@ public:
 
 	/** Remove an existing device template by its name and delete it */
 	void removeDeviceTemplate(const QString& name);
-	
+
 protected:
 	/** List that contains all available device templates */
 	QList <QLCInputDevice*> m_deviceTemplates;

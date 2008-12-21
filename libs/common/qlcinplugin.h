@@ -25,9 +25,10 @@
 #include <QStringList>
 #include <QtPlugin>
 #include <QString>
-#include <QObject>
 
 #include "qlctypes.h"
+
+class QObject;
 
 /*****************************************************************************
  * InputPlugin

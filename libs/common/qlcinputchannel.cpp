@@ -29,14 +29,13 @@
  * Initialization
  ****************************************************************************/
 
-QLCInputChannel::QLCInputChannel(QLCInputDevice* parent) : QObject(parent)
+QLCInputChannel::QLCInputChannel()
 {
-	Q_ASSERT(parent != NULL);
 	m_channel = 0;
+	m_type = NoType;
 }
 
 QLCInputChannel::QLCInputChannel(const QLCInputChannel& channel)
-	: QObject(channel.parent())
 {
 	*this = channel;
 }
