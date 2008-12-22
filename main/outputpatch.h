@@ -60,7 +60,7 @@ public:
 	QString pluginName() const;
 
 	int output() const { return m_output; }
-	QString inputName() const;
+	QString outputName() const;
 
 protected:
 	QLCOutPlugin* m_plugin;

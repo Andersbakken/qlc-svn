@@ -23,6 +23,7 @@
 #include <QTreeWidget>
 #include <QStringList>
 #include <QHeaderView>
+#include <QToolBar>
 #include <QAction>
 #include <QMenu>
 
@@ -42,16 +43,7 @@ extern App* _app;
 
 OutputManager::OutputManager(QWidget* parent) : QWidget(parent)
 {
-	Q_ASSERT(_app->outputMap() != NULL);
-
-	setupUi(this);
-
-	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
-
-	connect(m_edit, SIGNAL(clicked()), this, SLOT(slotEditClicked()));
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditClicked()));
-
+	init();
 	update();
 }
 
@@ -59,63 +51,80 @@ OutputManager::~OutputManager()
 {
 }
 
-void OutputManager::update()
-{
-	m_tree->clear();
-	for (int i = 0; i < KUniverseCount; i++)
-	{
-		QTreeWidgetItem* item;
-		OutputPatch* outputPatch;
-		QString str;
-
-		outputPatch = _app->outputMap()->patch(i);
-		Q_ASSERT(outputPatch != NULL);
-
-		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnUniverse, str.setNum(i + 1));
-		item->setText(KColumnPlugin, outputPatch->plugin()->name());
-		item->setText(KColumnOutputName,
-			      outputPatch->plugin()->outputs()
-						[outputPatch->output()]);
-		item->setText(KColumnOutput,
-			      str.setNum(outputPatch->output() + 1));
-	}
-}
-
 /*****************************************************************************
  * Tree widget
  *****************************************************************************/
 
+void OutputManager::update()
+{
+	m_tree->clear();
+	for (int uni = 0; uni < KUniverseCount; uni++)
+	{
+		OutputPatch* op = _app->outputMap()->patch(uni);
+		updateItem(new QTreeWidgetItem(m_tree), op, uni);
+	}
+}
+
+void OutputManager::init()
+{
+	QStringList columns;
+
+	/* Create a new layout for this widget */
+	new QVBoxLayout(this);
+
+	/* Toolbar */
+	m_toolbar = new QToolBar(tr("Output Manager"), this);
+	m_toolbar->addAction(QIcon(":/edit.png"), tr("Edit Mapping"),
+			     this, SLOT(slotEditClicked()));
+	layout()->addWidget(m_toolbar);
+
+	/* Tree */
+	m_tree = new QTreeWidget(this);
+	layout()->addWidget(m_tree);
+	m_tree->setRootIsDecorated(false);
+	m_tree->setItemsExpandable(false);
+	m_tree->setSortingEnabled(false);
+	m_tree->setAllColumnsShowFocus(true);
+	columns << tr("Universe")
+		<< tr("Plugin")
+		<< tr("Output");
+	m_tree->setHeaderLabels(columns);
+
+	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditClicked()));
+}
+
+void OutputManager::updateItem(QTreeWidgetItem* item, OutputPatch* op,
+			       int universe)
+{
+	Q_ASSERT(item != NULL);
+	Q_ASSERT(op != NULL);
+
+	item->setText(KColumnUniverse, QString("%1").arg(universe + 1));
+	item->setText(KColumnPlugin, op->pluginName());
+	item->setText(KColumnOutputName, op->outputName());
+	item->setText(KColumnOutput, QString("%1").arg(op->output() + 1));
+}
+
+/****************************************************************************
+ * Toolbar
+ ****************************************************************************/
+
 void OutputManager::slotEditClicked()
 {
 	QTreeWidgetItem* item;
+	OutputPatch* patch;
 	int universe;
-	QString str;
-	int output;
 
 	item = m_tree->currentItem();
 	if (item == NULL)
 		return;
 
 	universe = item->text(KColumnUniverse).toInt() - 1;
-	str = item->text(KColumnPlugin);
-	output = item->text(KColumnOutput).remove("Output").toInt() - 1;
+	patch = _app->outputMap()->patch(universe);
+	Q_ASSERT(patch != NULL);
 
-	OutputPatchEditor ope(this, universe, str, output);
+	OutputPatchEditor ope(this, universe, patch);
 	if (ope.exec() == QDialog::Accepted)
-	{
-		if (ope.output() != KOutputInvalid &&
-		    ope.pluginName().isEmpty() == false)
-		{
-			item->setText(KColumnUniverse,
-				      str.setNum(universe + 1));
-			item->setText(KColumnPlugin, ope.pluginName());
-			item->setText(KColumnOutputName, ope.outputName());
-			item->setText(KColumnOutput,
-				      str.setNum(ope.output() + 1));
-
-			_app->outputMap()->setPatch(universe, ope.pluginName(),
-						    ope.output());
-		}
-	}
+		updateItem(item, patch, universe);
 }

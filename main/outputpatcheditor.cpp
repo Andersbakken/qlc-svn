@@ -27,6 +27,7 @@
 #include <QDebug>
 
 #include "outputpatcheditor.h"
+#include "outputpatch.h"
 #include "outputmap.h"
 #include "app.h"
 
@@ -36,39 +37,44 @@
 extern App* _app;
 
 OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
-				     const QString& pluginName,
-				     t_output output) : QDialog(parent)
+				     OutputPatch* patch) : QDialog(parent)
 {
-	/* OutputMap */
-	Q_ASSERT(_app->outputMap() != NULL);
+	Q_ASSERT(universe < _app->outputMap()->universes());
+	m_universe = universe;
+
+	Q_ASSERT(patch != NULL);
+	m_patch = patch;
+
+	m_universe = universe;
+	m_pluginName = patch->pluginName();
+	m_output = patch->output();
 
 	/* Setup UI controls */
 	setupUi(this);
 
 	connect(m_configureButton, SIGNAL(clicked()),
 		this, SLOT(slotConfigureClicked()));
-
 	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						  QTreeWidgetItem*)),
 		this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(accept()));
 
-	/* Universe */
-	Q_ASSERT(universe < _app->outputMap()->universes());
-	m_universe = universe;
+	/* Window title to match the mapped universe */
 	setWindowTitle(tr("Mapping properties for output universe %1")
 			.arg(universe + 1));
-
-	/* Selected plugin & output */
-	m_pluginName = pluginName;
-	m_output = output;
 
 	fillTree();
 }
 
 OutputPatchEditor::~OutputPatchEditor()
 {
+}
+
+void OutputPatchEditor::accept()
+{
+	_app->outputMap()->setPatch(m_universe, m_pluginName, m_output);
+	QDialog::accept();
 }
 
 void OutputPatchEditor::fillTree()

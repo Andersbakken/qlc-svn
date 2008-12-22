@@ -99,7 +99,6 @@ FORMS += aboutbox.ui \
 	 inputchanneleditor.ui \
 	 inputdeviceeditor.ui \
          inputpatcheditor.ui \
-         outputmanager.ui \
          outputpatcheditor.ui \
          sceneeditor.ui \
          selectinputchannel.ui \

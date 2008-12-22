@@ -24,13 +24,14 @@
 
 #include <QWidget>
 
-#include "ui_outputmanager.h"
-
+class QTreeWidgetItem;
 class QTreeWidget;
 class QPushButton;
+class OutputPatch;
 class OutputMap;
+class QToolBar;
 
-class OutputManager : public QWidget, public Ui_OutputManager
+class OutputManager : public QWidget
 {
 	Q_OBJECT
 
@@ -41,16 +42,31 @@ public:
 	OutputManager(QWidget* parent);
 	virtual ~OutputManager();
 
-	void update();
-
 private:
 	Q_DISABLE_COPY(OutputManager)
 
 	/*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
+public:
+	void update();
+
+protected:
+	void init();
+	void updateItem(QTreeWidgetItem* item, OutputPatch* op, int universe);
+
+protected:
+	QTreeWidget* m_tree;
+
+	/*********************************************************************
+	 * Toolbar
+	 *********************************************************************/
 protected slots:
 	void slotEditClicked();
+
+protected:
+	QToolBar* m_toolbar;
+
 };
 
 #endif

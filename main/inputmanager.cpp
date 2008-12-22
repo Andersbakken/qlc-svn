@@ -49,9 +49,7 @@ extern App* _app;
 
 InputManager::InputManager(QWidget* parent) : QWidget(parent)
 {
-	setupUi();
-
-        m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+	init();
 
 	/* Timer that clears the input data icon after a while */
 	m_timer = new QTimer(this);
@@ -73,7 +71,27 @@ InputManager::~InputManager()
 {
 }
 
-void InputManager::setupUi()
+/*****************************************************************************
+ * Tree widget
+ *****************************************************************************/
+
+void InputManager::update()
+{
+	m_tree->clear();
+	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
+	{
+		InputPatch* inputPatch;
+		QTreeWidgetItem* item;
+
+		inputPatch = _app->inputMap()->patch(i);
+		Q_ASSERT(inputPatch != NULL);
+
+		item = new QTreeWidgetItem(m_tree);
+		updateItem(item, inputPatch, i);
+	}
+}
+
+void InputManager::init()
 {
 	QStringList columns;
 
@@ -103,82 +121,17 @@ void InputManager::setupUi()
 		this, SLOT(slotEditClicked()));
 }
 
-void InputManager::update()
-{
-	m_tree->clear();
-	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
-	{
-		InputPatch* inputPatch;
-		QTreeWidgetItem* item;
-
-		inputPatch = _app->inputMap()->patch(i);
-		Q_ASSERT(inputPatch != NULL);
-
-		item = new QTreeWidgetItem(m_tree);
-		updateItem(item, inputPatch, i);
-	}
-}
-
-/****************************************************************************
- * Toolbar
- ****************************************************************************/
-
-void InputManager::slotEditClicked()
-{
-	t_input_universe universe;
-	InputPatch* inputPatch;
-	QTreeWidgetItem* item;
-
-	item = m_tree->currentItem();
-	if (item == NULL)
-		return;
-
-	universe = item->text(KColumnUniverse).toInt() - 1;
-	inputPatch = _app->inputMap()->patch(universe);
-	Q_ASSERT(inputPatch != NULL);
-
-	InputPatchEditor ipe(this, universe, inputPatch);
-	if (ipe.exec() == QDialog::Accepted)
-		updateItem(item, inputPatch, universe);
-}
-
-/*****************************************************************************
- * Tree widget
- *****************************************************************************/
-
-void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* inputPatch,
+void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
 			      t_input_universe universe)
 {
 	Q_ASSERT(item != NULL);
-	Q_ASSERT(inputPatch != NULL);
+	Q_ASSERT(ip != NULL);
 
-	/* Universe */
 	item->setText(KColumnUniverse, QString("%1").arg(universe + 1));
-
-	/* Plugin name */
-	if (inputPatch->plugin() != NULL &&
-	    inputPatch->input() != KInputInvalid)
-	{
-		/* Plugin name */
-		item->setText(KColumnPlugin, inputPatch->pluginName());
-
-		/* Plugin's input name */
-		item->setText(KColumnInput, inputPatch->inputName());
-
-		/* Plugin's input number */
-		item->setText(KColumnInputNum,
-			      QString("%1").arg(inputPatch->input() + 1));
-
-		/* Input device */
-		item->setText(KColumnDevice, inputPatch->deviceName());
-	}
-	else
-	{
-		item->setText(KColumnPlugin, KInputNone);
-		item->setText(KColumnInput, KInputNone);
-		item->setText(KColumnInputNum, KInputNone);
-		item->setText(KColumnDevice, KInputNone);
-	}
+	item->setText(KColumnPlugin, ip->pluginName());
+	item->setText(KColumnInput, ip->inputName());
+	item->setText(KColumnInputNum, QString("%1").arg(ip->input() + 1));
+	item->setText(KColumnDevice, ip->deviceName());
 }
 
 void InputManager::slotInputValueChanged(t_input_universe universe,
@@ -210,4 +163,27 @@ void InputManager::slotTimerTimeout()
 		(*it)->setIcon(KColumnUniverse, QIcon());
 		++it;
 	}
+}
+
+/****************************************************************************
+ * Toolbar
+ ****************************************************************************/
+
+void InputManager::slotEditClicked()
+{
+	t_input_universe universe;
+	QTreeWidgetItem* item;
+	InputPatch* patch;
+
+	item = m_tree->currentItem();
+	if (item == NULL)
+		return;
+
+	universe = item->text(KColumnUniverse).toInt() - 1;
+	patch = _app->inputMap()->patch(universe);
+	Q_ASSERT(patch != NULL);
+
+	InputPatchEditor ipe(this, universe, patch);
+	if (ipe.exec() == QDialog::Accepted)
+		updateItem(item, patch, universe);
 }

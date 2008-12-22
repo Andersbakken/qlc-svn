@@ -68,7 +68,7 @@ QString OutputPatch::pluginName() const
 		return KOutputNone;
 }
 
-QString OutputPatch::inputName() const
+QString OutputPatch::outputName() const
 {
 	if (m_plugin != NULL)
 		return m_plugin->outputs()[m_output];

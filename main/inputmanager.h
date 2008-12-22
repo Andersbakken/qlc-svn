@@ -50,18 +50,9 @@ private:
 	Q_DISABLE_COPY(InputManager)
 
 protected:
-	void setupUi();
+	void init();
 
 	/*********************************************************************
-	 * Toolbar
-	 *********************************************************************/
-protected slots:
-	void slotEditClicked();
-
-protected:
-	QToolBar* m_toolbar;
-
-	 /*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
 protected:
@@ -77,6 +68,15 @@ protected slots:
 protected:
 	QTreeWidget* m_tree;
 	QTimer* m_timer;
+
+	/*********************************************************************
+	 * Toolbar
+	 *********************************************************************/
+protected slots:
+	void slotEditClicked();
+
+protected:
+	QToolBar* m_toolbar;
 };
 
 #endif

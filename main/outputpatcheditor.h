@@ -27,9 +27,9 @@
 #include "ui_outputpatcheditor.h"
 #include "common/qlctypes.h"
 
-class OutputMap;
-class OutputPatch;
 class QStringList;
+class OutputPatch;
+class OutputMap;
 
 class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
 {
@@ -39,9 +39,11 @@ class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	OutputPatchEditor(QWidget* parent, int universe,
-			  const QString& pluginName, t_output output);
+	OutputPatchEditor(QWidget* parent, int universe, OutputPatch* patch);
 	~OutputPatchEditor();
+
+public slots:
+	void accept();
 
 private:
 	Q_DISABLE_COPY(OutputPatchEditor)
@@ -54,25 +56,22 @@ protected slots:
 	void slotCurrentItemChanged(QTreeWidgetItem* item);
 	void slotConfigureClicked();
 
+	/********************************************************************
+	 * Selection
+	 ********************************************************************/
 protected:
+	/** The output patch that is being edited */
+	OutputPatch* m_patch;
+
 	/** The output universe being edited */
 	int m_universe;
 
-	/********************************************************************
-	 * Selection extraction
-	 ********************************************************************/
-public:
-	const QString pluginName() const { return m_pluginName; }
-	const QString outputName() const { return m_outputName; }
-	t_output output() const { return m_output; }
-
-protected:
 	/** The selected plugin's name */
 	QString m_pluginName;
 
 	/** The selected output name */
 	QString m_outputName;
-	
+
 	/** The selected output line number */
 	t_output m_output;
 };
