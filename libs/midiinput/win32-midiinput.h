@@ -56,13 +56,13 @@ public:
 	 *********************************************************************/
 public:
 	void rescanDevices();
-
-protected:
 	MIDIDevice* device(unsigned int index);
 
 	void addDevice(MIDIDevice* device);
 	void removeDevice(MIDIDevice* device);
 
+	const QList <MIDIDevice*>& devices() { return m_devices; }
+	
 signals:
 	void deviceAdded(MIDIDevice* device);
 	void deviceRemoved(MIDIDevice* device);

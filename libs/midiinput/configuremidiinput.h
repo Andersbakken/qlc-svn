@@ -39,30 +39,29 @@ public:
 	virtual ~ConfigureMIDIInput();
 
 protected:
+	/** The plugin that is being edited */
 	MIDIInput* m_plugin;
 	
 	/*********************************************************************
-	 * List of devices
+	 * Tree widget
 	 *********************************************************************/
-protected slots:
-	/**
-	 * Invoke refresh for the interface list
-	 */
-	void slotRefreshClicked();
-
-	/**
-	 * Callback for HIDInput::deviceAdded() signals.
-	 */
+protected:
+	/** Callback for HIDInput::deviceAdded() signals. */
 	void slotDeviceAdded(MIDIDevice* device);
 
-	/**
-	 * Callback for HIDInput::deviceRemoved() signals.
-	 */
+	/** Callback for HIDInput::deviceRemoved() signals. */
 	void slotDeviceRemoved(MIDIDevice* device);
 
 protected:
 	/** Refresh the interface list */
 	void refreshList();
+
+protected slots:
+	/** Invoke refresh for the interface list */
+	void slotRefreshClicked();
+
+	/** Open a dialog with which to select a feedback output line */
+	void slotEditClicked();
 };
 
 #endif

@@ -31,23 +31,44 @@
 #ifdef WIN32
 #include "win32-mididevice.h"
 #include "win32-midiinput.h"
+#include "configuremidiline.h"
 #else
 #include "unix-mididevice.h"
 #include "unix-midiinput.h"
 #endif
 
-#define KColumnNumber  0
-#define KColumnName    1
+#define KColumnNumber   0
+#define KColumnName     1
+#define KColumnFeedBack 2
 
 ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
 	: QDialog(parent)
 {
+	QStringList headerLabels;
+
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
 	
-	/* Setup UI controls */
 	setupUi(this);
-	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
+	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+	
+	/* One needs to choose the particular output line for feedback only
+	   in windows, since input & output lines don't have the same ID. */
+#ifdef WIN32
+	headerLabels << tr("Input") << tr("Name") << tr("Feedback line");
+#else
+	headerLabels << tr("Input") << tr("Name");
+#endif
+	m_tree->setHeaderLabels(headerLabels);
+
+	/* Enable the configuration button only for windows because the unix
+	   version can determine the feedback line by itself. */
+#ifdef WIN32
+	connect(m_editButton, SIGNAL(clicked()),
+		this, SLOT(slotEditClicked()));
+#else
+	m_editButton->hide();
+#endif
 
 	connect(m_refreshButton, SIGNAL(clicked()),
 		this, SLOT(slotRefreshClicked()));
@@ -66,28 +87,37 @@ ConfigureMIDIInput::~ConfigureMIDIInput()
 }
 
 /*****************************************************************************
- * List of devices
+ * Tree widget
  *****************************************************************************/
-
-void ConfigureMIDIInput::slotRefreshClicked()
-{
-	Q_ASSERT(m_plugin != NULL);
-	m_plugin->rescanDevices();
-}
 
 void ConfigureMIDIInput::refreshList()
 {
-	QTreeWidgetItem* item;
-	int i = 0;
+	m_tree->clear();
 
-	m_list->clear();
-
-	QStringListIterator it(m_plugin->inputs());
+	QListIterator <MIDIDevice*> it(m_plugin->devices());
 	while (it.hasNext() == true)
 	{
-		item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnNumber, QString("%1").arg(i++));
-		item->setText(KColumnName, it.next());
+		QTreeWidgetItem* item;
+		MIDIDevice* dev;
+
+		dev = it.next();
+		Q_ASSERT(dev != NULL);
+		
+		item = new QTreeWidgetItem(m_tree);
+		item->setText(KColumnNumber,
+			      QString("%1").arg(dev->input() + 1));
+		item->setText(KColumnName, dev->name());
+#ifdef WIN32
+		if (dev->feedBackId() != UINT_MAX)
+		{
+			item->setText(KColumnFeedBack,
+				MIDIDevice::feedBackNames()[dev->feedBackId()]);
+		}
+		else
+		{
+			item->setText(KColumnFeedBack, tr("None"));
+		}
+#endif
 	}
 }
 
@@ -99,9 +129,42 @@ void ConfigureMIDIInput::slotDeviceAdded(MIDIDevice* device)
 
 void ConfigureMIDIInput::slotDeviceRemoved(MIDIDevice* device)
 {
-	QListIterator <QTreeWidgetItem*> it(m_list->findItems(device->name(),
+	QListIterator <QTreeWidgetItem*> it(m_tree->findItems(device->name(),
 							      Qt::MatchExactly,
 							      KColumnName));
 	while (it.hasNext() == true)
 		delete it.next();
 }
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void ConfigureMIDIInput::slotRefreshClicked()
+{
+	Q_ASSERT(m_plugin != NULL);
+	m_plugin->rescanDevices();
+}
+
+#ifdef WIN32
+void ConfigureMIDIInput::slotEditClicked()
+{
+	QTreeWidgetItem* item;
+	MIDIDevice* device;
+	t_input input;
+
+	/* Get the currently selected tree widget item */
+	item = m_tree->currentItem();
+	if (item == NULL)
+		return;
+
+	/* Get the device represented by the selected item */
+	input = item->text(KColumnNumber).toInt() - 1;
+	device = m_plugin->device(input);
+	Q_ASSERT(device != NULL);
+
+	/* Configure the device */
+	ConfigureMIDILine cml(this, device);
+	cml.exec();
+}
+#endif

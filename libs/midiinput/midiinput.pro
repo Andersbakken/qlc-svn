@@ -46,14 +46,17 @@ unix:SOURCES 	+= configuremidiinput.cpp \
 # WIN32 sources
 ###############################################################################
 
-win32:FORMS	+= configuremidiinput.ui
+win32:FORMS	+= configuremidiinput.ui \
+		   configuremidiline.ui
 
 win32:HEADERS	+= configuremidiinput.h \
+		   configuremidiline.h \
    		   midiinputevent.h \
 		   win32-mididevice.h \
 		   win32-midiinput.h
 
 win32:SOURCES	+= configuremidiinput.cpp \
+		   configuremidiline.cpp \
 		   midiinputevent.cpp \
 		   win32-mididevice.cpp \
 		   win32-midiinput.cpp

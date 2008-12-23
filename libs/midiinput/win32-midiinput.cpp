@@ -207,16 +207,13 @@ void MIDIInput::slotDeviceValueChanged(MIDIDevice* device,
 				       t_input_channel channel,
 				       t_input_value value)
 {
-	qDebug() << QString("%1: C:%2 V:%3").arg(device->name())
-			.arg(channel).arg(value);
-
-	emit valueChanged(this, device->line(), channel, value);
+	Q_ASSERT(device != NULL);
+	emit valueChanged(this, device->input(), channel, value);
 }
 
 void MIDIInput::connectInputData(QObject* listener)
 {
 	Q_ASSERT(listener != NULL);
-
 	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
 					  t_input_value)),
 		listener,
@@ -224,10 +221,12 @@ void MIDIInput::connectInputData(QObject* listener)
 				      t_input_value)));
 }
 
-void MIDIInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
-			 t_input_value /*value*/)
+void MIDIInput::feedBack(t_input input, t_input_channel channel,
+			 t_input_value value)
 {
-	/* TODO */
+	MIDIDevice* dev = device(input);
+	if (dev != NULL)
+		dev->feedBack(channel, value);
 }
 
 /*****************************************************************************

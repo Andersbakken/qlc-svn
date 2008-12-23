@@ -14,7 +14,7 @@
   </property>
   <layout class="QVBoxLayout" >
    <item>
-    <widget class="QTreeWidget" name="m_list" >
+    <widget class="QTreeWidget" name="m_tree" >
      <property name="alternatingRowColors" >
       <bool>true</bool>
      </property>
@@ -27,16 +27,6 @@
      <property name="allColumnsShowFocus" >
       <bool>true</bool>
      </property>
-     <column>
-      <property name="text" >
-       <string>Input</string>
-      </property>
-     </column>
-     <column>
-      <property name="text" >
-       <string>Name</string>
-      </property>
-     </column>
     </widget>
    </item>
    <item>
@@ -45,6 +35,16 @@
       <widget class="QPushButton" name="m_refreshButton" >
        <property name="text" >
         <string>Refresh</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_editButton" >
+       <property name="toolTip" >
+        <string>Edit the selected input line</string>
+       </property>
+       <property name="text" >
+        <string>Edit...</string>
        </property>
       </widget>
      </item>

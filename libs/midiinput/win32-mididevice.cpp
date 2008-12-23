@@ -21,6 +21,8 @@
 
 #include <QApplication>
 #include <Windows.h>
+#include <QSettings>
+#include <QVariant>
 #include <QObject>
 #include <QString>
 #include <QDebug>
@@ -32,42 +34,50 @@
 
 MIDIDevice::MIDIDevice(MIDIInput* parent, UINT id) : QObject(parent)
 {
+	QSettings settings;
+	MIDIINCAPS inCaps;
+	QVariant variant;
 	MMRESULT res;
-	MIDIINCAPS caps;
+	QString key;
 	
-	res = midiInGetDevCaps(id, &caps, sizeof(MIDIINCAPS));
-
 	m_id = id;
-	m_name = QString("MIDI Input %1").arg(id + 1);
+	m_feedBackId = UINT_MAX;
 	m_handle = NULL;
-	
+	m_feedBackHandle = NULL;
+
+	/* Extract name */
+	m_name = QString("MIDI Input %1: ").arg(id + 1);
+	res = midiInGetDevCaps(id, &inCaps, sizeof(MIDIINCAPS));	
 	if (res == MMSYSERR_BADDEVICEID)
 	{
-		m_name += QString(": Bad device ID");
+		m_name += QString("Bad device ID");
 		qDebug() << "MIDI IN device" << id + 1 << " has bad device ID";
 	}
 	else if (res == MMSYSERR_INVALPARAM)
 	{
-		m_name += QString(": Invalid parameters");
+		m_name += QString("Invalid parameters");
 		qDebug() << "Invalid params for MIDI IN device" << id + 1;
 	}
 	else if (res == MMSYSERR_NODRIVER)
 	{
-		m_name += QString(": No driver installed");
+		m_name += QString("No driver installed");
 		qDebug() << "MIDI IN device" << id + 1 << "has no driver";
 	}
 	else if (res == MMSYSERR_NOMEM)
 	{
-		m_name += QString(": Out of memory");
+		m_name += QString("Out of memory");
 		qDebug() << "Out of memory while opening MIDI IN" << id + 1;
 	}
 	else
 	{
-		QString str = QString::fromWCharArray(caps.szPname);
-		m_name += QString(": %2").arg(str);
-
-		qDebug() << m_name;
+		m_name += QString::fromWCharArray(inCaps.szPname);
 	}
+
+	/* Load feedback line number */
+	key = QString("/MIDIInput/Inputs/%1/FeedBackLine").arg(m_id);
+	variant = settings.value(key);
+	if (variant.isValid() == true && variant.toUInt() != UINT_MAX)
+		setFeedBackId(variant.toUInt());
 }
 
 MIDIDevice::~MIDIDevice()
@@ -79,12 +89,13 @@ MIDIDevice::~MIDIDevice()
  * File operations
  *****************************************************************************/
  
-static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, 
-				DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
+				DWORD_PTR dwInstance, DWORD_PTR dwParam1,
+				DWORD_PTR dwParam2)
 {
-	MIDIDevice* self;
 	t_input_channel channel = 0;
 	t_input_value value = 0;
+	MIDIDevice* self;
 
 	self = (MIDIDevice*) dwInstance;
 	Q_ASSERT(self != NULL);
@@ -101,9 +112,13 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance
 		    status == MIDI_CONTROL_CHANGE)
 		{
 			channel = static_cast<t_input_channel> (data1);
-			value = static_cast<t_input_value> (data2) * 2;
+			value = t_input_value(SCALE(float(data2),
+						    float(0),
+						    float(127),
+						    float(0),
+						    float(KInputValueMax)));
 
-			event = new MIDIInputEvent(self, self->line(),
+			event = new MIDIInputEvent(self, self->input(),
 						   channel, value);
 			QApplication::postEvent(self, event);
 		}
@@ -156,6 +171,9 @@ bool MIDIDevice::open()
 		qDebug() << QString("%1 opened.").arg(m_name);
 		midiInStart(m_handle);
 		result = true;
+
+		/* Open feedback output */
+		openOutput();
 	}
 
 	return result;
@@ -185,7 +203,19 @@ void MIDIDevice::close()
 	{
 		qDebug() << QString("%1 closed successfully.").arg(m_name);
 		m_handle = NULL;
+
+		/* Close feedback output */
+		closeOutput();
 	}
+}
+
+/*****************************************************************************
+ * ID/Input
+ *****************************************************************************/
+
+t_input MIDIDevice::input() const
+{
+	return static_cast<t_input> (m_id);
 }
 
 /*****************************************************************************
@@ -201,7 +231,7 @@ QString MIDIDevice::infoText()
 
 	/* File name */
 	info += QString("<TD>");
-	info += QString("%1").arg(m_id);
+	info += QString("%1").arg(m_id + 1);
 	info += QString("</TD>");
 
 	/* Name */
@@ -238,8 +268,126 @@ void MIDIDevice::customEvent(QEvent* event)
 	}
 }
  
-void MIDIDevice::feedBack(t_input_channel /*channel*/,
-			      t_input_value /*value*/)
+/*****************************************************************************
+ * Feedback
+ *****************************************************************************/
+
+UINT MIDIDevice::feedBackId() const
 {
+	return m_feedBackId;
 }
 
+void MIDIDevice::setFeedBackId(UINT id)
+{
+	QSettings settings;
+	bool reopen = false;
+	QString key;
+
+	if (m_feedBackHandle != NULL)
+	{
+		reopen = true;
+		closeOutput();
+	}
+
+	m_feedBackId = id;
+
+	/* Save the feedback line number */
+	key = QString("/MIDIInput/Inputs/%1/FeedBackLine").arg(m_id);
+	settings.setValue(key, id);
+	
+	if (m_feedBackId  != UINT_MAX && reopen == true)
+		openOutput();
+}
+
+void MIDIDevice::openOutput()
+{
+	if (m_feedBackHandle == NULL && m_feedBackId != UINT_MAX)
+	{
+		MMRESULT res;
+		res = midiOutOpen(&m_feedBackHandle, m_feedBackId, 0, 0, 0);
+		if (res != MMSYSERR_NOERROR)
+			m_feedBackHandle = NULL;
+	}
+}
+
+void MIDIDevice::closeOutput()
+{
+	if (m_feedBackHandle != NULL)
+	{
+		MMRESULT res;
+		res = midiOutClose(m_feedBackHandle);
+		if (res == MMSYSERR_NOERROR)
+			m_feedBackHandle = NULL;
+	}
+}
+
+QStringList MIDIDevice::feedBackNames()
+{
+	QStringList list;
+	MIDIOUTCAPS caps;
+	MMRESULT res;
+	QString name;
+	UINT num;
+	
+	num = midiOutGetNumDevs();
+	for (UINT id = 0; id < num; id++)
+	{
+		res = midiOutGetDevCaps(id, &caps, sizeof(MIDIOUTCAPS));	
+		if (res == MMSYSERR_NOERROR)
+		{
+			name = QString("MIDI Output %1: %2").arg(id + 1)
+				.arg(QString::fromWCharArray(caps.szPname));
+			list << name;
+		}
+	}
+	
+	return list;
+}
+
+void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
+{
+	/* Attempt to open the same line for feedback output as well */
+	if (m_feedBackId != UINT_MAX && m_feedBackHandle == NULL)
+		openOutput();
+
+	/* MIDI devices can have only 128 real channels */
+	if (channel < 128)
+	{
+		union
+		{
+			DWORD dwData;
+			BYTE bData[4];
+		} msg;
+
+		/* Use control change numbers as DMX channels and
+		   control values as DMX channel values */ 
+		msg.bData[0] = MIDI_CONTROL_CHANGE;
+		msg.bData[1] = (BYTE) channel;
+		msg.bData[2] = (BYTE) value >> 1;
+		msg.bData[3] = 0;
+
+		/* Push the message out */
+		midiOutShortMsg(m_feedBackHandle, msg.dwData);
+
+		/* Use note numbers as DMX channels and velocities as
+		   DMX channel values. 0 is written as note off */
+/*
+		if (value == 0)
+		{
+			msg.bData[0] = MIDI_NOTE_OFF;
+			msg.bData[1] = (BYTE) channel;
+			msg.bData[2] = 0;
+			msg.bData[3] = 0;
+		}
+		else
+		{
+			msg.bData[0] = MIDI_NOTE_ON;
+			msg.bData[1] = (BYTE) channel;
+			msg.bData[2] = (BYTE) value >> 1;
+			msg.bData[3] = 0;
+		}
+*/
+		/* Push the message out */
+		//midiOutShortMsg(m_feedBackHandle, msg.dwData);
+	}
+}

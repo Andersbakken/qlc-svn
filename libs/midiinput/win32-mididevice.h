@@ -47,27 +47,21 @@ public:
 	 * File operations
 	 *********************************************************************/
 public:
-	/**
-	 * Attempt to open the device in RW mode and fall back to RO
-	 * if that fails.
-	 *
-	 * @return true if the file was opened RW/RO
-	 */
+	/** Open the device for input data */
 	bool open();
 
-	/**
-	 * Close the device
-	 */
+	/** Close the input device */
 	void close();
 	
 protected:
 	HMIDIIN m_handle;
 
 	/*********************************************************************
-	 * Line
+	 * ID/Input
 	 *********************************************************************/
 public:
-	t_input line() const { return static_cast<t_input> (m_id); }
+	/** Get this input device's input line number */
+	t_input input() const;
 
 protected:
 	UINT m_id;
@@ -96,22 +90,36 @@ protected:
 	void customEvent(QEvent* event);
 
 signals:
-	/**
-	 * Signal that is emitted when an input channel's value is changed
-	 *
-	 * @param device The eventing MIDIDevice
-	 * @param channel The channel whose value has changed
-	 * @param value The changed value
-	 */
+	/** Signal that is emitted when an input channel's value is changed */
 	void valueChanged(MIDIDevice* device, t_input_channel channel,
 			  t_input_value value);
 
+	/*********************************************************************
+	 * Feedback
+	 *********************************************************************/
 public:
-	/**
-	 * Send an input value back the device to move motorized sliders
-	 * and such.
-	 */
+	/** Get this input device's feedback output line number */
+	UINT feedBackId() const;
+	
+	/** Set this input device's feedback output line number */
+	void setFeedBackId(UINT id);
+
+	/** Open the device for feedback output */
+	void openOutput();
+
+	/** Close the feedback device */
+	void closeOutput();
+
+	/** Get a list of available outputs for feedback */
+	static QStringList feedBackNames();
+
+public:
+	/** Send input values back to the device to move motorized faders */
 	void feedBack(t_input_channel channel, t_input_value value);
+
+protected:
+	UINT m_feedBackId;
+	HMIDIOUT m_feedBackHandle;
 };
 
 #endif

@@ -91,12 +91,13 @@ protected:
 public:
 	void rescanDevices();
 
-protected:
 	MIDIDevice* device(const snd_seq_addr_t* address);
 	MIDIDevice* device(unsigned int index);
 
 	void addDevice(MIDIDevice* device);
 	void removeDevice(MIDIDevice* device);
+
+	const QList <MIDIDevice*>& devices() { return m_devices; }
 
 signals:
 	void deviceAdded(MIDIDevice* device);
