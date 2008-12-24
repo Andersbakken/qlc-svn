@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   configuremidiinput.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -48,10 +48,10 @@ ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
 
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
-	
+
 	setupUi(this);
 	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
-	
+
 	/* One needs to choose the particular output line for feedback only
 	   in windows, since input & output lines don't have the same ID. */
 #ifdef WIN32
@@ -102,7 +102,7 @@ void ConfigureMIDIInput::refreshList()
 
 		dev = it.next();
 		Q_ASSERT(dev != NULL);
-		
+
 		item = new QTreeWidgetItem(m_tree);
 		item->setText(KColumnNumber,
 			      QString("%1").arg(dev->input() + 1));
