@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QObject>
 #include <QDebug>
 #include <QtXml>
 
@@ -32,8 +33,10 @@
  * Initialization
  *****************************************************************************/
 
-InputPatch::InputPatch(InputMap* parent) : QObject(parent)
+InputPatch::InputPatch(QObject* parent) : QObject(parent)
 {
+	Q_ASSERT(parent != NULL);
+
 	m_plugin = NULL;
 	m_input = KInputInvalid;
 	m_device = NULL;
@@ -41,8 +44,6 @@ InputPatch::InputPatch(InputMap* parent) : QObject(parent)
 
 InputPatch::~InputPatch()
 {
-	if (m_plugin != NULL && m_input != KInputInvalid)
-		m_plugin->close(m_input);
 }
 
 /*****************************************************************************

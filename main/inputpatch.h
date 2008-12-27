@@ -22,6 +22,8 @@
 #ifndef INPUTPATCH_H
 #define INPUTPATCH_H
 
+#include <QObject>
+
 #include "common/qlcinputdevice.h"
 #include "common/qlctypes.h"
 
@@ -46,8 +48,11 @@ class InputPatch : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	InputPatch(InputMap* parent);
+	InputPatch(QObject* parent);
 	virtual ~InputPatch();
+
+private:
+	Q_DISABLE_COPY(InputPatch);
 
 	/********************************************************************
 	 * Properties

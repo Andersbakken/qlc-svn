@@ -71,9 +71,6 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 
 InputMap::~InputMap()
 {
-	for (t_input_universe i = 0; i < m_universes; i++)
-		delete m_patch[i];
-
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
 

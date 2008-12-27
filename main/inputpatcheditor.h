@@ -28,6 +28,7 @@
 #include <common/qlctypes.h>
 
 #include "ui_inputpatcheditor.h"
+#include "inputpatch.h"
 
 class QStringList;
 class InputPatch;
@@ -42,21 +43,27 @@ class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 	 ********************************************************************/
 public:
 	InputPatchEditor(QWidget* parent, t_input_universe universe,
-			 InputPatch* patch);
+			 const InputPatch* patch);
 	~InputPatchEditor();
 
 private:
 	Q_DISABLE_COPY(InputPatchEditor)
 
 protected slots:
-	void accept();
+	void reject();
 
 protected:
 	/** The input universe that is being edited */
 	t_input_universe m_universe;
 
-	/** The input patch that is being edited */
-	InputPatch* m_inputPatch;
+	QString m_originalPluginName;
+	QString m_currentPluginName;
+
+	t_input m_originalInput;
+	t_input m_currentInput;
+
+	QString m_originalDeviceName;
+	QString m_currentDeviceName;
 
 	/********************************************************************
 	 * Mapping page
@@ -66,7 +73,8 @@ protected:
 	void fillMappingTree();
 
 protected slots:
-	void slotMappingCurrentItemChanged(QTreeWidgetItem* item);
+	void slotMapCurrentItemChanged(QTreeWidgetItem* item);
+	void slotMapItemChanged(QTreeWidgetItem* item);
 	void slotConfigureInputClicked();
 
 	/********************************************************************
@@ -78,24 +86,10 @@ protected:
 	void updateDeviceItem(const QString& name, QTreeWidgetItem* item);
 
 protected slots:
-	void slotDeviceItemChanged(QTreeWidgetItem* item, int column);
+	void slotDeviceItemChanged(QTreeWidgetItem* item);
 	void slotAddDeviceClicked();
 	void slotRemoveDeviceClicked();
 	void slotEditDeviceClicked();
-
-	/********************************************************************
-	 * Selection
-	 ********************************************************************/
-protected:
-	/** Selected plugin */
-	QString m_pluginName;
-
-	/** Selected input */
-	QString m_inputName;
-	t_input m_input;
-
-	/* Selected device */
-	QString m_deviceName;
 };
 
 #endif /* INPUTPATCHEDITOR_H */

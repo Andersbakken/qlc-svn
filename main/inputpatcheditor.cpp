@@ -50,17 +50,23 @@ extern App* _app;
 #define KDeviceColumnName 0
 
 InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
-				   InputPatch* inputPatch) : QDialog(parent)
+				   const InputPatch* inputPatch)
+	: QDialog(parent)
 {
 	Q_ASSERT(universe < _app->inputMap()->universes());
 	m_universe = universe;
+	setWindowTitle(tr("Mapping properties for input universe %1")
+			.arg(m_universe + 1));
 
-	Q_ASSERT(inputPatch != NULL);
-	m_inputPatch = inputPatch;
+	/* Copy these so they can be applied if the user cancels */
+	m_originalPluginName = inputPatch->pluginName();
+	m_currentPluginName = inputPatch->pluginName();
 
-	m_pluginName = inputPatch->pluginName();
-	m_input = inputPatch->input();
-	m_deviceName = inputPatch->deviceName();
+	m_originalInput = inputPatch->input();
+	m_currentInput = inputPatch->input();
+
+	m_originalDeviceName = inputPatch->deviceName();
+	m_currentDeviceName = inputPatch->deviceName();
 
 	/* Setup UI controls */
 	setupUi(this);
@@ -72,12 +78,12 @@ InputPatchEditor::~InputPatchEditor()
 {
 }
 
-void InputPatchEditor::accept()
+void InputPatchEditor::reject()
 {
-	_app->inputMap()->setPatch(m_universe, m_pluginName, m_input,
-				   m_deviceName);
+	_app->inputMap()->setPatch(m_universe, m_originalPluginName,
+				   m_originalInput, m_originalDeviceName);
 
-	QDialog::accept();
+	QDialog::reject();
 }
 
 /****************************************************************************
@@ -86,27 +92,27 @@ void InputPatchEditor::accept()
 
 void InputPatchEditor::setupMappingPage()
 {
-	/* Plugin tree */
-	connect(m_mapTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
-						     QTreeWidgetItem*)),
-		this, SLOT(slotMappingCurrentItemChanged(QTreeWidgetItem*)));
-
-	/* Configure plugin/input */
-	connect(m_configureButton, SIGNAL(clicked()),
-		this, SLOT(slotConfigureInputClicked()));
-
-	/* Input universe that is being edited */
-	setWindowTitle(tr("Mapping properties for input universe %1")
-			.arg(m_universe + 1));
-
 	/* Fill the map tree with available plugins */
 	fillMappingTree();
+
+	/* Check state changes */
+	connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
+
+	/* Selection changes */
+	connect(m_mapTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
+						     QTreeWidgetItem*)),
+		this, SLOT(slotMapCurrentItemChanged(QTreeWidgetItem*)));
+
+	/* Configure button */
+	connect(m_configureButton, SIGNAL(clicked()),
+		this, SLOT(slotConfigureInputClicked()));
 }
 
 void InputPatchEditor::fillMappingTree()
 {
-	QTreeWidgetItem* pitem;
-	QTreeWidgetItem* iitem;
+	QTreeWidgetItem* iitem = NULL;
+	QTreeWidgetItem* pitem = NULL;
 	QString pluginName;
 	int i;
 
@@ -117,10 +123,13 @@ void InputPatchEditor::fillMappingTree()
 	pitem = new QTreeWidgetItem(m_mapTree);
 	pitem->setText(KMapColumnName, KInputNone);
 	pitem->setText(KMapColumnInput, QString("%1").arg(KInputInvalid));
+	pitem->setFlags(pitem->flags() | Qt::ItemIsUserCheckable);
 
 	/* Set "Nothing" selected if there is no valid input selected */
-	if (m_input == KInputInvalid)
-		m_mapTree->setCurrentItem(pitem);
+	if (m_currentInput == KInputInvalid)
+		pitem->setCheckState(KMapColumnName, Qt::Checked);
+	else
+		pitem->setCheckState(KMapColumnName, Qt::Unchecked);
 
 	/* Go thru available plugins and put them as the tree's root nodes. */
 	QStringListIterator pit(_app->inputMap()->pluginNames());
@@ -131,21 +140,35 @@ void InputPatchEditor::fillMappingTree()
 		pluginName = pit.next();
 		pitem = new QTreeWidgetItem(m_mapTree);
 		pitem->setText(KMapColumnName, pluginName);
-		pitem->setText(KMapColumnInput, QString("%1").arg(KInputInvalid));
+		pitem->setText(KMapColumnInput, QString("%1")
+							.arg(KInputInvalid));
 
 		/* Go thru available inputs provided by each plugin and put
 		   them as their parent plugin's leaf nodes. */
-		QStringListIterator iit(_app->inputMap()->pluginInputs(
-								pluginName));
+		QStringListIterator iit(
+			_app->inputMap()->pluginInputs(pluginName));
 		while (iit.hasNext() == true)
 		{
 			iitem = new QTreeWidgetItem(pitem);
 			iitem->setText(KMapColumnName, iit.next());
 			iitem->setText(KMapColumnInput, QString("%1").arg(i));
+			iitem->setFlags(iitem->flags() |
+					Qt::ItemIsUserCheckable);
 
-			/* Select the currently mapped plugin input */
-			if (m_pluginName == pluginName && m_input == i)
-				m_mapTree->setCurrentItem(iitem);
+			/* Select the currently mapped plugin input and expand
+			   its parent node. */
+			if (m_currentPluginName == pluginName &&
+			    m_currentInput == i)
+			{
+				iitem->setCheckState(KMapColumnName,
+						     Qt::Checked);
+				pitem->setExpanded(true);
+			}
+			else
+			{
+				iitem->setCheckState(KMapColumnName,
+						     Qt::Unchecked);
+			}
 
 			i++;
 		}
@@ -158,48 +181,106 @@ void InputPatchEditor::fillMappingTree()
 			iitem->setText(KMapColumnName, KInputNone);
 			iitem->setText(KMapColumnInput,
 				       QString("%1").arg(KInputInvalid));
+			pitem->setFlags(pitem->flags() |
+					Qt::ItemIsUserCheckable);
 		}
 	}
 }
 
-void InputPatchEditor::slotMappingCurrentItemChanged(QTreeWidgetItem* item)
+void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
 {
+	QString info;
+
 	if (item == NULL)
 	{
-		m_input = KInputInvalid;
-		m_inputName = QString::null;
-		m_pluginName = QString::null;
-		m_configureButton->setEnabled(false);
+		/* Nothing selected */
+		info = tr("No information");
 	}
 	else
 	{
-		m_input = item->text(KMapColumnInput).toInt();
-		if (m_input != KInputInvalid)
+		QString plugin;
+		t_input input;
+
+		if (item->parent() != NULL)
 		{
-			m_inputName = item->text(KMapColumnName);
-			m_pluginName = item->parent()->text(KMapColumnName);
+			/* Input node selected */
+			plugin = item->parent()->text(KMapColumnName);
+			input = item->text(KMapColumnInput).toInt();
 		}
 		else
 		{
-			m_inputName = QString::null;
-			m_pluginName = item->text(KMapColumnName);
+			/* Plugin node selected */
+			plugin = item->text(KMapColumnName);
+			input = KInputInvalid;
 		}
 
-		if (m_pluginName == KInputNone)
-			m_configureButton->setEnabled(false);
-		else
-			m_configureButton->setEnabled(true);
+		info = _app->inputMap()->pluginStatus(plugin, input);
 	}
 
-	/* Update plugin/input information */
-	QString info;
-	info = _app->inputMap()->pluginStatus(m_pluginName, m_input);
+	/* Display information for the selected plugin or input */
 	m_infoBrowser->setText(info);
+}
+
+void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
+{
+	if (item == NULL)
+		return;
+
+	if (item->checkState(KMapColumnName) == Qt::Checked)
+	{
+		/* Temporarily disable this signal to prevent an endless loop */
+		disconnect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+			   this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
+
+		/* Set all other items unchecked... */
+		QTreeWidgetItemIterator it(m_mapTree);
+		while ((*it) != NULL)
+		{
+			/* Don't touch the item that was just checked nor
+			   any parent nodes. */
+			if (*it != item && (*it)->childCount() == 0)
+			{
+				/* Set all the rest of the nodes unchecked */
+				(*it)->setCheckState(KDeviceColumnName,
+						     Qt::Unchecked);
+			}
+
+			/* Next one */
+			++it;
+		}
+
+		/* Start listening to this signal once again */
+		connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+			this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
+	}
+	else
+	{
+		/* Don't allow unchecking an item by clicking it. Only allow
+		   changing the check state by checking another item. */
+		item->setCheckState(KDeviceColumnName, Qt::Checked);
+	}
+
+	/* Store the selected plugin name & input */
+	if (item->parent() != NULL)
+	{
+		m_currentPluginName = item->parent()->text(KMapColumnName);
+		m_currentInput = item->text(KMapColumnInput).toInt();
+	}
+	else
+	{
+		m_currentPluginName = KInputNone;
+		m_currentInput = KInputInvalid;
+	}
+
+	/* Apply the patch immediately so that input data can be used in the
+	   input device editor */
+	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
+				   m_currentInput, m_currentDeviceName);
 }
 
 void InputPatchEditor::slotConfigureInputClicked()
 {
-	_app->inputMap()->configurePlugin(m_pluginName);
+	_app->inputMap()->configurePlugin(m_currentPluginName);
 
 	/* Refill the mapping tree in case configuration changed something */
 	fillMappingTree();
@@ -223,7 +304,7 @@ void InputPatchEditor::setupDevicePage()
 
 	/* Listen to itemChanged() signals to catch check state changes */
 	connect(m_deviceTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		this, SLOT(slotDeviceItemChanged(QTreeWidgetItem*,int)));
+		this, SLOT(slotDeviceItemChanged(QTreeWidgetItem*)));
 
 	/* Double click acts as edit button click */
 	connect(m_deviceTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
@@ -250,54 +331,45 @@ void InputPatchEditor::fillDeviceTree()
 }
 
 void InputPatchEditor::updateDeviceItem(const QString& name,
-					  QTreeWidgetItem* item)
+					QTreeWidgetItem* item)
 {
 	Q_ASSERT(item != NULL);
 
 	item->setText(KDeviceColumnName, name);
 
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	if (m_deviceName == name)
+	if (m_currentDeviceName == name)
 		item->setCheckState(KDeviceColumnName, Qt::Checked);
 	else
 		item->setCheckState(KDeviceColumnName, Qt::Unchecked);
 }
 
-void InputPatchEditor::slotDeviceItemChanged(QTreeWidgetItem* item,
-					       int column)
+void InputPatchEditor::slotDeviceItemChanged(QTreeWidgetItem* item)
 {
-	Q_UNUSED(column);
-
 	if (item->checkState(KDeviceColumnName) == Qt::Checked)
 	{
 		/* Temporarily disable this signal to prevent an endless loop */
 		disconnect(m_deviceTree,
 			   SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 			   this,
-			   SLOT(slotDeviceItemChanged(QTreeWidgetItem*,int)));
+			   SLOT(slotDeviceItemChanged(QTreeWidgetItem*)));
 
 		/* Set all other items unchecked... */
-		for (int i = 0; i < m_deviceTree->topLevelItemCount(); i++)
+		QTreeWidgetItemIterator it(m_deviceTree);
+		while (*it != NULL)
 		{
-			QTreeWidgetItem* another;
-			another = m_deviceTree->topLevelItem(i);
-
-			if (another != item)
-			{
-				/* ...except the one that was just checked */
-				another->setCheckState(KDeviceColumnName,
-							Qt::Unchecked);
-			}
+			/* ...except the one that was just checked */
+			if (*it != item)
+				(*it)->setCheckState(KDeviceColumnName,
+						     Qt::Unchecked);
+			++it;
 		}
-
-		/* Store the selected device name */
-		m_deviceName = item->text(KDeviceColumnName);
 
 		/* Start listening to this signal once again */
 		connect(m_deviceTree,
 			SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 			this,
-			SLOT(slotDeviceItemChanged(QTreeWidgetItem*,int)));
+			SLOT(slotDeviceItemChanged(QTreeWidgetItem*)));
 	}
 	else
 	{
@@ -305,6 +377,13 @@ void InputPatchEditor::slotDeviceItemChanged(QTreeWidgetItem* item,
 		   changing the check state by checking another item. */
 		item->setCheckState(KDeviceColumnName, Qt::Checked);
 	}
+
+	/* Store the selected device name */
+	m_currentDeviceName = item->text(KDeviceColumnName);
+
+	/* Apply the patch immediately */
+	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
+				   m_currentInput, m_currentDeviceName);
 }
 
 void InputPatchEditor::slotAddDeviceClicked()
