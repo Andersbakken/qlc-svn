@@ -39,11 +39,12 @@ class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	OutputPatchEditor(QWidget* parent, int universe, OutputPatch* patch);
+	OutputPatchEditor(QWidget* parent, int universe,
+			  const OutputPatch* patch);
 	~OutputPatchEditor();
 
 public slots:
-	void accept();
+	void reject();
 
 private:
 	Q_DISABLE_COPY(OutputPatchEditor)
@@ -54,26 +55,16 @@ protected:
 
 protected slots:
 	void slotCurrentItemChanged(QTreeWidgetItem* item);
+	void slotItemChanged(QTreeWidgetItem* item);
 	void slotConfigureClicked();
 
-	/********************************************************************
-	 * Selection
-	 ********************************************************************/
 protected:
-	/** The output patch that is being edited */
-	OutputPatch* m_patch;
-
-	/** The output universe being edited */
 	int m_universe;
 
-	/** The selected plugin's name */
-	QString m_pluginName;
-
-	/** The selected output name */
-	QString m_outputName;
-
-	/** The selected output line number */
-	t_output m_output;
+	QString m_originalPluginName;
+	QString m_currentPluginName;
+	t_output m_originalOutput;
+	t_output m_currentOutput;
 };
 
 #endif /* OUTPUTPATCHEDITOR_H */

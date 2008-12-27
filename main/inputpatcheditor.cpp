@@ -95,10 +95,6 @@ void InputPatchEditor::setupMappingPage()
 	/* Fill the map tree with available plugins */
 	fillMappingTree();
 
-	/* Check state changes */
-	connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
-
 	/* Selection changes */
 	connect(m_mapTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						     QTreeWidgetItem*)),
@@ -115,6 +111,10 @@ void InputPatchEditor::fillMappingTree()
 	QTreeWidgetItem* pitem = NULL;
 	QString pluginName;
 	int i;
+
+	/* Disable check state change tracking when the tree is filled */
+	disconnect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		   this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
 
 	m_mapTree->clear();
 
@@ -181,10 +181,15 @@ void InputPatchEditor::fillMappingTree()
 			iitem->setText(KMapColumnName, KInputNone);
 			iitem->setText(KMapColumnInput,
 				       QString("%1").arg(KInputInvalid));
-			pitem->setFlags(pitem->flags() |
-					Qt::ItemIsUserCheckable);
+			iitem->setFlags(iitem->flags() & ~Qt::ItemIsEnabled);
+			iitem->setFlags(iitem->flags() & ~Qt::ItemIsSelectable);
+			iitem->setCheckState(KMapColumnName, Qt::Unchecked);
 		}
 	}
+
+	/* Enable check state change tracking after the tree has been filled */
+	connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
 }
 
 void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
@@ -241,7 +246,7 @@ void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
 			if (*it != item && (*it)->childCount() == 0)
 			{
 				/* Set all the rest of the nodes unchecked */
-				(*it)->setCheckState(KDeviceColumnName,
+				(*it)->setCheckState(KMapColumnName,
 						     Qt::Unchecked);
 			}
 
@@ -257,7 +262,7 @@ void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
 	{
 		/* Don't allow unchecking an item by clicking it. Only allow
 		   changing the check state by checking another item. */
-		item->setCheckState(KDeviceColumnName, Qt::Checked);
+		item->setCheckState(KMapColumnName, Qt::Checked);
 	}
 
 	/* Store the selected plugin name & input */
@@ -280,7 +285,20 @@ void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
 
 void InputPatchEditor::slotConfigureInputClicked()
 {
-	_app->inputMap()->configurePlugin(m_currentPluginName);
+	QTreeWidgetItem* item;
+	QString plugin;
+
+	/* Find out the currently selected plugin */
+	item = m_mapTree->currentItem();
+	if (item == NULL)
+		return;
+	else if (item->parent() != NULL)
+		plugin = item->parent()->text(KMapColumnName);
+	else
+		plugin = item->text(KMapColumnName);
+
+	/* Configure the plugin */
+	_app->inputMap()->configurePlugin(plugin);
 
 	/* Refill the mapping tree in case configuration changed something */
 	fillMappingTree();
