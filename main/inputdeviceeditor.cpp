@@ -24,6 +24,7 @@
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QMessageBox>
+#include <QTabWidget>
 #include <QDialog>
 #include <QDebug>
 #include <QFile>
@@ -102,8 +103,7 @@ void InputDeviceEditor::fillTree()
 {
 	m_tree->clear();
 
-	QMapIterator <t_channel, QLCInputChannel*>
-		it(m_device->channels());
+	QMapIterator <t_channel, QLCInputChannel*> it(m_device->channels());
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -134,11 +134,25 @@ void InputDeviceEditor::updateChannelItem(QTreeWidgetItem* item,
  * OK & Cancel
  ****************************************************************************/
 
+void InputDeviceEditor::reject()
+{
+	/* Don't allow closing the dialog in any way when the wizard is on */
+	if (m_buttonBox->isEnabled() == false)
+		return;
+
+	QDialog::reject();
+}
+
 void InputDeviceEditor::accept()
 {
+	/* Don't allow closing the dialog in any way when the wizard is on */
+	if (m_buttonBox->isEnabled() == false)
+		return;
+
 	m_device->setManufacturer(m_manufacturerEdit->text());
 	m_device->setModel(m_modelEdit->text());
 
+	/* Check that we have at least the bare necessities to save the dev */
 	if (m_device->manufacturer().isEmpty() == true ||
 	    m_device->model().isEmpty() == true)
 	{
@@ -280,6 +294,15 @@ void InputDeviceEditor::slotWizardClicked(bool checked)
 {
 	if (checked == true)
 	{
+		QMessageBox::information(this, tr("Channel wizard activated"),
+			tr("You have enabled the input channel wizard. After ")
+		      + tr("clicking OK, wiggle your mapped input device's ")
+		      + tr("controls. They should appear into the list. ")
+		      + tr("Click the wizard button again to stop channel ")
+		      + tr("auto-detection.\n\nNote that the wizard cannot ")
+		      + tr("tell the difference between a knob and a slider ")
+		      + tr("so you will have to do the change manually."));
+
 		connect(_app->inputMap(),
 			SIGNAL(inputValueChanged(t_input_universe,
 						 t_input_channel,
@@ -300,6 +323,9 @@ void InputDeviceEditor::slotWizardClicked(bool checked)
 						   t_input_channel,
 						   t_input_value)));
 	}
+
+	m_buttonBox->setEnabled(!checked);
+	m_tab->setTabEnabled(0, !checked);
 }
 
 void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,

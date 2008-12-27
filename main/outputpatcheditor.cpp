@@ -40,6 +40,8 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 				     const OutputPatch* patch)
 	: QDialog(parent)
 {
+	setupUi(this);
+
 	Q_ASSERT(universe < _app->outputMap()->universes());
 	m_universe = universe;
 	setWindowTitle(tr("Mapping properties for output universe %1")
@@ -50,9 +52,6 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 
 	m_originalOutput = patch->output();
 	m_currentOutput = patch->output();
-
-	/* Setup UI controls */
-	setupUi(this);
 
 	/* Selection changes */
 	connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,

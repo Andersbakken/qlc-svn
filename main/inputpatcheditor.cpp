@@ -53,6 +53,8 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 				   const InputPatch* inputPatch)
 	: QDialog(parent)
 {
+	setupUi(this);
+
 	Q_ASSERT(universe < _app->inputMap()->universes());
 	m_universe = universe;
 	setWindowTitle(tr("Mapping properties for input universe %1")
@@ -69,7 +71,6 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 	m_currentDeviceName = inputPatch->deviceName();
 
 	/* Setup UI controls */
-	setupUi(this);
 	setupMappingPage();
 	setupDevicePage();
 }
