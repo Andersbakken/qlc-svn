@@ -81,6 +81,14 @@ void SelectInputChannel::fillTree()
 	t_input_universe uni;
 	InputPatch* patch;
 
+	/* Add an option to select no input at all */
+	chItem = new QTreeWidgetItem(m_tree);
+	chItem->setText(KColumnName, KInputNone);
+	chItem->setText(KColumnUniverse, QString("%1")
+					 .arg(KInputUniverseInvalid));
+	chItem->setText(KColumnChannel, QString("%1")
+					.arg(KInputChannelInvalid));
+
 	for (uni = 0; uni < _app->inputMap()->universes(); uni++)
 	{
 		/* Get the patch associated to the current universe */
@@ -168,6 +176,8 @@ void SelectInputChannel::updateUniverseItem(QTreeWidgetItem* item,
 	{
 		/* The current universe doesn't have anything assigned to it */
 		name = QString("%1: %2").arg(universe + 1).arg(KInputNone);
+		item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+		item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
 	}
 	else
 	{

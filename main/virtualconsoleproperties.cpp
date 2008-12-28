@@ -22,8 +22,13 @@
 #include <QCheckBox>
 #include <QSpinBox>
 
+#include "common/qlcinputdevice.h"
+
 #include "virtualconsoleproperties.h"
+#include "selectinputchannel.h"
 #include "virtualconsole.h"
+#include "inputpatch.h"
+#include "inputmap.h"
 #include "app.h"
 
 extern App* _app;
@@ -32,6 +37,10 @@ VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent)
 	: QDialog(parent)
 {
 	setupUi(this);
+	connect(m_chooseFadeInputButton, SIGNAL(clicked()),
+		this, SLOT(slotChooseFadeInputClicked()));
+	connect(m_chooseHoldInputButton, SIGNAL(clicked()),
+		this, SLOT(slotChooseHoldInputClicked()));
 
 #if defined(__APPLE__) || defined (WIN32)
 	m_hardwareTimerRadio->setEnabled(false);
@@ -132,6 +141,196 @@ t_bus_value VirtualConsoleProperties::holdLowLimit()
 t_bus_value VirtualConsoleProperties::holdHighLimit()
 {
 	return m_holdHighSpin->value();
+}
+
+/*****************************************************************************
+ * Slider external input
+ *****************************************************************************/
+
+void VirtualConsoleProperties::setFadeInputSource(t_input_universe uni,
+						  t_input_channel ch)
+{
+	m_fadeInputUniverse = uni;
+	m_fadeInputChannel = ch;
+
+	updateFadeInputSource();
+}
+
+t_input_universe VirtualConsoleProperties::fadeInputUniverse()
+{
+	return m_fadeInputUniverse;
+}
+
+t_input_channel VirtualConsoleProperties::fadeInputChannel()
+{
+	return m_fadeInputChannel;
+}
+
+void VirtualConsoleProperties::setHoldInputSource(t_input_universe uni,
+						  t_input_channel ch)
+{
+	m_holdInputUniverse = uni;
+	m_holdInputChannel = ch;
+
+	updateHoldInputSource();
+}
+
+t_input_universe VirtualConsoleProperties::holdInputUniverse()
+{
+	return m_holdInputUniverse;
+}
+
+t_input_channel VirtualConsoleProperties::holdInputChannel()
+{
+	return m_holdInputChannel;
+}
+
+void VirtualConsoleProperties::slotChooseFadeInputClicked()
+{
+	SelectInputChannel sic(this);
+	if (sic.exec() == QDialog::Accepted)
+	{
+		m_fadeInputUniverse = sic.universe();
+		m_fadeInputChannel = sic.channel();
+
+		updateFadeInputSource();
+	}
+}
+
+void VirtualConsoleProperties::slotChooseHoldInputClicked()
+{
+	SelectInputChannel sic(this);
+	if (sic.exec() == QDialog::Accepted)
+	{
+		m_holdInputUniverse = sic.universe();
+		m_holdInputChannel = sic.channel();
+
+		updateHoldInputSource();
+	}
+}
+
+void VirtualConsoleProperties::updateFadeInputSource()
+{
+	QLCInputDevice* dev;
+	InputPatch* patch;
+	QString uniName;
+	QString chName;
+
+	if (m_fadeInputUniverse == KInputUniverseInvalid ||
+	    m_fadeInputChannel == KInputChannelInvalid)
+	{
+		/* Nothing selected for input universe and/or channel */
+		uniName = KInputNone;
+		chName = KInputNone;
+	}
+	else
+	{
+		patch = _app->inputMap()->patch(m_fadeInputUniverse);
+		if (patch == NULL || patch->plugin() == NULL)
+		{
+			/* There is no patch for the given universe */
+			uniName = KInputNone;
+			chName = KInputNone;
+		}
+		else
+		{
+			dev = patch->device();
+			if (dev == NULL)
+			{
+				/* There is no device. Display plugin
+				   name and channel number. Boring. */
+				uniName = patch->plugin()->name();
+				chName = tr("%1: Unknown")
+						.arg(m_fadeInputChannel + 1);
+			}
+			else
+			{
+				QString name;
+
+				/* Display device name for universe */
+				uniName = QString("%1: %2")
+						.arg(m_fadeInputUniverse + 1)
+						.arg(dev->name());
+
+				/* User can input the channel number by hand,
+				   so put something rational to the channel
+				   name in those cases as well. */
+				name = dev->channelName(m_fadeInputChannel);
+				if (name == QString::null)
+					name = tr("Unknown");
+
+				/* Display channel name */
+				chName = QString("%1: %2")
+					.arg(m_fadeInputChannel + 1).arg(name);
+			}
+		}
+	}
+
+	/* Display the gathered information */
+	m_fadeInputUniverseEdit->setText(uniName);
+	m_fadeInputChannelEdit->setText(chName);
+}
+
+void VirtualConsoleProperties::updateHoldInputSource()
+{
+	QLCInputDevice* dev;
+	InputPatch* patch;
+	QString uniName;
+	QString chName;
+
+	if (m_holdInputUniverse == KInputUniverseInvalid ||
+	    m_holdInputChannel == KInputChannelInvalid)
+	{
+		/* Nothing selected for input universe and/or channel */
+		uniName = KInputNone;
+		chName = KInputNone;
+	}
+	else
+	{
+		patch = _app->inputMap()->patch(m_holdInputUniverse);
+		if (patch == NULL || patch->plugin() == NULL)
+		{
+			/* There is no patch for the given universe */
+			uniName = KInputNone;
+			chName = KInputNone;
+		}
+		else
+		{
+			dev = patch->device();
+			if (dev == NULL)
+			{
+				/* There is no device. Display plugin
+				   name and channel number. Boring. */
+				uniName = patch->plugin()->name();
+				chName = tr("%1: Unknown")
+						.arg(m_holdInputChannel + 1);
+			}
+			else
+			{
+				QString name;
+
+				/* Display device name for universe */
+				uniName = QString("%1: %2")
+						.arg(m_holdInputUniverse + 1)
+						.arg(dev->name());
+
+				/* User can input the channel number by hand,
+				   so put something rational to the channel
+				   name in those cases as well. */
+				name = dev->channelName(m_holdInputChannel);
+				if (name == QString::null)
+					name = tr("Unknown");
+
+				/* Display channel name */
+				chName = QString("%1: %2")
+					.arg(m_holdInputChannel + 1).arg(name);
+			}
+		}
+	}
+
+	/* Display the gathered information */
+	m_holdInputUniverseEdit->setText(uniName);
+	m_holdInputChannelEdit->setText(chName);
 }
 
 /*****************************************************************************

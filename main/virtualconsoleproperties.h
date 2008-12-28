@@ -80,6 +80,33 @@ public:
 	t_bus_value holdHighLimit();
 
 	/*********************************************************************
+	 * Slider external input
+	 *********************************************************************/
+public:
+	void setFadeInputSource(t_input_universe uni, t_input_channel ch);
+	t_input_universe fadeInputUniverse();
+	t_input_channel fadeInputChannel();
+
+	void setHoldInputSource(t_input_universe uni, t_input_channel ch);
+	t_input_universe holdInputUniverse();
+	t_input_channel holdInputChannel();
+
+protected:
+	t_input_universe m_fadeInputUniverse;
+	t_input_channel m_fadeInputChannel;
+
+	t_input_universe m_holdInputUniverse;
+	t_input_channel m_holdInputChannel;
+
+protected slots:
+	void slotChooseFadeInputClicked();
+	void slotChooseHoldInputClicked();
+
+protected:
+	void updateFadeInputSource();
+	void updateHoldInputSource();
+
+	/*********************************************************************
 	 * Timer type
 	 *********************************************************************/
 public:

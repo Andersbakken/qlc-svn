@@ -259,7 +259,8 @@ void VCSliderProperties::updateInputUniverseChannel()
 				/* There is no device. Display plugin
 				   name and channel number. Boring. */
 				uniName = patch->plugin()->name();
-				chName = tr("%1: Unknown").arg(m_inputChannel);
+				chName = tr("%1: Unknown")
+						.arg(m_inputChannel + 1);
 			}
 			else
 			{

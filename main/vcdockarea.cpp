@@ -61,7 +61,6 @@ bool VCDockArea::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 	bool visible = false;
-	t_bus_id bus = 0;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
@@ -84,15 +83,15 @@ bool VCDockArea::loadXML(QDomDocument* doc, QDomElement* root)
 		if (tag.tagName() == KXMLQLCVCDockSlider)
 		{
 			/* Check, which slider is defined in this node */
-			bus = tag.attribute(KXMLQLCVCDockSliderBus).toInt();
+			str = tag.attribute(KXMLQLCBusRole);
 
 			/* Only accept buses 0 and 1 */
-			if (bus == KBusIDDefaultFade)
+			if (str == KXMLQLCBusFade)
 				m_defaultFadeSlider->loadXML(doc, &tag);
-			else if (bus == KBusIDDefaultHold)
+			else if (str == KXMLQLCBusHold)
 				m_defaultHoldSlider->loadXML(doc, &tag);
 			else
-				qDebug() << "Cannot bind default sliders to "
+				qDebug() << "Cannot bind default sliders to"
 				         << "other than Fade/Hold buses.";
 		}
 		else
@@ -132,7 +131,7 @@ bool VCDockArea::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Slider entries */
 	m_defaultFadeSlider->saveXML(doc, &root);
 	m_defaultHoldSlider->saveXML(doc, &root);
-	
+
 	return true;
 }
 

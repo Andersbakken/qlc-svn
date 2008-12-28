@@ -59,10 +59,10 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 	m_gridEnabled = true;
 	m_gridX = 10;
 	m_gridY = 10;
-	
+
 	m_keyRepeatOff = true;
 	m_grabKeyboard = true;
-	
+
 	m_selectedWidget = NULL;
 	m_clipboardAction = ClipboardNone;
 
@@ -149,27 +149,27 @@ void VirtualConsole::initActions()
 				      tr("Cut"), this);
 	connect(m_editCutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditCut()));
-	
+
 	m_editCopyAction = new QAction(QIcon(":/editcopy.png"),
 				       tr("Copy"), this);
 	connect(m_editCopyAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditCopy()));
-	
+
 	m_editPasteAction = new QAction(QIcon(":/editpaste.png"),
 					tr("Paste"), this);
 	connect(m_editPasteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditPaste()));
-	
+
 	m_editDeleteAction = new QAction(QIcon(":/editdelete.png"),
 					 tr("Delete"), this);
 	connect(m_editDeleteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditDelete()));
-	
+
 	m_editPropertiesAction = new QAction(QIcon(":/configure.png"),
 					     tr("Properties"), this);
 	connect(m_editPropertiesAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditProperties()));
-	
+
 	m_editRenameAction = new QAction(QIcon(":/editclear.png"),
 					 tr("Rename"), this);
 	connect(m_editRenameAction, SIGNAL(triggered(bool)),
@@ -384,7 +384,7 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 			qDebug() << "Unknown virtual console tag:"
 				 << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -441,7 +441,7 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	str.setNum((m_grabKeyboard) ? 1 : 0);
 	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardGrab, str);
 	str.setNum((m_keyRepeatOff) ? 1 : 0);
-	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardRepeat, str);	
+	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardRepeat, str);
 
 	/* Dock Area */
 	m_dockArea->saveXML(doc, &root);
@@ -540,7 +540,7 @@ void VirtualConsole::paste(VCFrame* parent, QPoint point)
 
 void VirtualConsole::copyWidget(VCWidget*, VCFrame*, QPoint)
 {
-	/* TODO: 
+	/* TODO:
 	   Create a copy of the widget and place it into the parent,
 	   at the given point */
 }
@@ -658,21 +658,36 @@ void VirtualConsole::slotAddLabel()
 void VirtualConsole::slotToolsSettings()
 {
 	VirtualConsoleProperties prop(this);
-	t_bus_value lo = 0;
-	t_bus_value hi = 0;
+	t_input_universe uni;
+	t_input_channel ch;
+	t_bus_value lo;
+	t_bus_value hi;
 
 	Q_ASSERT(m_dockArea != NULL);
 
+	/* Layout */
 	prop.setKeyRepeatOff(m_keyRepeatOff);
 	prop.setGrabKeyboard(m_grabKeyboard);
-
 	prop.setGrid(m_gridEnabled, m_gridX, m_gridY);
 
-	m_dockArea->defaultFadeSlider()->busRange(lo, hi);
+	/* Default sliders */
+	lo = m_dockArea->defaultFadeSlider()->busLowLimit();
+	hi = m_dockArea->defaultFadeSlider()->busHighLimit();
 	prop.setFadeLimits(lo, hi);
-	m_dockArea->defaultHoldSlider()->busRange(lo, hi);
+
+	lo = m_dockArea->defaultHoldSlider()->busLowLimit();
+	hi = m_dockArea->defaultHoldSlider()->busHighLimit();
 	prop.setHoldLimits(lo, hi);
 
+	uni = m_dockArea->defaultFadeSlider()->inputUniverse();
+	ch = m_dockArea->defaultFadeSlider()->inputChannel();
+	prop.setFadeInputSource(uni, ch);
+
+	uni = m_dockArea->defaultHoldSlider()->inputUniverse();
+	ch = m_dockArea->defaultHoldSlider()->inputChannel();
+	prop.setHoldInputSource(uni, ch);
+
+	/* Timer */
 	prop.setTimerType(_app->functionConsumer()->timerType());
 
 	if (prop.exec() == QDialog::Accepted)
@@ -680,7 +695,7 @@ void VirtualConsole::slotToolsSettings()
 		setGridEnabled(prop.isGridEnabled());
 		setGridX(prop.gridX());
 		setGridY(prop.gridY());
-		
+
 		setKeyRepeatOff(prop.isKeyRepeatOff());
 		setGrabKeyboard(prop.isGrabKeyboard());
 
@@ -691,6 +706,14 @@ void VirtualConsole::slotToolsSettings()
 		lo = prop.holdLowLimit();
 		hi = prop.holdHighLimit();
 		m_dockArea->defaultHoldSlider()->setBusRange(lo, hi);
+
+		uni = prop.fadeInputUniverse();
+		ch = prop.fadeInputChannel();
+		m_dockArea->defaultFadeSlider()->setInputSource(uni, ch);
+
+		uni = prop.holdInputUniverse();
+		ch = prop.holdInputChannel();
+		m_dockArea->defaultHoldSlider()->setInputSource(uni, ch);
 
 		_app->functionConsumer()->setTimerType(prop.timerType());
 
