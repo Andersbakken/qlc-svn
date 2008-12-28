@@ -93,6 +93,9 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 
 VirtualConsole::~VirtualConsole()
 {
+	/* The parent widget is a QMdiSubWindow, which must be deleted now
+	   since its child is deleted. */
+	parentWidget()->deleteLater();
 }
 
 void VirtualConsole::initActions()
