@@ -337,9 +337,11 @@ int FunctionManager::slotEdit()
 	Function* function;
 	int result;
 
-	item = m_functionTree->selectedItems().first();
-	if (item == NULL)
+	if (m_functionTree->selectedItems().isEmpty() == true)
 		return QDialog::Rejected;
+
+	item = m_functionTree->selectedItems().first();
+	Q_ASSERT(item != NULL);
 
 	// Find the selected function
 	function = _app->doc()->function(item->text(KColumnID).toInt());
