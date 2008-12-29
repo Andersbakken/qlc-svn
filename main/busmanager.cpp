@@ -73,9 +73,6 @@ void BusManager::setupUi()
 
 	columns << tr("Bus ID") << tr("Name");
 	m_tree->setHeaderLabels(columns);
-
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditClicked()));
 }
 
 /****************************************************************************
@@ -113,13 +110,28 @@ void BusManager::slotEditClicked()
 void BusManager::fillTree()
 {
 	QTreeWidgetItem* item;
-	QString str;
 
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
 		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnID, str.sprintf("%.2d", id + 1));
+		item->setText(KColumnID, QString("%1").arg(id + 1));
 		item->setText(KColumnName, Bus::name(id));
+		item->setFlags(item->flags() | Qt::ItemIsEditable);
 	}
+
+	connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
 }
 
+void BusManager::slotItemChanged(QTreeWidgetItem* item, int column)
+{
+	int index;
+
+	Q_ASSERT(item != NULL);
+
+	index = m_tree->indexOfTopLevelItem(item);
+	if (column == KColumnID) /* Reject ID column edits */
+		item->setText(KColumnID, QString("%1").arg(index + 1));
+	else /* Change bus name */
+		Bus::setName(index, item->text(KColumnName));
+}

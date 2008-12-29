@@ -60,6 +60,9 @@ protected:
 protected:
 	void fillTree();
 
+protected slots:
+	void slotItemChanged(QTreeWidgetItem* item, int column);
+
 protected:
 	QTreeWidget* m_tree;
 };
