@@ -44,6 +44,8 @@ class VCSliderProperties;
 #define KXMLQLCVCSliderValueDisplayStyleExact "Exact"
 #define KXMLQLCVCSliderValueDisplayStylePercentage "Percentage"
 
+#define KXMLQLCVCSliderInvertedAppearance "InvertedAppearance"
+
 #define KXMLQLCVCSliderBus "Bus"
 #define KXMLQLCVCSliderBusLowLimit "LowLimit"
 #define KXMLQLCVCSliderBusHighLimit "HighLimit"
@@ -162,6 +164,13 @@ public:
 
 protected:
 	ValueDisplayStyle m_valueDisplayStyle;
+
+	/*********************************************************************
+	 * Inverted appearance
+	 *********************************************************************/
+public:
+	bool invertedAppearance() const;
+	void setInvertedAppearance(bool invert);
 
 	/*********************************************************************
 	 * Bus

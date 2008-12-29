@@ -264,6 +264,22 @@ VCSlider::ValueDisplayStyle VCSlider::valueDisplayStyle()
 }
 
 /*****************************************************************************
+ * Inverted appearance
+ *****************************************************************************/
+
+bool VCSlider::invertedAppearance() const
+{
+	Q_ASSERT(m_slider != NULL);
+	return m_slider->invertedAppearance();
+}
+
+void VCSlider::setInvertedAppearance(bool invert)
+{
+	Q_ASSERT(m_slider != NULL);
+	m_slider->setInvertedAppearance(invert);
+}
+
+/*****************************************************************************
  * Slider Mode
  *****************************************************************************/
 
@@ -720,11 +736,11 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	int w = 0;
 	int h = 0;
 
-	QDomNode node;
-	QDomElement tag;
-	QString str;
 	SliderMode sliderMode = Bus;
+	QDomElement tag;
+	QDomNode node;
 	QString caption;
+	QString str;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
@@ -737,6 +753,10 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 
 	/* Caption */
 	caption = root->attribute(KXMLQLCVCCaption);
+	if (root->attribute(KXMLQLCVCSliderInvertedAppearance) == "false")
+		setInvertedAppearance(false);
+	else
+		setInvertedAppearance(true);
 
 	/* Children */
 	node = root->firstChild();
@@ -859,6 +879,12 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 	/* Caption */
 	root.setAttribute(KXMLQLCVCCaption, caption());
+
+	/* Inverted appearance */
+	if (invertedAppearance() == true)
+		root.setAttribute(KXMLQLCVCSliderInvertedAppearance, "true");
+	else
+		root.setAttribute(KXMLQLCVCSliderInvertedAppearance, "false");
 
 	/* Window state */
 	QLCFile::saveXMLWindowState(doc, &root, this);

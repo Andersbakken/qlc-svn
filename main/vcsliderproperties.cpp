@@ -65,10 +65,6 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 		this, SLOT(slotModeLevelClicked()));
 	connect(m_modeSubmasterRadio, SIGNAL(clicked()),
 		this, SLOT(slotModeSubmasterClicked()));
-	connect(m_valueExactRadio, SIGNAL(clicked()),
-		this, SLOT(slotValueExactClicked()));
-	connect(m_valuePercentageRadio, SIGNAL(clicked()),
-		this, SLOT(slotValuePercentageClicked()));
 
 	/* Level page connections */
 	connect(m_levelLowLimitSpin, SIGNAL(valueChanged(int)),
@@ -112,6 +108,12 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 		slotModeLevelClicked();
 		break;
 	}
+
+	/* Slider movement (Qt understands inverted appearance vice versa) */
+	if (m_slider->invertedAppearance() == true)
+		m_sliderMovementNormalRadio->setChecked(true);
+	else
+		m_sliderMovementInvertedRadio->setChecked(true);
 
 	/* Value display style */
 	switch (m_slider->valueDisplayStyle())
@@ -205,14 +207,6 @@ void VCSliderProperties::slotModeLevelClicked()
 }
 
 void VCSliderProperties::slotModeSubmasterClicked()
-{
-}
-
-void VCSliderProperties::slotValueExactClicked()
-{
-}
-
-void VCSliderProperties::slotValuePercentageClicked()
 {
 }
 
@@ -713,6 +707,12 @@ void VCSliderProperties::accept()
 		m_slider->setValueDisplayStyle(VCSlider::ExactValue);
 	else
 		m_slider->setValueDisplayStyle(VCSlider::PercentageValue);
+
+	/* Slider movement (Qt understands inverted appearance vice versa) */
+	if (m_sliderMovementNormalRadio->isChecked() == true)
+		m_slider->setInvertedAppearance(true);
+	else
+		m_slider->setInvertedAppearance(false);
 
 	/* External input */
 	m_slider->setInputSource(m_inputUniverse, m_inputChannel);

@@ -53,9 +53,6 @@ protected slots:
 	void slotModeLevelClicked();
 	void slotModeSubmasterClicked();
 
-	void slotValueExactClicked();
-	void slotValuePercentageClicked();
-
 	void slotChooseInputClicked();
 
 protected:
@@ -75,7 +72,7 @@ protected:
 protected slots:
 	/** Callback for bus combo item activations */
 	void slotBusComboActivated(int item);
-	
+
 	/** Callback for bus low limit spin value changes */
 	void slotBusLowLimitSpinChanged(int value);
 
@@ -117,7 +114,7 @@ protected:
 	/** Update channel selections from the slider's level channel list */
 	void levelUpdateChannelSelections();
 
-	/** 
+	/**
 	 * Select all channels matching the given group name from the listview
 	 * on the level page
 	 */
@@ -147,7 +144,7 @@ protected slots:
 
 	/** Callback for "channel selection by group" button clicks */
 	void slotLevelByGroupClicked();
-	
+
 	/*********************************************************************
 	 * OK & Cancel
 	 *********************************************************************/
