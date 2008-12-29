@@ -59,9 +59,6 @@ extern App* _app;
 
 FunctionManager::FunctionManager(QWidget* parent) : QWidget(parent)
 {
-	m_blockAddFunctionSignal = false;
-	m_blockRemoveFunctionSignal = false;
-
 	new QVBoxLayout(this);
 
 	initActions();
@@ -82,68 +79,6 @@ FunctionManager::~FunctionManager()
 void FunctionManager::update()
 {
 	updateFunctionTree();
-}
-
-/*****************************************************************************
- * Doc signal handlers
- *****************************************************************************/
-
-void FunctionManager::slotFunctionAdded(t_function_id fid)
-{
-	QTreeWidgetItem* item;
-	Function* function;
-
-	// The function manager has its own routines for functions that are
-	// created with it.
-	if (m_blockAddFunctionSignal == true)
-		return;
-
-	// Create a new item for the function
-	item = new QTreeWidgetItem(m_functionTree);
-	function = _app->doc()->function(fid);
-	updateFunctionItem(item, function);
-}
-
-void FunctionManager::slotFunctionRemoved(t_function_id id)
-{
-	QTreeWidgetItem* item;
-
-	// The function manager has its own routines for functions that are
-	// removed with it.
-	if (m_blockRemoveFunctionSignal == true)
-		return;
-
-	item = getItem(id, m_functionTree);
-	if (item != NULL)
-	{
-		if (item->isSelected() == true)
-		{
-			QTreeWidgetItem* nextItem;
-
-			// Try to select the closest neighbour
-			if (m_functionTree->itemAbove(item) != NULL)
-				nextItem = m_functionTree->itemAbove(item);
-			else
-				nextItem = m_functionTree->itemBelow(item);
-  
-			if (nextItem != NULL)
-				nextItem->setSelected(true);
-		}
-
-		delete item;
-	}
-}
-
-void FunctionManager::slotFunctionChanged(t_function_id id)
-{
-	QTreeWidgetItem* item;
-
-	item = getItem(id, m_functionTree);
-	if (item != NULL)
-	{
-		Function* function = _app->doc()->function(id);
-		updateFunctionItem(item, function);
-	}
 }
 
 /*****************************************************************************
@@ -231,17 +166,17 @@ void FunctionManager::initMenu()
 
 	/* Bus menu */
 	m_busGroup = new QActionGroup(this);
+	m_busGroup->setExclusive(false);
 	m_busMenu = new QMenu(this);
 	m_busMenu->setTitle("Assign bus");
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
 		/* <xx>: <name> */
-		action = new QAction(QString("%1: %2").arg(id + 1, 2, 10,
-							   QChar('0'))
+		action = new QAction(QString("%1: %2").arg(id + 1)
 				     .arg(Bus::name(id)), this);
-		action->setCheckable(true);
+		action->setCheckable(false);
+		action->setData(id);
 		m_busGroup->addAction(action);
-		m_busActions.append(action);
 		m_busMenu->addAction(action);
 	}
 
@@ -279,10 +214,11 @@ void FunctionManager::initToolbar()
 
 void FunctionManager::slotBusTriggered(QAction* action)
 {
-	/* Bus actions are in ascending order in the list so the index of
-	   the triggered action is also the ID of the bus represented by
-	   the action. */
-	t_bus_id busID = m_busActions.indexOf(action);
+	t_bus_id bus;
+
+	Q_ASSERT(action != NULL);
+
+	bus = action->data().toInt();
 
 	/* Set the selected bus to all selected functions */
 	QListIterator <QTreeWidgetItem*> it(m_functionTree->selectedItems());
@@ -293,22 +229,40 @@ void FunctionManager::slotBusTriggered(QAction* action)
 
 		item = it.next();
 		Q_ASSERT(item != NULL);
+
 		function = _app->doc()->function(item->text(KColumnID).toInt());
 		Q_ASSERT(function != NULL);
 
-		function->setBus(busID);
+		function->setBus(bus);
 		updateFunctionItem(item, function);
 	}
 }
 
 void FunctionManager::slotBusNameChanged(t_bus_id id, const QString& name)
 {
-	QAction* action;
+	/* Change the menu item's name to reflect the new bus name */
+	QListIterator <QAction*> it(m_busGroup->actions());
+	while (it.hasNext() == true)
+	{
+		QAction* action = it.next();
+		Q_ASSERT(action != NULL);
 
-	action = m_busActions.at(id);
-	Q_ASSERT(action != NULL);
+		if (action->data().toInt() == id)
+		{
+			action->setText(QString("%1: %2")
+					.arg(id + 1).arg(name));
+			break;
+		}
+	}
 
-	action->setText(QString("%1: %2").arg(id).arg(name));
+	/* Change all affected function item's bus names as well */
+	QListIterator <QTreeWidgetItem*> twit(
+			m_functionTree->findItems(QString("%1: ").arg(id + 1),
+						  Qt::MatchStartsWith,
+						  KColumnBus));
+	while (twit.hasNext() == true)
+		twit.next()->setText(KColumnBus,
+				     QString("%1: %2").arg(id + 1).arg(name));
 }
 
 void FunctionManager::slotAddScene()
@@ -422,13 +376,15 @@ void FunctionManager::slotDelete()
 
 void FunctionManager::slotSelectAll()
 {
-	for (int i = 0; i < m_functionTree->topLevelItemCount(); i++)
-		m_functionTree->topLevelItem(i)->setSelected(true);
+	/* This has to be done thru an intermediary slot because the tree
+	   widget hasn't been created when actions are being created and
+	   so a direct slot collection to m_functionTree is not possible. */
+	m_functionTree->selectAll();
 }
 
 void FunctionManager::updateActionStatus()
 {
-	if (m_functionTree->selectedItems().count() > 0)
+	if (m_functionTree->selectedItems().isEmpty() == false)
 	{
 		/* At least one function has been selected, so
 		   editing is possible. */
@@ -437,6 +393,8 @@ void FunctionManager::updateActionStatus()
 
 		m_deleteAction->setEnabled(true);
 		m_selectAllAction->setEnabled(true);
+
+		m_busGroup->setEnabled(true);
 	}
 	else
 	{
@@ -446,47 +404,8 @@ void FunctionManager::updateActionStatus()
 
 		m_deleteAction->setEnabled(false);
 		m_selectAllAction->setEnabled(false);
-	}
 
-	/* Update bus menu actions in both cases */
-	updateBusActions();
-}
-
-void FunctionManager::updateBusActions()
-{
-	QTreeWidgetItem* functionItem = m_functionTree->currentItem();
-	if (functionItem == NULL)
-	{
-		/* No current function item selection, disable bus actions */
 		m_busGroup->setEnabled(false);
-	}
-	else
-	{
-		Function* function;
-		t_function_id fid;
-		QAction* action;
-
-		/* Find the selected function */
-		fid = functionItem->text(KColumnID).toInt();
-		function = _app->doc()->function(fid);
-		Q_ASSERT(function != NULL);
-
-		/* Collections don't have a bus ID and it's always KNoID.
-		   Other functions' bus ID's can never be KNoID so it is
-		   safe to check the function's bus-assignability this way */
-		if (function->busID() == KNoID)
-		{
-			m_busGroup->setEnabled(false);
-		}
-		else
-		{
-			m_busGroup->setEnabled(true);
-
-			/* Set the current function's bus checked */
-			action = m_busActions.at(function->busID());
-			Q_ASSERT(action != NULL);
-			action->setChecked(true);
-		}
 	}
 }
 
@@ -549,13 +468,13 @@ void FunctionManager::updateFunctionItem(QTreeWidgetItem* item,
 
 	item->setText(KColumnName, function->name());
 	item->setIcon(KColumnName, function->icon());
-	item->setText(KColumnBus, function->busName());
-	item->setText(KColumnID, QString::number(function->id()));
+	item->setText(KColumnBus, QString("%1: %2").arg(function->busID() + 1)
+				  .arg(Bus::name(function->busID())));
+	item->setText(KColumnID, QString("%1").arg(function->id()));
 }
 
 void FunctionManager::deleteSelectedFunctions()
 {
-	m_blockRemoveFunctionSignal = true;
 	QListIterator <QTreeWidgetItem*> it(m_functionTree->selectedItems());
 	while (it.hasNext() == true)
 	{
@@ -566,12 +485,9 @@ void FunctionManager::deleteSelectedFunctions()
 		fid = item->text(KColumnID).toInt();
 		_app->doc()->deleteFunction(fid);
 
-		/* This is pretty weird, since QTreeWidget::selectedItems()
-		   is const, but this seems to work so let's ship it... */
 		delete item;
 	}
 
-	m_blockRemoveFunctionSignal = false;
 }
 
 void FunctionManager::slotFunctionTreeSelectionChanged()
@@ -579,8 +495,10 @@ void FunctionManager::slotFunctionTreeSelectionChanged()
 	updateActionStatus();
 }
 
-void FunctionManager::slotFunctionTreeContextMenuRequested(const QPoint&)
+void FunctionManager::slotFunctionTreeContextMenuRequested(const QPoint& point)
 {
+	Q_UNUSED(point);
+
 	QMenu contextMenu(this);
 	contextMenu.addMenu(m_manageMenu);
 	contextMenu.addMenu(m_editMenu);
@@ -606,7 +524,7 @@ Function* FunctionManager::copyFunction(t_function_id fid)
 	{
 	case Function::Scene:
 	{
-		newFunction = _app->doc()->newFunction(Function::Scene);
+		newFunction = _app->doc()->function(Function::Scene);
 		Scene* scene = static_cast<Scene*> (newFunction);
 		scene->copyFrom(static_cast<Scene*> (function));
 		scene->setName("Copy of " + function->name());
@@ -624,9 +542,7 @@ Function* FunctionManager::copyFunction(t_function_id fid)
 
 	case Function::Collection:
 	{
-		newFunction =
-			_app->doc()->newFunction(Function::Collection);
-
+		newFunction = _app->doc()->newFunction(Function::Collection);
 		Collection* fc = static_cast<Collection*> (newFunction);
 		fc->copyFrom(static_cast<Collection*> (function));
 		fc->setName("Copy of " + function->name());
@@ -647,20 +563,22 @@ Function* FunctionManager::copyFunction(t_function_id fid)
 		break;
 	}
 
+	/* Create a new item for the copied function */
+	if (newFunction != NULL)
+	{
+		QTreeWidgetItem* item;
+		item = new QTreeWidgetItem(m_functionTree);
+		updateFunctionItem(item, newFunction);
+	}
+
 	return newFunction;
 }
 
 void FunctionManager::addFunction(Function::Type type)
 {
-	QTreeWidgetItem* newItem;
+	QTreeWidgetItem* item;
 	Function* function;
 
-	// We don't want the signal handler to add the function twice
-	m_blockAddFunctionSignal = true;
-
-	//
-	// Create the function
-	//
 	switch(type)
 	{
 	case Function::Scene:
@@ -705,49 +623,23 @@ void FunctionManager::addFunction(Function::Type type)
 		break;
 	}
 
-	// We don't want the signal handler to add the function twice
-	m_blockAddFunctionSignal = false;
+	/* Create a new item for the function */
+	item = new QTreeWidgetItem(m_functionTree);
+	updateFunctionItem(item, function);
 
-	// Create a new item for the function
-	newItem = new QTreeWidgetItem(m_functionTree);
-
-	// Update the item's contents based on the function itself
-	updateFunctionItem(newItem, function);
-
-	// Clear current selection so that slotEdit() behaves correctly
+	/* Clear current selection and select only the new one */
 	m_functionTree->clearSelection();
+	item->setSelected(true);
 
-	// Select only the new item
-	newItem->setSelected(true);
-
+	/* Start editing immediately */
 	if (slotEdit() == QDialog::Rejected)
 	{
-		// Edit dialog was rejected -> delete function
+		/* Edit dialog was rejected -> delete function */
 		deleteSelectedFunctions();
 	}
 	else
 	{
-		// Sort the list so that the new item takes its correct place
 		m_functionTree->sortItems(KColumnName, Qt::AscendingOrder);
-
-		// Make sure that the new item is visible
-		m_functionTree->scrollToItem(newItem);
+		m_functionTree->scrollToItem(item);
 	}
-}
-
-QTreeWidgetItem* FunctionManager::getItem(t_function_id id,
-					  QTreeWidget* listView)
-{
-	Q_ASSERT(listView != NULL);
-
-	QTreeWidgetItemIterator it(listView);
-
-	while (*it != NULL)
-	{
-		if ((*it)->text(KColumnID).toInt() == id)
-			return *it;
-		++it;
-	}
-
-	return NULL;
 }

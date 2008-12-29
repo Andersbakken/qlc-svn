@@ -254,26 +254,9 @@ void Function::setBus(t_bus_id id)
 	{
 		m_busID = id;
 	}
-	
+
 	_app->doc()->setModified();
 	_app->doc()->emitFunctionChanged(m_id);
-}
-
-QString Function::busName() const
-{
-	QString text;
-	
-	if (busID() != KNoID)
-	{
-		text.sprintf("%.2d: ", busID() + 1);
-		text += Bus::name(busID());
-	}
-	else
-	{
-		text = QString("N/A");
-	}
-
-	return text;
 }
 
 /*****************************************************************************

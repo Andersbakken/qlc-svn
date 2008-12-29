@@ -1138,18 +1138,6 @@ void App::slotFunctionManager()
 		connect(m_functionManager, SIGNAL(destroyed(QObject*)),
 			this, SLOT(slotFunctionManagerDestroyed(QObject*)));
 
-		connect(m_doc, SIGNAL(functionAdded(t_function_id)),
-			m_functionManager,
-			SLOT(slotFunctionAdded(t_function_id)));
-
-		connect(m_doc, SIGNAL(functionRemoved(t_function_id)),
-			m_functionManager,
-			SLOT(slotFunctionRemoved(t_function_id)));
-
-		connect(m_doc, SIGNAL(functionChanged(t_function_id)),
-			m_functionManager,
-			SLOT(slotFunctionChanged(t_function_id)));
-
 		m_functionManager->show();
 		sub->show();
 		sub->resize(600, 450);

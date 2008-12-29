@@ -55,19 +55,6 @@ private:
 	Q_DISABLE_COPY(FunctionManager)
 
 	/*********************************************************************
-	 * Doc signal handlers
-	 *********************************************************************/
-public slots:
-	/** Function was added to Doc */
-	void slotFunctionAdded(t_function_id fid);
-
-	/** Function was removed from Doc */
-	void slotFunctionRemoved(t_function_id fid);
-
-	/** Function was changed */
-	void slotFunctionChanged(t_function_id fid);
-
-	/*********************************************************************
 	 * Function tree
 	 *********************************************************************/
 protected:
@@ -92,9 +79,6 @@ protected slots:
 
 protected:
 	QTreeWidget* m_functionTree;
-
-	// Get an item from the given listview by the given id
-	QTreeWidgetItem* getItem(t_function_id id, QTreeWidget* listView);
 
 protected slots:
 	/** Set the selected bus to all selected functions */
@@ -123,9 +107,7 @@ protected slots:
 	void slotSelectAll();
 
 protected:
-	/** Update action enabled status */
 	void updateActionStatus();
-	void updateBusActions();
 
 protected:
 	QMenu* m_manageMenu;
@@ -146,7 +128,6 @@ protected:
 	QAction* m_selectAllAction;
 
 	QActionGroup* m_busGroup;
-	QList <QAction*> m_busActions;
 
 	/*********************************************************************
 	 * Helpers

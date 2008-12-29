@@ -251,11 +251,6 @@ public:
 	 */
 	t_bus_id busID() const { return m_busID; }
 
-	/**
-	 * Get a textual representation of the function's bus (ID: Name)
-	 */
-	virtual QString busName() const;
-
 public slots:
 	/**
 	 * Callback for bus value changes
