@@ -76,7 +76,7 @@ ConsoleChannel::~ConsoleChannel()
 
 void ConsoleChannel::init()
 {
-	QLCChannel* ch;
+	const QLCChannel* ch;
 	QString num;
 
 	setCheckable(true);
@@ -116,7 +116,7 @@ void ConsoleChannel::init()
 	// Set channel label
 	num.sprintf("%d", m_channel + 1);
 	m_numberLabel->setText(num);
-	
+
 	connect(m_valueSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(slotValueChange(int)));
 
@@ -129,20 +129,20 @@ void ConsoleChannel::init()
 
 void ConsoleChannel::initMenu()
 {
-	QLCChannel* ch;
-	
+	const QLCChannel* ch;
+
 	Q_ASSERT(m_fixture != NULL);
 
 	ch = m_fixture->channel(m_channel);
 	Q_ASSERT(ch != NULL);
-	
+
 	// Get rid of a possible previous menu
 	if (m_menu != NULL)
 	{
 		delete m_menu;
 		m_menu = NULL;
 	}
-	
+
 	// Create a popup menu and set the channel name as its title
 	m_menu = new QMenu(this);
 	m_presetButton->setMenu(m_menu);
@@ -215,7 +215,7 @@ void ConsoleChannel::initMenu()
 		initCapabilityMenu(ch);
 	else
 		initPlainMenu();
-	
+
 }
 
 void ConsoleChannel::initPlainMenu()
@@ -229,13 +229,13 @@ void ConsoleChannel::initPlainMenu()
 		action = m_menu->addAction(s);
 		action->setData(i);
 	}
-	
+
 	// Connect menu item activation signal to this
 	connect(m_menu, SIGNAL(triggered(QAction*)),
 		this, SLOT(slotContextMenuTriggered(QAction*)));
 }
 
-void ConsoleChannel::initCapabilityMenu(QLCChannel* ch)
+void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
 {
 	QLCCapability* cap;
 	QMenu* valueMenu;
@@ -243,7 +243,7 @@ void ConsoleChannel::initCapabilityMenu(QLCChannel* ch)
 	QString s;
 	QString t;
 
-	QListIterator <QLCCapability*> it(*ch->capabilities());
+	QListIterator <QLCCapability*> it(ch->capabilities());
 	while (it.hasNext() == true)
 	{
 		cap = it.next();
@@ -258,29 +258,51 @@ void ConsoleChannel::initCapabilityMenu(QLCChannel* ch)
 			valueMenu = new QMenu(m_menu);
 			valueMenu->setTitle(s);
 
+			/* Add a color icon */
+			if (ch->group() == KQLCChannelGroupColour)
+				valueMenu->setIcon(colorIcon(cap->name()));
+
 			for (int i = cap->min(); i <= cap->max(); i++)
 			{
 				action = valueMenu->addAction(
 					t.sprintf("%.3d", i));
 				action->setData(i);
 			}
-			
+
 			m_menu->addMenu(valueMenu);
 		}
 		else
 		{
 			// Just one value in this range, put that into the menu
 			action = m_menu->addAction(s);
-			action->setData((int) ((cap->min() + cap->max()) / 2));
+			action->setData(cap->min());
+
+			/* Add a color icon */
+			if (ch->group() == KQLCChannelGroupColour)
+				action->setIcon(colorIcon(cap->name()));
 		}
 	}
 
 	// Connect menu item activation signal to this
 	connect(m_menu, SIGNAL(triggered(QAction*)),
 		this, SLOT(slotContextMenuTriggered(QAction*)));
-	
+
 	// Set the menu also as the preset button's popup menu
 	m_presetButton->setMenu(m_menu);
+}
+
+const QIcon ConsoleChannel::colorIcon(const QString& name)
+{
+	QString colname(name.toLower().remove(QRegExp("[0-9]")).remove(' '));
+	if (QColor::colorNames().contains(colname) == true)
+	{
+		QColor col(colname);
+		QPixmap pm(32, 32);
+		pm.fill(col);
+		return QIcon(pm);
+	}
+
+	return QIcon();
 }
 
 void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)

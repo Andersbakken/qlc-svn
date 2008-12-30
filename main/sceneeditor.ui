@@ -30,14 +30,14 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="3" >
+       <item row="0" column="1" >
         <widget class="QLineEdit" name="m_nameEdit" >
          <property name="toolTip" >
           <string>Name of this scene</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="4" >
+       <item row="1" column="0" colspan="2" >
         <widget class="QTreeWidget" name="m_tree" >
          <property name="alternatingRowColors" >
           <bool>true</bool>
@@ -64,7 +64,7 @@
          </column>
         </widget>
        </item>
-       <item row="1" column="4" >
+       <item row="1" column="2" >
         <layout class="QVBoxLayout" name="verticalLayout" >
          <item>
           <widget class="QToolButton" name="m_addFixtureButton" >
@@ -121,51 +121,6 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0" colspan="2" >
-        <widget class="QPushButton" name="m_enableChannelsButton" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip" >
-          <string>Enable all channels in currently selected fixtures</string>
-         </property>
-         <property name="text" >
-          <string>Enable channels</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2" >
-        <widget class="QPushButton" name="m_disableChannelsButton" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip" >
-          <string>Disable all channels in currently selected fixtures</string>
-         </property>
-         <property name="text" >
-          <string>Disable channels</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3" >
-        <spacer name="horizontalSpacer" >
-         <property name="orientation" >
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0" >
-          <size>
-           <width>261</width>
-           <height>23</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -190,8 +145,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>442</x>
-     <y>355</y>
+     <x>457</x>
+     <y>354</y>
     </hint>
     <hint type="destinationlabel" >
      <x>158</x>
@@ -206,44 +161,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>544</x>
-     <y>355</y>
+     <x>545</x>
+     <y>354</y>
     </hint>
     <hint type="destinationlabel" >
      <x>308</x>
      <y>295</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_enableChannelsButton</sender>
-   <signal>clicked()</signal>
-   <receiver>SceneEditor</receiver>
-   <slot>slotEnableChannelsClicked()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>65</x>
-     <y>296</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>3</x>
-     <y>316</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_disableChannelsButton</sender>
-   <signal>clicked()</signal>
-   <receiver>SceneEditor</receiver>
-   <slot>slotDisableChannelsClicked()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>184</x>
-     <y>287</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>76</x>
-     <y>325</y>
     </hint>
    </hints>
   </connection>

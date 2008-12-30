@@ -397,7 +397,7 @@ void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
 						Fixture* fxi, t_channel ch)
 {
 	QTreeWidgetItem* item;
-	QLCChannel* channel;
+	const QLCChannel* channel;
 	QString str;
 
 	Q_ASSERT(parent != NULL);
@@ -439,12 +439,12 @@ QTreeWidgetItem* VCSliderProperties::levelChannelNode(QTreeWidgetItem* parent,
 }
 
 void VCSliderProperties::levelUpdateCapabilities(QTreeWidgetItem* parent,
-						 QLCChannel* channel)
+						 const QLCChannel* channel)
 {
 	Q_ASSERT(parent != NULL);
 	Q_ASSERT(channel != NULL);
 
-	QListIterator <QLCCapability*> it(*channel->capabilities());
+	QListIterator <QLCCapability*> it(channel->capabilities());
 	while (it.hasNext() == true)
 		levelUpdateCapabilityNode(parent, it.next());
 }

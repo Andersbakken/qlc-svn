@@ -189,7 +189,7 @@ t_channel Fixture::channels()
 		return m_channels;
 }
 
-QLCChannel* Fixture::channel(t_channel channel)
+const QLCChannel* Fixture::channel(t_channel channel)
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		return m_fixtureMode->channel(channel);
@@ -200,6 +200,26 @@ QLCChannel* Fixture::channel(t_channel channel)
 int Fixture::channelAddress(t_channel channel)
 {
 	return universeAddress() + channel;
+}
+
+t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
+			   const QString& group) const
+{
+	for (t_channel i = 0; i < m_fixtureMode->channels(); i++)
+	{
+		const QLCChannel* ch;
+
+		ch = m_fixtureMode->channel(i);
+		Q_ASSERT(ch != NULL);
+
+		if (ch->group() != QString::null && ch->group() != group)
+			continue;
+
+		if (ch->name().contains(name, cs) == true)
+			return i;
+	}
+
+	return KChannelInvalid;
 }
 
 QLCChannel* Fixture::createGenericChannel()

@@ -146,6 +146,60 @@ void FixtureConsole::slotValueChanged(t_channel channel, t_value value,
 	emit valueChanged(m_fixture, channel, value, enabled);
 }
 
+QList <SceneValue> FixtureConsole::values() const
+{
+	QList <SceneValue> list;
+
+	QListIterator <QObject*> it(children());
+	while (it.hasNext() == true)
+	{
+		ConsoleChannel* cc;
+
+		cc = qobject_cast<ConsoleChannel*> (it.next());
+		if (cc != NULL && cc->isEnabled() == true)
+		{
+			list.append(SceneValue(m_fixture, cc->channel(),
+						cc->sliderValue()));
+		}
+	}
+
+	return list;
+}
+
+void FixtureConsole::setValues(const QList <SceneValue>& list)
+{
+	enableAllChannels(false);
+
+	QListIterator <SceneValue> it(list);
+	while (it.hasNext() == true)
+	{
+		SceneValue val(it.next());
+		if (val.channel < children().count())
+		{
+			ConsoleChannel* cc = channel(val.channel);
+			if (cc != NULL)
+			{
+				cc->enable(true);
+				cc->setValue(val.value);
+			}
+		}
+	}
+}
+
+ConsoleChannel* FixtureConsole::channel(t_channel ch)
+{
+	QListIterator <QObject*> it(children());
+	while (it.hasNext() == true)
+	{
+		ConsoleChannel* cc;
+		cc = qobject_cast<ConsoleChannel*> (it.next());
+		if (cc != NULL && cc->channel() == ch)
+			return cc;
+	}
+
+	return NULL;
+}
+
 /*****************************************************************************
  * Save / Load
  *****************************************************************************/

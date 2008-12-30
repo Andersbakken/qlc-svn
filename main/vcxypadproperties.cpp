@@ -134,7 +134,7 @@ QTreeWidgetItem* VCXYPadProperties::createChannelEntry(QTreeWidget* parent,
 						       bool reverse)
 {
 	QTreeWidgetItem* item;
-	QLCChannel* ch;
+	const QLCChannel* ch;
 	Fixture* fxi;
 	QString s;
 

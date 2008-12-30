@@ -23,11 +23,15 @@
 #define SCENEEDITOR_H
 
 #include <QWidget>
-#include "ui_sceneeditor.h"
+#include <QList>
 
 #include "common/qlctypes.h"
+
+#include "ui_sceneeditor.h"
 #include "fixture.h"
 #include "scene.h"
+
+class QAction;
 
 class SceneEditor : public QDialog, public Ui_SceneEditor
 {
@@ -55,13 +59,40 @@ protected:
 	 *********************************************************************/
 protected slots:
 	void accept();
+	void slotTabChanged(int tab);
+
+	void slotEnableAll();
+	void slotDisableAll();
+
+	void slotEnableCurrent();
+	void slotDisableCurrent();
+
+	void slotCopy();
+	void slotPaste();
+	void slotCopyToAll();
+	void slotColorTool();
+
+protected:
+	QAction* m_addAction;
+	QAction* m_removeAction;
+
+	QAction* m_enableAllAction;
+	QAction* m_disableAllAction;
+
+	QAction* m_enableCurrentAction;
+	QAction* m_disableCurrentAction;
+
+	QAction* m_copyAction;
+	QAction* m_pasteAction;
+	QAction* m_copyToAllAction;
+	QAction* m_colorToolAction;
 
 	/*********************************************************************
 	 * General tab
 	 *********************************************************************/
 protected:
 	QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id);
-	QList <Fixture*> selectedFixtures();
+	QList <Fixture*> selectedFixtures() const;
 
 	void addFixtureItem(Fixture* fixture);
 	void removeFixtureItem(Fixture* fixture);
@@ -69,9 +100,6 @@ protected:
 protected slots:
 	void slotAddFixtureClicked();
 	void slotRemoveFixtureClicked();
-
-	void slotEnableChannelsClicked();
-	void slotDisableChannelsClicked();
 
 	/*********************************************************************
 	 * Fixture tabs
@@ -92,6 +120,9 @@ protected slots:
 protected:
 	Scene* m_scene;
 	Scene* m_original;
+
+	/** Values from a copied console */
+	QList <SceneValue> m_copy;
 };
 
 #endif

@@ -229,13 +229,22 @@ public:
 	 * @param channel The channel number to get
 	 * @return A QLCChannel* instance that should not be modified
 	 */
-	QLCChannel* channel(t_channel channel);
+	const QLCChannel* channel(t_channel channel);
 
 	/**
 	 * Get a fixture's channel's DMX address.
 	 *
 	 */
 	int channelAddress(t_channel channel);
+
+	/**
+	 * Get a channel by its name. Comparison is done as a "contains"
+	 * operation, i.e. the given name can be a substring of a longer name.
+	 * If group is QString::null, it is ignored.
+	 */
+	t_channel channel(const QString& name,
+			  Qt::CaseSensitivity cs = Qt::CaseSensitive,
+			  const QString& group = QString::null) const;
 
 protected:
 	/**

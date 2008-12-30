@@ -73,7 +73,7 @@ void FixtureList::init()
 
 		for (unsigned int n = 0; n < fxi->channels(); n++)
 		{
-			QLCChannel* channel;
+			const QLCChannel* channel;
 			QString s;
 
 			// Create a new item for a channel

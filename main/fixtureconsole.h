@@ -54,6 +54,9 @@ public:
 	/** Set the fixture that this console is controlling */
 	void setFixture(t_fixture_id id);
 
+	/** Get the fixture that this console is controlling */
+	t_fixture_id fixture() const { return m_fixture; }
+
 protected:
 	t_fixture_id m_fixture;
 
@@ -72,6 +75,16 @@ public:
 
 	/** Set the value of one scene channel */
 	void setSceneValue(const SceneValue& scv);
+
+	/** Get all channel's values */
+	QList <SceneValue> values() const;
+
+	/** Set all channel's values */
+	void setValues(const QList <SceneValue>& list);
+
+	/** Get a console channel instance for the given channel (first ch is
+	    always number zero, so these are not DMX channels) */
+	ConsoleChannel* channel(t_channel ch);
 
 protected slots:
 	/** Slot that captures individual channel value changes */

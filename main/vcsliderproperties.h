@@ -102,7 +102,7 @@ protected:
 
 	/** Update a channel's capabilities */
 	void levelUpdateCapabilities(QTreeWidgetItem* parent,
-				     QLCChannel* channel);
+				     const QLCChannel* channel);
 
 	/** Update a channel's capability node */
 	void levelUpdateCapabilityNode(QTreeWidgetItem* parent,

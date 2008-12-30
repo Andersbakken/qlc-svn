@@ -23,6 +23,7 @@
 #define CONSOLECHANNEL_H
 
 #include <QGroupBox>
+#include <QIcon>
 
 #include "common/qlctypes.h"
 #include "scene.h"
@@ -73,7 +74,10 @@ protected:
 	void initPlainMenu();
 
 	/** Initialize the context menu for fixtures with capabilities */
-	void initCapabilityMenu(QLCChannel* ch);
+	void initCapabilityMenu(const QLCChannel* ch);
+
+protected:
+	const QIcon colorIcon(const QString& name);
 
 protected:
 	QMenu* m_menu;

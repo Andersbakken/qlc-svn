@@ -39,6 +39,102 @@
   <Name>Knob 8</Name>
   <Type>Knob</Type>
  </Channel>
+ <Channel Number="9" >
+  <Name>Knob 9</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="10" >
+  <Name>Knob 10</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="11" >
+  <Name>Knob 11</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="12" >
+  <Name>Knob 12</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="13" >
+  <Name>Knob 13</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="14" >
+  <Name>Knob 14</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="15" >
+  <Name>Knob 15</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="16" >
+  <Name>Knob 16</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="17" >
+  <Name>Knob 17</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="18" >
+  <Name>Knob 18</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="19" >
+  <Name>Knob 19</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="20" >
+  <Name>Knob 20</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="21" >
+  <Name>Knob 21</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="22" >
+  <Name>Knob 22</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="23" >
+  <Name>Knob 23</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="24" >
+  <Name>Knob 24</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="25" >
+  <Name>Knob 25</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="26" >
+  <Name>Knob 26</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="27" >
+  <Name>Knob 27</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="28" >
+  <Name>Knob 28</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="29" >
+  <Name>Knob 29</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="30" >
+  <Name>Knob 30</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="31" >
+  <Name>Knob 31</Name>
+  <Type>Knob</Type>
+ </Channel>
+ <Channel Number="32" >
+  <Name>Knob 32</Name>
+  <Type>Knob</Type>
+ </Channel>
  <Channel Number="65" >
   <Name>Button 1 Top</Name>
   <Type>Button</Type>

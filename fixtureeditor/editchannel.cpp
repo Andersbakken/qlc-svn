@@ -267,7 +267,7 @@ void EditChannel::slotEditCapabilityClicked()
 
 void EditChannel::refreshCapabilities()
 {
-	QListIterator <QLCCapability*> it(*m_channel->capabilities());
+	QListIterator <QLCCapability*> it(m_channel->capabilities());
 	QLCCapability* cap = NULL;
 	QTreeWidgetItem* item = NULL;
 	QString str;
