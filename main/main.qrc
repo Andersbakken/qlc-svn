@@ -1,6 +1,5 @@
 ﻿<RCC>
     <qresource>
-        <file alias="apply.png">../gfx/apply.png</file>
         <file alias="attach.png">../gfx/attach.png</file>
 	<file alias="back.png">../gfx/back.png</file>
         <file alias="beam.png">../gfx/beam.png</file>
@@ -56,21 +55,16 @@
         <file alias="output.png">../gfx/output.png</file>
 	<file alias="pan.png">../gfx/pan.png</file>
         <file alias="panic.png">../gfx/panic.png</file>
-        <file alias="plugin.png">../gfx/plugin.png</file>
 	<file alias="prism.png">../gfx/prism.png</file>
 	<file alias="qlc.png">../gfx/qlc.png</file>
         <file alias="scene.png">../gfx/scene.png</file>
-        <file alias="sequence.png">../gfx/sequence.png</file>
 	<file alias="shutter.png">../gfx/shutter.png</file>
         <file alias="slider.png">../gfx/slider.png</file>
         <file alias="speed.png">../gfx/speed.png</file>
 	<file alias="tilt.png">../gfx/tilt.png</file>
         <file alias="undo.png">../gfx/undo.png</file>
         <file alias="up.png">../gfx/up.png</file>
-	<file alias="view_left_right.png">../gfx/view_left_right.png</file>
-        <file alias="view_sidetree.png">../gfx/view_sidetree.png</file>
         <file alias="virtualconsole.png">../gfx/virtualconsole.png</file>
-	<file alias="window_nofullscreen.png">../gfx/window_nofullscreen.png</file>
         <file alias="wizard.png">../gfx/wizard.png</file>
         <file alias="xypad-point.png">../gfx/xypad-point.png</file>
 	<file alias="xypad.png">../gfx/xypad.png</file>
