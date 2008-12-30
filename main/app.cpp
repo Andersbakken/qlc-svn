@@ -102,10 +102,10 @@ App::App() : QMainWindow()
 	QCoreApplication::setOrganizationName("qlc");
 	QCoreApplication::setOrganizationDomain("sf.net");
 	QCoreApplication::setApplicationName("Q Light Controller");
-     
+
 	init();
 	slotModeDesign();
-	
+
 	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
 }
 
@@ -434,16 +434,16 @@ void App::initDoc()
 	// Delete existing document object
 	if (m_doc != NULL)
 		delete m_doc;
-	
+
 	// Create a new document object
 	m_doc = new Doc();
 
 	connect(m_doc, SIGNAL(modified(bool)),
 		this, SLOT(slotDocModified(bool)));
-	
+
 	connect(this, SIGNAL(modeChanged(App::Mode)),
 		m_doc, SLOT(slotModeChanged(App::Mode)));
-	
+
 	/* Connect fixture list change signals from the new document object */
 	if (m_fixtureManager != NULL)
 	{
@@ -518,12 +518,12 @@ QLCFixtureDef* App::fixtureDef(const QString& manufacturer,
 {
 	QListIterator <QLCFixtureDef*> it(m_fixtureDefList);
 	while (it.hasNext() == true)
-	{	
+	{
 		QLCFixtureDef* fd = it.next();
 		if (fd->manufacturer() == manufacturer && fd->model() == model)
 			return fd;
 	}
-	
+
 	return NULL;
 }
 
@@ -547,7 +547,7 @@ void App::slotModeOperate()
 	m_modeIndicator->setPalette(pal);
 
 	m_modeOperateAction->setChecked(true);
-	
+
 	m_fileNewAction->setEnabled(false);
 	m_fileOpenAction->setEnabled(false);
 	m_fileQuitAction->setEnabled(false);
@@ -556,11 +556,15 @@ void App::slotModeOperate()
 	m_outputManagerAction->setEnabled(false);
 	m_inputManagerAction->setEnabled(false);
 	m_busManagerAction->setEnabled(false);
-	
+
+	m_modeToggleAction->setIcon(QIcon(":/design.png"));
+	m_modeToggleAction->setText(tr("Design"));
+	m_modeToggleAction->setToolTip(tr("Switch to design mode"));
+
 	/* Close function manager if it's open */
 	if (m_functionManager != NULL)
 		m_functionManager->parentWidget()->close();
-	
+
 	/* Close bus manager if it's open */
 	if (m_busManager != NULL)
 		m_busManager->parentWidget()->close();
@@ -599,16 +603,16 @@ void App::slotModeDesign()
 			   "Design mode?"),
 			QMessageBox::Yes,
 			QMessageBox::No);
-		
+
 		if (result == QMessageBox::No)
 			return;
 		else
 			m_functionConsumer->purge();
 	}
-	
+
 	/* Stop function consumer */
 	m_functionConsumer->stop();
-	
+
 	/* Set normal palette to mode indicator */
 	m_modeIndicator->setText(KModeTextDesign);
 	QPalette pal = palette();
@@ -619,7 +623,7 @@ void App::slotModeDesign()
 	m_modeIndicator->setPalette(pal);
 
 	m_modeDesignAction->setChecked(true);
-	
+
 	m_fileNewAction->setEnabled(true);
 	m_fileOpenAction->setEnabled(true);
 	m_fileQuitAction->setEnabled(true);
@@ -629,11 +633,23 @@ void App::slotModeDesign()
 	m_inputManagerAction->setEnabled(true);
 	m_busManagerAction->setEnabled(true);
 
+	m_modeToggleAction->setIcon(QIcon(":/operate.png"));
+	m_modeToggleAction->setText(tr("Operate"));
+	m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
+
 	/* Allow opening a context menu */
 	centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	m_mode = Design;
 	emit modeChanged(Design);
+}
+
+void App::slotModeToggle()
+{
+	if (m_mode == Design)
+		slotModeOperate();
+	else
+		slotModeDesign();
 }
 
 /*****************************************************************************
@@ -749,6 +765,12 @@ void App::initActions()
 	connect(m_modeOperateAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotModeOperate()));
 
+	m_modeToggleAction = new QAction(QIcon(":/operate.png"),
+					 tr("Operate"), this);
+	m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
+	connect(m_modeToggleAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotModeToggle()));
+
 	/* Control actions */
 	m_controlVCAction = new QAction(QIcon(":/virtualconsole.png"),
 					tr("Virtual Console"), this);
@@ -765,7 +787,7 @@ void App::initActions()
 	m_controlBlackoutAction->setCheckable(true);
 	connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlBlackout()));
-	
+
 	m_controlPanicAction = new QAction(QIcon(":/panic.png"),
 					   tr("Panic!"), this);
 	connect(m_controlPanicAction, SIGNAL(triggered(bool)),
@@ -828,7 +850,7 @@ void App::initMenuBar()
 	m_controlMenu = new QMenu(menuBar());
 	m_controlMenu->setTitle(tr("Control"));
 	menuBar()->addMenu(m_controlMenu);
-	
+
 	/* Mode menu */
 	m_modeMenu = new QMenu(m_controlMenu);
 	m_modeMenu->setTitle(tr("Mode"));
@@ -876,6 +898,8 @@ void App::initStatusBar()
 
 void App::initToolBar()
 {
+	QWidget* widget;
+
 	m_toolbar = new QToolBar(tr("Workspace"), this);
 	m_toolbar->setFloatable(false);
 	m_toolbar->setMovable(false);
@@ -888,9 +912,16 @@ void App::initToolBar()
 	m_toolbar->addAction(m_functionManagerAction);
 	m_toolbar->addSeparator();
 	m_toolbar->addAction(m_controlVCAction);
-	m_toolbar->addSeparator();
 	m_toolbar->addAction(m_controlMonitorAction);
+
+	/* Create an empty widget between the last toolbar button and
+	   BO & mode buttons to separate the critical ones from the rest. */
+	widget = new QWidget(this);
+	widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	m_toolbar->addWidget(widget);
+
 	m_toolbar->addAction(m_controlBlackoutAction);
+	m_toolbar->addAction(m_modeToggleAction);
 }
 
 /*****************************************************************************

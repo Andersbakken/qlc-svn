@@ -152,7 +152,7 @@ protected:
 
 protected:
 	Doc* m_doc;
-	
+
 	/*********************************************************************
 	 * Fixture definitions
 	 *********************************************************************/
@@ -178,12 +178,13 @@ public:
 	enum Mode { Operate, Design };
 	Mode mode() { return m_mode; }
 
-signals:
-	void modeChanged(App::Mode mode);
-
 public slots:
 	void slotModeOperate();
 	void slotModeDesign();
+	void slotModeToggle();
+
+signals:
+	void modeChanged(App::Mode mode);
 
 protected:
 	/** Main operating mode */
@@ -197,7 +198,7 @@ public:
 
 protected:
 	FixtureManager* m_fixtureManager;
-	
+
 	/*********************************************************************
 	 * Function Manager
 	 *********************************************************************/
@@ -293,7 +294,7 @@ public slots:
 	void slotControlPanic();
 
 	void slotHelpIndex();
-	void slotDocBrowserDestroyed(QObject* object);	
+	void slotDocBrowserDestroyed(QObject* object);
 	void slotHelpAbout();
 	void slotHelpAboutQt();
 
@@ -314,6 +315,7 @@ protected:
 
 	QAction* m_modeOperateAction;
 	QAction* m_modeDesignAction;
+	QAction* m_modeToggleAction;
 
 	QAction* m_controlVCAction;
 	QAction* m_controlMonitorAction;
@@ -330,7 +332,7 @@ protected:
 	QMenu* m_controlMenu;
 	QMenu* m_modeMenu;
 	QMenu* m_helpMenu;
-	
+
 	QToolBar* m_toolbar;
 
 	/*********************************************************************
@@ -339,7 +341,7 @@ protected:
 public:
 	/** Set workspace background image from the given path */
 	void setBackgroundImage(QString path);
-	
+
 	/** Get the current workspace background image path */
 	QString backgroundImage() const { return m_backgroundImage; }
 
