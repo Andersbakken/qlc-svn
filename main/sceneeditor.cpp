@@ -265,7 +265,10 @@ void SceneEditor::slotCopy()
 	/* QObject cast fails unless the widget is a FixtureConsole */
 	fc = qobject_cast<FixtureConsole*> (m_tab->currentWidget());
 	if (fc != NULL)
+	{
 		m_copy = fc->values();
+		m_pasteAction->setEnabled(true);
+	}
 }
 
 void SceneEditor::slotPaste()
@@ -354,9 +357,11 @@ void SceneEditor::slotColorTool()
 	}
 	else
 	{
-		QMessageBox::information(this, tr("Color components not found"),
-			tr("Unable to find channels for CMY or RGB colour ") +
-			tr("components from current fixture."));
+		QMessageBox::information(this,
+					 tr("Colour components not found"),
+					 tr("Unable to find channels for ") +
+					 tr("CMY or RGB colour components ") +
+					 tr("from current fixture."));
 	}
 }
 
