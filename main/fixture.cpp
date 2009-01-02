@@ -205,24 +205,42 @@ int Fixture::channelAddress(t_channel channel)
 t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
 			   const QString& group) const
 {
-	for (t_channel i = 0; i < m_fixtureMode->channels(); i++)
+	if (m_fixtureDef == NULL && m_fixtureMode == NULL)
 	{
-		const QLCChannel* ch;
-
-		ch = m_fixtureMode->channel(i);
-		Q_ASSERT(ch != NULL);
-
-		if (ch->group() != QString::null && ch->group() != group)
-			continue;
-
-		if (ch->name().contains(name, cs) == true)
-			return i;
+		/* There's just one generic channel object with "Intensity" as
+		   its name that is the same for all channel numbers. So
+		   there's really no point in returning 0 here. */
+		return KChannelInvalid;
 	}
+	else
+	{
+		/* Search for the channel name (and group) from our list */
+		for (t_channel i = 0; i < m_fixtureMode->channels(); i++)
+		{
+			const QLCChannel* ch;
 
-	return KChannelInvalid;
+			ch = m_fixtureMode->channel(i);
+			Q_ASSERT(ch != NULL);
+
+			if (ch->group() != QString::null &&
+			    ch->group() != group)
+			{
+				/* Given group name doesn't match */
+				continue;
+			}
+			else if (ch->name().contains(name, cs) == true)
+			{
+				/* Found the channel */
+				return i;
+			}
+		}
+
+		/* Went thru all channels but a match was not found */
+		return KChannelInvalid;
+	}
 }
 
-QLCChannel* Fixture::createGenericChannel()
+const QLCChannel* Fixture::createGenericChannel()
 {
 	if (m_genericChannel == NULL)
 	{

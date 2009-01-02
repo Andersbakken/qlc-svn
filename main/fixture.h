@@ -253,7 +253,7 @@ protected:
 	 *
 	 * @return The generic QLCChannel 
 	 */
-	QLCChannel* createGenericChannel();
+	const QLCChannel* createGenericChannel();
 
 protected:
 	/** DMX address & universe */
