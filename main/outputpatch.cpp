@@ -70,7 +70,8 @@ QString OutputPatch::pluginName() const
 
 QString OutputPatch::outputName() const
 {
-	if (m_plugin != NULL)
+	if (m_plugin != NULL && m_output != KOutputInvalid &&
+	    m_output < m_plugin->outputs().count())
 		return m_plugin->outputs()[m_output];
 	else
 		return KOutputNone;
