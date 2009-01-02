@@ -76,7 +76,8 @@ QString InputPatch::pluginName() const
 
 QString InputPatch::inputName() const
 {
-	if (m_plugin != NULL && m_input != KInputInvalid)
+	if (m_plugin != NULL && m_input != KInputInvalid &&
+	    m_input < m_plugin->inputs().count())
 		return m_plugin->inputs()[m_input];
 	else
 		return KInputNone;
