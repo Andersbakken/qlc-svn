@@ -264,8 +264,10 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		    ev->type == SND_SEQ_EVENT_CHANPRESS)
 		{
 			/* Scale the value from [0-127] to [0-255] */
-			value = SCALE((float) ev->data.control.value,
-				      0.0, 127.0, 0.0, 255.0);
+			value = t_input_value(
+				SCALE(double(ev->data.control.value),
+				      double(0), double(127),
+				      double(0), double(255)));
 
 			e = new MIDIInputEvent(device, device->input(),
 					       ev->data.control.param,
@@ -275,8 +277,10 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		else if (ev->type == SND_SEQ_EVENT_NOTEON)
 		{
 			/* Scale the value from [0-127] to [0-255] */
-			value = SCALE((float) ev->data.note.velocity,
-				      0.0, 127.0, 0.0, 255.0);
+			value = t_input_value(
+				SCALE(double(ev->data.note.velocity),
+				      double(0), double(127),
+				      double(0), double(255)));
 
 			e = new MIDIInputEvent(device, device->input(),
 					       ev->data.note.note, value);

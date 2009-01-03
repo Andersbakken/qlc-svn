@@ -112,11 +112,12 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
 		    status == MIDI_CONTROL_CHANGE)
 		{
 			channel = static_cast<t_input_channel> (data1);
-			value = t_input_value(SCALE(float(data2),
-						    float(0),
-						    float(127),
-						    float(0),
-						    float(KInputValueMax)));
+			value = t_input_value(SCALE(double(data2),
+						    double(0),
+						    double(127),
+						    double(0),
+						    double(KInputValueMax)));
+			qDebug() << value;
 
 			event = new MIDIInputEvent(self, self->input(),
 						   channel, value);
