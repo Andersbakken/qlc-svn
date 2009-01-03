@@ -5,15 +5,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>436</width>
+    <width>434</width>
     <height>345</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Input patch editor</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3" >
+   <item row="0" column="0" colspan="2" >
     <widget class="QTabWidget" name="m_tab" >
      <property name="currentIndex" >
       <number>0</number>
@@ -192,13 +192,23 @@
      </widget>
     </widget>
    </item>
-   <item>
+   <item row="1" column="1" >
     <widget class="QDialogButtonBox" name="m_buttonBox" >
      <property name="orientation" >
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons" >
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QRadioButton" name="m_editorUniverseRadio" >
+     <property name="toolTip" >
+      <string>Use this universe for e.g. scene channel value setting in scene editor</string>
+     </property>
+     <property name="text" >
+      <string>Default editor universe</string>
      </property>
     </widget>
    </item>

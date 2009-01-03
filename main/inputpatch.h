@@ -63,7 +63,7 @@ public:
 	QLCInPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
 
-	t_input input() const { return m_input; }
+	t_input input() const;
 	QString inputName() const;
 
 	QLCInputDevice* device() const { return m_device; }

@@ -37,7 +37,9 @@ class QDomDocument;
 class QDomElement;
 
 #define KInputNone QObject::tr("None")
+
 #define KXMLQLCInputMap "InputMap"
+#define KXMLQLCInputMapEditorUniverse "EditorUniverse"
 
 class InputMap : public QObject
 {
@@ -102,6 +104,16 @@ public:
 	QStringList universeNames();
 
 	/**
+	 * Get the universe that is used for editing functions etc.
+	 */
+	t_input_universe editorUniverse() const;
+
+	/**
+	 * Set the universe that is used for editing functions etc.
+	 */
+	void setEditorUniverse(t_input_universe uni);
+	
+	/**
 	 * Initialize the patching table
 	 */
 	void initPatch();
@@ -133,6 +145,9 @@ protected:
 
 	/** Total number of supported input universes */
 	t_input_universe m_universes;
+
+	/** The universe used to edit functions etc. */
+	t_input_universe m_editorUniverse;
 
 	/*********************************************************************
 	 * Plugins

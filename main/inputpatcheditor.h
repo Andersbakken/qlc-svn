@@ -51,6 +51,7 @@ private:
 
 protected slots:
 	void reject();
+	void accept();
 
 protected:
 	/** The input universe that is being edited */

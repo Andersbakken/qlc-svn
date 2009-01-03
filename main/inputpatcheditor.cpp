@@ -20,6 +20,7 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QButtonGroup>
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QMessageBox>
@@ -53,9 +54,11 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 				   const InputPatch* inputPatch)
 	: QDialog(parent)
 {
+	Q_ASSERT(universe < _app->inputMap()->universes());
+	Q_ASSERT(inputPatch != NULL);
+
 	setupUi(this);
 
-	Q_ASSERT(universe < _app->inputMap()->universes());
 	m_universe = universe;
 	setWindowTitle(tr("Mapping properties for input universe %1")
 			.arg(m_universe + 1));
@@ -87,6 +90,14 @@ void InputPatchEditor::reject()
 	QDialog::reject();
 }
 
+void InputPatchEditor::accept()
+{
+	if (m_editorUniverseRadio->isChecked() == true)
+		_app->inputMap()->setEditorUniverse(m_universe);
+
+	QDialog::accept();
+}
+
 /****************************************************************************
  * Mapping page
  ****************************************************************************/
@@ -104,6 +115,14 @@ void InputPatchEditor::setupMappingPage()
 	/* Configure button */
 	connect(m_configureButton, SIGNAL(clicked()),
 		this, SLOT(slotConfigureInputClicked()));
+
+	/* Prevent the editor uni radio button from being unchecked manually */
+	QButtonGroup* group = new QButtonGroup(this);
+	group->addButton(m_editorUniverseRadio);
+
+	/* Set checked if the current universe is also the editor universe */
+	if (_app->inputMap()->editorUniverse() == m_universe)
+		m_editorUniverseRadio->setChecked(true);
 }
 
 void InputPatchEditor::fillMappingTree()

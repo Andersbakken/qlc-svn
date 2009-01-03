@@ -56,6 +56,8 @@ SceneEditor::SceneEditor(QWidget* parent, Scene* scene) : QDialog(parent)
 	Q_ASSERT(scene != NULL);
 	m_original = scene;
 
+	m_currentTab = KTabGeneral;
+	
 	/* Create a copy of the original scene so that we can freely modify it.
 	   Keep also a pointer to the original so that we can move the
 	   contents from the copied chaser to the original when OK is clicked */
@@ -188,6 +190,15 @@ void SceneEditor::accept()
 
 void SceneEditor::slotTabChanged(int tab)
 {
+	FixtureConsole* fc;
+
+	/* Disable external input from the previous console tab so that
+	   only the curren tab is affected. */
+	fc = qobject_cast<FixtureConsole*> (m_tab->widget(m_currentTab));
+	if (fc != NULL)
+		fc->enableExternalInput(false);
+	m_currentTab = tab;
+
 	if (tab == KTabGeneral)
 	{
 		m_removeAction->setEnabled(true);
@@ -213,6 +224,11 @@ void SceneEditor::slotTabChanged(int tab)
 
 		m_copyToAllAction->setEnabled(true);
 		m_colorToolAction->setEnabled(true);
+
+		/* Enable external input on the current console tab */
+		fc = qobject_cast<FixtureConsole*> (m_tab->widget(tab));
+		Q_ASSERT(fc != NULL);
+		fc->enableExternalInput(true);
 	}
 }
 

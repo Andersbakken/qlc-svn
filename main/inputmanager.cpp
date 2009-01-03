@@ -43,7 +43,8 @@
 #define KColumnPlugin   1
 #define KColumnInput    2
 #define KColumnDevice   3
-#define KColumnInputNum 4
+#define KColumnEditor   4
+#define KColumnInputNum 5
 
 extern App* _app;
 
@@ -114,7 +115,8 @@ void InputManager::init()
 	columns << tr("Universe")
 		<< tr("Plugin")
 		<< tr("Input")
-		<< tr("Device");
+		<< tr("Device")
+		<< tr("Editor universe");
 	m_tree->setHeaderLabels(columns);
 
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
@@ -127,11 +129,16 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
 	Q_ASSERT(item != NULL);
 	Q_ASSERT(ip != NULL);
 
-	item->setText(KColumnUniverse, QString("%1").arg(universe + 1));
+	item->setText(KColumnUniverse, tr("%1").arg(universe + 1));
 	item->setText(KColumnPlugin, ip->pluginName());
 	item->setText(KColumnInput, ip->inputName());
-	item->setText(KColumnInputNum, QString("%1").arg(ip->input() + 1));
 	item->setText(KColumnDevice, ip->deviceName());
+	if (_app->inputMap()->editorUniverse() == universe)
+	{
+		item->setCheckState(KColumnEditor, Qt::Checked);
+		item->setFlags(item->flags() & ~Qt::ItemIsUserCheckable);
+	}
+	item->setText(KColumnInputNum, QString("%1").arg(ip->input() + 1));
 }
 
 void InputManager::slotInputValueChanged(t_input_universe universe,
@@ -185,5 +192,5 @@ void InputManager::slotEditClicked()
 
 	InputPatchEditor ipe(this, universe, patch);
 	if (ipe.exec() == QDialog::Accepted)
-		updateItem(item, patch, universe);
+		update();
 }

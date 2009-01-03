@@ -29,6 +29,7 @@
 
 #include "fixtureconsole.h"
 #include "consolechannel.h"
+#include "inputmap.h"
 #include "app.h"
 #include "doc.h"
 
@@ -42,6 +43,7 @@ FixtureConsole::FixtureConsole(QWidget* parent) : QWidget(parent)
 {
 	m_fixture = KNoID;
 	m_channelsCheckable = false;
+	m_externalInputEnabled = false;
 
 	new QHBoxLayout(this);
 }
@@ -198,6 +200,54 @@ ConsoleChannel* FixtureConsole::channel(t_channel ch)
 	}
 
 	return NULL;
+}
+
+/*****************************************************************************
+ * External input
+ *****************************************************************************/
+
+void FixtureConsole::enableExternalInput(bool enable)
+{
+	if (enable == true && m_externalInputEnabled == false)
+	{
+		connect(_app->inputMap(),
+			SIGNAL(inputValueChanged(t_input_universe,
+						 t_input_channel,
+						 t_input_value)),
+			this, SLOT(slotInputValueChanged(t_input_universe,
+							 t_input_channel,
+							 t_input_value)));
+		m_externalInputEnabled = true;
+	}
+	else if (enable == false && m_externalInputEnabled == true)
+	{
+		disconnect(_app->inputMap(),
+			   SIGNAL(inputValueChanged(t_input_universe,
+						    t_input_channel,
+						    t_input_value)),
+			   this,
+			   SLOT(slotInputValueChanged(t_input_universe,
+						      t_input_channel,
+						      t_input_value)));
+		m_externalInputEnabled = false;
+	}
+}
+
+void FixtureConsole::slotInputValueChanged(t_input_universe uni,
+					   t_input_channel ch,
+					   t_input_value value)
+{
+	if (uni == _app->inputMap()->editorUniverse())
+	{
+		ConsoleChannel* cc;
+
+		cc = channel(ch);
+		if (cc != NULL)
+		{
+			cc->setValue(value);
+			cc->setChecked(true);
+		}
+	}
 }
 
 /*****************************************************************************

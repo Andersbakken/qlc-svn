@@ -54,7 +54,8 @@ extern App* _app;
 InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 {
 	m_universes = universes;
-
+	m_editorUniverse = 0;
+	
 	initPatch();
 	loadPlugins();
 
@@ -109,6 +110,19 @@ QStringList InputMap::universeNames()
 	}
 
 	return list;
+}
+
+t_input_universe InputMap::editorUniverse() const
+{
+	return m_editorUniverse;
+}
+
+void InputMap::setEditorUniverse(t_input_universe uni)
+{
+	if (uni < universes())
+		m_editorUniverse = uni;
+	else
+		m_editorUniverse = 0;
 }
 
 /*****************************************************************************
@@ -412,6 +426,8 @@ void InputMap::removeDevice(const QString& name)
 bool InputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
 	QDomElement root;
+	QDomElement tag;
+	QDomText text;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(wksp_root != NULL);
@@ -419,6 +435,12 @@ bool InputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	/* InputMap entry */
 	root = doc->createElement(KXMLQLCInputMap);
 	wksp_root->appendChild(root);
+
+	/* Editor universe */
+	tag = doc->createElement(KXMLQLCInputMapEditorUniverse);
+	root.appendChild(tag);
+	text = doc->createTextNode(QString("%1").arg(editorUniverse()));
+	tag.appendChild(text);
 
 	/* Patches */
 	for (t_input_universe i = 0; i < m_universes; i++)
@@ -441,7 +463,7 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 		return false;
 	}
 
-	/* Patches */
+	/* Children */
 	node = root->firstChild();
 	while (node.isNull() == false)
 	{
@@ -449,6 +471,8 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 
 		if (tag.tagName() == KXMLQLCInputPatch)
 			InputPatch::loader(doc, &tag, this);
+		else if (tag.tagName() == KXMLQLCInputMapEditorUniverse)
+			setEditorUniverse(tag.text().toInt());
 		else
 			qWarning() << "Unknown InputMap tag:" << tag.tagName();
 
@@ -467,8 +491,15 @@ void InputMap::loadDefaults()
 	QString deviceName;
 	QSettings settings;
 	QString plugin;
+	QVariant value;
 	QString input;
 	QString key;
+
+	/* Editor universe */
+	key = QString("/inputmap/editoruniverse/");
+	value = settings.value(key);
+	if (value.isValid() == true)
+		setEditorUniverse(value.toInt());
 
 	for (t_input_universe i = 0; i < m_universes; i++)
 	{
@@ -501,7 +532,10 @@ void InputMap::saveDefaults()
 		InputPatch* pat = patch(i);
 		Q_ASSERT(pat != NULL);
 
-		/* Save empty values if the patch doesn't have a valid plugin */
+		/* Editor universe */
+		key = QString("/inputmap/editoruniverse/");
+		settings.setValue(key, m_editorUniverse);
+
 		if (pat->plugin() != NULL)
 		{
 			/* Plugin name */

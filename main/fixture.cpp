@@ -733,7 +733,8 @@ void Fixture::viewConsole()
 		m_console = new FixtureConsole(_app);
 		m_console->setChannelsCheckable(false);
 		m_console->setFixture(m_id);
-
+		m_console->enableExternalInput(true);
+		
 		/* Prevent right-clicks from getting propagated to workspace */
 		sub->setContextMenuPolicy(Qt::CustomContextMenu);
 
