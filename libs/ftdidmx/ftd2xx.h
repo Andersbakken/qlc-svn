@@ -60,11 +60,6 @@ Revision History:
 #define FTD2XX_API
 #endif
 #endif
-typedef struct _EVENT_HANDLE{
-	pthread_cond_t eCondVar;
-	pthread_mutex_t eMutex;
-	int iVar;
-} EVENT_HANDLE;
 
 typedef DWORD		 	*FT_HANDLE;
 //typedef unsigned int		 FT_HANDLE;

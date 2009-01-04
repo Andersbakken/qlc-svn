@@ -116,9 +116,15 @@ bool FTDIDMXDevice::open()
 	memcpy(serial, a.constData(), a.count());
 	serial[a.count()] = 0;
 
+#ifndef _WINDOWS
+	// Windows users cannot dynamiccaly set VID/PID of harward
 	if (FT_SetVIDPID(m_vid, m_pid) == FT_OK && 
 	    FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
 	{
+#else
+	if (FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
+	{
+#endif
 		free(serial);
 		if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
 		{

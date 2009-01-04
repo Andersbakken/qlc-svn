@@ -40,7 +40,12 @@
 void FTDIDMXOut::init()
 {
 	// TODO: this should read from the configuration
+#ifndef _WINDOWS
+	// On Windows the users must ensure the ftdi driver is correct
+	// for their hardware, *NIX users can just dynamically
+	// alter the hardware settings in QLC
 	setVIDPID(known_devices[0].vid, known_devices[0].pid);
+#endif
 	rescanDevices();
 }
 
