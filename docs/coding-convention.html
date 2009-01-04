@@ -4,34 +4,23 @@
 <TITLE>Q Light Controller Documentation - Coding Convention</TITLE>
 </HEAD>
 
-<BODY>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD ALIGN="left">
-<IMG SRC="pics/qlc-logo.png" ALIGN="absmiddle" ALT="Q Light Controller">
-</TD>
-<TD ALIGN="right">
-<A HREF="index.html" CLASS="link">QLC Documentation</A>
-<BR>
-<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
-<BR>
-<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
-<BR>
-</TD>
-</TR>
-</TABLE>
-
+<CENTER>
+<IMG SRC="../gfx/qlc.png">
 <H1>Coding Convention</H1>
+</CENTER>
 
 <P>
-This file describes the coding convention (ten commandments) used in QLC source code.
-The purpose of this document is to instruct developers to write somewhat
-uniform code. The following rules are more or less similar to Qt's coding
-convention.
+This file describes the coding convention (ten commandments) used in QLC
+source code. The purpose of this document is to instruct developers to write
+somewhat uniform code. The following rules are more or less similar to the
+<A HREF="http://doc.trolltech.com/qq/qq13-apis.html">Qt coding convention</A>.
+Please read that page first. It's REALLY good.
 </P>
 
+<HR>
+
 <P>
-1. Each source file should be attached with this header:
+1. Each source file should be attached with this header:<BR>
 <PRE>
 /*
   Q Light Controller
@@ -57,11 +46,22 @@ convention.
 </PRE>
 </P>
 
+<HR>
+
 <P>
-2. Each member variable has a prefix "m_", for example int m_fooMember;<BR>
-Each global variable or function begins with "_", for example int _foo;<BR>
-<B>Avoid global variables!</B>
+2. Each member variable has a prefix "m_", for example:<BR>
+<PRE>
+	int m_fooMember;
+</PRE>
+Each global variable or function begins with "_", for example:
+<PRE>
+	int _foo;
+</PRE>
+
+<B>Still, try to avoid global variables at all costs!</B>
 </P>
+
+<HR>
 
 <P>
 3. Each function begins with a small letter and in compound words, all
@@ -75,11 +75,14 @@ int this_is_not_allowed_because_it_is_ugly;
 </PRE>
 </P>
 
+<HR>
+
 <P>
 4. Every control structure (if, while, for...) will be written inside
-brackets { } even if they would contain only one line of code.
-Also, the brackets are written on a new line without anything
-else after the bracket. This goes for functions and classes, too:
+brackets { } even if they would contain only one line of code, unless it looks
+really nice and clean. Also, brackets are written on their own line without
+anything else after or before the bracket on the same line. This goes for
+function and class definitions, too:
 <PRE>
 do
 {
@@ -108,6 +111,8 @@ void FooClass::fooBar()
 </PRE>
 </P>
 
+<HR>
+
 <P>
 5. Each class name will be written each word beginning with a capital letter.
 Same rules as with functions.
@@ -127,6 +132,8 @@ In general:<BR>
 class FooBarClass definition is saved in foobarclass.h<BR>
 and its implementation is in foobarclass.cpp
 </P>
+
+<HR>
 
 <P>
 6. All macro definitions are written completely in capital letters, words
@@ -148,6 +155,8 @@ static const int KMenuItem ( 1000 );
 </PRE>
 </P>
 
+<HR>
+
 <P>
 7. Each operator will be separated with spaces:
 <PRE>
@@ -162,18 +171,24 @@ for (int foo = 0; foo != bar; foo++)
 </PRE>
 </P>
 
+<HR>
+
 <P>
 8. Variable, function and class names should be descriptive. Use your common
 sense here.
 </P>
 
+<HR>
+
 <P>
-10. Write nice and readable code. Do not write code in one pile, use spaces and
+9. Write nice and readable code. Do not write code in one pile, use spaces and
 empty lines between logical sections.
 </P>
 
+<HR>
+
 <P>
-11. WRITE COMMENTS. I am a BAD example on this...
+10. WRITE COMMENTS.
 </P>
 
 </BODY>

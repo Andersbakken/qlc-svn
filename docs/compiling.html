@@ -1,134 +1,120 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Q Light Controller Documentation - Compiling</TITLE>
+<TITLE>Q Light Controller Documentation - Compiling instructions</TITLE>
 </HEAD>
 
-<BODY>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD ALIGN="left">
-<IMG SRC="pics/qlc-logo.png" ALIGN="absmiddle" ALT="Q Light Controller">
-</TD>
-<TD ALIGN="right">
-<A HREF="index.html" CLASS="link">QLC Documentation</A>
-<BR>
-<A HREF="http://qlc.sourceforge.net" CLASS="link">QLC Homepage</A>
-<BR>
-<A HREF="http://www.sourceforge.net/projects/qlc" CLASS="link">QLC at SourceForge</A>
-<BR>
-</TD>
-</TR>
-</TABLE>
-
-<H1>Compiling</H1>
+<CENTER>
+<IMG SRC="../gfx/qlc.png">
+<H1>Compiling Instructions</H1>
+</CENTER>
 
 <P>
-This document discusses issues related to compiling Q Light Controller from source files. It is
-assumed that the user is installing QLC with the default settings.
+This document discusses issues related to compiling Q Light Controller from
+source files. It is assumed that the user is installing QLC with the default
+settings.
 </P>
 
-<H3>Directory structure</H3>
+<H2>Directory structure</H2>
 
 <P>
-<TABLE COLS="2">
-
-<TR>
-<TD COLSPAN="2">dce/</TD>
-</TR>
-<TR>
-<TD>&nbsp;&nbsp;&nbsp;src/</TD><TD>Fixture editor sources</TD>
-</TR>
-
-</TR>
-<TR>
-<TD>debian/</TD><TD>Scripts for debian package creation</TD>
-</TR>
-
-<TR>
-<TD COLSPAN="2">libs/</TD>
-</TR>
-<TR>
-<TD>&nbsp;&nbsp;&nbsp;common/</TD><TD>Common helper classes</TD>
-</TR>
-<TR>
-<TD>&nbsp;&nbsp;&nbsp;dmx4linuxout/</TD><TD>DMX4Linux output plugin</TD>
-</TR>
-<TR>
-<TD>&nbsp;&nbsp;&nbsp;midiout/</TD><TD>MIDI-based output plugin</TD>
-</TR>
-
-<TR>
-<TD COLSPAN="2">main/</TD>
-</TR>
-<TR>
-<TD>&nbsp;&nbsp;&nbsp;src/</TD><TD>Main application sources</TD>
-</TR>
-
-<TR>
-<TD>xpm/</TD><TD>User interface icons, backgrounds, etc.</TD>
-</TR>
-
-<TR>
-<TD>devices/</TD><TD>Fixture definitions</TD>
-</TR>
-
-<TR>
-<TD>docs/</TD><TD>All documentation files</TD>
-</TR>
-
-</TABLE>
+<LI>debian: Scripts for debian package creation</LI>
+<LI>docs: QLC documentation files</LI>
+<LI>etc: Desktop integration stuff</LI>
+<LI>fixtureeditor: Fixture editor sources</LI>
+<LI>fixtures: Fixture definition files</LI>
+<LI>gfx: Graphics, icons...</LI>
+<LI>inputdevices: Input device definition files</LI>
+<LI>libs</LI>
+<UL>
+ <LI>common: Common helper classes</LI>
+ <LI>dmx4linuxout: DMX4Linux output plugin</LI>
+ <LI>ftdidmx: FTDI-chip-based output plugin</LI>
+ <LI>hidinput: Input plugin for Human Interface Devices (mice, joysticks...)</LI>
+ <LI>llaout: Linux Lighting Architecture output plugin</LI>
+ <LI>midiinput: MIDI-based input plugin</LI>
+ <LI>midiout: MIDI-based output plugin</LI>
+ <LI>soundtolight: Deprecated (needs updating)</LI>
+ <LI>udmxout: Output plugin for Anyma uDMX devices</LI>
+ <LI>usbdmxout: Output plugin for Peperoni Rodin devices</LI>
+</UL>
+<LI>main: The main QLC application sources</LI>
 </P>
 
 <H3>Configuration</H3>
 <P>
-In most cases, qlc doesn't require any manual configuration if you have
-all the necessary libraries installed on your Linux system. The most
-common cases of unsuccessful compile operations are the result of missing or
-incorrect libraries. To compile QLC, you need at least these
-versions of the following components (the more recent the better):
-<LI>QT 3.3 library (multithreaded qt-mt.so)</LI>
-<LI>QT 3.3 headers (i.e. development package)</LI>
-<LI>GNU automake 1.9</LI>
-<LI>GNU autoconf 2.59</LI>
-<LI>GNU make 3.0</LI>
-<LI>GNU libtool 1.5</LI>
-<LI>GCC (g++) 2.x</LI>
-<LI>pkg-config 0.16</LI>
-<LI>AWK 3.x</LI>
-<LI>GNU coreutils (usually present in all linux boxes)</LI>
+In most cases, qlc doesn't require any manual configuration if you have all
+the necessary libraries installed on your system. The most common cases of
+unsuccessful compile operations are the result of missing or incorrect
+libraries. To compile QLC, you need at least these versions of the following
+components (the more recent the better):
 </P>
 
 <P>
-To automatically configure QLC, run:
-<PRE>
-	./configure
-</PRE>
+<LI>Qt >= 4.1 development libraries & tools</LI>
+<BR>
+<B>Requirements - Linux</B>
+<BR>
+<LI>Main application, library and fixture editor: g++ >= 4.3</LI>
+<BR>
+<LI>FTDIDMX Output plugin: No additional requirements</LI>
+<LI>HID Input plugin: No additional requirements</LI>
+<LI>MIDI Input plugin: libasound, libasound-dev, pkg-config</LI>
+<LI>MIDI Output plugin: libasound, libasound-dev, pkg-config</LI>
+<LI>LLA Output plugin: liblla, lla-dev, pkg-config (see libs/llaout/README)</LI>
+<LI>uDMX Output plugin: libusb, libusb-dev</LI>
+<LI>USBDMX Output plugin: No additional requirements</LI>
+<BR>
+<B>Requirements - Windows</B>
+<BR>
+<LI>FTDIDMX Output plugin: ?</LI>
+<LI>HID Input plugin: Not available for Windows</LI>
+<LI>MIDI Input plugin: No additional requirements</LI>
+<LI>MIDI Output plugin: No additional requirements</LI>
+<LI>LLA Output plugin: Not available for Windows</LI>
+<LI>uDMX Output plugin: No additional requirements</LI>
+<LI>USBDMX Output plugin: No additional requirements</LI>
+<BR>
+<B>Requirements - OSX</B>
+<BR>
+<LI>FTDIDMX Output plugin: No additional requirements</LI>
+<LI>HID Input plugin: Not available for OSX</LI>
+<LI>MIDI Input plugin: Not available for OSX</LI>
+<LI>MIDI Output plugin: Not available for OSX</LI>
+<LI>LLA Output plugin: liblla, lla-dev, pkg-config (see libs/llaout/README)</LI>
+<LI>uDMX Output plugin: Not available for OSX</LI>
+<LI>USBDMX Output plugin: Not available for OSX</LI>
 </P>
 
-<H3>Compiling</H3>
+<H3>Compiling & Installation</H3>
 <P>
-Now, that everything should be in order, compile QLC with:
-
+For windows, just install the latest Qt package from Trolltech/Nokia along
+with the default MinGW setup and start the Qt command prompt. For Linux or
+OSX, in addition to the Qt libraries, you need also Qt development packages.
+</P>
+<P>
+As normal user, type to your X terminal/shell prompt/whatever:<BR>
 <PRE>
-	make
+        qmake
 </PRE>
-
-To install QLC, type:
-
+and then:<BR>
 <PRE>
-	make install
+        make
+</PRE>
+and then (as administrator/root):<BR>
+<PRE>
+        make install
 </PRE>
 </P>
 
-<H3>Package creation (debian)</H3>
+<H3>Package creation (linux/debian)</H3>
 
 <P>
 If you wish to create your own debian packages, there is a special <I>debian</I>
-directory for debian-specific package info. In general, you shouldn't have to modify
-anything in the directory, in fact, you don't need to go there at all. To be able to
-create debian packages, you'll need the following components, in addition to the ones
-needed to compile QLC:
+directory for debian-specific package info. In general, you shouldn't have to
+modify anything in the directory, in fact, you don't need to go there at all.
+To be able to create debian packages, you'll need the following components, in
+addition to the ones needed to compile QLC:
 <LI>debhelper</LI>
 <LI>dpkg</LI>
 <LI>dpkg-dev (namely dpkg-buildpackage)</LI>
@@ -136,15 +122,10 @@ needed to compile QLC:
 </P>
 
 <P>
-To start building a debian package, just <B>cd</B> to the QLC top directory and type:
+To start building a debian package, just <B>cd</B> to the QLC top directory
+and type:
 <PRE>
-	./create_debian_package.sh
-</PRE>
-
-or
-
-<PRE>
-	dpkg-buildpackage -rfakeroot -uc -us -sa -D
+	dpkg-buildpackage -rfakeroot
 </PRE>
 </P>
 
@@ -165,7 +146,7 @@ You can install the packages with:
 And uninstall them with:
 
 <PRE>
-	dpkg -r [package name].deb
+	dpkg -P [package name].deb
 </PRE>
 </P>
 

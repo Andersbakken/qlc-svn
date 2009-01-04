@@ -4,104 +4,82 @@
 <TITLE>Q Light Controller Documentation - Virtual Console</TITLE>
 </HEAD>
 
-<BODY>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD ALIGN="left">
-<IMG SRC="pics/qlc-logo.png" ALIGN="absmiddle" ALT="Q Light Controller">
-</TD>
-<TD ALIGN="right">
-<A HREF="index.html" >Documentation index</A>
-<BR>
-<A HREF="http://qlc.sourceforge.net" >QLC Homepage</A>
-<BR>
-<A HREF="http://www.sourceforge.net/projects/qlc" >QLC at SourceForge</A>
-<BR>
-</TD>
-</TR>
-</TABLE>
+<H2>Virtual Console</H2>
 
-<H1>Virtual Console</H1>
-
-<TABLE CELLSPACING="0" CELLPADDING="5" WIDTH="100%">
-
-<TR>
-<TD VALIGN="top">
-<IMG SRC="pics/qlc-logo.png" WIDTH="100" BORDER="0">
-</TD>
-
-<TD VALIGN="top">
 <P>
-The virtual console is essentially a "drawing area", that is initially empty. The user can add and
-remove buttons, sliders, frames and labels that are used to construct a custom lighting console. The
-lighting automation is primarily controlled thru the virtual console, although limited control is also
-possible thru the fixture console.
+The virtual console is essentially a "drawing area", that is initially empty.
+Users can add, remove and edit various widgets that are used to construct a
+custom lighting console. Lighting automation is primarily controlled thru the
+virtual console, although very limited control is possible thru each fixture's
+own console.
 </P>
 
 <P>
-The virtual console background can be a color or a tiled image. The user can restrict the movement and
-sizes of the GUI elements (widgets) as if they were on a grid. The grid can have a resolution between
-1-100 pixels independently for x- and y-axes and the grid can be turned on or off. If the grid is
-turned off, widgets can be placed and resized freely.
+The virtual console background can be a color or a tiled image. Users can
+restrict the movement and sizing of the GUI elements (widgets) as if they were
+laid on a grid. The grid can have a resolution between 1-100 pixels
+independently for x- and y-axes and the grid can be turned on or off. If the
+grid is turned off, widgets can be placed and resized freely.
 </P>
 
 <P>
-The user can set the virtual console to exclusively receive all keyboard input in operate mode. Also,
-key repeating can (and should!) be turned off to prevent flickering caused by computers' habit of
-continuously generating key press events as long as a key is pressed.
+Users can set the virtual console to exclusively receive all keyboard input in
+operate mode. Also, key repeating can (and should!) be turned off to prevent
+flickering caused by computers' habit of continuously generating key press
+events as long as a key is pressed.
 </P>
 
 <P>
-On the left side of virtual console, are always two speed sliders that are always assigned to buses
-number 1 (Default Fade) and 2 (Default Hold). These sliders can be hidden from view either from a
-menu item, or pressing the "Hide" button.
+On the left side of virtual console, are two speed sliders that are always
+assigned to buses number 1 (Default Fade) and 2 (Default Hold). These sliders
+can be hidden with a menu item under the Tools menu. The sliders can be
+configured thru the virtual console properties dialog.
 </P>
 
 <P>
-All widgets described below, can be configured thru a popup-menu that can be invoked by clicking the
-right mouse button over the widget. Note that this menu is available only in design mode.
+All widgets described in the next section can be configured thru a popup-menu
+that is invoked by clicking the right mouse button over the widget. Note that
+this menu along with all configuration options are available only when the
+application is in design mode.
 </P>
 
 <P>
-In design mode, all widgets draw a resize area in their lower-right corners. By keeping the mouse left
-button pressed over the resize area and moving the mouse, the user can resize the widget. Left mouse
-button press over the widget starts to move the widget.
-</P>
-
-<P>
-In operate mode, all editing capabilities of the virtual console widgets are disabled to prevent the
-user from making accidental changes. Buttons can only be pressed/released, sliders can only be moved
-and XY-Pads can only be used to drag the position indicator. Labels and frames don't have any user
-actions in operate mode.
+In design mode, all widgets draw a resize handle in their lower-right corners.
+By keeping the mouse left button pressed over the resize area and moving the
+mouse, users can resize these widgets. Left mouse button press over the widget
+starts to move the widget. In operate mode, all editing capabilities of the
+virtual console are disabled to prevent users from making accidental changes.
 </P>
 
 <H3>Buttons</H3>
 
 <P>
-The virtual console can house any number of button-like widgets. The button size and placement can be
-adjusted within the virtual console. The button has text and color or an image as foreground.
+The virtual console can contain any number of button-like widgets. Button
+size and placement can be adjusted within the virtual console. The button has
+text and color or an image as foreground.
 </P>
 
 <P>
-One function can be assigned to each button. When a function is assigned to a button, that button's
-tooltip is set to reflect the fixture (or Global) that function belongs to and the function's name.
+One function can be assigned to each button. When a function is assigned to a
+button, that button's tooltip is set to display the function's name.
 </P>
 
 <P>
-A button can be set to behave like a locking push button; pressed, the assigned function is run until
-it stops by itself; or depressed again, causing the button to unlock, explicitly stopping the function
-as soon as possible.
+A button can be set to behave like a locking push button; pressed, the
+assigned function is run until it stops by itself; or depressed again,
+causing the button to unlock, explicitly stopping the function as soon as
+possible.
 </P>
 
 <P>
-A button can be set to behave like a flash button; when the button is pressed, the function is kept
-running until the function stops by itself or the button is released and the function is stopped
-explicitly by the button.
+A button can be set to behave like a flash button; when the button is pressed,
+the function is kept running until the function stops by itself or the button
+is released and the function is stopped explicitly by the button.
 </P>
 
 <P>
-Each button can have a keyboard key combination assigned to it acting the same way as if the button
-was pressed with the mouse cursor.
+Each button can have a keyboard key combination assigned to it acting the same
+way as if the button was pressed with the mouse cursor.
 </P>
 
 <H3>Sliders</H3>

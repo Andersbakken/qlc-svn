@@ -1,295 +1,266 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Q Light Controller Documentation - The Concept</TITLE>
+<TITLE>Q Light Controller Documentation - Basic Concepts</TITLE>
 </HEAD>
 
-<BODY>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD ALIGN="left">
-<IMG SRC="pics/qlc-logo.png" ALIGN="absmiddle" ALT="Q Light Controller">
-</TD>
-<TD ALIGN="right">
-<A HREF="index.html" >Documentation index</A>
-<BR>
-<A HREF="http://qlc.sourceforge.net" >QLC Homepage</A>
-<BR>
-<A HREF="http://www.sourceforge.net/projects/qlc" >QLC at SourceForge</A>
-<BR>
-</TD>
-</TR>
-</TABLE>
-
-<H1>The Q Light Controller Concept</H1>
-
-<TABLE CELLSPACING="0" CELLPADDING="5" WIDTH="100%">
-
-<TR>
-<TD VALIGN="top">
-<IMG SRC="pics/qlc-logo.png" WIDTH="100" BORDER="0">
-</TD>
-
-<TD VALIGN="top">
-<H2>Purpose</H2>
+<CENTER>
+<IMG SRC="../gfx/qlc.png">
+<H1>Basic Concepts</H1>
+</CENTER>
 
 <P>
 Q Light Controller (QLC for short) is meant to control lighting equipment used
-in various performances, like live concerts and theatres etc. The main purpose is
-that QLC could outperform commercial lighting desks with an intuitive and flexible
-user interface.
+in various performances, like live concerts and theatres etc. The main purpose
+is that QLC could outperform commercial lighting desks with an intuitive and
+flexible user interface, without the need for a 500+ page manual.
 </P>
 
-<H2>Modes</H2>
+<A NAME="Modes" HREF="#Modes"><H2>Modes</H2></A>
 
 <P>
-Q Light Controller is based on the common concept of having two distinct operational
-modes to prevent accidental or otherwise harmful changes during operation. Design mode
-is meant to edit the behaviour of the program; create and edit functions and fixtures
-and how they work. Operate mode is meant to execute the created functions that
-eventually control your lighting fixtures.
+Q Light Controller is based on the common concept of having two distinct
+operational modes to prevent accidental or otherwise harmful changes during
+operation. <b>Design mode</b> is meant to edit the behaviour of the program;
+create and edit functions and fixtures and how they work. <b>Operate mode</b>
+is meant to execute the created functions that eventually control your
+lighting fixtures.
 </P>
 
-<H2>Fixtures</H2>
+<A NAME="Output" HREF="#Output"><H2>Output</H2></A>
 
 <P>
-The software is based on the DMX512 standard which defines the number of universes,
-number of channels and value range for all channels, as well as other protocol-related
-information. QLC supports the use of 8 DMX universes, each consisting of 512 channels,
-each channel having an integer value between 0 and 255. DMX access is achieved thru
-the DMX4Linux driver suite. Additional protocols can be supported thru custom made
-plugins (for example the 128-channel midiout plugin). It is also possible to run
-QLC without actual DMX hardware for offline editing.
+DMX output is achieved thru output plugins that can support one or more
+physical DMX universes. It is also possible to run QLC without actual DMX
+hardware.
 </P>
 
+<A NAME="Input" HREF="#Input"><H2>Input</H2></A>
+
 <P>
-The user can store shared fixture information in a fixture library that contains
-the following properties on each fixture:
-<BR>
-&nbsp;
-<BR>
-* Manufacturer and model (e.g. Manufacturer:Martin, Model:MAC550).
-<BR>
-* Type (Dimmer, Color changer, Scanner, Moving head, Fogger, Hazer, Fan, Others)
-<BR>
-* Number of channels (1-512).
-<BR>
-* Description of each channel's purpose (e.g. Gobo, Color, Speed etc.)
-<BR>
-* Value ranges in each channel representing a special functionality (e.g. 0-5:Lamp on)
-<BR>
+Primary input methods for QLC are naturally the keyboard and mouse. Users can
+attach keyboard keys to virtual console buttons and drag sliders and do pretty
+much everything with a mouse.
 </P>
 
 <P>
-These fixture entries can then be used to create fixture instances (256 at most at a time),
-that will, after instantiation, have additional properties defined by the user:
-<BR>
-&nbsp;
-<BR>
-* DMX Address
-<BR>
-* DMX Universe
-<BR>
-* Name
-<BR>
+Special input plugins provide capabilities for getting external devices (mainly
+slider boards) to provide input data to QLC elements. These input devices can
+be attached to virtual console widgets to eliminate the need for controlling
+a lighting show with a clumsy mouse or keyboard. External input can be used
+also to edit some function contents.
+</P>
+
+<A NAME="Fixtures" HREF="#Fixtures"><H2>Fixtures</H2></A>
+
+<P>
+The software is based on the DMX512 standard, which defines the number of
+channels and their value range, as well as other protocol-related information.
+QLC supports 4 individual DMX universes, each consisting of 512 channels,
+each channel having an integer value between 0 and 255.
 </P>
 
 <P>
-Several instances of one fixture can be created. Each fixture can be named, but the name is
-not used internally to discern fixture instances from one another. The same goes for the DMX address.
-So you can have any number of devices with the same name and/or address, if you feel that doing so
-serves a purpose.
-</P>
-
-<H2>Functions</H2>
-
-<P>
-The user can create a number of functions, that are used to automate the setting of values to channels.
-The different function types are: scene, chaser, EFX, collection and sequence. Each function can be
-named, but the name is not used internally to discern one function from another, although it is
-encouraged that the user gives functions descriptive names (for his own good).
-</P>
-
-<H3>Speed Setting</H3>
-
-<P>
-Functions have a speed setting that is set by the user. A maximum of 32 different speed settings called
-buses, are possible. One function can have exactly one bus and many functions can share a bus. The speed
-settings can be changed at any time with a resolution of 1/64 seconds. Any of the buses can be assigned
-in design mode to any function. A name can be assigned to each of the buses, for convenience and clarity.
+Users can store shared fixture information in a fixture library that contains
+the following properties for each fixture:<BR>
+<LI>Manufacturer (e.g. Martin)</LI>
+<LI>Model (e.g. MAC250)</LI>
+<LI>Type (Color Changer, Scanner, Moving Head, Smoke, Haze, Fan...)</LI>
+<LI>Channels:</LI>
+<UL>
+ <LI>Channel group (Pan, Tilt, Gobo, Color, Speed etc.)</LI>
+ <LI>8bit and 16bit channel bindings for pan & tilt groups
+ <LI>Value ranges for channel features (e.g. 0-5:Lamp on, 6-15:Strobe etc..)
+</UL>
 </P>
 
 <P>
-The names of the first two buses are fixed to "Fade" and "Hold". Functions' completion times and their
-run-time accuracy in value setting can be late or early 10 milliseconds on average. The user is able to
-quickly stop all running functions (pressing a panic button) in case something disastrous happens.
+These fixture entries can then be used to create fixture instances (256 at most
+at a time), that will, after instantiation, have additional properties defined
+by users:<BR>
+<LI>DMX Universe</LI>
+<LI>DMX Address</LI>
+<LI>Name</LI>
+</P>
+
+<P>
+Several instances of a fixture can be created (i.e. users must be able to
+have several instances of a MAC250 in use). Each fixture can be named, but the
+name is not used internally to identify individual fixture instances. The same
+goes for the DMX address. Nevertheless users are encouraged to name their
+fixtures in some systematic way to help identify each of them -- if necessary.
+</P>
+
+<P>
+Generic dimmer devices don't need their own fixture definitions, because usually
+multiple dimmers are patched into a common address space, employing one or more
+dimmers. Users can create instances of these generic dimmer entities just by
+defining the number of channels each one of them should use.
+</P>
+
+<A NAME="Functions" HREF="#Functions"><H2>Functions</H2></A>
+
+<P>
+Users can create 4096 functions, that are used to automate the setting of
+values to channels. The different function types are:<BR>
+<LI>Scene</LI>
+<LI>Chaser</LI>
+<LI>EFX</LI>
+<LI>Collection</LI>
+<BR>
+Each function can be named, but the name is not used internally to identify
+individual functions. Nevertheless users are encouraged to name their functions
+in some systematic way to help identify each of them -- if necessary.
+</P>
+
+<A NAME="Buses" HREF="#Buses"><H3>Speed Setting (buses)</H3></A>
+
+<P>
+Functions have a speed setting that is set by users. A maximum of 32 different
+speed settings called buses, are possible. One function can have exactly one
+bus and many functions can share one bus. The speed settings can be changed at
+any time with a resolution of 1/64 seconds. Any of the buses can be assigned
+in design mode to any function (except collection-type functions, which have
+no meaning for a speed). A name can be assigned to each of the buses, for
+convenience and to help identification.
+</P>
+
+<P>
+The names of the first two buses are, by default, "Fade" and "Hold". Functions'
+completion times and their run-time accuracy in value setting can be late or
+early 10 milliseconds on average. The user is able to quickly stop all running
+functions (pressing a panic button) in case something disastrous happens.
 </P>
 
 <A NAME="Scene" HREF="#Scene"><H3>Scene</H3></A>
 
 <P>
-A scene function encapsulates the values of all channels held by one fixture instance. Each stored value
-holds information on the style that the value will be set once the scene function is activated. Possible
-value types (styles) are:
-<BR>
-&nbsp;
-</BR>
-* Fade
-<BR>
-* Set
-<BR>
-* NoSet
-<BR>
+A scene function encapsulates the values of selected channels owned by one or
+more fixture instances. When a scene is started, the duration it takes for the
+values to reach their target depends on the function's speed setting (see the
+section on <I>Speed Setting</I> above). Bus number 1 (Default Fade) is
+assigned to all newly created scenes by default. If the bus' value is 0 seconds,
+the scene values are set immediately and no fading occurs. Otherwise the values
+are always faded from what they currently are, to the target values defined in
+the scene. Channels that are not enabled in the scene will not be touched.
 </P>
 
 <P>
-Of these, "NoSet" means that the value of the channel must not be touched at all. "Set" value is set at
-the very instant when the function is executed. "Fade" value is namely faded from the value that the
-channel currently has, to the value specified in the scene, smoothly during the given time span (e.g.
-speed bus value). The execution of a scene takes always the time specified as the function's speed,
-regardless of whether the channel values are already those specified in the scene or all values are of
-type "Set" or "NoSet".
-</P>
-
-<P>
-Bus number 1 (Default Fade) is assigned to all newly created scenes by default. The bus value is used
-as the overall time given to fade the scene channels from their current values to the ones defined in
-the scene.
-</P>
-
-<P>
-A copy of a scene function can be created to the same fixture that the original is assigned to, or to
-another fixture. All scene properties are copied to the duplicated scene. If the target fixture has less
-channels than the originating fixture, excess channels are cropped from the copy. If the target fixture
-has more channels than the originating fixture, the extra channels are set to zero value with "NoSet"
-type. After copying, the two functions are completely independent function entities. Scenes can also be
-moved between fixtures with the same rules.
+Copies of scene functions can be created within the 4096 total function limit.
+All of the function's contents are copied to the duplicate. After copying, the
+two functions are completely independent entities that behave exactly the same.
 </P>
 
 <A NAME="EFX" HREF="#EFX"><H3>EFX</H3></A>
 
 <P>
-An EFX function is mainly used to automate moving lights (e.g. scanners & moving heads). The EFX can
-create complex mathematical paths to an X-Y plane that are converted to DMX values for the fixture's
-pan and tilt channels.
+An EFX function is mainly used to automate moving lights (e.g. scanners &
+moving heads). The EFX can create complex mathematical paths on an X-Y plane
+that are converted to DMX values for the fixture's pan and tilt channels.
+<B>Only fixtures that contain valid pan & tilt channels can take part in an
+EFX function.</B>
 </P>
 
 <P>
-Bus number 1 (Default Fade) is assigned to all newly created EFX's by default. The bus value is used
-as the overall time for an EFX to complete one cycle (i.e. in a circle algorithm it is the time
-given to complete a full 360 degree circle).
+Bus number 1 (Default Fade) is assigned to all newly created EFX's by default.
+The bus value is used as the overall time for the EFX algorithm to complete
+one cycle. In other words, with a circle algorithm, the bus value is understood
+as the time available to complete a full 360 degree circle.
 </P>
 
 <P>
-A copy of an EFX function can be created to the same fixture that the original is assigned to, or to
-another fixture. All EFX properties are copied to the duplicated EFX. Channel mappings are done using
-direct channel numbers (e.g. 1=1, 2=2 etc.). If the target fixture has less channels than the
-originating fixture, excess channels are cropped from the copy. After copying, the two functions are
-completely independent function entities. EFX's can also be moved between fixtures with the same rules.
-</P>
-
-<A NAME="Sequence" HREF="#Sequence"><H3>Sequence</H3></A>
-
-<P>
-A sequence function is also used to automate moving lights (e.g. scanners & moving heads). The big
-difference between an EFX and a sequence is that you must enter each step manually for sequences,
-while EFX's will create the steps automatically using different mathematical formulae. Also, you can
-enter values for each channel of a fixture in a sequence function, while EFX's operate solely on
-pan and tilt channels.
+EFX functions can have special start and stop scenes, that are run just before
+the EFX is started and immediately after the EFX stops. These scenes are not,
+however, faded as would happen with a normal scene, but instead, they are
+set immediately, as if the speed set thru their bus was set to zero.
 </P>
 
 <P>
-Bus number 2 (Default Hold) is assigned to all newly created sequences by default. The bus value is
-used as hold time between steps.
+Fixtures taking part in an EFX function can be set to follow the algorithm
+either in parallel (all fixtures following the same pattern synchronously) or
+in serial (fixtures start following the pattern one after another, with a
+little delay in-between, creating a more lively, wave-like effect).
 </P>
 
 <P>
-A copy of a sequence function can be created to the same fixture that the original is assigned to, or
-to another fixture. All sequence properties are copied to the duplicated sequence. If the target
-fixture has less channels than the originating fixture, excess channels are cropped from the copy.
-If the target fixture has more channels than the originating fixture, the extra channels are set to
-zero value with "NoSet" type. After copying, the two functions are completely independent function
-entities. Sequences can also be moved between fixtures with the same rules.
-</P>
-
-<A NAME="Collection" HREF="#Collection"><H3>Collection</H3></A>
-
-<P>
-A collection function encapsulates multiple functions that are executed simultaneously when the
-collection function is executed. Any number of functions can be inserted to a collection. One function
-can be inserted only once and a collection cannot be a member of itself. The collection function is not
-attached to a fixture, thus it is held in the Global function space.
+EFX functions' direction can be reversed for all fixtures at once or on a
+per-fixture basis. The function can also be set to do an infinte loop, an
+infinite ping-pong-loop (direction is reversed after each pass) or it can run
+thru just once, in a single-shot mode, after which it terminates by itself.
+If the function is set to do an infinite loop, it must be stopped manually.
 </P>
 
 <P>
-The speed setting has no effect on a collection, therefore, it is not necessary to have the possibility
-to assign a bus to a collection.
-</P>
-
-<P>
-A copy of a collection function can be created to the global function space. The duplicated function has
-the same properties as the original function. After copying, the two functions are completely
-independent function entities.
+Copies of EFX functions can be created within the 4096 total function limit.
+All of the function's contents are copied to the duplicate. After copying, the
+two functions are completely independent entities that behave exactly the same.
 </P>
 
 <A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
 
 <P>
-A chaser function encapsulates multiple functions that are executed in serial one after another when
-the chaser function is run. The next function is run after the previous has finished. Any number of
-functions can be inserted to a chaser. The chaser cannot be a member of itself, although it is possible
-to add for example a collection as a member that holds the same chaser. These situations should be
-avoided because they create endless nested loops.
+A chaser function encapsulates multiple scenes that are executed in serial one
+after the other when the chaser function is run. The next function is run
+after the previous has finished. Any number of scenes can be inserted to a
+chaser.
 </P>
 
 <P>
-A chaser's direction can be set to (mutually exclusive):
-<BR>
-&nbsp;
-<BR>
-* Normal (traverse the functions from the beginning to the end)
-<BR>
-* Reverse (traverse the functions from the end to the beginning)
+Chaser functions' direction can be reversed. The function can also be set to do
+an infinite loop, an infinite ping-pong-loop (direction is reversed after
+each pass) or it can run thru just once, in a single-shot mode, after which it
+terminates by itself. If the function is set to do an infinite loop, it must
+be stopped manually.
 </P>
 
 <P>
-The run order can be set to (mutually exclusive):
-<BR>
-&nbsp;
-<BR>
-* Loop (loop indefinitely, jump to the first after executing the last function)
-<BR>
-* Single-shot (traverse the functions thru once and stop)
-<BR>
-* Ping-Pong (loop indefinitely, but reverse the direction at both ends)
-<BR>
+Bus number 2 (Default Hold) is assigned to all newly created chasers by
+default. The bus value is used as hold time between steps. Fade time for the
+chaser's member scene functions is set thru the scene function's own speed
+buses.
 </P>
 
 <P>
-The direction setting has effect on run order as described.
+Copies of chaser functions can be created within the 4096 total function limit.
+All of the function's contents are copied to the duplicate. After copying, the
+two functions are completely independent entities that behave exactly the same.
+</P>
+
+<A NAME="Collection" HREF="#Collection"><H3>Collection</H3></A>
+
+<P>
+A collection function encapsulates multiple functions that are executed
+simultaneously when the collection function is executed. Any number of
+functions can be inserted to a collection. One function can be inserted only
+once and a collection cannot be a member of itself.
 </P>
 
 <P>
-Bus number 2 (Default Hold) is assigned to all newly created chasers by default. The bus value
-is used as hold time between steps.
+Speed setting has no effect on a collection. The collection's functions' speeds
+are set individually by its member functions' buses.
 </P>
 
 <P>
-A copy of a chaser function can be created to the global function space. The duplicated function has
-the same properties as the original function. After copying, the two functions are completely
-independent function entities.
+Copies of collection functions can be created within the 4096 total function
+limit. All of the function's contents are copied to the duplicate. After
+copying, the two functions are completely independent entities that behave
+exactly the same.
 </P>
 
-<H2>Virtual Console</H2>
+<A NAME="VirtualConsole" HREF="#VirtualConsole"><H2>Virtual Console</H2></A>
 
 <P>
-The primary purpose of the virtual console is to act as an open sandbox where the user can create
-a lighting desk of his/her choice. <A HREF="virtualconsole.html">Read more...</A>
+The purpose of the virtual console is to act as an open sandbox where the user
+can create a lighting desk layout of his choice. Users can create various GUI
+(Graphical User Interface) elements, called widgets, onto the console surface:
+<BR>
+<LI>Buttons for starting and stopping functions</LI>
+<LI>Sliders for adjusting selected bus or channel values</LI>
+<LI>XY Pads for manually moving intelligent light beams</LI>
+<LI>Cue lists for theatrical performance purposes</LI>
+<LI>Frames for grouping various widgets together</LI>
+<LI>Labels to act as static information banners for other widgets</LI>
 </P>
-
-</TD>
-</TR>
-</TABLE>
 
 </BODY>
 </HTML>
