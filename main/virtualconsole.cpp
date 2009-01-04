@@ -298,6 +298,9 @@ void VirtualConsole::initDockArea()
 
 	// Add the dock area into the master horizontal layout
 	layout()->addWidget(m_dockArea);
+
+	/* Show the dock area by default */
+	m_dockArea->show();
 }
 
 /*********************************************************************
