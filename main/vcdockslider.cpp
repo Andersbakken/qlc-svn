@@ -287,12 +287,14 @@ bool VCDockSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCVCDockSliderBus)
 		{
-			str = tag.attribute(KXMLQLCVCDockSliderBus);
-			bus = str.toInt();
+			/* Bus */
+			bus = tag.text().toInt();
 
+			/* Low limit */
 			str = tag.attribute(KXMLQLCVCDockSliderBusLowLimit);
 			lo = str.toInt();
 
+			/* High limit */
 			str = tag.attribute(KXMLQLCVCDockSliderBusHighLimit);
 			hi = str.toInt();
 
