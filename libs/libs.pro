@@ -11,8 +11,8 @@ SUBDIRS			+= common
 !win32:SUBDIRS		+= ftdidmx
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
-unix:SUBDIRS		+= llaout
+!mac:unix:SUBDIRS		+= llaout
 
 # Input plugins
-SUBDIRS			+= midiinput
+!mac:SUBDIRS			+= midiinput
 !mac:unix:SUBDIRS	+= hidinput

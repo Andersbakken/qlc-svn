@@ -28,6 +28,10 @@
 #include <QtXml>
 #include <QDir>
 
+#ifdef __APPLE__
+#include <QApplication>
+#endif
+
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
