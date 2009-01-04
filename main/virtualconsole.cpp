@@ -242,15 +242,6 @@ void VirtualConsole::initMenuBar()
 	m_addMenu->addAction(m_addFrameAction);
 	m_addMenu->addAction(m_addLabelAction);
 
-	/* Tools menu */
-	m_toolsMenu = new QMenu(menuBar);
-	m_toolsMenu->setTitle(tr("Tools"));
-	menuBar->addMenu(m_toolsMenu);
-	m_toolsMenu->addAction(m_toolsPanicAction);
-	m_toolsMenu->addAction(m_toolsSlidersAction);
-	m_toolsMenu->addSeparator();
-	m_toolsMenu->addAction(m_toolsSettingsAction);
-
 	/* Edit menu */
 	m_editMenu = new QMenu(menuBar);
 	m_editMenu->setTitle(tr("Edit"));
@@ -263,6 +254,15 @@ void VirtualConsole::initMenuBar()
 	m_editMenu->addAction(m_editPropertiesAction);
 	m_editMenu->addAction(m_editRenameAction);
 	m_editMenu->addSeparator();
+
+	/* Tools menu */
+	m_toolsMenu = new QMenu(menuBar);
+	m_toolsMenu->setTitle(tr("Tools"));
+	menuBar->addMenu(m_toolsMenu);
+	m_toolsMenu->addAction(m_toolsPanicAction);
+	m_toolsMenu->addAction(m_toolsSlidersAction);
+	m_toolsMenu->addSeparator();
+	m_toolsMenu->addAction(m_toolsSettingsAction);
 
 	/* Foreground menu */
 	QMenu* fgMenu = new QMenu(m_editMenu);
