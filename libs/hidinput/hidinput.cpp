@@ -26,7 +26,7 @@
 #include <QDir>
 
 #include "configurehidinput.h"
-#include "hideventdevice.h"
+#include "hidjsdevice.h"
 #include "hidpoller.h"
 #include "hidinput.h"
 
@@ -101,8 +101,8 @@ void HIDInput::rescanDevices()
 	   to destroy in case some of them have disappeared. */
 	QList <HIDDevice*> destroyList(m_devices);
 
-	/* Check all files matching filter "/dev/input/event*" */
-	QDir dir("/dev/input/", QString("event*"), QDir::Name, QDir::System);
+	/* Check all files matching filter "/dev/input/js*" */
+	QDir dir("/dev/input/", QString("js*"), QDir::Name, QDir::System);
 	QStringListIterator it(dir.entryList());
 	while (it.hasNext() == true)
 	{
@@ -117,7 +117,7 @@ void HIDInput::rescanDevices()
 			if (dev == NULL)
 			{
 				/* This device is unknown to us. Add it. */
-				dev = new HIDEventDevice(this, line++, path);
+				dev = new HIDJsDevice(this, line++, path);
 				addDevice(dev);
 			}
 			else
@@ -136,7 +136,7 @@ void HIDInput::rescanDevices()
 				removeDevice(dev);
 		}
 	}
-	
+
 	/* Destroy all devices that were not found during rescan */
 	while (destroyList.isEmpty() == false)
 		removeDevice(destroyList.takeFirst());
@@ -232,21 +232,26 @@ QString HIDInput::infoText(t_input input)
 	str += QString("</HEAD>");
 	str += QString("<BODY>");
 
+	str += QString("<H3>%1</H3>").arg(name());
+
 	if (input == KInputInvalid)
 	{
-		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("This plugin provides input support for ");
-		str += QString("various HID (Human Interface Device) ");
-		str += QString("devices like joysticks, mice and keyboards.");
-		str += QString("</P>");
+		/* Plugin or just an invalid input selected. Display generic
+		   information. */
+		str += QString("<P>This plugin provides input support for ");
+		str += QString("various Human Interface Devices like ");
+		str += QString("joysticks, mice and keyboards.</P>");
 	}
-	else if (device(input) != NULL)
+	else
 	{
-		str += QString("<H3>%1</H3>").arg(inputs()[input]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		/* A specific input line selected. Display its information if
+		   available. */
+		HIDDevice* dev = device(input);
+
+		if (dev != NULL)
+			str += dev->infoText();
+		else
+			str += tr("<P>%1: Device not found.</P>").arg(input+1);
 	}
 
 	str += QString("</BODY>");
