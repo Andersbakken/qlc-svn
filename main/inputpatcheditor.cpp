@@ -543,6 +543,17 @@ void InputPatchEditor::slotRemoveDeviceClicked()
 		QFile file(device->path());
 		if (file.remove() == true)
 		{
+			if (item->checkState(KDeviceColumnName) == Qt::Checked)
+			{
+				/* The currently assigned device is removed,
+				   so select "None" next. */
+				QTreeWidgetItem* none;
+				none = m_deviceTree->topLevelItem(0);
+				Q_ASSERT(none != NULL);
+				none->setCheckState(KDeviceColumnName,
+						    Qt::Checked);
+			}
+
 			/* Successful deletion. Remove the device from
 			   input map and our tree widget */
 			_app->inputMap()->removeDevice(name);

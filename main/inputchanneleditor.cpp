@@ -30,7 +30,7 @@
 InputChannelEditor::InputChannelEditor(QWidget* parent,
 	const QLCInputChannel* channel) : QDialog(parent)
 {
-	m_channel = KInputChannelInvalid;
+	m_channel = 0;
 	m_type = QLCInputChannel::NoType;
 	m_name = QString::null;
 

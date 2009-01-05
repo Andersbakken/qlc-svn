@@ -7,6 +7,8 @@ docs.files	= coding-convention.html \
 		compiling.html \
 		concept.html \
 		howto-add-fixtures.html \
+		howto-input-devices.html \
+		howto-input-mapping.html \
 		howto-output-mapping.html \
 		index.html \
 		tutorial.html \
