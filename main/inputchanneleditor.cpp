@@ -36,6 +36,15 @@ InputChannelEditor::InputChannelEditor(QWidget* parent,
 
 	setupUi(this);
 
+	/* Connect to these already now so that the handlers get called
+	   during initialization. */
+	connect(m_numberSpin, SIGNAL(valueChanged(int)),
+		this, SLOT(slotNumberChanged(int)));
+	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
+		this, SLOT(slotNameEdited(const QString&)));
+	connect(m_typeCombo, SIGNAL(activated(const QString&)),
+		this, SLOT(slotTypeActivated(const QString &)));
+
 	/* Fill type combo with type icons and names */
 	QStringListIterator it(QLCInputChannel::types());
 	while (it.hasNext() == true)
@@ -65,16 +74,10 @@ InputChannelEditor::InputChannelEditor(QWidget* parent,
 	}
 	else
 	{
-		/* Multiple channels are being edited */
+		/* Multiple channels are being edited. Disable the channel
+		   number spin. */
 		m_numberSpin->setEnabled(false);
 	}
-
-	connect(m_numberSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotNumberChanged(int)));
-	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
-		this, SLOT(slotNameEdited(const QString&)));
-	connect(m_typeCombo, SIGNAL(activated(const QString&)),
-		this, SLOT(slotTypeActivated(const QString &)));
 }
 
 InputChannelEditor::~InputChannelEditor()

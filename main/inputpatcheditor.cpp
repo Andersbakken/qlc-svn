@@ -434,6 +434,12 @@ edit:
 		QLCInputDevice* dev;
 		QString path;
 		QDir dir;
+		QString manufacturer;
+		QString model;
+
+		/* Remove spaces from these */
+		manufacturer = ite.device()->manufacturer().remove(QChar(' '));
+		model = ite.device()->model().remove(QChar(' '));
 
 #ifdef Q_WS_X11
 		/* If the current user is root, use the system device dir
@@ -459,10 +465,9 @@ edit:
 		dir = QDir(INPUTDEVICEDIR);
 #endif
 		/* Construct a descriptive file name for the device */
-		path = QString("%1/%2-%3")
-				.arg(dir.absolutePath())
-				.arg(ite.device()->manufacturer())
-				.arg(ite.device()->model());
+		path = QString("%1/%2-%3%4").arg(dir.absolutePath())
+				.arg(manufacturer).arg(model)
+				.arg(KExtInputDevice);
 
 		/* Ensure that creating a new input device won't overwrite
 		   an existing file. */
@@ -473,14 +478,13 @@ edit:
 				/* Start adding a number suffix to the file
 				   name and stop when a unique file name is
 				   found. */
-				QString s;
-				s = QString("%1-%2%3").arg(path).arg(i)
-						      .arg(KExtInputDevice);
-				if (QFile::exists(s) == false)
-				{
-					path = s;
+				path = QString("%1/%2-%3-%4%5")
+						.arg(dir.absolutePath())
+						.arg(manufacturer).arg(model)
+						.arg(i).arg(KExtInputDevice);
+
+				if (QFile::exists(path) == false)
 					break;
-				}
 			}
 		}
 
@@ -595,6 +599,13 @@ edit:
 	}
 	else
 	{
+		QString manufacturer;
+		QString model;
+
+		/* Remove spaces from these */
+		manufacturer = device->manufacturer().remove(QChar(' '));
+		model = device->model().remove(QChar(' '));
+
 		/* Ensure that user device directory exists */
 		path = QString("%1/%2").arg(getenv("HOME"))
 				       .arg(USERINPUTDEVICEDIR);
@@ -610,29 +621,9 @@ edit:
 		{
 			/* Construct a descriptive file name for
 			   the device under user's HOME dir */
-			path = QString("%1/%2-%3")
-				.arg(dir.absolutePath())
-				.arg(device->manufacturer())
-				.arg(device->model());
-
-			/* Ensure that creating a new file won't
-			   overwrite an existing file. */
-			if (QFile::exists(path + KExtInputDevice))
-			{
-				/* Add an increasing number suffix to the name
-				   and stop when a unique name is found. */
-				for (int i = 1; i < INT_MAX; i++)
-				{
-					QString s;
-					s = QString("%1-%2%3").arg(path)
-						.arg(i).arg(KExtInputDevice);
-					if (QFile::exists(s) == false)
-					{
-						path = s;
-						break;
-					}
-				}
-			}
+			path = QString("%1/%2-%3%4").arg(dir.absolutePath())
+				.arg(manufacturer).arg(model)
+				.arg(KExtInputDevice);
 		}
 	}
 #else

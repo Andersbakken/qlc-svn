@@ -173,10 +173,26 @@ void InputDeviceEditor::slotAddClicked()
 {
 	QLCInputChannel* channel = new QLCInputChannel();
 	InputChannelEditor ice(this, channel);
+add:
 	if (ice.exec() == QDialog::Accepted)
 	{
-		m_device->addChannel(channel);
-		updateChannelItem(new QTreeWidgetItem(m_tree), channel);
+		channel->setChannel(ice.channel());
+		channel->setType(ice.type());
+		channel->setName(ice.name());
+
+		if (m_device->channel(ice.channel()) == NULL)
+		{
+			m_device->addChannel(channel);
+			updateChannelItem(new QTreeWidgetItem(m_tree), channel);
+		}
+		else
+		{
+			QMessageBox::warning(this,
+					     tr("Channel already exists"),
+					     tr("Channel %1 already exists")
+						.arg(ice.channel() + 1));
+			goto add;
+		}
 	}
 	else
 	{
@@ -248,16 +264,30 @@ void InputDeviceEditor::slotEditClicked()
 
 		/* Edit the channel and update its item if necessary */
 		InputChannelEditor ice(this, channel);
+edit:
 		if (ice.exec() == QDialog::Accepted)
 		{
-			if (ice.channel() != KInputChannelInvalid)
-				channel->setChannel(ice.channel());
-			if (ice.name() != QString::null)
-				channel->setName(ice.name());
-			if (ice.type() != QLCInputChannel::NoType)
-				channel->setType(ice.type());
+			QLCInputChannel* another;
+			another = m_device->channel(ice.channel());
 
-                        updateChannelItem(item, channel);
+			if (another == NULL || another == channel)
+			{
+				if (ice.channel() != KInputChannelInvalid)
+					channel->setChannel(ice.channel());
+				if (ice.name() != QString::null)
+					channel->setName(ice.name());
+				if (ice.type() != QLCInputChannel::NoType)
+					channel->setType(ice.type());
+	                        updateChannelItem(item, channel);
+			}
+			else
+			{
+				QMessageBox::warning(this,
+						tr("Channel already exists"),
+						tr("Channel %1 already exists")
+						.arg(ice.channel() + 1));
+				goto edit;
+			}
 		}
 	}
 	else if (m_tree->selectedItems().count() > 1)
