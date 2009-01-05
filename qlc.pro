@@ -8,3 +8,4 @@ SUBDIRS		+= fixtures
 SUBDIRS		+= inputdevices
 SUBDIRS		+= fixtureeditor
 SUBDIRS		+= etc
+SUBDIRS		+= docs

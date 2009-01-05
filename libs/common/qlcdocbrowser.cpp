@@ -70,14 +70,7 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 	connect(m_homeAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(home()));
 
-	/* Set the documentation source */
-#ifdef __APPLE__
-	m_browser->setSource(QUrl(QApplication::applicationDirPath() + QString("/../docs/index.html")));
-#else
-	QSettings s;
-	QString docs = s.value("directories/documentation").toString();
-	m_browser->setSource(QUrl(docs + QString("/index.html")));
-#endif
+	m_browser->setSource(QUrl(QString("%1/html/index.html").arg(DOCSDIR)));
 }
 
 QLCDocBrowser::~QLCDocBrowser()

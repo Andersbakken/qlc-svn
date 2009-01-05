@@ -11,6 +11,11 @@ unix:LIBSDIR		= /usr/lib
 win32:DATADIR		= $$(SystemDrive)/QLC
 unix:DATADIR		= /usr/share/qlc
 
+# Documentation
+win32:DOCSDIR		= $$DATADIR/Documents
+unix:DOCSDIR		= $$DATADIR/documents
+DEFINES			+= DOCSDIR=\\\"$$DOCSDIR\\\"
+
 # Input devices
 win32:INPUTDEVICEDIR	= $$DATADIR/InputDevices
 unix:INPUTDEVICEDIR	= $$DATADIR/inputdevices
