@@ -33,8 +33,19 @@
 
 QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 {
+	QSettings settings;
+	QVariant w, h;
+	QString path;
+	
 	setWindowTitle("Q Light Controller - Document Browser");
-	resize(600, 600);
+
+	/* Recall window size */
+	w = settings.value("documentbrowser/width");
+	h = settings.value("documentbrowser/height");
+	if (w.isValid() == false || h.isValid() == false)
+		resize(600, 600);
+	else
+		resize(w.toInt(), h.toInt());
 
 	/* Actions */
 	m_backwardAction = new QAction(QIcon(":/back.png"),
@@ -49,14 +60,14 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 
 	/* Toolbar */
 	QToolBar* toolbar = new QToolBar("Document Browser", this);
-	this->addToolBar(toolbar);
+	addToolBar(toolbar);
 	toolbar->addAction(m_backwardAction);
 	toolbar->addAction(m_forwardAction);
 	toolbar->addAction(m_homeAction);
 
 	/* Browser */
 	m_browser = new QTextBrowser(this);
-	this->setCentralWidget(m_browser);
+	setCentralWidget(m_browser);
 
 	connect(m_browser, SIGNAL(backwardAvailable(bool)),
 		this, SLOT(slotBackwardAvailable(bool)));
@@ -70,11 +81,19 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 	connect(m_homeAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(home()));
 
-	m_browser->setSource(QUrl(QString("%1/html/index.html").arg(DOCSDIR)));
+#ifdef WIN32
+	path = QString("Documents/html/index.html"); /* Wonder why? */
+#else
+	path = QString("%1/html/index.html").arg(DOCSDIR);
+#endif
+	m_browser->setSource(QUrl(path));
 }
 
 QLCDocBrowser::~QLCDocBrowser()
 {
+	QSettings settings;
+	settings.setValue("documentbrowser/width", width());
+	settings.setValue("documentbrowser/height", height());
 }
 
 void QLCDocBrowser::slotBackwardAvailable(bool available)
