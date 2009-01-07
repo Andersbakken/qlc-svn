@@ -17,7 +17,11 @@ distclean" in trunk (top-most source directory) and then "qmake" and "make"
 again. We attempt to keep the SVN head free of fatal errors and it should
 compile all the time. However, some inter-object dependencies do get mixed up
 sometimes and you need to compile the whole package instead of just the latest
-changes.
+changes. Sometimes even that doesn't work, because QLC installs its common
+libraries to system directories, where (at least unixes) fetch them instead
+of the source directory. In those cases, you might try going to the libs
+directory, compile it with "make" and install with "make install" and then
+attempt to re-compile the whole package with "make".
 
 License
 -------
