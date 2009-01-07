@@ -5,7 +5,19 @@ Copyright (c) Heikki Junnila
 EMail: hjunnila@users.sf.net
 QLC at SourceForge: http://qlc.sf.net
 
+DEVELOPERS AT WORK
+------------------
 
+If you're compiling QLC from sources and you regularly do "svn update" (or
+something similar) to get the latest sources, you probably end up seeing some
+compiler warnings and errors from time to time. Since the whole source package
+is under development, you might even encounter unresolved symbols etc. that
+halt the compiler immediately. If such a thing occurs, you should do a "make
+distclean" in trunk (top-most source directory) and then "qmake" and "make"
+again. We attempt to keep the SVN head free of fatal errors and it should
+compile all the time. However, some inter-object dependencies do get mixed up
+sometimes and you need to compile the whole package instead of just the latest
+changes.
 
 License
 -------
