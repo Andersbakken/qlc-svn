@@ -63,8 +63,14 @@ protected slots:
 	/** Invoke refresh for the interface list */
 	void slotRefreshClicked();
 
-	/** Open a dialog with which to select a feedback output line */
+#ifdef WIN32
+	/**
+	 * Open a dialog with which to select a feedback output line.
+	 * Available only for windows because ALSA uses the same address for
+	 * input and output.
+	 */
 	void slotEditClicked();
+#endif
 };
 
 #endif

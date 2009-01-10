@@ -53,7 +53,7 @@ ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
 	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	/* One needs to choose the particular output line for feedback only
-	   in windows, since input & output lines don't have the same ID. */
+	   in windows, where input & output lines don't have the same ID. */
 #ifdef WIN32
 	headerLabels << tr("Input") << tr("Name") << tr("Feedback line");
 #else
@@ -61,8 +61,8 @@ ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
 #endif
 	m_tree->setHeaderLabels(headerLabels);
 
-	/* Enable the configuration button only for windows because the unix
-	   version can determine the feedback line by itself. */
+	/* Enable the configuration button only for windows because ALSA
+	   uses the same address for input and output. */
 #ifdef WIN32
 	connect(m_editButton, SIGNAL(clicked()),
 		this, SLOT(slotEditClicked()));
