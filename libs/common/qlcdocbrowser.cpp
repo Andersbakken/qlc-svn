@@ -33,9 +33,9 @@
 
 QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 {
+	QStringList searchPaths;
 	QSettings settings;
 	QVariant w, h;
-	QString path;
 	
 	setWindowTitle("Q Light Controller - Document Browser");
 
@@ -81,12 +81,9 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 	connect(m_homeAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(home()));
 
-#ifdef WIN32
-	path = QString("Documents/html/index.html"); /* Wonder why? */
-#else
-	path = QString("%1/html/index.html").arg(DOCSDIR);
-#endif
-	m_browser->setSource(QUrl(path));
+	searchPaths << QString("%1/html/").arg(DOCSDIR);
+	m_browser->setSearchPaths(searchPaths);
+	m_browser->setSource(QUrl(QString("index.html")));
 }
 
 QLCDocBrowser::~QLCDocBrowser()

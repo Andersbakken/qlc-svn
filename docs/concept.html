@@ -6,7 +6,7 @@
 
 <CENTER>
 <IMG SRC="../gfx/qlc.png">
-<H1>Basic Concepts</H1>
+<H1>Basic Concepts & Glossary</H1>
 </CENTER>
 
 <P>
@@ -16,71 +16,197 @@ is that QLC could outperform commercial lighting desks with an intuitive and
 flexible user interface, without the need for a 500+ page manual.
 </P>
 
-<A NAME="Modes" HREF="#Modes"><H2>Modes</H2></A>
-
 <P>
-Q Light Controller is based on the common concept of having two distinct
-operational modes to prevent accidental or otherwise harmful changes during
-operation. <b>Design mode</b> is meant to edit the behaviour of the program;
-create and edit functions and fixtures and how they work. <b>Operate mode</b>
-is meant to execute the created functions that eventually control your
-lighting fixtures.
+This page has been arranged in alphabetical order to ease searching for a
+specific topic.
 </P>
 
-<A NAME="Output" HREF="#Output"><H2>Output</H2></A>
+<A NAME="Blackout" HREF="#Blackout"><H3>Blackout</H3></A>
 
 <P>
-DMX output is achieved thru output plugins that can support one or more
-physical DMX universes. It is also possible to run QLC without actual DMX
-hardware.
+Blackout is used to set all channels in all universes to zero and keep them
+that way, regardless of what functions are currently being run or what values
+have been set to them manually. When blackout is turned off, <U>current
+values</U> of all channels are set to each universe.
 </P>
 
-<A NAME="Input" HREF="#Input"><H2>Input</H2></A>
+<A NAME="Buses" HREF="#Buses"><H3>Buses</H3></A>
 
 <P>
-Primary input methods for QLC are naturally the keyboard and mouse. Users can
-attach keyboard keys to virtual console buttons and drag sliders and do pretty
-much everything with a mouse.
+Buses provide different speed settings to the various <A HREF="#Functions">
+functions</A> that the user creates. One bus may control the <I>fading</i>
+speed for a group of scenes, another the time it takes for an <A HREF="#EFX">
+EFX</A> function to complete a full circle, etc..
 </P>
 
 <P>
-Special input plugins provide capabilities for getting external devices (mainly
-slider boards) to provide input data to QLC elements. These input devices can
-be attached to virtual console widgets to eliminate the need for controlling
-a lighting show with a clumsy mouse or keyboard. External input can be used
-also to edit some function contents.
+Functions have speed buses that are set by users. A maximum of 32 different
+speed settings called buses, are possible. One function can have exactly one
+bus and many functions can share one bus. The speed setting of each bus can be
+changed at any time with a resolution of 1/64th of second. Any of the buses can
+be assigned in <A HREF="#Modes">design mode</A> to any function. The only
+exception to this comes from <A HREF="#Collection">collection</A> functions,
+which don't have a speed setting at all.
 </P>
 
-<A NAME="Fixtures" HREF="#Fixtures"><H2>Fixtures</H2></A>
+<P>
+Each bus can have a name set by the user can for convenience and to help in
+identification. The names of the first two buses are, by default, "Fade" and
+"Hold".
+</P>
+
+<A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
 
 <P>
-The software is based on the DMX512 standard, which defines the number of
-channels and their value range, as well as other protocol-related information.
-QLC supports 4 individual DMX universes, each consisting of 512 channels,
-each channel having an integer value between 0 and 255.
+A chaser <A HREF="#Functions">function</A> encapsulates multiple scenes that are
+run in serial, one after the other, when the chaser function is started. The
+next function is run only after the previous has finished. Any number of
+<A HREF="#Scene">scenes</A> can be inserted to a chaser.
+</P>
+
+<P>
+Chaser functions' direction can be reversed. The function can also be set to do
+an infinite loop, an infinite ping-pong-loop (direction is reversed after
+each pass) or it can run thru just once, in a single-shot mode, after which it
+terminates by itself. If the function is set to do an infinite loop, it must
+be stopped manually.
+</P>
+
+<P>
+<A HREF="#Buses">Bus</A> number 2 (Default Hold) is assigned to all newly
+created chasers by default. The bus value is understood by chasers as hold time
+between steps. Fade time for the chaser's member scene functions is set thru
+each scene function's own speed bus.
+</P>
+
+<P>
+Copies of chaser functions can be created within the 4096 total function limit.
+All of the function's contents are copied to the duplicate. After copying, the
+two functions are completely independent entities that behave exactly the same.
+</P>
+
+<A NAME="Collection" HREF="#Collection"><H3>Collection</H3></A>
+
+<P>
+A collection <A HREF="#Functions">function</A> encapsulates multiple functions
+that are run simultaneously when the collection function is executed. Any number
+of functions can be inserted to a collection, but each function can be inserted
+only once and a collection cannot be a direct member of itself.
+</P>
+
+<P>
+<A HREF="#Buses">Speed setting</A> has no effect on collections. Each member
+functions' speed is set individually by their own buses.
+</P>
+
+<P>
+Copies of collection functions can be created within the 4096 total function
+limit. All of the function's contents are copied to the duplicate. After
+copying, the two functions are completely independent entities that behave
+exactly the same.
+</P>
+
+<A NAME="DMX" HREF="#DMX"><H3>DMX</H3></A>
+
+<P>
+DMX is short for <B>D</B>igital <B>M</B>ultiple<B>X</B>. It basically defines
+a whole bunch of properties, protocol, wiring etc. but in the case of a lighting
+software, it defines the maximum number of channels (512) per universe and the
+channels' value range (0-255).
+</P>
+
+<P>
+QLC supports 4 individual universes, that need not be necessarily connected to
+DMX hardware; rather, DMX has just been selected as the de facto lighting
+standard. Actual hardware abstraction (whether it's analog 0-10V, DMX or some
+other method) is achieved thru <A HREF="#OutputPlugins">output plugins</A>.
+</P>
+
+<A NAME="EFX" HREF="#EFX"><H3>EFX</H3></A>
+
+<P>
+An EFX <A HREF="#Functions">function</A> is mainly used to automate moving
+lights (e.g. scanners & moving heads). The EFX can create complex mathematical
+paths on an X-Y plane that are converted to DMX values for the fixture's pan and
+tilt channels. <B>Only fixtures that contain valid pan & tilt channels can take
+part in an EFX function.</B>
+</P>
+
+<P>
+<A HREF="#Buses">Bus</A> number 1 (Default Fade) is assigned to all newly
+created EFX's by default. The bus value is used as the overall time for the EFX
+algorithm to complete one cycle. In other words, with a circle algorithm, the
+bus value is understood as the time available to complete a full 360 degree
+circle.
+</P>
+
+<P>
+EFX functions can have special start and stop <A HREF="#Scene">scenes</A>, that
+are run just before the EFX is started and immediately after the EFX stops.
+These scenes are not, however, faded as would happen with a normal scene.
+Instead, their values are set immediately, as if their speed setting was zero.
+</P>
+
+<P>
+Fixtures taking part in an EFX function can be set to follow the algorithm
+either in parallel or serial:
+<UL>
+<LI>Parallel: all fixtures follow the same pattern synchronously</LI>
+<LI>Serial: fixtures start following the pattern one after the other, with a
+little in-between delay, creating a more lively, wave-like effect. To see the
+effect, you need at least two similar moving fixtures, preferably four.</LI>
+</UL>
+</P>
+
+<P>
+EFX functions' direction can be reversed for all fixtures at once or on a
+per-fixture basis. The function can also be set to do an infinte loop, an
+infinite ping-pong-loop (direction is reversed after each pass) or it can run
+thru just once, in a single-shot mode, after which it terminates by itself.
+If the function is set to do an infinite loop, it must be stopped manually.
+</P>
+
+<P>
+Copies of EFX functions can be created within the 4096 total function limit.
+All of the function's contents are copied to the duplicate. After copying, the
+two functions are completely independent entities that behave exactly the same.
+</P>
+
+<A NAME="Fixtures" HREF="#Fixtures"><H3>Fixtures</H3></A>
+
+<P>
+A fixture is essentially one lighting device. It can be, for example, one
+moving head, one scanner, one laser etc.. However, for simplicity, individual
+PAR cans (and the like) that are usually controlled thru one dimmer channel per
+can, can be grouped together to form one single fixture.
 </P>
 
 <P>
 Users can store shared fixture information in a fixture library that contains
-the following properties for each fixture:<BR>
+the following properties for each fixture:
+<UL>
 <LI>Manufacturer (e.g. Martin)</LI>
 <LI>Model (e.g. MAC250)</LI>
 <LI>Type (Color Changer, Scanner, Moving Head, Smoke, Haze, Fan...)</LI>
+<LI>Physical properties (bulb type, beam angle, dimensions...)</LI>
 <LI>Channels:</LI>
 <UL>
  <LI>Channel group (Pan, Tilt, Gobo, Color, Speed etc.)</LI>
  <LI>8bit and 16bit channel bindings for pan & tilt groups
  <LI>Value ranges for channel features (e.g. 0-5:Lamp on, 6-15:Strobe etc..)
 </UL>
+</UL>
 </P>
 
 <P>
 These fixture entries can then be used to create fixture instances (256 at most
 at a time), that will, after instantiation, have additional properties defined
-by users:<BR>
+by users:
+<UL>
 <LI>DMX Universe</LI>
 <LI>DMX Address</LI>
 <LI>Name</LI>
+</UL>
 </P>
 
 <P>
@@ -98,51 +224,103 @@ dimmers. Users can create instances of these generic dimmer entities just by
 defining the number of channels each one of them should use.
 </P>
 
-<A NAME="Functions" HREF="#Functions"><H2>Functions</H2></A>
+<A NAME="Functions" HREF="#Functions"><H3>Functions</H3></A>
 
 <P>
 Users can create 4096 functions, that are used to automate the setting of
-values to channels. The different function types are:<BR>
-<LI>Scene</LI>
-<LI>Chaser</LI>
-<LI>EFX</LI>
-<LI>Collection</LI>
-<BR>
+values to channels. Each function type has its own way for automating lights.
+</P>
+
+<P>
+The function types are:
+<UL>
+<LI><A HREF="#Scene">Scene</A></LI>
+<LI><A HREF="#Chaser">Chaser</A></LI>
+<LI><A HREF="#EFX">EFX</A></LI>
+<LI><A HREF="#Collection">Collection</A></LI>
+</UL>
+</P>
+
+<P>
 Each function can be named, but the name is not used internally to identify
 individual functions. Nevertheless users are encouraged to name their functions
 in some systematic way to help identify each of them -- if necessary.
 </P>
 
-<A NAME="Buses" HREF="#Buses"><H3>Speed Setting (buses)</H3></A>
+<A NAME="InputPlugins" HREF="#InputPlugins"><H3>Input plugins</H3></A>
 
 <P>
-Functions have a speed setting that is set by users. A maximum of 32 different
-speed settings called buses, are possible. One function can have exactly one
-bus and many functions can share one bus. The speed settings can be changed at
-any time with a resolution of 1/64 seconds. Any of the buses can be assigned
-in design mode to any function (except collection-type functions, which have
-no meaning for a speed). A name can be assigned to each of the buses, for
-convenience and to help identification.
+Primary input methods for QLC are naturally the keyboard and mouse. Users can
+attach keyboard keys to virtual console buttons and drag sliders and do pretty
+much everything with a mouse. It is possible to attach additional input devices
+to one's computer to alleviate the rather clumsy and slow user experience that
+is achieved with a regular mouse and a keyboard. Special input plugins provide
+capabilities for getting external devices (mainly slider boards) to produce
+input data to various QLC elements.
 </P>
 
+<A NAME="Input" HREF="#Input"><H3>Input (line)</H3></A>
+
 <P>
-The names of the first two buses are, by default, "Fade" and "Hold". Functions'
-completion times and their run-time accuracy in value setting can be late or
-early 10 milliseconds on average. The user is able to quickly stop all running
-functions (pressing a panic button) in case something disastrous happens.
+An input is a physical input line provided by some hardware which is accessed
+thru an input plugin. It can be, for example, a MIDI IN connector in the user's
+computer (or peripheral) to which users can connect MIDI-capable input devices
+like slider boards etc.
+</P>
+
+<A NAME="InputDevices" HREF="#InputDevices"><H3>Input devices</H3></A>
+
+<P>
+Input devices can be thought of as <A HREF="#Fixtures">fixtures'</A> cousins;
+they contain information on specific devices that produce input data for the
+users. An input device can be, for example, a specific slider board like the
+Behringer BCF-2000.
+</P>
+
+<A NAME="Modes" HREF="#Modes"><H3>Modes</H3></A>
+
+<P>
+Q Light Controller is based on the common concept of having two distinct
+operational modes to prevent accidental or otherwise harmful changes during
+operation:
+<UL>
+<LI><U>Design mode</U> is meant to edit the behaviour of the program;
+create and edit <A HREF="#Functions">functions</A> and
+<A HREF="#Fixtures">fixtures</A> and how they work.</LI>
+<LI><U>Operate mode</U> is meant to execute the created functions that
+eventually control the user's lighting fixtures.</LI>
+</UL>
+</P>
+
+<A NAME="Output" HREF="#OutputPlugins"><H3>Output plugins</H3></A>
+
+<P>
+DMX output is achieved thru output plugins that can support one or more
+output lines. It is also possible to run QLC without actual DMX
+hardware.
+</P>
+
+<A NAME="Output" HREF="#Output"><H3>Output (line)</H3></A>
+
+<P>
+An output is a physical output line provided by some hardware which is accessed
+thru an output plugin. In other words, it is a real DMX universe, but has been
+dubbed <u>output</u> to separate it from QLC's internal universes. You could
+think of them as individual output (XLR) connectors in your DMX hardware.
 </P>
 
 <A NAME="Scene" HREF="#Scene"><H3>Scene</H3></A>
 
 <P>
-A scene function encapsulates the values of selected channels owned by one or
-more fixture instances. When a scene is started, the duration it takes for the
-values to reach their target depends on the function's speed setting (see the
-section on <I>Speed Setting</I> above). Bus number 1 (Default Fade) is
+A scene <A HREF="#Functions">function</A> encapsulates the values of selected
+channels owned by one or more fixture instances. When a scene is started, the
+duration it takes for its channels to reach their target values depends on the
+function's <A HREF="#Buses">speed setting</A>. Bus number 1 (Default Fade) is
 assigned to all newly created scenes by default. If the bus' value is 0 seconds,
 the scene values are set immediately and no fading occurs. Otherwise the values
 are always faded from what they currently are, to the target values defined in
-the scene. Channels that are not enabled in the scene will not be touched.
+the scene. Channels that are not enabled in the scene will not be touched at
+all by the function.
 </P>
 
 <P>
@@ -151,115 +329,20 @@ All of the function's contents are copied to the duplicate. After copying, the
 two functions are completely independent entities that behave exactly the same.
 </P>
 
-<A NAME="EFX" HREF="#EFX"><H3>EFX</H3></A>
-
-<P>
-An EFX function is mainly used to automate moving lights (e.g. scanners &
-moving heads). The EFX can create complex mathematical paths on an X-Y plane
-that are converted to DMX values for the fixture's pan and tilt channels.
-<B>Only fixtures that contain valid pan & tilt channels can take part in an
-EFX function.</B>
-</P>
-
-<P>
-Bus number 1 (Default Fade) is assigned to all newly created EFX's by default.
-The bus value is used as the overall time for the EFX algorithm to complete
-one cycle. In other words, with a circle algorithm, the bus value is understood
-as the time available to complete a full 360 degree circle.
-</P>
-
-<P>
-EFX functions can have special start and stop scenes, that are run just before
-the EFX is started and immediately after the EFX stops. These scenes are not,
-however, faded as would happen with a normal scene, but instead, they are
-set immediately, as if the speed set thru their bus was set to zero.
-</P>
-
-<P>
-Fixtures taking part in an EFX function can be set to follow the algorithm
-either in parallel (all fixtures following the same pattern synchronously) or
-in serial (fixtures start following the pattern one after another, with a
-little delay in-between, creating a more lively, wave-like effect).
-</P>
-
-<P>
-EFX functions' direction can be reversed for all fixtures at once or on a
-per-fixture basis. The function can also be set to do an infinte loop, an
-infinite ping-pong-loop (direction is reversed after each pass) or it can run
-thru just once, in a single-shot mode, after which it terminates by itself.
-If the function is set to do an infinite loop, it must be stopped manually.
-</P>
-
-<P>
-Copies of EFX functions can be created within the 4096 total function limit.
-All of the function's contents are copied to the duplicate. After copying, the
-two functions are completely independent entities that behave exactly the same.
-</P>
-
-<A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
-
-<P>
-A chaser function encapsulates multiple scenes that are executed in serial one
-after the other when the chaser function is run. The next function is run
-after the previous has finished. Any number of scenes can be inserted to a
-chaser.
-</P>
-
-<P>
-Chaser functions' direction can be reversed. The function can also be set to do
-an infinite loop, an infinite ping-pong-loop (direction is reversed after
-each pass) or it can run thru just once, in a single-shot mode, after which it
-terminates by itself. If the function is set to do an infinite loop, it must
-be stopped manually.
-</P>
-
-<P>
-Bus number 2 (Default Hold) is assigned to all newly created chasers by
-default. The bus value is used as hold time between steps. Fade time for the
-chaser's member scene functions is set thru the scene function's own speed
-buses.
-</P>
-
-<P>
-Copies of chaser functions can be created within the 4096 total function limit.
-All of the function's contents are copied to the duplicate. After copying, the
-two functions are completely independent entities that behave exactly the same.
-</P>
-
-<A NAME="Collection" HREF="#Collection"><H3>Collection</H3></A>
-
-<P>
-A collection function encapsulates multiple functions that are executed
-simultaneously when the collection function is executed. Any number of
-functions can be inserted to a collection. One function can be inserted only
-once and a collection cannot be a member of itself.
-</P>
-
-<P>
-Speed setting has no effect on a collection. The collection's functions' speeds
-are set individually by its member functions' buses.
-</P>
-
-<P>
-Copies of collection functions can be created within the 4096 total function
-limit. All of the function's contents are copied to the duplicate. After
-copying, the two functions are completely independent entities that behave
-exactly the same.
-</P>
-
-<A NAME="VirtualConsole" HREF="#VirtualConsole"><H2>Virtual Console</H2></A>
+<A NAME="VirtualConsole" HREF="#VirtualConsole"><H3>Virtual Console</H3></A>
 
 <P>
 The purpose of the virtual console is to act as an open sandbox where the user
 can create a lighting desk layout of his choice. Users can create various GUI
 (Graphical User Interface) elements, called widgets, onto the console surface:
-<BR>
+<UL>
 <LI>Buttons for starting and stopping functions</LI>
 <LI>Sliders for adjusting selected bus or channel values</LI>
 <LI>XY Pads for manually moving intelligent light beams</LI>
 <LI>Cue lists for theatrical performance purposes</LI>
 <LI>Frames for grouping various widgets together</LI>
 <LI>Labels to act as static information banners for other widgets</LI>
+</UL>
 </P>
 
 <HR>
