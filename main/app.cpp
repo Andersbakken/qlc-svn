@@ -804,7 +804,8 @@ void App::initActions()
 	connect(m_helpAboutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAbout()));
 
-	m_helpAboutQtAction = new QAction(tr("About Qt"), this);
+	m_helpAboutQtAction = new QAction(QIcon(":/qt.png"),
+					  tr("About Qt"), this);
 	connect(m_helpAboutQtAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAboutQt()));
 }

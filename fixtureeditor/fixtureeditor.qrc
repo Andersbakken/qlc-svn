@@ -7,6 +7,7 @@
         <file alias="exit.png">../gfx/exit.png</file>
         <file alias="help.png">../gfx/help.png</file>
         <file alias="qlc.png">../gfx/qlc.png</file>
+        <file alias="qt.png">../gfx/qt.png</file>
         <file alias="fixture.png">../gfx/fixture.png</file>
         <file alias="edit_add.png">../gfx/edit_add.png</file>
         <file alias="edit_remove.png">../gfx/edit_remove.png</file>

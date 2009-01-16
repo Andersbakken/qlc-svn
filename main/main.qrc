@@ -57,6 +57,7 @@
         <file alias="panic.png">../gfx/panic.png</file>
 	<file alias="prism.png">../gfx/prism.png</file>
 	<file alias="qlc.png">../gfx/qlc.png</file>
+	<file alias="qt.png">../gfx/qt.png</file>
         <file alias="scene.png">../gfx/scene.png</file>
 	<file alias="shutter.png">../gfx/shutter.png</file>
         <file alias="slider.png">../gfx/slider.png</file>
