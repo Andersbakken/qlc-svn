@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: qlc
 Section: Other
 Architecture: i386
-Depends: ${shlib:Depends}
+Depends: ${shlib:Depends}, ${misc:Depends}
 Description: Software DMX lighting desk
   Software DMX lighting desk
 
@@ -18,3 +18,10 @@ Architecture: any
 Depends: qlc
 Description: Fixture definitions for Q Light Controller
   Fixture definitions for Q Light Controller
+
+Package: qlc-inputdevices
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Input device definitions for Q Light Controller
+  Input device definitions for Q Light Controller
