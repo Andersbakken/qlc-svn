@@ -144,6 +144,9 @@ public:
 	Doc* doc() { return m_doc; }
 	void newDocument();
 
+signals:
+	void documentChanged(Doc* doc);
+
 protected slots:
 	void slotDocModified(bool state);
 

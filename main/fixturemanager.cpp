@@ -77,6 +77,13 @@ FixtureManager::FixtureManager(QWidget* parent) : QWidget(parent)
 	initToolBar();
 	initDataView();
 	updateView();
+	
+	/* To disable some actions when switching to operate mode */
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		this, SLOT(slotModeChanged(App::Mode)));
+
+	/* Listen to fixture additions/removals */
+	slotDocumentChanged(_app->doc());
 }
 
 FixtureManager::~FixtureManager()
@@ -86,6 +93,18 @@ FixtureManager::~FixtureManager()
 /*****************************************************************************
  * Doc signal handlers
  *****************************************************************************/
+
+void FixtureManager::slotDocumentChanged(Doc* doc)
+{
+	Q_ASSERT(doc != NULL);
+
+ 	/* Connect fixture list change signals from the new document object */
+	connect(doc, SIGNAL(fixtureAdded(t_fixture_id)),
+		this, SLOT(slotFixtureAdded(t_fixture_id)));
+
+	connect(doc, SIGNAL(fixtureRemoved(t_fixture_id)),
+		this, SLOT(slotFixtureRemoved(t_fixture_id)));
+}
 
 void FixtureManager::slotFixtureAdded(t_fixture_id id)
 {

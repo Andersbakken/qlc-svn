@@ -24,7 +24,10 @@
 
 #include <QObject>
 #include <QVector>
+#include <QTimer>
 #include <QList>
+#include <QHash>
+
 #include "common/qlctypes.h"
 
 class QString;
@@ -162,6 +165,34 @@ public:
 	 */
 	void setValueRange(t_channel address, t_value* values, t_channel num);
 
+	/*********************************************************************
+	 * Monitor timer
+	 *********************************************************************/
+public:
+	/**
+	 * Set the frequency for monitor timer. If frequency > 0, the timer is
+	 * started and a changedValues() signal is emitted every frequency:th
+	 * of a second. If frequency == 0, the timer is stopped and no signal
+	 * emission occurs.
+	 */
+	void setMonitorTimerFrequency(unsigned int frequency);
+
+	/**
+	 * Get the monitor timer frequency.
+	 */
+	unsigned int monitorTimerFrequency() const;
+	
+protected slots:
+	/** Slot that catches monitor timer signals */
+	void slotMonitorTimeout();
+
+signals:
+	void changedValues(const QHash <t_channel,t_value>& values);
+
+protected:
+	QTimer m_monitorTimer;
+	QHash <t_channel,t_value> m_monitorValues;
+	
 	/*********************************************************************
 	 * Patch
 	 *********************************************************************/

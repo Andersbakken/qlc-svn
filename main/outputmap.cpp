@@ -67,6 +67,9 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 
 	load();
 	loadDefaults();
+
+	connect(&m_monitorTimer, SIGNAL(timeout()),
+		this, SLOT(slotMonitorTimeout()));
 }
 
 OutputMap::~OutputMap()
@@ -301,6 +304,10 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	{
 		/* Just store the values when in blackout */
 		m_blackoutStore[channel] = value;
+
+		if (m_monitorTimer.isActive() == true)
+			m_monitorValues[channel] = value;
+
 		return;
 	}
 
@@ -323,6 +330,9 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	   the universe output selected for this patch */
 	outputPatch->plugin()->writeChannel(outputPatch->output(),
 					    (channel % 512), value);
+
+	if (m_monitorTimer.isActive() == true)
+		m_monitorValues[channel] = value;
 }
 
 void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
@@ -337,6 +347,13 @@ void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
 	{
 		memcpy(m_blackoutStore + address, values, 
 		       num * sizeof(t_value));
+
+		if (m_monitorTimer.isActive() == true)
+		{
+			for (t_channel i = 0; i < num; i++)
+				m_monitorValues[address + i] = values[i];
+		}
+		
 		return;
 	}
 	
@@ -360,6 +377,41 @@ void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
 	outputPatch->plugin()->writeRange(outputPatch->output(),
 					  (address % 512), values, num);
 
+	if (m_monitorTimer.isActive() == true)
+	{
+		for (t_channel i = 0; i < num; i++)
+			m_monitorValues[address + i] = values[i];
+	}
+}
+
+/*****************************************************************************
+ * Monitor timer
+ *****************************************************************************/
+
+void OutputMap::setMonitorTimerFrequency(unsigned int frequency)
+{
+	/* 0 stops the timer, other values are interpreted as Hz */
+	if (frequency > 0)
+		m_monitorTimer.start(1000 / frequency);
+	else
+		m_monitorTimer.stop();
+}
+
+unsigned int OutputMap::monitorTimerFrequency() const
+{
+	return int((1.0 / double(m_monitorTimer.interval())) * 1000);
+}
+
+void OutputMap::slotMonitorTimeout()
+{
+	if (m_monitorValues.count() > 0)
+	{
+		/* Only the changed values are emitted to Monitor when 
+		   the timer is running. This way, Monitor doesn't need to
+		   always fetch the entire universe-ful of values. */
+		emit changedValues(m_monitorValues);
+		m_monitorValues.clear();
+	}
 }
 
 /*****************************************************************************

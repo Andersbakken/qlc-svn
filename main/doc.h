@@ -158,6 +158,16 @@ public:
 	 */
 	Fixture* fixture(t_fixture_id id);
 
+signals:
+	/** Signal that a fixture has been added */
+	void fixtureAdded(t_fixture_id fxi_id);
+
+	/** Signal that a fixture has been removed */
+	void fixtureRemoved(t_fixture_id fxi_id);
+
+	/** Signal that a fixture's properties have changed */
+	void fixtureChanged(t_fixture_id fxi_id);
+
 	/*********************************************************************
 	 * Functions
 	 *********************************************************************/
@@ -229,15 +239,6 @@ public slots:
 signals:
 	/** Signal that this Doc has been modified (or unmodified) */
 	void modified(bool state);
-
-	/** Signal that a fixture has been added */
-	void fixtureAdded(t_fixture_id fxi_id);
-
-	/** Signal that a fixture has been removed */
-	void fixtureRemoved(t_fixture_id fxi_id);
-
-	/** Signal that a fixture's properties have changed */
-	void fixtureChanged(t_fixture_id fxi_id);
 
 	/** Signal that a function has been added */
 	void functionAdded(t_function_id function);

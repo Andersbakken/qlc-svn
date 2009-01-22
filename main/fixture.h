@@ -95,6 +95,9 @@ public:
 	 */
 	~Fixture();
 
+	/** Less-than operator for qSort() */
+	bool operator<(const Fixture& fxi);
+	
 private:
 	Q_DISABLE_COPY(Fixture)
 
@@ -119,7 +122,7 @@ public:
 	 *
 	 * @return The instance's fixture ID
 	 */
-	t_fixture_id id();
+	t_fixture_id id() const;
 
 protected:
 	/** Fixture ID */
@@ -141,7 +144,7 @@ public:
 	 *
 	 * @return The instance's friendly name
 	 */
-	QString name();
+	QString name() const;
 
 protected:
 	/** Friendly name */
@@ -155,7 +158,7 @@ public:
 	 * Get the fixture's type
 	 *
 	 */
-	QString type();
+	QString type() const;
 
 	/*********************************************************************
 	 * Universe
@@ -173,7 +176,7 @@ public:
 	 *
 	 * @return A zero-based DMX address (i.e. 0-511; not 1-512)
 	 */
-	t_channel universe();
+	t_channel universe() const;
 
 	/*********************************************************************
 	 * Address
@@ -191,7 +194,7 @@ public:
 	 *
 	 * @return A zero-based DMX address (i.e. 0-511; not 1-512)
 	 */
-	t_channel address();
+	t_channel address() const;
 
 public:
 	/**
@@ -199,7 +202,7 @@ public:
 	 *
 	 * @return The fixture's address & universe
 	 */
-	t_channel universeAddress();
+	t_channel universeAddress() const;
 
 	/*********************************************************************
 	 * Channels
@@ -220,7 +223,7 @@ public:
 	 *
 	 * @return Number of channels
 	 */
-	t_channel channels();
+	t_channel channels() const;
 
 	/**
 	 * Get a specific channel object by the channel's number. For generic
@@ -235,7 +238,7 @@ public:
 	 * Get a fixture's channel's DMX address.
 	 *
 	 */
-	int channelAddress(t_channel channel);
+	int channelAddress(t_channel channel) const;
 
 	/**
 	 * Get a channel by its name. Comparison is done as a "contains"

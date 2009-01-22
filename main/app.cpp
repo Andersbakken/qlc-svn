@@ -431,11 +431,9 @@ void App::initFunctionConsumer()
 
 void App::initDoc()
 {
-	// Delete existing document object
+	// Delete existing document object and create a new one
 	if (m_doc != NULL)
 		delete m_doc;
-
-	// Create a new document object
 	m_doc = new Doc();
 
 	connect(m_doc, SIGNAL(modified(bool)),
@@ -444,17 +442,7 @@ void App::initDoc()
 	connect(this, SIGNAL(modeChanged(App::Mode)),
 		m_doc, SLOT(slotModeChanged(App::Mode)));
 
-	/* Connect fixture list change signals from the new document object */
-	if (m_fixtureManager != NULL)
-	{
-		connect(m_doc, SIGNAL(fixtureAdded(t_fixture_id)),
-			m_fixtureManager,
-			SLOT(slotFixtureAdded(t_fixture_id)));
-		
-		connect(m_doc, SIGNAL(fixtureRemoved(t_fixture_id)),
-			m_fixtureManager,
-			SLOT(slotFixtureRemoved(t_fixture_id)));
-	}
+	emit documentChanged(m_doc);
 }
 
 void App::slotDocModified(bool state)
@@ -1005,6 +993,7 @@ void App::slotFileOpen()
 
 	/* Create a file open dialog */
 	QFileDialog dialog(this);
+	dialog.setWindowTitle(tr("Open Workspace"));
 	dialog.setAcceptMode(QFileDialog::AcceptOpen);
 	dialog.selectFile(m_doc->fileName());
 
@@ -1062,6 +1051,7 @@ void App::slotFileSaveAs()
 
 	/* Create a file save dialog */
 	QFileDialog dialog(this);
+	dialog.setWindowTitle(tr("Save Workspace As"));
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
 	dialog.selectFile(m_doc->fileName());
 
@@ -1122,21 +1112,6 @@ void App::slotFixtureManager()
 
 		connect(m_fixtureManager, SIGNAL(destroyed(QObject*)),
 			this, SLOT(slotFixtureManagerDestroyed(QObject*)));
-
-		/* To disable some actions when switching to operate mode */
-		connect(this, SIGNAL(modeChanged(App::Mode)),
-			m_fixtureManager, SLOT(slotModeChanged(App::Mode)));
-
-		/* Listen to fixture additions/removals */
-		connect(m_doc,
-			SIGNAL(fixtureAdded(t_fixture_id)),
-			m_fixtureManager,
-			SLOT(slotFixtureAdded(t_fixture_id)));
-		
-		connect(m_doc,
-			SIGNAL(fixtureRemoved(t_fixture_id)),
-			m_fixtureManager,
-			SLOT(slotFixtureRemoved(t_fixture_id)));
 
 		m_fixtureManager->show();
 		sub->show();
@@ -1255,6 +1230,8 @@ void App::slotControlMonitor()
 		sub->setWidget(m_monitor);
 		sub->setAttribute(Qt::WA_DeleteOnClose);
 		sub->setWindowIcon(QIcon(":/monitor.png"));
+		sub->setWindowTitle("Fixture Monitor");
+		sub->resize(200, 400);
 
 		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
 

@@ -55,6 +55,9 @@ private:
 	 * Doc signal handlers
 	 ********************************************************************/
 public slots:
+	/** Listen to document changes (after App::newDocument())*/
+	void slotDocumentChanged(Doc* doc);
+
 	 /** Callback for Doc::fixtureAdded() signals */
 	void slotFixtureAdded(t_fixture_id id);
 

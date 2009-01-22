@@ -85,6 +85,14 @@ Fixture::~Fixture()
 		delete m_genericChannel;
 }
 
+bool Fixture::operator<(const Fixture& fxi)
+{
+	if (m_address < fxi.m_address)
+		return true;
+	else
+		return false;
+}
+
 /*****************************************************************************
  * Fixture ID
  *****************************************************************************/
@@ -95,7 +103,7 @@ void Fixture::setID(t_fixture_id id)
 	emit changed(m_id);
 }
 
-t_fixture_id Fixture::id()
+t_fixture_id Fixture::id() const
 {
 	return m_id;
 }
@@ -114,7 +122,7 @@ void Fixture::setName(QString name)
 	emit changed(m_id);
 }
 
-QString Fixture::name()
+QString Fixture::name() const
 {
 	return m_name;
 }
@@ -122,7 +130,7 @@ QString Fixture::name()
 /*****************************************************************************
  * Fixture type
  *****************************************************************************/
-QString Fixture::type()
+QString Fixture::type() const
 {
 	if (m_fixtureDef != NULL)
 		return m_fixtureDef->type();
@@ -142,7 +150,7 @@ void Fixture::setUniverse(t_channel universe)
 	emit changed(m_id);
 }
 
-t_channel Fixture::universe()
+t_channel Fixture::universe() const
 {
 	/* The universe part is stored in the highest 7 bits */
 	return (m_address >> 9);
@@ -160,13 +168,13 @@ void Fixture::setAddress(t_channel address)
 	emit changed(m_id);
 }
 
-t_channel Fixture::address()
+t_channel Fixture::address() const
 {
 	/* The address part is stored in the lowest 9 bits */
 	return (m_address & 0x01FF);
 }
 
-t_channel Fixture::universeAddress()
+t_channel Fixture::universeAddress() const
 {
 	return m_address;
 }
@@ -181,7 +189,7 @@ void Fixture::setChannels(t_channel channels)
 	m_channels = channels;
 }
 
-t_channel Fixture::channels()
+t_channel Fixture::channels() const
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		return m_fixtureMode->channels();
@@ -197,7 +205,7 @@ const QLCChannel* Fixture::channel(t_channel channel)
 		return createGenericChannel();
 }
 
-int Fixture::channelAddress(t_channel channel)
+int Fixture::channelAddress(t_channel channel) const
 {
 	return universeAddress() + channel;
 }
@@ -275,6 +283,8 @@ void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
 	if (m_genericChannel != NULL)
 		delete m_genericChannel;
 	m_genericChannel = NULL;
+
+	emit changed(m_id);
 }
 
 /*****************************************************************************

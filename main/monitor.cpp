@@ -19,24 +19,19 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QMdiSubWindow>
 #include <QActionGroup>
-#include <QPaintEvent>
 #include <QFontDialog>
-#include <QVBoxLayout>
+#include <QScrollArea>
+#include <QSpacerItem>
 #include <QMenuBar>
-#include <QPainter>
 #include <QAction>
-#include <QTimer>
-#include <QColor>
-#include <QRect>
 #include <QFont>
 #include <QMenu>
 #include <QIcon>
 #include <QtXml>
 
-#include <math.h>
-
+#include "monitorfixture.h"
+#include "monitorlayout.h"
 #include "outputmap.h"
 #include "monitor.h"
 #include "app.h"
@@ -47,484 +42,231 @@
 
 extern App* _app;
 
-/** Number of pixels to leave between borders and values/labels on X axis */
-#define X_OFFSET 10
-
-/** Number of pixels to leave between borders and values/labels on Y axis */
-#define Y_OFFSET 5
-
 /*****************************************************************************
- * Initialize
+ * Initialization
  *****************************************************************************/
+
 Monitor::Monitor(QWidget* parent) : QWidget(parent)
 {
-	m_universe        = 0;
-	m_visibleMin      = 0;
-	m_visibleMax      = 0;
-	m_newValues       = NULL;
-	m_oldValues       = NULL;
-	m_timer           = NULL;
-	m_updateFrequency = 16;
-
 	init();
 }
 
 Monitor::~Monitor()
 {
-	if (m_timer != NULL)
-		delete m_timer;
-
-	while (m_universeActions.isEmpty() == false)
-		m_universeActions.takeFirst();
-
-	/* Wait for painter to stop */
-	while (m_painter.isActive())
-	{
-		/* NOP */
-	}
-		
-	delete [] m_newValues;
-	delete [] m_oldValues;
+	/* Stop the timer */
+	_app->outputMap()->setMonitorTimerFrequency(0);
 }
 
 void Monitor::init()
 {
-	Q_ASSERT(parentWidget() != NULL);
-
-	/* Master layout */
+	/* Master layout for menu and scroll area */
 	new QVBoxLayout(this);
 
-	/* Create menu bar & actions */
-	initActions();
+	/* Create menu bar */
 	initMenu();
 
-	/* Icon & window title */
-	qobject_cast <QMdiSubWindow*> 
-		(parentWidget())->setWindowIcon(QIcon(":/monitor.png"));
-	qobject_cast <QMdiSubWindow*> 
-		(parentWidget())->setWindowTitle("DMX Monitor - Universe 1");
-	
-	/* Init the arrays that hold the values */
-	m_newValues = new t_value[512];
-	m_oldValues = new t_value[512];
-	for (t_channel i = 0; i < 512; i++)
-		m_newValues[i] = m_oldValues[i] = 0;
+	/* Scroll area that contains the monitor widget */
+	m_scrollArea = new QScrollArea(this);
+	m_scrollArea->setWidgetResizable(true);
+	layout()->addWidget(m_scrollArea);
 
-	/* Start with the first universe */
-	setUniverse(0);
+	/* Monitor widget that contains all MonitorFixtures */
+	m_monitorWidget = new QWidget(m_scrollArea);
+	m_monitorWidget->setBackgroundRole(QPalette::Dark);
+	m_monitorLayout = new MonitorLayout(m_monitorWidget);
+	m_monitorLayout->setSpacing(1);
+	m_monitorLayout->setMargin(1);
 
-	/* Connect and start the update timer with 16Hz */
-	setFrequency(16);
-
-	/* Set a reasonable default size */
-	parentWidget()->resize(280, 150);
-}
-
-void Monitor::initActions()
-{
-	/* Universe actions */
-	QActionGroup* universeGroup = new QActionGroup(this);
-	for (t_channel i = 0; i < KUniverseCount; i++)
+	/* Create a bunch of MonitorFixtures for each fixture */
+	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 	{
-		QAction* action;
-		action = new QAction(QString(tr("Universe %1")).arg(i+1), this);
-		m_universeActions.append(action);
-		universeGroup->addAction(action);
-		action->setCheckable(true);
+		Fixture* fxi = _app->doc()->fixture(i);
+		if (fxi != NULL)
+			createMonitorFixture(fxi);
 	}
 
-	/* Font */
-	m_fontAction = new QAction(QIcon(":/fonts.png"), tr("Font"), this);
-	connect(m_fontAction, SIGNAL(triggered(bool)), this, SLOT(slotFont()));
+	/* Show the master container widgets */
+	m_scrollArea->setWidget(m_monitorWidget);
+	m_monitorWidget->show();
+	m_scrollArea->show();
 
-	QActionGroup* speedGroup = new QActionGroup(this);
+	connect(_app, SIGNAL(documentChanged(Doc*)),
+		this, SLOT(slotDocumentChanged(Doc*)));
 
-	/* 16Hz update speed */
-	m_16HzAction = new QAction(tr("16x per second"), this);
-	connect(m_16HzAction, SIGNAL(triggered(bool)), this, SLOT(slot16Hz()));
-	speedGroup->addAction(m_16HzAction);
-	m_16HzAction->setCheckable(true);
+	slotDocumentChanged(_app->doc());
 
-	/* 32Hz update speed */
-	m_32HzAction = new QAction(tr("32x per second"), this);
-	connect(m_32HzAction, SIGNAL(triggered(bool)), this, SLOT(slot32Hz()));
-	speedGroup->addAction(m_32HzAction);
-	m_32HzAction->setCheckable(true);
-
-	/* 64Hz update speed */
-	m_64HzAction = new QAction(tr("64x per second"), this);
-	connect(m_64HzAction, SIGNAL(triggered(bool)), this, SLOT(slot64Hz()));
-	speedGroup->addAction(m_64HzAction);
-	m_64HzAction->setCheckable(true);
-}
-
-void Monitor::initMenu()
-{
-	/* Menu bar */
-	Q_ASSERT(layout() != NULL);
-	layout()->setMenuBar(new QMenuBar(this));
-	
-	/* Universe menu */
-	QMenu* universeMenu = new QMenu(layout()->menuBar());
-	universeMenu->setTitle(tr("Universe"));
-	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(universeMenu);
-	QListIterator <QAction*> it(m_universeActions);
-	while (it.hasNext() == true)
-		universeMenu->addAction(it.next());
-
-	/* Display menu */
-	QMenu* displayMenu = new QMenu(layout()->menuBar());
-	displayMenu->setTitle("Display");
-	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(displayMenu);
-	displayMenu->addAction(m_fontAction);
-	displayMenu->addSeparator();
-
-	/* Update speed (inside display menu) */
-	QMenu* speedMenu = new QMenu(displayMenu);
-	displayMenu->addMenu(speedMenu);
-	speedMenu->setTitle("Update speed");
-	speedMenu->setIcon(QIcon(":/clock.png"));
-	speedMenu->addAction(m_16HzAction);
-	speedMenu->addAction(m_32HzAction);
-	speedMenu->addAction(m_64HzAction);
-
-	connect(universeMenu, SIGNAL(triggered(QAction*)),
-		this, SLOT(slotUniverseTriggered(QAction*)));
-}
-
-void Monitor::slotUniverseTriggered(QAction* action)
-{
-	Q_ASSERT(action != NULL);
-	setUniverse(action->text().remove("Universe").toInt() - 1);
-}
-
-void Monitor::slotFont()
-{
-	bool ok = false;
-	QFont font = QFontDialog::getFont(&ok, m_font, this);
-	if (ok == true)
-	{
-		m_font = font;
-		update();
-	}
-}
-
-void Monitor::slot16Hz()
-{
-	setFrequency(16);
-}
-
-void Monitor::slot32Hz()
-{
-	setFrequency(32);
-}
-
-void Monitor::slot64Hz()
-{
-	setFrequency(64);
-}
-
-void Monitor::setUniverse(t_channel universe)
-{
-	QString s;
-	
-	Q_ASSERT(universe < KUniverseCount);
-	Q_ASSERT(parentWidget() != NULL);
-
-	m_universeActions.at(universe)->setChecked(true);
-	m_universe = universe;
-	
-	qobject_cast <QMdiSubWindow*> (parentWidget())->setWindowTitle(
-		s.sprintf("DMX Monitor - Universe %d", universe + 1));
-
-	update();
-}
-
-void Monitor::setFrequency(int freq)
-{
-	if (freq == 16)
-		m_16HzAction->setChecked(true);
-	else if (freq == 32)
-		m_32HzAction->setEnabled(true);
-	else
-		m_64HzAction->setEnabled(true);
-
-	m_updateFrequency = freq;
-
-	if (m_timer == NULL)
-	{
-		m_timer = new QTimer();
-		connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
-	}
-	else
-	{
-		m_timer->stop();
-	}
-
-	m_timer->start(1000 / m_updateFrequency);
-}
-
-void Monitor::slotTimeOut()
-{
-	/* Read only the visible range of values. There's no point in reading
-	   such values that aren't going to get drawn anyway. */
-	_app->outputMap()->getValueRange(512 * m_universe + m_visibleMin,
-					 m_newValues, m_visibleMax + 1);
-
-	// Paint only changed values
-	//repaint(false); // This would have told to draw only VALUES
-	// TODO Now we draw everything: fixture labels, channel labels & values
-	update();
+	/* Start the monitor timer in output map */
+	_app->outputMap()->setMonitorTimerFrequency(16);
 }
 
 /****************************************************************************
- * Label & value painting
+ * Menu
  ****************************************************************************/
 
-//
-// Paint event has been received
-//
-void Monitor::paintEvent(QPaintEvent* e)
+void Monitor::initMenu()
 {
-	QFontMetrics metrics(m_font);
-	int unitW = metrics.width(QString("000")) + X_OFFSET;
-	int unitH = metrics.height();
-	int unitsX = (rect().width() - X_OFFSET) / (unitW);
-	int y_offset = layout()->menuBar()->height() + Y_OFFSET;
-	int x_offset = X_OFFSET;
+	QActionGroup* group;
+	QAction* action;
+	QMenu* displayMenu;
+	QMenu* menu;
+
+	/* Menu bar */
+	Q_ASSERT(layout() != NULL);
+	layout()->setMenuBar(new QMenuBar(this));
+
+	/* Update speed menu */
+	menu = new QMenu(layout()->menuBar());
+	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(menu);
+	menu->setTitle(tr("Update speed"));
+	connect(menu, SIGNAL(triggered(QAction*)),
+		this, SLOT(slotSpeedTriggered(QAction*)));
+
+	/* Speed group and actions */
+	group = new QActionGroup(this);
+	group->setExclusive(true);
+
+	action = menu->addAction(tr("16Hz"));
+	action->setCheckable(true);
+	action->setData(16);
+	group->addAction(action);
+	action->setChecked(true);
+
+	action = menu->addAction(tr("32Hz"));
+	action->setCheckable(true);
+	action->setData(32);
+	group->addAction(action);
+
+	action = menu->addAction(tr("64Hz"));
+	action->setCheckable(true);
+	action->setData(64);
+	group->addAction(action);
 	
-	// Wait until previous painter is finished
-	while (m_painter.isActive())
-	{
-		/* NOP */
-	}
+	/* Display menu */
+	displayMenu = new QMenu(layout()->menuBar());
+	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(displayMenu);
+	displayMenu->setTitle(tr("Display"));
+	displayMenu->addAction(QIcon(":/fonts.png"), tr("Font"),
+			       this, SLOT(slotChooseFont()));
+	displayMenu->addSeparator();
 
-	// Begin painting
-	m_painter.begin(this);
+	/* Channel display style */
+	menu = new QMenu(displayMenu);
+	displayMenu->addMenu(menu);
+	menu->setTitle("Channel style");
+	connect(menu, SIGNAL(triggered(QAction*)),
+		this, SLOT(slotChannelStyleTriggered(QAction*)));
 
-	// Set the font used for drawing text
-	m_painter.setFont(m_font);
+	/* Style group and actions */
+	group = new QActionGroup(this);
+	group->setExclusive(true);
 
-	if (1) // e->erased()) TODO
-	{
-		// Draw everything that is inside the invalidated region
-		paintFixtureLabelAll(e->region(), x_offset, y_offset,
-				     unitW, unitH, unitsX);
-		paintChannelLabelAll(e->region(), x_offset, y_offset,
-				     unitW, unitH, unitsX);
-		paintChannelValueAll(e->region(), x_offset, y_offset,
-				     unitW, unitH, unitsX, false);
-	}
-	else
-	{
-		// Draw only changed values
-		paintChannelValueAll(e->region(), x_offset, y_offset,
-				     unitW, unitH, unitsX, true);
-	}
+	action = menu->addAction(tr("Relative to fixture"));
+	action->setCheckable(true);
+	action->setData(MonitorFixture::RelativeChannels);
+	group->addAction(action);
+	action->setChecked(true);
 
-	m_painter.end();
-	
-	// Paint the generic graphics
-	QWidget::paintEvent(e);
+	action = menu->addAction(tr("Absolute DMX"));
+	action->setCheckable(true);
+	action->setData(MonitorFixture::DMXChannels);
+	group->addAction(action);
+
+	/* Value display style */
+	menu = new QMenu(displayMenu);
+	displayMenu->addMenu(menu);
+	menu->setTitle("Value style");
+	connect(menu, SIGNAL(triggered(QAction*)),
+		this, SLOT(slotValueStyleTriggered(QAction*)));
+
+	/* Style group and actions */
+	group = new QActionGroup(this);
+	group->setExclusive(true);
+
+	action = menu->addAction(tr("Absolute DMX"));
+	action->setCheckable(true);
+	action->setData(MonitorFixture::DMXValues);
+	group->addAction(action);
+	action->setChecked(true);
+
+	action = menu->addAction(tr("Percentage"));
+	action->setCheckable(true);
+	action->setData(MonitorFixture::PercentageValues);
+	group->addAction(action);
 }
 
-//
-// Paint all visible fixture labels
-//
-void Monitor::paintFixtureLabelAll(QRegion region, int x_offset, int y_offset,
-				   int unitW, int unitH, int unitsX)
+void Monitor::slotChooseFont()
 {
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int wcur = 0;
-	int h = 0;
-	
-	t_fixture_id id = KNoID;
-	Fixture* fxi = NULL;
-	
-	// Draw fixture names and their channel spaces
-	for (id = 0; id < KFixtureArraySize; id++)
-	{
-		fxi = _app->doc()->fixture(id);
-		if (fxi == NULL) continue;
-		if (fxi->universe() != m_universe) continue;
-		
-		// Calculate x and y positions for this fixture label
-		x = ((fxi->address() % unitsX) * unitW);
-		x += x_offset;
-		
-		y = static_cast<int> 
-			(floor((fxi->address() / unitsX)) * (unitH * 3));
-		y += y_offset;
-		
-		// Get width and height for this fixture label
-		w = (fxi->channels() * unitW) - X_OFFSET;
-		h = unitH;
-			
-		// Check if this label needs to be painted at all
-		if (region.contains(QRect(x, y, w, h)) == false)
-			continue;
-
-		if ((x + w + X_OFFSET) <= width())
-		{
-			// The label fits to one line, just draw it
-			paintFixtureLabel(x, y, w, h, fxi->name());
-		}
-		else
-		{
-			// The label needs to be drawn on at least two lines
-			while (w > 0)
-			{	
-				wcur = MIN(w, (unitsX * unitW) - (x));
-				
-				// Draw the label
-				paintFixtureLabel(x, y, wcur, h, fxi->name());
-			
-				// Calculate remaining width
-				w = w - wcur - X_OFFSET;
-				
-				// Next line
-				y += (unitH * 3);
-				x = x_offset;
-			}
-		}
-	}
+	bool ok = false;
+	QFont f = QFontDialog::getFont(&ok, font(), this);
+	if (ok == true)
+		setFont(f);
 }
 
-//
-// Draw the fixture label to the given coordinates
-//
-void Monitor::paintFixtureLabel(int x, int y, int w, int h, QString label)
+void Monitor::slotSpeedTriggered(QAction* action)
 {
-	m_painter.fillRect(x, y, w, h, palette().color(QPalette::Highlight));
-
-	m_painter.setPen(palette().color(QPalette::Shadow));
-	m_painter.drawRect(x, y, w, h);
-
-	m_painter.setPen(palette().color(QPalette::HighlightedText));
-	m_painter.drawText(x, y, w, h, Qt::AlignLeft | Qt::AlignVCenter, label);
+	Q_ASSERT(action != NULL);
+	_app->outputMap()->setMonitorTimerFrequency(action->data().toUInt());
+	action->setChecked(true);
 }
 
-//
-// Paint all channel labels
-//
-void Monitor::paintChannelLabelAll(QRegion region, int x_offset, int y_offset,
-				   int unitW, int unitH, int unitsX)
+void Monitor::slotChannelStyleTriggered(QAction* action)
 {
-	int x = 0;
-	int y = 0;
-	int i = 0;
-	QString s;
-	
-	for (i = 0; i < 512; i++)
-	{
-		// Calculate x and y positions for this channel
-		x = ((i % unitsX) * (unitW));
-		x += x_offset;
-		
-		y = unitH + static_cast<int> 
-			(floor((i / unitsX)) * (unitH * 3));
-		y += y_offset;
-		
-		if (region.contains(QRect(x, y, unitW, unitH)))
-		{
-			// Paint channel label
-			paintChannelLabel(x, y, unitW, unitH,
-					  s.sprintf("%.3d", i + 1));
-		}
-	}
+	Q_ASSERT(action != NULL);
+	action->setChecked(true);
+	emit channelStyleChanged(
+		MonitorFixture::ChannelStyle(action->data().toInt()));
 }
 
-//
-// Paint channel label
-//
-void Monitor::paintChannelLabel(int x, int y, int w, int h, QString label)
+void Monitor::slotValueStyleTriggered(QAction* action)
 {
-	m_painter.setPen(palette().color(QPalette::WindowText));
-	m_painter.eraseRect(x, y, w, h);
-	m_painter.drawText(x, y, w, h, Qt::AlignLeft | Qt::AlignVCenter, label);
+	Q_ASSERT(action != NULL);
+	action->setChecked(true);
+	emit valueStyleChanged(
+		MonitorFixture::ValueStyle(action->data().toInt()));
 }
 
-//
-// Paint all channel values
-//
-void Monitor::paintChannelValueAll(QRegion region, int x_offset, int y_offset,
-				   int unitW, int unitH, int unitsX,
-				   bool onlyDelta)
+/****************************************************************************
+ * Fixture added/removed stuff
+ ****************************************************************************/
+
+void Monitor::createMonitorFixture(Fixture* fxi)
 {
-	int x = 0;
-	int y = 0;
-	int value = 0;
-	int i = 0;
-	
-	QString s;
+	MonitorFixture* mof;
 
-	// Set normal text color to painter
-	m_painter.setPen(palette().color(QPalette::Text));
-	
-	for (i = 0; i < 512; i++)
-	{
-		// Lock value array
-		m_valueMutex.lock();
-	
-		if (onlyDelta && m_oldValues[i] == m_newValues[i])
-		{
-			m_valueMutex.unlock();
-			continue;
-		}
-		
-		m_oldValues[i] = m_newValues[i];
+	mof = new MonitorFixture(m_monitorWidget);
+	mof->setFixture(fxi->id());
+	mof->show();
 
-		// Get channel value from array;
-		value = m_newValues[i];
-		
-		// Unlock array
-		m_valueMutex.unlock();
-		
-		// Calculate xy position for this channel
-		x = ((i % unitsX) * (unitW));
-		x += x_offset;
-		
-		y = (unitH * 2) + 
-		    static_cast<int> (floor((i / unitsX)) * (unitH * 3));
-		y += y_offset;
-		
-		// If all values must be drawn, draw only those that are
-		// inside the invalidated area, otherwise draw the delta values
-		if (!onlyDelta && !region.contains(QRect(x, y, unitW, unitH)))
-			continue;
-		
-		// Draw only those values that are visible
-		if (y < height())
-		{
-			// Convert the value to a string
-			s.sprintf("%.3d", value);
-		
-			// Paint the value
-			paintChannelValue(x, y, unitW, unitH, s);
+	/* Listen to value & channel style changes */
+	connect(this, SIGNAL(valueStyleChanged(MonitorFixture::ValueStyle)),
+		mof, SLOT(slotValueStyleChanged(MonitorFixture::ValueStyle)));
+	connect(this, SIGNAL(channelStyleChanged(MonitorFixture::ChannelStyle)),
+		mof, SLOT(slotChannelStyleChanged(MonitorFixture::ChannelStyle)));
 
-			/* Update the biggest visible channel number only,
-			   when the visibility of all channels is being
-			   checked */
-			if (onlyDelta == false)
-				m_visibleMax = i;
-		}
-		else
-		{
-			// Rest of the values are not visible either
-			break;
-		}
-	}
+	m_monitorLayout->addItem(new MonitorLayoutItem(mof));
+	m_monitorFixtures.append(mof);
 }
 
-//
-// Paint one channel value
-//
-void Monitor::paintChannelValue(int x, int y, int w, int h, QString value)
+void Monitor::slotDocumentChanged(Doc* doc)
 {
-	m_painter.eraseRect(x, y, w, h);
-	m_painter.drawText(x, y, w, h, Qt::AlignBottom, value);
+	/* Listen to fixture additions and changes */
+	connect(_app->doc(), SIGNAL(fixtureAdded(t_fixture_id)),
+		this, SLOT(slotFixtureAdded(t_fixture_id)));
+	connect(_app->doc(), SIGNAL(fixtureChanged(t_fixture_id)),
+		this, SLOT(slotFixtureChanged(t_fixture_id)));
+}
+
+void Monitor::slotFixtureAdded(t_fixture_id fxi_id)
+{
+	Fixture* fxi = _app->doc()->fixture(fxi_id);
+	if (fxi != NULL)
+		createMonitorFixture(fxi);
+}
+
+void Monitor::slotFixtureChanged(t_fixture_id fxi_id)
+{
+	m_monitorLayout->sort();
+	m_monitorWidget->updateGeometry();
 }
 
 /****************************************************************************
@@ -540,14 +282,15 @@ void Monitor::loader(QDomDocument*, QDomElement*)
 
 bool Monitor::loadXML(QDomDocument*, QDomElement* root)
 {
-	bool visible = false;
+	bool vis = false;
 	int x = 0;
 	int y = 0;
 	int w = 0;
 	int h = 0;
 
-	QDomNode node;
 	QDomElement tag;
+	QDomNode node;
+	QFont font;
 
 	Q_ASSERT(root != NULL);
 
@@ -562,31 +305,23 @@ bool Monitor::loadXML(QDomDocument*, QDomElement* root)
 	{
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
-		}
+			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h, &vis);
 		else if (tag.tagName() == KXMLQLCMonitorFont)
-		{
-			m_font.fromString(tag.text());
-			// repaint(true); // Repaint all
-			update();
-		}
+			font.fromString(tag.text());
 		else if (tag.tagName() == KXMLQLCMonitorUpdateFrequency)
-		{
-			setFrequency(tag.text().toInt());
-		}
+			_app->outputMap()->setMonitorTimerFrequency(
+							tag.text().toInt());
 		else
-		{
 			qDebug() << "Unknown monitor tag:" << tag.tagName();
-		}
 
 		node = node.nextSibling();
 	}
 
+	setFont(font);
+	
 	hide();
 	setGeometry(x, y, w, h);
-	if (visible == false)
+	if (vis == false)
 		showMinimized();
 	else
 		showNormal();
@@ -611,13 +346,13 @@ bool Monitor::saveXML(QDomDocument* doc, QDomElement* fxi_root)
 	/* Font */
 	tag = doc->createElement(KXMLQLCMonitorFont);
 	root.appendChild(tag);
-	text = doc->createTextNode(m_font.toString());
+	text = doc->createTextNode(font().toString());
 	tag.appendChild(text);
 
 	/* Update frequency */
 	tag = doc->createElement(KXMLQLCMonitorUpdateFrequency);
 	root.appendChild(tag);
-	str.setNum(m_updateFrequency);
+	str.setNum(_app->outputMap()->monitorTimerFrequency());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 

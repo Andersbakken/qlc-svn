@@ -22,25 +22,24 @@
 #ifndef MONITOR_H
 #define MONITOR_H
 
-#include <QPainter>
 #include <QWidget>
-#include <QMutex>
+#include <QHash>
+#include <QList>
 
 #include "common/qlctypes.h"
+#include "monitorfixture.h"
 
+class MonitorLayout;
 class QDomDocument;
 class QDomElement;
-class QPixmap;
+class QScrollArea;
+class OutputMap;
 class QAction;
-class QColor;
-class QBrush;
-class QTimer;
-class QRect;
+class Fixture;
 class QFont;
 class QMenu;
 class QIcon;
-
-class OutputMap;
+class Doc;
 
 #define KXMLQLCMonitor "Monitor"
 #define KXMLQLCMonitorFont "Font"
@@ -50,101 +49,52 @@ class Monitor : public QWidget
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
-	Monitor(QWidget* parent);
-	~Monitor();
+	Monitor(QWidget* parent = NULL);
+	virtual ~Monitor();
 
 private:
 	Q_DISABLE_COPY(Monitor)
 
 protected:
 	void init();
-
-	/*********************************************************************
-	 * Content
-	 *********************************************************************/
-protected:
-	void setUniverse(t_channel universe);
-	void setFrequency(int freq);
-
-protected slots:
-	void slotTimeOut();
-
-protected:
-	void connectTimer();
-
-protected:
-	QTimer* m_timer;
-	int m_updateFrequency;
-
-	/** The universe number under inspection */
-	t_channel m_universe;
-
-	/** Old value buffer */
-	t_value* m_oldValues;
-
-	/** New value buffer */
-	t_value* m_newValues;
-
-	/** Value buffer mutex */
-	QMutex m_valueMutex;
-
+	
 	/*********************************************************************
 	 * Menu
 	 *********************************************************************/
 protected:
-	void initActions();
 	void initMenu();
-	void slotMenuTriggered(QAction* action);
 
 protected slots:
-	void slotUniverseTriggered(QAction* action);
-	void slotFont();
-	void slot16Hz();
-	void slot32Hz();
-	void slot64Hz();
+	void slotChooseFont();
+	void slotSpeedTriggered(QAction* action);
+	void slotChannelStyleTriggered(QAction* action);
+	void slotValueStyleTriggered(QAction* action);
+
+	/********************************************************************
+	 * Monitor Fixtures
+	 ********************************************************************/
+protected:
+	void createMonitorFixture(Fixture* fxi);
+
+protected slots:
+	void slotDocumentChanged(Doc* doc);
+	void slotFixtureAdded(t_fixture_id fxi_id);
+	void slotFixtureChanged(t_fixture_id fxi_id);
 
 protected:
-	QList <QAction*> m_universeActions;
-	QAction* m_fontAction;
-	QAction* m_16HzAction;
-	QAction* m_32HzAction;
-	QAction* m_64HzAction;
+	QScrollArea* m_scrollArea;
+	QWidget* m_monitorWidget;
+	MonitorLayout* m_monitorLayout;
 
-	/*********************************************************************
-	 * Painting
-	 *********************************************************************/
-protected:
-	void paintEvent(QPaintEvent* e);
+	QList <MonitorFixture*> m_monitorFixtures;
 
-	/** Fixture label painting */
-	void paintFixtureLabelAll(QRegion region, int x_offset, int y_offset,
-				  int unitW, int unitH, int unitsX);
-	void paintFixtureLabel(int x, int y, int w, int h, QString label);
-
-	/** Channel label painting */
-	void paintChannelLabelAll(QRegion region, int x_offset, int y_offset,
-				  int unitW, int unitH, int unitsX);
-	void paintChannelLabel(int x, int y, int w, int h, QString s);
-
-	/** Channel value painting */
-	void paintChannelValueAll(QRegion region, int x_offset, int y_offset,
-				  int unitW, int unitH, int unitsX,
-				  bool onlyDelta);
-	void paintChannelValue(int x, int y, int w, int h, QString s);
-
-protected:
-	/** The smallest visible channel number */
-	t_channel m_visibleMin;
-
-	/** The biggest visible channel number */
-	t_channel m_visibleMax;
-
-	/** Master painter object that draws stuff on the widget */
-	QPainter m_painter;
-
-	/** Font used */
-	QFont m_font;
+signals:
+	void channelStyleChanged(MonitorFixture::ChannelStyle style);
+	void valueStyleChanged(MonitorFixture::ValueStyle style);
 
 	/*********************************************************************
 	 * Save & Load
