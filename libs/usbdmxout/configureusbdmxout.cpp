@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   configureusbdmxout.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -96,7 +96,7 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 			   be changed during testing */
 			m_list->setEnabled(false);
 			m_buttonBox->setEnabled(false);
-			
+
 			/* Start a 1sec timer that blinks all channels of the
 			   selected universe on and off */
 			m_timer = new QTimer(this);
@@ -116,7 +116,7 @@ void ConfigureUSBDMXOut::slotTestToggled(bool state)
 
 		/* Open the output line for testing */
 		m_plugin->close(m_output);
-		
+
 		m_list->setEnabled(true);
 		m_buttonBox->setEnabled(true);
 
@@ -169,7 +169,7 @@ void ConfigureUSBDMXOut::refreshList()
 	while (it.hasNext() == true)
 	{
 		it.next();
-		
+
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
 		item->setText(KColumnName, it.value()->name());
 		item->setText(KColumnOutput, QString("%1").arg(i++));

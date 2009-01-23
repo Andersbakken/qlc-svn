@@ -1,5 +1,5 @@
 /*
- * USBDMX_DYNAMIC.C - module to dynamically load the usbdmx.dll, 
+ * USBDMX_DYNAMIC.C - module to dynamically load the usbdmx.dll,
  * if present.
  *
  * This file is provided as is to allow an easy start with the
@@ -34,7 +34,7 @@ struct usbdmx_functions *usbdmx_init(VOID)
 		used++;			// increment used counter
 		return &usbdmx;	// return usbdmx_functions structure
 	}
-	
+
 	// load the DLL
 	hLib = LoadLibrary(TEXT("usbdmx.dll"));
 	if (!hLib)
@@ -93,7 +93,7 @@ struct usbdmx_functions *usbdmx_init(VOID)
  * USBDMX_RELEASE()
  *
  * decrements the "used" counter and releases the DLL if not used anymore.
- * After calling USBDMX_RELEASE() the pointer returned by USBDMX_INIT() 
+ * After calling USBDMX_RELEASE() the pointer returned by USBDMX_INIT()
  * is not valid anymore.
  */
 VOID usbdmx_release(VOID)
@@ -105,5 +105,5 @@ VOID usbdmx_release(VOID)
 		return;	// finish
 
 	// release dll
-	FreeLibrary(hLib); 
+	FreeLibrary(hLib);
 }

@@ -93,7 +93,7 @@ bool USBDMXDevice::open()
 	if (m_usbdmx->open(m_output, &m_handle) == TRUE)
 	{
 		USHORT version;
-		
+
 		/* Check the device version against driver version */
 		m_usbdmx->device_version(m_handle, &version);
 		if (USBDMX_DLL_VERSION_CHECK(m_usbdmx) == FALSE)
