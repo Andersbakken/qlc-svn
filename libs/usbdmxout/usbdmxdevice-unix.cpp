@@ -134,9 +134,6 @@ USBDMXDevice::USBDMXDevice(QObject* parent, const QString &path,
 	m_path = path;
 	m_output = output;
 
-	/* Clear the DMX buffer */
-	memset(m_values, 0, 512);
-
 	m_file.setFileName(m_path);
 	m_name = extractName();
 }
@@ -208,13 +205,10 @@ t_output USBDMXDevice::output() const
 bool USBDMXDevice::open()
 {
 	m_file.unsetError();
-	if (m_file.open(QIODevice::ReadWrite) == true)
+	if (m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered) == true)
 	{
 		/* Set writing mode */
 		::ioctl(m_file.handle(), DMX_MEM_MAP_SET, DMX_TX_MEM);
-
-		/* Set blocking mode */
-		::ioctl(m_file.handle(), DMX_BLOCKING_SET, 1);
 
 		/* Set DMX startcode */
 		::ioctl(m_file.handle(), DMX_TX_STARTCODE_SET, 0);
@@ -246,43 +240,14 @@ bool USBDMXDevice::close()
 }
 
 /****************************************************************************
- * Read & write
+ * Write
  ****************************************************************************/
-
-void USBDMXDevice::write(t_channel channel, t_value value)
-{
-	m_mutex.lock();
-	m_values[channel] = value;
-	m_file.seek(0);
-	if (m_file.write((const char*) m_values, sizeof(m_values)) == -1)
-		qWarning() << "write error:" << m_file.errorString();
-	m_mutex.unlock();
-}
 
 void USBDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
 {
 	Q_ASSERT(address + num <= 512);
 
-	m_mutex.lock();
-	memcpy(m_values + address, values, num);
-	m_file.seek(0);
-	if (m_file.write((const char*) m_values, sizeof(m_values)) == -1)
+	m_file.seek(address);
+	if (m_file.write((const char*) values, num) == -1)
 		qWarning() << "writeRange error:" << m_file.errorString();
-	m_mutex.unlock();
-}
-
-void USBDMXDevice::read(t_channel channel, t_value* value)
-{
-	m_mutex.lock();
-	*value = m_values[channel];
-	m_mutex.unlock();
-}
-
-void USBDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
-{
-	Q_ASSERT(address + num <= 512);
-
-	m_mutex.lock();
-	memcpy(values, m_values + address, num);
-	m_mutex.unlock();
 }

@@ -179,8 +179,9 @@ QString USBDMXOut::infoText(t_output output)
 
 void USBDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-	if (m_devices.contains(output) == true)
-		m_devices[output]->write(channel, value);
+	Q_UNUSED(output);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
@@ -192,15 +193,18 @@ void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 
 void USBDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-	if (m_devices.contains(output) == true)
-		m_devices[output]->read(channel, value);
+	Q_UNUSED(output);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 void USBDMXOut::readRange(t_output output, t_channel address, t_value* values,
 			  t_channel num)
 {
-	if (m_devices.contains(output) == true)
-		m_devices[output]->readRange(address, values, num);
+	Q_UNUSED(output);
+	Q_UNUSED(address);
+	Q_UNUSED(values);
+	Q_UNUSED(num);
 }
 
 /*****************************************************************************
