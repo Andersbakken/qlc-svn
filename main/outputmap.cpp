@@ -220,6 +220,8 @@ void OutputMap::setValue(t_channel channel, t_value value)
 
 void OutputMap::timerEvent(QTimerEvent* event)
 {
+	Q_UNUSED(event);
+
 	if (m_monitorValues.count() > 0)
 	{
 		for (int i = 0; i < m_universes; i++)
