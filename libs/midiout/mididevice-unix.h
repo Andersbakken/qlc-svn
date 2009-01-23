@@ -33,6 +33,8 @@ class MIDIDevice;
 class MIDIOut;
 class QString;
 
+#define MAX_MIDI_DMX_CHANNELS 128
+
 /*****************************************************************************
  * MIDIDevice
  *****************************************************************************/
@@ -40,7 +42,7 @@ class QString;
 class MIDIDevice : public QObject
 {
 	Q_OBJECT
-		
+
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
@@ -61,7 +63,7 @@ public:
 public:
 	/** Get the output line number that this device represents */
 	t_output output() const { return m_output; }
-	
+
 	/** Set the output line number that this device represents */
 	void setOutput(t_output output) { m_output = output; }
 
@@ -115,7 +117,7 @@ public:
 		ControlChange,
 		Note
 	};
-	
+
 	/** Get this device's operational mode */
 	Mode mode() const { return m_mode; }
 
@@ -137,22 +139,18 @@ public:
 
 	/** Set this device's MIDI channel */
 	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
-	
+
 protected:
 	t_channel m_midiChannel;
 
 	/********************************************************************
-	 * Read & write
+	 * Write
 	 ********************************************************************/
 public:
-	void write(t_channel channel, t_value value);
-	void writeRange(t_channel channel, t_value* values, t_channel num);
-
-	void read(t_channel channel, t_value* value);
-	void readRange(t_channel channel, t_value* values, t_channel num);
+	void writeRange(t_value* values, t_channel num);
 
 protected:
-	t_value m_values[512];
+	t_value m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

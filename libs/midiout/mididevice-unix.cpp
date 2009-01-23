@@ -31,8 +31,6 @@
 #include "mididevice-unix.h"
 #include "midiout-unix.h"
 
-#define MAX_MIDI_DMX_CHANNELS 128
-
 MIDIDevice::MIDIDevice(MIDIOut* parent, t_output output,
 		       const snd_seq_addr_t* address) : QObject(parent)
 {
@@ -44,8 +42,7 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, t_output output,
 	extractName();
 	loadSettings();
 
-	/* Start with all values zeroed */
-	memset(m_values, 0, sizeof(m_values));
+	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
 }
 
 MIDIDevice::~MIDIDevice()
@@ -66,7 +63,7 @@ void MIDIDevice::loadSettings()
 		setMidiChannel(value.toInt());
 	else
 		setMidiChannel(0);
-	
+
 	/* Attempt to get the mode from settings */
 	key = QString("/midiout/%1/mode").arg(m_name);
 	value = settings.value(key);
@@ -105,7 +102,7 @@ void MIDIDevice::setAddress(const snd_seq_addr_t* address)
 
 	if (m_address != NULL)
 		delete m_address;
-	
+
 	m_address = new snd_seq_addr_t;
 	m_address->client = address->client;
 	m_address->port = address->port;
@@ -157,7 +154,7 @@ void MIDIDevice::extractName()
 	snd_seq_port_info_t* portInfo = NULL;
 	MIDIOut* plugin;
 	int r;
-	
+
 	plugin = static_cast<MIDIOut*> (parent());
 	Q_ASSERT(plugin != NULL);
 	Q_ASSERT(plugin->alsa() != NULL);
@@ -199,132 +196,82 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
 }
 
 /****************************************************************************
- * Read & write
+ * Write
  ****************************************************************************/
 
-void MIDIDevice::write(t_channel channel, t_value value)
+void MIDIDevice::writeRange(t_value* values, t_channel num)
 {
-	Q_ASSERT(channel < 512);
-	m_values[channel] = value;
+	snd_seq_event_t ev;
+	MIDIOut* plugin;
+	int i;
+
+	Q_UNUSED(num);
+
+	plugin = static_cast<MIDIOut*> (parent());
+	Q_ASSERT(plugin != NULL);
+	Q_ASSERT(plugin->alsa() != NULL);
+	Q_ASSERT(m_address != NULL);
+
+	/* Setup a common event structure for all values */
+	snd_seq_ev_clear(&ev);
+	snd_seq_ev_set_dest(&ev, m_address->client, m_address->port);
+	snd_seq_ev_set_subs(&ev);
+	snd_seq_ev_set_direct(&ev);
 
 	/* Since MIDI devices can have only 128 real channels, we don't
-	   actually attempt to output more than that, although a full 512
-	   channel universe exists within each MIDIDevice object. */
-	if (channel < MAX_MIDI_DMX_CHANNELS)
+	   attempt to write more than that */
+
+	switch (m_mode)
 	{
-		snd_seq_event_t ev;
-		MIDIOut* plugin;
-	
-		plugin = static_cast<MIDIOut*> (parent());
-		Q_ASSERT(plugin != NULL);
-		Q_ASSERT(plugin->alsa() != NULL);
-		Q_ASSERT(m_address != NULL);
-
-		/* Setup an event structure */
-		snd_seq_ev_clear(&ev);
-		snd_seq_ev_set_dest(&ev, m_address->client, m_address->port);
-		snd_seq_ev_set_subs(&ev);
-		snd_seq_ev_set_direct(&ev);
-
-		switch (m_mode)
+	default:
+	case ControlChange:
+		/* Use control change numbers as DMX channels and
+		   control values as DMX channel values */
+		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
 		{
-		default:
-		case ControlChange:
-			/* Use control change numbers as DMX channels and
-			   control values as DMX channel values */
-			snd_seq_ev_set_controller(&ev, m_midiChannel,
-						  channel, value >> 1);
-			break;
-
-		case Note:
-			/* Use note numbers as DMX channels and velocities as
-			   DMX channel values. 0 is written as note off */
-			if (value == 0)
-				snd_seq_ev_set_noteoff(&ev, m_midiChannel,
-						       channel, 0);
-			else
-				snd_seq_ev_set_noteon(&ev, m_midiChannel,
-						      channel, value >> 1);
-			break;
-		}
-
-		snd_seq_event_output(plugin->alsa(), &ev);
-		snd_seq_drain_output(plugin->alsa());
-	}
-}
-
-void MIDIDevice::writeRange(t_channel address, t_value* values, t_channel num)
-{
-	Q_ASSERT(address + num < 512);
-	memcpy(m_values + address, values, num);
-
-	/* Since MIDI devices can have only 128 real channels, we don't
-	   actually attempt to output more than that, although a full 512
-	   channel universe exists within each MIDIDevice object. */
-	if (address < MAX_MIDI_DMX_CHANNELS)
-	{
-		snd_seq_event_t ev;
-		MIDIOut* plugin;
-		int i;
-	
-		plugin = static_cast<MIDIOut*> (parent());
-		Q_ASSERT(plugin != NULL);
-		Q_ASSERT(plugin->alsa() != NULL);
-		Q_ASSERT(m_address != NULL);
-
-		/* Setup a common event structure for all values */
-		snd_seq_ev_clear(&ev);
-		snd_seq_ev_set_dest(&ev, m_address->client, m_address->port);
-		snd_seq_ev_set_subs(&ev);
-		snd_seq_ev_set_direct(&ev);
-	
-		switch (m_mode)
-		{
-		default:
-		case ControlChange:
-			/* Use control change numbers as DMX channels and
-			   control values as DMX channel values */
-			for (i = 0; i < num; i++)
+			if (m_values[i] != values[i])
 			{
-				snd_seq_ev_set_controller(&ev, m_midiChannel,
-						address + i, values[i] >> 1);
-				snd_seq_event_output(plugin->alsa(), &ev);
+				m_values[i] = values[i];
+
+				snd_seq_ev_set_controller(&ev,
+							  m_midiChannel,
+							  i,
+							  values[i] >> 1);
+				snd_seq_event_output_buffer(plugin->alsa(),
+							    &ev);
 			}
-			break;
+		}
+		break;
 
-		case Note:
-			/* Use note numbers as DMX channels and velocities as
-			   DMX channel values. 0 is written as note off */
-			for (i = 0; i < num; i++)
+	case Note:
+		/* Use note numbers as DMX channels and velocities as
+		   DMX channel values. Value 0 is written as note off. */
+		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
+		{
+			if (m_values[i] != values[i])
 			{
+				m_values[i] = values[i];
+
 				if (values[i] == 0)
 				{
 					snd_seq_ev_set_noteoff(&ev,
-						m_midiChannel, address + i, 0);
+							       m_midiChannel,
+							       i,
+							       0);
 				}
 				else
 				{
 					snd_seq_ev_set_noteon(&ev,
-						m_midiChannel, address + i,
-						values[i] >> 1);
+							      m_midiChannel,
+							      i,
+							      values[i] >> 1);
 				}
+
+				snd_seq_event_output(plugin->alsa(), &ev);
 			}
-			break;
 		}
-
-		snd_seq_drain_output(plugin->alsa());
+		break;
 	}
-}
 
-void MIDIDevice::read(t_channel channel, t_value* value)
-{
-	Q_ASSERT(channel < 512);
-	*value = m_values[channel];
+	snd_seq_drain_output(plugin->alsa());
 }
-
-void MIDIDevice::readRange(t_channel address, t_value* values, t_channel num)
-{
-	Q_ASSERT(address + num < 512);
-	memcpy(values, m_values + address, num);
-}
-
