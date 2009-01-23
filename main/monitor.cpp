@@ -48,6 +48,9 @@ extern App* _app;
 
 Monitor::Monitor(QWidget* parent) : QWidget(parent)
 {
+	m_channelStyle = MonitorFixture::RelativeChannels;
+	m_valueStyle = MonitorFixture::DMXValues;
+
 	init();
 }
 
@@ -140,7 +143,7 @@ void Monitor::initMenu()
 	action->setCheckable(true);
 	action->setData(64);
 	group->addAction(action);
-	
+
 	/* Display menu */
 	displayMenu = new QMenu(layout()->menuBar());
 	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(displayMenu);
@@ -213,16 +216,16 @@ void Monitor::slotChannelStyleTriggered(QAction* action)
 {
 	Q_ASSERT(action != NULL);
 	action->setChecked(true);
-	emit channelStyleChanged(
-		MonitorFixture::ChannelStyle(action->data().toInt()));
+	m_channelStyle = MonitorFixture::ChannelStyle(action->data().toInt());
+	emit channelStyleChanged(m_channelStyle);
 }
 
 void Monitor::slotValueStyleTriggered(QAction* action)
 {
 	Q_ASSERT(action != NULL);
 	action->setChecked(true);
-	emit valueStyleChanged(
-		MonitorFixture::ValueStyle(action->data().toInt()));
+	m_valueStyle = MonitorFixture::ValueStyle(action->data().toInt());
+	emit valueStyleChanged(m_valueStyle);
 }
 
 /****************************************************************************
@@ -235,13 +238,15 @@ void Monitor::createMonitorFixture(Fixture* fxi)
 
 	mof = new MonitorFixture(m_monitorWidget);
 	mof->setFixture(fxi->id());
+	mof->slotSetChannelStyle(m_channelStyle);
+	mof->slotSetValueStyle(m_valueStyle);
 	mof->show();
 
 	/* Listen to value & channel style changes */
 	connect(this, SIGNAL(valueStyleChanged(MonitorFixture::ValueStyle)),
-		mof, SLOT(slotValueStyleChanged(MonitorFixture::ValueStyle)));
+		mof, SLOT(slotSetValueStyle(MonitorFixture::ValueStyle)));
 	connect(this, SIGNAL(channelStyleChanged(MonitorFixture::ChannelStyle)),
-		mof, SLOT(slotChannelStyleChanged(MonitorFixture::ChannelStyle)));
+		mof, SLOT(slotSetChannelStyle(MonitorFixture::ChannelStyle)));
 
 	m_monitorLayout->addItem(new MonitorLayoutItem(mof));
 	m_monitorFixtures.append(mof);
@@ -249,10 +254,12 @@ void Monitor::createMonitorFixture(Fixture* fxi)
 
 void Monitor::slotDocumentChanged(Doc* doc)
 {
-	/* Listen to fixture additions and changes */
-	connect(_app->doc(), SIGNAL(fixtureAdded(t_fixture_id)),
+	Q_ASSERT(doc != NULL);
+
+	/* Listen to fixture additions and changes from the new Doc */
+	connect(doc, SIGNAL(fixtureAdded(t_fixture_id)),
 		this, SLOT(slotFixtureAdded(t_fixture_id)));
-	connect(_app->doc(), SIGNAL(fixtureChanged(t_fixture_id)),
+	connect(doc, SIGNAL(fixtureChanged(t_fixture_id)),
 		this, SLOT(slotFixtureChanged(t_fixture_id)));
 }
 
@@ -265,6 +272,8 @@ void Monitor::slotFixtureAdded(t_fixture_id fxi_id)
 
 void Monitor::slotFixtureChanged(t_fixture_id fxi_id)
 {
+	Q_UNUSED(fxi_id);
+
 	m_monitorLayout->sort();
 	m_monitorWidget->updateGeometry();
 }
@@ -318,7 +327,7 @@ bool Monitor::loadXML(QDomDocument*, QDomElement* root)
 	}
 
 	setFont(font);
-	
+
 	hide();
 	setGeometry(x, y, w, h);
 	if (vis == false)

@@ -113,6 +113,10 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 		QGridLayout* lay;
 		int i;
 
+		/* The grid layout uses columns and rows. The first row is for
+		   the fixture name, second row for channel numbers and the
+		   third row for channel values. Each channel is in its own
+		   column. */
 		lay = qobject_cast<QGridLayout*> (layout());
 
 		/* Create a new fixture label and set the fixture name there */
@@ -121,23 +125,37 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 					.arg(fxi->name())
 					.arg(fxi->universe() + 1));
 
-		/* Set the fixture name to span all channels */
+		/* Set the fixture name to span all channels horizontally */
 		lay->addWidget(m_fixtureLabel, 0, 0, 1, fxi->channels(),
 				Qt::AlignLeft);
 
 		/* Create channel numbers and value labels */
 		for (i = 0; i < fxi->channels(); i++)
 		{
+			t_channel channel;
+			t_value value;
 			QLabel* label;
 			QString str;
 
+			/* Set channel number according to style */
+			if (m_channelStyle == DMXChannels)
+				channel = fxi->address() + i;
+			else
+				channel = i;
+
+			/* Get the channel's current value */
+			value = _app->outputMap()->getValue(
+						fxi->universeAddress() + i);
+
+			/* Create a label for channel number */
 			label = new QLabel(this);
-			label->setText(str.sprintf("<B>%.3d</B>", i));
+			label->setText(str.sprintf("<B>%.3d</B>", channel + 1));
 			lay->addWidget(label, 1, i, Qt::AlignHCenter);
 			m_channelLabels.append(label);
 
+			/* Create a label for value */
 			label = new QLabel(this);
-			label->setText("000");
+			label->setText(str.sprintf("%.3d", value));
 			lay->addWidget(label, 2, i, Qt::AlignHCenter);
 			m_valueLabels.append(label);
 		}
@@ -150,7 +168,7 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 	}
 }
 
-void MonitorFixture::slotChannelStyleChanged(MonitorFixture::ChannelStyle style)
+void MonitorFixture::slotSetChannelStyle(MonitorFixture::ChannelStyle style)
 {
 	QString str;
 	int i = 1;
@@ -209,8 +227,8 @@ void MonitorFixture::slotChangedValues(const QHash <t_channel,t_value>& values)
 		it.next();
 
 		/* Use only those channels that belong to this fixture */
-		if (fxi->universeAddress() <= it.key() &&
-		    (fxi->universeAddress() + fxi->channels()) >= it.key())
+		if (it.key() >= fxi->universeAddress() &&
+		    it.key() < (fxi->universeAddress() + fxi->channels()))
 		{
 			/* Isolate only the relative channel number */
 			ch = (it.key() & 0x1FF) - fxi->address();
@@ -232,7 +250,7 @@ void MonitorFixture::slotChangedValues(const QHash <t_channel,t_value>& values)
 	}
 }
 
-void MonitorFixture::slotValueStyleChanged(MonitorFixture::ValueStyle style)
+void MonitorFixture::slotSetValueStyle(MonitorFixture::ValueStyle style)
 {
 	if (m_valueStyle == style)
 		return;

@@ -61,7 +61,7 @@ private:
 
 protected:
 	void init();
-	
+
 	/*********************************************************************
 	 * Menu
 	 *********************************************************************/
@@ -85,16 +85,19 @@ protected slots:
 	void slotFixtureAdded(t_fixture_id fxi_id);
 	void slotFixtureChanged(t_fixture_id fxi_id);
 
+signals:
+	void channelStyleChanged(MonitorFixture::ChannelStyle style);
+	void valueStyleChanged(MonitorFixture::ValueStyle style);
+
 protected:
 	QScrollArea* m_scrollArea;
 	QWidget* m_monitorWidget;
 	MonitorLayout* m_monitorLayout;
 
-	QList <MonitorFixture*> m_monitorFixtures;
+	MonitorFixture::ChannelStyle m_channelStyle;
+	MonitorFixture::ValueStyle m_valueStyle;
 
-signals:
-	void channelStyleChanged(MonitorFixture::ChannelStyle style);
-	void valueStyleChanged(MonitorFixture::ValueStyle style);
+	QList <MonitorFixture*> m_monitorFixtures;
 
 	/*********************************************************************
 	 * Save & Load

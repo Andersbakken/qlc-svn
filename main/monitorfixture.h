@@ -57,7 +57,7 @@ public:
 	t_fixture_id fixture() const { return m_fixture; }
 
 public slots:
-	void slotChannelStyleChanged(MonitorFixture::ChannelStyle style);
+	void slotSetChannelStyle(MonitorFixture::ChannelStyle style);
 	void slotFixtureChanged(t_fixture_id fxi_id);
 	void slotFixtureRemoved(t_fixture_id fxi_id);
 
@@ -81,7 +81,7 @@ public:
 	void setValue(t_channel universeChannel, t_value value);
 
 public slots:
-	void slotValueStyleChanged(MonitorFixture::ValueStyle style);
+	void slotSetValueStyle(MonitorFixture::ValueStyle style);
 
 protected slots:
 	void slotChangedValues(const QHash <t_channel,t_value>& values);
