@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   outputpatch.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <algorithm>
 #include <QObject>
 #include <QtXml>
 
@@ -34,6 +35,10 @@ OutputPatch::OutputPatch(QObject* parent) : QObject(parent)
 {
 	m_plugin = NULL;
 	m_output = -1;
+
+	std::fill(m_values, m_values + 512, 0);
+
+	m_blackout = false;
 }
 
 OutputPatch::~OutputPatch()
@@ -43,7 +48,7 @@ OutputPatch::~OutputPatch()
 }
 
 /****************************************************************************
- * Properties
+ * Plugin & Output
  ****************************************************************************/
 
 void OutputPatch::set(QLCOutPlugin* plugin, int output)
@@ -55,7 +60,7 @@ void OutputPatch::set(QLCOutPlugin* plugin, int output)
 
 	m_plugin = plugin;
 	m_output = output;
-	
+
 	if (m_plugin != NULL)
 		m_plugin->open(m_output);
 }
@@ -75,6 +80,62 @@ QString OutputPatch::outputName() const
 		return m_plugin->outputs()[m_output];
 	else
 		return KOutputNone;
+}
+
+/*****************************************************************************
+ * Values
+ *****************************************************************************/
+
+t_value OutputPatch::value(t_channel channel) const
+{
+	Q_ASSERT(channel < 512);
+	return m_values[channel];
+}
+
+void OutputPatch::setValue(t_channel channel, t_value value)
+{
+	Q_ASSERT(channel < 512);
+	m_values[channel] = value;
+}
+
+void OutputPatch::dump()
+{
+	/* Don't dump when we're in blackout mode */
+	if (m_blackout == false)
+	{
+		/* Don't do anything if there is no plugin and/or output line.
+		   Otherwise write the whole 512 channel universe.  */
+		if (m_plugin != NULL && m_output != KOutputInvalid)
+			m_plugin->writeRange(m_output, 0, m_values, 512);
+	}
+}
+
+bool OutputPatch::blackout() const
+{
+	return m_blackout;
+}
+
+void OutputPatch::setBlackout(bool blackout)
+{
+	/* Don't do blackout twice */
+	if (m_blackout == blackout)
+		return;
+	m_blackout = blackout;
+
+	if (m_blackout == true)
+	{
+		/* Write a whole universe-ful of zeros */
+		t_value zeros[512];
+		std::fill(zeros, zeros + 512, 0);
+
+		if (m_plugin != NULL && m_output != KOutputInvalid)
+			m_plugin->writeRange(m_output, 0, zeros, 512);
+	}
+	else
+	{
+		/* Write the existing values to the plugin immediately */
+		dump();
+	}
 }
 
 /*****************************************************************************
@@ -124,7 +185,7 @@ bool OutputPatch::loader(QDomDocument*, QDomElement* root, OutputMap* outputMap)
 	QString pluginName;
 	int output = 0;
 	int universe = 0;
-	
+
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(outputMap != NULL);
 
@@ -142,7 +203,7 @@ bool OutputPatch::loader(QDomDocument*, QDomElement* root, OutputMap* outputMap)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCOutputPatchPlugin)
 		{
 			/* Plugin name */
@@ -157,7 +218,7 @@ bool OutputPatch::loader(QDomDocument*, QDomElement* root, OutputMap* outputMap)
 		{
 			qWarning() << "Unknown Patch tag: " << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

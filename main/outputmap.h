@@ -24,7 +24,6 @@
 
 #include <QObject>
 #include <QVector>
-#include <QTimer>
 #include <QList>
 #include <QHash>
 
@@ -91,18 +90,18 @@ public:
 	 *
 	 * @param blackout If true, set blackout ON, otherwise OFF
 	 */
-	void setBlackout(bool state);
+	void setBlackout(bool blackout);
 
 	/**
 	 * Get blackout state
 	 *
 	 * @return true if blackout is ON, otherwise false
 	 */
-	bool blackout();
+	bool blackout() const;
 
 signals:
 	/**
-	 * Signal that is sent when blackout state is changed. 
+	 * Signal that is sent when blackout state is changed.
 	 *
 	 * @param state true if blackout has been turned on, otherwise false
 	 */
@@ -111,9 +110,6 @@ signals:
 protected:
 	/** Current blackout state */
 	bool m_blackout;
-
-	/** A temp place to store values to during blackout */
-	t_value* m_blackoutStore;
 
 	/*********************************************************************
 	 * Values
@@ -129,20 +125,6 @@ public:
 	t_value getValue(t_channel channel);
 
 	/**
-	 * Get the value of a number of channels. Channels 0-511 are for the
-	 * first universe, 512-1023 for the second etc..
-	 *
-	 * You should limit the range to one universe. For example, don't
-	 * try to get values for channels 510-515. In any case, there are no
-	 * such fixtures in the world that could exist in two universes.
-	 *
-	 * @param address The address of the first channel
-	 * @param values An array that should contain the values
-	 * @param num Size of values array
-	 */
-	bool getValueRange(t_channel address, t_value* values, t_channel num);
-
-	/**
 	 * Set the value of one channel. Channels 0-511 are for the first
 	 * universe, 512-1023 for the second etc..
 	 *
@@ -151,48 +133,24 @@ public:
 	 */
 	void setValue(t_channel channel, t_value value);
 
-	/**
-	 * Set the value of a number of channels. Channels 0-511 are for the
-	 * first universe, 512-1023 for the second etc..
-	 *
-	 * You should limit the range to one universe. For example, don't
-	 * try to set values for channels 510-515. In any case, there are no
-	 * such fixtures in the world that could exist in two universes.
-	 *
-	 * @param address The address of the first channel
-	 * @param values The values to set
-	 * @param num Size of values array
-	 */
-	void setValueRange(t_channel address, t_value* values, t_channel num);
-
-	/*********************************************************************
-	 * Monitor timer
-	 *********************************************************************/
-public:
-	/**
-	 * Set the frequency for monitor timer. If frequency > 0, the timer is
-	 * started and a changedValues() signal is emitted every frequency:th
-	 * of a second. If frequency == 0, the timer is stopped and no signal
-	 * emission occurs.
-	 */
-	void setMonitorTimerFrequency(unsigned int frequency);
-
-	/**
-	 * Get the monitor timer frequency.
-	 */
-	unsigned int monitorTimerFrequency() const;
-	
-protected slots:
-	/** Slot that catches monitor timer signals */
-	void slotMonitorTimeout();
+protected:
+	/** Timer event handler */
+	void timerEvent(QTimerEvent* event);
 
 signals:
+	/** Send a map of changed values to MonitorFixtures */
 	void changedValues(const QHash <t_channel,t_value>& values);
 
 protected:
-	QTimer m_monitorTimer;
+	/**
+	 * A map of changed values that are sent to MonitorFixtures from
+	 * slotDMXTimeout() using changedValues() signal.
+	 */
 	QHash <t_channel,t_value> m_monitorValues;
-	
+
+	/** ID of the DMX timer */
+	int m_timerId;
+
 	/*********************************************************************
 	 * Patch
 	 *********************************************************************/

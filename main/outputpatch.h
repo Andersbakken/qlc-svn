@@ -23,6 +23,7 @@
 #define OUTPUTPATCH_H
 
 #include <QObject>
+
 #include "common/qlctypes.h"
 
 class QDomDocument;
@@ -51,7 +52,7 @@ private:
 	Q_DISABLE_COPY(OutputPatch)
 
 	/********************************************************************
-	 * Properties
+	 * Plugin & output
 	 ********************************************************************/
 public:
 	void set(QLCOutPlugin* plugin, int output);
@@ -65,6 +66,30 @@ public:
 protected:
 	QLCOutPlugin* m_plugin;
 	int m_output;
+
+	/********************************************************************
+	 * Values
+	 ********************************************************************/
+public:
+	/** Get the value for a channel from the internal buffer */
+	t_value value(t_channel channel) const;
+
+	/** Set the value for a channel to the internal buffer */
+	void setValue(t_channel channel, t_value value);
+
+	/** Write the contents of the internal buffer to the actual plugin.
+	    Called periodically by OutputMap. You don't need to call this. */
+	void dump();
+
+	/** Check, whether this universe is in blackout mode */
+	bool blackout() const;
+
+	/** Set or release this universe to/from blackout mode */
+	void setBlackout(bool blackout);
+
+protected:
+	t_value m_values[512];
+	bool m_blackout;
 
 	/********************************************************************
 	 * Load & Save

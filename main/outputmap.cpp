@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   outputmap.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -21,6 +21,7 @@
 
 #include <QPluginLoader>
 #include <QMessageBox>
+#include <QTimerEvent>
 #include <QSettings>
 #include <QString>
 #include <QDebug>
@@ -59,27 +60,28 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 {
 	m_universes = universes;
 	m_dummyOut = NULL;
-
 	m_blackout = false;
-	m_blackoutStore = NULL;
 
 	initPatch();
 
 	load();
 	loadDefaults();
 
-	connect(&m_monitorTimer, SIGNAL(timeout()),
-		this, SLOT(slotMonitorTimeout()));
+	/* Start the DMX timer */
+	m_timerId = startTimer(1000 / KFrequency);
 }
 
 OutputMap::~OutputMap()
 {
+	killTimer(m_timerId);
+
 	for (int i = 0; i < m_universes; i++)
 		delete m_patch[i];
 
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
 
+	/* The purge above gets rid of m_dummyOut as well. Just NULL it. */
 	m_dummyOut = NULL;
 }
 
@@ -152,63 +154,20 @@ bool OutputMap::toggleBlackout()
 	return m_blackout;
 }
 
-void OutputMap::setBlackout(bool state)
+void OutputMap::setBlackout(bool blackout)
 {
 	/* Don't do blackout twice */
-	if (m_blackout == state)
+	if (m_blackout == blackout)
 		return;
+	m_blackout = blackout;
 
-	if (state == true)
-	{
-		t_value zeros[512] = { 0 };
-
-		Q_ASSERT(m_blackoutStore == NULL);
-		m_blackoutStore = new t_value[m_universes * 512];
-
-		/* Read the current values from all plugins */
-		for (int i = 0; i < m_universes; i++)
-		{
-			/* Get the whole universe into the blackout store */
-			getValueRange(i * 512,
-				      m_blackoutStore + (i * 512),
-				      512);
-			
-			/* Set all plugin outputs to zeros */
-			setValueRange(i * 512, zeros, 512);
-		}
-
-		/* Set blackout AFTER the zero write operation so that
-		   OutputMap::setValueRange() doesn't write the zeros to
-		   m_blackoutstore */
-		m_blackout = true;
-	}
-	else
-	{
-		Q_ASSERT(m_blackoutStore != NULL);
-
-		/* Toggle blackout off BEFORE the operation so that
-		   OutputMap::setValueRange() writes the blackoutstore contents
-		   back to universes. */
-		m_blackout = false;
-
-		/* Write the values from the blackout store to all plugins */
-		for (int i = 0; i < m_universes; i++)
-		{
-			/* Set values from the blackout store back to
-			   plugin outputs */
-			setValueRange(i * 512,
-				      m_blackoutStore + (i * 512),
-				      512);
-		}
-
-		delete [] m_blackoutStore;
-		m_blackoutStore = NULL;
-	}
+	for (int i = 0; i < m_universes; i++)
+		m_patch[i]->setBlackout(m_blackout);
 
 	emit blackoutChanged(m_blackout);
 }
 
-bool OutputMap::blackout()
+bool OutputMap::blackout() const
 {
 	return m_blackout;
 }
@@ -221,73 +180,21 @@ t_value OutputMap::getValue(t_channel channel)
 {
 	OutputPatch* outputPatch;
 	t_channel universe;
-	t_value value = 0;
-	
-	Q_ASSERT(channel < (m_universes * 512));
+	t_value value;
 
-	if (m_blackout == true)
-		return m_blackoutStore[channel];
-
-	/* Calculate universe from the channel number.
-	   0-511 are universe 1, 512-1022 are universe 2... */
-	universe = static_cast<t_channel> (channel / 512);
-	if (universe >= m_universes)
-	{
-		qWarning() << "Unable to get value. Invalid universe number:"
-			   << universe;
-		return 0;
-	}
+	/* Get the universe from the channel number. Channel is in the lowest
+	   9 bits and the universe is in the highest 7 bits. */
+	universe = static_cast<t_channel> (channel >> 9);
+	Q_ASSERT(universe < m_universes);
 
 	/* Get the plugin that is assigned to this universe */
 	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
-	Q_ASSERT(outputPatch->plugin() != NULL);
 
-	/* Isolate just the channel number (0-511) and remap it to
-	   the universe output selected for this patch */
-	outputPatch->plugin()->readChannel(outputPatch->output(),
-					   (channel % 512), &value);
+	/* Isolate just the channel number from the lowest 9 bits (0-511) */
+	value = outputPatch->value(channel & 0x1FF);
 
 	return value;
-}
-
-bool OutputMap::getValueRange(t_channel address, t_value* values, t_channel num)
-{
-	OutputPatch* outputPatch;
-	t_channel universe;
-
-	Q_ASSERT(address < (m_universes * 512));
-	Q_ASSERT((address + num - 1) < (m_universes * 512));
-
-	if (m_blackout == true)
-	{
-		/* Get the values from the temporary store when in blackout */
-		memcpy(values, m_blackoutStore + address,
-		       num * sizeof(t_value));
-		return true;
-	}
-
-	/* Calculate universe from the channel number.
-	   0-511 are universe 1, 512-1022 are universe 2... */
-	universe = static_cast<t_channel> (address / 512);
-	if (universe >= m_universes)
-	{
-		qWarning() << "Unable to set values. Invalid universe number:"
-			   << universe;
-		return 0;
-	}
-
-	/* Get the plugin that is assigned to this universe */
-	outputPatch = m_patch[universe];
-	Q_ASSERT(outputPatch != NULL);
-	Q_ASSERT(outputPatch->plugin() != NULL);
-
-	/* Isolate just the channel number (0-511) and remap it to
-	   the universe output selected for this patch */
-	outputPatch->plugin()->readRange(outputPatch->output(),
-					 (address % 512), values, num);
-
-	return true;
 }
 
 void OutputMap::setValue(t_channel channel, t_value value)
@@ -298,117 +205,26 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	if (channel == KChannelInvalid)
 		return;
 
-	Q_ASSERT(channel < (m_universes * 512));
-
-	if (m_blackout == true)
-	{
-		/* Just store the values when in blackout */
-		m_blackoutStore[channel] = value;
-
-		if (m_monitorTimer.isActive() == true)
-			m_monitorValues[channel] = value;
-
-		return;
-	}
-
-	/* Calculate universe from the channel number.
-	   0-511 are universe 1, 512-1022 are universe 2... */
-	universe = static_cast<t_channel> (channel / 512);
-	if (universe >= m_universes)
-	{
-		qWarning() << "Unable to set values. Invalid universe number:"
-			   << universe;
-		return;
-	}
+	/* Get the universe from the channel number. Channel is in the lowest
+	   9 bits and the universe is in the highest 7 bits. */
+	universe = static_cast<t_channel> (channel >> 9);
+	Q_ASSERT(universe < m_universes);
 
 	/* Get the plugin that is assigned to this universe */
 	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
-	Q_ASSERT(outputPatch->plugin() != NULL);
 
-	/* Isolate just the channel number (0-511) and remap it to
-	   the universe output selected for this patch */
-	outputPatch->plugin()->writeChannel(outputPatch->output(),
-					    (channel % 512), value);
-
-	if (m_monitorTimer.isActive() == true)
-		m_monitorValues[channel] = value;
+	outputPatch->setValue(channel & 0x1FF, value);
+	m_monitorValues[channel] = value;
 }
 
-void OutputMap::setValueRange(t_channel address, t_value* values, t_channel num)
-{
-	OutputPatch* outputPatch;
-	t_channel universe;
-
-	Q_ASSERT(address < (m_universes * 512));
-	Q_ASSERT((address + num - 1) < (m_universes * 512));
-
-	if (m_blackout == true)
-	{
-		memcpy(m_blackoutStore + address, values, 
-		       num * sizeof(t_value));
-
-		if (m_monitorTimer.isActive() == true)
-		{
-			for (t_channel i = 0; i < num; i++)
-				m_monitorValues[address + i] = values[i];
-		}
-		
-		return;
-	}
-	
-	/* Calculate universe from the channel number.
-	   0-511 are universe 1, 512-1022 are universe 2... */
-	universe = static_cast<t_channel> (address / 512);
-	if (universe >= m_universes)
-	{
-		qWarning() << "Unable to set values. Invalid universe number:"
-			   << universe;
-		return;
-	}
-
-	/* Get the plugin that is assigned to this universe */
-	outputPatch = m_patch[universe];
-	Q_ASSERT(outputPatch != NULL);
-	Q_ASSERT(outputPatch->plugin() != NULL);
-
-	/* Isolate just the channel number (0-511) and remap it to
-	   the universe output selected for this patch */
-	outputPatch->plugin()->writeRange(outputPatch->output(),
-					  (address % 512), values, num);
-
-	if (m_monitorTimer.isActive() == true)
-	{
-		for (t_channel i = 0; i < num; i++)
-			m_monitorValues[address + i] = values[i];
-	}
-}
-
-/*****************************************************************************
- * Monitor timer
- *****************************************************************************/
-
-void OutputMap::setMonitorTimerFrequency(unsigned int frequency)
-{
-	/* 0 stops the timer, other values are interpreted as Hz */
-	if (frequency > 0)
-		m_monitorTimer.start(1000 / frequency);
-	else
-		m_monitorTimer.stop();
-}
-
-unsigned int OutputMap::monitorTimerFrequency() const
-{
-	return int((1.0 / double(m_monitorTimer.interval())) * 1000);
-}
-
-void OutputMap::slotMonitorTimeout()
+void OutputMap::timerEvent(QTimerEvent* event)
 {
 	if (m_monitorValues.count() > 0)
 	{
-		/* Only the changed values are emitted to Monitor when 
-		   the timer is running. This way, Monitor doesn't need to
-		   always fetch the entire universe-ful of values. */
+		for (int i = 0; i < m_universes; i++)
+			m_patch[i]->dump();
+
 		emit changedValues(m_monitorValues);
 		m_monitorValues.clear();
 	}
@@ -428,6 +244,7 @@ void OutputMap::initPatch()
 	for (int i = 0; i < m_universes; i++)
 	{
 		OutputPatch* outputPatch;
+
 		/* The dummy output plugin provides always as many outputs
 		   as QLC has supported universes. So, assign each of these
 		   outputs, by default, to each universe */
@@ -454,7 +271,7 @@ bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
 			   << universe << "not found.";
 		return false;
 	}
-	
+
 	m_patch[universe]->set(outputPlugin, output);
 
 	return true;
@@ -477,7 +294,7 @@ QStringList OutputMap::pluginNames()
 
 	while (it.hasNext() == true)
 		list.append(it.next()->name());
-	
+
 	return list;
 }
 

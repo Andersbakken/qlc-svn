@@ -70,7 +70,6 @@ protected:
 
 protected slots:
 	void slotChooseFont();
-	void slotSpeedTriggered(QAction* action);
 	void slotChannelStyleTriggered(QAction* action);
 	void slotValueStyleTriggered(QAction* action);
 

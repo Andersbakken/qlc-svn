@@ -56,8 +56,6 @@ Monitor::Monitor(QWidget* parent) : QWidget(parent)
 
 Monitor::~Monitor()
 {
-	/* Stop the timer */
-	_app->outputMap()->setMonitorTimerFrequency(0);
 }
 
 void Monitor::init()
@@ -93,13 +91,10 @@ void Monitor::init()
 	m_monitorWidget->show();
 	m_scrollArea->show();
 
+	/* Listen to Document changes */
 	connect(_app, SIGNAL(documentChanged(Doc*)),
 		this, SLOT(slotDocumentChanged(Doc*)));
-
 	slotDocumentChanged(_app->doc());
-
-	/* Start the monitor timer in output map */
-	_app->outputMap()->setMonitorTimerFrequency(16);
 }
 
 /****************************************************************************
@@ -116,33 +111,6 @@ void Monitor::initMenu()
 	/* Menu bar */
 	Q_ASSERT(layout() != NULL);
 	layout()->setMenuBar(new QMenuBar(this));
-
-	/* Update speed menu */
-	menu = new QMenu(layout()->menuBar());
-	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(menu);
-	menu->setTitle(tr("Update speed"));
-	connect(menu, SIGNAL(triggered(QAction*)),
-		this, SLOT(slotSpeedTriggered(QAction*)));
-
-	/* Speed group and actions */
-	group = new QActionGroup(this);
-	group->setExclusive(true);
-
-	action = menu->addAction(tr("16Hz"));
-	action->setCheckable(true);
-	action->setData(16);
-	group->addAction(action);
-	action->setChecked(true);
-
-	action = menu->addAction(tr("32Hz"));
-	action->setCheckable(true);
-	action->setData(32);
-	group->addAction(action);
-
-	action = menu->addAction(tr("64Hz"));
-	action->setCheckable(true);
-	action->setData(64);
-	group->addAction(action);
 
 	/* Display menu */
 	displayMenu = new QMenu(layout()->menuBar());
@@ -203,13 +171,6 @@ void Monitor::slotChooseFont()
 	QFont f = QFontDialog::getFont(&ok, font(), this);
 	if (ok == true)
 		setFont(f);
-}
-
-void Monitor::slotSpeedTriggered(QAction* action)
-{
-	Q_ASSERT(action != NULL);
-	_app->outputMap()->setMonitorTimerFrequency(action->data().toUInt());
-	action->setChecked(true);
 }
 
 void Monitor::slotChannelStyleTriggered(QAction* action)
@@ -317,9 +278,6 @@ bool Monitor::loadXML(QDomDocument*, QDomElement* root)
 			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h, &vis);
 		else if (tag.tagName() == KXMLQLCMonitorFont)
 			font.fromString(tag.text());
-		else if (tag.tagName() == KXMLQLCMonitorUpdateFrequency)
-			_app->outputMap()->setMonitorTimerFrequency(
-							tag.text().toInt());
 		else
 			qDebug() << "Unknown monitor tag:" << tag.tagName();
 
@@ -356,13 +314,6 @@ bool Monitor::saveXML(QDomDocument* doc, QDomElement* fxi_root)
 	tag = doc->createElement(KXMLQLCMonitorFont);
 	root.appendChild(tag);
 	text = doc->createTextNode(font().toString());
-	tag.appendChild(text);
-
-	/* Update frequency */
-	tag = doc->createElement(KXMLQLCMonitorUpdateFrequency);
-	root.appendChild(tag);
-	str.setNum(_app->outputMap()->monitorTimerFrequency());
-	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
 	/* Save window state. parentWidget() should be used for all
