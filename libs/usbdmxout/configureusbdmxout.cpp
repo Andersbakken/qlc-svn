@@ -20,12 +20,10 @@
 */
 
 #include <QTreeWidgetItem>
-#include <QMapIterator>
 #include <QTreeWidget>
 #include <QPushButton>
 #include <QString>
-#include <QTimer>
-#include <QMap>
+#include <QList>
 
 #include "configureusbdmxout.h"
 
@@ -68,6 +66,7 @@ ConfigureUSBDMXOut::~ConfigureUSBDMXOut()
 
 void ConfigureUSBDMXOut::slotRefreshClicked()
 {
+	m_plugin->rescanDevices();
 	refreshList();
 }
 
@@ -77,13 +76,11 @@ void ConfigureUSBDMXOut::refreshList()
 
 	m_list->clear();
 
-	QMapIterator <t_output, USBDMXDevice*> it(m_plugin->m_devices);
+	QListIterator <USBDMXDevice*> it(m_plugin->m_devices);
 	while (it.hasNext() == true)
 	{
-		it.next();
-
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnName, it.value()->name());
+		item->setText(KColumnName, it.next()->name());
 		item->setText(KColumnOutput, QString("%1").arg(i++));
 	}
 }

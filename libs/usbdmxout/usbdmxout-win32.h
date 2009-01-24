@@ -27,7 +27,7 @@
 #include <windows.h>
 #include <QtPlugin>
 #include <QMutex>
-#include <QMap>
+#include <QList>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
@@ -62,12 +62,16 @@ public:
 	 *********************************************************************/
 public:
 	void rescanDevices();
-	USBDMXDevice* device(HANDLE handle);
-	QStringList outputs();
 
 protected:
-	QMap <t_output, USBDMXDevice*> m_devices;
-	struct usbdmx_functions *m_usbdmx;
+	QList <USBDMXDevice*> m_devices;
+	struct usbdmx_functions* m_usbdmx;
+
+	/*********************************************************************
+	 * Outputs
+	 *********************************************************************/
+public:
+	QStringList outputs();
 
 	/*********************************************************************
 	 * Name

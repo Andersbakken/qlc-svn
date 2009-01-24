@@ -51,6 +51,9 @@ public:
 	int output() const;
 
 protected:
+	void extractName();
+
+protected:
 	QString m_name;
 	int m_output;
 
@@ -58,8 +61,15 @@ protected:
 	 * Open & close
 	 ********************************************************************/
 public:
-	bool open();
-	bool close();
+	/** Open this device for DMX output */
+	void open();
+	
+	/** Close this device */
+	void close();
+	
+	/** Re-extract the device's name and reopen it if necessary */
+	void rehash();
+
 	HANDLE handle() const;
 
 protected:

@@ -19,14 +19,11 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QMessageBox>
 #include <QStringList>
 #include <windows.h>
-#include <QPalette>
 #include <QDebug>
 #include <QString>
-#include <QColor>
 
 #include "configureusbdmxout.h"
 #include "usbdmxdevice-win32.h"
@@ -61,23 +58,55 @@ void USBDMXOut::init()
 
 void USBDMXOut::rescanDevices()
 {
+	USHORT id = 0;
+
 	if (m_usbdmx == NULL)
 		return;
 
-	for (t_output i = 0; i < MAX_USBDMX_DEVICES; i++)
+	for (id = 0; id < 32; id++)
 	{
-		HANDLE handle;
-		if (m_usbdmx->open(i, &handle) == TRUE)
+		HANDLE handle = NULL;
+		if (m_usbdmx->open(id, &handle) == TRUE)
 		{
+			/* We don't need the handle now. */
 			m_usbdmx->close(handle);
-			if (m_devices.contains(i) == false)
+
+			if (id >= m_devices.count())
 			{
 				USBDMXDevice* device;
-				device = new USBDMXDevice(this, m_usbdmx, i);
-				m_devices.insert(i, device);
+
+				/* Device was opened successfully and it's
+				   a new device. Append it to our list. */
+				device = new USBDMXDevice(this, m_usbdmx, id);
+				m_devices.append(device);
+			}
+			else
+			{
+				/* We already have a device with this id. Try
+				   the next one. */
 			}
 		}
+		else
+		{
+			/* This device ID doesn't exist and neither does any
+			   consecutive id, so we can stop looking. */
+			break;
+		}
 	}
+
+	/* Remove those devices that aren't present. I.e. if our search
+	   stopped into an ID that is equal to or less than the current number
+	   of devices, one or more devices are no longer present. */
+	while (id < m_devices.count())
+		delete m_devices.takeLast();
+
+	/* Because all devices have just plain and dull IDs, we can't know,
+	   whether the user removed one XSwitch and plugged in a Rodin1,
+	   that ends up getting the same ID. Therefore, force all known devices
+	   to reload their info again. */
+	QListIterator <USBDMXDevice*> it(m_devices);
+	while (it.hasNext() == true)
+		it.next()->rehash();
 }
 
 /*****************************************************************************
@@ -89,8 +118,8 @@ void USBDMXOut::open(t_output output)
 	if (m_usbdmx == NULL)
 		return;
 
-	if (m_devices.contains(output) == true)
-		m_devices[output]->open();
+	if (output < m_devices.count())
+		m_devices.at(output)->open();
 }
 
 void USBDMXOut::close(t_output output)
@@ -98,16 +127,16 @@ void USBDMXOut::close(t_output output)
 	if (m_usbdmx == NULL)
 		return;
 
-	if (m_devices.contains(output) == true)
-		m_devices[output]->close();
+	if (output < m_devices.count())
+		m_devices.at(output)->close();
 }
 
 QStringList USBDMXOut::outputs()
 {
 	QStringList list;
-	QMapIterator <t_output, USBDMXDevice*> it(m_devices);
+	QListIterator <USBDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
-		list << it.next().value()->name();
+		list << it.next()->name();
 
 	return list;
 }
@@ -168,7 +197,7 @@ QString USBDMXOut::infoText(t_output output)
 		str += QString("more information. ");
 		str += QString("</P>");
 	}
-	else if (m_devices.contains(output) == true)
+	else if (output < m_devices.count())
 	{
 		str += QString("<H3>%1</H3>").arg(outputs()[output]);
 		str += QString("<P>");
@@ -198,8 +227,8 @@ void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 {
 	Q_UNUSED(address);
 
-	if (m_devices.contains(output) == true)
-		m_devices[output]->writeRange(values, num);
+	if (output < m_devices.count())
+		m_devices.at(output)->writeRange(values, num);
 }
 
 void USBDMXOut::readChannel(t_output output, t_channel channel, t_value* value)

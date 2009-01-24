@@ -38,25 +38,7 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	m_output = output;
 	m_usbdmx = usbdmx;
 
-	if (open() == false)
-		m_name = QString("%1: Unable to open device").arg(m_output + 1);
-	else
-	{
-		if (m_usbdmx->is_xswitch(m_handle))
-			m_name = QString("%1: X-Switch").arg(m_output + 1);
-		else if (m_usbdmx->is_rodin1(m_handle))
-			m_name = QString("%1: Rodin 1").arg(m_output + 1);
-		else if (m_usbdmx->is_rodin2(m_handle))
-			m_name = QString("%1: Rodin 2").arg(m_output + 1);
-		else if (m_usbdmx->is_rodint(m_handle))
-			m_name = QString("%1: Rodin T").arg(m_output + 1);
-		else if (m_usbdmx->is_usbdmx21(m_handle))
-			m_name = QString("%1: USBDMX21").arg(m_output + 1);
-		else
-			m_name = QString("%1: Unknown").arg(m_output + 1);
-	}
-
-	close();
+	extractName();
 }
 
 USBDMXDevice::~USBDMXDevice()
@@ -78,14 +60,54 @@ int USBDMXDevice::output() const
 	return m_output;
 }
 
+void USBDMXDevice::extractName()
+{
+	bool needToClose = false;
+
+	if (m_handle == NULL)
+	{
+		/* If the device was closed, we need to close it after name
+		   extraction. But if it was already open, we leave it that
+		   way, too. */
+		needToClose = true;
+		open();
+	}
+
+	if (m_handle == NULL)
+	{
+		/* Opening the device failed */
+		m_name = QString("%1: Cannot open device").arg(m_output + 1);
+	}
+	else
+	{
+		/* Check the device type and name it accordingly */
+		if (m_usbdmx->is_xswitch(m_handle) == TRUE)
+			m_name = QString("%1: X-Switch").arg(m_output + 1);
+		else if (m_usbdmx->is_rodin1(m_handle) == TRUE)
+			m_name = QString("%1: Rodin 1").arg(m_output + 1);
+		else if (m_usbdmx->is_rodin2(m_handle) == TRUE)
+			m_name = QString("%1: Rodin 2").arg(m_output + 1);
+		else if (m_usbdmx->is_rodint(m_handle) == TRUE)
+			m_name = QString("%1: Rodin T").arg(m_output + 1);
+		else if (m_usbdmx->is_usbdmx21(m_handle) == TRUE)
+			m_name = QString("%1: USBDMX21").arg(m_output + 1);
+		else
+			m_name = QString("%1: Unknown").arg(m_output + 1);
+	}
+
+	/* Close the device if it was opened only for name extraction */
+	if (needToClose == true)
+		close();
+}
+
 /****************************************************************************
  * Open & close
  ****************************************************************************/
 
-bool USBDMXDevice::open()
+void USBDMXDevice::open()
 {
 	if (m_handle != NULL)
-		return true;
+		return;
 
 	/* Open the device */
 	if (m_usbdmx->open(m_output, &m_handle) == TRUE)
@@ -95,31 +117,37 @@ bool USBDMXDevice::open()
 		/* Check the device version against driver version */
 		m_usbdmx->device_version(m_handle, &version);
 		if (USBDMX_DLL_VERSION_CHECK(m_usbdmx) == FALSE)
-			return false;
+			return;
 
 		/* DMX512 specifies 0 as the official startcode */
 		if (m_usbdmx->tx_startcode_set(m_handle, 0) == FALSE)
-			return false;
-
-		return true;
+			return;
 	}
 	else
 	{
 		qWarning() << QString("Unable to open USBDMX %1")
 					.arg(m_output + 1);
-		return false;
 	}
 }
 
-bool USBDMXDevice::close()
+void USBDMXDevice::close()
 {
 	if (m_handle == NULL)
-		return true;
+		return;
 
 	m_usbdmx->close(m_handle);
 	m_handle = NULL;
+}
 
-	return true;
+void USBDMXDevice::rehash()
+{
+	if (m_handle != NULL)
+	{
+		close();
+		open();
+	}
+
+	extractName();
 }
 
 /****************************************************************************
@@ -128,8 +156,8 @@ bool USBDMXDevice::close()
 
 void USBDMXDevice::writeRange(t_value* values, t_channel num)
 {
-	Q_ASSERT(num == 512);
+	Q_UNUSED(num);
 
 	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, values, num);
+		m_usbdmx->tx_set(m_handle, values, 512);
 }
