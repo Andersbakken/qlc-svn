@@ -69,14 +69,7 @@ protected:
 	 * Read & write
 	 ********************************************************************/
 public:
-	void write(t_channel channel, t_value value);
-	void writeRange(t_channel address, t_value* values, t_channel num);
-
-	void read(t_channel channel, t_value* value);
-	void readRange(t_channel address, t_value* values, t_channel num);
-
-protected:
-	t_value m_values[512];
+	void writeRange(t_value* values, t_channel num);
 };
 
 #endif

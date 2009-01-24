@@ -38,8 +38,6 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	m_output = output;
 	m_usbdmx = usbdmx;
 
-	memset(m_values, 0, 512 * sizeof(t_value));
-
 	if (open() == false)
 		m_name = QString("%1: Unable to open device").arg(m_output + 1);
 	else
@@ -128,30 +126,10 @@ bool USBDMXDevice::close()
  * Read & write
  ****************************************************************************/
 
-void USBDMXDevice::write(t_channel channel, t_value value)
+void USBDMXDevice::writeRange(t_value* values, t_channel num)
 {
-	Q_ASSERT(channel < 512);
-	m_values[channel] = value;
+	Q_ASSERT(num == 512);
+
 	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, m_values, 512);
-}
-
-void USBDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
-{
-	Q_ASSERT(address + num <= 512);
-	memcpy(m_values + address, values, num);
-	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, m_values, 512);
-}
-
-void USBDMXDevice::read(t_channel channel, t_value* value)
-{
-	Q_ASSERT(value != NULL);
-	*value = m_values[channel];
-}
-
-void USBDMXDevice::readRange(t_channel address, t_value* values, t_channel num)
-{
-	Q_ASSERT(address + num <= 512);
-	memcpy(values, m_values + address, num);
+		m_usbdmx->tx_set(m_handle, values, num);
 }
