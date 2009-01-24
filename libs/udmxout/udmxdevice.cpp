@@ -20,9 +20,15 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QDebug>
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include "libusb_dyn.h"
+#else
 #include <usb.h>
+#endif
 
+#include <QDebug>
 #include "udmxdevice.h"
 
 #define UDMX_SHARED_VENDOR     0x16C0 /* VOTI */
