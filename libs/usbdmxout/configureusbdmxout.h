@@ -45,38 +45,10 @@ protected:
 	USBDMXOut* m_plugin;
 
 	/*********************************************************************
-	 * Universe testing
-	 *********************************************************************/
-protected slots:
-	/**
-	 * Start/stop flashing all channel values of one universe
-	 *
-	 * @param state true to start flashing, false to stop flashing
-	 */
-	void slotTestToggled(bool state);
-
-	/**
-	 * Flash all channels of one universe between 0 and 255
-	 */
-	void slotTestTimeout();
-
-protected:
-	/** Timer that drives universe testing */
-	QTimer* m_timer;
-
-	/** Modulo var that changes state between [0|1] on each timer pass */
-	int m_testMod;
-
-	/** The universe to test output on */
-	t_output m_output;
-
-	/*********************************************************************
 	 * Refresh
 	 *********************************************************************/
 protected slots:
-	/**
-	 * Invoke refresh for the interface list
-	 */
+	/** Invoke refresh for the interface list */
 	void slotRefreshClicked();
 
 protected:
