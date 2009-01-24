@@ -29,15 +29,13 @@
 #include "midiout-win32.h"
 #include "midiprotocol.h"
 
-#define MAX_MIDI_DMX_CHANNELS 128
-
 MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 {
 	m_id = id;
 	m_handle = NULL;
 
 	/* Start with all values zeroed */
-	memset(m_values, 0, sizeof(m_values));
+	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
 
 	/* Get a name for this device */
 	extractName();
@@ -261,63 +259,10 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
 }
 
 /****************************************************************************
- * Read & write
+ * Write
  ****************************************************************************/
 
-void MIDIDevice::write(t_channel channel, t_value value)
-{
-	Q_ASSERT(channel < 512);
-	m_values[channel] = value;
-
-	/* Since MIDI devices can have only 128 real channels, we don't
-	   actually attempt to output more than that, although a full 512
-	   channel universe exists within each MIDIDevice object. */
-	if (channel < MAX_MIDI_DMX_CHANNELS)
-	{
-		union
-		{
-			DWORD dwData;
-			BYTE bData[4];
-		} msg;
-
-		switch (m_mode)
-		{
-		default:
-		case ControlChange:
-			/* Use control change numbers as DMX channels and
-			   control values as DMX channel values */ 
-			msg.bData[0] = MIDI_CONTROL_CHANGE;
-			msg.bData[1] = (BYTE) channel;
-			msg.bData[2] = (BYTE) value >> 1;
-			msg.bData[3] = 0;
-			break;
-
-		case Note:
-			/* Use note numbers as DMX channels and velocities as
-			   DMX channel values. 0 is written as note off */
-			if (value == 0)
-			{
-				msg.bData[0] = MIDI_NOTE_OFF;
-				msg.bData[1] = (BYTE) channel;
-				msg.bData[2] = 0;
-				msg.bData[3] = 0;
-			}
-			else
-			{
-				msg.bData[0] = MIDI_NOTE_ON;
-				msg.bData[1] = (BYTE) channel;
-				msg.bData[2] = (BYTE) value >> 1;
-				msg.bData[3] = 0;
-			}
-			break;
-		}
-		
-		/* Push the message out */
-		midiOutShortMsg(m_handle, msg.dwData);
-	}
-}
-
-void MIDIDevice::writeRange(t_channel address, t_value* values, t_channel num)
+void MIDIDevice::writeRange(t_value* values, t_channel num)
 {
 	int i;
 	union
@@ -326,66 +271,57 @@ void MIDIDevice::writeRange(t_channel address, t_value* values, t_channel num)
 		BYTE bData[4];
 	} msg;
 
-	Q_ASSERT(address + num < 512);
-	memcpy(m_values + address, values, num);
-	
-	/* Since MIDI devices can have only 128 real channels, we don't
-	   actually attempt to output more than that, although a full 512
-	   channel universe exists within each MIDIDevice object. */
-
 	switch (m_mode)
 	{
 	default:
 	case ControlChange:
 		/* Use control change numbers as DMX channels and
 		   control values as DMX channel values */
-		for (i = 0; i < num && address + i < MAX_MIDI_DMX_CHANNELS; i++)
+		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
 		{
-			msg.bData[0] = MIDI_CONTROL_CHANGE;
-			msg.bData[1] = (BYTE) address + i;
-			msg.bData[2] = (BYTE) values[i] >> 1;
-			msg.bData[3] = 0;
+			if (m_values[i] != values[i])
+			{
+				m_values[i] = values[i];
 
-			/* Push the message out */
-			midiOutShortMsg(m_handle, msg.dwData);
+				msg.bData[0] = MIDI_CONTROL_CHANGE;
+				msg.bData[1] = (BYTE) i;
+				msg.bData[2] = (BYTE) values[i] >> 1;
+				msg.bData[3] = 0;
+
+				/* Push the message out */
+				midiOutShortMsg(m_handle, msg.dwData);
+			}
 		}
 		break;
 
 	case Note:
 		/* Use note numbers as DMX channels and velocities as
 		   DMX channel values. 0 is written as note off */
-		for (i = 0; i < num && address + i < MAX_MIDI_DMX_CHANNELS; i++)
+		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
 		{
-			if (values[i] == 0)
+			if (m_values[i] != values[i])
 			{
-				msg.bData[0] = MIDI_NOTE_OFF;
-				msg.bData[1] = (BYTE) address + i;
-				msg.bData[2] = 0;
-				msg.bData[3] = 0;
-			}
-			else
-			{
-				msg.bData[0] = MIDI_NOTE_ON;
-				msg.bData[1] = (BYTE) address + i;
-				msg.bData[2] = (BYTE) values[i] >> 1;
-				msg.bData[3] = 0;
-			}
+				m_values[i] = values[i];
 
-			/* Push the message out */
-			midiOutShortMsg(m_handle, msg.dwData);
+				if (values[i] == 0)
+				{
+					msg.bData[0] = MIDI_NOTE_OFF;
+					msg.bData[1] = (BYTE) i;
+					msg.bData[2] = 0;
+					msg.bData[3] = 0;
+				}
+				else
+				{
+					msg.bData[0] = MIDI_NOTE_ON;
+					msg.bData[1] = (BYTE) i;
+					msg.bData[2] = (BYTE) values[i] >> 1;
+					msg.bData[3] = 0;
+				}
+
+				/* Push the message out */
+				midiOutShortMsg(m_handle, msg.dwData);
+			}
 		}
 		break;
 	}
-}
-
-void MIDIDevice::read(t_channel channel, t_value* value)
-{
-	Q_ASSERT(channel < 512);
-	*value = m_values[channel];
-}
-
-void MIDIDevice::readRange(t_channel address, t_value* values, t_channel num)
-{
-	Q_ASSERT(address + num < 512);
-	memcpy(values, m_values + address, num);
 }

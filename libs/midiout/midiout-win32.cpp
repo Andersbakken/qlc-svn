@@ -193,32 +193,35 @@ QString MIDIOut::infoText(t_output output)
 
 void MIDIOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-	MIDIDevice* dev = device(output);
-	if (dev != NULL)
-		dev->write(channel, value);
+	Q_UNUSED(output);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 void MIDIOut::writeRange(t_output output, t_channel address, t_value* values,
 		t_channel num)
 {
+	Q_UNUSED(address);
+
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
-		dev->writeRange(address, values, num);
+		dev->writeRange(values, num);
 }
 
 void MIDIOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-	MIDIDevice* dev = device(output);
-	if (dev != NULL)
-		dev->read(channel, value);
+	Q_UNUSED(output);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 void MIDIOut::readRange(t_output output, t_channel address, t_value* values,
 	       t_channel num)
 {
-	MIDIDevice* dev = device(output);
-	if (dev != NULL)
-		dev->readRange(address, values, num);
+	Q_UNUSED(output);
+	Q_UNUSED(address);
+	Q_UNUSED(values);
+	Q_UNUSED(num);
 }
 
 /*****************************************************************************

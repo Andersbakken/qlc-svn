@@ -31,6 +31,9 @@ class MIDIDevice;
 class MIDIOut;
 class QString;
 
+/** MIDI devices can have only 128 real channels */
+#define MAX_MIDI_DMX_CHANNELS 128
+
 /*****************************************************************************
  * MIDIDevice
  *****************************************************************************/
@@ -134,17 +137,13 @@ protected:
 	t_channel m_midiChannel;
 
 	/********************************************************************
-	 * Read & write
+	 * Write
 	 ********************************************************************/
 public:
-	void write(t_channel channel, t_value value);
-	void writeRange(t_channel channel, t_value* values, t_channel num);
-
-	void read(t_channel channel, t_value* value);
-	void readRange(t_channel channel, t_value* values, t_channel num);
+	void writeRange(t_value* values, t_channel num);
 
 protected:
-	t_value m_values[512];
+	t_value m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif
