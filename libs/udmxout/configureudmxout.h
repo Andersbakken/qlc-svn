@@ -44,26 +44,6 @@ protected:
 	UDMXOut* m_plugin;
 
 	/*********************************************************************
-	 * Universe testing
-	 *********************************************************************/
-protected slots:
-	/** Start or stop flashing all channel values of one universe */
-	void slotTestToggled(bool state);
-
-	/** Flash all channels of one universe between 0 and 255 */
-	void slotTestTimeout();
-
-protected:
-	/** Timer that drives universe testing */
-	QTimer* m_timer;
-
-	/** Modulo var that changes state between [0|1] on each timer pass */
-	int m_testMod;
-
-	/** The universe to test output on */
-	t_output m_output;
-
-	/*********************************************************************
 	 * Refresh
 	 *********************************************************************/
 protected slots:
