@@ -5,7 +5,7 @@ LANGUAGE 	= C++
 TARGET 		= midiinput
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on release
+CONFIG          += plugin
 unix:CONFIG	+= link_pkgconfig
 
 ###############################################################################

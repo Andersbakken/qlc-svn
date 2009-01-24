@@ -4,7 +4,7 @@ TEMPLATE	= lib
 LANGUAGE	= C++
 TARGET		= udmxout
 
-CONFIG          += plugin warn_on release
+CONFIG          += plugin
 
 INCLUDEPATH	+= . ../../libs/
 unix:LIBS	+= -lusb

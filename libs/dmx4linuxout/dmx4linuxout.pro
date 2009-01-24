@@ -5,7 +5,7 @@ LANGUAGE	= C++
 TARGET		= dmx4linuxout
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on release
+CONFIG          += plugin
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target

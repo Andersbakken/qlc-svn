@@ -5,7 +5,7 @@ LANGUAGE 	= C++
 TARGET 		= hidinput
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on release
+CONFIG          += plugin
 
 target.path	= $$INPUTPLUGINDIR
 !macx:INSTALLS	+= target

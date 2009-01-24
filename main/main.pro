@@ -4,7 +4,7 @@ TEMPLATE 	= app
 LANGUAGE 	= C++
 TARGET 		= qlc
 
-CONFIG          += qt warn_on release
+CONFIG          += qt
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/

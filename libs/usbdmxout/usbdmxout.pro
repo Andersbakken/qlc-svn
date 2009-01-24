@@ -5,7 +5,7 @@ LANGUAGE	= C++
 TARGET		= usbdmxout
 
 INCLUDEPATH	+= . ../../libs/
-CONFIG          += plugin warn_on release
+CONFIG          += plugin
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
