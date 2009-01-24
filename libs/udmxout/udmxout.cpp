@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   uDMXout.cpp
-  
+
   Copyright (c)	2008, Lutz Hillebrand (ilLUTZminator)
-    
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -50,7 +50,7 @@ void uDMXOut::init()
 	// m_hLog->open(QIODevice::WriteOnly);
 
 	// Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__);
-  
+
 	for (int n = 0; n < MAX_UDMX_DEVICES; n++)
 		m_device[n] = NULL;
 
@@ -65,12 +65,12 @@ void uDMXOut::init()
 
 	// initialize values
 	memset(m_values, 0, KChannelMax);
-  
+
 	loadSettings();
-  
+
 	// initialize USB
 	// usb_set_debug(1);
-	usb_init(); 
+	usb_init();
 }
 
 int uDMXOut::usbStringGet(usb_dev_handle *dev, int index, int langid,
@@ -79,9 +79,9 @@ int uDMXOut::usbStringGet(usb_dev_handle *dev, int index, int langid,
 	char buffer[256];
 	int rval, i;
 
-	rval = usb_control_msg(dev, USB_ENDPOINT_IN, USB_REQ_GET_DESCRIPTOR, 
+	rval = usb_control_msg(dev, USB_ENDPOINT_IN, USB_REQ_GET_DESCRIPTOR,
 				(USB_DT_STRING << 8) + index, langid, buffer,
-				sizeof(buffer), 1000);				
+				sizeof(buffer), 1000);
 	if (rval < 0)
 		return rval;
 
@@ -105,7 +105,7 @@ int uDMXOut::usbStringGet(usb_dev_handle *dev, int index, int langid,
 	}
 
 	buf[i - 1] = 0;
-	
+
 	return i - 1;
 }
 
@@ -123,7 +123,7 @@ bool uDMXOut::Debug(int debuglevel, char * format, ...)
 	// little security risk of buffer overrun but another way
 	// is too complicated ...
 	char string[4096] ;
-  
+
 	if (m_debug < debuglevel)
 	{
 		return true;
@@ -133,12 +133,12 @@ bool uDMXOut::Debug(int debuglevel, char * format, ...)
 	va_start(argzeiger, format);
 	vsprintf(string, format, argzeiger);
 	va_end(argzeiger);
-  
+
 	QTextStream out(m_hLog);
 #ifdef WIN32
-	out << string << "\r\n";  
+	out << string << "\r\n";
 #else
-	out << string << "\n";  
+	out << string << "\n";
 #endif
 
 	return true;
@@ -147,7 +147,7 @@ bool uDMXOut::Debug(int debuglevel, char * format, ...)
 
 void uDMXOut::rescanDevices()
 {
-	//Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;  
+	//Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;
 
 	/* TODO: Move device discovery to this function and call this from
 	   init() since this is not a plugin API function. All outputs should
@@ -161,20 +161,20 @@ void uDMXOut::rescanDevices()
 
 void uDMXOut::open(t_output output)
 {
-	//Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;  
+	//Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;
 
 	/* TODO: Open ONLY the specified output line. Move device discovery to
 	   rescanDevices(). */
-  
+
 	QString txt;
 	int n = m_firstUniverse;
-  
+
 	struct usb_bus *bus;
 	struct usb_device *dev;
 	usb_dev_handle *handle = 0;
-  
+
 	m_numOfDevices = 0;
-   
+
 	usb_find_busses();
 	usb_find_devices();
 
@@ -184,7 +184,7 @@ void uDMXOut::open(t_output output)
 		for (dev = bus->devices; dev != NULL; dev = dev->next)
 		{
 			if ((dev->descriptor.idVendor == USBDEV_SHARED_VENDOR)
-			    && 
+			    &&
 			    (dev->descriptor.idProduct == USBDEV_SHARED_PRODUCT))
 			{
 				char string[256];
@@ -282,7 +282,7 @@ LoopEnd:
 		}
 	}
 
-	//Debug(DEBUG_INFO, "%s %d %s() FirstUniverse %d, NumDevs %d", 
+	//Debug(DEBUG_INFO, "%s %d %s() FirstUniverse %d, NumDevs %d",
 	//      __FILE__, __LINE__, __FUNCTION__, m_firstUniverse, m_numOfDevices ) ;
 
 	return;
@@ -297,7 +297,7 @@ void uDMXOut::close(t_output output)
 
 QStringList uDMXOut::outputs()
 {
-	//Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;  
+	//Debug(DEBUG_ALL, "%s %d %s()", __FILE__, __LINE__, __FUNCTION__) ;
 
 	/* TODO: (Gather and) return a list of output names. Start the first
 	   universe from 1 to be user-friendly. This function is also used
@@ -305,7 +305,7 @@ QStringList uDMXOut::outputs()
 
 	QStringList list;
 	list << QString("1: uDMXout 1");
-	return list;  
+	return list;
 }
 
 /*****************************************************************************
@@ -336,7 +336,7 @@ void uDMXOut::configure()
 
 	   Provide a means to do rescanDevices() from the configuration
 	   dialog and a list (treewidget) that shows all available outputs. */
-  
+
 	Configure_uDMXOut conf(NULL, this);
 	if (conf.exec() == QDialog::Accepted)
 	{
@@ -363,8 +363,8 @@ int uDMXOut::saveSettings()
 	QSettings *settings = new QSettings(CONF_FILE, QSettings::IniFormat);
 	settings->beginGroup("uDMX");
 	settings->setValue("Debug", m_debug);
-	settings->setValue("FirstUniverse", m_firstUniverse);  
-	settings->setValue("Channels", m_channels);   
+	settings->setValue("FirstUniverse", m_firstUniverse);
+	settings->setValue("Channels", m_channels);
 	delete settings;
 
 	return errno;
@@ -436,24 +436,24 @@ QString uDMXOut::infoText(t_output output)
 
 void uDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-	//Debug(DEBUG_ALL, "%s %d %s(%d, %d, %d)", 
+	//Debug(DEBUG_ALL, "%s %d %s(%d, %d, %d)",
 	//      __FILE__, __LINE__, __FUNCTION__, output, channel, value);
 
 	// Make it simple an actually use only ONE function
 	// no difference between writeChannel and writeRange here ...
 	m_values[channel] = value;
-  
+
 	writeRange(output, channel, &m_values[channel], 1);
-  
+
 	return;
 }
 
 void uDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 			   t_channel num)
 {
-	//Debug(DEBUG_ALL, "%s %d %s(%d, %d)", 
-	//      __FILE__, __LINE__, __FUNCTION__, output, address); 
-        
+	//Debug(DEBUG_ALL, "%s %d %s(%d, %d)",
+	//      __FILE__, __LINE__, __FUNCTION__, output, address);
+
 	QString txt;
 	t_value* pValue;
 	int iChannelsToWrite, iBlockSize;
@@ -484,7 +484,7 @@ void uDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 				//Debug(DEBUG_WARN, "%s %d %s() ERROR: tried to write to non-existing device %d",
 				//      __FILE__, __LINE__, __FUNCTION__, device);
 			}
-			
+
 			return;
 		}
 		else
@@ -501,8 +501,8 @@ void uDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 				iBlockSize  = MIN(iChannelsToWrite, 256);
 
 				nBytes = usb_control_msg(m_device[device],
-							 USB_TYPE_VENDOR | 
-							 USB_RECIP_DEVICE | 
+							 USB_TYPE_VENDOR |
+							 USB_RECIP_DEVICE |
 							 USB_ENDPOINT_OUT,
 							 cmd_SetChannelRange,
 							 iBlockSize,
@@ -541,8 +541,8 @@ void uDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 
 void uDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-	//Debug(DEBUG_ALL, "%s %d %s(%d, %d, %d)", 
-	//      __FILE__, __LINE__, __FUNCTION__, output, channel, *value) ;  
+	//Debug(DEBUG_ALL, "%s %d %s(%d, %d, %d)",
+	//      __FILE__, __LINE__, __FUNCTION__, output, channel, *value) ;
 
 	/* TODO: Q_ASSERT(output < available outputs); */
 	/* TODO: Q_ASSERT(channel < 512); */
@@ -557,8 +557,8 @@ void uDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
 void uDMXOut::readRange(t_output output, t_channel address, t_value* values,
 			  t_channel num)
 {
-	//Debug(DEBUG_ALL, "%s %d %s(%d, %d)", 
-	//      __FILE__, __LINE__, __FUNCTION__, output, address) ;  
+	//Debug(DEBUG_ALL, "%s %d %s(%d, %d)",
+	//      __FILE__, __LINE__, __FUNCTION__, output, address) ;
 
 	/* TODO: Q_ASSERT(output < available outputs); */
 	/* TODO: Q_ASSERT(address < 512 - num); */
