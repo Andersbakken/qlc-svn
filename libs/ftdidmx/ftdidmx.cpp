@@ -19,11 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QStringList>
-#include <QPalette>
 #include <QString>
-#include <QColor>
 #include <QDebug>
 #include <QList>
 #include <QDir>
@@ -39,8 +36,8 @@
 
 void FTDIDMXOut::init()
 {
-	// TODO: this should read from the configuration
-#ifndef _WINDOWS
+	// TODO: this should be read from the configuration
+#ifndef WIN32
 	// On Windows the users must ensure the ftdi driver is correct
 	// for their hardware, *NIX users can just dynamically
 	// alter the hardware settings in QLC
@@ -83,8 +80,9 @@ void FTDIDMXOut::rescanDevices()
 	int pid = m_scan_pid;
 	m_vidpid_mutex.unlock();
 
+#ifndef WIN32
 	FT_SetVIDPID(vid, pid);
-
+#endif
 	if (FT_CreateDeviceInfoList(&devices) != FT_OK)
 		devices = MAX_NUM_DEVICES;
 

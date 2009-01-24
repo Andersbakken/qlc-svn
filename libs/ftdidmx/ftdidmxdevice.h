@@ -22,13 +22,22 @@
 #ifndef FTDIDMXDEVICE_H
 #define FTDIDMXDEVICE_H
 
+#ifdef WIN32
+#include <windows.h>
+#include "ftd2xx-win32.h"
+#else
 #include "ftd2xx.h"
-#include <common/qlctypes.h>
+#endif
+
 #include <QObject>
 #include <QMutex>
 #include <QTimer>
 #include <QString>
 #include <QThread>
+
+#include "common/qlctypes.h"
+
+#define MAX_NUM_DEVICES 50
 
 class FTDIDMXDevice : public QThread
 {

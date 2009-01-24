@@ -19,7 +19,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifndef WIN32
 #include <sys/ioctl.h>
+#endif
 #include <QDebug>
 #include <QThread>
 
@@ -116,7 +118,7 @@ bool FTDIDMXDevice::open()
 	memcpy(serial, a.constData(), a.count());
 	serial[a.count()] = 0;
 
-#ifndef _WINDOWS
+#ifndef WIN32
 	// Windows users cannot dynamiccaly set VID/PID of harward
 	if (FT_SetVIDPID(m_vid, m_pid) == FT_OK && 
 	    FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
@@ -152,8 +154,7 @@ bool FTDIDMXDevice::open()
 		}
 
 		// Set flow control
-	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE,
-	 			NULL, NULL)))
+	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0)))
 	 	{
 			qWarning() << "Unable to set flow control on"
 				   << "FTDI device" << m_path;
@@ -231,4 +232,3 @@ void FTDIDMXDevice::readRange(t_channel address, t_value* values,
 	m_dataChanged = true;
 	m_mutex.unlock();
 }
-

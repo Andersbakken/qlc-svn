@@ -8,6 +8,7 @@ INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin
 macx:LIBS	+= -L. -lftd2xx.0.1.4
 unix:LIBS	+= libftd2xx.a.0.4.16 -ldl
+win32:LIBS	+= ftd2xx.lib
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
@@ -18,14 +19,14 @@ macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 FORMS += configureftdidmx.ui
 
 # Headers
-unix:HEADERS += configureftdidmx.h \
-                ftdidmx.h \
-		ftdidmxdevice.h
+HEADERS += configureftdidmx.h \
+	   ftdidmx.h \
+	   ftdidmxdevice.h
 
 # Sources
-unix:SOURCES += configureftdidmx.cpp \
-                ftdidmx.cpp \
-		ftdidmxdevice.cpp
+SOURCES += configureftdidmx.cpp \
+	   ftdidmx.cpp \
+	   ftdidmxdevice.cpp
 
 macx {
 	QMAKE_POST_LINK = cp libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/
