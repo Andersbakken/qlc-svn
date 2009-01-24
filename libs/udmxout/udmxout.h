@@ -1,8 +1,9 @@
 /*
   Q Light Controller
-  uDMXout.h
+  udmxout.h
 
-  Copyright (c)	2008, Lutz Hillebrand (ilLUTZminator)
+  Copyright (c)	Lutz Hillebrand
+		Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -22,42 +23,22 @@
 #ifndef UDMXOUT_H
 #define UDMXOUT_H
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include "libusb_dyn.h"
-#else
-#include <usb.h>
-#endif
-
 #include <QStringList>
 #include <QtPlugin>
-#include <QMutex>
-#include <QMap>
-
-#include <QFile>
+#include <QList>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-enum DebugLevel {DEBUG_ERROR, DEBUG_WARN, DEBUG_INFO, DEBUG_ALL} ;
-
-#define USBDEV_SHARED_VENDOR    0x16C0  /* VOTI */
-#define USBDEV_SHARED_PRODUCT   0x05DC  /* Obdev's free shared PID */
-/* Use obdev's generic shared VID/PID pair and follow the rules outlined
- * in firmware/usbdrv/USBID-License.txt. */
-#define cmd_SetChannelRange 2
-#define MAX_UDMX_DEVICES 1
-
 class ConfigureUDmxOut;
-class uDMXDevice;
+class UDMXDevice;
 class QString;
 
 /*****************************************************************************
  * USBDMXOut
  *****************************************************************************/
 
-class uDMXOut : public QObject, public QLCOutPlugin
+class UDMXOut : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
@@ -68,38 +49,32 @@ class uDMXOut : public QObject, public QLCOutPlugin
 	 * Initialization
 	 *********************************************************************/
 public:
+	virtual ~UDMXOut();
+
 	void init();
 	void open(t_output output);
 	void close(t_output output);
-
-	int usbStringGet(usb_dev_handle *dev, int index, int langid,
-			 char *buf, int buflen);
-
-	int debug() const { return m_debug; }
-	//bool uDMXOut::debug(int debuglevel, char* format, ...);
-
-protected:
-	int  m_debug;
-	// QFile *m_hLog;
 
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/
 public:
 	void rescanDevices();
-	QStringList outputs();
-
-	int firstUniverse() const { return m_firstUniverse; }
-	int channels() const { return m_channels; }
 
 protected:
-	QString m_deviceName;
-	QString m_configDir;
-	usb_dev_handle* m_device[MAX_UDMX_DEVICES];
+	/** Get a UDMXDevice entry by its usbdev struct */
+	UDMXDevice* device(struct usb_device* usbdev);
 
-	int m_firstUniverse;
-	int m_numOfDevices;
-	int m_LastInvalidDevice;
+protected:
+	/** List of available devices */
+	QList <UDMXDevice*> m_devices;
+
+	/*********************************************************************
+	 * Outputs
+	 *********************************************************************/
+public:
+	/** Get the names of outputs provided by this plugin */
+	QStringList outputs();
 
 	/*********************************************************************
 	 * Name
@@ -112,8 +87,6 @@ public:
 	 *********************************************************************/
 public:
 	void configure();
-	int saveSettings();
-	int loadSettings();
 
 	/*********************************************************************
 	 * Plugin status
@@ -132,10 +105,6 @@ public:
 	void readChannel(t_output output, t_channel channel, t_value* value);
 	void readRange(t_output output, t_channel address, t_value* values,
 		       t_channel num);
-
-protected:
-	t_value m_values[KChannelMax];
-	t_channel m_channels;
 };
 
 #endif

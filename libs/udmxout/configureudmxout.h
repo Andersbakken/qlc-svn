@@ -1,8 +1,9 @@
 /*
   Q Light Controller
-  configureuDMXout.h
+  configureudmxout.h
 
-  Copyright (c)	2008, Lutz Hillebrand (ilLUTZminator)
+  Copyright (c)	Lutz Hillebrand
+		Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,22 +27,52 @@
 
 #include "ui_configureudmxout.h"
 
-class uDMXOut;
+class UDMXOut;
 
-class Configure_uDMXOut : public QDialog, public Ui_Configure_uDMXOut
+class ConfigureUDMXOut : public QDialog, public Ui_ConfigureUDMXOut
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
-	Configure_uDMXOut(QWidget* parent, uDMXOut* plugin);
-	virtual ~Configure_uDMXOut();
-
-	int firstUniverse();
-	int channels();
-	int debug();
+	ConfigureUDMXOut(QWidget* parent, UDMXOut* plugin);
+	virtual ~ConfigureUDMXOut();
 
 protected:
-	uDMXOut* m_plugin;
+	UDMXOut* m_plugin;
+
+	/*********************************************************************
+	 * Universe testing
+	 *********************************************************************/
+protected slots:
+	/** Start or stop flashing all channel values of one universe */
+	void slotTestToggled(bool state);
+
+	/** Flash all channels of one universe between 0 and 255 */
+	void slotTestTimeout();
+
+protected:
+	/** Timer that drives universe testing */
+	QTimer* m_timer;
+
+	/** Modulo var that changes state between [0|1] on each timer pass */
+	int m_testMod;
+
+	/** The universe to test output on */
+	t_output m_output;
+
+	/*********************************************************************
+	 * Refresh
+	 *********************************************************************/
+protected slots:
+	/** Invoke refresh for the interface list */
+	void slotRefreshClicked();
+
+protected:
+	/** Refresh the interface list */
+	void refreshList();
 };
 
 #endif
