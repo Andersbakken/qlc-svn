@@ -3,6 +3,7 @@
   udmxdevice.h
 
   Copyright (c) Heikki Junnila
+		Lutz Hillebrand
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -52,7 +53,6 @@ public:
 	QString infoText() const;
 
 protected:
-	int usbStringGet(int index, int langid, char* buf, int buflen);
 	void extractName();
 
 protected:
