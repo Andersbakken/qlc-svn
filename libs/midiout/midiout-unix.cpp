@@ -270,10 +270,11 @@ QString MIDIOut::name()
 QStringList MIDIOut::outputs()
 {
 	QStringList list;
+	int i = 1;
 
 	QListIterator <MIDIDevice*> it(m_devices);
 	while (it.hasNext() == true)
-		list << it.next()->name();
+		list << QString("%1: %2").arg(i++).arg(it.next()->name());
 
 	return list;
 }
