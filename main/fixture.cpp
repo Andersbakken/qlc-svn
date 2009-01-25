@@ -56,7 +56,6 @@ Fixture::Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
 	m_address = (m_address & 0xFE00) | (address & 0x01FF);
 	m_address = (m_address & 0x01FF) | (universe << 9);
 
-	m_console = NULL;
 	m_genericChannel = NULL;
 }
 
@@ -72,15 +71,11 @@ Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
 	m_address = (m_address & 0xFE00) | (address & 0x01FF);
 	m_address = (m_address & 0x01FF) | (universe << 9);
 
-	m_console = NULL;
 	m_genericChannel = NULL;
 }
 
 Fixture::~Fixture()
 {
-	if (m_console != NULL)
-		delete m_console;
-
 	if (m_genericChannel != NULL)
 		delete m_genericChannel;
 }
@@ -115,10 +110,6 @@ t_fixture_id Fixture::id() const
 void Fixture::setName(QString name)
 {
 	m_name = name;
-
-	if (m_console != NULL)
-		m_console->parentWidget()->setWindowTitle(m_name + " Console");
-
 	emit changed(m_id);
 }
 
@@ -273,10 +264,6 @@ void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
 	m_fixtureDef = fixtureDef;
 	m_fixtureMode = fixtureMode;
 
-	if (m_console != NULL)
-		delete m_console;
-	m_console = NULL;
-
 	/* In case the old def was a dimmer and the new one is not, delete
 	   the generic channel as possibly useless. It is created automatically
 	   if it is again needed. */
@@ -354,10 +341,6 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 		else if (tag.tagName() == KXMLFixtureChannels)
 		{
 			channels = tag.text().toInt();
-		}
-		else if (tag.tagName() == KXMLQLCFixtureConsole)
-		{
-			consoletag = tag;
 		}
 		else
 		{
@@ -440,15 +423,6 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	{
 		delete fxi;
 		fxi = NULL;
-	}
-	else
-	{
-		/* Load the fixture's console settings */
-		if (consoletag.tagName() == KXMLQLCFixtureConsole)
-		{
-			fxi->viewConsole();
-			fxi->m_console->loadXML(doc, &tag);
-		}
 	}
 
 	return fxi;
@@ -533,9 +507,6 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	str.setNum(channels());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
-
-	if (m_console != NULL)
-		m_console->saveXML(doc, &root);
 
 	return true;
 }
@@ -726,46 +697,4 @@ QString Fixture::status()
 	info += QString("</HTML>");
 
 	return info;
-}
-
-/*****************************************************************************
- * Console
- *****************************************************************************/
-
-/* TODO: WTF is this actually doing in a model-class that has no UI??? */
-void Fixture::viewConsole()
-{
-	if (m_console == NULL)
-	{
-		QMdiSubWindow* sub;
-
-		sub = new QMdiSubWindow(_app->centralWidget());
-		m_console = new FixtureConsole(_app);
-		m_console->setChannelsCheckable(false);
-		m_console->setFixture(m_id);
-		m_console->enableExternalInput(true);
-		
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_console);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowIcon(QIcon(":/console.png"));
-		sub->setWindowTitle(m_name + " console");
-
-		qobject_cast <QMdiArea*>
-			(_app->centralWidget())->addSubWindow(sub);
-
-		m_console->show();
-		sub->show();
-
-		connect(m_console, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotConsoleDestroyed(QObject*)));
-	}
-}
-
-void Fixture::slotConsoleDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_console = NULL;
 }

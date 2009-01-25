@@ -111,13 +111,6 @@ protected slots:
 
 protected:
 	bool m_externalInputEnabled;
-
-	/*********************************************************************
-	 * Save / Load
-	 *********************************************************************/
-public:
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* fxi_root);
 };
 
 #endif

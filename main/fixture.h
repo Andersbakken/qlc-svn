@@ -338,24 +338,6 @@ public:
 	QString status();
 
 	/*********************************************************************
-	 * Console
-	 *********************************************************************/
-public:
-	/** View the fixture's console */
-	void viewConsole();
-
-public slots:
-	/**
-	 * Callback for console close signals. This has to be public because
-	 * this is used from fixture manager
-	 */
-	void slotConsoleDestroyed(QObject* object);
-
-protected:
-	/** The fixture's console */
-	FixtureConsole* m_console;
-
-	/*********************************************************************
 	 * Signals
 	 *********************************************************************/
 signals:

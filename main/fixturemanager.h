@@ -29,8 +29,10 @@
 #include "app.h"
 
 class QTreeWidgetItem;
+class FixtureConsole;
 class QTextBrowser;
 class QTreeWidget;
+class QTabWidget;
 class QSplitter;
 class QAction;
 
@@ -93,7 +95,10 @@ protected slots:
 protected:
 	QSplitter* m_splitter;
 	QTreeWidget* m_tree;
+
+	QTabWidget* m_tab;
 	QTextBrowser* m_info;
+	FixtureConsole* m_console;
 
 	/********************************************************************
 	 * Menu & Toolbar & Actions
@@ -109,7 +114,6 @@ protected slots:
 	void slotAdd();
 	void slotRemove();
 	void slotProperties();
-	void slotConsole();
 	void slotAutoFunction();
 
 	/** Callback for right mouse button clicks over a fixture item */

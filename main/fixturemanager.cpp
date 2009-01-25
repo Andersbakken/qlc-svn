@@ -25,6 +25,7 @@
 #include <QTreeWidget>
 #include <QMessageBox>
 #include <QByteArray>
+#include <QTabWidget>
 #include <QSplitter>
 #include <QToolBar>
 #include <QAction>
@@ -42,7 +43,7 @@
 #include "common/qlcfile.h"
 
 #include "fixtureproperties.h"
-#include "consolechannel.h"
+#include "fixtureconsole.h"
 #include "fixturemanager.h"
 #include "addfixture.h"
 #include "collection.h"
@@ -61,6 +62,10 @@ extern App* _app;
 #define KColumnName     2
 #define KColumnID       3
 
+// Tab widget tabs
+#define KTabInformation 0
+#define KTabConsole     1
+
 // Default window size
 #define KDefaultWidth  600
 #define KDefaultHeight 300
@@ -72,6 +77,8 @@ extern App* _app;
 FixtureManager::FixtureManager(QWidget* parent) : QWidget(parent)
 {
 	new QVBoxLayout(this);
+
+	m_console = NULL;
 
 	initActions();
 	initToolBar();
@@ -183,7 +190,7 @@ void FixtureManager::initDataView()
 	m_splitter->setSizePolicy(QSizePolicy::Expanding,
 				  QSizePolicy::Expanding);
 
-	// Create the list view
+	/* Create a tree widget to the left part of the splitter */
 	m_tree = new QTreeWidget(this);
 	m_splitter->addWidget(m_tree);
 
@@ -205,9 +212,13 @@ void FixtureManager::initDataView()
 	connect(m_tree, SIGNAL(customContextMenuRequested(const QPoint&)),
 		this, SLOT(slotContextMenuRequested(const QPoint&)));
 
-	// Create the text view
+	/* Create a tab widget to the right part of the splitter */
+	m_tab = new QTabWidget(this);
+	m_splitter->addWidget(m_tab);
+
+	/* Create the text view */
 	m_info = new QTextBrowser(this);
-	m_splitter->addWidget(m_info);
+	m_tab->addTab(m_info, tr("Information"));
 
 	m_splitter->setStretchFactor(0, 1);
 	m_splitter->setStretchFactor(1, 0);
@@ -287,7 +298,6 @@ void FixtureManager::slotSelectionChanged()
 		// Disable all other actions
 		m_removeAction->setEnabled(false);
 		m_propertiesAction->setEnabled(false);
-		m_consoleAction->setEnabled(false);
 
 		QString info;
 		info = QString("<HTML><BODY>");
@@ -296,22 +306,36 @@ void FixtureManager::slotSelectionChanged()
 		info += QString(" from the toolbar to start adding fixtures.");
 		info += QString("</BODY></HTML>");
 		m_info->setText(info);
+
+		delete m_console;
+		m_console = NULL;
+		m_tab->removeTab(KTabConsole);
 	}
 	else
 	{
-		Fixture* fxi;
 		t_fixture_id id;
+		Fixture* fxi;
+		int page;
 
 		// Set the text view's contents
 		id = item->text(KColumnID).toInt();
 		fxi = _app->doc()->fixture(id);
 		Q_ASSERT(fxi != NULL);
-
 		m_info->setText(fxi->status());
 
-		/* Console is always available as long as there is a fixture */
-		m_consoleAction->setEnabled(true);
+		/* Mark the current tab widget page */
+		page = m_tab->currentIndex();
 
+		/* Create a new console for the selected fixture */
+		delete m_console;
+		m_console = new FixtureConsole(this);
+		m_console->setFixture(id);
+		m_console->setChannelsCheckable(false);
+		m_tab->addTab(m_console, tr("Console"));
+
+		/* Recall the same tab widget page */
+		m_tab->setCurrentIndex(page);
+		
 		// Enable/disable actions
 		if (_app->mode() == App::Design)
 		{
@@ -354,11 +378,6 @@ void FixtureManager::initActions()
 					 tr("Configure fixture..."), this);
 	connect(m_propertiesAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotProperties()));
-
-	m_consoleAction = new QAction(QIcon(":/console.png"),
-				      tr("Fixture console"), this);
-	connect(m_consoleAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotConsole()));
 }
 
 void FixtureManager::initToolBar()
@@ -371,7 +390,6 @@ void FixtureManager::initToolBar()
 	toolbar->addAction(m_removeAction);
 	toolbar->addSeparator();
 	toolbar->addAction(m_propertiesAction);
-	toolbar->addAction(m_consoleAction);
 }
 
 void FixtureManager::slotAdd()
@@ -507,19 +525,6 @@ void FixtureManager::slotProperties()
 	}
 }
 
-void FixtureManager::slotConsole()
-{
-	QTreeWidgetItem* item = m_tree->currentItem();
-	if (item != NULL)
-	{
-		t_fixture_id id = item->text(KColumnID).toInt();
-		Fixture* fxi = _app->doc()->fixture(id);
-		Q_ASSERT(fxi != NULL);
-
-		fxi->viewConsole();
-	}
-}
-
 void FixtureManager::slotAutoFunction()
 {
 #if 0
@@ -564,8 +569,6 @@ void FixtureManager::slotAutoFunction()
 				Scene::Set);
 		}
 	}
-
-	fxi->viewConsole();
 #endif
 }
 
@@ -573,9 +576,7 @@ void FixtureManager::slotContextMenuRequested(const QPoint&)
 {
 	QMenu menu(this);
 	menu.addAction(m_addAction);
-	menu.addSeparator();
 	menu.addAction(m_propertiesAction);
-	menu.addAction(m_consoleAction);
 	menu.addSeparator();
 	menu.addAction(m_removeAction);
 	menu.exec(QCursor::pos());
