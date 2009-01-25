@@ -125,17 +125,16 @@
  * Initialization
  ****************************************************************************/
 
-USBDMXDevice::USBDMXDevice(QObject* parent, const QString &path,
-			   t_output output) : QObject(parent)
+USBDMXDevice::USBDMXDevice(QObject* parent, const QString& path)
+	: QObject(parent)
 {
 	Q_ASSERT(path.isEmpty() == false);
 	Q_ASSERT(output != KOutputInvalid);
 
 	m_path = path;
-	m_output = output;
-
 	m_file.setFileName(m_path);
-	m_name = extractName();
+
+	extractName();
 }
 
 USBDMXDevice::~USBDMXDevice()
@@ -143,13 +142,20 @@ USBDMXDevice::~USBDMXDevice()
 	close();
 }
 
-QString USBDMXDevice::extractName()
+void USBDMXDevice::extractName()
 {
-	QString name;
+	bool needToClose = false;
 
-	if (open() == false)
+	if (m_file.isOpen() == false)
 	{
-		name = QString("%1: Nothing").arg(m_output + 1);
+		needToClose = true;
+		open();
+	}
+
+	if (m_file.isOpen() == false)
+	{
+		needToClose = false;
+		m_name = QString("Nothing");
 	}
 	else
 	{
@@ -157,26 +163,25 @@ QString USBDMXDevice::extractName()
 		switch (type)
 		{
 		case XSWITCH:
-			name = QString("%1: X-Switch").arg(m_output + 1);
+			m_name = QString("X-Switch");
 			break;
 		case RODIN1:
-			name = QString("%1: Rodin 1").arg(m_output + 1);
+			m_name = QString("Rodin 1");
 			break;
 		case RODIN2:
-			name = QString("%1: Rodin 2").arg(m_output + 1);
+			m_name = QString("Rodin 2");
 			break;
 		case USBDMX21:
-			name = QString("%1: USBDMX21").arg(m_output + 1);
+			m_name = QString("USBDMX21");
 			break;
 		default:
-			name = QString("%1: Unknown").arg(m_output + 1);
+			m_name = QString("Unknown");
 			break;
 		}
 	}
 
-	close();
-
-	return name;
+	if (needToClose == true)
+		close();
 }
 
 /****************************************************************************
@@ -193,16 +198,11 @@ QString USBDMXDevice::path() const
 	return m_path;
 }
 
-t_output USBDMXDevice::output() const
-{
-	return m_output;
-}
-
 /****************************************************************************
  * Open & close
  ****************************************************************************/
 
-bool USBDMXDevice::open()
+void USBDMXDevice::open()
 {
 	m_file.unsetError();
 	if (m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered) == true)
@@ -212,42 +212,33 @@ bool USBDMXDevice::open()
 
 		/* Set DMX startcode */
 		::ioctl(m_file.handle(), DMX_TX_STARTCODE_SET, 0);
-
-		return true;
 	}
 	else
 	{
-		qWarning() << QString("Unable to open USBDMX %1: %2")
-			.arg(m_output).arg(m_file.errorString());
-		return false;
+		qWarning() << QString("Unable to open %1: %2").arg(m_name)
+				.arg(m_file.errorString());
 	}
 }
 
-bool USBDMXDevice::close()
+void USBDMXDevice::close()
 {
 	m_file.unsetError();
 	m_file.close();
+
 	if (m_file.error() != QFile::NoError)
-	{
-		qWarning() << QString("Unable to close USBDMX %1: %2")
-			.arg(m_output).arg(m_file.errorString());
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+		qWarning() << QString("Unable to close %1: %2").arg(m_name)
+				.arg(m_file.errorString());
 }
 
 /****************************************************************************
  * Write
  ****************************************************************************/
 
-void USBDMXDevice::writeRange(t_channel address, t_value* values, t_channel num)
+void USBDMXDevice::writeRange(t_value* values, t_channel num)
 {
-	Q_ASSERT(address + num <= 512);
+	Q_UNUSED(num);
 
-	m_file.seek(address);
-	if (m_file.write((const char*) values, num) == -1)
+	m_file.seek(0);
+	if (m_file.write((const char*) values, 512) == -1)
 		qWarning() << "writeRange error:" << m_file.errorString();
 }

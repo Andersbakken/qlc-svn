@@ -80,7 +80,10 @@ void ConfigureUSBDMXOut::refreshList()
 	while (it.hasNext() == true)
 	{
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnName, it.next()->name());
-		item->setText(KColumnOutput, QString("%1").arg(i++));
+		item->setText(KColumnName, QString("%1: %2").arg(i + 1)
+						.arg(it.next()->name()));
+		item->setText(KColumnOutput, QString("%1").arg(i));
+
+		i++;
 	}
 }

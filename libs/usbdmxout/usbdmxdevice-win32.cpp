@@ -76,23 +76,23 @@ void USBDMXDevice::extractName()
 	if (m_handle == NULL)
 	{
 		/* Opening the device failed */
-		m_name = QString("%1: Cannot open device").arg(m_output + 1);
+		m_name = QString("Nothing");
 	}
 	else
 	{
 		/* Check the device type and name it accordingly */
 		if (m_usbdmx->is_xswitch(m_handle) == TRUE)
-			m_name = QString("%1: X-Switch").arg(m_output + 1);
+			m_name = QString("X-Switch");
 		else if (m_usbdmx->is_rodin1(m_handle) == TRUE)
-			m_name = QString("%1: Rodin 1").arg(m_output + 1);
+			m_name = QString("Rodin 1");
 		else if (m_usbdmx->is_rodin2(m_handle) == TRUE)
-			m_name = QString("%1: Rodin 2").arg(m_output + 1);
+			m_name = QString("Rodin 2");
 		else if (m_usbdmx->is_rodint(m_handle) == TRUE)
-			m_name = QString("%1: Rodin T").arg(m_output + 1);
+			m_name = QString("Rodin T");
 		else if (m_usbdmx->is_usbdmx21(m_handle) == TRUE)
-			m_name = QString("%1: USBDMX21").arg(m_output + 1);
+			m_name = QString("USBDMX21");
 		else
-			m_name = QString("%1: Unknown").arg(m_output + 1);
+			m_name = QString("Unknown");
 	}
 
 	/* Close the device if it was opened only for name extraction */

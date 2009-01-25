@@ -37,11 +37,11 @@ class USBDMXDevice : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	USBDMXDevice(QObject* parent, const QString &path, t_output output);
+	USBDMXDevice(QObject* parent, const QString& path);
 	virtual ~USBDMXDevice();
 
 protected:
-	QString extractName();
+	void extractName();
 
 	/********************************************************************
 	 * Properties
@@ -49,19 +49,17 @@ protected:
 public:
 	QString name() const;
 	QString path() const;
-	t_output output() const;
 
 protected:
 	QString m_name;
 	QString m_path;
-	t_output m_output;
 
 	/********************************************************************
 	 * Open & close
 	 ********************************************************************/
 public:
-	bool open();
-	bool close();
+	void open();
+	void close();
 
 protected:
 	QFile m_file;
@@ -70,7 +68,7 @@ protected:
 	 * Write
 	 ********************************************************************/
 public:
-	void writeRange(t_channel channel, t_value* values, t_channel num);
+	void writeRange(t_value* values, t_channel num);
 };
 
 #endif

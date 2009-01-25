@@ -26,8 +26,7 @@
 
 #include <QStringList>
 #include <QtPlugin>
-#include <QMutex>
-#include <QMap>
+#include <QList>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
@@ -64,7 +63,7 @@ public:
 	QStringList outputs();
 
 protected:
-	QMap <t_output, USBDMXDevice*> m_devices;
+	QList <USBDMXDevice*> m_devices;
 
 	/*********************************************************************
 	 * Name

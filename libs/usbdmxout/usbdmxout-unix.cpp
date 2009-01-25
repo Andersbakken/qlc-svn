@@ -21,11 +21,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QStringList>
-#include <QPalette>
 #include <QString>
-#include <QColor>
 #include <QDebug>
 #include <QList>
 #include <QDir>
@@ -45,14 +42,14 @@ void USBDMXOut::init()
 
 void USBDMXOut::open(t_output output)
 {
-	if (m_devices.contains(output) == true)
-		m_devices[output]->open();
+	if (output < m_devices.count())
+		m_devices.at(output)->open();
 }
 
 void USBDMXOut::close(t_output output)
 {
-	if (m_devices.contains(output) == true)
-		m_devices[output]->close();
+	if (output < m_devices.count())
+		m_devices.at(output)->close();
 }
 
 /*****************************************************************************
@@ -68,32 +65,47 @@ void USBDMXOut::rescanDevices()
 
 	output = 0;
 
+	QList <USBDMXDevice*> destroyList(m_devices);
+
 	nameFilters << "usbdmx*";
 	QStringListIterator it(dir.entryList(nameFilters,
 					     QDir::Files | QDir::System));
 	while (it.hasNext() == true)
 	{
+		USBDMXDevice* dev;
+
 		path = dir.absolutePath() + QDir::separator() + it.next();
 
-		if (device(path) == NULL)
+		dev = device(path);
+		if (dev != NULL)
 		{
-			USBDMXDevice* device;
-			device = new USBDMXDevice(this, path, output);
-			Q_ASSERT(device != NULL);
-			m_devices.insert(output, device);
+			/* This device still exists. Don't destroy it. */
+			destroyList.removeAll(dev);
 		}
+		else
+		{
+			dev = new USBDMXDevice(this, path);
+			m_devices.append(dev);
+		}
+	}
+
+	/* Destroy all devices that weren't found in the rescan */
+	while (destroyList.isEmpty() == false)
+	{
+		USBDMXDevice* dev = destroyList.takeFirst();
+		m_devices.removeAll(dev);
+		delete dev;
 	}
 }
 
 USBDMXDevice* USBDMXOut::device(const QString& path)
 {
-	QMapIterator <t_output, USBDMXDevice*> it(m_devices);
+	QListIterator <USBDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
 	{
-		it.next();
-		Q_ASSERT(it.value() != NULL);
-		if (it.value()->path() == path)
-			return it.value();
+		USBDMXDevice* dev = it.next();
+		if (dev->path() == path)
+			return dev;
 	}
 
 	return NULL;
@@ -102,15 +114,11 @@ USBDMXDevice* USBDMXOut::device(const QString& path)
 QStringList USBDMXOut::outputs()
 {
 	QStringList list;
+	int i = 1;
 
-	QMapIterator <t_output, USBDMXDevice*> it(m_devices);
+	QListIterator <USBDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
-	{
-		it.next();
-		Q_ASSERT(it.value() != NULL);
-		list << it.value()->name();
-	}
-
+		list << QString("%1: %2").arg(i++).arg(it.next()->name());
 	return list;
 }
 
@@ -159,7 +167,7 @@ QString USBDMXOut::infoText(t_output output)
 		str += QString("more information. ");
 		str += QString("</P>");
 	}
-	else if (m_devices.contains(output) == true)
+	else if (output < m_devices.count())
 	{
 		str += QString("<H3>%1</H3>").arg(outputs()[output]);
 		str += QString("<P>");
@@ -187,8 +195,10 @@ void USBDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
 void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 			   t_channel num)
 {
-	if (m_devices.contains(output) == true)
-		m_devices[output]->writeRange(address, values, num);
+	Q_UNUSED(address);
+
+	if (output < m_devices.count())
+		m_devices.at(output)->writeRange(values, num);
 }
 
 void USBDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
