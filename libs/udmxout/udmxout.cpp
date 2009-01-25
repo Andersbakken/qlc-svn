@@ -135,10 +135,11 @@ UDMXDevice* UDMXOut::device(struct usb_device* usbdev)
 QStringList UDMXOut::outputs()
 {
 	QStringList list;
+	int i = 1;
 
 	QListIterator <UDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
-		list << it.next()->name();
+		list << QString("%1: %2").arg(i++).arg(it.next()->name());
 	return list;
 }
 
@@ -181,8 +182,8 @@ QString UDMXOut::infoText(t_output output)
 		str += QString("<P>");
 		str += QString("This plugin provides DMX output support for ");
 		str += QString("uDMX devices. See ");
-		str += QString("<I>www.anyma.ch/research/udmx</I> for more ");
-		str += QString("information.");
+		str += QString("<a href=\"http://www.anyma.ch/research/udmx\">");
+		str += QString("http://www.anyma.ch</a> for more information.");
 		str += QString("</P>");
 	}
 	else if (output < m_devices.count())
@@ -212,7 +213,7 @@ void UDMXOut::writeRange(t_output output, t_channel address, t_value* values,
 {
 	Q_UNUSED(address);
 
-	if (m_devices.count() < output)
+	if (output < m_devices.count())
 		m_devices.at(output)->writeRange(values, num);
 }
 
