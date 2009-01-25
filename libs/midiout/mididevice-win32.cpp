@@ -202,33 +202,30 @@ void MIDIDevice::extractName()
 	MMRESULT res;
 	MIDIOUTCAPS caps;
 
-	m_name = QString("MIDI Output %1").arg(m_id + 1);
-
 	res = midiOutGetDevCaps(m_id, &caps, sizeof(MIDIOUTCAPS));	
 	if (res == MMSYSERR_BADDEVICEID)
 	{
-		m_name += QString(": Bad device ID");
+		m_name = QString("Bad device ID");
 		qDebug() << "MIDI OUT" << m_id + 1 << "has bad device ID";
 	}
 	else if (res == MMSYSERR_INVALPARAM)
 	{
-		m_name += QString(": Invalid parameters");
+		m_name = QString("Invalid parameters");
 		qDebug() << "Invalid params for MIDI OUT device" << m_id + 1;
 	}
 	else if (res == MMSYSERR_NODRIVER)
 	{
-		m_name += QString(": No driver installed");
+		m_name = QString("No driver installed");
 		qDebug() << "MIDI OUT device" << m_id + 1 << "has no driver";
 	}
 	else if (res == MMSYSERR_NOMEM)
 	{
-		m_name += QString(": Out of memory");
+		m_name = QString("Out of memory");
 		qDebug() << "Out of memory while opening MIDI OUT" << m_id + 1;
 	}
 	else
 	{
-		QString str = QString::fromWCharArray(caps.szPname);
-		m_name += QString(": %2").arg(str);
+		m_name = QString::fromWCharArray(caps.szPname);
 	}
 }
 
