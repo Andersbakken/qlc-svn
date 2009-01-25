@@ -105,7 +105,7 @@ QString DummyOutPlugin::infoText(t_output output)
 	if (output == KOutputInvalid)
 		str += QString("<H3>%1</H3>").arg(name());
 	else
-		str += QString("<H3>%1</H3>").arg(outputs()[output]);
+		str += QString("<H3>%1 %2</H3>").arg(name()).arg(output + 1);
 	str += QString("<P>");
 	str += QString("This plugin does absolutely nothing; ");
 	str += QString("you can use it if you don't have ");

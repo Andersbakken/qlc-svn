@@ -51,6 +51,9 @@
         <property name="toolTip" >
          <string>Information related to the currently selected plugin or output</string>
         </property>
+        <property name="openLinks" >
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="0" column="1" >
