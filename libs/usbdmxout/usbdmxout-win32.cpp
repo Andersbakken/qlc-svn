@@ -134,9 +134,11 @@ void USBDMXOut::close(t_output output)
 QStringList USBDMXOut::outputs()
 {
 	QStringList list;
+	int i = 1;
+
 	QListIterator <USBDMXDevice*> it(m_devices);
 	while (it.hasNext() == true)
-		list << it.next()->name();
+		list << QString("%1: %2").arg(i++).arg(it.next()->name());
 
 	return list;
 }
@@ -193,16 +195,14 @@ QString USBDMXOut::infoText(t_output output)
 		str += QString("devices manufactured by Peperoni Light: ");
 		str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
 		str += QString("USBDMX21. See ");
-		str += QString("<address>www.peperoni-light.de</address> for ");
-		str += QString("more information. ");
+		str += QString("<a href=\"http://www.peperoni-light.de\">");
+		str += QString("http://www.peperoni-light.de</a> for more ");
+		str += QString("information. ");
 		str += QString("</P>");
 	}
 	else if (output < m_devices.count())
 	{
-		str += QString("<H3>%1</H3>").arg(outputs()[output]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		str += m_devices.at(output)->infoText();
 	}
 
 	str += QString("</BODY>");

@@ -37,6 +37,7 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	m_handle = NULL;
 	m_output = output;
 	m_usbdmx = usbdmx;
+	m_deviceOK = false;
 
 	extractName();
 }
@@ -60,6 +61,27 @@ int USBDMXDevice::output() const
 	return m_output;
 }
 
+QString USBDMXDevice::infoText() const
+{
+	QString str;
+
+	str += QString("<H3>%1</H3>").arg(m_name);
+	str += QString("<P>");
+	if (m_deviceOK == true)
+	{
+		str += QString("Device is working correctly.");
+	}
+	else
+	{
+		str += QString("Device is NOT working correctly. ");
+		str += QString("Please open the configuration dialog and ");
+		str += QString("click the <B>Refresh</B> button.");
+	}
+	str += QString("</P>");
+	
+	return str;
+}
+
 void USBDMXDevice::extractName()
 {
 	bool needToClose = false;
@@ -77,6 +99,7 @@ void USBDMXDevice::extractName()
 	{
 		/* Opening the device failed */
 		m_name = QString("Nothing");
+		m_deviceOK = false;
 	}
 	else
 	{
@@ -93,6 +116,8 @@ void USBDMXDevice::extractName()
 			m_name = QString("USBDMX21");
 		else
 			m_name = QString("Unknown");
+
+		m_deviceOK = true;
 	}
 
 	/* Close the device if it was opened only for name extraction */
