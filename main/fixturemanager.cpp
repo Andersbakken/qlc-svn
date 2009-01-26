@@ -84,10 +84,14 @@ FixtureManager::FixtureManager(QWidget* parent) : QWidget(parent)
 	initToolBar();
 	initDataView();
 	updateView();
-	
+
 	/* To disable some actions when switching to operate mode */
 	connect(_app, SIGNAL(modeChanged(App::Mode)),
 		this, SLOT(slotModeChanged(App::Mode)));
+
+	/* Listen to document changes */
+	connect(_app, SIGNAL(documentChanged(Doc*)),
+		this, SLOT(slotDocumentChanged(Doc*)));
 
 	/* Listen to fixture additions/removals */
 	slotDocumentChanged(_app->doc());
