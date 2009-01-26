@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QMutex>
 #include <QList>
 #include <QHash>
 
@@ -150,6 +151,9 @@ protected:
 
 	/** ID of the DMX timer */
 	int m_timerId;
+
+	/** Mutex that guards m_monitorValues */
+	QMutex m_mutex;
 
 	/*********************************************************************
 	 * Patch

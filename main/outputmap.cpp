@@ -191,7 +191,7 @@ t_value OutputMap::getValue(t_channel channel)
 	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 
-	/* Isolate just the channel number from the lowest 9 bits (0-511) */
+	/* Reading from universes should be OK without a mutex */
 	value = outputPatch->value(channel & 0x1FF);
 
 	return value;
@@ -214,14 +214,21 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 
+	/* Perform universe & monitorValue writing inside a mutex to
+	   prevent QHash crashes. */
+	m_mutex.lock();
 	outputPatch->setValue(channel & 0x1FF, value);
 	m_monitorValues[channel] = value;
+	m_mutex.unlock();
 }
 
 void OutputMap::timerEvent(QTimerEvent* event)
 {
 	Q_UNUSED(event);
 
+	/* Perform universe & monitorValue dumping inside a mutex to
+	   prevent QHash crashes. */
+	m_mutex.lock();
 	if (m_monitorValues.count() > 0)
 	{
 		for (int i = 0; i < m_universes; i++)
@@ -230,6 +237,7 @@ void OutputMap::timerEvent(QTimerEvent* event)
 		emit changedValues(m_monitorValues);
 		m_monitorValues.clear();
 	}
+	m_mutex.unlock();
 }
 
 /*****************************************************************************
