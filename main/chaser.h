@@ -29,7 +29,6 @@ class Event;
 class QFile;
 class QString;
 class QDomDocument;
-class QTimer;
 
 class Chaser : public Function
 {
@@ -39,8 +38,8 @@ class Chaser : public Function
 	 * Initialization
 	 *********************************************************************/
 public:
-	/** Constructor -- without a parent because of... umm.. */
-	Chaser();
+	/** Constructor */
+	Chaser(QObject* parent);
 
 	/**
 	 * Copy the contents of the given chaser into this chaser.
@@ -50,13 +49,12 @@ public:
 	 *               new steps appear after existing steps. If false,
 	 *               the existing steps of this chaser are cleared.
 	 */
-	void copyFrom(const Chaser* ch, bool append = false);
+	void copyFrom(Chaser* ch, bool append = false);
 
 	/** Destructor */
 	virtual ~Chaser();
 
 private:
-	/* Disable copying with a copy constructor & operator= */
 	Q_DISABLE_COPY(Chaser)
 
 	/*********************************************************************
@@ -95,8 +93,8 @@ public:
 	 * Running
 	 *********************************************************************/
 protected slots:
-	/** Initiate a speed change (from a speed bus) */
-	void slotBusValueChanged(t_bus_id, t_bus_value);
+	/** Skip to next step when a tapped signal is received from bus */
+	void slotBusTapped(t_bus_id id);
 
 	/** Slot that receives child functions' stopped() signals and
 	    toggles next chaser step. */
@@ -122,50 +120,12 @@ protected:
 	/** Start a step function at the given index */
 	void startMemberAt(int index);
 
-	/*********************************************************************
-	 * Internal threading
-	 *********************************************************************/
-protected slots:
-	/** Stop this function */
-	void slotStop();
-
-	/** The hold timer has timed out */
-	void slotTimerTimeout();
-
-signals:
-	/** Stop this function */
-	void stopping();
-
-protected:
-	/** Move on to the next function or end the thread if we are done */
-	void advance();
-
-	/** Stop the timer so that it won't timeout until set again */
-	void unsetTimer();
-
-	/**
-	 * Set a time for the timer. time is the time from now.
-	 * This doesn't change any internal state except for the timer,
-	 * use startTimer if a timer isn't already running
-	 */
-	void setTimer(t_bus_value time);
-
-	/**
-	 * Start the timer. This sets all internal state as well as starting
-	 * the timer for the time specified
-	 */
-	void startTimer(t_bus_value time);
-
-	/** Updates the timer for a new value of m_holdTime.*/
-	void updateTimer();
+	/** Stop a step function at the given index */
+	void stopMemberAt(int index);
 
 protected:
 	bool m_childRunning;
-
-	t_bus_value m_holdTime;
-	t_bus_value m_holdStart;
-
-	QTimer* m_timer;
+	bool m_stopped;
 
 	Direction m_runTimeDirection;
 	int m_runTimePosition;

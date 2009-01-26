@@ -177,7 +177,10 @@ void VCDockSlider::slotSliderReleased()
 void VCDockSlider::slotTapButtonClicked()
 {
 	int t = m_time.elapsed();
+	m_sliderPressed = true;
 	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
+	Bus::tap(m_bus);
+	m_sliderPressed = false;
 	m_time.restart();
 }
 

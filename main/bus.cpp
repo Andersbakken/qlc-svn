@@ -106,6 +106,19 @@ QString Bus::name(t_bus_id id)
 		return QString::null;
 }
 
+bool Bus::tap(t_bus_id id)
+{
+	if (id >= KBusIDMin && id < KBusCount)
+	{
+		s_busEmitter->emitTapped(id);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool Bus::loadXML(QDomDocument*, QDomElement* root)
 {
 	QDomNode node;

@@ -669,6 +669,7 @@ void VCSlider::slotTapButtonClicked()
 	int t = m_time->elapsed();
 	slotSliderPressed();
 	setSliderValue(static_cast<int> (t * 0.001 * KFrequency));
+	Bus::tap(m_bus);
 	slotSliderReleased();
 	m_time->restart();
 }

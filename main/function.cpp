@@ -243,12 +243,8 @@ void Function::setBus(t_bus_id id)
 {
 	if (id < KBusIDMin || id >= KBusCount)
 	{
-		if (m_type == Scene)
+		if (m_type != Collection)
 			m_busID = KBusIDDefaultFade;
-		else if (m_type == Chaser)
-			m_busID = KBusIDDefaultHold;
-		else
-			m_busID = KNoID;
 	}
 	else
 	{

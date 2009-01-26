@@ -29,6 +29,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QTimer>
+#include <QIcon>
 
 #include "common/qlcfixturedef.h"
 
@@ -65,7 +66,7 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 	/* Create a copy of the original chaser so that we can freely modify
 	   it and keep a pointer to the original so that we can move the
 	   contents from the copied chaser to the original when OK is clicked */
-	m_chaser = new Chaser();
+	m_chaser = new Chaser(this);
 	m_chaser->copyFrom(chaser);
 	Q_ASSERT(m_chaser != NULL);
 	m_original = chaser;

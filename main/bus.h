@@ -79,6 +79,9 @@ public:
 	/** Remove a bus listener */
 	static bool removeListener(t_bus_id, Function*);
 
+	/** Emit a tapped signal */
+	static bool tap(t_bus_id);
+
 	/** Load all buses from an XML document */
 	static bool loadXML(QDomDocument* doc, QDomElement* root);
 
@@ -122,9 +125,13 @@ protected:
 	void emitNameChanged(t_bus_id id, QString name)
 		{ emit nameChanged(id, name); }
 
+	void emitTapped(t_bus_id id)
+		{ emit tapped(id); }
+
 signals:
 	void valueChanged(t_bus_id, t_bus_value);
 	void nameChanged(t_bus_id, const QString&);
+	void tapped(t_bus_id);
 };
 
 #endif
