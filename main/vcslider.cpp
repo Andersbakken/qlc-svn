@@ -338,8 +338,9 @@ void VCSlider::setSliderMode(SliderMode mode)
 	if (mode == Bus)
 	{
 		/* Set the slider range */
-		m_slider->setRange(busLowLimit() * KFrequency, 
+		m_slider->setRange(busLowLimit() * KFrequency,
 				   busHighLimit() * KFrequency);
+		setSliderValue(busHighLimit() * KFrequency);
 
 		/* Reconnect to bus emitter */
 		connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
@@ -356,6 +357,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 	{
 		/* Set the slider range */
 		m_slider->setRange(levelLowLimit(), levelHighLimit());
+		setSliderValue(levelHighLimit());
 
 		m_bottomLabel->show();
 		m_tapButton->hide();
