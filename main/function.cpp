@@ -80,6 +80,7 @@ void Function::setID(t_function_id id)
 	/* Don't set doc modified status or emit changed signal, because this
 	   function is called only once during function creation. */
 	m_id = id;
+	qDebug() << id;
 }
 
 /*****************************************************************************

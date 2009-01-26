@@ -512,7 +512,7 @@ void FunctionManager::slotFunctionTreeContextMenuRequested(const QPoint& point)
  * Helpers
  *****************************************************************************/
 
-Function* FunctionManager::copyFunction(t_function_id fid)
+void FunctionManager::copyFunction(t_function_id fid)
 {
 	Function* newFunction = NULL;
 	QString msg;
@@ -524,7 +524,7 @@ Function* FunctionManager::copyFunction(t_function_id fid)
 	{
 	case Function::Scene:
 	{
-		newFunction = _app->doc()->function(Function::Scene);
+		newFunction = _app->doc()->newFunction(Function::Scene);
 		Scene* scene = static_cast<Scene*> (newFunction);
 		scene->copyFrom(static_cast<Scene*> (function));
 		scene->setName("Copy of " + function->name());
@@ -570,8 +570,6 @@ Function* FunctionManager::copyFunction(t_function_id fid)
 		item = new QTreeWidgetItem(m_functionTree);
 		updateFunctionItem(item, newFunction);
 	}
-
-	return newFunction;
 }
 
 void FunctionManager::addFunction(Function::Type type)
