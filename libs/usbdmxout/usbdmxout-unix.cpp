@@ -163,8 +163,9 @@ QString USBDMXOut::infoText(t_output output)
 		str += QString("devices manufactured by Peperoni Light: ");
 		str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
 		str += QString("USBDMX21. See ");
-		str += QString("<address>www.peperoni-light.de</address> for ");
-		str += QString("more information. ");
+		str += QString("<a href=\"http://www.peperoni-light.de\">");
+		str += QString("http://www.peperoni-light.de</a> for more ");
+		str += QString("information. ");
 		str += QString("</P>");
 	}
 	else if (output < m_devices.count())

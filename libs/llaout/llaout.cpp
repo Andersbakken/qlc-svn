@@ -117,7 +117,9 @@ QString LLAOut::infoText(t_output output)
 		str += QString("<P>");
 		str += QString("This plugin provides DMX output support for ");
 		str += QString("the Linux Lighting Architecture (LLA). ");
-		str += QString("See www.nomis52.net for more information.");
+		str += QString("See <a href=\"http://www.nomis52.net\">");
+		str += QString("http://www.nomis52.net</a> for more ");
+		str += QString("information.");
 		str += QString("</P>");
 	}
 	else if (output == 0)
