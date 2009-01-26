@@ -31,6 +31,10 @@
 
 extern App* _app;
 
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
+
 t_bus_id Bus::s_nextID ( KBusIDMin );
 Bus* Bus::s_busArray ( NULL );
 BusEmitter* Bus::s_busEmitter ( NULL );
@@ -60,7 +64,20 @@ void Bus::init()
 	s_busEmitter = new BusEmitter();
 }
 
-bool Bus::setName(t_bus_id id, QString name)
+/****************************************************************************
+ * Name
+ ****************************************************************************/
+
+const QString& Bus::name(t_bus_id id)
+{
+	static const QString null;
+	if (id >= KBusIDMin && id < KBusCount)
+		return s_busArray[id].m_name;
+	else
+		return null;
+}
+
+bool Bus::setName(t_bus_id id, const QString& name)
 {
 	if (id >= KBusIDMin && id < KBusCount)
 	{
@@ -73,6 +90,18 @@ bool Bus::setName(t_bus_id id, QString name)
 	{
 		return false;
 	}
+}
+
+/****************************************************************************
+ * Value
+ ****************************************************************************/
+
+t_bus_value Bus::value(t_bus_id id)
+{
+	if (id >= KBusIDMin && id < KBusCount)
+		return s_busArray[id].m_value;
+	else
+		return 0;
 }
 
 bool Bus::setValue(t_bus_id id, t_bus_value value)
@@ -90,21 +119,9 @@ bool Bus::setValue(t_bus_id id, t_bus_value value)
 	}
 }
 
-t_bus_value Bus::value(t_bus_id id)
-{
-	if (id >= KBusIDMin && id < KBusCount)
-		return s_busArray[id].m_value;
-	else
-		return 0;
-}
-
-QString Bus::name(t_bus_id id)
-{
-	if (id >= KBusIDMin && id < KBusCount)
-		return s_busArray[id].m_name;
-	else
-		return QString::null;
-}
+/****************************************************************************
+ * Tap
+ ****************************************************************************/
 
 bool Bus::tap(t_bus_id id)
 {
@@ -118,6 +135,10 @@ bool Bus::tap(t_bus_id id)
 		return false;
 	}
 }
+
+/****************************************************************************
+ * Load & Save
+ ****************************************************************************/
 
 bool Bus::loadXML(QDomDocument*, QDomElement* root)
 {

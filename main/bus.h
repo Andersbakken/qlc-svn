@@ -47,12 +47,18 @@ class Function;
 
 class Bus
 {
+	/********************************************************************
+	 * Initialization
+	 ********************************************************************/
 protected:
 	/** Constructor */
 	Bus();
 
 	/** Destructor */
 	~Bus();
+
+protected:
+	t_bus_id m_id;
 
 public:
 	/** Initialize buses */
@@ -61,39 +67,48 @@ public:
 	/** Get the BusEmitter singleton */
 	static const BusEmitter* emitter() { return s_busEmitter; }
 
+	/********************************************************************
+	 * Value
+	 ********************************************************************/
+public:
 	/** Get the value of a bus */
-	static t_bus_value value(t_bus_id);
+	static t_bus_value value(t_bus_id id);
 
 	/** Set the value of a bus (emits the value as well) */
-	static bool setValue(t_bus_id, t_bus_value);
+	static bool setValue(t_bus_id id, t_bus_value value);
 
+protected:
+	t_bus_value m_value;
+
+	/********************************************************************
+	 * Name
+	 ********************************************************************/
+public:
 	/** Get the name of a bus */
-	static QString name(t_bus_id);
+	static const QString& name(t_bus_id id);
 
 	/** Set the name of a bus */
-	static bool setName(t_bus_id, QString);
+	static bool setName(t_bus_id id, const QString& name);
 
-	/** Add a new listener for bus value changes */
-	static bool addListener(t_bus_id, Function*);
+protected:
+	QString m_name;
 
-	/** Remove a bus listener */
-	static bool removeListener(t_bus_id, Function*);
-
+	/********************************************************************
+	 * Tap
+	 ********************************************************************/
+public:
 	/** Emit a tapped signal */
-	static bool tap(t_bus_id);
+	static bool tap(t_bus_id id);
 
+	/********************************************************************
+	 * Load & Save
+	 ********************************************************************/
+public:
 	/** Load all buses from an XML document */
 	static bool loadXML(QDomDocument* doc, QDomElement* root);
 
 	/** Save all buses to an XML document */
 	static bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
-
-protected:
-	t_bus_id m_id;
-	t_bus_value m_value;
-	QString m_name;
-
-	QList <Function*> m_listeners;
 
 protected:
 	static Bus* s_busArray;
@@ -122,16 +137,16 @@ protected:
 	void emitValueChanged(t_bus_id id, t_bus_value value)
 		{ emit valueChanged(id, value); }
 
-	void emitNameChanged(t_bus_id id, QString name)
+	void emitNameChanged(t_bus_id id, const QString& name)
 		{ emit nameChanged(id, name); }
 
 	void emitTapped(t_bus_id id)
 		{ emit tapped(id); }
 
 signals:
-	void valueChanged(t_bus_id, t_bus_value);
-	void nameChanged(t_bus_id, const QString&);
-	void tapped(t_bus_id);
+	void valueChanged(t_bus_id id, t_bus_value value);
+	void nameChanged(t_bus_id id, const QString& name);
+	void tapped(t_bus_id id);
 };
 
 #endif
