@@ -25,9 +25,12 @@
 #include <QLocale>
 #include <QString>
 #include <QDebug>
+#include <QHash>
 
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "common/qlctypes.h"
 
 #include "app.h"
 #include "doc.h"
@@ -128,13 +131,11 @@ int main(int argc, char** argv)
 	smTran.load("qlc_" + QLocale::system().name());
 	qapp.installTranslator(&smTran);
 
-	/* Registering needed for Function::running(t_function_id) and
-	   Function::stopped(t_function_id) meta-signals */
+	/* Registering needed to pass signals with these types to between
+	   different contexts (threads) */
 	qRegisterMetaType <t_function_id>("t_function_id");
-
-	/* Registering needed for various chaser signals */
-	qRegisterMetaType <t_bus_id>("t_bus_id");
-	qRegisterMetaType <t_bus_value>("t_bus_value");
+	qRegisterMetaType < QHash<t_channel,t_value> >(
+						"QHash<t_channel,t_value>");
 
 	_app = new App();
 	_app->show();

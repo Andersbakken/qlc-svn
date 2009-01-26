@@ -87,6 +87,8 @@ bool FunctionConsumer::setTimerType(TimerType type)
 {
 	bool result = false;
 
+	stop();
+
 	switch (type)
 	{
 #ifndef __APPLE__
@@ -110,6 +112,8 @@ bool FunctionConsumer::setTimerType(TimerType type)
 		break;
 	}
 
+	start();
+
 	return result;
 }
 
@@ -122,13 +126,13 @@ bool FunctionConsumer::openRTC()
 {
 	int retval = -1;
 	unsigned long tmp = 0;
-	
+
 	m_fdRTC = open("/dev/rtc", O_RDONLY);
 	if (m_fdRTC == -1)
 	{
 		/* open failed */
 		qWarning("Unable to open /dev/rtc: %s", strerror(errno));
-		
+
 		/* but we try an alternate location of the device */
 		m_fdRTC = open("/dev/misc/rtc", O_RDONLY);
 		if (m_fdRTC == -1)
@@ -140,7 +144,7 @@ bool FunctionConsumer::openRTC()
 			return false;
 		}
 	}
-	
+
 	/* Attempt to set RTC frequency to KFrequency (64Hz) */
 	retval = ioctl(m_fdRTC, RTC_IRQP_SET, KFrequency);
 	if (retval == -1)
@@ -272,7 +276,7 @@ void FunctionConsumer::runRTC()
 			event();
 		}
 	}
-	
+
 	stopRTC();
 	closeRTC();
 }
@@ -334,7 +338,7 @@ void FunctionConsumer::runNanoSleepTimer()
 		/* Increment the finish time for this loop */
 		finish->tv_sec += (finish->tv_usec + tickTime) / 1000000;
 		finish->tv_usec = (finish->tv_usec + tickTime) % 1000000;
-		
+
 		tod = gettimeofday(current, NULL);
 		if (tod == -1)
 		{
@@ -343,7 +347,7 @@ void FunctionConsumer::runNanoSleepTimer()
 			m_running = false;
 			break;
 		}
-		
+
 		/* Do a rough sleep using the kernel to return control.
 		   We know that this will never be seconds as we are dealing
 		   with jumps of under a second every time. */
@@ -412,7 +416,7 @@ int FunctionConsumer::runningFunctions()
 void FunctionConsumer::cue(Function* function)
 {
 	Q_ASSERT(function != NULL);
-	
+
 	m_functionListMutex.lock();
 	m_functionList.append(function);
 	m_functionListMutex.unlock();
@@ -421,7 +425,7 @@ void FunctionConsumer::cue(Function* function)
 void FunctionConsumer::purge()
 {
 	QListIterator <Function*> it(m_functionList);
-	
+
 	/* Issue a stop command to all running functions */
 	m_functionListMutex.lock();
 	while (it.hasNext() == true)
@@ -431,16 +435,10 @@ void FunctionConsumer::purge()
 		m_functionListMutex.lock();
 	}
 	m_functionListMutex.unlock();
-	
+
 	/* Wait until all functions have been stopped */
 	while (runningFunctions() > 0)
-	{
-#ifdef X11
-		pthread_yield();
-#elif __APPLE__
-		pthread_yield_np();
-#endif
-	}
+		msleep(10);
 }
 
 t_bus_value FunctionConsumer::timeCode()
@@ -451,15 +449,13 @@ t_bus_value FunctionConsumer::timeCode()
 void FunctionConsumer::stop()
 {
 	m_running = false;
-	
+
+	/* Wait for function threads to finish */
 	while (runningFunctions() > 0)
-	{
-#ifdef X11
-		pthread_yield();
-#elif __APPLE__
-		pthread_yield_np();
-#endif
-	}
+		msleep(10);
+
+	/* Wait for this thread to finish */
+	wait();
 }
 
 
@@ -467,6 +463,8 @@ void FunctionConsumer::run()
 {
 	m_timeCode = 0;
 	m_running = true;
+
+	qDebug() << "start";
 
 	switch (m_timerType)
 	{
@@ -480,6 +478,8 @@ void FunctionConsumer::run()
 		runNanoSleepTimer();
 		break;
 	}
+
+	qDebug() << "stop";
 }
 
 /**
@@ -490,14 +490,14 @@ void FunctionConsumer::event()
 {
 	/* Lock before accessing the running functions list */
 	m_functionListMutex.lock();
-	
+
 	for (int i = 0; i < m_functionList.count(); i++)
 	{
 		m_function = m_functionList.at(i);
 
 		/* Unlock after accessing the running functions list */
 		m_functionListMutex.unlock(); 
-		
+
 		if (m_function->eventBuffer()->get(m_event) == -1)
 		{
 			if (m_function->isRunning() == false)
@@ -527,11 +527,13 @@ void FunctionConsumer::event()
 						   m_event[m_channel] & 0xFF);
 			}
 		}
-		
+
 		/* Lock for next round */
 		m_functionListMutex.lock(); 
 	}
-	
 	/* No more loops, unlock and get out */
 	m_functionListMutex.unlock();
+
+	/* Dump the contents of each universe to their plugins */
+	m_outputMap->dumpUniverses();
 }

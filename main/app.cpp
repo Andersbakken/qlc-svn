@@ -125,7 +125,7 @@ App::~App()
 	if (m_monitor != NULL)
 		delete m_monitor;
 	m_monitor = NULL;
-	
+
 	// Delete fixture manager view
 	if (m_fixtureManager != NULL)
 		delete m_fixtureManager;
@@ -420,8 +420,8 @@ void App::initFunctionConsumer()
 	m_functionConsumer = new FunctionConsumer(m_outputMap);
 	Q_ASSERT(m_functionConsumer != NULL);
 
-	/* TODO: Put this into some kind of a settings dialog */
-	// m_functionConsumer->setTimerType(FunctionConsumer::RTCTimer);
+	/* Use nanosleep timer by default and start function consumer.
+	   It also drives the universe writer. */
 	m_functionConsumer->setTimerType(FunctionConsumer::NanoSleepTimer);
 }
 
@@ -565,9 +565,6 @@ void App::slotModeOperate()
 	if (m_outputManager != NULL)
 		m_outputManager->parentWidget()->close();
 
-	/* Start function consumer */
-	m_functionConsumer->start();
-
 	/* Prevent opening a context menu */
 	centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
 
@@ -597,9 +594,6 @@ void App::slotModeDesign()
 		else
 			m_functionConsumer->purge();
 	}
-
-	/* Stop function consumer */
-	m_functionConsumer->stop();
 
 	/* Set normal palette to mode indicator */
 	m_modeIndicator->setText(KModeTextDesign);

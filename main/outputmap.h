@@ -127,16 +127,18 @@ public:
 
 	/**
 	 * Set the value of one channel. Channels 0-511 are for the first
-	 * universe, 512-1023 for the second etc..
+	 * universe, 512-1023 for the second etc.. This function does not
+	 * actually write the values to plugins; dumpUniverses() is for that
+	 * and it is called periodically from FunctionConsumer. Don't call
+	 * it manually.
 	 *
 	 * @param channel The channel whose value to set
 	 * @param value The value to set
 	 */
 	void setValue(t_channel channel, t_value value);
 
-protected:
-	/** Timer event handler */
-	void timerEvent(QTimerEvent* event);
+	/** Dump all universes' contents to their output plugins */
+	void dumpUniverses();
 
 signals:
 	/** Send a map of changed values to MonitorFixtures */
@@ -149,11 +151,8 @@ protected:
 	 */
 	QHash <t_channel,t_value> m_monitorValues;
 
-	/** ID of the DMX timer */
-	int m_timerId;
-
-	/** Mutex that guards m_monitorValues */
-	QMutex m_mutex;
+ 	/** Mutex that guards m_monitorValues */
+ 	QMutex m_mutex;
 
 	/*********************************************************************
 	 * Patch

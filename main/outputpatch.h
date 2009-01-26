@@ -90,6 +90,7 @@ public:
 protected:
 	t_value m_values[512];
 	bool m_blackout;
+	bool m_changed;
 
 	/********************************************************************
 	 * Load & Save

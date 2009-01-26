@@ -21,7 +21,6 @@
 
 #include <QPluginLoader>
 #include <QMessageBox>
-#include <QTimerEvent>
 #include <QSettings>
 #include <QString>
 #include <QDebug>
@@ -66,15 +65,10 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 
 	load();
 	loadDefaults();
-
-	/* Start the DMX timer */
-	m_timerId = startTimer(1000 / KFrequency);
 }
 
 OutputMap::~OutputMap()
 {
-	killTimer(m_timerId);
-
 	for (int i = 0; i < m_universes; i++)
 		delete m_patch[i];
 
@@ -187,12 +181,18 @@ t_value OutputMap::getValue(t_channel channel)
 	universe = static_cast<t_channel> (channel >> 9);
 	Q_ASSERT(universe < m_universes);
 
+	/* Perform universe & monitorValue writing inside a mutex to
+	   synchronize patching and prevent crashes. */
+	m_mutex.lock();
+
 	/* Get the plugin that is assigned to this universe */
 	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 
-	/* Reading from universes should be OK without a mutex */
+	/* Read from universe */
 	value = outputPatch->value(channel & 0x1FF);
+
+	m_mutex.unlock();
 
 	return value;
 }
@@ -210,33 +210,33 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	universe = static_cast<t_channel> (channel >> 9);
 	Q_ASSERT(universe < m_universes);
 
+	/* Perform universe & monitorValue writing inside a mutex to
+	   synchronize patching and prevent crashes. */
+	m_mutex.lock();
+
 	/* Get the plugin that is assigned to this universe */
 	outputPatch = m_patch[universe];
 	Q_ASSERT(outputPatch != NULL);
 
-	/* Perform universe & monitorValue writing inside a mutex to
-	   prevent QHash crashes. */
-	m_mutex.lock();
+	/* Write to universe */
 	outputPatch->setValue(channel & 0x1FF, value);
+
 	m_monitorValues[channel] = value;
+
 	m_mutex.unlock();
 }
 
-void OutputMap::timerEvent(QTimerEvent* event)
+void OutputMap::dumpUniverses()
 {
-	Q_UNUSED(event);
-
-	/* Perform universe & monitorValue dumping inside a mutex to
-	   prevent QHash crashes. */
+	/* Perform universe & monitorValue writing inside a mutex to
+	   synchronize patching and prevent crashes. */
 	m_mutex.lock();
-	if (m_monitorValues.count() > 0)
-	{
-		for (int i = 0; i < m_universes; i++)
-			m_patch[i]->dump();
+	for (int i = 0; i < m_universes; i++)
+		m_patch[i]->dump();
 
-		emit changedValues(m_monitorValues);
-		m_monitorValues.clear();
-	}
+	emit changedValues(m_monitorValues);
+	m_monitorValues.clear();
+
 	m_mutex.unlock();
 }
 
