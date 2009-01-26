@@ -48,7 +48,8 @@
  * Initialization
  *****************************************************************************/
 
-FunctionConsumer::FunctionConsumer(OutputMap* outputMap) : QThread()
+FunctionConsumer::FunctionConsumer(QObject* parent, OutputMap* outputMap)
+	: QThread(parent)
 {
 	Q_ASSERT(outputMap != NULL);
 	m_outputMap = outputMap;
@@ -464,8 +465,6 @@ void FunctionConsumer::run()
 	m_timeCode = 0;
 	m_running = true;
 
-	qDebug() << "start";
-
 	switch (m_timerType)
 	{
 #ifdef X11
@@ -478,8 +477,6 @@ void FunctionConsumer::run()
 		runNanoSleepTimer();
 		break;
 	}
-
-	qDebug() << "stop";
 }
 
 /**

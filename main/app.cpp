@@ -417,7 +417,7 @@ void App::initFunctionConsumer()
 {
 	Q_ASSERT(m_outputMap != NULL);
 
-	m_functionConsumer = new FunctionConsumer(m_outputMap);
+	m_functionConsumer = new FunctionConsumer(this, m_outputMap);
 	Q_ASSERT(m_functionConsumer != NULL);
 
 	/* Use nanosleep timer by default and start function consumer.

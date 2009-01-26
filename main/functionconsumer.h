@@ -40,12 +40,13 @@ class FunctionConsumer : public QThread
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new FunctionConsumer instance. A FunctionConsumer takes
-	 * care of running functions when the application is in operate mode.
+	 * Create a new FunctionConsumer instance. Takes care of running
+	 * functions and driving internal DMX universe dumping to plugins.
 	 *
+	 * @param parent The parent that owns this instance
 	 * @param outputMap A OutputMap instance used to write function values
 	 */
-	FunctionConsumer(OutputMap* outputMap);
+	FunctionConsumer(QObject* parent, OutputMap* outputMap);
 
 	/**
 	 * Destroy a FunctionConsumer instance
