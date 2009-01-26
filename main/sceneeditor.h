@@ -24,6 +24,7 @@
 
 #include <QWidget>
 #include <QList>
+#include <QMap>
 
 #include "common/qlctypes.h"
 

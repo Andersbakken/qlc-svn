@@ -57,7 +57,7 @@ SceneEditor::SceneEditor(QWidget* parent, Scene* scene) : QDialog(parent)
 	m_original = scene;
 
 	m_currentTab = KTabGeneral;
-	
+
 	/* Create a copy of the original scene so that we can freely modify it.
 	   Keep also a pointer to the original so that we can move the
 	   contents from the copied chaser to the original when OK is clicked */
@@ -156,8 +156,6 @@ void SceneEditor::init()
 	}
 
 	m_initializing = false;
-
-	m_tree->sortItems(KColumnName, Qt::AscendingOrder);
 }
 
 void SceneEditor::setSceneValue(const SceneValue& scv)
@@ -523,8 +521,13 @@ FixtureConsole* SceneEditor::fixtureConsole(Fixture* fixture)
 
 	/* Start from the first fixture tab */
 	for (int i = KTabFirstFixture; i < m_tab->count(); i++)
-		if (m_tab->tabText(i) == fixture->name())
-			return qobject_cast<FixtureConsole*> (m_tab->widget(i));
+	{
+		FixtureConsole* console;
+		console = qobject_cast<FixtureConsole*> (m_tab->widget(i));
+		if (console != NULL && console->fixture() == fixture->id())
+			return console;
+	}
+
 	return NULL;
 }
 
@@ -552,15 +555,18 @@ void SceneEditor::removeFixtureTab(Fixture* fixture)
 {
 	Q_ASSERT(fixture != NULL);
 
-	/* Start from the first fixture tab */
+	/* Start searching from the first fixture tab */
 	for (int i = KTabFirstFixture; i < m_tab->count(); i++)
 	{
-		if (m_tab->tabText(i) == fixture->name())
+		FixtureConsole* console;
+		console = qobject_cast<FixtureConsole*> (m_tab->widget(i));
+		if (console != NULL && console->fixture() == fixture->id())
 		{
-			QWidget* console = m_tab->widget(i);
-			Q_ASSERT(console != NULL);
-			delete console;
+			/* First remove the tab because otherwise Qt might
+			   remove two tabs -- undocumented feature, which
+			   might be intended or it might not. */
 			m_tab->removeTab(i);
+			delete console;
 			break;
 		}
 	}
