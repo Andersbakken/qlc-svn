@@ -665,9 +665,15 @@ QStyle* App::s_sliderStyle = NULL;
 QStyle* App::sliderStyle()
 {
 #ifdef WIN32
-	/* A better style to replace crappy windows sliders */
 	if (s_sliderStyle == NULL)
-		s_sliderStyle = QStyleFactory::create("Cleanlooks");
+	{
+		QStringList keys(QStyleFactory::keys());
+		if (keys.contains("Cleanlooks") == true)
+			s_sliderStyle = QStyleFactory::create("Cleanlooks");
+		else
+			s_sliderStyle = QApplication::style();
+	}
+
 	return s_sliderStyle;
 #else
 	return QApplication::style();
