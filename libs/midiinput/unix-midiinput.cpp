@@ -132,7 +132,6 @@ void MIDIInput::rescanDevices()
 {
 	snd_seq_client_info_t* clientInfo = NULL;
 	snd_seq_port_info_t* portInfo = NULL;
-	t_input line = 0;
 
 	/* Don't do anything if the ALSA sequencer interface is not open */
 	if (m_alsa == NULL)
@@ -171,7 +170,7 @@ void MIDIInput::rescanDevices()
 			if (dev == NULL)
 			{
 				/* New address. Create a new device for it. */
-				dev = new MIDIDevice(this, line++, address);
+				dev = new MIDIDevice(this, address);
 				Q_ASSERT(dev != NULL);
 
 				/* Don't show QLC's internal ALSA ports */
@@ -348,10 +347,16 @@ void MIDIInput::customEvent(QEvent* event)
 	if (event->type() == MIDIInputEvent::eventType)
 	{
 		MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
+		t_input input;
 
-		emit valueChanged(this, e->m_input, e->m_channel,
-				  e->m_value);
-		event->accept();
+		Q_ASSERT(event != NULL);
+		input = m_devices.indexOf(e->m_device);
+		if (input != -1)
+		{
+			emit valueChanged(this, input, e->m_channel,
+					  e->m_value);
+			event->accept();
+		}
 	}
 }
 

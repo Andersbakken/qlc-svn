@@ -239,10 +239,10 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 	do
 	{
 		snd_seq_event_t* ev = NULL;
+		t_input_value value;
 		MIDIDevice* device;
 		MIDIInputEvent* e;
 		quint64 hash;
-		float value;
 		int r;
 
 		/* Receive an event */
@@ -269,9 +269,8 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 				      double(0), double(127),
 				      double(0), double(255)));
 
-			e = new MIDIInputEvent(device, device->input(),
-					       ev->data.control.param,
-					       (t_input_value) value);
+			e = new MIDIInputEvent(device, ev->data.control.param,
+					       value);
 			QApplication::postEvent(parent(), e);
 		}
 		else if (ev->type == SND_SEQ_EVENT_NOTEON)
@@ -282,15 +281,14 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 				      double(0), double(127),
 				      double(0), double(255)));
 
-			e = new MIDIInputEvent(device, device->input(),
-					       ev->data.note.note, value);
+			e = new MIDIInputEvent(device, ev->data.note.note,
+					       value);
 			QApplication::postEvent(parent(), e);
 		}
 		else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
 		{
 			/* It's a note off message -> send a zero value */
-			e = new MIDIInputEvent(device, device->input(),
-					       ev->data.note.note, 0);
+			e = new MIDIInputEvent(device, ev->data.note.note, 0);
 			QApplication::postEvent(parent(), e);
 		}
 	}

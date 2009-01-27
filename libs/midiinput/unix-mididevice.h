@@ -42,23 +42,8 @@ class MIDIDevice : public QObject
 	Q_OBJECT
 
 public:
-	MIDIDevice(MIDIInput* parent, t_input input,
-		   const snd_seq_addr_t* address);
+	MIDIDevice(MIDIInput* parent, const snd_seq_addr_t* address);
 	virtual ~MIDIDevice();
-
-	/*********************************************************************
-	 * Input
-	 *********************************************************************/
-public:
-	/** Get the input line number that this device represents */
-	t_input input() const { return m_input; }
-
-	/** Set the input line number that this device represents */
-	void setInput(t_input input) { m_input = input; }
-
-protected:
-	/** The input line number that this device represents */
-	t_input m_input;
 
 	/*********************************************************************
  	 * ALSA address

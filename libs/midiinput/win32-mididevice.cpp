@@ -39,7 +39,7 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, UINT id) : QObject(parent)
 	QVariant variant;
 	MMRESULT res;
 	QString key;
-	
+
 	m_id = id;
 	m_feedBackId = UINT_MAX;
 	m_handle = NULL;
@@ -47,7 +47,7 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, UINT id) : QObject(parent)
 
 	/* Extract name */
 	m_name = QString("MIDI Input %1: ").arg(id + 1);
-	res = midiInGetDevCaps(id, &inCaps, sizeof(MIDIINCAPS));	
+	res = midiInGetDevCaps(id, &inCaps, sizeof(MIDIINCAPS));
 	if (res == MMSYSERR_BADDEVICEID)
 	{
 		m_name += QString("Bad device ID");
@@ -117,10 +117,8 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
 						    double(127),
 						    double(0),
 						    double(KInputValueMax)));
-			qDebug() << value;
 
-			event = new MIDIInputEvent(self, self->input(),
-						   channel, value);
+			event = new MIDIInputEvent(self, channel, value);
 			QApplication::postEvent(self, event);
 		}
 	}
@@ -211,15 +209,6 @@ void MIDIDevice::close()
 }
 
 /*****************************************************************************
- * ID/Input
- *****************************************************************************/
-
-t_input MIDIDevice::input() const
-{
-	return static_cast<t_input> (m_id);
-}
-
-/*****************************************************************************
  * Device info
  *****************************************************************************/
 
@@ -268,7 +257,7 @@ void MIDIDevice::customEvent(QEvent* event)
 		event->accept();
 	}
 }
- 
+
 /*****************************************************************************
  * Feedback
  *****************************************************************************/
@@ -295,7 +284,7 @@ void MIDIDevice::setFeedBackId(UINT id)
 	/* Save the feedback line number */
 	key = QString("/MIDIInput/Inputs/%1/FeedBackLine").arg(m_id);
 	settings.setValue(key, id);
-	
+
 	if (m_feedBackId  != UINT_MAX && reopen == true)
 		openOutput();
 }

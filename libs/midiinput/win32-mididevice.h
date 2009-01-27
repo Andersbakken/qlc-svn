@@ -52,18 +52,12 @@ public:
 
 	/** Close the input device */
 	void close();
-	
+
 protected:
+	/** Handle to the opened MIDI input device */
 	HMIDIIN m_handle;
 
-	/*********************************************************************
-	 * ID/Input
-	 *********************************************************************/
-public:
-	/** Get this input device's input line number */
-	t_input input() const;
-
-protected:
+	/** The ID of the windows MIDI input that this device represents */
 	UINT m_id;
 
 	/*********************************************************************
@@ -100,7 +94,7 @@ signals:
 public:
 	/** Get this input device's feedback output line number */
 	UINT feedBackId() const;
-	
+
 	/** Set this input device's feedback output line number */
 	void setFeedBackId(UINT id);
 

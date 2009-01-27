@@ -29,13 +29,12 @@
 #include "unix-midiinput.h"
 #include "midiinputevent.h"
 
-MIDIDevice::MIDIDevice(MIDIInput* parent, t_input input,
-		       const snd_seq_addr_t* address) : QObject(parent)
+MIDIDevice::MIDIDevice(MIDIInput* parent, const snd_seq_addr_t* address)
+	: QObject(parent)
 {
 	Q_ASSERT(address != NULL);
 	m_address = NULL;
 
-	setInput(input);
 	setAddress(address);
 	extractName();
 }

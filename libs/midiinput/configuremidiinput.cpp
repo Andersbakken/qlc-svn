@@ -92,6 +92,8 @@ ConfigureMIDIInput::~ConfigureMIDIInput()
 
 void ConfigureMIDIInput::refreshList()
 {
+	int i = 1;
+
 	m_tree->clear();
 
 	QListIterator <MIDIDevice*> it(m_plugin->devices());
@@ -104,8 +106,7 @@ void ConfigureMIDIInput::refreshList()
 		Q_ASSERT(dev != NULL);
 
 		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnNumber,
-			      QString("%1").arg(dev->input() + 1));
+		item->setText(KColumnNumber, QString("%1").arg(i++));
 		item->setText(KColumnName, dev->name());
 #ifdef WIN32
 		if (dev->feedBackId() != UINT_MAX)
