@@ -398,11 +398,11 @@ signals:
 	 * Dock Area
 	 *********************************************************************/
 public:
-	/** Get a pointer to the dock area that holds the default sliders */
+	/** Get a pointer to the dock area that holds the default slider */
 	VCDockArea* dockArea() { return m_dockArea; }
 
 protected:
-	/** Dock area that holds the default fade & hold sliders */
+	/** Dock area that holds the default fade slider */
 	VCDockArea* m_dockArea;
 
 	/*********************************************************************

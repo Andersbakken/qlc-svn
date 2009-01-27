@@ -681,17 +681,9 @@ void VirtualConsole::slotToolsSettings()
 	hi = m_dockArea->defaultFadeSlider()->busHighLimit();
 	prop.setFadeLimits(lo, hi);
 
-	lo = m_dockArea->defaultHoldSlider()->busLowLimit();
-	hi = m_dockArea->defaultHoldSlider()->busHighLimit();
-	prop.setHoldLimits(lo, hi);
-
 	uni = m_dockArea->defaultFadeSlider()->inputUniverse();
 	ch = m_dockArea->defaultFadeSlider()->inputChannel();
 	prop.setFadeInputSource(uni, ch);
-
-	uni = m_dockArea->defaultHoldSlider()->inputUniverse();
-	ch = m_dockArea->defaultHoldSlider()->inputChannel();
-	prop.setHoldInputSource(uni, ch);
 
 	/* Timer */
 	prop.setTimerType(_app->functionConsumer()->timerType());
@@ -709,17 +701,9 @@ void VirtualConsole::slotToolsSettings()
 		hi = prop.fadeHighLimit();
 		m_dockArea->defaultFadeSlider()->setBusRange(lo, hi);
 
-		lo = prop.holdLowLimit();
-		hi = prop.holdHighLimit();
-		m_dockArea->defaultHoldSlider()->setBusRange(lo, hi);
-
 		uni = prop.fadeInputUniverse();
 		ch = prop.fadeInputChannel();
 		m_dockArea->defaultFadeSlider()->setInputSource(uni, ch);
-
-		uni = prop.holdInputUniverse();
-		ch = prop.holdInputChannel();
-		m_dockArea->defaultHoldSlider()->setInputSource(uni, ch);
 
 		_app->functionConsumer()->setTimerType(prop.timerType());
 

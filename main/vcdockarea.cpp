@@ -41,10 +41,6 @@ VCDockArea::VCDockArea(QWidget* parent) : QFrame(parent)
 	// Default fade time slider
 	m_defaultFadeSlider = new VCDockSlider(this, KBusIDDefaultFade);
 	layout()->addWidget(m_defaultFadeSlider);
-
-	// Default hold time slider
-	m_defaultHoldSlider = new VCDockSlider(this, KBusIDDefaultHold);
-	layout()->addWidget(m_defaultHoldSlider);
 }
 
 VCDockArea::~VCDockArea()
@@ -81,23 +77,9 @@ bool VCDockArea::loadXML(QDomDocument* doc, QDomElement* root)
 	{
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCVCDockSlider)
-		{
-			/* Check, which slider is defined in this node */
-			str = tag.attribute(KXMLQLCBusRole);
-
-			/* Only accept buses 0 and 1 */
-			if (str == KXMLQLCBusFade)
-				m_defaultFadeSlider->loadXML(doc, &tag);
-			else if (str == KXMLQLCBusHold)
-				m_defaultHoldSlider->loadXML(doc, &tag);
-			else
-				qDebug() << "Cannot bind default sliders to"
-				         << "other than Fade/Hold buses.";
-		}
+			m_defaultFadeSlider->loadXML(doc, &tag);
 		else
-		{
 			qDebug() << "Unknown dock slider tag:" << tag.tagName();
-		}
 
 		node = node.nextSibling();
 	}
@@ -130,7 +112,6 @@ bool VCDockArea::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 	/* Slider entries */
 	m_defaultFadeSlider->saveXML(doc, &root);
-	m_defaultHoldSlider->saveXML(doc, &root);
 
 	return true;
 }

@@ -155,7 +155,7 @@ bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	/* Speed bus */
 	tag = doc->createElement(KXMLQLCBus);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusTap);
 	str.setNum(busID());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
@@ -219,8 +219,6 @@ bool Chaser::loadXML(QDomDocument*, QDomElement* root)
 		{
 			/* Bus */
 			str = tag.attribute(KXMLQLCBusRole);
-			Q_ASSERT(str == KXMLQLCBusHold);
-
 			setBus(tag.text().toInt());
 		}
 		else if (tag.tagName() == KXMLQLCFunctionDirection)

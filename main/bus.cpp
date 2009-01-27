@@ -57,7 +57,6 @@ void Bus::init()
 	s_busArray = new Bus[KBusCount];
 
 	s_busArray[KBusIDDefaultFade].m_name = "Fade";
-	s_busArray[KBusIDDefaultHold].m_name = "Hold";
 
 	if (s_busEmitter != NULL)
 		delete s_busEmitter;
