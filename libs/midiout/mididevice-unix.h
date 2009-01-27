@@ -47,8 +47,7 @@ class MIDIDevice : public QObject
 	 * Initialization
 	 *********************************************************************/
 public:
-	MIDIDevice(MIDIOut* parent, t_output output,
-		   const snd_seq_addr_t* address);
+	MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address);
 	virtual ~MIDIDevice();
 
 	/** Load global settings */
@@ -56,20 +55,6 @@ public:
 
 	/** Save global settings */
 	void saveSettings();
-
-	/*********************************************************************
-	 * Output
-	 *********************************************************************/
-public:
-	/** Get the output line number that this device represents */
-	t_output output() const { return m_output; }
-
-	/** Set the output line number that this device represents */
-	void setOutput(t_output output) { m_output = output; }
-
-protected:
-	/** The output line number that this device represents */
-	t_output m_output;
 
 	/*********************************************************************
  	 * ALSA address

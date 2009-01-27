@@ -49,7 +49,7 @@ ConfigureMIDIOut::ConfigureMIDIOut(QWidget* parent, MIDIOut* plugin)
 {
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
-	
+
 	/* Setup UI controls */
 	setupUi(this);
 	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
@@ -88,6 +88,7 @@ void ConfigureMIDIOut::refreshList()
 {
 	QTreeWidgetItem* item;
 	MIDIDevice* dev;
+	int i = 1;
 
 	m_list->clear();
 
@@ -97,8 +98,7 @@ void ConfigureMIDIOut::refreshList()
 		dev = it.next();
 
 		item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnNumber,
-			      QString("%1").arg(dev->output() + 1));
+		item->setText(KColumnNumber, QString("%1").arg(i++));
 		item->setText(KColumnName, dev->name());
 		item->setText(KColumnMIDIChannel,
 			      QString("%1").arg(dev->midiChannel() + 1));
@@ -111,11 +111,11 @@ void ConfigureMIDIOut::slotEditClicked()
 {
 	QTreeWidgetItem* item;
 	MIDIDevice* device;
-	
+
 	item = m_list->currentItem();
 	if (item == NULL)
 		return;
-	
+
 	device = m_plugin->device(item->text(KColumnNumber).toInt() - 1);
 	if (device == NULL)
 		return;

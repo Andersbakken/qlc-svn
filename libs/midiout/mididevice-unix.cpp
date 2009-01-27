@@ -31,13 +31,12 @@
 #include "mididevice-unix.h"
 #include "midiout-unix.h"
 
-MIDIDevice::MIDIDevice(MIDIOut* parent, t_output output,
-		       const snd_seq_addr_t* address) : QObject(parent)
+MIDIDevice::MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address)
+	: QObject(parent)
 {
 	Q_ASSERT(address != NULL);
 	m_address = NULL;
 
-	setOutput(output);
 	setAddress(address);
 	extractName();
 	loadSettings();
