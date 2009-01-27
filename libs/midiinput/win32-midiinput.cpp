@@ -207,8 +207,12 @@ void MIDIInput::slotDeviceValueChanged(MIDIDevice* device,
 				       t_input_channel channel,
 				       t_input_value value)
 {
+	t_input input;
+
 	Q_ASSERT(device != NULL);
-	emit valueChanged(this, device->input(), channel, value);
+
+	input = m_devices.indexOf(device);
+	emit valueChanged(this, input, channel, value);
 }
 
 void MIDIInput::connectInputData(QObject* listener)
