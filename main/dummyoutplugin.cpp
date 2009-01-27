@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QMessageBox>
 #include <QString>
 #include <QDebug>
@@ -40,8 +39,6 @@ DummyOutPlugin::~DummyOutPlugin()
 
 void DummyOutPlugin::init()
 {
-	for (t_channel i = 0; i < sizeof(m_values); i++)
-		m_values[i] = 0;
 }
 
 /*****************************************************************************
@@ -125,37 +122,35 @@ QString DummyOutPlugin::infoText(t_output output)
 void DummyOutPlugin::writeChannel(t_output output, t_channel channel,
 				  t_value value)
 {
-	m_mutex.lock();
-	m_values[(512 * output) + channel] = value;
-	m_mutex.unlock();
+	Q_UNUSED(output);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 void DummyOutPlugin::writeRange(t_output output, t_channel address,
 				t_value* values, t_channel num)
 {
-	Q_ASSERT(values != NULL);
-
-	m_mutex.lock();
-	memcpy(m_values + (address + (512 * output)), values, num);
-	m_mutex.unlock();
+	Q_UNUSED(output);
+	Q_UNUSED(address);
+	Q_UNUSED(values);
+	Q_UNUSED(num);
 }
 
 void DummyOutPlugin::readChannel(t_output output, t_channel channel,
 				 t_value* value)
 {
-	m_mutex.lock();
-	*value = m_values[(512 * output) + channel];
-	m_mutex.unlock();
+	Q_UNUSED(output);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 void DummyOutPlugin::readRange(t_output output, t_channel address,
 			       t_value* values, t_channel num)
 {
-	Q_ASSERT(values != NULL);
-
-	m_mutex.lock();
-	memcpy(values, m_values + (address + (512 * output)), num);
-	m_mutex.unlock();
+	Q_UNUSED(output);
+	Q_UNUSED(address);
+	Q_UNUSED(values);
+	Q_UNUSED(num);
 }
 
 Q_EXPORT_PLUGIN2(dummyout, DummyOutPlugin)

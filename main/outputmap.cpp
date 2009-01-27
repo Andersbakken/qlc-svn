@@ -231,12 +231,14 @@ void OutputMap::dumpUniverses()
 	/* Perform universe & monitorValue writing inside a mutex to
 	   synchronize patching and prevent crashes. */
 	m_mutex.lock();
-	for (int i = 0; i < m_universes; i++)
-		m_patch[i]->dump();
+	if (m_monitorValues.count() > 0)
+	{
+		for (int i = 0; i < m_universes; i++)
+			m_patch[i]->dump();
 
-	emit changedValues(m_monitorValues);
-	m_monitorValues.clear();
-
+		emit changedValues(m_monitorValues);
+		m_monitorValues.clear();
+	}
 	m_mutex.unlock();
 }
 

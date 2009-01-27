@@ -96,7 +96,6 @@ void OutputPatch::setValue(t_channel channel, t_value value)
 {
 	Q_ASSERT(channel < 512);
 	m_values[channel] = value;
-	m_changed = true; /* Mutexed in outputmap */
 }
 
 void OutputPatch::dump()
@@ -108,8 +107,6 @@ void OutputPatch::dump()
 		   Otherwise write the whole 512 channel universe. */
 		if (m_plugin != NULL && m_output != KOutputInvalid)
 			m_plugin->writeRange(m_output, 0, m_values, 512);
-
-		m_changed = true; /* Mutexed in outputmap */
 	}
 }
 
