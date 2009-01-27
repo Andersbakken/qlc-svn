@@ -85,12 +85,11 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	/* Main VBox */
 	new QVBoxLayout(this);
 	layout()->setMargin(0);
-	layout()->setSpacing(0);
 
 	/* Top label */
 	m_topLabel = new QLabel(this);
 	layout()->addWidget(m_topLabel);
-	m_topLabel->setAlignment(Qt::AlignCenter);
+	m_topLabel->setAlignment(Qt::AlignHCenter);
 
 	/* Slider & its HBox */
 	m_hbox = new QHBoxLayout();

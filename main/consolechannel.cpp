@@ -40,6 +40,12 @@
 
 extern App* _app;
 
+#define CMARGIN_LEFT      1
+#define CMARGIN_TOP       1
+#define CMARGIN_TOP_CHECK 15 /* Leave some space for the check box */
+#define CMARGIN_RIGHT     1
+#define CMARGIN_BOTTOM    1
+
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
@@ -83,11 +89,14 @@ void ConsoleChannel::init()
 	connect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled(bool)));
 
 	new QVBoxLayout(this);
-	layout()->setContentsMargins(1, 15, 1, 1);
+	layout()->setAlignment(Qt::AlignHCenter);
+	layout()->setContentsMargins(CMARGIN_LEFT, CMARGIN_TOP_CHECK,
+				     CMARGIN_RIGHT, CMARGIN_BOTTOM);
 
 	m_presetButton = new QToolButton(this);
+	m_presetButton->setIconSize(QSize(26, 26));
 	layout()->addWidget(m_presetButton);
-	m_presetButton->setSizePolicy(QSizePolicy::Preferred,
+	m_presetButton->setSizePolicy(QSizePolicy::Maximum,
 				      QSizePolicy::Preferred);
 
 	m_valueLabel = new QLabel(this);
@@ -397,3 +406,29 @@ void ConsoleChannel::slotToggled(bool state)
 	emit valueChanged(m_channel, m_value, state);
 }
 
+/*****************************************************************************
+ * Checkable
+ *****************************************************************************/
+
+void ConsoleChannel::setCheckable(bool checkable)
+{
+	if (layout() != NULL)
+	{
+		if (checkable == true)
+		{
+			layout()->setContentsMargins(CMARGIN_LEFT,
+						     CMARGIN_TOP_CHECK,
+						     CMARGIN_RIGHT,
+						     CMARGIN_BOTTOM);
+		}
+		else
+		{
+			layout()->setContentsMargins(CMARGIN_LEFT,
+						     CMARGIN_TOP,
+						     CMARGIN_RIGHT,
+						     CMARGIN_BOTTOM);
+		}
+	}
+
+	QGroupBox::setCheckable(checkable);
+}
