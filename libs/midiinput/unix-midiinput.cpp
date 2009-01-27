@@ -117,7 +117,7 @@ void MIDIInput::initALSA()
 	/* Create an application-level port for receiving MIDI data from
 	   actual system clients' ports */
 	m_address = new snd_seq_addr_t;
-	m_address->port = snd_seq_create_simple_port(m_alsa, "Input Port",
+	m_address->port = snd_seq_create_simple_port(m_alsa, "__QLC__input",
 			SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ |
 		   	SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
 			SND_SEQ_PORT_TYPE_MIDI_GENERIC);
@@ -172,7 +172,13 @@ void MIDIInput::rescanDevices()
 			{
 				/* New address. Create a new device for it. */
 				dev = new MIDIDevice(this, line++, address);
-				addDevice(dev);
+				Q_ASSERT(dev != NULL);
+
+				/* Don't show QLC's internal ALSA ports */
+				if (dev->name().contains("__QLC__") == false)
+					addDevice(dev);
+				else
+					delete dev;
 			}
 			else
 			{

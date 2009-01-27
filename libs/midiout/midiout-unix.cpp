@@ -134,7 +134,7 @@ void MIDIOut::initALSA()
 
 	/* Create an application-level port */
 	m_address = new snd_seq_addr_t;
-	m_address->port = snd_seq_create_simple_port(m_alsa, "MIDI Output",
+	m_address->port = snd_seq_create_simple_port(m_alsa, "__QLC__output",
 		   	SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ,
 			SND_SEQ_PORT_TYPE_MIDI_GENERIC);
 	m_address->client = snd_seq_client_info_get_client(client);
@@ -191,7 +191,13 @@ void MIDIOut::rescanDevices()
 			{
 				/* New address. Create a new device for it. */
 				dev = new MIDIDevice(this, line++, address);
-				addDevice(dev);
+				Q_ASSERT(dev != NULL);
+
+				/* Don't show QLC's internal ALSA ports */
+				if (dev->name().contains("__QLC__") == false)
+					addDevice(dev);
+				else
+					delete dev;
 			}
 			else
 			{
@@ -201,7 +207,7 @@ void MIDIOut::rescanDevices()
 			}
 		}
 	}
-	
+
 	/* All devices that were not found during rescan are clearly no longer
 	   in our presence and must be destroyed. */
 	while (destroyList.isEmpty() == false)
