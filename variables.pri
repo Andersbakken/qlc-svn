@@ -16,22 +16,26 @@ unix:DATADIR		= /usr/share/qlc
 
 # Documentation
 win32:DOCSDIR		= $$DATADIR/Documents
+win32:DEFINES		+= DOCSDIR=\\\"Documents\\\"
+
 unix:DOCSDIR		= $$DATADIR/documents
-DEFINES			+= DOCSDIR=\\\"$$DOCSDIR\\\"
+unix:DEFINES		+= DOCSDIR=\\\"$$DOCSDIR\\\"
 
 # Input devices
 win32:INPUTDEVICEDIR	= $$DATADIR/InputDevices
-unix:INPUTDEVICEDIR	= $$DATADIR/inputdevices
-DEFINES			+= INPUTDEVICEDIR=\\\"$$INPUTDEVICEDIR\\\"
+win32:DEFINES		+= INPUTDEVICEDIR=\\\"InputDevices\\\"
 
+unix:INPUTDEVICEDIR	= $$DATADIR/inputdevices
+unix:DEFINES		+= INPUTDEVICEDIR=\\\"$$INPUTDEVICEDIR\\\"
 unix:USERINPUTDEVICEDIR	= .qlc/inputdevices
 unix:DEFINES		+= USERINPUTDEVICEDIR=\\\"$$USERINPUTDEVICEDIR\\\"
 
 # Fixtures
 win32:FIXTUREDIR	= $$DATADIR/Fixtures
-unix:FIXTUREDIR		= $$DATADIR/fixtures
-DEFINES			+= FIXTUREDIR=\\\"$$FIXTUREDIR\\\"
+win32:DEFINES		+= FIXTUREDIR=\\\"Fixtures\\\"
 
+unix:FIXTUREDIR		= $$DATADIR/fixtures
+unix:DEFINES		+= FIXTUREDIR=\\\"$$FIXTUREDIR\\\"
 unix:USERFIXTUREDIR	= .qlc/fixtures
 unix:DEFINES		+= USERFIXTUREDIR=\\\"$$USERFIXTUREDIR\\\"
 
@@ -39,15 +43,19 @@ unix:DEFINES		+= USERFIXTUREDIR=\\\"$$USERFIXTUREDIR\\\"
 win32:PLUGINDIR		= $$LIBSDIR/Plugins
 unix:PLUGINDIR		= $$LIBSDIR/qlc
 
-#Input Plugins
-unix:INPUTPLUGINDIR	= $$PLUGINDIR/input
+# Input Plugins
 win32:INPUTPLUGINDIR	= $$PLUGINDIR/Input
+win32:DEFINES		+= INPUTPLUGINDIR=\\\"Plugins/Input\\\"
+
+unix:INPUTPLUGINDIR	= $$PLUGINDIR/input
 macx:INPUTPLUGINDIR	= ../Plugins/Input
-DEFINES			+= INPUTPLUGINDIR=\\\"$$INPUTPLUGINDIR\\\"
+unix:macx:DEFINES	+= INPUTPLUGINDIR=\\\"$$INPUTPLUGINDIR\\\"
 
 # Output Plugins
-unix:OUTPUTPLUGINDIR	= $$PLUGINDIR/output
 win32:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
+win32:DEFINES		+= OUTPUTPLUGINDIR=\\\"Plugins/Output\\\"
+
+unix:OUTPUTPLUGINDIR	= $$PLUGINDIR/output
 macx:OUTPUTPLUGINDIR	= ../Plugins/Output
-DEFINES			+= OUTPUTPLUGINDIR=\\\"$$OUTPUTPLUGINDIR\\\"
+unix:macx:DEFINES	+= OUTPUTPLUGINDIR=\\\"$$OUTPUTPLUGINDIR\\\"
 
