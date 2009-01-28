@@ -51,8 +51,13 @@ which don't have a speed setting at all.
 
 <P>
 Each bus can have a name set by the user can for convenience and to help in
-identification. The names of the first two buses are, by default, "Fade" and
-"Hold".
+identification. The name of the first bus is, by default, "Fade" and it is
+assigned to all newly-created functions.
+</P>
+
+<P>
+Buses can also send special "tap" signals, that can be used, for example, to
+synchronize chaser stepping to match tempo.
 </P>
 
 <A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
@@ -73,10 +78,12 @@ be stopped manually.
 </P>
 
 <P>
-<A HREF="#Buses">Bus</A> number 2 (Default Hold) is assigned to all newly
-created chasers by default. The bus value is understood by chasers as hold time
-between steps. Fade time for the chaser's member scene functions is set thru
-each scene function's own speed bus.
+<A HREF="#Buses">Bus</A> number 1 (Default Fade) is assigned to all newly
+created chasers by default. Bus values are ignored by chasers completely.
+Clicking the bus slider's tap button sends special "tap" events to connected
+chasers, which in turn, skip to the next step on each tap. If the chaser's
+member scenes are connected to the same bus, tapping will also set their
+fade times, resulting in a smooth, timely synchronization.
 </P>
 
 <P>
@@ -96,7 +103,7 @@ only once and a collection cannot be a direct member of itself.
 
 <P>
 <A HREF="#Buses">Speed setting</A> has no effect on collections. Each member
-functions' speed is set individually by their own buses.
+function's speed is set individually thru their own buses.
 </P>
 
 <P>
