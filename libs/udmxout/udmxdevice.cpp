@@ -188,12 +188,3 @@ void UDMXDevice::writeRange(t_value* values, t_channel num)
 			   << usb_strerror();
 	}
 }
-
-/* usb request for cmd_SetChannelRange:
-        bmRequestType:  ignored by device, should be USB_TYPE_VENDOR | USB_RECI$
-        bRequest:               cmd_SetChannelRange
-        wValue:                 number of channels to set [1 .. 512-wIndex]
-        wIndex:                 index of first channel to set [0 .. 511]
-        wLength:                length of data, must be >= wValue
-*/
-
