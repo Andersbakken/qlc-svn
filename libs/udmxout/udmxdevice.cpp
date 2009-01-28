@@ -173,25 +173,27 @@ void UDMXDevice::writeRange(t_value* values, t_channel num)
 	if (m_handle == NULL)
 		return;
 
-	/* Write the first 256 channels (0-255) */
+	/* Write all 512 channels */
 	r = usb_control_msg(m_handle,
 			USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-			UDMX_SET_CHANNEL_RANGE, 256,
-			0, (char*) values, 256, 50000);
+			UDMX_SET_CHANNEL_RANGE, /* Command */
+			512,			/* Number of channels to set */
+			0,                      /* Starting index */
+			(char*) values,         /* Values to set */
+			512,                    /* Size of values */
+			5000);                  /* Timeout */
 	if (r < 0)
 	{
-		qWarning() << "UDMX: unable to write channels 0 - 255";
-		return;
-	}
-
-	/* Write the last 256 channels (256-511) */
-	r = usb_control_msg(m_handle,
-			USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-			UDMX_SET_CHANNEL_RANGE, 256,
-			256, (char*) values + 256, 256, 50000);
-	if (r < 0)
-	{
-		qWarning() << "UDMX: unable to write channels 256 - 511";
-		return;
+		qWarning() << "UDMX: unable to write universe:"
+			   << usb_strerror();
 	}
 }
+
+/* usb request for cmd_SetChannelRange:
+        bmRequestType:  ignored by device, should be USB_TYPE_VENDOR | USB_RECI$
+        bRequest:               cmd_SetChannelRange
+        wValue:                 number of channels to set [1 .. 512-wIndex]
+        wIndex:                 index of first channel to set [0 .. 511]
+        wLength:                length of data, must be >= wValue
+*/
+
