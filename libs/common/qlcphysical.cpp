@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   qlcphysical.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -32,16 +32,16 @@ QLCPhysical& QLCPhysical::operator=(const QLCPhysical& physical)
 		m_bulbType = physical.bulbType();
 		m_bulbLumens = physical.bulbLumens();
 		m_bulbColourTemperature = physical.bulbColourTemperature();
- 
+
 		m_weight = physical.weight();
 		m_width = physical.width();
 		m_height = physical.height();
 		m_depth = physical.depth();
- 
+
 		m_lensName = physical.lensName();
 		m_lensDegreesMin = physical.lensDegreesMin();
 		m_lensDegreesMax = physical.lensDegreesMax();
- 
+
 		m_focusType = physical.focusType();
 		m_focusPanMax = physical.focusPanMax();
 		m_focusTiltMax = physical.focusTiltMax();
@@ -56,16 +56,16 @@ bool QLCPhysical::loadXML(QDomElement* root)
 	QDomElement tag;
 	QString str;
 	QString ch;
-	
+
 	if (root->tagName() != KXMLQLCPhysical)
 		return false;
-	
+
 	/* Subtags */
 	node = root->firstChild();
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCPhysicalBulb)
 		{
 			m_bulbType = tag.attribute(KXMLQLCPhysicalBulbType);
@@ -98,7 +98,7 @@ bool QLCPhysical::loadXML(QDomElement* root)
 
 		node = node.nextSibling();
 	}
-	
+
 	return true;
 }
 
@@ -108,10 +108,10 @@ bool QLCPhysical::saveXML(QDomDocument* doc, QDomElement* root)
 	QDomElement subtag;
 	QDomText text;
 	QString str;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
-	
+
 	/* Physical entry */
 	tag = doc->createElement(KXMLQLCPhysical);
 	root->appendChild(tag);
@@ -144,6 +144,6 @@ bool QLCPhysical::saveXML(QDomDocument* doc, QDomElement* root)
 	subtag.setAttribute(KXMLQLCPhysicalFocusPanMax, m_focusPanMax);
 	subtag.setAttribute(KXMLQLCPhysicalFocusTiltMax, m_focusTiltMax);
 	tag.appendChild(subtag);
-	
+
 	return true;
 }

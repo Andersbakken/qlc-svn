@@ -56,7 +56,7 @@ class QLC_DECLSPEC QLCPhysical
 public:
 	/* Default destructor */
 	virtual ~QLCPhysical() {}
-	
+
 	/** Assignment operator */
 	QLCPhysical& operator=(const QLCPhysical& physical);
 

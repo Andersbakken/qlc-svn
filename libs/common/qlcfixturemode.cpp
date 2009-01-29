@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcfixturemode.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -33,20 +33,20 @@
 QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef)
 {
 	m_fixtureDef = fixtureDef;
-	
+
 	m_physical.setBulbType(QString::null);
 	m_physical.setBulbLumens(0);
 	m_physical.setBulbColourTemperature(0);
-	
+
 	m_physical.setWeight(0);
 	m_physical.setWidth(0);
 	m_physical.setHeight(0);
 	m_physical.setDepth(0);
-	
+
 	m_physical.setLensName("Other");
 	m_physical.setLensDegreesMin(0);
 	m_physical.setLensDegreesMax(0);
-	
+
 	m_physical.setFocusType("Fixed");
 	m_physical.setFocusPanMax(0);
 	m_physical.setFocusTiltMax(0);
@@ -61,7 +61,7 @@ QLCFixtureMode::QLCFixtureMode(QLCFixtureMode* mode)
 QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef, QDomElement* tag)
 {
 	m_fixtureDef = fixtureDef;
-	
+
 	if (tag != NULL)
 		loadXML(tag);
 }
@@ -77,11 +77,11 @@ QLCFixtureMode& QLCFixtureMode::operator=(QLCFixtureMode& mode)
 	{
 		QListIterator <QLCChannel*> it(mode.m_channels);
 		int i = 0;
-		
+
 		m_name = mode.name();
 		m_physical = mode.physical();
 		m_fixtureDef = mode.fixtureDef();
-		
+
 		m_channels.clear();
 		while (it.hasNext() == true)
 			insertChannel(it.next(), i++);
@@ -120,14 +120,14 @@ QLCChannel* QLCFixtureMode::channel(const QString& name)
 {
 	QListIterator <QLCChannel*> it(m_channels);
 	QLCChannel* ch = NULL;
-	
+
 	while (it.hasNext() == true)
 	{
 		ch = it.next();
 		if (ch->name() == name)
 			return ch;
 	}
-	
+
 	return NULL;
 }
 
@@ -143,10 +143,10 @@ t_channel QLCFixtureMode::channelNumber(QLCChannel* channel)
 {
 	QListIterator <QLCChannel*> it(m_channels);
 	int i = 0;
-	
+
 	if (channel == NULL)
 		return KChannelInvalid;
-	
+
 	while (it.hasNext() == true)
 	{
 		if (it.next()->name() == channel->name())
@@ -180,13 +180,13 @@ bool QLCFixtureMode::loadXML(QDomElement* root)
 		return false;
 	else
 		setName(str);
-	
+
 	/* Subtags */
 	node = root->firstChild();
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCFixtureModeChannel)
 		{
 			str = tag.attribute(KXMLQLCFixtureModeChannelNumber);
@@ -227,7 +227,7 @@ bool QLCFixtureMode::saveXML(QDomDocument* doc, QDomElement* root)
 	root->appendChild(tag);
 
 	m_physical.saveXML(doc, &tag);
-	
+
 	/* Channels */
 	QListIterator <QLCChannel*> it(m_channels);
 	while (it.hasNext() == true)

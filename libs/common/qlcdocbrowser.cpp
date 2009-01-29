@@ -36,7 +36,7 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 	QStringList searchPaths;
 	QSettings settings;
 	QVariant w, h;
-	
+
 	setWindowTitle("Q Light Controller - Document Browser");
 
 	/* Recall window size */

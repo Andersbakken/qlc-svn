@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcfixturemode.h
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -76,7 +76,7 @@ protected:
 public:
 	/** Get the fixture that this mode is associated to */
 	QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
- 
+
 protected:
 	QLCFixtureDef* m_fixtureDef;
 
@@ -86,32 +86,32 @@ protected:
 public:
 	/** Insert a channel at the given position */
 	void insertChannel(QLCChannel* channel, t_channel index);
-	
+
 	/** Remove a channel (doesn't delete it) */
 	bool removeChannel(QLCChannel* channel);
-	
+
 	/** Get a channel by its name */
 	QLCChannel* channel(const QString& name);
-	
+
 	/** Get a channel by its index */
 	QLCChannel* channel(t_channel ch);
-	
+
 	/** Get the number of channels */
 	t_channel channels() { return m_channels.count(); }
-	
+
 	/** Get a channel's index */
 	t_channel channelNumber(QLCChannel* channel);
 
 protected:
 	QList <QLCChannel*> m_channels;
-	
+
 	/*********************************************************************
 	 * Physical
 	 *********************************************************************/
 public:
 	/** Set physical properties */
 	void setPhysical(const QLCPhysical &physical);
-	
+
 	/** Get physical properties */
 	const QLCPhysical physical();
 
@@ -120,7 +120,7 @@ public:
 
 	/** Save to an XML document */
 	bool saveXML(QDomDocument* doc, QDomElement* root);
-		
+
 protected:
 	QLCPhysical m_physical;
 };

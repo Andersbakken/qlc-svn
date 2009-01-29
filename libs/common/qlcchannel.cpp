@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   qlcchannel.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -73,7 +73,7 @@ QLCChannel& QLCChannel::operator=(QLCChannel& channel)
 		/* Clear old capabilities */
 		while (m_capabilities.isEmpty() == false)
 			delete m_capabilities.takeFirst();
-		
+
 		/* Copy new capabilities from the other channel */
 		while (it.hasNext() == true)
 			m_capabilities.append(new QLCCapability(it.next()));
@@ -188,9 +188,9 @@ bool QLCChannel::addCapability(QLCCapability* cap)
 {
 	QListIterator <QLCCapability*> it(m_capabilities);
 	QLCCapability* temp = NULL;
-	
+
 	Q_ASSERT(cap != NULL);
-	
+
 	/* Check for overlapping values */
 	while (it.hasNext() == true)
 	{
@@ -202,7 +202,7 @@ bool QLCChannel::addCapability(QLCCapability* cap)
 			return false;
 		}
 	}
-	
+
 	m_capabilities.append(cap);
 	return true;
 }
@@ -249,7 +249,7 @@ void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 	grptag = doc->createElement(KXMLQLCChannelGroup);
 	text = doc->createTextNode(m_group);
 	grptag.appendChild(text);
-	
+
 	/* Group control byte */
 	str.setNum(m_controlByte);
 	grptag.setAttribute(KXMLQLCChannelGroupByte, str);
@@ -276,13 +276,13 @@ bool QLCChannel::loadXML(QDomElement* root)
 		return false;
 	else
 		setName(str);
-	
+
 	/* Subtags */
 	node = root->firstChild();
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCCapability)
 		{
 			addCapability(new QLCCapability(&tag));

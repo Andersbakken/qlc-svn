@@ -1,25 +1,24 @@
 /*
   Q Light Controller
   qlccapability.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <iostream>
 #include <QString>
 #include <QFile>
 #include <QtXml>
@@ -39,7 +38,7 @@ QLCCapability::QLCCapability(QLCCapability* capability)
 	m_min = KChannelValueMin;
 	m_max = KChannelValueMax;
 	m_name = QString::null;
-	
+
 	if (capability != NULL)
 		*this = *capability;
 }
@@ -47,11 +46,11 @@ QLCCapability::QLCCapability(QLCCapability* capability)
 QLCCapability::QLCCapability(QDomElement* tag)
 {
 	Q_ASSERT(tag != NULL);
-	
+
 	m_min = KChannelValueMin;
 	m_max = KChannelValueMax;
 	m_name = QString::null;
-	
+
 	loadXML(tag);
 }
 
@@ -67,7 +66,7 @@ QLCCapability& QLCCapability::operator=(QLCCapability& capability)
 		m_max = capability.m_max;
 		m_name = capability.m_name;
 	}
-	
+
 	return *this;
 }
 
@@ -109,7 +108,7 @@ bool QLCCapability::loadXML(QDomElement* root)
 	str = root->attribute(KXMLQLCCapabilityMin);
 	if (str == QString::null)
 	{
-		qDebug() << "QLCCapability has no min limit.";
+		qWarning() << "QLCCapability has no min limit.";
 		return false;
 	}
 	else
@@ -121,7 +120,7 @@ bool QLCCapability::loadXML(QDomElement* root)
 	str = root->attribute(KXMLQLCCapabilityMax);
 	if (str == QString::null)
 	{
-		qDebug() << "QLCCapability has no max limit.";
+		qWarning() << "QLCCapability has no max limit.";
 		return false;
 	}
 	else

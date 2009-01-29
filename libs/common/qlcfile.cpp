@@ -99,7 +99,7 @@ bool QLCFile::getXMLHeader(QString content, QDomDocument** doc)
 	tag.appendChild(subtag);
 	text = (*doc)->createTextNode(QString(getenv("USER")));
 	subtag.appendChild(text);
-	
+
 	return true;
 }
 
@@ -109,7 +109,7 @@ bool QLCFile::saveXMLWindowState(QDomDocument* doc, QDomElement* root,
 	QDomElement tag;
 	QDomText text;
 	QString str;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(window != NULL);
@@ -151,7 +151,7 @@ bool QLCFile::loadXMLWindowState(QDomElement* tag,
 				 int* w, int* h,
 				 bool* visible)
 {
-	if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL || 
+	if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL ||
 	    visible == NULL)
 		return false;
 
@@ -161,7 +161,7 @@ bool QLCFile::loadXMLWindowState(QDomElement* tag,
 		*y = tag->attribute(KXMLQLCWindowStateY).toInt();
 		*w = tag->attribute(KXMLQLCWindowStateWidth).toInt();
 		*h = tag->attribute(KXMLQLCWindowStateHeight).toInt();
-		
+
 		if (tag->attribute(KXMLQLCWindowStateVisible) == KXMLQLCTrue)
 			*visible = true;
 		else

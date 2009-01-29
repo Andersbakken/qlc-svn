@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   qlcfixturedef.h
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -65,26 +65,26 @@ public:
 
 	/** Assignment operator */
 	QLCFixtureDef& operator=(QLCFixtureDef& fixture);
- 
+
 	/*********************************************************************
 	 * Fixture information
 	 *********************************************************************/
 public:
 	/** Get the fixture's name string (=="manufacturer model") */
 	QString name() { return m_manufacturer + QString(" ") + m_model; }
-	
+
 	/** Set the fixture's manufacturer string */
 	void setManufacturer(const QString mfg);
 
 	/** Set the fixture's manufacturer string */
 	QString manufacturer() const { return m_manufacturer; }
-	
+
 	/** Set the fixture's model string */
 	void setModel(const QString model);
 
 	/** Get the fixture's model string */
 	QString model() const { return m_model; }
-	
+
 	/** Set the fixture's type string */
 	void setType(const QString &type);
 
@@ -108,10 +108,10 @@ public:
 
 	/** Search for a channel by its name */
 	QLCChannel* channel(const QString &name);
-	
+
 	/** Get all channels */
 	QList <QLCChannel*> *channels() { return &m_channels; }
-	
+
 protected:
 	/** Available channels */
 	QList <QLCChannel*> m_channels;
@@ -128,15 +128,15 @@ public:
 
 	/** Get a certain mode by its name */
 	QLCFixtureMode* mode(const QString& name);
-	
+
 	/** Get all modes */
 	QList <QLCFixtureMode*> *modes() { return &m_modes; }
-	
+
 	/** Save the fixture into an XML file */
 	bool saveXML(const QString &fileName);
-	
+
 	/** Load fixture contents from an XML document */
-	virtual bool loadXML(QDomDocument* doc); 
+	virtual bool loadXML(QDomDocument* doc);
 
 protected:
 	/** Modes (i.e. particular collections of channels) */

@@ -42,7 +42,7 @@ QLCFixtureDef::QLCFixtureDef(QLCFixtureDef *fixture)
 	m_manufacturer = QString::null;
 	m_model = QString::null;
 	m_type = QString("Dimmer");
-	
+
 	if (fixture != NULL)
 		*this = *fixture;
 }
@@ -58,15 +58,15 @@ QLCFixtureDef::QLCFixtureDef(const QString &fileName)
 	m_manufacturer = QString::null;
 	m_model = QString::null;
 	m_type = QString("Dimmer");
-	
+
 	if (QLCFile::readXML(fileName, &doc) == true)
 	{
 		if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
 		{
 			if (loadXML(doc) == false)
 			{
-				qDebug() << fileName 
-				 << " is not a fixture definition file";
+				qDebug() << fileName
+					 << " is not a fixture definition file";
 			}
 		}
 		else
@@ -96,7 +96,7 @@ QLCFixtureDef& QLCFixtureDef::operator=(QLCFixtureDef& fixture)
 	{
 		QListIterator <QLCChannel*> chit(fixture.m_channels);
 		QListIterator <QLCFixtureMode*> modeit(fixture.m_modes);
-		
+
 		m_manufacturer = fixture.m_manufacturer;
 		m_model = fixture.m_model;
 		m_type = fixture.m_type;
@@ -104,20 +104,20 @@ QLCFixtureDef& QLCFixtureDef::operator=(QLCFixtureDef& fixture)
 		/* Clear all channels */
 		while (m_channels.isEmpty() == false)
 			delete m_channels.takeFirst();
-		
+
 		/* Copy channels from the other fixture */
 		while (chit.hasNext() == true)
 			m_channels.append(new QLCChannel(chit.next()));
-		
+
 		/* Clear all modes */
 		while (m_modes.isEmpty() == false)
 			delete m_modes.takeFirst();
-		
+
 		/* Copy modes from the other fixture */
 		while (modeit.hasNext() == true)
 			m_modes.append(new QLCFixtureMode(modeit.next()));
 	}
-	
+
 	return *this;
 }
 
@@ -175,14 +175,14 @@ QLCChannel* QLCFixtureDef::channel(const QString &name)
 {
 	QListIterator <QLCChannel*> it(m_channels);
 	QLCChannel* ch = NULL;
-	
+
 	while (it.hasNext() == true)
 	{
 		ch = it.next();
 		if (ch->name() == name)
 			return ch;
 	}
-	
+
 	return NULL;
 }
 
@@ -215,14 +215,14 @@ QLCFixtureMode* QLCFixtureDef::mode(const QString& name)
 {
 	QListIterator <QLCFixtureMode*> it(m_modes);
 	QLCFixtureMode* mode = NULL;
-	
+
 	while (it.hasNext() == true)
 	{
 		mode = it.next();
 		if (mode->name() == name)
 			return mode;
 	}
-	
+
 	return NULL;
 }
 
@@ -259,19 +259,19 @@ bool QLCFixtureDef::saveXML(const QString &fileName)
 		root.appendChild(tag);
 		text = doc->createTextNode(m_manufacturer);
 		tag.appendChild(text);
-		
+
 		/* Model */
 		tag = doc->createElement(KXMLQLCFixtureDefModel);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_model);
 		tag.appendChild(text);
-		
+
 		/* Type */
 		tag = doc->createElement(KXMLQLCFixtureDefType);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_type);
 		tag.appendChild(text);
-		
+
 		/* Channels */
 		QListIterator <QLCChannel*> chit(m_channels);
 		while (chit.hasNext() == true)
@@ -342,6 +342,6 @@ bool QLCFixtureDef::loadXML(QDomDocument* doc)
 		qDebug() << "Fixture node not found in file!";
 		retval = false;
 	}
-	
+
 	return retval;
 }
