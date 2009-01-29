@@ -25,15 +25,24 @@ macx {
 
 # Win32 additional DLL installation
 win32 {
+	# Qt Libraries
         qtlibs.path     = $$LIBSDIR
         qtlibs.files    = $$(QTDIR)/bin/QtCore4.dll \
                           $$(QTDIR)/bin/QtGui4.dll \
                           $$(QTDIR)/bin/QtXml4.dll
 
-        # TODO: MinGW might be elsewhere, but there's no easy way to find it
+	# MinGW library
         mingw.path      = $$LIBSDIR
         mingw.files     = $$(SystemDrive)/MinGW/bin/mingwm10.dll
 
-        INSTALLS        += qtlibs mingw
-}
+	# NullSoft installer files
+	nsis.path	= $$DATADIR
+	nsis.files	= qlc.nsi \
+			  qlc-input-midi.nsi \
+			  qlc-output-ftdidmx.nsi \
+			  qlc-output-midi.nsi \
+			  qlc-output-udmx.nsi \
+			  qlc-output-usbdmx.nsi
 
+        INSTALLS        += qtlibs mingw nsis
+}
