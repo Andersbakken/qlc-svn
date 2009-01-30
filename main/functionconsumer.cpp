@@ -65,7 +65,6 @@ FunctionConsumer::FunctionConsumer(QObject* parent, OutputMap* outputMap)
 	m_timerType = NanoSleepTimer;
 #endif
 
-	m_timeCode = 0;
 	m_running = false;
 
 	/* Each fixture should fit inside one universe -> 512 values */
@@ -273,7 +272,6 @@ void FunctionConsumer::runRTC()
 		}
 		else
 		{
-			m_timeCode++;
 			event();
 		}
 	}
@@ -379,8 +377,6 @@ void FunctionConsumer::runNanoSleepTimer()
 			}
 		}
 
-		m_timeCode++;
-
 		event();
 	}
 
@@ -395,7 +391,6 @@ void FunctionConsumer::runNanoSleepTimer()
 	while (m_running == true)
 	{
 		usleep(1000000 / KFrequency);
-		m_timeCode++;
 		event();
 	}
 }
@@ -425,26 +420,18 @@ void FunctionConsumer::cue(Function* function)
 
 void FunctionConsumer::purge()
 {
-	QListIterator <Function*> it(m_functionList);
+	m_functionListMutex.lock();
 
 	/* Issue a stop command to all running functions */
-	m_functionListMutex.lock();
+	QListIterator <Function*> it(m_functionList);
 	while (it.hasNext() == true)
-	{
-		m_functionListMutex.unlock();
 		it.next()->stop();
-		m_functionListMutex.lock();
-	}
+
 	m_functionListMutex.unlock();
 
 	/* Wait until all functions have been stopped */
 	while (runningFunctions() > 0)
 		msleep(10);
-}
-
-t_bus_value FunctionConsumer::timeCode()
-{
-	return m_timeCode;
 }
 
 void FunctionConsumer::stop()
@@ -459,10 +446,8 @@ void FunctionConsumer::stop()
 	wait();
 }
 
-
 void FunctionConsumer::run()
 {
-	m_timeCode = 0;
 	m_running = true;
 
 	switch (m_timerType)
@@ -488,46 +473,37 @@ void FunctionConsumer::event()
 	/* Lock before accessing the running functions list */
 	m_functionListMutex.lock();
 
-	for (int i = 0; i < m_functionList.count(); i++)
+	QMutableListIterator <Function*> it(m_functionList);
+	while (it.hasNext() == true)
 	{
-		m_function = m_functionList.at(i);
-
-		/* Unlock after accessing the running functions list */
-		m_functionListMutex.unlock(); 
+		m_function = it.next();
 
 		if (m_function->eventBuffer()->get(m_event) == -1)
 		{
 			if (m_function->isRunning() == false)
 			{
-				/* Lock before remove */
-				m_functionListMutex.lock();
-
 				/* Remove the current function */
-				m_functionList.removeAt(i);
+				it.remove();
 
 				/* Tell the function that it has been removed */
 				m_function->finale();
-
-				/* Unlock after remove */
-				m_functionListMutex.unlock();
 			}
 		}
 		else
 		{
+			qDebug() << m_function->eventBuffer()->eventSize();
+
 			for (m_channel = 0;
 			     m_channel < m_function->eventBuffer()->eventSize();
 			     m_channel++)
 			{
-				/* Write also invalid values; let setValue()
-				   take care of them */
-				m_outputMap->setValue(m_event[m_channel] >> 8,
-						   m_event[m_channel] & 0xFF);
+				m_outputMap->setValue(
+					t_channel(m_event[m_channel] >> 8),
+					t_value(m_event[m_channel]));
 			}
 		}
-
-		/* Lock for next round */
-		m_functionListMutex.lock(); 
 	}
+
 	/* No more loops, unlock and get out */
 	m_functionListMutex.unlock();
 

@@ -375,7 +375,8 @@ void Scene::arm()
 		Q_ASSERT(fxi != NULL);
 
 		m_channels[i].address = fxi->universeAddress() + scv.channel;
-		m_channelData[i] = (fxi->universeAddress() + scv.channel) << 8;
+		m_channelData[i] = t_buffer_data(fxi->universeAddress() 
+						 + scv.channel) << 8;
 		i++;
 	}
 }
@@ -427,11 +428,9 @@ void Scene::run()
 	for (i = 0; i < channels; i++)
 	{
 		m_channels[i].current = m_channels[i].start =
-			static_cast<float> 
-			(_app->outputMap()->getValue(m_channels[i].address));
+			_app->outputMap()->getValue(m_channels[i].address);
 
-		m_channels[i].target = 
-			static_cast<float> (m_values.at(i).value);
+		m_channels[i].target = m_values.at(i).value;
 
 		/* Check, whether this scene needs to play at all */
 		if (m_channels[i].current == m_values.at(i).value)
@@ -462,17 +461,15 @@ void Scene::run()
 			   it should be after m_elapsedTime, so that it
 			   will be ready when elapsedTime == timeSpan */
 			m_channels[i].current = m_channels[i].start
-				+ (m_channels[i].target - m_channels[i].start)
-				* (float(m_elapsedTime) / m_timeSpan);
-			
-			/* The address is in the first 8 bits, so
-			   preserve that part with AND. Then add the
-			   value to the lowest 8 bits with OR. */
-			m_channelData[i] = (m_channelData[i] & 0xff00)
-				| static_cast<t_buffer_data>
-				(m_channels[i].current);
+				+ ((m_channels[i].target - m_channels[i].start)
+				* (double(m_elapsedTime) / double(m_timeSpan)));
+
+			/* The address is in bits 8-31 and value in 0-7, so
+			   discard the value part and OR the new value there */
+			m_channelData[i] = (m_channelData[i] & ~0xFF)
+				| t_buffer_data(m_channels[i].current);
 		}
-		
+
 		m_eventBuffer->put(m_channelData);
 	}
 	
@@ -484,10 +481,10 @@ void Scene::run()
 	for (i = 0; i < channels && m_stopped == false; i++)
 	{
 		/* Just set the target value */
-		m_channelData[i] = (m_channelData[i] & 0xff00) |
-			static_cast<t_buffer_data> (m_channels[i].target);
+		m_channelData[i] = (m_channelData[i] & ~0xFF)
+			| t_buffer_data(m_channels[i].target);
 	}
-	
+
 	if (m_stopped == false)
 	{
 		/* Put the last values to the buffer */

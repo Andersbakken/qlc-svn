@@ -174,14 +174,6 @@ public:
 	void purge();
 
 	/**
-	 * Get the elapsed time since FunctionConsumer was started. This is
-	 * used by, for example, chasers to calculate their hold time.
-	 *
-	 * @return The current timecode
-	 */
-	t_bus_value timeCode();
-
-	/**
 	 * Stop the FunctionConsumer alltogether. No functions will be run
 	 * if FC is stopped.
 	 */
@@ -215,9 +207,6 @@ protected:
 
 	/** Mutex that guards access to m_functionList */
 	QMutex m_functionListMutex;
-
-	/** Elapsed time since FC start */
-	t_bus_value m_timeCode;
 
 	/** Buffer that holds the values of each function */
 	t_buffer_data* m_event;

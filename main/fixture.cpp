@@ -50,11 +50,12 @@ Fixture::Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
 {
 	m_fixtureDef = fixtureDef;
 	m_fixtureMode = mode;
+	m_address = 0;
 	m_name = name;
 	m_id = id;
 
-	m_address = (m_address & 0xFE00) | (address & 0x01FF);
-	m_address = (m_address & 0x01FF) | (universe << 9);
+	setUniverse(universe);
+	setAddress(address);
 
 	m_genericChannel = NULL;
 }
@@ -68,8 +69,8 @@ Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
 	m_id = id;
 	m_channels = channels;
 
-	m_address = (m_address & 0xFE00) | (address & 0x01FF);
-	m_address = (m_address & 0x01FF) | (universe << 9);
+	setUniverse(universe);
+	setAddress(address);
 
 	m_genericChannel = NULL;
 }

@@ -46,13 +46,13 @@ public:
 	t_channel address;
 
 	/** The value of the channel where a scene started fading from */
-	float start;
+	t_value start;
 
 	/** The current value set by a scene */
-	float current;
+	t_value current;
 
 	/** The target value to eventually fade to */
-	float target;
+	t_value target;
 
 	/** If true, this value is ready, don't set it anymore to DMX */
 	bool ready;

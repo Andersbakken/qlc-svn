@@ -231,7 +231,7 @@ void MonitorFixture::slotChangedValues(const QHash <t_channel,t_value>& values)
 		    it.key() < (fxi->universeAddress() + fxi->channels()))
 		{
 			/* Isolate only the relative channel number */
-			ch = (it.key() & 0x1FF) - fxi->address();
+			ch = it.key() - fxi->universeAddress();
 			Q_ASSERT(ch < m_valueLabels.count());
 
 			/* Get the value label that represents the channel */
