@@ -349,8 +349,8 @@ void ConsoleChannel::update()
 
 	Q_ASSERT(m_fixture != NULL);
 	
-	value = _app->outputMap()->getValue(m_fixture->universeAddress() +
-					    m_channel);
+	value = _app->outputMap()->value(m_fixture->universeAddress() +
+					 m_channel);
 	
 	m_valueLabel->setNum(value);
 	setValue(value);
@@ -395,8 +395,8 @@ void ConsoleChannel::enable(bool state)
 {
 	setChecked(state);
 
-	m_value = _app->outputMap()->getValue(m_fixture->universeAddress() +
-					      m_channel);
+	m_value = _app->outputMap()->value(m_fixture->universeAddress() +
+					   m_channel);
 
 	emit valueChanged(m_channel, m_value, isEnabled());
 }

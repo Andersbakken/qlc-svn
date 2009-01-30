@@ -123,7 +123,7 @@ public:
 	 * @param channel The channel whose value to get
 	 * @return The value of the channel
 	 */
-	t_value getValue(t_channel channel);
+	t_value value(t_channel channel);
 
 	/**
 	 * Set the value of one channel. Channels 0-511 are for the first

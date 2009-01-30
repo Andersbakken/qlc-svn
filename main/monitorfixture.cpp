@@ -144,7 +144,7 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 				channel = i;
 
 			/* Get the channel's current value */
-			value = _app->outputMap()->getValue(
+			value = _app->outputMap()->value(
 						fxi->universeAddress() + i);
 
 			/* Create a label for channel number */

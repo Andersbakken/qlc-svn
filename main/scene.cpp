@@ -428,7 +428,7 @@ void Scene::run()
 	for (i = 0; i < channels; i++)
 	{
 		m_channels[i].current = m_channels[i].start =
-			_app->outputMap()->getValue(m_channels[i].address);
+			_app->outputMap()->value(m_channels[i].address);
 
 		m_channels[i].target = m_values.at(i).value;
 

@@ -171,7 +171,7 @@ bool OutputMap::blackout() const
  * Values
  *****************************************************************************/
 
-t_value OutputMap::getValue(t_channel channel)
+t_value OutputMap::value(t_channel channel)
 {
 	OutputPatch* outputPatch;
 	t_channel universe;
