@@ -60,6 +60,7 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 	m_universes = universes;
 	m_dummyOut = NULL;
 	m_blackout = false;
+	m_collectValues = false;
 
 	initPatch();
 
@@ -179,7 +180,8 @@ t_value OutputMap::getValue(t_channel channel)
 	/* Get the universe from the channel number. Channel is in the lowest
 	   9 bits and the universe is in the highest 7 bits. */
 	universe = static_cast<t_channel> (channel >> 9);
-	Q_ASSERT(universe < m_universes);
+	if (universe > KUniverseCount)
+		universe = KUniverseCount - 1;
 
 	/* Perform universe & monitorValue writing inside a mutex to
 	   synchronize patching and prevent crashes. */
@@ -208,7 +210,8 @@ void OutputMap::setValue(t_channel channel, t_value value)
 	/* Get the universe from the channel number. Channel is in the lowest
 	   9 bits and the universe is in the highest 7 bits. */
 	universe = static_cast<t_channel> (channel >> 9);
-	Q_ASSERT(universe < m_universes);
+	if (universe > KUniverseCount)
+		universe = KUniverseCount - 1;
 
 	/* Perform universe & monitorValue writing inside a mutex to
 	   synchronize patching and prevent crashes. */
@@ -220,8 +223,9 @@ void OutputMap::setValue(t_channel channel, t_value value)
 
 	/* Write to universe */
 	outputPatch->setValue(channel & 0x1FF, value);
-
-	m_monitorValues[channel] = value;
+	
+	if (m_collectValues == true)
+		m_monitorValues[channel] = value;
 
 	m_mutex.unlock();
 }
@@ -231,11 +235,11 @@ void OutputMap::dumpUniverses()
 	/* Perform universe & monitorValue writing inside a mutex to
 	   synchronize patching and prevent crashes. */
 	m_mutex.lock();
-	if (m_monitorValues.count() > 0)
-	{
-		for (int i = 0; i < m_universes; i++)
-			m_patch[i]->dump();
+	for (int i = 0; i < m_universes; i++)
+		m_patch[i]->dump();
 
+	if (m_collectValues == true)
+	{
 		emit changedValues(m_monitorValues);
 		m_monitorValues.clear();
 	}

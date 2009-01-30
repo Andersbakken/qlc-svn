@@ -140,6 +140,9 @@ public:
 	/** Dump all universes' contents to their output plugins */
 	void dumpUniverses();
 
+	/** En/disable collection and sending of changed values (to monitor) */
+	void collectValues(bool collect) { m_collectValues = collect; }
+
 signals:
 	/** Send a map of changed values to MonitorFixtures */
 	void changedValues(const QHash <t_channel,t_value>& values);
@@ -153,6 +156,9 @@ protected:
 
  	/** Mutex that guards m_monitorValues */
  	QMutex m_mutex;
+
+	/** Collect monitor values or not */
+	bool m_collectValues;
 
 	/*********************************************************************
 	 * Patch

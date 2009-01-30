@@ -52,10 +52,13 @@ Monitor::Monitor(QWidget* parent) : QWidget(parent)
 	m_valueStyle = MonitorFixture::DMXValues;
 
 	init();
+
+	_app->outputMap()->collectValues(true);
 }
 
 Monitor::~Monitor()
 {
+	_app->outputMap()->collectValues(false);
 }
 
 void Monitor::init()

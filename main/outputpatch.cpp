@@ -35,6 +35,7 @@ OutputPatch::OutputPatch(QObject* parent) : QObject(parent)
 {
 	m_plugin = NULL;
 	m_output = -1;
+	m_dirty = false;
 
 	std::fill(m_values, m_values + 512, 0);
 
@@ -96,6 +97,7 @@ void OutputPatch::setValue(t_channel channel, t_value value)
 {
 	Q_ASSERT(channel < 512);
 	m_values[channel] = value;
+	m_dirty = true;
 }
 
 void OutputPatch::dump()
@@ -105,8 +107,12 @@ void OutputPatch::dump()
 	{
 		/* Don't do anything if there is no plugin and/or output line.
 		   Otherwise write the whole 512 channel universe. */
-		if (m_plugin != NULL && m_output != KOutputInvalid)
+		if (m_plugin != NULL && m_output != KOutputInvalid &&
+		    m_dirty == true)
+		{
 			m_plugin->writeRange(m_output, 0, m_values, 512);
+			m_dirty = false;
+		}
 	}
 }
 
