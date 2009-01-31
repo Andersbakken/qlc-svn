@@ -19,6 +19,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QStyleOptionButton>
+#include <QColorDialog>
+#include <QFileDialog>
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QMessageBox>
@@ -28,6 +31,7 @@
 #include <QEvent>
 #include <QTimer>
 #include <QBrush>
+#include <QStyle>
 #include <QtXml>
 #include <QMenu>
 #include <QSize>
@@ -41,7 +45,6 @@
 #include "inputmap.h"
 #include "vcbutton.h"
 #include "function.h"
-#include "vcframe.h"
 #include "fixture.h"
 #include "keybind.h"
 #include "app.h"
@@ -61,14 +64,11 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	/* No function is initially attached to the button */
 	m_function = KNoID;
 
-	/* Set the frame line width a bit thicker to make this look more
-	   like a button than a frame (which it actually is) */
-	setLineWidth(2);
-
 	setCaption(QString::null);
 	setOn(false);
 	setExclusive(false);
 	setStopFunctions(false);
+	setFrameStyle(KVCFrameStyleNone);
 
 	/* Initial size */
 	setMinimumSize(20, 20);
@@ -109,6 +109,137 @@ void VCButton::slotProperties()
 {
 	VCButtonProperties prop(this, _app);
 	prop.exec();
+}
+
+/*****************************************************************************
+ * Background image
+ *****************************************************************************/
+
+void VCButton::slotChooseBackgroundImage()
+{
+}
+
+/*****************************************************************************
+ * Background color
+ *****************************************************************************/
+
+void VCButton::setBackgroundColor(const QColor& color)
+{
+	QPalette pal = palette();
+
+	m_hasCustomBackgroundColor = true;
+	m_backgroundImage = QString::null;
+
+	pal.setColor(QPalette::Button, color);
+	setPalette(pal);
+
+	_app->doc()->setModified();
+}
+
+void VCButton::slotChooseBackgroundColor()
+{
+	QColor color;
+
+	color = QColorDialog::getColor(palette().color(QPalette::Button));
+	if (color.isValid() == true)
+		setBackgroundColor(color);
+}
+
+void VCButton::slotResetBackgroundColor()
+{
+	QColor fg;
+
+	m_hasCustomBackgroundColor = false;
+	m_backgroundImage = QString::null;
+
+	/* Store foreground color */
+	if (m_hasCustomForegroundColor == true)
+		fg = palette().color(QPalette::ButtonText);
+
+	/* Reset the whole palette to application palette */
+	setPalette(QApplication::palette());
+
+	/* Restore foreground color */
+	if (fg.isValid() == true)
+	{
+		QPalette pal = palette();
+		pal.setColor(QPalette::ButtonText, fg);
+		setPalette(pal);
+	}
+
+	_app->doc()->setModified();
+}
+
+/*****************************************************************************
+ * Foreground color
+ *****************************************************************************/
+
+void VCButton::setForegroundColor(const QColor& color)
+{
+	QPalette pal = palette();
+
+	m_hasCustomForegroundColor = true;
+
+	pal.setColor(QPalette::ButtonText, color);
+	setPalette(pal);
+
+	_app->doc()->setModified();
+}
+
+void VCButton::slotChooseForegroundColor()
+{
+	QColor color;
+
+	color = QColorDialog::getColor(palette().color(QPalette::ButtonText));
+	if (color.isValid() == true)
+		setForegroundColor(color);
+}
+
+void VCButton::slotResetForegroundColor()
+{
+	QColor bg;
+
+	m_hasCustomForegroundColor = false;
+
+	/* Store background color */
+	if (m_hasCustomBackgroundColor == true)
+		bg = palette().color(QPalette::Button);
+
+	/* Reset the whole palette to application palette */
+	setPalette(QApplication::palette());
+
+	/* Restore foreground color */
+	if (bg.isValid() == true)
+		setBackgroundColor(bg);
+	else if (m_backgroundImage.isEmpty() == false)
+		setBackgroundImage(m_backgroundImage);
+
+	_app->doc()->setModified();
+}
+
+/*****************************************************************************
+ * Button icon
+ *****************************************************************************/
+
+void VCButton::setIcon(const QString& icon)
+{
+	m_icon = icon;
+	update();
+}
+
+void VCButton::slotChooseIcon()
+{
+	QString path;
+	path = QFileDialog::getOpenFileName(this, tr("Select button icon"),
+			icon(), tr("Images (*.png *.xpm *.jpg *.gif)"));
+        if (path.isEmpty() == false)
+                setIcon(path);
+}
+
+void VCButton::slotResetIcon()
+{
+	m_icon = QString::null;
+	update();
 }
 
 /*****************************************************************************
@@ -160,6 +291,9 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 
 	/* Caption */
 	setCaption(root->attribute(KXMLQLCVCCaption));
+
+	/* Icon */
+	setIcon(root->attribute(KXMLQLCVCButtonIcon));
 
 	/* Children */
 	node = root->firstChild();
@@ -223,6 +357,9 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Caption */
 	root.setAttribute(KXMLQLCVCCaption, caption());
 
+	/* Icon */
+	root.setAttribute(KXMLQLCVCButtonIcon, icon());
+
 	/* Function */
 	tag = doc->createElement(KXMLQLCVCButtonFunction);
 	root.appendChild(tag);
@@ -252,13 +389,6 @@ void VCButton::setOn(bool on)
 {
 	m_on = on;
 
-	/* Simulate button-look with a frame (line width has been set a bit
-	   thicker in constructor to emphasize this) */
-	if (on == true)
-		VCWidget::setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	else
-		VCWidget::setFrameStyle(QFrame::Panel | QFrame::Raised);
-
 	/* Send input feedback */
 	if (m_inputUniverse != KInputUniverseInvalid &&
 	    m_inputChannel != KInputChannelInvalid)
@@ -276,12 +406,8 @@ void VCButton::setOn(bool on)
 						   0);
 		}
 	}
-}
 
-void VCButton::setFrameStyle(const int)
-{
-	/* Don't allow real frame style setting because we need to simulate
-	   button-look with a custom frame style */
+	update();
 }
 
 /*****************************************************************************
@@ -308,6 +434,8 @@ void VCButton::slotInputValueChanged(t_input_universe universe,
 				     t_input_channel channel,
 				     t_input_value value)
 {
+	Q_UNUSED(value);
+
 	/* Don't allow operation during design mode */
 	if (_app->mode() == App::Design)
 		return;
@@ -475,9 +603,9 @@ void VCButton::slotFlashReady()
 	// This function is called twice with same XOR mask,
 	// thus creating a brief opposite-color -- normal-color flash
 	QPalette pal = palette();
-	QColor color(pal.color(QPalette::Window));
+	QColor color(pal.color(QPalette::Button));
 	color.setRgb(color.red()^0xff, color.green()^0xff, color.blue()^0xff);
-	pal.setColor(QPalette::Window, color);
+	pal.setColor(QPalette::Button, color);
 	setPalette(pal);
 }
 
@@ -492,11 +620,21 @@ void VCButton::invokeMenu(QPoint point)
 
 	/* First, create the common widget menu and insert a separator to it */
 	menu = VCWidget::createMenu();
+
+	/* Icon menu */
+	QMenu* iconMenu = new QMenu(menu);
+	iconMenu->setTitle(tr("Icon"));
+	iconMenu->addAction(QIcon(":/image.png"), tr("Choose..."),
+			    this, SLOT(slotChooseIcon()));
+	iconMenu->addAction(QIcon(":/undo.png"), tr("None"),
+			    this, SLOT(slotResetIcon()));
+
+	menu->addMenu(iconMenu);
 	menu->addSeparator();
 
 	/* Insert a menu item for attaching a function to this button */
 	attachAction = menu->addAction(QIcon(":/attach.png"),
-				       "Set function...", this,
+				       tr("Set function..."), this,
 				       SLOT(slotAttachFunction()));
 
 	menu->exec(point);
@@ -507,7 +645,19 @@ void VCButton::slotAttachFunction()
 {
 	FunctionSelection sel(this, false, KNoID, Function::Undefined, false);
 	if (sel.exec() == QDialog::Accepted)
-		setFunction(sel.selection.at(0));
+	{
+		t_function_id fid;
+
+		fid = sel.selection.at(0);
+		setFunction(fid);
+
+		if (caption().isEmpty() == true)
+		{
+			Function* function = _app->doc()->function(fid);
+			if (function != NULL)
+				setCaption(function->name());
+		}
+	}
 }
 
 /*****************************************************************************
@@ -516,18 +666,51 @@ void VCButton::slotAttachFunction()
 
 void VCButton::paintEvent(QPaintEvent* e)
 {
-	VCWidget::paintEvent(e);
+	QStyleOptionButton option;
+	option.initFrom(this);
 
+	/* Caption */
+	option.text = caption();
+
+	/* Sunken or raised based on isOn() status */
+	if (isOn() == true)
+		option.state = QStyle::State_Sunken;
+	else
+		option.state= QStyle::State_Raised;
+
+	/* Enabled or disabled looks based on application mode */
+	if (_app->mode() == App::Operate)
+		option.state |= QStyle::State_Enabled;
+
+	/* Icon */
+	if (icon() != QString::null)
+	{
+		option.icon = QIcon(icon());
+		option.iconSize = QSize(26, 26);
+	}
+	else
+	{
+		option.icon = QIcon();
+		option.iconSize = QSize(-1, -1);
+	}
+
+	/* Paint the button */
+	QPainter painter(this);
+	style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
+
+	/* Flash emblem */
 	if (m_keyBind->action() == KeyBind::Flash)
 	{
-		/* TODO: Something better for marking a flash button */
-		QPainter p(this);
-
-		QPen pen(Qt::red);
-		p.setPen(pen);
-		p.drawEllipse(rect().width() - 14, rect().height() - 14,
-			      10, 10);
+		QIcon icon(":/flash.png");
+		painter.drawPixmap(rect().width() - 16, 0,
+			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
 	}
+
+	/* Stop painting here */
+	painter.end();
+
+	/* Draw a selection frame if appropriate */
+	VCWidget::paintEvent(e);
 }
 
 void VCButton::mousePressEvent(QMouseEvent* e)

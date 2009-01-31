@@ -40,8 +40,6 @@ class KeyBind;
 
 #define KXMLQLCVirtualConsole "VirtualConsole"
 
-#define KXMLQLCVCCaption "Caption"
-
 #define KXMLQLCVirtualConsoleGrid "Grid"
 #define KXMLQLCVirtualConsoleGridEnabled "Enabled"
 #define KXMLQLCVirtualConsoleGridXResolution "XResolution"

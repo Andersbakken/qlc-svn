@@ -63,6 +63,7 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 	connect(m_list, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
 		this, SLOT(slotItemActivated(QTreeWidgetItem*)));
 
+	setFrameStyle(KVCFrameStyleSunken);
 	setCaption(tr("Cue list"));
 	resize(QPoint(200, 200));
 

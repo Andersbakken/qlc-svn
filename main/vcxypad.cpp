@@ -54,11 +54,11 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 	/* Set the class name "VCXYPad" as the object name as well */
 	setObjectName(VCXYPad::staticMetaObject.className());
 
+	setFrameStyle(KVCFrameStyleSunken);
 	setCaption(QString::null);
 	setMinimumSize(20, 20);
 
 	resize(QPoint(120, 120));
-	setFrameStyle(KVCWidgetFrameStyleSunken);
 
 	m_xyPosPixmap = QPixmap(":/xypad-point.png");
 

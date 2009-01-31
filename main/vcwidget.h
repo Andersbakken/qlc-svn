@@ -22,7 +22,7 @@
 #ifndef VCWIDGET_H
 #define VCWIDGET_H
 
-#include <QFrame>
+#include <QWidget>
 
 #include "common/qlctypes.h"
 #include "app.h"
@@ -35,8 +35,10 @@ class QString;
 class QMenu;
 class QFile;
 
+#define KXMLQLCVCCaption "Caption"
+#define KXMLQLCVCFrameStyle "FrameStyle"
+
 #define KXMLQLCVCWidgetAppearance "Appearance"
-#define KXMLQLCVCWidgetFrameStyle "FrameStyle"
 
 #define KXMLQLCVCWidgetForegroundColor "ForegroundColor"
 #define KXMLQLCVCWidgetBackgroundColor "BackgroundColor"
@@ -48,15 +50,15 @@ class QFile;
 #define KXMLQLCVCWidgetBackgroundImage "BackgroundImage"
 #define KXMLQLCVCWidgetBackgroundImageNone "None"
 
+#define KVCFrameStyleSunken (QFrame::StyledPanel | QFrame::Sunken)
+#define KVCFrameStyleRaised (QFrame::StyledPanel | QFrame::Raised)
+#define KVCFrameStyleNone   (QFrame::NoFrame)
+
 #define KXMLQLCVCWidgetInput "Input"
 #define KXMLQLCVCWidgetInputUniverse "Universe"
 #define KXMLQLCVCWidgetInputChannel "Channel"
 
-const int KVCWidgetFrameStyleSunken ( QFrame::StyledPanel | QFrame::Sunken );
-const int KVCWidgetFrameStyleRaised ( QFrame::StyledPanel | QFrame::Raised );
-const int KVCWidgetFrameStyleNone   ( QFrame::NoFrame );
-
-class VCWidget : public QFrame
+class VCWidget : public QWidget
 {
 	Q_OBJECT
 
@@ -132,7 +134,6 @@ public:
 	/** Set the widget's foreground color */
 	virtual void setForegroundColor(const QColor& color);
 
-public:
 	/** Get the widget's foreground color */
 	virtual const QColor& foregroundColor() { 
 		return palette().color(QPalette::WindowText); }
@@ -145,7 +146,7 @@ public slots:
 	/** Invoke a color choosing dialog */
 	virtual void slotChooseForegroundColor();
 
-	/** Reset the widget's background color to whatever the platform uses */
+	/** Reset the widget's foreground color to whatever the platform uses */
 	virtual void slotResetForegroundColor();
 
 protected:
@@ -190,19 +191,33 @@ public slots:
 	virtual void slotRename();
 
 	/*********************************************************************
-	 * Frame style
-	 *********************************************************************/
-public slots:
-	virtual void slotSetFrameSunken();
-	virtual void slotSetFrameRaised();
-	virtual void slotResetFrame();
-
-	/*********************************************************************
 	 * Stacking
 	 *********************************************************************/
 public slots:
 	virtual void raise();
 	virtual void lower();
+
+	/*********************************************************************
+	 * Frame style
+	 *********************************************************************/
+public:
+	void setFrameStyle(int style);
+	int frameStyle() const { return m_frameStyle; }
+
+public slots:
+	void slotSetFrameSunken();
+	void slotSetFrameRaised();
+	void slotResetFrame();
+
+protected:
+	int m_frameStyle;
+
+	/*********************************************************************
+	 * Frame style converters
+	 *********************************************************************/
+public:
+	static QString frameStyleToString(int style);
+	static int stringToFrameStyle(const QString& style);
 
 	/*********************************************************************
 	 * Properties
@@ -276,13 +291,6 @@ protected:
 
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
-
-	/*********************************************************************
-	 * Frame style converters
-	 *********************************************************************/
-public:
-	static QString frameStyleToString(const int style);
-	static int stringToFrameStyle(const QString& style);
 
 	/*********************************************************************
 	 * Event handlers

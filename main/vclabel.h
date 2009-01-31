@@ -26,6 +26,7 @@
 
 class QDomDocument;
 class QDomElement;
+class QPaintEvent;
 
 #define KXMLQLCVCLabel "Label"
 
@@ -54,6 +55,12 @@ public:
 			   QWidget* parent);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+
+	/*********************************************************************
+	 * Painting
+	 *********************************************************************/
+protected:
+	void paintEvent(QPaintEvent* e);
 };
 
 #endif

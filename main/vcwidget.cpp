@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QStyleOptionFrame>
 #include <QApplication>
 #include <QInputDialog>
 #include <QColorDialog>
@@ -33,6 +34,7 @@
 #include <QDebug>
 #include <QBrush>
 #include <QPoint>
+#include <QStyle>
 #include <QSize>
 #include <QMenu>
 #include <QList>
@@ -49,7 +51,7 @@
 
 extern App* _app;
 
-VCWidget::VCWidget(QWidget* parent) : QFrame(parent)
+VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 {
 	Q_ASSERT(parent != NULL);
 
@@ -60,18 +62,17 @@ VCWidget::VCWidget(QWidget* parent) : QFrame(parent)
 	m_hasCustomBackgroundColor = false;
 	m_hasCustomForegroundColor = false;
 	m_hasCustomFont = false;
+	m_frameStyle = KVCFrameStyleNone;
 
 	m_xpos = 0;
 	m_ypos = 0;
 	m_resizeMode = false;
 
-	setFrameStyle(KVCWidgetFrameStyleSunken);
-
 	setBackgroundRole(QPalette::Window);
 	setAutoFillBackground(true);
+	setEnabled(true);
 
 	setMinimumSize(20, 20);
-	QFrame::resize(QSize(120, 120));
 
 	m_inputUniverse = KInputUniverseInvalid;
 	m_inputChannel = KInputChannelInvalid;
@@ -278,7 +279,7 @@ void VCWidget::slotResetFont()
 void VCWidget::setCaption(const QString& text)
 {
 	setWindowTitle(text);
-	repaint();
+	update();
 	_app->doc()->setModified();
 }
 
@@ -295,28 +296,6 @@ void VCWidget::slotRename()
 }
 
 /*****************************************************************************
- * Frame style
- *****************************************************************************/
-
-void VCWidget::slotSetFrameSunken()
-{
-	setFrameStyle(KVCWidgetFrameStyleSunken);
-	_app->doc()->setModified();
-}
-
-void VCWidget::slotSetFrameRaised()
-{
-	setFrameStyle(KVCWidgetFrameStyleRaised);
-	_app->doc()->setModified();
-}
-
-void VCWidget::slotResetFrame()
-{
-	setFrameStyle(KVCWidgetFrameStyleNone);
-	_app->doc()->setModified();
-}
-
-/*****************************************************************************
  * Stacking
  *****************************************************************************/
 
@@ -330,6 +309,56 @@ void VCWidget::lower()
 {
 	QWidget::lower();
 	_app->doc()->setModified();
+}
+
+/*****************************************************************************
+ * Frame style
+ *****************************************************************************/
+
+void VCWidget::setFrameStyle(int style)
+{
+	m_frameStyle = style;
+	update();
+	_app->doc()->setModified();
+}
+
+void VCWidget::slotSetFrameSunken()
+{
+	setFrameStyle(KVCFrameStyleSunken);
+}
+
+void VCWidget::slotSetFrameRaised()
+{
+	setFrameStyle(KVCFrameStyleRaised);
+}
+
+void VCWidget::slotResetFrame()
+{
+	setFrameStyle(KVCFrameStyleNone);
+}
+
+/*****************************************************************************
+ * Frame style converters
+ *****************************************************************************/
+
+QString VCWidget::frameStyleToString(int style)
+{
+	if (style == KVCFrameStyleSunken)
+		return "Sunken";
+	else if (style == KVCFrameStyleRaised)
+		return "Raised";
+	else
+		return "None";
+}
+
+int VCWidget::stringToFrameStyle(const QString& style)
+{
+	if (style == "Sunken")
+		return KVCFrameStyleSunken;
+	else if (style == "Raised")
+		return KVCFrameStyleRaised;
+	else
+		return KVCFrameStyleNone;
 }
 
 /*****************************************************************************
@@ -427,19 +456,14 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCVCWidgetFrameStyle)
+		if (tag.tagName() == KXMLQLCVCFrameStyle)
 		{
-			int style = 0;
-			style = stringToFrameStyle(tag.text());
-			setFrameStyle(style);
+			setFrameStyle(stringToFrameStyle(tag.text()));
 		}
 		else if (tag.tagName() == KXMLQLCVCWidgetForegroundColor)
 		{
 			if (tag.text() != KXMLQLCVCWidgetColorDefault)
-			{
-				QColor color(tag.text().toUInt());
-				setForegroundColor(color);
-			}
+				setForegroundColor(QColor(tag.text().toUInt()));
 		}
 		else if (tag.tagName() == KXMLQLCVCWidgetBackgroundColor)
 		{
@@ -510,7 +534,7 @@ bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 	frame_root->appendChild(root);
 
 	/* Frame style */
-	tag = doc->createElement(KXMLQLCVCWidgetFrameStyle);
+	tag = doc->createElement(KXMLQLCVCFrameStyle);
 	root.appendChild(tag);
 	text = doc->createTextNode(frameStyleToString(frameStyle()));
 	tag.appendChild(text);
@@ -586,7 +610,7 @@ bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
 
 void VCWidget::slotModeChanged(App::Mode mode)
 {
-	repaint();
+	update();
 
 	/* Patch the signal thru to all children */
 	emit modeChanged(mode);
@@ -655,7 +679,7 @@ QMenu* VCWidget::createMenu()
 	fontMenu->addAction(QIcon(":/undo.png"), "Default",
 			    this, SLOT(slotResetFont()));
 
-	// Frame menu
+	/* Frame menu */
 	QMenu* frameMenu = new QMenu(editMenu);
 	frameMenu->setTitle("Frame");
 	frameMenu->addAction(QIcon(":/framesunken.png"), "Sunken",
@@ -715,7 +739,7 @@ void VCWidget::resize(QPoint p)
 	p = mapFromParent(p);
 
 	// Do the resize
-	QFrame::resize(p.x(), p.y());
+	QWidget::resize(p.x(), p.y());
 }
 
 void VCWidget::move(QPoint p)
@@ -740,31 +764,7 @@ void VCWidget::move(QPoint p)
 		p.setY(parentWidget()->height() - rect().height());
 
 	// Do the move
-	QFrame::move(p);
-}
-
-/*****************************************************************************
- * Frame style converters
- *****************************************************************************/
-
-QString VCWidget::frameStyleToString(const int style)
-{
-	if (style == KVCWidgetFrameStyleSunken)
-		return "Sunken";
-	else if (style == KVCWidgetFrameStyleRaised)
-		return "Raised";
-	else
-		return "None";
-}
-
-int VCWidget::stringToFrameStyle(const QString& style)
-{
-	if (style == "Sunken")
-		return KVCWidgetFrameStyleSunken;
-	else if (style == "Raised")
-		return KVCWidgetFrameStyleRaised;
-	else
-		return KVCWidgetFrameStyleNone;
+	QWidget::move(p);
 }
 
 /*****************************************************************************
@@ -773,38 +773,37 @@ int VCWidget::stringToFrameStyle(const QString& style)
 
 void VCWidget::paintEvent(QPaintEvent* e)
 {
-	int caption_x = 0;
-	int caption_y = 0;
+	Q_UNUSED(e);
 
-	// First paint whatever QFrame wants to
-	QFrame::paintEvent(e);
-
-	// Draw the widget's caption
 	QPainter painter(this);
-	QFontMetrics metrics = painter.fontMetrics();
-	QSize textSize = metrics.size(Qt::TextSingleLine, caption());
-	
-	caption_x = static_cast<int> (floor((width() / 2.0) -
-					   (textSize.width() / 2.0)));	
-	caption_y = static_cast<int> (floor((height() / 2.0) + 
-			    ((textSize.height() - metrics.leading()) / 2.0)));
-	
-	painter.drawText(caption_x, caption_y, caption());
+
+	/* Draw frame according to style */
+	QStyleOptionFrame option;
+	option.initFrom(this);
+	if (frameStyle() == KVCFrameStyleSunken)
+		option.state = QStyle::State_Sunken;
+	else if (frameStyle() == KVCFrameStyleRaised)
+		option.state = QStyle::State_Raised;
+	else
+		option.state = QStyle::State_None;
+
+	if (option.state != QStyle::State_None)
+		style()->drawPrimitive(QStyle::PE_Frame, &option, &painter, this);
 
 	/* Draw selection frame */
 	if (_app->mode() == App::Design &&
 	    _app->virtualConsole()->selectedWidget() == this)
 	{
-		// Draw a dotted line around the widget
+		/* Draw a dotted line around the widget */
 		QPen pen(Qt::DotLine);
-		pen.setWidth(2);
+		pen.setWidth(0);
 		painter.setPen(pen);
-		painter.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
+		painter.drawRect(0, 0, rect().width(), rect().height());
 
-		// Draw a resize handle
-		QBrush b(Qt::SolidPattern);
-		painter.fillRect(rect().width() - 10,
-				 rect().height() - 10, 10, 10, b);
+		/* Draw a resize handle */
+		QIcon icon(":/resize.png");
+		painter.drawPixmap(rect().width() - 16, rect().height() - 17,
+			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
 	}
 }
 
@@ -843,7 +842,7 @@ void VCWidget::mousePressEvent(QMouseEvent* e)
 	}
 	else
 	{
-		QFrame::mousePressEvent(e);
+		QWidget::mousePressEvent(e);
 	}
 }
 
@@ -857,7 +856,7 @@ void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 	}
 	else
 	{
-		QFrame::mouseReleaseEvent(e);
+		QWidget::mouseReleaseEvent(e);
 	}
 }
 
@@ -890,6 +889,6 @@ void VCWidget::mouseMoveEvent(QMouseEvent* e)
 	}
 	else
 	{
-		QFrame::mouseMoveEvent(e);
+		QWidget::mouseMoveEvent(e);
 	}
 }

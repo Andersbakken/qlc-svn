@@ -19,9 +19,12 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QStyleOptionFrameV2>
 #include <QMetaObject>
 #include <QMessageBox>
+#include <QPainter>
 #include <QAction>
+#include <QStyle>
 #include <QDebug>
 #include <QPoint>
 #include <QSize>
@@ -50,8 +53,10 @@ VCFrame::VCFrame(QWidget* parent) : VCWidget(parent)
 	setObjectName(VCFrame::staticMetaObject.className());
 
 	m_buttonBehaviour = Normal;
-	setFrameStyle(KVCWidgetFrameStyleSunken);
+	m_frameStyle = KVCFrameStyleSunken;
+
 	setMinimumSize(20, 20);
+	QWidget::resize(QSize(120, 120));
 }
 
 VCFrame::~VCFrame()
@@ -294,7 +299,7 @@ void VCFrame::invokeMenu(QPoint point)
 
 	menu = VCWidget::createMenu();
 	Q_ASSERT(menu != NULL);
-	
+
 	/* Create an "Add widget" menu */
 	addMenu = new QMenu(menu);
 	addMenu->setTitle("Add widget");
@@ -313,7 +318,7 @@ void VCFrame::invokeMenu(QPoint point)
 	addMenu->addAction(QIcon(":/label.png"), tr("Label"),
 			   this, SLOT(slotAddLabel()));
 
-	/* Put the Add menu into the main menu, after a separator */
+	/* Add sub menus to the master menu */
 	menu->addSeparator();
 	menu->addMenu(addMenu);
 
@@ -452,7 +457,7 @@ void VCFrame::paintEvent(QPaintEvent* e)
 	if (isBottomFrame() == false)
 		VCWidget::paintEvent(e);
 	else
-		QFrame::paintEvent(e);
+		QWidget::paintEvent(e);
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)
@@ -460,5 +465,5 @@ void VCFrame::mouseMoveEvent(QMouseEvent* e)
 	if (isBottomFrame() == false)
 		VCWidget::mouseMoveEvent(e);
 	else
-		QFrame::mouseMoveEvent(e);
+		QWidget::mouseMoveEvent(e);
 }

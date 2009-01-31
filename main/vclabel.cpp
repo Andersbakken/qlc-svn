@@ -19,8 +19,11 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QPaintEvent>
+#include <QPainter>
 #include <QString>
 #include <QDebug>
+#include <QStyle>
 #include <QSize>
 #include <QtXml>
 
@@ -30,6 +33,8 @@
 #include "vclabel.h"
 #include "app.h"
 #include "doc.h"
+
+extern App* _app;
 
 VCLabel::VCLabel(QWidget* parent) : VCWidget(parent)
 {
@@ -113,7 +118,7 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			qDebug() << "Unknown label tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -145,3 +150,22 @@ bool VCLabel::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 	return true;
 }
+
+/****************************************************************************
+ * Drawing
+ ****************************************************************************/
+
+void VCLabel::paintEvent(QPaintEvent* e)
+{
+	bool enabled = false;
+	if (_app->mode() == App::Operate)
+		enabled = true;
+
+	QPainter painter(this);
+	style()->drawItemText(&painter, rect(), Qt::AlignCenter, palette(),
+			      enabled, caption(), foregroundRole());
+	painter.end();
+
+	VCWidget::paintEvent(e);
+}
+

@@ -35,6 +35,7 @@ class QEvent;
 class KeyBind;
 
 #define KXMLQLCVCButton "Button"
+#define KXMLQLCVCButtonIcon "Icon"
 
 #define KXMLQLCVCButtonFunction "Function"
 #define KXMLQLCVCButtonFunctionID "ID"
@@ -65,6 +66,66 @@ private:
 public slots:
 	/** Edit this widget's properties */
 	void slotProperties();
+
+	/*********************************************************************
+	 * Background image
+	 *********************************************************************/
+public:
+	/* Don't allow background image setting for buttons */
+	void setBackgroundImage(const QString& path) { Q_UNUSED(path); }
+
+public slots:
+	void slotChooseBackgroundImage();
+
+	/*********************************************************************
+	 * Background color
+	 *********************************************************************/
+public:
+	/** Set the button's background color */
+	void setBackgroundColor(const QColor& color);
+
+	/** Get the button's background color */
+	QColor backgroundColor() const
+		{ return palette().color(QPalette::Button); }
+
+public slots:
+	/** Choose the background color with a dialog */
+	void slotChooseBackgroundColor();
+
+	/** Reset the button's background color to whatever the platform uses */
+	void slotResetBackgroundColor();
+
+	/*********************************************************************
+	 * Foreground color
+	 *********************************************************************/
+public:
+	/** Set the button's foreground color */
+	void setForegroundColor(const QColor& color);
+
+	/** Get the button's foreground color */
+	const QColor& foregroundColor() { 
+		return palette().color(QPalette::ButtonText); }
+
+public slots:
+	/** Choose the foreground color with a color dialog */
+	void slotChooseForegroundColor();
+
+	/** Reset the button's foreground color to whatever the platform uses */
+	virtual void slotResetForegroundColor();
+
+	/*********************************************************************
+	 * Button icon
+	 *********************************************************************/
+public:
+	QString icon() const { return m_icon; }
+	void setIcon(const QString& icon);
+
+public slots:
+	void slotChooseIcon();
+	void slotResetIcon();
+
+protected:
+	QString m_icon;
 
 	/*********************************************************************
 	 * Load & Save
@@ -104,8 +165,6 @@ public:
 public:
 	void setOn(bool on);
 	bool isOn() const { return m_on; }
-
-	void setFrameStyle(const int style);
 
 protected:
 	bool m_on;

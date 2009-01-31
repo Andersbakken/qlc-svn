@@ -81,10 +81,10 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_time = NULL;
 
 	setCaption(QString::null);
+	setFrameStyle(KVCFrameStyleSunken);
 
 	/* Main VBox */
 	new QVBoxLayout(this);
-	layout()->setMargin(0);
 
 	/* Top label */
 	m_topLabel = new QLabel(this);
@@ -954,34 +954,3 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	return true;
 }
 
-/*****************************************************************************
- * Event handlers
- *****************************************************************************/
-
-void VCSlider::paintEvent(QPaintEvent* e)
-{
-	// First paint whatever QFrame wants to
-	QFrame::paintEvent(e);
-
-	QPainter painter(this);
-
-	/* This paint event handler must be here because VCWidget would draw
-	   the caption into its background, which is not what we want for
-	   a slider */
-
-	/* Draw selection frame */
-	if (_app->mode() == App::Design &&
-	    _app->virtualConsole()->selectedWidget() == this)
-	{
-		// Draw a dotted line around the widget
-		QPen pen(Qt::DotLine);
-		pen.setWidth(2);
-		painter.setPen(pen);
-		painter.drawRect(1, 1, rect().width() - 1, rect().height() - 1);
-
-		// Draw a resize handle
-		QBrush b(Qt::SolidPattern);
-		painter.fillRect(rect().width() - 10,
-				 rect().height() - 10, 10, 10, b);
-	}
-}

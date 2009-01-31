@@ -32,6 +32,7 @@
         <file alias="filesave.png">../gfx/filesave.png</file>
         <file alias="filesaveas.png">../gfx/filesaveas.png</file>
 	<file alias="fixture.png">../gfx/fixture.png</file>
+	<file alias="flash.png">../gfx/flash.png</file>
         <file alias="fonts.png">../gfx/fonts.png</file>
         <file alias="forward.png">../gfx/forward.png</file>
 	<file alias="frame.png">../gfx/frame.png</file>
@@ -58,6 +59,7 @@
 	<file alias="prism.png">../gfx/prism.png</file>
 	<file alias="qlc.png">../gfx/qlc.png</file>
 	<file alias="qt.png">../gfx/qt.png</file>
+	<file alias="resize.png">../gfx/resize.png</file>
         <file alias="scene.png">../gfx/scene.png</file>
 	<file alias="shutter.png">../gfx/shutter.png</file>
         <file alias="slider.png">../gfx/slider.png</file>
