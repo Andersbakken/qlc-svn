@@ -491,8 +491,6 @@ void FunctionConsumer::event()
 		}
 		else
 		{
-			qDebug() << m_function->eventBuffer()->eventSize();
-
 			for (m_channel = 0;
 			     m_channel < m_function->eventBuffer()->eventSize();
 			     m_channel++)
