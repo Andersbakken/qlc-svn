@@ -461,7 +461,7 @@ void Scene::run()
 			   it should be after m_elapsedTime, so that it
 			   will be ready when elapsedTime == timeSpan */
 			m_channels[i].current = m_channels[i].start
-				+ ((m_channels[i].target - m_channels[i].start)
+				+ t_value((m_channels[i].target - m_channels[i].start)
 				* (double(m_elapsedTime) / double(m_timeSpan)));
 
 			/* The address is in bits 8-31 and value in 0-7, so
