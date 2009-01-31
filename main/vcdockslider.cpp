@@ -283,10 +283,6 @@ bool VCDockSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		return false;
 	}
 
-	/* Accept only fade slider, hold is a thing of the past */
-	if (root->attribute(KXMLQLCBusRole) != KXMLQLCBusFade)
-		return false;
-
 	/* Children */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -345,7 +341,11 @@ bool VCDockSlider::saveXML(QDomDocument* doc, QDomElement* da_root)
 	da_root->appendChild(root);
 
 	/* Role */
-	root.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
+	if (m_bus == KBusIDDefaultFade)
+		role = KXMLQLCBusFade;
+	else
+		role = KXMLQLCBusHold;
+	root.setAttribute(KXMLQLCBusRole, role);
 
 	/* Bus */
 	tag = doc->createElement(KXMLQLCVCDockSliderBus);

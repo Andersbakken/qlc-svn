@@ -175,21 +175,6 @@ public:
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	
 	/*********************************************************************
-	 * Bus
-	 *********************************************************************/
-public slots:
-	/**
-	 * Listener for bus value changes
-	 */
-	void slotBusValueChanged(t_bus_id id, t_bus_value value);
-
-public:
-	/**
-	 * Initiate speed change with the given bus value
-	 */
-	void speedChange(t_bus_value value);
-	
-	/*********************************************************************
 	 * Running
 	 *********************************************************************/
 public:
@@ -201,7 +186,6 @@ protected:
 	void run();
 	
 protected:
-	t_bus_value m_timeSpan;
 	t_bus_value m_elapsedTime;
 
 	SceneChannel* m_channels;

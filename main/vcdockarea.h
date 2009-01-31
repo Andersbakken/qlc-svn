@@ -83,9 +83,11 @@ signals:
 	 *********************************************************************/
 public:
 	VCDockSlider* defaultFadeSlider() { return m_defaultFadeSlider; }
+	VCDockSlider* defaultHoldSlider() { return m_defaultHoldSlider; }
 
 protected:
 	VCDockSlider* m_defaultFadeSlider;
+	VCDockSlider* m_defaultHoldSlider;
 };
 
 #endif

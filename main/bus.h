@@ -43,7 +43,7 @@ class Function;
 
 #define KXMLQLCBusRole "Role"
 #define KXMLQLCBusFade "Fade"
-#define KXMLQLCBusTap "Tap"
+#define KXMLQLCBusHold "Hold"
 
 class Bus
 {

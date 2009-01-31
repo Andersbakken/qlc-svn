@@ -44,12 +44,10 @@ extern App* _app;
 
 Chaser::Chaser(QObject* parent) : Function(parent, Function::Chaser)
 {
-	m_childRunning = false;
-
 	m_runTimeDirection = Forward;
 	m_runTimePosition = 0;
 
-	setBus(KBusIDDefaultFade);
+	setBus(KBusIDDefaultHold);
 
 	connect(Bus::emitter(), SIGNAL(tapped(t_bus_id)),
 		this, SLOT(slotBusTapped(t_bus_id)));
@@ -155,7 +153,7 @@ bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	/* Speed bus */
 	tag = doc->createElement(KXMLQLCBus);
 	root.appendChild(tag);
-	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusTap);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
 	str.setNum(busID());
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
@@ -196,7 +194,6 @@ bool Chaser::loadXML(QDomDocument*, QDomElement* root)
 {
 	t_fixture_id step_fxi = KNoID;
 	int step_number = 0;
-	QString str;
 
 	QDomNode node;
 	QDomElement tag;
@@ -218,7 +215,6 @@ bool Chaser::loadXML(QDomDocument*, QDomElement* root)
 		if (tag.tagName() == KXMLQLCBus)
 		{
 			/* Bus */
-			str = tag.attribute(KXMLQLCBusRole);
 			setBus(tag.text().toInt());
 		}
 		else if (tag.tagName() == KXMLQLCFunctionDirection)
@@ -267,19 +263,9 @@ void Chaser::slotBusTapped(t_bus_id id)
 {
 	if (id == m_busID)
 	{
-		if (m_childRunning == true)
-			stopMemberAt(m_runTimePosition);
+		stopMemberAt(m_runTimePosition);
+		m_tapped = true;
 	}
-}
-
-void Chaser::slotChildStopped(t_function_id id)
-{
-	Function* function = _app->doc()->function(id);
-	Q_ASSERT(function != NULL);
-
-	disconnect(function, SIGNAL(stopped(t_function_id)),
-		   this, SLOT(slotChildStopped(t_function_id)));
-	m_childRunning = false;
 }
 
 void Chaser::arm()
@@ -304,13 +290,12 @@ void Chaser::disarm()
 
 void Chaser::run()
 {
+	m_tapped = false;
 	emit running(m_id);
 
-	m_childRunning = false;
 	m_stopped = false;
 
 	m_runTimeDirection = m_direction;
-
 	if (m_runTimeDirection == Forward)
 		m_runTimePosition = 0;
 	else
@@ -352,9 +337,12 @@ void Chaser::run()
 		}
 		else if (m_runOrder == Loop)
 		{
-			// Just continue as before, start from the beginning
-			m_runTimePosition = 0;
-			continue;
+			/* Just continue as before, start from the beginning
+			   or end, depending on direction. */
+			if (m_runTimeDirection == Forward)
+				m_runTimePosition = 0;
+			else
+				m_runTimePosition = m_steps.count() - 1;
 		}
 		else // if (m_runOrder == PingPong)
 		{
@@ -381,26 +369,34 @@ void Chaser::startMemberAt(int index)
 {
 	t_function_id id = m_steps.at(index);
   	Function* function = _app->doc()->function(id);
+	unsigned int stepDuration = 0;
 
 	/* Check that the function exists */
-	m_childRunning = false;
 	if (function == NULL)
 		return;
 
 	/* Start the child function */
-	connect(function, SIGNAL(stopped(t_function_id)),
-		this, SLOT(slotChildStopped(t_function_id)));
-	m_childRunning = true;
 	function->start();
 
-	/* Wait for the child function to complete or the user to stop this
-	   chaser altogether. Mutexes should not be needed here, although
-	   m_childRunning is set false from FunctionConsumer's context. */
-	while (m_childRunning == true && m_stopped == false)
-		QThread::msleep(1000/KFrequency);
-
-	if (m_stopped == true)
-		stopMemberAt(m_runTimePosition);
+	/* Wait for step duration to expire */
+	while (m_stopped == false)
+	{
+		if (stepDuration >= Bus::value(m_busID))
+		{
+			stopMemberAt(m_runTimePosition);
+			break;
+		}
+		else if (m_tapped == true)
+		{
+			m_tapped = false;
+			break;
+		}
+		else
+		{
+			QThread::usleep(1000000 / KFrequency);
+			stepDuration++;
+		}
+	}
 }
 
 void Chaser::stopMemberAt(int index)

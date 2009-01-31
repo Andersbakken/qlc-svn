@@ -96,10 +96,6 @@ protected slots:
 	/** Skip to next step when a tapped signal is received from bus */
 	void slotBusTapped(t_bus_id id);
 
-	/** Slot that receives child functions' stopped() signals and
-	    toggles next chaser step. */
-	void slotChildStopped(t_function_id id);
-
 public:
 	/** Stop this function */
 	void stop();
@@ -124,7 +120,7 @@ protected:
 	void stopMemberAt(int index);
 
 protected:
-	bool m_childRunning;
+	bool m_tapped;
 	bool m_stopped;
 
 	Direction m_runTimeDirection;

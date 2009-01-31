@@ -390,7 +390,7 @@ void FunctionConsumer::runNanoSleepTimer()
 {
 	while (m_running == true)
 	{
-		usleep(1000000 / KFrequency);
+		QThread::usleep(1000000 / KFrequency);
 		event();
 	}
 }

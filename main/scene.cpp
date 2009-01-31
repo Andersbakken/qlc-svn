@@ -145,7 +145,6 @@ bool SceneValue::operator== (const SceneValue& scv) const
 
 Scene::Scene(QObject* parent) : Function(parent, Function::Scene)
 {
-	m_timeSpan = 255;
 	m_elapsedTime = 0;
 	m_channels = NULL;
 	m_channelData = NULL;
@@ -322,31 +321,6 @@ bool Scene::loadXML(QDomDocument*, QDomElement* root)
 }
 
 /*****************************************************************************
- * Bus
- *****************************************************************************/
-
-void Scene::slotBusValueChanged(t_bus_id id, t_bus_value value)
-{
-	if (id != m_busID)
-		return;
-
-	if (isRunning() == true)
-		speedChange(value);
-	else
-		m_timeSpan = value;
-}
-
-void Scene::speedChange(t_bus_value newTimeSpan)
-{
-	m_timeSpan = newTimeSpan;
-	if (m_timeSpan == 0)
-	{
-		m_timeSpan = static_cast<t_bus_value>
-			(1.0 / static_cast<float> (KFrequency));
-	}
-}
-
-/*****************************************************************************
  * Running
  *****************************************************************************/
 
@@ -414,12 +388,6 @@ void Scene::run()
 	
 	// No time has yet passed for this scene.
 	m_elapsedTime = 0;
-	
-	// Get speed
-	m_timeSpan = Bus::value(m_busID);
-
-	// Set initial speed
-	speedChange(m_timeSpan);
 
 	// Append this function to running functions' list
 	_app->functionConsumer()->cue(this);
@@ -452,7 +420,7 @@ void Scene::run()
 	}
 
 	for (m_elapsedTime = 0;
-	     m_elapsedTime < m_timeSpan && m_stopped == false;
+	     m_elapsedTime < Bus::value(m_busID) && m_stopped == false;
 	     m_elapsedTime++)
 	{
 		for (i = 0; i < channels; i++)
@@ -462,7 +430,7 @@ void Scene::run()
 			   will be ready when elapsedTime == timeSpan */
 			m_channels[i].current = m_channels[i].start
 				+ t_value((m_channels[i].target - m_channels[i].start)
-				* (double(m_elapsedTime) / double(m_timeSpan)));
+				* (double(m_elapsedTime) / double(Bus::value(m_busID))));
 
 			/* The address is in bits 8-31 and value in 0-7, so
 			   discard the value part and OR the new value there */
