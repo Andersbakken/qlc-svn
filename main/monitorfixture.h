@@ -78,13 +78,10 @@ public:
 		PercentageValues
 	};
 
-	void setValue(t_channel universeChannel, t_value value);
+	void updateValues();
 
 public slots:
 	void slotSetValueStyle(MonitorFixture::ValueStyle style);
-
-protected slots:
-	void slotChangedValues(const QHash <t_channel,t_value>& values);
 
 protected:
 	ValueStyle m_valueStyle;

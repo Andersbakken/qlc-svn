@@ -24,6 +24,7 @@
 #include <QtXml>
 
 #include "common/qlcoutplugin.h"
+#include "common/qlctypes.h"
 #include "outputpatch.h"
 #include "outputmap.h"
 
@@ -35,11 +36,6 @@ OutputPatch::OutputPatch(QObject* parent) : QObject(parent)
 {
 	m_plugin = NULL;
 	m_output = -1;
-	m_dirty = false;
-
-	std::fill(m_values, m_values + 512, 0);
-
-	m_blackout = false;
 }
 
 OutputPatch::~OutputPatch()
@@ -84,64 +80,14 @@ QString OutputPatch::outputName() const
 }
 
 /*****************************************************************************
- * Values
+ * Value dump
  *****************************************************************************/
 
-t_value OutputPatch::value(t_channel channel) const
+void OutputPatch::dump(const char* universe)
 {
-	Q_ASSERT(channel < 512);
-	return m_values[channel];
-}
-
-void OutputPatch::setValue(t_channel channel, t_value value)
-{
-	Q_ASSERT(channel < 512);
-	m_values[channel] = value;
-	m_dirty = true;
-}
-
-void OutputPatch::dump()
-{
-	/* Don't dump when we're in blackout mode */
-	if (m_blackout == false)
-	{
-		/* Don't do anything if there is no plugin and/or output line.
-		   Otherwise write the whole 512 channel universe. */
-		if (m_plugin != NULL && m_output != KOutputInvalid &&
-		    m_dirty == true)
-		{
-			m_plugin->writeRange(m_output, 0, m_values, 512);
-			m_dirty = false;
-		}
-	}
-}
-
-bool OutputPatch::blackout() const
-{
-	return m_blackout;
-}
-
-void OutputPatch::setBlackout(bool blackout)
-{
-	/* Don't do blackout twice */
-	if (m_blackout == blackout)
-		return;
-	m_blackout = blackout;
-
-	if (m_blackout == true)
-	{
-		/* Write a whole universe-ful of zeros */
-		t_value zeros[512];
-		std::fill(zeros, zeros + 512, 0);
-
-		if (m_plugin != NULL && m_output != KOutputInvalid)
-			m_plugin->writeRange(m_output, 0, zeros, 512);
-	}
-	else
-	{
-		/* Write the existing values to the plugin immediately */
-		dump();
-	}
+	/* Don't do anything if there is no plugin and/or output line. */
+	if (m_plugin != NULL && m_output != KOutputInvalid)
+		m_plugin->writeRange(m_output, 0, (t_value*) universe, 512);
 }
 
 /*****************************************************************************

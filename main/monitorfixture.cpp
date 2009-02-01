@@ -101,11 +101,6 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 	while (m_valueLabels.isEmpty() == false)
 		delete m_valueLabels.takeFirst();
 
-	disconnect(_app->outputMap(),
-		   SIGNAL(changedValues(const QHash <t_channel,t_value>&)),
-		   this,
-		   SLOT(slotChangedValues(const QHash <t_channel,t_value>&)));
-
 	m_fixture = fxi_id;
 	fxi = _app->doc()->fixture(m_fixture);
 	if (fxi != NULL)
@@ -159,12 +154,6 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 			lay->addWidget(label, 2, i, Qt::AlignHCenter);
 			m_valueLabels.append(label);
 		}
-
-		/* Listen to changed values coming from output map */
-		connect(_app->outputMap(),
-			SIGNAL(changedValues(const QHash <t_channel,t_value>&)),
-			this,
-			SLOT(slotChangedValues(const QHash <t_channel,t_value>&)));
 	}
 }
 
@@ -206,12 +195,13 @@ void MonitorFixture::slotFixtureRemoved(t_fixture_id fxi_id)
  * Values
  ****************************************************************************/
 
-void MonitorFixture::slotChangedValues(const QHash <t_channel,t_value>& values)
+void MonitorFixture::updateValues()
 {
 	QLabel* label;
+	t_value value;
 	Fixture* fxi;
-	t_channel ch;
 	QString str;
+	int i = 0;
 
 	/* Check that this MonitorFixture represents a fixture */
 	if (m_fixture == KNoID)
@@ -221,31 +211,26 @@ void MonitorFixture::slotChangedValues(const QHash <t_channel,t_value>& values)
 	fxi = _app->doc()->fixture(m_fixture);
 	Q_ASSERT(fxi != NULL);
 
-	QHashIterator <t_channel,t_value> it(values);
+	QListIterator <QLabel*> it(m_valueLabels);
 	while (it.hasNext() == true)
 	{
-		it.next();
+		label = it.next();
+		Q_ASSERT(label != NULL);
 
-		/* Use only those channels that belong to this fixture */
-		if (it.key() >= fxi->universeAddress() &&
-		    it.key() < (fxi->universeAddress() + fxi->channels()))
+		value = _app->outputMap()->value(fxi->universeAddress() + i);
+		i++;
+
+		/* Set the label's text to reflect the changed value */
+		if (m_valueStyle == DMXValues)
 		{
-			/* Isolate only the relative channel number */
-			ch = it.key() - fxi->universeAddress();
-			Q_ASSERT(ch < m_valueLabels.count());
-
-			/* Get the value label that represents the channel */
-			label = m_valueLabels.at(ch);
-			Q_ASSERT(label != NULL);
-
-			/* Set the label's text to reflect the changed value */
-			if (m_valueStyle == DMXValues)
-				label->setText(str.sprintf("%.3d", it.value()));
-			else
-				label->setText(str.sprintf("%.3d", int(
-					ceil(SCALE(double(it.value()),
-						  double(0), double(255),
-						  double(0), double(100))))));
+			label->setText(str.sprintf("%.3d", value));
+		}
+		else
+		{
+			label->setText(str.sprintf("%.3d", int(
+				ceil(SCALE(double(value),
+					   double(0), double(255),
+					   double(0), double(100))))));
 		}
 	}
 }

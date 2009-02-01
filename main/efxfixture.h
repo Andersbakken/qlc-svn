@@ -55,7 +55,7 @@ public:
 
 	/** Comparing operator */
 	bool operator==(const EFXFixture& fxi) const;
-	
+
 	/********************************************************************
 	 * Public properties
 	 ********************************************************************/
@@ -68,7 +68,7 @@ public:
 
 	/** Set this fixture's direction */
 	void setDirection(Function::Direction dir);
-	
+
 	/** Get this fixture's direction */
 	Function::Direction direction() const;
 
@@ -87,12 +87,6 @@ public:
 	 * Protected run-time-only properties
 	 ********************************************************************/
 protected:
-	/** Set starting index (place of first lsbPanCh) in m_channelData */
-	void setIndex(int number);
-
-	/** Get starting index (place of first lsbPanCh) in m_channelData */
-	int index() const;
-
 	/** Set the order number in serial propagation mode */
 	void setSerialNumber(int number);
 
@@ -130,6 +124,12 @@ protected:
 	    for pan and tilt. */
 	bool isValid();
 
+	/* Run the start scene if necessary */
+	void start();
+
+	/* Run the stop scene if necessary */
+	void stop();
+
 	/** Reset the fixture when the EFX is stopped */
 	void reset();
 
@@ -143,9 +143,6 @@ protected:
 
 	/** The ID of the fixture that is EFXFixture represents */
 	t_fixture_id m_fixture;
-	
-	/** This fixture's starting index in m_channelData */
-	int m_index;
 
 	/** This fixture's order number in serial propagation mode */
 	int m_serialNumber;
@@ -155,7 +152,7 @@ protected:
 
 	/** This fixture's current run-time direction */
 	Function::Direction m_runTimeDirection;
-	
+
 	/** The scene that is used to initialize the fixtures involved */
 	Scene* m_startScene;
 
@@ -199,22 +196,22 @@ protected:
 	float m_tiltValue;
 
 	/**
-	 * (Index + 0)th channel in m_channelData
+	 * Universe channel for LSB pan data
 	 */
 	t_channel m_lsbPanChannel;
 
 	/**
-	 * (index + 1)th channel in m_channelData
+	 * Universe channel for MSB pan data
 	 */
 	t_channel m_msbPanChannel;
 
 	/**
-	 * (index + 2)th channel in m_channelData
+	 * Universe channel for LSB tilt data
 	 */
 	t_channel m_lsbTiltChannel;
 
 	/**
-	 * (index + 3)th channel in m_channelData
+	 * Universe channel for MSB tilt data
 	 */
 	t_channel m_msbTiltChannel;
 
@@ -222,15 +219,11 @@ protected:
 	 * Running
 	 *********************************************************************/
 protected:
-	/**
-	 * Calculate the next step for this fixture and put the values to $data
-	 */
-	void nextStep(t_buffer_data* data);
+	/** Calculate the next step data for this fixture */
+	void nextStep(QByteArray* universes);
 
-	/**
-	 * Write this EFXFixture's channel data to event buffer
-	 */
-	void setPoint(t_buffer_data* data);
+	/** Write this EFXFixture's channel data to universes */
+	void setPoint(QByteArray* universes);
 };
 
 #endif

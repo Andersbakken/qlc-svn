@@ -41,7 +41,6 @@ HEADERS += aboutbox.h \
            efx.h \
            efxeditor.h \
            efxfixture.h \
-           eventbuffer.h \
            fixture.h \
            fixtureconsole.h \
            fixturelist.h \
@@ -128,7 +127,6 @@ SOURCES += aboutbox.cpp \
            efx.cpp \
            efxeditor.cpp \
            efxfixture.cpp \
-           eventbuffer.cpp \
            fixture.cpp \
            fixtureconsole.cpp \
            fixturelist.cpp \

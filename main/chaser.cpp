@@ -28,7 +28,6 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
-#include "eventbuffer.h"
 #include "fixture.h"
 #include "chaser.h"
 #include "scene.h"
@@ -254,158 +253,169 @@ bool Chaser::loadXML(QDomDocument*, QDomElement* root)
  * Running
  *****************************************************************************/
 
-void Chaser::stop()
-{
-	m_stopped = true;
-}
-
 void Chaser::slotBusTapped(t_bus_id id)
 {
 	if (id == m_busID)
-	{
-		stopMemberAt(m_runTimePosition);
 		m_tapped = true;
-	}
 }
 
 void Chaser::arm()
 {
-	/* There's actually no need for an eventbuffer, but
-	 * because FunctionConsumer does EventBuffer::get() calls, it must be
-	 * there... So allocate a zero length buffer. */
-	if (m_eventBuffer == NULL)
-		m_eventBuffer = new EventBuffer(0, 0);
 }
 
 void Chaser::disarm()
 {
-	if (m_eventBuffer != NULL)
-		delete m_eventBuffer;
-	m_eventBuffer = NULL;
 }
 
-/*****************************************************************************
- * Running
- *****************************************************************************/
-
-void Chaser::run()
+void Chaser::start()
 {
-	m_tapped = false;
-	emit running(m_id);
+	/* No point running this chaser if it has no steps */
+	if (m_steps.count() == 0)
+	{
+		emit stopped(m_id);
+		return;
+	}
 
-	m_stopped = false;
-
+	/* Current position starts from invalid index because nextStep() is
+	   called first in write(). */
 	m_runTimeDirection = m_direction;
 	if (m_runTimeDirection == Forward)
-		m_runTimePosition = 0;
+		m_runTimePosition = -1;
 	else
-		m_runTimePosition = m_steps.count() - 1;
+		m_runTimePosition = m_steps.count();
 
-	// Add this to function consumer
-	_app->functionConsumer()->cue(this);
+	m_tapped = false;
+	Function::start();
+}
 
-	while (m_stopped == false)
+void Chaser::stop()
+{
+	stopMemberAt(m_runTimePosition);
+	Function::stop();
+}
+
+bool Chaser::write(QByteArray* universes)
+{
+	Q_UNUSED(universes);
+
+	/* TODO: With some changes to scene, chaser could basically act as a
+	   proxy for its members by calling the scene's write() functions
+	   by itself instead of starting/stopping them. Whether this would do
+	   any good, is not clear. */
+
+	if (m_elapsed == 0)
 	{
-		// Run thru this chaser, either forwards or backwards
-		if (m_runTimeDirection == Forward)
-		{
-			while (m_runTimePosition < (int) m_steps.count() &&
-			       m_stopped == false)
-			{
-				startMemberAt(m_runTimePosition);
+		/* Get the next step index */
+		nextStep();
 
-				/* Going forwards, next step */
-				m_runTimePosition++;
-			}
-		}
-		else
-		{
-			while (m_runTimePosition >= 0 && m_stopped == false)
-			{
-				startMemberAt(m_runTimePosition);
+		/* Start the current function */
+		startMemberAt(m_runTimePosition);
 
-				/* Going backwards, previous step */
-				m_runTimePosition--;
-			}
-		}
+		/* Mark one cycle being elapsed */
+		m_elapsed = 1;
+	}
+	else if (m_elapsed >= Bus::value(m_busID) || m_tapped == true)
+	{
+		/* Reset tapped flag even if it wasn't true */
+		m_tapped = false;
 
-		// Check what should be done after one round
+		/* Stop current function */
+		stopMemberAt(m_runTimePosition);
+
+		/* Get the next step index */
+		nextStep();
+
+		/* Check, whether we have gone a full cycle */
+		if (roundCheck() == false)
+			return false;
+
+		/* Start the next step immediately */
+		startMemberAt(m_runTimePosition);
+
+		/* Mark one cycle being elapsed */
+		m_elapsed = 1;
+	}
+	else
+	{
+		/* Just waiting for hold time to pass */
+		m_elapsed++;
+	}
+
+	return true;
+}
+
+bool Chaser::roundCheck()
+{
+	/* Check if one complete chase round has been completed. */
+	if ((m_runTimeDirection == Backward && m_runTimePosition == -1)
+	    || (m_runTimeDirection == Forward && m_runTimePosition == m_steps.count()))
+	{
 		if (m_runOrder == SingleShot)
 		{
-			// That's it
-			break;
+			/* One round complete. Terminate. */
+			return false;
 		}
 		else if (m_runOrder == Loop)
 		{
-			/* Just continue as before, start from the beginning
-			   or end, depending on direction. */
+			/* Loop around at either end */
 			if (m_runTimeDirection == Forward)
 				m_runTimePosition = 0;
 			else
 				m_runTimePosition = m_steps.count() - 1;
 		}
-		else // if (m_runOrder == PingPong)
+		else /* Ping Pong */
 		{
-			// Change run order
+			/* Change running direction, don't run the step at
+			   each end twice, so -1/+1 */
 			if (m_runTimeDirection == Forward)
 			{
-				m_runTimeDirection = Backward;
-
-				// -2: Don't run the last function again
 				m_runTimePosition = m_steps.count() - 2;
+				m_runTimeDirection = Backward;
 			}
 			else
 			{
+				m_runTimePosition = 1;
 				m_runTimeDirection = Forward;
-
-				// 1: Don't run the first function again
-				m_runTimePosition = 1; 
 			}
 		}
 	}
+
+	/* Let's continue */
+	return true;
+}
+
+void Chaser::nextStep()
+{
+	if (m_runTimeDirection == Forward)
+		m_runTimePosition++;
+	else
+		m_runTimePosition--;
 }
 
 void Chaser::startMemberAt(int index)
 {
-	t_function_id id = m_steps.at(index);
-  	Function* function = _app->doc()->function(id);
-	unsigned int stepDuration = 0;
+  	Function* function;
+	t_function_id fid;
 
-	/* Check that the function exists */
-	if (function == NULL)
-		return;
+	fid = m_steps.at(index);
+	Q_ASSERT(fid > 0 && fid < m_steps.count());
 
-	/* Start the child function */
+	function = _app->doc()->function(fid);
+	Q_ASSERT(function != NULL);
+
 	function->start();
-
-	/* Wait for step duration to expire */
-	while (m_stopped == false)
-	{
-		if (stepDuration >= Bus::value(m_busID))
-		{
-			stopMemberAt(m_runTimePosition);
-			break;
-		}
-		else if (m_tapped == true)
-		{
-			m_tapped = false;
-			break;
-		}
-		else
-		{
-			QThread::usleep(1000000 / KFrequency);
-			stepDuration++;
-		}
-	}
 }
 
 void Chaser::stopMemberAt(int index)
 {
-	t_function_id id = m_steps.at(index);
-	Function* function = _app->doc()->function(id);
+  	Function* function;
+	t_function_id fid;
 
-	if (function == NULL)
-		return;
+	fid = m_steps.at(index);
+	Q_ASSERT(fid > 0 && fid < m_steps.count());
+
+	function = _app->doc()->function(fid);
+	Q_ASSERT(function != NULL);
 
 	function->stop();
 }

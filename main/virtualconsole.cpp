@@ -336,19 +336,6 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 		return false;
 	}
 
-	/* Timer type */
-	if (root->attribute(KXMLQLCVirtualConsoleTimerType) ==
-	    KXMLQLCVirtualConsoleTimerHardware)
-	{
-		_app->functionConsumer()->setTimerType(
-			FunctionConsumer::RTCTimer);
-	}
-	else
-	{
-		_app->functionConsumer()->setTimerType(
-			FunctionConsumer::NanoSleepTimer);
-	}
-
 	node = root->firstChild();
 	while (node.isNull() == false)
 	{
@@ -416,17 +403,6 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	/* Virtual Console entry */
 	root = doc->createElement(KXMLQLCVirtualConsole);
 	wksp_root->appendChild(root);
-	if (_app->functionConsumer()->timerType() ==
-	    FunctionConsumer::NanoSleepTimer)
-	{
-		root.setAttribute(KXMLQLCVirtualConsoleTimerType,
-				  KXMLQLCVirtualConsoleTimerSoftware);
-	}
-	else
-	{
-		root.setAttribute(KXMLQLCVirtualConsoleTimerType,
-				  KXMLQLCVirtualConsoleTimerHardware);
-	}
 
 	/* Save window state */
 	QLCFile::saveXMLWindowState(doc, &root, parentWidget());
@@ -693,9 +669,6 @@ void VirtualConsole::slotToolsSettings()
 	ch = m_dockArea->defaultHoldSlider()->inputChannel();
 	prop.setHoldInputSource(uni, ch);
 
-	/* Timer */
-	prop.setTimerType(_app->functionConsumer()->timerType());
-
 	if (prop.exec() == QDialog::Accepted)
 	{
 		setGridEnabled(prop.isGridEnabled());
@@ -720,8 +693,6 @@ void VirtualConsole::slotToolsSettings()
 		uni = prop.holdInputUniverse();
 		ch = prop.holdInputChannel();
 		m_dockArea->defaultHoldSlider()->setInputSource(uni, ch);
-
-		_app->functionConsumer()->setTimerType(prop.timerType());
 
 		_app->doc()->setModified();
 	}

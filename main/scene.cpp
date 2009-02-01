@@ -31,7 +31,6 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
-#include "eventbuffer.h"
 #include "outputmap.h"
 #include "scene.h"
 #include "app.h"
@@ -145,10 +144,6 @@ bool SceneValue::operator== (const SceneValue& scv) const
 
 Scene::Scene(QObject* parent) : Function(parent, Function::Scene)
 {
-	m_elapsedTime = 0;
-	m_channels = NULL;
-	m_channelData = NULL;
-
 	setBus(KBusIDDefaultFade);
 }
 
@@ -320,148 +315,153 @@ bool Scene::loadXML(QDomDocument*, QDomElement* root)
 	return true;
 }
 
-/*****************************************************************************
- * Running
- *****************************************************************************/
+/****************************************************************************
+ * SceneChannel implementation
+ ****************************************************************************/
+
+SceneChannel::SceneChannel()
+{
+	address = 0;
+	start = 0;
+	current = 0;
+	target = 0;
+	ready = true;
+}
+
+SceneChannel::SceneChannel(const SceneChannel& sch)
+{
+	*this = sch;
+}
+
+SceneChannel::~SceneChannel()
+{
+}
+
+SceneChannel& SceneChannel::operator=(const SceneChannel& sch)
+{
+	if (this != &sch)
+	{
+		address = sch.address;
+		start = sch.start;
+		current = sch.current;
+		target = sch.target;
+		ready = sch.ready;
+	}
+
+	return *this;
+}
+
+/****************************************************************************
+ * New bufferless running
+ ****************************************************************************/
 
 void Scene::arm()
 {
-	int i = 0;
+	m_channels.clear();
 
-	if (m_channels == NULL)
-		m_channels = new SceneChannel[m_values.count()];
-
-	if (m_channelData == NULL)
-		m_channelData = new t_buffer_data[m_values.count()];
-	
-	/* TODO: Shifting right (=division by two) causes rounding errors!! */
-	if (m_eventBuffer == NULL)
-		m_eventBuffer = new EventBuffer(m_values.count(),
-						KFrequency >> 1);
-
-	/* Fill in the actual channel numbers because they can't change
-	   after functions have been armed for operate mode. */
 	QListIterator <SceneValue> it(m_values);
 	while (it.hasNext() == true)
 	{
-		SceneValue scv = it.next();
+		SceneChannel channel;
+		SceneValue scv(it.next());
 		Fixture* fxi = _app->doc()->fixture(scv.fxi);
 		Q_ASSERT(fxi != NULL);
 
-		m_channels[i].address = fxi->universeAddress() + scv.channel;
-		m_channelData[i] = t_buffer_data(fxi->universeAddress() 
-						 + scv.channel) << 8;
-		i++;
+		channel.address = fxi->universeAddress() + scv.channel;
+		channel.target = scv.value;
+		channel.ready = true;
+
+		m_channels.append(channel);
 	}
 }
 
 void Scene::disarm()
 {
-	if (m_channels != NULL)
-		delete [] m_channels;
-	m_channels = NULL;
-	
-	if (m_channelData != NULL)
-		delete [] m_channelData;
-	m_channelData = NULL;
-	
-	if (m_eventBuffer != NULL)
-		delete m_eventBuffer;
-	m_eventBuffer = NULL;
+	m_channels.clear();
 }
 
-void Scene::stop()
+bool Scene::write(QByteArray* universes)
 {
-	m_stopped = true;
-}
+	t_channel ready = m_channels.count();
 
-void Scene::run()
-{
-	t_channel channels = m_values.count();
-	t_channel ready = channels;
-	t_channel i;
+	Q_ASSERT(universe != NULL);
 
-	emit running(m_id);
-
-	// Initialize this scene for running
-	m_stopped = false;
-	
-	// No time has yet passed for this scene.
-	m_elapsedTime = 0;
-
-	// Append this function to running functions' list
-	_app->functionConsumer()->cue(this);
-
-	/* Fill run-time buffers with the data for the first step */
-	for (i = 0; i < channels; i++)
+	if (m_elapsed == 0)
 	{
-		m_channels[i].current = m_channels[i].start =
-			_app->outputMap()->value(m_channels[i].address);
-
-		m_channels[i].target = m_values.at(i).value;
-
-		/* Check, whether this scene needs to play at all */
-		if (m_channels[i].current == m_values.at(i).value)
+		QMutableListIterator <SceneChannel> it(m_channels);
+		while (it.hasNext() == true)
 		{
-			m_channels[i].ready = true;
+			SceneChannel sch = it.next();
+
+			sch.start = sch.current =
+				_app->outputMap()->value(sch.address);
+			if (sch.current == sch.target)
+				ready--;
+			else
+				sch.ready = false;
+			it.setValue(sch);
+		}
+
+		if (ready == 0)
+		{
+			/* All channels are ready. No need to run at all. */
+			return false;
+		}
+	}
+
+	m_elapsed++;
+
+	QMutableListIterator <SceneChannel> it(m_channels);
+	while (it.hasNext() == true)
+	{
+		SceneChannel sch = it.next();
+
+		if (sch.ready == true)
+		{
 			ready--;
+			continue;
+		}
+		if (m_elapsed >= Bus::value(m_busID))
+		{
+			/* Write the absolute target value to get rid of
+			   rounding errors in nextValue(). */
+			sch.current = sch.target;
+			sch.ready = true;
+			ready--;
+
+			/* Write the target value to the universe */
+			universes->data()[sch.address] = sch.target;
 		}
 		else
 		{
-			m_channels[i].ready = false;
+			/* Write the next value to the universe buffer */
+			universes->data()[sch.address] = nextValue(&sch);
 		}
+
+		it.setValue(sch);
 	}
 
 	if (ready == 0)
-	{
-		/* This scene does not need to be played because all target
-		   values are already where they are supposed to be. */
-		m_stopped = true;
-	}
-
-	for (m_elapsedTime = 0;
-	     m_elapsedTime < Bus::value(m_busID) && m_stopped == false;
-	     m_elapsedTime++)
-	{
-		for (i = 0; i < channels; i++)
-		{
-			/* Calculate the current value based on what
-			   it should be after m_elapsedTime, so that it
-			   will be ready when elapsedTime == timeSpan */
-			m_channels[i].current = m_channels[i].start
-				+ t_value((m_channels[i].target - m_channels[i].start)
-				* (double(m_elapsedTime) / double(Bus::value(m_busID))));
-
-			/* The address is in bits 8-31 and value in 0-7, so
-			   discard the value part and OR the new value there */
-			m_channelData[i] = (m_channelData[i] & ~0xFF)
-				| t_buffer_data(m_channels[i].current);
-		}
-
-		m_eventBuffer->put(m_channelData);
-	}
-	
-	/* Write the last step exactly to target because timespan might have
-	   been set to a smaller amount than what has elapsed. Also, because
-	   floats are NEVER exact numbers, it might be that we never quite
-	   reach the target within the given timespan (in case the values don't
-	   add up because of rounding errors and inaccuracy of floats). */
-	for (i = 0; i < channels && m_stopped == false; i++)
-	{
-		/* Just set the target value */
-		m_channelData[i] = (m_channelData[i] & ~0xFF)
-			| t_buffer_data(m_channels[i].target);
-	}
-
-	if (m_stopped == false)
-	{
-		/* Put the last values to the buffer */
-		m_eventBuffer->put(m_channelData);
-	}
+		return false;
 	else
-	{
-		/* This scene was stopped. Clear buffer so that this function
-		   can finish as quickly as possible */
-		m_eventBuffer->purge();
-	}
+		return true;
+}
+
+t_value Scene::nextValue(SceneChannel* sch)
+{
+	double timeScale;
+
+	Q_ASSERT(sch != NULL);
+
+	/*
+	 *Calculate the current value based on what it should be after
+	 * m_elapsed cycles, so that it will be ready when
+	 * m_elapsed == Bus::value()
+	 */
+	timeScale = double(m_elapsed) / double(Bus::value(m_busID));
+	sch->current = sch->target - sch->start;
+	sch->current = int(double(sch->current) * timeScale);
+	sch->current += sch->start;
+
+	return t_value(sch->current);
 }

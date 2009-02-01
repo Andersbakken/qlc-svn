@@ -420,9 +420,8 @@ void App::initFunctionConsumer()
 	m_functionConsumer = new FunctionConsumer(this, m_outputMap);
 	Q_ASSERT(m_functionConsumer != NULL);
 
-	/* Use nanosleep timer by default and start function consumer.
-	   It also drives the universe writer. */
-	m_functionConsumer->setTimerType(FunctionConsumer::NanoSleepTimer);
+	/* Start function consumer */
+	m_functionConsumer->start();
 }
 
 /*****************************************************************************
@@ -592,7 +591,7 @@ void App::slotModeDesign()
 		if (result == QMessageBox::No)
 			return;
 		else
-			m_functionConsumer->purge();
+			m_functionConsumer->stopAll();
 	}
 
 	/* Set normal palette to mode indicator */
@@ -1253,7 +1252,7 @@ void App::slotMonitorDestroyed(QObject* object)
 void App::slotControlPanic()
 {
 	/* Shut down all running functions */
-	m_functionConsumer->purge();
+	m_functionConsumer->stopAll();
 }
 
 /*****************************************************************************

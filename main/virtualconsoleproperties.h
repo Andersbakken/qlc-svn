@@ -105,13 +105,6 @@ protected slots:
 protected:
 	void updateFadeInputSource();
 	void updateHoldInputSource();
-
-	/*********************************************************************
-	 * Timer type
-	 *********************************************************************/
-public:
-	void setTimerType(FunctionConsumer::TimerType type);
-	FunctionConsumer::TimerType timerType();
 };
 
 #endif

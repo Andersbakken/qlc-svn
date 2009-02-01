@@ -68,30 +68,13 @@ protected:
 	int m_output;
 
 	/********************************************************************
-	 * Values
+	 * Value dump
 	 ********************************************************************/
 public:
-	/** Get the value for a channel from the internal buffer */
-	t_value value(t_channel channel) const;
+	/** Write the contents of a 512 channel value buffer to the plugin.
+	  * Called periodically by OutputMap. No need to call manually. */
+	void dump(const char* universe);
 
-	/** Set the value for a channel to the internal buffer */
-	void setValue(t_channel channel, t_value value);
-
-	/** Write the contents of the internal buffer to the actual plugin.
-	    Called periodically by OutputMap. You don't need to call this. */
-	void dump();
-
-	/** Check, whether this universe is in blackout mode */
-	bool blackout() const;
-
-	/** Set or release this universe to/from blackout mode */
-	void setBlackout(bool blackout);
-
-protected:
-	t_value m_values[512];
-	bool m_blackout;
-	bool m_dirty;
-	
 	/********************************************************************
 	 * Load & Save
 	 ********************************************************************/

@@ -25,7 +25,6 @@
 #include <QList>
 #include "function.h"
 
-class Event;
 class QFile;
 class QString;
 class QDomDocument;
@@ -93,25 +92,24 @@ public:
 	 * Running
 	 *********************************************************************/
 protected slots:
-	/** Skip to next step when a tapped signal is received from bus */
 	void slotBusTapped(t_bus_id id);
 
 public:
-	/** Stop this function */
-	void stop();
-
-	/** Allocate everything needed in run-time */
 	void arm();
-
-	/** Delete everything needed in run-time */
 	void disarm();
 
-	/** Do some post-run cleanup (called by FunctionConsumer) */
-	void cleanup();
+	void start();
+	void stop();
+
+	bool write(QByteArray* universes);
 
 protected:
-	/** Main producer thread */
-	void run();
+	/** Check, whether the chaser has gone a full round. Returns false
+	    if singleshot == true and a full round has been completed. */
+	bool roundCheck();
+
+	/** Increment or decrement the next function position */
+	void nextStep();
 
 	/** Start a step function at the given index */
 	void startMemberAt(int index);

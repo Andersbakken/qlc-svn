@@ -52,13 +52,25 @@ Monitor::Monitor(QWidget* parent) : QWidget(parent)
 	m_valueStyle = MonitorFixture::DMXValues;
 
 	init();
-
-	_app->outputMap()->collectValues(true);
 }
 
 Monitor::~Monitor()
 {
-	_app->outputMap()->collectValues(false);
+}
+
+void Monitor::show()
+{
+	m_timer = startTimer(1000 / 50);
+
+	QWidget::show();
+}
+
+void Monitor::hide()
+{
+	killTimer(m_timer);
+	m_timer = 0;
+
+	QWidget::show();
 }
 
 void Monitor::init()
@@ -240,6 +252,20 @@ void Monitor::slotFixtureChanged(t_fixture_id fxi_id)
 
 	m_monitorLayout->sort();
 	m_monitorWidget->updateGeometry();
+}
+
+/****************************************************************************
+ * Timer
+ ****************************************************************************/
+
+void Monitor::timerEvent(QTimerEvent* e)
+{
+	Q_UNUSED(e);
+
+	QList <MonitorFixture*> list = findChildren <MonitorFixture*>();
+	QListIterator <MonitorFixture*> it(list);
+	while (it.hasNext() == true)
+		it.next()->updateValues();
 }
 
 /****************************************************************************

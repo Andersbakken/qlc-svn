@@ -23,7 +23,6 @@
 #define FUNCTION_H
 
 #include <QObject>
-#include <QThread>
 #include <QString>
 #include <QList>
 
@@ -33,7 +32,6 @@ class QDomDocument;
 class QDomElement;
 class QIcon;
 
-class EventBuffer;
 class Function;
 class Bus;
 
@@ -55,11 +53,12 @@ class Bus;
 
 #define KXMLQLCFunctionEnabled "Enabled"
 
-class Function : public QThread
+class Function : public QObject
 {
 	Q_OBJECT
 
 public:
+	/** TODO: There's no point in having these as a bit mask?! */
 	enum Type
 	{
 		Undefined  = 0,
@@ -251,16 +250,6 @@ public:
 	 */
 	t_bus_id busID() const { return m_busID; }
 
-public slots:
-	/**
-	 * Callback for bus value changes
-	 *
-	 * @param id The ID of the bus whose value has changed
-	 * @param value The changed bus value
-	 */
-	virtual void slotBusValueChanged(t_bus_id, t_bus_value)
-	{ /* NOP */ }
-
 protected:
 	t_bus_id m_busID;
 
@@ -304,36 +293,22 @@ public:
 	 * Running
 	 *********************************************************************/
 public:
-	/**
-	 * When the mode is changed to Operate, this is called to make all mem
-	 * allocations so they are not done during run-time (and thus creating
-	 * huge overhead)
-	 */
-	virtual void arm() { /* NOP */ }
+	/** Allocate run-time stuff */
+	virtual void arm() = 0;
 
-	/**
-	 * When the mode is changed back to Design, this is called to free
-	 * any run-time allocations.
-	 */
-	virtual void disarm() { /* NOP */ }
+	/** Free any run-time allocations */
+	virtual void disarm() = 0;
 
-	/**
-	 * Start the function
-	 */
-	virtual bool start();
+	/** Start the function */
+	virtual void start();
 
-	/**
-	 * Stop the function
-	 */
-	virtual void stop() = 0;
+	/** Stop the function */
+	virtual void stop();
 
-	/**
-	 * Tell this function that it has been removed from FunctionConsumer's
-	 * list of running functions (as a result of having an emptied-down
-	 * EventBuffer, and having finished its run() method). Usually,
-	 * functions have little more to do than emit a stopped() signal.
-	 */
-	virtual void finale() { emit stopped(m_id); }
+	bool isRunning() const { return m_running; }
+
+	/** Write next values to universes */
+	virtual bool write(QByteArray* universes) = 0;
 
 signals:
 	/**
@@ -349,17 +324,9 @@ signals:
 	 */
 	void stopped(t_function_id id);
 
-	/*********************************************************************
-	 * Event buffer
-	 *********************************************************************/
-public:
-	/**
-	 * Return the eventbuffer object. Only for FunctionConsumer's use.
-	 */
-	EventBuffer* eventBuffer() const { return m_eventBuffer; }
-
 protected:
-	EventBuffer* m_eventBuffer;
+	bool m_running;
+	t_bus_value m_elapsed;
 };
 
 #endif

@@ -587,52 +587,20 @@ protected:
 	 * Running
 	 *********************************************************************/
 public:
-	/**
-	 * Prepare this function for running. This is called when
-	 * the user sets the mode to Operate. Basically allocates everything
-	 * that is needed to run the function.
-	 */
 	void arm();
-
-	/**
-	 * Free all run-time allocations. This is called respectively when
-	 * the user sets the mode back to Design.
-	 */
 	void disarm();
 
-	/**
-	 * Stop this EFX immediately (as soon as possible)
-	 */
+	void start();
 	void stop();
 
-protected:
-	/**
-	 * The worker thread that takes care of filling the function's
-	 * buffer with event data
-	 */
-	void run();
+	bool write(QByteArray* universes);
 
 protected:
-	/**
-	 * Flag used to stop the EFX manually
-	 */
-	bool m_stopped;
-
 	/**
 	 * The size of one step derived from m_cycleDuration. If m_cycleDuration
 	 * is 64, then this is 1/64.
 	 */
 	float m_stepSize;
-
-	/**
-	 * Channel data that is written to the event buffer
-	 */
-	t_buffer_data* m_channelData;
-
-	/**
-	 * Actual number of channels inside m_channelData
-	 */
-	int m_channels;
 
 	/**
 	 * Run-time pan & tilt channels and their values

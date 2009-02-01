@@ -20,6 +20,7 @@
 */
 
 #include <QApplication>
+#include <QByteArray>
 #include <QPolygon>
 #include <QDebug>
 #include <QList>
@@ -33,7 +34,6 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
-#include "eventbuffer.h"
 #include "fixture.h"
 #include "scene.h"
 #include "app.h"
@@ -87,10 +87,10 @@ EFX::EFX(QObject* parent) : Function(parent, Function::EFX)
 
 	m_stepSize = 0;
 
-	m_channelData = NULL;
-
 	/* Set Default Fade as the speed bus */
 	setBus(KBusIDDefaultFade);
+	connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id,t_bus_value)),
+		this, SLOT(slotBusValueChanged(t_bus_id,t_bus_value)));
 }
 
 /**
@@ -142,8 +142,6 @@ bool EFX::copyFrom(EFX* efx)
 	m_algorithm = QString(efx->algorithm());
 
 	m_stepSize = 0;
-
-	m_channelData = NULL;
 
 	return true;
 }
@@ -1083,7 +1081,7 @@ bool EFX::loadXMLAxis(QDomDocument*, QDomElement* root)
 	{
 		qWarning() << "Unknown EFX axis:" << axis;
 	}
-	
+
 	return true;
 }
 
@@ -1261,11 +1259,6 @@ void EFX::rotateAndScale(float* x, float* y, float w, float h,
  * Running
  *****************************************************************************/
 
-/**
- * Prepare this function for running. This is called when
- * the user sets the mode to Operate. Basically allocates everything
- * that is needed to run the function.
- */
 void EFX::arm()
 {
 	class Scene* startScene = NULL;
@@ -1275,8 +1268,6 @@ void EFX::arm()
 	Fixture* fxi = NULL;
 	int channels = 0;
 	int serialNumber = 0;
-
-	m_channels = 0;
 
 	/* Initialization scene */
 	if (m_startSceneID != KNoID && m_startSceneEnabled == true)
@@ -1298,7 +1289,6 @@ void EFX::arm()
 	while (it.hasNext() == true)
 	{
 		EFXFixture ef = it.next();
-		ef.setIndex(m_channels);
 		ef.setSerialNumber(serialNumber);
 		ef.setStartScene(startScene);
 		ef.setStopScene(stopScene);
@@ -1354,18 +1344,9 @@ void EFX::arm()
 		{
 			ef.updateSkipThreshold();
 			m_runTimeFixtures.append(ef);
-			m_channels += channels;
 			serialNumber++;
 		}
 	}
-
-	/* Allocate space for channel data that is set to the eventbuffer */
-	if (m_channelData == NULL)
-		m_channelData = new unsigned int[m_channels];
-
-	/* Allocate space for the event buffer, 1/2 seconds worth of events */
-	if (m_eventBuffer == NULL)
-		m_eventBuffer = new EventBuffer(m_channels, KFrequency >> 1);
 
 	/* Choose a point calculation function depending on the algorithm */
 	if (m_algorithm == KCircleAlgorithmName)
@@ -1384,113 +1365,54 @@ void EFX::arm()
 		pointFunc = NULL;
 }
 
-/**
- * Free all run-time allocations. This is called respectively when
- * the user sets the mode back to Design.
- */
 void EFX::disarm()
 {
 	/* Remove all run-time fixtures from the list */
 	m_runTimeFixtures.clear();
 
-	/* Get rid of channel data buffer */
-	if (m_channelData != NULL)
-		delete [] m_channelData;
-	m_channelData = NULL;
-
-	/* Get rid of event buffer */
-	if (m_eventBuffer != NULL)
-		delete m_eventBuffer;
-	m_eventBuffer = NULL;
-
 	/* Just a precaution: invalidate the algorithm worker function */
 	pointFunc = NULL;
 }
 
-/**
- * Stop this EFX
- */
-void EFX::stop()
+void EFX::start()
 {
-	m_stopped = true;
-}
-
-/**
- * The worker thread that takes care of filling the function's
- * buffer with event data
- */
-void EFX::run()
-{
-	int ready;
-
-	/* Mark this function stopped for now if some initial check fails */
-	m_stopped = true;
-
-	emit running(m_id);
-
 	/* Set initial speed */
 	slotBusValueChanged(m_busID, Bus::value(m_busID));
+	Function::start();
+}
 
-	/* Append this function to running functions' list */
-	_app->functionConsumer()->cue(this);
+bool EFX::write(QByteArray* universes)
+{
+	int ready = 0;
 
 	/* Check that a valid point function is present and there's at least
 	   one fixture to control. */
 	if (pointFunc == NULL || m_runTimeFixtures.isEmpty() == true)
-		return;
+		return false;
 
-	/* Ready to run. Mark as not stopped. */
-	m_stopped = false;
-
-	/* Go thru all fixtures and calculate their next step */
-	while (m_stopped == false)
+	QMutableListIterator <EFXFixture> it(m_runTimeFixtures);
+	while (it.hasNext() == true)
 	{
-		ready = 0;
-
-		QMutableListIterator <EFXFixture> it(m_runTimeFixtures);
-		while (it.hasNext() == true && m_stopped == false)
-		{
-			it.next();
-			if (it.value().isReady() == false)
-			{
-				it.value().nextStep(m_channelData);
-			}
-			else
-			{
-				ready++;
-			}
-		}
-
-		/* Put the next event into the EFX's event buffer */
-		m_eventBuffer->put(m_channelData);
-
-		/* Check for stop condition */
-		if (ready == m_runTimeFixtures.count())
-			m_stopped = true;
+		it.next();
+		if (it.value().isReady() == false)
+			it.value().nextStep(universes);
+		else
+			ready++;
 	}
 
-	/* Clear the event buffer's contents so that this function will
-	   stop immediately. */
-	m_eventBuffer->purge();
+	/* Check for stop condition */
+	if (ready == m_runTimeFixtures.count())
+		return false;
+	else
+		return true;
+}
 
-	/* De-initialize in the end (SingleShot will have de-initialized
-	   all "ready" fixtures already) */
-	if (m_stopSceneID != KNoID && m_stopSceneEnabled == true)
-	{
-		class Scene* stopScene = static_cast <class Scene*>
-			(_app->doc()->function(m_stopSceneID));
-		Q_ASSERT(stopScene != NULL);
-		
-		stopScene->writeValues();
-	}
+void EFX::stop()
+{
+	Function::stop();
 
 	/* Reset all fixtures */
 	QMutableListIterator <EFXFixture> it(m_runTimeFixtures);
 	while (it.hasNext() == true)
 		it.next().reset();
-
-	/* Reset channel data */
-	for (int i = 0; i < m_channels; i++)
-		m_channelData[i] = 0;
-
 }

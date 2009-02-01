@@ -41,12 +41,6 @@ VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent)
 		this, SLOT(slotChooseFadeInputClicked()));
 	connect(m_chooseHoldInputButton, SIGNAL(clicked()),
 		this, SLOT(slotChooseHoldInputClicked()));
-
-#if defined(__APPLE__) || defined (WIN32)
-	m_hardwareTimerRadio->setEnabled(false);
-	m_softwareTimerRadio->setChecked(true);
-	m_hardwareTimerRadio->setToolTip(tr("Not available"));
-#endif
 }
 
 VirtualConsoleProperties::~VirtualConsoleProperties()
@@ -331,24 +325,4 @@ void VirtualConsoleProperties::updateHoldInputSource()
 	/* Display the gathered information */
 	m_holdInputUniverseEdit->setText(uniName);
 	m_holdInputChannelEdit->setText(chName);
-}
-
-/*****************************************************************************
- * Timer type
- *****************************************************************************/
-
-void VirtualConsoleProperties::setTimerType(FunctionConsumer::TimerType type)
-{
-	if (type == FunctionConsumer::RTCTimer)
-		m_hardwareTimerRadio->setChecked(true);
-	else
-		m_softwareTimerRadio->setChecked(true);
-}
-
-FunctionConsumer::TimerType VirtualConsoleProperties::timerType()
-{
-	if (m_hardwareTimerRadio->isChecked() == true)
-		return FunctionConsumer::RTCTimer;
-	else
-		return FunctionConsumer::NanoSleepTimer;
 }

@@ -21,6 +21,7 @@
 
 #include <QPluginLoader>
 #include <QMessageBox>
+#include <QByteArray>
 #include <QSettings>
 #include <QString>
 #include <QDebug>
@@ -60,7 +61,8 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 	m_universes = universes;
 	m_dummyOut = NULL;
 	m_blackout = false;
-	m_collectValues = false;
+
+	m_universeArray = new QByteArray(universes * 512, 0);
 
 	initPatch();
 
@@ -70,6 +72,9 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 
 OutputMap::~OutputMap()
 {
+	delete m_universeArray;
+	m_universeArray = NULL;
+
 	for (int i = 0; i < m_universes; i++)
 		delete m_patch[i];
 
@@ -156,8 +161,21 @@ void OutputMap::setBlackout(bool blackout)
 		return;
 	m_blackout = blackout;
 
-	for (int i = 0; i < m_universes; i++)
-		m_patch[i]->setBlackout(m_blackout);
+	if (blackout == true)
+	{
+		for (int i = 0; i < m_universes; i++)
+		{
+			char zeros[512];
+			std::fill(zeros, zeros + 512, 0);
+
+			m_patch[i]->dump(zeros);
+		}
+	}
+	else
+	{
+		/* Force writing of values back to the plugins */
+		m_universeChanged = true;
+	}
 
 	emit blackoutChanged(m_blackout);
 }
@@ -173,77 +191,47 @@ bool OutputMap::blackout() const
 
 t_value OutputMap::value(t_channel channel)
 {
-	OutputPatch* outputPatch;
-	t_channel universe;
 	t_value value;
 
-	/* Get the universe from the channel number. Channel is in the lowest
-	   9 bits and the universe is in the highest 7 bits. */
-	universe = static_cast<t_channel> (channel >> 9);
-	if (universe > KUniverseCount)
-		universe = KUniverseCount - 1;
+	if (channel > (m_universes * 512))
+		return 0;
 
-	/* Perform universe & monitorValue writing inside a mutex to
-	   synchronize patching and prevent crashes. */
-	m_mutex.lock();
-
-	/* Get the plugin that is assigned to this universe */
-	outputPatch = m_patch[universe];
-	Q_ASSERT(outputPatch != NULL);
-
-	/* Read from universe */
-	value = outputPatch->value(channel & 0x1FF);
-
-	m_mutex.unlock();
+	value = m_universeArray->data()[channel];
 
 	return value;
 }
 
 void OutputMap::setValue(t_channel channel, t_value value)
 {
-	OutputPatch* outputPatch;
-	t_channel universe;
-
-	if (channel == KChannelInvalid)
+	if (channel > m_universes * 512)
 		return;
 
-	/* Get the universe from the channel number. Channel is in the lowest
-	   9 bits and the universe is in the highest 7 bits. */
-	universe = static_cast<t_channel> (channel >> 9);
-	if (universe > KUniverseCount)
-		universe = KUniverseCount - 1;
+	m_universeArray->data()[channel] = value;
+	m_universeChanged = true;
+}
 
-	/* Perform universe & monitorValue writing inside a mutex to
-	   synchronize patching and prevent crashes. */
-	m_mutex.lock();
+QByteArray* OutputMap::claimUniverses()
+{
+	return m_universeArray;
+}
 
-	/* Get the plugin that is assigned to this universe */
-	outputPatch = m_patch[universe];
-	Q_ASSERT(outputPatch != NULL);
-
-	/* Write to universe */
-	outputPatch->setValue(channel & 0x1FF, value);
-	
-	if (m_collectValues == true)
-		m_monitorValues[channel] = value;
-
-	m_mutex.unlock();
+void OutputMap::releaseUniverses()
+{
+	m_universeChanged = true;
 }
 
 void OutputMap::dumpUniverses()
 {
-	/* Perform universe & monitorValue writing inside a mutex to
-	   synchronize patching and prevent crashes. */
-	m_mutex.lock();
-	for (int i = 0; i < m_universes; i++)
-		m_patch[i]->dump();
-
-	if (m_collectValues == true)
+	if (m_universeChanged == true && m_blackout == false)
 	{
-		emit changedValues(m_monitorValues);
-		m_monitorValues.clear();
+		for (int i = 0; i < m_universes; i++)
+		{
+			m_patch[i]->dump(m_universeArray->constData()
+					 + (512 * i));
+		}
+
+		m_universeChanged = false;
 	}
-	m_mutex.unlock();
 }
 
 /*****************************************************************************

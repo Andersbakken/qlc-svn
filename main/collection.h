@@ -80,18 +80,13 @@ public:
 	 * Running
 	 *********************************************************************/
 public:
-	/** Allocate some stuff for run-time */
 	void arm();
-
-	/** Delete run-time allocations */
 	void disarm();
 
-	/** Stop this function */
+	void start();
 	void stop();
 
-protected:
-	/** Main producer thread */
-	void run();
+	bool write(QByteArray* universes);
 
 protected slots:
 	/** Called whenever one of this function's child functions stops */

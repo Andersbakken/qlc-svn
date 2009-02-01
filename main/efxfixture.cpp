@@ -22,7 +22,6 @@
 #include <QDebug>
 #include <math.h>
 
-#include "eventbuffer.h"
 #include "efxfixture.h"
 #include "function.h"
 #include "scene.h"
@@ -38,7 +37,6 @@ EFXFixture::EFXFixture(EFX* parent)
 	m_parent = parent;
 
 	m_fixture = KNoID;
-	m_index = 0;
 	m_serialNumber = 0;
 	m_direction = Function::Forward;
 	m_runTimeDirection = Function::Forward;
@@ -73,7 +71,6 @@ EFXFixture& EFXFixture::operator=(const EFXFixture& ef)
 	if (this != &ef)
 	{
 		m_parent = ef.m_parent;
-		m_index = ef.m_index;
 		m_serialNumber = ef.m_serialNumber;
 		m_direction = ef.m_direction;
 		m_runTimeDirection = ef.m_runTimeDirection;
@@ -148,8 +145,6 @@ bool EFXFixture::loadXML(QDomDocument* doc, QDomElement* root)
 		return false;
 	}
 
-	qDebug() << root->text();
-
 	if (root->firstChild().nodeType() == QDomNode::TextNode)
 	{
 		/* Old file format contains just the fixture ID as in 
@@ -164,7 +159,7 @@ bool EFXFixture::loadXML(QDomDocument* doc, QDomElement* root)
 		while (node.isNull() == false)
 		{
 			tag = node.toElement();
-		
+
 			if (tag.tagName() == KXMLQLCEFXFixtureID)
 			{
 				/* Fixture ID */
@@ -185,7 +180,7 @@ bool EFXFixture::loadXML(QDomDocument* doc, QDomElement* root)
 			node = node.nextSibling();
 		}
 	}
-	
+
 	return true;
 }
 
@@ -221,16 +216,6 @@ bool EFXFixture::saveXML(QDomDocument* doc, QDomElement* efx_root) const
  * Protected run-time-only properties
  ****************************************************************************/
 
-void EFXFixture::setIndex(int number)
-{
-	m_index = number;
-}
-
-int EFXFixture::index() const
-{
-	return m_index;
-}
-
 void EFXFixture::setSerialNumber(int number)
 {
 	m_serialNumber = number;
@@ -240,7 +225,7 @@ int EFXFixture::serialNumber() const
 {
 	return m_serialNumber;
 }
-	
+
 void EFXFixture::setStartScene(Scene* scene)
 {
 	m_startScene = scene;
@@ -250,7 +235,7 @@ Scene* EFXFixture::startScene() const
 {
 	return m_startScene;
 }
-	
+
 void EFXFixture::setStopScene(Scene* scene)
 {
 	m_stopScene = scene;
@@ -323,7 +308,7 @@ void EFXFixture::reset()
  * Running
  *****************************************************************************/
 
-void EFXFixture::nextStep(t_buffer_data* data)
+void EFXFixture::nextStep(QByteArray* universes)
 {
 	if (m_ready == true)
 		return;
@@ -337,13 +322,11 @@ void EFXFixture::nextStep(t_buffer_data* data)
 	{
 		m_iterator += m_parent->m_stepSize;
 
-		/* This fixture is now running. Initialize it */
 		if (m_initialized == false)
 		{
+			/* This fixture is now running. Initialize it. */
 			m_initialized = true;
-
-			if (m_startScene != NULL)
-				m_startScene->writeValues(m_fixture);
+			start();
 		}
 	}
 
@@ -360,7 +343,8 @@ void EFXFixture::nextStep(t_buffer_data* data)
 					    &m_panValue, &m_tiltValue);
 		}
 
-		setPoint(data);
+		/* Write this fixture's data to universes */
+		setPoint(universes);
 	}
 	else
 	{
@@ -386,27 +370,38 @@ void EFXFixture::nextStep(t_buffer_data* data)
 	}
 }
 
-void EFXFixture::setPoint(t_buffer_data* data)
+void EFXFixture::start()
 {
-	/* Write coarse point data to event buffer */
-	data[m_index + 0]  = m_msbPanChannel << 8;
-	data[m_index + 0] |= static_cast <t_value> (m_panValue);
+	if (m_startScene != NULL)
+		m_startScene->writeValues(m_fixture);
+}
 
-	data[m_index + 1]  = m_msbTiltChannel << 8;
-	data[m_index + 1] |= static_cast <t_value> (m_tiltValue);
+void EFXFixture::stop()
+{
+	if (m_stopScene != NULL)
+		m_stopScene->writeValues(m_fixture);
+}
 
-	/* Write fine point data to event buffer if applicable */
+void EFXFixture::setPoint(QByteArray* universes)
+{
+	char* data = static_cast<char*> (universes->data());
+
+	/* Write coarse point data to universes */
+	data[m_msbPanChannel] = static_cast <t_value> (m_panValue);
+	data[m_msbTiltChannel] = static_cast <t_value> (m_tiltValue);
+
+	/* Write fine point data to universes if applicable */
 	if (m_lsbPanChannel != KChannelInvalid)
 	{
-		data[m_index + 2]  = m_lsbPanChannel << 8;
-		data[m_index + 2] |= static_cast <t_value> 
+		/* Leave only the fraction */
+		data[m_lsbPanChannel] = static_cast <t_value>
 			((m_panValue - floor(m_panValue)) * 255.0);
 	}
 
 	if (m_lsbTiltChannel != KChannelInvalid)
 	{
-		data[m_index + 3]  = m_lsbTiltChannel << 8;
-		data[m_index + 3] |= static_cast <t_value> 
+		/* Leave only the fraction */
+		data[m_lsbTiltChannel] = static_cast <t_value>
 			((m_tiltValue - floor(m_tiltValue)) * 255.0);
 	}
 }

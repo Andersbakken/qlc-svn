@@ -30,9 +30,10 @@
 
 #include "common/qlctypes.h"
 
-class QString;
 class QDomDocument;
 class QDomElement;
+class QByteArray;
+class QString;
 
 class QLCOutPlugin;
 class OutputMap;
@@ -128,37 +129,36 @@ public:
 	/**
 	 * Set the value of one channel. Channels 0-511 are for the first
 	 * universe, 512-1023 for the second etc.. This function does not
-	 * actually write the values to plugins; dumpUniverses() is for that
+	 * actually write the values to plugins; dumpUniverses() does that
 	 * and it is called periodically from FunctionConsumer. Don't call
 	 * it manually.
+	 *
+	 * This function is used from manually-controlled widgets in the UI
+	 * to write one value at a time to the given channel.
 	 *
 	 * @param channel The channel whose value to set
 	 * @param value The value to set
 	 */
 	void setValue(t_channel channel, t_value value);
 
-	/** Dump all universes' contents to their output plugins */
+	/** Take exclusive access to all universes (FunctionConsumer) */
+	QByteArray* claimUniverses();
+
+	/** Release exclusive access to all universes (FunctionConsumer) */
+	void releaseUniverses();
+
+	/** Write all universes' data to their plugins */
 	void dumpUniverses();
 
-	/** En/disable collection and sending of changed values (to monitor) */
-	void collectValues(bool collect) { m_collectValues = collect; }
-
-signals:
-	/** Send a map of changed values to MonitorFixtures */
-	void changedValues(const QHash <t_channel,t_value>& values);
-
 protected:
-	/**
-	 * A map of changed values that are sent to MonitorFixtures from
-	 * slotDMXTimeout() using changedValues() signal.
-	 */
-	QHash <t_channel,t_value> m_monitorValues;
+	/** The values of all universes */
+	QByteArray* m_universeArray;
 
- 	/** Mutex that guards m_monitorValues */
- 	QMutex m_mutex;
+	/** When true, universes are dumped. Otherwise not. */
+	bool m_universeChanged;
 
-	/** Collect monitor values or not */
-	bool m_collectValues;
+	/** Mutex guarding m_universeArray */
+	QMutex m_universeMutex;
 
 	/*********************************************************************
 	 * Patch

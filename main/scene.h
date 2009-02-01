@@ -27,7 +27,6 @@
 
 #include "common/qlctypes.h"
 
-#include "eventbuffer.h"
 #include "function.h"
 #include "fixture.h"
 
@@ -42,17 +41,24 @@
 class SceneChannel
 {
 public:
+	SceneChannel();
+	SceneChannel(const SceneChannel& sch);
+	~SceneChannel();
+
+	SceneChannel& operator=(const SceneChannel& sch);
+
+public:
 	/** The universe and channel that this object refers to */
 	t_channel address;
 
 	/** The value of the channel where a scene started fading from */
-	t_value start;
+	int start;
 
 	/** The current value set by a scene */
-	t_value current;
+	int current;
 
 	/** The target value to eventually fade to */
-	t_value target;
+	int target;
 
 	/** If true, this value is ready, don't set it anymore to DMX */
 	bool ready;
@@ -159,7 +165,7 @@ public:
 	QList <SceneValue> *values() { return &m_values; }
 
 protected:
-	QList <SceneValue> m_values;	
+	QList <SceneValue> m_values;
 
 	/*********************************************************************
 	 * Fixtures
@@ -170,28 +176,24 @@ public slots:
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
-public:	
+public:
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
-	
+
 	/*********************************************************************
 	 * Running
 	 *********************************************************************/
 public:
 	void arm();
 	void disarm();
-	void stop();
-	
-protected:
-	void run();
-	
-protected:
-	t_bus_value m_elapsedTime;
 
-	SceneChannel* m_channels;
-	t_buffer_data* m_channelData;
+	bool write(QByteArray* universes);
 
-	bool m_stopped;
+protected:
+	t_value nextValue(SceneChannel* sch);
+
+protected:
+	QList <SceneChannel> m_channels;
 };
 
 #endif

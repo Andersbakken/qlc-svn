@@ -28,6 +28,7 @@
 
 #include "common/qlcfile.h"
 
+#include "functionconsumer.h"
 #include "function.h"
 #include "bus.h"
 #include "app.h"
@@ -52,19 +53,15 @@ const QString KForwardString    (    "Forward" );
  * Initialization
  *****************************************************************************/
 
-Function::Function(QObject* parent, Type type) : QThread(parent)
+Function::Function(QObject* parent, Type type) : QObject(parent)
 {
 	m_id = KNoID;
 	m_name = QString::null;
 	m_type = type;
 	m_runOrder = Loop;
 	m_direction = Forward;
-	m_busID = KBusIDInvalid;
-	m_eventBuffer = NULL;
-
-	// Receive bus value change signals
-	connect(Bus::emitter(),	SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-		this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+	m_busID = KBusIDDefaultFade;
+	m_running = false;
 }
 
 Function::~Function()
@@ -303,16 +300,23 @@ Function* Function::loader(QDomDocument* doc, QDomElement* root)
  * Running
  *****************************************************************************/
 
-bool Function::start()
+void Function::start()
 {
-	if (isRunning() == true)
+	if (m_running == false)
 	{
-		qDebug() << "Function" << name() << "is already running!";
-		return false;
+		m_elapsed = 0;
+		m_running = true;
+		_app->functionConsumer()->startMe(this);
+		emit running(m_id);
 	}
-	else
+}
+
+void Function::stop()
+{
+	if (m_running == true)
 	{
-		QThread::start();
-		return true;
+		_app->functionConsumer()->stopMe(this);
+		m_running = false;
+		emit stopped(m_id);
 	}
 }

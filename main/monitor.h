@@ -56,6 +56,10 @@ public:
 	Monitor(QWidget* parent = NULL);
 	virtual ~Monitor();
 
+public slots:
+	void show();
+	void hide();
+
 private:
 	Q_DISABLE_COPY(Monitor)
 
@@ -97,6 +101,15 @@ protected:
 	MonitorFixture::ValueStyle m_valueStyle;
 
 	QList <MonitorFixture*> m_monitorFixtures;
+
+	/*********************************************************************
+	 * Timer
+	 *********************************************************************/
+protected:
+	void timerEvent(QTimerEvent* e);
+
+protected:
+	int m_timer;
 
 	/*********************************************************************
 	 * Save & Load
