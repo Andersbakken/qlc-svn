@@ -43,10 +43,11 @@ extern App* _app;
 VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 {
 	setupUi(this);
+
+	m_slider->setInvertedAppearance(true);
+	m_slider->setInvertedControls(true);
 	m_slider->setStyle(App::sliderStyle());
-	layout()->setMargin(0);
 	setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-	m_sliderPressed = false;
 
 	m_busLowLimit = 0;
 	m_busHighLimit = 5;
@@ -62,12 +63,8 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 		this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
 
 	/* Slider connections */
-	connect(m_slider, SIGNAL(sliderPressed()),
-		this, SLOT(slotSliderPressed()));
 	connect(m_slider, SIGNAL(valueChanged(int)),
 		this, SLOT(slotSliderValueChanged(int)));
-	connect(m_slider, SIGNAL(sliderReleased()),
-		this, SLOT(slotSliderReleased()));
 
 	/* Tap button clicks */
 	connect(m_tapButton, SIGNAL(clicked()),
@@ -125,7 +122,7 @@ void VCDockSlider::slotBusNameChanged(t_bus_id bus, const QString& name)
 
 void VCDockSlider::slotBusValueChanged(t_bus_id bus, t_bus_value value)
 {
-	if (bus == m_bus && m_sliderPressed == false)
+	if (bus == m_bus && m_slider->isSliderDown() == false)
 		m_slider->setValue(value);
 }
 
@@ -133,17 +130,11 @@ void VCDockSlider::slotBusValueChanged(t_bus_id bus, t_bus_value value)
  * Slider
  *****************************************************************************/
 
-void VCDockSlider::slotSliderPressed()
-{
-	m_sliderPressed = true;
-}
-
 void VCDockSlider::slotSliderValueChanged(int value)
 {
 	QString num;
 
-	if (m_sliderPressed == true)
-		Bus::setValue(m_bus, m_slider->value());
+	Bus::setValue(m_bus, m_slider->value());
 
 	/* Set value to label */
 	num.sprintf("%.2fs", float(value) / float(KFrequency));
@@ -165,11 +156,6 @@ void VCDockSlider::slotSliderValueChanged(int value)
 	}
 }
 
-void VCDockSlider::slotSliderReleased()
-{
-	m_sliderPressed = false;
-}
-
 /*****************************************************************************
  * Tap button
  *****************************************************************************/
@@ -177,10 +163,8 @@ void VCDockSlider::slotSliderReleased()
 void VCDockSlider::slotTapButtonClicked()
 {
 	int t = m_time.elapsed();
-	m_sliderPressed = true;
 	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
 	Bus::tap(m_bus);
-	m_sliderPressed = false;
 	m_time.restart();
 }
 
@@ -249,12 +233,10 @@ void VCDockSlider::slotInputValueChanged(t_input_universe universe,
 			    (float) m_slider->minimum(),
 			    (float) m_slider->maximum());
 
-		m_sliderPressed = true;
 		if (m_slider->invertedAppearance() == true)
 			m_slider->setValue(m_slider->maximum() - (int) val);
 		else
 			m_slider->setValue((int) val);
-		m_sliderPressed = false;
 	}
 }
 

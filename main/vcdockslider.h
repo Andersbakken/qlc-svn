@@ -88,13 +88,7 @@ protected:
 	 * User input slots
 	 *********************************************************************/
 protected slots:
-	void slotSliderPressed();
 	void slotSliderValueChanged(int value);
-	void slotSliderReleased();
-
-protected:
-	/** Separates manual user input (true) from internal data (false) */
-	bool m_sliderPressed;
 
 	/*********************************************************************
 	 * Tap button

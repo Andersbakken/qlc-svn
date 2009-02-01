@@ -361,17 +361,13 @@ public:
 	int sliderValue();
 
 public slots:
-	void slotSliderPressed();
-	void slotSliderValueChanged(int value);
-	void slotSliderReleased();
+	void slotSliderMoved(int value);
 
 protected:
 	QHBoxLayout* m_hbox;
 	QSlider* m_slider;
 
 	int m_sliderValue;
-	bool m_sliderPressed;
-	bool m_moveSliderOnly;
 
 	/*********************************************************************
 	 * Bottom label

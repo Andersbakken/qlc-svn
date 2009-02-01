@@ -75,8 +75,6 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_busHighLimit = KDefaultBusHighLimit;
 
 	m_sliderValue = 0;
-	m_sliderPressed = false;
-	m_moveSliderOnly = false;
 
 	m_time = NULL;
 
@@ -99,16 +97,12 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_slider = new QSlider(this);
 	m_slider->setStyle(App::sliderStyle());
 	m_hbox->addWidget(m_slider);
-	m_slider->setRange(KDefaultBusLowLimit * KFrequency, 
+	m_slider->setRange(KDefaultBusLowLimit * KFrequency,
 			   KDefaultBusHighLimit * KFrequency);
 	m_slider->setPageStep(1);
-	m_slider->setInvertedAppearance(true);
-	connect(m_slider, SIGNAL(sliderPressed()),
-		this, SLOT(slotSliderPressed()));
+	m_slider->setInvertedAppearance(false);
 	connect(m_slider, SIGNAL(valueChanged(int)),
-		this, SLOT(slotSliderValueChanged(int)));
-	connect(m_slider, SIGNAL(sliderReleased()),
-		this, SLOT(slotSliderReleased()));
+		this, SLOT(slotSliderMoved(int)));
 
 	m_hbox->insertSpacing(-1, 10);
 
@@ -131,7 +125,8 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	setBus(KBusIDDefaultFade);
 	setSliderMode(Bus);
 	setSliderValue(0);
-	slotSliderValueChanged(0);
+	slotSliderMoved(0);
+	setInvertedAppearance(true);
 
 	/* Update the slider according to current mode */
 	slotModeChanged(_app->mode());
@@ -276,6 +271,7 @@ void VCSlider::setInvertedAppearance(bool invert)
 {
 	Q_ASSERT(m_slider != NULL);
 	m_slider->setInvertedAppearance(invert);
+	m_slider->setInvertedControls(invert);
 }
 
 /*****************************************************************************
@@ -339,7 +335,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 		/* Set the slider range */
 		m_slider->setRange(busLowLimit() * KFrequency,
 				   busHighLimit() * KFrequency);
-		setSliderValue(busHighLimit() * KFrequency);
+		setSliderValue(busLowLimit() * KFrequency);
 
 		/* Reconnect to bus emitter */
 		connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
@@ -356,7 +352,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 	{
 		/* Set the slider range */
 		m_slider->setRange(levelLowLimit(), levelHighLimit());
-		setSliderValue(levelHighLimit());
+		setSliderValue(levelLowLimit());
 
 		m_bottomLabel->show();
 		m_tapButton->hide();
@@ -418,7 +414,7 @@ void VCSlider::setBusValue(int value)
 
 void VCSlider::slotBusValueChanged(t_bus_id bus, t_bus_value value)
 {
-	if (bus == m_bus && m_sliderPressed == false)
+	if (bus == m_bus && m_slider->isSliderDown() == false)
 		setSliderValue(value);
 }
 
@@ -528,10 +524,7 @@ void VCSlider::setLevelValue(t_value value)
 		if (fxi != NULL)
 			dmx_ch = fxi->channelAddress(ch);
 
-		_app->outputMap()->setValue(dmx_ch,
-					    m_levelHighLimit - value +
-					    m_levelLowLimit);
-
+		_app->outputMap()->setValue(dmx_ch, value);
 	}
 }
 
@@ -564,12 +557,7 @@ int VCSlider::sliderValue()
 	return m_sliderValue;
 }
 
-void VCSlider::slotSliderPressed()
-{
-	m_sliderPressed = true;
-}
-
-void VCSlider::slotSliderValueChanged(int value)
+void VCSlider::slotSliderMoved(int value)
 {
 	QString num;
 
@@ -579,17 +567,22 @@ void VCSlider::slotSliderValueChanged(int value)
 	{
 	case Bus:
 	{
-		/* Set bus value only if this callback is a result of
-		   user dragging the slider and slider tracking is on */
-		if (m_sliderPressed == true)
-			setBusValue(value);
+		setBusValue(value);
 
 		/* Set text for the top label */
 		if (valueDisplayStyle() == ExactValue)
+		{
 			num.sprintf("%.2fs", ((float) value / (float) KFrequency));
+		}
 		else
-			num.sprintf("%.3d%%", static_cast<int> 
-				    (((float) ((m_busHighLimit * KFrequency) - value) / (float) ((m_busHighLimit - m_busLowLimit) * (float) KFrequency)) * 100.0));
+		{
+			/* Horrible code... */
+			num.sprintf("%.3d%%", static_cast<int>
+				(((float) ((m_busHighLimit * KFrequency)
+				- value) / (float) ((m_busHighLimit
+							- m_busLowLimit) *
+				(float) KFrequency)) * 100.0));
+		}
 
 		setTopLabelText(num);
 	}
@@ -601,11 +594,17 @@ void VCSlider::slotSliderValueChanged(int value)
 
 		/* Set text for the top label */
 		if (valueDisplayStyle() == ExactValue)
-			num.sprintf("%.3d", 
-				    m_levelHighLimit - value + m_levelLowLimit);
+		{
+			num.sprintf("%.3d", value);
+		}
 		else
-			num.sprintf("%.3d%%", static_cast<int>
-				    ((((float) (m_levelHighLimit - value)) / (float) (m_levelHighLimit - m_levelLowLimit)) * 100.0));
+		{
+			float f = SCALE(float(value),
+				 	float(m_slider->minimum()),
+				 	float(m_slider->maximum()),
+					float(0), float(100));
+			num.sprintf("%.3d%%", static_cast<int> (f));
+		}
 		setTopLabelText(num);
 	}
 	break;
@@ -621,7 +620,7 @@ void VCSlider::slotSliderValueChanged(int value)
 	if (m_inputUniverse != KInputUniverseInvalid &&
 	    m_inputChannel != KInputChannelInvalid)
 	{
-		if (m_slider->invertedAppearance() == true)
+		if (invertedAppearance() == true)
 			value = m_slider->maximum() - value;
 
 		float fb = SCALE(float(value), float(m_slider->minimum()),
@@ -631,11 +630,6 @@ void VCSlider::slotSliderValueChanged(int value)
 		_app->inputMap()->feedBack(m_inputUniverse, m_inputChannel,
 								int(fb));
 	}
-}
-
-void VCSlider::slotSliderReleased()
-{
-	m_sliderPressed = false;
 }
 
 /*****************************************************************************
@@ -668,10 +662,8 @@ QString VCSlider::tapButtonText()
 void VCSlider::slotTapButtonClicked()
 {
 	int t = m_time->elapsed();
-	slotSliderPressed();
 	setSliderValue(static_cast<int> (t * 0.001 * KFrequency));
 	Bus::tap(m_bus);
-	slotSliderReleased();
 	m_time->restart();
 }
 
@@ -695,12 +687,10 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
 			    (float) m_slider->minimum(),
 			    (float) m_slider->maximum());
 
-		m_sliderPressed = true;
 		if (m_slider->invertedAppearance() == true)
 			m_slider->setValue(m_slider->maximum() - (int) val);
 		else
 			m_slider->setValue((int) val);
-		m_sliderPressed = false;
 	}
 }
 

@@ -111,9 +111,9 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 
 	/* Slider movement (Qt understands inverted appearance vice versa) */
 	if (m_slider->invertedAppearance() == true)
-		m_sliderMovementNormalRadio->setChecked(true);
-	else
 		m_sliderMovementInvertedRadio->setChecked(true);
+	else
+		m_sliderMovementNormalRadio->setChecked(true);
 
 	/* Value display style */
 	switch (m_slider->valueDisplayStyle())
@@ -708,11 +708,11 @@ void VCSliderProperties::accept()
 	else
 		m_slider->setValueDisplayStyle(VCSlider::PercentageValue);
 
-	/* Slider movement (Qt understands inverted appearance vice versa) */
+	/* Slider movement */
 	if (m_sliderMovementNormalRadio->isChecked() == true)
-		m_slider->setInvertedAppearance(true);
-	else
 		m_slider->setInvertedAppearance(false);
+	else
+		m_slider->setInvertedAppearance(true);
 
 	/* External input */
 	m_slider->setInputSource(m_inputUniverse, m_inputChannel);
