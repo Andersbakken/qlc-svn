@@ -29,8 +29,10 @@
 #include "scene.h"
 
 class QContextMenuEvent;
-class QVBoxLayout;
+class QIntValidator;
 class QToolButton;
+class QVBoxLayout;
+class QLineEdit;
 class QSlider;
 class QLabel;
 class QMenu;
@@ -70,9 +72,6 @@ protected:
 	/** Initialize the context menu */
 	void initMenu();
 
-	/** Initialize the context menu for plain dimmer fixtures */
-	void initPlainMenu();
-
 	/** Initialize the context menu for fixtures with capabilities */
 	void initCapabilityMenu(const QLCChannel* ch);
 
@@ -90,7 +89,7 @@ public:
 	int sliderValue() const;
 
 	/** Update the UI to match the channel's real status & value */
-	void update();
+	void updateValue();
 
 	/** Enable/disable DMX value output */
 	void setOutputDMX(bool state);
@@ -99,6 +98,9 @@ public:
 	void setValue(t_value value);
 
 public slots:
+	/** Value edit box was edited */
+	void slotValueEdited(const QString& text);
+
 	/** Slider value was changed */
 	void slotValueChange(int value);
 
@@ -145,9 +147,9 @@ protected:
 	 * Widgets
 	 *********************************************************************/
 protected:
-	QVBoxLayout* verticalLayout;
 	QToolButton* m_presetButton;
-	QLabel* m_valueLabel;
+	QIntValidator* m_validator;
+	QLineEdit* m_valueEdit;
 	QSlider* m_valueSlider;
 	QLabel* m_numberLabel;
 };

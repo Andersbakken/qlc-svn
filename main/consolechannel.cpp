@@ -22,6 +22,8 @@
 #include <QContextMenuEvent>
 #include <QVBoxLayout>
 #include <QToolButton>
+#include <QIntValidator>
+#include <QLineEdit>
 #include <QSlider>
 #include <QLabel>
 #include <QMenu>
@@ -72,8 +74,14 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
 	m_menu = NULL;
 	m_outputDMX = true;
 
+	m_presetButton = NULL;
+	m_validator = NULL;
+	m_valueEdit = NULL;
+	m_valueSlider = NULL;
+	m_numberLabel = NULL;
+
 	init();
-	update();
+	updateValue();
 }
 
 ConsoleChannel::~ConsoleChannel()
@@ -93,21 +101,29 @@ void ConsoleChannel::init()
 	layout()->setContentsMargins(CMARGIN_LEFT, CMARGIN_TOP_CHECK,
 				     CMARGIN_RIGHT, CMARGIN_BOTTOM);
 
-	m_presetButton = new QToolButton(this);
-	m_presetButton->setIconSize(QSize(26, 26));
-	layout()->addWidget(m_presetButton);
-	m_presetButton->setSizePolicy(QSizePolicy::Maximum,
-				      QSizePolicy::Preferred);
+	/* Create a button only if its menu has sophisticated contents */
+	if (m_fixture->fixtureDef() != NULL && m_fixture->fixtureMode() != NULL)
+	{
+		m_presetButton = new QToolButton(this);
+		m_presetButton->setIconSize(QSize(26, 26));
+		layout()->addWidget(m_presetButton);
+		m_presetButton->setSizePolicy(QSizePolicy::Maximum,
+					      QSizePolicy::Preferred);
+		initMenu();
+	}
 
-	m_valueLabel = new QLabel(this);
-	layout()->addWidget(m_valueLabel);
-	m_valueLabel->setAlignment(Qt::AlignCenter);
+	m_valueEdit = new QLineEdit(this);
+	layout()->addWidget(m_valueEdit);
+	m_valueEdit->setAlignment(Qt::AlignCenter);
+	m_validator = new QIntValidator(0, 255, this);
+	m_valueEdit->setValidator(m_validator);
 
 	m_valueSlider = new QSlider(this);
 	m_valueSlider->setStyle(App::sliderStyle());
 	layout()->addWidget(m_valueSlider);
 	m_valueSlider->setInvertedAppearance(false);
 	m_valueSlider->setRange(0, 255);
+	m_valueSlider->setPageStep(1);
 	m_valueSlider->setSizePolicy(QSizePolicy::Preferred,
 				     QSizePolicy::Expanding);
 
@@ -126,10 +142,10 @@ void ConsoleChannel::init()
 	num.sprintf("%d", m_channel + 1);
 	m_numberLabel->setText(num);
 
+	connect(m_valueEdit, SIGNAL(textEdited(const QString&)),
+		this, SLOT(slotValueEdited(const QString&)));
 	connect(m_valueSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(slotValueChange(int)));
-
-	initMenu();
 }
 
 /*****************************************************************************
@@ -222,26 +238,6 @@ void ConsoleChannel::initMenu()
 	// i.e. not for Generic dimmer fixtures
 	if (m_fixture->fixtureDef() != NULL && m_fixture->fixtureMode() != NULL)
 		initCapabilityMenu(ch);
-	else
-		initPlainMenu();
-
-}
-
-void ConsoleChannel::initPlainMenu()
-{
-	for (t_value i = 0; i < 255; i++)
-	{
-		QAction* action;
-		QString s;
-
-		s.sprintf("%.3d", i);
-		action = m_menu->addAction(s);
-		action->setData(i);
-	}
-
-	// Connect menu item activation signal to this
-	connect(m_menu, SIGNAL(triggered(QAction*)),
-		this, SLOT(slotContextMenuTriggered(QAction*)));
 }
 
 void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
@@ -343,16 +339,16 @@ int ConsoleChannel::sliderValue() const
 	return m_valueSlider->value();
 }
 
-void ConsoleChannel::update()
+void ConsoleChannel::updateValue()
 {
 	t_value value = 0;
 
 	Q_ASSERT(m_fixture != NULL);
-	
+
 	value = _app->outputMap()->value(m_fixture->universeAddress() +
 					 m_channel);
-	
-	m_valueLabel->setNum(value);
+
+	m_valueEdit->setText(QString("%1").arg(value));
 	setValue(value);
 }
 
@@ -374,14 +370,18 @@ void ConsoleChannel::setValue(t_value value)
 	m_valueSlider->setValue(static_cast<int> (value));
 }
 
+void ConsoleChannel::slotValueEdited(const QString& text)
+{
+	setValue(text.toInt());
+}
+
 void ConsoleChannel::slotValueChange(int value)
 {
 	if (m_outputDMX == true)
 		_app->outputMap()->setValue(m_fixture->universeAddress() +
 					    m_channel, (t_value) value);
-	
-	m_valueLabel->setNum(value);
-	
+
+	m_valueEdit->setText(QString("%1").arg(value));
 	m_value = value;
 
 	emit valueChanged(m_channel, m_value, isEnabled());
