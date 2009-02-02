@@ -135,8 +135,11 @@ public:
 	/** Save the fixture into an XML file */
 	bool saveXML(const QString &fileName);
 
+	/** Load this fixture's contents from the given file */
+	bool loadXML(const QString& fileName);
+
 	/** Load fixture contents from an XML document */
-	virtual bool loadXML(QDomDocument* doc);
+	bool loadXML(QDomDocument* doc);
 
 protected:
 	/** Modes (i.e. particular collections of channels) */

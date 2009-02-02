@@ -47,40 +47,6 @@ QLCFixtureDef::QLCFixtureDef(QLCFixtureDef *fixture)
 		*this = *fixture;
 }
 
-QLCFixtureDef::QLCFixtureDef(const QString &fileName)
-{
-	QDomDocument* doc = NULL;
-	QDomDocumentType doctype;
-	QString errorString;
-
-	Q_ASSERT(fileName != QString::null);
-
-	m_manufacturer = QString::null;
-	m_model = QString::null;
-	m_type = QString("Dimmer");
-
-	if (QLCFile::readXML(fileName, &doc) == true)
-	{
-		if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
-		{
-			if (loadXML(doc) == false)
-			{
-				qDebug() << fileName
-					 << " is not a fixture definition file";
-			}
-		}
-		else
-		{
-			qDebug() << fileName
-				 << " is not a fixture definition file";
-		}
-	}
-	else
-	{
-		qDebug() << fileName << ": File parsing failed";
-	}
-}
-
 QLCFixtureDef::~QLCFixtureDef()
 {
 	while (m_channels.isEmpty() == false)
@@ -295,6 +261,42 @@ bool QLCFixtureDef::saveXML(const QString &fileName)
 	}
 
 	file.close();
+
+	return retval;
+}
+
+bool QLCFixtureDef::loadXML(const QString& fileName)
+{
+	QDomDocument* doc = NULL;
+	QDomDocumentType doctype;
+	QString errorString;
+	bool retval = true;
+
+	if (fileName.isEmpty() == true)
+		return false;
+
+	if (QLCFile::readXML(fileName, &doc) == true)
+	{
+		if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
+		{
+			retval = loadXML(doc);
+		}
+		else
+		{
+			retval = false;
+			qDebug() << fileName
+				 << "is not a fixture definition file";
+		}
+	}
+	else
+	{
+		retval = false;
+		qDebug() << fileName << "parsing failed";
+	}
+
+	/* Get rid of doc */
+	if (doc != NULL)
+		delete doc;
 
 	return retval;
 }

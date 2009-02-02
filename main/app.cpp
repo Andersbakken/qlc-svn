@@ -473,14 +473,18 @@ bool App::loadFixtureDefinitions(QString fixturePath)
 	}
 
 	/* Attempt to read all specified files from the given directory */
-	QStringList dirlist(dir.entryList());
-	QStringList::Iterator it;
-	for (it = dirlist.begin(); it != dirlist.end(); ++it)
+	QStringListIterator it(dir.entryList());
+	while (it.hasNext() == true)
 	{
-		QString path = QString(fixturePath) + QDir::separator() + *it;
-		QLCFixtureDef* fxi = new QLCFixtureDef(path);
+		QLCFixtureDef* fxi;
+		QString path;
 
-		if (fxi != NULL)
+		path = dir.absoluteFilePath(it.next());
+
+		fxi = new QLCFixtureDef();
+		Q_ASSERT(fxi != NULL);
+
+		if (fxi->loadXML(path) == true)
 		{
 			/* Check that there are no duplicates */
 			QLCFixtureDef* prev;
