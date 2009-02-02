@@ -9,7 +9,7 @@ QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
 macx:LIBS 	+= -L./qlc.app/Contents/Frameworks -lqlccommon
-unix:LIBS 	+= -L../libs/common/ -lqlccommon
+unix:!macx:LIBS += -L../libs/common/ -lqlccommon
 win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 
 # MAC Icon (TODO: Move under ../etc)
@@ -178,5 +178,5 @@ macx {
         system(mkdir -p qlc.app/Contents/Frameworks)
         LIBS_PATH = ../libs/common/libqlccommon*.dylib
         system(cp $$LIBS_PATH qlc.app/Contents/Frameworks)
-	QMAKE_POST_LINK = install_name_tool -change libqlccommon.3.dylib @executable_path/../Frameworks/libqlccommon.3.dylib qlc.app/Contents/MacOS/qlc
+	QMAKE_POST_LINK = install_name_tool -change libqlccommon.3.dylib @executable_path/../../Frameworks/libqlccommon.3.dylib qlc.app/Contents/MacOS/qlc
 }

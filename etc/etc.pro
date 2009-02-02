@@ -11,17 +11,7 @@ unix:icons.path		= /usr/share/pixmaps/
 unix:icons.files	+= ../gfx/qlc.png \
 			   ../gfx/qlc-fixtureeditor.png
 
-unix:INSTALLS		+= icons desktop
-
-# MAC installation setup
-macx {
-        system(rm -Rf main/qlc.app/Contents/docs)
-        system(mkdir -p main/qlc.app/Contents/)
-        system(cp -r docs main/qlc.app/Contents/)
-        system(rm -Rf fixtureeditor/qlc-fixtureeditor.app/Contents/docs)
-        system(mkdir -p fixtureeditor/qlc-fixtureeditor.app/Contents/)
-        system(cp -r docs fixtureeditor/qlc-fixtureeditor.app/Contents/)
-}
+unix!macx:INSTALLS	+= icons desktop
 
 # Win32 additional DLL installation
 win32 {

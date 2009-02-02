@@ -48,4 +48,5 @@ headers.files = qlccapability.h \
                 qlcphysical.h \
                 qlctypes.h
 
-INSTALLS 	+= target headers
+!macx:INSTALLS 	+= target headers
+macx:INSTALLS	+= target

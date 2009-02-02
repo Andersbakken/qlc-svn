@@ -3,58 +3,72 @@ CONFIG			+= warn_on release
 
 # Binaries
 win32:BINDIR		= $$(SystemDrive)/QLC
-unix:BINDIR		= /usr/bin
+unix:!macx:BINDIR	= /usr/bin
 macx:BINDIR		= /Applications
 
 # Libraries
 win32:LIBSDIR		= $$BINDIR
-unix:LIBSDIR		= /usr/lib
+unix:!macx:LIBSDIR	= /usr/lib
+macx:LIBSDIR            = $$BINDIR/qlc.app/Contents/Frameworks/
 
 # Data
 win32:DATADIR		= $$(SystemDrive)/QLC
-unix:DATADIR		= /usr/share/qlc
+unix:!macx:DATADIR	= /usr/share/qlc
+macx:DATADIR		= $$BINDIR/qlc.app/Contents/Resources/
 
 # Documentation
 win32:DOCSDIR		= $$DATADIR/Documents
 win32:DEFINES		+= DOCSDIR=\\\"Documents\\\"
 
-unix:DOCSDIR		= $$DATADIR/documents
-unix:DEFINES		+= DOCSDIR=\\\"$$DOCSDIR\\\"
+unix:!macx:DOCSDIR	= $$DATADIR/documents
+unix:!macx:DEFINES	+= DOCSDIR=\\\"$$DOCSDIR\\\"
+
+macx:DOCSDIR		= $$BINDIR/qlc.app/Contents/Resources/Documents/
+macx:DEFINES		+= DOCSDIR=\\\"../Resources/Documents\\\"
 
 # Input devices
 win32:INPUTDEVICEDIR	= $$DATADIR/InputDevices
 win32:DEFINES		+= INPUTDEVICEDIR=\\\"InputDevices\\\"
 
-unix:INPUTDEVICEDIR	= $$DATADIR/inputdevices
-unix:DEFINES		+= INPUTDEVICEDIR=\\\"$$INPUTDEVICEDIR\\\"
-unix:USERINPUTDEVICEDIR	= .qlc/inputdevices
-unix:DEFINES		+= USERINPUTDEVICEDIR=\\\"$$USERINPUTDEVICEDIR\\\"
+unix:!macx:INPUTDEVICEDIR	= $$DATADIR/inputdevices
+unix:!macx:DEFINES		+= INPUTDEVICEDIR=\\\"$$INPUTDEVICEDIR\\\"
+unix:!macx:USERINPUTDEVICEDIR	= .qlc/inputdevices
+unix:!macx:DEFINES		+= USERINPUTDEVICEDIR=\\\"$$USERINPUTDEVICEDIR\\\"
+
+macx:INPUTDEVICEDIR	= $$BINDIR/qlc.app/Contents/Resources/inputdevices
+macx:DEFINES		+= INPUTDEVICEDIR=\\\"../Resources/inputdevices\\\"
+
+# USERINPUTDEVIEDIR required??
 
 # Fixtures
 win32:FIXTUREDIR	= $$DATADIR/Fixtures
 win32:DEFINES		+= FIXTUREDIR=\\\"Fixtures\\\"
 
-unix:FIXTUREDIR		= $$DATADIR/fixtures
-unix:DEFINES		+= FIXTUREDIR=\\\"$$FIXTUREDIR\\\"
-unix:USERFIXTUREDIR	= .qlc/fixtures
-unix:DEFINES		+= USERFIXTUREDIR=\\\"$$USERFIXTUREDIR\\\"
+unix:!macx:FIXTUREDIR		= $$DATADIR/fixtures
+unix:!macx:DEFINES		+= FIXTUREDIR=\\\"$$FIXTUREDIR\\\"
+unix:!macx:USERFIXTUREDIR	= .qlc/fixtures
+unix:!macx:DEFINES		+= USERFIXTUREDIR=\\\"$$USERFIXTUREDIR\\\"
+
+macx:FIXTUREDIR		= $$BINDIR/qlc.app/Fixtures
+macx:DEFINES		+= FIXTUREDIR=\\\"../../Fixtures\\\"
 
 # Plugins
 win32:PLUGINDIR		= $$LIBSDIR/Plugins
-unix:PLUGINDIR		= $$LIBSDIR/qlc
+unix:!macx:PLUGINDIR		= $$LIBSDIR/qlc
+macx:PLUGINDIR		= $$BINDIR/qlc.app/Contents/Plugins
 
 # Input Plugins
 win32:INPUTPLUGINDIR	= $$PLUGINDIR/Input
 win32:DEFINES		+= INPUTPLUGINDIR=\\\"Plugins/Input\\\"
 
 unix:INPUTPLUGINDIR	= $$PLUGINDIR/input
-macx:INPUTPLUGINDIR	= ../Plugins/Input
-unix:macx:DEFINES	+= INPUTPLUGINDIR=\\\"$$INPUTPLUGINDIR\\\"
+unix:!macx:DEFINES	+= INPUTPLUGINDIR=\\\"$$INPUTPLUGINDIR\\\"
+macx:DEFINES		+= INPUTPLUGINDIR=\\\"../Plugins/input\\\"
 
 # Output Plugins
 win32:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
 win32:DEFINES		+= OUTPUTPLUGINDIR=\\\"Plugins/Output\\\"
 
 unix:OUTPUTPLUGINDIR	= $$PLUGINDIR/output
-macx:OUTPUTPLUGINDIR	= ../Plugins/Output
-!win32:DEFINES		+= OUTPUTPLUGINDIR=\\\"$$OUTPUTPLUGINDIR\\\"
+unix:!macx:DEFINES	+= OUTPUTPLUGINDIR=\\\"$$OUTPUTPLUGINDIR\\\"
+macx:DEFINES		+= OUTPUTPLUGINDIR=\\\"../Plugins/output\\\"
