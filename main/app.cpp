@@ -212,8 +212,15 @@ void App::init()
 	QDir dir(QString(getenv("HOME")));
 	loadFixtureDefinitions(dir.absoluteFilePath(QString(USERFIXTUREDIR)));
 #endif
+
 	/* Then, load system fixtures */
+#ifdef __APPLE__
+        loadFixtureDefinitions(QString("%1/%2")
+                               .arg(QApplication::applicationDirPath())
+                               .arg(FIXTUREDIR));
+#else
 	loadFixtureDefinitions(FIXTUREDIR);
+#endif
 
 	// The main view
 	initStatusBar();

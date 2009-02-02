@@ -64,8 +64,15 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 	QDir dir(QString(getenv("HOME")));
 	loadDevices(dir.absoluteFilePath(QString(USERINPUTDEVICEDIR)));
 #endif
+
 	/* Then, load system devices */
+#ifdef __APPLE__
+	loadDevices(QString("%1/%2")
+                    .arg(QApplication::applicationDirPath())
+                    .arg(INPUTDEVICEDIR));
+#else
 	loadDevices(INPUTDEVICEDIR);
+#endif
 
 	loadDefaults();
 }
