@@ -102,6 +102,12 @@ void FunctionConsumer::stopAll()
  * Thread running / stopping
  ****************************************************************************/
 
+void FunctionConsumer::start(Priority priority)
+{
+	m_running = true;
+	QThread::start(priority);
+}
+ 
 #ifndef WIN32
 void FunctionConsumer::run()
 {
@@ -212,7 +218,7 @@ void FunctionConsumer::event()
 
 		/* No need to access the list on this round anymore. */
 		m_functionListMutex.unlock();
-
+		qDebug() << "foo";
 		universes = m_outputMap->claimUniverses();
 		if (function->write(universes) == false || m_stopAll == true)
 			function->stop();

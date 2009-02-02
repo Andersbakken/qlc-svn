@@ -93,6 +93,9 @@ protected:
 	 * Main thread
 	 *********************************************************************/
 public:
+	/** Start the consumer */
+	void start(Priority priority = InheritPriority);
+
 	/** Stop this altogether. Functions cannot be run after this. */
 	void stop();
 
