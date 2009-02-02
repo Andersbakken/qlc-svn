@@ -20,9 +20,9 @@
 */
 
 #include <QContextMenuEvent>
+#include <QIntValidator>
 #include <QVBoxLayout>
 #include <QToolButton>
-#include <QIntValidator>
 #include <QLineEdit>
 #include <QSlider>
 #include <QLabel>
@@ -107,6 +107,7 @@ void ConsoleChannel::init()
 		m_presetButton = new QToolButton(this);
 		m_presetButton->setIconSize(QSize(26, 26));
 		layout()->addWidget(m_presetButton);
+		layout()->setAlignment(m_presetButton, Qt::AlignHCenter);
 		m_presetButton->setSizePolicy(QSizePolicy::Maximum,
 					      QSizePolicy::Preferred);
 		initMenu();
@@ -117,6 +118,7 @@ void ConsoleChannel::init()
 	m_valueEdit->setAlignment(Qt::AlignCenter);
 	m_validator = new QIntValidator(0, 255, this);
 	m_valueEdit->setValidator(m_validator);
+	m_valueEdit->setMinimumSize(QSize(1, 1));
 
 	m_valueSlider = new QSlider(this);
 	m_valueSlider->setStyle(App::sliderStyle());
