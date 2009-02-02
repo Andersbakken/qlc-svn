@@ -57,9 +57,6 @@ public:
 	/** Copy constructor */
 	QLCFixtureDef(QLCFixtureDef *dc);
 
-	/** Create contents from an XML file */
-	QLCFixtureDef(const QString &fileName);
-
 	/** Destructor */
 	virtual ~QLCFixtureDef();
 

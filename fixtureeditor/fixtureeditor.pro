@@ -9,7 +9,6 @@ QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS	+= -L../libs/common -lqlccommon
-macx:LIBS	+= -L./qlc-fixtureeditor.app/Contents/Frameworks -lqlccommon
 win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 
 # Installation
