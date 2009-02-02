@@ -81,7 +81,14 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 	connect(m_homeAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(home()));
 
+#ifdef __APPLE__
+        searchPaths << QString("%1/%2/html/")
+                       .arg(QApplication::applicationDirPath())
+                       .arg(DOCSDIR);
+#else
 	searchPaths << QString("%1/html/").arg(DOCSDIR);
+#endif
+
 	m_browser->setSearchPaths(searchPaths);
 	m_browser->setSource(QUrl(QString("index.html")));
 }
