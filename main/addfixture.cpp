@@ -50,7 +50,7 @@ AddFixture::AddFixture(QWidget *parent, QLCFixtureDef* select)
 	m_universeValue = 0;
 	m_amountValue = 1;
 	m_gapValue = 0;
-	m_channelsValue = 0;
+	m_channelsValue = 1;
 	m_fixtureDef = NULL;
 	m_mode = NULL;
 
@@ -68,12 +68,17 @@ AddFixture::AddFixture(QWidget *parent, QLCFixtureDef* select)
 		this, SLOT(slotChannelsChanged(int)));
 	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
 		this, SLOT(slotNameEdited(const QString&)));
+	connect(m_gapSpin, SIGNAL(valueChanged(int)),
+		this, SLOT(slotGapSpinChanged(int)));
+	connect(m_amountSpin, SIGNAL(valueChanged(int)),
+		this, SLOT(slotAmountSpinChanged(int)));
 
 	/* Fill fixture definition tree */
 	fillTree(select);
 
-	/* Simulate the first selection change (none) */
+	/* Simulate the first selection ("Generic - Dimmer" with 1 channel) */
 	slotSelectionChanged();
+	findAddress();
 }
 
 AddFixture::~AddFixture()
@@ -185,15 +190,34 @@ void AddFixture::fillModeCombo(const QString& text)
 	}
 }
 
+void AddFixture::findAddress()
+{
+	/* Find the next free address space for x fixtures, each taking y
+	   channels, leaving z channels gap in-between. */
+	t_channel address = _app->doc()->findAddress(
+		(m_channelsValue + m_gapValue) * m_amountValue);
+
+	/* Set the address only if the channel space was really found */
+	if (address != KChannelInvalid)
+	{
+		m_universeSpin->setValue((address >> 9) + 1);
+		m_addressSpin->setValue((address & 0x01FF) + 1);
+	}
+}
+
 /*****************************************************************************
  * Slots
  *****************************************************************************/
 
 void AddFixture::slotChannelsChanged(int value)
 {
+	m_channelsValue = value;
+
 	/* Set the maximum possible address so that channels cannot
 	   overflow beyond DMX's range of 512 channels */
 	m_addressSpin->setRange(1, 513 - value);
+
+	findAddress();
 }
 
 void AddFixture::slotModeActivated(const QString& modeName)
@@ -316,19 +340,25 @@ void AddFixture::slotNameEdited(const QString &text)
 	   start substituting the name with the model again. */
 	if (text.length() == 0)
 		m_nameEdit->setModified(false);
+	m_nameValue = text;
+}
+
+void AddFixture::slotAmountSpinChanged(int value)
+{
+	m_amountValue = value;
+	findAddress();
+}
+
+void AddFixture::slotGapSpinChanged(int value)
+{
+	m_gapValue = value;
+	findAddress();
 }
 
 void AddFixture::accept()
 {
-	m_nameValue = m_nameEdit->text();
-
 	m_addressValue = m_addressSpin->value() - 1;
 	m_universeValue = m_universeSpin->value() - 1;
-	
-	m_amountValue = m_amountSpin->value();
-	m_gapValue = m_gapSpin->value();
 
-	m_channelsValue = m_channelsSpin->value();
-	
 	QDialog::accept();
 }

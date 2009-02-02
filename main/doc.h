@@ -158,6 +158,13 @@ public:
 	 */
 	Fixture* fixture(t_fixture_id id);
 
+	/**
+	 * Attempt to find the next contiguous free address space for the given
+	 * number of channels. The address might span multiple universes. If
+	 * an address cannot be found, returns KChannelInvalid.
+	 */
+	t_channel findAddress(t_channel numChannels);
+
 signals:
 	/** Signal that a fixture has been added */
 	void fixtureAdded(t_fixture_id fxi_id);

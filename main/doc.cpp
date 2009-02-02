@@ -470,6 +470,41 @@ Fixture* Doc::fixture(t_fixture_id id)
 		return NULL;
 }
 
+t_channel Doc::findAddress(t_channel numChannels)
+{
+	t_channel freeSpace = 0;
+	t_channel maxChannels = KUniverseCount * 512;
+
+	/* Construct a map of unallocated channels */
+	int map[maxChannels];
+	std::fill(map, map + maxChannels, 0);
+
+	/* Go thru all fixtures and mark their address spaces to the map */
+	for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+	{
+		Fixture* fxi = m_fixtureArray[fxi_id];
+		if (fxi == NULL)
+			continue;
+
+		for (t_channel ch = 0; ch < fxi->channels(); ch++)
+			map[fxi->universeAddress() + ch] = 1;
+	}
+
+	/* Try to find the next contiguous free address space */
+	for (t_channel ch = 0; ch < maxChannels; ch++)
+	{
+		if (map[ch] == 0)
+			freeSpace++;
+		else
+			freeSpace = 0;
+
+		if (freeSpace == numChannels)
+			return ch - freeSpace + 1;
+	}
+
+	return KChannelInvalid;
+}
+
 /*****************************************************************************
  * Functions
  *****************************************************************************/

@@ -102,27 +102,37 @@ protected:
 	/** Fill all modes of the current fixture to the mode combo */
 	void fillModeCombo(const QString& text = QString::null);
 
+	/** Find the next free address space for current fixture selection,
+	    amount and address gap. Sets the address to address spin. */
+	void findAddress();
+
 	/*********************************************************************
 	 * Slots
 	 *********************************************************************/
 protected slots:
-	 /** Callback for channels spin value changes */
-	 void slotChannelsChanged(int value);
+	/** Callback for channels spin value changes */
+	void slotChannelsChanged(int value);
 
-	 /** Callback for mode selection changes */
-	 void slotModeActivated(const QString& modeName);
+	/** Callback for mode selection changes */
+	void slotModeActivated(const QString& modeName);
 
-	 /** Callback for tree view selection changes */
-	 void slotSelectionChanged();
-	 
-	 /** Callback for tree double clicks (same as select + OK) */
-	 void slotTreeDoubleClicked(QTreeWidgetItem* item);
-	 
-	 /** Callback for friendly name editing */
-	 void slotNameEdited(const QString &text);
-	 
-	 /** OK button pressed */
-	 void accept();
+	/** Callback for tree view selection changes */
+	void slotSelectionChanged();
+
+	/** Callback for tree double clicks (same as select + OK) */
+	void slotTreeDoubleClicked(QTreeWidgetItem* item);
+
+	/** Callback for friendly name editing */
+	void slotNameEdited(const QString &text);
+
+	/** Callback for fixture amount value changes */
+	void slotAmountSpinChanged(int value);
+
+	/** Callback for address gap value changes */
+	void slotGapSpinChanged(int value);
+
+	/** OK button pressed */
+	void accept();
 };
 
 #endif
