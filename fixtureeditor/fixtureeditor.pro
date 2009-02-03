@@ -11,6 +11,14 @@ INCLUDEPATH 	+= . ../libs/
 unix:LIBS	+= -L../libs/common -lqlccommon
 win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 
+# MAC Icon (TODO: Move under ../etc)
+macx:ICON	= ../gfx/qlc-fixtureeditor.icns
+macx:QMAKE_INFO_PLIST = ./Info.plist
+
+# Bug in QT means it classifies directories as files
+macx:QMAKE_DEL_FILE = rm -Rf
+macx:QMAKE_CLEAN += qlc-fixtureeditor.app/
+
 # Installation
 target.path 	= $$BINDIR
 INSTALLS 	+= target
@@ -40,9 +48,4 @@ SOURCES += aboutbox.cpp \
            fixtureeditor.cpp \
            main.cpp
 
-macx {
-	system(mkdir -p qlc-fixtureeditor.app/Contents/Frameworks)
-	LIBS_PATH = ../libs/common/libqlccommon*.dylib
-	system(cp $$LIBS_PATH qlc-fixtureeditor.app/Contents/Frameworks)
-	QMAKE_POST_LINK = install_name_tool -change libqlccommon.3.dylib @executable_path/../Frameworks/libqlccommon.3.dylib qlc-fixtureeditor.app/Contents/MacOS/qlc-fixtureeditor
-}
+macx:QMAKE_POST_LINK = ./libupdate.sh

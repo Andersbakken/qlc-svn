@@ -15,6 +15,10 @@ win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
 macx:ICON	= ../gfx/qlc.icns
 macx:QMAKE_INFO_PLIST = ./Info.plist
 
+# Bug in QT means it classifies directories as files
+macx:QMAKE_DEL_FILE = rm -Rf
+macx:QMAKE_CLEAN += qlc.app/
+
 # Installation
 target.path	= $$BINDIR
 INSTALLS	+= target
@@ -173,9 +177,4 @@ SOURCES += aboutbox.cpp \
            virtualconsoleproperties.cpp \
            xychannelunit.cpp
 
-macx {
-        system(mkdir -p qlc.app/Contents/Frameworks)
-        LIBS_PATH = ../libs/common/libqlccommon*.dylib
-        system(cp $$LIBS_PATH qlc.app/Contents/Frameworks)
-	QMAKE_POST_LINK = install_name_tool -change libqlccommon.3.dylib @executable_path/../Frameworks/libqlccommon.3.dylib qlc.app/Contents/MacOS/qlc
-}
+macx:QMAKE_POST_LINK = ./libupdate,sh
