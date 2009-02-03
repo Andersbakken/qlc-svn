@@ -293,7 +293,7 @@ void App::slotFileOpen()
 
 	/* Attempt to create a fixture definition from the selected file */
 	fixtureDef = new QLCFixtureDef();
-	if (fixtureDef->loadXML(path))
+	if (!fixtureDef->loadXML(path))
 	{
 		delete fixtureDef;
 		QMessageBox::warning(this, tr("Fixture loading failed"),
