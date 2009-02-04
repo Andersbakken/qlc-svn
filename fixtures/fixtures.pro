@@ -11,6 +11,7 @@ fixtures.files += Futurelight-CF-200.qxf
 fixtures.files += Futurelight-CY-200.qxf
 fixtures.files += Futurelight-CY-250.qxf
 fixtures.files += Futurelight-DJ-Color200.qxf
+fixtures.files += Futurelight-DJ-LEDScan100.qxf
 fixtures.files += Futurelight-DJScan200.qxf
 fixtures.files += Futurelight-DJScan250.qxf
 fixtures.files += Futurelight-EVO-5.qxf
