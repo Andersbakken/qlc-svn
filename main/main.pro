@@ -7,6 +7,8 @@ TARGET 		= qlc
 CONFIG          += qt
 QT 		+= xml
 
+TRANSLATIONS	= qlc_gb.ts
+
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
 win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
