@@ -345,10 +345,9 @@ void QLCFixtureEditor::setCaption()
 	
 	/* If the document is modified, append an asterisk after the
 	   filename. Otherwise the caption is just the current filename */
+	caption = QDir::toNativeSeparators(fileName);
 	if (m_modified == true)
-		caption = fileName + QString(" *");
-	else
-		caption = fileName;
+		caption += QString(" *");
 
 	parentWidget()->setWindowTitle(caption);
 }
