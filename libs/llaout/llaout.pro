@@ -10,6 +10,7 @@ PKGCONFIG	+= liblla
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
+unix:LIBS	+= -llla
 
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 
