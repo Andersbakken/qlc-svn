@@ -35,6 +35,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QtXml>
+#include <QScrollArea>
 
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
@@ -335,7 +336,9 @@ void FixtureManager::slotSelectionChanged()
 		m_console = new FixtureConsole(this);
 		m_console->setFixture(id);
 		m_console->setChannelsCheckable(false);
-		m_tab->addTab(m_console, tr("Console"));
+		QScrollArea *scrollArea = new QScrollArea(this);
+		scrollArea->setWidget(m_console);
+		m_tab->addTab(scrollArea, tr("Console"));
 
 		/* Recall the same tab widget page */
 		m_tab->setCurrentIndex(page);

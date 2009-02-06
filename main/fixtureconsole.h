@@ -22,7 +22,7 @@
 #ifndef FIXTURECONSOLE_H
 #define FIXTURECONSOLE_H
 
-#include <QScrollArea>
+#include <QWidget>
 #include <QList>
 
 #include "common/qlctypes.h"
@@ -33,7 +33,7 @@ class QDomElement;
 
 #define KXMLQLCFixtureConsole "Console"
 
-class FixtureConsole : public QScrollArea
+class FixtureConsole : public QWidget
 {
 	Q_OBJECT
 

@@ -79,6 +79,8 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
 	m_valueEdit = NULL;
 	m_valueSlider = NULL;
 	m_numberLabel = NULL;
+	
+	setFixedWidth(50);
 
 	init();
 	updateValue();

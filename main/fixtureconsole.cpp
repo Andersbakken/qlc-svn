@@ -39,7 +39,7 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-FixtureConsole::FixtureConsole(QWidget* parent) : QScrollArea(parent)
+FixtureConsole::FixtureConsole(QWidget* parent) : QWidget(parent)
 {
 	m_fixture = KNoID;
 	m_channelsCheckable = false;
@@ -79,14 +79,14 @@ void FixtureConsole::setFixture(t_fixture_id id)
 
 		connect(cc, SIGNAL(valueChanged(t_channel,t_value,bool)),
 			this, SLOT(slotValueChanged(t_channel,t_value,bool)));
-
+		
 		m_channels.append(cc);
 	}
 
 	/* Resize the console to some sensible proportions if at least
 	   one channel unit was inserted */
 	if (cc != NULL)
-		resize((fxi->channels() * cc->width()), 250);
+		resize((fxi->channels() * 75), 250);
 }
 
 /*****************************************************************************
