@@ -7,7 +7,8 @@ TARGET 		= qlc
 CONFIG          += qt
 QT 		+= xml
 
-TRANSLATIONS	= qlc_gb.ts
+TRANSLATIONS	= qlc_gb.ts \
+		  qlc_es.ts
 
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
@@ -179,4 +180,4 @@ SOURCES += aboutbox.cpp \
            virtualconsoleproperties.cpp \
            xychannelunit.cpp
 
-macx:QMAKE_POST_LINK = ./libupdate,sh
+macx:QMAKE_POST_LINK = ./libupdate.sh

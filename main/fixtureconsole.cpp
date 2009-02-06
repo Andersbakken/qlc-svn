@@ -1,4 +1,4 @@
-/*
+ /*
   Q Light Controller
   fixtureconsole.cpp
 
@@ -39,7 +39,7 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-FixtureConsole::FixtureConsole(QWidget* parent) : QWidget(parent)
+FixtureConsole::FixtureConsole(QWidget* parent) : QScrollArea(parent)
 {
 	m_fixture = KNoID;
 	m_channelsCheckable = false;
