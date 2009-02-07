@@ -361,8 +361,9 @@ void App::slotFileQuit()
 
 void App::slotHelpIndex()
 {
-	QLCDocBrowser browser(NULL);
-	browser.setAttribute(Qt::WA_DeleteOnClose);
+	QLCDocBrowser* browser = new QLCDocBrowser(this, Qt::Window);
+	browser->setAttribute(Qt::WA_DeleteOnClose);
+	browser->show();
 }
 
 void App::slotHelpAbout()

@@ -1,21 +1,23 @@
 <RCC>
     <qresource>
-        <file alias="qlc-fixtureeditor.png">../gfx/qlc-fixtureeditor.png</file>
-        <file alias="filenew.png">../gfx/filenew.png</file>
-        <file alias="fileopen.png">../gfx/fileopen.png</file>
-        <file alias="filesave.png">../gfx/filesave.png</file>
-        <file alias="exit.png">../gfx/exit.png</file>
-        <file alias="help.png">../gfx/help.png</file>
-        <file alias="qlc.png">../gfx/qlc.png</file>
-        <file alias="qt.png">../gfx/qt.png</file>
-        <file alias="fixture.png">../gfx/fixture.png</file>
+        <file alias="back.png">../gfx/back.png</file>
         <file alias="edit_add.png">../gfx/edit_add.png</file>
         <file alias="edit_remove.png">../gfx/edit_remove.png</file>
         <file alias="edit.png">../gfx/edit.png</file>
-        <file alias="up.png">../gfx/up.png</file>
-        <file alias="down.png">../gfx/down.png</file>
         <file alias="editcopy.png">../gfx/editcopy.png</file>
         <file alias="editpaste.png">../gfx/editpaste.png</file>
         <file alias="editdelete.png">../gfx/editdelete.png</file>
+        <file alias="exit.png">../gfx/exit.png</file>
+        <file alias="fileopen.png">../gfx/fileopen.png</file>
+        <file alias="filenew.png">../gfx/filenew.png</file>
+        <file alias="filesave.png">../gfx/filesave.png</file>
+        <file alias="fixture.png">../gfx/fixture.png</file>
+        <file alias="forward.png">../gfx/forward.png</file>
+        <file alias="down.png">../gfx/down.png</file>
+        <file alias="help.png">../gfx/help.png</file>
+        <file alias="qlc.png">../gfx/qlc.png</file>
+        <file alias="qlc-fixtureeditor.png">../gfx/qlc-fixtureeditor.png</file>
+        <file alias="qt.png">../gfx/qt.png</file>
+        <file alias="up.png">../gfx/up.png</file>
     </qresource>
 </RCC>

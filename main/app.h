@@ -47,7 +47,6 @@ class FixtureManager;
 class VirtualConsole;
 class DummyOutPlugin;
 class DummyInPlugin;
-class QLCDocBrowser;
 class QLCFixtureDef;
 class OutputManager;
 class InputManager;
@@ -224,15 +223,6 @@ protected:
 	static QStyle* s_sliderStyle;
 
 	/*********************************************************************
-	 * Help browser
-	 *********************************************************************/	
-public:
-	QLCDocBrowser* docBrowser() const { return m_docBrowser; }
-
-protected:
-	QLCDocBrowser* m_docBrowser;
-
-	/*********************************************************************
 	 * Status bar
 	 *********************************************************************/
 protected:
@@ -275,7 +265,6 @@ public slots:
 	void slotControlPanic();
 
 	void slotHelpIndex();
-	void slotDocBrowserDestroyed(QObject* object);
 	void slotHelpAbout();
 	void slotHelpAboutQt();
 

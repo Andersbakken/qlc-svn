@@ -31,49 +31,45 @@
 #include "qlcdocbrowser.h"
 #include "qlctypes.h"
 
-QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
+QLCDocBrowser::QLCDocBrowser(QWidget* parent, Qt::WindowFlags f)
+	: QWidget(parent, f)
 {
-	QStringList searchPaths;
-	QSettings settings;
-	QVariant w, h;
+	new QVBoxLayout(this);
 
-	setWindowTitle("Q Light Controller - Document Browser");
+	setWindowTitle(tr("QLC Document Browser"));
+	setWindowIcon(QIcon(":/help.png"));
 
 	/* Recall window size */
-	w = settings.value("documentbrowser/width");
-	h = settings.value("documentbrowser/height");
+	QSettings settings;
+	QVariant w = settings.value("documentbrowser/width");
+	QVariant h = settings.value("documentbrowser/height");
 	if (w.isValid() == false || h.isValid() == false)
 		resize(600, 600);
 	else
 		resize(w.toInt(), h.toInt());
 
 	/* Actions */
-	m_backwardAction = new QAction(QIcon(":/back.png"),
-				       tr("Backward"), this);
-	m_backwardAction->setEnabled(false);
+	m_backwardAction = new QAction(QIcon(":/back.png"), tr("Backward"), this);
+	m_forwardAction = new QAction(QIcon(":/forward.png"), tr("Forward"), this);
+	m_homeAction = new QAction(QIcon(":/qlc.png"), tr("Index"), this);
 
-	m_forwardAction = new QAction(QIcon(":/forward.png"),
-				      tr("Forward"), this);
+	m_backwardAction->setEnabled(false);
 	m_forwardAction->setEnabled(false);
 
-	m_homeAction = new QAction(QIcon(":/help.png"), tr("Index"), this);
-
 	/* Toolbar */
-	QToolBar* toolbar = new QToolBar("Document Browser", this);
-	addToolBar(toolbar);
-	toolbar->addAction(m_backwardAction);
-	toolbar->addAction(m_forwardAction);
-	toolbar->addAction(m_homeAction);
+	m_toolbar = new QToolBar("Document Browser", this);
+	layout()->addWidget(m_toolbar);
+	m_toolbar->addAction(m_backwardAction);
+	m_toolbar->addAction(m_forwardAction);
+	m_toolbar->addAction(m_homeAction);
 
 	/* Browser */
 	m_browser = new QTextBrowser(this);
-	setCentralWidget(m_browser);
-
+	layout()->addWidget(m_browser);
 	connect(m_browser, SIGNAL(backwardAvailable(bool)),
 		this, SLOT(slotBackwardAvailable(bool)));
 	connect(m_browser, SIGNAL(forwardAvailable(bool)),
 		this, SLOT(slotForwardAvailable(bool)));
-
 	connect(m_backwardAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(backward()));
 	connect(m_forwardAction, SIGNAL(triggered(bool)),
@@ -81,6 +77,8 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent) : QMainWindow(parent)
 	connect(m_homeAction, SIGNAL(triggered(bool)),
 		m_browser, SLOT(home()));
 
+	/* Set document search paths */
+	QStringList searchPaths;
 #ifdef __APPLE__
         searchPaths << QString("%1/%2/html/")
                        .arg(QApplication::applicationDirPath())

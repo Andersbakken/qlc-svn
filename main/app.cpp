@@ -89,7 +89,6 @@ App::App() : QMainWindow()
 	m_functionManager = NULL;
 	m_fixtureManager = NULL;
 	m_virtualConsole = NULL;
-	m_docBrowser = NULL;
 
 	m_mode = Design;
 	m_modeIndicator = NULL;
@@ -148,11 +147,6 @@ App::~App()
 	if (m_blackoutIndicator != NULL)
 		delete m_blackoutIndicator;
 	m_blackoutIndicator = NULL;
-
-	// Delete document browser
-	if (m_docBrowser != NULL)
-		delete m_docBrowser;
-	m_docBrowser = NULL;
 
 	// Delete fixture definitions
 	while (m_fixtureDefList.isEmpty() == false)
@@ -1200,22 +1194,9 @@ void App::slotControlPanic()
 
 void App::slotHelpIndex()
 {
-	if (m_docBrowser == NULL)
-	{
-		m_docBrowser = new QLCDocBrowser(this);
-		m_docBrowser->setAttribute(Qt::WA_DeleteOnClose);
-
-		connect(m_docBrowser, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotDocBrowserDestroyed(QObject*)));
-
-		m_docBrowser->show();
-	}
-}
-
-void App::slotDocBrowserDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_docBrowser = NULL;
+	QLCDocBrowser* browser = new QLCDocBrowser(this, Qt::Window);
+	browser->setAttribute(Qt::WA_DeleteOnClose);
+	browser->show();
 }
 
 void App::slotHelpAbout()

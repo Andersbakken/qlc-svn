@@ -25,15 +25,17 @@
 #include <QMainWindow>
 #include "qlctypes.h"
 
+class QLCDocBrowser;
 class QTextBrowser;
+class QToolBar;
 class QAction;
 
-class QLC_DECLSPEC QLCDocBrowser : public QMainWindow
+class QLC_DECLSPEC QLCDocBrowser : public QWidget
 {
 	Q_OBJECT
 
 public:
-	QLCDocBrowser(QWidget* parent);
+	QLCDocBrowser(QWidget* parent, Qt::WindowFlags f = 0);
 	~QLCDocBrowser();
 
 private:
@@ -44,11 +46,12 @@ protected slots:
 	void slotForwardAvailable(bool);
 
 protected:
+	QTextBrowser* m_browser;
+	QToolBar* m_toolbar;
+
 	QAction* m_backwardAction;
 	QAction* m_forwardAction;
 	QAction* m_homeAction;
-
-	QTextBrowser* m_browser;
 };
 
 #endif
