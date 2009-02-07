@@ -149,6 +149,8 @@ void FixtureManager::create(QWidget* parent)
 	QVariant h = settings.value("fixturemanager/height");
 	if (w.isValid() == true && h.isValid() == true)
 		window->resize(w.toInt(), h.toInt());
+	else
+		window->resize(600, 400);
 }
 
 /*****************************************************************************

@@ -26,6 +26,7 @@
 #include <QVBoxLayout>
 #include <QStringList>
 #include <QHeaderView>
+#include <QSettings>
 #include <QMdiArea>
 #include <QToolBar>
 #include <QAction>
@@ -78,6 +79,17 @@ BusManager::BusManager(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 
 BusManager::~BusManager()
 {
+	QSettings settings;
+	QRect rect;
+
+#ifdef _APPLE_
+	rect = this->rect();
+#else
+	rect = parentWidget()->rect();
+#endif
+	settings.setValue("busmanager/width", rect.width());
+	settings.setValue("busmanager/height", rect.height());
+
 	/* Reset singleton instance */
 	s_instance = NULL;
 }
@@ -111,6 +123,14 @@ void BusManager::create(QWidget* parent)
 
 	connect(_app, SIGNAL(modeChanged(App::Mode)),
 		s_instance, SLOT(slotAppModeChanged(App::Mode)));
+
+	QSettings settings;
+	QVariant w = settings.value("busmanager/width");
+	QVariant h = settings.value("busmanager/height");
+	if (w.isValid() == true && h.isValid() == true)
+		window->resize(w.toInt(), h.toInt());
+	else
+		window->resize(300, 400);
 }
 
 /****************************************************************************
