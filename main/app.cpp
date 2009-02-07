@@ -71,7 +71,7 @@
 #define KModeTextOperate tr("Operate")
 #define KModeTextDesign tr("Design")
 
-extern App* _app;
+App* _app;
 
 /*********************************************************************
  * Initialization
@@ -79,6 +79,8 @@ extern App* _app;
 
 App::App() : QMainWindow()
 {
+	_app = this;
+
 	m_outputMap = NULL;
 	m_inputMap = NULL;
 	m_functionConsumer = NULL;
@@ -167,7 +169,7 @@ void App::init()
 	/* Input & output mappers and their plugins */
 	initOutputMap();
 	initInputMap();
-	
+
 	/* Function running engine */
 	initFunctionConsumer();
 

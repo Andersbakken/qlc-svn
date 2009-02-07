@@ -70,8 +70,6 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 
 	// Main layout
 	new QHBoxLayout(this);
-	layout()->setMargin(0);
-	layout()->setSpacing(0);
 
 	// Window title & icon
 	parentWidget()->setWindowIcon(QIcon(":/virtualconsole.png"));
@@ -88,7 +86,7 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 	setDrawArea(new VCFrame(this));
 
 	// Set some default size
-	parentWidget()->resize(300, 400);
+	parentWidget()->resize(640, 480);
 }
 
 VirtualConsole::~VirtualConsole()

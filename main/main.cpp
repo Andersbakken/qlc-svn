@@ -39,8 +39,6 @@
 #include <X11/Xlib.h>
 #endif
 
-App* _app;
-
 void print_version()
 {
 	qDebug() << KApplicationNameLong << KApplicationVersion;
@@ -69,11 +67,13 @@ void print_usage()
  *
  * @return true to continue application init; otherwise false
  */
-bool parseArgs(int argc, char **argv)
+bool parseArgs(App* app, int argc, char **argv)
 {
 	bool result = true;
 	int i = 0;
 	QString s;
+
+	Q_ASSERT(app != NULL);
 
 	for (i = 1; i < argc; i++)
 	{
@@ -92,15 +92,15 @@ bool parseArgs(int argc, char **argv)
 		else if (::strcmp(argv[i], "-p") == 0 ||
 			 ::strcmp(argv[i], "--operate") == 0)
 		{
-			_app->slotModeOperate();
+			app->slotModeOperate();
 			result = true;
 		}
 		else if (::strcmp(argv[i], "-o") == 0 ||
 			 ::strcmp(argv[i], "--open") == 0)
 		{
 			s = QString((const char*) argv[++i]);
-			_app->newDocument();
-			//_app->doc()->loadWorkspaceAs(s);
+			//app->newDocument();
+			//app->doc()->loadWorkspaceAs(s);
 			result = true;
 		}
 		else
@@ -137,15 +137,11 @@ int main(int argc, char** argv)
 	qRegisterMetaType < QHash<t_channel,t_value> >(
 						"QHash<t_channel,t_value>");
 
-	_app = new App();
-	_app->show();
-
-	if (parseArgs(argc, argv) == false)
-		return 0;
-
+	App app;
+	if (parseArgs(&app, argc, argv) == false)
+		return -1;
+	app.show();
 	qapp.exec();
-
-	delete _app;
 
 #if !defined(WIN32) && !defined(__APPLE__)
 	/* Set key repeat on in case QLC is set to turn it off in operate mode.

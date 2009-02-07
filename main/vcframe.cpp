@@ -454,10 +454,7 @@ void VCFrame::slotAddLabel()
 
 void VCFrame::paintEvent(QPaintEvent* e)
 {
-	if (isBottomFrame() == false)
-		VCWidget::paintEvent(e);
-	else
-		QWidget::paintEvent(e);
+	VCWidget::paintEvent(e);
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)
