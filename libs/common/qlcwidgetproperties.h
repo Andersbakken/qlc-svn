@@ -23,6 +23,7 @@
 #define QLCWIDGETPROPERTIES_H
 
 #include <QtXml>
+#include <common/qlctypes.h>
 
 class QWidget;
 
@@ -36,7 +37,7 @@ class QWidget;
 
 /** Simple class to store a widget's visible state (minimized, maximized,
     visible or not visible and dimensions. */
-class QLCWidgetProperties
+class QLC_DECLSPEC QLCWidgetProperties
 {
 public:
 	QLCWidgetProperties();
