@@ -24,9 +24,10 @@
 
 #include <QWidget>
 
+#include "app.h"
+
 class QTreeWidgetItem;
 class QTreeWidget;
-class QPushButton;
 class OutputPatch;
 class OutputMap;
 class QToolBar;
@@ -39,20 +40,34 @@ class OutputManager : public QWidget
 	 * Initialization
 	 *********************************************************************/
 public:
-	OutputManager(QWidget* parent);
+	/** Get the OutputManager singleton instance. Can be NULL. */
+	static OutputManager* instance() { return s_instance; }
+
+	/** Create an instance with parent. Fails if s_instance is not NULL. */
+	static void create(QWidget* parent);
+
+	/** Normal public destructor */
 	virtual ~OutputManager();
 
 private:
 	Q_DISABLE_COPY(OutputManager)
 
+protected:
+	/** Protected constructor to prevent multiple instances. */
+	OutputManager(QWidget* parent, Qt::WindowFlags flags = 0);
+
+protected slots:
+	void slotAppModeChanged(App::Mode mode);
+	void slotDocumentChanged();
+
+protected:
+	static OutputManager* s_instance;
+
 	/*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
-public:
-	void update();
-
 protected:
-	void init();
+	void updateTree();
 	void updateItem(QTreeWidgetItem* item, OutputPatch* op, int universe);
 
 protected:

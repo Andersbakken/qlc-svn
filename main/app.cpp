@@ -84,7 +84,6 @@ App::App() : QMainWindow()
 	m_functionConsumer = NULL;
 	m_doc = NULL;
 
-	m_outputManager = NULL;
 	m_virtualConsole = NULL;
 
 	m_mode = Design;
@@ -299,46 +298,12 @@ void App::slotFlashBlackoutIndicator()
 	bg = pal.color(QPalette::Background);
 	bg.setRgb(bg.red() ^ 0xff, bg.green() ^ 0xff, bg.blue() ^ 0xff);
 	pal.setColor(QPalette::Background, bg);
-	
+
 	fg = pal.color(QPalette::Foreground);
 	fg.setRgb(fg.red() ^ 0xff, fg.green() ^ 0xff, fg.blue() ^ 0xff);
 	pal.setColor(QPalette::Foreground, fg);
 
 	m_blackoutIndicator->setPalette(pal);
-}
-
-void App::slotOutputManager()
-{
-	if (m_outputManager == NULL)
-	{
-		QMdiSubWindow* sub;
-
-		sub = new QMdiSubWindow(centralWidget());
-		m_outputManager = new OutputManager(sub);
-		m_outputManager->show();
-
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_outputManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowTitle(tr("Output Manager"));
-		sub->setWindowIcon(QIcon(":/output.png"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_outputManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotOutputManagerDestroyed(QObject*)));
-
-		sub->resize(600, 300);
-		sub->show();
-	}
-}
-
-void App::slotOutputManagerDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_outputManager = NULL;
 }
 
 /*****************************************************************************
@@ -493,10 +458,6 @@ void App::slotModeOperate()
 	m_modeToggleAction->setIcon(QIcon(":/design.png"));
 	m_modeToggleAction->setText(tr("Design"));
 	m_modeToggleAction->setToolTip(tr("Switch to design mode"));
-
-	/* Close output manager if it's open */
-	if (m_outputManager != NULL)
-		m_outputManager->parentWidget()->close();
 
 	/* Prevent opening a context menu */
 	centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -895,10 +856,6 @@ void App::newDocument()
 	doc()->resetModified();
 
 	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
-
-        /* Update these in case they are open */
-        if (m_outputManager != NULL)
-                m_outputManager->update();
 }
 
 void App::slotFileOpen()
@@ -954,10 +911,6 @@ void App::slotFileOpen()
 				      tr("Workspace file might be corrupt."));
 	else
 		doc()->resetModified();
-
-	/* Update these in case they are open */
-	if (m_outputManager != NULL)
-		m_outputManager->update();
 }
 
 void App::slotFileSave()
@@ -1031,6 +984,11 @@ void App::slotFunctionManager()
 void App::slotBusManager()
 {
 	BusManager::create(this);
+}
+
+void App::slotOutputManager()
+{
+	OutputManager::create(this);
 }
 
 void App::slotInputManager()

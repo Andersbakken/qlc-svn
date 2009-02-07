@@ -1,9 +1,9 @@
 /*
   Q Light Controller
   outputmanager.cpp
-  
+
   Copyright (c) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
@@ -20,9 +20,12 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QMdiSubWindow>
 #include <QTreeWidget>
 #include <QStringList>
 #include <QHeaderView>
+#include <QSettings>
+#include <QMdiArea>
 #include <QToolBar>
 #include <QAction>
 #include <QMenu>
@@ -41,34 +44,15 @@
 
 extern App* _app;
 
-OutputManager::OutputManager(QWidget* parent) : QWidget(parent)
+OutputManager* OutputManager::s_instance = NULL;
+
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
+
+OutputManager::OutputManager(QWidget* parent, Qt::WindowFlags flags)
+	: QWidget(parent, flags)
 {
-	init();
-	update();
-}
-
-OutputManager::~OutputManager()
-{
-}
-
-/*****************************************************************************
- * Tree widget
- *****************************************************************************/
-
-void OutputManager::update()
-{
-	m_tree->clear();
-	for (int uni = 0; uni < KUniverseCount; uni++)
-	{
-		OutputPatch* op = _app->outputMap()->patch(uni);
-		updateItem(new QTreeWidgetItem(m_tree), op, uni);
-	}
-}
-
-void OutputManager::init()
-{
-	QStringList columns;
-
 	/* Create a new layout for this widget */
 	new QVBoxLayout(this);
 
@@ -85,13 +69,102 @@ void OutputManager::init()
 	m_tree->setItemsExpandable(false);
 	m_tree->setSortingEnabled(false);
 	m_tree->setAllColumnsShowFocus(true);
-	columns << tr("Universe")
-		<< tr("Plugin")
-		<< tr("Output");
+
+	QStringList columns;
+	columns << tr("Universe") << tr("Plugin") << tr("Output");
 	m_tree->setHeaderLabels(columns);
 
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
+
+	updateTree();
+}
+
+OutputManager::~OutputManager()
+{
+	QSettings settings;
+	QRect rect;
+
+#ifdef _APPLE_
+	rect = this->rect();
+#else
+	rect = parentWidget()->rect();
+#endif
+	settings.setValue("outputmanager/width", rect.width());
+	settings.setValue("outputmanager/height", rect.height());
+
+	OutputManager::s_instance = NULL;
+}
+
+void OutputManager::create(QWidget* parent)
+{
+	QWidget* window;
+
+	/* Must not create more than one instance */
+	if (s_instance != NULL)
+		return;
+
+#ifdef _APPLE_
+	/* Create a separate window for OSX */
+	s_instance = new OutputManager(parent, Qt::Window);
+	window = s_instance;
+#else
+	/* Create an MDI window for X11 & Win32 */
+	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+	Q_ASSERT(area != NULL);
+	s_instance = new OutputManager(parent);
+	window = area->addSubWindow(s_instance);
+#endif
+
+	/* Set some common properties for the window and show it */
+	window->setAttribute(Qt::WA_DeleteOnClose);
+	window->setWindowIcon(QIcon(":/output.png"));
+	window->setWindowTitle(tr("Output Manager"));
+	window->setContextMenuPolicy(Qt::CustomContextMenu);
+	window->show();
+
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		s_instance, SLOT(slotAppModeChanged(App::Mode)));
+	connect(_app, SIGNAL(documentChanged(Doc*)),
+		s_instance, SLOT(slotDocumentChanged()));
+
+	QSettings settings;
+	QVariant w = settings.value("outputmanager/width");
+	QVariant h = settings.value("outputmanager/height");
+	if (w.isValid() == true && h.isValid() == true)
+		window->resize(w.toInt(), h.toInt());
+	else
+		window->resize(700, 300);
+}
+
+void OutputManager::slotAppModeChanged(App::Mode mode)
+{
+	/* Close this when entering operate mode */
+	if (mode == App::Operate)
+#ifdef _APPLE_
+		deleteLater();
+#else
+		parent()->deleteLater();
+#endif
+}
+
+void OutputManager::slotDocumentChanged()
+{
+	updateTree();
+}
+
+/*****************************************************************************
+ * Tree widget
+ *****************************************************************************/
+
+void OutputManager::updateTree()
+{
+	m_tree->clear();
+	for (int uni = 0; uni < KUniverseCount; uni++)
+	{
+		OutputPatch* op = _app->outputMap()->patch(uni);
+		updateItem(new QTreeWidgetItem(m_tree), op, uni);
+	}
 }
 
 void OutputManager::updateItem(QTreeWidgetItem* item, OutputPatch* op,
