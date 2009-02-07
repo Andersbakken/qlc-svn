@@ -66,8 +66,12 @@ protected:
 	/*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
-protected:
+public:
+	/** Update the output mapping tree */
 	void updateTree();
+
+protected:
+	/** Update the contents of an OutputPatch to an item */
 	void updateItem(QTreeWidgetItem* item, OutputPatch* op, int universe);
 
 protected:

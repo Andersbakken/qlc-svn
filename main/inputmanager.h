@@ -69,8 +69,12 @@ protected:
 	/*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
-protected:
+public:
+	/** Update the input mapping tree */
 	void updateTree();
+
+protected:
+	/** Update the contents of an input patch to an item */
 	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
 			t_input_universe universe);
 

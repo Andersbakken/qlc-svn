@@ -72,12 +72,13 @@ protected:
 	/*********************************************************************
 	 * Function tree
 	 *********************************************************************/
+public:
+	/** Update all functions to function tree */
+	void updateTree();
+
 protected:
 	/** Init function tree view */
 	void initTree();
-
-	/** Update all functions to function tree */
-	void updateTree();
 
 	/** Update the item's contents from the given function */
 	void updateFunctionItem(QTreeWidgetItem* item, Function* function);

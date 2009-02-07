@@ -911,6 +911,13 @@ void App::slotFileOpen()
 				      tr("Workspace file might be corrupt."));
 	else
 		doc()->resetModified();
+
+	if (FunctionManager::instance() != NULL)
+		FunctionManager::instance()->updateTree();
+	if (OutputManager::instance() != NULL)
+		InputManager::instance()->updateTree();
+	if (InputManager::instance() != NULL)
+		InputManager::instance()->updateTree();
 }
 
 void App::slotFileSave()
