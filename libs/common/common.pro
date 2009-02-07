@@ -20,7 +20,8 @@ HEADERS += qlccapability.h \
 	   qlcinputchannel.h \
 	   qlcinputdevice.h \
            qlcphysical.h \
-           qlctypes.h
+           qlctypes.h \
+	   qlcwidgetproperties.h
 	   
 SOURCES += qlccapability.cpp \
            qlcchannel.cpp \
@@ -30,7 +31,8 @@ SOURCES += qlccapability.cpp \
            qlcfixturemode.cpp \
 	   qlcinputchannel.cpp \
 	   qlcinputdevice.cpp \
-           qlcphysical.cpp
+           qlcphysical.cpp \
+	   qlcwidgetproperties.cpp
 
 # Installation
 target.path	= $$LIBSDIR
