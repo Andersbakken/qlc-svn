@@ -47,11 +47,24 @@ class FixtureManager : public QWidget
 	 * Initialization
 	 ********************************************************************/
 public:
-	FixtureManager(QWidget* parent);
+	/** Get the monitor singleton instance. Can be NULL. */
+	static FixtureManager* instance() { return s_instance; }
+
+	/** Create an instance  with parent. Fails if s_instance != NULL. */
+	static void create(QWidget* parent);
+
 	~FixtureManager();
+
+protected:
+	/** Protected constructor to prevent multiple instances. */
+	FixtureManager(QWidget* parent, Qt::WindowFlags f = 0);
 
 private:
 	Q_DISABLE_COPY(FixtureManager)
+
+protected:
+	/** The singleton FixtureManager instance */
+	static FixtureManager* s_instance;
 
 	/********************************************************************
 	 * Doc signal handlers
@@ -124,15 +137,6 @@ protected:
 	QAction* m_removeAction;
 	QAction* m_propertiesAction;
 	QAction* m_consoleAction;
-
-	/********************************************************************
-	 * Save & Load
-	 ********************************************************************/
-public:
-	static void loader(QDomDocument* doc, QDomElement* root);
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* fxi_root);
-
 };
 
 #endif

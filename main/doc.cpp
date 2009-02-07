@@ -223,10 +223,6 @@ bool Doc::loadXML(QDomDocument* doc)
 		{
 			Monitor::loadXML(doc, &tag);
 		}
-		else if (tag.tagName() == KXMLQLCFixtureManager)
-		{
-			FixtureManager::loader(doc, &tag);
-		}
 		else if (tag.tagName() == KXMLQLCVirtualConsole)
 		{
 			VirtualConsole::loader(doc, &tag);
@@ -288,10 +284,6 @@ bool Doc::saveXML(const QString& fileName)
 
 		/* Write Monitor state */
 		Monitor::saveXML(doc, &root);
-
-		/* Write Fixture Manager state */
-		if (_app->fixtureManager() != NULL)
-			_app->fixtureManager()->saveXML(doc, &root);
 
 		/* Write virtual console */
 		_app->virtualConsole()->saveXML(doc, &root);

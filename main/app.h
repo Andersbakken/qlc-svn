@@ -43,7 +43,6 @@ class QMenu;
 
 class FunctionConsumer;
 class FunctionManager;
-class FixtureManager;
 class VirtualConsole;
 class DummyOutPlugin;
 class DummyInPlugin;
@@ -191,15 +190,6 @@ protected:
 	Mode m_mode;
 
 	/*********************************************************************
-	 * Fixture Manager
-	 *********************************************************************/
-public:
-	FixtureManager* fixtureManager() const { return m_fixtureManager; }
-
-protected:
-	FixtureManager* m_fixtureManager;
-
-	/*********************************************************************
 	 * Function Manager
 	 *********************************************************************/
 public:
@@ -253,7 +243,6 @@ public slots:
 	void slotFileQuit();
 
 	void slotFixtureManager();
-	void slotFixtureManagerDestroyed(QObject* object);
 	void slotFunctionManager();
 	void slotFunctionManagerDestroyed(QObject* object);
 	void slotBusManager();

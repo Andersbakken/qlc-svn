@@ -87,7 +87,6 @@ App::App() : QMainWindow()
 	m_inputManager = NULL;
 	m_outputManager = NULL;
 	m_functionManager = NULL;
-	m_fixtureManager = NULL;
 	m_virtualConsole = NULL;
 
 	m_mode = Design;
@@ -112,11 +111,6 @@ App::~App()
 	if (m_functionManager != NULL)
 		delete m_functionManager;
 	m_functionManager = NULL;
-
-	// Delete fixture manager view
-	if (m_fixtureManager != NULL)
-		delete m_fixtureManager;
-	m_fixtureManager = NULL;
 
 	// Delete virtual console
 	if (m_virtualConsole != NULL)
@@ -1083,34 +1077,7 @@ void App::slotFileQuit()
 
 void App::slotFixtureManager()
 {
-	if (m_fixtureManager == NULL)
-	{
-		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_fixtureManager = new FixtureManager(sub);
-
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_fixtureManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowIcon(QIcon(":/fixture.png"));
-		sub->setWindowTitle(tr("Fixture Manager"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_fixtureManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotFixtureManagerDestroyed(QObject*)));
-
-		m_fixtureManager->show();
-		sub->show();
-		sub->resize(600, 350);
-	}
-}
-
-void App::slotFixtureManagerDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_fixtureManager = NULL;
+	FixtureManager::create(this);
 }
 
 void App::slotFunctionManager()

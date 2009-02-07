@@ -20,22 +20,22 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QMdiSubWindow>
 #include <QTextBrowser>
 #include <QVBoxLayout>
 #include <QTreeWidget>
+#include <QScrollArea>
 #include <QMessageBox>
-#include <QByteArray>
 #include <QTabWidget>
 #include <QSplitter>
+#include <QMdiArea>
 #include <QToolBar>
 #include <QAction>
-#include <QWidget>
 #include <QString>
 #include <QDebug>
 #include <QIcon>
 #include <QMenu>
 #include <QtXml>
-#include <QScrollArea>
 
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
@@ -71,11 +71,14 @@ extern App* _app;
 #define KDefaultWidth  600
 #define KDefaultHeight 300
 
+FixtureManager* FixtureManager::s_instance = NULL;
+
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-FixtureManager::FixtureManager(QWidget* parent) : QWidget(parent)
+FixtureManager::FixtureManager(QWidget* parent, Qt::WindowFlags flags)
+	: QWidget(parent, flags)
 {
 	new QVBoxLayout(this);
 
@@ -100,6 +103,52 @@ FixtureManager::FixtureManager(QWidget* parent) : QWidget(parent)
 
 FixtureManager::~FixtureManager()
 {
+	QSettings settings;
+	QRect rect;
+
+#ifdef _APPLE_
+	rect = this->rect();
+#else
+	rect = parentWidget()->rect();
+#endif
+	settings.setValue("fixturemanager/width", rect.width());
+	settings.setValue("fixturemanager/height", rect.height());
+
+	FixtureManager::s_instance = NULL;
+}
+
+void FixtureManager::create(QWidget* parent)
+{
+	QWidget* window;
+
+	/* Must not create more than one instance */
+	if (s_instance != NULL)
+		return;
+
+#ifdef _APPLE_
+	/* Create a separate window for OSX */
+	s_instance = new FixtureManager(parent, Qt::Window);
+	window = s_instance;
+#else
+	/* Create an MDI window for X11 & Win32 */
+	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+	Q_ASSERT(area != NULL);
+	s_instance = new FixtureManager(parent);
+	window = area->addSubWindow(s_instance);
+#endif
+
+	/* Set some common properties for the window and show it */
+	window->setAttribute(Qt::WA_DeleteOnClose);
+	window->setWindowIcon(QIcon(":/fixture.png"));
+	window->setWindowTitle(tr("Fixture Manager"));
+	window->setContextMenuPolicy(Qt::CustomContextMenu);
+        window->show();
+
+	QSettings settings;
+	QVariant w = settings.value("fixturemanager/width");
+	QVariant h = settings.value("fixturemanager/height");
+	if (w.isValid() == true && h.isValid() == true)
+		window->resize(w.toInt(), h.toInt());
 }
 
 /*****************************************************************************
@@ -343,7 +392,7 @@ void FixtureManager::slotSelectionChanged()
 
 		/* Recall the same tab widget page */
 		m_tab->setCurrentIndex(page);
-		
+
 		// Enable/disable actions
 		if (_app->mode() == App::Design)
 		{
@@ -423,14 +472,14 @@ void FixtureManager::slotAdd()
 			/* If an empty name was given use the model instead */
 			if (name.simplified() == QString::null)
 				name = fixtureDef->model();
-			
+
 			/* If we're adding more than one fixture,
 			   append a number to the end of the name */
 			if (af.amount() > 1)
 				modname = QString("%1 #1").arg(name);
 			else
 				modname = name;
-				
+
 			/* Add the first fixture without gap */
 			_app->doc()->newFixture(fixtureDef, mode, address,
 						universe, modname);
@@ -445,7 +494,7 @@ void FixtureManager::slotAdd()
 						.arg(i + 1);
 				else
 					modname = name;
-				
+
 				/* Add the fixture */
 				_app->doc()->newFixture(fixtureDef, mode,
 						address + (i * channels) + gap,
@@ -466,7 +515,7 @@ void FixtureManager::slotAdd()
 				modname = QString("%1 #1").arg(name);
 			else
 				modname = name;
-				
+
 			// Add the first fixture without gap
 			_app->doc()->newGenericFixture(address, universe,
 						       channels, modname);
@@ -481,7 +530,7 @@ void FixtureManager::slotAdd()
 						.arg(i + 1);
 				else
 					modname = name;
-				
+
 				/* Add the fixture */
 				_app->doc()->newGenericFixture(
 					address + (i * channels) + gap,
@@ -588,87 +637,4 @@ void FixtureManager::slotContextMenuRequested(const QPoint&)
 	menu.addSeparator();
 	menu.addAction(m_removeAction);
 	menu.exec(QCursor::pos());
-}
-
-/*****************************************************************************
- * Load & save
- *****************************************************************************/
-
-void FixtureManager::loader(QDomDocument*, QDomElement*)
-{
-	/* TODO !!! */
-	//_app->createFixtureManager();
-	//_app->fixtureManager()->loadXML(doc, root);
-}
-
-bool FixtureManager::loadXML(QDomDocument*, QDomElement* root)
-{
-	QDomNode node;
-	QDomElement tag;
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
-
-	Q_ASSERT(root != NULL);
-
-	if (root->tagName() != KXMLQLCFixtureManager)
-	{
-		qDebug() << "Fixture Manager node not found!";
-		return false;
-	}
-
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
-		}
-		else
-		{
-			qDebug() << "Unknown fixture manager tag:"
-				 << tag.tagName();
-		}
-
-		node = node.nextSibling();
-	}
-
-	hide();
-	setGeometry(x, y, w, h);
-	if (visible == false)
-		showMinimized();
-	else
-		showNormal();
-
-	m_splitter->restoreState(
-		root->attribute(KXMLQLCFixtureManagerSplitterSize).toAscii());
-
-	return true;
-}
-
-bool FixtureManager::saveXML(QDomDocument* doc, QDomElement* fxi_root)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(fxi_root != NULL);
-
-	/* Fixture Manager entry */
-	root = doc->createElement(KXMLQLCFixtureManager);
-	fxi_root->appendChild(root);
-
-	// Splitter size
-	root.setAttribute(KXMLQLCFixtureManagerSplitterSize,
-			  (const char*) m_splitter->saveState());
-
-	/* Save window state. parentWidget() should be used for all
-	   widgets within the workspace. */
-	return QLCFile::saveXMLWindowState(doc, &root, parentWidget());
 }
