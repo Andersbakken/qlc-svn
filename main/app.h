@@ -47,7 +47,6 @@ class DummyOutPlugin;
 class DummyInPlugin;
 class QLCFixtureDef;
 class OutputManager;
-class InputManager;
 class QLCInPlugin;
 class QLCPlugin;
 class OutputMap;
@@ -103,18 +102,12 @@ protected:
 	 * Input mapping
 	 *********************************************************************/
 public:
-	InputManager* inputManager() const { return m_inputManager; }
 	InputMap* inputMap() { return m_inputMap; }
 
 protected:
 	void initInputMap();
 
-protected slots:
-	void slotInputManager();
-	void slotInputManagerDestroyed(QObject* inputManager);
-
 protected:
-	InputManager* m_inputManager;
 	InputMap* m_inputMap;
 
 	/*********************************************************************
@@ -235,6 +228,7 @@ public slots:
 	void slotFixtureManager();
 	void slotFunctionManager();
 	void slotBusManager();
+	void slotInputManager();
 
 	void slotControlVirtualConsole();
 	void slotVirtualConsoleClosed();

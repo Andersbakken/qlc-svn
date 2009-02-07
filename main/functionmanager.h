@@ -55,8 +55,6 @@ public:
 	/** Normal public destructor */
 	~FunctionManager();
 
-	void update();
-
 private:
 	Q_DISABLE_COPY(FunctionManager)
 

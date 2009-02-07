@@ -23,7 +23,9 @@
 #define INPUTMANAGER_H
 
 #include <QWidget>
+
 #include "common/qlctypes.h"
+#include "app.h"
 
 class QTreeWidgetItem;
 class QTreeWidget;
@@ -41,21 +43,34 @@ class InputManager : public QWidget
 	 * Initialization
 	 *********************************************************************/
 public:
-	InputManager(QWidget* parent);
-	virtual ~InputManager();
+	/** Get the InputManager singleton instance. Can be NULL. */
+	static InputManager* instance() { return s_instance; }
 
-	void update();
+	/** Create an instance with parent. Fails if s_instance is not NULL. */
+	static void create(QWidget* parent);
+
+	/** Normal public destructor */
+	virtual ~InputManager();
 
 private:
 	Q_DISABLE_COPY(InputManager)
 
 protected:
-	void init();
+	/** Protected constructor to prevent multiple instances. */
+	InputManager(QWidget* parent, Qt::WindowFlags flags = 0);
+
+protected slots:
+	void slotAppModeChanged(App::Mode mode);
+	void slotDocumentChanged();
+
+protected:
+	static InputManager* s_instance;
 
 	/*********************************************************************
 	 * Tree widget
 	 *********************************************************************/
 protected:
+	void updateTree();
 	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
 			t_input_universe universe);
 

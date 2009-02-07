@@ -84,7 +84,6 @@ App::App() : QMainWindow()
 	m_functionConsumer = NULL;
 	m_doc = NULL;
 
-	m_inputManager = NULL;
 	m_outputManager = NULL;
 	m_virtualConsole = NULL;
 
@@ -352,40 +351,6 @@ void App::initInputMap()
 	Q_ASSERT(m_inputMap != NULL);
 }
 
-void App::slotInputManager()
-{
-	if (m_inputManager == NULL)
-	{
-		QMdiSubWindow* sub;
-
-		sub = new QMdiSubWindow(centralWidget());
-		m_inputManager = new InputManager(sub);
-		m_inputManager->show();
-
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_inputManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowTitle(tr("Input Manager"));
-		sub->setWindowIcon(QIcon(":/input.png"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_inputManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotInputManagerDestroyed(QObject*)));
-
-		sub->resize(600, 300);
-		sub->show();
-	}
-}
-
-void App::slotInputManagerDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_inputManager = NULL;
-}
-
 /*****************************************************************************
  * Function consumer
  *****************************************************************************/
@@ -528,10 +493,6 @@ void App::slotModeOperate()
 	m_modeToggleAction->setIcon(QIcon(":/design.png"));
 	m_modeToggleAction->setText(tr("Design"));
 	m_modeToggleAction->setToolTip(tr("Switch to design mode"));
-
-	/* Close input manager if it's open */
-	if (m_inputManager != NULL)
-		m_inputManager->parentWidget()->close();
 
 	/* Close output manager if it's open */
 	if (m_outputManager != NULL)
@@ -936,8 +897,6 @@ void App::newDocument()
 	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
 
         /* Update these in case they are open */
-        if (m_inputManager != NULL)
-                m_inputManager->update();
         if (m_outputManager != NULL)
                 m_outputManager->update();
 }
@@ -997,8 +956,6 @@ void App::slotFileOpen()
 		doc()->resetModified();
 
 	/* Update these in case they are open */
-	if (m_inputManager != NULL)
-		m_inputManager->update();
 	if (m_outputManager != NULL)
 		m_outputManager->update();
 }
@@ -1074,6 +1031,11 @@ void App::slotFunctionManager()
 void App::slotBusManager()
 {
 	BusManager::create(this);
+}
+
+void App::slotInputManager()
+{
+	InputManager::create(this);
 }
 
 /*****************************************************************************

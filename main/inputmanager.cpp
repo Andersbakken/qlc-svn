@@ -20,11 +20,14 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QMdiSubWindow>
 #include <QTreeWidget>
 #include <QHeaderView>
 #include <QStringList>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QSettings>
+#include <QMdiArea>
 #include <QToolBar>
 #include <QAction>
 #include <QTimer>
@@ -48,54 +51,15 @@
 
 extern App* _app;
 
-InputManager::InputManager(QWidget* parent) : QWidget(parent)
+InputManager* InputManager::s_instance = NULL;
+
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
+
+InputManager::InputManager(QWidget* parent, Qt::WindowFlags flags)
+	: QWidget(parent, flags)
 {
-	init();
-
-	/* Timer that clears the input data icon after a while */
-	m_timer = new QTimer(this);
-	m_timer->setSingleShot(true);
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
-
-	/* Listen to input map's input data signals */
-	connect(_app->inputMap(),
-		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
-					 t_input_value)),
-		this,
-		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
-					   t_input_value)));
-
-	update();
-}
-
-InputManager::~InputManager()
-{
-}
-
-/*****************************************************************************
- * Tree widget
- *****************************************************************************/
-
-void InputManager::update()
-{
-	m_tree->clear();
-	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
-	{
-		InputPatch* inputPatch;
-		QTreeWidgetItem* item;
-
-		inputPatch = _app->inputMap()->patch(i);
-		Q_ASSERT(inputPatch != NULL);
-
-		item = new QTreeWidgetItem(m_tree);
-		updateItem(item, inputPatch, i);
-	}
-}
-
-void InputManager::init()
-{
-	QStringList columns;
-
 	/* Create a new layout for this widget */
 	new QVBoxLayout(this);
 
@@ -112,15 +76,122 @@ void InputManager::init()
 	m_tree->setItemsExpandable(false);
 	m_tree->setSortingEnabled(false);
 	m_tree->setAllColumnsShowFocus(true);
-	columns << tr("Universe")
-		<< tr("Plugin")
-		<< tr("Input")
-		<< tr("Device")
-		<< tr("Editor universe");
+
+	QStringList columns;
+	columns << tr("Universe") << tr("Plugin") << tr("Input")
+		<< tr("Device")	<< tr("Editor universe");
 	m_tree->setHeaderLabels(columns);
 
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
+
+	/* Timer that clears the input data icon after a while */
+	m_timer = new QTimer(this);
+	m_timer->setSingleShot(true);
+	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
+
+	/* Listen to input map's input data signals */
+	connect(_app->inputMap(),
+		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
+					 t_input_value)),
+		this,
+		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
+					   t_input_value)));
+
+	updateTree();
+}
+
+InputManager::~InputManager()
+{
+	QSettings settings;
+	QRect rect;
+
+#ifdef _APPLE_
+	rect = this->rect();
+#else
+	rect = parentWidget()->rect();
+#endif
+	settings.setValue("inputmanager/width", rect.width());
+	settings.setValue("inputmanager/height", rect.height());
+
+	InputManager::s_instance = NULL;
+}
+
+void InputManager::create(QWidget* parent)
+{
+	QWidget* window;
+
+	/* Must not create more than one instance */
+	if (s_instance != NULL)
+		return;
+
+#ifdef _APPLE_
+	/* Create a separate window for OSX */
+	s_instance = new InputManager(parent, Qt::Window);
+	window = s_instance;
+#else
+	/* Create an MDI window for X11 & Win32 */
+	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+	Q_ASSERT(area != NULL);
+	s_instance = new InputManager(parent);
+	window = area->addSubWindow(s_instance);
+#endif
+
+	/* Set some common properties for the window and show it */
+	window->setAttribute(Qt::WA_DeleteOnClose);
+	window->setWindowIcon(QIcon(":/input.png"));
+	window->setWindowTitle(tr("Input Manager"));
+	window->setContextMenuPolicy(Qt::CustomContextMenu);
+	window->show();
+
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		s_instance, SLOT(slotAppModeChanged(App::Mode)));
+	connect(_app, SIGNAL(documentChanged(Doc*)),
+		s_instance, SLOT(slotDocumentChanged()));
+
+	QSettings settings;
+	QVariant w = settings.value("inputmanager/width");
+	QVariant h = settings.value("inputmanager/height");
+	if (w.isValid() == true && h.isValid() == true)
+		window->resize(w.toInt(), h.toInt());
+	else
+		window->resize(700, 300);
+}
+
+void InputManager::slotAppModeChanged(App::Mode mode)
+{
+	/* Close this when entering operate mode */
+	if (mode == App::Operate)
+#ifdef _APPLE_
+		deleteLater();
+#else
+		parent()->deleteLater();
+#endif
+}
+
+void InputManager::slotDocumentChanged()
+{
+	updateTree();
+}
+
+/*****************************************************************************
+ * Tree widget
+ *****************************************************************************/
+
+void InputManager::updateTree()
+{
+	m_tree->clear();
+	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
+	{
+		InputPatch* inputPatch;
+		QTreeWidgetItem* item;
+
+		inputPatch = _app->inputMap()->patch(i);
+		Q_ASSERT(inputPatch != NULL);
+
+		item = new QTreeWidgetItem(m_tree);
+		updateItem(item, inputPatch, i);
+	}
 }
 
 void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
@@ -192,5 +263,5 @@ void InputManager::slotEditClicked()
 
 	InputPatchEditor ipe(this, universe, patch);
 	if (ipe.exec() == QDialog::Accepted)
-		update();
+		updateTree();
 }
