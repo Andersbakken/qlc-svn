@@ -91,7 +91,6 @@ App::App() : QMainWindow()
 	m_fixtureManager = NULL;
 	m_virtualConsole = NULL;
 	m_docBrowser = NULL;
-	m_monitor = NULL;
 
 	m_mode = Design;
 	m_modeIndicator = NULL;
@@ -120,11 +119,6 @@ App::~App()
 	if (m_busManager != NULL)
 		delete m_busManager;
 	m_busManager = NULL;
-
-	// Delete monitor
-	if (m_monitor != NULL)
-		delete m_monitor;
-	m_monitor = NULL;
 
 	// Delete fixture manager view
 	if (m_fixtureManager != NULL)
@@ -1227,37 +1221,7 @@ void App::slotVirtualConsoleClosed()
 
 void App::slotControlMonitor()
 {
-	if (m_monitor == NULL)
-	{
-		Q_ASSERT(m_outputMap != NULL);
-
-		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_monitor = new Monitor(sub);
-
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_monitor);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowIcon(QIcon(":/monitor.png"));
-		sub->setWindowTitle("Fixture Monitor");
-		sub->resize(200, 400);
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_monitor, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotMonitorDestroyed(QObject*)));
-		
-		m_monitor->show();
-		m_monitor->setFocus();
-		sub->show();
-	}
-}
-
-void App::slotMonitorDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_monitor = NULL;
+	Monitor::create(this);
 }
 
 void App::slotControlPanic()

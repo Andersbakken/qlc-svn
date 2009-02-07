@@ -221,7 +221,7 @@ bool Doc::loadXML(QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLQLCMonitor)
 		{
-			Monitor::loader(doc, &tag);
+			Monitor::loadXML(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCFixtureManager)
 		{
@@ -287,8 +287,7 @@ bool Doc::saveXML(const QString& fileName)
 				m_functionArray[i]->saveXML(doc, &root);
 
 		/* Write Monitor state */
-		if (_app->monitor() != NULL)
-			_app->monitor()->saveXML(doc, &root);
+		Monitor::saveXML(doc, &root);
 
 		/* Write Fixture Manager state */
 		if (_app->fixtureManager() != NULL)

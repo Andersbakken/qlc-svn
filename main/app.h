@@ -56,7 +56,6 @@ class BusManager;
 class QLCPlugin;
 class OutputMap;
 class InputMap;
-class Monitor;
 class Doc;
 class App;
 
@@ -235,15 +234,6 @@ protected:
 	static QStyle* s_sliderStyle;
 
 	/*********************************************************************
-	 * Monitor
-	 *********************************************************************/
-public:
-	Monitor* monitor() const { return m_monitor; }
-
-protected:
-	Monitor* m_monitor;
-
-	/*********************************************************************
 	 * Help browser
 	 *********************************************************************/	
 public:
@@ -292,7 +282,6 @@ public slots:
 	void slotControlVirtualConsole();
 	void slotVirtualConsoleClosed();
 	void slotControlMonitor();
-	void slotMonitorDestroyed(QObject* object);
 	void slotControlBlackout();
 	void slotControlPanic();
 

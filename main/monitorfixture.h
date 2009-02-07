@@ -24,9 +24,10 @@
 
 #include <QFrame>
 #include <QList>
-#include <QHash>
+#include <QFont>
 
 #include "common/qlctypes.h"
+#include "monitor.h"
 
 class QGridLayout;
 class QFrame;
@@ -47,23 +48,16 @@ public:
 	 * Fixture
 	 ********************************************************************/
 public:
-	enum ChannelStyle
-	{
-		RelativeChannels,
-		DMXChannels
-	};
-
 	void setFixture(t_fixture_id fxi_id);
 	t_fixture_id fixture() const { return m_fixture; }
 
 public slots:
-	void slotSetChannelStyle(MonitorFixture::ChannelStyle style);
+	void slotChannelStyleChanged(MonitorProperties::ChannelStyle style);
 	void slotFixtureChanged(t_fixture_id fxi_id);
 	void slotFixtureRemoved(t_fixture_id fxi_id);
 
 protected:
 	t_fixture_id m_fixture;
-	ChannelStyle m_channelStyle;
 
 	QLabel* m_fixtureLabel;
 	QList <QLabel*> m_channelLabels;
@@ -72,19 +66,12 @@ protected:
 	 * Values
 	 ********************************************************************/
 public:
-	enum ValueStyle
-	{
-		DMXValues,
-		PercentageValues
-	};
-
 	void updateValues();
 
 public slots:
-	void slotSetValueStyle(MonitorFixture::ValueStyle style);
+	void slotValueStyleChanged(MonitorProperties::ValueStyle style);
 
 protected:
-	ValueStyle m_valueStyle;
 	QList <QLabel*> m_valueLabels;
 };
 
