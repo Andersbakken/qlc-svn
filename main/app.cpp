@@ -86,7 +86,6 @@ App::App() : QMainWindow()
 
 	m_inputManager = NULL;
 	m_outputManager = NULL;
-	m_functionManager = NULL;
 	m_virtualConsole = NULL;
 
 	m_mode = Design;
@@ -107,11 +106,6 @@ App::App() : QMainWindow()
 
 App::~App()
 {
-	// Delete function tree
-	if (m_functionManager != NULL)
-		delete m_functionManager;
-	m_functionManager = NULL;
-
 	// Delete virtual console
 	if (m_virtualConsole != NULL)
 		delete m_virtualConsole;
@@ -535,10 +529,6 @@ void App::slotModeOperate()
 	m_modeToggleAction->setText(tr("Design"));
 	m_modeToggleAction->setToolTip(tr("Switch to design mode"));
 
-	/* Close function manager if it's open */
-	if (m_functionManager != NULL)
-		m_functionManager->parentWidget()->close();
-
 	/* Close input manager if it's open */
 	if (m_inputManager != NULL)
 		m_inputManager->parentWidget()->close();
@@ -950,8 +940,6 @@ void App::newDocument()
                 m_inputManager->update();
         if (m_outputManager != NULL)
                 m_outputManager->update();
-        if (m_functionManager != NULL)
-                m_functionManager->update();
 }
 
 void App::slotFileOpen()
@@ -1013,8 +1001,6 @@ void App::slotFileOpen()
 		m_inputManager->update();
 	if (m_outputManager != NULL)
 		m_outputManager->update();
-	if (m_functionManager != NULL)
-		m_functionManager->update();
 }
 
 void App::slotFileSave()
@@ -1082,34 +1068,7 @@ void App::slotFixtureManager()
 
 void App::slotFunctionManager()
 {
-	if (m_functionManager == NULL)
-	{
-		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_functionManager = new FunctionManager(sub);
-
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_functionManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowIcon(QIcon(":/function.png"));
-		sub->setWindowTitle("Function Manager");
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_functionManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotFunctionManagerDestroyed(QObject*)));
-
-		m_functionManager->show();
-		sub->show();
-		sub->resize(600, 450);
-	}
-}
-
-void App::slotFunctionManagerDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_functionManager = NULL;
+	FunctionManager::create(this);
 }
 
 void App::slotBusManager()

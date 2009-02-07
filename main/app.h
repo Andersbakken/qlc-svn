@@ -42,7 +42,6 @@ class QTimer;
 class QMenu;
 
 class FunctionConsumer;
-class FunctionManager;
 class VirtualConsole;
 class DummyOutPlugin;
 class DummyInPlugin;
@@ -190,15 +189,6 @@ protected:
 	Mode m_mode;
 
 	/*********************************************************************
-	 * Function Manager
-	 *********************************************************************/
-public:
-	FunctionManager* functionManager() const { return m_functionManager; }
-
-protected:
-	FunctionManager* m_functionManager;
-
-	/*********************************************************************
 	 * Virtual Console
 	 *********************************************************************/
 public:
@@ -244,7 +234,6 @@ public slots:
 
 	void slotFixtureManager();
 	void slotFunctionManager();
-	void slotFunctionManagerDestroyed(QObject* object);
 	void slotBusManager();
 
 	void slotControlVirtualConsole();

@@ -27,6 +27,7 @@
 
 #include "common/qlctypes.h"
 #include "function.h"
+#include "app.h"
 
 class QTreeWidgetItem;
 class QActionGroup;
@@ -34,9 +35,8 @@ class QTreeWidget;
 class QSplitter;
 class QToolBar;
 class QAction;
-class QMenu;
-
 class Fixture;
+class QMenu;
 
 class FunctionManager : public QWidget
 {
@@ -46,7 +46,13 @@ class FunctionManager : public QWidget
 	 * Initialization
 	 *********************************************************************/
 public:
-	FunctionManager(QWidget* parent);
+	/** Get the FunctionManager singleton instance. Can be NULL. */
+	static FunctionManager* instance() { return s_instance; }
+
+	/** Create an instance with parent. Fails if s_instance is not NULL. */
+	static void create(QWidget* parent);
+
+	/** Normal public destructor */
 	~FunctionManager();
 
 	void update();
@@ -54,15 +60,26 @@ public:
 private:
 	Q_DISABLE_COPY(FunctionManager)
 
+protected:
+	/** Protected constructor to prevent multiple instances. */
+	FunctionManager(QWidget* parent, Qt::WindowFlags flags = 0);
+
+protected slots:
+	void slotAppModeChanged(App::Mode mode);
+	void slotDocumentChanged();
+
+protected:
+	static FunctionManager* s_instance;
+
 	/*********************************************************************
 	 * Function tree
 	 *********************************************************************/
 protected:
 	/** Init function tree view */
-	void initFunctionTree();
+	void initTree();
 
 	/** Update all functions to function tree */
-	void updateFunctionTree();
+	void updateTree();
 
 	/** Update the item's contents from the given function */
 	void updateFunctionItem(QTreeWidgetItem* item, Function* function);
@@ -72,13 +89,13 @@ protected:
 
 protected slots:
 	/** Function selection was changed */
-	void slotFunctionTreeSelectionChanged();
+	void slotTreeSelectionChanged();
 
 	/** Right mouse button was clicked on function tree */
-	void slotFunctionTreeContextMenuRequested(const QPoint& pos);
+	void slotTreeContextMenuRequested(const QPoint& pos);
 
 protected:
-	QTreeWidget* m_functionTree;
+	QTreeWidget* m_tree;
 
 protected slots:
 	/** Set the selected bus to all selected functions */
