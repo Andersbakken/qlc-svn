@@ -333,6 +333,7 @@ void FixtureManager::slotSelectionChanged()
 
 		/* Create a new console for the selected fixture */
 		delete m_console;
+		m_tab->removeTab(1);
 		m_console = new FixtureConsole(this);
 		m_console->setFixture(id);
 		m_console->setChannelsCheckable(false);
