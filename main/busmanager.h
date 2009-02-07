@@ -23,6 +23,7 @@
 #define BUSMANAGER_H
 
 #include <QWidget>
+#include "app.h"
 
 class QTreeWidgetItem;
 class QTreeWidget;
@@ -36,14 +37,27 @@ class BusManager : public QWidget
 	 * Initialization
 	 *********************************************************************/
 public:
-	BusManager(QWidget* parent);
+	/** Get the BusManager singleton instance. Can be NULL. */
+	static BusManager* instance() { return s_instance; }
+
+	/** Create a BusManager with parent. Fails if s_instance is not NULL. */
+	static void create(QWidget* parent);
+
+	/** Normal public destructor */
 	~BusManager();
 
 private:
 	Q_DISABLE_COPY(BusManager)
 
 protected:
-	void setupUi();
+	/** Protected constructor to prevent multiple instances. */
+	BusManager(QWidget* parent, Qt::WindowFlags f = 0);
+
+protected slots:
+	void slotAppModeChanged(App::Mode mode);
+
+protected:
+	static BusManager* s_instance;
 
 	/*********************************************************************
 	 * Toolbar

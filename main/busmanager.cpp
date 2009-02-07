@@ -20,11 +20,13 @@
 */
 
 #include <QTreeWidgetItem>
+#include <QMdiSubWindow>
 #include <QInputDialog>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QStringList>
 #include <QHeaderView>
+#include <QMdiArea>
 #include <QToolBar>
 #include <QAction>
 #include <QString>
@@ -37,21 +39,17 @@
 #define KColumnID   0
 #define KColumnName 1
 
-BusManager::BusManager(QWidget* parent) : QWidget(parent)
+extern App* _app;
+
+BusManager* BusManager::s_instance = NULL;
+
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
+
+BusManager::BusManager(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
 	Q_ASSERT(parent != NULL);
-
-	setupUi();
-	fillTree();
-}
-
-BusManager::~BusManager()
-{
-}
-
-void BusManager::setupUi()
-{
-	QStringList columns;
 
 	/* Create a new layout for this widget */
 	new QVBoxLayout(this);
@@ -71,8 +69,63 @@ void BusManager::setupUi()
 	m_tree->setAllColumnsShowFocus(true);
 	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
+	QStringList columns;
 	columns << tr("Bus ID") << tr("Name");
 	m_tree->setHeaderLabels(columns);
+
+	fillTree();
+}
+
+BusManager::~BusManager()
+{
+	/* Reset singleton instance */
+	s_instance = NULL;
+}
+
+void BusManager::create(QWidget* parent)
+{
+	QWidget* window;
+
+	/* Must not create more than one instance */
+	if (s_instance != NULL)
+		return;
+
+#ifdef _APPLE_
+	/* Create a separate window for OSX */
+	s_instance = new BusManager(parent, Qt::Window);
+	window = s_instance;
+#else
+	/* Create an MDI window for X11 & Win32 */
+	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+	Q_ASSERT(area != NULL);
+	s_instance = new BusManager(parent);
+	window = area->addSubWindow(s_instance);
+#endif
+
+	/* Set some common properties for the window and show it */
+	window->setAttribute(Qt::WA_DeleteOnClose);
+	window->setWindowIcon(QIcon(":/bus.png"));
+	window->setWindowTitle(tr("Bus Manager"));
+	window->setContextMenuPolicy(Qt::CustomContextMenu);
+	window->show();
+
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		s_instance, SLOT(slotAppModeChanged(App::Mode)));
+}
+
+/****************************************************************************
+ * App mode
+ ****************************************************************************/
+
+void BusManager::slotAppModeChanged(App::Mode mode)
+{
+	/* Destroy this when going to operate mode */
+	if (mode == App::Operate)
+#ifdef _APPLE_
+		deleteLater(); /* Destroy this */
+#else
+		parent()->deleteLater(); /* Destroy mdi subwindow */
+#endif
 }
 
 /****************************************************************************
@@ -109,16 +162,20 @@ void BusManager::slotEditClicked()
 
 void BusManager::fillTree()
 {
-	QTreeWidgetItem* item;
-
+	/* Fill all buses to tree */
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
+		QTreeWidgetItem* item;
 		item = new QTreeWidgetItem(m_tree);
 		item->setText(KColumnID, QString("%1").arg(id + 1));
 		item->setText(KColumnName, Bus::name(id));
 		item->setFlags(item->flags() | Qt::ItemIsEditable);
 	}
 
+	/* Set first bus selected */
+	m_tree->setCurrentItem(m_tree->topLevelItem(0));
+
+	/* Listen to in-place item renaming */
 	connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 		this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
 }

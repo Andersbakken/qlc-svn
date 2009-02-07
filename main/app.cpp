@@ -87,7 +87,6 @@ App::App() : QMainWindow()
 	m_inputManager = NULL;
 	m_outputManager = NULL;
 	m_functionManager = NULL;
-	m_busManager = NULL;
 	m_fixtureManager = NULL;
 	m_virtualConsole = NULL;
 	m_docBrowser = NULL;
@@ -114,11 +113,6 @@ App::~App()
 	if (m_functionManager != NULL)
 		delete m_functionManager;
 	m_functionManager = NULL;
-
-	// Delete bus properties
-	if (m_busManager != NULL)
-		delete m_busManager;
-	m_busManager = NULL;
 
 	// Delete fixture manager view
 	if (m_fixtureManager != NULL)
@@ -556,10 +550,6 @@ void App::slotModeOperate()
 	/* Close function manager if it's open */
 	if (m_functionManager != NULL)
 		m_functionManager->parentWidget()->close();
-
-	/* Close bus manager if it's open */
-	if (m_busManager != NULL)
-		m_busManager->parentWidget()->close();
 
 	/* Close input manager if it's open */
 	if (m_inputManager != NULL)
@@ -1163,33 +1153,7 @@ void App::slotFunctionManagerDestroyed(QObject* object)
 
 void App::slotBusManager()
 {
-	if (m_busManager == NULL)
-	{
-		QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-		m_busManager = new BusManager(sub);
-
-		/* Prevent right-clicks from getting propagated to workspace */
-		sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-		sub->setWidget(m_busManager);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		sub->setWindowTitle(tr("Bus Manager"));
-		sub->setWindowIcon(QIcon(":/bus.png"));
-
-		qobject_cast <QMdiArea*> (centralWidget())->addSubWindow(sub);
-
-		connect(m_busManager, SIGNAL(destroyed(QObject*)),
-			this, SLOT(slotBusManagerDestroyed(QObject*)));
-
-		m_busManager->show();
-		sub->show();
-	}
-}
-
-void App::slotBusManagerDestroyed(QObject* object)
-{
-	Q_UNUSED(object);
-	m_busManager = NULL;
+	BusManager::create(this);
 }
 
 /*****************************************************************************

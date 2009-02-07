@@ -52,7 +52,6 @@ class QLCFixtureDef;
 class OutputManager;
 class InputManager;
 class QLCInPlugin;
-class BusManager;
 class QLCPlugin;
 class OutputMap;
 class InputMap;
@@ -211,15 +210,6 @@ protected:
 	FunctionManager* m_functionManager;
 
 	/*********************************************************************
-	 * Bus Manager
-	 *********************************************************************/
-public:
-	BusManager* busManager() const { return m_busManager; }
-
-protected:
-	BusManager* m_busManager;
-
-	/*********************************************************************
 	 * Virtual Console
 	 *********************************************************************/
 public:
@@ -277,7 +267,6 @@ public slots:
 	void slotFunctionManager();
 	void slotFunctionManagerDestroyed(QObject* object);
 	void slotBusManager();
-	void slotBusManagerDestroyed(QObject* object);
 
 	void slotControlVirtualConsole();
 	void slotVirtualConsoleClosed();
