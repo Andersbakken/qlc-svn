@@ -57,7 +57,7 @@ assigned to all newly-created functions.
 
 <P>
 Buses can also send special "tap" signals, that can be used, for example, to
-synchronize chaser stepping to match tempo.
+manually synchronize chaser stepping to match tempo.
 </P>
 
 <A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
@@ -78,18 +78,22 @@ be stopped manually.
 </P>
 
 <P>
-<A HREF="#Buses">Bus</A> number 1 (Default Fade) is assigned to all newly
-created chasers by default. Bus values are ignored by chasers completely.
-Clicking the bus slider's tap button sends special "tap" events to connected
-chasers, which in turn, skip to the next step on each tap. If the chaser's
-member scenes are connected to the same bus, tapping will also set their
-fade times, resulting in a smooth, timely synchronization.
+<A HREF="#Buses">Bus</A> number 2 (Default Hold) is assigned to all
+newly-created chasers by default. The bus value specifies step duration for
+chasers. If the speed setting of a chaser's members scene is higher (slower)
+than the chaser's speed setting, the scene won't have enough time to fade to
+its target value before the chaser triggers the next step. Respectively, if
+a member scene's speed setting is lower (faster) than the chaser's speed
+setting, the chaser will wait after the scene has finished before it triggers
+the next step.
 </P>
 
 <P>
 Copies of chaser functions can be created within the 4096 total function limit.
 All of the function's contents are copied to the duplicate. After copying, the
 two functions are completely independent entities that behave exactly the same.
+For chasers, only information on the member scenes get copied. The member
+scenes themselves are not copied.
 </P>
 
 <A NAME="Collection" HREF="#Collection"><H3>Collection</H3></A>
@@ -110,7 +114,8 @@ function's speed is set individually thru their own buses.
 Copies of collection functions can be created within the 4096 total function
 limit. All of the function's contents are copied to the duplicate. After
 copying, the two functions are completely independent entities that behave
-exactly the same.
+exactly the same. For collections, only information on the member functions get
+copied. The member functions themselves are not copied.
 </P>
 
 <A NAME="DMX" HREF="#DMX"><H3>DMX</H3></A>
