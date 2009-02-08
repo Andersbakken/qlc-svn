@@ -26,10 +26,6 @@
 #include <QMutex>
 #include <QFile>
 
-#ifndef WIN32
-#include <lla/LlaClient.h>
-#endif
-
 #include "common/qlcfile.h"
 #include "configurellaout.h"
 #include "llaout.h"
@@ -40,7 +36,12 @@
 
 void LLAOut::init()
 {
-	m_lla = new LlaClient();
+	m_lla = NULL;
+	m_lla_client = new lla::SimpleClient();
+	if (m_lla_client->Setup() == false)
+		qWarning() << "Could not initialise LLA Client";
+	else
+		m_lla = m_lla_client->GetClient();
 
 	for (t_channel i = 0; i < 512; i++)
 		m_values[i] = 0;
@@ -58,7 +59,7 @@ void LLAOut::open(t_output output)
 	if (output != 0)
 		return;
 
-	if (m_lla->start() < 0)
+	if (m_lla->Setup() < 0)
 		qWarning() << "Unable to open LLA";
 }
 
@@ -68,7 +69,7 @@ void LLAOut::close(t_output output)
 		return;
 
 	if (m_lla != NULL)
-		m_lla->stop();
+		m_lla->Stop();
 }
 
 QStringList LLAOut::outputs()
@@ -146,8 +147,9 @@ void LLAOut::writeChannel(t_output output, t_channel channel, t_value value)
 	m_values[channel] = value;
 	if (m_lla != NULL)
 	{
-		m_lla->send_dmx(output + 1, m_values, 512);
-		m_lla->fd_action(0);
+		m_lla->SendDmx(output + 1, m_values, 512);
+		// This is from the previous implementation, what exactly did it do?
+		//m_lla->fd_action(0);
 	}
 	m_mutex.unlock();
 }
@@ -164,8 +166,9 @@ void LLAOut::writeRange(t_output output, t_channel address, t_value* values,
 	memcpy(m_values + address, values, num * sizeof(t_value));
 	if (m_lla != NULL)
 	{
-		m_lla->send_dmx(output + 1, m_values, 512);
-		m_lla->fd_action(0);
+		m_lla->SendDmx(output + 1, m_values, 512);
+		// Again, what does this do?
+		//m_lla->fd_action(0);
 	}
 	m_mutex.unlock();
 }

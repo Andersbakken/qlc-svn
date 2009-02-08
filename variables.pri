@@ -11,6 +11,10 @@ win32:LIBSDIR		= $$BINDIR
 unix:!macx:LIBSDIR	= /usr/lib
 macx:LIBSDIR            = $$BINDIR/qlc.app/Contents/Frameworks/
 
+# LLA Directories
+unix:LLA		= ${HOME}/lla
+unix:LLA_HTTPD		= $$LLA/libmicrohttpd
+
 # Data
 win32:DATADIR		= $$(SystemDrive)/QLC
 unix:!macx:DATADIR	= /usr/share/qlc

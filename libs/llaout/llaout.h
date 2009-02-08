@@ -30,24 +30,11 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-class LlaClient
-#ifndef WIN32
-;
-#else
-{
-public:
-	LlaClient() {}
-	~LlaClient() {}
-	
-	int start() { qDebug() << "LLA Start"; return 0; }
-	void stop() { qDebug() << "LLA Stop"; }
-	void send_dmx(unsigned int u, t_value* v, unsigned int n)
-	{
-		qDebug() << "LLA Send: " << u << v << n;
-	}
-	void fd_action(unsigned int a) { qDebug() << "LLA FD: " << a; }
-};
+#ifdef __APPLE__
+typedef	u_int32_t	socklen_t;
 #endif
+
+#include <lla/SimpleClient.h>
 
 class ConfigureLlaOut;
 
@@ -73,7 +60,8 @@ public:
 	QStringList outputs();
 
 protected:
-	LlaClient *m_lla;
+	lla::SimpleClient *m_lla_client;
+	lla::LlaClient *m_lla;
 	
 	/*********************************************************************
 	 * Name
