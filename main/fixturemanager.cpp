@@ -369,6 +369,7 @@ void FixtureManager::slotSelectionChanged()
 	}
 	else
 	{
+		QScrollArea* scrollArea;
 		t_fixture_id id;
 		Fixture* fxi;
 		int page;
@@ -382,14 +383,19 @@ void FixtureManager::slotSelectionChanged()
 		/* Mark the current tab widget page */
 		page = m_tab->currentIndex();
 
-		/* Create a new console for the selected fixture */
+		/* Delete existing scroll area and console */
 		delete m_console;
-		m_tab->removeTab(1);
+		delete m_tab->widget(KTabConsole);
+
+		/* Create a new console for the selected fixture */
 		m_console = new FixtureConsole(this);
 		m_console->setFixture(id);
 		m_console->setChannelsCheckable(false);
-		QScrollArea *scrollArea = new QScrollArea(this);
+
+		/* Put the console inside a scroll area */
+		scrollArea = new QScrollArea(this);
 		scrollArea->setWidget(m_console);
+		scrollArea->setWidgetResizable(true);
 		m_tab->addTab(scrollArea, tr("Console"));
 
 		/* Recall the same tab widget page */
