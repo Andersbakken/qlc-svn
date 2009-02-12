@@ -83,24 +83,30 @@ t_output FTDIDMXDevice::output() const
  * Threading class
  ****************************************************************************/
 
-// This definition of usleep for WIN32 has been taken directly from the
-// PHP5 source (win32/time.c)
-
+// Code adapted from example at
+// http://msdn.microsoft.com/en-us/library/ms687008(VS.85).aspx
 // It has never been compiled or tested in this instance, therefore it may
 // or may not work...
 
 #ifdef WIN32
+// Most error handling ignored as it would take too long
 void usleep(unsigned int useconds)
 {
-	HANDLE timer;
-	LARGE_INTEGER due;
+	HANDLE hTimer = CreateWaitableTimer(0, true, 0);
+	if (hTimer == NULL) {
+		if (useconds >= 1000)
+			Sleep(useconds / 1000);
+		else
+			return;
+	}
 
-	due.QuadPart = -(10 * (__int64)useconds);
+	LARGE_INTEGER liDueTime;
+	liDueTime.QuadPart = -(10 * useconds);
 
-	timer = CreateWaitableTimer(NULL, TRUE, NULL);
-	SetWaitableTimer(timer, &due, 0, NULL, NULL, 0);
-	WaitForSingleObject(timer, INFINITE);
-	CloseHandle(timer);
+	if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0))
+		return;
+	WaitForSingleObject(hTimer, INFINITE);
+	CloseHandle(hTimer);
 }
 #endif
 
