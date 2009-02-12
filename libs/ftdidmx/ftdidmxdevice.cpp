@@ -89,7 +89,7 @@ t_output FTDIDMXDevice::output() const
 // It has never been compiled or tested in this instance, therefore it may
 // or may not work...
 
-#ifndef usleep
+#ifdef WIN32
 void usleep(unsigned int useconds)
 {
 	HANDLE timer;
