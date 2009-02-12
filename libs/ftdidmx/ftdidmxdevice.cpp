@@ -83,6 +83,27 @@ t_output FTDIDMXDevice::output() const
  * Threading class
  ****************************************************************************/
 
+// This definition of usleep for WIN32 has been taken directly from the
+// PHP5 source (win32/time.c)
+
+// It has never been compiled or tested in this instance, therefore it may
+// or may not work...
+
+#ifndef usleep
+void usleep(unsigned int useconds)
+{
+	HANDLE timer;
+	LARGE_INTEGER due;
+
+	due.QuadPart = -(10 * (__int64)useconds);
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &due, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
+#endif
+
 void FTDIDMXDevice::run()
 {
 	// Write the data to the device
@@ -90,16 +111,27 @@ void FTDIDMXDevice::run()
 	unsigned char startCode = 0;
 
 	// Wait for device to clear
-	sleep(1);
+	usleep(1000);
 
 	while (m_threadRunning == true)
 	{
+		// usleep values added by suggestion of Hugh Blemings
+		// on qlc-devel mailing list (11/02/09).
+		// As I have not run more than one dimmer rack with this
+		// plugin I am unable to assertain whether or not this
+		// is better or equivilent to previous code therefore
+		// I am including it in order for the analysis of the users.
+		// At the time of writing LLA is being re-vamped so this
+		// plugin will become redundant for all but Windows users.
+
 		// Write data
 		FT_SetBreakOn(m_handle);
+		usleep(88);
 		FT_SetBreakOff(m_handle);
+		usleep(8);
 		FT_Write(m_handle, &startCode, 1, &bytesWritten);
 		FT_Write(m_handle, m_values, 512, &bytesWritten);
-		usleep(30);
+		usleep(24000);
 	}
 }
 
