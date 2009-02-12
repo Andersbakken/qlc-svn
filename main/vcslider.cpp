@@ -89,11 +89,14 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	layout()->addWidget(m_topLabel);
 	m_topLabel->setAlignment(Qt::AlignHCenter);
 
-	/* Slider & its HBox */
+	/* Slider's HBox |stretch|slider|stretch| */
 	m_hbox = new QHBoxLayout();
 	layout()->addItem(m_hbox);
-	m_hbox->insertSpacing(-1, 10);
 
+	/* Put stretchable space before the slider (to its left side) */
+	m_hbox->addStretch();
+
+	/* The slider */
 	m_slider = new QSlider(this);
 	m_slider->setStyle(App::sliderStyle());
 	m_hbox->addWidget(m_slider);
@@ -104,7 +107,8 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	connect(m_slider, SIGNAL(valueChanged(int)),
 		this, SLOT(slotSliderMoved(int)));
 
-	m_hbox->insertSpacing(-1, 10);
+	/* Put stretchable space after the slider (to its right side) */
+	m_hbox->addStretch();
 
 	/* Tap button */
 	m_tapButton = new QPushButton(this);
