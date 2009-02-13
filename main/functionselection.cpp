@@ -88,6 +88,8 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 	else
 		m_tree->setSelectionMode(QAbstractItemView::SingleSelection);
 
+	connect(m_tree, SIGNAL(itemSelectionChanged()),
+		this, SLOT(slotItemSelectionChanged()));
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotItemDoubleClicked(QTreeWidgetItem*)));
 
@@ -129,6 +131,24 @@ void FunctionSelection::refillTree()
 				item->setFlags(0); // Disables the item
 		}
 	}
+}
+
+void FunctionSelection::slotItemSelectionChanged()
+{
+	QList <t_function_id> removeList(selection);
+
+	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+	while (it.hasNext() == true)
+	{
+		t_function_id id = it.next()->text(KColumnID).toInt();
+		if (selection.contains(id) == false)
+			selection.append(id);
+
+		removeList.removeAll(id);
+	}
+	
+	while (removeList.isEmpty() == false)
+		selection.removeAll(removeList.takeFirst());
 }
 
 void FunctionSelection::slotItemDoubleClicked(QTreeWidgetItem* item)
@@ -177,13 +197,5 @@ void FunctionSelection::slotCollectionChecked(bool state)
 
 void FunctionSelection::accept()
 {
-	selection.clear();
-
-	/* TODO: Check, whether some items are fixture items. If they are,
-	   don't put them into selection list. See above Qt::ItemIsEnabled. */
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	while (it.hasNext() == true)
-		selection.append(it.next()->text(KColumnID).toInt());
-
 	QDialog::accept();
 }

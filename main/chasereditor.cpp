@@ -167,10 +167,9 @@ void ChaserEditor::slotAddClicked()
 	if (fs.exec() == QDialog::Accepted)
 	{
 		QListIterator <t_function_id> it(fs.selection);
-		it.toBack();
-		while (it.hasPrevious() == true)
-			m_chaser->addStep(it.previous());
-		
+		while (it.hasNext() == true)
+			m_chaser->addStep(it.next());
+
 		// Update all steps in the list
 		updateStepList();
 	}

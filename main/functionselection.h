@@ -92,9 +92,7 @@ protected:
 	QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id, Doc* doc);
 
 protected slots:
-	/**
-	 * Item double clicks
-	 */
+	void slotItemSelectionChanged();
 	void slotItemDoubleClicked(QTreeWidgetItem* item);
 
 	void slotCollectionChecked(bool state);
