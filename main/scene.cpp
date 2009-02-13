@@ -369,7 +369,6 @@ void Scene::arm()
 
 		channel.address = fxi->universeAddress() + scv.channel;
 		channel.target = scv.value;
-		channel.ready = true;
 
 		m_channels.append(channel);
 	}
@@ -382,36 +381,42 @@ void Scene::disarm()
 
 bool Scene::write(QByteArray* universes)
 {
+	/* Count ready channels so that the scene can be stopped */
 	t_channel ready = m_channels.count();
 
-	Q_ASSERT(universe != NULL);
+	/* Iterator for all scene channels */
+	QMutableListIterator <SceneChannel> it(m_channels);
 
+	Q_ASSERT(universes != NULL);
+
+	/* Get starting values for each channel on the first pass */
 	if (m_elapsed == 0)
 	{
-		QMutableListIterator <SceneChannel> it(m_channels);
 		while (it.hasNext() == true)
 		{
 			SceneChannel sch = it.next();
 
 			sch.start = sch.current =
 				_app->outputMap()->value(sch.address);
+
+			/* Mark channels ready if they are already what they
+			   are supposed to be. */
 			if (sch.current == sch.target)
-				ready--;
+				sch.ready = true;
 			else
 				sch.ready = false;
+
+			/* Set the changed object back to the list */
 			it.setValue(sch);
 		}
 
-		if (ready == 0)
-		{
-			/* All channels are ready. No need to run at all. */
-			return false;
-		}
+		/* Reel back to start of list */
+		it.toFront();
 	}
 
+	/* Next time unit */
 	m_elapsed++;
 
-	QMutableListIterator <SceneChannel> it(m_channels);
 	while (it.hasNext() == true)
 	{
 		SceneChannel sch = it.next();
@@ -423,8 +428,9 @@ bool Scene::write(QByteArray* universes)
 		}
 		if (m_elapsed >= Bus::value(m_busID))
 		{
-			/* Write the absolute target value to get rid of
-			   rounding errors in nextValue(). */
+			/* When this scene's time is up, write the absolute
+			   target values to get rid of rounding errors that
+			   may happen in nextValue(). */
 			sch.current = sch.target;
 			sch.ready = true;
 			ready--;
@@ -438,9 +444,11 @@ bool Scene::write(QByteArray* universes)
 			universes->data()[sch.address] = nextValue(&sch);
 		}
 
+		/* Set the changed object back to the list */
 		it.setValue(sch);
 	}
 
+	/* When all channels are ready, this function can be stopped. */
 	if (ready == 0)
 		return false;
 	else
