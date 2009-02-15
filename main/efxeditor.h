@@ -66,11 +66,11 @@ protected:
 	 * General page
 	 *********************************************************************/
 protected:
-	QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id);
-	QList <Fixture*> selectedFixtures();
+	QTreeWidgetItem* fixtureItem(EFXFixture* ef);
+	const QList <EFXFixture*> selectedFixtures() const;
 	void updateIndices(int from, int to);
-	void addFixtureItem(Fixture* fixture, Function::Direction fxi_dir);
-	void removeFixtureItem(Fixture* fixture);
+	void addFixtureItem(EFXFixture* ef);
+	void removeFixtureItem(EFXFixture* ef);
 
 protected slots:
 	void slotNameEdited(const QString &text);

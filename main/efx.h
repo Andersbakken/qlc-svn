@@ -348,33 +348,27 @@ public:
 	enum PropagationMode { Parallel, Serial };
 
 public:
-	/** Add a fixture to this EFX */
-	void addFixture(t_fixture_id fxi_id);
+	/** Add a new fixture to this EFX */
+	bool addFixture(EFXFixture* ef);
 
-	/** Remove the designated fixture from this EFX */
-	void removeFixture(t_fixture_id fxi_id);
+	/** Remove the designated fixture from this EFX but don't delete it */
+	bool removeFixture(EFXFixture* ef);
 
 	/** Raise a fixture in the serial order to an earlier position */
-	void raiseFixture(t_fixture_id fxi_id);
+	bool raiseFixture(EFXFixture* ef);
 
 	/** Lower a fixture in the serial order to a later position */
-	void lowerFixture(t_fixture_id fxi_id);
-
-	/** Set a particular fixture's direction */
-	void setFixtureDirection(t_fixture_id fxi_id, Function::Direction dir);
-
-	/** Get a particular fixture's direction */
-	Function::Direction fixtureDirection(t_fixture_id fxi_id);
+	bool lowerFixture(EFXFixture* ef);
 
 	/** Get a list of fixtures taking part in this EFX */
-	QList <t_fixture_id> fixtures() const;
+	const QList <EFXFixture*> fixtures() const { return m_fixtures; }
 
 public slots:
 	/** Slot that captures Doc::fixtureRemoved signals */
 	void slotFixtureRemoved(t_fixture_id fxi_id);
 
 protected:
-	QList <EFXFixture> m_fixtures;
+	QList <EFXFixture*> m_fixtures;
 
 	/*********************************************************************
 	 * Fixture propagation mode
@@ -601,11 +595,6 @@ protected:
 	 * is 64, then this is 1/64.
 	 */
 	float m_stepSize;
-
-	/**
-	 * Run-time pan & tilt channels and their values
-	 */
-	QList <EFXFixture> m_runTimeFixtures;
 };
 
 #endif

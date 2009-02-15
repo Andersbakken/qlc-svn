@@ -98,6 +98,8 @@ EFX::EFX(QObject* parent) : Function(parent, Function::EFX)
  */
 EFX::~EFX()
 {
+	while (m_fixtures.isEmpty() == false)
+		delete m_fixtures.takeFirst();
 }
 
 /**
@@ -114,7 +116,14 @@ bool EFX::copyFrom(EFX* efx)
 	Function::setBus(efx->busID());
 
 	m_fixtures.clear();
-	m_fixtures = efx->m_fixtures;
+	QListIterator <EFXFixture*> it(efx->m_fixtures);
+	while (it.hasNext() == true)
+	{
+		EFXFixture* ef = new EFXFixture(this);
+		ef->copyFrom(it.next());
+		m_fixtures.append(ef);
+	}
+
 	m_propagationMode = efx->m_propagationMode;
 
 	m_width = efx->width();
@@ -550,35 +559,48 @@ bool EFX::isPhaseEnabled()
  * Fixtures
  *****************************************************************************/
 
-void EFX::addFixture(t_fixture_id fxi_id)
+bool EFX::addFixture(EFXFixture* ef)
 {
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
+	Q_ASSERT(ef != NULL);
 
-	if (m_fixtures.contains(ef) == false)
+	/* Search for an existing fixture with the same ID to prevent multiple
+	   entries of the same fixture. */
+	QListIterator <EFXFixture*> it(m_fixtures);
+	while (it.hasNext() == true)
 	{
-		m_fixtures.append(ef);
-
-		_app->doc()->setModified();
-		_app->doc()->emitFunctionChanged(m_id);
+		/* Found the same fixture. Don't add the new one. */
+		if (it.next()->fixture() == ef->fixture())
+			return false;
 	}
-}
 
-void EFX::removeFixture(t_fixture_id fxi_id)
-{
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
-
-	m_fixtures.removeAll(ef);
+	/* Put the EFXFixture object into our list */
+	m_fixtures.append(ef);
 
 	_app->doc()->setModified();
 	_app->doc()->emitFunctionChanged(m_id);
+
+	return true;
 }
 
-void EFX::raiseFixture(t_fixture_id fxi_id)
+bool EFX::removeFixture(EFXFixture* ef)
 {
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
+	Q_ASSERT(ef != NULL);
+
+	if (m_fixtures.removeAll(ef) > 0)
+	{
+		_app->doc()->setModified();
+		_app->doc()->emitFunctionChanged(m_id);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool EFX::raiseFixture(EFXFixture* ef)
+{
+	Q_ASSERT(ef != NULL);
 
 	int index = m_fixtures.indexOf(ef);
 	if (index > 0)
@@ -587,53 +609,48 @@ void EFX::raiseFixture(t_fixture_id fxi_id)
 
 		_app->doc()->setModified();
 		_app->doc()->emitFunctionChanged(m_id);
+
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void EFX::lowerFixture(t_fixture_id fxi_id)
+bool EFX::lowerFixture(EFXFixture* ef)
 {
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
-
 	int index = m_fixtures.indexOf(ef);
-	if (index < m_fixtures.count())
+	if (index < (m_fixtures.count() - 1))
 	{
 		m_fixtures.move(index, index + 1);
 
 		_app->doc()->setModified();
 		_app->doc()->emitFunctionChanged(m_id);
+
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void EFX::setFixtureDirection(t_fixture_id fxi_id, Function::Direction dir)
+void EFX::slotFixtureRemoved(t_fixture_id fxi_id)
 {
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
-
-	int index = m_fixtures.indexOf(ef);
-	Q_ASSERT(index >= 0);
-
-	ef = m_fixtures.at(index);
-	ef.setDirection(dir);
-	m_fixtures.replace(index, ef);
-}
-
-Function::Direction EFX::fixtureDirection(t_fixture_id fxi_id)
-{
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
-
-	int index = m_fixtures.indexOf(ef);
-	return m_fixtures.at(index).direction();
-}
-
-QList <t_fixture_id> EFX::fixtures() const
-{
-	QList <t_fixture_id> list;
-	QListIterator <EFXFixture> it(m_fixtures);
+	/* Remove the destroyed fixture from our list */
+	QMutableListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
-		list.append(it.next().fixture());
-	return list;
+	{
+		it.next();
+
+		if (it.value()->fixture() == fxi_id)
+		{
+			it.remove();
+			delete it.value();
+			break;
+		}
+	}
 }
 
 /*****************************************************************************
@@ -659,14 +676,6 @@ EFX::PropagationMode EFX::stringToPropagationMode(QString str)
 		return Serial;
 	else
 		return Parallel;
-}
-
-void EFX::slotFixtureRemoved(t_fixture_id fxi_id)
-{
-	EFXFixture ef(this);
-	ef.setFixture(fxi_id);
-
-	m_fixtures.removeAll(ef);
 }
 
 /*****************************************************************************
@@ -772,9 +781,9 @@ bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Fixtures */
-	QListIterator <EFXFixture> it(m_fixtures);
+	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
-		it.next().saveXML(doc, &root);
+		it.next()->saveXML(doc, &root);
 
 	/* Propagation mode */
 	tag = doc->createElement(KXMLQLCEFXPropagationMode);
@@ -915,7 +924,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 	QString str;
 	QDomNode node;
 	QDomElement tag;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
@@ -930,7 +939,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCBus)
 		{
 			/* Bus */
@@ -939,10 +948,13 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCEFXFixture)
 		{
-			EFXFixture ef(this);
-			ef.loadXML(doc, &tag);
-			if (ef.fixture() != KNoID)
-				m_fixtures.append(ef);
+			EFXFixture* ef = new EFXFixture(this);
+			ef->loadXML(doc, &tag);
+			if (ef->fixture() != KNoID)
+			{
+				if (addFixture(ef) == false)
+					delete ef;
+			}
 		}
 		else if (tag.tagName() == KXMLQLCEFXPropagationMode)
 		{
@@ -1265,42 +1277,41 @@ void EFX::arm()
 	class Scene* stopScene = NULL;
 	QLCFixtureMode* mode = NULL;
 	QLCChannel* ch = NULL;
-	Fixture* fxi = NULL;
-	int channels = 0;
 	int serialNumber = 0;
+	Fixture* fxi = NULL;
 
 	/* Initialization scene */
 	if (m_startSceneID != KNoID && m_startSceneEnabled == true)
-	{
 		startScene = static_cast <class Scene*>
 			(_app->doc()->function(m_startSceneID));
-		Q_ASSERT(startScene != NULL);
-	}
 
 	/* De-initialization scene */
 	if (m_stopSceneID != KNoID && m_stopSceneEnabled == true)
-	{
 		stopScene = static_cast <class Scene*>
 			(_app->doc()->function(m_stopSceneID));
-		Q_ASSERT(stopScene != NULL);
-	}
 
-	QListIterator <EFXFixture> it(m_fixtures);
+	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
 	{
-		EFXFixture ef = it.next();
-		ef.setSerialNumber(serialNumber);
-		ef.setStartScene(startScene);
-		ef.setStopScene(stopScene);
+		EFXFixture* ef = it.next();
+		Q_ASSERT(ef != NULL);
 
-		fxi = _app->doc()->fixture(ef.fixture());
-		Q_ASSERT(fxi != NULL);
+		ef->setSerialNumber(serialNumber++);
+		ef->setStartScene(startScene);
+		ef->setStopScene(stopScene);
 
+		/* If fxi == NULL, the fixture has been destroyed */
+		fxi = _app->doc()->fixture(ef->fixture());
+		if (fxi == NULL)
+			continue;
+
+		/* If this fixture has no mode, it's a generic dimmer that
+		   can't do pan&tilt anyway. */
 		mode = fxi->fixtureMode();
-		Q_ASSERT(mode != NULL);
+		if (mode == NULL)
+			continue;
 
-		channels = 0;
-
+		/* Find exact channel numbers for MSB/LSB pan and tilt */
 		for (t_channel i = 0; i < mode->channels(); i++)
 		{
 			ch = mode->channel(i);
@@ -1310,41 +1321,28 @@ void EFX::arm()
 			{
 				if (ch->controlByte() == 0)
 				{
-					ef.setMsbPanChannel(
+					ef->setMsbPanChannel(
 						fxi->universeAddress() + i);
-					channels++;
 				}
 				else if (ch->controlByte() == 1)
 				{
-					ef.setLsbPanChannel(
+					ef->setLsbPanChannel(
 						fxi->universeAddress() + i);
-					channels++;
 				}
 			}
 			else if (ch->group() == KQLCChannelGroupTilt)
 			{
 				if (ch->controlByte() == 0)
 				{
-					ef.setMsbTiltChannel(
+					ef->setMsbTiltChannel(
 						fxi->universeAddress() + i);
-					channels++;
 				}
 				else if (ch->controlByte() == 1)
 				{
-					ef.setLsbTiltChannel(
+					ef->setLsbTiltChannel(
 						fxi->universeAddress() + i);
-					channels++;
 				}
 			}
-		}
-
-		/* The fixture must have at least an LSB channel for 8bit
-		   precision AND a valid fixture ID to work with the EFX. */
-		if (ef.isValid() == true)
-		{
-			ef.updateSkipThreshold();
-			m_runTimeFixtures.append(ef);
-			serialNumber++;
 		}
 	}
 
@@ -1367,9 +1365,6 @@ void EFX::arm()
 
 void EFX::disarm()
 {
-	/* Remove all run-time fixtures from the list */
-	m_runTimeFixtures.clear();
-
 	/* Just a precaution: invalidate the algorithm worker function */
 	pointFunc = NULL;
 }
@@ -1385,23 +1380,25 @@ bool EFX::write(QByteArray* universes)
 {
 	int ready = 0;
 
+	Q_ASSERT(universes != NULL);
+
 	/* Check that a valid point function is present and there's at least
 	   one fixture to control. */
-	if (pointFunc == NULL || m_runTimeFixtures.isEmpty() == true)
+	if (pointFunc == NULL || m_fixtures.isEmpty() == true)
 		return false;
 
-	QMutableListIterator <EFXFixture> it(m_runTimeFixtures);
+	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
 	{
-		it.next();
-		if (it.value().isReady() == false)
-			it.value().nextStep(universes);
+		EFXFixture* ef = it.next();
+		if (ef->isReady() == false)
+			ef->nextStep(universes);
 		else
 			ready++;
 	}
 
 	/* Check for stop condition */
-	if (ready == m_runTimeFixtures.count())
+	if (ready == m_fixtures.count())
 		return false;
 	else
 		return true;
@@ -1412,7 +1409,8 @@ void EFX::stop()
 	Function::stop();
 
 	/* Reset all fixtures */
-	QMutableListIterator <EFXFixture> it(m_runTimeFixtures);
+	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
-		it.next().reset();
+		it.next()->reset();
 }
+

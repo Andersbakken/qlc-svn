@@ -46,7 +46,7 @@ extern App* _app;
 #define KColumnNumber  0
 #define KColumnName    1
 #define KColumnReverse 2
-#define KColumnID      3
+#define KColumnEF      3
 
 #define KInitColumnName     0
 #define KInitColumnID       1
@@ -76,7 +76,7 @@ EFXEditor::EFXEditor(QWidget* parent, EFX* efx) : QDialog(parent)
 
 EFXEditor::~EFXEditor()
 {
-	m_efx->setPreviewPointArray(NULL);
+	delete m_efx;
 }
 
 void EFXEditor::initGeneralPage()
@@ -108,14 +108,9 @@ void EFXEditor::initGeneralPage()
 	slotNameEdited(m_efx->name());
 
 	/* Put all of the EFX's fixtures to the tree view */
-	QListIterator <t_fixture_id> it(m_efx->fixtures());
+	QListIterator <EFXFixture*> it(m_efx->fixtures());
 	while (it.hasNext() == true)
-	{
-		t_fixture_id fxi_id = it.next();
-		Function::Direction fxi_dir = m_efx->fixtureDirection(fxi_id);
-
-		addFixtureItem(_app->doc()->fixture(fxi_id), fxi_dir);
-	}
+		addFixtureItem(it.next());
 
 	/* Set propagation mode */
 	if (m_efx->propagationMode() == EFX::Serial)
@@ -264,13 +259,13 @@ void EFXEditor::accept()
  * General page
  *****************************************************************************/
 
-QTreeWidgetItem* EFXEditor::fixtureItem(t_fixture_id fxi_id)
+QTreeWidgetItem* EFXEditor::fixtureItem(EFXFixture* ef)
 {
 	QTreeWidgetItemIterator it(m_tree);
 	while (*it != NULL)
 	{
 		QTreeWidgetItem* item = *it;
-		if (item->text(KColumnID).toInt() == fxi_id)
+		if (item->text(KColumnEF).toULongLong() == qulonglong(ef))
 			return item;
 		++it;
 	}
@@ -278,24 +273,14 @@ QTreeWidgetItem* EFXEditor::fixtureItem(t_fixture_id fxi_id)
 	return NULL;
 }
 
-QList <Fixture*> EFXEditor::selectedFixtures()
+const QList <EFXFixture*> EFXEditor::selectedFixtures() const
 {
 	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	QList <Fixture*> list;
+	QList <EFXFixture*> list;
 	
+	/* Put all selected fixture IDs to a list and return it */
 	while (it.hasNext() == true)
-	{
-		QTreeWidgetItem* item;
-		t_fixture_id fxi_id;
-		Fixture* fixture;
-
-		item = it.next();
-		fxi_id = item->text(KColumnID).toInt();
-		fixture = _app->doc()->fixture(fxi_id);
-		Q_ASSERT(fixture != NULL);
-
-		list.append(fixture);
-	}
+		list << (EFXFixture*) it.next()->text(KColumnEF).toULongLong();
 
 	return list;
 }
@@ -315,18 +300,23 @@ void EFXEditor::updateIndices(int from, int to)
 	}
 }
 
-void EFXEditor::addFixtureItem(Fixture* fixture, Function::Direction fxi_dir)
+void EFXEditor::addFixtureItem(EFXFixture* ef)
 {
 	QTreeWidgetItem* item;
+	Fixture* fxi;
 
-	Q_ASSERT(fixture != NULL);
+	Q_ASSERT(ef != NULL);
+
+	fxi = _app->doc()->fixture(ef->fixture());
+	if (fxi == NULL)
+		return;
 
 	item = new QTreeWidgetItem(m_tree);
-	item->setText(KColumnName, fixture->name());
-	item->setText(KColumnID, QString("%1").arg(fixture->id()));
+	item->setText(KColumnName, fxi->name());
+	item->setText(KColumnEF, QString("%1").arg(qulonglong(ef)));
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
 
-	if (fxi_dir == Function::Backward)
+	if (ef->direction() == Function::Backward)
 		item->setCheckState(KColumnReverse, Qt::Checked);
 	else
 		item->setCheckState(KColumnReverse, Qt::Unchecked);
@@ -338,14 +328,14 @@ void EFXEditor::addFixtureItem(Fixture* fixture, Function::Direction fxi_dir)
 	m_tree->setCurrentItem(item);
 }
 
-void EFXEditor::removeFixtureItem(Fixture* fixture)
+void EFXEditor::removeFixtureItem(EFXFixture* ef)
 {
 	QTreeWidgetItem* item;
 	int from;
 
-	Q_ASSERT(fixture != NULL);
+	Q_ASSERT(ef != NULL);
 
-	item = fixtureItem(fixture->id());
+	item = fixtureItem(ef);
 	Q_ASSERT(item != NULL);
 
 	from = m_tree->indexOfTopLevelItem(item);
@@ -367,12 +357,14 @@ void EFXEditor::slotFixtureItemChanged(QTreeWidgetItem* item, int column)
 {
 	if (column == KColumnReverse)
 	{
-		t_fixture_id fxi_id = item->text(KColumnID).toInt();
+		EFXFixture* ef;
+		ef = (EFXFixture*) item->text(KColumnEF).toULongLong();
+		Q_ASSERT(ef != NULL);
 
 		if (item->checkState(column) == Qt::Checked)
-			m_efx->setFixtureDirection(fxi_id, Function::Backward);
+			ef->setDirection(Function::Backward);
 		else
-			m_efx->setFixtureDirection(fxi_id, Function::Forward);
+			ef->setDirection(Function::Forward);
 	}
 }
 
@@ -384,7 +376,13 @@ void EFXEditor::slotAddFixtureClicked()
 	QTreeWidgetItemIterator twit(m_tree);
 	while (*twit != NULL)
 	{
-		disabled.append((*twit)->text(KColumnID).toInt());
+		EFXFixture* ef;
+		ef = (EFXFixture*) ((*twit)->text(KColumnEF).toULongLong());
+		Q_ASSERT(ef != NULL);
+
+		/* TODO: Disable all fixtures that don't have pan&tilt chans */
+
+		disabled.append(ef->fixture());
 		twit++;
 	}
 
@@ -392,19 +390,16 @@ void EFXEditor::slotAddFixtureClicked()
 	FixtureSelection fs(this, _app->doc(), true, disabled);
 	if (fs.exec() == QDialog::Accepted)
 	{
-		t_fixture_id fxi_id;
-		Fixture* fixture;
-
 		QListIterator <t_fixture_id> it(fs.selection);
 		while (it.hasNext() == true)
 		{
-			fxi_id = it.next();
+			EFXFixture* ef = new EFXFixture(m_efx);
+			ef->setFixture(it.next());
 
-			fixture = _app->doc()->fixture(fxi_id);
-			Q_ASSERT(fixture != NULL);
-
-			m_efx->addFixture(fxi_id);
-			addFixtureItem(fixture, Function::Forward);
+			if (m_efx->addFixture(ef) == true)
+				addFixtureItem(ef);
+			else
+				delete ef;
 		}
 	}
 }
@@ -418,16 +413,15 @@ void EFXEditor::slotRemoveFixtureClicked()
 
 	if (r == QMessageBox::Yes)
 	{
-		Fixture* fixture;
-
-		QListIterator <Fixture*> it(selectedFixtures());
+		QListIterator <EFXFixture*> it(selectedFixtures());
 		while (it.hasNext() == true)
 		{
-			fixture = it.next();
-			Q_ASSERT(fixture != NULL);
+			EFXFixture* ef = it.next();
+			Q_ASSERT(ef != NULL);
 
-			removeFixtureItem(fixture);
-			m_efx->removeFixture(fixture->id());
+			removeFixtureItem(ef);
+			if (m_efx->removeFixture(ef) == true)
+				delete ef;
 		}
 	}
 }
@@ -440,17 +434,23 @@ void EFXEditor::slotRaiseFixtureClicked()
 	item = m_tree->currentItem();
 	if (item != NULL)
 	{
+		EFXFixture* ef;
+
 		index = m_tree->indexOfTopLevelItem(item);
 		if (index == 0)
 			return;
 
-		m_efx->raiseFixture(item->text(KColumnID).toInt());
+		ef = (EFXFixture*) (item->text(KColumnEF).toULongLong());
+		Q_ASSERT(ef != NULL);
 
-		item = m_tree->takeTopLevelItem(index);
-		m_tree->insertTopLevelItem(index - 1, item);
-		m_tree->setCurrentItem(item);
+		if (m_efx->raiseFixture(ef) == true)
+		{
+			item = m_tree->takeTopLevelItem(index);
+			m_tree->insertTopLevelItem(index - 1, item);
+			m_tree->setCurrentItem(item);
 
-		updateIndices(index - 1, index);
+			updateIndices(index - 1, index);
+		}
 	}
 }
 
@@ -462,17 +462,23 @@ void EFXEditor::slotLowerFixtureClicked()
 	item = m_tree->currentItem();
 	if (item != NULL)
 	{
+		EFXFixture* ef;
+
 		index = m_tree->indexOfTopLevelItem(item);
 		if (index == (m_tree->topLevelItemCount() - 1))
 			return;
 
-		m_efx->lowerFixture(item->text(KColumnID).toInt());
+		ef = (EFXFixture*) (item->text(KColumnEF).toULongLong());
+		Q_ASSERT(ef != NULL);
 
-		item = m_tree->takeTopLevelItem(index);
-		m_tree->insertTopLevelItem(index + 1, item);
-		m_tree->setCurrentItem(item);
+		if (m_efx->lowerFixture(ef) == true)
+		{
+			item = m_tree->takeTopLevelItem(index);
+			m_tree->insertTopLevelItem(index + 1, item);
+			m_tree->setCurrentItem(item);
 
-		updateIndices(index, index + 1);
+			updateIndices(index, index + 1);
+		}
 	}
 }
 

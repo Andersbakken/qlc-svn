@@ -57,49 +57,34 @@ EFXFixture::EFXFixture(EFX* parent)
 	m_msbTiltChannel = KChannelInvalid;
 }
 
-EFXFixture::EFXFixture(const EFXFixture* ef)
+void EFXFixture::copyFrom(const EFXFixture* ef)
 {
-	*this = *ef;
+	/* Don't copy the parent */
+	/* m_parent = ef->m_parent; */
+
+	m_fixture = ef->m_fixture;
+	m_serialNumber = ef->m_serialNumber;
+	m_direction = ef->m_direction;
+	m_runTimeDirection = ef->m_runTimeDirection;
+	m_startScene = ef->m_startScene;
+	m_stopScene = ef->m_stopScene;
+	m_initialized = ef->m_initialized;
+	m_ready = ef->m_ready;
+
+	m_skipIterator = ef->m_skipIterator;
+	m_skipThreshold = ef->m_skipThreshold;
+	m_iterator = ef->m_iterator;
+	m_panValue = ef->m_panValue;
+	m_tiltValue = ef->m_tiltValue;
+
+	m_lsbPanChannel = ef->m_lsbPanChannel;
+	m_msbPanChannel = ef->m_msbPanChannel;
+	m_lsbTiltChannel = ef->m_lsbTiltChannel;
+	m_msbTiltChannel = ef->m_msbTiltChannel;
 }
 
 EFXFixture::~EFXFixture()
 {
-}
-
-EFXFixture& EFXFixture::operator=(const EFXFixture& ef)
-{
-	if (this != &ef)
-	{
-		m_parent = ef.m_parent;
-		m_serialNumber = ef.m_serialNumber;
-		m_direction = ef.m_direction;
-		m_runTimeDirection = ef.m_runTimeDirection;
-		m_startScene = ef.m_startScene;
-		m_stopScene = ef.m_stopScene;
-		m_initialized = ef.m_initialized;
-		m_ready = ef.m_ready;
-
-		m_skipIterator = ef.m_skipIterator;
-		m_skipThreshold = ef.m_skipThreshold;
-		m_iterator = ef.m_iterator;
-		m_panValue = ef.m_panValue;
-		m_tiltValue = ef.m_tiltValue;
-
-		m_lsbPanChannel = ef.m_lsbPanChannel;
-		m_msbPanChannel = ef.m_msbPanChannel;
-		m_lsbTiltChannel = ef.m_lsbTiltChannel;
-		m_msbTiltChannel = ef.m_msbTiltChannel;
-	}
-	
-	return *this;
-}
-
-bool EFXFixture::operator==(const EFXFixture& fxi) const
-{
-	if (m_fixture == fxi.m_fixture)
-		return true;
-	else
-		return false;
 }
 
 /****************************************************************************
@@ -141,44 +126,34 @@ bool EFXFixture::loadXML(QDomDocument* doc, QDomElement* root)
 
 	if (root->tagName() != KXMLQLCEFXFixture)
 	{
-		qWarning("Fixture node not found!");
+		qWarning("EFX Fixture node not found!");
 		return false;
 	}
 
-	if (root->firstChild().nodeType() == QDomNode::TextNode)
+	/* New file format contains sub tags */
+	node = root->firstChild();
+	while (node.isNull() == false)
 	{
-		/* Old file format contains just the fixture ID as in 
-		   "<Fixture>id</Fixture>" */
-		setFixture(root->text().toInt());
-		setDirection(Function::Forward);
-	}
-	else
-	{
-		/* New file format contains sub tags */
-		node = root->firstChild();
-		while (node.isNull() == false)
-		{
-			tag = node.toElement();
+		tag = node.toElement();
 
-			if (tag.tagName() == KXMLQLCEFXFixtureID)
-			{
-				/* Fixture ID */
-				setFixture(tag.text().toInt());
-			}
-			else if (tag.tagName() == KXMLQLCEFXFixtureDirection)
-			{
-				/* Direction */
-				Function::Direction dir;
-				dir = Function::stringToDirection(tag.text());
-				setDirection(dir);
-			}
-			else
-			{
-				qWarning() << "Unknown EFX Fixture tag:"
-					<< tag.tagName();
-			}
-			node = node.nextSibling();
+		if (tag.tagName() == KXMLQLCEFXFixtureID)
+		{
+			/* Fixture ID */
+			setFixture(tag.text().toInt());
 		}
+		else if (tag.tagName() == KXMLQLCEFXFixtureDirection)
+		{
+			/* Direction */
+			Function::Direction dir;
+			dir = Function::stringToDirection(tag.text());
+			setDirection(dir);
+		}
+		else
+		{
+			qWarning() << "Unknown EFX Fixture tag:"
+				<< tag.tagName();
+		}
+		node = node.nextSibling();
 	}
 
 	return true;
@@ -310,16 +285,23 @@ void EFXFixture::reset()
 
 void EFXFixture::nextStep(QByteArray* universes)
 {
-	if (m_ready == true)
+	/* Bail out without doing anything if this EFX is ready
+	  (after single-shot), or it has no pan&tilt channels (not valid). */
+	if (m_ready == true || isValid() == false)
 		return;
+
+	if (m_iterator == 0)
+		updateSkipThreshold();
 
 	if (m_parent->propagationMode() == EFX::Serial &&
 	    m_skipIterator < m_skipThreshold)
 	{
+		/* Fixture still needs to wait for its turn in serial mode */
 		m_skipIterator += m_parent->m_stepSize;
 	}
 	else
 	{
+		/* This fixture doesn't need to wait (anymore) */
 		m_iterator += m_parent->m_stepSize;
 
 		if (m_initialized == false)
@@ -362,10 +344,8 @@ void EFXFixture::nextStep(QByteArray* universes)
 		else if (m_parent->m_runOrder == Function::SingleShot)
 		{
 			/* De-initialize the fixture and mark this as ready */
-			if (m_stopScene != NULL)
-				m_stopScene->writeValues(m_fixture);
-
 			m_ready = true;
+			stop();
 		}
 	}
 }
@@ -385,6 +365,7 @@ void EFXFixture::stop()
 void EFXFixture::setPoint(QByteArray* universes)
 {
 	char* data = static_cast<char*> (universes->data());
+	Q_ASSERT(data != NULL);
 
 	/* Write coarse point data to universes */
 	data[m_msbPanChannel] = static_cast <t_value> (m_panValue);
@@ -405,4 +386,3 @@ void EFXFixture::setPoint(QByteArray* universes)
 			((m_tiltValue - floor(m_tiltValue)) * 255.0);
 	}
 }
-
