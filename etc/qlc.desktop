@@ -1,11 +1,9 @@
 [Desktop Entry]
 Type=Application
-Encoding=UTF-8
 Name=Q Light Controller
-GenericName=DMX Light Controller
-GenericName[de]=DMX Licht Steuerpult
-GenericName[fi]=DMX Valo-ohjain
+GenericName=Lighting control
+GenericName[de]=Licht steuerung
+GenericName[fi]=Valojen ohjaus
 Exec=qlc
 Icon=qlc
-Terminal=false
-Categories=Application;Lighting;
+Categories=Lighting;Art;Qt;

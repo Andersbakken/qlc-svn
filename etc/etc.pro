@@ -11,7 +11,7 @@ unix:icons.path		= /usr/share/pixmaps/
 unix:icons.files	+= ../gfx/qlc.png \
 			   ../gfx/qlc-fixtureeditor.png
 
-unix!macx:INSTALLS	+= icons desktop
+unix:!macx:INSTALLS	+= icons desktop
 
 # Win32 additional DLL installation
 win32 {
