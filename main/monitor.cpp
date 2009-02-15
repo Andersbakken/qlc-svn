@@ -88,7 +88,12 @@ Monitor::Monitor(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 	/* Listen to Document changes */
 	connect(_app, SIGNAL(documentChanged(Doc*)),
 		this, SLOT(slotDocumentChanged(Doc*)));
-	slotDocumentChanged(_app->doc());
+
+	/* Listen to fixture additions and changes from Doc */
+	connect(_app->doc(), SIGNAL(fixtureAdded(t_fixture_id)),
+		this, SLOT(slotFixtureAdded(t_fixture_id)));
+	connect(_app->doc(), SIGNAL(fixtureChanged(t_fixture_id)),
+		this, SLOT(slotFixtureChanged(t_fixture_id)));
 
 	m_timer = startTimer(1000 / 50);
 	QWidget::show();
@@ -256,13 +261,15 @@ void Monitor::createMonitorFixture(Fixture* fxi)
 
 void Monitor::slotDocumentChanged(Doc* doc)
 {
-	Q_ASSERT(doc != NULL);
+	Q_UNUSED(doc);
 
-	/* Listen to fixture additions and changes from the new Doc */
-	connect(doc, SIGNAL(fixtureAdded(t_fixture_id)),
-		this, SLOT(slotFixtureAdded(t_fixture_id)));
-	connect(doc, SIGNAL(fixtureChanged(t_fixture_id)),
-		this, SLOT(slotFixtureChanged(t_fixture_id)));
+	/* Since the new document specifies, whether the monitor should be
+	   visible or not, we can just destroy this instance. */
+#ifdef _APPLE_
+	deleteLater();
+#else
+	parentWidget()->deleteLater();
+#endif
 }
 
 void Monitor::slotFixtureAdded(t_fixture_id fxi_id)
