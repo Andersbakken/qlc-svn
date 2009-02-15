@@ -78,6 +78,10 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	m_keyBind = new KeyBind();
 	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
 	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
+
+	/* Listen to function removals */
+	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
+		this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 VCButton::~VCButton()
@@ -479,6 +483,13 @@ void VCButton::setFunction(t_function_id fid)
 	}
 
 	_app->doc()->setModified();
+}
+
+void VCButton::slotFunctionRemoved(t_function_id fid)
+{
+	/* Invalidate the button's function if it's the one that was removed */
+	if (fid == m_function)
+		setFunction(KNoID);
 }
 
 void VCButton::setExclusive(bool exclusive)

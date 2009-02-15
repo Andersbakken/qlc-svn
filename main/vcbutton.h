@@ -237,6 +237,10 @@ public:
 	 */
 	bool isExclusive() { return m_isExclusive; }
 
+protected slots:
+	/** Invalidates the button's function if the function is destroyed */
+	void slotFunctionRemoved(t_function_id fid);
+
 protected:
 	/** The function that this button is controlling */
 	t_function_id m_function;
