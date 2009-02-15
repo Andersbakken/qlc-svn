@@ -72,6 +72,9 @@ public:
 	void append(t_function_id fid);
 
 protected slots:
+	/** Removes destroyed functions from the list */
+	void slotFunctionRemoved(t_function_id fid);
+
 	/** Skip to the next cue */
 	void slotNextCue();
 

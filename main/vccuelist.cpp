@@ -71,6 +71,9 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 	m_current = NULL;
 
 	slotModeChanged(_app->mode());
+
+	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
+		this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 VCCueList::~VCCueList()
@@ -90,7 +93,7 @@ void VCCueList::append(t_function_id fid)
 {
 	QTreeWidgetItem* item;
 	Function* function;
-	
+
 	function = _app->doc()->function(fid);
 	Q_ASSERT(function != NULL);
 
@@ -99,6 +102,19 @@ void VCCueList::append(t_function_id fid)
 		      QString("%1").arg(m_list->indexOfTopLevelItem(item) + 1));
 	item->setText(KVCCueListColumnName, function->name());
 	item->setText(KVCCueListColumnID, QString("%1").arg(fid));
+}
+
+void VCCueList::slotFunctionRemoved(t_function_id fid)
+{
+	/* Find all items matching the destroyed function ID and remove them */
+	for (int i = 0; i < m_list->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* item = m_list->topLevelItem(i);
+		Q_ASSERT(item != NULL);
+
+		if (item->text(KVCCueListColumnID).toInt() == fid)
+			delete item;
+	}
 }
 
 void VCCueList::slotNextCue()
@@ -132,7 +148,7 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 {
 	if (_app->mode() != App::Operate)
 		return;
-	
+
 	if (m_current != NULL)
 		m_current->stop();
 
