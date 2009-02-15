@@ -92,7 +92,7 @@ public:
 	virtual void setBackgroundImage(const QString& path);
 
 	/** Get the widget's background image */
-	virtual const QString& backgroundImage() { return m_backgroundImage; }
+	virtual QString backgroundImage() { return m_backgroundImage; }
 
 public slots:
 	/** Invoke an image choosing dialog */
@@ -110,11 +110,11 @@ public:
 
 	/** Get the widget's background color. The color is invalid if the
 	    widget has a background image. */
-	virtual const QColor& backgroundColor() {
+	virtual QColor backgroundColor() const {
 		return palette().color(QPalette::Window); }
 
 	/** Check, whether the widget has a custom background color */
-	virtual bool hasCustomBackgroundColor() {
+	virtual bool hasCustomBackgroundColor() const {
 		return m_hasCustomBackgroundColor; }
 
 public slots:
@@ -135,11 +135,11 @@ public:
 	virtual void setForegroundColor(const QColor& color);
 
 	/** Get the widget's foreground color */
-	virtual const QColor& foregroundColor() { 
+	virtual QColor foregroundColor() const {
 		return palette().color(QPalette::WindowText); }
 
 	/** Check, whether the widget has a custom foreground color */
-	virtual bool hasCustomForegroundColor() {
+	virtual bool hasCustomForegroundColor() const {
 		return m_hasCustomForegroundColor; }
 
 public slots:
@@ -160,10 +160,10 @@ public:
 	virtual void setFont(const QFont& font);
 
 	/** Get the font used for the widget's caption */
-	virtual QFont font() { return QWidget::font(); }
+	virtual QFont font() const { return QWidget::font(); }
 
 	/** Check, whether the widget has a custom font */
-	virtual bool hasCustomFont() { return m_hasCustomFont; }
+	virtual bool hasCustomFont() const { return m_hasCustomFont; }
 
 public slots:
 	/** Invoke a font choosing dialog */

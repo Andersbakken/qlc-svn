@@ -103,7 +103,7 @@ public:
 	void setForegroundColor(const QColor& color);
 
 	/** Get the button's foreground color */
-	const QColor& foregroundColor() { 
+	QColor foregroundColor() const {
 		return palette().color(QPalette::ButtonText); }
 
 public slots:
