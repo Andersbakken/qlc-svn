@@ -11,7 +11,9 @@ SUBDIRS			+= common
 !win32:SUBDIRS		+= ftdidmx
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
-unix:SUBDIRS		+= llaout
+
+# Disabled until updated debian packages are available at nomis52.net
+#unix:SUBDIRS		+= llaout
 
 # Input plugins
 !mac:SUBDIRS			+= midiinput
