@@ -1,8 +1,0 @@
-QLC LLA Output Plugin
-
-Debian: Add this line to your /etc/apt/sources.list and install lla-dev 
-to compile LLAOut: deb http://www.nomis52.net/data/debian ./
-
-Simon Newton
-newtons @ iinet . net
-
