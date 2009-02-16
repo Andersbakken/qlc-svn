@@ -228,7 +228,7 @@ bool LlaEmbeddedServer::init()
 
   lla::lla_server_options options;
   options.http_enable = true;
-  m_daemon = new lla::LlaDaemon(options, NULL);
+  m_daemon = new lla::LlaDaemon(&options);
   if (!m_daemon->Init())
   {
     qWarning() << "LLA Server failed init";

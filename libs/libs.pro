@@ -12,8 +12,10 @@ SUBDIRS			+= common
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
 
-# Disabled until updated debian packages are available at nomis52.net
-#unix:SUBDIRS		+= llaout
+# LLA output plugin
+exists($$LLA_GIT):exists($$PROTOBUF) {
+	unix:SUBDIRS	+= llaout
+}
 
 # Input plugins
 !mac:SUBDIRS			+= midiinput

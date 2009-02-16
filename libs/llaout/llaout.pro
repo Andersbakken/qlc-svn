@@ -4,9 +4,9 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET = llaout
 
-INCLUDEPATH  += . ../../libs/
-CONFIG  += plugin link_pkgconfig
-PKGCONFIG += liblla
+INCLUDEPATH  += . ../../libs/ $$LLA_GIT $$PROTOBUF
+CONFIG  += plugin # link_pkgconfig
+#PKGCONFIG += liblla
 
 target.path = $$OUTPUTPLUGINDIR
 !macx:INSTALLS += target

@@ -12,8 +12,10 @@ unix:!macx:LIBSDIR	= /usr/lib
 macx:LIBSDIR            = $$BINDIR/qlc.app/Contents/Frameworks/
 
 # LLA Directories
-unix:LLA		= ${HOME}/lla
-unix:LLA_HTTPD		= $$LLA/libmicrohttpd
+unix:LLA_GIT		= /usr/src/lla
+# Should contain google/protobuf/common.h which can be got through
+# Macports on Mac
+unix:PROTOBUF		= /opt/local/include/
 
 # Data
 win32:DATADIR		= $$(SystemDrive)/QLC
