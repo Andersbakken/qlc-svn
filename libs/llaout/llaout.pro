@@ -1,0 +1,29 @@
+include(../../variables.pri)
+
+TEMPLATE = lib
+LANGUAGE = C++
+TARGET = llaout
+
+INCLUDEPATH  += . ../../libs/
+CONFIG  += plugin link_pkgconfig
+PKGCONFIG += liblla
+
+target.path = $$OUTPUTPLUGINDIR
+!macx:INSTALLS += target
+unix:LIBS += -llla -lllaserver
+
+macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
+
+# Forms
+FORMS += configurellaout.ui
+
+# Headers
+HEADERS += configurellaout.h \
+	   llaout.h \
+	   llaoutthread.h
+
+# Source
+SOURCES += configurellaout.cpp \
+	   llaout.cpp \
+	   llaoutthread.cpp
+
