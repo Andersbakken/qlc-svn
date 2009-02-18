@@ -347,13 +347,13 @@ void MIDIInput::customEvent(QEvent* event)
 	if (event->type() == MIDIInputEvent::eventType)
 	{
 		MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
-		t_input input;
+		int index;
 
 		Q_ASSERT(event != NULL);
-		input = m_devices.indexOf(e->m_device);
-		if (input != -1)
+		index = m_devices.indexOf(e->m_device);
+		if (index != -1)
 		{
-			emit valueChanged(this, input, e->m_channel,
+			emit valueChanged(this, t_input(index), e->m_channel,
 					  e->m_value);
 			event->accept();
 		}
