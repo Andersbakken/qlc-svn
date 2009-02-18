@@ -463,8 +463,21 @@ Fixture* Doc::fixture(t_fixture_id id)
 
 t_channel Doc::findAddress(t_channel numChannels)
 {
+	/* Try to find contiguous space from one universe at a time */
+	for (int universe = 0; universe < KUniverseCount; universe++)
+	{
+		t_channel ch = findAddress(universe, numChannels);
+		if (ch != KChannelInvalid)
+			return ch;
+	}
+
+	return KChannelInvalid;
+}
+
+t_channel Doc::findAddress(int universe, t_channel numChannels)
+{
 	t_channel freeSpace = 0;
-	t_channel maxChannels = KUniverseCount * 512;
+	t_channel maxChannels = 512;
 
 	/* Construct a map of unallocated channels */
 	int map[maxChannels];
@@ -475,6 +488,9 @@ t_channel Doc::findAddress(t_channel numChannels)
 	{
 		Fixture* fxi = m_fixtureArray[fxi_id];
 		if (fxi == NULL)
+			continue;
+
+		if (fxi->universe() != universe)
 			continue;
 
 		for (t_channel ch = 0; ch < fxi->channels(); ch++)
@@ -490,7 +506,7 @@ t_channel Doc::findAddress(t_channel numChannels)
 			freeSpace = 0;
 
 		if (freeSpace == numChannels)
-			return ch - freeSpace + 1;
+			return (ch - freeSpace + 1) | (universe << 9);
 	}
 
 	return KChannelInvalid;

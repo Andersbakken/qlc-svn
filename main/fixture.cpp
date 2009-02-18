@@ -297,7 +297,7 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QDomElement consoletag;
 
-	Q_ASSERT(doc != NULL);
+	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLFixture)

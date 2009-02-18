@@ -165,6 +165,10 @@ public:
 	 */
 	t_channel findAddress(t_channel numChannels);
 
+protected:
+	/** Try to find the next free address from the given universe */
+	t_channel findAddress(int universe, t_channel numChannels);
+
 signals:
 	/** Signal that a fixture has been added */
 	void fixtureAdded(t_fixture_id fxi_id);
