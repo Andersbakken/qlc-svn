@@ -65,6 +65,7 @@ fixtures.files += SGM-Giotto-Wash-400.qxf
 fixtures.files += SGM-Victory-250.qxf
 fixtures.files += SGM-Victory-II-250.qxf
 fixtures.files += SGM-Victory-II-Pro150.qxf
+fixtures.files += Stairville-LED-PAR56.qxf
 
 fixtures.path = $$FIXTUREDIR
 INSTALLS += fixtures
