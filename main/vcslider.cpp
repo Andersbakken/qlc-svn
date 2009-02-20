@@ -98,7 +98,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
 	/* The slider */
 	m_slider = new QSlider(this);
-	m_slider->setStyle(App::sliderStyle());
+	m_slider->setStyle(App::saneStyle());
 	m_hbox->addWidget(m_slider);
 	m_slider->setRange(KDefaultBusLowLimit * KFrequency,
 			   KDefaultBusHighLimit * KFrequency);

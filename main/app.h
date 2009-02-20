@@ -181,14 +181,17 @@ protected:
 	 *********************************************************************/
 public:
 	VirtualConsole* virtualConsole() const { return m_virtualConsole; }
-	static QStyle* sliderStyle();
+
+	/** Attempt to get a sane style that replaces windows' crappy sliders
+	 *  and buttons that don't obey background color setting. */
+	static QStyle* saneStyle();
 
 protected:
 	void initVirtualConsole();
 
 protected:
 	VirtualConsole* m_virtualConsole;
-	static QStyle* s_sliderStyle;
+	static QStyle* s_saneStyle;
 
 	/*********************************************************************
 	 * Status bar

@@ -72,6 +72,7 @@
 #define KModeTextDesign tr("Design")
 
 App* _app;
+QStyle* App::s_saneStyle = NULL;
 
 /*********************************************************************
  * Initialization
@@ -557,20 +558,19 @@ void App::initVirtualConsole(void)
 	sub->hide();
 }
 
-QStyle* App::s_sliderStyle = NULL;
-QStyle* App::sliderStyle()
+QStyle* App::saneStyle()
 {
 #ifdef WIN32
-	if (s_sliderStyle == NULL)
+	if (s_saneStyle == NULL)
 	{
 		QStringList keys(QStyleFactory::keys());
 		if (keys.contains("Cleanlooks") == true)
-			s_sliderStyle = QStyleFactory::create("Cleanlooks");
+			s_saneStyle = QStyleFactory::create("Cleanlooks");
 		else
-			s_sliderStyle = QApplication::style();
+			s_saneStyle = QApplication::style();
 	}
 
-	return s_sliderStyle;
+	return s_saneStyle;
 #else
 	return QApplication::style();
 #endif

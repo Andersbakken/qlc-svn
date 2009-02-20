@@ -46,7 +46,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 
 	m_slider->setInvertedAppearance(true);
 	m_slider->setInvertedControls(true);
-	m_slider->setStyle(App::sliderStyle());
+	m_slider->setStyle(App::saneStyle());
 	setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
 	m_busLowLimit = 0;

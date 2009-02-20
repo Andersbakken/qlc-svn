@@ -74,6 +74,8 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	setMinimumSize(20, 20);
 	resize(QPoint(30, 30));
 
+	setStyle(App::saneStyle());
+	
 	/* Keybinding */
 	m_keyBind = new KeyBind();
 	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));

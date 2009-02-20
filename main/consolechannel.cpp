@@ -123,7 +123,7 @@ void ConsoleChannel::init()
 	m_valueEdit->setMinimumSize(QSize(1, 1));
 
 	m_valueSlider = new QSlider(this);
-	m_valueSlider->setStyle(App::sliderStyle());
+	m_valueSlider->setStyle(App::saneStyle());
 	layout()->addWidget(m_valueSlider);
 	m_valueSlider->setInvertedAppearance(false);
 	m_valueSlider->setRange(0, 255);
