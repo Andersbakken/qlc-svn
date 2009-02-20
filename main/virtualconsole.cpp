@@ -20,9 +20,14 @@
 */
 
 #include <QApplication>
+#include <QInputDialog>
+#include <QColorDialog>
 #include <QHBoxLayout>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QFontDialog>
 #include <QCloseEvent>
+#include <QMetaObject>
 #include <QMenuBar>
 #include <QString>
 #include <QPoint>
@@ -63,9 +68,7 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 	m_keyRepeatOff = true;
 	m_grabKeyboard = true;
 
-	m_selectedWidget = NULL;
-	m_clipboardAction = ClipboardNone;
-
+	m_editAction = EditNone;
 	m_editMenu = NULL;
 
 	// Main layout
@@ -176,22 +179,6 @@ void VirtualConsole::initActions()
 	connect(m_editRenameAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditRename()));
 
-	/* Foreground menu actions */
-	m_fgColorAction = new QAction(QIcon(":/color.png"),
-				      tr("Color"), this);
-	connect(m_fgColorAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotForegroundColor()));
-
-	m_fgFontAction = new QAction(QIcon(":/fonts.png"),
-				     tr("Font"), this);
-	connect(m_fgFontAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotForegroundFont()));
-
-	m_fgDefaultAction = new QAction(QIcon(":/undo.png"),
-					tr("Default"), this);
-	connect(m_fgDefaultAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotForegroundNone()));
-
 	/* Background menu actions */
 	m_bgColorAction = new QAction(QIcon(":/color.png"),
 				      tr("Color"), this);
@@ -202,6 +189,28 @@ void VirtualConsole::initActions()
 					tr("Default"), this);
 	connect(m_bgDefaultAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBackgroundNone()));
+
+	/* Foreground menu actions */
+	m_fgColorAction = new QAction(QIcon(":/color.png"),
+				      tr("Color"), this);
+	connect(m_fgColorAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotForegroundColor()));
+
+	m_fgDefaultAction = new QAction(QIcon(":/undo.png"),
+					tr("Default"), this);
+	connect(m_fgDefaultAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotForegroundNone()));
+
+	/* Font menu actions */
+	m_fontAction = new QAction(QIcon(":/fonts.png"),
+				   tr("Font"), this);
+	connect(m_fontAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotFont()));
+
+	m_resetFontAction = new QAction(QIcon(":/undo.png"),
+				   tr("Default"), this);
+	connect(m_resetFontAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotResetFont()));
 
 	/* Stacking menu actions */
 	m_stackingRaiseAction = new QAction(QIcon(":/up.png"),
@@ -262,20 +271,25 @@ void VirtualConsole::initMenuBar()
 	m_toolsMenu->addSeparator();
 	m_toolsMenu->addAction(m_toolsSettingsAction);
 
-	/* Foreground menu */
-	QMenu* fgMenu = new QMenu(m_editMenu);
-	fgMenu->setTitle(tr("Foreground"));
-	m_editMenu->addMenu(fgMenu);
-	fgMenu->addAction(m_fgColorAction);
-	fgMenu->addAction(m_fgFontAction);
-	fgMenu->addAction(m_fgDefaultAction);
-
 	/* Background Menu */
 	QMenu* bgMenu = new QMenu(m_editMenu);
 	bgMenu->setTitle(tr("Background"));
 	m_editMenu->addMenu(bgMenu);
 	bgMenu->addAction(m_bgColorAction);
 	bgMenu->addAction(m_bgDefaultAction);
+
+	/* Foreground menu */
+	QMenu* fgMenu = new QMenu(m_editMenu);
+	fgMenu->setTitle(tr("Foreground"));
+	m_editMenu->addMenu(fgMenu);
+	fgMenu->addAction(m_fgColorAction);
+	fgMenu->addAction(m_fgDefaultAction);
+
+	/* Font menu */
+	QMenu* fontMenu = new QMenu(m_editMenu);
+	fontMenu->setTitle(tr("Font"));
+	fontMenu->addAction(m_fontAction);
+	fontMenu->addAction(m_resetFontAction);
 
 	/* Stacking order menu */
 	QMenu* stackMenu = new QMenu(m_editMenu);
@@ -364,6 +378,7 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCDockArea)
 		{
+			Q_ASSERT(m_dockArea != NULL);
 			m_dockArea->loadXML(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCFrame)
@@ -437,98 +452,44 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
  * Selected widget
  *****************************************************************************/
 
-void VirtualConsole::setSelectedWidget(VCWidget* w)
+void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
 {
-	if (m_selectedWidget != NULL)
+	Q_ASSERT(widget != NULL);
+
+	if (select == false)
 	{
-		VCWidget* old = m_selectedWidget;
-		m_selectedWidget = w;
-		old->update();
+		m_selectedWidgets.removeAll(widget);
+		widget->update();
+	}
+	else if (select == true && m_selectedWidgets.indexOf(widget) == -1)
+	{
+		m_selectedWidgets.append(widget);
+		widget->update();
 	}
 	else
-	{
-		m_selectedWidget = w;
-	}
+		qWarning() << "Virtual console clipboard double add!";
+}
 
-	if (m_selectedWidget != NULL)
-	{
-		m_selectedWidget->update();
-	}
+bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
+{
+	if (widget == NULL || m_selectedWidgets.indexOf(widget) == -1)
+		return false;
 	else
-	{
-		/* Usually the selected widget is NULL only when we have
-		   deleted some widget from virtual console. So, clear the
-		   clipboard as well so that we don't end up pasting an
-		   invalid object -> segfault. */
-		clearClipboard();
-	}
+		return true;
 }
 
-/*****************************************************************************
- * Clipboard
- *****************************************************************************/
-
-void VirtualConsole::cut(QList <VCWidget*> *widgets)
+void VirtualConsole::clearWidgetSelection()
 {
-	Q_ASSERT(widgets != NULL);
+	/* Get a copy of selected widget list */
+	QList <VCWidget*> widgets(m_selectedWidgets);
 
-	/* Clipboard will cut the widgets when paste is invoked */
-	m_clipboardAction = ClipboardCut;
+	/* Clear the list so isWidgetSelected() returns false for all widgets */
+	m_selectedWidgets.clear();
 
-	/* Copy the contents of the widget list. Just pointers. */
-	m_clipboard = *widgets;
-}
-
-void VirtualConsole::copy(QList <VCWidget*> *widgets)
-{
-	Q_ASSERT(widgets != NULL);
-
-	/* Clipboard will copy the widgets when paste is invoked */
-	m_clipboardAction = ClipboardCopy;
-
-	/* Copy the contents of the widget list. Just pointers. */
-	m_clipboard = *widgets;
-}
-
-void VirtualConsole::paste(VCFrame* parent, QPoint point)
-{
-	QListIterator <VCWidget*> it(m_clipboard);
+	/* Update all widgets to clear the selection frame around them */
+	QListIterator <VCWidget*> it(widgets);
 	while (it.hasNext() == true)
-	{
-		VCWidget* widget = it.next();
-		if (m_clipboardAction == ClipboardCut)
-		{
-			widget->setParent(parent);
-			widget->move(point);
-			widget->show();
-		}
-		else if (m_clipboardAction == ClipboardCopy)
-		{
-			copyWidget(widget, parent, point);
-		}
-		else
-		{
-			qDebug() << "Cannot paste from an empty clipboard!";
-		}
-	}
-
-	/* If the action was about cutting something, the originals are removed
-	   by now and moved to another parent. From now on, paste actions just
-	   create copies of them, and not move them any further. */
-	m_clipboardAction = ClipboardCopy;
-}
-
-void VirtualConsole::copyWidget(VCWidget*, VCFrame*, QPoint)
-{
-	/* TODO:
-	   Create a copy of the widget and place it into the parent,
-	   at the given point */
-}
-
-void VirtualConsole::clearClipboard()
-{
-	m_clipboard.clear();
-	m_clipboardAction = ClipboardNone;
+		it.next()->update();
 }
 
 /*****************************************************************************
@@ -537,7 +498,6 @@ void VirtualConsole::clearClipboard()
 
 void VirtualConsole::setDrawArea(VCFrame* drawArea)
 {
-	Q_ASSERT(drawArea != NULL);
 	Q_ASSERT(layout() != NULL);
 
 	if (m_drawArea != NULL)
@@ -556,79 +516,62 @@ void VirtualConsole::setDrawArea(VCFrame* drawArea)
 
 void VirtualConsole::slotAddButton()
 {
-	VCFrame* frame;
-	if (m_selectedWidget != NULL &&
-	    m_selectedWidget->objectName() == "VCFrame")
-		frame = qobject_cast<VCFrame*>(m_selectedWidget);
-	else
-		frame = m_drawArea;
+	/* Find the frame that was selected last and add the widget there */
+	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	Q_ASSERT(frame != NULL);
-	frame->slotAddButton();
+	VCFrame* frame = frames.last();
+	if (frame != NULL)
+		frame->slotAddButton();
 }
 
 void VirtualConsole::slotAddSlider()
 {
-	VCFrame* frame;
-	if (m_selectedWidget != NULL &&
-	    m_selectedWidget->objectName() == "VCFrame")
-		frame = qobject_cast<VCFrame*>(m_selectedWidget);
-	else
-		frame = m_drawArea;
+	/* Find the frame that was selected last and add the widget there */
+	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	Q_ASSERT(frame != NULL);
-	frame->slotAddSlider();
+	VCFrame* frame = frames.last();
+	if (frame != NULL)
+		frame->slotAddSlider();
 }
 
 void VirtualConsole::slotAddXYPad()
 {
-	VCFrame* frame;
-	if (m_selectedWidget != NULL &&
-	    m_selectedWidget->objectName() == "VCFrame")
-		frame = qobject_cast<VCFrame*>(m_selectedWidget);
-	else
-		frame = m_drawArea;
+	/* Find the frame that was selected last and add the widget there */
+	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	Q_ASSERT(frame != NULL);
-	frame->slotAddXYPad();
+	VCFrame* frame = frames.last();
+	if (frame != NULL)
+		frame->slotAddXYPad();
 }
 
 void VirtualConsole::slotAddCueList()
 {
-	VCFrame* frame;
-	if (m_selectedWidget != NULL &&
-	    m_selectedWidget->objectName() == "VCFrame")
-		frame = qobject_cast<VCFrame*>(m_selectedWidget);
-	else
-		frame = m_drawArea;
+	/* Find the frame that was selected last and add the widget there */
+	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	Q_ASSERT(frame != NULL);
-	frame->slotAddCueList();
+	VCFrame* frame = frames.last();
+	if (frame != NULL)
+		frame->slotAddCueList();
 }
+
 void VirtualConsole::slotAddFrame()
 {
-	VCFrame* frame;
-	if (m_selectedWidget != NULL &&
-	    m_selectedWidget->objectName() == "VCFrame")
-		frame = qobject_cast<VCFrame*>(m_selectedWidget);
-	else
-		frame = m_drawArea;
+	/* Find the frame that was selected last and add the widget there */
+	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	Q_ASSERT(frame != NULL);
-	frame->slotAddFrame();
+	VCFrame* frame = frames.last();
+	if (frame != NULL)
+		frame->slotAddFrame();
 }
 
 void VirtualConsole::slotAddLabel()
 {
-	VCFrame* frame;
-	if (m_selectedWidget != NULL &&
-	    m_selectedWidget->objectName() == "VCFrame")
-		frame = qobject_cast<VCFrame*>(m_selectedWidget);
-	else
-		frame = m_drawArea;
+	/* Find the frame that was selected last and add the widget there */
+	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	Q_ASSERT(frame != NULL);
-	frame->slotAddLabel();
+	VCFrame* frame = frames.last();
+	if (frame != NULL)
+		frame->slotAddLabel();
 }
 
 /*********************************************************************
@@ -718,57 +661,95 @@ void VirtualConsole::slotToolsPanic()
 
 void VirtualConsole::slotEditCut()
 {
-	QMessageBox::information(this, "TODO", "Not implemented");
+	/* Make the edit action valid only if there's something to cut */
+	if (m_selectedWidgets.count() == 0)
+	{
+		m_editAction = EditNone;
+		m_clipboard.clear();
+	}
+	else
+	{
+		m_editAction = EditCut;
+		m_clipboard = m_selectedWidgets;
+	}
 }
 
 void VirtualConsole::slotEditCopy()
 {
-	QMessageBox::information(this, "TODO", "Not implemented");
+	/* Make the edit action valid only if there's something to copy */
+	if (m_selectedWidgets.count() == 0)
+	{
+		m_editAction = EditNone;
+	}
+	else
+	{
+		m_editAction = EditCopy;
+		m_clipboard = m_selectedWidgets;
+	}
 }
 
 void VirtualConsole::slotEditPaste()
 {
-	QMessageBox::information(this, "TODO", "Not implemented");
+	if (m_clipboard.count() == 0)
+	{
+		/* Invalidate the edit action if there's nothing to paste */
+		m_editAction = EditNone;
+	}
+	else if (m_editAction == EditCut)
+	{
+		/* TODO: reparent() to all frames in m_selectedWidgets */
+	}
+	else if (m_editAction == EditCopy)
+	{
+		/* TODO: copy m_clipboard to all frames in m_selectedWidgets */
+	}
 }
 
 void VirtualConsole::slotEditDelete()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotDelete();
+	QString msg(tr("Do you wish to delete the selected widgets?"));
+	QString title(tr("Delete widgets"));
+	int result = QMessageBox::question(this, title, msg,
+					   QMessageBox::Yes,
+					   QMessageBox::No);
+	if (result == QMessageBox::Yes)
+	{
+		while (m_selectedWidgets.isEmpty() == false)
+		{
+			/* Consume the selected list until it is empty and
+			   delete each widget. */
+			VCWidget* widget = m_selectedWidgets.takeFirst();
+			widget->deleteLater();
+
+			/* Remove the widget from clipboard as well so that
+			   deleted widgets won't be pasted anymore anywhere */
+			m_clipboard.removeAll(widget);
+		}
+	}
 }
 
 void VirtualConsole::slotEditProperties()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotProperties();
+	VCWidget* widget = m_selectedWidgets.last();
+	if (widget != NULL)
+		widget->slotProperties();
 }
 
 void VirtualConsole::slotEditRename()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotRename();
-}
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
 
-/*********************************************************************
- * Foreground menu callbacks
- *********************************************************************/
-
-void VirtualConsole::slotForegroundFont()
-{
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotChooseFont();
-}
-
-void VirtualConsole::slotForegroundColor()
-{
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotChooseForegroundColor();
-}
-
-void VirtualConsole::slotForegroundNone()
-{
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotResetForegroundColor();
+	bool ok = false;
+	QString text(m_selectedWidgets.last()->caption());
+	text = QInputDialog::getText(this, tr("Rename widgets"), tr("Caption:"),
+				     QLineEdit::Normal, text, &ok);
+	if (ok == true)
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->setCaption(text);
+	}
 }
 
 /*********************************************************************
@@ -777,20 +758,95 @@ void VirtualConsole::slotForegroundNone()
 
 void VirtualConsole::slotBackgroundColor()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotChooseBackgroundColor();
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
+	QColor color = QColorDialog::getColor(
+				m_selectedWidgets.last()->backgroundColor());
+	if (color.isValid() == true)
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->setBackgroundColor(color);
+	}
 }
 
 void VirtualConsole::slotBackgroundImage()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotChooseBackgroundImage();
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
+	QString path(m_selectedWidgets.last()->backgroundImage());
+	path = QFileDialog::getOpenFileName(this,
+					    tr("Select background image"),
+					    path,
+					    "Images (*.png *.xpm *.jpg *.gif)");
+	if (path.isEmpty() == false)
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->setBackgroundImage(path);
+	}
 }
 
 void VirtualConsole::slotBackgroundNone()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->slotResetBackgroundColor();
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->slotResetBackgroundColor();
+}
+
+/*********************************************************************
+ * Foreground menu callbacks
+ *********************************************************************/
+
+void VirtualConsole::slotForegroundColor()
+{
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
+	QColor color(m_selectedWidgets.last()->foregroundColor());
+	color = QColorDialog::getColor(color);
+	if (color.isValid() == true)
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->setForegroundColor(color);
+	}
+}
+
+void VirtualConsole::slotForegroundNone()
+{
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->slotResetForegroundColor();
+}
+
+/*********************************************************************
+ * Font menu callbacks
+ *********************************************************************/
+
+void VirtualConsole::slotFont()
+{
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
+	bool ok = false;
+	QFont font(m_selectedWidgets.last()->font());
+	font = QFontDialog::getFont(&ok, font);
+	if (ok == true)
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->setFont(font);
+	}
+}
+
+void VirtualConsole::slotResetFont()
+{
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->slotResetFont();
 }
 
 /*********************************************************************
@@ -799,14 +855,16 @@ void VirtualConsole::slotBackgroundNone()
 
 void VirtualConsole::slotStackingRaise()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->raise();
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->raise();
 }
 
 void VirtualConsole::slotStackingLower()
 {
-	if (m_selectedWidget != NULL)
-		m_selectedWidget->lower();
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->lower();
 }
 
 /*********************************************************************

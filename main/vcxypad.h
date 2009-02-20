@@ -66,10 +66,6 @@ public:
 private:
 	Q_DISABLE_COPY(VCXYPad)
 
-public slots:
-	/** Delete this widget */
-	void slotDelete();
-
 	/*********************************************************************
 	 * Properties
 	 *********************************************************************/

@@ -91,20 +91,6 @@ VCButton::~VCButton()
 	m_keyBind = NULL;
 }
 
-void VCButton::slotDelete()
-{
-	if (QMessageBox::question(this, "Delete",
-				  QString("Delete button: %1?")
-				  .arg(caption()),
-				  QMessageBox::Yes,
-				  QMessageBox::No) == QMessageBox::Yes)
-	{
-		_app->virtualConsole()->setSelectedWidget(NULL);
-		_app->doc()->setModified();
-		deleteLater();
-	}
-}
-
 /*****************************************************************************
  * Properties
  *****************************************************************************/
@@ -112,15 +98,8 @@ void VCButton::slotDelete()
 void VCButton::slotProperties()
 {
 	VCButtonProperties prop(this, _app);
-	prop.exec();
-}
-
-/*****************************************************************************
- * Background image
- *****************************************************************************/
-
-void VCButton::slotChooseBackgroundImage()
-{
+	if (prop.exec() == QDialog::Accepted)
+		_app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -133,20 +112,11 @@ void VCButton::setBackgroundColor(const QColor& color)
 
 	m_hasCustomBackgroundColor = true;
 	m_backgroundImage = QString::null;
-
+	qDebug() << pal.color(QPalette::Button).toRgb() << color.toRgb();
 	pal.setColor(QPalette::Button, color);
 	setPalette(pal);
 
 	_app->doc()->setModified();
-}
-
-void VCButton::slotChooseBackgroundColor()
-{
-	QColor color;
-
-	color = QColorDialog::getColor(palette().color(QPalette::Button));
-	if (color.isValid() == true)
-		setBackgroundColor(color);
 }
 
 void VCButton::slotResetBackgroundColor()
@@ -190,15 +160,6 @@ void VCButton::setForegroundColor(const QColor& color)
 	_app->doc()->setModified();
 }
 
-void VCButton::slotChooseForegroundColor()
-{
-	QColor color;
-
-	color = QColorDialog::getColor(palette().color(QPalette::ButtonText));
-	if (color.isValid() == true)
-		setForegroundColor(color);
-}
-
 void VCButton::slotResetForegroundColor()
 {
 	QColor bg;
@@ -237,7 +198,15 @@ void VCButton::slotChooseIcon()
 	path = QFileDialog::getOpenFileName(this, tr("Select button icon"),
 			icon(), tr("Images (*.png *.xpm *.jpg *.gif)"));
         if (path.isEmpty() == false)
-                setIcon(path);
+	{
+		VCWidget* widget;
+		foreach(widget, _app->virtualConsole()->selectedWidgets())
+		{
+			VCButton* button = qobject_cast<VCButton*> (widget);
+			if (button != NULL)
+				button->setIcon(path);
+		}
+	}
 }
 
 void VCButton::slotResetIcon()

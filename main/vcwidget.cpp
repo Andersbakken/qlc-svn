@@ -85,6 +85,15 @@ VCWidget::~VCWidget()
 {
 }
 
+/*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+bool VCWidget::copyFrom(const VCWidget* widget)
+{
+	return false;
+}
+
 void VCWidget::slotCut()
 {
 	QMessageBox::information(this, "TODO", "Not implemented");
@@ -102,19 +111,7 @@ void VCWidget::slotPaste()
 
 void VCWidget::slotDelete()
 {
-	QString msg;
-
-	msg = "Do you wish to delete this widget?\n" + caption();
-	int result = QMessageBox::question(this, "Delete", msg,
-					   QMessageBox::Yes,
-					   QMessageBox::No);
-
-	if (result == QMessageBox::Yes)
-	{
-		_app->virtualConsole()->setSelectedWidget(NULL);
-		_app->doc()->setModified();
-		deleteLater();
-	}
+	_app->virtualConsole()->slotEditDelete();
 }
 
 /*****************************************************************************
@@ -137,13 +134,7 @@ void VCWidget::setBackgroundImage(const QString& path)
 
 void VCWidget::slotChooseBackgroundImage()
 {
-	QString path;
-	path = QFileDialog::getOpenFileName(this,
-					    tr("Select background image"),
-					    m_backgroundImage,
-					    "Images (*.png *.xpm *.jpg *.gif)");
-	if (path.isEmpty() == false)
-		setBackgroundImage(path);
+	_app->virtualConsole()->slotBackgroundImage();
 }
 
 /*****************************************************************************
@@ -157,7 +148,6 @@ void VCWidget::setBackgroundColor(const QColor& color)
 	m_hasCustomBackgroundColor = true;
 	m_backgroundImage = QString::null;
 
-	/* setAutoFillBackground(true); */
 	pal.setColor(QPalette::Window, color);
 	setPalette(pal);
 
@@ -166,11 +156,7 @@ void VCWidget::setBackgroundColor(const QColor& color)
 
 void VCWidget::slotChooseBackgroundColor()
 {
-	QColor color;
-
-	color = QColorDialog::getColor(palette().color(QPalette::Window));
-	if (color.isValid() == true)
-		setBackgroundColor(color);
+	_app->virtualConsole()->slotBackgroundColor();
 }
 
 void VCWidget::slotResetBackgroundColor()
@@ -217,11 +203,7 @@ void VCWidget::setForegroundColor(const QColor& color)
 
 void VCWidget::slotChooseForegroundColor()
 {
-	QColor color;
-
-	color = QColorDialog::getColor(palette().color(QPalette::WindowText));
-	if (color.isValid() == true)
-		setForegroundColor(color);
+	_app->virtualConsole()->slotForegroundColor();
 }
 
 void VCWidget::slotResetForegroundColor()
@@ -259,10 +241,7 @@ void VCWidget::setFont(const QFont& font)
 
 void VCWidget::slotChooseFont()
 {
-	bool ok = false;
-	QFont f = QFontDialog::getFont(&ok, font());
-	if (ok == true)
-		setFont(f);
+	_app->virtualConsole()->slotFont();
 }
 
 void VCWidget::slotResetFont()
@@ -285,14 +264,7 @@ void VCWidget::setCaption(const QString& text)
 
 void VCWidget::slotRename()
 {
-	QString text;
-	bool ok = false;
-
-	text = QInputDialog::getText(this, tr("Rename widget"),
-				     tr("Set widget caption:"),
-				     QLineEdit::Normal, caption(), &ok);
-	if (ok == true)
-		setCaption(text);
+	_app->virtualConsole()->slotEditRename();
 }
 
 /*****************************************************************************
@@ -301,14 +273,12 @@ void VCWidget::slotRename()
 
 void VCWidget::raise()
 {
-	QWidget::raise();
-	_app->doc()->setModified();
+	_app->virtualConsole()->slotStackingRaise();
 }
 
 void VCWidget::lower()
 {
-	QWidget::lower();
-	_app->doc()->setModified();
+	_app->virtualConsole()->slotStackingLower();
 }
 
 /*****************************************************************************
@@ -787,12 +757,16 @@ void VCWidget::paintEvent(QPaintEvent* e)
 	else
 		option.state = QStyle::State_None;
 
+	/* Draw a frame border if such is specified for this widget */
 	if (option.state != QStyle::State_None)
-		style()->drawPrimitive(QStyle::PE_Frame, &option, &painter, this);
+	{
+		style()->drawPrimitive(QStyle::PE_Frame, &option,
+				       &painter, this);
+	}
 
 	/* Draw selection frame */
 	if (_app->mode() == App::Design &&
-	    _app->virtualConsole()->selectedWidget() == this)
+	    _app->virtualConsole()->isWidgetSelected(this) == true)
 	{
 		/* Draw a dotted line around the widget */
 		QPen pen(Qt::DotLine);
@@ -809,40 +783,82 @@ void VCWidget::paintEvent(QPaintEvent* e)
 
 void VCWidget::mousePressEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
-	{
-		_app->virtualConsole()->setSelectedWidget(this);
+	Q_ASSERT(e != NULL);
 
-		if (m_resizeMode == true)
-		{
-			setMouseTracking(false);
-			m_resizeMode = false;
-		}
-
-		if (e->button() & Qt::LeftButton || e->button() & Qt::MidButton)
-		{
-			if (e->x() > rect().width() - 10 &&
-			    e->y() > rect().height() - 10)
-			{
-				m_resizeMode = true;
-				setMouseTracking(true);
-				setCursor(QCursor(Qt::SizeFDiagCursor));
-			}
-			else
-			{
-				m_mousePressPoint = QPoint(e->x(), e->y());
-				setCursor(QCursor(Qt::SizeAllCursor));
-			}
-		}
-		else if (e->button() & Qt::RightButton)
-		{
-			m_mousePressPoint = QPoint(e->x(), e->y());
-			invokeMenu(mapToGlobal(e->pos()));
-		}
-	}
-	else
+	if (_app->mode() == App::Operate)
 	{
 		QWidget::mousePressEvent(e);
+		return;
+	}
+
+	/* Perform widget de/selection in virtualconsole's selection buffer */
+	handleWidgetSelection(e);
+	
+	/* Resize mode */
+	if (m_resizeMode == true)
+	{
+		setMouseTracking(false);
+		m_resizeMode = false;
+	}
+
+	/* Move, resize or context menu invocation */
+	if (e->button() & Qt::LeftButton || e->button() & Qt::MidButton)
+	{
+		/* Start moving or resizing based on where the click landed */
+		if (e->x() > rect().width() - 10 &&
+		    e->y() > rect().height() - 10)
+		{
+			m_resizeMode = true;
+			setMouseTracking(true);
+			setCursor(QCursor(Qt::SizeFDiagCursor));
+		}
+		else
+		{
+			m_mousePressPoint = QPoint(e->x(), e->y());
+			setCursor(QCursor(Qt::SizeAllCursor));
+		}
+	}
+	else if (e->button() & Qt::RightButton)
+	{
+		/* Menu invocation */
+		m_mousePressPoint = QPoint(e->x(), e->y());
+		invokeMenu(mapToGlobal(e->pos()));
+	}
+}
+
+void VCWidget::handleWidgetSelection(QMouseEvent* e)
+{
+	/* Widget selection logic (like in Qt Designer) */
+	if (e->button() == Qt::LeftButton)
+	{
+		if (e->modifiers() & Qt::ShiftModifier)
+		{
+			/* Toggle selection with LMB when shift is pressed */
+			bool sel;
+			sel = _app->virtualConsole()->isWidgetSelected(this);
+			_app->virtualConsole()->setWidgetSelected(this, !sel);
+		}
+		else
+		{
+			if (_app->virtualConsole()->isWidgetSelected(this)
+			    == false)
+			{
+				/* Select only this */
+				_app->virtualConsole()->clearWidgetSelection();
+				_app->virtualConsole()->setWidgetSelected(this,
+									true);
+			}
+		}
+	}
+	else if (e->button() == Qt::RightButton)
+	{
+		if (_app->virtualConsole()->isWidgetSelected(this) == false)
+		{
+			/* Select only this */
+			_app->virtualConsole()->clearWidgetSelection();
+			_app->virtualConsole()->setWidgetSelected(this,
+								  true);
+		}
 	}
 }
 

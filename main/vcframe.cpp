@@ -79,23 +79,6 @@ bool VCFrame::isBottomFrame()
 	}
 }
 
-void VCFrame::slotDelete()
-{
-	/* Bottom frame cannot be destroyed */
-	if (isBottomFrame() == true)
-		return;
-
-	if (QMessageBox::question(this, "Delete",
-				  QString("Delete frame: %1?").arg(caption()),
-				  QMessageBox::Yes,
-				  QMessageBox::No) == QMessageBox::Yes)
-	{
-		_app->virtualConsole()->setSelectedWidget(NULL);
-		_app->doc()->setModified();
-		deleteLater();
-	}
-}
-
 /*****************************************************************************
  * Properties
  *****************************************************************************/
@@ -115,25 +98,20 @@ void VCFrame::setButtonBehaviour(ButtonBehaviour b)
 {
 	m_buttonBehaviour = b;
 
-	if (_app->virtualConsole()->selectedWidget() != NULL)
-	{
-		/* Find a list of child widgets, whose names match
-		   the class name of VCButton (i.e. "VCButton") */
-		QListIterator<VCButton*> it(
-			_app->virtualConsole()->selectedWidget()
-			->findChildren <VCButton*>(
-				VCButton::staticMetaObject.className()));
+	/* Find a list of child widgets, whose names match
+	   the class name of VCButton (i.e. "VCButton") */
+	QListIterator<VCButton*> it(findChildren <VCButton*>(
+				      VCButton::staticMetaObject.className()));
 
-		if (b == VCFrame::Exclusive)
-		{
-			while (it.hasNext() == true)
-				it.next()->setExclusive(true);
-		}
-		else
-		{
-			while (it.hasNext() == true)
-				it.next()->setExclusive(false);
-		}
+	if (b == VCFrame::Exclusive)
+	{
+		while (it.hasNext() == true)
+			it.next()->setExclusive(true);
+	}
+	else
+	{
+		while (it.hasNext() == true)
+			it.next()->setExclusive(false);
 	}
 }
 
@@ -348,7 +326,8 @@ void VCFrame::slotAddButton()
 	else
 		button->move(m_mousePressPoint);
 
-	_app->virtualConsole()->setSelectedWidget(button);
+	_app->virtualConsole()->clearWidgetSelection();
+	_app->virtualConsole()->setWidgetSelected(button, true);
 
 	_app->doc()->setModified();
 }
@@ -367,7 +346,8 @@ void VCFrame::slotAddSlider()
 	else
 		slider->move(m_mousePressPoint);
 
-	_app->virtualConsole()->setSelectedWidget(slider);
+	_app->virtualConsole()->clearWidgetSelection();
+	_app->virtualConsole()->setWidgetSelected(slider, true);
 
 	_app->doc()->setModified();
 }
@@ -386,7 +366,8 @@ void VCFrame::slotAddXYPad()
 	else
 		xypad->move(m_mousePressPoint);
 
-	_app->virtualConsole()->setSelectedWidget(xypad);
+	_app->virtualConsole()->clearWidgetSelection();
+	_app->virtualConsole()->setWidgetSelected(xypad, true);
 
 	_app->doc()->setModified();
 }
@@ -405,7 +386,8 @@ void VCFrame::slotAddCueList()
 	else
 		cuelist->move(m_mousePressPoint);
 
-	_app->virtualConsole()->setSelectedWidget(cuelist);
+	_app->virtualConsole()->clearWidgetSelection();
+	_app->virtualConsole()->setWidgetSelected(cuelist, true);
 
 	_app->doc()->setModified();
 }
@@ -424,7 +406,8 @@ void VCFrame::slotAddFrame()
 	else
 		frame->move(m_mousePressPoint);
 
-	_app->virtualConsole()->setSelectedWidget(frame);
+	_app->virtualConsole()->clearWidgetSelection();
+	_app->virtualConsole()->setWidgetSelected(frame, true);
 
 	_app->doc()->setModified();
 }
@@ -443,7 +426,8 @@ void VCFrame::slotAddLabel()
 	else
 		label->move(m_mousePressPoint);
 
-	_app->virtualConsole()->setSelectedWidget(label);
+	_app->virtualConsole()->clearWidgetSelection();
+	_app->virtualConsole()->setWidgetSelected(label, true);
 
 	_app->doc()->setModified();
 }
@@ -452,9 +436,11 @@ void VCFrame::slotAddLabel()
  * Event handlers
  *****************************************************************************/
 
-void VCFrame::paintEvent(QPaintEvent* e)
+void VCFrame::handleWidgetSelection(QMouseEvent* e)
 {
-	VCWidget::paintEvent(e);
+	/* Don't allow selection of the bottom frame */
+	if (isBottomFrame() == false)
+		VCWidget::handleWidgetSelection(e);
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)

@@ -72,23 +72,6 @@ VCXYPad::~VCXYPad()
 	clearChannels();
 }
 
-void VCXYPad::slotDelete()
-{
-	QString msg;
-
-	msg = "Do you wish to delete this XY-Pad?\n" + caption();
-	int result = QMessageBox::question(this, "Delete", msg,
-					   QMessageBox::Yes,
-					   QMessageBox::No);
-
-	if (result == QMessageBox::Yes)
-	{
-		_app->virtualConsole()->setSelectedWidget(NULL);
-		_app->doc()->setModified();
-		deleteLater();
-	}
-}
-
 /*****************************************************************************
  * Properties
  *****************************************************************************/

@@ -53,10 +53,6 @@ public:
 	VCButton(QWidget* parent);
 	~VCButton();
 
-public slots:
-	/** Delete this widget */
-	void slotDelete();
-
 private:
 	Q_DISABLE_COPY(VCButton)
 
@@ -74,9 +70,6 @@ public:
 	/* Don't allow background image setting for buttons */
 	void setBackgroundImage(const QString& path) { Q_UNUSED(path); }
 
-public slots:
-	void slotChooseBackgroundImage();
-
 	/*********************************************************************
 	 * Background color
 	 *********************************************************************/
@@ -89,9 +82,6 @@ public:
 		{ return palette().color(QPalette::Button); }
 
 public slots:
-	/** Choose the background color with a dialog */
-	void slotChooseBackgroundColor();
-
 	/** Reset the button's background color to whatever the platform uses */
 	void slotResetBackgroundColor();
 
@@ -107,9 +97,6 @@ public:
 		return palette().color(QPalette::ButtonText); }
 
 public slots:
-	/** Choose the foreground color with a color dialog */
-	void slotChooseForegroundColor();
-
 	/** Reset the button's foreground color to whatever the platform uses */
 	virtual void slotResetForegroundColor();
 

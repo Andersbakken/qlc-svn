@@ -49,10 +49,6 @@ public:
 	/* Check if this is the virtual console's draw area */
 	bool isBottomFrame();
 
-public slots:
-	/* Delete this widget */
-	void slotDelete();
-
 private:
 	/** Prevent copying thru operator= or copy constructor since QObject's
 	    parental properties get confused when copied. */
@@ -113,7 +109,7 @@ public slots:
 	 * Event handlers
 	 *********************************************************************/
 protected:
-	void paintEvent(QPaintEvent* e);
+	void handleWidgetSelection(QMouseEvent* e);
 	void mouseMoveEvent(QMouseEvent* e);
 };
 

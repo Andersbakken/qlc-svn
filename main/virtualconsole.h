@@ -172,94 +172,40 @@ public:
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
 	/*********************************************************************
-	 * Selected widget
+	 * Selected widgets
 	 *********************************************************************/
 public:
-	/**
-	 * Get the currently selected widget. The selected widget is the one
-	 * that has been clicked by the user and is being edited.
-	 *
-	 * @return The selected widget or NULL if none is selected
-	 */
-	VCWidget* selectedWidget() { return m_selectedWidget; }
+	enum EditAction { EditNone, EditCut, EditCopy };
 
-	/**
-	 * Set the currently selected widget. This is called by individual
-	 * widgets when they are clicked. They always set themselves as the
-	 * selected widget.
-	 *
-	 * @param widget The widget that was last clicked
-	 */
-	void setSelectedWidget(VCWidget* widget);
+	/** Set the edit action for selected widgets */
+	void setEditAction(EditAction action) { m_editAction = action; }
+	
+	/** Get the edit action for selected widgets */
+	EditAction editAction() const { return m_editAction; }
 
-protected:
-	/** The widget that currently has the "edit focus" in virtual console */
-	VCWidget* m_selectedWidget;
+	/** Get a list of currently selected widgets */
+	const QList <VCWidget*> selectedWidgets() const
+		{ return m_selectedWidgets; }
 
-	/*********************************************************************
-	 * Clipboard
-	 *********************************************************************/
-public:
-	/**
-	 * Cut the given widgets from their parents to get pasted to another
-	 * parent widget. This does not remove anything from anywhere, it just
-	 * marks these widgets "cut". Only when paste is invoked, are they
-	 * moved.
-	 *
-	 * @param widgets A list of widget pointers to cut
-	 */
-	void cut(QList <VCWidget*> *widgets);
+	/** Either select or unselect a widget */
+	void setWidgetSelected(VCWidget* widget, bool selected);
 
-	/**
-	 * Copy the given widgets from their parents to get pasted to another
-	 * parent widget. 
-	 *
-	 * @param widgets A list of widget pointers to copy
-	 */
-	void copy(QList <VCWidget*> *widgets);
-
-	/**
-	 * Paste clipboard contents to the given parent widget. Items can be
-	 * pasted only to VCFrames since other VC widget types do not really
-	 * support children.
-	 *
-	 * @param parent The parent VCFrame to paste the widgets to
-	 * @param point Use this point as the top-left corner of the bounding
-	 *              box where the widgets are pasted to
-	 */
-	void paste(VCFrame* parent, QPoint point);
+	/** Check, whether the given widget is selected */
+	bool isWidgetSelected(VCWidget* widget) const;
+	
+	/** Clear the list of selected widgets */
+	void clearWidgetSelection();
 
 protected:
-	/**
-	 * Copy a VCWidget into another parent VCFrame
-	 *
-	 * @param widget The widget to make a copy of
-	 * @param parent The parent frame for the copy
-	 * @param point The point in the parent to paste to
-	 */
-	void copyWidget(VCWidget* widget, VCFrame* parent, QPoint point);
+	/** The widgets that are currently selected */
+	QList <VCWidget*> m_selectedWidgets;
 
-	/**
-	 * Clear the contents of the widget clipboard. This should be done at
-	 * least when a widget is deleted to prevent the case where we try to
-	 * cut/copy/paste a deleted widget. Another alternative would be to
-	 * modify the clipboard contents, but... Delete could also be treated
-	 * as a clipboard operation; the selected item is cut from its place,
-	 * put into the clipboard and from there on to the trashcan.
-	 */
-	void clearClipboard();
-
-protected:
-	typedef enum _ClipboardAction
-	{
-		ClipboardNone = 0,
-		ClipboardCut,
-		ClipboardCopy
-	} ClipboardAction;
-
-	ClipboardAction m_clipboardAction;
+	/** The widgets that are currently either copied or cut */
 	QList <VCWidget*> m_clipboard;
 
+	/** Indicates, whether the selected widgets should be copied or cut */
+	EditAction m_editAction;
+	
 	/*********************************************************************
 	 * Draw area
 	 *********************************************************************/
@@ -306,12 +252,14 @@ protected:
 	QAction* m_editPropertiesAction;
 	QAction* m_editRenameAction;
 
-	QAction* m_fgColorAction;
-	QAction* m_fgFontAction;
-	QAction* m_fgDefaultAction;
-
 	QAction* m_bgColorAction;
 	QAction* m_bgDefaultAction;
+
+	QAction* m_fgColorAction;
+	QAction* m_fgDefaultAction;
+
+	QAction* m_fontAction;
+	QAction* m_resetFontAction;
 
 	QAction* m_stackingRaiseAction;
 	QAction* m_stackingLowerAction;
@@ -361,20 +309,26 @@ public slots:
 	void slotEditProperties();
 
 	/*********************************************************************
-	 * Foreground menu callbacks
-	 *********************************************************************/
-public slots:
-	void slotForegroundFont();
-	void slotForegroundColor();
-	void slotForegroundNone();
-
-	/*********************************************************************
 	 * Background menu callbacks
 	 *********************************************************************/
 public slots:
 	void slotBackgroundColor();
 	void slotBackgroundImage();
 	void slotBackgroundNone();
+
+	/*********************************************************************
+	 * Foreground menu callbacks
+	 *********************************************************************/
+public slots:
+	void slotForegroundColor();
+	void slotForegroundNone();
+
+	/*********************************************************************
+	 * Font menu callbacks
+	 *********************************************************************/
+public slots:
+	void slotFont();
+	void slotResetFont();
 
 	/*********************************************************************
 	 * Stacking menu callbacks

@@ -143,23 +143,6 @@ VCSlider::~VCSlider()
 	m_time = NULL;
 }
 
-void VCSlider::slotDelete()
-{
-	QString msg;
-
-	msg = "Do you wish to delete this slider?\n" + caption();
-	int result = QMessageBox::question(this, "Delete", msg,
-					   QMessageBox::Yes,
-					   QMessageBox::No);
-
-	if (result == QMessageBox::Yes)
-	{
-		_app->virtualConsole()->setSelectedWidget(NULL);
-		_app->doc()->setModified();
-		deleteLater();
-	}
-}
-
 /*****************************************************************************
  * Caption
  *****************************************************************************/
@@ -197,7 +180,8 @@ void VCSlider::slotRename()
 void VCSlider::slotProperties()
 {
 	VCSliderProperties prop(_app, this);
-	prop.exec();
+	if (prop.exec() == QDialog::Accepted)
+		_app->doc()->setModified();
 }
 
 /*****************************************************************************

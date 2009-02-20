@@ -73,16 +73,21 @@ protected:
 public:
 	virtual ~VCWidget();
 
+private:
+	Q_DISABLE_COPY(VCWidget)
+
+	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/** Copy the contents for this widget from another widget */
+	virtual bool copyFrom(const VCWidget* widget);
+
 public slots:
 	virtual void slotCut();
 	virtual void slotCopy();
 	virtual void slotPaste();
-
-	/** Delete this widget */
 	virtual void slotDelete();
-
-private:
-	Q_DISABLE_COPY(VCWidget)
 
 	/*********************************************************************
 	 * Background image
@@ -299,6 +304,8 @@ protected:
 	virtual void paintEvent(QPaintEvent* e);
 
 	virtual void mousePressEvent(QMouseEvent* e);
+	virtual void handleWidgetSelection(QMouseEvent* e);
+
 	virtual void mouseReleaseEvent(QMouseEvent* e);
 	virtual void mouseDoubleClickEvent(QMouseEvent* e);
 	virtual void mouseMoveEvent(QMouseEvent* e);
