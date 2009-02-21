@@ -348,6 +348,9 @@ void VirtualConsole::initDockArea()
 
 	/* Show the dock area by default */
 	m_dockArea->show();
+
+	/* Disables all edit actions at first */
+	enableEditActions();
 }
 
 /*********************************************************************
@@ -515,6 +518,9 @@ void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
 		if (m_customMenu != NULL)
 			m_editMenu->addMenu(m_customMenu);
 	}
+
+	/* Enable or disable edit actions */
+	enableEditActions();
 }
 
 bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
@@ -542,6 +548,41 @@ void VirtualConsole::clearWidgetSelection()
 	if (m_customMenu != NULL)
 		delete m_customMenu;
 	m_customMenu = NULL;
+
+	/* Enable or disable edit actions */
+	enableEditActions();
+}
+
+void VirtualConsole::enableEditActions()
+{
+	bool enable;
+
+	if (m_selectedWidgets.isEmpty() == true)
+		enable = false;
+	else
+		enable = true;
+
+	m_editCutAction->setEnabled(enable);
+	m_editCopyAction->setEnabled(enable);
+	m_editDeleteAction->setEnabled(enable);
+	m_editPropertiesAction->setEnabled(enable);
+	m_editRenameAction->setEnabled(enable);
+
+	m_bgColorAction->setEnabled(enable);
+	m_bgDefaultAction->setEnabled(enable);
+
+	m_fgColorAction->setEnabled(enable);
+	m_fgDefaultAction->setEnabled(enable);
+
+	m_fontAction->setEnabled(enable);
+	m_resetFontAction->setEnabled(enable);
+
+	m_frameSunkenAction->setEnabled(enable);
+	m_frameRaisedAction->setEnabled(enable);
+	m_frameNoneAction->setEnabled(enable);
+
+	m_stackingRaiseAction->setEnabled(enable);
+	m_stackingLowerAction->setEnabled(enable);
 }
 
 /*****************************************************************************
@@ -890,6 +931,9 @@ void VirtualConsole::slotEditDelete()
 
 void VirtualConsole::slotEditProperties()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget = m_selectedWidgets.last();
 	if (widget != NULL)
 		widget->editProperties();

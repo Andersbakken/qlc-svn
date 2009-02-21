@@ -179,7 +179,7 @@ public:
 
 	/** Set the edit action for selected widgets */
 	void setEditAction(EditAction action) { m_editAction = action; }
-	
+
 	/** Get the edit action for selected widgets */
 	EditAction editAction() const { return m_editAction; }
 
@@ -192,9 +192,13 @@ public:
 
 	/** Check, whether the given widget is selected */
 	bool isWidgetSelected(VCWidget* widget) const;
-	
+
 	/** Clear the list of selected widgets */
 	void clearWidgetSelection();
+
+protected:
+	/** Enable or disable edit actions based on selection */
+	void enableEditActions();
 
 protected:
 	/** The widgets that are currently selected */
@@ -205,7 +209,7 @@ protected:
 
 	/** Indicates, whether the selected widgets should be copied or cut */
 	EditAction m_editAction;
-	
+
 	/*********************************************************************
 	 * Draw area
 	 *********************************************************************/

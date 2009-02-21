@@ -256,7 +256,7 @@ protected:
 public:
 	/** Get a custom menu specific to this widget. Ownership is transferred
 	    to the caller, which must delete the returned menu pointer. */
-	virtual QMenu* customMenu(QMenu* parentMenu) { return NULL; }
+	virtual QMenu* customMenu(QMenu* parentMenu);
 
 	/*********************************************************************
 	 * Widget move & resize
