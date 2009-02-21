@@ -62,6 +62,17 @@ private:
 	Q_DISABLE_COPY(VCCueList)
 
 	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/** Create a copy of this widget into the given parent */
+	VCWidget* createCopy(VCWidget* parent);
+
+protected:
+	/** Copy the contents for this widget from another widget */
+	bool copyFrom(VCWidget* widget);
+
+	/*********************************************************************
 	 * Cue list
 	 *********************************************************************/
 public:
@@ -93,8 +104,8 @@ protected:
 	 * Key Bind
 	 *********************************************************************/
 public:
-	void setKeyBind(KeyBind* kb);
-	KeyBind* keyBind() const { return m_keyBind; }
+	void setKeyBind(const KeyBind* kb);
+	const KeyBind* keyBind() const { return m_keyBind; }
 
 protected:
 	KeyBind* m_keyBind;
@@ -117,8 +128,8 @@ public:
 	 * Properties
 	 *********************************************************************/
 public:
-	/** See VCWidget::slotProperties() */
-	void slotProperties();
+	/** Edit properties for this widget */
+	void editProperties();
 
 	/*********************************************************************
 	 * Load & Save

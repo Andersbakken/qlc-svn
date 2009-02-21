@@ -73,10 +73,62 @@ VCXYPad::~VCXYPad()
 }
 
 /*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+VCWidget* VCXYPad::createCopy(VCWidget* parent)
+{
+	Q_ASSERT(parent != NULL);
+
+	VCXYPad* xypad = new VCXYPad(parent);
+	if (xypad->copyFrom(this) == false)
+	{
+		delete xypad;
+		xypad = NULL;
+	}
+
+	return xypad;
+}
+
+bool VCXYPad::copyFrom(VCWidget* widget)
+{
+	XYChannelUnit* xyc;
+
+	VCXYPad* xypad = qobject_cast <VCXYPad*> (widget);
+	if (xypad == NULL)
+		return false;
+
+	/* Get rid of existing channels */
+	clearChannels();
+
+	/* Copy X axis channels */
+	QListIterator <XYChannelUnit*> xit(xypad->m_channelsX);
+	while (xit.hasNext() == true)
+	{
+		xyc = new XYChannelUnit(*(xit.next()));
+		m_channelsX.append(xyc);
+	}
+
+	/* Copy Y axis channels */
+	QListIterator <XYChannelUnit*> yit(xypad->m_channelsY);
+	while (yit.hasNext() == true)
+	{
+		xyc = new XYChannelUnit(*(yit.next()));
+		m_channelsY.append(xyc);
+	}
+
+	/* Copy the current position */
+	setCurrentXYPosition(xypad->currentXYPosition());
+
+	/* Copy common stuff */
+	return VCWidget::copyFrom(widget);
+}
+
+/*****************************************************************************
  * Properties
  *****************************************************************************/
 
-void VCXYPad::slotProperties()
+void VCXYPad::editProperties()
 {
 	VCXYPadProperties prop(_app, this);
 	if (prop.exec() == QDialog::Accepted)

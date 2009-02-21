@@ -81,6 +81,45 @@ VCCueList::~VCCueList()
 }
 
 /*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+VCWidget* VCCueList::createCopy(VCWidget* parent)
+{
+	Q_ASSERT(parent != NULL);
+
+	VCCueList* cuelist = new VCCueList(parent);
+	if (cuelist->copyFrom(this) == false)
+	{
+		delete cuelist;
+		cuelist = NULL;
+	}
+
+	return cuelist;
+}
+
+bool VCCueList::copyFrom(VCWidget* widget)
+{
+	VCCueList* cuelist = qobject_cast<VCCueList*> (widget);
+	if (cuelist == NULL)
+		return false;
+
+	/* Copy function list contents */
+	m_list->clear();
+	for (int i = 0; i < cuelist->m_list->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* item = cuelist->m_list->topLevelItem(i);
+		append(item->text(KVCCueListColumnID).toInt());
+	}
+
+	/* Copy key binding */
+	setKeyBind(cuelist->keyBind());
+
+	/* Copy common stuff */
+	return VCWidget::copyFrom(widget);
+}
+
+/*****************************************************************************
  * Cue list
  *****************************************************************************/
 
@@ -169,7 +208,7 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
  * Key Bind
  *****************************************************************************/
 
-void VCCueList::setKeyBind(KeyBind* kb)
+void VCCueList::setKeyBind(const KeyBind* kb)
 {
 	if (m_keyBind != NULL)
 		delete m_keyBind;
@@ -224,7 +263,7 @@ void VCCueList::slotModeChanged(App::Mode mode)
  * Properties
  *****************************************************************************/
 
-void VCCueList::slotProperties()
+void VCCueList::editProperties()
 {
 	VCCueListProperties prop(_app, this);
 	if (prop.exec() == QDialog::Accepted)

@@ -144,6 +144,52 @@ VCSlider::~VCSlider()
 }
 
 /*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+VCWidget* VCSlider::createCopy(VCWidget* parent)
+{
+	Q_ASSERT(parent != NULL);
+
+	VCSlider* slider = new VCSlider(parent);
+	if (slider->copyFrom(this) == false)
+	{
+		delete slider;
+		slider = NULL;
+	}
+
+	return slider;
+}
+
+bool VCSlider::copyFrom(VCWidget* widget)
+{
+	VCSlider* slider = qobject_cast<VCSlider*> (widget);
+	if (slider == NULL)
+		return false;
+
+	/* Copy level stuff */
+	setLevelLowLimit(slider->levelLowLimit());
+	setLevelHighLimit(slider->levelHighLimit());
+	m_levelChannels = slider->m_levelChannels;
+
+	/* Copy bus stuff */
+	setBusLowLimit(slider->busLowLimit());
+	setBusHighLimit(slider->busHighLimit());
+	setBus(slider->bus());
+
+	/* Copy slider appearance */
+	setValueDisplayStyle(slider->valueDisplayStyle());
+	setInvertedAppearance(slider->invertedAppearance());
+
+	/* Copy mode & current value */
+	setSliderMode(slider->sliderMode());
+	setSliderValue(slider->sliderValue());
+
+	/* Copy common stuff */
+	return VCWidget::copyFrom(widget);
+}
+
+/*****************************************************************************
  * Caption
  *****************************************************************************/
 
@@ -158,26 +204,11 @@ void VCSlider::setCaption(const QString& text)
 		setTapButtonText(text);
 }
 
-void VCSlider::slotRename()
-{
-	QString text;
-
-	if (m_sliderMode == Bus)
-		QMessageBox::information(_app->virtualConsole(),
-					 "Cannot rename a bus mode slider",
-					 "A slider cannot be renamed when it " \
-					 "is used to control a bus;\n" \
-					 "The bus' name is used as the " \
-					 "slider's name instead.");
-	else
-		VCWidget::slotRename();
-}
-
 /*****************************************************************************
  * Properties
  *****************************************************************************/
 
-void VCSlider::slotProperties()
+void VCSlider::editProperties()
 {
 	VCSliderProperties prop(_app, this);
 	if (prop.exec() == QDialog::Accepted)

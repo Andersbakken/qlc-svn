@@ -67,11 +67,21 @@ private:
 	Q_DISABLE_COPY(VCXYPad)
 
 	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/** Create a copy of this widget into the given parent */
+	VCWidget* createCopy(VCWidget* parent);
+
+	/** Copy the contents for this widget from another widget */
+	bool copyFrom(VCWidget* widget);
+
+	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
-public slots:
+public:
 	/** Display a properties dialog */
-	void slotProperties();
+	void editProperties();
 
 	/*********************************************************************
 	 * Channels
@@ -127,7 +137,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Get the pad's current position (i.e. where the point is) */
-	const QPoint currentXYPosition() const { return m_currentXYPosition; }
+	QPoint currentXYPosition() const { return m_currentXYPosition; }
 
 	/** Set the pad's current position (i.e. move the point) */
 	void setCurrentXYPosition(const QPoint& point);

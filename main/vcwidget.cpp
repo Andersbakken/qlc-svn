@@ -64,8 +64,6 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 	m_hasCustomFont = false;
 	m_frameStyle = KVCFrameStyleNone;
 
-	m_xpos = 0;
-	m_ypos = 0;
 	m_resizeMode = false;
 
 	setBackgroundRole(QPalette::Window);
@@ -89,29 +87,46 @@ VCWidget::~VCWidget()
  * Clipboard
  *****************************************************************************/
 
+void VCWidget::setParent(QWidget* parent)
+{
+	if (parentWidget() != NULL)
+		disconnect(parentWidget(), SIGNAL(modeChanged(App::Mode)),
+			   this, SLOT(slotModeChanged(App::Mode)));
+
+	connect(parent, SIGNAL(modeChanged(App::Mode)),
+		this, SLOT(slotModeChanged(App::Mode)));
+
+	QWidget::setParent(parent);
+}
+
 bool VCWidget::copyFrom(const VCWidget* widget)
 {
-	return false;
-}
+	if (widget == NULL)
+		return false;
 
-void VCWidget::slotCut()
-{
-	QMessageBox::information(this, "TODO", "Not implemented");
-}
+	m_backgroundImage = widget->m_backgroundImage;
 
-void VCWidget::slotCopy()
-{
-	QMessageBox::information(this, "TODO", "Not implemented");
-}
+	m_hasCustomBackgroundColor = widget->m_hasCustomBackgroundColor;
+	if (m_hasCustomBackgroundColor == true)
+		setBackgroundColor(widget->backgroundColor());
 
-void VCWidget::slotPaste()
-{
-	QMessageBox::information(this, "TODO", "Not implemented");
-}
+	m_hasCustomForegroundColor = widget->m_hasCustomForegroundColor;
+	if (m_hasCustomForegroundColor == true)
+		setForegroundColor(widget->foregroundColor());
 
-void VCWidget::slotDelete()
-{
-	_app->virtualConsole()->slotEditDelete();
+	m_hasCustomFont = widget->m_hasCustomFont;
+	if (m_hasCustomFont == true)
+		setFont(widget->font());
+
+	m_frameStyle = widget->m_frameStyle;
+
+	setGeometry(widget->geometry());
+	setCaption(widget->caption());
+
+	m_inputUniverse = widget->m_inputUniverse;
+	m_inputChannel = widget->m_inputChannel;
+	
+	return true;
 }
 
 /*****************************************************************************
@@ -132,11 +147,6 @@ void VCWidget::setBackgroundImage(const QString& path)
 	_app->doc()->setModified();
 }
 
-void VCWidget::slotChooseBackgroundImage()
-{
-	_app->virtualConsole()->slotBackgroundImage();
-}
-
 /*****************************************************************************
  * Background color
  *****************************************************************************/
@@ -154,12 +164,7 @@ void VCWidget::setBackgroundColor(const QColor& color)
 	_app->doc()->setModified();
 }
 
-void VCWidget::slotChooseBackgroundColor()
-{
-	_app->virtualConsole()->slotBackgroundColor();
-}
-
-void VCWidget::slotResetBackgroundColor()
+void VCWidget::resetBackgroundColor()
 {
 	QColor fg;
 
@@ -201,12 +206,7 @@ void VCWidget::setForegroundColor(const QColor& color)
 	_app->doc()->setModified();
 }
 
-void VCWidget::slotChooseForegroundColor()
-{
-	_app->virtualConsole()->slotForegroundColor();
-}
-
-void VCWidget::slotResetForegroundColor()
+void VCWidget::resetForegroundColor()
 {
 	QColor bg;
 
@@ -239,12 +239,7 @@ void VCWidget::setFont(const QFont& font)
 	_app->doc()->setModified();
 }
 
-void VCWidget::slotChooseFont()
-{
-	_app->virtualConsole()->slotFont();
-}
-
-void VCWidget::slotResetFont()
+void VCWidget::resetFont()
 {
 	m_hasCustomFont = false;
 	setFont(QFont());
@@ -262,25 +257,6 @@ void VCWidget::setCaption(const QString& text)
 	_app->doc()->setModified();
 }
 
-void VCWidget::slotRename()
-{
-	_app->virtualConsole()->slotEditRename();
-}
-
-/*****************************************************************************
- * Stacking
- *****************************************************************************/
-
-void VCWidget::raise()
-{
-	_app->virtualConsole()->slotStackingRaise();
-}
-
-void VCWidget::lower()
-{
-	_app->virtualConsole()->slotStackingLower();
-}
-
 /*****************************************************************************
  * Frame style
  *****************************************************************************/
@@ -292,24 +268,10 @@ void VCWidget::setFrameStyle(int style)
 	_app->doc()->setModified();
 }
 
-void VCWidget::slotSetFrameSunken()
-{
-	setFrameStyle(KVCFrameStyleSunken);
-}
-
-void VCWidget::slotSetFrameRaised()
-{
-	setFrameStyle(KVCFrameStyleRaised);
-}
-
-void VCWidget::slotResetFrame()
+void VCWidget::resetFrameStyle()
 {
 	setFrameStyle(KVCFrameStyleNone);
 }
-
-/*****************************************************************************
- * Frame style converters
- *****************************************************************************/
 
 QString VCWidget::frameStyleToString(int style)
 {
@@ -335,7 +297,7 @@ int VCWidget::stringToFrameStyle(const QString& style)
  * Properties
  *****************************************************************************/
 
-void VCWidget::slotProperties()
+void VCWidget::editProperties()
 {
 	QMessageBox::information(_app, staticMetaObject.className(),
 				 tr("This widget has no properties"));
@@ -590,91 +552,11 @@ void VCWidget::slotModeChanged(App::Mode mode)
  * Widget menu
  *****************************************************************************/
 
-void VCWidget::invokeMenu(QPoint point)
+void VCWidget::invokeMenu(const QPoint& point)
 {
-	QMenu* menu = createMenu();
+	QMenu* menu = _app->virtualConsole()->editMenu();
+	Q_ASSERT(menu != NULL);
 	menu->exec(point);
-	delete menu;
-}
-
-QMenu* VCWidget::createMenu()
-{
-	QAction* action;
-
-	// Create edit menu here so that all submenus can be its children
-	/* DO NOT set this as the menu's parent object. Otherwise deleting this
-	   thru the menu will crash the whole program. */
-	QMenu* editMenu = new QMenu(NULL);
-	action = editMenu->addAction(QIcon(":/editcut.png"), "Cut",
-				     this, SLOT(slotCut()));
-	action->setEnabled(false);
-	action = editMenu->addAction(QIcon(":/editcopy.png"), "Copy",
-				     this, SLOT(slotCopy()));
-	action->setEnabled(false);
-	action = editMenu->addAction(QIcon(":/editpaste.png"), "Paste",
-				     this, SLOT(slotPaste()));
-	action->setEnabled(false);
-	editMenu->addAction(QIcon(":/editdelete.png"), "Delete",
-			    this, SLOT(slotDelete()));
-	editMenu->addSeparator();
-	editMenu->addAction(QIcon(":/configure.png"), "Properties...",
-			    this, SLOT(slotProperties()));
-	editMenu->addAction(QIcon(":/editclear.png"), "Rename...",
-			    this, SLOT(slotRename()));
-	editMenu->addSeparator();
-
-	// Background menu
-	QMenu* bgMenu = new QMenu(editMenu);
-	bgMenu->setTitle("Background");
-	bgMenu->addAction(QIcon(":/color.png"), "Color...",
-			  this, SLOT(slotChooseBackgroundColor()));
-	bgMenu->addAction(QIcon(":/image.png"), "Image...",
-			  this, SLOT(slotChooseBackgroundImage()));
-	bgMenu->addAction(QIcon(":/undo.png"), "Default",
-			  this, SLOT(slotResetBackgroundColor()));
-
-	// Foreground menu
-	QMenu* fgMenu = new QMenu(editMenu);
-	fgMenu->setTitle("Foreground");
-	fgMenu->addAction(QIcon(":/color.png"), "Color...",
-			  this, SLOT(slotChooseForegroundColor()));
-	fgMenu->addAction(QIcon(":/undo.png"), "Default",
-			  this, SLOT(slotResetForegroundColor()));
-
-	// Font menu
-	QMenu* fontMenu = new QMenu(editMenu);
-	fontMenu->setTitle("Font");
-	fontMenu->addAction(QIcon(":/fonts.png"), "Font...",
-			   this, SLOT(slotChooseFont()));
-	fontMenu->addAction(QIcon(":/undo.png"), "Default",
-			    this, SLOT(slotResetFont()));
-
-	/* Frame menu */
-	QMenu* frameMenu = new QMenu(editMenu);
-	frameMenu->setTitle("Frame");
-	frameMenu->addAction(QIcon(":/framesunken.png"), "Sunken",
-			     this, SLOT(slotSetFrameSunken()));
-	frameMenu->addAction(QIcon(":/frameraised.png"), "Raised",
-			     this, SLOT(slotSetFrameRaised()));
-	frameMenu->addAction(QIcon(":/framenone.png"), "None",
-			     this, SLOT(slotResetFrame()));
-
-	// Stacking order menu
-	QMenu* stackMenu = new QMenu(editMenu);
-	stackMenu->setTitle("Stacking order");
-	stackMenu->addAction(QIcon(":/up.png"), "Raise",
-			     this, SLOT(raise()));
-	stackMenu->addAction(QIcon(":/down.png"), "Lower",
-			     this, SLOT(lower()));
-
-	// Menu construction
-	editMenu->addMenu(bgMenu);
-	editMenu->addMenu(fgMenu);
-	editMenu->addMenu(fontMenu);
-	editMenu->addMenu(frameMenu);
-	editMenu->addMenu(stackMenu);
-
-	return editMenu;
 }
 
 /*****************************************************************************
@@ -879,7 +761,7 @@ void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 void VCWidget::mouseDoubleClickEvent(QMouseEvent*)
 {
 	if (_app->mode() == App::Design)
-		slotProperties();
+		editProperties();
 }
 
 void VCWidget::mouseMoveEvent(QMouseEvent* e)

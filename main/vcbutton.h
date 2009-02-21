@@ -29,6 +29,7 @@ class QDomDocument;
 class QDomElement;
 class QMouseEvent;
 class QPaintEvent;
+class QAction;
 class QPoint;
 class QEvent;
 
@@ -57,11 +58,22 @@ private:
 	Q_DISABLE_COPY(VCButton)
 
 	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/** Create a copy of this widget to the given parent */
+	VCWidget* createCopy(VCWidget* parent);
+
+protected:
+	/** Copy the contents for this widget from another widget */
+	bool copyFrom(VCWidget* widget);
+
+	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
-public slots:
+public:
 	/** Edit this widget's properties */
-	void slotProperties();
+	void editProperties();
 
 	/*********************************************************************
 	 * Background image
@@ -81,9 +93,8 @@ public:
 	QColor backgroundColor() const
 		{ return palette().color(QPalette::Button); }
 
-public slots:
 	/** Reset the button's background color to whatever the platform uses */
-	void slotResetBackgroundColor();
+	void resetBackgroundColor();
 
 	/*********************************************************************
 	 * Foreground color
@@ -96,9 +107,8 @@ public:
 	QColor foregroundColor() const {
 		return palette().color(QPalette::ButtonText); }
 
-public slots:
 	/** Reset the button's foreground color to whatever the platform uses */
-	virtual void slotResetForegroundColor();
+	virtual void resetForegroundColor();
 
 	/*********************************************************************
 	 * Button icon
@@ -113,6 +123,8 @@ public slots:
 
 protected:
 	QString m_icon;
+	QAction* m_chooseIconAction;
+	QAction* m_resetIconAction;
 
 	/*********************************************************************
 	 * Load & Save
@@ -281,18 +293,11 @@ protected:
 	bool m_stopFunctions;
 
 	/*********************************************************************
-	 * Widget menu
-	 *********************************************************************/
-protected:
-	/** Invoke the widget menu */
-	void invokeMenu(QPoint point);
-
-protected slots:
-	/**
-	 * Invoke a function selection dialog to set (attach) a function to
-	 * this button.
-	 */
-	void slotAttachFunction();
+	* Custom menu
+	*********************************************************************/
+public:
+	/** Get a custom menu specific to this widget. Must be deleted. */
+	QMenu* customMenu(QMenu* parentMenu);
 
 	/*********************************************************************
 	 * Event Handlers

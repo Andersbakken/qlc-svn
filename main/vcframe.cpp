@@ -80,10 +80,43 @@ bool VCFrame::isBottomFrame()
 }
 
 /*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+VCWidget* VCFrame::createCopy(VCWidget* parent)
+{
+	Q_ASSERT(parent != NULL);
+
+	VCFrame* frame = new VCFrame(parent);
+	if (frame->copyFrom(this) == false)
+	{
+		delete frame;
+		frame = NULL;
+	}
+
+	return frame;
+}
+
+bool VCFrame::copyFrom(VCWidget* widget)
+{
+	VCFrame* frame = qobject_cast<VCFrame*> (widget);
+	if (frame == NULL)
+		return false;
+
+	/* Copy button behaviour */
+	setButtonBehaviour(frame->buttonBehaviour());
+
+	/* TODO: Copy children? */
+
+	/* Copy common stuff */
+	return VCWidget::copyFrom(widget);
+}
+
+/*****************************************************************************
  * Properties
  *****************************************************************************/
 
-void VCFrame::slotProperties()
+void VCFrame::editProperties()
 {
 	VCFrameProperties prop(_app, this);
 	if (prop.exec() == QDialog::Accepted)
@@ -115,9 +148,9 @@ void VCFrame::setButtonBehaviour(ButtonBehaviour b)
 	}
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Load & Save
- *********************************************************************/
+ *****************************************************************************/
 
 bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 {
@@ -267,169 +300,21 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 }
 
 /*****************************************************************************
- * Widget menu
+ * Custom menu
  *****************************************************************************/
 
-void VCFrame::invokeMenu(QPoint point)
+QMenu* VCFrame::customMenu(QMenu* parentMenu)
 {
-	QMenu* addMenu;
-	QMenu* menu;
-
-	menu = VCWidget::createMenu();
-	Q_ASSERT(menu != NULL);
-
-	/* Create an "Add widget" menu */
-	addMenu = new QMenu(menu);
-	addMenu->setTitle("Add widget");
-	addMenu->addAction(QIcon(":/button.png"), tr("Button"), 
-			   this, SLOT(slotAddButton()));
-	addMenu->addAction(QIcon(":/slider.png"), tr("Slider"),
-			   this, SLOT(slotAddSlider()));
-	addMenu->addAction(QIcon(":/xypad.png"), tr("XY pad"),
-			   this, SLOT(slotAddXYPad()));
-	addMenu->addSeparator();
-	addMenu->addAction(QIcon(":/cuelist.png"), tr("Cue list"),
-			   this, SLOT(slotAddCueList()));
-	addMenu->addSeparator();
-	addMenu->addAction(QIcon(":/frame.png"), tr("Frame"),
-			   this, SLOT(slotAddFrame()));
-	addMenu->addAction(QIcon(":/label.png"), tr("Label"),
-			   this, SLOT(slotAddLabel()));
-
-	/* Add sub menus to the master menu */
-	menu->addSeparator();
-	menu->addMenu(addMenu);
-
-	/* Execute menu at the given point */
-	menu->exec(point);
-
-	/* Deletes also add menu and its actions */
-	delete menu;
-}
-
-void VCFrame::slotAddButton()
-{
-	VCButton* button;
-	QPoint at;
-
-	button = new VCButton(this);
-	Q_ASSERT(button != NULL);
-	button->show();
-
-	if (this->buttonBehaviour() == VCFrame::Exclusive)
-		button->setExclusive(true);
-	else
-		button->setExclusive(false);
-
-	if (at.isNull() == false)
-		button->move(at);
-	else
-		button->move(m_mousePressPoint);
-
-	_app->virtualConsole()->clearWidgetSelection();
-	_app->virtualConsole()->setWidgetSelected(button, true);
-
-	_app->doc()->setModified();
-}
-
-void VCFrame::slotAddSlider()
-{
-	VCSlider* slider;
-	QPoint at;
-
-	slider = new VCSlider(this);
-	Q_ASSERT(slider != NULL);
-	slider->show();
-
-	if (at.isNull() == false)
-		slider->move(at);
-	else
-		slider->move(m_mousePressPoint);
-
-	_app->virtualConsole()->clearWidgetSelection();
-	_app->virtualConsole()->setWidgetSelected(slider, true);
-
-	_app->doc()->setModified();
-}
-
-void VCFrame::slotAddXYPad()
-{
-	VCXYPad* xypad;
-	QPoint at;
-
-	xypad = new VCXYPad(this);
-	Q_ASSERT(xypad != NULL);
-	xypad->show();
-
-	if (at.isNull() == false)
-		xypad->move(at);
-	else
-		xypad->move(m_mousePressPoint);
-
-	_app->virtualConsole()->clearWidgetSelection();
-	_app->virtualConsole()->setWidgetSelected(xypad, true);
-
-	_app->doc()->setModified();
-}
-
-void VCFrame::slotAddCueList()
-{
-	VCCueList* cuelist;
-	QPoint at;
-
-	cuelist = new VCCueList(this);
-	Q_ASSERT(cuelist != NULL);
-	cuelist->show();
-
-	if (at.isNull() == false)
-		cuelist->move(at);
-	else
-		cuelist->move(m_mousePressPoint);
-
-	_app->virtualConsole()->clearWidgetSelection();
-	_app->virtualConsole()->setWidgetSelected(cuelist, true);
-
-	_app->doc()->setModified();
-}
-
-void VCFrame::slotAddFrame()
-{
-	VCFrame* frame;
-	QPoint at;
-
-	frame = new VCFrame(this);
-	Q_ASSERT(frame != NULL);
-	frame->show();
-
-	if (at.isNull() == false)
-		frame->move(at);
-	else
-		frame->move(m_mousePressPoint);
-
-	_app->virtualConsole()->clearWidgetSelection();
-	_app->virtualConsole()->setWidgetSelected(frame, true);
-
-	_app->doc()->setModified();
-}
-
-void VCFrame::slotAddLabel()
-{
-	VCLabel* label;
-	QPoint at;
-
-	label = new VCLabel(this);
-	Q_ASSERT(label != NULL);
-	label->show();
-
-	if (at.isNull() == false)
-		label->move(at);
-	else
-		label->move(m_mousePressPoint);
-
-	_app->virtualConsole()->clearWidgetSelection();
-	_app->virtualConsole()->setWidgetSelected(label, true);
-
-	_app->doc()->setModified();
+	/* Basically, just returning VC::addMenu() would suffice here, but
+	   since the returned menu will be deleted when the current widget
+	   changes, we have to copy the menu's contents into a new menu. */
+	QMenu* menu = new QMenu(parentMenu);
+	menu->setTitle(tr("Add"));
+	QListIterator <QAction*> it(
+				_app->virtualConsole()->addMenu()->actions());
+	while (it.hasNext() == true)
+		menu->addAction(it.next());
+	return menu;
 }
 
 /*****************************************************************************
@@ -438,9 +323,12 @@ void VCFrame::slotAddLabel()
 
 void VCFrame::handleWidgetSelection(QMouseEvent* e)
 {
-	/* Don't allow selection of the bottom frame */
+	/* Don't allow selection of the bottom frame. Selecting it will always
+	   actually clear the current selection. */
 	if (isBottomFrame() == false)
 		VCWidget::handleWidgetSelection(e);
+	else
+		_app->virtualConsole()->clearWidgetSelection(); 
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)

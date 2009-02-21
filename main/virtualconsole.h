@@ -229,10 +229,11 @@ protected:
 	 * Menus & actions
 	 *********************************************************************/
 public:
+	QMenu* customMenu() { return m_customMenu; }
 	QMenu* toolsMenu() { return m_toolsMenu; }
 	QMenu* editMenu() { return m_editMenu; }
 	QMenu* addMenu() { return m_addMenu; }
-
+	
 protected:
 	QAction* m_addButtonAction;
 	QAction* m_addSliderAction;
@@ -261,14 +262,19 @@ protected:
 	QAction* m_fontAction;
 	QAction* m_resetFontAction;
 
+	QAction* m_frameSunkenAction;
+	QAction* m_frameRaisedAction;
+	QAction* m_frameNoneAction;
+
 	QAction* m_stackingRaiseAction;
 	QAction* m_stackingLowerAction;
 
 protected:
+	QMenu* m_customMenu;
 	QMenu* m_toolsMenu;
-	QMenu* m_addMenu;
 	QMenu* m_editMenu;
-
+	QMenu* m_addMenu;
+	
 	/*********************************************************************
 	 * Misc slots
 	 *********************************************************************/
@@ -329,6 +335,14 @@ public slots:
 public slots:
 	void slotFont();
 	void slotResetFont();
+
+	/*********************************************************************
+	 * Frame menu callbacks
+	 *********************************************************************/
+public slots:
+	void slotFrameSunken();
+	void slotFrameRaised();
+	void slotFrameNone();
 
 	/*********************************************************************
 	 * Stacking menu callbacks

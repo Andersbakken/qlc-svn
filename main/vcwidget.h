@@ -80,14 +80,15 @@ private:
 	 * Clipboard
 	 *********************************************************************/
 public:
-	/** Copy the contents for this widget from another widget */
-	virtual bool copyFrom(const VCWidget* widget);
+	/** Overwritten QWidget method to set a new parent for this widget */
+	virtual void setParent(QWidget* parent);
 
-public slots:
-	virtual void slotCut();
-	virtual void slotCopy();
-	virtual void slotPaste();
-	virtual void slotDelete();
+	/** Create a copy of this widget into the given parent and return it */
+	virtual VCWidget* createCopy(VCWidget* parent) = 0;
+
+protected:
+	/** Copy the contents for this widget from the given widget */
+	virtual bool copyFrom(const VCWidget* widget);
 
 	/*********************************************************************
 	 * Background image
@@ -98,10 +99,6 @@ public:
 
 	/** Get the widget's background image */
 	virtual QString backgroundImage() { return m_backgroundImage; }
-
-public slots:
-	/** Invoke an image choosing dialog */
-	virtual void slotChooseBackgroundImage();
 
 protected:
 	QString m_backgroundImage;
@@ -122,12 +119,8 @@ public:
 	virtual bool hasCustomBackgroundColor() const {
 		return m_hasCustomBackgroundColor; }
 
-public slots:
-	/** Invoke a color choosing dialog */
-	virtual void slotChooseBackgroundColor();
-
 	/** Reset the widget's background color to whatever the platform uses */
-	virtual void slotResetBackgroundColor();
+	virtual void resetBackgroundColor();
 
 protected:
 	bool m_hasCustomBackgroundColor;
@@ -147,12 +140,8 @@ public:
 	virtual bool hasCustomForegroundColor() const {
 		return m_hasCustomForegroundColor; }
 
-public slots:
-	/** Invoke a color choosing dialog */
-	virtual void slotChooseForegroundColor();
-
 	/** Reset the widget's foreground color to whatever the platform uses */
-	virtual void slotResetForegroundColor();
+	virtual void resetForegroundColor();
 
 protected:
 	bool m_hasCustomForegroundColor;
@@ -170,13 +159,9 @@ public:
 	/** Check, whether the widget has a custom font */
 	virtual bool hasCustomFont() const { return m_hasCustomFont; }
 
-public slots:
-	/** Invoke a font choosing dialog */
-	virtual void slotChooseFont();
-
 	/** Reset the font used for the widget's caption to whatever the
 	    platform uses */
-	virtual void slotResetFont();
+	virtual void resetFont();
 
 protected:
 	bool m_hasCustomFont;
@@ -191,44 +176,26 @@ public:
 	/** Get this widget's caption text */
 	virtual QString caption() const { return windowTitle(); }
 
-public slots:
-	/** Invoke a dialog to rename this widget */
-	virtual void slotRename();
-
-	/*********************************************************************
-	 * Stacking
-	 *********************************************************************/
-public slots:
-	virtual void raise();
-	virtual void lower();
-
 	/*********************************************************************
 	 * Frame style
 	 *********************************************************************/
 public:
 	void setFrameStyle(int style);
 	int frameStyle() const { return m_frameStyle; }
+	void resetFrameStyle();
 
-public slots:
-	void slotSetFrameSunken();
-	void slotSetFrameRaised();
-	void slotResetFrame();
+public:
+	static QString frameStyleToString(int style);
+	static int stringToFrameStyle(const QString& style);
 
 protected:
 	int m_frameStyle;
 
 	/*********************************************************************
-	 * Frame style converters
-	 *********************************************************************/
-public:
-	static QString frameStyleToString(int style);
-	static int stringToFrameStyle(const QString& style);
-
-	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
-public slots:
-	virtual void slotProperties();
+public:
+	virtual void editProperties();
 
 	/*********************************************************************
 	 * External input
@@ -280,20 +247,31 @@ signals:
 	 * Widget menu
 	 *********************************************************************/
 protected:
-	virtual void invokeMenu(QPoint point);
-	virtual QMenu* createMenu();
+	/** Invoke a context menu */
+	virtual void invokeMenu(const QPoint& point);
+
+	/*********************************************************************
+	 * Custom menu
+	 *********************************************************************/
+public:
+	/** Get a custom menu specific to this widget. Ownership is transferred
+	    to the caller, which must delete the returned menu pointer. */
+	virtual QMenu* customMenu(QMenu* parentMenu) { return NULL; }
 
 	/*********************************************************************
 	 * Widget move & resize
 	 *********************************************************************/
 public:
+	/** Resize this widget to given size. TODO: Change to QSize. */
 	virtual void resize(QPoint p);
+	
+	/** Move this widget to the given point */
 	virtual void move(QPoint p);
 
+	/** Get the point where the mouse was clicked last in this widget */
+	QPoint lastClickPoint() const { return m_mousePressPoint; }
+	
 protected:
-	int m_xpos;
-	int m_ypos;
-
 	QPoint m_mousePressPoint;
 	bool m_resizeMode;
 

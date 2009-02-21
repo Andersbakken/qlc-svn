@@ -41,12 +41,30 @@ VCLabel::VCLabel(QWidget* parent) : VCWidget(parent)
 	/* Set the class name "VCLabel" as the object name as well */
 	setObjectName(VCLabel::staticMetaObject.className());
 
-	setCaption("Label");
+	setCaption(tr("Label"));
 	resize(QPoint(100, 30));
 }
 
 VCLabel::~VCLabel()
 {
+}
+
+/*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+VCWidget* VCLabel::createCopy(VCWidget* parent)
+{
+	Q_ASSERT(parent != NULL);
+
+	VCLabel* label = new VCLabel(parent);
+	if (label->copyFrom(this) == false)
+	{
+		delete label;
+		label = NULL;
+	}
+
+	return label;
 }
 
 /*****************************************************************************

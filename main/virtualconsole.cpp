@@ -43,8 +43,12 @@
 #include "virtualconsole.h"
 #include "vcdockslider.h"
 #include "vcdockarea.h"
+#include "vccuelist.h"
 #include "vcbutton.h"
+#include "vcslider.h"
 #include "vcframe.h"
+#include "vclabel.h"
+#include "vcxypad.h"
 #include "keybind.h"
 #include "app.h"
 #include "doc.h"
@@ -58,6 +62,11 @@ extern QApplication* _qapp;
 
 VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 {
+	m_customMenu = NULL;
+	m_toolsMenu = NULL;
+	m_editMenu = NULL;
+	m_addMenu = NULL;
+
 	m_dockArea = NULL;
 	m_drawArea = NULL;
 
@@ -163,6 +172,7 @@ void VirtualConsole::initActions()
 					tr("Paste"), this);
 	connect(m_editPasteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditPaste()));
+	m_editPasteAction->setEnabled(false);
 
 	m_editDeleteAction = new QAction(QIcon(":/editdelete.png"),
 					 tr("Delete"), this);
@@ -212,6 +222,22 @@ void VirtualConsole::initActions()
 	connect(m_resetFontAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotResetFont()));
 
+	/* Frame menu actions */
+	m_frameSunkenAction = new QAction(QIcon(":/framesunken.png"),
+					  tr("Sunken"), this);
+	connect(m_frameSunkenAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotFrameSunken()));
+
+	m_frameRaisedAction = new QAction(QIcon(":/frameraised.png"),
+					  tr("Raised"), this);
+	connect(m_frameRaisedAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotFrameRaised()));
+
+	m_frameNoneAction = new QAction(QIcon(":/framenone.png"),
+					  tr("None"), this);
+	connect(m_frameNoneAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotFrameNone()));
+
 	/* Stacking menu actions */
 	m_stackingRaiseAction = new QAction(QIcon(":/up.png"),
 					    tr("Raise"), this);
@@ -222,11 +248,6 @@ void VirtualConsole::initActions()
 					    tr("Lower"), this);
 	connect(m_stackingLowerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotStackingLower()));
-
-	/* TODO */
-	m_editCutAction->setEnabled(false);
-	m_editCopyAction->setEnabled(false);
-	m_editPasteAction->setEnabled(false);
 }
 
 void VirtualConsole::initMenuBar()
@@ -288,8 +309,17 @@ void VirtualConsole::initMenuBar()
 	/* Font menu */
 	QMenu* fontMenu = new QMenu(m_editMenu);
 	fontMenu->setTitle(tr("Font"));
+	m_editMenu->addMenu(fontMenu);
 	fontMenu->addAction(m_fontAction);
 	fontMenu->addAction(m_resetFontAction);
+
+	/* Frame menu */
+	QMenu* frameMenu = new QMenu(m_editMenu);
+	frameMenu->setTitle(tr("Frame"));
+	m_editMenu->addMenu(frameMenu);
+	frameMenu->addAction(m_frameSunkenAction);
+	frameMenu->addAction(m_frameRaisedAction);
+	frameMenu->addAction(m_frameNoneAction);
 
 	/* Stacking order menu */
 	QMenu* stackMenu = new QMenu(m_editMenu);
@@ -297,6 +327,11 @@ void VirtualConsole::initMenuBar()
 	m_editMenu->addMenu(stackMenu);
 	stackMenu->addAction(m_stackingRaiseAction);
 	stackMenu->addAction(m_stackingLowerAction);
+
+	/* Add a separator that separates the common edit items from a custom
+	   widget menu that gets appended to the edit menu when a selected
+	   widget provides one. */
+	m_editMenu->addSeparator();
 }
 
 void VirtualConsole::initDockArea()
@@ -466,8 +501,20 @@ void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
 		m_selectedWidgets.append(widget);
 		widget->update();
 	}
-	else
-		qWarning() << "Virtual console clipboard double add!";
+
+	/* Get rid of an existing menu */
+	if (m_customMenu != NULL)
+		delete m_customMenu;
+	m_customMenu = NULL;
+
+	/* Change the custom menu to the latest-selected widget's menu */
+	if (m_selectedWidgets.count() > 0)
+	{
+		VCWidget* latestWidget = m_selectedWidgets.last();
+		m_customMenu = latestWidget->customMenu(m_editMenu);
+		if (m_customMenu != NULL)
+			m_editMenu->addMenu(m_customMenu);
+	}
 }
 
 bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
@@ -490,6 +537,11 @@ void VirtualConsole::clearWidgetSelection()
 	QListIterator <VCWidget*> it(widgets);
 	while (it.hasNext() == true)
 		it.next()->update();
+
+	/* Get rid of the custom menu (if any) */
+	if (m_customMenu != NULL)
+		delete m_customMenu;
+	m_customMenu = NULL;
 }
 
 /*****************************************************************************
@@ -519,59 +571,125 @@ void VirtualConsole::slotAddButton()
 	/* Find the frame that was selected last and add the widget there */
 	QList <VCFrame*> frames(findChildren <VCFrame*> ());
 
-	VCFrame* frame = frames.last();
-	if (frame != NULL)
-		frame->slotAddButton();
+	VCFrame* parent = frames.last();
+	if (parent != NULL)
+	{
+		VCButton* button = new VCButton(parent);
+		Q_ASSERT(button != NULL);
+		button->show();
+
+		if (parent->buttonBehaviour() == VCFrame::Exclusive)
+			button->setExclusive(true);
+		else
+			button->setExclusive(false);
+
+		button->move(parent->lastClickPoint());
+
+		clearWidgetSelection();
+		setWidgetSelected(button, true);
+
+		_app->doc()->setModified();
+	}
 }
 
 void VirtualConsole::slotAddSlider()
 {
 	/* Find the frame that was selected last and add the widget there */
 	QList <VCFrame*> frames(findChildren <VCFrame*> ());
+	VCFrame* parent = frames.last();
+	if (parent != NULL)
+	{
+		VCSlider* slider = new VCSlider(parent);
+		Q_ASSERT(slider != NULL);
+		slider->show();
 
-	VCFrame* frame = frames.last();
-	if (frame != NULL)
-		frame->slotAddSlider();
+		slider->move(parent->lastClickPoint());
+
+		clearWidgetSelection();
+		setWidgetSelected(slider, true);
+
+		_app->doc()->setModified();
+	}
 }
 
 void VirtualConsole::slotAddXYPad()
 {
 	/* Find the frame that was selected last and add the widget there */
 	QList <VCFrame*> frames(findChildren <VCFrame*> ());
+	VCFrame* parent = frames.last();
+	if (parent != NULL)
+	{
+		VCXYPad* xypad = new VCXYPad(parent);
+		Q_ASSERT(xypad != NULL);
+		xypad->show();
 
-	VCFrame* frame = frames.last();
-	if (frame != NULL)
-		frame->slotAddXYPad();
+		xypad->move(parent->lastClickPoint());
+
+		clearWidgetSelection();
+		setWidgetSelected(xypad, true);
+
+		_app->doc()->setModified();
+	}
 }
 
 void VirtualConsole::slotAddCueList()
 {
 	/* Find the frame that was selected last and add the widget there */
 	QList <VCFrame*> frames(findChildren <VCFrame*> ());
+	VCFrame* parent = frames.last();
+	if (parent != NULL)
+	{
+		VCCueList* cuelist = new VCCueList(parent);
+		Q_ASSERT(cuelist != NULL);
+		cuelist->show();
 
-	VCFrame* frame = frames.last();
-	if (frame != NULL)
-		frame->slotAddCueList();
+		cuelist->move(parent->lastClickPoint());
+
+		clearWidgetSelection();
+		setWidgetSelected(cuelist, true);
+
+		_app->doc()->setModified();
+	}
 }
 
 void VirtualConsole::slotAddFrame()
 {
 	/* Find the frame that was selected last and add the widget there */
 	QList <VCFrame*> frames(findChildren <VCFrame*> ());
+	VCFrame* parent = frames.last();
+	if (parent != NULL)
+	{
+		VCFrame* frame = new VCFrame(parent);
+		Q_ASSERT(frame != NULL);
+		frame->show();
 
-	VCFrame* frame = frames.last();
-	if (frame != NULL)
-		frame->slotAddFrame();
+		frame->move(parent->lastClickPoint());
+
+		clearWidgetSelection();
+		setWidgetSelected(frame, true);
+
+		_app->doc()->setModified();
+	}
 }
 
 void VirtualConsole::slotAddLabel()
 {
 	/* Find the frame that was selected last and add the widget there */
 	QList <VCFrame*> frames(findChildren <VCFrame*> ());
+	VCFrame* parent = frames.last();
+	if (parent != NULL)
+	{
+		VCLabel* label = new VCLabel(parent);
+		Q_ASSERT(label != NULL);
+		label->show();
 
-	VCFrame* frame = frames.last();
-	if (frame != NULL)
-		frame->slotAddLabel();
+		label->move(parent->lastClickPoint());
+
+		clearWidgetSelection();
+		setWidgetSelected(label, true);
+
+		_app->doc()->setModified();
+	}
 }
 
 /*********************************************************************
@@ -666,11 +784,13 @@ void VirtualConsole::slotEditCut()
 	{
 		m_editAction = EditNone;
 		m_clipboard.clear();
+		m_editPasteAction->setEnabled(false);
 	}
 	else
 	{
 		m_editAction = EditCut;
 		m_clipboard = m_selectedWidgets;
+		m_editPasteAction->setEnabled(true);
 	}
 }
 
@@ -680,11 +800,14 @@ void VirtualConsole::slotEditCopy()
 	if (m_selectedWidgets.count() == 0)
 	{
 		m_editAction = EditNone;
+		m_clipboard.clear();
+		m_editPasteAction->setEnabled(false);
 	}
 	else
 	{
 		m_editAction = EditCopy;
 		m_clipboard = m_selectedWidgets;
+		m_editPasteAction->setEnabled(true);
 	}
 }
 
@@ -694,14 +817,50 @@ void VirtualConsole::slotEditPaste()
 	{
 		/* Invalidate the edit action if there's nothing to paste */
 		m_editAction = EditNone;
+		m_editPasteAction->setEnabled(false);
 	}
 	else if (m_editAction == EditCut)
 	{
-		/* TODO: reparent() to all frames in m_selectedWidgets */
+		VCWidget* parent;
+
+		/* Select the parent that gets the cut clipboard contents */
+		if (m_selectedWidgets.count() == 0)
+			parent = _app->virtualConsole()->drawArea();
+		else
+			parent = m_selectedWidgets.last();
+
+		/* Move each widget to the new parent */
+		QMutableListIterator <VCWidget*> it(m_clipboard);
+		while (it.hasNext() == true)
+		{
+			VCWidget* widget = it.next();
+			Q_ASSERT(widget != NULL);
+			widget->setParent(parent);
+			widget->show();
+		}
+
+		/* Clear clipboard after pasting stuff that was CUT */
+		m_clipboard.clear();
+		m_editPasteAction->setEnabled(false);
 	}
 	else if (m_editAction == EditCopy)
 	{
-		/* TODO: copy m_clipboard to all frames in m_selectedWidgets */
+		VCWidget* parent;
+
+		/* Select the parent that gets the copied clipboard contents */
+		if (m_selectedWidgets.count() == 0)
+			parent = _app->virtualConsole()->drawArea();
+		else
+			parent = m_selectedWidgets.last();
+
+		/* Copy each widget to the parent */
+		QMutableListIterator <VCWidget*> it(m_clipboard);
+		while (it.hasNext() == true)
+		{
+			VCWidget* widget = it.next()->createCopy(parent);
+			Q_ASSERT(widget != NULL);
+			widget->show();
+		}
 	}
 }
 
@@ -724,6 +883,7 @@ void VirtualConsole::slotEditDelete()
 			/* Remove the widget from clipboard as well so that
 			   deleted widgets won't be pasted anymore anywhere */
 			m_clipboard.removeAll(widget);
+			m_editPasteAction->setEnabled(false);
 		}
 	}
 }
@@ -732,7 +892,7 @@ void VirtualConsole::slotEditProperties()
 {
 	VCWidget* widget = m_selectedWidgets.last();
 	if (widget != NULL)
-		widget->slotProperties();
+		widget->editProperties();
 }
 
 void VirtualConsole::slotEditRename()
@@ -793,7 +953,7 @@ void VirtualConsole::slotBackgroundNone()
 {
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
-		widget->slotResetBackgroundColor();
+		widget->resetBackgroundColor();
 }
 
 /*********************************************************************
@@ -819,7 +979,7 @@ void VirtualConsole::slotForegroundNone()
 {
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
-		widget->slotResetForegroundColor();
+		widget->resetForegroundColor();
 }
 
 /*********************************************************************
@@ -846,7 +1006,7 @@ void VirtualConsole::slotResetFont()
 {
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
-		widget->slotResetFont();
+		widget->resetFont();
 }
 
 /*********************************************************************
@@ -867,6 +1027,31 @@ void VirtualConsole::slotStackingLower()
 		widget->lower();
 }
 
+/*********************************************************************
+ * Frame menu callbacks
+ *********************************************************************/
+
+void VirtualConsole::slotFrameSunken()
+{
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->setFrameStyle(KVCFrameStyleSunken);
+}
+
+void VirtualConsole::slotFrameRaised()
+{
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->setFrameStyle(KVCFrameStyleRaised);
+}
+
+void VirtualConsole::slotFrameNone()
+{
+	VCWidget* widget;
+	foreach(widget, m_selectedWidgets)
+		widget->setFrameStyle(KVCFrameStyleNone);
+}
+ 
 /*********************************************************************
  * Misc callbacks
  *********************************************************************/

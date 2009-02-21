@@ -70,6 +70,15 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	setStopFunctions(false);
 	setFrameStyle(KVCFrameStyleNone);
 
+	/* Menu actions */
+	m_chooseIconAction = new QAction(QIcon(":/image.png"), tr("Choose..."),
+					 this);
+	m_resetIconAction = new QAction(QIcon(":/undo.png"), tr("None"), this);	
+	connect(m_chooseIconAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotChooseIcon()));
+	connect(m_resetIconAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotResetIcon()));
+
 	/* Initial size */
 	setMinimumSize(20, 20);
 	resize(QPoint(30, 30));
@@ -94,10 +103,45 @@ VCButton::~VCButton()
 }
 
 /*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+VCWidget* VCButton::createCopy(VCWidget* parent)
+{
+	Q_ASSERT(parent != NULL);
+
+	VCButton* button = new VCButton(parent);
+	if (button->copyFrom(this) == false)
+	{
+		delete button;
+		button = NULL;
+	}
+
+	return button;
+}
+
+bool VCButton::copyFrom(VCWidget* widget)
+{
+	VCButton* button = qobject_cast <VCButton*> (widget);
+	if (button == NULL)
+		return false;
+	
+	/* Copy button-specific stuff */
+	setIcon(button->icon());
+	setKeyBind(button->keyBind());
+	setFunction(button->function());
+	setExclusive(button->isExclusive());
+	setStopFunctions(button->stopFunctions());
+	
+	/* Copy common stuff */
+	return VCWidget::copyFrom(widget);
+}
+
+/*****************************************************************************
  * Properties
  *****************************************************************************/
 
-void VCButton::slotProperties()
+void VCButton::editProperties()
 {
 	VCButtonProperties prop(this, _app);
 	if (prop.exec() == QDialog::Accepted)
@@ -121,7 +165,7 @@ void VCButton::setBackgroundColor(const QColor& color)
 	_app->doc()->setModified();
 }
 
-void VCButton::slotResetBackgroundColor()
+void VCButton::resetBackgroundColor()
 {
 	QColor fg;
 
@@ -162,7 +206,7 @@ void VCButton::setForegroundColor(const QColor& color)
 	_app->doc()->setModified();
 }
 
-void VCButton::slotResetForegroundColor()
+void VCButton::resetForegroundColor()
 {
 	QColor bg;
 
@@ -592,54 +636,17 @@ void VCButton::slotFlashReady()
 }
 
 /*****************************************************************************
- * Widget menu
+ * Custom menu
  *****************************************************************************/
 
-void VCButton::invokeMenu(QPoint point)
+QMenu* VCButton::customMenu(QMenu* parentMenu)
 {
-	QAction* attachAction;
-	QMenu* menu;
+	QMenu* menu = new QMenu(parentMenu);
+	menu->setTitle(tr("Icon"));
+	menu->addAction(m_chooseIconAction);
+	menu->addAction(m_resetIconAction);
 
-	/* First, create the common widget menu and insert a separator to it */
-	menu = VCWidget::createMenu();
-
-	/* Icon menu */
-	QMenu* iconMenu = new QMenu(menu);
-	iconMenu->setTitle(tr("Icon"));
-	iconMenu->addAction(QIcon(":/image.png"), tr("Choose..."),
-			    this, SLOT(slotChooseIcon()));
-	iconMenu->addAction(QIcon(":/undo.png"), tr("None"),
-			    this, SLOT(slotResetIcon()));
-
-	menu->addMenu(iconMenu);
-	menu->addSeparator();
-
-	/* Insert a menu item for attaching a function to this button */
-	attachAction = menu->addAction(QIcon(":/attach.png"),
-				       tr("Set function..."), this,
-				       SLOT(slotAttachFunction()));
-
-	menu->exec(point);
-	delete menu;
-}
-
-void VCButton::slotAttachFunction()
-{
-	FunctionSelection sel(this, false, KNoID, Function::Undefined, false);
-	if (sel.exec() == QDialog::Accepted)
-	{
-		t_function_id fid;
-
-		fid = sel.selection.at(0);
-		setFunction(fid);
-
-		if (caption().isEmpty() == true)
-		{
-			Function* function = _app->doc()->function(fid);
-			if (function != NULL)
-				setCaption(function->name());
-		}
-	}
+	return menu;
 }
 
 /*****************************************************************************

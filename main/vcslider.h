@@ -79,20 +79,28 @@ private:
 	Q_DISABLE_COPY(VCSlider)
 
 	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/** Create a copy of this widget into the given parent */
+	VCWidget* createCopy(VCWidget* parent);
+
+protected:
+	/** Copy the contents for this widget from another widget */
+	bool copyFrom(VCWidget* widget);
+
+	/*********************************************************************
 	 * Caption
 	 *********************************************************************/
 public:
 	void setCaption(const QString& text);
 
-public slots:
-	void slotRename();
-
 	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
-public slots:
+public:
 	/** Edit this widget's properties */
-	void slotProperties();
+	void editProperties();
 
 	/*********************************************************************
 	 * QLC Mode

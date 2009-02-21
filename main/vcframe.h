@@ -55,27 +55,34 @@ private:
 	Q_DISABLE_COPY(VCFrame)
 
 	/*********************************************************************
+	 * Clipboard
+	 *********************************************************************/
+public:
+	/** Create a copy of this widget into the given parent */
+	VCWidget* createCopy(VCWidget* parent);
+
+protected:
+	/** Copy the contents for this widget from another widget */
+	bool copyFrom(VCWidget* widget);
+
+	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
-public slots:
+public:
 	/** Edit this widget's properties */
-	void slotProperties();
+	void editProperties();
 
 	/*********************************************************************
 	 * Button behaviour
 	 *********************************************************************/
 public:
-	enum ButtonBehaviour
-	{
-		Normal = 0,
-		Exclusive = 1
-	};
+	enum ButtonBehaviour { Normal = 0, Exclusive = 1};
 
 	/** Set the way buttons behave inside this frame */
 	void setButtonBehaviour(ButtonBehaviour);
 
 	/** Get the way buttons behave inside this frame */
-	ButtonBehaviour buttonBehaviour() { return m_buttonBehaviour; }
+	ButtonBehaviour buttonBehaviour() const { return m_buttonBehaviour; }
 
 protected:
 	ButtonBehaviour m_buttonBehaviour;
@@ -89,21 +96,12 @@ public:
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
 	/*********************************************************************
-	 * Widget menu & actions
+	 * Custom menu
 	 *********************************************************************/
-protected:
-	void invokeMenu(QPoint point);
-
-	/*********************************************************************
-	 * Widget adding
-	 *********************************************************************/
-public slots:
-	void slotAddButton();
-	void slotAddSlider();
-	void slotAddXYPad();
-	void slotAddCueList();
-	void slotAddFrame();
-	void slotAddLabel();
+public:
+	/** Get a custom menu specific to this widget. Ownership is transferred
+	    to the caller, which must delete the returned menu pointer. */
+	virtual QMenu* customMenu(QMenu* parentMenu);
 
 	/*********************************************************************
 	 * Event handlers
