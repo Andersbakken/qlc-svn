@@ -31,7 +31,6 @@
 #include "chasereditor.h"
 #include "fixture.h"
 #include "chaser.h"
-#include "scene.h"
 #include "doc.h"
 #include "app.h"
 #include "bus.h"
