@@ -99,11 +99,11 @@ void VCCueListProperties::slotAddClicked()
 	QTreeWidgetItem* item;
 	Function* function;
 
-	/* Select only scenes */
-	FunctionSelection fs(this, true, KNoID, Function::Scene, true);
+	/* Select functions */
+	FunctionSelection fs(this, true);
 	if (fs.exec() == QDialog::Accepted)
 	{
-		/* Append selected scenes. TODO: Insert after current item. */
+		/* Append selected functions */
 		QListIterator <t_function_id> it(fs.selection);
 		while (it.hasNext() == true)
 		{
