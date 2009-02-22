@@ -35,9 +35,8 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid,
 			     char *description, t_output output)
 	: QThread(parent)
 {
-	Q_ASSERT(path.isEmpty() == false);
 	Q_ASSERT(output != KOutputInvalid);
-	
+
 	m_vid = vid;
 	m_pid = pid;
 	m_output = output;

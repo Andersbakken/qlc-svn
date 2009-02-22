@@ -129,7 +129,6 @@ USBDMXDevice::USBDMXDevice(QObject* parent, const QString& path)
 	: QObject(parent)
 {
 	Q_ASSERT(path.isEmpty() == false);
-	Q_ASSERT(output != KOutputInvalid);
 
 	m_path = path;
 	m_file.setFileName(m_path);
