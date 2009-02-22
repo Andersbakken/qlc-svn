@@ -104,7 +104,7 @@ void VCCueListProperties::slotAddClicked()
 	if (fs.exec() == QDialog::Accepted)
 	{
 		/* Append selected functions */
-		QListIterator <t_function_id> it(fs.selection);
+		QListIterator <t_function_id> it(fs.selection());
 		while (it.hasNext() == true)
 		{
 			function = _app->doc()->function(it.next());

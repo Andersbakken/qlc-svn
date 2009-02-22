@@ -409,7 +409,7 @@ void Chaser::startMemberAt(int index)
 	t_function_id fid;
 
 	fid = m_steps.at(index);
-	Q_ASSERT(fid > 0 && fid < m_steps.count());
+	Q_ASSERT(fid != KNoID);
 
 	function = _app->doc()->function(fid);
 	Q_ASSERT(function != NULL);
@@ -423,7 +423,7 @@ void Chaser::stopMemberAt(int index)
 	t_function_id fid;
 
 	fid = m_steps.at(index);
-	Q_ASSERT(fid > 0 && fid < m_steps.count());
+	Q_ASSERT(fid != KNoID);
 
 	function = _app->doc()->function(fid);
 	Q_ASSERT(function != NULL);

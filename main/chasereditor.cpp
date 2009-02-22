@@ -127,7 +127,7 @@ void ChaserEditor::updateStepList(int selectIndex)
 		fid = it.next();
 		function = _app->doc()->function(fid);
 		Q_ASSERT(function != NULL);
-		
+
 		item = new QTreeWidgetItem(m_tree);
 		item->setText(KColumnNumber, "###");
 		item->setText(KColumnFunction, function->name());
@@ -162,11 +162,10 @@ void ChaserEditor::slotNameEdited(const QString& text)
 
 void ChaserEditor::slotAddClicked()
 {
-	FunctionSelection fs(this, true, m_original->id(),
-			     Function::Scene, true);
+	FunctionSelection fs(this, true, m_original->id());
 	if (fs.exec() == QDialog::Accepted)
 	{
-		QListIterator <t_function_id> it(fs.selection);
+		QListIterator <t_function_id> it(fs.selection());
 		while (it.hasNext() == true)
 			m_chaser->addStep(it.next());
 

@@ -58,7 +58,7 @@ class Function : public QObject
 	Q_OBJECT
 
 public:
-	/** TODO: There's no point in having these as a bit mask?! */
+	/** This is a bit mask because FunctionSelection does type filtering */
 	enum Type
 	{
 		Undefined  = 0,

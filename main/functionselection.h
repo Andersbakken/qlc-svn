@@ -31,6 +31,7 @@
 
 class QTreeWidgetItem;
 class QToolBar;
+class QAction;
 class QWidget;
 
 class Fixture;
@@ -51,14 +52,15 @@ public:
 	 * @param multiple Set true to enable multiple selection
 	 * @param disableID A function ID to disable (when adding steps to
 	 *                  a chaser, disable the chaser itself)
-	 * @param filter Show only functions of the given types OR'd. Use
-	 *               Function::Undefined to show all.
+	 * @param filter Show only functions of the given types OR'd. All
+	 *               functions are shown by default.
 	 * @param constFilter If true, don't allow user filter selection
 	 */
 	FunctionSelection(QWidget* parent,
 			  bool multiple,
 			  t_function_id disableFunction = KNoID,
-			  int filter = Function::Undefined,
+			  int filter = Function::Scene | Function::Chaser |
+				       Function::EFX | Function::Collection,
 			  bool constFilter = false);
 
 	/**
@@ -66,13 +68,19 @@ public:
 	 */
 	~FunctionSelection();
 
-	/**
-	 * List of selected function IDs
-	 */
-	QList <t_function_id> selection;
-
 private:
 	Q_DISABLE_COPY(FunctionSelection)
+
+	/*********************************************************************
+	 * Selection
+	 *********************************************************************/
+public:
+	/** Get a list of selected function IDs */
+	const QList <t_function_id> selection() const { return m_selection; }
+
+protected:
+	/** The list of selected function IDs */
+	QList <t_function_id> m_selection;
 
 	/*********************************************************************
 	 * Toolbar
@@ -89,6 +97,10 @@ protected:
 
 protected:
 	QToolBar* m_toolbar;
+	QAction* m_addSceneAction;
+	QAction* m_addChaserAction;
+	QAction* m_addEFXAction;
+	QAction* m_addCollectionAction;
 
 	/*********************************************************************
 	 * Internal

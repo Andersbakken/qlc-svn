@@ -47,6 +47,12 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 				     bool constFilter)
 	: QDialog(parent)
 {
+	m_toolbar = NULL;
+	m_addSceneAction = NULL;
+	m_addChaserAction = NULL;
+	m_addEFXAction = NULL;
+	m_addCollectionAction = NULL;
+
 	setupUi(this);
 
 	/* Create toolbar */
@@ -58,23 +64,23 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 	/* Filter */
 	m_filter = filter;
 
-	if (m_filter & Function::Scene)
-		m_sceneCheck->setChecked(true);
+	m_sceneCheck->setChecked(m_filter & Function::Scene);
+	m_addSceneAction->setEnabled(m_filter & Function::Scene);
 	connect(m_sceneCheck, SIGNAL(toggled(bool)),
 		this, SLOT(slotSceneChecked(bool)));
 
-	if (m_filter & Function::Chaser)
-		m_chaserCheck->setChecked(true);
+	m_chaserCheck->setChecked(m_filter & Function::Chaser);
+	m_addChaserAction->setEnabled(m_filter & Function::Chaser);
 	connect(m_chaserCheck, SIGNAL(toggled(bool)),
 		this, SLOT(slotChaserChecked(bool)));
 
-	if (m_filter & Function::EFX)
-		m_efxCheck->setChecked(true);
+	m_efxCheck->setChecked(m_filter & Function::EFX);
+	m_addEFXAction->setEnabled(m_filter & Function::EFX);
 	connect(m_efxCheck, SIGNAL(toggled(bool)),
 		this, SLOT(slotEFXChecked(bool)));
 
-	if (m_filter & Function::Collection)
-		m_collectionCheck->setChecked(true);
+	m_collectionCheck->setChecked(m_filter & Function::Collection);
+	m_addCollectionAction->setEnabled(m_filter & Function::Collection);
 	connect(m_collectionCheck, SIGNAL(toggled(bool)),
 		this, SLOT(slotCollectionChecked(bool)));
 
@@ -113,14 +119,14 @@ void FunctionSelection::initToolBar()
 	m_toolbar = new QToolBar(this);
 	layout()->setMenuBar(m_toolbar);
 
-	m_toolbar->addAction(QIcon(":/scene.png"), tr("New Scene"),
-			this, SLOT(slotNewScene()));
-	m_toolbar->addAction(QIcon(":/chaser.png"), tr("New Chaser"),
-			this, SLOT(slotNewChaser()));
-	m_toolbar->addAction(QIcon(":/efx.png"), tr("New EFX"),
-			this, SLOT(slotNewEFX()));
-	m_toolbar->addAction(QIcon(":/collection.png"), tr("New Collection"),
-			this, SLOT(slotNewCollection()));
+	m_addSceneAction = m_toolbar->addAction(QIcon(":/scene.png"),
+			tr("New Scene"), this, SLOT(slotNewScene()));
+	m_addChaserAction = m_toolbar->addAction(QIcon(":/chaser.png"),
+			tr("New Chaser"), this, SLOT(slotNewChaser()));
+	m_addEFXAction = m_toolbar->addAction(QIcon(":/efx.png"),
+			tr("New EFX"), this, SLOT(slotNewEFX()));
+	m_addCollectionAction = m_toolbar->addAction(QIcon(":/collection.png"),
+			tr("New Collection"), this, SLOT(slotNewCollection()));
 }
 
 void FunctionSelection::slotNewScene()
@@ -267,8 +273,7 @@ void FunctionSelection::refillTree()
 		if (function == NULL)
 			continue;
 
-		if (m_filter == Function::Undefined ||
-		    m_filter & function->type())
+		if (m_filter & function->type())
 		{
 			item = new QTreeWidgetItem(m_tree);
 			updateFunctionItem(item, function);
@@ -281,20 +286,20 @@ void FunctionSelection::refillTree()
 
 void FunctionSelection::slotItemSelectionChanged()
 {
-	QList <t_function_id> removeList(selection);
+	QList <t_function_id> removeList(m_selection);
 
 	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
 	while (it.hasNext() == true)
 	{
 		t_function_id id = it.next()->text(KColumnID).toInt();
-		if (selection.contains(id) == false)
-			selection.append(id);
+		if (m_selection.contains(id) == false)
+			m_selection.append(id);
 
 		removeList.removeAll(id);
 	}
 
 	while (removeList.isEmpty() == false)
-		selection.removeAll(removeList.takeFirst());
+		m_selection.removeAll(removeList.takeFirst());
 }
 
 void FunctionSelection::slotItemDoubleClicked(QTreeWidgetItem* item)
@@ -311,6 +316,7 @@ void FunctionSelection::slotSceneChecked(bool state)
 		m_filter = (m_filter | Function::Scene);
 	else
 		m_filter = (m_filter & ~Function::Scene);
+	m_addSceneAction->setEnabled(state);
 	refillTree();
 }
 
@@ -320,6 +326,7 @@ void FunctionSelection::slotChaserChecked(bool state)
 		m_filter = (m_filter | Function::Chaser);
 	else
 		m_filter = (m_filter & ~Function::Chaser);
+	m_addChaserAction->setEnabled(state);
 	refillTree();
 }
 
@@ -329,6 +336,7 @@ void FunctionSelection::slotEFXChecked(bool state)
 		m_filter = (m_filter | Function::EFX);
 	else
 		m_filter = (m_filter & ~Function::EFX);
+	m_addEFXAction->setEnabled(state);
 	refillTree();
 }
 
@@ -338,6 +346,7 @@ void FunctionSelection::slotCollectionChecked(bool state)
 		m_filter = (m_filter | Function::Collection);
 	else
 		m_filter = (m_filter & ~Function::Collection);
+	m_addCollectionAction->setEnabled(state);
 	refillTree();
 }
 

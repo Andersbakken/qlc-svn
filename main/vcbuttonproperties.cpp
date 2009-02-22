@@ -99,11 +99,11 @@ VCButtonProperties::~VCButtonProperties()
 
 void VCButtonProperties::slotAttachFunction()
 {
-	FunctionSelection sel(this, false, KNoID, Function::Undefined, false);
+	FunctionSelection sel(this, false);
 	if (sel.exec() == QDialog::Accepted)
 	{
 		/* Get the first selected function */
-		slotSetFunction(sel.selection.at(0));
+		slotSetFunction(sel.selection().at(0));
 	}
 }
 

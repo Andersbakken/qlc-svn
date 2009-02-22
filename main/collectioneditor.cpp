@@ -84,7 +84,7 @@ void CollectionEditor::slotAdd()
 	{
 		t_function_id fid;
 
-		QListIterator <t_function_id> it(sel.selection);
+		QListIterator <t_function_id> it(sel.selection());
 		while (it.hasNext() == true)
 		{
 			fid = it.next();
