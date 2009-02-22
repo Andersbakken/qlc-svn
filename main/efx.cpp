@@ -34,6 +34,7 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
+#include "efxeditor.h"
 #include "fixture.h"
 #include "scene.h"
 #include "app.h"
@@ -750,6 +751,16 @@ void EFX::setStopSceneEnabled(bool set)
 bool EFX::stopSceneEnabled()
 {
 	return m_stopSceneEnabled;
+}
+
+/*****************************************************************************
+ * Edit
+ *****************************************************************************/
+
+int EFX::edit()
+{
+	EFXEditor editor(_app, this);
+	return editor.exec();
 }
 
 /*****************************************************************************

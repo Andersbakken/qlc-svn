@@ -373,40 +373,7 @@ int FunctionManager::slotEdit()
 		return QDialog::Rejected;
 
 	// Edit the selected function
-	switch (function->type())
-	{
-	case Function::Scene:
-	{
-		SceneEditor se(this, static_cast<Scene*> (function));
-		result = se.exec();
-	}
-	break;
-
-	case Function::Chaser:
-	{
-		ChaserEditor ce(this, static_cast<Chaser*> (function));
-		result = ce.exec();
-	}
-	break;
-
-	case Function::Collection:
-	{
-		CollectionEditor fce(this, static_cast<Collection*> (function));
-		result = fce.exec();
-	}
-	break;
-
-	case Function::EFX:
-	{
-		EFXEditor ee(this, static_cast<EFX*> (function));
-		result = ee.exec();
-	}
-	break;
-
-	default:
-		result = QDialog::Rejected;
-		break;
-	}
+	result = function->edit();
 
 	updateFunctionItem(item, function);
 

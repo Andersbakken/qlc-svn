@@ -28,6 +28,7 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
+#include "chasereditor.h"
 #include "fixture.h"
 #include "chaser.h"
 #include "scene.h"
@@ -124,6 +125,16 @@ bool Chaser::lowerStep(unsigned int index)
 	{
 		return false;
 	}
+}
+
+/*****************************************************************************
+ * Edit
+ *****************************************************************************/
+
+int Chaser::edit()
+{
+	ChaserEditor editor(_app, this);
+	return editor.exec();
 }
 
 /*****************************************************************************

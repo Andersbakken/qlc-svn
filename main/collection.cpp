@@ -29,6 +29,7 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
+#include "collectioneditor.h"
 #include "collection.h"
 #include "function.h"
 #include "app.h"
@@ -59,6 +60,16 @@ void Collection::copyFrom(const Collection* fc, bool append)
 Collection::~Collection()
 {
 	m_steps.clear();
+}
+
+/*****************************************************************************
+ * Edit
+ *****************************************************************************/
+
+int Collection::edit()
+{
+	CollectionEditor editor(_app, this);
+	return editor.exec();
 }
 
 /*****************************************************************************

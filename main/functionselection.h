@@ -30,6 +30,7 @@
 #include "function.h"
 
 class QTreeWidgetItem;
+class QToolBar;
 class QWidget;
 
 class Fixture;
@@ -74,12 +75,29 @@ private:
 	Q_DISABLE_COPY(FunctionSelection)
 
 	/*********************************************************************
+	 * Toolbar
+	 *********************************************************************/
+protected slots:
+	void slotNewScene();
+	void slotNewChaser();
+	void slotNewEFX();
+	void slotNewCollection();
+
+protected:
+	/** Create toolbar */
+	void initToolBar();
+
+protected:
+	QToolBar* m_toolbar;
+
+	/*********************************************************************
 	 * Internal
 	 *********************************************************************/
 protected:
-	/**
-	 * Clear & (re)fill the tree
-	 */
+	/** Update the contents of the given function to the tree item */
+	void updateFunctionItem(QTreeWidgetItem* item, Function* function);
+
+	/** Clear & (re)fill the tree */
 	void refillTree();
 
 	/**

@@ -21,6 +21,7 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
+#include <QToolBar>
 #include <QDebug>
 
 #include "functionselection.h"
@@ -47,6 +48,9 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 	: QDialog(parent)
 {
 	setupUi(this);
+
+	/* Create toolbar */
+	initToolBar();
 
 	/* Disable function */
 	m_disable = disableFunction;
@@ -101,8 +105,153 @@ FunctionSelection::~FunctionSelection()
 }
 
 /*****************************************************************************
- * Internal
+ * Toolbar
  *****************************************************************************/
+
+void FunctionSelection::initToolBar()
+{
+	m_toolbar = new QToolBar(this);
+	layout()->setMenuBar(m_toolbar);
+
+	m_toolbar->addAction(QIcon(":/scene.png"), tr("New Scene"),
+			this, SLOT(slotNewScene()));
+	m_toolbar->addAction(QIcon(":/chaser.png"), tr("New Chaser"),
+			this, SLOT(slotNewChaser()));
+	m_toolbar->addAction(QIcon(":/efx.png"), tr("New EFX"),
+			this, SLOT(slotNewEFX()));
+	m_toolbar->addAction(QIcon(":/collection.png"), tr("New Collection"),
+			this, SLOT(slotNewCollection()));
+}
+
+void FunctionSelection::slotNewScene()
+{
+	Function* function;
+	function = _app->doc()->newFunction(Function::Scene);
+	if (function == NULL)
+		return;
+	function->setName(tr("New Scene"));
+
+	/* Create a new item for the function */
+	QTreeWidgetItem* item;
+	item = new QTreeWidgetItem(m_tree);
+	updateFunctionItem(item, function);
+
+	/* Append the new function to current selection */
+	item->setSelected(true);
+
+	if (function->edit() == QDialog::Rejected)
+	{
+		_app->doc()->deleteFunction(function->id());
+		delete item;
+	}
+	else
+	{
+		updateFunctionItem(item, function);
+		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+		m_tree->scrollToItem(item);
+	}
+}
+
+void FunctionSelection::slotNewChaser()
+{
+	Function* function;
+	function = _app->doc()->newFunction(Function::Chaser);
+	if (function == NULL)
+		return;
+	function->setName(tr("New Chaser"));
+
+	/* Create a new item for the function */
+	QTreeWidgetItem* item;
+	item = new QTreeWidgetItem(m_tree);
+	updateFunctionItem(item, function);
+
+	/* Append the new function to current selection */
+	item->setSelected(true);
+
+	if (function->edit() == QDialog::Rejected)
+	{
+		_app->doc()->deleteFunction(function->id());
+		delete item;
+	}
+	else
+	{
+		updateFunctionItem(item, function);
+		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+		m_tree->scrollToItem(item);
+	}
+}
+
+void FunctionSelection::slotNewEFX()
+{
+	Function* function;
+	function = _app->doc()->newFunction(Function::EFX);
+	if (function == NULL)
+		return;
+	function->setName(tr("New EFX"));
+
+	/* Create a new item for the function */
+	QTreeWidgetItem* item;
+	item = new QTreeWidgetItem(m_tree);
+	updateFunctionItem(item, function);
+
+	/* Append the new function to current selection */
+	item->setSelected(true);
+
+	if (function->edit() == QDialog::Rejected)
+	{
+		_app->doc()->deleteFunction(function->id());
+		delete item;
+	}
+	else
+	{
+		updateFunctionItem(item, function);
+		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+		m_tree->scrollToItem(item);
+	}
+}
+
+void FunctionSelection::slotNewCollection()
+{
+	Function* function;
+	function = _app->doc()->newFunction(Function::Collection);
+	if (function == NULL)
+		return;
+	function->setName(tr("New Collection"));
+
+	/* Create a new item for the function */
+	QTreeWidgetItem* item;
+	item = new QTreeWidgetItem(m_tree);
+	updateFunctionItem(item, function);
+
+	/* Append the new function to current selection */
+	item->setSelected(true);
+
+	if (function->edit() == QDialog::Rejected)
+	{
+		_app->doc()->deleteFunction(function->id());
+		delete item;
+	}
+	else
+	{
+		updateFunctionItem(item, function);
+		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+		m_tree->scrollToItem(item);
+	}
+}
+
+/*****************************************************************************
+ * Tree
+ *****************************************************************************/
+
+void FunctionSelection::updateFunctionItem(QTreeWidgetItem* item,
+					   Function* function)
+{
+	QString str;
+
+	item->setText(KColumnName, function->name());
+	item->setText(KColumnType, function->typeString());
+	item->setText(KColumnID, str.setNum(function->id()));
+}
 
 void FunctionSelection::refillTree()
 {
@@ -113,8 +262,7 @@ void FunctionSelection::refillTree()
 	{
 		QTreeWidgetItem* item;
 		Function* function;
-		QString str;
-		
+
 		function = _app->doc()->function(fid);
 		if (function == NULL)
 			continue;
@@ -123,11 +271,9 @@ void FunctionSelection::refillTree()
 		    m_filter & function->type())
 		{
 			item = new QTreeWidgetItem(m_tree);
-			item->setText(KColumnName, function->name());
-			item->setText(KColumnType, function->typeString());
-			item->setText(KColumnID, str.setNum(fid));
+			updateFunctionItem(item, function);
 
-			if (m_disable == fid)
+			if (m_disable == function->id())
 				item->setFlags(0); // Disables the item
 		}
 	}
@@ -146,7 +292,7 @@ void FunctionSelection::slotItemSelectionChanged()
 
 		removeList.removeAll(id);
 	}
-	
+
 	while (removeList.isEmpty() == false)
 		selection.removeAll(removeList.takeFirst());
 }

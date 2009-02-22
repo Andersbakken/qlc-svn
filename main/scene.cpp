@@ -31,6 +31,7 @@
 #include "common/qlcfile.h"
 
 #include "functionconsumer.h"
+#include "sceneeditor.h"
 #include "outputmap.h"
 #include "scene.h"
 #include "app.h"
@@ -213,6 +214,16 @@ void Scene::writeValues(t_fixture_id fxi_id)
 						    m_values[i].value);
 		}
 	}
+}
+
+/*****************************************************************************
+ * Edit
+ *****************************************************************************/
+
+int Scene::edit()
+{
+	SceneEditor editor(_app, this);
+	return editor.exec();
 }
 
 /*****************************************************************************
