@@ -69,7 +69,10 @@ Collection::~Collection()
 int Collection::edit()
 {
 	CollectionEditor editor(_app, this);
-	return editor.exec();
+	int result = editor.exec();
+	if (result == QDialog::Accepted)
+		emit changed(m_id);
+	return result;
 }
 
 /*****************************************************************************
@@ -159,15 +162,11 @@ bool Collection::loadXML(QDomDocument*, QDomElement* root)
 void Collection::addItem(t_function_id id)
 {
 	m_steps.append(id);
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
 }
 
 void Collection::removeItem(t_function_id id)
 {
 	m_steps.takeAt(m_steps.indexOf(id));
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
 }
 
 /*****************************************************************************

@@ -77,17 +77,12 @@ Chaser::~Chaser()
 void Chaser::addStep(t_function_id id)
 {
 	m_steps.append(id);
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
 }
 
 void Chaser::removeStep(unsigned int index)
 {
 	Q_ASSERT(int(index) < m_steps.size());
-
 	m_steps.removeAt(index);
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
 }
 
 bool Chaser::raiseStep(unsigned int index)
@@ -96,10 +91,6 @@ bool Chaser::raiseStep(unsigned int index)
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index - 1, fid);
-
-		_app->doc()->setModified();
-		_app->doc()->emitFunctionChanged(m_id);
-
 		return true;
 	}
 	else
@@ -114,10 +105,6 @@ bool Chaser::lowerStep(unsigned int index)
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index + 1, fid);
-
-		_app->doc()->setModified();
-		_app->doc()->emitFunctionChanged(m_id);
-
 		return true;
 	}
 	else
@@ -133,7 +120,10 @@ bool Chaser::lowerStep(unsigned int index)
 int Chaser::edit()
 {
 	ChaserEditor editor(_app, this);
-	return editor.exec();
+	int result = editor.exec();
+	if (result == QDialog::Accepted)
+		emit changed(m_id);
+	return result;
 }
 
 /*****************************************************************************

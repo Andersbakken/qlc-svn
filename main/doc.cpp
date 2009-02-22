@@ -240,7 +240,7 @@ bool Doc::loadXML(QDomDocument* doc)
 	}
 
 	_app->setGeometry(x, y, w, h);
-	
+
 	return true;
 }
 
@@ -263,7 +263,7 @@ bool Doc::saveXML(const QString& fileName)
 
 		/* THE MASTER XML ROOT NODE */
 		root = doc->documentElement();
-		
+
 		/* Write output mapping */
 		_app->outputMap()->saveXML(doc, &root);
 
@@ -617,6 +617,10 @@ Function* Doc::createFunction(Function::Type type)
 		   get rid of nonexisting members. */
 		connect(this, SIGNAL(fixtureRemoved(t_fixture_id)),
 			function, SLOT(slotFixtureRemoved(t_fixture_id)));
+
+		/* Pass function change signals thru */
+		connect(function, SIGNAL(changed(t_function_id)),
+			this, SLOT(slotFunctionChanged(t_function_id)));
 	}
 
 	return function;
@@ -642,14 +646,15 @@ Function* Doc::function(t_function_id id)
 		return NULL;
 }
 
+void Doc::slotFunctionChanged(t_function_id fid)
+{
+	setModified();
+	emit functionChanged(fid);
+}
+
 /*****************************************************************************
  * Miscellaneous
  *****************************************************************************/
-
-void Doc::emitFunctionChanged(t_function_id fid)
-{
-	emit functionChanged(fid);
-}
 
 void Doc::slotModeChanged(App::Mode mode)
 {

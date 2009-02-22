@@ -179,9 +179,6 @@ void Scene::setValue(SceneValue scv)
 	{
 		m_values.replace(index, scv);
 	}
-
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
 }
 
 void Scene::setValue(t_fixture_id fxi, t_channel ch, t_value value)
@@ -223,7 +220,10 @@ void Scene::writeValues(t_fixture_id fxi_id)
 int Scene::edit()
 {
 	SceneEditor editor(_app, this);
-	return editor.exec();
+	int result = editor.exec();
+	if (result == QDialog::Accepted)
+		emit changed(m_id);
+	return result;
 }
 
 /*****************************************************************************
@@ -251,7 +251,7 @@ bool Scene::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	QDomElement tag;
 	QDomText text;
 	QString str;
-	
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(wksp_root != NULL);
 
@@ -275,17 +275,17 @@ bool Scene::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	QListIterator <SceneValue> it(m_values);
 	while (it.hasNext() == true)
 		it.next().saveXML(doc, &root);
-		
+
 	return true;
 }
 
 bool Scene::loadXML(QDomDocument*, QDomElement* root)
 {
 	QString str;
-	
+
 	QDomNode node;
 	QDomElement tag;
-	
+
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCFunction)
@@ -299,7 +299,7 @@ bool Scene::loadXML(QDomDocument*, QDomElement* root)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCBus)
 		{
 			/* Bus */
@@ -319,7 +319,7 @@ bool Scene::loadXML(QDomDocument*, QDomElement* root)
 		{
 			qWarning() << "Unknown scene tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 

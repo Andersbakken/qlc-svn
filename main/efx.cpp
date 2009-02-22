@@ -577,9 +577,6 @@ bool EFX::addFixture(EFXFixture* ef)
 	/* Put the EFXFixture object into our list */
 	m_fixtures.append(ef);
 
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
-
 	return true;
 }
 
@@ -588,15 +585,9 @@ bool EFX::removeFixture(EFXFixture* ef)
 	Q_ASSERT(ef != NULL);
 
 	if (m_fixtures.removeAll(ef) > 0)
-	{
-		_app->doc()->setModified();
-		_app->doc()->emitFunctionChanged(m_id);
 		return true;
-	}
 	else
-	{
 		return false;
-	}
 }
 
 bool EFX::raiseFixture(EFXFixture* ef)
@@ -607,10 +598,6 @@ bool EFX::raiseFixture(EFXFixture* ef)
 	if (index > 0)
 	{
 		m_fixtures.move(index, index - 1);
-
-		_app->doc()->setModified();
-		_app->doc()->emitFunctionChanged(m_id);
-
 		return true;
 	}
 	else
@@ -625,10 +612,6 @@ bool EFX::lowerFixture(EFXFixture* ef)
 	if (index < (m_fixtures.count() - 1))
 	{
 		m_fixtures.move(index, index + 1);
-
-		_app->doc()->setModified();
-		_app->doc()->emitFunctionChanged(m_id);
-
 		return true;
 	}
 	else
@@ -760,7 +743,10 @@ bool EFX::stopSceneEnabled()
 int EFX::edit()
 {
 	EFXEditor editor(_app, this);
-	return editor.exec();
+	int result = editor.exec();
+	if (result == QDialog::Accepted)
+		emit changed(m_id);
+	return result;
 }
 
 /*****************************************************************************

@@ -86,8 +86,7 @@ void Function::setID(t_function_id id)
 void Function::setName(QString name)
 {
 	m_name = QString(name);
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
+	emit changed(m_id);
 }
 
 /*****************************************************************************
@@ -155,8 +154,7 @@ QIcon Function::icon() const
 void Function::setRunOrder(Function::RunOrder order)
 {
 	m_runOrder = order;
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);	
+	emit changed(m_id);
 }
 
 QString Function::runOrderToString(RunOrder order)
@@ -200,8 +198,7 @@ Function::RunOrder Function::stringToRunOrder(QString str)
 void Function::setDirection(Function::Direction dir)
 {
 	m_direction = dir;
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);	
+	emit changed(m_id);
 }
 
 QString Function::directionToString(Direction dir)
@@ -248,17 +245,16 @@ void Function::setBus(t_bus_id id)
 		m_busID = id;
 	}
 
-	_app->doc()->setModified();
-	_app->doc()->emitFunctionChanged(m_id);
+	emit changed(m_id);
 }
 
 /*****************************************************************************
  * Fixtures
  *****************************************************************************/
 
-void Function::slotFixtureRemoved(t_fixture_id)
+void Function::slotFixtureRemoved(t_fixture_id fid)
 {
-	/* NOP */
+	Q_UNUSED(fid);
 }
 
 /*****************************************************************************

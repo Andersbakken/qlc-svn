@@ -107,6 +107,10 @@ public:
 protected:
 	t_function_id m_id;
 
+signals:
+	/** Signal telling that the contents of this function have changed */
+	void changed(t_function_id fid);
+
 	/*********************************************************************
 	 * Name
 	 *********************************************************************/

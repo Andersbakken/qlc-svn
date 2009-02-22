@@ -234,24 +234,16 @@ public:
 	 */
 	Function* function(t_function_id id);
 
-public:
-	/**
-	 * Emit a functionChanged() signal.
-	 *
-	 * Because Functions are not QObjects, they cannot emit signals by
-	 * themselves. Therefore, they must call this function to make Doc
-	 * emit the function change signal, instead.
-	 *
-	 * @param id The ID of the function that needs to be signalled
-	 */
-	void emitFunctionChanged(t_function_id id);
-
 public slots:
 	/** Catch QLC App mode changes */
 	void slotModeChanged(App::Mode mode);
 
 	/** Catch fixture property changes */
 	void slotFixtureChanged(t_fixture_id fxi_id);
+
+protected slots:
+	/** Slot that catches function change signals */
+	void slotFunctionChanged(t_function_id fid);
 
 signals:
 	/** Signal that this Doc has been modified (or unmodified) */
