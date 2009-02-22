@@ -158,7 +158,6 @@ void VCButton::setBackgroundColor(const QColor& color)
 
 	m_hasCustomBackgroundColor = true;
 	m_backgroundImage = QString::null;
-	qDebug() << pal.color(QPalette::Button).toRgb() << color.toRgb();
 	pal.setColor(QPalette::Button, color);
 	setPalette(pal);
 

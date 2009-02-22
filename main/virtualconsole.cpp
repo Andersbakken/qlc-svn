@@ -195,6 +195,11 @@ void VirtualConsole::initActions()
 	connect(m_bgColorAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBackgroundColor()));
 
+	m_bgImageAction = new QAction(QIcon(":/image.png"),
+				      tr("Image"), this);
+	connect(m_bgImageAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotBackgroundImage()));
+
 	m_bgDefaultAction = new QAction(QIcon(":/undo.png"),
 					tr("Default"), this);
 	connect(m_bgDefaultAction, SIGNAL(triggered(bool)),
@@ -297,6 +302,7 @@ void VirtualConsole::initMenuBar()
 	bgMenu->setTitle(tr("Background"));
 	m_editMenu->addMenu(bgMenu);
 	bgMenu->addAction(m_bgColorAction);
+	bgMenu->addAction(m_bgImageAction);
 	bgMenu->addAction(m_bgDefaultAction);
 
 	/* Foreground menu */
@@ -598,6 +604,7 @@ void VirtualConsole::updateEditActions()
 {
 	bool enable;
 
+	/* If selectedWidgets is empty, all actions go to draw area */
 	if (m_selectedWidgets.isEmpty() == true)
 		enable = false;
 	else
@@ -608,10 +615,11 @@ void VirtualConsole::updateEditActions()
 	m_editDeleteAction->setEnabled(enable);
 	m_editPropertiesAction->setEnabled(enable);
 	m_editRenameAction->setEnabled(enable);
-
+/*
 	m_bgColorAction->setEnabled(enable);
+	m_bgImageAction->setEnabled(enable);
 	m_bgDefaultAction->setEnabled(enable);
-
+*/
 	m_fgColorAction->setEnabled(enable);
 	m_fgDefaultAction->setEnabled(enable);
 
@@ -1023,42 +1031,69 @@ void VirtualConsole::slotEditRename()
 
 void VirtualConsole::slotBackgroundColor()
 {
-	if (m_selectedWidgets.isEmpty() == true)
-		return;
+	QColor color;
 
-	QColor color = QColorDialog::getColor(
-				m_selectedWidgets.last()->backgroundColor());
+	if (m_selectedWidgets.isEmpty() == true)
+		color = m_drawArea->backgroundColor();
+	else
+		color = m_selectedWidgets.last()->backgroundColor();
+
+	color = QColorDialog::getColor(color);
 	if (color.isValid() == true)
 	{
-		VCWidget* widget;
-		foreach(widget, m_selectedWidgets)
-			widget->setBackgroundColor(color);
+		if (m_selectedWidgets.isEmpty() == true)
+		{
+			m_drawArea->setBackgroundColor(color);
+		}
+		else
+		{
+			VCWidget* widget;
+			foreach(widget, m_selectedWidgets)
+				widget->setBackgroundColor(color);
+		}
 	}
 }
 
 void VirtualConsole::slotBackgroundImage()
 {
-	if (m_selectedWidgets.isEmpty() == true)
-		return;
+	QString path;
 
-	QString path(m_selectedWidgets.last()->backgroundImage());
+	if (m_selectedWidgets.isEmpty() == true)
+		path = m_drawArea->backgroundImage();
+	else
+		path = m_selectedWidgets.last()->backgroundImage();
+
 	path = QFileDialog::getOpenFileName(this,
 					    tr("Select background image"),
 					    path,
 					    "Images (*.png *.xpm *.jpg *.gif)");
 	if (path.isEmpty() == false)
 	{
-		VCWidget* widget;
-		foreach(widget, m_selectedWidgets)
-			widget->setBackgroundImage(path);
+		if (m_selectedWidgets.isEmpty() == true)
+		{
+			m_drawArea->setBackgroundImage(path);
+		}
+		else
+		{
+			VCWidget* widget;
+			foreach(widget, m_selectedWidgets)
+				widget->setBackgroundImage(path);
+		}
 	}
 }
 
 void VirtualConsole::slotBackgroundNone()
 {
-	VCWidget* widget;
-	foreach(widget, m_selectedWidgets)
-		widget->resetBackgroundColor();
+	if (m_selectedWidgets.isEmpty() == true)
+	{
+		m_drawArea->resetBackgroundColor();
+	}
+	else
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->resetBackgroundColor();
+	}
 }
 
 /*********************************************************************

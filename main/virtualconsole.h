@@ -243,7 +243,7 @@ public:
 	QMenu* toolsMenu() { return m_toolsMenu; }
 	QMenu* editMenu() { return m_editMenu; }
 	QMenu* addMenu() { return m_addMenu; }
-	
+
 protected:
 	QAction* m_addButtonAction;
 	QAction* m_addSliderAction;
@@ -264,6 +264,7 @@ protected:
 	QAction* m_editRenameAction;
 
 	QAction* m_bgColorAction;
+	QAction* m_bgImageAction;
 	QAction* m_bgDefaultAction;
 
 	QAction* m_fgColorAction;
