@@ -29,6 +29,7 @@
 
 #include "functionconsumer.h"
 #include "chasereditor.h"
+#include "function.h"
 #include "fixture.h"
 #include "chaser.h"
 #include "doc.h"
@@ -52,22 +53,44 @@ Chaser::Chaser(QObject* parent) : Function(parent, Function::Chaser)
 		this, SLOT(slotBusTapped(t_bus_id)));
 }
 
-void Chaser::copyFrom(Chaser* ch, bool append)
-{
-	Q_ASSERT(ch != NULL);
-
-	Function::setName(ch->name());
-	setDirection(ch->direction());
-	setRunOrder(ch->runOrder());
-
-	if (append == false)
-		m_steps.clear();
-	m_steps = ch->m_steps;
-}
-
 Chaser::~Chaser()
 {
 	m_steps.clear();
+}
+
+/*****************************************************************************
+ * Copying
+ *****************************************************************************/
+
+Function* Chaser::createCopy()
+{
+	Function* function = _app->doc()->newFunction(Function::Chaser);
+	if (function == NULL)
+		return NULL;
+
+	if (function->copyFrom(this) == false)
+	{
+		_app->doc()->deleteFunction(function->id());
+		function = NULL;
+	}
+	else
+	{
+		function->setName(tr("Copy of %1").arg(function->name()));
+	}
+
+	return function;
+}
+
+bool Chaser::copyFrom(const Function* function)
+{
+	const Chaser* chaser = qobject_cast<const Chaser*> (function);
+	if (chaser == NULL)
+		return false;
+
+	m_steps.clear();
+	m_steps = chaser->m_steps;
+
+	return Function::copyFrom(function);
 }
 
 /*****************************************************************************

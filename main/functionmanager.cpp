@@ -551,56 +551,11 @@ void FunctionManager::slotTreeContextMenuRequested(const QPoint& point)
 
 void FunctionManager::copyFunction(t_function_id fid)
 {
-	Function* newFunction = NULL;
-	QString msg;
-
 	Function* function = _app->doc()->function(fid);
 	Q_ASSERT(function != NULL);
 
-	switch(function->type())
-	{
-	case Function::Scene:
-	{
-		newFunction = _app->doc()->newFunction(Function::Scene);
-		Scene* scene = static_cast<Scene*> (newFunction);
-		scene->copyFrom(static_cast<Scene*> (function));
-		scene->setName("Copy of " + function->name());
-	}
-	break;
-
-	case Function::Chaser:
-	{
-		newFunction = _app->doc()->newFunction(Function::Chaser);
-		Chaser* chaser = static_cast<Chaser*> (newFunction);
-		chaser->copyFrom(static_cast<Chaser*> (function));
-		chaser->setName("Copy of " + function->name());
-	}
-	break;
-
-	case Function::Collection:
-	{
-		newFunction = _app->doc()->newFunction(Function::Collection);
-		Collection* fc = static_cast<Collection*> (newFunction);
-		fc->copyFrom(static_cast<Collection*> (function));
-		fc->setName("Copy of " + function->name());
-	}
-	break;
-
-	case Function::EFX:
-	{
-		newFunction = _app->doc()->newFunction(Function::EFX);
-		EFX* efx = static_cast<EFX*> (newFunction);
-		efx->copyFrom(static_cast<EFX*> (function));
-		efx->setName("Copy of " + function->name());
-	}
-	break;
-
-	default:
-		newFunction = NULL;
-		break;
-	}
-
 	/* Create a new item for the copied function */
+	Function* newFunction = function->createCopy();
 	if (newFunction != NULL)
 	{
 		QTreeWidgetItem* item;

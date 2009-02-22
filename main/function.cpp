@@ -69,6 +69,23 @@ Function::~Function()
 }
 
 /*****************************************************************************
+ * Copying
+ *****************************************************************************/
+
+bool Function::copyFrom(const Function* function)
+{
+	if (function == NULL)
+		return false;
+
+	setName(function->name());
+	setRunOrder(function->runOrder());
+	setDirection(function->direction());
+	setBus(function->busID());
+
+	return true;
+}
+
+/*****************************************************************************
  * ID
  *****************************************************************************/
 
@@ -86,7 +103,6 @@ void Function::setID(t_function_id id)
 void Function::setName(QString name)
 {
 	m_name = QString(name);
-	emit changed(m_id);
 }
 
 /*****************************************************************************
@@ -154,7 +170,6 @@ QIcon Function::icon() const
 void Function::setRunOrder(Function::RunOrder order)
 {
 	m_runOrder = order;
-	emit changed(m_id);
 }
 
 QString Function::runOrderToString(RunOrder order)
@@ -198,7 +213,6 @@ Function::RunOrder Function::stringToRunOrder(QString str)
 void Function::setDirection(Function::Direction dir)
 {
 	m_direction = dir;
-	emit changed(m_id);
 }
 
 QString Function::directionToString(Direction dir)
@@ -244,8 +258,6 @@ void Function::setBus(t_bus_id id)
 	{
 		m_busID = id;
 	}
-
-	emit changed(m_id);
 }
 
 /*****************************************************************************

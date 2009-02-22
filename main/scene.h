@@ -119,15 +119,19 @@ public:
 	/** Destroy the scene */
 	~Scene();
 
-	/**
-	 * Copy all contents (except ID and object relationships) from
-	 * another scene function.
-	 */
-	void copyFrom(const Scene* scene);
-
 private:
 	/* Disable copying with a copy constructor & operator= */
 	Q_DISABLE_COPY(Scene)
+
+	/*********************************************************************
+	 * Copying
+	 *********************************************************************/
+public:
+	/** Create a copy of this function */
+	Function* createCopy();
+
+	/** Copy the contents for this function from another function */
+	bool copyFrom(const Function* function);
 
 	/*********************************************************************
 	 * Values

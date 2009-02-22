@@ -152,15 +152,39 @@ Scene::~Scene()
 {
 }
 
-void Scene::copyFrom(const Scene* scene)
-{
-	Q_ASSERT(scene != NULL);
+/*****************************************************************************
+ * Copying
+ *****************************************************************************/
 
-	setName(scene->name());
-	setBus(scene->busID());
+Function* Scene::createCopy()
+{
+	Function* function = _app->doc()->newFunction(Function::Scene);
+	if (function == NULL)
+		return NULL;
+
+	if (function->copyFrom(this) == false)
+	{
+		_app->doc()->deleteFunction(function->id());
+		function = NULL;
+	}
+	else
+	{
+		function->setName(tr("Copy of %1").arg(function->name()));
+	}
+
+	return function;
+}
+
+bool Scene::copyFrom(const Function* function)
+{
+	const Scene* scene = qobject_cast<const Scene*> (function);
+	if (scene == NULL)
+		return false;
 
 	m_values.clear();
 	m_values = scene->m_values;
+
+	return Function::copyFrom(function);
 }
 
 /*****************************************************************************

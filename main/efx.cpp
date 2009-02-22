@@ -103,18 +103,34 @@ EFX::~EFX()
 		delete m_fixtures.takeFirst();
 }
 
-/**
- * Copy function contents from another function
- *
- * @param efx EFX function from which to copy contents to this function
- * @param to The new parent fixture instance for this function
- */
-bool EFX::copyFrom(EFX* efx)
-{
-	Q_ASSERT(efx != NULL);
+/*****************************************************************************
+ * Copying
+ *****************************************************************************/
 
-	Function::setName(efx->name());
-	Function::setBus(efx->busID());
+Function* EFX::createCopy()
+{
+	Function* function = _app->doc()->newFunction(Function::EFX);
+	if (function == NULL)
+		return NULL;
+
+	if (function->copyFrom(this) == false)
+	{
+		_app->doc()->deleteFunction(function->id());
+		function = NULL;
+	}
+	else
+	{
+		function->setName(tr("Copy of %1").arg(function->name()));
+	}
+
+	return function;
+}
+
+bool EFX::copyFrom(const Function* function)
+{
+	const EFX* efx = qobject_cast<const EFX*> (function);
+	if (efx == NULL)
+		return false;
 
 	m_fixtures.clear();
 	QListIterator <EFXFixture*> it(efx->m_fixtures);
@@ -147,13 +163,9 @@ bool EFX::copyFrom(EFX* efx)
 	m_stopSceneID = efx->stopScene();
 	m_stopSceneEnabled = efx->stopSceneEnabled();
 
-	m_previewPointArray = NULL;
-
 	m_algorithm = QString(efx->algorithm());
 
-	m_stepSize = 0;
-
-	return true;
+	return Function::copyFrom(function);
 }
 
 /*****************************************************************************
@@ -293,7 +305,7 @@ QStringList EFX::algorithmList()
  *
  * @return Name of the current algorithm. See @ref algorithmList
  */
-QString EFX::algorithm()
+QString EFX::algorithm() const
 {
 	return m_algorithm;
 }
@@ -333,7 +345,7 @@ void EFX::setWidth(int width)
  *
  * @return Pattern width (0-255)
  */
-int EFX::width()
+int EFX::width() const
 {
 	return static_cast<int> (m_width);
 }
@@ -358,7 +370,7 @@ void EFX::setHeight(int height)
  *
  * @return Pattern height (0-255)
  */
-int EFX::height()
+int EFX::height() const
 {
 	return static_cast<int> (m_height);
 }
@@ -383,7 +395,7 @@ void EFX::setRotation(int rot)
  *
  * @return Pattern rotation (0-359)
  */
-int EFX::rotation()
+int EFX::rotation() const
 {
 	return static_cast<int> (m_rotation);
 }
@@ -408,7 +420,7 @@ void EFX::setXOffset(int offset)
  *
  * @return Pattern offset (0-255; 127 is middle)
  */
-int EFX::xOffset()
+int EFX::xOffset() const
 {
 	return static_cast<int> (m_xOffset);
 }
@@ -429,7 +441,7 @@ void EFX::setYOffset(int offset)
  *
  * @return Pattern offset (0-255; 127 is middle)
  */
-int EFX::yOffset()
+int EFX::yOffset() const
 {
 	return static_cast<int> (m_yOffset);
 }
@@ -454,7 +466,7 @@ void EFX::setXFrequency(int freq)
  *
  * @return Pattern offset (0-255)
  */
-int EFX::xFrequency()
+int EFX::xFrequency() const
 {
 	return static_cast<int> (m_xFrequency);
 }
@@ -475,7 +487,7 @@ void EFX::setYFrequency(int freq)
  *
  * @return Pattern offset (0-255)
  */
-int EFX::yFrequency()
+int EFX::yFrequency() const
 {
 	return static_cast<int> (m_yFrequency);
 }
@@ -515,7 +527,7 @@ void EFX::setXPhase(int phase)
  *
  * @return Pattern phase (0-255)
  */
-int EFX::xPhase()
+int EFX::xPhase() const
 {
 	return static_cast<int> (m_xPhase * 180.0 / M_PI);
 }
@@ -536,7 +548,7 @@ void EFX::setYPhase(int phase)
  *
  * @return Pattern phase (0-255)
  */
-int EFX::yPhase()
+int EFX::yPhase() const
 {
 	return static_cast<int> (m_yPhase * 180.0 / M_PI);
 }
@@ -544,7 +556,7 @@ int EFX::yPhase()
 /**
  * Returns true when lissajous has been selected
  */
-bool EFX::isPhaseEnabled()
+bool EFX::isPhaseEnabled() const
 {
 	if (m_algorithm == KLissajousAlgorithmName)
 	{
@@ -678,7 +690,7 @@ void EFX::setStartScene(t_function_id scene)
  * Get the id for start scene
  *
  */
-t_function_id EFX::startScene()
+t_function_id EFX::startScene() const
 {
 	return m_startSceneID;
 }
@@ -696,7 +708,7 @@ void EFX::setStartSceneEnabled(bool set)
  * Get start scene enabled status
  *
  */
-bool EFX::startSceneEnabled()
+bool EFX::startSceneEnabled() const
 {
 	return m_startSceneEnabled;
 }
@@ -713,7 +725,7 @@ void EFX::setStopScene(t_function_id scene)
  * Get the id for stop scene
  *
  */
-t_function_id EFX::stopScene()
+t_function_id EFX::stopScene() const
 {
 	return m_stopSceneID;
 }
@@ -731,7 +743,7 @@ void EFX::setStopSceneEnabled(bool set)
  * Get stop scene enabled status
  *
  */
-bool EFX::stopSceneEnabled()
+bool EFX::stopSceneEnabled() const
 {
 	return m_stopSceneEnabled;
 }

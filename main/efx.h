@@ -69,16 +69,18 @@ public:
 	EFX(QObject* parent);
 	~EFX();
 
-	/**
-	 * Copy function contents from another function
-	 *
-	 * @param efx EFX function from which to copy contents to this function
-	 * @param to The new parent fixture for this function
-	 */
-	bool copyFrom(EFX* efx);
-
 private:
 	Q_DISABLE_COPY(EFX)
+
+	/*********************************************************************
+	 * Copying
+	 *********************************************************************/
+public:
+	/** Create a copy of this function */
+	Function* createCopy();
+
+	/** Copy the contents for this function from another function */
+	bool copyFrom(const Function* function);
 
 	/*********************************************************************
 	 * Preview
@@ -116,7 +118,7 @@ public:
 	static QStringList algorithmList();
 
 	/** Get the current algorithm */
-	QString algorithm();
+	QString algorithm() const;
 
 	/** Set the current algorithm */
 	void setAlgorithm(QString algorithm);
@@ -141,7 +143,7 @@ public:
 	 *
 	 * @return Pattern width (0-255)
 	 */
-	int width();
+	int width() const;
 
 protected:
 	/**
@@ -165,7 +167,7 @@ public:
 	 *
 	 * @return Pattern height (0-255)
 	 */
-	int height();
+	int height() const;
 
 protected:
 	/**
@@ -189,7 +191,7 @@ public:
 	 *
 	 * @return Pattern rotation (0-359)
 	 */
-	int rotation();
+	int rotation() const;
 
 protected:
 	/**
@@ -213,7 +215,7 @@ public:
 	 *
 	 * @return Pattern offset (0-255; 127 is middle)
 	 */
-	int xOffset();
+	int xOffset() const;
 
 	/**
 	 * Set the pattern offset on the Y-axis
@@ -227,7 +229,7 @@ public:
 	 *
 	 * @return Pattern offset (0-255; 127 is middle)
 	 */
-	int yOffset();
+	int yOffset() const;
 
 protected:
 	/**
@@ -256,7 +258,7 @@ public:
 	 *
 	 * @return Pattern offset (0-255)
 	 */
-	int xFrequency();
+	int xFrequency() const;
 
 	/**
 	 * Set the lissajous pattern frequency  on the Y-axis
@@ -270,7 +272,7 @@ public:
 	 *
 	 * @return Pattern offset (0-255)
 	 */
-	int yFrequency();
+	int yFrequency() const;
 
 	/**
 	 * Returns true when lissajous has been selected
@@ -304,7 +306,7 @@ public:
 	 *
 	 * @return Pattern phase (0-255)
 	 */
-	int xPhase();
+	int xPhase() const;
 
 	/**
 	 * Set the lissajous pattern phase on the Y-axis
@@ -318,12 +320,12 @@ public:
 	 *
 	 * @return Pattern phase (0-255)
 	 */
-	int yPhase();
+	int yPhase() const;
 
 	/**
 	 * Returns true when lissajous has been selected
 	 */
-	bool isPhaseEnabled();
+	bool isPhaseEnabled() const;
 
 protected:
 	/**
@@ -397,25 +399,25 @@ public:
 	void setStartScene(t_function_id id);
   
 	/** Get the start scene */
-	t_function_id startScene();
+	t_function_id startScene() const;
   
 	/** Set start scene enabled status */
 	void setStartSceneEnabled(bool set);
 
 	/** Get start scene enabled status */
-	bool startSceneEnabled();
+	bool startSceneEnabled() const;
 
 	/** Set the stop scene */
 	void setStopScene(t_function_id id);
   
 	/** Get the stop scene */
-	t_function_id stopScene();
+	t_function_id stopScene() const;
   
 	/** Set stop scene enabled status */
 	void setStopSceneEnabled(bool set);
 
 	/** Get stop scene enabled status */
-	bool stopSceneEnabled();
+	bool stopSceneEnabled() const;
 
 protected:
 	/** Start (initialisation) scene */

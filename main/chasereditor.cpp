@@ -225,7 +225,7 @@ void ChaserEditor::accept()
 {
 	/* Name */
 	m_chaser->setName(m_nameEdit->text());
-	
+
 	/* Run Order */
 	if (m_singleShot->isChecked() == true)
 		m_chaser->setRunOrder(Chaser::SingleShot);
@@ -233,16 +233,16 @@ void ChaserEditor::accept()
 		m_chaser->setRunOrder(Chaser::PingPong);
 	else
 		m_chaser->setRunOrder(Chaser::Loop);
-	
+
 	/* Direction */
 	if (m_backward->isChecked() == true)
 		m_chaser->setDirection(Chaser::Backward);
 	else
 		m_chaser->setDirection(Chaser::Forward);
-	
+
 	/* Copy the temp chaser's contents to the original */
-	m_original->copyFrom(m_chaser, false);
-	
+	m_original->copyFrom(m_chaser);
+
 	/* Mark doc as modified, close and accept */
 	_app->doc()->setModified();
 	QDialog::accept();

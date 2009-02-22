@@ -89,6 +89,17 @@ private:
 	Q_DISABLE_COPY(Function)
 
 	/*********************************************************************
+	 * Copying
+	 *********************************************************************/
+public:
+	/** Create a copy of this function and return it. The function is put
+	    to Doc automatically. */
+	virtual Function* createCopy() = 0;
+
+	/** Copy this function's contents from the given function */
+	virtual bool copyFrom(const Function* function);
+
+	/*********************************************************************
 	 * ID
 	 *********************************************************************/
 public:

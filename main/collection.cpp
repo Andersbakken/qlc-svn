@@ -45,21 +45,44 @@ Collection::Collection(QObject* parent) : Function(parent, Function::Collection)
 {
 }
 
-void Collection::copyFrom(const Collection* fc, bool append)
-{
-	Q_ASSERT(fc != NULL);
-
-	Function::setName(fc->name());
-	Function::setBus(fc->busID());
-
-	if (append == false)
-		m_steps.clear();
-	m_steps = fc->m_steps;
-}
-
 Collection::~Collection()
 {
 	m_steps.clear();
+}
+
+/*****************************************************************************
+ * Copying
+ *****************************************************************************/
+
+Function* Collection::createCopy()
+{
+	Function* function = _app->doc()->newFunction(Function::Collection);
+	if (function == NULL)
+		return NULL;
+
+	if (function->copyFrom(this) == false)
+	{
+		_app->doc()->deleteFunction(function->id());
+		function = NULL;
+	}
+	else
+	{
+		function->setName(tr("Copy of %1").arg(function->name()));
+	}
+
+	return function;
+}
+
+bool Collection::copyFrom(const Function* function)
+{
+	const Collection* coll = qobject_cast<const Collection*> (function);
+	if (coll == NULL)
+		return false;
+
+	m_steps.clear();
+	m_steps = coll->m_steps;
+
+	return Function::copyFrom(function);
 }
 
 /*****************************************************************************

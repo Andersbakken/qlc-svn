@@ -40,21 +40,21 @@ public:
 	/** Constructor */
 	Chaser(QObject* parent);
 
-	/**
-	 * Copy the contents of the given chaser into this chaser.
-	 *
-	 * @param ch Chaser to copy from
-	 * @param append If true, existing contents will not be cleared;
-	 *               new steps appear after existing steps. If false,
-	 *               the existing steps of this chaser are cleared.
-	 */
-	void copyFrom(Chaser* ch, bool append = false);
-
 	/** Destructor */
 	virtual ~Chaser();
 
 private:
 	Q_DISABLE_COPY(Chaser)
+
+	/*********************************************************************
+	 * Copying
+	 *********************************************************************/
+public:
+	/** Create a copy of this function */
+	Function* createCopy();
+
+	/** Copy the contents for this function from another function */
+	bool copyFrom(const Function* function);
 
 	/*********************************************************************
 	 * Chaser contents
