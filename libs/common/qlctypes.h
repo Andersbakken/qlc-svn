@@ -116,7 +116,7 @@ typedef int t_fixture_id;
 /**
  * Maximum number of fixtures
  */
-const t_fixture_id KFixtureArraySize ( 128 );
+const t_fixture_id KFixtureArraySize ( 256 );
 
 /*****************************************************************************
  * Function

@@ -57,12 +57,14 @@ Doc::Doc() : QObject()
 					    KFixtureArraySize);
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 		m_fixtureArray[i] = NULL;
+	m_fixtureAllocation = 0;
 
 	// Allocate function array
 	m_functionArray = (Function**) malloc(sizeof(Function*) *
 					      KFunctionArraySize);
 	for (t_function_id i = 0; i < KFunctionArraySize; i++)
 		m_functionArray[i] = NULL;
+	m_functionAllocation = 0;
 
 	resetModified();
 }
@@ -81,6 +83,7 @@ Doc::~Doc()
 		}
 	}
 	delete [] m_functionArray;
+	m_functionAllocation = 0;
 
 	// Delete all fixture instances
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
@@ -94,6 +97,7 @@ Doc::~Doc()
 		}
 	}
 	delete [] m_fixtureArray;
+	m_fixtureAllocation = 0;
 }
 
 void Doc::setModified()
@@ -324,7 +328,10 @@ Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
 			 QString name)
 {
 	Fixture* fxi = NULL;
-	
+
+	if (m_fixtureAllocation == KFixtureArraySize)
+		return NULL;
+
 	/* Find the next free slot for a new fixture */
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 	{
@@ -335,6 +342,8 @@ Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
 			Q_ASSERT(fxi != NULL);
 
 			m_fixtureArray[i] = fxi;
+			m_fixtureAllocation++;
+
 			setModified();
 
 			// Patch fixture change events thru Doc
@@ -344,16 +353,6 @@ Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
 			emit fixtureAdded(i);
 			break;
 		}
-	}
-
-	if (fxi == NULL)
-	{
-		QString num;
-		num.setNum(KFixtureArraySize);
-		QMessageBox::warning(_app, 
-				     "Unable to create fixture instance",
-				     "You cannot create more than "
-				     + num + " fixtures.");
 	}
 
 	return fxi;
@@ -365,7 +364,10 @@ Fixture* Doc::newGenericFixture(t_channel address,
 				QString name)
 {
 	Fixture* fxi = NULL;
-	
+
+	if (m_fixtureAllocation == KFixtureArraySize)
+		return NULL;
+
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 	{
 		if (m_fixtureArray[i] == NULL)
@@ -374,6 +376,8 @@ Fixture* Doc::newGenericFixture(t_channel address,
 			Q_ASSERT(fxi != NULL);
 
 			m_fixtureArray[i] = fxi;
+			m_fixtureAllocation++;
+
 			setModified();
 
 			// Patch fixture change events thru Doc
@@ -385,22 +389,15 @@ Fixture* Doc::newGenericFixture(t_channel address,
 		}
 	}
 
-	if (fxi == NULL)
-	{
-		QString num;
-		num.setNum(KFixtureArraySize);
-		QMessageBox::warning(_app, 
-				     "Unable to create fixture instance",
-				     "You cannot create more than "
-				     + num + " fixtures.");
-	}
-
 	return fxi;
 }
 
 bool Doc::newFixture(Fixture* fxi)
 {
 	t_fixture_id id = 0;
+
+	if (m_fixtureAllocation == KFixtureArraySize)
+		return false;
 
 	if (fxi == NULL)
 		return false;
@@ -421,6 +418,7 @@ bool Doc::newFixture(Fixture* fxi)
 	else
 	{
 		m_fixtureArray[id] = fxi;
+		m_fixtureAllocation++;
 
 		// Patch fixture change events thru Doc
 		connect(fxi, SIGNAL(changed(t_fixture_id)),
@@ -441,6 +439,7 @@ bool Doc::deleteFixture(t_fixture_id id)
 	{
 		delete m_fixtureArray[id];
 		m_fixtureArray[id] = NULL;
+		m_fixtureAllocation--;
 
 		emit fixtureRemoved(id);
 		setModified();
@@ -528,6 +527,8 @@ Function* Doc::newFunction(Function::Type type)
 			function = createFunction(type);
 			Q_ASSERT(function != NULL);
 			m_functionArray[id] = function;
+			m_functionAllocation++;
+
 			function->setID(id);
 
 			emit functionAdded(id);
@@ -541,7 +542,7 @@ Function* Doc::newFunction(Function::Type type)
 		qDebug() << QString("Cannot add any more functions. All %1"
 				    " are occupied.").arg(KFunctionArraySize);
 	}
-	
+
 	return function;
 }
 
@@ -553,13 +554,14 @@ Function* Doc::newFunction(Function::Type type, t_function_id fid, QString name,
 	Q_ASSERT(fid >= 0 && fid < KFunctionArraySize);
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
-	
+
 	/* Put the function to its place (==ID) in the function array */
 	if (m_functionArray[fid] == NULL)
 	{
 		function = createFunction(type);
 		Q_ASSERT(function != NULL);
 		m_functionArray[fid] = function;
+		m_functionAllocation++;
 
 		function->setID(fid);
 		function->setName(name);
@@ -626,7 +628,8 @@ void Doc::deleteFunction(t_function_id id)
 	{
 		delete m_functionArray[id];
 		m_functionArray[id] = NULL;
-      
+		m_functionAllocation--;
+
 		emit functionRemoved(id);
 	}
 }

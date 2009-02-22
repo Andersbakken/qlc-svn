@@ -197,6 +197,9 @@ protected:
 	 * Status bar
 	 *********************************************************************/
 protected:
+	void initStatusBar();
+
+protected:
 	/** Flashing blackout indicator on the status bar */
 	QLabel* m_blackoutIndicator;
 
@@ -206,6 +209,12 @@ protected:
 	/** Mode indicator on the status bar */
 	QLabel* m_modeIndicator;
 
+	/** Indicator showing available fixture space */
+	QLabel* m_fixtureAllocationIndicator;
+
+	/** Indicator showing available function space */
+	QLabel* m_functionAllocationIndicator;
+
 	/*********************************************************************
 	 * Menus & toolbars
 	 *********************************************************************/	
@@ -213,7 +222,6 @@ protected:
 	void initActions();
 	void initMenuBar();
 	void initToolBar();
-	void initStatusBar();
 	QMenuBar *menuBar();
 
 public slots:

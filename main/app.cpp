@@ -95,6 +95,9 @@ App::App() : QMainWindow()
 	m_blackoutIndicator = NULL;
 	m_blackoutIndicatorTimer = NULL;
 
+	m_fixtureAllocationIndicator = NULL;
+	m_functionAllocationIndicator = NULL;
+
 	QCoreApplication::setOrganizationName("qlc");
 	QCoreApplication::setOrganizationDomain("sf.net");
 	QCoreApplication::setApplicationName("Q Light Controller");
@@ -365,6 +368,19 @@ void App::slotDocModified(bool state)
 		setWindowTitle(caption + QString(" *"));
 	else
 		setWindowTitle(caption);
+
+	/* Update fixture & function allocation status */
+	m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2")
+		.arg(m_doc->fixtures()).arg(KFixtureArraySize));
+	m_fixtureAllocationIndicator->setToolTip(
+		tr("Space left for %1 fixtures")
+		.arg(KFixtureArraySize - m_doc->fixtures()));
+
+	m_functionAllocationIndicator->setText(tr("Functions: %1/%2")
+		.arg(m_doc->functions()).arg(KFunctionArraySize));
+	m_functionAllocationIndicator->setToolTip(
+		tr("Space left for %1 functions")
+		.arg(KFunctionArraySize - m_doc->functions()));
 }
 
 /*****************************************************************************
@@ -440,6 +456,9 @@ void App::slotModeOperate()
 
 	/* Set highlighted palette to mode indicator */
 	m_modeIndicator->setText(KModeTextOperate);
+	m_modeIndicator->setToolTip(
+		tr("Operate mode is active; editing facilities are disabled"));
+
 	QPalette pal = palette();
 	pal.setColor(QPalette::Window,
 		     QApplication::palette().color(QPalette::Highlight));
@@ -494,6 +513,9 @@ void App::slotModeDesign()
 
 	/* Set normal palette to mode indicator */
 	m_modeIndicator->setText(KModeTextDesign);
+	m_modeIndicator->setToolTip(
+		tr("Design mode is active; editing facilities are enabled"));
+
 	QPalette pal = palette();
 	pal.setColor(QPalette::Window,
 		     QApplication::palette().color(QPalette::Window));
@@ -574,6 +596,50 @@ QStyle* App::saneStyle()
 #else
 	return QApplication::style();
 #endif
+}
+
+/*****************************************************************************
+ * Status bar
+ *****************************************************************************/
+
+void App::initStatusBar()
+{
+	/* Fixture Allocation Indicator */
+	m_fixtureAllocationIndicator = new QLabel(statusBar());
+	m_fixtureAllocationIndicator->setFrameStyle(QFrame::StyledPanel |
+						    QFrame::Sunken);
+	m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2")
+		.arg(KFixtureArraySize).arg(KFixtureArraySize));
+	statusBar()->addWidget(m_fixtureAllocationIndicator);
+
+	/* Function Allocation Indicator */
+	m_functionAllocationIndicator = new QLabel(statusBar());
+	m_functionAllocationIndicator->setFrameStyle(QFrame::StyledPanel |
+						     QFrame::Sunken);
+	m_functionAllocationIndicator->setText(tr("Functions: %1/%2")
+		.arg(KFunctionArraySize).arg(KFunctionArraySize));
+	statusBar()->addWidget(m_functionAllocationIndicator);
+
+	/* Mode Indicator */
+	m_modeIndicator = new QLabel(statusBar());
+	m_modeIndicator->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+	m_modeIndicator->setText(KModeTextDesign);
+	m_modeIndicator->setAutoFillBackground(true);
+	m_modeIndicator->setToolTip(
+		tr("Design mode is active; editing facilities are enabled"));
+	statusBar()->addWidget(m_modeIndicator);
+
+	/* Blackout Indicator */
+	m_blackoutIndicatorTimer = new QTimer(this);
+	m_blackoutIndicator = new QLabel(statusBar());
+	m_blackoutIndicator->setFrameStyle(QFrame::StyledPanel |
+					   QFrame::Sunken);
+	m_blackoutIndicator->setText(tr("Blackout"));
+	m_blackoutIndicator->setAutoFillBackground(true);
+	m_blackoutIndicator->setToolTip(
+		tr("Blackout is active; all outputs are disabled"));
+	m_blackoutIndicator->hide();
+	statusBar()->addWidget(m_blackoutIndicator);
 }
 
 /*****************************************************************************
@@ -760,25 +826,6 @@ void App::initMenuBar()
 	m_helpMenu->addSeparator();
 	m_helpMenu->addAction(m_helpAboutAction);
 	m_helpMenu->addAction(m_helpAboutQtAction);
-}
-
-void App::initStatusBar()
-{
-	/* Mode Indicator */
-	m_modeIndicator = new QLabel(statusBar());
-	m_modeIndicator->setMargin(2);
-	m_modeIndicator->setText(KModeTextDesign);
-	m_modeIndicator->setAutoFillBackground(true);
-	statusBar()->addWidget(m_modeIndicator);
-
-	/* Blackout Indicator */
-	m_blackoutIndicatorTimer = new QTimer(this);
-	m_blackoutIndicator = new QLabel(statusBar());
-	m_blackoutIndicator->setMargin(2);
-	m_blackoutIndicator->setText(tr("Blackout"));
-	m_blackoutIndicator->setAutoFillBackground(true);
-	m_blackoutIndicator->hide();
-	statusBar()->addWidget(m_blackoutIndicator);
 }
 
 void App::initToolBar()

@@ -165,6 +165,9 @@ public:
 	 */
 	t_channel findAddress(t_channel numChannels);
 
+	/** Return the number of fixtures present */
+	int fixtures() const { return m_fixtureAllocation; }
+
 protected:
 	/** Try to find the next free address from the given universe */
 	t_channel findAddress(int universe, t_channel numChannels);
@@ -204,6 +207,9 @@ public:
 	Function* newFunction(Function::Type type, t_function_id fid,
 			      QString name, QDomDocument* doc,
 			      QDomElement* root);
+
+	/** Return the number of functions present */
+	int functions() const { return m_functionAllocation; }
 
 protected:
 	/**
@@ -270,8 +276,14 @@ protected:
 	/** Array that holds all functions */
 	Function** m_functionArray;
 
+	/** Number of allocated fixtures */
+	int m_fixtureAllocation;
+
 	/** Array that holds all fixtures */
 	Fixture** m_fixtureArray;
+
+	/** Number of allocated functions */
+	int m_functionAllocation;
 };
 
 #endif
