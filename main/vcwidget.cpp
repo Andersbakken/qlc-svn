@@ -542,6 +542,10 @@ bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
 
 void VCWidget::slotModeChanged(App::Mode mode)
 {
+	/* Reset mouse cursor */
+	unsetCursor();
+	
+	/* Force an update to get rid of selection markers */
 	update();
 
 	/* Patch the signal thru to all children */
