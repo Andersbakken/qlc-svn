@@ -180,12 +180,15 @@ void Monitor::initMenu()
 	action->setCheckable(true);
 	action->setData(MonitorProperties::RelativeChannels);
 	group->addAction(action);
-	action->setChecked(true);
+	if (s_properties.channelStyle() == MonitorProperties::RelativeChannels)
+		action->setChecked(true);
 
 	action = menu->addAction(tr("Absolute DMX"));
 	action->setCheckable(true);
 	action->setData(MonitorProperties::DMXChannels);
 	group->addAction(action);
+	if (s_properties.channelStyle() == MonitorProperties::DMXChannels)
+		action->setChecked(true);
 
 	/* Value display style */
 	menu = new QMenu(displayMenu);
@@ -203,11 +206,15 @@ void Monitor::initMenu()
 	action->setData(MonitorProperties::DMXValues);
 	group->addAction(action);
 	action->setChecked(true);
+	if (s_properties.valueStyle() == MonitorProperties::DMXValues)
+		action->setChecked(true);
 
 	action = menu->addAction(tr("Percentage"));
 	action->setCheckable(true);
 	action->setData(MonitorProperties::PercentageValues);
 	group->addAction(action);
+	if (s_properties.valueStyle() == MonitorProperties::PercentageValues)
+		action->setChecked(true);
 }
 
 void Monitor::slotChooseFont()
