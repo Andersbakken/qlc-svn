@@ -125,7 +125,7 @@ bool VCWidget::copyFrom(const VCWidget* widget)
 
 	m_inputUniverse = widget->m_inputUniverse;
 	m_inputChannel = widget->m_inputChannel;
-	
+
 	return true;
 }
 
@@ -671,6 +671,8 @@ void VCWidget::paintEvent(QPaintEvent* e)
 		painter.drawPixmap(rect().width() - 16, rect().height() - 16,
 			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
 	}
+
+	QWidget::paintEvent(e);
 }
 
 void VCWidget::mousePressEvent(QMouseEvent* e)
@@ -685,7 +687,7 @@ void VCWidget::mousePressEvent(QMouseEvent* e)
 
 	/* Perform widget de/selection in virtualconsole's selection buffer */
 	handleWidgetSelection(e);
-	
+
 	/* Resize mode */
 	if (m_resizeMode == true)
 	{
@@ -762,16 +764,16 @@ void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 		m_resizeMode = false;
 		setMouseTracking(false);
 	}
-	else
-	{
-		QWidget::mouseReleaseEvent(e);
-	}
+
+	QWidget::mouseReleaseEvent(e);
 }
 
-void VCWidget::mouseDoubleClickEvent(QMouseEvent*)
+void VCWidget::mouseDoubleClickEvent(QMouseEvent* e)
 {
 	if (_app->mode() == App::Design)
 		editProperties();
+
+	QWidget::mouseDoubleClickEvent(e);
 }
 
 void VCWidget::mouseMoveEvent(QMouseEvent* e)
@@ -795,8 +797,6 @@ void VCWidget::mouseMoveEvent(QMouseEvent* e)
 			_app->doc()->setModified();
 		}
 	}
-	else
-	{
-		QWidget::mouseMoveEvent(e);
-	}
+
+	QWidget::mouseMoveEvent(e);
 }

@@ -197,8 +197,14 @@ public:
 	void clearWidgetSelection();
 
 protected:
+	/** Change the custom menu to the last selected widget's menu */
+	void updateCustomMenu();
+
 	/** Enable or disable edit actions based on selection */
-	void enableEditActions();
+	void updateEditActions();
+
+	/** Enable or disable add actions based on selection */
+	void updateAddActions();
 
 protected:
 	/** The widgets that are currently selected */

@@ -348,9 +348,6 @@ void VirtualConsole::initDockArea()
 
 	/* Show the dock area by default */
 	m_dockArea->show();
-
-	/* Disables all edit actions at first */
-	enableEditActions();
 }
 
 /*********************************************************************
@@ -487,6 +484,30 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 }
 
 /*****************************************************************************
+ * Draw area
+ *****************************************************************************/
+
+void VirtualConsole::setDrawArea(VCFrame* drawArea)
+{
+	Q_ASSERT(layout() != NULL);
+
+	if (m_drawArea != NULL)
+		delete m_drawArea;
+	m_drawArea = drawArea;
+
+	/* Add the draw area into the master horizontal layout */
+	layout()->addWidget(m_drawArea);
+	m_drawArea->setSizePolicy(QSizePolicy::Expanding,
+				  QSizePolicy::Expanding);
+
+	/* Disable all edit actions at first */
+	updateEditActions();
+
+	/* Enable all add actions at first */
+	updateAddActions();
+}
+
+/*****************************************************************************
  * Selected widget
  *****************************************************************************/
 
@@ -505,22 +526,14 @@ void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
 		widget->update();
 	}
 
-	/* Get rid of an existing menu */
-	if (m_customMenu != NULL)
-		delete m_customMenu;
-	m_customMenu = NULL;
-
 	/* Change the custom menu to the latest-selected widget's menu */
-	if (m_selectedWidgets.count() > 0)
-	{
-		VCWidget* latestWidget = m_selectedWidgets.last();
-		m_customMenu = latestWidget->customMenu(m_editMenu);
-		if (m_customMenu != NULL)
-			m_editMenu->addMenu(m_customMenu);
-	}
+	updateCustomMenu();
 
 	/* Enable or disable edit actions */
-	enableEditActions();
+	updateEditActions();
+
+	/* Enable or disable add actions */
+	updateAddActions();
 }
 
 bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
@@ -544,16 +557,44 @@ void VirtualConsole::clearWidgetSelection()
 	while (it.hasNext() == true)
 		it.next()->update();
 
-	/* Get rid of the custom menu (if any) */
-	if (m_customMenu != NULL)
-		delete m_customMenu;
-	m_customMenu = NULL;
+	/* Change the custom menu to the latest-selected widget's menu */
+	updateCustomMenu();
 
 	/* Enable or disable edit actions */
-	enableEditActions();
+	updateEditActions();
+
+	/* Enable or disable add actions */
+	updateAddActions();
 }
 
-void VirtualConsole::enableEditActions()
+void VirtualConsole::updateCustomMenu()
+{
+	/* Get rid of the custom menu, but delete it later because this might
+	   be called from the very menu that is being deleted. */
+	if (m_customMenu != NULL)
+	{
+		delete m_customMenu;
+		m_customMenu = NULL;
+	}
+
+	if (m_selectedWidgets.count() > 0)
+	{
+		/* Change the custom menu to the last selected widget's menu */
+		VCWidget* latestWidget = m_selectedWidgets.last();
+		m_customMenu = latestWidget->customMenu(m_editMenu);
+		if (m_customMenu != NULL)
+			m_editMenu->addMenu(m_customMenu);
+	}
+	else
+	{
+		/* Change the custom menu to the bottom frame's menu */
+		m_customMenu = m_drawArea->customMenu(m_editMenu);
+		if (m_customMenu != NULL)
+			m_editMenu->addMenu(m_customMenu);
+	}
+}
+
+void VirtualConsole::updateEditActions()
 {
 	bool enable;
 
@@ -585,22 +626,25 @@ void VirtualConsole::enableEditActions()
 	m_stackingLowerAction->setEnabled(enable);
 }
 
-/*****************************************************************************
- * Draw area
- *****************************************************************************/
-
-void VirtualConsole::setDrawArea(VCFrame* drawArea)
+void VirtualConsole::updateAddActions()
 {
-	Q_ASSERT(layout() != NULL);
+	bool enable;
 
-	if (m_drawArea != NULL)
-		delete m_drawArea;
-	m_drawArea = drawArea;
+	/* Enable add menu only for VCDockArea (selected is empty) or
+	   widgets that can be cast to VCFrame. */
+	if (m_selectedWidgets.isEmpty() == true)
+		enable = true;
+	else if (qobject_cast<VCFrame*> (m_selectedWidgets.last()) != NULL)
+		enable = true;
+	else
+		enable = false;
 
-	/* Add the draw area into the master horizontal layout */
-	layout()->addWidget(m_drawArea);
-	m_drawArea->setSizePolicy(QSizePolicy::Expanding,
-				  QSizePolicy::Expanding);
+	m_addButtonAction->setEnabled(enable);
+	m_addSliderAction->setEnabled(enable);
+	m_addXYPadAction->setEnabled(enable);
+	m_addCueListAction->setEnabled(enable);
+	m_addFrameAction->setEnabled(enable);
+	m_addLabelAction->setEnabled(enable);
 }
 
 /*****************************************************************************
@@ -609,10 +653,15 @@ void VirtualConsole::setDrawArea(VCFrame* drawArea)
 
 void VirtualConsole::slotAddButton()
 {
-	/* Find the frame that was selected last and add the widget there */
-	QList <VCFrame*> frames(findChildren <VCFrame*> ());
+	VCFrame* parent;
 
-	VCFrame* parent = frames.last();
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = m_drawArea;
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
 	if (parent != NULL)
 	{
 		VCButton* button = new VCButton(parent);
@@ -626,18 +675,21 @@ void VirtualConsole::slotAddButton()
 
 		button->move(parent->lastClickPoint());
 
-		clearWidgetSelection();
-		setWidgetSelected(button, true);
-
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotAddSlider()
 {
-	/* Find the frame that was selected last and add the widget there */
-	QList <VCFrame*> frames(findChildren <VCFrame*> ());
-	VCFrame* parent = frames.last();
+	VCFrame* parent;
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = m_drawArea;
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
 	if (parent != NULL)
 	{
 		VCSlider* slider = new VCSlider(parent);
@@ -646,18 +698,21 @@ void VirtualConsole::slotAddSlider()
 
 		slider->move(parent->lastClickPoint());
 
-		clearWidgetSelection();
-		setWidgetSelected(slider, true);
-
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotAddXYPad()
 {
-	/* Find the frame that was selected last and add the widget there */
-	QList <VCFrame*> frames(findChildren <VCFrame*> ());
-	VCFrame* parent = frames.last();
+	VCFrame* parent;
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = m_drawArea;
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
 	if (parent != NULL)
 	{
 		VCXYPad* xypad = new VCXYPad(parent);
@@ -666,18 +721,21 @@ void VirtualConsole::slotAddXYPad()
 
 		xypad->move(parent->lastClickPoint());
 
-		clearWidgetSelection();
-		setWidgetSelected(xypad, true);
-
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotAddCueList()
 {
-	/* Find the frame that was selected last and add the widget there */
-	QList <VCFrame*> frames(findChildren <VCFrame*> ());
-	VCFrame* parent = frames.last();
+	VCFrame* parent;
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = m_drawArea;
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
 	if (parent != NULL)
 	{
 		VCCueList* cuelist = new VCCueList(parent);
@@ -686,18 +744,21 @@ void VirtualConsole::slotAddCueList()
 
 		cuelist->move(parent->lastClickPoint());
 
-		clearWidgetSelection();
-		setWidgetSelected(cuelist, true);
-
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotAddFrame()
 {
-	/* Find the frame that was selected last and add the widget there */
-	QList <VCFrame*> frames(findChildren <VCFrame*> ());
-	VCFrame* parent = frames.last();
+	VCFrame* parent;
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = m_drawArea;
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
 	if (parent != NULL)
 	{
 		VCFrame* frame = new VCFrame(parent);
@@ -706,18 +767,21 @@ void VirtualConsole::slotAddFrame()
 
 		frame->move(parent->lastClickPoint());
 
-		clearWidgetSelection();
-		setWidgetSelected(frame, true);
-
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotAddLabel()
 {
-	/* Find the frame that was selected last and add the widget there */
-	QList <VCFrame*> frames(findChildren <VCFrame*> ());
-	VCFrame* parent = frames.last();
+	VCFrame* parent;
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = m_drawArea;
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
 	if (parent != NULL)
 	{
 		VCLabel* label = new VCLabel(parent);
@@ -725,9 +789,6 @@ void VirtualConsole::slotAddLabel()
 		label->show();
 
 		label->move(parent->lastClickPoint());
-
-		clearWidgetSelection();
-		setWidgetSelected(label, true);
 
 		_app->doc()->setModified();
 	}
