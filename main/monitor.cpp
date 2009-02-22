@@ -168,7 +168,7 @@ void Monitor::initMenu()
 	/* Channel display style */
 	menu = new QMenu(displayMenu);
 	displayMenu->addMenu(menu);
-	menu->setTitle("Channel style");
+	menu->setTitle(tr("Channel style"));
 	connect(menu, SIGNAL(triggered(QAction*)),
 		this, SLOT(slotChannelStyleTriggered(QAction*)));
 
@@ -193,7 +193,7 @@ void Monitor::initMenu()
 	/* Value display style */
 	menu = new QMenu(displayMenu);
 	displayMenu->addMenu(menu);
-	menu->setTitle("Value style");
+	menu->setTitle(tr("Value style"));
 	connect(menu, SIGNAL(triggered(QAction*)),
 		this, SLOT(slotValueStyleTriggered(QAction*)));
 
