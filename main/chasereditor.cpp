@@ -74,7 +74,7 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 	/* Name edit */
 	m_nameEdit->setText(m_chaser->name());
 	m_nameEdit->setSelection(0, m_nameEdit->text().length());
-	setWindowTitle(tr("Chaser editor - ") + m_chaser->name());
+	setWindowTitle(tr("Chaser - %1").arg(m_chaser->name()));
 
 	/* Running order */
 	switch (m_chaser->runOrder())

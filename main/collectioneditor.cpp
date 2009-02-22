@@ -73,7 +73,7 @@ CollectionEditor::~CollectionEditor()
 
 void CollectionEditor::slotNameEdited(const QString& text)
 {
-	setWindowTitle("Chaser editor - " + text);
+	setWindowTitle(tr("Collection - %1").arg(text));
 }
 
 void CollectionEditor::slotAdd()

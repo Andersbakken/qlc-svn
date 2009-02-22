@@ -59,6 +59,8 @@ protected:
 	 * Common
 	 *********************************************************************/
 protected slots:
+	void slotNameEdited(const QString& name);
+
 	void accept();
 	void slotTabChanged(int tab);
 

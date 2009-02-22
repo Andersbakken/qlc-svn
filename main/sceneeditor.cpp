@@ -134,6 +134,9 @@ void SceneEditor::init()
 		this, SLOT(slotRemoveFixtureClicked()));
 
 	m_nameEdit->setText(m_scene->name());
+	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
+		this, SLOT(slotNameEdited(const QString&)));
+	slotNameEdited(m_scene->name());
 
 	m_initializing = true;
 
@@ -175,6 +178,11 @@ void SceneEditor::setSceneValue(const SceneValue& scv)
 /*****************************************************************************
  * Common
  *****************************************************************************/
+
+void SceneEditor::slotNameEdited(const QString& name)
+{
+	setWindowTitle(tr("Scene - %1").arg(name));
+}
 
 void SceneEditor::accept()
 {

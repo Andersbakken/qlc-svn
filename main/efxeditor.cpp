@@ -249,6 +249,8 @@ void EFXEditor::initInitializationPage()
 
 void EFXEditor::accept()
 {
+	m_efx->setName(m_nameEdit->text());
+
 	/* Copy the contents of the modified EFX over the original EFX */
 	m_original->copyFrom(m_efx);
 
@@ -346,11 +348,7 @@ void EFXEditor::removeFixtureItem(EFXFixture* ef)
 
 void EFXEditor::slotNameEdited(const QString &text)
 {
-	Q_ASSERT(m_efx != NULL);
-
-	setWindowTitle(tr("EFX Editor - %1").arg(text));
-
-	m_efx->setName(text);
+	setWindowTitle(tr("EFX - %1").arg(text));
 }
 
 void EFXEditor::slotFixtureItemChanged(QTreeWidgetItem* item, int column)
