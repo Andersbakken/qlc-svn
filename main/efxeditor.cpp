@@ -46,7 +46,6 @@ extern App* _app;
 #define KColumnNumber  0
 #define KColumnName    1
 #define KColumnReverse 2
-#define KColumnEF      3
 
 #define KInitColumnName     0
 #define KInitColumnID       1
@@ -267,7 +266,9 @@ QTreeWidgetItem* EFXEditor::fixtureItem(EFXFixture* ef)
 	while (*it != NULL)
 	{
 		QTreeWidgetItem* item = *it;
-		if (item->text(KColumnEF).toULongLong() == qulonglong(ef))
+		EFXFixture* ef_item = reinterpret_cast<EFXFixture*>
+			(item->data(0, Qt::UserRole).toULongLong());
+		if (ef_item == ef)
 			return item;
 		++it;
 	}
@@ -282,8 +283,12 @@ const QList <EFXFixture*> EFXEditor::selectedFixtures() const
 	
 	/* Put all selected fixture IDs to a list and return it */
 	while (it.hasNext() == true)
-		list << (EFXFixture*) it.next()->text(KColumnEF).toULongLong();
-
+	{
+		EFXFixture* ef = reinterpret_cast <EFXFixture*>
+			(it.next()->data(0, Qt::UserRole).toULongLong());
+		list << ef;
+	}
+	
 	return list;
 }
 
@@ -315,7 +320,8 @@ void EFXEditor::addFixtureItem(EFXFixture* ef)
 
 	item = new QTreeWidgetItem(m_tree);
 	item->setText(KColumnName, fxi->name());
-	item->setText(KColumnEF, QString("%1").arg(qulonglong(ef)));
+	item->setData(0, Qt::UserRole,
+			QVariant(reinterpret_cast<qulonglong> (ef)));
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
 
 	if (ef->direction() == Function::Backward)
@@ -355,8 +361,8 @@ void EFXEditor::slotFixtureItemChanged(QTreeWidgetItem* item, int column)
 {
 	if (column == KColumnReverse)
 	{
-		EFXFixture* ef;
-		ef = (EFXFixture*) item->text(KColumnEF).toULongLong();
+		EFXFixture* ef = reinterpret_cast <EFXFixture*>
+			(item->data(0, Qt::UserRole).toULongLong());
 		Q_ASSERT(ef != NULL);
 
 		if (item->checkState(column) == Qt::Checked)
@@ -374,8 +380,8 @@ void EFXEditor::slotAddFixtureClicked()
 	QTreeWidgetItemIterator twit(m_tree);
 	while (*twit != NULL)
 	{
-		EFXFixture* ef;
-		ef = (EFXFixture*) ((*twit)->text(KColumnEF).toULongLong());
+		EFXFixture* ef = reinterpret_cast <EFXFixture*>
+			((*twit)->data(0, Qt::UserRole).toULongLong());
 		Q_ASSERT(ef != NULL);
 
 		/* TODO: Disable all fixtures that don't have pan&tilt chans */
@@ -426,19 +432,15 @@ void EFXEditor::slotRemoveFixtureClicked()
 
 void EFXEditor::slotRaiseFixtureClicked()
 {
-	QTreeWidgetItem* item;
-	int index;
-
-	item = m_tree->currentItem();
+	QTreeWidgetItem* item = m_tree->currentItem();
 	if (item != NULL)
 	{
-		EFXFixture* ef;
-
-		index = m_tree->indexOfTopLevelItem(item);
+		int index = m_tree->indexOfTopLevelItem(item);
 		if (index == 0)
 			return;
 
-		ef = (EFXFixture*) (item->text(KColumnEF).toULongLong());
+		EFXFixture* ef = reinterpret_cast <EFXFixture*>
+			(item->data(0, Qt::UserRole).toULongLong());
 		Q_ASSERT(ef != NULL);
 
 		if (m_efx->raiseFixture(ef) == true)
@@ -454,19 +456,15 @@ void EFXEditor::slotRaiseFixtureClicked()
 
 void EFXEditor::slotLowerFixtureClicked()
 {
-	QTreeWidgetItem* item;
-	int index;
-
-	item = m_tree->currentItem();
+	QTreeWidgetItem* item = m_tree->currentItem();
 	if (item != NULL)
 	{
-		EFXFixture* ef;
-
-		index = m_tree->indexOfTopLevelItem(item);
+		int index = m_tree->indexOfTopLevelItem(item);
 		if (index == (m_tree->topLevelItemCount() - 1))
 			return;
 
-		ef = (EFXFixture*) (item->text(KColumnEF).toULongLong());
+		EFXFixture* ef = reinterpret_cast <EFXFixture*>
+			(item->data(0, Qt::UserRole).toULongLong());
 		Q_ASSERT(ef != NULL);
 
 		if (m_efx->lowerFixture(ef) == true)
