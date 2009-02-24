@@ -192,6 +192,13 @@ protected:
 	int m_frameStyle;
 
 	/*********************************************************************
+	 * Capability to have children
+	 *********************************************************************/
+public:
+	/** Return true if this widget can hold children. */
+	virtual bool canHaveChildren() const { return false; }
+
+	/*********************************************************************
 	 * Properties
 	 *********************************************************************/
 public:

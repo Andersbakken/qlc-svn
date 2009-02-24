@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QInputDialog>
 #include <QColorDialog>
+#include <QActionGroup>
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -62,6 +63,14 @@ extern QApplication* _qapp;
 
 VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 {
+	m_editActionGroup = NULL;
+	m_addActionGroup = NULL;
+	m_bgActionGroup = NULL;
+	m_fgActionGroup = NULL;
+	m_fontActionGroup = NULL;
+	m_frameActionGroup = NULL;
+	m_stackingActionGroup = NULL;
+
 	m_customMenu = NULL;
 	m_toolsMenu = NULL;
 	m_editMenu = NULL;
@@ -141,6 +150,16 @@ void VirtualConsole::initActions()
 	connect(m_addLabelAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddLabel()));
 
+	/* Put add actions under the same group */
+	m_addActionGroup = new QActionGroup(this);
+	m_addActionGroup->setExclusive(false);
+	m_addActionGroup->addAction(m_addButtonAction);
+	m_addActionGroup->addAction(m_addSliderAction);
+	m_addActionGroup->addAction(m_addXYPadAction);
+	m_addActionGroup->addAction(m_addCueListAction);
+	m_addActionGroup->addAction(m_addFrameAction);
+	m_addActionGroup->addAction(m_addLabelAction);
+	
 	/* Tools menu actions */
 	m_toolsSettingsAction = new QAction(QIcon(":/configure.png"),
 					    tr("Settings"), this);
@@ -160,22 +179,26 @@ void VirtualConsole::initActions()
 	/* Edit menu actions */
 	m_editCutAction = new QAction(QIcon(":/editcut.png"),
 				      tr("Cut"), this);
+	m_editCutAction->setShortcut(Qt::CTRL + Qt::Key_X);
 	connect(m_editCutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditCut()));
 
 	m_editCopyAction = new QAction(QIcon(":/editcopy.png"),
 				       tr("Copy"), this);
+	m_editCopyAction->setShortcut(Qt::CTRL + Qt::Key_C);
 	connect(m_editCopyAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditCopy()));
 
 	m_editPasteAction = new QAction(QIcon(":/editpaste.png"),
 					tr("Paste"), this);
+	m_editPasteAction->setShortcut(Qt::CTRL + Qt::Key_V);
+	m_editPasteAction->setEnabled(false);
 	connect(m_editPasteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditPaste()));
-	m_editPasteAction->setEnabled(false);
 
 	m_editDeleteAction = new QAction(QIcon(":/editdelete.png"),
 					 tr("Delete"), this);
+	m_editDeleteAction->setShortcut(Qt::Key_Delete);
 	connect(m_editDeleteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditDelete()));
 
@@ -188,6 +211,16 @@ void VirtualConsole::initActions()
 					 tr("Rename"), this);
 	connect(m_editRenameAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditRename()));
+
+	/* Put edit actions under the same group */
+	m_editActionGroup = new QActionGroup(this);
+	m_editActionGroup->setExclusive(false);
+	m_editActionGroup->addAction(m_editCutAction);
+	m_editActionGroup->addAction(m_editCopyAction);
+	m_editActionGroup->addAction(m_editPasteAction);
+	m_editActionGroup->addAction(m_editDeleteAction);
+	m_editActionGroup->addAction(m_editPropertiesAction);
+	m_editActionGroup->addAction(m_editRenameAction);
 
 	/* Background menu actions */
 	m_bgColorAction = new QAction(QIcon(":/color.png"),
@@ -205,6 +238,13 @@ void VirtualConsole::initActions()
 	connect(m_bgDefaultAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBackgroundNone()));
 
+	/* Put BG actions under the same group */
+	m_bgActionGroup = new QActionGroup(this);
+	m_bgActionGroup->setExclusive(false);
+	m_bgActionGroup->addAction(m_bgColorAction);
+	m_bgActionGroup->addAction(m_bgImageAction);
+	m_bgActionGroup->addAction(m_bgDefaultAction);
+
 	/* Foreground menu actions */
 	m_fgColorAction = new QAction(QIcon(":/color.png"),
 				      tr("Color"), this);
@@ -216,6 +256,12 @@ void VirtualConsole::initActions()
 	connect(m_fgDefaultAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotForegroundNone()));
 
+	/* Put FG actions under the same group */
+	m_fgActionGroup = new QActionGroup(this);
+	m_fgActionGroup->setExclusive(false);
+	m_fgActionGroup->addAction(m_fgColorAction);
+	m_fgActionGroup->addAction(m_fgDefaultAction);
+
 	/* Font menu actions */
 	m_fontAction = new QAction(QIcon(":/fonts.png"),
 				   tr("Font"), this);
@@ -226,6 +272,12 @@ void VirtualConsole::initActions()
 				   tr("Default"), this);
 	connect(m_resetFontAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotResetFont()));
+
+	/* Put font actions under the same group */
+	m_fontActionGroup = new QActionGroup(this);
+	m_fontActionGroup->setExclusive(false);
+	m_fontActionGroup->addAction(m_fontAction);
+	m_fontActionGroup->addAction(m_resetFontAction);
 
 	/* Frame menu actions */
 	m_frameSunkenAction = new QAction(QIcon(":/framesunken.png"),
@@ -243,6 +295,13 @@ void VirtualConsole::initActions()
 	connect(m_frameNoneAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFrameNone()));
 
+	/* Put frame actions under the same group */
+	m_frameActionGroup = new QActionGroup(this);
+	m_frameActionGroup->setExclusive(false);
+	m_frameActionGroup->addAction(m_frameRaisedAction);
+	m_frameActionGroup->addAction(m_frameSunkenAction);
+	m_frameActionGroup->addAction(m_frameNoneAction);
+
 	/* Stacking menu actions */
 	m_stackingRaiseAction = new QAction(QIcon(":/up.png"),
 					    tr("Raise"), this);
@@ -253,6 +312,12 @@ void VirtualConsole::initActions()
 					    tr("Lower"), this);
 	connect(m_stackingLowerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotStackingLower()));
+
+	/* Put stacking actions under the same group */
+	m_stackingActionGroup = new QActionGroup(this);
+	m_stackingActionGroup->setExclusive(false);
+	m_stackingActionGroup->addAction(m_stackingRaiseAction);
+	m_stackingActionGroup->addAction(m_stackingLowerAction);
 }
 
 void VirtualConsole::initMenuBar()
@@ -506,11 +571,8 @@ void VirtualConsole::setDrawArea(VCFrame* drawArea)
 	m_drawArea->setSizePolicy(QSizePolicy::Expanding,
 				  QSizePolicy::Expanding);
 
-	/* Disable all edit actions at first */
-	updateEditActions();
-
-	/* Enable all add actions at first */
-	updateAddActions();
+	/* Update actions' enabled status */
+	updateActions();
 }
 
 /*****************************************************************************
@@ -535,11 +597,8 @@ void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
 	/* Change the custom menu to the latest-selected widget's menu */
 	updateCustomMenu();
 
-	/* Enable or disable edit actions */
-	updateEditActions();
-
-	/* Enable or disable add actions */
-	updateAddActions();
+	/* Enable or disable actions */
+	updateActions();
 }
 
 bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
@@ -566,11 +625,8 @@ void VirtualConsole::clearWidgetSelection()
 	/* Change the custom menu to the latest-selected widget's menu */
 	updateCustomMenu();
 
-	/* Enable or disable edit actions */
-	updateEditActions();
-
-	/* Enable or disable add actions */
-	updateAddActions();
+	/* Enable or disable actions */
+	updateActions();
 }
 
 void VirtualConsole::updateCustomMenu()
@@ -600,59 +656,38 @@ void VirtualConsole::updateCustomMenu()
 	}
 }
 
-void VirtualConsole::updateEditActions()
+void VirtualConsole::updateActions()
 {
 	bool enable;
 
-	/* If selectedWidgets is empty, all actions go to draw area */
+	/* When selected widgets is empty, all actions go to main draw area. */
 	if (m_selectedWidgets.isEmpty() == true)
-		enable = false;
+	{
+		m_addActionGroup->setEnabled(true);
+
+		m_editActionGroup->setEnabled(false);
+		m_fgActionGroup->setEnabled(true); /* Enable draw area BG */
+		m_fgActionGroup->setEnabled(false);
+		m_fontActionGroup->setEnabled(false);
+		m_frameActionGroup->setEnabled(false);
+		m_stackingActionGroup->setEnabled(false);
+	}
 	else
-		enable = true;
+	{
+		m_editActionGroup->setEnabled(true);
+		m_fgActionGroup->setEnabled(true);
+		m_fgActionGroup->setEnabled(true);
+		m_fontActionGroup->setEnabled(true);
+		m_frameActionGroup->setEnabled(true);
+		m_stackingActionGroup->setEnabled(true);
 
-	m_editCutAction->setEnabled(enable);
-	m_editCopyAction->setEnabled(enable);
-	m_editDeleteAction->setEnabled(enable);
-	m_editPropertiesAction->setEnabled(enable);
-	m_editRenameAction->setEnabled(enable);
-/*
-	m_bgColorAction->setEnabled(enable);
-	m_bgImageAction->setEnabled(enable);
-	m_bgDefaultAction->setEnabled(enable);
-*/
-	m_fgColorAction->setEnabled(enable);
-	m_fgDefaultAction->setEnabled(enable);
-
-	m_fontAction->setEnabled(enable);
-	m_resetFontAction->setEnabled(enable);
-
-	m_frameSunkenAction->setEnabled(enable);
-	m_frameRaisedAction->setEnabled(enable);
-	m_frameNoneAction->setEnabled(enable);
-
-	m_stackingRaiseAction->setEnabled(enable);
-	m_stackingLowerAction->setEnabled(enable);
-}
-
-void VirtualConsole::updateAddActions()
-{
-	bool enable;
-
-	/* Enable add menu only for VCDockArea (selected is empty) or
-	   widgets that can be cast to VCFrame. */
-	if (m_selectedWidgets.isEmpty() == true)
-		enable = true;
-	else if (qobject_cast<VCFrame*> (m_selectedWidgets.last()) != NULL)
-		enable = true;
-	else
-		enable = false;
-
-	m_addButtonAction->setEnabled(enable);
-	m_addSliderAction->setEnabled(enable);
-	m_addXYPadAction->setEnabled(enable);
-	m_addCueListAction->setEnabled(enable);
-	m_addFrameAction->setEnabled(enable);
-	m_addLabelAction->setEnabled(enable);
+		/* Need to check, whether the last selected widget can hold
+		   children, since it will get new additions if possible. */
+		if (m_selectedWidgets.last()->canHaveChildren() == true)
+			m_addActionGroup->setEnabled(true);
+		else
+			m_addActionGroup->setEnabled(false);
+	}
 }
 
 /*****************************************************************************
@@ -1229,17 +1264,27 @@ void VirtualConsole::slotModeChanged(App::Mode mode)
 
 	if (mode == App::Operate)
 	{
-		// Don't allow edits in operate mode
-		m_editMenu->setEnabled(false);
-		m_addMenu->setEnabled(false);
+		// Don't allow editing or adding in operate mode
 		m_toolsSettingsAction->setEnabled(false);
+		m_editActionGroup->setEnabled(false);
+		m_addActionGroup->setEnabled(false);
+		m_bgActionGroup->setEnabled(false);
+		m_fgActionGroup->setEnabled(false);
+		m_fontActionGroup->setEnabled(false);
+		m_frameActionGroup->setEnabled(false);
+		m_stackingActionGroup->setEnabled(false);
 	}
 	else
 	{
-		// Allow edits in design mode
-		m_editMenu->setEnabled(true);
-		m_addMenu->setEnabled(true);
+		// Allow editing and adding in design mode
 		m_toolsSettingsAction->setEnabled(true);
+		m_editActionGroup->setEnabled(true);
+		m_addActionGroup->setEnabled(true);
+		m_bgActionGroup->setEnabled(true);
+		m_fgActionGroup->setEnabled(true);
+		m_fontActionGroup->setEnabled(true);
+		m_frameActionGroup->setEnabled(true);
+		m_stackingActionGroup->setEnabled(true);
 	}
 
 	/* Patch the event thru to all children */

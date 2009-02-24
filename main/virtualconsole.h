@@ -29,6 +29,7 @@
 #include "app.h"
 
 class QDomDocument;
+class QActionGroup;
 class QDomElement;
 class QAction;
 class QMenu;
@@ -200,11 +201,8 @@ protected:
 	/** Change the custom menu to the last selected widget's menu */
 	void updateCustomMenu();
 
-	/** Enable or disable edit actions based on selection */
-	void updateEditActions();
-
-	/** Enable or disable add actions based on selection */
-	void updateAddActions();
+	/** Enable or disable actions based on current selection */
+	void updateActions();
 
 protected:
 	/** The widgets that are currently selected */
@@ -245,6 +243,14 @@ public:
 	QMenu* addMenu() { return m_addMenu; }
 
 protected:
+	QActionGroup* m_addActionGroup;
+	QActionGroup* m_editActionGroup;
+	QActionGroup* m_bgActionGroup;
+	QActionGroup* m_fgActionGroup;
+	QActionGroup* m_fontActionGroup;
+	QActionGroup* m_frameActionGroup;
+	QActionGroup* m_stackingActionGroup;
+	
 	QAction* m_addButtonAction;
 	QAction* m_addSliderAction;
 	QAction* m_addXYPadAction;
