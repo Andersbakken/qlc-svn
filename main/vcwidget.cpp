@@ -660,12 +660,15 @@ void VCWidget::paintEvent(QPaintEvent* e)
 				       &painter, this);
 	}
 
+	QWidget::paintEvent(e);
+
 	/* Draw selection frame */
 	if (_app->mode() == App::Design &&
 	    _app->virtualConsole()->isWidgetSelected(this) == true)
 	{
 		/* Draw a dotted line around the widget */
 		QPen pen(Qt::DotLine);
+		pen.setCapStyle(Qt::RoundCap);
 		pen.setWidth(0);
 		painter.setPen(pen);
 		painter.drawRect(0, 0, rect().width(), rect().height());
@@ -675,8 +678,6 @@ void VCWidget::paintEvent(QPaintEvent* e)
 		painter.drawPixmap(rect().width() - 16, rect().height() - 16,
 			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
 	}
-
-	QWidget::paintEvent(e);
 }
 
 void VCWidget::mousePressEvent(QMouseEvent* e)
@@ -768,16 +769,18 @@ void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 		m_resizeMode = false;
 		setMouseTracking(false);
 	}
-
-	QWidget::mouseReleaseEvent(e);
+	else
+	{
+		QWidget::mouseReleaseEvent(e);
+	}
 }
 
 void VCWidget::mouseDoubleClickEvent(QMouseEvent* e)
 {
 	if (_app->mode() == App::Design)
 		editProperties();
-
-	QWidget::mouseDoubleClickEvent(e);
+	else
+		QWidget::mouseDoubleClickEvent(e);
 }
 
 void VCWidget::mouseMoveEvent(QMouseEvent* e)
@@ -801,6 +804,8 @@ void VCWidget::mouseMoveEvent(QMouseEvent* e)
 			_app->doc()->setModified();
 		}
 	}
-
-	QWidget::mouseMoveEvent(e);
+	else
+	{
+		QWidget::mouseMoveEvent(e);
+	}
 }
