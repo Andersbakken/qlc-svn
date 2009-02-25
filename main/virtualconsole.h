@@ -31,13 +31,12 @@
 class QDomDocument;
 class QActionGroup;
 class QDomElement;
-class QAction;
-class QMenu;
-
 class VCDockArea;
 class VCWidget;
 class VCFrame;
+class QAction;
 class KeyBind;
+class QMenu;
 
 #define KXMLQLCVirtualConsole "VirtualConsole"
 
@@ -86,7 +85,10 @@ private:
 protected:
 	void initActions();
 	void initMenuBar();
-	void initDockArea();
+
+signals:
+	/** Signal telling that the VC has been closed */
+	void closed();
 
 	/*********************************************************************
 	 * Grid
@@ -215,25 +217,6 @@ protected:
 	EditAction m_editAction;
 
 	/*********************************************************************
-	 * Draw area
-	 *********************************************************************/
-public:
-	/**
-	 * Set the bottom-most VCFrame that acts as the "drawing area" housing
-	 * all other vc widgets.
-	 *
-	 * @param drawArea The VCFrame to set as the bottom-most widget
-	 */
-	void setDrawArea(VCFrame* drawArea);
-
-	/** Get the virtual console's bottom-most widget */
-	VCFrame* drawArea() const { return m_drawArea; }
-
-protected:
-	/** The bottom-most widget in virtual console */
-	VCFrame* m_drawArea;
-
-	/*********************************************************************
 	 * Menus & actions
 	 *********************************************************************/
 public:
@@ -243,6 +226,8 @@ public:
 	QMenu* addMenu() { return m_addMenu; }
 
 protected:
+	QToolBar* m_toolbar;
+
 	QActionGroup* m_addActionGroup;
 	QActionGroup* m_editActionGroup;
 	QActionGroup* m_bgActionGroup;
@@ -292,15 +277,6 @@ protected:
 	QMenu* m_editMenu;
 	QMenu* m_addMenu;
 	
-	/*********************************************************************
-	 * Misc slots
-	 *********************************************************************/
-public slots:
-	void slotModeChanged(App::Mode mode);
-
-signals:
-	void modeChanged(App::Mode);
-
 	/*********************************************************************
 	 * Add menu callbacks
 	 *********************************************************************/
@@ -369,15 +345,6 @@ public slots:
 	void slotStackingLower();
 
 	/*********************************************************************
-	 * Signals
-	 *********************************************************************/
-signals:
-	void closed();
-
-	void keyPressed(QKeyEvent*);
-	void keyReleased(QKeyEvent*);
-
-	/*********************************************************************
 	 * Dock Area
 	 *********************************************************************/
 public:
@@ -385,8 +352,42 @@ public:
 	VCDockArea* dockArea() { return m_dockArea; }
 
 protected:
+	/** Initialize default sliders */
+	void initDockArea();
+
+protected:
 	/** Dock area that holds the default fade & hold sliders */
 	VCDockArea* m_dockArea;
+
+	/*********************************************************************
+	 * Draw area
+	 *********************************************************************/
+public:
+	/**
+	 * Set the bottom-most VCFrame that acts as the "drawing area" housing
+	 * all other vc widgets.
+	 *
+	 * @param drawArea The VCFrame to set as the bottom-most widget
+	 */
+	void setDrawArea(VCFrame* drawArea);
+
+	/** Get the virtual console's bottom-most widget */
+	VCFrame* drawArea() const { return m_drawArea; }
+
+protected:
+	/** The bottom-most widget in virtual console */
+	VCFrame* m_drawArea;
+
+	/*********************************************************************
+	 * Main application mode
+	 *********************************************************************/
+public slots:
+	/** Slot that catches main application mode changes */
+	void slotModeChanged(App::Mode mode);
+
+signals:
+	/** Signal emitted to all children */
+	void modeChanged(App::Mode);
 
 	/*********************************************************************
 	 * Event handlers
@@ -397,10 +398,14 @@ protected:
 	void keyReleaseEvent(QKeyEvent* e);
 
 	/*********************************************************************
-	 * Key event receivers
+	 * Key events
 	 *********************************************************************/
+signals:
+	void keyPressed(QKeyEvent*);
+	void keyReleased(QKeyEvent*);
+
 protected:
-	// Key receiver bind objects
+	/** Key binding objects */
 	QList <KeyBind*> m_keyReceivers;
 };
 

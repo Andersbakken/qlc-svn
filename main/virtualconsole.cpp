@@ -405,25 +405,9 @@ void VirtualConsole::initMenuBar()
 	m_editMenu->addSeparator();
 }
 
-void VirtualConsole::initDockArea()
-{
-	if (m_dockArea != NULL)
-		delete m_dockArea;
-
-	m_dockArea = new VCDockArea(this);
-	m_dockArea->setSizePolicy(QSizePolicy::Maximum,
-				  QSizePolicy::Expanding);
-
-	// Add the dock area into the master horizontal layout
-	layout()->addWidget(m_dockArea);
-
-	/* Show the dock area by default */
-	m_dockArea->show();
-}
-
-/*********************************************************************
+/*****************************************************************************
  * Load & Save
- *********************************************************************/
+ *****************************************************************************/
 
 bool VirtualConsole::loader(QDomDocument* doc, QDomElement* vc_root)
 {
@@ -555,27 +539,6 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 }
 
 /*****************************************************************************
- * Draw area
- *****************************************************************************/
-
-void VirtualConsole::setDrawArea(VCFrame* drawArea)
-{
-	Q_ASSERT(layout() != NULL);
-
-	if (m_drawArea != NULL)
-		delete m_drawArea;
-	m_drawArea = drawArea;
-
-	/* Add the draw area into the master horizontal layout */
-	layout()->addWidget(m_drawArea);
-	m_drawArea->setSizePolicy(QSizePolicy::Expanding,
-				  QSizePolicy::Expanding);
-
-	/* Update actions' enabled status */
-	updateActions();
-}
-
-/*****************************************************************************
  * Selected widget
  *****************************************************************************/
 
@@ -658,8 +621,6 @@ void VirtualConsole::updateCustomMenu()
 
 void VirtualConsole::updateActions()
 {
-	bool enable;
-
 	/* When selected widgets is empty, all actions go to main draw area. */
 	if (m_selectedWidgets.isEmpty() == true)
 	{
@@ -837,9 +798,9 @@ void VirtualConsole::slotAddLabel()
 	}
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Tools menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotToolsSettings()
 {
@@ -918,9 +879,9 @@ void VirtualConsole::slotToolsPanic()
 	_app->slotControlPanic();
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Edit menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotEditCut()
 {
@@ -1060,9 +1021,9 @@ void VirtualConsole::slotEditRename()
 	}
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Background menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotBackgroundColor()
 {
@@ -1131,9 +1092,9 @@ void VirtualConsole::slotBackgroundNone()
 	}
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Foreground menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotForegroundColor()
 {
@@ -1157,9 +1118,9 @@ void VirtualConsole::slotForegroundNone()
 		widget->resetForegroundColor();
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Font menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotFont()
 {
@@ -1184,9 +1145,9 @@ void VirtualConsole::slotResetFont()
 		widget->resetFont();
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Stacking menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotStackingRaise()
 {
@@ -1202,9 +1163,9 @@ void VirtualConsole::slotStackingLower()
 		widget->lower();
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Frame menu callbacks
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::slotFrameSunken()
 {
@@ -1227,9 +1188,50 @@ void VirtualConsole::slotFrameNone()
 		widget->setFrameStyle(KVCFrameStyleNone);
 }
  
-/*********************************************************************
- * Misc callbacks
- *********************************************************************/
+/*****************************************************************************
+ * Dock area
+ *****************************************************************************/
+
+void VirtualConsole::initDockArea()
+{
+	if (m_dockArea != NULL)
+		delete m_dockArea;
+
+	m_dockArea = new VCDockArea(this);
+	m_dockArea->setSizePolicy(QSizePolicy::Maximum,
+				  QSizePolicy::Expanding);
+
+	// Add the dock area into the master horizontal layout
+	layout()->addWidget(m_dockArea);
+
+	/* Show the dock area by default */
+	m_dockArea->show();
+}
+
+/*****************************************************************************
+ * Draw area
+ *****************************************************************************/
+
+void VirtualConsole::setDrawArea(VCFrame* drawArea)
+{
+	Q_ASSERT(layout() != NULL);
+
+	if (m_drawArea != NULL)
+		delete m_drawArea;
+	m_drawArea = drawArea;
+
+	/* Add the draw area into the master horizontal layout */
+	layout()->addWidget(m_drawArea);
+	m_drawArea->setSizePolicy(QSizePolicy::Expanding,
+				  QSizePolicy::Expanding);
+
+	/* Update actions' enabled status */
+	updateActions();
+}
+
+/*****************************************************************************
+ * Main application mode
+ *****************************************************************************/
 
 void VirtualConsole::slotModeChanged(App::Mode mode)
 {
@@ -1291,9 +1293,9 @@ void VirtualConsole::slotModeChanged(App::Mode mode)
 	emit modeChanged(mode);
 }
 
-/*********************************************************************
+/*****************************************************************************
  * Event handlers
- *********************************************************************/
+ *****************************************************************************/
 
 void VirtualConsole::closeEvent(QCloseEvent* e)
 {
