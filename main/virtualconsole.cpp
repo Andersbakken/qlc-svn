@@ -30,6 +30,7 @@
 #include <QCloseEvent>
 #include <QMetaObject>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QString>
 #include <QPoint>
 #include <QDebug>
@@ -323,9 +324,19 @@ void VirtualConsole::initActions()
 void VirtualConsole::initMenuBar()
 {
 	QMenuBar* menuBar;
+	QToolBar* toolBar;
+	QVBoxLayout* vbox;
+	QWidget* widget;
 
-	menuBar = new QMenuBar(this);
-	layout()->setMenuBar(menuBar);
+	/* Menu widget to the layout */
+	widget = new QWidget(this);
+	vbox = new QVBoxLayout(widget);
+	vbox->setMargin(0);
+	layout()->setMenuBar(widget);
+
+	/* Menubar */
+	menuBar = new QMenuBar(widget);
+	vbox->addWidget(menuBar);
 
 	/* Add menu */
 	m_addMenu = new QMenu(menuBar);
@@ -403,6 +414,26 @@ void VirtualConsole::initMenuBar()
 	   widget menu that gets appended to the edit menu when a selected
 	   widget provides one. */
 	m_editMenu->addSeparator();
+
+	/* Toolbar */
+	toolBar = new QToolBar(widget);
+	vbox->addWidget(toolBar);
+	
+	toolBar->addAction(m_addButtonAction);
+	toolBar->addAction(m_addSliderAction);
+	toolBar->addAction(m_addXYPadAction);
+	toolBar->addAction(m_addCueListAction);
+	toolBar->addAction(m_addFrameAction);
+	toolBar->addAction(m_addLabelAction);
+	toolBar->addSeparator();
+	toolBar->addAction(m_editCutAction);
+	toolBar->addAction(m_editCopyAction);
+	toolBar->addAction(m_editPasteAction);
+	toolBar->addSeparator();
+	toolBar->addAction(m_editDeleteAction);
+	toolBar->addSeparator();
+	toolBar->addAction(m_editPropertiesAction);
+	toolBar->addAction(m_editRenameAction);
 }
 
 /*****************************************************************************
