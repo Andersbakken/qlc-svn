@@ -664,9 +664,8 @@ void VirtualConsole::updateActions()
 		m_editDeleteAction->setEnabled(false);
 		m_editRenameAction->setEnabled(false);
 
-		/* Rest of the stuff is disabled for draw area, except BG */
+		/* All the rest are disabled for draw area, except BG & font */
 		m_fgActionGroup->setEnabled(false);
-		m_fontActionGroup->setEnabled(false);
 		m_frameActionGroup->setEnabled(false);
 		m_stackingActionGroup->setEnabled(false);
 
@@ -1179,6 +1178,9 @@ void VirtualConsole::slotForegroundColor()
 
 void VirtualConsole::slotForegroundNone()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
 		widget->resetForegroundColor();
@@ -1190,25 +1192,42 @@ void VirtualConsole::slotForegroundNone()
 
 void VirtualConsole::slotFont()
 {
-	if (m_selectedWidgets.isEmpty() == true)
-		return;
-
 	bool ok = false;
-	QFont font(m_selectedWidgets.last()->font());
+	QFont font;
+
+	if (m_selectedWidgets.isEmpty() == true)
+		font = m_drawArea->font();
+	else
+		font = m_selectedWidgets.last()->font();
+
 	font = QFontDialog::getFont(&ok, font);
 	if (ok == true)
 	{
-		VCWidget* widget;
-		foreach(widget, m_selectedWidgets)
-			widget->setFont(font);
+		if (m_selectedWidgets.isEmpty() == true)
+		{
+			m_drawArea->setFont(font);
+		}
+		else
+		{
+			VCWidget* widget;
+			foreach(widget, m_selectedWidgets)
+				widget->setFont(font);
+		}
 	}
 }
 
 void VirtualConsole::slotResetFont()
 {
-	VCWidget* widget;
-	foreach(widget, m_selectedWidgets)
-		widget->resetFont();
+	if (m_selectedWidgets.isEmpty() == true)
+	{
+		m_drawArea->resetFont();
+	}
+	else
+	{
+		VCWidget* widget;
+		foreach(widget, m_selectedWidgets)
+			widget->resetFont();
+	}
 }
 
 /*****************************************************************************
@@ -1217,6 +1236,9 @@ void VirtualConsole::slotResetFont()
 
 void VirtualConsole::slotStackingRaise()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
 		widget->raise();
@@ -1224,6 +1246,9 @@ void VirtualConsole::slotStackingRaise()
 
 void VirtualConsole::slotStackingLower()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
 		widget->lower();
@@ -1235,6 +1260,9 @@ void VirtualConsole::slotStackingLower()
 
 void VirtualConsole::slotFrameSunken()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
 		widget->setFrameStyle(KVCFrameStyleSunken);
@@ -1242,6 +1270,9 @@ void VirtualConsole::slotFrameSunken()
 
 void VirtualConsole::slotFrameRaised()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
 		widget->setFrameStyle(KVCFrameStyleRaised);
@@ -1249,6 +1280,9 @@ void VirtualConsole::slotFrameRaised()
 
 void VirtualConsole::slotFrameNone()
 {
+	if (m_selectedWidgets.isEmpty() == true)
+		return;
+
 	VCWidget* widget;
 	foreach(widget, m_selectedWidgets)
 		widget->setFrameStyle(KVCFrameStyleNone);
