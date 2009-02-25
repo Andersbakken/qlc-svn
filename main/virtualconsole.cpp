@@ -655,30 +655,62 @@ void VirtualConsole::updateActions()
 	/* When selected widgets is empty, all actions go to main draw area. */
 	if (m_selectedWidgets.isEmpty() == true)
 	{
+		/* Enable widget additions to draw area */
 		m_addActionGroup->setEnabled(true);
 
-		m_editActionGroup->setEnabled(false);
-		m_fgActionGroup->setEnabled(true); /* Enable draw area BG */
+		/* Disable edit actions that can't be allowed for draw area */
+		m_editCutAction->setEnabled(false);
+		m_editCopyAction->setEnabled(false);
+		m_editDeleteAction->setEnabled(false);
+		m_editRenameAction->setEnabled(false);
+
+		/* Rest of the stuff is disabled for draw area, except BG */
 		m_fgActionGroup->setEnabled(false);
 		m_fontActionGroup->setEnabled(false);
 		m_frameActionGroup->setEnabled(false);
 		m_stackingActionGroup->setEnabled(false);
+
+		/* Enable paste to draw area if there's something to paste */
+		if (m_clipboard.isEmpty() == true)
+			m_editPasteAction->setEnabled(false);
+		else
+			m_editPasteAction->setEnabled(true);
 	}
 	else
 	{
-		m_editActionGroup->setEnabled(true);
-		m_fgActionGroup->setEnabled(true);
+		/* Enable edit actions for other widgets */
+		m_editCutAction->setEnabled(true);
+		m_editCopyAction->setEnabled(true);
+		m_editDeleteAction->setEnabled(true);
+		m_editRenameAction->setEnabled(true);
+
+		/* Enable all common properties */
+		m_bgActionGroup->setEnabled(true);
 		m_fgActionGroup->setEnabled(true);
 		m_fontActionGroup->setEnabled(true);
 		m_frameActionGroup->setEnabled(true);
 		m_stackingActionGroup->setEnabled(true);
 
-		/* Need to check, whether the last selected widget can hold
-		   children, since it will get new additions if possible. */
+		/* Check, whether the last selected widget can hold children */
 		if (m_selectedWidgets.last()->canHaveChildren() == true)
+		{
+			/* Enable paste for widgets that can hold children */
+			if (m_clipboard.isEmpty() == true)
+				m_editPasteAction->setEnabled(false);
+			else
+				m_editPasteAction->setEnabled(true);
+
+			/* Enable also new additions */
 			m_addActionGroup->setEnabled(true);
+		}
 		else
+		{
+			/* No new children possible */
 			m_addActionGroup->setEnabled(false);
+
+			/* No pasted children possible */
+			m_editPasteAction->setEnabled(false);
+		}
 	}
 }
 
@@ -1027,10 +1059,13 @@ void VirtualConsole::slotEditDelete()
 
 void VirtualConsole::slotEditProperties()
 {
-	if (m_selectedWidgets.isEmpty() == true)
-		return;
+	VCWidget* widget;
 
-	VCWidget* widget = m_selectedWidgets.last();
+	if (m_selectedWidgets.isEmpty() == true)
+		widget = m_drawArea;
+	else
+		widget = m_selectedWidgets.last();
+
 	if (widget != NULL)
 		widget->editProperties();
 }
