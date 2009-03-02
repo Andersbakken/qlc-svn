@@ -27,7 +27,7 @@
 
 class QWidget;
 
-#define KXMLQLCWidgetProperties "Properties"
+#define KXMLQLCWidgetProperties "WidgetProperties"
 #define KXMLQLCWidgetX "X"
 #define KXMLQLCWidgetY "Y"
 #define KXMLQLCWidgetWidth "Width"
@@ -41,7 +41,10 @@ class QLC_DECLSPEC QLCWidgetProperties
 {
 public:
 	QLCWidgetProperties();
+	QLCWidgetProperties(const QLCWidgetProperties& properties);
 	virtual ~QLCWidgetProperties();
+
+	QLCWidgetProperties& operator=(const QLCWidgetProperties& properties);
 
 	QFlags <Qt::WindowState> state() const { return m_state; }
 	bool visible() const { return m_visible; }
@@ -50,9 +53,9 @@ public:
 	int width() const { return m_width; }
 	int height() const { return m_height; }
 
-	void store(QWidget* widget);
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* root);
+	virtual void store(QWidget* widget);
+	virtual bool loadXML(QDomDocument* doc, QDomElement* root);
+	virtual bool saveXML(QDomDocument* doc, QDomElement* root);
 
 protected:
 	QFlags <Qt::WindowState> m_state;

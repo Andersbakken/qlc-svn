@@ -62,6 +62,11 @@
 extern App* _app;
 extern QApplication* _qapp;
 
+VCProperties VirtualConsole::s_properties;
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
+
 VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 {
 	m_editActionGroup = NULL;
@@ -80,16 +85,21 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 	m_dockArea = NULL;
 	m_drawArea = NULL;
 
-	m_gridEnabled = true;
-	m_gridX = 10;
-	m_gridY = 10;
-
-	m_keyRepeatOff = true;
-	m_grabKeyboard = true;
-
 	m_editAction = EditNone;
 	m_editMenu = NULL;
 
+	init();
+}
+
+VirtualConsole::~VirtualConsole()
+{
+	/* The parent widget is a QMdiSubWindow, which must be deleted now
+	   since its child is deleted. */
+	parentWidget()->deleteLater();
+}
+
+void VirtualConsole::init()
+{
 	// Main layout
 	new QHBoxLayout(this);
 
@@ -108,14 +118,7 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 	setDrawArea(new VCFrame(this));
 
 	// Set some default size
-	parentWidget()->resize(640, 480);
-}
-
-VirtualConsole::~VirtualConsole()
-{
-	/* The parent widget is a QMdiSubWindow, which must be deleted now
-	   since its child is deleted. */
-	parentWidget()->deleteLater();
+	parentWidget()->resize(s_properties.width(), s_properties.height());
 }
 
 void VirtualConsole::initActions()
@@ -450,12 +453,6 @@ bool VirtualConsole::loader(QDomDocument* doc, QDomElement* vc_root)
 
 bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 {
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
-
 	QDomNode node;
 	QDomElement tag;
 	QString str;
@@ -473,53 +470,20 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
-		}
-		else if (tag.tagName() == KXMLQLCVirtualConsoleGrid)
-		{
-			str = tag.attribute(KXMLQLCVirtualConsoleGridXResolution);
-			setGridX(str.toInt());
-
-			str = tag.attribute(KXMLQLCVirtualConsoleGridYResolution);
-			setGridY(str.toInt());
-
-			str = tag.attribute(KXMLQLCVirtualConsoleGridEnabled);
-			setGridEnabled((bool) str.toInt());
-		}
-		else if (tag.tagName() == KXMLQLCVirtualConsoleKeyboard)
-		{
-			str = tag.attribute(KXMLQLCVirtualConsoleKeyboardGrab);
-			setGrabKeyboard((bool) str.toInt());
-
-			str = tag.attribute(KXMLQLCVirtualConsoleKeyboardRepeat);
-			setKeyRepeatOff((bool) str.toInt());
-		}
-		else if (tag.tagName() == KXMLQLCVCDockArea)
-		{
-			Q_ASSERT(m_dockArea != NULL);
-			m_dockArea->loadXML(doc, &tag);
-		}
+		if (tag.tagName() == KXMLQLCVCProperties)
+			s_properties.loadXML(doc, &tag);
 		else if (tag.tagName() == KXMLQLCVCFrame)
-		{
 			VCFrame::loader(doc, &tag, this);
-		}
 		else
-		{
 			qDebug() << "Unknown virtual console tag:"
 				 << tag.tagName();
-		}
 
 		node = node.nextSibling();
 	}
 
-	parentWidget()->setGeometry(x, y, w, h);
-	if (visible == true)
-		parentWidget()->showNormal();
-	else
-		parentWidget()->hide();
+	/* Tell the dock area to refresh its properties and show it (or not) */
+	Q_ASSERT(m_dockArea != NULL);
+	m_dockArea->refreshProperties();
 
 	return true;
 }
@@ -538,33 +502,11 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	root = doc->createElement(KXMLQLCVirtualConsole);
 	wksp_root->appendChild(root);
 
-	/* Save window state */
-	QLCFile::saveXMLWindowState(doc, &root, parentWidget());
-
-	/* Grid */
-	tag = doc->createElement(KXMLQLCVirtualConsoleGrid);
-	root.appendChild(tag);
-	str.setNum((m_gridEnabled) ? 1 : 0);
-	tag.setAttribute(KXMLQLCVirtualConsoleGridEnabled, str);
-	str.setNum(m_gridX);
-	tag.setAttribute(KXMLQLCVirtualConsoleGridXResolution, str);
-	str.setNum(m_gridY);
-	tag.setAttribute(KXMLQLCVirtualConsoleGridYResolution, str);
-
-	/* Keyboard settings */
-	tag = doc->createElement(KXMLQLCVirtualConsoleKeyboard);
-	root.appendChild(tag);
-	str.setNum((m_grabKeyboard) ? 1 : 0);
-	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardGrab, str);
-	str.setNum((m_keyRepeatOff) ? 1 : 0);
-	tag.setAttribute(KXMLQLCVirtualConsoleKeyboardRepeat, str);
-
-	/* Dock Area */
-	m_dockArea->saveXML(doc, &root);
+	/* Properties */
+	s_properties.saveXML(doc, &root);
 
 	/* Save children */
-	if (m_drawArea != NULL)
-		m_drawArea->saveXML(doc, &root);
+	m_drawArea->saveXML(doc, &root);
 
 	return true;
 }
@@ -866,71 +808,27 @@ void VirtualConsole::slotAddLabel()
 
 void VirtualConsole::slotToolsSettings()
 {
-	VirtualConsoleProperties prop(this);
-	t_input_universe uni;
-	t_input_channel ch;
-	t_bus_value lo;
-	t_bus_value hi;
-
-	Q_ASSERT(m_dockArea != NULL);
-
-	/* Layout */
-	prop.setKeyRepeatOff(m_keyRepeatOff);
-	prop.setGrabKeyboard(m_grabKeyboard);
-	prop.setGrid(m_gridEnabled, m_gridX, m_gridY);
-
-	/* Default sliders */
-	lo = m_dockArea->defaultFadeSlider()->busLowLimit();
-	hi = m_dockArea->defaultFadeSlider()->busHighLimit();
-	prop.setFadeLimits(lo, hi);
-
-	lo = m_dockArea->defaultHoldSlider()->busLowLimit();
-	hi = m_dockArea->defaultHoldSlider()->busHighLimit();
-	prop.setHoldLimits(lo, hi);
-
-	uni = m_dockArea->defaultFadeSlider()->inputUniverse();
-	ch = m_dockArea->defaultFadeSlider()->inputChannel();
-	prop.setFadeInputSource(uni, ch);
-
-	uni = m_dockArea->defaultHoldSlider()->inputUniverse();
-	ch = m_dockArea->defaultHoldSlider()->inputChannel();
-	prop.setHoldInputSource(uni, ch);
-
+	VirtualConsoleProperties prop(this, s_properties);
 	if (prop.exec() == QDialog::Accepted)
 	{
-		setGridEnabled(prop.isGridEnabled());
-		setGridX(prop.gridX());
-		setGridY(prop.gridY());
-
-		setKeyRepeatOff(prop.isKeyRepeatOff());
-		setGrabKeyboard(prop.isGrabKeyboard());
-
-		lo = prop.fadeLowLimit();
-		hi = prop.fadeHighLimit();
-		m_dockArea->defaultFadeSlider()->setBusRange(lo, hi);
-
-		lo = prop.holdLowLimit();
-		hi = prop.holdHighLimit();
-		m_dockArea->defaultHoldSlider()->setBusRange(lo, hi);
-
-		uni = prop.fadeInputUniverse();
-		ch = prop.fadeInputChannel();
-		m_dockArea->defaultFadeSlider()->setInputSource(uni, ch);
-
-		uni = prop.holdInputUniverse();
-		ch = prop.holdInputChannel();
-		m_dockArea->defaultHoldSlider()->setInputSource(uni, ch);
-
+		s_properties = prop.properties();
+		m_dockArea->refreshProperties();
 		_app->doc()->setModified();
 	}
 }
 
 void VirtualConsole::slotToolsSliders()
 {
-	if (m_dockArea->isHidden())
+	if (m_dockArea->isHidden() == true)
+	{
+		s_properties.setSlidersVisible(true);
 		m_dockArea->show();
+	}
 	else
+	{
+		s_properties.setSlidersVisible(false);
 		m_dockArea->hide();
+	}
 
 	_app->doc()->setModified();
 }
@@ -1338,7 +1236,7 @@ void VirtualConsole::slotModeChanged(App::Mode mode)
 	QString config;
 
 	/* Key repeat */
-	if (isKeyRepeatOff() == true)
+	if (s_properties.isKeyRepeatOff() == true)
 	{
 #if !defined(WIN32) && !defined(__APPLE__)
 		Display* display;
@@ -1356,7 +1254,7 @@ void VirtualConsole::slotModeChanged(App::Mode mode)
 	}
 	
 	/* Grab keyboard */
-	if (isGrabKeyboard() == true)
+	if (s_properties.isGrabKeyboard() == true)
 	{
 		if (mode == App::Design)
 			releaseKeyboard();

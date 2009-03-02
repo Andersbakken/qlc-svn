@@ -28,20 +28,6 @@
 #include "common/qlctypes.h"
 #include "ui_vcdockslider.h"
 
-class QDomDocument;
-class QDomElement;
-class QMouseEvent;
-class QPoint;
-class QFile;
-
-#define KXMLQLCVCDockSlider "Slider"
-#define KXMLQLCVCDockSliderBus "Bus"
-#define KXMLQLCVCDockSliderBusLowLimit "Low"
-#define KXMLQLCVCDockSliderBusHighLimit "High"
-#define KXMLQLCVCDockSliderInput "Input"
-#define KXMLQLCVCDockSliderInputUniverse "Universe"
-#define KXMLQLCVCDockSliderInputChannel "Channel"
-
 class VCDockSlider : public QFrame, public Ui_VCDockSlider
 {
 	Q_OBJECT
@@ -57,32 +43,21 @@ private:
 	Q_DISABLE_COPY(VCDockSlider)
 
 	/*********************************************************************
-	 * Bus
+	 * Properties
 	 *********************************************************************/
 public:
-	/** Set the bus that this slider controls */
-	void setBus(t_bus_id bus);
+	/** Refresh properties from VCProperties */
+	void refreshProperties();
 
-	/** Get the bus that this slider controls */
-	t_bus_id bus() const { return m_bus; }
-
-	/** Set bus value low & high limits i.e. range */
-	void setBusRange(t_bus_value lo, t_bus_value hi);
-
-	/** Get the slider's low value limit */
-	t_bus_value busLowLimit() const { return m_busLowLimit; }
-
-	/** Get the slider's high value limit */
-	t_bus_value busHighLimit() const { return m_busHighLimit; }
-
-public slots:
+	/*********************************************************************
+	 * Bus
+	 *********************************************************************/
+protected slots:
 	void slotBusNameChanged(t_bus_id bus, const QString& name);
 	void slotBusValueChanged(t_bus_id bus, t_bus_value value);
 
 protected:
 	t_bus_id m_bus;
-	t_bus_value m_busLowLimit;
-	t_bus_value m_busHighLimit;
 
 	/*********************************************************************
 	 * User input slots
@@ -103,36 +78,11 @@ protected:
 	/*********************************************************************
 	 * External input
 	 *********************************************************************/
-public:
-	/** Set the input universe & channel that this slider listens to */
-	void setInputSource(t_input_universe uni, t_input_channel ch);
-
-	/** Get the input universe that this slider listens to */
-	t_input_universe inputUniverse() const { return m_inputUniverse; }
-
-	/** Get the input channel number that this slider listens to */
-	t_input_channel inputChannel() const { return m_inputChannel; }
-
 protected slots:
 	/** Slot for external input value change signals */
 	void slotInputValueChanged(t_input_universe universe,
 				   t_input_channel channel,
 				   t_input_value value);
-
-protected:
-	t_input_universe m_inputUniverse;
-	t_input_channel m_inputChannel;
-
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
-public:
-	/** Load this slider's settings */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-
-	/** Save this slider's settings */
-	bool saveXML(QDomDocument* doc, QDomElement* da_root);
-
 };
 
 #endif

@@ -391,8 +391,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel" >
      <x>157</x>
@@ -407,8 +407,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel" >
      <x>286</x>
@@ -416,5 +416,158 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_grabKeyboardCheck</sender>
+   <signal>clicked()</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotGrabKeyboardClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>57</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>3</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_keyRepeatOffCheck</sender>
+   <signal>clicked()</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotKeyRepeatOffClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>42</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>4</x>
+     <y>100</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_gridGroup</sender>
+   <signal>clicked()</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotGridClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>471</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>498</x>
+     <y>49</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_gridXSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotGridXChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>439</x>
+     <y>74</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>499</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_gridYSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotGridYChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>447</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>497</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_fadeLowSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotFadeLimitsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>151</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>5</x>
+     <y>65</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_fadeHighSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotFadeLimitsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>185</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>2</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_holdLowSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotHoldLimitsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>388</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>497</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_holdHighSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VirtualConsoleProperties</receiver>
+   <slot>slotHoldLimitsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>406</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>495</x>
+     <y>145</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>slotGrabKeyboardClicked()</slot>
+  <slot>slotKeyRepeatOffClicked()</slot>
+  <slot>slotGridClicked()</slot>
+  <slot>slotGridXChanged(int)</slot>
+  <slot>slotGridYChanged(int)</slot>
+  <slot>slotFadeLimitsChanged()</slot>
+  <slot>slotHoldLimitsChanged()</slot>
+ </slots>
 </ui>

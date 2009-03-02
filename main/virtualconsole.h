@@ -26,6 +26,7 @@
 #include <QFrame>
 #include <QList>
 
+#include "virtualconsoleproperties.h"
 #include "app.h"
 
 class QDomDocument;
@@ -39,19 +40,6 @@ class KeyBind;
 class QMenu;
 
 #define KXMLQLCVirtualConsole "VirtualConsole"
-
-#define KXMLQLCVirtualConsoleGrid "Grid"
-#define KXMLQLCVirtualConsoleGridEnabled "Enabled"
-#define KXMLQLCVirtualConsoleGridXResolution "XResolution"
-#define KXMLQLCVirtualConsoleGridYResolution "YResolution"
-
-#define KXMLQLCVirtualConsoleKeyboard "Keyboard"
-#define KXMLQLCVirtualConsoleKeyboardGrab "Grab"
-#define KXMLQLCVirtualConsoleKeyboardRepeat "Repeat"
-
-#define KXMLQLCVirtualConsoleTimerType "Timer"
-#define KXMLQLCVirtualConsoleTimerSoftware "Software"
-#define KXMLQLCVirtualConsoleTimerHardware "Hardware"
 
 #define KXMLQLCVCAppearance "Appearance"
 #define KXMLQLCVCFrameStyle "FrameStyle"
@@ -83,6 +71,7 @@ private:
 	Q_DISABLE_COPY(VirtualConsole)
 
 protected:
+	void init();
 	void initActions();
 	void initMenuBar();
 
@@ -91,59 +80,15 @@ signals:
 	void closed();
 
 	/*********************************************************************
-	 * Grid
+	 * Properties
 	 *********************************************************************/
 public:
-	/** Set widget placement grid enabled/disabled */
-	void setGridEnabled(bool enable) { m_gridEnabled = enable; }
-
-	/** Get widget placement grid state */
-	bool isGridEnabled() { return m_gridEnabled; }
-
-	/** Set widget placement grid X resolution */
-	void setGridX(int x) { m_gridX = x; }
-
-	/** Get widget placement grid X resolution */
-	int gridX() { return m_gridX; }
-
-	/** Set widget placement grid Y resolution */
-	void setGridY(int y) { m_gridY = y; }
-
-	/** Get widget placement grid Y resolution */
-	int gridY() { return m_gridY; }
+	/** Get VC properties read-only */
+	static const VCProperties properties() { return s_properties; }
 
 protected:
-	/** Widget placement grid enabled? */
-	bool m_gridEnabled;
-
-	/** Widget placement grid X resolution */
-	int m_gridX;
-
-	/** Widget placement grid Y resolution */
-	int m_gridY;
-
-	/*********************************************************************
-	 * Keyboard state
-	 *********************************************************************/
-public:
-	/** Turn key repeat off or not when in operate mode */
-	void setKeyRepeatOff(bool set) { m_keyRepeatOff = set; }
-
-	/** Get the status of turning key repeat off */
-	bool isKeyRepeatOff() { return m_keyRepeatOff; }
-
-	/** Grab all keyboard input when in operate mode */
-	void setGrabKeyboard(bool grab) { m_grabKeyboard = grab; }
-
-	/** Get the status of grabbing keyboard input */
-	bool isGrabKeyboard() { return m_grabKeyboard; }
-
-protected:
-	/** Key repeat off status */
-	bool m_keyRepeatOff;
-
-	/** Keyboard grabbing status */
-	bool m_grabKeyboard;
+	/** VC properties */
+	static VCProperties s_properties;
 
 	/*********************************************************************
 	 * Load & Save

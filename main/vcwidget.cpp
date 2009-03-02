@@ -43,6 +43,7 @@
 #include <cmath>
 #include "common/qlcfile.h"
 
+#include "virtualconsoleproperties.h"
 #include "virtualconsole.h"
 #include "inputmap.h"
 #include "vcwidget.h"
@@ -580,10 +581,10 @@ QMenu* VCWidget::customMenu(QMenu* parentMenu)
 void VCWidget::resize(QPoint p)
 {
 	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
+	if (VirtualConsole::properties().isGridEnabled() == true)
 	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+		p.setX(p.x() - (p.x() % VirtualConsole::properties().gridX()));
+		p.setY(p.y() - (p.y() % VirtualConsole::properties().gridY()));
 	}
 
 	// Map to parent coordinates so that they can be compared
@@ -611,10 +612,10 @@ void VCWidget::resize(QPoint p)
 void VCWidget::move(QPoint p)
 {
 	// Grid settings
-	if (_app->virtualConsole()->isGridEnabled())
+	if (VirtualConsole::properties().isGridEnabled() == true)
 	{
-		p.setX(p.x() - (p.x() % _app->virtualConsole()->gridX()));
-		p.setY(p.y() - (p.y() % _app->virtualConsole()->gridY()));
+		p.setX(p.x() - (p.x() % VirtualConsole::properties().gridX()));
+		p.setY(p.y() - (p.y() % VirtualConsole::properties().gridY()));
 	}
 
 	// Don't move beyond left or right

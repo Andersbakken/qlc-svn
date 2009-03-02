@@ -24,15 +24,9 @@
 
 #include <qframe.h>
 
-class QDomDocument;
-class QDomElement;
+class VCDockSlider;
 class QShowEvent;
 class QHideEvent;
-
-class VCDockSlider;
-
-#define KXMLQLCVCDockArea "DockArea"
-#define KXMLQLCVCDockAreaVisible "Visible"
 
 class VCDockArea : public QFrame
 {
@@ -49,24 +43,15 @@ private:
 	Q_DISABLE_COPY(VCDockArea)
 
 	/*********************************************************************
-	 * Load & Save
+	 * Sliders
 	 *********************************************************************/
 public:
-	/**
-	 * Load this slider's settings
-	 *
-	 * @param doc An XML document to load from
-	 * @param root A VCDockSlider XML root node to load from
-	 */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	/** Refresh slider properties */
+	void refreshProperties();
 
-	/**
-	 * Save this slider's settings
-	 *
-	 * @param doc An XML document to save to
-	 * @param vc_root VirtualConsole XML root node to save to
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+protected:
+	VCDockSlider* m_fade;
+	VCDockSlider* m_hold;
 
 	/*********************************************************************
 	 * Event Handlers & Signals
@@ -77,17 +62,6 @@ protected:
 
 signals:
 	void visibilityChanged(bool isVisible);
-
-	/*********************************************************************
-	 * Widgets
-	 *********************************************************************/
-public:
-	VCDockSlider* defaultFadeSlider() { return m_defaultFadeSlider; }
-	VCDockSlider* defaultHoldSlider() { return m_defaultHoldSlider; }
-
-protected:
-	VCDockSlider* m_defaultFadeSlider;
-	VCDockSlider* m_defaultHoldSlider;
 };
 
 #endif

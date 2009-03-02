@@ -34,8 +34,29 @@ QLCWidgetProperties::QLCWidgetProperties()
 	m_height = 0;
 }
 
+QLCWidgetProperties::QLCWidgetProperties(const QLCWidgetProperties& properties)
+{
+	*this = properties;
+}
+
 QLCWidgetProperties::~QLCWidgetProperties()
 {
+}
+
+QLCWidgetProperties& QLCWidgetProperties::operator=(
+					const QLCWidgetProperties& properties)
+{
+	if (this != &properties)
+	{
+		m_state = properties.m_state;
+		m_visible = properties.m_visible;
+		m_x = properties.m_x;
+		m_y = properties.m_y;
+		m_width = properties.m_width;
+		m_height = properties.m_height;
+	}
+
+	return *this;
 }
 
 void QLCWidgetProperties::store(QWidget* widget)
@@ -58,7 +79,8 @@ bool QLCWidgetProperties::loadXML(QDomDocument* doc, QDomElement* root)
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCWidgetProperties)
+	if (root->tagName() != KXMLQLCWidgetProperties ||
+	    root->tagName() != QString("Properties")) /* Legacy */
 	{
 		qWarning("Widget Properties node not found!");
 		return false;

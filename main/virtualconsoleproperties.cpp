@@ -21,8 +21,10 @@
 
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QtXml>
 
 #include "common/qlcinputdevice.h"
+#include "common/qlcfile.h"
 
 #include "virtualconsoleproperties.h"
 #include "selectinputchannel.h"
@@ -30,17 +32,339 @@
 #include "inputpatch.h"
 #include "inputmap.h"
 #include "app.h"
+#include "bus.h"
 
 extern App* _app;
 
-VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent)
-	: QDialog(parent)
+/*****************************************************************************
+ * Properties
+ *****************************************************************************/
+
+VCProperties::VCProperties() : QLCWidgetProperties()
+{
+	m_width = 640;
+	m_height = 480;
+
+	m_gridEnabled = true;
+	m_gridX = 10;
+	m_gridY = 10;
+
+	m_keyRepeatOff = false;
+	m_grabKeyboard = false;
+
+	m_slidersVisible = true;
+
+	m_fadeLowLimit = 0;
+	m_fadeHighLimit = 10;
+	m_holdLowLimit = 0;
+	m_holdHighLimit = 10;
+
+	m_fadeInputUniverse = KInputUniverseInvalid;
+	m_fadeInputChannel = KInputChannelInvalid;
+	m_holdInputUniverse = KInputUniverseInvalid;
+	m_holdInputChannel = KInputChannelInvalid;
+}
+
+VCProperties::VCProperties(const VCProperties& properties)
+	: QLCWidgetProperties(properties)
+{
+	*this = properties;
+}
+
+VCProperties::~VCProperties()
+{
+}
+
+VCProperties& VCProperties::operator=(const VCProperties& properties)
+{
+	m_gridEnabled = properties.m_gridEnabled;
+	m_gridX = properties.m_gridX;
+	m_gridY = properties.m_gridY;
+
+	m_keyRepeatOff = properties.m_keyRepeatOff;
+	m_grabKeyboard = properties.m_grabKeyboard;
+
+	m_slidersVisible = properties.m_slidersVisible;
+
+	m_fadeLowLimit = properties.m_fadeLowLimit;
+	m_fadeHighLimit = properties.m_fadeHighLimit;
+	m_holdLowLimit = properties.m_holdLowLimit;
+	m_holdHighLimit = properties.m_holdHighLimit;
+
+	m_fadeInputUniverse = properties.m_fadeInputUniverse;
+	m_fadeInputChannel = properties.m_fadeInputChannel;
+	m_holdInputUniverse = properties.m_holdInputUniverse;
+	m_holdInputChannel = properties.m_holdInputChannel;
+
+	return *this;
+}
+
+void VCProperties::store(VirtualConsole* vc)
+{
+	Q_ASSERT(vc != NULL);
+	QLCWidgetProperties::store(vc);
+}
+
+bool VCProperties::loadXML(QDomDocument* doc, QDomElement* root)
+{
+	QDomElement tag;
+	QDomNode node;
+	QString str;
+	
+	Q_UNUSED(doc);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCVCProperties)
+	{
+		qDebug() << "Virtual console properties node not found!";
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == KXMLQLCVCPropertiesGrid)
+		{
+			/* Grid X resolution */
+			str = tag.attribute(KXMLQLCVCPropertiesGridXResolution);
+			setGridX(str.toInt());
+
+			/* Grid Y resolution */
+			str = tag.attribute(KXMLQLCVCPropertiesGridYResolution);
+			setGridY(str.toInt());
+
+			/* Grid enabled */
+			str = tag.attribute(KXMLQLCVCPropertiesGridEnabled);
+			if (str == KXMLQLCTrue)
+				setGridEnabled(true);
+			else
+				setGridEnabled(false);
+		}
+		else if (tag.tagName() == KXMLQLCVCPropertiesKeyboard)
+		{
+			/* Keyboard grab */
+			str = tag.attribute(KXMLQLCVCPropertiesKeyboardGrab);
+			if (str == KXMLQLCTrue)
+				setGrabKeyboard(true);
+			else
+				setGrabKeyboard(false);
+
+			/* Key repeat */
+			str = tag.attribute(KXMLQLCVCPropertiesKeyboardRepeatOff);
+			if (str == KXMLQLCTrue)
+				setKeyRepeatOff(true);
+			else
+				setKeyRepeatOff(false);
+		}
+		else if (tag.tagName() == KXMLQLCVCPropertiesDefaultSlider)
+		{
+			t_bus_value low = 0;
+			t_bus_value high = 10;
+			t_input_universe universe = KInputUniverseInvalid;
+			t_input_channel channel = KInputChannelInvalid;
+			QDomElement subtag;
+
+			/* Bus low limit */
+			str = tag.attribute(KXMLQLCVCPropertiesLowLimit);
+			if (str.isNull() == false)
+				low = t_bus_value(str.toInt());
+
+			/* Bus high limit */
+			str = tag.attribute(KXMLQLCVCPropertiesHighLimit);
+			if (str.isNull() == false)
+				high = t_bus_value(str.toInt());
+
+			/* Sliders' visibility (on by default) */
+			str = tag.attribute(KXMLQLCVCPropertiesDefaultSliderVisible);
+			if (str == KXMLQLCFalse)
+				setSlidersVisible(false);
+			else
+				setSlidersVisible(true);
+
+			/* External input */
+			subtag = tag.firstChild().toElement();
+			if (subtag.isNull() == false &&
+			    subtag.tagName() == KXMLQLCVCPropertiesInput)
+			{
+				/* Universe */
+				str = subtag.attribute(KXMLQLCVCPropertiesInputUniverse);
+				if (str.isNull() == false)
+					universe = str.toInt();
+
+				/* Channel */
+				str = subtag.attribute(KXMLQLCVCPropertiesInputChannel);
+				if (str.isNull() == false)
+					channel = str.toInt();
+			}
+
+			/* Set the gathered properties to the correct slider */
+			if (tag.attribute(KXMLQLCBusRole) == KXMLQLCBusFade)
+			{
+				setFadeLimits(low, high);
+				setFadeInputSource(universe, channel);
+			}
+			else
+			{
+				setHoldLimits(low, high);
+				setHoldInputSource(universe, channel);
+			}
+		}
+		else if (tag.tagName() == KXMLQLCWidgetProperties)
+		{
+			QLCWidgetProperties::loadXML(doc, &tag);
+		}
+		else
+		{
+			qDebug() << "Unknown virtual console property tag:"
+				 << tag.tagName();
+		}
+
+		/* Next node */
+		node = node.nextSibling();
+	}
+
+	return true;
+}
+
+bool VCProperties::saveXML(QDomDocument* doc, QDomElement* vc_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	/* Properties entry */
+	root = doc->createElement(KXMLQLCVCProperties);
+	vc_root->appendChild(root);
+
+	/* Grid */
+	tag = doc->createElement(KXMLQLCVCPropertiesGrid);
+	root.appendChild(tag);
+	if (m_gridEnabled == true)
+		tag.setAttribute(KXMLQLCVCPropertiesGridEnabled, KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesGridEnabled, KXMLQLCFalse);
+
+	tag.setAttribute(KXMLQLCVCPropertiesGridXResolution,
+			 QString("%1").arg(m_gridX));
+	tag.setAttribute(KXMLQLCVCPropertiesGridYResolution,
+			 QString("%1").arg(m_gridY));
+
+	/* Keyboard settings */
+	tag = doc->createElement(KXMLQLCVCPropertiesKeyboard);
+	root.appendChild(tag);
+
+	/* Grab keyboard */
+	if (m_grabKeyboard == true)
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardGrab, KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardGrab, KXMLQLCFalse);
+
+	/* Key repeat off */
+	if (m_keyRepeatOff == true)
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
+				 KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
+				 KXMLQLCFalse);
+
+	/* Fade slider */
+	tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
+
+	/* Sliders' visibility state is stored in fade slider */
+	if (m_slidersVisible == true)
+		tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
+				 KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
+				 KXMLQLCFalse);
+
+	/* Fade slider limits */
+	tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
+			 QString("%1").arg(m_fadeLowLimit));
+	tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
+			 QString("%1").arg(m_fadeHighLimit));
+
+	/* Fade slider external input */
+	if (m_fadeInputUniverse != KInputUniverseInvalid &&
+	    m_fadeInputChannel != KInputChannelInvalid)
+	{
+		QDomElement subtag;
+		subtag = doc->createElement(KXMLQLCVCPropertiesInput);
+		tag.appendChild(subtag);
+		subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
+				    QString("%1").arg(m_fadeInputUniverse));
+		subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
+				    QString("%1").arg(m_fadeInputChannel));
+        }
+
+	/* Hold slider */
+	tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
+	root.appendChild(tag);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
+
+	/* Hold slider limits */
+	tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
+			 QString("%1").arg(m_holdLowLimit));
+	tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
+			 QString("%1").arg(m_holdHighLimit));
+
+	/* Fade slider external input */
+	if (m_holdInputUniverse != KInputUniverseInvalid &&
+	    m_holdInputChannel != KInputChannelInvalid)
+	{
+		QDomElement subtag;
+		subtag = doc->createElement(KXMLQLCVCPropertiesInput);
+		tag.appendChild(subtag);
+		subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
+				    QString("%1").arg(m_holdInputUniverse));
+		subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
+				    QString("%1").arg(m_holdInputChannel));
+        }
+
+	return QLCWidgetProperties::saveXML(doc, &root);
+}
+
+/*****************************************************************************
+ * Properties dialog
+ *****************************************************************************/
+
+VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent,
+			const VCProperties& properties) : QDialog(parent)
 {
 	setupUi(this);
+
 	connect(m_chooseFadeInputButton, SIGNAL(clicked()),
 		this, SLOT(slotChooseFadeInputClicked()));
 	connect(m_chooseHoldInputButton, SIGNAL(clicked()),
 		this, SLOT(slotChooseHoldInputClicked()));
+
+	m_properties = properties;
+
+	/* Grid */
+	m_gridGroup->setChecked(properties.isGridEnabled());
+	m_gridXSpin->setValue(properties.gridX());
+	m_gridYSpin->setValue(properties.gridY());
+
+	/* Keyboard */
+	m_grabKeyboardCheck->setChecked(properties.isGrabKeyboard());
+	m_keyRepeatOffCheck->setChecked(properties.isKeyRepeatOff());
+
+	/* Slider limits */
+	m_fadeLowSpin->setValue(properties.fadeLowLimit());
+	m_fadeHighSpin->setValue(properties.fadeHighLimit());
+	m_holdLowSpin->setValue(properties.holdLowLimit());
+	m_holdHighSpin->setValue(properties.holdHighLimit());
+
+	/* External input */
+	updateFadeInputSource();
+	updateHoldInputSource();
 }
 
 VirtualConsoleProperties::~VirtualConsoleProperties()
@@ -48,135 +372,48 @@ VirtualConsoleProperties::~VirtualConsoleProperties()
 }
 
 /*****************************************************************************
- * Grid
+ * Layout page
  *****************************************************************************/
 
-void VirtualConsoleProperties::setGrid(bool enabled, int x, int y)
+void VirtualConsoleProperties::slotGrabKeyboardClicked()
 {
-	m_gridGroup->setChecked(enabled);
-	m_gridXSpin->setValue(x);
-	m_gridYSpin->setValue(y);
+	m_properties.setGrabKeyboard(m_grabKeyboardCheck->isChecked());
 }
 
-bool VirtualConsoleProperties::isGridEnabled()
+void VirtualConsoleProperties::slotKeyRepeatOffClicked()
 {
-	return m_gridGroup->isChecked();
+	m_properties.setKeyRepeatOff(m_keyRepeatOffCheck->isChecked());
 }
 
-int VirtualConsoleProperties::gridX()
+void VirtualConsoleProperties::slotGridClicked()
 {
-	return m_gridXSpin->value();
+	m_properties.setGridEnabled(m_gridGroup->isChecked());
 }
 
-int VirtualConsoleProperties::gridY()
+void VirtualConsoleProperties::slotGridXChanged(int value)
 {
-	return m_gridYSpin->value();
+	m_properties.setGridX(m_gridXSpin->value());
+}
+
+void VirtualConsoleProperties::slotGridYChanged(int value)
+{
+	m_properties.setGridY(m_gridYSpin->value());
 }
 
 /*****************************************************************************
- * Key repeat
+ * Sliders page
  *****************************************************************************/
 
-void VirtualConsoleProperties::setKeyRepeatOff(bool set)
+void VirtualConsoleProperties::slotFadeLimitsChanged()
 {
-	m_keyRepeatOffCheck->setChecked(set);
+	m_properties.setFadeLimits(m_fadeLowSpin->value(),
+				   m_fadeHighSpin->value());
 }
 
-bool VirtualConsoleProperties::isKeyRepeatOff()
+void VirtualConsoleProperties::slotHoldLimitsChanged()
 {
-	return m_keyRepeatOffCheck->isChecked();
-}
-
-/*****************************************************************************
- * Grab keyboard
- *****************************************************************************/
-
-void VirtualConsoleProperties::setGrabKeyboard(bool set)
-{
-	m_grabKeyboardCheck->setChecked(set);
-}
-
-bool VirtualConsoleProperties::isGrabKeyboard()
-{
-	return m_grabKeyboardCheck->isChecked();
-}
-
-/*****************************************************************************
- * Slider value ranges
- *****************************************************************************/
-
-void VirtualConsoleProperties::setFadeLimits(t_bus_value low, t_bus_value high)
-{
-	m_fadeLowSpin->setValue(low);
-	m_fadeHighSpin->setValue(high);
-}
-
-t_bus_value VirtualConsoleProperties::fadeLowLimit()
-{
-	return m_fadeLowSpin->value();
-}
-
-t_bus_value VirtualConsoleProperties::fadeHighLimit()
-{
-	return m_fadeHighSpin->value();
-}
-
-void VirtualConsoleProperties::setHoldLimits(t_bus_value low, t_bus_value high)
-{
-	m_holdLowSpin->setValue(low);
-	m_holdHighSpin->setValue(high);
-}
-
-t_bus_value VirtualConsoleProperties::holdLowLimit()
-{
-	return m_holdLowSpin->value();
-}
-
-t_bus_value VirtualConsoleProperties::holdHighLimit()
-{
-	return m_holdHighSpin->value();
-}
-
-/*****************************************************************************
- * Slider external input
- *****************************************************************************/
-
-void VirtualConsoleProperties::setFadeInputSource(t_input_universe uni,
-						  t_input_channel ch)
-{
-	m_fadeInputUniverse = uni;
-	m_fadeInputChannel = ch;
-
-	updateFadeInputSource();
-}
-
-t_input_universe VirtualConsoleProperties::fadeInputUniverse()
-{
-	return m_fadeInputUniverse;
-}
-
-t_input_channel VirtualConsoleProperties::fadeInputChannel()
-{
-	return m_fadeInputChannel;
-}
-
-void VirtualConsoleProperties::setHoldInputSource(t_input_universe uni,
-						  t_input_channel ch)
-{
-	m_holdInputUniverse = uni;
-	m_holdInputChannel = ch;
-
-	updateHoldInputSource();
-}
-
-t_input_universe VirtualConsoleProperties::holdInputUniverse()
-{
-	return m_holdInputUniverse;
-}
-
-t_input_channel VirtualConsoleProperties::holdInputChannel()
-{
-	return m_holdInputChannel;
+	m_properties.setHoldLimits(m_holdLowSpin->value(),
+				   m_holdHighSpin->value());
 }
 
 void VirtualConsoleProperties::slotChooseFadeInputClicked()
@@ -184,9 +421,8 @@ void VirtualConsoleProperties::slotChooseFadeInputClicked()
 	SelectInputChannel sic(this);
 	if (sic.exec() == QDialog::Accepted)
 	{
-		m_fadeInputUniverse = sic.universe();
-		m_fadeInputChannel = sic.channel();
-
+		m_properties.setFadeInputSource(sic.universe(),
+						sic.channel());
 		updateFadeInputSource();
 	}
 }
@@ -196,9 +432,8 @@ void VirtualConsoleProperties::slotChooseHoldInputClicked()
 	SelectInputChannel sic(this);
 	if (sic.exec() == QDialog::Accepted)
 	{
-		m_holdInputUniverse = sic.universe();
-		m_holdInputChannel = sic.channel();
-
+		m_properties.setHoldInputSource(sic.universe(),
+						sic.channel());
 		updateHoldInputSource();
 	}
 }
@@ -210,54 +445,61 @@ void VirtualConsoleProperties::updateFadeInputSource()
 	QString uniName;
 	QString chName;
 
-	if (m_fadeInputUniverse == KInputUniverseInvalid ||
-	    m_fadeInputChannel == KInputChannelInvalid)
+	if (m_properties.fadeInputUniverse() == KInputUniverseInvalid ||
+	    m_properties.fadeInputChannel() == KInputChannelInvalid)
 	{
 		/* Nothing selected for input universe and/or channel */
 		uniName = KInputNone;
 		chName = KInputNone;
+
+		/* Display the gathered information */
+		m_fadeInputUniverseEdit->setText(uniName);
+		m_fadeInputChannelEdit->setText(chName);
+		
+		return;
+	}
+
+	patch = _app->inputMap()->patch(m_properties.fadeInputUniverse());
+	if (patch == NULL || patch->plugin() == NULL)
+	{
+		/* There is no patch for the given universe */
+		uniName = KInputNone;
+		chName = KInputNone;
+
+		/* Display the gathered information */
+		m_fadeInputUniverseEdit->setText(uniName);
+		m_fadeInputChannelEdit->setText(chName);
+		
+		return;
+	}
+
+	dev = patch->device();
+	if (dev == NULL)
+	{
+		/* There is no device. Display plugin name and channel number.
+		   Boring. */
+		uniName = patch->plugin()->name();
+		chName = tr("%1: Unknown")
+				.arg(m_properties.fadeInputChannel() + 1);
 	}
 	else
 	{
-		patch = _app->inputMap()->patch(m_fadeInputUniverse);
-		if (patch == NULL || patch->plugin() == NULL)
-		{
-			/* There is no patch for the given universe */
-			uniName = KInputNone;
-			chName = KInputNone;
-		}
-		else
-		{
-			dev = patch->device();
-			if (dev == NULL)
-			{
-				/* There is no device. Display plugin
-				   name and channel number. Boring. */
-				uniName = patch->plugin()->name();
-				chName = tr("%1: Unknown")
-						.arg(m_fadeInputChannel + 1);
-			}
-			else
-			{
-				QString name;
+		QString name;
 
-				/* Display device name for universe */
-				uniName = QString("%1: %2")
-						.arg(m_fadeInputUniverse + 1)
-						.arg(dev->name());
+		/* Display device name for universe */
+		uniName = QString("%1: %2")
+			.arg(m_properties.fadeInputUniverse() + 1)
+			.arg(dev->name());
 
-				/* User can input the channel number by hand,
-				   so put something rational to the channel
-				   name in those cases as well. */
-				name = dev->channelName(m_fadeInputChannel);
-				if (name == QString::null)
-					name = tr("Unknown");
+		/* User can input the channel number by hand, so put something
+		   rational to the channel name in those cases as well. */
+		name = dev->channelName(m_properties.fadeInputChannel());
+		if (name == QString::null)
+			name = tr("Unknown");
 
-				/* Display channel name */
-				chName = QString("%1: %2")
-					.arg(m_fadeInputChannel + 1).arg(name);
-			}
-		}
+		/* Display channel name */
+		chName = QString("%1: %2")
+			.arg(m_properties.fadeInputChannel() + 1).arg(name);
 	}
 
 	/* Display the gathered information */
@@ -272,54 +514,60 @@ void VirtualConsoleProperties::updateHoldInputSource()
 	QString uniName;
 	QString chName;
 
-	if (m_holdInputUniverse == KInputUniverseInvalid ||
-	    m_holdInputChannel == KInputChannelInvalid)
+	if (m_properties.holdInputUniverse() == KInputUniverseInvalid ||
+	    m_properties.holdInputChannel() == KInputChannelInvalid)
 	{
 		/* Nothing selected for input universe and/or channel */
 		uniName = KInputNone;
 		chName = KInputNone;
+
+		/* Display the gathered information */
+		m_holdInputUniverseEdit->setText(uniName);
+		m_holdInputChannelEdit->setText(chName);
+		
+		return;
+	}
+
+	patch = _app->inputMap()->patch(m_properties.holdInputUniverse());
+	if (patch == NULL || patch->plugin() == NULL)
+	{
+		/* There is no patch for the given universe */
+		uniName = KInputNone;
+		chName = KInputNone;
+
+		/* Display the gathered information */
+		m_holdInputUniverseEdit->setText(uniName);
+		m_holdInputChannelEdit->setText(chName);
+		
+		return;
+	}
+
+	dev = patch->device();
+	if (dev == NULL)
+	{
+		/* There is no device. Display plugin name and channel number.
+		   Boring. */
+		uniName = patch->plugin()->name();
+		chName = tr("%1: Unknown")
+				.arg(m_properties.holdInputChannel() + 1);
 	}
 	else
 	{
-		patch = _app->inputMap()->patch(m_holdInputUniverse);
-		if (patch == NULL || patch->plugin() == NULL)
-		{
-			/* There is no patch for the given universe */
-			uniName = KInputNone;
-			chName = KInputNone;
-		}
-		else
-		{
-			dev = patch->device();
-			if (dev == NULL)
-			{
-				/* There is no device. Display plugin
-				   name and channel number. Boring. */
-				uniName = patch->plugin()->name();
-				chName = tr("%1: Unknown")
-						.arg(m_holdInputChannel + 1);
-			}
-			else
-			{
-				QString name;
+		QString name;
 
-				/* Display device name for universe */
-				uniName = QString("%1: %2")
-						.arg(m_holdInputUniverse + 1)
-						.arg(dev->name());
+		/* Display device name for universe */
+		uniName = QString("%1: %2")
+				.arg(m_properties.holdInputUniverse() + 1)
+				.arg(dev->name());
+		/* User can input the channel number by hand, so put something
+		   rational to the channel name in those cases as well. */
+		name = dev->channelName(m_properties.holdInputChannel());
+		if (name == QString::null)
+			name = tr("Unknown");
 
-				/* User can input the channel number by hand,
-				   so put something rational to the channel
-				   name in those cases as well. */
-				name = dev->channelName(m_holdInputChannel);
-				if (name == QString::null)
-					name = tr("Unknown");
-
-				/* Display channel name */
-				chName = QString("%1: %2")
-					.arg(m_holdInputChannel + 1).arg(name);
-			}
-		}
+		/* Display channel name */
+		chName = QString("%1: %2")
+			.arg(m_properties.holdInputChannel() + 1).arg(name);
 	}
 
 	/* Display the gathered information */

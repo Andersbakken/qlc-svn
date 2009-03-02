@@ -25,8 +25,150 @@
 #include <QDialog>
 
 #include "ui_virtualconsoleproperties.h"
+#include "common/qlcwidgetproperties.h"
 #include "common/qlctypes.h"
-#include "functionconsumer.h"
+
+#define KXMLQLCVCProperties "Properties"
+#define KXMLQLCVCPropertiesGrid "Grid"
+#define KXMLQLCVCPropertiesGridEnabled "Enabled"
+#define KXMLQLCVCPropertiesGridXResolution "XResolution"
+#define KXMLQLCVCPropertiesGridYResolution "YResolution"
+
+#define KXMLQLCVCPropertiesKeyboard "Keyboard"
+#define KXMLQLCVCPropertiesKeyboardGrab "Grab"
+#define KXMLQLCVCPropertiesKeyboardRepeatOff "RepeatOff"
+
+#define KXMLQLCVCPropertiesDefaultSlider "DefaultSlider"
+#define KXMLQLCVCPropertiesDefaultSliderVisible "Visible"
+#define KXMLQLCVCPropertiesLowLimit "Low"
+#define KXMLQLCVCPropertiesHighLimit "High"
+
+#define KXMLQLCVCPropertiesInput "Input"
+#define KXMLQLCVCPropertiesInputUniverse "Universe"
+#define KXMLQLCVCPropertiesInputChannel "Channel"
+
+/*****************************************************************************
+ * Properties
+ *****************************************************************************/
+
+class VCProperties : public QLCWidgetProperties
+{
+	friend class VirtualConsoleProperties;
+	friend class VirtualConsole;
+
+public:
+	VCProperties();
+	VCProperties(const VCProperties& properties);
+	~VCProperties();
+
+	VCProperties& operator=(const VCProperties& properties);
+
+	/** Store current VC properties */
+	void store(VirtualConsole* vc);
+
+	/*********************************************************************
+	 * Grid
+	 *********************************************************************/
+public:
+	bool isGridEnabled() const { return m_gridEnabled; }
+	int gridX() const { return m_gridX; }
+	int gridY() const { return m_gridY; }
+
+protected:
+	void setGridEnabled(bool enable) { m_gridEnabled = enable; }
+	void setGridX(int x) { m_gridX = x; }
+	void setGridY(int y) { m_gridY = y; }
+
+protected:
+	/** Widget placement grid enabled? */
+	bool m_gridEnabled;
+
+	/** Widget placement grid X resolution */
+	int m_gridX;
+
+	/** Widget placement grid Y resolution */
+	int m_gridY;
+
+	/*********************************************************************
+	 * Keyboard state
+	 *********************************************************************/
+public:
+	bool isKeyRepeatOff() const { return m_keyRepeatOff; }
+	bool isGrabKeyboard() const { return m_grabKeyboard; }
+
+protected:
+	void setKeyRepeatOff(bool set) { m_keyRepeatOff = set; }
+	void setGrabKeyboard(bool grab) { m_grabKeyboard = grab; }
+
+protected:
+	/** Key repeat off during operate mode? */
+	bool m_keyRepeatOff;
+
+	/** Grab keyboard in operate mode? */
+	bool m_grabKeyboard;
+
+	/*********************************************************************
+	 * Default sliders
+	 *********************************************************************/
+public:
+	bool slidersVisible() const { return m_slidersVisible; }
+
+	t_bus_value fadeLowLimit() const { return m_fadeLowLimit; }
+	t_bus_value fadeHighLimit() const { return m_fadeHighLimit; }
+
+	t_bus_value holdLowLimit() const { return m_holdLowLimit; }
+	t_bus_value holdHighLimit() const { return m_holdHighLimit; }
+
+	t_input_universe fadeInputUniverse() const { return m_fadeInputUniverse; }
+	t_input_channel fadeInputChannel() const { return m_fadeInputChannel; }
+
+	t_input_universe holdInputUniverse() const { return m_holdInputUniverse; }
+	t_input_channel holdInputChannel() const { return m_holdInputChannel; }
+
+protected:
+	void setSlidersVisible(bool visible) { m_slidersVisible = visible; }
+
+	void setFadeLimits(t_bus_value low, t_bus_value high)
+		{ m_fadeLowLimit = low; m_fadeHighLimit = high; }
+	void setHoldLimits(t_bus_value low, t_bus_value high)
+		{ m_holdLowLimit = low; m_holdHighLimit = high; }
+
+	void setFadeInputSource(t_input_universe uni, t_input_channel ch)
+		{ m_fadeInputUniverse = uni; m_fadeInputChannel = ch; }
+	void setHoldInputSource(t_input_universe uni, t_input_channel ch)
+		{ m_holdInputUniverse = uni; m_holdInputChannel = ch; }
+
+protected:
+	/** Default fade & hold sliders visible? */
+	bool m_slidersVisible;
+
+	/** Input source for fade slider */
+	t_input_universe m_fadeInputUniverse;
+	t_input_channel m_fadeInputChannel;
+
+	/** Limits for fade slider */
+	t_bus_value m_fadeLowLimit;
+	t_bus_value m_fadeHighLimit;
+
+	/** Input source for hold slider */
+	t_input_universe m_holdInputUniverse;
+	t_input_channel m_holdInputChannel;
+
+	/** Limits for hold slider */
+	t_bus_value m_holdLowLimit;
+	t_bus_value m_holdHighLimit;
+
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* root);
+};
+
+/*****************************************************************************
+ * Properties dialog
+ *****************************************************************************/
 
 class VirtualConsoleProperties : public QDialog,
 	public Ui_VirtualConsoleProperties
@@ -37,68 +179,36 @@ class VirtualConsoleProperties : public QDialog,
 	 * Initialization
 	 *********************************************************************/
 public:
-	VirtualConsoleProperties(QWidget* parent);
+	VirtualConsoleProperties(QWidget* parent,
+				 const VCProperties& properties);
 	~VirtualConsoleProperties();
+
+	VCProperties properties() const { return m_properties; }
 
 private:
 	Q_DISABLE_COPY(VirtualConsoleProperties)
 
-	/*********************************************************************
-	 * Grid
-	 *********************************************************************/
-public:
-	void setGrid(bool enabled, int x, int y);
-
-	bool isGridEnabled();
-	int gridX();
-	int gridY();
-
-	/*********************************************************************
-	 * Key repeat
-	 *********************************************************************/
-public:
-	void setKeyRepeatOff(bool set);
-	bool isKeyRepeatOff();
-
-	/*********************************************************************
-	 * Grab keyboard
-	 *********************************************************************/
-public:
-	void setGrabKeyboard(bool set);
-	bool isGrabKeyboard();
-
-	/*********************************************************************
-	 * Slider value ranges
-	 *********************************************************************/
-public:
-	void setFadeLimits(t_bus_value low, t_bus_value high);
-	t_bus_value fadeLowLimit();
-	t_bus_value fadeHighLimit();
-
-	void setHoldLimits(t_bus_value low, t_bus_value high);
-	t_bus_value holdLowLimit();
-	t_bus_value holdHighLimit();
-
-	/*********************************************************************
-	 * Slider external input
-	 *********************************************************************/
-public:
-	void setFadeInputSource(t_input_universe uni, t_input_channel ch);
-	t_input_universe fadeInputUniverse();
-	t_input_channel fadeInputChannel();
-
-	void setHoldInputSource(t_input_universe uni, t_input_channel ch);
-	t_input_universe holdInputUniverse();
-	t_input_channel holdInputChannel();
-
 protected:
-	t_input_universe m_fadeInputUniverse;
-	t_input_channel m_fadeInputChannel;
+	VCProperties m_properties;
 
-	t_input_universe m_holdInputUniverse;
-	t_input_channel m_holdInputChannel;
-
+	/*********************************************************************
+	 * Layout page
+	 *********************************************************************/
 protected slots:
+	void slotGrabKeyboardClicked();
+	void slotKeyRepeatOffClicked();
+	void slotGridClicked();
+	
+	void slotGridXChanged(int value);
+	void slotGridYChanged(int value);
+
+	/*********************************************************************
+	 * Sliders page
+	 *********************************************************************/
+protected slots:
+	void slotFadeLimitsChanged();
+	void slotHoldLimitsChanged();
+
 	void slotChooseFadeInputClicked();
 	void slotChooseHoldInputClicked();
 
