@@ -355,6 +355,20 @@ void VCWidget::slotInputValueChanged(t_input_universe universe,
 }
 
 /*****************************************************************************
+ * Key sequence handler
+ *****************************************************************************/
+
+void VCWidget::slotKeyPressed(const QKeySequence& keySequence)
+{
+	emit keyPressed(keySequence);
+}
+
+void VCWidget::slotKeyReleased(const QKeySequence& keySequence)
+{
+	emit keyReleased(keySequence);
+}
+
+/*****************************************************************************
  * Load & Save
  *****************************************************************************/
 

@@ -27,7 +27,6 @@
 #include "functionselection.h"
 #include "assignhotkey.h"
 #include "vccuelist.h"
-#include "keybind.h"
 #include "app.h"
 #include "doc.h"
 
@@ -76,8 +75,8 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
 	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	/* Key bind */
-	m_keyBind = KeyBind(cueList->keyBind());
-	m_keyEdit->setText(m_keyBind.keyString());
+	m_keySequence = QKeySequence(cueList->keySequence());
+	m_keyEdit->setText(m_keySequence.toString());
 }
 
 VCCueListProperties::~VCCueListProperties()
@@ -184,18 +183,18 @@ void VCCueListProperties::slotLowerClicked()
 
 void VCCueListProperties::slotAttachClicked()
 {
-	AssignHotKey ahk(this);
+	AssignHotKey ahk(this, m_keySequence);
 	if (ahk.exec() == QDialog::Accepted)
 	{
-		m_keyBind = KeyBind(ahk.keyBind());
-		m_keyEdit->setText(m_keyBind.keyString());
+		m_keySequence = QKeySequence(ahk.keySequence());
+		m_keyEdit->setText(m_keySequence.toString());
 	}
 }
 
 void VCCueListProperties::slotDetachClicked()
 {
-	m_keyBind = KeyBind();
-	m_keyEdit->setText(m_keyBind.keyString());
+	m_keySequence = QKeySequence();
+	m_keyEdit->setText(m_keySequence.toString());
 }
 
 void VCCueListProperties::accept()
@@ -210,8 +209,8 @@ void VCCueListProperties::accept()
 		++it;
 	}
 
-	/* Key binding */
-	m_cueList->setKeyBind(m_keyBind);
+	/* Key sequence */
+	m_cueList->setKeySequence(m_keySequence);
 
 	QDialog::accept();
 }

@@ -52,8 +52,8 @@ VCProperties::VCProperties() : QLCWidgetProperties()
 	m_gridX = 10;
 	m_gridY = 10;
 
-	m_keyRepeatOff = false;
-	m_grabKeyboard = false;
+	m_keyRepeatOff = true;
+	m_grabKeyboard = true;
 
 	m_slidersVisible = true;
 

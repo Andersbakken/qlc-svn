@@ -22,6 +22,7 @@
 #ifndef VCWIDGET_H
 #define VCWIDGET_H
 
+#include <QKeySequence>
 #include <QWidget>
 
 #include "common/qlctypes.h"
@@ -223,6 +224,23 @@ protected slots:
 protected:
 	t_input_universe m_inputUniverse;
 	t_input_channel m_inputChannel;
+
+	/*********************************************************************
+	 * Key sequence handler
+	 *********************************************************************/
+protected slots:
+	/** Handle key presses. Default implementation passes to children. */
+	void slotKeyPressed(const QKeySequence& keySequence);
+
+	/** Handle key releases. Default implementation passes to children. */
+	void slotKeyReleased(const QKeySequence& keySequence);
+
+signals:
+	/** Tell listeners that a key was pressed */
+	void keyPressed(const QKeySequence& keySequence);
+
+	/** Tell listeners that a key was released */
+	void keyReleased(const QKeySequence& keySequence);
 
 	/*********************************************************************
 	 * Load & Save

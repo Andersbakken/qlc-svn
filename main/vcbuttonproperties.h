@@ -22,12 +22,12 @@
 #ifndef VCBUTTONPROPERTIES_H
 #define VCBUTTONPROPERTIES_H
 
+#include <QKeySequence>
 #include <QDialog>
-#include "common/qlctypes.h"
 
+#include "common/qlctypes.h"
 #include "ui_vcbuttonproperties.h"
 #include "vcbutton.h"
-#include "keybind.h"
 
 class FunctionManager;
 class KeyBind;
@@ -60,7 +60,7 @@ protected:
 protected:
 	VCButton* m_button;
 
-	KeyBind m_keyBind;
+	QKeySequence m_keySequence;
 	t_function_id m_function;
 	t_input_universe m_inputUniverse;
 	t_input_channel m_inputChannel;

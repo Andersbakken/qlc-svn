@@ -29,6 +29,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QKeyEvent>
 #include <QMdiArea>
 #include <QMenuBar>
 #include <QToolBar>
@@ -48,7 +49,6 @@
 #include "vcframe.h"
 #include "vclabel.h"
 #include "vcxypad.h"
-#include "keybind.h"
 #include "app.h"
 #include "doc.h"
 
@@ -1233,6 +1233,18 @@ void VirtualConsole::initContents()
 	/* Add the contents area into the master horizontal layout */
 	layout()->addWidget(contents());
 
+	/* Disconnect old key handlers to prevent duplicates */
+	disconnect(this, SIGNAL(keyPressed(const QKeySequence&)),
+		   contents(), SLOT(slotKeyPressed(const QKeySequence&)));
+	disconnect(this, SIGNAL(keyReleased(const QKeySequence&)),
+		   contents(), SLOT(slotKeyReleased(const QKeySequence&)));
+
+	/* Connect new key handlers */
+	connect(this, SIGNAL(keyPressed(const QKeySequence&)),
+		contents(), SLOT(slotKeyPressed(const QKeySequence&)));
+	connect(this, SIGNAL(keyReleased(const QKeySequence&)),
+		contents(), SLOT(slotKeyReleased(const QKeySequence&)));
+
 	/* Make the contents area take up all available space */
 	contents()->setSizePolicy(QSizePolicy::Expanding,
 				  QSizePolicy::Expanding);
@@ -1242,6 +1254,22 @@ void VirtualConsole::initContents()
 
 	/* Update actions' enabled status */
 	updateActions();
+}
+
+/*****************************************************************************
+ * Key press handler
+ *****************************************************************************/
+
+void VirtualConsole::keyPressEvent(QKeyEvent* event)
+{
+	QKeySequence seq(event->key() | event->modifiers());
+	emit keyPressed(seq);
+}
+
+void VirtualConsole::keyReleaseEvent(QKeyEvent* event)
+{
+	QKeySequence seq(event->key() | event->modifiers());
+	emit keyReleased(seq);
 }
 
 /*****************************************************************************

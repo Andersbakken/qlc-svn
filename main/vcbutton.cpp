@@ -46,7 +46,6 @@
 #include "vcbutton.h"
 #include "function.h"
 #include "fixture.h"
-#include "keybind.h"
 #include "app.h"
 #include "doc.h"
 
@@ -120,7 +119,7 @@ bool VCButton::copyFrom(VCWidget* widget)
 
 	/* Copy button-specific stuff */
 	setIcon(button->icon());
-	setKeyBind(button->keyBind());
+	setKeySequence(button->keySequence());
 	setFunction(button->function());
 	setExclusive(button->isExclusive());
 	setStopFunctions(button->stopFunctions());
@@ -334,10 +333,12 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			loadXMLInput(doc, &tag);
 		}
-		else if (tag.tagName() == KXMLQLCKeyBind)
+#warning LOAD KEY SEQUENCE
+/*		else if (tag.tagName() == KXMLQLCKeyBind)
 		{
 			m_keyBind.loadXML(doc, &tag);
 		}
+*/
 		else
 		{
 			qDebug() << "Unknown button tag:" << tag.tagName();
@@ -362,7 +363,7 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(vc_root != NULL);
 
-	/* VC Label entry */
+	/* VC button entry */
 	root = doc->createElement(KXMLQLCVCButton);
 	vc_root->appendChild(root);
 
@@ -388,7 +389,8 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	saveXMLAppearance(doc, &root);
 
 	/* Key binding */
-	m_keyBind.saveXML(doc, &root);
+#warning SAVE KEY SEQUENCE
+	//m_keyBind.saveXML(doc, &root);
 
 	return true;
 }
@@ -423,12 +425,24 @@ void VCButton::setOn(bool on)
 }
 
 /*****************************************************************************
- * KeyBind
+ * Key sequence handler
  *****************************************************************************/
 
-void VCButton::setKeyBind(const KeyBind& kb)
+void VCButton::setKeySequence(const QKeySequence& keySequence)
 {
-	m_keyBind = kb;
+	m_keySequence = QKeySequence(keySequence);
+}
+
+void VCButton::slotKeyPressed(const QKeySequence& keySequence)
+{
+	if (m_keySequence == keySequence)
+		pressFunction();
+}
+
+void VCButton::slotKeyReleased(const QKeySequence& keySequence)
+{
+	if (m_keySequence == keySequence)
+		releaseFunction();
 }
 
 /*****************************************************************************
@@ -524,6 +538,8 @@ void VCButton::pressFunction()
 {
 	Function* f = NULL;
 
+#warning BUTTON ACTIONS
+
 	/* TODO: Should this return immediately? */
 	if (m_stopFunctions == true)
 		_app->slotControlPanic();
@@ -532,7 +548,7 @@ void VCButton::pressFunction()
 	{
 		return;
 	}
-	else if (m_keyBind.action() == KeyBind::Toggle &&
+	else if (/*m_keyBind.action() == KeyBind::Toggle &&*/
 		 m_isExclusive == false)
 	{
 		f = _app->doc()->function(m_function);
@@ -549,7 +565,7 @@ void VCButton::pressFunction()
 			setFunction(KNoID);
 		}
 	}
-	else if (m_keyBind.action() == KeyBind::Toggle &&
+	else if (/*m_keyBind.action() == KeyBind::Toggle &&*/
 		 m_isExclusive == true)
 	{
 		/* Get a list of this button's siblings from this' parent */
@@ -579,7 +595,7 @@ void VCButton::pressFunction()
 			setFunction(KNoID);
 		}
 	}
-	else if (m_keyBind.action() == KeyBind::Flash)
+	else if ( 0 ) //m_keyBind.action() == KeyBind::Flash)
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
@@ -602,12 +618,16 @@ void VCButton::releaseFunction()
 	{
 		return;
 	}
+
+#warning BUTTON ACTIONS
+/*
 	else if (m_keyBind.action() == KeyBind::Flash)
 	{
 		Function* function = _app->doc()->function(m_function);
 		if (function != NULL && isOn() == true)
 			function->stop();
 	}
+*/
 }
 
 void VCButton::slotFlashReady()
@@ -674,13 +694,15 @@ void VCButton::paintEvent(QPaintEvent* e)
 	style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
 
 	/* Flash emblem */
+#warning BUTTON ACTIONS
+/*
 	if (m_keyBind.action() == KeyBind::Flash)
 	{
 		QIcon icon(":/flash.png");
 		painter.drawPixmap(rect().width() - 16, 0,
 			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
 	}
-
+*/
 	/* Stop painting here */
 	painter.end();
 

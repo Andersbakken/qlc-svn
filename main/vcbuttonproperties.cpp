@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QKeySequence>
 #include <QRadioButton>
 #include <QMessageBox>
 #include <QPushButton>
@@ -39,7 +40,6 @@
 #include "inputpatch.h"
 #include "inputmap.h"
 #include "function.h"
-#include "keybind.h"
 #include "fixture.h"
 #include "app.h"
 #include "doc.h"
@@ -58,9 +58,9 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	m_nameEdit->setText(m_button->caption());
 	slotSetFunction(button->function());
 
-	/* KeyBind key */
-	m_keyBind = button->keyBind();
-	m_keyEdit->setText(m_keyBind.keyString());
+	/* Key sequence */
+	m_keySequence = QKeySequence(button->keySequence());
+	m_keyEdit->setText(m_keySequence.toString());
 
 	/* External input */
 	m_inputUniverse = m_button->inputUniverse();
@@ -71,17 +71,10 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 		this, SLOT(slotChooseInputClicked()));
 
 	/* Press action */
-	switch(m_keyBind.action())
-	{
-	default:
-	case KeyBind::Toggle:
-		m_toggle->setChecked(true);
-		break;
-	case KeyBind::Flash:
-		m_flash->setChecked(true);
-		break;
-	}
-
+#warning ACTION
+	m_toggle->setChecked(true);
+	m_flash->setEnabled(false);
+	
 	/* Panic operation */
 	m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
 
@@ -123,18 +116,18 @@ void VCButtonProperties::slotSetFunction(t_function_id fid)
 
 void VCButtonProperties::slotAttachKey()
 {
-	AssignHotKey ahk(this);
+	AssignHotKey ahk(this, m_keySequence);
 	if (ahk.exec() == QDialog::Accepted)
 	{
-		m_keyBind = ahk.keyBind();
-		m_keyEdit->setText(m_keyBind.keyString());
+		m_keySequence = QKeySequence(ahk.keySequence());
+		m_keyEdit->setText(m_keySequence.toString());
 	}
 }
 
 void VCButtonProperties::slotDetachKey()
 {
-	m_keyBind = KeyBind();
-	m_keyEdit->setText(m_keyBind.keyString());
+	m_keySequence = QKeySequence();
+	m_keyEdit->setText(m_keySequence.toString());
 }
 
 void VCButtonProperties::slotChooseInputClicked()
@@ -213,12 +206,10 @@ void VCButtonProperties::accept()
 	m_button->setCaption(m_nameEdit->text());
 	m_button->setFunction(m_function);
 
-	if (m_flash->isChecked() == true)
-		m_keyBind.setAction(KeyBind::Flash);
-	else
-		m_keyBind.setAction(KeyBind::Toggle);
+#warning ACTION
+	/* TODO: Button action */
 
-	m_button->setKeyBind(m_keyBind);
+	m_button->setKeySequence(m_keySequence);
 	m_button->setInputSource(m_inputUniverse, m_inputChannel);
         m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());
 

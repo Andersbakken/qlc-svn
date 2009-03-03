@@ -22,6 +22,7 @@
 #ifndef VIRTUALCONSOLE_H
 #define VIRTUALCONSOLE_H
 
+#include <QKeySequence>
 #include <QWidget>
 #include <QFrame>
 #include <QList>
@@ -34,6 +35,7 @@ class QDomDocument;
 class QActionGroup;
 class QDomElement;
 class VCDockArea;
+class QKeyEvent;
 class VCWidget;
 class VCFrame;
 class QAction;
@@ -298,6 +300,23 @@ public:
 protected:
 	/** Place the contents area to the VC view */
 	void initContents();
+
+	/*********************************************************************
+	 * Key press handler
+	 *********************************************************************/
+protected:
+	/** Handler for keyboard key presse events */
+	void keyPressEvent(QKeyEvent* event);
+
+	/** Handler for keyboard key release events */
+	void keyReleaseEvent(QKeyEvent* event);
+
+signals:
+	/** Signal telling that the keySequence was pressed down */
+	void keyPressed(const QKeySequence& keySequence);
+
+	/** Signal telling that the keySequence was released */
+	void keyReleased(const QKeySequence& keySequence);
 
 	/*********************************************************************
 	 * Main application mode

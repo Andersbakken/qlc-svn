@@ -19,38 +19,48 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QKeySequence>
 #include <QTextBrowser>
 #include <QLineEdit>
 #include <QKeyEvent>
+#include <QDebug>
 
 #include "assignhotkey.h"
-#include "keybind.h"
 
-AssignHotKey::AssignHotKey(QWidget* parent) : QDialog(parent)
+/*****************************************************************************
+ * Initialization
+ *****************************************************************************/
+AssignHotKey::AssignHotKey(QWidget* parent, const QKeySequence& keySequence)
+	: QDialog(parent)
 {
 	setupUi(this);
 
-	QString str = QString::null;
-	str += QString("<HTML><HEAD><TITLE>Assign Key</TITLE></HEAD><BODY>");
-	str += QString("<CENTER><H1>Assign Key</H1>");
-	str += QString("Hit the key-combination that you want to assign. ");
-	str += QString("You may hit either a single key or a key-combination");
-	str += QString("using CTRL, ALT, and/or SHIFT.</CENTER>");
-	str += QString("</BODY></HTML>");
+	QString str("<HTML><HEAD><TITLE></TITLE></HEAD><BODY><CENTER>");
+	str += QString("<H1>") + tr("Assign Key") + QString("</H1>");
+	str += tr("Hit the key combination that you wish to assign. "
+		  "You may hit either a single key or a combination "
+		  "using CTRL, ALT, and SHIFT.");
+	str += QString("</CENTER></BODY></HTML>");
+
+	/* TODO: For OSX, put the apple key to the above text */
+
 	m_infoText->setText(str);
 	m_infoText->setFocusPolicy(Qt::NoFocus);
 	m_buttonBox->setFocusPolicy(Qt::NoFocus);
 
 	m_previewEdit->setReadOnly(true);
 	m_previewEdit->setAlignment(Qt::AlignCenter);
+
+	m_keySequence = QKeySequence(keySequence);
+	m_previewEdit->setText(m_keySequence.toString());
 }
 
 AssignHotKey::~AssignHotKey()
 {
 }
 
-void AssignHotKey::keyPressEvent(QKeyEvent* e)
+void AssignHotKey::keyPressEvent(QKeyEvent* event)
 {
-	m_keyBind = KeyBind(e->key(), e->modifiers());
-	m_previewEdit->setText(m_keyBind.keyString());
+	m_keySequence = QKeySequence(event->key() | event->modifiers());
+	m_previewEdit->setText(m_keySequence.toString());
 }

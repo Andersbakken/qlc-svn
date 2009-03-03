@@ -22,8 +22,9 @@
 #ifndef VCCUELIST_H
 #define VCCUELIST_H
 
+#include <QKeySequence>
+#include <QWidget>
 #include "vcwidget.h"
-#include "keybind.h"
 
 class QTreeWidgetItem;
 class QDomDocument;
@@ -101,14 +102,17 @@ protected:
 	Function* m_current;
 
 	/*********************************************************************
-	 * Key Bind
+	 * Key sequence handler
 	 *********************************************************************/
 public:
-	void setKeyBind(const KeyBind& kb);
-	const KeyBind keyBind() const { return m_keyBind; }
+	void setKeySequence(const QKeySequence& keySequence);
+	QKeySequence keySequence() const { return m_keySequence; }
+
+protected slots:
+	void slotKeyPressed(const QKeySequence& keySequence);
 
 protected:
-	KeyBind m_keyBind;
+	QKeySequence m_keySequence;
 
 	/*********************************************************************
 	 * Caption

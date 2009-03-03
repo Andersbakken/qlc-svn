@@ -22,10 +22,10 @@
 #ifndef ASSIGNHOTKEY_H
 #define ASSIGNHOTKEY_H
 
+#include <QKeySequence>
 #include <QDialog>
 
 #include "ui_assignhotkey.h"
-#include "keybind.h"
 
 class QKeyEvent;
 
@@ -33,24 +33,28 @@ class AssignHotKey : public QDialog, public Ui_AssignHotKey
 {
 	Q_OBJECT
 
+	/*********************************************************************
+	 * Initialization
+	 *********************************************************************/
 public:
-	AssignHotKey(QWidget* parent);
+	AssignHotKey(QWidget* parent, const QKeySequence& keySequence);
 	~AssignHotKey();
 
 private:
 	Q_DISABLE_COPY(AssignHotKey)
 
 protected:
-	void keyPressEvent(QKeyEvent* e);
+	void keyPressEvent(QKeyEvent* event);
 
 	/*********************************************************************
-	 * Key binding
+	 * Key sequence
 	 *********************************************************************/
 public:
-	const KeyBind keyBind() const { return m_keyBind; }
+	/** Get the key sequence */
+	QKeySequence keySequence() const { return m_keySequence; }
 
 protected:
-	KeyBind m_keyBind;
+	QKeySequence m_keySequence;
 };
 
 #endif

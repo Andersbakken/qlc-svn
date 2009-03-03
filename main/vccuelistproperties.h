@@ -22,9 +22,10 @@
 #ifndef VCCUELISTPROPERTIES_H
 #define VCCUELISTPROPERTIES_H
 
+#include <QKeySequence>
 #include <QDialog>
+
 #include "ui_vccuelistproperties.h"
-#include "keybind.h"
 
 class VCCueList;
 
@@ -50,7 +51,7 @@ protected slots:
 
 protected:
 	VCCueList* m_cueList;
-	KeyBind m_keyBind;
+	QKeySequence m_keySequence;
 };
 
 #endif

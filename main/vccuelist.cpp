@@ -33,7 +33,6 @@
 #include "virtualconsole.h"
 #include "vccuelist.h"
 #include "function.h"
-#include "keybind.h"
 #include "app.h"
 #include "doc.h"
 
@@ -111,8 +110,8 @@ bool VCCueList::copyFrom(VCWidget* widget)
 		append(item->text(KVCCueListColumnID).toInt());
 	}
 
-	/* Copy key binding */
-	setKeyBind(cuelist->keyBind());
+	/* Copy key sequence */
+	setKeySequence(cuelist->keySequence());
 
 	/* Copy common stuff */
 	return VCWidget::copyFrom(widget);
@@ -204,12 +203,18 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 }
 
 /*****************************************************************************
- * Key Bind
+ * Key sequence handler
  *****************************************************************************/
 
-void VCCueList::setKeyBind(const KeyBind& kb)
+void VCCueList::setKeySequence(const QKeySequence& keySequence)
 {
-	m_keyBind = kb;
+	m_keySequence = QKeySequence(keySequence);
+}
+
+void VCCueList::slotKeyPressed(const QKeySequence& keySequence)
+{
+	if (m_keySequence == keySequence)
+		slotNextCue();
 }
 
 /*****************************************************************************
@@ -322,10 +327,13 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			loadXMLAppearance(doc, &tag);
 		}
+#warning LOAD KEY SEQUENCE
+/*
 		else if (tag.tagName() == KXMLQLCKeyBind)
 		{
 			m_keyBind.loadXML(doc, &tag);
 		}
+*/
 		else if (tag.tagName() == KXMLQLCVCCueListFunction)
 		{
 			append(tag.text().toInt());
@@ -372,7 +380,8 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	}
 
 	/* Key binding */
-	m_keyBind.saveXML(doc, &root);
+#warning SAVE KEY SEQUENCE
+	//m_keyBind.saveXML(doc, &root);
 
 	/* Window state */
 	QLCFile::saveXMLWindowState(doc, &root, this);

@@ -64,7 +64,6 @@ HEADERS += aboutbox.h \
            inputmap.h \
 	   inputpatch.h \
            inputpatcheditor.h \
-           keybind.h \
            monitor.h \
            monitorfixture.h \
 	   monitorlayout.h \
@@ -150,7 +149,6 @@ SOURCES += aboutbox.cpp \
            inputmap.cpp \
 	   inputpatch.cpp \
            inputpatcheditor.cpp \
-           keybind.cpp \
            main.cpp \
            monitor.cpp \
            monitorfixture.cpp \

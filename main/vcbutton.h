@@ -22,10 +22,11 @@
 #ifndef VCBUTTON_H
 #define VCBUTTON_H
 
-#include "vcwidget.h"
-#include "keybind.h"
+#include <QKeySequence>
+#include <QWidget>
 
 #include "common/qlctypes.h"
+#include "vcwidget.h"
 
 class QDomDocument;
 class QDomElement;
@@ -169,18 +170,18 @@ protected:
 	bool m_on;
 
 	/*********************************************************************
-	 * KeyBind
+	 * Key sequence handler
 	 *********************************************************************/
 public:
-	/** Get the button's key binding object */
-	KeyBind keyBind() const { return m_keyBind; }
+	void setKeySequence(const QKeySequence& keySequence);
+	QKeySequence keySequence() const { return m_keySequence; }
 
-	/** Set the button's key binding object */
-	void setKeyBind(const KeyBind& kb);
+protected slots:
+	void slotKeyPressed(const QKeySequence& keySequence);
+	void slotKeyReleased(const QKeySequence& keySequence);
 
 protected:
-	/** Button's key binding object for keyboard shortcuts */
-	KeyBind m_keyBind;
+	QKeySequence m_keySequence;
 
 	/*********************************************************************
 	 * External input

@@ -156,8 +156,6 @@ void VCDockSlider::slotSliderValueChanged(int value)
 		ch = VirtualConsole::properties().holdInputChannel();
 	}
 
-	qDebug() << "paska" << uni << ch;
-
 	/* Send input feedback */
 	if (uni != KInputUniverseInvalid && ch != KInputChannelInvalid)
 	{
