@@ -84,13 +84,13 @@ HEADERS += aboutbox.h \
            vcframe.h \
            vcframeproperties.h \
            vclabel.h \
+           vcproperties.h \
            vcslider.h \
            vcsliderproperties.h \
            vcwidget.h \
            vcxypad.h \
            vcxypadproperties.h \
            virtualconsole.h \
-           virtualconsoleproperties.h \
            xychannelunit.h
 
 FORMS += aboutbox.ui \
@@ -113,9 +113,9 @@ FORMS += aboutbox.ui \
          vccuelistproperties.ui \
          vcdockslider.ui \
          vcframeproperties.ui \
+         vcproperties.ui \
          vcsliderproperties.ui \
-         vcxypadproperties.ui \
-         virtualconsoleproperties.ui
+         vcxypadproperties.ui
 
 SOURCES += aboutbox.cpp \
            addfixture.cpp \
@@ -171,13 +171,13 @@ SOURCES += aboutbox.cpp \
            vcframe.cpp \
            vcframeproperties.cpp \
            vclabel.cpp \
+           vcproperties.cpp \
            vcslider.cpp \
            vcsliderproperties.cpp \
            vcwidget.cpp \
            vcxypad.cpp \
            vcxypadproperties.cpp \
            virtualconsole.cpp \
-           virtualconsoleproperties.cpp \
            xychannelunit.cpp
 
 macx:QMAKE_POST_LINK = ./libupdate.sh

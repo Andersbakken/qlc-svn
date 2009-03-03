@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  virtualconsoleproperties.cpp
+  vcproperties.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -26,9 +26,9 @@
 #include "common/qlcinputdevice.h"
 #include "common/qlcfile.h"
 
-#include "virtualconsoleproperties.h"
 #include "selectinputchannel.h"
 #include "virtualconsole.h"
+#include "vcproperties.h"
 #include "inputpatch.h"
 #include "inputmap.h"
 #include "app.h"
@@ -37,7 +37,7 @@
 extern App* _app;
 
 /*****************************************************************************
- * Properties
+ * Properties Initialization
  *****************************************************************************/
 
 VCProperties::VCProperties() : QLCWidgetProperties()
@@ -99,6 +99,10 @@ VCProperties& VCProperties::operator=(const VCProperties& properties)
 	return *this;
 }
 
+/*****************************************************************************
+ * Properties Load & Save
+ *****************************************************************************/
+
 void VCProperties::store(VirtualConsole* vc)
 {
 	Q_ASSERT(vc != NULL);
@@ -110,7 +114,7 @@ bool VCProperties::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QDomNode node;
 	QString str;
-	
+
 	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
@@ -332,11 +336,11 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* vc_root)
 }
 
 /*****************************************************************************
- * Properties dialog
+ * VCPropertiesEditor Initialization
  *****************************************************************************/
 
-VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent,
-			const VCProperties& properties) : QDialog(parent)
+VCPropertiesEditor::VCPropertiesEditor(QWidget* parent,
+	const VCProperties& properties) : QDialog(parent)
 {
 	setupUi(this);
 
@@ -367,7 +371,7 @@ VirtualConsoleProperties::VirtualConsoleProperties(QWidget* parent,
 	updateHoldInputSource();
 }
 
-VirtualConsoleProperties::~VirtualConsoleProperties()
+VCPropertiesEditor::~VCPropertiesEditor()
 {
 }
 
@@ -375,48 +379,48 @@ VirtualConsoleProperties::~VirtualConsoleProperties()
  * Layout page
  *****************************************************************************/
 
-void VirtualConsoleProperties::slotGrabKeyboardClicked()
+void VCPropertiesEditor::slotGrabKeyboardClicked()
 {
 	m_properties.setGrabKeyboard(m_grabKeyboardCheck->isChecked());
 }
 
-void VirtualConsoleProperties::slotKeyRepeatOffClicked()
+void VCPropertiesEditor::slotKeyRepeatOffClicked()
 {
 	m_properties.setKeyRepeatOff(m_keyRepeatOffCheck->isChecked());
 }
 
-void VirtualConsoleProperties::slotGridClicked()
+void VCPropertiesEditor::slotGridClicked()
 {
 	m_properties.setGridEnabled(m_gridGroup->isChecked());
 }
 
-void VirtualConsoleProperties::slotGridXChanged(int value)
+void VCPropertiesEditor::slotGridXChanged(int value)
 {
-	m_properties.setGridX(m_gridXSpin->value());
+	m_properties.setGridX(value);
 }
 
-void VirtualConsoleProperties::slotGridYChanged(int value)
+void VCPropertiesEditor::slotGridYChanged(int value)
 {
-	m_properties.setGridY(m_gridYSpin->value());
+	m_properties.setGridY(value);
 }
 
 /*****************************************************************************
  * Sliders page
  *****************************************************************************/
 
-void VirtualConsoleProperties::slotFadeLimitsChanged()
+void VCPropertiesEditor::slotFadeLimitsChanged()
 {
 	m_properties.setFadeLimits(m_fadeLowSpin->value(),
 				   m_fadeHighSpin->value());
 }
 
-void VirtualConsoleProperties::slotHoldLimitsChanged()
+void VCPropertiesEditor::slotHoldLimitsChanged()
 {
 	m_properties.setHoldLimits(m_holdLowSpin->value(),
 				   m_holdHighSpin->value());
 }
 
-void VirtualConsoleProperties::slotChooseFadeInputClicked()
+void VCPropertiesEditor::slotChooseFadeInputClicked()
 {
 	SelectInputChannel sic(this);
 	if (sic.exec() == QDialog::Accepted)
@@ -427,7 +431,7 @@ void VirtualConsoleProperties::slotChooseFadeInputClicked()
 	}
 }
 
-void VirtualConsoleProperties::slotChooseHoldInputClicked()
+void VCPropertiesEditor::slotChooseHoldInputClicked()
 {
 	SelectInputChannel sic(this);
 	if (sic.exec() == QDialog::Accepted)
@@ -438,7 +442,7 @@ void VirtualConsoleProperties::slotChooseHoldInputClicked()
 	}
 }
 
-void VirtualConsoleProperties::updateFadeInputSource()
+void VCPropertiesEditor::updateFadeInputSource()
 {
 	QLCInputDevice* dev;
 	InputPatch* patch;
@@ -507,7 +511,7 @@ void VirtualConsoleProperties::updateFadeInputSource()
 	m_fadeInputChannelEdit->setText(chName);
 }
 
-void VirtualConsoleProperties::updateHoldInputSource()
+void VCPropertiesEditor::updateHoldInputSource()
 {
 	QLCInputDevice* dev;
 	InputPatch* patch;

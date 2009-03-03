@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>VirtualConsoleProperties</class>
- <widget class="QDialog" name="VirtualConsoleProperties" >
+ <class>VCPropertiesEditor</class>
+ <widget class="QDialog" name="VCPropertiesEditor" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -387,7 +387,7 @@
   <connection>
    <sender>m_buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -403,7 +403,7 @@
   <connection>
    <sender>m_buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -419,7 +419,7 @@
   <connection>
    <sender>m_grabKeyboardCheck</sender>
    <signal>clicked()</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotGrabKeyboardClicked()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -435,7 +435,7 @@
   <connection>
    <sender>m_keyRepeatOffCheck</sender>
    <signal>clicked()</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotKeyRepeatOffClicked()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -451,7 +451,7 @@
   <connection>
    <sender>m_gridGroup</sender>
    <signal>clicked()</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotGridClicked()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -467,7 +467,7 @@
   <connection>
    <sender>m_gridXSpin</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotGridXChanged(int)</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -483,7 +483,7 @@
   <connection>
    <sender>m_gridYSpin</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotGridYChanged(int)</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -499,7 +499,7 @@
   <connection>
    <sender>m_fadeLowSpin</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotFadeLimitsChanged()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -515,7 +515,7 @@
   <connection>
    <sender>m_fadeHighSpin</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotFadeLimitsChanged()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -531,7 +531,7 @@
   <connection>
    <sender>m_holdLowSpin</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotHoldLimitsChanged()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -547,7 +547,7 @@
   <connection>
    <sender>m_holdHighSpin</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>VirtualConsoleProperties</receiver>
+   <receiver>VCPropertiesEditor</receiver>
    <slot>slotHoldLimitsChanged()</slot>
    <hints>
     <hint type="sourcelabel" >

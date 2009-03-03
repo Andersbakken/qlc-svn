@@ -41,8 +41,8 @@
 
 #include "common/qlcfile.h"
 
-#include "virtualconsoleproperties.h"
 #include "virtualconsole.h"
+#include "vcproperties.h"
 #include "vcdockslider.h"
 #include "vcdockarea.h"
 #include "vccuelist.h"
@@ -808,10 +808,10 @@ void VirtualConsole::slotAddLabel()
 
 void VirtualConsole::slotToolsSettings()
 {
-	VirtualConsoleProperties prop(this, s_properties);
-	if (prop.exec() == QDialog::Accepted)
+	VCPropertiesEditor vcpe(this, s_properties);
+	if (vcpe.exec() == QDialog::Accepted)
 	{
-		s_properties = prop.properties();
+		s_properties = vcpe.properties();
 		m_dockArea->refreshProperties();
 		_app->doc()->setModified();
 	}

@@ -27,8 +27,8 @@
 
 #include "common/qlcfile.h"
 
-#include "virtualconsoleproperties.h"
 #include "virtualconsole.h"
+#include "vcproperties.h"
 #include "vcdockslider.h"
 #include "inputmap.h"
 #include "app.h"

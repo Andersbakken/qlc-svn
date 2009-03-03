@@ -2694,149 +2694,149 @@ Note that the wizard cannot </source>
     </message>
 </context>
 <context>
-    <name>VirtualConsoleProperties</name>
+    <name>VCPropertiesEditor</name>
     <message>
-        <location filename="virtualconsoleproperties.cpp" line="300"/>
+        <location filename="vcproperties.cpp" line="300"/>
         <source>%1: Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.cpp" line="316"/>
+        <location filename="vcproperties.cpp" line="316"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="13"/>
+        <location filename="vcproperties.ui" line="13"/>
         <source>Virtual Console properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="23"/>
+        <location filename="vcproperties.ui" line="23"/>
         <source>Layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="29"/>
+        <location filename="vcproperties.ui" line="29"/>
         <source>Keyboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="35"/>
+        <location filename="vcproperties.ui" line="35"/>
         <source>Make virtual console to take exclusive keyboard control during operate mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="38"/>
+        <location filename="vcproperties.ui" line="38"/>
         <source>Grab keyboard in operate mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="45"/>
+        <location filename="vcproperties.ui" line="45"/>
         <source>Prevent flickering when a keyboard hotkey has been pressed in operate mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="48"/>
+        <location filename="vcproperties.ui" line="48"/>
         <source>Turn off key repeat in operate mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="58"/>
+        <location filename="vcproperties.ui" line="58"/>
         <source>Use a grid layout for virtual console widgets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="61"/>
+        <location filename="vcproperties.ui" line="61"/>
         <source>Grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="70"/>
+        <location filename="vcproperties.ui" line="70"/>
         <source>Horizontal (X)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="77"/>
+        <location filename="vcproperties.ui" line="77"/>
         <source>Widget grid layout X resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="103"/>
+        <location filename="vcproperties.ui" line="103"/>
         <source>px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="93"/>
+        <location filename="vcproperties.ui" line="93"/>
         <source>Vertical (Y)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="100"/>
+        <location filename="vcproperties.ui" line="100"/>
         <source>Widget grid layout Y resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="146"/>
+        <location filename="vcproperties.ui" line="146"/>
         <source>Default sliders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="152"/>
+        <location filename="vcproperties.ui" line="152"/>
         <source>Default fade slider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="268"/>
+        <location filename="vcproperties.ui" line="268"/>
         <source>Low limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="165"/>
+        <location filename="vcproperties.ui" line="165"/>
         <source>Lowest value that can be set to the &apos;fade&apos; bus with the default sliders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="298"/>
+        <location filename="vcproperties.ui" line="298"/>
         <source>s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="288"/>
+        <location filename="vcproperties.ui" line="288"/>
         <source>High limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="185"/>
+        <location filename="vcproperties.ui" line="185"/>
         <source>Highest value that can be set to the &apos;fade&apos; bus with the default sliders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="321"/>
+        <location filename="vcproperties.ui" line="321"/>
         <source>Input universe</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="335"/>
+        <location filename="vcproperties.ui" line="335"/>
         <source>Input channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="362"/>
+        <location filename="vcproperties.ui" line="362"/>
         <source>Choose...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="262"/>
+        <location filename="vcproperties.ui" line="262"/>
         <source>Default hold slider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="275"/>
+        <location filename="vcproperties.ui" line="275"/>
         <source>Lowest value that can be set to the &apos;hold&apos; bus with the default sliders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="virtualconsoleproperties.ui" line="295"/>
+        <location filename="vcproperties.ui" line="295"/>
         <source>Highest value that can be set to the &apos;hold&apos; bus with the default sliders</source>
         <translation type="unfinished"></translation>
     </message>

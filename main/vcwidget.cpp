@@ -43,8 +43,8 @@
 #include <cmath>
 #include "common/qlcfile.h"
 
-#include "virtualconsoleproperties.h"
 #include "virtualconsole.h"
+#include "vcproperties.h"
 #include "inputmap.h"
 #include "vcwidget.h"
 #include "app.h"

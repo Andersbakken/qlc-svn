@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  virtualconsoleproperties.h
+  vcproperties.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,12 +19,12 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VIRTUALCONSOLEPROPERTIES_H
-#define VIRTUALCONSOLEPROPERTIES_H
+#ifndef VCPROPERTIES_H
+#define VCPROPERTIES_H
 
 #include <QDialog>
 
-#include "ui_virtualconsoleproperties.h"
+#include "ui_vcproperties.h"
 #include "common/qlcwidgetproperties.h"
 #include "common/qlctypes.h"
 
@@ -57,7 +57,7 @@ class QDomElement;
 
 class VCProperties : public QLCWidgetProperties
 {
-	friend class VirtualConsoleProperties;
+	friend class VCPropertiesEditor;
 	friend class VirtualConsole;
 
 public:
@@ -174,8 +174,7 @@ public:
  * Properties dialog
  *****************************************************************************/
 
-class VirtualConsoleProperties : public QDialog,
-	public Ui_VirtualConsoleProperties
+class VCPropertiesEditor : public QDialog, public Ui_VCPropertiesEditor
 {
 	Q_OBJECT
 
@@ -183,14 +182,13 @@ class VirtualConsoleProperties : public QDialog,
 	 * Initialization
 	 *********************************************************************/
 public:
-	VirtualConsoleProperties(QWidget* parent,
-				 const VCProperties& properties);
-	~VirtualConsoleProperties();
+	VCPropertiesEditor(QWidget* parent, const VCProperties& properties);
+	~VCPropertiesEditor();
 
 	VCProperties properties() const { return m_properties; }
 
 private:
-	Q_DISABLE_COPY(VirtualConsoleProperties)
+	Q_DISABLE_COPY(VCPropertiesEditor)
 
 protected:
 	VCProperties m_properties;
@@ -202,7 +200,7 @@ protected slots:
 	void slotGrabKeyboardClicked();
 	void slotKeyRepeatOffClicked();
 	void slotGridClicked();
-	
+
 	void slotGridXChanged(int value);
 	void slotGridYChanged(int value);
 
