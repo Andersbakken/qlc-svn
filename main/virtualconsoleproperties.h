@@ -28,6 +28,10 @@
 #include "common/qlcwidgetproperties.h"
 #include "common/qlctypes.h"
 
+class VirtualConsole;
+class QDomDocument;
+class QDomElement;
+
 #define KXMLQLCVCProperties "Properties"
 #define KXMLQLCVCPropertiesGrid "Grid"
 #define KXMLQLCVCPropertiesGridEnabled "Enabled"
