@@ -21,6 +21,7 @@
 
 #include <QThread>
 #include <QDebug>
+#include <QTime>
 
 #ifndef WIN32
 #include <sys/types.h>
@@ -30,6 +31,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#else
+#include <windows.h>
 #endif
 
 #include "functionconsumer.h"
@@ -196,9 +199,35 @@ void FunctionConsumer::run()
 #else /* WIN32 */
 void FunctionConsumer::run()
 {
+	/* This timer implementation requires 64bit support from compiler.
+	   (Not 64bit processor architecture, though.) */
+	LARGE_INTEGER frequency;
+	LARGE_INTEGER start;
+	LARGE_INTEGER lap;
+	LONGLONG target;
+
+	/* Calculate the target time that should be waited before each event */
+	QueryPerformanceFrequency(&frequency);
+	target = frequency.QuadPart / KFrequency;
+
 	while (m_running == true)
 	{
-		QThread::msleep(1000 / KFrequency);
+		/* Reset the timer and make the first check */
+		QueryPerformanceCounter(&start);
+		QueryPerformanceCounter(&lap);
+
+		/* Loop here until $target ticks have passed */
+		while ((lap.QuadPart - start.QuadPart) < target)
+		{
+			/* Relinquish this thread's time slot, but don't sleep
+			   because that would skew the timer at least 30ms. */
+			Sleep(0);
+
+			/* Check how many ticks have passed */
+			QueryPerformanceCounter(&lap);
+		}
+
+		/* Execute the next timer event */
 		event();
 	}
 }
