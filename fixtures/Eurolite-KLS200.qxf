@@ -10,7 +10,20 @@
  <Type>Color Changer</Type>
  <Channel Name="Internal programs" >
   <Group Byte="0" >Effect</Group>
-  <Capability Min="0" Max="255" >Internal programs</Capability>
+  <Capability Min="0" Max="9" >Manual Control</Capability>
+  <Capability Min="10" Max="29" >Program 1</Capability>
+  <Capability Min="30" Max="49" >Program 2</Capability>
+  <Capability Min="50" Max="69" >Program 3</Capability>
+  <Capability Min="70" Max="89" >Program 4</Capability>
+  <Capability Min="90" Max="109" >Program 5</Capability>
+  <Capability Min="110" Max="129" >Program 6</Capability>
+  <Capability Min="130" Max="149" >Program 7</Capability>
+  <Capability Min="150" Max="169" >Program 8</Capability>
+  <Capability Min="170" Max="189" >Program 9</Capability>
+  <Capability Min="190" Max="209" >Program 10</Capability>
+  <Capability Min="210" Max="229" >Program 11</Capability>
+  <Capability Min="230" Max="249" >Automatic Control</Capability>
+  <Capability Min="250" Max="255" >Music Control</Capability>
  </Channel>
  <Channel Name="Master Dimmer" >
   <Group Byte="0" >Intensity</Group>
