@@ -198,7 +198,7 @@ void FunctionConsumer::run()
 {
 	while (m_running == true)
 	{
-		QThread::usleep(1000000 / KFrequency);
+		QThread::msleep(1000 / KFrequency);
 		event();
 	}
 }

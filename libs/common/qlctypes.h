@@ -387,6 +387,6 @@ const t_axis KAxisZ ( 2 );
  * Function consumer engine
  *****************************************************************************/
 
-const int KFrequency ( 64 );
+const int KFrequency ( 50 );
 
 #endif
