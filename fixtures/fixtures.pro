@@ -6,6 +6,7 @@ TARGET = fixtures
 fixtures.files += Elation-Color-Spot-150.qxf
 fixtures.files += Elation-Vision-250.qxf
 fixtures.files += Eurolite-LED-PAR56.qxf
+fixtures.files += Eurolite-KLS200.qxf
 fixtures.files += Futurelight-AHS-150.qxf
 fixtures.files += Futurelight-CF-200.qxf
 fixtures.files += Futurelight-CY-200.qxf
