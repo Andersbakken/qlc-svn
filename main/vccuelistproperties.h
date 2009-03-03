@@ -24,9 +24,9 @@
 
 #include <QDialog>
 #include "ui_vccuelistproperties.h"
+#include "keybind.h"
 
 class VCCueList;
-class KeyBind;
 
 class VCCueListProperties : public QDialog, public Ui_VCCueListProperties
 {
@@ -50,7 +50,7 @@ protected slots:
 
 protected:
 	VCCueList* m_cueList;
-	KeyBind* m_keyBind;
+	KeyBind m_keyBind;
 };
 
 #endif

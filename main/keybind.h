@@ -22,9 +22,6 @@
 #ifndef KEYBIND_H
 #define KEYBIND_H
 
-#include <QObject>
-
-class QKeyEvent;
 class QDomDocument;
 class QDomElement;
 
@@ -33,21 +30,8 @@ class QDomElement;
 #define KXMLQLCKeyBindModifier "Modifier"
 #define KXMLQLCKeyBindAction "Action"
 
-class KeyBind : public QObject
+class KeyBind
 {
-	Q_OBJECT
-
-	/*********************************************************************
-	 * Enums
-	 *********************************************************************/
-public:
-	enum Action {
-		Toggle,
-		Flash,
-		StepForward,
-		StepBackward
-	};
-
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
@@ -59,13 +43,20 @@ public:
 	KeyBind(const int key, const Qt::KeyboardModifiers mod);
 
 	/** Construct a copy object from the given KeyBind object */
-	KeyBind(const KeyBind* kb);
+	KeyBind(const KeyBind& kb);
 
 	/** Destructor */
 	~KeyBind();
 
+	/*********************************************************************
+	 * Operators
+	 *********************************************************************/
+public:
+	/** Copy the contents from another KeyBind object */
+	KeyBind& operator=(const KeyBind& kb);
+
 	/** Compare operator between two KeyBind objects */
-	bool operator==(KeyBind*);
+	bool operator==(const KeyBind& kb) const;
 
 	/** Check, whether the key binding is valid (i.e. there is a key) */
 	bool isValid() const;
@@ -81,7 +72,7 @@ public:
 	 * @param mod Keyboard modifier key (alt, ctrl, shift...)
 	 * @return Key & modifier (e.g. "Ctrl + A")
 	 */
-	static QString keyString(int key, int mod);
+	static QString keyString(int key, Qt::KeyboardModifiers mod);
 
 	/**
 	 * Get a string representation matching the object's current key
@@ -118,36 +109,23 @@ protected:
 	 * Actions
 	 *********************************************************************/
 public:
+	enum Action { Toggle, Flash };
+
 	/** Set the action to take when the assigned key combo is pressed */
 	void setAction(Action action) { m_action = action; }
 
 	/** Get the action to take when the assigned key combo is pressed */
 	KeyBind::Action action() const { return m_action; }
 
-signals:
-	/** Signal that is emitted when the key combo is pressed */
-	void pressed();
+	/** Convert the given action to string */
+	static QString actionToString(KeyBind::Action action);
 
-	/** Signal that is emitted when the key combo is released */
-	void released();
-
-public slots:
-	/** Key press receiver slot */
-	void slotKeyPressed(QKeyEvent* e);
-
-	/** Key release receiver slot */
-	void slotKeyReleased(QKeyEvent* e);
+	/** Convert the given string to action*/
+	static KeyBind::Action stringToAction(const QString& action);
 
 protected:
 	/** The action to take when the assigned key combo is pressed */
 	Action m_action;
-
-	/*********************************************************************
-	 * Action to string
-	 *********************************************************************/
-public:
-	static QString actionToString(KeyBind::Action action);
-	static KeyBind::Action stringToAction(QString action);
 
 	/*********************************************************************
 	 * Load & Save

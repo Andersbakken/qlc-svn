@@ -67,7 +67,6 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 	setCaption(tr("Cue list"));
 	resize(QPoint(200, 200));
 
-	m_keyBind = NULL;
 	m_current = NULL;
 
 	slotModeChanged(_app->mode());
@@ -208,21 +207,9 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
  * Key Bind
  *****************************************************************************/
 
-void VCCueList::setKeyBind(const KeyBind* kb)
+void VCCueList::setKeyBind(const KeyBind& kb)
 {
-	if (m_keyBind != NULL)
-		delete m_keyBind;
-
-	if (kb != NULL)
-	{
-		m_keyBind = new KeyBind(kb);
-		connect(m_keyBind, SIGNAL(pressed()),
-			this, SLOT(slotNextCue()));
-	}
-	else
-	{
-		m_keyBind = NULL;
-	}
+	m_keyBind = kb;
 }
 
 /*****************************************************************************
@@ -337,9 +324,7 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCKeyBind)
 		{
-			KeyBind* kb = new KeyBind();
-			kb->loadXML(doc, &tag);
-			setKeyBind(kb);
+			m_keyBind.loadXML(doc, &tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCCueListFunction)
 		{
@@ -387,8 +372,7 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	}
 
 	/* Key binding */
-	if (m_keyBind != NULL)
-		m_keyBind->saveXML(doc, &root);
+	m_keyBind.saveXML(doc, &root);
 
 	/* Window state */
 	QLCFile::saveXMLWindowState(doc, &root, this);

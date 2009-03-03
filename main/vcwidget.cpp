@@ -76,7 +76,7 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 	m_inputUniverse = KInputUniverseInvalid;
 	m_inputChannel = KInputChannelInvalid;
 
-	connect(parent, SIGNAL(modeChanged(App::Mode)), 
+	connect(_app, SIGNAL(modeChanged(App::Mode)), 
 		this, SLOT(slotModeChanged(App::Mode)));
 }
 
@@ -87,18 +87,6 @@ VCWidget::~VCWidget()
 /*****************************************************************************
  * Clipboard
  *****************************************************************************/
-
-void VCWidget::setParent(QWidget* parent)
-{
-	if (parentWidget() != NULL)
-		disconnect(parentWidget(), SIGNAL(modeChanged(App::Mode)),
-			   this, SLOT(slotModeChanged(App::Mode)));
-
-	connect(parent, SIGNAL(modeChanged(App::Mode)),
-		this, SLOT(slotModeChanged(App::Mode)));
-
-	QWidget::setParent(parent);
-}
 
 bool VCWidget::copyFrom(const VCWidget* widget)
 {
@@ -559,7 +547,12 @@ void VCWidget::slotModeChanged(App::Mode mode)
 
 void VCWidget::invokeMenu(const QPoint& point)
 {
-	QMenu* menu = _app->virtualConsole()->editMenu();
+	/* No point coming here if there is no VC instance */
+	VirtualConsole* vc = VirtualConsole::instance();
+	if (vc == NULL)
+		return;
+
+	QMenu* menu = vc->editMenu();
 	Q_ASSERT(menu != NULL);
 	menu->exec(point);
 }
@@ -642,6 +635,11 @@ void VCWidget::paintEvent(QPaintEvent* e)
 {
 	Q_UNUSED(e);
 
+	/* No point coming here if there is no VC instance */
+	VirtualConsole* vc = VirtualConsole::instance();
+	if (vc == NULL)
+		return;
+
 	QPainter painter(this);
 
 	/* Draw frame according to style */
@@ -664,8 +662,7 @@ void VCWidget::paintEvent(QPaintEvent* e)
 	QWidget::paintEvent(e);
 
 	/* Draw selection frame */
-	if (_app->mode() == App::Design &&
-	    _app->virtualConsole()->isWidgetSelected(this) == true)
+	if (_app->mode() == App::Design && vc->isWidgetSelected(this) == true)
 	{
 		/* Draw a dotted line around the widget */
 		QPen pen(Qt::DotLine);
@@ -728,36 +725,37 @@ void VCWidget::mousePressEvent(QMouseEvent* e)
 
 void VCWidget::handleWidgetSelection(QMouseEvent* e)
 {
+	/* No point coming here if there is no VC */
+	VirtualConsole* vc = VirtualConsole::instance();
+	if (vc == NULL)
+		return;
+
 	/* Widget selection logic (like in Qt Designer) */
 	if (e->button() == Qt::LeftButton)
 	{
 		if (e->modifiers() & Qt::ShiftModifier)
 		{
 			/* Toggle selection with LMB when shift is pressed */
-			bool sel;
-			sel = _app->virtualConsole()->isWidgetSelected(this);
-			_app->virtualConsole()->setWidgetSelected(this, !sel);
+			bool selected = vc->isWidgetSelected(this);
+			vc->setWidgetSelected(this, !selected);
 		}
 		else
 		{
-			if (_app->virtualConsole()->isWidgetSelected(this)
-			    == false)
+			if (vc->isWidgetSelected(this) == false)
 			{
 				/* Select only this */
-				_app->virtualConsole()->clearWidgetSelection();
-				_app->virtualConsole()->setWidgetSelected(this,
-									true);
+				vc->clearWidgetSelection();
+				vc->setWidgetSelected(this, true);
 			}
 		}
 	}
 	else if (e->button() == Qt::RightButton)
 	{
-		if (_app->virtualConsole()->isWidgetSelected(this) == false)
+		if (vc->isWidgetSelected(this) == false)
 		{
 			/* Select only this */
-			_app->virtualConsole()->clearWidgetSelection();
-			_app->virtualConsole()->setWidgetSelected(this,
-								  true);
+			vc->clearWidgetSelection();
+			vc->setWidgetSelected(this, true);
 		}
 	}
 }

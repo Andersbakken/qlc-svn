@@ -170,11 +170,6 @@ bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	frame = new VCFrame(parent);
 	frame->show();
 
-	/* If the current parent widget is anything else than a VCFrame,
-	   the currently loaded VCFrame becomes the parent of all VC widgets */
-	if (parent->objectName() != VCFrame::staticMetaObject.className())
-		_app->virtualConsole()->setDrawArea(frame);
-
 	/* Continue loading */
 	return frame->loadXML(doc, root);
 }
@@ -305,13 +300,17 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 QMenu* VCFrame::customMenu(QMenu* parentMenu)
 {
+	/* No point coming here if there is no VC */
+	VirtualConsole* vc = VirtualConsole::instance();
+	if (vc == NULL)
+		return NULL;
+
 	/* Basically, just returning VC::addMenu() would suffice here, but
 	   since the returned menu will be deleted when the current widget
 	   changes, we have to copy the menu's contents into a new menu. */
 	QMenu* menu = new QMenu(parentMenu);
 	menu->setTitle(tr("Add"));
-	QListIterator <QAction*> it(
-				_app->virtualConsole()->addMenu()->actions());
+	QListIterator <QAction*> it(vc->addMenu()->actions());
 	while (it.hasNext() == true)
 		menu->addAction(it.next());
 	return menu;
@@ -323,12 +322,17 @@ QMenu* VCFrame::customMenu(QMenu* parentMenu)
 
 void VCFrame::handleWidgetSelection(QMouseEvent* e)
 {
+	/* No point coming here if there is no VC */
+	VirtualConsole* vc = VirtualConsole::instance();
+	if (vc == NULL)
+		return;
+
 	/* Don't allow selection of the bottom frame. Selecting it will always
 	   actually clear the current selection. */
 	if (isBottomFrame() == false)
 		VCWidget::handleWidgetSelection(e);
 	else
-		_app->virtualConsole()->clearWidgetSelection(); 
+		vc->clearWidgetSelection(); 
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)

@@ -31,6 +31,9 @@
 class VirtualConsole;
 class QDomDocument;
 class QDomElement;
+class VCFrame;
+
+#define KXMLQLCVirtualConsole "VirtualConsole"
 
 #define KXMLQLCVCProperties "Properties"
 #define KXMLQLCVCPropertiesGrid "Grid"
@@ -67,8 +70,19 @@ public:
 
 	VCProperties& operator=(const VCProperties& properties);
 
-	/** Store current VC properties */
-	void store(VirtualConsole* vc);
+	/*********************************************************************
+	 * VC Contents
+	 *********************************************************************/
+public:
+	/** Get Virtual Console's bottom-most frame */
+	VCFrame* contents() const { return m_contents; }
+
+	/** Reset Virtual Console's bottom-most frame to initial state */
+	void resetContents();
+
+protected:
+	/** The bottom-most frame in Virtual Console containing all widgets */
+	VCFrame* m_contents;
 
 	/*********************************************************************
 	 * Grid
@@ -166,8 +180,11 @@ protected:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(QDomDocument* doc, QDomElement* vc_root);
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+
+protected:
+	bool loadProperties(QDomDocument* doc, QDomElement* root);
 };
 
 /*****************************************************************************

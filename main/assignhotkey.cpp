@@ -30,8 +30,6 @@ AssignHotKey::AssignHotKey(QWidget* parent) : QDialog(parent)
 {
 	setupUi(this);
 
-	m_keyBind = new KeyBind();
-
 	QString str = QString::null;
 	str += QString("<HTML><HEAD><TITLE>Assign Key</TITLE></HEAD><BODY>");
 	str += QString("<CENTER><H1>Assign Key</H1>");
@@ -53,8 +51,6 @@ AssignHotKey::~AssignHotKey()
 
 void AssignHotKey::keyPressEvent(QKeyEvent* e)
 {
-	Q_ASSERT (m_keyBind != NULL);
-	m_keyBind->setKey(e->key());
-	m_keyBind->setMod(e->modifiers());
-	m_previewEdit->setText(m_keyBind->keyString());
+	m_keyBind = KeyBind(e->key(), e->modifiers());
+	m_previewEdit->setText(m_keyBind.keyString());
 }

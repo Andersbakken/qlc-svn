@@ -23,10 +23,11 @@
 #define ASSIGNHOTKEY_H
 
 #include <QDialog>
+
 #include "ui_assignhotkey.h"
+#include "keybind.h"
 
 class QKeyEvent;
-class KeyBind;
 
 class AssignHotKey : public QDialog, public Ui_AssignHotKey
 {
@@ -40,16 +41,16 @@ private:
 	Q_DISABLE_COPY(AssignHotKey)
 
 protected:
-	void keyPressEvent(QKeyEvent*);
+	void keyPressEvent(QKeyEvent* e);
 
 	/*********************************************************************
 	 * Key binding
 	 *********************************************************************/
 public:
-	KeyBind* keyBind() const { return m_keyBind; }
+	const KeyBind keyBind() const { return m_keyBind; }
 
 protected:
-	KeyBind* m_keyBind;
+	KeyBind m_keyBind;
 };
 
 #endif

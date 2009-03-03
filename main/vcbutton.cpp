@@ -85,11 +85,6 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 
 	setStyle(App::saneStyle());
 	
-	/* Keybinding */
-	m_keyBind = new KeyBind();
-	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
-	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
-
 	/* Listen to function removals */
 	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
 		this, SLOT(slotFunctionRemoved(t_function_id)));
@@ -97,9 +92,6 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 
 VCButton::~VCButton()
 {
-	if (m_keyBind != NULL)
-		delete m_keyBind;
-	m_keyBind = NULL;
 }
 
 /*****************************************************************************
@@ -125,7 +117,7 @@ bool VCButton::copyFrom(VCWidget* widget)
 	VCButton* button = qobject_cast <VCButton*> (widget);
 	if (button == NULL)
 		return false;
-	
+
 	/* Copy button-specific stuff */
 	setIcon(button->icon());
 	setKeyBind(button->keyBind());
@@ -239,13 +231,18 @@ void VCButton::setIcon(const QString& icon)
 
 void VCButton::slotChooseIcon()
 {
+	/* No point coming here if there is no VC */
+	VirtualConsole* vc = VirtualConsole::instance();
+	if (vc == NULL)
+		return;
+
 	QString path;
 	path = QFileDialog::getOpenFileName(this, tr("Select button icon"),
 			icon(), tr("Images (*.png *.xpm *.jpg *.gif)"));
         if (path.isEmpty() == false)
 	{
 		VCWidget* widget;
-		foreach(widget, _app->virtualConsole()->selectedWidgets())
+		foreach(widget, vc->selectedWidgets())
 		{
 			VCButton* button = qobject_cast<VCButton*> (widget);
 			if (button != NULL)
@@ -339,10 +336,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCKeyBind)
 		{
-			KeyBind* kb = new KeyBind();
-			kb->loadXML(doc, &tag);
-			setKeyBind(kb);
-			delete kb;
+			m_keyBind.loadXML(doc, &tag);
 		}
 		else
 		{
@@ -394,7 +388,7 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	saveXMLAppearance(doc, &root);
 
 	/* Key binding */
-	m_keyBind->saveXML(doc, &root);
+	m_keyBind.saveXML(doc, &root);
 
 	return true;
 }
@@ -432,16 +426,9 @@ void VCButton::setOn(bool on)
  * KeyBind
  *****************************************************************************/
 
-void VCButton::setKeyBind(const KeyBind* kb)
+void VCButton::setKeyBind(const KeyBind& kb)
 {
-	Q_ASSERT(kb != NULL);
-
-	if (m_keyBind != NULL)
-		delete m_keyBind;
-	m_keyBind = new KeyBind(kb);
-
-	connect(m_keyBind, SIGNAL(pressed()), this, SLOT(pressFunction()));
-	connect(m_keyBind, SIGNAL(released()), this, SLOT(releaseFunction()));
+	m_keyBind = kb;
 }
 
 /*****************************************************************************
@@ -545,7 +532,7 @@ void VCButton::pressFunction()
 	{
 		return;
 	}
-	else if (m_keyBind->action() == KeyBind::Toggle &&
+	else if (m_keyBind.action() == KeyBind::Toggle &&
 		 m_isExclusive == false)
 	{
 		f = _app->doc()->function(m_function);
@@ -562,7 +549,7 @@ void VCButton::pressFunction()
 			setFunction(KNoID);
 		}
 	}
-	else if (m_keyBind->action() == KeyBind::Toggle &&
+	else if (m_keyBind.action() == KeyBind::Toggle &&
 		 m_isExclusive == true)
 	{
 		/* Get a list of this button's siblings from this' parent */
@@ -592,7 +579,7 @@ void VCButton::pressFunction()
 			setFunction(KNoID);
 		}
 	}
-	else if (m_keyBind->action() == KeyBind::Flash)
+	else if (m_keyBind.action() == KeyBind::Flash)
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
@@ -615,7 +602,7 @@ void VCButton::releaseFunction()
 	{
 		return;
 	}
-	else if (m_keyBind->action() == KeyBind::Flash)
+	else if (m_keyBind.action() == KeyBind::Flash)
 	{
 		Function* function = _app->doc()->function(m_function);
 		if (function != NULL && isOn() == true)
@@ -687,7 +674,7 @@ void VCButton::paintEvent(QPaintEvent* e)
 	style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
 
 	/* Flash emblem */
-	if (m_keyBind->action() == KeyBind::Flash)
+	if (m_keyBind.action() == KeyBind::Flash)
 	{
 		QIcon icon(":/flash.png");
 		painter.drawPixmap(rect().width() - 16, 0,

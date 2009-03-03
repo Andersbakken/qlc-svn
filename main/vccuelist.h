@@ -23,6 +23,7 @@
 #define VCCUELIST_H
 
 #include "vcwidget.h"
+#include "keybind.h"
 
 class QTreeWidgetItem;
 class QDomDocument;
@@ -31,7 +32,6 @@ class QTreeWidget;
 
 class VCCueListProperties;
 class Function;
-class KeyBind;
 
 #define KXMLQLCVCCueList "CueList"
 #define KXMLQLCVCCueListFunction "Function"
@@ -104,11 +104,11 @@ protected:
 	 * Key Bind
 	 *********************************************************************/
 public:
-	void setKeyBind(const KeyBind* kb);
-	const KeyBind* keyBind() const { return m_keyBind; }
+	void setKeyBind(const KeyBind& kb);
+	const KeyBind keyBind() const { return m_keyBind; }
 
 protected:
-	KeyBind* m_keyBind;
+	KeyBind m_keyBind;
 
 	/*********************************************************************
 	 * Caption

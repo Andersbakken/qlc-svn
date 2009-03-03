@@ -80,9 +80,6 @@ private:
 	 * Clipboard
 	 *********************************************************************/
 public:
-	/** Overwritten QWidget method to set a new parent for this widget */
-	virtual void setParent(QWidget* parent);
-
 	/** Create a copy of this widget into the given parent and return it */
 	virtual VCWidget* createCopy(VCWidget* parent) = 0;
 

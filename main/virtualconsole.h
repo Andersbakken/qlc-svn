@@ -29,6 +29,7 @@
 #include "vcproperties.h"
 #include "app.h"
 
+class VirtualConsole;
 class QDomDocument;
 class QActionGroup;
 class QDomElement;
@@ -38,8 +39,6 @@ class VCFrame;
 class QAction;
 class KeyBind;
 class QMenu;
-
-#define KXMLQLCVirtualConsole "VirtualConsole"
 
 #define KXMLQLCVCAppearance "Appearance"
 #define KXMLQLCVCFrameStyle "FrameStyle"
@@ -64,20 +63,25 @@ class VirtualConsole : public QWidget
 	 * Initialization
 	 *********************************************************************/
 public:
-	VirtualConsole(QWidget* parent);
+	/** Get the VC singleton instance. Can be NULL. */
+	static VirtualConsole* instance() { return s_instance; }
+
+	/** Create a VC with parent. Fails if s_instance is not NULL. */
+	static void create(QWidget* parent);
+
+	/** Public destructor */
 	~VirtualConsole();
 
 private:
 	Q_DISABLE_COPY(VirtualConsole)
 
 protected:
-	void init();
-	void initActions();
-	void initMenuBar();
+	/** Protected constructor to prevent multiple instances */
+	VirtualConsole(QWidget* parent, Qt::WindowFlags flags = 0);
 
-signals:
-	/** Signal telling that the VC has been closed */
-	void closed();
+protected:
+	/** The singleton instance */
+	static VirtualConsole* s_instance;
 
 	/*********************************************************************
 	 * Properties
@@ -89,35 +93,6 @@ public:
 protected:
 	/** VC properties */
 	static VCProperties s_properties;
-
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
-public:
-	/**
-	 * Load and initialize virtual console from an XML document
-	 *
-	 * @param doc An XML document to load from
-	 * @param vc_root A VirtualConsole root node to start loading from
-	 */
-	static bool loader(QDomDocument* doc, QDomElement* vc_root);
-
-	/**
-	 * Load Virtual Console contents from an XML document (already
-	 * initialized with VirtualConsole::loader())
-	 *
-	 * @param doc An XML document to load from
-	 * @param root A VirtualConsole root node to start loading from
-	 */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-
-	/**
-	 * Save Virtual Console contents to an XML document
-	 *
-	 * @param doc An XML Document to save to
-	 * @param wksp_root A WorkSpace root node to save under
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
 	/*********************************************************************
 	 * Selected widgets
@@ -145,13 +120,6 @@ public:
 	void clearWidgetSelection();
 
 protected:
-	/** Change the custom menu to the last selected widget's menu */
-	void updateCustomMenu();
-
-	/** Enable or disable actions based on current selection */
-	void updateActions();
-
-protected:
 	/** The widgets that are currently selected */
 	QList <VCWidget*> m_selectedWidgets;
 
@@ -162,13 +130,26 @@ protected:
 	EditAction m_editAction;
 
 	/*********************************************************************
-	 * Menus & actions
+	 * Actions, menu- and toolbar
 	 *********************************************************************/
 public:
 	QMenu* customMenu() { return m_customMenu; }
 	QMenu* toolsMenu() { return m_toolsMenu; }
 	QMenu* editMenu() { return m_editMenu; }
 	QMenu* addMenu() { return m_addMenu; }
+
+protected:
+	/** Initialize actions */
+	void initActions();
+
+	/** Initialize menus and toolbar */
+	void initMenuBar();
+
+	/** Change the custom menu to the last selected widget's menu */
+	void updateCustomMenu();
+
+	/** Enable or disable actions based on current selection */
+	void updateActions();
 
 protected:
 	QToolBar* m_toolbar;
@@ -305,53 +286,35 @@ protected:
 	VCDockArea* m_dockArea;
 
 	/*********************************************************************
-	 * Draw area
+	 * Contents
 	 *********************************************************************/
 public:
-	/**
-	 * Set the bottom-most VCFrame that acts as the "drawing area" housing
-	 * all other vc widgets.
-	 *
-	 * @param drawArea The VCFrame to set as the bottom-most widget
-	 */
-	void setDrawArea(VCFrame* drawArea);
+	/** Get the VC's current contents */
+	VCFrame* contents() const { return s_properties.contents(); }
 
-	/** Get the virtual console's bottom-most widget */
-	VCFrame* drawArea() const { return m_drawArea; }
+	/** Reset the VC contents to an initial state */
+	static void resetContents();
 
 protected:
-	/** The bottom-most widget in virtual console */
-	VCFrame* m_drawArea;
+	/** Place the contents area to the VC view */
+	void initContents();
 
 	/*********************************************************************
 	 * Main application mode
 	 *********************************************************************/
 public slots:
 	/** Slot that catches main application mode changes */
-	void slotModeChanged(App::Mode mode);
-
-signals:
-	/** Signal emitted to all children */
-	void modeChanged(App::Mode);
+	void slotAppModeChanged(App::Mode mode);
 
 	/*********************************************************************
-	 * Event handlers
+	 * Load & Save
 	 *********************************************************************/
-protected:
-	void closeEvent(QCloseEvent* e);
-	void keyPressEvent(QKeyEvent* e);
-	void keyReleaseEvent(QKeyEvent* e);
+public:
+	/** Load properties and contents from an XML document */
+	static bool loadXML(QDomDocument* doc, QDomElement* vc_root);
 
-	/*********************************************************************
-	 * Key events
-	 *********************************************************************/
-signals:
-	void keyPressed(QKeyEvent*);
-	void keyReleased(QKeyEvent*);
-
-protected:
-	/** Key binding objects */
-	QList <KeyBind*> m_keyReceivers;
+	/** Save properties and contents to an XML document */
+	static bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 };
 
 #endif

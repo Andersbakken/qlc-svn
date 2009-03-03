@@ -19,27 +19,24 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QMdiSubWindow>
 #include <QApplication>
 #include <QInputDialog>
 #include <QColorDialog>
 #include <QActionGroup>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QFontDialog>
-#include <QCloseEvent>
-#include <QMetaObject>
+#include <QMdiArea>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QString>
-#include <QPoint>
 #include <QDebug>
 #include <QMenu>
-#include <QFile>
 #include <QList>
 #include <QtXml>
-
-#include "common/qlcfile.h"
 
 #include "virtualconsole.h"
 #include "vcproperties.h"
@@ -63,11 +60,14 @@ extern App* _app;
 extern QApplication* _qapp;
 
 VCProperties VirtualConsole::s_properties;
+VirtualConsole* VirtualConsole::s_instance = NULL;
+
 /****************************************************************************
  * Initialization
  ****************************************************************************/
 
-VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
+VirtualConsole::VirtualConsole(QWidget* parent, Qt::WindowFlags flags)
+	: QWidget(parent, flags)
 {
 	m_editActionGroup = NULL;
 	m_addActionGroup = NULL;
@@ -83,43 +83,124 @@ VirtualConsole::VirtualConsole(QWidget* parent) : QWidget(parent)
 	m_addMenu = NULL;
 
 	m_dockArea = NULL;
-	m_drawArea = NULL;
 
 	m_editAction = EditNone;
 	m_editMenu = NULL;
 
-	init();
+	/* Main layout */
+	new QHBoxLayout(this);
+
+	initActions();
+	initMenuBar();
+
+	initDockArea();
+	initContents();
 }
 
 VirtualConsole::~VirtualConsole()
 {
-	/* The parent widget is a QMdiSubWindow, which must be deleted now
-	   since its child is deleted. */
-	parentWidget()->deleteLater();
+	/* The layout takes ownership of the contents. Adopt them back to the
+	   main application object to prevent their destruction. */
+	s_properties.m_contents->setParent(_app);
+
+#ifdef _APPLE_
+	s_properties.store(this);
+#else
+	s_properties.store(parentWidget());
+#endif
+
+	s_instance = NULL;
 }
 
-void VirtualConsole::init()
+void VirtualConsole::create(QWidget* parent)
 {
-	// Main layout
-	new QHBoxLayout(this);
+	QWidget* window;
 
-	// Window title & icon
-	parentWidget()->setWindowIcon(QIcon(":/virtualconsole.png"));
-	parentWidget()->setWindowTitle(tr("Virtual Console"));
+	/* Must not create more than one instance */
+	if (s_instance != NULL)
+		return;
 
-	// Init top menu bar & actions
-	initActions();
-	initMenuBar();
+#ifdef _APPLE_
+	/* Create a separate window for OSX */
+	s_instance = new VirtualConsole(parent, Qt::Window);
+	window = s_instance;
+#else
+	/* Create an MDI window for X11 & Win32 */
+	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+	Q_ASSERT(area != NULL);
+	s_instance = new VirtualConsole(parent);
+	window = area->addSubWindow(s_instance);
+#endif
 
-	// Init left dock area
-	initDockArea();
+	/* Listen to mode changes */
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		s_instance, SLOT(slotAppModeChanged(App::Mode)));
 
-	// Init right drawing area
-	setDrawArea(new VCFrame(this));
-
-	// Set some default size
-	parentWidget()->resize(s_properties.width(), s_properties.height());
+	/* Set some common properties for the window and show it */
+	window->setAttribute(Qt::WA_DeleteOnClose);
+	window->setWindowIcon(QIcon(":/virtualconsole.png"));
+	window->setWindowTitle(tr("Virtual Console"));
+	window->resize(s_properties.width(), s_properties.height());
+	window->show();
 }
+
+/*****************************************************************************
+ * Selected widget
+ *****************************************************************************/
+
+void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
+{
+	Q_ASSERT(widget != NULL);
+
+	if (select == false)
+	{
+		m_selectedWidgets.removeAll(widget);
+		widget->update();
+	}
+	else if (select == true && m_selectedWidgets.indexOf(widget) == -1)
+	{
+		m_selectedWidgets.append(widget);
+		widget->update();
+	}
+
+	/* Change the custom menu to the latest-selected widget's menu */
+	updateCustomMenu();
+
+	/* Enable or disable actions */
+	updateActions();
+}
+
+bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
+{
+	if (widget == NULL || m_selectedWidgets.indexOf(widget) == -1)
+		return false;
+	else
+		return true;
+}
+
+void VirtualConsole::clearWidgetSelection()
+{
+	/* Get a copy of selected widget list */
+	QList <VCWidget*> widgets(m_selectedWidgets);
+
+	/* Clear the list so isWidgetSelected() returns false for all widgets */
+	m_selectedWidgets.clear();
+
+	/* Update all widgets to clear the selection frame around them */
+	QListIterator <VCWidget*> it(widgets);
+	while (it.hasNext() == true)
+		it.next()->update();
+
+	/* Change the custom menu to the latest-selected widget's menu */
+	updateCustomMenu();
+
+	/* Enable or disable actions */
+	updateActions();
+}
+
+/*****************************************************************************
+ * Actions, menu- and toolbar
+ *****************************************************************************/
 
 void VirtualConsole::initActions()
 {
@@ -439,132 +520,6 @@ void VirtualConsole::initMenuBar()
 	toolBar->addAction(m_editRenameAction);
 }
 
-/*****************************************************************************
- * Load & Save
- *****************************************************************************/
-
-bool VirtualConsole::loader(QDomDocument* doc, QDomElement* vc_root)
-{
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
-
-	return _app->virtualConsole()->loadXML(doc, vc_root);
-}
-
-bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* root)
-{
-	QDomNode node;
-	QDomElement tag;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
-
-	if (root->tagName() != KXMLQLCVirtualConsole)
-	{
-		qDebug() << "Virtual Console node not found!";
-		return false;
-	}
-
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCVCProperties)
-			s_properties.loadXML(doc, &tag);
-		else if (tag.tagName() == KXMLQLCVCFrame)
-			VCFrame::loader(doc, &tag, this);
-		else
-			qDebug() << "Unknown virtual console tag:"
-				 << tag.tagName();
-
-		node = node.nextSibling();
-	}
-
-	/* Tell the dock area to refresh its properties and show it (or not) */
-	Q_ASSERT(m_dockArea != NULL);
-	m_dockArea->refreshProperties();
-
-	return true;
-}
-
-bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(wksp_root != NULL);
-
-	/* Virtual Console entry */
-	root = doc->createElement(KXMLQLCVirtualConsole);
-	wksp_root->appendChild(root);
-
-	/* Properties */
-	s_properties.saveXML(doc, &root);
-
-	/* Save children */
-	m_drawArea->saveXML(doc, &root);
-
-	return true;
-}
-
-/*****************************************************************************
- * Selected widget
- *****************************************************************************/
-
-void VirtualConsole::setWidgetSelected(VCWidget* widget, bool select)
-{
-	Q_ASSERT(widget != NULL);
-
-	if (select == false)
-	{
-		m_selectedWidgets.removeAll(widget);
-		widget->update();
-	}
-	else if (select == true && m_selectedWidgets.indexOf(widget) == -1)
-	{
-		m_selectedWidgets.append(widget);
-		widget->update();
-	}
-
-	/* Change the custom menu to the latest-selected widget's menu */
-	updateCustomMenu();
-
-	/* Enable or disable actions */
-	updateActions();
-}
-
-bool VirtualConsole::isWidgetSelected(VCWidget* widget) const
-{
-	if (widget == NULL || m_selectedWidgets.indexOf(widget) == -1)
-		return false;
-	else
-		return true;
-}
-
-void VirtualConsole::clearWidgetSelection()
-{
-	/* Get a copy of selected widget list */
-	QList <VCWidget*> widgets(m_selectedWidgets);
-
-	/* Clear the list so isWidgetSelected() returns false for all widgets */
-	m_selectedWidgets.clear();
-
-	/* Update all widgets to clear the selection frame around them */
-	QListIterator <VCWidget*> it(widgets);
-	while (it.hasNext() == true)
-		it.next()->update();
-
-	/* Change the custom menu to the latest-selected widget's menu */
-	updateCustomMenu();
-
-	/* Enable or disable actions */
-	updateActions();
-}
-
 void VirtualConsole::updateCustomMenu()
 {
 	/* Get rid of the custom menu, but delete it later because this might
@@ -586,7 +541,8 @@ void VirtualConsole::updateCustomMenu()
 	else
 	{
 		/* Change the custom menu to the bottom frame's menu */
-		m_customMenu = m_drawArea->customMenu(m_editMenu);
+		Q_ASSERT(contents() != NULL);
+		m_customMenu = contents()->customMenu(m_editMenu);
 		if (m_customMenu != NULL)
 			m_editMenu->addMenu(m_customMenu);
 	}
@@ -663,10 +619,12 @@ void VirtualConsole::slotAddButton()
 {
 	VCFrame* parent;
 
+	Q_ASSERT(contents() != NULL);
+
 	/* Either add to the draw area or the latest selected widget (but only
 	   if it's a VCFrame). */
 	if (m_selectedWidgets.isEmpty() == true)
-		parent = m_drawArea;
+		parent = contents();
 	else
 		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
 
@@ -691,10 +649,12 @@ void VirtualConsole::slotAddSlider()
 {
 	VCFrame* parent;
 
+	Q_ASSERT(contents() != NULL);
+
 	/* Either add to the draw area or the latest selected widget (but only
 	   if it's a VCFrame). */
 	if (m_selectedWidgets.isEmpty() == true)
-		parent = m_drawArea;
+		parent = contents();
 	else
 		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
 
@@ -714,10 +674,12 @@ void VirtualConsole::slotAddXYPad()
 {
 	VCFrame* parent;
 
+	Q_ASSERT(contents() != NULL);
+
 	/* Either add to the draw area or the latest selected widget (but only
 	   if it's a VCFrame). */
 	if (m_selectedWidgets.isEmpty() == true)
-		parent = m_drawArea;
+		parent = contents();
 	else
 		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
 
@@ -737,10 +699,12 @@ void VirtualConsole::slotAddCueList()
 {
 	VCFrame* parent;
 
+	Q_ASSERT(contents() != NULL);
+
 	/* Either add to the draw area or the latest selected widget (but only
 	   if it's a VCFrame). */
 	if (m_selectedWidgets.isEmpty() == true)
-		parent = m_drawArea;
+		parent = contents();
 	else
 		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
 
@@ -760,10 +724,12 @@ void VirtualConsole::slotAddFrame()
 {
 	VCFrame* parent;
 
+	Q_ASSERT(contents() != NULL);
+
 	/* Either add to the draw area or the latest selected widget (but only
 	   if it's a VCFrame). */
 	if (m_selectedWidgets.isEmpty() == true)
-		parent = m_drawArea;
+		parent = contents();
 	else
 		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
 
@@ -783,10 +749,12 @@ void VirtualConsole::slotAddLabel()
 {
 	VCFrame* parent;
 
+	Q_ASSERT(contents() != NULL);
+
 	/* Either add to the draw area or the latest selected widget (but only
 	   if it's a VCFrame). */
 	if (m_selectedWidgets.isEmpty() == true)
-		parent = m_drawArea;
+		parent = contents();
 	else
 		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
 
@@ -889,9 +857,11 @@ void VirtualConsole::slotEditPaste()
 	{
 		VCWidget* parent;
 
+		Q_ASSERT(contents() != NULL);
+
 		/* Select the parent that gets the cut clipboard contents */
 		if (m_selectedWidgets.count() == 0)
-			parent = _app->virtualConsole()->drawArea();
+			parent = contents();
 		else
 			parent = m_selectedWidgets.last();
 
@@ -913,9 +883,11 @@ void VirtualConsole::slotEditPaste()
 	{
 		VCWidget* parent;
 
+		Q_ASSERT(contents() != NULL);
+
 		/* Select the parent that gets the copied clipboard contents */
 		if (m_selectedWidgets.count() == 0)
-			parent = _app->virtualConsole()->drawArea();
+			parent = contents();
 		else
 			parent = m_selectedWidgets.last();
 
@@ -958,8 +930,10 @@ void VirtualConsole::slotEditProperties()
 {
 	VCWidget* widget;
 
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
-		widget = m_drawArea;
+		widget = contents();
 	else
 		widget = m_selectedWidgets.last();
 
@@ -992,8 +966,10 @@ void VirtualConsole::slotBackgroundColor()
 {
 	QColor color;
 
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
-		color = m_drawArea->backgroundColor();
+		color = contents()->backgroundColor();
 	else
 		color = m_selectedWidgets.last()->backgroundColor();
 
@@ -1002,7 +978,7 @@ void VirtualConsole::slotBackgroundColor()
 	{
 		if (m_selectedWidgets.isEmpty() == true)
 		{
-			m_drawArea->setBackgroundColor(color);
+			contents()->setBackgroundColor(color);
 		}
 		else
 		{
@@ -1017,8 +993,10 @@ void VirtualConsole::slotBackgroundImage()
 {
 	QString path;
 
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
-		path = m_drawArea->backgroundImage();
+		path = contents()->backgroundImage();
 	else
 		path = m_selectedWidgets.last()->backgroundImage();
 
@@ -1030,7 +1008,7 @@ void VirtualConsole::slotBackgroundImage()
 	{
 		if (m_selectedWidgets.isEmpty() == true)
 		{
-			m_drawArea->setBackgroundImage(path);
+			contents()->setBackgroundImage(path);
 		}
 		else
 		{
@@ -1043,9 +1021,11 @@ void VirtualConsole::slotBackgroundImage()
 
 void VirtualConsole::slotBackgroundNone()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 	{
-		m_drawArea->resetBackgroundColor();
+		contents()->resetBackgroundColor();
 	}
 	else
 	{
@@ -1061,6 +1041,8 @@ void VirtualConsole::slotBackgroundNone()
 
 void VirtualConsole::slotForegroundColor()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1076,6 +1058,8 @@ void VirtualConsole::slotForegroundColor()
 
 void VirtualConsole::slotForegroundNone()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1093,8 +1077,10 @@ void VirtualConsole::slotFont()
 	bool ok = false;
 	QFont font;
 
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
-		font = m_drawArea->font();
+		font = contents()->font();
 	else
 		font = m_selectedWidgets.last()->font();
 
@@ -1103,7 +1089,7 @@ void VirtualConsole::slotFont()
 	{
 		if (m_selectedWidgets.isEmpty() == true)
 		{
-			m_drawArea->setFont(font);
+			contents()->setFont(font);
 		}
 		else
 		{
@@ -1116,9 +1102,11 @@ void VirtualConsole::slotFont()
 
 void VirtualConsole::slotResetFont()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 	{
-		m_drawArea->resetFont();
+		contents()->resetFont();
 	}
 	else
 	{
@@ -1134,6 +1122,8 @@ void VirtualConsole::slotResetFont()
 
 void VirtualConsole::slotStackingRaise()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1144,6 +1134,8 @@ void VirtualConsole::slotStackingRaise()
 
 void VirtualConsole::slotStackingLower()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1158,6 +1150,8 @@ void VirtualConsole::slotStackingLower()
 
 void VirtualConsole::slotFrameSunken()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1168,6 +1162,8 @@ void VirtualConsole::slotFrameSunken()
 
 void VirtualConsole::slotFrameRaised()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1178,6 +1174,8 @@ void VirtualConsole::slotFrameRaised()
 
 void VirtualConsole::slotFrameNone()
 {
+	Q_ASSERT(contents() != NULL);
+
 	if (m_selectedWidgets.isEmpty() == true)
 		return;
 
@@ -1207,21 +1205,40 @@ void VirtualConsole::initDockArea()
 }
 
 /*****************************************************************************
- * Draw area
+ * Contents
  *****************************************************************************/
 
-void VirtualConsole::setDrawArea(VCFrame* drawArea)
+void VirtualConsole::resetContents()
+{
+	/* Destroy existing contents */
+	if (s_properties.m_contents != NULL)
+	{
+		delete s_properties.m_contents;
+		s_properties.m_contents = NULL;
+	}
+
+	/* If there is an instance of the VC, make it re-read the contents */
+	if (s_instance != NULL)
+		s_instance->initContents();
+}
+
+void VirtualConsole::initContents()
 {
 	Q_ASSERT(layout() != NULL);
 
-	if (m_drawArea != NULL)
-		delete m_drawArea;
-	m_drawArea = drawArea;
+	/* Create new contents if there isn't any yet */
+	if (contents() == NULL)
+		s_properties.resetContents();
 
-	/* Add the draw area into the master horizontal layout */
-	layout()->addWidget(m_drawArea);
-	m_drawArea->setSizePolicy(QSizePolicy::Expanding,
+	/* Add the contents area into the master horizontal layout */
+	layout()->addWidget(contents());
+
+	/* Make the contents area take up all available space */
+	contents()->setSizePolicy(QSizePolicy::Expanding,
 				  QSizePolicy::Expanding);
+
+	m_clipboard.clear();
+	m_selectedWidgets.clear();
 
 	/* Update actions' enabled status */
 	updateActions();
@@ -1231,7 +1248,7 @@ void VirtualConsole::setDrawArea(VCFrame* drawArea)
  * Main application mode
  *****************************************************************************/
 
-void VirtualConsole::slotModeChanged(App::Mode mode)
+void VirtualConsole::slotAppModeChanged(App::Mode mode)
 {
 	QString config;
 
@@ -1286,35 +1303,34 @@ void VirtualConsole::slotModeChanged(App::Mode mode)
 		m_frameActionGroup->setEnabled(true);
 		m_stackingActionGroup->setEnabled(true);
 	}
-
-	/* Patch the event thru to all children */
-	emit modeChanged(mode);
 }
 
 /*****************************************************************************
- * Event handlers
+ * Load & Save
  *****************************************************************************/
 
-void VirtualConsole::closeEvent(QCloseEvent* e)
+bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* vc_root)
 {
-	e->accept();
-	emit closed();
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	return s_properties.loadXML(doc, vc_root);
 }
 
-void VirtualConsole::keyPressEvent(QKeyEvent* e)
+bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-	if (_app->mode() == App::Operate)
-	{
-		emit keyPressed(e);
-		e->accept();
-	}
-}
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
 
-void VirtualConsole::keyReleaseEvent(QKeyEvent* e)
-{
-	if (_app->mode() == App::Operate)
+	/* Store instance properties (geometry) */
+	if (s_instance != NULL)
 	{
-		emit keyReleased(e);
-		e->accept();
+#ifdef _APPLE_
+		s_properties.store(s_instance);
+#else
+		s_properties.store(s_instance->parentWidget());
+#endif
 	}
+
+	return s_properties.saveXML(doc, wksp_root);
 }

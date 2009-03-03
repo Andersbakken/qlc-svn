@@ -87,8 +87,6 @@ App::App() : QMainWindow()
 	m_functionConsumer = NULL;
 	m_doc = NULL;
 
-	m_virtualConsole = NULL;
-
 	m_mode = Design;
 	m_modeIndicator = NULL;
 
@@ -110,11 +108,6 @@ App::App() : QMainWindow()
 
 App::~App()
 {
-	// Delete virtual console
-	if (m_virtualConsole != NULL)
-		delete m_virtualConsole;
-	m_virtualConsole = NULL;
-
 	// Delete doc
 	if (m_doc != NULL)
 		delete m_doc;
@@ -204,9 +197,6 @@ void App::init()
 
 	// Document
 	initDoc();
-
-	// Virtual Console
-	initVirtualConsole();
 
 	// Start up in non-modified state
 	m_doc->resetModified();
@@ -554,31 +544,8 @@ void App::slotModeToggle()
 }
 
 /*****************************************************************************
- * Virtual Console
+ * Sane style
  *****************************************************************************/
-
-void App::initVirtualConsole(void)
-{
-	if (m_virtualConsole != NULL)
-		delete m_virtualConsole;
-
-	QMdiSubWindow* sub = new QMdiSubWindow(centralWidget());
-	m_virtualConsole = new VirtualConsole(sub);
-	m_virtualConsole->show();
-
-	/* Prevent right-clicks from getting propagated to workspace */
-	sub->setContextMenuPolicy(Qt::CustomContextMenu);
-
-	sub->setWidget(m_virtualConsole);
-
-	connect(m_virtualConsole, SIGNAL(closed()),
-		this, SLOT(slotVirtualConsoleClosed()));
-
-	connect(this, SIGNAL(modeChanged(App::Mode)),
-		m_virtualConsole, SLOT(slotModeChanged(App::Mode)));
-
-	sub->hide();
-}
 
 QStyle* App::saneStyle()
 {
@@ -725,7 +692,7 @@ void App::initActions()
 	m_controlVCAction = new QAction(QIcon(":/virtualconsole.png"),
 					tr("Virtual Console"), this);
 	connect(m_controlVCAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotControlVirtualConsole()));
+		this, SLOT(slotControlVC()));
 
 	m_controlMonitorAction = new QAction(QIcon(":/monitor.png"),
 					     tr("Monitor"), this);
@@ -901,10 +868,11 @@ bool App::slotFileNew()
 void App::newDocument()
 {
 	initDoc();
-	initVirtualConsole();
-	doc()->resetModified();
+	VirtualConsole::resetContents();
 
 	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
+
+	doc()->resetModified();
 }
 
 void App::slotFileOpen()
@@ -1066,17 +1034,9 @@ void App::slotControlBlackout()
 		m_outputMap->setBlackout(true);
 }
 
-void App::slotControlVirtualConsole()
+void App::slotControlVC()
 {
-	Q_ASSERT(m_virtualConsole != NULL);
-
-	m_virtualConsole->show();
-	m_virtualConsole->parentWidget()->show();
-	m_virtualConsole->parentWidget()->setFocus();
-}
-
-void App::slotVirtualConsoleClosed()
-{
+	VirtualConsole::create(this);
 }
 
 void App::slotControlMonitor()

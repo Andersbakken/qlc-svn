@@ -79,7 +79,7 @@ bool QLCWidgetProperties::loadXML(QDomDocument* doc, QDomElement* root)
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCWidgetProperties ||
+	if (root->tagName() != KXMLQLCWidgetProperties &&
 	    root->tagName() != QString("Properties")) /* Legacy */
 	{
 		qWarning("Widget Properties node not found!");

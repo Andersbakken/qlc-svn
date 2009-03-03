@@ -229,7 +229,7 @@ bool Doc::loadXML(QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLQLCVirtualConsole)
 		{
-			VirtualConsole::loader(doc, &tag);
+			VirtualConsole::loadXML(doc, &tag);
 		}
 		else
 		{
@@ -290,7 +290,7 @@ bool Doc::saveXML(const QString& fileName)
 		Monitor::saveXML(doc, &root);
 
 		/* Write virtual console */
-		_app->virtualConsole()->saveXML(doc, &root);
+		VirtualConsole::saveXML(doc, &root);
 
 		/* Write buses */
 		Bus::saveXML(doc, &root);

@@ -23,6 +23,8 @@
 #define VCBUTTON_H
 
 #include "vcwidget.h"
+#include "keybind.h"
+
 #include "common/qlctypes.h"
 
 class QDomDocument;
@@ -32,8 +34,6 @@ class QPaintEvent;
 class QAction;
 class QPoint;
 class QEvent;
-
-class KeyBind;
 
 #define KXMLQLCVCButton "Button"
 #define KXMLQLCVCButtonIcon "Icon"
@@ -172,25 +172,15 @@ protected:
 	 * KeyBind
 	 *********************************************************************/
 public:
-	/**
-	 * Get the button's key binding object
-	 */
-	KeyBind* keyBind() { return m_keyBind; }
+	/** Get the button's key binding object */
+	KeyBind keyBind() const { return m_keyBind; }
 
-	/**
-	 * Set the button's key binding object. This only makes a copy of the
-	 * object's contents.
-	 *
-	 * @param kb A key binding object
-	 */
-	void setKeyBind(const KeyBind* kb);
+	/** Set the button's key binding object */
+	void setKeyBind(const KeyBind& kb);
 
 protected:
-	/** 
-	 * This button's key binding object. This is present even when a
-	 * button does not have a key binding.
-	 */
-	KeyBind* m_keyBind;
+	/** Button's key binding object for keyboard shortcuts */
+	KeyBind m_keyBind;
 
 	/*********************************************************************
 	 * External input

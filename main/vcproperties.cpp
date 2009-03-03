@@ -31,6 +31,7 @@
 #include "vcproperties.h"
 #include "inputpatch.h"
 #include "inputmap.h"
+#include "vcframe.h"
 #include "app.h"
 #include "bus.h"
 
@@ -42,6 +43,8 @@ extern App* _app;
 
 VCProperties::VCProperties() : QLCWidgetProperties()
 {
+	m_contents = NULL;
+
 	m_width = 640;
 	m_height = 480;
 
@@ -73,10 +76,17 @@ VCProperties::VCProperties(const VCProperties& properties)
 
 VCProperties::~VCProperties()
 {
+	/* Don't delete m_contents because there might be several copies of
+	   this class in memory and deleting just one of them would delete
+	   the contents for others as well. */
 }
 
 VCProperties& VCProperties::operator=(const VCProperties& properties)
 {
+	/* The contents of m_contents cannot be copied. Instead, only the
+	   pointer is copied. */
+	m_contents = properties.m_contents;
+
 	m_gridEnabled = properties.m_gridEnabled;
 	m_gridX = properties.m_gridX;
 	m_gridY = properties.m_gridY;
@@ -100,16 +110,184 @@ VCProperties& VCProperties::operator=(const VCProperties& properties)
 }
 
 /*****************************************************************************
+ * VC Contents
+ *****************************************************************************/
+
+void VCProperties::resetContents()
+{
+	/* Get rid of any existing contents */
+	if (m_contents != NULL)
+		delete m_contents;
+
+	/* Create new contents */
+	m_contents = new VCFrame(_app);
+}
+
+/*****************************************************************************
  * Properties Load & Save
  *****************************************************************************/
 
-void VCProperties::store(VirtualConsole* vc)
+bool VCProperties::loadXML(QDomDocument* doc, QDomElement* vc_root)
 {
-	Q_ASSERT(vc != NULL);
-	QLCWidgetProperties::store(vc);
+	QDomNode node;
+	QDomElement tag;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (vc_root->tagName() != KXMLQLCVirtualConsole)
+	{
+		qDebug() << "Virtual Console node not found!";
+		return false;
+	}
+
+	node = vc_root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+
+		if (tag.tagName() == KXMLQLCVCProperties)
+		{
+			/* Properties */
+			loadProperties(doc, &tag);
+		}
+		else if (tag.tagName() == KXMLQLCVCFrame)
+		{
+			/* Contents */
+			if (m_contents == NULL)
+				m_contents = new VCFrame(_app);
+			Q_ASSERT(m_contents != NULL);
+			m_contents->loadXML(doc, &tag);
+		}
+		else
+		{
+			qDebug() << "Unknown Virtual Console tag"
+				 << tag.tagName();
+		}
+
+		/* Next node */
+		node = node.nextSibling();
+	}
+
+	return true;
 }
 
-bool VCProperties::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
+{
+	QDomElement prop_root;
+	QDomElement vc_root;
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(vc_root != NULL);
+
+	/* Virtual Console entry */
+	vc_root = doc->createElement(KXMLQLCVirtualConsole);
+	wksp_root->appendChild(vc_root);
+
+	/* Contents */
+	if (m_contents != NULL)
+		m_contents->saveXML(doc, &vc_root);
+
+	/* Properties entry */
+	prop_root = doc->createElement(KXMLQLCVCProperties);
+	vc_root.appendChild(prop_root);
+
+	/* Grid */
+	tag = doc->createElement(KXMLQLCVCPropertiesGrid);
+	prop_root.appendChild(tag);
+	if (m_gridEnabled == true)
+		tag.setAttribute(KXMLQLCVCPropertiesGridEnabled, KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesGridEnabled, KXMLQLCFalse);
+
+	tag.setAttribute(KXMLQLCVCPropertiesGridXResolution,
+			 QString("%1").arg(m_gridX));
+	tag.setAttribute(KXMLQLCVCPropertiesGridYResolution,
+			 QString("%1").arg(m_gridY));
+
+	/* Keyboard settings */
+	tag = doc->createElement(KXMLQLCVCPropertiesKeyboard);
+	prop_root.appendChild(tag);
+
+	/* Grab keyboard */
+	if (m_grabKeyboard == true)
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardGrab, KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardGrab, KXMLQLCFalse);
+
+	/* Key repeat off */
+	if (m_keyRepeatOff == true)
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
+				 KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
+				 KXMLQLCFalse);
+
+	/* Fade slider */
+	tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
+	prop_root.appendChild(tag);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
+
+	/* Sliders' visibility state is stored in fade slider */
+	if (m_slidersVisible == true)
+		tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
+				 KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
+				 KXMLQLCFalse);
+
+	/* Fade slider limits */
+	tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
+			 QString("%1").arg(m_fadeLowLimit));
+	tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
+			 QString("%1").arg(m_fadeHighLimit));
+
+	/* Fade slider external input */
+	if (m_fadeInputUniverse != KInputUniverseInvalid &&
+	    m_fadeInputChannel != KInputChannelInvalid)
+	{
+		QDomElement subtag;
+		subtag = doc->createElement(KXMLQLCVCPropertiesInput);
+		tag.appendChild(subtag);
+		subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
+				    QString("%1").arg(m_fadeInputUniverse));
+		subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
+				    QString("%1").arg(m_fadeInputChannel));
+        }
+
+	/* Hold slider */
+	tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
+	prop_root.appendChild(tag);
+	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
+
+	/* Hold slider limits */
+	tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
+			 QString("%1").arg(m_holdLowLimit));
+	tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
+			 QString("%1").arg(m_holdHighLimit));
+
+	/* Fade slider external input */
+	if (m_holdInputUniverse != KInputUniverseInvalid &&
+	    m_holdInputChannel != KInputChannelInvalid)
+	{
+		QDomElement subtag;
+		subtag = doc->createElement(KXMLQLCVCPropertiesInput);
+		tag.appendChild(subtag);
+		subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
+				    QString("%1").arg(m_holdInputUniverse));
+		subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
+				    QString("%1").arg(m_holdInputChannel));
+        }
+
+	/* Save widget properties */
+	return QLCWidgetProperties::saveXML(doc, &prop_root);
+}
+
+bool VCProperties::loadProperties(QDomDocument* doc, QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
@@ -229,110 +407,6 @@ bool VCProperties::loadXML(QDomDocument* doc, QDomElement* root)
 	}
 
 	return true;
-}
-
-bool VCProperties::saveXML(QDomDocument* doc, QDomElement* vc_root)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
-
-	/* Properties entry */
-	root = doc->createElement(KXMLQLCVCProperties);
-	vc_root->appendChild(root);
-
-	/* Grid */
-	tag = doc->createElement(KXMLQLCVCPropertiesGrid);
-	root.appendChild(tag);
-	if (m_gridEnabled == true)
-		tag.setAttribute(KXMLQLCVCPropertiesGridEnabled, KXMLQLCTrue);
-	else
-		tag.setAttribute(KXMLQLCVCPropertiesGridEnabled, KXMLQLCFalse);
-
-	tag.setAttribute(KXMLQLCVCPropertiesGridXResolution,
-			 QString("%1").arg(m_gridX));
-	tag.setAttribute(KXMLQLCVCPropertiesGridYResolution,
-			 QString("%1").arg(m_gridY));
-
-	/* Keyboard settings */
-	tag = doc->createElement(KXMLQLCVCPropertiesKeyboard);
-	root.appendChild(tag);
-
-	/* Grab keyboard */
-	if (m_grabKeyboard == true)
-		tag.setAttribute(KXMLQLCVCPropertiesKeyboardGrab, KXMLQLCTrue);
-	else
-		tag.setAttribute(KXMLQLCVCPropertiesKeyboardGrab, KXMLQLCFalse);
-
-	/* Key repeat off */
-	if (m_keyRepeatOff == true)
-		tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
-				 KXMLQLCTrue);
-	else
-		tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
-				 KXMLQLCFalse);
-
-	/* Fade slider */
-	tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
-	root.appendChild(tag);
-	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
-
-	/* Sliders' visibility state is stored in fade slider */
-	if (m_slidersVisible == true)
-		tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
-				 KXMLQLCTrue);
-	else
-		tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
-				 KXMLQLCFalse);
-
-	/* Fade slider limits */
-	tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
-			 QString("%1").arg(m_fadeLowLimit));
-	tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
-			 QString("%1").arg(m_fadeHighLimit));
-
-	/* Fade slider external input */
-	if (m_fadeInputUniverse != KInputUniverseInvalid &&
-	    m_fadeInputChannel != KInputChannelInvalid)
-	{
-		QDomElement subtag;
-		subtag = doc->createElement(KXMLQLCVCPropertiesInput);
-		tag.appendChild(subtag);
-		subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
-				    QString("%1").arg(m_fadeInputUniverse));
-		subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
-				    QString("%1").arg(m_fadeInputChannel));
-        }
-
-	/* Hold slider */
-	tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
-	root.appendChild(tag);
-	tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
-
-	/* Hold slider limits */
-	tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
-			 QString("%1").arg(m_holdLowLimit));
-	tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
-			 QString("%1").arg(m_holdHighLimit));
-
-	/* Fade slider external input */
-	if (m_holdInputUniverse != KInputUniverseInvalid &&
-	    m_holdInputChannel != KInputChannelInvalid)
-	{
-		QDomElement subtag;
-		subtag = doc->createElement(KXMLQLCVCPropertiesInput);
-		tag.appendChild(subtag);
-		subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
-				    QString("%1").arg(m_holdInputUniverse));
-		subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
-				    QString("%1").arg(m_holdInputChannel));
-        }
-
-	return QLCWidgetProperties::saveXML(doc, &root);
 }
 
 /*****************************************************************************

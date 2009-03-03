@@ -76,22 +76,12 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
 	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	/* Key bind */
-	if (cueList->keyBind() != NULL)
-	{
-		m_keyBind = new KeyBind(cueList->keyBind());
-		m_keyEdit->setText(m_keyBind->keyString());
-	}
-	else
-	{
-		m_keyBind = NULL;
-		m_keyEdit->setText(tr("No key binding"));
-	}
+	m_keyBind = KeyBind(cueList->keyBind());
+	m_keyEdit->setText(m_keyBind.keyString());
 }
 
 VCCueListProperties::~VCCueListProperties()
 {
-	if (m_keyBind != NULL)
-		delete m_keyBind;
 }
 
 void VCCueListProperties::slotAddClicked()
@@ -197,17 +187,15 @@ void VCCueListProperties::slotAttachClicked()
 	AssignHotKey ahk(this);
 	if (ahk.exec() == QDialog::Accepted)
 	{
-		delete m_keyBind;
-		m_keyBind = new KeyBind(ahk.keyBind());
-		m_keyEdit->setText(m_keyBind->keyString());
+		m_keyBind = KeyBind(ahk.keyBind());
+		m_keyEdit->setText(m_keyBind.keyString());
 	}
 }
 
 void VCCueListProperties::slotDetachClicked()
 {
-	delete m_keyBind;
-	m_keyBind = NULL;
-	m_keyEdit->setText(tr("No key binding"));
+	m_keyBind = KeyBind();
+	m_keyEdit->setText(m_keyBind.keyString());
 }
 
 void VCCueListProperties::accept()

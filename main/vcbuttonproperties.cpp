@@ -49,6 +49,8 @@ extern App* _app;
 VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	: QDialog(parent)
 {
+	Q_ASSERT(button != NULL);
+
 	setupUi(this);
 
 	/* Button text and function */
@@ -57,8 +59,8 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	slotSetFunction(button->function());
 
 	/* KeyBind key */
-	m_keyBind = new KeyBind(button->keyBind());
-	m_keyEdit->setText(m_keyBind->keyString());
+	m_keyBind = button->keyBind();
+	m_keyEdit->setText(m_keyBind.keyString());
 
 	/* External input */
 	m_inputUniverse = m_button->inputUniverse();
@@ -69,7 +71,7 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 		this, SLOT(slotChooseInputClicked()));
 
 	/* Press action */
-	switch(m_keyBind->action())
+	switch(m_keyBind.action())
 	{
 	default:
 	case KeyBind::Toggle:
@@ -94,7 +96,6 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 
 VCButtonProperties::~VCButtonProperties()
 {
-	delete m_keyBind;
 }
 
 void VCButtonProperties::slotAttachFunction()
@@ -125,22 +126,15 @@ void VCButtonProperties::slotAttachKey()
 	AssignHotKey ahk(this);
 	if (ahk.exec() == QDialog::Accepted)
 	{
-		QString keyString;
-
-		Q_ASSERT(ahk.keyBind() != NULL);
-
-		if (m_keyBind != NULL)
-			delete m_keyBind;
-		m_keyBind = new KeyBind(ahk.keyBind());
-		m_keyEdit->setText(m_keyBind->keyString());
+		m_keyBind = ahk.keyBind();
+		m_keyEdit->setText(m_keyBind.keyString());
 	}
 }
 
 void VCButtonProperties::slotDetachKey()
 {
-	m_keyBind->setKey(Qt::Key_unknown);
-	m_keyBind->setMod(Qt::NoModifier);
-	m_keyEdit->setText(m_keyBind->keyString());
+	m_keyBind = KeyBind();
+	m_keyEdit->setText(m_keyBind.keyString());
 }
 
 void VCButtonProperties::slotChooseInputClicked()
@@ -219,18 +213,14 @@ void VCButtonProperties::accept()
 	m_button->setCaption(m_nameEdit->text());
 	m_button->setFunction(m_function);
 
-	Q_ASSERT(m_keyBind != NULL);
-
 	if (m_flash->isChecked() == true)
-		m_keyBind->setAction(KeyBind::Flash);
+		m_keyBind.setAction(KeyBind::Flash);
 	else
-		m_keyBind->setAction(KeyBind::Toggle);
+		m_keyBind.setAction(KeyBind::Toggle);
 
 	m_button->setKeyBind(m_keyBind);
 	m_button->setInputSource(m_inputUniverse, m_inputChannel);
         m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());
-
-	_app->doc()->setModified();
 
 	QDialog::accept();
 }

@@ -42,7 +42,6 @@ class QTimer;
 class QMenu;
 
 class FunctionConsumer;
-class VirtualConsole;
 class DummyOutPlugin;
 class DummyInPlugin;
 class QLCFixtureDef;
@@ -177,20 +176,14 @@ protected:
 	Mode m_mode;
 
 	/*********************************************************************
-	 * Virtual Console
+	 * Sane style
 	 *********************************************************************/
 public:
-	VirtualConsole* virtualConsole() const { return m_virtualConsole; }
-
 	/** Attempt to get a sane style that replaces windows' crappy sliders
 	 *  and buttons that don't obey background color setting. */
 	static QStyle* saneStyle();
 
 protected:
-	void initVirtualConsole();
-
-protected:
-	VirtualConsole* m_virtualConsole;
 	static QStyle* s_saneStyle;
 
 	/*********************************************************************
@@ -237,8 +230,7 @@ public slots:
 	void slotOutputManager();
 	void slotInputManager();
 
-	void slotControlVirtualConsole();
-	void slotVirtualConsoleClosed();
+	void slotControlVC();
 	void slotControlMonitor();
 	void slotControlBlackout();
 	void slotControlPanic();
