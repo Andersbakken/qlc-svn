@@ -107,6 +107,7 @@ void ConsoleChannel::init()
 	if (m_fixture->fixtureDef() != NULL && m_fixture->fixtureMode() != NULL)
 	{
 		m_presetButton = new QToolButton(this);
+		m_presetButton->setStyle(App::saneStyle());
 		m_presetButton->setIconSize(QSize(26, 26));
 		layout()->addWidget(m_presetButton);
 		layout()->setAlignment(m_presetButton, Qt::AlignHCenter);
