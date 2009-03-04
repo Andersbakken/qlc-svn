@@ -224,6 +224,8 @@ void ConsoleChannel::initMenu()
 
 		m_presetButton->setIcon(QIcon(":/color.png"));
 	}
+	else if (ch->group() == KQLCChannelGroupEffect)
+		m_presetButton->setIcon(QIcon(":/efx.png"));
 	else if (ch->group() == KQLCChannelGroupGobo)
 		m_presetButton->setIcon(QIcon(":/gobo.png"));
 	else if (ch->group() == KQLCChannelGroupShutter)
