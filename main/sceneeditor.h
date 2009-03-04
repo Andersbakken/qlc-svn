@@ -76,12 +76,9 @@ protected slots:
 	void slotColorTool();
 
 protected:
-	QAction* m_addAction;
-	QAction* m_removeAction;
+	bool isColorToolAvailable();
 
-	QAction* m_enableAllAction;
-	QAction* m_disableAllAction;
-
+protected:
 	QAction* m_enableCurrentAction;
 	QAction* m_disableCurrentAction;
 

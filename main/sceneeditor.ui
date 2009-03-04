@@ -12,8 +12,8 @@
   <property name="windowTitle" >
    <string>Scene editor</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" >
-   <item row="0" column="0" colspan="2" >
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
+   <item>
     <widget class="QTabWidget" name="m_tab" >
      <property name="currentIndex" >
       <number>0</number>
@@ -22,7 +22,7 @@
       <attribute name="title" >
        <string>General</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2" >
+      <layout class="QGridLayout" name="gridLayout" >
        <item row="0" column="0" >
         <widget class="QLabel" name="m_nameLabel" >
          <property name="text" >
@@ -30,14 +30,14 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" >
+       <item row="0" column="1" colspan="3" >
         <widget class="QLineEdit" name="m_nameEdit" >
          <property name="toolTip" >
           <string>Name of this scene</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="2" >
+       <item row="1" column="0" colspan="4" >
         <widget class="QTreeWidget" name="m_tree" >
          <property name="alternatingRowColors" >
           <bool>true</bool>
@@ -64,7 +64,7 @@
          </column>
         </widget>
        </item>
-       <item row="1" column="2" >
+       <item rowspan="2" row="1" column="4" >
         <layout class="QVBoxLayout" name="verticalLayout" >
          <item>
           <widget class="QToolButton" name="m_addFixtureButton" >
@@ -121,11 +121,44 @@
          </item>
         </layout>
        </item>
+       <item row="2" column="0" colspan="2" >
+        <widget class="QPushButton" name="m_enableChannelsButton" >
+         <property name="toolTip" >
+          <string>Enable all fixtures' channels</string>
+         </property>
+         <property name="text" >
+          <string>Enable all</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" >
+        <widget class="QPushButton" name="m_disableChannelsButton" >
+         <property name="toolTip" >
+          <string>Disable all fixtures' channels</string>
+         </property>
+         <property name="text" >
+          <string>Disable all</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3" >
+        <spacer name="horizontalSpacer" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>299</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </widget>
    </item>
-   <item row="1" column="1" >
+   <item>
     <widget class="QDialogButtonBox" name="m_buttonBox" >
      <property name="standardButtons" >
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
@@ -170,10 +203,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_enableChannelsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SceneEditor</receiver>
+   <slot>slotEnableAll()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>57</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>3</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_disableChannelsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SceneEditor</receiver>
+   <slot>slotDisableAll()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>172</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>5</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>slotEnableChannelsClicked()</slot>
-  <slot>slotDisableChannelsClicked()</slot>
+  <slot>slotEnableAll()</slot>
+  <slot>slotDisableAll()</slot>
   <slot>slotUpdateValuesChecked(bool)</slot>
  </slots>
 </ui>

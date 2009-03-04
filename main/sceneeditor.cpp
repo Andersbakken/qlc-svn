@@ -25,10 +25,9 @@
 #include <QMessageBox>
 #include <QToolButton>
 #include <QTabWidget>
-#include <QMenuBar>
+#include <QToolBar>
 #include <QLayout>
 #include <QLabel>
-#include <QMenu>
 
 #include "common/qlcfixturedef.h"
 #include "common/qlcchannel.h"
@@ -77,51 +76,46 @@ SceneEditor::~SceneEditor()
 
 void SceneEditor::init()
 {
-	QMenuBar* menuBar;
-	QMenu* menu;
+	QToolBar* toolBar;
 
-	/* Menubar */
-	menuBar = new QMenuBar(this);
-	layout()->setMenuBar(menuBar);
+	/* Actions */
+	m_enableCurrentAction = new QAction(QIcon(":/check.png"),
+			tr("Enable all channels in current fixture"), this);
+	m_disableCurrentAction = new QAction(QIcon(":/uncheck.png"),
+			tr("Disable all channels in current fixture"), this);
+	m_copyAction = new QAction(QIcon(":/editcopy.png"),
+			tr("Copy current values to clipboard"), this);
+	m_pasteAction = new QAction(QIcon(":/editpaste.png"),
+			tr("Paste clipboard values to current fixture"), this);
+	m_copyToAllAction = new QAction(QIcon(":/editcopyall.png"),
+			tr("Copy current values to all fixtures"), this);
+	m_colorToolAction = new QAction(QIcon(":/color.png"),
+			tr("Color tool for CMY/RGB-capable fixtures"), this);
 
-	/* Fixture menu */
-	menu = new QMenu(menuBar);
-	menu->setTitle(tr("Fixtures"));
-	m_addAction = menu->addAction(QIcon(":/edit_add.png"),
-				      tr("Add fixtures"), this,
-				      SLOT(slotAddFixtureClicked()));
-	m_removeAction = menu->addAction(QIcon(":/edit_remove.png"),
-					 tr("Remove fixtures"), this,
-					 SLOT(slotRemoveFixtureClicked()));
-	menu->addSeparator();
-	m_enableAllAction = menu->addAction(tr("Enable all channels"),
-					    this, SLOT(slotEnableAll()));
-	m_disableAllAction = menu->addAction(tr("Disable all channels"),
-					     this, SLOT(slotDisableAll()));
-	menuBar->addMenu(menu);
+	connect(m_enableCurrentAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotEnableCurrent()));
+	connect(m_disableCurrentAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotDisableCurrent()));
+	connect(m_copyAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotCopy()));
+	connect(m_pasteAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotPaste()));
+	connect(m_copyToAllAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotCopyToAll()));
+	connect(m_colorToolAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotColorTool()));
 
-	/* Edit menu */
-	menu = new QMenu(menuBar);
-	menu->setTitle(tr("Edit"));
-	m_copyAction = menu->addAction(QIcon(":/editcopy.png"), tr("Copy"),
-				       this, SLOT(slotCopy()));
-	m_pasteAction = menu->addAction(QIcon(":/editpaste.png"), tr("Paste"),
-					this, SLOT(slotPaste()));
-	menu->addSeparator();
-	m_copyToAllAction = menu->addAction(tr("Copy to all"),
-					    this, SLOT(slotCopyToAll()));
-	menu->addSeparator();
-	m_enableCurrentAction = menu->addAction(tr("Enable channels"),
-						this,
-						SLOT(slotEnableCurrent()));
-	m_disableCurrentAction = menu->addAction(tr("Disable channels"),
-						 this,
-						 SLOT(slotDisableCurrent()));
-	menu->addSeparator();
-	m_colorToolAction = menu->addAction(QIcon(":/color.png"),
-					    tr("Color tool"), this,
-					    SLOT(slotColorTool()));
-	menuBar->addMenu(menu);
+	/* Toolbar */
+	toolBar = new QToolBar(this);
+	layout()->setMenuBar(toolBar);
+	toolBar->addAction(m_enableCurrentAction);
+	toolBar->addAction(m_disableCurrentAction);
+	toolBar->addSeparator();
+	toolBar->addAction(m_copyAction);
+	toolBar->addAction(m_pasteAction);
+	toolBar->addAction(m_copyToAllAction);
+	toolBar->addSeparator();
+	toolBar->addAction(m_colorToolAction);
 
 	/* Tab widget */
 	connect(m_tab, SIGNAL(currentChanged(int)),
@@ -207,8 +201,6 @@ void SceneEditor::slotTabChanged(int tab)
 
 	if (tab == KTabGeneral)
 	{
-		m_removeAction->setEnabled(true);
-
 		m_enableCurrentAction->setEnabled(false);
 		m_disableCurrentAction->setEnabled(false);
 
@@ -219,8 +211,6 @@ void SceneEditor::slotTabChanged(int tab)
 	}
 	else
 	{
-		m_removeAction->setEnabled(false);
-
 		m_enableCurrentAction->setEnabled(true);
 		m_disableCurrentAction->setEnabled(true);
 
@@ -229,7 +219,7 @@ void SceneEditor::slotTabChanged(int tab)
 			m_pasteAction->setEnabled(true);
 
 		m_copyToAllAction->setEnabled(true);
-		m_colorToolAction->setEnabled(true);
+		m_colorToolAction->setEnabled(isColorToolAvailable());
 
 		/* Enable external input on the current console tab */
 		fc = qobject_cast<FixtureConsole*> (m_tab->widget(tab));
@@ -314,6 +304,9 @@ void SceneEditor::slotCopyToAll()
 		if (fc != NULL)
 			fc->setValues(m_copy);
 	}
+
+	m_copy.clear();
+	m_pasteAction->setEnabled(false);
 }
 
 void SceneEditor::slotColorTool()
@@ -377,13 +370,44 @@ void SceneEditor::slotColorTool()
 			fc->channel(blue)->enable(true);
 		}
 	}
+}
+
+bool SceneEditor::isColorToolAvailable()
+{
+	FixtureConsole* fc;
+	Fixture* fxi;
+	QColor color;
+	t_channel cyan, magenta, yellow;
+	t_channel red, green, blue;
+
+	/* QObject cast fails unless the widget is a FixtureConsole */
+	fc = qobject_cast<FixtureConsole*> (m_tab->currentWidget());
+	if (fc == NULL)
+		return false;
+
+	fxi = _app->doc()->fixture(fc->fixture());
+	Q_ASSERT(fxi != NULL);
+
+	cyan = fxi->channel("cyan", Qt::CaseInsensitive, KQLCChannelGroupColour);
+	magenta = fxi->channel("magenta", Qt::CaseInsensitive, KQLCChannelGroupColour);
+	yellow = fxi->channel("yellow", Qt::CaseInsensitive, KQLCChannelGroupColour);
+	red = fxi->channel("red", Qt::CaseInsensitive, KQLCChannelGroupColour);
+	green = fxi->channel("green", Qt::CaseInsensitive, KQLCChannelGroupColour);
+	blue = fxi->channel("blue", Qt::CaseInsensitive, KQLCChannelGroupColour);
+
+	if (cyan != KChannelInvalid && magenta != KChannelInvalid &&
+	    yellow != KChannelInvalid)
+	{
+		return true;
+	}
+	else if (red != KChannelInvalid && green != KChannelInvalid &&
+		 blue != KChannelInvalid)
+	{
+		return true;
+	}
 	else
 	{
-		QMessageBox::information(this,
-					 tr("Colour components not found"),
-					 tr("Unable to find channels for ") +
-					 tr("CMY or RGB colour components ") +
-					 tr("from current fixture."));
+		return false;
 	}
 }
 

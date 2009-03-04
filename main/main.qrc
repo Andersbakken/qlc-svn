@@ -7,6 +7,7 @@
 	<file alias="bus.png">../gfx/bus.png</file>
         <file alias="button.png">../gfx/button.png</file>
         <file alias="chaser.png">../gfx/chaser.png</file>
+        <file alias="check.png">../gfx/check.png</file>
 	<file alias="clock.png">../gfx/clock.png</file>
         <file alias="collection.png">../gfx/collection.png</file>
         <file alias="color.png">../gfx/color.png</file>
@@ -19,6 +20,7 @@
 	<file alias="edit.png">../gfx/edit.png</file>
         <file alias="editclear.png">../gfx/editclear.png</file>
         <file alias="editcopy.png">../gfx/editcopy.png</file>
+        <file alias="editcopyall.png">../gfx/editcopyall.png</file>
 	<file alias="editcut.png">../gfx/editcut.png</file>
         <file alias="editdelete.png">../gfx/editdelete.png</file>
         <file alias="editpaste.png">../gfx/editpaste.png</file>
@@ -65,6 +67,7 @@
         <file alias="slider.png">../gfx/slider.png</file>
         <file alias="speed.png">../gfx/speed.png</file>
 	<file alias="tilt.png">../gfx/tilt.png</file>
+        <file alias="uncheck.png">../gfx/uncheck.png</file>
         <file alias="undo.png">../gfx/undo.png</file>
         <file alias="up.png">../gfx/up.png</file>
         <file alias="virtualconsole.png">../gfx/virtualconsole.png</file>
