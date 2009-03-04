@@ -518,7 +518,19 @@ void VCButton::slotInputValueChanged(t_input_universe universe,
 		return;
 
 	if (universe == m_inputUniverse && channel == m_inputChannel)
-		pressFunction();
+	{
+		if (isOn() == true && value == 0)
+		{
+			if (m_action == Flash)
+				releaseFunction();
+			else
+				pressFunction();
+		}
+		else if (isOn() == false && value > 0)
+		{
+			pressFunction();
+		}
+	}
 }
 
 /*****************************************************************************
