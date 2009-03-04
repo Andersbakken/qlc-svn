@@ -36,6 +36,7 @@ class Function;
 
 #define KXMLQLCVCCueList "CueList"
 #define KXMLQLCVCCueListFunction "Function"
+#define KXMLQLCVCCueListKey "Key"
 
 #define KVCCueListColumnNumber 0
 #define KVCCueListColumnName   1
@@ -143,6 +144,10 @@ public:
 			   QWidget* parent);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+
+protected:
+	/** Load a legacy KeyBind node */
+	bool loadKeyBind(QDomDocument* doc, QDomElement* key_root);
 };
 
 #endif

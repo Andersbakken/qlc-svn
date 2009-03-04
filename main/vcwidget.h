@@ -230,10 +230,10 @@ protected:
 	 *********************************************************************/
 protected slots:
 	/** Handle key presses. Default implementation passes to children. */
-	void slotKeyPressed(const QKeySequence& keySequence);
+	virtual void slotKeyPressed(const QKeySequence& keySequence);
 
 	/** Handle key releases. Default implementation passes to children. */
-	void slotKeyReleased(const QKeySequence& keySequence);
+	virtual void slotKeyReleased(const QKeySequence& keySequence);
 
 signals:
 	/** Tell listeners that a key was pressed */

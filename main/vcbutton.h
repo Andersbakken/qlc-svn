@@ -42,7 +42,11 @@ class QEvent;
 #define KXMLQLCVCButtonFunction "Function"
 #define KXMLQLCVCButtonFunctionID "ID"
 
-#define KXMLQLCVCButtonInputChannel "InputChannel"
+#define KXMLQLCVCButtonAction "Action"
+#define KXMLQLCVCButtonActionFlash "Flash"
+#define KXMLQLCVCButtonActionToggle "Toggle"
+
+#define KXMLQLCVCButtonKey "Key"
 
 class VCButton : public VCWidget
 {
@@ -159,6 +163,10 @@ public:
 	 */
 	bool saveXML(QDomDocument* doc, QDomElement* frame_root);
 
+protected:
+	/** Load a legacy KeyBind node */
+	bool loadKeyBind(QDomDocument* doc, QDomElement* key_root);
+
 	/*********************************************************************
 	 * Button state
 	 *********************************************************************/
@@ -237,6 +245,28 @@ protected:
 
 	/** Exclusive status */
 	bool m_isExclusive;
+
+	/*********************************************************************
+	 * Button action
+	 *********************************************************************/
+public:
+	/**
+	 * Toggle: Start/stop the assigned function.
+	 * Flash: Keep the function running as long as the button is kept down.
+	 */
+	enum Action { Toggle, Flash };
+
+	/** Set this button's action */
+	void setAction(Action action);
+
+	/** Get this button's action */
+	Action action() const { return m_action; }
+
+	static QString actionToString(Action action);
+	static Action stringToAction(const QString& str);
+
+protected:
+	Action m_action;
 
 	/*********************************************************************
 	 * Button press / release handlers

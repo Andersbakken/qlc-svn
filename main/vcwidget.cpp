@@ -27,6 +27,7 @@
 #include <QFontDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QMetaObject>
 #include <QPainter>
 #include <QPalette>
 #include <QCursor>
@@ -78,6 +79,15 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 
 	connect(_app, SIGNAL(modeChanged(App::Mode)), 
 		this, SLOT(slotModeChanged(App::Mode)));
+
+	/* Listen to parent's (only VCWidget-kind) key signals */
+	if (parent->inherits(metaObject()->className()) == true)
+	{
+		connect(parent, SIGNAL(keyPressed(const QKeySequence&)),
+			this, SLOT(slotKeyPressed(const QKeySequence&)));
+		connect(parent,	SIGNAL(keyReleased(const QKeySequence&)),
+			this, SLOT(slotKeyReleased(const QKeySequence&)));
+	}
 }
 
 VCWidget::~VCWidget()

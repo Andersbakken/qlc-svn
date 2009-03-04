@@ -71,9 +71,10 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 		this, SLOT(slotChooseInputClicked()));
 
 	/* Press action */
-#warning ACTION
-	m_toggle->setChecked(true);
-	m_flash->setEnabled(false);
+	if (button->action() == VCButton::Toggle)
+		m_toggle->setChecked(true);
+	else
+		m_flash->setChecked(true);
 	
 	/* Panic operation */
 	m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
@@ -205,12 +206,14 @@ void VCButtonProperties::accept()
 {
 	m_button->setCaption(m_nameEdit->text());
 	m_button->setFunction(m_function);
-
-#warning ACTION
-	/* TODO: Button action */
-
 	m_button->setKeySequence(m_keySequence);
 	m_button->setInputSource(m_inputUniverse, m_inputChannel);
+
+	if (m_toggle->isChecked() == true)
+		m_button->setAction(VCButton::Toggle);
+	else
+		m_button->setAction(VCButton::Flash);
+
         m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());
 
 	QDialog::accept();

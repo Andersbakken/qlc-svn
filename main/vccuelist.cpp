@@ -327,16 +327,17 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			loadXMLAppearance(doc, &tag);
 		}
-#warning LOAD KEY SEQUENCE
-/*
-		else if (tag.tagName() == KXMLQLCKeyBind)
+		else if (tag.tagName() == KXMLQLCVCCueListKey)
 		{
-			m_keyBind.loadXML(doc, &tag);
+			setKeySequence(QKeySequence(tag.text()));
 		}
-*/
 		else if (tag.tagName() == KXMLQLCVCCueListFunction)
 		{
 			append(tag.text().toInt());
+		}
+		else if (tag.tagName() == "KeyBind") /* Legacy */
+		{
+			loadKeyBind(doc, &tag);
 		}
 		else
 		{
@@ -379,15 +380,56 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
 		++it;
 	}
 
-	/* Key binding */
-#warning SAVE KEY SEQUENCE
-	//m_keyBind.saveXML(doc, &root);
+	/* Key sequence */
+	if (m_keySequence.isEmpty() == false)
+	{
+		tag = doc->createElement(KXMLQLCVCCueListKey);
+		root.appendChild(tag);
+		text = doc->createTextNode(m_keySequence.toString());
+		tag.appendChild(text);
+	}
 
 	/* Window state */
 	QLCFile::saveXMLWindowState(doc, &root, this);
 
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
+
+	return true;
+}
+
+bool VCCueList::loadKeyBind(QDomDocument* doc, QDomElement* key_root)
+{
+	QDomElement tag;
+	QDomNode node;
+
+	Q_UNUSED(doc);
+
+	if (key_root->tagName() != "KeyBind")
+	{
+		qWarning() << "Not a key bind node!";
+		return false;
+	}
+
+	node = key_root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == "Key")
+		{
+			int mod = tag.attribute("Modifier").toInt();
+			int key = tag.text().toInt();
+
+			setKeySequence(QKeySequence(key | mod));
+		}
+		else
+		{
+			qWarning() << "Unknown key binding tag:"
+				   << tag.tagName();
+		}
+
+		node = node.nextSibling();
+	}
 
 	return true;
 }

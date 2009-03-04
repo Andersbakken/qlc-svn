@@ -66,6 +66,7 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	setCaption(QString::null);
 	setOn(false);
 	setExclusive(false);
+	setAction(Toggle);
 	setStopFunctions(false);
 	setFrameStyle(KVCFrameStyleNone);
 
@@ -333,12 +334,18 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		{
 			loadXMLInput(doc, &tag);
 		}
-#warning LOAD KEY SEQUENCE
-/*		else if (tag.tagName() == KXMLQLCKeyBind)
+		else if (tag.tagName() == KXMLQLCVCButtonAction)
 		{
-			m_keyBind.loadXML(doc, &tag);
+			setAction(stringToAction(tag.text()));
 		}
-*/
+		else if (tag.tagName() == KXMLQLCVCButtonKey)
+		{
+			setKeySequence(QKeySequence(tag.text()));
+		}
+		else if (tag.tagName() == "KeyBind") /* Legacy */
+		{
+			loadKeyBind(doc, &tag);
+		}
 		else
 		{
 			qDebug() << "Unknown button tag:" << tag.tagName();
@@ -379,6 +386,21 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	str.setNum(function());
 	tag.setAttribute(KXMLQLCVCButtonFunctionID, str);
 
+	/* Action */
+	tag = doc->createElement(KXMLQLCVCButtonAction);
+	root.appendChild(tag);
+	text = doc->createTextNode(actionToString(action()));
+	tag.appendChild(text);
+
+	/* Key sequence */
+	if (m_keySequence.isEmpty() == false)
+	{
+		tag = doc->createElement(KXMLQLCVCButtonKey);
+		root.appendChild(tag);
+		text = doc->createTextNode(m_keySequence.toString());
+		tag.appendChild(text);
+	}
+
 	/* External input */
 	saveXMLInput(doc, &root);
 
@@ -388,9 +410,45 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
 
-	/* Key binding */
-#warning SAVE KEY SEQUENCE
-	//m_keyBind.saveXML(doc, &root);
+	return true;
+}
+
+bool VCButton::loadKeyBind(QDomDocument* doc, QDomElement* key_root)
+{
+	QDomElement tag;
+	QDomNode node;
+
+	Q_UNUSED(doc);
+
+	if (key_root->tagName() != "KeyBind")
+	{
+		qWarning() << "Not a key bind node!";
+		return false;
+	}
+
+	node = key_root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+		if (tag.tagName() == "Key")
+		{
+			int mod = tag.attribute("Modifier").toInt();
+			int key = tag.text().toInt();
+
+			setKeySequence(QKeySequence(key | mod));
+		}
+		else if (tag.tagName() == "Action")
+		{
+			setAction(stringToAction(tag.text()));
+		}
+		else
+		{
+			qWarning() << "Unknown key binding tag:"
+				   << tag.tagName();
+		}
+
+		node = node.nextSibling();
+	}
 
 	return true;
 }
@@ -515,6 +573,31 @@ void VCButton::setExclusive(bool exclusive)
 }
 
 /*****************************************************************************
+ * Button action
+ *****************************************************************************/
+
+void VCButton::setAction(Action action)
+{
+	m_action = action;
+}
+
+QString VCButton::actionToString(VCButton::Action action)
+{
+	if (action == Flash)
+		return QString(KXMLQLCVCButtonActionFlash);
+	else
+		return QString(KXMLQLCVCButtonActionToggle);
+}
+
+VCButton::Action VCButton::stringToAction(const QString& str)
+{
+	if (str == KXMLQLCVCButtonActionFlash)
+		return Flash;
+	else
+		return Toggle;
+}
+
+/*****************************************************************************
  * Button press / release handlers
  *****************************************************************************/
 
@@ -538,8 +621,6 @@ void VCButton::pressFunction()
 {
 	Function* f = NULL;
 
-#warning BUTTON ACTIONS
-
 	/* TODO: Should this return immediately? */
 	if (m_stopFunctions == true)
 		_app->slotControlPanic();
@@ -548,8 +629,7 @@ void VCButton::pressFunction()
 	{
 		return;
 	}
-	else if (/*m_keyBind.action() == KeyBind::Toggle &&*/
-		 m_isExclusive == false)
+	else if (m_action == Toggle && m_isExclusive == false)
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
@@ -565,8 +645,7 @@ void VCButton::pressFunction()
 			setFunction(KNoID);
 		}
 	}
-	else if (/*m_keyBind.action() == KeyBind::Toggle &&*/
-		 m_isExclusive == true)
+	else if (m_action == Toggle && m_isExclusive == true)
 	{
 		/* Get a list of this button's siblings from this' parent */
 		QListIterator <VCButton*> it(
@@ -595,7 +674,7 @@ void VCButton::pressFunction()
 			setFunction(KNoID);
 		}
 	}
-	else if ( 0 ) //m_keyBind.action() == KeyBind::Flash)
+	else if (m_action == Flash)
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
@@ -612,22 +691,16 @@ void VCButton::pressFunction()
 
 void VCButton::releaseFunction()
 {
-	Q_ASSERT(m_keyBind != NULL);
-
 	if (m_function == KNoID)
 	{
 		return;
 	}
-
-#warning BUTTON ACTIONS
-/*
-	else if (m_keyBind.action() == KeyBind::Flash)
+	else if (m_action == Flash)
 	{
 		Function* function = _app->doc()->function(m_function);
 		if (function != NULL && isOn() == true)
 			function->stop();
 	}
-*/
 }
 
 void VCButton::slotFlashReady()
@@ -694,15 +767,13 @@ void VCButton::paintEvent(QPaintEvent* e)
 	style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
 
 	/* Flash emblem */
-#warning BUTTON ACTIONS
-/*
-	if (m_keyBind.action() == KeyBind::Flash)
+	if (m_action == Flash)
 	{
 		QIcon icon(":/flash.png");
 		painter.drawPixmap(rect().width() - 16, 0,
 			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
 	}
-*/
+
 	/* Stop painting here */
 	painter.end();
 
