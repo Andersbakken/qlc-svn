@@ -254,10 +254,7 @@ protected:
 	QAction* m_inputManagerAction;
 	QAction* m_outputManagerAction;
 
-	QAction* m_modeOperateAction;
-	QAction* m_modeDesignAction;
 	QAction* m_modeToggleAction;
-
 	QAction* m_controlVCAction;
 	QAction* m_controlMonitorAction;
 	QAction* m_controlBlackoutAction;
@@ -271,7 +268,6 @@ protected:
 	QMenu* m_fileMenu;
 	QMenu* m_managerMenu;
 	QMenu* m_controlMenu;
-	QMenu* m_modeMenu;
 	QMenu* m_helpMenu;
 
 	QToolBar* m_toolbar;

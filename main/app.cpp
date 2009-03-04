@@ -456,8 +456,6 @@ void App::slotModeOperate()
 		     QApplication::palette().color(QPalette::HighlightedText));
 	m_modeIndicator->setPalette(pal);
 
-	m_modeOperateAction->setChecked(true);
-
 	m_fileNewAction->setEnabled(false);
 	m_fileOpenAction->setEnabled(false);
 	m_fileQuitAction->setEnabled(false);
@@ -512,8 +510,6 @@ void App::slotModeDesign()
 	pal.setColor(QPalette::WindowText,
 		     QApplication::palette().color(QPalette::WindowText));
 	m_modeIndicator->setPalette(pal);
-
-	m_modeDesignAction->setChecked(true);
 
 	m_fileNewAction->setEnabled(true);
 	m_fileOpenAction->setEnabled(true);
@@ -617,112 +613,111 @@ void App::initActions()
 {
 	/* File actions */
 	m_fileNewAction = new QAction(QIcon(":/filenew.png"),
-				      tr("New"), this);
+				      tr("&New"), this);
+	m_fileNewAction->setShortcut(QKeySequence("CTRL+N"));
 	connect(m_fileNewAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileNew()));
 
 	m_fileOpenAction = new QAction(QIcon(":/fileopen.png"),
-				       tr("Open"), this);
+				       tr("&Open"), this);
+	m_fileOpenAction->setShortcut(QKeySequence("CTRL+O"));
 	connect(m_fileOpenAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileOpen()));
 
 	m_fileSaveAction = new QAction(QIcon(":/filesave.png"),
-				       tr("Save"), this);
+				       tr("&Save"), this);
+	m_fileSaveAction->setShortcut(QKeySequence("CTRL+S"));
 	connect(m_fileSaveAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSave()));
 
 	m_fileSaveAsAction = new QAction(QIcon(":/filesaveas.png"),
-					 tr("Save As..."), this);
+					 tr("Save &As..."), this);
 	connect(m_fileSaveAsAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSaveAs()));
 
 	m_fileQuitAction = new QAction(QIcon(":/exit.png"),
-				       tr("Quit"), this);
+				       tr("&Quit"), this);
 	connect(m_fileQuitAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileQuit()));
 
 	/* Manager actions */
 	m_fixtureManagerAction = new QAction(QIcon(":/fixture.png"),
-					     tr("Fixtures"), this);
+					     tr("&Fixtures"), this);
+	m_fixtureManagerAction->setShortcut(QKeySequence("ALT+F"));
 	connect(m_fixtureManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFixtureManager()));
 
 	m_functionManagerAction = new QAction(QIcon(":/function.png"),
-					      tr("Functions"), this);
+					      tr("&Functions"), this);
+	m_functionManagerAction->setShortcut(QKeySequence("ALT+U"));
 	connect(m_functionManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFunctionManager()));
 
 	m_busManagerAction = new QAction(QIcon(":/bus.png"),
-					 tr("Buses"), this);
+					 tr("&Buses"), this);
+	m_busManagerAction->setShortcut(QKeySequence("ALT+B"));
 	connect(m_busManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBusManager()));
 
 	m_inputManagerAction = new QAction(QIcon(":/input.png"),
-					   tr("Inputs"), this);
+					   tr("&Inputs"), this);
+	m_inputManagerAction->setShortcut(QKeySequence("ALT+I"));
 	connect(m_inputManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotInputManager()));
 
 	m_outputManagerAction = new QAction(QIcon(":/output.png"),
-					    tr("Outputs"), this);
+					    tr("OOutputs"), this);
+	m_outputManagerAction->setShortcut(QKeySequence("ALT+O"));
 	connect(m_outputManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotOutputManager()));
 
-	/* Mode actions */
-	QActionGroup* modeGroup = new QActionGroup(this);
-	m_modeDesignAction = new QAction(tr("Design"), this);
-	m_modeDesignAction->setCheckable(true);
-	m_modeDesignAction->setChecked(true);
-	modeGroup->addAction(m_modeDesignAction);
-	connect(m_modeDesignAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotModeDesign()));
-
-	m_modeOperateAction = new QAction(tr("Operate"), this);
-	m_modeOperateAction->setCheckable(true);
-	modeGroup->addAction(m_modeOperateAction);
-	connect(m_modeOperateAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotModeOperate()));
-
+	/* Control actions */
 	m_modeToggleAction = new QAction(QIcon(":/operate.png"),
-					 tr("Operate"), this);
+					 tr("&Operate"), this);
 	m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
+	m_modeToggleAction->setShortcut(QKeySequence("CTRL+TAB"));
 	connect(m_modeToggleAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotModeToggle()));
 
-	/* Control actions */
 	m_controlVCAction = new QAction(QIcon(":/virtualconsole.png"),
-					tr("Virtual Console"), this);
+					tr("&Virtual Console"), this);
+	m_controlVCAction->setShortcut(QKeySequence("CTRL+R"));
 	connect(m_controlVCAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlVC()));
 
 	m_controlMonitorAction = new QAction(QIcon(":/monitor.png"),
-					     tr("Monitor"), this);
+					     tr("&Monitor"), this);
+	m_controlMonitorAction->setShortcut(QKeySequence("CTRL+M"));
 	connect(m_controlMonitorAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlMonitor()));
 
 	m_controlBlackoutAction = new QAction(QIcon(":/blackout.png"),
-					      tr("Toggle Blackout"), this);
+					      tr("Toggle &Blackout"), this);
 	m_controlBlackoutAction->setCheckable(true);
+	m_controlBlackoutAction->setShortcut(QKeySequence("CTRL+B"));
 	connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlBlackout()));
 
 	m_controlPanicAction = new QAction(QIcon(":/panic.png"),
-					   tr("Panic!"), this);
+					   tr("&Panic!"), this);
+	m_controlPanicAction->setShortcut(QKeySequence("CTRL+SHIFT+ESC"));
 	connect(m_controlPanicAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlPanic()));
 
 	/* Help actions */
 	m_helpIndexAction = new QAction(QIcon(":/help.png"),
-					tr("Index"), this);
+					tr("&Index"), this);
+	m_helpIndexAction->setShortcut(QKeySequence("SHIFT+F1"));
 	connect(m_helpIndexAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpIndex()));
 
 	m_helpAboutAction = new QAction(QIcon(":/qlc.png"),
-					tr("About QLC"), this);
+					tr("&About QLC"), this);
 	connect(m_helpAboutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAbout()));
 
 	m_helpAboutQtAction = new QAction(QIcon(":/qt.png"),
-					  tr("About Qt"), this);
+					  tr("About &Qt"), this);
 	connect(m_helpAboutQtAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAboutQt()));
 }
@@ -743,7 +738,7 @@ void App::initMenuBar()
 {
 	/* File Menu */
 	m_fileMenu = new QMenu(menuBar());
-	m_fileMenu->setTitle(tr("File"));
+	m_fileMenu->setTitle(tr("&File"));
 	menuBar()->addMenu(m_fileMenu);
 	m_fileMenu->addAction(m_fileNewAction);
 	m_fileMenu->addAction(m_fileOpenAction);
@@ -755,7 +750,7 @@ void App::initMenuBar()
 
 	/* Manager Menu */
 	m_managerMenu = new QMenu(menuBar());
-	m_managerMenu->setTitle(tr("Manager"));
+	m_managerMenu->setTitle(tr("&Manager"));
 	menuBar()->addMenu(m_managerMenu);
 	m_managerMenu->addAction(m_fixtureManagerAction);
 	m_managerMenu->addAction(m_functionManagerAction);
@@ -766,16 +761,9 @@ void App::initMenuBar()
 
 	/* Control Menu */
 	m_controlMenu = new QMenu(menuBar());
-	m_controlMenu->setTitle(tr("Control"));
+	m_controlMenu->setTitle(tr("&Control"));
 	menuBar()->addMenu(m_controlMenu);
-
-	/* Mode menu */
-	m_modeMenu = new QMenu(m_controlMenu);
-	m_modeMenu->setTitle(tr("Mode"));
-	m_modeMenu->addAction(m_modeDesignAction);
-	m_modeMenu->addAction(m_modeOperateAction);
-	m_controlMenu->addMenu(m_modeMenu);
-
+	m_controlMenu->addAction(m_modeToggleAction);
 	m_controlMenu->addSeparator();
 	m_controlMenu->addAction(m_controlVCAction);
 	m_controlMenu->addAction(m_controlMonitorAction);
@@ -787,7 +775,7 @@ void App::initMenuBar()
 
 	/* Help menu */
 	m_helpMenu = new QMenu(menuBar());
-	m_helpMenu->setTitle(tr("Help"));
+	m_helpMenu->setTitle(tr("&Help"));
 	menuBar()->addMenu(m_helpMenu);
 	m_helpMenu->addAction(m_helpIndexAction);
 	m_helpMenu->addSeparator();
