@@ -643,7 +643,7 @@ void App::initActions()
 	/* Manager actions */
 	m_fixtureManagerAction = new QAction(QIcon(":/fixture.png"),
 					     tr("&Fixtures"), this);
-	m_fixtureManagerAction->setShortcut(QKeySequence("ALT+F"));
+	m_fixtureManagerAction->setShortcut(QKeySequence("ALT+X"));
 	connect(m_fixtureManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFixtureManager()));
 

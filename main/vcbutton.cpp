@@ -73,7 +73,11 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	/* Menu actions */
 	m_chooseIconAction = new QAction(QIcon(":/image.png"), tr("Choose..."),
 					 this);
+	m_chooseIconAction->setShortcut(QKeySequence("SHIFT+C"));
+
 	m_resetIconAction = new QAction(QIcon(":/undo.png"), tr("None"), this);	
+	m_resetIconAction->setShortcut(QKeySequence("SHIFT+ALT+C"));
+
 	connect(m_chooseIconAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotChooseIcon()));
 	connect(m_resetIconAction, SIGNAL(triggered(bool)),

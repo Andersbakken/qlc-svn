@@ -207,31 +207,37 @@ void VirtualConsole::initActions()
 	/* Add menu actions */
 	m_addButtonAction = new QAction(QIcon(":/button.png"),
 					tr("Button"), this);
+	m_addButtonAction->setShortcut(QKeySequence("CTRL+SHIFT+B"));
 	connect(m_addButtonAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddButton()));
 
 	m_addSliderAction = new QAction(QIcon(":/slider.png"),
 					tr("Slider"), this);
+	m_addSliderAction->setShortcut(QKeySequence("CTRL+SHIFT+S"));
 	connect(m_addSliderAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddSlider()));
 
 	m_addXYPadAction = new QAction(QIcon(":/xypad.png"),
 				       tr("XY pad"), this);
+	m_addXYPadAction->setShortcut(QKeySequence("CTRL+SHIFT+X"));
 	connect(m_addXYPadAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddXYPad()));
 
 	m_addCueListAction = new QAction(QIcon(":/cuelist.png"),
 					 tr("Cue list"), this);
+	m_addCueListAction->setShortcut(QKeySequence("CTRL+SHIFT+C"));
 	connect(m_addCueListAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddCueList()));
 
 	m_addFrameAction = new QAction(QIcon(":/frame.png"),
 				       tr("Frame"), this);
+	m_addFrameAction->setShortcut(QKeySequence("CTRL+SHIFT+F"));
 	connect(m_addFrameAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddFrame()));
 
 	m_addLabelAction = new QAction(QIcon(":/label.png"),
 				       tr("Label"), this);
+	m_addLabelAction->setShortcut(QKeySequence("CTRL+SHIFT+L"));
 	connect(m_addLabelAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddLabel()));
 
@@ -244,7 +250,7 @@ void VirtualConsole::initActions()
 	m_addActionGroup->addAction(m_addCueListAction);
 	m_addActionGroup->addAction(m_addFrameAction);
 	m_addActionGroup->addAction(m_addLabelAction);
-	
+
 	/* Tools menu actions */
 	m_toolsSettingsAction = new QAction(QIcon(":/configure.png"),
 					    tr("Settings"), this);
@@ -264,31 +270,32 @@ void VirtualConsole::initActions()
 	/* Edit menu actions */
 	m_editCutAction = new QAction(QIcon(":/editcut.png"),
 				      tr("Cut"), this);
-	m_editCutAction->setShortcut(Qt::CTRL + Qt::Key_X);
+	m_editCutAction->setShortcut(QKeySequence("CTRL+X"));
 	connect(m_editCutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditCut()));
 
 	m_editCopyAction = new QAction(QIcon(":/editcopy.png"),
 				       tr("Copy"), this);
-	m_editCopyAction->setShortcut(Qt::CTRL + Qt::Key_C);
+	m_editCopyAction->setShortcut(QKeySequence("CTRL+C"));
 	connect(m_editCopyAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditCopy()));
 
 	m_editPasteAction = new QAction(QIcon(":/editpaste.png"),
 					tr("Paste"), this);
-	m_editPasteAction->setShortcut(Qt::CTRL + Qt::Key_V);
+	m_editPasteAction->setShortcut(QKeySequence("CTRL+V"));
 	m_editPasteAction->setEnabled(false);
 	connect(m_editPasteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditPaste()));
 
 	m_editDeleteAction = new QAction(QIcon(":/editdelete.png"),
 					 tr("Delete"), this);
-	m_editDeleteAction->setShortcut(Qt::Key_Delete);
+	m_editDeleteAction->setShortcut(QKeySequence("Delete"));
 	connect(m_editDeleteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditDelete()));
 
 	m_editPropertiesAction = new QAction(QIcon(":/configure.png"),
 					     tr("Properties"), this);
+	m_editPropertiesAction->setShortcut(QKeySequence("CTRL+E"));
 	connect(m_editPropertiesAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEditProperties()));
 
@@ -310,16 +317,19 @@ void VirtualConsole::initActions()
 	/* Background menu actions */
 	m_bgColorAction = new QAction(QIcon(":/color.png"),
 				      tr("Color"), this);
+	m_bgColorAction->setShortcut(QKeySequence("SHIFT+B"));
 	connect(m_bgColorAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBackgroundColor()));
 
 	m_bgImageAction = new QAction(QIcon(":/image.png"),
 				      tr("Image"), this);
+	m_bgImageAction->setShortcut(QKeySequence("SHIFT+I"));
 	connect(m_bgImageAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBackgroundImage()));
 
 	m_bgDefaultAction = new QAction(QIcon(":/undo.png"),
 					tr("Default"), this);
+	m_bgDefaultAction->setShortcut(QKeySequence("SHIFT+ALT+B"));
 	connect(m_bgDefaultAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotBackgroundNone()));
 
@@ -333,11 +343,13 @@ void VirtualConsole::initActions()
 	/* Foreground menu actions */
 	m_fgColorAction = new QAction(QIcon(":/color.png"),
 				      tr("Color"), this);
+	m_fgColorAction->setShortcut(QKeySequence("SHIFT+F"));
 	connect(m_fgColorAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotForegroundColor()));
 
 	m_fgDefaultAction = new QAction(QIcon(":/undo.png"),
 					tr("Default"), this);
+	m_fgDefaultAction->setShortcut(QKeySequence("SHIFT+ALT+F"));
 	connect(m_fgDefaultAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotForegroundNone()));
 
@@ -350,11 +362,13 @@ void VirtualConsole::initActions()
 	/* Font menu actions */
 	m_fontAction = new QAction(QIcon(":/fonts.png"),
 				   tr("Font"), this);
+	m_fontAction->setShortcut(QKeySequence("SHIFT+O"));
 	connect(m_fontAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFont()));
 
 	m_resetFontAction = new QAction(QIcon(":/undo.png"),
 				   tr("Default"), this);
+	m_resetFontAction->setShortcut(QKeySequence("SHIFT+ALT+O"));
 	connect(m_resetFontAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotResetFont()));
 
@@ -367,16 +381,19 @@ void VirtualConsole::initActions()
 	/* Frame menu actions */
 	m_frameSunkenAction = new QAction(QIcon(":/framesunken.png"),
 					  tr("Sunken"), this);
+	m_frameSunkenAction->setShortcut(QKeySequence("SHIFT+S"));
 	connect(m_frameSunkenAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFrameSunken()));
 
 	m_frameRaisedAction = new QAction(QIcon(":/frameraised.png"),
 					  tr("Raised"), this);
+	m_frameRaisedAction->setShortcut(QKeySequence("SHIFT+R"));
 	connect(m_frameRaisedAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFrameRaised()));
 
 	m_frameNoneAction = new QAction(QIcon(":/framenone.png"),
 					  tr("None"), this);
+	m_frameNoneAction->setShortcut(QKeySequence("SHIFT+ALT+S"));
 	connect(m_frameNoneAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFrameNone()));
 
@@ -390,11 +407,13 @@ void VirtualConsole::initActions()
 	/* Stacking menu actions */
 	m_stackingRaiseAction = new QAction(QIcon(":/up.png"),
 					    tr("Raise"), this);
+	m_stackingRaiseAction->setShortcut(QKeySequence("SHIFT+UP"));
 	connect(m_stackingRaiseAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotStackingRaise()));
 
 	m_stackingLowerAction = new QAction(QIcon(":/down.png"),
 					    tr("Lower"), this);
+	m_stackingLowerAction->setShortcut(QKeySequence("SHIFT+DOWN"));
 	connect(m_stackingLowerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotStackingLower()));
 
@@ -424,7 +443,7 @@ void VirtualConsole::initMenuBar()
 
 	/* Add menu */
 	m_addMenu = new QMenu(menuBar);
-	m_addMenu->setTitle(tr("Add"));
+	m_addMenu->setTitle(tr("&Add"));
 	menuBar->addMenu(m_addMenu);
 	m_addMenu->addAction(m_addButtonAction);
 	m_addMenu->addAction(m_addSliderAction);
@@ -437,7 +456,7 @@ void VirtualConsole::initMenuBar()
 
 	/* Edit menu */
 	m_editMenu = new QMenu(menuBar);
-	m_editMenu->setTitle(tr("Edit"));
+	m_editMenu->setTitle(tr("&Edit"));
 	menuBar->addMenu(m_editMenu);
 	m_editMenu->addAction(m_editCutAction);
 	m_editMenu->addAction(m_editCopyAction);
@@ -450,7 +469,7 @@ void VirtualConsole::initMenuBar()
 
 	/* Tools menu */
 	m_toolsMenu = new QMenu(menuBar);
-	m_toolsMenu->setTitle(tr("Tools"));
+	m_toolsMenu->setTitle(tr("&Tools"));
 	menuBar->addMenu(m_toolsMenu);
 	m_toolsMenu->addAction(m_toolsPanicAction);
 	m_toolsMenu->addAction(m_toolsSlidersAction);
@@ -459,7 +478,7 @@ void VirtualConsole::initMenuBar()
 
 	/* Background Menu */
 	QMenu* bgMenu = new QMenu(m_editMenu);
-	bgMenu->setTitle(tr("Background"));
+	bgMenu->setTitle(tr("&Background"));
 	m_editMenu->addMenu(bgMenu);
 	bgMenu->addAction(m_bgColorAction);
 	bgMenu->addAction(m_bgImageAction);
@@ -467,21 +486,21 @@ void VirtualConsole::initMenuBar()
 
 	/* Foreground menu */
 	QMenu* fgMenu = new QMenu(m_editMenu);
-	fgMenu->setTitle(tr("Foreground"));
+	fgMenu->setTitle(tr("&Foreground"));
 	m_editMenu->addMenu(fgMenu);
 	fgMenu->addAction(m_fgColorAction);
 	fgMenu->addAction(m_fgDefaultAction);
 
 	/* Font menu */
 	QMenu* fontMenu = new QMenu(m_editMenu);
-	fontMenu->setTitle(tr("Font"));
+	fontMenu->setTitle(tr("F&ont"));
 	m_editMenu->addMenu(fontMenu);
 	fontMenu->addAction(m_fontAction);
 	fontMenu->addAction(m_resetFontAction);
 
 	/* Frame menu */
 	QMenu* frameMenu = new QMenu(m_editMenu);
-	frameMenu->setTitle(tr("Frame"));
+	frameMenu->setTitle(tr("F&rame"));
 	m_editMenu->addMenu(frameMenu);
 	frameMenu->addAction(m_frameSunkenAction);
 	frameMenu->addAction(m_frameRaisedAction);
@@ -489,7 +508,7 @@ void VirtualConsole::initMenuBar()
 
 	/* Stacking order menu */
 	QMenu* stackMenu = new QMenu(m_editMenu);
-	stackMenu->setTitle(tr("Stacking order"));
+	stackMenu->setTitle(tr("Stacking &order"));
 	m_editMenu->addMenu(stackMenu);
 	stackMenu->addAction(m_stackingRaiseAction);
 	stackMenu->addAction(m_stackingLowerAction);
