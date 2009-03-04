@@ -435,7 +435,7 @@ void FixtureManager::initActions()
 		this, SLOT(slotAdd()));
 
 	m_removeAction = new QAction(QIcon(":/edit_remove.png"),
-				     tr("Remove fixture"), this);
+				     tr("Delete fixture"), this);
 	connect(m_removeAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotRemove()));
 
@@ -558,8 +558,8 @@ void FixtureManager::slotRemove()
 	t_fixture_id id = item->text(KColumnID).toInt();
 
 	// Display a question
-	if (QMessageBox::question(this, "Remove fixture",
-				  QString("Do you want to remove %1?")
+	if (QMessageBox::question(this, "Delete Fixture",
+				  QString("Do you want to DELETE %1?")
 					.arg(item->text(KColumnName)),
 				  QMessageBox::Yes, QMessageBox::No)
 	    == QMessageBox::Yes)

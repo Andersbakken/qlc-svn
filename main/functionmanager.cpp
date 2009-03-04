@@ -394,14 +394,14 @@ void FunctionManager::slotDelete()
 	if (it.hasNext() == false)
 		return;
 
-	msg = "Do you want to delete function(s):\n";
+	msg = "Do you want to DELETE:\n";
 
 	// Append functions' names to the message
 	while (it.hasNext() == true)
 		msg += it.next()->text(KColumnName) + QString("\n");
 
 	// Ask for user's confirmation
-	if (QMessageBox::question(this, "Delete function(s)", msg,
+	if (QMessageBox::question(this, "Delete Functions", msg,
 				  QMessageBox::Yes, QMessageBox::No)
 	    == QMessageBox::Yes)
 	{
