@@ -1219,7 +1219,10 @@ void VirtualConsole::resetContents()
 
 	/* If there is an instance of the VC, make it re-read the contents */
 	if (s_instance != NULL)
+	{
+		s_instance->dockArea()->refreshProperties();
 		s_instance->initContents();
+	}
 }
 
 void VirtualConsole::initContents()
@@ -1339,10 +1342,20 @@ void VirtualConsole::slotAppModeChanged(App::Mode mode)
 
 bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* vc_root)
 {
+	bool retval = false;
+
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(vc_root != NULL);
 
-	return s_properties.loadXML(doc, vc_root);
+	/* Load properties & contents */
+	retval = s_properties.loadXML(doc, vc_root);
+
+	/* Make the dock area update itself after loading its settings. The
+	   contents area is already updated. */
+	if (s_instance != NULL)
+		s_instance->dockArea()->refreshProperties();
+
+	return retval;
 }
 
 bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)

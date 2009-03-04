@@ -74,6 +74,9 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 	connect(m_tapButton, SIGNAL(clicked()),
 		this, SLOT(slotTapButtonClicked()));
 
+	/* Read slider's properties */
+	refreshProperties();
+
 	m_time.start();
 }
 
