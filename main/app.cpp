@@ -666,7 +666,7 @@ void App::initActions()
 		this, SLOT(slotInputManager()));
 
 	m_outputManagerAction = new QAction(QIcon(":/output.png"),
-					    tr("OOutputs"), this);
+					    tr("&Outputs"), this);
 	m_outputManagerAction->setShortcut(QKeySequence("ALT+O"));
 	connect(m_outputManagerAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotOutputManager()));
