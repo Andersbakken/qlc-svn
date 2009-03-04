@@ -136,7 +136,6 @@ protected:
 	QAction* m_addChaserAction;
 	QAction* m_addCollectionAction;
 	QAction* m_addEFXAction;
-	QAction* m_closeAction;
 
 	QAction* m_cloneAction;
 	QAction* m_editAction;

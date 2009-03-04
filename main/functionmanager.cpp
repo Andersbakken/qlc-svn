@@ -157,52 +157,53 @@ void FunctionManager::slotDocumentChanged()
 
 void FunctionManager::initActions()
 {
-	Q_ASSERT(parentWidget() != NULL);
-
 	/* Manage actions */
 	m_addSceneAction = new QAction(QIcon(":/scene.png"),
-				       tr("New scene"), this);
+				       tr("New &scene"), this);
+	m_addSceneAction->setShortcut(QKeySequence("CTRL+S"));
 	connect(m_addSceneAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddScene()));
 
 	m_addChaserAction = new QAction(QIcon(":/chaser.png"),
-					tr("New chaser"), this);
+					tr("New c&haser"), this);
+	m_addChaserAction->setShortcut(QKeySequence("CTRL+H"));
 	connect(m_addChaserAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddChaser()));
 
 	m_addCollectionAction = new QAction(QIcon(":/collection.png"),
-					    tr("New collection"), this);
+					    tr("New c&ollection"), this);
+	m_addCollectionAction->setShortcut(QKeySequence("CTRL+O"));
 	connect(m_addCollectionAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddCollection()));
 
 	m_addEFXAction = new QAction(QIcon(":/efx.png"),
-				     tr("New EFX"), this);
+				     tr("New E&FX"), this);
+	m_addEFXAction->setShortcut(QKeySequence("CTRL+F"));
 	connect(m_addEFXAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddEFX()));
 
-	m_closeAction = new QAction(QIcon(":/fileclose.png"),
-				    tr("Close"), this);
-	connect(m_closeAction, SIGNAL(triggered(bool)),
-		parentWidget(), SLOT(close()));
-
 	/* Edit actions */
 	m_editAction = new QAction(QIcon(":/edit.png"),
-				   tr("Edit"), this);
+				   tr("&Edit"), this);
+	m_editAction->setShortcut(QKeySequence("CTRL+E"));
 	connect(m_editAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotEdit()));
 
 	m_cloneAction = new QAction(QIcon(":/editcopy.png"),
-				    tr("Clone"), this);
+				    tr("&Clone"), this);
+	m_cloneAction->setShortcut(QKeySequence("CTRL+C"));
 	connect(m_cloneAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotClone()));
 
 	m_deleteAction = new QAction(QIcon(":/editdelete.png"),
-				     tr("Delete"), this);
+				     tr("&Delete"), this);
+	m_deleteAction->setShortcut(QKeySequence("Delete"));
 	connect(m_deleteAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotDelete()));
 
 	m_selectAllAction = new QAction(QIcon(":/selectall.png"),
-					tr("Select all"), this);
+					tr("Select &all"), this);
+	m_selectAllAction->setShortcut(QKeySequence("CTRL+A"));
 	connect(m_selectAllAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotSelectAll()));
 }
@@ -215,17 +216,15 @@ void FunctionManager::initMenu()
 
 	/* Function menu */
 	m_manageMenu = new QMenu(this);
-	m_manageMenu->setTitle(tr("Manage"));
+	m_manageMenu->setTitle(tr("&Manage"));
 	m_manageMenu->addAction(m_addSceneAction);
 	m_manageMenu->addAction(m_addChaserAction);
 	m_manageMenu->addAction(m_addEFXAction);
 	m_manageMenu->addAction(m_addCollectionAction);
-	m_manageMenu->addSeparator();
-	m_manageMenu->addAction(m_closeAction);
 
 	/* Edit menu */
 	m_editMenu = new QMenu(this);
-	m_editMenu->setTitle("Edit");
+	m_editMenu->setTitle("&Edit");
 	m_editMenu->addAction(m_editAction);
 	m_editMenu->addSeparator();
 	m_editMenu->addAction(m_cloneAction);
@@ -238,7 +237,7 @@ void FunctionManager::initMenu()
 	m_busGroup = new QActionGroup(this);
 	m_busGroup->setExclusive(false);
 	m_busMenu = new QMenu(this);
-	m_busMenu->setTitle("Assign bus");
+	m_busMenu->setTitle("&Assign bus");
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
 		/* <xx>: <name> */
