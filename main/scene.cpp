@@ -30,7 +30,6 @@
 #include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
-#include "functionconsumer.h"
 #include "sceneeditor.h"
 #include "outputmap.h"
 #include "scene.h"

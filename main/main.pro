@@ -54,7 +54,6 @@ HEADERS += aboutbox.h \
            fixtureproperties.h \
            fixtureselection.h \
            function.h \
-           functionconsumer.h \
            functionmanager.h \
            functionselection.h \
            generatorarea.h \
@@ -64,6 +63,7 @@ HEADERS += aboutbox.h \
            inputmap.h \
 	   inputpatch.h \
            inputpatcheditor.h \
+           mastertimer.h \
            monitor.h \
            monitorfixture.h \
 	   monitorlayout.h \
@@ -139,7 +139,6 @@ SOURCES += aboutbox.cpp \
            fixtureproperties.cpp \
            fixtureselection.cpp \
            function.cpp \
-           functionconsumer.cpp \
            functionmanager.cpp \
            functionselection.cpp \
            generatorarea.cpp \
@@ -150,6 +149,7 @@ SOURCES += aboutbox.cpp \
 	   inputpatch.cpp \
            inputpatcheditor.cpp \
            main.cpp \
+           mastertimer.cpp \
            monitor.cpp \
            monitorfixture.cpp \
 	   monitorlayout.cpp \

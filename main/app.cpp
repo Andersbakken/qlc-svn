@@ -44,12 +44,12 @@
 #include <QFile>
 #include <QIcon>
 
-#include "functionconsumer.h"
 #include "functionmanager.h"
 #include "virtualconsole.h"
 #include "fixturemanager.h"
 #include "outputmanager.h"
 #include "inputmanager.h"
+#include "mastertimer.h"
 #include "busmanager.h"
 #include "outputmap.h"
 #include "inputmap.h"
@@ -82,9 +82,9 @@ App::App() : QMainWindow()
 {
 	_app = this;
 
+	m_masterTimer = NULL;
 	m_outputMap = NULL;
 	m_inputMap = NULL;
-	m_functionConsumer = NULL;
 	m_doc = NULL;
 
 	m_mode = Design;
@@ -113,10 +113,10 @@ App::~App()
 		delete m_doc;
 	m_doc = NULL;
 
-	// Delete function consumer
-	if (m_functionConsumer != NULL)
-		delete m_functionConsumer;
-	m_functionConsumer = NULL;
+	// Delete master timer
+	if (m_masterTimer != NULL)
+		delete m_masterTimer;
+	m_masterTimer = NULL;
 
 	// Delete mode indicator
 	if (m_modeIndicator != NULL)
@@ -167,8 +167,9 @@ void App::init()
 	initOutputMap();
 	initInputMap();
 
-	/* Function running engine */
-	initFunctionConsumer();
+	/* Function running engine/master timer */
+	m_masterTimer = new MasterTimer(this, m_outputMap);
+	m_masterTimer->start();
 
 	/* Buses */
 	Bus::init();
@@ -310,21 +311,6 @@ void App::initInputMap()
 {
 	m_inputMap = new InputMap(this, KInputUniverseCount);
 	Q_ASSERT(m_inputMap != NULL);
-}
-
-/*****************************************************************************
- * Function consumer
- *****************************************************************************/
-
-void App::initFunctionConsumer()
-{
-	Q_ASSERT(m_outputMap != NULL);
-
-	m_functionConsumer = new FunctionConsumer(this, m_outputMap);
-	Q_ASSERT(m_functionConsumer != NULL);
-
-	/* Start function consumer */
-	m_functionConsumer->start();
 }
 
 /*****************************************************************************
@@ -482,7 +468,7 @@ void App::slotModeDesign()
 	if (m_mode == Design)
 		return;
 
-	if (m_functionConsumer->runningFunctions())
+	if (m_masterTimer->runningFunctions())
 	{
 		int result = QMessageBox::warning(
 			this,
@@ -496,7 +482,7 @@ void App::slotModeDesign()
 		if (result == QMessageBox::No)
 			return;
 		else
-			m_functionConsumer->stopAll();
+			m_masterTimer->stopAll();
 	}
 
 	/* Set normal palette to mode indicator */
@@ -1035,7 +1021,7 @@ void App::slotControlMonitor()
 void App::slotControlPanic()
 {
 	/* Shut down all running functions */
-	m_functionConsumer->stopAll();
+	m_masterTimer->stopAll();
 }
 
 /*****************************************************************************

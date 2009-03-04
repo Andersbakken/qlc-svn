@@ -27,7 +27,6 @@
 #include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
-#include "functionconsumer.h"
 #include "chasereditor.h"
 #include "function.h"
 #include "fixture.h"

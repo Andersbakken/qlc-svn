@@ -33,7 +33,6 @@
 #include "common/qlcchannel.h"
 #include "common/qlcfile.h"
 
-#include "functionconsumer.h"
 #include "efxeditor.h"
 #include "fixture.h"
 #include "scene.h"

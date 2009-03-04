@@ -28,7 +28,6 @@
 
 #include "common/qlcfile.h"
 
-#include "functionconsumer.h"
 #include "collectioneditor.h"
 #include "collection.h"
 #include "function.h"

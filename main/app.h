@@ -41,11 +41,11 @@ class QLabel;
 class QTimer;
 class QMenu;
 
-class FunctionConsumer;
 class DummyOutPlugin;
 class DummyInPlugin;
 class QLCFixtureDef;
 class QLCInPlugin;
+class MasterTimer;
 class QLCPlugin;
 class OutputMap;
 class InputMap;
@@ -105,19 +105,15 @@ protected:
 	InputMap* m_inputMap;
 
 	/*********************************************************************
-	 * Function Consumer
+	 * Master timer
 	 *********************************************************************/
 public:
-	/** Get a pointer to the function runner object */
-	FunctionConsumer* functionConsumer() { return m_functionConsumer; }
-
-protected:
-	/** Initialize the function runner object */
-	void initFunctionConsumer();
+	/** Get a pointer to the master timer */
+	MasterTimer* masterTimer() { return m_masterTimer; }
 
 protected:
 	/** The function runner object */
-	FunctionConsumer* m_functionConsumer;
+	MasterTimer* m_masterTimer;
 
 	/*********************************************************************
 	 * Doc

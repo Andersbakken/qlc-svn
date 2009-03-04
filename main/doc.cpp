@@ -31,7 +31,6 @@
 #include "common/qlcfixturemode.h"
 #include "common/qlcfile.h"
 
-#include "functionconsumer.h"
 #include "virtualconsole.h"
 #include "fixturemanager.h"
 #include "collection.h"

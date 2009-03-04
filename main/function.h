@@ -341,7 +341,7 @@ signals:
 
 	/**
 	 * Signal that is emitted to this function's parent(s) when this
-	 * function is really finished (i.e. removed from FunctionConsumer's
+	 * function is really finished (i.e. removed from Master Timer's
 	 * list of running functions).
 	 */
 	void stopped(t_function_id id);

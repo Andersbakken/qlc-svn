@@ -130,7 +130,7 @@ public:
 	 * Set the value of one channel. Channels 0-511 are for the first
 	 * universe, 512-1023 for the second etc.. This function does not
 	 * actually write the values to plugins; dumpUniverses() does that
-	 * and it is called periodically from FunctionConsumer. Don't call
+	 * and it is called periodically from MasterTimer. Don't call
 	 * it manually.
 	 *
 	 * This function is used from manually-controlled widgets in the UI
@@ -141,10 +141,10 @@ public:
 	 */
 	void setValue(t_channel channel, t_value value);
 
-	/** Take exclusive access to all universes (FunctionConsumer) */
+	/** Take exclusive access to all universes */
 	QByteArray* claimUniverses();
 
-	/** Release exclusive access to all universes (FunctionConsumer) */
+	/** Release exclusive access to all universes */
 	void releaseUniverses();
 
 	/** Write all universes' data to their plugins */

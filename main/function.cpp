@@ -28,7 +28,7 @@
 
 #include "common/qlcfile.h"
 
-#include "functionconsumer.h"
+#include "mastertimer.h"
 #include "function.h"
 #include "bus.h"
 #include "app.h"
@@ -314,7 +314,7 @@ void Function::start()
 	{
 		m_elapsed = 0;
 		m_running = true;
-		_app->functionConsumer()->startMe(this);
+		_app->masterTimer()->startMe(this);
 		emit running(m_id);
 	}
 }
@@ -323,7 +323,7 @@ void Function::stop()
 {
 	if (m_running == true)
 	{
-		_app->functionConsumer()->stopMe(this);
+		_app->masterTimer()->stopMe(this);
 		m_running = false;
 		emit stopped(m_id);
 	}

@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  functionconsumer.cpp
+  mastertimer.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -35,7 +35,7 @@
 #include <windows.h>
 #endif
 
-#include "functionconsumer.h"
+#include "mastertimer.h"
 #include "outputmap.h"
 #include "function.h"
 #include "app.h"
@@ -45,7 +45,7 @@
  * Initialization
  *****************************************************************************/
 
-FunctionConsumer::FunctionConsumer(QObject* parent, OutputMap* outputMap)
+MasterTimer::MasterTimer(QObject* parent, OutputMap* outputMap)
 	: QThread(parent)
 {
 	Q_ASSERT(outputMap != NULL);
@@ -54,7 +54,7 @@ FunctionConsumer::FunctionConsumer(QObject* parent, OutputMap* outputMap)
 	m_stopAll = false;
 }
 
-FunctionConsumer::~FunctionConsumer()
+MasterTimer::~MasterTimer()
 {
 	stop();
 }
@@ -63,7 +63,7 @@ FunctionConsumer::~FunctionConsumer()
  * Functions
  *****************************************************************************/
 
-int FunctionConsumer::runningFunctions()
+int MasterTimer::runningFunctions()
 {
 	int n = 0;
 	m_functionListMutex.lock();
@@ -72,7 +72,7 @@ int FunctionConsumer::runningFunctions()
 	return n;
 }
 
-void FunctionConsumer::startMe(Function* function)
+void MasterTimer::startMe(Function* function)
 {
 	Q_ASSERT(function != NULL);
 
@@ -81,7 +81,7 @@ void FunctionConsumer::startMe(Function* function)
 	m_functionListMutex.unlock();
 }
 
-void FunctionConsumer::stopMe(Function* function)
+void MasterTimer::stopMe(Function* function)
 {
 	Q_ASSERT(function != NULL);
 
@@ -90,7 +90,7 @@ void FunctionConsumer::stopMe(Function* function)
 	m_functionListMutex.unlock();
 }
 
-void FunctionConsumer::stopAll()
+void MasterTimer::stopAll()
 {
 	m_stopAll = true;
 
@@ -105,14 +105,14 @@ void FunctionConsumer::stopAll()
  * Thread running / stopping
  ****************************************************************************/
 
-void FunctionConsumer::start(Priority priority)
+void MasterTimer::start(Priority priority)
 {
 	m_running = true;
 	QThread::start(priority);
 }
  
 #ifndef WIN32
-void FunctionConsumer::run()
+void MasterTimer::run()
 {
 	/* How long to wait each loop */
 	int tickTime = 1000000 / KFrequency;
@@ -135,7 +135,7 @@ void FunctionConsumer::run()
 	{
 		qWarning() << "Unable to get the time accurately:"
 			   << strerror(errno)
-			   << "- Stopping FunctionConsumer";
+			   << "- Stopping MasterTimer";
 		m_running = false;
 	}
 	else
@@ -197,7 +197,7 @@ void FunctionConsumer::run()
 	free(remainingTime);
 }
 #else /* WIN32 */
-void FunctionConsumer::run()
+void MasterTimer::run()
 {
 	/* This timer implementation requires 64bit support from compiler.
 	   (Not 64bit processor architecture, though.) */
@@ -233,7 +233,7 @@ void FunctionConsumer::run()
 }
 #endif
 
-void FunctionConsumer::event()
+void MasterTimer::event()
 {
 	/* Lock before accessing the running functions list. */
 	m_functionListMutex.lock();
@@ -263,7 +263,7 @@ void FunctionConsumer::event()
 	m_outputMap->dumpUniverses();
 }
 
-void FunctionConsumer::stop()
+void MasterTimer::stop()
 {
 	stopAll();
 

@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  functionconsumer.h
+  mastertimer.h
 
   Copyright (C) Heikki Junnila
 
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FUNCTIONCONSUMER_H
-#define FUNCTIONCONSUMER_H
+#ifndef MASTERTIMER_H
+#define MASTERTIMER_H
 
 #include <QThread>
 #include <QMutex>
@@ -31,7 +31,7 @@
 
 class OutputMap;
 
-class FunctionConsumer : public QThread
+class MasterTimer : public QThread
 {
 	Q_OBJECT
 
@@ -40,28 +40,22 @@ class FunctionConsumer : public QThread
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new FunctionConsumer instance. FC takes care of running
+	 * Create a new MasterTimer instance. FC takes care of running
 	 * functions and driving internal DMX universe dumping to plugins.
 	 *
 	 * @param parent The parent that owns this instance
 	 * @param outputMap A OutputMap instance used to write function values
 	 */
-	FunctionConsumer(QObject* parent, OutputMap* outputMap);
+	MasterTimer(QObject* parent, OutputMap* outputMap);
 
-	/** Destroy a FunctionConsumer instance */
-	virtual ~FunctionConsumer();
+	/** Destroy a MasterTimer instance */
+	virtual ~MasterTimer();
 
-	/** Initialize the FunctionConsumer prior to starting it. */
+	/** Initialize the MasterTimer prior to starting it. */
 	void init();
 
 private:
-	Q_DISABLE_COPY(FunctionConsumer)
-
-	/*********************************************************************
-	 * NanoSleep timer
-	 *********************************************************************/
-protected:
-	void runNanoSleepTimer();
+	Q_DISABLE_COPY(MasterTimer)
 
 	/*********************************************************************
 	 * Functions
@@ -93,7 +87,7 @@ protected:
 	 * Main thread
 	 *********************************************************************/
 public:
-	/** Start the consumer */
+	/** Start the timer */
 	void start(Priority priority = InheritPriority);
 
 	/** Stop this altogether. Functions cannot be run after this. */
