@@ -140,7 +140,10 @@ void VirtualConsole::create(QWidget* parent)
 	window->setAttribute(Qt::WA_DeleteOnClose);
 	window->setWindowIcon(QIcon(":/virtualconsole.png"));
 	window->setWindowTitle(tr("Virtual Console"));
-	window->resize(s_properties.width(), s_properties.height());
+	window->setContextMenuPolicy(Qt::CustomContextMenu);
+	window->setWindowState(s_properties.state());
+	window->setGeometry(s_properties.x(), s_properties.y(),
+			    s_properties.width(), s_properties.height());
 	window->show();
 }
 
@@ -1368,6 +1371,10 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* vc_root)
 
 	/* Load properties & contents */
 	retval = s_properties.loadXML(doc, vc_root);
+
+	/* Display VC if appropriate */
+	if (s_properties.visible() == true)
+		create(_app);
 
 	/* Make the dock area update itself after loading its settings. The
 	   contents area is already updated. */
