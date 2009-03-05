@@ -5,307 +5,145 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>453</height>
+    <width>444</width>
+    <height>317</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>XY Pad Properties</string>
   </property>
-  <layout class="QVBoxLayout" >
-   <item>
-    <widget class="QGroupBox" name="m_horizontalGroup" >
-     <property name="title" >
-      <string>Horizontal axis (X)</string>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QLabel" name="m_nameLabel" >
+     <property name="text" >
+      <string>XY Pad Name</string>
      </property>
-     <layout class="QGridLayout" >
-      <item row="0" column="0" >
-       <widget class="QTreeWidget" name="m_listX" >
-        <column>
-         <property name="text" >
-          <string>Fixture</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Channel</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Min</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Max</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Reverse</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-      <item row="0" column="1" >
-       <layout class="QVBoxLayout" >
-        <item>
-         <widget class="QToolButton" name="m_addX" >
-          <property name="toolTip" >
-           <string>Add a channel to this pad's X axis</string>
-          </property>
-          <property name="text" >
-           <string>...</string>
-          </property>
-          <property name="icon" >
-           <iconset resource="main.qrc" >
-            <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
-          </property>
-          <property name="iconSize" >
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="m_removeX" >
-          <property name="toolTip" >
-           <string>Remove the selected channel from this pad's X axis</string>
-          </property>
-          <property name="text" >
-           <string>...</string>
-          </property>
-          <property name="icon" >
-           <iconset resource="main.qrc" >
-            <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
-          </property>
-          <property name="iconSize" >
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0" >
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0" >
-       <layout class="QHBoxLayout" >
-        <item>
-         <widget class="QLabel" name="m_minXLabel" >
-          <property name="text" >
-           <string>Minimum value</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="m_minXSpin" >
-          <property name="toolTip" >
-           <string>Lowest value for the selected channel on the X axis</string>
-          </property>
-          <property name="maximum" >
-           <number>255</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="m_maxXLabel" >
-          <property name="text" >
-           <string>Maximum value</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="m_maxXSpin" >
-          <property name="toolTip" >
-           <string>Highest value for the selected channel on the X axis</string>
-          </property>
-          <property name="maximum" >
-           <number>255</number>
-          </property>
-          <property name="value" >
-           <number>255</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="m_reverseX" >
-          <property name="toolTip" >
-           <string>Reverse the selected channel's X axis</string>
-          </property>
-          <property name="text" >
-           <string>Reverse</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="m_verticalGroup" >
-     <property name="title" >
-      <string>Vertical axis (Y)</string>
+   <item row="0" column="1" >
+    <widget class="QLineEdit" name="m_nameEdit" />
+   </item>
+   <item row="1" column="0" colspan="2" >
+    <widget class="QTreeWidget" name="m_tree" >
+     <property name="toolTip" >
+      <string>List of scenes that can be activated with this cue list</string>
      </property>
-     <layout class="QGridLayout" >
-      <item row="0" column="0" >
-       <widget class="QTreeWidget" name="m_listY" >
-        <column>
-         <property name="text" >
-          <string>Fixture</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Channel</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Min</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Max</string>
-         </property>
-        </column>
-        <column>
-         <property name="text" >
-          <string>Reverse</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-      <item row="0" column="1" >
-       <layout class="QVBoxLayout" >
-        <item>
-         <widget class="QToolButton" name="m_addY" >
-          <property name="toolTip" >
-           <string>Add a channel to this pad's Y axis</string>
-          </property>
-          <property name="text" >
-           <string>...</string>
-          </property>
-          <property name="icon" >
-           <iconset resource="main.qrc" >
-            <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
-          </property>
-          <property name="iconSize" >
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="m_removeY" >
-          <property name="toolTip" >
-           <string>Remove the selected channel from this pad's Y axis</string>
-          </property>
-          <property name="text" >
-           <string>...</string>
-          </property>
-          <property name="icon" >
-           <iconset resource="main.qrc" >
-            <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
-          </property>
-          <property name="iconSize" >
-           <size>
-            <width>26</width>
-            <height>26</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0" >
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0" >
-       <layout class="QHBoxLayout" >
-        <item>
-         <widget class="QLabel" name="m_minYLabel" >
-          <property name="text" >
-           <string>Minimum value</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="m_minYSpin" >
-          <property name="toolTip" >
-           <string>Lowest value for the selected channel on the Y axis</string>
-          </property>
-          <property name="maximum" >
-           <number>255</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="m_maxYLabel" >
-          <property name="text" >
-           <string>Maximum value</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="m_maxYSpin" >
-          <property name="toolTip" >
-           <string>Highest value for the selected channel on the Y axis</string>
-          </property>
-          <property name="maximum" >
-           <number>255</number>
-          </property>
-          <property name="value" >
-           <number>255</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="m_reverseY" >
-          <property name="toolTip" >
-           <string>Reverse the selected channel's Y axis</string>
-          </property>
-          <property name="text" >
-           <string>Reverse</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
+     <property name="showDropIndicator" stdset="0" >
+      <bool>false</bool>
+     </property>
+     <property name="alternatingRowColors" >
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode" >
+      <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <property name="rootIsDecorated" >
+      <bool>false</bool>
+     </property>
+     <property name="itemsExpandable" >
+      <bool>false</bool>
+     </property>
+     <property name="allColumnsShowFocus" >
+      <bool>true</bool>
+     </property>
+     <property name="expandsOnDoubleClick" >
+      <bool>false</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Fixture</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>X-Axis</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Y-Axis</string>
+      </property>
+     </column>
     </widget>
    </item>
-   <item>
+   <item row="1" column="2" >
+    <layout class="QVBoxLayout" name="verticalLayout" >
+     <item>
+      <widget class="QToolButton" name="m_addButton" >
+       <property name="toolTip" >
+        <string>Add scene(s) to the cue list</string>
+       </property>
+       <property name="text" >
+        <string>...</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="main.qrc" >
+         <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
+       </property>
+       <property name="iconSize" >
+        <size>
+         <width>26</width>
+         <height>26</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="m_removeButton" >
+       <property name="toolTip" >
+        <string>Remove selected scene(s) from the cue list</string>
+       </property>
+       <property name="text" >
+        <string>...</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="main.qrc" >
+         <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
+       </property>
+       <property name="iconSize" >
+        <size>
+         <width>26</width>
+         <height>26</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="m_editButton" >
+       <property name="toolTip" >
+        <string>Raise the selected scene</string>
+       </property>
+       <property name="text" >
+        <string>...</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="main.qrc" >
+         <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
+       </property>
+       <property name="iconSize" >
+        <size>
+         <width>26</width>
+         <height>26</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0" colspan="3" >
     <widget class="QDialogButtonBox" name="m_buttonBox" >
      <property name="orientation" >
       <enum>Qt::Horizontal</enum>
@@ -328,8 +166,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>307</y>
     </hint>
     <hint type="destinationlabel" >
      <x>157</x>
@@ -344,8 +182,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>307</y>
     </hint>
     <hint type="destinationlabel" >
      <x>286</x>
@@ -353,5 +191,58 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_addButton</sender>
+   <signal>clicked()</signal>
+   <receiver>VCXYPadProperties</receiver>
+   <slot>slotAddClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>418</x>
+     <y>47</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>438</x>
+     <y>15</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_removeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>VCXYPadProperties</receiver>
+   <slot>slotRemoveClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>422</x>
+     <y>92</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>439</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_editButton</sender>
+   <signal>clicked()</signal>
+   <receiver>VCXYPadProperties</receiver>
+   <slot>slotEditClicked()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>416</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>416</x>
+     <y>159</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>slotAddClicked()</slot>
+  <slot>slotRemoveClicked()</slot>
+  <slot>slotEditClicked()</slot>
+ </slots>
 </ui>

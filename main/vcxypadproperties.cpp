@@ -21,322 +21,203 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
-#include <QToolButton>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QMenu>
+#include <QMessageBox>
 
-#include "common/qlcfixturedef.h"
-#include "common/qlcchannel.h"
-#include "common/qlcfile.h"
-
+#include "vcxypadfixtureeditor.h"
 #include "vcxypadproperties.h"
-#include "xychannelunit.h"
-#include "fixturelist.h"
+#include "fixtureselection.h"
+#include "vcxypadfixture.h"
 #include "vcxypad.h"
-#include "fixture.h"
-#include "app.h"
-#include "doc.h"
 
 extern App* _app;
 
-const int KColumnFixtureName   ( 0 );
-const int KColumnChannelName   ( 1 );
-const int KColumnLo            ( 2 );
-const int KColumnHi            ( 3 );
-const int KColumnReverse       ( 4 );
-const int KColumnFixtureID     ( 5 );
-const int KColumnChannelNumber ( 6 );
+#define KColumnFixture   0
+#define KColumnXAxis     1
+#define KColumnYAxis     2
+
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
 
 VCXYPadProperties::VCXYPadProperties(QWidget* parent, VCXYPad* xypad)
 	: QDialog(parent)
 {
+	Q_ASSERT(xypad != NULL);
 	m_xypad = xypad;
 
 	setupUi(this);
 
-	connect(m_addX, SIGNAL(clicked()), this, SLOT(slotAddX()));
-	connect(m_removeX, SIGNAL(clicked()), this, SLOT(slotRemoveX()));
-	connect(m_addY, SIGNAL(clicked()), this, SLOT(slotAddY()));
-	connect(m_removeY, SIGNAL(clicked()), this, SLOT(slotRemoveY()));
-
-	/* Min X spin */
-	m_minXSpin->setValue(0);
-	connect(m_minXSpin, SIGNAL(valueChanged(const QString&)),
-		this, SLOT(slotMinXChanged(const QString&)));
-
-	/* Max X spin */
-	m_maxXSpin->setValue(255);
-	connect(m_maxXSpin, SIGNAL(valueChanged(const QString&)),
-		this, SLOT(slotMaxXChanged(const QString&)));
-
-	/* Min Y spin */
-	m_minYSpin->setValue(0);
-	connect(m_minYSpin, SIGNAL(valueChanged(const QString&)),
-		this, SLOT(slotMinYChanged(const QString&)));
-
-	/* Max Y spin */
-	m_maxYSpin->setValue(255);
-	connect(m_maxYSpin, SIGNAL(valueChanged(const QString&)),
-		this, SLOT(slotMaxYChanged(const QString&)));
-
-	/* X axis reverse */
-	m_reverseX->setChecked(false);
-	connect(m_reverseX, SIGNAL(toggled(bool)),
-		this, SLOT(slotReverseXToggled(bool)));
-
-	/* Y axis reverse */
-	m_reverseY->setChecked(false);
-	connect(m_reverseY, SIGNAL(toggled(bool)),
-		this, SLOT(slotReverseYToggled(bool)));
-
-	/* X list */
-	connect(m_listX, SIGNAL(itemSelectionChanged()),
-		this, SLOT(slotSelectionXChanged()));
-	fillChannelList(m_listX, m_xypad->channelsX());
-	m_listX->setCurrentItem(m_listX->topLevelItem(0));
-
-	/* Y list */
-	connect(m_listY, SIGNAL(itemSelectionChanged()),
-		this, SLOT(slotSelectionYChanged()));
-	fillChannelList(m_listY, m_xypad->channelsY());
-	m_listY->setCurrentItem(m_listY->topLevelItem(0));
+	m_nameEdit->setText(m_xypad->caption());
+	fillTree();
 }
 
 VCXYPadProperties::~VCXYPadProperties()
 {
 }
 
-/**
- * Fill a channel list with XYChannelUnit objects
- */
-void VCXYPadProperties::fillChannelList(QTreeWidget *list,
-					QList <XYChannelUnit*>* channels)
+/****************************************************************************
+ * Tree
+ ****************************************************************************/
+
+void VCXYPadProperties::fillTree()
 {
-	QListIterator <XYChannelUnit*> it(*channels);
+	m_tree->clear();
+
+	QListIterator <VCXYPadFixture> it(m_xypad->fixtures());
+	while (it.hasNext() == true)
+		updateFixtureItem(new QTreeWidgetItem(m_tree), it.next());
+}
+
+void VCXYPadProperties::updateFixtureItem(QTreeWidgetItem* item,
+					  const VCXYPadFixture& fxi)
+{
+	Q_ASSERT(item != NULL);
+
+	item->setText(KColumnFixture, fxi.name());
+	item->setText(KColumnXAxis, fxi.xBrief());
+	item->setText(KColumnYAxis, fxi.yBrief());
+	item->setData(KColumnFixture, Qt::UserRole, QVariant(fxi));
+}
+
+QList <t_fixture_id> VCXYPadProperties::selectedFixtureIDs() const
+{
+	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+	QList <t_fixture_id> list;
+	
+	/* Put all selected fixture IDs to a list and return it */
 	while (it.hasNext() == true)
 	{
-		XYChannelUnit* xyc = it.next();
-		createChannelEntry(list, xyc->fixtureID(), xyc->channel(),
-				   xyc->lo(), xyc->hi(), xyc->reverse());
-	}
-}
-
-/**
- * Create a channel entry to the given parent listview
- */
-QTreeWidgetItem* VCXYPadProperties::createChannelEntry(QTreeWidget* parent,
-						       t_fixture_id fixtureID,
-						       t_channel channel,
-						       t_value lo,
-						       t_value hi,
-						       bool reverse)
-{
-	QTreeWidgetItem* item;
-	const QLCChannel* ch;
-	Fixture* fxi;
-	QString s;
-
-	fxi = _app->doc()->fixture(fixtureID);
-	if (fxi == NULL)
-		return NULL;
-
-	item = new QTreeWidgetItem(parent);
-
-	// Fixture name
-	item->setText(KColumnFixtureName, fxi->name());
-
-	// Channel name
-	ch = fxi->channel(channel);
-	if (ch != NULL)
-	{
-		s.sprintf("%.3d: ", channel + 1);
-		s += ch->name();
-		item->setText(KColumnChannelName, s);
-	}
-	else
-	{
-		delete item;
-		return NULL;
+		QVariant var(it.next()->data(KColumnFixture, Qt::UserRole));
+		VCXYPadFixture fxi(var);
+		list << fxi.fixture();
 	}
 
-	// High limit
-	item->setText(KColumnHi, s.sprintf("%.3d", hi));
-
-	// Low limit
-	item->setText(KColumnLo, s.sprintf("%.3d", lo));
-
-	// Reverse
-	if (reverse == true)
-		item->setText(KColumnReverse, "Reversed");
-	else
-		item->setText(KColumnReverse, "Normal");
-
-	// Fixture ID
-	item->setText(KColumnFixtureID, s.setNum(fixtureID));
-
-	// Channel number
-	item->setText(KColumnChannelNumber, s.sprintf("%.3d", channel));
-
-	return item;
+	return list;
 }
 
-void VCXYPadProperties::addChannel(QTreeWidget* list)
+QList <VCXYPadFixture> VCXYPadProperties::selectedFixtures() const
 {
-	FixtureList fl(this);
+	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+	QList <VCXYPadFixture> list;
 
-	if (list == m_listX)
-		fl.setWindowTitle("Add a channel to the list of horizontal axes");
-	else
-		fl.setWindowTitle("Add a channel to the list of vertical axes");
+	/* Put all selected fixtures to a list and return it */
+	while (it.hasNext() == true)
+		list << it.next()->data(KColumnFixture, Qt::UserRole);
 
-	if (fl.exec() == QDialog::Accepted)
+	return list;
+}
+
+QTreeWidgetItem* VCXYPadProperties::fixtureItem(const VCXYPadFixture& fxi)
+{
+	QTreeWidgetItemIterator it(m_tree);
+	while (*it != NULL)
 	{
-		t_fixture_id fxi_id = fl.selectedFixtureID();
-		t_channel ch = fl.selectedChannel();
-
-		if (fxi_id != KNoID && ch != KChannelInvalid)
-			createChannelEntry(list, fxi_id, ch, KChannelValueMin,
-					   KChannelValueMax, false);
-	}
-}
-
-void VCXYPadProperties::slotAddY()
-{
-	addChannel(m_listY);
-}
-
-void VCXYPadProperties::slotAddX()
-{
-	addChannel(m_listX);
-}
-
-void VCXYPadProperties::slotRemoveX()
-{
-	delete(m_listX->currentItem());
-}
-
-void VCXYPadProperties::slotRemoveY()
-{
-	delete(m_listY->currentItem());
-}
-
-void VCXYPadProperties::slotMaxXChanged(const QString& text)
-{
-	QTreeWidgetItem* item = m_listX->currentItem();
-	if (item != NULL)
-		item->setText(KColumnHi, text);
-}
-
-void VCXYPadProperties::slotMinXChanged(const QString& text)
-{
-	QTreeWidgetItem* item = m_listX->currentItem();
-	if (item != NULL)
-		item->setText(KColumnLo, text);
-}
-
-void VCXYPadProperties::slotMaxYChanged(const QString& text)
-{
-	QTreeWidgetItem* item = m_listY->currentItem();
-	if (item != NULL)
-		item->setText(KColumnHi, text);
-}
-
-void VCXYPadProperties::slotMinYChanged(const QString& text)
-{
-	QTreeWidgetItem* item = m_listY->currentItem();
-	if (item != NULL)
-		item->setText(KColumnLo, text);
-}
-
-void VCXYPadProperties::slotReverseXToggled(bool state)
-{
-	QTreeWidgetItem* item = m_listX->currentItem();
-	if (item != NULL)
-		item->setText(KColumnReverse, (state) ? "Reversed" : "Normal");
-}
-
-void VCXYPadProperties::slotReverseYToggled(bool state)
-{
-	QTreeWidgetItem* item = m_listY->currentItem();
-	if (item != NULL)
-		item->setText(KColumnReverse, (state) ? "Reversed" : "Normal");
-}
-
-void VCXYPadProperties::slotSelectionXChanged()
-{
-	QTreeWidgetItem* item = m_listX->currentItem();
-	if (item != NULL)
-	{
-		m_minXSpin->setValue(item->text(KColumnLo).toInt());
-		m_maxXSpin->setValue(item->text(KColumnHi).toInt());
-
-		if (item->text(KColumnReverse) == "Reversed")
-			m_reverseX->setChecked(true);
+		QVariant var((*it)->data(KColumnFixture, Qt::UserRole));
+		VCXYPadFixture another(var);
+		if (fxi.fixture() == another.fixture())
+			return *it;
 		else
-			m_reverseX->setChecked(false);
+			++it;
+	}
+
+	return NULL;
+}
+
+void VCXYPadProperties::removeFixtureItem(t_fixture_id fxi_id)
+{
+	QTreeWidgetItemIterator it(m_tree);
+	while (*it != NULL)
+	{
+		QVariant var((*it)->data(KColumnFixture, Qt::UserRole));
+		VCXYPadFixture fxi(var);
+		if (fxi.fixture() == fxi_id)
+		{
+			delete (*it);
+			break;
+		}
+
+		++it;
 	}
 }
 
-void VCXYPadProperties::slotSelectionYChanged()
+void VCXYPadProperties::slotAddClicked()
 {
-	QTreeWidgetItem* item = m_listY->currentItem();
-	if (item != NULL)
+	/* Put all fixtures already present into a list of fixtures that
+	   will be disabled in the fixture selection dialog */
+	/* TODO: Disable all fixtures that don't have pan&tilt chans */
+	QList <t_fixture_id> disabled;
+	QTreeWidgetItemIterator twit(m_tree);
+	while (*twit != NULL)
 	{
-		m_minYSpin->setValue(item->text(KColumnLo).toInt());
-		m_maxYSpin->setValue(item->text(KColumnHi).toInt());
+		QVariant var((*twit)->data(KColumnFixture, Qt::UserRole));
+		VCXYPadFixture fxi(var);
+		disabled << fxi.fixture();
+	}
 
-		if (item->text(KColumnReverse) == "Reversed")
-			m_reverseY->setChecked(true);
-		else
-			m_reverseY->setChecked(false);
+	/* Get a list of new fixtures to add to the pad */
+	FixtureSelection fs(this, _app->doc(), true, disabled);
+	if (fs.exec() == QDialog::Accepted)
+	{
+		QListIterator <t_fixture_id> it(fs.selection);
+		while (it.hasNext() == true)
+		{
+			VCXYPadFixture fxi;
+			fxi.setFixture(it.next());
+			updateFixtureItem(new QTreeWidgetItem(m_tree), fxi);
+		}
+	}
+}
+
+void VCXYPadProperties::slotRemoveClicked()
+{
+	int r = QMessageBox::question(
+		this, tr("Remove fixtures"),
+		tr("Do you want to remove the selected fixtures?"),
+		QMessageBox::Yes, QMessageBox::No);
+
+	if (r == QMessageBox::Yes)
+	{
+		QListIterator <t_fixture_id> it(selectedFixtureIDs());
+		while (it.hasNext() == true)
+		{
+			t_fixture_id fxi_id = it.next();
+			removeFixtureItem(fxi_id);
+		}
+	}
+}
+
+void VCXYPadProperties::slotEditClicked()
+{
+	/* Get a list of selected fixtures */
+	QList <VCXYPadFixture> list(selectedFixtures());
+
+	/* Start editor */
+	VCXYPadFixtureEditor editor(this, list);
+	if (editor.exec() == QDialog::Accepted)
+	{
+		QListIterator <VCXYPadFixture> it(editor.fixtures());
+		while (it.hasNext() == true)
+		{
+			VCXYPadFixture fxi(it.next());
+			QTreeWidgetItem* item = fixtureItem(fxi);
+
+			updateFixtureItem(item, fxi);
+		}
 	}
 }
 
 void VCXYPadProperties::accept()
 {
-	QList <XYChannelUnit*>* list;
+	m_xypad->clearFixtures();
+	m_xypad->setCaption(m_nameEdit->text());
 
-	// Update the X list
-	list = m_xypad->channelsX();
-	while (list->isEmpty() == false)
-		delete list->takeFirst();
-
-	QTreeWidgetItemIterator xit(m_listX);
-	while (*xit != NULL)
+	QTreeWidgetItemIterator it(m_tree);
+	while (*it != NULL)
 	{
-		list->append(createChannelUnit(*xit));
-		++xit;
+		QVariant var((*it)->data(KColumnFixture, Qt::UserRole));
+		m_xypad->appendFixture(var);
+		++it;
 	}
 
-	// Update the Y list
-	list = m_xypad->channelsY();
-	while (list->isEmpty() == false)
-		delete list->takeFirst();
-
-	QTreeWidgetItemIterator yit(m_listY);
-	while (*yit != NULL)
-	{
-		list->append(createChannelUnit(*yit));
-		++yit;
-	}
-	
 	QDialog::accept();
-}
-
-/**
- * Create an XY channel unit from the given list item
- */
-XYChannelUnit* VCXYPadProperties::createChannelUnit(QTreeWidgetItem* item)
-{
-	if (item == NULL)
-		return NULL;
-
-	return new XYChannelUnit(
-		item->text(KColumnFixtureID).toInt(),
-		item->text(KColumnChannelNumber).toInt(),
-		item->text(KColumnLo).toInt(),
-		item->text(KColumnHi).toInt(),
-		(item->text(KColumnReverse) == "Reversed") ? true : false);
 }

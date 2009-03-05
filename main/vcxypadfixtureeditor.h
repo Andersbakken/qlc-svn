@@ -1,8 +1,8 @@
 /*
   Q Light Controller
-  vcxypadproperties.h
+  vcxypadfixtureeditor.h
 
-  Copyright (c) Stefan Krumm, Heikki Junnila
+  Copyright (c) Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -19,18 +19,15 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VCXYPADPROPERTIES_H
-#define VCXYPADPROPERTIES_H
+#ifndef VCXYPADFIXTUREEDITOR
+#define VCXYPADFIXTUREEDITOR
 
 #include <QDialog>
 
-#include "ui_vcxypadproperties.h"
-#include "common/qlctypes.h"
+#include "ui_vcxypadfixtureeditor.h"
 #include "vcxypadfixture.h"
 
-class VCXYPad;
-
-class VCXYPadProperties : public QDialog, public Ui_VCXYPadProperties
+class VCXYPadFixtureEditor : public QDialog, public Ui_VCXYPadFixtureEditor
 {
 	Q_OBJECT
 
@@ -38,34 +35,28 @@ class VCXYPadProperties : public QDialog, public Ui_VCXYPadProperties
 	 * Initialization
 	 ********************************************************************/
 public:
-	VCXYPadProperties(QWidget* parent, VCXYPad* xypad);
-	~VCXYPadProperties();
+	VCXYPadFixtureEditor(QWidget* parent, QList <VCXYPadFixture> fixtures);
+	~VCXYPadFixtureEditor();
 
 private:
-	Q_DISABLE_COPY(VCXYPadProperties)
-
-	/********************************************************************
-	 * Tree
-	 ********************************************************************/
-protected:
-	void fillTree();
-	QList <t_fixture_id> selectedFixtureIDs() const;
-	QList <VCXYPadFixture> selectedFixtures() const;
-	QTreeWidgetItem* fixtureItem(const VCXYPadFixture& fxi);
-
-	void updateFixtureItem(QTreeWidgetItem* item,
-			       const VCXYPadFixture& fxi);
-	void removeFixtureItem(t_fixture_id fxi_id);
+	Q_DISABLE_COPY(VCXYPadFixtureEditor)
 
 protected slots:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotEditClicked();
-
 	void accept();
 
+	void slotXMinChanged(int value);
+	void slotXMaxChanged(int value);
+	void slotYMinChanged(int value);
+	void slotYMaxChanged(int value);
+
+	/********************************************************************
+	 * Fixtures
+	 ********************************************************************/
+public:
+	QList <VCXYPadFixture> fixtures() const { return m_fixtures; }
+
 protected:
-	VCXYPad* m_xypad;
+	QList <VCXYPadFixture> m_fixtures;
 };
 
 #endif

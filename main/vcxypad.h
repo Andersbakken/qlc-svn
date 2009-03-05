@@ -22,35 +22,24 @@
 #ifndef VCXYPAD_H
 #define VCXYPAD_H
 
+#include <QWidget>
 #include <QPixmap>
+#include <QString>
 #include <QList>
 
-#include "vcwidget.h"
 #include "common/qlctypes.h"
+#include "vcxypadfixture.h"
+#include "vcwidget.h"
 
 class QDomDocument;
 class QDomElement;
 class QPaintEvent;
 class QMouseEvent;
-class QString;
-class QFile;
-
-class XYChannelUnit;
 
 #define KXMLQLCVCXYPad "XYPad"
 #define KXMLQLCVCXYPadPosition "Position"
 #define KXMLQLCVCXYPadPositionX "X"
 #define KXMLQLCVCXYPadPositionY "Y"
-
-#define KXMLQLCVCXYPadChannel "Channel"
-#define KXMLQLCVCXYPadChannelAxis "Axis"
-#define KXMLQLCVCXYPadChannelAxisX "X"
-#define KXMLQLCVCXYPadChannelAxisY "Y"
-
-#define KXMLQLCVCXYPadChannelFixture "Fixture"
-#define KXMLQLCVCXYPadChannelLowLimit "LowLimit"
-#define KXMLQLCVCXYPadChannelHighLimit "HighLimit"
-#define KXMLQLCVCXYPadChannelReverse "Reverse"
 
 class VCXYPad : public VCWidget
 {
@@ -84,53 +73,17 @@ public:
 	void editProperties();
 
 	/*********************************************************************
-	 * Channels
+	 * Fixtures
 	 *********************************************************************/
 public:
-	/**
-	 * Append a new channel to this pad
-	 *
-	 * @param axis X or Y axis channel
-	 * @param fixture The ID of the fixture, whose channel to append
-	 * @param channel The fixture channel to append
-	 * @lowLimit The lowest value that the channel can have with this pad
-	 * @param highLimit The highest value the channel can get with this pad
-	 * @param reverse Treat the axis reversed (up<->down,left<->right)
-	 */
-	void appendChannel(t_axis axis, t_fixture_id fixture, t_channel channel,
-			   t_value lowLimit, t_value highLimit, bool reverse);
+	void appendFixture(const VCXYPadFixture& fxi);
+	void removeFixture(t_fixture_id fxi);
+	void clearFixtures();
 
-	/**
-	 * Remove a channel from this pad
-	 *
-	 * @param axis X or Y axis channel
-	 * @param fixture The ID of the fixture, whose channel to remove
-	 * @param channel The fixture channel to remove
-	 **/
-	void removeChannel(t_axis axis, t_fixture_id fixture, t_channel channel);
-
-	/**
-	 * Get a certain channel unit from this pad
-	 *
-	 * @param axis X or Y axis channel
-	 * @param fixture The ID of the fixture to look up
-	 * @param channel The fixture channel to get
-	 **/
-	XYChannelUnit* channel(t_axis axis, t_fixture_id fixture,
-			       t_channel channel);
-
-	/** Clear all channel lists from this pad */
-	void clearChannels();
-
-	/** Get the pad's list of X axis channels */
-	QList <XYChannelUnit*>* channelsX() { return &m_channelsX; }
-
-	/** Get the pad's list of Y axis channels */
-	QList <XYChannelUnit*>* channelsY() { return &m_channelsY; }
-
+	QList <VCXYPadFixture> fixtures() const { return m_fixtures; }
+	
 protected:
-	QList <XYChannelUnit*> m_channelsX;
-	QList <XYChannelUnit*> m_channelsY;
+	QList <VCXYPadFixture> m_fixtures;
 
 	/*********************************************************************
 	 * Current position
@@ -142,12 +95,19 @@ public:
 	/** Set the pad's current position (i.e. move the point) */
 	void setCurrentXYPosition(const QPoint& point);
 
-	/** Same stuff as above, but with separate x & y integers */
-	void setCurrentXYPosition(int x, int y);
+protected:
+	/** Write DMX data according to the given XY position */
+	void outputDMX(const QPoint& point);
 
 protected:
 	QPoint m_currentXYPosition;
 	QPixmap m_xyPosPixmap;
+
+	/*********************************************************************
+	 * Application Mode
+	 *********************************************************************/
+protected slots:
+	void slotAppModeChanged(App::Mode mode);
 
 	/*********************************************************************
 	 * Load & Save
@@ -177,13 +137,6 @@ public:
 	 * @param root A QDomElement where to create this pad's VCXYPad node
 	 */
 	bool saveXML(QDomDocument* doc, QDomElement* root);
-
-	/*********************************************************************
-	 * DMX writer
-	 *********************************************************************/
-protected:
-	/** Write DMX data according to the given XY position */
-	void outputDMX(int x, int y);
 
 	/*********************************************************************
 	 * Event handlers

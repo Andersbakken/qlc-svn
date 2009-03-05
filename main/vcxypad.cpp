@@ -46,7 +46,7 @@
 extern App* _app;
 
 /*****************************************************************************
- * Initialization
+ * VCXYPad Initialization
  *****************************************************************************/
 
 VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
@@ -55,7 +55,7 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 	setObjectName(VCXYPad::staticMetaObject.className());
 
 	setFrameStyle(KVCFrameStyleSunken);
-	setCaption(QString::null);
+	setCaption("XY Pad");
 	setMinimumSize(20, 20);
 
 	resize(QPoint(120, 120));
@@ -65,11 +65,13 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 	/* Set initial position to center */
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
+
+	connect(_app, SIGNAL(modeChanged(App::Mode)),
+		this, SLOT(slotAppModeChanged(App::Mode)));
 }
 
 VCXYPad::~VCXYPad()
 {
-	clearChannels();
 }
 
 /*****************************************************************************
@@ -92,30 +94,15 @@ VCWidget* VCXYPad::createCopy(VCWidget* parent)
 
 bool VCXYPad::copyFrom(VCWidget* widget)
 {
-	XYChannelUnit* xyc;
-
 	VCXYPad* xypad = qobject_cast <VCXYPad*> (widget);
 	if (xypad == NULL)
 		return false;
 
 	/* Get rid of existing channels */
-	clearChannels();
+	m_fixtures.clear();
 
-	/* Copy X axis channels */
-	QListIterator <XYChannelUnit*> xit(xypad->m_channelsX);
-	while (xit.hasNext() == true)
-	{
-		xyc = new XYChannelUnit(*(xit.next()));
-		m_channelsX.append(xyc);
-	}
-
-	/* Copy Y axis channels */
-	QListIterator <XYChannelUnit*> yit(xypad->m_channelsY);
-	while (yit.hasNext() == true)
-	{
-		xyc = new XYChannelUnit(*(yit.next()));
-		m_channelsY.append(xyc);
-	}
+	/* Copy the other widget's fixtures */
+	m_fixtures = xypad->fixtures();
 
 	/* Copy the current position */
 	setCurrentXYPosition(xypad->currentXYPosition());
@@ -136,78 +123,26 @@ void VCXYPad::editProperties()
 }
 
 /*****************************************************************************
- * Channels
+ * Fixtures
  *****************************************************************************/
-void VCXYPad::clearChannels()
-{
-	while (m_channelsX.isEmpty() == false)
-		delete m_channelsX.takeFirst();
 
-	while (m_channelsY.isEmpty() == false)
-		delete m_channelsY.takeFirst();
+void VCXYPad::appendFixture(const VCXYPadFixture& fxi)
+{
+	if (m_fixtures.indexOf(fxi) == -1)
+		m_fixtures.append(fxi);
 }
 
-void VCXYPad::appendChannel(t_axis axis, t_fixture_id fixture,
-			    t_channel channel, t_value lowLimit,
-			    t_value highLimit, bool reverse)
+void VCXYPad::removeFixture(t_fixture_id fxi_id)
 {
-	XYChannelUnit* xyc = NULL;
+	VCXYPadFixture fixture;
+	fixture.setFixture(fxi_id);
 
-	if (this->channel(axis, fixture, channel) == NULL)
-	{
-		xyc = new XYChannelUnit(fixture, channel,
-					lowLimit, highLimit, reverse);
-		if (axis == KAxisX)
-			m_channelsX.append(xyc);
-		else
-			m_channelsY.append(xyc);
-	}
+	m_fixtures.removeAll(fixture);
 }
 
-void VCXYPad::removeChannel(t_axis axis, t_fixture_id fixture,
-			    t_channel channel)
+void VCXYPad::clearFixtures()
 {
-	QList <XYChannelUnit*>* list;
-
-	if (axis == KAxisX)
-		list = &m_channelsX;
-	else
-		list = &m_channelsY;
-
-	QMutableListIterator <XYChannelUnit*> it(*list);
-	while (it.hasNext() == true)
-	{
-		XYChannelUnit* xyc = it.next();
-		if (xyc != NULL && xyc->fixtureID() == fixture &&
-		    xyc->channel() == channel)
-		{
-			it.remove();
-			delete xyc;
-			break;
-		}
-	}
-}
-
-XYChannelUnit* VCXYPad::channel(t_axis axis, t_fixture_id fixture,
-				t_channel channel)
-{
-	XYChannelUnit* xyc;
-	QList <XYChannelUnit*>* list;
-
-	if (axis == KAxisX)
-		list = &m_channelsX;
-	else
-		list = &m_channelsY;
-
-	QListIterator <XYChannelUnit*> it(*list);
-	while (it.hasNext() == true)
-	{
-		xyc = it.next();
-		if (xyc->fixtureID() == fixture && xyc->channel() == channel)
-			return xyc;
-	}
-
-	return NULL;
+	m_fixtures.clear();
 }
 
 /*****************************************************************************
@@ -216,13 +151,39 @@ XYChannelUnit* VCXYPad::channel(t_axis axis, t_fixture_id fixture,
 
 void VCXYPad::setCurrentXYPosition(const QPoint& point)
 {
-	m_currentXYPosition = point;;
-	repaint();
+	m_currentXYPosition = point;
+	update();
 }
 
-void VCXYPad::setCurrentXYPosition(int x, int y)
+void VCXYPad::outputDMX(const QPoint& point)
 {
-	setCurrentXYPosition(QPoint(x, y));
+	/* Scale XY coordinate values to 0.0 - 1.0 */
+	float x = SCALE(float(point.x()), float(0), float(width()),
+			float(0), float(1));
+	float y = SCALE(float(point.y()), float(0), float(height()),
+			float(0), float(1));
+
+	VCXYPadFixture fixture;
+	foreach (fixture, m_fixtures)
+		fixture.outputDMX(x, y);
+}
+
+/*****************************************************************************
+ * Application mode
+ *****************************************************************************/
+
+void VCXYPad::slotAppModeChanged(App::Mode mode)
+{
+	QMutableListIterator <VCXYPadFixture> it(m_fixtures);
+	while (it.hasNext() == true)
+	{
+		VCXYPadFixture fxi(it.next());
+		if (mode == App::Operate)
+			fxi.arm();
+		else
+			fxi.disarm();
+		it.setValue(fxi);
+	}
 }
 
 /*****************************************************************************
@@ -300,43 +261,11 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 			str = tag.attribute(KXMLQLCVCXYPadPositionY);
 			ypos = str.toInt();
 		}
-		else if (tag.tagName() == KXMLQLCVCXYPadChannel)
+		else if (tag.tagName() == KXMLQLCVCXYPadFixture)
 		{
-			QString axis;
-			t_fixture_id fixture = KNoID;
-			t_value lowLimit = 0;
-			t_value highLimit = 255;
-			bool reverse = false;
-			t_channel channel = 0;
-
-			/* Axis */
-			axis = tag.attribute(KXMLQLCVCXYPadChannelAxis);
-
-			/* Fixture ID */
-			str = tag.attribute(KXMLQLCVCXYPadChannelFixture);
-			fixture = str.toInt();
-
-			/* Low limit */
-			str = tag.attribute(KXMLQLCVCXYPadChannelLowLimit);
-			lowLimit = str.toInt();
-
-			/* High limit */
-			str = tag.attribute(KXMLQLCVCXYPadChannelHighLimit);
-			highLimit = str.toInt();
-
-			/* Reverse */
-			str = tag.attribute(KXMLQLCVCXYPadChannelReverse);
-			reverse = (bool) str.toInt();
-
-			/* Fixture channel number */
-			channel = tag.text().toInt();
-
-			if (axis == KXMLQLCVCXYPadChannelAxisX)
-				appendChannel(KAxisX, fixture, channel,
-					      lowLimit, highLimit, reverse);
-			else
-				appendChannel(KAxisY, fixture, channel,
-					      lowLimit, highLimit, reverse);
+			VCXYPadFixture fxi;
+			if (fxi.loadXML(doc, &tag) == true)
+				appendFixture(fxi);
 		}
 		else
 		{
@@ -349,14 +278,13 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 	/* First set window dimensions and AFTER that set the
 	   pointer's XY position */
 	setGeometry(x, y, w, h);
-	setCurrentXYPosition(xpos, ypos);
+	setCurrentXYPosition(QPoint(xpos, ypos));
 
 	return true;
 }
 
 bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
-	XYChannelUnit* xyc = NULL;
 	QDomElement root;
 	QDomElement tag;
 	QDomText text;
@@ -372,84 +300,21 @@ bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Caption */
 	root.setAttribute(KXMLQLCVCCaption, caption());
 
+	/* Fixtures */
+	VCXYPadFixture fixture;
+	foreach (fixture, m_fixtures)
+		fixture.saveXML(doc, &root);
+
 	/* Current XY Position */
 	tag = doc->createElement(KXMLQLCVCXYPadPosition);
-	str.setNum(currentXYPosition().x());
-	tag.setAttribute(KXMLQLCVCXYPadPositionX, str);
-	str.setNum(currentXYPosition().x());
-	tag.setAttribute(KXMLQLCVCXYPadPositionY, str);
+	tag.setAttribute(KXMLQLCVCXYPadPositionX,
+			 QString("%1").arg(currentXYPosition().x()));
+	tag.setAttribute(KXMLQLCVCXYPadPositionY,
+			 QString("%1").arg(currentXYPosition().y()));
 	root.appendChild(tag);
 
 	/* Window state */
 	QLCFile::saveXMLWindowState(doc, &root, this);
-
-	/* X Channels */
-	QListIterator <XYChannelUnit*> xit(m_channelsX);
-	while (xit.hasNext() == true)
-	{
-		xyc = xit.next();
-
-		tag = doc->createElement(KXMLQLCVCXYPadChannel);
-
-		/* This is an X axis channel */
-		tag.setAttribute(KXMLQLCVCXYPadChannelAxis,
-				 KXMLQLCVCXYPadChannelAxisX);
-
-		/* Fixture ID */
-		str.setNum(xyc->fixtureID());
-		tag.setAttribute(KXMLQLCVCXYPadChannelFixture, str);
-
-		/* Channel low value limit */
-		str.setNum(xyc->lo());
-		tag.setAttribute(KXMLQLCVCXYPadChannelLowLimit, str);
-
-		/* Channel high value limit */
-		str.setNum(xyc->hi());
-		tag.setAttribute(KXMLQLCVCXYPadChannelHighLimit, str);
-
-		/* Reverse */
-		str.setNum(xyc->reverse());
-		tag.setAttribute(KXMLQLCVCXYPadChannelReverse, str);
-
-		/* DMX Channel number */
-		str.setNum(xyc->channel());
-		text = doc->createTextNode(str);
-		tag.appendChild(text);
-
-		root.appendChild(tag);
-	}
-
-	/* Y Channels */
-	QListIterator <XYChannelUnit*> yit(m_channelsY);
-	while (yit.hasNext() == true)
-	{
-		xyc = yit.next();
-
-		tag = doc->createElement(KXMLQLCVCXYPadChannel);
-
-		/* This is an Y axis channel */
-		tag.setAttribute(KXMLQLCVCXYPadChannelAxis,
-				 KXMLQLCVCXYPadChannelAxisY);
-
-		/* Fixture ID */
-		str.setNum(xyc->fixtureID());
-		tag.setAttribute(KXMLQLCVCXYPadChannelFixture, str);
-
-		/* Channel low value limit */
-		str.setNum(xyc->lo());
-		tag.setAttribute(KXMLQLCVCXYPadChannelLowLimit, str);
-
-		/* Channel high value limit */
-		str.setNum(xyc->hi());
-		tag.setAttribute(KXMLQLCVCXYPadChannelHighLimit, str);
-
-		/* Fixture channel number */
-		str.setNum(xyc->channel());
-		text = doc->createTextNode(str);
-		tag.appendChild(text);
-
-		root.appendChild(tag);
-	}
 
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
@@ -469,14 +334,19 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 	QPainter p(this);
 	QPen pen;
 
+	/* Draw name (offset just a bit to avoid frame) */
+	p.drawText(1, 1, width() - 2, height() - 2,
+		   Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, caption());
+
 	/* Draw crosshairs to indicate the center position */
 	pen.setStyle(Qt::DotLine);
 	pen.setColor(palette().color(QPalette::WindowText));
-	pen.setWidth(1);
+	pen.setWidth(0);
 	p.setPen(pen);
 	p.drawLine(width() / 2, 0, width() / 2, height());
 	p.drawLine(0, height() / 2, width(), height() / 2);
 
+	/* Draw the current point pixmap */
 	p.drawPixmap(m_currentXYPosition.x() - (m_xyPosPixmap.width() / 2),
 		     m_currentXYPosition.y() - (m_xyPosPixmap.height() / 2),
 		     m_xyPosPixmap);
@@ -484,125 +354,49 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 
 void VCXYPad::mousePressEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (_app->mode() == App::Operate)
 	{
-		/* Let the parent class take care of moving & resizing */
-		VCWidget::mousePressEvent(e);
-	}
-	else
-	{
-		setCurrentXYPosition(e->x(), e->y());
+		/* Mouse moves the XY point in operate mode */
+		int x = CLAMP(e->x(), 0, width());
+		int y = CLAMP(e->y(), 0, height());
+		QPoint point(x, y);
 
+		setCurrentXYPosition(point);
+		outputDMX(point);
 		setMouseTracking(true);
 		setCursor(Qt::CrossCursor);
-
-		outputDMX(e->x(), e->y());
-
-		VCWidget::mousePressEvent(e);
 	}
+
+	VCWidget::mousePressEvent(e);
 }
 
 void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (_app->mode() == App::Operate)
 	{
-		/* Let the parent class take care of moving & resizing */
-		VCWidget::mouseReleaseEvent(e);
-	}
-	else
-	{
+		/* Mouse moves the XY point in operate mode */
 		setMouseTracking(false);
 		unsetCursor();
+
 		VCWidget::mouseReleaseEvent(e);
 	}
+
+	VCWidget::mouseReleaseEvent(e);
 }
 
 void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (_app->mode() == App::Operate)
 	{
-		/* Let the parent class take care of moving & resizing */
-		VCWidget::mouseMoveEvent(e);
-	}
-	else
-	{
-		/* The following is not done by hasMouse() because
-		   that fails if there are child widgets */
-		if (e->x() > 0 &&  e->y() > 0 &&
-		    e->x() < rect().width() &&
-		    e->y() < rect().height())
-		{
-			m_currentXYPosition = mapFromGlobal(m_currentXYPosition);
-			m_currentXYPosition.setX(e->x());
-			m_currentXYPosition.setY(e->y());
-			repaint();
+		/* Mouse moves the XY point in operate mode */
+		int x = CLAMP(e->x(), 0, width());
+		int y = CLAMP(e->y(), 0, height());
+		QPoint point(x, y);
 
-			outputDMX( e->x(), e->y());
-			setCursor(Qt::CrossCursor);
-		}
-		else
-		{
-			unsetCursor();
-		}
-
-		VCWidget::mouseMoveEvent(e);
+		setCurrentXYPosition(point);
+		outputDMX(point);
+		update();
 	}
+
+	VCWidget::mouseMoveEvent(e);
 }
-
-/*****************************************************************************
- * DMX writer
- *****************************************************************************/
-
-void VCXYPad::outputDMX(int x, int y)
-{
-	int delta;
-	int xx;
-
-	QListIterator <XYChannelUnit*> xit(*channelsX());
-	while (xit.hasNext() == true)
-	{
-		XYChannelUnit* xyc = xit.next();
-
-		delta = xyc->hi() - xyc->lo();
-		xx = xyc->lo() + int((delta * x) / rect().width());
-
-		if (xyc->reverse() == false)
-		{
-			_app->outputMap()->setValue(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(), (t_value) xx);
-		}
-		else
-		{
-			_app->outputMap()->setValue(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(),
-				(t_value) KChannelValueMax - xx);
-		}
-	}
-
-	QListIterator <XYChannelUnit*> yit(*channelsY());
-	while (yit.hasNext() == true)
-	{
-		XYChannelUnit* xyc = yit.next();
-
-		delta = xyc->hi() - xyc->lo();
-		xx = xyc->lo() + int((delta * y) / rect().height());
-
-		if (xyc->reverse() == false)
-		{
-			_app->outputMap()->setValue(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(), (t_value) xx);
-		}
-		else
-		{
-			_app->outputMap()->setValue(
-				xyc->fixture()->universeAddress() +
-				xyc->channel(),
-				(t_value) KChannelValueMax - xx);
-		}
-	}
-
-}
-

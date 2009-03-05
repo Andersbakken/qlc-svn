@@ -49,7 +49,6 @@ HEADERS += aboutbox.h \
            efxfixture.h \
            fixture.h \
            fixtureconsole.h \
-           fixturelist.h \
            fixturemanager.h \
            fixtureproperties.h \
            fixtureselection.h \
@@ -88,6 +87,8 @@ HEADERS += aboutbox.h \
            vcsliderproperties.h \
            vcwidget.h \
            vcxypad.h \
+ 	   vcxypadfixture.h \
+ 	   vcxypadfixtureeditor.h \
            vcxypadproperties.h \
            virtualconsole.h \
            xychannelunit.h
@@ -98,7 +99,6 @@ FORMS += aboutbox.ui \
          chasereditor.ui \
          collectioneditor.ui \
          efxeditor.ui \
-         fixturelist.ui \
          fixtureproperties.ui \
          fixtureselection.ui \
          functionselection.ui \
@@ -114,6 +114,7 @@ FORMS += aboutbox.ui \
          vcframeproperties.ui \
          vcproperties.ui \
          vcsliderproperties.ui \
+         vcxypadfixtureeditor.ui \
          vcxypadproperties.ui
 
 SOURCES += aboutbox.cpp \
@@ -134,7 +135,6 @@ SOURCES += aboutbox.cpp \
            efxfixture.cpp \
            fixture.cpp \
            fixtureconsole.cpp \
-           fixturelist.cpp \
            fixturemanager.cpp \
            fixtureproperties.cpp \
            fixtureselection.cpp \
@@ -174,6 +174,8 @@ SOURCES += aboutbox.cpp \
            vcsliderproperties.cpp \
            vcwidget.cpp \
            vcxypad.cpp \
+           vcxypadfixture.cpp \
+           vcxypadfixtureeditor.cpp \
            vcxypadproperties.cpp \
            virtualconsole.cpp \
            xychannelunit.cpp
