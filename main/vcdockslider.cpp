@@ -49,9 +49,7 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 	m_slider->setStyle(App::saneStyle());
 
 	m_bus = bus;
-	slotBusValueChanged(m_bus, Bus::value(m_bus));
-	slotBusNameChanged(m_bus, Bus::name(m_bus));
-	
+
 	/* Bus connections */
 	connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
 		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
@@ -76,6 +74,9 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 
 	/* Read slider's properties */
 	refreshProperties();
+
+	slotBusValueChanged(m_bus, Bus::value(m_bus));
+	slotBusNameChanged(m_bus, Bus::name(m_bus));
 
 	m_time.start();
 }
