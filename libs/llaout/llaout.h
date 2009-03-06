@@ -25,6 +25,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QList>
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 #include "llaoutthread.h"
@@ -33,6 +34,8 @@ class ConfigureLlaOut;
 
 // Number of output universes
 enum { K_UNIVERSE_COUNT = 4 };
+
+typedef QList<unsigned int> OutputList;
 
 // The LLA Output plugin
 class LLAOut : public QObject, public QLCOutPlugin
@@ -58,13 +61,13 @@ public:
   void readRange(t_output output, t_channel address, t_value* values,
                  t_channel num);
 
+  const OutputList outputMapping() const;
+  void setOutputUniverse(t_output output, unsigned int universe);
+
 protected:
   QString m_configDir;
   LlaOutThread *m_thread;
-
-private:
-  // dmx data buffers
-  t_channel *m_dmx_data[K_UNIVERSE_COUNT];
+  OutputList m_output_list;
 };
 
 #endif

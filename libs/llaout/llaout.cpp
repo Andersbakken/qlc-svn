@@ -35,6 +35,11 @@
  */
 void LLAOut::init()
 {
+  // TODO: load this from a savefile at some point
+  for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
+    m_output_list.append(i);
+
+  // Choose between Standalone or Embedded
   //m_thread = new LlaEmbeddedServer();
   m_thread = new LlaStandaloneClient();
   if (!m_thread->start())
@@ -42,7 +47,6 @@ void LLAOut::init()
     qWarning() << "llaout: start thread failed";
     return;
   }
-  memset(m_dmx_data, 0x00, K_UNIVERSE_COUNT * sizeof(t_channel*));
 }
 
 
@@ -57,23 +61,6 @@ void LLAOut::open(t_output output)
     qWarning() << "llaout: output " << output << " out of range";
     return;
   }
-
-  if (m_dmx_data[output])
-  {
-    qWarning() << "llaout: output " << output << " already active";
-    return;
-  }
-
-  t_channel *dmx_buffer = (t_channel*) malloc(K_UNIVERSE_SIZE *
-                                              sizeof(t_channel));
-
-  if (!dmx_buffer)
-  {
-    qWarning() << "llaout: malloc failed for output " << output;
-    return;
-  }
-
-  m_dmx_data[output] = dmx_buffer;
 }
 
 
@@ -88,14 +75,6 @@ void LLAOut::close(t_output output)
     qWarning() << "llaout: output " << output << " out of range";
     return;
   }
-
-  if (!m_dmx_data[output])
-  {
-    qWarning() << "llaout: output " << output << " not active";
-    return;
-  }
-  free(m_dmx_data[output]);
-  m_dmx_data[output] = NULL;
 }
 
 
@@ -106,10 +85,10 @@ void LLAOut::close(t_output output)
 QStringList LLAOut::outputs()
 {
   QStringList list;
-  for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
+  for (int i = 0; i != m_output_list.size(); ++i)
   {
     QString s;
-    s.sprintf("%d: LLA Universe %d", i, i);
+    s.sprintf("LLA Output %d", i+1);
     list << s;
   }
   return list;
@@ -121,7 +100,7 @@ QStringList LLAOut::outputs()
  */
 QString LLAOut::name()
 {
-  return QString("LLA Output");
+  return QString("LLA Output Plugin");
 }
 
 
@@ -129,10 +108,10 @@ QString LLAOut::name()
  * Configure this plugin.
  * TODO: Add this.
  * Things we may want:
- *   - http server on/off
- *   - listen for other clients
- *   - universe ID
- *   - lla device patching
+ *  - http server on/off
+ *  - listen for other clients
+ *  - universe ID
+ *  - lla device patching
  */
 void LLAOut::configure()
 {
@@ -180,61 +159,73 @@ QString LLAOut::infoText(t_output output)
 
 
 /*
- * Write a single channel.
+ * Write a single channel. Heikki says this will be deprecated soon.
  */
 void LLAOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
-  if (output > K_UNIVERSE_COUNT || !m_thread || channel > K_UNIVERSE_SIZE)
-    return;
-
-  m_dmx_data[output][channel] = value;
+  Q_UNUSED(output);
+  Q_UNUSED(channel);
+  Q_UNUSED(value);
 }
 
 
 /*
- * Write a range of channels.
+ * Write a range of channels. We can assume here that address is always 0 and
+ * num is always 512.
  */
 void LLAOut::writeRange(t_output output, t_channel address, t_value* values,
                         t_channel num)
 {
-  if (output > K_UNIVERSE_COUNT || !m_thread || address > K_UNIVERSE_SIZE)
+  if (output > K_UNIVERSE_COUNT || !m_thread || address != 0 ||
+      num != K_UNIVERSE_SIZE)
     return;
-
-  unsigned int length = num;
-  if (address + length > K_UNIVERSE_SIZE)
-    length = K_UNIVERSE_SIZE - address;
-
-  memcpy(&m_dmx_data[output][address], values, length);
-  m_thread->write_dmx(output + 1, (dmx_t*) m_dmx_data[output], K_UNIVERSE_SIZE);
+  m_thread->write_dmx(m_output_list[output], (dmx_t*) values, num);
 }
 
 
 /*
- * Read a single channel.
+ * Read a single channel. Heikki says this will be deprecated soon.
  */
 void LLAOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
-  if (output > K_UNIVERSE_COUNT || !m_thread || channel > K_UNIVERSE_SIZE)
-    return;
-
-  *value = m_dmx_data[output][channel];
+  Q_UNUSED(output);
+  Q_UNUSED(channel);
+  Q_UNUSED(value);
 }
 
 
 /*
- * Read a change of channels.
+ * Read a change of channels. Heikki says this will be deprecated soon.
  */
 void LLAOut::readRange(t_output output, t_channel address, t_value* values,
                        t_channel num)
 {
-  if (output > K_UNIVERSE_COUNT || !m_thread || address > K_UNIVERSE_SIZE)
+  Q_UNUSED(output);
+  Q_UNUSED(address);
+  Q_UNUSED(values);
+  Q_UNUSED(num);
+}
+
+
+/*
+ * Return the output: universe mapping
+ */
+const OutputList LLAOut::outputMapping() const
+{
+  return m_output_list;
+}
+
+
+/*
+ * Set the LLA universe for an output
+ * @param output the id of the output to change
+ * @param universe the LLA universe id
+ */
+void LLAOut::setOutputUniverse(t_output output, unsigned int universe)
+{
+  if (output > K_UNIVERSE_COUNT)
     return;
-
-  unsigned int length = num;
-  if (address + length > K_UNIVERSE_SIZE)
-    length = K_UNIVERSE_SIZE - address;
-
-  memcpy(values, &m_dmx_data[output][address], length);
+  m_output_list[output] = universe;
 }
 
 Q_EXPORT_PLUGIN2(llaout, LLAOut)
