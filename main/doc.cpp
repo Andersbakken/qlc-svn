@@ -516,6 +516,13 @@ t_channel Doc::findAddress(int universe, t_channel numChannels)
 
 Function* Doc::newFunction(Function::Type type)
 {
+	if (functions() >= KFunctionArraySize)
+	{
+		qDebug() << "Cannot add more than" << KFunctionArraySize
+			 << "functions";
+		return NULL;
+	}
+
 	Function* function = NULL;
 
 	// Find the next free space from function array
@@ -534,12 +541,6 @@ Function* Doc::newFunction(Function::Type type)
 
 			break;
 		}
-	}
-
-	if (function == NULL)
-	{
-		qDebug() << QString("Cannot add any more functions. All %1"
-				    " are occupied.").arg(KFunctionArraySize);
 	}
 
 	return function;

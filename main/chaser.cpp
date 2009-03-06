@@ -46,6 +46,7 @@ Chaser::Chaser(QObject* parent) : Function(parent, Function::Chaser)
 	m_runTimeDirection = Forward;
 	m_runTimePosition = 0;
 
+	setName(tr("New Chaser"));
 	setBus(KBusIDDefaultHold);
 
 	connect(Bus::emitter(), SIGNAL(tapped(t_bus_id)),

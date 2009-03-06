@@ -566,50 +566,18 @@ void FunctionManager::addFunction(Function::Type type)
 	QTreeWidgetItem* item;
 	Function* function;
 
-	switch(type)
+	/* Check that we haven't exceeded function count */
+	if (_app->doc()->functions() >= KFunctionArraySize)
 	{
-	case Function::Scene:
-	{
-		function = _app->doc()->newFunction(Function::Scene);
-		if (function == NULL)
-			return;
-		function->setName(tr("New Scene"));
-	}
-	break;
-
-	case Function::Chaser:
-	{
-		function = _app->doc()->newFunction(Function::Chaser);
-		if (function == NULL)
-			return;
-		function->setName(tr("New Chaser"));
-	}
-	break;
-
-	case Function::Collection:
-	{
-		function = _app->doc()->newFunction(Function::Collection);
-		if (function == NULL)
-			return;
-		function->setName(tr("New Collection"));
-	}
-	break;
-
-	case Function::EFX:
-	{
-		function = _app->doc()->newFunction(Function::EFX);
-		if (function == NULL)
-			return;
-		function->setName(tr("New EFX"));
-	}
-	break;
-
-	default:
-		function = NULL;
+		QMessageBox::critical(this, tr("Too many functions"),
+			     tr("You can't create more than %1 functions."));
 		return;
-		break;
 	}
 
+	/* Create a new function */
+	function = _app->doc()->newFunction(type);
+	Q_ASSERT(function != NULL);
+	
 	/* Create a new item for the function */
 	item = new QTreeWidgetItem(m_tree);
 	updateFunctionItem(item, function);

@@ -42,6 +42,7 @@ extern App* _app;
 
 Collection::Collection(QObject* parent) : Function(parent, Function::Collection)
 {
+	setName(tr("New Collection"));
 }
 
 Collection::~Collection()

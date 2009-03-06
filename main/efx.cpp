@@ -87,6 +87,8 @@ EFX::EFX(QObject* parent) : Function(parent, Function::EFX)
 
 	m_stepSize = 0;
 
+	setName(tr("New EFX"));
+
 	/* Set Default Fade as the speed bus */
 	setBus(KBusIDDefaultFade);
 	connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id,t_bus_value)),

@@ -144,6 +144,7 @@ bool SceneValue::operator== (const SceneValue& scv) const
 
 Scene::Scene(QObject* parent) : Function(parent, Function::Scene)
 {
+	setName(tr("New Scene"));
 	setBus(KBusIDDefaultFade);
 }
 
