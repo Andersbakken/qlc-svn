@@ -874,52 +874,72 @@ void VirtualConsole::slotEditPaste()
 		/* Invalidate the edit action if there's nothing to paste */
 		m_editAction = EditNone;
 		m_editPasteAction->setEnabled(false);
+		return;
 	}
-	else if (m_editAction == EditCut)
+	
+	VCWidget* parent;
+	VCWidget* widget;
+	QRect bounds;
+
+	Q_ASSERT(contents() != NULL);
+
+	/* Select the parent that gets the cut clipboard contents */
+	if (m_selectedWidgets.count() == 0)
+		parent = contents();
+	else
+		parent = m_selectedWidgets.last();
+
+	/* Get the bounding rect for all selected widgets */
+	QListIterator <VCWidget*> it(m_clipboard);
+	while (it.hasNext() == true)
 	{
-		VCWidget* parent;
+		widget = it.next();
+		Q_ASSERT(widget != NULL);
+		bounds = bounds.united(widget->geometry());
+	}
 
-		Q_ASSERT(contents() != NULL);
+	/* Get the upcoming parent's last mouse click point */
+	QPoint cp(parent->lastClickPoint());
 
-		/* Select the parent that gets the cut clipboard contents */
-		if (m_selectedWidgets.count() == 0)
-			parent = contents();
-		else
-			parent = m_selectedWidgets.last();
-
-		/* Move each widget to the new parent */
-		QMutableListIterator <VCWidget*> it(m_clipboard);
+	if (m_editAction == EditCut)
+	{
+		it.toFront();
 		while (it.hasNext() == true)
 		{
-			VCWidget* widget = it.next();
+			widget = it.next();
 			Q_ASSERT(widget != NULL);
+
+			/* Get widget's relative pos to the bounding rect */
+			QPoint p(widget->x() - bounds.x() + cp.x(),
+				 widget->y() - bounds.y() + cp.y());
+
+			/* Reparent and move to the correct place */
 			widget->setParent(parent);
+			widget->move(p);
 			widget->show();
 		}
-
+		
 		/* Clear clipboard after pasting stuff that was CUT */
 		m_clipboard.clear();
 		m_editPasteAction->setEnabled(false);
 	}
 	else if (m_editAction == EditCopy)
 	{
-		VCWidget* parent;
-
-		Q_ASSERT(contents() != NULL);
-
-		/* Select the parent that gets the copied clipboard contents */
-		if (m_selectedWidgets.count() == 0)
-			parent = contents();
-		else
-			parent = m_selectedWidgets.last();
-
-		/* Copy each widget to the parent */
-		QMutableListIterator <VCWidget*> it(m_clipboard);
+		it.toFront();
 		while (it.hasNext() == true)
 		{
-			VCWidget* widget = it.next()->createCopy(parent);
+			widget = it.next();
 			Q_ASSERT(widget != NULL);
-			widget->show();
+
+			/* Get widget's relative pos to the bounding rect */
+			QPoint p(widget->x() - bounds.x() + cp.x(),
+				 widget->y() - bounds.y() + cp.y());
+
+			/* Create a copy and move to correct place */
+			VCWidget* copy = widget->createCopy(parent);
+			Q_ASSERT(copy != NULL);
+			copy->move(p);
+			copy->show();
 		}
 	}
 }
