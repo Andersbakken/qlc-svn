@@ -71,11 +71,9 @@ FunctionManager::FunctionManager(QWidget* parent, Qt::WindowFlags flags)
 	initMenu();
 	initToolbar();
 
-	// Create function tree
 	initTree();
-
-	// Get all functions
 	updateTree();
+	updateActionStatus();
 }
 
 FunctionManager::~FunctionManager()
@@ -215,12 +213,12 @@ void FunctionManager::initMenu()
 	layout()->setMenuBar(new QMenuBar(this));
 
 	/* Function menu */
-	m_manageMenu = new QMenu(this);
-	m_manageMenu->setTitle(tr("&Manage"));
-	m_manageMenu->addAction(m_addSceneAction);
-	m_manageMenu->addAction(m_addChaserAction);
-	m_manageMenu->addAction(m_addEFXAction);
-	m_manageMenu->addAction(m_addCollectionAction);
+	m_addMenu = new QMenu(this);
+	m_addMenu->setTitle(tr("&Add"));
+	m_addMenu->addAction(m_addSceneAction);
+	m_addMenu->addAction(m_addChaserAction);
+	m_addMenu->addAction(m_addEFXAction);
+	m_addMenu->addAction(m_addCollectionAction);
 
 	/* Edit menu */
 	m_editMenu = new QMenu(this);
@@ -237,7 +235,7 @@ void FunctionManager::initMenu()
 	m_busGroup = new QActionGroup(this);
 	m_busGroup->setExclusive(false);
 	m_busMenu = new QMenu(this);
-	m_busMenu->setTitle("&Assign bus");
+	m_busMenu->setTitle("Assign &bus");
 	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
 	{
 		/* <xx>: <name> */
@@ -258,7 +256,7 @@ void FunctionManager::initMenu()
 		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
 
 	/* Construct menu bar */
-	static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_manageMenu);
+	static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
 	static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_editMenu);
 	m_editMenu->addMenu(m_busMenu);
 }
@@ -536,7 +534,7 @@ void FunctionManager::slotTreeContextMenuRequested(const QPoint& point)
 	Q_UNUSED(point);
 
 	QMenu contextMenu(this);
-	contextMenu.addMenu(m_manageMenu);
+	contextMenu.addMenu(m_addMenu);
 	contextMenu.addMenu(m_editMenu);
 
 	updateActionStatus();

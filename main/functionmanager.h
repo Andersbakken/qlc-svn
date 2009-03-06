@@ -126,7 +126,7 @@ protected:
 	void updateActionStatus();
 
 protected:
-	QMenu* m_manageMenu;
+	QMenu* m_addMenu;
 	QMenu* m_editMenu;
 	QMenu* m_busMenu;
 
