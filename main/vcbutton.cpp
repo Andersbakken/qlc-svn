@@ -439,7 +439,8 @@ bool VCButton::loadKeyBind(QDomDocument* doc, QDomElement* key_root)
 			int mod = tag.attribute("Modifier").toInt();
 			int key = tag.text().toInt();
 
-			setKeySequence(QKeySequence(key | mod));
+			if (key < Qt::Key_unknown)
+				setKeySequence(QKeySequence(key | mod));
 		}
 		else if (tag.tagName() == "Action")
 		{

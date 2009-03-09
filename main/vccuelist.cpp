@@ -418,9 +418,10 @@ bool VCCueList::loadKeyBind(QDomDocument* doc, QDomElement* key_root)
 		if (tag.tagName() == "Key")
 		{
 			int mod = tag.attribute("Modifier").toInt();
-			int key = tag.text().toInt();
+			int key = tag.text().toUInt();
 
-			setKeySequence(QKeySequence(key | mod));
+			if (key < Qt::Key_unknown)
+				setKeySequence(QKeySequence(key | mod));
 		}
 		else
 		{
