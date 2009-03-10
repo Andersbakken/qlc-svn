@@ -44,7 +44,8 @@ public:
 	~EditMode();
 
 protected:
-	/** Initialize the dialog */
+	void loadDefaults();
+	void saveDefaults();
 	void init();
 
 	/*********************************************************************

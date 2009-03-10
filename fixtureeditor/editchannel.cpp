@@ -28,12 +28,16 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QGroupBox>
+#include <QSettings>
+#include <QPoint>
+#include <QSize>
 
-#include "common/qlcchannel.h"
 #include "common/qlccapability.h"
+#include "common/qlcchannel.h"
 
-#include "editchannel.h"
 #include "editcapability.h"
+#include "editchannel.h"
+#include "app.h"
 
 #define KColumnMin 0
 #define KColumnMax 1
@@ -46,12 +50,39 @@ EditChannel::EditChannel(QWidget* parent, QLCChannel* channel) : QDialog(parent)
 
 	setupUi(this);
 	init();
+
+	loadDefaults();
 }
 
 EditChannel::~EditChannel()
 {
+	saveDefaults();
+
 	if (m_channel != NULL)
 		delete m_channel;
+}
+
+void EditChannel::loadDefaults()
+{
+	QSettings settings;
+	QPoint pos;
+	QSize size;
+
+	pos = settings.value(KApplicationName + "/editchannel/position", 
+			     QPoint()).toPoint();
+	size = settings.value(KApplicationName + "/editchannel/size",
+			      QSize(450, 500)).toSize();
+
+	resize(size);
+	if (pos.isNull() == false)
+		move(pos);
+}
+
+void EditChannel::saveDefaults()
+{
+	QSettings settings;
+	settings.setValue(KApplicationName + "/editchannel/position", pos());
+	settings.setValue(KApplicationName + "/editchannel/size", size());
 }
 
 void EditChannel::init()

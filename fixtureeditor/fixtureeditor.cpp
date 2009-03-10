@@ -85,12 +85,38 @@ QLCFixtureEditor::QLCFixtureEditor(QWidget* parent,
 	init();
 	setCaption();
 
+	loadDefaults();
 	setModified(false);
 }
 
 QLCFixtureEditor::~QLCFixtureEditor()
 {
+	saveDefaults();
 	delete m_fixtureDef;
+}
+
+void QLCFixtureEditor::loadDefaults()
+{
+	QSettings settings;
+	QPoint pos;
+	QSize size;
+
+	pos = settings.value(KApplicationName + "/fixtureeditor/position", 
+			     QPoint(0, 0)).toPoint();
+	size = settings.value(KApplicationName + "/fixtureeditor/size",
+			      QSize(450, 500)).toSize();
+
+	parentWidget()->resize(size);
+	parentWidget()->move(pos);
+}
+
+void QLCFixtureEditor::saveDefaults()
+{
+	QSettings settings;
+	settings.setValue(KApplicationName + "/fixtureeditor/position",
+			  parentWidget()->pos());
+	settings.setValue(KApplicationName + "/fixtureeditor/size",
+			  parentWidget()->size());
 }
 
 void QLCFixtureEditor::init()

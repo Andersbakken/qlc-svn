@@ -62,6 +62,10 @@ App::App(QWidget* parent) : QMainWindow(parent)
 	setWindowIcon(QIcon(":/qlc-fixtureeditor.png"));
 	setCentralWidget(new QMdiArea(this));
 
+	QCoreApplication::setOrganizationName("qlc");
+	QCoreApplication::setOrganizationDomain("sf.net");
+	QCoreApplication::setApplicationName("Fixture Editor");
+
 	initActions();
 	initMenuBar();
 	initToolBar();
@@ -77,7 +81,7 @@ App::~App()
 
 void App::loadDefaults()
 {
-	QSettings settings(KApplicationName, KApplicationName);
+	QSettings settings;
 	QPoint pos = settings.value(KApplicationName + "/mainwindow/position", 
 				    QPoint(0, 0)).toPoint();
 	QSize size = settings.value(KApplicationName + "/mainwindow/size",
@@ -88,7 +92,7 @@ void App::loadDefaults()
 
 void App::saveDefaults()
 {
-	QSettings settings(KApplicationName, KApplicationName);
+	QSettings settings;
 	settings.setValue(KApplicationName + "/mainwindow/position", pos());
 	settings.setValue(KApplicationName + "/mainwindow/size", size());
 }

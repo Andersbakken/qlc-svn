@@ -27,13 +27,17 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QSettings>
 #include <QSpinBox>
+#include <QPoint>
+#include <QSize>
 
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlcphysical.h"
 #include "common/qlcchannel.h"
 #include "editmode.h"
+#include "app.h"
 
 #define KChannelsColumnNumber 0
 #define KChannelsColumnName 1
@@ -48,6 +52,8 @@ EditMode::EditMode(QWidget* parent, QLCFixtureMode* mode) : QDialog(parent)
 
 	setupUi(this);
 	init();
+
+	loadDefaults();
 }
 
 EditMode::EditMode(QWidget* parent, QLCFixtureDef* fixtureDef) : QDialog(parent)
@@ -59,11 +65,37 @@ EditMode::EditMode(QWidget* parent, QLCFixtureDef* fixtureDef) : QDialog(parent)
 
 	setupUi(this);
 	init();
+
+	loadDefaults();
 }
 
 EditMode::~EditMode()
 {
+	saveDefaults();
 	delete m_mode;
+}
+
+void EditMode::loadDefaults()
+{
+	QSettings settings;
+	QPoint pos;
+	QSize size;
+
+	pos = settings.value(KApplicationName + "/editmode/position", 
+			     QPoint()).toPoint();
+	size = settings.value(KApplicationName + "/editmode/size",
+			      QSize(450, 670)).toSize();
+
+	resize(size);
+	if (pos.isNull() == false)
+		move(pos);
+}
+
+void EditMode::saveDefaults()
+{
+	QSettings settings;
+	settings.setValue(KApplicationName + "/editmode/position", pos());
+	settings.setValue(KApplicationName + "/editmode/size", size());
 }
 
 void EditMode::init()

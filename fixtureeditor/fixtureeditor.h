@@ -42,6 +42,9 @@ public:
 	virtual ~QLCFixtureEditor();
 
 protected:
+	void loadDefaults();
+	void saveDefaults();
+
 	void init();
 	void closeEvent(QCloseEvent* e);
 
