@@ -6,7 +6,7 @@
   <Author>hjunnila</Author>
  </Creator>
  <Manufacturer>GLP</Manufacturer>
- <Model>YPOC 575</Model>
+ <Model>YPOC Color 575</Model>
  <Type>Moving Head</Type>
  <Channel Name="Pan coarse" >
   <Group Byte="0" >Pan</Group>
