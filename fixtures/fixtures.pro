@@ -44,6 +44,7 @@ fixtures.files += GLP-Junior-Scan-1.qxf
 fixtures.files += GLP-Junior-Scan-2.qxf
 fixtures.files += GLP-PocketScan.qxf
 fixtures.files += GLP-YPOC575.qxf
+fixtures.files += GLP-YPOCBasic250.qxf
 fixtures.files += GLP-YPOCBasicColor.qxf
 fixtures.files += GLP-YPOCColor.qxf
 fixtures.files += JB-Lighting-Varyscan2.qxf
