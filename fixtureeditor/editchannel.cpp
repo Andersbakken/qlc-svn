@@ -152,11 +152,6 @@ void EditChannel::slotGroupActivated(const QString& group)
 		m_msbRadio->click();
 	else
 		m_lsbRadio->click();
-
-	if (group == KQLCChannelGroupPan || group == KQLCChannelGroupTilt)
-		m_controlByteGroup->setEnabled(true);
-	else
-		m_controlByteGroup->setEnabled(false);
 }
 
 void EditChannel::slotMsbRadioToggled(bool toggled)
