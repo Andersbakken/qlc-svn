@@ -150,37 +150,37 @@ void App::initActions()
 {
 	/* File actions */
 	m_fileNewAction = new QAction(QIcon(":/filenew.png"),
-				      tr("New"), this);
+				      tr("&New"), this);
+	m_fileNewAction->setShortcut(QKeySequence("CTRL+N"));
 	connect(m_fileNewAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileNew()));
 
 	m_fileOpenAction = new QAction(QIcon(":/fileopen.png"),
-				       tr("Open"), this);
-	m_fileOpenAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+				       tr("&Open"), this);
+	m_fileOpenAction->setShortcut(QKeySequence("CTRL+O"));
 	connect(m_fileOpenAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileOpen()));
 
 	m_fileSaveAction = new QAction(QIcon(":/filesave.png"),
-				       tr("Save"), this);
-	m_fileSaveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+				       tr("&Save"), this);
+	m_fileSaveAction->setShortcut(QKeySequence("CTRL+S"));
 	connect(m_fileSaveAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSave()));
 
-	m_fileSaveAsAction = new QAction(tr("Save As"), this);
-	m_fileSaveAsAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT +
-						     Qt::Key_S));
+	m_fileSaveAsAction = new QAction(tr("Save &As"), this);
+	m_fileSaveAsAction->setShortcut(QKeySequence("CTRL+SHIFT+S"));
 	connect(m_fileSaveAsAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSaveAs()));
 
 	m_fileQuitAction = new QAction(QIcon(":/exit.png"),
-				       tr("Quit"), this);
-	m_fileQuitAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
+				       tr("&Quit"), this);
 	connect(m_fileQuitAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileQuit()));
 
 	/* Help actions */
 	m_helpIndexAction = new QAction(QIcon(":/help.png"),
 					tr("Index"), this);
+	m_helpIndexAction->setShortcut(QKeySequence("SHIFT+F1"));
 	connect(m_helpIndexAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpIndex()));
 
@@ -210,7 +210,7 @@ void App::initMenuBar()
 {
 	/* File Menu */
 	m_fileMenu = new QMenu(menuBar());
-	m_fileMenu->setTitle(tr("File"));
+	m_fileMenu->setTitle(tr("&File"));
 	m_fileMenu->addAction(m_fileNewAction);
 	m_fileMenu->addAction(m_fileOpenAction);
 	m_fileMenu->addAction(m_fileSaveAction);
@@ -220,7 +220,7 @@ void App::initMenuBar()
 
 	/* Help menu */
 	m_helpMenu = new QMenu(menuBar());
-	m_helpMenu->setTitle(tr("Help"));
+	m_helpMenu->setTitle(tr("&Help"));
 	m_helpMenu->addAction(m_helpIndexAction);
 	m_helpMenu->addSeparator();
 	m_helpMenu->addAction(m_helpAboutAction);
