@@ -139,9 +139,9 @@ void ConsoleChannel::init()
 	// Generic fixtures don't have channel objects
 	ch = m_fixture->channel(m_channel);
 	if (ch != NULL)
-		this->setToolTip(ch->name());
+		setToolTip(QString("%1 / %2").arg(ch->name()).arg(ch->group()));
 	else
-		this->setToolTip(tr("Level"));
+		setToolTip(tr("Level"));
 
 	// Set channel label
 	num.sprintf("%d", m_channel + 1);
@@ -306,15 +306,38 @@ void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
 const QIcon ConsoleChannel::colorIcon(const QString& name)
 {
 	QString colname(name.toLower().remove(QRegExp("[0-9]")).remove(' '));
-	if (QColor::colorNames().contains(colname) == true)
+	QColor color;
+
+	color.setNamedColor(colname);
+	if (color.isValid() == false)
 	{
-		QColor col(colname);
-		QPixmap pm(32, 32);
-		pm.fill(col);
-		return QIcon(pm);
+		QListIterator <QString> it(name.toLower().split(" "));
+		while (it.hasNext() == true)
+		{
+			QColor part;
+			part.setNamedColor(it.next());
+			if (part.isValid() == true)
+			{
+				if (color.isValid() == false)
+					color = part;
+				else
+					color.setRgb(part.red() + color.red(),
+						part.green() + color.green(),
+						part.blue() + color.blue());
+			}
+		}
 	}
 
-	return QIcon();
+	if (color.isValid() == true)
+	{
+		QPixmap pm(32, 32);
+		pm.fill(color);
+		return QIcon(pm);
+	}
+	else
+	{
+		return QIcon();
+	}
 }
 
 void ConsoleChannel::contextMenuEvent(QContextMenuEvent* e)
