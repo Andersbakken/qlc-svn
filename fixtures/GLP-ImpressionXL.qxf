@@ -3,7 +3,7 @@
  <Creator>
   <Name>Q Light Controller</Name>
   <Version>3.0.0</Version>
-  <Author>hjunnila</Author>
+  <Author></Author>
  </Creator>
  <Manufacturer>GLP</Manufacturer>
  <Model>Impression XL</Model>
@@ -50,7 +50,7 @@
   <Capability Min="0" Max="255" >Red mix</Capability>
  </Channel>
  <Channel Name="Red fine" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="1" >Colour</Group>
   <Capability Min="0" Max="255" >Red fine mix</Capability>
  </Channel>
  <Channel Name="Green coarse" >
@@ -58,7 +58,7 @@
   <Capability Min="0" Max="255" >Green mix</Capability>
  </Channel>
  <Channel Name="Green fine" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="1" >Colour</Group>
   <Capability Min="0" Max="255" >Green fine mix</Capability>
  </Channel>
  <Channel Name="Blue coarse" >
@@ -66,7 +66,7 @@
   <Capability Min="0" Max="255" >Blue mix</Capability>
  </Channel>
  <Channel Name="Blue fine" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="1" >Colour</Group>
   <Capability Min="0" Max="255" >Blue fine mix</Capability>
  </Channel>
  <Channel Name="Shutter" >
@@ -87,7 +87,7 @@
   <Capability Min="0" Max="255" >Intensity</Capability>
  </Channel>
  <Channel Name="Dimmer fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Intensity</Group>
   <Capability Min="0" Max="255" >Dimmer fine</Capability>
  </Channel>
  <Channel Name="Colour temperature" >

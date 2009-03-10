@@ -3,7 +3,7 @@
  <Creator>
   <Name>Q Light Controller</Name>
   <Version>3.0.0</Version>
-  <Author>hjunnila</Author>
+  <Author></Author>
  </Creator>
  <Manufacturer>GLP</Manufacturer>
  <Model>Impression WA</Model>
@@ -29,7 +29,7 @@
   <Capability Min="0" Max="255" >White mix</Capability>
  </Channel>
  <Channel Name="White fine" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="1" >Colour</Group>
   <Capability Min="0" Max="255" >White fine mix</Capability>
  </Channel>
  <Channel Name="Amber coarse" >
@@ -37,7 +37,7 @@
   <Capability Min="0" Max="255" >Amber mix</Capability>
  </Channel>
  <Channel Name="Amber fine" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="1" >Colour</Group>
   <Capability Min="0" Max="255" >Amber fine mix</Capability>
  </Channel>
  <Channel Name="Shutter" >
@@ -54,7 +54,7 @@
   <Capability Min="0" Max="255" >Intensity</Capability>
  </Channel>
  <Channel Name="Dimmer fine" >
-  <Group Byte="0" >Intensity</Group>
+  <Group Byte="1" >Intensity</Group>
   <Capability Min="0" Max="255" >Intensity fine</Capability>
  </Channel>
  <Channel Name="Movement" >
