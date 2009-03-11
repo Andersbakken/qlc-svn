@@ -62,7 +62,7 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 	connect(m_remove, SIGNAL(clicked()), this, SLOT(slotRemoveClicked()));
 	connect(m_raise, SIGNAL(clicked()), this, SLOT(slotRaiseClicked()));
 	connect(m_lower, SIGNAL(clicked()), this, SLOT(slotLowerClicked()));
-
+	
 	/* Create a copy of the original chaser so that we can freely modify
 	   it and keep a pointer to the original so that we can move the
 	   contents from the copied chaser to the original when OK is clicked */
@@ -75,6 +75,11 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 	m_nameEdit->setText(m_chaser->name());
 	m_nameEdit->setSelection(0, m_nameEdit->text().length());
 	setWindowTitle(tr("Chaser - %1").arg(m_chaser->name()));
+
+	/* Bus */
+	connect(m_busCombo, SIGNAL(activated(int)),
+		this, SLOT(slotBusComboActivated(int)));
+	fillBusCombo();
 
 	/* Running order */
 	switch (m_chaser->runOrder())
@@ -110,6 +115,17 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 ChaserEditor::~ChaserEditor()
 {
 	delete m_chaser;
+}
+
+void ChaserEditor::fillBusCombo()
+{
+	m_busCombo->clear();
+
+	for (t_bus_id i = 0; i < KBusCount; i++)
+		m_busCombo->addItem(
+			QString("%1: %2").arg(i + 1).arg(Bus::name(i)));
+
+	m_busCombo->setCurrentIndex(m_chaser->busID());
 }
 
 void ChaserEditor::updateStepList(int selectIndex)
@@ -158,6 +174,12 @@ void ChaserEditor::updateOrderNumbers()
 void ChaserEditor::slotNameEdited(const QString& text)
 {
 	setWindowTitle(QString(tr("Chaser editor - %1")).arg(text));
+}
+
+void ChaserEditor::slotBusComboActivated(int index)
+{
+	Q_ASSERT(m_chaser != NULL);
+	m_chaser->setBus(index);
 }
 
 void ChaserEditor::slotAddClicked()

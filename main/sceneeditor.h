@@ -50,6 +50,7 @@ private:
 
 protected:
 	void init();
+	void fillBusCombo();
 	void setSceneValue(const SceneValue& scv);
 
 protected:
@@ -60,7 +61,8 @@ protected:
 	 *********************************************************************/
 protected slots:
 	void slotNameEdited(const QString& name);
-
+	void slotBusComboActivated(int index);
+	
 	void accept();
 	void slotTabChanged(int tab);
 

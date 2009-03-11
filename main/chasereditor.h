@@ -40,9 +40,11 @@ private:
 	Q_DISABLE_COPY(ChaserEditor)
 
 protected:
+	/** Fill known buses to the bus combo and select current */
+	void fillBusCombo();
+
 	/**
 	 * Insert chaser steps into the editor's view and select an item
-	 *
 	 * @param selectIndex The index to select
 	 */
 	void updateStepList(int selectIndex = 0);
@@ -55,6 +57,9 @@ protected slots:
 
 	/** Name has been edited */
 	void slotNameEdited(const QString& text);
+
+	/** Bus has been activated */
+	void slotBusComboActivated(int index);
 
 	/** Add a step */
 	void slotAddClicked();

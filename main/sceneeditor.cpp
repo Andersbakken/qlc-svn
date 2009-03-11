@@ -132,6 +132,11 @@ void SceneEditor::init()
 		this, SLOT(slotNameEdited(const QString&)));
 	slotNameEdited(m_scene->name());
 
+	/* Bus */
+	connect(m_busCombo, SIGNAL(activated(int)),
+		this, SLOT(slotBusComboActivated(int)));
+	fillBusCombo();
+
 	m_initializing = true;
 
 	QListIterator <SceneValue> it(*m_scene->values());
@@ -155,6 +160,17 @@ void SceneEditor::init()
 	m_initializing = false;
 }
 
+void SceneEditor::fillBusCombo()
+{
+	m_busCombo->clear();
+
+	for (t_bus_id i = 0; i < KBusCount; i++)
+		m_busCombo->addItem(
+			QString("%1: %2").arg(i + 1).arg(Bus::name(i)));
+
+	m_busCombo->setCurrentIndex(m_scene->busID());
+}
+
 void SceneEditor::setSceneValue(const SceneValue& scv)
 {
 	FixtureConsole* fc;
@@ -176,6 +192,12 @@ void SceneEditor::setSceneValue(const SceneValue& scv)
 void SceneEditor::slotNameEdited(const QString& name)
 {
 	setWindowTitle(tr("Scene - %1").arg(name));
+}
+
+void SceneEditor::slotBusComboActivated(int index)
+{
+	Q_ASSERT(m_scene != NULL);
+	m_scene->setBus(index);
 }
 
 void SceneEditor::accept()
