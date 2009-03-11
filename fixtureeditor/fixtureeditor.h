@@ -90,7 +90,7 @@ protected slots:
 	void slotEditChannel();
 	void slotCopyChannel();
 	void slotPasteChannel();
-	void slotChannelListContextMenuRequested(const QPoint& pos);
+	void slotChannelListContextMenuRequested();
 
 protected:
 	QLCChannel* currentChannel();
@@ -105,7 +105,7 @@ protected slots:
 	void slotRemoveMode();
 	void slotEditMode();
 	void slotCloneMode();
-	void slotModeListContextMenuRequested(const QPoint& pos);
+	void slotModeListContextMenuRequested();
 
 protected:
 	QLCFixtureMode* currentMode();

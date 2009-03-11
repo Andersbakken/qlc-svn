@@ -146,16 +146,13 @@ void QLCFixtureEditor::init()
 	connect(m_channelList, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 							 QTreeWidgetItem*)),
 		this, SLOT(slotChannelListSelectionChanged(QTreeWidgetItem*)));
-	connect(m_channelList,
-		SIGNAL(customContextMenuRequested(const QPoint&)),
-		this,
-		SLOT(slotChannelListContextMenuRequested(const QPoint&)));
-	connect(m_channelList,
-		SIGNAL(itemActivated(QTreeWidgetItem*,int)),
-		this,
-		SLOT(slotEditChannel()));
+	connect(m_channelList, SIGNAL(customContextMenuRequested(const QPoint&)),
+		this, SLOT(slotChannelListContextMenuRequested()));
+	connect(m_channelList, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditChannel()));
 
 	m_channelList->header()->setResizeMode(QHeaderView::ResizeToContents);
+	m_channelList->setContextMenuPolicy(Qt::CustomContextMenu);
 	refreshChannelList();
 
 	/* Mode page */
@@ -169,16 +166,13 @@ void QLCFixtureEditor::init()
 	connect(m_modeList, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						      QTreeWidgetItem*)),
 		this, SLOT(slotModeListSelectionChanged(QTreeWidgetItem*)));
-	connect(m_modeList,
-		SIGNAL(customContextMenuRequested(const QPoint&)),
-		this,
-		SLOT(slotModeListContextMenuRequested(const QPoint&)));
-	connect(m_modeList,
-		SIGNAL(itemActivated(QTreeWidgetItem*,int)),
-		this,
-		SLOT(slotEditMode()));
+	connect(m_modeList, SIGNAL(customContextMenuRequested(const QPoint&)),
+		this, SLOT(slotModeListContextMenuRequested()));
+	connect(m_modeList, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditMode()));
 
 	m_modeList->header()->setResizeMode(QHeaderView::ResizeToContents);
+	m_modeList->setContextMenuPolicy(Qt::CustomContextMenu);
 	refreshModeList();
 }
 
@@ -532,7 +526,10 @@ void QLCFixtureEditor::slotPasteChannel()
 	QLCChannel* ch = _app->copyChannel();
 	if (ch != NULL && m_fixtureDef != NULL)
 	{
-		m_fixtureDef->addChannel(new QLCChannel(ch));
+		QLCChannel* copy = new QLCChannel(ch);
+		copy->setName(tr("Copy of %1").arg(ch->name()));
+		m_fixtureDef->addChannel(copy);
+
 		refreshChannelList();
 		setModified();
 	}
@@ -564,7 +561,7 @@ void QLCFixtureEditor::refreshChannelList()
 	slotChannelListSelectionChanged(m_channelList->currentItem());
 }
 
-void QLCFixtureEditor::slotChannelListContextMenuRequested(const QPoint& pos)
+void QLCFixtureEditor::slotChannelListContextMenuRequested()
 {
 	QAction editAction(QIcon(":/edit.png"), tr("Edit"), this);
 	QAction copyAction(QIcon(":/editcopy.png"), tr("Copy"), this);
@@ -598,7 +595,7 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested(const QPoint& pos)
 	if (_app->copyChannel() == NULL)
 		pasteAction.setEnabled(false);
 
-	QAction* selectedAction = menu.exec(pos);
+	QAction* selectedAction = menu.exec(QCursor::pos());
 	if (selectedAction == NULL)
 		return;
 	else if (selectedAction->text() == tr("Edit"))
@@ -622,9 +619,8 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested(const QPoint& pos)
 		if (node != NULL)
 			node->setText(KChannelsColumnGroup,
 				      selectedAction->text());
+		setModified();
 	}
-
-	setModified();
 }
 
 QLCChannel* QLCFixtureEditor::currentChannel()
@@ -786,6 +782,8 @@ void QLCFixtureEditor::slotCloneMode()
 			clone->setName(text);
 			mode->fixtureDef()->addMode(clone);
 			refreshModeList();
+
+			setModified();
 			break;
 		}
 		else
@@ -796,7 +794,7 @@ void QLCFixtureEditor::slotCloneMode()
 	}
 }
 
-void QLCFixtureEditor::slotModeListContextMenuRequested(const QPoint& pos)
+void QLCFixtureEditor::slotModeListContextMenuRequested()
 {
 	QAction editAction(QIcon(":/edit.png"), tr("Edit"), this);
 	connect(&editAction, SIGNAL(triggered(bool)),
@@ -815,14 +813,14 @@ void QLCFixtureEditor::slotModeListContextMenuRequested(const QPoint& pos)
 	menu.addSeparator();
 	menu.addAction(&removeAction);
 
-	if (m_channelList->currentItem() == NULL)
+	if (m_modeList->currentItem() == NULL)
 	{
 		editAction.setEnabled(false);
 		cloneAction.setEnabled(false);
 		removeAction.setEnabled(false);
 	}
 
-	menu.exec(pos);
+	menu.exec(QCursor::pos());
 }
 
 void QLCFixtureEditor::refreshModeList()
