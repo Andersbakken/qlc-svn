@@ -64,6 +64,7 @@ fixtures.files += Martin-MX-4.qxf
 fixtures.files += Martin-Robocolor-Pro-400.qxf
 fixtures.files += Martin-Roboscan-518.qxf
 fixtures.files += Martin-Roboscan-812.qxf
+fixtures.files += Martin-SCX-500.qxf
 fixtures.files += Movitec-SL-250.qxf
 fixtures.files += Movitec-SL-575.qxf
 fixtures.files += Movitec-WL-250.qxf
