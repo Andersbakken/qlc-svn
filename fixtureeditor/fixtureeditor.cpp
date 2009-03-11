@@ -87,6 +87,13 @@ QLCFixtureEditor::QLCFixtureEditor(QWidget* parent,
 
 	loadDefaults();
 	setModified(false);
+
+	/* Connect to be able to enable/disable clipboard actions */
+	connect(_app, SIGNAL(clipboardChanged()),
+		this, SLOT(slotClipboardChanged()));
+
+	/* Initial update to clipboard actions */
+	slotClipboardChanged();
 }
 
 QLCFixtureEditor::~QLCFixtureEditor()
@@ -428,11 +435,6 @@ void QLCFixtureEditor::slotChannelListSelectionChanged(QTreeWidgetItem* item)
 		m_editChannelButton->setEnabled(true);
 		m_copyChannelButton->setEnabled(true);
 	}
-
-	if (_app->copyChannel() != NULL)
-		m_pasteChannelButton->setEnabled(true);
-	else
-		m_pasteChannelButton->setEnabled(false);
 }
 
 void QLCFixtureEditor::slotAddChannel()
@@ -536,7 +538,6 @@ void QLCFixtureEditor::slotEditChannel()
 void QLCFixtureEditor::slotCopyChannel()
 {
 	_app->setCopyChannel(currentChannel());
-	m_pasteChannelButton->setEnabled(true);
 }
 
 void QLCFixtureEditor::slotPasteChannel()
@@ -545,7 +546,7 @@ void QLCFixtureEditor::slotPasteChannel()
 	if (ch != NULL && m_fixtureDef != NULL)
 	{
 		QLCChannel* copy = new QLCChannel(ch);
-		copy->setName(tr("Copy of %1").arg(ch->name()));
+		copy->setName(ch->name());
 		m_fixtureDef->addChannel(copy);
 
 		refreshChannelList();
@@ -929,3 +930,16 @@ QLCFixtureMode* QLCFixtureEditor::currentMode()
 
 	return mode;
 }
+
+/*****************************************************************************
+ * Clipboard
+ *****************************************************************************/
+
+void QLCFixtureEditor::slotClipboardChanged()
+{
+	if (_app->copyChannel() != NULL)
+		m_pasteChannelButton->setEnabled(true);
+	else
+		m_pasteChannelButton->setEnabled(false);
+}
+

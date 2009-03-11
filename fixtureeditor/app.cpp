@@ -139,6 +139,8 @@ void App::setCopyChannel(QLCChannel* ch)
 
 	if (ch != NULL)
 		m_copyChannel = new QLCChannel(ch);
+
+	emit clipboardChanged();
 }
 
 QLCChannel* App::copyChannel() const

@@ -55,6 +55,10 @@ public:
 	void setCopyChannel(QLCChannel* ch);
 	QLCChannel* copyChannel() const;
 
+signals:
+	/** Signal telling that the contents of the clipboard have changed */
+	void clipboardChanged();
+
 protected:
 	QLCChannel* m_copyChannel;
 

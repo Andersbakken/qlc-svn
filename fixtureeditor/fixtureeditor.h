@@ -114,8 +114,10 @@ protected:
 	void refreshModeList();
 
 	/*********************************************************************
-	 * Stuff
+	 * Clipboard
 	 *********************************************************************/
+public slots:
+	void slotClipboardChanged();
 };
 
 #endif
