@@ -117,7 +117,7 @@ bool QLCFixtureMode::removeChannel(QLCChannel* channel)
 	return false;
 }
 
-QLCChannel* QLCFixtureMode::channel(const QString& name)
+QLCChannel* QLCFixtureMode::channel(const QString& name) const
 {
 	QListIterator <QLCChannel*> it(m_channels);
 	QLCChannel* ch = NULL;
@@ -132,7 +132,7 @@ QLCChannel* QLCFixtureMode::channel(const QString& name)
 	return NULL;
 }
 
-QLCChannel* QLCFixtureMode::channel(t_channel ch)
+QLCChannel* QLCFixtureMode::channel(t_channel ch) const
 {
 	if (ch > m_channels.count())
 		return NULL;
@@ -140,7 +140,7 @@ QLCChannel* QLCFixtureMode::channel(t_channel ch)
 		return m_channels.at(ch);
 }
 
-t_channel QLCFixtureMode::channelNumber(QLCChannel* channel)
+t_channel QLCFixtureMode::channelNumber(QLCChannel* channel) const
 {
 	QListIterator <QLCChannel*> it(m_channels);
 	int i = 0;

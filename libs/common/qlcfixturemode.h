@@ -91,16 +91,16 @@ public:
 	bool removeChannel(QLCChannel* channel);
 
 	/** Get a channel by its name */
-	QLCChannel* channel(const QString& name);
+	QLCChannel* channel(const QString& name) const;
 
 	/** Get a channel by its index */
-	QLCChannel* channel(t_channel ch);
+	QLCChannel* channel(t_channel ch) const;
 
 	/** Get the number of channels */
-	t_channel channels() { return m_channels.count(); }
+	t_channel channels() const { return m_channels.count(); }
 
 	/** Get a channel's index */
-	t_channel channelNumber(QLCChannel* channel);
+	t_channel channelNumber(QLCChannel* channel) const;
 
 protected:
 	QList <QLCChannel*> m_channels;
