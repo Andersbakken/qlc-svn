@@ -1,6 +1,7 @@
 <RCC>
     <qresource>
         <file alias="back.png">../gfx/back.png</file>
+        <file alias="check.png">../gfx/check.png</file>
         <file alias="edit_add.png">../gfx/edit_add.png</file>
         <file alias="edit_remove.png">../gfx/edit_remove.png</file>
         <file alias="edit.png">../gfx/edit.png</file>
@@ -18,6 +19,7 @@
         <file alias="qlc.png">../gfx/qlc.png</file>
         <file alias="qlc-fixtureeditor.png">../gfx/qlc-fixtureeditor.png</file>
         <file alias="qt.png">../gfx/qt.png</file>
+        <file alias="uncheck.png">../gfx/uncheck.png</file>
         <file alias="up.png">../gfx/up.png</file>
     </qresource>
 </RCC>

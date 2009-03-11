@@ -178,22 +178,25 @@
           <bool>true</bool>
          </property>
          <property name="rootIsDecorated" >
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="itemsExpandable" >
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="allColumnsShowFocus" >
           <bool>true</bool>
          </property>
+         <property name="expandsOnDoubleClick" >
+          <bool>false</bool>
+         </property>
          <column>
           <property name="text" >
-           <string>Channel Name</string>
+           <string>Name</string>
           </property>
          </column>
          <column>
           <property name="text" >
-           <string>Channel Group</string>
+           <string>Group</string>
           </property>
          </column>
         </widget>
@@ -202,6 +205,9 @@
         <layout class="QVBoxLayout" >
          <item>
           <widget class="QToolButton" name="m_addChannelButton" >
+           <property name="toolTip" >
+            <string>Add a channel</string>
+           </property>
            <property name="text" >
             <string>...</string>
            </property>
@@ -219,6 +225,9 @@
          </item>
          <item>
           <widget class="QToolButton" name="m_removeChannelButton" >
+           <property name="toolTip" >
+            <string>Remove selected channel</string>
+           </property>
            <property name="text" >
             <string>...</string>
            </property>
@@ -236,12 +245,62 @@
          </item>
          <item>
           <widget class="QToolButton" name="m_editChannelButton" >
+           <property name="toolTip" >
+            <string>Edit selected channel</string>
+           </property>
            <property name="text" >
             <string>...</string>
            </property>
            <property name="icon" >
             <iconset resource="fixtureeditor.qrc" >
              <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_copyChannelButton" >
+           <property name="toolTip" >
+            <string>Copy the selected channel to the clipboard</string>
+           </property>
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/editcopy.png</normaloff>:/editcopy.png</iconset>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_pasteChannelButton" >
+           <property name="toolTip" >
+            <string>Paste the channel in clipboard to this fixture</string>
+           </property>
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/editpaste.png</normaloff>:/editpaste.png</iconset>
            </property>
            <property name="iconSize" >
             <size>
@@ -264,6 +323,26 @@
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QToolButton" name="m_expandChannelsButton" >
+           <property name="toolTip" >
+            <string>Open/close all channel items</string>
+           </property>
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/check.png</normaloff>:/check.png</iconset>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
@@ -279,22 +358,22 @@
           <bool>true</bool>
          </property>
          <property name="rootIsDecorated" >
-          <bool>false</bool>
-         </property>
-         <property name="itemsExpandable" >
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="allColumnsShowFocus" >
           <bool>true</bool>
          </property>
+         <property name="expandsOnDoubleClick" >
+          <bool>false</bool>
+         </property>
          <column>
           <property name="text" >
-           <string>Mode Name</string>
+           <string>Name</string>
           </property>
          </column>
          <column>
           <property name="text" >
-           <string>Number of Channels</string>
+           <string>Channels</string>
           </property>
          </column>
         </widget>
@@ -303,6 +382,9 @@
         <layout class="QVBoxLayout" >
          <item>
           <widget class="QToolButton" name="m_addModeButton" >
+           <property name="toolTip" >
+            <string>Add a mode</string>
+           </property>
            <property name="text" >
             <string>...</string>
            </property>
@@ -320,6 +402,9 @@
          </item>
          <item>
           <widget class="QToolButton" name="m_removeModeButton" >
+           <property name="toolTip" >
+            <string>Remove the selected mode</string>
+           </property>
            <property name="text" >
             <string>...</string>
            </property>
@@ -337,12 +422,42 @@
          </item>
          <item>
           <widget class="QToolButton" name="m_editModeButton" >
+           <property name="toolTip" >
+            <string>Edit the selected mode</string>
+           </property>
            <property name="text" >
             <string>...</string>
            </property>
            <property name="icon" >
             <iconset resource="fixtureeditor.qrc" >
              <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_cloneModeButton" >
+           <property name="toolTip" >
+            <string>Create a copy of the selected mode</string>
+           </property>
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/editcopy.png</normaloff>:/editcopy.png</iconset>
            </property>
            <property name="iconSize" >
             <size>
@@ -364,6 +479,23 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_expandModesButton" >
+           <property name="text" >
+            <string>...</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="fixtureeditor.qrc" >
+             <normaloff>:/check.png</normaloff>:/check.png</iconset>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>26</width>
+             <height>26</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

@@ -142,6 +142,12 @@ void QLCFixtureEditor::init()
 		this, SLOT(slotRemoveChannel()));
 	connect(m_editChannelButton, SIGNAL(clicked()),
 		this, SLOT(slotEditChannel()));
+	connect(m_copyChannelButton, SIGNAL(clicked()),
+		this, SLOT(slotCopyChannel()));
+	connect(m_pasteChannelButton, SIGNAL(clicked()),
+		this, SLOT(slotPasteChannel()));
+	connect(m_expandChannelsButton, SIGNAL(clicked()),
+		this, SLOT(slotExpandChannels()));
 
 	connect(m_channelList, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 							 QTreeWidgetItem*)),
@@ -162,6 +168,10 @@ void QLCFixtureEditor::init()
 		this, SLOT(slotRemoveMode()));
 	connect(m_editModeButton, SIGNAL(clicked()),
 		this, SLOT(slotEditMode()));
+	connect(m_cloneModeButton, SIGNAL(clicked()),
+		this, SLOT(slotCloneMode()));
+	connect(m_expandModesButton, SIGNAL(clicked()),
+		this, SLOT(slotExpandModes()));
 
 	connect(m_modeList, SIGNAL(currentItemChanged(QTreeWidgetItem*,
 						      QTreeWidgetItem*)),
@@ -410,12 +420,19 @@ void QLCFixtureEditor::slotChannelListSelectionChanged(QTreeWidgetItem* item)
 	{
 		m_removeChannelButton->setEnabled(false);
 		m_editChannelButton->setEnabled(false);
+		m_copyChannelButton->setEnabled(false);
 	}
 	else
 	{
 		m_removeChannelButton->setEnabled(true);
 		m_editChannelButton->setEnabled(true);
+		m_copyChannelButton->setEnabled(true);
 	}
+
+	if (_app->copyChannel() != NULL)
+		m_pasteChannelButton->setEnabled(true);
+	else
+		m_pasteChannelButton->setEnabled(false);
 }
 
 void QLCFixtureEditor::slotAddChannel()
@@ -519,6 +536,7 @@ void QLCFixtureEditor::slotEditChannel()
 void QLCFixtureEditor::slotCopyChannel()
 {
 	_app->setCopyChannel(currentChannel());
+	m_pasteChannelButton->setEnabled(true);
 }
 
 void QLCFixtureEditor::slotPasteChannel()
@@ -533,6 +551,16 @@ void QLCFixtureEditor::slotPasteChannel()
 		refreshChannelList();
 		setModified();
 	}
+}
+
+void QLCFixtureEditor::slotExpandChannels()
+{
+	if (m_channelList->topLevelItemCount() <= 0)
+		return;
+	else if (m_channelList->topLevelItem(0)->isExpanded() == true)
+		m_channelList->collapseAll();
+	else
+		m_channelList->expandAll();
 }
 
 void QLCFixtureEditor::refreshChannelList()
@@ -556,6 +584,20 @@ void QLCFixtureEditor::refreshChannelList()
 		// Store the channel pointer to the listview as a string
 		str.sprintf("%lu", (unsigned long) ch);
 		item->setText(KChannelsColumnPointer, str);
+
+		/* Put all capabilities as non-selectable sub items */
+		QListIterator <QLCCapability*> capit(ch->capabilities());
+		while (capit.hasNext() == true)
+		{
+			QLCCapability* cap = capit.next();
+			Q_ASSERT(cap != NULL);
+			
+			QTreeWidgetItem* capitem = new QTreeWidgetItem(item);
+			capitem->setText(KChannelsColumnName,
+				QString("[%1-%2]: %3").arg(cap->min())
+					.arg(cap->max()).arg(cap->name()));
+			capitem->setFlags(0); /* No selection etc. */
+		}
 	}
 
 	slotChannelListSelectionChanged(m_channelList->currentItem());
@@ -646,11 +688,13 @@ void QLCFixtureEditor::slotModeListSelectionChanged(QTreeWidgetItem* item)
 	{
 		m_removeModeButton->setEnabled(false);
 		m_editModeButton->setEnabled(false);
+		m_cloneModeButton->setEnabled(false);
 	}
 	else
 	{
 		m_removeModeButton->setEnabled(true);
 		m_editModeButton->setEnabled(true);
+		m_cloneModeButton->setEnabled(true);
 	}
 }
 
@@ -794,6 +838,16 @@ void QLCFixtureEditor::slotCloneMode()
 	}
 }
 
+void QLCFixtureEditor::slotExpandModes()
+{
+	if (m_modeList->topLevelItemCount() <= 0)
+		return;
+	else if (m_modeList->topLevelItem(0)->isExpanded() == true)
+		m_modeList->collapseAll();
+	else
+		m_modeList->expandAll();
+}
+
 void QLCFixtureEditor::slotModeListContextMenuRequested()
 {
 	QAction editAction(QIcon(":/edit.png"), tr("Edit"), this);
@@ -827,7 +881,6 @@ void QLCFixtureEditor::refreshModeList()
 {
 	QTreeWidgetItem* item;
 	QLCFixtureMode* mode;
-	QString str;
 
 	m_modeList->clear();
 
@@ -836,15 +889,29 @@ void QLCFixtureEditor::refreshModeList()
 	while (it.hasNext() == true)
 	{
 		mode = it.next();
+		Q_ASSERT(mode != NULL);
 
 		item = new QTreeWidgetItem(m_modeList);
 		item->setText(KModesColumnName, mode->name());
-		str.sprintf("%d", mode->channels());
-		item->setText(KModesColumnChannels, str);
+		item->setText(KModesColumnChannels,
+			QString("%1").arg(mode->channels()));
 
 		// Store the channel pointer to the listview as a string
-		str.sprintf("%lu", (unsigned long) mode);
-		item->setText(KModesColumnPointer, str);
+		item->setText(KModesColumnPointer,
+				QString("%1").arg((unsigned long) mode));
+
+		/* Put all mode channels as non-selectable sub items */
+		for (t_channel i = 0; i < mode->channels(); i++)
+		{
+			QLCChannel* ch = mode->channel(i);
+			Q_ASSERT(ch != NULL);
+
+			QTreeWidgetItem* chitem = new QTreeWidgetItem(item);
+			chitem->setText(KModesColumnName, ch->name());
+			chitem->setText(KModesColumnChannels,
+					QString("%1").arg(i + 1));
+			chitem->setFlags(0); /* No selection etc. */
+		}
 	}
 	
 	slotModeListSelectionChanged(m_modeList->currentItem());

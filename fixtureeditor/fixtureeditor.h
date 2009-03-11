@@ -90,6 +90,7 @@ protected slots:
 	void slotEditChannel();
 	void slotCopyChannel();
 	void slotPasteChannel();
+	void slotExpandChannels();
 	void slotChannelListContextMenuRequested();
 
 protected:
@@ -105,6 +106,7 @@ protected slots:
 	void slotRemoveMode();
 	void slotEditMode();
 	void slotCloneMode();
+	void slotExpandModes();
 	void slotModeListContextMenuRequested();
 
 protected:
