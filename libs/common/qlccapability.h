@@ -42,7 +42,7 @@ public:
 	/** Default constructor */
 	QLCCapability(t_value min = KChannelValueMin,
 		      t_value max = KChannelValueMax,
-		      QString name = QString::null);
+		      const QString& name = QString::null);
 
 	/** Copy constructor */
 	QLCCapability(const QLCCapability* cap);

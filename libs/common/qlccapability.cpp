@@ -26,7 +26,7 @@
 #include "qlccapability.h"
 #include "qlctypes.h"
 
-QLCCapability::QLCCapability(t_value min, t_value max, QString name)
+QLCCapability::QLCCapability(t_value min, t_value max, const QString& name)
 {
 	m_min = min;
 	m_max = max;

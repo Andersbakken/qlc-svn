@@ -45,7 +45,7 @@ extern App* _app;
  *****************************************************************************/
 
 Fixture::Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
-		 t_channel address, t_channel universe, QString name,
+		 t_channel address, t_channel universe, const QString& name,
 		 t_fixture_id id)
 {
 	m_fixtureDef = fixtureDef;
@@ -61,7 +61,7 @@ Fixture::Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
 }
 
 Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
-		 QString name, t_fixture_id id)
+		 const QString& name, t_fixture_id id)
 {
 	m_fixtureDef = NULL;
 	m_fixtureMode = NULL;

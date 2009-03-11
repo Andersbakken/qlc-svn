@@ -66,7 +66,7 @@ public:
 	 * @param id A unique fixture ID assigned by @ref Doc
 	 */
 	Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
-		t_channel address, t_channel universe, QString name,
+		t_channel address, t_channel universe, const QString& name,
 		t_fixture_id id);
 
 	/**
@@ -80,7 +80,7 @@ public:
 	 * @param id A unique fixture ID assigned by class @ref Doc
 	 */
 	Fixture(t_channel address, t_channel universe, t_channel channels,
-		QString name, t_fixture_id id);
+		const QString& name, t_fixture_id id);
 
 	/**
 	 * Create a new fixture instance from an XML substructure.
@@ -107,10 +107,10 @@ private:
 protected:
 	/**
 	 * Change the fixture instance's fixture ID. This is generally VERY
-	 * dangerous, since all functions will cease to work unless their
-	 * fixture ID's are changed as well. Also, the fixture will have to
-	 * be moved within Doc's fixture array to reflect the new ID, which
-	 * is essentially the fixture's position in that array.
+	 * dangerous, since all functions (using this fixture) will cease to
+	 * work unless their fixture references are changed as well. Also, the
+	 * fixture will have to be moved within Doc's fixture array to reflect
+	 * the new ID, which is essentially the fixture's position in the array.
 	 *
 	 * @param id The new fixture id
 	 */
