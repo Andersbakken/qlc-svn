@@ -114,6 +114,7 @@ protected slots:
 protected:
 	QLCFixtureMode* currentMode();
 	void refreshModeList();
+	void updateModeItem(const QLCFixtureMode* mode, QTreeWidgetItem* item);
 
 	/*********************************************************************
 	 * Clipboard
