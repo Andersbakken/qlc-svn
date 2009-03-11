@@ -37,7 +37,7 @@ QLCFixtureDef::QLCFixtureDef()
 	m_type = QString("Dimmer");
 }
 
-QLCFixtureDef::QLCFixtureDef(QLCFixtureDef *fixture)
+QLCFixtureDef::QLCFixtureDef(const QLCFixtureDef *fixture)
 {
 	m_manufacturer = QString::null;
 	m_model = QString::null;
@@ -56,7 +56,7 @@ QLCFixtureDef::~QLCFixtureDef()
 		delete m_modes.takeFirst();
 }
 
-QLCFixtureDef& QLCFixtureDef::operator=(QLCFixtureDef& fixture)
+QLCFixtureDef& QLCFixtureDef::operator=(const QLCFixtureDef& fixture)
 {
 	if (this != &fixture)
 	{
@@ -301,7 +301,7 @@ bool QLCFixtureDef::loadXML(const QString& fileName)
 	return retval;
 }
 
-bool QLCFixtureDef::loadXML(QDomDocument* doc)
+bool QLCFixtureDef::loadXML(const QDomDocument* doc)
 {
 	QDomElement root;
 	QDomNode node;

@@ -49,16 +49,16 @@ public:
 	QLCFixtureMode(QLCFixtureDef* fixtureDef);
 
 	/** Copy constructor */
-	QLCFixtureMode(QLCFixtureMode* mode);
+	QLCFixtureMode(const QLCFixtureMode* mode);
 
 	/** Create contents from an XML tag */
-	QLCFixtureMode(QLCFixtureDef* fixtureDef, QDomElement* tag);
+	QLCFixtureMode(QLCFixtureDef* fixtureDef, const QDomElement* tag);
 
 	/** Destructor */
-	virtual ~QLCFixtureMode();
+	~QLCFixtureMode();
 
 	/** Assignment operator */
-	QLCFixtureMode& operator=(QLCFixtureMode& mode);
+	QLCFixtureMode& operator=(const QLCFixtureMode& mode);
 
 	/*********************************************************************
 	 * Name
@@ -116,7 +116,7 @@ public:
 	const QLCPhysical physical();
 
 	/** Load from an XML tag */
-	virtual bool loadXML(QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 	/** Save to an XML document */
 	bool saveXML(QDomDocument* doc, QDomElement* root);

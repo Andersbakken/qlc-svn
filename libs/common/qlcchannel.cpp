@@ -35,7 +35,7 @@ QLCChannel::QLCChannel()
 	m_controlByte = 0;
 }
 
-QLCChannel::QLCChannel(QLCChannel* channel)
+QLCChannel::QLCChannel(const QLCChannel* channel)
 {
 	m_name = QString::null;
 	m_group = QString(KQLCChannelGroupIntensity);
@@ -45,7 +45,7 @@ QLCChannel::QLCChannel(QLCChannel* channel)
 		*this = *channel;
 }
 
-QLCChannel::QLCChannel(QDomElement* tag)
+QLCChannel::QLCChannel(const QDomElement* tag)
 {
 	m_name = QString::null;
 	m_group = QString(KQLCChannelGroupIntensity);
@@ -60,7 +60,7 @@ QLCChannel::~QLCChannel()
 		delete m_capabilities.takeFirst();
 }
 
-QLCChannel& QLCChannel::operator=(QLCChannel& channel)
+QLCChannel& QLCChannel::operator=(const QLCChannel& channel)
 {
 	if (this != &channel)
 	{
@@ -262,7 +262,7 @@ void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 		it.next()->saveXML(doc, &chtag);
 }
 
-bool QLCChannel::loadXML(QDomElement* root)
+bool QLCChannel::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;

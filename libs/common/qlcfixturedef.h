@@ -55,13 +55,13 @@ public:
 	QLCFixtureDef();
 
 	/** Copy constructor */
-	QLCFixtureDef(QLCFixtureDef *dc);
+	QLCFixtureDef(const QLCFixtureDef *dc);
 
 	/** Destructor */
-	virtual ~QLCFixtureDef();
+	~QLCFixtureDef();
 
 	/** Assignment operator */
-	QLCFixtureDef& operator=(QLCFixtureDef& fixture);
+	QLCFixtureDef& operator=(const QLCFixtureDef& fixture);
 
 	/*********************************************************************
 	 * Fixture information
@@ -136,7 +136,7 @@ public:
 	bool loadXML(const QString& fileName);
 
 	/** Load fixture contents from an XML document */
-	bool loadXML(QDomDocument* doc);
+	bool loadXML(const QDomDocument* doc);
 
 protected:
 	/** Modes (i.e. particular collections of channels) */

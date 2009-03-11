@@ -33,7 +33,7 @@ QLCCapability::QLCCapability(t_value min, t_value max, QString name)
 	m_name = name;
 }
 
-QLCCapability::QLCCapability(QLCCapability* capability)
+QLCCapability::QLCCapability(const QLCCapability* capability)
 {
 	m_min = KChannelValueMin;
 	m_max = KChannelValueMax;
@@ -43,7 +43,7 @@ QLCCapability::QLCCapability(QLCCapability* capability)
 		*this = *capability;
 }
 
-QLCCapability::QLCCapability(QDomElement* tag)
+QLCCapability::QLCCapability(const QDomElement* tag)
 {
 	Q_ASSERT(tag != NULL);
 
@@ -58,7 +58,7 @@ QLCCapability::~QLCCapability()
 {
 }
 
-QLCCapability& QLCCapability::operator=(QLCCapability& capability)
+QLCCapability& QLCCapability::operator=(const QLCCapability& capability)
 {
 	if (this != &capability)
 	{
@@ -70,7 +70,7 @@ QLCCapability& QLCCapability::operator=(QLCCapability& capability)
 	return *this;
 }
 
-int QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
+bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomElement tag;
 	QDomText text;
@@ -95,10 +95,10 @@ int QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 	text = doc->createTextNode(m_name);
 	tag.appendChild(text);
 
-	return 0;
+	return true;
 }
 
-bool QLCCapability::loadXML(QDomElement* root)
+bool QLCCapability::loadXML(const QDomElement* root)
 {
 	QString str;
 

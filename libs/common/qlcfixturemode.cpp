@@ -52,13 +52,14 @@ QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef)
 	m_physical.setFocusTiltMax(0);
 }
 
-QLCFixtureMode::QLCFixtureMode(QLCFixtureMode* mode)
+QLCFixtureMode::QLCFixtureMode(const QLCFixtureMode* mode)
 {
 	if (mode != NULL)
 		*this = *mode;
 }
 
-QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef, QDomElement* tag)
+QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef,
+				const QDomElement* tag)
 {
 	m_fixtureDef = fixtureDef;
 
@@ -71,16 +72,16 @@ QLCFixtureMode::~QLCFixtureMode()
 	m_channels.clear();
 }
 
-QLCFixtureMode& QLCFixtureMode::operator=(QLCFixtureMode& mode)
+QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
 {
 	if (this != &mode)
 	{
 		QListIterator <QLCChannel*> it(mode.m_channels);
 		int i = 0;
 
-		m_name = mode.name();
-		m_physical = mode.physical();
-		m_fixtureDef = mode.fixtureDef();
+		m_name = mode.m_name;
+		m_physical = mode.m_physical;
+		m_fixtureDef = mode.m_fixtureDef;
 
 		m_channels.clear();
 		while (it.hasNext() == true)
@@ -167,7 +168,7 @@ const QLCPhysical QLCFixtureMode::physical()
 	return m_physical;
 }
 
-bool QLCFixtureMode::loadXML(QDomElement* root)
+bool QLCFixtureMode::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;

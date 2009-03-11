@@ -60,16 +60,16 @@ public:
 	QLCChannel();
 
 	/** Copy constructor */
-	QLCChannel(QLCChannel* lc);
+	QLCChannel(const QLCChannel* channel);
 
 	/** Create contents from an XML tag */
-	QLCChannel(QDomElement* tag);
+	QLCChannel(const QDomElement* tag);
 
 	/** Destructor */
-	virtual ~QLCChannel();
+	~QLCChannel();
 
 	/** Assignment operator */
-	QLCChannel& operator=(QLCChannel& lc);
+	QLCChannel& operator=(const QLCChannel& lc);
 
 	/*********************************************************************
 	 * Channel groups
@@ -136,7 +136,7 @@ public:
 	void saveXML(QDomDocument* doc, QDomElement* root);
 
 	/** Load channel contents from an XML element */
-	virtual bool loadXML(QDomElement* tag);
+	bool loadXML(const QDomElement* tag);
 
 protected:
 	/** Name */

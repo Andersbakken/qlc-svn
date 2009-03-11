@@ -45,30 +45,30 @@ public:
 		      QString name = QString::null);
 
 	/** Copy constructor */
-	QLCCapability(QLCCapability* cap);
+	QLCCapability(const QLCCapability* cap);
 
 	/** Create contents from an XML tag */
-	QLCCapability(QDomElement* tag);
+	QLCCapability(const QDomElement* tag);
 
 	/** Destructor */
-	virtual ~QLCCapability();
+	~QLCCapability();
 
 	/** Assignment operator */
-	QLCCapability& operator=(QLCCapability& capability);
+	QLCCapability& operator=(const QLCCapability& capability);
 
-	t_value min() { return m_min; }
-	t_value max() { return m_max; }
-	QString name() { return m_name; }
+	t_value min() const { return m_min; }
+	t_value max() const { return m_max; }
+	QString name() const { return m_name; }
 
-	void setMin(const t_value &value) { m_min = value; }
-	void setMax(const t_value &value) { m_max = value; }
-	void setName(const QString &name) { m_name = name; }
+	void setMin(t_value value) { m_min = value; }
+	void setMax(t_value value) { m_max = value; }
+	void setName(const QString& name) { m_name = name; }
 
 	/** Save the capability to a QDomDocument, under the given element */
-	int saveXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* root);
 
 	/** Load capability contents from an XML element */
-	virtual bool loadXML(QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 protected:
 	t_value m_min;
