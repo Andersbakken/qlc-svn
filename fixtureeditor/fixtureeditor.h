@@ -96,6 +96,8 @@ protected slots:
 protected:
 	QLCChannel* currentChannel();
 	void refreshChannelList();
+	void updateChannelItem(const QLCChannel* channel,
+			       QTreeWidgetItem* item);
 
 	/*********************************************************************
 	 * Modes

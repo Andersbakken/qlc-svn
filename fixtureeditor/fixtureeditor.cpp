@@ -466,17 +466,25 @@ void QLCFixtureEditor::slotAddChannel()
 			}
 			else
 			{
-				/* Create a new channel to the fixture */
-				m_fixtureDef->addChannel(
-					new QLCChannel(ec.channel()));
-				refreshChannelList();
-				setModified();
+				/* Create a new channel and item for it */
+				QTreeWidgetItem* item;
+				QLCChannel* ch;
+
+				ch = new QLCChannel(ec.channel());
+				item = new QTreeWidgetItem(m_channelList);
+
+				m_fixtureDef->addChannel(ch);
+				updateChannelItem(ch, item);
 				
+				m_channelList->setCurrentItem(item);
+
+				setModified();
 				ok = true;
 			}
 		}
 		else
 		{
+			/* Cancel pressed */
 			ok = true;
 		}
 	}
@@ -505,6 +513,7 @@ void QLCFixtureEditor::slotRemoveChannel()
 		// Remove the selected channel from the fixture (also deleted)
 		m_fixtureDef->removeChannel(currentChannel());
 		delete item;
+
 		m_channelList->setCurrentItem(next);
 		setModified();
 	}
@@ -528,8 +537,7 @@ void QLCFixtureEditor::slotEditChannel()
 		*real = *(ec.channel());
 
 		item = m_channelList->currentItem();
-		item->setText(KChannelsColumnName, real->name());
-		item->setText(KChannelsColumnGroup, real->group());
+		updateChannelItem(real, item);
 
 		setModified();
 	}
@@ -566,43 +574,54 @@ void QLCFixtureEditor::slotExpandChannels()
 
 void QLCFixtureEditor::refreshChannelList()
 {
-	QLCChannel* ch = NULL;
-	QTreeWidgetItem* item = NULL;
-	QString str;
-
 	m_channelList->clear();
 
-	// Fill channels list
+	/* Fill channels list */
 	QListIterator <QLCChannel*> it(*m_fixtureDef->channels());
 	while (it.hasNext() == true)
 	{
-		ch = it.next();
-
-		item = new QTreeWidgetItem(m_channelList);
-		item->setText(KChannelsColumnName, ch->name());
-		item->setText(KChannelsColumnGroup, ch->group());
-
-		// Store the channel pointer to the listview as a string
-		str.sprintf("%lu", (unsigned long) ch);
-		item->setText(KChannelsColumnPointer, str);
-
-		/* Put all capabilities as non-selectable sub items */
-		QListIterator <QLCCapability*> capit(ch->capabilities());
-		while (capit.hasNext() == true)
-		{
-			QLCCapability* cap = capit.next();
-			Q_ASSERT(cap != NULL);
-			
-			QTreeWidgetItem* capitem = new QTreeWidgetItem(item);
-			capitem->setText(KChannelsColumnName,
-				QString("[%1-%2]: %3").arg(cap->min())
-					.arg(cap->max()).arg(cap->name()));
-			capitem->setFlags(0); /* No selection etc. */
-		}
+		updateChannelItem(it.next(),
+				  new QTreeWidgetItem(m_channelList));
 	}
 
 	slotChannelListSelectionChanged(m_channelList->currentItem());
 }
+
+void QLCFixtureEditor::updateChannelItem(const QLCChannel* channel,
+					 QTreeWidgetItem* item)
+{
+	QString str;
+
+	Q_ASSERT(channel != NULL);
+	Q_ASSERT(item != NULL);
+
+	item->setText(KChannelsColumnName, channel->name());
+	item->setText(KChannelsColumnGroup, channel->group());
+
+	/* Store the channel pointer to the listview as a string */
+	str.sprintf("%lu", (unsigned long) channel);
+	item->setText(KChannelsColumnPointer, str);
+
+	/* Destroy the existing list of children */
+	QList <QTreeWidgetItem*> children(item->takeChildren());
+	foreach (QTreeWidgetItem* child, children)
+		delete child;
+	
+	/* Put all capabilities as non-selectable sub items */
+	QListIterator <QLCCapability*> capit(channel->capabilities());
+	while (capit.hasNext() == true)
+	{
+		QLCCapability* cap = capit.next();
+		Q_ASSERT(cap != NULL);
+
+		QTreeWidgetItem* capitem = new QTreeWidgetItem(item);
+		capitem->setText(KChannelsColumnName,
+				 QString("[%1-%2]: %3").arg(cap->min())
+					.arg(cap->max()).arg(cap->name()));
+		capitem->setFlags(0); /* No selection etc. */
+	}
+}
+
 
 void QLCFixtureEditor::slotChannelListContextMenuRequested()
 {
