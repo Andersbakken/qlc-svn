@@ -160,6 +160,7 @@ void ConsoleChannel::init()
 void ConsoleChannel::initMenu()
 {
 	const QLCChannel* ch;
+	QAction* action;
 
 	Q_ASSERT(m_fixture != NULL);
 
@@ -177,7 +178,6 @@ void ConsoleChannel::initMenu()
 	m_menu = new QMenu(this);
 	m_presetButton->setMenu(m_menu);
 	m_presetButton->setPopupMode(QToolButton::InstantPopup);
-	m_menu->setTitle(ch->name());
 
 	if (ch->group() == KQLCChannelGroupPan)
 		m_presetButton->setIcon(QIcon(":/pan.png"));
@@ -241,6 +241,11 @@ void ConsoleChannel::initMenu()
 	else if (ch->group() == KQLCChannelGroupBeam)
 		m_presetButton->setIcon(QIcon(":/beam.png"));
 
+	action = m_menu->addAction(m_presetButton->icon(), ch->name());
+	m_menu->setTitle(ch->name());
+	action->setEnabled(false);
+	m_menu->addSeparator();
+	
 	// Initialize the preset menu only for normal fixtures,
 	// i.e. not for Generic dimmer fixtures
 	if (m_fixture->fixtureDef() != NULL && m_fixture->fixtureMode() != NULL)
