@@ -66,33 +66,11 @@ protected:
 	bool copyFrom(VCWidget* widget);
 
 	/*********************************************************************
-	 * Properties
-	 *********************************************************************/
-public:
-	/** Edit this widget's properties */
-	void editProperties();
-
-	/*********************************************************************
 	 * Capability to have children
 	 *********************************************************************/
 public:
 	/** VCFrame can hold children */
 	bool canHaveChildren() const { return true; }
-
-	/*********************************************************************
-	 * Button behaviour
-	 *********************************************************************/
-public:
-	enum ButtonBehaviour { Normal = 0, Exclusive = 1};
-
-	/** Set the way buttons behave inside this frame */
-	void setButtonBehaviour(ButtonBehaviour);
-
-	/** Get the way buttons behave inside this frame */
-	ButtonBehaviour buttonBehaviour() const { return m_buttonBehaviour; }
-
-protected:
-	ButtonBehaviour m_buttonBehaviour;
 
 	/*********************************************************************
 	 * Load & Save

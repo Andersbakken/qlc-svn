@@ -656,11 +656,6 @@ void VirtualConsole::slotAddButton()
 		Q_ASSERT(button != NULL);
 		button->show();
 
-		if (parent->buttonBehaviour() == VCFrame::Exclusive)
-			button->setExclusive(true);
-		else
-			button->setExclusive(false);
-
 		button->move(parent->lastClickPoint());
 
 		_app->doc()->setModified();

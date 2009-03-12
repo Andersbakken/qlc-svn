@@ -65,7 +65,6 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 
 	setCaption(QString::null);
 	setOn(false);
-	setExclusive(false);
 	setAction(Toggle);
 	setStopFunctions(false);
 	setFrameStyle(KVCFrameStyleNone);
@@ -126,7 +125,6 @@ bool VCButton::copyFrom(VCWidget* widget)
 	setIcon(button->icon());
 	setKeySequence(button->keySequence());
 	setFunction(button->function());
-	setExclusive(button->isExclusive());
 	setStopFunctions(button->stopFunctions());
 	
 	/* Copy common stuff */
@@ -582,13 +580,6 @@ void VCButton::slotFunctionRemoved(t_function_id fid)
 		setFunction(KNoID);
 }
 
-void VCButton::setExclusive(bool exclusive)
-{
-	// sure, we have made this over the frame stuff
-	// but it works for the moment and can change sometime
-	m_isExclusive = exclusive;
-}
-
 /*****************************************************************************
  * Button action
  *****************************************************************************/
@@ -646,7 +637,7 @@ void VCButton::pressFunction()
 	{
 		return;
 	}
-	else if (m_action == Toggle && m_isExclusive == false)
+	else if (m_action == Toggle)
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
@@ -656,40 +647,6 @@ void VCButton::pressFunction()
 			else
 				f->start();
 		}
-		else
-		{
-			qDebug() << "Function has been deleted!";
-			setFunction(KNoID);
-		}
-	}
-	else if (m_action == Toggle && m_isExclusive == true)
-	{
-		/* Get a list of this button's siblings from this' parent */
-		QListIterator <VCButton*> it(
-			parentWidget()->findChildren<VCButton*>("VCButton"));
-
-		/* Stop all sibling buttons' functions */
-		while (it.hasNext() == true)
-		{
-			VCButton* sibling = it.next();
-			if (sibling != this &&
-			    sibling->parentWidget() == parentWidget())
-			{
-				sibling->setOn(false);
-			}
-		}
-
-		/* Start this button's function */
-		f = _app->doc()->function(m_function);
-		if (f != NULL)
-		{
-			f->start();
-		}
-		else
-		{
-			qDebug() << "Function has been deleted!";
-			setFunction(KNoID);
-		}
 	}
 	else if (m_action == Flash)
 	{
@@ -697,11 +654,6 @@ void VCButton::pressFunction()
 		if (f != NULL)
 		{
 			f->start();
-		}
-		else
-		{
-			qDebug() << "Function has been deleted!";
-			setFunction(KNoID);
 		}
 	}
 }

@@ -218,23 +218,6 @@ public:
 	 */
 	t_function_id function() const { return m_function; }
 
-	/**
-	 * Set the button to behave exclusively inside its VCFrame parent.
-	 * An exclusive button will, when pressed down, stop the functions
-	 * attached to other VCButtons in the same frame.
-	 *
-	 * @param exclusive true to set exclusive, otherwise false
-	 */
-	void setExclusive(bool exclusive = true);
-
-	/**
-	 * Get the button's exclusive status. 
-	 * See @ref setExclusive() for disambiguation.
-	 *
-	 * @return true if button is exclusive, false if it is not
-	 */
-	bool isExclusive() { return m_isExclusive; }
-
 protected slots:
 	/** Invalidates the button's function if the function is destroyed */
 	void slotFunctionRemoved(t_function_id fid);
@@ -242,9 +225,6 @@ protected slots:
 protected:
 	/** The function that this button is controlling */
 	t_function_id m_function;
-
-	/** Exclusive status */
-	bool m_isExclusive;
 
 	/*********************************************************************
 	 * Button action

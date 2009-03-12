@@ -34,7 +34,6 @@
 
 #include "common/qlcfile.h"
 
-#include "vcframeproperties.h"
 #include "virtualconsole.h"
 #include "vccuelist.h"
 #include "vcbutton.h"
@@ -52,7 +51,6 @@ VCFrame::VCFrame(QWidget* parent) : VCWidget(parent)
 	/* Set the class name "VCFrame" as the object name as well */
 	setObjectName(VCFrame::staticMetaObject.className());
 
-	m_buttonBehaviour = Normal;
 	m_frameStyle = KVCFrameStyleSunken;
 
 	setMinimumSize(20, 20);
@@ -103,49 +101,10 @@ bool VCFrame::copyFrom(VCWidget* widget)
 	if (frame == NULL)
 		return false;
 
-	/* Copy button behaviour */
-	setButtonBehaviour(frame->buttonBehaviour());
-
 	/* TODO: Copy children? */
 
 	/* Copy common stuff */
 	return VCWidget::copyFrom(widget);
-}
-
-/*****************************************************************************
- * Properties
- *****************************************************************************/
-
-void VCFrame::editProperties()
-{
-	VCFrameProperties prop(_app, this);
-	if (prop.exec() == QDialog::Accepted)
-		_app->doc()->setModified();
-}
-
-/*****************************************************************************
- * Button Behaviour
- *****************************************************************************/
-
-void VCFrame::setButtonBehaviour(ButtonBehaviour b)
-{
-	m_buttonBehaviour = b;
-
-	/* Find a list of child widgets, whose names match
-	   the class name of VCButton (i.e. "VCButton") */
-	QListIterator<VCButton*> it(findChildren <VCButton*>(
-				      VCButton::staticMetaObject.className()));
-
-	if (b == VCFrame::Exclusive)
-	{
-		while (it.hasNext() == true)
-			it.next()->setExclusive(true);
-	}
-	else
-	{
-		while (it.hasNext() == true)
-			it.next()->setExclusive(false);
-	}
 }
 
 /*****************************************************************************
@@ -264,10 +223,6 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 	/* Caption */
 	root.setAttribute(KXMLQLCVCCaption, caption());
-
-	/* Button Behaviour */
-	str.setNum(buttonBehaviour());
-	root.setAttribute(KXMLQLCVCFrameButtonBehaviour, str);
 
 	/* Save appearance */
 	saveXMLAppearance(doc, &root);

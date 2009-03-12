@@ -80,7 +80,6 @@ HEADERS += aboutbox.h \
            vcdockarea.h \
            vcdockslider.h \
            vcframe.h \
-           vcframeproperties.h \
            vclabel.h \
            vcproperties.h \
            vcslider.h \
@@ -111,7 +110,6 @@ FORMS += aboutbox.ui \
          vcbuttonproperties.ui \
          vccuelistproperties.ui \
          vcdockslider.ui \
-         vcframeproperties.ui \
          vcproperties.ui \
          vcsliderproperties.ui \
          vcxypadfixtureeditor.ui \
@@ -167,7 +165,6 @@ SOURCES += aboutbox.cpp \
            vcdockarea.cpp \
            vcdockslider.cpp \
            vcframe.cpp \
-           vcframeproperties.cpp \
            vclabel.cpp \
            vcproperties.cpp \
            vcslider.cpp \
