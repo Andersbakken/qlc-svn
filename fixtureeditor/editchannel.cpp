@@ -327,13 +327,15 @@ void EditChannel::slotWizardClicked()
 
 void EditChannel::refreshCapabilities()
 {
+	m_channel->sortCapabilities();
+
 	QListIterator <QLCCapability*> it(m_channel->capabilities());
 	QLCCapability* cap = NULL;
 	QTreeWidgetItem* item = NULL;
 	QString str;
 	
 	m_capabilityList->clear();
-	
+
 	/* Fill capabilities */
 	while (it.hasNext() == true)
 	{
