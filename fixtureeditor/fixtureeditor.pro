@@ -29,12 +29,14 @@ win32:RC_FILE = fixtureeditor.rc
 
 HEADERS += aboutbox.h \
            app.h \
+	   capabilitywizard.h \
            editcapability.h \
            editchannel.h \
            editmode.h \
            fixtureeditor.h
 
 FORMS += aboutbox.ui \
+	 capabilitywizard.ui \
 	 editcapability.ui \
 	 editchannel.ui \
 	 editmode.ui \
@@ -42,6 +44,7 @@ FORMS += aboutbox.ui \
 
 SOURCES += aboutbox.cpp \
            app.cpp \
+	   capabilitywizard.cpp \
            editcapability.cpp \
            editchannel.cpp \
            editmode.cpp \

@@ -35,6 +35,7 @@
 #include "common/qlccapability.h"
 #include "common/qlcchannel.h"
 
+#include "capabilitywizard.h"
 #include "editcapability.h"
 #include "editchannel.h"
 #include "app.h"
@@ -123,6 +124,8 @@ void EditChannel::init()
 		this, SLOT(slotRemoveCapabilityClicked()));
 	connect(m_editCapabilityButton, SIGNAL(clicked()),
 		this, SLOT(slotEditCapabilityClicked()));
+	connect(m_wizardButton, SIGNAL(clicked()),
+		this, SLOT(slotWizardClicked()));
 	
 	/* Capability list connections */
 	m_capabilityList->header()
@@ -289,6 +292,37 @@ void EditChannel::slotEditCapabilityClicked()
 	}
 	
 	delete ec;
+}
+
+void EditChannel::slotWizardClicked()
+{
+	bool overlap = false;
+
+	CapabilityWizard cw(this, m_channel);
+	if (cw.exec() == QDialog::Accepted)
+	{
+		QListIterator <QLCCapability*> it(cw.capabilities());
+		while (it.hasNext() == true)
+		{
+			QLCCapability* cap;
+			cap = new QLCCapability(it.next());
+			if (m_channel->addCapability(cap) == false)
+			{
+				delete cap;
+				overlap = true;
+			}
+
+			refreshCapabilities();
+		}
+
+		if (overlap == true)
+		{
+			QMessageBox::warning(this,
+				tr("Overlapping values"),
+				tr("Some capabilities could not be created "
+				   "because of overlapping values."));
+		}
+	}
 }
 
 void EditChannel::refreshCapabilities()

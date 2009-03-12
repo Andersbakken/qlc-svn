@@ -70,7 +70,8 @@ protected slots:
 	void slotAddCapabilityClicked();
 	void slotRemoveCapabilityClicked();
 	void slotEditCapabilityClicked();
- 
+	void slotWizardClicked();
+
 protected:
 	void refreshCapabilities();
 	QLCCapability* currentCapability();

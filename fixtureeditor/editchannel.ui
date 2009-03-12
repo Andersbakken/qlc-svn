@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>627</width>
+    <width>454</width>
     <height>457</height>
    </rect>
   </property>
@@ -166,6 +166,26 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_wizardButton" >
+          <property name="toolTip" >
+           <string>Capability wizard</string>
+          </property>
+          <property name="text" >
+           <string>...</string>
+          </property>
+          <property name="icon" >
+           <iconset resource="fixtureeditor.qrc" >
+            <normaloff>:/wizard.png</normaloff>:/wizard.png</iconset>
+          </property>
+          <property name="iconSize" >
+           <size>
+            <width>26</width>
+            <height>26</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

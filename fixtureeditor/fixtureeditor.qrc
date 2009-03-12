@@ -21,5 +21,6 @@
         <file alias="qt.png">../gfx/qt.png</file>
         <file alias="uncheck.png">../gfx/uncheck.png</file>
         <file alias="up.png">../gfx/up.png</file>
+        <file alias="wizard.png">../gfx/wizard.png</file>
     </qresource>
 </RCC>
