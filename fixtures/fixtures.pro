@@ -54,6 +54,7 @@ fixtures.files += GLP-YPOCColor.qxf
 fixtures.files += JB-Lighting-Varyscan2.qxf
 fixtures.files += Lite-Works-ColorChanger.qxf
 fixtures.files += Martin-Atomic-3000.qxf
+fixtures.files += Martin-EFX-500.qxf
 fixtures.files += Martin-MAC250plus.qxf
 fixtures.files += Martin-MiniMAC-Maestro.qxf
 fixtures.files += Martin-MiniMAC-Profile.qxf
