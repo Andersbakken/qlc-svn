@@ -226,6 +226,16 @@ bool QLCChannel::removeCapability(QLCCapability* cap)
 	return false;
 }
 
+static bool capsort(const QLCCapability* cap1, const QLCCapability* cap2)
+{
+	return (*cap1) < (*cap2);
+}
+
+void QLCChannel::sortCapabilities()
+{
+	qSort(m_capabilities.begin(), m_capabilities.end(), capsort);
+}
+
 /*****************************************************************************
  * File operations
  *****************************************************************************/

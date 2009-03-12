@@ -38,6 +38,9 @@ class QLCCapability;
 
 class QLC_DECLSPEC QLCCapability
 {
+	/********************************************************************
+	 * Initialization
+	 ********************************************************************/
 public:
 	/** Default constructor */
 	QLCCapability(t_value min = KChannelValueMin,
@@ -56,6 +59,13 @@ public:
 	/** Assignment operator */
 	QLCCapability& operator=(const QLCCapability& capability);
 
+	/** Comparing operator for qSort */
+	bool operator<(const QLCCapability& capability) const;
+	
+	/********************************************************************
+	 * Properties
+	 ********************************************************************/
+public:
 	t_value min() const { return m_min; }
 	t_value max() const { return m_max; }
 	QString name() const { return m_name; }
@@ -64,16 +74,20 @@ public:
 	void setMax(t_value value) { m_max = value; }
 	void setName(const QString& name) { m_name = name; }
 
+protected:
+	t_value m_min;
+	t_value m_max;
+	QString m_name;
+
+	/********************************************************************
+	 * Load & Save
+	 ********************************************************************/
+public:
 	/** Save the capability to a QDomDocument, under the given element */
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 
 	/** Load capability contents from an XML element */
 	bool loadXML(const QDomElement* root);
-
-protected:
-	t_value m_min;
-	t_value m_max;
-	QString m_name;
 };
 
 #endif

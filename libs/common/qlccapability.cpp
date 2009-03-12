@@ -70,6 +70,14 @@ QLCCapability& QLCCapability::operator=(const QLCCapability& capability)
 	return *this;
 }
 
+bool QLCCapability::operator<(const QLCCapability& capability) const
+{
+	if (m_min < capability.m_min)
+		return true;
+	else
+		return false;
+}
+
 bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomElement tag;

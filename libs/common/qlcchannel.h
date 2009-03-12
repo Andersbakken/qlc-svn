@@ -125,7 +125,7 @@ public:
 	/** Remove a capability from the channel */
 	bool removeCapability(QLCCapability* cap);
 
-protected:
+	/** Sort capabilities to ascending order by their values */
 	void sortCapabilities();
 
 	/*********************************************************************
