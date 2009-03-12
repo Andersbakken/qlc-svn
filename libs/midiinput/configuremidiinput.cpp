@@ -66,6 +66,8 @@ ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
 #ifdef WIN32
 	connect(m_editButton, SIGNAL(clicked()),
 		this, SLOT(slotEditClicked()));
+	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditClicked()));
 #else
 	m_editButton->hide();
 #endif
@@ -166,6 +168,7 @@ void ConfigureMIDIInput::slotEditClicked()
 
 	/* Configure the device */
 	ConfigureMIDILine cml(this, device);
-	cml.exec();
+	if (cml.exec() == QDialog::Accepted)
+		refreshList();
 }
 #endif
