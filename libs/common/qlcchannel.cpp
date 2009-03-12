@@ -158,7 +158,7 @@ QString QLCChannel::indexToGroup(int index)
  * Capabilities
  *****************************************************************************/
 
-QLCCapability* QLCChannel::searchCapability(t_value value)
+QLCCapability* QLCChannel::searchCapability(t_value value) const
 {
 	QListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)
@@ -171,7 +171,7 @@ QLCCapability* QLCChannel::searchCapability(t_value value)
 	return NULL;
 }
 
-QLCCapability* QLCChannel::searchCapability(QString name)
+QLCCapability* QLCChannel::searchCapability(QString name) const
 {
 	QListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)

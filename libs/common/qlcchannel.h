@@ -114,10 +114,10 @@ public:
 	const QList <QLCCapability*> capabilities() const { return m_capabilities; }
 
 	/** Search for a particular capability by its channel value */
-	QLCCapability* searchCapability(t_value value);
+	QLCCapability* searchCapability(t_value value) const;
 
 	/** Search for a particular capability by its name */
-	QLCCapability* searchCapability(QString name);
+	QLCCapability* searchCapability(QString name) const;
 
 	/** Add a new capability to the channel */
 	bool addCapability(QLCCapability* cap);
