@@ -141,7 +141,7 @@ bool Collection::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool Collection::loadXML(QDomDocument*, QDomElement* root)
+bool Collection::loadXML(const QDomElement* root)
 {
 	t_fixture_id step_fxi = KNoID;
 

@@ -89,8 +89,7 @@ HEADERS += aboutbox.h \
  	   vcxypadfixture.h \
  	   vcxypadfixtureeditor.h \
            vcxypadproperties.h \
-           virtualconsole.h \
-           xychannelunit.h
+           virtualconsole.h
 
 FORMS += aboutbox.ui \
 	 addfixture.ui \
@@ -174,7 +173,6 @@ SOURCES += aboutbox.cpp \
            vcxypadfixture.cpp \
            vcxypadfixtureeditor.cpp \
            vcxypadproperties.cpp \
-           virtualconsole.cpp \
-           xychannelunit.cpp
+           virtualconsole.cpp
 
 macx:QMAKE_POST_LINK = ./libupdate.sh

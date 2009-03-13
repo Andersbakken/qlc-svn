@@ -456,12 +456,11 @@ bool InputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
+bool InputMap::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCInputMap)
@@ -477,7 +476,7 @@ bool InputMap::loadXML(QDomDocument* doc, QDomElement* root)
 		tag = node.toElement();
 
 		if (tag.tagName() == KXMLQLCInputPatch)
-			InputPatch::loader(doc, &tag, this);
+			InputPatch::loader(&tag, this);
 		else if (tag.tagName() == KXMLQLCInputMapEditorUniverse)
 			setEditorUniverse(tag.text().toInt());
 		else

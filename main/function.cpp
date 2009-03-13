@@ -274,13 +274,12 @@ void Function::slotFixtureRemoved(t_fixture_id fid)
  * Load & Save
  *****************************************************************************/
 
-Function* Function::loader(QDomDocument* doc, QDomElement* root)
+Function* Function::loader(const QDomElement* root)
 {
 	t_function_id func_id = 0;
 	Type func_type;
 	QString func_name;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCFunction)
@@ -297,12 +296,12 @@ Function* Function::loader(QDomDocument* doc, QDomElement* root)
 	func_name = root->attribute(KXMLQLCFunctionName);
 
 	/* Type */
-	func_type = Function::stringToType(root->attribute(KXMLQLCFunctionType));
+	func_type = Function::stringToType(
+		root->attribute(KXMLQLCFunctionType));
 
 	/* Create a new function into Doc using the loaded information 
 	   and continue loading the specific function contents from Doc */
-	return _app->doc()->newFunction(func_type, func_id, func_name,
-					doc, root);
+	return _app->doc()->newFunction(func_type, func_id, func_name, root);
 }
 
 /*****************************************************************************

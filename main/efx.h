@@ -439,30 +439,12 @@ public:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	/**
-	 * Save the function's contents to an XML document
-	 *
-	 * @param doc The QDomDocument to save to
-	 * @param wksp_root The workspace root XML element
-	 */
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
-
-	/**
-	 * Load the function's contents from an XML document
-	 *
-	 * @param doc The QDomDocument to load from
-	 * @param root The EFX root XML element
-	 */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 protected:
-	/**
-	 * Load an axis' contents from an XML document
-	 *
-	 * @param doc The QDomDocument to load from
-	 * @param root An EFX Axis root XML element
-	 */
-	bool loadXMLAxis(QDomDocument* doc, QDomElement* root);
+	/** Load an axis' contents from an XML document*/
+	bool loadXMLAxis(const QDomElement* root);
 
 	/*********************************************************************
 	 * Bus

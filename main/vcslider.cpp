@@ -717,11 +717,10 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
  * Load & Save
  *****************************************************************************/
 
-bool VCSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+bool VCSlider::loader(const QDomElement* root, QWidget* parent)
 {
 	VCSlider* slider = NULL;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
@@ -736,10 +735,10 @@ bool VCSlider::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	slider->show();
 
 	/* Continue loading */
-	return slider->loadXML(doc, root);
+	return slider->loadXML(root);
 }
 
-bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCSlider::loadXML(const QDomElement* root)
 {
 	bool visible = false;
 	int x = 0;
@@ -753,7 +752,6 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	QString caption;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCSlider)
@@ -782,7 +780,7 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			loadXMLAppearance(doc, &tag);
+			loadXMLAppearance(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCSliderMode)
 		{
@@ -803,11 +801,11 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCSliderLevel)
 		{
-			loadXMLLevel(doc, &tag);
+			loadXMLLevel(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCWidgetInput)
 		{
-			loadXMLInput(doc, &tag);
+			loadXMLInput(&tag);
 		}
 		else
 		{
@@ -824,7 +822,7 @@ bool VCSlider::loadXML(QDomDocument* doc, QDomElement* root)
 	return true;
 }
 
-bool VCSlider::loadXMLLevel(QDomDocument*, QDomElement* level_root)
+bool VCSlider::loadXMLLevel(const QDomElement* level_root)
 {
 	QDomNode node;
 	QDomElement tag;

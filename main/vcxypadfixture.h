@@ -127,7 +127,7 @@ protected:
 	 * Load & Save
 	 ********************************************************************/
 public:
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(const QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 };
 

@@ -55,7 +55,7 @@ class QLC_DECLSPEC QLCPhysical
 {
 public:
 	/* Default destructor */
-	virtual ~QLCPhysical() {}
+	~QLCPhysical() {}
 
 	/** Assignment operator */
 	QLCPhysical& operator=(const QLCPhysical& physical);
@@ -100,7 +100,7 @@ public:
 	void setFocusTiltMax(const int tilt) { m_focusTiltMax = tilt; }
 	int focusTiltMax() const { return m_focusTiltMax; }
 
-	virtual bool loadXML(QDomElement* root);
+	bool loadXML(const QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 
 protected:

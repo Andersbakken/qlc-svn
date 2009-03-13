@@ -140,14 +140,13 @@ public:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	static bool loader(QDomDocument* doc, QDomElement* root,
-			   QWidget* parent);
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	static bool loader(const QDomElement* root, QWidget* parent);
+	bool loadXML(const QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
 protected:
 	/** Load a legacy KeyBind node */
-	bool loadKeyBind(QDomDocument* doc, QDomElement* key_root);
+	bool loadKeyBind(const QDomElement* key_root);
 };
 
 #endif

@@ -143,7 +143,7 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 	return true;
 }
 
-bool InputPatch::loader(QDomDocument*, QDomElement* root, InputMap* inputMap)
+bool InputPatch::loader(const QDomElement* root, InputMap* inputMap)
 {
 	t_input_universe universe = 0;
 	QString deviceName;

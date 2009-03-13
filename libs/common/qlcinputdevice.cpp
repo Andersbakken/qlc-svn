@@ -180,7 +180,7 @@ QLCInputDevice* QLCInputDevice::loader(const QString& path)
 	return device;
 }
 
-bool QLCInputDevice::loadXML(QDomDocument* doc)
+bool QLCInputDevice::loadXML(const QDomDocument* doc)
 {
 	QDomElement root;
 	QDomElement tag;
@@ -210,7 +210,7 @@ bool QLCInputDevice::loadXML(QDomDocument* doc)
 			else if (tag.tagName() == KXMLQLCInputChannel)
 			{
 				QLCInputChannel* ich = new QLCInputChannel();
-				if (ich->loadXML(doc, &tag) == true)
+				if (ich->loadXML(&tag) == true)
 					addChannel(ich);
 				else
 					delete ich;

@@ -110,7 +110,7 @@ public:
 	void store(Monitor* monitor);
 
 	/** Load contents from the given XML document */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 	/** Save contents to the given XML document */
 	bool saveXML(QDomDocument* doc, QDomElement* root);
@@ -219,7 +219,7 @@ protected:
 	 * Save & Load
 	 *********************************************************************/
 public:
-	static bool loadXML(QDomDocument* doc, QDomElement* root);
+	static bool loadXML(const QDomElement* root);
 	static bool saveXML(QDomDocument* doc, QDomElement* root);
 };
 

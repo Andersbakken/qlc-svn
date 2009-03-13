@@ -146,7 +146,7 @@ bool QLCFile::saveXMLWindowState(QDomDocument* doc, QDomElement* root,
 	return true;
 }
 
-bool QLCFile::loadXMLWindowState(QDomElement* tag,
+bool QLCFile::loadXMLWindowState(const QDomElement* tag,
 				 int* x, int* y,
 				 int* w, int* h,
 				 bool* visible)

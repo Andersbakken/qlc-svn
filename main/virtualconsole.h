@@ -330,7 +330,7 @@ public slots:
 	 *********************************************************************/
 public:
 	/** Load properties and contents from an XML document */
-	static bool loadXML(QDomDocument* doc, QDomElement* vc_root);
+	static bool loadXML(const QDomElement* vc_root);
 
 	/** Save properties and contents to an XML document */
 	static bool saveXML(QDomDocument* doc, QDomElement* wksp_root);

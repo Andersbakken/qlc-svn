@@ -314,7 +314,7 @@ bool Scene::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool Scene::loadXML(QDomDocument*, QDomElement* root)
+bool Scene::loadXML(const QDomElement* root)
 {
 	QString str;
 

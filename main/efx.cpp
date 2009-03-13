@@ -929,13 +929,12 @@ bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
+bool EFX::loadXML(const QDomElement* root)
 {
 	QString str;
 	QDomNode node;
 	QDomElement tag;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCFunction)
@@ -959,7 +958,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 		else if (tag.tagName() == KXMLQLCEFXFixture)
 		{
 			EFXFixture* ef = new EFXFixture(this);
-			ef->loadXML(doc, &tag);
+			ef->loadXML(&tag);
 			if (ef->fixture() != KNoID)
 			{
 				if (addFixture(ef) == false)
@@ -1026,7 +1025,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 		else if (tag.tagName() == KXMLQLCEFXAxis)
 		{
 			/* Axes */
-			loadXMLAxis(doc, &tag);
+			loadXMLAxis(&tag);
 		}
 		else
 		{
@@ -1039,7 +1038,7 @@ bool EFX::loadXML(QDomDocument* doc, QDomElement* root)
 	return true;
 }
 
-bool EFX::loadXMLAxis(QDomDocument*, QDomElement* root)
+bool EFX::loadXMLAxis(const QDomElement* root)
 {
 	int frequency = 0;
 	int offset = 0;

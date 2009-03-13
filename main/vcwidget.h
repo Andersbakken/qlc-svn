@@ -246,12 +246,12 @@ signals:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	virtual bool loadXML(QDomDocument* doc, QDomElement* vc_root) = 0;
+	virtual bool loadXML(const QDomElement* vc_root) = 0;
 	virtual bool saveXML(QDomDocument* doc, QDomElement* vc_root) = 0;
 
 protected:
-	bool loadXMLAppearance(QDomDocument* doc, QDomElement* appearance_root);
-	bool loadXMLInput(QDomDocument* doc, QDomElement* root);
+	bool loadXMLAppearance(const QDomElement* appearance_root);
+	bool loadXMLInput(const QDomElement* root);
 
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* widget_root);
 	bool saveXMLInput(QDomDocument* doc, QDomElement* root);

@@ -302,7 +302,7 @@ QString VCXYPadFixture::yBrief() const
  * Load & Save
  ****************************************************************************/
 
-bool VCXYPadFixture::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCXYPadFixture::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;
@@ -311,7 +311,6 @@ bool VCXYPadFixture::loadXML(QDomDocument* doc, QDomElement* root)
 	QString max;
 	QString rev;
 
-	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCXYPadFixture)

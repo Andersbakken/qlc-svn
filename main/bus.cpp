@@ -140,7 +140,7 @@ bool Bus::tap(t_bus_id id)
  * Load & Save
  ****************************************************************************/
 
-bool Bus::loadXML(QDomDocument*, QDomElement* root)
+bool Bus::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;

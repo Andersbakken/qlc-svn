@@ -426,10 +426,9 @@ protected slots:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	static bool loader(QDomDocument* doc, QDomElement* root, QWidget* parent);
-
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-	bool loadXMLLevel(QDomDocument* doc, QDomElement* level_root);
+	static bool loader(const QDomElement* root, QWidget* parent);
+	bool loadXML(const QDomElement* root);
+	bool loadXMLLevel(const QDomElement* level_root);
 
 	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 };

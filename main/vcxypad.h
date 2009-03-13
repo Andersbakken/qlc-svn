@@ -113,29 +113,9 @@ protected slots:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	/** Create & load a VCXYPad from the given XML node
-	 *
-	 * @param doc A QDomDocument containing a QLC workspace
-	 * @param root A QDomElement containing a VCXYPad node tree
-	 * @param parent The parent widget that the loaded pad belongs to 
-	 */
-	static bool loader(QDomDocument* doc, QDomElement* root,
-			   QWidget* parent);
+	static bool loader(const QDomElement* root, QWidget* parent);
+	bool loadXML(const QDomElement* root);
 
-	/**
-	 * Load a VCXYPad's contents from the given XML node
-	 *
-	 * @param doc A QDomDocument containing a QLC workspace
-	 * @param root A QDomElement containing a VCXYPad node tree
-	 */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
-
-	/**
-	 * Save a VCXYPad's contents to the given XML node
-	 *
-	 * @param doc A QDomDocument containing a QLC workspace
-	 * @param root A QDomElement where to create this pad's VCXYPad node
-	 */
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 
 	/*********************************************************************

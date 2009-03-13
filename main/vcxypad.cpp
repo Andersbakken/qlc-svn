@@ -36,7 +36,6 @@
 
 #include "vcxypadproperties.h"
 #include "virtualconsole.h"
-#include "xychannelunit.h"
 #include "outputmap.h"
 #include "vcxypad.h"
 #include "fixture.h"
@@ -190,11 +189,10 @@ void VCXYPad::slotAppModeChanged(App::Mode mode)
  * Load & Save
  *****************************************************************************/
 
-bool VCXYPad::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+bool VCXYPad::loader(const QDomElement* root, QWidget* parent)
 {
 	VCXYPad* xypad = NULL;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
@@ -209,10 +207,10 @@ bool VCXYPad::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	xypad->show();
 
 	/* Continue loading */
-	return xypad->loadXML(doc, root);
+	return xypad->loadXML(root);
 }
 
-bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCXYPad::loadXML(const QDomElement* root)
 {
 	bool visible = false;
 	int x = 0;
@@ -227,7 +225,6 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCXYPad)
@@ -251,7 +248,7 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			loadXMLAppearance(doc, &tag);
+			loadXMLAppearance(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCXYPadPosition)
 		{
@@ -264,7 +261,7 @@ bool VCXYPad::loadXML(QDomDocument* doc, QDomElement* root)
 		else if (tag.tagName() == KXMLQLCVCXYPadFixture)
 		{
 			VCXYPadFixture fxi;
-			if (fxi.loadXML(doc, &tag) == true)
+			if (fxi.loadXML(&tag) == true)
 				appendFixture(fxi);
 		}
 		else

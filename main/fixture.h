@@ -315,7 +315,7 @@ public:
 	 * @param root An XML subtree containing a single fixture instance
 	 * @return A newly-created Fixture instance or NULL if loading failed
 	 */
-	static Fixture* loader(QDomDocument* doc, QDomElement* root);
+	static Fixture* loader(const QDomElement* root);
 
 	/**
 	 * Save the fixture instance into an XML document, under the given

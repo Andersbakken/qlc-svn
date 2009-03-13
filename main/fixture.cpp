@@ -279,7 +279,7 @@ void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
  * Load & Save
  *****************************************************************************/
 
-Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
+Fixture* Fixture::loader(const QDomElement* root)
 {
 	Fixture* fxi = NULL;
 	QLCFixtureDef* fixtureDef = NULL;
@@ -297,7 +297,6 @@ Fixture* Fixture::loader(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QDomElement consoletag;
 
-	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLFixture)

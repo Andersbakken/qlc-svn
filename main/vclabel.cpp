@@ -71,11 +71,10 @@ VCWidget* VCLabel::createCopy(VCWidget* parent)
  * Load & Save
  *****************************************************************************/
 
-bool VCLabel::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+bool VCLabel::loader(const QDomElement* root, QWidget* parent)
 {
 	VCLabel* label = NULL;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
@@ -90,10 +89,10 @@ bool VCLabel::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	label->show();
 
 	/* Continue loading */
-	return label->loadXML(doc, root);
+	return label->loadXML(root);
 }
 
-bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCLabel::loadXML(const QDomElement* root)
 {
 	bool visible = false;
 	int x = 0;
@@ -105,7 +104,6 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCLabel)
@@ -130,7 +128,7 @@ bool VCLabel::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			loadXMLAppearance(doc, &tag);
+			loadXMLAppearance(&tag);
 		}
 		else
 		{

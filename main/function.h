@@ -301,7 +301,7 @@ public:
 	 * @param doc An XML document to load from
 	 * @param root An XML root element of a function
 	 */
-	virtual bool loadXML(QDomDocument* doc, QDomElement* root) = 0;
+	virtual bool loadXML(const QDomElement* root) = 0;
 
 	/**
 	 * Load any function from an XML tag
@@ -309,7 +309,7 @@ public:
 	 * @param doc An XML document to load from
 	 * @param root An XML root element of a function
 	 */
-	static Function* loader(QDomDocument* doc, QDomElement* root);
+	static Function* loader(const QDomElement* root);
 
 	/*********************************************************************
 	 * Flash

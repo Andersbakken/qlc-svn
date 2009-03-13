@@ -144,7 +144,7 @@ public:
 
 protected:
 	/** Load an input device from the given document */
-	bool loadXML(QDomDocument* doc);
+	bool loadXML(const QDomDocument* doc);
 };
 
 #endif

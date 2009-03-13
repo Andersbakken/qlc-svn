@@ -266,11 +266,10 @@ void VCCueList::editProperties()
  * Load & Save
  *****************************************************************************/
 
-bool VCCueList::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+bool VCCueList::loader(const QDomElement* root, QWidget* parent)
 {
 	VCCueList* cuelist = NULL;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
@@ -285,10 +284,10 @@ bool VCCueList::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	cuelist->show();
 
 	/* Continue loading */
-	return cuelist->loadXML(doc, root);
+	return cuelist->loadXML(root);
 }
 
-bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCCueList::loadXML(const QDomElement* root)
 {
 	bool visible = false;
 	int x = 0;
@@ -300,7 +299,6 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCCueList)
@@ -325,7 +323,7 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			loadXMLAppearance(doc, &tag);
+			loadXMLAppearance(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCCueListKey)
 		{
@@ -337,7 +335,7 @@ bool VCCueList::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == "KeyBind") /* Legacy */
 		{
-			loadKeyBind(doc, &tag);
+			loadKeyBind(&tag);
 		}
 		else
 		{
@@ -398,12 +396,10 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	return true;
 }
 
-bool VCCueList::loadKeyBind(QDomDocument* doc, QDomElement* key_root)
+bool VCCueList::loadKeyBind(const QDomElement* key_root)
 {
 	QDomElement tag;
 	QDomNode node;
-
-	Q_UNUSED(doc);
 
 	if (key_root->tagName() != "KeyBind")
 	{

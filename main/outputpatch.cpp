@@ -129,7 +129,7 @@ bool OutputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 	return true;
 }
 
-bool OutputPatch::loader(QDomDocument*, QDomElement* root, OutputMap* outputMap)
+bool OutputPatch::loader(const QDomElement* root, OutputMap* outputMap)
 {
 	QDomNode node;
 	QDomElement tag;

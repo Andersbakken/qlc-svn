@@ -127,14 +127,13 @@ void VCProperties::resetContents()
  * Properties Load & Save
  *****************************************************************************/
 
-bool VCProperties::loadXML(QDomDocument* doc, QDomElement* vc_root)
+bool VCProperties::loadXML(const QDomElement* vc_root)
 {
 	QDomNode node;
 	QDomElement tag;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
+	Q_ASSERT(vc_root != NULL);
 
 	if (vc_root->tagName() != KXMLQLCVirtualConsole)
 	{
@@ -150,7 +149,7 @@ bool VCProperties::loadXML(QDomDocument* doc, QDomElement* vc_root)
 		if (tag.tagName() == KXMLQLCVCProperties)
 		{
 			/* Properties */
-			loadProperties(doc, &tag);
+			loadProperties(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCFrame)
 		{
@@ -158,7 +157,7 @@ bool VCProperties::loadXML(QDomDocument* doc, QDomElement* vc_root)
 			if (m_contents == NULL)
 				m_contents = new VCFrame(_app);
 			Q_ASSERT(m_contents != NULL);
-			m_contents->loadXML(doc, &tag);
+			m_contents->loadXML(&tag);
 		}
 		else
 		{
@@ -182,7 +181,7 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	QString str;
 
 	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
+	Q_ASSERT(wksp_root != NULL);
 
 	/* Virtual Console entry */
 	vc_root = doc->createElement(KXMLQLCVirtualConsole);
@@ -287,13 +286,12 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return QLCWidgetProperties::saveXML(doc, &prop_root);
 }
 
-bool VCProperties::loadProperties(QDomDocument* doc, QDomElement* root)
+bool VCProperties::loadProperties(const QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
 	QString str;
 
-	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCProperties)
@@ -394,7 +392,7 @@ bool VCProperties::loadProperties(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCWidgetProperties)
 		{
-			QLCWidgetProperties::loadXML(doc, &tag);
+			QLCWidgetProperties::loadXML(&tag);
 		}
 		else
 		{

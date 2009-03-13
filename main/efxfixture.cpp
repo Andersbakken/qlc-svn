@@ -116,12 +116,11 @@ Function::Direction EFXFixture::direction() const
  * Load & Save
  *****************************************************************************/
 
-bool EFXFixture::loadXML(QDomDocument* doc, QDomElement* root)
+bool EFXFixture::loadXML(const QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
 
-	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCEFXFixture)

@@ -54,7 +54,7 @@ public:
 	int height() const { return m_height; }
 
 	virtual void store(QWidget* widget);
-	virtual bool loadXML(QDomDocument* doc, QDomElement* root);
+	virtual bool loadXML(const QDomElement* root);
 	virtual bool saveXML(QDomDocument* doc, QDomElement* root);
 
 protected:

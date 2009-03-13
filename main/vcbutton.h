@@ -138,13 +138,11 @@ public:
 	/**
 	 * Create and load a new VCButton from an XML document
 	 *
-	 * @param doc An XML document to load from
 	 * @param btn_root A VCButton XML root node
 	 * @param parent A parent VCFrame for the new VCButton
 	 * @return true if successful; otherwise false
 	 */
-	static bool loader(QDomDocument* doc, QDomElement* btn_root,
-			   QWidget* parent);
+	static bool loader(const QDomElement* btn_root, QWidget* parent);
 
 	/**
 	 * Load a VCButton's properties from an XML document node
@@ -153,7 +151,7 @@ public:
 	 * @param btn_root A VCButton XML root node containing button properties
 	 * @return true if successful; otherwise false
 	 */
-	bool loadXML(QDomDocument* doc, QDomElement* btn_root);
+	bool loadXML(const QDomElement* btn_root);
 
 	/**
 	 * Save a VCButton's properties to an XML document node
@@ -165,7 +163,7 @@ public:
 
 protected:
 	/** Load a legacy KeyBind node */
-	bool loadKeyBind(QDomDocument* doc, QDomElement* key_root);
+	bool loadKeyBind(const QDomElement* key_root);
 
 	/*********************************************************************
 	 * Button state

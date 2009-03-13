@@ -50,7 +50,7 @@ QLCPhysical& QLCPhysical::operator=(const QLCPhysical& physical)
 	return *this;
 }
 
-bool QLCPhysical::loadXML(QDomElement* root)
+bool QLCPhysical::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;

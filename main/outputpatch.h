@@ -98,8 +98,7 @@ public:
 	 * @param universe The universe number that the OutputPatch is for
 	 * @return true if successful, otherwise false
 	 */
-	static bool loader(QDomDocument* doc, QDomElement* root,
-			   OutputMap* outputMap);
+	static bool loader(const QDomElement* root, OutputMap* outputMap);
 };
 
 #endif

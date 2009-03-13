@@ -180,11 +180,11 @@ protected:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	bool loadXML(QDomDocument* doc, QDomElement* vc_root);
+	bool loadXML(const QDomElement* vc_root);
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
 protected:
-	bool loadProperties(QDomDocument* doc, QDomElement* root);
+	bool loadProperties(const QDomElement* root);
 };
 
 /*****************************************************************************

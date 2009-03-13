@@ -212,7 +212,7 @@ bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool Chaser::loadXML(QDomDocument*, QDomElement* root)
+bool Chaser::loadXML(const QDomElement* root)
 {
 	t_fixture_id step_fxi = KNoID;
 	int step_number = 0;

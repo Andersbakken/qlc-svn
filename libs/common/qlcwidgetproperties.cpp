@@ -70,13 +70,11 @@ void QLCWidgetProperties::store(QWidget* widget)
 	m_height = widget->height();
 }
 
-bool QLCWidgetProperties::loadXML(QDomDocument* doc, QDomElement* root)
+bool QLCWidgetProperties::loadXML(const QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
 
-	Q_UNUSED(doc);
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCWidgetProperties &&

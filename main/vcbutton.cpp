@@ -263,11 +263,10 @@ void VCButton::slotResetIcon()
  * Load & Save
  *****************************************************************************/
 
-bool VCButton::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+bool VCButton::loader(const QDomElement* root, QWidget* parent)
 {
 	VCButton* button = NULL;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
@@ -282,10 +281,10 @@ bool VCButton::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	button->show();
 
 	/* Continue loading */
-	return button->loadXML(doc, root);
+	return button->loadXML(root);
 }
 
-bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCButton::loadXML(const QDomElement* root)
 {
 	bool visible = false;
 	int x = 0;
@@ -297,7 +296,6 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCButton)
@@ -325,7 +323,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			loadXMLAppearance(doc, &tag);
+			loadXMLAppearance(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCButtonFunction)
 		{
@@ -334,7 +332,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCWidgetInput)
 		{
-			loadXMLInput(doc, &tag);
+			loadXMLInput(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCButtonAction)
 		{
@@ -346,7 +344,7 @@ bool VCButton::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == "KeyBind") /* Legacy */
 		{
-			loadKeyBind(doc, &tag);
+			loadKeyBind(&tag);
 		}
 		else
 		{
@@ -415,12 +413,10 @@ bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	return true;
 }
 
-bool VCButton::loadKeyBind(QDomDocument* doc, QDomElement* key_root)
+bool VCButton::loadKeyBind(const QDomElement* key_root)
 {
 	QDomElement tag;
 	QDomNode node;
-
-	Q_UNUSED(doc);
 
 	if (key_root->tagName() != "KeyBind")
 	{

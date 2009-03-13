@@ -280,7 +280,7 @@ public:
 	 * @param map_root A OutputMap root node to load from
 	 * @return true if successful, otherwise false
 	 */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 	/*********************************************************************
 	 * Defaults

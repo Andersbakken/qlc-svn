@@ -99,7 +99,7 @@ public:
 	 *
 	 * @return true if succesful, otherwise false
 	 */
-	static bool loadXMLWindowState(QDomElement* tag,
+	static bool loadXMLWindowState(const QDomElement* tag,
 				       int* x, int* y,
 				       int* w, int* h,
 				       bool* visible);

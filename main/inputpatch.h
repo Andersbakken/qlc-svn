@@ -98,8 +98,7 @@ public:
 	 * @param inputMap InputMap object that contains the loaded patch
 	 * @return true if successful, otherwise false
 	 */
-	static bool loader(QDomDocument* doc, QDomElement* root,
-			   InputMap* inputMap);
+	static bool loader(const QDomElement* root, InputMap* inputMap);
 };
 
 #endif

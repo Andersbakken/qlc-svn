@@ -382,7 +382,7 @@ void VCWidget::slotKeyReleased(const QKeySequence& keySequence)
  * Load & Save
  *****************************************************************************/
 
-bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
+bool VCWidget::loadXMLAppearance(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;
@@ -440,9 +440,8 @@ bool VCWidget::loadXMLAppearance(QDomDocument*, QDomElement* root)
 	return true;
 }
 
-bool VCWidget::loadXMLInput(QDomDocument* doc, QDomElement* root)
+bool VCWidget::loadXMLInput(const QDomElement* root)
 {
-	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCWidgetInput)

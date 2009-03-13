@@ -92,7 +92,7 @@ public:
 	 * @param doc The XML document to read from
 	 * @return TRUE if successful, otherwise FALSE
 	 */
-	bool loadXML(QDomDocument* doc);
+	bool loadXML(const QDomDocument* doc);
 
 	/**
 	 * Save the Doc's contents to the given XML file. Also resets
@@ -120,7 +120,7 @@ public:
 			    QLCFixtureMode* mode,
 			    t_channel address,
 			    t_channel universe,
-			    QString name);
+			    const QString& name);
 
 	/**
 	 * Create a new generic fixture instance
@@ -133,7 +133,7 @@ public:
 	Fixture* newGenericFixture(t_channel address,
 				   t_channel universe,
 				   t_channel channels,
-				   QString name);
+				   const QString& name);
 
 	/**
 	 * Insert a new fixture instance into Doc's fixture array. Use this
@@ -205,8 +205,7 @@ public:
 	 * @param root An XML "Function" tag to load the function contents from
 	 */
 	Function* newFunction(Function::Type type, t_function_id fid,
-			      QString name, QDomDocument* doc,
-			      QDomElement* root);
+			      const QString& name, const QDomElement* root);
 
 	/** Return the number of functions present */
 	int functions() const { return m_functionAllocation; }

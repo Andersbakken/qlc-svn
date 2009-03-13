@@ -72,7 +72,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Load public properties from an EFXFixture node */
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 	/** Save public properties under an EFX node */
 	bool saveXML(QDomDocument* doc, QDomElement* efx_root) const;

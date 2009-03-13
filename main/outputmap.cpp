@@ -394,12 +394,11 @@ bool OutputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	return true;
 }
 
-bool OutputMap::loadXML(QDomDocument* doc, QDomElement* root)
+bool OutputMap::loadXML(const QDomElement* root)
 {
 	QDomNode node;
 	QDomElement tag;
-	
-	Q_ASSERT(doc != NULL);
+
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCOutputMap)
@@ -415,13 +414,9 @@ bool OutputMap::loadXML(QDomDocument* doc, QDomElement* root)
 		tag = node.toElement();
 		
 		if (tag.tagName() == KXMLQLCOutputPatch)
-		{
-			OutputPatch::loader(doc, &tag, this);
-		}
+			OutputPatch::loader(&tag, this);
 		else
-		{
 			qWarning() << "Unknown OutputMap tag:" << tag.tagName();
-		}
 		
 		node = node.nextSibling();
 	}

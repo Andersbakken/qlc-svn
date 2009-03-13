@@ -105,7 +105,7 @@ public:
 	 ********************************************************************/
 public:
 	/** Load all buses from an XML document */
-	static bool loadXML(QDomDocument* doc, QDomElement* root);
+	static bool loadXML(const QDomElement* root);
 
 	/** Save all buses to an XML document */
 	static bool saveXML(QDomDocument* doc, QDomElement* wksp_root);

@@ -1377,15 +1377,14 @@ void VirtualConsole::slotAppModeChanged(App::Mode mode)
  * Load & Save
  *****************************************************************************/
 
-bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* vc_root)
+bool VirtualConsole::loadXML(const QDomElement* vc_root)
 {
 	bool retval = false;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(vc_root != NULL);
 
 	/* Load properties & contents */
-	retval = s_properties.loadXML(doc, vc_root);
+	retval = s_properties.loadXML(vc_root);
 
 	/* Display VC if appropriate */
 	if (s_properties.visible() == true)
@@ -1402,7 +1401,7 @@ bool VirtualConsole::loadXML(QDomDocument* doc, QDomElement* vc_root)
 bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
 	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
+	Q_ASSERT(wksp_root != NULL);
 
 	/* Store instance properties (geometry) */
 	if (s_instance != NULL)

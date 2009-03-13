@@ -127,12 +127,11 @@ void QLCInputChannel::setName(const QString& name)
  * Load & Save
  ****************************************************************************/
 
-bool QLCInputChannel::loadXML(QDomDocument* doc, QDomElement* root)
+bool QLCInputChannel::loadXML(const QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
 
-	Q_UNUSED(doc);
 	Q_ASSERT(root != NULL);
 
 	/* Verify that the tag contains an input channel */

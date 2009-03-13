@@ -111,11 +111,10 @@ bool VCFrame::copyFrom(VCWidget* widget)
  * Load & Save
  *****************************************************************************/
 
-bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
+bool VCFrame::loader(const QDomElement* root, QWidget* parent)
 {
 	VCFrame* frame = NULL;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(parent != NULL);
 
@@ -130,10 +129,10 @@ bool VCFrame::loader(QDomDocument* doc, QDomElement* root, QWidget* parent)
 	frame->show();
 
 	/* Continue loading */
-	return frame->loadXML(doc, root);
+	return frame->loadXML(root);
 }
 
-bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
+bool VCFrame::loadXML(const QDomElement* root)
 {
 	bool visible = false;
 	int x = 0;
@@ -145,7 +144,6 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 	QDomElement tag;
 	QString str;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCVCFrame)
@@ -170,31 +168,31 @@ bool VCFrame::loadXML(QDomDocument* doc, QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
-			loadXMLAppearance(doc, &tag);
+			loadXMLAppearance(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVCFrame)
 		{
-			VCFrame::loader(doc, &tag, this);
+			VCFrame::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCVCLabel)
 		{
-			VCLabel::loader(doc, &tag, this);
+			VCLabel::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCVCButton)
 		{
-			VCButton::loader(doc, &tag, this);
+			VCButton::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCVCXYPad)
 		{
-			VCXYPad::loader(doc, &tag, this);
+			VCXYPad::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCVCSlider)
 		{
-			VCSlider::loader(doc, &tag, this);
+			VCSlider::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCVCCueList)
 		{
-			VCCueList::loader(doc, &tag, this);
+			VCCueList::loader(&tag, this);
 		}
 		else
 		{

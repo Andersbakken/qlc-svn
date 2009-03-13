@@ -195,7 +195,7 @@ public slots:
 	 *********************************************************************/
 public:
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
-	bool loadXML(QDomDocument* doc, QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 	/*********************************************************************
 	 * Flash

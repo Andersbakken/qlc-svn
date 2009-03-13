@@ -312,17 +312,15 @@ void Monitor::timerEvent(QTimerEvent* e)
  * Load & Save
  ****************************************************************************/
 
-bool Monitor::loadXML(QDomDocument* doc, QDomElement* root)
+bool Monitor::loadXML(const QDomElement* root)
 {
-	Q_UNUSED(doc);
-
 	if (root->tagName() != KXMLQLCMonitor)
 	{
 		qWarning("Monitor node not found!");
 		return false;
 	}
 
-	s_properties.loadXML(doc, root);
+	s_properties.loadXML(root);
 	if (s_properties.visible() == true)
 		create(_app);
 
@@ -420,12 +418,11 @@ void MonitorProperties::store(Monitor* monitor)
 #endif
 }
 
-bool MonitorProperties::loadXML(QDomDocument* doc, QDomElement* root)
+bool MonitorProperties::loadXML(const QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
 
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCMonitor)
@@ -446,7 +443,7 @@ bool MonitorProperties::loadXML(QDomDocument* doc, QDomElement* root)
 		else if (tag.tagName() == KXMLQLCMonitorChannelStyle)
 			m_channelStyle = stringToChannelStyle(tag.text());
 		else if (tag.tagName() == KXMLQLCWidgetProperties)
-			QLCWidgetProperties::loadXML(doc, &tag);
+			QLCWidgetProperties::loadXML(&tag);
 		else
 			qDebug() << "Unknown monitor tag:" << tag.tagName();
 

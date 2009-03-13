@@ -163,7 +163,7 @@ bool Doc::loadXML(const QString& fileName)
 	return retval;
 }
 
-bool Doc::loadXML(QDomDocument* doc)
+bool Doc::loadXML(const QDomDocument* doc)
 {
 	QDomElement root;
 	QDomNode node;
@@ -199,11 +199,11 @@ bool Doc::loadXML(QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLQLCOutputMap)
 		{
-			_app->outputMap()->loadXML(doc, &tag);
+			_app->outputMap()->loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCInputMap)
 		{
-			_app->inputMap()->loadXML(doc, &tag);
+			_app->inputMap()->loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCWindowState)
 		{
@@ -212,27 +212,27 @@ bool Doc::loadXML(QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLFixture)
 		{
-			Fixture::loader(doc, &tag);
+			Fixture::loader(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCFunction)
 		{
-			Function::loader(doc, &tag);
+			Function::loader(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCBus)
 		{
-			Bus::loadXML(doc, &tag);
+			Bus::loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCMonitor)
 		{
-			Monitor::loadXML(doc, &tag);
+			Monitor::loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCVirtualConsole)
 		{
-			VirtualConsole::loadXML(doc, &tag);
+			VirtualConsole::loadXML(&tag);
 		}
 		else
 		{
-			qDebug() << "Unknown Workspace tag:" <<tag.tagName();
+			qDebug() << "Unknown Workspace tag:" << tag.tagName();
 		}
 
 		node = node.nextSibling();
@@ -324,7 +324,7 @@ Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
 			 QLCFixtureMode* mode,
 			 t_channel address,
 			 t_channel universe,
-			 QString name)
+			 const QString& name)
 {
 	Fixture* fxi = NULL;
 
@@ -360,7 +360,7 @@ Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
 Fixture* Doc::newGenericFixture(t_channel address,
 				t_channel universe,
 				t_channel channels,
-				QString name)
+				const QString& name)
 {
 	Fixture* fxi = NULL;
 
@@ -546,13 +546,12 @@ Function* Doc::newFunction(Function::Type type)
 	return function;
 }
 
-Function* Doc::newFunction(Function::Type type, t_function_id fid, QString name,
-			   QDomDocument* doc, QDomElement* root)
+Function* Doc::newFunction(Function::Type type, t_function_id fid,
+			   const QString& name, const QDomElement* root)
 {
 	Function* function = NULL;
 
 	Q_ASSERT(fid >= 0 && fid < KFunctionArraySize);
-	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
 	/* Put the function to its place (==ID) in the function array */
@@ -567,7 +566,7 @@ Function* Doc::newFunction(Function::Type type, t_function_id fid, QString name,
 		function->setName(name);
 
 		/* Continue loading the function contents */
-		if (function->loadXML(doc, root) == false)
+		if (function->loadXML(root) == false)
 		{
 			delete function;
 			function = NULL;
