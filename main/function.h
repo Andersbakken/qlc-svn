@@ -312,6 +312,21 @@ public:
 	static Function* loader(QDomDocument* doc, QDomElement* root);
 
 	/*********************************************************************
+	 * Flash
+	 *********************************************************************/
+public:
+	virtual void flash();
+	virtual void unFlash();
+
+	virtual bool isFlashing() const { return m_flashing; }
+
+signals:
+	void flashing(t_function_id fid, bool state);
+
+protected:
+	bool m_flashing;
+
+	/*********************************************************************
 	 * Running
 	 *********************************************************************/
 public:

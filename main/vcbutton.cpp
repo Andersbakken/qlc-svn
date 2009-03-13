@@ -542,23 +542,28 @@ void VCButton::slotInputValueChanged(t_input_universe universe,
 
 void VCButton::setFunction(t_function_id fid)
 {
-	Function* function = _app->doc()->function(fid);
+	Function* old = _app->doc()->function(m_function);
+	if (old != NULL)
+	{
+		/* Get rid of old function connections */
+		disconnect(old, SIGNAL(running(t_function_id)),
+			   this, SLOT(slotFunctionRunning(t_function_id)));
+		disconnect(old, SIGNAL(stopped(t_function_id)),
+			   this, SLOT(slotFunctionStopped(t_function_id)));
+		disconnect(old, SIGNAL(flashing(t_function_id,bool)),
+			   this, SLOT(slotFunctionFlashing(t_function_id,bool)));
+	}
 
+	Function* function = _app->doc()->function(fid);
 	if (function != NULL)
 	{
-		Function* old = _app->doc()->function(m_function);
-		if (old != NULL)
-		{
-			disconnect(old, SIGNAL(running(t_function_id)),
-				   this, SLOT(slotFunctionRunning(t_function_id)));
-			disconnect(old, SIGNAL(stopped(t_function_id)),
-				   this, SLOT(slotFunctionStopped(t_function_id)));
-		}
-
+		/* Connect to the new function */
 		connect(function, SIGNAL(running(t_function_id)),
 			this, SLOT(slotFunctionRunning(t_function_id)));
 		connect(function, SIGNAL(stopped(t_function_id)),
 			this, SLOT(slotFunctionStopped(t_function_id)));
+		connect(function, SIGNAL(flashing(t_function_id,bool)),
+			this, SLOT(slotFunctionFlashing(t_function_id,bool)));
 
 		m_function = fid;
 
@@ -566,11 +571,10 @@ void VCButton::setFunction(t_function_id fid)
 	}
 	else
 	{
+		/* No function attachment */
 		m_function = KNoID;
 		setToolTip(QString::null);
 	}
-
-	_app->doc()->setModified();
 }
 
 void VCButton::slotFunctionRemoved(t_function_id fid)
@@ -609,6 +613,44 @@ VCButton::Action VCButton::stringToAction(const QString& str)
  * Button press / release handlers
  *****************************************************************************/
 
+void VCButton::pressFunction()
+{
+	Function* f = NULL;
+
+	if (m_stopFunctions == true)
+		_app->slotControlPanic();
+
+	if (m_action == Toggle)
+	{
+		f = _app->doc()->function(m_function);
+		if (f != NULL)
+		{
+			if (isOn() == true)
+				f->stop();
+			else
+				f->start();
+		}
+	}
+	else if (m_action == Flash && isOn() == false)
+	{
+		f = _app->doc()->function(m_function);
+		if (f != NULL)
+			f->flash();
+	}
+}
+
+void VCButton::releaseFunction()
+{
+	Function* f = NULL;
+
+	if (m_action == Flash && isOn() == true)
+	{
+		f = _app->doc()->function(m_function);
+		if (f != NULL)
+			f->unFlash();
+	}
+}
+
 void VCButton::slotFunctionRunning(t_function_id fid)
 {
 	if (fid == m_function)
@@ -620,62 +662,21 @@ void VCButton::slotFunctionStopped(t_function_id fid)
 	if (fid == m_function)
 	{
 		setOn(false);
-		slotFlashReady();
-		QTimer::singleShot(200, this, SLOT(slotFlashReady()));
+		slotBlinkReady();
+		QTimer::singleShot(200, this, SLOT(slotBlinkReady()));
 	}
 }
 
-void VCButton::pressFunction()
+void VCButton::slotFunctionFlashing(t_function_id fid, bool state)
 {
-	Function* f = NULL;
-
-	/* TODO: Should this return immediately? */
-	if (m_stopFunctions == true)
-		_app->slotControlPanic();
-
-	if (m_function == KNoID)
-	{
-		return;
-	}
-	else if (m_action == Toggle)
-	{
-		f = _app->doc()->function(m_function);
-		if (f != NULL)
-		{
-			if (isOn() == true)
-				f->stop();
-			else
-				f->start();
-		}
-	}
-	else if (m_action == Flash)
-	{
-		f = _app->doc()->function(m_function);
-		if (f != NULL)
-		{
-			f->start();
-		}
-	}
+	if (fid == m_function)
+		setOn(state);
 }
 
-void VCButton::releaseFunction()
-{
-	if (m_function == KNoID)
-	{
-		return;
-	}
-	else if (m_action == Flash)
-	{
-		Function* function = _app->doc()->function(m_function);
-		if (function != NULL && isOn() == true)
-			function->stop();
-	}
-}
-
-void VCButton::slotFlashReady()
+void VCButton::slotBlinkReady()
 {
 	// This function is called twice with same XOR mask,
-	// thus creating a brief opposite-color -- normal-color flash
+	// thus creating a brief opposite-color -- normal-color blink
 	QPalette pal = palette();
 	QColor color(pal.color(QPalette::Button));
 	color.setRgb(color.red()^0xff, color.green()^0xff, color.blue()^0xff);

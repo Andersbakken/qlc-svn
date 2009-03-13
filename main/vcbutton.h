@@ -251,33 +251,25 @@ protected:
 	/*********************************************************************
 	 * Button press / release handlers
 	 *********************************************************************/
-public slots:
-	/**
-	 * Handler for function running signal
-	 */
-	void slotFunctionRunning(t_function_id fid);
-
-	/**
-	 * Handler for function stop signal
-	 */
-	void slotFunctionStopped(t_function_id fid);
-
-	/**
-	 * Handler for button press i.e. (mouse/key)button down, not click.
-	 */
+protected:
+	/** Handler for button presses (mouse/key)button down, not click */
 	void pressFunction();
 
-	/**
-	 * Handler for button release i.e. (mouse/key)button up, not click.
-	 */
+	/** Handler for button releases (mouse/key)button up, not click */
 	void releaseFunction();
 
 protected slots:
-	/**
-	 * Slot for brief widget flashing when the controlled function has
-	 * (been) stopped
-	 */
-	void slotFlashReady();
+	/** Handler for function running signal */
+	void slotFunctionRunning(t_function_id fid);
+
+	/** Handler for function stop signal */
+	void slotFunctionStopped(t_function_id fid);
+
+	/** Basically the same as slotFunctionStopped() but for flash signal */
+	void slotFunctionFlashing(t_function_id fid, bool state);
+
+	/** Slot for brief widget blink when controlled function stops */
+	void slotBlinkReady();
 
 	/*********************************************************************
 	 * Stop functions

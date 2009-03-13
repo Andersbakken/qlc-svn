@@ -61,6 +61,7 @@ Function::Function(QObject* parent, Type type) : QObject(parent)
 	m_runOrder = Loop;
 	m_direction = Forward;
 	m_busID = KBusIDDefaultFade;
+	m_flashing = false;
 	m_running = false;
 }
 
@@ -302,6 +303,28 @@ Function* Function::loader(QDomDocument* doc, QDomElement* root)
 	   and continue loading the specific function contents from Doc */
 	return _app->doc()->newFunction(func_type, func_id, func_name,
 					doc, root);
+}
+
+/*****************************************************************************
+ * Flash
+ *****************************************************************************/
+
+void Function::flash()
+{
+	if (m_flashing == false)
+	{
+		m_flashing = true;
+		emit flashing(m_id, true);
+	}
+}
+
+void Function::unFlash()
+{
+	if (m_flashing == true)
+	{
+		m_flashing = false;
+		emit flashing(m_id, false);
+	}
 }
 
 /*****************************************************************************

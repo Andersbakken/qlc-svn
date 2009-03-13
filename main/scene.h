@@ -158,10 +158,16 @@ public:
 	t_value value(t_fixture_id fxi, t_channel ch);
 
 	/**
-	 * Write the scene values to DMX Map. If fxi_id is given, writes
+	 * Write the scene values to OutputMap. If fxi_id is given, writes
 	 * values only for the specified fixture. 
 	 */
 	void writeValues(t_fixture_id fxi_id = KNoID);
+
+	/**
+	 * Write zeros for all involved channels to OutputMap. If fxi_id is
+	 * given, writes zeros only for the specified fixture. 
+	 */
+	void writeZeros(t_fixture_id fxi_id = KNoID);
 
 	/**
 	 * Get a list of values in this scene
@@ -190,6 +196,13 @@ public slots:
 public:
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 	bool loadXML(QDomDocument* doc, QDomElement* root);
+
+	/*********************************************************************
+	 * Flash
+	 *********************************************************************/
+public:
+	void flash();
+	void unFlash();
 
 	/*********************************************************************
 	 * Running

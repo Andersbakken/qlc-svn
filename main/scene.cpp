@@ -237,6 +237,17 @@ void Scene::writeValues(t_fixture_id fxi_id)
 	}
 }
 
+void Scene::writeZeros(t_fixture_id fxi_id)
+{
+	for (int i = 0; i < m_values.count(); i++)
+	{
+		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
+		{
+			_app->outputMap()->setValue(m_channels[i].address, 0);
+		}
+	}
+}
+
 /*****************************************************************************
  * Edit
  *****************************************************************************/
@@ -387,7 +398,29 @@ SceneChannel& SceneChannel::operator=(const SceneChannel& sch)
 }
 
 /****************************************************************************
- * New bufferless running
+ * Flashing
+ ****************************************************************************/
+
+void Scene::flash()
+{
+	if (isFlashing() == false)
+	{
+		Function::flash();
+		writeValues();
+	}
+}
+
+void Scene::unFlash()
+{
+	if (isFlashing() == true)
+	{
+		Function::unFlash();
+		writeZeros();
+	}
+}
+
+/****************************************************************************
+ * Running
  ****************************************************************************/
 
 void Scene::arm()
