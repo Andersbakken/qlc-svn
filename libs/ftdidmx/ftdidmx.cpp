@@ -230,5 +230,4 @@ void FTDIDMXOut::readRange(t_output output, t_channel address, t_value* values,
  * Plugin export
  ****************************************************************************/
 
-Q_EXPORT_PLUGIN2(FTDIDMXout, FTDIDMXOut)
-
+Q_EXPORT_PLUGIN2(ftdidmxout, FTDIDMXOut)

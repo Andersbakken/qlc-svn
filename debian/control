@@ -24,4 +24,50 @@ Section: Other
 Architecture: any
 Depends: qlc
 Description: Input device definitions for Q Light Controller
-  Input device definitions for Q Light Controller
+  Input device definitions for Q Light Controller. Includes definition for
+  Behringer BCF2000 slider board.
+
+Package: qlc-input-hid
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Input plugin supporting HID devices
+  Input plugin for Q Light Controller that enables input data from
+  external HID-compliant devices (for example joysticks, mice and keyboards).
+
+Package: qlc-input-midi
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Input plugin supporting MIDI devices
+  Input plugin for Q Light Controller that enables input data from
+  external MIDI controller devices (for example Behringer BCF2000).
+
+Package: qlc-output-dmx4linux
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Output plugin for DMX devices supported thru the DMX4Linux suite
+  Output plugin for DMX devices supported thru the DMX4Linux suite
+  (http://llg.cubic.org).
+
+Package: qlc-output-ftdi
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Output plugin for FTDI-based DMX devices
+  Output plugin for FTDI-based DMX devices (for example Enttec dongles).
+
+Package: qlc-output-udmx
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Output plugin for uDMX devices by anyma
+  Output plugin for uDMX devices by anyma (www.anyma.ch)
+
+Package: qlc-output-usbdmx
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Output plugin for USB-to-DMX devices by Peperoni Light
+  Output plugin for USB-to-DMX devices by Peproni Light (www.peperoni-light.de).

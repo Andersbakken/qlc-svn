@@ -1,3 +1,9 @@
 qlc_3.0pre_i386.deb Other optional
 qlc-fixtures_3.0pre_i386.deb Other optional
 qlc-inputdevices_3.0pre_i386.deb Other optional
+qlc-input-hid_3.0pre_i386.deb Other optional
+qlc-input-midi_3.0pre_i386.deb Other optional
+qlc-output-dmx4linux_3.0pre_i386.deb Other optional
+qlc-output-ftdi_3.0pre_i386.deb Other optional
+qlc-output-udmx_3.0pre_i386.deb Other optional
+qlc-output-usbdmx_3.0pre_i386.deb Other optional

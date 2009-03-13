@@ -2,7 +2,7 @@ include(../../variables.pri)
 
 TEMPLATE	= lib
 LANGUAGE	= C++
-TARGET		= ftdidmx
+TARGET		= ftdidmxout
 
 INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin
