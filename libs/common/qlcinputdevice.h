@@ -24,6 +24,7 @@
 
 #include <QStringList>
 #include <QString>
+#include <QHash>
 #include <QMap>
 
 #include <common/qlctypes.h>
@@ -36,6 +37,10 @@ class QDomElement;
 #define KXMLQLCInputDevice "InputDevice"
 #define KXMLQLCInputDeviceManufacturer "Manufacturer"
 #define KXMLQLCInputDeviceModel "Model"
+
+#define KXMLQLCInputDeviceMap "Map"
+#define KXMLQLCInputDeviceMapFrom "From"
+#define KXMLQLCInputDeviceMapTo "To"
 
 class QLC_DECLSPEC QLCInputDevice
 {
@@ -111,7 +116,7 @@ public:
 	 * @param channel The number of the channel to get
 	 * @return A QLCInputChannel* or NULL if not found
 	 */
-	QLCInputChannel* channel(t_input_channel channel);
+	QLCInputChannel* channel(t_input_channel channel) const;
 
 	/**
 	 * Get the name of the given channel.
@@ -119,12 +124,10 @@ public:
 	 * @param channel The number of the channel, whose name to get
 	 * @return The name of the channel or QString::null if not found
 	 */
-	QString channelName(t_input_channel channel);
+	QString channelName(t_input_channel channel) const;
 
-	/**
-	 * Get available channels in a non-modifiable map
-	 */
-	const QMap <t_input_channel, QLCInputChannel*> channels()
+	/** Get available channels in a non-modifiable map */
+	const QMap <t_input_channel, QLCInputChannel*> channels() const
 		{ return m_channels; }
 
 protected:
@@ -132,6 +135,33 @@ protected:
 	    QList because not all channels might be present. */
 	QMap <t_input_channel, QLCInputChannel*> m_channels;
 
+	/********************************************************************
+	 * Channel mapping
+	 ********************************************************************/
+public:
+	/** Set up a real input channel to show up as a different channel.
+	  * Remove mapping when to == KInputChannelInvalid. */
+	void setMapping(t_input_channel from, t_input_channel to);
+
+	/** Get the mapped channel for a real input channel */
+	t_input_channel mapping(t_input_channel from) const;
+
+	/** Get the real channel for a mapped channel (slow) */
+	t_input_channel reverseMapping(t_input_channel to) const;
+
+	/** Get a readily-mapped channel object for the given mapped channel */
+	const QLCInputChannel* mappedChannel(t_input_channel to) const;
+	
+	/** Get the cross-channel mappings as a non-modifiable hash */
+	const QHash <t_input_channel, t_input_channel> mapping() const
+		{ return m_mapping; }
+
+protected:
+	/** Channel cross-mapping. From (real) = key, to (mapped) = value.
+	    This is not an attribute of QLCInputChannel to prevent multiple
+	    mappings to/from the same channel. */
+	QHash <t_input_channel, t_input_channel> m_mapping;
+	
 	/********************************************************************
 	 * Load & Save
 	 ********************************************************************/
@@ -145,6 +175,9 @@ public:
 protected:
 	/** Load an input device from the given document */
 	bool loadXML(const QDomDocument* doc);
+
+	/** Save channel mappings */
+	bool saveXMLMappings(QDomDocument* doc, QDomElement* root) const;
 };
 
 #endif

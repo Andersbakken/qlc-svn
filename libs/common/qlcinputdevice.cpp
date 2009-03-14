@@ -133,10 +133,13 @@ void QLCInputDevice::removeChannel(t_input_channel channel)
 	{
 		QLCInputChannel* ich = m_channels.take(channel);
 		delete ich;
+
+		/* Also invalidate mapping for the removed channel */
+		setMapping(channel, KInputChannelInvalid);
 	}
 }
 
-QLCInputChannel* QLCInputDevice::channel(t_input_channel channel)
+QLCInputChannel* QLCInputDevice::channel(t_input_channel channel) const
 {
 	if (m_channels.contains(channel) == true)
 		return m_channels[channel];
@@ -144,12 +147,58 @@ QLCInputChannel* QLCInputDevice::channel(t_input_channel channel)
 		return NULL;
 }
 
-QString QLCInputDevice::channelName(t_input_channel channel)
+QString QLCInputDevice::channelName(t_input_channel channel) const
 {
 	if (m_channels.contains(channel) == true)
 		return m_channels[channel]->name();
 	else
 		return QString::null;
+}
+
+/****************************************************************************
+ * Channel mapping
+ ****************************************************************************/
+
+void QLCInputDevice::setMapping(t_input_channel from, t_input_channel to)
+{
+	if (from == KInputChannelInvalid)
+		return;
+
+	/* Remove mapping if to == KInputChannelInvalid. Otherwise assign. */
+	if (to == KInputChannelInvalid)
+		m_mapping.remove(from);
+	else
+		m_mapping[from] = to;
+}
+
+t_input_channel QLCInputDevice::mapping(t_input_channel from) const
+{
+	if (m_mapping.contains(from) == true)
+		return m_mapping[from];
+	else
+		return KInputChannelInvalid;
+}
+
+t_input_channel QLCInputDevice::reverseMapping(t_input_channel to) const
+{
+	QHashIterator <t_input_channel, t_input_channel> it(m_mapping);
+	while (it.hasNext() == true)
+	{
+		it.next();
+		if (it.value() == to)
+			return it.key();
+	}
+
+	return KInputChannelInvalid;
+}
+
+const QLCInputChannel* QLCInputDevice::mappedChannel(t_input_channel to) const
+{
+	t_input_channel from = reverseMapping(to);
+	if (from == KInputChannelInvalid)
+		return NULL;
+	else
+		return channel(from);
 }
 
 /****************************************************************************
@@ -182,9 +231,12 @@ QLCInputDevice* QLCInputDevice::loader(const QString& path)
 
 bool QLCInputDevice::loadXML(const QDomDocument* doc)
 {
+	t_input_value from;
+	t_input_value to;
 	QDomElement root;
 	QDomElement tag;
 	QDomNode node;
+	QString str;
 
 	Q_ASSERT(doc != NULL);
 
@@ -214,6 +266,22 @@ bool QLCInputDevice::loadXML(const QDomDocument* doc)
 					addChannel(ich);
 				else
 					delete ich;
+			}
+			else if (tag.tagName() == KXMLQLCInputDeviceMap)
+			{
+				str = tag.attribute(KXMLQLCInputDeviceMapFrom);
+				if (str.isEmpty() == false)
+					from = str.toInt();
+				else
+					from = KInputChannelInvalid;
+
+				str = tag.attribute(KXMLQLCInputDeviceMapTo);
+				if (str.isEmpty() == false)
+					to = str.toInt();
+				else
+					to = KInputChannelInvalid;
+
+				setMapping(from, to);
 			}
 
 			node = node.nextSibling();
@@ -264,6 +332,9 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 		while (it.hasNext() == true)
 			it.next().value()->saveXML(doc, &root);
 
+		/* Save channel mappings */
+		saveXMLMappings(doc, &root);
+
 		/* Write the document into the stream */
 		m_path = fileName;
 		stream << doc->toString() << "\n";
@@ -281,4 +352,33 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 	file.close();
 
 	return retval;
+}
+
+bool QLCInputDevice::saveXMLMappings(QDomDocument* doc, QDomElement* root) const
+{
+	QDomElement tag;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCInputDevice)
+	{
+		qWarning() << "Not an Input Device node!";
+		return false;
+	}
+	
+	QHashIterator <t_input_channel, t_input_channel> it(m_mapping);
+	while (it.hasNext() == true)
+	{
+		it.next();
+		
+		tag = doc->createElement(KXMLQLCInputDeviceMap);
+		tag.setAttribute(KXMLQLCInputDeviceMapFrom,
+				 QString("%1").arg(it.key()));
+		tag.setAttribute(KXMLQLCInputDeviceMapTo,
+				 QString("%1").arg(it.value()));
+		root->appendChild(tag);
+	}
+
+	return true;
 }
