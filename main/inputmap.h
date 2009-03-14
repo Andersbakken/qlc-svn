@@ -26,7 +26,7 @@
 #include <QVector>
 #include <QList>
 
-#include "common/qlcinputdevice.h"
+#include "common/qlcinputprofile.h"
 #include "common/qlctypes.h"
 
 class QLCInPlugin;
@@ -77,7 +77,7 @@ public slots:
 			      t_input_channel channel, t_input_value value);
 
 public:
-	/** Send feedback value to the input device e.g. to move a motorized
+	/** Send feedback value to the input profile e.g. to move a motorized
 	    sliders & knobs, set indicator leds etc. */
 	void feedBack(t_input_universe universe, t_input_channel channel,
 		      t_input_value value);
@@ -124,12 +124,12 @@ public:
 	 * @param universe The input universe to patch
 	 * @param pluginName The name of the plugin to patch to the universe
 	 * @param input An input universe provided by the plugin to patch to
-	 * @param deviceName The name of an input device
+	 * @param profileName The name of an input profile
 	 * @return true if successful, otherwise false
 	 */
 	bool setPatch(t_input_universe universe,
 		      const QString& pluginName, t_input input,
-		      const QString& deviceName = QString::null);
+		      const QString& profileName = QString::null);
 
 	/**
 	 * Get mapping for an input universe.
@@ -215,28 +215,28 @@ protected:
 	QList <QLCInPlugin*> m_plugins;
 
 	/*********************************************************************
-	 * Input devices
+	 * Input profiles
 	 *********************************************************************/
 protected:
-	/** Load all device devices from the given path */
-	void loadDevices(const QString& devicePath);
+	/** Load all profile profiles from the given path */
+	void loadProfiles(const QString& profilePath);
 
 public:
-	/** Get a list of available device names */
-	QStringList deviceNames();
+	/** Get a list of available profile names */
+	QStringList profileNames();
 
-	/** Get a device by its name */
-	QLCInputDevice* device(const QString& name);
+	/** Get a profile by its name */
+	QLCInputProfile* profile(const QString& name);
 
-	/** Add a new device */
-	void addDevice(QLCInputDevice* device);
+	/** Add a new profile */
+	void addProfile(QLCInputProfile* profile);
 
-	/** Remove an existing device by its name and delete it */
-	void removeDevice(const QString& name);
+	/** Remove an existing profile by its name and delete it */
+	void removeProfile(const QString& name);
 
 protected:
-	/** List that contains all available devices */
-	QList <QLCInputDevice*> m_devices;
+	/** List that contains all available profiles */
+	QList <QLCInputProfile*> m_profiles;
 
 	/*********************************************************************
 	 * Save & Load

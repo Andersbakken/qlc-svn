@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcinputdevice.h
+  qlcinputprofile.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLCINPUTDEVICE_H
-#define QLCINPUTDEVICE_H
+#ifndef QLCINPUTPROFILE_H
+#define QLCINPUTPROFILE_H
 
 #include <QStringList>
 #include <QString>
@@ -30,38 +30,38 @@
 #include <common/qlctypes.h>
 
 class QLCInputChannel;
-class QLCInputDevice;
+class QLCInputProfile;
 class QDomDocument;
 class QDomElement;
 
-#define KXMLQLCInputDevice "InputDevice"
-#define KXMLQLCInputDeviceManufacturer "Manufacturer"
-#define KXMLQLCInputDeviceModel "Model"
+#define KXMLQLCInputProfile "InputProfile"
+#define KXMLQLCInputProfileManufacturer "Manufacturer"
+#define KXMLQLCInputProfileModel "Model"
 
-#define KXMLQLCInputDeviceMap "Map"
-#define KXMLQLCInputDeviceMapFrom "From"
-#define KXMLQLCInputDeviceMapTo "To"
+#define KXMLQLCInputProfileMap "Map"
+#define KXMLQLCInputProfileMapFrom "From"
+#define KXMLQLCInputProfileMapTo "To"
 
-class QLC_DECLSPEC QLCInputDevice
+class QLC_DECLSPEC QLCInputProfile
 {
 	/********************************************************************
 	 * Initialization
 	 ********************************************************************/
 public:
 	/** Standard constructor */
-	QLCInputDevice();
+	QLCInputProfile();
 
 	/** Copy constructor */
-	QLCInputDevice(const QLCInputDevice& inputDevice);
+	QLCInputProfile(const QLCInputProfile& profile);
 
 	/** Destructor */
-	virtual ~QLCInputDevice();
+	virtual ~QLCInputProfile();
 
 	/** Assignment operator */
-	QLCInputDevice& operator=(const QLCInputDevice& inputDevice);
+	QLCInputProfile& operator=(const QLCInputProfile& profile);
 
 	/********************************************************************
-	 * Device information
+	 * Profile information
 	 ********************************************************************/
 public:
 	void setManufacturer(const QString& manufacturer);
@@ -70,10 +70,10 @@ public:
 	void setModel(const QString& model);
 	QString model() const { return m_model; }
 
-	/** Get the device name (manufacturer - model) */
+	/** Get the profile name (manufacturer - model) */
 	QString name() const;
 
-	/** Get the path where the device is stored in. Don't use
+	/** Get the path where the profile is stored in. Don't use
 	    this as a unique ID since this varies between platforms. */
 	QString path() const;
 
@@ -87,7 +87,7 @@ protected:
 	 ********************************************************************/
 public:
 	/**
-	 * Add a new channel to this device and claim ownership of the channel.
+	 * Add a new channel to this profile and claim ownership of the channel.
 	 *
 	 * @param ich The input channel to add. The channel contains the channel
 	 *            number to map to. Any existing mapping is cleared.
@@ -95,7 +95,7 @@ public:
 	void addChannel(QLCInputChannel* ich);
 
 	/**
-	 * Remove the given channel mapping from this device. Does not delete
+	 * Remove the given channel mapping from this profile. Does not delete
 	 * the instance.
 	 *
 	 * @param ich The channel object to remove
@@ -103,7 +103,7 @@ public:
 	void removeChannel(QLCInputChannel* ich);
 
 	/**
-	 * Remove a channel from the given channel number from this device.
+	 * Remove a channel from the given channel number from this profile.
 	 * Also deletes the instance.
 	 *
 	 * @param channel The channel number to remove
@@ -131,7 +131,7 @@ public:
 		{ return m_channels; }
 
 protected:
-	/** Channel objects present in this device. This is a QMap and not a
+	/** Channel objects present in this profile. This is a QMap and not a
 	    QList because not all channels might be present. */
 	QMap <t_input_channel, QLCInputChannel*> m_channels;
 
@@ -166,14 +166,14 @@ protected:
 	 * Load & Save
 	 ********************************************************************/
 public:
-	/** Load an input device from the given path */
-	static QLCInputDevice* loader(const QString& path);
+	/** Load an input profile from the given path */
+	static QLCInputProfile* loader(const QString& path);
 
-	/** Save an input device into a given file name */
+	/** Save an input profile into a given file name */
 	bool saveXML(const QString& fileName);
 
 protected:
-	/** Load an input device from the given document */
+	/** Load an input profile from the given document */
 	bool loadXML(const QDomDocument* doc);
 
 	/** Save channel mappings */

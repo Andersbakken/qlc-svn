@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  inputdeviceeditor.cpp
+  inputprofileeditor.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -32,10 +32,10 @@
 #include <QDir>
 
 #include <common/qlcinputchannel.h>
-#include <common/qlcinputdevice.h>
+#include <common/qlcinputprofile.h>
 
 #include "inputchanneleditor.h"
-#include "inputdeviceeditor.h"
+#include "inputprofileeditor.h"
 #include "inputmap.h"
 #include "app.h"
 
@@ -50,7 +50,7 @@ extern App* _app;
  * Initialization
  ****************************************************************************/
 
-InputDeviceEditor::InputDeviceEditor(QWidget* parent, QLCInputDevice* device)
+InputProfileEditor::InputProfileEditor(QWidget* parent, QLCInputProfile* profile)
 	: QDialog(parent)
 {
 	setupUi(this);
@@ -67,43 +67,43 @@ InputDeviceEditor::InputDeviceEditor(QWidget* parent, QLCInputDevice* device)
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
 
-	if (device == NULL)
+	if (profile == NULL)
 	{
-		m_device = new QLCInputDevice();
+		m_profile = new QLCInputProfile();
 	}
 	else
 	{
-		m_device = new QLCInputDevice(*device);
-		if ((QFile::permissions(m_device->path()) &
+		m_profile = new QLCInputProfile(*profile);
+		if ((QFile::permissions(m_profile->path()) &
 		     QFile::WriteUser) == 0)
 		{
 			QMessageBox::warning(this, tr("File not writable"),
 				tr("You do not have permission to write to "
 				   "the file %1. You might not be able to "
-				   "save your modifications to the device.")
+				   "save your modifications to the profile.")
 				   .arg(QDir::toNativeSeparators(
-						m_device->path())));
+						m_profile->path())));
 		}
 	}
 
-	/* Device manufacturer & model */
-	m_manufacturerEdit->setText(m_device->manufacturer());
-	m_modelEdit->setText(m_device->model());
+	/* Profile manufacturer & model */
+	m_manufacturerEdit->setText(m_profile->manufacturer());
+	m_modelEdit->setText(m_profile->model());
 
-	/* Fill up the tree with device's channels */
+	/* Fill up the tree with profile's channels */
 	fillTree();
 }
 
-InputDeviceEditor::~InputDeviceEditor()
+InputProfileEditor::~InputProfileEditor()
 {
-	delete m_device;
+	delete m_profile;
 }
 
-void InputDeviceEditor::fillTree()
+void InputProfileEditor::fillTree()
 {
 	m_tree->clear();
 
-	QMapIterator <t_channel, QLCInputChannel*> it(m_device->channels());
+	QMapIterator <t_channel, QLCInputChannel*> it(m_profile->channels());
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -111,7 +111,7 @@ void InputDeviceEditor::fillTree()
 	}
 }
 
-void InputDeviceEditor::updateChannelItem(QTreeWidgetItem* item,
+void InputProfileEditor::updateChannelItem(QTreeWidgetItem* item,
 					    QLCInputChannel* ch)
 {
 	Q_ASSERT(item != NULL);
@@ -134,7 +134,7 @@ void InputDeviceEditor::updateChannelItem(QTreeWidgetItem* item,
  * OK & Cancel
  ****************************************************************************/
 
-void InputDeviceEditor::reject()
+void InputProfileEditor::reject()
 {
 	/* Don't allow closing the dialog in any way when the wizard is on */
 	if (m_buttonBox->isEnabled() == false)
@@ -143,18 +143,18 @@ void InputDeviceEditor::reject()
 	QDialog::reject();
 }
 
-void InputDeviceEditor::accept()
+void InputProfileEditor::accept()
 {
 	/* Don't allow closing the dialog in any way when the wizard is on */
 	if (m_buttonBox->isEnabled() == false)
 		return;
 
-	m_device->setManufacturer(m_manufacturerEdit->text());
-	m_device->setModel(m_modelEdit->text());
+	m_profile->setManufacturer(m_manufacturerEdit->text());
+	m_profile->setModel(m_modelEdit->text());
 
-	/* Check that we have at least the bare necessities to save the dev */
-	if (m_device->manufacturer().isEmpty() == true ||
-	    m_device->model().isEmpty() == true)
+	/* Check that we have at least the bare necessities to save the profile */
+	if (m_profile->manufacturer().isEmpty() == true ||
+	    m_profile->model().isEmpty() == true)
 	{
 		QMessageBox::warning(this, tr("Missing information"),
 			     tr("Manufacturer and/or model name is missing."));
@@ -169,7 +169,7 @@ void InputDeviceEditor::accept()
  * Editing
  ****************************************************************************/
 
-void InputDeviceEditor::slotAddClicked()
+void InputProfileEditor::slotAddClicked()
 {
 	QLCInputChannel* channel = new QLCInputChannel();
 	InputChannelEditor ice(this, channel);
@@ -180,9 +180,9 @@ add:
 		channel->setType(ice.type());
 		channel->setName(ice.name());
 
-		if (m_device->channel(ice.channel()) == NULL)
+		if (m_profile->channel(ice.channel()) == NULL)
 		{
-			m_device->addChannel(channel);
+			m_profile->addChannel(channel);
 			updateChannelItem(new QTreeWidgetItem(m_tree), channel);
 		}
 		else
@@ -200,7 +200,7 @@ add:
 	}
 }
 
-void InputDeviceEditor::slotRemoveClicked()
+void InputProfileEditor::slotRemoveClicked()
 {
 	QList <QTreeWidgetItem*> selected;
 	QTreeWidgetItem* next = NULL;
@@ -230,7 +230,7 @@ void InputDeviceEditor::slotRemoveClicked()
 
 		/* Delete the channel object */
 		chnum = item->text(KColumnNumber).toInt() - 1;
-		m_device->removeChannel(chnum);
+		m_profile->removeChannel(chnum);
 
 		/* Choose the closest item below or above the removed items
 		   as the one that is selected after the removal */
@@ -244,7 +244,7 @@ void InputDeviceEditor::slotRemoveClicked()
 	m_tree->setCurrentItem(next);
 }
 
-void InputDeviceEditor::slotEditClicked()
+void InputProfileEditor::slotEditClicked()
 {
 	QLCInputChannel* channel;
 	t_input_channel chnum;
@@ -259,7 +259,7 @@ void InputDeviceEditor::slotEditClicked()
 
 		/* Find the channel object associated to the selected item */
 		chnum = item->text(KColumnNumber).toInt() - 1;
-		channel = m_device->channel(chnum);
+		channel = m_profile->channel(chnum);
 		Q_ASSERT(channel != NULL);
 
 		/* Edit the channel and update its item if necessary */
@@ -268,7 +268,7 @@ edit:
 		if (ice.exec() == QDialog::Accepted)
 		{
 			QLCInputChannel* another;
-			another = m_device->channel(ice.channel());
+			another = m_profile->channel(ice.channel());
 
 			if (another == NULL || another == channel)
 			{
@@ -304,7 +304,7 @@ edit:
 				Q_ASSERT(item != NULL);
 
 				chnum = item->text(KColumnNumber).toInt() - 1;
-				channel = m_device->channel(chnum);
+				channel = m_profile->channel(chnum);
 				Q_ASSERT(channel != NULL);
 
 				/* Set only name and type and only if they
@@ -320,13 +320,13 @@ edit:
 	}
 }
 
-void InputDeviceEditor::slotWizardClicked(bool checked)
+void InputProfileEditor::slotWizardClicked(bool checked)
 {
 	if (checked == true)
 	{
 		QMessageBox::information(this, tr("Channel wizard activated"),
 			tr("You have enabled the input channel wizard. After ")
-		      + tr("clicking OK, wiggle your mapped input device's ")
+		      + tr("clicking OK, wiggle your mapped input profile's ")
 		      + tr("controls. They should appear into the list. ")
 		      + tr("Click the wizard button again to stop channel ")
 		      + tr("auto-detection.\n\nNote that the wizard cannot ")
@@ -358,7 +358,7 @@ void InputDeviceEditor::slotWizardClicked(bool checked)
 	m_tab->setTabEnabled(0, !checked);
 }
 
-void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,
+void InputProfileEditor::slotInputValueChanged(t_input_universe universe,
 						t_input_channel channel,
 						t_input_value value)
 {
@@ -372,7 +372,7 @@ void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,
 	if (list.count() == 0)
 	{
 		/* No channel items found. Create a new channel to the
-		   device and display it also in the tree widget */
+		   profile and display it also in the tree widget */
 		QTreeWidgetItem* item;
 		QLCInputChannel* ch;
 
@@ -380,7 +380,7 @@ void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,
 		ch->setChannel(channel);
 		ch->setName(tr("Button %1").arg(channel + 1));
 		ch->setType(QLCInputChannel::Button);
-		m_device->addChannel(ch);
+		m_profile->addChannel(ch);
 
 		item = new QTreeWidgetItem(m_tree);
 		updateChannelItem(item, ch);
@@ -388,15 +388,17 @@ void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,
 	}
 	else
 	{
+		QTreeWidgetItem* old = list.first();
+
 		/* Existing channel & item found. Modify their contents. */
 		QStringList values;
-		values = list.first()->text(KColumnValues).split(",");
+		values = old->data(KColumnValues, Qt::UserRole).toStringList();
 
 		if (values.contains(QString("%1").arg(value)) == false)
 		{
 			values << QString("%1").arg(value);
 			values.sort();
-			list.first()->setText(KColumnValues, values.join(","));
+			old->setData(KColumnValues, Qt::UserRole, values);
 		}
 
 		/* Change the channel type only the one time when its value
@@ -405,21 +407,21 @@ void InputDeviceEditor::slotInputValueChanged(t_input_universe universe,
 		if (values.count() == 3)
 		{
 			QLCInputChannel* ch;
-			ch = m_device->channel(channel);
+			ch = m_profile->channel(channel);
 			Q_ASSERT(ch != NULL);
 
 			ch->setType(QLCInputChannel::Slider);
 			ch->setName(tr("Slider %1").arg(channel + 1));
-			updateChannelItem(list.first(), ch);
+			updateChannelItem(old, ch);
 		}
 	}
 }
 
 /****************************************************************************
- * Device
+ * Profile
  ****************************************************************************/
 
-const QLCInputDevice* InputDeviceEditor::device() const
+const QLCInputProfile* InputProfileEditor::profile() const
 {
-	return m_device;
+	return m_profile;
 }

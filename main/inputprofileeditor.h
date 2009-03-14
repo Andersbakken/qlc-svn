@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  inputdeviceeditor.h
+  inputprofileeditor.h
 
   Copyright (C) Heikki Junnila
 
@@ -19,18 +19,18 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef INPUTDEVICEEDITOR_H
-#define INPUTDEVICEEDITOR_H
+#ifndef INPUTPROFILEEDITOR_H
+#define INPUTPROFILEEDITOR_H
 
 #include <common/qlctypes.h>
 #include <QDialog>
 
-#include "ui_inputdeviceeditor.h"
+#include "ui_inputprofileeditor.h"
 
 class QLCInputChannel;
-class QLCInputDevice;
+class QLCInputProfile;
 
-class InputDeviceEditor : public QDialog, public Ui_InputDeviceEditor
+class InputProfileEditor : public QDialog, public Ui_InputProfileEditor
 {
 	Q_OBJECT
 
@@ -38,11 +38,11 @@ class InputDeviceEditor : public QDialog, public Ui_InputDeviceEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	InputDeviceEditor(QWidget* parent, QLCInputDevice* device);
-	virtual ~InputDeviceEditor();
+	InputProfileEditor(QWidget* parent, QLCInputProfile* profile);
+	virtual ~InputProfileEditor();
 
 private:
-	Q_DISABLE_COPY(InputDeviceEditor)
+	Q_DISABLE_COPY(InputProfileEditor)
 
 protected:
 	void fillTree();
@@ -69,13 +69,13 @@ protected slots:
 				   t_input_value value);
 
 	/********************************************************************
-	 * Device
+	 * Profile
 	 ********************************************************************/
 public:
-	const QLCInputDevice* device() const;
+	const QLCInputProfile* profile() const;
 
 protected:
-	QLCInputDevice* m_device;
+	QLCInputProfile* m_profile;
 };
 
 #endif

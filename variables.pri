@@ -32,19 +32,17 @@ unix:!macx:DEFINES	+= DOCSDIR=\\\"$$DOCSDIR\\\"
 macx:DOCSDIR		= $$BINDIR/qlc.app/Contents/Resources/Documents/
 macx:DEFINES		+= DOCSDIR=\\\"../Resources/Documents\\\"
 
-# Input devices
-win32:INPUTDEVICEDIR	= $$DATADIR/InputDevices
-win32:DEFINES		+= INPUTDEVICEDIR=\\\"InputDevices\\\"
+# Input profiles
+win32:INPUTPROFILEDIR	= $$DATADIR/InputProfiles
+win32:DEFINES		+= INPUTPROFILEDIR=\\\"InputProfiles\\\"
 
-unix:!macx:INPUTDEVICEDIR	= $$DATADIR/inputdevices
-unix:!macx:DEFINES		+= INPUTDEVICEDIR=\\\"$$INPUTDEVICEDIR\\\"
-unix:!macx:USERINPUTDEVICEDIR	= .qlc/inputdevices
-unix:!macx:DEFINES		+= USERINPUTDEVICEDIR=\\\"$$USERINPUTDEVICEDIR\\\"
+unix:!macx:INPUTPROFILEDIR	= $$DATADIR/inputprofiles
+unix:!macx:DEFINES		+= INPUTPROFILEDIR=\\\"$$INPUTPROFILEDIR\\\"
+unix:!macx:USERINPUTPROFILEDIR	= .qlc/inputprofiles
+unix:!macx:DEFINES		+= USERINPUTPROFILEDIR=\\\"$$USERINPUTPROFILEDIR\\\"
 
-macx:INPUTDEVICEDIR	= $$BINDIR/qlc.app/Contents/Resources/inputdevices
-macx:DEFINES		+= INPUTDEVICEDIR=\\\"../Resources/inputdevices\\\"
-
-# USERINPUTDEVIEDIR required??
+macx:INPUTPROFILEDIR	= $$BINDIR/qlc.app/Contents/Resources/inputprofiles
+macx:DEFINES		+= INPUTPROFILEDIR=\\\"../Resources/inputprofiles\\\"
 
 # Fixtures
 win32:FIXTUREDIR	= $$DATADIR/Fixtures

@@ -23,7 +23,7 @@
 #include <QtXml>
 
 #include "qlcinputchannel.h"
-#include "qlcinputdevice.h"
+#include "qlcinputprofile.h"
 
 /****************************************************************************
  * Initialization

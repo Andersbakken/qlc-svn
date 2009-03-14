@@ -235,7 +235,7 @@ void OutputPatchEditor::slotItemChanged(QTreeWidgetItem* item)
 	}
 
 	/* Apply the patch immediately so that input data can be used in the
-	   input device editor */
+	   input profile editor */
 	_app->outputMap()->setPatch(m_universe, m_currentPluginName,
 				    m_currentOutput);
 }

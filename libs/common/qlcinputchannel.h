@@ -24,7 +24,7 @@
 
 #include <common/qlctypes.h>
 
-class QLCInputDevice;
+class QLCInputProfile;
 class QDomDocument;
 class QDomElement;
 class QString;

@@ -60,18 +60,18 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 	loadPlugins();
 
 #ifdef Q_WS_X11
-	/* First, load user devices (overrides system devices) */
+	/* First, load user profiles (overrides system profiles) */
 	QDir dir(QString(getenv("HOME")));
-	loadDevices(dir.absoluteFilePath(QString(USERINPUTDEVICEDIR)));
+	loadProfiles(dir.absoluteFilePath(QString(USERINPUTPROFILEDIR)));
 #endif
 
-	/* Then, load system devices */
+	/* Then, load system profiles */
 #ifdef __APPLE__
-	loadDevices(QString("%1/%2")
+	loadProfiles(QString("%1/%2")
                     .arg(QApplication::applicationDirPath())
-                    .arg(INPUTDEVICEDIR));
+                    .arg(INPUTPROFILEDIR));
 #else
-	loadDevices(INPUTDEVICEDIR);
+	loadProfiles(INPUTPROFILEDIR);
 #endif
 
 	loadDefaults();
@@ -79,11 +79,13 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 
 InputMap::~InputMap()
 {
+	saveDefaults();
+
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
 
-	while (m_devices.isEmpty() == false)
-		delete m_devices.takeFirst();
+	while (m_profiles.isEmpty() == false)
+		delete m_profiles.takeFirst();
 }
 
 /*****************************************************************************
@@ -174,7 +176,7 @@ void InputMap::initPatch()
 
 bool InputMap::setPatch(t_input_universe universe,
 			const QString& pluginName, t_input input,
-			const QString& deviceName)
+			const QString& profileName)
 {
 	/* Check that the universe that we're doing mapping for is valid */
 	if (universe >= m_universes)
@@ -183,9 +185,9 @@ bool InputMap::setPatch(t_input_universe universe,
 		return false;
 	}
 
-	/* Don't care if plugin or device is NULL. */
+	/* Don't care if plugin or profile is NULL. */
 	m_patch[universe]->set(plugin(pluginName), input,
-			       device(deviceName));
+			       profile(profileName));
 
 	return true;
 }
@@ -341,86 +343,86 @@ QLCInPlugin* InputMap::plugin(const QString& name)
 }
 
 /*****************************************************************************
- * Devices
+ * Profiles
  *****************************************************************************/
 
-void InputMap::loadDevices(const QString& devicePath)
+void InputMap::loadProfiles(const QString& profilePath)
 {
-	/* Find *.qxi from devicePath, sort by name, get regular files */
-	QDir dir(devicePath, QString("*%1").arg(KExtInputDevice),
+	/* Find *.qxi from profilePath, sort by name, get regular files */
+	QDir dir(profilePath, QString("*%1").arg(KExtInputProfile),
 		 QDir::Name, QDir::Files);
 	if (dir.exists() == false || dir.isReadable() == false)
 	{
-		qWarning() << "Unable to load input devices from"
-			   << devicePath;
+		qWarning() << "Unable to load input profiles from"
+			   << profilePath;
 		return;
 	}
 
 	/* Go thru all found file entries and attempt to load an input
-	   device from each of them. */
+	   profile from each of them. */
 	QStringListIterator it(dir.entryList());
 	while (it.hasNext() == true)
 	{
-		QLCInputDevice* dev;
+		QLCInputProfile* profile;
 		QString path;
 
 		path = dir.absoluteFilePath(it.next());
-		dev = QLCInputDevice::loader(path);
-		if (dev != NULL)
+		profile = QLCInputProfile::loader(path);
+		if (profile != NULL)
 		{
 			/* Check for duplicates */
-			if (device(dev->name()) == NULL)
-				m_devices.append(dev);
+			if (this->profile(profile->name()) == NULL)
+				m_profiles.append(profile);
 			else
-				delete dev;
+				delete profile;
 		}
 		else
 		{
-			qWarning() << "Unable to find an input device from"
+			qWarning() << "Unable to find an input profile from"
 				   << path;
 		}
 	}
 }
 
-QStringList InputMap::deviceNames()
+QStringList InputMap::profileNames()
 {
 	QStringList list;
-	QListIterator <QLCInputDevice*> it(m_devices);
+	QListIterator <QLCInputProfile*> it(m_profiles);
 	while (it.hasNext() == true)
 		list << it.next()->name();
 	return list;
 }
 
-QLCInputDevice* InputMap::device(const QString& name)
+QLCInputProfile* InputMap::profile(const QString& name)
 {
-	QListIterator <QLCInputDevice*> it(m_devices);
+	QListIterator <QLCInputProfile*> it(m_profiles);
 	while (it.hasNext() == true)
 	{
-		QLCInputDevice* dev = it.next();
-		if (dev->name() == name)
-			return dev;
+		QLCInputProfile* profile = it.next();
+		if (profile->name() == name)
+			return profile;
 	}
 
 	return NULL;
 }
 
-void InputMap::addDevice(QLCInputDevice* device)
+void InputMap::addProfile(QLCInputProfile* profile)
 {
-	Q_ASSERT(device != NULL);
-	m_devices.append(device);
+	Q_ASSERT(profile != NULL);
+	m_profiles.append(profile);
 }
 
-void InputMap::removeDevice(const QString& name)
+void InputMap::removeProfile(const QString& name)
 {
-	QLCInputDevice* device;
-	QMutableListIterator <QLCInputDevice*> it(m_devices);
+	QLCInputProfile* profile;
+	QMutableListIterator <QLCInputProfile*> it(m_profiles);
 	while (it.hasNext() == true)
 	{
-		device = it.next();
-		if (device->name() == name)
+		profile = it.next();
+		if (profile->name() == name)
 		{
 			it.remove();
-			delete device;
+			delete profile;
 			break;
 		}
 	}
@@ -494,7 +496,7 @@ bool InputMap::loadXML(const QDomElement* root)
 
 void InputMap::loadDefaults()
 {
-	QString deviceName;
+	QString profileName;
 	QSettings settings;
 	QString plugin;
 	QVariant value;
@@ -517,13 +519,13 @@ void InputMap::loadDefaults()
 		key = QString("/inputmap/universe%2/input/").arg(i);
 		input = settings.value(key).toString();
 
-		/* Input device */
-		key = QString("/inputmap/universe%2/device/").arg(i);
-		deviceName = settings.value(key).toString();
+		/* Input profile */
+		key = QString("/inputmap/universe%2/profile/").arg(i);
+		profileName = settings.value(key).toString();
 
 		/* Do the mapping */
 		if (plugin.length() > 0 && input.length() > 0)
-			setPatch(i, plugin, input.toInt(), deviceName);
+			setPatch(i, plugin, input.toInt(), profileName);
 	}
 }
 
@@ -552,9 +554,9 @@ void InputMap::saveDefaults()
 			key = QString("/inputmap/universe%2/input/").arg(i);
 			settings.setValue(key, str.setNum(pat->input()));
 
-			/* Input device */
-			key = QString("/inputmap/universe%2/device/").arg(i);
-			settings.setValue(key, pat->deviceName());
+			/* Input profile */
+			key = QString("/inputmap/universe%2/profile/").arg(i);
+			settings.setValue(key, pat->profileName());
 		}
 		else
 		{
@@ -566,8 +568,8 @@ void InputMap::saveDefaults()
 			key = QString("/inputmap/universe%2/input/").arg(i);
 			settings.setValue(key, "");
 
-			/* Input device */
-			key = QString("/inputmap/universe%2/device/").arg(i);
+			/* Input profile */
+			key = QString("/inputmap/universe%2/profile/").arg(i);
 			settings.setValue(key, "");
 		}
 	}

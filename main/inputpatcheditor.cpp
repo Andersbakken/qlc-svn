@@ -31,11 +31,11 @@
 #include <QFile>
 #include <QDir>
 
-#include <common/qlcinputdevice.h>
+#include <common/qlcinputprofile.h>
 #include <common/qlctypes.h>
 #include <common/qlcfile.h>
 
-#include "inputdeviceeditor.h"
+#include "inputprofileeditor.h"
 #include "inputpatcheditor.h"
 #include "inputpatch.h"
 #include "inputmap.h"
@@ -47,8 +47,8 @@ extern App* _app;
 #define KMapColumnName  0
 #define KMapColumnInput 1
 
-/* Device column structure */
-#define KDeviceColumnName 0
+/* Profile column structure */
+#define KProfileColumnName 0
 
 InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 				   const InputPatch* inputPatch)
@@ -70,12 +70,12 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 	m_originalInput = inputPatch->input();
 	m_currentInput = inputPatch->input();
 
-	m_originalDeviceName = inputPatch->deviceName();
-	m_currentDeviceName = inputPatch->deviceName();
+	m_originalProfileName = inputPatch->profileName();
+	m_currentProfileName = inputPatch->profileName();
 
 	/* Setup UI controls */
 	setupMappingPage();
-	setupDevicePage();
+	setupProfilePage();
 }
 
 InputPatchEditor::~InputPatchEditor()
@@ -85,7 +85,7 @@ InputPatchEditor::~InputPatchEditor()
 void InputPatchEditor::reject()
 {
 	_app->inputMap()->setPatch(m_universe, m_originalPluginName,
-				   m_originalInput, m_originalDeviceName);
+				   m_originalInput, m_originalProfileName);
 
 	QDialog::reject();
 }
@@ -298,9 +298,9 @@ void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
 	}
 
 	/* Apply the patch immediately so that input data can be used in the
-	   input device editor */
+	   input profile editor */
 	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
-				   m_currentInput, m_currentDeviceName);
+				   m_currentInput, m_currentProfileName);
 }
 
 void InputPatchEditor::slotConfigureInputClicked()
@@ -325,153 +325,153 @@ void InputPatchEditor::slotConfigureInputClicked()
 }
 
 /****************************************************************************
- * Device tree
+ * Profile tree
  ****************************************************************************/
 
-void InputPatchEditor::setupDevicePage()
+void InputPatchEditor::setupProfilePage()
 {
-	connect(m_addDeviceButton, SIGNAL(clicked()),
-		this, SLOT(slotAddDeviceClicked()));
-	connect(m_removeDeviceButton, SIGNAL(clicked()),
-		this, SLOT(slotRemoveDeviceClicked()));
-	connect(m_editDeviceButton, SIGNAL(clicked()),
-		this, SLOT(slotEditDeviceClicked()));
+	connect(m_addProfileButton, SIGNAL(clicked()),
+		this, SLOT(slotAddProfileClicked()));
+	connect(m_removeProfileButton, SIGNAL(clicked()),
+		this, SLOT(slotRemoveProfileClicked()));
+	connect(m_editProfileButton, SIGNAL(clicked()),
+		this, SLOT(slotEditProfileClicked()));
 
-	/* Fill the device tree with available device names */
-	fillDeviceTree();
+	/* Fill the profile tree with available profile names */
+	fillProfileTree();
 
 	/* Listen to itemChanged() signals to catch check state changes */
-	connect(m_deviceTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		this, SLOT(slotDeviceItemChanged(QTreeWidgetItem*)));
+	connect(m_profileTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotProfileItemChanged(QTreeWidgetItem*)));
 
 	/* Double click acts as edit button click */
-	connect(m_deviceTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditDeviceClicked()));
+	connect(m_profileTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+		this, SLOT(slotEditProfileClicked()));
 }
 
-void InputPatchEditor::fillDeviceTree()
+void InputPatchEditor::fillProfileTree()
 {
 	QTreeWidgetItem* item;
 
-	m_deviceTree->clear();
+	m_profileTree->clear();
 
-	/* Add an option for having no device at all */
-	item = new QTreeWidgetItem(m_deviceTree);
-	updateDeviceItem(KInputNone, item);
+	/* Add an option for having no profile at all */
+	item = new QTreeWidgetItem(m_profileTree);
+	updateProfileItem(KInputNone, item);
 
-	/* Insert available input devices to the tree */
-	QStringListIterator it(_app->inputMap()->deviceNames());
+	/* Insert available input profiles to the tree */
+	QStringListIterator it(_app->inputMap()->profileNames());
 	while (it.hasNext() == true)
 	{
-		item = new QTreeWidgetItem(m_deviceTree);
-		updateDeviceItem(it.next(), item);
+		item = new QTreeWidgetItem(m_profileTree);
+		updateProfileItem(it.next(), item);
 	}
 }
 
-void InputPatchEditor::updateDeviceItem(const QString& name,
+void InputPatchEditor::updateProfileItem(const QString& name,
 					QTreeWidgetItem* item)
 {
 	Q_ASSERT(item != NULL);
 
-	item->setText(KDeviceColumnName, name);
+	item->setText(KProfileColumnName, name);
 
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	if (m_currentDeviceName == name)
-		item->setCheckState(KDeviceColumnName, Qt::Checked);
+	if (m_currentProfileName == name)
+		item->setCheckState(KProfileColumnName, Qt::Checked);
 	else
-		item->setCheckState(KDeviceColumnName, Qt::Unchecked);
+		item->setCheckState(KProfileColumnName, Qt::Unchecked);
 }
 
-void InputPatchEditor::slotDeviceItemChanged(QTreeWidgetItem* item)
+void InputPatchEditor::slotProfileItemChanged(QTreeWidgetItem* item)
 {
-	if (item->checkState(KDeviceColumnName) == Qt::Checked)
+	if (item->checkState(KProfileColumnName) == Qt::Checked)
 	{
 		/* Temporarily disable this signal to prevent an endless loop */
-		disconnect(m_deviceTree,
+		disconnect(m_profileTree,
 			   SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 			   this,
-			   SLOT(slotDeviceItemChanged(QTreeWidgetItem*)));
+			   SLOT(slotProfileItemChanged(QTreeWidgetItem*)));
 
 		/* Set all other items unchecked... */
-		QTreeWidgetItemIterator it(m_deviceTree);
+		QTreeWidgetItemIterator it(m_profileTree);
 		while (*it != NULL)
 		{
 			/* ...except the one that was just checked */
 			if (*it != item)
-				(*it)->setCheckState(KDeviceColumnName,
+				(*it)->setCheckState(KProfileColumnName,
 						     Qt::Unchecked);
 			++it;
 		}
 
 		/* Start listening to this signal once again */
-		connect(m_deviceTree,
+		connect(m_profileTree,
 			SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 			this,
-			SLOT(slotDeviceItemChanged(QTreeWidgetItem*)));
+			SLOT(slotProfileItemChanged(QTreeWidgetItem*)));
 	}
 	else
 	{
 		/* Don't allow unchecking an item by clicking it. Only allow
 		   changing the check state by checking another item. */
-		item->setCheckState(KDeviceColumnName, Qt::Checked);
+		item->setCheckState(KProfileColumnName, Qt::Checked);
 	}
 
-	/* Store the selected device name */
-	m_currentDeviceName = item->text(KDeviceColumnName);
+	/* Store the selected profile name */
+	m_currentProfileName = item->text(KProfileColumnName);
 
 	/* Apply the patch immediately */
 	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
-				   m_currentInput, m_currentDeviceName);
+				   m_currentInput, m_currentProfileName);
 }
 
-void InputPatchEditor::slotAddDeviceClicked()
+void InputPatchEditor::slotAddProfileClicked()
 {
-	/* Create a new input device and start editing it */
-	InputDeviceEditor ite(this, NULL);
+	/* Create a new input profile and start editing it */
+	InputProfileEditor ite(this, NULL);
 edit:
 	if (ite.exec() == QDialog::Accepted)
 	{
-		QLCInputDevice* dev;
+		QLCInputProfile* profile;
 		QString path;
 		QDir dir;
 		QString manufacturer;
 		QString model;
 
 		/* Remove spaces from these */
-		manufacturer = ite.device()->manufacturer().remove(QChar(' '));
-		model = ite.device()->model().remove(QChar(' '));
+		manufacturer = ite.profile()->manufacturer().remove(QChar(' '));
+		model = ite.profile()->model().remove(QChar(' '));
 
 #ifdef Q_WS_X11
-		/* If the current user is root, use the system device dir
-		   for saving devices. Otherwise use the user's home dir.
+		/* If the current user is root, use the system profile dir
+		   for saving profiles. Otherwise use the user's home dir.
 		   This is done on Linux only, because Win32 & OSX save
-		   system devices in a user-writable directory. */
+		   system profiles in a user-writable directory. */
 		if (geteuid() == 0)
 		{
-			dir = QDir(INPUTDEVICEDIR);
+			dir = QDir(INPUTPROFILEDIR);
 		}
 		else
 		{
 			path = QString("%1/%2").arg(getenv("HOME"))
-					       .arg(USERINPUTDEVICEDIR);
+					       .arg(USERINPUTPROFILEDIR);
 			dir = QDir(path);
 		}
 
-		/* Ensure that the selected device directory exists */
+		/* Ensure that the selected profile directory exists */
 		if (dir.exists() == false)
 			dir.mkpath(".");
 #else
-		/* Use the system input device dir for Win32/OSX */
-		dir = QDir(INPUTDEVICEDIR);
+		/* Use the system input profile dir for Win32/OSX */
+		dir = QDir(INPUTPROFILEDIR);
 #endif
-		/* Construct a descriptive file name for the device */
+		/* Construct a descriptive file name for the profile */
 		path = QString("%1/%2-%3%4").arg(dir.absolutePath())
 				.arg(manufacturer).arg(model)
-				.arg(KExtInputDevice);
+				.arg(KExtInputProfile);
 
-		/* Ensure that creating a new input device won't overwrite
+		/* Ensure that creating a new input profile won't overwrite
 		   an existing file. */
-		if (QFile::exists(path + KExtInputDevice) == true)
+		if (QFile::exists(path + KExtInputProfile) == true)
 		{
 			for (int i = 1; i < INT_MAX; i++)
 			{
@@ -481,82 +481,82 @@ edit:
 				path = QString("%1/%2-%3-%4%5")
 						.arg(dir.absolutePath())
 						.arg(manufacturer).arg(model)
-						.arg(i).arg(KExtInputDevice);
+						.arg(i).arg(KExtInputProfile);
 
 				if (QFile::exists(path) == false)
 					break;
 			}
 		}
 
-		/* Create a new non-const copy of the device and
+		/* Create a new non-const copy of the profile and
 		   reparent it to the input map */
-		dev = new QLCInputDevice(*ite.device());
+		profile = new QLCInputProfile(*ite.profile());
 
 		/* Save it to a file, go back to edit if save failed */
-		if (dev->saveXML(path) == false)
+		if (profile->saveXML(path) == false)
 		{
 			QMessageBox::warning(this, tr("Saving failed"),
-				tr("Unable to save the device to %1")
+				tr("Unable to save the profile to %1")
 				.arg(QDir::toNativeSeparators(path)));
-			delete dev;
+			delete profile;
 			goto edit;
 		}
 		else
 		{
-			/* Add the new device to input map */
-			_app->inputMap()->addDevice(dev);
+			/* Add the new profile to input map */
+			_app->inputMap()->addProfile(profile);
 
-			/* Add the new device to our tree widget */
+			/* Add the new profile to our tree widget */
 			QTreeWidgetItem* item;
-			item = new QTreeWidgetItem(m_deviceTree);
-			updateDeviceItem(dev->name(), item);
+			item = new QTreeWidgetItem(m_profileTree);
+			updateProfileItem(profile->name(), item);
 		}
 	}
 }
 
-void InputPatchEditor::slotRemoveDeviceClicked()
+void InputPatchEditor::slotRemoveProfileClicked()
 {
-	QLCInputDevice* device;
+	QLCInputProfile* profile;
 	QTreeWidgetItem* item;
 	QString name;
 	int r;
 
 	/* Find out the currently selected item */
-	item = m_deviceTree->currentItem();
+	item = m_profileTree->currentItem();
 	if (item == NULL)
 		return;
 
-	/* Get the currently selected device object by its name */
-	name = item->text(KDeviceColumnName);
-	device = _app->inputMap()->device(name);
-	if (device == NULL)
+	/* Get the currently selected profile object by its name */
+	name = item->text(KProfileColumnName);
+	profile = _app->inputMap()->profile(name);
+	if (profile == NULL)
 		return;
 
 	/* Ask for user confirmation */
-	r = QMessageBox::question(this, tr("Delete device"),
-		tr("Do you wish to permanently delete device \"%1\"?")
-		.arg(device->name()),
+	r = QMessageBox::question(this, tr("Delete profile"),
+		tr("Do you wish to permanently delete profile \"%1\"?")
+		.arg(profile->name()),
 		QMessageBox::Yes, QMessageBox::No);
 	if (r == QMessageBox::Yes)
 	{
 		/* Attempt to delete the file first */
-		QFile file(device->path());
+		QFile file(profile->path());
 		if (file.remove() == true)
 		{
-			if (item->checkState(KDeviceColumnName) == Qt::Checked)
+			if (item->checkState(KProfileColumnName) == Qt::Checked)
 			{
-				/* The currently assigned device is removed,
+				/* The currently assigned profile is removed,
 				   so select "None" next. */
 				QTreeWidgetItem* none;
-				none = m_deviceTree->topLevelItem(0);
+				none = m_profileTree->topLevelItem(0);
 				Q_ASSERT(none != NULL);
-				none->setCheckState(KDeviceColumnName,
+				none->setCheckState(KProfileColumnName,
 						    Qt::Checked);
 			}
 
-			/* Successful deletion. Remove the device from
+			/* Successful deletion. Remove the profile from
 			   input map and our tree widget */
-			_app->inputMap()->removeDevice(name);
+			_app->inputMap()->removeProfile(name);
 			delete item;
 		}
 		else
@@ -569,26 +569,26 @@ void InputPatchEditor::slotRemoveDeviceClicked()
 	}
 }
 
-void InputPatchEditor::slotEditDeviceClicked()
+void InputPatchEditor::slotEditProfileClicked()
 {
-	QLCInputDevice* device;
+	QLCInputProfile* profile;
 	QTreeWidgetItem* item;
 	QString name;
 
 	/* Get the currently selected item and bail out if nothing or "None"
 	   is selected */
-	item = m_deviceTree->currentItem();
-	if (item == NULL || item->text(KDeviceColumnName) == KInputNone)
+	item = m_profileTree->currentItem();
+	if (item == NULL || item->text(KProfileColumnName) == KInputNone)
 		return;
 
-	/* Get the currently selected device by its name */
-	name = item->text(KDeviceColumnName);
-	device = _app->inputMap()->device(name);
-	if (device == NULL)
+	/* Get the currently selected profile by its name */
+	name = item->text(KProfileColumnName);
+	profile = _app->inputMap()->profile(name);
+	if (profile == NULL)
 		return;
 
-	/* Edit the device and update the item if OK was pressed */
-	InputDeviceEditor ite(this, device);
+	/* Edit the profile and update the item if OK was pressed */
+	InputProfileEditor ite(this, profile);
 edit:
 	if (ite.exec() == QDialog::Rejected)
 		return;
@@ -596,17 +596,17 @@ edit:
 	QString path;
 
 	/* Copy the channel's contents from the editor's copy to
-	   the actual object (with QLCInputDevice::operator=()). */
-	*device = *ite.device();
+	   the actual object (with QLCInputProfile::operator=()). */
+	*profile = *ite.profile();
 
 #ifdef Q_WS_X11
-	/* If the current user is root, save the device to its old path.
+	/* If the current user is root, save the profile to its old path.
 	   Otherwise use the user's home dir and generate a new file name
 	   if necessary. This is done on Linux only, because Win32 & OSX save
-	   devices always in a user-writable directory. */
+	   profiles always in a user-writable directory. */
 	if (geteuid() == 0)
 	{
-		path = device->path();
+		path = profile->path();
 	}
 	else
 	{
@@ -614,47 +614,47 @@ edit:
 		QString model;
 
 		/* Remove spaces from these */
-		manufacturer = device->manufacturer().remove(QChar(' '));
-		model = device->model().remove(QChar(' '));
+		manufacturer = profile->manufacturer().remove(QChar(' '));
+		model = profile->model().remove(QChar(' '));
 
-		/* Ensure that user device directory exists */
+		/* Ensure that user profile directory exists */
 		path = QString("%1/%2").arg(getenv("HOME"))
-				       .arg(USERINPUTDEVICEDIR);
+				       .arg(USERINPUTPROFILEDIR);
 		QDir dir = QDir(path);
 		if (dir.exists() == false)
 			dir.mkpath(".");
 
-		/* Check, whether the device was originally saved
+		/* Check, whether the profile was originally saved
 		   in the system directory. If it is, construct a
-		   new name for it into the user's device dir. */
-		path = device->path();
+		   new name for it into the user's profile dir. */
+		path = profile->path();
 		if (path.contains(getenv("HOME")) == false)
 		{
 			/* Construct a descriptive file name for
-			   the device under user's HOME dir */
+			   the profile under user's HOME dir */
 			path = QString("%1/%2-%3%4").arg(dir.absolutePath())
 				.arg(manufacturer).arg(model)
-				.arg(KExtInputDevice);
+				.arg(KExtInputProfile);
 		}
 	}
 #else
-	/* Win32 & OSX save input devices in a user-writable directory,
+	/* Win32 & OSX save input profiles in a user-writable directory,
 	   so we can use that directly. */
-	path = device->path();
+	path = profile->path();
 #endif
-	/* Save the device */
-	if (device->saveXML(path) == true)
+	/* Save the profile */
+	if (profile->saveXML(path) == true)
 	{
-		/* Get the device's name from the device itself
+		/* Get the profile's name from the profile itself
 		   since it may have changed making local variable
 		   "name" invalid */
-		updateDeviceItem(device->name(), item);
+		updateProfileItem(profile->name(), item);
 	}
 	else
 	{
 		QMessageBox::warning(this, tr("Saving failed"),
 			tr("Unable to save %1 to %2")
-			.arg(device->name())
+			.arg(profile->name())
 			.arg(QDir::toNativeSeparators(path)));
 		goto edit;
 	}

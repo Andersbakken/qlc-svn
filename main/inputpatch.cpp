@@ -39,7 +39,7 @@ InputPatch::InputPatch(QObject* parent) : QObject(parent)
 
 	m_plugin = NULL;
 	m_input = KInputInvalid;
-	m_device = NULL;
+	m_profile = NULL;
 }
 
 InputPatch::~InputPatch()
@@ -50,7 +50,7 @@ InputPatch::~InputPatch()
  * Properties
  *****************************************************************************/
 
-void InputPatch::set(QLCInPlugin* plugin, t_input input, QLCInputDevice* device)
+void InputPatch::set(QLCInPlugin* plugin, t_input input, QLCInputProfile* profile)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
 	   the line has been assigned to more than one input universe */
@@ -59,7 +59,7 @@ void InputPatch::set(QLCInPlugin* plugin, t_input input, QLCInputDevice* device)
 
 	m_plugin = plugin;
 	m_input = input;
-	m_device = device;
+	m_profile = profile;
 
 	/* Open the assigned plugin input */
 	if (m_plugin != NULL && input != KInputInvalid)
@@ -91,10 +91,10 @@ QString InputPatch::inputName() const
 		return KInputNone;
 }
 
-QString InputPatch::deviceName() const
+QString InputPatch::profileName() const
 {
-	if (m_device != NULL)
-		return m_device->name();
+	if (m_profile != NULL)
+		return m_profile->name();
 	else
 		return KInputNone;
 }
@@ -134,10 +134,10 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 	text = doc->createTextNode(str);
 	tag.appendChild(text);
 
-	/* Device */
-	tag = doc->createElement(KXMLQLCInputPatchDevice);
+	/* Profile */
+	tag = doc->createElement(KXMLQLCInputPatchProfile);
 	root.appendChild(tag);
-	text = doc->createTextNode(deviceName());
+	text = doc->createTextNode(profileName());
 	tag.appendChild(text);
 
 	return true;
@@ -146,7 +146,7 @@ bool InputPatch::saveXML(QDomDocument* doc, QDomElement* map_root,
 bool InputPatch::loader(const QDomElement* root, InputMap* inputMap)
 {
 	t_input_universe universe = 0;
-	QString deviceName;
+	QString profileName;
 	QString pluginName;
 	QDomElement tag;
 	QDomNode node;
@@ -181,10 +181,10 @@ bool InputPatch::loader(const QDomElement* root, InputMap* inputMap)
 			/* Plugin input */
 			input = tag.text().toInt();
 		}
-		else if (tag.tagName() == KXMLQLCInputPatchDevice)
+		else if (tag.tagName() == KXMLQLCInputPatchProfile)
 		{
-			/* Device */
-			deviceName = tag.text();
+			/* Profile */
+			profileName = tag.text();
 		}
 		else
 		{
@@ -195,5 +195,5 @@ bool InputPatch::loader(const QDomElement* root, InputMap* inputMap)
 		node = node.nextSibling();
 	}
 
-	return inputMap->setPatch(universe, pluginName, input, deviceName);
+	return inputMap->setPatch(universe, pluginName, input, profileName);
 }

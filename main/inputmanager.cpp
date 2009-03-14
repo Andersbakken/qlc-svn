@@ -45,7 +45,7 @@
 #define KColumnUniverse 0
 #define KColumnPlugin   1
 #define KColumnInput    2
-#define KColumnDevice   3
+#define KColumnProfile   3
 #define KColumnEditor   4
 #define KColumnInputNum 5
 
@@ -79,7 +79,7 @@ InputManager::InputManager(QWidget* parent, Qt::WindowFlags flags)
 
 	QStringList columns;
 	columns << tr("Universe") << tr("Plugin") << tr("Input")
-		<< tr("Device")	<< tr("Editor universe");
+		<< tr("Profile")	<< tr("Editor universe");
 	m_tree->setHeaderLabels(columns);
 
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
@@ -203,7 +203,7 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
 	item->setText(KColumnUniverse, tr("%1").arg(universe + 1));
 	item->setText(KColumnPlugin, ip->pluginName());
 	item->setText(KColumnInput, ip->inputName());
-	item->setText(KColumnDevice, ip->deviceName());
+	item->setText(KColumnProfile, ip->profileName());
 	if (_app->inputMap()->editorUniverse() == universe)
 	{
 		item->setCheckState(KColumnEditor, Qt::Checked);

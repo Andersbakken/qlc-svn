@@ -18,11 +18,11 @@ HEADERS += qlccapability.h \
            qlcfixturedef.h \
            qlcfixturemode.h \
 	   qlcinputchannel.h \
-	   qlcinputdevice.h \
+	   qlcinputprofile.h \
            qlcphysical.h \
            qlctypes.h \
 	   qlcwidgetproperties.h
-	   
+
 SOURCES += qlccapability.cpp \
            qlcchannel.cpp \
            qlcdocbrowser.cpp \
@@ -30,7 +30,7 @@ SOURCES += qlccapability.cpp \
            qlcfixturedef.cpp \
            qlcfixturemode.cpp \
 	   qlcinputchannel.cpp \
-	   qlcinputdevice.cpp \
+	   qlcinputprofile.cpp \
            qlcphysical.cpp \
 	   qlcwidgetproperties.cpp
 
@@ -46,7 +46,7 @@ headers.files = qlccapability.h \
                 qlcfixturedef.h \
                 qlcfixturemode.h \
 		qlcinputchannel.h \
-		qlcinputdevice.h \
+		qlcinputprofile.h \
                 qlcphysical.h \
                 qlctypes.h
 

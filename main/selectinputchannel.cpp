@@ -23,7 +23,7 @@
 #include <QTreeWidget>
 
 #include <common/qlcinputchannel.h>
-#include <common/qlcinputdevice.h>
+#include <common/qlcinputprofile.h>
 
 #include "selectinputchannel.h"
 #include "inputpatch.h"
@@ -77,7 +77,7 @@ void SelectInputChannel::fillTree()
 	QLCInputChannel* channel;
 	QTreeWidgetItem* uniItem;
 	QTreeWidgetItem* chItem;
-	QLCInputDevice* device;
+	QLCInputProfile* profile;
 	t_input_universe uni;
 	InputPatch* patch;
 
@@ -106,12 +106,12 @@ void SelectInputChannel::fillTree()
 			updateChannelItem(chItem, uni, NULL);
 		}
 
-		/* Add known channels from device (if any) */
-		device = patch->device();
-		if (device != NULL)
+		/* Add known channels from profile (if any) */
+		profile = patch->profile();
+		if (profile != NULL)
 		{
 			QMapIterator <t_input_channel, QLCInputChannel*>
-				it(device->channels());
+				it(profile->channels());
 			while (it.hasNext() == true)
 			{
 				channel = it.next().value();
@@ -182,11 +182,11 @@ void SelectInputChannel::updateUniverseItem(QTreeWidgetItem* item,
 	else
 	{
 		/* The current universe has something assigned to it. Check,
-		   whether it has an input device. */
-		if (patch->device() != NULL)
+		   whether it has an input profile. */
+		if (patch->profile() != NULL)
 		{
 			name = QString("%1: %2").arg(universe + 1)
-						.arg(patch->deviceName());
+						.arg(patch->profileName());
 		}
 		else
 		{

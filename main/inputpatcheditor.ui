@@ -92,13 +92,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Device" >
+     <widget class="QWidget" name="Profile" >
       <attribute name="title" >
-       <string>Device</string>
+       <string>Profile</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout" >
        <item rowspan="4" row="0" column="0" >
-        <widget class="QTreeWidget" name="m_deviceTree" >
+        <widget class="QTreeWidget" name="m_profileTree" >
          <property name="rootIsDecorated" >
           <bool>false</bool>
          </property>
@@ -110,15 +110,15 @@
          </property>
          <column>
           <property name="text" >
-           <string>Device</string>
+           <string>Profile</string>
           </property>
          </column>
         </widget>
        </item>
        <item row="0" column="1" >
-        <widget class="QToolButton" name="m_addDeviceButton" >
+        <widget class="QToolButton" name="m_addProfileButton" >
          <property name="toolTip" >
-          <string>Create a new input device</string>
+          <string>Create a new input profile</string>
          </property>
          <property name="text" >
           <string>...</string>
@@ -136,9 +136,9 @@
         </widget>
        </item>
        <item row="1" column="1" >
-        <widget class="QToolButton" name="m_removeDeviceButton" >
+        <widget class="QToolButton" name="m_removeProfileButton" >
          <property name="toolTip" >
-          <string>Delete the selected input device</string>
+          <string>Delete the selected input profile</string>
          </property>
          <property name="text" >
           <string>...</string>
@@ -156,9 +156,9 @@
         </widget>
        </item>
        <item row="2" column="1" >
-        <widget class="QToolButton" name="m_editDeviceButton" >
+        <widget class="QToolButton" name="m_editProfileButton" >
          <property name="toolTip" >
-          <string>Edit the selected input device</string>
+          <string>Edit the selected input profile</string>
          </property>
          <property name="text" >
           <string>...</string>

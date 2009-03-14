@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcinputdevice.cpp
+  qlcinputprofile.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -24,24 +24,24 @@
 #include <QMap>
 
 #include <common/qlcinputchannel.h>
-#include <common/qlcinputdevice.h>
+#include <common/qlcinputprofile.h>
 #include <common/qlcfile.h>
 
 /****************************************************************************
  * Initialization
  ****************************************************************************/
 
-QLCInputDevice::QLCInputDevice()
+QLCInputProfile::QLCInputProfile()
 {
 }
 
-QLCInputDevice::QLCInputDevice(const QLCInputDevice& device)
+QLCInputProfile::QLCInputProfile(const QLCInputProfile& profile)
 {
 	/* Copy contents with operator=() */
-	*this = device;
+	*this = profile;
 }
 
-QLCInputDevice::~QLCInputDevice()
+QLCInputProfile::~QLCInputProfile()
 {
 	/* Delete existing channels but leave the pointers there */
 	QMutableMapIterator <t_input_channel,QLCInputChannel*> it(m_channels);
@@ -52,13 +52,13 @@ QLCInputDevice::~QLCInputDevice()
 	m_channels.clear();
 }
 
-QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
+QLCInputProfile& QLCInputProfile::operator=(const QLCInputProfile& profile)
 {
-	if (this != &device)
+	if (this != &profile)
 	{
-		m_manufacturer = device.m_manufacturer;
-		m_model = device.m_model;
-		m_path = device.m_path;
+		m_manufacturer = profile.m_manufacturer;
+		m_model = profile.m_model;
+		m_path = profile.m_path;
 
 		/* Delete existing channels */
 		QMutableMapIterator <t_input_channel,QLCInputChannel*>
@@ -69,9 +69,9 @@ QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
 		/* Clear the list of freed pointers */
 		m_channels.clear();
 
-		/* Copy the other device's channels */
+		/* Copy the other profile's channels */
 		QMapIterator <t_input_channel,QLCInputChannel*>
-			it(device.m_channels);
+			it(profile.m_channels);
 		while (it.hasNext() == true)
 			addChannel(new QLCInputChannel(*(it.next().value())));
 	}
@@ -80,25 +80,25 @@ QLCInputDevice& QLCInputDevice::operator=(const QLCInputDevice& device)
 }
 
 /****************************************************************************
- * Device information
+ * profile information
  ****************************************************************************/
 
-void QLCInputDevice::setManufacturer(const QString& manufacturer)
+void QLCInputProfile::setManufacturer(const QString& manufacturer)
 {
 	m_manufacturer = manufacturer;
 }
 
-void QLCInputDevice::setModel(const QString& model)
+void QLCInputProfile::setModel(const QString& model)
 {
 	m_model = model;
 }
 
-QString QLCInputDevice::name() const
+QString QLCInputProfile::name() const
 {
 	return QString("%1 - %2").arg(m_manufacturer).arg(m_model);
 }
 
-QString QLCInputDevice::path() const
+QString QLCInputProfile::path() const
 {
 	return m_path;
 }
@@ -107,7 +107,7 @@ QString QLCInputDevice::path() const
  * Channels
  ****************************************************************************/
 
-void QLCInputDevice::addChannel(QLCInputChannel* ich)
+void QLCInputProfile::addChannel(QLCInputChannel* ich)
 {
 	Q_ASSERT(ich != NULL);
 
@@ -118,7 +118,7 @@ void QLCInputDevice::addChannel(QLCInputChannel* ich)
 	m_channels.insert(ich->channel(), ich);
 }
 
-void QLCInputDevice::removeChannel(QLCInputChannel* ich)
+void QLCInputProfile::removeChannel(QLCInputChannel* ich)
 {
 	Q_ASSERT(ich != NULL);
 
@@ -127,7 +127,7 @@ void QLCInputDevice::removeChannel(QLCInputChannel* ich)
 		m_channels.remove(ich->channel());
 }
 
-void QLCInputDevice::removeChannel(t_input_channel channel)
+void QLCInputProfile::removeChannel(t_input_channel channel)
 {
 	if (m_channels.contains(channel) == true)
 	{
@@ -139,7 +139,7 @@ void QLCInputDevice::removeChannel(t_input_channel channel)
 	}
 }
 
-QLCInputChannel* QLCInputDevice::channel(t_input_channel channel) const
+QLCInputChannel* QLCInputProfile::channel(t_input_channel channel) const
 {
 	if (m_channels.contains(channel) == true)
 		return m_channels[channel];
@@ -147,7 +147,7 @@ QLCInputChannel* QLCInputDevice::channel(t_input_channel channel) const
 		return NULL;
 }
 
-QString QLCInputDevice::channelName(t_input_channel channel) const
+QString QLCInputProfile::channelName(t_input_channel channel) const
 {
 	if (m_channels.contains(channel) == true)
 		return m_channels[channel]->name();
@@ -159,7 +159,7 @@ QString QLCInputDevice::channelName(t_input_channel channel) const
  * Channel mapping
  ****************************************************************************/
 
-void QLCInputDevice::setMapping(t_input_channel from, t_input_channel to)
+void QLCInputProfile::setMapping(t_input_channel from, t_input_channel to)
 {
 	if (from == KInputChannelInvalid)
 		return;
@@ -171,7 +171,7 @@ void QLCInputDevice::setMapping(t_input_channel from, t_input_channel to)
 		m_mapping[from] = to;
 }
 
-t_input_channel QLCInputDevice::mapping(t_input_channel from) const
+t_input_channel QLCInputProfile::mapping(t_input_channel from) const
 {
 	if (m_mapping.contains(from) == true)
 		return m_mapping[from];
@@ -179,7 +179,7 @@ t_input_channel QLCInputDevice::mapping(t_input_channel from) const
 		return KInputChannelInvalid;
 }
 
-t_input_channel QLCInputDevice::reverseMapping(t_input_channel to) const
+t_input_channel QLCInputProfile::reverseMapping(t_input_channel to) const
 {
 	QHashIterator <t_input_channel, t_input_channel> it(m_mapping);
 	while (it.hasNext() == true)
@@ -192,7 +192,7 @@ t_input_channel QLCInputDevice::reverseMapping(t_input_channel to) const
 	return KInputChannelInvalid;
 }
 
-const QLCInputChannel* QLCInputDevice::mappedChannel(t_input_channel to) const
+const QLCInputChannel* QLCInputProfile::mappedChannel(t_input_channel to) const
 {
 	t_input_channel from = reverseMapping(to);
 	if (from == KInputChannelInvalid)
@@ -205,31 +205,31 @@ const QLCInputChannel* QLCInputDevice::mappedChannel(t_input_channel to) const
  * Load & Save
  ****************************************************************************/
 
-QLCInputDevice* QLCInputDevice::loader(const QString& path)
+QLCInputProfile* QLCInputProfile::loader(const QString& path)
 {
-	QLCInputDevice* device = NULL;
+	QLCInputProfile* profile = NULL;
 	QDomDocument* doc = NULL;
 
 	if (QLCFile::readXML(path, &doc) == false)
 		return false;
 	Q_ASSERT(doc != NULL);
 
-	device = new QLCInputDevice();
-	if (device->loadXML(doc) == false)
+	profile = new QLCInputProfile();
+	if (profile->loadXML(doc) == false)
 	{
-		delete device;
-		device = NULL;
+		delete profile;
+		profile = NULL;
 	}
 	else
 	{
-		device->m_path = path;
+		profile->m_path = path;
 	}
 
 	delete doc;
-	return device;
+	return profile;
 }
 
-bool QLCInputDevice::loadXML(const QDomDocument* doc)
+bool QLCInputProfile::loadXML(const QDomDocument* doc)
 {
 	t_input_value from;
 	t_input_value to;
@@ -241,7 +241,7 @@ bool QLCInputDevice::loadXML(const QDomDocument* doc)
 	Q_ASSERT(doc != NULL);
 
 	root = doc->documentElement();
-	if (root.tagName() == KXMLQLCInputDevice)
+	if (root.tagName() == KXMLQLCInputProfile)
 	{
 		node = root.firstChild();
 		while (node.isNull() == false)
@@ -251,11 +251,11 @@ bool QLCInputDevice::loadXML(const QDomDocument* doc)
 			{
 				/* Ignore */
 			}
-			if (tag.tagName() == KXMLQLCInputDeviceManufacturer)
+			if (tag.tagName() == KXMLQLCInputProfileManufacturer)
 			{
 				setManufacturer(tag.text());
 			}
-			else if (tag.tagName() == KXMLQLCInputDeviceModel)
+			else if (tag.tagName() == KXMLQLCInputProfileModel)
 			{
 				setModel(tag.text());
 			}
@@ -267,15 +267,15 @@ bool QLCInputDevice::loadXML(const QDomDocument* doc)
 				else
 					delete ich;
 			}
-			else if (tag.tagName() == KXMLQLCInputDeviceMap)
+			else if (tag.tagName() == KXMLQLCInputProfileMap)
 			{
-				str = tag.attribute(KXMLQLCInputDeviceMapFrom);
+				str = tag.attribute(KXMLQLCInputProfileMapFrom);
 				if (str.isEmpty() == false)
 					from = str.toInt();
 				else
 					from = KInputChannelInvalid;
 
-				str = tag.attribute(KXMLQLCInputDeviceMapTo);
+				str = tag.attribute(KXMLQLCInputProfileMapTo);
 				if (str.isEmpty() == false)
 					to = str.toInt();
 				else
@@ -289,13 +289,13 @@ bool QLCInputDevice::loadXML(const QDomDocument* doc)
 	}
 	else
 	{
-		qDebug() << "Input device node not found in file!";
+		qDebug() << "Input profile node not found in file!";
 	}
 
 	return true;
 }
 
-bool QLCInputDevice::saveXML(const QString& fileName)
+bool QLCInputProfile::saveXML(const QString& fileName)
 {
 	QDomDocument* doc = NULL;
 	QDomElement root;
@@ -307,7 +307,7 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 	if (file.open(QIODevice::WriteOnly) == false)
 		return false;
 
-	if (QLCFile::getXMLHeader(KXMLQLCInputDevice, &doc) == true)
+	if (QLCFile::getXMLHeader(KXMLQLCInputProfile, &doc) == true)
 	{
 		/* Create a text stream for the file */
 		QTextStream stream(&file);
@@ -316,13 +316,13 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 		root = doc->documentElement();
 
 		/* Manufacturer */
-		tag = doc->createElement(KXMLQLCInputDeviceManufacturer);
+		tag = doc->createElement(KXMLQLCInputProfileManufacturer);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_manufacturer);
 		tag.appendChild(text);
 
 		/* Model */
-		tag = doc->createElement(KXMLQLCInputDeviceModel);
+		tag = doc->createElement(KXMLQLCInputProfileModel);
 		root.appendChild(tag);
 		text = doc->createTextNode(m_model);
 		tag.appendChild(text);
@@ -354,16 +354,16 @@ bool QLCInputDevice::saveXML(const QString& fileName)
 	return retval;
 }
 
-bool QLCInputDevice::saveXMLMappings(QDomDocument* doc, QDomElement* root) const
+bool QLCInputProfile::saveXMLMappings(QDomDocument* doc, QDomElement* root) const
 {
 	QDomElement tag;
 
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCInputDevice)
+	if (root->tagName() != KXMLQLCInputProfile)
 	{
-		qWarning() << "Not an Input Device node!";
+		qWarning() << "Not an Input profile node!";
 		return false;
 	}
 	
@@ -372,10 +372,10 @@ bool QLCInputDevice::saveXMLMappings(QDomDocument* doc, QDomElement* root) const
 	{
 		it.next();
 		
-		tag = doc->createElement(KXMLQLCInputDeviceMap);
-		tag.setAttribute(KXMLQLCInputDeviceMapFrom,
+		tag = doc->createElement(KXMLQLCInputProfileMap);
+		tag.setAttribute(KXMLQLCInputProfileMapFrom,
 				 QString("%1").arg(it.key()));
-		tag.setAttribute(KXMLQLCInputDeviceMapTo,
+		tag.setAttribute(KXMLQLCInputProfileMapTo,
 				 QString("%1").arg(it.value()));
 		root->appendChild(tag);
 	}

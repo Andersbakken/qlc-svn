@@ -665,7 +665,7 @@ QString Fixture::status()
 	info += QString("</TD>");
 	info += QString("</TR>");
 	
-	// Fill table with device's channels
+	// Fill table with the fixture's channels
 	for (t_channel ch = 0; ch < channels();	ch++)
 	{
 		info += QString("<TR>");

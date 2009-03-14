@@ -18,5 +18,5 @@ Section ""
   File QtXml4.dll
   File /r Documents
   File /r Fixtures
-  File /r InputDevices
+  File /r InputProfiles
 SectionEnd

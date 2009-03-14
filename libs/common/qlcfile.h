@@ -29,9 +29,9 @@ class QDomElement;
 class QString;
 
 // File extensions
-#define KExtFixture   ".qxf" // 'Q'lc 'X'ml 'F'ixture
-#define KExtWorkspace ".qxw" // 'Q'lc 'X'ml 'W'orkspace
-#define KExtInputDevice ".qxi" // 'Q'lc 'X'ml 'I'nput device
+#define KExtFixture      ".qxf" // 'Q'lc 'X'ml 'F'ixture
+#define KExtWorkspace    ".qxw" // 'Q'lc 'X'ml 'W'orkspace
+#define KExtInputProfile ".qxi" // 'Q'lc 'X'ml 'I'nput profile
 
 // Generic XML tags common for all documents
 #define KXMLQLCCreator "Creator"

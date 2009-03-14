@@ -24,7 +24,7 @@
 
 #include <QDialog>
 
-#include <common/qlcinputdevice.h>
+#include <common/qlcinputprofile.h>
 #include <common/qlctypes.h>
 
 #include "ui_inputpatcheditor.h"
@@ -63,8 +63,8 @@ protected:
 	t_input m_originalInput;
 	t_input m_currentInput;
 
-	QString m_originalDeviceName;
-	QString m_currentDeviceName;
+	QString m_originalProfileName;
+	QString m_currentProfileName;
 
 	/********************************************************************
 	 * Mapping page
@@ -79,18 +79,18 @@ protected slots:
 	void slotConfigureInputClicked();
 
 	/********************************************************************
-	 * Device page
+	 * Profile page
 	 ********************************************************************/
 protected:
-	void setupDevicePage();
-	void fillDeviceTree();
-	void updateDeviceItem(const QString& name, QTreeWidgetItem* item);
+	void setupProfilePage();
+	void fillProfileTree();
+	void updateProfileItem(const QString& name, QTreeWidgetItem* item);
 
 protected slots:
-	void slotDeviceItemChanged(QTreeWidgetItem* item);
-	void slotAddDeviceClicked();
-	void slotRemoveDeviceClicked();
-	void slotEditDeviceClicked();
+	void slotProfileItemChanged(QTreeWidgetItem* item);
+	void slotAddProfileClicked();
+	void slotRemoveProfileClicked();
+	void slotEditProfileClicked();
 };
 
 #endif /* INPUTPATCHEDITOR_H */

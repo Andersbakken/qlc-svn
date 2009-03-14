@@ -19,12 +19,12 @@ Depends: qlc
 Description: Fixture definitions for Q Light Controller
   Fixture definitions for Q Light Controller
 
-Package: qlc-inputdevices
+Package: qlc-inputprofiles
 Section: Other
 Architecture: any
 Depends: qlc
-Description: Input device definitions for Q Light Controller
-  Input device definitions for Q Light Controller. Includes definition for
+Description: Input device profiles for Q Light Controller
+  Input device profiles for Q Light Controller. Includes profile for
   Behringer BCF2000 slider board.
 
 Package: qlc-input-hid

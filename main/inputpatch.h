@@ -24,7 +24,7 @@
 
 #include <QObject>
 
-#include "common/qlcinputdevice.h"
+#include "common/qlcinputprofile.h"
 #include "common/qlctypes.h"
 
 class InputPatchEditor;
@@ -35,7 +35,7 @@ class InputMap;
 class QDomDocument;
 class QDomElement;
 
-#define KXMLQLCInputPatchDevice "Device"
+#define KXMLQLCInputPatchProfile "Profile"
 #define KXMLQLCInputPatchUniverse "Universe"
 #define KXMLQLCInputPatchPluginNone "None"
 #define KXMLQLCInputPatchPlugin "Plugin"
@@ -58,7 +58,7 @@ private:
 	 * Properties
 	 ********************************************************************/
 public:
-	void set(QLCInPlugin* plugin, t_input input, QLCInputDevice* device);
+	void set(QLCInPlugin* plugin, t_input input, QLCInputProfile* profile);
 
 	QLCInPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
@@ -66,13 +66,13 @@ public:
 	t_input input() const;
 	QString inputName() const;
 
-	QLCInputDevice* device() const { return m_device; }
-	QString deviceName() const;
+	QLCInputProfile* profile() const { return m_profile; }
+	QString profileName() const;
 
 protected:
 	QLCInPlugin* m_plugin;
 	t_input m_input;
-	QLCInputDevice* m_device;
+	QLCInputProfile* m_profile;
 
 	/********************************************************************
 	 * Load & Save

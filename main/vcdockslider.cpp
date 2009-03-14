@@ -109,7 +109,7 @@ void VCDockSlider::refreshProperties()
 	Q_ASSERT(m_slider != NULL);
 	m_slider->setRange(low * KFrequency, high * KFrequency);
 	
-	/* Send feedback to the bus & possible external input device */
+	/* Send feedback to the bus & possible external input profile */
 	slotSliderValueChanged(m_slider->value());
 }
 

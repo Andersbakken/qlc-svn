@@ -23,7 +23,7 @@
 #include <QSpinBox>
 #include <QtXml>
 
-#include "common/qlcinputdevice.h"
+#include "common/qlcinputprofile.h"
 #include "common/qlcfile.h"
 
 #include "selectinputchannel.h"
@@ -516,7 +516,7 @@ void VCPropertiesEditor::slotChooseHoldInputClicked()
 
 void VCPropertiesEditor::updateFadeInputSource()
 {
-	QLCInputDevice* dev;
+	QLCInputProfile* profile;
 	InputPatch* patch;
 	QString uniName;
 	QString chName;
@@ -549,10 +549,10 @@ void VCPropertiesEditor::updateFadeInputSource()
 		return;
 	}
 
-	dev = patch->device();
-	if (dev == NULL)
+	profile = patch->profile();
+	if (profile == NULL)
 	{
-		/* There is no device. Display plugin name and channel number.
+		/* There is no profile. Display plugin name and channel number.
 		   Boring. */
 		uniName = patch->plugin()->name();
 		chName = tr("%1: Unknown")
@@ -562,14 +562,14 @@ void VCPropertiesEditor::updateFadeInputSource()
 	{
 		QString name;
 
-		/* Display device name for universe */
+		/* Display profile name for universe */
 		uniName = QString("%1: %2")
 			.arg(m_properties.fadeInputUniverse() + 1)
-			.arg(dev->name());
+			.arg(profile->name());
 
 		/* User can input the channel number by hand, so put something
 		   rational to the channel name in those cases as well. */
-		name = dev->channelName(m_properties.fadeInputChannel());
+		name = profile->channelName(m_properties.fadeInputChannel());
 		if (name == QString::null)
 			name = tr("Unknown");
 
@@ -585,7 +585,7 @@ void VCPropertiesEditor::updateFadeInputSource()
 
 void VCPropertiesEditor::updateHoldInputSource()
 {
-	QLCInputDevice* dev;
+	QLCInputProfile* profile;
 	InputPatch* patch;
 	QString uniName;
 	QString chName;
@@ -618,10 +618,10 @@ void VCPropertiesEditor::updateHoldInputSource()
 		return;
 	}
 
-	dev = patch->device();
-	if (dev == NULL)
+	profile = patch->profile();
+	if (profile == NULL)
 	{
-		/* There is no device. Display plugin name and channel number.
+		/* There is no profile. Display plugin name and channel number.
 		   Boring. */
 		uniName = patch->plugin()->name();
 		chName = tr("%1: Unknown")
@@ -631,13 +631,13 @@ void VCPropertiesEditor::updateHoldInputSource()
 	{
 		QString name;
 
-		/* Display device name for universe */
+		/* Display profile name for universe */
 		uniName = QString("%1: %2")
 				.arg(m_properties.holdInputUniverse() + 1)
-				.arg(dev->name());
+				.arg(profile->name());
 		/* User can input the channel number by hand, so put something
 		   rational to the channel name in those cases as well. */
-		name = dev->channelName(m_properties.holdInputChannel());
+		name = profile->channelName(m_properties.holdInputChannel());
 		if (name == QString::null)
 			name = tr("Unknown");
 

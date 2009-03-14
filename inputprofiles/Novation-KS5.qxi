@@ -1,5 +1,5 @@
-<!DOCTYPE InputDevice>
-<InputDevice>
+<!DOCTYPE InputProfile>
+<InputProfile>
  <Creator>
   <Name>Q Light Controller</Name>
   <Version>3.0</Version>
@@ -55,5 +55,4 @@
   <Name>B0</Name>
   <Type>AbsoluteFader</Type>
  </Channel>
-</InputDevice>
-	
+</InputProfile>

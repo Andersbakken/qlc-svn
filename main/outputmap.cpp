@@ -72,6 +72,8 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 
 OutputMap::~OutputMap()
 {
+	saveDefaults();
+
 	delete m_universeArray;
 	m_universeArray = NULL;
 

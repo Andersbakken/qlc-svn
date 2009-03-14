@@ -224,7 +224,7 @@ void VCSliderProperties::slotChooseInputClicked()
 
 void VCSliderProperties::updateInputUniverseChannel()
 {
-	QLCInputDevice* dev;
+	QLCInputProfile* profile;
 	InputPatch* patch;
 	QString uniName;
 	QString chName;
@@ -247,10 +247,10 @@ void VCSliderProperties::updateInputUniverseChannel()
 		}
 		else
 		{
-			dev = patch->device();
-			if (dev == NULL)
+			profile = patch->profile();
+			if (profile == NULL)
 			{
-				/* There is no device. Display plugin
+				/* There is no profile. Display plugin
 				   name and channel number. Boring. */
 				uniName = patch->plugin()->name();
 				chName = tr("%1: Unknown")
@@ -258,15 +258,15 @@ void VCSliderProperties::updateInputUniverseChannel()
 			}
 			else
 			{
-				/* Display device name for universe */
+				/* Display profile name for universe */
 				uniName = QString("%1: %2")
 						.arg(m_inputUniverse + 1)
-						.arg(dev->name());
+						.arg(profile->name());
 
 				/* User can input the channel number by hand,
 				   so put something rational to the channel
 				   name in those cases as well. */
-				QString name = dev->channelName(m_inputChannel);
+				QString name = profile->channelName(m_inputChannel);
 				if (name == QString::null)
 					name = tr("Unknown");
 
