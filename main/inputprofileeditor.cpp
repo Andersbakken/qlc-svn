@@ -388,13 +388,18 @@ void InputProfileEditor::slotInputValueChanged(t_input_universe universe,
 	}
 	else
 	{
-		QTreeWidgetItem* old = list.first();
+		QTreeWidgetItem* old;
+		QStringList values;
 
 		/* Existing channel & item found. Modify their contents. */
-		QStringList values;
+		old = list.first();
 		values = old->data(KColumnValues, Qt::UserRole).toStringList();
 
-		if (values.contains(QString("%1").arg(value)) == false)
+		/* No need to collect any more values, since this channel has
+		   been judged to be a slider when count == 3 (see below). */
+		if (values.count() > 3)
+			return;
+		else if (values.contains(QString("%1").arg(value)) == false)
 		{
 			values << QString("%1").arg(value);
 			values.sort();
