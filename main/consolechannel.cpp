@@ -341,7 +341,10 @@ const QIcon ConsoleChannel::colorIcon(const QString& name)
 	}
 	else
 	{
-		return QIcon();
+		if (name.toLower().contains("rainbow") == true)
+			return QIcon(":/rainbow.png");
+		else
+			return QIcon();
 	}
 }
 
