@@ -43,12 +43,12 @@ VCXYPadFixtureEditor::VCXYPadFixtureEditor(QWidget* parent,
 	{
 		VCXYPadFixture fxi = fixtures.first();
 
-		m_xMin->setValue(fxi.xMin() * 100);
-		m_xMax->setValue(fxi.xMax() * 100);
+		m_xMin->setValue(int(fxi.xMin() * 100));
+		m_xMax->setValue(int(fxi.xMax() * 100));
 		m_xReverse->setChecked(fxi.xReverse());
 
-		m_yMin->setValue(fxi.yMin() * 100);
-		m_yMax->setValue(fxi.yMax() * 100);
+		m_yMin->setValue(int(fxi.yMin() * 100));
+		m_yMax->setValue(int(fxi.yMax() * 100));
 		m_yReverse->setChecked(fxi.yReverse());
 	}
 }
