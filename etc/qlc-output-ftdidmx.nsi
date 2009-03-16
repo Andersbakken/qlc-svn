@@ -10,5 +10,5 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Output
-  File /oname=Plugins\Output\ftdidmx.dll Plugins\Output\ftdidmx.dll
+  File /oname=Plugins\Output\ftdidmxout.dll Plugins\Output\ftdidmxout.dll
 SectionEnd
