@@ -10,6 +10,7 @@ fixtures.files += Eurolite-KLS200.qxf
 fixtures.files += Eurolite-DMXSuperstrobe-2700.qxf
 fixtures.files += Eurolite-TC-150.qxf
 fixtures.files += Eurolite-TC-200.qxf
+fixtures.files += Eurolite-TC-250.qxf
 fixtures.files += Eurolite-TC-300.qxf
 fixtures.files += Eurolite-TC-5.qxf
 fixtures.files += Eurolite-TF-5.qxf
