@@ -1,0 +1,11 @@
+#!/bin/bash
+
+rm -Rf qlc-dmg-source
+mkdir qlc-dmg-source
+cd qlc-dmg-source
+cp -r /Applications/qlc.app ./
+cp -r /Applications/qlc-fixtureeditor.app ./
+ln -s /Applications " "
+cd ..
+./create-dmg --volname "QLC v3.0" --background ../gfx/dmgbg.png --window-size 490 379 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.dmg qlc-dmg-source/
+rm -Rf qlc-dmg-source
