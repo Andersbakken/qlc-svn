@@ -1,4 +1,4 @@
-qlc (3.0pre) stable; urgency=low
+qlc (3.0) stable; urgency=low
 
   * Port from Qt3 to Qt4
   * Windows and Mac OSX ports
@@ -7,13 +7,21 @@ qlc (3.0pre) stable; urgency=low
   * New DMX/fixture monitor
   * New generic fixture for dimmers
   * New cue list widget in virtual console
-  * Support for hardware & software timers
+  * XYPad: new and faster fixture-based editor
+  * Improved timer accuracy
+  * Much faster and efficient function engine
   * Complete output subsystem renewal
   * New output plugins (LLA, FTDI, MIDI, uDMX)
+  * Support for multiple universes (4) thru different plugins
   * Support for input devices (slider boards etc.)
   * New input plugins for HID and MIDI devices
+  * Input profiles (e.g. Behringer BCF2000)
+  * Fixture definitions can be changed for existing fixtures
+  * New fixture definitions (Eurolite, GLP, Martin, Movitec, Robe..)
+  * Support for user and system fixture definitions in Linux & OSX
+  * New XML-based file format
 
- -- Heikki Junnila <hjunnila@users.sf.net>  Wed, 21 Jan 2009 09:24:26 +0200
+ -- Heikki Junnila <hjunnila@users.sf.net>  Wed, 17 Mar 2009 11:24:43 +0200
 
 qlc (2.6-1) stable; urgency=low
 
