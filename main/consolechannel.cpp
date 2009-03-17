@@ -235,7 +235,7 @@ void ConsoleChannel::initMenu()
 	else if (ch->group() == KQLCChannelGroupPrism)
 		m_presetButton->setIcon(QIcon(":/prism.png"));
 	else if (ch->group() == KQLCChannelGroupMaintenance)
-		m_presetButton->setIcon(QIcon(":/configure.png"));
+		m_presetButton->setIcon(QIcon(":/maintenance.png"));
 	else if (ch->group() == KQLCChannelGroupIntensity)
 		m_presetButton->setIcon(QIcon(":/intensity.png"));
 	else if (ch->group() == KQLCChannelGroupBeam)
