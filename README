@@ -58,9 +58,9 @@ Requirements - Linux
 
 Requirements - Windows
 ----------------------
-* MinGW environment (installd with Qt)
+* MinGW environment (installed with Qt)
 
-* FTDIDMX Output plugin: ?
+* FTDIDMX Output plugin: No additional requirements
 * HID Input plugin: Not available for Windows
 * MIDI Input plugin: No additional requirements
 * MIDI Output plugin: No additional requirements
