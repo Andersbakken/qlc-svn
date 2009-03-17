@@ -9,5 +9,5 @@ Page instfiles
 ;--------------------------------
 Section ""
   SetOutPath $INSTDIR
-  File /r Fixtures
+  File /r ..\Fixtures
 SectionEnd

@@ -9,12 +9,12 @@ Page instfiles
 ;--------------------------------
 Section ""
   SetOutPath $INSTDIR
-  File mingwm10.dll
-  File qlccommon3.dll
-  File qlc.exe
-  File qlc-fixtureeditor.exe
-  File QtCore4.dll
-  File QtGui4.dll
-  File QtXml4.dll
-  File /r Documents
+  File ..\mingwm10.dll
+  File ..\qlccommon3.dll
+  File ..\qlc.exe
+  File ..\qlc-fixtureeditor.exe
+  File ..\QtCore4.dll
+  File ..\QtGui4.dll
+  File ..\QtXml4.dll
+  File /r ..\Documents
 SectionEnd

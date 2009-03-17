@@ -9,5 +9,5 @@ Page instfiles
 ;--------------------------------
 Section ""
   SetOutPath $INSTDIR
-  File /r InputProfiles
+  File /r ..\InputProfiles
 SectionEnd

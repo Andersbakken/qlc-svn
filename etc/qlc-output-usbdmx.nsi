@@ -10,5 +10,5 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Output
-  File /oname=Plugins\Output\usbdmxout.dll Plugins\Output\usbdmxout.dll
+  File /oname=Plugins\Output\usbdmxout.dll ..\Plugins\Output\usbdmxout.dll
 SectionEnd

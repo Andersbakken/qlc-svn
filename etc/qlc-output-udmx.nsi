@@ -10,5 +10,5 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Output
-  File /oname=Plugins\Output\udmxout.dll Plugins\Output\udmxout.dll
+  File /oname=Plugins\Output\udmxout.dll ..\Plugins\Output\udmxout.dll
 SectionEnd

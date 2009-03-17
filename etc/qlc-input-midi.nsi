@@ -10,5 +10,5 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Input
-  File /oname=Plugins\Input\midiinput.dll Plugins\Input\midiinput.dll
+  File /oname=Plugins\Input\midiinput.dll ..\Plugins\Input\midiinput.dll
 SectionEnd

@@ -10,5 +10,5 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Output
-  File /oname=Plugins\Output\midiout.dll Plugins\Output\midiout.dll
+  File /oname=Plugins\Output\midiout.dll ..\Plugins\Output\midiout.dll
 SectionEnd
