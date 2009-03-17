@@ -191,7 +191,7 @@ void App::initActions()
 		this, SLOT(slotHelpIndex()));
 
 	m_helpAboutAction = new QAction(QIcon(":/qlc.png"),
-					tr("About Fixture Editor..."), this);
+				tr("About Fixture Definition Editor..."), this);
 	connect(m_helpAboutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpAbout()));
 
