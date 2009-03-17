@@ -28,10 +28,11 @@ FunctionEnd
 
 Page instfiles
 Section
+	SetOutPath $INSTDIR
+
 	# this part is only necessary if you used /checknoshortcuts
 	StrCpy $R1 $R0 1
 	StrCmp $R1 ">" skip
-
 		CreateDirectory $SMPROGRAMS\$R0
 		CreateShortCut '$SMPROGRAMS\$R0\Q Light Controller.lnk' $INSTDIR\qlc.exe
 
@@ -43,7 +44,6 @@ SectionEnd
 
 ;--------------------------------
 Section ""
-  SetOutPath $INSTDIR
   File ..\mingwm10.dll
   File ..\qlccommon3.dll
   File ..\qlc.exe
