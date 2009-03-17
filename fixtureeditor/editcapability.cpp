@@ -25,7 +25,7 @@
 #include "common/qlccapability.h"
 #include "editcapability.h"
 
-EditCapability::EditCapability(QWidget* parent, QLCCapability* cap)
+EditCapability::EditCapability(QWidget* parent, const QLCCapability* cap)
 	: QDialog(parent)
 {
 	m_capability = new QLCCapability(cap);
