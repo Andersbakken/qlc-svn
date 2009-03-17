@@ -231,8 +231,8 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
 
 bool QLCInputProfile::loadXML(const QDomDocument* doc)
 {
-	t_input_value from;
-	t_input_value to;
+	t_input_channel from;
+	t_input_channel to;
 	QDomElement root;
 	QDomElement tag;
 	QDomNode node;
