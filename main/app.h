@@ -229,7 +229,6 @@ public slots:
 	void slotControlVC();
 	void slotControlMonitor();
 	void slotControlBlackout();
-	void slotControlPanic();
 
 	void slotHelpIndex();
 	void slotHelpAbout();
@@ -254,7 +253,6 @@ protected:
 	QAction* m_controlVCAction;
 	QAction* m_controlMonitorAction;
 	QAction* m_controlBlackoutAction;
-	QAction* m_controlPanicAction;
 
 	QAction* m_helpIndexAction;
 	QAction* m_helpAboutAction;

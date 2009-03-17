@@ -684,12 +684,6 @@ void App::initActions()
 	connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlBlackout()));
 
-	m_controlPanicAction = new QAction(QIcon(":/panic.png"),
-					   tr("&Panic!"), this);
-	m_controlPanicAction->setShortcut(QKeySequence("CTRL+SHIFT+ESC"));
-	connect(m_controlPanicAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotControlPanic()));
-
 	/* Help actions */
 	m_helpIndexAction = new QAction(QIcon(":/help.png"),
 					tr("&Index"), this);
@@ -754,7 +748,6 @@ void App::initMenuBar()
 	m_controlMenu->addAction(m_controlVCAction);
 	m_controlMenu->addAction(m_controlMonitorAction);
 	m_controlMenu->addSeparator();
-	m_controlMenu->addAction(m_controlPanicAction);
 	m_controlMenu->addAction(m_controlBlackoutAction);
 
 	menuBar()->addSeparator();
@@ -1016,12 +1009,6 @@ void App::slotControlVC()
 void App::slotControlMonitor()
 {
 	Monitor::create(this);
-}
-
-void App::slotControlPanic()
-{
-	/* Shut down all running functions */
-	m_masterTimer->stopAll();
 }
 
 /*****************************************************************************

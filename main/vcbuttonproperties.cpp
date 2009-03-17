@@ -76,9 +76,6 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
 	else
 		m_flash->setChecked(true);
 	
-	/* Panic operation */
-	m_stopFunctionsCheck->setChecked(m_button->stopFunctions());
-
 	/* Button connections */
 	connect(m_attachFunction, SIGNAL(clicked()),
 		this, SLOT(slotAttachFunction()));
@@ -213,8 +210,6 @@ void VCButtonProperties::accept()
 		m_button->setAction(VCButton::Toggle);
 	else
 		m_button->setAction(VCButton::Flash);
-
-        m_button->setStopFunctions(m_stopFunctionsCheck->isChecked());
 
 	QDialog::accept();
 }

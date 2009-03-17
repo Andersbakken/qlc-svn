@@ -42,6 +42,7 @@
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "vcdockslider.h"
+#include "mastertimer.h"
 #include "vcdockarea.h"
 #include "vccuelist.h"
 #include "vcbutton.h"
@@ -267,6 +268,7 @@ void VirtualConsole::initActions()
 
 	m_toolsPanicAction = new QAction(QIcon(":/panic.png"),
 					 tr("Stop ALL functions!"), this);
+	m_toolsPanicAction->setShortcut(QKeySequence("CTRL+SHIFT+ESC"));
 	connect(m_toolsPanicAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotToolsPanic()));
 
@@ -540,6 +542,12 @@ void VirtualConsole::initMenuBar()
 	toolBar->addSeparator();
 	toolBar->addAction(m_editPropertiesAction);
 	toolBar->addAction(m_editRenameAction);
+
+	QWidget* spacerWidget = new QWidget(this);
+	spacerWidget->setSizePolicy(QSizePolicy::Expanding,
+				    QSizePolicy::Preferred);
+	toolBar->addWidget(spacerWidget);
+	toolBar->addAction(m_toolsPanicAction);
 }
 
 void VirtualConsole::updateCustomMenu()
@@ -820,8 +828,8 @@ void VirtualConsole::slotToolsSliders()
 
 void VirtualConsole::slotToolsPanic()
 {
-	// Panic button pressed: stop all running functions
-	_app->slotControlPanic();
+	Q_ASSERT(_app->masterTimer() != NULL);
+	_app->masterTimer()->stopAll();
 }
 
 /*****************************************************************************

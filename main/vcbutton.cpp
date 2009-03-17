@@ -42,6 +42,7 @@
 #include "vcbuttonproperties.h"
 #include "functionselection.h"
 #include "virtualconsole.h"
+#include "mastertimer.h"
 #include "inputmap.h"
 #include "vcbutton.h"
 #include "function.h"
@@ -66,7 +67,6 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	setCaption(QString::null);
 	setOn(false);
 	setAction(Toggle);
-	setStopFunctions(false);
 	setFrameStyle(KVCFrameStyleNone);
 
 	/* Menu actions */
@@ -125,7 +125,6 @@ bool VCButton::copyFrom(VCWidget* widget)
 	setIcon(button->icon());
 	setKeySequence(button->keySequence());
 	setFunction(button->function());
-	setStopFunctions(button->stopFunctions());
 	
 	/* Copy common stuff */
 	return VCWidget::copyFrom(widget);
@@ -612,10 +611,6 @@ VCButton::Action VCButton::stringToAction(const QString& str)
 void VCButton::pressFunction()
 {
 	Function* f = NULL;
-
-	if (m_stopFunctions == true)
-		_app->slotControlPanic();
-
 	if (m_action == Toggle)
 	{
 		f = _app->doc()->function(m_function);

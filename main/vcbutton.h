@@ -270,20 +270,6 @@ protected slots:
 	void slotBlinkReady();
 
 	/*********************************************************************
-	 * Stop functions
-	 *********************************************************************/
-public:
-	/** Set this button to operate as a panic button */
-	void setStopFunctions(bool stop) { m_stopFunctions = stop; }
-
-	/** Check, whether this button should act as a panic button */
-	bool stopFunctions() const { return m_stopFunctions; }
-
-protected:
-	/** Does this button act as a panic button or not */
-	bool m_stopFunctions;
-
-	/*********************************************************************
 	* Custom menu
 	*********************************************************************/
 public:
