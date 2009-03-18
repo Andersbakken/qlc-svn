@@ -81,7 +81,7 @@ FunctionManager::~FunctionManager()
 	QSettings settings;
 	QRect rect;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	rect = this->rect();
 #else
 	rect = parentWidget()->rect();
@@ -100,7 +100,7 @@ void FunctionManager::create(QWidget* parent)
 	if (s_instance != NULL)
 		return;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	/* Create a separate window for OSX */
 	s_instance = new FunctionManager(parent, Qt::Window);
 	window = s_instance;
@@ -137,7 +137,7 @@ void FunctionManager::slotAppModeChanged(App::Mode mode)
 {
 	/* Close this when entering operate mode */
 	if (mode == App::Operate)
-#ifdef _APPLE_
+#ifdef __APPLE__
 		deleteLater();
 #else
 		parent()->deleteLater();

@@ -82,7 +82,7 @@ BusManager::~BusManager()
 	QSettings settings;
 	QRect rect;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	rect = this->rect();
 #else
 	rect = parentWidget()->rect();
@@ -102,7 +102,7 @@ void BusManager::create(QWidget* parent)
 	if (s_instance != NULL)
 		return;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	/* Create a separate window for OSX */
 	s_instance = new BusManager(parent, Qt::Window);
 	window = s_instance;
@@ -141,7 +141,7 @@ void BusManager::slotAppModeChanged(App::Mode mode)
 {
 	/* Destroy this when going to operate mode */
 	if (mode == App::Operate)
-#ifdef _APPLE_
+#ifdef __APPLE__
 		deleteLater(); /* Destroy this */
 #else
 		parent()->deleteLater(); /* Destroy mdi subwindow */

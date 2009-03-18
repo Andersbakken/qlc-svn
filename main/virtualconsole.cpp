@@ -104,7 +104,7 @@ VirtualConsole::~VirtualConsole()
 	   main application object to prevent their destruction. */
 	s_properties.m_contents->setParent(_app);
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	s_properties.store(this);
 #else
 	s_properties.store(parentWidget());
@@ -121,7 +121,7 @@ void VirtualConsole::create(QWidget* parent)
 	if (s_instance != NULL)
 		return;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	/* Create a separate window for OSX */
 	s_instance = new VirtualConsole(parent, Qt::Window);
 	window = s_instance;
@@ -1414,7 +1414,7 @@ bool VirtualConsole::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	/* Store instance properties (geometry) */
 	if (s_instance != NULL)
 	{
-#ifdef _APPLE_
+#ifdef __APPLE__
 		s_properties.store(s_instance);
 #else
 		s_properties.store(s_instance->parentWidget());

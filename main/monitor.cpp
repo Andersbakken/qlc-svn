@@ -119,7 +119,7 @@ void Monitor::create(QWidget* parent)
 	if (s_instance != NULL)
 		return;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	/* Create a separate window for OSX */
 	s_instance = new Monitor(parent, Qt::Window);
 	window = s_instance;
@@ -272,7 +272,7 @@ void Monitor::slotDocumentChanged(Doc* doc)
 
 	/* Since the new document specifies, whether the monitor should be
 	   visible or not, we can just destroy this instance. */
-#ifdef _APPLE_
+#ifdef __APPLE__
 	deleteLater();
 #else
 	parentWidget()->deleteLater();
@@ -411,7 +411,7 @@ MonitorProperties::ValueStyle MonitorProperties::stringToValueStyle(
 
 void MonitorProperties::store(Monitor* monitor)
 {
-#ifdef _APPLE_
+#ifdef __APPLE__
 	QLCWidgetProperties::store(monitor);
 #else
 	QLCWidgetProperties::store(monitor->parentWidget());

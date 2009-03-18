@@ -106,7 +106,7 @@ FixtureManager::~FixtureManager()
 	QSettings settings;
 	QRect rect;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	rect = this->rect();
 #else
 	rect = parentWidget()->rect();
@@ -125,7 +125,7 @@ void FixtureManager::create(QWidget* parent)
 	if (s_instance != NULL)
 		return;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	/* Create a separate window for OSX */
 	s_instance = new FixtureManager(parent, Qt::Window);
 	window = s_instance;

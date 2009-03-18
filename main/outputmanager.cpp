@@ -85,7 +85,7 @@ OutputManager::~OutputManager()
 	QSettings settings;
 	QRect rect;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	rect = this->rect();
 #else
 	rect = parentWidget()->rect();
@@ -104,7 +104,7 @@ void OutputManager::create(QWidget* parent)
 	if (s_instance != NULL)
 		return;
 
-#ifdef _APPLE_
+#ifdef __APPLE__
 	/* Create a separate window for OSX */
 	s_instance = new OutputManager(parent, Qt::Window);
 	window = s_instance;
@@ -141,7 +141,7 @@ void OutputManager::slotAppModeChanged(App::Mode mode)
 {
 	/* Close this when entering operate mode */
 	if (mode == App::Operate)
-#ifdef _APPLE_
+#ifdef __APPLE__
 		deleteLater();
 #else
 		parent()->deleteLater();
