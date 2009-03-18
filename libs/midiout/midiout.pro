@@ -23,7 +23,6 @@ macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 
 win32:LIBS	+= -lwinmm
 unix:PKGCONFIG	+= alsa
-unix:LIBS	+= -lasound
 
 ###############################################################################
 # UNIX sources
