@@ -46,10 +46,13 @@ ConfigureLLAOut::ConfigureLLAOut(QWidget* parent, LLAOut* plugin)
 
   setupUi(this);
   populateOutputList();
+	
+  m_standaloneCheck->setChecked(m_plugin->isStandalone());
 }
 
 ConfigureLLAOut::~ConfigureLLAOut()
 {
+  m_plugin->setStandalone(m_standaloneCheck->isChecked());
 }
 
 /*****************************************************************************

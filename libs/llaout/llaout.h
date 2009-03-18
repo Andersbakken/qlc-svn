@@ -63,11 +63,14 @@ public:
 
   const OutputList outputMapping() const;
   void setOutputUniverse(t_output output, unsigned int universe);
+  bool isStandalone();
+  void setStandalone(bool standalone);
 
 protected:
   QString m_configDir;
   LlaOutThread *m_thread;
   OutputList m_output_list;
+  bool m_standalone;
 };
 
 #endif

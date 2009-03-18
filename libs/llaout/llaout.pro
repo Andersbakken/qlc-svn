@@ -4,7 +4,7 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET = llaout
 
-INCLUDEPATH  += . $$LLA_GIT $$PROTOBUF
+INCLUDEPATH  += . ../../libs $$LLA_GIT $$PROTOBUF
 CONFIG  += plugin # link_pkgconfig
 #PKGCONFIG += liblla
 

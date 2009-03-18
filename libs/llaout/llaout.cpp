@@ -39,16 +39,43 @@ void LLAOut::init()
   for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
     m_output_list.append(i);
 
-  // Choose between Standalone or Embedded
-  //m_thread = new LlaEmbeddedServer();
-  m_thread = new LlaStandaloneClient();
-  if (!m_thread->start())
-  {
-    qWarning() << "llaout: start thread failed";
-    return;
-  }
+  // Ensure that we don't try to delete the thread
+  m_thread = NULL;
+  // This should load from the settings when it is made
+  setStandalone(false);
 }
 
+/*
+ * Is the plugin currently running as a stand alone daemon
+ */
+bool LLAOut::isStandalone()
+{
+  return m_standalone;
+}
+
+/*
+ * Set whether or not to run as a standalone daemon
+ */
+void LLAOut::setStandalone(bool standalone)
+{
+	if (standalone != m_standalone) {
+		if (m_thread != NULL) {
+			m_thread->stop();
+			delete m_thread;
+		}
+		m_standalone = standalone;
+		if (m_standalone) {
+			m_thread = new LlaEmbeddedServer();
+		} else {
+			m_thread = new LlaStandaloneClient();
+		}
+		if (!m_thread->start())
+		{
+			qWarning() << "llaout: start thread failed";
+		}
+		// TODO: Save the value to the configuration
+	}
+}
 
 /*
  * Open a universe for output

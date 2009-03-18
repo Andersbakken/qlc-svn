@@ -37,7 +37,17 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0" >
+    <widget class="QCheckBox" name="m_standaloneCheck" >
+     <property name="text" >
+      <string>Run standalone LLA daemon</string>
+     </property>
+    </widget>
+   </item>
   </layout>
+  <zorder>m_listView</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>m_standaloneCheck</zorder>
  </widget>
  <resources/>
  <connections>
