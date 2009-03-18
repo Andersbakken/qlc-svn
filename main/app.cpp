@@ -149,6 +149,7 @@ void App::init()
 	setWindowTitle(KApplicationNameLong);
 	setWindowIcon(QIcon(":/qlc.png"));
 
+#ifndef __APPLE__
 	/* MDI Area */
 	setCentralWidget(new QMdiArea(this));
 	centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -162,7 +163,14 @@ void App::init()
 
 	/* Resize the whole application to default size */
 	resize(KApplicationDefaultWidth, KApplicationDefaultHeight);
-
+#else
+	
+	/* This is just a toolbar, we onlt need it to be the size of the buttons */
+	resize(600, 32);
+	move(0, 20);
+	
+#endif
+	
 	/* Input & output mappers and their plugins */
 	initOutputMap();
 	initInputMap();
