@@ -4,13 +4,13 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET = llaout
 
-INCLUDEPATH  += . ../../libs/ $$LLA_GIT $$PROTOBUF
+INCLUDEPATH  += . $$LLA_GIT $$PROTOBUF
 CONFIG  += plugin # link_pkgconfig
 #PKGCONFIG += liblla
 
 target.path = $$OUTPUTPLUGINDIR
 !macx:INSTALLS += target
-unix:LIBS += -llla -lllaserver
+unix:LIBS += -llla -lllaserver -lllacommon
 
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 
