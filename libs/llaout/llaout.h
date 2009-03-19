@@ -45,6 +45,8 @@ class LLAOut : public QObject, public QLCOutPlugin
   friend class ConfigureLlaOut;
 
 public:
+  LLAOut();
+  ~LLAOut();
   void init();
   void open(t_output output=0);
   void close(t_output output=0);
@@ -63,14 +65,14 @@ public:
 
   const OutputList outputMapping() const;
   void setOutputUniverse(t_output output, unsigned int universe);
-  bool isStandalone();
-  void setStandalone(bool standalone);
+  bool isServerEmbedded();
+  void setServerEmbedded(bool embedServer);
 
 protected:
   QString m_configDir;
   LlaOutThread *m_thread;
   OutputList m_output_list;
-  bool m_standalone;
+  bool m_embedServer;
 };
 
 #endif

@@ -29,6 +29,20 @@
 #include "llaout.h"
 
 
+LLAOut::LLAOut()
+{
+  m_embedServer = false;
+  m_thread = NULL;
+}
+
+LLAOut::~LLAOut() {
+  if (m_thread != NULL) {
+    m_thread->stop();
+    delete m_thread;
+  }
+  m_thread = NULL;
+}
+
 /*
  * Start the plugin. It's hard to say if we want LLA running if there aren't
  * any output universes active.
@@ -39,42 +53,43 @@ void LLAOut::init()
   for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
     m_output_list.append(i);
 
-  // Ensure that we don't try to delete the thread
-  m_thread = NULL;
+  bool es = false;
+  // Make sure the thread is started the first time round
+  m_embedServer = !es;
   // This should load from the settings when it is made
-  setStandalone(false);
+  setServerEmbedded(es);
 }
 
 /*
  * Is the plugin currently running as a stand alone daemon
  */
-bool LLAOut::isStandalone()
+bool LLAOut::isServerEmbedded()
 {
-  return m_standalone;
+  return m_embedServer;
 }
 
 /*
  * Set whether or not to run as a standalone daemon
  */
-void LLAOut::setStandalone(bool standalone)
+void LLAOut::setServerEmbedded(bool embedServer)
 {
-	if (standalone != m_standalone) {
-		if (m_thread != NULL) {
-			m_thread->stop();
-			delete m_thread;
-		}
-		m_standalone = standalone;
-		if (m_standalone) {
-			m_thread = new LlaEmbeddedServer();
-		} else {
-			m_thread = new LlaStandaloneClient();
-		}
-		if (!m_thread->start())
-		{
-			qWarning() << "llaout: start thread failed";
-		}
-		// TODO: Save the value to the configuration
-	}
+  if (embedServer != m_embedServer) {
+    if (m_thread != NULL) {
+      m_thread->stop();
+      delete m_thread;
+    }
+    m_embedServer = embedServer;
+    if (m_embedServer) {
+      m_thread = new LlaEmbeddedServer();
+    } else {
+      m_thread = new LlaStandaloneClient();
+    }
+    if (!m_thread->start())
+    {
+      qWarning() << "llaout: start thread failed";
+    }
+    // TODO: Save the value to the configuration
+  }
 }
 
 /*
