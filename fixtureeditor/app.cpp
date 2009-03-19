@@ -288,6 +288,20 @@ void App::slotFileOpen()
 	dialog.setSidebarUrls(sidebar);
 #endif
 
+#ifdef __APPLE__
+	path = QString("/Applications/qlc.app/Fixtures");
+	QList <QUrl> sidebar;
+	
+	/* Ensure that there is a directory for user fixtures and append that
+	 to the sidebar. */
+	QDir dir(path);
+	if (dir.exists() == true) {
+		sidebar.append(QUrl::fromLocalFile(path));
+		dialog.setSidebarUrls(sidebar);
+		dialog.setDirectory(path);
+	}
+#endif
+	
 	/* Execute the dialog */
 	if (dialog.exec() != QDialog::Accepted)
 		return;
