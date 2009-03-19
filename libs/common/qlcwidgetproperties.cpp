@@ -28,8 +28,8 @@ QLCWidgetProperties::QLCWidgetProperties()
 {
 	m_state = Qt::WindowNoState;
 	m_visible = false;
-	m_x = 0;
-	m_y = 0;
+	m_x = 100;
+	m_y = 100;
 	m_width = 0;
 	m_height = 0;
 }
