@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QString>
 #include <QDebug>
+#include <QSettings>
 
 #include "common/qlcfile.h"
 #include "configurellaout.h"
@@ -53,7 +54,8 @@ void LLAOut::init()
   for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
     m_output_list.append(i);
 
-  bool es = false;
+  QSettings settings;
+  bool es = settings.value("LLAOut/embedded").toBool();
   // Make sure the thread is started the first time round
   m_embedServer = !es;
   // This should load from the settings when it is made
@@ -88,7 +90,8 @@ void LLAOut::setServerEmbedded(bool embedServer)
     {
       qWarning() << "llaout: start thread failed";
     }
-    // TODO: Save the value to the configuration
+    QSettings settings;
+    settings.setValue("LLAOut/embedded", m_embedServer);
   }
 }
 
