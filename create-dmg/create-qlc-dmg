@@ -1,11 +1,57 @@
-#!/bin/bash
+#! /bin/bash
 
 rm -Rf qlc-dmg-source
 mkdir qlc-dmg-source
 cd qlc-dmg-source
 cp -r /Applications/qlc.app ./
 cp -r /Applications/qlc-fixtureeditor.app ./
+
+# Convert QT to frameworks
+function copyQtFramework {
+	mkdir -p ./$1.app/Contents/Frameworks/$2.framework/Versions/4/
+	cp /Library/Frameworks/$2.framework/Versions/4/$2 ./$1.app/Contents/Frameworks/$2.framework/Versions/4/$2
+	cp -r /Library/Frameworks/$2.framework/Contents ./$1.app/Contents/Frameworks/$2.framework/
+	install_name_tool -id @executable_path/../Frameworks/$2.framework/Versions/4/$2 qlc.app/Contents/Frameworks/$2.framework/Versions/4/$2
+}
+
+function linkQtFramework {
+	install_name_tool -change $2.framework/Versions/4/$2 @executable_path/../Frameworks/$2.framework/Versions/4/$2 $1.app/$3
+	if [ "$2" != "QtCore" ]
+	then
+		install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore $1.app/Contents/Frameworks/$2.framework/Versions/4/$2
+	fi
+}
+
+function doAutoLink {
+	for (( i=0; i<${#toLink[@]}; i++ ))
+		do
+		# This is a bit hacky, we should check if the library is used
+		# before changing it, but it'll only throw and error...
+		linkQtFramework $1 QtCore "${toLink[i]}"
+		linkQtFramework $1 QtGui "${toLink[i]}"
+		linkQtFramework $1 QtXml "${toLink[i]}"
+	done
+}
+
+copyQtFramework qlc QtCore
+copyQtFramework qlc QtGui
+copyQtFramework qlc QtXml
+
+cd qlc.app
+toLink=( $(find Contents/Plugins -name \*.dylib) )
+cd ..
+toLink[${#toLink[@]}]="Contents/MacOS/qlc"
+toLink[${#toLink[@]}]="Contents/Frameworks/libqlccommon.3.dylib"
+doAutoLink qlc
+
+copyQtFramework qlc-fixtureeditor QtCore
+copyQtFramework qlc-fixtureeditor QtGui
+copyQtFramework qlc-fixtureeditor QtXml
+toLink=( "Contents/Frameworks/libqlccommon.3.dylib" "Contents/MacOS/qlc-fixtureeditor" )
+doAutoLink qlc-fixtureeditor
+
 ln -s /Applications " "
 cd ..
+rm qlc-3.0.dmg rw.qlc-3.0.dmg
 ./create-dmg --volname "QLC v3.0" --background ../gfx/dmgbg.png --window-size 490 379 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.dmg qlc-dmg-source/
 rm -Rf qlc-dmg-source
