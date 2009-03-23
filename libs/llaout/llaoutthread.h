@@ -73,7 +73,7 @@ private:
  *
  * LlaOut --pipe-> LlaOutThread --pipe-> LlaServer
  */
-class LlaOutThread : public QThread
+class LlaOutThread : public QThread, public lla::select_server::SocketManager
 {
 public:
   /*
@@ -91,6 +91,7 @@ public:
   bool start(Priority priority=InheritPriority);
   void stop();
   int write_dmx(unsigned int universe, dmx_t *data, unsigned int channels);
+  void SocketClosed(class lla::select_server::Socket *socket);
 
 protected:
   bool setup_client(lla::select_server::ConnectedSocket *socket);
@@ -99,6 +100,7 @@ protected:
 
 private:
   virtual bool init() = 0;
+  virtual void cleanup() {};
   lla::select_server::LoopbackSocket *m_pipe; // the pipe to get new dmx data on
   lla::select_server::SocketListener *m_listener; // the listener for the pipe
   lla::LlaClient *m_client;
@@ -115,10 +117,10 @@ public:
   LlaStandaloneClient():
     LlaOutThread(),
     m_tcp_socket(NULL) {}
-  ~LlaStandaloneClient();
 
 private:
   bool init();
+  void cleanup();
   lla::select_server::TcpSocket *m_tcp_socket;
 };
 
@@ -133,10 +135,10 @@ public:
     LlaOutThread(),
     m_daemon(NULL),
     m_pipe_socket(NULL) {}
-  ~LlaEmbeddedServer();
 
 private:
   bool init();
+  void cleanup();
   lla::LlaDaemon *m_daemon;
   lla::select_server::PipeSocket *m_pipe_socket;
 };

@@ -48,6 +48,7 @@ int PipeListener::SocketReady(lla::select_server::ConnectedSocket *socket) {
  */
 LlaOutThread::~LlaOutThread()
 {
+  wait();
   if (m_client)
   {
     m_client->Stop();
@@ -59,6 +60,8 @@ LlaOutThread::~LlaOutThread()
 
   if (m_listener)
     delete m_listener;
+
+  cleanup();
 }
 
 
@@ -81,7 +84,7 @@ bool LlaOutThread::start(Priority priority)
     m_pipe->SetListener(m_listener);
     // TODO add the manager here
     // the manager needs to delete it as well
-    m_ss->AddSocket(m_pipe);
+    m_ss->AddSocket(m_pipe, this);
   }
 
   QThread::start(priority);
@@ -94,7 +97,8 @@ bool LlaOutThread::start(Priority priority)
  */
 void LlaOutThread::stop()
 {
-  m_pipe->Close();
+  if (m_pipe)
+    m_pipe->Close();
   return;
 }
 
@@ -127,6 +131,16 @@ int LlaOutThread::write_dmx(unsigned int universe, dmx_t *data,
 
 
 /*
+ * Called when the pipe used to communicate between QLC and LLA is closed
+ */
+void LlaOutThread::SocketClosed(class lla::select_server::Socket *socket) {
+  // We don't need to delete the socket here because that gets done in the
+  // Destructor.
+  m_ss->Terminate();
+}
+
+
+/*
  * Setup the LlaClient to communicate with the server.
  * @return true if the setup worked corectly.
  */
@@ -148,18 +162,19 @@ bool LlaOutThread::setup_client(lla::select_server::ConnectedSocket *socket) {
 
 
 /*
- * Clean up the standalone client.
+ * Cleanup after the main destructor has run
  */
-LlaStandaloneClient::~LlaStandaloneClient()
-{
-  if (m_ss)
-    delete m_ss;
-
+void LlaStandaloneClient::cleanup() {
   if (m_tcp_socket)
   {
+    if (m_ss)
+      m_ss->RemoveSocket(m_tcp_socket);
     delete m_tcp_socket;
     m_tcp_socket = NULL;
   }
+
+  if (m_ss)
+    delete m_ss;
 }
 
 
@@ -206,9 +221,8 @@ bool LlaStandaloneClient::init()
 /*
  * Clean up the embedded server.
  */
-LlaEmbeddedServer::~LlaEmbeddedServer()
+void LlaEmbeddedServer::cleanup()
 {
-
   if (m_daemon)
     delete m_daemon;
 

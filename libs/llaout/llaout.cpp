@@ -82,6 +82,7 @@ void LLAOut::setServerEmbedded(bool embedServer)
     }
     m_embedServer = embedServer;
     if (m_embedServer) {
+      qWarning() << "llaout: running as embedded";
       m_thread = new LlaEmbeddedServer();
     } else {
       m_thread = new LlaStandaloneClient();
