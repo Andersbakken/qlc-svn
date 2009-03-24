@@ -102,7 +102,8 @@ VirtualConsole::~VirtualConsole()
 {
 	/* The layout takes ownership of the contents. Adopt them back to the
 	   main application object to prevent their destruction. */
-	s_properties.m_contents->setParent(_app);
+	if (_app != NULL)
+		s_properties.m_contents->setParent(_app);
 
 #ifdef __APPLE__
 	s_properties.store(this);

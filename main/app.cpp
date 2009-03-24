@@ -108,6 +108,9 @@ App::App() : QMainWindow()
 
 App::~App()
 {
+	// Remove the reference to the application
+	_app = NULL;
+
 	// Delete doc
 	if (m_doc != NULL)
 		delete m_doc;
