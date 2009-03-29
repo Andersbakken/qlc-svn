@@ -255,7 +255,9 @@ void InputMap::loadPlugins()
 		}
 		else
 		{
-			qWarning() << "No input plugin in" << path;
+			qWarning() << "Unable to load an input plugin from"
+				   << path << "because:"
+				   << loader.errorString();
 		}
 	}
 }

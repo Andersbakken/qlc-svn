@@ -137,7 +137,9 @@ void OutputMap::load()
 		}
 		else
 		{
-			qWarning() << "No output plugin in" << path;
+			qWarning() << "Unable to load an output plugin from" 
+				   << path << "because:"
+				   << loader.errorString();
 		}
 	}
 }
