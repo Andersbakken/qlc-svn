@@ -85,7 +85,7 @@ void EWingInput::slotReadSocket()
 			addDevice(wing);
 		}
 
-		/* TODO: Parse data */
+		wing->parseData(datagram);
 	}
 }
 
@@ -235,8 +235,8 @@ QString EWingInput::infoText(t_input input)
 
 void EWingInput::slotValueChanged(t_input_channel channel, t_input_value value)
 {
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
+	EWing* wing = qobject_cast<EWing*> (QObject::sender());
+	emit valueChanged(this, m_devices.indexOf(wing), channel, value);
 }
 
 void EWingInput::connectInputData(QObject* listener)

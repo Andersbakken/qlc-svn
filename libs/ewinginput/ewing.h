@@ -75,9 +75,13 @@ protected:
 	/** Resolve the wing type from the data array */
 	Type resolveType(const QByteArray& data);
 
+	/** Resolve firmware version */
+	unsigned char EWing::resolveFirmware(const QByteArray& data);
+
 protected:
 	QHostAddress m_address;
 	Type m_type;
+	unsigned char m_firmware;
 
 	/********************************************************************
 	 * Input data
@@ -105,6 +109,7 @@ signals:
 
 protected:
 	QByteArray m_values;
+	QMap <int,int> m_channelMap;
 };
 
 #endif
