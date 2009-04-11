@@ -28,6 +28,32 @@
 
 #include "common/qlctypes.h"
 
+/****************************************************************************
+ * Header data common to all wings
+ ****************************************************************************/
+
+#define EWING_BYTE_HEADER   0 /* 4 bytes */
+#define EWING_HEADER_SIZE   4
+#define EWING_HEADER_OUTPUT "WODD"
+#define EWING_HEADER_INPUT "WIDD"
+
+/****************************************************************************
+ * Status data common to all wings
+ ****************************************************************************/
+
+#define EWING_BYTE_FIRMWARE   4 /* Firmware version, 8bit value (0-255) */
+
+#define EWING_BYTE_FLAGS      5 /* Wing flags */
+#define EWING_FLAGS_MASK_PGUP 1 << 7
+#define EWING_FLAGS_MASK_PGDN 1 << 6
+#define EWING_FLAGS_MASK_BACK 1 << 5 /* Playback Wing only */
+#define EWING_FLAGS_MASK_GO   1 << 4 /* Playback Wing only */
+#define EWING_FLAGS_MASK_TYPE 0x3
+
+/****************************************************************************
+ * EWing
+ ****************************************************************************/
+
 class EWing : public QObject
 {
 	Q_OBJECT
@@ -36,47 +62,105 @@ class EWing : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	EWing(QObject* parent, const QHostAddress& address,
-		const QByteArray& data);
-	~EWing();
+	/** The UDP port of ENTTEC wing devices */
+	static const int UDPPort;
 
 	/** There are currently three types of wings from ENTTEC. */
 	enum Type
 	{
-		Unknown = 0,
+		Unknown  = 0,
 		Playback = 1,
 		Shortcut = 2,
-		Program = 3
+		Program  = 3
 	};
 
-	/** The UDP port of ENTTEC wing devices */
-	static const int UDPPort;
+	/**
+	 * Construct a new EWing object. Since EWing contains pure virtual
+	 * functions, the EWing class cannot be instantiated without
+	 * inheritance.
+	 *
+	 * @param parent The parent object that owns the new wing object.
+	 * @param address The address of the physical wing board.
+	 * @param data A UDP datagram packet originating from a wing.
+	 */
+	EWing(QObject* parent, const QHostAddress& address,
+	      const QByteArray& data);
 
-	/** Check, if data type is output (from the wing's perspective) */
+	/**
+	 * Destructor.
+	 */
+	~EWing();
+
+public:
+	/**
+	 * Check, if the type of data is output (from the wing's perspective).
+	 *
+	 * @param datagram The data, whose type to check.
+	 */
 	static bool isOutputData(const QByteArray& datagram);
 
 	/********************************************************************
 	 * Wing data
 	 ********************************************************************/
 public:
-	/** Get the device's address */
+	/**
+	 * Get the address of the device.
+	 *
+	 * @return The IP address of the wing board.
+	 */
 	QHostAddress address() const { return m_address; }
 
-	/** Get the device's type (see Type enum) */
+	/**
+	 * Get the type of the device (see Type enum).
+	 *
+	 * @return The type of the device
+	 */
 	Type type() const { return m_type; }
 
-	/** Return the name of this wing */
-	QString name() const;
+	/**
+	 * Return the name of the wing.
+	 *
+	 * This function is pure virtual and must be implemented in each of the
+	 * inheriting classes.
+	 *
+	 * @return The name of the device in the form "<type> at <address>"
+	 */
+	virtual QString name() const = 0;
 	
-	/** Return info regarding the device's state */
-	QString infoText() const;
+	/**
+	 * Return an info string describing the device's state.
+	 *
+	 * This function is pure virtual and must be implemented in each of the
+	 * inheriting classes.
+	 *
+	 * @return Information string.
+	 */
+	virtual QString infoText() const = 0;
+
+	/**
+	 * Get the wing's firmware version.
+	 *
+	 * @return Firmware version
+	 */
+	unsigned char firmware() const { return m_firmware; }
+
+public:
+	/**
+	 * Resolve the exact type of the wing from the given data packet.
+	 *
+	 * @param data The data packet to resolve
+	 * @return The wing type
+	 */
+	static Type resolveType(const QByteArray& data);
 
 protected:
-	/** Resolve the wing type from the data array */
-	Type resolveType(const QByteArray& data);
-
-	/** Resolve firmware version */
-	unsigned char EWing::resolveFirmware(const QByteArray& data);
+	/**
+	 * Resolve the wing's firmware version.
+	 *
+	 * @param data The data packet to resolve
+	 * @return Firmware version (0-255)
+	 */
+	unsigned char resolveFirmware(const QByteArray& data);
 
 protected:
 	QHostAddress m_address;
@@ -87,29 +171,53 @@ protected:
 	 * Input data
 	 ********************************************************************/
 public:
-	/** Parse input data and generate signals for each changed value */
-	void parseData(const QByteArray& data);
+	/**
+	 * Parse input data and generate signals for each changed value.
+	 *
+	 * This function is pure virtual and must be implemented in each of the
+	 * inheriting classes.
+	 *
+	 * @param data The data packet to parse
+	 */
+	virtual void parseData(const QByteArray& data) = 0;
+
+	/**
+	 * Send feedback data to the wing.
+	 *
+	 * @param channel The channel to send feedback data to
+	 * @param value The feedback value to set to the given channel
+	 */
+	virtual void feedBack(t_input_channel channel, t_input_value value);
+
+	/**
+	 * Get the cached value of the given channel.
+	 *
+	 * @param channel A channel whose value to get
+	 * @return The channel's value (0 if not found)
+	 */
+	unsigned char cacheValue(int channel);
 
 protected:
-	/** Set the value of a channel and emit valueChanged() if appropriate */
+	/**
+	 * Set the value of a channel and emit valueChanged() if the value has
+	 * changed from its previous state.
+	 *
+	 * @param channel A channel, whose value to change
+	 * @param value The value to set
+	 */
 	void setCacheValue(int channel, char value);
 
-	/** Read a Playback Wing datagram packet */
-	void parsePlaybackData(const QByteArray& data);
-
-	/** Read a Shortcut Wing datagram packet */
-	void parseShortcutData(const QByteArray& data);
-
-	/** Read a Program Wing datagram packet */
-	void parseProgramData(const QByteArray& data);
-
 signals:
-	/** Changed values are signalled with this signal */
+	/**
+	 * Changed values are signalled with this signal.
+	 *
+	 * @param channel The number of the changed channel
+	 * @param value The new value for the channel
+	 */
 	void valueChanged(t_input_channel channel, t_input_value value);
 
 protected:
 	QByteArray m_values;
-	QMap <int,int> m_channelMap;
 };
 
 #endif

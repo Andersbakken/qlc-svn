@@ -22,7 +22,13 @@ macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
 
 # Input
 HEADERS += ewinginput.h \
+	   eplaybackwing.h \
+	   eshortcutwing.h \
+	   eprogramwing.h \
 	   ewing.h
 
 SOURCES += ewinginput.cpp \
+	   eplaybackwing.cpp \
+	   eshortcutwing.cpp \
+	   eprogramwing.cpp \
 	   ewing.cpp

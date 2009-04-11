@@ -54,6 +54,21 @@ public:
 protected slots:
 	void slotReadSocket();
 
+protected:
+	/**
+	 * Create a new wing object from the given datagram packet. Looks up
+	 * the exact wing type from data and creates an EPlaybackWing,
+	 * EShortcutWing or an EProgramWing.
+	 *
+	 * @param parent The parent object that owns the new wing object
+	 * @param address The address of the physical wing board
+	 * @param data A UDP datagram packet originating from a wing
+	 *
+	 * @return A new EWing object or NULL if an error occurred
+	 */
+	static EWing* createWing(QObject* parent, const QHostAddress& address,
+				const QByteArray& data);
+
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/

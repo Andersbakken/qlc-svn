@@ -19,13 +19,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QMessageBox>
 #include <QStringList>
 #include <QUdpSocket>
 #include <QDebug>
 
 #include "ewinginput.h"
+#include "eplaybackwing.h"
+#include "eshortcutwing.h"
+#include "eprogramwing.h"
 #include "ewing.h"
 
 /*****************************************************************************
@@ -34,6 +37,8 @@
 
 void EWingInput::init()
 {
+	/* Create a new UDP socket and start listening to packets coming to
+	   any local address. */
 	m_socket = new QUdpSocket(this);
 	m_socket->bind(QHostAddress::Any, EWing::UDPPort);
 	connect(m_socket, SIGNAL(readyRead()), this, SLOT(slotReadSocket()));
@@ -63,30 +68,58 @@ void EWingInput::slotReadSocket()
 {
 	while (m_socket->hasPendingDatagrams() == true)
 	{
-		QByteArray datagram;
-		datagram.resize(m_socket->pendingDatagramSize());
-
 		QHostAddress sender;
-		quint16 senderPort;
+		QByteArray data;
+		EWing* wing;
 
-		m_socket->readDatagram(datagram.data(), datagram.size(),
-					&sender, &senderPort);
-
-		/* Check, that the message is from an ENTTEC Wing */
-		if (EWing::isOutputData(datagram) == false)
-			continue;
+		/* Read data from socket */
+		data.resize(m_socket->pendingDatagramSize());
+		m_socket->readDatagram(data.data(), data.size(), &sender);
 
 		/* Check, whether we already have a device from this address */
-		EWing* wing = device(sender);
+		wing = device(sender);
 		if (wing == NULL)
 		{
 			/* New address. Create a new device. */
-			wing = new EWing(this, sender, datagram);
-			addDevice(wing);
+			wing = createWing(this, sender, data);
+			if (wing != NULL)
+				addDevice(wing);
 		}
 
-		wing->parseData(datagram);
+		if (wing != NULL)
+			wing->parseData(data);
 	}
+}
+
+EWing* EWingInput::createWing(QObject* parent, const QHostAddress& address,
+				const QByteArray& data)
+{
+	EWing* ewing;
+
+	/* Check, that the message is from an ENTTEC Wing */
+	if (EWing::isOutputData(data) == false)
+		return NULL;
+
+	switch (EWing::resolveType(data))
+	{
+	case EWing::Playback:
+		ewing = new EPlaybackWing(parent, address, data);
+		break;
+
+	case EWing::Shortcut:
+		ewing = new EShortcutWing(parent, address, data);
+		break;
+
+	case EWing::Program:
+		ewing = new EProgramWing(parent, address, data);
+		break;
+
+	default:
+		ewing = NULL;
+		break;
+	}
+
+	return ewing;
 }
 
 /*****************************************************************************
@@ -176,6 +209,8 @@ QStringList EWingInput::inputs()
 
 void EWingInput::configure()
 {
+	QMessageBox::information(NULL, name(),
+				tr("This plugin has no configurable options."));
 }
 
 /*****************************************************************************
@@ -245,17 +280,16 @@ void EWingInput::connectInputData(QObject* listener)
 
 	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
 					  t_input_value)),
-		listener,
-		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
-				      t_input_value)));
+		listener, SLOT(slotValueChanged(QLCInPlugin*,t_input,
+					t_input_channel, t_input_value)));
 }
 
 void EWingInput::feedBack(t_input input, t_input_channel channel,
 			  t_input_value value)
 {
-	Q_UNUSED(input);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
+	EWing* ewing = device(input);
+	if (ewing != NULL)
+		ewing->feedBack(channel, value);
 }
 
 /*****************************************************************************
