@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <iostream>
 #include <QWidget>
 #include <QFile>
 #include <QtXml>
@@ -27,8 +26,9 @@
 #include "qlctypes.h"
 #include "qlcfile.h"
 
-bool QLCFile::readXML(const QString path, QDomDocument** document)
+QFile::FileError QLCFile::readXML(const QString path, QDomDocument** document)
 {
+	QFile::FileError retval;
 	bool result = false;
 	QString error;
 	int line = 0;
@@ -49,15 +49,20 @@ bool QLCFile::readXML(const QString path, QDomDocument** document)
 		{
 			qDebug() << path << ":" << error << ", line:" << line
 				 << ", col:" << col;
+			retval = QFile::ReadError;
+		}
+		else
+		{
+			retval = file.error();
 		}
 	}
 	else
 	{
 		qDebug() << "Unable to open file:" << path;
-		result = false;
+		retval = file.error();
 	}
 
-	return result;
+	return retval;
 }
 
 bool QLCFile::getXMLHeader(QString content, QDomDocument** doc)

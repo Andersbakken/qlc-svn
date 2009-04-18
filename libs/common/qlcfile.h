@@ -60,9 +60,9 @@ public:
 	 * @param path Path to the file to read
 	 * @param document QDomDocument* or NULL if an error has occurred
 	 *
-	 * @return true if succesful, otherwise false
+	 * @return An error code (QFile::NoError if successful)
 	 */
-	static bool readXML(QString path, QDomDocument** document);
+	static QFile::FileError readXML(QString path, QDomDocument** document);
 
 	/**
 	 * Get a common XML file header as a QDomDocument
