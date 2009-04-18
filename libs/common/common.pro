@@ -3,7 +3,6 @@ include(../../variables.pri)
 TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= qlccommon
-VERSION 	= 3.0
 
 CONFIG          += qt
 QT 		+= xml
