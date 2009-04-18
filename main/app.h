@@ -25,6 +25,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QList>
+#include <QFile>
 
 #include "common/qlcinplugin.h"
 #include "common/qlcoutplugin.h"
@@ -213,11 +214,14 @@ protected:
 	void initToolBar();
 	QMenuBar *menuBar();
 
+	/** Displays an error message if a file error has occurred */
+	bool handleFileError(QFile::FileError error);
+
 public slots:
 	bool slotFileNew();
-	void slotFileOpen();
-	void slotFileSave();
-	void slotFileSaveAs();
+	QFile::FileError slotFileOpen();
+	QFile::FileError slotFileSave();
+	QFile::FileError slotFileSaveAs();
 	void slotFileQuit();
 
 	void slotFixtureManager();

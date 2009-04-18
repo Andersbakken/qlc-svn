@@ -349,7 +349,10 @@ void App::slotDocModified(bool state)
 	QString caption(KApplicationNameLong);
 
 	if (m_doc->fileName() != QString::null)
-		caption += QString(" - ") + m_doc->fileName();
+	{
+		caption += QString(" - ")
+			+ QDir::toNativeSeparators(m_doc->fileName());
+	}
 
 	if (state == true)
 		setWindowTitle(caption + QString(" *"));
@@ -397,7 +400,8 @@ bool App::loadFixtureDefinitions(QString fixturePath)
 		fxi = new QLCFixtureDef();
 		Q_ASSERT(fxi != NULL);
 
-		if (fxi->loadXML(path) == true)
+		QFile::FileError error = fxi->loadXML(path);
+		if (error == QFile::NoError)
 		{
 			/* Check that there are no duplicates */
 			QLCFixtureDef* prev;
@@ -410,7 +414,7 @@ bool App::loadFixtureDefinitions(QString fixturePath)
 		else
 		{
 			qWarning() << "Fixture definition loading from"
-				   << path << "failed. Skipping.";
+				   << path << "failed:" << error;
 		}
 	}
 
@@ -805,6 +809,47 @@ void App::initToolBar()
  * File action slots
  *****************************************************************************/
 
+bool App::handleFileError(QFile::FileError error)
+{
+	QString msg;
+
+	switch (error)
+	{
+	case QFile::NoError:
+		return true;
+		break;
+	case QFile::ReadError:
+		msg = tr("Unable to read from file");
+		break;
+	case QFile::WriteError:
+		msg = tr("Unable to write to file");
+		break;
+	case QFile::FatalError:
+		msg = tr("A fatal error occurred");
+		break;
+	case QFile::ResourceError:
+		msg = tr("Unable to access resource");
+		break;
+	case QFile::OpenError:
+		msg = tr("Unable to open file for reading or writing");
+		break;
+	case QFile::AbortError:
+		msg = tr("Operation was aborted");
+		break;
+	case QFile::TimeOutError:
+		msg = tr("Operation timed out");
+		break;
+	default:
+	case QFile::UnspecifiedError:
+		msg = tr("An unspecified error has occurred. Nice.");
+		break;
+	}
+
+	QMessageBox::warning(this, tr("File error"), msg);
+
+	return false;
+}
+
 bool App::slotFileNew()
 {
 	bool result = false;
@@ -853,7 +898,7 @@ void App::newDocument()
 	doc()->resetModified();
 }
 
-void App::slotFileOpen()
+QFile::FileError App::slotFileOpen()
 {
 	QString fileName;
 
@@ -867,9 +912,17 @@ void App::slotFileOpen()
 						  QMessageBox::No,
 						  QMessageBox::Cancel);
 		if (result == QMessageBox::Yes)
-			slotFileSave(); /* Save first */
+		{
+			/* Save first, but don't proceed unless it succeeded. */
+			QFile::FileError error = slotFileSaveAs();
+			if (handleFileError(error) == false)
+				return error;
+		}
 		else if (result == QMessageBox::Cancel)
-			return; /* Whoops, go back! */
+		{
+			/* Second thoughts... Cancel loading. */
+			return QFile::NoError;
+		}
 	}
 
 	/* Create a file open dialog */
@@ -892,40 +945,54 @@ void App::slotFileOpen()
 
 	/* Get file name */
 	if (dialog.exec() != QDialog::Accepted)
-		return;
+		return QFile::NoError;
+
 	fileName = dialog.selectedFiles().first();
 	if (fileName.isEmpty() == true)
-		return;
+		return QFile::NoError;
 
 	/* Clear existing document data */
 	newDocument();
 
 	/* Load the file */
-	if (doc()->loadXML(fileName) == false)
-		QMessageBox::critical(this, tr("Unable to open file"),
-				      tr("Workspace file might be corrupt."));
-	else
+	QFile::FileError error = doc()->loadXML(fileName);
+	if (handleFileError(error) == true)
+	{
 		doc()->resetModified();
+		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
+						 .arg(doc()->fileName()));
+	}
 
+	/* Update these in any case, since they are at least emptied now as
+	   a result of calling newDocument() a few lines ago. */
 	if (FunctionManager::instance() != NULL)
 		FunctionManager::instance()->updateTree();
 	if (OutputManager::instance() != NULL)
 		InputManager::instance()->updateTree();
 	if (InputManager::instance() != NULL)
 		InputManager::instance()->updateTree();
+
+	return error;
 }
 
-void App::slotFileSave()
+QFile::FileError App::slotFileSave()
 {
+	QFile::FileError error;
+
 	/* Attempt to save with the existing name. Fall back to Save As. */
 	if (m_doc->fileName().isEmpty() == true)
-		slotFileSaveAs();
-	else if (m_doc->saveXML(m_doc->fileName()) == true)
+		error = slotFileSaveAs();
+	else
+		error = m_doc->saveXML(m_doc->fileName());
+
+	if (handleFileError(error) == true)
 		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
 						 .arg(doc()->fileName()));
+
+	return error;
 }
 
-void App::slotFileSaveAs()
+QFile::FileError App::slotFileSaveAs()
 {
 	QString fileName;
 
@@ -949,19 +1016,23 @@ void App::slotFileSaveAs()
 
 	/* Get file name */
 	if (dialog.exec() != QDialog::Accepted)
-		return;
+		return QFile::NoError;
+
 	fileName = dialog.selectedFiles().first();
 	if (fileName.isEmpty() == true)
-		return;
+		return QFile::NoError;
 
 	/* Always use the workspace suffix */
 	if (fileName.right(4) != KExtWorkspace)
 		fileName += KExtWorkspace;
 
 	/* Save the document and set workspace name */
-	if (m_doc->saveXML(fileName) == true)
+	QFile::FileError error = m_doc->saveXML(fileName);
+	if (handleFileError(error) == true)
 		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
 						 .arg(doc()->fileName()));
+
+	return error;
 }
 
 void App::slotFileQuit()

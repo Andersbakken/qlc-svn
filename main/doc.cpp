@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QMessageBox>
 #include <QStringList>
 #include <QString>
 #include <QDebug>
@@ -115,49 +114,33 @@ void Doc::resetModified()
  * Load & Save
  *****************************************************************************/
 
-bool Doc::loadXML(const QString& fileName)
+QFile::FileError Doc::loadXML(const QString& fileName)
 {
 	QDomDocument* doc = NULL;
 	QDomDocumentType doctype;
 	QString errorString;
-	bool retval = false;
+	QFile::FileError retval;
 
-	Q_ASSERT(fileName != QString::null);
-
-	if (QLCFile::readXML(fileName, &doc) == true)
+	retval = QLCFile::readXML(fileName, &doc);
+	if (retval == QFile::NoError)
 	{
 		if (doc->doctype().name() == KXMLQLCWorkspace)
 		{
 			if (loadXML(doc) == false)
 			{
-				QMessageBox::warning(
-					_app, 
-					"Unable to open file",
-					fileName +
-					" is not a valid workspace file");
-				retval = false;
+				retval = QFile::ReadError;
 			}
 			else
 			{
 				m_fileName = fileName;
 				resetModified();
-				retval = true;
+				retval = QFile::NoError;
 			}
 		}
 		else
 		{
-			QMessageBox::warning(_app, "Unable to open file",
-					     fileName + 
-					     " is not a workspace file");
-			retval = false;
+			retval = QFile::ReadError;
 		}
-	}
-	else
-	{
-		QMessageBox::warning(_app, "Unable to open file",
-				     fileName + 
-				     " is not a valid workspace file");
-		retval = false;
 	}
 
 	return retval;
@@ -178,13 +161,9 @@ bool Doc::loadXML(const QDomDocument* doc)
 	Q_ASSERT(doc != NULL);
 
 	root = doc->documentElement();
-
-	/* Load workspace background & theme */
-	// _app->workspace()->loadXML(doc, &root);
-
 	if (root.tagName() != KXMLQLCWorkspace)
 	{
-		qWarning("Workspace node not found in file!");
+		qWarning() << "Workspace node not found in file!";
 		return false;
 	}
 
@@ -243,17 +222,17 @@ bool Doc::loadXML(const QDomDocument* doc)
 	return true;
 }
 
-bool Doc::saveXML(const QString& fileName)
+QFile::FileError Doc::saveXML(const QString& fileName)
 {
 	QDomDocument* doc = NULL;
+	QFile::FileError retval;
 	QDomElement root;
 	QDomElement tag;
 	QDomText text;
-	bool retval = false;
 
 	QFile file(fileName);
 	if (file.open(QIODevice::WriteOnly) == false)
-		return false;
+		return file.error();
 
 	if (QLCFile::getXMLHeader(KXMLQLCWorkspace, &doc) == true)
 	{
@@ -268,9 +247,6 @@ bool Doc::saveXML(const QString& fileName)
 
 		/* Write input mapping */
 		_app->inputMap()->saveXML(doc, &root);
-
-		/* Write background image and theme */
-		// _app->workspace()->saveXML(doc, &root);
 
 		/* Write window state & size */
 		QLCFile::saveXMLWindowState(doc, &root, _app);
@@ -304,11 +280,11 @@ bool Doc::saveXML(const QString& fileName)
 		/* Delete the XML document */
 		delete doc;
 
-		retval = true;
+		retval = QFile::NoError;
 	}
 	else
 	{
-		retval = false;
+		retval = QFile::ReadError;
 	}
 
 	file.close();

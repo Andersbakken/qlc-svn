@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QFile>
 
 #include "function.h"
 #include "fixture.h"
@@ -82,26 +83,28 @@ public:
 	 * Load the Doc's contents from the given XML file
 	 *
 	 * @param fileName The name of the file to load from
-	 * @return TRUE if successful, otherwise FALSE
+	 * @return An error code (QFile::NoError if successful)
 	 */
-	bool loadXML(const QString& fileName);
+	QFile::FileError loadXML(const QString& fileName);
 
+protected:
 	/**
 	 * Load the Doc's contents from the given XML document
 	 *
 	 * @param doc The XML document to read from
-	 * @return TRUE if successful, otherwise FALSE
+	 * @return true if successful, otherwise false
 	 */
 	bool loadXML(const QDomDocument* doc);
 
+public:
 	/**
 	 * Save the Doc's contents to the given XML file. Also resets
 	 * the doc's modified status.
 	 *
 	 * @param fileName The name of the file to save to
-	 * @return TRUE if successful, otherwise FALSE
+	 * @return An error code (QFile::NoError if successful)
 	 */
-	bool saveXML(const QString& fileName);
+	QFile::FileError saveXML(const QString& fileName);
 
 	/*********************************************************************
 	 * Fixture Instances
