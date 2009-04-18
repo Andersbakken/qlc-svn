@@ -26,13 +26,12 @@
 #include "qlctypes.h"
 #include "qlcfile.h"
 
-QFile::FileError QLCFile::readXML(const QString path, QDomDocument** document)
+QFile::FileError QLCFile::readXML(const QString path, QDomDocument** doc)
 {
-	QFile::FileError retval;
-	bool result = false;
-	QString error;
-	int line = 0;
-	int col = 0;
+	QFile::FileError error;
+	QString msg;
+	int line;
+	int col;
 
 	Q_ASSERT(document != NULL);
 	Q_ASSERT(path != QString::null);
@@ -40,29 +39,27 @@ QFile::FileError QLCFile::readXML(const QString path, QDomDocument** document)
 	QFile file(path);
 	if (file.open(QIODevice::ReadOnly) == true)
 	{
-		*document = new QDomDocument();
-		result = (*document)->setContent(&file, false,
-						 &error, &line, &col);
-		file.close();
-
-		if (result == false)
+		*doc = new QDomDocument();
+		if ((*doc)->setContent(&file, false, &msg, &line, &col) == true)
 		{
-			qDebug() << path << ":" << error << ", line:" << line
-				 << ", col:" << col;
-			retval = QFile::ReadError;
+			error = QFile::NoError;
 		}
 		else
 		{
-			retval = file.error();
+			qDebug() << path << ":" << msg << ", line:" << line
+				 << ", col:" << col;
+			error = QFile::ReadError;
 		}
 	}
 	else
 	{
 		qDebug() << "Unable to open file:" << path;
-		retval = file.error();
+		error = file.error();
 	}
 
-	return retval;
+	file.close();
+
+	return error;
 }
 
 bool QLCFile::getXMLHeader(QString content, QDomDocument** doc)

@@ -129,18 +129,23 @@ public:
 	/** Get all modes */
 	QList <QLCFixtureMode*> *modes() { return &m_modes; }
 
-	/** Save the fixture into an XML file */
-	bool saveXML(const QString &fileName);
-
-	/** Load this fixture's contents from the given file */
-	bool loadXML(const QString& fileName);
-
-	/** Load fixture contents from an XML document */
-	bool loadXML(const QDomDocument* doc);
-
 protected:
 	/** Modes (i.e. particular collections of channels) */
 	QList <QLCFixtureMode*> m_modes;
+
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	/** Save the fixture into an XML file */
+	QFile::FileError saveXML(const QString &fileName);
+
+	/** Load this fixture's contents from the given file */
+	QFile::FileError loadXML(const QString& fileName);
+
+protected:
+	/** Load fixture contents from an XML document */
+	bool loadXML(const QDomDocument* doc);
 };
 
 #endif

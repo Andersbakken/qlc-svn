@@ -196,21 +196,21 @@ QLCFixtureMode* QLCFixtureDef::mode(const QString& name)
  * XML operations
  ****************************************************************************/
 
-bool QLCFixtureDef::saveXML(const QString &fileName)
+QFile::FileError QLCFixtureDef::saveXML(const QString &fileName)
 {
-	bool retval = false;
 	QDomDocument* doc = NULL;
+	QFile::FileError error;
 	QDomElement root;
 	QDomElement tag;
 	QDomText text;
 	QString str;
 
 	if (fileName.isEmpty() == true)
-		return false;
+		return QFile::OpenError;
 
 	QFile file(fileName);
 	if (file.open(QIODevice::WriteOnly) == false)
-		return false;
+		return file.error();
 
 	if (QLCFile::getXMLHeader(KXMLQLCFixtureDefDocument, &doc) == true)
 	{
@@ -253,52 +253,53 @@ bool QLCFixtureDef::saveXML(const QString &fileName)
 
 		delete doc;
 
-		retval = true;
+		error = QFile::NoError;
 	}
 	else
 	{
-		retval = false;
+		error = QFile::WriteError;
 	}
 
 	file.close();
 
-	return retval;
+	return error;
 }
 
-bool QLCFixtureDef::loadXML(const QString& fileName)
+QFile::FileError QLCFixtureDef::loadXML(const QString& fileName)
 {
 	QDomDocument* doc = NULL;
 	QDomDocumentType doctype;
+	QFile::FileError error;
 	QString errorString;
-	bool retval = true;
 
 	if (fileName.isEmpty() == true)
-		return false;
+		return QFile::OpenError;
 
-	if (QLCFile::readXML(fileName, &doc) == true)
+	error = QLCFile::readXML(fileName, &doc);
+	if (error != QFile::NoError)
 	{
-		if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
-		{
-			retval = loadXML(doc);
-		}
+		qDebug() << "Unable to read from" << fileName;
+		return error;
+	}
+
+	if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
+	{
+		if (loadXML(doc) == true)
+			error = QFile::NoError;
 		else
-		{
-			retval = false;
-			qDebug() << fileName
-				 << "is not a fixture definition file";
-		}
+			error = QFile::ReadError;
 	}
 	else
 	{
-		retval = false;
-		qDebug() << fileName << "parsing failed";
+		error = QFile::ReadError;
+		qWarning() << fileName << "is not a fixture definition file";
 	}
 
 	/* Get rid of doc */
 	if (doc != NULL)
 		delete doc;
 
-	return retval;
+	return error;
 }
 
 bool QLCFixtureDef::loadXML(const QDomDocument* doc)

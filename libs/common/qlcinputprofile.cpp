@@ -210,9 +210,8 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
 	QLCInputProfile* profile = NULL;
 	QDomDocument* doc = NULL;
 
-	if (QLCFile::readXML(path, &doc) == false)
+	if (QLCFile::readXML(path, &doc) != QFile::NoError)
 		return false;
-	Q_ASSERT(doc != NULL);
 
 	profile = new QLCInputProfile();
 	if (profile->loadXML(doc) == false)
