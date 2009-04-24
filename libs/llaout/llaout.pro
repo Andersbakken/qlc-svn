@@ -20,10 +20,12 @@ FORMS += configurellaout.ui
 # Headers
 HEADERS += configurellaout.h \
 	   llaout.h \
-	   llaoutthread.h
+	   llaoutthread.h \
+	   qlclogdestination.h
 
 # Source
 SOURCES += configurellaout.cpp \
 	   llaout.cpp \
-	   llaoutthread.cpp
+	   llaoutthread.cpp \
+	   qlclogdestination.cpp
 

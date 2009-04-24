@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QList>
+#include <lla/Logging.h>
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 #include "llaoutthread.h"
@@ -72,6 +73,7 @@ protected:
   QString m_configDir;
   LlaOutThread *m_thread;
   OutputList m_output_list;
+  lla::LogDestination *m_log_destination;
   bool m_embedServer;
 };
 

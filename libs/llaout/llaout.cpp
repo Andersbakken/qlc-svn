@@ -28,20 +28,28 @@
 #include "common/qlcfile.h"
 #include "configurellaout.h"
 #include "llaout.h"
+#include "qlclogdestination.h"
 
 
 LLAOut::LLAOut()
 {
   m_embedServer = false;
   m_thread = NULL;
+  m_log_destination = new lla::QLCLogDestination();
+  lla::InitLogging(lla::LLA_LOG_WARN, m_log_destination);
 }
 
 LLAOut::~LLAOut() {
-  if (m_thread != NULL) {
+  if (m_thread != NULL)
+  {
     m_thread->stop();
     delete m_thread;
   }
-  m_thread = NULL;
+  if (m_log_destination)
+  {
+    lla::InitLogging(lla::LLA_LOG_WARN, NULL);
+    delete m_log_destination;
+  }
 }
 
 /*
@@ -76,15 +84,18 @@ bool LLAOut::isServerEmbedded()
 void LLAOut::setServerEmbedded(bool embedServer)
 {
   if (embedServer != m_embedServer) {
-    if (m_thread != NULL) {
+    if (m_thread != NULL)
+    {
       m_thread->stop();
       delete m_thread;
     }
     m_embedServer = embedServer;
-    if (m_embedServer) {
+    if (m_embedServer)
+    {
       qWarning() << "llaout: running as embedded";
       m_thread = new LlaEmbeddedServer();
-    } else {
+    } else
+    {
       m_thread = new LlaStandaloneClient();
     }
     if (!m_thread->start())
