@@ -146,8 +146,18 @@ void FTDIDMXDevice::run()
 
 bool FTDIDMXDevice::open()
 {
-	// Change QString to char* (not const char* note)
+	FT_STATUS status = FT_OK;
+#ifndef WIN32
+	// Windows users cannot dynamiccaly set VID/PID of harward
+	status = FT_SetVIDPID(m_vid, m_pid);
+#endif
+	if (status != FT_OK)
+	{
+		qWarning() << "Unable to set VID/PID for FTDIDMX"
+			<< m_output << ":" << m_path << " - " << status;
+	}
 
+	// Change QString to char* (not const char* note)
 	char *serial;
 	QByteArray a = m_path.toLatin1();
 
@@ -155,16 +165,11 @@ bool FTDIDMXDevice::open()
 	memcpy(serial, a.constData(), a.count());
 	serial[a.count()] = 0;
 
-#ifndef WIN32
-	// Windows users cannot dynamiccaly set VID/PID of harward
-	if (FT_SetVIDPID(m_vid, m_pid) == FT_OK && 
-	    FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
+	status = FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle);
+	free(serial);
+
+	if (status == FT_OK)
 	{
-#else
-	if (FT_OpenEx(serial, FT_OPEN_BY_SERIAL_NUMBER, &m_handle) == FT_OK)
-	{
-#endif
-		free(serial);
 		if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
 		{
 			qWarning() << "Unable to reset FTDI device" << m_path;
@@ -212,8 +217,7 @@ bool FTDIDMXDevice::open()
 	else
 	{
 		qWarning() << "Unable to open FTDIDMX"
-			   << m_output << ":" << serial;
-		free(serial);
+			   << m_output << ":" << m_path << "-" << status;
 		return false;
 	}
 }
