@@ -29,7 +29,7 @@ namespace lla {
 
 const string QLCLogDestination::PREFIX = "LLA: ";
 
-void QLCLogDestination::Write(log_level level, string &log_line) {
+void QLCLogDestination::Write(log_level level, const string &log_line) {
 
   string output = PREFIX;
   output.append(log_line);
