@@ -41,13 +41,13 @@ cd qlc.app
 toLink=( $(find Contents/Plugins -name \*.dylib) )
 cd ..
 toLink[${#toLink[@]}]="Contents/MacOS/qlc"
-toLink[${#toLink[@]}]="Contents/Frameworks/libqlccommon.3.dylib"
+toLink[${#toLink[@]}]="Contents/Frameworks/libqlccommon.1.dylib"
 doAutoLink qlc
 
 copyQtFramework qlc-fixtureeditor QtCore
 copyQtFramework qlc-fixtureeditor QtGui
 copyQtFramework qlc-fixtureeditor QtXml
-toLink=( "Contents/Frameworks/libqlccommon.3.dylib" "Contents/MacOS/qlc-fixtureeditor" )
+toLink=( "Contents/Frameworks/libqlccommon.1.dylib" "Contents/MacOS/qlc-fixtureeditor" )
 doAutoLink qlc-fixtureeditor
 
 ln -s /Applications " "
