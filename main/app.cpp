@@ -471,7 +471,10 @@ void App::slotModeOperate()
 	m_modeToggleAction->setToolTip(tr("Switch to design mode"));
 
 	/* Prevent opening a context menu */
-	centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
+	#ifndef __APPLE__
+		// No centralWidget() on APPLE
+		centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
+	#endif
 
 	m_mode = Operate;
 	emit modeChanged(Operate);
@@ -526,7 +529,10 @@ void App::slotModeDesign()
 	m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
 
 	/* Allow opening a context menu */
-	centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
+	#ifndef __APPLE__
+		// No centralWidget on APPLE
+		centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
+	#endif
 
 	m_mode = Design;
 	emit modeChanged(Design);
