@@ -24,10 +24,7 @@
 
 #include <QString>
 #include <QList>
-
-#ifdef __APPLE__
 #include <QFile>
-#endif
 
 #include "qlctypes.h"
 
