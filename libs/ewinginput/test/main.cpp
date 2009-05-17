@@ -2,6 +2,7 @@
 
 #include "testeplaybackwing.h"
 #include "testeshortcutwing.h"
+#include "testeprogramwing.h"
 
 int main(int argc, char** argv)
 {
@@ -10,4 +11,7 @@ int main(int argc, char** argv)
 
 	TestEShortcutWing test2;
 	QTest::qExec(&test2);
+
+	TestEProgramWing test3;
+	QTest::qExec(&test3);
 }

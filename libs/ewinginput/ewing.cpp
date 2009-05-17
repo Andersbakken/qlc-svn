@@ -106,7 +106,7 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
 
 unsigned char EWing::cacheValue(int channel)
 {
-	if (m_values.size() <= channel)
+	if (m_values.size() < channel)
 		return 0;
 	else
 		return m_values[channel];
@@ -116,7 +116,7 @@ void EWing::setCacheValue(int channel, char value)
 {
 	Q_ASSERT(m_values.size() < channel);
 
-	if (m_values[channel] != value)
+	if (m_values[channel] != value && channel != EWING_INVALID_CHANNEL)
 	{
 		m_values[channel] = value;
 		emit valueChanged(channel, t_input_value(value));

@@ -84,6 +84,9 @@ public:
 	 * @param data The data packet to parse
 	 */
 	void parseData(const QByteArray& data);
+
+protected:
+	QMap <int, int> m_channelMap;
 };
 
 #endif
