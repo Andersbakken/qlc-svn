@@ -107,6 +107,15 @@ public:
 				       int* x, int* y,
 				       int* w, int* h,
 				       bool* visible);
+
+	/**
+	 * Get a string that gives a textual description for the given file
+	 * error code.
+	 *
+	 * @param error The error code to get description for
+	 * @return Short description of the given file error
+	 */
+	static QString errorString(QFile::FileError error);
 };
 
 #endif

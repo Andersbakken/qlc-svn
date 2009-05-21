@@ -410,11 +410,15 @@ bool App::loadFixtureDefinitions(QString fixturePath)
 				m_fixtureDefList.append(fxi);
 			else
 				delete fxi;
+			fxi = NULL;
 		}
 		else
 		{
 			qWarning() << "Fixture definition loading from"
-				   << path << "failed:" << error;
+				   << path << "failed: "
+				   << QLCFile::errorString(error);
+			delete fxi;
+			fxi = NULL;
 		}
 	}
 

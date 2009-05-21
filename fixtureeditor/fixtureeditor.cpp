@@ -261,16 +261,17 @@ bool QLCFixtureEditor::save()
 	}
 	else
 	{
-		if (m_fixtureDef->saveXML(m_fileName) == true)
+		QFile::FileError error = m_fixtureDef->saveXML(m_fileName);
+		if (error == QFile::NoError)
 		{
 			setModified(false);
 			return true;
 		}
 		else
 		{
-			QMessageBox::critical(this, "Unable to save file",
-					      QString("Error: ") +
-					      strerror(errno));
+			QMessageBox::critical(this, tr("Fixture saving failed"),
+				tr("Unable to save fixture definition: ") +
+				QLCFile::errorString(error));
 			return false;
 		}
 	}
@@ -350,7 +351,8 @@ bool QLCFixtureEditor::saveAs()
 		if (path.right(strlen(KExtFixture)) != QString(KExtFixture))
 			path += QString(KExtFixture);
 
-		if (m_fixtureDef->saveXML(path) == true)
+		QFile::FileError error = m_fixtureDef->saveXML(path);
+		if (error == QFile::NoError)
 		{
 			m_fileName = path;
 			setCaption();
@@ -359,9 +361,9 @@ bool QLCFixtureEditor::saveAs()
 		}
 		else
 		{
-			QMessageBox::critical(this,"Unable to save file: ",
-					      QString("Error: ") +
-					      strerror(errno));
+			QMessageBox::critical(this, tr("Fixture saving failed"),
+				tr("Unable to save fixture definition: ") +
+				QLCFile::errorString(error));
 			return false;
 		}
 	}

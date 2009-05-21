@@ -41,6 +41,7 @@
 #include <common/qlcdocbrowser.h>
 #include <common/qlcfixturedef.h>
 #include <common/qlcchannel.h>
+#include <common/qlcfile.h>
 
 #include "app.h"
 #include "aboutbox.h"
@@ -313,13 +314,8 @@ void App::slotFileOpen()
 
 	/* Attempt to create a fixture definition from the selected file */
 	fixtureDef = new QLCFixtureDef();
-	if (!fixtureDef->loadXML(path))
-	{
-		delete fixtureDef;
-		QMessageBox::warning(this, tr("Fixture loading failed"),
-				     tr("File didn't contain a valid fixture."));
-	}
-	else
+	QFile::FileError error = fixtureDef->loadXML(path);
+	if (error == QFile::NoError)
 	{
 		QLCFixtureEditor* editor;
 		QMdiSubWindow* sub;
@@ -335,6 +331,13 @@ void App::slotFileOpen()
 		
 		editor->show();
 		sub->show();
+	}
+	else
+	{
+		delete fixtureDef;
+		QMessageBox::warning(this, tr("Fixture loading failed"),
+			tr("Unable to load fixture definition: ") +
+			QLCFile::errorString(error));
 	}
 }
 
