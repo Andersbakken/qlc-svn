@@ -19,11 +19,32 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <iostream>
 #include <QString>
 #include <QtXml>
 
 #include "qlcphysical.h"
+
+QLCPhysical::QLCPhysical()
+{
+	/* Initialize only integer values since QStrings are null by default */
+	m_bulbLumens = 0;
+	m_bulbColourTemperature = 0;
+
+	m_weight = 0;
+	m_width = 0;
+	m_height = 0;
+	m_depth = 0;
+
+	m_lensDegreesMin = 0;
+	m_lensDegreesMax = 0;
+
+	m_focusPanMax = 0;
+	m_focusTiltMax = 0;
+}
+
+QLCPhysical::~QLCPhysical()
+{
+}
 
 QLCPhysical& QLCPhysical::operator=(const QLCPhysical& physical)
 {

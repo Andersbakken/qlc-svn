@@ -54,10 +54,9 @@ class QDomDocument;
 class QLC_DECLSPEC QLCPhysical
 {
 public:
-	/* Default destructor */
-	~QLCPhysical() {}
+	QLCPhysical();
+	~QLCPhysical();
 
-	/** Assignment operator */
 	QLCPhysical& operator=(const QLCPhysical& physical);
 
 public:
