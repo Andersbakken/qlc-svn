@@ -20,3 +20,4 @@ exists($$LLA_GIT):exists($$PROTOBUF) {
 # Input plugins
 !mac:SUBDIRS		+= midiinput
 !mac:unix:SUBDIRS	+= hidinput
+SUBDIRS			+= ewinginput
