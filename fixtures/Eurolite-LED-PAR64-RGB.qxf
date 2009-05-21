@@ -29,7 +29,7 @@
   <Capability Min="0" Max="10" >No function</Capability>
   <Capability Min="11" Max="255" >Strobe slow to fast</Capability>
  </Channel>
- <Mode Name="Mode 1" >
+ <Mode Name="Normal" >
   <Physical>
    <Bulb Lumens="400" Type="LED" ColourTemperature="0" />
    <Dimensions Width="265" Height="240" Weight="3" Depth="340" />
