@@ -33,23 +33,6 @@
 QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef)
 {
 	m_fixtureDef = fixtureDef;
-
-	m_physical.setBulbType(QString::null);
-	m_physical.setBulbLumens(0);
-	m_physical.setBulbColourTemperature(0);
-
-	m_physical.setWeight(0);
-	m_physical.setWidth(0);
-	m_physical.setHeight(0);
-	m_physical.setDepth(0);
-
-	m_physical.setLensName("Other");
-	m_physical.setLensDegreesMin(0);
-	m_physical.setLensDegreesMax(0);
-
-	m_physical.setFocusType("Fixed");
-	m_physical.setFocusPanMax(0);
-	m_physical.setFocusTiltMax(0);
 }
 
 QLCFixtureMode::QLCFixtureMode(const QLCFixtureMode* mode)
@@ -97,7 +80,8 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
 
 void QLCFixtureMode::insertChannel(QLCChannel* channel, t_channel index)
 {
-	m_channels.insert(index, channel);
+	if (channel != NULL)
+		m_channels.insert(index, channel);
 }
 
 bool QLCFixtureMode::removeChannel(QLCChannel* channel)
@@ -134,7 +118,7 @@ QLCChannel* QLCFixtureMode::channel(const QString& name) const
 
 QLCChannel* QLCFixtureMode::channel(t_channel ch) const
 {
-	if (ch > m_channels.count())
+	if (ch >= m_channels.size())
 		return NULL;
 	else
 		return m_channels.at(ch);
@@ -142,17 +126,13 @@ QLCChannel* QLCFixtureMode::channel(t_channel ch) const
 
 t_channel QLCFixtureMode::channelNumber(QLCChannel* channel) const
 {
-	QListIterator <QLCChannel*> it(m_channels);
-	int i = 0;
-
 	if (channel == NULL)
 		return KChannelInvalid;
 
-	while (it.hasNext() == true)
+	for (int i = 0; i < m_channels.size(); i++)
 	{
-		if (it.next()->name() == channel->name())
+		if (m_channels.at(i) == channel)
 			return i;
-		++i;
 	}
 
 	return KChannelInvalid;
@@ -174,7 +154,7 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
 	QDomElement tag;
 	QString str;
 	QString ch;
-
+	
 	/* Get channel name */
 	str = root->attribute(KXMLQLCFixtureModeName);
 	if (str == QString::null)
@@ -191,6 +171,8 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
 		if (tag.tagName() == KXMLQLCFixtureModeChannel)
 		{
 			str = tag.attribute(KXMLQLCFixtureModeChannelNumber);
+
+			Q_ASSERT(m_fixtureDef != NULL);
 			insertChannel(m_fixtureDef->channel(tag.text()),
 				      str.toInt());
 		}

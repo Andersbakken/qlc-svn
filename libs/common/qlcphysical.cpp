@@ -35,9 +35,11 @@ QLCPhysical::QLCPhysical()
 	m_height = 0;
 	m_depth = 0;
 
+	m_lensName = "Other";
 	m_lensDegreesMin = 0;
 	m_lensDegreesMax = 0;
 
+	m_focusType = "Fixed";
 	m_focusPanMax = 0;
 	m_focusTiltMax = 0;
 }

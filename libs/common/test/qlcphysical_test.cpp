@@ -55,7 +55,7 @@ void QLCPhysical_Test::depth()
 
 void QLCPhysical_Test::lensName()
 {
-	QVERIFY(p.lensName() == QString::null);
+	QVERIFY(p.lensName() == "Other");
 	p.setLensName("Fresnel");
 	QVERIFY(p.lensName() == "Fresnel");
 }
@@ -76,7 +76,7 @@ void QLCPhysical_Test::lensDegreesMax()
 
 void QLCPhysical_Test::focusType()
 {
-	QVERIFY(p.focusType() == QString::null);
+	QVERIFY(p.focusType() == "Fixed");
 	p.setFocusType("Head");
 	QVERIFY(p.focusType() == "Head");
 }
