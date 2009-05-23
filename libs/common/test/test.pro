@@ -14,8 +14,9 @@ HEADERS += qlcphysical_test.h \
 	   ../qlcfixturemode.h \
 	   qlcchannel_test.h \
 	   ../qlcchannel.h \
-	   \
+	   qlccapability_test.h \
 	   ../qlccapability.h \
+	   \
 	   ../qlcfixturedef.h \
 	   ../qlcfile.h
 
@@ -25,8 +26,9 @@ SOURCES += qlcphysical_test.cpp \
 	   ../qlcfixturemode.cpp \
 	   qlcchannel_test.cpp \
 	   ../qlcchannel.cpp \
-	   \
+	   qlccapability_test.cpp \
 	   ../qlccapability.cpp \
+	   \
 	   ../qlcfixturedef.cpp \
 	   ../qlcfile.cpp
 
