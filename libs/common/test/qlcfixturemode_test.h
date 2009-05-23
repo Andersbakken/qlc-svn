@@ -16,6 +16,7 @@ private slots:
 	void channelByIndex();
 	void channels();
 	void channelNumber();
+	void copy();
 };
 
 #endif

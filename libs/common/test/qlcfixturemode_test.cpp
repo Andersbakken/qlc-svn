@@ -160,7 +160,6 @@ void QLCFixtureMode_Test::channelByIndex()
 	QVERIFY(m.channel(2) == &ch3);
 	QVERIFY(m.channel(3) == &ch4);
 	QVERIFY(m.channel(12) == NULL);
-	QVERIFY(m.channel(-1) == NULL);
 }
 
 void QLCFixtureMode_Test::channels()
@@ -209,4 +208,9 @@ void QLCFixtureMode_Test::channelNumber()
 	QLCChannel ch5;
 	QVERIFY(m.channelNumber(&ch5) == KChannelInvalid);
 	QVERIFY(m.channelNumber(NULL) == KChannelInvalid);
+}
+
+void QLCFixtureMode_Test::copy()
+{
+	qWarning() << "TODO";
 }

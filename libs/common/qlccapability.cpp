@@ -78,6 +78,20 @@ bool QLCCapability::operator<(const QLCCapability& capability) const
 		return false;
 }
 
+bool QLCCapability::overlaps(const QLCCapability* cap)
+{
+	if (m_min >= cap->min() && m_min <= cap->max())
+		return true;
+	else if (m_max >= cap->min() && m_max <= cap->max())
+		return true;
+	else if (cap->min() >= m_min && cap->min() <= m_max)
+		return true;
+	else if (cap->max() >= m_min && cap->max() <= m_max)
+		return true;
+	else
+		return false;
+}
+
 bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomElement tag;

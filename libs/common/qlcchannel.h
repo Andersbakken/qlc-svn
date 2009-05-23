@@ -117,7 +117,7 @@ public:
 	QLCCapability* searchCapability(t_value value) const;
 
 	/** Search for a particular capability by its name */
-	QLCCapability* searchCapability(QString name) const;
+	QLCCapability* searchCapability(const QString& name) const;
 
 	/** Add a new capability to the channel */
 	bool addCapability(QLCCapability* cap);

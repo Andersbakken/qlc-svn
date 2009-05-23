@@ -61,18 +61,22 @@ public:
 
 	/** Comparing operator for qSort */
 	bool operator<(const QLCCapability& capability) const;
-	
+
 	/********************************************************************
 	 * Properties
 	 ********************************************************************/
 public:
 	t_value min() const { return m_min; }
-	t_value max() const { return m_max; }
-	QString name() const { return m_name; }
-
 	void setMin(t_value value) { m_min = value; }
+
+	t_value max() const { return m_max; }
 	void setMax(t_value value) { m_max = value; }
+
+	QString name() const { return m_name; }
 	void setName(const QString& name) { m_name = name; }
+
+	/** Check, whether the given capability overlaps with this */
+	bool overlaps(const QLCCapability* cap);
 
 protected:
 	t_value m_min;

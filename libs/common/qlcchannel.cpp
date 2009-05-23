@@ -171,7 +171,7 @@ QLCCapability* QLCChannel::searchCapability(t_value value) const
 	return NULL;
 }
 
-QLCCapability* QLCChannel::searchCapability(QString name) const
+QLCCapability* QLCChannel::searchCapability(const QString& name) const
 {
 	QListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)
@@ -186,21 +186,14 @@ QLCCapability* QLCChannel::searchCapability(QString name) const
 
 bool QLCChannel::addCapability(QLCCapability* cap)
 {
-	QListIterator <QLCCapability*> it(m_capabilities);
-	QLCCapability* temp = NULL;
-
 	Q_ASSERT(cap != NULL);
 
 	/* Check for overlapping values */
+	QListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)
 	{
-		temp = it.next();
-		if ((temp->min() <= cap->min() && temp->max() > cap->min()) ||
-		    (temp->min() < cap->max() && temp->max() >= cap->max()) ||
-		    (temp->min() >= cap->min() && temp->max() <= cap->max()))
-		{
+		if (cap->overlaps(it.next()) == true)
 			return false;
-		}
 	}
 
 	m_capabilities.append(cap);
@@ -209,10 +202,9 @@ bool QLCChannel::addCapability(QLCCapability* cap)
 
 bool QLCChannel::removeCapability(QLCCapability* cap)
 {
-	QMutableListIterator <QLCCapability*> it(m_capabilities);
-
 	Q_ASSERT(cap != NULL);
 
+	QMutableListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)
 	{
 		if (it.next() == cap)

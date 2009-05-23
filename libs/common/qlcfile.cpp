@@ -33,7 +33,7 @@ QFile::FileError QLCFile::readXML(const QString path, QDomDocument** doc)
 	int line;
 	int col;
 
-	Q_ASSERT(document != NULL);
+	Q_ASSERT(doc != NULL);
 	Q_ASSERT(path != QString::null);
 
 	QFile file(path);
