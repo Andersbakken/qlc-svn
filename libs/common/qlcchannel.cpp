@@ -189,10 +189,9 @@ bool QLCChannel::addCapability(QLCCapability* cap)
 	Q_ASSERT(cap != NULL);
 
 	/* Check for overlapping values */
-	QListIterator <QLCCapability*> it(m_capabilities);
-	while (it.hasNext() == true)
+	foreach (QLCCapability* another, m_capabilities)
 	{
-		if (cap->overlaps(it.next()) == true)
+		if (another->overlaps(cap) == true)
 			return false;
 	}
 

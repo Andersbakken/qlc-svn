@@ -78,15 +78,15 @@ bool QLCCapability::operator<(const QLCCapability& capability) const
 		return false;
 }
 
-bool QLCCapability::overlaps(const QLCCapability* cap)
+bool QLCCapability::overlaps(const QLCCapability& cap)
 {
-	if (m_min >= cap->min() && m_min <= cap->max())
+	if (m_min >= cap.min() && m_min <= cap.max())
 		return true;
-	else if (m_max >= cap->min() && m_max <= cap->max())
+	else if (m_max >= cap.min() && m_max <= cap.max())
 		return true;
-	else if (cap->min() >= m_min && cap->min() <= m_max)
+	else if (cap.min() >= m_min && cap.min() <= m_max)
 		return true;
-	else if (cap->max() >= m_min && cap->max() <= m_max)
+	else if (cap.max() >= m_min && cap.max() <= m_max)
 		return true;
 	else
 		return false;

@@ -76,7 +76,7 @@ public:
 	void setName(const QString& name) { m_name = name; }
 
 	/** Check, whether the given capability overlaps with this */
-	bool overlaps(const QLCCapability* cap);
+	bool overlaps(const QLCCapability& cap);
 
 protected:
 	t_value m_min;
