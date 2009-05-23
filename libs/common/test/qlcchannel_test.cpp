@@ -83,6 +83,68 @@ void QLCChannel_Test::controlByte()
 	QVERIFY(c.controlByte() == 1);
 }
 
+void QLCChannel_Test::searchCapabilityByValue()
+{
+	QLCChannel c;
+	QVERIFY(c.capabilities().size() == 0);
+
+	QLCCapability* cap1 = new QLCCapability(0, 9, "0-9");
+	QVERIFY(c.addCapability(cap1) == true);
+	QVERIFY(c.capabilities().size() == 1);
+
+	QLCCapability* cap2 = new QLCCapability(10, 19, "10-19");
+	QVERIFY(c.addCapability(cap2) == true);
+	QVERIFY(c.capabilities().size() == 2);
+
+	QLCCapability* cap3 = new QLCCapability(20, 29, "20-29");
+	QVERIFY(c.addCapability(cap3) == true);
+	QVERIFY(c.capabilities().size() == 3);
+
+	QVERIFY(c.searchCapability(0) == cap1);
+	QVERIFY(c.searchCapability(1) == cap1);
+	QVERIFY(c.searchCapability(2) == cap1);
+	QVERIFY(c.searchCapability(3) == cap1);
+	QVERIFY(c.searchCapability(4) == cap1);
+	QVERIFY(c.searchCapability(5) == cap1);
+	QVERIFY(c.searchCapability(6) == cap1);
+	QVERIFY(c.searchCapability(7) == cap1);
+	QVERIFY(c.searchCapability(8) == cap1);
+	QVERIFY(c.searchCapability(9) == cap1);
+
+	QVERIFY(c.searchCapability(10) == cap2);
+	QVERIFY(c.searchCapability(11) == cap2);
+	QVERIFY(c.searchCapability(12) == cap2);
+	QVERIFY(c.searchCapability(13) == cap2);
+	QVERIFY(c.searchCapability(14) == cap2);
+	QVERIFY(c.searchCapability(15) == cap2);
+	QVERIFY(c.searchCapability(16) == cap2);
+	QVERIFY(c.searchCapability(17) == cap2);
+	QVERIFY(c.searchCapability(18) == cap2);
+	QVERIFY(c.searchCapability(19) == cap2);
+
+	QVERIFY(c.searchCapability(30) == NULL);
+}
+
+void QLCChannel_Test::searchCapabilityByName()
+{
+	QLCChannel c;
+	QVERIFY(c.capabilities().size() == 0);
+
+	QLCCapability* cap1 = new QLCCapability(0, 9, "0-9");
+	QVERIFY(c.addCapability(cap1) == true);
+
+	QLCCapability* cap2 = new QLCCapability(10, 19, "10-19");
+	QVERIFY(c.addCapability(cap2) == true);
+
+	QLCCapability* cap3 = new QLCCapability(20, 29, "20-29");
+	QVERIFY(c.addCapability(cap3) == true);
+
+	QVERIFY(c.searchCapability("0-9") == cap1);
+	QVERIFY(c.searchCapability("10-19") == cap2);
+	QVERIFY(c.searchCapability("20-29") == cap3);
+	QVERIFY(c.searchCapability("foo") == NULL);
+}
+
 void QLCChannel_Test::addCapability()
 {
 	QLCChannel c;
@@ -151,72 +213,6 @@ void QLCChannel_Test::removeCapability()
 
 	QVERIFY(c.removeCapability(cap1) == true);
 	QVERIFY(c.capabilities().size() == 0);
-}
-
-void QLCChannel_Test::searchCapabilityByValue()
-{
-/*
-	QLCChannel c;
-	QVERIFY(c.capabilities().size() == 0);
-
-	QLCCapability* cap1 = new QLCCapability(0, 9, "0-9");
-	QVERIFY(c.addCapability(cap1) == true);
-	QVERIFY(c.capabilities().size() == 1);
-
-	QLCCapability* cap2 = new QLCCapability(10, 19, "10-19");
-	QVERIFY(c.addCapability(cap2) == true);
-	QVERIFY(c.capabilities().size() == 2);
-
-	QLCCapability* cap3 = new QLCCapability(20, 29, "20-29");
-	QVERIFY(c.addCapability(cap3) == true);
-	QVERIFY(c.capabilities().size() == 3);
-
-	QVERIFY(c.searchCapability(0) == cap1);
-	QVERIFY(c.searchCapability(1) == cap1);
-	QVERIFY(c.searchCapability(2) == cap1);
-	QVERIFY(c.searchCapability(3) == cap1);
-	QVERIFY(c.searchCapability(4) == cap1);
-	QVERIFY(c.searchCapability(5) == cap1);
-	QVERIFY(c.searchCapability(6) == cap1);
-	QVERIFY(c.searchCapability(7) == cap1);
-	QVERIFY(c.searchCapability(8) == cap1);
-	QVERIFY(c.searchCapability(9) == cap1);
-
-	QVERIFY(c.searchCapability(10) == cap2);
-	QVERIFY(c.searchCapability(11) == cap2);
-	QVERIFY(c.searchCapability(12) == cap2);
-	QVERIFY(c.searchCapability(13) == cap2);
-	QVERIFY(c.searchCapability(14) == cap2);
-	QVERIFY(c.searchCapability(15) == cap2);
-	QVERIFY(c.searchCapability(16) == cap2);
-	QVERIFY(c.searchCapability(17) == cap2);
-	QVERIFY(c.searchCapability(18) == cap2);
-	QVERIFY(c.searchCapability(19) == cap2);
-
-	QVERIFY(c.searchCapability(30) == NULL);
-*/
-}
-
-void QLCChannel_Test::searchCapabilityByName()
-{
-/*
-	QLCChannel c;
-	QVERIFY(c.capabilities().size() == 0);
-
-	QLCCapability* cap1 = new QLCCapability(0, 9, "0-9");
-	QVERIFY(c.addCapability(cap1) == true);
-
-	QLCCapability* cap2 = new QLCCapability(10, 19, "10-19");
-	QVERIFY(c.addCapability(cap2) == true);
-
-	QLCCapability* cap3 = new QLCCapability(20, 29, "20-29");
-	QVERIFY(c.addCapability(cap3) == true);
-
-	QVERIFY(c.searchCapability("0-9") == cap1);
-	QVERIFY(c.searchCapability("10-19") == cap2);
-	QVERIFY(c.searchCapability("20-29") == cap3);
-	QVERIFY(c.searchCapability("foo") == NULL);
-*/
 }
 
 void QLCChannel_Test::sortCapabilities()

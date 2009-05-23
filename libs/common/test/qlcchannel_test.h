@@ -12,10 +12,10 @@ private slots:
 	void name();
 	void group();
 	void controlByte();
-	void addCapability();
-	void removeCapability();
 	void searchCapabilityByValue();
 	void searchCapabilityByName();
+	void addCapability();
+	void removeCapability();
 	void sortCapabilities();
 	void copy();
 };
