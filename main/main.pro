@@ -12,7 +12,10 @@ TRANSLATIONS	= qlc_gb.ts \
 
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS 	+= -L../libs/common/ -lqlccommon
-win32:LIBS 	+= -L../libs/common/release/ -lqlccommon
+win32:{
+	release:LIBS 	+= -L../libs/common/release/ -lqlccommon
+	debug:LIBS 	+= -L../libs/common/debug/ -lqlccommon
+}
 
 # MAC Icon (TODO: Move under ../etc)
 macx:ICON	= ../gfx/qlc.icns
