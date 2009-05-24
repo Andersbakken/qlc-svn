@@ -87,9 +87,9 @@ void QLCFixtureMode_Test::removeChannel()
 	mode->insertChannel(ch4, 3);
 
 	/* Remove one channel in the middle */
-	QVERIFY(mode->channels().size() == 4);
+	QVERIFY(mode->channels() == 4);
 	mode->removeChannel(ch2);
-	QVERIFY(mode->channels().size() == 3);
+	QVERIFY(mode->channels() == 3);
 	QVERIFY(mode->channel(0) == ch1);
 	QVERIFY(mode->channel(1) == ch3);
 	QVERIFY(mode->channel(2) == ch4);
@@ -97,7 +97,7 @@ void QLCFixtureMode_Test::removeChannel()
 
 	/* Remove the same channel again. Shouldn't change anything. */
 	mode->removeChannel(ch2);
-	QVERIFY(mode->channels().size() == 3);
+	QVERIFY(mode->channels() == 3);
 	QVERIFY(mode->channel(0) == ch1);
 	QVERIFY(mode->channel(1) == ch3);
 	QVERIFY(mode->channel(2) == ch4);
@@ -105,7 +105,7 @@ void QLCFixtureMode_Test::removeChannel()
 
 	/* Remove last channel. */
 	mode->removeChannel(ch4);
-	QVERIFY(mode->channels().size() == 2);
+	QVERIFY(mode->channels() == 2);
 	QVERIFY(mode->channel(0) == ch1);
 	QVERIFY(mode->channel(1) == ch3);
 	QVERIFY(mode->channel(2) == NULL);
@@ -113,7 +113,7 @@ void QLCFixtureMode_Test::removeChannel()
 
 	/* Remove first channel. */
 	mode->removeChannel(ch1);
-	QVERIFY(mode->channels().size() == 1);
+	QVERIFY(mode->channels() == 1);
 	QVERIFY(mode->channel(0) == ch3);
 	QVERIFY(mode->channel(1) == NULL);
 	QVERIFY(mode->channel(2) == NULL);
@@ -121,7 +121,7 @@ void QLCFixtureMode_Test::removeChannel()
 
 	/* Remove last channel. */
 	mode->removeChannel(ch3);
-	QVERIFY(mode->channels().size() == 0);
+	QVERIFY(mode->channels() == 0);
 	QVERIFY(mode->channel(0) == NULL);
 	QVERIFY(mode->channel(1) == NULL);
 	QVERIFY(mode->channel(2) == NULL);
@@ -200,15 +200,15 @@ void QLCFixtureMode_Test::channelByIndex()
 void QLCFixtureMode_Test::channels()
 {
 	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
-	QVERIFY(mode->channels().size() == 0);
+	QVERIFY(mode->channels() == 0);
 
 	QLCChannel* ch1 = new QLCChannel();
 	mode->insertChannel(ch1, 0);
-	QVERIFY(mode->channels().size() == 1);
+	QVERIFY(mode->channels() == 1);
 
 	QLCChannel* ch2 = new QLCChannel();
 	mode->insertChannel(ch2, 1);
-	QVERIFY(mode->channels().size() == 2);
+	QVERIFY(mode->channels() == 2);
 
 	delete mode;
 	delete ch1;

@@ -113,7 +113,7 @@ public:
 	void setPhysical(const QLCPhysical &physical);
 
 	/** Get physical properties */
-	const QLCPhysical physical();
+	QLCPhysical physical();
 
 	/** Load from an XML tag */
 	bool loadXML(const QDomElement* root);

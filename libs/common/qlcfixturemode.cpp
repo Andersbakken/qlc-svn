@@ -143,7 +143,7 @@ void QLCFixtureMode::setPhysical(const QLCPhysical &physical)
 	m_physical = physical;
 }
 
-const QLCPhysical QLCFixtureMode::physical()
+QLCPhysical QLCFixtureMode::physical()
 {
 	return m_physical;
 }
