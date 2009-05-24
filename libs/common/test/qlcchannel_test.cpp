@@ -61,164 +61,320 @@ void QLCChannel_Test::groupList()
 void QLCChannel_Test::name()
 {
 	/* Verify that a name can be set & get for the channel */
-	QLCChannel c;
-	QVERIFY(c.name() == QString::null);
-	c.setName("Channel");
-	QVERIFY(c.name() == "Channel");
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->name() == QString::null);
+
+	channel->setName("Channel");
+	QVERIFY(channel->name() == "Channel");
+
+	delete channel;
 }
 
 void QLCChannel_Test::group()
 {
-	QLCChannel c;
-	QVERIFY(c.group() == KQLCChannelGroupIntensity);
-	c.setGroup("TestGroup");
-	QVERIFY(c.group() == "TestGroup");
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->group() == KQLCChannelGroupIntensity);
+
+	channel->setGroup("TestGroup");
+	QVERIFY(channel->group() == "TestGroup");
+
+	delete channel;
 }
 
 void QLCChannel_Test::controlByte()
 {
-	QLCChannel c;
-	QVERIFY(c.controlByte() == 0);
-	c.setControlByte(1);
-	QVERIFY(c.controlByte() == 1);
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->controlByte() == 0);
+
+	channel->setControlByte(1);
+	QVERIFY(channel->controlByte() == 1);
+
+	delete channel;
 }
 
 void QLCChannel_Test::searchCapabilityByValue()
 {
-	QLCChannel c;
-	QVERIFY(c.capabilities().size() == 0);
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->capabilities().size() == 0);
 
 	QLCCapability* cap1 = new QLCCapability(0, 9, "0-9");
-	QVERIFY(c.addCapability(cap1) == true);
-	QVERIFY(c.capabilities().size() == 1);
+	QVERIFY(channel->addCapability(cap1) == true);
+	QVERIFY(channel->capabilities().size() == 1);
 
 	QLCCapability* cap2 = new QLCCapability(10, 19, "10-19");
-	QVERIFY(c.addCapability(cap2) == true);
-	QVERIFY(c.capabilities().size() == 2);
+	QVERIFY(channel->addCapability(cap2) == true);
+	QVERIFY(channel->capabilities().size() == 2);
 
 	QLCCapability* cap3 = new QLCCapability(20, 29, "20-29");
-	QVERIFY(c.addCapability(cap3) == true);
-	QVERIFY(c.capabilities().size() == 3);
+	QVERIFY(channel->addCapability(cap3) == true);
+	QVERIFY(channel->capabilities().size() == 3);
 
-	QVERIFY(c.searchCapability(0) == cap1);
-	QVERIFY(c.searchCapability(1) == cap1);
-	QVERIFY(c.searchCapability(2) == cap1);
-	QVERIFY(c.searchCapability(3) == cap1);
-	QVERIFY(c.searchCapability(4) == cap1);
-	QVERIFY(c.searchCapability(5) == cap1);
-	QVERIFY(c.searchCapability(6) == cap1);
-	QVERIFY(c.searchCapability(7) == cap1);
-	QVERIFY(c.searchCapability(8) == cap1);
-	QVERIFY(c.searchCapability(9) == cap1);
+	QVERIFY(channel->searchCapability(0) == cap1);
+	QVERIFY(channel->searchCapability(1) == cap1);
+	QVERIFY(channel->searchCapability(2) == cap1);
+	QVERIFY(channel->searchCapability(3) == cap1);
+	QVERIFY(channel->searchCapability(4) == cap1);
+	QVERIFY(channel->searchCapability(5) == cap1);
+	QVERIFY(channel->searchCapability(6) == cap1);
+	QVERIFY(channel->searchCapability(7) == cap1);
+	QVERIFY(channel->searchCapability(8) == cap1);
+	QVERIFY(channel->searchCapability(9) == cap1);
 
-	QVERIFY(c.searchCapability(10) == cap2);
-	QVERIFY(c.searchCapability(11) == cap2);
-	QVERIFY(c.searchCapability(12) == cap2);
-	QVERIFY(c.searchCapability(13) == cap2);
-	QVERIFY(c.searchCapability(14) == cap2);
-	QVERIFY(c.searchCapability(15) == cap2);
-	QVERIFY(c.searchCapability(16) == cap2);
-	QVERIFY(c.searchCapability(17) == cap2);
-	QVERIFY(c.searchCapability(18) == cap2);
-	QVERIFY(c.searchCapability(19) == cap2);
+	QVERIFY(channel->searchCapability(10) == cap2);
+	QVERIFY(channel->searchCapability(11) == cap2);
+	QVERIFY(channel->searchCapability(12) == cap2);
+	QVERIFY(channel->searchCapability(13) == cap2);
+	QVERIFY(channel->searchCapability(14) == cap2);
+	QVERIFY(channel->searchCapability(15) == cap2);
+	QVERIFY(channel->searchCapability(16) == cap2);
+	QVERIFY(channel->searchCapability(17) == cap2);
+	QVERIFY(channel->searchCapability(18) == cap2);
+	QVERIFY(channel->searchCapability(19) == cap2);
 
-	QVERIFY(c.searchCapability(30) == NULL);
+	QVERIFY(channel->searchCapability(30) == NULL);
+
+	delete channel;
 }
 
 void QLCChannel_Test::searchCapabilityByName()
 {
-	QLCChannel c;
-	QVERIFY(c.capabilities().size() == 0);
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->capabilities().size() == 0);
 
 	QLCCapability* cap1 = new QLCCapability(0, 9, "0-9");
-	QVERIFY(c.addCapability(cap1) == true);
+	QVERIFY(channel->addCapability(cap1) == true);
 
 	QLCCapability* cap2 = new QLCCapability(10, 19, "10-19");
-	QVERIFY(c.addCapability(cap2) == true);
+	QVERIFY(channel->addCapability(cap2) == true);
 
 	QLCCapability* cap3 = new QLCCapability(20, 29, "20-29");
-	QVERIFY(c.addCapability(cap3) == true);
+	QVERIFY(channel->addCapability(cap3) == true);
 
-	QVERIFY(c.searchCapability("0-9") == cap1);
-	QVERIFY(c.searchCapability("10-19") == cap2);
-	QVERIFY(c.searchCapability("20-29") == cap3);
-	QVERIFY(c.searchCapability("foo") == NULL);
+	QVERIFY(channel->searchCapability("0-9") == cap1);
+	QVERIFY(channel->searchCapability("10-19") == cap2);
+	QVERIFY(channel->searchCapability("20-29") == cap3);
+	QVERIFY(channel->searchCapability("foo") == NULL);
+
+	delete channel;
 }
 
 void QLCChannel_Test::addCapability()
 {
-	QLCChannel c;
-	QVERIFY(c.capabilities().size() == 0);
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->capabilities().size() == 0);
 
 	QLCCapability* cap1 = new QLCCapability(15, 19, "15-19");
-	QVERIFY(c.addCapability(cap1) == true);
-	QVERIFY(c.capabilities().size() == 1);
-	QVERIFY(c.capabilities()[0] == cap1);
+	QVERIFY(channel->addCapability(cap1) == true);
+	QVERIFY(channel->capabilities().size() == 1);
+	QVERIFY(channel->capabilities()[0] == cap1);
 
 	QLCCapability* cap2 = new QLCCapability(0, 9, "0-9");
-	QVERIFY(c.addCapability(cap2) == true);
-	QVERIFY(c.capabilities().size() == 2);
-	QVERIFY(c.capabilities()[0] == cap1);
-	QVERIFY(c.capabilities()[1] == cap2);
+	QVERIFY(channel->addCapability(cap2) == true);
+	QVERIFY(channel->capabilities().size() == 2);
+	QVERIFY(channel->capabilities()[0] == cap1);
+	QVERIFY(channel->capabilities()[1] == cap2);
 
 	/* Completely overlapping with cap2 */
 	QLCCapability* cap3 = new QLCCapability(5, 6, "5-6");
-	QVERIFY(c.addCapability(cap3) == false);
+	QVERIFY(channel->addCapability(cap3) == false);
 	delete cap3;
+	cap3 = NULL;
 
 	/* Partially overlapping from low-end with cap1 */
 	QLCCapability* cap4 = new QLCCapability(19, 25, "19-25");
-	QVERIFY(c.addCapability(cap4) == false);
+	QVERIFY(channel->addCapability(cap4) == false);
 	delete cap4;
+	cap4 = NULL;
 
 	/* Partially overlapping from high end with cap1 */
 	QLCCapability* cap5 = new QLCCapability(10, 15, "10-15");
-	QVERIFY(c.addCapability(cap5) == false);
+	QVERIFY(channel->addCapability(cap5) == false);
 	delete cap5;
+	cap5 = NULL;
 
 	/* Partially overlapping with two ranges at both ends (cap1 & cap2) */
 	QLCCapability* cap6 = new QLCCapability(8, 16, "8-16");
-	QVERIFY(c.addCapability(cap6) == false);
+	QVERIFY(channel->addCapability(cap6) == false);
 	delete cap6;
+	cap6 = NULL;
 
 	/* Completely containing cap1 */
 	QLCCapability* cap7 = new QLCCapability(14, 20, "14-20");
-	QVERIFY(c.addCapability(cap7) == false);
+	QVERIFY(channel->addCapability(cap7) == false);
 	delete cap7;
+	cap7 = NULL;
 
 	/* Non-overlapping, between cap1 & cap2*/
 	QLCCapability* cap8 = new QLCCapability(10, 14, "10-14");
-	QVERIFY(c.addCapability(cap8) == true);
-	delete cap8;
+	QVERIFY(channel->addCapability(cap8) == true);
+	/* Don't delete cap8 because it's now a member of the channel and gets
+	   deleted from the channel's destructor. */
+
+	delete channel;
 }
 
 void QLCChannel_Test::removeCapability()
 {
-	QLCChannel c;
-	QVERIFY(c.capabilities().size() == 0);
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->capabilities().size() == 0);
 
 	QLCCapability* cap1 = new QLCCapability(10, 20, "10-20");
-	QVERIFY(c.addCapability(cap1) == true);
-	QVERIFY(c.capabilities().size() == 1);
+	QVERIFY(channel->addCapability(cap1) == true);
+	QVERIFY(channel->capabilities().size() == 1);
 
 	QLCCapability* cap2 = new QLCCapability(0, 9, "0-9");
-	QVERIFY(c.addCapability(cap2) == true);
-	QVERIFY(c.capabilities().size() == 2);
+	QVERIFY(channel->addCapability(cap2) == true);
+	QVERIFY(channel->capabilities().size() == 2);
 
-	QVERIFY(c.removeCapability(cap2) == true);
-	QVERIFY(c.capabilities().size() == 1);
+	QVERIFY(channel->removeCapability(cap2) == true);
+	QVERIFY(channel->capabilities().size() == 1);
+	/* cap2 is deleted by QLCChannel::removeCapability() */
 
-	QVERIFY(c.removeCapability(cap2) == false);
-	QVERIFY(c.capabilities().size() == 1);
+	QVERIFY(channel->removeCapability(cap2) == false);
+	QVERIFY(channel->capabilities().size() == 1);
 
-	QVERIFY(c.removeCapability(cap1) == true);
-	QVERIFY(c.capabilities().size() == 0);
+	QVERIFY(channel->removeCapability(cap1) == true);
+	QVERIFY(channel->capabilities().size() == 0);
+	/* cap1 is deleted by QLCChannel::removeCapability() */
+
+	delete channel;
 }
 
 void QLCChannel_Test::sortCapabilities()
 {
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->capabilities().size() == 0);
+
+	QLCCapability* cap1 = new QLCCapability(10, 19, "10-19");
+	QVERIFY(channel->addCapability(cap1) == true);
+
+	QLCCapability* cap2 = new QLCCapability(50, 59, "50-59");
+	QVERIFY(channel->addCapability(cap2) == true);
+
+	QLCCapability* cap3 = new QLCCapability(40, 49, "40-49");
+	QVERIFY(channel->addCapability(cap3) == true);
+
+	QLCCapability* cap4 = new QLCCapability(0, 9, "0-9");
+	QVERIFY(channel->addCapability(cap4) == true);
+
+	QLCCapability* cap5 = new QLCCapability(200, 209, "200-209");
+	QVERIFY(channel->addCapability(cap5) == true);
+
+	QLCCapability* cap6 = new QLCCapability(30, 39, "30-39");
+	QVERIFY(channel->addCapability(cap6) == true);
+
+	QLCCapability* cap7 = new QLCCapability(26, 29, "26-29");
+	QVERIFY(channel->addCapability(cap7) == true);
+
+	QLCCapability* cap8 = new QLCCapability(20, 25, "20-25");
+	QVERIFY(channel->addCapability(cap8) == true);
+
+	QList <QLCCapability*> orig(channel->capabilities());
+	QVERIFY(orig.at(0) == cap1);
+	QVERIFY(orig.at(1) == cap2);
+	QVERIFY(orig.at(2) == cap3);
+	QVERIFY(orig.at(3) == cap4);
+	QVERIFY(orig.at(4) == cap5);
+	QVERIFY(orig.at(5) == cap6);
+	QVERIFY(orig.at(6) == cap7);
+	QVERIFY(orig.at(7) == cap8);
+
+	channel->sortCapabilities();
+
+	QList <QLCCapability*> sorted(channel->capabilities());
+	QVERIFY(sorted.at(0) == cap4);
+	QVERIFY(sorted.at(1) == cap1);
+	QVERIFY(sorted.at(2) == cap8);
+	QVERIFY(sorted.at(3) == cap7);
+	QVERIFY(sorted.at(4) == cap6);
+	QVERIFY(sorted.at(5) == cap3);
+	QVERIFY(sorted.at(6) == cap2);
+	QVERIFY(sorted.at(7) == cap5);
+
+	delete channel;
 }
 
 void QLCChannel_Test::copy()
 {
+	QLCChannel* channel = new QLCChannel();
+	QVERIFY(channel->capabilities().size() == 0);
+
+	channel->setName("Foobar");
+	channel->setGroup("Tilt");
+	channel->setControlByte(3);
+	
+	QLCCapability* cap1 = new QLCCapability(10, 19, "10-19");
+	QVERIFY(channel->addCapability(cap1) == true);
+
+	QLCCapability* cap2 = new QLCCapability(50, 59, "50-59");
+	QVERIFY(channel->addCapability(cap2) == true);
+
+	QLCCapability* cap3 = new QLCCapability(40, 49, "40-49");
+	QVERIFY(channel->addCapability(cap3) == true);
+
+	QLCCapability* cap4 = new QLCCapability(0, 9, "0-9");
+	QVERIFY(channel->addCapability(cap4) == true);
+
+	QLCCapability* cap5 = new QLCCapability(200, 209, "200-209");
+	QVERIFY(channel->addCapability(cap5) == true);
+
+	QLCCapability* cap6 = new QLCCapability(30, 39, "30-39");
+	QVERIFY(channel->addCapability(cap6) == true);
+
+	QLCCapability* cap7 = new QLCCapability(26, 29, "26-29");
+	QVERIFY(channel->addCapability(cap7) == true);
+
+	QLCCapability* cap8 = new QLCCapability(20, 25, "20-25");
+	QVERIFY(channel->addCapability(cap8) == true);
+
+	/* Create a copy of the original channel */
+	QLCChannel* copy = new QLCChannel(channel);
+
+	QVERIFY(copy->name() == "Foobar");
+	QVERIFY(copy->group() == "Tilt");
+	QVERIFY(copy->controlByte() == 3);
+
+	/* Verify that the capabilities in the copied channel are also
+	   copies i.e. their pointers are not the same as the originals. */
+	QList <QLCCapability*> caps(copy->capabilities());
+	QVERIFY(caps.size() == 8);
+	QVERIFY(caps.at(0) != cap1);
+	QVERIFY(caps.at(0)->name() == cap1->name());
+	QVERIFY(caps.at(0)->min() == cap1->min());
+	QVERIFY(caps.at(0)->max() == cap1->max());
+
+	QVERIFY(caps.at(1) != cap2);
+	QVERIFY(caps.at(1)->name() == cap2->name());
+	QVERIFY(caps.at(1)->min() == cap2->min());
+	QVERIFY(caps.at(1)->max() == cap2->max());
+
+	QVERIFY(caps.at(2) != cap3);
+	QVERIFY(caps.at(2)->name() == cap3->name());
+	QVERIFY(caps.at(2)->min() == cap3->min());
+	QVERIFY(caps.at(2)->max() == cap3->max());
+
+	QVERIFY(caps.at(3) != cap4);
+	QVERIFY(caps.at(3)->name() == cap4->name());
+	QVERIFY(caps.at(3)->min() == cap4->min());
+	QVERIFY(caps.at(3)->max() == cap4->max());
+
+	QVERIFY(caps.at(4) != cap5);
+	QVERIFY(caps.at(4)->name() == cap5->name());
+	QVERIFY(caps.at(4)->min() == cap5->min());
+	QVERIFY(caps.at(4)->max() == cap5->max());
+
+	QVERIFY(caps.at(5) != cap6);
+	QVERIFY(caps.at(5)->name() == cap6->name());
+	QVERIFY(caps.at(5)->min() == cap6->min());
+	QVERIFY(caps.at(5)->max() == cap6->max());
+
+	QVERIFY(caps.at(6) != cap7);
+	QVERIFY(caps.at(6)->name() == cap7->name());
+	QVERIFY(caps.at(6)->min() == cap7->min());
+	QVERIFY(caps.at(6)->max() == cap7->max());
+
+	QVERIFY(caps.at(7) != cap8);
+	QVERIFY(caps.at(7)->name() == cap8->name());
+	QVERIFY(caps.at(7)->min() == cap8->min());
+	QVERIFY(caps.at(7)->max() == cap8->max());
 }

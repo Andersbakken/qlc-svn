@@ -2,215 +2,264 @@
 
 #include "../qlcfixturemode_test.h"
 #include "../qlcfixturemode.h"
+#include "../qlcfixturedef.h"
+
+void QLCFixtureMode_Test::initTestCase()
+{
+	m_fixtureDef = new QLCFixtureDef();
+	QVERIFY(m_fixtureDef != NULL);
+}
 
 void QLCFixtureMode_Test::name()
 {
 	/* Verify that a name can be set & get for the mode */
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
-	QVERIFY(m.name() == QString::null);
-	m.setName("Normal");
-	QVERIFY(m.name() == "Normal");
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
+
+	QVERIFY(mode->name() == QString::null);
+	mode->setName("Normal");
+	QVERIFY(mode->name() == "Normal");
+
+	delete mode;
 }
 
 void QLCFixtureMode_Test::physical()
 {
 	/* Verify that a QLCPhysical can be set & get for the mode */
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
+	QVERIFY(mode->physical().bulbType() == QString::null);
+
 	QLCPhysical p;
 	p.setBulbType("Foobar");
+	mode->setPhysical(p);
+	QVERIFY(mode->physical().bulbType() == "Foobar");
 
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
-	QVERIFY(m.physical().bulbType() == QString::null);
-
-	m.setPhysical(p);
-	QVERIFY(m.physical().bulbType() == "Foobar");
+	delete mode;
 }
 
 void QLCFixtureMode_Test::insertChannel()
 {
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
 
 	/* First channel */
-	QLCChannel ch1;
-	m.insertChannel(&ch1, 0);
-	QVERIFY(m.channel(0) == &ch1);
+	QLCChannel* ch1 = new QLCChannel();
+	mode->insertChannel(ch1, 0);
+	QVERIFY(mode->channel(0) == ch1);
 
 	/* Second prepended */
-	QLCChannel ch2;
-	m.insertChannel(&ch2, 0);
-	QVERIFY(m.channel(0) == &ch2);
-	QVERIFY(m.channel(1) == &ch1);
+	QLCChannel* ch2 = new QLCChannel();
+	mode->insertChannel(ch2, 0);
+	QVERIFY(mode->channel(0) == ch2);
+	QVERIFY(mode->channel(1) == ch1);
 
 	/* Third appended way over the end */
-	QLCChannel ch3;
-	m.insertChannel(&ch3, 10);
-	QVERIFY(m.channel(0) == &ch2);
-	QVERIFY(m.channel(1) == &ch1);
-	QVERIFY(m.channel(2) == &ch3);
+	QLCChannel* ch3 = new QLCChannel();
+	mode->insertChannel(ch3, 10);
+	QVERIFY(mode->channel(0) == ch2);
+	QVERIFY(mode->channel(1) == ch1);
+	QVERIFY(mode->channel(2) == ch3);
 
 	/* Fourth inserted in-between */
-	QLCChannel ch4;
-	m.insertChannel(&ch4, 1);
-	QVERIFY(m.channel(0) == &ch2);
-	QVERIFY(m.channel(1) == &ch4);
-	QVERIFY(m.channel(2) == &ch1);
-	QVERIFY(m.channel(3) == &ch3);
+	QLCChannel* ch4 = new QLCChannel();
+	mode->insertChannel(ch4, 1);
+	QVERIFY(mode->channel(0) == ch2);
+	QVERIFY(mode->channel(1) == ch4);
+	QVERIFY(mode->channel(2) == ch1);
+	QVERIFY(mode->channel(3) == ch3);
+
+	delete mode;
+	delete ch1;
+	delete ch2;
+	delete ch3;
+	delete ch4;
 }
 
 void QLCFixtureMode_Test::removeChannel()
 {
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
 
-	QLCChannel ch1;
-	m.insertChannel(&ch1, 0);
-	QLCChannel ch2;
-	m.insertChannel(&ch2, 1);
-	QLCChannel ch3;
-	m.insertChannel(&ch3, 2);
-	QLCChannel ch4;
-	m.insertChannel(&ch4, 3);
+	QLCChannel* ch1 = new QLCChannel();
+	mode->insertChannel(ch1, 0);
+	QLCChannel* ch2 = new QLCChannel();
+	mode->insertChannel(ch2, 1);
+	QLCChannel* ch3 = new QLCChannel();
+	mode->insertChannel(ch3, 2);
+	QLCChannel* ch4 = new QLCChannel();
+	mode->insertChannel(ch4, 3);
 
 	/* Remove one channel in the middle */
-	QVERIFY(m.channels() == 4);
-	m.removeChannel(&ch2);
-	QVERIFY(m.channels() == 3);
-	QVERIFY(m.channel(0) == &ch1);
-	QVERIFY(m.channel(1) == &ch3);
-	QVERIFY(m.channel(2) == &ch4);
-	QVERIFY(m.channel(3) == NULL);
+	QVERIFY(mode->channels().size() == 4);
+	mode->removeChannel(ch2);
+	QVERIFY(mode->channels().size() == 3);
+	QVERIFY(mode->channel(0) == ch1);
+	QVERIFY(mode->channel(1) == ch3);
+	QVERIFY(mode->channel(2) == ch4);
+	QVERIFY(mode->channel(3) == NULL);
 
 	/* Remove the same channel again. Shouldn't change anything. */
-	m.removeChannel(&ch2);
-	QVERIFY(m.channels() == 3);
-	QVERIFY(m.channel(0) == &ch1);
-	QVERIFY(m.channel(1) == &ch3);
-	QVERIFY(m.channel(2) == &ch4);
-	QVERIFY(m.channel(3) == NULL);
+	mode->removeChannel(ch2);
+	QVERIFY(mode->channels().size() == 3);
+	QVERIFY(mode->channel(0) == ch1);
+	QVERIFY(mode->channel(1) == ch3);
+	QVERIFY(mode->channel(2) == ch4);
+	QVERIFY(mode->channel(3) == NULL);
 
 	/* Remove last channel. */
-	m.removeChannel(&ch4);
-	QVERIFY(m.channels() == 2);
-	QVERIFY(m.channel(0) == &ch1);
-	QVERIFY(m.channel(1) == &ch3);
-	QVERIFY(m.channel(2) == NULL);
-	QVERIFY(m.channel(3) == NULL);
+	mode->removeChannel(ch4);
+	QVERIFY(mode->channels().size() == 2);
+	QVERIFY(mode->channel(0) == ch1);
+	QVERIFY(mode->channel(1) == ch3);
+	QVERIFY(mode->channel(2) == NULL);
+	QVERIFY(mode->channel(3) == NULL);
 
 	/* Remove first channel. */
-	m.removeChannel(&ch1);
-	QVERIFY(m.channels() == 1);
-	QVERIFY(m.channel(0) == &ch3);
-	QVERIFY(m.channel(1) == NULL);
-	QVERIFY(m.channel(2) == NULL);
-	QVERIFY(m.channel(3) == NULL);
+	mode->removeChannel(ch1);
+	QVERIFY(mode->channels().size() == 1);
+	QVERIFY(mode->channel(0) == ch3);
+	QVERIFY(mode->channel(1) == NULL);
+	QVERIFY(mode->channel(2) == NULL);
+	QVERIFY(mode->channel(3) == NULL);
 
 	/* Remove last channel. */
-	m.removeChannel(&ch3);
-	QVERIFY(m.channels() == 0);
-	QVERIFY(m.channel(0) == NULL);
-	QVERIFY(m.channel(1) == NULL);
-	QVERIFY(m.channel(2) == NULL);
-	QVERIFY(m.channel(3) == NULL);
+	mode->removeChannel(ch3);
+	QVERIFY(mode->channels().size() == 0);
+	QVERIFY(mode->channel(0) == NULL);
+	QVERIFY(mode->channel(1) == NULL);
+	QVERIFY(mode->channel(2) == NULL);
+	QVERIFY(mode->channel(3) == NULL);
+
+	delete mode;
+	delete ch1;
+	delete ch2;
+	delete ch3;
+	delete ch4;
 }
 
 void QLCFixtureMode_Test::channelByName()
 {
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
 
-	QLCChannel ch1;
-	ch1.setName("ch1");
-	m.insertChannel(&ch1, 0);
+	QLCChannel* ch1 = new QLCChannel();
+	ch1->setName("ch1");
+	mode->insertChannel(ch1, 0);
 
-	QLCChannel ch2;
-	ch2.setName("ch2");
-	m.insertChannel(&ch2, 1);
+	QLCChannel* ch2 = new QLCChannel();
+	ch2->setName("ch2");
+	mode->insertChannel(ch2, 1);
 
-	QLCChannel ch3;
-	ch3.setName("ch3");
-	m.insertChannel(&ch3, 2);
+	QLCChannel* ch3 = new QLCChannel();
+	ch3->setName("ch3");
+	mode->insertChannel(ch3, 2);
 
-	QLCChannel ch4;
-	ch4.setName("ch4");
-	m.insertChannel(&ch4, 3);
+	QLCChannel* ch4 = new QLCChannel();
+	ch4->setName("ch4");
+	mode->insertChannel(ch4, 3);
 
-	QVERIFY(m.channel("ch1") == &ch1);
-	QVERIFY(m.channel("ch2") == &ch2);
-	QVERIFY(m.channel("ch3") == &ch3);
-	QVERIFY(m.channel("ch4") == &ch4);
-	QVERIFY(m.channel("ch12") == NULL);
-	QVERIFY(m.channel("") == NULL);
+	QVERIFY(mode->channel("ch1") == ch1);
+	QVERIFY(mode->channel("ch2") == ch2);
+	QVERIFY(mode->channel("ch3") == ch3);
+	QVERIFY(mode->channel("ch4") == ch4);
+	QVERIFY(mode->channel("ch12") == NULL);
+	QVERIFY(mode->channel("") == NULL);
+
+	delete mode;
+	delete ch1;
+	delete ch2;
+	delete ch3;
+	delete ch4;
 }
 
 void QLCFixtureMode_Test::channelByIndex()
 {
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
 
-	QLCChannel ch1;
-	m.insertChannel(&ch1, 0);
+	QLCChannel* ch1 = new QLCChannel();
+	mode->insertChannel(ch1, 0);
 
-	QLCChannel ch2;
-	m.insertChannel(&ch2, 1);
+	QLCChannel* ch2 = new QLCChannel();
+	mode->insertChannel(ch2, 1);
 
-	QLCChannel ch3;
-	m.insertChannel(&ch3, 2);
+	QLCChannel* ch3 = new QLCChannel();
+	mode->insertChannel(ch3, 2);
 
-	QLCChannel ch4;
-	m.insertChannel(&ch4, 3);
+	QLCChannel* ch4 = new QLCChannel();
+	mode->insertChannel(ch4, 3);
 
-	QVERIFY(m.channel(0) == &ch1);
-	QVERIFY(m.channel(1) == &ch2);
-	QVERIFY(m.channel(2) == &ch3);
-	QVERIFY(m.channel(3) == &ch4);
-	QVERIFY(m.channel(12) == NULL);
+	QVERIFY(mode->channel(0) == ch1);
+	QVERIFY(mode->channel(1) == ch2);
+	QVERIFY(mode->channel(2) == ch3);
+	QVERIFY(mode->channel(3) == ch4);
+	QVERIFY(mode->channel(12) == NULL);
+
+	delete mode;
+	delete ch1;
+	delete ch2;
+	delete ch3;
+	delete ch4;
 }
 
 void QLCFixtureMode_Test::channels()
 {
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
-	
-	QVERIFY(m.channels() == 0);
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
+	QVERIFY(mode->channels().size() == 0);
 
-	m.insertChannel(NULL, 0);
-	QVERIFY(m.channels() == 0);
+	QLCChannel* ch1 = new QLCChannel();
+	mode->insertChannel(ch1, 0);
+	QVERIFY(mode->channels().size() == 1);
 
-	QLCChannel ch1;
-	m.insertChannel(&ch1, 0);
-	QVERIFY(m.channels() == 1);
+	QLCChannel* ch2 = new QLCChannel();
+	mode->insertChannel(ch2, 1);
+	QVERIFY(mode->channels().size() == 2);
 
-	QLCChannel ch2;
-	m.insertChannel(&ch2, 1);
-	QVERIFY(m.channels() == 2);
+	delete mode;
+	delete ch1;
+	delete ch2;
 }
 
 void QLCFixtureMode_Test::channelNumber()
 {
-	QLCFixtureMode m(reinterpret_cast<QLCFixtureMode*> (NULL));
+	QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
 
-	QLCChannel ch1;
-	ch1.setName("ch1");
-	m.insertChannel(&ch1, 0);
+	QLCChannel* ch1 = new QLCChannel();
+	ch1->setName("ch1");
+	mode->insertChannel(ch1, 0);
 
-	QLCChannel ch2;
-	ch2.setName("ch2");
-	m.insertChannel(&ch2, 1);
+	QLCChannel* ch2 = new QLCChannel();
+	ch2->setName("ch2");
+	mode->insertChannel(ch2, 1);
 
-	QLCChannel ch3;
-	ch3.setName("ch3");
-	m.insertChannel(&ch3, 2);
+	QLCChannel* ch3 = new QLCChannel();
+	ch3->setName("ch3");
+	mode->insertChannel(ch3, 2);
 
-	QLCChannel ch4;
-	ch4.setName("ch4");
-	m.insertChannel(&ch4, 3);
+	QLCChannel* ch4 = new QLCChannel();
+	ch4->setName("ch4");
+	mode->insertChannel(ch4, 3);
 
-	QVERIFY(m.channelNumber(&ch1) == 0);
-	QVERIFY(m.channelNumber(&ch2) == 1);
-	QVERIFY(m.channelNumber(&ch3) == 2);
-	QVERIFY(m.channelNumber(&ch4) == 3);
+	QVERIFY(mode->channelNumber(ch1) == 0);
+	QVERIFY(mode->channelNumber(ch2) == 1);
+	QVERIFY(mode->channelNumber(ch3) == 2);
+	QVERIFY(mode->channelNumber(ch4) == 3);
 
-	QLCChannel ch5;
-	QVERIFY(m.channelNumber(&ch5) == KChannelInvalid);
-	QVERIFY(m.channelNumber(NULL) == KChannelInvalid);
+	QLCChannel* ch5 = new QLCChannel();
+	QVERIFY(mode->channelNumber(ch5) == KChannelInvalid);
+	QVERIFY(mode->channelNumber(NULL) == KChannelInvalid);
+
+	delete mode;
+	delete ch1;
+	delete ch2;
+	delete ch3;
+	delete ch4;
+	delete ch5;
 }
 
 void QLCFixtureMode_Test::copy()
 {
 	qWarning() << "TODO";
+}
+
+void QLCFixtureMode_Test::cleanupTestCase()
+{
+	QVERIFY(m_fixtureDef != NULL);
+	delete m_fixtureDef;
+	m_fixtureDef = NULL;
 }
