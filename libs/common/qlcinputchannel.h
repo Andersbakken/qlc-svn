@@ -36,6 +36,7 @@ class QString;
 #define KXMLQLCInputChannelSlider "Slider"
 #define KXMLQLCInputChannelKnob "Knob"
 #define KXMLQLCInputChannelButton "Button"
+#define KXMLQLCInputChannelNone "None"
 
 class QLC_DECLSPEC QLCInputChannel
 {

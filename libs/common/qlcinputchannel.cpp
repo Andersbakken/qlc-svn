@@ -86,10 +86,11 @@ QString QLCInputChannel::typeToString(Type type)
 	case Knob:
 		str = QString(KXMLQLCInputChannelKnob);
 		break;
-	default:
 	case Slider:
 		str = QString(KXMLQLCInputChannelSlider);
 		break;
+	default:
+		str = QString(KXMLQLCInputChannelNone);
 	}
 
 	return str;
@@ -101,8 +102,10 @@ QLCInputChannel::Type QLCInputChannel::stringToType(const QString& type)
 		return Button;
 	else if (type == KXMLQLCInputChannelKnob)
 		return Knob;
-	else
+	else if (type == KXMLQLCInputChannelSlider)
 		return Slider;
+	else
+		return NoType;
 }
 
 QStringList QLCInputChannel::types()
