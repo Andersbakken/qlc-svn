@@ -37,14 +37,14 @@ QLCFixtureDef::QLCFixtureDef()
 	m_type = QString("Dimmer");
 }
 
-QLCFixtureDef::QLCFixtureDef(const QLCFixtureDef *fixture)
+QLCFixtureDef::QLCFixtureDef(const QLCFixtureDef* fixtureDef)
 {
 	m_manufacturer = QString::null;
 	m_model = QString::null;
 	m_type = QString("Dimmer");
 
-	if (fixture != NULL)
-		*this = *fixture;
+	if (fixtureDef != NULL)
+		*this = *fixtureDef;
 }
 
 QLCFixtureDef::~QLCFixtureDef()
@@ -81,7 +81,7 @@ QLCFixtureDef& QLCFixtureDef::operator=(const QLCFixtureDef& fixture)
 
 		/* Copy modes from the other fixture */
 		while (modeit.hasNext() == true)
-			m_modes.append(new QLCFixtureMode(modeit.next()));
+			m_modes.append(new QLCFixtureMode(this, modeit.next()));
 	}
 
 	return *this;
@@ -91,19 +91,19 @@ QLCFixtureDef& QLCFixtureDef::operator=(const QLCFixtureDef& fixture)
  * General properties
  ****************************************************************************/
 
-void QLCFixtureDef::setManufacturer(const QString mfg)
+void QLCFixtureDef::setManufacturer(const QString& mfg)
 {
-	m_manufacturer = QString(mfg);
+	m_manufacturer = mfg;
 }
 
-void QLCFixtureDef::setModel(const QString model)
+void QLCFixtureDef::setModel(const QString& model)
 {
-	m_model = QString(model);
+	m_model = model;
 }
 
-void QLCFixtureDef::setType(const QString &type)
+void QLCFixtureDef::setType(const QString& type)
 {
-	m_type = QString(type);
+	m_type = type;
 }
 
 /****************************************************************************
@@ -112,7 +112,8 @@ void QLCFixtureDef::setType(const QString &type)
 
 void QLCFixtureDef::addChannel(QLCChannel* channel)
 {
-	m_channels.append(channel);
+	if (channel != NULL && m_channels.contains(channel) == false)
+		m_channels.append(channel);
 }
 
 bool QLCFixtureDef::removeChannel(QLCChannel* channel)
@@ -137,7 +138,7 @@ bool QLCFixtureDef::removeChannel(QLCChannel* channel)
 	return false;
 }
 
-QLCChannel* QLCFixtureDef::channel(const QString &name)
+QLCChannel* QLCFixtureDef::channel(const QString& name)
 {
 	QListIterator <QLCChannel*> it(m_channels);
 	QLCChannel* ch = NULL;
@@ -158,7 +159,8 @@ QLCChannel* QLCFixtureDef::channel(const QString &name)
 
 void QLCFixtureDef::addMode(QLCFixtureMode* mode)
 {
-	m_modes.append(mode);
+	if (mode != NULL && m_modes.contains(mode) == false)
+		m_modes.append(mode);
 }
 
 bool QLCFixtureDef::removeMode(QLCFixtureMode* mode)
@@ -196,7 +198,7 @@ QLCFixtureMode* QLCFixtureDef::mode(const QString& name)
  * XML operations
  ****************************************************************************/
 
-QFile::FileError QLCFixtureDef::saveXML(const QString &fileName)
+QFile::FileError QLCFixtureDef::saveXML(const QString& fileName)
 {
 	QDomDocument* doc = NULL;
 	QFile::FileError error;

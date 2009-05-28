@@ -202,7 +202,7 @@ void VCXYPadFixture::arm()
 		}
 
 		/* Find exact channel numbers for MSB/LSB pan and tilt */
-		for (t_channel i = 0; i < mode->channels(); i++)
+		for (t_channel i = 0; i < mode->channels().size(); i++)
 		{
 			ch = mode->channel(i);
 			Q_ASSERT(ch != NULL);

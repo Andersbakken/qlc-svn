@@ -184,7 +184,7 @@ void Fixture::setChannels(t_channel channels)
 t_channel Fixture::channels() const
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
-		return m_fixtureMode->channels();
+		return m_fixtureMode->channels().size();
 	else
 		return m_channels;
 }
@@ -215,7 +215,7 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
 	else
 	{
 		/* Search for the channel name (and group) from our list */
-		for (t_channel i = 0; i < m_fixtureMode->channels(); i++)
+		for (t_channel i = 0; i < m_fixtureMode->channels().size(); i++)
 		{
 			const QLCChannel* ch;
 

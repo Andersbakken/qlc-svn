@@ -56,13 +56,13 @@ public:
 	QLCFixtureDef();
 
 	/** Copy constructor */
-	QLCFixtureDef(const QLCFixtureDef *dc);
+	QLCFixtureDef(const QLCFixtureDef* fixtureDef);
 
 	/** Destructor */
 	~QLCFixtureDef();
 
 	/** Assignment operator */
-	QLCFixtureDef& operator=(const QLCFixtureDef& fixture);
+	QLCFixtureDef& operator=(const QLCFixtureDef& fixtureDef);
 
 	/*********************************************************************
 	 * Fixture information
@@ -72,19 +72,19 @@ public:
 	QString name() { return m_manufacturer + QString(" ") + m_model; }
 
 	/** Set the fixture's manufacturer string */
-	void setManufacturer(const QString mfg);
+	void setManufacturer(const QString& mfg);
 
 	/** Set the fixture's manufacturer string */
 	QString manufacturer() const { return m_manufacturer; }
 
 	/** Set the fixture's model string */
-	void setModel(const QString model);
+	void setModel(const QString& model);
 
 	/** Get the fixture's model string */
 	QString model() const { return m_model; }
 
 	/** Set the fixture's type string */
-	void setType(const QString &type);
+	void setType(const QString& type);
 
 	/** Get the fixture's type string */
 	QString type() const { return m_type; }
@@ -105,10 +105,11 @@ public:
 	bool removeChannel(QLCChannel* channel);
 
 	/** Search for a channel by its name */
-	QLCChannel* channel(const QString &name);
+	QLCChannel* channel(const QString& name);
 
-	/** Get all channels */
-	QList <QLCChannel*> *channels() { return &m_channels; }
+	/** Get all channels in this fixture. Changes to the list won't end
+	    up into the fixture definition. */
+	QList <QLCChannel*> channels() const { return m_channels; }
 
 protected:
 	/** Available channels */
@@ -127,8 +128,9 @@ public:
 	/** Get a certain mode by its name */
 	QLCFixtureMode* mode(const QString& name);
 
-	/** Get all modes */
-	QList <QLCFixtureMode*> *modes() { return &m_modes; }
+	/** Get all modes in this fixture. Changes to the list won't end
+	    up into the fixture definition. */
+	QList <QLCFixtureMode*> modes() const { return m_modes; }
 
 protected:
 	/** Modes (i.e. particular collections of channels) */
@@ -139,7 +141,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Save the fixture into an XML file */
-	QFile::FileError saveXML(const QString &fileName);
+	QFile::FileError saveXML(const QString& fileName);
 
 	/** Load this fixture's contents from the given file */
 	QFile::FileError loadXML(const QString& fileName);

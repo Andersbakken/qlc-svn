@@ -48,7 +48,7 @@ EditMode::EditMode(QWidget* parent, QLCFixtureMode* mode) : QDialog(parent)
 	Q_ASSERT(mode != NULL);
 
 	/* Edit the given mode */
-	m_mode = new QLCFixtureMode(mode);
+	m_mode = new QLCFixtureMode(mode->fixtureDef(), mode);
 
 	setupUi(this);
 	init();
@@ -146,7 +146,7 @@ void EditMode::slotAddChannelClicked()
 
 	/* Create a list of channels that haven't been added to this mode yet */
 	QStringList chlist;
-	QListIterator <QLCChannel*> it(*m_mode->fixtureDef()->channels());
+	QListIterator <QLCChannel*> it(m_mode->fixtureDef()->channels());
 	while (it.hasNext() == true)
 	{
 		ch = it.next();
@@ -166,7 +166,7 @@ void EditMode::slotAddChannelClicked()
 		ch = m_mode->fixtureDef()->channel(name);
 
 		// Append the channel
-		m_mode->insertChannel(ch, m_mode->channels());
+		m_mode->insertChannel(ch, m_mode->channels().size());
 
 		// Easier to refresh the whole list
 		refreshChannelList();
@@ -237,7 +237,7 @@ void EditMode::slotLowerChannelClicked()
 	index = m_mode->channelNumber(ch) + 1;
 	
 	// Don't move beyond the end of the list
-	if (index >= m_mode->channels())
+	if (index >= m_mode->channels().size())
 		return;
 	
 	m_mode->removeChannel(ch);
@@ -250,14 +250,15 @@ void EditMode::slotLowerChannelClicked()
 void EditMode::refreshChannelList()
 {
 	m_channelList->clear();
-	
-	for (int i = 0; i < m_mode->channels(); i++)
+
+	for (int i = 0; i < m_mode->channels().size(); i++)
 	{
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_channelList);
 		QLCChannel* ch = m_mode->channel(i);
+		Q_ASSERT(ch != NULL);
+
 		QString str;
-	
-		str.sprintf("%.3d", i + 1);
+		str.sprintf("%.3d", (i + 1));
 		item->setText(KChannelsColumnNumber, str);
 		item->setText(KChannelsColumnName, ch->name());
 		

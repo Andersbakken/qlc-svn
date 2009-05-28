@@ -32,18 +32,28 @@
 
 QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef)
 {
+	Q_ASSERT(fixtureDef != NULL);
 	m_fixtureDef = fixtureDef;
 }
 
-QLCFixtureMode::QLCFixtureMode(const QLCFixtureMode* mode)
+QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef,
+			       const QLCFixtureMode* mode)
 {
+	Q_ASSERT(fixtureDef != NULL);
+	Q_ASSERT(mode != NULL);
+
+	m_fixtureDef = fixtureDef;
+
 	if (mode != NULL)
 		*this = *mode;
 }
 
 QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef,
-				const QDomElement* tag)
+			       const QDomElement* tag)
 {
+	Q_ASSERT(fixtureDef != NULL);
+	Q_ASSERT(tag != NULL);
+
 	m_fixtureDef = fixtureDef;
 
 	if (tag != NULL)
@@ -52,23 +62,39 @@ QLCFixtureMode::QLCFixtureMode(QLCFixtureDef* fixtureDef,
 
 QLCFixtureMode::~QLCFixtureMode()
 {
-	m_channels.clear();
 }
 
 QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
 {
 	if (this != &mode)
 	{
-		QListIterator <QLCChannel*> it(mode.m_channels);
-		int i = 0;
-
 		m_name = mode.m_name;
 		m_physical = mode.m_physical;
-		m_fixtureDef = mode.m_fixtureDef;
 
+		/* Clear the existing list of channels */
 		m_channels.clear();
+
+		Q_ASSERT(m_fixtureDef != NULL);
+
+		int i = 0;
+		QListIterator <QLCChannel*> it(mode.m_channels);
 		while (it.hasNext() == true)
-			insertChannel(it.next(), i++);
+		{
+			/* Since m_fixtureDef might not be the same as
+			   mode.m_fixtureDef, we need to search for a
+			   channel with the same name from m_fixtureDef and
+			   not from mode.m_fixtureDef. If the channel in the
+			   other mode is deleted, the one in this copied mode
+			   will be invalid and we end up in a crash. */
+			QLCChannel* ch = it.next();
+			QLCChannel* actual = m_fixtureDef->channel(ch->name());
+			if (actual != NULL)
+				insertChannel(actual, i++);
+			else
+				qWarning() << "Unable to find channel"
+					   << ch->name() << "for mode"
+					   << m_name << "from its fixture def";
+		}
 	}
 
 	return *this;
@@ -80,11 +106,25 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
 
 void QLCFixtureMode::insertChannel(QLCChannel* channel, t_channel index)
 {
-	if (channel != NULL)
+	if (channel == NULL)
+	{
+		qWarning() << "Will not add a NULL channel to mode"
+			   << m_name;
+		return;
+	}
+
+	Q_ASSERT(m_fixtureDef != NULL);
+
+	if (m_fixtureDef->channels().contains(channel) == true)
 		m_channels.insert(index, channel);
+	else
+		qWarning() << "Will not add channel" << channel->name()
+			   << "to mode" << m_name
+			   << "because the channel does not belong to mode's"
+			   << "own fixture definition";
 }
 
-bool QLCFixtureMode::removeChannel(QLCChannel* channel)
+bool QLCFixtureMode::removeChannel(const QLCChannel* channel)
 {
 	QMutableListIterator <QLCChannel*> it(m_channels);
 	while (it.hasNext() == true)
@@ -104,11 +144,10 @@ bool QLCFixtureMode::removeChannel(QLCChannel* channel)
 QLCChannel* QLCFixtureMode::channel(const QString& name) const
 {
 	QListIterator <QLCChannel*> it(m_channels);
-	QLCChannel* ch = NULL;
-
 	while (it.hasNext() == true)
 	{
-		ch = it.next();
+		QLCChannel* ch = it.next();
+		Q_ASSERT(ch != NULL);
 		if (ch->name() == name)
 			return ch;
 	}
@@ -138,7 +177,7 @@ t_channel QLCFixtureMode::channelNumber(QLCChannel* channel) const
 	return KChannelInvalid;
 }
 
-void QLCFixtureMode::setPhysical(const QLCPhysical &physical)
+void QLCFixtureMode::setPhysical(const QLCPhysical& physical)
 {
 	m_physical = physical;
 }

@@ -180,7 +180,7 @@ void AddFixture::fillModeCombo(const QString& text)
 	{
 		m_modeCombo->setEnabled(true);
 
-		QListIterator <QLCFixtureMode*> it(*m_fixtureDef->modes());
+		QListIterator <QLCFixtureMode*> it(m_fixtureDef->modes());
 		while (it.hasNext() == true)
 			m_modeCombo->addItem(it.next()->name());
 
@@ -233,16 +233,18 @@ void AddFixture::slotModeActivated(const QString& modeName)
 		return;
 	}
 
-	m_channelsSpin->setValue(m_mode->channels());
+	m_channelsSpin->setValue(m_mode->channels().size());
 
 	/* Show all selected mode channels in the list */
 	m_channelList->clear();
-	for (int i = 0; i < m_mode->channels(); i++)
+	for (int i = 0; i < m_mode->channels().size(); i++)
 	{
 		QLCChannel* channel = m_mode->channel(i);
 		Q_ASSERT(channel != NULL);
 
-		new QListWidgetItem(channel->name(), m_channelList);
+		new QListWidgetItem(
+			QString("%1: %2").arg(i + 1).arg(channel->name()),
+			m_channelList);
 	}
 }
 

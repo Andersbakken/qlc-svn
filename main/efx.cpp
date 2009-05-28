@@ -1284,10 +1284,7 @@ void EFX::arm()
 {
 	class Scene* startScene = NULL;
 	class Scene* stopScene = NULL;
-	QLCFixtureMode* mode = NULL;
-	QLCChannel* ch = NULL;
 	int serialNumber = 0;
-	Fixture* fxi = NULL;
 
 	/* Initialization scene */
 	if (m_startSceneID != KNoID && m_startSceneEnabled == true)
@@ -1310,20 +1307,20 @@ void EFX::arm()
 		ef->setStopScene(stopScene);
 
 		/* If fxi == NULL, the fixture has been destroyed */
-		fxi = _app->doc()->fixture(ef->fixture());
+		Fixture* fxi = _app->doc()->fixture(ef->fixture());
 		if (fxi == NULL)
 			continue;
 
 		/* If this fixture has no mode, it's a generic dimmer that
 		   can't do pan&tilt anyway. */
-		mode = fxi->fixtureMode();
+		QLCFixtureMode* mode = fxi->fixtureMode();
 		if (mode == NULL)
 			continue;
 
 		/* Find exact channel numbers for MSB/LSB pan and tilt */
-		for (t_channel i = 0; i < mode->channels(); i++)
+		for (t_channel i = 0; i < mode->channels().size(); i++)
 		{
-			ch = mode->channel(i);
+			QLCChannel* ch = mode->channel(i);
 			Q_ASSERT(ch != NULL);
 
 			if (ch->group() == KQLCChannelGroupPan)
