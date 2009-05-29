@@ -27,6 +27,7 @@
 #include "ui_selectinputchannel.h"
 
 class QTreeWidgetItem;
+class QLCInputProfile;
 class QLCInputChannel;
 class InputPatch;
 
@@ -76,7 +77,8 @@ protected:
 	/** Update the contents of a channel item */
 	void updateChannelItem(QTreeWidgetItem* item,
 			       t_input_universe universe,
-			       QLCInputChannel* channel);
+			       const QLCInputChannel* channel,
+			       const QLCInputProfile* profile);
 
 protected slots:
 	/** Receives changed information for items with manual input enabled */

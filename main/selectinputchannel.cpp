@@ -103,7 +103,7 @@ void SelectInputChannel::fillTree()
 		{
 			/* Add a manual option to each patched universe */
 			chItem = new QTreeWidgetItem(uniItem);
-			updateChannelItem(chItem, uni, NULL);
+			updateChannelItem(chItem, uni, NULL, NULL);
 		}
 
 		/* Add known channels from profile (if any) */
@@ -118,7 +118,8 @@ void SelectInputChannel::fillTree()
 				Q_ASSERT(channel != NULL);
 
 				chItem = new QTreeWidgetItem(uniItem);
-				updateChannelItem(chItem, uni, channel);
+				updateChannelItem(chItem, uni, channel,
+						  profile);
 			}
 		}
 	}
@@ -132,13 +133,14 @@ void SelectInputChannel::fillTree()
 
 void SelectInputChannel::updateChannelItem(QTreeWidgetItem* item,
 					   t_input_universe universe,
-					   QLCInputChannel* channel)
+					   const QLCInputChannel* channel,
+					   const QLCInputProfile* profile)
 {
 	Q_ASSERT(item != NULL);
 
 	/* Add a manual option to each universe */
 	item->setText(KColumnUniverse, QString("%1").arg(universe));
-	if (channel == NULL)
+	if (channel == NULL && profile == NULL)
 	{
 		item->setFlags(item->flags() | Qt::ItemIsEditable);
 		item->setText(KColumnName,
@@ -149,10 +151,10 @@ void SelectInputChannel::updateChannelItem(QTreeWidgetItem* item,
 	else
 	{
 		item->setText(KColumnName, QString("%1: %2")
-						.arg(channel->channel() + 1)
-						.arg(channel->name()));
+				.arg(profile->channelNumber(channel) + 1)
+				.arg(channel->name()));
 		item->setText(KColumnChannel, QString("%1")
-						.arg(channel->channel()));
+				.arg(profile->channelNumber(channel)));
 
 		/* Display nice icons to indicate channel type */
 		if (channel->type() == QLCInputChannel::Slider)

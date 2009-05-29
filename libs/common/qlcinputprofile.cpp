@@ -73,7 +73,14 @@ QLCInputProfile& QLCInputProfile::operator=(const QLCInputProfile& profile)
 		QMapIterator <t_input_channel,QLCInputChannel*>
 			it(profile.m_channels);
 		while (it.hasNext() == true)
-			addChannel(new QLCInputChannel(*(it.next().value())));
+		{
+			it.next();
+
+			t_input_channel number = it.key();
+			QLCInputChannel* ich = it.value();
+
+			insertChannel(number, new QLCInputChannel(*ich));
+		}
 	}
 
 	return *this;
@@ -95,7 +102,7 @@ void QLCInputProfile::setModel(const QString& model)
 
 QString QLCInputProfile::name() const
 {
-	return QString("%1 - %2").arg(m_manufacturer).arg(m_model);
+	return QString("%1 %2").arg(m_manufacturer).arg(m_model);
 }
 
 QString QLCInputProfile::path() const
@@ -107,35 +114,50 @@ QString QLCInputProfile::path() const
  * Channels
  ****************************************************************************/
 
-void QLCInputProfile::addChannel(QLCInputChannel* ich)
+bool QLCInputProfile::insertChannel(t_input_channel channel,
+				    QLCInputChannel* ich)
 {
-	Q_ASSERT(ich != NULL);
-
-	/* Remove & delete the previous mapping if such exists */
-	if (m_channels.contains(ich->channel()) == true)
-		removeChannel(ich->channel());
-
-	m_channels.insert(ich->channel(), ich);
+	if (ich != NULL && m_channels.contains(channel) == false)
+	{
+		m_channels.insert(channel, ich);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void QLCInputProfile::removeChannel(QLCInputChannel* ich)
-{
-	Q_ASSERT(ich != NULL);
-
-	/* Just remove the channel from the list, but don't delete */
-	if (m_channels.contains(ich->channel()) == true)
-		m_channels.remove(ich->channel());
-}
-
-void QLCInputProfile::removeChannel(t_input_channel channel)
+bool QLCInputProfile::removeChannel(t_input_channel channel)
 {
 	if (m_channels.contains(channel) == true)
 	{
 		QLCInputChannel* ich = m_channels.take(channel);
+		Q_ASSERT(ich != NULL);
 		delete ich;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
-		/* Also invalidate mapping for the removed channel */
-		setMapping(channel, KInputChannelInvalid);
+bool QLCInputProfile::remapChannel(QLCInputChannel* ich, t_input_channel number)
+{
+	if (ich == NULL)
+		return false;
+
+	t_input_channel old = channelNumber(ich);
+	if (old != KInputChannelInvalid && m_channels.contains(number) == false)
+	{
+		m_channels.take(old);
+		insertChannel(number, ich);
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -147,58 +169,21 @@ QLCInputChannel* QLCInputProfile::channel(t_input_channel channel) const
 		return NULL;
 }
 
-QString QLCInputProfile::channelName(t_input_channel channel) const
+t_input_channel QLCInputProfile::channelNumber(
+					const QLCInputChannel* channel) const
 {
-	if (m_channels.contains(channel) == true)
-		return m_channels[channel]->name();
-	else
-		return QString::null;
-}
-
-/****************************************************************************
- * Channel mapping
- ****************************************************************************/
-
-void QLCInputProfile::setMapping(t_input_channel from, t_input_channel to)
-{
-	if (from == KInputChannelInvalid)
-		return;
-
-	/* Remove mapping if to == KInputChannelInvalid. Otherwise assign. */
-	if (to == KInputChannelInvalid)
-		m_mapping.remove(from);
-	else
-		m_mapping[from] = to;
-}
-
-t_input_channel QLCInputProfile::mapping(t_input_channel from) const
-{
-	if (m_mapping.contains(from) == true)
-		return m_mapping[from];
-	else
+	if (channel == NULL)
 		return KInputChannelInvalid;
-}
 
-t_input_channel QLCInputProfile::reverseMapping(t_input_channel to) const
-{
-	QHashIterator <t_input_channel, t_input_channel> it(m_mapping);
+	QMapIterator <t_input_channel,QLCInputChannel*> it(m_channels);
 	while (it.hasNext() == true)
 	{
 		it.next();
-		if (it.value() == to)
+		if (it.value() == channel)
 			return it.key();
 	}
 
 	return KInputChannelInvalid;
-}
-
-const QLCInputChannel* QLCInputProfile::mappedChannel(t_input_channel to) const
-{
-	t_input_channel from = reverseMapping(to);
-	if (from == KInputChannelInvalid)
-		return NULL;
-	else
-		return channel(from);
 }
 
 /****************************************************************************
@@ -230,8 +215,8 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
 
 bool QLCInputProfile::loadXML(const QDomDocument* doc)
 {
-	t_input_channel from;
-	t_input_channel to;
+	QLCInputChannel* ich;
+	t_input_channel ch;
 	QDomElement root;
 	QDomElement tag;
 	QDomNode node;
@@ -260,27 +245,16 @@ bool QLCInputProfile::loadXML(const QDomDocument* doc)
 			}
 			else if (tag.tagName() == KXMLQLCInputChannel)
 			{
-				QLCInputChannel* ich = new QLCInputChannel();
-				if (ich->loadXML(&tag) == true)
-					addChannel(ich);
-				else
-					delete ich;
-			}
-			else if (tag.tagName() == KXMLQLCInputProfileMap)
-			{
-				str = tag.attribute(KXMLQLCInputProfileMapFrom);
+				str = tag.attribute(KXMLQLCInputChannelNumber);
 				if (str.isEmpty() == false)
-					from = str.toInt();
-				else
-					from = KInputChannelInvalid;
-
-				str = tag.attribute(KXMLQLCInputProfileMapTo);
-				if (str.isEmpty() == false)
-					to = str.toInt();
-				else
-					to = KInputChannelInvalid;
-
-				setMapping(from, to);
+				{
+					ch = str.toInt();
+					ich = new QLCInputChannel();
+					if (ich->loadXML(&tag) == true)
+						insertChannel(ch, ich);
+					else
+						delete ich;
+				}
 			}
 
 			node = node.nextSibling();
@@ -329,10 +303,10 @@ bool QLCInputProfile::saveXML(const QString& fileName)
 		/* Write channels to the document */
 		QMapIterator <t_input_channel, QLCInputChannel*> it(m_channels);
 		while (it.hasNext() == true)
-			it.next().value()->saveXML(doc, &root);
-
-		/* Save channel mappings */
-		saveXMLMappings(doc, &root);
+		{
+			it.next();
+			it.value()->saveXML(doc, &root, it.key());
+		}
 
 		/* Write the document into the stream */
 		m_path = fileName;
@@ -351,33 +325,4 @@ bool QLCInputProfile::saveXML(const QString& fileName)
 	file.close();
 
 	return retval;
-}
-
-bool QLCInputProfile::saveXMLMappings(QDomDocument* doc, QDomElement* root) const
-{
-	QDomElement tag;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
-
-	if (root->tagName() != KXMLQLCInputProfile)
-	{
-		qWarning() << "Not an Input profile node!";
-		return false;
-	}
-	
-	QHashIterator <t_input_channel, t_input_channel> it(m_mapping);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		
-		tag = doc->createElement(KXMLQLCInputProfileMap);
-		tag.setAttribute(KXMLQLCInputProfileMapFrom,
-				 QString("%1").arg(it.key()));
-		tag.setAttribute(KXMLQLCInputProfileMapTo,
-				 QString("%1").arg(it.value()));
-		root->appendChild(tag);
-	}
-
-	return true;
 }

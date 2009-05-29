@@ -1,6 +1,7 @@
 #include <QtTest>
 
 #include "qlcinputchannel_test.h"
+#include "qlcinputprofile_test.h"
 #include "qlcfixturemode_test.h"
 #include "qlcfixturedef_test.h"
 #include "qlccapability_test.h"
@@ -28,4 +29,7 @@ int main(int argc, char** argv)
 
 	QLCInputChannel_Test inputChannel;
 	QTest::qExec(&inputChannel, argc, argv);
+
+	QLCInputProfile_Test inputProfile;
+	QTest::qExec(&inputProfile, argc, argv);
 }

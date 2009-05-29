@@ -24,11 +24,14 @@
 #include <QSpinBox>
 #include <QIcon>
 
+#include <common/qlcinputprofile.h>
 #include <common/qlcinputchannel.h>
 #include "inputchanneleditor.h"
 
 InputChannelEditor::InputChannelEditor(QWidget* parent,
-	const QLCInputChannel* channel) : QDialog(parent)
+				       const QLCInputProfile* profile,
+				       const QLCInputChannel* channel)
+	: QDialog(parent)
 {
 	m_channel = 0;
 	m_type = QLCInputChannel::NoType;
@@ -58,12 +61,17 @@ InputChannelEditor::InputChannelEditor(QWidget* parent,
 			m_typeCombo->addItem(QIcon(":/slider.png"), str);
 	}
 
-	if (channel != NULL)
+	if (channel != NULL && profile != NULL)
 	{
 		QString type;
-
+		t_input_channel num;
+		
 		/* Channel number */
-		m_numberSpin->setValue(channel->channel() + 1);
+		num = profile->channelNumber(channel);
+		if (num != KInputChannelInvalid)
+			m_numberSpin->setValue(num + 1);
+		else
+			m_numberSpin->setValue(1);
 
 		/* Channel name */
 		m_nameEdit->setText(channel->name());

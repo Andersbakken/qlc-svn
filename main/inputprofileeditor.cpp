@@ -112,12 +112,15 @@ void InputProfileEditor::fillTree()
 }
 
 void InputProfileEditor::updateChannelItem(QTreeWidgetItem* item,
-					    QLCInputChannel* ch)
+					   QLCInputChannel* ch)
 {
+	t_input_channel num;
+
 	Q_ASSERT(item != NULL);
 	Q_ASSERT(ch != NULL);
 
-	item->setText(KColumnNumber, QString("%1").arg(ch->channel() + 1));
+	num = m_profile->channelNumber(ch);
+	item->setText(KColumnNumber, QString("%1").arg(num + 1));
 	item->setText(KColumnName, ch->name());
 	item->setText(KColumnType, QLCInputChannel::typeToString(ch->type()));
 
@@ -172,17 +175,16 @@ void InputProfileEditor::accept()
 void InputProfileEditor::slotAddClicked()
 {
 	QLCInputChannel* channel = new QLCInputChannel();
-	InputChannelEditor ice(this, channel);
+	InputChannelEditor ice(this, m_profile, channel);
 add:
 	if (ice.exec() == QDialog::Accepted)
 	{
-		channel->setChannel(ice.channel());
 		channel->setType(ice.type());
 		channel->setName(ice.name());
 
 		if (m_profile->channel(ice.channel()) == NULL)
 		{
-			m_profile->addChannel(channel);
+			m_profile->insertChannel(ice.channel(), channel);
 			updateChannelItem(new QTreeWidgetItem(m_tree), channel);
 		}
 		else
@@ -228,7 +230,7 @@ void InputProfileEditor::slotRemoveClicked()
 		item = it.next();
 		Q_ASSERT(item != NULL);
 
-		/* Delete the channel object */
+		/* Remove & Delete the channel object */
 		chnum = item->text(KColumnNumber).toInt() - 1;
 		m_profile->removeChannel(chnum);
 
@@ -263,7 +265,7 @@ void InputProfileEditor::slotEditClicked()
 		Q_ASSERT(channel != NULL);
 
 		/* Edit the channel and update its item if necessary */
-		InputChannelEditor ice(this, channel);
+		InputChannelEditor ice(this, m_profile, channel);
 edit:
 		if (ice.exec() == QDialog::Accepted)
 		{
@@ -273,11 +275,19 @@ edit:
 			if (another == NULL || another == channel)
 			{
 				if (ice.channel() != KInputChannelInvalid)
-					channel->setChannel(ice.channel());
+				{
+					m_profile->remapChannel(channel,
+								ice.channel());
+				}
 				if (ice.name() != QString::null)
+				{
 					channel->setName(ice.name());
+				}
 				if (ice.type() != QLCInputChannel::NoType)
+				{
 					channel->setType(ice.type());
+				}
+
 	                        updateChannelItem(item, channel);
 			}
 			else
@@ -293,7 +303,7 @@ edit:
 	else if (m_tree->selectedItems().count() > 1)
 	{
 		/* Multiple channels selected. Apply changes to all of them */
-		InputChannelEditor ice(this, NULL);
+		InputChannelEditor ice(this, NULL, NULL);
 		if (ice.exec() == QDialog::Accepted)
 		{
 			QListIterator <QTreeWidgetItem*> 
@@ -377,10 +387,9 @@ void InputProfileEditor::slotInputValueChanged(t_input_universe universe,
 		QLCInputChannel* ch;
 
 		ch = new QLCInputChannel();
-		ch->setChannel(channel);
 		ch->setName(tr("Button %1").arg(channel + 1));
 		ch->setType(QLCInputChannel::Button);
-		m_profile->addChannel(ch);
+		m_profile->insertChannel(channel, ch);
 
 		item = new QTreeWidgetItem(m_tree);
 		updateChannelItem(item, ch);

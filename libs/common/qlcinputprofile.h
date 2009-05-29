@@ -38,10 +38,6 @@ class QDomElement;
 #define KXMLQLCInputProfileManufacturer "Manufacturer"
 #define KXMLQLCInputProfileModel "Model"
 
-#define KXMLQLCInputProfileMap "Map"
-#define KXMLQLCInputProfileMapFrom "From"
-#define KXMLQLCInputProfileMapTo "To"
-
 class QLC_DECLSPEC QLCInputProfile
 {
 	/********************************************************************
@@ -87,46 +83,54 @@ protected:
 	 ********************************************************************/
 public:
 	/**
-	 * Add a new channel to this profile and claim ownership of the channel.
+	 * Insert a new channel to this profile to the given channel number
+	 * and claim ownership of the channel. If the profile already contains
+	 * the given channel, the call fails.
 	 *
-	 * @param ich The input channel to add. The channel contains the channel
-	 *            number to map to. Any existing mapping is cleared.
+	 * @param channel The channel number to add to.
+	 * @param ich The input channel to add.
+	 * @return true if the channel was inserted, otherwise false.
 	 */
-	void addChannel(QLCInputChannel* ich);
+	bool insertChannel(t_input_channel channel, QLCInputChannel* ich);
 
 	/**
-	 * Remove the given channel mapping from this profile. Does not delete
-	 * the instance.
+	 * Remove the given channel mapping from this profile. Also deletes the
+	 * channel instance.
 	 *
-	 * @param ich The channel object to remove
+	 * @param channel The channel number to remove & delete.
 	 */
-	void removeChannel(QLCInputChannel* ich);
+	bool removeChannel(t_input_channel channel);
 
 	/**
-	 * Remove a channel from the given channel number from this profile.
-	 * Also deletes the instance.
+	 * Re-map the given channel to a different channel number. If another
+	 * channel is already at the new channel number or the given input
+	 * channel object is not a member of the profile, this method fails.
 	 *
-	 * @param channel The channel number to remove
+	 * @param ich The input channel to re-map.
+	 * @param number The new channel number to re-map to.
+	 * @return true if successful, otherwise false.
 	 */
-	void removeChannel(t_input_channel channel);
+	bool remapChannel(QLCInputChannel* ich, t_input_channel number);
 
 	/**
 	 * Get a channel object by a channel number.
 	 *
-	 * @param channel The number of the channel to get
-	 * @return A QLCInputChannel* or NULL if not found
+	 * @param channel The number of the channel to get.
+	 * @return A QLCInputChannel* or NULL if not found.
 	 */
 	QLCInputChannel* channel(t_input_channel channel) const;
 
 	/**
-	 * Get the name of the given channel.
+	 * Get the channel number for the given input channel.
 	 *
-	 * @param channel The number of the channel, whose name to get
-	 * @return The name of the channel or QString::null if not found
+	 * @param channel The channel whose number to get
+	 * @return Channel number or KInputChannelInvalid if not found
 	 */
-	QString channelName(t_input_channel channel) const;
+	t_input_channel channelNumber(const QLCInputChannel* channel) const;
 
-	/** Get available channels in a non-modifiable map */
+	/**
+	 * Get available channels in a non-modifiable map
+	 */
 	const QMap <t_input_channel, QLCInputChannel*> channels() const
 		{ return m_channels; }
 
@@ -135,33 +139,6 @@ protected:
 	    QList because not all channels might be present. */
 	QMap <t_input_channel, QLCInputChannel*> m_channels;
 
-	/********************************************************************
-	 * Channel mapping
-	 ********************************************************************/
-public:
-	/** Set up a real input channel to show up as a different channel.
-	  * Remove mapping when to == KInputChannelInvalid. */
-	void setMapping(t_input_channel from, t_input_channel to);
-
-	/** Get the mapped channel for a real input channel */
-	t_input_channel mapping(t_input_channel from) const;
-
-	/** Get the real channel for a mapped channel (slow) */
-	t_input_channel reverseMapping(t_input_channel to) const;
-
-	/** Get a readily-mapped channel object for the given mapped channel */
-	const QLCInputChannel* mappedChannel(t_input_channel to) const;
-	
-	/** Get the cross-channel mappings as a non-modifiable hash */
-	const QHash <t_input_channel, t_input_channel> mapping() const
-		{ return m_mapping; }
-
-protected:
-	/** Channel cross-mapping. From (real) = key, to (mapped) = value.
-	    This is not an attribute of QLCInputChannel to prevent multiple
-	    mappings to/from the same channel. */
-	QHash <t_input_channel, t_input_channel> m_mapping;
-	
 	/********************************************************************
 	 * Load & Save
 	 ********************************************************************/
@@ -175,9 +152,6 @@ public:
 protected:
 	/** Load an input profile from the given document */
 	bool loadXML(const QDomDocument* doc);
-
-	/** Save channel mappings */
-	bool saveXMLMappings(QDomDocument* doc, QDomElement* root) const;
 };
 
 #endif

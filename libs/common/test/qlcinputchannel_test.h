@@ -8,7 +8,6 @@ class QLCInputChannel_Test : public QObject
 	Q_OBJECT
 
 private slots:
-	void channel();
 	void type();
 	void name();
 	void copy();

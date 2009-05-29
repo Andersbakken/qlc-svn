@@ -61,13 +61,13 @@ public:
 	 ********************************************************************/
 public:
 	/** Set the channel number that this object represents */
-	void setChannel(t_input_channel channel);
+	// void setChannel(t_input_channel channel);
 
 	/** Get the channel number that this object represents */
-	t_input_channel channel() const { return m_channel; }
+	// t_input_channel channel() const { return m_channel; }
 
 protected:
-	t_input_channel m_channel;
+	// t_input_channel m_channel;
 
 	/********************************************************************
 	 * Type
@@ -113,14 +113,28 @@ protected:
 	QString m_name;
 
 	/********************************************************************
-	* Load & Save
-	********************************************************************/
+	 * Load & Save
+	 ********************************************************************/
 public:
-	/** Load this channel's contents from the given XML document */
+	/**
+	 * Load this channel's contents from the given XML document
+	 *
+	 * @param root An input channel tag
+	 * @return true if successful, otherwise false
+	 */
 	bool loadXML(const QDomElement* root);
 
-	/** Save this channel's contents to the given XML document */
-	bool saveXML(QDomDocument* doc, QDomElement* root) const;
+	/**
+	 * Save this channel's contents to the given XML document, setting the
+	 * given channel number as the channel's number.
+	 *
+	 * @param doc The master XML document to save to
+	 * @param root The input profile root to save under
+	 * @param channelNumber The channel's number in the channel map
+	 * @return true if successful, otherwise false
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* root,
+		     t_input_channel channelNumber) const;
 };
 
 #endif

@@ -24,6 +24,7 @@
 #include <QtXml>
 
 #include "common/qlcinputprofile.h"
+#include "common/qlcinputchannel.h"
 #include "common/qlcfile.h"
 
 #include "selectinputchannel.h"
@@ -560,6 +561,7 @@ void VCPropertiesEditor::updateFadeInputSource()
 	}
 	else
 	{
+		QLCInputChannel* ich;
 		QString name;
 
 		/* Display profile name for universe */
@@ -569,8 +571,10 @@ void VCPropertiesEditor::updateFadeInputSource()
 
 		/* User can input the channel number by hand, so put something
 		   rational to the channel name in those cases as well. */
-		name = profile->channelName(m_properties.fadeInputChannel());
-		if (name == QString::null)
+		ich = profile->channel(m_properties.fadeInputChannel());
+		if (ich != NULL)
+			name = ich->name();
+		else
 			name = tr("Unknown");
 
 		/* Display channel name */
@@ -629,6 +633,7 @@ void VCPropertiesEditor::updateHoldInputSource()
 	}
 	else
 	{
+		QLCInputChannel* ich;
 		QString name;
 
 		/* Display profile name for universe */
@@ -637,8 +642,10 @@ void VCPropertiesEditor::updateHoldInputSource()
 				.arg(profile->name());
 		/* User can input the channel number by hand, so put something
 		   rational to the channel name in those cases as well. */
-		name = profile->channelName(m_properties.holdInputChannel());
-		if (name == QString::null)
+		ich = profile->channel(m_properties.holdInputChannel());
+		if (ich != NULL)
+			name = ich->name();
+		else
 			name = tr("Unknown");
 
 		/* Display channel name */

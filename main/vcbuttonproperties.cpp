@@ -175,6 +175,9 @@ void VCButtonProperties::updateInputSource()
 			}
 			else
 			{
+				QLCInputChannel* ich;
+				QString name;
+
 				/* Display profile name for universe */
 				uniName = QString("%1: %2")
 						.arg(m_inputUniverse + 1)
@@ -183,8 +186,10 @@ void VCButtonProperties::updateInputSource()
 				/* User can input the channel number by hand,
 				   so put something rational to the channel
 				   name in those cases as well. */
-				QString name = profile->channelName(m_inputChannel);
-				if (name == QString::null)
+				ich = profile->channel(m_inputChannel);
+				if (ich != NULL)
+					name = ich->name();
+				else
 					name = tr("Unknown");
 
 				/* Display channel name */

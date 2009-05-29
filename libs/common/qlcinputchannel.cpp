@@ -31,8 +31,7 @@
 
 QLCInputChannel::QLCInputChannel()
 {
-	m_channel = 0;
-	m_type = NoType;
+	m_type = Button;
 }
 
 QLCInputChannel::QLCInputChannel(const QLCInputChannel& channel)
@@ -50,7 +49,7 @@ QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
 	{
 		m_name = channel.m_name;
 		m_type = channel.m_type;
-		m_channel = channel.m_channel;
+		//m_channel = channel.m_channel;
 	}
 
 	return *this;
@@ -59,12 +58,12 @@ QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
 /****************************************************************************
  * Channel number
  ****************************************************************************/
-
+/*
 void QLCInputChannel::setChannel(t_input_channel channel)
 {
 	m_channel = channel;
 }
-
+*/
 /****************************************************************************
  * Type
  ****************************************************************************/
@@ -145,7 +144,7 @@ bool QLCInputChannel::loadXML(const QDomElement* root)
 	}
 
 	/* Get the channel number */
-	setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
+	// setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
 
 	/* Go thru all sub tags */
 	node = root->firstChild();
@@ -172,7 +171,8 @@ bool QLCInputChannel::loadXML(const QDomElement* root)
 	return true;
 }
 
-bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root) const
+bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root,
+			      t_input_channel channelNumber) const
 {
 	QDomElement subtag;
 	QDomElement tag;
@@ -188,7 +188,7 @@ bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 
 	/* Channel number attribute */
 	tag.setAttribute(KXMLQLCInputChannelNumber,
-			 QString("%1").arg(m_channel));
+			 QString("%1").arg(channelNumber));
 
 	/* Name */
 	subtag = doc->createElement(KXMLQLCInputChannelName);
