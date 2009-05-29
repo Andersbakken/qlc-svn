@@ -1,4 +1,5 @@
 #include <QtTest>
+#include <QtXml>
 
 #include "qlcinputprofile_test.h"
 #include "../qlcinputprofile.h"
@@ -206,5 +207,39 @@ void QLCInputProfile_Test::copy()
 
 void QLCInputProfile_Test::load()
 {
-	qDebug() << "TODO";
+	QDomDocument doc;
+
+	QDomElement profile = doc.createElement("InputProfile");
+	QDomElement manuf = doc.createElement("Manufacturer");
+	QDomText manufText = doc.createTextNode("Behringer");
+	manuf.appendChild(manufText);
+	profile.appendChild(manuf);
+	QDomElement model = doc.createElement("Model");
+	QDomText modelText = doc.createTextNode("BCF2000");
+	model.appendChild(modelText);
+	profile.appendChild(model);
+	doc.appendChild(profile);
+
+	QDomElement ch = doc.createElement("Channel");
+	ch.setAttribute("Number", 492);
+	profile.appendChild(ch);
+
+	QDomElement name = doc.createElement("Name");
+	QDomText nameText = doc.createTextNode("Foobar");
+	name.appendChild(nameText);
+	ch.appendChild(name);
+
+	QDomElement type = doc.createElement("Type");
+	QDomText typeText = doc.createTextNode("Slider");
+	type.appendChild(typeText);
+	ch.appendChild(type);
+
+	QLCInputProfile ip;
+	QVERIFY(ip.loadXML(&doc) == true);
+	QVERIFY(ip.manufacturer() == "Behringer");
+	QVERIFY(ip.model() == "BCF2000");
+	QVERIFY(ip.channels().size() == 1);
+	QVERIFY(ip.channel(492) != NULL);
+	QVERIFY(ip.channel(492)->name() == "Foobar");
+	QVERIFY(ip.channel(492)->type() == QLCInputChannel::Slider);
 }

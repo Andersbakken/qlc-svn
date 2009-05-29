@@ -149,7 +149,6 @@ public:
 	/** Save an input profile into a given file name */
 	bool saveXML(const QString& fileName);
 
-protected:
 	/** Load an input profile from the given document */
 	bool loadXML(const QDomDocument* doc);
 };

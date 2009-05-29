@@ -47,7 +47,6 @@ void QLCInputChannel_Test::load()
 	QDomDocument doc;
 
 	QDomElement root = doc.createElement("Channel");
-	//root.setAttribute("Number", 5);
 	doc.appendChild(root);
 
 	QDomElement name = doc.createElement("Name");
@@ -71,7 +70,6 @@ void QLCInputChannel_Test::loadWrongType()
 	QDomDocument doc;
 
 	QDomElement root = doc.createElement("Channel");
-	//root.setAttribute("Number", 5);
 	doc.appendChild(root);
 
 	QDomElement name = doc.createElement("Name");
