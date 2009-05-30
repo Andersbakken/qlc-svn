@@ -45,15 +45,6 @@ QLCChannel::QLCChannel(const QLCChannel* channel)
 		*this = *channel;
 }
 
-QLCChannel::QLCChannel(const QDomElement* tag)
-{
-	m_name = QString::null;
-	m_group = QString(KQLCChannelGroupIntensity);
-	m_controlByte = 0;
-
-	loadXML(tag);
-}
-
 QLCChannel::~QLCChannel()
 {
 	while (m_capabilities.isEmpty() == false)
@@ -271,6 +262,12 @@ bool QLCChannel::loadXML(const QDomElement* root)
 
 	Q_ASSERT(root != NULL);
 
+	if (root->tagName() != KXMLQLCChannel)
+	{
+		qWarning() << "Channel node not found.";
+		return false;
+	}
+
 	/* Get channel name */
 	str = root->attribute(KXMLQLCChannelName);
 	if (str == QString::null)
@@ -286,7 +283,22 @@ bool QLCChannel::loadXML(const QDomElement* root)
 
 		if (tag.tagName() == KXMLQLCCapability)
 		{
-			addCapability(new QLCCapability(&tag));
+			/* Create a new capability and attempt to load it */
+			QLCCapability* cap = new QLCCapability();
+			if (cap->loadXML(&tag) == true)
+			{
+				/* Loading succeeded */
+				if (addCapability(cap) == false)
+				{
+					/* Value overlaps with existing value */
+					delete cap;
+				}
+			}
+			else
+			{
+				/* Loading failed */
+				delete cap;
+			}
 		}
 		else if (tag.tagName() == KXMLQLCChannelGroup)
 		{

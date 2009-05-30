@@ -22,6 +22,9 @@ private slots:
 	void channelNumber();
 	void copy();
 	void cleanupTestCase();
+	void load();
+	void loadWrongRoot();
+	void loadNoName();
 
 private:
 	QLCFixtureDef* m_fixtureDef;

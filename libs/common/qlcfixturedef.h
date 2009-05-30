@@ -99,7 +99,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Add a new channel to this fixture */
-	void addChannel(QLCChannel* channel);
+	bool addChannel(QLCChannel* channel);
 
 	/** Remove a certain channel from this fixture */
 	bool removeChannel(QLCChannel* channel);
@@ -120,7 +120,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Add a new mode to this fixture */
-	void addMode(QLCFixtureMode* mode);
+	bool addMode(QLCFixtureMode* mode);
 
 	/** Remove a certain mode from this fixture */
 	bool removeMode(QLCFixtureMode* mode);

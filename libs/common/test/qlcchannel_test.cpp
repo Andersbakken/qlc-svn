@@ -1,5 +1,6 @@
 #include <QPointer>
 #include <QtTest>
+#include <QtXml>
 
 #include "../qlcchannel_test.h"
 #include "../qlccapability.h"
@@ -377,4 +378,111 @@ void QLCChannel_Test::copy()
 	QVERIFY(caps.at(7)->name() == cap8->name());
 	QVERIFY(caps.at(7)->min() == cap8->min());
 	QVERIFY(caps.at(7)->max() == cap8->max());
+}
+
+void QLCChannel_Test::load()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Channel");
+	root.setAttribute("Name", "Channel1");
+	doc.appendChild(root);
+
+	QDomElement group = doc.createElement("Group");
+	root.appendChild(group);
+	group.setAttribute("Byte", 1);
+	QDomText groupName = doc.createTextNode("Tilt");
+	group.appendChild(groupName);
+
+	QDomElement cap1 = doc.createElement("Capability");
+	root.appendChild(cap1);
+	cap1.setAttribute("Min", 0);
+	cap1.setAttribute("Max", 10);
+	QDomText cap1name = doc.createTextNode("Cap1");
+	cap1.appendChild(cap1name);
+
+	/* Overlaps with cap1, shouldn't appear in the channel */
+	QDomElement cap2 = doc.createElement("Capability");
+	root.appendChild(cap2);
+	cap2.setAttribute("Min", 5);
+	cap2.setAttribute("Max", 15);
+	QDomText cap2name = doc.createTextNode("Cap2");
+	cap2.appendChild(cap2name);
+
+	QDomElement cap3 = doc.createElement("Capability");
+	root.appendChild(cap3);
+	cap3.setAttribute("Min", 11);
+	cap3.setAttribute("Max", 20);
+	QDomText cap3name = doc.createTextNode("Cap3");
+	cap3.appendChild(cap3name);
+
+	/* Invalid capability tag, shouldn't appear in the channel, since it
+	   is not recognized by the channel. */
+	QDomElement cap4 = doc.createElement("apability");
+	root.appendChild(cap4);
+	cap4.setAttribute("Min", 21);
+	cap4.setAttribute("Max", 30);
+	QDomText cap4name = doc.createTextNode("Cap4");
+	cap4.appendChild(cap4name);
+
+	/* Missing minimum value, shouldn't appear in the channel, because
+	   loadXML() fails. */
+	QDomElement cap5 = doc.createElement("Capability");
+	root.appendChild(cap5);
+	cap5.setAttribute("Max", 30);
+	QDomText cap5name = doc.createTextNode("Cap5");
+	cap5.appendChild(cap5name);
+
+	QLCChannel ch;
+	QVERIFY(ch.loadXML(&root) == true);
+	QVERIFY(ch.name() == "Channel1");
+	QVERIFY(ch.group() == "Tilt");
+	QVERIFY(ch.controlByte() == 1);
+	QVERIFY(ch.capabilities().size() == 2);
+	QVERIFY(ch.capabilities()[0]->name() == "Cap1");
+	QVERIFY(ch.capabilities()[1]->name() == "Cap3");
+}
+
+void QLCChannel_Test::loadWrongRoot()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Chanel");
+	root.setAttribute("Name", "Channel1");
+	doc.appendChild(root);
+
+	QDomElement group = doc.createElement("Group");
+	root.appendChild(group);
+	group.setAttribute("Byte", 1);
+	QDomText groupName = doc.createTextNode("Tilt");
+	group.appendChild(groupName);
+
+	QDomElement cap1 = doc.createElement("Capability");
+	root.appendChild(cap1);
+	cap1.setAttribute("Min", 0);
+	cap1.setAttribute("Max", 10);
+	QDomText cap1name = doc.createTextNode("Cap1");
+	cap1.appendChild(cap1name);
+
+	/* Overlaps with cap1, shouldn't appear in the channel */
+	QDomElement cap2 = doc.createElement("Capability");
+	root.appendChild(cap2);
+	cap2.setAttribute("Min", 5);
+	cap2.setAttribute("Max", 15);
+	QDomText cap2name = doc.createTextNode("Cap2");
+	cap2.appendChild(cap2name);
+
+	QDomElement cap3 = doc.createElement("Capability");
+	root.appendChild(cap3);
+	cap3.setAttribute("Min", 11);
+	cap3.setAttribute("Max", 20);
+	QDomText cap3name = doc.createTextNode("Cap3");
+	cap3.appendChild(cap3name);
+
+	QLCChannel ch;
+	QVERIFY(ch.loadXML(&root) == false);
+	QVERIFY(ch.name() == QString::null);
+	QVERIFY(ch.group() == KQLCChannelGroupIntensity);
+	QVERIFY(ch.controlByte() == 0);
+	QVERIFY(ch.capabilities().size() == 0);
 }

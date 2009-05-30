@@ -18,6 +18,8 @@ private slots:
 	void removeCapability();
 	void sortCapabilities();
 	void copy();
+	void load();
+	void loadWrongRoot();
 };
 
 #endif

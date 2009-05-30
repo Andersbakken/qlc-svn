@@ -1,4 +1,5 @@
 #include <QtTest>
+#include <QtXml>
 
 #include "../qlcfixturemode_test.h"
 #include "../qlcfixturemode.h"
@@ -277,6 +278,123 @@ void QLCFixtureMode_Test::copy()
 
 	delete copy;
 	delete anotherDef;
+}
+
+void QLCFixtureMode_Test::load()
+{
+	QDomDocument doc;
+	
+	QDomElement root = doc.createElement("Mode");
+	root.setAttribute("Name", "Mode1");
+	doc.appendChild(root);
+
+	QDomElement ch1 = doc.createElement("Channel");
+	ch1.setAttribute("Number", 0);
+	QDomText ch1Text = doc.createTextNode("Channel 1");
+	ch1.appendChild(ch1Text);
+	root.appendChild(ch1);
+
+	/* Shouldn't appear in the mode since Channel 1 is already added */
+	QDomElement ch2 = doc.createElement("Channel");
+	ch2.setAttribute("Number", 1);
+	QDomText ch2Text = doc.createTextNode("Channel 1");
+	ch2.appendChild(ch2Text);
+	root.appendChild(ch2);
+
+	QDomElement ch3 = doc.createElement("Channel");
+	ch3.setAttribute("Number", 1);
+	QDomText ch3Text = doc.createTextNode("Channel 3");
+	ch3.appendChild(ch3Text);
+	root.appendChild(ch3);
+
+	/* Physical */
+	QDomElement phys = doc.createElement("Physical");
+	root.appendChild(phys);
+
+	/* Bulb */
+	QDomElement bulb = doc.createElement("Bulb");
+	bulb.setAttribute("Type", "LED");
+	bulb.setAttribute("Lumens", 18000);
+	bulb.setAttribute("ColourTemperature", 6500);
+	phys.appendChild(bulb);
+
+	QLCFixtureMode mode(m_fixtureDef);
+	QVERIFY(mode.physical().bulbType() != "LED");
+	QVERIFY(mode.physical().bulbLumens() != 18000);
+	QVERIFY(mode.physical().bulbColourTemperature() != 6500);
+
+	QVERIFY(mode.loadXML(&root) == true);
+	QVERIFY(mode.physical().bulbType() == "LED");
+	QVERIFY(mode.physical().bulbLumens() == 18000);
+	QVERIFY(mode.physical().bulbColourTemperature() == 6500);
+
+	QVERIFY(mode.channels().size() == 2);
+	QVERIFY(mode.channels()[0] == m_ch1);
+	QVERIFY(mode.channels()[1] == m_ch3);
+}
+
+void QLCFixtureMode_Test::loadWrongRoot()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("ode");
+	root.setAttribute("Name", "Mode1");
+	doc.appendChild(root);
+
+	QDomElement ch1 = doc.createElement("Channel");
+	ch1.setAttribute("Number", 0);
+	QDomText ch1Text = doc.createTextNode("Channel 1");
+	ch1.appendChild(ch1Text);
+	root.appendChild(ch1);
+
+	/* Shouldn't appear in the mode since Channel 1 is already added */
+	QDomElement ch2 = doc.createElement("Channel");
+	ch2.setAttribute("Number", 1);
+	QDomText ch2Text = doc.createTextNode("Channel 1");
+	ch2.appendChild(ch2Text);
+	root.appendChild(ch2);
+
+	QDomElement ch3 = doc.createElement("Channel");
+	ch3.setAttribute("Number", 1);
+	QDomText ch3Text = doc.createTextNode("Channel 3");
+	ch3.appendChild(ch3Text);
+	root.appendChild(ch3);
+
+	QLCFixtureMode mode(m_fixtureDef);
+	QVERIFY(mode.loadXML(&root) == false);
+	QVERIFY(mode.channels().size() == 0);
+}
+
+void QLCFixtureMode_Test::loadNoName()
+{
+	QDomDocument doc;
+
+	/* Loading should fail because mode has no name */
+	QDomElement root = doc.createElement("Mode");
+	doc.appendChild(root);
+
+	QDomElement ch1 = doc.createElement("Channel");
+	ch1.setAttribute("Number", 0);
+	QDomText ch1Text = doc.createTextNode("Channel 1");
+	ch1.appendChild(ch1Text);
+	root.appendChild(ch1);
+
+	/* Shouldn't appear in the mode since Channel 1 is already added */
+	QDomElement ch2 = doc.createElement("Channel");
+	ch2.setAttribute("Number", 1);
+	QDomText ch2Text = doc.createTextNode("Channel 1");
+	ch2.appendChild(ch2Text);
+	root.appendChild(ch2);
+
+	QDomElement ch3 = doc.createElement("Channel");
+	ch3.setAttribute("Number", 1);
+	QDomText ch3Text = doc.createTextNode("Channel 3");
+	ch3.appendChild(ch3Text);
+	root.appendChild(ch3);
+
+	QLCFixtureMode mode(m_fixtureDef);
+	QVERIFY(mode.loadXML(&root) == false);
+	QVERIFY(mode.channels().size() == 0);
 }
 
 void QLCFixtureMode_Test::cleanupTestCase()

@@ -110,10 +110,17 @@ void QLCFixtureDef::setType(const QString& type)
  * Channels
  ****************************************************************************/
 
-void QLCFixtureDef::addChannel(QLCChannel* channel)
+bool QLCFixtureDef::addChannel(QLCChannel* channel)
 {
 	if (channel != NULL && m_channels.contains(channel) == false)
+	{
 		m_channels.append(channel);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool QLCFixtureDef::removeChannel(QLCChannel* channel)
@@ -157,10 +164,17 @@ QLCChannel* QLCFixtureDef::channel(const QString& name)
  * Modes
  ****************************************************************************/
 
-void QLCFixtureDef::addMode(QLCFixtureMode* mode)
+bool QLCFixtureDef::addMode(QLCFixtureMode* mode)
 {
 	if (mode != NULL && m_modes.contains(mode) == false)
+	{
 		m_modes.append(mode);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool QLCFixtureDef::removeMode(QLCFixtureMode* mode)
@@ -322,17 +336,56 @@ bool QLCFixtureDef::loadXML(const QDomDocument* doc)
 			tag = node.toElement();
 
 			if (tag.tagName() == KXMLQLCCreator)
-				;
+			{
+			}
 			else if (tag.tagName() == KXMLQLCFixtureDefManufacturer)
+			{
 				setManufacturer(tag.text());
+			}
 			else if (tag.tagName() == KXMLQLCFixtureDefModel)
+			{
 				setModel(tag.text());
+			}
 			else if (tag.tagName() == KXMLQLCFixtureDefType)
+			{
 				setType(tag.text());
+			}
 			else if (tag.tagName() == KXMLQLCChannel)
-				addChannel(new QLCChannel(&tag));
+			{
+				QLCChannel* ch = new QLCChannel();
+				if (ch->loadXML(&tag) == true)
+				{
+					/* Loading succeeded */
+					if (addChannel(ch) == false)
+					{
+						/* Channel already exists */
+						delete ch;
+					}
+				}
+				else
+				{
+					/* Loading failed */
+					delete ch;
+				}
+			}
 			else if (tag.tagName() == KXMLQLCFixtureMode)
-				addMode(new QLCFixtureMode(this, &tag));
+			{
+				QLCFixtureMode* mode = new QLCFixtureMode(this);
+				if (mode->loadXML(&tag) == true)
+				{
+					/* Loading succeeded */
+					if (addMode(mode) == false)
+					{
+						/* Mode already exists */
+						delete mode;
+					}
+				}
+				else
+				{
+					/* Loading failed */
+					delete mode;
+				}
+			}
 			else
 				qDebug() << "Unknown Fixture tag: "
 					 << tag.tagName();

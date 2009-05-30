@@ -98,12 +98,14 @@ protected:
 public:
 	/**
 	 * Insert a channel at the given position. The channel must belong
-	 * to m_fixtureDef or it won't get added to the mode.
+	 * to m_fixtureDef or it won't get added to the mode. Each channel can
+	 * occupy exactly one index in a mode.
 	 *
 	 * @param channel The channel to add
 	 * @param index The position to insert the channel at
+	 * @return true, if successful, otherwise false
 	 */
-	void insertChannel(QLCChannel* channel, t_channel index);
+	bool insertChannel(QLCChannel* channel, t_channel index);
 
 	/**
 	 * Remove a channel from this mode. The channel is only removed from

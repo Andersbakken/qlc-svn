@@ -20,6 +20,7 @@
 */
 
 #include <QString>
+#include <QDebug>
 #include <QFile>
 #include <QtXml>
 
@@ -41,17 +42,6 @@ QLCCapability::QLCCapability(const QLCCapability* capability)
 
 	if (capability != NULL)
 		*this = *capability;
-}
-
-QLCCapability::QLCCapability(const QDomElement* tag)
-{
-	Q_ASSERT(tag != NULL);
-
-	m_min = KChannelValueMin;
-	m_max = KChannelValueMax;
-	m_name = QString::null;
-
-	loadXML(tag);
 }
 
 QLCCapability::~QLCCapability()
@@ -122,36 +112,53 @@ bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 
 bool QLCCapability::loadXML(const QDomElement* root)
 {
+	t_value min;
+	t_value max;
 	QString str;
 
 	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCCapability)
+	{
+		qWarning() << "Capability node not found.";
+		return false;
+	}
 
 	/* Get low limit attribute (critical) */
 	str = root->attribute(KXMLQLCCapabilityMin);
 	if (str == QString::null)
 	{
-		qWarning() << "QLCCapability has no min limit.";
+		qWarning() << "Capability has no minimum limit.";
 		return false;
 	}
 	else
 	{
-		setMin(str.toInt());
+		min = CLAMP(str.toInt(), 0, KChannelValueMax);
 	}
 
 	/* Get high limit attribute (critical) */
 	str = root->attribute(KXMLQLCCapabilityMax);
 	if (str == QString::null)
 	{
-		qWarning() << "QLCCapability has no max limit.";
+		qWarning() << "Capability has no maximum limit.";
 		return false;
 	}
 	else
 	{
-		setMax(str.toInt());
+		max = CLAMP(str.toInt(), 0, KChannelValueMax);
 	}
 
-	/* QLCCapability name */
-	setName(root->text());
-
-	return true;
+	if (min <= max)
+	{
+		setName(root->text());
+		setMin(min);
+		setMax(max);
+		return true;
+	}
+	else
+	{
+		qWarning() << "Capability min(" << min
+			   << ") is greater than max(" << max << ").";
+		return false;
+	}
 }

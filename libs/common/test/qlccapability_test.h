@@ -20,6 +20,12 @@ private slots:
 	void name();
 	void overlaps();
 	void copy();
+
+	void load();
+	void loadWrongRoot();
+	void loadNoMin();
+	void loadNoMax();
+	void loadMinGreaterThanMax();
 };
 
 #endif

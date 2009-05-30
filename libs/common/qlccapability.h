@@ -50,9 +50,6 @@ public:
 	/** Copy constructor */
 	QLCCapability(const QLCCapability* cap);
 
-	/** Create contents from an XML tag */
-	QLCCapability(const QDomElement* tag);
-
 	/** Destructor */
 	~QLCCapability();
 

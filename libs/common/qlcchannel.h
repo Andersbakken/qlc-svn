@@ -62,9 +62,6 @@ public:
 	/** Copy constructor */
 	QLCChannel(const QLCChannel* channel);
 
-	/** Create contents from an XML tag */
-	QLCChannel(const QDomElement* tag);
-
 	/** Destructor */
 	~QLCChannel();
 

@@ -104,24 +104,38 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
  * Channels
  ****************************************************************************/
 
-void QLCFixtureMode::insertChannel(QLCChannel* channel, t_channel index)
+bool QLCFixtureMode::insertChannel(QLCChannel* channel, t_channel index)
 {
 	if (channel == NULL)
 	{
-		qWarning() << "Will not add a NULL channel to mode"
-			   << m_name;
-		return;
+		qWarning() << "Will not add a NULL channel to mode" << m_name;
+		return false;
 	}
 
 	Q_ASSERT(m_fixtureDef != NULL);
 
 	if (m_fixtureDef->channels().contains(channel) == true)
-		m_channels.insert(index, channel);
+	{
+		if (m_channels.contains(channel) == false)
+		{
+			m_channels.insert(index, channel);
+			return true;
+		}
+		else
+		{
+			qWarning() << "Channel" << channel->name()
+				   << "is already a member of mode" << m_name;
+			return false;
+		}
+	}
 	else
+	{
 		qWarning() << "Will not add channel" << channel->name()
 			   << "to mode" << m_name
 			   << "because the channel does not belong to mode's"
 			   << "own fixture definition";
+		return false;
+	}
 }
 
 bool QLCFixtureMode::removeChannel(const QLCChannel* channel)
@@ -193,13 +207,26 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
 	QDomElement tag;
 	QString str;
 	QString ch;
-	
-	/* Get channel name */
-	str = root->attribute(KXMLQLCFixtureModeName);
-	if (str == QString::null)
+
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCFixtureMode)
+	{
+		qWarning() << "Mode tag not found!";
 		return false;
+	}
+
+	/* Mode name */
+	str = root->attribute(KXMLQLCFixtureModeName);
+	if (str.isEmpty() == true)
+	{
+		qWarning() << "Mode has no name!";
+		return false;
+	}
 	else
+	{
 		setName(str);
+	}
 
 	/* Subtags */
 	node = root->firstChild();
@@ -209,14 +236,15 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
 
 		if (tag.tagName() == KXMLQLCFixtureModeChannel)
 		{
-			str = tag.attribute(KXMLQLCFixtureModeChannelNumber);
-
+			/* Channel */
 			Q_ASSERT(m_fixtureDef != NULL);
+			str = tag.attribute(KXMLQLCFixtureModeChannelNumber);
 			insertChannel(m_fixtureDef->channel(tag.text()),
 				      str.toInt());
 		}
 		else if (tag.tagName() == KXMLQLCPhysical)
 		{
+			/* Physical */
 			QLCPhysical physical;
 			physical.loadXML(&tag);
 			setPhysical(physical);
