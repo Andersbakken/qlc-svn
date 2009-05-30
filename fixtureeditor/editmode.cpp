@@ -156,23 +156,32 @@ void EditMode::slotAddChannelClicked()
 			chlist << ch->name();
 	}
 	
-	bool ok = false;
-	QString name = QInputDialog::getItem(this, "Add channel to mode", 
-					     "Select a channel to add",
-					     chlist, 0, false, &ok);
-	
-	if (ok == true && name.isEmpty() == false)
+	if (chlist.size() > 0)
 	{
-		ch = m_mode->fixtureDef()->channel(name);
+		bool ok = false;
+		QString name = QInputDialog::getItem(this,
+						tr("Add channel to mode"), 
+						tr("Select a channel to add"),
+						chlist, 0, false, &ok);
+	
+		if (ok == true && name.isEmpty() == false)
+		{
+			ch = m_mode->fixtureDef()->channel(name);
 
-		// Append the channel
-		m_mode->insertChannel(ch, m_mode->channels().size());
+			// Append the channel
+			m_mode->insertChannel(ch, m_mode->channels().size());
 
-		// Easier to refresh the whole list
-		refreshChannelList();
+			// Easier to refresh the whole list
+			refreshChannelList();
 
-		// Select the new channel
-		selectChannel(ch->name());
+			// Select the new channel
+			selectChannel(ch->name());
+		}
+	}
+	else
+	{
+		QMessageBox::information(this, tr("No more available channels"),
+			tr("All available channels are present in the mode."));
 	}
 }
 
