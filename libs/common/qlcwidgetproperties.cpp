@@ -36,27 +36,16 @@ QLCWidgetProperties::QLCWidgetProperties()
 
 QLCWidgetProperties::QLCWidgetProperties(const QLCWidgetProperties& properties)
 {
-	*this = properties;
+	m_state = properties.m_state;
+	m_visible = properties.m_visible;
+	m_x = properties.m_x;
+	m_y = properties.m_y;
+	m_width = properties.m_width;
+	m_height = properties.m_height;
 }
 
 QLCWidgetProperties::~QLCWidgetProperties()
 {
-}
-
-QLCWidgetProperties& QLCWidgetProperties::operator=(
-					const QLCWidgetProperties& properties)
-{
-	if (this != &properties)
-	{
-		m_state = properties.m_state;
-		m_visible = properties.m_visible;
-		m_x = properties.m_x;
-		m_y = properties.m_y;
-		m_width = properties.m_width;
-		m_height = properties.m_height;
-	}
-
-	return *this;
 }
 
 void QLCWidgetProperties::store(QWidget* widget)

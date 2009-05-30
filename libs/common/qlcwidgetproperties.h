@@ -44,8 +44,6 @@ public:
 	QLCWidgetProperties(const QLCWidgetProperties& properties);
 	virtual ~QLCWidgetProperties();
 
-	QLCWidgetProperties& operator=(const QLCWidgetProperties& properties);
-
 	QFlags <Qt::WindowState> state() const { return m_state; }
 	bool visible() const { return m_visible; }
 	int x() const { return m_x; }

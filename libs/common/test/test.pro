@@ -24,6 +24,9 @@ HEADERS += qlcphysical_test.h \
 	   qlcinputprofile_test.h \
 	   ../qlcinputprofile.h \
 	   \
+	   qlcwidgetproperties_test.h \
+	   ../qlcwidgetproperties.h \
+	   \
 	   ../qlcfile.h
 
 SOURCES += qlcphysical_test.cpp \
@@ -41,6 +44,9 @@ SOURCES += qlcphysical_test.cpp \
 	   ../qlcinputchannel.cpp \
 	   qlcinputprofile_test.cpp \
 	   ../qlcinputprofile.cpp \
+	   \
+	   qlcwidgetproperties_test.cpp \
+	   ../qlcwidgetproperties.cpp \
 	   \
 	   ../qlcfile.cpp
 

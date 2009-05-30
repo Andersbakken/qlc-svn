@@ -1,5 +1,7 @@
+#include <QApplication>
 #include <QtTest>
 
+#include "qlcwidgetproperties_test.h"
 #include "qlcinputchannel_test.h"
 #include "qlcinputprofile_test.h"
 #include "qlcfixturemode_test.h"
@@ -10,7 +12,7 @@
 
 int main(int argc, char** argv)
 {
-	QCoreApplication(argc, argv);
+	QApplication app(argc, argv);
 
 	QLCPhysical_Test physical;
 	QTest::qExec(&physical, argc, argv);
@@ -32,4 +34,7 @@ int main(int argc, char** argv)
 
 	QLCInputProfile_Test inputProfile;
 	QTest::qExec(&inputProfile, argc, argv);
+
+	QLCWidgetProperties_Test properties;
+	QTest::qExec(&properties, argc, argv);
 }
