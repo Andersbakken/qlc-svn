@@ -27,6 +27,7 @@ private slots:
 	void focusTiltMax();
 
 	void copy();
+	void load();
 
 private:
 	QLCPhysical p;

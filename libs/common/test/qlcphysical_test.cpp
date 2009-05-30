@@ -111,5 +111,57 @@ void QLCPhysical_Test::copy()
 	QVERIFY(c.focusType() == p.focusType());
 	QVERIFY(c.focusPanMax() == p.focusPanMax());
 	QVERIFY(c.focusTiltMax() == p.focusTiltMax());
+}
 
+void QLCPhysical_Test::load()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Physical");
+	doc.appendChild(root);
+
+	/* Bulb */
+	QDomElement bulb = doc.createElement("Bulb");
+	bulb.setAttribute("Type", "LED");
+	bulb.setAttribute("Lumens", 18000);
+	bulb.setAttribute("ColourTemperature", 6500);
+	root.appendChild(bulb);
+
+	/* Dimensions */
+	QDomElement dim = doc.createElement("Dimensions");
+	dim.setAttribute("Weight", 39);
+	dim.setAttribute("Width", 530);
+	dim.setAttribute("Height", 320);
+	dim.setAttribute("Depth", 260);
+	root.appendChild(dim);
+
+	/* Lens */
+	QDomElement lens = doc.createElement("Lens");
+	lens.setAttribute("Name", "Fresnel");
+	lens.setAttribute("DegreesMin", 8);
+	lens.setAttribute("DegreesMax", 38);
+	root.appendChild(lens);
+
+	/* Focus */
+	QDomElement focus = doc.createElement("Focus");
+	focus.setAttribute("Type", "Head");
+	focus.setAttribute("PanMax", 520);
+	focus.setAttribute("TiltMax", 270);
+	root.appendChild(focus);
+	
+	QLCPhysical p;
+	p.loadXML(&root);
+	QVERIFY(p.bulbType() == "LED");
+	QVERIFY(p.bulbLumens() == 18000);
+	QVERIFY(p.bulbColourTemperature() == 6500);
+	QVERIFY(p.weight() == 39);
+	QVERIFY(p.width() == 530);
+	QVERIFY(p.height() == 320);
+	QVERIFY(p.depth() == 260);
+	QVERIFY(p.lensName() == "Fresnel");
+	QVERIFY(p.lensDegreesMin() == 8);
+	QVERIFY(p.lensDegreesMax() == 38);
+	QVERIFY(p.focusType() == "Head");
+	QVERIFY(p.focusPanMax() == 520);
+	QVERIFY(p.focusTiltMax() == 270);
 }
