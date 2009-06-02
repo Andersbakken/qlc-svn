@@ -53,5 +53,5 @@ doAutoLink qlc-fixtureeditor
 ln -s /Applications " "
 cd ..
 rm qlc-3.0.dmg rw.qlc-3.0.dmg
-./create-dmg --volname "QLC v3.0" --background ../gfx/dmgbg.png --window-size 490 379 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.dmg qlc-dmg-source/
+./create-dmg --volname "QLC v3.0" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.dmg qlc-dmg-source/
 rm -Rf qlc-dmg-source

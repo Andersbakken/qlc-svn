@@ -168,7 +168,7 @@ void App::init()
 	resize(KApplicationDefaultWidth, KApplicationDefaultHeight);
 #else
 	
-	/* This is just a toolbar, we onlt need it to be the size of the buttons */
+	/* This is just a toolbar, we only need it to be the size of the buttons */
 	resize(600, 32);
 	move(0, 20);
 	
