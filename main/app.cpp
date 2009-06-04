@@ -108,9 +108,6 @@ App::App() : QMainWindow()
 
 App::~App()
 {
-	// Remove the reference to the application
-	_app = NULL;
-
 	// Delete doc
 	if (m_doc != NULL)
 		delete m_doc;
@@ -139,6 +136,9 @@ App::~App()
 	// Delete fixture definitions
 	while (m_fixtureDefList.isEmpty() == false)
 		delete m_fixtureDefList.takeFirst();
+
+	// Remove the reference to the application
+	_app = NULL;
 }
 
 
