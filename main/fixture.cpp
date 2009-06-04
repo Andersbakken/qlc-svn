@@ -44,33 +44,15 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-Fixture::Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
-		 t_channel address, t_channel universe, const QString& name,
-		 t_fixture_id id)
+Fixture::Fixture(QObject* parent) : QObject(parent)
 {
-	m_fixtureDef = fixtureDef;
-	m_fixtureMode = mode;
+	m_id = KNoID;
+
 	m_address = 0;
-	m_name = name;
-	m_id = id;
+	m_channels = 0;
 
-	setUniverse(universe);
-	setAddress(address);
-
-	m_genericChannel = NULL;
-}
-
-Fixture::Fixture(t_channel address, t_channel universe, t_channel channels,
-		 const QString& name, t_fixture_id id)
-{
 	m_fixtureDef = NULL;
 	m_fixtureMode = NULL;
-	m_name = name;
-	m_id = id;
-	m_channels = channels;
-
-	setUniverse(universe);
-	setAddress(address);
 
 	m_genericChannel = NULL;
 }
@@ -79,6 +61,7 @@ Fixture::~Fixture()
 {
 	if (m_genericChannel != NULL)
 		delete m_genericChannel;
+	m_genericChannel = NULL;
 }
 
 bool Fixture::operator<(const Fixture& fxi)
@@ -122,6 +105,7 @@ QString Fixture::name() const
 /*****************************************************************************
  * Fixture type
  *****************************************************************************/
+
 QString Fixture::type() const
 {
 	if (m_fixtureDef != NULL)
@@ -279,9 +263,46 @@ void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
  * Load & Save
  *****************************************************************************/
 
-Fixture* Fixture::loader(const QDomElement* root)
+void Fixture::loader(const QDomElement* root, Doc* doc)
 {
-	Fixture* fxi = NULL;
+	Q_ASSERT(root != NULL);
+	Q_ASSERT(doc != NULL);
+
+	if (root->tagName() != KXMLFixture)
+	{
+		qDebug() << "Fixture node not found!";
+		return;
+	}
+
+	Fixture* fxi = new Fixture(doc);
+	Q_ASSERT(fxi != NULL);
+
+	if (fxi == NULL)
+	{
+		return;
+	}
+	else if (fxi->loadXML(root) == true)
+	{
+		if (doc->addFixture(fxi) == true)
+		{
+			/* Success */
+		}
+		else
+		{
+			qWarning() << "Fixture" << fxi->name()
+				   << "cannot be created.";
+			delete fxi;
+		}
+	}
+	else
+	{
+		qWarning() << "Fixture" << fxi->name() << "cannot be loaded.";
+		delete fxi;
+	}
+}
+
+bool Fixture::loadXML(const QDomElement* root)
+{
 	QLCFixtureDef* fixtureDef = NULL;
 	QLCFixtureMode* fixtureMode = NULL;
 	QString manufacturer;
@@ -293,16 +314,15 @@ Fixture* Fixture::loader(const QDomElement* root)
 	t_channel address = 0;
 	t_channel channels = 0;
 
-	QDomNode node;
 	QDomElement tag;
-	QDomElement consoletag;
+	QDomNode node;
 
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLFixture)
 	{
-		qDebug() << "Fixture instance node not found!";
-		return NULL;
+		qDebug() << "Fixture node not found!";
+		return false;
 	}
 
 	node = root->firstChild();
@@ -367,6 +387,9 @@ Fixture* Fixture::loader(const QDomElement* root)
 			qDebug() << QString("Fixture mode [%1] for [%2 - %3] "
 					    "not found!").arg(modeName)
 					    .arg(manufacturer).arg(model);
+			/* Set this also NULL so that a generic dimmer will be
+			   created instead as a backup. */
+			fixtureDef = NULL;
 		}
 	}
 
@@ -376,7 +399,7 @@ Fixture* Fixture::loader(const QDomElement* root)
 		qDebug() << QString("Fixture [%1] channels %2 out of bounds "
 				"(%3 - %4).").arg(name).arg(channels).arg(1)
 				.arg(KFixtureChannelsMax);
-		channels = 1;
+		channels = 1; /* At least one channel */
 	}
 
 	/* Make sure that address is something sensible */
@@ -402,30 +425,25 @@ Fixture* Fixture::loader(const QDomElement* root)
 	{
 		qDebug() << QString("Fixture ID %1 out of bounds (%2 - %3).")
 				    .arg(id).arg(0).arg(KFixtureArraySize);
-		return NULL;
+		return false;
 	}
 
-	/* Create the fixture */
 	if (fixtureDef != NULL && fixtureMode != NULL)
 	{
-		/* Create a normal fixture */
-		fxi = new Fixture(fixtureDef, fixtureMode, address, universe,
-				  name, id);
+		/* Assign fixtureDef & mode only if BOTH are not NULL */
+		setFixtureDefinition(fixtureDef, fixtureMode);
 	}
 	else
 	{
-		/* Create a generic fixture */
-		fxi = new Fixture(address, universe, channels, name, id);
+		/* Otherwise set just the channel count */
+		setChannels(channels);
 	}
 
-	/* Insert the fixture to Doc's fixture array */
-	if (_app->doc()->newFixture(fxi) == false)
-	{
-		delete fxi;
-		fxi = NULL;
-	}
-
-	return fxi;
+	setAddress(address);
+	setUniverse(universe);
+	setName(name);
+	
+	return true;
 }
 
 bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)

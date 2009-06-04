@@ -41,7 +41,7 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-Chaser::Chaser(QObject* parent) : Function(parent, Function::Chaser)
+Chaser::Chaser(QObject* parent) : Function(parent)
 {
 	m_runTimeDirection = Forward;
 	m_runTimePosition = 0;
@@ -59,26 +59,41 @@ Chaser::~Chaser()
 }
 
 /*****************************************************************************
+ * Function type
+ *****************************************************************************/
+
+Function::Type Chaser::type() const
+{
+	return Function::Chaser;
+}
+
+/*****************************************************************************
  * Copying
  *****************************************************************************/
 
 Function* Chaser::createCopy()
 {
-	Function* function = _app->doc()->newFunction(Function::Chaser);
-	if (function == NULL)
-		return NULL;
+	Function* copy = NULL;
 
-	if (function->copyFrom(this) == false)
+	copy = new Chaser(_app->doc());
+	Q_ASSERT(copy != NULL);
+
+	if (copy->copyFrom(this) == false)
 	{
-		_app->doc()->deleteFunction(function->id());
-		function = NULL;
+		delete copy;
+		copy = NULL;
+	}
+	else if (_app->doc()->addFunction(copy) == false)
+	{
+		delete copy;
+		copy = NULL;
 	}
 	else
 	{
-		function->setName(tr("Copy of %1").arg(function->name()));
+		copy->setName(tr("Copy of %1").arg(name()));
 	}
-
-	return function;
+	
+	return copy;
 }
 
 bool Chaser::copyFrom(const Function* function)
@@ -169,7 +184,7 @@ bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	wksp_root->appendChild(root);
 
 	root.setAttribute(KXMLQLCFunctionID, id());
-	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(type()));
 	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Speed bus */

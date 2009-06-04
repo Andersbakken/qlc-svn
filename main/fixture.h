@@ -40,10 +40,11 @@ class QString;
 class QDomDocument;
 class QDomElement;
 
-class QLCFixtureDef;
 class QLCFixtureMode;
-class QLCChannel;
 class FixtureConsole;
+class QLCFixtureDef;
+class QLCChannel;
+class Doc;
 
 class Fixture : public QObject
 {
@@ -54,41 +55,9 @@ class Fixture : public QObject
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new fixture instance using a fixture definition and
-	 * the given mode. Also, optionally assign the fixture a name.
-	 *
-	 * @param fixture A QLCFixture definition that the fixture instance is
-	 *                based on.
-	 * @param mode One of the modes specified for the fixture
-	 * @param address This instance's DMX address
-	 * @param universe This instance's DMX universe
-	 * @param name Friendly name that identifies the new instance
-	 * @param id A unique fixture ID assigned by @ref Doc
+	 * Create a new fixture instance with the given QObject parent.
 	 */
-	Fixture(QLCFixtureDef* fixtureDef, QLCFixtureMode* mode,
-		t_channel address, t_channel universe, const QString& name,
-		t_fixture_id id);
-
-	/**
-	 * Create a generic dimmer-style fixture instance, that has no special
-	 * abilities, except channels that can have normal DMX values.
-	 *
-	 * @param address This instance's DMX address
-	 * @param universe This instance's DMX universe
-	 * @param channels Number of channels to use for the fixture
-	 * @param name Friendly name that identifies the new instance
-	 * @param id A unique fixture ID assigned by class @ref Doc
-	 */
-	Fixture(t_channel address, t_channel universe, t_channel channels,
-		const QString& name, t_fixture_id id);
-
-	/**
-	 * Create a new fixture instance from an XML substructure.
-	 *
-	 * @param doc An XML document containing the given tag
-	 * @param tag An XML tag that contains a fixture instance structure
-	 */
-	Fixture(QDomDocument* doc, QDomElement* tag);
+	Fixture(QObject* parent);
 
 	/**
 	 * Destructor
@@ -104,7 +73,7 @@ private:
 	/*********************************************************************
 	 * Fixture ID
 	 *********************************************************************/
-protected:
+public:
 	/**
 	 * Change the fixture instance's fixture ID. This is generally VERY
 	 * dangerous, since all functions (using this fixture) will cease to
@@ -116,7 +85,6 @@ protected:
 	 */
 	void setID(t_fixture_id id);
 
-public:
 	/**
 	 * Get the fixture instance's fixture ID.
 	 *
@@ -308,14 +276,21 @@ protected:
 	 *********************************************************************/
 public:
 	/**
-	 * Load a single fixture instance from an XML document, under
-	 * the specified fixture tag.
+	 * Load a new fixture from an XML tag and add it to the given doc
+	 * object, if loading was successful.
 	 *
-	 * @param doc The XML document to load from
 	 * @param root An XML subtree containing a single fixture instance
-	 * @return A newly-created Fixture instance or NULL if loading failed
+	 * @param doc The QLC document object, that owns all fixtures
 	 */
-	static Fixture* loader(const QDomElement* root);
+	static void loader(const QDomElement* root, Doc* doc);
+
+	/**
+	 * Load a fixture's contents from the given XML node.
+	 *
+	 * @param root An XML subtree containing a single fixture instance
+	 * @return true if the fixture was loaded successfully, otherwise false
+	 */
+	bool loadXML(const QDomElement* root);
 
 	/**
 	 * Save the fixture instance into an XML document, under the given

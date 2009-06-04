@@ -29,7 +29,11 @@
 #include "common/qlcfile.h"
 
 #include "mastertimer.h"
+#include "collection.h"
 #include "function.h"
+#include "chaser.h"
+#include "scene.h"
+#include "efx.h"
 #include "bus.h"
 #include "app.h"
 #include "doc.h"
@@ -53,11 +57,10 @@ const QString KForwardString    (    "Forward" );
  * Initialization
  *****************************************************************************/
 
-Function::Function(QObject* parent, Type type) : QObject(parent)
+Function::Function(QObject* parent) : QObject(parent)
 {
 	m_id = KNoID;
 	m_name = QString::null;
-	m_type = type;
 	m_runOrder = Loop;
 	m_direction = Forward;
 	m_busID = KBusIDDefaultFade;
@@ -101,7 +104,7 @@ void Function::setID(t_function_id id)
  * Name
  *****************************************************************************/
 
-void Function::setName(QString name)
+void Function::setName(const QString& name)
 {
 	m_name = QString(name);
 }
@@ -149,7 +152,7 @@ Function::Type Function::stringToType(QString string)
 
 QIcon Function::icon() const
 {
-	switch (m_type)
+	switch (type())
 	{
 		case Scene:
 			return QIcon(":/scene.png");
@@ -252,7 +255,7 @@ void Function::setBus(t_bus_id id)
 {
 	if (id < KBusIDMin || id >= KBusCount)
 	{
-		if (m_type != Collection)
+		if (type() != Collection)
 			m_busID = KBusIDDefaultFade;
 	}
 	else
@@ -274,34 +277,61 @@ void Function::slotFixtureRemoved(t_fixture_id fid)
  * Load & Save
  *****************************************************************************/
 
-Function* Function::loader(const QDomElement* root)
+void Function::loader(const QDomElement* root, Doc* doc)
 {
-	t_function_id func_id = 0;
-	Type func_type;
-	QString func_name;
-
 	Q_ASSERT(root != NULL);
+	Q_ASSERT(doc != NULL);
 
 	if (root->tagName() != KXMLQLCFunction)
 	{
 		qWarning("Function node not found!");
-		return NULL;
+		return;
 	}
 
-	/* ID */
-	func_id = root->attribute(KXMLQLCFunctionID).toInt();
-	Q_ASSERT(func_id >= 0 && func_id < KFunctionArraySize);
+	/* Get common information from the tag's attributes */
+	t_function_id id = root->attribute(KXMLQLCFunctionID).toInt();
+	QString name = root->attribute(KXMLQLCFunctionName);
+	Type type = Function::stringToType(root->attribute(KXMLQLCFunctionType));
 
-	/* Name */
-	func_name = root->attribute(KXMLQLCFunctionName);
+	/* Check for ID validity before creating the function */
+	if (id < 0 || id >= KFunctionArraySize)
+	{
+		qWarning() << "Function ID" << id << "out of bounds.";
+		return;
+	}
 
-	/* Type */
-	func_type = Function::stringToType(
-		root->attribute(KXMLQLCFunctionType));
+	/* Create a new function according to the type */
+	Function* function = NULL;
+	if (type == Function::Scene)
+	        function = new class Scene(doc);
+	else if (type == Function::Chaser)
+	        function = new class Chaser(doc);
+	else if (type == Function::Collection)
+		function = new class Collection(doc);
+	else if (type == Function::EFX)
+		function = new class EFX(doc);
+	else
+		return;
 
-	/* Create a new function into Doc using the loaded information 
-	   and continue loading the specific function contents from Doc */
-	return _app->doc()->newFunction(func_type, func_id, func_name, root);
+	function->setName(name);
+	if (function->loadXML(root) == true)
+	{
+		if (doc->addFunction(function, id) == true)
+		{
+			/* Success */
+		}
+		else
+		{
+			qWarning() << "Function" << name
+				   << "cannot be created.";
+			delete function;
+		}
+	}
+	else
+	{
+		qWarning() << "Function" << name << "cannot be loaded.";
+		delete function;
+	}
 }
 
 /*****************************************************************************

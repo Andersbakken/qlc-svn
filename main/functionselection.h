@@ -106,6 +106,12 @@ protected:
 	 * Internal
 	 *********************************************************************/
 protected:
+	/** Add the given function to the tree and select it */
+	void addFunction(Function* function);
+
+	/** Display an error message if function creation failed */
+	void addFunctionErrorMessage();
+	
 	/** Update the contents of the given function to the tree item */
 	void updateFunctionItem(QTreeWidgetItem* item, Function* function);
 

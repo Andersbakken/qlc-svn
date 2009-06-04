@@ -191,11 +191,11 @@ bool Doc::loadXML(const QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLFixture)
 		{
-			Fixture::loader(&tag);
+			Fixture::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCFunction)
 		{
-			Function::loader(&tag);
+			Function::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCBus)
 		{
@@ -296,115 +296,51 @@ QFile::FileError Doc::saveXML(const QString& fileName)
  * Fixtures
  *****************************************************************************/
 
-Fixture* Doc::newFixture(QLCFixtureDef* fixtureDef,
-			 QLCFixtureMode* mode,
-			 t_channel address,
-			 t_channel universe,
-			 const QString& name)
+bool Doc::addFixture(Fixture* fixture, t_fixture_id id)
 {
-	Fixture* fxi = NULL;
+	bool ok = false;
+
+	Q_ASSERT(fixture != NULL);
 
 	if (m_fixtureAllocation == KFixtureArraySize)
-		return NULL;
+		return false;
 
-	/* Find the next free slot for a new fixture */
-	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+	if (id == KNoID)
 	{
-		if (m_fixtureArray[i] == NULL)
+		/* Find the next free slot for a new fixture */
+		for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 		{
-			fxi = new Fixture(fixtureDef, mode, address, universe,
-					  name, i);
-			Q_ASSERT(fxi != NULL);
-
-			m_fixtureArray[i] = fxi;
-			m_fixtureAllocation++;
-
-			setModified();
-
-			// Patch fixture change events thru Doc
-			connect(fxi, SIGNAL(changed(t_fixture_id)),
-				this, SLOT(slotFixtureChanged(t_fixture_id)));
-
-			emit fixtureAdded(i);
-			break;
+			if (m_fixtureArray[i] == NULL)
+			{
+				assignFixture(fixture, i);
+				ok = true;
+				break;
+			}
 		}
 	}
-
-	return fxi;
-}
-
-Fixture* Doc::newGenericFixture(t_channel address,
-				t_channel universe,
-				t_channel channels,
-				const QString& name)
-{
-	Fixture* fxi = NULL;
-
-	if (m_fixtureAllocation == KFixtureArraySize)
-		return NULL;
-
-	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+	else if (id >= 0 && id < KFunctionArraySize)
 	{
-		if (m_fixtureArray[i] == NULL)
+		if (m_fixtureArray[id] == NULL)
 		{
-			fxi = new Fixture(address, universe, channels, name, i);
-			Q_ASSERT(fxi != NULL);
-
-			m_fixtureArray[i] = fxi;
-			m_fixtureAllocation++;
-
-			setModified();
-
-			// Patch fixture change events thru Doc
-			connect(fxi, SIGNAL(changed(t_fixture_id)),
-				this, SLOT(slotFixtureChanged(t_fixture_id)));
-
-			emit fixtureAdded(i);
-			break;
+			assignFixture(fixture, id);
+			ok = true;
 		}
-	}
-
-	return fxi;
-}
-
-bool Doc::newFixture(Fixture* fxi)
-{
-	t_fixture_id id = 0;
-
-	if (m_fixtureAllocation == KFixtureArraySize)
-		return false;
-
-	if (fxi == NULL)
-		return false;
-
-	id = fxi->id();
-
-	if (id < 0 || id > KFixtureArraySize)
-	{
-		qDebug() << QString("Fixture ID %1 out of bounds (%2 - %3)!")
-				    .arg(id).arg(0).arg(KFixtureArraySize);
-		return false;
-	}
-	else if (m_fixtureArray[id] != NULL)
-	{
-		qDebug() << QString("Fixture ID %1 already taken!").arg(id);
-		return false;
+		else
+		{
+			qWarning() << "Unable to assign fixture"
+				   << fixture->name() << "to ID" << id
+				   << "because another fixture already"
+				   << "has the same ID.";
+		}
 	}
 	else
 	{
-		m_fixtureArray[id] = fxi;
-		m_fixtureAllocation++;
-
-		// Patch fixture change events thru Doc
-		connect(fxi, SIGNAL(changed(t_fixture_id)),
-			this, SLOT(slotFixtureChanged(t_fixture_id)));
-
-		emit fixtureAdded(id);
-
-		return true;
+		/* Pure and honest epic fail */
 	}
-}
 
+	return ok;
+}
+ 
 bool Doc::deleteFixture(t_fixture_id id)
 {
 	if (id < 0 || id > KFixtureArraySize)
@@ -486,122 +422,84 @@ t_channel Doc::findAddress(int universe, t_channel numChannels)
 	return KChannelInvalid;
 }
 
+void Doc::assignFixture(Fixture* fixture, t_fixture_id id)
+{
+	Q_ASSERT(fixture != NULL);
+	Q_ASSERT(id >= 0 && id < KFixtureArraySize);
+
+	/* Patch fixture change signals thru Doc */
+	connect(fixture, SIGNAL(changed(t_fixture_id)),
+		this, SLOT(slotFixtureChanged(t_fixture_id)));
+
+	m_fixtureArray[id] = fixture;
+	fixture->setID(id);
+	m_fixtureAllocation++;
+	emit fixtureAdded(id);
+
+	setModified();
+}
+
 /*****************************************************************************
  * Functions
  *****************************************************************************/
 
-Function* Doc::newFunction(Function::Type type)
+bool Doc::addFunction(Function* function, t_function_id id)
 {
+	bool ok = false;
+
+	Q_ASSERT(function != NULL);
+
 	if (functions() >= KFunctionArraySize)
 	{
 		qDebug() << "Cannot add more than" << KFunctionArraySize
 			 << "functions";
-		return NULL;
+		return false;
 	}
 
-	Function* function = NULL;
-
-	// Find the next free space from function array
-	for (t_function_id id = 0; id < KFunctionArraySize; id++)
+	if (id == KNoID)
+	{
+		/**
+		 * Find the next free space from function array.
+		 *
+		 * @todo Already with a couple hundred functions this becomes
+		 * unbearably slow. With a thousand functions... Oh boy...!
+		 */
+		for (t_function_id i = 0; i < KFunctionArraySize; i++)
+		{
+			if (m_functionArray[i] == NULL)
+			{
+				/* Found a place for the function */
+				assignFunction(function, i);
+				ok = true;
+				break;
+			}
+		}
+	}
+	else if (id >= 0 && id < KFunctionArraySize)
 	{
 		if (m_functionArray[id] == NULL)
 		{
-			function = createFunction(type);
-			Q_ASSERT(function != NULL);
-			m_functionArray[id] = function;
-			m_functionAllocation++;
-
-			function->setID(id);
-
-			emit functionAdded(id);
-
-			break;
+			/* Found a place for the function */
+			assignFunction(function, id);
+			ok = true;
 		}
-	}
-
-	return function;
-}
-
-Function* Doc::newFunction(Function::Type type, t_function_id fid,
-			   const QString& name, const QDomElement* root)
-{
-	Function* function = NULL;
-
-	Q_ASSERT(fid >= 0 && fid < KFunctionArraySize);
-	Q_ASSERT(root != NULL);
-
-	/* Put the function to its place (==ID) in the function array */
-	if (m_functionArray[fid] == NULL)
-	{
-		function = createFunction(type);
-		Q_ASSERT(function != NULL);
-		m_functionArray[fid] = function;
-		m_functionAllocation++;
-
-		function->setID(fid);
-		function->setName(name);
-
-		/* Continue loading the function contents */
-		if (function->loadXML(root) == false)
+		else
 		{
-			delete function;
-			function = NULL;
-			m_functionArray[fid] = NULL;
+			qWarning() << "Unable to assign function"
+				   << function->name() << "to ID" << id
+				   << "because another function already"
+				   << "has the same ID.";
 		}
-
-		emit functionAdded(fid);
 	}
 	else
 	{
-		qDebug() << QString("Function ID %1 already taken.").arg(fid);
+		/* Pure and honest epic fail */
 	}
 
-	return function;
+	return ok;
 }
 
-Function* Doc::createFunction(Function::Type type)
-{
-	Function* function;
-
-	switch (type)
-	{
-	case Function::Scene:
-	        function = new Scene(this);
-		break;
-
-	case Function::Chaser:
-	        function = new Chaser(this);
-		break;
-
-	case Function::Collection:
-		function = new Collection(this);
-		break;
-
-	case Function::EFX:
-		function = new EFX(this);
-		break;
-
-	default:
-		function = NULL;
-		break;
-	}
-
-	if (function != NULL)
-	{
-		/* Listen to fixture removals so that functions can
-		   get rid of nonexisting members. */
-		connect(this, SIGNAL(fixtureRemoved(t_fixture_id)),
-			function, SLOT(slotFixtureRemoved(t_fixture_id)));
-
-		/* Pass function change signals thru */
-		connect(function, SIGNAL(changed(t_function_id)),
-			this, SLOT(slotFunctionChanged(t_function_id)));
-	}
-
-	return function;
-}
-
-void Doc::deleteFunction(t_function_id id)
+bool Doc::deleteFunction(t_function_id id)
 {
 	if (m_functionArray[id] != NULL)
 	{
@@ -610,6 +508,13 @@ void Doc::deleteFunction(t_function_id id)
 		m_functionAllocation--;
 
 		emit functionRemoved(id);
+		setModified();
+
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -620,6 +525,27 @@ Function* Doc::function(t_function_id id)
 	else
 		return NULL;
 }
+
+void Doc::assignFunction(Function* function, t_function_id id)
+{
+	Q_ASSERT(function != NULL);
+	Q_ASSERT(id >= 0 && id < KFunctionArraySize);
+
+	/* Pass function change signals thru Doc */
+	connect(function, SIGNAL(changed(t_function_id)),
+		this, SLOT(slotFunctionChanged(t_function_id)));
+
+	/* Make the function listen to fixture removals so that it can
+	   get rid of nonexisting members. */
+	connect(this, SIGNAL(fixtureRemoved(t_fixture_id)),
+		function, SLOT(slotFixtureRemoved(t_fixture_id)));
+
+	m_functionAllocation++;
+	m_functionArray[id] = function;
+	function->setID(id);
+	emit functionAdded(id);
+	setModified();
+} 
 
 void Doc::slotFunctionChanged(t_function_id fid)
 {

@@ -40,7 +40,7 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-Collection::Collection(QObject* parent) : Function(parent, Function::Collection)
+Collection::Collection(QObject* parent) : Function(parent)
 {
 	setName(tr("New Collection"));
 }
@@ -51,26 +51,41 @@ Collection::~Collection()
 }
 
 /*****************************************************************************
+ * Function type
+ *****************************************************************************/
+
+Function::Type Collection::type() const
+{
+	return Function::Collection;
+}
+
+/*****************************************************************************
  * Copying
  *****************************************************************************/
 
 Function* Collection::createCopy()
 {
-	Function* function = _app->doc()->newFunction(Function::Collection);
-	if (function == NULL)
-		return NULL;
+	Function* copy = NULL;
 
-	if (function->copyFrom(this) == false)
+	copy = new Collection(_app->doc());
+	Q_ASSERT(copy != NULL);
+
+	if (copy->copyFrom(this) == false)
 	{
-		_app->doc()->deleteFunction(function->id());
-		function = NULL;
+		delete copy;
+		copy = NULL;
+	}
+	else if (_app->doc()->addFunction(copy) == false)
+	{
+		delete copy;
+		copy = NULL;
 	}
 	else
 	{
-		function->setName(tr("Copy of %1").arg(function->name()));
+		copy->setName(tr("Copy of %1").arg(name()));
 	}
-
-	return function;
+	
+	return copy;
 }
 
 bool Collection::copyFrom(const Function* function)
@@ -118,7 +133,7 @@ bool Collection::saveXML(QDomDocument* doc, QDomElement* wksp_root)
         wksp_root->appendChild(root);
 
 	root.setAttribute(KXMLQLCFunctionID, id());
-	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(type()));
 	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Steps */

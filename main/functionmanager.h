@@ -151,8 +151,8 @@ protected:
 	/** Create a copy of the given function */
 	void copyFunction(t_function_id fid);
 
-	/** Add a new function of the given type */
-	void addFunction(Function::Type type);
+	/** Add a new function */
+	void addFunction(Function* function);
 
 protected:
 	/** Don't listen to Doc::functionAdded signal when this is true */

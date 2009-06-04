@@ -111,41 +111,19 @@ public:
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new fixture instance from the given fixture definition
+	 * Add the given fixture to doc's fixture array. If id == KNoID,
+	 * doc assigns the fixture a new ID and takes ownership, unless there
+	 * is no more room for more fixtures.
 	 *
-	 * @param fixture A fixture definition from which to create the instance
-	 * @param name The friendly name of the fixture instance
-	 * @param address The fixture's DMX address
-	 * @param universe The fixture's DMX universe
-	 * @param name The fixture's friendly name
-	 */
-	Fixture* newFixture(QLCFixtureDef* fixtureDef,
-			    QLCFixtureMode* mode,
-			    t_channel address,
-			    t_channel universe,
-			    const QString& name);
-
-	/**
-	 * Create a new generic fixture instance
+	 * If id != KNoID, doc attempts to put the fixture at that exact index,
+	 * unless another fixture already has the same id.
 	 *
-	 * @param address The fixture's DMX address
-	 * @param universe The fixture's DMX universe
-	 * @param channels Number of channels to use for the fixture
-	 * @param name The fixture's friendly name
+	 * @param fixture The fixture to add
+	 * @param id The requested ID for the fixture
+	 * @return true if the fixture was successfully added to doc,
+	 *         otherwise false.
 	 */
-	Fixture* newGenericFixture(t_channel address,
-				   t_channel universe,
-				   t_channel channels,
-				   const QString& name);
-
-	/**
-	 * Insert a new fixture instance into Doc's fixture array. Use this
-	 * ONLY when loading a workspace from a file.
-	 *
-	 * @param fxi The fixture instance to insert
-	 * @return TRUE if successful, otherwise FALSE
-	 */
-	bool newFixture(Fixture* fxi);
+	bool addFixture(Fixture* fixture, t_fixture_id id = KNoID);
 
 	/**
 	 * Delete the given fixture instance from Doc
@@ -163,17 +141,43 @@ public:
 
 	/**
 	 * Attempt to find the next contiguous free address space for the given
-	 * number of channels. The address might span multiple universes. If
-	 * an address cannot be found, returns KChannelInvalid.
+	 * number of channels. The address will not span multiple universes.
+	 * If a suitable address space cannot be found, KChannelInvalid is
+	 * returned
+	 *
+	 * @param numChannels Number of channels in the address space
+	 * @return The address or KChannelInvalid if not found
 	 */
 	t_channel findAddress(t_channel numChannels);
 
-	/** Return the number of fixtures present */
+	/**
+	 * Get the number of fixtures currently present/allocated.
+	 *
+	 * @return Number of fixtures
+	 */
 	int fixtures() const { return m_fixtureAllocation; }
 
 protected:
-	/** Try to find the next free address from the given universe */
+	/**
+	 * Try to find the next free address from the given universe for
+	 * the given number of channels. KChannelInvalid is returned if
+	 * an adequate address range cannot be found.
+	 * 
+	 * @param universe The universe to search from
+	 * @param numChannels Number of free channels required
+	 * @return An address or KChannelInvalid if address space not available
+	 */
 	t_channel findAddress(int universe, t_channel numChannels);
+
+	/**
+	 * Assign the given fixture ID to the fixture, placing the fixture
+	 * at the same index in m_fixtureArray, increase fixture count and
+	 * emit fixtureAdded() signal.
+	 *
+	 * @param fixture The fixture to assign
+	 * @param id The ID to assign to the fixture
+	 */
+	void assignFixture(Fixture* fixture, t_fixture_id id);
 
 signals:
 	/** Signal that a fixture has been added */
@@ -190,51 +194,53 @@ signals:
 	 *********************************************************************/
 public:
 	/**
-	 * Create a new function
+	 * Add the given function to doc's function array. If id == KNoID,
+	 * doc assigns the function a new ID and takes ownership, unless there
+	 * is no more room for more functions.
 	 *
-	 * @param type The type of the new function
-	 * @param fxi_id The ID of the fixture instance that owns the function
+	 * If id != KNoID, doc attempts to put the function at that exact index,
+	 * unless another function already has the same id.
+	 *
+	 * @param function The function to add
+	 * @param id The requested ID for the function
+	 * @return true if the function was successfully added to doc,
+	 *         otherwise false.
 	 */
-	Function* newFunction(Function::Type type);
+	bool addFunction(Function* function, t_function_id id = KNoID);
 
 	/**
-	 * Insert a new function instance into Doc's function array. Use this
-	 * ONLY when loading a workspace from a file.
-	 *
-	 * @param type The type of the new function
-	 * @param fid The ID of the function (as loaded from a file)
-	 * @param name The name of the function
-	 * @param doc An XML document to load the function from
-	 * @param root An XML "Function" tag to load the function contents from
+	 * Get the number of functions currently present/allocated
+	 * 
+	 * @return Number of functions
 	 */
-	Function* newFunction(Function::Type type, t_function_id fid,
-			      const QString& name, const QDomElement* root);
-
-	/** Return the number of functions present */
 	int functions() const { return m_functionAllocation; }
 
-protected:
-	/**
-	 * Create a new function that is of the given type
-	 *
-	 * @param type Type of function to create
-	 */
-	Function* createFunction(Function::Type type);
-
-public:
 	/**
 	 * Delete the given function
 	 *
 	 * @param id The ID of the function to delete
+	 * @return true if the function was found and deleted
 	 */
-	void deleteFunction(t_function_id id);
+	bool deleteFunction(t_function_id id);
 
 	/**
 	 * Get a function that has the given ID
 	 *
 	 * @param id The ID of the function to get
+	 * @return A function at the given ID or NULL if not found
 	 */
 	Function* function(t_function_id id);
+
+protected:
+	/**
+	 * Assign the given function ID to the function, place the function
+	 * at the same index in m_functionArray, increase function count and
+	 * emit functionAdded() signal.
+	 *
+	 * @param function The function to assign
+	 * @param id The ID to assign to the function
+	 */
+	void assignFunction(Function* function, t_function_id id);
 
 public slots:
 	/** Catch QLC App mode changes */

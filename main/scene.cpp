@@ -142,7 +142,7 @@ bool SceneValue::operator== (const SceneValue& scv) const
  * Initialization
  *****************************************************************************/
 
-Scene::Scene(QObject* parent) : Function(parent, Function::Scene)
+Scene::Scene(QObject* parent) : Function(parent)
 {
 	setName(tr("New Scene"));
 	setBus(KBusIDDefaultFade);
@@ -153,26 +153,41 @@ Scene::~Scene()
 }
 
 /*****************************************************************************
+ * Function type
+ *****************************************************************************/
+
+Function::Type Scene::type() const
+{
+	return Function::Scene;
+}
+
+/*****************************************************************************
  * Copying
  *****************************************************************************/
 
 Function* Scene::createCopy()
 {
-	Function* function = _app->doc()->newFunction(Function::Scene);
-	if (function == NULL)
-		return NULL;
+	Function* copy = NULL;
 
-	if (function->copyFrom(this) == false)
+	copy = new Scene(_app->doc());
+	Q_ASSERT(copy != NULL);
+
+	if (copy->copyFrom(this) == false)
 	{
-		_app->doc()->deleteFunction(function->id());
-		function = NULL;
+		delete copy;
+		copy = NULL;
+	}
+	else if (_app->doc()->addFunction(copy) == false)
+	{
+		delete copy;
+		copy = NULL;
 	}
 	else
 	{
-		function->setName(tr("Copy of %1").arg(function->name()));
+		copy->setName(tr("Copy of %1").arg(name()));
 	}
-
-	return function;
+	
+	return copy;
 }
 
 bool Scene::copyFrom(const Function* function)
@@ -295,7 +310,7 @@ bool Scene::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	wksp_root->appendChild(root);
 
 	root.setAttribute(KXMLQLCFunctionID, id());
-	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(m_type));
+	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(type()));
 	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Speed bus */

@@ -460,91 +460,113 @@ void FixtureManager::initToolBar()
 void FixtureManager::slotAdd()
 {
 	AddFixture af(this);
-	if (af.exec() == QDialog::Accepted)
+	if (af.exec() == QDialog::Rejected)
+		return;
+
+	QString name = af.name();
+	t_channel address = af.address();
+	t_channel universe = af.universe();
+	t_channel channels = af.channels();
+	int gap = af.gap();
+
+	QLCFixtureDef* fixtureDef = af.fixtureDef();
+	QLCFixtureMode* mode = af.mode();
+
+	QString modname;
+
+	/* If an empty name was given use the model instead */
+	if (name.simplified() == QString::null)
 	{
-		QString name = af.name();
-		t_channel address = af.address();
-		t_channel universe = af.universe();
-		t_channel channels = af.channels();
-		int gap = af.gap();
-
-		QLCFixtureDef* fixtureDef = af.fixtureDef();
-		QLCFixtureMode* mode = af.mode();
-
-		QString modname;
-
-		if (fixtureDef != NULL && mode != NULL)
-		{
-			/* Add a normal fixture with an existing definition */
-
-			/* If an empty name was given use the model instead */
-			if (name.simplified() == QString::null)
-				name = fixtureDef->model();
-
-			/* If we're adding more than one fixture,
-			   append a number to the end of the name */
-			if (af.amount() > 1)
-				modname = QString("%1 #1").arg(name);
-			else
-				modname = name;
-
-			/* Add the first fixture without gap */
-			_app->doc()->newFixture(fixtureDef, mode, address,
-						universe, modname);
-
-			/* Add the rest (if any) with address gap */
-			for (int i = 1; i < af.amount(); i++)
-			{
-				/* If we're adding more than one fixture,
-				   append a number to the end of the name */
-				if (af.amount() > 1)
-					modname = QString("%1 #%2").arg(name)
-						.arg(i + 1);
-				else
-					modname = name;
-
-				/* Add the fixture */
-				_app->doc()->newFixture(fixtureDef, mode,
-						address + (i * channels) + gap,
-						universe, modname);
-			}
-		}
+		if (fixtureDef != NULL)
+			name = fixtureDef->model();
 		else
+			name = tr("Generic Dimmer");
+	}
+
+	/* If we're adding more than one fixture,
+	   append a number to the end of the name */
+	if (af.amount() > 1)
+		modname = QString("%1 #1").arg(name);
+	else
+		modname = name;
+
+	/* Create the fixture */
+	Fixture* fxi = new Fixture(_app->doc());
+
+	/* Add the first fixture without gap, at the given address */
+	fxi->setAddress(address);
+	fxi->setUniverse(universe);
+	fxi->setName(modname);
+
+	/* Set a fixture definition & mode if they were selected.
+	   Otherwise assign channels to a generic dimmer. */
+	if (fixtureDef != NULL && mode != NULL)
+		fxi->setFixtureDefinition(fixtureDef, mode);
+	else
+		fxi->setChannels(channels);
+
+	/* Attempt to add the fixture to doc. If the first one fails,
+	   it is very likely that others would, too. */
+	if (_app->doc()->addFixture(fxi) == false)
+	{
+		/* Adding failed. Display error and bail out. */
+		addFixtureErrorMessage();
+		delete fxi;
+		fxi = NULL;
+		return;
+	}
+
+	/* Add the rest (if any) WITH address gap */
+	for (int i = 1; i < af.amount(); i++)
+	{
+		/* If we're adding more than one fixture,
+		   append a number to the end of the name */
+		if (af.amount() > 1)
+			modname = QString("%1 #%2").arg(name).arg(i +1);
+		else
+			modname = name;
+
+		/* Create the fixture */
+		Fixture* fxi = new Fixture(_app->doc());
+
+		/* Assign the next address AFTER the previous fixture
+		   address space plus gap. */
+		fxi->setAddress(address + (i * channels) + gap);
+		fxi->setUniverse(universe);
+		fxi->setName(modname);
+		/* Set a fixture definition & mode if they were
+		   selected. Otherwise assign channels to a generic
+		   dimmer. */
+		if (fixtureDef != NULL && mode != NULL)
+			fxi->setFixtureDefinition(fixtureDef, mode);
+		else
+			fxi->setChannels(channels);
+
+		/* Attempt to add the fixture to doc. If one fails,
+		it is very likely that others would, too. */
+		if (_app->doc()->addFixture(fxi) == false)
 		{
-			/* Add a generic fixture without definition */
-
-			/* If an empty name was given use Generic instead */
-			if (name.simplified() == QString::null)
-				name = KXMLFixtureGeneric;
-
-			/* If we're adding more than one fixture,
-			   append a number to the end of the name */
-			if (af.amount() > 1)
-				modname = QString("%1 #1").arg(name);
-			else
-				modname = name;
-
-			// Add the first fixture without gap
-			_app->doc()->newGenericFixture(address, universe,
-						       channels, modname);
-
-			// Add the rest (if any) with address gap
-			for (int i = 1; i < af.amount(); i++)
-			{
-				/* If we're adding more than one fixture,
-				   append a number to the end of the name */
-				if (af.amount() > 1)
-					modname = QString("%1 #%2").arg(name)
-						.arg(i + 1);
-				else
-					modname = name;
-
-				/* Add the fixture */
-				_app->doc()->newGenericFixture(
-					address + (i * channels) + gap,
-					universe, channels, name);
-			}
+			/* Adding failed. Display error and bail out. */
+			addFixtureErrorMessage();
+			delete fxi;
+			fxi = NULL;
+			break;
 		}
+	}
+}
+
+void FixtureManager::addFixtureErrorMessage()
+{
+	if (_app->doc()->fixtures() >= KFixtureArraySize)
+	{
+		QMessageBox::critical(this, tr("Too many fixtures"),
+			tr("You can't create more than %1 fixtures.")
+			.arg(KFixtureArraySize));
+	}
+	else
+	{
+		QMessageBox::critical(this, tr("Fixture creation failed"),
+			tr("Unable to create new fixture."));
 	}
 }
 

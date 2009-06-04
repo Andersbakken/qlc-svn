@@ -21,12 +21,17 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
+#include <QMessageBox>
 #include <QToolBar>
 #include <QDebug>
 
 #include "functionselection.h"
+#include "collection.h"
 #include "function.h"
 #include "fixture.h"
+#include "chaser.h"
+#include "scene.h"
+#include "efx.h"
 #include "app.h"
 #include "doc.h"
 
@@ -131,123 +136,94 @@ void FunctionSelection::initToolBar()
 
 void FunctionSelection::slotNewScene()
 {
-	Function* function;
-	function = _app->doc()->newFunction(Function::Scene);
-	if (function == NULL)
-		return;
+	Function* function = new Scene(_app->doc());
 	function->setName(tr("New Scene"));
 
-	/* Create a new item for the function */
-	QTreeWidgetItem* item;
-	item = new QTreeWidgetItem(m_tree);
-	updateFunctionItem(item, function);
-
-	/* Append the new function to current selection */
-	item->setSelected(true);
-
-	if (function->edit() == QDialog::Rejected)
-	{
-		_app->doc()->deleteFunction(function->id());
-		delete item;
-	}
+	if (_app->doc()->addFunction(function) == true)
+		addFunction(function);
 	else
-	{
-		updateFunctionItem(item, function);
-		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-		m_tree->scrollToItem(item);
-	}
+		addFunctionErrorMessage();
 }
 
 void FunctionSelection::slotNewChaser()
 {
-	Function* function;
-	function = _app->doc()->newFunction(Function::Chaser);
-	if (function == NULL)
-		return;
+	Function* function = new Chaser(_app->doc());
 	function->setName(tr("New Chaser"));
 
-	/* Create a new item for the function */
-	QTreeWidgetItem* item;
-	item = new QTreeWidgetItem(m_tree);
-	updateFunctionItem(item, function);
-
-	/* Append the new function to current selection */
-	item->setSelected(true);
-
-	if (function->edit() == QDialog::Rejected)
-	{
-		_app->doc()->deleteFunction(function->id());
-		delete item;
-	}
+	if (_app->doc()->addFunction(function) == true)
+		addFunction(function);
 	else
-	{
-		updateFunctionItem(item, function);
-		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-		m_tree->scrollToItem(item);
-	}
+		addFunctionErrorMessage();
 }
 
 void FunctionSelection::slotNewEFX()
 {
-	Function* function;
-	function = _app->doc()->newFunction(Function::EFX);
-	if (function == NULL)
-		return;
+	Function* function = new EFX(_app->doc());
 	function->setName(tr("New EFX"));
 
-	/* Create a new item for the function */
-	QTreeWidgetItem* item;
-	item = new QTreeWidgetItem(m_tree);
-	updateFunctionItem(item, function);
-
-	/* Append the new function to current selection */
-	item->setSelected(true);
-
-	if (function->edit() == QDialog::Rejected)
-	{
-		_app->doc()->deleteFunction(function->id());
-		delete item;
-	}
+	if (_app->doc()->addFunction(function) == true)
+		addFunction(function);
 	else
-	{
-		updateFunctionItem(item, function);
-		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-		m_tree->scrollToItem(item);
-	}
+		addFunctionErrorMessage();
 }
 
 void FunctionSelection::slotNewCollection()
 {
-	Function* function;
-	function = _app->doc()->newFunction(Function::Collection);
-	if (function == NULL)
-		return;
+	Function* function = new Collection(_app->doc());
 	function->setName(tr("New Collection"));
 
-	/* Create a new item for the function */
-	QTreeWidgetItem* item;
-	item = new QTreeWidgetItem(m_tree);
-	updateFunctionItem(item, function);
-
-	/* Append the new function to current selection */
-	item->setSelected(true);
-
-	if (function->edit() == QDialog::Rejected)
-	{
-		_app->doc()->deleteFunction(function->id());
-		delete item;
-	}
+	if (_app->doc()->addFunction(function) == true)
+		addFunction(function);
 	else
-	{
-		updateFunctionItem(item, function);
-		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-		m_tree->scrollToItem(item);
-	}
+		addFunctionErrorMessage();
 }
 
 /*****************************************************************************
  * Tree
  *****************************************************************************/
+
+void FunctionSelection::addFunction(Function* function)
+{
+	QTreeWidgetItem* item;
+
+	Q_ASSERT(function != NULL);
+
+	/* Create a new item for the function */
+	item = new QTreeWidgetItem(m_tree);
+	updateFunctionItem(item, function);
+
+	/* Append the new function to current selection */
+	item->setSelected(true);
+
+	if (function->edit() == QDialog::Rejected)
+	{
+		_app->doc()->deleteFunction(function->id());
+		delete item;
+	}
+	else
+	{
+		updateFunctionItem(item, function);
+		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+		m_tree->scrollToItem(item);
+	}
+}
+
+void FunctionSelection::addFunctionErrorMessage()
+{
+	if (_app->doc()->functions() >= KFunctionArraySize)
+	{
+		QMessageBox::critical(this, tr("Too many functions"),
+			tr("You can't create more than %1 functions.")
+			.arg(KFunctionArraySize));
+		return;
+	}
+	else
+	{
+		QMessageBox::critical(this, tr("Function creation failed"),
+			tr("Unable to create new function."));
+		return;
+	}
+}
 
 void FunctionSelection::updateFunctionItem(QTreeWidgetItem* item,
 					   Function* function)

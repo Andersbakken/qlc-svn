@@ -98,6 +98,9 @@ protected:
 	/** Copy the given function into the given fixture */
 	void copyFunction(Function* function, Fixture* fxt);
 
+	/** Display an error message if fixture add fails */
+	void addFixtureErrorMessage();
+
 protected slots:
 	/** Callback for fixture list selection changes */
 	void slotSelectionChanged();

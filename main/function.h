@@ -34,6 +34,7 @@ class QIcon;
 
 class Function;
 class Bus;
+class Doc;
 
 #define KXMLQLCFunction "Function"
 #define KXMLQLCFunctionName "Name"
@@ -58,16 +59,6 @@ class Function : public QObject
 	Q_OBJECT
 
 public:
-	/** This is a bit mask because FunctionSelection does type filtering */
-	enum Type
-	{
-		Undefined  = 0,
-		Scene      = 1 << 0,
-		Chaser     = 1 << 1,
-		EFX        = 1 << 2,
-		Collection = 1 << 3
-	};
-
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
@@ -78,7 +69,7 @@ public:
 	 * @param parent The parent object that owns this function (Doc)
 	 * @param type The type of this function
 	 */
-	Function(QObject* parent, Function::Type type);
+	Function(QObject* parent);
 
 	/**
 	 * Destroy this function
@@ -131,7 +122,7 @@ public:
 	 *
 	 * @param name The function's new name
 	 */
-	virtual void setName(QString name);
+	virtual void setName(const QString& name);
 
 	/**
 	 * Return the name of this function
@@ -145,10 +136,20 @@ protected:
 	 * Type
 	 *********************************************************************/
 public:
+	/** This is a bit mask because FunctionSelection does type filtering */
+	enum Type
+	{
+		Undefined  = 0,
+		Scene      = 1 << 0,
+		Chaser     = 1 << 1,
+		EFX        = 1 << 2,
+		Collection = 1 << 3
+	};
+
 	/**
 	 * Return the type of this function (see the enum above)
 	 */
-	Function::Type type() const { return m_type; }
+	virtual Function::Type type() const = 0;
 
 	/**
 	 * Return the type of this function as a string
@@ -173,9 +174,6 @@ public:
 	 * Get an icon (representing the function's type) to be used in lists
 	 */
 	virtual QIcon icon() const;
-
-protected:
-	Type m_type;
 
 	/*********************************************************************
 	 * Running order
@@ -304,12 +302,13 @@ public:
 	virtual bool loadXML(const QDomElement* root) = 0;
 
 	/**
-	 * Load any function from an XML tag
+	 * Load a new function from an XML tag and add it to the given doc
+	 * object, if loading was successful.
 	 *
-	 * @param doc An XML document to load from
 	 * @param root An XML root element of a function
+	 * @param doc The QLC document object, that owns all functions
 	 */
-	static Function* loader(const QDomElement* root);
+	static void loader(const QDomElement* root, Doc* doc);
 
 	/*********************************************************************
 	 * Flash
