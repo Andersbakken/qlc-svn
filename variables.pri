@@ -1,5 +1,6 @@
 # Compiler configuration
 CONFIG			+= warn_on release
+CONFIG			-= debug
 
 # Binaries
 win32:BINDIR		= $$(SystemDrive)/QLC
