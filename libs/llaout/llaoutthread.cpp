@@ -21,26 +21,8 @@
 */
 
 #include <QDebug>
+#include <lla/Closure.h>
 #include "llaoutthread.h"
-
-
-/*
- * Called when there is data to be read on the socket.
- * @param socket the socket with new data.
- */
-int PipeListener::SocketReady(lla::select_server::ConnectedSocket *socket) {
-  unsigned int data_read;
-  int ret = socket->Receive((uint8_t*) &m_data, sizeof(m_data), data_read);
-  if (ret < 0)
-  {
-    qCritical() << "llaout: socket receive failed";
-    return 0;
-  }
-  if (!m_client->SendDmx(m_data.universe, m_data.data,
-                         data_read - sizeof(m_data.universe)))
-    qWarning() << "llaout:: SendDmx() failed";
-  return 0;
-}
 
 
 /*
@@ -57,9 +39,6 @@ LlaOutThread::~LlaOutThread()
 
   if (m_pipe)
     delete m_pipe;
-
-  if (m_listener)
-    delete m_listener;
 
   cleanup();
 }
@@ -78,13 +57,12 @@ bool LlaOutThread::start(Priority priority)
   if (!m_pipe)
   {
     // setup the pipe to recv dmx data on
-    m_pipe = new lla::select_server::LoopbackSocket();
+    m_pipe = new lla::network::LoopbackSocket();
     m_pipe->Init();
-    m_listener = new PipeListener(m_client);
-    m_pipe->SetListener(m_listener);
-    // TODO add the manager here
-    // the manager needs to delete it as well
-    m_ss->AddSocket(m_pipe, this);
+
+    m_pipe->SetOnData(lla::NewClosure(this, &LlaOutThread::new_pipe_data));
+    m_pipe->SetOnClose(lla::NewSingleClosure(this, &LlaOutThread::pipe_closed));
+    m_ss->AddSocket(m_pipe);
   }
 
   QThread::start(priority);
@@ -98,7 +76,7 @@ bool LlaOutThread::start(Priority priority)
 void LlaOutThread::stop()
 {
   if (m_pipe)
-    m_pipe->Close();
+    m_pipe->CloseClient();
   return;
 }
 
@@ -133,10 +111,30 @@ int LlaOutThread::write_dmx(unsigned int universe, dmx_t *data,
 /*
  * Called when the pipe used to communicate between QLC and LLA is closed
  */
-void LlaOutThread::SocketClosed(class lla::select_server::Socket *socket) {
+int LlaOutThread::pipe_closed() {
   // We don't need to delete the socket here because that gets done in the
   // Destructor.
   m_ss->Terminate();
+  return 0;
+}
+
+
+/*
+ * Called when there is data to be read on the pipe socket.
+ */
+int LlaOutThread::new_pipe_data() {
+  dmx_data data;
+  unsigned int data_read;
+  int ret = m_pipe->Receive((uint8_t*) &data, sizeof(data), data_read);
+  if (ret < 0)
+  {
+    qCritical() << "llaout: socket receive failed";
+    return 0;
+  }
+  if (!m_client->SendDmx(data.universe, data.data,
+                         data_read - sizeof(data.universe)))
+    qWarning() << "llaout:: SendDmx() failed";
+  return 0;
 }
 
 
@@ -144,7 +142,7 @@ void LlaOutThread::SocketClosed(class lla::select_server::Socket *socket) {
  * Setup the LlaClient to communicate with the server.
  * @return true if the setup worked corectly.
  */
-bool LlaOutThread::setup_client(lla::select_server::ConnectedSocket *socket) {
+bool LlaOutThread::setup_client(lla::network::ConnectedSocket *socket) {
   if (!m_client)
   {
     m_client = new lla::LlaClient(socket);
@@ -188,12 +186,13 @@ bool LlaStandaloneClient::init()
     return true;
 
   if (!m_ss)
-    m_ss = new lla::select_server::SelectServer();
+    m_ss = new lla::network::SelectServer();
 
   if (!m_tcp_socket)
   {
-    m_tcp_socket = new lla::select_server::TcpSocket();
-    if (!m_tcp_socket->Connect("127.0.0.1", LLA_DEFAULT_PORT))
+    m_tcp_socket = lla::network::TcpSocket::Connect("127.0.0.1",
+                                                    LLA_DEFAULT_PORT);
+    if (!m_tcp_socket)
     {
       qWarning() << "llaout: Connect failed, is LLAD running?";
       delete m_tcp_socket;
@@ -242,6 +241,7 @@ bool LlaEmbeddedServer::init()
 
   lla::lla_server_options options;
   options.http_enable = true;
+  options.http_port = lla::LlaServer::DEFAULT_HTTP_PORT;
   m_daemon = new lla::LlaDaemon(options);
   if (!m_daemon->Init())
   {
@@ -255,7 +255,7 @@ bool LlaEmbeddedServer::init()
   // setup the pipe socket used to communicate with the LlaServer
   if (!m_pipe_socket)
   {
-    m_pipe_socket = new lla::select_server::PipeSocket();
+    m_pipe_socket = new lla::network::PipeSocket();
     if (!m_pipe_socket->Init())
     {
       qWarning() << "llaout: pipe failed";
@@ -265,7 +265,6 @@ bool LlaEmbeddedServer::init()
       m_daemon = NULL;
       return false;
     }
-    m_ss->AddSocket(m_pipe_socket);
   }
 
   if (!setup_client(m_pipe_socket))

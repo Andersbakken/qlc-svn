@@ -25,8 +25,8 @@
 
 #include <qthread.h>
 #include <lla/LlaClient.h>
-#include <lla/select_server/SelectServer.h>
-#include <lla/select_server/Socket.h>
+#include <lla/network/SelectServer.h>
+#include <lla/network/Socket.h>
 #include <llad/LlaDaemon.h>
 
 // This should really be in qlctypes.h!
@@ -38,19 +38,6 @@ typedef struct
   unsigned int universe;
   dmx_t data[K_UNIVERSE_SIZE];
 } dmx_data;
-
-
-// Used in the LLA thread to handle data send through the pipe
-class PipeListener : public lla::select_server::SocketListener
-{
-public:
-  PipeListener(lla::LlaClient *client): m_client(client) {}
-  int SocketReady(lla::select_server::ConnectedSocket *socket);
-
-private:
-  lla::LlaClient *m_client;
-  dmx_data m_data;
-};
 
 
 /*
@@ -67,23 +54,18 @@ private:
  *   LlaOut --pipe-> LlaOutThread --tcp socket-> llad (separate process)
  *
  * When embedded the server, we still use the LlaClient class and setup a pipe
- * to send the * rpcs over. Yes, this results in copying the data twice over a
- * pipe but we * can't use a single pipe because the LlaClient needs to
+ * to send the rpcs over. Yes, this results in copying the data twice over a
+ * pipe but we can't use a single pipe because the LlaClient needs to
  * response to events.
  *
  * LlaOut --pipe-> LlaOutThread --pipe-> LlaServer
  */
-class LlaOutThread : public QThread, public lla::select_server::SocketManager
-{
+class LlaOutThread : public QThread {
 public:
-  /*
-   * @param run_as_embedded Set to true to run the embedded LLA server
-   */
   LlaOutThread():
     m_init_run(false),
     m_ss(NULL),
     m_pipe(NULL),
-    m_listener(NULL),
     m_client(NULL) {}
   virtual ~LlaOutThread();
 
@@ -91,18 +73,18 @@ public:
   bool start(Priority priority=InheritPriority);
   void stop();
   int write_dmx(unsigned int universe, dmx_t *data, unsigned int channels);
-  void SocketClosed(class lla::select_server::Socket *socket);
+  int new_pipe_data();
+  int pipe_closed();
 
 protected:
-  bool setup_client(lla::select_server::ConnectedSocket *socket);
+  bool setup_client(lla::network::ConnectedSocket *socket);
   bool m_init_run;
-  lla::select_server::SelectServer *m_ss; // the select server
+  lla::network::SelectServer *m_ss; // the select server
 
 private:
   virtual bool init() = 0;
   virtual void cleanup() {};
-  lla::select_server::LoopbackSocket *m_pipe; // the pipe to get new dmx data on
-  lla::select_server::SocketListener *m_listener; // the listener for the pipe
+  lla::network::LoopbackSocket *m_pipe; // the pipe to get new dmx data on
   lla::LlaClient *m_client;
   dmx_data m_data;
 };
@@ -121,7 +103,7 @@ public:
 private:
   bool init();
   void cleanup();
-  lla::select_server::TcpSocket *m_tcp_socket;
+  lla::network::TcpSocket *m_tcp_socket;
 };
 
 
@@ -140,7 +122,7 @@ private:
   bool init();
   void cleanup();
   lla::LlaDaemon *m_daemon;
-  lla::select_server::PipeSocket *m_pipe_socket;
+  lla::network::PipeSocket *m_pipe_socket;
 };
 
 #endif
