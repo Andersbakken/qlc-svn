@@ -32,7 +32,6 @@ class QString;
 class QFile;
 
 class BusEmitter;
-class Function;
 
 #define KXMLQLCBus "Bus"
 #define KXMLQLCBusID "ID"

@@ -24,12 +24,7 @@
 #include <QFile>
 #include <QtXml>
 
-#include "function.h"
 #include "bus.h"
-#include "app.h"
-#include "doc.h"
-
-extern App* _app;
 
 /****************************************************************************
  * Initialization
@@ -83,7 +78,6 @@ bool Bus::setName(t_bus_id id, const QString& name)
 	{
 		s_busArray[id].m_name = name;
 		s_busEmitter->emitNameChanged(id, name);
-		_app->doc()->setModified();
 		return true;
 	}
 	else

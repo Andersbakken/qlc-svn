@@ -253,6 +253,9 @@ protected slots:
 	/** Slot that catches function change signals */
 	void slotFunctionChanged(t_function_id fid);
 
+	/** Catches bus name changes so that Doc can be marked as modified */
+	void slotBusNameChanged();
+
 signals:
 	/** Signal that this Doc has been modified (or unmodified) */
 	void modified(bool state);

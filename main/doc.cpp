@@ -64,6 +64,11 @@ Doc::Doc() : QObject()
 		m_functionArray[i] = NULL;
 	m_functionAllocation = 0;
 
+	/* Connect to bus emitter so that Doc can be marked as modified when
+	   bus name changes. */
+	connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id,const QString&)),
+		this, SLOT(slotBusNameChanged()));
+
 	resetModified();
 }
 
@@ -590,4 +595,9 @@ void Doc::slotFixtureChanged(t_fixture_id id)
 {
 	setModified();
 	emit fixtureChanged(id);
+}
+
+void Doc::slotBusNameChanged()
+{
+	setModified();
 }
