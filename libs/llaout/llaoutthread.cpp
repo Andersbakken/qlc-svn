@@ -103,7 +103,8 @@ int LlaOutThread::write_dmx(unsigned int universe, dmx_t *data,
   unsigned int len = channels < K_UNIVERSE_SIZE ? channels : K_UNIVERSE_SIZE;
   m_data.universe = universe;
   memcpy(m_data.data, data, len);
-  m_pipe->Send((uint8_t*) &m_data, sizeof(m_data));
+  if (m_pipe)
+    m_pipe->Send((uint8_t*) &m_data, sizeof(m_data));
   return 0;
 }
 
