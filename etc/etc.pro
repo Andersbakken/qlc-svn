@@ -17,12 +17,12 @@ unix:!macx:INSTALLS	+= icons desktop
 win32 {
 	# Qt Libraries
         qtlibs.path     = $$LIBSDIR
-        release:qtlibs.files  = $$(QTDIR)/bin/QtCore4.dll \
-				$$(QTDIR)/bin/QtGui4.dll \
-				$$(QTDIR)/bin/QtXml4.dll
-	release:qtlibs.files  = $$(QTDIR)/bin/QtCored4.dll \
-				$$(QTDIR)/bin/QtGuid4.dll \
-				$$(QTDIR)/bin/QtXmld4.dll
+        qtlibs.files  = $$(QTDIR)/bin/QtCore4.dll \
+			$$(QTDIR)/bin/QtGui4.dll \
+			$$(QTDIR)/bin/QtXml4.dll \
+                        $$(QTDIR)/bin/QtCored4.dll \
+			$$(QTDIR)/bin/QtGuid4.dll \
+			$$(QTDIR)/bin/QtXmld4.dll
 
 	# MinGW library
 	mingw.path      = $$LIBSDIR
