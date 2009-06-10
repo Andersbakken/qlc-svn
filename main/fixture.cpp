@@ -399,7 +399,7 @@ bool Fixture::loadXML(const QDomElement* root)
 		qDebug() << QString("Fixture [%1] channels %2 out of bounds "
 				"(%3 - %4).").arg(name).arg(channels).arg(1)
 				.arg(KFixtureChannelsMax);
-		channels = 1; /* At least one channel */
+		channels = KFixtureChannelsMax;
 	}
 
 	/* Make sure that address is something sensible */
