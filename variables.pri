@@ -2,6 +2,9 @@
 CONFIG			+= warn_on release
 CONFIG			-= debug
 
+# Treat all compiler warnings as errors
+# QMAKE_CXXFLAGS		+= -Werror
+
 # Binaries
 win32:BINDIR		= $$(SystemDrive)/QLC
 unix:!macx:BINDIR	= /usr/bin
@@ -11,12 +14,6 @@ macx:BINDIR		= /Applications
 win32:LIBSDIR		= $$BINDIR
 unix:!macx:LIBSDIR	= /usr/lib
 macx:LIBSDIR            = $$BINDIR/qlc.app/Contents/Frameworks/
-
-# LLA Directories
-unix:LLA_GIT		= /usr/src/lla
-# Should contain google/protobuf/common.h which can be got through
-# Macports on Mac
-unix:PROTOBUF		= /opt/local/include/
 
 # Data
 win32:DATADIR		= $$(SystemDrive)/QLC
