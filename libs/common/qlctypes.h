@@ -168,7 +168,7 @@ const t_channel KChannelMax ( 512 * KUniverseCount );
 /**
  * Maximum number of channels for a single fixture
  */
-const t_channel KFixtureChannelsMax ( 64 );
+const t_channel KFixtureChannelsMax ( 128 );
 
 /**
  * Invalid channel number (must be larger than KChannelMax!)
