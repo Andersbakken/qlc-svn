@@ -26,13 +26,14 @@
 #include <QtXml>
 
 #include "common/qlctypes.h"
-
 #include "function.h"
 #include "fixture.h"
 
 #define KXMLQLCSceneValue "Value"
 #define KXMLQLCSceneValueFixture "Fixture"
 #define KXMLQLCSceneValueChannel "Channel"
+
+class QByteArray;
 
 /*****************************************************************************
  * SceneChannel
@@ -167,13 +168,13 @@ public:
 	 * Write the scene values to OutputMap. If fxi_id is given, writes
 	 * values only for the specified fixture. 
 	 */
-	void writeValues(t_fixture_id fxi_id = KNoID);
+	void writeValues(QByteArray* universes, t_fixture_id fxi_id = KNoID);
 
 	/**
 	 * Write zeros for all involved channels to OutputMap. If fxi_id is
 	 * given, writes zeros only for the specified fixture. 
 	 */
-	void writeZeros(t_fixture_id fxi_id = KNoID);
+	void writeZeros(QByteArray* universes, t_fixture_id fxi_id = KNoID);
 
 	/**
 	 * Get a list of values in this scene
@@ -188,7 +189,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Edit the function. Returns QDialog::DialogCode. */
-	int edit();
+	int edit(QWidget* parent);
 
 	/*********************************************************************
 	 * Fixtures
@@ -207,8 +208,8 @@ public:
 	 * Flash
 	 *********************************************************************/
 public:
-	void flash();
-	void unFlash();
+	void flash(QByteArray* universes);
+	void unFlash(QByteArray* universes);
 
 	/*********************************************************************
 	 * Running

@@ -240,25 +240,28 @@ t_value Scene::value(t_fixture_id fxi, t_channel ch)
 		return m_values.at(index).value;
 }
 
-void Scene::writeValues(t_fixture_id fxi_id)
+void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
 {
+	Q_ASSERT(universes != NULL);
+
 	for (int i = 0; i < m_values.count(); i++)
 	{
 		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
 		{
-			_app->outputMap()->setValue(m_channels[i].address,
-						    m_values[i].value);
+			universes->data()[m_channels[i].address] = m_values[i].value;
 		}
 	}
 }
 
-void Scene::writeZeros(t_fixture_id fxi_id)
+void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
 {
+	Q_ASSERT(universes != NULL);
+
 	for (int i = 0; i < m_values.count(); i++)
 	{
 		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
 		{
-			_app->outputMap()->setValue(m_channels[i].address, 0);
+			universes->data()[m_channels[i].address] = 0;
 		}
 	}
 }
@@ -267,9 +270,9 @@ void Scene::writeZeros(t_fixture_id fxi_id)
  * Edit
  *****************************************************************************/
 
-int Scene::edit()
+int Scene::edit(QWidget* parent)
 {
-	SceneEditor editor(_app, this);
+	SceneEditor editor(parent, this);
 	int result = editor.exec();
 	if (result == QDialog::Accepted)
 		emit changed(m_id);
@@ -416,21 +419,21 @@ SceneChannel& SceneChannel::operator=(const SceneChannel& sch)
  * Flashing
  ****************************************************************************/
 
-void Scene::flash()
+void Scene::flash(QByteArray* universes)
 {
 	if (isFlashing() == false)
 	{
-		Function::flash();
-		writeValues();
+		Function::flash(universes);
+		writeValues(universes);
 	}
 }
 
-void Scene::unFlash()
+void Scene::unFlash(QByteArray* universes)
 {
 	if (isFlashing() == true)
 	{
-		Function::unFlash();
-		writeZeros();
+		Function::unFlash(universes);
+		writeZeros(universes);
 	}
 }
 

@@ -195,7 +195,7 @@ void FunctionSelection::addFunction(Function* function)
 	/* Append the new function to current selection */
 	item->setSelected(true);
 
-	if (function->edit() == QDialog::Rejected)
+	if (function->edit(this) == QDialog::Rejected)
 	{
 		_app->doc()->deleteFunction(function->id());
 		delete item;

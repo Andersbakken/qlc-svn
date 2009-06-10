@@ -84,7 +84,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Edit the function. Returns QDialog::DialogCode. */
-	int edit();
+	int edit(QWidget* parent);
 
 	/*********************************************************************
 	 * Save & Load

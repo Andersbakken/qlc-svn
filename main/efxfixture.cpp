@@ -307,7 +307,7 @@ void EFXFixture::nextStep(QByteArray* universes)
 		{
 			/* This fixture is now running. Initialize it. */
 			m_initialized = true;
-			start();
+			start(universes);
 		}
 	}
 
@@ -344,21 +344,21 @@ void EFXFixture::nextStep(QByteArray* universes)
 		{
 			/* De-initialize the fixture and mark this as ready */
 			m_ready = true;
-			stop();
+			stop(universes);
 		}
 	}
 }
 
-void EFXFixture::start()
+void EFXFixture::start(QByteArray* universes)
 {
 	if (m_startScene != NULL)
-		m_startScene->writeValues(m_fixture);
+		m_startScene->writeValues(universes, m_fixture);
 }
 
-void EFXFixture::stop()
+void EFXFixture::stop(QByteArray* universes)
 {
 	if (m_stopScene != NULL)
-		m_stopScene->writeValues(m_fixture);
+		m_stopScene->writeValues(universes, m_fixture);
 }
 
 void EFXFixture::setPoint(QByteArray* universes)

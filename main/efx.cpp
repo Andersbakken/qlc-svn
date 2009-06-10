@@ -767,9 +767,9 @@ bool EFX::stopSceneEnabled() const
  * Edit
  *****************************************************************************/
 
-int EFX::edit()
+int EFX::edit(QWidget* parent)
 {
-	EFXEditor editor(_app, this);
+	EFXEditor editor(parent, this);
 	int result = editor.exec();
 	if (result == QDialog::Accepted)
 		emit changed(m_id);

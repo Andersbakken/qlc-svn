@@ -119,10 +119,10 @@ protected:
 	bool isValid();
 
 	/* Run the start scene if necessary */
-	void start();
+	void start(QByteArray* universes);
 
 	/* Run the stop scene if necessary */
-	void stop();
+	void stop(QByteArray* universes);
 
 	/** Reset the fixture when the EFX is stopped */
 	void reset();

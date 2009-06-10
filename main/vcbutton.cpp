@@ -25,6 +25,7 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QMessageBox>
+#include <QByteArray>
 #include <QPainter>
 #include <QString>
 #include <QDebug>
@@ -43,6 +44,7 @@
 #include "functionselection.h"
 #include "virtualconsole.h"
 #include "mastertimer.h"
+#include "outputmap.h"
 #include "inputmap.h"
 #include "vcbutton.h"
 #include "function.h"
@@ -626,7 +628,11 @@ void VCButton::pressFunction()
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
-			f->flash();
+		{
+			QByteArray* universes = _app->outputMap()->claimUniverses();
+			f->flash(universes);
+			_app->outputMap()->releaseUniverses();
+		}
 	}
 }
 
@@ -638,7 +644,11 @@ void VCButton::releaseFunction()
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
-			f->unFlash();
+		{
+			QByteArray* universes = _app->outputMap()->claimUniverses();
+			f->unFlash(universes);
+			_app->outputMap()->releaseUniverses();
+		}
 	}
 }
 

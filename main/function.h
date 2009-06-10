@@ -276,7 +276,7 @@ protected:
 	 *********************************************************************/
 public:
 	/** Edit the function. Returns QDialog::DialogCode. */
-	virtual int edit() = 0;
+	virtual int edit(QWidget* parent) = 0;
 
 	/*********************************************************************
 	 * Fixtures
@@ -319,8 +319,8 @@ public:
 	 * Flash
 	 *********************************************************************/
 public:
-	virtual void flash();
-	virtual void unFlash();
+	virtual void flash(QByteArray* universes);
+	virtual void unFlash(QByteArray* universes);
 
 	virtual bool isFlashing() const { return m_flashing; }
 

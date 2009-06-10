@@ -154,9 +154,9 @@ bool Chaser::lowerStep(unsigned int index)
  * Edit
  *****************************************************************************/
 
-int Chaser::edit()
+int Chaser::edit(QWidget* parent)
 {
-	ChaserEditor editor(_app, this);
+	ChaserEditor editor(parent, this);
 	int result = editor.exec();
 	if (result == QDialog::Accepted)
 		emit changed(m_id);

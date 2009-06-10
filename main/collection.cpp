@@ -103,9 +103,9 @@ bool Collection::copyFrom(const Function* function)
  * Edit
  *****************************************************************************/
 
-int Collection::edit()
+int Collection::edit(QWidget* parent)
 {
-	CollectionEditor editor(_app, this);
+	CollectionEditor editor(parent, this);
 	int result = editor.exec();
 	if (result == QDialog::Accepted)
 		emit changed(m_id);

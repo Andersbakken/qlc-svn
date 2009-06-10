@@ -430,7 +430,7 @@ int FunctionManager::slotEdit()
 		return QDialog::Rejected;
 
 	// Edit the selected function
-	result = function->edit();
+	result = function->edit(this);
 
 	updateFunctionItem(item, function);
 
