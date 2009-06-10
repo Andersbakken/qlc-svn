@@ -107,7 +107,11 @@
  </Channel>
  <Channel Name="No function" >
   <Group Byte="0" >Nothing</Group>
-  <Capability Min="0" Max="255" >Proportional focus control</Capability>
+  <Capability Min="0" Max="255" >No function</Capability>
+ </Channel>
+ <Channel Name="No function 2" >
+  <Group Byte="0" >Nothing</Group>
+  <Capability Min="0" Max="255" >No function</Capability>
  </Channel>
  <Channel Name="Focus" >
   <Group Byte="0" >Beam</Group>
@@ -146,7 +150,7 @@
   <Channel Number="9" >3-facet prism rotation control</Channel>
   <Channel Number="10" >Rotating gobos; continous rotation</Channel>
   <Channel Number="11" >Rotating gobo indexing, rotating gobo rotation</Channel>
-  <Channel Number="12" >No function</Channel>
+  <Channel Number="12" >No function 2</Channel>
   <Channel Number="13" >Focus</Channel>
   <Channel Number="14" >Shutter, strobe</Channel>
   <Channel Number="15" >Dimmer intensity</Channel>

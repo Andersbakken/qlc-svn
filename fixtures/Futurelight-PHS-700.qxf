@@ -69,7 +69,7 @@
   <Capability Min="170" Max="189" >Gobo 6 shake speed</Capability>
   <Capability Min="190" Max="255" >Gobo rainbow speed</Capability>
  </Channel>
- <Channel Name="Rotating gobo index, rotation" >
+ <Channel Name="Rotating gobo 1 index, rotation" >
   <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="127" >Gobo indexing</Capability>
   <Capability Min="128" Max="187" >Forward speed fast to slow</Capability>
@@ -93,7 +93,7 @@
   <Capability Min="150" Max="169" >Gobo 5 shake speed</Capability>
   <Capability Min="170" Max="189" >Gobo 6 shake speed</Capability>
  </Channel>
- <Channel Name="Rotating gobo index, rotation" >
+ <Channel Name="Rotating gobo 2 index, rotation" >
   <Group Byte="0" >Gobo</Group>
   <Capability Min="0" Max="127" >Gobo indexing</Capability>
   <Capability Min="128" Max="187" >Forwards gobo rotation speed</Capability>
@@ -187,9 +187,9 @@
   <Channel Number="3" >Colour 1</Channel>
   <Channel Number="4" >Colour 2</Channel>
   <Channel Number="5" >Rotating gobo wheel 1</Channel>
-  <Channel Number="6" >Rotating gobo index, rotation</Channel>
+  <Channel Number="6" >Rotating gobo 1 index, rotation</Channel>
   <Channel Number="7" >Rotating gobo wheel 2</Channel>
-  <Channel Number="8" >Rotating gobo index, rotation</Channel>
+  <Channel Number="8" >Rotating gobo 2 index, rotation</Channel>
   <Channel Number="9" >Prism</Channel>
   <Channel Number="10" >Focus</Channel>
   <Channel Number="11" >Iris</Channel>
