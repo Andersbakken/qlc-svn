@@ -83,9 +83,14 @@ private:
 	 * Copying
 	 *********************************************************************/
 public:
-	/** Create a copy of this function and return it. The function is put
-	    to Doc automatically. */
-	virtual Function* createCopy() = 0;
+	/**
+     * Create a copy of a function to the given doc object and return the
+     * newly-created function, unless an error has occurred.
+     *
+     * @param doc The QLC Doc object that owns all functions
+     * @return The newly-created function or NULL in case of an error
+     */
+	virtual Function* createCopy(Doc* doc) = 0;
 
 	/** Copy this function's contents from the given function */
 	virtual bool copyFrom(const Function* function);

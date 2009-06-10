@@ -82,8 +82,8 @@ public:
 	 * Copying
 	 *********************************************************************/
 public:
-	/** Create a copy of this function */
-	Function* createCopy();
+    /** @reimpl */
+	Function* createCopy(Doc* doc);
 
 	/** Copy the contents for this function from another function */
 	bool copyFrom(const Function* function);

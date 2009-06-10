@@ -71,19 +71,18 @@ Function::Type Chaser::type() const
  * Copying
  *****************************************************************************/
 
-Function* Chaser::createCopy()
+Function* Chaser::createCopy(Doc* doc)
 {
-	Function* copy = NULL;
+    Q_ASSERT(doc != NULL);
 
-	copy = new Chaser(_app->doc());
+	Function* copy = new Chaser(_app->doc());
 	Q_ASSERT(copy != NULL);
-
 	if (copy->copyFrom(this) == false)
 	{
 		delete copy;
 		copy = NULL;
 	}
-	else if (_app->doc()->addFunction(copy) == false)
+	else if (doc->addFunction(copy) == false)
 	{
 		delete copy;
 		copy = NULL;

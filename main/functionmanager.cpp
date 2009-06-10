@@ -611,10 +611,11 @@ void FunctionManager::copyFunction(t_function_id fid)
 	Function* function = _app->doc()->function(fid);
 	Q_ASSERT(function != NULL);
 
-	/* Create a new item for the copied function */
-	Function* copy = function->createCopy();
+    /* Attempt to create a copy of the function to Doc */
+	Function* copy = function->createCopy(_app->doc());
 	if (copy != NULL)
 	{
+        /* Create a new item for the copied function */
 		QTreeWidgetItem* item;
 		item = new QTreeWidgetItem(m_tree);
 		updateFunctionItem(item, function);

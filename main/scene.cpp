@@ -165,11 +165,11 @@ Function::Type Scene::type() const
  * Copying
  *****************************************************************************/
 
-Function* Scene::createCopy()
+Function* Scene::createCopy(Doc* doc)
 {
-	Function* copy = NULL;
+    Q_ASSERT(parent != NULL);
 
-	copy = new Scene(_app->doc());
+	Function* copy = new Scene(doc);
 	Q_ASSERT(copy != NULL);
 
 	if (copy->copyFrom(this) == false)
@@ -177,7 +177,7 @@ Function* Scene::createCopy()
 		delete copy;
 		copy = NULL;
 	}
-	else if (_app->doc()->addFunction(copy) == false)
+	else if (doc->addFunction(copy) == false)
 	{
 		delete copy;
 		copy = NULL;
@@ -186,7 +186,7 @@ Function* Scene::createCopy()
 	{
 		copy->setName(tr("Copy of %1").arg(name()));
 	}
-	
+
 	return copy;
 }
 
