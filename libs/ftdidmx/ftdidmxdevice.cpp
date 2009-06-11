@@ -26,7 +26,8 @@
 #include <QThread>
 
 #include "ftdidmxdevice.h"
-#include "dmxpro.h"
+
+char dmxProPacket[] = {0x7E, 0x06, 0x01, 0x02, 0xE7};
 
 /****************************************************************************
  * Initialization

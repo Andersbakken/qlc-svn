@@ -49,7 +49,6 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 
 	setupUi(this);
 
-	unsigned int devices = sizeof(known_devices) / sizeof(FTDIDevice);
 	for (unsigned int i = 0;
 	     i < sizeof(known_devices) / sizeof(FTDIDevice);
 	     i++)
