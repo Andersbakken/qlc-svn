@@ -26,6 +26,7 @@
 #include <QThread>
 
 #include "ftdidmxdevice.h"
+#include "dmxpro.h"
 
 /****************************************************************************
  * Initialization
@@ -52,6 +53,12 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid,
 			 .arg(QString::number(vid, 16))
 			 .arg(QString::number(pid, 16))
 			 .arg(m_path);
+	if (DMX_PRO_VID == vid && DMX_PRO_PID == pid) {
+		m_name = QString("%1 - USB DMX PRO").arg(m_name);
+		m_isDmxPro = true;
+	} else {
+		m_isDmxPro = false;
+	}
 }
 
 FTDIDMXDevice::~FTDIDMXDevice()
@@ -120,23 +127,30 @@ void FTDIDMXDevice::run()
 
 	while (m_threadRunning == true)
 	{
-		// usleep values added by suggestion of Hugh Blemings
-		// on qlc-devel mailing list (11/02/09).
-		// As I have not run more than one dimmer rack with this
-		// plugin I am unable to assertain whether or not this
-		// is better or equivilent to previous code therefore
-		// I am including it in order for the analysis of the users.
-		// At the time of writing LLA is being re-vamped so this
-		// plugin will become redundant for all but Windows users.
+		if (m_isDmxPro) {
+			FT_Write(m_handle, dmxProPacket, 4, &bytesWritten);
+			FT_Write(m_handle, &startCode, 1, &bytesWritten);
+			FT_Write(m_handle, m_values, 512, &bytesWritten);
+			FT_Write(m_handle, dmxProPacket+4, 1, &bytesWritten);
+		} else {
+			// usleep values added by suggestion of Hugh Blemings
+			// on qlc-devel mailing list (11/02/09).
+			// As I have not run more than one dimmer rack with this
+			// plugin I am unable to assertain whether or not this
+			// is better or equivilent to previous code therefore
+			// I am including it in order for the analysis of the users.
+			// At the time of writing LLA is being re-vamped so this
+			// plugin will become redundant for all but Windows users.
 
-		// Write data
-		FT_SetBreakOn(m_handle);
-		usleep(88);
-		FT_SetBreakOff(m_handle);
-		usleep(8);
-		FT_Write(m_handle, &startCode, 1, &bytesWritten);
-		FT_Write(m_handle, m_values, 512, &bytesWritten);
-		usleep(24000);
+			// Write data
+			FT_SetBreakOn(m_handle);
+			usleep(88);
+			FT_SetBreakOff(m_handle);
+			usleep(8);
+			FT_Write(m_handle, &startCode, 1, &bytesWritten);
+			FT_Write(m_handle, m_values, 512, &bytesWritten);
+			usleep(24000);
+		}
 	}
 }
 
@@ -170,44 +184,46 @@ bool FTDIDMXDevice::open()
 
 	if (status == FT_OK)
 	{
-		if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
-		{
-			qWarning() << "Unable to reset FTDI device" << m_path;
-			return false;
+		if (!m_isDmxPro) {
+			if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
+			{
+				qWarning() << "Unable to reset FTDI device" << m_path;
+				return false;
+			}
+
+			// Set the baud rate 12 will give us 250Kbits
+			if (!FT_SUCCESS(FT_SetDivisor(m_handle, 12)))
+			{
+				qWarning() << "Unable to set divisor on FTDI device"
+					   << m_path;
+				return false;
+			}
+
+			// Set the data characteristics
+			if (!FT_SUCCESS(FT_SetDataCharacteristics(m_handle,
+								  FT_BITS_8,
+								  FT_STOP_BITS_2,
+								  FT_PARITY_NONE)))
+			{
+				qWarning() << "Unable to set data characteristics on"
+					   << "FTDI device" << m_path;
+				return false;
+			}
+
+			// Set flow control
+	 		if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0)))
+		 	{
+				qWarning() << "Unable to set flow control on"
+					   << "FTDI device" << m_path;
+				return false;
+			}
+
+			// set RS485 for sendin
+			FT_ClrRts(m_handle);
+
+			// Clear TX RX buffers
+			FT_Purge(m_handle,FT_PURGE_TX | FT_PURGE_RX);
 		}
-
-		// Set the baud rate 12 will give us 250Kbits
-		if (!FT_SUCCESS(FT_SetDivisor(m_handle, 12)))
-		{
-			qWarning() << "Unable to set divisor on FTDI device"
-				   << m_path;
-			return false;
-		}
-
-		// Set the data characteristics
-		if (!FT_SUCCESS(FT_SetDataCharacteristics(m_handle,
-							  FT_BITS_8,
-							  FT_STOP_BITS_2,
-							  FT_PARITY_NONE)))
-		{
-			qWarning() << "Unable to set data characteristics on"
-				   << "FTDI device" << m_path;
-			return false;
-		}
-
-		// Set flow control
-	 	if (!FT_SUCCESS(FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0)))
-	 	{
-			qWarning() << "Unable to set flow control on"
-				   << "FTDI device" << m_path;
-			return false;
-		}
-
-		// set RS485 for sendin
-		FT_ClrRts(m_handle);
-
-		// Clear TX RX buffers
-		FT_Purge(m_handle,FT_PURGE_TX | FT_PURGE_RX);
 
 		m_threadRunning = true;
 		start(QThread::TimeCriticalPriority);

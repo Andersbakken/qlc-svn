@@ -26,6 +26,7 @@
 #include "common/qlctypes.h"
 
 #include "ui_configureftdidmx.h"
+#include "dmxpro.h"
 
 class FTDIDMXOut;
 class QTimer;
@@ -43,6 +44,7 @@ static struct FTDIDevice known_devices[] =
 {
 	{"Homebrew USB -> DMX", 0x0403, 0xEC70},
 	{"EntTec Open DMX USB", 0x0403, 0x6001},
+	{"EntTec DMX USB Pro",  DMX_PRO_VID, DMX_PRO_PID},
 	{"Other", 0x0000, 0x0000}
 };
 
