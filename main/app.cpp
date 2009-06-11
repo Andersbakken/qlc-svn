@@ -183,7 +183,7 @@ void App::init()
 	m_masterTimer->start();
 
 	/* Buses */
-	Bus::init();
+	Bus::init(this);
 
 	/* Fixture definitions */
 #ifdef Q_WS_X11

@@ -110,7 +110,7 @@ protected:
 
 protected slots:
 	/** When bus name changes, its action must also be updated */
-	void slotBusNameChanged(t_bus_id id, const QString& name);
+	void slotBusNameChanged(quint32 id, const QString& name);
 
 	void slotAddScene();
 	void slotAddChaser();

@@ -185,33 +185,33 @@ public:
 	 *
 	 * @param bus A bus id
 	 */
-	void setBus(t_bus_id bus);
+	void setBus(quint32 bus);
 
 	/**
 	 * Get the ID of the controlled bus
 	 *
 	 */
-	t_bus_id bus();
+	quint32 bus();
 
 	/**
 	 * Set the low limit for bus values set thru the slider
 	 */
-	void setBusLowLimit(t_bus_value limit);
+	void setBusLowLimit(quint32 limit);
 
 	/**
 	 * Get the low limit for bus values set thru the slider
 	 */
-	t_bus_value busLowLimit();
+	quint32 busLowLimit();
 
 	/**
 	 * Set the high limit for bus values set thru the slider
 	 */
-	void setBusHighLimit(t_bus_value limit);
+	void setBusHighLimit(quint32 limit);
 
 	/**
 	 * Get the high limit for bus values set thru the slider
 	 */
-	t_bus_value busHighLimit();
+	quint32 busHighLimit();
 
 protected:
 	/**
@@ -223,17 +223,17 @@ public slots:
 	/**
 	 * Callback for bus value changes
 	 */
-	void slotBusValueChanged(t_bus_id bus, t_bus_value value);
+	void slotBusValueChanged(quint32 bus, quint32 value);
 
 	/**
 	 * Callback for bus name changes
 	 */
-	void slotBusNameChanged(t_bus_id bus, const QString& name);
+	void slotBusNameChanged(quint32 bus, const QString& name);
 
 protected:
-	t_bus_id m_bus;
-	t_bus_value m_busLowLimit;
-	t_bus_value m_busHighLimit;
+	quint32 m_bus;
+	quint32 m_busLowLimit;
+	quint32 m_busHighLimit;
 
 	/*********************************************************************
 	 * Level channels

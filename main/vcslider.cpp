@@ -46,8 +46,8 @@
 
 extern App* _app;
 
-static const t_bus_value KDefaultBusLowLimit ( 0 );
-static const t_bus_value KDefaultBusHighLimit ( 5 );
+static const quint32 KDefaultBusLowLimit ( 0 );
+static const quint32 KDefaultBusHighLimit ( 5 );
 
 /*****************************************************************************
  * Initialization
@@ -70,7 +70,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_levelLowLimit = 0;
 	m_levelHighLimit = 255;
 
-	m_bus = -1;
+	m_bus = Bus::defaultFade();
 	m_busLowLimit = KDefaultBusLowLimit;
 	m_busHighLimit = KDefaultBusHighLimit;
 
@@ -126,7 +126,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	resize(QPoint(60, 220));
 
 	/* Initialize to bus mode by default */
-	setBus(KBusIDDefaultFade);
+	setBus(Bus::defaultFade());
 	setSliderMode(Bus);
 	setSliderValue(0);
 	slotSliderMoved(0);
@@ -342,10 +342,10 @@ void VCSlider::setSliderMode(SliderMode mode)
 
 	/* Disconnect these to prevent double callbacks and non-essential
 	   signals (with Level & Submaster modes) */
-	disconnect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
-		   this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-	disconnect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-		   this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+	disconnect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
+		   this, SLOT(slotBusNameChanged(quint32, const QString&)));
+	disconnect(Bus::instance(), SIGNAL(valueChanged(quint32, quint32)),
+		   this, SLOT(slotBusValueChanged(quint32, quint32)));
 
 	m_sliderMode = mode;
 
@@ -357,10 +357,10 @@ void VCSlider::setSliderMode(SliderMode mode)
 		setSliderValue(busLowLimit() * KFrequency);
 
 		/* Reconnect to bus emitter */
-		connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
-			this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-		connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-			this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+		connect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
+			this, SLOT(slotBusNameChanged(quint32, const QString&)));
+		connect(Bus::instance(), SIGNAL(valueChanged(quint32, quint32)),
+			this, SLOT(slotBusValueChanged(quint32, quint32)));
 
 		m_bottomLabel->hide();
 		m_tapButton->show();
@@ -387,57 +387,49 @@ void VCSlider::setSliderMode(SliderMode mode)
  * Bus
  *****************************************************************************/
 
-void VCSlider::setBus(t_bus_id bus)
+void VCSlider::setBus(quint32 bus)
 {
-	QString name;
-
 	m_bus = bus;
-
-	name = Bus::name(bus);
-	if (name.simplified().isEmpty() == true)
-		name.sprintf("Bus %.2d", bus + 1);
-
-	setCaption(name);
+	setCaption(Bus::instance()->idName(bus));
 }
 
-t_bus_id VCSlider::bus()
+quint32 VCSlider::bus()
 {
 	return m_bus;
 }
 
-void VCSlider::setBusLowLimit(t_bus_value limit)
+void VCSlider::setBusLowLimit(quint32 limit)
 {
 	m_busLowLimit = limit;
 }
 
-t_bus_value VCSlider::busLowLimit()
+quint32 VCSlider::busLowLimit()
 {
 	return m_busLowLimit;
 }
 
-void VCSlider::setBusHighLimit(t_bus_value limit)
+void VCSlider::setBusHighLimit(quint32 limit)
 {
 	m_busHighLimit = limit;
 }
 
-t_bus_value VCSlider::busHighLimit()
+quint32 VCSlider::busHighLimit()
 {
 	return m_busHighLimit;
 }
 
 void VCSlider::setBusValue(int value)
 {
-	if (Bus::setValue(m_bus, value) == false)
-		setTopLabelText("No Bus");
+	Bus::instance()->setValue(m_bus, value);
 }
 
-void VCSlider::slotBusValueChanged(t_bus_id bus, t_bus_value value)
+void VCSlider::slotBusValueChanged(quint32 bus, quint32 value)
 {
 	if (bus == m_bus && m_slider->isSliderDown() == false)
 		setSliderValue(value);
 }
 
-void VCSlider::slotBusNameChanged(t_bus_id bus, const QString&)
+void VCSlider::slotBusNameChanged(quint32 bus, const QString&)
 {
 	if (m_bus == bus)
 		setBus(bus);
@@ -682,7 +674,7 @@ void VCSlider::slotTapButtonClicked()
 {
 	int t = m_time->elapsed();
 	setSliderValue(static_cast<int> (t * 0.001 * KFrequency));
-	Bus::tap(m_bus);
+	Bus::instance()->tap(m_bus);
 	m_time->restart();
 }
 
@@ -792,12 +784,12 @@ bool VCSlider::loadXML(const QDomElement* root)
 		else if (tag.tagName() == KXMLQLCVCSliderBus)
 		{
 			str = tag.attribute(KXMLQLCVCSliderBusLowLimit);
-			setBusLowLimit(str.toInt());
+			setBusLowLimit(str.toUInt());
 
 			str = tag.attribute(KXMLQLCVCSliderBusHighLimit);
-			setBusHighLimit(str.toInt());
+			setBusHighLimit(str.toUInt());
 
-			setBus(tag.text().toInt());
+			setBus(tag.text().toUInt());
 		}
 		else if (tag.tagName() == KXMLQLCVCSliderLevel)
 		{

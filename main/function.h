@@ -261,15 +261,15 @@ public:
 	 *
 	 * @param id The ID of the bus
 	 */
-	virtual void setBus(t_bus_id id);
+	virtual void setBus(quint32 id);
 
 	/**
 	 * Get the bus used for setting the speed of this function
 	 */
-	t_bus_id busID() const { return m_busID; }
+	quint32 busID() const { return m_busID; }
 
 protected:
-	t_bus_id m_busID;
+	quint32 m_busID;
 
 	/*********************************************************************
 	 * Edit
@@ -367,7 +367,7 @@ signals:
 
 protected:
 	bool m_running;
-	t_bus_value m_elapsed;
+	quint32 m_elapsed;
 };
 
 #endif

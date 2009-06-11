@@ -47,10 +47,10 @@ Chaser::Chaser(QObject* parent) : Function(parent)
 	m_runTimePosition = 0;
 
 	setName(tr("New Chaser"));
-	setBus(KBusIDDefaultHold);
+	setBus(Bus::defaultHold());
 
-	connect(Bus::emitter(), SIGNAL(tapped(t_bus_id)),
-		this, SLOT(slotBusTapped(t_bus_id)));
+	connect(Bus::instance(), SIGNAL(tapped(quint32)),
+		this, SLOT(slotBusTapped(quint32)));
 }
 
 Chaser::~Chaser()
@@ -251,7 +251,7 @@ bool Chaser::loadXML(const QDomElement* root)
 		if (tag.tagName() == KXMLQLCBus)
 		{
 			/* Bus */
-			setBus(tag.text().toInt());
+			setBus(tag.text().toUInt());
 		}
 		else if (tag.tagName() == KXMLQLCFunctionDirection)
 		{
@@ -290,7 +290,7 @@ bool Chaser::loadXML(const QDomElement* root)
  * Running
  *****************************************************************************/
 
-void Chaser::slotBusTapped(t_bus_id id)
+void Chaser::slotBusTapped(quint32 id)
 {
 	if (id == m_busID)
 		m_tapped = true;
@@ -351,7 +351,7 @@ bool Chaser::write(QByteArray* universes)
 		/* Mark one cycle being elapsed */
 		m_elapsed = 1;
 	}
-	else if (m_elapsed >= Bus::value(m_busID) || m_tapped == true)
+	else if (m_elapsed >= Bus::instance()->value(m_busID) || m_tapped == true)
 	{
 		/* Reset tapped flag even if it wasn't true */
 		m_tapped = false;

@@ -236,11 +236,10 @@ void FunctionManager::initMenu()
 	m_busGroup->setExclusive(false);
 	m_busMenu = new QMenu(this);
 	m_busMenu->setTitle("Assign &bus");
-	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
+	for (quint32 id = 0; id < Bus::count(); id++)
 	{
 		/* <xx>: <name> */
-		action = new QAction(QString("%1: %2").arg(id + 1)
-				     .arg(Bus::name(id)), this);
+		action = new QAction(Bus::instance()->idName(id), this);
 		action->setCheckable(false);
 		action->setData(id);
 		m_busGroup->addAction(action);
@@ -252,8 +251,8 @@ void FunctionManager::initMenu()
 		this, SLOT(slotBusTriggered(QAction*)));
 
 	/* Catch bus name changes */
-	connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
-		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
+	connect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
+		this, SLOT(slotBusNameChanged(quint32, const QString&)));
 
 	/* Construct menu bar */
 	static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
@@ -281,11 +280,11 @@ void FunctionManager::initToolbar()
 
 void FunctionManager::slotBusTriggered(QAction* action)
 {
-	t_bus_id bus;
+	quint32 bus;
 
 	Q_ASSERT(action != NULL);
 
-	bus = action->data().toInt();
+	bus = action->data().toUInt();
 
 	/* Set the selected bus to all selected functions */
 	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
@@ -305,7 +304,7 @@ void FunctionManager::slotBusTriggered(QAction* action)
 	}
 }
 
-void FunctionManager::slotBusNameChanged(t_bus_id id, const QString& name)
+void FunctionManager::slotBusNameChanged(quint32 id, const QString& name)
 {
 	/* Change the menu item's name to reflect the new bus name */
 	QListIterator <QAction*> it(m_busGroup->actions());
@@ -314,7 +313,7 @@ void FunctionManager::slotBusNameChanged(t_bus_id id, const QString& name)
 		QAction* action = it.next();
 		Q_ASSERT(action != NULL);
 
-		if (action->data().toInt() == id)
+		if (action->data().toUInt() == id)
 		{
 			action->setText(QString("%1: %2")
 					.arg(id + 1).arg(name));
@@ -562,8 +561,7 @@ void FunctionManager::updateFunctionItem(QTreeWidgetItem* item,
 
 	item->setText(KColumnName, function->name());
 	item->setIcon(KColumnName, function->icon());
-	item->setText(KColumnBus, QString("%1: %2").arg(function->busID() + 1)
-				  .arg(Bus::name(function->busID())));
+	item->setText(KColumnBus, Bus::instance()->idName(function->busID()));
 	item->setText(KColumnID, QString("%1").arg(function->id()));
 }
 

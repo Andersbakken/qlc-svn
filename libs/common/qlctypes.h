@@ -321,54 +321,6 @@ const t_input_value KInputValueMin ( 0 );
 const t_input_value KInputValueMax ( UCHAR_MAX );
 
 /*****************************************************************************
- * Event buffer
- *****************************************************************************/
-
-/**
- * Event buffer data type
- */
-typedef unsigned int t_buffer_data;
-
-/*****************************************************************************
- * Bus
- *****************************************************************************/
-
-/**
- * Bus ID type
- */
-typedef short t_bus_id;
-
-/**
- * Bus value type
- */
-typedef unsigned long t_bus_value;
-
-/**
- * Smallest bus ID
- */
-const t_bus_id KBusIDMin         ( 0 );
-
-/**
- * Number of buses
- */
-const t_bus_id KBusCount         ( 32 );
-
-/**
- * Invalid bus ID
- */
-const t_bus_id KBusIDInvalid     ( -1 );
-
-/**
- * The default fade bus ID
- */
-const t_bus_id KBusIDDefaultFade ( KBusIDMin );
-
-/**
- * The default hold bus ID
- */
-const t_bus_id KBusIDDefaultHold ( KBusIDMin + 1 );
-
-/*****************************************************************************
  * Axes
  *****************************************************************************/
 

@@ -90,9 +90,9 @@ EFX::EFX(QObject* parent) : Function(parent)
 	setName(tr("New EFX"));
 
 	/* Set Default Fade as the speed bus */
-	setBus(KBusIDDefaultFade);
-	connect(Bus::emitter(), SIGNAL(valueChanged(t_bus_id,t_bus_value)),
-		this, SLOT(slotBusValueChanged(t_bus_id,t_bus_value)));
+	setBus(Bus::defaultFade());
+	connect(Bus::instance(), SIGNAL(valueChanged(quint32,quint32)),
+		this, SLOT(slotBusValueChanged(quint32,quint32)));
 }
 
 /**
@@ -967,7 +967,7 @@ bool EFX::loadXML(const QDomElement* root)
 		{
 			/* Bus */
 			str = tag.attribute(KXMLQLCBusRole);
-			setBus(tag.text().toInt());
+			setBus(tag.text().toUInt());
 		}
 		else if (tag.tagName() == KXMLQLCEFXFixture)
 		{
@@ -1131,7 +1131,7 @@ bool EFX::loadXMLAxis(const QDomElement* root)
  * @param id ID of the bus that has changed its value
  * @param value Bus' new value
  */
-void EFX::slotBusValueChanged(t_bus_id id, t_bus_value value)
+void EFX::slotBusValueChanged(quint32 id, quint32 value)
 {
 	if (id != m_busID)
 		return;
@@ -1392,7 +1392,7 @@ void EFX::disarm()
 void EFX::start()
 {
 	/* Set initial speed */
-	slotBusValueChanged(m_busID, Bus::value(m_busID));
+	slotBusValueChanged(m_busID, Bus::instance()->value(m_busID));
 	Function::start();
 }
 

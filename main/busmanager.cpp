@@ -160,17 +160,18 @@ void BusManager::slotEditClicked()
 	{
 		QString label;
 		QString name;
-		t_bus_id id;
+		quint32 bus;
 		bool ok = false;
 
-		id = item->text(KColumnID).toInt() - 1;
-		label = tr("Bus #%1 name:").arg(id + 1);
+		bus = item->text(KColumnID).toUInt() - 1;
+		label = tr("Bus #%1 name:").arg(bus + 1);
 		name = QInputDialog::getText(this, tr("Rename bus"), label,
-					     QLineEdit::Normal, Bus::name(id),
+					     QLineEdit::Normal,
+					     Bus::instance()->name(bus),
 					     &ok);
 		if (ok == true)
 		{
-			Bus::setName(id, name);
+			Bus::instance()->setName(bus, name);
 			item->setText(KColumnName, name);
 		}
 	}
@@ -183,12 +184,12 @@ void BusManager::slotEditClicked()
 void BusManager::fillTree()
 {
 	/* Fill all buses to tree */
-	for (t_bus_id id = KBusIDMin; id < KBusCount; id++)
+	for (quint32 bus = 0; bus < Bus::count(); bus++)
 	{
 		QTreeWidgetItem* item;
 		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnID, QString("%1").arg(id + 1));
-		item->setText(KColumnName, Bus::name(id));
+		item->setText(KColumnID, QString("%1").arg(bus + 1));
+		item->setText(KColumnName, Bus::instance()->name(bus));
 		item->setFlags(item->flags() | Qt::ItemIsEditable);
 	}
 
@@ -210,5 +211,5 @@ void BusManager::slotItemChanged(QTreeWidgetItem* item, int column)
 	if (column == KColumnID) /* Reject ID column edits */
 		item->setText(KColumnID, QString("%1").arg(index + 1));
 	else /* Change bus name */
-		Bus::setName(index, item->text(KColumnName));
+		Bus::instance()->setName(index, item->text(KColumnName));
 }

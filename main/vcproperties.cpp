@@ -340,8 +340,8 @@ bool VCProperties::loadProperties(const QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCVCPropertiesDefaultSlider)
 		{
-			t_bus_value low = 0;
-			t_bus_value high = 10;
+			quint32 low = 0;
+			quint32 high = 10;
 			t_input_universe universe = KInputUniverseInvalid;
 			t_input_channel channel = KInputChannelInvalid;
 			QDomElement subtag;
@@ -349,12 +349,12 @@ bool VCProperties::loadProperties(const QDomElement* root)
 			/* Bus low limit */
 			str = tag.attribute(KXMLQLCVCPropertiesLowLimit);
 			if (str.isNull() == false)
-				low = t_bus_value(str.toInt());
+				low = quint32(str.toUInt());
 
 			/* Bus high limit */
 			str = tag.attribute(KXMLQLCVCPropertiesHighLimit);
 			if (str.isNull() == false)
-				high = t_bus_value(str.toInt());
+				high = quint32(str.toUInt());
 
 			/* Sliders' visibility (on by default) */
 			str = tag.attribute(KXMLQLCVCPropertiesDefaultSliderVisible);

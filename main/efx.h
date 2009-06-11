@@ -463,7 +463,7 @@ public slots:
 	 * @param id ID of the bus that has changed its value
 	 * @param value Bus' new value
 	 */
-	void slotBusValueChanged(t_bus_id id, t_bus_value value);
+	void slotBusValueChanged(quint32 id, quint32 value);
 
 	/*********************************************************************
 	 * Point calculation functions

@@ -23,15 +23,12 @@
 #define BUS_H
 
 #include <QObject>
-#include <QList>
-#include "common/qlctypes.h"
+#include <QString>
+#include <QHash>
 
 class QDomDocument;
 class QDomElement;
-class QString;
-class QFile;
-
-class BusEmitter;
+class BusEntry;
 
 #define KXMLQLCBus "Bus"
 #define KXMLQLCBusID "ID"
@@ -44,108 +41,172 @@ class BusEmitter;
 #define KXMLQLCBusFade "Fade"
 #define KXMLQLCBusHold "Hold"
 
-class Bus
+/**
+ * Bus is used by functions to get information on their desired running time.
+ * The values that bus uses are 1/KFrequency:ths of a second; If KFrequency is
+ * 50, then a bus value of 25 means half a second, 50 a full second, 100 two
+ * seconds etc...
+ *
+ * Scene functions use bus values for fade time: how long it should take
+ * for the channels to fade from their current values to the ones specified in
+ * the scene.
+ *
+ * Chaser functions use bus values for step interval: how long the chaser
+ * should wait until the next step is triggered. Chasers utilize also the bus'
+ * capability to send tapped() signals, which, when emitted, interrupt the
+ * current step waiting and immediately move to the next step.
+ *
+ * EFX functions use bus values to specify the duration of one full cycle: if
+ * an EFX is set to perform a "Circle" algorithm, its bus value defines the time
+ * it should take for the function to run a full 360 degree circle.
+ */
+class Bus : public QObject
 {
+	Q_OBJECT
+	Q_DISABLE_COPY(Bus)
+
 	/********************************************************************
 	 * Initialization
 	 ********************************************************************/
-protected:
-	/** Constructor */
-	Bus();
+public:
+	/**
+	 * Initialize the Bus singleton object, setting the given object as
+	 * the bus' parent.
+	 *
+	 * @param parent A parent object who owns the Bus singleton
+	 */
+	static void init(QObject* parent);
 
-	/** Destructor */
+	/**
+	 * Get the bus singleton object. If Bus::init() has not been called,
+	 * the debug version asserts.
+	 *
+	 * @return The bus singleton or NULL
+	 */
+	static Bus* instance();
+
+	/**
+	 * Get the maximum number of buses
+	 */
+	static quint32 count();
+
+	/**
+	 * Get the bus ID of the default fade bus
+	 */
+	static quint32 defaultFade();
+
+	/**
+	 * Get the bus ID of the default hold bus
+	 */
+	static quint32 defaultHold();
+
+	/**
+	 * Destructor
+	 */
 	~Bus();
 
 protected:
-	t_bus_id m_id;
+	/**
+	 * Create a new Bus instance with the given parent object.
+	 *
+	 * @param parent A parent object who owns the Bus
+	 */
+	Bus(QObject* parent);
 
-public:
-	/** Initialize buses */
-	static void init();
-
-	/** Get the BusEmitter singleton */
-	static const BusEmitter* emitter() { return s_busEmitter; }
+protected:
+	QList <BusEntry*> m_buses;
+	static Bus* s_instance;
 
 	/********************************************************************
 	 * Value
 	 ********************************************************************/
 public:
-	/** Get the value of a bus */
-	static t_bus_value value(t_bus_id id);
+	/**
+	 * Get the value of a bus.
+	 *
+	 * @param bus The index of the bus, whose value to get.
+	 * @return Bus value or 0 if the bus does not exist.
+	 */
+	quint32 value(quint32 bus) const;
 
-	/** Set the value of a bus (emits the value as well) */
-	static bool setValue(t_bus_id id, t_bus_value value);
+	/**
+	 * Set the value of a bus and emit valueChanged(), if the bus is valid.
+	 *
+	 * @param bus The index of the bus, whose value to set.
+	 * @param value The value to set to the bus.
+	 */
+	void setValue(quint32 bus, quint32 value);
 
-protected:
-	t_bus_value m_value;
+signals:
+	void valueChanged(quint32 bus, quint32 value);
 
 	/********************************************************************
 	 * Name
 	 ********************************************************************/
 public:
-	/** Get the name of a bus */
-	static const QString& name(t_bus_id id);
+	/**
+	 * Get the name of a bus.
+	 *
+	 * @param bus The index of the bus, whose name to get.
+	 * @return Bus name or QString::null if the bus does not exist.
+	 */
+	QString name(quint32 bus) const;
 
-	/** Set the name of a bus */
-	static bool setName(t_bus_id id, const QString& name);
+	/**
+	 * Get the name and index of a bus in one string, to be used in
+	 * UI elements.
+	 *
+	 * @param The index of the bus, whose name to get.
+	 * @return Bus ID and name (e.g. "1: Fade") or QString::null if the
+	 *         given bus does not exist.
+	 */
+	QString idName(quint32 bus) const;
 
-protected:
-	QString m_name;
+	/**
+	 * Get a list of all buses. Each entry in the list takes the same form
+	 * as idName() does for a single bus.
+	 *
+	 * @return A list of idNames for all available buses.
+	 */
+	QStringList idNames() const;
+
+	/**
+	 * Set the name of a bus and emit nameChanged() if bus is valid.
+	 *
+	 * @param bus The index of the bus, whose name to set.
+	 * @param name The new name of the bus.
+	 */
+	void setName(quint32 bus, const QString& name);
+
+signals:
+	void nameChanged(quint32 bus, const QString& name);
 
 	/********************************************************************
 	 * Tap
 	 ********************************************************************/
 public:
-	/** Emit a tapped signal */
-	static bool tap(t_bus_id id);
+	/**
+	 * Emit a tapped signal thru the given bus. If bus does not exist,
+	 * no signal is emitted. Tap signals are used, for example, in chasers
+	 * to immediately skip to the next step instead of waiting for the set
+	 * time to pass.
+	 *
+	 * @param bus The index of the bus to tap.
+	 */
+	void tap(quint32 bus);
+
+signals:
+	void tapped(quint32 id);
 
 	/********************************************************************
 	 * Load & Save
 	 ********************************************************************/
 public:
 	/** Load all buses from an XML document */
-	static bool loadXML(const QDomElement* root);
+	bool loadXML(const QDomElement* root);
 
 	/** Save all buses to an XML document */
-	static bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
-
-protected:
-	static Bus* s_busArray;
-	static t_bus_id s_nextID;
-	static BusEmitter* s_busEmitter;
-};
-
-/*****************************************************************************
- * Bus Emitter class to handle signal emission
- *****************************************************************************/
-
-class BusEmitter : public QObject
-{
-	Q_OBJECT
-
-	friend class Bus;
-
-public:
-	BusEmitter() {};
-	~BusEmitter() {};
-
-private:
-	Q_DISABLE_COPY(BusEmitter)
-
-protected:
-	void emitValueChanged(t_bus_id id, t_bus_value value)
-		{ emit valueChanged(id, value); }
-
-	void emitNameChanged(t_bus_id id, const QString& name)
-		{ emit nameChanged(id, name); }
-
-	void emitTapped(t_bus_id id)
-		{ emit tapped(id); }
-
-signals:
-	void valueChanged(t_bus_id id, t_bus_value value);
-	void nameChanged(t_bus_id id, const QString& name);
-	void tapped(t_bus_id id);
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 };
 
 #endif

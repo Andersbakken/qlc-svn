@@ -42,11 +42,11 @@ VCDockArea::VCDockArea(QWidget* parent) : QFrame(parent)
 	layout()->setMargin(0);
 
 	/* Default fade time slider */
-	m_fade = new VCDockSlider(this, KBusIDDefaultFade);
+	m_fade = new VCDockSlider(this, Bus::defaultFade());
 	layout()->addWidget(m_fade);
 
 	/* Default hold time slider */
-	m_hold = new VCDockSlider(this, KBusIDDefaultHold);
+	m_hold = new VCDockSlider(this, Bus::defaultHold());
 	layout()->addWidget(m_hold);
 }
 

@@ -131,11 +131,11 @@ protected:
 public:
 	bool slidersVisible() const { return m_slidersVisible; }
 
-	t_bus_value fadeLowLimit() const { return m_fadeLowLimit; }
-	t_bus_value fadeHighLimit() const { return m_fadeHighLimit; }
+	quint32 fadeLowLimit() const { return m_fadeLowLimit; }
+	quint32 fadeHighLimit() const { return m_fadeHighLimit; }
 
-	t_bus_value holdLowLimit() const { return m_holdLowLimit; }
-	t_bus_value holdHighLimit() const { return m_holdHighLimit; }
+	quint32 holdLowLimit() const { return m_holdLowLimit; }
+	quint32 holdHighLimit() const { return m_holdHighLimit; }
 
 	t_input_universe fadeInputUniverse() const { return m_fadeInputUniverse; }
 	t_input_channel fadeInputChannel() const { return m_fadeInputChannel; }
@@ -146,9 +146,9 @@ public:
 protected:
 	void setSlidersVisible(bool visible) { m_slidersVisible = visible; }
 
-	void setFadeLimits(t_bus_value low, t_bus_value high)
+	void setFadeLimits(quint32 low, quint32 high)
 		{ m_fadeLowLimit = low; m_fadeHighLimit = high; }
-	void setHoldLimits(t_bus_value low, t_bus_value high)
+	void setHoldLimits(quint32 low, quint32 high)
 		{ m_holdLowLimit = low; m_holdHighLimit = high; }
 
 	void setFadeInputSource(t_input_universe uni, t_input_channel ch)
@@ -165,16 +165,16 @@ protected:
 	t_input_channel m_fadeInputChannel;
 
 	/** Limits for fade slider */
-	t_bus_value m_fadeLowLimit;
-	t_bus_value m_fadeHighLimit;
+	quint32 m_fadeLowLimit;
+	quint32 m_fadeHighLimit;
 
 	/** Input source for hold slider */
 	t_input_universe m_holdInputUniverse;
 	t_input_channel m_holdInputChannel;
 
 	/** Limits for hold slider */
-	t_bus_value m_holdLowLimit;
-	t_bus_value m_holdHighLimit;
+	quint32 m_holdLowLimit;
+	quint32 m_holdHighLimit;
 
 	/*********************************************************************
 	 * Load & Save

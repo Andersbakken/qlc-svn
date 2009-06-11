@@ -36,7 +36,7 @@ class VCDockSlider : public QFrame, public Ui_VCDockSlider
 	 * Initialization
 	 *********************************************************************/
 public:
-	VCDockSlider(QWidget* parent, t_bus_id bus);
+	VCDockSlider(QWidget* parent, quint32 bus);
 	~VCDockSlider();
 
 private:
@@ -53,11 +53,11 @@ public:
 	 * Bus
 	 *********************************************************************/
 protected slots:
-	void slotBusNameChanged(t_bus_id bus, const QString& name);
-	void slotBusValueChanged(t_bus_id bus, t_bus_value value);
+	void slotBusNameChanged(quint32 bus, const QString& name);
+	void slotBusValueChanged(quint32 bus, quint32 value);
 
 protected:
-	t_bus_id m_bus;
+	quint32 m_bus;
 
 	/*********************************************************************
 	 * User input slots

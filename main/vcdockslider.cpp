@@ -41,9 +41,9 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
+VCDockSlider::VCDockSlider(QWidget* parent, quint32 bus) : QFrame(parent)
 {
-	Q_ASSERT(bus == KBusIDDefaultFade || bus == KBusIDDefaultHold);
+	Q_ASSERT(bus == Bus::defaultFade() || bus == Bus::defaultHold());
 
 	setupUi(this);
 	m_slider->setStyle(App::saneStyle());
@@ -51,10 +51,10 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 	m_bus = bus;
 
 	/* Bus connections */
-	connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id, const QString&)),
-		this, SLOT(slotBusNameChanged(t_bus_id, const QString&)));
-	connect(Bus::emitter(),	SIGNAL(valueChanged(t_bus_id, t_bus_value)),
-		this, SLOT(slotBusValueChanged(t_bus_id, t_bus_value)));
+	connect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
+		this, SLOT(slotBusNameChanged(quint32, const QString&)));
+	connect(Bus::instance(), SIGNAL(valueChanged(quint32, quint32)),
+		this, SLOT(slotBusValueChanged(quint32, quint32)));
 
 	/* External input connection */
 	connect(_app->inputMap(), SIGNAL(inputValueChanged(t_input_universe,
@@ -75,8 +75,8 @@ VCDockSlider::VCDockSlider(QWidget* parent, t_bus_id bus) : QFrame(parent)
 	/* Read slider's properties */
 	refreshProperties();
 
-	slotBusValueChanged(m_bus, Bus::value(m_bus));
-	slotBusNameChanged(m_bus, Bus::name(m_bus));
+	slotBusValueChanged(m_bus, Bus::instance()->value(m_bus));
+	slotBusNameChanged(m_bus, Bus::instance()->name(m_bus));
 
 	m_time.start();
 }
@@ -92,10 +92,10 @@ VCDockSlider::~VCDockSlider()
 
 void VCDockSlider::refreshProperties()
 {
-	t_bus_value low = 0;
-	t_bus_value high = 10;
+	quint32 low = 0;
+	quint32 high = 10;
 
-	if (m_bus == KBusIDDefaultFade)
+	if (m_bus == Bus::defaultFade())
 	{
 		low = VirtualConsole::properties().fadeLowLimit();
 		high = VirtualConsole::properties().fadeHighLimit();
@@ -117,7 +117,7 @@ void VCDockSlider::refreshProperties()
  * Bus
  *****************************************************************************/
 
-void VCDockSlider::slotBusNameChanged(t_bus_id bus, const QString& name)
+void VCDockSlider::slotBusNameChanged(quint32 bus, const QString& name)
 {
 	if (bus == m_bus)
 	{
@@ -128,7 +128,7 @@ void VCDockSlider::slotBusNameChanged(t_bus_id bus, const QString& name)
 	}
 }
 
-void VCDockSlider::slotBusValueChanged(t_bus_id bus, t_bus_value value)
+void VCDockSlider::slotBusValueChanged(quint32 bus, quint32 value)
 {
 	if (bus == m_bus && m_slider->isSliderDown() == false)
 		m_slider->setValue(value);
@@ -145,14 +145,14 @@ void VCDockSlider::slotSliderValueChanged(int value)
 	QString num;
 
 	/* Set changed value to bus */
-	Bus::setValue(m_bus, m_slider->value());
+	Bus::instance()->setValue(m_bus, m_slider->value());
 
 	/* Set value to label */
 	num.sprintf("%.2fs", float(value) / float(KFrequency));
 	m_valueLabel->setText(num);
 
 	/* Find out this slider's input universe & channel */
-	if (m_bus == KBusIDDefaultFade)
+	if (m_bus == Bus::defaultFade())
 	{
 		uni = VirtualConsole::properties().fadeInputUniverse();
 		ch = VirtualConsole::properties().fadeInputChannel();
@@ -185,7 +185,7 @@ void VCDockSlider::slotTapButtonClicked()
 {
 	int t = m_time.elapsed();
 	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
-	Bus::tap(m_bus);
+	Bus::instance()->tap(m_bus);
 	m_time.restart();
 }
 
@@ -201,7 +201,7 @@ void VCDockSlider::slotInputValueChanged(t_input_universe universe,
 	t_input_channel ch;
 
 	/* Find out this slider's input source */
-	if (m_bus == KBusIDDefaultFade)
+	if (m_bus == Bus::defaultFade())
 	{
 		uni = VirtualConsole::properties().fadeInputUniverse();
 		ch = VirtualConsole::properties().fadeInputChannel();

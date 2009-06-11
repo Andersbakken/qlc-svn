@@ -63,7 +63,7 @@ Function::Function(QObject* parent) : QObject(parent)
 	m_name = QString::null;
 	m_runOrder = Loop;
 	m_direction = Forward;
-	m_busID = KBusIDDefaultFade;
+	m_busID = Bus::defaultFade();
 	m_flashing = false;
 	m_running = false;
 }
@@ -251,17 +251,10 @@ Function::Direction Function::stringToDirection(QString str)
  * Bus
  *****************************************************************************/
 
-void Function::setBus(t_bus_id id)
+void Function::setBus(quint32 id)
 {
-	if (id < KBusIDMin || id >= KBusCount)
-	{
-		if (type() != Collection)
-			m_busID = KBusIDDefaultFade;
-	}
-	else
-	{
+	if (id < Bus::count() && type() != Collection)
 		m_busID = id;
-	}
 }
 
 /*****************************************************************************

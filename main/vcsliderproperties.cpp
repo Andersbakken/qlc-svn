@@ -295,23 +295,14 @@ void VCSliderProperties::updateInputUniverseChannel()
 
 void VCSliderProperties::fillBusCombo()
 {
-	QString s;
-
 	m_busCombo->clear();
-
-	for (t_bus_id i = 0; i < KBusCount; i++)
-	{
-		s.sprintf("%.2d:", i+1);
-		s += Bus::name(i);
-		m_busCombo->addItem(s);
-	}
-
+	m_busCombo->addItems(Bus::instance()->idNames());
 	m_busCombo->setCurrentIndex(m_slider->bus());
 }
 
 void VCSliderProperties::slotBusComboActivated(int item)
 {
-	m_nameEdit->setText(Bus::name(item));
+	m_nameEdit->setText(Bus::instance()->name(item));
 }
 
 void VCSliderProperties::slotBusLowLimitSpinChanged(int value)

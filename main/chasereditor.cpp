@@ -120,11 +120,7 @@ ChaserEditor::~ChaserEditor()
 void ChaserEditor::fillBusCombo()
 {
 	m_busCombo->clear();
-
-	for (t_bus_id i = 0; i < KBusCount; i++)
-		m_busCombo->addItem(
-			QString("%1: %2").arg(i + 1).arg(Bus::name(i)));
-
+	m_busCombo->addItems(Bus::instance()->idNames());
 	m_busCombo->setCurrentIndex(m_chaser->busID());
 }
 

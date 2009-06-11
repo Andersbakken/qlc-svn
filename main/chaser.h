@@ -105,7 +105,7 @@ public:
 	 * Running
 	 *********************************************************************/
 protected slots:
-	void slotBusTapped(t_bus_id id);
+	void slotBusTapped(quint32 id);
 
 public:
 	void arm();

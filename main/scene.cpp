@@ -145,7 +145,7 @@ bool SceneValue::operator== (const SceneValue& scv) const
 Scene::Scene(QObject* parent) : Function(parent)
 {
 	setName(tr("New Scene"));
-	setBus(KBusIDDefaultFade);
+	setBus(Bus::defaultFade());
 }
 
 Scene::~Scene()
@@ -359,7 +359,7 @@ bool Scene::loadXML(const QDomElement* root)
 			str = tag.attribute(KXMLQLCBusRole);
 			Q_ASSERT(str == KXMLQLCBusFade);
 
-			setBus(tag.text().toInt());
+			setBus(tag.text().toUInt());
 		}
 		else if (tag.tagName() == KXMLQLCFunctionValue)
 		{
@@ -512,7 +512,7 @@ bool Scene::write(QByteArray* universes)
 			ready--;
 			continue;
 		}
-		if (m_elapsed >= Bus::value(m_busID))
+		if (m_elapsed >= Bus::instance()->value(m_busID))
 		{
 			/* When this scene's time is up, write the absolute
 			   target values to get rid of rounding errors that
@@ -550,9 +550,9 @@ t_value Scene::nextValue(SceneChannel* sch)
 	/*
 	 *Calculate the current value based on what it should be after
 	 * m_elapsed cycles, so that it will be ready when
-	 * m_elapsed == Bus::value()
+	 * m_elapsed == Bus::instance()->value()
 	 */
-	timeScale = double(m_elapsed) / double(Bus::value(m_busID));
+	timeScale = double(m_elapsed) / double(Bus::instance()->value(m_busID));
 	sch->current = sch->target - sch->start;
 	sch->current = int(double(sch->current) * timeScale);
 	sch->current += sch->start;

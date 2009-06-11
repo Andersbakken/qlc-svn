@@ -66,7 +66,7 @@ Doc::Doc() : QObject()
 
 	/* Connect to bus emitter so that Doc can be marked as modified when
 	   bus name changes. */
-	connect(Bus::emitter(), SIGNAL(nameChanged(t_bus_id,const QString&)),
+	connect(Bus::instance(), SIGNAL(nameChanged(quint32,const QString&)),
 		this, SLOT(slotBusNameChanged()));
 
 	resetModified();
@@ -204,7 +204,7 @@ bool Doc::loadXML(const QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLQLCBus)
 		{
-			Bus::loadXML(&tag);
+			Bus::instance()->loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCMonitor)
 		{
@@ -273,7 +273,7 @@ QFile::FileError Doc::saveXML(const QString& fileName)
 		VirtualConsole::saveXML(doc, &root);
 
 		/* Write buses */
-		Bus::saveXML(doc, &root);
+		Bus::instance()->saveXML(doc, &root);
 
 		/* Set file name and write the document to the stream */
 		m_fileName = fileName;
