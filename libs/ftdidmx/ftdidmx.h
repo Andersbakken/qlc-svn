@@ -57,6 +57,7 @@ protected:
 	QMutex m_vidpid_mutex;
 	int m_scan_vid;
 	int m_scan_pid;	
+	int m_device_type;
 
 	/*********************************************************************
 	 * Devices

@@ -35,17 +35,18 @@ struct FTDIDevice
 {
 	const char *name;
 	int vid;
-	int pid;	
+	int pid;
+	int type;
 };
 // Now struct can be used as QVarient
 Q_DECLARE_METATYPE(FTDIDevice);
 
 static struct FTDIDevice known_devices[] =
 {
-	{"Homebrew USB -> DMX", 0x0403, 0xEC70},
-	{"EntTec Open DMX USB", 0x0403, 0x6001},
-	{"EntTec DMX USB Pro",  DMX_PRO_VID, DMX_PRO_PID},
-	{"Other", 0x0000, 0x0000}
+	{"Homebrew USB -> DMX", 0x0403, 0xEC70, 0},
+	{"EntTec Open DMX USB", 0x0403, 0x6001, 0},
+	{"EntTec DMX USB Pro",  DMX_PRO_VID, DMX_PRO_PID, 1},
+	{"Other", 0x0000, 0x0000, 0}
 };
 
 class ConfigureFTDIDMXOut : public QDialog, public Ui_ConfigureFTDIDMXOut
@@ -105,6 +106,7 @@ protected:
 
 	int m_current_vid;
 	int m_current_pid;
+	int m_current_type;
 };
 
 #endif

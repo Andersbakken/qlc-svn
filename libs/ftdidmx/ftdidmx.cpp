@@ -62,11 +62,12 @@ void FTDIDMXOut::close(t_output output)
  * Devices
  *****************************************************************************/
 
-void FTDIDMXOut::setVIDPID(int vid, int pid)
+void FTDIDMXOut::setVIDPID(int vid, int pid, int type)
 {
 	m_vidpid_mutex.lock();
 	m_scan_vid = vid;
 	m_scan_pid = pid;
+	m_device_type = type;
 	m_vidpid_mutex.unlock();
 	rescanDevices();
 }
@@ -78,6 +79,7 @@ void FTDIDMXOut::rescanDevices()
 	m_vidpid_mutex.lock();
 	int vid = m_scan_vid;
 	int pid = m_scan_pid;
+	int type = m_device_type;
 	m_vidpid_mutex.unlock();
 
 #ifndef WIN32
@@ -103,7 +105,7 @@ void FTDIDMXOut::rescanDevices()
 		{
 			devices--;
 			FTDIDMXDevice* device;
-			device = new FTDIDMXDevice(this, vid, pid,
+			device = new FTDIDMXDevice(this, vid, pid, type,
 						   devString[devices], output);
 			Q_ASSERT(device != NULL);
 			m_devices.insert(output, device);

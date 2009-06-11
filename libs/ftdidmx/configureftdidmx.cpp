@@ -49,6 +49,7 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 
 	setupUi(this);
 
+	unsigned int devices = sizeof(known_devices) / sizeof(FTDIDevice);
 	for (unsigned int i = 0;
 	     i < sizeof(known_devices) / sizeof(FTDIDevice);
 	     i++)
@@ -60,11 +61,12 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 
 	m_current_pid = known_devices[0].pid;
 	m_current_vid = known_devices[0].vid;
+	m_current_type = known_devices[0].type;
 	
 	// Hide the pid/vid setters for Windows	
-#ifdef WIN32
 	label->setVisible(false);
 	m_device->setVisible(false);
+#ifdef WIN32
 	label_2->setVisible(false);
 	m_vid->setVisible(false);
 	label_3->setVisible(false);
@@ -79,7 +81,7 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 	connect(m_device, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(slotDeviceChanged(int)));
 
-	m_plugin->setVIDPID(m_current_vid, m_current_pid);
+	m_plugin->setVIDPID(m_current_vid, m_current_pid, m_current_type);
 	refreshList();
 }
 
@@ -181,7 +183,7 @@ void ConfigureFTDIDMXOut::slotRefreshClicked()
 		// Get the typed in VID/PID
 		int vid = getIntHex(m_vid);
 		int pid = getIntHex(m_pid);
-		m_plugin->setVIDPID(vid, pid);
+		m_plugin->setVIDPID(vid, pid, 0);
 	}
 	refreshList();
 }
@@ -205,6 +207,7 @@ void ConfigureFTDIDMXOut::slotDeviceChanged(int index)
 	
 	m_current_vid = device.vid;
 	m_current_pid = device.pid;
+	m_current_type = device.type;
 	
 	if (m_current_vid == 0 || m_current_pid == 0)
 	{
@@ -213,13 +216,13 @@ void ConfigureFTDIDMXOut::slotDeviceChanged(int index)
 
 		if (vid != 0 && pid != 0)
 		{
-			m_plugin->setVIDPID(vid, pid);
+			m_plugin->setVIDPID(vid, pid, 0);
 			refreshList();
 		}
 	}
-	else if (m_current_vid != 0 && m_current_pid != 0)
+	else
 	{
-		m_plugin->setVIDPID(m_current_vid, m_current_pid);
+		m_plugin->setVIDPID(m_current_vid, m_current_pid, m_current_type);
 		refreshList();
 	}
 }

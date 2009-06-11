@@ -32,7 +32,7 @@
  * Initialization
  ****************************************************************************/
 
-FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid,
+FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid, int type,
 			     char *description, t_output output)
 	: QThread(parent)
 {
@@ -40,6 +40,7 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid,
 
 	m_vid = vid;
 	m_pid = pid;
+	m_type = type;
 	m_output = output;
 	m_path = QString(description);
 
@@ -53,11 +54,8 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid,
 			 .arg(QString::number(vid, 16))
 			 .arg(QString::number(pid, 16))
 			 .arg(m_path);
-	if (DMX_PRO_VID == vid && DMX_PRO_PID == pid) {
+	if (m_type == 1) {
 		m_name = QString("%1 - USB DMX PRO").arg(m_name);
-		m_isDmxPro = true;
-	} else {
-		m_isDmxPro = false;
 	}
 }
 
@@ -127,7 +125,7 @@ void FTDIDMXDevice::run()
 
 	while (m_threadRunning == true)
 	{
-		if (m_isDmxPro) {
+		if (m_type == 1) {
 			FT_Write(m_handle, dmxProPacket, 4, &bytesWritten);
 			FT_Write(m_handle, &startCode, 1, &bytesWritten);
 			FT_Write(m_handle, m_values, 512, &bytesWritten);

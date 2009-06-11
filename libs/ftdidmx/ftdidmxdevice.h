@@ -64,6 +64,7 @@ protected:
 	QString m_path;
 	int m_vid;
 	int m_pid;
+	int m_type;
 	BOOL m_isDmxPro;
 	t_output m_output;
 
