@@ -2,7 +2,7 @@
 #include <QtTest>
 #include <QtXml>
 
-#include "../qlcchannel_test.h"
+#include "qlcchannel_test.h"
 #include "../qlccapability.h"
 #include "../qlcchannel.h"
 

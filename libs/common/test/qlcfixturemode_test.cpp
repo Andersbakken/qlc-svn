@@ -1,7 +1,7 @@
 #include <QtTest>
 #include <QtXml>
 
-#include "../qlcfixturemode_test.h"
+#include "qlcfixturemode_test.h"
 #include "../qlcfixturemode.h"
 #include "../qlcfixturedef.h"
 
