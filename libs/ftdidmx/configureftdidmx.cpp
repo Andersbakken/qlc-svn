@@ -63,14 +63,11 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 	m_current_type = known_devices[0].type;
 	
 	// Hide the pid/vid setters for Windows	
-	label->setVisible(false);
-	m_device->setVisible(false);
 #ifdef WIN32
 	label_2->setVisible(false);
 	m_vid->setVisible(false);
 	label_3->setVisible(false);
 	m_pid->setVisible(false);
-	gridLayout->removeItem(horizontalLayout);
 #endif
 
 	connect(m_testButton, SIGNAL(toggled(bool)),
