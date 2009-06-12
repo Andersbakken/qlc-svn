@@ -126,7 +126,7 @@ public:
 	bool removeMode(QLCFixtureMode* mode);
 
 	/** Get a certain mode by its name */
-	QLCFixtureMode* mode(const QString& name);
+	const QLCFixtureMode* mode(const QString& name) const;
 
 	/** Get all modes in this fixture. Changes to the list won't end
 	    up into the fixture definition. */

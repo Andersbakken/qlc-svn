@@ -27,9 +27,11 @@
 #include "ui_fixtureproperties.h"
 #include "common/qlctypes.h"
 
+class QLCFixtureDefCache;
 class QLCFixtureMode;
 class QLCFixtureDef;
 class Fixture;
+class Doc;
 
 class FixtureProperties : public QDialog, public Ui_FixtureProperties
 {
@@ -37,7 +39,9 @@ class FixtureProperties : public QDialog, public Ui_FixtureProperties
 
 public:
 	/** Constructor */
-	FixtureProperties(QWidget* parent, t_fixture_id fxi_id);
+	FixtureProperties(QWidget* parent, Fixture* fxi,
+			  const QLCFixtureDefCache& fixtureDefCache,
+			  const Doc& doc);
 
 	/** Destructor */
 	~FixtureProperties();
@@ -56,9 +60,12 @@ protected slots:
 	void accept();
 
 protected:
+	const QLCFixtureDefCache& m_fixtureDefCache;
+	const Doc& m_doc;
+	const QLCFixtureDef* m_fixtureDef;
+	const QLCFixtureMode* m_fixtureMode;
+
 	Fixture* m_fxi;
-	QLCFixtureDef* m_fixtureDef;
-	QLCFixtureMode* m_fixtureMode;
 	t_channel m_channels;
 };
 

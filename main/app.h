@@ -27,8 +27,9 @@
 #include <QList>
 #include <QFile>
 
-#include "common/qlcinplugin.h"
+#include "common/qlcfixturedefcache.h"
 #include "common/qlcoutplugin.h"
+#include "common/qlcinplugin.h"
 
 class QMessageBox;
 class QToolButton;
@@ -139,19 +140,16 @@ protected:
 	 * Fixture definitions
 	 *********************************************************************/
 public:
-	/** Load all fixture definitions from the given directory */
-	bool loadFixtureDefinitions(QString fixturePath);
-
-	/** Get a fixture definition by its manufacturer & model */
-	QLCFixtureDef* fixtureDef(const QString& manufacturer,
-				  const QString& model);
-
-	/** Get a list of fixture definitions */
-	QList <QLCFixtureDef*> *fixtureDefList() { return &m_fixtureDefList; }
+	const QLCFixtureDefCache& fixtureDefCache() const
+		{ return m_fixtureDefCache; }
 
 protected:
-	/** List of fixture definitions */
-	QList <QLCFixtureDef*> m_fixtureDefList;
+	/** Load all fixture definitions */
+	void loadFixtureDefinitions();
+
+protected:
+	/** Available fixture definitions */
+	QLCFixtureDefCache m_fixtureDefCache;
 
 	/*********************************************************************
 	 * Mode: operate or design

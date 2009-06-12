@@ -32,24 +32,30 @@
 #include "bus.h"
 
 class QDomDocument;
-class QLCFixtureDef;
-class QLCFixtureMode;
+class QString;
 
 #define KXMLQLCWorkspace "Workspace"
 
 class Doc : public QObject
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Doc)
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
-	Doc();
-	~Doc();
+	/**
+	 * Create a new Doc instance for the given parent.
+	 *
+	 * @param parent The parent object who owns the Doc instance
+	 */
+	Doc(QObject* parent);
 
-private:
-	Q_DISABLE_COPY(Doc)
+	/**
+	 * Destructor.
+	 */
+	~Doc();
 
 	/*********************************************************************
 	 * Modified status
@@ -83,18 +89,24 @@ public:
 	 * Load the Doc's contents from the given XML file
 	 *
 	 * @param fileName The name of the file to load from
+	 * @param fixtureDefCache A fixture definition cache instance that
+	 *                        owns all available fixture definitions.
 	 * @return An error code (QFile::NoError if successful)
 	 */
-	QFile::FileError loadXML(const QString& fileName);
+	QFile::FileError loadXML(const QString& fileName,
+				 const QLCFixtureDefCache& fixtureDefCache);
 
 protected:
 	/**
 	 * Load the Doc's contents from the given XML document
 	 *
 	 * @param doc The XML document to read from
+	 * @param fixtureDefCache A fixture definition cache instance that
+	 *                        owns all available fixture definitions.
 	 * @return true if successful, otherwise false
 	 */
-	bool loadXML(const QDomDocument* doc);
+	bool loadXML(const QDomDocument* doc,
+		     const QLCFixtureDefCache& fixtureDefCache);
 
 public:
 	/**
@@ -148,7 +160,7 @@ public:
 	 * @param numChannels Number of channels in the address space
 	 * @return The address or KChannelInvalid if not found
 	 */
-	t_channel findAddress(t_channel numChannels);
+	t_channel findAddress(t_channel numChannels) const;
 
 	/**
 	 * Get the number of fixtures currently present/allocated.
@@ -167,7 +179,7 @@ protected:
 	 * @param numChannels Number of free channels required
 	 * @return An address or KChannelInvalid if address space not available
 	 */
-	t_channel findAddress(int universe, t_channel numChannels);
+	t_channel findAddress(int universe, t_channel numChannels) const;
 
 	/**
 	 * Assign the given fixture ID to the fixture, placing the fixture

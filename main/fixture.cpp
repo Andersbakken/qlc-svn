@@ -27,6 +27,7 @@
 #include <QtXml>
 #include <QIcon>
 
+#include "common/qlcfixturedefcache.h"
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlccapability.h"
@@ -35,10 +36,7 @@
 
 #include "fixtureconsole.h"
 #include "fixture.h"
-#include "app.h"
 #include "doc.h"
-
-extern App* _app;
 
 /*****************************************************************************
  * Initialization
@@ -243,8 +241,8 @@ const QLCChannel* Fixture::createGenericChannel()
  * Fixture definition
  *****************************************************************************/
 
-void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
-				   QLCFixtureMode* fixtureMode)
+void Fixture::setFixtureDefinition(const QLCFixtureDef* fixtureDef,
+				   const QLCFixtureMode* fixtureMode)
 {
 	m_fixtureDef = fixtureDef;
 	m_fixtureMode = fixtureMode;
@@ -263,7 +261,8 @@ void Fixture::setFixtureDefinition(QLCFixtureDef* fixtureDef,
  * Load & Save
  *****************************************************************************/
 
-void Fixture::loader(const QDomElement* root, Doc* doc)
+void Fixture::loader(const QDomElement* root, Doc* doc,
+		     const QLCFixtureDefCache& fixtureDefCache)
 {
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(doc != NULL);
@@ -281,7 +280,7 @@ void Fixture::loader(const QDomElement* root, Doc* doc)
 	{
 		return;
 	}
-	else if (fxi->loadXML(root) == true)
+	else if (fxi->loadXML(root, fixtureDefCache) == true)
 	{
 		if (doc->addFixture(fxi) == true)
 		{
@@ -301,10 +300,11 @@ void Fixture::loader(const QDomElement* root, Doc* doc)
 	}
 }
 
-bool Fixture::loadXML(const QDomElement* root)
+bool Fixture::loadXML(const QDomElement* root,
+		      const QLCFixtureDefCache& fixtureDefCache)
 {
-	QLCFixtureDef* fixtureDef = NULL;
-	QLCFixtureMode* fixtureMode = NULL;
+	const QLCFixtureDef* fixtureDef = NULL;
+	const QLCFixtureMode* fixtureMode = NULL;
 	QString manufacturer;
 	QString model;
 	QString modeName;
@@ -372,7 +372,7 @@ bool Fixture::loadXML(const QDomElement* root)
 	}
 
 	/* Find the given fixture definition */
-	fixtureDef = _app->fixtureDef(manufacturer, model);
+	fixtureDef = fixtureDefCache.fixtureDef(manufacturer, model);
 	if (fixtureDef == NULL)
 	{
 		qDebug() << QString("No fixture definition for [%1 - %2]")

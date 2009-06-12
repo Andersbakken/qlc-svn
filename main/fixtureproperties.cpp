@@ -30,22 +30,19 @@
 #include "fixtureproperties.h"
 #include "addfixture.h"
 #include "fixture.h"
-#include "app.h"
-#include "doc.h"
 
-extern App* _app;
-
-FixtureProperties::FixtureProperties(QWidget* parent, t_fixture_id fxi_id)
-	: QDialog(parent)
+FixtureProperties::FixtureProperties(QWidget* parent, Fixture* fxi,
+				     const QLCFixtureDefCache& fixtureDefCache,
+				     const Doc& doc)
+	: QDialog(parent),
+	m_fixtureDefCache(fixtureDefCache),
+	m_doc(doc),
+	m_fixtureDef(fxi->fixtureDef()),
+	m_fixtureMode(fxi->fixtureMode()),
+	m_fxi(fxi),
+	m_channels(fxi->channels())
 {
 	setupUi(this);
-
-	Fixture* fxi = _app->doc()->fixture(fxi_id);
-	Q_ASSERT(fxi != NULL);
-	m_fxi = fxi;
-	m_fixtureDef = m_fxi->fixtureDef();
-	m_fixtureMode = m_fxi->fixtureMode();
-	m_channels = m_fxi->channels();
 
 	// Name
 	m_nameEdit->setText(m_fxi->name());
@@ -89,7 +86,10 @@ void FixtureProperties::slotNameEdited(const QString& text)
 
 void FixtureProperties::slotMakeModelClicked()
 {
-	AddFixture af(this, m_fxi->fixtureDef());
+	AddFixture af(this, m_fixtureDefCache, m_doc,
+		      m_fxi->fixtureDef()->manufacturer(),
+		      m_fxi->fixtureDef()->model());
+
 	af.setWindowTitle(tr("Change fixture definition"));
 	if (af.exec() == QDialog::Accepted)
 	{
@@ -99,8 +99,8 @@ void FixtureProperties::slotMakeModelClicked()
 		if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		{
 			m_makeModelEdit->setText(QString("%1 - %2")
-						 .arg(m_fixtureDef->manufacturer())
-						 .arg(m_fixtureDef->model()));
+					 .arg(m_fixtureDef->manufacturer())
+					 .arg(m_fixtureDef->model()));
 		}
 		else
 		{

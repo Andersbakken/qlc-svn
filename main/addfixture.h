@@ -23,21 +23,40 @@
 #define ADDFIXTURE_H
 
 #include <QWidget>
+
 #include "common/qlctypes.h"
 #include "ui_addfixture.h"
+#include "fixture.h"
 
+class QLCFixtureDefCache;
 class QTreeWidgetItem;
-class QString;
-class QLCFixtureDef;
 class QLCFixtureMode;
+class QLCFixtureDef;
+class QString;
+class Doc;
 
 class AddFixture : public QDialog, public Ui_AddFixture
 {
 	Q_OBJECT
 
 public:
-	/** Constructor, pre-select $select, if not NULL */
-	AddFixture(QWidget *parent, QLCFixtureDef* select = NULL);
+	/**
+	 * Create a new dialog for fixture definition selection.
+	 * If selectManufacturer and selectModel parameters are omitted, the
+	 * dialog selects "Generic Dimmer".
+	 * 
+	 * @param parent The parent object that owns the dialog
+	 * @param fixtureDefCache A cache that holds available fixture defs
+	 * @param doc QLC Doc used to resolve a free address automatically
+	 * @param selectManufacturer See $selectModel
+	 * @param selectModel Together with $selectManufacturer specifies the
+	 *                    fixture def to pre-select.
+	 */
+	AddFixture(QWidget* parent,
+		   const QLCFixtureDefCache& fixtureDefCache,
+		   const Doc& doc,
+		   const QString& selectManufacturer = KXMLFixtureGeneric,
+		   const QString& selectModel = KXMLFixtureGeneric);
 
 	/** Destructor */
 	~AddFixture();
@@ -50,10 +69,10 @@ private:
 	 *********************************************************************/
 public:
 	/** Get the selected QLCFixtureDef */
-	QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
+	const QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
 
 	/** Get the selected QLCFixtureMode */
-	QLCFixtureMode* mode() const { return m_mode; }
+	const QLCFixtureMode* mode() const { return m_mode; }
 
 	/** Get the assigned friendly name */
 	QString name() const { return m_nameValue; }
@@ -74,8 +93,11 @@ public:
 	t_channel channels() const { return m_channelsValue; }
 
 protected:
-	QLCFixtureDef* m_fixtureDef;
-	QLCFixtureMode* m_mode;
+	const QLCFixtureDefCache& m_fixtureDefCache;
+	const Doc& m_doc;
+	
+	const QLCFixtureDef* m_fixtureDef;
+	const QLCFixtureMode* m_mode;
 
 	QString m_nameValue;
 
@@ -86,18 +108,13 @@ protected:
 	t_channel m_channelsValue;
 
 	/*********************************************************************
-	 * Helpers
-	 *********************************************************************/
-protected:
-	/** Find a node that contains the given text */
-	QTreeWidgetItem* findNode(const QString& text);
-
-	/*********************************************************************
 	 * Fillers
 	 *********************************************************************/
 protected:
-	/** Fill all known fixture definitions to the tree view */
-	void fillTree(QLCFixtureDef* select);
+	/** Fill all known fixture definitions to the tree view. Select the
+	    given model from the given manufacturer. */
+	void fillTree(const QString& selectManufacturer,
+		      const QString& selectModel);
 
 	/** Fill all modes of the current fixture to the mode combo */
 	void fillModeCombo(const QString& text = QString::null);

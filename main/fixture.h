@@ -40,6 +40,7 @@ class QString;
 class QDomDocument;
 class QDomElement;
 
+class QLCFixtureDefCache;
 class QLCFixtureMode;
 class FixtureConsole;
 class QLCFixtureDef;
@@ -247,29 +248,29 @@ public:
 	 * @param fixtureDef The new fixture definition
 	 * @param fixtureMode The new fixture mode (member of $fixtureDef)
 	 */
-	void setFixtureDefinition(QLCFixtureDef* fixtureDef,
-				  QLCFixtureMode* fixtureMode);
+	void setFixtureDefinition(const QLCFixtureDef* fixtureDef,
+				  const QLCFixtureMode* fixtureMode);
 
 	/**
 	 * Get the fixture definition that this fixture instance is based on.
 	 *
 	 * @return A QLCFixture definition
 	 */
-	QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
+	const QLCFixtureDef* fixtureDef() const { return m_fixtureDef; }
 
 	/**
 	 * Get the fixture mode that this fixture instance is based on.
 	 *
 	 * @return A QLCFixtureMode definition
 	 */
-	QLCFixtureMode* fixtureMode() const { return m_fixtureMode; }
+	const QLCFixtureMode* fixtureMode() const { return m_fixtureMode; }
 
 protected:
 	/** The fixture definition that this instance is based on */
-	QLCFixtureDef* m_fixtureDef;
+	const QLCFixtureDef* m_fixtureDef;
 
 	/** The mode within the fixture definition that this instance uses */
-	QLCFixtureMode* m_fixtureMode;
+	const QLCFixtureMode* m_fixtureMode;
 
 	/*********************************************************************
 	 * Load & Save
@@ -281,8 +282,10 @@ public:
 	 *
 	 * @param root An XML subtree containing a single fixture instance
 	 * @param doc The QLC document object, that owns all fixtures
+	 * @param fixtureDefCache Get the fixture's definition from this cache
 	 */
-	static void loader(const QDomElement* root, Doc* doc);
+	static void loader(const QDomElement* root, Doc* doc,
+			   const QLCFixtureDefCache& fixtureDefCache);
 
 	/**
 	 * Load a fixture's contents from the given XML node.
@@ -290,7 +293,8 @@ public:
 	 * @param root An XML subtree containing a single fixture instance
 	 * @return true if the fixture was loaded successfully, otherwise false
 	 */
-	bool loadXML(const QDomElement* root);
+	bool loadXML(const QDomElement* root,
+		     const QLCFixtureDefCache& fixtureDefCache);
 
 	/**
 	 * Save the fixture instance into an XML document, under the given

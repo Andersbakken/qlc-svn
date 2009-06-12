@@ -26,7 +26,7 @@
 #include "qlcfixturedef.h"
 #include "qlcfile.h"
 
-QLCFixtureDefCache::QLCFixtureDefCache(QObject* parent) : QObject(parent)
+QLCFixtureDefCache::QLCFixtureDefCache()
 {
 }
 
@@ -99,7 +99,6 @@ bool QLCFixtureDefCache::addFixtureDef(QLCFixtureDef* fixtureDef)
 
 	/* Add the fixture definition to the manufacturer's map and emit it */
 	m_models[fixtureDef->manufacturer()][fixtureDef->model()] = fixtureDef;
-	emit fixtureDefAdded(fixtureDef->manufacturer(), fixtureDef->model());
 
 	return true;
 }

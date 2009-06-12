@@ -63,6 +63,7 @@
 #include <X11/Xlib.h>
 #endif
 
+#include "common/qlcfixturedefcache.h"
 #include "common/qlcdocbrowser.h"
 #include "common/qlcfixturedef.h"
 #include "common/qlctypes.h"
@@ -133,10 +134,6 @@ App::~App()
 		delete m_blackoutIndicator;
 	m_blackoutIndicator = NULL;
 
-	// Delete fixture definitions
-	while (m_fixtureDefList.isEmpty() == false)
-		delete m_fixtureDefList.takeFirst();
-
 	// Remove the reference to the application
 	_app = NULL;
 }
@@ -186,20 +183,7 @@ void App::init()
 	Bus::init(this);
 
 	/* Fixture definitions */
-#ifdef Q_WS_X11
-	/* First, load user fixtures (overrides system fixtures) */
-	QDir dir(QString(getenv("HOME")));
-	loadFixtureDefinitions(dir.absoluteFilePath(QString(USERFIXTUREDIR)));
-#endif
-
-	/* Then, load system fixtures */
-#ifdef __APPLE__
-        loadFixtureDefinitions(QString("%1/%2")
-                               .arg(QApplication::applicationDirPath())
-                               .arg(FIXTUREDIR));
-#else
-	loadFixtureDefinitions(FIXTUREDIR);
-#endif
+	loadFixtureDefinitions();
 
 	// The main view
 	initStatusBar();
@@ -333,7 +317,7 @@ void App::initDoc()
 	// Delete existing document object and create a new one
 	if (m_doc != NULL)
 		delete m_doc;
-	m_doc = new Doc();
+	m_doc = new Doc(this);
 
 	connect(m_doc, SIGNAL(modified(bool)),
 		this, SLOT(slotDocModified(bool)));
@@ -377,66 +361,22 @@ void App::slotDocModified(bool state)
  * Fixture definitions
  *****************************************************************************/
 
-bool App::loadFixtureDefinitions(QString fixturePath)
+void App::loadFixtureDefinitions()
 {
-	QDir dir(fixturePath, QString("*%1").arg(KExtFixture),
-		 QDir::Name, QDir::Files);
-	if (dir.exists() == false || dir.isReadable() == false)
-	{
-		qWarning() << "Unable to load fixture definitions from"
-			   << fixturePath;
-		return false;
-	}
+#ifdef Q_WS_X11
+	/* First, load user fixtures (overrides system fixtures) */
+	QDir dir(QString(getenv("HOME")));
+	m_fixtureDefCache.load(dir.absoluteFilePath(QString(USERFIXTUREDIR)));
+#endif
 
-	/* Attempt to read all specified files from the given directory */
-	QStringListIterator it(dir.entryList());
-	while (it.hasNext() == true)
-	{
-		QLCFixtureDef* fxi;
-		QString path;
-
-		path = dir.absoluteFilePath(it.next());
-
-		fxi = new QLCFixtureDef();
-		Q_ASSERT(fxi != NULL);
-
-		QFile::FileError error = fxi->loadXML(path);
-		if (error == QFile::NoError)
-		{
-			/* Check that there are no duplicates */
-			QLCFixtureDef* prev;
-			prev = fixtureDef(fxi->manufacturer(), fxi->model());
-			if (prev == NULL)
-				m_fixtureDefList.append(fxi);
-			else
-				delete fxi;
-			fxi = NULL;
-		}
-		else
-		{
-			qWarning() << "Fixture definition loading from"
-				   << path << "failed: "
-				   << QLCFile::errorString(error);
-			delete fxi;
-			fxi = NULL;
-		}
-	}
-
-	return true;
-}
-
-QLCFixtureDef* App::fixtureDef(const QString& manufacturer,
-			       const QString& model)
-{
-	QListIterator <QLCFixtureDef*> it(m_fixtureDefList);
-	while (it.hasNext() == true)
-	{
-		QLCFixtureDef* fd = it.next();
-		if (fd->manufacturer() == manufacturer && fd->model() == model)
-			return fd;
-	}
-
-	return NULL;
+	/* Then, load system fixtures */
+#ifdef __APPLE__
+        m_fixtureDefCache.load(QString("%1/%2")
+                               .arg(QApplication::applicationDirPath())
+                               .arg(FIXTUREDIR));
+#else
+	m_fixtureDefCache.load(FIXTUREDIR);
+#endif
 }
 
 /*****************************************************************************
@@ -965,7 +905,7 @@ QFile::FileError App::slotFileOpen()
 	newDocument();
 
 	/* Load the file */
-	QFile::FileError error = doc()->loadXML(fileName);
+	QFile::FileError error = doc()->loadXML(fileName, m_fixtureDefCache);
 	if (handleFileError(error) == true)
 	{
 		doc()->resetModified();

@@ -167,7 +167,7 @@ Function::Type Scene::type() const
 
 Function* Scene::createCopy(Doc* doc)
 {
-    Q_ASSERT(parent != NULL);
+	Q_ASSERT(doc != NULL);
 
 	Function* copy = new Scene(doc);
 	Q_ASSERT(copy != NULL);

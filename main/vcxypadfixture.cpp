@@ -185,7 +185,7 @@ void VCXYPadFixture::arm()
 	}
 	else
 	{
-		QLCFixtureMode* mode = NULL;
+		const QLCFixtureMode* mode = NULL;
 		QLCChannel* ch = NULL;
 
 		/* If this fixture has no mode, it's a generic dimmer that

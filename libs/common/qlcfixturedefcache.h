@@ -23,7 +23,6 @@
 #define QLCFIXTUREDEFCACHE_H
 
 #include <QStringList>
-#include <QObject>
 #include <QString>
 #include <QMap>
 
@@ -51,15 +50,13 @@ class QLCFixtureDef;
  * since they are made only during addFixtureDef() based on the definitions'
  * manufacturer() & model() data.
  */
-class QLC_DECLSPEC QLCFixtureDefCache : public QObject
+class QLC_DECLSPEC QLCFixtureDefCache
 {
-	Q_OBJECT
-
 public:
 	/**
 	 * Create a new fixture definition cache instance.
 	 */
-	QLCFixtureDefCache(QObject* parent);
+	QLCFixtureDefCache();
 
 	/**
 	 * Destroy a fixture definition cache instance.
@@ -104,10 +101,6 @@ public:
 	 * @return true, if the path could be accessed, otherwise false.
 	 */
 	bool load(const QString& fixturePath);
-
-signals:
-	/** Tells that a fixture definition was added */
-	void fixtureDefAdded(const QString& manufacturer, const QString& model);
 
 protected:
 	/** Map of manufacturers (key) and their models (value) */

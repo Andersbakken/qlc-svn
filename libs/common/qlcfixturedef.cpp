@@ -193,7 +193,7 @@ bool QLCFixtureDef::removeMode(QLCFixtureMode* mode)
 	return false;
 }
 
-QLCFixtureMode* QLCFixtureDef::mode(const QString& name)
+const QLCFixtureMode* QLCFixtureDef::mode(const QString& name) const
 {
 	QListIterator <QLCFixtureMode*> it(m_modes);
 	QLCFixtureMode* mode = NULL;

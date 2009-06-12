@@ -1327,7 +1327,7 @@ void EFX::arm()
 
 		/* If this fixture has no mode, it's a generic dimmer that
 		   can't do pan&tilt anyway. */
-		QLCFixtureMode* mode = fxi->fixtureMode();
+		const QLCFixtureMode* mode = fxi->fixtureMode();
 		if (mode == NULL)
 			continue;
 

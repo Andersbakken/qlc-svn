@@ -46,7 +46,7 @@
 
 extern App* _app;
 
-Doc::Doc() : QObject()
+Doc::Doc(QObject* parent) : QObject(parent)
 {
 	m_fileName = QString::null;
 
@@ -119,7 +119,8 @@ void Doc::resetModified()
  * Load & Save
  *****************************************************************************/
 
-QFile::FileError Doc::loadXML(const QString& fileName)
+QFile::FileError Doc::loadXML(const QString& fileName,
+			      const QLCFixtureDefCache& fixtureDefCache)
 {
 	QDomDocument* doc = NULL;
 	QDomDocumentType doctype;
@@ -131,7 +132,7 @@ QFile::FileError Doc::loadXML(const QString& fileName)
 	{
 		if (doc->doctype().name() == KXMLQLCWorkspace)
 		{
-			if (loadXML(doc) == false)
+			if (loadXML(doc, fixtureDefCache) == false)
 			{
 				retval = QFile::ReadError;
 			}
@@ -151,7 +152,8 @@ QFile::FileError Doc::loadXML(const QString& fileName)
 	return retval;
 }
 
-bool Doc::loadXML(const QDomDocument* doc)
+bool Doc::loadXML(const QDomDocument* doc,
+		  const QLCFixtureDefCache& fixtureDefCache)
 {
 	QDomElement root;
 	QDomNode node;
@@ -196,7 +198,7 @@ bool Doc::loadXML(const QDomDocument* doc)
 		}
 		else if (tag.tagName() == KXMLFixture)
 		{
-			Fixture::loader(&tag, this);
+			Fixture::loader(&tag, this, fixtureDefCache);
 		}
 		else if (tag.tagName() == KXMLQLCFunction)
 		{
@@ -376,7 +378,7 @@ Fixture* Doc::fixture(t_fixture_id id)
 		return NULL;
 }
 
-t_channel Doc::findAddress(t_channel numChannels)
+t_channel Doc::findAddress(t_channel numChannels) const
 {
 	/* Try to find contiguous space from one universe at a time */
 	for (int universe = 0; universe < KUniverseCount; universe++)
@@ -389,7 +391,7 @@ t_channel Doc::findAddress(t_channel numChannels)
 	return KChannelInvalid;
 }
 
-t_channel Doc::findAddress(int universe, t_channel numChannels)
+t_channel Doc::findAddress(int universe, t_channel numChannels) const
 {
 	t_channel freeSpace = 0;
 	t_channel maxChannels = 512;

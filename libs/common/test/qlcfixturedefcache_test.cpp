@@ -10,11 +10,9 @@
 
 void QLCFixtureDefCache_Test::add()
 {
-	QLCFixtureDefCache cache(this);
-	QVERIFY(cache.manufacturers().count() == 0);
+	QLCFixtureDefCache cache;
 
-	QSignalSpy spy(&cache, SIGNAL(fixtureDefAdded(const QString&,
-						      const QString&)));
+	QVERIFY(cache.manufacturers().count() == 0);
 
 	/* Add the first fixtureDef */
 	QLCFixtureDef* def = new QLCFixtureDef();
@@ -30,11 +28,6 @@ void QLCFixtureDefCache_Test::add()
 	QVERIFY(cache.models("Martin").contains("MAC250") == true);
 	QVERIFY(cache.models("Foo").count() == 0);
 	
-	QVERIFY(spy.count() == 1);
-	QVERIFY(spy.at(0).count() == 2);
-	QVERIFY(spy.at(0).at(0).toString() == "Martin");
-	QVERIFY(spy.at(0).at(1).toString() == "MAC250");
-
 	/* Another fixtureDef, same manufacturer & model. Should be ignored. */
 	QLCFixtureDef* def2 = new QLCFixtureDef();
 	def2->setManufacturer("Martin");
@@ -44,7 +37,6 @@ void QLCFixtureDefCache_Test::add()
 	QVERIFY(cache.manufacturers().count() == 1);
 	QVERIFY(cache.manufacturers().contains("Martin") == true);
 
-	QVERIFY(spy.count() == 1);
 	delete def2;
 	def2 = NULL;
 
@@ -62,11 +54,6 @@ void QLCFixtureDefCache_Test::add()
 	QVERIFY(cache.models("Martin").contains("MAC250") == true);
 	QVERIFY(cache.models("Martin").contains("MAC500") == true);
 
-	QVERIFY(spy.count() == 2);
-	QVERIFY(spy.at(1).count() == 2);
-	QVERIFY(spy.at(1).at(0).toString() == "Martin");
-	QVERIFY(spy.at(1).at(1).toString() == "MAC500");
-
 	/* Another fixtureDef, different manufacturer, different model */
 	QLCFixtureDef* def3 = new QLCFixtureDef();
 	def3->setManufacturer("Futurelight");
@@ -77,11 +64,6 @@ void QLCFixtureDefCache_Test::add()
 	QVERIFY(cache.manufacturers().contains("Martin") == true);
 	QVERIFY(cache.manufacturers().contains("Futurelight") == true);
 	QVERIFY(cache.manufacturers().contains("PHS700") == false);
-
-	QVERIFY(spy.count() == 3);
-	QVERIFY(spy.at(2).count() == 2);
-	QVERIFY(spy.at(2).at(0).toString() == "Futurelight");
-	QVERIFY(spy.at(2).at(1).toString() == "PHS700");
 
 	/* Another fixtureDef, different manufacturer, same model */
 	QLCFixtureDef* def4 = new QLCFixtureDef();
@@ -97,16 +79,11 @@ void QLCFixtureDefCache_Test::add()
 
 	QVERIFY(cache.models("Yoyodyne").count() == 1);
 	QVERIFY(cache.models("Yoyodyne").contains("MAC250") == true);
-
-	QVERIFY(spy.count() == 4);
-	QVERIFY(spy.at(3).count() == 2);
-	QVERIFY(spy.at(3).at(0).toString() == "Yoyodyne");
-	QVERIFY(spy.at(3).at(1).toString() == "MAC250");
 }
 
 void QLCFixtureDefCache_Test::fixtureDef()
 {
-	QLCFixtureDefCache cache(this);
+	QLCFixtureDefCache cache;
 
 	QLCFixtureDef* def1 = new QLCFixtureDef();
 	def1->setManufacturer("Martin");
@@ -140,16 +117,13 @@ void QLCFixtureDefCache_Test::fixtureDef()
 
 void QLCFixtureDefCache_Test::load()
 {
-	QLCFixtureDefCache cache(this);
+	QLCFixtureDefCache cache;
 
-	QSignalSpy spy(&cache, SIGNAL(fixtureDefAdded(const QString&,
-						      const QString&)));
 	QVERIFY(cache.load(INTERNAL_FIXTUREDIR) == true);
 
 	/* Test only that all available files get loaded properly. Actual
 	   contents of fixtureDefs should be tested in QLCFixtureDef_Test. */
 	QDir dir(INTERNAL_FIXTUREDIR, QString("*%1").arg(KExtFixture));
-	QVERIFY(spy.count() == dir.entryList().count());
 
 	/* At least these should be available */
 	QVERIFY(cache.manufacturers().contains("Elation") == true);

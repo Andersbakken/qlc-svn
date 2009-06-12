@@ -459,7 +459,7 @@ void FixtureManager::initToolBar()
 
 void FixtureManager::slotAdd()
 {
-	AddFixture af(this);
+	AddFixture af(this, _app->fixtureDefCache(), *_app->doc());
 	if (af.exec() == QDialog::Rejected)
 		return;
 
@@ -469,8 +469,8 @@ void FixtureManager::slotAdd()
 	t_channel channels = af.channels();
 	int gap = af.gap();
 
-	QLCFixtureDef* fixtureDef = af.fixtureDef();
-	QLCFixtureMode* mode = af.mode();
+	const QLCFixtureDef* fixtureDef = af.fixtureDef();
+	const QLCFixtureMode* mode = af.mode();
 
 	QString modname;
 
@@ -600,7 +600,8 @@ void FixtureManager::slotProperties()
 		Q_ASSERT(fixture != NULL);
 
 		// View properties dialog
-		FixtureProperties prop(this, id);
+		FixtureProperties prop(this, fixture,
+			_app->fixtureDefCache(), *_app->doc());
 		if (prop.exec() == QDialog::Accepted)
 		{
 			// Update changes to view

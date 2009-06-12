@@ -29,22 +29,25 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
+#include <QDebug>
 
+#include "common/qlcfixturedefcache.h"
 #include "common/qlcfixturemode.h"
 #include "common/qlcfixturedef.h"
 
 #include "addfixture.h"
-#include "app.h"
 #include "doc.h"
 
-extern App* _app;
+#define KColumnName 0
 
-static const int KColumnName    ( 0 );
-static const int KColumnType    ( 1 );
-static const int KColumnPointer ( 2 );
-
-AddFixture::AddFixture(QWidget *parent, QLCFixtureDef* select)
-	: QDialog(parent)
+AddFixture::AddFixture(QWidget* parent,
+		       const QLCFixtureDefCache& fixtureDefCache,
+		       const Doc& doc,
+		       const QString& selectManufacturer,
+		       const QString& selectModel)
+	: QDialog(parent),
+	m_fixtureDefCache(fixtureDefCache),
+	m_doc(doc)
 {
 	m_addressValue = 0;
 	m_universeValue = 0;
@@ -74,9 +77,9 @@ AddFixture::AddFixture(QWidget *parent, QLCFixtureDef* select)
 		this, SLOT(slotAmountSpinChanged(int)));
 
 	/* Fill fixture definition tree */
-	fillTree(select);
+	fillTree(selectManufacturer, selectModel);
 
-	/* Simulate the first selection ("Generic - Dimmer" with 1 channel) */
+	/* Simulate the first selection */
 	slotSelectionChanged();
 	findAddress();
 }
@@ -86,83 +89,56 @@ AddFixture::~AddFixture()
 }
 
 /*****************************************************************************
- * Helpers
- *****************************************************************************/
-
-QTreeWidgetItem* AddFixture::findNode(const QString& text)
-{
-	QList <QTreeWidgetItem*> list = m_tree->findItems(text,
-							  Qt::MatchExactly,
-							  KColumnName);
-	if (list.isEmpty() == true)
-		return NULL;
-	else
-		return list.at(0);
-}
-
-/*****************************************************************************
  * Fillers
  *****************************************************************************/
 
-void AddFixture::fillTree(QLCFixtureDef* select)
+void AddFixture::fillTree(const QString& selectManufacturer,
+			  const QString& selectModel)
 {
-	QLCFixtureDef* fixtureDef;
 	QTreeWidgetItem* parent;
-	QTreeWidgetItem* node;
-	QString str;
+	QTreeWidgetItem* child;
+	QString manuf;
+	QString model;
 
 	/* Clear the tree of any previous data */
 	m_tree->clear();
 
-	/* Add all known fixture definitions. */
-	QListIterator <QLCFixtureDef*> it(*_app->fixtureDefList());
+	/* Add all known fixture definitions to the tree */
+	QStringListIterator it(m_fixtureDefCache.manufacturers());
 	while (it.hasNext() == true)
 	{
-		fixtureDef = it.next();
+		manuf = it.next();
+		parent = new QTreeWidgetItem(m_tree);
+		parent->setText(KColumnName, manuf);
 
-		/* Find an existing manufacturer parent node */
-		parent = findNode(fixtureDef->manufacturer());
-
-		/* If an existing manufacturer parent node was not found,
-		   we must create one. Otherwise we use the found node
-		   as the parent for the new item. */
-		if (parent == NULL)
+		QStringListIterator modit(m_fixtureDefCache.models(manuf));
+		while (modit.hasNext() == true)
 		{
-			parent = new QTreeWidgetItem(m_tree);
-			parent->setText(KColumnName,
-					fixtureDef->manufacturer());
-		}
+			model = modit.next();
+			child = new QTreeWidgetItem(parent);
+			child->setText(KColumnName, model);
 
-		/* Create a new fixture node, under the parent node */
-		node = new QTreeWidgetItem(parent);
-		node->setText(KColumnName, fixtureDef->model());
-		node->setText(KColumnType, fixtureDef->type());
-
-		/* Store the fixture pointer into the tree */
-		str.sprintf("%lu", (unsigned long) fixtureDef);
-		node->setText(KColumnPointer, str);
-
-		/* Select the specified node, if any */
-		if (fixtureDef == select)
-		{
-			parent->setExpanded(true);
-			m_tree->setCurrentItem(node);
+			if (manuf == selectManufacturer &&
+			    model == selectModel)
+			{
+				parent->setExpanded(true);
+				m_tree->setCurrentItem(child);
+			}
 		}
 	}
 
-	/* Create a node & parent for generic dimmers */
+	/* Create a parent and a child for generic dimmer device */
 	parent = new QTreeWidgetItem(m_tree);
 	parent->setText(KColumnName, KXMLFixtureGeneric);
-	node = new QTreeWidgetItem(parent);
-	node->setText(KColumnName, KXMLFixtureGeneric);
-	node->setText(KColumnType, KXMLFixtureDimmer);
-	node->setText(KColumnPointer, "0");
+	child = new QTreeWidgetItem(parent);
+	child->setText(KColumnName, KXMLFixtureGeneric);
 
 	/* Select generic dimmer by default */
-	if (select == NULL)
+	if (selectManufacturer == KXMLFixtureGeneric &&
+	    selectModel == KXMLFixtureGeneric)
 	{
 		parent->setExpanded(true);
-		m_tree->setCurrentItem(node);
+		m_tree->setCurrentItem(child);
 	}
 }
 
@@ -194,7 +170,7 @@ void AddFixture::findAddress()
 {
 	/* Find the next free address space for x fixtures, each taking y
 	   channels, leaving z channels gap in-between. */
-	t_channel address = _app->doc()->findAddress(
+	t_channel address = m_doc.findAddress(
 		(m_channelsValue + m_gapValue) * m_amountValue);
 
 	/* Set the address only if the channel space was really found */
@@ -250,23 +226,22 @@ void AddFixture::slotModeActivated(const QString& modeName)
 
 void AddFixture::slotSelectionChanged()
 {
-	QTreeWidgetItem* item;
-	QString manuf;
-	QString model;
-
-	/* If there is no valid selection, i.e. the user has selected
-	   only the manufacturer, don't let the user press OK */
-	item = m_tree->currentItem();
+	/* If there is no valid selection (user has selected only a
+	   manufacturer or nothing at all) don't let him press OK. */
+	QTreeWidgetItem* item = m_tree->currentItem();
 	if (item == NULL || item->parent() == NULL)
 	{
 		/* Reset the selected fixture pointer */
 		m_fixtureDef = NULL;
+
+		/* Since there is no m_fixtureDef, mode combo is cleared */
 		fillModeCombo();
-		
+
+		/* Clear the name box unless it has been modified by user */
 		if (m_nameEdit->isModified() == false)
 			m_nameEdit->setText(QString::null);
 		m_nameEdit->setEnabled(false);
-		
+
 		m_channelsSpin->setValue(0);
 		m_channelList->clear();
 		m_addressSpin->setEnabled(false);
@@ -275,62 +250,68 @@ void AddFixture::slotSelectionChanged()
 		m_amountSpin->setEnabled(false);
 		m_gapSpin->setEnabled(false);
 		m_channelsSpin->setEnabled(false);
-		
+
 		m_buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+
+		return;
+	}
+
+	/* Item & its parent should be valid here */
+	QString manuf(item->parent()->text(KColumnName));
+	QString model(item->text(KColumnName));
+	if (manuf == KXMLFixtureGeneric && model == KXMLFixtureGeneric)
+	{
+		/* Generic dimmer selected. User enters number of channels. */
+		m_fixtureDef = NULL;
+		fillModeCombo(KXMLFixtureGeneric);
+		m_channelsSpin->setEnabled(true);
+		m_channelList->clear();
+
+		/* Set the model name as the fixture's friendly name ONLY
+		   if the user hasn't modified the friendly name field. */
+		if (m_nameEdit->isModified() == false)
+			m_nameEdit->setText(KXMLFixtureDimmer +
+					    QString("s")); // Plural :)
+		m_nameEdit->setEnabled(true);
 	}
 	else
 	{
-		if (item->text(KColumnName) == KXMLFixtureGeneric &&
-		    item->parent()->text(KColumnName) == KXMLFixtureGeneric)
-		{
-			/* Generic dimmer selected. User enters number of
-			   channels. */
-			m_fixtureDef = NULL;
-			fillModeCombo(KXMLFixtureGeneric);
-			m_channelsSpin->setEnabled(true);
-			m_channelList->clear();
+		/* Specific fixture definition selected. */
+		m_fixtureDef = m_fixtureDefCache.fixtureDef(manuf, model);
+		Q_ASSERT(m_fixtureDef != NULL);
 
-			/* Set the model name as the fixture's friendly name ONLY
-			   if the user hasn't modified the friendly name field. */	
-			if (m_nameEdit->isModified() == false)
-				m_nameEdit->setText(KXMLFixtureDimmer +
-						    QString("s")); // Plural :)
-			m_nameEdit->setEnabled(true);
-		}
-		else
-		{
-			/* Specific fixture selected. Def contains num of chs */
-			m_fixtureDef = (QLCFixtureDef*) 
-				item->text(KColumnPointer).toULong();
-			Q_ASSERT(m_fixtureDef != NULL);
+		/* Put fixture def's modes to the mode combo */
+		fillModeCombo();
 
-			fillModeCombo();
-			m_channelsSpin->setEnabled(false);
-			
-			/* Set the model name as the fixture's friendly name ONLY
-			   if the user hasn't modified the friendly name field. */	
-			if (m_nameEdit->isModified() == false)
-				m_nameEdit->setText(m_fixtureDef->model());
-			m_nameEdit->setEnabled(true);
-		}
+		/* Fixture def contains number of channels, so disable the
+		   spin box to prevent user from modifying it. */
+		m_channelsSpin->setEnabled(false);
 
-		/* Guide the user to edit the friendly name field */
-		m_nameEdit->setSelection(0, m_nameEdit->text().length());
-		m_nameEdit->setFocus();
-		
-		m_addressSpin->setEnabled(true);
-		m_universeSpin->setEnabled(true);
-
-		m_amountSpin->setEnabled(true);
-		m_gapSpin->setEnabled(true);
-		
-		m_buttonBox->setStandardButtons(QDialogButtonBox::Ok |
-						QDialogButtonBox::Cancel);
+		/* Set the model name as the fixture's friendly name ONLY
+		   if the user hasn't modified the friendly name field. */	
+		if (m_nameEdit->isModified() == false)
+			m_nameEdit->setText(m_fixtureDef->model());
+		m_nameEdit->setEnabled(true);
 	}
+
+	/* Guide the user to edit the friendly name field */
+	m_nameEdit->setSelection(0, m_nameEdit->text().length());
+	m_nameEdit->setFocus();
+
+	m_addressSpin->setEnabled(true);
+	m_universeSpin->setEnabled(true);
+
+	m_amountSpin->setEnabled(true);
+	m_gapSpin->setEnabled(true);
+
+	/* OK is again possible */
+	m_buttonBox->setStandardButtons(QDialogButtonBox::Ok |
+					QDialogButtonBox::Cancel);
 }
 
 void AddFixture::slotTreeDoubleClicked(QTreeWidgetItem* item)
 {
+	/* Select and accept (click OK for the user) */
 	slotSelectionChanged();
 	if (item != NULL && item->parent() != NULL)
 		accept();
