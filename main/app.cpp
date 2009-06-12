@@ -103,8 +103,7 @@ App::App() : QMainWindow()
 
 	init();
 	slotModeDesign();
-
-	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
+	slotDocModified(false);
 }
 
 App::~App()
@@ -146,7 +145,6 @@ void App::init()
 {
 	QSettings settings;
 
-	setWindowTitle(KApplicationNameLong);
 	setWindowIcon(QIcon(":/qlc.png"));
 
 #ifndef __APPLE__
@@ -336,6 +334,10 @@ void App::slotDocModified(bool state)
 	{
 		caption += QString(" - ")
 			+ QDir::toNativeSeparators(m_doc->fileName());
+	}
+	else
+	{
+		caption += tr(" - New Workspace");
 	}
 
 	if (state == true)
@@ -842,9 +844,6 @@ void App::newDocument()
 {
 	initDoc();
 	VirtualConsole::resetContents();
-
-	setWindowTitle(tr("%1 - New Workspace").arg(KApplicationNameLong));
-
 	doc()->resetModified();
 }
 
@@ -907,11 +906,7 @@ QFile::FileError App::slotFileOpen()
 	/* Load the file */
 	QFile::FileError error = doc()->loadXML(fileName, m_fixtureDefCache);
 	if (handleFileError(error) == true)
-	{
 		doc()->resetModified();
-		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
-						 .arg(doc()->fileName()));
-	}
 
 	/* Update these in any case, since they are at least emptied now as
 	   a result of calling newDocument() a few lines ago. */
@@ -935,10 +930,7 @@ QFile::FileError App::slotFileSave()
 	else
 		error = m_doc->saveXML(m_doc->fileName());
 
-	if (handleFileError(error) == true)
-		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
-						 .arg(doc()->fileName()));
-
+	handleFileError(error);
 	return error;
 }
 
@@ -978,10 +970,7 @@ QFile::FileError App::slotFileSaveAs()
 
 	/* Save the document and set workspace name */
 	QFile::FileError error = m_doc->saveXML(fileName);
-	if (handleFileError(error) == true)
-		setWindowTitle(QString("%1 - %2").arg(KApplicationNameLong)
-						 .arg(doc()->fileName()));
-
+	handleFileError(error);
 	return error;
 }
 
