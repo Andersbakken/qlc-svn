@@ -2,6 +2,7 @@
 #include <QtTest>
 
 #include "qlcwidgetproperties_test.h"
+#include "qlcfixturedefcache_test.h"
 #include "qlcinputchannel_test.h"
 #include "qlcinputprofile_test.h"
 #include "qlcfixturemode_test.h"
@@ -28,6 +29,9 @@ int main(int argc, char** argv)
 
 	QLCFixtureDef_Test fixtureDef;
 	QTest::qExec(&fixtureDef, argc, argv);
+
+	QLCFixtureDefCache_Test fixtureDefCache;
+	QTest::qExec(&fixtureDefCache, argc, argv);
 
 	QLCInputChannel_Test inputChannel;
 	QTest::qExec(&inputChannel, argc, argv);

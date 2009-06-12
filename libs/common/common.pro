@@ -15,6 +15,7 @@ HEADERS += qlccapability.h \
            qlcdocbrowser.h \
            qlcfile.h \
            qlcfixturedef.h \
+           qlcfixturedefcache.h \
            qlcfixturemode.h \
 	   qlcinputchannel.h \
 	   qlcinputprofile.h \
@@ -27,6 +28,7 @@ SOURCES += qlccapability.cpp \
            qlcdocbrowser.cpp \
            qlcfile.cpp \
            qlcfixturedef.cpp \
+           qlcfixturedefcache.cpp \
            qlcfixturemode.cpp \
 	   qlcinputchannel.cpp \
 	   qlcinputprofile.cpp \

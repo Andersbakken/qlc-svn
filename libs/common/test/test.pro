@@ -18,6 +18,8 @@ HEADERS += qlcphysical_test.h \
 	   ../qlccapability.h \
 	   qlcfixturedef_test.h \
 	   ../qlcfixturedef.h \
+	   qlcfixturedefcache_test.h \
+	   ../qlcfixturedefcache.h \
 	   \
 	   qlcinputchannel_test.h \
 	   ../qlcinputchannel.h \
@@ -39,6 +41,8 @@ SOURCES += qlcphysical_test.cpp \
 	   ../qlccapability.cpp \
 	   qlcfixturedef_test.cpp \
 	   ../qlcfixturedef.cpp \
+	   qlcfixturedefcache_test.cpp \
+	   ../qlcfixturedefcache.cpp \
 	   \
 	   qlcinputchannel_test.cpp \
 	   ../qlcinputchannel.cpp \

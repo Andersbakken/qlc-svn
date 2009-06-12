@@ -26,7 +26,7 @@
 #include <QList>
 #include <QFile>
 
-#include "qlctypes.h"
+#include <common/qlctypes.h>
 
 // Fixture document type
 #define KXMLQLCFixtureDefDocument "FixtureDefinition"

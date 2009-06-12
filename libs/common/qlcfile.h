@@ -22,11 +22,8 @@
 #ifndef QLCFILE_H
 #define QLCFILE_H
 
-#ifdef __APPLE__
 #include <QFile>
-#endif
-
-#include "qlctypes.h"
+#include <common/qlctypes.h>
 
 class QDomDocument;
 class QDomElement;
