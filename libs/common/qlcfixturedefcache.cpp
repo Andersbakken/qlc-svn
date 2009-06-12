@@ -48,8 +48,8 @@ QLCFixtureDefCache::~QLCFixtureDefCache()
 	}
 }
 
-QLCFixtureDef* QLCFixtureDefCache::fixtureDef(const QString& manufacturer,
-					      const QString& model) const
+const QLCFixtureDef* QLCFixtureDefCache::fixtureDef(
+	const QString& manufacturer, const QString& model) const
 {
 	if (m_models.contains(manufacturer) == false)
 	{
@@ -85,6 +85,23 @@ QStringList QLCFixtureDefCache::models(const QString& manufacturer) const
 	{
 		return QStringList();
 	}
+}
+
+bool QLCFixtureDefCache::addFixtureDef(QLCFixtureDef* fixtureDef)
+{
+	Q_ASSERT(fixtureDef != NULL);
+
+	QMap <QString, QLCFixtureDef*> defs(
+					m_models[fixtureDef->manufacturer()]);
+	/* Don't accept duplicate entries */
+	if (defs.contains(fixtureDef->model()) == true)
+		return false;
+
+	/* Add the fixture definition to the manufacturer's map and emit it */
+	m_models[fixtureDef->manufacturer()][fixtureDef->model()] = fixtureDef;
+	emit fixtureDefAdded(fixtureDef->manufacturer(), fixtureDef->model());
+
+	return true;
 }
 
 bool QLCFixtureDefCache::load(const QString& fixturePath)
@@ -127,23 +144,6 @@ bool QLCFixtureDefCache::load(const QString& fixturePath)
 			fxi = NULL;
 		}
 	}
-
-	return true;
-}
-
-bool QLCFixtureDefCache::addFixtureDef(QLCFixtureDef* fixtureDef)
-{
-	Q_ASSERT(fixtureDef != NULL);
-
-	QMap <QString, QLCFixtureDef*> defs(
-					m_models[fixtureDef->manufacturer()]);
-	/* Don't accept duplicate entries */
-	if (defs.contains(fixtureDef->model()) == true)
-		return false;
-
-	/* Add the fixture definition to the manufacturer's map and emit it */
-	m_models[fixtureDef->manufacturer()][fixtureDef->model()] = fixtureDef;
-	emit fixtureDefAdded(fixtureDef->manufacturer(), fixtureDef->model());
 
 	return true;
 }

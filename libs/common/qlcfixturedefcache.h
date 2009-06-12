@@ -44,6 +44,12 @@ class QLCFixtureDef;
  * QLCFixtureDef instance.
  *
  * Multiple manufacturer & model combinations are discarded.
+ *
+ * Because this component is meant to be used only on the application side,
+ * the returned fixture definitions are const, preventing any modifications to
+ * the definitions. Modifying the definitions would also screw up the mapping
+ * since they are made only during addFixtureDef() based on the definitions'
+ * manufacturer() & model() data.
  */
 class QLC_DECLSPEC QLCFixtureDefCache : public QObject
 {
@@ -61,14 +67,15 @@ public:
 	~QLCFixtureDefCache();
 
 	/**
-	 * Get a fixture definition by its manufacturer and model.
+	 * Get a fixture definition by its manufacturer and model. Only
+	 * const methods can be accessed for returned fixture definitions.
 	 *
 	 * @param manufacturer The fixture definition's manufacturer
 	 * @param model The fixture definition's model
 	 * @return A matching fixture definition or NULL if not found
 	 */
-	QLCFixtureDef* fixtureDef(const QString& manufacturer,
-				  const QString& model) const;
+	const QLCFixtureDef* fixtureDef(const QString& manufacturer,
+					const QString& model) const;
 
 	/**
 	 * Get a list of available manufacturer names.
@@ -81,6 +88,14 @@ public:
 	QStringList models(const QString& manufacturer) const;
 
 	/**
+	 * Add a fixture definition to the model map.
+	 *
+	 * @param fixtureDef The fixture definition to add
+	 * @return true, if $fixtureDef was added, otherwise false
+	 */
+	bool addFixtureDef(QLCFixtureDef* fixtureDef);
+
+	/**
 	 * Load fixture definitions from the given path. Ignores duplicates.
 	 * Returns true even if $fixturePath doesn't contain any fixtures,
 	 * if it is still accessible (and exists).
@@ -89,14 +104,6 @@ public:
 	 * @return true, if the path could be accessed, otherwise false.
 	 */
 	bool load(const QString& fixturePath);
-
-	/**
-	 * Add a fixture definition to the model map.
-	 *
-	 * @param fixtureDef The fixture definition to add
-	 * @return true, if $fixtureDef was added, otherwise false
-	 */
-	bool addFixtureDef(QLCFixtureDef* fixtureDef);
 
 signals:
 	/** Tells that a fixture definition was added */

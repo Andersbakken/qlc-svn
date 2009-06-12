@@ -8,7 +8,9 @@ class QLCFixtureDefCache_Test : public QObject
 	Q_OBJECT
 
 private slots:
-	void adding();
+	void add();
+	void fixtureDef();
+	void load();
 };
 
 #endif
