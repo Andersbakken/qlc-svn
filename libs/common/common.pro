@@ -37,19 +37,4 @@ SOURCES += qlccapability.cpp \
 
 # Installation
 target.path	= $$LIBSDIR
-
-unix:headers.path = /usr/include/qlc
-win32:headers.path = $$LIBSDIR/include
-headers.files = qlccapability.h \
-                qlcchannel.h \
-                qlcdocbrowser.h \
-                qlcfile.h \
-                qlcfixturedef.h \
-                qlcfixturemode.h \
-		qlcinputchannel.h \
-		qlcinputprofile.h \
-                qlcphysical.h \
-                qlctypes.h
-
-!macx:INSTALLS 	+= target headers
-macx:INSTALLS	+= target
+INSTALLS	+= target
