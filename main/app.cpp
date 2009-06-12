@@ -165,7 +165,7 @@ void App::init()
 	
 	/* This is just a toolbar, we only need it to be the size of the buttons */
 	resize(600, 32);
-	move(0, 20);
+	move(0, 22);
 	
 #endif
 	
@@ -939,7 +939,12 @@ QFile::FileError App::slotFileSaveAs()
 	QString fileName;
 
 	/* Create a file save dialog */
+#ifdef __APPLE__
+	// Don't create it above the screen...
+	QFileDialog dialog(NULL);
+#else
 	QFileDialog dialog(this);
+#endif
 	dialog.setWindowTitle(tr("Save Workspace As"));
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
 	dialog.selectFile(m_doc->fileName());
