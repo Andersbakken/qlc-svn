@@ -30,11 +30,16 @@ class Bus_Test : public QObject
 
 private slots:
 	void initTestCase();
-	void cleanupTestCase();
+
 	void defaults();
 	void value();
 	void name();
 	void tap();
+	void loadWrongRoot();
+	void load();
+	void loadWrongID();
+
+	void cleanupTestCase();
 };
 
 #endif

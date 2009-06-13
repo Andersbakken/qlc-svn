@@ -20,6 +20,7 @@
 */
 
 #include <QtTest>
+#include <QtXml>
 
 #include "bus_test.h"
 #include "../bus.h"
@@ -105,6 +106,61 @@ void Bus_Test::tap()
 	Bus::instance()->tap(6342);
 	QVERIFY(spy.count() == 1);
 	QVERIFY(spy.at(0).at(0).toUInt() == 17);
+}
+
+void Bus_Test::loadWrongRoot()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Bush");
+	doc.appendChild(root);
+	QVERIFY(Bus::instance()->loadXML(&root) == false);
+}
+
+void Bus_Test::load()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Bus");
+	doc.appendChild(root);
+	root.setAttribute("ID", 0);
+
+	QDomElement name = doc.createElement("Name");
+	QDomText nameText = doc.createTextNode("Foo");
+	name.appendChild(nameText);
+	root.appendChild(name);
+
+	QDomElement value = doc.createElement("Value");
+	QDomText valueText = doc.createTextNode("142");
+	value.appendChild(valueText);
+	root.appendChild(value);
+
+	QVERIFY(Bus::instance()->loadXML(&root) == true);
+	QVERIFY(Bus::instance()->value(0) == 142);
+	QVERIFY(Bus::instance()->name(0) == "Foo");
+}
+
+void Bus_Test::loadWrongID()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Bus");
+	doc.appendChild(root);
+	root.setAttribute("ID", Bus::count());
+
+	QDomElement name = doc.createElement("Name");
+	QDomText nameText = doc.createTextNode("Foo");
+	name.appendChild(nameText);
+	root.appendChild(name);
+
+	QDomElement value = doc.createElement("Value");
+	QDomText valueText = doc.createTextNode("142");
+	value.appendChild(valueText);
+	root.appendChild(value);
+
+	QVERIFY(Bus::instance()->loadXML(&root) == false);
+	QVERIFY(Bus::instance()->value(0) == 142);
+	QVERIFY(Bus::instance()->name(0) == "Foo");
 }
 
 void Bus_Test::cleanupTestCase()
