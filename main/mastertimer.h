@@ -26,10 +26,8 @@
 #include <QMutex>
 #include <QList>
 
-#include "common/qlctypes.h"
-#include "function.h"
-
 class OutputMap;
+class Function;
 
 class MasterTimer : public QThread
 {

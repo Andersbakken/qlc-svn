@@ -38,8 +38,6 @@
 #include "mastertimer.h"
 #include "outputmap.h"
 #include "function.h"
-#include "app.h"
-#include "doc.h"
 
 /*****************************************************************************
  * Initialization
