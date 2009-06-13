@@ -36,7 +36,9 @@
 
 #include "fixtureconsole.h"
 #include "fixture.h"
-#include "doc.h"
+
+#define KInvalidFixtureID -1
+#define KInvalidFixtureChannel USHRT_MAX
 
 /*****************************************************************************
  * Initialization
@@ -44,7 +46,7 @@
 
 Fixture::Fixture(QObject* parent) : QObject(parent)
 {
-	m_id = KNoID;
+	m_id = KInvalidFixtureID;
 
 	m_address = 0;
 	m_channels = 0;
@@ -83,6 +85,11 @@ void Fixture::setID(t_fixture_id id)
 t_fixture_id Fixture::id() const
 {
 	return m_id;
+}
+
+t_fixture_id Fixture::invalidId()
+{
+	return KInvalidFixtureID;
 }
 
 /*****************************************************************************
@@ -136,6 +143,10 @@ t_channel Fixture::universe() const
 
 void Fixture::setAddress(t_channel address)
 {
+	/* Don't allow more than 512 channels per universe */
+	if (address > 511)
+		return;
+
 	/* The address part is stored in the lowest 9 bits */
 	m_address = (m_address & 0xFE00) | (address & 0x01FF);
 
@@ -159,7 +170,6 @@ t_channel Fixture::universeAddress() const
 
 void Fixture::setChannels(t_channel channels)
 {
-	Q_ASSERT(m_fixtureDef == NULL && m_fixtureMode == NULL);
 	m_channels = channels;
 }
 
@@ -175,13 +185,18 @@ const QLCChannel* Fixture::channel(t_channel channel)
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		return m_fixtureMode->channel(channel);
+	else if (channel < channels())
+		return genericChannel();
 	else
-		return createGenericChannel();
+		return NULL;
 }
 
 int Fixture::channelAddress(t_channel channel) const
 {
-	return universeAddress() + channel;
+	if (channel < channels())
+		return universeAddress() + channel;
+	else
+		return invalidChannel();
 }
 
 t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
@@ -191,8 +206,10 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
 	{
 		/* There's just one generic channel object with "Intensity" as
 		   its name that is the same for all channel numbers. So
-		   there's really no point in returning 0 here. */
-		return KChannelInvalid;
+		   there's really no point in returning 0 or any otherwise
+		   valid channel number here. Which one of them the user would
+		   want to get? */
+		return invalidChannel();
 	}
 	else
 	{
@@ -204,8 +221,7 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
 			ch = m_fixtureMode->channel(i);
 			Q_ASSERT(ch != NULL);
 
-			if (ch->group() != QString::null &&
-			    ch->group() != group)
+			if (group != QString::null && ch->group() != group)
 			{
 				/* Given group name doesn't match */
 				continue;
@@ -218,11 +234,11 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
 		}
 
 		/* Went thru all channels but a match was not found */
-		return KChannelInvalid;
+		return invalidChannel();
 	}
 }
 
-const QLCChannel* Fixture::createGenericChannel()
+const QLCChannel* Fixture::genericChannel()
 {
 	if (m_genericChannel == NULL)
 	{
@@ -237,6 +253,11 @@ const QLCChannel* Fixture::createGenericChannel()
 	return m_genericChannel;
 }
 
+t_channel Fixture::invalidChannel()
+{
+	return KInvalidFixtureChannel;
+}
+
 /*****************************************************************************
  * Fixture definition
  *****************************************************************************/
@@ -244,8 +265,16 @@ const QLCChannel* Fixture::createGenericChannel()
 void Fixture::setFixtureDefinition(const QLCFixtureDef* fixtureDef,
 				   const QLCFixtureMode* fixtureMode)
 {
-	m_fixtureDef = fixtureDef;
-	m_fixtureMode = fixtureMode;
+	if (fixtureDef != NULL && fixtureMode != NULL)
+	{
+		m_fixtureDef = fixtureDef;
+		m_fixtureMode = fixtureMode;
+	}
+	else
+	{
+		m_fixtureDef = NULL;
+		m_fixtureMode = NULL;
+	}
 
 	/* In case the old def was a dimmer and the new one is not, delete
 	   the generic channel as possibly useless. It is created automatically
@@ -261,45 +290,6 @@ void Fixture::setFixtureDefinition(const QLCFixtureDef* fixtureDef,
  * Load & Save
  *****************************************************************************/
 
-void Fixture::loader(const QDomElement* root, Doc* doc,
-		     const QLCFixtureDefCache& fixtureDefCache)
-{
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(doc != NULL);
-
-	if (root->tagName() != KXMLFixture)
-	{
-		qDebug() << "Fixture node not found!";
-		return;
-	}
-
-	Fixture* fxi = new Fixture(doc);
-	Q_ASSERT(fxi != NULL);
-
-	if (fxi == NULL)
-	{
-		return;
-	}
-	else if (fxi->loadXML(root, fixtureDefCache) == true)
-	{
-		if (doc->addFixture(fxi) == true)
-		{
-			/* Success */
-		}
-		else
-		{
-			qWarning() << "Fixture" << fxi->name()
-				   << "cannot be created.";
-			delete fxi;
-		}
-	}
-	else
-	{
-		qWarning() << "Fixture" << fxi->name() << "cannot be loaded.";
-		delete fxi;
-	}
-}
-
 bool Fixture::loadXML(const QDomElement* root,
 		      const QLCFixtureDefCache& fixtureDefCache)
 {
@@ -309,7 +299,7 @@ bool Fixture::loadXML(const QDomElement* root,
 	QString model;
 	QString modeName;
 	QString name;
-	t_fixture_id id = KNoID;
+	t_fixture_id id = KInvalidFixtureID;
 	t_channel universe = 0;
 	t_channel address = 0;
 	t_channel channels = 0;
@@ -406,25 +396,25 @@ bool Fixture::loadXML(const QDomElement* root,
 	if (address > 511 || address + (channels - 1) > 511)
 	{
 		qDebug() << QString("Fixture channel range %1 - %2 out of DMX "
-				    "bounds (%3 - %4).").arg(address + 1)
-				    .arg(address + channels).arg(1).arg(512);
+				    "bounds (%3 - %4).").arg(address)
+				    .arg(address + channels).arg(0).arg(511);
 		address = 0;
 	}
 
 	/* Make sure that universe is something sensible */
-	if (universe > KUniverseCount)
+	if (universe >= KUniverseCount)
 	{
 		qDebug() << QString("Fixture universe %1 out of bounds "
 				    "(%2 - %3).").arg(universe).arg(0)
-				    .arg(KUniverseCount);
+				    .arg(KUniverseCount - 1);
 		universe = 0;
 	}
 
 	/* Check that we have a sensible ID, otherwise we can't continue */
-	if (id < 0 || id > KFixtureArraySize)
+	if (id < 0 || id >= KFixtureArraySize)
 	{
 		qDebug() << QString("Fixture ID %1 out of bounds (%2 - %3).")
-				    .arg(id).arg(0).arg(KFixtureArraySize);
+				    .arg(id).arg(0).arg(KFixtureArraySize - 1);
 		return false;
 	}
 

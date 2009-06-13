@@ -35,17 +35,15 @@
 #define KXMLFixtureChannels "Channels"
 #define KXMLFixtureDimmer "Dimmer"
 
-class QFile;
-class QString;
 class QDomDocument;
 class QDomElement;
+class QString;
 
 class QLCFixtureDefCache;
 class QLCFixtureMode;
 class FixtureConsole;
 class QLCFixtureDef;
 class QLCChannel;
-class Doc;
 
 class Fixture : public QObject
 {
@@ -93,6 +91,11 @@ public:
 	 */
 	t_fixture_id id() const;
 
+	/**
+	 * Get the invalid fixture ID (for comparison etc...)
+	 */
+	static t_fixture_id invalidId();
+
 protected:
 	/** Fixture ID */
 	t_fixture_id m_id;
@@ -124,8 +127,9 @@ protected:
 	 *********************************************************************/
 public:
 	/**
-	 * Get the fixture's type
+	 * Get the fixture's type as a string.
 	 *
+	 * @return Fixture type
 	 */
 	QString type() const;
 
@@ -210,13 +214,23 @@ public:
 	int channelAddress(t_channel channel) const;
 
 	/**
-	 * Get a channel by its name. Comparison is done as a "contains"
-	 * operation, i.e. the given name can be a substring of a longer name.
-	 * If group is QString::null, it is ignored.
+	 * Get a channel by its name from the given group of channels.
+	 * Comparison is done as a "contains" operation, i.e. the given name
+	 * can be a substring of a longer name. If group is QString::null, it
+	 * is ignored.
+	 *
+	 * @param name The name of the channel to search for
+	 * @param cs Case sensitivity of the search
+	 * @param group Group name of the channel
 	 */
 	t_channel channel(const QString& name,
 			  Qt::CaseSensitivity cs = Qt::CaseSensitive,
 			  const QString& group = QString::null) const;
+
+	/**
+	 * The invalid channel number (for comparison etc...)
+	 */
+	static t_channel invalidChannel();
 
 protected:
 	/**
@@ -225,7 +239,7 @@ protected:
 	 *
 	 * @return The generic QLCChannel 
 	 */
-	const QLCChannel* createGenericChannel();
+	const QLCChannel* genericChannel();
 
 protected:
 	/** DMX address & universe */
@@ -276,17 +290,6 @@ protected:
 	 * Load & Save
 	 *********************************************************************/
 public:
-	/**
-	 * Load a new fixture from an XML tag and add it to the given doc
-	 * object, if loading was successful.
-	 *
-	 * @param root An XML subtree containing a single fixture instance
-	 * @param doc The QLC document object, that owns all fixtures
-	 * @param fixtureDefCache Get the fixture's definition from this cache
-	 */
-	static void loader(const QDomElement* root, Doc* doc,
-			   const QLCFixtureDefCache& fixtureDefCache);
-
 	/**
 	 * Load a fixture's contents from the given XML node.
 	 *

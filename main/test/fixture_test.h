@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  test_engine.cpp
+  fixture_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,23 +19,33 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QtTest>
+#ifndef FIXTURE_TEST_H
+#define FIXTURE_TEST_H
 
-#include "fixture_test.h"
-#include "bus_test.h"
+#include <QObject>
+#include <common/qlcfixturedefcache.h>
 
-/* This file includes tests for QLC's ENGINE components. UI tests are done
-   separately. */
-int main(int argc, char** argv)
+class Fixture_Test : public QObject
 {
-	QApplication qapp(argc, argv);
+	Q_OBJECT
 
-	Bus_Test bus;
-	QTest::qExec(&bus, argc, argv);
+private slots:
+	void initTestCase();
+	void id();
+	void name();
+	void address();
+	void dimmer();
+	void fixtureDef();
+	void loadWrongRoot();
+	void loadFixtureDef();
+	void loadFixtureDefWrongChannels();
+	void loadDimmer();
+	void loadWrongAddress();
+	void loadWrongUniverse();
+	void loadWrongID();
 
-	Fixture_Test fixture;
-	QTest::qExec(&fixture, argc, argv);
+private:
+	QLCFixtureDefCache m_fixtureDefCache;
+};
 
-	return 0;
-}
+#endif

@@ -198,7 +198,28 @@ bool Doc::loadXML(const QDomDocument* doc,
 		}
 		else if (tag.tagName() == KXMLFixture)
 		{
-			Fixture::loader(&tag, this, fixtureDefCache);
+			Fixture* fxi = new Fixture(this);
+			Q_ASSERT(fxi != NULL);
+
+			if (fxi->loadXML(&root, fixtureDefCache) == true)
+			{
+				if (addFixture(fxi) == false)
+				{
+					qWarning() << "Fixture" << fxi->name()
+						   << "cannot be created.";
+					delete fxi;
+				}
+				else
+				{
+					/* Success */
+				}
+			}
+			else
+			{
+				qWarning() << "Fixture" << fxi->name() 
+					   << "cannot be loaded.";
+				delete fxi;
+			}
 		}
 		else if (tag.tagName() == KXMLQLCFunction)
 		{
