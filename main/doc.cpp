@@ -201,7 +201,7 @@ bool Doc::loadXML(const QDomDocument* doc,
 			Fixture* fxi = new Fixture(this);
 			Q_ASSERT(fxi != NULL);
 
-			if (fxi->loadXML(&root, fixtureDefCache) == true)
+			if (fxi->loadXML(&tag, fixtureDefCache) == true)
 			{
 				if (addFixture(fxi) == false)
 				{
