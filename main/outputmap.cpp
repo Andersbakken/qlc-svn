@@ -30,7 +30,7 @@
 #include <QDir>
 
 #ifdef __APPLE__
-#include <QApplication>
+#include <QCoreApplication>
 #endif
 
 #include "common/qlcoutplugin.h"
@@ -40,9 +40,6 @@
 #include "outputmanager.h"
 #include "outputpatch.h"
 #include "outputmap.h"
-#include "app.h"
-
-extern App* _app;
 
 #ifdef WIN32
 	#define PLUGINEXT ".dll"
@@ -92,7 +89,7 @@ void OutputMap::load()
 	QString path;
 
 #ifdef __APPLE__
-	path = QString("%1/%2").arg(QApplication::applicationDirPath())
+	path = QString("%1/%2").arg(QCoreApplication::applicationDirPath())
 				.arg(OUTPUTPLUGINDIR);
 #else
 	path = QString(OUTPUTPLUGINDIR);
@@ -320,10 +317,7 @@ QStringList OutputMap::pluginOutputs(const QString& pluginName)
 void OutputMap::configurePlugin(const QString& pluginName)
 {
 	QLCOutPlugin* outputPlugin = plugin(pluginName);
-	if (outputPlugin == NULL)
-		QMessageBox::warning(_app, tr("Unable to configure plugin"),
-				     tr("%1 not found").arg(pluginName));
-	else
+	if (outputPlugin != NULL)
 		outputPlugin->configure();
 }
 
