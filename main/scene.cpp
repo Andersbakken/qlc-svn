@@ -25,12 +25,9 @@
 #include <QFile>
 #include <QtXml>
 
-#include <time.h>
-
 #include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
-#include "outputmap.h"
 #include "scene.h"
 #include "doc.h"
 #include "bus.h"
@@ -481,8 +478,11 @@ bool Scene::write(QByteArray* universes)
 		{
 			SceneChannel sch = it.next();
 
-			/* Get the starting value from universes */
-			sch.start = universes->data()[sch.address];
+			/* Get the starting value from universes. Important
+			   to cast to t_value, since QByteArray handles signed
+			   char, whereas t_value is unsigned. Without cast,
+			   this will result in negative values when x > 127 */
+			sch.start = t_value(universes->data()[sch.address]);
 			sch.current = sch.start;
 
 			/* Mark channels ready if they are already what they

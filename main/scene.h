@@ -42,6 +42,12 @@ class QByteArray;
 /**
  * SceneChannel is a helper class used to store individual RUNTIME values for
  * channels as they are operated by a Scene function during Operate mode.
+ *
+ * Although t_value is an UNSIGNED char (0-255), these variables must be SIGNED
+ * because the floating-point calculations that Scene does don't necessarily
+ * stop exactly at 0.0 and 255.0, but might go slightly over/under. If these
+ * variables were unsigned, an overflow would occur in some cases, resulting in
+ * UINT_MAX values and everything would go wacko.
  */
 class SceneChannel
 {
@@ -57,13 +63,13 @@ public:
 	t_channel address;
 
 	/** The value of the channel where a scene started fading from */
-	int start;
+	qint32 start;
 
 	/** The current value set by a scene */
-	int current;
+	qint32 current;
 
 	/** The target value to eventually fade to */
-	int target;
+	qint32 target;
 
 	/** If true, this value is ready, don't set it anymore to DMX */
 	bool ready;
