@@ -35,10 +35,7 @@
 #include "scene.h"
 #include "efx.h"
 #include "bus.h"
-#include "app.h"
 #include "doc.h"
-
-extern App* _app;
 
 const QString KSceneString      (      "Scene" );
 const QString KChaserString     (     "Chaser" );
@@ -355,22 +352,30 @@ void Function::unFlash(QByteArray* universes)
  * Running
  *****************************************************************************/
 
-void Function::start()
+void Function::start(MasterTimer* timer)
 {
-	if (m_running == false)
+	if (isRunning() == false)
 	{
+		Q_ASSERT(timer != NULL);
+
+		qDebug() << "start" << name();
+
 		m_elapsed = 0;
 		m_running = true;
-		_app->masterTimer()->startMe(this);
+		timer->startFunction(this);
 		emit running(m_id);
 	}
 }
 
-void Function::stop()
+void Function::stop(MasterTimer* timer)
 {
-	if (m_running == true)
+	if (isRunning() == true)
 	{
-		_app->masterTimer()->stopMe(this);
+		Q_ASSERT(timer != NULL);
+
+		qDebug() << "stop" << name();
+
+		timer->stopFunction(this);
 		m_running = false;
 		emit stopped(m_id);
 	}

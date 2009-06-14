@@ -27,6 +27,7 @@
 #include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
+#include "mastertimer.h"
 #include "function.h"
 #include "fixture.h"
 #include "chaser.h"
@@ -41,6 +42,7 @@ Chaser::Chaser(QObject* parent) : Function(parent)
 {
 	m_runTimeDirection = Forward;
 	m_runTimePosition = 0;
+	m_masterTimer = NULL;
 
 	setName(tr("New Chaser"));
 	setBus(Bus::defaultHold());
@@ -316,8 +318,12 @@ void Chaser::disarm()
 {
 }
 
-void Chaser::start()
+void Chaser::start(MasterTimer* timer)
 {
+	Q_ASSERT(timer != NULL);
+
+	m_masterTimer = timer;
+
 	/* No point running this chaser if it has no steps */
 	if (m_steps.count() == 0)
 	{
@@ -334,13 +340,17 @@ void Chaser::start()
 		m_runTimePosition = m_steps.count();
 
 	m_tapped = false;
-	Function::start();
+
+	Function::start(timer);
 }
 
-void Chaser::stop()
+void Chaser::stop(MasterTimer* timer)
 {
+	Q_ASSERT(timer != NULL);
+
 	stopMemberAt(m_runTimePosition);
-	Function::stop();
+	Function::stop(timer);
+	m_masterTimer = NULL;
 }
 
 bool Chaser::write(QByteArray* universes)
@@ -452,7 +462,7 @@ void Chaser::startMemberAt(int index)
   	Function* function = doc->function(fid);
 	Q_ASSERT(function != NULL);
 
-	function->start();
+	function->start(m_masterTimer);
 }
 
 void Chaser::stopMemberAt(int index)
@@ -466,5 +476,5 @@ void Chaser::stopMemberAt(int index)
 	Function* function = doc->function(fid);
 	Q_ASSERT(function != NULL);
 
-	function->stop();
+	function->stop(m_masterTimer);
 }

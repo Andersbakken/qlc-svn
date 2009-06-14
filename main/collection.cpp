@@ -28,6 +28,7 @@
 
 #include "common/qlcfile.h"
 
+#include "mastertimer.h"
 #include "collection.h"
 #include "function.h"
 #include "doc.h"
@@ -224,7 +225,7 @@ void Collection::disarm()
 {
 }
 
-void Collection::stop()
+void Collection::stop(MasterTimer* timer)
 {
 	Doc* doc = qobject_cast <Doc*> (parent());
 	Q_ASSERT(doc != NULL);
@@ -236,14 +237,16 @@ void Collection::stop()
 	{
 		Function* function = doc->function(it.next());
 		Q_ASSERT(function != NULL);
-		function->stop();
+		function->stop(timer);
 	}
 
-	Function::stop();
+	Function::stop(timer);
 }
 
-void Collection::start()
+void Collection::start(MasterTimer* timer)
 {
+	Q_ASSERT(timer != NULL);
+
 	Doc* doc = qobject_cast <Doc*> (parent());
 	Q_ASSERT(doc != NULL);
 
@@ -263,10 +266,10 @@ void Collection::start()
 		connect(function, SIGNAL(stopped(t_function_id)),
 			this, SLOT(slotChildStopped(t_function_id)));
 
-		function->start();
+		function->start(timer);
 	}
 
-	Function::start();
+	Function::start(timer);
 }
 
 bool Collection::write(QByteArray* universes)

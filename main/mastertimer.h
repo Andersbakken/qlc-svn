@@ -63,10 +63,10 @@ public:
 	int runningFunctions();
 
 	/** Start running the given function */
-	void startMe(Function* function);
+	void startFunction(Function* function);
 
 	/** Stop running the given function */
-	void stopMe(Function* function);
+	void stopFunction(Function* function);
 
 	/** Stop all functions */
 	void stopAll();

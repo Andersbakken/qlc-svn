@@ -70,7 +70,7 @@ int MasterTimer::runningFunctions()
 	return n;
 }
 
-void MasterTimer::startMe(Function* function)
+void MasterTimer::startFunction(Function* function)
 {
 	Q_ASSERT(function != NULL);
 
@@ -79,7 +79,7 @@ void MasterTimer::startMe(Function* function)
 	m_functionListMutex.unlock();
 }
 
-void MasterTimer::stopMe(Function* function)
+void MasterTimer::stopFunction(Function* function)
 {
 	Q_ASSERT(function != NULL);
 
@@ -247,7 +247,7 @@ void MasterTimer::event()
 		m_functionListMutex.unlock();
 		universes = m_outputMap->claimUniverses();
 		if (function->write(universes) == false || m_stopAll == true)
-			function->stop();
+			function->stop(this);
 		m_outputMap->releaseUniverses();
 
 		/* Lock for the next round. */

@@ -32,6 +32,7 @@ class QDomDocument;
 class QDomElement;
 class QIcon;
 
+class MasterTimer;
 class Function;
 class Bus;
 class Doc;
@@ -333,15 +334,34 @@ public:
 	/** Free any run-time allocations */
 	virtual void disarm() = 0;
 
-	/** Start the function */
-	virtual void start();
+	/**
+	 * Start the function in the given MasterTimer instance. A function
+	 * can be running only in one MasterTimer at a time.
+	 *
+	 * @param timer The MasterTimer to run the function in
+	 */
+	virtual void start(MasterTimer* timer);
 
-	/** Stop the function */
-	virtual void stop();
+	/**
+	 * Stop running the function in the given MasterTimer instance.
+	 *
+	 * @param timer The MasterTimer to stop the function in
+	 */
+	virtual void stop(MasterTimer* timer);
 
+	/** Check, whether the function is running */
 	bool isRunning() const { return m_running; }
 
-	/** Write next values to universes */
+	/**
+	 * Write next values to universes. This method is called periodically
+	 * (once every 1/KFrequency:th of a second) by the MasterTimer that the
+	 * function has been set to run in, to write the next values to the
+	 * given DMX universe buffer. This method is called for each function
+	 * in the order that they were set to run. When this method has been
+	 * called for each running function, the buffer is written to OutputMap.
+	 *
+	 * @param universes The DMX universe buffer to write values into
+	 */
 	virtual bool write(QByteArray* universes) = 0;
 
 signals:

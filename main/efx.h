@@ -576,12 +576,19 @@ protected:
 	 * Running
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	void arm();
+
+	/** @reimpl */
 	void disarm();
 
-	void start();
-	void stop();
+	/** @reimpl */
+	void start(MasterTimer* timer);
 
+	/** @reimpl */
+	void stop(MasterTimer* timer);
+
+	/** @reimpl */
 	bool write(QByteArray* universes);
 
 protected:

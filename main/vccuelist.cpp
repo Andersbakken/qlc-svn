@@ -187,7 +187,7 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 		return;
 
 	if (m_current != NULL)
-		m_current->stop();
+		m_current->stop(_app->masterTimer());
 
 	if (item == NULL)
 		return;
@@ -199,7 +199,7 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 	connect(m_current, SIGNAL(stopped(t_function_id)),
 		this, SLOT(slotFunctionStopped(t_function_id)));
 
-	m_current->start();
+	m_current->start(_app->masterTimer());
 }
 
 /*****************************************************************************

@@ -619,9 +619,9 @@ void VCButton::pressFunction()
 		if (f != NULL)
 		{
 			if (isOn() == true)
-				f->stop();
+				f->stop(_app->masterTimer());
 			else
-				f->start();
+				f->start(_app->masterTimer());
 		}
 	}
 	else if (m_action == Flash && isOn() == false)

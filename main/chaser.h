@@ -28,6 +28,7 @@
 class QFile;
 class QString;
 class QDomDocument;
+class MasterTimer;
 
 class Chaser : public Function
 {
@@ -106,12 +107,19 @@ protected slots:
 	void slotBusTapped(quint32 id);
 
 public:
+	/** @reimpl */
 	void arm();
+
+	/** @reimpl */
 	void disarm();
 
-	void start();
-	void stop();
+	/** @reimpl */
+	void start(MasterTimer* timer);
 
+	/** @reimpl */
+	void stop(MasterTimer* timer);
+
+	/** @reimpl */
 	bool write(QByteArray* universes);
 
 protected:
@@ -134,6 +142,8 @@ protected:
 
 	Direction m_runTimeDirection;
 	int m_runTimePosition;
+
+	MasterTimer* m_masterTimer;
 };
 
 #endif

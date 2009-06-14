@@ -33,6 +33,7 @@
 #include "common/qlcchannel.h"
 #include "common/qlcfile.h"
 
+#include "mastertimer.h"
 #include "fixture.h"
 #include "scene.h"
 #include "doc.h"
@@ -1438,11 +1439,13 @@ void EFX::disarm()
 	pointFunc = NULL;
 }
 
-void EFX::start()
+void EFX::start(MasterTimer* timer)
 {
+	Q_ASSERT(timer != NULL);
+
 	/* Set initial speed */
 	slotBusValueChanged(m_busID, Bus::instance()->value(m_busID));
-	Function::start();
+	Function::start(timer);
 }
 
 bool EFX::write(QByteArray* universes)
@@ -1473,9 +1476,11 @@ bool EFX::write(QByteArray* universes)
 		return true;
 }
 
-void EFX::stop()
+void EFX::stop(MasterTimer* timer)
 {
-	Function::stop();
+	Q_ASSERT(timer != NULL);
+
+	Function::stop(timer);
 
 	/* Reset all fixtures */
 	QListIterator <EFXFixture*> it(m_fixtures);
