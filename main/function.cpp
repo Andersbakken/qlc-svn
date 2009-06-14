@@ -78,6 +78,8 @@ Function::~Function()
 
 bool Function::copyFrom(const Function* function)
 {
+	/* Don't copy the function's parent */
+
 	if (function == NULL)
 		return false;
 

@@ -33,15 +33,11 @@
 #include "common/qlcchannel.h"
 #include "common/qlcfile.h"
 
-#include "efxeditor.h"
 #include "fixture.h"
 #include "scene.h"
-#include "app.h"
 #include "doc.h"
 #include "efx.h"
 #include "bus.h"
-
-extern App* _app;
 
 /* Supported EFX algorithms */
 static const char* KCircleAlgorithmName    ( "Circle" );
@@ -93,6 +89,17 @@ EFX::EFX(QObject* parent) : Function(parent)
 	setBus(Bus::defaultFade());
 	connect(Bus::instance(), SIGNAL(valueChanged(quint32,quint32)),
 		this, SLOT(slotBusValueChanged(quint32,quint32)));
+
+	Doc* doc = qobject_cast <Doc*> (parent);
+	if (doc != NULL)
+	{
+		/* Listen to function removals so that they can be removed from
+		   this efx as well. Parent might not always be Doc, but an
+		   editor dialog, for example. Such efx's cannot be run,
+		   though. */
+		connect(doc, SIGNAL(functionRemoved(t_function_id)),
+			this, SLOT(slotFunctionRemoved(t_function_id)));
+	}
 }
 
 /**
@@ -119,9 +126,9 @@ Function::Type EFX::type() const
 
 Function* EFX::createCopy(Doc* doc)
 {
-    Q_ASSERT(doc != NULL);
+	Q_ASSERT(doc != NULL);
 
-	Function* copy = new EFX(_app->doc());
+	Function* copy = new EFX(doc);
 	Q_ASSERT(copy != NULL);
 	if (copy->copyFrom(this) == false)
 	{
@@ -180,7 +187,11 @@ bool EFX::copyFrom(const Function* function)
 
 	m_algorithm = QString(efx->algorithm());
 
-	return Function::copyFrom(function);
+	bool result = Function::copyFrom(function);
+
+	emit changed(m_id);
+
+	return result;
 }
 
 /*****************************************************************************
@@ -338,6 +349,8 @@ void EFX::setAlgorithm(QString algorithm)
 		m_algorithm = KCircleAlgorithmName;
 
 	updatePreview();
+
+	emit changed(m_id);
 }
 
 /*****************************************************************************
@@ -353,6 +366,7 @@ void EFX::setWidth(int width)
 {
 	m_width = static_cast<double> (width);
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -378,6 +392,7 @@ void EFX::setHeight(int height)
 {
 	m_height = static_cast<double> (height);
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -403,6 +418,7 @@ void EFX::setRotation(int rot)
 {
 	m_rotation = static_cast<int> (rot);
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -428,6 +444,7 @@ void EFX::setXOffset(int offset)
 {
 	m_xOffset = static_cast<double> (offset);
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -449,6 +466,7 @@ void EFX::setYOffset(int offset)
 {
 	m_yOffset = static_cast<double> (offset);
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -474,6 +492,7 @@ void EFX::setXFrequency(int freq)
 {
 	m_xFrequency = freq;
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -495,6 +514,7 @@ void EFX::setYFrequency(int freq)
 {
 	m_yFrequency = freq;
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -535,6 +555,7 @@ void EFX::setXPhase(int phase)
 {
 	m_xPhase = static_cast<float> (phase * M_PI / 180.0);
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -556,6 +577,7 @@ void EFX::setYPhase(int phase)
 {
 	m_yPhase = static_cast<float> (phase * M_PI) / 180.0;
 	updatePreview();
+	emit changed(m_id);
 }
 
 /**
@@ -604,6 +626,8 @@ bool EFX::addFixture(EFXFixture* ef)
 	/* Put the EFXFixture object into our list */
 	m_fixtures.append(ef);
 
+	emit changed(m_id);
+
 	return true;
 }
 
@@ -612,9 +636,14 @@ bool EFX::removeFixture(EFXFixture* ef)
 	Q_ASSERT(ef != NULL);
 
 	if (m_fixtures.removeAll(ef) > 0)
+	{
+		emit changed(m_id);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 bool EFX::raiseFixture(EFXFixture* ef)
@@ -625,6 +654,7 @@ bool EFX::raiseFixture(EFXFixture* ef)
 	if (index > 0)
 	{
 		m_fixtures.move(index, index - 1);
+		emit changed(m_id);
 		return true;
 	}
 	else
@@ -639,6 +669,7 @@ bool EFX::lowerFixture(EFXFixture* ef)
 	if (index < (m_fixtures.count() - 1))
 	{
 		m_fixtures.move(index, index + 1);
+		emit changed(m_id);
 		return true;
 	}
 	else
@@ -671,6 +702,7 @@ void EFX::slotFixtureRemoved(t_fixture_id fxi_id)
 void EFX::setPropagationMode(PropagationMode mode)
 {
 	m_propagationMode = mode;
+	emit changed(m_id);
 }
 
 QString EFX::propagationModeToString(PropagationMode mode)
@@ -698,6 +730,7 @@ void EFX::setStartScene(t_function_id scene)
 	if (scene >= KNoID && scene <= KFunctionArraySize)
 	{
 		m_startSceneID = scene;
+		emit changed(m_id);
 	}
 }
 
@@ -717,6 +750,7 @@ t_function_id EFX::startScene() const
 void EFX::setStartSceneEnabled(bool set)
 {
 	m_startSceneEnabled = set;
+	emit changed(m_id);
 }
 
 /**
@@ -733,6 +767,7 @@ void EFX::setStopScene(t_function_id scene)
 	if (scene >= KNoID && scene <= KFunctionArraySize)
 	{
 		m_stopSceneID = scene;
+		emit changed(m_id);
 	}
 }
 
@@ -752,6 +787,7 @@ t_function_id EFX::stopScene() const
 void EFX::setStopSceneEnabled(bool set)
 {
 	m_stopSceneEnabled = set;
+	emit changed(m_id);
 }
 
 /**
@@ -763,17 +799,27 @@ bool EFX::stopSceneEnabled() const
 	return m_stopSceneEnabled;
 }
 
-/*****************************************************************************
- * Edit
- *****************************************************************************/
-
-int EFX::edit(QWidget* parent)
+/**
+ * Catches Doc::functionRemoved() so that destroyed members can be removed
+ * immediately.
+ *
+ */
+void EFX::slotFunctionRemoved(t_function_id id)
 {
-	EFXEditor editor(parent, this);
-	int result = editor.exec();
-	if (result == QDialog::Accepted)
+	if (id == m_startSceneID)
+	{
+		m_startSceneID = KNoID;
+		m_startSceneEnabled = false;
 		emit changed(m_id);
-	return result;
+	}
+
+	/* No "else" because the same function might be both start & stop */
+	if (id == m_stopSceneID)
+	{
+		m_stopSceneID = KNoID;
+		m_stopSceneEnabled = false;
+		emit changed(m_id);
+	}
 }
 
 /*****************************************************************************
@@ -1300,15 +1346,18 @@ void EFX::arm()
 	class Scene* stopScene = NULL;
 	int serialNumber = 0;
 
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
+
 	/* Initialization scene */
 	if (m_startSceneID != KNoID && m_startSceneEnabled == true)
 		startScene = static_cast <class Scene*>
-			(_app->doc()->function(m_startSceneID));
+			(doc->function(m_startSceneID));
 
 	/* De-initialization scene */
 	if (m_stopSceneID != KNoID && m_stopSceneEnabled == true)
 		stopScene = static_cast <class Scene*>
-			(_app->doc()->function(m_stopSceneID));
+			(doc->function(m_stopSceneID));
 
 	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
@@ -1321,7 +1370,7 @@ void EFX::arm()
 		ef->setStopScene(stopScene);
 
 		/* If fxi == NULL, the fixture has been destroyed */
-		Fixture* fxi = _app->doc()->fixture(ef->fixture());
+		Fixture* fxi = doc->fixture(ef->fixture());
 		if (fxi == NULL)
 			continue;
 

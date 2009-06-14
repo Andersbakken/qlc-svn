@@ -56,7 +56,7 @@ public:
 	 * Copying
 	 *********************************************************************/
 public:
-    /** @reimpl */
+	/** @reimpl */
 	Function* createCopy(Doc* doc);
 
 	/** Copy the contents for this function from another function */
@@ -81,15 +81,13 @@ public:
 	/** Get this chaser's list of steps */
 	QList <t_function_id> *steps() { return &m_steps; }
 
+protected slots:
+	/** Catches Doc::functionRemoved() so that destroyed members can be
+	    removed immediately. */
+	void slotFunctionRemoved(t_function_id);
+
 protected:
 	QList <t_function_id> m_steps;
-
-	/*********************************************************************
-	 * Edit
-	 *********************************************************************/
-public:
-	/** Edit the function. Returns QDialog::DialogCode. */
-	int edit(QWidget* parent);
 
 	/*********************************************************************
 	 * Save & Load

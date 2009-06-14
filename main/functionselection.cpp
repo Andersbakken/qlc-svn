@@ -26,7 +26,11 @@
 #include <QDebug>
 
 #include "functionselection.h"
+#include "collectioneditor.h"
+#include "chasereditor.h"
+#include "sceneeditor.h"
 #include "collection.h"
+#include "efxeditor.h"
 #include "function.h"
 #include "fixture.h"
 #include "chaser.h"
@@ -195,7 +199,7 @@ void FunctionSelection::addFunction(Function* function)
 	/* Append the new function to current selection */
 	item->setSelected(true);
 
-	if (function->edit(this) == QDialog::Rejected)
+	if (editFunction(function) == QDialog::Rejected)
 	{
 		_app->doc()->deleteFunction(function->id());
 		delete item;
@@ -329,4 +333,43 @@ void FunctionSelection::slotCollectionChecked(bool state)
 void FunctionSelection::accept()
 {
 	QDialog::accept();
+}
+
+/*****************************************************************************
+ * Helpers
+ *****************************************************************************/
+
+int FunctionSelection::editFunction(Function* function)
+{
+	int result = QDialog::Rejected;
+
+	Q_ASSERT(function != NULL);
+
+	if (function->type() == Function::Scene)
+	{
+		SceneEditor editor(this, qobject_cast<Scene*> (function));
+		result = editor.exec();
+	}
+	else if (function->type() == Function::Chaser)
+	{
+		ChaserEditor editor(this, qobject_cast<Chaser*> (function));
+		result = editor.exec();
+	}
+	else if (function->type() == Function::Collection)
+	{
+		CollectionEditor editor(this,
+					qobject_cast<Collection*> (function));
+		result = editor.exec();
+	}
+	else if (function->type() == Function::EFX)
+	{
+		EFXEditor editor(this, qobject_cast<EFX*> (function));
+		result = editor.exec();
+	}
+	else
+	{
+		result = QDialog::Rejected;
+	}
+
+	return result;
 }

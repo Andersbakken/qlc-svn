@@ -154,6 +154,9 @@ protected:
 	/** Add a new function */
 	void addFunction(Function* function);
 
+	/** Open an editor for the given function */
+	int editFunction(Function* function);
+
 protected:
 	/** Don't listen to Doc::functionAdded signal when this is true */
 	bool m_blockAddFunctionSignal;

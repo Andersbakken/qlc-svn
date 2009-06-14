@@ -27,15 +27,11 @@
 #include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
-#include "chasereditor.h"
 #include "function.h"
 #include "fixture.h"
 #include "chaser.h"
 #include "doc.h"
-#include "app.h"
 #include "bus.h"
-
-extern App* _app;
 
 /*****************************************************************************
  * Initialization
@@ -51,6 +47,17 @@ Chaser::Chaser(QObject* parent) : Function(parent)
 
 	connect(Bus::instance(), SIGNAL(tapped(quint32)),
 		this, SLOT(slotBusTapped(quint32)));
+
+	Doc* doc = qobject_cast <Doc*> (parent);
+	if (doc != NULL)
+	{
+		/* Listen to function removals so that they can be removed from
+		   this chaser as well. Parent might not always be Doc, but an
+		   editor dialog, for example. Such chasers cannot be run,
+		   though. */
+		connect(doc, SIGNAL(functionRemoved(t_function_id)),
+			this, SLOT(slotFunctionRemoved(t_function_id)));
+	}
 }
 
 Chaser::~Chaser()
@@ -73,9 +80,9 @@ Function::Type Chaser::type() const
 
 Function* Chaser::createCopy(Doc* doc)
 {
-    Q_ASSERT(doc != NULL);
+	Q_ASSERT(doc != NULL);
 
-	Function* copy = new Chaser(_app->doc());
+	Function* copy = new Chaser(doc);
 	Q_ASSERT(copy != NULL);
 	if (copy->copyFrom(this) == false)
 	{
@@ -104,7 +111,11 @@ bool Chaser::copyFrom(const Function* function)
 	m_steps.clear();
 	m_steps = chaser->m_steps;
 
-	return Function::copyFrom(function);
+	bool result = Function::copyFrom(function);
+
+	emit changed(m_id);
+
+	return result;
 }
 
 /*****************************************************************************
@@ -114,12 +125,16 @@ bool Chaser::copyFrom(const Function* function)
 void Chaser::addStep(t_function_id id)
 {
 	m_steps.append(id);
+
+	emit changed(m_id);
 }
 
 void Chaser::removeStep(unsigned int index)
 {
 	Q_ASSERT(int(index) < m_steps.size());
 	m_steps.removeAt(index);
+
+	emit changed(m_id);
 }
 
 bool Chaser::raiseStep(unsigned int index)
@@ -128,6 +143,8 @@ bool Chaser::raiseStep(unsigned int index)
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index - 1, fid);
+
+		emit changed(m_id);
 		return true;
 	}
 	else
@@ -142,6 +159,8 @@ bool Chaser::lowerStep(unsigned int index)
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index + 1, fid);
+
+		emit changed(m_id);
 		return true;
 	}
 	else
@@ -150,17 +169,10 @@ bool Chaser::lowerStep(unsigned int index)
 	}
 }
 
-/*****************************************************************************
- * Edit
- *****************************************************************************/
-
-int Chaser::edit(QWidget* parent)
+void Chaser::slotFunctionRemoved(t_function_id id)
 {
-	ChaserEditor editor(parent, this);
-	int result = editor.exec();
-	if (result == QDialog::Accepted)
-		emit changed(m_id);
-	return result;
+	qDebug() << "Remove" << id;
+	m_steps.removeAll(id);
 }
 
 /*****************************************************************************
@@ -431,13 +443,13 @@ void Chaser::nextStep()
 
 void Chaser::startMemberAt(int index)
 {
-  	Function* function;
-	t_function_id fid;
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
 
-	fid = m_steps.at(index);
+	t_function_id fid = m_steps.at(index);
 	Q_ASSERT(fid != KNoID);
 
-	function = _app->doc()->function(fid);
+  	Function* function = doc->function(fid);
 	Q_ASSERT(function != NULL);
 
 	function->start();
@@ -445,13 +457,13 @@ void Chaser::startMemberAt(int index)
 
 void Chaser::stopMemberAt(int index)
 {
-  	Function* function;
-	t_function_id fid;
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
 
-	fid = m_steps.at(index);
+	t_function_id fid = m_steps.at(index);
 	Q_ASSERT(fid != KNoID);
 
-	function = _app->doc()->function(fid);
+	Function* function = doc->function(fid);
 	Q_ASSERT(function != NULL);
 
 	function->stop();

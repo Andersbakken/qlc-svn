@@ -429,7 +429,7 @@ int FunctionManager::slotEdit()
 		return QDialog::Rejected;
 
 	// Edit the selected function
-	result = function->edit(this);
+	result = editFunction(function);
 
 	updateFunctionItem(item, function);
 
@@ -656,4 +656,39 @@ void FunctionManager::addFunction(Function* function)
 		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
 		m_tree->scrollToItem(item);
 	}
+}
+
+int FunctionManager::editFunction(Function* function)
+{
+	int result = QDialog::Rejected;
+
+	Q_ASSERT(function != NULL);
+
+	if (function->type() == Function::Scene)
+	{
+		SceneEditor editor(this, qobject_cast<Scene*> (function));
+		result = editor.exec();
+	}
+	else if (function->type() == Function::Chaser)
+	{
+		ChaserEditor editor(this, qobject_cast<Chaser*> (function));
+		result = editor.exec();
+	}
+	else if (function->type() == Function::Collection)
+	{
+		CollectionEditor editor(this,
+					qobject_cast<Collection*> (function));
+		result = editor.exec();
+	}
+	else if (function->type() == Function::EFX)
+	{
+		EFXEditor editor(this, qobject_cast<EFX*> (function));
+		result = editor.exec();
+	}
+	else
+	{
+		result = QDialog::Rejected;
+	}
+
+	return result;
 }

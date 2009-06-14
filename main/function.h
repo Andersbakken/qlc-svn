@@ -84,12 +84,12 @@ private:
 	 *********************************************************************/
 public:
 	/**
-     * Create a copy of a function to the given doc object and return the
-     * newly-created function, unless an error has occurred.
-     *
-     * @param doc The QLC Doc object that owns all functions
-     * @return The newly-created function or NULL in case of an error
-     */
+	 * Create a copy of a function to the given doc object and return the
+	 * newly-created function, unless an error has occurred.
+	 *
+	 * @param doc The QLC Doc object that owns all functions
+	 * @return The newly-created function or NULL in case of an error
+	 */
 	virtual Function* createCopy(Doc* doc) = 0;
 
 	/** Copy this function's contents from the given function */
@@ -270,13 +270,6 @@ public:
 
 protected:
 	quint32 m_busID;
-
-	/*********************************************************************
-	 * Edit
-	 *********************************************************************/
-public:
-	/** Edit the function. Returns QDialog::DialogCode. */
-	virtual int edit(QWidget* parent) = 0;
 
 	/*********************************************************************
 	 * Fixtures

@@ -39,6 +39,10 @@ class QByteArray;
  * SceneChannel
  *****************************************************************************/
 
+/**
+ * SceneChannel is a helper class used to store individual RUNTIME values for
+ * channels as they are operated by a Scene function during Operate mode.
+ */
 class SceneChannel
 {
 public:
@@ -69,6 +73,11 @@ public:
  * SceneValue
  *****************************************************************************/
 
+/**
+ * SceneValue is a helper class used to store individual channel TARGET values
+ * for Scene functions. Each channel that is taking part of a scene is
+ * represented with a SceneValue.
+ */
 class SceneValue
 {
 public:
@@ -106,38 +115,53 @@ public:
  * Scene
  *****************************************************************************/
 
+/**
+ * Scene encapsulates the values of selected channels from one or more fixture
+ * instances. When a scene is started, the duration it takes for its channels
+ * to reach their target values depends on the function's speed setting. Bus
+ * number 1 (Default Fade) is assigned to all newly created scenes by default.
+ * If the bus' value is 0 seconds, scene values are set immediately and no
+ * fading occurs. Otherwise values are always faded from what they currently
+ * are, to the target values defined in the scene (with SceneValue instances).
+ * Channels that are not enabled in the scene will not be touched at all.
+ */
 class Scene : public Function
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Scene)
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
-	/** Construct a new scene function, with parent object (Doc) */
+	/**
+	 * Construct a new scene function, with given parent object. If the
+	 * parent is not a Doc* object, the debug build asserts.
+	 *
+	 * @param parent The parent object who owns the scene
+	 */
 	Scene(QObject* parent);
 
-	/** Destroy the scene */
+	/**
+	 * Destroy the scene
+	 */
 	~Scene();
-
-private:
-	/* Disable copying with a copy constructor & operator= */
-	Q_DISABLE_COPY(Scene)
 
 	/*********************************************************************
 	 * Function type
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	Function::Type type() const;
 
 	/*********************************************************************
 	 * Copying
 	 *********************************************************************/
 public:
-    /** @reimpl */
+	/** @reimpl */
 	Function* createCopy(Doc* doc);
 
-	/** Copy the contents for this function from another function */
+	/** @reimpl */
 	bool copyFrom(const Function* function);
 
 	/*********************************************************************
@@ -185,13 +209,6 @@ protected:
 	QList <SceneValue> m_values;
 
 	/*********************************************************************
-	 * Edit
-	 *********************************************************************/
-public:
-	/** Edit the function. Returns QDialog::DialogCode. */
-	int edit(QWidget* parent);
-
-	/*********************************************************************
 	 * Fixtures
 	 *********************************************************************/
 public slots:
@@ -201,23 +218,33 @@ public slots:
 	 * Load & Save
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+
+	/** @reimpl */
 	bool loadXML(const QDomElement* root);
 
 	/*********************************************************************
 	 * Flash
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	void flash(QByteArray* universes);
+
+	/** @reimpl */
 	void unFlash(QByteArray* universes);
 
 	/*********************************************************************
 	 * Running
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	void arm();
+
+	/** @reimpl */
 	void disarm();
 
+	/** @reimpl */
 	bool write(QByteArray* universes);
 
 protected:

@@ -28,13 +28,9 @@
 
 #include "common/qlcfile.h"
 
-#include "collectioneditor.h"
 #include "collection.h"
 #include "function.h"
-#include "app.h"
 #include "doc.h"
-
-extern App* _app;
 
 /*****************************************************************************
  * Initialization
@@ -43,6 +39,17 @@ extern App* _app;
 Collection::Collection(QObject* parent) : Function(parent)
 {
 	setName(tr("New Collection"));
+
+	Doc* doc = qobject_cast <Doc*> (parent);
+	if (doc != NULL)
+	{
+		/* Listen to function removals so that they can be removed from
+		   this collection as well. Parent might not always be Doc,
+		   but an editor dialog, for example. Such collections cannot
+		   be run, though. */
+		connect(doc, SIGNAL(functionRemoved(t_function_id)),
+			this, SLOT(slotFunctionRemoved(t_function_id)));
+	}
 }
 
 Collection::~Collection()
@@ -96,19 +103,10 @@ bool Collection::copyFrom(const Function* function)
 	m_steps.clear();
 	m_steps = coll->m_steps;
 
-	return Function::copyFrom(function);
-}
+	bool result = Function::copyFrom(function);
 
-/*****************************************************************************
- * Edit
- *****************************************************************************/
+	emit changed(m_id);
 
-int Collection::edit(QWidget* parent)
-{
-	CollectionEditor editor(parent, this);
-	int result = editor.exec();
-	if (result == QDialog::Accepted)
-		emit changed(m_id);
 	return result;
 }
 
@@ -199,11 +197,19 @@ bool Collection::loadXML(const QDomElement* root)
 void Collection::addItem(t_function_id id)
 {
 	m_steps.append(id);
+	emit changed(m_id);
 }
 
 void Collection::removeItem(t_function_id id)
 {
 	m_steps.takeAt(m_steps.indexOf(id));
+	emit changed(m_id);
+}
+
+void Collection::slotFunctionRemoved(t_function_id function)
+{
+	if (m_steps.removeAll(function) > 0)
+		emit changed(m_id);
 }
 
 /*****************************************************************************
@@ -212,7 +218,6 @@ void Collection::removeItem(t_function_id id)
 
 void Collection::arm()
 {
-	m_childCount = 0;
 }
 
 void Collection::disarm()
@@ -221,14 +226,17 @@ void Collection::disarm()
 
 void Collection::stop()
 {
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
+
 	/* TODO: this stops these functions, regardless of whether they
 	   were started by this collection or not */
 	QListIterator <t_function_id> it(m_steps);
 	while (it.hasNext() == true)
 	{
-		Function* function = _app->doc()->function(it.next());
-		if (function != NULL)
-			function->stop();
+		Function* function = doc->function(it.next());
+		Q_ASSERT(function != NULL);
+		function->stop();
 	}
 
 	Function::stop();
@@ -236,25 +244,26 @@ void Collection::stop()
 
 void Collection::start()
 {
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
+
 	m_childCount = 0;
 
 	QListIterator <t_function_id> it(m_steps);
 	while (it.hasNext() == true)
 	{
 		Function* function;
+		function = doc->function(it.next());
+		Q_ASSERT(function != NULL);
 
-		function = _app->doc()->function(it.next());
-		if (function != NULL)
-		{
-			m_childCountMutex.lock();
-			m_childCount++;
-			m_childCountMutex.unlock();
+		m_childCountMutex.lock();
+		m_childCount++;
+		m_childCountMutex.unlock();
 
-			connect(function, SIGNAL(stopped(t_function_id)),
-				this, SLOT(slotChildStopped(t_function_id)));
+		connect(function, SIGNAL(stopped(t_function_id)),
+			this, SLOT(slotChildStopped(t_function_id)));
 
-			function->start();
-		}
+		function->start();
 	}
 
 	Function::start();
@@ -272,9 +281,11 @@ bool Collection::write(QByteArray* universes)
 
 void Collection::slotChildStopped(t_function_id fid)
 {
-	Function* function;
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
 
-	function = _app->doc()->function(fid);
+	Function* function;
+	function = doc->function(fid);
 	Q_ASSERT(function != NULL);
 
 	disconnect(function, SIGNAL(stopped(t_function_id)),

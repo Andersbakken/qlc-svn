@@ -127,6 +127,11 @@ protected:
 	 */
 	QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id, Doc* doc);
 
+	/**
+	 * Edit the given function with an editor dialog
+	 */
+	int editFunction(Function* function);
+
 protected slots:
 	void slotItemSelectionChanged();
 	void slotItemDoubleClicked(QTreeWidgetItem* item);

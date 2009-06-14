@@ -82,7 +82,7 @@ public:
 	 * Copying
 	 *********************************************************************/
 public:
-    /** @reimpl */
+	/** @reimpl */
 	Function* createCopy(Doc* doc);
 
 	/** Copy the contents for this function from another function */
@@ -425,6 +425,11 @@ public:
 	/** Get stop scene enabled status */
 	bool stopSceneEnabled() const;
 
+protected slots:
+	/** Catches Doc::functionRemoved() so that destroyed members can be
+	    removed immediately. */
+	void slotFunctionRemoved(t_function_id function);
+
 protected:
 	/** Start (initialisation) scene */
 	t_function_id m_startSceneID;
@@ -433,13 +438,6 @@ protected:
 	/** Stop (de-initialisation) scene */
 	t_function_id m_stopSceneID;
 	bool m_stopSceneEnabled;
-
-	/*********************************************************************
-	 * Edit
-	 *********************************************************************/
-public:
-	/** Edit the function. Returns QDialog::DialogCode. */
-	int edit(QWidget* parent);
 
 	/*********************************************************************
 	 * Load & Save

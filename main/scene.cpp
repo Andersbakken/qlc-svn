@@ -30,14 +30,10 @@
 #include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
-#include "sceneeditor.h"
 #include "outputmap.h"
 #include "scene.h"
-#include "app.h"
 #include "doc.h"
 #include "bus.h"
-
-extern App* _app;
 
 /*****************************************************************************
  * SceneValue
@@ -199,7 +195,11 @@ bool Scene::copyFrom(const Function* function)
 	m_values.clear();
 	m_values = scene->m_values;
 
-	return Function::copyFrom(function);
+	bool result = Function::copyFrom(function);
+
+	emit changed(m_id);
+
+	return result;
 }
 
 /*****************************************************************************
@@ -218,6 +218,8 @@ void Scene::setValue(SceneValue scv)
 	{
 		m_values.replace(index, scv);
 	}
+
+	emit changed(m_id);
 }
 
 void Scene::setValue(t_fixture_id fxi, t_channel ch, t_value value)
@@ -228,6 +230,7 @@ void Scene::setValue(t_fixture_id fxi, t_channel ch, t_value value)
 void Scene::unsetValue(t_fixture_id fxi, t_channel ch)
 {
 	m_values.removeAll(SceneValue(fxi, ch, 0));
+	emit changed(m_id);
 }
 
 t_value Scene::value(t_fixture_id fxi, t_channel ch)
@@ -267,19 +270,6 @@ void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
 }
 
 /*****************************************************************************
- * Edit
- *****************************************************************************/
-
-int Scene::edit(QWidget* parent)
-{
-	SceneEditor editor(parent, this);
-	int result = editor.exec();
-	if (result == QDialog::Accepted)
-		emit changed(m_id);
-	return result;
-}
-
-/*****************************************************************************
  * Fixtures
  *****************************************************************************/
 
@@ -292,6 +282,8 @@ void Scene::slotFixtureRemoved(t_fixture_id fxi_id)
 		if (scv.fxi == fxi_id)
 			it.remove();
 	}
+
+	emit changed(m_id);
 }
 
 /*****************************************************************************
@@ -445,14 +437,21 @@ void Scene::arm()
 {
 	m_channels.clear();
 
+	/* Scenes cannot run unless they are children of Doc */
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
+
+	/* Get exact address numbers from fixtures and fixate them to this
+	   scene for running. */
 	QListIterator <SceneValue> it(m_values);
 	while (it.hasNext() == true)
 	{
-		SceneChannel channel;
 		SceneValue scv(it.next());
-		Fixture* fxi = _app->doc()->fixture(scv.fxi);
+
+		Fixture* fxi = doc->fixture(scv.fxi);
 		Q_ASSERT(fxi != NULL);
 
+		SceneChannel channel;
 		channel.address = fxi->universeAddress() + scv.channel;
 		channel.target = scv.value;
 
@@ -482,8 +481,9 @@ bool Scene::write(QByteArray* universes)
 		{
 			SceneChannel sch = it.next();
 
-			sch.start = sch.current =
-				_app->outputMap()->value(sch.address);
+			/* Get the starting value from universes */
+			sch.start = universes->data()[sch.address];
+			sch.current = sch.start;
 
 			/* Mark channels ready if they are already what they
 			   are supposed to be. */
