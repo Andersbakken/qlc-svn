@@ -35,9 +35,6 @@
 
 #include "inputpatch.h"
 #include "inputmap.h"
-#include "app.h"
-
-extern App* _app;
 
 #ifdef WIN32
 	#define PLUGINEXT ".dll"
@@ -285,14 +282,7 @@ QStringList InputMap::pluginInputs(const QString& pluginName)
 void InputMap::configurePlugin(const QString& pluginName)
 {
 	QLCInPlugin* inputPlugin = plugin(pluginName);
-	if (inputPlugin == NULL)
-	{
-		QMessageBox::warning(_app,
-				     tr("Unable to configure plugin"),
-				     tr("Plugin \"%1\" not found!")
-				     .arg(pluginName));
-	}
-	else
+	if (inputPlugin != NULL)
 		inputPlugin->configure();
 }
 
