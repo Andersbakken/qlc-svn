@@ -378,7 +378,6 @@ SceneChannel::SceneChannel()
 	start = 0;
 	current = 0;
 	target = 0;
-	ready = true;
 }
 
 SceneChannel::SceneChannel(const SceneChannel& sch)
@@ -398,7 +397,6 @@ SceneChannel& SceneChannel::operator=(const SceneChannel& sch)
 		start = sch.start;
 		current = sch.current;
 		target = sch.target;
-		ready = sch.ready;
 	}
 
 	return *this;
@@ -485,13 +483,6 @@ bool Scene::write(QByteArray* universes)
 			sch.start = t_value(universes->data()[sch.address]);
 			sch.current = sch.start;
 
-			/* Mark channels ready if they are already what they
-			   are supposed to be. */
-			if (sch.current == sch.target)
-				sch.ready = true;
-			else
-				sch.ready = false;
-
 			/* Set the changed object back to the list */
 			it.setValue(sch);
 		}
@@ -507,7 +498,7 @@ bool Scene::write(QByteArray* universes)
 	{
 		SceneChannel sch = it.next();
 
-		if (sch.ready == true)
+		if (sch.current == sch.target)
 		{
 			ready--;
 			continue;
@@ -518,7 +509,6 @@ bool Scene::write(QByteArray* universes)
 			   target values to get rid of rounding errors that
 			   may happen in nextValue(). */
 			sch.current = sch.target;
-			sch.ready = true;
 			ready--;
 
 			/* Write the target value to the universe */

@@ -43,6 +43,21 @@ class QByteArray;
  * SceneChannel is a helper class used to store individual RUNTIME values for
  * channels as they are operated by a Scene function during Operate mode.
  *
+ * Unlike SceneValue, a SceneChannel consists of an absolute DMX address,
+ * starting channel value, target value and channel's current value.
+ * SceneChannels are used only during Operate mode, when fixture addresses
+ * cannot change anymore, so it is slightly more efficient to store absolute
+ * DMX addresses than relative channel numbers as in SceneValue. When a Scene
+ * starts, it takes the current values of all of its channels and stores them
+ * into their respective SceneChannels' $start variable. The Scene then
+ * calculates how much time it still has until the values specified in $target
+ * need to be set for each involved channel and adjusts the step size
+ * accordingly. The more time there's left, the smoother the fade effect. Each
+ * gradual step is written to the channels' DMX addresses and also stored to
+ * SceneChannels' $current variable for the next round. When $current == $target
+ * the SceneChannel is seen ready and won't be touched any longer (until the
+ * rest of the channels are ready as well).
+ *
  * Although t_value is an UNSIGNED char (0-255), these variables must be SIGNED
  * because the floating-point calculations that Scene does don't necessarily
  * stop exactly at 0.0 and 255.0, but might go slightly over/under. If these
@@ -70,9 +85,6 @@ public:
 
 	/** The target value to eventually fade to */
 	qint32 target;
-
-	/** If true, this value is ready, don't set it anymore to DMX */
-	bool ready;
 };
 
 /*****************************************************************************
@@ -81,8 +93,21 @@ public:
 
 /**
  * SceneValue is a helper class used to store individual channel TARGET values
- * for Scene functions. Each channel that is taking part of a scene is
+ * for Scene functions. Each channel that is taking part in a scene is
  * represented with a SceneValue.
+ *
+ * A SceneValue consists of a fixture, channel and value. Fixture tells, which
+ * fixture a particular value corresponds to, channel contains the particular
+ * channel number from the fixture and, value tells the exact target value for
+ * that channel. Channel numbers are not absolute DMX channels because the
+ * fixture address can be changed at any time. Instead, channel number tells
+ * the relative channel number, respective to fixture address.
+ *
+ * For example:
+ * Let's say we have a SceneValue with channel = 5, value = 127 and, the
+ * fixture assigned to the SceneValue is at DMX address 100. Thus, the
+ * SceneValue represents value 127 for absolute DMX channel 105. If the address
+ * of the fixture is changed, the SceneValue doesn't need to be touched at all.
  */
 class SceneValue
 {
