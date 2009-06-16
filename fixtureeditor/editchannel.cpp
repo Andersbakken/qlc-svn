@@ -69,7 +69,7 @@ void EditChannel::loadDefaults()
 	QPoint pos;
 	QSize size;
 
-	pos = settings.value(KApplicationName + "/editchannel/position", 
+	pos = settings.value(KApplicationName + "/editchannel/position",
 			     QPoint()).toPoint();
 	size = settings.value(KApplicationName + "/editchannel/size",
 			      QSize(450, 500)).toSize();
@@ -126,7 +126,7 @@ void EditChannel::init()
 		this, SLOT(slotEditCapabilityClicked()));
 	connect(m_wizardButton, SIGNAL(clicked()),
 		this, SLOT(slotWizardClicked()));
-	
+
 	/* Capability list connections */
 	m_capabilityList->header()
 		->setResizeMode(QHeaderView::ResizeToContents);
@@ -138,7 +138,7 @@ void EditChannel::init()
 		SIGNAL(itemActivated(QTreeWidgetItem*,int)),
 		this,
 		SLOT(slotEditCapabilityClicked()));
-	
+
 	refreshCapabilities();
 }
 
@@ -196,7 +196,7 @@ void EditChannel::slotAddCapabilityClicked()
 	EditCapability* ec = NULL;
 	QLCCapability* cap = NULL;
 	bool ok = false;
-	
+
 	ec = new EditCapability(this);
 
 	while (ok == false)
@@ -207,7 +207,7 @@ void EditChannel::slotAddCapabilityClicked()
 
 			if (m_channel->addCapability(cap) == false)
 			{
-				QMessageBox::warning(this, 
+				QMessageBox::warning(this,
 						     tr("Overlapping values"),
 						     tr("The capability's values overlap with another capability!"));
 				delete cap;
@@ -224,7 +224,7 @@ void EditChannel::slotAddCapabilityClicked()
 			ok = true;
 		}
 	}
-	
+
 	delete ec;
 }
 
@@ -257,13 +257,13 @@ void EditChannel::slotEditCapabilityClicked()
 	QLCCapability* min = NULL;
 	QLCCapability* max = NULL;
 	bool ok = false;
-	
+
 	real = currentCapability();
 	if (real == NULL)
 		return;
 
 	ec = new EditCapability(this, real);
-	
+
 	while (ok == false)
 	{
 		if (ec->exec() == QDialog::Accepted)
@@ -273,7 +273,7 @@ void EditChannel::slotEditCapabilityClicked()
 			if ((min != NULL && min != real) ||
 			    (max != NULL && max != real))
 			{
-				QMessageBox::warning(this, 
+				QMessageBox::warning(this,
 						     tr("Overlapping values"),
 						     tr("The capability's values overlap with another capability!"));
 				ok = false;
@@ -290,7 +290,7 @@ void EditChannel::slotEditCapabilityClicked()
 			ok = true;
 		}
 	}
-	
+
 	delete ec;
 }
 
@@ -333,7 +333,7 @@ void EditChannel::refreshCapabilities()
 	QLCCapability* cap = NULL;
 	QTreeWidgetItem* item = NULL;
 	QString str;
-	
+
 	m_capabilityList->clear();
 
 	/* Fill capabilities */
@@ -342,7 +342,7 @@ void EditChannel::refreshCapabilities()
 		cap = it.next();
 
 		item = new QTreeWidgetItem(m_capabilityList);
-		
+
 		// Min
 		str.sprintf("%.3d", cap->min());
 		item->setText(KColumnMin, str);
@@ -350,17 +350,17 @@ void EditChannel::refreshCapabilities()
 		// Max
 		str.sprintf("%.3d", cap->max());
 		item->setText(KColumnMax, str);
-		
+
 		// Name
 		item->setText(KColumnName, cap->name());
-		
+
 		// Store the capability pointer to the listview as a string
 		str.sprintf("%lu", (unsigned long) cap);
 		item->setText(KColumnPointer, str);
 	}
-	
+
 	m_capabilityList->sortItems(KColumnMin, Qt::AscendingOrder);
-	
+
 	slotCapabilityListSelectionChanged(m_capabilityList->currentItem());
 }
 

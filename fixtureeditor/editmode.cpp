@@ -81,7 +81,7 @@ void EditMode::loadDefaults()
 	QPoint pos;
 	QSize size;
 
-	pos = settings.value(KApplicationName + "/editmode/position", 
+	pos = settings.value(KApplicationName + "/editmode/position",
 			     QPoint()).toPoint();
 	size = settings.value(KApplicationName + "/editmode/size",
 			      QSize(450, 670)).toSize();
@@ -155,7 +155,7 @@ void EditMode::slotAddChannelClicked()
 		else
 			chlist << ch->name();
 	}
-	
+
 	if (chlist.size() > 0)
 	{
 		bool ok = false;
@@ -163,7 +163,7 @@ void EditMode::slotAddChannelClicked()
 						tr("Add channel to mode"), 
 						tr("Select a channel to add"),
 						chlist, 0, false, &ok);
-	
+
 		if (ok == true && name.isEmpty() == false)
 		{
 			ch = m_mode->fixtureDef()->channel(name);
@@ -188,7 +188,7 @@ void EditMode::slotAddChannelClicked()
 void EditMode::slotRemoveChannelClicked()
 {
 	QLCChannel* ch = currentChannel();
-	
+
 	if (ch != NULL)
 	{
 		QTreeWidgetItem* item;
@@ -218,19 +218,19 @@ void EditMode::slotRaiseChannelClicked()
 {
 	QLCChannel* ch = currentChannel();
 	int index = 0;
-	
+
 	if (ch == NULL)
 		return;
-	
+
 	index = m_mode->channelNumber(ch) - 1;
 
 	// Don't move beyond the beginning of the list
 	if (index < 0)
 		return;
-	
+
 	m_mode->removeChannel(ch);
 	m_mode->insertChannel(ch, index);
-	
+
 	refreshChannelList();
 	selectChannel(ch->name());
 }
@@ -239,19 +239,19 @@ void EditMode::slotLowerChannelClicked()
 {
 	QLCChannel* ch = currentChannel();
 	int index = 0;
-	
+
 	if (ch == NULL)
 		return;
-	
+
 	index = m_mode->channelNumber(ch) + 1;
-	
+
 	// Don't move beyond the end of the list
 	if (index >= m_mode->channels().size())
 		return;
-	
+
 	m_mode->removeChannel(ch);
 	m_mode->insertChannel(ch, index);
-	
+
 	refreshChannelList();
 	selectChannel(ch->name());
 }
@@ -270,7 +270,7 @@ void EditMode::refreshChannelList()
 		str.sprintf("%.3d", (i + 1));
 		item->setText(KChannelsColumnNumber, str);
 		item->setText(KChannelsColumnName, ch->name());
-		
+
 		// Store the channel pointer to the listview as a string
 		str.sprintf("%lu", (unsigned long) ch);
 		item->setText(KChannelsColumnPointer, str);
