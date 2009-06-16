@@ -332,6 +332,8 @@ void Function::loader(const QDomElement* root, Doc* doc)
 
 void Function::flash(QByteArray* universes)
 {
+	Q_UNUSED(universes);
+
 	if (m_flashing == false)
 	{
 		m_flashing = true;
@@ -341,6 +343,8 @@ void Function::flash(QByteArray* universes)
 
 void Function::unFlash(QByteArray* universes)
 {
+	Q_UNUSED(universes);
+
 	if (m_flashing == true)
 	{
 		m_flashing = false;
