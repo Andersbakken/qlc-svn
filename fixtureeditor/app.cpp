@@ -47,6 +47,9 @@
 #include "aboutbox.h"
 #include "fixtureeditor.h"
 
+#define KXMLQLCGeometry "Geometry"
+#define KXMLQLCWindowState "WindowState"
+
 App::App(QWidget* parent) : QMainWindow(parent)
 {
 	QCoreApplication::setOrganizationName("qlc");
@@ -83,19 +86,27 @@ App::~App()
 void App::loadDefaults()
 {
 	QSettings settings;
-	QPoint pos = settings.value(KApplicationName + "/mainwindow/position", 
-				    QPoint(0, 0)).toPoint();
-	QSize size = settings.value(KApplicationName + "/mainwindow/size",
-				    QSize(800, 600)).toSize();
-	resize(size);
-	move(pos);
+
+	/* Application geometry and window state */
+	QVariant var;
+	var = settings.value(KXMLQLCGeometry, QRect(0, 0, 800, 600));
+	if (var.isValid() == true)
+		setGeometry(var.toRect());
+	var = settings.value(KXMLQLCWindowState, Qt::WindowNoState);
+	if (var.isValid() == true)
+		setWindowState(Qt::WindowState(var.toInt()));
 }
 
 void App::saveDefaults()
 {
 	QSettings settings;
-	settings.setValue(KApplicationName + "/mainwindow/position", pos());
-	settings.setValue(KApplicationName + "/mainwindow/size", size());
+
+	/* Save application geometry */
+	settings.setValue(KXMLQLCWindowState, int(windowState()));
+	/* Save window geometry only if the window is not maximized. Otherwise
+	   the non-maximized state is just 1px smaller than the maximized one */
+	if (!(windowState() & Qt::WindowMaximized))
+		settings.setValue(KXMLQLCGeometry, rect());
 }
 
 void App::closeEvent(QCloseEvent* e)
