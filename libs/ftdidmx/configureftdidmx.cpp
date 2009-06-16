@@ -26,6 +26,7 @@
 #include <QString>
 #include <QTimer>
 #include <QMap>
+#include <QSettings>
 
 #include "ftdidmx.h"
 #include "ftdidmxdevice.h"
@@ -49,6 +50,22 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 
 	setupUi(this);
 
+	QSettings settings;
+	QVariant pidV = settings.value("/ftdidmx/device/pid", QVariant(known_devices[0].pid));
+	QVariant vidV = settings.value("/ftdidmx/device/vid", QVariant(known_devices[0].vid));
+	QVariant typeV = settings.value("/ftdidmx/device/type", QVariant(known_devices[0].type));
+
+	int pid = -1, vid = -1, type = -1;
+	if (pidV.type() == QVariant::Int &&
+		vidV.type() == QVariant::Int &&
+		typeV.type() == QVariant::Int) {
+		pid = pidV.toInt();
+		vid = vidV.toInt();
+		type = typeV.toInt();
+	}
+
+	BOOL found = FALSE;
+
 	for (unsigned int i = 0;
 	     i < sizeof(known_devices) / sizeof(FTDIDevice);
 	     i++)
@@ -56,11 +73,32 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 		QVariant v;
 		v.setValue(known_devices[i]);
 		m_device->addItem(QString(known_devices[i].name), v);
+		if (found == FALSE &&
+			pid == known_devices[i].pid &&
+			vid == known_devices[i].vid &&
+			type == known_devices[i].type) {
+			found = TRUE;
+			m_current_pid = pid;
+			m_current_vid = vid;
+			m_current_type = type;
+			m_device->setCurrentIndex(i);
+		}
 	}
 
-	m_current_pid = known_devices[0].pid;
-	m_current_vid = known_devices[0].vid;
-	m_current_type = known_devices[0].type;
+	if (found == FALSE) {
+		if (vid > 0 && pid > 0) {
+			m_current_pid = 0;
+			m_current_vid = 0;
+			m_vid->setText(QString(vid));
+			m_pid->setText(QString(pid));
+			m_current_type = 0;
+			m_device->setCurrentIndex(sizeof(known_devices) / sizeof(FTDIDevice) - 1);
+		} else {
+			m_current_pid = known_devices[0].pid;
+			m_current_vid = known_devices[0].vid;
+			m_current_type = known_devices[0].type;
+		}
+	}
 	
 	// Hide the pid/vid setters for Windows	
 #ifdef WIN32
@@ -204,6 +242,11 @@ void ConfigureFTDIDMXOut::slotDeviceChanged(int index)
 	m_current_vid = device.vid;
 	m_current_pid = device.pid;
 	m_current_type = device.type;
+
+        QSettings settings;
+        settings.setValue("/ftdidmx/device/pid", QVariant(m_current_pid));
+        settings.setValue("/ftdidmx/device/vid", QVariant(m_current_vid));
+        settings.setValue("/ftdidmx/device/type", QVariant(m_current_type));
 	
 	if (m_current_vid == 0 || m_current_pid == 0)
 	{
@@ -229,6 +272,9 @@ void ConfigureFTDIDMXOut::refreshList()
 
 	m_list->clear();
 
+	QSettings settings;
+	QString serial = settings.value("/ftdidmx/device/serial", QString("")).toString();
+
 	QMapIterator <t_output, FTDIDMXDevice*> it(m_plugin->m_devices);
 	while (it.hasNext() == true)
 	{
@@ -237,5 +283,8 @@ void ConfigureFTDIDMXOut::refreshList()
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
 		item->setText(KColumnName, it.value()->name());
 		item->setText(KColumnOutput, QString("%1").arg(i++));
+		if (serial == it.value()->path()) {
+			item->setSelected(true);
+		}
 	}
 }

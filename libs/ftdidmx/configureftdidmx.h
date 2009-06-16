@@ -42,8 +42,8 @@ Q_DECLARE_METATYPE(FTDIDevice);
 
 static struct FTDIDevice known_devices[] =
 {
-	{"Homebrew USB -> DMX", 0x0403, 0xEC70, 0},
 	{"EntTec Open DMX USB", 0x0403, 0x6001, 0},
+	{"Homebrew USB -> DMX", 0x0403, 0xEC70, 0},
 	{"EntTec DMX USB Pro",  0x0403, 0x6001, 1},
 	{"Other", 0x0000, 0x0000, 0}
 };

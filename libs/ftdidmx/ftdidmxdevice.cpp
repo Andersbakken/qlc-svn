@@ -24,6 +24,7 @@
 #endif
 #include <QDebug>
 #include <QThread>
+#include <QSettings>
 
 #include "ftdidmxdevice.h"
 
@@ -159,6 +160,9 @@ void FTDIDMXDevice::run()
 
 bool FTDIDMXDevice::open()
 {
+	QSettings settings;
+        settings.setValue("/ftdidmx/device/serial", QVariant(m_path));
+
 	FT_STATUS status = FT_OK;
 #ifndef WIN32
 	// Windows users cannot dynamiccaly set VID/PID of harward
@@ -183,7 +187,7 @@ bool FTDIDMXDevice::open()
 
 	if (status == FT_OK)
 	{
-		if (!m_isDmxPro) {
+		if (m_type == 0) {
 			if (!FT_SUCCESS(FT_ResetDevice(m_handle)))
 			{
 				qWarning() << "Unable to reset FTDI device" << m_path;
