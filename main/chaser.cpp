@@ -173,7 +173,6 @@ bool Chaser::lowerStep(unsigned int index)
 
 void Chaser::slotFunctionRemoved(t_function_id id)
 {
-	qDebug() << "Remove" << id;
 	m_steps.removeAll(id);
 }
 
