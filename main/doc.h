@@ -28,10 +28,12 @@
 
 #include "function.h"
 #include "fixture.h"
-#include "app.h"
 #include "bus.h"
+#include "app.h"
 
 class QDomDocument;
+class OutputMap;
+class InputMap;
 class QString;
 
 #define KXMLQLCWorkspace "Workspace"
@@ -49,13 +51,19 @@ public:
 	 * Create a new Doc instance for the given parent.
 	 *
 	 * @param parent The parent object who owns the Doc instance
+	 * @param outputMap The output map component that handles DMX universes
+	 * @param inputMap The input map component that handles input events
 	 */
-	Doc(QObject* parent);
+	Doc(QObject* parent, OutputMap* outputMap, InputMap* inputMap);
 
 	/**
 	 * Destructor.
 	 */
 	~Doc();
+
+protected:
+	OutputMap* m_outputMap;
+	InputMap* m_inputMap;
 
 	/*********************************************************************
 	 * Modified status
@@ -222,7 +230,7 @@ public:
 
 	/**
 	 * Get the number of functions currently present/allocated
-	 * 
+	 *
 	 * @return Number of functions
 	 */
 	int functions() const { return m_functionAllocation; }

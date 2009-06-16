@@ -41,17 +41,20 @@
 #include "chaser.h"
 #include "scene.h"
 #include "efx.h"
-#include "app.h"
 #include "doc.h"
 
-extern App* _app;
-
-Doc::Doc(QObject* parent) : QObject(parent)
+Doc::Doc(QObject* parent, OutputMap* outputMap, InputMap* inputMap)
+	: QObject(parent),
+	m_outputMap(outputMap),
+	m_inputMap(inputMap)
 {
+	Q_ASSERT(outputMap != NULL);
+	Q_ASSERT(inputMap != NULL);
+
 	m_fileName = QString::null;
 
 	// Allocate fixture array
-	m_fixtureArray = (Fixture**) malloc(sizeof(Fixture*) * 
+	m_fixtureArray = (Fixture**) malloc(sizeof(Fixture*) *
 					    KFixtureArraySize);
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 		m_fixtureArray[i] = NULL;
@@ -159,12 +162,6 @@ bool Doc::loadXML(const QDomDocument* doc,
 	QDomNode node;
 	QDomElement tag;
 
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
-
 	Q_ASSERT(doc != NULL);
 
 	root = doc->documentElement();
@@ -185,16 +182,15 @@ bool Doc::loadXML(const QDomDocument* doc,
 		}
 		else if (tag.tagName() == KXMLQLCOutputMap)
 		{
-			_app->outputMap()->loadXML(&tag);
+			m_outputMap->loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCInputMap)
 		{
-			_app->inputMap()->loadXML(&tag);
+			m_inputMap->loadXML(&tag);
 		}
 		else if (tag.tagName() == KXMLQLCWindowState)
 		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
+			/* Ignore */
 		}
 		else if (tag.tagName() == KXMLFixture)
 		{
@@ -245,8 +241,6 @@ bool Doc::loadXML(const QDomDocument* doc,
 		node = node.nextSibling();
 	}
 
-	_app->setGeometry(x, y, w, h);
-
 	return true;
 }
 
@@ -271,13 +265,10 @@ QFile::FileError Doc::saveXML(const QString& fileName)
 		root = doc->documentElement();
 
 		/* Write output mapping */
-		_app->outputMap()->saveXML(doc, &root);
+		m_outputMap->saveXML(doc, &root);
 
 		/* Write input mapping */
-		_app->inputMap()->saveXML(doc, &root);
-
-		/* Write window state & size */
-		QLCFile::saveXMLWindowState(doc, &root, _app);
+		m_inputMap->saveXML(doc, &root);
 
 		/* Write fixtures into an XML document */
 		for (t_fixture_id i = 0; i < KFixtureArraySize; i++)

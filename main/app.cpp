@@ -71,6 +71,8 @@
 
 #define KModeTextOperate tr("Operate")
 #define KModeTextDesign tr("Design")
+#define KXMLQLCGeometry "Geometry"
+#define KXMLQLCWindowState "WindowState"
 
 App* _app;
 QStyle* App::s_saneStyle = NULL;
@@ -108,6 +110,16 @@ App::App() : QMainWindow()
 
 App::~App()
 {
+#ifndef __APPLE__
+	/* Save application geometry */
+	QSettings settings;
+	settings.setValue(KXMLQLCWindowState, int(windowState()));
+	/* Save window geometry only if the window is not maximized. Otherwise
+	   the non-maximized state is just 1px smaller than the maximized one */
+	if (!(windowState() & Qt::WindowMaximized))
+		settings.setValue(KXMLQLCGeometry, rect());
+#endif
+
 	// Delete doc
 	if (m_doc != NULL)
 		delete m_doc;
@@ -159,16 +171,21 @@ void App::init()
 	/* Workspace background */
 	setBackgroundImage(settings.value("/workspace/background").toString());
 
-	/* Resize the whole application to default size */
-	resize(KApplicationDefaultWidth, KApplicationDefaultHeight);
+	/* Application geometry and window state */
+	QVariant var;
+	var = settings.value(KXMLQLCGeometry, QRect(0, 0, 800, 600));
+	if (var.isValid() == true)
+		setGeometry(var.toRect());
+	var = settings.value(KXMLQLCWindowState, Qt::WindowNoState);
+	if (var.isValid() == true)
+		setWindowState(Qt::WindowState(var.toInt()));
 #else
-	
-	/* This is just a toolbar, we only need it to be the size of the buttons */
+	/* App is just a toolbar, we only need it to be the size of the
+	   toolbar's buttons */
 	resize(600, 32);
 	move(0, 22);
-	
 #endif
-	
+
 	/* Input & output mappers and their plugins */
 	initOutputMap();
 	initInputMap();
@@ -315,7 +332,7 @@ void App::initDoc()
 	// Delete existing document object and create a new one
 	if (m_doc != NULL)
 		delete m_doc;
-	m_doc = new Doc(this);
+	m_doc = new Doc(this, m_outputMap, m_inputMap);
 
 	connect(m_doc, SIGNAL(modified(bool)),
 		this, SLOT(slotDocModified(bool)));
