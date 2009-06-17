@@ -362,8 +362,6 @@ void Function::start(MasterTimer* timer)
 	{
 		Q_ASSERT(timer != NULL);
 
-		qDebug() << "start" << name();
-
 		m_elapsed = 0;
 		m_running = true;
 		timer->startFunction(this);
@@ -376,8 +374,6 @@ void Function::stop(MasterTimer* timer)
 	if (isRunning() == true)
 	{
 		Q_ASSERT(timer != NULL);
-
-		qDebug() << "stop" << name();
 
 		timer->stopFunction(this);
 		m_running = false;
