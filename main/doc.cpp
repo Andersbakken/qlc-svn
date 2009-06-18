@@ -41,7 +41,9 @@
 #include "efx.h"
 #include "doc.h"
 
-Doc::Doc(QObject* parent) : QObject(parent)
+Doc::Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache)
+	: QObject(parent),
+	m_fixtureDefCache(fixtureDefCache)
 {
 	m_fileName = QString::null;
 
@@ -114,8 +116,7 @@ void Doc::resetModified()
  * Load & Save
  *****************************************************************************/
 
-QFile::FileError Doc::loadXML(const QString& fileName,
-			      const QLCFixtureDefCache& fixtureDefCache)
+QFile::FileError Doc::loadXML(const QString& fileName)
 {
 	QDomDocument* doc = NULL;
 	QDomDocumentType doctype;
@@ -127,7 +128,7 @@ QFile::FileError Doc::loadXML(const QString& fileName,
 	{
 		if (doc->doctype().name() == KXMLQLCWorkspace)
 		{
-			if (loadXML(doc, fixtureDefCache) == false)
+			if (loadXML(doc) == false)
 			{
 				retval = QFile::ReadError;
 			}
@@ -147,8 +148,7 @@ QFile::FileError Doc::loadXML(const QString& fileName,
 	return retval;
 }
 
-bool Doc::loadXML(const QDomDocument* doc,
-		  const QLCFixtureDefCache& fixtureDefCache)
+bool Doc::loadXML(const QDomDocument* doc)
 {
 	QDomElement root;
 	QDomNode node;
@@ -174,28 +174,7 @@ bool Doc::loadXML(const QDomDocument* doc,
 		}
 		else if (tag.tagName() == KXMLFixture)
 		{
-			Fixture* fxi = new Fixture(this);
-			Q_ASSERT(fxi != NULL);
-
-			if (fxi->loadXML(&tag, fixtureDefCache) == true)
-			{
-				if (addFixture(fxi) == false)
-				{
-					qWarning() << "Fixture" << fxi->name()
-						   << "cannot be created.";
-					delete fxi;
-				}
-				else
-				{
-					/* Success */
-				}
-			}
-			else
-			{
-				qWarning() << "Fixture" << fxi->name() 
-					   << "cannot be loaded.";
-				delete fxi;
-			}
+			Fixture::loader(&tag, this);
 		}
 		else if (tag.tagName() == KXMLQLCFunction)
 		{

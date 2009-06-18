@@ -49,13 +49,25 @@ public:
 	 * Create a new Doc instance for the given parent.
 	 *
 	 * @param parent The parent object who owns the Doc instance
+	 * @param fixtureDefCache A fixture definition cache instance that
+	 *                        owns all available fixture definitions.
 	 */
-	Doc(QObject* parent);
+	Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache);
 
 	/**
 	 * Destructor.
 	 */
 	~Doc();
+
+	/*********************************************************************
+	 * Fixture definition cache
+	 *********************************************************************/
+public:
+	const QLCFixtureDefCache& fixtureDefCache() const
+		{ return m_fixtureDefCache; }
+
+protected:
+	const QLCFixtureDefCache& m_fixtureDefCache;
 
 	/*********************************************************************
 	 * Modified status
@@ -89,24 +101,18 @@ public:
 	 * Load the Doc's contents from the given XML file
 	 *
 	 * @param fileName The name of the file to load from
-	 * @param fixtureDefCache A fixture definition cache instance that
-	 *                        owns all available fixture definitions.
 	 * @return An error code (QFile::NoError if successful)
 	 */
-	QFile::FileError loadXML(const QString& fileName,
-				 const QLCFixtureDefCache& fixtureDefCache);
+	QFile::FileError loadXML(const QString& fileName);
 
 protected:
 	/**
 	 * Load the Doc's contents from the given XML document
 	 *
 	 * @param doc The XML document to read from
-	 * @param fixtureDefCache A fixture definition cache instance that
-	 *                        owns all available fixture definitions.
 	 * @return true if successful, otherwise false
 	 */
-	bool loadXML(const QDomDocument* doc,
-		     const QLCFixtureDefCache& fixtureDefCache);
+	bool loadXML(const QDomDocument* doc);
 
 public:
 	/**

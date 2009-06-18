@@ -332,7 +332,7 @@ void App::initDoc()
 	// Delete existing document object and create a new one
 	if (m_doc != NULL)
 		delete m_doc;
-	m_doc = new Doc(this);
+	m_doc = new Doc(this, fixtureDefCache());
 
 	connect(m_doc, SIGNAL(modified(bool)),
 		this, SLOT(slotDocModified(bool)));
@@ -921,7 +921,7 @@ QFile::FileError App::slotFileOpen()
 	newDocument();
 
 	/* Load the file */
-	QFile::FileError error = doc()->loadXML(fileName, m_fixtureDefCache);
+	QFile::FileError error = doc()->loadXML(fileName);
 	if (handleFileError(error) == true)
 		doc()->resetModified();
 

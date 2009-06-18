@@ -44,6 +44,7 @@ class QLCFixtureMode;
 class FixtureConsole;
 class QLCFixtureDef;
 class QLCChannel;
+class Doc;
 
 class Fixture : public QObject
 {
@@ -65,7 +66,7 @@ public:
 
 	/** Less-than operator for qSort() */
 	bool operator<(const Fixture& fxi);
-	
+
 private:
 	Q_DISABLE_COPY(Fixture)
 
@@ -290,6 +291,15 @@ protected:
 	 * Load & Save
 	 *********************************************************************/
 public:
+	/**
+	 * Load a fixture from the given XML node and attempt to add it to
+	 * the given QLC Doc instance.
+	 *
+	 * @param root The Fixture node to load from
+	 * @param doc The doc that owns all fixtures
+	 */
+	static bool loader(const QDomElement* root, Doc* doc);
+
 	/**
 	 * Load a fixture's contents from the given XML node.
 	 *

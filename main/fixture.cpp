@@ -36,6 +36,7 @@
 
 #include "fixtureconsole.h"
 #include "fixture.h"
+#include "doc.h"
 
 #define KInvalidFixtureID -1
 #define KInvalidFixtureChannel USHRT_MAX
@@ -289,6 +290,38 @@ void Fixture::setFixtureDefinition(const QLCFixtureDef* fixtureDef,
 /*****************************************************************************
  * Load & Save
  *****************************************************************************/
+
+bool Fixture::loader(const QDomElement* root, Doc* doc)
+{
+	bool result = false;
+
+	Fixture* fxi = new Fixture(doc);
+	Q_ASSERT(fxi != NULL);
+
+	if (fxi->loadXML(root, doc->fixtureDefCache()) == true)
+	{
+		if (doc->addFixture(fxi) == true)
+		{
+			/* Success */
+			result = true;
+		}
+		else
+		{
+			/* Doc is full */
+			qWarning() << "Fixture" << fxi->name()
+				   << "cannot be created.";
+			delete fxi;
+		}
+	}
+	else
+	{
+		qWarning() << "Fixture" << fxi->name()
+			   << "cannot be loaded.";
+		delete fxi;
+	}
+
+	return result;
+}
 
 bool Fixture::loadXML(const QDomElement* root,
 		      const QLCFixtureDefCache& fixtureDefCache)
