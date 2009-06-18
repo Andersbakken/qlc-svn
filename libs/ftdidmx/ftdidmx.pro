@@ -7,8 +7,18 @@ TARGET		= ftdidmxout
 INCLUDEPATH	+= . ../../libs/
 CONFIG          += plugin
 macx:LIBS	+= -L. -lftd2xx.0.1.4
-unix:LIBS	+= libftd2xx.a.0.4.16 -ldl
 win32:LIBS	+= ftd2xx.lib
+
+unix:!macx {
+	HARDWARE_PLATFORM = $$system(uname -m)
+	contains(HARDWARE_PLATFORM, x86_64) {
+		# 64-bit Linux
+		LIBS += libftd2xx.a.0.4.16_x86-64 -ldl
+	} else {
+		# 32-bit Linux
+		LIBS	+= libftd2xx.a.0.4.16 -ldl
+	}
+}
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
