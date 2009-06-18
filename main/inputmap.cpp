@@ -421,68 +421,6 @@ void InputMap::removeProfile(const QString& name)
 }
 
 /*****************************************************************************
- * Save & Load
- *****************************************************************************/
-
-bool InputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
-{
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(wksp_root != NULL);
-
-	/* InputMap entry */
-	root = doc->createElement(KXMLQLCInputMap);
-	wksp_root->appendChild(root);
-
-	/* Editor universe */
-	tag = doc->createElement(KXMLQLCInputMapEditorUniverse);
-	root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(editorUniverse()));
-	tag.appendChild(text);
-
-	/* Patches */
-	for (t_input_universe i = 0; i < m_universes; i++)
-		m_patch[i]->saveXML(doc, &root, i);
-
-	return true;
-}
-
-bool InputMap::loadXML(const QDomElement* root)
-{
-	QDomNode node;
-	QDomElement tag;
-
-	Q_ASSERT(root != NULL);
-
-	if (root->tagName() != KXMLQLCInputMap)
-	{
-		qWarning() << "InputMap node not found!";
-		return false;
-	}
-
-	/* Children */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-
-		if (tag.tagName() == KXMLQLCInputPatch)
-			InputPatch::loader(&tag, this);
-		else if (tag.tagName() == KXMLQLCInputMapEditorUniverse)
-			setEditorUniverse(tag.text().toInt());
-		else
-			qWarning() << "Unknown InputMap tag:" << tag.tagName();
-
-		node = node.nextSibling();
-	}
-
-	return true;
-}
-
-/*****************************************************************************
  * Defaults
  *****************************************************************************/
 

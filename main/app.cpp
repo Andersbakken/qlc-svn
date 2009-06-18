@@ -332,7 +332,7 @@ void App::initDoc()
 	// Delete existing document object and create a new one
 	if (m_doc != NULL)
 		delete m_doc;
-	m_doc = new Doc(this, m_outputMap, m_inputMap);
+	m_doc = new Doc(this);
 
 	connect(m_doc, SIGNAL(modified(bool)),
 		this, SLOT(slotDocModified(bool)));

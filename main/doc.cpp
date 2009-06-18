@@ -33,9 +33,7 @@
 #include "virtualconsole.h"
 #include "fixturemanager.h"
 #include "collection.h"
-#include "outputmap.h"
 #include "function.h"
-#include "inputmap.h"
 #include "fixture.h"
 #include "monitor.h"
 #include "chaser.h"
@@ -43,14 +41,8 @@
 #include "efx.h"
 #include "doc.h"
 
-Doc::Doc(QObject* parent, OutputMap* outputMap, InputMap* inputMap)
-	: QObject(parent),
-	m_outputMap(outputMap),
-	m_inputMap(inputMap)
+Doc::Doc(QObject* parent) : QObject(parent)
 {
-	Q_ASSERT(outputMap != NULL);
-	Q_ASSERT(inputMap != NULL);
-
 	m_fileName = QString::null;
 
 	// Allocate fixture array
@@ -180,18 +172,6 @@ bool Doc::loadXML(const QDomDocument* doc,
 		{
 			/* Ignore creator information */
 		}
-		else if (tag.tagName() == KXMLQLCOutputMap)
-		{
-			m_outputMap->loadXML(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCInputMap)
-		{
-			m_inputMap->loadXML(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCWindowState)
-		{
-			/* Ignore */
-		}
 		else if (tag.tagName() == KXMLFixture)
 		{
 			Fixture* fxi = new Fixture(this);
@@ -263,12 +243,6 @@ QFile::FileError Doc::saveXML(const QString& fileName)
 
 		/* THE MASTER XML ROOT NODE */
 		root = doc->documentElement();
-
-		/* Write output mapping */
-		m_outputMap->saveXML(doc, &root);
-
-		/* Write input mapping */
-		m_inputMap->saveXML(doc, &root);
 
 		/* Write fixtures into an XML document */
 		for (t_fixture_id i = 0; i < KFixtureArraySize; i++)

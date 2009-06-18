@@ -370,59 +370,6 @@ QLCOutPlugin* OutputMap::plugin(const QString& name)
 }
 
 /*****************************************************************************
- * Save & Load
- *****************************************************************************/
-
-bool OutputMap::saveXML(QDomDocument* doc, QDomElement* wksp_root)
-{
-	QDomElement root;
-	int i = 0;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(wksp_root != NULL);
-
-	/* OutputMap entry */
-	root = doc->createElement(KXMLQLCOutputMap);
-	wksp_root->appendChild(root);
-
-	/* Patches */
-	for (i = 0; i < m_patch.size(); i++)
-		m_patch[i]->saveXML(doc, &root, i);
-
-	return true;
-}
-
-bool OutputMap::loadXML(const QDomElement* root)
-{
-	QDomNode node;
-	QDomElement tag;
-
-	Q_ASSERT(root != NULL);
-
-	if (root->tagName() != KXMLQLCOutputMap)
-	{
-		qWarning() << "OutputMap node not found!";
-		return false;
-	}
-
-	/* Patches */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		
-		if (tag.tagName() == KXMLQLCOutputPatch)
-			OutputPatch::loader(&tag, this);
-		else
-			qWarning() << "Unknown OutputMap tag:" << tag.tagName();
-		
-		node = node.nextSibling();
-	}
-
-	return true;
-}
-
-/*****************************************************************************
  * Defaults
  *****************************************************************************/
 

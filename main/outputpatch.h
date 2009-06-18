@@ -74,31 +74,6 @@ public:
 	/** Write the contents of a 512 channel value buffer to the plugin.
 	  * Called periodically by OutputMap. No need to call manually. */
 	void dump(const char* universe);
-
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
-public:
-	/**
-	 * Save a OutputPatch's properties into an XML document
-	 *
-	 * @param doc An XML document to save to
-	 * @param map_root An XML root node (OutputMap) to save under
-	 * @param universe The internal universe number that the patch is
-	 *                 addressed to
-	 * @return true if successful, otherwise false
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* map_root, int universe);
-
-	/**
-	 * Create and load a OutputPatch's properties from an XML document
-	 *
-	 * @param doc An XML document to load from
-	 * @param root An XML node containing a OutputPatch to load from
-	 * @param universe The universe number that the OutputPatch is for
-	 * @return true if successful, otherwise false
-	 */
-	static bool loader(const QDomElement* root, OutputMap* outputMap);
 };
 
 #endif

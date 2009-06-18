@@ -239,28 +239,6 @@ protected:
 	QList <QLCInputProfile*> m_profiles;
 
 	/*********************************************************************
-	 * Save & Load
-	 *********************************************************************/
-public:
-	/**
-	 * Save InputMap details into an XML document
-	 *
-	 * @param doc An XML document to save to
-	 * @param wksp_root A parent XML node to save to (workspace)
-	 * @return true if successful, otherwise false
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
-
-	/**
-	 * Load InputMap details from an XML document
-	 *
-	 * @param doc An XML document to load from
-	 * @param map_root An OutputMap root node to load from
-	 * @return true if successful, otherwise false
-	 */
-	bool loadXML(const QDomElement* root);
-
-	/*********************************************************************
 	 * Defaults
 	 *********************************************************************/
 public:

@@ -73,32 +73,6 @@ protected:
 	QLCInPlugin* m_plugin;
 	t_input m_input;
 	QLCInputProfile* m_profile;
-
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
-public:
-	/**
-	 * Save an InputPatch's properties into an XML document
-	 *
-	 * @param doc An XML document to save to
-	 * @param map_root An XML root node (InputMap) to save under
-	 * @param universe The internal universe number that the patch is
-	 *                 addressed to
-	 * @return true if successful, otherwise false
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* map_root,
-		     t_input_universe universe);
-
-	/**
-	 * Create and load an InputPatch's properties from an XML document
-	 *
-	 * @param doc An XML document to load from
-	 * @param root An XML node containing an InputPatch to load from
-	 * @param inputMap InputMap object that contains the loaded patch
-	 * @return true if successful, otherwise false
-	 */
-	static bool loader(const QDomElement* root, InputMap* inputMap);
 };
 
 #endif
