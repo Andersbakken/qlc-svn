@@ -20,6 +20,7 @@
 */
 
 #include <QGridLayout>
+#include <QByteArray>
 #include <QString>
 #include <QFrame>
 #include <QLabel>
@@ -29,7 +30,6 @@
 
 #include "common/qlctypes.h"
 #include "monitorfixture.h"
-#include "outputmap.h"
 #include "fixture.h"
 #include "app.h"
 #include "doc.h"
@@ -126,7 +126,6 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 		for (i = 0; i < fxi->channels(); i++)
 		{
 			t_channel channel;
-			t_value value;
 			QLabel* label;
 			QString str;
 
@@ -140,10 +139,6 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 			{
 				channel = i;
 			}
-
-			/* Get the channel's current value */
-			value = _app->outputMap()->value(
-						fxi->universeAddress() + i);
 
 			/* Create a label for channel number */
 			label = new QLabel(this);
@@ -197,7 +192,7 @@ void MonitorFixture::slotFixtureRemoved(t_fixture_id fxi_id)
  * Values
  ****************************************************************************/
 
-void MonitorFixture::updateValues()
+void MonitorFixture::updateValues(const QByteArray& universes)
 {
 	QLabel* label;
 	t_value value;
@@ -219,7 +214,7 @@ void MonitorFixture::updateValues()
 		label = it.next();
 		Q_ASSERT(label != NULL);
 
-		value = _app->outputMap()->value(fxi->universeAddress() + i);
+		value = t_value(universes[fxi->universeAddress() + i]);
 		i++;
 
 		/* Set the label's text to reflect the changed value */

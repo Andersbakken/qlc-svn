@@ -29,7 +29,7 @@
 #include "common/qlctypes.h"
 #include "monitor.h"
 
-class QGridLayout;
+class QByteArray;
 class QFrame;
 class QLabel;
 
@@ -66,7 +66,7 @@ protected:
 	 * Values
 	 ********************************************************************/
 public:
-	void updateValues();
+	void updateValues(const QByteArray& universes);
 
 public slots:
 	void slotValueStyleChanged(MonitorProperties::ValueStyle style);
