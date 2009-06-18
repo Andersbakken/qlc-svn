@@ -213,9 +213,15 @@ bool Bus::loadXML(const QDomElement* root)
 	{
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCBusName)
-			m_buses[id]->name = tag.text();
+		{
+			setName(id, tag.text());
+			//m_buses[id]->name = tag.text();
+		}
 		else if (tag.tagName() == KXMLQLCBusValue)
-			m_buses[id]->value = tag.text().toULong();
+		{
+			setValue(id, tag.text().toULong());
+			//m_buses[id]->value = tag.text().toULong();
+		}
 		else
 			qDebug() << "Unknown Bus tag:" << tag.tagName();
 
