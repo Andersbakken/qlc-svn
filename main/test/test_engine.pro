@@ -14,70 +14,72 @@ target.path = $$BINDIR
 INSTALLS += target
 
 COMMONHEADERS += ../../libs/common/qlccapability.h \
-		../../libs/common/qlcchannel.h \
-		../../libs/common/qlcdocbrowser.h \
-		../../libs/common/qlcfile.h \
-		../../libs/common/qlcfixturedef.h \
-		../../libs/common/qlcfixturedefcache.h \
-		../../libs/common/qlcfixturemode.h \
-		../../libs/common/qlcinputchannel.h \
-		../../libs/common/qlcinputprofile.h \
-		../../libs/common/qlcphysical.h \
-		../../libs/common/qlctypes.h \
-		../../libs/common/qlcwidgetproperties.h
+		 ../../libs/common/qlcchannel.h \
+		 ../../libs/common/qlcdocbrowser.h \
+		 ../../libs/common/qlcfile.h \
+		 ../../libs/common/qlcfixturedef.h \
+		 ../../libs/common/qlcfixturedefcache.h \
+		 ../../libs/common/qlcfixturemode.h \
+		 ../../libs/common/qlcinputchannel.h \
+		 ../../libs/common/qlcinputprofile.h \
+		 ../../libs/common/qlcphysical.h \
+		 ../../libs/common/qlctypes.h \
+		 ../../libs/common/qlcwidgetproperties.h
 
 COMMONSOURCES += ../../libs/common/qlccapability.cpp \
 		 ../../libs/common/qlcchannel.cpp \
-		../../libs/common/qlcdocbrowser.cpp \
-		../../libs/common/qlcfile.cpp \
-		../../libs/common/qlcfixturedef.cpp \
-		../../libs/common/qlcfixturedefcache.cpp \
-		../../libs/common/qlcfixturemode.cpp \
-		../../libs/common/qlcinputchannel.cpp \
-		../../libs/common/qlcinputprofile.cpp \
-		../../libs/common/qlcphysical.cpp \
-		../../libs/common/qlcwidgetproperties.cpp
+		 ../../libs/common/qlcdocbrowser.cpp \
+		 ../../libs/common/qlcfile.cpp \
+		 ../../libs/common/qlcfixturedef.cpp \
+		 ../../libs/common/qlcfixturedefcache.cpp \
+		 ../../libs/common/qlcfixturemode.cpp \
+		 ../../libs/common/qlcinputchannel.cpp \
+		 ../../libs/common/qlcinputprofile.cpp \
+		 ../../libs/common/qlcphysical.cpp \
+		 ../../libs/common/qlcwidgetproperties.cpp
+
+ENGINEHEADERS += ../bus.h \
+		 ../fixture.h \
+		 ../doc.h \
+		 ../function.h \
+		 ../scene.h \
+		 ../chaser.h \
+		 ../collection.h \
+		 ../efx.h \
+		 ../efxfixture.h \
+		 ../mastertimer.h \
+		 ../outputmap.h \
+		 ../outputpatch.h \
+		 ../inputmap.h \
+		 ../inputpatch.h \
+		 ../dummyoutplugin.h
+
+ENGINESOURCES += ../bus.cpp \
+		 ../fixture.cpp \
+		 ../doc.cpp \
+		 ../function.cpp \
+		 ../scene.cpp \
+		 ../chaser.cpp \
+		 ../collection.cpp \
+		 ../efx.cpp \
+		 ../efxfixture.cpp \
+		 ../mastertimer.cpp \
+		 ../outputmap.cpp \
+		 ../outputpatch.cpp \
+		 ../inputmap.cpp \
+		 ../inputpatch.cpp \
+		 ../dummyoutplugin.cpp
 
 HEADERS = bus_test.h \
 	  fixture_test.h \
 	  \
-	  ../bus.h \
-	  ../fixture.h \
-	  ../doc.h \
-	  ../function.h \
-	  ../scene.h \
-	  ../chaser.h \
-	  ../collection.h \
-	  ../efx.h \
-	  ../efxfixture.h \
-	  ../mastertimer.h \
-	  ../outputmap.h \
-	  ../outputpatch.h \
-	  ../inputmap.h \
-	  ../inputpatch.h \
-	  ../dummyoutplugin.h \
-	  \
+	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS
 
 SOURCES = bus_test.cpp \
 	  fixture_test.cpp \
 	  \
-	  ../bus.cpp \
-	  ../fixture.cpp \
-	  ../doc.cpp \
-	  ../function.cpp \
-	  ../scene.cpp \
-	  ../chaser.cpp \
-	  ../collection.cpp \
-	  ../efx.cpp \
-	  ../efxfixture.cpp \
-	  ../mastertimer.cpp \
-	  ../outputmap.cpp \
-	  ../outputpatch.cpp \
-	  ../inputmap.cpp \
-	  ../inputpatch.cpp \
-	  ../dummyoutplugin.cpp \
-	  \
 	  test_engine.cpp \
 	  \
+	  $$ENGINESOURCES \
 	  $$COMMONSOURCES
