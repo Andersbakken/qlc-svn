@@ -113,13 +113,12 @@ class SceneValue
 {
 public:
 	/** Normal constructor */
-	SceneValue(t_fixture_id fxi_id, t_channel channel, t_value value);
+	SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
+		   t_channel channel = KChannelInvalid,
+		   t_value value = 0);
 
 	/** Copy constructor */
 	SceneValue(const SceneValue& scv);
-
-	/** Load constructor */
-	SceneValue(QDomElement* tag);
 
 	/** Destructor */
 	~SceneValue();
@@ -133,7 +132,10 @@ public:
 	/** Comparator function for matching SceneValues */
 	bool operator== (const SceneValue& scv) const;
 
-	/** Save this SceneValue to XML file */
+	/** Load this SceneValue's contents from an XML tag */
+	bool loadXML(const QDomElement* tag);
+
+	/** Save this SceneValue to an XML document */
 	bool saveXML(QDomDocument* doc, QDomElement* scene_root) const;
 
 public:

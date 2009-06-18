@@ -50,27 +50,6 @@ SceneValue::SceneValue(const SceneValue& scv)
 	value = scv.value;
 }
 
-SceneValue::SceneValue(QDomElement* tag)
-{
-	Q_ASSERT(tag != NULL);
-
-	if (tag->tagName() != KXMLQLCSceneValue)
-	{
-		fxi = KNoID;
-		channel = 0;
-		value = 0;
-
-		qWarning() << "Node is not a scene value tag:"
-			   << tag->tagName();
-	}
-	else
-	{
-		fxi = tag->attribute(KXMLQLCSceneValueFixture).toInt();
-		channel = tag->attribute(KXMLQLCSceneValueChannel).toInt();
-		value = tag->text().toInt();
-	}
-}
-
 SceneValue::~SceneValue()
 {
 }
@@ -81,27 +60,6 @@ bool SceneValue::isValid()
 		return false;
 	else
 		return true;
-}
-
-bool SceneValue::saveXML(QDomDocument* doc, QDomElement* scene_root) const
-{
-	QDomElement tag;
-	QDomText text;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(scene_root != NULL);
-
-	/* Value tag and its attributes */
-	tag = doc->createElement(KXMLQLCSceneValue);
-	tag.setAttribute(KXMLQLCSceneValueFixture, fxi);
-	tag.setAttribute(KXMLQLCSceneValueChannel, channel);
-	scene_root->appendChild(tag);
-
-	/* The actual value as node text */
-	text = doc->createTextNode(QString("%1").arg(value));
-	tag.appendChild(text);
-
-	return true;
 }
 
 bool SceneValue::operator< (const SceneValue& scv) const
@@ -129,6 +87,51 @@ bool SceneValue::operator== (const SceneValue& scv) const
 		return true;
 	else
 		return false;
+}
+
+bool SceneValue::loadXML(const QDomElement* tag)
+{
+	Q_ASSERT(tag != NULL);
+
+	if (tag->tagName() != KXMLQLCSceneValue)
+	{
+		qWarning() << "Node is not a scene value tag:"
+			   << tag->tagName();
+		return false;
+	}
+
+	fxi = t_fixture_id(tag->attribute(KXMLQLCSceneValueFixture).toInt());
+	if (fxi < 0 || fxi >= KFixtureArraySize)
+		return false;
+
+	channel = t_channel(tag->attribute(KXMLQLCSceneValueChannel).toInt());
+	if (channel >= KChannelMax)
+		return false;
+
+	value = t_value(tag->text().toUInt());
+
+	return isValid();
+}
+
+bool SceneValue::saveXML(QDomDocument* doc, QDomElement* scene_root) const
+{
+	QDomElement tag;
+	QDomText text;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(scene_root != NULL);
+
+	/* Value tag and its attributes */
+	tag = doc->createElement(KXMLQLCSceneValue);
+	tag.setAttribute(KXMLQLCSceneValueFixture, fxi);
+	tag.setAttribute(KXMLQLCSceneValueChannel, channel);
+	scene_root->appendChild(tag);
+
+	/* The actual value as node text */
+	text = doc->createTextNode(QString("%1").arg(value));
+	tag.appendChild(text);
+
+	return true;
 }
 
 /*****************************************************************************
@@ -346,15 +349,13 @@ bool Scene::loadXML(const QDomElement* root)
 		{
 			/* Bus */
 			str = tag.attribute(KXMLQLCBusRole);
-			Q_ASSERT(str == KXMLQLCBusFade);
-
 			setBus(tag.text().toUInt());
 		}
 		else if (tag.tagName() == KXMLQLCFunctionValue)
 		{
 			/* Channel value */
-			SceneValue scv(&tag);
-			if (scv.isValid() == true)
+			SceneValue scv;
+			if (scv.loadXML(&tag) == true)
 				setValue(scv);
 		}
 		else
