@@ -34,7 +34,7 @@
 class QDomDocument;
 class QString;
 
-#define KXMLQLCWorkspace "Workspace"
+#define KXMLQLCEngine "Engine"
 
 class Doc : public QObject
 {
@@ -87,42 +87,6 @@ public:
 	 * Reset Doc's modified state (i.e. it is no longer in need of saving)
 	 */
 	void resetModified();
-
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
-public:
-	/**
-	 * Get the name of the current workspace file
-	 */
-	QString fileName() { return m_fileName; }
-
-	/**
-	 * Load the Doc's contents from the given XML file
-	 *
-	 * @param fileName The name of the file to load from
-	 * @return An error code (QFile::NoError if successful)
-	 */
-	QFile::FileError loadXML(const QString& fileName);
-
-protected:
-	/**
-	 * Load the Doc's contents from the given XML document
-	 *
-	 * @param doc The XML document to read from
-	 * @return true if successful, otherwise false
-	 */
-	bool loadXML(const QDomDocument* doc);
-
-public:
-	/**
-	 * Save the Doc's contents to the given XML file. Also resets
-	 * the doc's modified status.
-	 *
-	 * @param fileName The name of the file to save to
-	 * @return An error code (QFile::NoError if successful)
-	 */
-	QFile::FileError saveXML(const QString& fileName);
 
 	/*********************************************************************
 	 * Fixture Instances
@@ -305,6 +269,27 @@ protected:
 
 	/** Number of allocated functions */
 	int m_functionAllocation;
+
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	/**
+	 * Load contents from the given XML document
+	 *
+	 * @param root The Engine XML root node to load from
+	 * @return true if successful, otherwise false
+	 */
+	bool loadXML(const QDomElement* root);
+
+	/**
+	 * Save contents to the given XML file.
+	 *
+	 * @param doc The XML document to save to
+	 * @param wksp_root The workspace root node to save under
+	 * @return true if successful, otherwise false
+	 */
+	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 };
 
 #endif

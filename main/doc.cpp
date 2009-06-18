@@ -26,16 +26,14 @@
 #include <QtXml>
 #include <QDir>
 
-#include "common/qlcfixturedef.h"
+#include "common/qlcfixturedefcache.h"
 #include "common/qlcfixturemode.h"
+#include "common/qlcfixturedef.h"
 #include "common/qlcfile.h"
 
-#include "virtualconsole.h"
-#include "fixturemanager.h"
 #include "collection.h"
 #include "function.h"
 #include "fixture.h"
-#include "monitor.h"
 #include "chaser.h"
 #include "scene.h"
 #include "efx.h"
@@ -110,158 +108,6 @@ void Doc::resetModified()
 {
 	m_modified = false;
 	emit modified(false);
-}
-
-/*****************************************************************************
- * Load & Save
- *****************************************************************************/
-
-QFile::FileError Doc::loadXML(const QString& fileName)
-{
-	QDomDocument* doc = NULL;
-	QDomDocumentType doctype;
-	QString errorString;
-	QFile::FileError retval;
-
-	retval = QLCFile::readXML(fileName, &doc);
-	if (retval == QFile::NoError)
-	{
-		if (doc->doctype().name() == KXMLQLCWorkspace)
-		{
-			if (loadXML(doc) == false)
-			{
-				retval = QFile::ReadError;
-			}
-			else
-			{
-				m_fileName = fileName;
-				resetModified();
-				retval = QFile::NoError;
-			}
-		}
-		else
-		{
-			retval = QFile::ReadError;
-		}
-	}
-
-	return retval;
-}
-
-bool Doc::loadXML(const QDomDocument* doc)
-{
-	QDomElement root;
-	QDomNode node;
-	QDomElement tag;
-
-	Q_ASSERT(doc != NULL);
-
-	root = doc->documentElement();
-	if (root.tagName() != KXMLQLCWorkspace)
-	{
-		qWarning() << "Workspace node not found in file!";
-		return false;
-	}
-
-	node = root.firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-
-		if (tag.tagName() == KXMLQLCCreator)
-		{
-			/* Ignore creator information */
-		}
-		else if (tag.tagName() == KXMLFixture)
-		{
-			Fixture::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCFunction)
-		{
-			Function::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCBus)
-		{
-			Bus::instance()->loadXML(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCMonitor)
-		{
-			Monitor::loadXML(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCVirtualConsole)
-		{
-			VirtualConsole::loadXML(&tag);
-		}
-		else
-		{
-			qDebug() << "Unknown Workspace tag:" << tag.tagName();
-		}
-
-		node = node.nextSibling();
-	}
-
-	return true;
-}
-
-QFile::FileError Doc::saveXML(const QString& fileName)
-{
-	QDomDocument* doc = NULL;
-	QFile::FileError retval;
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-
-	QFile file(fileName);
-	if (file.open(QIODevice::WriteOnly) == false)
-		return file.error();
-
-	if (QLCFile::getXMLHeader(KXMLQLCWorkspace, &doc) == true)
-	{
-		/* Create a text stream for the file */
-		QTextStream stream(&file);
-
-		/* THE MASTER XML ROOT NODE */
-		root = doc->documentElement();
-
-		/* Write fixtures into an XML document */
-		for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
-			if (m_fixtureArray[i] != NULL)
-				m_fixtureArray[i]->saveXML(doc, &root);
-
-		/* Write functions into an XML document */
-		for (t_function_id i = 0; i < KFunctionArraySize; i++)
-			if (m_functionArray[i] != NULL)
-				m_functionArray[i]->saveXML(doc, &root);
-
-		/* Write Monitor state */
-		Monitor::saveXML(doc, &root);
-
-		/* Write virtual console */
-		VirtualConsole::saveXML(doc, &root);
-
-		/* Write buses */
-		Bus::instance()->saveXML(doc, &root);
-
-		/* Set file name and write the document to the stream */
-		m_fileName = fileName;
-		stream << doc->toString() << "\n";
-
-		/* Mark this Doc object as unmodified */
-		resetModified();
-
-		/* Delete the XML document */
-		delete doc;
-
-		retval = QFile::NoError;
-	}
-	else
-	{
-		retval = QFile::ReadError;
-	}
-
-	file.close();
-
-	return retval;
 }
 
 /*****************************************************************************
@@ -526,7 +372,7 @@ void Doc::slotFunctionChanged(t_function_id fid)
 }
 
 /*****************************************************************************
- * Miscellaneous
+ * Monitoring/listening methods
  *****************************************************************************/
 
 void Doc::slotModeChanged(App::Mode mode)
@@ -568,3 +414,86 @@ void Doc::slotBusNameChanged()
 {
 	setModified();
 }
+
+/*****************************************************************************
+ * Load & Save
+ *****************************************************************************/
+
+bool Doc::loadXML(const QDomElement* root)
+{
+	QDomElement tag;
+	QDomNode node;
+
+	Q_ASSERT(root != NULL);
+
+	if (root->tagName() != KXMLQLCEngine)
+	{
+		qWarning() << "Engine node not found in file!";
+		return false;
+	}
+
+	node = root->firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+
+		if (tag.tagName() == KXMLFixture)
+		{
+			Fixture::loader(&tag, this);
+		}
+		else if (tag.tagName() == KXMLQLCFunction)
+		{
+			Function::loader(&tag, this);
+		}
+		else if (tag.tagName() == KXMLQLCBus)
+		{
+			Bus::instance()->loadXML(&tag);
+		}
+		else
+		{
+			qDebug() << "Unknown engine tag:" << tag.tagName();
+		}
+
+		node = node.nextSibling();
+	}
+
+	return true;
+}
+
+bool Doc::saveXML(QDomDocument* doc, QDomElement* wksp_root)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+
+	Q_ASSERT(doc != NULL);
+	Q_ASSERT(wksp_root != NULL);
+
+	/* Create the master Engine node */
+	root = doc->createElement(KXMLQLCEngine);
+	wksp_root->appendChild(root);
+
+	/* Write fixtures into an XML document */
+	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+	{
+		if (m_fixtureArray[i] != NULL)
+		{
+			m_fixtureArray[i]->saveXML(doc, &root);
+		}
+	}
+
+	/* Write functions into an XML document */
+	for (t_function_id i = 0; i < KFunctionArraySize; i++)
+	{
+		if (m_functionArray[i] != NULL)
+		{
+			m_functionArray[i]->saveXML(doc, &root);
+		}
+	}
+
+	/* Write buses */
+	Bus::instance()->saveXML(doc, &root);
+
+	return true;
+}
+

@@ -347,10 +347,10 @@ void App::slotDocModified(bool state)
 {
 	QString caption(KApplicationNameLong);
 
-	if (m_doc->fileName() != QString::null)
+	if (fileName() != QString::null)
 	{
 		caption += QString(" - ")
-			+ QDir::toNativeSeparators(m_doc->fileName());
+			+ QDir::toNativeSeparators(fileName());
 	}
 	else
 	{
@@ -866,7 +866,7 @@ void App::newDocument()
 
 QFile::FileError App::slotFileOpen()
 {
-	QString fileName;
+	QString fn;
 
 	/* Check that the user is aware of losing previous changes */
 	if (doc()->isModified() == true)
@@ -895,7 +895,7 @@ QFile::FileError App::slotFileOpen()
 	QFileDialog dialog(this);
 	dialog.setWindowTitle(tr("Open Workspace"));
 	dialog.setAcceptMode(QFileDialog::AcceptOpen);
-	dialog.selectFile(m_doc->fileName());
+	dialog.selectFile(fileName());
 
 	/* Append file filters to the dialog */
 	QStringList filters;
@@ -913,15 +913,15 @@ QFile::FileError App::slotFileOpen()
 	if (dialog.exec() != QDialog::Accepted)
 		return QFile::NoError;
 
-	fileName = dialog.selectedFiles().first();
-	if (fileName.isEmpty() == true)
+	fn = dialog.selectedFiles().first();
+	if (fn.isEmpty() == true)
 		return QFile::NoError;
 
 	/* Clear existing document data */
 	newDocument();
 
 	/* Load the file */
-	QFile::FileError error = doc()->loadXML(fileName);
+	QFile::FileError error = loadXML(fn);
 	if (handleFileError(error) == true)
 		doc()->resetModified();
 
@@ -942,10 +942,10 @@ QFile::FileError App::slotFileSave()
 	QFile::FileError error;
 
 	/* Attempt to save with the existing name. Fall back to Save As. */
-	if (m_doc->fileName().isEmpty() == true)
+	if (fileName().isEmpty() == true)
 		error = slotFileSaveAs();
 	else
-		error = m_doc->saveXML(m_doc->fileName());
+		error = saveXML(fileName());
 
 	handleFileError(error);
 	return error;
@@ -953,7 +953,7 @@ QFile::FileError App::slotFileSave()
 
 QFile::FileError App::slotFileSaveAs()
 {
-	QString fileName;
+	QString fn;
 
 	/* Create a file save dialog */
 #ifdef __APPLE__
@@ -964,14 +964,14 @@ QFile::FileError App::slotFileSaveAs()
 #endif
 	dialog.setWindowTitle(tr("Save Workspace As"));
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
-	dialog.selectFile(m_doc->fileName());
+	dialog.selectFile(fileName());
 
 	/* Append file filters to the dialog */
 	QStringList filters;
 	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
 	filters << QString("All Files (*)");
 	dialog.setNameFilters(filters);
-	
+
 	/* Append useful URLs to the dialog */
 	QList <QUrl> sidebar;
 	sidebar.append(QUrl::fromLocalFile(QDir::homePath()));
@@ -982,16 +982,16 @@ QFile::FileError App::slotFileSaveAs()
 	if (dialog.exec() != QDialog::Accepted)
 		return QFile::NoError;
 
-	fileName = dialog.selectedFiles().first();
-	if (fileName.isEmpty() == true)
+	fn = dialog.selectedFiles().first();
+	if (fn.isEmpty() == true)
 		return QFile::NoError;
 
 	/* Always use the workspace suffix */
-	if (fileName.right(4) != KExtWorkspace)
-		fileName += KExtWorkspace;
+	if (fn.right(4) != KExtWorkspace)
+		fn += KExtWorkspace;
 
 	/* Save the document and set workspace name */
-	QFile::FileError error = m_doc->saveXML(fileName);
+	QFile::FileError error = saveXML(fn);
 	handleFileError(error);
 	return error;
 }
@@ -1126,4 +1126,165 @@ void App::slotSetBackgroundImage()
 void App::slotClearBackgroundImage()
 {
 	setBackgroundImage(QString::null);
+}
+
+/*****************************************************************************
+ * Load & Save
+ *****************************************************************************/
+
+void App::setFileName(const QString& fileName)
+{
+	m_fileName = fileName;
+}
+
+QString App::fileName() const
+{
+	return m_fileName;
+}
+
+QFile::FileError App::loadXML(const QString& fileName)
+{
+	QDomDocument* doc = NULL;
+	QDomDocumentType doctype;
+	QString errorString;
+	QFile::FileError retval;
+
+	retval = QLCFile::readXML(fileName, &doc);
+	if (retval == QFile::NoError)
+	{
+		if (doc->doctype().name() == KXMLQLCWorkspace)
+		{
+			if (loadXML(doc) == false)
+			{
+				retval = QFile::ReadError;
+			}
+			else
+			{
+				setFileName(fileName);
+				m_doc->resetModified();
+				retval = QFile::NoError;
+			}
+		}
+		else
+		{
+			retval = QFile::ReadError;
+		}
+	}
+
+	return retval;
+}
+
+bool App::loadXML(const QDomDocument* doc)
+{
+	QDomElement root;
+	QDomElement tag;
+	QDomNode node;
+
+	Q_ASSERT(m_doc != NULL);
+	Q_ASSERT(doc != NULL);
+
+	root = doc->documentElement();
+	if (root.tagName() != KXMLQLCWorkspace)
+	{
+		qWarning() << "Workspace node not found in file!";
+		return false;
+	}
+
+	node = root.firstChild();
+	while (node.isNull() == false)
+	{
+		tag = node.toElement();
+
+		if (tag.tagName() == KXMLQLCEngine)
+		{
+			m_doc->loadXML(&tag);
+		}
+		else if (tag.tagName() == KXMLQLCMonitor)
+		{
+			Monitor::loadXML(&tag);
+		}
+		else if (tag.tagName() == KXMLQLCVirtualConsole)
+		{
+			VirtualConsole::loadXML(&tag);
+		}
+		else if (tag.tagName() == KXMLFixture)
+		{
+			/* Legacy support code, nowadays in Doc */
+			Fixture::loader(&tag, m_doc);
+		}
+		else if (tag.tagName() == KXMLQLCFunction)
+		{
+			/* Legacy support code, nowadays in Doc */
+			Function::loader(&tag, m_doc);
+		}
+		else if (tag.tagName() == KXMLQLCBus)
+		{
+			/* Legacy support code, nowadays in Doc */
+			Bus::instance()->loadXML(&tag);
+		}
+		else if (tag.tagName() == KXMLQLCCreator)
+		{
+			/* Ignore creator information */
+		}
+		else
+		{
+			qDebug() << "Unknown Workspace tag:" << tag.tagName();
+		}
+
+		node = node.nextSibling();
+	}
+
+	return true;
+}
+
+QFile::FileError App::saveXML(const QString& fileName)
+{
+	QDomDocument* doc = NULL;
+	QFile::FileError retval;
+	QDomElement root;
+	QDomElement tag;
+	QDomText text;
+
+	QFile file(fileName);
+	if (file.open(QIODevice::WriteOnly) == false)
+		return file.error();
+
+	if (QLCFile::getXMLHeader(KXMLQLCWorkspace, &doc) == true)
+	{
+		/* Create a text stream for the file */
+		QTextStream stream(&file);
+
+		/* THE MASTER XML ROOT NODE */
+		root = doc->documentElement();
+
+		/* Write engine components to the XML document */
+		m_doc->saveXML(doc, &root);
+
+		/* Write Monitor state to the XML document */
+		Monitor::saveXML(doc, &root);
+
+		/* Write virtual console to the XML document */
+		VirtualConsole::saveXML(doc, &root);
+
+		/* Write the XML document to the stream (=file) */
+		stream << doc->toString() << "\n";
+
+		/* Set the file name for the current Doc instance and
+		   set it also in an unmodified state. */
+		setFileName(fileName);
+		m_doc->resetModified();
+
+		/* Delete the XML document */
+		delete doc;
+
+		retval = QFile::NoError;
+	}
+	else
+	{
+		retval = QFile::ReadError;
+	}
+
+	file.close();
+
+	return retval;
 }

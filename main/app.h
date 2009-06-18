@@ -31,6 +31,8 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlcinplugin.h"
 
+class QDomDocument;
+class QDomElement;
 class QMessageBox;
 class QToolButton;
 class QFileDialog;
@@ -59,6 +61,8 @@ const QString KApplicationNameShort = "QLC";
 const QString KApplicationVersion   = QString("Version ") + QString(VERSION);
 const int KApplicationDefaultWidth  = 800;
 const int KApplicationDefaultHeight = 600;
+
+#define KXMLQLCWorkspace "Workspace"
 
 class App : public QMainWindow
 {
@@ -287,6 +291,47 @@ public slots:
 
 protected:
 	QString m_backgroundImage;
+
+	/*********************************************************************
+	 * Load & Save
+	 *********************************************************************/
+public:
+	/**
+	 * Set the name of the current workspace file
+	 */
+	void setFileName(const QString& fileName);
+
+	/**
+	 * Get the name of the current workspace file
+	 */
+	QString fileName() const;
+
+	/**
+	 * Load workspace contents from a file with the given name.
+	 *
+	 * @param fileName The name of the file to load from.
+	 * @return QFile::NoError if successful.
+	 */
+	QFile::FileError loadXML(const QString& fileName);
+
+	/**
+	 * Load workspace contents from the given XML document.
+	 *
+	 * @param doc The XML document to load from.
+	 */
+	bool loadXML(const QDomDocument* doc);
+
+	/**
+	 * Save workspace contents to a file with the given name. Changes the
+	 * current workspace file name to the given fileName.
+	 *
+	 * @param fileName The name of the file to save to.
+	 * @return QFile::NoError if successful.
+	 */
+	QFile::FileError saveXML(const QString& fileName);
+
+protected:
+	QString m_fileName;
 };
 
 #endif
