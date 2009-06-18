@@ -39,16 +39,44 @@ COMMONSOURCES += ../../libs/common/qlccapability.cpp \
 		../../libs/common/qlcwidgetproperties.cpp
 
 HEADERS = bus_test.h \
-	  ../bus.h \
 	  fixture_test.h \
+	  \
+	  ../bus.h \
 	  ../fixture.h \
+	  ../doc.h \
+	  ../function.h \
+	  ../scene.h \
+	  ../chaser.h \
+	  ../collection.h \
+	  ../efx.h \
+	  ../efxfixture.h \
+	  ../mastertimer.h \
+	  ../outputmap.h \
+	  ../outputpatch.h \
+	  ../inputmap.h \
+	  ../inputpatch.h \
+	  ../dummyoutplugin.h \
 	  \
 	  $$COMMONHEADERS
 
 SOURCES = bus_test.cpp \
-	  ../bus.cpp \
 	  fixture_test.cpp \
+	  \
+	  ../bus.cpp \
 	  ../fixture.cpp \
+	  ../doc.cpp \
+	  ../function.cpp \
+	  ../scene.cpp \
+	  ../chaser.cpp \
+	  ../collection.cpp \
+	  ../efx.cpp \
+	  ../efxfixture.cpp \
+	  ../mastertimer.cpp \
+	  ../outputmap.cpp \
+	  ../outputpatch.cpp \
+	  ../inputmap.cpp \
+	  ../inputpatch.cpp \
+	  ../dummyoutplugin.cpp \
 	  \
 	  test_engine.cpp \
 	  \
