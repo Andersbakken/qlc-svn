@@ -73,6 +73,7 @@ ENGINESOURCES += ../bus.cpp \
 HEADERS = bus_test.h \
 	  fixture_test.h \
 	  scenevalue_test.h \
+	  scenechannel_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS
@@ -80,6 +81,7 @@ HEADERS = bus_test.h \
 SOURCES = bus_test.cpp \
 	  fixture_test.cpp \
 	  scenevalue_test.cpp \
+	  scenechannel_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \

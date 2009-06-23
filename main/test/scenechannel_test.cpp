@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  test_engine.cpp
+  scenechannel_test.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -19,31 +19,38 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QtTest>
+#include <QtXml>
 
 #include "scenechannel_test.h"
-#include "scenevalue_test.h"
-#include "fixture_test.h"
-#include "bus_test.h"
+#include "../scene.h"
 
-/* This file includes tests for QLC's ENGINE components. UI tests are done
-   separately. */
-int main(int argc, char** argv)
+void SceneChannel_Test::initial()
 {
-	QApplication qapp(argc, argv);
+	SceneChannel sch;
+	QVERIFY(sch.address == 0);
+	QVERIFY(sch.start == 0);
+	QVERIFY(sch.current == 0);
+	QVERIFY(sch.target == 0);
+}
 
-	Bus_Test bus;
-	QTest::qExec(&bus, argc, argv);
+void SceneChannel_Test::copy()
+{
+	SceneChannel sch;
+	sch.address = 123;
+	sch.start = 15;
+	sch.current = 48;
+	sch.target = 90;
 
-	Fixture_Test fixture;
-	QTest::qExec(&fixture, argc, argv);
+	SceneChannel sch2 = sch;
+	QVERIFY(sch2.address == 123);
+	QVERIFY(sch2.start == 15);
+	QVERIFY(sch2.current == 48);
+	QVERIFY(sch2.target == 90);
 
-	SceneValue_Test scenevalue;
-	QTest::qExec(&scenevalue, argc, argv);
-
-	SceneChannel_Test scenechannel;
-	QTest::qExec(&scenechannel, argc, argv);
-
-	return 0;
+	SceneChannel sch3(sch);
+	QVERIFY(sch3.address == 123);
+	QVERIFY(sch3.start == 15);
+	QVERIFY(sch3.current == 48);
+	QVERIFY(sch3.target == 90);
 }
