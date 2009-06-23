@@ -230,7 +230,7 @@ bool Scene::copyFrom(const Function* function)
  * Values
  *****************************************************************************/
 
-void Scene::setValue(SceneValue scv)
+void Scene::setValue(const SceneValue& scv)
 {
 	int index = m_values.indexOf(scv);
 	if (index == -1)

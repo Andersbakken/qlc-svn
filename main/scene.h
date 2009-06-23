@@ -202,7 +202,7 @@ public:
 	/**
 	 * Set the value of one fixture channel, using a predefined SceneValue
 	 */
-	void setValue(SceneValue scv);
+	void setValue(const SceneValue& scv);
 
 	/**
 	 * Set the value of one fixture channel, specify parameters separately
