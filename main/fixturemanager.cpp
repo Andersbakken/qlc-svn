@@ -49,11 +49,8 @@
 #include "addfixture.h"
 #include "collection.h"
 #include "fixture.h"
-#include "chaser.h"
-#include "scene.h"
 #include "app.h"
 #include "doc.h"
-#include "efx.h"
 
 extern App* _app;
 

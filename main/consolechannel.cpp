@@ -35,7 +35,6 @@
 
 #include "app.h"
 #include "doc.h"
-#include "scene.h"
 #include "fixture.h"
 #include "outputmap.h"
 #include "consolechannel.h"

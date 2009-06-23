@@ -26,7 +26,6 @@
 #include <QIcon>
 
 #include "common/qlctypes.h"
-#include "scene.h"
 
 class QContextMenuEvent;
 class QIntValidator;

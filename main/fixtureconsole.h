@@ -27,6 +27,7 @@
 
 #include "common/qlctypes.h"
 #include "consolechannel.h"
+#include "scene.h"
 
 class QDomDocument;
 class QDomElement;
