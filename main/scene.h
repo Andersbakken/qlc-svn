@@ -71,8 +71,6 @@ public:
 	SceneChannel(const SceneChannel& sch);
 	~SceneChannel();
 
-	SceneChannel& operator=(const SceneChannel& sch);
-
 public:
 	/** The universe and channel that this object refers to */
 	t_channel address;

@@ -32,6 +32,30 @@
 #include "doc.h"
 #include "bus.h"
 
+/****************************************************************************
+ * SceneChannel
+ ****************************************************************************/
+
+SceneChannel::SceneChannel()
+{
+	address = 0;
+	start = 0;
+	current = 0;
+	target = 0;
+}
+
+SceneChannel::SceneChannel(const SceneChannel& sch)
+{
+	address = sch.address;
+	start = sch.start;
+	current = sch.current;
+	target = sch.target;
+}
+
+SceneChannel::~SceneChannel()
+{
+}
+
 /*****************************************************************************
  * SceneValue
  *****************************************************************************/
@@ -367,40 +391,6 @@ bool Scene::loadXML(const QDomElement* root)
 	}
 
 	return true;
-}
-
-/****************************************************************************
- * SceneChannel implementation
- ****************************************************************************/
-
-SceneChannel::SceneChannel()
-{
-	address = 0;
-	start = 0;
-	current = 0;
-	target = 0;
-}
-
-SceneChannel::SceneChannel(const SceneChannel& sch)
-{
-	*this = sch;
-}
-
-SceneChannel::~SceneChannel()
-{
-}
-
-SceneChannel& SceneChannel::operator=(const SceneChannel& sch)
-{
-	if (this != &sch)
-	{
-		address = sch.address;
-		start = sch.start;
-		current = sch.current;
-		target = sch.target;
-	}
-
-	return *this;
 }
 
 /****************************************************************************
