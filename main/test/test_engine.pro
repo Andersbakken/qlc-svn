@@ -72,6 +72,7 @@ ENGINESOURCES += ../bus.cpp \
 
 HEADERS = bus_test.h \
 	  fixture_test.h \
+	  scene_test.h \
 	  scenevalue_test.h \
 	  scenechannel_test.h \
 	  \
@@ -80,6 +81,7 @@ HEADERS = bus_test.h \
 
 SOURCES = bus_test.cpp \
 	  fixture_test.cpp \
+	  scene_test.cpp \
 	  scenevalue_test.cpp \
 	  scenechannel_test.cpp \
 	  \

@@ -221,20 +221,20 @@ public:
 
 	/**
 	 * Write the scene values to OutputMap. If fxi_id is given, writes
-	 * values only for the specified fixture. 
+	 * values only for the specified fixture.
 	 */
 	void writeValues(QByteArray* universes, t_fixture_id fxi_id = KNoID);
 
 	/**
 	 * Write zeros for all involved channels to OutputMap. If fxi_id is
-	 * given, writes zeros only for the specified fixture. 
+	 * given, writes zeros only for the specified fixture.
 	 */
 	void writeZeros(QByteArray* universes, t_fixture_id fxi_id = KNoID);
 
 	/**
 	 * Get a list of values in this scene
 	 */
-	QList <SceneValue> *values() { return &m_values; }
+	QList <SceneValue> values() const { return m_values; }
 
 protected:
 	QList <SceneValue> m_values;

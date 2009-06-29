@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  test_engine.cpp
+  scene_test.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -19,35 +19,20 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QtTest>
+#include <QtXml>
 
-#include "scenechannel_test.h"
-#include "scenevalue_test.h"
-#include "fixture_test.h"
 #include "scene_test.h"
-#include "bus_test.h"
+#include "../scene.h"
 
-/* This file includes tests for QLC's ENGINE components. UI tests are done
-   separately. */
-int main(int argc, char** argv)
+void Scene_Test::initial()
 {
-	QApplication qapp(argc, argv);
+	Scene s(this);
+	QVERIFY(s.type() == Function::Scene);
+	QVERIFY(s.name().isEmpty() == true);
+	QVERIFY(s.values().isEmpty() == true);
+}
 
-	Bus_Test bus;
-	QTest::qExec(&bus, argc, argv);
-
-	Fixture_Test fixture;
-	QTest::qExec(&fixture, argc, argv);
-
-	SceneValue_Test scenevalue;
-	QTest::qExec(&scenevalue, argc, argv);
-
-	SceneChannel_Test scenechannel;
-	QTest::qExec(&scenechannel, argc, argv);
-
-	Scene_Test scene;
-	QTest::qExec(&scene, argc, argv);
-
-	return 0;
+void Scene_Test::copy()
+{
 }

@@ -139,7 +139,7 @@ void SceneEditor::init()
 
 	m_initializing = true;
 
-	QListIterator <SceneValue> it(*m_scene->values());
+	QListIterator <SceneValue> it(m_scene->values());
 	while (it.hasNext() == true)
 	{
 		SceneValue scv(it.next());
