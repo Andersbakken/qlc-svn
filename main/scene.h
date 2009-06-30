@@ -220,18 +220,6 @@ public:
 	t_value value(t_fixture_id fxi, t_channel ch);
 
 	/**
-	 * Write the scene values to OutputMap. If fxi_id is given, writes
-	 * values only for the specified fixture.
-	 */
-	void writeValues(QByteArray* universes, t_fixture_id fxi_id = KNoID);
-
-	/**
-	 * Write zeros for all involved channels to OutputMap. If fxi_id is
-	 * given, writes zeros only for the specified fixture.
-	 */
-	void writeZeros(QByteArray* universes, t_fixture_id fxi_id = KNoID);
-
-	/**
 	 * Get a list of values in this scene
 	 */
 	QList <SceneValue> values() const { return m_values; }
@@ -278,7 +266,26 @@ public:
 	/** @reimpl */
 	bool write(QByteArray* universes);
 
+	/**
+	 * Write the scene values to OutputMap. If fxi_id is given, writes
+	 * values only for the specified fixture.
+	 *
+	 * The scene must be armed with arm() before calling this function or
+	 * otherwise nothing will be written.
+	 */
+	void writeValues(QByteArray* universes, t_fixture_id fxi_id = KNoID);
+
+	/**
+	 * Write zeros for all involved channels to OutputMap. If fxi_id is
+	 * given, writes zeros only for the specified fixture.
+	 *
+	 * The scene must be armed with arm() before calling this function or
+	 * otherwise nothing will be written.
+	 */
+	void writeZeros(QByteArray* universes, t_fixture_id fxi_id = KNoID);
+
 protected:
+	/** Calculate channel values for the next step. */
 	t_value nextValue(SceneChannel* sch);
 
 protected:

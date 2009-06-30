@@ -234,14 +234,9 @@ void Scene::setValue(const SceneValue& scv)
 {
 	int index = m_values.indexOf(scv);
 	if (index == -1)
-	{
 		m_values.append(scv);
-		qSort(m_values.begin(), m_values.end());
-	}
 	else
-	{
 		m_values.replace(index, scv);
-	}
 
 	emit changed(m_id);
 }
@@ -265,32 +260,6 @@ t_value Scene::value(t_fixture_id fxi, t_channel ch)
 		return 0;
 	else
 		return m_values.at(index).value;
-}
-
-void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
-{
-	Q_ASSERT(universes != NULL);
-
-	for (int i = 0; i < m_values.count(); i++)
-	{
-		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
-		{
-			universes->data()[m_channels[i].address] = m_values[i].value;
-		}
-	}
-}
-
-void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
-{
-	Q_ASSERT(universes != NULL);
-
-	for (int i = 0; i < m_values.count(); i++)
-	{
-		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
-		{
-			universes->data()[m_channels[i].address] = 0;
-		}
-	}
 }
 
 /*****************************************************************************
@@ -363,6 +332,13 @@ bool Scene::loadXML(const QDomElement* root)
 		return false;
 	}
 
+	if (root->attribute(KXMLQLCFunctionType) !=
+	    typeToString(Function::Scene))
+	{
+		qWarning("Function is not a scene!");
+		return false;
+	}
+
 	/* Load scene contents */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -372,7 +348,6 @@ bool Scene::loadXML(const QDomElement* root)
 		if (tag.tagName() == KXMLQLCBus)
 		{
 			/* Bus */
-			str = tag.attribute(KXMLQLCBusRole);
 			setBus(tag.text().toUInt());
 		}
 		else if (tag.tagName() == KXMLQLCFunctionValue)
@@ -520,6 +495,32 @@ bool Scene::write(QByteArray* universes)
 		return false;
 	else
 		return true;
+}
+
+void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
+{
+	Q_ASSERT(universes != NULL);
+
+	for (int i = 0; i < m_values.count(); i++)
+	{
+		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
+		{
+			universes->data()[m_channels[i].address] = m_values[i].value;
+		}
+	}
+}
+
+void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
+{
+	Q_ASSERT(universes != NULL);
+
+	for (int i = 0; i < m_values.count(); i++)
+	{
+		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
+		{
+			universes->data()[m_channels[i].address] = 0;
+		}
+	}
 }
 
 t_value Scene::nextValue(SceneChannel* sch)

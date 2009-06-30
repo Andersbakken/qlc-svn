@@ -23,14 +23,26 @@
 #define SCENE_TEST_H
 
 #include <QObject>
+#include <common/qlcfixturedefcache.h>
 
 class Scene_Test : public QObject
 {
 	Q_OBJECT
 
 private slots:
+	void initTestCase();
 	void initial();
-	void copy();
+	void values();
+	void fixtureRemoval();
+	void loadSuccess();
+	void loadWrongType();
+	void loadWrongRoot();
+	void save();
+	void copyFrom();
+	void createCopy();
+
+private:
+	QLCFixtureDefCache m_cache;
 };
 
 #endif
