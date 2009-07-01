@@ -29,6 +29,7 @@
 
 #include "fixture_test.h"
 #include "../fixture.h"
+#include "../doc.h"
 
 void Fixture_Test::initTestCase()
 {
@@ -44,7 +45,7 @@ void Fixture_Test::id()
 
 	fxi.setID(50);
 	QVERIFY(fxi.id() == 50);
-	
+
 	fxi.setID(INT_MAX);
 	QVERIFY(fxi.id() == INT_MAX);
 }
@@ -206,7 +207,7 @@ void Fixture_Test::loadWrongRoot()
 {
 	QDomDocument doc;
 	Fixture fxi(this);
-	
+
 	QDomElement root = doc.createElement("Function");
 	doc.appendChild(root);
 	QVERIFY(fxi.loadXML(&root, m_fixtureDefCache) == false);
@@ -215,7 +216,7 @@ void Fixture_Test::loadWrongRoot()
 void Fixture_Test::loadFixtureDef()
 {
 	QDomDocument doc;
-	
+
 	QDomElement root = doc.createElement("Fixture");
 	doc.appendChild(root);
 
@@ -272,7 +273,7 @@ void Fixture_Test::loadFixtureDef()
 void Fixture_Test::loadFixtureDefWrongChannels()
 {
 	QDomDocument doc;
-	
+
 	QDomElement root = doc.createElement("Fixture");
 	doc.appendChild(root);
 
@@ -329,7 +330,7 @@ void Fixture_Test::loadFixtureDefWrongChannels()
 void Fixture_Test::loadDimmer()
 {
 	QDomDocument doc;
-	
+
 	QDomElement root = doc.createElement("Fixture");
 	doc.appendChild(root);
 
@@ -386,7 +387,7 @@ void Fixture_Test::loadDimmer()
 void Fixture_Test::loadWrongAddress()
 {
 	QDomDocument doc;
-	
+
 	QDomElement root = doc.createElement("Fixture");
 	doc.appendChild(root);
 
@@ -441,7 +442,7 @@ void Fixture_Test::loadWrongAddress()
 void Fixture_Test::loadWrongUniverse()
 {
 	QDomDocument doc;
-	
+
 	QDomElement root = doc.createElement("Fixture");
 	doc.appendChild(root);
 
@@ -496,7 +497,7 @@ void Fixture_Test::loadWrongUniverse()
 void Fixture_Test::loadWrongID()
 {
 	QDomDocument doc;
-	
+
 	QDomElement root = doc.createElement("Fixture");
 	doc.appendChild(root);
 
@@ -543,4 +544,71 @@ void Fixture_Test::loadWrongID()
 
 	Fixture fxi(this);
 	QVERIFY(fxi.loadXML(&root, m_fixtureDefCache) == false);
+}
+
+void Fixture_Test::loader()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Fixture");
+	doc.appendChild(root);
+
+	QDomElement chs = doc.createElement("Channels");
+	QDomText chsText = doc.createTextNode("18");
+	chs.appendChild(chsText);
+	root.appendChild(chs);
+
+	QDomElement name = doc.createElement("Name");
+	QDomText nameText = doc.createTextNode("Foobar");
+	name.appendChild(nameText);
+	root.appendChild(name);
+
+	QDomElement uni = doc.createElement("Universe");
+	QDomText uniText = doc.createTextNode("3");
+	uni.appendChild(uniText);
+	root.appendChild(uni);
+
+	QDomElement model = doc.createElement("Model");
+	QDomText modelText = doc.createTextNode("Foobar");
+	model.appendChild(modelText);
+	root.appendChild(model);
+
+	QDomElement mode = doc.createElement("Mode");
+	QDomText modeText = doc.createTextNode("Foobar");
+	mode.appendChild(modeText);
+	root.appendChild(mode);
+
+	QDomElement type = doc.createElement("Manufacturer");
+	QDomText typeText = doc.createTextNode("Foobar");
+	type.appendChild(typeText);
+	root.appendChild(type);
+
+	QDomElement id = doc.createElement("ID");
+	QDomText idText = doc.createTextNode("42");
+	id.appendChild(idText);
+	root.appendChild(id);
+
+	QDomElement addr = doc.createElement("Address");
+	QDomText addrText = doc.createTextNode("21");
+	addr.appendChild(addrText);
+	root.appendChild(addr);
+
+	Doc* qlcdoc = new Doc(this, m_fixtureDefCache);
+	QVERIFY(qlcdoc != NULL);
+	QVERIFY(qlcdoc->fixtures() == 0);
+
+	QVERIFY(Fixture::loader(&root, qlcdoc) == true);
+	QVERIFY(qlcdoc->fixtures() == 1);
+	QVERIFY(qlcdoc->fixture(0) == NULL); // No ID auto-assignment
+
+	Fixture* fxi = qlcdoc->fixture(42);
+	QVERIFY(fxi != NULL);
+	QVERIFY(fxi->name() == "Foobar");
+	QVERIFY(fxi->channels() == 18);
+	QVERIFY(fxi->address() == 21);
+	QVERIFY(fxi->universe() == 3);
+	QVERIFY(fxi->fixtureDef() == NULL);
+	QVERIFY(fxi->fixtureMode() == NULL);
+
+	delete qlcdoc;
 }

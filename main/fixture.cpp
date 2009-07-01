@@ -300,7 +300,7 @@ bool Fixture::loader(const QDomElement* root, Doc* doc)
 
 	if (fxi->loadXML(root, doc->fixtureDefCache()) == true)
 	{
-		if (doc->addFixture(fxi) == true)
+		if (doc->addFixture(fxi, fxi->id()) == true)
 		{
 			/* Success */
 			result = true;
@@ -352,7 +352,7 @@ bool Fixture::loadXML(const QDomElement* root,
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCFixtureDefManufacturer)
 		{
 			manufacturer = tag.text();
@@ -465,7 +465,8 @@ bool Fixture::loadXML(const QDomElement* root,
 	setAddress(address);
 	setUniverse(universe);
 	setName(name);
-	
+	setID(id);
+
 	return true;
 }
 
