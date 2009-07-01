@@ -396,7 +396,7 @@ void Scene::unFlash(QByteArray* universes)
 
 void Scene::arm()
 {
-	m_channels.clear();
+	m_armedChannels.clear();
 
 	/* Scenes cannot run unless they are children of Doc */
 	Doc* doc = qobject_cast <Doc*> (parent());
@@ -404,34 +404,53 @@ void Scene::arm()
 
 	/* Get exact address numbers from fixtures and fixate them to this
 	   scene for running. */
-	QListIterator <SceneValue> it(m_values);
+	QMutableListIterator <SceneValue> it(m_values);
 	while (it.hasNext() == true)
 	{
 		SceneValue scv(it.next());
 
 		Fixture* fxi = doc->fixture(scv.fxi);
-		Q_ASSERT(fxi != NULL);
+		if (fxi == NULL)
+		{
+			qWarning() << "Channel" << scv.channel << "from an"
+				   << "unavailable fixture ID" << scv.fxi
+				   << "taking part in scene" << name()
+				   << ". Removing the channel.";
+			it.remove();
+			continue;
+		}
 
-		SceneChannel channel;
-		channel.address = fxi->universeAddress() + scv.channel;
-		channel.target = scv.value;
-
-		m_channels.append(channel);
+		if (scv.channel < fxi->channels())
+		{
+			SceneChannel channel;
+			channel.address = fxi->universeAddress() + scv.channel;
+			channel.target = scv.value;
+			m_armedChannels.append(channel);
+		}
+		else
+		{
+			qWarning() << "Scene " << name() << "channel"
+				   << scv.channel
+				   << "is out of its fixture" << fxi->name()
+				   << "channel count ( <" << fxi->channels()
+				   << ") bounds. Removing the channel.";
+			it.remove();
+		}
 	}
 }
 
 void Scene::disarm()
 {
-	m_channels.clear();
+	m_armedChannels.clear();
 }
 
 bool Scene::write(QByteArray* universes)
 {
 	/* Count ready channels so that the scene can be stopped */
-	t_channel ready = m_channels.count();
+	t_channel ready = m_armedChannels.count();
 
 	/* Iterator for all scene channels */
-	QMutableListIterator <SceneChannel> it(m_channels);
+	QMutableListIterator <SceneChannel> it(m_armedChannels);
 
 	Q_ASSERT(universes != NULL);
 
@@ -505,7 +524,8 @@ void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
 	{
 		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
 		{
-			universes->data()[m_channels[i].address] = m_values[i].value;
+			t_channel addr = m_armedChannels[i].address;
+			universes->data()[addr] = m_values[i].value;
 		}
 	}
 }
@@ -518,7 +538,8 @@ void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
 	{
 		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
 		{
-			universes->data()[m_channels[i].address] = 0;
+			t_channel addr = m_armedChannels[i].address;
+			universes->data()[addr] = 0;
 		}
 	}
 }

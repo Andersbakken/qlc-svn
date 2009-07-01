@@ -284,12 +284,15 @@ public:
 	 */
 	void writeZeros(QByteArray* universes, t_fixture_id fxi_id = KNoID);
 
+	/** Get a list of channels that have been armed for running */
+	QList <SceneChannel> armedChannels() const { return m_armedChannels; }
+
 protected:
 	/** Calculate channel values for the next step. */
 	t_value nextValue(SceneChannel* sch);
 
 protected:
-	QList <SceneChannel> m_channels;
+	QList <SceneChannel> m_armedChannels;
 };
 
 #endif

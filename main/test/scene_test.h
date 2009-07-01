@@ -41,6 +41,12 @@ private slots:
 	void copyFrom();
 	void createCopy();
 
+	void arm();
+	void armMissingFixture();
+	void armTooManyChannels();
+
+	void flashUnflash();
+
 private:
 	QLCFixtureDefCache m_cache;
 };

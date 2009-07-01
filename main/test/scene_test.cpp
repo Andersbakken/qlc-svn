@@ -333,3 +333,179 @@ void Scene_Test::createCopy()
 	QVERIFY(copy->value(4, 5) == 6);
 	QVERIFY(copy->value(7, 8) == 9);
 }
+
+void Scene_Test::arm()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setName("Test Fixture");
+	fxi->setAddress(15);
+	fxi->setUniverse(3);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 123);
+	s1->setValue(fxi->id(), 7, 45);
+	s1->setValue(fxi->id(), 3, 67);
+	doc->addFunction(s1);
+
+	QVERIFY(s1->armedChannels().size() == 0);
+	s1->arm();
+	QVERIFY(s1->armedChannels().size() == 3);
+
+	SceneChannel ch;
+	ch = s1->armedChannels().at(0);
+	QVERIFY(ch.address == fxi->universeAddress());
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 123);
+
+	ch = s1->armedChannels().at(1);
+	QVERIFY(ch.address == fxi->universeAddress() + 7);
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 45);
+
+	ch = s1->armedChannels().at(2);
+	QVERIFY(ch.address == fxi->universeAddress() + 3);
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 67);
+
+	s1->disarm();
+	QVERIFY(s1->armedChannels().size() == 0);
+	QVERIFY(s1->values().size() == 3);
+
+	delete doc;
+}
+
+void Scene_Test::armMissingFixture()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setName("Test Fixture");
+	fxi->setAddress(15);
+	fxi->setUniverse(3);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 7, 45);
+	s1->setValue(fxi->id() + 5, 9, 123); // Missing fixture
+	s1->setValue(fxi->id(), 3, 67);
+	doc->addFunction(s1);
+
+	QVERIFY(s1->armedChannels().size() == 0);
+	QVERIFY(s1->values().size() == 3);
+	s1->arm();
+	QVERIFY(s1->armedChannels().size() == 2);
+	QVERIFY(s1->values().size() == 2); // The channel is removed
+
+	SceneChannel ch;
+	ch = s1->armedChannels().at(0);
+	QVERIFY(ch.address == fxi->universeAddress() + 7);
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 45);
+
+	ch = s1->armedChannels().at(1);
+	QVERIFY(ch.address == fxi->universeAddress() + 3);
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 67);
+
+	s1->disarm();
+	QVERIFY(s1->armedChannels().size() == 0);
+	QVERIFY(s1->values().size() == 2);
+
+	delete doc;
+}
+
+void Scene_Test::armTooManyChannels()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setName("Test Fixture");
+	fxi->setAddress(15);
+	fxi->setUniverse(3);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 10, 123); // Channels 0 - 9 are valid
+	s1->setValue(fxi->id(), 7, 45);
+	s1->setValue(fxi->id(), 3, 67);
+	doc->addFunction(s1);
+
+	QVERIFY(s1->armedChannels().size() == 0);
+	QVERIFY(s1->values().size() == 3);
+	s1->arm();
+	QVERIFY(s1->armedChannels().size() == 2);
+	QVERIFY(s1->values().size() == 2); // The channel is removed
+
+	SceneChannel ch;
+	ch = s1->armedChannels().at(0);
+	QVERIFY(ch.address == fxi->universeAddress() + 7);
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 45);
+
+	ch = s1->armedChannels().at(1);
+	QVERIFY(ch.address == fxi->universeAddress() + 3);
+	QVERIFY(ch.start == 0);
+	QVERIFY(ch.current == 0);
+	QVERIFY(ch.target == 67);
+
+	s1->disarm();
+	QVERIFY(s1->armedChannels().size() == 0);
+	QVERIFY(s1->values().size() == 2);
+
+	delete doc;
+}
+
+void Scene_Test::flashUnflash()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 123);
+	s1->setValue(fxi->id(), 1, 45);
+	s1->setValue(fxi->id(), 2, 67);
+	doc->addFunction(s1);
+
+	s1->arm();
+
+	QByteArray uni(4 * 512, 0);
+	s1->flash(&uni);
+	QVERIFY(int(uni[0]) == 123);
+	QVERIFY(int(uni[1]) == 45);
+	QVERIFY(int(uni[2]) == 67);
+
+	s1->flash(&uni);
+	QVERIFY(int(uni[0]) == 123);
+	QVERIFY(int(uni[1]) == 45);
+	QVERIFY(int(uni[2]) == 67);
+
+	s1->unFlash(&uni);
+	QVERIFY(int(uni[0]) == 0);
+	QVERIFY(int(uni[1]) == 0);
+	QVERIFY(int(uni[2]) == 0);
+
+	s1->disarm();
+
+	delete doc;
+}
