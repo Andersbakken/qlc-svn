@@ -23,6 +23,7 @@
 #include <QtXml>
 
 #include "scene_test.h"
+#include "../function.h"
 #include "../fixture.h"
 #include "../chaser.h"
 #include "../scene.h"
@@ -508,4 +509,71 @@ void Scene_Test::flashUnflash()
 	s1->disarm();
 
 	delete doc;
+}
+
+void Scene_Test::writeBusZero()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 0);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 127);
+	s1->setValue(fxi->id(), 2, 0);
+	doc->addFunction(s1);
+
+	s1->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	s1->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == s1);
+	
+	QByteArray uni(4 * 512, 0);
+	QVERIFY(uni[0] == (char) 0);
+	QVERIFY(uni[1] == (char) 0);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == false);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
+	s1->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+	s1->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+/****************************************************************************
+ * MasterTimer Stub
+ ****************************************************************************/
+
+MasterTimerStub::MasterTimerStub(QObject* parent) : MasterTimer(parent, NULL)
+{
+}
+
+MasterTimerStub::~MasterTimerStub()
+{
+}
+
+void MasterTimerStub::startFunction(Function* function)
+{
+	m_list.append(function);
+}
+
+void MasterTimerStub::stopFunction(Function* function)
+{
+	m_list.removeAll(function);
 }

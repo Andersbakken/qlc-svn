@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <common/qlcfixturedefcache.h>
+#include "../mastertimer.h"
 
 class Scene_Test : public QObject
 {
@@ -47,8 +48,28 @@ private slots:
 
 	void flashUnflash();
 
+	void writeBusZero();
+
 private:
 	QLCFixtureDefCache m_cache;
+};
+
+/****************************************************************************
+ * MasterTimer Stub
+ ****************************************************************************/
+
+class MasterTimerStub : public MasterTimer
+{
+	Q_OBJECT
+
+public:
+	MasterTimerStub(QObject* parent);
+	~MasterTimerStub();
+
+	void startFunction(Function* function);
+	void stopFunction(Function* function);
+
+	QList <Function*> m_list;
 };
 
 #endif
