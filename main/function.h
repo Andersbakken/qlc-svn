@@ -360,7 +360,15 @@ public:
 	 * in the order that they were set to run. When this method has been
 	 * called for each running function, the buffer is written to OutputMap.
 	 *
+	 * MasterTimer calls this method for each function to get their DMX
+	 * data for the given array of universes. When this method returns
+	 * false, MasterTimer immediately removes the function from its list,
+	 * stopping the function as a result. This method will be called again
+	 * for each running function that returns true.
+	 *
 	 * @param universes The DMX universe buffer to write values into
+	 * @return true if the function has more data for the next round,
+	 *         false if the function has done its task and can be stopped.
 	 */
 	virtual bool write(QByteArray* universes) = 0;
 
