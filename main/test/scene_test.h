@@ -49,6 +49,10 @@ private slots:
 	void flashUnflash();
 
 	void writeBusZero();
+	void writeBusOne();
+	void writeBusTwo();
+	void writeBusFiveChangeToZeroInTheMiddle();
+	void writeNonZeroStartingValues();
 
 private:
 	QLCFixtureDefCache m_cache;

@@ -511,6 +511,7 @@ void Scene_Test::flashUnflash()
 	delete doc;
 }
 
+/** Test scene running with bus value 0 (takes one cycle) */
 void Scene_Test::writeBusZero()
 {
 	Doc* doc = new Doc(this, m_cache);
@@ -542,6 +543,228 @@ void Scene_Test::writeBusZero()
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
 	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == false);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
+	s1->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+	s1->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+/** Test scene running with bus value 1 (takes two cycles) */
+void Scene_Test::writeBusOne()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 1);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 127);
+	s1->setValue(fxi->id(), 2, 0);
+	doc->addFunction(s1);
+
+	s1->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	s1->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == s1);
+	
+	QByteArray uni(4 * 512, 0);
+	QVERIFY(uni[0] == (char) 0);
+	QVERIFY(uni[1] == (char) 0);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 127);
+	QVERIFY(uni[1] == (char) 63);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == false);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
+	s1->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+	s1->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+/** Test scene running with bus value 2 (takes three cycles) */
+void Scene_Test::writeBusTwo()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 2);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 127);
+	s1->setValue(fxi->id(), 2, 0);
+	doc->addFunction(s1);
+
+	s1->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	s1->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == s1);
+	
+	QByteArray uni(4 * 512, 0);
+	QVERIFY(uni[0] == (char) 0);
+	QVERIFY(uni[1] == (char) 0);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 85);
+	QVERIFY(uni[1] == (char) 42);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 170);
+	QVERIFY(uni[1] == (char) 84);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == false);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
+	s1->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+	s1->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+/** Test scene running with initial bus value 5 (takes 6 cycles) that is
+    changed in the middle to 0 */
+void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 5);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 127);
+	s1->setValue(fxi->id(), 2, 0);
+	doc->addFunction(s1);
+
+	s1->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	s1->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == s1);
+	
+	QByteArray uni(4 * 512, 0);
+	QVERIFY(uni[0] == (char) 0);
+	QVERIFY(uni[1] == (char) 0);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 42);
+	QVERIFY(uni[1] == (char) 21);
+	QVERIFY(uni[2] == (char) 0);
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 85);
+	QVERIFY(uni[1] == (char) 42);
+	QVERIFY(uni[2] == (char) 0);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 0);
+
+	QVERIFY(s1->write(&uni) == false);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
+	s1->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+	s1->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+/** Test scene running with initial values something else than zero */
+void Scene_Test::writeNonZeroStartingValues()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 2);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(10);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("First");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 127);
+	s1->setValue(fxi->id(), 2, 0);
+	doc->addFunction(s1);
+
+	s1->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	s1->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == s1);
+	
+	QByteArray uni(4 * 512, 0);
+	uni[0] = (char) 100;
+	uni[1] = (char) 255;
+	uni[2] = (char) 3;
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 151);
+	QVERIFY(uni[1] == (char) 213);
+	QVERIFY(uni[2] == (char) 2);
+
+	QVERIFY(s1->write(&uni) == true);
+	QVERIFY(uni[0] == (char) 203);
+	QVERIFY(uni[1] == (char) 170);
+	QVERIFY(uni[2] == (char) 1);
 
 	QVERIFY(s1->write(&uni) == false);
 	QVERIFY(uni[0] == (char) 255);

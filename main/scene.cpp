@@ -476,9 +476,6 @@ bool Scene::write(QByteArray* universes)
 		it.toFront();
 	}
 
-	/* Next time unit */
-	m_elapsed++;
-
 	while (it.hasNext() == true)
 	{
 		SceneChannel sch = it.next();
@@ -508,6 +505,9 @@ bool Scene::write(QByteArray* universes)
 		/* Set the changed object back to the list */
 		it.setValue(sch);
 	}
+
+	/* Next time unit */
+	m_elapsed++;
 
 	/* When all channels are ready, this function can be stopped. */
 	if (ready == 0)
@@ -546,16 +546,19 @@ void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
 
 t_value Scene::nextValue(SceneChannel* sch)
 {
-	double timeScale;
-
 	Q_ASSERT(sch != NULL);
 
+	/* Ensure that bus value is never zero */
+	double busValue = double(Bus::instance()->value(m_busID)) + 1.0;
+
+	/* Time scale is basically a percentage (0.0 - 1.0) of remaining time */
+	double timeScale = double(m_elapsed + 1) / busValue;
+
 	/*
-	 *Calculate the current value based on what it should be after
+	 * Calculate the current value based on what it should be after
 	 * m_elapsed cycles, so that it will be ready when
 	 * m_elapsed == Bus::instance()->value()
 	 */
-	timeScale = double(m_elapsed) / double(Bus::instance()->value(m_busID));
 	sch->current = sch->target - sch->start;
 	sch->current = int(double(sch->current) * timeScale);
 	sch->current += sch->start;
