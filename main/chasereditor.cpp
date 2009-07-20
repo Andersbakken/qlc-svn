@@ -128,7 +128,7 @@ void ChaserEditor::updateStepList(int selectIndex)
 {
 	m_tree->clear();
 
-	QListIterator <t_function_id> it(*m_chaser->steps());
+	QListIterator <t_function_id> it(m_chaser->steps());
 	while (it.hasNext() == true)
 	{
 		QTreeWidgetItem* item;

@@ -30,9 +30,19 @@ class QString;
 class QDomDocument;
 class MasterTimer;
 
+/**
+ * Chaser is a meta-function; it consists of other functions that are run in a
+ * sequential order. Chaser contains information only on the running order,
+ * direction and interval applied for its member functions. Therefore, a chaser
+ * itself is nothing without other functions (more than usually, scenes) as its
+ * members. If a member function's behaviour is changed, those changes are also
+ * applied automatically to those chasers that hold the changed function(s) as
+ * their members.
+ */
 class Chaser : public Function
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Chaser)
 
 	/*********************************************************************
 	 * Initialization
@@ -44,13 +54,11 @@ public:
 	/** Destructor */
 	virtual ~Chaser();
 
-private:
-	Q_DISABLE_COPY(Chaser)
-
 	/*********************************************************************
 	 * Function type
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	Function::Type type() const;
 
 	/*********************************************************************
@@ -67,25 +75,57 @@ public:
 	 * Chaser contents
 	 *********************************************************************/
 public:
-	/** Add the given function to the end of this chaser's step list */
-	void addStep(t_function_id fid);
+	/**
+	 * Add the given function to the end of this chaser's step list. The
+	 * same function can exist any number of times in a chaser. No checks
+	 * for the function's validity are made at this point, except that the
+	 * chaser's own ID cannot be added (i.e. a chaser cannot be its own
+	 * direct member).
+	 *
+	 * @param fid The ID of the function to add
+	 */
+	bool addStep(t_function_id fid);
 
-	/** Remove a function from the given step index */
-	void removeStep(unsigned int index = 0);
+	/**
+	 * Remove a function from the given step index. If the given index is
+	 * out of bounds, this returns false.
+	 *
+	 * @param index The index number to remove
+	 * @return true if successful, otherwise false
+	 */
+	bool removeStep(int index);
 
-	/** Raise the given step once (move it one step earlier) */
-	bool raiseStep(unsigned int index);
+	/**
+	 * Raise the given step once from the given index to index - 1. If the
+	 * index is already 0, this function fails.
+	 *
+	 * @param index The index of the step to raise
+	 * @return true if successful, otherwise false
+	 */
+	bool raiseStep(int index);
 
-	/** Lower the given step once (move it one step later) */
-	bool lowerStep(unsigned int index);
+	/**
+	 * Lower the given step once from the given index to index + 1. If the
+	 * index is already size - 1, this function fails.
+	 *
+	 * @param index The index of the step to lower
+	 * @return true if successful, otherwise false
+	 */
+	bool lowerStep(int index);
 
 	/** Get this chaser's list of steps */
-	QList <t_function_id> *steps() { return &m_steps; }
+	QList <t_function_id> steps() const { return m_steps; }
 
-protected slots:
-	/** Catches Doc::functionRemoved() so that destroyed members can be
-	    removed immediately. */
-	void slotFunctionRemoved(t_function_id);
+public slots:
+	/**
+	 * Catches Doc::functionRemoved() so that destroyed members can be
+	 * removed immediately. This method removes all occurrences of the
+	 * given function ID, while removeStep() only removes one function ID
+	 * at the given index.
+	 *
+	 * @param fid The ID of the function that was removed
+	 */
+	void slotFunctionRemoved(t_function_id fid);
 
 protected:
 	QList <t_function_id> m_steps;

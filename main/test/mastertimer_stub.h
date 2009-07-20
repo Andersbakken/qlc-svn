@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  test_engine.cpp
+  mastertimer_stub.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,39 +19,29 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QtTest>
+#ifndef MASTERTIMER_STUB_H
+#define MASTERTIMER_STUB_H
 
-#include "scenechannel_test.h"
-#include "scenevalue_test.h"
-#include "fixture_test.h"
-#include "chaser_test.h"
-#include "scene_test.h"
-#include "bus_test.h"
+#include <QObject>
+#include "../mastertimer.h"
 
-/* This file includes tests for QLC's ENGINE components. UI tests are done
-   separately. */
-int main(int argc, char** argv)
+/****************************************************************************
+ * MasterTimer Stub
+ ****************************************************************************/
+
+class MasterTimerStub : public MasterTimer
 {
-	QApplication qapp(argc, argv);
+	Q_OBJECT
 
-	Bus_Test bus;
-	QTest::qExec(&bus, argc, argv);
+public:
+	MasterTimerStub(QObject* parent);
+	~MasterTimerStub();
 
-	Fixture_Test fixture;
-	QTest::qExec(&fixture, argc, argv);
+	void startFunction(Function* function);
+	void stopFunction(Function* function);
 
-	SceneValue_Test scenevalue;
-	QTest::qExec(&scenevalue, argc, argv);
+	QList <Function*> m_list;
+};
 
-	SceneChannel_Test scenechannel;
-	QTest::qExec(&scenechannel, argc, argv);
+#endif
 
-	Scene_Test scene;
-	QTest::qExec(&scene, argc, argv);
-
-	Chaser_Test chaser;
-	QTest::qExec(&chaser, argc, argv);
-
-	return 0;
-}

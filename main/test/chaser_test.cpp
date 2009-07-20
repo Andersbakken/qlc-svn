@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  scene_test.cpp
+  chaser_test.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -22,163 +22,159 @@
 #include <QtTest>
 #include <QtXml>
 
-#include "mastertimer_stub.h"
-#include "scene_test.h"
+#include "chaser_test.h"
 #include "../function.h"
 #include "../fixture.h"
 #include "../chaser.h"
 #include "../scene.h"
 #include "../doc.h"
 
-void Scene_Test::initTestCase()
+void Chaser_Test::initTestCase()
 {
 	Bus::init(this);
 	m_cache.load("../../fixtures/");
 }
 
-void Scene_Test::initial()
+void Chaser_Test::initial()
 {
-	Scene s(this);
-	QVERIFY(s.type() == Function::Scene);
-	QVERIFY(s.name() == "New Scene");
-	QVERIFY(s.values().size() == 0);
-	QVERIFY(s.id() == KNoID);
+	Chaser c(this);
+	QVERIFY(c.type() == Function::Chaser);
+	QVERIFY(c.name() == "New Chaser");
+	QVERIFY(c.steps().size() == 0);
+	QVERIFY(c.id() == KNoID);
 }
 
-void Scene_Test::values()
+void Chaser_Test::steps()
 {
-	Scene s(this);
-	QVERIFY(s.values().size() == 0);
+	Chaser c(this);
+	c.setID(50);
+	QVERIFY(c.steps().size() == 0);
 
-	/* Value 3 to fixture 1's channel number 2 */
-	s.setValue(1, 2, 3);
-	QVERIFY(s.values().size() == 1);
-	QVERIFY(s.values().at(0).fxi == 1);
-	QVERIFY(s.values().at(0).channel == 2);
-	QVERIFY(s.values().at(0).value == 3);
+	/* A chaser should not be allowed to be its own member */
+	QVERIFY(c.addStep(50) == false);
+	QVERIFY(c.steps().size() == 0);
 
-	/* Value 6 to fixture 4's channel number 5 */
-	SceneValue scv(4, 5, 6);
-	s.setValue(scv);
-	QVERIFY(s.values().size() == 2);
-	QVERIFY(s.values().at(0).fxi == 1);
-	QVERIFY(s.values().at(0).channel == 2);
-	QVERIFY(s.values().at(0).value == 3);
-	QVERIFY(s.values().at(1).fxi == 4);
-	QVERIFY(s.values().at(1).channel == 5);
-	QVERIFY(s.values().at(1).value == 6);
+	/* Add a function with id "12" to the chaser */
+	c.addStep(12);
+	QVERIFY(c.steps().size() == 1);
+	QVERIFY(c.steps().at(0) == 12);
 
-	/* Replace previous value 3 with 15 for fixture 1's channel number 2 */
-	s.setValue(1, 2, 15);
-	QVERIFY(s.values().size() == 2);
-	QVERIFY(s.values().at(0).fxi == 1);
-	QVERIFY(s.values().at(0).channel == 2);
-	QVERIFY(s.values().at(0).value == 15);
-	QVERIFY(s.values().at(1).fxi == 4);
-	QVERIFY(s.values().at(1).channel == 5);
-	QVERIFY(s.values().at(1).value == 6);
+	/* Add another function in the middle */
+	c.addStep(34);
+	QVERIFY(c.steps().size() == 2);
+	QVERIFY(c.steps().at(0) == 12);
+	QVERIFY(c.steps().at(1) == 34);
 
-	QVERIFY(s.value(1, 2) == 15);
-	QVERIFY(s.value(3, 2) == 0); // No such channel
-	QVERIFY(s.value(4, 5) == 6);
+	/* Must be able to add the same function multiple times */
+	c.addStep(12);
+	QVERIFY(c.steps().size() == 3);
+	QVERIFY(c.steps().at(0) == 12);
+	QVERIFY(c.steps().at(1) == 34);
+	QVERIFY(c.steps().at(2) == 12);
 
-	/* No channel 5 for fixture 1 in the scene, unset shouldn't happen */
-	s.unsetValue(1, 5);
-	QVERIFY(s.values().size() == 2);
-	QVERIFY(s.values().at(0).fxi == 1);
-	QVERIFY(s.values().at(0).channel == 2);
-	QVERIFY(s.values().at(0).value == 15);
-	QVERIFY(s.values().at(1).fxi == 4);
-	QVERIFY(s.values().at(1).channel == 5);
-	QVERIFY(s.values().at(1).value == 6);
+	/* Removing a non-existent index should make no modifications */
+	QVERIFY(c.removeStep(3) == false);
+	QVERIFY(c.steps().size() == 3);
+	QVERIFY(c.steps().at(0) == 12);
+	QVERIFY(c.steps().at(1) == 34);
+	QVERIFY(c.steps().at(2) == 12);
 
-	/* Remove fixture 1's channel 2 from the scene */
-	s.unsetValue(1, 2);
-	QVERIFY(s.values().size() == 1);
-	QVERIFY(s.values().at(0).fxi == 4);
-	QVERIFY(s.values().at(0).channel == 5);
-	QVERIFY(s.values().at(0).value == 6);
+	/* Removing the last step should succeed */
+	QVERIFY(c.removeStep(2) == true);
+	QVERIFY(c.steps().size() == 2);
+	QVERIFY(c.steps().at(0) == 12);
+	QVERIFY(c.steps().at(1) == 34);
 
-	/* No fixture 1 anymore */
-	s.unsetValue(1, 2);
-	QVERIFY(s.values().size() == 1);
-	QVERIFY(s.values().at(0).fxi == 4);
-	QVERIFY(s.values().at(0).channel == 5);
-	QVERIFY(s.values().at(0).value == 6);
+	/* Removing the first step should succeed */
+	QVERIFY(c.removeStep(0) == true);
+	QVERIFY(c.steps().size() == 1);
+	QVERIFY(c.steps().at(0) == 34);
 
-	/* Remove fixture 4's channel 5 from the scene */
-	s.unsetValue(4, 5);
-	QVERIFY(s.values().size() == 0);
+	/* Removing the only step should succeed */
+	QVERIFY(c.removeStep(0) == true);
+	QVERIFY(c.steps().size() == 0);
+
+	/* Add some new steps to test raising & lowering */
+	c.addStep(0);
+	c.addStep(1);
+	c.addStep(2);
+	c.addStep(3);
+
+	QVERIFY(c.raiseStep(0) == false);
+	QVERIFY(c.steps().at(0) == 0);
+	QVERIFY(c.steps().at(1) == 1);
+	QVERIFY(c.steps().at(2) == 2);
+	QVERIFY(c.steps().at(3) == 3);
+
+	QVERIFY(c.raiseStep(1) == true);
+	QVERIFY(c.steps().at(0) == 1);
+	QVERIFY(c.steps().at(1) == 0);
+	QVERIFY(c.steps().at(2) == 2);
+	QVERIFY(c.steps().at(3) == 3);
+
+	QVERIFY(c.raiseStep(1) == true);
+	QVERIFY(c.steps().at(0) == 0);
+	QVERIFY(c.steps().at(1) == 1);
+	QVERIFY(c.steps().at(2) == 2);
+	QVERIFY(c.steps().at(3) == 3);
+
+	QVERIFY(c.lowerStep(3) == false);
+	QVERIFY(c.steps().at(0) == 0);
+	QVERIFY(c.steps().at(1) == 1);
+	QVERIFY(c.steps().at(2) == 2);
+	QVERIFY(c.steps().at(3) == 3);
+
+	QVERIFY(c.lowerStep(1) == true);
+	QVERIFY(c.steps().at(0) == 0);
+	QVERIFY(c.steps().at(1) == 2);
+	QVERIFY(c.steps().at(2) == 1);
+	QVERIFY(c.steps().at(3) == 3);
+
+	QVERIFY(c.lowerStep(0) == true);
+	QVERIFY(c.steps().at(0) == 2);
+	QVERIFY(c.steps().at(1) == 0);
+	QVERIFY(c.steps().at(2) == 1);
+	QVERIFY(c.steps().at(3) == 3);
 }
 
-void Scene_Test::fixtureRemoval()
+void Chaser_Test::functionRemoval()
 {
-	Scene s(this);
-	QVERIFY(s.values().size() == 0);
+	Chaser c(this);
+	c.setID(42);
+	QVERIFY(c.steps().size() == 0);
 
-	s.setValue(1, 2, 3);
-	s.setValue(4, 5, 6);
-	QVERIFY(s.values().size() == 2);
+	QVERIFY(c.addStep(0) == true);
+	QVERIFY(c.addStep(1) == true);
+	QVERIFY(c.addStep(2) == true);
+	QVERIFY(c.addStep(3) == true);
+	QVERIFY(c.steps().size() == 4);
 
-	/* Simulate fixture removal signal with an uninteresting fixture id */
-	s.slotFixtureRemoved(6);
-	QVERIFY(s.values().size() == 2);
+	/* Simulate function removal signal with an uninteresting function id */
+	c.slotFunctionRemoved(6);
+	QVERIFY(c.steps().size() == 4);
 
-	/* Simulate fixture removal signal with a fixture in the scene */
-	s.slotFixtureRemoved(4);
-	QVERIFY(s.values().size() == 1);
-	QVERIFY(s.values().at(0).fxi == 1);
-	QVERIFY(s.values().at(0).channel == 2);
-	QVERIFY(s.values().at(0).value == 3);
+	/* Simulate function removal signal with a function in the chaser */
+	c.slotFunctionRemoved(1);
+	QVERIFY(c.steps().size() == 3);
+	QVERIFY(c.steps().at(0) == 0);
+	QVERIFY(c.steps().at(1) == 2);
+	QVERIFY(c.steps().at(2) == 3);
 
-	/* Simulate fixture removal signal with an invalid fixture id */
-	s.slotFixtureRemoved(Fixture::invalidId());
-	QVERIFY(s.values().size() == 1);
-	QVERIFY(s.values().at(0).fxi == 1);
-	QVERIFY(s.values().at(0).channel == 2);
-	QVERIFY(s.values().at(0).value == 3);
+	/* Simulate function removal signal with an invalid function id */
+	c.slotFunctionRemoved(Function::invalidId());
+	QVERIFY(c.steps().size() == 3);
+	QVERIFY(c.steps().at(0) == 0);
+	QVERIFY(c.steps().at(1) == 2);
+	QVERIFY(c.steps().at(2) == 3);
 
-	/* Simulate fixture removal signal with a fixture in the scene */
-	s.slotFixtureRemoved(1);
-	QVERIFY(s.values().size() == 0);
+	/* Simulate function removal signal with a function in the chaser */
+	c.slotFunctionRemoved(0);
+	QVERIFY(c.steps().size() == 2);
+	QVERIFY(c.steps().at(0) == 2);
+	QVERIFY(c.steps().at(1) == 3);
 }
 
-void Scene_Test::loadSuccess()
-{
-	QDomDocument doc;
-
-	QDomElement root = doc.createElement("Function");
-	root.setAttribute("Type", "Scene");
-
-	QDomElement bus = doc.createElement("Bus");
-	bus.setAttribute("Role", "Fade");
-	QDomText busText = doc.createTextNode("5");
-	bus.appendChild(busText);
-	root.appendChild(bus);
-
-	QDomElement v1 = doc.createElement("Value");
-	v1.setAttribute("Fixture", 5);
-	v1.setAttribute("Channel", 60);
-	QDomText v1Text = doc.createTextNode("100");
-	v1.appendChild(v1Text);
-	root.appendChild(v1);
-
-	QDomElement v2 = doc.createElement("Value");
-	v2.setAttribute("Fixture", 133);
-	v2.setAttribute("Channel", 4);
-	QDomText v2Text = doc.createTextNode("59");
-	v2.appendChild(v2Text);
-	root.appendChild(v2);
-
-	Scene s(this);
-	QVERIFY(s.loadXML(&root) == true);
-	QVERIFY(s.busID() == 5);
-	QVERIFY(s.values().size() == 2);
-	QVERIFY(s.value(5, 60) == 100);
-	QVERIFY(s.value(133, 4) == 59);
-}
-
-void Scene_Test::loadWrongType()
+void Chaser_Test::loadSuccess()
 {
 	QDomDocument doc;
 
@@ -186,60 +182,141 @@ void Scene_Test::loadWrongType()
 	root.setAttribute("Type", "Chaser");
 
 	QDomElement bus = doc.createElement("Bus");
-	bus.setAttribute("Role", "Fade");
-	QDomText busText = doc.createTextNode("5");
+	bus.setAttribute("Role", "Hold");
+	QDomText busText = doc.createTextNode("16");
 	bus.appendChild(busText);
 	root.appendChild(bus);
 
-	QDomElement v1 = doc.createElement("Value");
-	v1.setAttribute("Fixture", 5);
-	v1.setAttribute("Channel", 60);
-	QDomText v1Text = doc.createTextNode("100");
-	v1.appendChild(v1Text);
-	root.appendChild(v1);
+	QDomElement dir = doc.createElement("Direction");
+	QDomText dirText = doc.createTextNode("Backward");
+	dir.appendChild(dirText);
+	root.appendChild(dir);
 
-	QDomElement v2 = doc.createElement("Value");
-	v2.setAttribute("Fixture", 133);
-	v2.setAttribute("Channel", 4);
-	QDomText v2Text = doc.createTextNode("59");
-	v2.appendChild(v2Text);
-	root.appendChild(v2);
+	QDomElement run = doc.createElement("RunOrder");
+	QDomText runText = doc.createTextNode("SingleShot");
+	run.appendChild(runText);
+	root.appendChild(run);
 
-	Scene s(this);
-	QVERIFY(s.loadXML(&root) == false);
+	QDomElement s1 = doc.createElement("Step");
+	s1.setAttribute("Number", 1);
+	QDomText s1Text = doc.createTextNode("50");
+	s1.appendChild(s1Text);
+	root.appendChild(s1);
+
+	QDomElement s2 = doc.createElement("Step");
+	s2.setAttribute("Number", 2);
+	QDomText s2Text = doc.createTextNode("12");
+	s2.appendChild(s2Text);
+	root.appendChild(s2);
+
+	QDomElement s3 = doc.createElement("Step");
+	s3.setAttribute("Number", 0);
+	QDomText s3Text = doc.createTextNode("87");
+	s3.appendChild(s3Text);
+	root.appendChild(s3);
+
+	Chaser c(this);
+	QVERIFY(c.loadXML(&root) == true);
+	QVERIFY(c.busID() == 16);
+	QVERIFY(c.direction() == Chaser::Backward);
+	QVERIFY(c.runOrder() == Chaser::SingleShot);
+	QVERIFY(c.steps().size() == 3);
+	QVERIFY(c.steps().at(0) == 87);
+	QVERIFY(c.steps().at(1) == 50);
+	QVERIFY(c.steps().at(2) == 12);
 }
 
-void Scene_Test::loadWrongRoot()
+void Chaser_Test::loadWrongType()
 {
 	QDomDocument doc;
 
-	QDomElement root = doc.createElement("Scene");
+	QDomElement root = doc.createElement("Function");
 	root.setAttribute("Type", "Scene");
 
 	QDomElement bus = doc.createElement("Bus");
-	bus.setAttribute("Role", "Fade");
-	QDomText busText = doc.createTextNode("5");
+	bus.setAttribute("Role", "Hold");
+	QDomText busText = doc.createTextNode("16");
 	bus.appendChild(busText);
 	root.appendChild(bus);
 
-	QDomElement v1 = doc.createElement("Value");
-	v1.setAttribute("Fixture", 5);
-	v1.setAttribute("Channel", 60);
-	QDomText v1Text = doc.createTextNode("100");
-	v1.appendChild(v1Text);
-	root.appendChild(v1);
+	QDomElement dir = doc.createElement("Direction");
+	QDomText dirText = doc.createTextNode("Backward");
+	dir.appendChild(dirText);
+	root.appendChild(dir);
 
-	QDomElement v2 = doc.createElement("Value");
-	v2.setAttribute("Fixture", 133);
-	v2.setAttribute("Channel", 4);
-	QDomText v2Text = doc.createTextNode("59");
-	v2.appendChild(v2Text);
-	root.appendChild(v2);
+	QDomElement run = doc.createElement("RunOrder");
+	QDomText runText = doc.createTextNode("SingleShot");
+	run.appendChild(runText);
+	root.appendChild(run);
 
-	Scene s(this);
-	QVERIFY(s.loadXML(&root) == false);
+	QDomElement s1 = doc.createElement("Step");
+	s1.setAttribute("Number", 1);
+	QDomText s1Text = doc.createTextNode("50");
+	s1.appendChild(s1Text);
+	root.appendChild(s1);
+
+	QDomElement s2 = doc.createElement("Step");
+	s2.setAttribute("Number", 2);
+	QDomText s2Text = doc.createTextNode("12");
+	s2.appendChild(s2Text);
+	root.appendChild(s2);
+
+	QDomElement s3 = doc.createElement("Step");
+	s3.setAttribute("Number", 0);
+	QDomText s3Text = doc.createTextNode("87");
+	s3.appendChild(s3Text);
+	root.appendChild(s3);
+
+	Chaser c(this);
+	QVERIFY(c.loadXML(&root) == false);
 }
 
+void Chaser_Test::loadWrongRoot()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Chaser");
+	root.setAttribute("Type", "Chaser");
+
+	QDomElement bus = doc.createElement("Bus");
+	bus.setAttribute("Role", "Hold");
+	QDomText busText = doc.createTextNode("16");
+	bus.appendChild(busText);
+	root.appendChild(bus);
+
+	QDomElement dir = doc.createElement("Direction");
+	QDomText dirText = doc.createTextNode("Backward");
+	dir.appendChild(dirText);
+	root.appendChild(dir);
+
+	QDomElement run = doc.createElement("RunOrder");
+	QDomText runText = doc.createTextNode("SingleShot");
+	run.appendChild(runText);
+	root.appendChild(run);
+
+	QDomElement s1 = doc.createElement("Step");
+	s1.setAttribute("Number", 1);
+	QDomText s1Text = doc.createTextNode("50");
+	s1.appendChild(s1Text);
+	root.appendChild(s1);
+
+	QDomElement s2 = doc.createElement("Step");
+	s2.setAttribute("Number", 2);
+	QDomText s2Text = doc.createTextNode("12");
+	s2.appendChild(s2Text);
+	root.appendChild(s2);
+
+	QDomElement s3 = doc.createElement("Step");
+	s3.setAttribute("Number", 0);
+	QDomText s3Text = doc.createTextNode("87");
+	s3.appendChild(s3Text);
+	root.appendChild(s3);
+
+	Chaser c(this);
+	QVERIFY(c.loadXML(&root) == false);
+}
+
+#if 0
 void Scene_Test::save()
 {
 	Scene s(this);
@@ -539,7 +616,7 @@ void Scene_Test::writeBusZero()
 
 	QVERIFY(mts->m_list.size() == 1);
 	QVERIFY(mts->m_list[0] == s1);
-	
+
 	QByteArray uni(4 * 512, 0);
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
@@ -585,7 +662,7 @@ void Scene_Test::writeBusOne()
 
 	QVERIFY(mts->m_list.size() == 1);
 	QVERIFY(mts->m_list[0] == s1);
-	
+
 	QByteArray uni(4 * 512, 0);
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
@@ -636,7 +713,7 @@ void Scene_Test::writeBusTwo()
 
 	QVERIFY(mts->m_list.size() == 1);
 	QVERIFY(mts->m_list[0] == s1);
-	
+
 	QByteArray uni(4 * 512, 0);
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
@@ -693,7 +770,7 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
 	QVERIFY(mts->m_list.size() == 1);
 	QVERIFY(mts->m_list[0] == s1);
-	
+
 	QByteArray uni(4 * 512, 0);
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
@@ -751,7 +828,7 @@ void Scene_Test::writeNonZeroStartingValues()
 
 	QVERIFY(mts->m_list.size() == 1);
 	QVERIFY(mts->m_list[0] == s1);
-	
+
 	QByteArray uni(4 * 512, 0);
 	uni[0] = (char) 100;
 	uni[1] = (char) 255;
@@ -779,4 +856,4 @@ void Scene_Test::writeNonZeroStartingValues()
 	delete mts;
 	delete doc;
 }
-
+#endif

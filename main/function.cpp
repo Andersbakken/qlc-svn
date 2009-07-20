@@ -37,6 +37,8 @@
 #include "bus.h"
 #include "doc.h"
 
+#define KInvalidFunctionID -1
+
 const QString KSceneString      (      "Scene" );
 const QString KChaserString     (     "Chaser" );
 const QString KEFXString        (        "EFX" );
@@ -97,6 +99,11 @@ void Function::setID(t_function_id id)
 	/* Don't set doc modified status or emit changed signal, because this
 	   function is called only once during function creation. */
 	m_id = id;
+}
+
+t_function_id Function::invalidId()
+{
+	return KInvalidFunctionID;
 }
 
 /*****************************************************************************

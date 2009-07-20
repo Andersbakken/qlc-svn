@@ -58,6 +58,7 @@ class Doc;
 class Function : public QObject
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Function)
 
 public:
 	/*********************************************************************
@@ -76,9 +77,6 @@ public:
 	 * Destroy this function
 	 */
 	virtual ~Function();
-
-private:
-	Q_DISABLE_COPY(Function)
 
 	/*********************************************************************
 	 * Copying
@@ -111,6 +109,11 @@ public:
 	 * Get this function's unique ID
 	 */
 	t_function_id id() const { return m_id; }
+
+	/**
+	 * Get the value for an invalid function ID (for comparison etc.)
+	 */
+	static t_function_id invalidId();
 
 protected:
 	t_function_id m_id;

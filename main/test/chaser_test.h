@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  scene_test.h
+  chaser_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,25 +19,26 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SCENE_TEST_H
-#define SCENE_TEST_H
+#ifndef CHASER_TEST_H
+#define CHASER_TEST_H
 
 #include <QObject>
 #include <common/qlcfixturedefcache.h>
 
-class Scene_Test : public QObject
+class Chaser_Test : public QObject
 {
 	Q_OBJECT
 
 private slots:
 	void initTestCase();
 	void initial();
-	void values();
-	void fixtureRemoval();
+	void steps();
+	void functionRemoval();
+
 	void loadSuccess();
 	void loadWrongType();
 	void loadWrongRoot();
-	void save();
+/*	void save();
 	void copyFrom();
 	void createCopy();
 
@@ -52,7 +53,7 @@ private slots:
 	void writeBusTwo();
 	void writeBusFiveChangeToZeroInTheMiddle();
 	void writeNonZeroStartingValues();
-
+*/
 private:
 	QLCFixtureDefCache m_cache;
 };

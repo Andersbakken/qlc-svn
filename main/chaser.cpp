@@ -100,7 +100,7 @@ Function* Chaser::createCopy(Doc* doc)
 	{
 		copy->setName(tr("Copy of %1").arg(name()));
 	}
-	
+
 	return copy;
 }
 
@@ -124,24 +124,37 @@ bool Chaser::copyFrom(const Function* function)
  * Contents
  *****************************************************************************/
 
-void Chaser::addStep(t_function_id id)
+bool Chaser::addStep(t_function_id id)
 {
-	m_steps.append(id);
-
-	emit changed(m_id);
+	if (id != m_id)
+	{
+		m_steps.append(id);
+		emit changed(m_id);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void Chaser::removeStep(unsigned int index)
+bool Chaser::removeStep(int index)
 {
-	Q_ASSERT(int(index) < m_steps.size());
-	m_steps.removeAt(index);
-
-	emit changed(m_id);
+	if (index >= 0 && index < m_steps.size())
+	{
+		m_steps.removeAt(index);
+		emit changed(m_id);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-bool Chaser::raiseStep(unsigned int index)
+bool Chaser::raiseStep(int index)
 {
-	if (int(index) > 0 && int(index) < m_steps.count())
+	if (index > 0 && index < m_steps.count())
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index - 1, fid);
@@ -155,9 +168,9 @@ bool Chaser::raiseStep(unsigned int index)
 	}
 }
 
-bool Chaser::lowerStep(unsigned int index)
+bool Chaser::lowerStep(int index)
 {
-	if (int(index) < (m_steps.count() - 1))
+	if (index >= 0 && index < (m_steps.count() - 1))
 	{
 		t_function_id fid = m_steps.takeAt(index);
 		m_steps.insert(index + 1, fid);
@@ -171,9 +184,9 @@ bool Chaser::lowerStep(unsigned int index)
 	}
 }
 
-void Chaser::slotFunctionRemoved(t_function_id id)
+void Chaser::slotFunctionRemoved(t_function_id fid)
 {
-	m_steps.removeAll(id);
+	m_steps.removeAll(fid);
 }
 
 /*****************************************************************************
@@ -241,9 +254,6 @@ bool Chaser::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
 bool Chaser::loadXML(const QDomElement* root)
 {
-	t_fixture_id step_fxi = KNoID;
-	int step_number = 0;
-
 	QDomNode node;
 	QDomElement tag;
 
@@ -254,6 +264,13 @@ bool Chaser::loadXML(const QDomElement* root)
 		qDebug() << "Function node not found!";
 		return false;
 	}
+
+        if (root->attribute(KXMLQLCFunctionType) !=
+            typeToString(Function::Chaser))
+        {
+                qWarning("Function is not a chaser!");
+                return false;
+        }
 
 	/* Load chaser contents */
 	node = root->firstChild();
@@ -278,15 +295,16 @@ bool Chaser::loadXML(const QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCFunctionStep)
 		{
-			step_number = 
-				tag.attribute(KXMLQLCFunctionNumber).toInt();
-			step_fxi = tag.text().toInt();
+			t_function_id fid = -1;
+			int num = 0;
 
-			if (step_number >= m_steps.size())
-				m_steps.append(step_fxi);
+			num = tag.attribute(KXMLQLCFunctionNumber).toInt();
+			fid = tag.text().toInt();
+
+			if (num >= m_steps.size())
+				m_steps.append(fid);
 			else
-				m_steps.insert(m_steps.at(step_number),
-					       step_fxi);
+				m_steps.insert(num, fid);
 		}
 		else
 		{

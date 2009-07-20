@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  test_engine.cpp
+  mastertimer_stub.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -19,39 +19,26 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QtTest>
+#include "mastertimer_stub.h"
 
-#include "scenechannel_test.h"
-#include "scenevalue_test.h"
-#include "fixture_test.h"
-#include "chaser_test.h"
-#include "scene_test.h"
-#include "bus_test.h"
+/****************************************************************************
+ * MasterTimer Stub
+ ****************************************************************************/
 
-/* This file includes tests for QLC's ENGINE components. UI tests are done
-   separately. */
-int main(int argc, char** argv)
+MasterTimerStub::MasterTimerStub(QObject* parent) : MasterTimer(parent, NULL)
 {
-	QApplication qapp(argc, argv);
+}
 
-	Bus_Test bus;
-	QTest::qExec(&bus, argc, argv);
+MasterTimerStub::~MasterTimerStub()
+{
+}
 
-	Fixture_Test fixture;
-	QTest::qExec(&fixture, argc, argv);
+void MasterTimerStub::startFunction(Function* function)
+{
+	m_list.append(function);
+}
 
-	SceneValue_Test scenevalue;
-	QTest::qExec(&scenevalue, argc, argv);
-
-	SceneChannel_Test scenechannel;
-	QTest::qExec(&scenechannel, argc, argv);
-
-	Scene_Test scene;
-	QTest::qExec(&scene, argc, argv);
-
-	Chaser_Test chaser;
-	QTest::qExec(&chaser, argc, argv);
-
-	return 0;
+void MasterTimerStub::stopFunction(Function* function)
+{
+	m_list.removeAll(function);
 }
