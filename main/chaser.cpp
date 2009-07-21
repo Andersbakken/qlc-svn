@@ -301,6 +301,8 @@ bool Chaser::loadXML(const QDomElement* root)
 			num = tag.attribute(KXMLQLCFunctionNumber).toInt();
 			fid = tag.text().toInt();
 
+			/* Don't check for the member function's existence,
+			   because it might not have been loaded yet. */
 			if (num >= m_steps.size())
 				m_steps.append(fid);
 			else
@@ -329,6 +331,18 @@ void Chaser::slotBusTapped(quint32 id)
 
 void Chaser::arm()
 {
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
+
+	/* Check that all member functions exist (nonexistent functions can
+	   be present only when a corrupted file has been loaded) */
+	QMutableListIterator<t_function_id> it(m_steps);
+	while (it.hasNext() == true)
+	{
+		/* Remove any nonexistent member functions */
+		if (doc->function(it.next()) == NULL)
+			it.remove();
+	}
 }
 
 void Chaser::disarm()
@@ -338,6 +352,10 @@ void Chaser::disarm()
 void Chaser::start(MasterTimer* timer)
 {
 	Q_ASSERT(timer != NULL);
+
+	/* Don't start twice */
+	if (isRunning() == true)
+		return;
 
 	m_masterTimer = timer;
 
@@ -365,7 +383,16 @@ void Chaser::stop(MasterTimer* timer)
 {
 	Q_ASSERT(timer != NULL);
 
-	stopMemberAt(m_runTimePosition);
+	/* Don't stop twice */
+	if (isRunning() == false)
+		return;
+
+	/* Only stop a member if the current position is within range. It is
+	   not in range, when nextStep() moves it deliberately off at each
+	   end in all running modes. */
+	if (m_runTimePosition >= 0 && m_runTimePosition < m_steps.size())
+		stopMemberAt(m_runTimePosition);
+
 	Function::stop(timer);
 	m_masterTimer = NULL;
 }
@@ -374,13 +401,20 @@ bool Chaser::write(QByteArray* universes)
 {
 	Q_UNUSED(universes);
 
-	/* TODO: With some changes to scene, chaser could basically act as a
+	/* With some changes to scene, chaser could basically act as a
 	   proxy for its members by calling the scene's write() functions
 	   by itself instead of starting/stopping them. Whether this would do
-	   any good, is not clear. */
+	   any good is not clear. */
+
+	/* TODO: One extra step is required in single shot mode to return
+	   false and thus get a chaser removed from MasterTimer. Not a big
+	   problem, but removing already after starting the last step would
+	   improve performance (very) slightly. */
 
 	if (m_elapsed == 0)
 	{
+		/* This is the first step since the last start() call */
+
 		/* Get the next step index */
 		nextStep();
 
@@ -390,7 +424,8 @@ bool Chaser::write(QByteArray* universes)
 		/* Mark one cycle being elapsed */
 		m_elapsed = 1;
 	}
-	else if (m_elapsed >= Bus::instance()->value(m_busID) || m_tapped == true)
+	else if (m_elapsed >= Bus::instance()->value(m_busID) ||
+		 m_tapped == true)
 	{
 		/* Reset tapped flag even if it wasn't true */
 		m_tapped = false;
@@ -401,14 +436,14 @@ bool Chaser::write(QByteArray* universes)
 		/* Get the next step index */
 		nextStep();
 
-		/* Check, whether we have gone a full cycle */
+		/* Check, whether we have gone a full cycle (thru all steps) */
 		if (roundCheck() == false)
 			return false;
+		else
+			startMemberAt(m_runTimePosition);
 
-		/* Start the next step immediately */
-		startMemberAt(m_runTimePosition);
-
-		/* Mark one cycle being elapsed */
+		/* Mark one cycle being elapsed since it tracks only the
+		   duration of the current step. */
 		m_elapsed = 1;
 	}
 	else
@@ -423,8 +458,8 @@ bool Chaser::write(QByteArray* universes)
 bool Chaser::roundCheck()
 {
 	/* Check if one complete chase round has been completed. */
-	if ((m_runTimeDirection == Backward && m_runTimePosition == -1)
-	    || (m_runTimeDirection == Forward && m_runTimePosition == m_steps.count()))
+	if ((m_runTimeDirection == Backward && m_runTimePosition == -1) ||
+	    (m_runTimeDirection == Forward && m_runTimePosition == m_steps.size()))
 	{
 		if (m_runOrder == SingleShot)
 		{

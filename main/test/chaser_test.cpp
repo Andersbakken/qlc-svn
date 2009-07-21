@@ -22,7 +22,9 @@
 #include <QtTest>
 #include <QtXml>
 
+#include "mastertimer_stub.h"
 #include "chaser_test.h"
+
 #include "../function.h"
 #include "../fixture.h"
 #include "../chaser.h"
@@ -500,272 +502,602 @@ void Chaser_Test::createCopy()
 	QVERIFY(copy->steps().at(2) == 40);
 }
 
-#if 0
-/** Test scene running with bus value 0 (takes one cycle) */
-void Scene_Test::writeBusZero()
+void Chaser_Test::armSuccess()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setName("Test Fixture");
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 255);
+	doc->addFunction(s1);
+	QVERIFY(s1->id() != Function::invalidId());
+
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 0);
+	s2->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s2);
+	QVERIFY(s2->id() != Function::invalidId());
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+
+	QVERIFY(c->steps().size() == 2);
+	c->arm();
+	QVERIFY(c->steps().size() == 2);
+
+	delete doc;
+}
+
+void Chaser_Test::armMissingFunction()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setName("Test Fixture");
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 255);
+	doc->addFunction(s1);
+
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 0);
+	s2->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s2);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->addStep(s1->id());
+	c->addStep(123); // Nonexistent function
+	c->addStep(s2->id());
+	c->addStep(55); // Nonexistent function
+
+	QVERIFY(c->steps().size() == 4);
+	c->arm();
+	QVERIFY(c->steps().size() == 2); // Nonexistent functions are removed
+
+	delete doc;
+}
+
+void Chaser_Test::writeBusZeroLoopForward()
 {
 	Doc* doc = new Doc(this, m_cache);
 
 	Bus::instance()->setValue(Bus::defaultFade(), 0);
+	Bus::instance()->setValue(Bus::defaultHold(), 0);
 
 	Fixture* fxi = new Fixture(doc);
 	fxi->setAddress(0);
 	fxi->setUniverse(0);
-	fxi->setChannels(10);
+	fxi->setChannels(2);
 	doc->addFixture(fxi);
 
 	Scene* s1 = new Scene(doc);
-	s1->setName("First");
+	s1->setName("Scene1");
 	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 127);
-	s1->setValue(fxi->id(), 2, 0);
+	s1->setValue(fxi->id(), 1, 255);
 	doc->addFunction(s1);
 
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 0);
+	s2->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s2);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+
 	s1->arm();
+	s2->arm();
+	c->arm();
 
 	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
+	c->start(mts);
 
 	QVERIFY(mts->m_list.size() == 1);
-	QVERIFY(mts->m_list[0] == s1);
+	QVERIFY(mts->m_list[0] == c);
 
-	QByteArray uni(4 * 512, 0);
-	QVERIFY(uni[0] == (char) 0);
-	QVERIFY(uni[1] == (char) 0);
-	QVERIFY(uni[2] == (char) 0);
+	QByteArray uni;
 
-	QVERIFY(s1->write(&uni) == false);
-	QVERIFY(uni[0] == (char) 255);
-	QVERIFY(uni[1] == (char) 127);
-	QVERIFY(uni[2] == (char) 0);
+	/* Since hold bus' value is 0 each call to write() starts the next
+	   step in chaser. */
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
 
-	s1->stop(mts);
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	c->stop(mts);
 	QVERIFY(mts->m_list.size() == 0);
+
+	c->disarm();
 	s1->disarm();
+	s2->disarm();
 
 	delete mts;
 	delete doc;
 }
 
-/** Test scene running with bus value 1 (takes two cycles) */
-void Scene_Test::writeBusOne()
+void Chaser_Test::writeBusZeroLoopBackward()
 {
 	Doc* doc = new Doc(this, m_cache);
-
-	Bus::instance()->setValue(Bus::defaultFade(), 1);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setAddress(0);
-	fxi->setUniverse(0);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 127);
-	s1->setValue(fxi->id(), 2, 0);
-	doc->addFunction(s1);
-
-	s1->arm();
-
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_list.size() == 1);
-	QVERIFY(mts->m_list[0] == s1);
-
-	QByteArray uni(4 * 512, 0);
-	QVERIFY(uni[0] == (char) 0);
-	QVERIFY(uni[1] == (char) 0);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 127);
-	QVERIFY(uni[1] == (char) 63);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == false);
-	QVERIFY(uni[0] == (char) 255);
-	QVERIFY(uni[1] == (char) 127);
-	QVERIFY(uni[2] == (char) 0);
-
-	s1->stop(mts);
-	QVERIFY(mts->m_list.size() == 0);
-	s1->disarm();
-
-	delete mts;
-	delete doc;
-}
-
-/** Test scene running with bus value 2 (takes three cycles) */
-void Scene_Test::writeBusTwo()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Bus::instance()->setValue(Bus::defaultFade(), 2);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setAddress(0);
-	fxi->setUniverse(0);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 127);
-	s1->setValue(fxi->id(), 2, 0);
-	doc->addFunction(s1);
-
-	s1->arm();
-
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_list.size() == 1);
-	QVERIFY(mts->m_list[0] == s1);
-
-	QByteArray uni(4 * 512, 0);
-	QVERIFY(uni[0] == (char) 0);
-	QVERIFY(uni[1] == (char) 0);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 85);
-	QVERIFY(uni[1] == (char) 42);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 170);
-	QVERIFY(uni[1] == (char) 84);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == false);
-	QVERIFY(uni[0] == (char) 255);
-	QVERIFY(uni[1] == (char) 127);
-	QVERIFY(uni[2] == (char) 0);
-
-	s1->stop(mts);
-	QVERIFY(mts->m_list.size() == 0);
-	s1->disarm();
-
-	delete mts;
-	delete doc;
-}
-
-/** Test scene running with initial bus value 5 (takes 6 cycles) that is
-    changed in the middle to 0 */
-void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Bus::instance()->setValue(Bus::defaultFade(), 5);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setAddress(0);
-	fxi->setUniverse(0);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 127);
-	s1->setValue(fxi->id(), 2, 0);
-	doc->addFunction(s1);
-
-	s1->arm();
-
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_list.size() == 1);
-	QVERIFY(mts->m_list[0] == s1);
-
-	QByteArray uni(4 * 512, 0);
-	QVERIFY(uni[0] == (char) 0);
-	QVERIFY(uni[1] == (char) 0);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 42);
-	QVERIFY(uni[1] == (char) 21);
-	QVERIFY(uni[2] == (char) 0);
-
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 85);
-	QVERIFY(uni[1] == (char) 42);
-	QVERIFY(uni[2] == (char) 0);
 
 	Bus::instance()->setValue(Bus::defaultFade(), 0);
-
-	QVERIFY(s1->write(&uni) == false);
-	QVERIFY(uni[0] == (char) 255);
-	QVERIFY(uni[1] == (char) 127);
-	QVERIFY(uni[2] == (char) 0);
-
-	s1->stop(mts);
-	QVERIFY(mts->m_list.size() == 0);
-	s1->disarm();
-
-	delete mts;
-	delete doc;
-}
-
-/** Test scene running with initial values something else than zero */
-void Scene_Test::writeNonZeroStartingValues()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Bus::instance()->setValue(Bus::defaultFade(), 2);
+	Bus::instance()->setValue(Bus::defaultHold(), 0);
 
 	Fixture* fxi = new Fixture(doc);
 	fxi->setAddress(0);
 	fxi->setUniverse(0);
-	fxi->setChannels(10);
+	fxi->setChannels(2);
 	doc->addFixture(fxi);
 
 	Scene* s1 = new Scene(doc);
-	s1->setName("First");
+	s1->setName("Scene1");
 	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 127);
-	s1->setValue(fxi->id(), 2, 0);
+	s1->setValue(fxi->id(), 1, 255);
 	doc->addFunction(s1);
 
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 0);
+	s2->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s2);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->setDirection(Chaser::Backward);
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+
 	s1->arm();
+	s2->arm();
+	c->arm();
 
 	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
+	c->start(mts);
 
 	QVERIFY(mts->m_list.size() == 1);
-	QVERIFY(mts->m_list[0] == s1);
+	QVERIFY(mts->m_list[0] == c);
 
-	QByteArray uni(4 * 512, 0);
-	uni[0] = (char) 100;
-	uni[1] = (char) 255;
-	uni[2] = (char) 3;
+	QByteArray uni;
 
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 151);
-	QVERIFY(uni[1] == (char) 213);
-	QVERIFY(uni[2] == (char) 2);
+	/* Since hold bus' value is 0 each call to write() starts the next
+	   step in chaser. Last step comes first because the chaser is now
+	   running backwards. */
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
 
-	QVERIFY(s1->write(&uni) == true);
-	QVERIFY(uni[0] == (char) 203);
-	QVERIFY(uni[1] == (char) 170);
-	QVERIFY(uni[2] == (char) 1);
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
 
-	QVERIFY(s1->write(&uni) == false);
-	QVERIFY(uni[0] == (char) 255);
-	QVERIFY(uni[1] == (char) 127);
-	QVERIFY(uni[2] == (char) 0);
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
 
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	c->stop(mts);
 	s1->stop(mts);
+	s2->stop(mts);
 	QVERIFY(mts->m_list.size() == 0);
+
+	c->disarm();
 	s1->disarm();
+	s2->disarm();
 
 	delete mts;
 	delete doc;
 }
-#endif
+
+void Chaser_Test::writeBusZeroSingleShotForward()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 0);
+	Bus::instance()->setValue(Bus::defaultHold(), 0);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 255);
+	doc->addFunction(s1);
+
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 0);
+	s2->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s2);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->setRunOrder(Chaser::SingleShot);
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+
+	s1->arm();
+	s2->arm();
+	c->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	c->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == c);
+
+	QByteArray uni;
+
+	/* SingleShot will stop automatically after the last step */
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == false);
+	c->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+
+	c->disarm();
+	s1->disarm();
+	s2->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+void Chaser_Test::writeBusZeroSingleShotBackward()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 0);
+	Bus::instance()->setValue(Bus::defaultHold(), 0);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 255);
+	doc->addFunction(s1);
+
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 0);
+	s2->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s2);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->setRunOrder(Chaser::SingleShot);
+	c->setDirection(Chaser::Backward);
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+
+	s1->arm();
+	s2->arm();
+	c->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	c->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == c);
+
+	QByteArray uni;
+
+	/* SingleShot will stop automatically after the last step */
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == false);
+	c->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+
+	c->disarm();
+	s1->disarm();
+	s2->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+void Chaser_Test::writeBusZeroPingPongForward()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 0);
+	Bus::instance()->setValue(Bus::defaultHold(), 0);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 255);
+	doc->addFunction(s1);
+
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 127);
+	s2->setValue(fxi->id(), 1, 127);
+	doc->addFunction(s2);
+
+	Scene* s3 = new Scene(doc);
+	s3->setName("Scene2");
+	s3->setValue(fxi->id(), 0, 0);
+	s3->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s3);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->setRunOrder(Chaser::PingPong);
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+	c->addStep(s3->id());
+
+	s1->arm();
+	s2->arm();
+	s3->arm();
+	c->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	c->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == c);
+
+	QByteArray uni;
+
+	/* Since hold bus' value is 0 each call to write() starts the next
+	   step in chaser. Last step comes first because the chaser is now
+	   running backwards. */
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s3);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s3);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	c->stop(mts);
+	s1->stop(mts);
+	s2->stop(mts);
+	s3->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+
+	c->disarm();
+	s1->disarm();
+	s2->disarm();
+	s3->disarm();
+
+	delete mts;
+	delete doc;
+}
+
+void Chaser_Test::writeBusZeroPingPongBackward()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Bus::instance()->setValue(Bus::defaultFade(), 0);
+	Bus::instance()->setValue(Bus::defaultHold(), 0);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 1, 255);
+	doc->addFunction(s1);
+
+	Scene* s2 = new Scene(doc);
+	s2->setName("Scene2");
+	s2->setValue(fxi->id(), 0, 127);
+	s2->setValue(fxi->id(), 1, 127);
+	doc->addFunction(s2);
+
+	Scene* s3 = new Scene(doc);
+	s3->setName("Scene2");
+	s3->setValue(fxi->id(), 0, 0);
+	s3->setValue(fxi->id(), 1, 0);
+	doc->addFunction(s3);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->setRunOrder(Chaser::PingPong);
+	c->setDirection(Chaser::Backward);
+	c->addStep(s1->id());
+	c->addStep(s2->id());
+	c->addStep(s3->id());
+
+	s1->arm();
+	s2->arm();
+	s3->arm();
+	c->arm();
+
+	MasterTimerStub* mts = new MasterTimerStub(this);
+	c->start(mts);
+
+	QVERIFY(mts->m_list.size() == 1);
+	QVERIFY(mts->m_list[0] == c);
+
+	QByteArray uni;
+
+	/* Since hold bus' value is 0 each call to write() starts the next
+	   step in chaser. Last step comes first because the chaser is now
+	   running backwards. */
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s3);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s3);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s1);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s2);
+
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == c);
+	QVERIFY(mts->m_list[1] == s3);
+
+	c->stop(mts);
+	s1->stop(mts);
+	s2->stop(mts);
+	s3->stop(mts);
+	QVERIFY(mts->m_list.size() == 0);
+
+	c->disarm();
+	s1->disarm();
+	s2->disarm();
+	s3->disarm();
+
+	delete mts;
+	delete doc;
+}

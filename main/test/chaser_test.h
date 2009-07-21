@@ -43,13 +43,16 @@ private slots:
 	void copyFrom();
 	void createCopy();
 
-/*
-	void writeBusZero();
-	void writeBusOne();
-	void writeBusTwo();
-	void writeBusFiveChangeToZeroInTheMiddle();
-	void writeNonZeroStartingValues();
-*/
+	void armSuccess();
+	void armMissingFunction();
+
+	void writeBusZeroLoopForward();
+	void writeBusZeroLoopBackward();
+	void writeBusZeroSingleShotForward();
+	void writeBusZeroSingleShotBackward();
+	void writeBusZeroPingPongForward();
+	void writeBusZeroPingPongBackward();
+
 private:
 	QLCFixtureDefCache m_cache;
 };
