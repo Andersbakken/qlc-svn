@@ -179,13 +179,17 @@ QIcon Function::icon() const
 
 void Function::setRunOrder(Function::RunOrder order)
 {
-	m_runOrder = order;
+	if (order == Loop || order == SingleShot || order == PingPong)
+		m_runOrder = order;
+	else
+		m_runOrder = Loop;
 }
 
 QString Function::runOrderToString(RunOrder order)
 {
 	switch (order)
 	{
+	default:
 	case Loop:
 		return KLoopString;
 		break;
@@ -197,18 +201,12 @@ QString Function::runOrderToString(RunOrder order)
 	case SingleShot:
 		return KSingleShotString;
 		break;
-
-	default:
-		return KUndefinedString;
-		break;
 	}
 }
 
 Function::RunOrder Function::stringToRunOrder(QString str)
 {
-	if (str == KLoopString)
-		return Loop;
-	else if (str == KPingPongString)
+	if (str == KPingPongString)
 		return PingPong;
 	else if (str == KSingleShotString)
 		return SingleShot;
@@ -222,13 +220,17 @@ Function::RunOrder Function::stringToRunOrder(QString str)
 
 void Function::setDirection(Function::Direction dir)
 {
-	m_direction = dir;
+	if (dir == Forward || dir == Backward)
+		m_direction = dir;
+	else
+		m_direction = Forward;
 }
 
 QString Function::directionToString(Direction dir)
 {
 	switch (dir)
 	{
+	default:
 	case Forward:
 		return KForwardString;
 		break;
@@ -236,18 +238,12 @@ QString Function::directionToString(Direction dir)
 	case Backward:
 		return KBackwardString;
 		break;
-
-	default:
-		return KUndefinedString;
-		break;
 	}
 }
 
 Function::Direction Function::stringToDirection(QString str)
 {
-	if (str == KForwardString)
-		return Forward;
-	else if (str == KBackwardString)
+	if (str == KBackwardString)
 		return Backward;
 	else
 		return Forward;

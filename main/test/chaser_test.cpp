@@ -41,7 +41,43 @@ void Chaser_Test::initial()
 	QVERIFY(c.type() == Function::Chaser);
 	QVERIFY(c.name() == "New Chaser");
 	QVERIFY(c.steps().size() == 0);
+	QVERIFY(c.direction() == Chaser::Forward);
+	QVERIFY(c.runOrder() == Chaser::Loop);
 	QVERIFY(c.id() == KNoID);
+}
+
+void Chaser_Test::directionRunOrder()
+{
+	Chaser c(this);
+
+	QVERIFY(c.direction() == Chaser::Forward);
+	QVERIFY(c.runOrder() == Chaser::Loop);
+
+	c.setDirection(Chaser::Backward);
+	QVERIFY(c.direction() == Chaser::Backward);
+
+	c.setRunOrder(Chaser::PingPong);
+	QVERIFY(c.runOrder() == Chaser::PingPong);
+
+	c.setDirection(Chaser::Forward);
+	QVERIFY(c.direction() == Chaser::Forward);
+
+	c.setRunOrder(Chaser::SingleShot);
+	QVERIFY(c.runOrder() == Chaser::SingleShot);
+
+	c.setDirection(Chaser::Backward);
+	QVERIFY(c.direction() == Chaser::Backward);
+
+	c.setRunOrder(Chaser::Loop);
+	QVERIFY(c.runOrder() == Chaser::Loop);
+
+	/* Check that invalid direction results in a sane fallback value */
+	c.setDirection(Chaser::Direction(15));
+	QVERIFY(c.direction() == Chaser::Forward);
+
+	/* Check that invalid run order results in a sane fallback value */
+	c.setRunOrder(Chaser::RunOrder(42));
+	QVERIFY(c.runOrder() == Chaser::Loop);
 }
 
 void Chaser_Test::steps()
@@ -316,279 +352,155 @@ void Chaser_Test::loadWrongRoot()
 	QVERIFY(c.loadXML(&root) == false);
 }
 
-#if 0
-void Scene_Test::save()
+void Chaser_Test::save()
 {
-	Scene s(this);
-	s.setBus(5);
-	s.setValue(1, 2, 3);
-	s.setValue(4, 5, 6);
+	Chaser c(this);
+	c.setDirection(Chaser::Backward);
+	c.setRunOrder(Chaser::SingleShot);
+	c.setBus(9);
+	c.addStep(3);
+	c.addStep(1);
+	c.addStep(0);
+	c.addStep(2);
 
 	QDomDocument doc;
 	QDomElement root = doc.createElement("TestRoot");
 
-	QVERIFY(s.saveXML(&doc, &root) == true);
+	QVERIFY(c.saveXML(&doc, &root) == true);
 	QVERIFY(root.firstChild().toElement().tagName() == "Function");
-	QVERIFY(root.firstChild().toElement().attribute("Type") == "Scene");
+	QVERIFY(root.firstChild().toElement().attribute("Type") == "Chaser");
 
 	QVERIFY(root.firstChild().firstChild().toElement().tagName() == "Bus");
-	QVERIFY(root.firstChild().firstChild().toElement().attribute("Role") == "Fade");
-	QVERIFY(root.firstChild().firstChild().toElement().text() == "5");
+	QVERIFY(root.firstChild().firstChild().toElement().attribute("Role") == "Hold");
+	QVERIFY(root.firstChild().firstChild().toElement().text() == "9");
 
-	QVERIFY(root.firstChild().firstChild().nextSibling().toElement().tagName() == "Value");
-	QVERIFY(root.firstChild().firstChild().nextSibling().toElement().attribute("Fixture") == "1");
-	QVERIFY(root.firstChild().firstChild().nextSibling().toElement().attribute("Channel") == "2");
-	QVERIFY(root.firstChild().firstChild().nextSibling().toElement().text() == "3");
+	QDomNode node = root.firstChild().firstChild();
+	bool bus = false, run = false, dir = false;
+	int fids = 0;
+	while (node.isNull() == false)
+	{
+		QDomElement tag = node.toElement();
+		if (tag.tagName() == "Bus")
+		{
+			QVERIFY(tag.text().toUInt() == 9);
+			QVERIFY(tag.attribute("Role") == "Hold");
+			bus = true;
+		}
+		else if (tag.tagName() == "Direction")
+		{
+			QVERIFY(tag.text() == "Backward");
+			dir = true;
+		}
+		else if (tag.tagName() == "RunOrder")
+		{
+			QVERIFY(tag.text() == "SingleShot");
+			run = true;
+		}
+		else if (tag.tagName() == "Step")
+		{
+			t_function_id fid = tag.text().toUInt();
+			QVERIFY(fid == 0 || fid == 1 || fid == 2 || fid == 3);
+			fids++;
+		}
+		else
+		{
+			QFAIL("Unhandled XML tag.");
+		}
 
-	QVERIFY(root.firstChild().firstChild().nextSibling().nextSibling().toElement().tagName() == "Value");
-	QVERIFY(root.firstChild().firstChild().nextSibling().nextSibling().toElement().attribute("Fixture") == "4");
-	QVERIFY(root.firstChild().firstChild().nextSibling().nextSibling().toElement().attribute("Channel") == "5");
-	QVERIFY(root.firstChild().firstChild().nextSibling().nextSibling().toElement().text() == "6");
+		node = node.nextSibling();
+	}
+
+	QVERIFY(bus == true);
+	QVERIFY(dir == true);
+	QVERIFY(run == true);
+	QVERIFY(fids == 4);
 }
 
-void Scene_Test::copyFrom()
+void Chaser_Test::copyFrom()
 {
-	Scene s1(this);
-	s1.setName("First");
-	s1.setBus(15);
-	s1.setValue(1, 2, 3);
-	s1.setValue(4, 5, 6);
-	s1.setValue(7, 8, 9);
+	Chaser c1(this);
+	c1.setName("First");
+	c1.setDirection(Chaser::Backward);
+	c1.setRunOrder(Chaser::PingPong);
+	c1.setBus(15);
+	c1.addStep(2);
+	c1.addStep(0);
+	c1.addStep(1);
+	c1.addStep(25);
 
-	/* Verify that scene contents are copied */
-	Scene s2(this);
-	QVERIFY(s2.copyFrom(&s1) == true);
-	QVERIFY(s2.name() == "First");
-	QVERIFY(s2.busID() == 15);
-	QVERIFY(s2.value(1, 2) == 3);
-	QVERIFY(s2.value(4, 5) == 6);
-	QVERIFY(s2.value(7, 8) == 9);
+	/* Verify that chaser contents are copied */
+	Chaser c2(this);
+	QVERIFY(c2.copyFrom(&c1) == true);
+	QVERIFY(c2.name() == "First");
+	QVERIFY(c2.busID() == 15);
+	QVERIFY(c2.direction() == Chaser::Backward);
+	QVERIFY(c2.runOrder() == Chaser::PingPong);
+	QVERIFY(c2.steps().size() == 4);
+	QVERIFY(c2.steps().at(0) == 2);
+	QVERIFY(c2.steps().at(1) == 0);
+	QVERIFY(c2.steps().at(2) == 1);
+	QVERIFY(c2.steps().at(3) == 25);
 
-	/* Verify that a Scene gets a copy only from another Scene */
-	Chaser c(this);
-	QVERIFY(s2.copyFrom(&c) == false);
+	/* Verify that a Chaser gets a copy only from another Chaser */
+	Scene s(this);
+	QVERIFY(c2.copyFrom(&s) == false);
 
-	/* Make a third Scene */
-	Scene s3(this);
-	s3.setName("Third");
-	s3.setBus(8);
-	s3.setValue(3, 1, 2);
-	s3.setValue(6, 4, 5);
-	s3.setValue(9, 7, 8);
+	/* Make a third Chaser */
+	Chaser c3(this);
+	c3.setName("Third");
+	c3.setBus(8);
+	c3.setDirection(Chaser::Forward);
+	c3.setRunOrder(Chaser::Loop);
+	c3.addStep(15);
+	c3.addStep(94);
+	c3.addStep(3);
 
-	/* Verify that copying TO the same Scene a second time succeeds */
-	QVERIFY(s2.copyFrom(&s3) == true);
-	QVERIFY(s2.name() == "Third");
-	QVERIFY(s2.busID() == 8);
-	QVERIFY(s2.value(3, 1) == 2);
-	QVERIFY(s2.value(6, 4) == 5);
-	QVERIFY(s2.value(9, 7) == 8);
+	/* Verify that copying TO the same Chaser a second time succeeds and
+	   that steps are not appended but replaced completely. */
+	QVERIFY(c2.copyFrom(&c3) == true);
+	QVERIFY(c2.name() == "Third");
+	QVERIFY(c2.busID() == 8);
+	QVERIFY(c2.direction() == Chaser::Forward);
+	QVERIFY(c2.runOrder() == Chaser::Loop);
+	QVERIFY(c2.steps().size() == 3);
+	QVERIFY(c2.steps().at(0) == 15);
+	QVERIFY(c2.steps().at(1) == 94);
+	QVERIFY(c2.steps().at(2) == 3);
 }
 
-void Scene_Test::createCopy()
+void Chaser_Test::createCopy()
 {
 	Doc doc(this, m_cache);
 
-	Scene* s1 = new Scene(this);
-	s1->setName("First");
-	s1->setBus(15);
-	s1->setValue(1, 2, 3);
-	s1->setValue(4, 5, 6);
-	s1->setValue(7, 8, 9);
+	Chaser* c1 = new Chaser(this);
+	c1->setName("First");
+	c1->setBus(15);
+	c1->setDirection(Chaser::Backward);
+	c1->setRunOrder(Chaser::SingleShot);
+	c1->addStep(20);
+	c1->addStep(30);
+	c1->addStep(40);
 
-	doc.addFunction(s1);
-	QVERIFY(s1->id() != KNoID);
+	doc.addFunction(c1);
+	QVERIFY(c1->id() != KNoID);
 
-	Function* f = s1->createCopy(&doc);
+	Function* f = c1->createCopy(&doc);
 	QVERIFY(f != NULL);
-	QVERIFY(f != s1);
-	QVERIFY(f->id() != s1->id());
+	QVERIFY(f != c1);
+	QVERIFY(f->id() != c1->id());
 
-	Scene* copy = qobject_cast<Scene*> (f);
+	Chaser* copy = qobject_cast<Chaser*> (f);
 	QVERIFY(copy != NULL);
 	QVERIFY(copy->busID() == 15);
-	QVERIFY(copy->values().size() == 3);
-	QVERIFY(copy->value(1, 2) == 3);
-	QVERIFY(copy->value(4, 5) == 6);
-	QVERIFY(copy->value(7, 8) == 9);
+	QVERIFY(copy->direction() == Chaser::Backward);
+	QVERIFY(copy->runOrder() == Chaser::SingleShot);
+	QVERIFY(copy->steps().size() == 3);
+	QVERIFY(copy->steps().at(0) == 20);
+	QVERIFY(copy->steps().at(1) == 30);
+	QVERIFY(copy->steps().at(2) == 40);
 }
 
-void Scene_Test::arm()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setName("Test Fixture");
-	fxi->setAddress(15);
-	fxi->setUniverse(3);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 123);
-	s1->setValue(fxi->id(), 7, 45);
-	s1->setValue(fxi->id(), 3, 67);
-	doc->addFunction(s1);
-
-	QVERIFY(s1->armedChannels().size() == 0);
-	s1->arm();
-	QVERIFY(s1->armedChannels().size() == 3);
-
-	SceneChannel ch;
-	ch = s1->armedChannels().at(0);
-	QVERIFY(ch.address == fxi->universeAddress());
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 123);
-
-	ch = s1->armedChannels().at(1);
-	QVERIFY(ch.address == fxi->universeAddress() + 7);
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 45);
-
-	ch = s1->armedChannels().at(2);
-	QVERIFY(ch.address == fxi->universeAddress() + 3);
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 67);
-
-	s1->disarm();
-	QVERIFY(s1->armedChannels().size() == 0);
-	QVERIFY(s1->values().size() == 3);
-
-	delete doc;
-}
-
-void Scene_Test::armMissingFixture()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setName("Test Fixture");
-	fxi->setAddress(15);
-	fxi->setUniverse(3);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 7, 45);
-	s1->setValue(fxi->id() + 5, 9, 123); // Missing fixture
-	s1->setValue(fxi->id(), 3, 67);
-	doc->addFunction(s1);
-
-	QVERIFY(s1->armedChannels().size() == 0);
-	QVERIFY(s1->values().size() == 3);
-	s1->arm();
-	QVERIFY(s1->armedChannels().size() == 2);
-	QVERIFY(s1->values().size() == 2); // The channel is removed
-
-	SceneChannel ch;
-	ch = s1->armedChannels().at(0);
-	QVERIFY(ch.address == fxi->universeAddress() + 7);
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 45);
-
-	ch = s1->armedChannels().at(1);
-	QVERIFY(ch.address == fxi->universeAddress() + 3);
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 67);
-
-	s1->disarm();
-	QVERIFY(s1->armedChannels().size() == 0);
-	QVERIFY(s1->values().size() == 2);
-
-	delete doc;
-}
-
-void Scene_Test::armTooManyChannels()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setName("Test Fixture");
-	fxi->setAddress(15);
-	fxi->setUniverse(3);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 10, 123); // Channels 0 - 9 are valid
-	s1->setValue(fxi->id(), 7, 45);
-	s1->setValue(fxi->id(), 3, 67);
-	doc->addFunction(s1);
-
-	QVERIFY(s1->armedChannels().size() == 0);
-	QVERIFY(s1->values().size() == 3);
-	s1->arm();
-	QVERIFY(s1->armedChannels().size() == 2);
-	QVERIFY(s1->values().size() == 2); // The channel is removed
-
-	SceneChannel ch;
-	ch = s1->armedChannels().at(0);
-	QVERIFY(ch.address == fxi->universeAddress() + 7);
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 45);
-
-	ch = s1->armedChannels().at(1);
-	QVERIFY(ch.address == fxi->universeAddress() + 3);
-	QVERIFY(ch.start == 0);
-	QVERIFY(ch.current == 0);
-	QVERIFY(ch.target == 67);
-
-	s1->disarm();
-	QVERIFY(s1->armedChannels().size() == 0);
-	QVERIFY(s1->values().size() == 2);
-
-	delete doc;
-}
-
-void Scene_Test::flashUnflash()
-{
-	Doc* doc = new Doc(this, m_cache);
-
-	Fixture* fxi = new Fixture(doc);
-	fxi->setAddress(0);
-	fxi->setUniverse(0);
-	fxi->setChannels(10);
-	doc->addFixture(fxi);
-
-	Scene* s1 = new Scene(doc);
-	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 123);
-	s1->setValue(fxi->id(), 1, 45);
-	s1->setValue(fxi->id(), 2, 67);
-	doc->addFunction(s1);
-
-	s1->arm();
-
-	QByteArray uni(4 * 512, 0);
-	s1->flash(&uni);
-	QVERIFY(int(uni[0]) == 123);
-	QVERIFY(int(uni[1]) == 45);
-	QVERIFY(int(uni[2]) == 67);
-
-	s1->flash(&uni);
-	QVERIFY(int(uni[0]) == 123);
-	QVERIFY(int(uni[1]) == 45);
-	QVERIFY(int(uni[2]) == 67);
-
-	s1->unFlash(&uni);
-	QVERIFY(int(uni[0]) == 0);
-	QVERIFY(int(uni[1]) == 0);
-	QVERIFY(int(uni[2]) == 0);
-
-	s1->disarm();
-
-	delete doc;
-}
-
+#if 0
 /** Test scene running with bus value 0 (takes one cycle) */
 void Scene_Test::writeBusZero()
 {

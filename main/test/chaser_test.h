@@ -32,22 +32,18 @@ class Chaser_Test : public QObject
 private slots:
 	void initTestCase();
 	void initial();
+	void directionRunOrder();
 	void steps();
 	void functionRemoval();
 
 	void loadSuccess();
 	void loadWrongType();
 	void loadWrongRoot();
-/*	void save();
+	void save();
 	void copyFrom();
 	void createCopy();
 
-	void arm();
-	void armMissingFixture();
-	void armTooManyChannels();
-
-	void flashUnflash();
-
+/*
 	void writeBusZero();
 	void writeBusOne();
 	void writeBusTwo();
