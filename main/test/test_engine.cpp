@@ -24,6 +24,7 @@
 
 #include "scenechannel_test.h"
 #include "scenevalue_test.h"
+#include "collection_test.h"
 #include "fixture_test.h"
 #include "chaser_test.h"
 #include "scene_test.h"
@@ -52,6 +53,9 @@ int main(int argc, char** argv)
 
 	Chaser_Test chaser;
 	QTest::qExec(&chaser, argc, argv);
+
+	Collection_Test collection;
+	QTest::qExec(&collection, argc, argv);
 
 	return 0;
 }

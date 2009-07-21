@@ -87,8 +87,7 @@ void CollectionEditor::slotAdd()
 		while (it.hasNext() == true)
 		{
 			fid = it.next();
-			if (isAlreadyMember(fid) == false)
-				m_fc->addItem(fid);
+			m_fc->addFunction(fid);
 		}
 
 		updateFunctionList();
@@ -101,7 +100,7 @@ void CollectionEditor::slotRemove()
 	if (item != NULL)
 	{
 		t_function_id id = item->text(KColumnFunctionID).toInt();
-		m_fc->removeItem(id);
+		m_fc->removeFunction(id);
 		delete item;
 	}
 }
@@ -119,7 +118,7 @@ void CollectionEditor::updateFunctionList()
 {
 	m_tree->clear();
 
-	QListIterator <t_function_id> it(*m_fc->steps());
+	QListIterator <t_function_id> it(m_fc->functions());
 	while (it.hasNext() == true)
 	{
 		QTreeWidgetItem* item;
@@ -135,17 +134,4 @@ void CollectionEditor::updateFunctionList()
 		item->setText(KColumnFunction, function->name());
 		item->setText(KColumnFunctionID, s.setNum(fid));
 	}
-}
-
-bool CollectionEditor::isAlreadyMember(t_function_id id)
-{
-	QListIterator <t_function_id> it(*m_fc->steps());
-
-	while (it.hasNext() == true)
-	{
-		if (it.next() == id)
-			return true;
-	}
-
-	return false;
 }

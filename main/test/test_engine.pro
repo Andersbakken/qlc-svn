@@ -79,6 +79,7 @@ HEADERS = bus_test.h \
 	  scenevalue_test.h \
 	  scenechannel_test.h \
 	  chaser_test.h \
+	  collection_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS \
@@ -90,6 +91,7 @@ SOURCES = bus_test.cpp \
 	  scenevalue_test.cpp \
 	  scenechannel_test.cpp \
 	  chaser_test.cpp \
+	  collection_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \

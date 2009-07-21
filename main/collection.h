@@ -32,6 +32,7 @@ class QDomDocument;
 class Collection : public Function
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Collection)
 
 	/*********************************************************************
 	 * Initialization
@@ -43,14 +44,11 @@ public:
 	/** Collections don't belong to any particular fixture */
 	void setFixture(t_fixture_id) { /* NOP */ }
 
-private:
-	/* Disable copying with a copy constructor & operator= */
-	Q_DISABLE_COPY(Collection)
-
 	/*********************************************************************
 	 * Function type
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	Function::Type type() const;
 
 	/*********************************************************************
@@ -67,22 +65,36 @@ public:
 	 * Contents
 	 *********************************************************************/
 public:
-	/** Add a function to this collection */
-	void addItem(t_function_id fid);
+	/**
+	 * Add a function to this collection. If the function is already a
+	 * member of the collection, this call fails.
+	 *
+	 * @param fid The function to add
+	 * @return true if successful, otherwise false
+	 */
+	bool addFunction(t_function_id fid);
 
-	/** Remove a function from this collection */
-	void removeItem(t_function_id fid);
+	/**
+	 * Remove a function from this collection. If the function is not a
+	 * member of the collection, this call fails.
+	 *
+	 * @param fid The function to remove
+	 * @return true if successful, otherwise false
+	 */
+	bool removeFunction(t_function_id fid);
 
-	/** Get this function's list of steps */
-	QList <t_function_id> *steps() { return &m_steps; }
+	/**
+	 * Get this function's list of member functions
+	 */
+	QList <t_function_id> functions() const { return m_functions; }
 
-protected slots:
+public slots:
 	/** Catches Doc::functionRemoved() so that destroyed members can be
 	    removed immediately. */
 	void slotFunctionRemoved(t_function_id function);
 
 protected:
-	QList <t_function_id> m_steps;
+	QList <t_function_id> m_functions;
 
 	/*********************************************************************
 	 * Save & Load

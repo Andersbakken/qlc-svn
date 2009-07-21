@@ -55,7 +55,7 @@ Collection::Collection(QObject* parent) : Function(parent)
 
 Collection::~Collection()
 {
-	m_steps.clear();
+	m_functions.clear();
 }
 
 /*****************************************************************************
@@ -101,14 +101,50 @@ bool Collection::copyFrom(const Function* function)
 	if (coll == NULL)
 		return false;
 
-	m_steps.clear();
-	m_steps = coll->m_steps;
+	m_functions.clear();
+	m_functions = coll->m_functions;
 
 	bool result = Function::copyFrom(function);
 
 	emit changed(m_id);
 
 	return result;
+}
+
+/*****************************************************************************
+ * Contents
+ *****************************************************************************/
+
+bool Collection::addFunction(t_function_id fid)
+{
+	if (fid != m_id && m_functions.contains(fid) == false)
+	{
+		m_functions.append(fid);
+		emit changed(m_id);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Collection::removeFunction(t_function_id fid)
+{
+	if (m_functions.removeAll(fid) > 0)
+	{
+		emit changed(m_id);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void Collection::slotFunctionRemoved(t_function_id fid)
+{
+	removeFunction(fid);
 }
 
 /*****************************************************************************
@@ -135,7 +171,7 @@ bool Collection::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 	root.setAttribute(KXMLQLCFunctionName, name());
 
 	/* Steps */
-	QListIterator <t_function_id> it(m_steps);
+	QListIterator <t_function_id> it(m_functions);
 	while (it.hasNext() == true)
 	{
 		/* Step tag */
@@ -156,8 +192,6 @@ bool Collection::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
 bool Collection::loadXML(const QDomElement* root)
 {
-	t_fixture_id step_fxi = KNoID;
-
 	QDomNode node;
 	QDomElement tag;
 
@@ -169,6 +203,13 @@ bool Collection::loadXML(const QDomElement* root)
 		return false;
 	}
 
+        if (root->attribute(KXMLQLCFunctionType) !=
+            typeToString(Function::Collection))
+        {
+                qWarning("Function is not a collection!");
+                return false;
+        }
+
 	/* Load collection contents */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -176,14 +217,9 @@ bool Collection::loadXML(const QDomElement* root)
 		tag = node.toElement();
 
 		if (tag.tagName() == KXMLQLCFunctionStep)
-		{
-			step_fxi = tag.text().toInt();
-			m_steps.append(step_fxi);
-		}
+			addFunction(tag.text().toInt());
 		else
-		{
 			qDebug() << "Unknown collection tag:" << tag.tagName();
-		}
 
 		node = node.nextSibling();
 	}
@@ -192,33 +228,23 @@ bool Collection::loadXML(const QDomElement* root)
 }
 
 /*****************************************************************************
- * Contents
- *****************************************************************************/
-
-void Collection::addItem(t_function_id id)
-{
-	m_steps.append(id);
-	emit changed(m_id);
-}
-
-void Collection::removeItem(t_function_id id)
-{
-	m_steps.takeAt(m_steps.indexOf(id));
-	emit changed(m_id);
-}
-
-void Collection::slotFunctionRemoved(t_function_id function)
-{
-	if (m_steps.removeAll(function) > 0)
-		emit changed(m_id);
-}
-
-/*****************************************************************************
  * Running
  *****************************************************************************/
 
 void Collection::arm()
 {
+	Doc* doc = qobject_cast <Doc*> (parent());
+	Q_ASSERT(doc != NULL);
+
+	/* Check that all member functions exist (nonexistent functions can
+	   be present only when a corrupted file has been loaded) */
+	QMutableListIterator<t_function_id> it(m_functions);
+	while (it.hasNext() == true)
+	{
+		/* Remove any nonexistent member functions */
+		if (doc->function(it.next()) == NULL)
+			it.remove();
+	}
 }
 
 void Collection::disarm()
@@ -232,7 +258,7 @@ void Collection::stop(MasterTimer* timer)
 
 	/* TODO: this stops these functions, regardless of whether they
 	   were started by this collection or not */
-	QListIterator <t_function_id> it(m_steps);
+	QListIterator <t_function_id> it(m_functions);
 	while (it.hasNext() == true)
 	{
 		Function* function = doc->function(it.next());
@@ -252,7 +278,7 @@ void Collection::start(MasterTimer* timer)
 
 	m_childCount = 0;
 
-	QListIterator <t_function_id> it(m_steps);
+	QListIterator <t_function_id> it(m_functions);
 	while (it.hasNext() == true)
 	{
 		Function* function;

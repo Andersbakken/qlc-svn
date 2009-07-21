@@ -1,6 +1,6 @@
 /*
-  Q Light Controller
-  collectioneditor.h
+  Q Light Controller - Unit test
+  collection_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,41 +19,35 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef COLLECTIONEDITOR_H
-#define COLLECTIONEDITOR_H
+#ifndef COLLECTION_TEST_H
+#define COLLECTION_TEST_H
 
-#include <QDialog>
+#include <QObject>
+#include <common/qlcfixturedefcache.h>
 
-#include "ui_collectioneditor.h"
-#include "common/qlctypes.h"
-
-class FunctionSelection;
-class Collection;
-
-class CollectionEditor : public QDialog, public Ui_CollectionEditor
+class Collection_Test : public QObject
 {
 	Q_OBJECT
 
-public:
-	CollectionEditor(QWidget* parent, Collection* fc);
-	~CollectionEditor();
+private slots:
+	void initTestCase();
+	void initial();
+	void functions();
+	void functionRemoval();
+
+	void loadSuccess();
+	void loadWrongType();
+	void loadWrongRoot();
+	void save();
+	void copyFrom();
+	void createCopy();
+
+	void armSuccess();
+	void armMissingFunction();
+	void write();
 
 private:
-	Q_DISABLE_COPY(CollectionEditor)
-
-protected slots:
-	void slotNameEdited(const QString& text);
-	void slotAdd();
-	void slotRemove();
-	void accept();
-
-protected:
-	void updateFunctionList();
-
-protected:
-	Collection* m_fc;
-	Collection* m_original;
+	QLCFixtureDefCache m_cache;
 };
 
 #endif
-
