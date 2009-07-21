@@ -445,11 +445,15 @@ void Collection_Test::write()
 	QVERIFY(mts->m_list[1] == s2);
 	QVERIFY(mts->m_list[2] == c);
 
-	QVERIFY(s1->write(&uni) == false);
+	/* S2 is still running after this so the collection is also running */
 	s1->stop(mts);
-	QVERIFY(s2->write(&uni) == false);
-	s2->stop(mts);
+	QVERIFY(c->write(&uni) == true);
+	QVERIFY(mts->m_list.size() == 2);
+	QVERIFY(mts->m_list[0] == s2);
+	QVERIFY(mts->m_list[1] == c);
 
+	/* Now also the collection tells that it's ready by returning false */
+	s2->stop(mts);
 	QVERIFY(c->write(&uni) == false);
 
 	c->stop(mts);
