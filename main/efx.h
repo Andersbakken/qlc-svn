@@ -59,6 +59,7 @@ class Fixture;
 class EFX : public Function
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(EFX)
 
 	friend class EFXFixture;
 
@@ -69,13 +70,11 @@ public:
 	EFX(QObject* parent);
 	~EFX();
 
-private:
-	Q_DISABLE_COPY(EFX)
-
 	/*********************************************************************
 	 * Function type
 	 *********************************************************************/
 public:
+	/** @reimpl */
 	Function::Type type() const;
 
 	/*********************************************************************
@@ -204,7 +203,7 @@ protected:
 	 * Pattern rotation, see \ref setRotation
 	 */
 	int m_rotation;
-  
+
 	/*********************************************************************
 	 * Offset
 	 *********************************************************************/
@@ -247,7 +246,7 @@ protected:
 	 * Pattern Y offset, see \ref setXOffset
 	 */
 	float m_yOffset;
-  
+
 	/*********************************************************************
 	 * Frequency
 	 *********************************************************************/
@@ -384,10 +383,10 @@ protected:
 public:
 	/** Set the EFX's fixture propagation mode (see the enum above) */
 	void setPropagationMode(PropagationMode mode);
-	
+
 	/** Get the EFX's fixture propagation mode */
 	PropagationMode propagationMode() const { return m_propagationMode; }
-	
+
 	/** Convert the propagation mode setting to a string */
 	static QString propagationModeToString(PropagationMode mode);
 
@@ -403,10 +402,10 @@ protected:
 public:
 	/** Set the start scene */
 	void setStartScene(t_function_id id);
-  
+
 	/** Get the start scene */
 	t_function_id startScene() const;
-  
+
 	/** Set start scene enabled status */
 	void setStartSceneEnabled(bool set);
 
@@ -415,10 +414,10 @@ public:
 
 	/** Set the stop scene */
 	void setStopScene(t_function_id id);
-  
+
 	/** Get the stop scene */
 	t_function_id stopScene() const;
-  
+
 	/** Set stop scene enabled status */
 	void setStopSceneEnabled(bool set);
 
@@ -457,7 +456,7 @@ public slots:
 	/**
 	 * This is called by buses for each function when the
 	 * bus value is changed.
-	 * 
+	 *
 	 * @param id ID of the bus that has changed its value
 	 * @param value Bus' new value
 	 */
