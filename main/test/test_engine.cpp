@@ -29,6 +29,7 @@
 #include "chaser_test.h"
 #include "scene_test.h"
 #include "bus_test.h"
+#include "efx_test.h"
 
 /* This file includes tests for QLC's ENGINE components. UI tests are done
    separately. */
@@ -56,6 +57,9 @@ int main(int argc, char** argv)
 
 	Collection_Test collection;
 	QTest::qExec(&collection, argc, argv);
+
+	EFX_Test efx;
+	QTest::qExec(&efx, argc, argv);
 
 	return 0;
 }

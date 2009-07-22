@@ -64,7 +64,7 @@ EFX::EFX(QObject* parent) : Function(parent)
 
 	m_xFrequency = 2;
 	m_yFrequency = 3;
-	m_xPhase = 1.5707963267;
+	m_xPhase = M_PI / 2.0;
 	m_yPhase = 0;
 
 	m_propagationMode = Parallel;
@@ -77,8 +77,6 @@ EFX::EFX(QObject* parent) : Function(parent)
 
 	m_stopSceneID = KNoID;
 	m_stopSceneEnabled = false;
-
-	m_previewPointArray = NULL;
 
 	m_algorithm = KCircleAlgorithmName;
 
@@ -103,9 +101,6 @@ EFX::EFX(QObject* parent) : Function(parent)
 	}
 }
 
-/**
- * Standard destructor
- */
 EFX::~EFX()
 {
 	while (m_fixtures.isEmpty() == false)
@@ -199,48 +194,33 @@ bool EFX::copyFrom(const Function* function)
  * Preview
  *****************************************************************************/
 
-/**
- * Set a pointer to a point array for updating the
- * changes when editing the function.
- *
- * @note Call this function with NULL after editing is finished!
- *
- * @param array The array to save the preview points to
- */
-void EFX::setPreviewPointArray(QPolygon* array)
+bool EFX::preview(QPolygon* polygon)
 {
-	m_previewPointArray = array;
-}
+	if (polygon == NULL)
+		return false;
 
-/**
- * Updates the preview points (if necessary)
- *
- */
-void EFX::updatePreview()
-{
-	if (m_previewPointArray == NULL)
-		return;
-
+	bool retval = true;
 	int stepCount = 128;
 	int step = 0;
 	float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2.0));
 
 	float i = 0;
-	float *x = new float;
-	float *y = new float;
+	float x = 0;
+	float y = 0;
 
 	/* Resize the array to contain stepCount points */
-	m_previewPointArray->resize(stepCount);
+	polygon->resize(stepCount);
 
+	/* Since algorithm is identified by a string, we don't want to do N
+	   string comparisons on each for loop increment. So, it's a bit faster
+	   to check the algorithm only once and then do the looping. */
 	if (m_algorithm == KCircleAlgorithmName)
 	{
 		/* Draw a preview of a circle */
 		for (i = 0; i < (M_PI * 2.0); i += stepSize)
 		{
-			circlePoint(this, i, x, y);
-			m_previewPointArray->setPoint(step++,
-						      static_cast<int> (*x),
-						      static_cast<int> (*y));
+			circlePoint(this, i, &x, &y);
+			polygon->setPoint(step++, int(x), int(y));
 		}
 	}
 	else if (m_algorithm == KEightAlgorithmName)
@@ -248,10 +228,8 @@ void EFX::updatePreview()
 		/* Draw a preview of a eight */
 		for (i = 0; i < (M_PI * 2.0); i += stepSize)
 		{
-			eightPoint(this, i, x, y);
-			m_previewPointArray->setPoint(step++,
-						      static_cast<int> (*x),
-						      static_cast<int> (*y));
+			eightPoint(this, i, &x, &y);
+			polygon->setPoint(step++, int(x), int(y));
 		}
 	}
 	else if (m_algorithm == KLineAlgorithmName)
@@ -259,10 +237,8 @@ void EFX::updatePreview()
 		/* Draw a preview of a line */
 		for (i = 0; i < (M_PI * 2.0); i += stepSize)
 		{
-			linePoint(this, i, x, y);
-			m_previewPointArray->setPoint(step++,
-						      static_cast<int> (*x),
-						      static_cast<int> (*y));
+			linePoint(this, i, &x, &y);
+			polygon->setPoint(step++, int(x), int(y));
 		}
 	}
 	else if (m_algorithm == KDiamondAlgorithmName)
@@ -270,10 +246,8 @@ void EFX::updatePreview()
 		/* Draw a preview of a diamond */
 		for (i = 0; i < (M_PI * 2.0); i += stepSize)
 		{
-			diamondPoint(this, i, x, y);
-			m_previewPointArray->setPoint(step++,
-						      static_cast<int> (*x),
-						      static_cast<int> (*y));
+			diamondPoint(this, i, &x, &y);
+			polygon->setPoint(step++, int(x), int(y));
 		}
 	}
 	else if (m_algorithm == KTriangleAlgorithmName)
@@ -281,10 +255,8 @@ void EFX::updatePreview()
 		/* Draw a preview of a triangle */
 		for (i = 0; i < (M_PI * 2.0); i += stepSize)
 		{
-			trianglePoint(this, i, x, y);
-			m_previewPointArray->setPoint(step++,
-						      static_cast<int> (*x),
-						      static_cast<int> (*y));
+			trianglePoint(this, i, &x, &y);
+			polygon->setPoint(step++, int(x), int(y));
 		}
 	}
 	else if (m_algorithm == KLissajousAlgorithmName)
@@ -292,28 +264,23 @@ void EFX::updatePreview()
 		/* Draw a preview of a lissajous */
 		for (i = 0; i < (M_PI * 2.0); i += stepSize)
 		{
-			lissajousPoint(this, i, x, y);
-			m_previewPointArray->setPoint(step++,
-						      static_cast<int> (*x),
-						      static_cast<int> (*y));
+			lissajousPoint(this, i, &x, &y);
+			polygon->setPoint(step++, int(x), int(y));
 		}
 	}
 	else
 	{
-		m_previewPointArray->resize(0);
+		polygon->resize(0);
+		retval = false;
 	}
 
-	delete x;
-	delete y;
+	return retval;
 }
 
 /*****************************************************************************
  * Algorithm
  *****************************************************************************/
 
-/**
- * Get the supported algorithms as a string list
- */
 QStringList EFX::algorithmList()
 {
 	QStringList list;
@@ -327,29 +294,17 @@ QStringList EFX::algorithmList()
 	return list;
 }
 
-/**
- * Get the current algorithm
- *
- * @return Name of the current algorithm. See @ref algorithmList
- */
 QString EFX::algorithm() const
 {
 	return m_algorithm;
 }
 
-/**
- * Set the current algorithm
- *
- * @param algorithm One of the strings returned by @ref algorithmList
- */
-void EFX::setAlgorithm(QString algorithm)
+void EFX::setAlgorithm(const QString& algorithm)
 {
 	if (algorithmList().contains(algorithm) == true)
 		m_algorithm = QString(algorithm);
 	else
 		m_algorithm = KCircleAlgorithmName;
-
-	updatePreview();
 
 	emit changed(m_id);
 }
@@ -358,23 +313,12 @@ void EFX::setAlgorithm(QString algorithm)
  * Width
  *****************************************************************************/
 
-/**
- * Set the pattern width
- *
- * @param width Pattern width (0-255)
- */
 void EFX::setWidth(int width)
 {
 	m_width = static_cast<double> (width);
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the pattern width
- *
- * @return Pattern width (0-255)
- */
 int EFX::width() const
 {
 	return static_cast<int> (m_width);
@@ -384,23 +328,12 @@ int EFX::width() const
  * Height
  *****************************************************************************/
 
-/**
- * Set the pattern height
- *
- * @param height Pattern height (0-255)
- */
 void EFX::setHeight(int height)
 {
 	m_height = static_cast<double> (height);
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the pattern height
- *
- * @return Pattern height (0-255)
- */
 int EFX::height() const
 {
 	return static_cast<int> (m_height);
@@ -410,23 +343,12 @@ int EFX::height() const
  * Rotation
  *****************************************************************************/
 
-/**
- * Set the pattern rotation
- *
- * @param rot Pattern rotation (0-359)
- */
 void EFX::setRotation(int rot)
 {
 	m_rotation = static_cast<int> (rot);
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the pattern rotation
- *
- * @return Pattern rotation (0-359)
- */
 int EFX::rotation() const
 {
 	return static_cast<int> (m_rotation);
@@ -436,45 +358,23 @@ int EFX::rotation() const
  * Offset
  *****************************************************************************/
 
-/**
- * Set the pattern offset on the X-axis
- *
- * @param offset Pattern offset (0-255; 127 is middle)
- */
 void EFX::setXOffset(int offset)
 {
 	m_xOffset = static_cast<double> (offset);
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the pattern offset on the X-axis
- *
- * @return Pattern offset (0-255; 127 is middle)
- */
 int EFX::xOffset() const
 {
 	return static_cast<int> (m_xOffset);
 }
 
-/**
- * Set the pattern offset on the Y-axis
- *
- * @param offset Pattern offset (0-255; 127 is middle)
- */
 void EFX::setYOffset(int offset)
 {
 	m_yOffset = static_cast<double> (offset);
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the pattern offset on the Y-axis
- *
- * @return Pattern offset (0-255; 127 is middle)
- */
 int EFX::yOffset() const
 {
 	return static_cast<int> (m_yOffset);
@@ -484,53 +384,28 @@ int EFX::yOffset() const
  * Frequency
  *****************************************************************************/
 
-/**
- * Set the lissajous pattern frequency  on the X-axis
- *
- * @param freq Pattern frequency (0-255)
- */
 void EFX::setXFrequency(int freq)
 {
 	m_xFrequency = freq;
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the lissajous pattern frequency on the X-axis
- *
- * @return Pattern offset (0-255)
- */
 int EFX::xFrequency() const
 {
 	return static_cast<int> (m_xFrequency);
 }
 
-/**
- * Set the lissajous pattern frequency  on the Y-axis
- *
- * @param freq Pattern frequency (0-255)
- */
 void EFX::setYFrequency(int freq)
 {
 	m_yFrequency = freq;
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the lissajous pattern frequency on the Y-axis
- *
- * @return Pattern offset (0-255)
- */
 int EFX::yFrequency() const
 {
 	return static_cast<int> (m_yFrequency);
 }
 
-/**
- * Returns true when lissajous has been selected
- */
 bool EFX::isFrequencyEnabled()
 {
 	if (m_algorithm == KLissajousAlgorithmName)
@@ -547,53 +422,28 @@ bool EFX::isFrequencyEnabled()
  * Phase
  *****************************************************************************/
 
-/**
- * Set the lissajous pattern phase on the X-axis
- *
- * @param phase Pattern phase (0-255)
- */
 void EFX::setXPhase(int phase)
 {
 	m_xPhase = static_cast<float> (phase * M_PI / 180.0);
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the lissajous pattern phase on the X-axis
- *
- * @return Pattern phase (0-255)
- */
 int EFX::xPhase() const
 {
 	return static_cast<int> (m_xPhase * 180.0 / M_PI);
 }
 
-/**
- * Set the lissajous pattern phase on the Y-axis
- *
- * @param phase Pattern phase (0-255)
- */
 void EFX::setYPhase(int phase)
 {
 	m_yPhase = static_cast<float> (phase * M_PI) / 180.0;
-	updatePreview();
 	emit changed(m_id);
 }
 
-/**
- * Get the lissajous pattern phase on the Y-axis
- *
- * @return Pattern phase (0-255)
- */
 int EFX::yPhase() const
 {
 	return static_cast<int> (m_yPhase * 180.0 / M_PI);
 }
 
-/**
- * Returns true when lissajous has been selected
- */
 bool EFX::isPhaseEnabled() const
 {
 	if (m_algorithm == KLissajousAlgorithmName)
@@ -735,29 +585,17 @@ void EFX::setStartScene(t_function_id scene)
 	}
 }
 
-/**
- * Get the id for start scene
- *
- */
 t_function_id EFX::startScene() const
 {
 	return m_startSceneID;
 }
 
-/**
- * Start scene enabled
- *
- */
 void EFX::setStartSceneEnabled(bool set)
 {
 	m_startSceneEnabled = set;
 	emit changed(m_id);
 }
 
-/**
- * Get start scene enabled status
- *
- */
 bool EFX::startSceneEnabled() const
 {
 	return m_startSceneEnabled;
@@ -772,39 +610,22 @@ void EFX::setStopScene(t_function_id scene)
 	}
 }
 
-/**
- * Get the id for stop scene
- *
- */
 t_function_id EFX::stopScene() const
 {
 	return m_stopSceneID;
 }
 
-/**
- * Stop scene enabled
- *
- */
 void EFX::setStopSceneEnabled(bool set)
 {
 	m_stopSceneEnabled = set;
 	emit changed(m_id);
 }
 
-/**
- * Get stop scene enabled status
- *
- */
 bool EFX::stopSceneEnabled() const
 {
 	return m_stopSceneEnabled;
 }
 
-/**
- * Catches Doc::functionRemoved() so that destroyed members can be removed
- * immediately.
- *
- */
 void EFX::slotFunctionRemoved(t_function_id id)
 {
 	if (id == m_startSceneID)
@@ -827,11 +648,6 @@ void EFX::slotFunctionRemoved(t_function_id id)
  * Load & Save
  *****************************************************************************/
 
-/**
- * Save the function's contents to an XML document
- *
- * @param doc The QDomDocument to save to
- */
 bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
 	QDomElement root;
@@ -1092,7 +908,7 @@ bool EFX::loadXML(const QDomElement* root)
 		{
 			qWarning() << "Unknown EFX tag:" << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -1108,7 +924,7 @@ bool EFX::loadXMLAxis(const QDomElement* root)
 
 	QDomNode node;
 	QDomElement tag;
-	
+
 	Q_ASSERT(root != NULL);
 
 	if (root->tagName() != KXMLQLCEFXAxis)
@@ -1125,7 +941,7 @@ bool EFX::loadXMLAxis(const QDomElement* root)
 	while (node.isNull() == false)
 	{
 		tag = node.toElement();
-		
+
 		if (tag.tagName() == KXMLQLCEFXOffset)
 		{
 			offset = tag.text().toInt();
@@ -1143,7 +959,7 @@ bool EFX::loadXMLAxis(const QDomElement* root)
 			qWarning() << "Unknown EFX axis tag: "
 				   << tag.tagName();
 		}
-		
+
 		node = node.nextSibling();
 	}
 
@@ -1171,13 +987,6 @@ bool EFX::loadXMLAxis(const QDomElement* root)
  * Bus
  *****************************************************************************/
 
-/**
- * This is called by buses for each function when the
- * bus value is changed.
- *
- * @param id ID of the bus that has changed its value
- * @param value Bus' new value
- */
 void EFX::slotBusValueChanged(quint32 id, quint32 value)
 {
 	if (id != m_busID)
@@ -1191,17 +1000,6 @@ void EFX::slotBusValueChanged(quint32 id, quint32 value)
  * Point calculation functions
  *****************************************************************************/
 
-/**
- * Calculate a single point in a circle pattern based on
- * the value of iterator (which is basically a step number)
- *
- * @note This is a static function
- *
- * @param efx The EFX function using this
- * @param iterator Step number
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- */
 void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
 {
 	*x = cos(iterator + M_PI_2);
@@ -1211,17 +1009,6 @@ void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-/**
- * Calculate a single point in an eight pattern based on
- * the value of iterator (which is basically a step number)
- *
- * @note This is a static function
- *
- * @param efx The EFX function using this
- * @param iterator Step number
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- */
 void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 {
 	*x = cos((iterator * 2) + M_PI_2);
@@ -1231,17 +1018,6 @@ void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-/**
- * Calculate a single point in a line pattern based on
- * the value of iterator (which is basically a step number)
- *
- * @note This is a static function
- *
- * @param efx The EFX function using this
- * @param iterator Step number
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- */
 void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 {
 	/* TODO: It's a simple line, I don't think we need cos() :) */
@@ -1252,17 +1028,6 @@ void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-/**
- * Calculate a single point in a triangle pattern based on
- * the value of iterator (which is basically a step number)
- *
- * @note This is a static function
- *
- * @param efx The EFX function using this
- * @param iterator Step number
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- */
 void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 {
 	/* TODO !!! */
@@ -1273,17 +1038,6 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-/**
- * Calculate a single point in a diamond pattern based on
- * the value of iterator (which is basically a step number)
- *
- * @note This is a static function
- *
- * @param efx The EFX function using this
- * @param iterator Step number
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- */
 void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
 {
 	*x = pow(cos(iterator - M_PI_2), 3);
@@ -1293,17 +1047,6 @@ void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-/**
- * Calculate a single point in a lissajous pattern based on
- * the value of iterator (which is basically a step number)
- *
- * @note This is a static function
- *
- * @param efx The EFX function using this
- * @param iterator Step number
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- */
 void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 {
 	*x = cos((efx->m_xFrequency * iterator) - efx->m_xPhase);
@@ -1313,15 +1056,6 @@ void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-/**
- * Rotate a single point in a  pattern by
- * the value of rot, scale height and width
- *
- *
- * @param x Holds the calculated X coordinate
- * @param y Holds the calculated Y coordinate
- * @param rot Amount of rotation in degrees
- */
 void EFX::rotateAndScale(float* x, float* y, float w, float h,
 			 float xOff, float yOff, float rotation)
 {

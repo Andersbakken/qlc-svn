@@ -133,7 +133,6 @@ void EFXEditor::initMovementPage()
 	m_previewArea = new EFXPreviewArea(m_previewFrame);
 	m_previewArea->resize(m_previewFrame->width(),
 			      m_previewFrame->height());
-	m_efx->setPreviewPointArray(m_previewArea->points());
 
 	/* Get supported algorithms and fill the algorithm combo with them */
 	m_algorithmCombo->addItems(EFX::algorithmList());
@@ -191,7 +190,7 @@ void EFXEditor::initMovementPage()
 	m_xOffsetSpin->setValue(m_efx->xOffset());
 	m_yOffsetSpin->setValue(m_efx->yOffset());
 	m_rotationSpin->setValue(m_efx->rotation());
-  
+
 	m_xFrequencySpin->setValue(m_efx->xFrequency());
 	m_yFrequencySpin->setValue(m_efx->yFrequency());
 	m_xPhaseSpin->setValue(m_efx->xPhase());
@@ -225,7 +224,8 @@ void EFXEditor::initMovementPage()
 	}
 
 	/* Draw the points */
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::initInitializationPage()
@@ -233,7 +233,7 @@ void EFXEditor::initInitializationPage()
 	connect(m_startSceneGroup, SIGNAL(toggled(bool)),
 		this, SLOT(slotStartSceneGroupToggled(bool)));
 	connect(m_stopSceneGroup, SIGNAL(toggled(bool)),
-		this, SLOT(slotStopSceneGroupToggled(bool)));	
+		this, SLOT(slotStopSceneGroupToggled(bool)));
 	connect(m_startSceneList, SIGNAL(itemSelectionChanged()),
 		this, SLOT(slotStartSceneListSelectionChanged()));
 	connect(m_stopSceneList, SIGNAL(itemSelectionChanged()),
@@ -276,7 +276,7 @@ const QList <EFXFixture*> EFXEditor::selectedFixtures() const
 {
 	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
 	QList <EFXFixture*> list;
-	
+
 	/* Put all selected fixture IDs to a list and return it */
 	while (it.hasNext() == true)
 	{
@@ -284,7 +284,7 @@ const QList <EFXFixture*> EFXEditor::selectedFixtures() const
 			(it.next()->data(0, Qt::UserRole).toULongLong());
 		list << ef;
 	}
-	
+
 	return list;
 }
 
@@ -535,7 +535,8 @@ void EFXEditor::slotAlgorithmSelected(const QString &text)
 	}
 
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotWidthSpinChanged(int value)
@@ -544,7 +545,8 @@ void EFXEditor::slotWidthSpinChanged(int value)
 
 	m_efx->setWidth(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotHeightSpinChanged(int value)
@@ -553,7 +555,8 @@ void EFXEditor::slotHeightSpinChanged(int value)
 
 	m_efx->setHeight(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotRotationSpinChanged(int value)
@@ -562,7 +565,8 @@ void EFXEditor::slotRotationSpinChanged(int value)
 
 	m_efx->setRotation(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotXOffsetSpinChanged(int value)
@@ -571,7 +575,8 @@ void EFXEditor::slotXOffsetSpinChanged(int value)
 
 	m_efx->setXOffset(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotYOffsetSpinChanged(int value)
@@ -580,7 +585,8 @@ void EFXEditor::slotYOffsetSpinChanged(int value)
 
 	m_efx->setYOffset(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotXFrequencySpinChanged(int value)
@@ -589,7 +595,8 @@ void EFXEditor::slotXFrequencySpinChanged(int value)
 
 	m_efx->setXFrequency(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotYFrequencySpinChanged(int value)
@@ -598,7 +605,8 @@ void EFXEditor::slotYFrequencySpinChanged(int value)
 
 	m_efx->setYFrequency(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotXPhaseSpinChanged(int value)
@@ -607,7 +615,8 @@ void EFXEditor::slotXPhaseSpinChanged(int value)
 
 	m_efx->setXPhase(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotYPhaseSpinChanged(int value)
@@ -616,7 +625,8 @@ void EFXEditor::slotYPhaseSpinChanged(int value)
 
 	m_efx->setYPhase(value);
 
-	m_previewArea->repaint();
+	m_efx->preview(m_previewArea->points());
+	m_previewArea->draw();
 }
 
 /*****************************************************************************
@@ -649,12 +659,18 @@ void EFXEditor::slotForwardClicked()
 {
 	Q_ASSERT(m_efx != NULL);
 	m_efx->setDirection(Function::Forward);
+
+	m_previewArea->setReverse(false);
+	m_previewArea->draw();
 }
 
 void EFXEditor::slotBackwardClicked()
 {
 	Q_ASSERT(m_efx != NULL);
 	m_efx->setDirection(Function::Backward);
+
+	m_previewArea->setReverse(true);
+	m_previewArea->draw();
 }
 
 /*****************************************************************************
@@ -759,7 +775,7 @@ void EFXEditor::slotStopSceneGroupToggled(bool state)
 void EFXEditor::slotStopSceneListSelectionChanged()
 {
 	Q_ASSERT(m_efx != NULL);
-   
+
 	QTreeWidgetItem* item = m_stopSceneList->currentItem();
 	if (item != NULL)
 		m_efx->setStopScene(item->text(KInitColumnID).toInt());
@@ -769,24 +785,22 @@ void EFXEditor::slotStopSceneListSelectionChanged()
  * EFX Preview Area implementation
  *****************************************************************************/
 
-/**
- * Constructor
- */
-EFXPreviewArea::EFXPreviewArea(QWidget* parent) : QFrame (parent)
+EFXPreviewArea::EFXPreviewArea(QWidget* parent) : QFrame (parent), m_timer(this)
 {
 	QPalette p = palette();
 	m_points = new QPolygon();
+	m_reverse = false;
 
 	setAutoFillBackground(true);
 	p.setColor(QPalette::Window, p.color(QPalette::Base));
 	setPalette(p);
 
 	setFrameStyle(StyledPanel | Sunken);
+
+	m_iter = 0;
+	connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
 }
 
-/**
- * Destructor
- */
 EFXPreviewArea::~EFXPreviewArea()
 {
 	setUpdatesEnabled(false);
@@ -795,20 +809,27 @@ EFXPreviewArea::~EFXPreviewArea()
 	m_points = NULL;
 }
 
-/**
- * Get the pointer for the point array that is used
- * to draw the preview
- *
- * @return The point array
- */
 QPolygon* EFXPreviewArea::points()
 {
 	return m_points;
 }
 
-/**
- * Paint the points in the point array
- */
+void EFXPreviewArea::draw()
+{
+	m_timer.stop();
+
+	if (m_reverse == true)
+		m_iter = m_points->size() - 1;
+	else
+		m_iter = 0;
+	m_timer.start(20);
+}
+
+void EFXPreviewArea::slotTimeout()
+{
+	repaint();
+}
+
 void EFXPreviewArea::paintEvent(QPaintEvent* e)
 {
 	QFrame::paintEvent(e);
@@ -817,13 +838,17 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
 	QPen pen;
 	QPoint point;
 	QColor color;
-	int i;
 
 	/* Crosshairs */
 	color = palette().color(QPalette::Mid);
 	painter.setPen(color);
 	painter.drawLine(127, 0, 127, 255);
 	painter.drawLine(0, 127, 255, 127);
+
+	if (m_reverse == true)
+		m_iter--;
+	else
+		m_iter++;
 
 	/* Plain points with highlight color */
 	color = palette().color(QPalette::Highlight);
@@ -832,19 +857,16 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
 	painter.drawPolygon(*m_points);
 
 	// Draw the points from the point array
-	for (i = 0; updatesEnabled() && i < m_points->size(); i++)
+	if (m_iter < m_points->size() && m_iter >= 0)
 	{
-		color = color.lighter(100 + (m_points->size()/100));
+		color = color.lighter(100 + (m_points->size() / 100));
 		pen.setColor(color);
 		painter.setPen(pen);
-		point = m_points->point(i);
-		painter.drawEllipse(point.x() - 1, point.y() - 1, 2, 2);
+		point = m_points->point(m_iter);
+		painter.drawEllipse(point.x() - 4, point.y() - 4, 8, 8);
 	}
-
-	/* Starting point */
-	pen.setColor(color);
-	painter.setPen(pen);
-	point = m_points->point(0);
-	painter.fillRect(point.x() - 3, point.y() - 3, 6, 6,
-			 QBrush(palette().color(QPalette::Dark)));
+	else
+	{
+		m_timer.stop();
+	}
 }

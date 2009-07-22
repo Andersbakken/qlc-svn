@@ -24,6 +24,7 @@
 
 #include <QPolygon>
 #include <QFrame>
+#include <QTimer>
 #include "common/qlctypes.h"
 
 #include "ui_efxeditor.h"
@@ -140,6 +141,24 @@ public:
 	 */
 	QPolygon* points();
 
+	/**
+	 * Tell the preview area to draw the points
+	 */
+	void draw();
+
+	/**
+	 * Set the preview area to draw the pattern in reverse or normal
+	 * order.
+	 *
+	 * @param reverse if true, the pattern is reversed
+	 */
+	void setReverse(bool reverse) { m_reverse = reverse; }
+
+	/**
+	 * Check, whether the preview are is drawing a reversed pattern
+	 */
+	bool isReverse() const { return m_reverse; }
+
 protected:
 	/**
 	 * QT Framework calls this when the widget needs
@@ -149,9 +168,22 @@ protected:
 	 */
 	void paintEvent(QPaintEvent* e);
 
+protected slots:
+	/** Animation timeout */
+	void slotTimeout();
+
 protected:
 	/** Points that are drawn in the preview area */
 	QPolygon* m_points;
+
+	/** Animation timer */
+	QTimer m_timer;
+
+	/** Animation position */
+	int m_iter;
+
+	/** Reverse or normal order */
+	bool m_reverse;
 };
 
 
