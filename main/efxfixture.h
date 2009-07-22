@@ -164,30 +164,30 @@ protected:
 	 * This fixture's current position in the pattern (a point on a
 	 * circle's circumference)
 	 */
-	float m_iterator;
+	qreal m_iterator;
 
 	/**
 	 * This iterator is incremented until it is >= m_skipThreshold.
 	 * After that, m_iterator is incremented. Used for serial propagation.
 	 */
-	float m_skipIterator;
+	qreal m_skipIterator;
 
 	/**
 	 * This is basically the index of a point in the EFX's pattern,
 	 * where this fixture will start doing its stuff. Used for serial
 	 * propagation.
 	 */
-	float m_skipThreshold;
+	qreal m_skipThreshold;
 
 	/**
 	 * The current pan value
 	 */
-	float m_panValue;
+	qreal m_panValue;
 
 	/**
 	 * The current tilt value
 	 */
-	float m_tiltValue;
+	qreal m_tiltValue;
 
 	/**
 	 * Universe channel for LSB pan data

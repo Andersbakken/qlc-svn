@@ -138,7 +138,7 @@ protected:
 	/**
 	 * Pattern width, see setWidth()
 	 */
-	float m_width;
+	qreal m_width;
 
 	/*********************************************************************
 	 * Height
@@ -162,7 +162,7 @@ protected:
 	/**
 	 * Pattern height, see setHeight()
 	 */
-	float m_height;
+	qreal m_height;
 
 	/*********************************************************************
 	 * Rotation
@@ -224,12 +224,12 @@ protected:
 	/**
 	 * Pattern X offset, see setXOffset()
 	 */
-	float m_xOffset;
+	qreal m_xOffset;
 
 	/**
 	 * Pattern Y offset, see setXOffset()
 	 */
-	float m_yOffset;
+	qreal m_yOffset;
 
 	/*********************************************************************
 	 * Frequency
@@ -238,28 +238,28 @@ public:
 	/**
 	 * Set the lissajous pattern frequency on the X-axis
 	 *
-	 * @param freq Pattern frequency (0-10)
+	 * @param freq Pattern frequency (0-5)
 	 */
 	void setXFrequency(int freq);
 
 	/**
 	 * Get the lissajous pattern frequency on the X-axis
 	 *
-	 * @return Pattern frequency (0-10)
+	 * @return Pattern frequency (0-5)
 	 */
 	int xFrequency() const;
 
 	/**
 	 * Set the lissajous pattern frequency on the Y-axis
 	 *
-	 * @param freq Pattern frequency (0-10)
+	 * @param freq Pattern frequency (0-5)
 	 */
 	void setYFrequency(int freq);
 
 	/**
 	 * Get the lissajous pattern frequency on the Y-axis
 	 *
-	 * @return Pattern frequency (0-10)
+	 * @return Pattern frequency (0-5)
 	 */
 	int yFrequency() const;
 
@@ -272,12 +272,12 @@ protected:
 	/**
 	 * Lissajous pattern X frequency, see setXFrequency()
 	 */
-	float m_xFrequency;
+	qreal m_xFrequency;
 
 	/**
 	 * Lissajous pattern Y frequency, see setYFrequency()
 	 */
-	float m_yFrequency;
+	qreal m_yFrequency;
 
 	/*********************************************************************
 	 * Phase
@@ -320,12 +320,12 @@ protected:
 	/**
 	 * Lissajous pattern X phase, see setXPhase()
 	 */
-	float m_xPhase;
+	qreal m_xPhase;
 
 	/**
 	 * Lissajous pattern Y phase, see setYPhase()
 	 */
-	float m_yPhase;
+	qreal m_yPhase;
 
 	/*********************************************************************
 	 * Fixtures
@@ -459,7 +459,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	void (*pointFunc) (EFX* efx, float iterator, float* x, float* y);
+	void (*pointFunc) (EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Calculate a single point in a circle based on
@@ -472,7 +472,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	static void circlePoint(EFX* efx, float iterator, float* x, float* y);
+	static void circlePoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Calculate a single point in a eight pattern based on
@@ -485,7 +485,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	static void eightPoint(EFX* efx, float iterator, float* x, float* y);
+	static void eightPoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Calculate a single point in a line pattern based on
@@ -498,7 +498,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	static void linePoint(EFX* efx, float iterator, float* x, float* y);
+	static void linePoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Calculate a single point in a triangle pattern based on
@@ -511,7 +511,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	static void trianglePoint(EFX* efx, float iterator, float* x, float* y);
+	static void trianglePoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Calculate a single point in a diamond pattern based on
@@ -524,7 +524,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	static void diamondPoint(EFX* efx, float iterator, float* x, float* y);
+	static void diamondPoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Calculate a single point in a lissajous pattern based on
@@ -537,7 +537,7 @@ protected:
 	 * @param x Holds the calculated X coordinate
 	 * @param y Holds the calculated Y coordinate
 	 */
-	static void lissajousPoint(EFX* efx, float iterator, float* x, float* y);
+	static void lissajousPoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
 
 	/**
 	 * Rotate a point of the pattern by rot degrees and scale the point
@@ -551,8 +551,8 @@ protected:
 	 * @param yOff Y offset of the pattern
 	 * @param rotation Degrees to rotate
 	 */
-	static void rotateAndScale(float *x, float *y, float w, float h,
-				   float xOff, float yOff, float rotation);
+	static void rotateAndScale(qreal *x, qreal *y, qreal w, qreal h,
+				   qreal xOff, qreal yOff, qreal rotation);
 
 	/*********************************************************************
 	 * Running
@@ -578,7 +578,7 @@ protected:
 	 * The size of one step derived from m_cycleDuration. If m_cycleDuration
 	 * is 64, then this is 1/64.
 	 */
-	float m_stepSize;
+	qreal m_stepSize;
 };
 
 #endif

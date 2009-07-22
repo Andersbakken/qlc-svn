@@ -69,9 +69,6 @@ EFX::EFX(QObject* parent) : Function(parent)
 
 	m_propagationMode = Parallel;
 
-	m_runOrder = EFX::Loop;
-	m_direction = EFX::Forward;
-
 	m_startSceneID = KNoID;
 	m_startSceneEnabled = false;
 
@@ -161,27 +158,24 @@ bool EFX::copyFrom(const Function* function)
 
 	m_propagationMode = efx->m_propagationMode;
 
-	m_width = efx->width();
-	m_height = efx->height();
-	m_xOffset = efx->xOffset();
-	m_yOffset = efx->yOffset();
-	m_rotation = efx->rotation();
+	m_width = efx->m_width;
+	m_height = efx->m_height;
+	m_xOffset = efx->m_xOffset;
+	m_yOffset = efx->m_yOffset;
+	m_rotation = efx->m_rotation;
 
-	m_xFrequency = efx->xFrequency();
-	m_yFrequency = efx->yFrequency();
-	m_xPhase = efx->xPhase();
-	m_yPhase = efx->yPhase();
+	m_xFrequency = efx->m_xFrequency;
+	m_yFrequency = efx->m_yFrequency;
+	m_xPhase = efx->m_xPhase;
+	m_yPhase = efx->m_yPhase;
 
-	m_runOrder = efx->runOrder();
-	m_direction = efx->direction();
+	m_startSceneID = efx->m_startSceneID;
+	m_startSceneEnabled = efx->m_startSceneEnabled;
 
-	m_startSceneID = efx->startScene();
-	m_startSceneEnabled = efx->startSceneEnabled();
+	m_stopSceneID = efx->m_stopSceneID;
+	m_stopSceneEnabled = efx->m_stopSceneEnabled;
 
-	m_stopSceneID = efx->stopScene();
-	m_stopSceneEnabled = efx->stopSceneEnabled();
-
-	m_algorithm = QString(efx->algorithm());
+	m_algorithm = efx->m_algorithm;
 
 	bool result = Function::copyFrom(function);
 
@@ -202,11 +196,11 @@ bool EFX::preview(QPolygon* polygon)
 	bool retval = true;
 	int stepCount = 128;
 	int step = 0;
-	float stepSize = (float)(1) / ((float)(stepCount) / (M_PI * 2.0));
+	qreal stepSize = (qreal)(1) / ((qreal)(stepCount) / (M_PI * 2.0));
 
-	float i = 0;
-	float x = 0;
-	float y = 0;
+	qreal i = 0;
+	qreal x = 0;
+	qreal y = 0;
 
 	/* Resize the array to contain stepCount points */
 	polygon->resize(stepCount);
@@ -315,7 +309,7 @@ void EFX::setAlgorithm(const QString& algorithm)
 
 void EFX::setWidth(int width)
 {
-	m_width = static_cast<double> (width);
+	m_width = static_cast<double> (CLAMP(width, 0, 127));
 	emit changed(m_id);
 }
 
@@ -330,7 +324,7 @@ int EFX::width() const
 
 void EFX::setHeight(int height)
 {
-	m_height = static_cast<double> (height);
+	m_height = static_cast<double> (CLAMP(height, 0, 127));
 	emit changed(m_id);
 }
 
@@ -345,7 +339,7 @@ int EFX::height() const
 
 void EFX::setRotation(int rot)
 {
-	m_rotation = static_cast<int> (rot);
+	m_rotation = static_cast<int> (CLAMP(rot, 0, 359));
 	emit changed(m_id);
 }
 
@@ -360,7 +354,7 @@ int EFX::rotation() const
 
 void EFX::setXOffset(int offset)
 {
-	m_xOffset = static_cast<double> (offset);
+	m_xOffset = static_cast<double> (CLAMP(offset, 0, 127));
 	emit changed(m_id);
 }
 
@@ -371,7 +365,7 @@ int EFX::xOffset() const
 
 void EFX::setYOffset(int offset)
 {
-	m_yOffset = static_cast<double> (offset);
+	m_yOffset = static_cast<double> (CLAMP(offset, 0, 127));
 	emit changed(m_id);
 }
 
@@ -386,7 +380,7 @@ int EFX::yOffset() const
 
 void EFX::setXFrequency(int freq)
 {
-	m_xFrequency = freq;
+	m_xFrequency = static_cast<qreal> (CLAMP(freq, 0, 5));
 	emit changed(m_id);
 }
 
@@ -397,7 +391,7 @@ int EFX::xFrequency() const
 
 void EFX::setYFrequency(int freq)
 {
-	m_yFrequency = freq;
+	m_yFrequency = static_cast<qreal> (CLAMP(freq, 0, 5));
 	emit changed(m_id);
 }
 
@@ -424,24 +418,24 @@ bool EFX::isFrequencyEnabled()
 
 void EFX::setXPhase(int phase)
 {
-	m_xPhase = static_cast<float> (phase * M_PI / 180.0);
+	m_xPhase = static_cast<qreal> (CLAMP(phase, 0, 359)) * M_PI / 180.0;
 	emit changed(m_id);
 }
 
 int EFX::xPhase() const
 {
-	return static_cast<int> (m_xPhase * 180.0 / M_PI);
+	return static_cast<int> (floor((m_xPhase * 180.0 / M_PI) + 0.5));
 }
 
 void EFX::setYPhase(int phase)
 {
-	m_yPhase = static_cast<float> (phase * M_PI) / 180.0;
+	m_yPhase = static_cast<qreal> (CLAMP(phase, 0, 359)) * M_PI / 180.0;
 	emit changed(m_id);
 }
 
 int EFX::yPhase() const
 {
-	return static_cast<int> (m_yPhase * 180.0 / M_PI);
+	return static_cast<int> (floor((m_yPhase * 180.0 / M_PI) + 0.5));
 }
 
 bool EFX::isPhaseEnabled() const
@@ -993,14 +987,14 @@ void EFX::slotBusValueChanged(quint32 id, quint32 value)
 		return;
 
 	/* Size of one step */
-	m_stepSize = float(1) / (float(value) / float(M_PI * 2));
+	m_stepSize = qreal(1) / (qreal(value) / qreal(M_PI * 2));
 }
 
 /*****************************************************************************
  * Point calculation functions
  *****************************************************************************/
 
-void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::circlePoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
 {
 	*x = cos(iterator + M_PI_2);
 	*y = cos(iterator);
@@ -1009,7 +1003,7 @@ void EFX::circlePoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::eightPoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
 {
 	*x = cos((iterator * 2) + M_PI_2);
 	*y = cos(iterator);
@@ -1018,7 +1012,7 @@ void EFX::eightPoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::linePoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
 {
 	/* TODO: It's a simple line, I don't think we need cos() :) */
 	*x = cos(iterator);
@@ -1028,7 +1022,7 @@ void EFX::linePoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::trianglePoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
 {
 	/* TODO !!! */
 	*x = cos(iterator);
@@ -1038,7 +1032,7 @@ void EFX::trianglePoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::diamondPoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
 {
 	*x = pow(cos(iterator - M_PI_2), 3);
 	*y = pow(cos(iterator), 3);
@@ -1047,7 +1041,7 @@ void EFX::diamondPoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
+void EFX::lissajousPoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
 {
 	*x = cos((efx->m_xFrequency * iterator) - efx->m_xPhase);
 	*y = cos((efx->m_yFrequency * iterator) - efx->m_yPhase);
@@ -1056,12 +1050,12 @@ void EFX::lissajousPoint(EFX* efx, float iterator, float* x, float* y)
 		       efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
 }
 
-void EFX::rotateAndScale(float* x, float* y, float w, float h,
-			 float xOff, float yOff, float rotation)
+void EFX::rotateAndScale(qreal* x, qreal* y, qreal w, qreal h,
+			 qreal xOff, qreal yOff, qreal rotation)
 {
-	float xx;
-	float yy;
-	float r;
+	qreal xx;
+	qreal yy;
+	qreal r;
 
 	xx = *x;
 	yy = *y;

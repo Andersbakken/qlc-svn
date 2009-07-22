@@ -32,6 +32,23 @@ class EFX_Test : public QObject
 private slots:
 	void initTestCase();
 	void initial();
+
+	void algorithmNames();
+	void width();
+	void height();
+	void rotation();
+	void xOffset();
+	void yOffset();
+	void xFrequency();
+	void yFrequency();
+	void xPhase();
+	void yPhase();
+
+	void fixtures();
+
+	void copyFrom();
+	void createCopy();
+
 /*	void functions();
 	void functionRemoval();
 
@@ -39,8 +56,6 @@ private slots:
 	void loadWrongType();
 	void loadWrongRoot();
 	void save();
-	void copyFrom();
-	void createCopy();
 
 	void armSuccess();
 	void armMissingFunction();

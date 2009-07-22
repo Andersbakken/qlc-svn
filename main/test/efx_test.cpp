@@ -43,6 +43,7 @@ void EFX_Test::initial()
 	QVERIFY(e.type() == Function::EFX);
 	QVERIFY(e.name() == "New EFX");
 	QVERIFY(e.id() == KNoID);
+
 	QVERIFY(e.algorithm() == "Circle");
 	QVERIFY(e.width() == 127);
 	QVERIFY(e.height() == 127);
@@ -65,6 +66,406 @@ void EFX_Test::initial()
 	QVERIFY(e.startSceneEnabled() == false);
 	QVERIFY(e.stopScene() == Function::invalidId());
 	QVERIFY(e.stopSceneEnabled() == false);
+}
+
+void EFX_Test::width()
+{
+	EFX e(this);
+
+	e.setWidth(300);
+	QVERIFY(e.width() == 127);
+
+	e.setWidth(128);
+	QVERIFY(e.width() == 127);
+
+	e.setWidth(0);
+	QVERIFY(e.width() == 0);
+
+	e.setWidth(52);
+	QVERIFY(e.width() == 52);
+
+	e.setWidth(-4);
+	QVERIFY(e.width() == 0);
+}
+
+void EFX_Test::height()
+{
+	EFX e(this);
+
+	e.setHeight(300);
+	QVERIFY(e.height() == 127);
+
+	e.setHeight(128);
+	QVERIFY(e.height() == 127);
+
+	e.setHeight(0);
+	QVERIFY(e.height() == 0);
+
+	e.setHeight(12);
+	QVERIFY(e.height() == 12);
+
+	e.setHeight(-4);
+	QVERIFY(e.height() == 0);
+}
+
+void EFX_Test::rotation()
+{
+	EFX e(this);
+
+	e.setRotation(400);
+	QVERIFY(e.rotation() == 359);
+
+	e.setRotation(360);
+	QVERIFY(e.rotation() == 359);
+
+	e.setRotation(0);
+	QVERIFY(e.rotation() == 0);
+
+	e.setRotation(12);
+	QVERIFY(e.rotation() == 12);
+
+	e.setRotation(-4);
+	QVERIFY(e.rotation() == 0);
+}
+
+void EFX_Test::xOffset()
+{
+	EFX e(this);
+
+	e.setXOffset(300);
+	QVERIFY(e.xOffset() == 127);
+
+	e.setXOffset(128);
+	QVERIFY(e.xOffset() == 127);
+
+	e.setXOffset(0);
+	QVERIFY(e.xOffset() == 0);
+
+	e.setXOffset(12);
+	QVERIFY(e.xOffset() == 12);
+
+	e.setXOffset(-4);
+	QVERIFY(e.xOffset() == 0);
+}
+
+void EFX_Test::yOffset()
+{
+	EFX e(this);
+
+	e.setYOffset(300);
+	QVERIFY(e.yOffset() == 127);
+
+	e.setYOffset(128);
+	QVERIFY(e.yOffset() == 127);
+
+	e.setYOffset(0);
+	QVERIFY(e.yOffset() == 0);
+
+	e.setYOffset(12);
+	QVERIFY(e.yOffset() == 12);
+
+	e.setYOffset(-4);
+	QVERIFY(e.yOffset() == 0);
+}
+
+void EFX_Test::xFrequency()
+{
+	EFX e(this);
+
+	QVERIFY(e.isFrequencyEnabled() == false);
+
+	e.setXFrequency(10);
+	QVERIFY(e.xFrequency() == 5);
+
+	e.setXFrequency(6);
+	QVERIFY(e.xFrequency() == 5);
+
+	e.setXFrequency(0);
+	QVERIFY(e.xFrequency() == 0);
+
+	e.setXFrequency(3);
+	QVERIFY(e.xFrequency() == 3);
+
+	e.setXFrequency(-4);
+	QVERIFY(e.xFrequency() == 0);
+
+	e.setAlgorithm("Lissajous");
+	QVERIFY(e.isFrequencyEnabled() == true);
+
+	e.setXFrequency(10);
+	QVERIFY(e.xFrequency() == 5);
+
+	e.setXFrequency(6);
+	QVERIFY(e.xFrequency() == 5);
+
+	e.setXFrequency(0);
+	QVERIFY(e.xFrequency() == 0);
+
+	e.setXFrequency(3);
+	QVERIFY(e.xFrequency() == 3);
+
+	e.setXFrequency(-4);
+	QVERIFY(e.xFrequency() == 0);
+}
+
+void EFX_Test::yFrequency()
+{
+	EFX e(this);
+
+	QVERIFY(e.isFrequencyEnabled() == false);
+
+	e.setYFrequency(10);
+	QVERIFY(e.yFrequency() == 5);
+
+	e.setYFrequency(6);
+	QVERIFY(e.yFrequency() == 5);
+
+	e.setYFrequency(0);
+	QVERIFY(e.yFrequency() == 0);
+
+	e.setYFrequency(3);
+	QVERIFY(e.yFrequency() == 3);
+
+	e.setYFrequency(-4);
+	QVERIFY(e.yFrequency() == 0);
+
+	e.setAlgorithm("Lissajous");
+	QVERIFY(e.isFrequencyEnabled() == true);
+
+	e.setXFrequency(10);
+	QVERIFY(e.xFrequency() == 5);
+
+	e.setXFrequency(6);
+	QVERIFY(e.xFrequency() == 5);
+
+	e.setXFrequency(0);
+	QVERIFY(e.xFrequency() == 0);
+
+	e.setXFrequency(3);
+	QVERIFY(e.xFrequency() == 3);
+
+	e.setXFrequency(-4);
+	QVERIFY(e.xFrequency() == 0);
+}
+
+void EFX_Test::xPhase()
+{
+	EFX e(this);
+
+	QVERIFY(e.isPhaseEnabled() == false);
+
+	e.setXPhase(400);
+	QVERIFY(e.xPhase() == 359);
+
+	e.setXPhase(360);
+	QVERIFY(e.xPhase() == 359);
+
+	e.setXPhase(0);
+	QVERIFY(e.xPhase() == 0);
+
+	e.setXPhase(359);
+	QVERIFY(e.xPhase() == 359);
+
+	e.setXPhase(46);
+	QVERIFY(e.xPhase() == 46);
+
+	e.setXPhase(-4);
+	QVERIFY(e.xPhase() == 0);
+
+	e.setAlgorithm("Lissajous");
+	QVERIFY(e.isPhaseEnabled() == true);
+
+	e.setXPhase(400);
+	QVERIFY(e.xPhase() == 359);
+
+	e.setXPhase(360);
+	QVERIFY(e.xPhase() == 359);
+
+	e.setXPhase(0);
+	QVERIFY(e.xPhase() == 0);
+
+	e.setXPhase(359);
+	QVERIFY(e.xPhase() == 359);
+
+	e.setXPhase(46);
+	QVERIFY(e.xPhase() == 46);
+
+	e.setXPhase(-4);
+	QVERIFY(e.xPhase() == 0);
+}
+
+void EFX_Test::yPhase()
+{
+	EFX e(this);
+
+	QVERIFY(e.isPhaseEnabled() == false);
+
+	e.setYPhase(400);
+	QVERIFY(e.yPhase() == 359);
+
+	e.setYPhase(360);
+	QVERIFY(e.yPhase() == 359);
+
+	e.setYPhase(0);
+	QVERIFY(e.yPhase() == 0);
+
+	e.setYPhase(359);
+	QVERIFY(e.yPhase() == 359);
+
+	e.setYPhase(152);
+	QVERIFY(e.yPhase() == 152);
+
+	e.setYPhase(-4);
+	QVERIFY(e.yPhase() == 0);
+
+	e.setAlgorithm("Lissajous");
+	QVERIFY(e.isPhaseEnabled() == true);
+
+	e.setYPhase(400);
+	QVERIFY(e.yPhase() == 359);
+
+	e.setYPhase(360);
+	QVERIFY(e.yPhase() == 359);
+
+	e.setYPhase(0);
+	QVERIFY(e.yPhase() == 0);
+
+	e.setYPhase(359);
+	QVERIFY(e.yPhase() == 359);
+
+	e.setYPhase(152);
+	QVERIFY(e.yPhase() == 152);
+
+	e.setYPhase(-4);
+	QVERIFY(e.yPhase() == 0);
+}
+
+void EFX_Test::algorithmNames()
+{
+	QStringList list = EFX::algorithmList();
+	QVERIFY(list.size() == 5);
+	QVERIFY(list.contains("Circle") == true);
+	QVERIFY(list.contains("Eight") == true);
+	QVERIFY(list.contains("Line") == true);
+	QVERIFY(list.contains("Diamond") == true);
+	QVERIFY(list.contains("Lissajous") == true);
+
+	EFX e(this);
+
+	/* All EFX's have Circle as the initial algorithm */
+	QVERIFY(e.algorithm() == "Circle");
+
+	e.setAlgorithm("Eight");
+	QVERIFY(e.algorithm() == "Eight");
+
+	e.setAlgorithm("Line");
+	QVERIFY(e.algorithm() == "Line");
+
+	e.setAlgorithm("Diamond");
+	QVERIFY(e.algorithm() == "Diamond");
+
+	e.setAlgorithm("Lissajous");
+	QVERIFY(e.algorithm() == "Lissajous");
+
+	/* Invalid algorithm name results in Circle as a fallback */
+	e.setAlgorithm("Foo");
+	QVERIFY(e.algorithm() == "Circle");
+}
+
+void EFX_Test::fixtures()
+{
+	EFX* e = new EFX(this);
+
+	EFXFixture* ef1 = new EFXFixture(e);
+	ef1->setFixture(12);
+
+	EFXFixture* ef2 = new EFXFixture(e);
+	ef2->setFixture(34);
+
+	QVERIFY(e->fixtures().size() == 0);
+
+	QVERIFY(e->addFixture(ef1) == true);
+	QVERIFY(e->addFixture(ef2) == true);
+
+	/* Must not be able to add the same fixture twice */
+	QVERIFY(e->addFixture(ef1) == false);
+	QVERIFY(e->addFixture(ef2) == false);
+
+	delete e;
+}
+
+void EFX_Test::copyFrom()
+{
+	EFX e1(this);
+	e1.setName("First");
+	e1.setDirection(EFX::Backward);
+	e1.setRunOrder(EFX::SingleShot);
+	e1.setBus(15);
+	e1.setAlgorithm("Lissajous");
+	e1.setWidth(13);
+	e1.setHeight(42);
+	e1.setRotation(78);
+	e1.setXOffset(34);
+	e1.setYOffset(27);
+	e1.setXFrequency(5);
+	e1.setYFrequency(4);
+	e1.setXPhase(163);
+	e1.setYPhase(94);
+	e1.setPropagationMode(EFX::Serial);
+	e1.setStartScene(99);
+	e1.setStopScene(88);
+
+	/* Verify that EFX contents are copied */
+	EFX e2(this);
+	QVERIFY(e2.copyFrom(&e1) == true);
+	QVERIFY(e2.name() == "First");
+	QVERIFY(e2.direction() == EFX::Backward);
+	QVERIFY(e2.runOrder() == EFX::SingleShot);
+	QVERIFY(e2.busID() == 15);
+	QVERIFY(e2.algorithm() == "Lissajous");
+	QVERIFY(e2.width() == 13);
+	QVERIFY(e2.height() == 42);
+	QVERIFY(e2.rotation() == 78);
+	QVERIFY(e2.xOffset() == 34);
+	QVERIFY(e2.yOffset() == 27);
+	QVERIFY(e2.xFrequency() == 5);
+	QVERIFY(e2.yFrequency() == 4);
+	QVERIFY(e2.xPhase() == 163);
+	QVERIFY(e2.yPhase() == 94);
+	QVERIFY(e2.propagationMode() == EFX::Serial);
+	QVERIFY(e2.startScene() == 99);
+	QVERIFY(e2.stopScene() == 88);
+
+	/* Verify that an EFX gets a copy only from another EFX */
+	Scene s(this);
+	QVERIFY(e2.copyFrom(&s) == false);
+
+	/* Make a third Collection */
+	EFX e3(this);
+	e3.setName("Third");
+
+	/* Verify that copying to the same EFX a second time succeeds */
+	QVERIFY(e2.copyFrom(&e3) == true);
+	QVERIFY(e2.name() == "Third");
+}
+
+void EFX_Test::createCopy()
+{
+	Doc doc(this, m_cache);
+
+	EFX* e1 = new EFX(this);
+	e1->setName("First");
+
+	doc.addFunction(e1);
+	QVERIFY(e1->id() != KNoID);
+
+	Function* f = e1->createCopy(&doc);
+	QVERIFY(f != NULL);
+	QVERIFY(f != e1);
+	QVERIFY(f->id() != e1->id());
+
+	EFX* copy = qobject_cast<EFX*> (f);
+	QVERIFY(copy != NULL);
 }
 
 #if 0
@@ -265,72 +666,6 @@ void Collection_Test::save()
 	}
 
 	QVERIFY(fids == 4);
-}
-
-void Collection_Test::copyFrom()
-{
-	Collection c1(this);
-	c1.setName("First");
-	c1.addFunction(2);
-	c1.addFunction(0);
-	c1.addFunction(1);
-	c1.addFunction(25);
-
-	/* Verify that Collection contents are copied */
-	Collection c2(this);
-	QVERIFY(c2.copyFrom(&c1) == true);
-	QVERIFY(c2.name() == "First");
-	QVERIFY(c2.functions().size() == 4);
-	QVERIFY(c2.functions().at(0) == 2);
-	QVERIFY(c2.functions().at(1) == 0);
-	QVERIFY(c2.functions().at(2) == 1);
-	QVERIFY(c2.functions().at(3) == 25);
-
-	/* Verify that a Collection gets a copy only from another Collection */
-	Scene s(this);
-	QVERIFY(c2.copyFrom(&s) == false);
-
-	/* Make a third Collection */
-	Collection c3(this);
-	c3.setName("Third");
-	c3.addFunction(15);
-	c3.addFunction(94);
-	c3.addFunction(3);
-
-	/* Verify that copying TO the same Collection a second time succeeds and
-	   that steps are not appended but replaced completely. */
-	QVERIFY(c2.copyFrom(&c3) == true);
-	QVERIFY(c2.name() == "Third");
-	QVERIFY(c2.functions().size() == 3);
-	QVERIFY(c2.functions().at(0) == 15);
-	QVERIFY(c2.functions().at(1) == 94);
-	QVERIFY(c2.functions().at(2) == 3);
-}
-
-void Collection_Test::createCopy()
-{
-	Doc doc(this, m_cache);
-
-	Collection* c1 = new Collection(this);
-	c1->setName("First");
-	c1->addFunction(20);
-	c1->addFunction(30);
-	c1->addFunction(40);
-
-	doc.addFunction(c1);
-	QVERIFY(c1->id() != KNoID);
-
-	Function* f = c1->createCopy(&doc);
-	QVERIFY(f != NULL);
-	QVERIFY(f != c1);
-	QVERIFY(f->id() != c1->id());
-
-	Collection* copy = qobject_cast<Collection*> (f);
-	QVERIFY(copy != NULL);
-	QVERIFY(copy->functions().size() == 3);
-	QVERIFY(copy->functions().at(0) == 20);
-	QVERIFY(copy->functions().at(1) == 30);
-	QVERIFY(copy->functions().at(2) == 40);
 }
 
 void Collection_Test::armSuccess()

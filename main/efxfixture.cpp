@@ -248,8 +248,8 @@ void EFXFixture::updateSkipThreshold()
 	   into as many steps as there are fixtures in this EFX. If there are
 	   four fixtures, these steps end up in 12 o'clock, 3 o'clock,
 	   6 o'clock and 9 o'clock etc.. */
-	m_skipThreshold = float(m_serialNumber) *
-		(float(M_PI * 2.0) / float(m_parent->m_fixtures.count()));
+	m_skipThreshold = qreal(m_serialNumber) *
+		(qreal(M_PI * 2.0) / qreal(m_parent->m_fixtures.count()));
 }
 
 bool EFXFixture::isValid()
