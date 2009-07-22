@@ -147,7 +147,9 @@ bool EFX::copyFrom(const Function* function)
 	if (efx == NULL)
 		return false;
 
-	m_fixtures.clear();
+	while (m_fixtures.isEmpty() == false)
+		delete m_fixtures.takeFirst();
+
 	QListIterator <EFXFixture*> it(efx->m_fixtures);
 	while (it.hasNext() == true)
 	{
@@ -533,8 +535,8 @@ void EFX::slotFixtureRemoved(t_fixture_id fxi_id)
 
 		if (it.value()->fixture() == fxi_id)
 		{
-			it.remove();
 			delete it.value();
+			it.remove();
 			break;
 		}
 	}
@@ -572,11 +574,17 @@ EFX::PropagationMode EFX::stringToPropagationMode(QString str)
 
 void EFX::setStartScene(t_function_id scene)
 {
-	if (scene >= KNoID && scene <= KFunctionArraySize)
+	if (scene > KNoID && scene < KFunctionArraySize)
 	{
 		m_startSceneID = scene;
-		emit changed(m_id);
 	}
+	else
+	{
+		m_startSceneID = Function::invalidId();
+		m_startSceneEnabled = false;
+	}
+
+	emit changed(m_id);
 }
 
 t_function_id EFX::startScene() const
@@ -597,11 +605,17 @@ bool EFX::startSceneEnabled() const
 
 void EFX::setStopScene(t_function_id scene)
 {
-	if (scene >= KNoID && scene <= KFunctionArraySize)
+	if (scene > KNoID && scene < KFunctionArraySize)
 	{
 		m_stopSceneID = scene;
-		emit changed(m_id);
 	}
+	else
+	{
+		m_stopSceneID = Function::invalidId();
+		m_stopSceneEnabled = false;
+	}
+
+	emit changed(m_id);
 }
 
 t_function_id EFX::stopScene() const

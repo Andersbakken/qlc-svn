@@ -43,8 +43,9 @@ private slots:
 	void yFrequency();
 	void xPhase();
 	void yPhase();
-
 	void fixtures();
+	void propagationMode();
+	void startStopScenes();
 
 	void copyFrom();
 	void createCopy();

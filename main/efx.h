@@ -407,7 +407,7 @@ public:
 	/** Get stop scene enabled status */
 	bool stopSceneEnabled() const;
 
-protected slots:
+public slots:
 	/** Catches Doc::functionRemoved() so that destroyed members can be
 	    removed immediately. */
 	void slotFunctionRemoved(t_function_id function);

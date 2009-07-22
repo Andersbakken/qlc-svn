@@ -68,6 +68,38 @@ void EFX_Test::initial()
 	QVERIFY(e.stopSceneEnabled() == false);
 }
 
+void EFX_Test::algorithmNames()
+{
+	QStringList list = EFX::algorithmList();
+	QVERIFY(list.size() == 5);
+	QVERIFY(list.contains("Circle") == true);
+	QVERIFY(list.contains("Eight") == true);
+	QVERIFY(list.contains("Line") == true);
+	QVERIFY(list.contains("Diamond") == true);
+	QVERIFY(list.contains("Lissajous") == true);
+
+	EFX e(this);
+
+	/* All EFX's have Circle as the initial algorithm */
+	QVERIFY(e.algorithm() == "Circle");
+
+	e.setAlgorithm("Eight");
+	QVERIFY(e.algorithm() == "Eight");
+
+	e.setAlgorithm("Line");
+	QVERIFY(e.algorithm() == "Line");
+
+	e.setAlgorithm("Diamond");
+	QVERIFY(e.algorithm() == "Diamond");
+
+	e.setAlgorithm("Lissajous");
+	QVERIFY(e.algorithm() == "Lissajous");
+
+	/* Invalid algorithm name results in Circle as a fallback */
+	e.setAlgorithm("Foo");
+	QVERIFY(e.algorithm() == "Circle");
+}
+
 void EFX_Test::width()
 {
 	EFX e(this);
@@ -340,58 +372,182 @@ void EFX_Test::yPhase()
 	QVERIFY(e.yPhase() == 0);
 }
 
-void EFX_Test::algorithmNames()
-{
-	QStringList list = EFX::algorithmList();
-	QVERIFY(list.size() == 5);
-	QVERIFY(list.contains("Circle") == true);
-	QVERIFY(list.contains("Eight") == true);
-	QVERIFY(list.contains("Line") == true);
-	QVERIFY(list.contains("Diamond") == true);
-	QVERIFY(list.contains("Lissajous") == true);
-
-	EFX e(this);
-
-	/* All EFX's have Circle as the initial algorithm */
-	QVERIFY(e.algorithm() == "Circle");
-
-	e.setAlgorithm("Eight");
-	QVERIFY(e.algorithm() == "Eight");
-
-	e.setAlgorithm("Line");
-	QVERIFY(e.algorithm() == "Line");
-
-	e.setAlgorithm("Diamond");
-	QVERIFY(e.algorithm() == "Diamond");
-
-	e.setAlgorithm("Lissajous");
-	QVERIFY(e.algorithm() == "Lissajous");
-
-	/* Invalid algorithm name results in Circle as a fallback */
-	e.setAlgorithm("Foo");
-	QVERIFY(e.algorithm() == "Circle");
-}
-
 void EFX_Test::fixtures()
 {
 	EFX* e = new EFX(this);
-
-	EFXFixture* ef1 = new EFXFixture(e);
-	ef1->setFixture(12);
-
-	EFXFixture* ef2 = new EFXFixture(e);
-	ef2->setFixture(34);
-
 	QVERIFY(e->fixtures().size() == 0);
 
+	/* Add first fixture */
+	EFXFixture* ef1 = new EFXFixture(e);
+	ef1->setFixture(12);
 	QVERIFY(e->addFixture(ef1) == true);
+	QVERIFY(e->fixtures().size() == 1);
+
+	/* Add second fixture */
+	EFXFixture* ef2 = new EFXFixture(e);
+	ef2->setFixture(34);
 	QVERIFY(e->addFixture(ef2) == true);
+	QVERIFY(e->fixtures().size() == 2);
 
 	/* Must not be able to add the same fixture twice */
 	QVERIFY(e->addFixture(ef1) == false);
 	QVERIFY(e->addFixture(ef2) == false);
+	QVERIFY(e->fixtures().size() == 2);
+
+	/* Try to remove a non-member fixture */
+	EFXFixture* ef3 = new EFXFixture(e);
+	ef3->setFixture(56);
+	QVERIFY(e->removeFixture(ef3) == false);
+	QVERIFY(e->fixtures().size() == 2);
+
+	/* Add third fixture */
+	e->addFixture(ef3);
+	QVERIFY(e->fixtures().size() == 3);
+	QVERIFY(e->fixtures().at(0) == ef1);
+	QVERIFY(e->fixtures().at(1) == ef2);
+	QVERIFY(e->fixtures().at(2) == ef3);
+
+	/* Add fourth fixture */
+	EFXFixture* ef4 = new EFXFixture(e);
+	ef4->setFixture(78);
+	e->addFixture(ef4);
+	QVERIFY(e->fixtures().size() == 4);
+	QVERIFY(e->fixtures().at(0) == ef1);
+	QVERIFY(e->fixtures().at(1) == ef2);
+	QVERIFY(e->fixtures().at(2) == ef3);
+	QVERIFY(e->fixtures().at(3) == ef4);
+
+	QVERIFY(e->removeFixture(ef4) == true);
+	QVERIFY(e->fixtures().at(0) == ef1);
+	QVERIFY(e->fixtures().at(1) == ef2);
+	QVERIFY(e->fixtures().at(2) == ef3);
+	delete ef4;
+
+	/* Raising the first and lowering the last must not succeed */
+	QVERIFY(e->raiseFixture(ef1) == false);
+	QVERIFY(e->lowerFixture(ef3) == false);
+	QVERIFY(e->fixtures().at(0) == ef1);
+	QVERIFY(e->fixtures().at(1) == ef2);
+	QVERIFY(e->fixtures().at(2) == ef3);
+
+	QVERIFY(e->raiseFixture(ef2) == true);
+	QVERIFY(e->fixtures().at(0) == ef2);
+	QVERIFY(e->fixtures().at(1) == ef1);
+	QVERIFY(e->fixtures().at(2) == ef3);
+	QVERIFY(e->raiseFixture(ef2) == false);
+
+	QVERIFY(e->lowerFixture(ef1) == true);
+	QVERIFY(e->fixtures().at(0) == ef2);
+	QVERIFY(e->fixtures().at(1) == ef3);
+	QVERIFY(e->fixtures().at(2) == ef1);
+	QVERIFY(e->lowerFixture(ef1) == false);
+
+	/* Uninteresting fixture is removed */
+	e->slotFixtureRemoved(99);
+	QVERIFY(e->fixtures().size() == 3);
+	QVERIFY(e->fixtures().at(0) == ef2);
+	QVERIFY(e->fixtures().at(1) == ef3);
+	QVERIFY(e->fixtures().at(2) == ef1);
+
+	/* Member fixture is removed */
+	e->slotFixtureRemoved(34);
+	QVERIFY(e->fixtures().size() == 2);
+	QVERIFY(e->fixtures().at(0) == ef3);
+	QVERIFY(e->fixtures().at(1) == ef1);
+
+	/* Non-Member fixture is removed */
+	e->slotFixtureRemoved(34);
+	QVERIFY(e->fixtures().size() == 2);
+	QVERIFY(e->fixtures().at(0) == ef3);
+	QVERIFY(e->fixtures().at(1) == ef1);
+
+	/* Member fixture is removed */
+	e->slotFixtureRemoved(12);
+	QVERIFY(e->fixtures().size() == 1);
+	QVERIFY(e->fixtures().at(0) == ef3);
+
+	/* Member fixture is removed */
+	e->slotFixtureRemoved(56);
+	QVERIFY(e->fixtures().size() == 0);
 
 	delete e;
+}
+
+void EFX_Test::propagationMode()
+{
+	EFX e(this);
+	QVERIFY(e.propagationMode() == EFX::Parallel);
+
+	e.setPropagationMode(EFX::Serial);
+	QVERIFY(e.propagationMode() == EFX::Serial);
+
+	QVERIFY(EFX::propagationModeToString(EFX::Serial) == "Serial");
+	QVERIFY(EFX::propagationModeToString(EFX::Parallel) == "Parallel");
+	QVERIFY(EFX::propagationModeToString(EFX::PropagationMode(7)) == "Parallel");
+
+	QVERIFY(EFX::stringToPropagationMode("Serial") == EFX::Serial);
+	QVERIFY(EFX::stringToPropagationMode("Parallel") == EFX::Parallel);
+	QVERIFY(EFX::stringToPropagationMode("Foobar") == EFX::Parallel);
+}
+
+void EFX_Test::startStopScenes()
+{
+	EFX e(this);
+
+	QVERIFY(e.startSceneEnabled() == false);
+	QVERIFY(e.startScene() == Function::invalidId());
+
+	QVERIFY(e.stopSceneEnabled() == false);
+	QVERIFY(e.stopScene() == Function::invalidId());
+
+	e.setStartScene(15);
+	QVERIFY(e.startSceneEnabled() == false);
+	QVERIFY(e.startScene() == 15);
+
+	e.setStartSceneEnabled(true);
+	QVERIFY(e.startSceneEnabled() == true);
+	QVERIFY(e.startScene() == 15);
+
+	e.setStopScene(73);
+	QVERIFY(e.stopSceneEnabled() == false);
+	QVERIFY(e.stopScene() == 73);
+
+	e.setStopSceneEnabled(true);
+	QVERIFY(e.stopSceneEnabled() == true);
+	QVERIFY(e.stopScene() == 73);
+
+	e.setStartScene(Function::invalidId());
+	QVERIFY(e.startSceneEnabled() == false);
+	QVERIFY(e.startScene() == Function::invalidId());
+
+	e.setStopScene(Function::invalidId());
+	QVERIFY(e.stopSceneEnabled() == false);
+	QVERIFY(e.stopScene() == Function::invalidId());
+
+	/* Test function removal slot */
+	e.setStartScene(15);
+	e.setStartSceneEnabled(true);
+	e.setStopScene(20);
+	e.setStopSceneEnabled(true);
+
+	e.slotFunctionRemoved(10);
+	QVERIFY(e.startScene() == 15);
+	QVERIFY(e.stopScene() == 20);
+
+	e.slotFunctionRemoved(15);
+	QVERIFY(e.startScene() == Function::invalidId());
+	QVERIFY(e.startSceneEnabled() == false);
+	QVERIFY(e.stopScene() == 20);
+	QVERIFY(e.stopSceneEnabled() == true);
+
+	e.setStartScene(15);
+	e.setStartSceneEnabled(true);
+
+	e.slotFunctionRemoved(20);
+	QVERIFY(e.startScene() == 15);
+	QVERIFY(e.startSceneEnabled() == true);
+	QVERIFY(e.stopScene() == Function::invalidId());
+	QVERIFY(e.stopSceneEnabled() == false);
 }
 
 void EFX_Test::copyFrom()
