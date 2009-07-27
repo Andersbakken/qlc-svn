@@ -50,6 +50,10 @@ public:
 	/** Copy contents from another EFXFixture */
 	void copyFrom(const EFXFixture* ef);
 
+protected:
+	/** The EFX function that this fixture belongs to */
+	EFX* m_parent;
+
 	/********************************************************************
 	 * Public properties
 	 ********************************************************************/
@@ -67,6 +71,12 @@ public:
 	Function::Direction direction() const;
 
 protected:
+	/** The ID of the fixture this EFXFixture represents */
+	t_fixture_id m_fixture;
+
+	/** This fixture's original running direction */
+	Function::Direction m_direction;
+
 	/*********************************************************************
 	 * Load & Save
 	 *********************************************************************/
@@ -132,17 +142,8 @@ protected:
 	bool isReady() const { return m_ready; }
 
 protected:
-	/** The EFX function that this fixture belongs to */
-	EFX* m_parent;
-
-	/** The ID of the fixture that is EFXFixture represents */
-	t_fixture_id m_fixture;
-
 	/** This fixture's order number in serial propagation mode */
 	int m_serialNumber;
-
-	/** This fixture's original direction */
-	Function::Direction m_direction;
 
 	/** This fixture's current run-time direction */
 	Function::Direction m_runTimeDirection;

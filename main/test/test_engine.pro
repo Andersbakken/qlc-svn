@@ -70,8 +70,11 @@ ENGINESOURCES += ../bus.cpp \
 		 ../inputpatch.cpp \
 		 ../dummyoutplugin.cpp
 
-STUBHEADERS += mastertimer_stub.h
-STUBSOURCES += mastertimer_stub.cpp
+STUBHEADERS += mastertimer_stub.h \
+		scene_stub.h
+
+STUBSOURCES += mastertimer_stub.cpp \
+		scene_stub.cpp
 
 HEADERS = bus_test.h \
 	  fixture_test.h \
@@ -81,6 +84,7 @@ HEADERS = bus_test.h \
 	  chaser_test.h \
 	  collection_test.h \
 	  efx_test.h \
+	  efxfixture_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS \
@@ -94,6 +98,7 @@ SOURCES = bus_test.cpp \
 	  chaser_test.cpp \
 	  collection_test.cpp \
 	  efx_test.cpp \
+	  efxfixture_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \

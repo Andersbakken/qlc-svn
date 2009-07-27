@@ -25,6 +25,7 @@
 #include "scenechannel_test.h"
 #include "scenevalue_test.h"
 #include "collection_test.h"
+#include "efxfixture_test.h"
 #include "fixture_test.h"
 #include "chaser_test.h"
 #include "scene_test.h"
@@ -60,6 +61,9 @@ int main(int argc, char** argv)
 
 	EFX_Test efx;
 	QTest::qExec(&efx, argc, argv);
+
+	EFXFixture_Test efxfixture;
+	QTest::qExec(&efxfixture, argc, argv);
 
 	return 0;
 }

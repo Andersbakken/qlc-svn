@@ -273,7 +273,8 @@ public:
 	 * The scene must be armed with arm() before calling this function or
 	 * otherwise nothing will be written.
 	 */
-	void writeValues(QByteArray* universes, t_fixture_id fxi_id = KNoID);
+	virtual void writeValues(QByteArray* universes,
+				 t_fixture_id fxi_id = KNoID);
 
 	/**
 	 * Write zeros for all involved channels to OutputMap. If fxi_id is
@@ -282,7 +283,8 @@ public:
 	 * The scene must be armed with arm() before calling this function or
 	 * otherwise nothing will be written.
 	 */
-	void writeZeros(QByteArray* universes, t_fixture_id fxi_id = KNoID);
+	virtual void writeZeros(QByteArray* universes,
+				t_fixture_id fxi_id = KNoID);
 
 	/** Get a list of channels that have been armed for running */
 	QList <SceneChannel> armedChannels() const { return m_armedChannels; }
