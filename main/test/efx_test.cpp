@@ -21,6 +21,7 @@
 
 #include <QtTest>
 #include <QtXml>
+#include <QList>
 
 #include "mastertimer_stub.h"
 #include "efx_test.h"
@@ -28,8 +29,12 @@
 #include "../function.h"
 #include "../fixture.h"
 #include "../scene.h"
-#include "../efx.h"
 #include "../doc.h"
+
+/* Expose protected members to the unit test */
+#define protected public
+#include "../efx.h"
+#undef protected
 
 void EFX_Test::initTestCase()
 {
@@ -43,6 +48,7 @@ void EFX_Test::initial()
 	QVERIFY(e.type() == Function::EFX);
 	QVERIFY(e.name() == "New EFX");
 	QVERIFY(e.id() == KNoID);
+	QVERIFY(e.pointFunc == NULL);
 
 	QVERIFY(e.algorithm() == "Circle");
 	QVERIFY(e.width() == 127);
@@ -107,11 +113,11 @@ void EFX_Test::width()
 	e.setWidth(300);
 	QVERIFY(e.width() == 127);
 
-	e.setWidth(128);
-	QVERIFY(e.width() == 127);
-
 	e.setWidth(0);
 	QVERIFY(e.width() == 0);
+
+	e.setWidth(128);
+	QVERIFY(e.width() == 127);
 
 	e.setWidth(52);
 	QVERIFY(e.width() == 52);
@@ -127,11 +133,11 @@ void EFX_Test::height()
 	e.setHeight(300);
 	QVERIFY(e.height() == 127);
 
-	e.setHeight(128);
-	QVERIFY(e.height() == 127);
-
 	e.setHeight(0);
 	QVERIFY(e.height() == 0);
+
+	e.setHeight(128);
+	QVERIFY(e.height() == 127);
 
 	e.setHeight(12);
 	QVERIFY(e.height() == 12);
@@ -165,13 +171,13 @@ void EFX_Test::xOffset()
 	EFX e(this);
 
 	e.setXOffset(300);
-	QVERIFY(e.xOffset() == 127);
-
-	e.setXOffset(128);
-	QVERIFY(e.xOffset() == 127);
+	QVERIFY(e.xOffset() == 255);
 
 	e.setXOffset(0);
 	QVERIFY(e.xOffset() == 0);
+
+	e.setXOffset(256);
+	QVERIFY(e.xOffset() == 255);
 
 	e.setXOffset(12);
 	QVERIFY(e.xOffset() == 12);
@@ -185,13 +191,13 @@ void EFX_Test::yOffset()
 	EFX e(this);
 
 	e.setYOffset(300);
-	QVERIFY(e.yOffset() == 127);
-
-	e.setYOffset(128);
-	QVERIFY(e.yOffset() == 127);
+	QVERIFY(e.yOffset() == 255);
 
 	e.setYOffset(0);
 	QVERIFY(e.yOffset() == 0);
+
+	e.setYOffset(256);
+	QVERIFY(e.yOffset() == 255);
 
 	e.setYOffset(12);
 	QVERIFY(e.yOffset() == 12);
@@ -570,6 +576,12 @@ void EFX_Test::copyFrom()
 	e1.setPropagationMode(EFX::Serial);
 	e1.setStartScene(99);
 	e1.setStopScene(88);
+	EFXFixture* ef1 = new EFXFixture(&e1);
+	ef1->setFixture(12);
+	e1.addFixture(ef1);
+	EFXFixture* ef2 = new EFXFixture(&e1);
+	ef2->setFixture(34);
+	e1.addFixture(ef2);
 
 	/* Verify that EFX contents are copied */
 	EFX e2(this);
@@ -591,18 +603,68 @@ void EFX_Test::copyFrom()
 	QVERIFY(e2.propagationMode() == EFX::Serial);
 	QVERIFY(e2.startScene() == 99);
 	QVERIFY(e2.stopScene() == 88);
-
+	QVERIFY(e2.fixtures().size() == 2);
+	QVERIFY(e2.fixtures().at(0)->fixture() == 12);
+	QVERIFY(e2.fixtures().at(1)->fixture() == 34);
+	QVERIFY(e2.fixtures().at(0) != ef1);
+	QVERIFY(e2.fixtures().at(1) != ef2);
+	
 	/* Verify that an EFX gets a copy only from another EFX */
 	Scene s(this);
 	QVERIFY(e2.copyFrom(&s) == false);
 
-	/* Make a third Collection */
+	/* Make a third EFX */
 	EFX e3(this);
 	e3.setName("Third");
+	e3.setDirection(EFX::Forward);
+	e3.setRunOrder(EFX::Loop);
+	e3.setBus(3);
+	e3.setAlgorithm("Eight");
+	e3.setWidth(31);
+	e3.setHeight(24);
+	e3.setRotation(87);
+	e3.setXOffset(43);
+	e3.setYOffset(72);
+	e3.setXFrequency(3);
+	e3.setYFrequency(2);
+	e3.setXPhase(136);
+	e3.setYPhase(49);
+	e3.setPropagationMode(EFX::Parallel);
+	e3.setStartScene(77);
+	e3.setStopScene(66);
+	EFXFixture* ef3 = new EFXFixture(&e3);
+	ef3->setFixture(56);
+	e3.addFixture(ef3);
+	EFXFixture* ef4 = new EFXFixture(&e3);
+	ef4->setFixture(78);
+	e3.addFixture(ef4);
 
 	/* Verify that copying to the same EFX a second time succeeds */
 	QVERIFY(e2.copyFrom(&e3) == true);
 	QVERIFY(e2.name() == "Third");
+	QVERIFY(e2.direction() == EFX::Forward);
+	QVERIFY(e2.runOrder() == EFX::Loop);
+	QVERIFY(e2.busID() == 3);
+	QVERIFY(e2.algorithm() == "Eight");
+	QVERIFY(e2.width() == 31);
+	QVERIFY(e2.height() == 24);
+	QVERIFY(e2.rotation() == 87);
+	QVERIFY(e2.xOffset() == 43);
+	QVERIFY(e2.yOffset() == 72);
+	QVERIFY(e2.xFrequency() == 3);
+	QVERIFY(e2.yFrequency() == 2);
+	QVERIFY(e2.xPhase() == 136);
+	QVERIFY(e2.yPhase() == 49);
+	QVERIFY(e2.propagationMode() == EFX::Parallel);
+	QVERIFY(e2.startScene() == 77);
+	QVERIFY(e2.stopScene() == 66);
+	QVERIFY(e2.fixtures().size() == 2);
+	QVERIFY(e2.fixtures().at(0)->fixture() == 56);
+	QVERIFY(e2.fixtures().at(1)->fixture() == 78);
+	QVERIFY(e2.fixtures().at(0) != ef1);
+	QVERIFY(e2.fixtures().at(0) != ef3);
+	QVERIFY(e2.fixtures().at(1) != ef2);
+	QVERIFY(e2.fixtures().at(1) != ef4);
 }
 
 void EFX_Test::createCopy()
@@ -611,6 +673,28 @@ void EFX_Test::createCopy()
 
 	EFX* e1 = new EFX(this);
 	e1->setName("First");
+	e1->setDirection(EFX::Forward);
+	e1->setRunOrder(EFX::PingPong);
+	e1->setBus(15);
+	e1->setAlgorithm("Line");
+	e1->setWidth(13);
+	e1->setHeight(42);
+	e1->setRotation(78);
+	e1->setXOffset(34);
+	e1->setYOffset(27);
+	e1->setXFrequency(5);
+	e1->setYFrequency(4);
+	e1->setXPhase(163);
+	e1->setYPhase(94);
+	e1->setPropagationMode(EFX::Serial);
+	e1->setStartScene(99);
+	e1->setStopScene(88);
+	EFXFixture* ef1 = new EFXFixture(e1);
+	ef1->setFixture(12);
+	e1->addFixture(ef1);
+	EFXFixture* ef2 = new EFXFixture(e1);
+	ef2->setFixture(34);
+	e1->addFixture(ef2);
 
 	doc.addFunction(e1);
 	QVERIFY(e1->id() != KNoID);
@@ -622,208 +706,597 @@ void EFX_Test::createCopy()
 
 	EFX* copy = qobject_cast<EFX*> (f);
 	QVERIFY(copy != NULL);
+	QVERIFY(copy->name() == "Copy of First");
+	QVERIFY(copy->direction() == EFX::Forward);
+	QVERIFY(copy->runOrder() == EFX::PingPong);
+	QVERIFY(copy->busID() == 15);
+	QVERIFY(copy->algorithm() == "Line");
+	QVERIFY(copy->width() == 13);
+	QVERIFY(copy->height() == 42);
+	QVERIFY(copy->rotation() == 78);
+	QVERIFY(copy->xOffset() == 34);
+	QVERIFY(copy->yOffset() == 27);
+	QVERIFY(copy->xFrequency() == 5);
+	QVERIFY(copy->yFrequency() == 4);
+	QVERIFY(copy->xPhase() == 163);
+	QVERIFY(copy->yPhase() == 94);
+	QVERIFY(copy->propagationMode() == EFX::Serial);
+	QVERIFY(copy->startScene() == 99);
+	QVERIFY(copy->stopScene() == 88);
+	QVERIFY(copy->fixtures().size() == 2);
+	QVERIFY(copy->fixtures().at(0)->fixture() == 12);
+	QVERIFY(copy->fixtures().at(1)->fixture() == 34);
+	QVERIFY(copy->fixtures().at(0) != ef1);
+	QVERIFY(copy->fixtures().at(1) != ef2);
 }
 
-#if 0
-void Collection_Test::functions()
+void EFX_Test::loadXAxis()
 {
-	Collection c(this);
-	c.setID(50);
-	QVERIFY(c.functions().size() == 0);
+	QDomDocument doc;
 
-	/* A collection should not be allowed to be its own member */
-	QVERIFY(c.addFunction(50) == false);
-	QVERIFY(c.functions().size() == 0);
+	QDomElement ax = doc.createElement("Axis");
+	ax.setAttribute("Name", "X");
 
-	/* Add a function with id "12" to the Collection */
-	QVERIFY(c.addFunction(12) == true);
-	QVERIFY(c.functions().size() == 1);
-	QVERIFY(c.functions().at(0) == 12);
+	QDomElement off = doc.createElement("Offset");
+	QDomText offText = doc.createTextNode("1");
+	off.appendChild(offText);
+	ax.appendChild(off);
 
-	/* Add another function in the middle */
-	QVERIFY(c.addFunction(34) == true);
-	QVERIFY(c.functions().size() == 2);
-	QVERIFY(c.functions().at(0) == 12);
-	QVERIFY(c.functions().at(1) == 34);
+	QDomElement freq = doc.createElement("Frequency");
+	QDomText freqText = doc.createTextNode("2");
+	freq.appendChild(freqText);
+	ax.appendChild(freq);
 
-	/* Must not be able to add the same function multiple times */
-	QVERIFY(c.addFunction(12) == false);
-	QVERIFY(c.functions().size() == 2);
-	QVERIFY(c.functions().at(0) == 12);
-	QVERIFY(c.functions().at(1) == 34);
+	QDomElement pha = doc.createElement("Phase");
+	QDomText phaText = doc.createTextNode("3");
+	pha.appendChild(phaText);
+	ax.appendChild(pha);
 
-	/* Removing a non-existent function should make no modifications */
-	QVERIFY(c.removeFunction(999) == false);
-	QVERIFY(c.functions().size() == 2);
-	QVERIFY(c.functions().at(0) == 12);
-	QVERIFY(c.functions().at(1) == 34);
-
-	/* Removing the last step should succeed */
-	QVERIFY(c.removeFunction(34) == true);
-	QVERIFY(c.functions().size() == 1);
-	QVERIFY(c.functions().at(0) == 12);
-
-	/* Removing the only step should succeed */
-	QVERIFY(c.removeFunction(12) == true);
-	QVERIFY(c.functions().size() == 0);
+	EFX e(this);
+	QVERIFY(e.loadXMLAxis(&ax) == true);
 }
 
-void Collection_Test::functionRemoval()
+void EFX_Test::loadYAxis()
 {
-	Collection c(this);
-	c.setID(42);
-	QVERIFY(c.functions().size() == 0);
+	QDomDocument doc;
 
-	QVERIFY(c.addFunction(0) == true);
-	QVERIFY(c.addFunction(1) == true);
-	QVERIFY(c.addFunction(2) == true);
-	QVERIFY(c.addFunction(3) == true);
-	QVERIFY(c.functions().size() == 4);
+	QDomElement ax = doc.createElement("Axis");
+	ax.setAttribute("Name", "Y");
 
-	/* Simulate function removal signal with an uninteresting function id */
-	c.slotFunctionRemoved(6);
-	QVERIFY(c.functions().size() == 4);
+	QDomElement off = doc.createElement("Offset");
+	QDomText offText = doc.createTextNode("1");
+	off.appendChild(offText);
+	ax.appendChild(off);
 
-	/* Simulate function removal signal with a function in the Collection */
-	c.slotFunctionRemoved(1);
-	QVERIFY(c.functions().size() == 3);
-	QVERIFY(c.functions().at(0) == 0);
-	QVERIFY(c.functions().at(1) == 2);
-	QVERIFY(c.functions().at(2) == 3);
+	QDomElement freq = doc.createElement("Frequency");
+	QDomText freqText = doc.createTextNode("2");
+	freq.appendChild(freqText);
+	ax.appendChild(freq);
 
-	/* Simulate function removal signal with an invalid function id */
-	c.slotFunctionRemoved(Function::invalidId());
-	QVERIFY(c.functions().size() == 3);
-	QVERIFY(c.functions().at(0) == 0);
-	QVERIFY(c.functions().at(1) == 2);
-	QVERIFY(c.functions().at(2) == 3);
+	QDomElement pha = doc.createElement("Phase");
+	QDomText phaText = doc.createTextNode("3");
+	pha.appendChild(phaText);
+	ax.appendChild(pha);
 
-	/* Simulate function removal signal with a function in the Collection */
-	c.slotFunctionRemoved(0);
-	QVERIFY(c.functions().size() == 2);
-	QVERIFY(c.functions().at(0) == 2);
-	QVERIFY(c.functions().at(1) == 3);
+	EFX e(this);
+	QVERIFY(e.loadXMLAxis(&ax) == true);
 }
 
-void Collection_Test::loadSuccess()
+void EFX_Test::loadYAxisWrongRoot()
+{
+	QDomDocument doc;
+
+	QDomElement ax = doc.createElement("sixA");
+	ax.setAttribute("Name", "Y");
+
+	QDomElement off = doc.createElement("Offset");
+	QDomText offText = doc.createTextNode("1");
+	off.appendChild(offText);
+	ax.appendChild(off);
+
+	QDomElement freq = doc.createElement("Frequency");
+	QDomText freqText = doc.createTextNode("2");
+	freq.appendChild(freqText);
+	ax.appendChild(freq);
+
+	QDomElement pha = doc.createElement("Phase");
+	QDomText phaText = doc.createTextNode("3");
+	pha.appendChild(phaText);
+	ax.appendChild(pha);
+
+	EFX e(this);
+	QVERIFY(e.loadXMLAxis(&ax) == false);
+}
+
+void EFX_Test::loadAxisNoXY()
+{
+	QDomDocument doc;
+
+	QDomElement ax = doc.createElement("Axis");
+	ax.setAttribute("Name", "Not X nor Y");
+
+	QDomElement off = doc.createElement("Offset");
+	QDomText offText = doc.createTextNode("1");
+	off.appendChild(offText);
+	ax.appendChild(off);
+
+	QDomElement freq = doc.createElement("Frequency");
+	QDomText freqText = doc.createTextNode("5");
+	freq.appendChild(freqText);
+	ax.appendChild(freq);
+
+	QDomElement pha = doc.createElement("Phase");
+	QDomText phaText = doc.createTextNode("333");
+	pha.appendChild(phaText);
+	ax.appendChild(pha);
+
+	EFX e(this);
+	QVERIFY(e.loadXMLAxis(&ax) == false);
+	QVERIFY(e.xOffset() != 1);
+	QVERIFY(e.xFrequency() != 5);
+	QVERIFY(e.xPhase() != 333);
+}
+
+void EFX_Test::loadSuccess()
 {
 	QDomDocument doc;
 
 	QDomElement root = doc.createElement("Function");
-	root.setAttribute("Type", "Collection");
+	root.setAttribute("Type", "EFX");
+	root.setAttribute("Name", "Test EFX");
 
-	QDomElement s1 = doc.createElement("Step");
-	QDomText s1Text = doc.createTextNode("50");
-	s1.appendChild(s1Text);
-	root.appendChild(s1);
+	QDomElement prop = doc.createElement("PropagationMode");
+	QDomText propText = doc.createTextNode("Serial");
+	prop.appendChild(propText);
+	root.appendChild(prop);
 
-	QDomElement s2 = doc.createElement("Step");
-	QDomText s2Text = doc.createTextNode("12");
-	s2.appendChild(s2Text);
-	root.appendChild(s2);
+	QDomElement bus = doc.createElement("Bus");
+	bus.setAttribute("Role", "Fade");
+	QDomText busText = doc.createTextNode("12");
+	bus.appendChild(busText);
+	root.appendChild(bus);
 
-	QDomElement s3 = doc.createElement("Step");
-	QDomText s3Text = doc.createTextNode("87");
-	s3.appendChild(s3Text);
-	root.appendChild(s3);
+	QDomElement dir = doc.createElement("Direction");
+	QDomText dirText = doc.createTextNode("Forward");
+	dir.appendChild(dirText);
+	root.appendChild(dir);
 
-	Collection c(this);
-	QVERIFY(c.loadXML(&root) == true);
-	QVERIFY(c.functions().size() == 3);
-	QVERIFY(c.functions().contains(50) == true);
-	QVERIFY(c.functions().contains(12) == true);
-	QVERIFY(c.functions().contains(87) == true);
+	QDomElement run = doc.createElement("RunOrder");
+	QDomText runText = doc.createTextNode("Loop");
+	run.appendChild(runText);
+	root.appendChild(run);
+
+	QDomElement algo = doc.createElement("Algorithm");
+	QDomText algoText = doc.createTextNode("Diamond");
+	algo.appendChild(algoText);
+	root.appendChild(algo);
+
+	QDomElement w = doc.createElement("Width");
+	QDomText wText = doc.createTextNode("100");
+	w.appendChild(wText);
+	root.appendChild(w);
+
+	QDomElement h = doc.createElement("Height");
+	QDomText hText = doc.createTextNode("90");
+	h.appendChild(hText);
+	root.appendChild(h);
+
+	QDomElement rot = doc.createElement("Rotation");
+	QDomText rotText = doc.createTextNode("310");
+	rot.appendChild(rotText);
+	root.appendChild(rot);
+
+	QDomElement stas = doc.createElement("StartScene");
+	stas.setAttribute("Enabled", "True");
+	QDomText stasText = doc.createTextNode("13");
+	stas.appendChild(stasText);
+	root.appendChild(stas);
+
+	QDomElement stos = doc.createElement("StopScene");
+	stos.setAttribute("Enabled", "True");
+	QDomText stosText = doc.createTextNode("77");
+	stos.appendChild(stosText);
+	root.appendChild(stos);
+
+	/* X Axis */
+	QDomElement xax = doc.createElement("Axis");
+	xax.setAttribute("Name", "X");
+	root.appendChild(xax);
+
+	QDomElement xoff = doc.createElement("Offset");
+	QDomText xoffText = doc.createTextNode("10");
+	xoff.appendChild(xoffText);
+	xax.appendChild(xoff);
+
+	QDomElement xfreq = doc.createElement("Frequency");
+	QDomText xfreqText = doc.createTextNode("2");
+	xfreq.appendChild(xfreqText);
+	xax.appendChild(xfreq);
+
+	QDomElement xpha = doc.createElement("Phase");
+	QDomText xphaText = doc.createTextNode("270");
+	xpha.appendChild(xphaText);
+	xax.appendChild(xpha);
+
+	/* Y Axis */
+	QDomElement yax = doc.createElement("Axis");
+	yax.setAttribute("Name", "Y");
+	root.appendChild(yax);
+
+	QDomElement yoff = doc.createElement("Offset");
+	QDomText yoffText = doc.createTextNode("20");
+	yoff.appendChild(yoffText);
+	yax.appendChild(yoff);
+
+	QDomElement yfreq = doc.createElement("Frequency");
+	QDomText yfreqText = doc.createTextNode("3");
+	yfreq.appendChild(yfreqText);
+	yax.appendChild(yfreq);
+
+	QDomElement ypha = doc.createElement("Phase");
+	QDomText yphaText = doc.createTextNode("80");
+	ypha.appendChild(yphaText);
+	yax.appendChild(ypha);
+
+	/* Fixture 1 */
+	QDomElement ef1 = doc.createElement("Fixture");
+	root.appendChild(ef1);
+
+	QDomElement ef1ID = doc.createElement("ID");
+	QDomText ef1IDText = doc.createTextNode("33");
+	ef1ID.appendChild(ef1IDText);
+	ef1.appendChild(ef1ID);
+
+	QDomElement ef1dir = doc.createElement("Direction");
+	QDomText ef1dirText = doc.createTextNode("Forward");
+	ef1dir.appendChild(ef1dirText);
+	ef1.appendChild(ef1dir);
+
+	/* Fixture 2 */
+	QDomElement ef2 = doc.createElement("Fixture");
+	root.appendChild(ef2);
+
+	QDomElement ef2ID = doc.createElement("ID");
+	QDomText ef2IDText = doc.createTextNode("11");
+	ef2ID.appendChild(ef2IDText);
+	ef2.appendChild(ef2ID);
+
+	QDomElement ef2dir = doc.createElement("Direction");
+	QDomText ef2dirText = doc.createTextNode("Backward");
+	ef2dir.appendChild(ef2dirText);
+	ef2.appendChild(ef2dir);
+
+	/* Fixture 3 */
+	QDomElement ef3 = doc.createElement("Fixture");
+	root.appendChild(ef3);
+
+	QDomElement ef3ID = doc.createElement("ID");
+	QDomText ef3IDText = doc.createTextNode("45");
+	ef3ID.appendChild(ef3IDText);
+	ef3.appendChild(ef3ID);
+
+	QDomElement ef3dir = doc.createElement("Direction");
+	QDomText ef3dirText = doc.createTextNode("Backward");
+	ef3dir.appendChild(ef3dirText);
+	ef3.appendChild(ef3dir);
+
+	EFX e(this);
+	QVERIFY(e.loadXML(&root) == true);
+	QVERIFY(e.busID() == 12);
+	QVERIFY(e.direction() == EFX::Forward);
+	QVERIFY(e.runOrder() == EFX::Loop);
+
+	QVERIFY(e.algorithm() == "Diamond");
+	QVERIFY(e.width() == 100);
+	QVERIFY(e.height() == 90);
+	QVERIFY(e.rotation() == 310);
+
+	QVERIFY(e.xOffset() == 10);
+	QVERIFY(e.xFrequency() == 2);
+	QVERIFY(e.xPhase() == 270);
+	QVERIFY(e.yOffset() == 20);
+	QVERIFY(e.yFrequency() == 3);
+	QVERIFY(e.yPhase() == 80);
+
+	QVERIFY(e.startScene() == 13);
+	QVERIFY(e.stopScene() == 77);
+
+	QVERIFY(e.propagationMode() == EFX::Serial);
+	QVERIFY(e.fixtures().size() == 3);
+	QVERIFY(e.fixtures().at(0)->fixture() == 33);
+	QVERIFY(e.fixtures().at(0)->direction() == EFX::Forward);
+	QVERIFY(e.fixtures().at(1)->fixture() == 11);
+	QVERIFY(e.fixtures().at(1)->direction() == EFX::Backward);
+	QVERIFY(e.fixtures().at(2)->fixture() == 45);
+	QVERIFY(e.fixtures().at(2)->direction() == EFX::Backward);
 }
 
-void Collection_Test::loadWrongType()
+void EFX_Test::loadWrongType()
 {
 	QDomDocument doc;
 
 	QDomElement root = doc.createElement("Function");
 	root.setAttribute("Type", "Chaser");
 
-	QDomElement s1 = doc.createElement("Step");
-	QDomText s1Text = doc.createTextNode("50");
-	s1.appendChild(s1Text);
-	root.appendChild(s1);
-
-	QDomElement s2 = doc.createElement("Step");
-	QDomText s2Text = doc.createTextNode("12");
-	s2.appendChild(s2Text);
-	root.appendChild(s2);
-
-	QDomElement s3 = doc.createElement("Step");
-	QDomText s3Text = doc.createTextNode("87");
-	s3.appendChild(s3Text);
-	root.appendChild(s3);
-
-	Collection c(this);
-	QVERIFY(c.loadXML(&root) == false);
+	EFX e(this);
+	QVERIFY(e.loadXML(&root) == false);
 }
 
-void Collection_Test::loadWrongRoot()
+void EFX_Test::loadWrongRoot()
 {
 	QDomDocument doc;
 
-	QDomElement root = doc.createElement("Collection");
-	root.setAttribute("Type", "Collection");
+	QDomElement root = doc.createElement("EFX");
+	root.setAttribute("Type", "EFX");
 
-	QDomElement s1 = doc.createElement("Step");
-	QDomText s1Text = doc.createTextNode("50");
-	s1.appendChild(s1Text);
-	root.appendChild(s1);
-
-	QDomElement s2 = doc.createElement("Step");
-	QDomText s2Text = doc.createTextNode("12");
-	s2.appendChild(s2Text);
-	root.appendChild(s2);
-
-	QDomElement s3 = doc.createElement("Step");
-	QDomText s3Text = doc.createTextNode("87");
-	s3.appendChild(s3Text);
-	root.appendChild(s3);
-
-	Collection c(this);
-	QVERIFY(c.loadXML(&root) == false);
+	EFX e(this);
+	QVERIFY(e.loadXML(&root) == false);
 }
 
-void Collection_Test::save()
+void EFX_Test::loadDuplicateFixture()
 {
-	Collection c(this);
-	c.addFunction(3);
-	c.addFunction(1);
-	c.addFunction(0);
-	c.addFunction(2);
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Function");
+	root.setAttribute("Type", "EFX");
+
+	/* Fixture 1 */
+	QDomElement ef1 = doc.createElement("Fixture");
+	root.appendChild(ef1);
+
+	QDomElement ef1ID = doc.createElement("ID");
+	QDomText ef1IDText = doc.createTextNode("33");
+	ef1ID.appendChild(ef1IDText);
+	ef1.appendChild(ef1ID);
+
+	QDomElement ef1dir = doc.createElement("Direction");
+	QDomText ef1dirText = doc.createTextNode("Forward");
+	ef1dir.appendChild(ef1dirText);
+	ef1.appendChild(ef1dir);
+
+	/* Fixture 2 */
+	QDomElement ef2 = doc.createElement("Fixture");
+	root.appendChild(ef2);
+
+	QDomElement ef2ID = doc.createElement("ID");
+	QDomText ef2IDText = doc.createTextNode("33");
+	ef2ID.appendChild(ef2IDText);
+	ef2.appendChild(ef2ID);
+
+	QDomElement ef2dir = doc.createElement("Direction");
+	QDomText ef2dirText = doc.createTextNode("Backward");
+	ef2dir.appendChild(ef2dirText);
+	ef2.appendChild(ef2dir);
+
+	EFX e(this);
+	QVERIFY(e.loadXML(&root) == true);
+	QVERIFY(e.fixtures().size() == 1);
+	QVERIFY(e.fixtures().at(0)->direction() == EFX::Forward);
+}
+
+void EFX_Test::save()
+{
+	EFX e1(this);
+	e1.setName("First");
+	e1.setDirection(EFX::Backward);
+	e1.setRunOrder(EFX::SingleShot);
+	e1.setBus(15);
+	e1.setAlgorithm("Lissajous");
+	e1.setWidth(13);
+	e1.setHeight(42);
+	e1.setRotation(78);
+	e1.setXOffset(34);
+	e1.setYOffset(27);
+	e1.setXFrequency(5);
+	e1.setYFrequency(4);
+	e1.setXPhase(163);
+	e1.setYPhase(94);
+	e1.setPropagationMode(EFX::Serial);
+	e1.setStartScene(99);
+	e1.setStartSceneEnabled(true);
+	e1.setStopScene(88);
+	//e1.setStartSceneEnabled(false);
+
+	EFXFixture* ef1 = new EFXFixture(&e1);
+	ef1->setFixture(12);
+	e1.addFixture(ef1);
+	EFXFixture* ef2 = new EFXFixture(&e1);
+	ef2->setFixture(34);
+	ef2->setDirection(EFX::Backward);
+	e1.addFixture(ef2);
+	EFXFixture* ef3 = new EFXFixture(&e1);
+	ef3->setFixture(56);
+	e1.addFixture(ef3);
 
 	QDomDocument doc;
 	QDomElement root = doc.createElement("TestRoot");
 
-	QVERIFY(c.saveXML(&doc, &root) == true);
+	QVERIFY(e1.saveXML(&doc, &root) == true);
 	QVERIFY(root.firstChild().toElement().tagName() == "Function");
-	QVERIFY(root.firstChild().toElement().attribute("Type") == "Collection");
+	QVERIFY(root.firstChild().toElement().attribute("Type") == "EFX");
+	QVERIFY(root.firstChild().toElement().attribute("Name") == "First");
 
 	QDomNode node = root.firstChild().firstChild();
-	int fids = 0;
+	bool dir = false, run = false, bus = false, algo = false, w = false,
+		h = false, rot = false, xoff = false, yoff = false,
+		xfreq = false, yfreq = false, xpha = false, ypha = false,
+		prop = false, stas = false, stos = false;
+	QList <QString> fixtures;
 	while (node.isNull() == false)
 	{
 		QDomElement tag = node.toElement();
-		if (tag.tagName() == "Step")
+		if (tag.tagName() == "Direction")
 		{
-			t_function_id fid = tag.text().toUInt();
-			QVERIFY(fid == 0 || fid == 1 || fid == 2 || fid == 3);
-			fids++;
+			QVERIFY(tag.text() == "Backward");
+			dir = true;
+		}
+		else if (tag.tagName() == "RunOrder")
+		{
+			QVERIFY(tag.text() == "SingleShot");
+			run = true;
+		}
+		else if (tag.tagName() == "Bus")
+		{
+			QVERIFY(tag.text() == "15");
+			bus = true;
+		}
+		else if (tag.tagName() == "Algorithm")
+		{
+			QVERIFY(tag.text() == "Lissajous");
+			algo = true;
+		}
+		else if (tag.tagName() == "Width")
+		{
+			QVERIFY(tag.text() == "13");
+			w = true;
+		}
+		else if (tag.tagName() == "Height")
+		{
+			QVERIFY(tag.text() == "42");
+			h = true;
+		}
+		else if (tag.tagName() == "Rotation")
+		{
+			QVERIFY(tag.text() == "78");
+			rot = true;
+		}
+		else if (tag.tagName() == "PropagationMode")
+		{
+			QVERIFY(tag.text() == "Serial");
+			prop = true;
+		}
+		else if (tag.tagName() == "StartScene")
+		{
+			QVERIFY(tag.text() == "99");
+			QVERIFY(tag.attribute("Enabled") == "True");
+			stos = true;
+		}
+		else if (tag.tagName() == "StopScene")
+		{
+			QVERIFY(tag.text() == "88");
+			QVERIFY(tag.attribute("Enabled") == "False");
+			stos = true;
+		}
+		else if (tag.tagName() == "Axis")
+		{
+			bool axis = true;
+			if (tag.attribute("Name") == "X")
+				axis = true;
+			else if (tag.attribute("Name") == "Y")
+				axis = false;
+			else
+				QFAIL("Invalid axis!");
+
+			QDomNode subnode = tag.firstChild();
+			QDomElement subtag = subnode.toElement();
+			if (subtag.tagName() == "Offset")
+			{
+				if (axis == true)
+				{
+					QVERIFY(subtag.text() == "34");
+					xoff = true;
+				}
+				else
+				{
+					QVERIFY(subtag.text() == "27");
+					yoff = true;
+				}
+			}
+			else if (subtag.tagName() == "Frequency")
+			{
+				if (axis == true)
+				{
+					QVERIFY(subtag.text() == "5");
+					xfreq = true;
+				}
+				else
+				{
+					QVERIFY(subtag.text() == "4");
+					yfreq = true;
+				}
+			}
+			else if (subtag.tagName() == "Phase")
+			{
+				if (axis == true)
+				{
+					QVERIFY(subtag.text() == "163");
+					xpha = true;
+				}
+				else
+				{
+					QVERIFY(subtag.text() == "94");
+					ypha = true;
+				}
+			}
+			else
+			{
+				QFAIL("Unexpected axis tag!");
+			}
+
+			subnode = subnode.nextSibling();
+		}
+		else if (tag.tagName() == "Fixture")
+		{
+			bool expectBackward = false;
+
+			QDomNode subnode = tag.firstChild();
+			QDomElement subtag = subnode.toElement();
+
+			if (subtag.tagName() == "ID")
+			{
+				if (fixtures.contains(subtag.text()) == true)
+					QFAIL("Same fixture multiple times!");
+				else
+					fixtures.append(subtag.text());
+
+				if (subtag.text() == "34")
+					expectBackward = true;
+				else
+					expectBackward = false;
+			}
+			else if (subtag.tagName() == "Direction")
+			{
+				if (expectBackward == false &&
+				    subtag.text() == "Backward")
+				{
+					QFAIL("Not expecting reversal!");
+				}
+			}
+			else
+			{
+				QFAIL("Unexpected fixture tag!");
+			}
+
+			subnode = subnode.nextSibling();
 		}
 		else
 		{
-			QFAIL("Unhandled XML tag.");
+			QFAIL("Unexpected EFX tag!");
 		}
 
 		node = node.nextSibling();
 	}
 
-	QVERIFY(fids == 4);
+	QVERIFY(fixtures.size() == 3);
+	QVERIFY(dir = true);
+	QVERIFY(run = true);
+	QVERIFY(bus = true);
+	QVERIFY(algo = true);
+	QVERIFY(w = true);
+	QVERIFY(h = true);
+	QVERIFY(rot = true);
+	QVERIFY(xoff = true);
+	QVERIFY(yoff = true);
+	QVERIFY(xfreq = true);
+	QVERIFY(yfreq = true);
+	QVERIFY(xpha = true);
+	QVERIFY(ypha = true);
+	QVERIFY(prop = true);
+	QVERIFY(stas = true);
+	QVERIFY(stos = true);
 }
 
+#if 0
 void Collection_Test::armSuccess()
 {
 	Doc* doc = new Doc(this, m_cache);

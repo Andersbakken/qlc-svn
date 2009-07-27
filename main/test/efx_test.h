@@ -50,15 +50,17 @@ private slots:
 	void copyFrom();
 	void createCopy();
 
-/*	void functions();
-	void functionRemoval();
-
+	void loadXAxis();
+	void loadYAxis();
+	void loadYAxisWrongRoot();
+	void loadAxisNoXY();
 	void loadSuccess();
 	void loadWrongType();
 	void loadWrongRoot();
+	void loadDuplicateFixture();
 	void save();
 
-	void armSuccess();
+/*	void armSuccess();
 	void armMissingFunction();
 	void write();
 */

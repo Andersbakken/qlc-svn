@@ -356,7 +356,7 @@ int EFX::rotation() const
 
 void EFX::setXOffset(int offset)
 {
-	m_xOffset = static_cast<double> (CLAMP(offset, 0, 127));
+	m_xOffset = static_cast<double> (CLAMP(offset, 0, 255));
 	emit changed(m_id);
 }
 
@@ -367,7 +367,7 @@ int EFX::xOffset() const
 
 void EFX::setYOffset(int offset)
 {
-	m_yOffset = static_cast<double> (CLAMP(offset, 0, 127));
+	m_yOffset = static_cast<double> (CLAMP(offset, 0, 255));
 	emit changed(m_id);
 }
 
@@ -828,6 +828,12 @@ bool EFX::loadXML(const QDomElement* root)
 		return false;
 	}
 
+	if (root->attribute(KXMLQLCFunctionType) != typeToString(Function::EFX))
+	{
+		qWarning("Function is not an EFX!");
+		return false;
+	}
+
 	/* Load EFX contents */
 	node = root->firstChild();
 	while (node.isNull() == false)
@@ -976,19 +982,23 @@ bool EFX::loadXMLAxis(const QDomElement* root)
 		setYOffset(offset);
 		setYFrequency(frequency);
 		setYPhase(phase);
+
+		return true;
 	}
 	else if (axis == KXMLQLCEFXX)
 	{
 		setXOffset(offset);
 		setXFrequency(frequency);
 		setXPhase(phase);
+
+		return true;
 	}
 	else
 	{
 		qWarning() << "Unknown EFX axis:" << axis;
-	}
 
-	return true;
+		return false;
+	}
 }
 
 /*****************************************************************************
