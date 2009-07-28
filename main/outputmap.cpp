@@ -58,6 +58,7 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 	m_universes = universes;
 	m_dummyOut = NULL;
 	m_blackout = false;
+	m_universeChanged = false;
 
 	m_universeArray = new QByteArray(universes * 512, 0);
 
