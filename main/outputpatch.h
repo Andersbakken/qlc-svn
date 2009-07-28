@@ -63,7 +63,7 @@ public:
 
 protected:
 	QLCOutPlugin* m_plugin;
-	int m_output;
+	t_output m_output;
 
 	/********************************************************************
 	 * Value dump

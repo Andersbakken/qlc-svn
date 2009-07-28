@@ -44,13 +44,16 @@ InputPatch::InputPatch(QObject* parent) : QObject(parent)
 
 InputPatch::~InputPatch()
 {
+	if (m_plugin != NULL)
+		m_plugin->close(m_input);
 }
 
 /*****************************************************************************
  * Properties
  *****************************************************************************/
 
-void InputPatch::set(QLCInPlugin* plugin, t_input input, QLCInputProfile* profile)
+void InputPatch::set(QLCInPlugin* plugin, t_input input,
+		     QLCInputProfile* profile)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
 	   the line has been assigned to more than one input universe */

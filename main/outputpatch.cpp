@@ -35,7 +35,7 @@
 OutputPatch::OutputPatch(QObject* parent) : QObject(parent)
 {
 	m_plugin = NULL;
-	m_output = -1;
+	m_output = KOutputInvalid;
 }
 
 OutputPatch::~OutputPatch()

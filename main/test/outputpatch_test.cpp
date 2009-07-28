@@ -35,7 +35,7 @@ void OutputPatch_Test::defaults()
 {
 	OutputPatch op(this);
 	QVERIFY(op.m_plugin == NULL);
-	QVERIFY(op.m_output == -1);
+	QVERIFY(op.m_output == KOutputInvalid);
 	QVERIFY(op.pluginName() == KOutputNone);
 	QVERIFY(op.outputName() == KOutputNone);
 }
