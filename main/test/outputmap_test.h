@@ -35,6 +35,8 @@ private slots:
 	void setValue();
 	void claimReleaseDump();
 	void blackout();
+	void pluginNames();
+	void pluginOutputs();
 };
 
 #endif

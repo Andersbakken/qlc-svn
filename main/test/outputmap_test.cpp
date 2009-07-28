@@ -72,6 +72,8 @@ void OutputMap_Test::appendPlugin()
 	OutputPluginStub* stub = new OutputPluginStub();
 	QVERIFY(om.appendPlugin(stub) == true);
 	QVERIFY(om.appendPlugin(stub) == false);
+	QVERIFY(om.plugin(stub->name()) == stub);
+	QVERIFY(om.plugin(om.m_dummyOut->name()) == om.m_dummyOut);
 }
 
 void OutputMap_Test::setPatch()
@@ -271,4 +273,31 @@ void OutputMap_Test::blackout()
 
 	for (int i = 0; i < 2048; i++)
 		QVERIFY(stub->m_array[i] == (char) 0);
+}
+
+void OutputMap_Test::pluginNames()
+{
+	OutputMap om(this);
+
+	QVERIFY(om.pluginNames().size() == 1);
+	QVERIFY(om.pluginNames().at(0) == om.m_dummyOut->name());
+
+	OutputPluginStub* stub = new OutputPluginStub();
+	om.appendPlugin(stub);
+
+	QVERIFY(om.pluginNames().size() == 2);
+	QVERIFY(om.pluginNames().at(0) == om.m_dummyOut->name());
+	QVERIFY(om.pluginNames().at(1) == stub->name());
+}
+
+void OutputMap_Test::pluginOutputs()
+{
+	OutputMap om(this);
+
+	OutputPluginStub* stub = new OutputPluginStub();
+	om.appendPlugin(stub);
+
+	QStringList ls(om.pluginOutputs(stub->name()));
+	QVERIFY(ls == stub->outputs());
+	QVERIFY(ls != om.m_dummyOut->outputs());
 }
