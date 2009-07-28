@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  dummyoutplugin.cpp
+  outputplugin_stub.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -19,25 +19,25 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QMessageBox>
 #include <QString>
-#include <QDebug>
+#include <QtTest>
 
-#include "dummyoutplugin.h"
+#include "outputplugin_stub.h"
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-DummyOutPlugin::DummyOutPlugin() : QLCOutPlugin()
+OutputPluginStub::OutputPluginStub() : QLCOutPlugin(),
+					m_array(KUniverseCount * 512, 0)
 {
 }
 
-DummyOutPlugin::~DummyOutPlugin()
+OutputPluginStub::~OutputPluginStub()
 {
 }
 
-void DummyOutPlugin::init()
+void OutputPluginStub::init()
 {
 }
 
@@ -45,31 +45,32 @@ void DummyOutPlugin::init()
  * Name
  *****************************************************************************/
 
-QString DummyOutPlugin::name()
+QString OutputPluginStub::name()
 {
-	return QString("Dummy Output");
+	return QString("Output Plugin Stub");
 }
 
 /*****************************************************************************
  * Open/close
  *****************************************************************************/
 
-void DummyOutPlugin::open(t_output output)
+void OutputPluginStub::open(t_output output)
 {
-	Q_UNUSED(output);
+	if (m_openLines.contains(output) == false && output < KUniverseCount)
+		m_openLines.append(output);
 }
 
-void DummyOutPlugin::close(t_output output)
+void OutputPluginStub::close(t_output output)
 {
-	Q_UNUSED(output);
+	m_openLines.removeAll(output);
 }
 
-QStringList DummyOutPlugin::outputs()
+QStringList OutputPluginStub::outputs()
 {
 	QStringList list;
 
 	for (int i = 0; i < KUniverseCount; i++)
-		list << QString("%1: Dummy Out %1").arg(i + 1);
+		list << QString("%1: Stub %1").arg(i + 1);
 
 	return list;
 }
@@ -78,74 +79,52 @@ QStringList DummyOutPlugin::outputs()
  * Configuration
  *****************************************************************************/
 
-void DummyOutPlugin::configure()
+void OutputPluginStub::configure()
 {
-	QMessageBox::information(NULL,
-				 tr("Dummy output configuration"),
-				 tr("This plugin has no configurable options"));
 }
 
 /*****************************************************************************
  * Status
  *****************************************************************************/
 
-QString DummyOutPlugin::infoText(t_output output)
+QString OutputPluginStub::infoText(t_output output)
 {
-	QString str;
-
-	str += QString("<HTML>");
-	str += QString("<HEAD>");
-	str += QString("<TITLE>%1</TITLE>").arg(name());
-	str += QString("</HEAD>");
-	str += QString("<BODY>");
-
-	if (output == KOutputInvalid)
-		str += QString("<H3>%1</H3>").arg(name());
-	else
-		str += QString("<H3>%1 %2</H3>").arg(name()).arg(output + 1);
-	str += QString("<P>");
-	str += QString("This plugin does absolutely nothing; ");
-	str += QString("you can use it if you don't have ");
-	str += QString("the necessary hardware for real control.");
-	str += QString("</P>");
-
-	str += QString("</BODY>");
-	str += QString("</HTML>");
-
-	return str;
+	Q_UNUSED(output);
+	return QString("This is a plugin stub for testing.");
 }
 
 /*****************************************************************************
  * Value read/write
  *****************************************************************************/
 
-void DummyOutPlugin::writeChannel(t_output output, t_channel channel,
-				  t_value value)
+void OutputPluginStub::writeChannel(t_output output, t_channel channel,
+				    t_value value)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(channel);
 	Q_UNUSED(value);
 }
 
-void DummyOutPlugin::writeRange(t_output output, t_channel address,
-				t_value* values, t_channel num)
+void OutputPluginStub::writeRange(t_output output, t_channel address,
+				  t_value* values, t_channel num)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
+	QVERIFY(output <= 3);
+	QVERIFY(address == 0);
+	QVERIFY(num == 512);
+
+	memcpy(m_array.data(), values, num);
 }
 
-void DummyOutPlugin::readChannel(t_output output, t_channel channel,
-				 t_value* value)
+void OutputPluginStub::readChannel(t_output output, t_channel channel,
+				   t_value* value)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(channel);
 	Q_UNUSED(value);
 }
 
-void DummyOutPlugin::readRange(t_output output, t_channel address,
-			       t_value* values, t_channel num)
+void OutputPluginStub::readRange(t_output output, t_channel address,
+				 t_value* values, t_channel num)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(address);

@@ -40,6 +40,7 @@ class OutputMap;
 class OutputPatch : public QObject
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(OutputPatch)
 
 	/********************************************************************
 	 * Initialization
@@ -47,9 +48,6 @@ class OutputPatch : public QObject
 public:
 	OutputPatch(QObject* parent);
 	virtual ~OutputPatch();
-
-private:
-	Q_DISABLE_COPY(OutputPatch)
 
 	/********************************************************************
 	 * Plugin & output

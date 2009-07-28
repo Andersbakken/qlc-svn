@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  dummyoutplugin.h
+  outputplugin_stub.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,26 +19,26 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DUMMYOUTPLUGIN_H
-#define DUMMYOUTPLUGIN_H
+#ifndef OUTPUTPLUGIN_STUB_H
+#define OUTPUTPLUGIN_STUB_H
 
 #include <QObject>
+#include <QList>
 
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-class DummyOutPlugin : public QObject, public QLCOutPlugin
+class OutputPluginStub : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
-	Q_INTERFACES(QLCOutPlugin)
-	Q_DISABLE_COPY(DummyOutPlugin)
+	Q_DISABLE_COPY(OutputPluginStub)
 
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
 public:
-	DummyOutPlugin();
-	virtual ~DummyOutPlugin();
+	OutputPluginStub();
+	virtual ~OutputPluginStub();
 
 	void init();
 
@@ -49,6 +49,8 @@ public:
 	void open(t_output output = 0);
 	void close(t_output output = 0);
 	QStringList outputs();
+
+	QList <t_output> m_openLines;
 
 	/*********************************************************************
 	 * Name
@@ -79,6 +81,8 @@ public:
 	void readChannel(t_output output, t_channel channel, t_value* value);
 	void readRange(t_output output, t_channel address, t_value* values,
 		       t_channel num);
+
+	QByteArray m_array;
 };
 
 #endif

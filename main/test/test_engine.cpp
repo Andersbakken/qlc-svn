@@ -23,6 +23,7 @@
 #include <QtTest>
 
 #include "scenechannel_test.h"
+#include "outputpatch_test.h"
 #include "scenevalue_test.h"
 #include "collection_test.h"
 #include "efxfixture_test.h"
@@ -64,6 +65,9 @@ int main(int argc, char** argv)
 
 	EFXFixture_Test efxfixture;
 	QTest::qExec(&efxfixture, argc, argv);
+
+	OutputPatch_Test outputpatch;
+	QTest::qExec(&outputpatch, argc, argv);
 
 	return 0;
 }
