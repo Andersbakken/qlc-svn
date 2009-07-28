@@ -120,6 +120,10 @@ App::~App()
 		settings.setValue(KXMLQLCGeometry, rect());
 #endif
 
+	// Store outputmap defaults
+	if (m_outputMap != NULL)
+		m_outputMap->saveDefaults();
+
 	// Delete doc
 	if (m_doc != NULL)
 		delete m_doc;
@@ -266,6 +270,9 @@ void App::initOutputMap()
 {
 	m_outputMap = new OutputMap(this, KUniverseCount);
 	Q_ASSERT(m_outputMap != NULL);
+
+	m_outputMap->loadPlugins();
+	m_outputMap->loadDefaults();
 
 	connect(m_outputMap, SIGNAL(blackoutChanged(bool)),
 		this, SLOT(slotOutputMapBlackoutChanged(bool)));

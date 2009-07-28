@@ -28,6 +28,7 @@
 #include "scenevalue_test.h"
 #include "collection_test.h"
 #include "efxfixture_test.h"
+#include "outputmap_test.h"
 #include "fixture_test.h"
 #include "chaser_test.h"
 #include "scene_test.h"
@@ -69,6 +70,9 @@ int main(int argc, char** argv)
 
 	OutputPatch_Test outputpatch;
 	QTest::qExec(&outputpatch, argc, argv);
+
+	OutputMap_Test outputmap;
+	QTest::qExec(&outputmap, argc, argv);
 
 	InputPatch_Test inputpatch;
 	QTest::qExec(&inputpatch, argc, argv);

@@ -112,7 +112,7 @@ void OutputPluginStub::writeRange(t_output output, t_channel address,
 	QVERIFY(address == 0);
 	QVERIFY(num == 512);
 
-	memcpy(m_array.data(), values, num);
+	memcpy(m_array.data() + (output * 512), values, num);
 }
 
 void OutputPluginStub::readChannel(t_output output, t_channel channel,

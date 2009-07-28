@@ -47,6 +47,7 @@ class OutputPatchEditor;
 class OutputMap : public QObject
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(OutputMap)
 
 	/*********************************************************************
 	 * Initialization
@@ -65,12 +66,10 @@ public:
 	~OutputMap();
 
 	/**
-	 * Load all output plugins from the plugin directory.
+	 * Load all output plugins from the plugin directory (varies between
+	 * platforms).
 	 */
-	void load();
-
-private:
-	Q_DISABLE_COPY(OutputMap)
+	void loadPlugins();
 
 protected:
 	/** Total number of supported universes */

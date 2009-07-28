@@ -62,15 +62,10 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 	m_universeArray = new QByteArray(universes * 512, 0);
 
 	initPatch();
-
-	load();
-	loadDefaults();
 }
 
 OutputMap::~OutputMap()
 {
-	saveDefaults();
-
 	delete m_universeArray;
 	m_universeArray = NULL;
 
@@ -84,7 +79,7 @@ OutputMap::~OutputMap()
 	m_dummyOut = NULL;
 }
 
-void OutputMap::load()
+void OutputMap::loadPlugins()
 {
 	QString path;
 
@@ -194,7 +189,7 @@ t_value OutputMap::value(t_channel channel)
 {
 	t_value value;
 
-	if (channel > (m_universes * 512))
+	if (channel >= (m_universes * 512))
 		return 0;
 
 	value = m_universeArray->data()[channel];
@@ -204,7 +199,7 @@ t_value OutputMap::value(t_channel channel)
 
 void OutputMap::setValue(t_channel channel, t_value value)
 {
-	if (channel > m_universes * 512)
+	if (channel >= m_universes * 512)
 		return;
 
 	m_universeArray->data()[channel] = value;
@@ -284,8 +279,10 @@ bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
 
 OutputPatch* OutputMap::patch(int universe)
 {
-	Q_ASSERT(universe >= 0 && universe < KUniverseCount);
-	return m_patch[universe];
+	if (universe >= 0 && universe < KUniverseCount)
+		return m_patch[universe];
+	else
+		return NULL;
 }
 
 /*****************************************************************************

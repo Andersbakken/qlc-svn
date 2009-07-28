@@ -91,6 +91,7 @@ HEADERS = bus_test.h \
 	  efxfixture_test.h \
 	  outputpatch_test.h \
 	  inputpatch_test.h \
+	  outputmap_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS \
@@ -107,6 +108,7 @@ SOURCES = bus_test.cpp \
 	  efxfixture_test.cpp \
 	  outputpatch_test.cpp \
 	  inputpatch_test.cpp \
+	  outputmap_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \
