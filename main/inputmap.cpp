@@ -52,26 +52,8 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 {
 	m_universes = universes;
 	m_editorUniverse = 0;
-	
+
 	initPatch();
-	loadPlugins();
-
-#ifdef Q_WS_X11
-	/* First, load user profiles (overrides system profiles) */
-	QDir dir(QString(getenv("HOME")));
-	loadProfiles(dir.absoluteFilePath(QString(USERINPUTPROFILEDIR)));
-#endif
-
-	/* Then, load system profiles */
-#ifdef __APPLE__
-	loadProfiles(QString("%1/%2")
-                    .arg(QApplication::applicationDirPath())
-                    .arg(INPUTPROFILEDIR));
-#else
-	loadProfiles(INPUTPROFILEDIR);
-#endif
-
-	loadDefaults();
 }
 
 InputMap::~InputMap()
@@ -89,33 +71,9 @@ InputMap::~InputMap()
  * Universes
  *****************************************************************************/
 
-t_input_universe InputMap::universes()
+t_input_universe InputMap::universes() const
 {
 	return m_universes;
-}
-
-QStringList InputMap::universeNames()
-{
-	QStringList inputs;
-	QStringList list;
-
-	for (t_input_universe i = 0; i < m_universes; i++)
-	{
-		if (m_patch[i]->plugin() != NULL)
-		{
-			inputs = m_patch[i]->plugin()->inputs();
-			list << QString("%1: %2/%3").arg(i + 1)
-				.arg(m_patch[i]->plugin()->name())
-				.arg(inputs.at(m_patch[i]->input()));
-		}
-		else
-		{
-			/* No assignment */
-			list << QString("%1: %2").arg(i + 1).arg(KInputNone);
-		}
-	}
-
-	return list;
 }
 
 t_input_universe InputMap::editorUniverse() const
@@ -182,17 +140,19 @@ bool InputMap::setPatch(t_input_universe universe,
 		return false;
 	}
 
-	/* Don't care if plugin or profile is NULL. */
-	m_patch[universe]->set(plugin(pluginName), input,
-			       profile(profileName));
+	/* Don't care if plugin or profile is NULL. It must be possible to
+	   clear the patch completely. */
+	m_patch[universe]->set(plugin(pluginName), input, profile(profileName));
 
 	return true;
 }
 
 InputPatch* InputMap::patch(t_input_universe universe)
 {
-	Q_ASSERT(universe < m_universes);
-	return m_patch[universe];
+	if (universe < m_universes)
+		return m_patch[universe];
+	else
+		return NULL;
 }
 
 /*****************************************************************************

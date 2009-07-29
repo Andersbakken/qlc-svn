@@ -29,6 +29,7 @@
 #include "collection_test.h"
 #include "efxfixture_test.h"
 #include "outputmap_test.h"
+#include "inputmap_test.h"
 #include "fixture_test.h"
 #include "chaser_test.h"
 #include "scene_test.h"
@@ -76,6 +77,9 @@ int main(int argc, char** argv)
 
 	InputPatch_Test inputpatch;
 	QTest::qExec(&inputpatch, argc, argv);
+
+	InputMap_Test inputmap;
+	QTest::qExec(&inputmap, argc, argv);
 
 	return 0;
 }

@@ -124,6 +124,10 @@ App::~App()
 	if (m_outputMap != NULL)
 		m_outputMap->saveDefaults();
 
+	// Store inputmap defaults
+	if (m_inputMap != NULL)
+		m_inputMap->saveDefaults();
+
 	// Delete doc
 	if (m_doc != NULL)
 		delete m_doc;
@@ -328,6 +332,28 @@ void App::initInputMap()
 {
 	m_inputMap = new InputMap(this, KInputUniverseCount);
 	Q_ASSERT(m_inputMap != NULL);
+
+	/* Load input plugins */
+	m_inputMap->loadPlugins();
+
+#ifdef Q_WS_X11
+	/* First, load user profiles (UNIX only). Override system profiles,
+	 * since duplicates in system profiles are ignored. */
+	QDir dir(QString(getenv("HOME")));
+	m_inputMap->loadProfiles(dir.absoluteFilePath(
+					QString(USERINPUTPROFILEDIR)));
+#endif
+
+	/* Then, load system profiles */
+#ifdef __APPLE__
+	m_inputMap->loadProfiles(QString("%1/%2")
+				 .arg(QApplication::applicationDirPath())
+				 .arg(INPUTPROFILEDIR));
+#else
+	m_inputMap->loadProfiles(INPUTPROFILEDIR);
+#endif
+
+	m_inputMap->loadDefaults();
 }
 
 /*****************************************************************************

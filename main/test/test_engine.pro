@@ -92,6 +92,7 @@ HEADERS = bus_test.h \
 	  outputpatch_test.h \
 	  inputpatch_test.h \
 	  outputmap_test.h \
+	  inputmap_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS \
@@ -109,6 +110,7 @@ SOURCES = bus_test.cpp \
 	  outputpatch_test.cpp \
 	  inputpatch_test.cpp \
 	  outputmap_test.cpp \
+	  inputmap_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \

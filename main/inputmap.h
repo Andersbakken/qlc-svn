@@ -44,6 +44,7 @@ class QDomElement;
 class InputMap : public QObject
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(InputMap)
 
 	friend class InputPatch;
 	friend class InputMapEditor;
@@ -64,9 +65,6 @@ public:
 	 * Destroy an InputMap object
 	 */
 	virtual ~InputMap();
-
-private:
-	Q_DISABLE_COPY(InputMap)
 
 	/*********************************************************************
 	 * Input data
@@ -94,14 +92,7 @@ public:
 	/**
 	 * Get the number of supported input universes
 	 */
-	t_input_universe universes();
-
-	/**
-	 * Get the assigned input line names for supported input universes, to
-	 * be used in UI controls in the form "x: name", with universe numbers
-	 * start from 1 instead of 0.
-	 */
-	QStringList universeNames();
+	t_input_universe universes() const;
 
 	/**
 	 * Get the universe that is used for editing functions etc.
@@ -112,11 +103,6 @@ public:
 	 * Set the universe that is used for editing functions etc.
 	 */
 	void setEditorUniverse(t_input_universe uni);
-	
-	/**
-	 * Initialize the patching table
-	 */
-	void initPatch();
 
 	/**
 	 * Patch the given universe to go thru the given plugin
@@ -139,6 +125,10 @@ public:
 	InputPatch* patch(t_input_universe universe);
 
 protected:
+	/** Initialize the patch table */
+	void initPatch();
+
+protected:
 	/** Vector containing all active input plugins and the internal
 	    universes that they are associated to. */
 	QVector <InputPatch*> m_patch;
@@ -152,13 +142,12 @@ protected:
 	/*********************************************************************
 	 * Plugins
 	 *********************************************************************/
-protected:
+public:
 	/**
 	 * Load all input plugins from the input plugin directory
 	 */
 	void loadPlugins();
 
-public:
 	/**
 	 * Get a list of available input plugins as a string list
 	 * containing the plugins' names
@@ -184,7 +173,7 @@ public:
 	void configurePlugin(const QString& pluginName);
 
 	/**
-	 * Get a status text for the given plugin. 
+	 * Get a status text for the given plugin.
 	 *
 	 * @param pluginName Name of the plugin, whose status to get
 	 * @param input A specific input identifier
@@ -217,11 +206,10 @@ protected:
 	/*********************************************************************
 	 * Input profiles
 	 *********************************************************************/
-protected:
+public:
 	/** Load all profile profiles from the given path */
 	void loadProfiles(const QString& profilePath);
 
-public:
 	/** Get a list of available profile names */
 	QStringList profileNames();
 
