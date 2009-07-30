@@ -97,7 +97,7 @@ t_fixture_id Fixture::invalidId()
  * Name
  *****************************************************************************/
 
-void Fixture::setName(QString name)
+void Fixture::setName(const QString& name)
 {
 	m_name = name;
 	emit changed(m_id);

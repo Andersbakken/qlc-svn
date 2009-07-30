@@ -110,7 +110,7 @@ public:
 	 *
 	 * @param name The new name to assign for the instance
 	 */
-	void setName(QString name);
+	void setName(const QString& name);
 
 	/**
 	 * Get the fixture instance's friendly name.
