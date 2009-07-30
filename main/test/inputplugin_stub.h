@@ -71,6 +71,9 @@ public:
 public:
 	void configure();
 
+	/** Number of times configure() has been called */
+	int m_configureCalled;
+
 	/*********************************************************************
 	 * Status
 	 *********************************************************************/
@@ -89,6 +92,10 @@ public:
 public:
 	void feedBack(t_input input, t_input_channel channel,
 			t_input_value value);
+
+	t_input m_feedBackInput;
+	t_input_channel m_feedBackChannel;
+	t_input_value m_feedBackValue;
 };
 
 #endif

@@ -24,6 +24,7 @@
 
 InputPluginStub::InputPluginStub()
 {
+	m_configureCalled = 0;
 }
 
 InputPluginStub::~InputPluginStub()
@@ -57,12 +58,12 @@ QStringList InputPluginStub::inputs()
 
 void InputPluginStub::configure()
 {
+	m_configureCalled++;
 }
 
 QString InputPluginStub::infoText(t_input input)
 {
-	Q_UNUSED(input);
-	return QString("This is a plugin stub for testing.");
+	return QString("%1: This is a plugin stub for testing.").arg(input);
 }
 
 QString InputPluginStub::name()
@@ -78,7 +79,7 @@ void InputPluginStub::connectInputData(QObject* listener)
 void InputPluginStub::feedBack(t_input input, t_input_channel channel,
 			t_input_value value)
 {
-	Q_UNUSED(input);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
+	m_feedBackInput = input;
+	m_feedBackChannel = channel;
+	m_feedBackValue = value;
 }

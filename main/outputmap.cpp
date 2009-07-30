@@ -71,7 +71,10 @@ OutputMap::~OutputMap()
 	m_universeArray = NULL;
 
 	for (int i = 0; i < m_universes; i++)
+	{
 		delete m_patch[i];
+		m_patch[i] = NULL;
+	}
 
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();

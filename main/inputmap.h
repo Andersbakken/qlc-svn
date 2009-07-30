@@ -77,7 +77,7 @@ public slots:
 public:
 	/** Send feedback value to the input profile e.g. to move a motorized
 	    sliders & knobs, set indicator leds etc. */
-	void feedBack(t_input_universe universe, t_input_channel channel,
+	bool feedBack(t_input_universe universe, t_input_channel channel,
 		      t_input_value value);
 
 signals:
@@ -217,10 +217,10 @@ public:
 	QLCInputProfile* profile(const QString& name);
 
 	/** Add a new profile */
-	void addProfile(QLCInputProfile* profile);
+	bool addProfile(QLCInputProfile* profile);
 
 	/** Remove an existing profile by its name and delete it */
-	void removeProfile(const QString& name);
+	bool removeProfile(const QString& name);
 
 protected:
 	/** List that contains all available profiles */

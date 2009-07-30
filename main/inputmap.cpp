@@ -58,7 +58,14 @@ InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
 
 InputMap::~InputMap()
 {
-	saveDefaults();
+	/* Clear patching table so that when it gets out of scope AFTER this
+	   destructor is run, it won't attempt to do close() on already-deleted
+	   plugin pointers. */
+	for (t_input_universe i = 0; i < m_universes; i++)
+	{
+		delete m_patch[i];
+		m_patch[i] = NULL;
+	}
 
 	while (m_plugins.isEmpty() == false)
 		delete m_plugins.takeFirst();
@@ -106,17 +113,24 @@ void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
 	}
 }
 
-void InputMap::feedBack(t_input_universe universe, t_input_channel channel,
+bool InputMap::feedBack(t_input_universe universe, t_input_channel channel,
 			t_input_value value)
 {
-	InputPatch* patch;
-	Q_ASSERT(universe < m_patch.size());
+	if (universe >= m_patch.size())
+		return false;
 
-	patch = m_patch[universe];
+	InputPatch* patch = m_patch[universe];
 	Q_ASSERT(patch != NULL);
 
 	if (patch->plugin() != NULL)
+	{
 		patch->plugin()->feedBack(patch->input(), channel, value);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /*****************************************************************************
@@ -315,18 +329,18 @@ void InputMap::loadProfiles(const QString& profilePath)
 	QStringListIterator it(dir.entryList());
 	while (it.hasNext() == true)
 	{
-		QLCInputProfile* profile;
+		QLCInputProfile* prof;
 		QString path;
 
 		path = dir.absoluteFilePath(it.next());
-		profile = QLCInputProfile::loader(path);
-		if (profile != NULL)
+		prof = QLCInputProfile::loader(path);
+		if (prof != NULL)
 		{
 			/* Check for duplicates */
-			if (this->profile(profile->name()) == NULL)
-				m_profiles.append(profile);
+			if (profile(prof->name()) == NULL)
+				addProfile(prof);
 			else
-				delete profile;
+				delete prof;
 		}
 		else
 		{
@@ -358,13 +372,23 @@ QLCInputProfile* InputMap::profile(const QString& name)
 	return NULL;
 }
 
-void InputMap::addProfile(QLCInputProfile* profile)
+bool InputMap::addProfile(QLCInputProfile* profile)
 {
 	Q_ASSERT(profile != NULL);
-	m_profiles.append(profile);
+
+	/* Don't add the same profile twice */
+	if (m_profiles.contains(profile) == false)
+	{
+		m_profiles.append(profile);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void InputMap::removeProfile(const QString& name)
+bool InputMap::removeProfile(const QString& name)
 {
 	QLCInputProfile* profile;
 	QMutableListIterator <QLCInputProfile*> it(m_profiles);
@@ -375,9 +399,11 @@ void InputMap::removeProfile(const QString& name)
 		{
 			it.remove();
 			delete profile;
-			break;
+			return true;
 		}
 	}
+
+	return false;
 }
 
 /*****************************************************************************
