@@ -170,14 +170,14 @@ public:
 	 *
 	 * @param type The type to convert
 	 */
-	static QString typeToString(Function::Type type);
+	static QString typeToString(const Function::Type& type);
 
 	/**
 	 * Convert a string to Type
 	 *
 	 * @param str The string to convert
 	 */
-	static Type stringToType(QString str);
+	static Type stringToType(const QString& str);
 
 	/**
 	 * Get an icon (representing the function's type) to be used in lists
@@ -196,7 +196,7 @@ public:
 	 *
 	 * @param dir This function's running order
 	 */
-	virtual void setRunOrder(Function::RunOrder order);
+	virtual void setRunOrder(const Function::RunOrder& order);
 
 	/**
 	 * Get this function's running order
@@ -208,14 +208,14 @@ public:
 	 *
 	 * @param order RunOrder to convert
 	 */
-	static QString runOrderToString(Function::RunOrder);
+	static QString runOrderToString(const Function::RunOrder& order);
 
 	/**
 	 * Convert a string to RunOrder
 	 *
 	 * @param str The string to convert
 	 */
-	static Function::RunOrder stringToRunOrder(QString str);
+	static Function::RunOrder stringToRunOrder(const QString& str);
 
 protected:
 	RunOrder m_runOrder;
@@ -232,7 +232,7 @@ public:
 	 *
 	 * @param dir This function's direction
 	 */
-	virtual void setDirection(Function::Direction dir);
+	virtual void setDirection(const Function::Direction& dir);
 
 	/**
 	 * Get this function's direction
@@ -244,14 +244,14 @@ public:
 	 *
 	 * @param dir Direction to convert
 	 */
-	static QString directionToString(Function::Direction dir);
+	static QString directionToString(const Function::Direction& dir);
 
 	/**
 	 * Convert a string to Direction
 	 *
 	 * @param str The string to convert
 	 */
-	static Function::Direction stringToDirection(QString str);
+	static Function::Direction stringToDirection(const QString& str);
 
 protected:
 	Direction m_direction;
@@ -377,15 +377,18 @@ public:
 
 signals:
 	/**
-	 * Signal that is emitted to this function's parent(s) when this
-	 * function is started
+	 * Emitted when a function is started (i.e. added to MasterTimer's
+	 * list of running functions).
+	 *
+	 * @param id The ID of the started function
 	 */
 	void running(t_function_id id);
 
 	/**
-	 * Signal that is emitted to this function's parent(s) when this
-	 * function is really finished (i.e. removed from Master Timer's
-	 * list of running functions).
+	 * Emitted when a function is really finished (i.e. removed from
+	 * MasterTimer's list of running functions).
+	 *
+	 * @param id The ID of the stopped function
 	 */
 	void stopped(t_function_id id);
 

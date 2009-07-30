@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  scene_stub.cpp
+  function_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,33 +19,23 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "scene_stub.h"
+#ifndef FUNCTION_TEST_H
+#define FUNCTION_TEST_H
 
-/****************************************************************************
- * Scene Stub
- ****************************************************************************/
+#include <QObject>
 
-SceneStub::SceneStub(QObject* parent) : Scene(parent)
+class Function_Test : public QObject
 {
-}
+	Q_OBJECT
 
-SceneStub::~SceneStub()
-{
-}
+private slots:
+	void invalidId();
+	void typeToString();
+	void stringToType();
+	void runOrderToString();
+	void stringToRunOrder();
+	void directionToString();
+	void stringToDirection();
+};
 
-void SceneStub::setValue(t_channel address, t_value value)
-{
-	m_values[address] = value;
-}
-
-void SceneStub::writeValues(QByteArray* array, t_fixture_id fxi_id)
-{
-	Q_UNUSED(fxi_id);
-
-	QMapIterator <t_channel,t_value> it(m_values);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		(*array)[it.key()] = it.value();
-	}
-}
+#endif

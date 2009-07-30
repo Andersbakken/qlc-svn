@@ -124,7 +124,7 @@ QString Function::typeString() const
 	return Function::typeToString(type());
 }
 
-QString Function::typeToString(const Type type)
+QString Function::typeToString(const Type& type)
 {
 	switch (type)
 	{
@@ -142,7 +142,7 @@ QString Function::typeToString(const Type type)
 	}
 }
 
-Function::Type Function::stringToType(QString string)
+Function::Type Function::stringToType(const QString& string)
 {
 	if (string == KSceneString)
 		return Scene;
@@ -177,7 +177,7 @@ QIcon Function::icon() const
  * Running order
  *****************************************************************************/
 
-void Function::setRunOrder(Function::RunOrder order)
+void Function::setRunOrder(const Function::RunOrder& order)
 {
 	if (order == Loop || order == SingleShot || order == PingPong)
 		m_runOrder = order;
@@ -185,7 +185,7 @@ void Function::setRunOrder(Function::RunOrder order)
 		m_runOrder = Loop;
 }
 
-QString Function::runOrderToString(RunOrder order)
+QString Function::runOrderToString(const RunOrder& order)
 {
 	switch (order)
 	{
@@ -204,7 +204,7 @@ QString Function::runOrderToString(RunOrder order)
 	}
 }
 
-Function::RunOrder Function::stringToRunOrder(QString str)
+Function::RunOrder Function::stringToRunOrder(const QString& str)
 {
 	if (str == KPingPongString)
 		return PingPong;
@@ -218,7 +218,7 @@ Function::RunOrder Function::stringToRunOrder(QString str)
  * Direction
  *****************************************************************************/
 
-void Function::setDirection(Function::Direction dir)
+void Function::setDirection(const Function::Direction& dir)
 {
 	if (dir == Forward || dir == Backward)
 		m_direction = dir;
@@ -226,7 +226,7 @@ void Function::setDirection(Function::Direction dir)
 		m_direction = Forward;
 }
 
-QString Function::directionToString(Direction dir)
+QString Function::directionToString(const Direction& dir)
 {
 	switch (dir)
 	{
@@ -241,7 +241,7 @@ QString Function::directionToString(Direction dir)
 	}
 }
 
-Function::Direction Function::stringToDirection(QString str)
+Function::Direction Function::stringToDirection(const QString& str)
 {
 	if (str == KBackwardString)
 		return Backward;

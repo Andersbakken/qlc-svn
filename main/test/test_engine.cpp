@@ -30,6 +30,7 @@
 #include "efxfixture_test.h"
 #include "outputmap_test.h"
 #include "inputmap_test.h"
+#include "function_test.h"
 #include "fixture_test.h"
 #include "chaser_test.h"
 #include "scene_test.h"
@@ -42,11 +43,26 @@ int main(int argc, char** argv)
 {
 	QApplication qapp(argc, argv);
 
+	OutputPatch_Test outputpatch;
+	QTest::qExec(&outputpatch, argc, argv);
+
+	OutputMap_Test outputmap;
+	QTest::qExec(&outputmap, argc, argv);
+
+	InputPatch_Test inputpatch;
+	QTest::qExec(&inputpatch, argc, argv);
+
+	InputMap_Test inputmap;
+	QTest::qExec(&inputmap, argc, argv);
+
 	Bus_Test bus;
 	QTest::qExec(&bus, argc, argv);
 
 	Fixture_Test fixture;
 	QTest::qExec(&fixture, argc, argv);
+
+	Function_Test function;
+	QTest::qExec(&function, argc, argv);
 
 	SceneValue_Test scenevalue;
 	QTest::qExec(&scenevalue, argc, argv);
@@ -63,23 +79,11 @@ int main(int argc, char** argv)
 	Collection_Test collection;
 	QTest::qExec(&collection, argc, argv);
 
-	EFX_Test efx;
-	QTest::qExec(&efx, argc, argv);
-
 	EFXFixture_Test efxfixture;
 	QTest::qExec(&efxfixture, argc, argv);
 
-	OutputPatch_Test outputpatch;
-	QTest::qExec(&outputpatch, argc, argv);
-
-	OutputMap_Test outputmap;
-	QTest::qExec(&outputmap, argc, argv);
-
-	InputPatch_Test inputpatch;
-	QTest::qExec(&inputpatch, argc, argv);
-
-	InputMap_Test inputmap;
-	QTest::qExec(&inputmap, argc, argv);
+	EFX_Test efx;
+	QTest::qExec(&efx, argc, argv);
 
 	return 0;
 }
