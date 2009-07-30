@@ -60,10 +60,12 @@ private slots:
 	void loadDuplicateFixture();
 	void save();
 
-/*	void armSuccess();
-	void armMissingFunction();
-	void write();
-*/
+	void armSuccess();
+	void armMissingStartScene();
+	void armMissingStopScene();
+	void armMissingFixture();
+	void writeStartStopScenes();
+
 private:
 	QLCFixtureDefCache m_cache;
 };
