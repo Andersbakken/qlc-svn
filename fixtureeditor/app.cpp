@@ -86,27 +86,35 @@ App::~App()
 void App::loadDefaults()
 {
 	QSettings settings;
+	QPoint pos;
+	QSize size;
 
 	/* Application geometry and window state */
-	QVariant var;
-	var = settings.value(KXMLQLCGeometry, QRect(0, 0, 800, 600));
-	if (var.isValid() == true)
-		setGeometry(var.toRect());
-	var = settings.value(KXMLQLCWindowState, Qt::WindowNoState);
-	if (var.isValid() == true)
-		setWindowState(Qt::WindowState(var.toInt()));
+	pos = settings.value("/workspace/position", QPoint(0, 0)).toPoint();
+	size = settings.value("/workspace/size", QSize(800, 600)).toSize();
+	resize(size);
+	move(pos);
+
+	QVariant var = settings.value("/workspace/state", Qt::WindowNoState);
+	setWindowState(Qt::WindowState(var.toInt()));
 }
 
 void App::saveDefaults()
 {
-	QSettings settings;
-
 	/* Save application geometry */
-	settings.setValue(KXMLQLCWindowState, int(windowState()));
-	/* Save window geometry only if the window is not maximized. Otherwise
-	   the non-maximized state is just 1px smaller than the maximized one */
-	if (!(windowState() & Qt::WindowMaximized))
-		settings.setValue(KXMLQLCGeometry, rect());
+	QSettings settings;
+	settings.setValue("/workspace/state", int(windowState()));
+
+	if ((windowState() & Qt::WindowMaximized) != Qt::WindowMaximized)
+	{
+		/* Save window geometry only if the window is not maximized.
+		   Otherwise the non-maximized size is no smaller than the
+		   maximized size. Of course, nothing prevents the user from
+		   manually resizing the window to ridiculous proportions, but
+		   that's already out of this app's hands. */
+		settings.setValue("/workspace/position", pos());
+		settings.setValue("/workspace/size", size());
+	}
 }
 
 void App::closeEvent(QCloseEvent* e)
