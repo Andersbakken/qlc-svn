@@ -71,15 +71,13 @@
 
 #define KModeTextOperate tr("Operate")
 #define KModeTextDesign tr("Design")
-#define KXMLQLCGeometry "Geometry"
-#define KXMLQLCWindowState "WindowState"
 
 App* _app;
 QStyle* App::s_saneStyle = NULL;
 
-/*********************************************************************
+/*****************************************************************************
  * Initialization
- *********************************************************************/
+ *****************************************************************************/
 
 App::App() : QMainWindow()
 {
@@ -113,11 +111,18 @@ App::~App()
 #ifndef __APPLE__
 	/* Save application geometry */
 	QSettings settings;
-	settings.setValue(KXMLQLCWindowState, int(windowState()));
-	/* Save window geometry only if the window is not maximized. Otherwise
-	   the non-maximized state is just 1px smaller than the maximized one */
-	if (!(windowState() & Qt::WindowMaximized))
-		settings.setValue(KXMLQLCGeometry, rect());
+	settings.setValue("/workspace/state", int(windowState()));
+
+	if ((windowState() & Qt::WindowMaximized) != Qt::WindowMaximized)
+	{
+		/* Save window geometry only if the window is not maximized.
+		   Otherwise the non-maximized size is no smaller than the
+		   maximized size. Of course, nothing prevents the user from
+		   manually resizing the window to ridiculous proportions, but
+		   that's already out of this app's hands. */
+		settings.setValue("/workspace/position", pos());
+		settings.setValue("/workspace/size", size());
+	}
 #endif
 
 	// Store outputmap defaults
@@ -164,6 +169,8 @@ App::~App()
 void App::init()
 {
 	QSettings settings;
+	QPoint pos;
+	QSize size;
 
 	setWindowIcon(QIcon(":/qlc.png"));
 
@@ -180,13 +187,13 @@ void App::init()
 	setBackgroundImage(settings.value("/workspace/background").toString());
 
 	/* Application geometry and window state */
-	QVariant var;
-	var = settings.value(KXMLQLCGeometry, QRect(0, 0, 800, 600));
-	if (var.isValid() == true)
-		setGeometry(var.toRect());
-	var = settings.value(KXMLQLCWindowState, Qt::WindowNoState);
-	if (var.isValid() == true)
-		setWindowState(Qt::WindowState(var.toInt()));
+	pos = settings.value("/workspace/position", QPoint(0, 0)).toPoint();
+	size = settings.value("/workspace/size", QSize(800, 600)).toSize();
+	resize(size);
+	move(pos);
+
+	QVariant var = settings.value("/workspace/state", Qt::WindowNoState);
+	setWindowState(Qt::WindowState(var.toInt()));
 #else
 	/* App is just a toolbar, we only need it to be the size of the
 	   toolbar's buttons */
