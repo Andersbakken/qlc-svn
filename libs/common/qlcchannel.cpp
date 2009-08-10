@@ -222,7 +222,7 @@ void QLCChannel::sortCapabilities()
  * File operations
  *****************************************************************************/
 
-void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
+bool QLCChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 {
 	QDomElement chtag;
 	QDomElement grptag;
@@ -252,6 +252,8 @@ void QLCChannel::saveXML(QDomDocument* doc, QDomElement* root)
 	QListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)
 		it.next()->saveXML(doc, &chtag);
+
+	return true;
 }
 
 bool QLCChannel::loadXML(const QDomElement* root)

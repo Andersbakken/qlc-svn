@@ -130,7 +130,7 @@ public:
 	 *********************************************************************/
 public:
 	/** Save the channel to a QDomDocument, under the given element */
-	void saveXML(QDomDocument* doc, QDomElement* root);
+	bool saveXML(QDomDocument* doc, QDomElement* root) const;
 
 	/** Load channel contents from an XML element */
 	bool loadXML(const QDomElement* tag);

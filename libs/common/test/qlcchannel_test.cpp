@@ -303,7 +303,7 @@ void QLCChannel_Test::copy()
 	channel->setName("Foobar");
 	channel->setGroup("Tilt");
 	channel->setControlByte(3);
-	
+
 	QLCCapability* cap1 = new QLCCapability(10, 19, "10-19");
 	QVERIFY(channel->addCapability(cap1) == true);
 
@@ -485,4 +485,75 @@ void QLCChannel_Test::loadWrongRoot()
 	QVERIFY(ch.group() == KQLCChannelGroupIntensity);
 	QVERIFY(ch.controlByte() == 0);
 	QVERIFY(ch.capabilities().size() == 0);
+}
+
+void QLCChannel_Test::save()
+{
+	QLCChannel* channel = new QLCChannel();
+
+	channel->setName("Foobar");
+	channel->setGroup("Tilt");
+	channel->setControlByte(1);
+
+	QLCCapability* cap1 = new QLCCapability(0, 9, "One");
+	QVERIFY(channel->addCapability(cap1) == true);
+
+	QLCCapability* cap2 = new QLCCapability(10, 19, "Two");
+	QVERIFY(channel->addCapability(cap2) == true);
+
+	QLCCapability* cap3 = new QLCCapability(20, 29, "Three");
+	QVERIFY(channel->addCapability(cap3) == true);
+
+	QLCCapability* cap4 = new QLCCapability(30, 39, "Four");
+	QVERIFY(channel->addCapability(cap4) == true);
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("TestRoot");
+
+	QVERIFY(channel->saveXML(&doc, &root) == true);
+	QVERIFY(root.firstChild().toElement().tagName() == "Channel");
+	QVERIFY(root.firstChild().toElement().attribute("Name") == "Foobar");
+
+	bool group = false;
+	bool capOne = false, capTwo = false, capThree = false, capFour = false;
+
+	QDomNode node = root.firstChild().firstChild();
+	while (node.isNull() == false)
+	{
+		QDomElement e = node.toElement();
+		if (e.tagName() == "Group")
+		{
+			group = true;
+			QVERIFY(e.attribute("Byte") == "1");
+			QVERIFY(e.text() == "Tilt");
+		}
+		else if (e.tagName() == "Capability")
+		{
+			if (e.text() == "One" && capOne == false)
+				capOne = true;
+			else if (e.text() == "Two" && capTwo == false)
+				capTwo = true;
+			else if (e.text() == "Three" && capThree == false)
+				capThree = true;
+			else if (e.text() == "Four" && capFour == false)
+				capFour = true;
+			else
+				QFAIL("Same capability saved multiple times");
+		}
+		else
+		{
+			QFAIL(QString("Unexpected tag: %1").arg(e.tagName())
+				.toAscii());
+		}
+
+		node = node.nextSibling();
+	}
+
+	QVERIFY(group == true);
+	QVERIFY(capOne == true);
+	QVERIFY(capTwo == true);
+	QVERIFY(capThree == true);
+	QVERIFY(capFour == true);
+
+	delete channel;
 }
