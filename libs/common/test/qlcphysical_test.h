@@ -28,6 +28,8 @@ private slots:
 
 	void copy();
 	void load();
+	void loadWrongRoot();
+	void save();
 
 private:
 	QLCPhysical p;

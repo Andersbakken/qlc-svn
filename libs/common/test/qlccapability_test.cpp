@@ -106,7 +106,7 @@ void QLCCapability_Test::copy()
 	cap1.setMin(5);
 	cap1.setMax(15);
 	cap1.setName("Foobar");
-	
+
 	QLCCapability cap2 = cap1;
 	QVERIFY(cap2.min() == 5);
 	QVERIFY(cap2.max() == 15);
@@ -209,4 +209,21 @@ void QLCCapability_Test::loadMinGreaterThanMax()
 	QVERIFY(cap.name() == QString::null);
 	QVERIFY(cap.min() == KChannelValueMin);
 	QVERIFY(cap.max() == KChannelValueMax);
+}
+
+void QLCCapability_Test::save()
+{
+	QLCCapability cap;
+	cap.setName("Testing");
+	cap.setMin(5);
+	cap.setMax(87);
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("TestRoot");
+
+	QVERIFY(cap.saveXML(&doc, &root) == true);
+	QVERIFY(root.firstChild().toElement().tagName() == "Capability");
+	QVERIFY(root.firstChild().toElement().text() == "Testing");
+	QVERIFY(root.firstChild().toElement().attribute("Min") == "5");
+	QVERIFY(root.firstChild().toElement().attribute("Max") == "87");
 }

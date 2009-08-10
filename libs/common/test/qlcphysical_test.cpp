@@ -148,9 +148,8 @@ void QLCPhysical_Test::load()
 	focus.setAttribute("PanMax", 520);
 	focus.setAttribute("TiltMax", 270);
 	root.appendChild(focus);
-	
-	QLCPhysical p;
-	p.loadXML(&root);
+
+	QVERIFY(p.loadXML(&root) == true);
 	QVERIFY(p.bulbType() == "LED");
 	QVERIFY(p.bulbLumens() == 18000);
 	QVERIFY(p.bulbColourTemperature() == 6500);
@@ -164,4 +163,100 @@ void QLCPhysical_Test::load()
 	QVERIFY(p.focusType() == "Head");
 	QVERIFY(p.focusPanMax() == 520);
 	QVERIFY(p.focusTiltMax() == 270);
+}
+
+void QLCPhysical_Test::loadWrongRoot()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Foosical");
+	doc.appendChild(root);
+
+	/* Bulb */
+	QDomElement bulb = doc.createElement("Bulb");
+	bulb.setAttribute("Type", "LED");
+	bulb.setAttribute("Lumens", 18000);
+	bulb.setAttribute("ColourTemperature", 6500);
+	root.appendChild(bulb);
+
+	/* Dimensions */
+	QDomElement dim = doc.createElement("Dimensions");
+	dim.setAttribute("Weight", 39);
+	dim.setAttribute("Width", 530);
+	dim.setAttribute("Height", 320);
+	dim.setAttribute("Depth", 260);
+	root.appendChild(dim);
+
+	/* Lens */
+	QDomElement lens = doc.createElement("Lens");
+	lens.setAttribute("Name", "Fresnel");
+	lens.setAttribute("DegreesMin", 8);
+	lens.setAttribute("DegreesMax", 38);
+	root.appendChild(lens);
+
+	/* Focus */
+	QDomElement focus = doc.createElement("Focus");
+	focus.setAttribute("Type", "Head");
+	focus.setAttribute("PanMax", 520);
+	focus.setAttribute("TiltMax", 270);
+	root.appendChild(focus);
+
+	QVERIFY(p.loadXML(&root) == false);
+}
+
+void QLCPhysical_Test::save()
+{
+	QDomDocument doc;
+	QDomElement root = doc.createElement("Test Root");
+	bool bulb = false, dim = false, lens = false, focus = false;
+
+	QVERIFY(p.saveXML(&doc, &root) == true);
+	QVERIFY(root.firstChild().toElement().tagName() == "Physical");
+
+	QDomNode node = root.firstChild().firstChild();
+	while (node.isNull() == false)
+	{
+		QDomElement e = node.toElement();
+		if (e.tagName() == "Bulb")
+		{
+			bulb = true;
+			QVERIFY(e.attribute("Type") == "LED");
+			QVERIFY(e.attribute("Lumens") == "18000");
+			QVERIFY(e.attribute("ColourTemperature") == "6500");
+		}
+		else if (e.tagName() == "Dimensions")
+		{
+			dim = true;
+			QVERIFY(e.attribute("Width") == "530");
+			QVERIFY(e.attribute("Depth") == "260");
+			QVERIFY(e.attribute("Height") == "320");
+			QVERIFY(e.attribute("Weight") == "39");
+		}
+		else if (e.tagName() == "Lens")
+		{
+			lens = true;
+			QVERIFY(e.attribute("Name") == "Fresnel");
+			QVERIFY(e.attribute("DegreesMin") == "8");
+			QVERIFY(e.attribute("DegreesMax") == "38");
+		}
+		else if (e.tagName() == "Focus")
+		{
+			focus = true;
+			QVERIFY(e.attribute("Type") == "Head");
+			QVERIFY(e.attribute("PanMax") == "520");
+			QVERIFY(e.attribute("TiltMax") == "270");
+		}
+		else
+		{
+			QFAIL(QString("Unexpected tag: %1").arg(e.tagName())
+				.toAscii());
+		}
+
+		node = node.nextSibling();
+	}
+
+	QVERIFY(bulb == true);
+	QVERIFY(dim == true);
+	QVERIFY(lens == true);
+	QVERIFY(focus == true);
 }

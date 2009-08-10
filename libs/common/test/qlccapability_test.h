@@ -26,6 +26,7 @@ private slots:
 	void loadNoMin();
 	void loadNoMax();
 	void loadMinGreaterThanMax();
+	void save();
 };
 
 #endif
