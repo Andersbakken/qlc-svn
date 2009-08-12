@@ -92,10 +92,12 @@ public:
 	 *********************************************************************/
 public:
 	/**
-	 * Get a preview of the current algorithm. Draws a number of points
-	 * to the polygon of 255px wide and 255px high, that represent the
-	 * pattern path on a flat surface directly in front of a moving fixture.
+	 * Get a preview of the current algorithm. Puts 128 points to the
+	 * given polygon, 255px wide and 255px high at maximum, that represent
+	 * roughly the path of the pattern on a flat surface directly in front
+	 * of a moving (head/mirror) fixture.
 	 *
+	 * @param polygon The polygon to fill with preview points
 	 */
 	bool preview(QPolygon* polygon);
 

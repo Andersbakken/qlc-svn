@@ -46,6 +46,7 @@ private slots:
 	void fixtures();
 	void propagationMode();
 	void startStopScenes();
+	void previewCircle();
 
 	void copyFrom();
 	void createCopy();

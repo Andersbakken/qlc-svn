@@ -559,6 +559,168 @@ void EFX_Test::startStopScenes()
 	QVERIFY(e.stopSceneEnabled() == false);
 }
 
+void EFX_Test::previewCircle()
+{
+	EFX e(this);
+
+	QPolygon poly;
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	QVERIFY(poly[0] == QPoint(127,254));
+	QVERIFY(poly[1] == QPoint(120,253));
+	QVERIFY(poly[2] == QPoint(114,253));
+	QVERIFY(poly[3] == QPoint(108,252));
+	QVERIFY(poly[4] == QPoint(102,251));
+	QVERIFY(poly[5] == QPoint(96,250));
+	QVERIFY(poly[6] == QPoint(90,248));
+	QVERIFY(poly[7] == QPoint(84,246));
+	QVERIFY(poly[8] == QPoint(78,244));
+	QVERIFY(poly[9] == QPoint(72,241));
+	QVERIFY(poly[10] == QPoint(67,239));
+	QVERIFY(poly[11] == QPoint(61,235));
+	QVERIFY(poly[12] == QPoint(56,232));
+	QVERIFY(poly[13] == QPoint(51,229));
+	QVERIFY(poly[14] == QPoint(46,225));
+	QVERIFY(poly[15] == QPoint(41,221));
+	QVERIFY(poly[16] == QPoint(37,216));
+	QVERIFY(poly[17] == QPoint(32,212));
+	QVERIFY(poly[18] == QPoint(28,207));
+	QVERIFY(poly[19] == QPoint(24,202));
+	QVERIFY(poly[20] == QPoint(21,197));
+	QVERIFY(poly[21] == QPoint(18,192));
+	QVERIFY(poly[22] == QPoint(14,186));
+	QVERIFY(poly[23] == QPoint(12,181));
+	QVERIFY(poly[24] == QPoint(9,175));
+	QVERIFY(poly[25] == QPoint(7,169));
+	QVERIFY(poly[26] == QPoint(5,163));
+	QVERIFY(poly[27] == QPoint(3,157));
+	QVERIFY(poly[28] == QPoint(2,151));
+	QVERIFY(poly[29] == QPoint(1,145));
+	QVERIFY(poly[30] == QPoint(0,139));
+	QVERIFY(poly[31] == QPoint(0,133));
+	QVERIFY(poly[32] == QPoint(0,126));
+	QVERIFY(poly[33] == QPoint(0,120));
+	QVERIFY(poly[34] == QPoint(0,114));
+	QVERIFY(poly[35] == QPoint(1,108));
+	QVERIFY(poly[36] == QPoint(2,102));
+	QVERIFY(poly[37] == QPoint(3,96));
+	QVERIFY(poly[38] == QPoint(5,90));
+	QVERIFY(poly[39] == QPoint(7,84));
+	QVERIFY(poly[40] == QPoint(9,78));
+	QVERIFY(poly[41] == QPoint(12,72));
+	QVERIFY(poly[42] == QPoint(14,67));
+	QVERIFY(poly[43] == QPoint(18,61));
+	QVERIFY(poly[44] == QPoint(21,56));
+	QVERIFY(poly[45] == QPoint(24,51));
+	QVERIFY(poly[46] == QPoint(28,46));
+	QVERIFY(poly[47] == QPoint(32,41));
+	QVERIFY(poly[48] == QPoint(37,37));
+	QVERIFY(poly[49] == QPoint(41,32));
+	QVERIFY(poly[50] == QPoint(46,28));
+	QVERIFY(poly[51] == QPoint(51,24));
+	QVERIFY(poly[52] == QPoint(56,21));
+	QVERIFY(poly[53] == QPoint(61,18));
+	QVERIFY(poly[54] == QPoint(67,14));
+	QVERIFY(poly[55] == QPoint(72,12));
+	QVERIFY(poly[56] == QPoint(78,9));
+	QVERIFY(poly[57] == QPoint(84,7));
+	QVERIFY(poly[58] == QPoint(90,5));
+	QVERIFY(poly[59] == QPoint(96,3));
+	QVERIFY(poly[60] == QPoint(102,2));
+	QVERIFY(poly[61] == QPoint(108,1));
+	QVERIFY(poly[62] == QPoint(114,0));
+	QVERIFY(poly[63] == QPoint(120,0));
+	QVERIFY(poly[64] == QPoint(126,0));
+	QVERIFY(poly[65] == QPoint(133,0));
+	QVERIFY(poly[66] == QPoint(139,0));
+	QVERIFY(poly[67] == QPoint(145,1));
+	QVERIFY(poly[68] == QPoint(151,2));
+	QVERIFY(poly[69] == QPoint(157,3));
+	QVERIFY(poly[70] == QPoint(163,5));
+	QVERIFY(poly[71] == QPoint(169,7));
+	QVERIFY(poly[72] == QPoint(175,9));
+	QVERIFY(poly[73] == QPoint(181,12));
+	QVERIFY(poly[74] == QPoint(186,14));
+	QVERIFY(poly[75] == QPoint(192,18));
+	QVERIFY(poly[76] == QPoint(197,21));
+	QVERIFY(poly[77] == QPoint(202,24));
+	QVERIFY(poly[78] == QPoint(207,28));
+	QVERIFY(poly[79] == QPoint(212,32));
+	QVERIFY(poly[80] == QPoint(216,37));
+	QVERIFY(poly[81] == QPoint(221,41));
+	QVERIFY(poly[82] == QPoint(225,46));
+	QVERIFY(poly[83] == QPoint(229,51));
+	QVERIFY(poly[84] == QPoint(232,56));
+	QVERIFY(poly[85] == QPoint(235,61));
+	QVERIFY(poly[86] == QPoint(239,67));
+	QVERIFY(poly[87] == QPoint(241,72));
+	QVERIFY(poly[88] == QPoint(244,78));
+	QVERIFY(poly[89] == QPoint(246,84));
+	QVERIFY(poly[90] == QPoint(248,90));
+	QVERIFY(poly[91] == QPoint(250,96));
+	QVERIFY(poly[92] == QPoint(251,102));
+	QVERIFY(poly[93] == QPoint(252,108));
+	QVERIFY(poly[94] == QPoint(253,114));
+	QVERIFY(poly[95] == QPoint(253,120));
+	QVERIFY(poly[96] == QPoint(254,126));
+	QVERIFY(poly[97] == QPoint(253,133));
+	QVERIFY(poly[98] == QPoint(253,139));
+	QVERIFY(poly[99] == QPoint(252,145));
+	QVERIFY(poly[100] == QPoint(251,151));
+	QVERIFY(poly[101] == QPoint(250,157));
+	QVERIFY(poly[102] == QPoint(248,163));
+	QVERIFY(poly[103] == QPoint(246,169));
+	QVERIFY(poly[104] == QPoint(244,175));
+	QVERIFY(poly[105] == QPoint(241,181));
+	QVERIFY(poly[106] == QPoint(239,186));
+	QVERIFY(poly[107] == QPoint(235,192));
+	QVERIFY(poly[108] == QPoint(232,197));
+	QVERIFY(poly[109] == QPoint(229,202));
+	QVERIFY(poly[110] == QPoint(225,207));
+	QVERIFY(poly[111] == QPoint(221,212));
+	QVERIFY(poly[112] == QPoint(216,216));
+	QVERIFY(poly[113] == QPoint(212,221));
+	QVERIFY(poly[114] == QPoint(207,225));
+	QVERIFY(poly[115] == QPoint(202,229));
+	QVERIFY(poly[116] == QPoint(197,232));
+	QVERIFY(poly[117] == QPoint(192,235));
+	QVERIFY(poly[118] == QPoint(186,239));
+	QVERIFY(poly[119] == QPoint(181,241));
+	QVERIFY(poly[120] == QPoint(175,244));
+	QVERIFY(poly[121] == QPoint(169,246));
+	QVERIFY(poly[122] == QPoint(163,248));
+	QVERIFY(poly[123] == QPoint(157,250));
+	QVERIFY(poly[124] == QPoint(151,251));
+	QVERIFY(poly[125] == QPoint(145,252));
+	QVERIFY(poly[126] == QPoint(139,253));
+	QVERIFY(poly[127] == QPoint(133,253));
+
+	/* Check that width affects the pattern */
+	e.setWidth(50);
+	poly.clear();
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	/* Width of 50 means actually 50px left of center (127-50) and
+	   50px right of center (127+50). +1 because the bound coordinates
+	   are OUTSIDE the actual points. */
+	QVERIFY(poly.boundingRect().width() == 50 + 50 + 1);
+	QVERIFY(poly.boundingRect().height() == 255);
+
+	/* Check that height affects the pattern */
+	e.setHeight(87);
+	poly.clear();
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	/* Height of 87 means actually 87px down of center (127-87) and
+	   87px up of center (127+87). And +1 because the bound coordinates
+	   are OUTSIDE the actual points. */
+	QVERIFY(poly.boundingRect().height() == 87 + 87 + 1);
+	QVERIFY(poly.boundingRect().width() == 100 + 1);
+}
+
 void EFX_Test::copyFrom()
 {
 	EFX e1(this);
