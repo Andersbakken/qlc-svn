@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QList>
 #include <QDir>
+#include <QSettings>
 
 #include "configureftdidmx.h"
 #include "ftdidmx.h"
@@ -36,14 +37,28 @@
 
 void FTDIDMXOut::init()
 {
-	// TODO: this should be read from the configuration
-#ifndef WIN32
+	QSettings settings;
+	QVariant pidV = settings.value("/ftdidmx/device/pid", QVariant(known_devices[0].pid));
+	QVariant vidV = settings.value("/ftdidmx/device/vid", QVariant(known_devices[0].vid));
+	QVariant typeV = settings.value("/ftdidmx/device/type", QVariant(known_devices[0].type));
+
+	int pid = -1, vid = -1, type = -1;
+	if (pidV.type() == QVariant::Int &&
+		vidV.type() == QVariant::Int &&
+		typeV.type() == QVariant::Int) {
+		pid = pidV.toInt();
+		vid = vidV.toInt();
+		type = typeV.toInt();
+	}
+
 	// On Windows the users must ensure the ftdi driver is correct
 	// for their hardware, *NIX users can just dynamically
 	// alter the hardware settings in QLC
-	setVIDPID(known_devices[0].vid, known_devices[0].pid, known_devices[0].type);
-#endif
-	rescanDevices();
+	if (pid > -1 && vid > -1 && type > -1) {
+		setVIDPID(vid, pid, type);
+	} else {
+		setVIDPID(known_devices[0].vid, known_devices[0].pid, known_devices[0].type);
+	}
 }
 
 void FTDIDMXOut::open(t_output output)
@@ -95,6 +110,8 @@ void FTDIDMXOut::rescanDevices()
 	for (unsigned int i = 0; i < devices; i++)
 		devStringPtr[i] = devString[i];
 	devStringPtr[devices] = NULL;
+
+	m_devices.clear();
 
 	FT_STATUS st = FT_ListDevices(devStringPtr, &devices,
 				      FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
