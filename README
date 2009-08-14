@@ -52,7 +52,7 @@ Requirements - Linux
 * HID Input plugin: No additional requirements
 * MIDI Input plugin: libasound, libasound-dev, pkg-config
 * MIDI Output plugin: libasound, libasound-dev, pkg-config
-* LLA Output plugin: liblla, lla-dev, pkg-config (see libs/llaout/README)
+* OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: libusb, libusb-dev
 * USBDMX Output plugin: No additional requirements
 
@@ -74,7 +74,7 @@ Requirements - OSX
 * HID Input plugin: Not available for OSX
 * MIDI Input plugin: Not available for OSX
 * MIDI Output plugin: Not available for OSX
-* LLA Output plugin: liblla, lla-dev, pkg-config (see libs/llaout/README)
+* OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: Not available for OSX
 * USBDMX Output plugin: Not available for OSX
 

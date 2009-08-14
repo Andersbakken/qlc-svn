@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  configurellaout.cpp
+  configureolaout.cpp
 
   Copyright (C) Simon Newton,
                 Heikki Junnila
@@ -27,8 +27,8 @@
 #include <QString>
 #include <QTimer>
 
-#include "configurellaout.h"
-#include "llaout.h"
+#include "configureolaout.h"
+#include "olaout.h"
 
 static const unsigned int KColumnName = 0;
 static const unsigned int KColumnOutput = 1;
@@ -38,7 +38,7 @@ static const unsigned int KColumnOutput = 1;
  * Initialization
  *****************************************************************************/
 
-ConfigureLLAOut::ConfigureLLAOut(QWidget* parent, LLAOut* plugin)
+ConfigureOLAOut::ConfigureOLAOut(QWidget* parent, OLAOut* plugin)
     : QDialog(parent)
 {
   Q_ASSERT(plugin != NULL);
@@ -50,7 +50,7 @@ ConfigureLLAOut::ConfigureLLAOut(QWidget* parent, LLAOut* plugin)
   m_standaloneCheck->setChecked(m_plugin->isServerEmbedded());
 }
 
-ConfigureLLAOut::~ConfigureLLAOut()
+ConfigureOLAOut::~ConfigureOLAOut()
 {
   m_plugin->setServerEmbedded(m_standaloneCheck->isChecked());
 }
@@ -59,7 +59,7 @@ ConfigureLLAOut::~ConfigureLLAOut()
  * Refresh
  *****************************************************************************/
 
-void ConfigureLLAOut::populateOutputList()
+void ConfigureOLAOut::populateOutputList()
 {
   m_listView->clear();
   OutputList outputs = m_plugin->outputMapping();
@@ -67,7 +67,7 @@ void ConfigureLLAOut::populateOutputList()
   for (int i = 0; i != outputs.size(); ++i)
   {
     QTreeWidgetItem* item = new QTreeWidgetItem(m_listView);
-    item->setText(KColumnName, QString("LLA Output %1").arg(i + 1));
+    item->setText(KColumnName, QString("OLA Output %1").arg(i + 1));
     item->setText(KColumnOutput, QString("%1").arg(outputs[i]));
   }
 }

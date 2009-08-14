@@ -6,6 +6,13 @@ cd qlc-dmg-source
 cp -r /Applications/qlc.app ./
 cp -r /Applications/qlc-fixtureeditor.app ./
 
+# Install plugins
+install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ../support/libqtaccessiblewidgets.dylib
+install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ../support/libqtaccessiblewidgets.dylib
+cp ../support/libqtaccessiblewidgets.dylib ./qlc.app/Contents/Plugins/
+mkdir ./qlc-fixtureeditor.app/Contents/Plugins
+cp ../support/libqtaccessiblewidgets.dylib ./qlc-fixtureeditor.app/Contents/Plugins/
+
 # Convert QT to frameworks
 function copyQtFramework {
 	mkdir -p ./$1.app/Contents/Frameworks/$2.framework/Versions/4/

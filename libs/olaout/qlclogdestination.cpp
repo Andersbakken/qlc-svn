@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlclogdestination.h
+  qlclogdestination.cpp
 
   Copyright (c) Heikki Junnila
                 Simon Newton
@@ -20,22 +20,36 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLCLOGDESTINATION_H
-#define QLCLOGDESTINATION_H
+#include <QDebug>
+#include <ola/StringUtils.h>
 
-#include <string>
-#include <lla/Logging.h>
+#include "qlclogdestination.h"
 
-namespace lla {
+namespace ola {
 
-// A LogDestination that uses the q{Debug,Warning,Critical} functions
-class QLCLogDestination : public LogDestination
-{
-public:
-  void Write(log_level level, const string &log_line);
-private:
-  static const string PREFIX;
-};
+const string QLCLogDestination::PREFIX = "OLA: ";
 
-} // lla
-#endif
+void QLCLogDestination::Write(log_level level, const string &log_line) {
+
+  string output = PREFIX;
+  output.append(log_line);
+  ola::StringTrim(output);
+
+  switch (level)
+  {
+    case ola::OLA_LOG_FATAL:
+      qCritical() << output.data();
+      break;
+    case ola::OLA_LOG_WARN:
+      qWarning() << output.data();
+      break;
+    case ola::OLA_LOG_INFO:
+    case ola::OLA_LOG_DEBUG:
+      qDebug() << output.data();
+      break;
+    default:
+      break;
+  }
+}
+
+} // ola

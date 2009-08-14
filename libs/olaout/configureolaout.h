@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  configurellaout.h
+  configureolaout.h
 
   Copyright (c) Simon Newton
                 Heikki Junnila
@@ -20,14 +20,14 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONFIGURELLAOUT_H
-#define CONFIGURELLAOUT_H
+#ifndef CONFIGUREOLAOUT_H
+#define CONFIGUREOLAOUT_H
 
-#include "ui_configurellaout.h"
+#include "ui_configureolaout.h"
 
-class LLAOut;
+class OLAOut;
 
-class ConfigureLLAOut : public QDialog, public Ui_ConfigureLLAOut
+class ConfigureOLAOut : public QDialog, public Ui_ConfigureOLAOut
 {
   Q_OBJECT
 
@@ -35,11 +35,11 @@ class ConfigureLLAOut : public QDialog, public Ui_ConfigureLLAOut
    * Initialization
    *********************************************************************/
 public:
-  ConfigureLLAOut(QWidget* parent, LLAOut* plugin);
-  virtual ~ConfigureLLAOut();
+  ConfigureOLAOut(QWidget* parent, OLAOut* plugin);
+  virtual ~ConfigureOLAOut();
 
 protected:
-  LLAOut* m_plugin;
+  OLAOut* m_plugin;
 
 private:
   void populateOutputList();

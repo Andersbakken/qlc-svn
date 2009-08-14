@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>ConfigureLLAOut</class>
- <widget class="QDialog" name="ConfigureLLAOut" >
+ <class>ConfigureOLAOut</class>
+ <widget class="QDialog" name="ConfigureOLAOut" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -22,7 +22,7 @@
      </column>
      <column>
       <property name="text" >
-       <string>LLA Universe</string>
+       <string>OLA Universe</string>
       </property>
      </column>
     </widget>
@@ -40,7 +40,7 @@
    <item row="1" column="0" >
     <widget class="QCheckBox" name="m_standaloneCheck" >
      <property name="text" >
-      <string>Run standalone LLA daemon</string>
+      <string>Run standalone OLA daemon</string>
      </property>
     </widget>
    </item>
@@ -54,7 +54,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ConfigureLLAOut</receiver>
+   <receiver>ConfigureOLAOut</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -70,7 +70,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ConfigureLLAOut</receiver>
+   <receiver>ConfigureOLAOut</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

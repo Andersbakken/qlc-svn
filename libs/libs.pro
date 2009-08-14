@@ -12,9 +12,9 @@ SUBDIRS			+= ftdidmx
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
 
-# LLA output plugin
-exists($$LLA_GIT):exists($$PROTOBUF) {
-	unix:SUBDIRS	+= llaout
+# OLA output plugin
+exists($$OLA_GIT) {
+	unix:SUBDIRS	+= olaout
 }
 
 # Input plugins

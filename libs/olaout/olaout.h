@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  llaout.h
+  olaout.h
 
   Copyright (c) Heikki Junnila
                 Simon Newton
@@ -20,34 +20,34 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef LLAOUT_H
-#define LLAOUT_H
+#ifndef OLAOUT_H
+#define OLAOUT_H
 
 #include <QObject>
 #include <QDebug>
 #include <QList>
-#include <lla/Logging.h>
+#include <ola/Logging.h>
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
-#include "llaoutthread.h"
+#include "olaoutthread.h"
 
-class ConfigureLlaOut;
+class ConfigureOlaOut;
 
 // Number of output universes
 enum { K_UNIVERSE_COUNT = 4 };
 
 typedef QList<unsigned int> OutputList;
 
-// The LLA Output plugin
-class LLAOut : public QObject, public QLCOutPlugin
+// The OLA Output plugin
+class OLAOut : public QObject, public QLCOutPlugin
 {
   Q_OBJECT
   Q_INTERFACES(QLCOutPlugin)
-  friend class ConfigureLlaOut;
+  friend class ConfigureOlaOut;
 
 public:
-  LLAOut();
-  ~LLAOut();
+  OLAOut();
+  ~OLAOut();
   void init();
   void open(t_output output=0);
   void close(t_output output=0);
@@ -71,9 +71,9 @@ public:
 
 protected:
   QString m_configDir;
-  LlaOutThread *m_thread;
+  OlaOutThread *m_thread;
   OutputList m_output_list;
-  lla::LogDestination *m_log_destination;
+  ola::LogDestination *m_log_destination;
   bool m_embedServer;
 };
 

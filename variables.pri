@@ -2,6 +2,9 @@
 CONFIG			+= warn_on release
 CONFIG			-= debug
 
+# OLA directories
+unix:OLA_GIT		= /usr/src/ola
+
 # Treat all compiler warnings as errors
 # QMAKE_CXXFLAGS		+= -Werror
 

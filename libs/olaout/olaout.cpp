@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  llaout.cpp
+  olaout.cpp
 
   Copyright (c) Heikki Junnila
                 Simon Newton
@@ -26,20 +26,20 @@
 #include <QSettings>
 
 #include "common/qlcfile.h"
-#include "configurellaout.h"
-#include "llaout.h"
+#include "configureolaout.h"
+#include "olaout.h"
 #include "qlclogdestination.h"
 
 
-LLAOut::LLAOut()
+OLAOut::OLAOut()
 {
   m_embedServer = false;
   m_thread = NULL;
-  m_log_destination = new lla::QLCLogDestination();
-  lla::InitLogging(lla::LLA_LOG_WARN, m_log_destination);
+  m_log_destination = new ola::QLCLogDestination();
+  ola::InitLogging(ola::OLA_LOG_WARN, m_log_destination);
 }
 
-LLAOut::~LLAOut() {
+OLAOut::~OLAOut() {
   if (m_thread != NULL)
   {
     m_thread->stop();
@@ -47,23 +47,23 @@ LLAOut::~LLAOut() {
   }
   if (m_log_destination)
   {
-    lla::InitLogging(lla::LLA_LOG_WARN, NULL);
+    ola::InitLogging(ola::OLA_LOG_WARN, NULL);
     delete m_log_destination;
   }
 }
 
 /*
- * Start the plugin. It's hard to say if we want LLA running if there aren't
+ * Start the plugin. It's hard to say if we want OLA running if there aren't
  * any output universes active.
  */
-void LLAOut::init()
+void OLAOut::init()
 {
   // TODO: load this from a savefile at some point
   for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
     m_output_list.append(i);
 
   QSettings settings;
-  bool es = settings.value("LLAOut/embedded").toBool();
+  bool es = settings.value("OLAOut/embedded").toBool();
   // Make sure the thread is started the first time round
   m_embedServer = !es;
   // This should load from the settings when it is made
@@ -73,7 +73,7 @@ void LLAOut::init()
 /*
  * Is the plugin currently running as a stand alone daemon
  */
-bool LLAOut::isServerEmbedded()
+bool OLAOut::isServerEmbedded()
 {
   return m_embedServer;
 }
@@ -81,7 +81,7 @@ bool LLAOut::isServerEmbedded()
 /*
  * Set whether or not to run as a standalone daemon
  */
-void LLAOut::setServerEmbedded(bool embedServer)
+void OLAOut::setServerEmbedded(bool embedServer)
 {
   if (embedServer != m_embedServer) {
     if (m_thread != NULL)
@@ -92,18 +92,18 @@ void LLAOut::setServerEmbedded(bool embedServer)
     m_embedServer = embedServer;
     if (m_embedServer)
     {
-      qWarning() << "llaout: running as embedded";
-      m_thread = new LlaEmbeddedServer();
+      qWarning() << "olaout: running as embedded";
+      m_thread = new OlaEmbeddedServer();
     } else
     {
-      m_thread = new LlaStandaloneClient();
+      m_thread = new OlaStandaloneClient();
     }
     if (!m_thread->start())
     {
-      qWarning() << "llaout: start thread failed";
+      qWarning() << "olaout: start thread failed";
     }
     QSettings settings;
-    settings.setValue("LLAOut/embedded", m_embedServer);
+    settings.setValue("OLAOut/embedded", m_embedServer);
   }
 }
 
@@ -111,11 +111,11 @@ void LLAOut::setServerEmbedded(bool embedServer)
  * Open a universe for output
  * @param output the universe id
  */
-void LLAOut::open(t_output output)
+void OLAOut::open(t_output output)
 {
   if (output >= K_UNIVERSE_COUNT)
   {
-    qWarning() << "llaout: output " << output << " out of range";
+    qWarning() << "olaout: output " << output << " out of range";
     return;
   }
 }
@@ -125,27 +125,27 @@ void LLAOut::open(t_output output)
  * Close this universe.
  * @param output the universe id
  */
-void LLAOut::close(t_output output)
+void OLAOut::close(t_output output)
 {
   if (output >= K_UNIVERSE_COUNT)
   {
-    qWarning() << "llaout: output " << output << " out of range";
+    qWarning() << "olaout: output " << output << " out of range";
     return;
   }
 }
 
 
 /*
- * Return a list of our outputs. For now we output on LLA universes 1 to
+ * Return a list of our outputs. For now we output on OLA universes 1 to
  * K_UNIVERSE_COUNT.
  */
-QStringList LLAOut::outputs()
+QStringList OLAOut::outputs()
 {
   QStringList list;
   for (int i = 0; i != m_output_list.size(); ++i)
   {
     QString s;
-    s.sprintf("LLA Output %d", i+1);
+    s.sprintf("OLA Output %d", i+1);
     list << s;
   }
   return list;
@@ -155,9 +155,9 @@ QStringList LLAOut::outputs()
 /*
  * The plugin name
  */
-QString LLAOut::name()
+QString OLAOut::name()
 {
-  return QString("LLA Output Plugin");
+  return QString("OLA Output Plugin");
 }
 
 
@@ -168,11 +168,11 @@ QString LLAOut::name()
  *  - http server on/off
  *  - listen for other clients
  *  - universe ID
- *  - lla device patching
+ *  - ola device patching
  */
-void LLAOut::configure()
+void OLAOut::configure()
 {
-  ConfigureLLAOut conf(NULL, this);
+  ConfigureOLAOut conf(NULL, this);
   conf.exec();
 }
 
@@ -180,7 +180,7 @@ void LLAOut::configure()
 /*
  * The plugin description.
  */
-QString LLAOut::infoText(t_output output)
+QString OLAOut::infoText(t_output output)
 {
   QString str;
 
@@ -195,9 +195,9 @@ QString LLAOut::infoText(t_output output)
     str += QString("<H3>%1</H3>").arg(name());
     str += QString("<P>");
     str += QString("This plugin provides DMX output support for ");
-    str += QString("the Linux Lighting Architecture (LLA). ");
-    str += QString("See <a href=\"http://www.nomis52.net\">");
-    str += QString("http://www.nomis52.net</a> for more ");
+    str += QString("the Open Lighting Architecture (OLA). See ");
+    str += QString("<a href=\"http://code.google.com/p/linux-lighting/\">");
+    str += QString("http://code.google.com/p/linux-lighting/</a> for more ");
     str += QString("information.");
     str += QString("</P>");
   }
@@ -205,7 +205,7 @@ QString LLAOut::infoText(t_output output)
   {
     str += QString("<H3>%1</H3>").arg(outputs()[output]);
     str += QString("<P>");
-    str += QString("This is the output for LLA universe %1").arg(output + 1);
+    str += QString("This is the output for OLA universe %1").arg(output + 1);
     str += QString("</P>");
   }
 
@@ -218,7 +218,7 @@ QString LLAOut::infoText(t_output output)
 /*
  * Write a single channel. Heikki says this will be deprecated soon.
  */
-void LLAOut::writeChannel(t_output output, t_channel channel, t_value value)
+void OLAOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
   Q_UNUSED(output);
   Q_UNUSED(channel);
@@ -230,20 +230,20 @@ void LLAOut::writeChannel(t_output output, t_channel channel, t_value value)
  * Write a range of channels. We can assume here that address is always 0 and
  * num is always 512.
  */
-void LLAOut::writeRange(t_output output, t_channel address, t_value* values,
+void OLAOut::writeRange(t_output output, t_channel address, t_value* values,
                         t_channel num)
 {
   if (output > K_UNIVERSE_COUNT || !m_thread || address != 0 ||
       num != K_UNIVERSE_SIZE)
     return;
-  m_thread->write_dmx(m_output_list[output], (dmx_t*) values, num);
+  m_thread->write_dmx(m_output_list[output], values, num);
 }
 
 
 /*
  * Read a single channel. Heikki says this will be deprecated soon.
  */
-void LLAOut::readChannel(t_output output, t_channel channel, t_value* value)
+void OLAOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
   Q_UNUSED(output);
   Q_UNUSED(channel);
@@ -254,7 +254,7 @@ void LLAOut::readChannel(t_output output, t_channel channel, t_value* value)
 /*
  * Read a change of channels. Heikki says this will be deprecated soon.
  */
-void LLAOut::readRange(t_output output, t_channel address, t_value* values,
+void OLAOut::readRange(t_output output, t_channel address, t_value* values,
                        t_channel num)
 {
   Q_UNUSED(output);
@@ -267,22 +267,22 @@ void LLAOut::readRange(t_output output, t_channel address, t_value* values,
 /*
  * Return the output: universe mapping
  */
-const OutputList LLAOut::outputMapping() const
+const OutputList OLAOut::outputMapping() const
 {
   return m_output_list;
 }
 
 
 /*
- * Set the LLA universe for an output
+ * Set the OLA universe for an output
  * @param output the id of the output to change
- * @param universe the LLA universe id
+ * @param universe the OLA universe id
  */
-void LLAOut::setOutputUniverse(t_output output, unsigned int universe)
+void OLAOut::setOutputUniverse(t_output output, unsigned int universe)
 {
   if (output > K_UNIVERSE_COUNT)
     return;
   m_output_list[output] = universe;
 }
 
-Q_EXPORT_PLUGIN2(llaout, LLAOut)
+Q_EXPORT_PLUGIN2(olaout, OLAOut)

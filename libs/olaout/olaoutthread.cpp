@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  llaoutthread.cpp
+  olaoutthread.cpp
 
   Copyright (c) Heikki Junnila
                 Simon Newton
@@ -21,14 +21,14 @@
 */
 
 #include <QDebug>
-#include <lla/Closure.h>
-#include "llaoutthread.h"
+#include <ola/Closure.h>
+#include "olaoutthread.h"
 
 
 /*
  * Clean up.
  */
-LlaOutThread::~LlaOutThread()
+OlaOutThread::~OlaOutThread()
 {
   wait();
   if (m_client)
@@ -45,11 +45,11 @@ LlaOutThread::~LlaOutThread()
 
 
 /*
- * Start the LLA thread
+ * Start the OLA thread
  *
  * @return true if sucessfull, false otherwise
  */
-bool LlaOutThread::start(Priority priority)
+bool OlaOutThread::start(Priority priority)
 {
   if (!init())
     return false;
@@ -57,11 +57,11 @@ bool LlaOutThread::start(Priority priority)
   if (!m_pipe)
   {
     // setup the pipe to recv dmx data on
-    m_pipe = new lla::network::LoopbackSocket();
+    m_pipe = new ola::network::LoopbackSocket();
     m_pipe->Init();
 
-    m_pipe->SetOnData(lla::NewClosure(this, &LlaOutThread::new_pipe_data));
-    m_pipe->SetOnClose(lla::NewSingleClosure(this, &LlaOutThread::pipe_closed));
+    m_pipe->SetOnData(ola::NewClosure(this, &OlaOutThread::new_pipe_data));
+    m_pipe->SetOnClose(ola::NewSingleClosure(this, &OlaOutThread::pipe_closed));
     m_ss->AddSocket(m_pipe);
   }
 
@@ -73,7 +73,7 @@ bool LlaOutThread::start(Priority priority)
 /*
  * Close the socket which stops the thread.
  */
-void LlaOutThread::stop()
+void OlaOutThread::stop()
 {
   if (m_pipe)
     m_pipe->CloseClient();
@@ -84,7 +84,7 @@ void LlaOutThread::stop()
 /*
  * Run the select server.
  */
-void LlaOutThread::run()
+void OlaOutThread::run()
 {
   m_ss->Run();
   return;
@@ -97,7 +97,7 @@ void LlaOutThread::run()
  * @param data a pointer to the data
  * @param channels the number of channels
  */
-int LlaOutThread::write_dmx(unsigned int universe, dmx_t *data,
+int OlaOutThread::write_dmx(unsigned int universe, t_value *data,
                             unsigned int channels)
 {
   unsigned int len = channels < K_UNIVERSE_SIZE ? channels : K_UNIVERSE_SIZE;
@@ -110,9 +110,9 @@ int LlaOutThread::write_dmx(unsigned int universe, dmx_t *data,
 
 
 /*
- * Called when the pipe used to communicate between QLC and LLA is closed
+ * Called when the pipe used to communicate between QLC and OLA is closed
  */
-int LlaOutThread::pipe_closed() {
+int OlaOutThread::pipe_closed() {
   // We don't need to delete the socket here because that gets done in the
   // Destructor.
   m_ss->Terminate();
@@ -123,33 +123,33 @@ int LlaOutThread::pipe_closed() {
 /*
  * Called when there is data to be read on the pipe socket.
  */
-int LlaOutThread::new_pipe_data() {
+int OlaOutThread::new_pipe_data() {
   dmx_data data;
   unsigned int data_read;
   int ret = m_pipe->Receive((uint8_t*) &data, sizeof(data), data_read);
   if (ret < 0)
   {
-    qCritical() << "llaout: socket receive failed";
+    qCritical() << "olaout: socket receive failed";
     return 0;
   }
-  if (!m_client->SendDmx(data.universe, data.data,
-                         data_read - sizeof(data.universe)))
-    qWarning() << "llaout:: SendDmx() failed";
+  m_buffer.Set(data.data, data_read - sizeof(data.universe));
+  if (!m_client->SendDmx(data.universe, m_buffer))
+    qWarning() << "olaout:: SendDmx() failed";
   return 0;
 }
 
 
 /*
- * Setup the LlaClient to communicate with the server.
+ * Setup the OlaClient to communicate with the server.
  * @return true if the setup worked corectly.
  */
-bool LlaOutThread::setup_client(lla::network::ConnectedSocket *socket) {
+bool OlaOutThread::setup_client(ola::network::ConnectedSocket *socket) {
   if (!m_client)
   {
-    m_client = new lla::LlaClient(socket);
+    m_client = new ola::OlaClient(socket);
     if (!m_client->Setup())
     {
-      qWarning() << "llaout: client setup failed";
+      qWarning() << "olaout: client setup failed";
       delete m_client;
       m_client = NULL;
       return false;
@@ -163,7 +163,7 @@ bool LlaOutThread::setup_client(lla::network::ConnectedSocket *socket) {
 /*
  * Cleanup after the main destructor has run
  */
-void LlaStandaloneClient::cleanup() {
+void OlaStandaloneClient::cleanup() {
   if (m_tcp_socket)
   {
     if (m_ss)
@@ -181,21 +181,21 @@ void LlaStandaloneClient::cleanup() {
  * Setup the standalone client.
  * @return true is successful.
  */
-bool LlaStandaloneClient::init()
+bool OlaStandaloneClient::init()
 {
   if (m_init_run)
     return true;
 
   if (!m_ss)
-    m_ss = new lla::network::SelectServer();
+    m_ss = new ola::network::SelectServer();
 
   if (!m_tcp_socket)
   {
-    m_tcp_socket = lla::network::TcpSocket::Connect("127.0.0.1",
-                                                    LLA_DEFAULT_PORT);
+    m_tcp_socket = ola::network::TcpSocket::Connect("127.0.0.1",
+                                                    OLA_DEFAULT_PORT);
     if (!m_tcp_socket)
     {
-      qWarning() << "llaout: Connect failed, is LLAD running?";
+      qWarning() << "olaout: Connect failed, is OLAD running?";
       delete m_tcp_socket;
       m_tcp_socket = NULL;
       delete m_ss;
@@ -221,7 +221,7 @@ bool LlaStandaloneClient::init()
 /*
  * Clean up the embedded server.
  */
-void LlaEmbeddedServer::cleanup()
+void OlaEmbeddedServer::cleanup()
 {
   if (m_daemon)
     delete m_daemon;
@@ -235,31 +235,31 @@ void LlaEmbeddedServer::cleanup()
  * Setup the embedded server.
  * @return true is successful.
  */
-bool LlaEmbeddedServer::init()
+bool OlaEmbeddedServer::init()
 {
   if (m_init_run)
     return true;
 
-  lla::lla_server_options options;
+  ola::ola_server_options options;
   options.http_enable = true;
-  options.http_port = lla::LlaServer::DEFAULT_HTTP_PORT;
-  m_daemon = new lla::LlaDaemon(options);
+  options.http_port = ola::OlaServer::DEFAULT_HTTP_PORT;
+  m_daemon = new ola::OlaDaemon(options);
   if (!m_daemon->Init())
   {
-    qWarning() << "LLA Server failed init";
+    qWarning() << "OLA Server failed init";
     delete m_daemon;
     m_daemon = NULL;
     return false;
   }
   m_ss = m_daemon->GetSelectServer();
 
-  // setup the pipe socket used to communicate with the LlaServer
+  // setup the pipe socket used to communicate with the OlaServer
   if (!m_pipe_socket)
   {
-    m_pipe_socket = new lla::network::PipeSocket();
+    m_pipe_socket = new ola::network::PipeSocket();
     if (!m_pipe_socket->Init())
     {
-      qWarning() << "llaout: pipe failed";
+      qWarning() << "olaout: pipe failed";
       delete m_pipe_socket;
       m_pipe_socket = NULL;
       delete m_daemon;
@@ -277,7 +277,7 @@ bool LlaEmbeddedServer::init()
       return false;
   }
 
-  m_daemon->GetLlaServer()->NewConnection(m_pipe_socket->OppositeEnd());
+  m_daemon->GetOlaServer()->NewConnection(m_pipe_socket->OppositeEnd());
   m_init_run = true;
   return true;
 }
