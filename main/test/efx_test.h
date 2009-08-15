@@ -46,7 +46,16 @@ private slots:
 	void fixtures();
 	void propagationMode();
 	void startStopScenes();
+
 	void previewCircle();
+	void previewEight();
+	void previewLine();
+	//void previewTriangle();
+	void previewDiamond();
+	void previewLissajous();
+
+	void rotateAndScale();
+	void widthHeightOffset();
 
 	void copyFrom();
 	void createCopy();

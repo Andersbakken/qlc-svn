@@ -4,18 +4,18 @@
 
   Copyright (c) Heikki Junnila
 
-  This program is free software; you can redistribute it and/or
+  This program is free software;you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
 
   This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  but WITHOUT ANY WARRANTY;without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
 
   You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
+  along with this program;if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
@@ -695,6 +695,577 @@ void EFX_Test::previewCircle()
 	QVERIFY(poly[125] == QPoint(145,252));
 	QVERIFY(poly[126] == QPoint(139,253));
 	QVERIFY(poly[127] == QPoint(133,253));
+}
+
+void EFX_Test::previewEight()
+{
+	EFX e(this);
+	e.setAlgorithm("Eight");
+
+	QPolygon poly;
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	QVERIFY(poly[0] == QPoint(127,254));
+	QVERIFY(poly[1] == QPoint(114,253));
+	QVERIFY(poly[2] == QPoint(102,253));
+	QVERIFY(poly[3] == QPoint(90,252));
+	QVERIFY(poly[4] == QPoint(78,251));
+	QVERIFY(poly[5] == QPoint(67,250));
+	QVERIFY(poly[6] == QPoint(56,248));
+	QVERIFY(poly[7] == QPoint(46,246));
+	QVERIFY(poly[8] == QPoint(37,244));
+	QVERIFY(poly[9] == QPoint(28,241));
+	QVERIFY(poly[10] == QPoint(21,239));
+	QVERIFY(poly[11] == QPoint(14,235));
+	QVERIFY(poly[12] == QPoint(9,232));
+	QVERIFY(poly[13] == QPoint(5,229));
+	QVERIFY(poly[14] == QPoint(2,225));
+	QVERIFY(poly[15] == QPoint(0,221));
+	QVERIFY(poly[16] == QPoint(0,216));
+	QVERIFY(poly[17] == QPoint(0,212));
+	QVERIFY(poly[18] == QPoint(2,207));
+	QVERIFY(poly[19] == QPoint(5,202));
+	QVERIFY(poly[20] == QPoint(9,197));
+	QVERIFY(poly[21] == QPoint(14,192));
+	QVERIFY(poly[22] == QPoint(21,186));
+	QVERIFY(poly[23] == QPoint(28,181));
+	QVERIFY(poly[24] == QPoint(37,175));
+	QVERIFY(poly[25] == QPoint(46,169));
+	QVERIFY(poly[26] == QPoint(56,163));
+	QVERIFY(poly[27] == QPoint(67,157));
+	QVERIFY(poly[28] == QPoint(78,151));
+	QVERIFY(poly[29] == QPoint(90,145));
+	QVERIFY(poly[30] == QPoint(102,139));
+	QVERIFY(poly[31] == QPoint(114,133));
+	QVERIFY(poly[32] == QPoint(127,126));
+	QVERIFY(poly[33] == QPoint(139,120));
+	QVERIFY(poly[34] == QPoint(151,114));
+	QVERIFY(poly[35] == QPoint(163,108));
+	QVERIFY(poly[36] == QPoint(175,102));
+	QVERIFY(poly[37] == QPoint(186,96));
+	QVERIFY(poly[38] == QPoint(197,90));
+	QVERIFY(poly[39] == QPoint(207,84));
+	QVERIFY(poly[40] == QPoint(216,78));
+	QVERIFY(poly[41] == QPoint(225,72));
+	QVERIFY(poly[42] == QPoint(232,67));
+	QVERIFY(poly[43] == QPoint(239,61));
+	QVERIFY(poly[44] == QPoint(244,56));
+	QVERIFY(poly[45] == QPoint(248,51));
+	QVERIFY(poly[46] == QPoint(251,46));
+	QVERIFY(poly[47] == QPoint(253,41));
+	QVERIFY(poly[48] == QPoint(254,37));
+	QVERIFY(poly[49] == QPoint(253,32));
+	QVERIFY(poly[50] == QPoint(251,28));
+	QVERIFY(poly[51] == QPoint(248,24));
+	QVERIFY(poly[52] == QPoint(244,21));
+	QVERIFY(poly[53] == QPoint(239,18));
+	QVERIFY(poly[54] == QPoint(232,14));
+	QVERIFY(poly[55] == QPoint(225,12));
+	QVERIFY(poly[56] == QPoint(216,9));
+	QVERIFY(poly[57] == QPoint(207,7));
+	QVERIFY(poly[58] == QPoint(197,5));
+	QVERIFY(poly[59] == QPoint(186,3));
+	QVERIFY(poly[60] == QPoint(175,2));
+	QVERIFY(poly[61] == QPoint(163,1));
+	QVERIFY(poly[62] == QPoint(151,0));
+	QVERIFY(poly[63] == QPoint(139,0));
+	QVERIFY(poly[64] == QPoint(127,0));
+	QVERIFY(poly[65] == QPoint(114,0));
+	QVERIFY(poly[66] == QPoint(102,0));
+	QVERIFY(poly[67] == QPoint(90,1));
+	QVERIFY(poly[68] == QPoint(78,2));
+	QVERIFY(poly[69] == QPoint(67,3));
+	QVERIFY(poly[70] == QPoint(56,5));
+	QVERIFY(poly[71] == QPoint(46,7));
+	QVERIFY(poly[72] == QPoint(37,9));
+	QVERIFY(poly[73] == QPoint(28,12));
+	QVERIFY(poly[74] == QPoint(21,14));
+	QVERIFY(poly[75] == QPoint(14,18));
+	QVERIFY(poly[76] == QPoint(9,21));
+	QVERIFY(poly[77] == QPoint(5,24));
+	QVERIFY(poly[78] == QPoint(2,28));
+	QVERIFY(poly[79] == QPoint(0,32));
+	QVERIFY(poly[80] == QPoint(0,37));
+	QVERIFY(poly[81] == QPoint(0,41));
+	QVERIFY(poly[82] == QPoint(2,46));
+	QVERIFY(poly[83] == QPoint(5,51));
+	QVERIFY(poly[84] == QPoint(9,56));
+	QVERIFY(poly[85] == QPoint(14,61));
+	QVERIFY(poly[86] == QPoint(21,67));
+	QVERIFY(poly[87] == QPoint(28,72));
+	QVERIFY(poly[88] == QPoint(37,78));
+	QVERIFY(poly[89] == QPoint(46,84));
+	QVERIFY(poly[90] == QPoint(56,90));
+	QVERIFY(poly[91] == QPoint(67,96));
+	QVERIFY(poly[92] == QPoint(78,102));
+	QVERIFY(poly[93] == QPoint(90,108));
+	QVERIFY(poly[94] == QPoint(102,114));
+	QVERIFY(poly[95] == QPoint(114,120));
+	QVERIFY(poly[96] == QPoint(126,126));
+	QVERIFY(poly[97] == QPoint(139,133));
+	QVERIFY(poly[98] == QPoint(151,139));
+	QVERIFY(poly[99] == QPoint(163,145));
+	QVERIFY(poly[100] == QPoint(175,151));
+	QVERIFY(poly[101] == QPoint(186,157));
+	QVERIFY(poly[102] == QPoint(197,163));
+	QVERIFY(poly[103] == QPoint(207,169));
+	QVERIFY(poly[104] == QPoint(216,175));
+	QVERIFY(poly[105] == QPoint(225,181));
+	QVERIFY(poly[106] == QPoint(232,186));
+	QVERIFY(poly[107] == QPoint(239,192));
+	QVERIFY(poly[108] == QPoint(244,197));
+	QVERIFY(poly[109] == QPoint(248,202));
+	QVERIFY(poly[110] == QPoint(251,207));
+	QVERIFY(poly[111] == QPoint(253,212));
+	QVERIFY(poly[112] == QPoint(254,216));
+	QVERIFY(poly[113] == QPoint(253,221));
+	QVERIFY(poly[114] == QPoint(251,225));
+	QVERIFY(poly[115] == QPoint(248,229));
+	QVERIFY(poly[116] == QPoint(244,232));
+	QVERIFY(poly[117] == QPoint(239,235));
+	QVERIFY(poly[118] == QPoint(232,239));
+	QVERIFY(poly[119] == QPoint(225,241));
+	QVERIFY(poly[120] == QPoint(216,244));
+	QVERIFY(poly[121] == QPoint(207,246));
+	QVERIFY(poly[122] == QPoint(197,248));
+	QVERIFY(poly[123] == QPoint(186,250));
+	QVERIFY(poly[124] == QPoint(175,251));
+	QVERIFY(poly[125] == QPoint(163,252));
+	QVERIFY(poly[126] == QPoint(151,253));
+	QVERIFY(poly[127] == QPoint(139,253));
+}
+
+void EFX_Test::previewLine()
+{
+	EFX e(this);
+	e.setAlgorithm("Line");
+
+	QPolygon poly;
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	QVERIFY(poly[0] == QPoint(254,254));
+	QVERIFY(poly[1] == QPoint(253,253));
+	QVERIFY(poly[2] == QPoint(253,253));
+	QVERIFY(poly[3] == QPoint(252,252));
+	QVERIFY(poly[4] == QPoint(251,251));
+	QVERIFY(poly[5] == QPoint(250,250));
+	QVERIFY(poly[6] == QPoint(248,248));
+	QVERIFY(poly[7] == QPoint(246,246));
+	QVERIFY(poly[8] == QPoint(244,244));
+	QVERIFY(poly[9] == QPoint(241,241));
+	QVERIFY(poly[10] == QPoint(239,239));
+	QVERIFY(poly[11] == QPoint(235,235));
+	QVERIFY(poly[12] == QPoint(232,232));
+	QVERIFY(poly[13] == QPoint(229,229));
+	QVERIFY(poly[14] == QPoint(225,225));
+	QVERIFY(poly[15] == QPoint(221,221));
+	QVERIFY(poly[16] == QPoint(216,216));
+	QVERIFY(poly[17] == QPoint(212,212));
+	QVERIFY(poly[18] == QPoint(207,207));
+	QVERIFY(poly[19] == QPoint(202,202));
+	QVERIFY(poly[20] == QPoint(197,197));
+	QVERIFY(poly[21] == QPoint(192,192));
+	QVERIFY(poly[22] == QPoint(186,186));
+	QVERIFY(poly[23] == QPoint(181,181));
+	QVERIFY(poly[24] == QPoint(175,175));
+	QVERIFY(poly[25] == QPoint(169,169));
+	QVERIFY(poly[26] == QPoint(163,163));
+	QVERIFY(poly[27] == QPoint(157,157));
+	QVERIFY(poly[28] == QPoint(151,151));
+	QVERIFY(poly[29] == QPoint(145,145));
+	QVERIFY(poly[30] == QPoint(139,139));
+	QVERIFY(poly[31] == QPoint(133,133));
+	QVERIFY(poly[32] == QPoint(126,126));
+	QVERIFY(poly[33] == QPoint(120,120));
+	QVERIFY(poly[34] == QPoint(114,114));
+	QVERIFY(poly[35] == QPoint(108,108));
+	QVERIFY(poly[36] == QPoint(102,102));
+	QVERIFY(poly[37] == QPoint(96,96));
+	QVERIFY(poly[38] == QPoint(90,90));
+	QVERIFY(poly[39] == QPoint(84,84));
+	QVERIFY(poly[40] == QPoint(78,78));
+	QVERIFY(poly[41] == QPoint(72,72));
+	QVERIFY(poly[42] == QPoint(67,67));
+	QVERIFY(poly[43] == QPoint(61,61));
+	QVERIFY(poly[44] == QPoint(56,56));
+	QVERIFY(poly[45] == QPoint(51,51));
+	QVERIFY(poly[46] == QPoint(46,46));
+	QVERIFY(poly[47] == QPoint(41,41));
+	QVERIFY(poly[48] == QPoint(37,37));
+	QVERIFY(poly[49] == QPoint(32,32));
+	QVERIFY(poly[50] == QPoint(28,28));
+	QVERIFY(poly[51] == QPoint(24,24));
+	QVERIFY(poly[52] == QPoint(21,21));
+	QVERIFY(poly[53] == QPoint(18,18));
+	QVERIFY(poly[54] == QPoint(14,14));
+	QVERIFY(poly[55] == QPoint(12,12));
+	QVERIFY(poly[56] == QPoint(9,9));
+	QVERIFY(poly[57] == QPoint(7,7));
+	QVERIFY(poly[58] == QPoint(5,5));
+	QVERIFY(poly[59] == QPoint(3,3));
+	QVERIFY(poly[60] == QPoint(2,2));
+	QVERIFY(poly[61] == QPoint(1,1));
+	QVERIFY(poly[62] == QPoint(0,0));
+	QVERIFY(poly[63] == QPoint(0,0));
+	QVERIFY(poly[64] == QPoint(0,0));
+	QVERIFY(poly[65] == QPoint(0,0));
+	QVERIFY(poly[66] == QPoint(0,0));
+	QVERIFY(poly[67] == QPoint(1,1));
+	QVERIFY(poly[68] == QPoint(2,2));
+	QVERIFY(poly[69] == QPoint(3,3));
+	QVERIFY(poly[70] == QPoint(5,5));
+	QVERIFY(poly[71] == QPoint(7,7));
+	QVERIFY(poly[72] == QPoint(9,9));
+	QVERIFY(poly[73] == QPoint(12,12));
+	QVERIFY(poly[74] == QPoint(14,14));
+	QVERIFY(poly[75] == QPoint(18,18));
+	QVERIFY(poly[76] == QPoint(21,21));
+	QVERIFY(poly[77] == QPoint(24,24));
+	QVERIFY(poly[78] == QPoint(28,28));
+	QVERIFY(poly[79] == QPoint(32,32));
+	QVERIFY(poly[80] == QPoint(37,37));
+	QVERIFY(poly[81] == QPoint(41,41));
+	QVERIFY(poly[82] == QPoint(46,46));
+	QVERIFY(poly[83] == QPoint(51,51));
+	QVERIFY(poly[84] == QPoint(56,56));
+	QVERIFY(poly[85] == QPoint(61,61));
+	QVERIFY(poly[86] == QPoint(67,67));
+	QVERIFY(poly[87] == QPoint(72,72));
+	QVERIFY(poly[88] == QPoint(78,78));
+	QVERIFY(poly[89] == QPoint(84,84));
+	QVERIFY(poly[90] == QPoint(90,90));
+	QVERIFY(poly[91] == QPoint(96,96));
+	QVERIFY(poly[92] == QPoint(102,102));
+	QVERIFY(poly[93] == QPoint(108,108));
+	QVERIFY(poly[94] == QPoint(114,114));
+	QVERIFY(poly[95] == QPoint(120,120));
+	QVERIFY(poly[96] == QPoint(126,126));
+	QVERIFY(poly[97] == QPoint(133,133));
+	QVERIFY(poly[98] == QPoint(139,139));
+	QVERIFY(poly[99] == QPoint(145,145));
+	QVERIFY(poly[100] == QPoint(151,151));
+	QVERIFY(poly[101] == QPoint(157,157));
+	QVERIFY(poly[102] == QPoint(163,163));
+	QVERIFY(poly[103] == QPoint(169,169));
+	QVERIFY(poly[104] == QPoint(175,175));
+	QVERIFY(poly[105] == QPoint(181,181));
+	QVERIFY(poly[106] == QPoint(186,186));
+	QVERIFY(poly[107] == QPoint(192,192));
+	QVERIFY(poly[108] == QPoint(197,197));
+	QVERIFY(poly[109] == QPoint(202,202));
+	QVERIFY(poly[110] == QPoint(207,207));
+	QVERIFY(poly[111] == QPoint(212,212));
+	QVERIFY(poly[112] == QPoint(216,216));
+	QVERIFY(poly[113] == QPoint(221,221));
+	QVERIFY(poly[114] == QPoint(225,225));
+	QVERIFY(poly[115] == QPoint(229,229));
+	QVERIFY(poly[116] == QPoint(232,232));
+	QVERIFY(poly[117] == QPoint(235,235));
+	QVERIFY(poly[118] == QPoint(239,239));
+	QVERIFY(poly[119] == QPoint(241,241));
+	QVERIFY(poly[120] == QPoint(244,244));
+	QVERIFY(poly[121] == QPoint(246,246));
+	QVERIFY(poly[122] == QPoint(248,248));
+	QVERIFY(poly[123] == QPoint(250,250));
+	QVERIFY(poly[124] == QPoint(251,251));
+	QVERIFY(poly[125] == QPoint(252,252));
+	QVERIFY(poly[126] == QPoint(253,253));
+	QVERIFY(poly[127] == QPoint(253,253));
+}
+
+//void EFX_Test::previewTriangle()
+//{
+//}
+
+void EFX_Test::previewDiamond()
+{
+	EFX e(this);
+	e.setAlgorithm("Diamond");
+
+	QPolygon poly;
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	QVERIFY(poly[0] == QPoint(127,254));
+	QVERIFY(poly[1] == QPoint(127,253));
+	QVERIFY(poly[2] == QPoint(127,252));
+	QVERIFY(poly[3] == QPoint(127,249));
+	QVERIFY(poly[4] == QPoint(127,246));
+	QVERIFY(poly[5] == QPoint(128,242));
+	QVERIFY(poly[6] == QPoint(130,238));
+	QVERIFY(poly[7] == QPoint(131,233));
+	QVERIFY(poly[8] == QPoint(134,227));
+	QVERIFY(poly[9] == QPoint(136,220));
+	QVERIFY(poly[10] == QPoint(140,214));
+	QVERIFY(poly[11] == QPoint(144,207));
+	QVERIFY(poly[12] == QPoint(148,200));
+	QVERIFY(poly[13] == QPoint(153,192));
+	QVERIFY(poly[14] == QPoint(159,185));
+	QVERIFY(poly[15] == QPoint(165,178));
+	QVERIFY(poly[16] == QPoint(171,171));
+	QVERIFY(poly[17] == QPoint(178,165));
+	QVERIFY(poly[18] == QPoint(185,159));
+	QVERIFY(poly[19] == QPoint(192,153));
+	QVERIFY(poly[20] == QPoint(200,148));
+	QVERIFY(poly[21] == QPoint(207,144));
+	QVERIFY(poly[22] == QPoint(214,140));
+	QVERIFY(poly[23] == QPoint(220,136));
+	QVERIFY(poly[24] == QPoint(227,134));
+	QVERIFY(poly[25] == QPoint(233,131));
+	QVERIFY(poly[26] == QPoint(238,130));
+	QVERIFY(poly[27] == QPoint(242,128));
+	QVERIFY(poly[28] == QPoint(246,127));
+	QVERIFY(poly[29] == QPoint(249,127));
+	QVERIFY(poly[30] == QPoint(252,127));
+	QVERIFY(poly[31] == QPoint(253,127));
+	QVERIFY(poly[32] == QPoint(254,127));
+	QVERIFY(poly[33] == QPoint(253,126));
+	QVERIFY(poly[34] == QPoint(252,126));
+	QVERIFY(poly[35] == QPoint(249,126));
+	QVERIFY(poly[36] == QPoint(246,126));
+	QVERIFY(poly[37] == QPoint(242,125));
+	QVERIFY(poly[38] == QPoint(238,123));
+	QVERIFY(poly[39] == QPoint(233,122));
+	QVERIFY(poly[40] == QPoint(227,119));
+	QVERIFY(poly[41] == QPoint(220,117));
+	QVERIFY(poly[42] == QPoint(214,113));
+	QVERIFY(poly[43] == QPoint(207,109));
+	QVERIFY(poly[44] == QPoint(200,105));
+	QVERIFY(poly[45] == QPoint(192,100));
+	QVERIFY(poly[46] == QPoint(185,94));
+	QVERIFY(poly[47] == QPoint(178,88));
+	QVERIFY(poly[48] == QPoint(171,82));
+	QVERIFY(poly[49] == QPoint(165,75));
+	QVERIFY(poly[50] == QPoint(159,68));
+	QVERIFY(poly[51] == QPoint(153,61));
+	QVERIFY(poly[52] == QPoint(148,53));
+	QVERIFY(poly[53] == QPoint(144,46));
+	QVERIFY(poly[54] == QPoint(140,39));
+	QVERIFY(poly[55] == QPoint(136,33));
+	QVERIFY(poly[56] == QPoint(134,26));
+	QVERIFY(poly[57] == QPoint(131,20));
+	QVERIFY(poly[58] == QPoint(130,15));
+	QVERIFY(poly[59] == QPoint(128,11));
+	QVERIFY(poly[60] == QPoint(127,7));
+	QVERIFY(poly[61] == QPoint(127,4));
+	QVERIFY(poly[62] == QPoint(127,1));
+	QVERIFY(poly[63] == QPoint(127,0));
+	QVERIFY(poly[64] == QPoint(127,0));
+	QVERIFY(poly[65] == QPoint(126,0));
+	QVERIFY(poly[66] == QPoint(126,1));
+	QVERIFY(poly[67] == QPoint(126,4));
+	QVERIFY(poly[68] == QPoint(126,7));
+	QVERIFY(poly[69] == QPoint(125,11));
+	QVERIFY(poly[70] == QPoint(123,15));
+	QVERIFY(poly[71] == QPoint(122,20));
+	QVERIFY(poly[72] == QPoint(119,26));
+	QVERIFY(poly[73] == QPoint(117,33));
+	QVERIFY(poly[74] == QPoint(113,39));
+	QVERIFY(poly[75] == QPoint(109,46));
+	QVERIFY(poly[76] == QPoint(105,53));
+	QVERIFY(poly[77] == QPoint(100,61));
+	QVERIFY(poly[78] == QPoint(94,68));
+	QVERIFY(poly[79] == QPoint(88,75));
+	QVERIFY(poly[80] == QPoint(82,82));
+	QVERIFY(poly[81] == QPoint(75,88));
+	QVERIFY(poly[82] == QPoint(68,94));
+	QVERIFY(poly[83] == QPoint(61,100));
+	QVERIFY(poly[84] == QPoint(53,105));
+	QVERIFY(poly[85] == QPoint(46,109));
+	QVERIFY(poly[86] == QPoint(39,113));
+	QVERIFY(poly[87] == QPoint(33,117));
+	QVERIFY(poly[88] == QPoint(26,119));
+	QVERIFY(poly[89] == QPoint(20,122));
+	QVERIFY(poly[90] == QPoint(15,123));
+	QVERIFY(poly[91] == QPoint(11,125));
+	QVERIFY(poly[92] == QPoint(7,126));
+	QVERIFY(poly[93] == QPoint(4,126));
+	QVERIFY(poly[94] == QPoint(1,126));
+	QVERIFY(poly[95] == QPoint(0,126));
+	QVERIFY(poly[96] == QPoint(0,127));
+	QVERIFY(poly[97] == QPoint(0,127));
+	QVERIFY(poly[98] == QPoint(1,127));
+	QVERIFY(poly[99] == QPoint(4,127));
+	QVERIFY(poly[100] == QPoint(7,127));
+	QVERIFY(poly[101] == QPoint(11,128));
+	QVERIFY(poly[102] == QPoint(15,130));
+	QVERIFY(poly[103] == QPoint(20,131));
+	QVERIFY(poly[104] == QPoint(26,134));
+	QVERIFY(poly[105] == QPoint(33,136));
+	QVERIFY(poly[106] == QPoint(39,140));
+	QVERIFY(poly[107] == QPoint(46,144));
+	QVERIFY(poly[108] == QPoint(53,148));
+	QVERIFY(poly[109] == QPoint(61,153));
+	QVERIFY(poly[110] == QPoint(68,159));
+	QVERIFY(poly[111] == QPoint(75,165));
+	QVERIFY(poly[112] == QPoint(82,171));
+	QVERIFY(poly[113] == QPoint(88,178));
+	QVERIFY(poly[114] == QPoint(94,185));
+	QVERIFY(poly[115] == QPoint(100,192));
+	QVERIFY(poly[116] == QPoint(105,200));
+	QVERIFY(poly[117] == QPoint(109,207));
+	QVERIFY(poly[118] == QPoint(113,214));
+	QVERIFY(poly[119] == QPoint(117,220));
+	QVERIFY(poly[120] == QPoint(119,227));
+	QVERIFY(poly[121] == QPoint(122,233));
+	QVERIFY(poly[122] == QPoint(123,238));
+	QVERIFY(poly[123] == QPoint(125,242));
+	QVERIFY(poly[124] == QPoint(126,246));
+	QVERIFY(poly[125] == QPoint(126,249));
+	QVERIFY(poly[126] == QPoint(126,252));
+	QVERIFY(poly[127] == QPoint(126,253));
+}
+
+void EFX_Test::previewLissajous()
+{
+	EFX e(this);
+	e.setAlgorithm("Lissajous");
+
+	QPolygon poly;
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+
+	QVERIFY(poly[0] == QPoint(127,254));
+	QVERIFY(poly[1] == QPoint(139,252));
+	QVERIFY(poly[2] == QPoint(151,248));
+	QVERIFY(poly[3] == QPoint(163,241));
+	QVERIFY(poly[4] == QPoint(175,232));
+	QVERIFY(poly[5] == QPoint(186,221));
+	QVERIFY(poly[6] == QPoint(197,207));
+	QVERIFY(poly[7] == QPoint(207,192));
+	QVERIFY(poly[8] == QPoint(216,175));
+	QVERIFY(poly[9] == QPoint(225,157));
+	QVERIFY(poly[10] == QPoint(232,139));
+	QVERIFY(poly[11] == QPoint(239,120));
+	QVERIFY(poly[12] == QPoint(244,102));
+	QVERIFY(poly[13] == QPoint(248,84));
+	QVERIFY(poly[14] == QPoint(251,67));
+	QVERIFY(poly[15] == QPoint(253,51));
+	QVERIFY(poly[16] == QPoint(254,37));
+	QVERIFY(poly[17] == QPoint(253,24));
+	QVERIFY(poly[18] == QPoint(251,14));
+	QVERIFY(poly[19] == QPoint(248,7));
+	QVERIFY(poly[20] == QPoint(244,2));
+	QVERIFY(poly[21] == QPoint(239,0));
+	QVERIFY(poly[22] == QPoint(232,0));
+	QVERIFY(poly[23] == QPoint(225,3));
+	QVERIFY(poly[24] == QPoint(216,9));
+	QVERIFY(poly[25] == QPoint(207,18));
+	QVERIFY(poly[26] == QPoint(197,28));
+	QVERIFY(poly[27] == QPoint(186,41));
+	QVERIFY(poly[28] == QPoint(175,56));
+	QVERIFY(poly[29] == QPoint(163,72));
+	QVERIFY(poly[30] == QPoint(151,90));
+	QVERIFY(poly[31] == QPoint(139,108));
+	QVERIFY(poly[32] == QPoint(126,127));
+	QVERIFY(poly[33] == QPoint(114,145));
+	QVERIFY(poly[34] == QPoint(102,163));
+	QVERIFY(poly[35] == QPoint(90,181));
+	QVERIFY(poly[36] == QPoint(78,197));
+	QVERIFY(poly[37] == QPoint(67,212));
+	QVERIFY(poly[38] == QPoint(56,225));
+	QVERIFY(poly[39] == QPoint(46,235));
+	QVERIFY(poly[40] == QPoint(37,244));
+	QVERIFY(poly[41] == QPoint(28,250));
+	QVERIFY(poly[42] == QPoint(21,253));
+	QVERIFY(poly[43] == QPoint(14,253));
+	QVERIFY(poly[44] == QPoint(9,251));
+	QVERIFY(poly[45] == QPoint(5,246));
+	QVERIFY(poly[46] == QPoint(2,239));
+	QVERIFY(poly[47] == QPoint(0,229));
+	QVERIFY(poly[48] == QPoint(0,216));
+	QVERIFY(poly[49] == QPoint(0,202));
+	QVERIFY(poly[50] == QPoint(2,186));
+	QVERIFY(poly[51] == QPoint(5,169));
+	QVERIFY(poly[52] == QPoint(9,151));
+	QVERIFY(poly[53] == QPoint(14,133));
+	QVERIFY(poly[54] == QPoint(21,114));
+	QVERIFY(poly[55] == QPoint(28,96));
+	QVERIFY(poly[56] == QPoint(37,78));
+	QVERIFY(poly[57] == QPoint(46,61));
+	QVERIFY(poly[58] == QPoint(56,46));
+	QVERIFY(poly[59] == QPoint(67,32));
+	QVERIFY(poly[60] == QPoint(78,21));
+	QVERIFY(poly[61] == QPoint(90,12));
+	QVERIFY(poly[62] == QPoint(102,5));
+	QVERIFY(poly[63] == QPoint(114,1));
+	QVERIFY(poly[64] == QPoint(126,0));
+	QVERIFY(poly[65] == QPoint(139,1));
+	QVERIFY(poly[66] == QPoint(151,5));
+	QVERIFY(poly[67] == QPoint(163,12));
+	QVERIFY(poly[68] == QPoint(175,21));
+	QVERIFY(poly[69] == QPoint(186,32));
+	QVERIFY(poly[70] == QPoint(197,46));
+	QVERIFY(poly[71] == QPoint(207,61));
+	QVERIFY(poly[72] == QPoint(216,78));
+	QVERIFY(poly[73] == QPoint(225,96));
+	QVERIFY(poly[74] == QPoint(232,114));
+	QVERIFY(poly[75] == QPoint(239,133));
+	QVERIFY(poly[76] == QPoint(244,151));
+	QVERIFY(poly[77] == QPoint(248,169));
+	QVERIFY(poly[78] == QPoint(251,186));
+	QVERIFY(poly[79] == QPoint(253,202));
+	QVERIFY(poly[80] == QPoint(254,216));
+	QVERIFY(poly[81] == QPoint(253,229));
+	QVERIFY(poly[82] == QPoint(251,239));
+	QVERIFY(poly[83] == QPoint(248,246));
+	QVERIFY(poly[84] == QPoint(244,251));
+	QVERIFY(poly[85] == QPoint(239,253));
+	QVERIFY(poly[86] == QPoint(232,253));
+	QVERIFY(poly[87] == QPoint(225,250));
+	QVERIFY(poly[88] == QPoint(216,244));
+	QVERIFY(poly[89] == QPoint(207,235));
+	QVERIFY(poly[90] == QPoint(197,225));
+	QVERIFY(poly[91] == QPoint(186,212));
+	QVERIFY(poly[92] == QPoint(175,197));
+	QVERIFY(poly[93] == QPoint(163,181));
+	QVERIFY(poly[94] == QPoint(151,163));
+	QVERIFY(poly[95] == QPoint(139,145));
+	QVERIFY(poly[96] == QPoint(127,127));
+	QVERIFY(poly[97] == QPoint(114,108));
+	QVERIFY(poly[98] == QPoint(102,90));
+	QVERIFY(poly[99] == QPoint(90,72));
+	QVERIFY(poly[100] == QPoint(78,56));
+	QVERIFY(poly[101] == QPoint(67,41));
+	QVERIFY(poly[102] == QPoint(56,28));
+	QVERIFY(poly[103] == QPoint(46,18));
+	QVERIFY(poly[104] == QPoint(37,9));
+	QVERIFY(poly[105] == QPoint(28,3));
+	QVERIFY(poly[106] == QPoint(21,0));
+	QVERIFY(poly[107] == QPoint(14,0));
+	QVERIFY(poly[108] == QPoint(9,2));
+	QVERIFY(poly[109] == QPoint(5,7));
+	QVERIFY(poly[110] == QPoint(2,14));
+	QVERIFY(poly[111] == QPoint(0,24));
+	QVERIFY(poly[112] == QPoint(0,37));
+	QVERIFY(poly[113] == QPoint(0,51));
+	QVERIFY(poly[114] == QPoint(2,67));
+	QVERIFY(poly[115] == QPoint(5,84));
+	QVERIFY(poly[116] == QPoint(9,102));
+	QVERIFY(poly[117] == QPoint(14,120));
+	QVERIFY(poly[118] == QPoint(21,139));
+	QVERIFY(poly[119] == QPoint(28,157));
+	QVERIFY(poly[120] == QPoint(37,175));
+	QVERIFY(poly[121] == QPoint(46,192));
+	QVERIFY(poly[122] == QPoint(56,207));
+	QVERIFY(poly[123] == QPoint(67,221));
+	QVERIFY(poly[124] == QPoint(78,232));
+	QVERIFY(poly[125] == QPoint(90,241));
+	QVERIFY(poly[126] == QPoint(102,248));
+	QVERIFY(poly[127] == QPoint(114,252));
+}
+
+void EFX_Test::widthHeightOffset()
+{
+	EFX e(this);
+	int i = 0;
+	int max = 0;
+
+	QPolygon poly;
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
 
 	/* Check that width affects the pattern */
 	e.setWidth(50);
@@ -719,6 +1290,136 @@ void EFX_Test::previewCircle()
 	   are OUTSIDE the actual points. */
 	QVERIFY(poly.boundingRect().height() == 87 + 87 + 1);
 	QVERIFY(poly.boundingRect().width() == 100 + 1);
+
+	/* X Offset is at center */
+	max = 0;
+	poly.clear();
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+	for (i = 0;i < 128;i++)
+		if (poly[i].x() > max)
+			max = poly[i].x();
+	QVERIFY(max == 177);
+
+	/* X offset + 20 */
+	max = 0;
+	e.setXOffset(127 + 20);
+	poly.clear();
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+	for (i = 0;i < 128;i++)
+		if (poly[i].x() > max)
+			max = poly[i].x();
+	QVERIFY(max == 197);
+
+	/* Y Offset is at center */
+	max = 0;
+	poly.clear();
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+	for (i = 0;i < 128;i++)
+		if (poly[i].y() > max)
+			max = poly[i].y();
+	QVERIFY(max == 214);
+
+	/* Y offset - 25 */
+	max = 0;
+	e.setYOffset(127 - 25);
+	poly.clear();
+	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(poly.size() == 128);
+	for (i = 0;i < 128;i++)
+		if (poly[i].y() > max)
+			max = poly[i].y();
+	QVERIFY(max == 189);
+}
+
+void EFX_Test::rotateAndScale()
+{
+	/* The X & Y params used here represent the first point in a circle
+	   algorithm as calculated by EFX::circlePoint(), based on iterator
+	   value 0, before calling rotateAndScale(). */
+	qreal x, y;
+
+	/* Rotation */
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 0);
+	QVERIFY(floor(x + 0.5) == 111);
+	QVERIFY(floor(y + 0.5) == 253);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 90);
+	QVERIFY(floor(x + 0.5) == 253);
+	QVERIFY(floor(y + 0.5) == 143);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 180);
+	QVERIFY(floor(x + 0.5) == 143);
+	QVERIFY(floor(y + 0.5) == 1);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 270);
+	QVERIFY(floor(x + 0.5) == 1);
+	QVERIFY(floor(y + 0.5) == 111);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 45);
+	QVERIFY(floor(x + 0.5) == 205);
+	QVERIFY(floor(y + 0.5) == 227);
+
+	/* Offset */
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 128, 128, 0);
+	QVERIFY(floor(x + 0.5) == 112);
+	QVERIFY(floor(y + 0.5) == 254);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 0, 0, 0);
+	QVERIFY(floor(x + 0.5) == -16);
+	QVERIFY(floor(y + 0.5) == 126);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 0, 127, 0);
+	QVERIFY(floor(x + 0.5) == -16);
+	QVERIFY(floor(y + 0.5) == 253);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 127, 0, 0);
+	QVERIFY(floor(x + 0.5) == 111);
+	QVERIFY(floor(y + 0.5) == 126);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 127, 1, 255, 0);
+	QVERIFY(floor(x + 0.5) == -15);
+	QVERIFY(floor(y + 0.5) == 381);
+
+	/* Width & height (rotate also by 90 degrees to get more tangible
+	   results, because x&y point to the bottom-center, where width & height
+	   params have very little effect without offset or rotation). */
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 64, 64, 127, 127, 90);
+	QVERIFY(floor(x + 0.5) == 190);
+	QVERIFY(floor(y + 0.5) == 135);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 10, 127, 127, 127, 90);
+	QVERIFY(floor(x + 0.5) == 137);
+	QVERIFY(floor(y + 0.5) == 143);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 64, 127, 127, 127, 90);
+	QVERIFY(floor(x + 0.5) == 190);
+	QVERIFY(floor(y + 0.5) == 143);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 64, 0, 127, 127, 90);
+	QVERIFY(floor(x + 0.5) == 190);
+	QVERIFY(floor(y + 0.5) == 127);
+
+	x = -0.125333;y = 0.992115;
+	EFX::rotateAndScale(&x, &y, 127, 0, 127, 127, 90);
+	QVERIFY(floor(x + 0.5) == 253);
+	QVERIFY(floor(y + 0.5) == 127);
 }
 
 void EFX_Test::copyFrom()
@@ -1490,14 +2191,14 @@ void EFX_Test::armSuccess()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("INIT");
-	s1->setValue(fxi1->id(), 0, 205); // Shutter open
-	s1->setValue(fxi2->id(), 0, 205); // Shutter open
+	s1->setValue(fxi1->id(), 0, 205);// Shutter open
+	s1->setValue(fxi2->id(), 0, 205);// Shutter open
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
 	s2->setName("DEINIT");
-	s2->setValue(fxi1->id(), 0, 0); // Shutter closed
-	s2->setValue(fxi2->id(), 0, 0); // Shutter closed
+	s2->setValue(fxi1->id(), 0, 0);// Shutter closed
+	s2->setValue(fxi2->id(), 0, 0);// Shutter closed
 	doc->addFunction(s2);
 
 	EFX* e = new EFX(doc);
@@ -1570,14 +2271,14 @@ void EFX_Test::armMissingStartScene()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("INIT");
-	s1->setValue(fxi1->id(), 0, 205); // Shutter open
-	s1->setValue(fxi2->id(), 0, 205); // Shutter open
+	s1->setValue(fxi1->id(), 0, 205);// Shutter open
+	s1->setValue(fxi2->id(), 0, 205);// Shutter open
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
 	s2->setName("DEINIT");
-	s2->setValue(fxi1->id(), 0, 0); // Shutter closed
-	s2->setValue(fxi2->id(), 0, 0); // Shutter closed
+	s2->setValue(fxi1->id(), 0, 0);// Shutter closed
+	s2->setValue(fxi2->id(), 0, 0);// Shutter closed
 	doc->addFunction(s2);
 
 	EFX* e = new EFX(doc);
@@ -1650,14 +2351,14 @@ void EFX_Test::armMissingStopScene()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("INIT");
-	s1->setValue(fxi1->id(), 0, 205); // Shutter open
-	s1->setValue(fxi2->id(), 0, 205); // Shutter open
+	s1->setValue(fxi1->id(), 0, 205);// Shutter open
+	s1->setValue(fxi2->id(), 0, 205);// Shutter open
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
 	s2->setName("DEINIT");
-	s2->setValue(fxi1->id(), 0, 0); // Shutter closed
-	s2->setValue(fxi2->id(), 0, 0); // Shutter closed
+	s2->setValue(fxi1->id(), 0, 0);// Shutter closed
+	s2->setValue(fxi2->id(), 0, 0);// Shutter closed
 	doc->addFunction(s2);
 
 	EFX* e = new EFX(doc);
@@ -1730,14 +2431,14 @@ void EFX_Test::armMissingFixture()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("INIT");
-	s1->setValue(fxi1->id(), 0, 205); // Shutter open
-	s1->setValue(fxi2->id(), 0, 205); // Shutter open
+	s1->setValue(fxi1->id(), 0, 205);// Shutter open
+	s1->setValue(fxi2->id(), 0, 205);// Shutter open
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
 	s2->setName("DEINIT");
-	s2->setValue(fxi1->id(), 0, 0); // Shutter closed
-	s2->setValue(fxi2->id(), 0, 0); // Shutter closed
+	s2->setValue(fxi1->id(), 0, 0);// Shutter closed
+	s2->setValue(fxi2->id(), 0, 0);// Shutter closed
 	doc->addFunction(s2);
 
 	EFX* e = new EFX(doc);
@@ -1812,14 +2513,14 @@ void EFX_Test::writeStartStopScenes()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("INIT");
-	s1->setValue(fxi1->id(), 0, 205); // Shutter open
-	s1->setValue(fxi2->id(), 0, 205); // Shutter open
+	s1->setValue(fxi1->id(), 0, 205);// Shutter open
+	s1->setValue(fxi2->id(), 0, 205);// Shutter open
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
 	s2->setName("DEINIT");
-	s2->setValue(fxi1->id(), 0, 0); // Shutter closed
-	s2->setValue(fxi2->id(), 0, 0); // Shutter closed
+	s2->setValue(fxi1->id(), 0, 0);// Shutter closed
+	s2->setValue(fxi2->id(), 0, 0);// Shutter closed
 	doc->addFunction(s2);
 
 	EFX* e = new EFX(doc);
@@ -1852,14 +2553,14 @@ void EFX_Test::writeStartStopScenes()
 	QByteArray unis(512 * 4, 0);
 
 	QVERIFY(e->write(&unis) == true);
-	QVERIFY(unis[0] == (char) 205); // Start scene: shutter open
-	QVERIFY(unis[512 + 0] == (char) 205); // Start scene: shutter open
+	QVERIFY(unis[0] == (char) 205);// Start scene: shutter open
+	QVERIFY(unis[512 + 0] == (char) 205);// Start scene: shutter open
 
 	e->stop(mts);
 	QEXPECT_FAIL("", "TODO: Fix stop scene for Loop/PingPong", Continue);
-	QVERIFY(unis[0] == (char) 0); // Stop scene: shutter closed
+	QVERIFY(unis[0] == (char) 0);// Stop scene: shutter closed
 	QEXPECT_FAIL("", "TODO: Fix stop scene for Loop/PingPong", Continue);
-	QVERIFY(unis[512 + 0] == (char) 0); // Stop scene: shutter closed
+	QVERIFY(unis[512 + 0] == (char) 0);// Stop scene: shutter closed
 
 	delete doc;
 }
