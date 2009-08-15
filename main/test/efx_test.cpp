@@ -27,6 +27,7 @@
 #include <common/qlcfixturedef.h>
 
 #include "mastertimer_stub.h"
+#include "outputmap_stub.h"
 #include "efx_test.h"
 
 #include "../function.h"
@@ -2545,21 +2546,21 @@ void EFX_Test::writeStartStopScenes()
 
 	Bus::instance()->setValue(0, 50);
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
+	QByteArray unis(512 * 4, 0);
+	OutputMapStub* oms = new OutputMapStub(this);
+	oms->setUniverses(&unis);
+	MasterTimerStub* mts = new MasterTimerStub(this, oms);
+
 	e->start(mts);
 	QVERIFY(mts->m_list.size() == 1);
 	QVERIFY(mts->m_list.first() == e);
-
-	QByteArray unis(512 * 4, 0);
 
 	QVERIFY(e->write(&unis) == true);
 	QVERIFY(unis[0] == (char) 205);// Start scene: shutter open
 	QVERIFY(unis[512 + 0] == (char) 205);// Start scene: shutter open
 
 	e->stop(mts);
-	QEXPECT_FAIL("", "TODO: Fix stop scene for Loop/PingPong", Continue);
 	QVERIFY(unis[0] == (char) 0);// Stop scene: shutter closed
-	QEXPECT_FAIL("", "TODO: Fix stop scene for Loop/PingPong", Continue);
 	QVERIFY(unis[512 + 0] == (char) 0);// Stop scene: shutter closed
 
 	delete doc;

@@ -71,6 +71,9 @@ public:
 	/** Stop all functions */
 	void stopAll();
 
+	/** Get the output map object that MasterTimer uses for DMX output */
+	OutputMap* outputMap() const { return m_outputMap; }
+
 protected:
 	/** List of currently running functions */
 	QList <Function*> m_functionList;

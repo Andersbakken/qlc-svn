@@ -34,6 +34,7 @@
 #include "common/qlcfile.h"
 
 #include "mastertimer.h"
+#include "outputmap.h"
 #include "fixture.h"
 #include "scene.h"
 #include "doc.h"
@@ -1237,6 +1238,26 @@ void EFX::stop(MasterTimer* timer)
 	/* Reset all fixtures */
 	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
-		it.next()->reset();
+	{
+		EFXFixture* ef(it.next());
+
+		/* WARNING: Potential place for a deadlock if
+		   OutputMap::claimUniverses() and ::releaseUniverses() is ever
+		   changed to use a mutex.
+		   
+		   This runs the EFX's stop scene for Loop & PingPong modes.
+		   It's not exactly the best solution, but this way the change
+		   is limited only to this one place. TODO: Maybe this can be
+		   done the right way when HTP is implemented...? */
+		if (m_runOrder != SingleShot)
+		{
+			QByteArray* universes;
+			universes = timer->outputMap()->claimUniverses();
+			ef->stop(universes);
+			timer->outputMap()->releaseUniverses();
+		}
+
+		ef->reset();
+	}
 }
 

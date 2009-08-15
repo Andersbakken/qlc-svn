@@ -73,12 +73,14 @@ ENGINESOURCES += ../bus.cpp \
 STUBHEADERS += mastertimer_stub.h \
 		scene_stub.h \
 		outputplugin_stub.h \
-		inputplugin_stub.h
+		inputplugin_stub.h \
+		outputmap_stub.h
 
 STUBSOURCES += mastertimer_stub.cpp \
 		scene_stub.cpp \
 		outputplugin_stub.cpp \
-		inputplugin_stub.cpp
+		inputplugin_stub.cpp \
+		outputmap_stub.cpp
 
 HEADERS = bus_test.h \
 	  fixture_test.h \

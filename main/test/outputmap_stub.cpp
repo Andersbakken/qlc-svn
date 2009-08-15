@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  mastertimer_stub.cpp
+  outputmap_stub.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -19,28 +19,33 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "mastertimer_stub.h"
+#include <QDebug>
+#include "outputmap_stub.h"
 
 /****************************************************************************
- * MasterTimer Stub
+ * OutputMap Stub
  ****************************************************************************/
 
-MasterTimerStub::MasterTimerStub(QObject* parent, OutputMap* outputMap) 
-	: MasterTimer(parent, outputMap)
+OutputMapStub::OutputMapStub(QObject* parent) : OutputMap(parent)
+{
+	m_unis = NULL;
+}
+
+OutputMapStub::~OutputMapStub()
 {
 }
 
-MasterTimerStub::~MasterTimerStub()
+void OutputMapStub::setUniverses(QByteArray* unis)
 {
+	m_unis = unis;
 }
 
-void MasterTimerStub::startFunction(Function* function)
+QByteArray* OutputMapStub::claimUniverses()
 {
-	m_list.append(function);
+	return m_unis;
 }
 
-void MasterTimerStub::stopFunction(Function* function)
+void OutputMapStub::releaseUniverses()
 {
-	m_list.removeAll(function);
 }
 

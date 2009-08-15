@@ -23,7 +23,9 @@
 #define MASTERTIMER_STUB_H
 
 #include <QObject>
+
 #include "../mastertimer.h"
+#include "../outputmap.h"
 
 /****************************************************************************
  * MasterTimer Stub
@@ -34,7 +36,7 @@ class MasterTimerStub : public MasterTimer
 	Q_OBJECT
 
 public:
-	MasterTimerStub(QObject* parent);
+	MasterTimerStub(QObject* parent, OutputMap* outputMap = NULL);
 	~MasterTimerStub();
 
 	void startFunction(Function* function);

@@ -212,11 +212,13 @@ void OutputMap::setValue(t_channel channel, t_value value)
 
 QByteArray* OutputMap::claimUniverses()
 {
+	/* WARNING: If considering mutex usage, take a look at EFX::stop() */
 	return m_universeArray;
 }
 
 void OutputMap::releaseUniverses()
 {
+	/* WARNING: If considering mutex usage, take a look at EFX::stop() */
 	m_universeChanged = true;
 }
 

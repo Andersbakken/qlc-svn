@@ -141,10 +141,10 @@ public:
 	void setValue(t_channel channel, t_value value);
 
 	/** Take exclusive access to all universes */
-	QByteArray* claimUniverses();
+	virtual QByteArray* claimUniverses();
 
 	/** Release exclusive access to all universes */
-	void releaseUniverses();
+	virtual void releaseUniverses();
 
 	/** Write all universes' data to their plugins */
 	void dumpUniverses();
