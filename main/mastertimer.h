@@ -32,6 +32,7 @@ class Function;
 class MasterTimer : public QThread
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(MasterTimer)
 
 	/*********************************************************************
 	 * Initialization
@@ -48,12 +49,6 @@ public:
 
 	/** Destroy a MasterTimer instance */
 	virtual ~MasterTimer();
-
-	/** Initialize the MasterTimer prior to starting it. */
-	void init();
-
-private:
-	Q_DISABLE_COPY(MasterTimer)
 
 	/*********************************************************************
 	 * Functions

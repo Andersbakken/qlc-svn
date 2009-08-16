@@ -74,13 +74,15 @@ STUBHEADERS += mastertimer_stub.h \
 		scene_stub.h \
 		outputplugin_stub.h \
 		inputplugin_stub.h \
-		outputmap_stub.h
+		outputmap_stub.h \
+		function_stub.h
 
 STUBSOURCES += mastertimer_stub.cpp \
 		scene_stub.cpp \
 		outputplugin_stub.cpp \
 		inputplugin_stub.cpp \
-		outputmap_stub.cpp
+		outputmap_stub.cpp \
+		function_stub.cpp
 
 HEADERS = bus_test.h \
 	  fixture_test.h \
@@ -96,6 +98,7 @@ HEADERS = bus_test.h \
 	  inputpatch_test.h \
 	  outputmap_test.h \
 	  inputmap_test.h \
+	  mastertimer_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS \
@@ -115,9 +118,11 @@ SOURCES = bus_test.cpp \
 	  inputpatch_test.cpp \
 	  outputmap_test.cpp \
 	  inputmap_test.cpp \
+	  mastertimer_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \
 	  $$ENGINESOURCES \
 	  $$COMMONSOURCES \
 	  $$STUBSOURCES
+

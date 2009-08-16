@@ -23,6 +23,7 @@
 #include <QtTest>
 
 #include "scenechannel_test.h"
+#include "mastertimer_test.h"
 #include "outputpatch_test.h"
 #include "inputpatch_test.h"
 #include "scenevalue_test.h"
@@ -85,5 +86,9 @@ int main(int argc, char** argv)
 	EFX_Test efx;
 	QTest::qExec(&efx, argc, argv);
 
+	MasterTimer_Test mt;
+	QTest::qExec(&mt, argc, argv);
+
 	return 0;
 }
+

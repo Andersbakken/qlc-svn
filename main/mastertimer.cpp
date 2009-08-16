@@ -75,7 +75,10 @@ void MasterTimer::startFunction(Function* function)
 	Q_ASSERT(function != NULL);
 
 	m_functionListMutex.lock();
-	m_functionList.append(function);
+
+	if (m_functionList.contains(function) == false)
+		m_functionList.append(function);
+
 	m_functionListMutex.unlock();
 }
 
@@ -268,3 +271,4 @@ void MasterTimer::stop()
 	m_running = false;
 	wait();
 }
+
