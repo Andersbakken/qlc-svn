@@ -38,6 +38,10 @@ private slots:
 	void startStopFunction();
 	void interval();
 	void functionInitiatedStop();
+	void runMultipleFunctions();
+	void stopAll();
+	void stop();
+	void restart();
 
 	void cleanupTestCase();
 

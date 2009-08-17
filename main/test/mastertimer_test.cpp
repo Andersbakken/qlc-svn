@@ -118,8 +118,114 @@ void MasterTimer_Test::functionInitiatedStop()
 	QVERIFY(mt.runningFunctions() == 1);
 
 	fs.setReturnState(false);
-	usleep(1000000);
+	usleep(500000);
 	QVERIFY(mt.runningFunctions() == 0);
+}
+
+void MasterTimer_Test::runMultipleFunctions()
+{
+	MasterTimer mt(this, m_oms);
+	mt.start();
+
+	Function_Stub fs1(this);
+	fs1.start(&mt);
+	QVERIFY(mt.runningFunctions() == 1);
+
+	Function_Stub fs2(this);
+	fs2.start(&mt);
+	QVERIFY(mt.runningFunctions() == 2);
+
+	Function_Stub fs3(this);
+	fs3.start(&mt);
+	QVERIFY(mt.runningFunctions() == 3);
+
+	fs1.setReturnState(false);
+	fs2.setReturnState(false);
+	fs3.setReturnState(false);
+	usleep(500000);
+	QVERIFY(mt.runningFunctions() == 0);
+}
+
+void MasterTimer_Test::stopAll()
+{
+	MasterTimer mt(this, m_oms);
+	mt.start();
+
+	Function_Stub fs1(this);
+	fs1.start(&mt);
+
+	Function_Stub fs2(this);
+	fs2.start(&mt);
+
+	Function_Stub fs3(this);
+	fs3.start(&mt);
+	QVERIFY(mt.runningFunctions() == 3);
+
+	mt.stopAll();
+	QVERIFY(mt.runningFunctions() == 0);
+}
+
+void MasterTimer_Test::stop()
+{
+	MasterTimer mt(this, m_oms);
+	mt.start();
+
+	Function_Stub fs1(this);
+	fs1.start(&mt);
+
+	Function_Stub fs2(this);
+	fs2.start(&mt);
+
+	Function_Stub fs3(this);
+	fs3.start(&mt);
+	QVERIFY(mt.runningFunctions() == 3);
+
+	mt.stop();
+	QVERIFY(mt.runningFunctions() == 0);
+	QVERIFY(mt.m_running == false);
+}
+
+void MasterTimer_Test::restart()
+{
+	MasterTimer mt(this, m_oms);
+	mt.start();
+
+	Function_Stub fs1(this);
+	fs1.start(&mt);
+
+	Function_Stub fs2(this);
+	fs2.start(&mt);
+
+	Function_Stub fs3(this);
+	fs3.start(&mt);
+	QVERIFY(mt.runningFunctions() == 3);
+
+	mt.stop();
+	QVERIFY(mt.runningFunctions() == 0);
+	QVERIFY(mt.m_functionList.size() == 0);
+	QVERIFY(mt.m_functionListMutex.tryLock() == true);
+	mt.m_functionListMutex.unlock();
+	QVERIFY(mt.outputMap() == m_oms);
+	QVERIFY(mt.m_outputMap == m_oms);
+	QVERIFY(mt.m_running == false);
+	QVERIFY(mt.m_stopAll == false);
+
+	mt.start();
+	QVERIFY(mt.runningFunctions() == 0);
+	QVERIFY(mt.m_functionList.size() == 0);
+	QVERIFY(mt.m_functionListMutex.tryLock() == true);
+	mt.m_functionListMutex.unlock();
+	QVERIFY(mt.outputMap() == m_oms);
+	QVERIFY(mt.m_outputMap == m_oms);
+	QVERIFY(mt.m_running == true);
+	QVERIFY(mt.m_stopAll == false);
+
+	fs1.start(&mt);
+	fs2.start(&mt);
+	fs3.start(&mt);
+	QVERIFY(mt.runningFunctions() == 3);
+
+	mt.stopAll();
 }
 
 void MasterTimer_Test::cleanupTestCase()
