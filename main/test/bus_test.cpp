@@ -163,6 +163,36 @@ void Bus_Test::loadWrongID()
 	QVERIFY(Bus::instance()->name(0) == "Foo");
 }
 
+void Bus_Test::save()
+{
+	quint32 i;
+
+	for (i = 0; i < Bus::count(); i++)
+	{
+		Bus::instance()->setName(i, QString("Bus %1").arg(i));
+		Bus::instance()->setValue(i, Bus::count() - i);
+	}
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("TestRoot");
+
+	QVERIFY(Bus::instance()->saveXML(&doc, &root) == true);
+	QDomNode node = root.firstChild();
+	for (i = 0; i < Bus::count(); i++)
+	{
+		QDomElement e = node.toElement();
+		QVERIFY(e.attribute("ID").toUInt() == i);
+
+		QVERIFY(e.firstChild().toElement().text()
+						== Bus::instance()->name(i));
+
+		QVERIFY(e.firstChild().nextSibling().toElement().text().toUInt()
+						== Bus::instance()->value(i));
+
+		node = node.nextSibling();
+	}
+}
+
 void Bus_Test::cleanupTestCase()
 {
 	QVERIFY(Bus::instance() != NULL);

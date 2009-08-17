@@ -44,6 +44,7 @@ private slots:
 	void loadWrongUniverse();
 	void loadWrongID();
 	void loader();
+	void save();
 
 private:
 	QLCFixtureDefCache m_fixtureDefCache;

@@ -38,6 +38,7 @@ private slots:
 	void loadWrongRoot();
 	void load();
 	void loadWrongID();
+	void save();
 
 	void cleanupTestCase();
 };

@@ -612,3 +612,112 @@ void Fixture_Test::loader()
 
 	delete qlcdoc;
 }
+
+void Fixture_Test::save()
+{
+	const QLCFixtureDef* fixtureDef;
+	fixtureDef = m_fixtureDefCache.fixtureDef("Martin", "MAC250+");
+	Q_ASSERT(fixtureDef != NULL);
+
+	const QLCFixtureMode* fixtureMode;
+	fixtureMode = fixtureDef->modes().at(0);
+	Q_ASSERT(fixtureMode != NULL);
+
+	Fixture fxi(this);
+	fxi.setID(1337);
+	fxi.setName("Test Fixture");
+	fxi.setUniverse(2);
+	fxi.setAddress(438);
+	fxi.setFixtureDefinition(fixtureDef, fixtureMode);
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("TestRoot");
+	QVERIFY(fxi.saveXML(&doc, &root) == true);
+	QDomNode node = root.firstChild();
+	QVERIFY(node.toElement().tagName() == "Fixture");
+
+	bool manufacturer = false, model = false, mode = false, name = false,
+		channels = false, universe = false, address = false, id = false;
+
+	node = node.firstChild();
+	while (node.isNull() == false)
+	{
+		QDomElement e = node.toElement();
+		
+		if (e.tagName() == "Manufacturer")
+		{
+			QVERIFY(e.text() == "Martin");
+			manufacturer = true;
+		}
+		else if (e.tagName() == "Model")
+		{
+			QVERIFY(e.text() == "MAC250+");
+			model = true;
+		}
+		else if (e.tagName() == "Mode")
+		{
+			QVERIFY(e.text() == fixtureMode->name());
+			mode = true;
+		}
+		else if (e.tagName() == "ID")
+		{
+			QVERIFY(e.text() == "1337");
+			id = true;
+		}
+		else if (e.tagName() == "Name")
+		{
+			QVERIFY(e.text() == "Test Fixture");
+			name = true;
+		}
+		else if (e.tagName() == "Universe")
+		{
+			QVERIFY(e.text() == "2");
+			universe = true;
+		}
+		else if (e.tagName() == "Address")
+		{
+			QVERIFY(e.text() == "438");
+			address = true;
+		}
+		else if (e.tagName() == "Channels")
+		{
+			QVERIFY(e.text().toInt()
+					== fixtureMode->channels().count());
+			channels = true;
+		}
+		else
+		{
+			QFAIL(QString("Unexpected tag: %1").arg(e.tagName())
+				.toAscii());
+		}
+
+		node = node.nextSibling();
+	}
+
+	QVERIFY(manufacturer == true);
+	QVERIFY(model == true);
+	QVERIFY(mode == true);
+	QVERIFY(id == true);
+	QVERIFY(name == true);
+	QVERIFY(universe == true);
+	QVERIFY(address == true);
+	QVERIFY(channels == true);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
