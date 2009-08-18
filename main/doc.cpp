@@ -123,7 +123,7 @@ bool Doc::addFixture(Fixture* fixture, t_fixture_id id)
 	if (m_fixtureAllocation == KFixtureArraySize)
 		return false;
 
-	if (id == KNoID)
+	if (id == Fixture::invalidId())
 	{
 		/* Find the next free slot for a new fixture */
 		for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
@@ -274,7 +274,7 @@ bool Doc::addFunction(Function* function, t_function_id id)
 		return false;
 	}
 
-	if (id == KNoID)
+	if (id == Function::invalidId())
 	{
 		/**
 		 * Find the next free space from function array.

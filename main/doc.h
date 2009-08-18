@@ -93,19 +93,20 @@ public:
 	 *********************************************************************/
 public:
 	/**
-	 * Add the given fixture to doc's fixture array. If id == KNoID,
-	 * doc assigns the fixture a new ID and takes ownership, unless there
-	 * is no more room for more fixtures.
+	 * Add the given fixture to doc's fixture array.
+	 * If id == Fixture::invalidId(), doc assigns the fixture a new ID and
+	 * takes ownership, unless there is no more room for more fixtures.
 	 *
-	 * If id != KNoID, doc attempts to put the fixture at that exact index,
-	 * unless another fixture already has the same id.
+	 * If id != Fixture::invalidId(), doc attempts to put the fixture at
+	 * that exact index, unless another fixture already occupies it.
 	 *
 	 * @param fixture The fixture to add
 	 * @param id The requested ID for the fixture
 	 * @return true if the fixture was successfully added to doc,
 	 *         otherwise false.
 	 */
-	bool addFixture(Fixture* fixture, t_fixture_id id = KNoID);
+	bool addFixture(Fixture* fixture,
+			t_fixture_id id = Fixture::invalidId());
 
 	/**
 	 * Delete the given fixture instance from Doc
@@ -176,19 +177,20 @@ signals:
 	 *********************************************************************/
 public:
 	/**
-	 * Add the given function to doc's function array. If id == KNoID,
-	 * doc assigns the function a new ID and takes ownership, unless there
-	 * is no more room for more functions.
+	 * Add the given function to doc's function array.
+	 * If id == Function::invalidId(), doc assigns the function a new ID
+	 * and takes ownership, unless there is no more room for more functions.
 	 *
-	 * If id != KNoID, doc attempts to put the function at that exact index,
-	 * unless another function already has the same id.
+	 * If id != Function::invalidId(), doc attempts to put the function at
+	 * that exact index, unless another function already occupies it.
 	 *
 	 * @param function The function to add
 	 * @param id The requested ID for the function
 	 * @return true if the function was successfully added to doc,
 	 *         otherwise false.
 	 */
-	bool addFunction(Function* function, t_function_id id = KNoID);
+	bool addFunction(Function* function,
+			 t_function_id id = Function::invalidId());
 
 	/**
 	 * Get the number of functions currently present/allocated

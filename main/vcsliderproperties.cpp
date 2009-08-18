@@ -475,7 +475,7 @@ void VCSliderProperties::levelUpdateChannelSelections()
 		QTreeWidgetItem* fxiNode;
 		QTreeWidgetItem* chNode;
 
-		t_fixture_id fxi_id = KNoID;
+		t_fixture_id fxi_id = Fixture::invalidId();
 		t_channel ch = 0;
 
 		VCSlider::splitCombinedValue(it.next(), &fxi_id, &ch);

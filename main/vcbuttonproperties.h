@@ -28,6 +28,7 @@
 #include "common/qlctypes.h"
 #include "ui_vcbuttonproperties.h"
 #include "vcbutton.h"
+#include "function.h"
 
 class FunctionManager;
 class KeyBind;
@@ -45,7 +46,7 @@ private:
 
 protected slots:
 	void slotAttachFunction();
-	void slotSetFunction(t_function_id fid = KNoID);
+	void slotSetFunction(t_function_id fid = Function::invalidId());
 
 	void slotAttachKey();
 	void slotDetachKey();

@@ -64,7 +64,7 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	setObjectName(VCButton::staticMetaObject.className());
 
 	/* No function is initially attached to the button */
-	m_function = KNoID;
+	m_function = Function::invalidId();
 
 	setCaption(QString::null);
 	setOn(false);
@@ -89,7 +89,7 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 	resize(QPoint(30, 30));
 
 	setStyle(App::saneStyle());
-	
+
 	/* Listen to function removals */
 	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
 		this, SLOT(slotFunctionRemoved(t_function_id)));
@@ -569,7 +569,7 @@ void VCButton::setFunction(t_function_id fid)
 	else
 	{
 		/* No function attachment */
-		m_function = KNoID;
+		m_function = Function::invalidId();
 		setToolTip(QString::null);
 	}
 }
@@ -578,7 +578,7 @@ void VCButton::slotFunctionRemoved(t_function_id fid)
 {
 	/* Invalidate the button's function if it's the one that was removed */
 	if (fid == m_function)
-		setFunction(KNoID);
+		setFunction(Function::invalidId());
 }
 
 /*****************************************************************************

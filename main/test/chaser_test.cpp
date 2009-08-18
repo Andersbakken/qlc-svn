@@ -45,7 +45,7 @@ void Chaser_Test::initial()
 	QVERIFY(c.steps().size() == 0);
 	QVERIFY(c.direction() == Chaser::Forward);
 	QVERIFY(c.runOrder() == Chaser::Loop);
-	QVERIFY(c.id() == KNoID);
+	QVERIFY(c.id() == Function::invalidId());
 }
 
 void Chaser_Test::directionRunOrder()
@@ -484,7 +484,7 @@ void Chaser_Test::createCopy()
 	c1->addStep(40);
 
 	doc.addFunction(c1);
-	QVERIFY(c1->id() != KNoID);
+	QVERIFY(c1->id() != Function::invalidId());
 
 	Function* f = c1->createCopy(&doc);
 	QVERIFY(f != NULL);

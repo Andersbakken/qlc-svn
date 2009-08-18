@@ -80,7 +80,7 @@ SceneValue::~SceneValue()
 
 bool SceneValue::isValid()
 {
-	if (fxi == KNoID)
+	if (fxi == Fixture::invalidId())
 		return false;
 	else
 		return true;
@@ -522,7 +522,7 @@ void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
 
 	for (int i = 0; i < m_values.count(); i++)
 	{
-		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
+		if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
 		{
 			t_channel addr = m_armedChannels[i].address;
 			universes->data()[addr] = m_values[i].value;
@@ -536,7 +536,7 @@ void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
 
 	for (int i = 0; i < m_values.count(); i++)
 	{
-		if (fxi_id == KNoID || m_values[i].fxi == fxi_id)
+		if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
 		{
 			t_channel addr = m_armedChannels[i].address;
 			universes->data()[addr] = 0;

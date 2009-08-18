@@ -39,7 +39,7 @@ extern App* _app;
 MonitorFixture::MonitorFixture(QWidget* parent) : QFrame(parent)
 {
 	m_fixtureLabel = NULL;
-	m_fixture = KNoID;
+	m_fixture = Fixture::invalidId();
 
 	new QGridLayout(this);
 	layout()->setMargin(3);
@@ -201,7 +201,7 @@ void MonitorFixture::updateValues(const QByteArray& universes)
 	int i = 0;
 
 	/* Check that this MonitorFixture represents a fixture */
-	if (m_fixture == KNoID)
+	if (m_fixture == Fixture::invalidId())
 		return;
 
 	/* Check that this MonitorFixture's fixture really exists */

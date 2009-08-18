@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QMap>
 
+#include "../fixture.h"
 #include "../scene.h"
 
 /****************************************************************************
@@ -40,7 +41,8 @@ public:
 	~SceneStub();
 
 	void setValue(t_channel address, t_value value);
-	void writeValues(QByteArray* universes, t_fixture_id fxi_id = KNoID);
+	void writeValues(QByteArray* universes,
+			 t_fixture_id fxi_id = Fixture::invalidId());
 
 	QMap <t_channel,t_value> m_values;
 };

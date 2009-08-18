@@ -1,4 +1,4 @@
- /*
+/*
   Q Light Controller
   fixtureconsole.cpp
 
@@ -30,6 +30,7 @@
 #include "fixtureconsole.h"
 #include "consolechannel.h"
 #include "inputmap.h"
+#include "fixture.h"
 #include "app.h"
 #include "doc.h"
 
@@ -41,7 +42,7 @@ extern App* _app;
 
 FixtureConsole::FixtureConsole(QWidget* parent) : QWidget(parent)
 {
-	m_fixture = KNoID;
+	m_fixture = Fixture::invalidId();
 	m_channelsCheckable = false;
 	m_externalInputEnabled = false;
 
@@ -79,7 +80,7 @@ void FixtureConsole::setFixture(t_fixture_id id)
 
 		connect(cc, SIGNAL(valueChanged(t_channel,t_value,bool)),
 			this, SLOT(slotValueChanged(t_channel,t_value,bool)));
-		
+
 		m_channels.append(cc);
 	}
 

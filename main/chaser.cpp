@@ -509,7 +509,7 @@ void Chaser::startMemberAt(int index)
 	Q_ASSERT(doc != NULL);
 
 	t_function_id fid = m_steps.at(index);
-	Q_ASSERT(fid != KNoID);
+	Q_ASSERT(fid != Function::invalidId());
 
   	Function* function = doc->function(fid);
 	Q_ASSERT(function != NULL);
@@ -523,7 +523,7 @@ void Chaser::stopMemberAt(int index)
 	Q_ASSERT(doc != NULL);
 
 	t_function_id fid = m_steps.at(index);
-	Q_ASSERT(fid != KNoID);
+	Q_ASSERT(fid != Function::invalidId());
 
 	Function* function = doc->function(fid);
 	Q_ASSERT(function != NULL);

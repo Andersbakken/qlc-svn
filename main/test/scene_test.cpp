@@ -42,7 +42,7 @@ void Scene_Test::initial()
 	QVERIFY(s.type() == Function::Scene);
 	QVERIFY(s.name() == "New Scene");
 	QVERIFY(s.values().size() == 0);
-	QVERIFY(s.id() == KNoID);
+	QVERIFY(s.id() == Function::invalidId());
 }
 
 void Scene_Test::values()
@@ -320,7 +320,7 @@ void Scene_Test::createCopy()
 	s1->setValue(7, 8, 9);
 
 	doc.addFunction(s1);
-	QVERIFY(s1->id() != KNoID);
+	QVERIFY(s1->id() != Function::invalidId());
 
 	Function* f = s1->createCopy(&doc);
 	QVERIFY(f != NULL);

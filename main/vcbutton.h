@@ -212,7 +212,8 @@ public:
 	/**
 	 * Get the ID of the function attached to a VCButton
 	 *
-	 * @return The ID of the attached function or KNoID if there isn't one
+	 * @return The ID of the attached function or Function::invalidId()
+	 *         if there isn't one
 	 */
 	t_function_id function() const { return m_function; }
 

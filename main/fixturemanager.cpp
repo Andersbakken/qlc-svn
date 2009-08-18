@@ -282,8 +282,8 @@ void FixtureManager::initDataView()
 void FixtureManager::updateView()
 {
 	QTreeWidgetItem* item;
-	t_fixture_id currentId = KNoID;
-	t_fixture_id id = KNoID;
+	t_fixture_id currentId = Fixture::invalidId();
+	t_fixture_id id = Fixture::invalidId();
 	Fixture* fxt = NULL;
 
 	// Store the currently selected fixture's ID
@@ -312,7 +312,7 @@ void FixtureManager::updateView()
 	}
 
 	/* Select the first fixture unless something else is wanted */
-	if (currentId == KNoID)
+	if (currentId == Fixture::invalidId())
 		m_tree->setCurrentItem(m_tree->topLevelItem(0));
 }
 

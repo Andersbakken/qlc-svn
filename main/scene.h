@@ -121,7 +121,7 @@ public:
 	/** Destructor */
 	~SceneValue();
 
-	/** A SceneValue is not valid if .fxi == KNoID */
+	/** A SceneValue is not valid if .fxi == Fixture::invalidId() */
 	bool isValid();
 
 	/** Comparator function for qSort() */
@@ -274,7 +274,7 @@ public:
 	 * otherwise nothing will be written.
 	 */
 	virtual void writeValues(QByteArray* universes,
-				 t_fixture_id fxi_id = KNoID);
+				 t_fixture_id fxi_id = Fixture::invalidId());
 
 	/**
 	 * Write zeros for all involved channels to OutputMap. If fxi_id is
@@ -284,7 +284,7 @@ public:
 	 * otherwise nothing will be written.
 	 */
 	virtual void writeZeros(QByteArray* universes,
-				t_fixture_id fxi_id = KNoID);
+				t_fixture_id fxi_id = Fixture::invalidId());
 
 	/** Get a list of channels that have been armed for running */
 	QList <SceneChannel> armedChannels() const { return m_armedChannels; }

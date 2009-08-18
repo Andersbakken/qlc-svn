@@ -58,7 +58,7 @@ const QString KForwardString    (    "Forward" );
 
 Function::Function(QObject* parent) : QObject(parent)
 {
-	m_id = KNoID;
+	m_id = Function::invalidId();
 	m_name = QString::null;
 	m_runOrder = Loop;
 	m_direction = Forward;

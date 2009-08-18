@@ -43,7 +43,7 @@ void Collection_Test::initial()
 	QVERIFY(c.type() == Function::Collection);
 	QVERIFY(c.name() == "New Collection");
 	QVERIFY(c.functions().size() == 0);
-	QVERIFY(c.id() == KNoID);
+	QVERIFY(c.id() == Function::invalidId());
 }
 
 void Collection_Test::functions()
@@ -296,7 +296,7 @@ void Collection_Test::createCopy()
 	c1->addFunction(40);
 
 	doc.addFunction(c1);
-	QVERIFY(c1->id() != KNoID);
+	QVERIFY(c1->id() != Function::invalidId());
 
 	Function* f = c1->createCopy(&doc);
 	QVERIFY(f != NULL);

@@ -70,10 +70,10 @@ EFX::EFX(QObject* parent) : Function(parent)
 
 	m_propagationMode = Parallel;
 
-	m_startSceneID = KNoID;
+	m_startSceneID = Function::invalidId();
 	m_startSceneEnabled = false;
 
-	m_stopSceneID = KNoID;
+	m_stopSceneID = Function::invalidId();
 	m_stopSceneEnabled = false;
 
 	m_algorithm = KCircleAlgorithmName;
@@ -575,7 +575,7 @@ EFX::PropagationMode EFX::stringToPropagationMode(QString str)
 
 void EFX::setStartScene(t_function_id scene)
 {
-	if (scene > KNoID && scene < KFunctionArraySize)
+	if (scene > Function::invalidId() && scene < KFunctionArraySize)
 	{
 		m_startSceneID = scene;
 	}
@@ -606,7 +606,7 @@ bool EFX::startSceneEnabled() const
 
 void EFX::setStopScene(t_function_id scene)
 {
-	if (scene > KNoID && scene < KFunctionArraySize)
+	if (scene > Function::invalidId() && scene < KFunctionArraySize)
 	{
 		m_stopSceneID = scene;
 	}
@@ -639,7 +639,7 @@ void EFX::slotFunctionRemoved(t_function_id id)
 {
 	if (id == m_startSceneID)
 	{
-		m_startSceneID = KNoID;
+		m_startSceneID = Function::invalidId();
 		m_startSceneEnabled = false;
 		emit changed(m_id);
 	}
@@ -647,7 +647,7 @@ void EFX::slotFunctionRemoved(t_function_id id)
 	/* No "else" because the same function might be both start & stop */
 	if (id == m_stopSceneID)
 	{
-		m_stopSceneID = KNoID;
+		m_stopSceneID = Function::invalidId();
 		m_stopSceneEnabled = false;
 		emit changed(m_id);
 	}
@@ -851,7 +851,7 @@ bool EFX::loadXML(const QDomElement* root)
 		{
 			EFXFixture* ef = new EFXFixture(this);
 			ef->loadXML(&tag);
-			if (ef->fixture() != KNoID)
+			if (ef->fixture() != Fixture::invalidId())
 			{
 				if (addFixture(ef) == false)
 					delete ef;
@@ -1104,14 +1104,20 @@ void EFX::arm()
 	Q_ASSERT(doc != NULL);
 
 	/* Initialization scene */
-	if (m_startSceneID != KNoID && m_startSceneEnabled == true)
+	if (m_startSceneID != Function::invalidId() &&
+	    m_startSceneEnabled == true)
+	{
 		startScene = static_cast <class Scene*>
 			(doc->function(m_startSceneID));
+	}
 
 	/* De-initialization scene */
-	if (m_stopSceneID != KNoID && m_stopSceneEnabled == true)
+	if (m_stopSceneID != Function::invalidId() &&
+	    m_stopSceneEnabled == true)
+	{
 		stopScene = static_cast <class Scene*>
 			(doc->function(m_stopSceneID));
+	}
 
 	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)

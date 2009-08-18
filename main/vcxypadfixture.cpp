@@ -42,7 +42,7 @@ extern App* _app;
 
 VCXYPadFixture::VCXYPadFixture()
 {
-	m_fixture = KNoID;
+	m_fixture = Fixture::invalidId();
 
 	m_xMin = 0;
 	m_xMax = 1;
@@ -161,7 +161,7 @@ void VCXYPadFixture::setFixture(t_fixture_id fxi_id)
 QString VCXYPadFixture::name() const
 {
 	static QString null = QString::null;
-	if (m_fixture == KNoID)
+	if (m_fixture == Fixture::invalidId())
 		return null;
 
 	Fixture* fxi = _app->doc()->fixture(m_fixture);

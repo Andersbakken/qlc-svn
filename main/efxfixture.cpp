@@ -36,7 +36,7 @@ EFXFixture::EFXFixture(EFX* parent)
 	Q_ASSERT(parent != NULL);
 	m_parent = parent;
 
-	m_fixture = KNoID;
+	m_fixture = Fixture::invalidId();
 	m_serialNumber = 0;
 	m_direction = Function::Forward;
 	m_runTimeDirection = Function::Forward;
@@ -257,7 +257,8 @@ void EFXFixture::updateSkipThreshold()
 bool EFXFixture::isValid()
 {
 	if (m_msbPanChannel != KChannelInvalid &&
-	    m_msbTiltChannel != KChannelInvalid && m_fixture != KNoID)
+	    m_msbTiltChannel != KChannelInvalid &&
+	    m_fixture != Fixture::invalidId())
 	{
 		return true;
 	}

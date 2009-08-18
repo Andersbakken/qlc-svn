@@ -51,7 +51,7 @@ void EFX_Test::initial()
 	EFX e(this);
 	QVERIFY(e.type() == Function::EFX);
 	QVERIFY(e.name() == "New EFX");
-	QVERIFY(e.id() == KNoID);
+	QVERIFY(e.id() == Function::invalidId());
 	QVERIFY(e.pointFunc == NULL);
 
 	QVERIFY(e.algorithm() == "Circle");
@@ -1564,7 +1564,7 @@ void EFX_Test::createCopy()
 	e1->addFixture(ef2);
 
 	doc.addFunction(e1);
-	QVERIFY(e1->id() != KNoID);
+	QVERIFY(e1->id() != Function::invalidId());
 
 	Function* f = e1->createCopy(&doc);
 	QVERIFY(f != NULL);

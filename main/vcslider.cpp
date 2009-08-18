@@ -523,7 +523,7 @@ t_value VCSlider::levelHighLimit()
 void VCSlider::setLevelValue(t_value value)
 {
 	Fixture* fxi = NULL;
-	t_fixture_id fxi_id = KNoID;
+	t_fixture_id fxi_id = Fixture::invalidId();
 	t_channel ch = 0;
 	int dmx_ch = 0;
 
@@ -868,7 +868,7 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	QDomElement chtag;
 	QDomText text;
 	QString str;
-	t_fixture_id fxi_id = KNoID;
+	t_fixture_id fxi_id = Fixture::invalidId();
 	t_channel ch = 0;
 
 	Q_ASSERT(doc != NULL);

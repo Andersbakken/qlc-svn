@@ -58,7 +58,7 @@ public:
 	 */
 	FunctionSelection(QWidget* parent,
 			  bool multiple,
-			  t_function_id disableFunction = KNoID,
+			  t_function_id disableFunction = Function::invalidId(),
 			  int filter = Function::Scene | Function::Chaser |
 				       Function::EFX | Function::Collection,
 			  bool constFilter = false);
