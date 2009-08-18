@@ -43,6 +43,14 @@ Description: Input plugin supporting MIDI devices
   Input plugin for Q Light Controller that enables input data from
   external MIDI controller devices (for example Behringer BCF2000).
 
+Package: qlc-input-enttec-wing
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Input plugin supporting ENTTEC wings
+  Input plugin for Q Light Controller that enables input data from
+  ENTTEC Shortcut, Playback and Program wings.
+
 Package: qlc-output-dmx4linux
 Section: Other
 Architecture: any
