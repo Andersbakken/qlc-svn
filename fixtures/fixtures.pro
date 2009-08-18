@@ -82,6 +82,7 @@ fixtures.files += Martin-EFX-600.qxf
 fixtures.files += Martin-EFX-700.qxf
 fixtures.files += Martin-EFX-800.qxf
 fixtures.files += Martin-MAC250plus.qxf
+fixtures.files += Martin-MAC300.qxf
 fixtures.files += Martin-MiniMAC-Maestro.qxf
 fixtures.files += Martin-MiniMAC-Profile.qxf
 fixtures.files += Martin-MiniMAC-Wash.qxf
