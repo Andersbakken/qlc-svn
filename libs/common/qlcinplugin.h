@@ -34,6 +34,51 @@ class QObject;
  * InputPlugin
  *****************************************************************************/
 
+/**
+ * QLCInPlugin is an interface for all input plugins. Input plugins provide
+ * input data from various (external) gadgets, such as slider wings, for
+ * example.
+ *
+ * Each plugin can be understood as an adaptation layer between QLC and a
+ * protocol used by a certain family of input devices. For example, a MIDI
+ * input plugin can provide input support for a multitude of various MIDI
+ * devices. Each of the devices currently connected to the computer can then
+ * be represented as a separate input line by the MIDI plugin. Each plugin
+ * must provide at least one input line for QLC in order to work properly.
+ * Then again, if there are no such devices currently connected to the computer
+ * that would be supported by the plugin, the plugin can choose to provide no
+ * lines at all (until the user plugs in a supported device).
+ *
+ * When QLC has successfully loaded an input plugin, it will call init()
+ * exactly once for each plugin. After that, it is assumed that either the
+ * plugin auto-senses the devices it supports or the user must manually try
+ * to search for new devices thru a custom configuration dialog that can be
+ * opened with configure(). connectInputData() is also called exactly once
+ * for each plugin to make a signal-slot connection between the plugin and
+ * QLC.
+ *
+ * Plugins should not leave any resources open unless open() is called. And
+ * even then, the plugin should open only such resources that are needed for
+ * the specific input line given in the call to open(). Respectively, when
+ * close() is called, the plugin should relinquish all resources associated to
+ * the closed input line (unless shared with other lines).
+ *
+ * Plugins have a name that is shown to users as a list item. Each input
+ * line name, preceded by its index, is shown under the plugin name as a
+ * selectable list entry. Therefore, these names should be descriptive, but
+ * relatively short. Input line indices are shown on the UI as 1-based, but
+ * they are still handled internally as 0-based.
+ *
+ * An info text can be fetched for each plugin with infoText(). If the input
+ * parameter == KInputInvalid, the plugin should provide a brief status snippet
+ * on its overall state. If the input line parameter is given, the plugin
+ * should provide information concerning ONLY that particular input line.
+ * This info is displayed to the user as-is.
+ *
+ * Feedback values going the other way from QLC towards input devices is done
+ * with feedbackData(). This data can be used by the input devices for e.g.
+ * moving motorized faders to reflect their status on the QLC UI.
+ */
 class QLCInPlugin
 {
 public:
@@ -103,9 +148,10 @@ public:
 	/**
 	 * Get a list of input lines' names. The names must be always in the
 	 * same order i.e. the first name is the name of input line number 0,
-	 * the next one is input line number 1, etc..
+	 * the next one is input line number 1, etc.. These indices are used
+	 * with open() and close().
 	 *
-	 * @return Number of inputs provided by the plugin
+	 * @return A list of available input names
 	 */
 	virtual QStringList inputs() = 0;
 
@@ -116,17 +162,17 @@ public:
 	/**
 	 * Normally, if QLCInPlugin were a QObject, one would just define a
 	 * signal to QLCInPlugin that is emitted when input data is available.
-	 * It seems, however, that plugins' base interface classes cannot be
-	 * QObjects, so the basic signal-slot approach cannot be used.
+	 * It seems, however, that plugins' base interface class (QLCInPlugin)
+	 * cannot be a QObject, so the basic signal-slot approach cannot be used.
 	 *
 	 * Each input plugin implementation must:
 	 *    1. Inherit QObject and QLCInPlugin
-	 *    2. Re-implement this method and connect their plugin's signal:
+	 *    2. Re-implement this method and connect the plugin's signal:
 	 *
 	 *         valueChanged(QLCInPlugin* plugin, t_input line,
 	 *                      t_input_channel ch, t_input_value val);
 	 *
-	 * to the listener object's slot:
+	 * to the given listener object's slot:
 	 *
 	 *         slotValueChanged(QLCInPlugin* plugin, t_input line,
 	 *                          t_input_channel ch, t_input_value val);
@@ -144,7 +190,7 @@ public:
 	 * Send a value back to an input line's channel. This method can be
 	 * used for example to move motorized sliders with QLC sliders. If the
 	 * hardware /that the plugin provides access to) doesn't support this,
-	 * the function can be left empty.
+	 * the implementation can be left empty.
 	 *
 	 * @param input The input line to send feedback to
 	 * @param channel A channel in the input line to send feedback to

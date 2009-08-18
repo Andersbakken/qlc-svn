@@ -36,6 +36,14 @@ class QDomDocument;
 class QDomElement;
 class QLCCapability;
 
+/**
+ * QLCCapability represents one value range with a special meaning in a
+ * QLCChannel. For example, a sunburst gobo might be set on a "gobo" channel
+ * with any DMX value between 15 and 25. This is represented as a
+ * QLCCapability, whose min == 15, max == 25 and name == "Sunburst". Single
+ * values can be represented by setting the same value to both, for example:
+ * min == 15 and max == 15.
+ */
 class QLC_DECLSPEC QLCCapability
 {
 	/********************************************************************

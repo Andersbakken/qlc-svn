@@ -26,6 +26,49 @@
 
 #include "qlctypes.h"
 
+/**
+ * QLCOutPlugin is an interface for all output plugins. Output plugins provide
+ * the means for QLC to actually output DMX data to fixtures, using DMX hard-
+ * ware supported by various output plugins.
+ *
+ * Each plugin can be understood as an adaptation layer betwen QLC and an
+ * interconnecting protocol used by a certain family of DMX (well, any
+ * lighting protocol) dongles. For example, an FTDI output plugin provides
+ * the means for QLC to control fixtures using, for example, an ENTTEC DMX
+ * dongles. Each plugin must provide at least one output line for QLC in order
+ * to work properly. Then again, if there are no such devices currently
+ * connected to the computer that would be supported by the plugin, the plugin
+ * can choose to provide no lines at all (until the user plugs in a supported
+ * device).
+ *
+ * When QLC has successfully loaded an input plugin, it will call init()
+ * exactly once for each plugin. After that, it is assumed that either the
+ * plugin auto-senses the devices it supports or the user must manually try
+ * to search for new devices thru a custom configuration dialog that can be
+ * opened with configure().
+ *
+ * Plugins should not leave any resources open unless open() is called. And
+ * even then, the plugin should open only such resources that are needed for
+ * the specific output line given in the call to open(). Respectively, when
+ * close() is called, the plugin should relinquish all resources associated to
+ * the closed output line (unless shared with other lines).
+ *
+ * Plugins have a name that is shown to users as a list item. Each output
+ * line name, preceded by its index, is shown under the plugin name as a
+ * selectable list entry. Therefore, these names should be descriptive, but
+ * relatively short. Output line indices are shown on the UI as 1-based, but
+ * they are still handled internally as 0-based.
+ *
+ * An info text can be fetched for each plugin with infoText(). If the output
+ * parameter == KOutputInvalid, the plugin should provide a brief status snippet
+ * on its overall state. If the input line parameter is given, the plugin
+ * should provide information concerning ONLY that particular output line.
+ * This info is displayed to the user as-is.
+ *
+ * DMX data is written by QLC to plugins with writeData(). Complete 512-channel
+ * universes are written at a time. Traffic from output plugins towards QLC is
+ * not possible.
+ */
 class QLCOutPlugin
 {
 public:
@@ -104,20 +147,18 @@ public:
 	virtual QStringList outputs() = 0;
 
 	/**
-	 * Write the value of one channel. Channel numbers 0-511 are
-	 * for the first universe, 512-1023 for the second, etc...
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all output plugins.
-	 *
-	 * @param output The output (universe) to write to
-	 * @param channel The channel within that universe to write to
-	 * @param value The value to write (0-255)
+	 * @DEPRECATED
 	 */
 	virtual void writeChannel(t_output output, t_channel channel,
 				  t_value value) = 0;
 
 	/**
+	 * @DEPRECATED SOON
+	 *
+	 * @note A new method will be coming in the near future to
+	 * replace this one. The new method will most likely take
+	 * a complete 512-channel QByteArray at a time.
+	 *
 	 * Write the values of a number of channels
 	 *
 	 * This is a pure virtual function that must be implemented
@@ -133,29 +174,13 @@ public:
 				t_value* values, t_channel num) = 0;
 
 	/**
-	 * Get the value of one channel. Channel numbers 0-511 are
-	 * for the first universe, 512-1023 for the second, etc...
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all output plugins.
-	 *
-	 * @param output The output (universe) to read from
-	 * @param channel The channel to read
-	 * @param value A pointer to hold the read value
+	 * @DEPRECATED
 	 */
 	virtual void readChannel(t_output output, t_channel channel,
 				 t_value* value) = 0;
 
 	/**
-	 * Read the values of a number of channels.
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all output plugins.
-	 *
-	 * @param output The output (universe) to read from
-	 * @param address The starting address to start reading from
-	 * @param values An array that holds the read values
-	 * @param num The size of values array
+	 * @DEPRECATED
 	 */
 	virtual void readRange(t_output output, t_channel address,
 			       t_value* values, t_channel num) = 0;

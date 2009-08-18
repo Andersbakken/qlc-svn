@@ -53,6 +53,21 @@ class QStringList;
 class QLCCapability;
 class QLCChannel;
 
+/**
+ * QLCChannel represents one DMX channel with one or more DMX value ranges,
+ * represented by QLCCapability instances. For example, the DMX channel used to
+ * set gobos to a fixture is represented by a QLCChannel that contains one
+ * capability for each gobo value range. QLCChannels can also have a name for
+ * making it easier for users to understand their purpose, a group to provide
+ * additional (and more formal) data about the channel's use (for example pan
+ * and tilt for QLC's EFX function) as well as a control byte to signify the
+ * bit depth of the channel (16bit pan & tilt, mostly).
+ *
+ * QLCChannels themselves don't have channel numbers assigned to them, because
+ * the same channel might be present at different locations in different
+ * fixture modes. Instead, a QLCFixtureMode defines the actual channel number
+ * for each of its QLCChannels.
+ */
 class QLC_DECLSPEC QLCChannel
 {
 public:

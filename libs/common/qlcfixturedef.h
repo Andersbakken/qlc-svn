@@ -49,6 +49,25 @@ class QLCChannel;
 class QLCFixtureMode;
 class QLCFixtureDef;
 
+/**
+ * QLCFixtureDef represents exactly one fixture, identified by its manufacturer
+ * and model names. Each fixture definition has also a type that describes
+ * roughly the fixture's purpose (moving head, scanner, flower etc).
+ *
+ * A QLCFixtureDef houses all of its QLCChannel entries in a non-ordered pool.
+ * Each QLCFixtureMode picks their channels from this channel pool and arranges
+ * them in such an order that represents each mode (channel and physical
+ * configuration) of the fixture.
+ *
+ * The same channel instance cannot exist multiple times in a QLCFixtureDef,
+ * but it is still possible to create two channel instances with the same name
+ * and apparent content. The same rules apply to QLCFixtureModes within a
+ * QLCFixtureDef.
+ *
+ * QLCFixtureDef owns the channel instances and deletes them when it is deleted
+ * itself. QLCFixtureModes do not delete their channels because they might be
+ * shared between multiple modes.
+ */
 class QLC_DECLSPEC QLCFixtureDef
 {
 public:
@@ -107,8 +126,11 @@ public:
 	/** Search for a channel by its name */
 	QLCChannel* channel(const QString& name);
 
-	/** Get all channels in this fixture. Changes to the list won't end
-	    up into the fixture definition. */
+	/**
+	 * Get all channels in this fixture. Changes to the list won't end
+	 * up into the fixture definition. This list does not represent the actual
+	 * channel order for the fixture; use QLCFixtureMode for that.
+	 */
 	QList <QLCChannel*> channels() const { return m_channels; }
 
 protected:
@@ -133,7 +155,7 @@ public:
 	QList <QLCFixtureMode*> modes() const { return m_modes; }
 
 protected:
-	/** Modes (i.e. particular collections of channels) */
+	/** Modes (i.e. ordered collections of channels) */
 	QList <QLCFixtureMode*> m_modes;
 
 	/*********************************************************************

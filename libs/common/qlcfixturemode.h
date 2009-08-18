@@ -42,6 +42,26 @@ class QLCFixtureDef;
 class QLCPhysical;
 class QLCChannel;
 
+/**
+ * QLCFixtureMode is essentially a collection of QLCChannels, arranged in such
+ * order that they represent the channel configuration of an actual fixture.
+ * Damn that sentence was hard to formulate... In many simple cases, fixtures
+ * have only one mode and therefore a separate QLCFixtureMode is rather useless.
+ * However, since many fixtures DO use different modes (16bit & 8bit movement
+ * modes have a different number of channels etc..) this class is very much
+ * needed to prevent the need for having to create a separate definition files
+ * for each different mode. To ease the user in selecting the proper mode,
+ * each mode can also have a name.
+ *
+ * Since fixture modes represent different settings for a fixture, it is only
+ * natural to assume that also the physical properties of a fixture can be
+ * changed. Therefore, each QLCFixtureMode contains also a QLCPhysical object
+ * that defines the physical properties of a fixture in a certain mode.
+ *
+ * QLCFixtureDef owns the channel instances and deletes them when it is deleted
+ * itself. QLCFixtureModes do not delete their channels because they might be
+ * shared between multiple modes.
+ */
 class QLC_DECLSPEC QLCFixtureMode
 {
 public:

@@ -51,6 +51,11 @@ class QDomDocument;
 #define KXMLQLCPhysicalFocusPanMax "PanMax"
 #define KXMLQLCPhysicalFocusTiltMax "TiltMax"
 
+/**
+ * QLCPhysical represents the physical properties of a fixture (in a certain
+ * mode). These properties include weight, dimensions, light source, lens,
+ * movement capabilities and beam width.
+ */
 class QLC_DECLSPEC QLCPhysical
 {
 public:
