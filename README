@@ -51,6 +51,7 @@ Requirements - Linux
 * FTDIDMX Output plugin: No additional requirements
 * HID Input plugin: No additional requirements
 * MIDI Input plugin: libasound, libasound-dev, pkg-config
+* ENTTEC Wing Input plugin: No additional requirements
 * MIDI Output plugin: libasound, libasound-dev, pkg-config
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: libusb, libusb-dev
@@ -63,6 +64,7 @@ Requirements - Windows
 * FTDIDMX Output plugin: No additional requirements
 * HID Input plugin: Not available for Windows
 * MIDI Input plugin: No additional requirements
+* ENTTEC Wing Input plugin: No additional requirements
 * MIDI Output plugin: No additional requirements
 * LLA Output plugin: Not available for Windows
 * uDMX Output plugin: No additional requirements
@@ -73,6 +75,7 @@ Requirements - OSX
 * FTDIDMX Output plugin: No additional requirements
 * HID Input plugin: Not available for OSX
 * MIDI Input plugin: Not available for OSX
+* ENTTEC Wing Input plugin: No additional requirements
 * MIDI Output plugin: Not available for OSX
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: Not available for OSX
