@@ -34,6 +34,7 @@ win32 {
 	nsis.files	= qlc.nsi \
 			  qlc-fixtures.nsi \
 			  qlc-input-midi.nsi \
+			  qlc-input-enttec-wing.nsi \
 			  qlc-input-profiles.nsi \
 			  qlc-output-ftdidmx.nsi \
 			  qlc-output-midi.nsi \
