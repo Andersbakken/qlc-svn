@@ -609,14 +609,14 @@ void FunctionManager::copyFunction(t_function_id fid)
 	Function* function = _app->doc()->function(fid);
 	Q_ASSERT(function != NULL);
 
-    /* Attempt to create a copy of the function to Doc */
+	/* Attempt to create a copy of the function to Doc */
 	Function* copy = function->createCopy(_app->doc());
 	if (copy != NULL)
 	{
-        /* Create a new item for the copied function */
+	        /* Create a new item for the copied function */
 		QTreeWidgetItem* item;
 		item = new QTreeWidgetItem(m_tree);
-		updateFunctionItem(item, function);
+		updateFunctionItem(item, copy);
 	}
 	else if (_app->doc()->functions() >= KFunctionArraySize)
 	{
