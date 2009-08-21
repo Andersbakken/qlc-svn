@@ -303,6 +303,9 @@ void EFXFixture::nextStep(QByteArray* universes)
 	}
 	else
 	{
+		/* Increment for next round. */
+		m_iterator += m_parent->m_stepSize;
+
 		if (m_initialized == false)
 		{
 			/* This fixture is now running. Initialize it. */
@@ -326,9 +329,6 @@ void EFXFixture::nextStep(QByteArray* universes)
 
 		/* Write this fixture's data to universes. */
 		setPoint(universes);
-
-		/* Increment for next round. */
-		m_iterator += m_parent->m_stepSize;
 	}
 	else
 	{
