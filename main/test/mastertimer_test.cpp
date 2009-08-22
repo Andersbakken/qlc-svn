@@ -20,6 +20,10 @@
 */
 
 #include <QtTest>
+#ifdef WIN32
+#include <windows.h>
+#include <winbase.h>
+#endif
 
 #include "mastertimer_test.h"
 #include "outputmap_stub.h"
@@ -53,7 +57,11 @@ void MasterTimer_Test::startStop()
 	MasterTimer mt(this, m_oms);
 
 	mt.start();
+#ifdef WIN32
+	Sleep(200);
+#else
 	usleep(200);
+#endif
 	QVERIFY(mt.runningFunctions() == 0);
 	QVERIFY(mt.m_functionList.size() == 0);
 	QVERIFY(mt.outputMap() == m_oms);
@@ -98,7 +106,11 @@ void MasterTimer_Test::interval()
 	mt.startFunction(&fs);
 	QVERIFY(mt.runningFunctions() == 1);
 
+#ifdef WIN32
+	Sleep(1000);
+#else
 	usleep(1000000);
+#endif
 	/* It's not guaranteed that context switch happens exactly after 50
 	   cycles, so we just have to estimate here... */
 	QVERIFY(fs.m_writeCalls >= 49 && fs.m_writeCalls <= 51);
@@ -118,7 +130,11 @@ void MasterTimer_Test::functionInitiatedStop()
 	QVERIFY(mt.runningFunctions() == 1);
 
 	fs.setReturnState(false);
+#ifdef WIN32
+	Sleep(500);
+#else
 	usleep(500000);
+#endif
 	QVERIFY(mt.runningFunctions() == 0);
 }
 
@@ -142,7 +158,11 @@ void MasterTimer_Test::runMultipleFunctions()
 	fs1.setReturnState(false);
 	fs2.setReturnState(false);
 	fs3.setReturnState(false);
+#ifdef WIN32
+	Sleep(500);
+#else
 	usleep(500000);
+#endif
 	QVERIFY(mt.runningFunctions() == 0);
 }
 
