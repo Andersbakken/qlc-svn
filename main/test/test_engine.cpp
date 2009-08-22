@@ -44,54 +44,87 @@
 int main(int argc, char** argv)
 {
 	QApplication qapp(argc, argv);
-
+	int r;
+	
 	OutputPatch_Test outputpatch;
-	QTest::qExec(&outputpatch, argc, argv);
+	r = QTest::qExec(&outputpatch, argc, argv);
+	if (r != 0)
+		return r;
 
 	OutputMap_Test outputmap;
-	QTest::qExec(&outputmap, argc, argv);
+	r = QTest::qExec(&outputmap, argc, argv);
+	if (r != 0)
+		return r;
 
 	InputPatch_Test inputpatch;
-	QTest::qExec(&inputpatch, argc, argv);
+	r = QTest::qExec(&inputpatch, argc, argv);
+	if (r != 0)
+		return r;
 
 	InputMap_Test inputmap;
-	QTest::qExec(&inputmap, argc, argv);
+	r = QTest::qExec(&inputmap, argc, argv);
+	if (r != 0)
+		return r;
 
 	Bus_Test bus;
-	QTest::qExec(&bus, argc, argv);
+	r = QTest::qExec(&bus, argc, argv);
+	if (r != 0)
+		return r;
 
 	Fixture_Test fixture;
-	QTest::qExec(&fixture, argc, argv);
+	r = QTest::qExec(&fixture, argc, argv);
+	if (r != 0)
+		return r;
 
 	Function_Test function;
-	QTest::qExec(&function, argc, argv);
+	r = QTest::qExec(&function, argc, argv);
+	if (r != 0)
+		return r;
 
 	SceneValue_Test scenevalue;
-	QTest::qExec(&scenevalue, argc, argv);
+	r = QTest::qExec(&scenevalue, argc, argv);
+	if (r != 0)
+		return r;
 
 	SceneChannel_Test scenechannel;
-	QTest::qExec(&scenechannel, argc, argv);
+	r = QTest::qExec(&scenechannel, argc, argv);
+	if (r != 0)
+		return r;
 
 	Scene_Test scene;
-	QTest::qExec(&scene, argc, argv);
+	r = QTest::qExec(&scene, argc, argv);
+	if (r != 0)
+		return r;
 
 	Chaser_Test chaser;
-	QTest::qExec(&chaser, argc, argv);
+	r = QTest::qExec(&chaser, argc, argv);
+	if (r != 0)
+		return r;
 
 	Collection_Test collection;
-	QTest::qExec(&collection, argc, argv);
+	r = QTest::qExec(&collection, argc, argv);
+	if (r != 0)
+		return r;
 
 	EFXFixture_Test efxfixture;
-	QTest::qExec(&efxfixture, argc, argv);
+	r = QTest::qExec(&efxfixture, argc, argv);
+	if (r != 0)
+		return r;
 
 	EFX_Test efx;
-	QTest::qExec(&efx, argc, argv);
+	r = QTest::qExec(&efx, argc, argv);
+	if (r != 0)
+		return r;
 
 	MasterTimer_Test mt;
-	QTest::qExec(&mt, argc, argv);
+	r = QTest::qExec(&mt, argc, argv);
+	if (r != 0)
+		return r;
 
 	Doc_Test doc;
-	QTest::qExec(&doc, argc, argv);
+	r = QTest::qExec(&doc, argc, argv);
+	if (r != 0)
+		return r;
 
 	return 0;
 }
