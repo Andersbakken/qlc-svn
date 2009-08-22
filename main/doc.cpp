@@ -43,8 +43,6 @@ Doc::Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache)
 	: QObject(parent),
 	m_fixtureDefCache(fixtureDefCache)
 {
-	m_fileName = QString::null;
-
 	// Allocate fixture array
 	m_fixtureArray = (Fixture**) malloc(sizeof(Fixture*) *
 					    KFixtureArraySize);

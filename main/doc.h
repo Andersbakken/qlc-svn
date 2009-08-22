@@ -63,6 +63,7 @@ public:
 	 * Fixture definition cache
 	 *********************************************************************/
 public:
+	/** Get the fixture definition cache */
 	const QLCFixtureDefCache& fixtureDefCache() const
 		{ return m_fixtureDefCache; }
 
@@ -87,6 +88,10 @@ public:
 	 * Reset Doc's modified state (i.e. it is no longer in need of saving)
 	 */
 	void resetModified();
+
+protected:
+	/** Modified status (true; needs saving, false; does not) */
+	bool m_modified;
 
 	/*********************************************************************
 	 * Fixture Instances
@@ -145,7 +150,7 @@ protected:
 	 * Try to find the next free address from the given universe for
 	 * the given number of channels. KChannelInvalid is returned if
 	 * an adequate address range cannot be found.
-	 * 
+	 *
 	 * @param universe The universe to search from
 	 * @param numChannels Number of free channels required
 	 * @return An address or KChannelInvalid if address space not available
@@ -171,6 +176,13 @@ signals:
 
 	/** Signal that a fixture's properties have changed */
 	void fixtureChanged(t_fixture_id fxi_id);
+
+protected:
+	/** Array that holds all fixtures */
+	Fixture** m_fixtureArray;
+
+	/** Number of allocated fixtures in fixture array */
+	int m_fixtureAllocation;
 
 	/*********************************************************************
 	 * Functions
@@ -254,20 +266,8 @@ signals:
 	void functionChanged(t_function_id function);
 
 protected:
-	/** Current Doc file name */
-	QString m_fileName;
-
-	/** Modified status (true; needs saving, false; does not) */
-	bool m_modified;
-
 	/** Array that holds all functions */
 	Function** m_functionArray;
-
-	/** Number of allocated fixtures */
-	int m_fixtureAllocation;
-
-	/** Array that holds all fixtures */
-	Fixture** m_fixtureArray;
 
 	/** Number of allocated functions */
 	int m_functionAllocation;

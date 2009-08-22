@@ -99,6 +99,7 @@ HEADERS = bus_test.h \
 	  outputmap_test.h \
 	  inputmap_test.h \
 	  mastertimer_test.h \
+	  doc_test.h \
 	  \
 	  $$ENGINEHEADERS \
 	  $$COMMONHEADERS \
@@ -119,6 +120,7 @@ SOURCES = bus_test.cpp \
 	  outputmap_test.cpp \
 	  inputmap_test.cpp \
 	  mastertimer_test.cpp \
+	  doc_test.cpp \
 	  \
 	  test_engine.cpp \
 	  \

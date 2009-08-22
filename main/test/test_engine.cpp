@@ -37,6 +37,7 @@
 #include "scene_test.h"
 #include "bus_test.h"
 #include "efx_test.h"
+#include "doc_test.h"
 
 /* This file includes tests for QLC's ENGINE components. UI tests are done
    separately. */
@@ -88,6 +89,9 @@ int main(int argc, char** argv)
 
 	MasterTimer_Test mt;
 	QTest::qExec(&mt, argc, argv);
+
+	Doc_Test doc;
+	QTest::qExec(&doc, argc, argv);
 
 	return 0;
 }
