@@ -14,31 +14,52 @@
 int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
+	int r;
 
 	QLCPhysical_Test physical;
-	QTest::qExec(&physical, argc, argv);
+	r = QTest::qExec(&physical, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCCapability_Test capability;
-	QTest::qExec(&capability, argc, argv);
+	r = QTest::qExec(&capability, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCChannel_Test channel;
-	QTest::qExec(&channel, argc, argv);
+	r = QTest::qExec(&channel, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCFixtureMode_Test mode;
-	QTest::qExec(&mode, argc, argv);
+	r = QTest::qExec(&mode, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCFixtureDef_Test fixtureDef;
-	QTest::qExec(&fixtureDef, argc, argv);
+	r = QTest::qExec(&fixtureDef, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCFixtureDefCache_Test fixtureDefCache;
-	QTest::qExec(&fixtureDefCache, argc, argv);
+	r = QTest::qExec(&fixtureDefCache, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCInputChannel_Test inputChannel;
-	QTest::qExec(&inputChannel, argc, argv);
+	r = QTest::qExec(&inputChannel, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCInputProfile_Test inputProfile;
-	QTest::qExec(&inputProfile, argc, argv);
+	r = QTest::qExec(&inputProfile, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCWidgetProperties_Test properties;
-	QTest::qExec(&properties, argc, argv);
+	r = QTest::qExec(&properties, argc, argv);
+	if (r != 0)
+		return r;
+
+	return 0;
 }
