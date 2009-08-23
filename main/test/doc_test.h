@@ -35,7 +35,9 @@ private slots:
 	void defaults();
 	void addFixture();
 	void deleteFixture();
+	void fixtureLimits();
 	void fixture();
+	void findAddress();
 
 	void cleanupTestCase();
 
