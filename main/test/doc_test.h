@@ -33,11 +33,17 @@ private slots:
 	void initTestCase();
 
 	void defaults();
+
 	void addFixture();
 	void deleteFixture();
 	void fixtureLimits();
 	void fixture();
 	void findAddress();
+
+	void addFunction();
+	void deleteFunction();
+	void function();
+	void functionLimits();
 
 	void cleanupTestCase();
 

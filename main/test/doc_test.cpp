@@ -19,12 +19,17 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QPointer>
 #include <QtTest>
 #include <QtXml>
 
-#include "doc_test.h"
+#include "../collection.h"
 #include "../fixture.h"
+#include "../chaser.h"
+#include "../scene.h"
+#include "../efx.h"
 
+#include "doc_test.h"
 #define protected public
 #include "../doc.h"
 #undef protected
@@ -245,6 +250,105 @@ void Doc_Test::findAddress()
 
 	/* Next free slot is found only from the next universe */
 	QVERIFY(doc.findAddress(500) == 512);
+}
+
+void Doc_Test::addFunction()
+{
+	Doc doc(this, m_fixtureDefCache);
+	QVERIFY(doc.m_functionAllocation == 0);
+
+	Scene* s = new Scene(&doc);
+	QVERIFY(s->id() == Function::invalidId());
+	QVERIFY(doc.addFunction(s) == true);
+	QVERIFY(s->id() == 0);
+	QVERIFY(doc.m_functionAllocation == 1);
+
+	Chaser* c = new Chaser(&doc);
+	QVERIFY(c->id() == Function::invalidId());
+	QVERIFY(doc.addFunction(c) == true);
+	QVERIFY(c->id() == 1);
+	QVERIFY(doc.m_functionAllocation == 2);
+
+	Collection* o = new Collection(&doc);
+	QVERIFY(o->id() == Function::invalidId());
+	QVERIFY(doc.addFunction(o, 0) == false);
+	QVERIFY(o->id() == Function::invalidId());
+	QVERIFY(doc.m_functionAllocation == 2);
+	QVERIFY(doc.addFunction(o, 2) == true);
+	QVERIFY(o->id() == 2);
+	QVERIFY(doc.m_functionAllocation == 3);
+
+	EFX* e = new EFX(&doc);
+	QVERIFY(e->id() == Function::invalidId());
+	QVERIFY(doc.addFunction(e, KFunctionArraySize) == false);
+	QVERIFY(e->id() == Function::invalidId());
+	QVERIFY(doc.addFunction(e) == true);
+	QVERIFY(e->id() == 3);
+	QVERIFY(doc.m_functionAllocation == 4);
+}
+
+void Doc_Test::deleteFunction()
+{
+	Doc doc(this, m_fixtureDefCache);
+
+	Scene* s1 = new Scene(&doc);
+	doc.addFunction(s1);
+
+	Scene* s2 = new Scene(&doc);
+	doc.addFunction(s2);
+
+	Scene* s3 = new Scene(&doc);
+	doc.addFunction(s3);
+
+	QPointer <Scene> ptr(s2);
+	QVERIFY(ptr != NULL);
+	t_function_id id = s2->id();
+	QVERIFY(doc.deleteFunction(id) == true);
+	QVERIFY(doc.deleteFunction(id) == false);
+	QVERIFY(doc.deleteFunction(42) == false);
+	QVERIFY(ptr == NULL); // doc.deleteFunction() should also delete
+	QVERIFY(doc.m_fixtureArray[id] == NULL);
+}
+
+void Doc_Test::function()
+{
+	Doc doc(this, m_fixtureDefCache);
+
+	Scene* s1 = new Scene(&doc);
+	doc.addFunction(s1);
+
+	Scene* s2 = new Scene(&doc);
+	doc.addFunction(s2);
+
+	Scene* s3 = new Scene(&doc);
+	doc.addFunction(s3);
+
+	QVERIFY(doc.function(s1->id()) == s1);
+	QVERIFY(doc.function(s2->id()) == s2);
+	QVERIFY(doc.function(s3->id()) == s3);
+
+	t_function_id id = s2->id();
+	doc.deleteFunction(id);
+	QVERIFY(doc.function(id) == NULL);
+}
+
+void Doc_Test::functionLimits()
+{
+	Doc doc(this, m_fixtureDefCache);
+
+	for (t_function_id id = 0; id < KFunctionArraySize; id++)
+	{
+		Scene* s = new Scene(&doc);
+		s->setName(QString("Test %1").arg(id));
+		QVERIFY(doc.addFunction(s) == true);
+		QVERIFY(doc.m_functionAllocation == id + 1);
+	}
+
+	Scene* over = new Scene(&doc);
+	over->setName("Over Limits");
+	QVERIFY(doc.addFunction(over) == false);
+	QVERIFY(doc.m_functionAllocation == KFunctionArraySize);
+	delete over;
 }
 
 void Doc_Test::cleanupTestCase()
