@@ -54,6 +54,7 @@ void Doc_Test::defaults()
 void Doc_Test::addFixture()
 {
 	Doc doc(this, m_fixtureDefCache);
+	QVERIFY(doc.isModified() == false);
 
 	/* Add a completely new fixture */
 	Fixture* f1 = new Fixture(&doc);
@@ -64,6 +65,9 @@ void Doc_Test::addFixture()
 	QVERIFY(doc.addFixture(f1) == true);
 	QVERIFY(doc.m_fixtureAllocation == 1);
 	QVERIFY(f1->id() == 0);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
 
 	/* Add another fixture but attempt to put assign it an already-assigned
 	   fixture ID. */
@@ -74,12 +78,16 @@ void Doc_Test::addFixture()
 	f2->setUniverse(0);
 	QVERIFY(doc.addFixture(f2, f1->id()) == false);
 	QVERIFY(doc.m_fixtureAllocation == 1);
+	QVERIFY(doc.isModified() == false);
 
 	/* But, the fixture can be added if we give it an unassigned ID. */
 	QVERIFY(doc.addFixture(f2, f1->id() + 1) == true);
 	QVERIFY(doc.m_fixtureAllocation == 2);
 	QVERIFY(f1->id() == 0);
 	QVERIFY(f2->id() == 1);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
 
 	/* Add again a completely new fixture, with automatic ID assignment */
 	Fixture* f3 = new Fixture(&doc);
@@ -92,6 +100,7 @@ void Doc_Test::addFixture()
 	QVERIFY(f1->id() == 0);
 	QVERIFY(f2->id() == 1);
 	QVERIFY(f3->id() == 2);
+	QVERIFY(doc.isModified() == true);
 }
 
 void Doc_Test::deleteFixture()
@@ -127,18 +136,27 @@ void Doc_Test::deleteFixture()
 	f3->setUniverse(0);
 	doc.addFixture(f3);
 
+	QVERIFY(doc.isModified() == true);
+	doc.resetModified();
+
 	QVERIFY(doc.deleteFixture(42) == false);
 	QVERIFY(doc.m_fixtureAllocation == 3);
+	QVERIFY(doc.isModified() == false);
 
 	QVERIFY(doc.deleteFixture(Fixture::invalidId()) == false);
 	QVERIFY(doc.m_fixtureAllocation == 3);
+	QVERIFY(doc.isModified() == false);
 
 	t_fixture_id id = f2->id();
 	QVERIFY(doc.deleteFixture(id) == true);
 	QVERIFY(doc.m_fixtureAllocation == 2);
+	QVERIFY(doc.isModified() == true);
 
 	QVERIFY(doc.deleteFixture(id) == false);
 	QVERIFY(doc.m_fixtureAllocation == 2);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
 
 	Fixture* f4 = new Fixture(&doc);
 	f4->setName("Four");
@@ -149,6 +167,7 @@ void Doc_Test::deleteFixture()
 	QVERIFY(f1->id() == 0);
 	QVERIFY(f4->id() == 1); // Takes the place of the removed f2
 	QVERIFY(f3->id() == 2);
+	QVERIFY(doc.isModified() == true);
 }
 
 void Doc_Test::fixtureLimits()
@@ -163,9 +182,12 @@ void Doc_Test::fixtureLimits()
 		QVERIFY(doc.m_fixtureAllocation == id + 1);
 	}
 
+	doc.resetModified();
+
 	Fixture* over = new Fixture(&doc);
 	over->setName("Over Limits");
 	QVERIFY(doc.addFixture(over) == false);
+	QVERIFY(doc.isModified() == false);
 	QVERIFY(doc.m_fixtureAllocation == KFixtureArraySize);
 	delete over;
 }
@@ -244,6 +266,8 @@ void Doc_Test::findAddress()
 	f3->setAddress(30);
 	doc.addFixture(f3);
 
+	doc.resetModified();
+
 	/* Next free slot for max 5 channels is between 25 and 30 */
 	QVERIFY(doc.findAddress(1) == 25);
 	QVERIFY(doc.findAddress(5) == 25);
@@ -252,6 +276,9 @@ void Doc_Test::findAddress()
 
 	/* Next free slot is found only from the next universe */
 	QVERIFY(doc.findAddress(500) == 512);
+
+	/* findAddress() must not affect modified state */
+	QVERIFY(doc.isModified() == false);
 }
 
 void Doc_Test::addFunction()
@@ -264,21 +291,31 @@ void Doc_Test::addFunction()
 	QVERIFY(doc.addFunction(s) == true);
 	QVERIFY(s->id() == 0);
 	QVERIFY(doc.m_functionAllocation == 1);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
 
 	Chaser* c = new Chaser(&doc);
 	QVERIFY(c->id() == Function::invalidId());
 	QVERIFY(doc.addFunction(c) == true);
 	QVERIFY(c->id() == 1);
 	QVERIFY(doc.m_functionAllocation == 2);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
 
 	Collection* o = new Collection(&doc);
 	QVERIFY(o->id() == Function::invalidId());
 	QVERIFY(doc.addFunction(o, 0) == false);
+	QVERIFY(doc.isModified() == false);
 	QVERIFY(o->id() == Function::invalidId());
 	QVERIFY(doc.m_functionAllocation == 2);
 	QVERIFY(doc.addFunction(o, 2) == true);
 	QVERIFY(o->id() == 2);
 	QVERIFY(doc.m_functionAllocation == 3);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
 
 	EFX* e = new EFX(&doc);
 	QVERIFY(e->id() == Function::invalidId());
@@ -287,6 +324,7 @@ void Doc_Test::addFunction()
 	QVERIFY(doc.addFunction(e) == true);
 	QVERIFY(e->id() == 3);
 	QVERIFY(doc.m_functionAllocation == 4);
+	QVERIFY(doc.isModified() == true);
 }
 
 void Doc_Test::deleteFunction()
@@ -302,14 +340,33 @@ void Doc_Test::deleteFunction()
 	Scene* s3 = new Scene(&doc);
 	doc.addFunction(s3);
 
+	doc.resetModified();
+
 	QPointer <Scene> ptr(s2);
 	QVERIFY(ptr != NULL);
 	t_function_id id = s2->id();
 	QVERIFY(doc.deleteFunction(id) == true);
+	QVERIFY(doc.isModified() == true);
+
+	doc.resetModified();
+
 	QVERIFY(doc.deleteFunction(id) == false);
 	QVERIFY(doc.deleteFunction(42) == false);
+	QVERIFY(doc.isModified() == false);
 	QVERIFY(ptr == NULL); // doc.deleteFunction() should also delete
 	QVERIFY(doc.m_fixtureArray[id] == NULL);
+
+	id = s1->id();
+	QVERIFY(doc.deleteFunction(id) == true);
+	QVERIFY(doc.m_fixtureArray[id] == NULL);
+	QVERIFY(doc.isModified() == true);
+
+	id = s3->id();
+	QVERIFY(doc.deleteFunction(id) == true);
+	QVERIFY(doc.m_fixtureArray[id] == NULL);
+	QVERIFY(doc.isModified() == true);
+
+	QVERIFY(doc.functions() == 0);
 }
 
 void Doc_Test::function()
@@ -346,11 +403,14 @@ void Doc_Test::functionLimits()
 		QVERIFY(doc.m_functionAllocation == id + 1);
 	}
 
+	doc.resetModified();
+
 	Scene* over = new Scene(&doc);
 	over->setName("Over Limits");
 	QVERIFY(doc.addFunction(over) == false);
 	QVERIFY(doc.m_functionAllocation == KFunctionArraySize);
 	delete over;
+	QVERIFY(doc.isModified() == false);
 }
 
 void Doc_Test::save()
@@ -390,6 +450,8 @@ void Doc_Test::save()
 	EFX* e = new EFX(&doc);
 	doc.addFunction(e);
 
+	QVERIFY(doc.isModified() == true);
+
 	QDomDocument document;
 	QDomElement root = document.createElement("TestRoot");
 
@@ -419,4 +481,7 @@ void Doc_Test::save()
 	QVERIFY(fixtures == 3);
 	QVERIFY(functions == 4);
 	QVERIFY(buses == Bus::count());
+
+	/* Saving doesn't implicitly reset modified status */
+	QVERIFY(doc.isModified() == true);
 }
