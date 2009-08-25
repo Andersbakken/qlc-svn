@@ -45,7 +45,7 @@ private slots:
 	void function();
 	void functionLimits();
 
-	void cleanupTestCase();
+        void save();
 
 private:
         QLCFixtureDefCache m_fixtureDefCache;

@@ -28,6 +28,7 @@
 #include "../chaser.h"
 #include "../scene.h"
 #include "../efx.h"
+#include "../bus.h"
 
 #include "doc_test.h"
 #define protected public
@@ -36,6 +37,7 @@
 
 void Doc_Test::initTestCase()
 {
+    Bus::init(this);
 }
 
 void Doc_Test::defaults()
@@ -351,6 +353,70 @@ void Doc_Test::functionLimits()
 	delete over;
 }
 
-void Doc_Test::cleanupTestCase()
+void Doc_Test::save()
 {
+	Doc doc(this, m_fixtureDefCache);
+
+	Scene* s = new Scene(&doc);
+	doc.addFunction(s);
+
+	Fixture* f1 = new Fixture(&doc);
+	f1->setName("One");
+	f1->setChannels(5);
+	f1->setAddress(0);
+	f1->setUniverse(0);
+	doc.addFixture(f1);
+
+	Chaser* c = new Chaser(&doc);
+	doc.addFunction(c);
+
+	Fixture* f2 = new Fixture(&doc);
+	f2->setName("Two");
+	f2->setChannels(10);
+	f2->setAddress(20);
+	f2->setUniverse(1);
+	doc.addFixture(f2);
+
+	Collection* o = new Collection(&doc);
+	doc.addFunction(o);
+
+	Fixture* f3 = new Fixture(&doc);
+	f3->setName("Three");
+	f3->setChannels(15);
+	f3->setAddress(40);
+	f3->setUniverse(2);
+	doc.addFixture(f3);
+
+	EFX* e = new EFX(&doc);
+	doc.addFunction(e);
+
+	QDomDocument document;
+	QDomElement root = document.createElement("TestRoot");
+
+	QVERIFY(doc.saveXML(&document, &root) == true);
+
+	unsigned int fixtures = 0, functions = 0, buses = 0;
+	QDomNode node = root.firstChild();
+	QVERIFY(node.toElement().tagName() == "Engine");
+
+	node = node.firstChild();
+	while (node.isNull() == false)
+	{
+		QDomElement tag = node.toElement();
+		if (tag.tagName() == "Fixture")
+			fixtures++;
+		else if (tag.tagName() == "Function")
+			functions++;
+		else if (tag.tagName() == "Bus")
+			buses++;
+		else
+			QFAIL(QString("Unexpected tag: %1")
+					.arg(tag.tagName()).toAscii());
+
+		node = node.nextSibling();
+	}
+
+	QVERIFY(fixtures == 3);
+	QVERIFY(functions == 4);
+	QVERIFY(buses == Bus::count());
 }
