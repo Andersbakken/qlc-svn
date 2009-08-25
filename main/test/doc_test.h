@@ -23,6 +23,8 @@
 #define DOC_TEST_H
 
 #include <QObject>
+#include <QtXml>
+
 #include <common/qlcfixturedefcache.h>
 
 class Doc_Test : public QObject
@@ -45,7 +47,14 @@ private slots:
 	void function();
 	void functionLimits();
 
+	void load();
+	void loadWrongRoot();
         void save();
+
+private:
+	QDomElement createFixtureNode(QDomDocument& doc, t_fixture_id id);
+	QDomElement createCollectionNode(QDomDocument& doc, t_function_id id);
+	QDomElement createBusNode(QDomDocument& doc, quint32 id, quint32 value);
 
 private:
         QLCFixtureDefCache m_fixtureDefCache;

@@ -413,6 +413,52 @@ void Doc_Test::functionLimits()
 	QVERIFY(doc.isModified() == false);
 }
 
+void Doc_Test::load()
+{
+	Doc doc(this, m_fixtureDefCache);
+
+	QDomDocument document;
+	QDomElement root = document.createElement("Engine");
+
+	root.appendChild(createFixtureNode(document, 0));
+	root.appendChild(createFixtureNode(document, 72));
+	root.appendChild(createFixtureNode(document, 15));
+
+	root.appendChild(createCollectionNode(document, 5));
+	root.appendChild(createCollectionNode(document, 9));
+	root.appendChild(createCollectionNode(document, 1));
+	root.appendChild(createCollectionNode(document, 7));
+
+	root.appendChild(createBusNode(document, 0, 1));
+	root.appendChild(createBusNode(document, 7, 2));
+	root.appendChild(createBusNode(document, 12, 3));
+	root.appendChild(createBusNode(document, 29, 4));
+	root.appendChild(createBusNode(document, 31, 500));
+
+	root.appendChild(document.createElement("ExtraTag"));
+
+	QVERIFY(doc.fixtures() == 0);
+	QVERIFY(doc.functions() == 0);
+	QVERIFY(doc.loadXML(&root) == true);
+	QVERIFY(doc.fixtures() == 3);
+	QVERIFY(doc.functions() == 4);
+	QVERIFY(Bus::instance()->value(0) == 1);
+	QVERIFY(Bus::instance()->value(7) == 2);
+	QVERIFY(Bus::instance()->value(12) == 3);
+	QVERIFY(Bus::instance()->value(29) == 4);
+	QVERIFY(Bus::instance()->value(31) == 500);
+}
+
+void Doc_Test::loadWrongRoot()
+{
+	Doc doc(this, m_fixtureDefCache);
+
+	QDomDocument document;
+	QDomElement root = document.createElement("Enjine");
+
+	QVERIFY(doc.loadXML(&root) == false);
+}
+
 void Doc_Test::save()
 {
 	Doc doc(this, m_fixtureDefCache);
@@ -485,3 +531,95 @@ void Doc_Test::save()
 	/* Saving doesn't implicitly reset modified status */
 	QVERIFY(doc.isModified() == true);
 }
+
+QDomElement Doc_Test::createFixtureNode(QDomDocument& doc, t_fixture_id id)
+{
+	QDomElement root = doc.createElement("Fixture");
+	doc.appendChild(root);
+
+	QDomElement chs = doc.createElement("Channels");
+	QDomText chsText = doc.createTextNode("18");
+	chs.appendChild(chsText);
+	root.appendChild(chs);
+
+	QDomElement name = doc.createElement("Name");
+	QDomText nameText = doc.createTextNode(QString("Fixture %1").arg(id));
+	name.appendChild(nameText);
+	root.appendChild(name);
+
+	QDomElement uni = doc.createElement("Universe");
+	QDomText uniText = doc.createTextNode("3");
+	uni.appendChild(uniText);
+	root.appendChild(uni);
+
+	QDomElement model = doc.createElement("Model");
+	QDomText modelText = doc.createTextNode("Foobar");
+	model.appendChild(modelText);
+	root.appendChild(model);
+
+	QDomElement mode = doc.createElement("Mode");
+	QDomText modeText = doc.createTextNode("Foobar");
+	mode.appendChild(modeText);
+	root.appendChild(mode);
+
+	QDomElement type = doc.createElement("Manufacturer");
+	QDomText typeText = doc.createTextNode("Foobar");
+	type.appendChild(typeText);
+	root.appendChild(type);
+
+	QDomElement fxi_id = doc.createElement("ID");
+	QDomText fxi_idText = doc.createTextNode(QString("%1").arg(id));
+	fxi_id.appendChild(fxi_idText);
+	root.appendChild(fxi_id);
+
+	QDomElement addr = doc.createElement("Address");
+	QDomText addrText = doc.createTextNode("21");
+	addr.appendChild(addrText);
+	root.appendChild(addr);
+
+	return root;
+}
+
+QDomElement Doc_Test::createCollectionNode(QDomDocument& doc, t_function_id id)
+{
+	QDomElement root = doc.createElement("Function");
+	root.setAttribute("Type", "Collection");
+	root.setAttribute("ID", QString("%1").arg(id));
+
+	QDomElement s1 = doc.createElement("Step");
+	QDomText s1Text = doc.createTextNode("50");
+	s1.appendChild(s1Text);
+	root.appendChild(s1);
+
+	QDomElement s2 = doc.createElement("Step");
+	QDomText s2Text = doc.createTextNode("12");
+	s2.appendChild(s2Text);
+	root.appendChild(s2);
+
+	QDomElement s3 = doc.createElement("Step");
+	QDomText s3Text = doc.createTextNode("87");
+	s3.appendChild(s3Text);
+	root.appendChild(s3);
+
+	return root;
+}
+
+QDomElement Doc_Test::createBusNode(QDomDocument& doc, quint32 id, quint32 val)
+{
+	QDomElement root = doc.createElement("Bus");
+	doc.appendChild(root);
+	root.setAttribute("ID", id);
+
+	QDomElement name = doc.createElement("Name");
+	QDomText nameText = doc.createTextNode(QString("Bus %1").arg(id));
+	name.appendChild(nameText);
+	root.appendChild(name);
+
+	QDomElement value = doc.createElement("Value");
+	QDomText valueText = doc.createTextNode(QString("%1").arg(val));
+	value.appendChild(valueText);
+	root.appendChild(value);
+
+	return root;
+}
+
