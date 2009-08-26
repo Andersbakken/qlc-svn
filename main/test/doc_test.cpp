@@ -456,6 +456,23 @@ void Doc_Test::loadWrongRoot()
 	QDomDocument document;
 	QDomElement root = document.createElement("Enjine");
 
+	root.appendChild(createFixtureNode(document, 0));
+	root.appendChild(createFixtureNode(document, 72));
+	root.appendChild(createFixtureNode(document, 15));
+
+	root.appendChild(createCollectionNode(document, 5));
+	root.appendChild(createCollectionNode(document, 9));
+	root.appendChild(createCollectionNode(document, 1));
+	root.appendChild(createCollectionNode(document, 7));
+
+	root.appendChild(createBusNode(document, 0, 1));
+	root.appendChild(createBusNode(document, 7, 2));
+	root.appendChild(createBusNode(document, 12, 3));
+	root.appendChild(createBusNode(document, 29, 4));
+	root.appendChild(createBusNode(document, 31, 500));
+
+	root.appendChild(document.createElement("ExtraTag"));
+
 	QVERIFY(doc.loadXML(&root) == false);
 }
 
