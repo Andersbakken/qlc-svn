@@ -1,5 +1,5 @@
 Name "MIDI input plugin for Q Light Controller"
-OutFile "qlc-input-midi-3.0.exe"
+OutFile "qlc-input-midi-3.0.1.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------

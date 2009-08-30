@@ -1,5 +1,5 @@
 Name "Q Light Controller"
-OutFile "qlc-3.0.exe"
+OutFile "qlc-3.0.1.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
@@ -45,7 +45,7 @@ SectionEnd
 ;--------------------------------
 Section ""
   File ..\mingwm10.dll
-  File ..\qlccommon3.dll
+  File ..\qlccommon.dll
   File ..\qlc.exe
   File ..\qlc-fixtureeditor.exe
   File ..\QtCore4.dll
