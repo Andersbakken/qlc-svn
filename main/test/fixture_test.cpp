@@ -30,9 +30,11 @@
 #include "fixture_test.h"
 #include "../fixture.h"
 #include "../doc.h"
+#include "../bus.h"
 
 void Fixture_Test::initTestCase()
 {
+	Bus::init(this);
 	QVERIFY(m_fixtureDefCache.load("../../fixtures/") == true);
 }
 

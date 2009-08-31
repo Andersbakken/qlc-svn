@@ -29,6 +29,7 @@ class Function_Test : public QObject
 	Q_OBJECT
 
 private slots:
+	void initTestCase();
 	void invalidId();
 	void typeToString();
 	void stringToType();
@@ -36,6 +37,12 @@ private slots:
 	void stringToRunOrder();
 	void directionToString();
 	void stringToDirection();
+	void loaderWrongRoot();
+	void loaderWrongID();
+	void loaderScene();
+	void loaderChaser();
+	void loaderCollection();
+	void loaderEFX();
 };
 
 #endif
