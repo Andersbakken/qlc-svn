@@ -44,166 +44,36 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 {
 	Q_ASSERT(plugin != NULL);
 	m_plugin = plugin;
-	m_timer = NULL;
-	m_testMod = 1;
-	m_output = KOutputInvalid;
 
 	setupUi(this);
-
-	QSettings settings;
-	QVariant pidV = settings.value("/ftdidmx/device/pid", QVariant(known_devices[0].pid));
-	QVariant vidV = settings.value("/ftdidmx/device/vid", QVariant(known_devices[0].vid));
-	QVariant typeV = settings.value("/ftdidmx/device/type", QVariant(known_devices[0].type));
-
-	int pid = -1, vid = -1, type = -1;
-	if (pidV.type() == QVariant::Int &&
-		vidV.type() == QVariant::Int &&
-		typeV.type() == QVariant::Int) {
-		pid = pidV.toInt();
-		vid = vidV.toInt();
-		type = typeV.toInt();
-	}
-
-	BOOL found = FALSE;
-
-	for (unsigned int i = 0;
-	     i < sizeof(known_devices) / sizeof(FTDIDevice);
-	     i++)
+	
+	m_device->clear();
+	m_device->addItem(QString(""), QVariant(-1));
+	for (int i = 0; i < plugin->m_number_device_types; i++)
 	{
-		QVariant v;
-		v.setValue(known_devices[i]);
-		m_device->addItem(QString(known_devices[i].name), v);
-		if (found == FALSE &&
-			pid == known_devices[i].pid &&
-			vid == known_devices[i].vid &&
-			type == known_devices[i].type) {
-			found = TRUE;
-			m_current_pid = pid;
-			m_current_vid = vid;
-			m_current_type = type;
-			m_device->setCurrentIndex(i);
-		}
+		m_device->addItem(QString(plugin->m_device_types[i].name), QVariant(i));
 	}
-
-	if (found == FALSE) {
-		if (vid > 0 && pid > 0) {
-			m_current_pid = 0;
-			m_current_vid = 0;
-			m_vid->setText(QString(vid));
-			m_pid->setText(QString(pid));
-			m_current_type = 0;
-			m_device->setCurrentIndex(sizeof(known_devices) / sizeof(FTDIDevice) - 1);
-		} else {
-			m_current_pid = known_devices[0].pid;
-			m_current_vid = known_devices[0].vid;
-			m_current_type = known_devices[0].type;
-		}
-	}
+	m_device->setCurrentIndex(0);
 	
 	// Hide the pid/vid setters for Windows	
 #ifdef WIN32
-	label_2->setVisible(false);
-	m_vid->setVisible(false);
-	label_3->setVisible(false);
-	m_pid->setVisible(false);
+	typeContainer->setVisible(false);
 #endif
 
-	connect(m_testButton, SIGNAL(toggled(bool)),
-		this, SLOT(slotTestToggled(bool)));
 	connect(m_refreshButton, SIGNAL(clicked()),
-		this, SLOT(slotRefreshClicked()));
+			this, SLOT(slotRefreshClicked()));
+	connect(m_addTypeButton, SIGNAL(clicked()),
+			this, SLOT(slotAddTypeClicked()));
 	connect(m_device, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(slotDeviceChanged(int)));
+			this, SLOT(slotDeviceTypeChanged(int)));
+	connect(m_list, SIGNAL(currentIndexChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+			this, SLOT(slotDeviceChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
-	m_plugin->setVIDPID(m_current_vid, m_current_pid, m_current_type);
 	refreshList();
 }
 
 ConfigureFTDIDMXOut::~ConfigureFTDIDMXOut()
 {
-	slotTestToggled(false);
-}
-
-/*****************************************************************************
- * Universe testing
- *****************************************************************************/
-
-void ConfigureFTDIDMXOut::slotTestToggled(bool state)
-{
-	QTreeWidgetItem* item = NULL;
-
-	if (state == true)
-	{
-		item = m_list->currentItem();
-		if (item == NULL)
-		{
-			/* If there is no selection, don't toggle the button */
-			m_testButton->setDown(false);
-		}
-		else
-		{
-			/* Get the number of the universe to test */
-			m_output = item->text(KColumnOutput).toInt();
-
-			/* Open the output line for testing */
-			m_plugin->open(m_output);
-
-			/* Disable the listview so that the selection cannot
-			   be changed during testing */
-			m_list->setEnabled(false);
-			m_buttonBox->setEnabled(false);
-			
-			/* Start a 1sec timer that blinks all channels of the
-			   selected universe on and off */
-			m_timer = new QTimer(this);
-			connect(m_timer, SIGNAL(timeout()),
-				this, SLOT(slotTestTimeout()));
-			m_timer->start(1000);
-
-			/* Do the first cycle already here, since the first
-			   timeout occurs after one second */
-			slotTestTimeout();
-		}
-	}
-	else
-	{
-		delete m_timer;
-		m_timer = NULL;
-
-		/* Open the output line for testing */
-		m_plugin->close(m_output);
-		
-		m_list->setEnabled(true);
-		m_buttonBox->setEnabled(true);
-
-		/* Reset channel values to zero */
-		if (m_testMod == 1)
-		{
-			m_testMod = 0;
-			slotTestTimeout();
-			m_testMod = 0;
-		}
-		
-		m_output = KOutputInvalid;
-	}
-}
-
-void ConfigureFTDIDMXOut::slotTestTimeout()
-{
-	t_value values[512];
-
-	if (m_output == KOutputInvalid)
-		return;
-
-	if (m_testMod == 0)
-		for (t_channel i = 0; i < 512; i++)
-			values[i] = 0;
-	else
-		for (t_channel i = 0; i < 512; i++)
-			values[i] = 255;
-	m_testMod = (m_testMod + 1) % 2;
-
-	m_plugin->writeRange(m_output, 0, values, 512);
 }
 
 /*****************************************************************************
@@ -212,14 +82,23 @@ void ConfigureFTDIDMXOut::slotTestTimeout()
 
 void ConfigureFTDIDMXOut::slotRefreshClicked()
 {
-	if (m_current_vid == 0 || m_current_pid == 0)
-	{
-		// Get the typed in VID/PID
-		int vid = getIntHex(m_vid);
-		int pid = getIntHex(m_pid);
-		m_plugin->setVIDPID(vid, pid, 0);
-	}
 	refreshList();
+}
+
+void ConfigureFTDIDMXOut::slotAddTypeClicked()
+{
+	QString name = m_typeName->text();
+	int vid = this->getIntHex(m_vid);
+	int pid = this->getIntHex(m_pid);
+	
+	QSettings settings;
+	int types = settings.value("/ftdidmx/types/number", QVariant(0)).toInt();
+	
+	settings.setValue(QString("/ftdidmx/types/vid%1").arg(types), QVariant(vid));
+	settings.setValue(QString("/ftdidmx/types/pid%1").arg(types), QVariant(pid));
+	settings.setValue(QString("/ftdidmx/types/interface%1").arg(types), QVariant(0));
+	settings.setValue(QString("/ftdidmx/types/name%1").arg(types), QVariant(name));
+	settings.setValue("/ftdidmx/types/number", ++types);
 }
 
 int ConfigureFTDIDMXOut::getIntHex(QLineEdit *e)
@@ -234,57 +113,92 @@ int ConfigureFTDIDMXOut::getIntHex(QLineEdit *e)
 	return ret;
 }
 
-void ConfigureFTDIDMXOut::slotDeviceChanged(int index)
+void ConfigureFTDIDMXOut::slotDeviceChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+{
+	if (current == NULL) {
+		return;
+	}
+	
+	QSettings settings;
+	QVariant type = settings.value(QString("/ftdidmx/devices/type%1").arg(m_list->indexOfTopLevelItem(current)), QVariant(0));
+	if (type.type() != QVariant::Int) {
+		return;
+	}
+	
+	m_device->setCurrentIndex(type.toInt());
+}
+
+void ConfigureFTDIDMXOut::slotDeviceTypeChanged(int index)
 {
 	QVariant d = m_device->itemData(index);
-	FTDIDevice device = d.value<FTDIDevice>();
 	
-	m_current_vid = device.vid;
-	m_current_pid = device.pid;
-	m_current_type = device.type;
-
-        QSettings settings;
-        settings.setValue("/ftdidmx/device/pid", QVariant(m_current_pid));
-        settings.setValue("/ftdidmx/device/vid", QVariant(m_current_vid));
-        settings.setValue("/ftdidmx/device/type", QVariant(m_current_type));
-	
-	if (m_current_vid == 0 || m_current_pid == 0)
-	{
-		int vid = getIntHex(m_vid);
-		int pid = getIntHex(m_pid);
-
-		if (vid != 0 && pid != 0)
-		{
-			m_plugin->setVIDPID(vid, pid, 0);
-			refreshList();
-		}
+	QList<QTreeWidgetItem *> s = m_list->selectedItems();
+	if (s.count() == 0) {
+		return;
 	}
-	else
-	{
-		m_plugin->setVIDPID(m_current_vid, m_current_pid, m_current_type);
-		refreshList();
-	}
+
+	QSettings settings;
+	settings.setValue(QString("/ftdidmx/devices/type%1").arg(m_list->indexOfTopLevelItem(s.first())), d);
 }
 
 void ConfigureFTDIDMXOut::refreshList()
 {
-	t_output i = 0;
-
 	m_list->clear();
-
 	QSettings settings;
-	QString serial = settings.value("/ftdidmx/device/serial", QString("")).toString();
-
-	QMapIterator <t_output, FTDIDMXDevice*> it(m_plugin->m_devices);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		
+	
+	int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
+	
+	for (int i = 0; i < loadedDevices; i++) {
+		QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString();
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnName, it.value()->name());
-		item->setText(KColumnOutput, QString("%1").arg(i++));
-		if (serial == it.value()->path()) {
-			item->setSelected(true);
+		item->setText(KColumnName, serial);
+		item->setText(KColumnOutput, QString("%1").arg(i));
+	}
+	
+	for (int i = 0; i < m_plugin->m_number_device_types; i++) {
+#ifndef WIN32
+		FT_SetVIDPID(m_plugin->m_device_types[i].vid, m_plugin->m_device_types[i].pid);
+#endif
+
+		DWORD devices;
+		if (FT_CreateDeviceInfoList(&devices) != FT_OK)
+			devices = MAX_NUM_DEVICES;
+		
+		char devString[devices][64];
+		char *devStringPtr[devices + 1];
+		
+		for (unsigned int j = 0; j < devices; j++)
+			devStringPtr[j] = devString[j];
+		devStringPtr[devices] = NULL;
+		
+		FT_STATUS st = FT_ListDevices(devStringPtr, &devices,
+									  FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
+		if (st == FT_OK)
+		{
+			t_output output = loadedDevices;
+			while (devices > 0)
+			{
+				devices--;
+				
+				QString serial = QString(devString[devices]);
+				
+				bool found = false;
+				for (int j = 0; j < loadedDevices; j++) {
+					if (settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString() == serial) {
+						found = true;
+					}
+				}
+				if (!found) {
+					QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
+					item->setText(KColumnName, QString(serial));
+					item->setText(KColumnOutput, QString("%1").arg(output));
+					
+					settings.setValue(QString("/ftdidmx/devices/serial%1").arg(output), QVariant(serial));
+					settings.setValue(QString("/ftdidmx/devices/type%1").arg(output), QVariant(i));
+					output++;
+				}
+			}
+			settings.setValue("/ftdidmx/devices/number", QVariant(output));
 		}
 	}
 }

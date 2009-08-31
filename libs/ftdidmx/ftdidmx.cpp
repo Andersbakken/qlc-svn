@@ -31,6 +31,13 @@
 #include "ftdidmxdevice.h"
 #include "ftd2xx.h"
 
+static struct FTDIDevice known_devices[] =
+{
+	{"EntTec Open DMX USB", 0x0403, 0x6001, 0},
+	{"Homebrew USB -> DMX", 0x0403, 0xEC70, 0},
+	{"EntTec DMX USB Pro",  0x0403, 0x6001, 1}
+};
+
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
@@ -38,26 +45,53 @@
 void FTDIDMXOut::init()
 {
 	QSettings settings;
-	QVariant pidV = settings.value("/ftdidmx/device/pid", QVariant(known_devices[0].pid));
-	QVariant vidV = settings.value("/ftdidmx/device/vid", QVariant(known_devices[0].vid));
-	QVariant typeV = settings.value("/ftdidmx/device/type", QVariant(known_devices[0].type));
-
-	int pid = -1, vid = -1, type = -1;
-	if (pidV.type() == QVariant::Int &&
-		vidV.type() == QVariant::Int &&
-		typeV.type() == QVariant::Int) {
-		pid = pidV.toInt();
-		vid = vidV.toInt();
-		type = typeV.toInt();
-	}
-
-	// On Windows the users must ensure the ftdi driver is correct
-	// for their hardware, *NIX users can just dynamically
-	// alter the hardware settings in QLC
-	if (pid > -1 && vid > -1 && type > -1) {
-		setVIDPID(vid, pid, type);
+	QVariant devTypes = settings.value("/ftdidmx/types/number", 0);
+	m_number_device_types = sizeof(known_devices) / sizeof(FTDIDevice);
+	if (devTypes.type() == QVariant::Int) {
+		int i = devTypes.toInt();
+		m_device_types = (FTDIDevice*)malloc(sizeof(FTDIDevice) * (m_number_device_types + i));
+		
+		while (i > 0) {
+			i--;
+			QVariant vid = settings.value(QString("/ftdidmx/types/vid%1").arg(i), QVariant(0));
+			QVariant pid = settings.value(QString("/ftdidmx/types/pid%1").arg(i), QVariant(0));
+			QVariant interface = settings.value(QString("/ftdidmx/types/interface%1").arg(i), QVariant(0));
+			QVariant name = settings.value(QString("/ftdidmx/types/name%1").arg(i), QVariant(""));
+			if (vid.type() == QVariant::Int &&
+				pid.type() == QVariant::Int &&
+				interface.type() == QVariant::Int &&
+				name.type() == QVariant::String) {
+				FTDIDevice d = m_device_types[m_number_device_types + i];
+				d.vid = vid.toInt();
+				d.pid = pid.toInt();
+				d.type = interface.toInt();
+				d.name = name.toString().toAscii();
+			}
+		}
+		
+		m_number_device_types += i;
 	} else {
-		setVIDPID(known_devices[0].vid, known_devices[0].pid, known_devices[0].type);
+		m_device_types = (FTDIDevice*)malloc(sizeof(FTDIDevice) * m_number_device_types);
+	}
+	
+	for (unsigned int i = 0; i < sizeof(known_devices) / sizeof(FTDIDevice); i++) {
+		FTDIDevice d = m_device_types[i];
+		d.vid = known_devices[i].vid;
+		d.pid = known_devices[i].pid;
+		d.type = known_devices[i].type;
+		d.name = known_devices[i].name;
+	}
+}
+
+FTDIDMXOut::FTDIDMXOut()
+{
+	m_device_types = NULL;
+}
+
+FTDIDMXOut::~FTDIDMXOut()
+{
+	if (m_device_types != NULL) {
+		free(m_device_types);
 	}
 }
 
@@ -77,68 +111,29 @@ void FTDIDMXOut::close(t_output output)
  * Devices
  *****************************************************************************/
 
-void FTDIDMXOut::setVIDPID(int vid, int pid, int type)
-{
-	m_vidpid_mutex.lock();
-	m_scan_vid = vid;
-	m_scan_pid = pid;
-	m_device_type = type;
-	m_vidpid_mutex.unlock();
-	rescanDevices();
-}
-
-void FTDIDMXOut::rescanDevices()
-{
-	DWORD devices;
-	// Make sure we have a static vid/pid throughout the scanning process
-	m_vidpid_mutex.lock();
-	int vid = m_scan_vid;
-	int pid = m_scan_pid;
-	int type = m_device_type;
-	m_vidpid_mutex.unlock();
-
-#ifndef WIN32
-	FT_SetVIDPID(vid, pid);
-#endif
-	if (FT_CreateDeviceInfoList(&devices) != FT_OK)
-		devices = MAX_NUM_DEVICES;
-
-	// Array to store serial numbers in
-	char devString[devices][64];
-	char *devStringPtr[devices + 1];
-
-	for (unsigned int i = 0; i < devices; i++)
-		devStringPtr[i] = devString[i];
-	devStringPtr[devices] = NULL;
-
-	m_devices.clear();
-
-	FT_STATUS st = FT_ListDevices(devStringPtr, &devices,
-				      FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
-	if (st == FT_OK)
-	{
-		t_output output = 0;
-		while (devices > 0)
-		{
-			devices--;
-			FTDIDMXDevice* device;
-			device = new FTDIDMXDevice(this, vid, pid, type,
-						   devString[devices], output);
-			Q_ASSERT(device != NULL);
-			m_devices.insert(output, device);
-		}
-	}
-}
-
 FTDIDMXDevice* FTDIDMXOut::device(const QString& path)
 {
-	QMapIterator <t_output, FTDIDMXDevice*> it(m_devices);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		Q_ASSERT(it.value() != NULL);
-		if (it.value()->path() == path)
-			return it.value();
+	QSettings settings;
+	int output = path.toInt();
+	
+	if (m_devices.contains(output)) {
+		return m_devices.value(output);
+	} else {
+		int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
+		if (loadedDevices <= output) {
+			return NULL;
+		}
+		QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(output)).toString();
+		int dType = settings.value(QString("/ftdidmx/devices/type%1").arg(output)).toInt();
+		int pid = settings.value(QString("/ftdidmx/types/pid%1").arg(dType)).toInt();
+		int vid = settings.value(QString("/ftdidmx/types/vid%1").arg(dType)).toInt();
+		int type = settings.value(QString("/ftdidmx/types/interface%1").arg(dType)).toInt();
+		
+		FTDIDMXDevice *device = new FTDIDMXDevice(this, vid, pid, type, serial.toAscii().data(), output);
+		if (device != NULL) {
+			m_devices.insert(output, device);
+			return device;
+		}
 	}
 
 	return NULL;
@@ -147,13 +142,11 @@ FTDIDMXDevice* FTDIDMXOut::device(const QString& path)
 QStringList FTDIDMXOut::outputs()
 {
 	QStringList list;
+	QSettings settings;
 
-	QMapIterator <t_output, FTDIDMXDevice*> it(m_devices);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		Q_ASSERT(it.value() != NULL);
-		list << it.value()->name();
+	int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
+	for (int i = 0; i < loadedDevices; i++) {
+		list << settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString();
 	}
 
 	return list;

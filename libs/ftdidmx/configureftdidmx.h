@@ -30,24 +30,6 @@
 class FTDIDMXOut;
 class QTimer;
 
-struct FTDIDevice
-{
-	const char *name;
-	int vid;
-	int pid;
-	int type;
-};
-// Now struct can be used as QVarient
-Q_DECLARE_METATYPE(FTDIDevice);
-
-static struct FTDIDevice known_devices[] =
-{
-	{"EntTec Open DMX USB", 0x0403, 0x6001, 0},
-	{"Homebrew USB -> DMX", 0x0403, 0xEC70, 0},
-	{"EntTec DMX USB Pro",  0x0403, 0x6001, 1},
-	{"Other", 0x0000, 0x0000, 0}
-};
-
 class ConfigureFTDIDMXOut : public QDialog, public Ui_ConfigureFTDIDMXOut
 {
 	Q_OBJECT
@@ -63,32 +45,6 @@ protected:
 	FTDIDMXOut* m_plugin;
 
 	/*********************************************************************
-	 * Universe testing
-	 *********************************************************************/
-protected slots:
-	/**
-	 * Start/stop flashing all channel values of one universe
-	 *
-	 * @param state true to start flashing, false to stop flashing
-	 */
-	void slotTestToggled(bool state);
-
-	/**
-	 * Flash all channels of one universe between 0 and 255
-	 */
-	void slotTestTimeout();
-
-protected:
-	/** Timer that drives universe testing */
-	QTimer* m_timer;
-
-	/** Modulo var that changes state between [0|1] on each timer pass */
-	int m_testMod;
-
-	/** The universe to test output on */
-	t_output m_output;
-
-	/*********************************************************************
 	 * Refresh
 	 *********************************************************************/
 protected slots:
@@ -96,16 +52,14 @@ protected slots:
 	 * Invoke refresh for the interface list
 	 */
 	void slotRefreshClicked();
-	void slotDeviceChanged(int index);
+	void slotDeviceChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
+	void slotDeviceTypeChanged(int index);
+	void slotAddTypeClicked();
 
 protected:
 	/** Refresh the interface list */
 	void refreshList();
 	int getIntHex(QLineEdit *e);
-
-	int m_current_vid;
-	int m_current_pid;
-	int m_current_type;
 };
 
 #endif

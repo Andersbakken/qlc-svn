@@ -24,7 +24,6 @@
 #endif
 #include <QDebug>
 #include <QThread>
-#include <QSettings>
 
 #include "ftdidmxdevice.h"
 
@@ -44,7 +43,7 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid, int type,
 	m_pid = pid;
 	m_type = type;
 	m_output = output;
-	m_path = QString(description);
+	m_path = QString(output);
 
 	// Ensure we set everything to 0
 	for (t_channel i = 0; i < sizeof(m_values); i++)
@@ -160,8 +159,6 @@ void FTDIDMXDevice::run()
 
 bool FTDIDMXDevice::open()
 {
-	QSettings settings;
-        settings.setValue("/ftdidmx/device/serial", QVariant(m_path));
 
 	FT_STATUS status = FT_OK;
 #ifndef WIN32

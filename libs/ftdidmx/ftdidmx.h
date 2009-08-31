@@ -30,6 +30,17 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
+
+struct FTDIDevice
+{
+	const char *name;
+	int vid;
+	int pid;
+	int type;
+};
+// Now struct can be used as QVariant
+//Q_DECLARE_METATYPE(FTDIDevice);
+
 class ConfigureFTDIDMXOut;
 class FTDIDMXDevice;
 class QString;
@@ -49,22 +60,20 @@ class FTDIDMXOut : public QObject, public QLCOutPlugin
 	 * Initialization
 	 *********************************************************************/
 public:
+	FTDIDMXOut();
+	~FTDIDMXOut();
 	void init();
 	void open(t_output output = 0);
 	void close(t_output output = 0);
 
 protected:
-	QMutex m_vidpid_mutex;
-	int m_scan_vid;
-	int m_scan_pid;	
-	int m_device_type;
+	int m_number_device_types;
+	FTDIDevice* m_device_types;
 
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/
 public:
-	void rescanDevices();
-	void setVIDPID(int vid, int pid, int type);
 	FTDIDMXDevice* device(const QString& path);
 	QStringList outputs();
 

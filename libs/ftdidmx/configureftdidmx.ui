@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>ConfigureFTDIDMXOut</class>
- <widget class="QDialog" name="ConfigureFTDIDMXOut" >
-  <property name="geometry" >
+ <widget class="QDialog" name="ConfigureFTDIDMXOut">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,16 +10,16 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Configure FTDI DMX Plugin</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" >
-   <item row="4" column="2" >
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="2">
     <spacer>
-     <property name="orientation" >
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>40</width>
        <height>20</height>
@@ -26,85 +27,49 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="0" >
-    <widget class="QPushButton" name="m_testButton" >
-     <property name="text" >
-      <string>Test output</string>
-     </property>
-     <property name="checkable" >
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1" >
-    <widget class="QPushButton" name="m_refreshButton" >
-     <property name="text" >
+   <item row="4" column="1">
+    <widget class="QPushButton" name="m_refreshButton">
+     <property name="text">
       <string>Refresh</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="3" >
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="standardButtons" >
+   <item row="4" column="3">
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="4" >
-    <widget class="QTreeWidget" name="m_list" >
-     <property name="alternatingRowColors" >
+   <item row="3" column="0" colspan="4">
+    <widget class="QTreeWidget" name="m_list">
+     <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
-     <property name="rootIsDecorated" >
+     <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
-     <property name="itemsExpandable" >
+     <property name="itemsExpandable">
       <bool>false</bool>
      </property>
-     <property name="allColumnsShowFocus" >
+     <property name="allColumnsShowFocus">
       <bool>true</bool>
      </property>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>Devices</string>
       </property>
      </column>
     </widget>
    </item>
-   <item rowspan="3" row="0" column="0" colspan="4" >
-    <layout class="QHBoxLayout" name="horizontalLayout" >
+   <item row="0" column="0" rowspan="3" colspan="4">
+    <layout class="QHBoxLayout" name="typeContainer">
      <item>
-      <widget class="QLabel" name="label" >
-       <property name="text" >
-        <string>Device Type</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="m_device" >
-       <property name="enabled" >
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize" >
-        <size>
-         <width>200</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer" >
-       <property name="orientation" >
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -113,26 +78,76 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label_2" >
-       <property name="text" >
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Type Name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_typeName"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
         <string>VID</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_vid" />
+      <widget class="QLineEdit" name="m_vid">
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3" >
-       <property name="text" >
+      <widget class="QLabel" name="label_3">
+       <property name="text">
         <string>PID</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_pid" />
+      <widget class="QLineEdit" name="m_pid">
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_addTypeButton">
+       <property name="text">
+        <string>Add Type</string>
+       </property>
+      </widget>
      </item>
     </layout>
+   </item>
+   <item row="4" column="0">
+    <widget class="QComboBox" name="m_device">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -144,11 +159,11 @@
    <receiver>ConfigureFTDIDMXOut</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>277</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>225</x>
      <y>273</y>
     </hint>
@@ -160,11 +175,11 @@
    <receiver>ConfigureFTDIDMXOut</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>405</x>
      <y>273</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>245</x>
      <y>288</y>
     </hint>
