@@ -2,6 +2,10 @@
 CONFIG			+= warn_on release
 CONFIG			-= debug
 
+# Fix for Mac OS 10.6 with Qt 4.5
+macx:CONFIG		-= x86_64
+macx:CONFIG		+= x86
+
 # OLA directories
 unix:OLA_GIT		= /usr/src/ola
 
