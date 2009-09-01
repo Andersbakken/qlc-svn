@@ -52,7 +52,7 @@ protected slots:
 	 * Invoke refresh for the interface list
 	 */
 	void slotRefreshClicked();
-	void slotDeviceChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
+	void slotDeviceChanged(QTreeWidgetItem * current, int index);
 	void slotDeviceTypeChanged(int index);
 	void slotAddTypeClicked();
 

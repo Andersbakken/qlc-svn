@@ -66,8 +66,8 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 			this, SLOT(slotAddTypeClicked()));
 	connect(m_device, SIGNAL(currentIndexChanged(int)),
 			this, SLOT(slotDeviceTypeChanged(int)));
-	connect(m_list, SIGNAL(currentIndexChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-			this, SLOT(slotDeviceChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+	connect(m_list, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
+			this, SLOT(slotDeviceChanged(QTreeWidgetItem*, int)));
 
 	refreshList();
 }
@@ -113,19 +113,19 @@ int ConfigureFTDIDMXOut::getIntHex(QLineEdit *e)
 	return ret;
 }
 
-void ConfigureFTDIDMXOut::slotDeviceChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+void ConfigureFTDIDMXOut::slotDeviceChanged(QTreeWidgetItem * current, int column)
 {
 	if (current == NULL) {
 		return;
 	}
-	
+
 	QSettings settings;
 	QVariant type = settings.value(QString("/ftdidmx/devices/type%1").arg(m_list->indexOfTopLevelItem(current)), QVariant(0));
 	if (type.type() != QVariant::Int) {
 		return;
 	}
 	
-	m_device->setCurrentIndex(type.toInt());
+	m_device->setCurrentIndex(type.toInt() + 1);
 }
 
 void ConfigureFTDIDMXOut::slotDeviceTypeChanged(int index)

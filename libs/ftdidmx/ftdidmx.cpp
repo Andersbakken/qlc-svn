@@ -75,11 +75,10 @@ void FTDIDMXOut::init()
 	}
 	
 	for (unsigned int i = 0; i < sizeof(known_devices) / sizeof(FTDIDevice); i++) {
-		FTDIDevice d = m_device_types[i];
-		d.vid = known_devices[i].vid;
-		d.pid = known_devices[i].pid;
-		d.type = known_devices[i].type;
-		d.name = known_devices[i].name;
+		m_device_types[i].vid = known_devices[i].vid;
+		m_device_types[i].pid = known_devices[i].pid;
+		m_device_types[i].type = known_devices[i].type;
+		m_device_types[i].name = known_devices[i].name;
 	}
 }
 
