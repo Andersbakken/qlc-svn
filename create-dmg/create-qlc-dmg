@@ -6,27 +6,12 @@ cd qlc-dmg-source
 cp -r /Applications/qlc.app ./
 cp -r /Applications/qlc-fixtureeditor.app ./
 
+macdeployqt qlc-fixtureeditor.app
+macdeployqt qlc.app
+
 # Install plugins
-install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ../support/libqtaccessiblewidgets.dylib
-install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ../support/libqtaccessiblewidgets.dylib
-cp ../support/libqtaccessiblewidgets.dylib ./qlc.app/Contents/Plugins/
-mkdir ./qlc-fixtureeditor.app/Contents/Plugins
-cp ../support/libqtaccessiblewidgets.dylib ./qlc-fixtureeditor.app/Contents/Plugins/
-
-# Convert QT to frameworks
-function copyQtFramework {
-	mkdir -p ./$1.app/Contents/Frameworks/$2.framework/Versions/4/
-	cp /Library/Frameworks/$2.framework/Versions/4/$2 ./$1.app/Contents/Frameworks/$2.framework/Versions/4/$2
-	cp -r /Library/Frameworks/$2.framework/Contents ./$1.app/Contents/Frameworks/$2.framework/
-	install_name_tool -id @executable_path/../Frameworks/$2.framework/Versions/4/$2 qlc.app/Contents/Frameworks/$2.framework/Versions/4/$2
-}
-
 function linkQtFramework {
 	install_name_tool -change $2.framework/Versions/4/$2 @executable_path/../Frameworks/$2.framework/Versions/4/$2 $1.app/$3
-	if [ "$2" != "QtCore" ]
-	then
-		install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore $1.app/Contents/Frameworks/$2.framework/Versions/4/$2
-	fi
 }
 
 function doAutoLink {
@@ -40,25 +25,17 @@ function doAutoLink {
 	done
 }
 
-copyQtFramework qlc QtCore
-copyQtFramework qlc QtGui
-copyQtFramework qlc QtXml
-
 cd qlc.app
 toLink=( $(find Contents/Plugins -name \*.dylib) )
 cd ..
-toLink[${#toLink[@]}]="Contents/MacOS/qlc"
 toLink[${#toLink[@]}]="Contents/Frameworks/libqlccommon.1.dylib"
 doAutoLink qlc
 
-copyQtFramework qlc-fixtureeditor QtCore
-copyQtFramework qlc-fixtureeditor QtGui
-copyQtFramework qlc-fixtureeditor QtXml
-toLink=( "Contents/Frameworks/libqlccommon.1.dylib" "Contents/MacOS/qlc-fixtureeditor" )
+toLink=( "Contents/Frameworks/libqlccommon.1.dylib" )
 doAutoLink qlc-fixtureeditor
 
 ln -s /Applications " "
 cd ..
-rm qlc-3.0.dmg rw.qlc-3.0.dmg
-./create-dmg --volname "QLC v3.0" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.dmg qlc-dmg-source/
+rm qlc-3.0.1.dmg rw.qlc-3.0.1.dmg
+./create-dmg --volname "QLC v3.0.1" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.1.dmg qlc-dmg-source/
 rm -Rf qlc-dmg-source
