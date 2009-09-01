@@ -147,14 +147,15 @@ void ConfigureFTDIDMXOut::refreshList()
 	QSettings settings;
 	
 	int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
-	
+
 	for (int i = 0; i < loadedDevices; i++) {
 		QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString();
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
 		item->setText(KColumnName, serial);
 		item->setText(KColumnOutput, QString("%1").arg(i));
 	}
-	
+
+	t_output output = loadedDevices;	
 	for (int i = 0; i < m_plugin->m_number_device_types; i++) {
 #ifndef WIN32
 		FT_SetVIDPID(m_plugin->m_device_types[i].vid, m_plugin->m_device_types[i].pid);
@@ -175,7 +176,6 @@ void ConfigureFTDIDMXOut::refreshList()
 									  FT_LIST_ALL | FT_OPEN_BY_SERIAL_NUMBER);
 		if (st == FT_OK)
 		{
-			t_output output = loadedDevices;
 			while (devices > 0)
 			{
 				devices--;
@@ -184,7 +184,7 @@ void ConfigureFTDIDMXOut::refreshList()
 				
 				bool found = false;
 				for (int j = 0; j < loadedDevices; j++) {
-					if (settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString() == serial) {
+					if (settings.value(QString("/ftdidmx/devices/serial%1").arg(j)).toString() == serial) {
 						found = true;
 					}
 				}
@@ -198,7 +198,7 @@ void ConfigureFTDIDMXOut::refreshList()
 					output++;
 				}
 			}
-			settings.setValue("/ftdidmx/devices/number", QVariant(output));
 		}
 	}
+	settings.setValue("/ftdidmx/devices/number", QVariant(output));
 }
