@@ -1,3 +1,19 @@
+qlc (3.0.1) stable; urgency=high
+
+  * Quality was improved thru automatic unit testing of all engine components
+  * Engine-originated crashes have been fixed
+  * Support for Enttec DMX USB Pro dongle was added
+  * Preliminary support for Enttec Wings was added
+  * Maximum channel count per fixture was increased to 128
+  * Initial window placement bug was fixed
+  * EFX path visualization was improved with animation
+  * Function timing accuracy has been improved slightly
+  * A bug related to fixture loading and wrong ID assignment was fixed
+  * Engine and UI components have been separated to drastically cut down
+    on call-graph spaghetti
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Mon, 31 Aug 2009 21:01:06 +0300
+
 qlc (3.0) stable; urgency=low
 
   * Port from Qt3 to Qt4
