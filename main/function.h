@@ -309,8 +309,9 @@ public:
 	 *
 	 * @param root An XML root element of a function
 	 * @param doc The QLC document object, that owns all functions
+	 * @return true if successful, otherwise false
 	 */
-	static void loader(const QDomElement* root, Doc* doc);
+	static bool loader(const QDomElement* root, Doc* doc);
 
 	/*********************************************************************
 	 * Flash

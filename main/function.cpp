@@ -272,7 +272,7 @@ void Function::slotFixtureRemoved(t_fixture_id fid)
  * Load & Save
  *****************************************************************************/
 
-void Function::loader(const QDomElement* root, Doc* doc)
+bool Function::loader(const QDomElement* root, Doc* doc)
 {
 	Q_ASSERT(root != NULL);
 	Q_ASSERT(doc != NULL);
@@ -280,7 +280,7 @@ void Function::loader(const QDomElement* root, Doc* doc)
 	if (root->tagName() != KXMLQLCFunction)
 	{
 		qWarning("Function node not found!");
-		return;
+		return false;
 	}
 
 	/* Get common information from the tag's attributes */
@@ -292,7 +292,7 @@ void Function::loader(const QDomElement* root, Doc* doc)
 	if (id < 0 || id >= KFunctionArraySize)
 	{
 		qWarning() << "Function ID" << id << "out of bounds.";
-		return;
+		return false;
 	}
 
 	/* Create a new function according to the type */
@@ -306,7 +306,7 @@ void Function::loader(const QDomElement* root, Doc* doc)
 	else if (type == Function::EFX)
 		function = new class EFX(doc);
 	else
-		return;
+		return false;
 
 	function->setName(name);
 	if (function->loadXML(root) == true)
@@ -314,18 +314,21 @@ void Function::loader(const QDomElement* root, Doc* doc)
 		if (doc->addFunction(function, id) == true)
 		{
 			/* Success */
+			return true;
 		}
 		else
 		{
 			qWarning() << "Function" << name
 				   << "cannot be created.";
 			delete function;
+			return false;
 		}
 	}
 	else
 	{
 		qWarning() << "Function" << name << "cannot be loaded.";
 		delete function;
+		return false;
 	}
 }
 
