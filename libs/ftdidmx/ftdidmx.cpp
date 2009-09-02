@@ -96,8 +96,17 @@ FTDIDMXOut::~FTDIDMXOut()
 
 void FTDIDMXOut::open(t_output output)
 {
-	if (m_devices.contains(output) == true)
+	if (m_devices.contains(output) == true) {
 		m_devices[output]->open();
+	} else {
+		QSettings settings;
+		int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
+		if (loadedDevices > output) {
+			QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(output), "").toString();
+			FTDIDMXDevice *d = this->device(serial);
+			d->open();
+		}
+	}
 }
 
 void FTDIDMXOut::close(t_output output)
@@ -113,28 +122,28 @@ void FTDIDMXOut::close(t_output output)
 FTDIDMXDevice* FTDIDMXOut::device(const QString& path)
 {
 	QSettings settings;
-	int output = path.toInt();
-	
-	if (m_devices.contains(output)) {
-		return m_devices.value(output);
-	} else {
-		int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
-		if (loadedDevices <= output) {
-			return NULL;
-		}
-		QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(output)).toString();
-		int dType = settings.value(QString("/ftdidmx/devices/type%1").arg(output)).toInt();
-		int pid = settings.value(QString("/ftdidmx/types/pid%1").arg(dType)).toInt();
-		int vid = settings.value(QString("/ftdidmx/types/vid%1").arg(dType)).toInt();
-		int type = settings.value(QString("/ftdidmx/types/interface%1").arg(dType)).toInt();
-		
-		FTDIDMXDevice *device = new FTDIDMXDevice(this, vid, pid, type, serial.toAscii().data(), output);
-		if (device != NULL) {
-			m_devices.insert(output, device);
-			return device;
+	int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
+
+	for (int i = 0; i < loadedDevices; i++) {
+		QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString();
+		if (serial == path) {
+			// This is the output
+			if (m_devices.contains(i)) {
+				return m_devices.value(i);
+			} else {
+				int pid = settings.value(QString("/ftdidmx/devices/pid%1").arg(i)).toInt();
+				int vid = settings.value(QString("/ftdidmx/devices/vid%1").arg(i)).toInt();
+				int dType = settings.value(QString("/ftdidmx/devices/type%1").arg(i)).toInt();
+				
+				FTDIDMXDevice *device = new FTDIDMXDevice(this, vid, pid, m_device_types[dType].type, serial.toAscii().data(), i);
+				if (device != NULL) {
+					m_devices.insert(i, device);
+					return device;
+				}
+			}
 		}
 	}
-
+	
 	return NULL;
 }
 
@@ -147,7 +156,7 @@ QStringList FTDIDMXOut::outputs()
 	for (int i = 0; i < loadedDevices; i++) {
 		list << settings.value(QString("/ftdidmx/devices/serial%1").arg(i)).toString();
 	}
-
+	
 	return list;
 }
 
@@ -193,12 +202,39 @@ QString FTDIDMXOut::infoText(t_output output)
 		str += QString("hardware.");
 		str += QString("</P>");
 	}
-	else if (m_devices.contains(output) == true)
+	else
 	{
-		str += QString("<H3>%1</H3>").arg(outputs()[output]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		QSettings settings;
+		int loadedDevices = settings.value("/ftdidmx/devices/number", QVariant(0)).toInt();
+		if (loadedDevices > output)
+		{
+			QString serial = settings.value(QString("/ftdidmx/devices/serial%1").arg(output)).toString();
+			int pid = settings.value(QString("/ftdidmx/devices/pid%1").arg(output)).toInt();
+			int vid = settings.value(QString("/ftdidmx/devices/vid%1").arg(output)).toInt();
+			int dType = settings.value(QString("/ftdidmx/devices/type%1").arg(output)).toInt();
+			
+			str += QString("<H3>FTDI DMX Device %1</H3>").arg(serial);
+			str += QString("<P>");
+			str += QString("VID: 0x%1 PID: 0x%2 Interface: ").arg(QString::number(vid, 16)).arg(QString::number(pid, 16));
+			if (m_device_types[dType].type == 1) {
+				str += QString("USB DMX PRO");
+			} else if (m_device_types[dType].type == 0) {
+				str += QString("Homebrew");
+			}
+			str += QString("<br/>");
+			if (m_devices.contains(output)) {
+				if (m_devices.value(output)->isOpen()) {
+					str += QString("Open and functioning");
+				} else {
+					str += QString("Loaded, but not open or not functioning correctly");
+				}
+			} else {
+				str += QString("Currently not in use");
+			}
+			str += QString("</P>");
+		} else {
+			str += QString("<H3>Invalid device number: %1</H3>").arg(output);
+		}
 	}
 
 	str += QString("</BODY>");

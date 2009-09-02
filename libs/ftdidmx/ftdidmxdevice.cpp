@@ -43,7 +43,8 @@ FTDIDMXDevice::FTDIDMXDevice(QObject* parent, int vid, int pid, int type,
 	m_pid = pid;
 	m_type = type;
 	m_output = output;
-	m_path = QString(output);
+	m_path = QString(description);
+	m_open = false;
 
 	// Ensure we set everything to 0
 	for (t_channel i = 0; i < sizeof(m_values); i++)
@@ -82,6 +83,11 @@ QString FTDIDMXDevice::path() const
 t_output FTDIDMXDevice::output() const
 {
 	return m_output;
+}
+
+void FTDIDMXDevice::setType(int type)
+{
+	m_type = type;
 }
 
 /****************************************************************************
@@ -227,6 +233,7 @@ bool FTDIDMXDevice::open()
 
 		m_threadRunning = true;
 		start(QThread::TimeCriticalPriority);
+		m_open = true;
 
 		return true;
 	}
@@ -245,7 +252,13 @@ bool FTDIDMXDevice::close()
 	wait(500);
 
 	FT_Close(m_handle);
+	m_open = false;
 	return true;
+}
+
+bool FTDIDMXDevice::isOpen()
+{
+	return m_open;
 }
 
 /****************************************************************************

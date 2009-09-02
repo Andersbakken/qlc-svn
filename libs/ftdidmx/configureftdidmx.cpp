@@ -98,7 +98,28 @@ void ConfigureFTDIDMXOut::slotAddTypeClicked()
 	settings.setValue(QString("/ftdidmx/types/pid%1").arg(types), QVariant(pid));
 	settings.setValue(QString("/ftdidmx/types/interface%1").arg(types), QVariant(0));
 	settings.setValue(QString("/ftdidmx/types/name%1").arg(types), QVariant(name));
-	settings.setValue("/ftdidmx/types/number", ++types);
+	settings.setValue("/ftdidmx/types/number", QVariant(types + 1));
+	
+	FTDIDevice *oldDevices = m_plugin->m_device_types;
+	FTDIDevice *newDevices = (FTDIDevice*)malloc(sizeof(FTDIDevice)*(m_plugin->m_number_device_types + 1));
+	
+	for (int i = 0; i < m_plugin->m_number_device_types; i++) {
+		memcpy(&newDevices[i], &oldDevices[i], sizeof(FTDIDevice));
+	}
+	newDevices[m_plugin->m_number_device_types].name = name.toAscii();
+	newDevices[m_plugin->m_number_device_types].vid = vid;
+	newDevices[m_plugin->m_number_device_types].pid = pid;
+	newDevices[m_plugin->m_number_device_types].type = 0;
+	
+	m_device->addItem(name, QVariant(m_plugin->m_number_device_types));
+	
+	m_plugin->m_device_types = newDevices;
+	m_plugin->m_number_device_types++;
+	free(oldDevices);
+	
+	m_vid->setText("");
+	m_pid->setText("");
+	m_typeName->setText("");
 }
 
 int ConfigureFTDIDMXOut::getIntHex(QLineEdit *e)
@@ -138,7 +159,12 @@ void ConfigureFTDIDMXOut::slotDeviceTypeChanged(int index)
 	}
 
 	QSettings settings;
-	settings.setValue(QString("/ftdidmx/devices/type%1").arg(m_list->indexOfTopLevelItem(s.first())), d);
+	int output = m_list->indexOfTopLevelItem(s.first());
+	settings.setValue(QString("/ftdidmx/devices/type%1").arg(output), d);
+	
+	if (m_plugin->m_devices.contains(output)) {
+		m_plugin->m_devices.value(output)->setType(m_plugin->m_device_types[d.toInt()].type);
+	}
 }
 
 void ConfigureFTDIDMXOut::refreshList()
@@ -195,6 +221,8 @@ void ConfigureFTDIDMXOut::refreshList()
 					
 					settings.setValue(QString("/ftdidmx/devices/serial%1").arg(output), QVariant(serial));
 					settings.setValue(QString("/ftdidmx/devices/type%1").arg(output), QVariant(i));
+					settings.setValue(QString("/ftdidmx/devices/vid%1").arg(output), QVariant(m_plugin->m_device_types[i].vid));
+					settings.setValue(QString("/ftdidmx/devices/pid%1").arg(output), QVariant(m_plugin->m_device_types[i].pid));
 					output++;
 				}
 			}

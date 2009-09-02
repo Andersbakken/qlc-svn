@@ -58,6 +58,7 @@ public:
 	QString name() const;
 	QString path() const;
 	t_output output() const;
+	void setType(int type);
 
 protected:
 	QString m_name;
@@ -66,6 +67,7 @@ protected:
 	int m_pid;
 	int m_type;
 	t_output m_output;
+	bool m_open;
 
 	/********************************************************************
 	 * Threading
@@ -83,6 +85,7 @@ protected:
 public:
 	bool open();
 	bool close();
+	bool isOpen();
 
 protected:
 	FT_HANDLE m_handle;
