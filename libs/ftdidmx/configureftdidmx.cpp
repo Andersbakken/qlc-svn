@@ -136,6 +136,8 @@ int ConfigureFTDIDMXOut::getIntHex(QLineEdit *e)
 
 void ConfigureFTDIDMXOut::slotDeviceChanged(QTreeWidgetItem * current, int column)
 {
+	Q_UNUSED(column);
+
 	if (current == NULL) {
 		return;
 	}
