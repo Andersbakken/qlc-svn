@@ -20,15 +20,13 @@
 */
 
 #include <QApplication>
+#include <QTextStream>
 #include <QTranslator>
 #include <QMetaType>
 #include <QLocale>
 #include <QString>
 #include <QDebug>
 #include <QHash>
-
-#include <sys/types.h>
-#include <unistd.h>
 
 #include "common/qlctypes.h"
 
@@ -39,24 +37,51 @@
 #include <X11/Xlib.h>
 #endif
 
-void print_version()
+/* Use this namespace for command-line arguments so that we don't pollute
+   the global namespace. */
+namespace QLCArgs
 {
-	qDebug() << KApplicationNameLong << KApplicationVersion;
-	qDebug() << "This program is licensed under the terms of GNU GPL.";
-	qDebug() << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)";
+	/**
+	 * If true, switch to operate mode after ALL initialization is done.
+	 */
+	bool operate;
+
+	/**
+	 * Specifies a workspace file name to load after all initialization
+	 * has been done, but before switching to operate mode (if applicable)
+	 */
+	QString workspace;
 }
 
-void print_usage()
+/**
+ * Prints the application version
+ */
+void printVersion()
 {
-	print_version();
+	QTextStream cout(stdout, QIODevice::WriteOnly);
 
-	qDebug() << "Usage:";
-	qDebug() << "  qlc [options]";
-	qDebug() << "\nOptions:";
-	qDebug() << "  -o <file> or --open <file>    Open the specified workspace file";
-	qDebug() << "  -p or --operate               Start in operate mode";
-	qDebug() << "  -h or --help                  Print this help";
-	qDebug() << "  -v or --version               Print version information";
+	cout << endl;
+	cout << KApplicationNameLong << " " << KApplicationVersion << endl;
+	cout << "This program is licensed under the terms of GNU GPL." << endl;
+	cout << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)" << endl;
+	cout << endl;
+}
+
+/**
+ * Prints possible command-line options
+ */
+void printUsage()
+{
+	QTextStream cout(stdout, QIODevice::WriteOnly);
+
+	cout << "Usage:";
+	cout << "  qlc [options]" << endl;
+	cout << "Options:" << endl;
+	cout << "  -o <file> or --open <file>\tOpen the specified workspace file" << endl;
+	cout << "  -p or --operate\t\tStart in operate mode" << endl;
+	cout << "  -h or --help\t\t\tPrint this help" << endl;
+	cout << "  -v or --version\t\tPrint version information" << endl;
+	cout << endl;
 }
 
 /**
@@ -65,53 +90,44 @@ void print_usage()
  * @param argc Number of arguments in array argv
  * @param argv Arguments array
  *
- * @return true to continue application init; otherwise false
+ * @return true to continue with application launch; otherwise false
  */
-bool parseArgs(App* app, int argc, char **argv)
+bool parseArgs(int argc, char **argv)
 {
-	bool result = true;
-	int i = 0;
-	QString s;
-
 	Q_ASSERT(app != NULL);
 
-	for (i = 1; i < argc; i++)
+	QLCArgs::operate = false;
+
+	for (int i = 1; i < argc; i++)
 	{
 		if (::strcmp(argv[i], "-v") == 0 ||
 		    ::strcmp(argv[i], "--version") == 0)
 		{
-			print_version();
-			result = false;
+			/* Don't print anything, since version is always
+			   printed before anything else. Just make the app
+			   exit by returning false. */
+			return false;
 		}
 		else if (::strcmp(argv[i], "-h") == 0 ||
 			 ::strcmp(argv[i], "--help") == 0)
 		{
-			print_usage();
-			result = false;
+			printUsage();
+			return false;
 		}
 		else if (::strcmp(argv[i], "-p") == 0 ||
 			 ::strcmp(argv[i], "--operate") == 0)
 		{
-			app->slotModeOperate();
-			result = true;
+			QLCArgs::operate = true;
 		}
 		else if (::strcmp(argv[i], "-o") == 0 ||
 			 ::strcmp(argv[i], "--open") == 0)
 		{
-			s = QString((const char*) argv[++i]);
-			//app->newDocument();
-			//app->doc()->loadWorkspaceAs(s);
-			result = true;
-		}
-		else
-		{
-			result = true;
+			QLCArgs::workspace = QString(argv[++i]);
 		}
 	}
 
-	return result;
+	return true;
 }
-
 
 /**
  * THE entry point for the application
@@ -121,8 +137,17 @@ bool parseArgs(App* app, int argc, char **argv)
  */
 int main(int argc, char** argv)
 {
+	/* Let the world know... */
+	printVersion();
+
+	/* Parse command-line arguments */
+	if (parseArgs(argc, argv) == false)
+		return 0;
+
+	/* Create the Qt core application object */
 	QApplication qapp(argc, argv);
 
+	/* Make QLC i18n-friendly */
 	QTranslator qtTran;
 	qtTran.load("qt_" + QLocale::system().name());
 	qapp.installTranslator(&qtTran);
@@ -137,9 +162,14 @@ int main(int argc, char** argv)
 	qRegisterMetaType < QHash<t_channel,t_value> >(
 						"QHash<t_channel,t_value>");
 
+	/* Create and initialize the QLC application object */
 	App app;
-	if (parseArgs(&app, argc, argv) == false)
-		return -1;
+	if (QLCArgs::operate == true)
+		app.slotModeOperate();
+	if (QLCArgs::workspace.isEmpty() == false)
+		app.loadXML(QLCArgs::workspace);
+
+	/* Show and execute the application */
 	app.show();
 	qapp.exec();
 
