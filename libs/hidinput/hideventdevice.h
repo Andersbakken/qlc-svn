@@ -29,6 +29,7 @@
 #include <sys/ioctl.h>
 #include <linux/input.h>
 #include <linux/types.h>
+#include <stdint.h>
 
 #include "common/qlctypes.h"
 #include "hiddevice.h"
