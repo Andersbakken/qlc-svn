@@ -217,10 +217,10 @@ MIDIDevice* MIDIInput::device(const snd_seq_addr_t* address)
 
 MIDIDevice* MIDIInput::device(unsigned int index)
 {
-	if (index > static_cast<unsigned int> (m_devices.count()))
-		return NULL;
-	else
+	if (index < static_cast<unsigned int>(m_devices.size()))
 		return m_devices.at(index);
+	else
+		return NULL;
 }
 
 void MIDIInput::addDevice(MIDIDevice* device)
