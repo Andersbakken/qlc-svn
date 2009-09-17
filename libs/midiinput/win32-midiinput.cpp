@@ -104,10 +104,10 @@ void MIDIInput::rescanDevices()
 
 MIDIDevice* MIDIInput::device(unsigned int index)
 {
-	if (index > static_cast<unsigned int> (m_devices.count()))
-		return NULL;
-	else
+	if (index < static_cast<unsigned int> (m_devices.count()))
 		return m_devices.at(index);
+	else
+		return NULL;
 }
 
 void MIDIInput::addDevice(MIDIDevice* device)
