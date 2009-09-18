@@ -223,7 +223,7 @@ MIDIDevice* MIDIOut::device(const snd_seq_addr_t* address)
 
 		Q_ASSERT(dev != NULL);
 		Q_ASSERT(dev->address() != NULL);
-		
+
 		if (dev->address()->client == address->client &&
 		    dev->address()->port == address->port)
 		{
@@ -236,10 +236,10 @@ MIDIDevice* MIDIOut::device(const snd_seq_addr_t* address)
 
 MIDIDevice* MIDIOut::device(unsigned int index)
 {
-	if (index >= static_cast<unsigned int> (m_devices.count()))
-		return NULL;
-	else
+	if (index < static_cast<unsigned int> (m_devices.size()))
 		return m_devices.at(index);
+	else
+		return NULL;
 }
 
 void MIDIOut::addDevice(MIDIDevice* device)

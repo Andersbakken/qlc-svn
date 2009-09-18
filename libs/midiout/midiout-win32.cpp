@@ -83,10 +83,10 @@ void MIDIOut::rescanDevices()
 
 MIDIDevice* MIDIOut::device(unsigned int index)
 {
-	if (index > static_cast<unsigned int> (m_devices.count()))
-		return NULL;
-	else
+	if (index < static_cast<unsigned int> (m_devices.size()))
 		return m_devices.at(index);
+	else
+		return NULL;
 }
 
 void MIDIOut::addDevice(MIDIDevice* device)
