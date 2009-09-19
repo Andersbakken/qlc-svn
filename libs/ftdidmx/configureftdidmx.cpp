@@ -51,15 +51,20 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 	m_device->addItem(QString(""), QVariant(-1));
 	for (int i = 0; i < plugin->m_number_device_types; i++)
 	{
-		m_device->addItem(QString(plugin->m_device_types[i].name), QVariant(i));
+		m_device->addItem(QString(plugin->m_device_types[i].name),
+				  QVariant(i));
 	}
 	m_device->setCurrentIndex(0);
-	
-	// Hide the pid/vid setters for Windows	
-#ifdef WIN32
-	typeContainer->setVisible(false);
-#endif
 
+#ifdef WIN32
+	// Hide the pid/vid setters for Windows	
+	m_typeNameLabel->hide();
+	m_vidLabel->hide();
+	m_vid->hide();
+	m_pidLabel->hide();
+	m_pid->hide();
+	m_addTypeButton->hide();
+#else
 	connect(m_refreshButton, SIGNAL(clicked()),
 			this, SLOT(slotRefreshClicked()));
 	connect(m_addTypeButton, SIGNAL(clicked()),
@@ -68,7 +73,7 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 			this, SLOT(slotDeviceTypeChanged(int)));
 	connect(m_list, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
 			this, SLOT(slotDeviceChanged(QTreeWidgetItem*, int)));
-
+#endif
 	refreshList();
 }
 

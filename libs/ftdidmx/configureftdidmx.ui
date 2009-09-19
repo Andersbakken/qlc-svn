@@ -65,22 +65,9 @@
    <item row="0" column="0" rowspan="3" colspan="4">
     <layout class="QHBoxLayout" name="typeContainer">
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="m_typeNameLabel">
        <property name="text">
-        <string>Type Name</string>
+        <string>Type Name:</string>
        </property>
       </widget>
      </item>
@@ -88,9 +75,9 @@
       <widget class="QLineEdit" name="m_typeName"/>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="m_vidLabel">
        <property name="text">
-        <string>VID</string>
+        <string>VID:</string>
        </property>
       </widget>
      </item>
@@ -105,9 +92,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="m_pidLabel">
        <property name="text">
-        <string>PID</string>
+        <string>PID:</string>
        </property>
       </widget>
      </item>
