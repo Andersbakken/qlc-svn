@@ -55,16 +55,17 @@ void FTDIDMXOut::init()
 			i--;
 			QVariant vid = settings.value(QString("/ftdidmx/types/vid%1").arg(i), QVariant(0));
 			QVariant pid = settings.value(QString("/ftdidmx/types/pid%1").arg(i), QVariant(0));
-			QVariant interface = settings.value(QString("/ftdidmx/types/interface%1").arg(i), QVariant(0));
+			QVariant iface = settings.value(QString("/ftdidmx/types/interface%1").arg(i), QVariant(0));
 			QVariant name = settings.value(QString("/ftdidmx/types/name%1").arg(i), QVariant(""));
 			if (vid.type() == QVariant::Int &&
 				pid.type() == QVariant::Int &&
-				interface.type() == QVariant::Int &&
-				name.type() == QVariant::String) {
+				iface.type() == QVariant::Int &&
+				name.type() == QVariant::String)
+			{
 				FTDIDevice d = m_device_types[m_number_device_types + i];
 				d.vid = vid.toInt();
 				d.pid = pid.toInt();
-				d.type = interface.toInt();
+				d.type = iface.toInt();
 				d.name = name.toString().toAscii();
 			}
 		}
