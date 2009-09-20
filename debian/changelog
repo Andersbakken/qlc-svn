@@ -1,3 +1,8 @@
+qlc (3.0.2) stable; urgency=high
+  * Two crash bugs were fixed in midi input and output plugins.
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Sun, 20 Sep 2009 13:29:47 +0300
+
 qlc (3.0.1) stable; urgency=high
 
   * Quality was improved thru automatic unit testing of all engine components
