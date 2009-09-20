@@ -30,7 +30,6 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-
 struct FTDIDevice
 {
 	const char *name;
@@ -60,7 +59,8 @@ class FTDIDMXOut : public QObject, public QLCOutPlugin
 	 * Initialization
 	 *********************************************************************/
 public:
-	FTDIDMXOut();
+	/* Don't declare a constructor for Qt plugins */
+
 	~FTDIDMXOut();
 	void init();
 	void open(t_output output = 0);

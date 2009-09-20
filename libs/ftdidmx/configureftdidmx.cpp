@@ -59,6 +59,7 @@ ConfigureFTDIDMXOut::ConfigureFTDIDMXOut(QWidget* parent, FTDIDMXOut* plugin)
 #ifdef WIN32
 	// Hide the pid/vid setters for Windows	
 	m_typeNameLabel->hide();
+	m_typeName->hide();
 	m_vidLabel->hide();
 	m_vid->hide();
 	m_pidLabel->hide();

@@ -29,7 +29,12 @@
 #include "configureftdidmx.h"
 #include "ftdidmx.h"
 #include "ftdidmxdevice.h"
-#include "ftd2xx.h"
+
+#ifdef WIN32
+#	include "ftd2xx-win32.h"
+#else
+#	include "ftd2xx.h"
+#endif
 
 static struct FTDIDevice known_devices[] =
 {
@@ -44,6 +49,8 @@ static struct FTDIDevice known_devices[] =
 
 void FTDIDMXOut::init()
 {
+	m_device_types = NULL;
+
 	QSettings settings;
 	QVariant devTypes = settings.value("/ftdidmx/types/number", 0);
 	m_number_device_types = sizeof(known_devices) / sizeof(FTDIDevice);
@@ -83,10 +90,7 @@ void FTDIDMXOut::init()
 	}
 }
 
-FTDIDMXOut::FTDIDMXOut()
-{
-	m_device_types = NULL;
-}
+/* Don't define a constructor for Qt plugins */
 
 FTDIDMXOut::~FTDIDMXOut()
 {
