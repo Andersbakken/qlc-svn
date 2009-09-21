@@ -78,4 +78,11 @@ Section: Other
 Architecture: any
 Depends: qlc
 Description: Output plugin for USB-to-DMX devices by Peperoni Light
-  Output plugin for USB-to-DMX devices by Peproni Light (www.peperoni-light.de).
+  Output plugin for USB-to-DMX devices by Peperoni Light (www.peperoni-light.de).
+
+Package: qlc-output-midi
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Output plugin supporting DMX thru MIDI devices.
+  DMX output plugin for MIDI devices.
