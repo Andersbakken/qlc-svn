@@ -29,19 +29,15 @@
 #include "unix-midiinput.h"
 #include "midiinputevent.h"
 
-MIDIDevice::MIDIDevice(MIDIInput* parent, const snd_seq_addr_t* address)
-	: QObject(parent)
+MIDIDevice::MIDIDevice(MIDIInput* parent) : QObject(parent)
 {
-	Q_ASSERT(address != NULL);
 	m_address = NULL;
-
-	setAddress(address);
-	extractName();
 }
 
 MIDIDevice::~MIDIDevice()
 {
 	delete m_address;
+	m_address = NULL;
 }
 
 /*****************************************************************************
@@ -55,14 +51,16 @@ const snd_seq_addr_t* MIDIDevice::address() const
 
 void MIDIDevice::setAddress(const snd_seq_addr_t* address)
 {
-	Q_ASSERT(address != NULL);
-
 	if (m_address != NULL)
 		delete m_address;
+	m_address = NULL;
 
-	m_address = new snd_seq_addr_t;
-	m_address->client = address->client;
-	m_address->port = address->port;
+	if (address != NULL)
+	{
+		m_address = new snd_seq_addr_t;
+		m_address->client = address->client;
+		m_address->port = address->port;
+	}
 }
 
 /*****************************************************************************
@@ -100,24 +98,26 @@ QString MIDIDevice::name() const
 	return m_name;
 }
 
-void MIDIDevice::extractName()
+bool MIDIDevice::extractName()
 {
+	MIDIInput* plugin = static_cast<MIDIInput*> (parent());
+	if (plugin == NULL || plugin->alsa() == NULL || m_address == NULL)
+		return false;
+
 	snd_seq_port_info_t* portInfo = NULL;
-	MIDIInput* plugin;
-	int r;
-
-	plugin = static_cast<MIDIInput*> (parent());
-	Q_ASSERT(plugin != NULL);
-	Q_ASSERT(plugin->alsa() != NULL);
-	Q_ASSERT(m_address != NULL);
-
 	snd_seq_port_info_alloca(&portInfo);
-	r = snd_seq_get_any_port_info(plugin->alsa(), m_address->client,
+	int r = snd_seq_get_any_port_info(plugin->alsa(), m_address->client,
 				      m_address->port, portInfo);
 	if (r == 0)
+	{
 		m_name = QString(snd_seq_port_info_get_name(portInfo));
+		return true;
+	}
 	else
+	{
 		m_name = QString("ERROR");
+		return false;
+	}
 }
 
 /*****************************************************************************

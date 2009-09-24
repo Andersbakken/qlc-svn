@@ -170,10 +170,10 @@ void MIDIInput::rescanDevices()
 			if (dev == NULL)
 			{
 				/* New address. Create a new device for it. */
-				dev = new MIDIDevice(this, address);
+				dev = new MIDIDevice(this);
 				Q_ASSERT(dev != NULL);
-
-				/* Don't show QLC's internal ALSA ports */
+				dev->setAddress(address);
+				dev->extractName();
 				if (dev->name().contains("__QLC__") == false)
 					addDevice(dev);
 				else

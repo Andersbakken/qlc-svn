@@ -42,7 +42,7 @@ class MIDIDevice : public QObject
 	Q_OBJECT
 
 public:
-	MIDIDevice(MIDIInput* parent, const snd_seq_addr_t* address);
+	MIDIDevice(MIDIInput* parent);
 	virtual ~MIDIDevice();
 
 	/*********************************************************************
@@ -68,9 +68,12 @@ public:
 	/** Get the device's name */
 	QString name() const;
 
-protected:
-	/** Extract the name of this device from ALSA */
-	void extractName();
+	/**
+	 * Extract the name of this device from ALSA.
+	 *
+	 * @return true if successful, otherwise false.
+	 */
+	bool extractName();
 
 protected:
 	/** The name of this ALSA MIDI device */

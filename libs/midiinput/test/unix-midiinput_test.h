@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  main.cpp
+  unix-midiinput_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,36 +19,18 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QtTest>
+#ifndef UNIX_MIDIINPUT_TEST_H
+#define UNIX_MIDIINPUT_TEST_H
 
-#ifdef Q_WS_WIN
-#else
-#	include "unix-mididevice_test.h"
-#	include "unix-midiinput_test.h"
-#endif
+#include <QObject>
 
-#include "midiinputevent_test.h"
-
-int main(int argc, char** argv)
+class MIDIInput_Test : public QObject
 {
-	QApplication qapp(argc, argv);
-	int r;
+	Q_OBJECT
 
-	MIDIInputEvent_Test event;
-	r = QTest::qExec(&event, argc, argv);
-	if (r != 0)
-		return r;
+private slots:
+	void initial();
+	void openClose();
+};
 
-	MIDIDevice_Test device;
-	r = QTest::qExec(&device, argc, argv);
-	if (r != 0)
-		return r;
-
-	MIDIInput_Test input;
-	r = QTest::qExec(&input, argc, argv);
-	if (r != 0)
-		return r;
-
-	return 0;
-}
+#endif
