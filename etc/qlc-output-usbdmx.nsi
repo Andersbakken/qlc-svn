@@ -1,5 +1,5 @@
 Name "Peperoni USBDMX output plugin for Q Light Controller"
-OutFile "qlc-output-usbdmx-3.0.1.exe"
+OutFile "qlc-output-usbdmx-3.0.2.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
