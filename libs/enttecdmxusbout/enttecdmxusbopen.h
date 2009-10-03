@@ -26,7 +26,13 @@
 #include <QThread>
 
 #include "enttecdmxusbwidget.h"
-#include "ftd2xx.h"
+
+#ifdef WIN32
+#	include "windows.h"
+#	include "ftd2xx-win32.h"
+#else
+#	include "ftd2xx.h"
+#endif
 
 class EnttecDMXUSBOpen : public QThread, public EnttecDMXUSBWidget
 {

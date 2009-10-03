@@ -151,7 +151,7 @@ bool EnttecDMXUSBPro::initializePort()
 	}
 
 	/* Set flow control */
-	status = FT_SetFlowControl(m_handle, FT_FLOW_NONE, NULL, NULL);
+	status = FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0);
 	if (status != FT_OK)
 	{
 		qWarning() << "FT_SetFlowControl:" << status;
