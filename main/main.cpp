@@ -94,8 +94,6 @@ void printUsage()
  */
 bool parseArgs(int argc, char **argv)
 {
-	Q_ASSERT(app != NULL);
-
 	QLCArgs::operate = false;
 
 	for (int i = 1; i < argc; i++)
