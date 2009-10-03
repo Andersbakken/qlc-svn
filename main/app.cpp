@@ -970,7 +970,7 @@ QFile::FileError App::slotFileOpen()
 	if (FunctionManager::instance() != NULL)
 		FunctionManager::instance()->updateTree();
 	if (OutputManager::instance() != NULL)
-		InputManager::instance()->updateTree();
+		OutputManager::instance()->updateTree();
 	if (InputManager::instance() != NULL)
 		InputManager::instance()->updateTree();
 
