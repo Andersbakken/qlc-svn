@@ -6,9 +6,10 @@ TEMPLATE		= subdirs
 SUBDIRS			+= common
 
 # Output plugins
-!mac:SUBDIRS         	+= usbdmxout
-!mac:unix:SUBDIRS	+= dmx4linuxout
 SUBDIRS			+= ftdidmx
+!mac:!win32:SUBDIRS	+= dmx4linuxout
+!mac:SUBDIRS         	+= usbdmxout
+!mac:SUBDIRS		+= enttecdmxusbout
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
 
@@ -18,6 +19,6 @@ exists($$OLA_GIT) {
 }
 
 # Input plugins
-!mac:SUBDIRS		+= midiinput
-!mac:unix:SUBDIRS	+= hidinput
 SUBDIRS			+= ewinginput
+!mac:SUBDIRS		+= midiinput
+!mac:!win32:SUBDIRS	+= hidinput
