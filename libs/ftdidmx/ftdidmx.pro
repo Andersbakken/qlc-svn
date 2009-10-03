@@ -22,14 +22,6 @@ unix:!macx {
 
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
-
-win32 {
-	# Windows needs an additional DLL
-	ftdidll.path	= $$BINDIR
-	ftdidll.files	= ftd2xx.dll
-	INSTALLS	+= ftdidll
-}
-
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 
 # Forms

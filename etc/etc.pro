@@ -37,6 +37,7 @@ win32 {
 			  qlc-input-enttec-wing.nsi \
 			  qlc-input-profiles.nsi \
 			  qlc-output-ftdidmx.nsi \
+			  qlc-output-enttecdmxusb.nsi \
 			  qlc-output-midi.nsi \
 			  qlc-output-udmx.nsi \
 			  qlc-output-usbdmx.nsi
