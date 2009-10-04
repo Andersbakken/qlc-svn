@@ -10,6 +10,7 @@ SUBDIRS			+= ftdidmx
 !mac:!win32:SUBDIRS	+= dmx4linuxout
 !mac:SUBDIRS         	+= peperoniout
 !mac:SUBDIRS		+= enttecdmxusbout
+!mac:SUBDIRS		+= enttecdmxusbproout
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
 

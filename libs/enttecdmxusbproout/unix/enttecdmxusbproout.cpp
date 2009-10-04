@@ -183,41 +183,45 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 	if (output == KOutputInvalid)
 	{
 		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("This plugin provides DMX output support for ");
-		str += QString("Enttec DMX USB Pro widgets using VCP drivers. ");
-		str += QString("See <a href=\"http://www.enttec.com\">");
-		str += QString("http://www.enttec.com</a> for more ");
-		str += QString("information.");
-		str += QString("</P>");
 
 		if (m_widgets.size() == 0)
 		{
 #ifdef WIN32
 			str += QString("<P>");
 			str += QString("<B>No devices available</B>. Make ");
-			str += QString("sure you have your Enttec DMX USB Pro ");
+			str += QString("sure you have the Enttec DMX USB Pro ");
 			str += QString("plugged in and the <I>VCP</I> ");
-			str += QString("(Virtual Communications Port) drivers ");
+			str += QString("(Virtual Communication Port) drivers ");
 			str += QString("installed. Then click the ");
 			str += QString("<B>configure</B> button. Note that the ");
-			str += QString("<I>D2XX</I> driver is not supported.");
+			str += QString("<I>D2XX</I> driver is not supported ");
+			str += QString("by this plugin.");
 			str += QString("</P>");
 #else
 			str += QString("<P>");
 			str += QString("<B>No devices available</B>. Make ");
-			str += QString("sure you have your Enttec DMX USB Pro ");
+			str += QString("sure you have the Enttec DMX USB Pro ");
 			str += QString("plugged in and the <I>ftdi_sio</I> ");
-			str += QString("kernel module loaded. You might need ");
-			str += QString("to uninstall the <I>FTDI</I> or ");
-			str += QString("<I>Enttec Open DMX USB</I> plugins. ");
-			str += QString("Then click the <B>configure</B> ");
-			str += QString("button. Note that the <I>D2XX</I> ");
-			str += QString("interface is not supported and might ");
-			str += QString("in fact interfere with this plugin.");
+			str += QString("kernel module loaded. You need to ");
+			str += QString("uninstall the <I>FTDI</I> and ");
+			str += QString("<I>Enttec Open DMX USB</I> plugins ");
+			str += QString("because the <I>D2XX</I> interface ");
+			str += QString("used by them overrides the VCP ");
+			str += QString("(Virtual Communications Port) ");
+			str += QString("interface used by this plugin.");
 			str += QString("</P>");
 #endif
 		}
+
+		str += QString("<P>");
+		str += QString("This plugin provides DMX output support for ");
+		str += QString("Enttec DMX USB Pro widgets using the VCP ");
+		str += QString("(Virtual Communications Port) driver.");
+		str += QString("See <a href=\"http://www.enttec.com\">");
+		str += QString("http://www.enttec.com</a> for more ");
+		str += QString("information.");
+		str += QString("</P>");
+
 	}
 	else if (output < m_widgets.size())
 	{
