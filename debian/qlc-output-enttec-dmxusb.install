@@ -1,0 +1,2 @@
+usr/lib/qlc/output/libenttecdmxusbout.so
+etc/udev/rules.d/z65-enttec-dmxusb.rules

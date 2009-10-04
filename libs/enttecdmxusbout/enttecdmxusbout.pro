@@ -22,7 +22,7 @@ unix:!macx {
 
 # Rules to make ENTTEC devices readable & writable by normal users
 unix:!macx:udev.path	= /etc/udev/rules.d
-unix:!macx:udev.files	= z65-enttec.rules
+unix:!macx:udev.files	= z65-enttec-dmxusb.rules
 unix:!macx:INSTALLS	+= udev
 
 # Plugin installation

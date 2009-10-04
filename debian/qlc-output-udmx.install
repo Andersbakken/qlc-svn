@@ -1,1 +1,2 @@
 usr/lib/qlc/output/libudmxout.so
+etc/udev/rules.d/z65-anyma-udmx.rules

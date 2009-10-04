@@ -59,6 +59,13 @@ Description: Output plugin for DMX devices supported thru the DMX4Linux suite
   Output plugin for DMX devices supported thru the DMX4Linux suite
   (http://llg.cubic.org).
 
+Package: qlc-output-enttec-dmxusb
+Section: Other
+Architecture: any
+Depends: qlc
+Description: Output plugin for Enttec DMX USB dongles
+  Output plugin for Enttec DMX USB Pro and Open DMX USB.
+
 Package: qlc-output-ftdi
 Section: Other
 Architecture: any

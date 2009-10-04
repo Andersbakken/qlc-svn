@@ -1,3 +1,15 @@
+qlc (3.0.3) stable; urgency=low
+
+  * A crash bug in OutputMap re-loading was fixed
+  * A new plugin was created for Enttec DMX USB Pro (and DMX USB Open with
+    reservation)
+  * uDMX and Enttec devices are now made user-readable/writable with a custom
+    udev rule
+  * ftd2xx.dll was removed from Windows build of FTDIDMX since it should come
+    with the FTDI driver installation.
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Sun, 04 Oct 2009 08:21:28 +0300
+
 qlc (3.0.2) stable; urgency=high
   * Two crash bugs were fixed in midi input and output plugins.
 
