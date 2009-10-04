@@ -18,7 +18,7 @@
 /**
  * DLL version
  */
-static USHORT USBDMX_DLL_VERSION = 0x0403;
+#define USBDMX_DLL_VERSION USHORT(0x0403)
 
 /**
  * MACRO to verify dll version
