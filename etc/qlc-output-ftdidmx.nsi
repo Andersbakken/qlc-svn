@@ -1,5 +1,5 @@
 Name "FTDIDMX output plugin for Q Light Controller"
-OutFile "qlc-output-ftdidmx-3.0.2.exe"
+OutFile "qlc-output-ftdidmx-3.0.3.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
