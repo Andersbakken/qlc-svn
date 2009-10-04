@@ -168,6 +168,20 @@ QString EnttecDMXUSBOut::infoText(t_output output)
 		str += QString("http://www.enttec.com</a> for more ");
 		str += QString("information. ");
 		str += QString("</P>");
+
+#ifdef WIN32
+		if (m_widgets.size() == 0)
+		{
+			str += QString("<P>");
+			str += QString("<B>No devices available</B>. Make ");
+			str += QString("sure you have your Enttec hardware ");
+			str += QString("plugged in and the <I>D2XX</I> ");
+			str += QString("drivers installed. Then click the ");
+			str += QString("<B>configure</B> button. Note that ");
+			str += QString("the VCP driver is not supported.");
+			str += QString("</P>");
+		}
+#endif
 	}
 	else if (output < m_widgets.size())
 	{
