@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  usbdmxout-win32.cpp
+  peperoniout.cpp
 
   Copyright (c)	Heikki Junnila
 
@@ -25,16 +25,15 @@
 #include <QDebug>
 #include <QString>
 
-#include "configureusbdmxout.h"
-#include "usbdmxdevice-win32.h"
-#include "usbdmxout-win32.h"
-#include "usbdmx-dynamic.h"
+#include "peperoni/usbdmx-dynamic.h"
+#include "peperonidevice.h"
+#include "peperoniout.h"
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
-void USBDMXOut::init()
+void PeperoniOut::init()
 {
 	/* Load usbdmx.dll */
 	m_usbdmx = usbdmx_init();
@@ -56,7 +55,7 @@ void USBDMXOut::init()
 	}
 }
 
-void USBDMXOut::rescanDevices()
+void PeperoniOut::rescanDevices()
 {
 	USHORT id = 0;
 
@@ -71,13 +70,13 @@ void USBDMXOut::rescanDevices()
 			/* We don't need the handle now. */
 			m_usbdmx->close(handle);
 
-			if (id >= m_devices.count())
+			if (id >= m_devices.size())
 			{
-				USBDMXDevice* device;
+				PeperoniDevice* device;
 
 				/* Device was opened successfully and it's
 				   a new device. Append it to our list. */
-				device = new USBDMXDevice(this, m_usbdmx, id);
+				device = new PeperoniDevice(this, m_usbdmx, id);
 				m_devices.append(device);
 			}
 			else
@@ -97,14 +96,14 @@ void USBDMXOut::rescanDevices()
 	/* Remove those devices that aren't present. I.e. if our search
 	   stopped into an ID that is equal to or less than the current number
 	   of devices, one or more devices are no longer present. */
-	while (id < m_devices.count())
+	while (id < m_devices.size())
 		delete m_devices.takeLast();
 
 	/* Because all devices have just plain and dull IDs, we can't know,
 	   whether the user removed one XSwitch and plugged in a Rodin1,
 	   that ends up getting the same ID. Therefore, force all known devices
 	   to reload their info again. */
-	QListIterator <USBDMXDevice*> it(m_devices);
+	QListIterator <PeperoniDevice*> it(m_devices);
 	while (it.hasNext() == true)
 		it.next()->rehash();
 }
@@ -113,30 +112,30 @@ void USBDMXOut::rescanDevices()
  * Plugin open/close
  *****************************************************************************/
 
-void USBDMXOut::open(t_output output)
+void PeperoniOut::open(t_output output)
 {
 	if (m_usbdmx == NULL)
 		return;
 
-	if (output < m_devices.count())
+	if (output < m_devices.size())
 		m_devices.at(output)->open();
 }
 
-void USBDMXOut::close(t_output output)
+void PeperoniOut::close(t_output output)
 {
 	if (m_usbdmx == NULL)
 		return;
 
-	if (output < m_devices.count())
+	if (output < m_devices.size())
 		m_devices.at(output)->close();
 }
 
-QStringList USBDMXOut::outputs()
+QStringList PeperoniOut::outputs()
 {
 	QStringList list;
 	int i = 1;
 
-	QListIterator <USBDMXDevice*> it(m_devices);
+	QListIterator <PeperoniDevice*> it(m_devices);
 	while (it.hasNext() == true)
 		list << QString("%1: %2").arg(i++).arg(it.next()->name());
 
@@ -147,26 +146,29 @@ QStringList USBDMXOut::outputs()
  * Name
  *****************************************************************************/
 
-QString USBDMXOut::name()
+QString PeperoniOut::name()
 {
-	return QString("USB DMX Output");
+	return QString("Peperoni Output");
 }
 
 /*****************************************************************************
  * Configuration
  *****************************************************************************/
 
-void USBDMXOut::configure()
+void PeperoniOut::configure()
 {
-	ConfigureUSBDMXOut conf(NULL, this);
-	conf.exec();
+	int r = QMessageBox::question(NULL, name(),
+				tr("Do you wish to re-scan your hardware?"),
+				QMessageBox::Yes, QMessageBox::No);
+	if (r == QMessageBox::Yes)
+		rescanDevices();
 }
 
 /*****************************************************************************
  * Plugin status
  *****************************************************************************/
 
-QString USBDMXOut::infoText(t_output output)
+QString PeperoniOut::infoText(t_output output)
 {
 	QString str;
 
@@ -200,7 +202,7 @@ QString USBDMXOut::infoText(t_output output)
 		str += QString("information. ");
 		str += QString("</P>");
 	}
-	else if (output < m_devices.count())
+	else if (output < m_devices.size())
 	{
 		str += m_devices.at(output)->infoText();
 	}
@@ -215,30 +217,30 @@ QString USBDMXOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void USBDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
+void PeperoniOut::writeChannel(t_output output, t_channel channel, t_value value)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(channel);
 	Q_UNUSED(value);
 }
 
-void USBDMXOut::writeRange(t_output output, t_channel address, t_value* values,
+void PeperoniOut::writeRange(t_output output, t_channel address, t_value* values,
 			   t_channel num)
 {
 	Q_UNUSED(address);
 
-	if (output < m_devices.count())
+	if (output < m_devices.size())
 		m_devices.at(output)->writeRange(values, num);
 }
 
-void USBDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
+void PeperoniOut::readChannel(t_output output, t_channel channel, t_value* value)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(channel);
 	Q_UNUSED(value);
 }
 
-void USBDMXOut::readRange(t_output output, t_channel address, t_value* values,
+void PeperoniOut::readRange(t_output output, t_channel address, t_value* values,
 			  t_channel num)
 {
 	Q_UNUSED(output);
@@ -251,4 +253,5 @@ void USBDMXOut::readRange(t_output output, t_channel address, t_value* values,
  * Plugin export
  ****************************************************************************/
 
-Q_EXPORT_PLUGIN2(usbdmxout, USBDMXOut)
+Q_EXPORT_PLUGIN2(peperoniout, PeperoniOut)
+

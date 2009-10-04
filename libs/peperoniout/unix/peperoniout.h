@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  usbdmxout-unix.h
+  peperoniout.h
 
   Copyright (c) Christian Sühs
 		Stefan Krumm
@@ -21,8 +21,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef USBDMXOUT_H
-#define USBDMXOUT_H
+#ifndef PEPERONIOUT_H
+#define PEPERONIOUT_H
 
 #include <QStringList>
 #include <QtPlugin>
@@ -31,20 +31,17 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-class ConfigureUsbDmxOut;
-class USBDMXDevice;
+class PeperoniDevice;
 class QString;
 
 /*****************************************************************************
- * USBDMXOut
+ * PeperoniOut
  *****************************************************************************/
 
-class USBDMXOut : public QObject, public QLCOutPlugin
+class PeperoniOut : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
-
-	friend class ConfigureUSBDMXOut;
 
 	/*********************************************************************
 	 * Initialization
@@ -59,11 +56,11 @@ public:
 	 *********************************************************************/
 public:
 	void rescanDevices();
-	USBDMXDevice* device(const QString& path);
+	PeperoniDevice* device(const QString& path);
 	QStringList outputs();
 
 protected:
-	QList <USBDMXDevice*> m_devices;
+	QList <PeperoniDevice*> m_devices;
 
 	/*********************************************************************
 	 * Name

@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  usbdmxout-win32.h
+  peperoniout.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef USBDMXOUT_H
-#define USBDMXOUT_H
+#ifndef PEPERONIOUT_H
+#define PEPERONIOUT_H
 
 #define WIN32_LEAN_AND_MEAN
 #include <QStringList>
@@ -34,20 +34,17 @@
 
 #define MAX_USBDMX_DEVICES 16
 
-class ConfigureUsbDmxOut;
-class USBDMXDevice;
+class PeperoniDevice;
 class QString;
 
 /*****************************************************************************
- * USBDMXOut
+ * PeperoniOut
  *****************************************************************************/
 
-class USBDMXOut : public QObject, public QLCOutPlugin
+class PeperoniOut : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
-
-	friend class ConfigureUSBDMXOut;
 
 	/*********************************************************************
 	 * Initialization
@@ -64,7 +61,7 @@ public:
 	void rescanDevices();
 
 protected:
-	QList <USBDMXDevice*> m_devices;
+	QList <PeperoniDevice*> m_devices;
 	struct usbdmx_functions* m_usbdmx;
 
 	/*********************************************************************

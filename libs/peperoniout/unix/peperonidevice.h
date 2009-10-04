@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  usbdmxdevice-unix.h
+  peperonidevice.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef USBDMXDEVICE_H
-#define USBDMXDEVICE_H
+#ifndef PEPERONIDEVICE_H
+#define PEPERONIDEVICE_H
 
 #include <common/qlctypes.h>
 #include <QObject>
@@ -29,7 +29,7 @@
 
 class QString;
 
-class USBDMXDevice : public QObject
+class PeperoniDevice : public QObject
 {
 	Q_OBJECT
 
@@ -37,8 +37,8 @@ class USBDMXDevice : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	USBDMXDevice(QObject* parent, const QString& path);
-	virtual ~USBDMXDevice();
+	PeperoniDevice(QObject* parent, const QString& path);
+	virtual ~PeperoniDevice();
 
 protected:
 	void extractName();

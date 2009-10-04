@@ -8,7 +8,7 @@ SUBDIRS			+= common
 # Output plugins
 SUBDIRS			+= ftdidmx
 !mac:!win32:SUBDIRS	+= dmx4linuxout
-!mac:SUBDIRS         	+= usbdmxout
+!mac:SUBDIRS         	+= peperoniout
 !mac:SUBDIRS		+= enttecdmxusbout
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout

@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  usbdmxdevice-win32.cpp
+  peperonidevice.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -22,14 +22,14 @@
 #include <QObject>
 #include <QDebug>
 
-#include "usbdmxdevice-win32.h"
-#include "usbdmx-dynamic.h"
+#include "peperonidevice.h"
+#include "peperoni/usbdmx-dynamic.h"
 
 /****************************************************************************
  * Initialization
  ****************************************************************************/
 
-USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
+PeperoniDevice::PeperoniDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 			   int output) : QObject(parent)
 {
 	Q_ASSERT(usbdmx != NULL);
@@ -42,7 +42,7 @@ USBDMXDevice::USBDMXDevice(QObject* parent, struct usbdmx_functions* usbdmx,
 	extractName();
 }
 
-USBDMXDevice::~USBDMXDevice()
+PeperoniDevice::~PeperoniDevice()
 {
 	close();
 }
@@ -51,17 +51,17 @@ USBDMXDevice::~USBDMXDevice()
  * Properties
  ****************************************************************************/
 
-QString USBDMXDevice::name() const
+QString PeperoniDevice::name() const
 {
 	return m_name;
 }
 
-int USBDMXDevice::output() const
+int PeperoniDevice::output() const
 {
 	return m_output;
 }
 
-QString USBDMXDevice::infoText() const
+QString PeperoniDevice::infoText() const
 {
 	QString str;
 
@@ -82,7 +82,7 @@ QString USBDMXDevice::infoText() const
 	return str;
 }
 
-void USBDMXDevice::extractName()
+void PeperoniDevice::extractName()
 {
 	bool needToClose = false;
 
@@ -129,7 +129,7 @@ void USBDMXDevice::extractName()
  * Open & close
  ****************************************************************************/
 
-void USBDMXDevice::open()
+void PeperoniDevice::open()
 {
 	if (m_handle != NULL)
 		return;
@@ -150,12 +150,12 @@ void USBDMXDevice::open()
 	}
 	else
 	{
-		qWarning() << QString("Unable to open USBDMX %1")
+		qWarning() << QString("Unable to open Peperoni %1")
 					.arg(m_output + 1);
 	}
 }
 
-void USBDMXDevice::close()
+void PeperoniDevice::close()
 {
 	if (m_handle == NULL)
 		return;
@@ -164,7 +164,7 @@ void USBDMXDevice::close()
 	m_handle = NULL;
 }
 
-void USBDMXDevice::rehash()
+void PeperoniDevice::rehash()
 {
 	if (m_handle != NULL)
 	{
@@ -179,7 +179,7 @@ void USBDMXDevice::rehash()
  * Read & write
  ****************************************************************************/
 
-void USBDMXDevice::writeRange(t_value* values, t_channel num)
+void PeperoniDevice::writeRange(t_value* values, t_channel num)
 {
 	Q_UNUSED(num);
 
