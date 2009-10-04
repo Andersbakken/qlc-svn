@@ -40,7 +40,7 @@ win32 {
 			  qlc-output-enttecdmxusb.nsi \
 			  qlc-output-midi.nsi \
 			  qlc-output-udmx.nsi \
-			  qlc-output-usbdmx.nsi
+			  qlc-output-peperoni.nsi
 
         INSTALLS        += qtlibs mingw nsis
 }

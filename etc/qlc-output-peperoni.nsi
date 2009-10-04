@@ -1,5 +1,5 @@
 Name "Peperoni USBDMX output plugin for Q Light Controller"
-OutFile "qlc-output-usbdmx-3.0.2.exe"
+OutFile "qlc-output-peperoni-3.0.2.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
@@ -10,5 +10,11 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Output
-  File /oname=Plugins\Output\usbdmxout.dll ..\Plugins\Output\usbdmxout.dll
+  File /oname=Plugins\Output\peperoniout.dll ..\Plugins\Output\peperoniout.dll
+  IfFileExists "Plugins\Output\usbdmxout.dll" RemoveUSBDMX PastRemoveUSBDMX
+
+  RemoveUSBDMX:
+   Delete "$INSTDIR\Plugins\Output\usbdmxout.dll"
+
+  PastRemoveUSBDMX:
 SectionEnd
