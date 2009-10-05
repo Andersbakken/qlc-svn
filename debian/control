@@ -7,7 +7,7 @@ Standards-Version: 3.6.0
 
 Package: qlc
 Section: Other
-Architecture: i386
+Architecture: i386 amd64
 Replaces: qlc-fixtures, qlc-input-profiles
 Conflicts: qlc-fixtures, qlc-input-profiles
 Provides: qlc-fixtures, qlc-input-profiles
@@ -18,7 +18,7 @@ Description: Software DMX lighting desk
 
 Package: qlc-input-hid
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Depends: qlc
 Description: Input plugin supporting HID devices
   Input plugin for Q Light Controller that enables input data from
@@ -26,7 +26,7 @@ Description: Input plugin supporting HID devices
 
 Package: qlc-input-midi
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Depends: qlc, libasound2 (>= 1.0.16)
 Description: Input plugin supporting MIDI devices
   Input plugin for Q Light Controller that enables input data from
@@ -34,7 +34,7 @@ Description: Input plugin supporting MIDI devices
 
 Package: qlc-input-enttec-wing
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Depends: qlc
 Description: Input plugin supporting ENTTEC wings
   Input plugin for Q Light Controller that enables input data from
@@ -42,7 +42,7 @@ Description: Input plugin supporting ENTTEC wings
 
 Package: qlc-output-dmx4linux
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Depends: qlc
 Description: Output plugin for DMX devices supported thru the DMX4Linux suite
   Output plugin for DMX devices supported thru the DMX4Linux suite
@@ -50,7 +50,7 @@ Description: Output plugin for DMX devices supported thru the DMX4Linux suite
 
 Package: qlc-output-enttec-dmxusb
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Replaces: qlc-output-ftdi
 Provides: qlc-output-ftdi
 Conflicts: qlc-output-ftdi, qlc-output-enttec-dmxusbpro
@@ -63,7 +63,7 @@ Description: Output plugin for Enttec DMX USB dongles
 
 Package: qlc-output-enttec-dmxusbpro
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Conflicts: qlc-output-enttec-dmxusb, qlc-output-ftdi
 Depends: qlc
 Description: Output plugin for Enttec DMX USB Pro dongles with VCP support
@@ -74,14 +74,14 @@ Description: Output plugin for Enttec DMX USB Pro dongles with VCP support
 
 Package: qlc-output-udmx
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Depends: qlc, libusb-0.1-4 (>= 2:0.1.12)
 Description: Output plugin for uDMX devices by anyma
   Output plugin for uDMX devices by anyma (www.anyma.ch).
 
 Package: qlc-output-peperoni
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Replaces: qlc-output-usbdmx
 Conflicts: qlc-output-usbdmx
 Provides: qlc-output-usbdmx
@@ -92,7 +92,7 @@ Description: Output plugin for Peperoni Light DMX dongles
 
 Package: qlc-output-midi
 Section: Other
-Architecture: any
+Architecture: i386 amd64
 Depends: qlc, libasound2 (>= 1.0.16)
 Description: Output plugin supporting DMX thru MIDI devices
   DMX output plugin for MIDI devices.
