@@ -23,6 +23,7 @@
 #define APP_H
 
 #include <QMainWindow>
+#include "common/qlctypes.h"
 
 class QToolBar;
 class QAction;
@@ -31,7 +32,7 @@ class QMenu;
 class QLCChannel;
 
 const QString KApplicationName = "QLC Fixture Definition Editor";
-const QString KApplicationVersion = "Version 3.0.0";
+const QString KApplicationVersion = QString("Version ") + QString(VERSION);
 const QString KFixtureFilter ("Fixtures (*.qxf)");
 
 class App : public QMainWindow

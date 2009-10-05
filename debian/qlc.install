@@ -3,3 +3,5 @@ usr/lib/libqlccommon.*
 usr/share/qlc/documents/*
 usr/share/applications/*
 usr/share/pixmaps/*
+usr/share/qlc/fixtures/*
+usr/share/qlc/inputprofiles/*

@@ -52,4 +52,6 @@ Section ""
   File ..\QtGui4.dll
   File ..\QtXml4.dll
   File /r ..\Documents
+  File /r ..\Fixtures
+  File /r ..\InputProfiles
 SectionEnd

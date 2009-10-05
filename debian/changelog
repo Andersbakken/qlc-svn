@@ -12,6 +12,9 @@ qlc (3.0.3) stable; urgency=high
     with the FTDI driver installation.
   * Renamed "USB DMX Output" plugin to "Peperoni Output" to make it clearer
     that it has nothing to do with Enttec DMX USB devices.
+  * Bundled fixture definitions and input profiles along with the main package.
+    Looking at the statistics, it seems that very few people have actually
+    found out that they need to download them as well.
 
  -- Heikki Junnila <hjunnila@julia.avaya.ath.cx>  Sun, 04 Oct 2009 19:07:28 +0300
 

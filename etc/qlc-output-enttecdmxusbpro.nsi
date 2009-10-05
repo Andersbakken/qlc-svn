@@ -1,5 +1,5 @@
-Name "FTDIDMX output plugin for Q Light Controller"
-OutFile "qlc-output-ftdidmx-3.0.3.exe"
+Name "Enttec DMX USB Pro (VCP) output plugin for Q Light Controller"
+OutFile "qlc-output-enttecdmxusbpro-3.0.3.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
@@ -10,5 +10,5 @@ Page instfiles
 Section ""
   SetOutPath $INSTDIR
   CreateDirectory $INSTDIR\Plugins\Output
-  File /oname=Plugins\Output\ftdidmxout.dll ..\Plugins\Output\ftdidmxout.dll
+  File /oname=Plugins\Output\enttecdmxusbproout.dll ..\Plugins\Output\enttecdmxusbproout.dll
 SectionEnd

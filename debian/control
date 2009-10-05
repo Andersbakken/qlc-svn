@@ -8,24 +8,13 @@ Standards-Version: 3.6.0
 Package: qlc
 Section: Other
 Architecture: i386
+Replaces: qlc-fixtures, qlc-input-profiles
+Conflicts: qlc-fixtures, qlc-input-profiles
+Provides: qlc-fixtures, qlc-input-profiles
 Depends: ${shlib:Depends}, ${misc:Depends}
 Description: Software DMX lighting desk
-  Q Light Controller - The Linux DMX lighting desk.
-
-Package: qlc-fixtures
-Section: Other
-Architecture: any
-Depends: qlc
-Description: Fixture definitions for Q Light Controller
-  Fixture definitions for Q Light Controller.
-
-Package: qlc-inputprofiles
-Section: Other
-Architecture: any
-Depends: qlc
-Description: Input device profiles for Q Light Controller
-  Input device profiles for Q Light Controller. Includes profile for
-  Behringer BCF2000 slider board.
+  Q Light Controller - The Linux DMX lighting desk. Includes also fixture
+  definitions and input profiles.
 
 Package: qlc-input-hid
 Section: Other
@@ -82,14 +71,6 @@ Description: Output plugin for Enttec DMX USB Pro dongles with VCP support
   accessing the device. This plugin requires that the qlc-output-enttec-dmxusb
   and qlc-output-ftdi are removed because the D2XX interface used by them
   overrides the ftdi_sio (VCP) kernel module used by this plugin.
-
-Package: qlc-output-ftdi
-Section: Other
-Architecture: any
-Depends: qlc
-Description: Output plugin for FTDI-based DMX devices (legacy package)
-  Output plugin for FTDI-based DMX devices (for example Enttec Open DMX USB).
-  This package is replaced by qlc-output-enttec-dmxusb.
 
 Package: qlc-output-udmx
 Section: Other

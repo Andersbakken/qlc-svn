@@ -32,12 +32,10 @@ win32 {
 	# NullSoft installer files
 	nsis.path	= $$DATADIR\nsis
 	nsis.files	= qlc.nsi \
-			  qlc-fixtures.nsi \
 			  qlc-input-midi.nsi \
 			  qlc-input-enttec-wing.nsi \
-			  qlc-input-profiles.nsi \
-			  qlc-output-ftdidmx.nsi \
 			  qlc-output-enttecdmxusb.nsi \
+			  qlc-output-enttecdmxusbpro.nsi \
 			  qlc-output-midi.nsi \
 			  qlc-output-udmx.nsi \
 			  qlc-output-peperoni.nsi

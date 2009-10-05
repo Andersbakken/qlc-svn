@@ -27,7 +27,7 @@
 /*****************************************************************************
  * Common defines
  *****************************************************************************/
-#define VERSION "3.0.1"
+#define VERSION "3.0.3"
 
 /**
  * QLC_UNIT_TEST is defined for unit tests, which compile individual source and
