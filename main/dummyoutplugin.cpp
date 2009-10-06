@@ -104,9 +104,11 @@ QString DummyOutPlugin::infoText(t_output output)
 	else
 		str += QString("<H3>%1 %2</H3>").arg(name()).arg(output + 1);
 	str += QString("<P>");
-	str += QString("This plugin does absolutely nothing; ");
-	str += QString("you can use it if you don't have ");
-	str += QString("the necessary hardware for real control.");
+	str += QString("This plugin does absolutely nothing; you can use ");
+	str += QString("it if you don't have DMX output plugins or ");
+	str += QString("hardware installed. You can get more plugins from ");
+	str += QString("<a href=\"http://www.sf.net/projects/qlc/files\">");
+	str += QString("http://www.sf.net/projects/qlc/files</a>.");
 	str += QString("</P>");
 
 	str += QString("</BODY>");
