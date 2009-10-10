@@ -4,7 +4,7 @@ TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= qlccommon
 
-CONFIG          += qt static
+CONFIG          += qt staticlib
 QT 		+= xml
 INCLUDEPATH	+= ../
 win32:DEFINES 	+= QLC_EXPORT
