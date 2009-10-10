@@ -128,7 +128,6 @@ bool EnttecDMXUSBPro::initializePort()
 	tio.c_cc[VMIN] = 1;
 	tio.c_cc[VTIME] = 10;
 
-#ifdef __APPLE__
 	/* Set exclusive access */
 	if (::ioctl(m_file, TIOCEXCL) == -1)
 	{
@@ -146,14 +145,11 @@ bool EnttecDMXUSBPro::initializePort()
         }
 
 	/* 8N2 - 8bits, no parity, 2 stop bits, maximum speed */
+#ifdef __APPLE__
 	::cfsetspeed(&tio, B230400);
 	tio.c_cflag |= CRTSCTS | CS8 | CSTOPB | CLOCAL | CREAD;
 #else
-	/* 8N2 - 8bits, no parity, 2 stop bits, maximum speed */
 	tio.c_cflag = __MAX_BAUD | CRTSCTS | CS8 | CSTOPB | CLOCAL | CREAD;
-	tio.c_iflag = IGNPAR | ICRNL;
-	tio.c_oflag = 0;
-	tio.c_lflag = 0;
 #endif
 	::tcflush(m_file, TCIFLUSH);
 	if (::tcsetattr(m_file, TCSANOW, &tio) == -1)
