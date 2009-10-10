@@ -8,10 +8,10 @@ CONFIG          += qt
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
-unix:LIBS	+= -L../libs/common -lqlccommon
+unix:LIBS	+= ../libs/common/libqlccommon.a
 win32:{
-	release:LIBS 	+= -L../libs/common/release/ -lqlccommon
-	debug:LIBS 	+= -L../libs/common/debug/ -lqlccommon
+	release:LIBS 	+= ../libs/common/release/qlccommon.a
+	debug:LIBS 	+= ../libs/common/debug/qlccommon.a
 }
 
 # MAC Icon (TODO: Move under ../etc)
