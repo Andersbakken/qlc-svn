@@ -6,11 +6,10 @@ TEMPLATE		= subdirs
 SUBDIRS			+= common
 
 # Output plugins
-SUBDIRS			+= ftdidmx
+SUBDIRS			+= enttecdmxusbout
+SUBDIRS			+= enttecdmxusbproout
 !mac:!win32:SUBDIRS	+= dmx4linuxout
 !mac:SUBDIRS         	+= peperoniout
-SUBDIRS			+= enttecdmxusbout
-!mac:SUBDIRS		+= enttecdmxusbproout
 !mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
 

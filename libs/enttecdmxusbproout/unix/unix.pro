@@ -11,7 +11,7 @@ INCLUDEPATH	+= ../../../libs
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
-macx:DESTDIR	= ../../main/qlc.app/Contents/Plugins/output
+macx:DESTDIR	= ../../../main/qlc.app/Contents/Plugins/output
 
 HEADERS += enttecdmxusbproout.h \
 	   enttecdmxusbpro.h

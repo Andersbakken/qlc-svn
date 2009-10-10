@@ -34,6 +34,7 @@
 
 void EnttecDMXUSBProOut::init()
 {
+#ifndef __APPLE__
 	/* Listen to device additions and removals thru DBus system bus */
 	QDBusConnection::systemBus().connect(QString(),
 		QString("/org/freedesktop/Hal/Manager"),
@@ -45,6 +46,7 @@ void EnttecDMXUSBProOut::init()
 		QString("org.freedesktop.Hal.Manager"),
 		QString("DeviceRemoved"),
 		this, SLOT(slotDeviceRemoved(const QString&)));
+#endif
 
 	/* Search for new widgets */
 	rescanWidgets();
@@ -89,7 +91,11 @@ void EnttecDMXUSBProOut::rescanWidgets()
 
 	QList <EnttecDMXUSBPro*> destroyList(m_widgets);
 
+#ifdef __APPLE__
+	nameFilters << "tty.usbserial*";
+#else
 	nameFilters << "ttyUSB*";
+#endif
 	QStringListIterator it(dir.entryList(nameFilters,
 					     QDir::Files | QDir::System));
 	while (it.hasNext() == true)
@@ -186,18 +192,6 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 
 		if (m_widgets.size() == 0)
 		{
-#ifdef WIN32
-			str += QString("<P>");
-			str += QString("<B>No devices available</B>. Make ");
-			str += QString("sure you have the Enttec DMX USB Pro ");
-			str += QString("plugged in and the <I>VCP</I> ");
-			str += QString("(Virtual Communication Port) drivers ");
-			str += QString("installed. Then click the ");
-			str += QString("<B>configure</B> button. Note that the ");
-			str += QString("<I>D2XX</I> driver is not supported ");
-			str += QString("by this plugin.");
-			str += QString("</P>");
-#else
 			str += QString("<P>");
 			str += QString("<B>No devices available</B>. Make ");
 			str += QString("sure you have the Enttec DMX USB Pro ");
@@ -210,7 +204,6 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 			str += QString("(Virtual Communications Port) ");
 			str += QString("interface used by this plugin.");
 			str += QString("</P>");
-#endif
 		}
 
 		str += QString("<P>");

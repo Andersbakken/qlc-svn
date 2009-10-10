@@ -48,7 +48,7 @@ public:
 	virtual ~EnttecDMXUSBPro();
 
 protected:
-	QFile m_file;
+	int m_file;
 
 	/********************************************************************
 	 * Open & close
@@ -114,7 +114,7 @@ public:
 	/**
 	 * Get the device path (the same that was given in constructor)
 	 */
-	QString path() const { return m_file.fileName(); }
+	QString path() const { return m_path; }
 
 protected:
 	/** Extract the widget's unique serial number */
@@ -123,6 +123,7 @@ protected:
 protected:
 	QString m_serial;
 	QString m_name;
+	QString m_path;
 
 	/********************************************************************
 	 * DMX operations

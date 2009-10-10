@@ -19,8 +19,14 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
+#include <sys/ioctl.h>
 #include <termios.h>
+#include <strings.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <errno.h>
 #include <QDebug>
 
 #include "enttecdmxusbpro.h"
@@ -31,9 +37,10 @@
 
 EnttecDMXUSBPro::EnttecDMXUSBPro(QObject* parent, const QString& path)
 	: QObject(parent),
-	m_file(path),
+	m_file(-1),
 	m_serial("Unknown"),
-	m_name("DMX USB Pro")
+	m_name("DMX USB Pro"),
+	m_path(path)
 {
 	open();
 	extractSerial();
@@ -54,8 +61,9 @@ bool EnttecDMXUSBPro::open()
 	if (isOpen() == false)
 	{
 		/* Attempt to open the device */
-		if (m_file.open(QIODevice::ReadWrite |
-				QIODevice::Unbuffered) == true)
+		m_file = ::open(m_path.toUtf8(),
+				O_RDWR | O_NOCTTY | O_NONBLOCK);
+		if (m_file != -1)
 		{
 			if (initializePort() == false)
 			{
@@ -71,8 +79,8 @@ bool EnttecDMXUSBPro::open()
 		}
 		else
 		{
-			qWarning() << "Unable to open" << name() << ":"
-				   << m_file.errorString();
+			qWarning() << "Error opening " << m_path << ":"
+				   << strerror(errno) << "(" << errno << ").";
 			return false;
 		}
 	}
@@ -86,47 +94,74 @@ bool EnttecDMXUSBPro::open()
 bool EnttecDMXUSBPro::close()
 {
 	if (isOpen() == true)
-		m_file.close();
+	{
+		::close(m_file);
+		m_file = -1;
+	}
 
 	return true;
 }
 
 bool EnttecDMXUSBPro::isOpen() const
 {
-	return m_file.isOpen();
+	if (m_file != -1)
+		return true;
+	else
+		return false;
 }
 
 bool EnttecDMXUSBPro::initializePort()
 {
 	struct termios tio;
 
-	bzero(&tio, sizeof(tio));
+	/* Nothing to do if the port isn't open */
+	if (isOpen() == false)
+		return false;
 
+	::bzero(&tio, sizeof(tio));
+
+	/* Disable all input & output processing so \0 won't be understood as
+	   a terminating character. */
+	::cfmakeraw(&tio);
+
+	/* Set R/W timeout to 1 sec */
+	tio.c_cc[VMIN] = 1;
+	tio.c_cc[VTIME] = 10;
+
+#ifdef __APPLE__
+	/* Set exclusive access */
+	if (::ioctl(m_file, TIOCEXCL) == -1)
+	{
+		qWarning() << "Error setting TIOCEXCL on" << m_path << ":"
+			   << strerror(errno) << "(" << errno << ").";
+		return false;
+        }
+
+	/* Lose non-blocking R/W mode */
+	if (::fcntl(m_file, F_SETFL, 0) == -1)
+	{
+		qWarning() << "Error clearing O_NONBLOCK on" << m_path << ":"
+			   << strerror(errno) << "(" << errno << ").";
+		return false;
+        }
+
+	/* 8N2 - 8bits, no parity, 2 stop bits, maximum speed */
+	::cfsetspeed(&tio, B230400);
+	tio.c_cflag |= CRTSCTS | CS8 | CSTOPB | CLOCAL | CREAD;
+#else
+	/* 8N2 - 8bits, no parity, 2 stop bits, maximum speed */
 	tio.c_cflag = __MAX_BAUD | CRTSCTS | CS8 | CSTOPB | CLOCAL | CREAD;
 	tio.c_iflag = IGNPAR | ICRNL;
 	tio.c_oflag = 0;
 	tio.c_lflag = 0;
-
-	tio.c_cc[VINTR]    = 0; /* Ctrl-c */
-	tio.c_cc[VQUIT]    = 0; /* Ctrl-\ */
-	tio.c_cc[VERASE]   = 0; /* del */
-	tio.c_cc[VKILL]    = 0; /* @ */
-	tio.c_cc[VEOF]     = 4; /* Ctrl-d */
-	tio.c_cc[VTIME]    = 0; /* inter-character timer unused */
-	tio.c_cc[VMIN]     = 1; /* block read until 1 character arrives */
-	tio.c_cc[VSWTC]    = 0; /* '\0' */
-	tio.c_cc[VSTART]   = 0; /* Ctrl-q */
-	tio.c_cc[VSTOP]    = 0; /* Ctrl-s */
-	tio.c_cc[VSUSP]    = 0; /* Ctrl-z */
-	tio.c_cc[VEOL]     = 0; /* '\0' */
-	tio.c_cc[VREPRINT] = 0; /* Ctrl-r */
-	tio.c_cc[VDISCARD] = 0; /* Ctrl-u */
-	tio.c_cc[VWERASE]  = 0; /* Ctrl-w */
-	tio.c_cc[VLNEXT]   = 0; /* Ctrl-v */
-	tio.c_cc[VEOL2]    = 0; /* '\0' */
-
-	tcflush(m_file.handle(), TCIFLUSH);
-	tcsetattr(m_file.handle(), TCSANOW, &tio);
+#endif
+	::tcflush(m_file, TCIFLUSH);
+	if (::tcsetattr(m_file, TCSANOW, &tio) == -1)
+	{
+		qWarning() << "Error setting tty attributes to" << m_path << ":"
+			   << strerror(errno) << "(" << errno << ").";
+		return false;
+	}
 
 	return true;
 }
@@ -152,6 +187,9 @@ QString EnttecDMXUSBPro::uniqueName() const
 
 bool EnttecDMXUSBPro::extractSerial()
 {
+	int writtenBytes;
+	int readBytes;
+
 	/* Can't get the serial unless the widget is open */
 	if (isOpen() == false)
 	{
@@ -160,17 +198,13 @@ bool EnttecDMXUSBPro::extractSerial()
 	}
 
 	/* Write "Get Widget Serial Number Request" message */
-	QByteArray request;
-	request.append(char(0x7e));
-	request.append(char(0x0a));
-	request.append(char(0x00));
-	request.append(char(0x00));
-	request.append(char(0xe7));
-	qint64 written = m_file.write(request);
-	if (written != request.size())
+	char request[] = { 0x7e, 0x0a, 0x00, 0x00, 0xe7 };
+	writtenBytes = ::write(m_file, request, sizeof(request));
+	if (writtenBytes != sizeof(request))
 	{
-		qWarning() << "Unable to write serial request to"
-			   << name() << ": " << m_file.errorString();
+		qWarning() << "Unable to write serial number request to"
+			   << m_path << ":" << strerror(errno)
+			   << "(" << errno << ").";
 		return false;
 	}
 
@@ -178,7 +212,16 @@ bool EnttecDMXUSBPro::extractSerial()
 	usleep(1000);
 
 	/* Wait for "Get Widget Serial Number Reply" message to be available */
-	QByteArray reply(m_file.read(9));
+	char reply[9];
+	bzero(reply, sizeof(reply));
+	readBytes = ::read(m_file, reply, 9);
+	if (readBytes != 9)
+	{
+		qWarning() << "Unable to read serial number reply from"
+			   << m_path << ":" << strerror(errno)
+			   << "(" << errno << ").";
+		return false;
+	}
 
 	/* Reply message is:
 	   { 0x7E 0x0A 0x04 0x00 0xNN, 0xNN, 0xNN, 0xNN 0xE7 }
@@ -204,6 +247,8 @@ bool EnttecDMXUSBPro::extractSerial()
 
 bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
 {
+	int writtenBytes;
+
 	/* Can't send DMX unless the widget is open */
 	if (isOpen() == false)
 	{
@@ -218,11 +263,12 @@ bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
 	request.prepend(char(0x7e)); // Start byte
 	request.append(char(0xe7));  // Stop byte
 
-	qint64 written = m_file.write(request);
-	if (written != request.size())
+	writtenBytes = ::write(m_file, request.data(), request.size());
+	if (writtenBytes != request.size())
 	{
-		qWarning() << "Unable to write DMX data to" << name() << ":"
-			   << m_file.errorString();
+		qWarning() << "Unable to write DMX data to"
+			   << m_path << ":" << strerror(errno)
+			   << "(" << errno << ").";
 		return false;
 	}
 	else
