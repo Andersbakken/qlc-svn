@@ -2,7 +2,8 @@ TEMPLATE = app
 TARGET = test
 
 CONFIG += warn_on
-QT += dbus
+macx:CONFIG -= app_bundle
+!macx:QT += dbus
 
 INCLUDEPATH += .. ../../../
 
