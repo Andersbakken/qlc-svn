@@ -12,8 +12,9 @@ TRANSLATIONS	= qlc_gb.ts
 INCLUDEPATH 	+= . ../libs/
 unix:LIBS 	+= ../libs/common/libqlccommon.a
 win32:{
-	release:LIBS 	+= ../libs/common/release/qlccommon.a
-	debug:LIBS 	+= ../libs/common/debug/qlccommon.a
+	# Windows is so fucking retarded that you can't link these statically
+	release:LIBS 	+= -L../libs/common/release -lqlccommon
+	debug:LIBS 	+= -L../libs/common/debug -lqlccommon
 }
 
 # MAC Icon (TODO: Move under ../etc)
