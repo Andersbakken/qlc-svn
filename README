@@ -40,46 +40,47 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-Requirements
+Requirements - ALL
 --------------------
 * Qt >= 4.3 development libraries & tools
 
 Requirements - Linux
 --------------------
-* g++ >= 4.3
-
-* FTDIDMX Output plugin: No additional requirements
+* Enttec DMX USB Pro Output plugin: No additional requirements
+* Enttec Open DMX USB Output plugin: No additional requirements
 * HID Input plugin: No additional requirements
 * MIDI Input plugin: libasound, libasound-dev, pkg-config
 * ENTTEC Wing Input plugin: No additional requirements
 * MIDI Output plugin: libasound, libasound-dev, pkg-config
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: libusb, libusb-dev
-* USBDMX Output plugin: No additional requirements
+* Peperoni Output plugin: No additional requirements
 
 Requirements - Windows
 ----------------------
 * MinGW environment (installed with Qt)
 
-* FTDIDMX Output plugin: No additional requirements
+* Enttec DMX USB Pro Output plugin: No additional requirements
+* Enttec Open DMX USB Output plugin: No additional requirements
 * HID Input plugin: Not available for Windows
 * MIDI Input plugin: No additional requirements
 * ENTTEC Wing Input plugin: No additional requirements
 * MIDI Output plugin: No additional requirements
 * LLA Output plugin: Not available for Windows
 * uDMX Output plugin: No additional requirements
-* USBDMX Output plugin: No additional requirements
+* Peperoni Output plugin: No additional requirements
 
 Requirements - OSX
 ------------------
-* FTDIDMX Output plugin: No additional requirements
+* Enttec DMX USB Pro Output plugin: No additional requirements
+* Enttec Open DMX USB Output plugin: No additional requirements
 * HID Input plugin: Not available for OSX
 * MIDI Input plugin: Not available for OSX
 * ENTTEC Wing Input plugin: No additional requirements
 * MIDI Output plugin: Not available for OSX
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: Not available for OSX
-* USBDMX Output plugin: Not available for OSX
+* Peperoni Output plugin: Not available for OSX
 
 
 Compiling & Installation
