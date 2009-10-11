@@ -47,9 +47,11 @@ public:
 	/** @reimp */
 	void close(t_output output);
 
+#ifndef __APPLE__
 protected slots:
 	void slotDeviceAdded(const QString& name);
 	void slotDeviceRemoved(const QString& name);
+#endif
 
 	/********************************************************************
 	 * Devices (ENTTEC calls them "widgets" and so shall we)

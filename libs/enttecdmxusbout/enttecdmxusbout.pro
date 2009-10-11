@@ -6,8 +6,8 @@ TARGET		= enttecdmxusbout
 
 CONFIG		+= plugin
 INCLUDEPATH	+= ../../libs ftdi
-macx:LIBS	+= -Lftdi/ -lftd2xx.0.1.4
-win32:LIBS	+= ftdi/ftd2xx.lib
+macx:LIBS	+= ftdi/macx/libftd2xx.a.0.1.6 -lIOKit
+win32:LIBS	+= ftdi/win32/ftd2xx.lib
 
 unix:!macx {
 	HARDWARE_PLATFORM = $$system(uname -m)
@@ -27,8 +27,7 @@ unix:!macx:INSTALLS	+= udev
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR
-!macx:INSTALLS	+= target
-macx:DESTDIR	= ../../main/qlc.app/Contents/Plugins/output
+INSTALLS	+= target
 
 HEADERS += ftdi/ftd2xx.h \
 	   ftdi/WinTypes.h \
@@ -41,7 +40,7 @@ SOURCES += enttecdmxusbout.cpp \
 	   enttecdmxusbpro.cpp \
 	   enttecdmxusbopen.cpp
 
-macx {
-	QMAKE_POST_LINK = cp ftdi/libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/
-	QMAKE_POST_LINK += && install_name_tool -change /usr/local/lib/libftd2xx.0.1.4.dylib @executable_path/../Plugins/output/libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/libenttecdmxusbout.dylib
-}
+#macx {
+#	QMAKE_POST_LINK = cp ftdi/libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/
+#	QMAKE_POST_LINK += && install_name_tool -change /usr/local/lib/libftd2xx.0.1.4.dylib @executable_path/../Plugins/output/libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/libenttecdmxusbout.dylib
+#}

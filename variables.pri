@@ -15,17 +15,17 @@ unix:OLA_GIT		= /usr/src/ola
 # Binaries
 win32:BINDIR		= $$(SystemDrive)/QLC
 unix:!macx:BINDIR	= /usr/bin
-macx:BINDIR		= /Applications
+macx:BINDIR		= ~/qlc.app/Contents/MacOS
 
 # Libraries
 win32:LIBSDIR		= $$BINDIR
 unix:!macx:LIBSDIR	= /usr/lib
-macx:LIBSDIR            = $$BINDIR/qlc.app/Contents/Frameworks/
+macx:LIBSDIR            = ~/qlc.app/Contents/Frameworks/
 
 # Data
 win32:DATADIR		= $$(SystemDrive)/QLC
 unix:!macx:DATADIR	= /usr/share/qlc
-macx:DATADIR		= $$BINDIR/qlc.app/Contents/Resources/
+macx:DATADIR		= ~/qlc.app/Contents/Resources/
 
 # Documentation
 win32:DOCSDIR		= $$DATADIR/Documents
@@ -34,7 +34,7 @@ win32:DEFINES		+= DOCSDIR=\\\"Documents\\\"
 unix:!macx:DOCSDIR	= $$DATADIR/documents
 unix:!macx:DEFINES	+= DOCSDIR=\\\"$$DOCSDIR\\\"
 
-macx:DOCSDIR		= $$BINDIR/qlc.app/Contents/Resources/Documents/
+macx:DOCSDIR		= $$DATADIR/Documents/
 macx:DEFINES		+= DOCSDIR=\\\"../Resources/Documents\\\"
 
 # Input profiles
@@ -46,8 +46,8 @@ unix:!macx:DEFINES		+= INPUTPROFILEDIR=\\\"$$INPUTPROFILEDIR\\\"
 unix:!macx:USERINPUTPROFILEDIR	= .qlc/inputprofiles
 unix:!macx:DEFINES		+= USERINPUTPROFILEDIR=\\\"$$USERINPUTPROFILEDIR\\\"
 
-macx:INPUTPROFILEDIR	= $$BINDIR/qlc.app/Contents/Resources/inputprofiles
-macx:DEFINES		+= INPUTPROFILEDIR=\\\"../Resources/inputprofiles\\\"
+macx:INPUTPROFILEDIR	= $$DATADIR/InputProfiles
+macx:DEFINES		+= INPUTPROFILEDIR=\\\"../Resources/InputProfiles\\\"
 
 # Fixtures
 win32:FIXTUREDIR	= $$DATADIR/Fixtures
@@ -58,26 +58,30 @@ unix:!macx:DEFINES		+= FIXTUREDIR=\\\"$$FIXTUREDIR\\\"
 unix:!macx:USERFIXTUREDIR	= .qlc/fixtures
 unix:!macx:DEFINES		+= USERFIXTUREDIR=\\\"$$USERFIXTUREDIR\\\"
 
-macx:FIXTUREDIR		= $$BINDIR/qlc.app/Fixtures
-macx:DEFINES		+= FIXTUREDIR=\\\"../../Fixtures\\\"
+macx:FIXTUREDIR		= $$DATADIR/Fixtures
+macx:DEFINES		+= FIXTUREDIR=\\\"../Resources/Fixtures\\\"
 
 # Plugins
 win32:PLUGINDIR		= $$LIBSDIR/Plugins
-unix:!macx:PLUGINDIR		= $$LIBSDIR/qlc
-macx:PLUGINDIR		= $$BINDIR/qlc.app/Contents/Plugins
+unix:!macx:PLUGINDIR	= $$LIBSDIR/qlc
+macx:PLUGINDIR		= $$DATADIR/../Plugins
 
 # Input Plugins
 win32:INPUTPLUGINDIR	= $$PLUGINDIR/Input
 win32:DEFINES		+= INPUTPLUGINDIR=\\\"Plugins/Input\\\"
 
-unix:INPUTPLUGINDIR	= $$PLUGINDIR/input
+unix:!macx:INPUTPLUGINDIR = $$PLUGINDIR/input
 unix:!macx:DEFINES	+= INPUTPLUGINDIR=\\\"$$INPUTPLUGINDIR\\\"
-macx:DEFINES		+= INPUTPLUGINDIR=\\\"../Plugins/input\\\"
+
+macx:INPUTPLUGINDIR	= $$PLUGINDIR/Input
+macx:DEFINES		+= INPUTPLUGINDIR=\\\"../Plugins/Input\\\"
 
 # Output Plugins
 win32:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
 win32:DEFINES		+= OUTPUTPLUGINDIR=\\\"Plugins/Output\\\"
 
-unix:OUTPUTPLUGINDIR	= $$PLUGINDIR/output
+unix:!macx:OUTPUTPLUGINDIR = $$PLUGINDIR/output
 unix:!macx:DEFINES	+= OUTPUTPLUGINDIR=\\\"$$OUTPUTPLUGINDIR\\\"
-macx:DEFINES		+= OUTPUTPLUGINDIR=\\\"../Plugins/output\\\"
+
+macx:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
+macx:DEFINES		+= OUTPUTPLUGINDIR=\\\"../Plugins/Output\\\"

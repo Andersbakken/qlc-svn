@@ -5,13 +5,12 @@ LANGUAGE	= C++
 TARGET		= enttecdmxusbproout
 
 CONFIG		+= plugin
-QT		+= dbus
+unix:!macx:QT	+= dbus
 INCLUDEPATH	+= ../../../libs
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR
-!macx:INSTALLS	+= target
-macx:DESTDIR	= ../../../main/qlc.app/Contents/Plugins/output
+macx:INSTALLS	+= target
 
 HEADERS += enttecdmxusbproout.h \
 	   enttecdmxusbpro.h

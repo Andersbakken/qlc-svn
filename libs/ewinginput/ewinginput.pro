@@ -9,7 +9,7 @@ CONFIG          += plugin
 QT		+= network
 
 target.path	= $$INPUTPLUGINDIR
-!macx:INSTALLS	+= target
+macx:INSTALLS	+= target
 
 win32 {
 	# Qt Libraries
@@ -17,8 +17,6 @@ win32 {
 	qtnetwork.files = $$(QTDIR)/bin/QtNetwork4.dll
 	INSTALLS	+= qtnetwork
 }
-
-macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
 
 # Input
 HEADERS += ewinginput.h \

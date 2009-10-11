@@ -5,6 +5,7 @@ LANGUAGE 	= C++
 TARGET 		= qlc-fixtureeditor
 
 CONFIG          += qt
+macx:CONFIG	-= app_bundle
 QT 		+= xml
 
 INCLUDEPATH 	+= . ../libs/
@@ -14,14 +15,6 @@ win32:{
 	release:LIBS 	+= -L../libs/common/release -lqlccommon
 	debug:LIBS 	+= -L../libs/common/debug -lqlccommon
 }
-
-# MAC Icon (TODO: Move under ../etc)
-macx:ICON	= ../gfx/qlc-fixtureeditor.icns
-macx:QMAKE_INFO_PLIST = ./Info.plist
-
-# Bug in QT means it classifies directories as files
-macx:QMAKE_DEL_FILE = rm -Rf
-macx:QMAKE_CLEAN += qlc-fixtureeditor.app/
 
 # Installation
 target.path 	= $$BINDIR
@@ -55,4 +48,3 @@ SOURCES += aboutbox.cpp \
            fixtureeditor.cpp \
            main.cpp
 
-macx:QMAKE_POST_LINK = ./libupdate.sh

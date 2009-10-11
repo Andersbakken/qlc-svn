@@ -19,7 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
+#ifndef __APPLE__
 #include <QDBusConnection>
+#endif
+
 #include <QStringList>
 #include <QMessageBox>
 #include <QDebug>
@@ -64,6 +67,7 @@ void EnttecDMXUSBProOut::close(t_output output)
 		m_widgets.at(output)->close();
 }
 
+#ifndef __APPLE__
 void EnttecDMXUSBProOut::slotDeviceAdded(const QString& name)
 {
 	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_6001_"))
@@ -75,6 +79,7 @@ void EnttecDMXUSBProOut::slotDeviceRemoved(const QString& name)
 	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_6001_"))
 		rescanWidgets();
 }
+#endif
 
 /****************************************************************************
  * Devices (ENTTEC calls them "widgets" and so shall we)

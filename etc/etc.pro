@@ -3,17 +3,31 @@ include(../variables.pri)
 TEMPLATE	= subdirs
 TARGET		= icons
 
-unix:desktop.path	= /usr/share/applications/
-unix:desktop.files	+= qlc.desktop \
+# Linux
+unix:!macx {
+	desktop.path	= /usr/share/applications/
+	desktop.files	+= qlc.desktop \
 			   qlc-fixtureeditor.desktop
 
-unix:icons.path		= /usr/share/pixmaps/
-unix:icons.files	+= ../gfx/qlc.png \
+	icons.path	= /usr/share/pixmaps/
+	icons.files	+= ../gfx/qlc.png \
 			   ../gfx/qlc-fixtureeditor.png
 
-unix:!macx:INSTALLS	+= icons desktop
+	INSTALLS	+= icons desktop
+}
 
-# Win32 additional DLL installation
+# Mac OSX
+macx {
+	icons.path	= $$DATADIR
+	icons.files	+= ../gfx/qlc.icns
+
+	plist.path	= $$DATADIR/..
+	plist.files	+= Info.plist
+
+	INSTALLS	+= icons plist
+}
+
+# Windows
 win32 {
 	# Qt Libraries
         qtlibs.path  = $$LIBSDIR
