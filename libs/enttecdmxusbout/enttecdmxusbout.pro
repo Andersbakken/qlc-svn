@@ -13,10 +13,10 @@ unix:!macx {
 	HARDWARE_PLATFORM = $$system(uname -m)
 	contains(HARDWARE_PLATFORM, x86_64) {
 		# 64-bit Linux
-		LIBS += ftdi/libftd2xx.a.0.4.16_x86-64 -ldl
+		LIBS += ftdi/unix/libftd2xx.a.0.4.16_x86-64 -ldl
 	} else {
 		# 32-bit Linux
-		LIBS += ftdi/libftd2xx.a.0.4.16 -ldl
+		LIBS += ftdi/unix/libftd2xx.a.0.4.16 -ldl
 	}
 }
 
@@ -39,8 +39,3 @@ HEADERS += ftdi/ftd2xx.h \
 SOURCES += enttecdmxusbout.cpp \
 	   enttecdmxusbpro.cpp \
 	   enttecdmxusbopen.cpp
-
-#macx {
-#	QMAKE_POST_LINK = cp ftdi/libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/
-#	QMAKE_POST_LINK += && install_name_tool -change /usr/local/lib/libftd2xx.0.1.4.dylib @executable_path/../Plugins/output/libftd2xx.0.1.4.dylib ../../main/qlc.app/Contents/Plugins/output/libenttecdmxusbout.dylib
-#}
