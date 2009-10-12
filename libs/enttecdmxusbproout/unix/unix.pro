@@ -10,7 +10,7 @@ INCLUDEPATH	+= ../../../libs
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR
-macx:INSTALLS	+= target
+INSTALLS	+= target
 
 HEADERS += enttecdmxusbproout.h \
 	   enttecdmxusbpro.h

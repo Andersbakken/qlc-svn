@@ -9,7 +9,7 @@ CONFIG          += plugin
 QT		+= network
 
 target.path	= $$INPUTPLUGINDIR
-macx:INSTALLS	+= target
+INSTALLS	+= target
 
 win32 {
 	# Qt Libraries
