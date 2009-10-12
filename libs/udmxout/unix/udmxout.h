@@ -30,7 +30,6 @@
 #include "common/qlcoutplugin.h"
 #include "common/qlctypes.h"
 
-class ConfigureUDmxOut;
 class UDMXDevice;
 class QString;
 
@@ -42,8 +41,6 @@ class UDMXOut : public QObject, public QLCOutPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCOutPlugin)
-
-	friend class ConfigureUDMXOut;
 
 	/*********************************************************************
 	 * Initialization

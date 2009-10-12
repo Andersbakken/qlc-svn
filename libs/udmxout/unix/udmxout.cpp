@@ -28,13 +28,10 @@
 #include <usb.h>
 #endif
 
-#include <QCoreApplication>
-#include <QStringList>
-#include <QSettings>
+#include <QMessageBox>
 #include <QString>
 #include <QDebug>
 
-#include "configureudmxout.h"
 #include "udmxdevice.h"
 #include "udmxout.h"
 
@@ -158,8 +155,11 @@ QString UDMXOut::name()
 
 void UDMXOut::configure()
 {
-	ConfigureUDMXOut conf(NULL, this);
-	conf.exec();
+	int r = QMessageBox::question(NULL, name(),
+				tr("Do you wish to re-scan your hardware?"),
+				QMessageBox::Yes, QMessageBox::No);
+	if (r == QMessageBox::Yes)
+		rescanDevices();
 }
 
 /*****************************************************************************
