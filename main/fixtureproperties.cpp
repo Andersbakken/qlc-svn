@@ -86,10 +86,15 @@ void FixtureProperties::slotNameEdited(const QString& text)
 
 void FixtureProperties::slotMakeModelClicked()
 {
-	AddFixture af(this, m_fixtureDefCache, m_doc,
-		      m_fxi->fixtureDef()->manufacturer(),
-		      m_fxi->fixtureDef()->model());
+	QString manuf;
+	QString model;
+	if (m_fxi->fixtureDef() != NULL)
+	{
+		manuf = m_fxi->fixtureDef()->manufacturer();
+		model = m_fxi->fixtureDef()->model();
+	}
 
+	AddFixture af(this, m_fixtureDefCache, m_doc, manuf, model);
 	af.setWindowTitle(tr("Change fixture definition"));
 	if (af.exec() == QDialog::Accepted)
 	{
