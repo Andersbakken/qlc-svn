@@ -11,9 +11,9 @@ macx:SUBDIRS		+= macx
 # Output plugins
 SUBDIRS			+= enttecdmxusbout
 SUBDIRS			+= enttecdmxusbproout
+SUBDIRS         	+= peperoniout
+SUBDIRS			+= udmxout
 !mac:!win32:SUBDIRS	+= dmx4linuxout
-!mac:SUBDIRS         	+= peperoniout
-!mac:SUBDIRS		+= udmxout
 !mac:SUBDIRS		+= midiout
 
 # OLA output plugin
