@@ -75,6 +75,7 @@ fixtures.files += GLP-YPOCBasicColor.qxf
 fixtures.files += GLP-YPOCColor.qxf
 fixtures.files += JB-Lighting-Varyscan2.qxf
 fixtures.files += Lite-Works-ColorChanger.qxf
+fixtures.files += MacMah-WiderPanel.qxf
 fixtures.files += Martin-Atomic-3000.qxf
 fixtures.files += Martin-Destroyer.qxf
 fixtures.files += Martin-EFX-500.qxf
