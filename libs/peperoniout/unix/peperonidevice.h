@@ -22,12 +22,14 @@
 #ifndef PEPERONIDEVICE_H
 #define PEPERONIDEVICE_H
 
-#include <common/qlctypes.h>
 #include <QObject>
-#include <QMutex>
-#include <QFile>
 
+#include "common/qlctypes.h"
+
+struct usb_dev_handle;
+struct usb_device;
 class QString;
+class QByteArray;
 
 class PeperoniDevice : public QObject
 {
@@ -37,22 +39,24 @@ class PeperoniDevice : public QObject
 	 * Initialization
 	 ********************************************************************/
 public:
-	PeperoniDevice(QObject* parent, const QString& path);
+	PeperoniDevice(QObject* parent, struct usb_device* device);
 	virtual ~PeperoniDevice();
+
+	/** Find out, whether the given USB device is a Peperoni device */
+	static bool isPeperoniDevice(const struct usb_device* device);
+
+	/********************************************************************
+	 * Device information
+	 ********************************************************************/
+public:
+	QString name() const;
+	QString infoText() const;
 
 protected:
 	void extractName();
 
-	/********************************************************************
-	 * Properties
-	 ********************************************************************/
-public:
-	QString name() const;
-	QString path() const;
-
 protected:
 	QString m_name;
-	QString m_path;
 
 	/********************************************************************
 	 * Open & close
@@ -61,14 +65,18 @@ public:
 	void open();
 	void close();
 
+	const struct usb_device* device() const;
+	const usb_dev_handle* handle() const;
+
 protected:
-	QFile m_file;
+	struct usb_device* m_device;
+	usb_dev_handle* m_handle;
 
 	/********************************************************************
 	 * Write
 	 ********************************************************************/
 public:
-	void writeRange(t_value* values, t_channel num);
+	void writeRange(char* values, int num);
 };
 
 #endif

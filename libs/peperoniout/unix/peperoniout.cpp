@@ -2,9 +2,7 @@
   Q Light Controller
   peperoniout.cpp
 
-  Copyright (c) Christian Suehs
-                Stefan Krumm
-		Heikki Junnila
+  Copyright (c)	Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -21,12 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QStringList>
 #include <QMessageBox>
 #include <QString>
 #include <QDebug>
-#include <QList>
-#include <QDir>
+#include <usb.h>
 
 #include "peperonidevice.h"
 #include "peperoniout.h"
@@ -35,8 +31,13 @@
  * Initialization
  *****************************************************************************/
 
+PeperoniOut::~PeperoniOut()
+{
+}
+
 void PeperoniOut::init()
 {
+	usb_init();
 	rescanDevices();
 }
 
@@ -58,58 +59,65 @@ void PeperoniOut::close(t_output output)
 
 void PeperoniOut::rescanDevices()
 {
-	QStringList nameFilters;
-	QDir dir("/dev/");
-	t_output output;
-	QString path;
+	struct usb_device* dev;
+	struct usb_bus* bus;
 
-	output = 0;
-
+	/* Treat all devices as dead first, until we find them again. Those
+	   that aren't found, get destroyed at the end of this function. */
 	QList <PeperoniDevice*> destroyList(m_devices);
 
-	nameFilters << "usbdmx*";
-	QStringListIterator it(dir.entryList(nameFilters,
-					     QDir::Files | QDir::System));
-	while (it.hasNext() == true)
+	usb_find_busses();
+	usb_find_devices();
+
+	/* Iterate thru all buses */
+	for (bus = usb_get_busses(); bus != NULL; bus = bus->next)
 	{
-		PeperoniDevice* dev;
-
-		path = dir.absolutePath() + QDir::separator() + it.next();
-
-		dev = device(path);
-		if (dev != NULL)
+		/* Iterate thru all devices in each bus */
+		for (dev = bus->devices; dev != NULL; dev = dev->next)
 		{
-			/* This device still exists. Don't destroy it. */
-			destroyList.removeAll(dev);
-		}
-		else
-		{
-			dev = new PeperoniDevice(this, path);
-			m_devices.append(dev);
+			PeperoniDevice* pepdev = device(dev);
+			if (pepdev != NULL)
+			{
+				/* We already have this device and it's still
+				   there. Remove from the destroy list and
+				   continue iterating. */
+				destroyList.removeAll(pepdev);
+				continue;
+			}
+			else if (PeperoniDevice::isPeperoniDevice(dev) == true)
+			{
+				/* This is a new device. Create and append. */
+				pepdev = new PeperoniDevice(this, dev);
+				m_devices.append(pepdev);
+			}
 		}
 	}
 
-	/* Destroy all devices that weren't found in the rescan */
+	/* Destroy those devices that were no longer found. */
 	while (destroyList.isEmpty() == false)
 	{
-		PeperoniDevice* dev = destroyList.takeFirst();
-		m_devices.removeAll(dev);
-		delete dev;
+		PeperoniDevice* pepdev = destroyList.takeFirst();
+		m_devices.removeAll(pepdev);
+		delete pepdev;
 	}
 }
 
-PeperoniDevice* PeperoniOut::device(const QString& path)
+PeperoniDevice* PeperoniOut::device(struct usb_device* usbdev)
 {
 	QListIterator <PeperoniDevice*> it(m_devices);
 	while (it.hasNext() == true)
 	{
 		PeperoniDevice* dev = it.next();
-		if (dev->path() == path)
+		if (dev->device() == usbdev)
 			return dev;
 	}
 
 	return NULL;
 }
+
+/*****************************************************************************
+ * Outputs
+ *****************************************************************************/
 
 QStringList PeperoniOut::outputs()
 {
@@ -163,20 +171,15 @@ QString PeperoniOut::infoText(t_output output)
 		str += QString("<H3>%1</H3>").arg(name());
 		str += QString("<P>");
 		str += QString("This plugin provides DMX output support for ");
-		str += QString("devices manufactured by Peperoni Light: ");
-		str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
-		str += QString("USBDMX21. See ");
+		str += QString("Peperoni DMX devices. See ");
 		str += QString("<a href=\"http://www.peperoni-light.de\">");
 		str += QString("http://www.peperoni-light.de</a> for more ");
-		str += QString("information. ");
+		str += QString("information.");
 		str += QString("</P>");
 	}
 	else if (output < m_devices.size())
 	{
-		str += QString("<H3>%1</H3>").arg(outputs()[output]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		str += m_devices.at(output)->infoText();
 	}
 
 	str += QString("</BODY>");
@@ -189,23 +192,25 @@ QString PeperoniOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void PeperoniOut::writeChannel(t_output output, t_channel channel, t_value value)
+void PeperoniOut::writeChannel(t_output output, t_channel channel,
+			       t_value value)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(channel);
 	Q_UNUSED(value);
 }
 
-void PeperoniOut::writeRange(t_output output, t_channel address, t_value* values,
-			   t_channel num)
+void PeperoniOut::writeRange(t_output output, t_channel address,
+			     t_value* values, t_channel num)
 {
 	Q_UNUSED(address);
 
 	if (output < m_devices.size())
-		m_devices.at(output)->writeRange(values, num);
+		m_devices.at(output)->writeRange((char*) values, num);
 }
 
-void PeperoniOut::readChannel(t_output output, t_channel channel, t_value* value)
+void PeperoniOut::readChannel(t_output output, t_channel channel,
+			      t_value* value)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(channel);

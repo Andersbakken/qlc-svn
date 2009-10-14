@@ -2,9 +2,7 @@
   Q Light Controller
   peperoniout.h
 
-  Copyright (c) Christian Sühs
-		Stefan Krumm
-		Heikki Junnila
+  Copyright (c)	Heikki Junnila
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -35,7 +33,7 @@ class PeperoniDevice;
 class QString;
 
 /*****************************************************************************
- * PeperoniOut
+ * USBDMXOut
  *****************************************************************************/
 
 class PeperoniOut : public QObject, public QLCOutPlugin
@@ -47,20 +45,32 @@ class PeperoniOut : public QObject, public QLCOutPlugin
 	 * Initialization
 	 *********************************************************************/
 public:
+	virtual ~PeperoniOut();
+
 	void init();
-	void open(t_output output = 0);
-	void close(t_output output = 0);
+	void open(t_output output);
+	void close(t_output output);
 
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/
 public:
 	void rescanDevices();
-	PeperoniDevice* device(const QString& path);
-	QStringList outputs();
 
 protected:
+	/** Get a PeperoniDevice entry by its usbdev struct */
+	PeperoniDevice* device(struct usb_device* usbdev);
+
+protected:
+	/** List of available devices */
 	QList <PeperoniDevice*> m_devices;
+
+	/*********************************************************************
+	 * Outputs
+	 *********************************************************************/
+public:
+	/** Get the names of outputs provided by this plugin */
+	QStringList outputs();
 
 	/*********************************************************************
 	 * Name
