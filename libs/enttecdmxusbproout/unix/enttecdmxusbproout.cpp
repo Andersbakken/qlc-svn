@@ -200,14 +200,16 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 			str += QString("<P>");
 			str += QString("<B>No devices available</B>. Make ");
 			str += QString("sure you have the Enttec DMX USB Pro ");
-			str += QString("plugged in and the <I>ftdi_sio</I> ");
-			str += QString("kernel module loaded. You need to ");
-			str += QString("uninstall the <I>FTDI</I> and ");
-			str += QString("<I>Enttec Open DMX USB</I> plugins ");
+			str += QString("plugged in and the FTDI VCP driver ");
+			str += QString("installed from <a href=\"http://www.ftdichip.com/Drivers/VCP.htm\">");
+			str += QString("http://www.ftdichip.com/Drivers/VCP.htm</a>. ");
+#ifndef WIN32 /* There's something good in windows, after all */
+			str += QString("You also need to uninstall the generic <I>FTDI</I> and ");
+			str += QString("<I>Enttec DMX USB</I> plugins, ");
 			str += QString("because the <I>D2XX</I> interface ");
 			str += QString("used by them overrides the VCP ");
-			str += QString("(Virtual Communications Port) ");
 			str += QString("interface used by this plugin.");
+#endif
 			str += QString("</P>");
 		}
 
