@@ -160,28 +160,27 @@ QString EnttecDMXUSBOut::infoText(t_output output)
 	if (output == KOutputInvalid)
 	{
 		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("This plugin provides DMX output support for ");
-		str += QString("devices manufactured by ENTTEC: ");
-		str += QString("DMX USB Pro and Open DMX USB. See ");
-		str += QString("<a href=\"http://www.enttec.com\">");
-		str += QString("http://www.enttec.com</a> for more ");
-		str += QString("information. ");
-		str += QString("</P>");
-
-#ifdef WIN32
 		if (m_widgets.size() == 0)
 		{
 			str += QString("<P>");
-			str += QString("<B>No devices available</B>. Make ");
-			str += QString("sure you have your Enttec hardware ");
+			str += QString("<B>No devices available</B>. ");
+#ifdef WIN32
+			str += QString("Make sure you have your Enttec hardware ");
 			str += QString("plugged in and the <I>D2XX</I> ");
-			str += QString("drivers installed. Then click the ");
-			str += QString("<B>configure</B> button. Note that ");
-			str += QString("the VCP driver is not supported.");
+			str += QString("drivers installed from <a href=\"http://www.ftdichip.com/Drivers/D2XX.htm\">");
+			str += QString("http://www.ftdichip.com/Drivers/D2XX.htm</a>. ");
+			str += QString("Note that the VCP interface used by Enttec DMX USB Pro ");
+			str += QString("is not supported by this plugin.");
+#endif
 			str += QString("</P>");
 		}
-#endif
+
+		str += QString("<P>");
+		str += QString("This plugin provides DMX output support for ");
+		str += QString("ENTTEC DMX USB Pro and Open DMX USB, using the ");
+		str += QString("proprietary D2XX interface. See <a href=\"http://www.enttec.com\">");
+		str += QString("http://www.enttec.com</a> for more information.");
+		str += QString("</P>");
 	}
 	else if (output < m_widgets.size())
 	{
