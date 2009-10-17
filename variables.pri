@@ -13,22 +13,27 @@ macx:CONFIG		+= x86 ppc
 unix:OLA_GIT		= /usr/src/ola
 
 # Treat all compiler warnings as errors
-# QMAKE_CXXFLAGS		+= -Werror
+#QMAKE_CXXFLAGS		+= -Werror
+
+# Install root (TODO: win32 & UNIX)
+#win32:INSTALLROOT	= $$(SystemDrive)/QLC
+#unix:!macx:INSTALLROOT	= /usr
+macx:INSTALLROOT	= ~/QLC.app
 
 # Binaries
 win32:BINDIR		= $$(SystemDrive)/QLC
 unix:!macx:BINDIR	= /usr/bin
-macx:BINDIR		= ~/qlc.app/Contents/MacOS
+macx:BINDIR		= $$INSTALLROOT/Contents/MacOS
 
 # Libraries
 win32:LIBSDIR		= $$BINDIR
 unix:!macx:LIBSDIR	= /usr/lib
-macx:LIBSDIR            = ~/qlc.app/Contents/Frameworks/
+macx:LIBSDIR            = $$INSTALLROOT/Contents/Frameworks/
 
 # Data
 win32:DATADIR		= $$(SystemDrive)/QLC
 unix:!macx:DATADIR	= /usr/share/qlc
-macx:DATADIR		= ~/qlc.app/Contents/Resources/
+macx:DATADIR		= $$INSTALLROOT/Contents/Resources/
 
 # Documentation
 win32:DOCSDIR		= $$DATADIR/Documents
