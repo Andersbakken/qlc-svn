@@ -1,3 +1,5 @@
+include(../../../variables.pri)
+
 TEMPLATE = lib
 TARGET = usb
 VERSION = 0.1.12

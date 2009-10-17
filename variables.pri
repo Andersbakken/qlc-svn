@@ -2,9 +2,12 @@
 CONFIG			+= warn_on release
 CONFIG			-= debug
 
-# Fix for Mac OS 10.6 with Qt 4.5
-macx:CONFIG		-= x86_64
-macx:CONFIG		+= x86
+# Build universal binaries on Mac OS 10.5 with official Qt 4.5 binary release
+macx:CONFIG		+= x86 ppc
+
+# Fix for Mac OS 10.6 with Qt 4.5 (disabled until Qt works fully in Snow Leo)
+#macx:CONFIG		-= x86_64
+#macx:CONFIG		+= x86
 
 # OLA directories
 unix:OLA_GIT		= /usr/src/ola
