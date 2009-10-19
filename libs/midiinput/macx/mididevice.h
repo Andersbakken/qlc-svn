@@ -44,7 +44,7 @@ class MIDIDevice : public QObject
 	 * Initialization
 	 *********************************************************************/
 public:
-	MIDIDevice(MIDIInput* parent, MIDIEndpointRef source);
+	MIDIDevice(MIDIInput* parent, MIDIEntityRef entity);
 	virtual ~MIDIDevice();
 
 	/** Get the device's unique ID and store it to m_uid */
@@ -64,11 +64,20 @@ public:
 	void close();
 
 protected:
+	/** Reference to the MIDI entity that owns source and destination */
+	MIDIEntityRef m_entity;
+
 	/** Reference to the opened MIDI source */
 	MIDIEndpointRef m_source;
 
+	/** Reference to the opened MIDI destination */
+	MIDIEndpointRef m_destination;
+
 	/** Reference to a virtual port that receives data from the source */
-	MIDIPortRef m_port;
+	MIDIPortRef m_inPort;
+
+	/** Reference to a virtual port that sends data to the destination */
+	MIDIPortRef m_outPort;
 
 	/*********************************************************************
 	 * Device info

@@ -100,41 +100,50 @@ void MIDIInput::rescanDevices()
 	QList <MIDIDevice*> destroyList(m_devices);
 
 	/* Find out which devices are still present */
-	for (ItemCount i = 0; i < MIDIGetNumberOfSources(); i++)
+	for (ItemCount i = 0; i < MIDIGetNumberOfDevices(); i++)
 	{
-		MIDIEndpointRef src = MIDIGetSource(i);
-		OSStatus s = 0;
-		SInt32 uid = 0;
+		MIDIDeviceRef dev = MIDIGetDevice(i);
+		for (ItemCount j = 0; j < MIDIDeviceGetNumberOfEntities(dev); j++)
+		{
+			MIDIEntityRef entity = MIDIDeviceGetEntity(dev, j);
+			OSStatus s = 0;
+			SInt32 uid = 0;
 
-		/* Extract UID from the source */
-		s = MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID,
-						 &uid);
-		if (s != 0)
-		{
-			qWarning() << "Unable to get UID of MIDI source";
-			continue;
-		}
+			/* Check if the entity is able to receive data */
+			if (MIDIEntityGetNumberOfSources(entity) == 0)
+				continue;
 
-		MIDIDevice* dev(deviceByUID(uid));
-		if (dev != NULL)
-		{
-			/* Device still exists, remove it from destroyList */
-			destroyList.removeAll(dev);
-		}
-		else
-		{
-			/* New device */
-			dev = new MIDIDevice(this, src);
-			Q_ASSERT(dev != NULL);
-			if (dev->extractUID() == true &&
-			    dev->extractName() == true)
+			/* Extract UID from the source */
+			s = MIDIObjectGetIntegerProperty(entity,
+							 kMIDIPropertyUniqueID,
+							 &uid);
+			if (s != 0)
 			{
-				m_devices.append(dev);
+				qWarning() << "Unable to get entity UID";
+				continue;
+			}
+
+			MIDIDevice* dev(deviceByUID(uid));
+			if (dev != NULL)
+			{
+				/* Device still exists */
+				destroyList.removeAll(dev);
 			}
 			else
 			{
-				delete dev;
-				dev = NULL;
+				/* New device */
+				dev = new MIDIDevice(this, entity);
+				Q_ASSERT(dev != NULL);
+				if (dev->extractUID() == true &&
+				    dev->extractName() == true)
+				{
+					m_devices.append(dev);
+				}
+				else
+				{
+					delete dev;
+					dev = NULL;
+				}
 			}
 		}
 	}

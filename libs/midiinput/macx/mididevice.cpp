@@ -35,11 +35,15 @@
  * Initialization
  *****************************************************************************/
 
-MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEndpointRef source)
+MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEntityRef entity)
 	: QObject(parent),
-	m_source(source),
-	m_port(0)
+	m_entity(entity),
+	m_source(NULL),
+	m_destination(NULL),
+	m_inPort(NULL),
+	m_outPort(NULL)
 {
+	Q_ASSERT(MIDIGetNumberOfSources(entity) > 0);
 }
 
 MIDIDevice::~MIDIDevice()
@@ -53,7 +57,7 @@ bool MIDIDevice::extractUID()
 	SInt32 uid;
 
 	/* Get the UID property */
-	s = MIDIObjectGetIntegerProperty(m_source, kMIDIPropertyUniqueID, &uid);
+	s = MIDIObjectGetIntegerProperty(m_entity, kMIDIPropertyUniqueID, &uid);
 	if (s == 0)
 	{
 		m_uid = uid;
@@ -62,7 +66,7 @@ bool MIDIDevice::extractUID()
 	else
 	{
 		m_uid = -1;
-		qWarning() << "Unable to get UID for MIDI source:" << s;
+		qWarning() << "Unable to get UID for MIDI entity:" << s;
 		return false;
 	}
 }
@@ -73,23 +77,31 @@ bool MIDIDevice::extractName()
 	OSStatus s;
 
 	/* Get the name property */
-	s = MIDIObjectGetStringProperty(m_source, kMIDIPropertyDisplayName, &str);
+	s = MIDIObjectGetStringProperty(m_entity, kMIDIPropertyName, &str);
 	if (s != 0)
 	{
-		qWarning() << "Unable to get name for MIDI source:" << s;
-		return false;
+		qWarning() << "Unable to get manufacturer for MIDI entity:"
+			   << s;
+		m_name = QString("Unknown %1").arg(m_uid);
 	}
-
-	/* Convert the name into a QString. This call can fail if the buffer
-	   is too small, so let's not make the device unusable just because we
-	   allocated too little space for it. */
-	CFIndex size = CFStringGetLength(str) + 1;
-	char* buf = (char*) malloc(size);
-	if (CFStringGetCString(str, buf, size, kCFStringEncodingISOLatin1))
-		m_name = QString(buf);
 	else
-		m_name = QString("Unknown");
-	free(buf);
+	{
+		/* Convert the name into a QString. */
+		CFIndex size = CFStringGetLength(str) + 1;
+		char* buf = (char*) malloc(size);
+		if (CFStringGetCString(str, buf, size,
+					kCFStringEncodingISOLatin1))
+		{
+			m_name = QString(buf);
+		}
+		else
+		{
+			m_name = QString("Unknown %1").arg(m_uid);
+		}
+
+		free(buf);
+		CFRelease(str);
+	}
 
 	return true;
 }
@@ -122,7 +134,8 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
 			continue;
 
 		/* TODO: This makes no differentiation on note & CC data:
-		   e.g. cc15 == note15, cc1 == note1 etc... Annoying. */
+		   e.g. cc15 == note15, cc1 == note1 etc... Annoying.
+		   Then again, there's 127 channels already. Enough? */
 		if (packet.data[0] ==MIDI_NOTE_ON ||
 		    packet.data[0] == MIDI_NOTE_OFF ||
 		    packet.data[0] == MIDI_CONTROL_CHANGE)
@@ -148,38 +161,57 @@ bool MIDIDevice::open()
 	Q_ASSERT(plugin != NULL);
 
 	/* Don't open twice */
-	if (m_port != NULL)
+	if (m_inPort != NULL)
 		return true;
 
-	/* Make a port */
+	/* Make an input port */
 	s = MIDIInputPortCreate(plugin->client(), CFSTR("QLC Input Port"),
-				MidiInProc, NULL, &m_port);
+				MidiInProc, NULL, &m_inPort);
 	if (s != 0)
 	{
-		qWarning() << "Unable to make a port for" << name()
+		qWarning() << "Unable to make an input port for" << name()
 			   << ":" << s;
-		m_port = NULL;
+		m_inPort = NULL;
 		return false;
 	}
 
-	/* Connect the port to this device's source */
-	s = MIDIPortConnectSource(m_port, m_source, this);
+	/* Connect the input port to the first source */
+	m_source = MIDIEntityGetSource(m_entity, 0);
+	s = MIDIPortConnectSource(m_inPort, m_source, this);
 	if (s != 0)
 	{
-		qWarning() << "Unable to connect port to source for"
+		qWarning() << "Unable to connect input port to source for"
 			   << name() << ":" << s;
-		s = MIDIPortDispose(m_port);
+
+		s = MIDIPortDispose(m_inPort);
+		if (s != 0)
+			qWarning() << "Unable to dispose of port for" << name();
+
+		m_inPort = NULL;
+		m_source = NULL;
+
+		return false;
+	}
+
+	/* If the entity has destinations, use one of them for feedback */
+	if (MIDIEntityGetNumberOfDestinations(m_entity) > 0 && m_outPort == 0)
+	{
+		/* Make an output port */
+		s = MIDIOutputPortCreate(plugin->client(),
+					 CFSTR("QLC Input FB Port"),
+					 &m_outPort);
 		if (s != 0)
 		{
-			qWarning() << "Unable to dispose of port for"
-				   << name();
+			qWarning() << "Unable to make an output port for"
+				   << name() << ":" << s;
+			m_outPort = NULL;
+			m_destination = NULL;
 		}
 		else
 		{
-			m_port = NULL;
+			/* Use the first destination */
+			m_destination = MIDIEntityGetDestination(m_entity, 0);
 		}
-
-		return false;
 	}
 
 	return true;
@@ -187,25 +219,42 @@ bool MIDIDevice::open()
 
 void MIDIDevice::close()
 {
-	if (m_port != NULL)
+	OSStatus s;
+
+	if (m_inPort != NULL && m_source != NULL)
 	{
-		OSStatus s;
-		s = MIDIPortDisconnectSource(m_port, m_source);
+		s = MIDIPortDisconnectSource(m_inPort, m_source);
 		if (s != 0)
 		{
-			qWarning() << "Unable to disconnect port for"
+			qWarning() << "Unable to disconnect input port for"
 				   << name();
 		}
 
-		s = MIDIPortDispose(m_port);
+		s = MIDIPortDispose(m_inPort);
 		if (s != 0)
 		{
-			qWarning() << "Unable to dispose of port for"
+			qWarning() << "Unable to dispose of input port for"
 				   << name();
 		}
 		else
 		{
-			m_port = NULL;
+			m_inPort = NULL;
+			m_source = NULL;
+		}
+	}
+
+	if (m_outPort != NULL && m_destination != NULL)
+	{
+		s = MIDIPortDispose(m_outPort);
+		if (s != 0)
+		{
+			qWarning() << "Unable to dispose of output port for"
+				   << name();
+		}
+		else
+		{
+			m_outPort = NULL;
+			m_destination = NULL;
 		}
 	}
 }
@@ -230,6 +279,44 @@ void MIDIDevice::customEvent(QEvent* event)
 
 void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 {
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
+	Byte note[3];
+	Byte cc[3];
+
+	/* If there's no output port or a destination, the endpoint probably
+	   doesn't have a MIDI IN port -> no feedback. */
+	if (m_outPort == NULL || m_destination == NULL)
+		return;
+
+	/* MIDI doesn't support more than 127 distinct notes/cc's */
+	if (channel > 127)
+		return;
+
+	/* Send the value as NOTE as well as CC data */
+	if (value == 0)
+		note[0] = MIDI_NOTE_OFF;
+	else
+		note[0] = MIDI_NOTE_ON;
+	cc[0] = MIDI_CONTROL_CHANGE;
+	cc[1] = note[1] = static_cast<char> (channel);
+	cc[2] = note[2] = static_cast<char> (SCALE(double(value),
+						   double(0),
+						   double(KInputValueMax),
+						   double(0),
+						   double(127)));
+
+	/* Construct a MIDI packet list (in a very peculiar way, yes..) */
+	Byte buffer[32]; // Should be enough
+	MIDIPacketList* list = (MIDIPacketList*) buffer;
+	MIDIPacket* packet = MIDIPacketListInit(list);
+	packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
+				   sizeof(note), note);
+	Q_ASSERT(packet != NULL);
+	packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
+				   sizeof(cc), cc);
+	Q_ASSERT(packet != NULL);
+
+	/* Send the very peculiar MIDI packet */
+	OSStatus s = MIDISend(m_outPort, m_destination, list);
+	if (s != 0)
+		qWarning() << "Unable to send feedback data to" << name();
 }
