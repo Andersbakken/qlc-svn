@@ -584,7 +584,7 @@ QString Fixture::status()
 	info += QString("</TD>");
 	info += QString("</TR>");
 	info += QString("</TABLE>");
-	
+
 	// Manufacturer
 	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
 	info += QString("<TR>");
@@ -592,7 +592,7 @@ QString Fixture::status()
 	info += QString("<B>Manufacturer</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	
+
 	if (m_fixtureDef != NULL)
 		info += m_fixtureDef->manufacturer();
 	else
@@ -615,7 +615,7 @@ QString Fixture::status()
 
 	info += QString("</TD>");
 	info += QString("</TR>");
-	
+
 	// Mode
 	info += QString("<TR>");
 	info += QString("<TD>");
@@ -627,7 +627,7 @@ QString Fixture::status()
 		info += m_fixtureMode->name();
 	else
 		info += KXMLFixtureGeneric;
-		
+
 	info += QString("</TD>");
 	info += QString("</TR>");
 
@@ -655,7 +655,7 @@ QString Fixture::status()
 	info += t.sprintf("%d", universe() + 1);
 	info += QString("</TD>");
 	info += QString("</TR>");
-	
+
 	// Address
 	info += QString("<TR>");
 	info += QString("<TD>");
@@ -665,14 +665,24 @@ QString Fixture::status()
 	info += t.sprintf("%d - %d", address() + 1, address() + channels());
 	info += QString("</TD>");
 	info += QString("</TR>");
+
+	// Binary address
+	info += QString("<TR>");
+	info += QString("<TD>");
+	info += QString("<B>Binary address</B>");
+	info += QString("</TD>");
+	info += QString("<TD>");
+	info += QString("%1").arg(address() + 1, 9, 2, QChar('0'));
+	info += QString("</TD>");
+	info += QString("</TR>");
 	info += QString("</TABLE>");
-	
+
 	//
 	// Channels
 	//
 	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
 	info += QString("<TR>");
-	
+
 	// Relative channel column title
 	info += QString("<TD BGCOLOR=\"");
 	info += pal.color(QPalette::Highlight).name();
@@ -683,7 +693,7 @@ QString Fixture::status()
 	info += QString("<B>Channel</B>");
 	info += QString("</FONT>");
 	info += QString("</TD>");
-	
+
 	// DMX channel column title
 	info += QString("<TD BGCOLOR=\"");
 	info += pal.color(QPalette::Highlight).name();
@@ -706,7 +716,7 @@ QString Fixture::status()
 	info += QString("</FONT>");
 	info += QString("</TD>");
 	info += QString("</TR>");
-	
+
 	// Fill table with the fixture's channels
 	for (t_channel ch = 0; ch < channels();	ch++)
 	{
@@ -721,10 +731,10 @@ QString Fixture::status()
 		info += QString("<TD>");
 		info += t.setNum(address() + ch + 1);
 		info += QString("</TD>");
-		
+
 		// Channel name
 		info += QString("<TD>");
-		
+
 		if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 			info += channel(ch)->name();
 		else
