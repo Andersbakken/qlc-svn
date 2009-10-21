@@ -110,7 +110,7 @@ public:
 		ControlChange,
 		Note
 	};
-	
+
 	/** Get this device's operational mode */
 	Mode mode() const { return m_mode; }
 
@@ -132,7 +132,7 @@ public:
 
 	/** Set this device's MIDI channel */
 	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
-	
+
 protected:
 	t_channel m_midiChannel;
 

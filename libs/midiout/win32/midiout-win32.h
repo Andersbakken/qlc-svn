@@ -53,7 +53,7 @@ public:
 
 	/** Second-stage constructor */
 	void init();
-	
+
 	/** Open the given output */
 	void open(t_output output = 0);
 

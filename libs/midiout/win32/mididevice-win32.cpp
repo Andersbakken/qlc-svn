@@ -39,7 +39,7 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 
 	/* Get a name for this device */
 	extractName();
-	
+
 	/* Load global settings */
 	loadSettings();
 }
@@ -62,7 +62,7 @@ void MIDIDevice::loadSettings()
 		setMidiChannel(value.toInt());
 	else
 		setMidiChannel(0);
-	
+
 	/* Attempt to get the mode from settings */
 	key = QString("/midiout/%1/mode").arg(m_name);
 	value = settings.value(key);
@@ -148,7 +148,7 @@ void MIDIDevice::close()
 
 	if (m_handle == NULL)
 		return;
-	
+
 	res = midiOutClose(m_handle);
 	if (res == MIDIERR_STILLPLAYING)
 	{
@@ -202,7 +202,7 @@ void MIDIDevice::extractName()
 	MMRESULT res;
 	MIDIOUTCAPS caps;
 
-	res = midiOutGetDevCaps(m_id, &caps, sizeof(MIDIOUTCAPS));	
+	res = midiOutGetDevCaps(m_id, &caps, sizeof(MIDIOUTCAPS));
 	if (res == MMSYSERR_BADDEVICEID)
 	{
 		m_name = QString("Bad device ID");
