@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   configuremidiout.cpp
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -30,14 +30,8 @@
 
 #include "configuremididevice.h"
 #include "configuremidiout.h"
-
-#ifdef WIN32
-#include "mididevice-win32.h"
-#include "midiout-win32.h"
-#else
-#include "mididevice-unix.h"
-#include "midiout-unix.h"
-#endif
+#include "mididevice.h"
+#include "midiout.h"
 
 #define KColumnNumber      0
 #define KColumnName        1
