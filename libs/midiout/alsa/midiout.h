@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  midiout-unix.h
+  midiout.h
 
   Copyright (c) Heikki Junnila
 

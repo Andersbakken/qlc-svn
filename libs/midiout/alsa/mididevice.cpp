@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  mididevice-unix.cpp
+  mididevice.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -28,8 +28,8 @@
 
 #include <alsa/asoundlib.h>
 
-#include "mididevice-unix.h"
-#include "midiout-unix.h"
+#include "mididevice.h"
+#include "midiout.h"
 
 MIDIDevice::MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address)
 	: QObject(parent)

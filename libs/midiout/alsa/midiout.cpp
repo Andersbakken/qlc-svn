@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  midiout-unix.cpp
+  midiout.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -28,8 +28,8 @@
 #include <alsa/asoundlib.h>
 
 #include "configuremidiout.h"
-#include "mididevice-unix.h"
-#include "midiout-unix.h"
+#include "mididevice.h"
+#include "midiout.h"
 
 /*****************************************************************************
  * MIDIOut Initialization

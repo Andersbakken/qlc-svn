@@ -16,10 +16,10 @@ FORMS		+= ../common/configuremididevice.ui \
 
 HEADERS		+= ../common/configuremididevice.h \
 		   ../common/configuremidiout.h \
-		   mididevice-unix.h \
-		   midiout-unix.h
+		   mididevice.h \
+		   midiout.h
 
 SOURCES		+= ../common/configuremididevice.cpp \
 		   ../common/configuremidiout.cpp \
-		   mididevice-unix.cpp \
-		   midiout-unix.cpp
+		   mididevice.cpp \
+		   midiout.cpp
