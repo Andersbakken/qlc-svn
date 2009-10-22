@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  midiout-win32.cpp
+  midiout.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -25,8 +25,8 @@
 #include <QDebug>
 
 #include "configuremidiout.h"
-#include "mididevice-win32.h"
-#include "midiout-win32.h"
+#include "mididevice.h"
+#include "midiout.h"
 
 /*****************************************************************************
  * MIDIOut Initialization

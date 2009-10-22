@@ -16,11 +16,11 @@ FORMS		+= ../common/configuremididevice.ui \
 
 SOURCES		+= ../common/configuremididevice.cpp \
 		   ../common/configuremidiout.cpp \
-		   mididevice-win32.cpp \
-		   midiout-win32.cpp
+		   mididevice.cpp \
+		   midiout.cpp
 
 HEADERS		+= ../common/configuremididevice.h \
 		   ../common/configuremidiout.h \
 		   ../common/midiprotocol.h \
-		   mididevice-win32.h \
-		   midiout-win32.h
+		   mididevice.h \
+		   midiout.h

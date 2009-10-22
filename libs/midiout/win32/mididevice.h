@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  mididevice-win32.h
+  mididevice.h
 
   Copyright (c) Heikki Junnila
 

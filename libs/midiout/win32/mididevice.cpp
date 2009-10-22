@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  mididevice-win32.cpp
+  mididevice.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -25,9 +25,9 @@
 #include <QString>
 #include <QDebug>
 
-#include "mididevice-win32.h"
-#include "midiout-win32.h"
 #include "midiprotocol.h"
+#include "mididevice.h"
+#include "midiout.h"
 
 MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 {

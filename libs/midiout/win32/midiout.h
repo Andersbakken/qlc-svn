@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  midiout-win32.h
+  midiout.h
 
   Copyright (c) Heikki Junnila
 
