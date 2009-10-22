@@ -45,6 +45,7 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, MIDIEntityRef entity)
 
 MIDIDevice::~MIDIDevice()
 {
+	saveSettings();
 	close();
 }
 
@@ -110,7 +111,7 @@ void MIDIDevice::loadSettings()
 	QString key;
 
 	/* Attempt to get a MIDI channel from settings */
-	key = QString("/midiout/%1/midichannel").arg(m_name);
+	key = QString("/midiout/%1/midichannel").arg(m_uid);
 	value = settings.value(key);
 	if (value.isValid() == true)
 		setMidiChannel(value.toInt());
@@ -118,7 +119,7 @@ void MIDIDevice::loadSettings()
 		setMidiChannel(0);
 
 	/* Attempt to get the mode from settings */
-	key = QString("/midiout/%1/mode").arg(m_name);
+	key = QString("/midiout/%1/mode").arg(m_uid);
 	value = settings.value(key);
 	if (value.isValid() == true)
 		setMode(stringToMode(value.toString()));
@@ -132,11 +133,11 @@ void MIDIDevice::saveSettings()
 	QString key;
 
 	/* Store MIDI channel to settings */
-	key = QString("/midiout/%1/midichannel").arg(m_name);
+	key = QString("/midiout/%1/midichannel").arg(m_uid);
 	settings.setValue(key, m_midiChannel);
 
 	/* Store mode to settings */
-	key = QString("/midiout/%1/mode").arg(m_name);
+	key = QString("/midiout/%1/mode").arg(m_uid);
 	settings.setValue(key, MIDIDevice::modeToString(m_mode));
 }
 

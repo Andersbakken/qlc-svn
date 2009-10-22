@@ -160,6 +160,7 @@ void MIDIOut::addDevice(MIDIDevice* device)
 	Q_ASSERT(device != NULL);
 
 	m_devices.append(device);
+	device->loadSettings();
 	emit deviceAdded(device);
 }
 
