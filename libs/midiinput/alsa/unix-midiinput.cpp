@@ -46,7 +46,8 @@ MIDIInput::~MIDIInput()
 		delete m_devices.takeFirst();
 
 	/* Close the ALSA sequencer interface */
-	snd_seq_close(m_alsa);
+	if (m_alsa != NULL)
+		snd_seq_close(m_alsa);
 	m_alsa = NULL;
 }
 
