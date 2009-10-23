@@ -38,11 +38,11 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address)
 	m_mode = ControlChange;
 	m_midiChannel = 0;
 
+	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
+
 	setAddress(address);
 	extractName();
 	loadSettings();
-
-	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
 }
 
 MIDIDevice::~MIDIDevice()
@@ -203,18 +203,15 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
 
 void MIDIDevice::writeRange(t_value* values, t_channel num)
 {
-	snd_seq_event_t ev;
-	MIDIOut* plugin;
-	int i;
-
 	Q_UNUSED(num);
 
-	plugin = static_cast<MIDIOut*> (parent());
+	MIDIOut* plugin = static_cast<MIDIOut*> (parent());
 	Q_ASSERT(plugin != NULL);
 	Q_ASSERT(plugin->alsa() != NULL);
 	Q_ASSERT(m_address != NULL);
 
 	/* Setup a common event structure for all values */
+	snd_seq_event_t ev;
 	snd_seq_ev_clear(&ev);
 	snd_seq_ev_set_dest(&ev, m_address->client, m_address->port);
 	snd_seq_ev_set_subs(&ev);
@@ -223,57 +220,50 @@ void MIDIDevice::writeRange(t_value* values, t_channel num)
 	/* Since MIDI devices can have only 128 real channels, we don't
 	   attempt to write more than that */
 
-	switch (m_mode)
+	for (unsigned char channel = 0; channel < MAX_MIDI_DMX_CHANNELS;
+	     channel++)
 	{
-	default:
-	case ControlChange:
-		/* Use control change numbers as DMX channels and
-		   control values as DMX channel values */
-		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
+		/* Scale 0-255 to 0-127 */
+		char scaled = static_cast <char> (SCALE(double(values[channel]),
+							double(0),
+							double(KInputValueMax),
+							double(0),
+							double(127)));
+
+		/* Since MIDI is so slow, we only send values that are
+           	   actually changed. */
+		if (m_values[channel] == scaled)
+        		continue;
+
+		/* Store the changed MIDI value */
+		m_values[channel] = scaled;
+
+		if (mode() == Note)
 		{
-			if (m_values[i] != values[i])
+			if (scaled == 0)
 			{
-				m_values[i] = values[i];
-
-				snd_seq_ev_set_controller(&ev,
-							  m_midiChannel,
-							  i,
-							  values[i] >> 1);
-				snd_seq_event_output_buffer(plugin->alsa(),
-							    &ev);
+				/* 0 is sent as a note off command */
+				snd_seq_ev_set_noteoff(&ev, midiChannel(),
+						       channel, scaled);
 			}
-		}
-		break;
+			else
+			{
+				/* 1-127 is sent as note on command */
+				snd_seq_ev_set_noteon(&ev, midiChannel(),
+						      channel, scaled);
+			}
 
-	case Note:
-		/* Use note numbers as DMX channels and velocities as
-		   DMX channel values. Value 0 is written as note off. */
-		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
+			snd_seq_event_output(plugin->alsa(), &ev);
+		}
+		else
 		{
-			if (m_values[i] != values[i])
-			{
-				m_values[i] = values[i];
-
-				if (values[i] == 0)
-				{
-					snd_seq_ev_set_noteoff(&ev,
-							       m_midiChannel,
-							       i,
-							       0);
-				}
-				else
-				{
-					snd_seq_ev_set_noteon(&ev,
-							      m_midiChannel,
-							      i,
-							      values[i] >> 1);
-				}
-
-				snd_seq_event_output(plugin->alsa(), &ev);
-			}
+			/* Control change */
+			snd_seq_ev_set_controller(&ev, midiChannel(),
+						  channel, scaled);
+			snd_seq_event_output_buffer(plugin->alsa(), &ev);
 		}
-		break;
 	}
 
+	/* Make sure that all values go to the MIDI endpoint */
 	snd_seq_drain_output(plugin->alsa());
 }
