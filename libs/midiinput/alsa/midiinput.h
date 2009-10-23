@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  unix-midiinput.h
+  midiinput.h
 
   Copyright (C) Heikki Junnila
                 Stefan Krumm

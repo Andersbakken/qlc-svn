@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  unix-midiinput.cpp
+  midiinput.cpp
 
   Copyright (C) Heikki Junnila
 		Stefan Krumm
@@ -27,10 +27,10 @@
 #include <QDir>
 
 #include "configuremidiinput.h"
-#include "unix-mididevice.h"
-#include "unix-midipoller.h"
-#include "unix-midiinput.h"
 #include "midiinputevent.h"
+#include "mididevice.h"
+#include "midipoller.h"
+#include "midiinput.h"
 
 /*****************************************************************************
  * MIDIInput Initialization
@@ -171,14 +171,17 @@ void MIDIInput::rescanDevices()
 			if (dev == NULL)
 			{
 				/* New address. Create a new device for it. */
-				dev = new MIDIDevice(this);
-				Q_ASSERT(dev != NULL);
-				dev->setAddress(address);
-				dev->extractName();
-				if (dev->name().contains("__QLC__") == false)
+				dev = new MIDIDevice(this, address);
+				if (dev != NULL &&
+				    dev->name().contains("__QLC__") == false)
+				{
 					addDevice(dev);
+				}
 				else
+				{
 					delete dev;
+					dev = NULL;
+				}
 			}
 			else
 			{
@@ -229,7 +232,6 @@ void MIDIInput::addDevice(MIDIDevice* device)
 	Q_ASSERT(device != NULL);
 
 	m_devices.append(device);
-
 	emit deviceAdded(device);
 }
 

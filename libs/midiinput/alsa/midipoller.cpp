@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  unix-midipoller.cpp
+  midipoller.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -24,10 +24,10 @@
 #include <QDebug>
 #include <poll.h>
 
-#include "unix-midipoller.h"
-#include "unix-mididevice.h"
-#include "unix-midiinput.h"
 #include "midiinputevent.h"
+#include "midipoller.h"
+#include "mididevice.h"
+#include "midiinput.h"
 
 #define KPollTimeout 1000
 
@@ -256,13 +256,20 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 		else
 			continue;
 
+		Q_ASSERT(device != NULL);
+
 		/* Parse the MIDI event into an internal MIDIInputEvent */
-		if (ev->type == SND_SEQ_EVENT_CONTROLLER ||
+		if (device->mode() == MIDIDevice::ControlChange &&
+		    (ev->type == SND_SEQ_EVENT_CONTROLLER ||
 		    ev->type == SND_SEQ_EVENT_NONREGPARAM ||
 		    ev->type == SND_SEQ_EVENT_REGPARAM ||
 		    ev->type == SND_SEQ_EVENT_KEYPRESS ||
-		    ev->type == SND_SEQ_EVENT_CHANPRESS)
+		    ev->type == SND_SEQ_EVENT_CHANPRESS))
 		{
+			/* Check the incoming midi channel */
+			if (ev->data.control.channel != device->midiChannel())
+				continue;
+
 			/* Scale the value from [0-127] to [0-255] */
 			value = t_input_value(
 				SCALE(double(ev->data.control.value),
@@ -273,8 +280,13 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 					       value);
 			QApplication::postEvent(parent(), e);
 		}
-		else if (ev->type == SND_SEQ_EVENT_NOTEON)
+		else if (device->mode() == MIDIDevice::Note &&
+			 ev->type == SND_SEQ_EVENT_NOTEON)
 		{
+			/* Check the incoming midi channel */
+			if (ev->data.note.channel != device->midiChannel())
+				continue;
+
 			/* Scale the value from [0-127] to [0-255] */
 			value = t_input_value(
 				SCALE(double(ev->data.note.velocity),
@@ -285,8 +297,13 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 					       value);
 			QApplication::postEvent(parent(), e);
 		}
-		else if (ev->type == SND_SEQ_EVENT_NOTEOFF)
+		else if (device->mode() == MIDIDevice::Note &&
+			 ev->type == SND_SEQ_EVENT_NOTEOFF)
 		{
+			/* Check the incoming midi channel */
+			if (ev->data.note.channel != device->midiChannel())
+				continue;
+
 			/* It's a note off message -> send a zero value */
 			e = new MIDIInputEvent(device, ev->data.note.note, 0);
 			QApplication::postEvent(parent(), e);

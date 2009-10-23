@@ -4,7 +4,7 @@ TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= midiinput
 
-INCLUDEPATH	+= ../common ../../../libs
+INCLUDEPATH	+= ../common ../..
 CONFIG          += plugin link_pkgconfig
 PKGCONFIG	+= alsa
 
@@ -19,16 +19,19 @@ INSTALLS	+= target
 # Sources
 ###############################################################################
 
-FORMS		+= ../common/configuremidiinput.ui
+FORMS		+= ../common/configuremidiinput.ui \
+		   ../common/configuremidiline.ui
 
 HEADERS		+= ../common/configuremidiinput.h \
+		   ../common/configuremidiline.h \
 		   ../common/midiinputevent.h \
-		   unix-mididevice.h \
-		   unix-midiinput.h \
-		   unix-midipoller.h
+		   mididevice.h \
+		   midiinput.h \
+		   midipoller.h
 
 SOURCES 	+= ../common/configuremidiinput.cpp \
+		   ../common/configuremidiline.cpp \
 		   ../common/midiinputevent.cpp \
-		   unix-mididevice.cpp \
-		   unix-midiinput.cpp \
-		   unix-midipoller.cpp
+		   mididevice.cpp \
+		   midiinput.cpp \
+		   midipoller.cpp

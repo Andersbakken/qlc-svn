@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  unix-mididevice.h
+  mididevice.h
 
   Copyright (c) Heikki Junnila
 
@@ -42,8 +42,14 @@ class MIDIDevice : public QObject
 	Q_OBJECT
 
 public:
-	MIDIDevice(MIDIInput* parent);
+	MIDIDevice(MIDIInput* parent, const snd_seq_addr_t* address);
 	virtual ~MIDIDevice();
+
+	/** Load global settings */
+	void loadSettings();
+
+	/** Save global settings */
+	void saveSettings();
 
 	/*********************************************************************
  	 * ALSA address
@@ -68,16 +74,54 @@ public:
 	/** Get the device's name */
 	QString name() const;
 
-	/**
-	 * Extract the name of this device from ALSA.
-	 *
-	 * @return true if successful, otherwise false.
-	 */
-	bool extractName();
+protected:
+	/** Extract the name of this device from ALSA. */
+	void extractName();
 
 protected:
 	/** The name of this ALSA MIDI device */
 	QString m_name;
+
+	/*********************************************************************
+	 * Operational mode
+	 *********************************************************************/
+public:
+	/**
+	 * This device's operational mode.
+	 *
+	 * @ControlChange: Use MIDI ControlChange ID's as input channels
+	 * @Note: Use MIDI Note ON/OFF commands as input channels
+	 */
+	enum Mode
+	{
+		ControlChange,
+		Note
+	};
+
+	/** Get this device's operational mode */
+	Mode mode() const { return m_mode; }
+
+	/** Set this device's operational mode */
+	void setMode(Mode m) { m_mode = m; }
+
+	static QString modeToString(Mode mode);
+	static Mode stringToMode(const QString& mode);
+
+protected:
+	Mode m_mode;
+
+	/*********************************************************************
+	 * MIDI channel
+	 *********************************************************************/
+public:
+	/** Get this device's MIDI channel */
+	t_channel midiChannel() const { return m_midiChannel; }
+
+	/** Set this device's MIDI channel */
+	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
+
+protected:
+	t_channel m_midiChannel;
 
 	/*********************************************************************
 	 * Input data
