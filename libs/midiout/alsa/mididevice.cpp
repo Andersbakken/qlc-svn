@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QSettings>
 #include <QObject>
 #include <QString>
@@ -36,6 +35,8 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address)
 {
 	Q_ASSERT(address != NULL);
 	m_address = NULL;
+	m_mode = ControlChange;
+	m_midiChannel = 0;
 
 	setAddress(address);
 	extractName();
@@ -46,7 +47,9 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address)
 
 MIDIDevice::~MIDIDevice()
 {
+	saveSettings();
 	delete m_address;
+	m_address = NULL;
 }
 
 void MIDIDevice::loadSettings()
