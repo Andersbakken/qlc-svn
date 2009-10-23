@@ -94,6 +94,7 @@ protected:
 protected:
 	/** The name of this MIDI device */
 	QString m_name;
+	bool m_isOK;
 
 	/*********************************************************************
 	 * Operational mode
@@ -143,7 +144,15 @@ public:
 	void writeRange(t_value* values, t_channel num);
 
 protected:
-	t_value m_values[MAX_MIDI_DMX_CHANNELS];
+	/** Send one channel */
+	void sendData(BYTE command, BYTE channel, BYTE value);
+
+protected:
+	/**
+	 * Cache values here because MIDI is so slow that we need to send only
+	 * those values that have actually changed.
+	 */
+	BYTE m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

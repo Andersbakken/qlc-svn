@@ -33,10 +33,13 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 {
 	m_id = id;
 	m_handle = NULL;
+	m_mode = ControlChange;
+	m_midiChannel = 0;
+	m_isOK = false;
 
 	/* Start with all values zeroed */
 	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
-
+	
 	/* Get a name for this device */
 	extractName();
 
@@ -46,6 +49,7 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 
 MIDIDevice::~MIDIDevice()
 {
+	saveSettings();
 	close();
 }
 
@@ -135,7 +139,6 @@ bool MIDIDevice::open()
 	}
 	else
 	{
-		qDebug() << QString("%1 opened.").arg(m_name);
 		result = true;
 	}
 
@@ -167,7 +170,6 @@ void MIDIDevice::close()
 	}
 	else
 	{
-		qDebug() << QString("%1 closed successfully.").arg(m_name);
 		m_handle = NULL;
 	}
 }
@@ -182,7 +184,10 @@ QString MIDIDevice::infoText()
 
 	info += QString("<B>%1</B>").arg(name());
 	info += QString("<P>");
-	info += QString("Device is working correctly.");
+	if (m_isOK == true)
+		info += QString("Device is working correctly.");
+	else
+		info += QString("<B>MIDI Output not available.</B>");
 	info += QString("</P>");
 	info += QString("<P>");
 	info += QString("<B>MIDI Channel: </B>%1<BR>").arg(m_midiChannel + 1);
@@ -226,6 +231,7 @@ void MIDIDevice::extractName()
 	else
 	{
 		m_name = QString::fromWCharArray(caps.szPname);
+		m_isOK = true;
 	}
 }
 
@@ -261,64 +267,60 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
 
 void MIDIDevice::writeRange(t_value* values, t_channel num)
 {
-	int i;
+	for (BYTE channel = 0; channel < MAX_MIDI_DMX_CHANNELS; channel++)
+	{
+		/* Scale 0-255 to 0-127 */
+		BYTE scaled = static_cast<BYTE> (SCALE(double(values[channel]),
+							double(0),
+							double(KInputValueMax),
+							double(0),
+							double(127)));
+
+		/* Since MIDI is so slow, we only send values that are
+		   actually changed. */
+		if (m_values[channel] == scaled)
+			continue;
+
+		/* Store the changed MIDI value */
+		m_values[channel] = scaled;
+
+		if (m_mode == Note)
+		{
+			if (scaled == 0)
+			{
+				/* Zero is sent as a note off command */
+				sendData(MIDI_NOTE_OFF | (BYTE) midiChannel(),
+					 channel, scaled);
+			}
+			else
+			{
+				/* 1-127 are sent as note on commands */
+				sendData(MIDI_NOTE_ON | (BYTE) midiChannel(),
+					 channel, scaled);
+			}
+		}
+		else
+		{
+			/* Control change */
+			sendData(MIDI_CONTROL_CHANGE | (BYTE) midiChannel(),
+				 channel, scaled);
+		}
+	}
+}
+
+void MIDIDevice::sendData(BYTE command, BYTE channel, BYTE value)
+{
 	union
 	{
 		DWORD dwData;
 		BYTE bData[4];
 	} msg;
 
-	switch (m_mode)
-	{
-	default:
-	case ControlChange:
-		/* Use control change numbers as DMX channels and
-		   control values as DMX channel values */
-		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
-		{
-			if (m_values[i] != values[i])
-			{
-				m_values[i] = values[i];
+	msg.bData[0] = command;
+	msg.bData[1] = channel;
+	msg.bData[2] = value;
+	msg.bData[3] = 0;
 
-				msg.bData[0] = MIDI_CONTROL_CHANGE;
-				msg.bData[1] = (BYTE) i;
-				msg.bData[2] = (BYTE) values[i] >> 1;
-				msg.bData[3] = 0;
-
-				/* Push the message out */
-				midiOutShortMsg(m_handle, msg.dwData);
-			}
-		}
-		break;
-
-	case Note:
-		/* Use note numbers as DMX channels and velocities as
-		   DMX channel values. 0 is written as note off */
-		for (i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
-		{
-			if (m_values[i] != values[i])
-			{
-				m_values[i] = values[i];
-
-				if (values[i] == 0)
-				{
-					msg.bData[0] = MIDI_NOTE_OFF;
-					msg.bData[1] = (BYTE) i;
-					msg.bData[2] = 0;
-					msg.bData[3] = 0;
-				}
-				else
-				{
-					msg.bData[0] = MIDI_NOTE_ON;
-					msg.bData[1] = (BYTE) i;
-					msg.bData[2] = (BYTE) values[i] >> 1;
-					msg.bData[3] = 0;
-				}
-
-				/* Push the message out */
-				midiOutShortMsg(m_handle, msg.dwData);
-			}
-		}
-		break;
-	}
+	/* Push the message out */
+	midiOutShortMsg(m_handle, msg.dwData);
 }
