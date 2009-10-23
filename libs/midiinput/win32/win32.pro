@@ -5,7 +5,7 @@ LANGUAGE 	= C++
 TARGET 		= midiinput
 
 CONFIG          += plugin
-INCLUDEPATH	+= ../common ../../../libs
+INCLUDEPATH	+= ../common ../..
 LIBS		+= -lwinmm
 
 ###############################################################################
@@ -25,11 +25,11 @@ FORMS		+= ../common/configuremidiinput.ui \
 HEADERS		+= ../common/configuremidiinput.h \
 		   ../common/configuremidiline.h \
    		   ../common/midiinputevent.h \
-		   win32-mididevice.h \
-		   win32-midiinput.h
+		   mididevice.h \
+		   midiinput.h
 
 SOURCES		+= ../common/configuremidiinput.cpp \
 		   ../common/configuremidiline.cpp \
 		   ../common/midiinputevent.cpp \
-		   win32-mididevice.cpp \
-		   win32-midiinput.cpp
+		   mididevice.cpp \
+		   midiinput.cpp

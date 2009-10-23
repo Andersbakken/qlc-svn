@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  win32-midiinput.h
+  midiinput.h
   
   Copyright (C) Heikki Junnila
   
@@ -45,26 +45,42 @@ class MIDIInput : public QObject, public QLCInPlugin
 	 * Initialization
 	 *********************************************************************/
 public:
+	/** \reimp */
 	void init();
+
+	/** \reimp */
 	virtual ~MIDIInput();
 
+	/** \reimp */
 	void open(t_input input = 0);
+
+	/** \reimp */
 	void close(t_input input = 0);
 
 	/*********************************************************************
 	 * Devices
 	 *********************************************************************/
 public:
+	/** Find out what devices are present */
 	void rescanDevices();
+
+	/** Get a device by its index number */
 	MIDIDevice* device(unsigned int index);
 
+	/** Add a new device (as a result of rescanDevices) */
 	void addDevice(MIDIDevice* device);
+
+	/** Remove an existing device (as a result of rescanDevices) */
 	void removeDevice(MIDIDevice* device);
 
+	/** Get a list of currently available devices */
 	const QList <MIDIDevice*>& devices() { return m_devices; }
-	
+
 signals:
+	/** Tells that a new device has been made available */
 	void deviceAdded(MIDIDevice* device);
+
+	/** Tells that an existing device is no more available */
 	void deviceRemoved(MIDIDevice* device);
 
 protected:
@@ -74,41 +90,49 @@ protected:
 	 * Name
 	 *********************************************************************/
 public:
+	/** \reimp */
 	QString name();
 
 	/*********************************************************************
 	 * Inputs
 	 *********************************************************************/
 public:
+	/** \reimp */
 	QStringList inputs();
 
 	/*********************************************************************
 	 * Configuration
 	 *********************************************************************/
 public:
+	/** \reimp */
 	void configure();
 
 	/*********************************************************************
 	 * Status
 	 *********************************************************************/
 public:
+	/** \reimp */
 	QString infoText(t_input input = KInputInvalid);
 
 	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
 protected slots:
+	/** Catches input events from MidiInProc */
 	void slotDeviceValueChanged(MIDIDevice* device,
 				    t_input_channel channel,
 				    t_input_value value);
 
 signals:
+	/** \reimp */
 	void valueChanged(QLCInPlugin* plugin, t_input line,
 			  t_input_channel channel, t_input_value value);
 
 public:
+	/** \reimp */
 	void connectInputData(QObject* listener);
 
+	/** \reimp */
 	void feedBack(t_input input, t_input_channel channel,
 		      t_input_value value);
 };

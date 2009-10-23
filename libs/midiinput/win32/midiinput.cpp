@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  win32-midiinput.cpp
+  midiinput.cpp
   
   Copyright (C) Heikki Junnila
   
@@ -26,8 +26,8 @@
 #include <QDebug>
 
 #include "configuremidiinput.h"
-#include "win32-mididevice.h"
-#include "win32-midiinput.h"
+#include "mididevice.h"
+#include "midiinput.h"
 
 /*****************************************************************************
  * MIDIInput Initialization
@@ -185,12 +185,21 @@ QString MIDIInput::infoText(t_input input)
 		str += QString("various MIDI devices.");
 		str += QString("</P>");
 	}
-	else if (device(input) != NULL)
+	else
 	{
-		str += QString("<H3>%1</H3>").arg(inputs()[input]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		MIDIDevice* dev = device(input);
+		if (dev != NULL)
+		{
+			str += device(input)->infoText();
+		}
+		else
+		{
+			str += QString("<P><I>");
+			str += QString("Unable to find device. Please go to ");
+			str += QString("the configuration dialog and click ");
+			str += QString("the refresh button.");
+			str += QString("</I></P>");
+		}
 	}
 
 	str += QString("</BODY>");
