@@ -59,7 +59,7 @@ void MIDIDevice::loadSettings()
 	QString key;
 
 	/* Attempt to load feedback line number */
-	key = QString("/MIDIInput/Inputs/%1/FeedBackLine").arg(m_id);
+	key = QString("/midiinput/%1/feedbackid").arg(m_id);
 	value = settings.value(key);
 	if (value.isValid() == true && value.toUInt() != UINT_MAX)
 		setFeedBackId(value.toUInt());
@@ -87,6 +87,10 @@ void MIDIDevice::saveSettings()
 	QSettings settings;
 	QString key;
 
+	/* Store Feedback line number */
+	key = QString("/midiinput/%1/feedbackid").arg(m_id);
+	settings.setValue(key, m_feedBackId);
+
 	/* Store MIDI channel to settings */
 	key = QString("/midiinput/%1/midichannel").arg(m_id);
 	settings.setValue(key, m_midiChannel);
@@ -106,7 +110,7 @@ static void postEvent(MIDIDevice* self, BYTE data1, BYTE data2)
 	t_input_value value = 0;
 
 	Q_ASSERT(self != NULL);
-	
+
 	channel = static_cast<t_input_channel> (data1);
 	value = t_input_value(SCALE(double(data2),
 				    double(0),
@@ -118,7 +122,7 @@ static void postEvent(MIDIDevice* self, BYTE data1, BYTE data2)
 	MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
 	QApplication::postEvent(self, event);
 }
- 
+
 static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
 				DWORD_PTR dwInstance, DWORD_PTR dwParam1,
 				DWORD_PTR dwParam2)
@@ -205,7 +209,7 @@ bool MIDIDevice::open()
 void MIDIDevice::close()
 {
 	MMRESULT res;
-	
+
 	res = midiInClose(m_handle);
 	if (res == MIDIERR_STILLPLAYING)
 	{
@@ -259,7 +263,7 @@ QString MIDIDevice::infoText()
 		info += QString("MIDI Input not available.");
 		info += QString("</P>");
 	}
-	
+
 	return info;
 }
 
@@ -403,11 +407,11 @@ QStringList MIDIDevice::feedBackNames()
 	MMRESULT res;
 	QString name;
 	UINT num;
-	
+
 	num = midiOutGetNumDevs();
 	for (UINT id = 0; id < num; id++)
 	{
-		res = midiOutGetDevCaps(id, &caps, sizeof(MIDIOUTCAPS));	
+		res = midiOutGetDevCaps(id, &caps, sizeof(MIDIOUTCAPS));
 		if (res == MMSYSERR_NOERROR)
 		{
 			name = QString("MIDI Output %1: %2").arg(id + 1)
@@ -415,7 +419,7 @@ QStringList MIDIDevice::feedBackNames()
 			list << name;
 		}
 	}
-	
+
 	return list;
 }
 
@@ -444,7 +448,7 @@ void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 	if (mode() == ControlChange)
 	{
 		/* Use control change numbers as DMX channels and
-		   control values as DMX channel values */ 
+		   control values as DMX channel values */
 		msg.bData[0] = MIDI_CONTROL_CHANGE | (BYTE) midiChannel();
 		msg.bData[1] = (BYTE) channel;
 		msg.bData[2] = (BYTE) scaled;
