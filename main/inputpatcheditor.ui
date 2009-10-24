@@ -1,58 +1,65 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>InputPatchEditor</class>
- <widget class="QDialog" name="InputPatchEditor" >
-  <property name="geometry" >
+ <widget class="QDialog" name="InputPatchEditor">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>434</width>
-    <height>345</height>
+    <height>464</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Input patch editor</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3" >
-   <item row="0" column="0" colspan="2" >
-    <widget class="QTabWidget" name="m_tab" >
-     <property name="currentIndex" >
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0" colspan="2">
+    <widget class="QTabWidget" name="m_tab">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="Mapping" >
-      <attribute name="title" >
+     <widget class="QWidget" name="Mapping">
+      <attribute name="title">
        <string>Mapping</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2" >
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTreeWidget" name="m_mapTree" >
+        <widget class="QTreeWidget" name="m_mapTree">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <column>
-          <property name="text" >
+          <property name="text">
            <string>Inputs</string>
           </property>
          </column>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="m_infoGroup" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+        <widget class="QGroupBox" name="m_infoGroup">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title" >
+         <property name="title">
           <string>Input Information</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2" >
-          <item row="1" column="1" >
-           <spacer name="verticalSpacer" >
-            <property name="orientation" >
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="1">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
-            <property name="sizeType" >
-             <enum>QSizePolicy::Maximum</enum>
+            <property name="sizeType">
+             <enum>QSizePolicy::Expanding</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>20</width>
               <height>54</height>
@@ -60,26 +67,26 @@
             </property>
            </spacer>
           </item>
-          <item rowspan="2" row="0" column="0" >
-           <widget class="QTextBrowser" name="m_infoBrowser" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Ignored" hsizetype="Expanding" >
+          <item row="0" column="0" rowspan="2">
+           <widget class="QTextBrowser" name="m_infoBrowser">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <widget class="QToolButton" name="m_configureButton" >
-            <property name="text" >
+          <item row="0" column="1">
+           <widget class="QToolButton" name="m_configureButton">
+            <property name="text">
              <string>...</string>
             </property>
-            <property name="icon" >
-             <iconset resource="main.qrc" >
+            <property name="icon">
+             <iconset resource="main.qrc">
               <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
             </property>
-            <property name="iconSize" >
+            <property name="iconSize">
              <size>
               <width>26</width>
               <height>26</height>
@@ -92,42 +99,42 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Profile" >
-      <attribute name="title" >
+     <widget class="QWidget" name="Profile">
+      <attribute name="title">
        <string>Profile</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout" >
-       <item rowspan="4" row="0" column="0" >
-        <widget class="QTreeWidget" name="m_profileTree" >
-         <property name="rootIsDecorated" >
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" rowspan="4">
+        <widget class="QTreeWidget" name="m_profileTree">
+         <property name="rootIsDecorated">
           <bool>false</bool>
          </property>
-         <property name="itemsExpandable" >
+         <property name="itemsExpandable">
           <bool>false</bool>
          </property>
-         <property name="allColumnsShowFocus" >
+         <property name="allColumnsShowFocus">
           <bool>true</bool>
          </property>
          <column>
-          <property name="text" >
+          <property name="text">
            <string>Profile</string>
           </property>
          </column>
         </widget>
        </item>
-       <item row="0" column="1" >
-        <widget class="QToolButton" name="m_addProfileButton" >
-         <property name="toolTip" >
+       <item row="0" column="1">
+        <widget class="QToolButton" name="m_addProfileButton">
+         <property name="toolTip">
           <string>Create a new input profile</string>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>...</string>
          </property>
-         <property name="icon" >
-          <iconset resource="main.qrc" >
+         <property name="icon">
+          <iconset resource="main.qrc">
            <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
          </property>
-         <property name="iconSize" >
+         <property name="iconSize">
           <size>
            <width>26</width>
            <height>26</height>
@@ -135,19 +142,19 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" >
-        <widget class="QToolButton" name="m_removeProfileButton" >
-         <property name="toolTip" >
+       <item row="1" column="1">
+        <widget class="QToolButton" name="m_removeProfileButton">
+         <property name="toolTip">
           <string>Delete the selected input profile</string>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>...</string>
          </property>
-         <property name="icon" >
-          <iconset resource="main.qrc" >
+         <property name="icon">
+          <iconset resource="main.qrc">
            <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
          </property>
-         <property name="iconSize" >
+         <property name="iconSize">
           <size>
            <width>26</width>
            <height>26</height>
@@ -155,19 +162,19 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1" >
-        <widget class="QToolButton" name="m_editProfileButton" >
-         <property name="toolTip" >
+       <item row="2" column="1">
+        <widget class="QToolButton" name="m_editProfileButton">
+         <property name="toolTip">
           <string>Edit the selected input profile</string>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>...</string>
          </property>
-         <property name="icon" >
-          <iconset resource="main.qrc" >
+         <property name="icon">
+          <iconset resource="main.qrc">
            <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
          </property>
-         <property name="iconSize" >
+         <property name="iconSize">
           <size>
            <width>26</width>
            <height>26</height>
@@ -175,12 +182,12 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1" >
-        <spacer name="verticalSpacer_2" >
-         <property name="orientation" >
+       <item row="3" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>170</height>
@@ -192,22 +199,22 @@
      </widget>
     </widget>
    </item>
-   <item row="1" column="1" >
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="orientation" >
+   <item row="1" column="1">
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="1" column="0" >
-    <widget class="QRadioButton" name="m_editorUniverseRadio" >
-     <property name="toolTip" >
+   <item row="1" column="0">
+    <widget class="QRadioButton" name="m_editorUniverseRadio">
+     <property name="toolTip">
       <string>Use this universe for e.g. scene channel value setting in scene editor</string>
      </property>
-     <property name="text" >
+     <property name="text">
       <string>Default editor universe</string>
      </property>
     </widget>
@@ -215,7 +222,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="main.qrc" />
+  <include location="main.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -224,11 +231,11 @@
    <receiver>InputPatchEditor</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>266</x>
      <y>335</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -240,11 +247,11 @@
    <receiver>InputPatchEditor</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>334</x>
      <y>335</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>
@@ -256,11 +263,11 @@
    <receiver>InputPatchEditor</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>200</x>
      <y>116</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>430</x>
      <y>129</y>
     </hint>
