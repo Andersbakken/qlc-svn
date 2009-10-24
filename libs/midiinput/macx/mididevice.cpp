@@ -41,13 +41,16 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEntityRef entity)
 	m_source(NULL),
 	m_destination(NULL),
 	m_inPort(NULL),
-	m_outPort(NULL)
+	m_outPort(NULL),
+	m_mode(ControlChange),
+	m_midiChannel(0)
 {
 	Q_ASSERT(MIDIGetNumberOfSources(entity) > 0);
 }
 
 MIDIDevice::~MIDIDevice()
 {
+	saveSettings();
 	close();
 }
 
@@ -106,48 +109,92 @@ bool MIDIDevice::extractName()
 	return true;
 }
 
+void MIDIDevice::loadSettings()
+{
+	QSettings settings;
+	QVariant value;
+	QString key;
+
+	/* Attempt to get a MIDI channel from settings */
+	key = QString("/midiinput/%1/midichannel").arg(m_name);
+	value = settings.value(key);
+	if (value.isValid() == true)
+		setMidiChannel(value.toInt());
+	else
+		setMidiChannel(0);
+
+	/* Attempt to get the mode from settings */
+	key = QString("/midiinput/%1/mode").arg(m_name);
+	value = settings.value(key);
+	if (value.isValid() == true)
+		setMode(stringToMode(value.toString()));
+	else
+		setMode(ControlChange);
+}
+
+void MIDIDevice::saveSettings()
+{
+	QSettings settings;
+	QString key;
+
+	/* Store MIDI channel to settings */
+	key = QString("/midiinput/%1/midichannel").arg(m_name);
+	settings.setValue(key, m_midiChannel);
+
+	/* Store mode to settings */
+	key = QString("/midiinput/%1/mode").arg(m_name);
+	settings.setValue(key, MIDIDevice::modeToString(m_mode));
+}
+
 /*****************************************************************************
  * File operations
  *****************************************************************************/
 
+static void postEvent(MIDIDevice* self, MIDIPacket packet)
+{
+	t_input_channel channel;
+	t_input_value value;
+
+	channel = static_cast<t_input_channel> (packet.data[1]);
+	value = t_input_value(SCALE(double(packet.data[2]),
+				    double(0),
+				    double(127),
+				    double(0),
+				    double(KInputValueMax)));
+	MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
+	QApplication::postEvent(self, event);
+}
+
 static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
 			void* srcConnRefCon)
 {
-	t_input_channel channel = 0;
-	t_input_value value = 0;
-	MIDIDevice* self;
-
 	Q_UNUSED(readProcRefCon);
 
-	self = static_cast<MIDIDevice*>(srcConnRefCon);
+	MIDIDevice* self = static_cast<MIDIDevice*>(srcConnRefCon);
 	Q_ASSERT(self != NULL);
 
 	for (UInt32 i = 0; i < pktList->numPackets; i++)
 	{
-		MIDIPacket packet;
-		MIDIInputEvent* event;
-
-		packet = pktList->packet[i];
+		MIDIPacket packet = pktList->packet[i];
 
 		/* WTF are we gonna do with a packet without data? */
 		if (packet.length < 1)
 			continue;
 
-		/* TODO: This makes no differentiation on note & CC data:
-		   e.g. cc15 == note15, cc1 == note1 etc... Annoying.
-		   Then again, there's 127 channels already. Enough? */
-		if (packet.data[0] ==MIDI_NOTE_ON ||
-		    packet.data[0] == MIDI_NOTE_OFF ||
-		    packet.data[0] == MIDI_CONTROL_CHANGE)
+		/* Check that the data came to the correct MIDI channel */
+		if ((packet.data[0] & 0x0F) != (Byte) self->midiChannel())
+			continue;
+
+		/* Read the event */
+		if (self->mode() == MIDIDevice::Note &&
+		    ((packet.data[0] & 0xF0) == MIDI_NOTE_ON ||
+		     (packet.data[0] & 0xF0) == MIDI_NOTE_OFF))
 		{
-			channel = static_cast<t_input_channel> (packet.data[1]);
-			value = t_input_value(SCALE(double(packet.data[2]),
-						    double(0),
-						    double(127),
-						    double(0),
-						    double(KInputValueMax)));
-			event = new MIDIInputEvent(self, channel, value);
-			QApplication::postEvent(self, event);
+			postEvent(self, packet);
+		}
+		else if (packet.data[0] & MIDI_CONTROL_CHANGE)
+		{
+			postEvent(self, packet);
 		}
 	}
 }
@@ -260,6 +307,68 @@ void MIDIDevice::close()
 }
 
 /*****************************************************************************
+ * Device info
+ *****************************************************************************/
+
+QString MIDIDevice::infoText() const
+{
+	MIDIInput* plugin;
+	QString info;
+
+	plugin = static_cast<MIDIInput*> (parent());
+	Q_ASSERT(plugin != NULL);
+
+	if (plugin->client() != NULL)
+	{
+		info += QString("<B>%1</B>").arg(name());
+		info += QString("<P>");
+		info += QString("Device is working correctly.");
+		info += QString("</P>");
+		info += QString("<P>");
+		info += QString("<B>MIDI Channel: </B>%1<BR>")
+				.arg(m_midiChannel + 1);
+		info += QString("<B>Mode: </B>%1")
+				.arg(modeToString(m_mode));
+		info += QString("</P>");
+	}
+	else
+	{
+		info += QString("<B>Unknown device</B>");
+		info += QString("<P>");
+		info += QString("MIDI interface is not available.");
+		info += QString("</P>");
+	}
+
+	return info;
+}
+
+/*****************************************************************************
+ * Operational mode
+ *****************************************************************************/
+
+QString MIDIDevice::modeToString(Mode mode)
+{
+	switch (mode)
+	{
+	default:
+	case ControlChange:
+		return QString("Control Change");
+		break;
+	case Note:
+		return QString("Note Velocity");
+		break;
+	}
+}
+
+MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
+{
+	if (mode == QString("Note Velocity"))
+		return Note;
+	else
+		return ControlChange;
+}
+
+/*****************************************************************************
  * Input data
  *****************************************************************************/
 
@@ -293,10 +402,10 @@ void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 
 	/* Send the value as NOTE as well as CC data */
 	if (value == 0)
-		note[0] = MIDI_NOTE_OFF;
+		note[0] = midiChannel() | MIDI_NOTE_OFF;
 	else
-		note[0] = MIDI_NOTE_ON;
-	cc[0] = MIDI_CONTROL_CHANGE;
+		note[0] = midiChannel() | MIDI_NOTE_ON;
+	cc[0] = midiChannel() | MIDI_CONTROL_CHANGE;
 	cc[1] = note[1] = static_cast<char> (channel);
 	cc[2] = note[2] = static_cast<char> (SCALE(double(value),
 						   double(0),

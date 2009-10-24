@@ -68,14 +68,19 @@ protected:
 	 * Devices
 	 *********************************************************************/
 public:
-	/** Find out, what devices are currently present */
 	void rescanDevices();
 
-	/** Get a MIDIDevice with the given uid or NULL if not found */
 	MIDIDevice* deviceByUID(SInt32 uid);
-
-	/** Get a MIDIDevice at the given input index or NULL if over limits */
 	MIDIDevice* device(t_input input);
+
+	void addDevice(MIDIDevice* device);
+	void removeDevice(MIDIDevice* device);
+
+	const QList <MIDIDevice*>& devices() const { return m_devices; }
+
+signals:
+	void deviceAdded(MIDIDevice* device);
+	void deviceRemoved(MIDIDevice* device);
 
 protected:
 	QList <MIDIDevice*> m_devices;

@@ -24,6 +24,7 @@
 #include <QPalette>
 #include <QDebug>
 
+#include "configuremidiinput.h"
 #include "mididevice.h"
 #include "midiinput.h"
 
@@ -137,7 +138,7 @@ void MIDIInput::rescanDevices()
 				if (dev->extractUID() == true &&
 				    dev->extractName() == true)
 				{
-					m_devices.append(dev);
+					addDevice(dev);
 				}
 				else
 				{
@@ -150,7 +151,7 @@ void MIDIInput::rescanDevices()
 
 	/* Destroy all devices that were no longer present */
 	while (destroyList.isEmpty() == false)
-		delete destroyList.takeFirst();
+		removeDevice(destroyList.takeFirst());
 }
 
 MIDIDevice* MIDIInput::deviceByUID(SInt32 uid)
@@ -172,6 +173,24 @@ MIDIDevice* MIDIInput::device(t_input input)
 		return m_devices.at(input);
 	else
 		return NULL;
+}
+
+void MIDIInput::addDevice(MIDIDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	m_devices.append(device);
+	device->loadSettings();
+	emit deviceAdded(device);
+}
+
+void MIDIInput::removeDevice(MIDIDevice* device)
+{
+	Q_ASSERT(device != NULL);
+
+	m_devices.removeAll(device);
+	emit deviceRemoved(device);
+	delete device;
 }
 
 /*****************************************************************************
@@ -204,11 +223,8 @@ QStringList MIDIInput::inputs()
 
 void MIDIInput::configure()
 {
-	int r = QMessageBox::question(NULL, name(),
-				tr("Do you wish to re-scan your hardware?"),
-				QMessageBox::Yes, QMessageBox::No);
-	if (r == QMessageBox::Yes)
-		rescanDevices();
+	ConfigureMIDIInput cmi(NULL, this);
+	cmi.exec();
 }
 
 /*****************************************************************************
@@ -233,12 +249,21 @@ QString MIDIInput::infoText(t_input input)
 		str += QString("various MIDI devices.");
 		str += QString("</P>");
 	}
-	else if (device(input) != NULL)
+	else
 	{
-		str += QString("<H3>%1</H3>").arg(inputs()[input]);
-		str += QString("<P>");
-		str += QString("Device is operating correctly.");
-		str += QString("</P>");
+		MIDIDevice* dev = device(input);
+		if (dev != NULL)
+		{
+			str += dev->infoText();
+		}
+		else
+		{
+			str += QString("<P><I>");
+			str += QString("Unable to find device. Please go to ");
+			str += QString("the configuration dialog and click ");
+			str += QString("the refresh button.");
+			str += QString("</I></P>");
+		}
 	}
 
 	str += QString("</BODY>");

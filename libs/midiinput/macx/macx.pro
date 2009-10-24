@@ -19,10 +19,17 @@ INSTALLS	+= target
 # Sources
 ###############################################################################
 
+FORMS		+= ../common/configuremidiinput.ui \
+		   ../common/configuremidiline.ui
+
 HEADERS		+= ../common/midiinputevent.h \
+		   ../common/configuremidiinput.h \
+		   ../common/configuremidiline.h \
 		   mididevice.h \
 		   midiinput.h
 
 SOURCES		+= ../common/midiinputevent.cpp \
+		   ../common/configuremidiinput.cpp \
+		   ../common/configuremidiline.cpp \
 		   mididevice.cpp \
 		   midiinput.cpp
