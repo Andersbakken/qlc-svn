@@ -85,6 +85,9 @@ protected:
 	/** Reference to a virtual port that sends data to the destination */
 	MIDIPortRef m_outPort;
 
+	/** Set to false if the device is having problems */
+	bool m_isOK;
+
 	/*********************************************************************
 	 * Device info
 	 *********************************************************************/

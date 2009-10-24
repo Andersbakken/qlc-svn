@@ -42,6 +42,7 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEntityRef entity)
 	m_destination(NULL),
 	m_inPort(NULL),
 	m_outPort(NULL),
+	m_isOK(false),
 	m_mode(ControlChange),
 	m_midiChannel(0)
 {
@@ -64,6 +65,7 @@ bool MIDIDevice::extractUID()
 	if (s == 0)
 	{
 		m_uid = uid;
+		m_isOK = true;
 		return true;
 	}
 	else
@@ -177,8 +179,8 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
 	{
 		MIDIPacket packet = pktList->packet[i];
 
-		/* WTF are we gonna do with a packet without data? */
-		if (packet.length < 1)
+		/* Check that the packet contains enough data */
+		if (packet.length < 3)
 			continue;
 
 		/* Check that the data came to the correct MIDI channel */
@@ -219,6 +221,7 @@ bool MIDIDevice::open()
 		qWarning() << "Unable to make an input port for" << name()
 			   << ":" << s;
 		m_inPort = NULL;
+		m_isOK = false;
 		return false;
 	}
 
@@ -236,6 +239,7 @@ bool MIDIDevice::open()
 
 		m_inPort = NULL;
 		m_source = NULL;
+		m_isOK = false;
 
 		return false;
 	}
@@ -261,6 +265,7 @@ bool MIDIDevice::open()
 		}
 	}
 
+	m_isOK = true;
 	return true;
 }
 
@@ -312,13 +317,9 @@ void MIDIDevice::close()
 
 QString MIDIDevice::infoText() const
 {
-	MIDIInput* plugin;
 	QString info;
 
-	plugin = static_cast<MIDIInput*> (parent());
-	Q_ASSERT(plugin != NULL);
-
-	if (plugin->client() != NULL)
+	if (m_isOK == true)
 	{
 		info += QString("<B>%1</B>").arg(name());
 		info += QString("<P>");
@@ -326,9 +327,8 @@ QString MIDIDevice::infoText() const
 		info += QString("</P>");
 		info += QString("<P>");
 		info += QString("<B>MIDI Channel: </B>%1<BR>")
-				.arg(m_midiChannel + 1);
-		info += QString("<B>Mode: </B>%1")
-				.arg(modeToString(m_mode));
+							.arg(midiChannel() + 1);
+		info += QString("<B>Mode: </B>%1").arg(modeToString(mode()));
 		info += QString("</P>");
 	}
 	else
@@ -388,8 +388,7 @@ void MIDIDevice::customEvent(QEvent* event)
 
 void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 {
-	Byte note[3];
-	Byte cc[3];
+	Byte cmd[3];
 
 	/* If there's no output port or a destination, the endpoint probably
 	   doesn't have a MIDI IN port -> no feedback. */
@@ -400,32 +399,45 @@ void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 	if (channel > 127)
 		return;
 
-	/* Send the value as NOTE as well as CC data */
-	if (value == 0)
-		note[0] = midiChannel() | MIDI_NOTE_OFF;
+	/* Set MIDI command */
+	if (m_mode == Note)
+	{
+		if (value == 0)
+			cmd[0] = MIDI_NOTE_OFF;
+		else
+			cmd[0] = MIDI_NOTE_ON;
+	}
 	else
-		note[0] = midiChannel() | MIDI_NOTE_ON;
-	cc[0] = midiChannel() | MIDI_CONTROL_CHANGE;
-	cc[1] = note[1] = static_cast<char> (channel);
-	cc[2] = note[2] = static_cast<char> (SCALE(double(value),
-						   double(0),
-						   double(KInputValueMax),
-						   double(0),
-						   double(127)));
+	{
+		cmd[0] = MIDI_CONTROL_CHANGE;
+	}
 
-	/* Construct a MIDI packet list (in a very peculiar way, yes..) */
+	/* Set MIDI channel */
+	cmd[0] |= (Byte) midiChannel();
+
+	/* Set input channel (note or cc number) and value */
+	cmd[1] = static_cast <Byte> (channel);
+	cmd[2] = static_cast <Byte> (SCALE(double(value),
+					   double(0),
+					   double(KInputValueMax),
+					   double(0),
+					   double(127)));
+
+	/* Construct a MIDI packet list containing one packet */
 	Byte buffer[32]; // Should be enough
 	MIDIPacketList* list = (MIDIPacketList*) buffer;
 	MIDIPacket* packet = MIDIPacketListInit(list);
 	packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
-				   sizeof(note), note);
-	Q_ASSERT(packet != NULL);
-	packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
-				   sizeof(cc), cc);
-	Q_ASSERT(packet != NULL);
-
-	/* Send the very peculiar MIDI packet */
-	OSStatus s = MIDISend(m_outPort, m_destination, list);
-	if (s != 0)
-		qWarning() << "Unable to send feedback data to" << name();
+				   sizeof(cmd), cmd);
+	if (packet == NULL)
+	{
+		qWarning() << "MIDI buffer overflow";
+	}
+	else
+	{
+		/* Send the MIDI packet */
+		OSStatus s = MIDISend(m_outPort, m_destination, list);
+		if (s != 0)
+			qWarning() << "Unable to send feedback to" << name();
+	}
 }
