@@ -24,7 +24,7 @@ INSTALLS 	+= target
 RESOURCES += fixtureeditor.qrc
 win32:RC_FILE = fixtureeditor.rc
 
-HEADERS += aboutbox.h \
+HEADERS += ../main/aboutbox.h \
            app.h \
 	   capabilitywizard.h \
            editcapability.h \
@@ -32,14 +32,14 @@ HEADERS += aboutbox.h \
            editmode.h \
            fixtureeditor.h
 
-FORMS += aboutbox.ui \
+FORMS += ../main/aboutbox.ui \
 	 capabilitywizard.ui \
 	 editcapability.ui \
 	 editchannel.ui \
 	 editmode.ui \
 	 fixtureeditor.ui
 
-SOURCES += aboutbox.cpp \
+SOURCES += ../main/aboutbox.cpp \
            app.cpp \
 	   capabilitywizard.cpp \
            editcapability.cpp \

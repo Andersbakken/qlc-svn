@@ -44,7 +44,7 @@
 #include <common/qlcfile.h>
 
 #include "app.h"
-#include "aboutbox.h"
+#include "../main/aboutbox.h"
 #include "fixtureeditor.h"
 
 #define KXMLQLCGeometry "Geometry"
