@@ -19,7 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
-#ifndef __APPLE__
+/* HAL DBus service is not available on Apple & Windows */
+#ifdef DBUS_ENABLED
 #include <QDBusConnection>
 #endif
 
@@ -37,18 +38,18 @@
 
 void EnttecDMXUSBProOut::init()
 {
-#ifndef __APPLE__
+#ifdef DBUS_ENABLED
 	/* Listen to device additions and removals thru DBus system bus */
 	QDBusConnection::systemBus().connect(QString(),
-		QString("/org/freedesktop/Hal/Manager"),
-		QString("org.freedesktop.Hal.Manager"),
-		QString("DeviceAdded"),
-		this, SLOT(slotDeviceAdded(const QString&)));
+				QString("/org/freedesktop/Hal/Manager"),
+				QString("org.freedesktop.Hal.Manager"),
+				QString("DeviceAdded"),
+				this, SLOT(slotDeviceAdded(const QString&)));
 	QDBusConnection::systemBus().connect(QString(),
-		QString("/org/freedesktop/Hal/Manager"),
-		QString("org.freedesktop.Hal.Manager"),
-		QString("DeviceRemoved"),
-		this, SLOT(slotDeviceRemoved(const QString&)));
+				QString("/org/freedesktop/Hal/Manager"),
+				QString("org.freedesktop.Hal.Manager"),
+				QString("DeviceRemoved"),
+				this, SLOT(slotDeviceRemoved(const QString&)));
 #endif
 
 	/* Search for new widgets */
@@ -67,7 +68,7 @@ void EnttecDMXUSBProOut::close(t_output output)
 		m_widgets.at(output)->close();
 }
 
-#ifndef __APPLE__
+#ifdef DBUS_ENABLED
 void EnttecDMXUSBProOut::slotDeviceAdded(const QString& name)
 {
 	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_6001_"))
@@ -203,13 +204,11 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 			str += QString("plugged in and the FTDI VCP driver ");
 			str += QString("installed from <a href=\"http://www.ftdichip.com/Drivers/VCP.htm\">");
 			str += QString("http://www.ftdichip.com/Drivers/VCP.htm</a>. ");
-#ifndef WIN32 /* There's something good in windows, after all */
 			str += QString("You also need to uninstall the generic <I>FTDI</I> and ");
 			str += QString("<I>Enttec DMX USB</I> plugins, ");
 			str += QString("because the <I>D2XX</I> interface ");
 			str += QString("used by them overrides the VCP ");
 			str += QString("interface used by this plugin.");
-#endif
 			str += QString("</P>");
 		}
 

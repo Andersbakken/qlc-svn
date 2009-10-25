@@ -162,7 +162,6 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 
 		if (m_widgets.size() == 0)
 		{
-#ifdef WIN32
 			str += QString("<P>");
 			str += QString("<B>No devices available</B>. Make ");
 			str += QString("sure you have the Enttec DMX USB Pro ");
@@ -173,20 +172,6 @@ QString EnttecDMXUSBProOut::infoText(t_output output)
 			str += QString("<I>D2XX</I> driver is not supported ");
 			str += QString("by this plugin.");
 			str += QString("</P>");
-#else
-			str += QString("<P>");
-			str += QString("<B>No devices available</B>. Make ");
-			str += QString("sure you have the Enttec DMX USB Pro ");
-			str += QString("plugged in and the <I>ftdi_sio</I> ");
-			str += QString("kernel module loaded. You need to ");
-			str += QString("uninstall the <I>FTDI</I> and ");
-			str += QString("<I>Enttec Open DMX USB</I> plugins ");
-			str += QString("because the <I>D2XX</I> interface ");
-			str += QString("used by them overrides the VCP ");
-			str += QString("(Virtual Communications Port) ");
-			str += QString("interface used by this plugin.");
-			str += QString("</P>");
-#endif
 		}
 
 		str += QString("<P>");

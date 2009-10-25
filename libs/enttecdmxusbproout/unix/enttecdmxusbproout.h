@@ -47,7 +47,7 @@ public:
 	/** @reimp */
 	void close(t_output output);
 
-#ifndef __APPLE__
+#ifdef DBUS_ENABLED
 protected slots:
 	void slotDeviceAdded(const QString& name);
 	void slotDeviceRemoved(const QString& name);

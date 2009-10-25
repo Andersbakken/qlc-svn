@@ -5,17 +5,15 @@ LANGUAGE	= C++
 TARGET		= enttecdmxusbproout
 
 CONFIG		+= plugin
-QT		+= dbus
-DEFINES		+= DBUS_ENABLED
-INCLUDEPATH	+= ../..
+INCLUDEPATH	+= ../.. ../unix
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
-HEADERS += enttecdmxusbproout.h \
-	   enttecdmxusbpro.h
+HEADERS += ../unix/enttecdmxusbproout.h \
+	   ../unix/enttecdmxusbpro.h
 
-SOURCES += enttecdmxusbproout.cpp \
-	   enttecdmxusbpro.cpp
+SOURCES += ../unix/enttecdmxusbproout.cpp \
+	   ../unix/enttecdmxusbpro.cpp
 

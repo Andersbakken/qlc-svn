@@ -1,4 +1,5 @@
-TEMPLATE	= subdirs
+TEMPLATE		= subdirs
 
-unix:SUBDIRS	+= unix
-win32:SUBDIRS	+= win32
+win32:SUBDIRS		+= win32
+unix:!macx:SUBDIRS	+= unix
+macx:SUBDIRS		+= macx
