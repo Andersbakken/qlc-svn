@@ -36,6 +36,9 @@ ConfigureMIDILine::ConfigureMIDILine(QWidget* parent, MIDIDevice* device)
 #ifdef WIN32
 	m_feedBackCombo->addItems(MIDIDevice::feedBackNames());
 	m_feedBackCombo->setCurrentIndex(m_device->feedBackId());
+#else
+	m_feedBackLabel->hide();
+	m_feedBackCombo->hide();
 #endif
 	m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::ControlChange));
 	m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::Note));
