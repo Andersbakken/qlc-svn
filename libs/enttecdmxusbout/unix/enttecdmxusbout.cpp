@@ -19,6 +19,11 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
+/* HAL DBus service is not available on Apple & Windows */
+#ifdef DBUS_ENABLED
+#include <QDBusConnection>
+#endif
+
 #include <QStringList>
 #include <QMessageBox>
 #include <QDebug>
@@ -34,6 +39,21 @@
 
 void EnttecDMXUSBOut::init()
 {
+#ifdef DBUS_ENABLED
+	/* Listen to device additions and removals thru DBus system bus */
+	QDBusConnection::systemBus().connect(QString(),
+				QString("/org/freedesktop/Hal/Manager"),
+				QString("org.freedesktop.Hal.Manager"),
+				QString("DeviceAdded"),
+				this, SLOT(slotDeviceAdded(const QString&)));
+	QDBusConnection::systemBus().connect(QString(),
+				QString("/org/freedesktop/Hal/Manager"),
+				QString("org.freedesktop.Hal.Manager"),
+				QString("DeviceRemoved"),
+				this, SLOT(slotDeviceRemoved(const QString&)));
+#endif
+
+	/* Search for new widgets */
 	rescanWidgets();
 }
 
@@ -48,6 +68,20 @@ void EnttecDMXUSBOut::close(t_output output)
 	if (output < m_widgets.size())
 		m_widgets.at(output)->close();
 }
+
+#ifdef DBUS_ENABLED
+void EnttecDMXUSBOut::slotDeviceAdded(const QString& name)
+{
+	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_"))
+		rescanWidgets();
+}
+
+void EnttecDMXUSBOut::slotDeviceRemoved(const QString& name)
+{
+	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_"))
+		rescanWidgets();
+}
+#endif
 
 /****************************************************************************
  * Devices (ENTTEC calls them "widgets" and so shall we)

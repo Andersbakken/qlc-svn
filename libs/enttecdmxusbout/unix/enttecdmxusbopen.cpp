@@ -60,7 +60,7 @@ bool EnttecDMXUSBOpen::open()
 				close();
 				return false;
 			}
-			
+
 			if (isRunning() == false)
 				start();
 

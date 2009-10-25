@@ -6,6 +6,8 @@ TARGET		= enttecdmxusbout
 
 CONFIG		+= plugin
 INCLUDEPATH	+= ../.. ../ftdi
+QT		+= dbus
+DEFINES		+= DBUS_ENABLED
 
 HARDWARE_PLATFORM = $$system(uname -m)
 contains(HARDWARE_PLATFORM, x86_64) {
