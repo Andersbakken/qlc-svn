@@ -130,7 +130,7 @@ public:
 	t_channel midiChannel() const { return m_midiChannel; }
 
 	/** Set this device's MIDI channel */
-	void setMidiChannel(t_channel channel);
+	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
 
 protected:
 	t_channel m_midiChannel;

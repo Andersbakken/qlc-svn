@@ -235,17 +235,15 @@ QString MIDIOut::infoText(t_output output)
 		MIDIDevice* dev = device(output);
 		if (dev != NULL)
 		{
-			str += device(output)->infoText();
-			/*str += QString("<H3>%1</H3>").arg(outputs()[output]);
-	                str += QString("<P>");
-	                str += QString("Device is operating correctly.");
-	                str += QString("</P>");*/
+			str += dev->infoText();
 		}
 		else
 		{
-			str += QString("<P>");
-			str += QString("No MIDI output devices found.");
-			str += QString("</P>");
+			str += QString("<P><I>");
+			str += QString("Unable to find device. Please go to ");
+			str += QString("the configuration dialog and click ");
+			str += QString("the refresh button.");
+			str += QString("</I></P>");
 		}
 	}
 

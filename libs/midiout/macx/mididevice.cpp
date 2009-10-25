@@ -236,11 +236,6 @@ bool MIDIDevice::open()
                 {
                         /* Use the first destination */
                         m_destination = MIDIEntityGetDestination(m_entity, 0);
-
-			/* Set MIDI channel number as a bitmask */
-			MIDIObjectSetIntegerProperty(m_destination,
-						kMIDIPropertyTransmitChannels,
-						1 << midiChannel());
                 }
 
 	        return true;
@@ -274,20 +269,6 @@ void MIDIDevice::close()
         }
 }
 
-void MIDIDevice::setMidiChannel(t_channel channel)
-{
-	m_midiChannel = channel;
-
-	/* If the destination is already open, change its property */
-	if (m_destination != NULL)
-	{
-		/* Set MIDI channel number as a bitmask */
-		MIDIObjectSetIntegerProperty(m_destination,
-					     kMIDIPropertyTransmitChannels,
-					     1 << midiChannel());
-	}
-}
-
 /****************************************************************************
  * Write
  ****************************************************************************/
@@ -298,7 +279,7 @@ void MIDIDevice::writeRange(t_value* values, t_channel num)
 	Q_UNUSED(num);
 
         /* If there's no output port or a destination, the endpoint probably
-           doesn't have a MIDI IN port -> no feedback. */
+           doesn't have a MIDI OUT port. */
         if (m_outPort == NULL || m_destination == NULL)
                 return;
 
@@ -308,74 +289,57 @@ void MIDIDevice::writeRange(t_value* values, t_channel num)
 
 	/* Since MIDI devices can have only 128 real channels, we don't
 	   attempt to write more than that */
-
-	switch (m_mode)
+	for (Byte channel = 0; channel < MAX_MIDI_DMX_CHANNELS; channel++)
 	{
-	default:
-	case ControlChange:
-		/* Use control change numbers as DMX channels and
-		   control values as DMX channel values */
-		Byte cc[3];
-		for (int i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
+		Byte cmd[3];
+
+		cmd[1] = channel;
+		cmd[2] = static_cast <Byte> (SCALE(double(values[channel]),
+						   double(0),
+						   double(255),
+						   double(0),
+						   double(127)));
+		/* Since MIDI is so slow, we only send values that are
+		   actually changed. */
+		if (m_values[channel] == cmd[2])
+			continue;
+
+		/* Store the changed MIDI value. */
+		m_values[channel] = cmd[2];
+
+		if (m_mode == Note)
 		{
-			if (m_values[i] == values[i])
-				continue;
-
-			m_values[i] = values[i];
-
-			cc[0] = MIDI_CONTROL_CHANGE;
-		        cc[1] = static_cast<char> (i);
-			cc[2] = static_cast<char> (SCALE(double(values[i]),
-							 double(0),
-							 double(KInputValueMax),
-							 double(0),
-							 double(127)));
-
-			packet = MIDIPacketListAdd(list, sizeof(buffer),
-						   packet, 0, sizeof(cc), cc);
-			if (packet == NULL)
+			if (cmd[2] == 0)
 			{
-				qWarning() << "MIDIOut buffer overflow";
-				break;
+				/* Zero is sent as a note off command */
+				cmd[0] = MIDI_NOTE_OFF;
 			}
-		}
-		break;
-
-	case Note:
-		/* Use note numbers as DMX channels and velocities as
-		   DMX channel values. Value 0 is written as note off. */
-		Byte note[3];
-		for (int i = 0; i < MAX_MIDI_DMX_CHANNELS; i++)
-		{
-			if (m_values[i] == values[i])
-				continue;
-
-			m_values[i] = values[i];
-
-			if (values[i] == 0)
-				note[0] = MIDI_NOTE_OFF;
 			else
-				note[0] = MIDI_NOTE_ON;
-		        note[1] = static_cast<char> (i);
-			note[2] = static_cast<char> (SCALE(double(values[i]),
-							 double(0),
-							 double(KInputValueMax),
-							 double(0),
-							 double(127)));
-
-			packet = MIDIPacketListAdd(list, sizeof(buffer),
-						   packet, 0, sizeof(note),
-						   note);
-			if (packet == NULL)
 			{
-				qWarning() << "MIDIOut buffer overflow";
-				break;
+				/* 1-127 is sent as note on command */
+				cmd[0] = MIDI_NOTE_ON;
 			}
 		}
-		break;
+		else
+		{
+			/* Control change */
+			cmd[0] = MIDI_CONTROL_CHANGE;
+		}
+
+		/* Encode MIDI channel to the command */
+		cmd[0] |= (Byte) midiChannel();
+
+		/* Add the MIDI command to the packet list */
+		packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
+					   sizeof(cmd), cmd);
+		if (packet == NULL)
+		{
+			qWarning() << "MIDIOut buffer overflow";
+			break;
+		}
 	}
 
-	/* Send the very peculiar MIDI packet */
+	/* Send the MIDI packet list */
 	OSStatus s = MIDISend(m_outPort, m_destination, list);
 	if (s != 0)
 		qWarning() << "Unable to send MIDI data to" << name();
