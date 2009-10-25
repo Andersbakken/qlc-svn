@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>347</width>
-    <height>153</height>
+    <height>190</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -60,7 +60,7 @@
        </widget>
       </item>
       <item row="2" column="0" colspan="2" >
-       <widget class="QCheckBox" name="m_yReverse" >
+       <widget class="QCheckBox" name="m_xReverse" >
         <property name="text" >
          <string>Reverse</string>
         </property>
@@ -116,7 +116,7 @@
        </widget>
       </item>
       <item row="2" column="0" colspan="2" >
-       <widget class="QCheckBox" name="m_xReverse" >
+       <widget class="QCheckBox" name="m_yReverse" >
         <property name="text" >
          <string>Reverse</string>
         </property>
