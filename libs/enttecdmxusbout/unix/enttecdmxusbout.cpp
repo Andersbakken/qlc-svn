@@ -105,7 +105,6 @@ bool EnttecDMXUSBOut::rescanWidgets()
 	}
 	else if (num <= 0)
 	{
-		qDebug() << "No devices found";
 		return true;
 	}
 
