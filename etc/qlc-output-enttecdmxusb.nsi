@@ -1,5 +1,5 @@
 Name "Enttec DMX USB output plugin for Q Light Controller"
-OutFile "qlc-output-enttecdmxusb-3.0.3.exe"
+OutFile "qlc-output-enttecdmxusb-3.0.4.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------

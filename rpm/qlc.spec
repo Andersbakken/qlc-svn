@@ -2,7 +2,7 @@
 # QLC Master package
 #############################################################################
 
-%define version 3.0.3
+%define version 3.0.4
 
 Summary: Q Light Controller - The free DMX lighting console
 License: GPLv2

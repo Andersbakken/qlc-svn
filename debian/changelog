@@ -1,3 +1,19 @@
+qlc (3.0.4) stable; urgency=low
+
+  * OSX support for MIDI Input, MIDI output, Enttec Open/Pro and Peperoni plugins
+  * Enttec Open DMX USB plugin open routine was fixed
+  * MIDI Input & Output plugins can set MIDI channel and mode in all platforms
+  * VCXYPad editor fixed (reverse checkboxes switched places)
+  * OSX binaries are universal for PPC and Intel processors
+  * A crash bug in fixture properties dialog was fixed
+  * Mac Mah wider Panel fixture definition was added
+  * Created udev rules for udmx, enttec and peperoni devices for non-root usage
+  * Completely renewed architecture for Peperoni plugin, making the special
+    linux peperoni device driver obsolete.
+  * RPM packaging script was added
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Mon, 26 Oct 2009 22:22:21 +0200
+
 qlc (3.0.3) stable; urgency=high
 
   * A crash bug in OutputMap re-loading was fixed.
@@ -16,7 +32,7 @@ qlc (3.0.3) stable; urgency=high
     Looking at the statistics, it seems that very few people have actually
     found out that they need to download them as well.
 
- -- Heikki Junnila <hjunnila@julia.avaya.ath.cx>  Sun, 04 Oct 2009 19:07:28 +0300
+ -- Heikki Junnila <hjunnila@users.sf.net>  Sun, 04 Oct 2009 19:07:28 +0300
 
 qlc (3.0.2) stable; urgency=high
   * Two crash bugs were fixed in midi input and output plugins.

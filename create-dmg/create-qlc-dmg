@@ -39,6 +39,6 @@ toLink=( $(find Contents/Plugins -name \*.dylib) )
 #ln -s ~/ " "
 cd ../..
 echo `pwd`
-rm qlc-3.0.3.dmg rw.qlc-3.0.3.dmg
-./create-dmg --volname "QLC v3.0.3" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.3.dmg qlc-dmg-source/
+rm qlc-3.0.4.dmg rw.qlc-3.0.4.dmg
+./create-dmg --volname "QLC v3.0.4" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.4.dmg qlc-dmg-source/
 rm -Rf qlc-dmg-source

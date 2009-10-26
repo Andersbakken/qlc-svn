@@ -1,5 +1,5 @@
 Name "ENTTEC wing input plugin for Q Light Controller"
-OutFile "qlc-input-enttec-wing-3.0.3.exe"
+OutFile "qlc-input-enttec-wing-3.0.4.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------

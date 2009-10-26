@@ -1,5 +1,5 @@
 Name "Q Light Controller"
-OutFile "qlc-3.0.3.exe"
+OutFile "qlc-3.0.4.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
