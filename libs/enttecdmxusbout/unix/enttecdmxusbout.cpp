@@ -129,10 +129,11 @@ bool EnttecDMXUSBOut::rescanWidgets()
 			}
 			else
 			{
+				/* This is an Open DMX USB widget */
 				EnttecDMXUSBOpen* w;
-				w = new EnttecDMXUSBOpen(this, devInfo[i]);
+				w = new EnttecDMXUSBOpen(this, devInfo[i], i);
 				Q_ASSERT(w != NULL);
-				w->setSerial(QString("%1").arg(i));
+				//w->setSerial(QString("%1").arg(i));
 				m_widgets.append(w);
 			}
 		}

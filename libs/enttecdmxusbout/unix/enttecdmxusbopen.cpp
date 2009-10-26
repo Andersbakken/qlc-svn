@@ -28,9 +28,13 @@
  ****************************************************************************/
 
 EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent,
-				   const FT_DEVICE_LIST_INFO_NODE& info)
+				   const FT_DEVICE_LIST_INFO_NODE& info,
+				   DWORD id)
 	: QThread(parent),
-	m_info(info),
+	m_handle(0),
+	m_id(id),
+	m_serial(QString(info.SerialNumber)),
+	m_name(QString(info.Description)),
 	m_running(false),
 	m_universe(QByteArray(512, 0))
 {
@@ -50,7 +54,7 @@ bool EnttecDMXUSBOpen::open()
 	if (isOpen() == false)
 	{
 		/* Attempt to open the device */
-		FT_STATUS status = FT_Open(0, &m_info.ftHandle);
+		FT_STATUS status = FT_Open(m_id, &m_handle);
 		if (status == FT_OK)
 		{
 			if (initializePort() == false)
@@ -88,10 +92,10 @@ bool EnttecDMXUSBOpen::close()
 		if (isRunning() == true)
 			stop();
 
-		FT_STATUS status = FT_Close(m_info.ftHandle);
+		FT_STATUS status = FT_Close(m_handle);
 		if (status == FT_OK)
 		{
-			m_info.ftHandle = 0;
+			m_handle = 0;
 			return true;
 		}
 		else
@@ -109,7 +113,7 @@ bool EnttecDMXUSBOpen::close()
 
 bool EnttecDMXUSBOpen::isOpen() const
 {
-	if (m_info.ftHandle != 0)
+	if (m_handle != 0)
 		return true;
 	else
 		return false;
@@ -120,7 +124,7 @@ bool EnttecDMXUSBOpen::initializePort()
 	FT_STATUS status = FT_OK;
 
 	/* Reset the widget */
-	status = FT_ResetDevice(m_info.ftHandle);
+	status = FT_ResetDevice(m_handle);
 	if (status != FT_OK)
 	{
 		qWarning() << "FT_ResetDevice:" << status;
@@ -128,7 +132,7 @@ bool EnttecDMXUSBOpen::initializePort()
 	}
 
 	/* Set the baud rate. 12 will give us 250Kbits */
-	status = FT_SetDivisor(m_info.ftHandle, 12);
+	status = FT_SetDivisor(m_handle, 12);
 	if (status != FT_OK)
 	{
 		qWarning() << "FT_SetDivisor:" << status;
@@ -136,7 +140,7 @@ bool EnttecDMXUSBOpen::initializePort()
 	}
 
 	/* Set data characteristics */
-	status = FT_SetDataCharacteristics(m_info.ftHandle, FT_BITS_8,
+	status = FT_SetDataCharacteristics(m_handle, FT_BITS_8,
 					   FT_STOP_BITS_2, FT_PARITY_NONE);
 	if (status != FT_OK)
 	{
@@ -145,7 +149,7 @@ bool EnttecDMXUSBOpen::initializePort()
 	}
 
 	/* Set flow control */
-	status = FT_SetFlowControl(m_info.ftHandle, FT_FLOW_NONE, 0, 0);
+	status = FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0);
 	if (status != FT_OK)
 	{
 		qWarning() << "FT_SetFlowControl:" << status;
@@ -153,10 +157,10 @@ bool EnttecDMXUSBOpen::initializePort()
 	}
 
 	/* Set RS485 for sending */
-	FT_ClrRts(m_info.ftHandle);
+	FT_ClrRts(m_handle);
 
 	/* Clear TX RX buffers */
-	FT_Purge(m_info.ftHandle, FT_PURGE_TX | FT_PURGE_RX);
+	FT_Purge(m_handle, FT_PURGE_TX | FT_PURGE_RX);
 
 	return true;
 }
@@ -167,7 +171,7 @@ bool EnttecDMXUSBOpen::initializePort()
 
 QString EnttecDMXUSBOpen::name() const
 {
-	return m_info.Description;
+	return m_name;
 }
 
 QString EnttecDMXUSBOpen::serial() const
@@ -223,6 +227,7 @@ void EnttecDMXUSBOpen::run()
 	/* Wait for device to settle if the port was opened just recently */
 	usleep(1000);
 
+	m_running = true;
 	while (m_running == true)
 	{
 		if (isOpen() == false)
@@ -233,7 +238,7 @@ void EnttecDMXUSBOpen::run()
 			return;
 		}
 
-		status = FT_SetBreakOn(m_info.ftHandle);
+		status = FT_SetBreakOn(m_handle);
 		if (status != FT_OK)
 		{
 			qWarning() << "FT_SetBreakOn:" << status;
@@ -242,7 +247,7 @@ void EnttecDMXUSBOpen::run()
 
 		usleep(88);
 
-		status = FT_SetBreakOff(m_info.ftHandle);
+		status = FT_SetBreakOff(m_handle);
 		if (status != FT_OK)
 		{
 			qWarning() << "FT_SetBreakOff:" << status;
@@ -251,14 +256,14 @@ void EnttecDMXUSBOpen::run()
 
 		usleep(8);
 
-		status = FT_Write(m_info.ftHandle, &startByte, 1, &written);
+		status = FT_Write(m_handle, &startByte, 1, &written);
 		if (status != FT_OK)
 		{
 			qWarning() << "FT_Write startbyte:" << status;
 			goto framesleep;
 		}
 
-		status = FT_Write(m_info.ftHandle, m_universe.data(),
+		status = FT_Write(m_handle, m_universe.data(),
 				  m_universe.size(), &written);
 		if (status != FT_OK)
 		{

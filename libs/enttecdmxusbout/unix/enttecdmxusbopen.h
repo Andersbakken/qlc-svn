@@ -49,9 +49,11 @@ public:
 	 *
 	 * @param parent The owner of this object
 	 * @param info FTDI device information
+	 * @param id The device's unique ID
 	 */
 	EnttecDMXUSBOpen(QObject* parent,
-			 const FT_DEVICE_LIST_INFO_NODE& info);
+			 const FT_DEVICE_LIST_INFO_NODE& info,
+			 DWORD id);
 
 	/**
 	 * Destructor
@@ -60,7 +62,8 @@ public:
 
 protected:
 	/** FTDI device information */
-	FT_DEVICE_LIST_INFO_NODE m_info;
+	FT_HANDLE m_handle;
+	DWORD m_id;
 
 	/********************************************************************
 	 * Open & close
@@ -134,6 +137,7 @@ public:
 
 protected:
 	QString m_serial;
+	QString m_name;
 
 	/********************************************************************
 	 * DMX operations
