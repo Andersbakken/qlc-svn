@@ -11,10 +11,11 @@ Architecture: i386 amd64
 Replaces: qlc-fixtures, qlc-input-profiles
 Conflicts: qlc-fixtures, qlc-input-profiles
 Provides: qlc-fixtures, qlc-input-profiles
-Depends: ${shlib:Depends}, ${misc:Depends}
+Depends: libqt4-core (>= 4.3.0), libqt4-xml (>= 4.3.0), libqt4-gui (>= 4.3.0)
 Description: Software DMX lighting desk
   Q Light Controller - The Linux DMX lighting desk. Includes also fixture
-  definitions and input profiles.
+  definitions and input profiles. In order to get access to real DMX hardware,
+  you need to download an output plugin from http://www.sf.net/projects/qlc/files
 
 Package: qlc-input-hid
 Section: Other
