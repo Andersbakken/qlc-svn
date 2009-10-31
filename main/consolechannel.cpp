@@ -309,27 +309,64 @@ void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
 
 const QIcon ConsoleChannel::colorIcon(const QString& name)
 {
-	QString colname(name.toLower().remove(QRegExp("[0-9]")).remove(' '));
-	QColor color;
-
-	color.setNamedColor(colname);
-	if (color.isValid() == false)
+	/* Return immediately with a rainbow icon -- if appropriate */
+	if (name.toLower().contains("rainbow") ||
+	    name.toLower().contains("cw") == true)
 	{
+		return QIcon(":/rainbow.png");
+	}
+	else if (name.toLower().contains("cto") == true)
+	{
+		QColor color(255, 201, 0);
+		QPixmap pm(32, 32);
+		pm.fill(color);
+		return QIcon(pm);
+	}
+	else if (name.toLower().contains("ctb") == true)
+	{
+		QColor color(0, 128, 190);
+		QPixmap pm(32, 32);
+		pm.fill(color);
+		return QIcon(pm);
+	}
+	else if (name.toLower().contains("uv") == true)
+	{
+		QColor color(37, 0, 136);
+		QPixmap pm(32, 32);
+		pm.fill(color);
+		return QIcon(pm);
+	}
+
+#ifdef Q_WS_X11
+	QColor::setAllowX11ColorNames(true);
+#endif
+	QStringList colorList(QColor::colorNames());
+	QString colname;
+	QColor color;
+	int index;
+
+	colname = name.toLower().remove(QRegExp("[0-9]")).remove(' ');
+	index = colorList.indexOf(colname);
+	if (index != -1)
+	{
+		color.setNamedColor(colname);
+	}
+	else
+	{
+		QString re("(");
 		QListIterator <QString> it(name.toLower().split(" "));
 		while (it.hasNext() == true)
 		{
-			QColor part;
-			part.setNamedColor(it.next());
-			if (part.isValid() == true)
-			{
-				if (color.isValid() == false)
-					color = part;
-				else
-					color.setRgb(part.red() + color.red(),
-						part.green() + color.green(),
-						part.blue() + color.blue());
-			}
+			re += it.next();
+			if (it.hasNext() == true)
+				re += "|";
 		}
+		re += ")";
+
+		QRegExp regex(re, Qt::CaseInsensitive);
+		index = colorList.indexOf(regex);
+		if (index != -1)
+			color.setNamedColor(colorList.at(index));
 	}
 
 	if (color.isValid() == true)
@@ -340,10 +377,7 @@ const QIcon ConsoleChannel::colorIcon(const QString& name)
 	}
 	else
 	{
-		if (name.toLower().contains("rainbow") == true)
-			return QIcon(":/rainbow.png");
-		else
-			return QIcon();
+		return QIcon();
 	}
 }
 
