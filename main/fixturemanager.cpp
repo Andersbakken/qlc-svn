@@ -43,7 +43,6 @@
 #include "common/qlcchannel.h"
 #include "common/qlcfile.h"
 
-#include "fixtureproperties.h"
 #include "fixtureconsole.h"
 #include "fixturemanager.h"
 #include "addfixture.h"
@@ -462,7 +461,8 @@ void FixtureManager::initToolBar()
 
 void FixtureManager::slotAdd()
 {
-	AddFixture af(this, _app->fixtureDefCache(), *_app->doc());
+	AddFixture af(this, _app->fixtureDefCache(), *_app->doc(),
+			*_app->outputMap());
 	if (af.exec() == QDialog::Rejected)
 		return;
 
@@ -596,71 +596,62 @@ void FixtureManager::slotRemove()
 void FixtureManager::slotProperties()
 {
 	QTreeWidgetItem* item = m_tree->currentItem();
-	if (item != NULL)
-	{
-		t_fixture_id id = item->text(KColumnID).toInt();
-		Fixture* fixture = _app->doc()->fixture(id);
-		Q_ASSERT(fixture != NULL);
-
-		// View properties dialog
-		FixtureProperties prop(this, fixture,
-			_app->fixtureDefCache(), *_app->doc());
-		if (prop.exec() == QDialog::Accepted)
-		{
-			// Update changes to view
-			updateItem(item, fixture);
-
-			// Update changes to the info view
-			slotSelectionChanged();
-		}
-	}
-}
-
-void FixtureManager::slotAutoFunction()
-{
-#if 0
-	QTreeWidgetItem* item;
-	t_fixture_id fxi_id;
-	Fixture* fxi;
-
-	item = m_tree->currentItem();
 	if (item == NULL)
 		return;
 
-	fxi_id = item->text(KColumnID).toInt();
-	fxi = _app->doc()->fixture(fxi_id);
-	Q_ASSERT(fxi != NULL);
+	t_fixture_id id = item->text(KColumnID).toInt();
+	Fixture* fxi = _app->doc()->fixture(id);
+	if (fxi == NULL)
+		return;
 
-	// Loop over all channels
-	for (int i = 0; i < fxi->channels(); i++)
+	QString manuf;
+	QString model;
+	QString mode;
+
+	if (fxi->fixtureDef() != NULL)
 	{
-		QLCChannel* channel = fxi->channel(i);
-		Q_ASSERT(channel != NULL);
-
-		QListIterator <QLCCapability*> 
-			cap_it(*channel->capabilities());
-
-		// Loop over all capabilities
-		while (cap_it.hasNext() == true)
-		{
-			QLCCapability* cap = cap_it.next();
-			Q_ASSERT(cap != NULL);
-
-			Scene* sc = static_cast<Scene*> 
-				(_app->doc()->newFunction(Function::Scene,
-							  fxi_id));
-			sc->setName(channel->name() + " - " + cap->name());
-
-			// Set the unused channels to NoSet and zero.
-			for (int j = 0; j < fxi->channels(); j++)
-				sc->set(j, 0, Scene::NoSet);
-
-			// Set only the capability
-			sc->set(i, (t_value) ((cap->min() + cap->max()) / 2),
-				Scene::Set);
-		}
+		manuf = fxi->fixtureDef()->manufacturer();
+		model = fxi->fixtureDef()->model();
+		mode = fxi->fixtureMode()->name();
 	}
-#endif
+	else
+	{
+		manuf = KXMLFixtureGeneric;
+		model = KXMLFixtureGeneric;
+	}
+
+	AddFixture af(this, _app->fixtureDefCache(), *(_app->doc()),
+			*(_app->outputMap()), manuf, model, mode,
+			fxi->name(), fxi->universe(), fxi->address());
+	af.setWindowTitle(tr("Change fixture properties"));
+	if (af.exec() == QDialog::Accepted)
+	{
+		if (fxi->name() != af.name())
+			fxi->setName(af.name());
+		if (fxi->universe() != af.universe())
+			fxi->setUniverse(af.universe());
+		if (fxi->address() != af.address())
+			fxi->setAddress(af.address());
+
+		if (af.fixtureDef() != NULL && af.mode() != NULL)
+		{
+			if (fxi->fixtureDef() != af.fixtureDef() ||
+			    fxi->fixtureMode() != af.mode())
+			{
+				fxi->setFixtureDefinition(af.fixtureDef(),
+							  af.mode());
+			}
+		}
+		else
+		{
+			/* Generic dimmer */
+			fxi->setFixtureDefinition(NULL, NULL);
+			fxi->setChannels(af.channels());
+		}
+
+		updateItem(item, fxi);
+		slotSelectionChanged();
+	}
 }
 
 void FixtureManager::slotContextMenuRequested(const QPoint&)

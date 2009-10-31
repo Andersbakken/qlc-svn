@@ -192,7 +192,30 @@ public:
 	 *
 	 * @param universe The internal universe to get mapping for
 	 */
-	OutputPatch* patch(int universe);
+	OutputPatch* patch(int universe) const;
+
+	/**
+	 * Get a list of available universes.
+	 */
+	QStringList universeNames() const;
+	
+	/**
+	 * Check, whether the given universe should be displayed as 0-511
+	 * or 1-512.
+	 *
+	 * @param universe The universe to check the setting for
+	 * @return true for 0-511, false for 1-512
+	 */
+	bool isDMXZeroBased(int universe) const;
+
+	/**
+	 * Change, whether the given universe should be displayed as 0-511
+	 * or 1-512.
+	 *
+	 * @param universe The universe to change the setting for
+	 * @param set true for 0-511, false for 1-512
+	 */
+	void setDMXZeroBased(int universe, bool set);
 
 protected:
 	/** Vector containing all active plugins */

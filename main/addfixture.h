@@ -32,6 +32,7 @@ class QLCFixtureDefCache;
 class QTreeWidgetItem;
 class QLCFixtureMode;
 class QLCFixtureDef;
+class OutputMap;
 class QString;
 class Doc;
 
@@ -51,12 +52,21 @@ public:
 	 * @param selectManufacturer See $selectModel
 	 * @param selectModel Together with $selectManufacturer specifies the
 	 *                    fixture def to pre-select.
+	 * @param selectMode Pre-selected fixture mode
+	 * @param selectName Pre-selected name
+	 * @param selectUniverse Pre-selected universe
+	 * @param selectAddress Pre-selected address
 	 */
 	AddFixture(QWidget* parent,
 		   const QLCFixtureDefCache& fixtureDefCache,
 		   const Doc& doc,
+		   const OutputMap& outputMap,
 		   const QString& selectManufacturer = KXMLFixtureGeneric,
-		   const QString& selectModel = KXMLFixtureGeneric);
+		   const QString& selectModel = KXMLFixtureGeneric,
+		   const QString& selectMode = QString(),
+		   const QString& selectName = QString(),
+		   int selectUniverse = -1,
+		   int selectAddress = -1);
 
 	/** Destructor */
 	~AddFixture();
@@ -95,7 +105,8 @@ public:
 protected:
 	const QLCFixtureDefCache& m_fixtureDefCache;
 	const Doc& m_doc;
-	
+	const OutputMap& m_outputMap;
+
 	const QLCFixtureDef* m_fixtureDef;
 	const QLCFixtureMode* m_mode;
 
@@ -127,11 +138,17 @@ protected:
 	 * Slots
 	 *********************************************************************/
 protected slots:
-	/** Callback for channels spin value changes */
-	void slotChannelsChanged(int value);
-
 	/** Callback for mode selection changes */
 	void slotModeActivated(const QString& modeName);
+
+	/** Callback for universe combo activations */
+	void slotUniverseActivated(int universe);
+
+	/** Callback for address spin changes */
+	void slotAddressChanged(int value);
+
+	/** Callback for channels spin value changes */
+	void slotChannelsChanged(int value);
 
 	/** Callback for tree view selection changes */
 	void slotSelectionChanged();
@@ -147,9 +164,6 @@ protected slots:
 
 	/** Callback for address gap value changes */
 	void slotGapSpinChanged(int value);
-
-	/** OK button pressed */
-	void accept();
 };
 
 #endif

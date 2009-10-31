@@ -46,7 +46,6 @@ HEADERS += aboutbox.h \
            fixture.h \
            fixtureconsole.h \
            fixturemanager.h \
-           fixtureproperties.h \
            fixtureselection.h \
            function.h \
            functionmanager.h \
@@ -93,7 +92,6 @@ FORMS += aboutbox.ui \
          chasereditor.ui \
          collectioneditor.ui \
          efxeditor.ui \
-         fixtureproperties.ui \
          fixtureselection.ui \
          functionselection.ui \
 	 inputchanneleditor.ui \
@@ -129,7 +127,6 @@ SOURCES += aboutbox.cpp \
            fixture.cpp \
            fixtureconsole.cpp \
            fixturemanager.cpp \
-           fixtureproperties.cpp \
            fixtureselection.cpp \
            function.cpp \
            functionmanager.cpp \

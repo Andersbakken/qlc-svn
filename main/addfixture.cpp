@@ -36,6 +36,7 @@
 #include "common/qlcfixturedef.h"
 
 #include "addfixture.h"
+#include "outputmap.h"
 #include "doc.h"
 
 #define KColumnName 0
@@ -43,11 +44,17 @@
 AddFixture::AddFixture(QWidget* parent,
 		       const QLCFixtureDefCache& fixtureDefCache,
 		       const Doc& doc,
+		       const OutputMap& outputMap,
 		       const QString& selectManufacturer,
-		       const QString& selectModel)
+		       const QString& selectModel,
+		       const QString& selectMode,
+		       const QString& selectName,
+		       int selectUniverse,
+		       int selectAddress)
 	: QDialog(parent),
 	m_fixtureDefCache(fixtureDefCache),
-	m_doc(doc)
+	m_doc(doc),
+	m_outputMap(outputMap)
 {
 	m_addressValue = 0;
 	m_universeValue = 0;
@@ -67,6 +74,10 @@ AddFixture::AddFixture(QWidget* parent,
 		this, SLOT(slotTreeDoubleClicked(QTreeWidgetItem*)));
 	connect(m_modeCombo, SIGNAL(activated(const QString&)),
 		this, SLOT(slotModeActivated(const QString&)));
+	connect(m_universeCombo, SIGNAL(activated(int)),
+		this, SLOT(slotUniverseActivated(int)));
+	connect(m_addressSpin, SIGNAL(valueChanged(int)),
+		this, SLOT(slotAddressChanged(int)));
 	connect(m_channelsSpin, SIGNAL(valueChanged(int)),
 		this, SLOT(slotChannelsChanged(int)));
 	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
@@ -79,9 +90,47 @@ AddFixture::AddFixture(QWidget* parent,
 	/* Fill fixture definition tree */
 	fillTree(selectManufacturer, selectModel);
 
-	/* Simulate the first selection */
+	/* Fill universe combo with available universes */
+	Q_ASSERT(m_outputMap != NULL);
+	m_universeCombo->addItems(m_outputMap.universeNames());
+
+	/* Simulate first selection and find the next free address */
 	slotSelectionChanged();
-	findAddress();
+
+	if (selectAddress == -1 && selectUniverse == -1)
+	{
+		slotUniverseActivated(0);
+		findAddress();
+	}
+	else
+	{
+		m_universeCombo->setCurrentIndex(selectUniverse);
+		slotUniverseActivated(selectUniverse);
+
+		if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+			m_addressSpin->setValue(selectAddress);
+		else
+			m_addressSpin->setValue(selectAddress + 1);
+		m_addressValue = selectAddress;
+
+		m_multipleGroup->setEnabled(false);
+	}
+
+	if (selectName.isEmpty() == false)
+	{
+		m_nameEdit->setText(selectName);
+		slotNameEdited(selectName);
+	}
+
+	if (selectMode.isEmpty() == false)
+	{
+		int index = m_modeCombo->findText(selectMode);
+		if (index != -1)
+		{
+			m_modeCombo->setCurrentIndex(index);
+			slotModeActivated(m_modeCombo->itemText(index));
+		}
+	}
 }
 
 AddFixture::~AddFixture()
@@ -151,6 +200,7 @@ void AddFixture::fillModeCombo(const QString& text)
 		m_modeCombo->setEnabled(false);
 		m_modeCombo->addItem(text);
 		m_modeCombo->setCurrentIndex(0);
+		m_mode = NULL;
 	}
 	else
 	{
@@ -176,25 +226,18 @@ void AddFixture::findAddress()
 	/* Set the address only if the channel space was really found */
 	if (address != KChannelInvalid)
 	{
-		m_universeSpin->setValue((address >> 9) + 1);
-		m_addressSpin->setValue((address & 0x01FF) + 1);
+		m_universeCombo->setCurrentIndex(address >> 9);
+
+		if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+			m_addressSpin->setValue(address & 0x01FF);
+		else
+			m_addressSpin->setValue((address & 0x01FF) + 1);
 	}
 }
 
 /*****************************************************************************
  * Slots
  *****************************************************************************/
-
-void AddFixture::slotChannelsChanged(int value)
-{
-	m_channelsValue = value;
-
-	/* Set the maximum possible address so that channels cannot
-	   overflow beyond DMX's range of 512 channels */
-	m_addressSpin->setRange(1, 513 - value);
-
-	findAddress();
-}
 
 void AddFixture::slotModeActivated(const QString& modeName)
 {
@@ -224,6 +267,74 @@ void AddFixture::slotModeActivated(const QString& modeName)
 	}
 }
 
+void AddFixture::slotUniverseActivated(int universe)
+{
+	int value = m_addressSpin->value();
+	bool zeroBaseChanged = true;
+
+	if (m_outputMap.isDMXZeroBased(m_universeValue) ==
+	    m_outputMap.isDMXZeroBased(universe))
+	{
+		zeroBaseChanged = false;
+	}
+
+	m_universeValue = universe;
+
+	/* Adjust the available address range */
+	slotChannelsChanged(m_channelsValue);
+
+	/* If the zero-based setting is changed, change also the current address
+	   setting accordingly (e.g. x in 0-511 is x+1 in 1-512 & vice versa) */
+	if (zeroBaseChanged == true)
+	{
+		if (m_outputMap.isDMXZeroBased(universe) == true)
+			m_addressSpin->setValue(value - 1);
+		else
+			m_addressSpin->setValue(value + 1);
+	}
+}
+
+void AddFixture::slotAddressChanged(int value)
+{
+	if (m_outputMap.isDMXZeroBased(m_universeCombo->currentIndex()) == true)
+		m_addressValue = value;
+	else
+		m_addressValue = value - 1;
+}
+
+void AddFixture::slotChannelsChanged(int value)
+{
+	m_channelsValue = value;
+
+	/* Set the maximum possible address so that channels cannot overflow
+	   beyond DMX's range of 512 channels */
+	if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+		m_addressSpin->setRange(0, 512 - value);
+	else
+		m_addressSpin->setRange(1, 513 - value);
+}
+
+void AddFixture::slotNameEdited(const QString &text)
+{
+	/* If the user clears the text in the name field,
+	   start substituting the name with the model again. */
+	if (text.length() == 0)
+		m_nameEdit->setModified(false);
+	else
+		m_nameEdit->setModified(true);
+	m_nameValue = text;
+}
+
+void AddFixture::slotAmountSpinChanged(int value)
+{
+	m_amountValue = value;
+}
+
+void AddFixture::slotGapSpinChanged(int value)
+{
+	m_gapValue = value;
+}
+
 void AddFixture::slotSelectionChanged()
 {
 	/* If there is no valid selection (user has selected only a
@@ -245,7 +356,7 @@ void AddFixture::slotSelectionChanged()
 		m_channelsSpin->setValue(0);
 		m_channelList->clear();
 		m_addressSpin->setEnabled(false);
-		m_universeSpin->setEnabled(false);
+		m_universeCombo->setEnabled(false);
 		
 		m_amountSpin->setEnabled(false);
 		m_gapSpin->setEnabled(false);
@@ -263,6 +374,7 @@ void AddFixture::slotSelectionChanged()
 	{
 		/* Generic dimmer selected. User enters number of channels. */
 		m_fixtureDef = NULL;
+		m_mode = NULL;
 		fillModeCombo(KXMLFixtureGeneric);
 		m_channelsSpin->setEnabled(true);
 		m_channelList->clear();
@@ -299,7 +411,7 @@ void AddFixture::slotSelectionChanged()
 	m_nameEdit->setFocus();
 
 	m_addressSpin->setEnabled(true);
-	m_universeSpin->setEnabled(true);
+	m_universeCombo->setEnabled(true);
 
 	m_amountSpin->setEnabled(true);
 	m_gapSpin->setEnabled(true);
@@ -317,31 +429,3 @@ void AddFixture::slotTreeDoubleClicked(QTreeWidgetItem* item)
 		accept();
 }
 
-void AddFixture::slotNameEdited(const QString &text)
-{
-	/* If the user clears the text in the name field,
-	   start substituting the name with the model again. */
-	if (text.length() == 0)
-		m_nameEdit->setModified(false);
-	m_nameValue = text;
-}
-
-void AddFixture::slotAmountSpinChanged(int value)
-{
-	m_amountValue = value;
-	findAddress();
-}
-
-void AddFixture::slotGapSpinChanged(int value)
-{
-	m_gapValue = value;
-	findAddress();
-}
-
-void AddFixture::accept()
-{
-	m_addressValue = m_addressSpin->value() - 1;
-	m_universeValue = m_universeSpin->value() - 1;
-
-	QDialog::accept();
-}

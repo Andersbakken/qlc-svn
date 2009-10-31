@@ -291,12 +291,8 @@ void OutputPatchEditor::slotZeroBasedDMXClicked()
 
 void OutputPatchEditor::storeDMXZeroBasedSetting(bool set)
 {
-	QSettings settings;
-	QString key;
-
-	/* Store the setting immediately */
-	key = QString("/outputmap/universe%1/dmxzerobased").arg(m_universe);
-	settings.setValue(key, set);
+	Q_ASSERT(_app->outputMap() != NULL);
+	_app->outputMap()->setDMXZeroBased(m_universe, set);
 
 	/* Update fixture manager so the setting is visible immediately */
 	if (FixtureManager::instance() != NULL)

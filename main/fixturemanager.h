@@ -131,7 +131,6 @@ protected slots:
 	void slotAdd();
 	void slotRemove();
 	void slotProperties();
-	void slotAutoFunction();
 
 	/** Callback for right mouse button clicks over a fixture item */
 	void slotContextMenuRequested(const QPoint& pos);

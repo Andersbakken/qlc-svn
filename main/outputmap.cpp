@@ -283,12 +283,54 @@ bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
 	return true;
 }
 
-OutputPatch* OutputMap::patch(int universe)
+OutputPatch* OutputMap::patch(int universe) const
 {
 	if (universe >= 0 && universe < KUniverseCount)
 		return m_patch[universe];
 	else
 		return NULL;
+}
+
+QStringList OutputMap::universeNames() const
+{
+	QStringList list;
+
+	for (int i = 0; i < KUniverseCount; i++)
+	{
+		QString name;
+		name = QString("%1: %2").arg(i + 1).arg(patch(i)->pluginName());
+		if (isDMXZeroBased(i) == true)
+			name += QString(" (0 - 511)");
+		else
+			name += QString(" (1 - 512)");
+
+		list << name;
+	}
+
+	return list;
+}
+
+bool OutputMap::isDMXZeroBased(int universe) const
+{
+	QSettings settings;
+	QVariant value;
+	QString key;
+
+	key = QString("/outputmap/universe%1/dmxzerobased").arg(universe);
+	value = settings.value(key);
+	if (value.isValid() == true)
+		return value.toBool();
+	else
+		return false;
+}
+
+void OutputMap::setDMXZeroBased(int universe, bool set)
+{
+	QSettings settings;
+	QString key;
+
+	key = QString("/outputmap/universe%1/dmxzerobased").arg(universe);
+	settings.setValue(key, set);
 }
 
 /*****************************************************************************
