@@ -52,11 +52,13 @@ private:
 protected:
 	void fillTree();
 	void updateOutputInfo();
+	void storeDMXZeroBasedSetting(bool set);
 
 protected slots:
 	void slotCurrentItemChanged(QTreeWidgetItem* item);
 	void slotItemChanged(QTreeWidgetItem* item);
 	void slotConfigureClicked();
+	void slotZeroBasedDMXClicked();
 
 protected:
 	int m_universe;
@@ -65,6 +67,7 @@ protected:
 	QString m_currentPluginName;
 	t_output m_originalOutput;
 	t_output m_currentOutput;
+	bool m_originalDMXZeroBasedSetting;
 };
 
 #endif /* OUTPUTPATCHEDITOR_H */

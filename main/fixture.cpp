@@ -260,6 +260,24 @@ t_channel Fixture::invalidChannel()
 }
 
 /*****************************************************************************
+ * DMX display style
+ *****************************************************************************/
+
+bool Fixture::isDMXZeroBased() const
+{
+	QSettings settings;
+	QVariant value;
+	QString key;
+
+	key = QString("/outputmap/universe%1/dmxzerobased").arg(universe());
+	value = settings.value(key);
+	if (value.isValid() == true)
+		return value.toBool();
+	else
+		return false;
+}
+
+/*****************************************************************************
  * Fixture definition
  *****************************************************************************/
 
@@ -652,7 +670,10 @@ QString Fixture::status()
 	info += QString("<B>Universe</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += t.sprintf("%d", universe() + 1);
+	if (isDMXZeroBased() == true)
+		info += t.sprintf("%d", universe());
+	else
+		info += t.sprintf("%d", universe() + 1);
 	info += QString("</TD>");
 	info += QString("</TR>");
 
@@ -662,17 +683,23 @@ QString Fixture::status()
 	info += QString("<B>Address space</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += t.sprintf("%d - %d", address() + 1, address() + channels());
+	if (isDMXZeroBased() == true)
+		info += t.sprintf("%d - %d", address(), address() + channels() - 1);
+	else
+		info += t.sprintf("%d - %d", address() + 1, address() + channels());
 	info += QString("</TD>");
 	info += QString("</TR>");
 
 	// Binary address
 	info += QString("<TR>");
 	info += QString("<TD>");
-	info += QString("<B>Binary address</B>");
+	info += QString("<B>Binary address (DIP)</B>");
 	info += QString("</TD>");
 	info += QString("<TD>");
-	info += QString("%1").arg(address() + 1, 9, 2, QChar('0'));
+	if (isDMXZeroBased() == true)
+		info += QString("%1").arg(address() + 1, 9, 2, QChar('0'));
+	else
+		info += QString("%1").arg(address(), 9, 2, QChar('0'));
 	info += QString("</TD>");
 	info += QString("</TR>");
 	info += QString("</TABLE>");
@@ -729,7 +756,10 @@ QString Fixture::status()
 
 		// DMX channel
 		info += QString("<TD>");
-		info += t.setNum(address() + ch + 1);
+		if (isDMXZeroBased() == true)
+			info += t.setNum(address() + ch);
+		else
+			info += t.setNum(address() + ch + 1);
 		info += QString("</TD>");
 
 		// Channel name

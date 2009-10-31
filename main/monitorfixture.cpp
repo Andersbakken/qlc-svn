@@ -83,6 +83,12 @@ bool MonitorFixture::operator<(const MonitorFixture& mof)
 		return false;
 }
 
+void MonitorFixture::updateLabelStyles()
+{
+	slotChannelStyleChanged(Monitor::properties().channelStyle());
+	slotValueStyleChanged(Monitor::properties().valueStyle());
+}
+
 /****************************************************************************
  * Fixture
  ****************************************************************************/
@@ -125,20 +131,8 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 		/* Create channel numbers and value labels */
 		for (i = 0; i < fxi->channels(); i++)
 		{
-			t_channel channel;
 			QLabel* label;
 			QString str;
-
-			/* Set channel number according to style */
-			if (Monitor::properties().channelStyle() ==
-						MonitorProperties::DMXChannels)
-			{
-				channel = fxi->address() + i;
-			}
-			else
-			{
-				channel = i;
-			}
 
 			/* Create a label for channel number */
 			label = new QLabel(this);
@@ -160,14 +154,27 @@ void MonitorFixture::slotChannelStyleChanged(
 					MonitorProperties::ChannelStyle style)
 {
 	QString str;
-	int i = 1;
+	int i = 0;
 
+	/* Check that this MonitorFixture represents a fixture */
+	if (m_fixture == Fixture::invalidId())
+		return;
+
+	Fixture* fxi = _app->doc()->fixture(m_fixture);
+	Q_ASSERT(fxi != NULL);
+
+	/* Start channel numbering from this fixture's address */
 	if (style == MonitorProperties::DMXChannels)
+		i = fxi->address();
+	else
+		i = 1;
+
+	/* +1 if addresses should be shown 1-based */
+	if (fxi->isDMXZeroBased() == false &&
+	    style == MonitorProperties::DMXChannels)
 	{
-		/* Start channel numbering from this fixture's address */
-		Fixture* fxi = _app->doc()->fixture(m_fixture);
-		if (fxi != NULL)
-			i = fxi->address() + 1;
+		/* 1-based addresses */
+		i = i + 1;
 	}
 
 	QListIterator <QLabel*> it(m_channelLabels);

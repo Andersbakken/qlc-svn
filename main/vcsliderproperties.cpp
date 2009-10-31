@@ -412,7 +412,8 @@ void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
 		item->setCheckState(KColumnName, Qt::Unchecked);
 	}
 
-	item->setText(KColumnName, channel->name());
+	item->setText(KColumnName, QString("%1:%2").arg(ch + 1)
+					.arg(channel->name()));
 	item->setText(KColumnType, channel->group());
 
 	levelUpdateCapabilities(item, channel);

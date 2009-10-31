@@ -44,6 +44,9 @@ public:
 	/** Less-than operator for qSort() */
 	bool operator<(const MonitorFixture& mof);
 
+	/** Update channel and value label styles */
+	void updateLabelStyles();
+
 	/********************************************************************
 	 * Fixture
 	 ********************************************************************/

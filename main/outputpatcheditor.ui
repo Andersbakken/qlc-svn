@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
+<ui version="4.0" >
  <class>OutputPatchEditor</class>
- <widget class="QDialog" name="OutputPatchEditor">
-  <property name="geometry">
+ <widget class="QDialog" name="OutputPatchEditor" >
+  <property name="geometry" >
    <rect>
     <x>0</x>
     <y>0</y>
@@ -10,35 +9,35 @@
     <height>464</height>
    </rect>
   </property>
-  <property name="windowTitle">
+  <property name="windowTitle" >
    <string>Output patch editor</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
    <item>
-    <widget class="QGroupBox" name="m_mappingGroup">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+    <widget class="QGroupBox" name="m_mappingGroup" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="title">
+     <property name="title" >
       <string>Mapping</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout" >
       <item>
-       <widget class="QTreeWidget" name="m_tree">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <widget class="QTreeWidget" name="m_tree" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="allColumnsShowFocus">
+        <property name="allColumnsShowFocus" >
          <bool>true</bool>
         </property>
         <column>
-         <property name="text">
+         <property name="text" >
           <string>Plugins/Outputs</string>
          </property>
         </column>
@@ -48,40 +47,40 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="m_infoGroup">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+    <widget class="QGroupBox" name="m_infoGroup" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="title">
+     <property name="title" >
       <string>Output Information</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" rowspan="2">
-       <widget class="QTextBrowser" name="m_infoBrowser">
-        <property name="toolTip">
+     <layout class="QGridLayout" name="gridLayout" >
+      <item rowspan="2" row="0" column="0" >
+       <widget class="QTextBrowser" name="m_infoBrowser" >
+        <property name="toolTip" >
          <string>Information related to the currently selected plugin or output</string>
         </property>
-        <property name="openLinks">
+        <property name="openLinks" >
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QToolButton" name="m_configureButton">
-        <property name="toolTip">
+      <item row="0" column="1" >
+       <widget class="QToolButton" name="m_configureButton" >
+        <property name="toolTip" >
          <string>Configure the selected plugin/output</string>
         </property>
-        <property name="text">
+        <property name="text" >
          <string>...</string>
         </property>
-        <property name="icon">
-         <iconset resource="main.qrc">
+        <property name="icon" >
+         <iconset resource="main.qrc" >
           <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
         </property>
-        <property name="iconSize">
+        <property name="iconSize" >
          <size>
           <width>26</width>
           <height>26</height>
@@ -89,15 +88,15 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
+      <item row="1" column="1" >
+       <spacer name="verticalSpacer" >
+        <property name="orientation" >
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeType">
+        <property name="sizeType" >
          <enum>QSizePolicy::Expanding</enum>
         </property>
-        <property name="sizeHint" stdset="0">
+        <property name="sizeHint" stdset="0" >
          <size>
           <width>20</width>
           <height>40</height>
@@ -109,11 +108,21 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="m_buttonBox">
-     <property name="orientation">
+    <widget class="QCheckBox" name="m_zeroBasedDMXCheckBox" >
+     <property name="toolTip" >
+      <string>Display 0-511 (instead of 1-512) as the DMX address space for this universe</string>
+     </property>
+     <property name="text" >
+      <string>Display zero-based DMX addresses for this universe</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="m_buttonBox" >
+     <property name="orientation" >
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons">
+     <property name="standardButtons" >
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -121,7 +130,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="main.qrc"/>
+  <include location="main.qrc" />
  </resources>
  <connections>
   <connection>
@@ -130,11 +139,11 @@
    <receiver>OutputPatchEditor</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel">
+    <hint type="sourcelabel" >
      <x>257</x>
      <y>96</y>
     </hint>
-    <hint type="destinationlabel">
+    <hint type="destinationlabel" >
      <x>157</x>
      <y>274</y>
     </hint>
@@ -146,11 +155,11 @@
    <receiver>OutputPatchEditor</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel">
+    <hint type="sourcelabel" >
      <x>325</x>
      <y>96</y>
     </hint>
-    <hint type="destinationlabel">
+    <hint type="destinationlabel" >
      <x>286</x>
      <y>274</y>
     </hint>

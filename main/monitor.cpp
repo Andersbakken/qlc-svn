@@ -250,6 +250,12 @@ void Monitor::slotValueStyleTriggered(QAction* action)
 /****************************************************************************
  * Fixture added/removed stuff
  ****************************************************************************/
+void Monitor::updateFixtureLabelStyles()
+{
+	QListIterator <MonitorFixture*> it(m_monitorFixtures);
+	while (it.hasNext() == true)
+		it.next()->updateLabelStyles();
+}
 
 void Monitor::createMonitorFixture(Fixture* fxi)
 {

@@ -179,6 +179,10 @@ protected slots:
 	/********************************************************************
 	 * Monitor Fixtures
 	 ********************************************************************/
+public:
+	/** Update monitor fixture labels */
+	void updateFixtureLabelStyles();
+
 protected:
 	/** Create a new MonitorFixture* and append it to the layout */
 	void createMonitorFixture(Fixture* fxi);

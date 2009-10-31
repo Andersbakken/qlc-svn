@@ -22,13 +22,16 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 #include <QToolButton>
+#include <QSettings>
 #include <QGroupBox>
 #include <QVariant>
 #include <QDebug>
 
 #include "outputpatcheditor.h"
+#include "fixturemanager.h"
 #include "outputpatch.h"
 #include "outputmap.h"
+#include "monitor.h"
 #include "app.h"
 
 #define KColumnName   0
@@ -40,6 +43,10 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 				     const OutputPatch* patch)
 	: QDialog(parent)
 {
+	QSettings settings;
+	QVariant value;
+	QString key;
+
 	setupUi(this);
 
 	Q_ASSERT(universe < _app->outputMap()->universes());
@@ -62,6 +69,17 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
 	connect(m_configureButton, SIGNAL(clicked()),
 		this, SLOT(slotConfigureClicked()));
 
+	/* Zero-based DMX setting */
+	connect(m_zeroBasedDMXCheckBox, SIGNAL(clicked()),
+		this, SLOT(slotZeroBasedDMXClicked()));
+	key = QString("/outputmap/universe%1/dmxzerobased").arg(universe);
+	value = settings.value(key);
+	if (value.isValid() == true)
+		m_zeroBasedDMXCheckBox->setChecked(value.toBool());
+	else
+		m_zeroBasedDMXCheckBox->setChecked(false);
+	m_originalDMXZeroBasedSetting = m_zeroBasedDMXCheckBox->isChecked();
+
 	fillTree();
 }
 
@@ -71,8 +89,12 @@ OutputPatchEditor::~OutputPatchEditor()
 
 void OutputPatchEditor::reject()
 {
+	/* Revert changes to original values (stored when this dialog opens) */
 	_app->outputMap()->setPatch(m_universe, m_originalPluginName,
 				    m_originalOutput);
+
+	storeDMXZeroBasedSetting(m_originalDMXZeroBasedSetting);
+
 	QDialog::reject();
 }
 
@@ -261,3 +283,27 @@ void OutputPatchEditor::slotConfigureClicked()
 	/* Refill the mapping tree in case configuration changed something */
 	fillTree();
 }
+
+void OutputPatchEditor::slotZeroBasedDMXClicked()
+{
+	storeDMXZeroBasedSetting(m_zeroBasedDMXCheckBox->isChecked());
+}
+
+void OutputPatchEditor::storeDMXZeroBasedSetting(bool set)
+{
+	QSettings settings;
+	QString key;
+
+	/* Store the setting immediately */
+	key = QString("/outputmap/universe%1/dmxzerobased").arg(m_universe);
+	settings.setValue(key, set);
+
+	/* Update fixture manager so the setting is visible immediately */
+	if (FixtureManager::instance() != NULL)
+		FixtureManager::instance()->updateView();
+
+	/* Update monitor so the setting is visible immediately */
+	if (Monitor::instance() != NULL)
+		Monitor::instance()->updateFixtureLabelStyles();
+}
+

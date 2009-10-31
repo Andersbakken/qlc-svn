@@ -85,12 +85,13 @@ public slots:
 	/********************************************************************
 	 * Data view
 	 ********************************************************************/
+public:
+	/** Update the list of fixtures */
+	void updateView();
+
 protected:
 	/** Construct the list view and data view */
 	void initDataView();
-
-	/** Update the list of fixtures */
-	void updateView();
 
 	/** Update a single fixture's data into a QTreeWidgetItem */
 	void updateItem(QTreeWidgetItem* item, Fixture* fxt);
