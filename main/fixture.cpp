@@ -697,9 +697,9 @@ QString Fixture::status()
 	info += QString("</TD>");
 	info += QString("<TD>");
 	if (isDMXZeroBased() == true)
-		info += QString("%1").arg(address() + 1, 9, 2, QChar('0'));
-	else
 		info += QString("%1").arg(address(), 9, 2, QChar('0'));
+	else
+		info += QString("%1").arg(address() + 1, 9, 2, QChar('0'));
 	info += QString("</TD>");
 	info += QString("</TR>");
 	info += QString("</TABLE>");
