@@ -145,8 +145,22 @@ void OutputPatchEditor::fillTree()
 			}
 			else
 			{
-				oitem->setCheckState(KColumnName,
-						     Qt::Unchecked);
+				int uni;
+
+				oitem->setCheckState(KColumnName, Qt::Unchecked);
+				uni = _app->outputMap()->mapping(pluginName, i);
+				if (uni != -1)
+				{
+					/* If a mapping exists for this plugin
+					   and output, make it impossible to
+					   map it to another universe. */
+					oitem->setFlags(oitem->flags()
+							& (!Qt::ItemIsEnabled));
+					oitem->setText(KColumnName,
+						oitem->text(KColumnName) +
+						QString(" (Mapped to universe %1)")
+							.arg(uni + 1));
+				}
 			}
 
 			i++;

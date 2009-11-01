@@ -161,12 +161,24 @@ bool InputMap::setPatch(t_input_universe universe,
 	return true;
 }
 
-InputPatch* InputMap::patch(t_input_universe universe)
+InputPatch* InputMap::patch(t_input_universe universe) const
 {
 	if (universe < m_universes)
 		return m_patch[universe];
 	else
 		return NULL;
+}
+
+int InputMap::mapping(const QString& pluginName, t_input input) const
+{
+	for (int uni = 0; uni < universes(); uni++)
+	{
+		const InputPatch* p = patch(uni);
+		if (p->pluginName() == pluginName && p->input() == input)
+			return uni;
+	}
+
+	return -1;
 }
 
 /*****************************************************************************
@@ -441,7 +453,13 @@ void InputMap::loadDefaults()
 
 		/* Do the mapping */
 		if (plugin.length() > 0 && input.length() > 0)
-			setPatch(i, plugin, input.toInt(), profileName);
+		{
+			/* Check that the same plugin & input are not mapped
+			   to more than one universe at a time. */
+			int m = mapping(plugin, input.toInt());
+			if (m == -1 || m == i)
+				setPatch(i, plugin, input.toInt(), profileName);
+		}
 	}
 }
 

@@ -333,6 +333,18 @@ void OutputMap::setDMXZeroBased(int universe, bool set)
 	settings.setValue(key, set);
 }
 
+int OutputMap::mapping(const QString& pluginName, t_output output) const
+{
+	for (int uni = 0; uni < universes(); uni++)
+	{
+		const OutputPatch* p = patch(uni);
+		if (p->pluginName() == pluginName && p->output() == output)
+			return uni;
+	}
+
+	return -1;
+}
+
 /*****************************************************************************
  * Plugins
  *****************************************************************************/
@@ -436,7 +448,13 @@ void OutputMap::loadDefaults()
 		output = settings.value(key).toString();
 
 		if (plugin.length() > 0 && output.length() > 0)
-			setPatch(i, plugin, output.toInt());
+		{
+			/* Check that the same plugin & output are not mapped
+			   to more than one universe at a time. */
+			int m = mapping(plugin, output.toInt());
+			if (m == -1 || m == i)
+				setPatch(i, plugin, output.toInt());
+		}
 	}
 }
 

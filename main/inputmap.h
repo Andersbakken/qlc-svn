@@ -122,7 +122,18 @@ public:
 	 *
 	 * @param universe The internal input universe to get mapping for
 	 */
-	InputPatch* patch(t_input_universe universe);
+	InputPatch* patch(t_input_universe universe) const;
+
+	/**
+	 * Check, whether a certain input in a certain plugin has been mapped
+	 * to a universe. Returns the mapped universe number or -1 if not
+	 * mapped.
+	 *
+	 * @param pluginName The name of the plugin to check for
+	 * @param input The particular input to check for
+	 * @return Mapped universe number or -1 if not mapped
+	 */
+	int mapping(const QString& pluginName, t_input input) const;
 
 protected:
 	/** Initialize the patch table */

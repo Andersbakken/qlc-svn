@@ -186,8 +186,25 @@ void InputPatchEditor::fillMappingTree()
 			}
 			else
 			{
+				int uni;
+
 				iitem->setCheckState(KMapColumnName,
 						     Qt::Unchecked);
+				uni = _app->inputMap()->mapping(pluginName, i);
+				if (uni != -1)
+				{
+					/* If a mapping exists for this plugin
+					   and output, make it impossible to
+					   map it to another universe. */
+					iitem->setFlags(iitem->flags()
+							& (!Qt::ItemIsEnabled));
+					iitem->setText(KMapColumnName,
+						iitem->text(KMapColumnName) +
+						QString(" (Mapped to universe %1)")
+							.arg(uni + 1));
+				}
+
+
 			}
 
 			i++;

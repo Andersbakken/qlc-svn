@@ -174,7 +174,7 @@ public:
 	 *
 	 * @return Universe count supported by QLC
 	 */
-	int universes() { return m_universes; }
+	int universes() const { return m_universes; }
 
 	/**
 	 * Patch the given universe to go thru the given plugin
@@ -216,6 +216,17 @@ public:
 	 * @param set true for 0-511, false for 1-512
 	 */
 	void setDMXZeroBased(int universe, bool set);
+
+	/**
+	 * Check, whether a certain output in a certain plugin has been mapped
+	 * to a universe. Returns the mapped universe number or -1 if not
+	 * mapped.
+	 *
+	 * @param pluginName The name of the plugin to check for
+	 * @param output The particular output to check for
+	 * @return Mapped universe number or -1 if not mapped
+	 */
+	int mapping(const QString& pluginName, t_output output) const;
 
 protected:
 	/** Vector containing all active plugins */
