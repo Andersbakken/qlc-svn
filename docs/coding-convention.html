@@ -10,17 +10,15 @@
 </CENTER>
 
 <P>
-This file describes the coding convention (ten commandments) used in QLC
-source code. The purpose of this document is to instruct developers to write
-somewhat uniform code. The following rules are more or less similar to the
-<A HREF="http://doc.trolltech.com/qq/qq13-apis.html">Qt coding convention</A>.
-Please read that page first. It's REALLY good.
+This file describes the coding convention used in QLC source code. The purpose
+of this document is to instruct developers to write somewhat uniform and 
+clear code.
 </P>
 
 <HR>
 
 <P>
-1. Each source file should be attached with this header:<BR>
+Each source/header file should begin with this header:<BR>
 <PRE>
 /*
   Q Light Controller
@@ -49,7 +47,7 @@ Please read that page first. It's REALLY good.
 <HR>
 
 <P>
-2. Each member variable has a prefix "m_", for example:<BR>
+Each member variable has a prefix "m_", for example:<BR>
 <PRE>
 	int m_fooMember;
 </PRE>
@@ -64,70 +62,85 @@ Each global variable or function begins with "_", for example:
 <HR>
 
 <P>
-3. Each function begins with a small letter and in compound words, all
+Each function begins with a small letter and in compound words, all
 the following words begin with a capital letter. No word separation with
-underscore is allowed. Examples:
+underscore is allowed. Otherwise known as camel-case. Examples:
 <PRE>
-int foo();
-int fooBar();
-int thisIsAMemberFunction();
-int this_is_not_allowed_because_it_is_ugly;
+	int foo();
+	int fooBar();
+	int thisIsAMemberFunction();
+	int this_is_not_allowed_because_it_is_ugly;
 </PRE>
 </P>
 
 <HR>
 
 <P>
-4. Every control structure (if, while, for...) will be written inside
-brackets { } even if they would contain only one line of code, unless it looks
-really nice and clean. Also, brackets are written on their own line without
-anything else after or before the bracket on the same line. This goes for
-function and class definitions, too:
+Follow the <A HREF="http://en.wikipedia.org/wiki/Indent_style#Allman_style_.28bsd_in_Emacs.29">
+Allman style</A> with curly braces. The reason for this is simply code
+readability by CLEARLY separating the <I>conditions</I> from <I>then(s)</I>.
 <PRE>
-do
-{
-    foo();
-}
-while (bar);
+	do
+	{
+		foo();
+	}
+	while (bar);
+	
+	if (foo == true)
+	{
+		foo();
+	}
+	else
+	{
+		bar();
+	}
+	
+	for (int i = 0; i != n; i++)
+	{
+		foo(i);
+	}
 
-if (foo == true)
-{
-    foo();
-}
-else
-{
-    bar();
-}
+	void FooClass::fooBar()
+	{
+		...
+	}
+</PRE>
 
-for (int i = 0; i != n; i++)
-{
-    foo(i);
-}
-
-void FooClass::fooBar()
-{
-    ...
-}
+<P>
+So, please don't do this. It's just pure, honest, 100% bullshit. By far the
+biggest mistake <A HREF="http://en.wikipedia.org/wiki/Indent_style#K.26R_style">
+Kernighan and Ritchie</A> made back in the days:
+</P>
+<PRE>
+	if (something == something_else &&
+	    something_completely_different != the_same) {
+		do_something();
+		and_also_something_else(with, a, couple, of,
+					parameters);
+	} else if (one_thing->leads_to_another ||
+		   foo != bar) {
+		do_something_else();
+	}
 </PRE>
 </P>
 
 <HR>
 
 <P>
-5. Each class name will be written each word beginning with a capital letter.
-Same rules as with functions.
+Each class name will be written with each word beginning with a capital letter.
+Same rules apply here as for functions.
 <PRE>
-class FooBar;
-class Foo;
+	class FooBar;
+	class Foo;
 </PRE>
 </P>
 
 <P>
-5.1. Respectively, each class should be in its own file and the file name must be
-the class' name, in small letters. If it makes things significantly more logical,
-SMALL classes can be defined inside other classes' definitions and files.
-File suffix for implementation files is ".cpp" and for header files ".h". Do NOT
-use other styles.<BR>
+Respectively, each class should be in its own file and the file name must be
+the class' name, in small letters. If it makes things significantly more
+logical, SMALL classes can be defined inside other classes' definitions and/or
+files. File suffix for implementation files is ".cpp" and for header files ".h".
+Do NOT use other styles.<BR>
 In general:<BR>
 class FooBarClass definition is saved in foobarclass.h<BR>
 and its implementation is in foobarclass.cpp
@@ -136,17 +149,17 @@ and its implementation is in foobarclass.cpp
 <HR>
 
 <P>
-6. All macro definitions are written completely in capital letters, words
+All macro definitions are written completely in capital letters, words
 may be separated with "_". Example:
-
-<PRE>
-#define FOOBAR 5
-#define FOO_BAR(x) foobar(x);
-</PRE>
 </P>
 
+<PRE>
+	#define FOOBAR 5
+	#define FOO_BAR(x) foobar(x);
+</PRE>
+
 <P>
-6.1 Normal integer macros, like the ones you would use to identify certain menu
+Normal integer macros, like the ones you would use to identify certain menu
 items, columns etc. can be substituted with static constants, in which case, the
 constant's name begins with a capital 'K'. This is done to associate them more
 into the field of #defined macros than variables.<BR>
@@ -158,41 +171,55 @@ static const int KMenuItem ( 1000 );
 <HR>
 
 <P>
-7. Each operator will be separated with spaces:
+Each operator will be separated with spaces:
 <PRE>
-if (foo == bar)
+	if (foo == bar)
+	while (foo != bar)
+	int foo = bar;
+	for (int foo = 0; foo != bar; foo++)
+</PRE>
 
-while (foo != bar)
-
-int foo = bar;
-
-for (int foo = 0; foo != bar; foo++)
-...
+Not like this. You're only saving the spring mechanism on your space bar, but
+cause a lot of bad eyesight for people trying to read your code.
+<PRE>
+	if(foo==bar)
+	while(foo!=bar)
 </PRE>
 </P>
 
 <HR>
 
 <P>
-8. Variable, function and class names should be descriptive. Use your common
-sense here.
+Variable, function and class names should be descriptive. Use your common
+sense here. Use <I>i</I> for the normal iterator pattern, but that's about it.
 </P>
 
 <HR>
 
 <P>
-9. Write nice and readable code. Do not write code in one pile, use spaces and
-empty lines between logical sections.
+Write nice and readable code. Do not write code in one pile, use spaces and
+empty lines between logical sections. If you're trying to fit one function
+within the vertical limits of your monitor, either get a bigger monitor or
+refactor the code to smaller chunks.
 </P>
 
 <HR>
 
 <P>
-10. WRITE COMMENTS.
+Line width is 80 characters, tabsize is 8, and NOT converted to spaces. If you
+need longer lines, you should consider refactoring your code to smaller chunks,
+thus reducing indentation level.
 </P>
 
 <HR>
-<I>Last modified: 2009-01-05 by Heikki Junnila</I>
+
+<P>
+WRITE COMMENTS. Tell others what your code is supposed to be doing. Even if it
+seems obvious to you, it's hardly even close to obvious to anyone else.
+</P>
+
+<HR>
+<I>Last modified: November 1st 2009, Heikki Junnila</I>
 
 </BODY>
 </HTML>
