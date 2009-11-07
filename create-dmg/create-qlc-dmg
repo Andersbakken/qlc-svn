@@ -1,43 +1,36 @@
-#! /bin/bash
+#!/bin/bash
 
 rm -Rf qlc-dmg-source
 mkdir qlc-dmg-source
 cd qlc-dmg-source
 cp -r ~/qlc.app ./
-#cp -r /Applications/qlc-fixtureeditor.app ./
 
-#macdeployqt qlc-fixtureeditor.app
 macdeployqt qlc.app
 
 # Install plugins
 function linkQtFramework {
-	install_name_tool -change $2.framework/Versions/4/$2 \
-		@executable_path/../Frameworks/$2.framework/Versions/4/$2 \
-		$1.app/$3
+	install_name_tool -change $1.framework/Versions/4/$1 \
+		@executable_path/../Frameworks/$1.framework/Versions/4/$1 \
+		$2
 }
 
 function doAutoLink {
-	for (( i=0; i<${#toLink[@]}; i++ ))
+	for ((i=0; i < ${#toLink[@]}; i++))
 		do
 		# This is a bit hacky, we should check if the library is used
 		# before changing it, but it'll only throw and error...
-		linkQtFramework $1 QtCore "${toLink[i]}"
-		linkQtFramework $1 QtGui "${toLink[i]}"
-		linkQtFramework $1 QtXml "${toLink[i]}"
+		linkQtFramework QtCore "${toLink[i]}"
+		linkQtFramework QtGui "${toLink[i]}"
+		linkQtFramework QtXml "${toLink[i]}"
+		linkQtFramework QtNetwork "${toLink[i]}"
 	done
 }
 
-cd qlc.app
-toLink=( $(find Contents/Plugins -name \*.dylib) )
-#cd ..
-#toLink[${#toLink[@]}]="Contents/Frameworks/libqlccommon.1.dylib"
-#doAutoLink qlc
+#cd qlc.app
+toLink=( $(find qlc.app/Contents/Plugins -name \*.dylib) )
+doAutoLink
 
-#toLink=( "Contents/Frameworks/libqlccommon.1.dylib" )
-#doAutoLink qlc-fixtureeditor
-
-#ln -s ~/ " "
-cd ../..
+cd ..
 echo `pwd`
 rm qlc-3.0.4.dmg rw.qlc-3.0.4.dmg
 ./create-dmg --volname "QLC v3.0.4" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.4.dmg qlc-dmg-source/

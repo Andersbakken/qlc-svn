@@ -8,6 +8,11 @@ CONFIG          += qt
 macx:CONFIG	-= app_bundle
 QT 		+= xml
 
+# macdeployqt checks dependencies only for the main app, forgetting QtNetwork,
+# which is needed by the Enttec Wing plugin, so we need to add a bogus
+# dependency here...
+macx:QT		+= network
+
 TRANSLATIONS	= qlc_gb.ts
 
 INCLUDEPATH 	+= . ../libs/
