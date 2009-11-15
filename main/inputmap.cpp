@@ -277,13 +277,23 @@ QString InputMap::pluginStatus(const QString& pluginName, t_input input)
 	QLCInPlugin* inputPlugin = NULL;
 	QString info;
 
-	if (pluginName != QString::null)
+	if (pluginName.isEmpty() == false)
 		inputPlugin = plugin(pluginName);
 
 	if (inputPlugin != NULL)
+	{
 		info = inputPlugin->infoText(input);
+	}
 	else
-		info = tr("No information");
+	{
+                /* Nothing selected */
+                info += tr("<HTML><HEAD><TITLE>None</TITLE></HEAD><BODY>");
+                info += tr("<H3>No input plugin selected</H3>");
+                info += tr("<P>You can download input plugins from ");
+                info += tr("<A HREF=\"http://www.sf.net/projects/qlc/files\">");
+                info += tr("http://www.sf.net/projects/qlc/files</A>.");
+                info += tr("</BODY></HTML>");
+	}
 
 	return info;
 }

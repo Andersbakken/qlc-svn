@@ -100,6 +100,7 @@ void OutputPatchEditor::reject()
 
 void OutputPatchEditor::fillTree()
 {
+	QTreeWidgetItem* selectItem = NULL;
 	QTreeWidgetItem* pitem;
 	QTreeWidgetItem* oitem;
 	QString pluginName;
@@ -142,6 +143,8 @@ void OutputPatchEditor::fillTree()
 			{
 				oitem->setCheckState(KColumnName, Qt::Checked);
 				pitem->setExpanded(true);
+
+				selectItem = oitem;
 			}
 			else
 			{
@@ -183,6 +186,8 @@ void OutputPatchEditor::fillTree()
         /* Enable check state change tracking after the tree has been filled */
 	connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 		this, SLOT(slotItemChanged(QTreeWidgetItem*)));
+
+	m_tree->setCurrentItem(selectItem);
 }
 
 void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)

@@ -76,6 +76,9 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 	/* Setup UI controls */
 	setupMappingPage();
 	setupProfilePage();
+
+	/* Select the top-most "None" item */
+	m_mapTree->setCurrentItem(m_mapTree->topLevelItem(0));
 }
 
 InputPatchEditor::~InputPatchEditor()
@@ -235,8 +238,7 @@ void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
 
 	if (item == NULL)
 	{
-		/* Nothing selected */
-		info = tr("No information");
+		info = _app->inputMap()->pluginStatus(QString::null, 0);
 	}
 	else
 	{
