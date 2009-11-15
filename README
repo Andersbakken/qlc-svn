@@ -75,12 +75,12 @@ Requirements - OSX
 * Enttec DMX USB Pro Output plugin: No additional requirements
 * Enttec Open DMX USB Output plugin: No additional requirements
 * HID Input plugin: Not available for OSX
-* MIDI Input plugin: Not available for OSX
+* MIDI Input plugin: No additional requirements
 * ENTTEC Wing Input plugin: No additional requirements
-* MIDI Output plugin: Not available for OSX
+* MIDI Output plugin: No additional requirements
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
-* uDMX Output plugin: Not available for OSX
-* Peperoni Output plugin: Not available for OSX
+* uDMX Output plugin: No additional requirements
+* Peperoni Output plugin: No additional requirements
 
 
 Compiling & Installation
