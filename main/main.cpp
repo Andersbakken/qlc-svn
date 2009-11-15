@@ -62,8 +62,9 @@ void printVersion()
 
 	cout << endl;
 	cout << KApplicationNameLong << " " << KApplicationVersion << endl;
-	cout << "This program is licensed under the terms of GNU GPL." << endl;
-	cout << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)" << endl;
+	cout << "This program is licensed under the terms of the GNU ";
+	cout << "General Public License v2." << endl;
+	cout << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)." << endl;
 	cout << endl;
 }
 
