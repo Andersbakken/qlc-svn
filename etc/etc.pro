@@ -56,3 +56,7 @@ win32 {
 
         INSTALLS        += qtlibs mingw nsis
 }
+
+samples.files += Sample.qxw
+samples.path = $$DATADIR
+INSTALLS += samples
