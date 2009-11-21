@@ -123,7 +123,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_bottomLabel->setAlignment(Qt::AlignCenter);
 	m_bottomLabel->hide();
 
-	resize(QPoint(60, 220));
+	resize(QSize(60, 220));
 
 	/* Initialize to bus mode by default */
 	setBus(Bus::defaultFade());

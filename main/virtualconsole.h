@@ -33,6 +33,7 @@
 class VirtualConsole;
 class QDomDocument;
 class QActionGroup;
+class QScrollArea;
 class QDomElement;
 class VCDockArea;
 class QKeyEvent;
@@ -301,6 +302,10 @@ protected:
 	/** Place the contents area to the VC view */
 	void initContents();
 
+protected:
+	/** Scroll Area that contains the bottom-most VCFrame */
+	QScrollArea* m_scrollArea;
+	
 	/*********************************************************************
 	 * Key press handler
 	 *********************************************************************/

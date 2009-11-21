@@ -57,7 +57,7 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 	setCaption("XY Pad");
 	setMinimumSize(20, 20);
 
-	resize(QPoint(120, 120));
+	resize(QSize(120, 120));
 
 	m_xyPosPixmap = QPixmap(":/xypad-point.png");
 

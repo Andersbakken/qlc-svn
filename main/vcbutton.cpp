@@ -86,7 +86,7 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 
 	/* Initial size */
 	setMinimumSize(20, 20);
-	resize(QPoint(30, 30));
+	resize(QSize(30, 30));
 
 	setStyle(App::saneStyle());
 

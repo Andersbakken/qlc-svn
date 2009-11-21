@@ -64,7 +64,7 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 
 	setFrameStyle(KVCFrameStyleSunken);
 	setCaption(tr("Cue list"));
-	resize(QPoint(200, 200));
+	resize(QSize(200, 200));
 
 	m_current = NULL;
 

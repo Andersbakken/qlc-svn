@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QDesktopWidget>
 #include <QMdiSubWindow>
 #include <QApplication>
 #include <QInputDialog>
@@ -29,6 +30,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QScrollArea>
 #include <QKeyEvent>
 #include <QMdiArea>
 #include <QMenuBar>
@@ -84,6 +86,7 @@ VirtualConsole::VirtualConsole(QWidget* parent, Qt::WindowFlags flags)
 	m_addMenu = NULL;
 
 	m_dockArea = NULL;
+	m_scrollArea = NULL;
 
 	m_editAction = EditNone;
 	m_editMenu = NULL;
@@ -1280,7 +1283,20 @@ void VirtualConsole::initContents()
 		s_properties.resetContents();
 
 	/* Add the contents area into the master horizontal layout */
-	layout()->addWidget(contents());
+	if (m_scrollArea == NULL)
+	{
+		m_scrollArea = new QScrollArea(this);
+		layout()->addWidget(m_scrollArea);
+		m_scrollArea->setAlignment(Qt::AlignCenter);
+		m_scrollArea->setWidgetResizable(false);
+	}
+
+	/* Make the bottom frame as big as the screen */
+	QDesktopWidget dw;
+	contents()->setGeometry(dw.availableGeometry(this));
+	contents()->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
+					      QSizePolicy::Fixed));
+	m_scrollArea->setWidget(contents());
 
 	/* Disconnect old key handlers to prevent duplicates */
 	disconnect(this, SIGNAL(keyPressed(const QKeySequence&)),

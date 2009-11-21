@@ -60,6 +60,8 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 	/* Set the class name "VCWidget" as the object name as well */
 	setObjectName(VCWidget::staticMetaObject.className());
 
+	setMinimumSize(QSize(20, 20));
+	
 	m_backgroundImage = QString::null;
 	m_hasCustomBackgroundColor = false;
 	m_hasCustomForegroundColor = false;
@@ -71,8 +73,6 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 	setBackgroundRole(QPalette::Window);
 	setAutoFillBackground(true);
 	setEnabled(true);
-
-	setMinimumSize(20, 20);
 
 	m_inputUniverse = KInputUniverseInvalid;
 	m_inputChannel = KInputChannelInvalid;
@@ -593,62 +593,52 @@ QMenu* VCWidget::customMenu(QMenu* parentMenu)
 /*****************************************************************************
  * Widget move & resize
  *****************************************************************************/
-
-void VCWidget::resize(QPoint p)
+void VCWidget::resize(const QSize& size)
 {
-	// Grid settings
+	QSize sz(size);
+
+	// Force grid settings, if applicable
 	if (VirtualConsole::properties().isGridEnabled() == true)
 	{
-		p.setX(p.x() - (p.x() % VirtualConsole::properties().gridX()));
-		p.setY(p.y() - (p.y() % VirtualConsole::properties().gridY()));
+		sz.setWidth(size.width() -
+			(size.width() % VirtualConsole::properties().gridX()));
+		sz.setHeight(size.height() -
+			(size.height() % VirtualConsole::properties().gridY()));
 	}
 
-	// Map to parent coordinates so that they can be compared
-	p = mapToParent(p);
-
-	// Don't move beyond left or right
-	if (p.x() < 0)
-		p.setX(0);
-	else if (p.x() > parentWidget()->width())
-		p.setX(parentWidget()->width());
-
-	// Don't move beyond top or bottom
-	if (p.y() < 0)
-		p.setY(0);
-	else if (p.y() > parentWidget()->height())
-		p.setY(parentWidget()->height());
-
-	// Map back so that this can be resized
-	p = mapFromParent(p);
-
-	// Do the resize
-	QWidget::resize(p.x(), p.y());
+	// Resize
+	QWidget::resize(sz);
 }
 
-void VCWidget::move(QPoint p)
+void VCWidget::move(const QPoint& point)
 {
-	// Grid settings
+	QPoint pt(point);
+
+	// Force grid settings, if applicable
 	if (VirtualConsole::properties().isGridEnabled() == true)
 	{
-		p.setX(p.x() - (p.x() % VirtualConsole::properties().gridX()));
-		p.setY(p.y() - (p.y() % VirtualConsole::properties().gridY()));
+		pt.setX(point.x() - 
+			(point.x() % VirtualConsole::properties().gridX()));
+		pt.setY(point.y() - 
+			(point.y() % VirtualConsole::properties().gridY()));
 	}
 
 	// Don't move beyond left or right
-	if (p.x() < 0)
-		p.setX(0);
-	else if (p.x() + rect().width() > parentWidget()->width())
-		p.setX(parentWidget()->width() - rect().width());
+	if (pt.x() < 0)
+		pt.setX(0);
+	else if (pt.x() + rect().width() > parentWidget()->width())
+		pt.setX(parentWidget()->width() - rect().width());
 
 	// Don't move beyond top or bottom
-	if (p.y() < 0)
-		p.setY(0);
-	else if (p.y() + rect().height() > parentWidget()->height())
-		p.setY(parentWidget()->height() - rect().height());
+	if (pt.y() < 0)
+		pt.setY(0);
+	else if (pt.y() + rect().height() > parentWidget()->height())
+		pt.setY(parentWidget()->height() - rect().height());
 
-	// Do the move
-	QWidget::move(p);
+	// Move
+	QWidget::move(pt);
 }
+
 
 /*****************************************************************************
  * Event handlers
@@ -811,8 +801,8 @@ void VCWidget::mouseMoveEvent(QMouseEvent* e)
 	{
 		if (m_resizeMode == true)
 		{
-			QPoint p(QCursor::pos());
-			resize(mapFromGlobal(p));
+			QPoint p(mapFromGlobal(QCursor::pos()));
+			resize(QSize(p.x(), p.y()));
 			_app->doc()->setModified();
 		}
 		else if (e->buttons() & Qt::LeftButton ||

@@ -52,9 +52,6 @@ VCFrame::VCFrame(QWidget* parent) : VCWidget(parent)
 	setObjectName(VCFrame::staticMetaObject.className());
 
 	m_frameStyle = KVCFrameStyleSunken;
-
-	setMinimumSize(20, 20);
-	QWidget::resize(QSize(120, 120));
 }
 
 VCFrame::~VCFrame()

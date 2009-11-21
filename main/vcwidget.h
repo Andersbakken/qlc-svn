@@ -284,11 +284,11 @@ public:
 	 * Widget move & resize
 	 *********************************************************************/
 public:
-	/** Resize this widget to given size. TODO: Change to QSize. */
-	virtual void resize(QPoint p);
+	/** Resize this widget to the given size. */
+	virtual void resize(const QSize& size);
 
 	/** Move this widget to the given point */
-	virtual void move(QPoint p);
+	virtual void move(const QPoint& point);
 
 	/** Get the point where the mouse was clicked last in this widget */
 	QPoint lastClickPoint() const { return m_mousePressPoint; }
