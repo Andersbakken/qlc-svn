@@ -2,11 +2,11 @@
 <FixtureDefinition>
  <Creator>
   <Name>Q Light Controller</Name>
-  <Version>2.6.1</Version>
-  <Author>hjunnila</Author>
+  <Version>3.0.4</Version>
+  <Author></Author>
  </Creator>
  <Manufacturer>JB-Lighting</Manufacturer>
- <Model>Varyscan2</Model>
+ <Model>Varyscan 2</Model>
  <Type>Scanner</Type>
  <Channel Name="Pan" >
   <Group Byte="0" >Pan</Group>
@@ -30,10 +30,10 @@
  </Channel>
  <Mode Name="Mode 1" >
   <Physical>
-   <Bulb ColourTemperature="0" Lumens="0" Type="" />
+   <Bulb Lumens="0" Type="" ColourTemperature="0" />
    <Dimensions Width="0" Height="0" Weight="0" Depth="0" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
-   <Focus TiltMax="0" PanMax="0" Type="Fixed" />
+   <Focus PanMax="0" Type="Fixed" TiltMax="0" />
   </Physical>
   <Channel Number="0" >Pan</Channel>
   <Channel Number="1" >Tilt</Channel>
