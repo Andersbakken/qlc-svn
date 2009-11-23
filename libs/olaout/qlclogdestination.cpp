@@ -33,7 +33,7 @@ void QLCLogDestination::Write(log_level level, const string &log_line) {
 
   string output = PREFIX;
   output.append(log_line);
-  ola::StringTrim(output);
+  ola::StringTrim(&output);
 
   switch (level)
   {
