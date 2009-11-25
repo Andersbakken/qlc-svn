@@ -26,7 +26,7 @@
 #include <QString>
 #include <QMap>
 
-#include <common/qlctypes.h>
+#include "qlctypes.h"
 
 class QLCFixtureDef;
 

@@ -23,7 +23,7 @@
 #define QLCWIDGETPROPERTIES_H
 
 #include <QtXml>
-#include <common/qlctypes.h>
+#include "qlctypes.h"
 
 class QWidget;
 

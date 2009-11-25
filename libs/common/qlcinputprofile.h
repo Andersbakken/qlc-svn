@@ -27,7 +27,7 @@
 #include <QHash>
 #include <QMap>
 
-#include <common/qlctypes.h>
+#include "qlctypes.h"
 
 class QLCInputChannel;
 class QLCInputProfile;

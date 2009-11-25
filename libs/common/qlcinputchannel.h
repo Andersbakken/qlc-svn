@@ -22,7 +22,7 @@
 #ifndef QLCINPUTCHANNEL_H
 #define QLCINPUTCHANNEL_H
 
-#include <common/qlctypes.h>
+#include "qlctypes.h"
 
 class QLCInputProfile;
 class QDomDocument;

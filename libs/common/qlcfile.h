@@ -23,7 +23,7 @@
 #define QLCFILE_H
 
 #include <QFile>
-#include <common/qlctypes.h>
+#include "qlctypes.h"
 
 class QDomDocument;
 class QDomElement;
