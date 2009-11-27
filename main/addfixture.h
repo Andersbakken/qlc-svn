@@ -45,7 +45,7 @@ public:
 	 * Create a new dialog for fixture definition selection.
 	 * If selectManufacturer and selectModel parameters are omitted, the
 	 * dialog selects "Generic Dimmer".
-	 * 
+	 *
 	 * @param parent The parent object that owns the dialog
 	 * @param fixtureDefCache A cache that holds available fixture defs
 	 * @param doc QLC Doc used to resolve a free address automatically
@@ -56,6 +56,7 @@ public:
 	 * @param selectName Pre-selected name
 	 * @param selectUniverse Pre-selected universe
 	 * @param selectAddress Pre-selected address
+	 * @param selectChannels Pre-selected channel amount
 	 */
 	AddFixture(QWidget* parent,
 		   const QLCFixtureDefCache& fixtureDefCache,
@@ -66,7 +67,8 @@ public:
 		   const QString& selectMode = QString(),
 		   const QString& selectName = QString(),
 		   int selectUniverse = -1,
-		   int selectAddress = -1);
+		   int selectAddress = -1,
+		   int selectChannels = 1);
 
 	/** Destructor */
 	~AddFixture();

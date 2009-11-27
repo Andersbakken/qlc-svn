@@ -50,7 +50,8 @@ AddFixture::AddFixture(QWidget* parent,
 		       const QString& selectMode,
 		       const QString& selectName,
 		       int selectUniverse,
-		       int selectAddress)
+		       int selectAddress,
+		       int selectChannels)
 	: QDialog(parent),
 	m_fixtureDefCache(fixtureDefCache),
 	m_doc(doc),
@@ -130,6 +131,10 @@ AddFixture::AddFixture(QWidget* parent,
 			m_modeCombo->setCurrentIndex(index);
 			slotModeActivated(m_modeCombo->itemText(index));
 		}
+	}
+	else
+	{
+		m_channelsSpin->setValue(selectChannels);
 	}
 }
 

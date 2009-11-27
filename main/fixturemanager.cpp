@@ -622,7 +622,8 @@ void FixtureManager::slotProperties()
 
 	AddFixture af(this, _app->fixtureDefCache(), *(_app->doc()),
 			*(_app->outputMap()), manuf, model, mode,
-			fxi->name(), fxi->universe(), fxi->address());
+			fxi->name(), fxi->universe(), fxi->address(),
+			fxi->channels());
 	af.setWindowTitle(tr("Change fixture properties"));
 	if (af.exec() == QDialog::Accepted)
 	{
