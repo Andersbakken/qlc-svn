@@ -1,10 +1,11 @@
 TEMPLATE = app
 LANGUAGE = C++
+TARGET   = test
+
 CONFIG	+= warn_on
+CONFIG	-= app_bundle
 QT 	+= testlib xml
 DEFINES += QLC_UNIT_TEST
-
-TARGET 	= test
 
 INCLUDEPATH += ../ ../../
 
