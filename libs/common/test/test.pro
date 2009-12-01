@@ -30,7 +30,9 @@ HEADERS += qlcphysical_test.h \
 	   qlcwidgetproperties_test.h \
 	   ../qlcwidgetproperties.h \
 	   \
-	   ../qlcfile.h
+	   ../qlcfile.h \
+	   \
+	   qlcmacros_test.h
 
 SOURCES += qlcphysical_test.cpp \
 	   ../qlcphysical.cpp \
@@ -53,6 +55,8 @@ SOURCES += qlcphysical_test.cpp \
 	   qlcwidgetproperties_test.cpp \
 	   ../qlcwidgetproperties.cpp \
 	   \
-	   ../qlcfile.cpp
+	   ../qlcfile.cpp \
+	   \
+	   qlcmacros_test.cpp
 
 SOURCES += main.cpp

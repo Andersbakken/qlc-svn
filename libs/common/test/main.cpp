@@ -10,11 +10,17 @@
 #include "qlccapability_test.h"
 #include "qlcphysical_test.h"
 #include "qlcchannel_test.h"
+#include "qlcmacros_test.h"
 
 int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 	int r;
+
+	QLCMacros_Test macros;
+	r = QTest::qExec(&macros, argc, argv);
+	if (r != 0)
+		return r;
 
 	QLCPhysical_Test physical;
 	r = QTest::qExec(&physical, argc, argv);
