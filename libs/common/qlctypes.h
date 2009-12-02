@@ -79,7 +79,7 @@
  * @param y The second value to compare
  * @return The bigger one of the given values
  */
-#define MAX(x, y) (x < y) ? y : x
+#define MAX(x, y) ((x < y) ? y : x)
 
 #ifdef MIN
 #undef MIN
@@ -91,7 +91,7 @@
  * @param y The second value to compare
  * @return The smaller one of the given values
  */
-#define MIN(x, y) (x < y) ? x : y
+#define MIN(x, y) ((x < y) ? x : y)
 
 #ifdef SCALE
 #undef SCALE
@@ -102,7 +102,7 @@
  * of 0 - 20.
  */
 #define SCALE(x, src_min, src_max, dest_min, dest_max) \
-	(x - src_min) * (dest_max / (src_max - src_min))
+	((x - src_min) * (dest_max / (src_max - src_min)))
 
 /*****************************************************************************
  * Fixtures
