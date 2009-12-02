@@ -1,0 +1,13 @@
+To create an apple .dmg package, you need to:
+
+1. Compile QLC
+   * cd ..
+   * qmake -spec macx-g++ -recursive
+   * make
+
+2. Install QLC to the default installation path (~/QLC.app/)
+   * make install
+
+3. Run the .dmg creation script in this directory
+   * cd create-dmg
+   * ./create-qlc-dmg
