@@ -20,14 +20,13 @@
 */
 
 #include <QApplication>
+#include <QMessageBox>
 #include <QString>
 #include <QDebug>
 #include <QMutex>
 #include <QFile>
 
-#include "common/qlcfile.h"
-
-#include "configuredmx4linuxout.h"
+#include "qlcfile.h"
 #include "dmx4linuxout.h"
 
 /*****************************************************************************
@@ -37,9 +36,6 @@
 void DMX4LinuxOut::init()
 {
 	m_file.setFileName("/dev/dmx");
-
-	for (t_channel i = 0; i < 512; i++)
-		m_values[i] = 0;
 }
 
 /*****************************************************************************
@@ -91,8 +87,11 @@ QString DMX4LinuxOut::name()
 
 void DMX4LinuxOut::configure()
 {
-	ConfigureDMX4LinuxOut conf(NULL, this);
-	conf.exec();
+	int r = QMessageBox::question(NULL, name(),
+				tr("Do you wish to re-scan your hardware?"),
+				QMessageBox::Yes, QMessageBox::No);
+	if (r == QMessageBox::Yes)
+		init();
 }
 
 /*****************************************************************************
@@ -134,44 +133,17 @@ QString DMX4LinuxOut::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-void DMX4LinuxOut::writeChannel(t_output output, t_channel channel,
-			        t_value value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void DMX4LinuxOut::writeRange(t_output output, t_channel address,
-			      t_value* values, t_channel num)
+void DMX4LinuxOut::outputDMX(t_output output, const QByteArray& universe)
 {
 	if (output != 0 || m_file.isOpen() == false)
 		return;
 
-	m_mutex.lock();
-	memcpy(m_values + address, values, num);
-	m_file.seek(address);
-	if (m_file.write((const char*) values, num) == -1)
+	m_file.seek(0);
+	if (m_file.write(universe) == -1)
+	{
 		qWarning() << "DMX4Linux: Unable to write:"
 			   << m_file.errorString();
-	m_mutex.unlock();
-}
-
-void DMX4LinuxOut::readChannel(t_output output, t_channel channel,
-			       t_value* value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void DMX4LinuxOut::readRange(t_output output, t_channel address,
-			     t_value* values, t_channel num)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
+	}
 }
 
 /*****************************************************************************

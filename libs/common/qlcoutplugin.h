@@ -147,43 +147,12 @@ public:
 	virtual QStringList outputs() = 0;
 
 	/**
-	 * @DEPRECATED
-	 */
-	virtual void writeChannel(t_output output, t_channel channel,
-				  t_value value) = 0;
-
-	/**
-	 * @DEPRECATED SOON
+	 * Write a complete 512-channel DMX universe to the plugin.
 	 *
-	 * @note A new method will be coming in the near future to
-	 * replace this one. The new method will most likely take
-	 * a complete 512-channel QByteArray at a time.
-	 *
-	 * Write the values of a number of channels
-	 *
-	 * This is a pure virtual function that must be implemented
-	 * in all output plugins.
-	 *
-	 * @param output The output (universe) to write to
-	 * @param address The starting address in that universe
-	 * @param values An array of values that are written to all
-	 *               consequent channels starting from address
-	 * @param num The size of values array
+	 * @param output The output universe to write to
+	 * @param universe The universe data to write
 	 */
-	virtual void writeRange(t_output output, t_channel address,
-				t_value* values, t_channel num) = 0;
-
-	/**
-	 * @DEPRECATED
-	 */
-	virtual void readChannel(t_output output, t_channel channel,
-				 t_value* value) = 0;
-
-	/**
-	 * @DEPRECATED
-	 */
-	virtual void readRange(t_output output, t_channel address,
-			       t_value* values, t_channel num) = 0;
+	virtual void outputDMX(t_output output, const QByteArray& universe) = 0;
 };
 
 Q_DECLARE_INTERFACE(QLCOutPlugin, "QLCOutPlugin")

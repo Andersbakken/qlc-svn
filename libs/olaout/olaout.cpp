@@ -215,54 +215,13 @@ QString OLAOut::infoText(t_output output)
 }
 
 
-/*
- * Write a single channel. Heikki says this will be deprecated soon.
- */
-void OLAOut::writeChannel(t_output output, t_channel channel, t_value value)
+void OLAOut::outputDMX(t_output output, const QByteArray& universe)
 {
-  Q_UNUSED(output);
-  Q_UNUSED(channel);
-  Q_UNUSED(value);
-}
-
-
-/*
- * Write a range of channels. We can assume here that address is always 0 and
- * num is always 512.
- */
-void OLAOut::writeRange(t_output output, t_channel address, t_value* values,
-                        t_channel num)
-{
-  if (output > K_UNIVERSE_COUNT || !m_thread || address != 0 ||
-      num != K_UNIVERSE_SIZE)
+  if (output > K_UNIVERSE_COUNT || !m_thread)
     return;
-  m_thread->write_dmx(m_output_list[output], values, num);
+
+  m_thread->write_dmx(m_output_list[output], universe);
 }
-
-
-/*
- * Read a single channel. Heikki says this will be deprecated soon.
- */
-void OLAOut::readChannel(t_output output, t_channel channel, t_value* value)
-{
-  Q_UNUSED(output);
-  Q_UNUSED(channel);
-  Q_UNUSED(value);
-}
-
-
-/*
- * Read a change of channels. Heikki says this will be deprecated soon.
- */
-void OLAOut::readRange(t_output output, t_channel address, t_value* values,
-                       t_channel num)
-{
-  Q_UNUSED(output);
-  Q_UNUSED(address);
-  Q_UNUSED(values);
-  Q_UNUSED(num);
-}
-
 
 /*
  * Return the output: universe mapping

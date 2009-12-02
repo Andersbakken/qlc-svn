@@ -94,13 +94,8 @@ public:
 	 * Value read/write methods
 	 *********************************************************************/
 public:
-	void writeChannel(t_output output, t_channel channel, t_value value);
-	void writeRange(t_output output, t_channel address, t_value* values,
-			t_channel num);
-
-	void readChannel(t_output output, t_channel channel, t_value* value);
-	void readRange(t_output output, t_channel address, t_value* values,
-		       t_channel num);
+	/** \reimp */
+	void outputDMX(t_output output, const QByteArray& universe);
 };
 
 #endif

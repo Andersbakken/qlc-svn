@@ -27,6 +27,7 @@
 
 #include <alsa/asoundlib.h>
 
+#include "midiprotocol.h"
 #include "mididevice.h"
 #include "midiout.h"
 
@@ -201,10 +202,8 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
  * Write
  ****************************************************************************/
 
-void MIDIDevice::writeRange(t_value* values, t_channel num)
+void MIDIDevice::outputDMX(const QByteArray& universe)
 {
-	Q_UNUSED(num);
-
 	MIDIOut* plugin = static_cast<MIDIOut*> (parent());
 	Q_ASSERT(plugin != NULL);
 	Q_ASSERT(plugin->alsa() != NULL);
@@ -224,11 +223,7 @@ void MIDIDevice::writeRange(t_value* values, t_channel num)
 	     channel++)
 	{
 		/* Scale 0-255 to 0-127 */
-		char scaled = static_cast <char> (SCALE(double(values[channel]),
-							double(0),
-							double(KInputValueMax),
-							double(0),
-							double(127)));
+		char scaled = DMX2MIDI(universe[channel]);
 
 		/* Since MIDI is so slow, we only send values that are
            	   actually changed. */

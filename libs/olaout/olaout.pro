@@ -10,19 +10,19 @@ TARGET = olaout
 #
 # OLA Directories
 unix:OLA_GIT		= /usr/src/ola
+
 # Should contain google/protobuf/common.h which can be got through
 # Macports on Mac
 unix:PROTOBUF		= /opt/local/include/
 
 INCLUDEPATH  += . ../../libs $$OLA_GIT $$PROTOBUF
-CONFIG  += plugin # link_pkgconfig
+CONFIG += plugin # link_pkgconfig
+CONFIG -= ppc # LibOLA is not a universal binary 
 #PKGCONFIG += libola
 
 target.path = $$OUTPUTPLUGINDIR
-!macx:INSTALLS += target
+INSTALLS += target
 unix:LIBS += -lola -lolaserver -lolacommon
-
-macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 
 # Forms
 FORMS += configureolaout.ui

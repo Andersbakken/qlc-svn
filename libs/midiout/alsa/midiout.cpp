@@ -341,40 +341,14 @@ QString MIDIOut::infoText(t_output output)
 }
 
 /*****************************************************************************
- * Value read/write methods
+ * Write
  *****************************************************************************/
 
-void MIDIOut::writeChannel(t_output output, t_channel channel, t_value value)
+void MIDIOut::outputDMX(t_output output, const QByteArray& universe)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void MIDIOut::writeRange(t_output output, t_channel address, t_value* values,
-		t_channel num)
-{
-	Q_UNUSED(address);
-
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
-		dev->writeRange(values, num);
-}
-
-void MIDIOut::readChannel(t_output output, t_channel channel, t_value* value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void MIDIOut::readRange(t_output output, t_channel address, t_value* values,
-	       t_channel num)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
+		dev->outputDMX(universe);
 }
 
 /*****************************************************************************

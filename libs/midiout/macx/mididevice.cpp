@@ -273,11 +273,8 @@ void MIDIDevice::close()
  * Write
  ****************************************************************************/
 
-void MIDIDevice::writeRange(t_value* values, t_channel num)
+void MIDIDevice::outputDMX(const QByteArray& universe)
 {
-	Q_ASSERT(num == 512);
-	Q_UNUSED(num);
-
         /* If there's no output port or a destination, the endpoint probably
            doesn't have a MIDI OUT port. */
         if (m_outPort == NULL || m_destination == NULL)
@@ -294,11 +291,8 @@ void MIDIDevice::writeRange(t_value* values, t_channel num)
 		Byte cmd[3];
 
 		cmd[1] = channel;
-		cmd[2] = static_cast <Byte> (SCALE(double(values[channel]),
-						   double(0),
-						   double(255),
-						   double(0),
-						   double(127)));
+		cmd[2] = DMX2MIDI(universe[channel]);
+
 		/* Since MIDI is so slow, we only send values that are
 		   actually changed. */
 		if (m_values[channel] == cmd[2])

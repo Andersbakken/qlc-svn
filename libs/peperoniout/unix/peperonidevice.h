@@ -76,7 +76,7 @@ protected:
 	 * Write
 	 ********************************************************************/
 public:
-	void writeRange(char* values, int num);
+	void outputDMX(const QByteArray& universe);
 };
 
 #endif

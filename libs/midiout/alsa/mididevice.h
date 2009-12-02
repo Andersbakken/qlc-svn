@@ -132,7 +132,8 @@ protected:
 	 * Write
 	 ********************************************************************/
 public:
-	void writeRange(t_value* values, t_channel num);
+	/** Write the given values to MIDI output */
+	void outputDMX(const QByteArray& universe);
 
 protected:
 	/**

@@ -74,7 +74,7 @@ public:
   void run();
   bool start(Priority priority=InheritPriority);
   void stop();
-  int write_dmx(unsigned int universe, t_value *data, unsigned int channels);
+  int write_dmx(unsigned int universe, const QByteArray& data);
   int new_pipe_data();
   int pipe_closed();
 

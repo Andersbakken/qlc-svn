@@ -56,13 +56,7 @@ public:
   void configure();
   QString infoText(t_output output = KOutputInvalid);
 
-  void writeChannel(t_output output, t_channel channel, t_value value);
-  void writeRange(t_output output, t_channel address, t_value* values,
-                  t_channel num);
-
-  void readChannel(t_output output, t_channel channel, t_value* value);
-  void readRange(t_output output, t_channel address, t_value* values,
-                 t_channel num);
+  void outputDMX(t_output output, const QByteArray& universe);
 
   const OutputList outputMapping() const;
   void setOutputUniverse(t_output output, unsigned int universe);

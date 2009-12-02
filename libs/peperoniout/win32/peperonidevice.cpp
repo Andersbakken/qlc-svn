@@ -176,13 +176,11 @@ void PeperoniDevice::rehash()
 }
 
 /****************************************************************************
- * Read & write
+ * Write
  ****************************************************************************/
 
-void PeperoniDevice::writeRange(t_value* values, t_channel num)
+void PeperoniDevice::outputDMX(const QByteArray& universe)
 {
-	Q_UNUSED(num);
-
 	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, values, 512);
+		m_usbdmx->tx_set(m_handle, universe.data(), universe.size());
 }

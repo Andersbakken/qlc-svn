@@ -198,39 +198,13 @@ QString UDMXOut::infoText(t_output output)
 }
 
 /*****************************************************************************
- * Value Read/Write
+ * Write
  *****************************************************************************/
 
-void UDMXOut::writeChannel(t_output output, t_channel channel, t_value value)
+void UDMXOut::outputDMX(t_output output, const QByteArray& universe)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void UDMXOut::writeRange(t_output output, t_channel address, t_value* values,
-			   t_channel num)
-{
-	Q_UNUSED(address);
-
-	if (output < m_devices.count())
-		m_devices.at(output)->writeRange(values, num);
-}
-
-void UDMXOut::readChannel(t_output output, t_channel channel, t_value* value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void UDMXOut::readRange(t_output output, t_channel address, t_value* values,
-			  t_channel num)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
+	if (output < m_devices.size())
+		m_devices.at(output)->outputDMX(universe);
 }
 
 /*****************************************************************************

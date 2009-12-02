@@ -234,43 +234,11 @@ QString EnttecDMXUSBOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void EnttecDMXUSBOut::writeChannel(t_output output, t_channel channel,
-				   t_value value)
+void EnttecDMXUSBOut::outputDMX(t_output output, const QByteArray& universe)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void EnttecDMXUSBOut::writeRange(t_output output, t_channel address,
-				 t_value* values, t_channel num)
-{
-	Q_UNUSED(address);
-
 	if (output < m_widgets.size())
-	{
-		QByteArray ba((const char*)values, num);
-		m_widgets.at(output)->sendDMX(ba);
-	}
+		m_widgets.at(output)->sendDMX(universe);
 }
-
-void EnttecDMXUSBOut::readChannel(t_output output, t_channel channel,
-				  t_value* value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void EnttecDMXUSBOut::readRange(t_output output, t_channel address,
-				t_value* values, t_channel num)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
-}
-
 
 /****************************************************************************
  * Plugin export

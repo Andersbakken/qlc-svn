@@ -76,7 +76,7 @@ protected:
 public:
 	/** Get the ALSA sequencer handle */
 	snd_seq_t* alsa() { return m_alsa; }
-	
+
 	/** Get the plugin's own ALSA port that collates all events */
 	const snd_seq_addr_t* address() { return m_address; }
 
@@ -97,7 +97,7 @@ public:
 protected:
 	/** Get a MIDIDevice by its ALSA address */
 	MIDIDevice* device(const snd_seq_addr_t* address);
-	
+
 	/** Get a MIDIDevice by its index in the QList */
 	MIDIDevice* device(unsigned int index);
 
@@ -147,16 +147,11 @@ public:
 	QString infoText(t_output output = KOutputInvalid);
 
 	/*********************************************************************
-	 * Value read/write methods
+	 * Write
 	 *********************************************************************/
 public:
-	void writeChannel(t_output output, t_channel channel, t_value value);
-	void writeRange(t_output output, t_channel address, t_value* values,
-			t_channel num);
-
-	void readChannel(t_output output, t_channel channel, t_value* value);
-	void readRange(t_output output, t_channel address, t_value* values,
-		       t_channel num);
+	/** \reimp */
+	void outputDMX(t_output output, const QByteArray& universe);
 };
 
 #endif

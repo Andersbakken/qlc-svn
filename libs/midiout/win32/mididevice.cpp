@@ -39,7 +39,7 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 
 	/* Start with all values zeroed */
 	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
-	
+
 	/* Get a name for this device */
 	extractName();
 
@@ -265,16 +265,12 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
  * Write
  ****************************************************************************/
 
-void MIDIDevice::writeRange(t_value* values, t_channel num)
+void MIDIDevice::outputDMX(const QByteArray& universe)
 {
 	for (BYTE channel = 0; channel < MAX_MIDI_DMX_CHANNELS; channel++)
 	{
 		/* Scale 0-255 to 0-127 */
-		BYTE scaled = static_cast<BYTE> (SCALE(double(values[channel]),
-							double(0),
-							double(KInputValueMax),
-							double(0),
-							double(127)));
+		BYTE scaled = DMX2MIDI(universe[channel]);
 
 		/* Since MIDI is so slow, we only send values that are
 		   actually changed. */

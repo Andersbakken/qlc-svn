@@ -210,7 +210,7 @@ const usb_dev_handle* PeperoniDevice::handle() const
  * Write
  ****************************************************************************/
 
-void PeperoniDevice::writeRange(char* values, int num)
+void PeperoniDevice::outputDMX(const QByteArray& universe)
 {
 	if (m_handle == NULL)
 		return;
@@ -221,8 +221,8 @@ void PeperoniDevice::writeRange(char* values, int num)
 		PEPERONI_TX_MEM_REQUEST, // We are writing DMX data
 		PEPERONI_TX_MEM_NONBLOCK,// Don't block during frame send
 		0,                       // Start at DMX address 0
-		values,                  // Our DMX universe
-		num,                     // Our DMX universe size
+		(char*) universe.data(),         // Our DMX universe
+		universe.size(),         // Our DMX universe size
 		500);                    // Timeout
 	if (r < 0)
 	{

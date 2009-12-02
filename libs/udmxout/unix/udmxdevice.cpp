@@ -164,27 +164,23 @@ const usb_dev_handle* UDMXDevice::handle() const
  * Write
  ****************************************************************************/
 
-void UDMXDevice::writeRange(t_value* values, t_channel num)
+void UDMXDevice::outputDMX(const QByteArray& universe)
 {
-	int r;
-
-	Q_UNUSED(num);
-
 	if (m_handle == NULL)
 		return;
 
 	/* Write all 512 channels */
-	r = usb_control_msg(m_handle,
+	int r = usb_control_msg(m_handle,
 			USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
 			UDMX_SET_CHANNEL_RANGE, /* Command */
 			512,			/* Number of channels to set */
 			0,                      /* Starting index */
-			(char*) values,         /* Values to set */
-			512,                    /* Size of values */
-			5000);                  /* Timeout */
+			(char*) universe.data(),        /* Values to set */
+			universe.size(),        /* Size of values */
+			500);                   /* Timeout */
 	if (r < 0)
 	{
-		qWarning() << "UDMX: unable to write universe:"
+		qWarning() << "uDMX: unable to write universe:"
 			   << usb_strerror();
 	}
 }

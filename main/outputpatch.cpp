@@ -83,9 +83,9 @@ QString OutputPatch::outputName() const
  * Value dump
  *****************************************************************************/
 
-void OutputPatch::dump(const char* universe)
+void OutputPatch::dump(const QByteArray& universe)
 {
 	/* Don't do anything if there is no plugin and/or output line. */
 	if (m_plugin != NULL && m_output != KOutputInvalid)
-		m_plugin->writeRange(m_output, 0, (t_value*) universe, 512);
+		m_plugin->outputDMX(m_output, universe);
 }

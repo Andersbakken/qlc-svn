@@ -60,7 +60,7 @@ OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
 	m_blackout = false;
 	m_universeChanged = false;
 
-	m_universeArray = new QByteArray(universes * 512, 0);
+	m_universeArray = new QByteArray(512 * universes, 0);
 
 	initPatch();
 }
@@ -163,13 +163,9 @@ void OutputMap::setBlackout(bool blackout)
 
 	if (blackout == true)
 	{
+		QByteArray zeros(512, 0);
 		for (int i = 0; i < m_universes; i++)
-		{
-			char zeros[512];
-			std::fill(zeros, zeros + 512, 0);
-
 			m_patch[i]->dump(zeros);
-		}
 	}
 	else
 	{
@@ -227,10 +223,7 @@ void OutputMap::dumpUniverses()
 	if (m_universeChanged == true && m_blackout == false)
 	{
 		for (int i = 0; i < m_universes; i++)
-		{
-			m_patch[i]->dump(m_universeArray->constData()
-					 + (512 * i));
-		}
+			m_patch[i]->dump(m_universeArray->mid(i * 512, 512));
 
 		m_universeChanged = false;
 	}

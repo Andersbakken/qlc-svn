@@ -65,10 +65,10 @@ protected:
 public:
 	/** Open this device for DMX output */
 	void open();
-	
+
 	/** Close this device */
 	void close();
-	
+
 	/** Re-extract the device's name and reopen it if necessary */
 	void rehash();
 
@@ -78,10 +78,10 @@ protected:
 	HANDLE m_handle;
 
 	/********************************************************************
-	 * Read & write
+	 * Write
 	 ********************************************************************/
 public:
-	void writeRange(t_value* values, t_channel num);
+	void outputDMX(const QByteArray& universe);
 };
 
 #endif

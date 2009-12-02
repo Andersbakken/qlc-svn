@@ -26,4 +26,7 @@
 #define MIDI_NOTE_OFF       0x80
 #define MIDI_CONTROL_CHANGE 0xB0
 
+#define DMX2MIDI(x) static_cast <char> (SCALE(qreal(static_cast <uchar> (x)), \
+			qreal(0), qreal(255), qreal(0), qreal(127)))
+
 #endif

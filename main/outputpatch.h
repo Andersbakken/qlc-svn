@@ -71,7 +71,7 @@ protected:
 public:
 	/** Write the contents of a 512 channel value buffer to the plugin.
 	  * Called periodically by OutputMap. No need to call manually. */
-	void dump(const char* universe);
+	void dump(const QByteArray& universe);
 };
 
 #endif

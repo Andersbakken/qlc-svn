@@ -140,10 +140,16 @@ public:
 	 */
 	void setValue(t_channel channel, t_value value);
 
-	/** Take exclusive access to all universes */
+	/**
+	 * Claim access to all universes. This is declared virtual to make
+	 * unit testing a bit easier.
+	 */
 	virtual QByteArray* claimUniverses();
 
-	/** Release exclusive access to all universes */
+	/**
+	 * Release access to all universes. This is declared virtual to make
+	 * unit testing a bit easier.
+	 */
 	virtual void releaseUniverses();
 
 	/** Write all universes' data to their plugins */

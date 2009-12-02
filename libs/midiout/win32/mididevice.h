@@ -141,7 +141,7 @@ protected:
 	 * Write
 	 ********************************************************************/
 public:
-	void writeRange(t_value* values, t_channel num);
+	void outputDMX(const QByteArray& universe);
 
 protected:
 	/** Send one channel */

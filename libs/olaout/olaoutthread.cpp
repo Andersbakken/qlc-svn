@@ -97,12 +97,10 @@ void OlaOutThread::run()
  * @param data a pointer to the data
  * @param channels the number of channels
  */
-int OlaOutThread::write_dmx(unsigned int universe, t_value *data,
-                            unsigned int channels)
+int OlaOutThread::write_dmx(unsigned int universe, const QByteArray& data)
 {
-  unsigned int len = channels < K_UNIVERSE_SIZE ? channels : K_UNIVERSE_SIZE;
   m_data.universe = universe;
-  memcpy(m_data.data, data, len);
+  memcpy(m_data.data, data.data(), data.size());
   if (m_pipe)
     m_pipe->Send((uint8_t*) &m_data, sizeof(m_data));
   return 0;

@@ -192,38 +192,10 @@ QString PeperoniOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void PeperoniOut::writeChannel(t_output output, t_channel channel,
-			       t_value value)
+void PeperoniOut::outputDMX(t_output output, const QByteArray& universe)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void PeperoniOut::writeRange(t_output output, t_channel address,
-			     t_value* values, t_channel num)
-{
-	Q_UNUSED(address);
-
 	if (output < m_devices.size())
-		m_devices.at(output)->writeRange((char*) values, num);
-}
-
-void PeperoniOut::readChannel(t_output output, t_channel channel,
-			      t_value* value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void PeperoniOut::readRange(t_output output, t_channel address, t_value* values,
-			  t_channel num)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
+		m_devices.at(output)->outputDMX(universe);
 }
 
 /*****************************************************************************
