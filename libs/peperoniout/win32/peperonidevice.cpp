@@ -182,5 +182,6 @@ void PeperoniDevice::rehash()
 void PeperoniDevice::outputDMX(const QByteArray& universe)
 {
 	if (m_handle != NULL)
-		m_usbdmx->tx_set(m_handle, universe.data(), universe.size());
+		m_usbdmx->tx_set(m_handle, (unsigned char*) universe.data(),
+				 universe.size());
 }

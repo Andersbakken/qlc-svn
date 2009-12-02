@@ -121,7 +121,7 @@ public:
 	 *********************************************************************/
 public:
 	/** \reimp */
-	void outputDMX(const QByteArray& universe);
+	void outputDMX(t_output output, const QByteArray& universe);
 };
 
 #endif
