@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QDesktopWidget>
 #include <QMdiSubWindow>
 #include <QApplication>
 #include <QCloseEvent>
@@ -86,17 +87,16 @@ App::~App()
 void App::loadDefaults()
 {
 	QSettings settings;
-	QPoint pos;
 	QSize size;
 
 	/* Application geometry and window state */
-	pos = settings.value("/workspace/position", QPoint(0, 0)).toPoint();
-	size = settings.value("/workspace/size", QSize(800, 600)).toSize();
-	resize(size);
-	move(pos);
+	size = settings.value("/workspace/size").toSize();
+	if (size.isValid() == true)
+		resize(size);
 
 	QVariant var = settings.value("/workspace/state", Qt::WindowNoState);
-	setWindowState(Qt::WindowState(var.toInt()));
+	if (var.isValid() == true)
+		setWindowState(Qt::WindowState(var.toInt()));
 }
 
 void App::saveDefaults()
@@ -112,7 +112,6 @@ void App::saveDefaults()
 		   maximized size. Of course, nothing prevents the user from
 		   manually resizing the window to ridiculous proportions, but
 		   that's already out of this app's hands. */
-		settings.setValue("/workspace/position", pos());
 		settings.setValue("/workspace/size", size());
 	}
 }

@@ -21,6 +21,7 @@
 */
 
 #include <QCoreApplication>
+#include <QDesktopWidget>
 #include <QMdiSubWindow>
 #include <QStyleFactory>
 #include <QApplication>
@@ -120,7 +121,6 @@ App::~App()
 		   maximized size. Of course, nothing prevents the user from
 		   manually resizing the window to ridiculous proportions, but
 		   that's already out of this app's hands. */
-		settings.setValue("/workspace/position", pos());
 		settings.setValue("/workspace/size", size());
 	}
 #endif
@@ -162,7 +162,6 @@ App::~App()
 	_app = NULL;
 }
 
-
 /**
  * Main initialization function
  */
@@ -187,18 +186,22 @@ void App::init()
 	setBackgroundImage(settings.value("/workspace/background").toString());
 
 	/* Application geometry and window state */
-	pos = settings.value("/workspace/position", QPoint(0, 0)).toPoint();
-	size = settings.value("/workspace/size", QSize(800, 600)).toSize();
-	resize(size);
-	move(pos);
+	size = settings.value("/workspace/size").toSize();
+	if (size.isValid() == true)
+		resize(size);
 
 	QVariant var = settings.value("/workspace/state", Qt::WindowNoState);
-	setWindowState(Qt::WindowState(var.toInt()));
+	if (var.isValid() == true)
+		setWindowState(Qt::WindowState(var.toInt()));
 #else
 	/* App is just a toolbar, we only need it to be the size of the
-	   toolbar's buttons */
-	resize(600, 32);
-	move(0, 22);
+	   toolbar's buttons. Resizing is not necessary with fixed policy. */
+	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+	/* Move to the top of the available screen space (below menu bar) */
+	QDesktopWidget dw;
+	QRect available(dw.availableGeometry());
+	move(available.x(), available.y());
 #endif
 
 	/* Input & output mappers and their plugins */
