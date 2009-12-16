@@ -67,27 +67,23 @@ void OutputPatch_Test::patch()
 
 void OutputPatch_Test::dump()
 {
-	QByteArray uni(513, 0);
+	QByteArray uni(513, char(0));
 	uni[0] = 100;
 	uni[169] = 50;
 	uni[511] = 25;
-	uni[512] = 255; // 255 should not get copied
 
-	OutputPatch op(this);
-	OutputPluginStub stub;
-	op.set(&stub, 0);
-	QVERIFY(stub.m_array[0] == (char) 0);
-	QVERIFY(stub.m_array[169] == (char) 0);
-	QVERIFY(stub.m_array[511] == (char) 0);
-	QVERIFY(stub.m_array[512] == (char) 0);
+	OutputPatch* op = new OutputPatch(this);
+	OutputPluginStub* stub = new OutputPluginStub;
+	op->set(stub, 0);
+	QVERIFY(stub->m_array[0] == (char) 0);
+	QVERIFY(stub->m_array[169] == (char) 0);
+	QVERIFY(stub->m_array[511] == (char) 0);
 
-	op.dump(uni.constData());
-	QVERIFY(stub.m_array[0] == (char) 100);
-	QVERIFY(stub.m_array[169] == (char) 50);
-	QVERIFY(stub.m_array[511] == (char) 25);
-	QVERIFY(stub.m_array[512] == (char) 0); // 255 should not get copied
+	op->dump(uni);
+	QVERIFY(stub->m_array[0] == (char) 100);
+	QVERIFY(stub->m_array[169] == (char) 50);
+	QVERIFY(stub->m_array[511] == (char) 25);
 
-	/* Must reset the patch first because the stub is allocated on stack
-	   and seems to get out of scope before the patch object. */
-	op.set(NULL, -1);
+	delete op;
+	delete stub;
 }

@@ -6,6 +6,7 @@ TARGET = test_engine
 DEFINES += QLC_UNIT_TEST
 
 CONFIG += warn_on qtestlib
+CONFIG -= app_bundle
 QT += xml
 
 INCLUDEPATH += ../ ../../libs/

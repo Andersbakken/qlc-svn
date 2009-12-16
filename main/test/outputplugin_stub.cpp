@@ -28,9 +28,9 @@
  * Initialization
  *****************************************************************************/
 
-OutputPluginStub::OutputPluginStub() : QLCOutPlugin(),
-					m_array(KUniverseCount * 512, 0)
+OutputPluginStub::OutputPluginStub() : QLCOutPlugin()
 {
+	m_array = QByteArray(int(KUniverseCount * 512), char(0));
 }
 
 OutputPluginStub::~OutputPluginStub()
@@ -97,37 +97,7 @@ QString OutputPluginStub::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-void OutputPluginStub::writeChannel(t_output output, t_channel channel,
-				    t_value value)
+void OutputPluginStub::outputDMX(t_output output, const QByteArray& universe)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void OutputPluginStub::writeRange(t_output output, t_channel address,
-				  t_value* values, t_channel num)
-{
-	QVERIFY(output <= 3);
-	QVERIFY(address == 0);
-	QVERIFY(num == 512);
-
-	memcpy(m_array.data() + (output * 512), values, num);
-}
-
-void OutputPluginStub::readChannel(t_output output, t_channel channel,
-				   t_value* value)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
-}
-
-void OutputPluginStub::readRange(t_output output, t_channel address,
-				 t_value* values, t_channel num)
-{
-	Q_UNUSED(output);
-	Q_UNUSED(address);
-	Q_UNUSED(values);
-	Q_UNUSED(num);
+	m_array = m_array.replace(output * 512, universe.size(), universe);
 }

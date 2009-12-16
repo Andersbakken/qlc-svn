@@ -119,11 +119,11 @@ void InputMap_Test::pluginStatus()
 	InputMap im(this);
 
 	InputPluginStub* stub = new InputPluginStub();
-	QVERIFY(im.pluginStatus(stub->name()) == tr("No information"));
-	QVERIFY(im.pluginStatus(stub->name(), 0) == tr("No information"));
-	QVERIFY(im.pluginStatus(stub->name(), 1) == tr("No information"));
-	QVERIFY(im.pluginStatus(stub->name(), 2) == tr("No information"));
-	QVERIFY(im.pluginStatus(stub->name(), 3) == tr("No information"));
+	QVERIFY(im.pluginStatus(stub->name()).contains("No input plugin"));
+	QVERIFY(im.pluginStatus(stub->name(), 0).contains("No input plugin"));
+	QVERIFY(im.pluginStatus(stub->name(), 1).contains("No input plugin"));
+	QVERIFY(im.pluginStatus(stub->name(), 2).contains("No input plugin"));
+	QVERIFY(im.pluginStatus(stub->name(), 3).contains("No input plugin"));
 
 	im.appendPlugin(stub);
 	QVERIFY(im.pluginStatus(stub->name()) == stub->infoText(KInputInvalid));
