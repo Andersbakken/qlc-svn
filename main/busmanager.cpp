@@ -37,6 +37,8 @@
 #include "app.h"
 #include "bus.h"
 
+#define SETTINGS_GEOMETRY "busmanager/geometry"
+
 #define KColumnID   0
 #define KColumnName 1
 
@@ -79,19 +81,13 @@ BusManager::BusManager(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 
 BusManager::~BusManager()
 {
-	QSettings settings;
-	QRect rect;
-
+        QSettings settings;
 #ifdef __APPLE__
-	rect = this->rect();
+        settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
-	rect = parentWidget()->rect();
+        settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
-	settings.setValue("busmanager/width", rect.width());
-	settings.setValue("busmanager/height", rect.height());
-
-	/* Reset singleton instance */
-	s_instance = NULL;
+	BusManager::s_instance = NULL;
 }
 
 void BusManager::create(QWidget* parent)
@@ -125,12 +121,21 @@ void BusManager::create(QWidget* parent)
 		s_instance, SLOT(slotAppModeChanged(App::Mode)));
 
 	QSettings settings;
-	QVariant w = settings.value("busmanager/width");
-	QVariant h = settings.value("busmanager/height");
-	if (w.isValid() == true && h.isValid() == true)
-		window->resize(w.toInt(), h.toInt());
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+	{
+		window->restoreGeometry(var.toByteArray());
+	}
 	else
-		window->resize(300, 400);
+	{
+		/* Backwards compatibility */
+		QVariant w = settings.value("busmanager/width");
+		QVariant h = settings.value("busmanager/height");
+		if (w.isValid() == true && h.isValid() == true)
+			window->resize(w.toInt(), h.toInt());
+		else
+			window->resize(300, 400);
+	}
 }
 
 /****************************************************************************

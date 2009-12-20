@@ -50,6 +50,8 @@
 #include "doc.h"
 #include "efx.h"
 
+#define SETTINGS_GEOMETRY "functionmanager/geometry"
+
 #define KColumnName 0
 #define KColumnBus  1
 #define KColumnID   2
@@ -78,17 +80,12 @@ FunctionManager::FunctionManager(QWidget* parent, Qt::WindowFlags flags)
 
 FunctionManager::~FunctionManager()
 {
-	QSettings settings;
-	QRect rect;
-
+        QSettings settings;
 #ifdef __APPLE__
-	rect = this->rect();
+        settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
-	rect = parentWidget()->rect();
+        settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
-	settings.setValue("functionmanager/width", rect.width());
-	settings.setValue("functionmanager/height", rect.height());
-
 	FunctionManager::s_instance = NULL;
 }
 
@@ -125,12 +122,21 @@ void FunctionManager::create(QWidget* parent)
 		s_instance, SLOT(slotDocumentChanged()));
 
 	QSettings settings;
-	QVariant w = settings.value("functionmanager/width");
-	QVariant h = settings.value("functionmanager/height");
-	if (w.isValid() == true && h.isValid() == true)
-		window->resize(w.toInt(), h.toInt());
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+	{
+		window->restoreGeometry(var.toByteArray());
+	}
 	else
-		window->resize(600, 400);
+	{
+		/* Backwards compatibility */
+		QVariant w = settings.value("functionmanager/width");
+		QVariant h = settings.value("functionmanager/height");
+		if (w.isValid() == true && h.isValid() == true)
+			window->resize(w.toInt(), h.toInt());
+		else
+			window->resize(600, 400);
+	}
 }
 
 void FunctionManager::slotAppModeChanged(App::Mode mode)

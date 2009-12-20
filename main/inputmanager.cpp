@@ -42,10 +42,12 @@
 #include "inputmap.h"
 #include "app.h"
 
+#define SETTINGS_GEOMETRY "inputmanager/geometry"
+
 #define KColumnUniverse 0
 #define KColumnPlugin   1
 #define KColumnInput    2
-#define KColumnProfile   3
+#define KColumnProfile  3
 #define KColumnEditor   4
 #define KColumnInputNum 5
 
@@ -103,18 +105,12 @@ InputManager::InputManager(QWidget* parent, Qt::WindowFlags flags)
 
 InputManager::~InputManager()
 {
-	QSettings settings;
-	QRect rect;
-
+        QSettings settings;
 #ifdef __APPLE__
-	rect = this->rect();
+        settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
-	rect = parentWidget()->rect();
+        settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
-	settings.setValue("inputmanager/width", rect.width());
-	settings.setValue("inputmanager/height", rect.height());
-
-	InputManager::s_instance = NULL;
 }
 
 void InputManager::create(QWidget* parent)
@@ -150,12 +146,20 @@ void InputManager::create(QWidget* parent)
 		s_instance, SLOT(slotDocumentChanged()));
 
 	QSettings settings;
-	QVariant w = settings.value("inputmanager/width");
-	QVariant h = settings.value("inputmanager/height");
-	if (w.isValid() == true && h.isValid() == true)
-		window->resize(w.toInt(), h.toInt());
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+	{
+		window->restoreGeometry(var.toByteArray());
+	}
 	else
-		window->resize(700, 300);
+	{
+		QVariant w = settings.value("inputmanager/width");
+		QVariant h = settings.value("inputmanager/height");
+		if (w.isValid() == true && h.isValid() == true)
+			window->resize(w.toInt(), h.toInt());
+		else
+			window->resize(700, 300);
+	}
 }
 
 void InputManager::slotAppModeChanged(App::Mode mode)

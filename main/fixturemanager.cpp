@@ -53,6 +53,8 @@
 
 extern App* _app;
 
+#define SETTINGS_GEOMETRY "fixturemanager/geometry"
+
 // List view column numbers
 #define KColumnUniverse 0
 #define KColumnAddress  1
@@ -68,6 +70,7 @@ extern App* _app;
 #define KDefaultHeight 300
 
 FixtureManager* FixtureManager::s_instance = NULL;
+
 
 /*****************************************************************************
  * Initialization
@@ -100,16 +103,11 @@ FixtureManager::FixtureManager(QWidget* parent, Qt::WindowFlags flags)
 FixtureManager::~FixtureManager()
 {
 	QSettings settings;
-	QRect rect;
-
 #ifdef __APPLE__
-	rect = this->rect();
+	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
-	rect = parentWidget()->rect();
+	settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
-	settings.setValue("fixturemanager/width", rect.width());
-	settings.setValue("fixturemanager/height", rect.height());
-
 	FixtureManager::s_instance = NULL;
 }
 
@@ -141,12 +139,21 @@ void FixtureManager::create(QWidget* parent)
         window->show();
 
 	QSettings settings;
-	QVariant w = settings.value("fixturemanager/width");
-	QVariant h = settings.value("fixturemanager/height");
-	if (w.isValid() == true && h.isValid() == true)
-		window->resize(w.toInt(), h.toInt());
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+	{
+		window->restoreGeometry(var.toByteArray());
+	}
 	else
-		window->resize(600, 400);
+	{
+		/* Backwards compatibility */
+		QVariant w = settings.value("fixturemanager/width");
+		QVariant h = settings.value("fixturemanager/height");
+		if (w.isValid() == true && h.isValid() == true)
+			window->resize(w.toInt(), h.toInt());
+		else
+			window->resize(600, 400);
+	}
 }
 
 /*****************************************************************************

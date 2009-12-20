@@ -70,6 +70,8 @@
 #include "common/qlctypes.h"
 #include "common/qlcfile.h"
 
+#define SETTINGS_GEOMETRY "workspace/geometry"
+
 #define KModeTextOperate tr("Operate")
 #define KModeTextDesign tr("Design")
 
@@ -109,21 +111,8 @@ App::App() : QMainWindow()
 
 App::~App()
 {
-#ifndef __APPLE__
-	/* Save application geometry */
-	QSettings settings;
-	settings.setValue("/workspace/state", int(windowState()));
-
-	if ((windowState() & Qt::WindowMaximized) != Qt::WindowMaximized)
-	{
-		/* Save window geometry only if the window is not maximized.
-		   Otherwise the non-maximized size is no smaller than the
-		   maximized size. Of course, nothing prevents the user from
-		   manually resizing the window to ridiculous proportions, but
-		   that's already out of this app's hands. */
-		settings.setValue("/workspace/size", size());
-	}
-#endif
+        QSettings settings;
+        settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 
 	// Store outputmap defaults
 	if (m_outputMap != NULL)
@@ -168,8 +157,6 @@ App::~App()
 void App::init()
 {
 	QSettings settings;
-	QPoint pos;
-	QSize size;
 
 	setWindowIcon(QIcon(":/qlc.png"));
 
@@ -185,23 +172,42 @@ void App::init()
 	/* Workspace background */
 	setBackgroundImage(settings.value("/workspace/background").toString());
 
-	/* Application geometry and window state */
-	size = settings.value("/workspace/size").toSize();
-	if (size.isValid() == true)
-		resize(size);
-
-	QVariant var = settings.value("/workspace/state", Qt::WindowNoState);
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
 	if (var.isValid() == true)
-		setWindowState(Qt::WindowState(var.toInt()));
+	{
+		this->restoreGeometry(var.toByteArray());
+	}
+	else
+	{
+		/* Application geometry and window state */
+		QSize size = settings.value("/workspace/size").toSize();
+		if (size.isValid() == true)
+			resize(size);
+		else
+			resize(800, 600);
+
+		QVariant state = settings.value("/workspace/state",
+					Qt::WindowNoState);
+		if (state.isValid() == true)
+			setWindowState(Qt::WindowState(state.toInt()));
+	}
 #else
 	/* App is just a toolbar, we only need it to be the size of the
 	   toolbar's buttons. Resizing is not necessary with fixed policy. */
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-	/* Move to the top of the available screen space (below menu bar) */
-	QDesktopWidget dw;
-	QRect available(dw.availableGeometry());
-	move(available.x(), available.y());
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+	{
+		this->restoreGeometry(var.toByteArray());
+	}
+	else
+	{
+		/* Move to the top of the available screen space */
+		QDesktopWidget dw;
+		QRect available(dw.availableGeometry());
+		move(available.x(), available.y());
+	}
 #endif
 
 	/* Input & output mappers and their plugins */

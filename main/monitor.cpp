@@ -42,6 +42,8 @@
 #include "common/qlctypes.h"
 #include "common/qlcfile.h"
 
+#define SETTINGS_GEOMETRY "monitor/geometry"
+
 extern App* _app;
 
 MonitorProperties Monitor::s_properties = MonitorProperties();
