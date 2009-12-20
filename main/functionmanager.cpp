@@ -210,7 +210,7 @@ void FunctionManager::initMenu()
 {
 	QAction* action;
 
-	layout()->setMenuBar(new QMenuBar(this));
+	// layout()->setMenuBar(new QMenuBar(this));
 
 	/* Function menu */
 	m_addMenu = new QMenu(this);
@@ -255,8 +255,8 @@ void FunctionManager::initMenu()
 		this, SLOT(slotBusNameChanged(quint32, const QString&)));
 
 	/* Construct menu bar */
-	static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
-	static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_editMenu);
+	//static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
+	//static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_editMenu);
 	m_editMenu->addMenu(m_busMenu);
 }
 

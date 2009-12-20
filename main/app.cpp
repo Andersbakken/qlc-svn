@@ -711,6 +711,18 @@ void App::initActions()
 	connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotControlBlackout()));
 
+	/* Window actions */
+#ifdef __APPLE__
+	m_windowMinimizeAction = new QAction(tr("Minimize"), this);
+	m_windowMinimizeAction->setShortcut(QKeySequence("CTRL+M"));
+	connect(m_windowMinimizeAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotWindowMinimize()));
+
+	m_windowAllToFrontAction = new QAction(tr("Bring All to Front"), this);
+	connect(m_windowAllToFrontAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotWindowAllToFront()));
+#endif
+
 	/* Help actions */
 	m_helpIndexAction = new QAction(QIcon(":/help.png"),
 					tr("&Index"), this);
@@ -776,6 +788,15 @@ void App::initMenuBar()
 	m_controlMenu->addAction(m_controlMonitorAction);
 	m_controlMenu->addSeparator();
 	m_controlMenu->addAction(m_controlBlackoutAction);
+
+#ifdef __APPLE__
+	/* Window menu */
+	m_windowMenu = new QMenu(menuBar());
+	connect(m_windowMenu, SIGNAL(aboutToShow()),
+		this, SLOT(slotWindowMenuAboutToShow()));
+	m_windowMenu->setTitle(tr("&Window"));
+	menuBar()->addMenu(m_windowMenu);
+#endif
 
 	menuBar()->addSeparator();
 
@@ -1097,6 +1118,84 @@ void App::slotControlMonitor()
 	Monitor::create(this);
 }
 
+/*****************************************************************************
+ * Window action slots
+ *****************************************************************************/
+#ifdef __APPLE__
+void App::slotWindowMenuAboutToShow()
+{
+	m_windowMenu->clear();
+
+	m_windowMenu->addAction(m_windowMinimizeAction);
+	m_windowMenu->addSeparator();
+	m_windowMenu->addAction(m_windowAllToFrontAction);
+	m_windowMenu->addSeparator();
+
+	QListIterator <QObject*> it(_app->children());
+	while (it.hasNext() == true)
+	{
+		QWidget* w = qobject_cast<QWidget*> (it.next());
+		if (w == NULL)
+			continue;
+
+		if (w->windowTitle().simplified().isEmpty() == false)
+		{
+			QAction* a = m_windowMenu->addAction(w->windowTitle());
+			a->setIcon(w->windowIcon());
+			a->setCheckable(true);
+
+			if (w->isMinimized() == true)
+			{
+				a->setChecked(false);
+				a->setData((qulonglong) w);
+				connect(a, SIGNAL(triggered(bool)), this,
+					SLOT(slotWindowMenuItemSelected()));
+			}
+			else
+			{
+				a->setChecked(true);
+			}
+		}
+	}
+}
+
+void App::slotWindowMenuItemSelected()
+{
+	QAction* a = qobject_cast<QAction*> (QObject::sender());
+	if (a == NULL)
+		return;
+
+	QWidget* w = qobject_cast<QWidget*> (
+		reinterpret_cast<QObject*> (a->data().toULongLong()));
+	if (w == NULL)
+		return;
+
+	if (w->isMinimized() == true)
+	{
+		w->raise();
+		w->showNormal();
+	}
+}
+
+void App::slotWindowMinimize()
+{
+	QWidget* active = QApplication::activeWindow();
+	if (active != NULL)
+		active->showMinimized();
+}
+
+void App::slotWindowAllToFront()
+{
+	QListIterator <QObject*> it(children());
+	while (it.hasNext() == true)
+	{
+		QWidget* w = qobject_cast<QWidget*> (it.next());
+		if (w == NULL)
+			continue;
+		w->raise();
+	}
+}
+#endif
 /*****************************************************************************
  * Help action slots
  *****************************************************************************/

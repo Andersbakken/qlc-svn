@@ -236,6 +236,13 @@ public slots:
 	void slotControlMonitor();
 	void slotControlBlackout();
 
+#ifdef __APPLE__
+	void slotWindowMenuAboutToShow();
+	void slotWindowMenuItemSelected();
+	void slotWindowMinimize();
+	void slotWindowAllToFront();
+#endif
+
 	void slotHelpIndex();
 	void slotHelpAbout();
 	void slotHelpAboutQt();
@@ -260,6 +267,11 @@ protected:
 	QAction* m_controlMonitorAction;
 	QAction* m_controlBlackoutAction;
 
+#ifdef __APPLE__
+	QAction* m_windowMinimizeAction;
+	QAction* m_windowAllToFrontAction;
+#endif
+
 	QAction* m_helpIndexAction;
 	QAction* m_helpAboutAction;
 	QAction* m_helpAboutQtAction;
@@ -269,6 +281,10 @@ protected:
 	QMenu* m_managerMenu;
 	QMenu* m_controlMenu;
 	QMenu* m_helpMenu;
+
+#ifdef __APPLE__
+	QMenu* m_windowMenu;
+#endif
 
 	QToolBar* m_toolbar;
 
