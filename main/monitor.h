@@ -163,18 +163,18 @@ protected:
 	 * Menu
 	 *********************************************************************/
 protected:
-	/** Create a menu */
-	void initMenu();
+	/** Create tool bar */
+	void initToolBar();
 
 protected slots:
 	/** Menu action slot for font selection */
 	void slotChooseFont();
 
 	/** Menu action slot for channel style selection */
-	void slotChannelStyleTriggered(QAction* action);
+	void slotChannelStyleTriggered();
 
 	/** Menu action slot for value style selection */
-	void slotValueStyleTriggered(QAction* action);
+	void slotValueStyleTriggered();
 
 	/********************************************************************
 	 * Monitor Fixtures

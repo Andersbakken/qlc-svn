@@ -26,10 +26,9 @@
 #include <QSpacerItem>
 #include <QByteArray>
 #include <QMdiArea>
-#include <QMenuBar>
+#include <QToolBar>
 #include <QAction>
 #include <QFont>
-#include <QMenu>
 #include <QIcon>
 #include <QtXml>
 
@@ -54,11 +53,11 @@ Monitor* Monitor::s_instance = NULL;
 
 Monitor::Monitor(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
-	/* Master layout for menu and scroll area */
+	/* Master layout for toolbar and scroll area */
 	new QVBoxLayout(this);
 
-	/* Create menu bar */
-	initMenu();
+	/* Create toolbar */
+	initToolBar();
 
 	/* Scroll area that contains the monitor widget */
 	m_scrollArea = new QScrollArea(this);
@@ -147,72 +146,73 @@ void Monitor::create(QWidget* parent)
  * Menu
  ****************************************************************************/
 
-void Monitor::initMenu()
+void Monitor::initToolBar()
 {
 	QActionGroup* group;
 	QAction* action;
-	QMenu* displayMenu;
-	QMenu* menu;
+	QToolBar* toolBar = new QToolBar(this);
 
 	/* Menu bar */
 	Q_ASSERT(layout() != NULL);
-	layout()->setMenuBar(new QMenuBar(this));
+	layout()->setMenuBar(toolBar);
 
-	/* Display menu */
-	displayMenu = new QMenu(layout()->menuBar());
-	qobject_cast <QMenuBar*> (layout()->menuBar())->addMenu(displayMenu);
-	displayMenu->setTitle(tr("Display"));
-	displayMenu->addAction(QIcon(":/fonts.png"), tr("Font"),
-			       this, SLOT(slotChooseFont()));
-	displayMenu->addSeparator();
+	/* Font */
+	toolBar->addAction(QIcon(":/fonts.png"), tr("Font"),
+			   this, SLOT(slotChooseFont()));
 
-	/* Channel display style */
-	menu = new QMenu(displayMenu);
-	displayMenu->addMenu(menu);
-	menu->setTitle(tr("Channel style"));
-	connect(menu, SIGNAL(triggered(QAction*)),
-		this, SLOT(slotChannelStyleTriggered(QAction*)));
+	toolBar->addSeparator();
 
-	/* Style group and actions */
+	/* Channel style */
 	group = new QActionGroup(this);
 	group->setExclusive(true);
 
-	action = menu->addAction(tr("Relative to fixture"));
-	action->setCheckable(true);
-	action->setData(MonitorProperties::RelativeChannels);
-	group->addAction(action);
-	if (s_properties.channelStyle() == MonitorProperties::RelativeChannels)
-		action->setChecked(true);
-
-	action = menu->addAction(tr("Absolute DMX"));
+	action = toolBar->addAction(tr("DMX Channels"));
+	action->setToolTip(tr("Show absolute DMX channel numbers"));
 	action->setCheckable(true);
 	action->setData(MonitorProperties::DMXChannels);
+	connect(action, SIGNAL(triggered(bool)),
+		this, SLOT(slotChannelStyleTriggered()));
+	toolBar->addAction(action);
 	group->addAction(action);
 	if (s_properties.channelStyle() == MonitorProperties::DMXChannels)
 		action->setChecked(true);
 
-	/* Value display style */
-	menu = new QMenu(displayMenu);
-	displayMenu->addMenu(menu);
-	menu->setTitle(tr("Value style"));
-	connect(menu, SIGNAL(triggered(QAction*)),
-		this, SLOT(slotValueStyleTriggered(QAction*)));
+	action = toolBar->addAction(tr("Relative Channels"));
+	action->setToolTip(tr("Show channel numbers relative to fixture"));
+	action->setCheckable(true);
+	action->setData(MonitorProperties::RelativeChannels);
+	connect(action, SIGNAL(triggered(bool)),
+		this, SLOT(slotChannelStyleTriggered()));
+	toolBar->addAction(action);
+	group->addAction(action);
+	if (s_properties.channelStyle() == MonitorProperties::RelativeChannels)
+		action->setChecked(true);
 
-	/* Style group and actions */
+	toolBar->addSeparator();
+
+	/* Value display style */
 	group = new QActionGroup(this);
 	group->setExclusive(true);
 
-	action = menu->addAction(tr("Absolute DMX"));
+	action = toolBar->addAction(tr("DMX Values"));
+	action->setToolTip(tr("Show DMX values 0-255"));
 	action->setCheckable(true);
 	action->setData(MonitorProperties::DMXValues);
+	connect(action, SIGNAL(triggered(bool)),
+		this, SLOT(slotValueStyleTriggered()));
+	toolBar->addAction(action);
 	group->addAction(action);
 	action->setChecked(true);
 	if (s_properties.valueStyle() == MonitorProperties::DMXValues)
 		action->setChecked(true);
 
-	action = menu->addAction(tr("Percentage"));
+	action = toolBar->addAction(tr("Percent Values"));
+	action->setToolTip(tr("Show percentage values 0-100%"));
 	action->setCheckable(true);
 	action->setData(MonitorProperties::PercentageValues);
+	connect(action, SIGNAL(triggered(bool)),
+		this, SLOT(slotValueStyleTriggered()));
+	toolBar->addAction(action);
 	group->addAction(action);
 	if (s_properties.valueStyle() == MonitorProperties::PercentageValues)
 		action->setChecked(true);
@@ -229,18 +229,22 @@ void Monitor::slotChooseFont()
 	}
 }
 
-void Monitor::slotChannelStyleTriggered(QAction* action)
+void Monitor::slotChannelStyleTriggered()
 {
+	QAction* action = qobject_cast<QAction*> (QObject::sender());
 	Q_ASSERT(action != NULL);
+
 	action->setChecked(true);
 	s_properties.m_channelStyle =
 		MonitorProperties::ChannelStyle(action->data().toInt());
 	emit channelStyleChanged(s_properties.m_channelStyle);
 }
 
-void Monitor::slotValueStyleTriggered(QAction* action)
+void Monitor::slotValueStyleTriggered()
 {
+	QAction* action = qobject_cast<QAction*> (QObject::sender());
 	Q_ASSERT(action != NULL);
+
 	action->setChecked(true);
 	s_properties.m_valueStyle =
 		MonitorProperties::ValueStyle(action->data().toInt());
