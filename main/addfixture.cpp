@@ -25,6 +25,8 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QHeaderView>
+#include <QByteArray>
+#include <QSettings>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
@@ -38,6 +40,8 @@
 #include "addfixture.h"
 #include "outputmap.h"
 #include "doc.h"
+
+#define SETTINGS_GEOMETRY "addfixture/geometry"
 
 #define KColumnName 0
 
@@ -136,10 +140,17 @@ AddFixture::AddFixture(QWidget* parent,
 	{
 		m_channelsSpin->setValue(selectChannels);
 	}
+
+	QSettings settings;
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 }
 
 AddFixture::~AddFixture()
 {
+	QSettings settings;
+	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 /*****************************************************************************
