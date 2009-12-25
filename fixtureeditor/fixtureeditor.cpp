@@ -73,6 +73,8 @@ static const int KMenuCopy ( 1 );
 static const int KMenuPaste ( 3 );
 static const int KMenuRemove ( 4 );
 
+#define KSettingsGeometry "fixtureeditor/geometry"
+
 QLCFixtureEditor::QLCFixtureEditor(QWidget* parent,
 				   QLCFixtureDef* fixtureDef,
 				   const QString& fileName) : QWidget(parent)
@@ -85,7 +87,6 @@ QLCFixtureEditor::QLCFixtureEditor(QWidget* parent,
 	init();
 	setCaption();
 
-	loadDefaults();
 	setModified(false);
 
 	/* Connect to be able to enable/disable clipboard actions */
@@ -94,36 +95,34 @@ QLCFixtureEditor::QLCFixtureEditor(QWidget* parent,
 
 	/* Initial update to clipboard actions */
 	slotClipboardChanged();
+
+	QSettings settings;
+	QVariant var = settings.value(KSettingsGeometry);
+	if (var.isValid() == true)
+	{
+		parentWidget()->restoreGeometry(var.toByteArray());
+	}
+	else
+	{
+		/* Backwards compatibility */
+		var = settings.value(KApplicationName +
+				     "/fixtureeditor/position");
+		if (var.isValid() == true)
+			parentWidget()->move(var.toPoint());
+
+		var = settings.value(KApplicationName + "/fixtureeditor/size");
+		if (var.isValid() == true)
+			parentWidget()->resize(var.toSize());
+	}
 }
 
 QLCFixtureEditor::~QLCFixtureEditor()
 {
-	saveDefaults();
+	QSettings settings;
+	settings.setValue(KSettingsGeometry, saveGeometry());
+
 	delete m_fixtureDef;
-}
-
-void QLCFixtureEditor::loadDefaults()
-{
-	QSettings settings;
-	QPoint pos;
-	QSize size;
-
-	pos = settings.value(KApplicationName + "/fixtureeditor/position", 
-			     QPoint(0, 0)).toPoint();
-	size = settings.value(KApplicationName + "/fixtureeditor/size",
-			      QSize(450, 500)).toSize();
-
-	parentWidget()->resize(size);
-	parentWidget()->move(pos);
-}
-
-void QLCFixtureEditor::saveDefaults()
-{
-	QSettings settings;
-	settings.setValue(KApplicationName + "/fixtureeditor/position",
-			  parentWidget()->pos());
-	settings.setValue(KApplicationName + "/fixtureeditor/size",
-			  parentWidget()->size());
+	m_fixtureDef = NULL;
 }
 
 void QLCFixtureEditor::init()

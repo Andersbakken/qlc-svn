@@ -39,6 +39,8 @@
 #include "editmode.h"
 #include "app.h"
 
+#define KSettingsGeometry "editmode/geometry"
+
 #define KChannelsColumnNumber 0
 #define KChannelsColumnName 1
 #define KChannelsColumnPointer 2
@@ -52,7 +54,6 @@ EditMode::EditMode(QWidget* parent, QLCFixtureMode* mode) : QDialog(parent)
 
 	setupUi(this);
 	init();
-
 	loadDefaults();
 }
 
@@ -65,37 +66,23 @@ EditMode::EditMode(QWidget* parent, QLCFixtureDef* fixtureDef) : QDialog(parent)
 
 	setupUi(this);
 	init();
-
 	loadDefaults();
 }
 
 EditMode::~EditMode()
 {
-	saveDefaults();
+	QSettings settings;
+	settings.setValue(KSettingsGeometry, saveGeometry());
+
 	delete m_mode;
 }
 
 void EditMode::loadDefaults()
 {
-	QSettings settings;
-	QPoint pos;
-	QSize size;
-
-	pos = settings.value(KApplicationName + "/editmode/position",
-			     QPoint()).toPoint();
-	size = settings.value(KApplicationName + "/editmode/size",
-			      QSize(450, 670)).toSize();
-
-	resize(size);
-	if (pos.isNull() == false)
-		move(pos);
-}
-
-void EditMode::saveDefaults()
-{
-	QSettings settings;
-	settings.setValue(KApplicationName + "/editmode/position", pos());
-	settings.setValue(KApplicationName + "/editmode/size", size());
+        QSettings settings;
+        QVariant var = settings.value(KSettingsGeometry);
+        if (var.isValid() == true)
+                restoreGeometry(var.toByteArray());
 }
 
 void EditMode::init()

@@ -39,8 +39,6 @@ public:
 	~EditChannel();
 
 protected:
-	void loadDefaults();
-	void saveDefaults();
 	void init();
 
 	/*********************************************************************

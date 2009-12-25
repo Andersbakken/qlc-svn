@@ -40,6 +40,8 @@
 #include "editchannel.h"
 #include "app.h"
 
+#define KSettingsGeometry "editchannel/geometry"
+
 #define KColumnMin 0
 #define KColumnMax 1
 #define KColumnName 2
@@ -52,38 +54,19 @@ EditChannel::EditChannel(QWidget* parent, QLCChannel* channel) : QDialog(parent)
 	setupUi(this);
 	init();
 
-	loadDefaults();
+        QSettings settings;
+        QVariant var = settings.value(KSettingsGeometry);
+        if (var.isValid() == true)
+                restoreGeometry(var.toByteArray());
 }
 
 EditChannel::~EditChannel()
 {
-	saveDefaults();
+	QSettings settings;
+	settings.setValue(KSettingsGeometry, saveGeometry());
 
 	if (m_channel != NULL)
 		delete m_channel;
-}
-
-void EditChannel::loadDefaults()
-{
-	QSettings settings;
-	QPoint pos;
-	QSize size;
-
-	pos = settings.value(KApplicationName + "/editchannel/position",
-			     QPoint()).toPoint();
-	size = settings.value(KApplicationName + "/editchannel/size",
-			      QSize(450, 500)).toSize();
-
-	resize(size);
-	if (pos.isNull() == false)
-		move(pos);
-}
-
-void EditChannel::saveDefaults()
-{
-	QSettings settings;
-	settings.setValue(KApplicationName + "/editchannel/position", pos());
-	settings.setValue(KApplicationName + "/editchannel/size", size());
 }
 
 void EditChannel::init()

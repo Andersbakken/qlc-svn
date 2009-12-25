@@ -21,9 +21,12 @@
 
 #include <QSpinBox>
 #include <QLineEdit>
+#include <QSettings>
 
 #include "common/qlccapability.h"
 #include "editcapability.h"
+
+#define KSettingsGeometry "editcapability/geometry"
 
 EditCapability::EditCapability(QWidget* parent, const QLCCapability* cap)
 	: QDialog(parent)
@@ -44,10 +47,18 @@ EditCapability::EditCapability(QWidget* parent, const QLCCapability* cap)
 		this, SLOT(slotMaxSpinChanged(int)));
 	connect(m_descriptionEdit, SIGNAL(textEdited(const QString&)),
 		this, SLOT(slotDescriptionEdited(const QString&)));
+
+	QSettings settings;
+	QVariant var = settings.value(KSettingsGeometry);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 }
 
 EditCapability::~EditCapability()
 {
+	QSettings settings;
+	settings.setValue(KSettingsGeometry, saveGeometry());
+
 	if (m_capability != NULL)
 		delete m_capability;
 }

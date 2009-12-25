@@ -44,9 +44,6 @@ public:
 	~App();
 
 protected:
-	void loadDefaults();
-	void saveDefaults();
-
 	void closeEvent(QCloseEvent*);
 
 	/*********************************************************************

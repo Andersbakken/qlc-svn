@@ -48,8 +48,7 @@
 #include "../main/aboutbox.h"
 #include "fixtureeditor.h"
 
-#define KXMLQLCGeometry "Geometry"
-#define KXMLQLCWindowState "WindowState"
+#define KSettingsGeometry "workspace/geometry"
 
 App::App(QWidget* parent) : QMainWindow(parent)
 {
@@ -75,45 +74,18 @@ App::App(QWidget* parent) : QMainWindow(parent)
 	initMenuBar();
 	initToolBar();
 
-	loadDefaults();
+	QSettings settings;
+	QVariant var = settings.value(KSettingsGeometry);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 }
 
 App::~App()
 {
-	saveDefaults();
+	QSettings settings;
+	settings.setValue(KSettingsGeometry, saveGeometry());
+
 	setCopyChannel(NULL);
-}
-
-void App::loadDefaults()
-{
-	QSettings settings;
-	QSize size;
-
-	/* Application geometry and window state */
-	size = settings.value("/workspace/size").toSize();
-	if (size.isValid() == true)
-		resize(size);
-
-	QVariant var = settings.value("/workspace/state", Qt::WindowNoState);
-	if (var.isValid() == true)
-		setWindowState(Qt::WindowState(var.toInt()));
-}
-
-void App::saveDefaults()
-{
-	/* Save application geometry */
-	QSettings settings;
-	settings.setValue("/workspace/state", int(windowState()));
-
-	if ((windowState() & Qt::WindowMaximized) != Qt::WindowMaximized)
-	{
-		/* Save window geometry only if the window is not maximized.
-		   Otherwise the non-maximized size is no smaller than the
-		   maximized size. Of course, nothing prevents the user from
-		   manually resizing the window to ridiculous proportions, but
-		   that's already out of this app's hands. */
-		settings.setValue("/workspace/size", size());
-	}
 }
 
 void App::closeEvent(QCloseEvent* e)

@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QSettings>
 #include <QTextEdit>
 #include <QSpinBox>
 #include <QDialog>
@@ -28,6 +29,8 @@
 
 #include "capabilitywizard.h"
 
+#define KSettingsGeometry "capabilitywizard/geometry"
+
 CapabilityWizard::CapabilityWizard(QWidget* parent, const QLCChannel* channel)
 	: QDialog(parent)
 {
@@ -36,10 +39,18 @@ CapabilityWizard::CapabilityWizard(QWidget* parent, const QLCChannel* channel)
 
 	setupUi(this);
 	slotCreateCapabilities();
+
+	QSettings settings;
+	QVariant var = settings.value(KSettingsGeometry);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 }
 
 CapabilityWizard::~CapabilityWizard()
 {
+	QSettings settings;
+	settings.setValue(KSettingsGeometry, saveGeometry());
+
 	foreach (QLCCapability* cap, m_caps)
 		delete cap;
 }
