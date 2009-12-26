@@ -5,7 +5,7 @@ TARGET = usb
 VERSION = 0.1.12
 
 CONFIG += staticlib
-LIBS += -lIOKit
+LIBS += -framework IOKit -framework CoreFoundation
 
 # Input
 HEADERS += error.h usb.h usbi.h

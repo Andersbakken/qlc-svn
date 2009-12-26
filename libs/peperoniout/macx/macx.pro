@@ -6,7 +6,8 @@ TARGET		= peperoniout
 
 CONFIG          += plugin
 INCLUDEPATH	+= ../../ ../../macx/libusb
-LIBS		+= ../../macx/libusb/libusb.a -lIOKit
+LIBS		+= ../../macx/libusb/libusb.a
+LIBS		+= -framework IOKit -framework CoreFoundation
 
 target.path 	= $$OUTPUTPLUGINDIR
 INSTALLS	+= target

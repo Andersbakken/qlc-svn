@@ -6,7 +6,7 @@ TARGET 		= midiinput
 
 CONFIG          += plugin
 INCLUDEPATH	+= ../common ../..
-LIBS		+= -framework CoreMIDI
+LIBS		+= -framework CoreMIDI -framework CoreFoundation
 
 ###############################################################################
 # Installation

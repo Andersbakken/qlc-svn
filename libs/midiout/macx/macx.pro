@@ -6,7 +6,7 @@ TARGET		= midiout
 
 INCLUDEPATH	+= ../common/ ../..
 CONFIG          += plugin
-LIBS		+= -framework CoreMIDI
+LIBS		+= -framework CoreMIDI -framework CoreFoundation
 
 target.path	= $$OUTPUTPLUGINDIR
 INSTALLS	+= target

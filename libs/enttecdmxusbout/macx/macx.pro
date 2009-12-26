@@ -6,7 +6,8 @@ TARGET		= enttecdmxusbout
 
 CONFIG		+= plugin
 INCLUDEPATH	+= ../.. ../ftdi
-LIBS		+= -L../ftdi/macx -lftd2xx.0.1.6 -lIOKit
+LIBS		+= -L../ftdi/macx -lftd2xx.0.1.6
+LIBS		+= -framework IOKit -framework CoreFoundation
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR
