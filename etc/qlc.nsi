@@ -45,6 +45,7 @@ SectionEnd
 ;--------------------------------
 Section ""
   File ..\mingwm10.dll
+  File ..\libgcc_s_dw2-1.dll
   File ..\qlccommon.dll
   File ..\qlc.exe
   File ..\qlc-fixtureeditor.exe

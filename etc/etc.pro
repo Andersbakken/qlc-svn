@@ -41,7 +41,12 @@ win32 {
 
 	# MinGW library
 	mingw.path      = $$LIBSDIR
-	mingw.files     = $$(SystemDrive)/MinGW/bin/mingwm10.dll
+	mingw.files     += $$(SystemDrive)/MinGW/bin/mingwm10.dll
+
+	# GCC 4.4.0
+	exists($$(SystemDrive)/MinGW/bin/libgcc_s_dw2-1.dll) {
+		mingw.files	+= $$(SystemDrive)/MinGW/bin/libgcc_s_dw2-1.dll
+	}
 
 	# NullSoft installer files
 	nsis.path	= $$DATADIR\nsis
