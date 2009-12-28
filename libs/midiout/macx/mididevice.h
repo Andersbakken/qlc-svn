@@ -27,7 +27,7 @@
 #include <QObject>
 #include <QFile>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class MIDIDevice;
 class MIDIOut;

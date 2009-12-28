@@ -2,42 +2,27 @@ include(../../variables.pri)
 
 TEMPLATE = app
 LANGUAGE = C++
-TARGET = test_engine
+TARGET   = test_engine
+
 DEFINES += QLC_UNIT_TEST
+CONFIG 	+= warn_on qtestlib
+CONFIG 	-= app_bundle
+QT 	+= xml
 
-CONFIG += warn_on qtestlib
-CONFIG -= app_bundle
-QT += xml
+INCLUDEPATH += ..
+INCLUDEPATH += ../../libs/common
+DEPENDPATH  += ..
 
-INCLUDEPATH += ../ ../../libs/common
-
+# Windows needs even the test to be installed (because of libqlccommon.dll)
 target.path = $$BINDIR
 INSTALLS += target
 
-COMMONHEADERS += ../../libs/common/qlccapability.h \
-		 ../../libs/common/qlcchannel.h \
-		 ../../libs/common/qlcdocbrowser.h \
-		 ../../libs/common/qlcfile.h \
-		 ../../libs/common/qlcfixturedef.h \
-		 ../../libs/common/qlcfixturedefcache.h \
-		 ../../libs/common/qlcfixturemode.h \
-		 ../../libs/common/qlcinputchannel.h \
-		 ../../libs/common/qlcinputprofile.h \
-		 ../../libs/common/qlcphysical.h \
-		 ../../libs/common/qlctypes.h \
-		 ../../libs/common/qlcwidgetproperties.h
-
-COMMONSOURCES += ../../libs/common/qlccapability.cpp \
-		 ../../libs/common/qlcchannel.cpp \
-		 ../../libs/common/qlcdocbrowser.cpp \
-		 ../../libs/common/qlcfile.cpp \
-		 ../../libs/common/qlcfixturedef.cpp \
-		 ../../libs/common/qlcfixturedefcache.cpp \
-		 ../../libs/common/qlcfixturemode.cpp \
-		 ../../libs/common/qlcinputchannel.cpp \
-		 ../../libs/common/qlcinputprofile.cpp \
-		 ../../libs/common/qlcphysical.cpp \
-		 ../../libs/common/qlcwidgetproperties.cpp
+unix:LIBS += ../../libs/common/libqlccommon.a
+win32:{
+        # Windows is so fucking retarded that you can't link these statically
+        release:LIBS    += -L../libs/common/release -lqlccommon
+        debug:LIBS      += -L../libs/common/debug -lqlccommon
+}
 
 ENGINEHEADERS += ../bus.h \
 		 ../fixture.h \
