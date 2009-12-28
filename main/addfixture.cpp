@@ -96,7 +96,6 @@ AddFixture::AddFixture(QWidget* parent,
 	fillTree(selectManufacturer, selectModel);
 
 	/* Fill universe combo with available universes */
-	Q_ASSERT(m_outputMap != NULL);
 	m_universeCombo->addItems(m_outputMap.universeNames());
 
 	/* Simulate first selection and find the next free address */

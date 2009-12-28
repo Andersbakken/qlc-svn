@@ -5,7 +5,7 @@ LANGUAGE 	= C++
 TARGET 		= qlccommon
 
 CONFIG          += qt
-!win32:CONFIG	+= staticlib
+CONFIG          += staticlib
 QT 		+= xml
 win32:DEFINES 	+= QLC_EXPORT
 
@@ -34,6 +34,3 @@ SOURCES += qlccapability.cpp \
 	   qlcinputprofile.cpp \
            qlcphysical.cpp \
 	   qlcwidgetproperties.cpp
-
-win32:target.path = $$LIBSDIR
-win32:INSTALLS += target

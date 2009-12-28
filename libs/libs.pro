@@ -25,3 +25,7 @@ exists($$OLA_GIT) {
 SUBDIRS			+= ewinginput
 SUBDIRS			+= midiinput
 !mac:!win32:SUBDIRS	+= hidinput
+
+# Unit tests
+SUBDIRS			+= common/test
+SUBDIRS			+= ewinginput/test

@@ -56,7 +56,7 @@ class QDomDocument;
  * mode). These properties include weight, dimensions, light source, lens,
  * movement capabilities and beam width.
  */
-class QLC_DECLSPEC QLCPhysical
+class QLCPhysical
 {
 public:
 	QLCPhysical();

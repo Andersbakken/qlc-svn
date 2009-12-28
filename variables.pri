@@ -1,6 +1,8 @@
 # Compiler configuration
-CONFIG			+= warn_on release
-CONFIG			-= debug
+CONFIG			+= warn_on
+
+# Treat all compiler warnings as errors
+QMAKE_CXXFLAGS		+= -Werror
 
 # Build universal binaries on Mac OS 10.5 with official Qt 4.5 binary release
 macx:CONFIG		+= x86 ppc
@@ -11,9 +13,6 @@ macx:CONFIG		+= x86 ppc
 
 # OLA directories
 unix:OLA_GIT		= /usr/src/ola
-
-# Treat all compiler warnings as errors
-#QMAKE_CXXFLAGS		+= -Werror
 
 # Install root (TODO: win32 & UNIX)
 #win32:INSTALLROOT	= $$(SystemDrive)/QLC

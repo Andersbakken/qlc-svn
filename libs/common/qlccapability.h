@@ -44,7 +44,7 @@ class QLCCapability;
  * values can be represented by setting the same value to both, for example:
  * min == 15 and max == 15.
  */
-class QLC_DECLSPEC QLCCapability
+class QLCCapability
 {
 	/********************************************************************
 	 * Initialization

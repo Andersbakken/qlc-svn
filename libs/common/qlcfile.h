@@ -52,7 +52,7 @@ class QString;
 #define KXMLQLCWindowStateWidth "Width"
 #define KXMLQLCWindowStateHeight "Height"
 
-class QLC_DECLSPEC QLCFile
+class QLCFile
 {
 public:
 	/**

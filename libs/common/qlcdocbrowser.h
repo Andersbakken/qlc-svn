@@ -30,7 +30,7 @@ class QTextBrowser;
 class QToolBar;
 class QAction;
 
-class QLC_DECLSPEC QLCDocBrowser : public QWidget
+class QLCDocBrowser : public QWidget
 {
 	Q_OBJECT
 

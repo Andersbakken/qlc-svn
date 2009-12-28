@@ -38,7 +38,7 @@ class QDomElement;
 #define KXMLQLCInputProfileManufacturer "Manufacturer"
 #define KXMLQLCInputProfileModel "Model"
 
-class QLC_DECLSPEC QLCInputProfile
+class QLCInputProfile
 {
 	/********************************************************************
 	 * Initialization

@@ -4,7 +4,7 @@ TARGET = testewing
 
 QT += network testlib
 CONFIG += release warn_on
-INCLUDEPATH += ../../
+INCLUDEPATH += ../../common
 
 SOURCES = testeplaybackwing.cpp \
 	  testeprogramwing.cpp \

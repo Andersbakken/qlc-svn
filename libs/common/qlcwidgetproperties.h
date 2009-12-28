@@ -37,7 +37,7 @@ class QWidget;
 
 /** Simple class to store a widget's visible state (minimized, maximized,
     visible or not visible and dimensions. */
-class QLC_DECLSPEC QLCWidgetProperties
+class QLCWidgetProperties
 {
 public:
 	QLCWidgetProperties();

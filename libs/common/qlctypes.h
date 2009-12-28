@@ -29,25 +29,6 @@
  *****************************************************************************/
 #define VERSION "3.0.4"
 
-/**
- * QLC_UNIT_TEST is defined for unit tests, which compile individual source and
- * header files into the unit test executables. The library import/export scheme
- * would produce warnings/errors in such cases (for platforms it is actually
- * needed for, like win32) unless it is disabled completely.
- *
- * Q_DECL_EXPORT and Q_DECL_IMPORT take the underlying platform into account
- * and get replaced by the platform-specific keyword, if needed.
- */
-#ifndef QLC_UNIT_TEST
-#  ifdef QLC_EXPORT
-#    define QLC_DECLSPEC Q_DECL_EXPORT
-#  else
-#    define QLC_DECLSPEC Q_DECL_IMPORT
-#  endif
-#else
-#  define QLC_DECLSPEC
-#endif
-
 /*****************************************************************************
  * Utils
  *****************************************************************************/

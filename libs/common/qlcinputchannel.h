@@ -38,7 +38,7 @@ class QString;
 #define KXMLQLCInputChannelButton "Button"
 #define KXMLQLCInputChannelNone "None"
 
-class QLC_DECLSPEC QLCInputChannel
+class QLCInputChannel
 {
 	/********************************************************************
 	 * Initialization

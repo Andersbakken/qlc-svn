@@ -6,8 +6,6 @@
 #include "../qlcfixturedef.h"
 #include "../qlcfile.h"
 
-#define INTERNAL_FIXTUREDIR "../../../fixtures/"
-
 void QLCFixtureDefCache_Test::add()
 {
 	QLCFixtureDefCache cache;

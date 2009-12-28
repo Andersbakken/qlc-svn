@@ -13,15 +13,10 @@ INCLUDEPATH += ..
 INCLUDEPATH += ../../libs/common
 DEPENDPATH  += ..
 
-# Windows needs even the test to be installed (because of libqlccommon.dll)
-target.path = $$BINDIR
-INSTALLS += target
-
-unix:LIBS += ../../libs/common/libqlccommon.a
+unix:LIBS	+= ../../libs/common/libqlccommon.a
 win32:{
-        # Windows is so fucking retarded that you can't link these statically
-        release:LIBS    += -L../libs/common/release -lqlccommon
-        debug:LIBS      += -L../libs/common/debug -lqlccommon
+	CONFIG(release, debug|release) LIBS += ../../libs/common/release/libqlccommon.a
+	CONFIG(debug, debug|release) LIBS += ../../libs/common/debug/libqlccommon.a
 }
 
 ENGINEHEADERS += ../bus.h \
