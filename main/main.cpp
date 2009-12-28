@@ -28,7 +28,7 @@
 #include <QDebug>
 #include <QHash>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #include "app.h"
 #include "doc.h"

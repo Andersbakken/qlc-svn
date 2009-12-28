@@ -25,7 +25,7 @@
 #include <QKeySequence>
 #include <QDialog>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "ui_vcbuttonproperties.h"
 #include "vcbutton.h"
 #include "function.h"

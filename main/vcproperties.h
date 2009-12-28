@@ -25,8 +25,8 @@
 #include <QDialog>
 
 #include "ui_vcproperties.h"
-#include "common/qlcwidgetproperties.h"
-#include "common/qlctypes.h"
+#include "qlcwidgetproperties.h"
+#include "qlctypes.h"
 
 class VirtualConsole;
 class QDomDocument;

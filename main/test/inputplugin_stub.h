@@ -27,8 +27,8 @@
 #include <QString>
 #include <QObject>
 
-#include <common/qlcinplugin.h>
-#include <common/qlctypes.h>
+#include "qlcinplugin.h"
+#include "qlctypes.h"
 
 /*****************************************************************************
  * InputPlugin

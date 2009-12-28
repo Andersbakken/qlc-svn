@@ -26,7 +26,7 @@
 #include <QList>
 #include <QMap>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #include "ui_sceneeditor.h"
 #include "fixture.h"

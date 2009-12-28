@@ -26,7 +26,7 @@
 #include <QLabel>
 #include <QTimer>
 
-#include "common/qlcfixturedef.h"
+#include "qlcfixturedef.h"
 
 #include "functionselection.h"
 #include "collectioneditor.h"

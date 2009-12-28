@@ -22,7 +22,7 @@
 #include <QtTest>
 #include <QtXml>
 
-#include <common/qlcfixturedefcache.h>
+#include "qlcfixturedefcache.h"
 
 #include "function_test.h"
 #include "../function.h"

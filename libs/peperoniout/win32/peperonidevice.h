@@ -23,10 +23,12 @@
 #define PEPERONIDEVICE_H
 
 #define WIN32_LEAN_AND_MEAN
-#include <common/qlctypes.h>
 #include <windows.h>
+
 #include <QObject>
 #include <QMutex>
+
+#include "qlctypes.h"
 
 class PeperoniDevice : public QObject
 {

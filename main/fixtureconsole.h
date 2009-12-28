@@ -25,7 +25,7 @@
 #include <QWidget>
 #include <QList>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "consolechannel.h"
 #include "scene.h"
 

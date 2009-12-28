@@ -27,7 +27,7 @@
 
 #include <alsa/asoundlib.h>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class MIDIDevice;
 class MIDIInput;

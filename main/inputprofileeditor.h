@@ -22,9 +22,9 @@
 #ifndef INPUTPROFILEEDITOR_H
 #define INPUTPROFILEEDITOR_H
 
-#include <common/qlctypes.h>
 #include <QDialog>
 
+#include "qlctypes.h"
 #include "ui_inputprofileeditor.h"
 
 class QLCInputChannel;

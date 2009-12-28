@@ -26,10 +26,10 @@
 #include <QtXml>
 #include <QDir>
 
-#include "common/qlcfixturedefcache.h"
-#include "common/qlcfixturemode.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlcfile.h"
+#include "qlcfixturedefcache.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlcfile.h"
 
 #include "collection.h"
 #include "function.h"

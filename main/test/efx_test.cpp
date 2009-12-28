@@ -23,8 +23,8 @@
 #include <QtXml>
 #include <QList>
 
-#include <common/qlcfixturemode.h>
-#include <common/qlcfixturedef.h>
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
 
 #include "mastertimer_stub.h"
 #include "outputmap_stub.h"

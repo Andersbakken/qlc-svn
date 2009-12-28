@@ -15,7 +15,7 @@ macx:QT		+= network
 
 TRANSLATIONS	= qlc_gb.ts
 
-INCLUDEPATH 	+= . ../libs/
+INCLUDEPATH 	+= . ../libs/common
 unix:LIBS 	+= ../libs/common/libqlccommon.a
 win32:{
 	# Windows is so fucking retarded that you can't link these statically

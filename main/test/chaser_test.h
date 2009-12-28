@@ -23,7 +23,7 @@
 #define CHASER_TEST_H
 
 #include <QObject>
-#include <common/qlcfixturedefcache.h>
+#include "qlcfixturedefcache.h"
 
 class Chaser_Test : public QObject
 {

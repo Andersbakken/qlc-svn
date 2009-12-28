@@ -5,8 +5,9 @@ LANGUAGE	= C++
 TARGET		= udmxout
 
 CONFIG          += plugin
-INCLUDEPATH	+= ./
-INCLUDEPATH	+= ../../
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= .
+DEPENDPATH	+= ../unix
 
 target.path 	= $$OUTPUTPLUGINDIR
 INSTALLS	+= target

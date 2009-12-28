@@ -23,7 +23,7 @@
 #include <QLineEdit>
 #include <QSettings>
 
-#include "common/qlccapability.h"
+#include "qlccapability.h"
 #include "editcapability.h"
 
 #define KSettingsGeometry "editcapability/geometry"

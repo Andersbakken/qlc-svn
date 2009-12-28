@@ -29,8 +29,8 @@
 
 #include <alsa/asoundlib.h>
 
-#include "common/qlcinplugin.h"
-#include "common/qlctypes.h"
+#include "qlcinplugin.h"
+#include "qlctypes.h"
 
 class ConfigureMIDIInput;
 class MIDIInputEvent;

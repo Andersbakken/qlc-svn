@@ -24,7 +24,7 @@
 #include <QDebug>
 #include <QtXml>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "virtualconsole.h"
 #include "vcproperties.h"

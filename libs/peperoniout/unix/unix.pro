@@ -5,7 +5,7 @@ LANGUAGE	= C++
 TARGET		= peperoniout
 
 CONFIG          += plugin
-INCLUDEPATH	+= ../../
+INCLUDEPATH	+= ../../common
 LIBS		+= -lusb
 
 target.path 	= $$OUTPUTPLUGINDIR

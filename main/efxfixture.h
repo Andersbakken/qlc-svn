@@ -22,7 +22,7 @@
 #ifndef EFXFIXTURE_H
 #define EFXFIXTURE_H
 
-#include <common/qlctypes.h>
+#include "qlctypes.h"
 #include "function.h"
 
 class EFXFixture;

@@ -22,8 +22,8 @@
 #include <QObject>
 #include <QDebug>
 
+#include "usbdmx-dynamic.h"
 #include "peperonidevice.h"
-#include "peperoni/usbdmx-dynamic.h"
 
 /****************************************************************************
  * Initialization

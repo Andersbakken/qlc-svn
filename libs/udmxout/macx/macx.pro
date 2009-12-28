@@ -5,7 +5,9 @@ LANGUAGE	= C++
 TARGET		= udmxout
 
 CONFIG          += plugin
-INCLUDEPATH	+= ../../../libs ../../macx/libusb
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= ../../macx/libusb
+DEPENDPATH	+= ../unix
 LIBS		+= ../../macx/libusb/libusb.a
 LIBS		+= -framework IOKit -framework CoreFoundation
 

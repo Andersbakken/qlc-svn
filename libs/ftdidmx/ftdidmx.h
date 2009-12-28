@@ -27,8 +27,8 @@
 #include <QMutex>
 #include <QMap>
 
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 
 struct FTDIDevice
 {

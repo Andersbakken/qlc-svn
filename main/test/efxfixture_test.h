@@ -23,7 +23,7 @@
 #define EFXFIXTURE_TEST_H
 
 #include <QObject>
-#include <common/qlcfixturedefcache.h>
+#include "qlcfixturedefcache.h"
 
 class EFXFixture_Test : public QObject
 {

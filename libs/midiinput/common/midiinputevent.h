@@ -23,7 +23,7 @@
 #define MIDIINPUTEVENT_H
 
 #include <QEvent>
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class MIDIDevice;
 

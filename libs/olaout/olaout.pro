@@ -15,7 +15,9 @@ unix:OLA_GIT		= /usr/src/ola
 # Macports on Mac
 unix:PROTOBUF		= /opt/local/include/
 
-INCLUDEPATH  += . ../../libs $$OLA_GIT $$PROTOBUF
+INCLUDEPATH  += ../common
+INCLUDEPATH  += $$OLA_GIT $$PROTOBUF
+
 CONFIG += plugin # link_pkgconfig
 CONFIG -= ppc # LibOLA is not a universal binary 
 #PKGCONFIG += libola

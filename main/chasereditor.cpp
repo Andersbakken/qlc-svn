@@ -31,7 +31,7 @@
 #include <QTimer>
 #include <QIcon>
 
-#include "common/qlcfixturedef.h"
+#include "qlcfixturedef.h"
 
 #include "functionselection.h"
 #include "chasereditor.h"

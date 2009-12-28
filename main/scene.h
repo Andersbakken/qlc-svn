@@ -25,7 +25,7 @@
 #include <QList>
 #include <QtXml>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "function.h"
 #include "fixture.h"
 

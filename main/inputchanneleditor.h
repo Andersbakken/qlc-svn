@@ -24,9 +24,9 @@
 
 #include <QDialog>
 
-#include "common/qlcinputchannel.h"
+#include "qlcinputchannel.h"
 #include "ui_inputchanneleditor.h"
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class QLCInputChannel;
 

@@ -25,7 +25,8 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
+
 #include "configureolaout.h"
 #include "olaout.h"
 #include "qlclogdestination.h"

@@ -28,7 +28,7 @@
 #include <QFont>
 #include <cmath>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "monitorfixture.h"
 #include "fixture.h"
 #include "app.h"

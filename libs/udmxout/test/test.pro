@@ -4,11 +4,14 @@ TARGET 		= udmxtest
 CONFIG 		+= warn_on
 MAKE_CXXFLAGS	+= -Werror
 
-macx:CONFIG	-= app_bundle
+INCLUDEPATH 	+= ../../common
+INCLUDEPATH	+= ../unix
+DEPENDPATH	+= ../unix
 
-INCLUDEPATH 	+= ../../ ../unix
 macx:INCLUDEPATH += ../../macx/libusb
-macx:LIBS 	+= ../../macx/libusb/libusb.a -lIOKit
+macx:LIBS 	+= ../../macx/libusb/libusb.a
+macx:LIBS	+= -framework IOKit -framework CoreFoundation
+macx:CONFIG	-= app_bundle
 
 HEADERS += ../unix/udmxdevice.h \
 	   ../unix/udmxout.h

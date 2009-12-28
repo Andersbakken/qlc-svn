@@ -4,7 +4,9 @@ TEMPLATE	= lib
 LANGUAGE	= C++
 TARGET		= peperoniout
 
-INCLUDEPATH	+= peperoni ../../../libs/
+INCLUDEPATH	+= peperoni
+INCLUDEPATH	+= ../../common
+DEPENDPATH	+= peperoni
 CONFIG          += plugin
 
 target.path	= $$OUTPUTPLUGINDIR

@@ -26,8 +26,8 @@
 #include <QString>
 #include <QList>
 
-#include "common/qlcinplugin.h"
-#include "common/qlctypes.h"
+#include "qlcinplugin.h"
+#include "qlctypes.h"
 
 class MIDIDevice;
 class MIDIInput;

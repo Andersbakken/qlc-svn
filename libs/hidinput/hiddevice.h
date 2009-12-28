@@ -28,7 +28,7 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class HIDInput;
 

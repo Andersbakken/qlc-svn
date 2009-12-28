@@ -24,8 +24,8 @@
 #include <QSpinBox>
 #include <QIcon>
 
-#include <common/qlcinputprofile.h>
-#include <common/qlcinputchannel.h>
+#include "qlcinputprofile.h"
+#include "qlcinputchannel.h"
 #include "inputchanneleditor.h"
 
 InputChannelEditor::InputChannelEditor(QWidget* parent,

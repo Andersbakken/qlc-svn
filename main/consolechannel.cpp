@@ -30,8 +30,8 @@
 #include <QList>
 #include <QtXml>
 
-#include "common/qlcchannel.h"
-#include "common/qlccapability.h"
+#include "qlcchannel.h"
+#include "qlccapability.h"
 
 #include "app.h"
 #include "doc.h"

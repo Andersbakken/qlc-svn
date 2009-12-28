@@ -35,7 +35,7 @@
 #include <QString>
 #include <QThread>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #define MAX_NUM_DEVICES 50
 

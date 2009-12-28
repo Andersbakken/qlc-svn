@@ -5,7 +5,8 @@ LANGUAGE	= C++
 TARGET		= enttecdmxusbout
 
 CONFIG		+= plugin
-INCLUDEPATH	+= ../.. ../ftdi
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= ../ftdi
 LIBS		+= ../ftdi/win32/ftd2xx.lib
 
 # Plugin installation

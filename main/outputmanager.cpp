@@ -30,7 +30,7 @@
 #include <QAction>
 #include <QMenu>
 
-#include "common/qlcoutplugin.h"
+#include "qlcoutplugin.h"
 #include "outputpatcheditor.h"
 #include "outputmanager.h"
 #include "outputpatch.h"

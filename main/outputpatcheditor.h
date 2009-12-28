@@ -25,7 +25,7 @@
 #include <QDialog>
 
 #include "ui_outputpatcheditor.h"
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class QStringList;
 class OutputPatch;

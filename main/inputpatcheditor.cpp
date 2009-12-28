@@ -31,9 +31,9 @@
 #include <QFile>
 #include <QDir>
 
-#include <common/qlcinputprofile.h>
-#include <common/qlctypes.h>
-#include <common/qlcfile.h>
+#include "qlcinputprofile.h"
+#include "qlctypes.h"
+#include "qlcfile.h"
 
 #include "inputprofileeditor.h"
 #include "inputpatcheditor.h"

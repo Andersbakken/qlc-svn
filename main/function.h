@@ -26,7 +26,7 @@
 #include <QString>
 #include <QList>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class QDomDocument;
 class QDomElement;

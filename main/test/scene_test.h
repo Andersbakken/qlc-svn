@@ -23,7 +23,7 @@
 #define SCENE_TEST_H
 
 #include <QObject>
-#include <common/qlcfixturedefcache.h>
+#include "qlcfixturedefcache.h"
 
 class Scene_Test : public QObject
 {

@@ -4,7 +4,9 @@ TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= midiinput
 
-INCLUDEPATH	+= ../common ../..
+INCLUDEPATH	+= ../common
+INCLUDEPATH	+= ../../common
+DEPENDPATH	+= ../common
 CONFIG          += plugin link_pkgconfig
 PKGCONFIG	+= alsa
 

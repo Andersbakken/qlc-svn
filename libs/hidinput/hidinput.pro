@@ -4,13 +4,11 @@ TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= hidinput
 
-INCLUDEPATH	+= . ../../libs/
+INCLUDEPATH	+= ../../libs/common
 CONFIG          += plugin
 
 target.path	= $$INPUTPLUGINDIR
-!macx:INSTALLS	+= target
-
-macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/input
+INSTALLS	+= target
 
 # Input
 HEADERS += configurehidinput.h \

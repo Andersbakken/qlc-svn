@@ -26,7 +26,7 @@
 #include <CoreMIDI/CoreMIDI.h>
 #include <QObject>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class MIDIDevice;
 class MIDIInput;

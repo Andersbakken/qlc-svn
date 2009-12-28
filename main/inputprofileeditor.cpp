@@ -31,8 +31,8 @@
 #include <QList>
 #include <QDir>
 
-#include <common/qlcinputchannel.h>
-#include <common/qlcinputprofile.h>
+#include "qlcinputchannel.h"
+#include "qlcinputprofile.h"
 
 #include "inputchanneleditor.h"
 #include "inputprofileeditor.h"

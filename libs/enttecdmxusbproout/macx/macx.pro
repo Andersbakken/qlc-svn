@@ -5,7 +5,9 @@ LANGUAGE	= C++
 TARGET		= enttecdmxusbproout
 
 CONFIG		+= plugin
-INCLUDEPATH	+= ../.. ../unix
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= ../unix
+DEPENDPATH	+= ../unix
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR

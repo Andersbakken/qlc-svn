@@ -26,7 +26,7 @@
 #include <QVariant>
 #include <QString>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class VCXYPadFixture;
 class QDomDocument;

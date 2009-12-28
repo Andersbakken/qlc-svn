@@ -23,7 +23,8 @@
 #define SELECTINPUTCHANNEL_H
 
 #include <QDialog>
-#include <common/qlctypes.h>
+
+#include "qlctypes.h"
 #include "ui_selectinputchannel.h"
 
 class QTreeWidgetItem;

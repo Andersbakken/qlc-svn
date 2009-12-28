@@ -7,7 +7,7 @@ TARGET		= enttecdmxusbproout
 CONFIG		+= plugin
 QT		+= dbus
 DEFINES		+= DBUS_ENABLED
-INCLUDEPATH	+= ../..
+INCLUDEPATH	+= ../../libs/common
 
 # Plugin installation
 target.path	= $$OUTPUTPLUGINDIR

@@ -8,7 +8,9 @@ CONFIG          += qt
 macx:CONFIG	-= app_bundle
 QT 		+= xml
 
-INCLUDEPATH 	+= . ../libs/
+INCLUDEPATH 	+= ../libs/common
+DEPENDPATH	+= ../main
+
 unix:LIBS	+= ../libs/common/libqlccommon.a
 win32:{
 	# Windows is so fucking retarded that you can't link these statically

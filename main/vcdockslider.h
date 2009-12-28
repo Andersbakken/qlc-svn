@@ -25,7 +25,7 @@
 #include <QWidget>
 #include <QTime>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "ui_vcdockslider.h"
 
 class VCDockSlider : public QFrame, public Ui_VCDockSlider

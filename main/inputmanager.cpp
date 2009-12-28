@@ -34,7 +34,7 @@
 #include <QDebug>
 #include <QIcon>
 
-#include <common/qlcinplugin.h>
+#include "qlcinplugin.h"
 
 #include "inputpatcheditor.h"
 #include "inputmanager.h"

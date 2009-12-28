@@ -25,7 +25,7 @@
 #include <QDialog>
 
 #include "ui_vcxypadproperties.h"
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "vcxypadfixture.h"
 
 class VCXYPad;

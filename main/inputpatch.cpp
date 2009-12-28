@@ -23,8 +23,8 @@
 #include <QDebug>
 #include <QtXml>
 
-#include "common/qlcinplugin.h"
-#include "common/qlctypes.h"
+#include "qlcinplugin.h"
+#include "qlctypes.h"
 
 #include "inputpatch.h"
 #include "inputmap.h"

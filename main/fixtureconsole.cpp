@@ -25,7 +25,7 @@
 #include <QList>
 #include <QtXml>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "fixtureconsole.h"
 #include "consolechannel.h"

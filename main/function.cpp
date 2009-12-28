@@ -26,7 +26,7 @@
 #include <QIcon>
 #include <QtXml>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "mastertimer.h"
 #include "collection.h"

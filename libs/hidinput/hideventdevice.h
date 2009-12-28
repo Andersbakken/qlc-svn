@@ -31,7 +31,7 @@
 #include <linux/types.h>
 #include <stdint.h>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "hiddevice.h"
 
 class HIDEventDevice;

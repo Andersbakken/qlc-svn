@@ -26,8 +26,8 @@
 #include <QHash>
 #include <QList>
 
-#include "common/qlcwidgetproperties.h"
-#include "common/qlctypes.h"
+#include "qlcwidgetproperties.h"
+#include "qlctypes.h"
 
 class MonitorProperties;
 class MonitorFixture;

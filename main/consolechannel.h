@@ -25,7 +25,7 @@
 #include <QGroupBox>
 #include <QIcon>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class QContextMenuEvent;
 class QIntValidator;

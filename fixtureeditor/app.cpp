@@ -39,10 +39,10 @@
 #include <QIcon>
 #include <QUrl>
 
-#include <common/qlcdocbrowser.h>
-#include <common/qlcfixturedef.h>
-#include <common/qlcchannel.h>
-#include <common/qlcfile.h>
+#include "qlcdocbrowser.h"
+#include "qlcfixturedef.h"
+#include "qlcchannel.h"
+#include "qlcfile.h"
 
 #include "app.h"
 #include "../main/aboutbox.h"

@@ -5,7 +5,10 @@ LANGUAGE	= C++
 TARGET		= enttecdmxusbout
 
 CONFIG		+= plugin
-INCLUDEPATH	+= ../.. ../ftdi
+
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= ../ftdi
+
 LIBS		+= -L../ftdi/macx -lftd2xx.0.1.6
 LIBS		+= -framework IOKit -framework CoreFoundation
 

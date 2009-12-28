@@ -32,8 +32,8 @@
 #include <QDebug>
 #include <QPen>
 
-#include "common/qlcfixturedef.h"
-#include "common/qlcchannel.h"
+#include "qlcfixturedef.h"
+#include "qlcchannel.h"
 
 #include "fixtureselection.h"
 #include "efxeditor.h"

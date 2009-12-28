@@ -24,7 +24,7 @@
 
 #include <QWidget>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "ui_addfixture.h"
 #include "fixture.h"
 

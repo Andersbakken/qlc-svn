@@ -24,7 +24,7 @@
 
 #include <QObject>
 #include <QList>
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #define KXMLFixture "Fixture"
 #define KXMLFixtureName "Name"

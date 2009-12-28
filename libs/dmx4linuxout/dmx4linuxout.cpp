@@ -26,7 +26,6 @@
 #include <QMutex>
 #include <QFile>
 
-#include "qlcfile.h"
 #include "dmx4linuxout.h"
 
 /*****************************************************************************

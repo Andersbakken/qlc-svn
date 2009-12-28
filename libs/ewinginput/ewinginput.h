@@ -26,8 +26,8 @@
 #include <QStringList>
 #include <QList>
 
-#include "common/qlcinplugin.h"
-#include "common/qlctypes.h"
+#include "qlcinplugin.h"
+#include "qlctypes.h"
 
 class QUdpSocket;
 class EWing;

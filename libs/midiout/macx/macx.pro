@@ -4,7 +4,9 @@ TEMPLATE	= lib
 LANGUAGE	= C++
 TARGET		= midiout
 
-INCLUDEPATH	+= ../common/ ../..
+INCLUDEPATH	+= ../common
+INCLUDEPATH	+= ../../common
+DEPENDPATH	+= ../common
 CONFIG          += plugin
 LIBS		+= -framework CoreMIDI -framework CoreFoundation
 

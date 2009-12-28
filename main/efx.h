@@ -24,7 +24,7 @@
 
 #include <QList>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #include "efxfixture.h"
 #include "function.h"

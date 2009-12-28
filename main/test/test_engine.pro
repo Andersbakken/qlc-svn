@@ -9,7 +9,7 @@ CONFIG += warn_on qtestlib
 CONFIG -= app_bundle
 QT += xml
 
-INCLUDEPATH += ../ ../../libs/
+INCLUDEPATH += ../ ../../libs/common
 
 target.path = $$BINDIR
 INSTALLS += target

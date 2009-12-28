@@ -5,7 +5,7 @@ LANGUAGE	= C++
 TARGET		= udmxout
 
 CONFIG          += plugin
-INCLUDEPATH	+= ../../../libs/
+INCLUDEPATH	+= ../../common
 LIBS		+= -lusb
 
 target.path 	= $$OUTPUTPLUGINDIR

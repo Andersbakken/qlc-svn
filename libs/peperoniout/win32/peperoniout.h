@@ -23,14 +23,15 @@
 #define PEPERONIOUT_H
 
 #define WIN32_LEAN_AND_MEAN
-#include <QStringList>
 #include <windows.h>
+
+#include <QStringList>
 #include <QtPlugin>
 #include <QMutex>
 #include <QList>
 
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 
 #define MAX_USBDMX_DEVICES 16
 

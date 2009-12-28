@@ -24,8 +24,8 @@
 
 #include <QObject>
 
-#include "common/qlcinputprofile.h"
-#include "common/qlctypes.h"
+#include "qlcinputprofile.h"
+#include "qlctypes.h"
 
 class InputPatchEditor;
 class InputMapEditor;

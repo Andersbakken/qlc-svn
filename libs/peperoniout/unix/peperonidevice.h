@@ -24,7 +24,7 @@
 
 #include <QObject>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 struct usb_dev_handle;
 struct usb_device;

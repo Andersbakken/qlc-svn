@@ -23,9 +23,9 @@
 #include <QtXml>
 #include <QMap>
 
-#include <common/qlcinputchannel.h>
-#include <common/qlcinputprofile.h>
-#include <common/qlcfile.h>
+#include "qlcinputchannel.h"
+#include "qlcinputprofile.h"
+#include "qlcfile.h"
 
 /****************************************************************************
  * Initialization

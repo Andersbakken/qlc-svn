@@ -31,10 +31,10 @@
 #include <QSpinBox>
 #include <QLabel>
 
-#include "common/qlcinputprofile.h"
-#include "common/qlcinputchannel.h"
-#include "common/qlccapability.h"
-#include "common/qlcchannel.h"
+#include "qlcinputprofile.h"
+#include "qlcinputchannel.h"
+#include "qlccapability.h"
+#include "qlcchannel.h"
 
 #include "vcsliderproperties.h"
 #include "selectinputchannel.h"

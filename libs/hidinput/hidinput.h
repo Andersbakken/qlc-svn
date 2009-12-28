@@ -25,8 +25,8 @@
 #include <QEvent>
 #include <QList>
 
-#include "common/qlcinplugin.h"
-#include "common/qlctypes.h"
+#include "qlcinplugin.h"
+#include "qlctypes.h"
 
 #include "hiddevice.h"
 #include "hidpoller.h"

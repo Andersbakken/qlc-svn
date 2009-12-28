@@ -38,7 +38,7 @@
 #include <QSize>
 #include <QPen>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "vcbuttonproperties.h"
 #include "functionselection.h"

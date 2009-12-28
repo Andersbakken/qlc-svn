@@ -26,7 +26,7 @@
 #include <QList>
 #include <QFont>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "monitor.h"
 
 class QByteArray;

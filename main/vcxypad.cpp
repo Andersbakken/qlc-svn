@@ -32,7 +32,7 @@
 #include <QList>
 #include <QtXml>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "vcxypadproperties.h"
 #include "virtualconsole.h"

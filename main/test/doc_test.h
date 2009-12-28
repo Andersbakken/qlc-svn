@@ -25,7 +25,7 @@
 #include <QObject>
 #include <QtXml>
 
-#include <common/qlcfixturedefcache.h>
+#include "qlcfixturedefcache.h"
 
 class Doc_Test : public QObject
 {

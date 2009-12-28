@@ -37,11 +37,11 @@
 #include <QMenu>
 #include <QtXml>
 
-#include "common/qlcfixturemode.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlccapability.h"
-#include "common/qlcchannel.h"
-#include "common/qlcfile.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlccapability.h"
+#include "qlcchannel.h"
+#include "qlcfile.h"
 
 #include "fixtureconsole.h"
 #include "fixturemanager.h"

@@ -37,13 +37,13 @@
 #include <QList>
 #include <QUrl>
 
-#include <common/qlcfixturemode.h>
-#include <common/qlcfixturedef.h>
-#include <common/qlccapability.h>
-#include <common/qlcphysical.h>
-#include <common/qlcchannel.h>
-#include <common/qlctypes.h>
-#include <common/qlcfile.h>
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlccapability.h"
+#include "qlcphysical.h"
+#include "qlcchannel.h"
+#include "qlctypes.h"
+#include "qlcfile.h"
 
 #ifdef Q_WS_X11
 #include <sys/types.h>

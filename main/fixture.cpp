@@ -27,12 +27,12 @@
 #include <QtXml>
 #include <QIcon>
 
-#include "common/qlcfixturedefcache.h"
-#include "common/qlcfixturemode.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlccapability.h"
-#include "common/qlcchannel.h"
-#include "common/qlctypes.h"
+#include "qlcfixturedefcache.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlccapability.h"
+#include "qlcchannel.h"
+#include "qlctypes.h"
 
 #include "fixtureconsole.h"
 #include "fixture.h"

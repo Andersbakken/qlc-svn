@@ -23,8 +23,8 @@
 #include <QObject>
 #include <QtXml>
 
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 #include "outputpatch.h"
 #include "outputmap.h"
 

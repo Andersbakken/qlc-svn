@@ -24,8 +24,8 @@
 
 #include <QObject>
 
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 
 class EnttecDMXUSBWidget;
 

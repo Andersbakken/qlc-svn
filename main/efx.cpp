@@ -28,10 +28,10 @@
 
 #include <math.h>
 
-#include "common/qlcfixturemode.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlcchannel.h"
-#include "common/qlcfile.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlcchannel.h"
+#include "qlcfile.h"
 
 #include "mastertimer.h"
 #include "outputmap.h"

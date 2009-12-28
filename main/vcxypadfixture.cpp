@@ -24,9 +24,9 @@
 #include <QString>
 #include <QtXml>
 
-#include "common/qlcfixturemode.h"
-#include "common/qlcchannel.h"
-#include "common/qlcfile.h"
+#include "qlcfixturemode.h"
+#include "qlcchannel.h"
+#include "qlcfile.h"
 
 #include "vcxypadfixture.h"
 #include "outputmap.h"

@@ -32,10 +32,11 @@
 #include <QPoint>
 #include <QSize>
 
-#include "common/qlcfixturemode.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlcphysical.h"
-#include "common/qlcchannel.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlcphysical.h"
+#include "qlcchannel.h"
+
 #include "editmode.h"
 #include "app.h"
 

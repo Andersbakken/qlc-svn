@@ -33,8 +33,8 @@
 #include <QCoreApplication>
 #endif
 
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 
 #include "dummyoutplugin.h"
 #include "outputmanager.h"

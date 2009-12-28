@@ -28,9 +28,9 @@
 #include <QCheckBox>
 #include <QSpinBox>
 
-#include "common/qlcinputchannel.h"
-#include "common/qlcinputprofile.h"
-#include "common/qlcfixturedef.h"
+#include "qlcinputchannel.h"
+#include "qlcinputprofile.h"
+#include "qlcfixturedef.h"
 
 #include "vcbuttonproperties.h"
 #include "selectinputchannel.h"

@@ -42,7 +42,7 @@
 #include <QtXml>
 
 #include <cmath>
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "virtualconsole.h"
 #include "vcproperties.h"

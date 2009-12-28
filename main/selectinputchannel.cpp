@@ -22,8 +22,8 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 
-#include <common/qlcinputchannel.h>
-#include <common/qlcinputprofile.h>
+#include "qlcinputchannel.h"
+#include "qlcinputprofile.h"
 
 #include "selectinputchannel.h"
 #include "inputpatch.h"

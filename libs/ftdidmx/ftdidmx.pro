@@ -4,7 +4,7 @@ TEMPLATE	= lib
 LANGUAGE	= C++
 TARGET		= ftdidmxout
 
-INCLUDEPATH	+= . ../../libs/
+INCLUDEPATH	+= ../../libs/common
 CONFIG          += plugin
 macx:LIBS	+= -L. -lftd2xx.0.1.4
 win32:LIBS	+= ftd2xx.lib

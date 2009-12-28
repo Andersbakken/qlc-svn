@@ -27,7 +27,7 @@
 #include <QString>
 #include <QList>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "vcxypadfixture.h"
 #include "vcwidget.h"
 

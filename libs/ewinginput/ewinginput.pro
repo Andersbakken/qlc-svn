@@ -4,7 +4,7 @@ TEMPLATE 	= lib
 LANGUAGE 	= C++
 TARGET 		= ewinginput
 
-INCLUDEPATH	+= . ../../libs/
+INCLUDEPATH	+= ../../libs/common
 CONFIG          += plugin
 QT		+= network
 

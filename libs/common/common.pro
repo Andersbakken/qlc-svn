@@ -7,7 +7,6 @@ TARGET 		= qlccommon
 CONFIG          += qt
 !win32:CONFIG	+= staticlib
 QT 		+= xml
-INCLUDEPATH	+= ../
 win32:DEFINES 	+= QLC_EXPORT
 
 # Sources

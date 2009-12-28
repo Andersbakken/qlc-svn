@@ -25,7 +25,7 @@
 #include <QList>
 
 #include "vcwidget.h"
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class QDomDocument;
 class QDomElement;

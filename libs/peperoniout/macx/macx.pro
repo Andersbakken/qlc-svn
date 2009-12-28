@@ -5,7 +5,9 @@ LANGUAGE	= C++
 TARGET		= peperoniout
 
 CONFIG          += plugin
-INCLUDEPATH	+= ../../ ../../macx/libusb
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= ../../macx/libusb
+DEPENTPATH	+= ../unix
 LIBS		+= ../../macx/libusb/libusb.a
 LIBS		+= -framework IOKit -framework CoreFoundation
 

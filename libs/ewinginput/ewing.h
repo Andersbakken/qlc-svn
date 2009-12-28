@@ -26,7 +26,7 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #define EWING_INVALID_CHANNEL -1
 

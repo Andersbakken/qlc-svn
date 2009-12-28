@@ -25,8 +25,8 @@
 #include <QFile>
 #include <QtXml>
 
-#include "common/qlcfixturedef.h"
-#include "common/qlcfile.h"
+#include "qlcfixturedef.h"
+#include "qlcfile.h"
 
 #include "scene.h"
 #include "doc.h"

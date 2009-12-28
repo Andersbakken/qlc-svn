@@ -25,7 +25,7 @@
 #include <QDialog>
 #include <QList>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 #include "ui_functionselection.h"
 #include "function.h"
 

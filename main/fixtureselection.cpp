@@ -22,7 +22,7 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 
-#include "common/qlcfixturedef.h"
+#include "qlcfixturedef.h"
 
 #include "fixtureselection.h"
 #include "fixture.h"

@@ -64,11 +64,11 @@
 #include <X11/Xlib.h>
 #endif
 
-#include "common/qlcfixturedefcache.h"
-#include "common/qlcdocbrowser.h"
-#include "common/qlcfixturedef.h"
-#include "common/qlctypes.h"
-#include "common/qlcfile.h"
+#include "qlcfixturedefcache.h"
+#include "qlcdocbrowser.h"
+#include "qlcfixturedef.h"
+#include "qlctypes.h"
+#include "qlcfile.h"
 
 #define SETTINGS_GEOMETRY "workspace/geometry"
 

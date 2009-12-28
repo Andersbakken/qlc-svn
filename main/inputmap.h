@@ -26,8 +26,8 @@
 #include <QVector>
 #include <QList>
 
-#include "common/qlcinputprofile.h"
-#include "common/qlctypes.h"
+#include "qlcinputprofile.h"
+#include "qlctypes.h"
 
 class QLCInPlugin;
 class InputPatch;

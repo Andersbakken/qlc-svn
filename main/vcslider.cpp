@@ -42,7 +42,7 @@
 #include "app.h"
 #include "doc.h"
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 extern App* _app;
 

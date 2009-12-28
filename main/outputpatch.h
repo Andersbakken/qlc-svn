@@ -24,7 +24,7 @@
 
 #include <QObject>
 
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 class QDomDocument;
 class QDomElement;

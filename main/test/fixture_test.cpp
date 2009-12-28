@@ -22,10 +22,10 @@
 #include <QtTest>
 #include <QtXml>
 
-#include <common/qlcfixturedefcache.h>
-#include <common/qlcfixturemode.h>
-#include <common/qlcfixturedef.h>
-#include <common/qlccapability.h>
+#include "qlcfixturedefcache.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
+#include "qlccapability.h"
 
 #include "fixture_test.h"
 #include "../fixture.h"

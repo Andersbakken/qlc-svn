@@ -29,9 +29,9 @@
 #include <QtXml>
 #include <QDir>
 
-#include <common/qlcinplugin.h>
-#include <common/qlctypes.h>
-#include <common/qlcfile.h>
+#include "qlcinplugin.h"
+#include "qlctypes.h"
+#include "qlcfile.h"
 
 #include "inputpatch.h"
 #include "inputmap.h"

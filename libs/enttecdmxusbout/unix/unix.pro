@@ -5,9 +5,11 @@ LANGUAGE	= C++
 TARGET		= enttecdmxusbout
 
 CONFIG		+= plugin
-INCLUDEPATH	+= ../.. ../ftdi
 QT		+= dbus
 DEFINES		+= DBUS_ENABLED
+
+INCLUDEPATH	+= ../../common
+INCLUDEPATH	+= ../ftdi
 
 HARDWARE_PLATFORM = $$system(uname -m)
 contains(HARDWARE_PLATFORM, x86_64) {

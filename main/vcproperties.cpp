@@ -23,9 +23,9 @@
 #include <QSpinBox>
 #include <QtXml>
 
-#include "common/qlcinputprofile.h"
-#include "common/qlcinputchannel.h"
-#include "common/qlcfile.h"
+#include "qlcinputprofile.h"
+#include "qlcinputchannel.h"
+#include "qlcfile.h"
 
 #include "selectinputchannel.h"
 #include "virtualconsole.h"

@@ -27,8 +27,8 @@
 #include <QDebug>
 #include <QList>
 #include <ola/Logging.h>
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 #include "olaoutthread.h"
 
 class ConfigureOlaOut;

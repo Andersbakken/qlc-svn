@@ -23,7 +23,7 @@
 #define FIXTURE_TEST_H
 
 #include <QObject>
-#include <common/qlcfixturedefcache.h>
+#include "qlcfixturedefcache.h"
 
 class Fixture_Test : public QObject
 {

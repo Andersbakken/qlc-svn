@@ -27,7 +27,7 @@
 #include <QSize>
 #include <QtXml>
 
-#include "common/qlcfile.h"
+#include "qlcfile.h"
 
 #include "virtualconsole.h"
 #include "vclabel.h"

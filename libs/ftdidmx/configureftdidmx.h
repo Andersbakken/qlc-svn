@@ -23,8 +23,8 @@
 #define CONFIGUREFTDIDMX_H
 
 #include <QDialog>
-#include "common/qlctypes.h"
 
+#include "qlctypes.h"
 #include "ui_configureftdidmx.h"
 
 class FTDIDMXOut;

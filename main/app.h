@@ -27,9 +27,9 @@
 #include <QList>
 #include <QFile>
 
-#include "common/qlcfixturedefcache.h"
-#include "common/qlcoutplugin.h"
-#include "common/qlcinplugin.h"
+#include "qlcfixturedefcache.h"
+#include "qlcoutplugin.h"
+#include "qlcinplugin.h"
 
 class QDomDocument;
 class QDomElement;

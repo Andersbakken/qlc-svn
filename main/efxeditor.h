@@ -25,7 +25,7 @@
 #include <QPolygon>
 #include <QFrame>
 #include <QTimer>
-#include "common/qlctypes.h"
+#include "qlctypes.h"
 
 #include "ui_efxeditor.h"
 #include "efx.h"

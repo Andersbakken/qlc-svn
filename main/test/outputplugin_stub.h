@@ -25,8 +25,8 @@
 #include <QObject>
 #include <QList>
 
-#include "common/qlcoutplugin.h"
-#include "common/qlctypes.h"
+#include "qlcoutplugin.h"
+#include "qlctypes.h"
 
 class OutputPluginStub : public QObject, public QLCOutPlugin
 {

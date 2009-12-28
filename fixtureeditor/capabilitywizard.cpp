@@ -24,8 +24,8 @@
 #include <QSpinBox>
 #include <QDialog>
 
-#include <common/qlccapability.h>
-#include <common/qlcchannel.h>
+#include "qlccapability.h"
+#include "qlcchannel.h"
 
 #include "capabilitywizard.h"
 

@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <QString>
 
-#include "peperoni/usbdmx-dynamic.h"
+#include "usbdmx-dynamic.h"
 #include "peperonidevice.h"
 #include "peperoniout.h"
 

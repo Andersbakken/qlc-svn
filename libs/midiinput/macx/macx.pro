@@ -5,7 +5,9 @@ LANGUAGE 	= C++
 TARGET 		= midiinput
 
 CONFIG          += plugin
-INCLUDEPATH	+= ../common ../..
+INCLUDEPATH	+= ../common
+INCLUDEPATH	+= ../../common
+DEPENDPATH	+= ../common
 LIBS		+= -framework CoreMIDI -framework CoreFoundation
 
 ###############################################################################
