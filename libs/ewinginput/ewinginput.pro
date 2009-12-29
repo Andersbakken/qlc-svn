@@ -14,7 +14,8 @@ INSTALLS	+= target
 win32 {
 	# Qt Libraries
 	qtnetwork.path  = $$LIBSDIR
-	qtnetwork.files = $$(QTDIR)/bin/QtNetwork4.dll
+	CONFIG(release, debug|release) qtnetwork.files = $$(QTDIR)/bin/QtNetwork4.dll
+	CONFIG(debug, debug|release) qtnetwork.files = $$(QTDIR)/bin/QtNetworkd4.dll
 	INSTALLS	+= qtnetwork
 }
 
