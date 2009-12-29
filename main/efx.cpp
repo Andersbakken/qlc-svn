@@ -214,55 +214,61 @@ bool EFX::preview(QPolygon* polygon)
 	if (m_algorithm == KCircleAlgorithmName)
 	{
 		/* Draw a preview of a circle */
-		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		for (step = 0; step < stepCount; step++)
 		{
 			circlePoint(this, i, &x, &y);
-			polygon->setPoint(step++, int(x), int(y));
+			polygon->setPoint(step, int(x), int(y));
+			i += stepSize;
 		}
 	}
 	else if (m_algorithm == KEightAlgorithmName)
 	{
 		/* Draw a preview of a eight */
-		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		for (step = 0; step < stepCount; step++)
 		{
 			eightPoint(this, i, &x, &y);
-			polygon->setPoint(step++, int(x), int(y));
+			polygon->setPoint(step, int(x), int(y));
+			i += stepSize;
 		}
 	}
 	else if (m_algorithm == KLineAlgorithmName)
 	{
 		/* Draw a preview of a line */
-		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		for (step = 0; step < stepCount; step++)
 		{
 			linePoint(this, i, &x, &y);
-			polygon->setPoint(step++, int(x), int(y));
+			polygon->setPoint(step, int(x), int(y));
+			i += stepSize;
 		}
 	}
 	else if (m_algorithm == KDiamondAlgorithmName)
 	{
 		/* Draw a preview of a diamond */
-		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		for (step = 0; step < stepCount; step++)
 		{
 			diamondPoint(this, i, &x, &y);
-			polygon->setPoint(step++, int(x), int(y));
+			polygon->setPoint(step, int(x), int(y));
+			i += stepSize;
 		}
 	}
 	else if (m_algorithm == KTriangleAlgorithmName)
 	{
 		/* Draw a preview of a triangle */
-		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		for (step = 0; step < stepCount; step++)
 		{
 			trianglePoint(this, i, &x, &y);
-			polygon->setPoint(step++, int(x), int(y));
+			polygon->setPoint(step, int(x), int(y));
+			i += stepSize;
 		}
 	}
 	else if (m_algorithm == KLissajousAlgorithmName)
 	{
 		/* Draw a preview of a lissajous */
-		for (i = 0; i < (M_PI * 2.0); i += stepSize)
+		for (step = 0; step < stepCount; step++)
 		{
 			lissajousPoint(this, i, &x, &y);
-			polygon->setPoint(step++, int(x), int(y));
+			polygon->setPoint(step, int(x), int(y));
+			i += stepSize;
 		}
 	}
 	else

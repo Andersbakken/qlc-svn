@@ -46,7 +46,6 @@
 MasterTimer::MasterTimer(QObject* parent, OutputMap* outputMap)
 	: QThread(parent)
 {
-	Q_ASSERT(outputMap != NULL);
 	m_outputMap = outputMap;
 	m_running = false;
 	m_stopAll = false;
