@@ -4,8 +4,7 @@ TEMPLATE = app
 LANGUAGE = C++
 TARGET   = test_engine
 
-DEFINES += QLC_UNIT_TEST
-CONFIG 	+= warn_on qtestlib
+CONFIG 	+= qtestlib
 CONFIG 	-= app_bundle
 QT 	+= xml
 

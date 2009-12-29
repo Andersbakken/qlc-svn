@@ -2,11 +2,10 @@ include(../../../variables.pri)
 
 TEMPLATE = app
 LANGUAGE = C++
-TARGET   = test
+TARGET   = test_common
 
 CONFIG	-= app_bundle
 QT 	+= testlib xml
-DEFINES += QLC_UNIT_TEST
 
 unix:DEFINES += INTERNAL_FIXTUREDIR=\\\"../../../fixtures/\\\"
 win32:DEFINES += INTERNAL_FIXTUREDIR=\\\"../../../../fixtures/\\\"

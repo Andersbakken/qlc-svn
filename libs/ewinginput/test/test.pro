@@ -1,9 +1,11 @@
+include(../../../variables.pri)
+
 TEMPLATE = app
 LANGUAGE = C++
-TARGET = testewing
+TARGET   = test_ewing
 
-QT += network testlib
-CONFIG += release warn_on
+QT 	+= network testlib
+CONFIG 	-= app_bundle
 INCLUDEPATH += ../../common
 
 SOURCES = testeplaybackwing.cpp \

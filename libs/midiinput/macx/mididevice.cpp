@@ -46,7 +46,6 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEntityRef entity)
 	m_mode(ControlChange),
 	m_midiChannel(0)
 {
-	Q_ASSERT(MIDIGetNumberOfSources(entity) > 0);
 }
 
 MIDIDevice::~MIDIDevice()

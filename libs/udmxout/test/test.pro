@@ -1,17 +1,18 @@
-TEMPLATE 	= app
-TARGET 		= udmxtest
+include(../../../variables.pri)
 
-CONFIG 		+= warn_on
-MAKE_CXXFLAGS	+= -Werror
+TEMPLATE = app
+LANGUAGE = C++
+TARGET 	 = udmxtest
 
-INCLUDEPATH 	+= ../../common
-INCLUDEPATH	+= ../unix
-DEPENDPATH	+= ../unix
+CONFIG -= app_bundle
+
+INCLUDEPATH += ../../common
+INCLUDEPATH += ../unix
+DEPENDPATH  += ../unix
 
 macx:INCLUDEPATH += ../../macx/libusb
-macx:LIBS 	+= ../../macx/libusb/libusb.a
-macx:LIBS	+= -framework IOKit -framework CoreFoundation
-macx:CONFIG	-= app_bundle
+macx:LIBS 	 += ../../macx/libusb/libusb.a
+macx:LIBS	 += -framework IOKit -framework CoreFoundation
 
 HEADERS += ../unix/udmxdevice.h \
 	   ../unix/udmxout.h

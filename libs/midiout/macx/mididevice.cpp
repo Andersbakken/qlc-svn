@@ -39,7 +39,6 @@ MIDIDevice::MIDIDevice(MIDIOut* parent, MIDIEntityRef entity)
 	m_mode(ControlChange),
 	m_midiChannel(1)
 {
-	Q_ASSERT(MIDIGetNumberOfDestinations(entity) > 0);
 	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
 }
 

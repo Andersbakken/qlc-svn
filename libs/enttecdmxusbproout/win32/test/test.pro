@@ -1,9 +1,14 @@
+include(../../../../variables.pri)
+
 TEMPLATE = app
+LANGUAGE = C++
 TARGET = test
 
-CONFIG += warn_on console
+CONFIG += console
 
-INCLUDEPATH += .. ../../../
+INCLUDEPATH += ..
+INCLUDEPATH += ../../../common
+DEPENDPATH  += ..
 
 SOURCES += main.cpp ../enttecdmxusbpro.cpp ../enttecdmxusbproout.cpp
 HEADERS += ../enttecdmxusbpro.h ../enttecdmxusbproout.h
