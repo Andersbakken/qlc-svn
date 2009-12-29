@@ -71,7 +71,10 @@ bool EWing::isOutputData(const QByteArray& data)
 {
 	/* Check, if there's enough bytes for the header */
 	if (data.size() < EWING_HEADER_SIZE)
+	{
+		qWarning() << "Got bogus data";
 		return false;
+	}
 
 	QByteArray header(data.mid(EWING_BYTE_HEADER, EWING_HEADER_SIZE));
 	return (header == EWING_HEADER_OUTPUT);
@@ -85,7 +88,12 @@ EWing::Type EWing::resolveType(const QByteArray& data)
 {
 	/* Check, if there's enough bytes for wing flags */
 	if (data.size() < EWING_BYTE_FLAGS)
+	{
+		qWarning() << "Unable to determine wing type."
+			   << "Expected at least" << EWING_BYTE_FLAGS
+			   << "bytes but got only" << data.size();
 		return Unknown;
+	}
 
 	unsigned char flags = data[EWING_BYTE_FLAGS];
 	return EWing::Type(flags & EWING_FLAGS_MASK_TYPE);
@@ -95,7 +103,12 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
 {
 	/* Check, if there's enough bytes for wing flags */
 	if (data.size() < EWING_BYTE_FIRMWARE)
+	{
+		qWarning() << "Unable to determine firmware version."
+			   << "Expected at least" << EWING_BYTE_FIRMWARE
+			   << "bytes but got only" << data.size();
 		return 0;
+	}
 
 	return data[EWING_BYTE_FIRMWARE];
 }
@@ -106,17 +119,28 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
 
 unsigned char EWing::cacheValue(int channel)
 {
-	if (m_values.size() < channel)
+	if (channel >= m_values.size())
+	{
+		qWarning() << "Attempting to retrieve value for a channel that"
+			   << "is beyond allocated wing channel count";
 		return 0;
+	}
 	else
+	{
 		return m_values[channel];
+	}
 }
 
 void EWing::setCacheValue(int channel, char value)
 {
-	Q_ASSERT(m_values.size() < channel);
+	if (channel >= m_values.size())
+	{
+		qWarning() << "Attempting to store value for a channel that is"
+			   << "beyond allocated wing channel count";
+		return;
+	}
 
-	if (m_values[channel] != value && channel != EWING_INVALID_CHANNEL)
+	if (channel != EWING_INVALID_CHANNEL && m_values[channel] != value)
 	{
 		m_values[channel] = value;
 		emit valueChanged(channel, t_input_value(value));

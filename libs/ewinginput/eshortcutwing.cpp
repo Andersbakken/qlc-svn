@@ -72,7 +72,7 @@ EWING_SHORTCUT_BYTE_BUTTON + 7: Buttons 00 - 07 (8 buttons)
 EShortcutWing::EShortcutWing(QObject* parent, const QHostAddress& address,
 	const QByteArray& data) : EWing(parent, address, data)
 {
-	m_values.resize(EWING_SHORTCUT_CHANNEL_COUNT);
+	m_values = QByteArray(EWING_SHORTCUT_CHANNEL_COUNT, 0);
 	
 	/* Take initial values from the first received datagram packet.
 	   The plugin hasn't yet connected to valueChanged() signal, so this

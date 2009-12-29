@@ -48,7 +48,7 @@ EProgramWing::EProgramWing(QObject* parent, const QHostAddress& address,
 			   const QByteArray& data)
 	: EWing(parent, address, data)
 {
-	m_values.resize(EWING_PROGRAM_CHANNEL_COUNT);
+	m_values = QByteArray(EWING_PROGRAM_CHANNEL_COUNT, 0);
 
 	m_channelMap[0] = 6;
 	m_channelMap[1] = 5;
@@ -181,7 +181,12 @@ void EProgramWing::parseData(const QByteArray& data)
 
 	/* Check that we can get all buttons from the packet */
 	size = EWING_PROGRAM_BYTE_BUTTON + EWING_PROGRAM_BUTTON_SIZE;
-	Q_ASSERT(data.size() >= size);
+	if (data.size() < size)
+	{
+		qWarning() << "Expected at least" << size
+			   << "bytes for buttons but got only" << data.size();
+		return;
+	}
 
 	/* Read the state of each button */
 	for (byte = size - 1; byte >= EWING_PROGRAM_BYTE_BUTTON; byte--)
@@ -208,7 +213,12 @@ void EProgramWing::parseData(const QByteArray& data)
 
 	/* Check that we can get all sliders from the packet */
 	size = EWING_PROGRAM_BYTE_ENCODER + EWING_PROGRAM_ENCODER_SIZE;
-	Q_ASSERT(data.size() >= size);
+	if (data.size() < size)
+	{
+		qWarning() << "Expected at least" << size
+			   << "bytes for sliders but got only" << data.size();
+		return;
+	}
 
 	/* Read the direction of each encoder. 255 = CW, 1 = CCW, 0 = NOP. */
 	for (int encoder = 0; encoder < EWING_PROGRAM_ENCODER_SIZE; encoder++)

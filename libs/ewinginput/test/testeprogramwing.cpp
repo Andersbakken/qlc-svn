@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QUdpSocket>
 #include <QByteArray>
-#include <QtTest>
+#include <QTest>
 
 #include "../eprogramwing.h"
 #include "testeprogramwing.h"
@@ -384,7 +384,7 @@ void TestEProgramWing::buttons()
 	QFETCH(int, value);
 
 	m_ewing->parseData(ba);
-	QVERIFY(m_ewing->cacheValue(channel) == (unsigned char) value);
+	QCOMPARE(m_ewing->cacheValue(channel), (unsigned char) value);
 }
 
 void TestEProgramWing::encoders_data()
@@ -409,7 +409,7 @@ void TestEProgramWing::encoders_data()
 		QTest::newRow("Encoder 0 CCW") << ba << 65 << i;
 
 	/********************************************************************/
-#if 0
+
 	QTest::newRow("Encoder 1 Initial") << ba << 66 << 0;
 	ba[26] = 255;
 	for (int i = 1; i <= 255; i++)
@@ -418,7 +418,7 @@ void TestEProgramWing::encoders_data()
 	ba[26] = 1;
 	for (int i = 254; i >= 0; i--)
 		QTest::newRow("Encoder 1 CCW") << ba << 66 << i;
-#endif
+
 	/********************************************************************/
 
 	QTest::newRow("Encoder 2 CW Initial") << ba << 67 << 0;
@@ -438,7 +438,7 @@ void TestEProgramWing::encoders()
 	QFETCH(int, value);
 
 	m_ewing->parseData(ba);
-	QVERIFY(m_ewing->cacheValue(channel) == value);
+	QCOMPARE(int(m_ewing->cacheValue(channel)), value);
 }
 
 void TestEProgramWing::cleanupTestCase()

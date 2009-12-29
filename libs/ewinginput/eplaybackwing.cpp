@@ -89,7 +89,7 @@ EWING_PLAYBACK_BYTE_SLIDER + 9: Slider 10 (0-255)
 EPlaybackWing::EPlaybackWing(QObject* parent, const QHostAddress& address,
 	const QByteArray& data) : EWing(parent, address, data)
 {
-	m_values.resize(EWING_PLAYBACK_CHANNEL_COUNT);
+	m_values = QByteArray(EWING_PLAYBACK_CHANNEL_COUNT, 0);
 
 	/* Playback wing keys seem to be in a somewhat weird order */
 	m_channelMap[0] = 7 + EWING_PLAYBACK_SLIDER_SIZE;
