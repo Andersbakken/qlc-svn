@@ -213,7 +213,8 @@ void MonitorFixture::updateValues(const QByteArray& universes)
 
 	/* Check that this MonitorFixture's fixture really exists */
 	fxi = _app->doc()->fixture(m_fixture);
-	Q_ASSERT(fxi != NULL);
+	if (fxi == NULL)
+		return;
 
 	QListIterator <QLabel*> it(m_valueLabels);
 	while (it.hasNext() == true)
