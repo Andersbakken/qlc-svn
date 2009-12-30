@@ -35,7 +35,11 @@
 void Fixture_Test::initTestCase()
 {
 	Bus::init(this);
+#ifdef WIN32
+	QVERIFY(m_fixtureDefCache.load("../../../fixtures/") == true);
+#else
 	QVERIFY(m_fixtureDefCache.load("../../fixtures/") == true);
+#endif
 }
 
 void Fixture_Test::id()

@@ -49,7 +49,7 @@ void MasterTimer_Test::initial()
 	QVERIFY(mt.outputMap() == m_oms);
 	QVERIFY(mt.m_outputMap == m_oms);
 	QVERIFY(mt.m_running == false);
-	QVERIFY(mt.m_stopAll == false);
+	QVERIFY(mt.m_stopAllFunctions == false);
 }
 
 void MasterTimer_Test::startStop()
@@ -67,7 +67,7 @@ void MasterTimer_Test::startStop()
 	QVERIFY(mt.outputMap() == m_oms);
 	QVERIFY(mt.m_outputMap == m_oms);
 	QVERIFY(mt.m_running == true);
-	QVERIFY(mt.m_stopAll == false);
+	QVERIFY(mt.m_stopAllFunctions == false);
 
 	mt.stop();
 
@@ -76,7 +76,7 @@ void MasterTimer_Test::startStop()
 	QVERIFY(mt.outputMap() == m_oms);
 	QVERIFY(mt.m_outputMap == m_oms);
 	QVERIFY(mt.m_running == false);
-	QVERIFY(mt.m_stopAll == false);
+	QVERIFY(mt.m_stopAllFunctions == false);
 }
 
 void MasterTimer_Test::startStopFunction()
@@ -181,7 +181,7 @@ void MasterTimer_Test::stopAll()
 	fs3.start(&mt);
 	QVERIFY(mt.runningFunctions() == 3);
 
-	mt.stopAll();
+	mt.stopAllFunctions();
 	QVERIFY(mt.runningFunctions() == 0);
 }
 
@@ -228,7 +228,7 @@ void MasterTimer_Test::restart()
 	QVERIFY(mt.outputMap() == m_oms);
 	QVERIFY(mt.m_outputMap == m_oms);
 	QVERIFY(mt.m_running == false);
-	QVERIFY(mt.m_stopAll == false);
+	QVERIFY(mt.m_stopAllFunctions == false);
 
 	mt.start();
 	QVERIFY(mt.runningFunctions() == 0);
@@ -238,14 +238,14 @@ void MasterTimer_Test::restart()
 	QVERIFY(mt.outputMap() == m_oms);
 	QVERIFY(mt.m_outputMap == m_oms);
 	QVERIFY(mt.m_running == true);
-	QVERIFY(mt.m_stopAll == false);
+	QVERIFY(mt.m_stopAllFunctions == false);
 
 	fs1.start(&mt);
 	fs2.start(&mt);
 	fs3.start(&mt);
 	QVERIFY(mt.runningFunctions() == 3);
 
-	mt.stopAll();
+	mt.stopAllFunctions();
 }
 
 void MasterTimer_Test::cleanupTestCase()

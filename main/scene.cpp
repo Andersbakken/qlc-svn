@@ -549,10 +549,10 @@ t_value Scene::nextValue(SceneChannel* sch)
 	Q_ASSERT(sch != NULL);
 
 	/* Ensure that bus value is never zero */
-	double busValue = double(Bus::instance()->value(m_busID)) + 1.0;
+	qreal busValue = qreal(Bus::instance()->value(m_busID)) + 1.0;
 
 	/* Time scale is basically a percentage (0.0 - 1.0) of remaining time */
-	double timeScale = double(m_elapsed + 1) / busValue;
+	qreal timeScale = qreal(m_elapsed + 1) / busValue;
 
 	/*
 	 * Calculate the current value based on what it should be after
@@ -560,7 +560,7 @@ t_value Scene::nextValue(SceneChannel* sch)
 	 * m_elapsed == Bus::instance()->value()
 	 */
 	sch->current = sch->target - sch->start;
-	sch->current = int(double(sch->current) * timeScale);
+	sch->current = int(qreal(sch->current) * timeScale);
 	sch->current += sch->start;
 
 	return t_value(sch->current);

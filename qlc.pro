@@ -17,7 +17,12 @@ QMAKE_CLEAN	+= $$DEBIAN_CLEAN
 QMAKE_DISTCLEAN += $$DEBIAN_CLEAN
 
 unittests.target = test
-unittests.commands += cd libs/common/test ; ./test_common ; \
+QMAKE_EXTRA_TARGETS += unittests
+
+unix:unittests.commands += cd libs/common/test ; ./test_common ; \
                       cd ../../ewinginput/test ; ./test_ewing ; \
                       cd ../../../main/test ; ./test_engine
-QMAKE_EXTRA_TARGETS += unittests
+
+win32:unittests.commands += cd libs/common/test/debug && test_common.exe && \
+                      cd ../../../ewinginput/test/debug && test_ewing.exe && \
+                      cd ../../../../main/test/debug && test_engine.exe
