@@ -833,7 +833,7 @@ void VirtualConsole::slotToolsSliders()
 void VirtualConsole::slotToolsPanic()
 {
 	Q_ASSERT(_app->masterTimer() != NULL);
-	_app->masterTimer()->stopAll();
+	_app->masterTimer()->stopAllFunctions();
 }
 
 /*****************************************************************************

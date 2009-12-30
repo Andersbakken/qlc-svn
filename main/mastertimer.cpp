@@ -37,6 +37,7 @@
 
 #include "mastertimer.h"
 #include "outputmap.h"
+#include "dmxsource.h"
 #include "function.h"
 
 /*****************************************************************************
@@ -44,11 +45,11 @@
  *****************************************************************************/
 
 MasterTimer::MasterTimer(QObject* parent, OutputMap* outputMap)
-	: QThread(parent)
+	: QThread(parent),
+	m_outputMap(outputMap),
+	m_stopAllFunctions(false),
+	m_running(false)
 {
-	m_outputMap = outputMap;
-	m_running = false;
-	m_stopAll = false;
 }
 
 MasterTimer::~MasterTimer()
@@ -62,9 +63,8 @@ MasterTimer::~MasterTimer()
 
 int MasterTimer::runningFunctions()
 {
-	int n = 0;
 	m_functionListMutex.lock();
-	n = m_functionList.count();
+	int n = m_functionList.size();
 	m_functionListMutex.unlock();
 	return n;
 }
@@ -74,10 +74,8 @@ void MasterTimer::startFunction(Function* function)
 	Q_ASSERT(function != NULL);
 
 	m_functionListMutex.lock();
-
 	if (m_functionList.contains(function) == false)
 		m_functionList.append(function);
-
 	m_functionListMutex.unlock();
 }
 
@@ -90,15 +88,38 @@ void MasterTimer::stopFunction(Function* function)
 	m_functionListMutex.unlock();
 }
 
-void MasterTimer::stopAll()
+void MasterTimer::stopAllFunctions()
 {
-	m_stopAll = true;
+	m_stopAllFunctions = true;
 
 	/* Wait until all functions have been stopped */
 	while (runningFunctions() > 0)
 		msleep(10);
 
-	m_stopAll = false;
+	m_stopAllFunctions = false;
+}
+
+/****************************************************************************
+ * DMX Sources
+ ****************************************************************************/
+
+void MasterTimer::registerDMXSource(DMXSource* source)
+{
+	Q_ASSERT(source != NULL);
+
+	m_dmxSourceListMutex.lock();
+	if (m_dmxSourceList.contains(source) == false)
+		m_dmxSourceList.append(source);
+	m_dmxSourceListMutex.unlock();
+}
+
+void MasterTimer::unregisterDMXSource(DMXSource* source)
+{
+	Q_ASSERT(source != NULL);
+
+	m_dmxSourceListMutex.lock();
+	m_dmxSourceList.removeAll(source);
+	m_dmxSourceListMutex.unlock();
 }
 
 /****************************************************************************
@@ -107,6 +128,10 @@ void MasterTimer::stopAll()
 
 void MasterTimer::start(Priority priority)
 {
+	/* Start with a clean slate */
+	m_functionList.clear();
+	m_dmxSourceList.clear();
+
 	m_running = true;
 	QThread::start(priority);
 }
@@ -188,7 +213,8 @@ void MasterTimer::run()
 			}
 		}
 
-		event();
+		/* Execute the next timer event */
+		timerTick();
 	}
 
 	free(finish);
@@ -228,29 +254,37 @@ void MasterTimer::run()
 		}
 
 		/* Execute the next timer event */
-		event();
+		timerTick();
 	}
 }
 #endif
 
-void MasterTimer::event()
+void MasterTimer::timerTick()
 {
+	runFunctions();
+	runDMXSources();
+	m_outputMap->dumpUniverses();
+}
+
+void MasterTimer::runFunctions()
+{
+	QByteArray* universes = m_outputMap->claimUniverses();
+
 	/* Lock before accessing the running functions list. */
 	m_functionListMutex.lock();
-	for (int i = 0; i < m_functionList.count(); i++)
+	for (int i = 0; i < m_functionList.size(); i++)
 	{
-		QByteArray* universes;
-		Function* function;
-
-		function = m_functionList.at(i);
+		Function* function = m_functionList.at(i);
 		Q_ASSERT(function != NULL);
 
 		/* No need to access the list on this round anymore. */
 		m_functionListMutex.unlock();
-		universes = m_outputMap->claimUniverses();
-		if (function->write(universes) == false || m_stopAll == true)
+
+		if (function->write(universes) == false ||
+		    m_stopAllFunctions == true)
+		{
 			function->stop(this);
-		m_outputMap->releaseUniverses();
+		}
 
 		/* Lock for the next round. */
 		m_functionListMutex.lock();
@@ -258,14 +292,38 @@ void MasterTimer::event()
 
 	/* No more functions. Get out and wait for next timer event. */
 	m_functionListMutex.unlock();
+	m_outputMap->releaseUniverses();
+}
 
-	/* Write all universes' data to output plugins */
-	m_outputMap->dumpUniverses();
+void MasterTimer::runDMXSources()
+{
+	QByteArray* universes = m_outputMap->claimUniverses();
+
+	/* Lock before accessing the running functions list. */
+	m_dmxSourceListMutex.lock();
+	for (int i = 0; i < m_dmxSourceList.size(); i++)
+	{
+		DMXSource* source = m_dmxSourceList.at(i);
+		Q_ASSERT(source != NULL);
+
+		/* No need to access the list on this round anymore. */
+		m_dmxSourceListMutex.unlock();
+
+		/* Get DMX data from the source */
+		source->writeDMX(universes);
+
+		/* Lock for the next round. */
+		m_dmxSourceListMutex.lock();
+	}
+
+	/* No more sources. Get out and wait for next timer event. */
+	m_dmxSourceListMutex.unlock();
+	m_outputMap->releaseUniverses();
 }
 
 void MasterTimer::stop()
 {
-	stopAll();
+	stopAllFunctions();
 
 	m_running = false;
 	wait();

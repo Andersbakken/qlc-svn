@@ -37,6 +37,7 @@
 #include "doc.h"
 #include "fixture.h"
 #include "outputmap.h"
+#include "mastertimer.h"
 #include "consolechannel.h"
 
 extern App* _app;
@@ -70,6 +71,7 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
 	m_channel = channel;
 
 	m_value = 0;
+	m_valueChanged = false;
 	m_menu = NULL;
 	m_outputDMX = true;
 
@@ -87,6 +89,7 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
 
 ConsoleChannel::~ConsoleChannel()
 {
+	_app->masterTimer()->unregisterDMXSource(this);
 }
 
 void ConsoleChannel::init()
@@ -150,6 +153,9 @@ void ConsoleChannel::init()
 		this, SLOT(slotValueEdited(const QString&)));
 	connect(m_valueSlider, SIGNAL(valueChanged(int)),
 		this, SLOT(slotValueChange(int)));
+
+	/* Register this object as a source of DMX data */
+	_app->masterTimer()->registerDMXSource(this);
 }
 
 /*****************************************************************************
@@ -426,14 +432,6 @@ void ConsoleChannel::updateValue()
 void ConsoleChannel::setOutputDMX(bool state)
 {
 	m_outputDMX = state;
-
-	/* When output is enabled again, update the current value to DMX */
-	if (state == true)
-		_app->outputMap()->setValue(m_fixture->universeAddress() +
-					    m_channel, (t_value) m_value);
-	else
-		_app->outputMap()->setValue(m_fixture->universeAddress() +
-					    m_channel, 0); /* Nasty...? */
 }
 
 void ConsoleChannel::setValue(t_value value)
@@ -448,14 +446,37 @@ void ConsoleChannel::slotValueEdited(const QString& text)
 
 void ConsoleChannel::slotValueChange(int value)
 {
-	if (m_outputDMX == true)
-		_app->outputMap()->setValue(m_fixture->universeAddress() +
-					    m_channel, (t_value) value);
+	if (m_value != value)
+	{
+		m_value = value;
+		m_valueEdit->setText(QString("%1").arg(m_value));
+		emit valueChanged(m_channel, m_value, isEnabled());
 
-	m_valueEdit->setText(QString("%1").arg(value));
-	m_value = value;
+		/* Use a mutex for m_valueChanged so that the latest value
+		   is really written. */
+		m_valueChangedMutex.lock();
+		m_valueChanged = true;
+		m_valueChangedMutex.unlock();
+	}
+}
 
-	emit valueChanged(m_channel, m_value, isEnabled());
+/*****************************************************************************
+ * DMXSource
+ *****************************************************************************/
+
+void ConsoleChannel::writeDMX(QByteArray* universes)
+{
+	if (m_outputDMX == false)
+		return;
+
+	m_valueChangedMutex.lock();
+	if (m_valueChanged == true)
+	{
+		t_channel ch = m_fixture->universeAddress() + m_channel;
+		(*universes)[ch] = char(m_value);
+		m_valueChanged = false;
+	}
+	m_valueChangedMutex.unlock();
 }
 
 /*****************************************************************************

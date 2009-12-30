@@ -23,9 +23,11 @@
 #define CONSOLECHANNEL_H
 
 #include <QGroupBox>
+#include <QMutex>
 #include <QIcon>
 
 #include "qlctypes.h"
+#include "dmxsource.h"
 
 class QContextMenuEvent;
 class QIntValidator;
@@ -39,7 +41,7 @@ class QMenu;
 class QLCChannel;
 class Fixture;
 
-class ConsoleChannel : public QGroupBox
+class ConsoleChannel : public QGroupBox, public DMXSource
 {
 	Q_OBJECT
 
@@ -109,7 +111,16 @@ signals:
 
 protected:
 	t_value m_value;
+	bool m_valueChanged;
+	QMutex m_valueChangedMutex;
 	bool m_outputDMX;
+
+	/*********************************************************************
+	 * DMXSource
+	 *********************************************************************/
+public:
+	/** \reimp */
+	void writeDMX(QByteArray* universes);
 
 	/*********************************************************************
 	 * Enable/disable

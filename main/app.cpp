@@ -512,7 +512,7 @@ void App::slotModeDesign()
 		if (result == QMessageBox::No)
 			return;
 		else
-			m_masterTimer->stopAll();
+			m_masterTimer->stopAllFunctions();
 	}
 
 	/* Set normal palette to mode indicator */

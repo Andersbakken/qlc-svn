@@ -41,6 +41,7 @@ HEADERS += aboutbox.h \
            collection.h \
            collectioneditor.h \
            consolechannel.h \
+	   dmxsource.h \
            doc.h \
            dummyoutplugin.h \
            efx.h \

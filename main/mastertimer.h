@@ -27,6 +27,7 @@
 #include <QList>
 
 class OutputMap;
+class DMXSource;
 class Function;
 
 class MasterTimer : public QThread
@@ -51,6 +52,17 @@ public:
 	virtual ~MasterTimer();
 
 	/*********************************************************************
+	 * OutputMap
+	 *********************************************************************/
+public:
+	/** Get the output map object that MasterTimer uses for DMX output */
+	OutputMap* outputMap() const { return m_outputMap; }
+
+protected:
+	/** An OutputMap instance that routes all values to correct plugins. */
+	OutputMap* m_outputMap;
+
+	/*********************************************************************
 	 * Functions
 	 *********************************************************************/
 public:
@@ -63,11 +75,8 @@ public:
 	/** Stop running the given function */
 	virtual void stopFunction(Function* function);
 
-	/** Stop all functions */
-	void stopAll();
-
-	/** Get the output map object that MasterTimer uses for DMX output */
-	OutputMap* outputMap() const { return m_outputMap; }
+	/** Stop all functions. DMX sources aren't removed with this method. */
+	void stopAllFunctions();
 
 protected:
 	/** List of currently running functions */
@@ -76,8 +85,36 @@ protected:
 	/** Mutex that guards access to m_functionList */
 	QMutex m_functionListMutex;
 
-	/** An OutputMap instance that routes all values to correct plugins */
-	OutputMap* m_outputMap;
+	/** Flag for stopping all functions */
+	bool m_stopAllFunctions;
+
+	/*********************************************************************
+	 * DMX Sources
+	 *********************************************************************/
+public:
+	/**
+	 * Register a DMXSource for additional DMX data output (sliders and
+	 * other directly user-controlled gadgets). Each DMXSource instance
+	 * can be registered exactly once.
+	 *
+	 * @param source The DMXSource to register
+	 */
+	virtual void registerDMXSource(DMXSource* source);
+
+	/**
+	 * Unregister a previously registered DMXSource. This should be called
+	 * in the DMXSource's destructor (at the latest).
+	 *
+	 * @param source The DMXSource to unregister
+	 */
+	virtual void unregisterDMXSource(DMXSource* source);
+
+protected:
+	/** List of currently running functions */
+	QList <DMXSource*> m_dmxSourceList;
+
+	/** Mutex that guards access to m_functionList */
+	QMutex m_dmxSourceListMutex;
 
 	/*********************************************************************
 	 * Main thread
@@ -93,18 +130,18 @@ protected:
 	/** The main thread function */
 	virtual void run();
 
-	/**
-	 * The main thread function calls this function to handle all running
-	 * functions on each periodic pass.
-	 */
-	void event();
+	/** Perform steps necessary for each timer tick */
+	void timerTick();
+
+	/** Execute one timer tick for each registered Function */
+	void runFunctions();
+
+	/** Execute one timer tick for each registered DMXSource */
+	void runDMXSources();
 
 protected:
 	/** Running status, telling, whether the FC has been started or not */
 	bool m_running;
-
-	/** Flag for stopping all functions */
-	bool m_stopAll;
 };
 
 #endif
