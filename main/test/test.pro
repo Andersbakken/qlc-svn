@@ -51,6 +51,7 @@ ENGINESOURCES += ../bus.cpp \
 		 ../dummyoutplugin.cpp
 
 STUBHEADERS += mastertimer_stub.h \
+		dmxsource_stub.h \
 		scene_stub.h \
 		outputplugin_stub.h \
 		inputplugin_stub.h \
@@ -58,6 +59,7 @@ STUBHEADERS += mastertimer_stub.h \
 		function_stub.h
 
 STUBSOURCES += mastertimer_stub.cpp \
+		dmxsource_stub.cpp \
 		scene_stub.cpp \
 		outputplugin_stub.cpp \
 		inputplugin_stub.cpp \

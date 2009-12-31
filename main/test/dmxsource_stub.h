@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  mastertimer_stub.h
+  dmxsource_stub.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,30 +19,24 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MASTERTIMER_STUB_H
-#define MASTERTIMER_STUB_H
+#ifndef DMXSOURCE_STUB_H
+#define DMXSOURCE_STUB_H
 
 #include <QObject>
+#include "dmxsource.h"
 
-#include "../mastertimer.h"
-#include "../outputmap.h"
+class QByteArray;
 
-/****************************************************************************
- * MasterTimer Stub
- ****************************************************************************/
-
-class MasterTimerStub : public MasterTimer
+class DMXSource_Stub : public DMXSource
 {
-	Q_OBJECT
-
 public:
-	MasterTimerStub(QObject* parent, OutputMap* outputMap = NULL);
-	~MasterTimerStub();
+	DMXSource_Stub();
+	~DMXSource_Stub();
 
-	void startFunction(Function* function);
-	void stopFunction(Function* function);
-	QList <Function*> m_functionList;
+	void writeDMX(QByteArray* universes);
+
+	/** Number of calls to writeDMX() */
+	int m_writeCalls;
 };
 
 #endif
-

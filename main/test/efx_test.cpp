@@ -2556,8 +2556,8 @@ void EFX_Test::writeStartStopScenes()
 	MasterTimerStub* mts = new MasterTimerStub(this, oms);
 
 	e->start(mts);
-	QVERIFY(mts->m_list.size() == 1);
-	QVERIFY(mts->m_list.first() == e);
+	QVERIFY(mts->m_functionList.size() == 1);
+	QVERIFY(mts->m_functionList.first() == e);
 
 	QVERIFY(e->write(&unis) == true);
 	QVERIFY(unis[0] == (char) 205);// Start scene: shutter open

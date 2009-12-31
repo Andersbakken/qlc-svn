@@ -424,40 +424,40 @@ void Collection_Test::write()
 	/* Collection starts all of its members immediately when it is started
 	   itself. */
 	c->start(mts);
-	QVERIFY(mts->m_list.size() == 3);
-	QVERIFY(mts->m_list[0] == s1);
-	QVERIFY(mts->m_list[1] == s2);
-	QVERIFY(mts->m_list[2] == c);
+	QVERIFY(mts->m_functionList.size() == 3);
+	QVERIFY(mts->m_functionList[0] == s1);
+	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(mts->m_functionList[2] == c);
 
 	QByteArray uni;
 
 	/* All write calls to the collection "succeed" as long as there are
 	   members running. */
 	QVERIFY(c->write(&uni) == true);
-	QVERIFY(mts->m_list.size() == 3);
-	QVERIFY(mts->m_list[0] == s1);
-	QVERIFY(mts->m_list[1] == s2);
-	QVERIFY(mts->m_list[2] == c);
+	QVERIFY(mts->m_functionList.size() == 3);
+	QVERIFY(mts->m_functionList[0] == s1);
+	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(mts->m_functionList[2] == c);
 
 	QVERIFY(c->write(&uni) == true);
-	QVERIFY(mts->m_list.size() == 3);
-	QVERIFY(mts->m_list[0] == s1);
-	QVERIFY(mts->m_list[1] == s2);
-	QVERIFY(mts->m_list[2] == c);
+	QVERIFY(mts->m_functionList.size() == 3);
+	QVERIFY(mts->m_functionList[0] == s1);
+	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(mts->m_functionList[2] == c);
 
 	/* S2 is still running after this so the collection is also running */
 	s1->stop(mts);
 	QVERIFY(c->write(&uni) == true);
-	QVERIFY(mts->m_list.size() == 2);
-	QVERIFY(mts->m_list[0] == s2);
-	QVERIFY(mts->m_list[1] == c);
+	QVERIFY(mts->m_functionList.size() == 2);
+	QVERIFY(mts->m_functionList[0] == s2);
+	QVERIFY(mts->m_functionList[1] == c);
 
 	/* Now also the collection tells that it's ready by returning false */
 	s2->stop(mts);
 	QVERIFY(c->write(&uni) == false);
 
 	c->stop(mts);
-	QVERIFY(mts->m_list.size() == 0);
+	QVERIFY(mts->m_functionList.size() == 0);
 
 	c->disarm();
 	s1->disarm();

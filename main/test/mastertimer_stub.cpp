@@ -36,11 +36,10 @@ MasterTimerStub::~MasterTimerStub()
 
 void MasterTimerStub::startFunction(Function* function)
 {
-	m_list.append(function);
+	m_functionList.append(function);
 }
 
 void MasterTimerStub::stopFunction(Function* function)
 {
-	m_list.removeAll(function);
+	m_functionList.removeAll(function);
 }
-

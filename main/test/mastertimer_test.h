@@ -36,10 +36,11 @@ private slots:
 	void initial();
 	void startStop();
 	void startStopFunction();
+	void registerUnregisterDMXSource();
 	void interval();
 	void functionInitiatedStop();
 	void runMultipleFunctions();
-	void stopAll();
+	void stopAllFunctions();
 	void stop();
 	void restart();
 
