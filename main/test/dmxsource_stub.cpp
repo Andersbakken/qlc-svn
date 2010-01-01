@@ -35,5 +35,6 @@ DMXSource_Stub::~DMXSource_Stub()
 
 void DMXSource_Stub::writeDMX(QByteArray* universes)
 {
+	Q_UNUSED(universes);
 	m_writeCalls++;
 }
