@@ -339,22 +339,15 @@ public:
 	virtual void disarm() = 0;
 
 	/**
-	 * Start the function in the given MasterTimer instance. A function
-	 * can be running only in one MasterTimer at a time.
+	 * Called by MasterTimer when the function is started. MasterTimer's
+	 * function list mutex is locked during this call, so functions must
+	 * not attempt to start/stop additional functions from their preRun()
+	 * methods because it would result in a deadlock.
 	 *
-	 * @param timer The MasterTimer to run the function in
+	 * @param timer The MasterTimer instance that takes care of running
+	 *              the function in correct intervals.
 	 */
-	virtual void start(MasterTimer* timer);
-
-	/**
-	 * Stop running the function in the given MasterTimer instance.
-	 *
-	 * @param timer The MasterTimer to stop the function in
-	 */
-	virtual void stop(MasterTimer* timer);
-
-	/** Check, whether the function is running */
-	bool isRunning() const { return m_running; }
+	virtual void preRun(MasterTimer* timer);
 
 	/**
 	 * Write next values to universes. This method is called periodically
@@ -365,16 +358,27 @@ public:
 	 * called for each running function, the buffer is written to OutputMap.
 	 *
 	 * MasterTimer calls this method for each function to get their DMX
-	 * data for the given array of universes. When this method returns
-	 * false, MasterTimer immediately removes the function from its list,
-	 * stopping the function as a result. This method will be called again
-	 * for each running function that returns true.
+	 * data for the given array of universes. This method will be called
+	 * for each running function until Function::stopped() returns true.
 	 *
+	 * @param timer The MasterTimer that is running the function
 	 * @param universes The DMX universe buffer to write values into
-	 * @return true if the function has more data for the next round,
-	 *         false if the function has done its task and can be stopped.
 	 */
-	virtual bool write(QByteArray* universes) = 0;
+	virtual void write(MasterTimer* timer, QByteArray* universes) = 0;
+
+	/**
+	 * Called by MasterTimer when the function is stopped. No more write()
+	 * calls will arrive to the function after this call. The function may
+	 * still write its last data packet to universes during this call.
+	 * Used by e.g. EFX to write its stop scene values. MasterTimer's
+	 * function list mutex is locked during this call, so functions must
+	 * not attempt to start/stop additional functions from their preRun()
+	 * methods because it would result in a deadlock.
+	 *
+	 * @param timer The MasterTimer that has stopped running the function
+	 * @param universes Universe buffer to write the function's exit data
+	 */
+	virtual void postRun(MasterTimer* timer, QByteArray* universes);
 
 signals:
 	/**
@@ -393,9 +397,50 @@ signals:
 	 */
 	void stopped(t_function_id id);
 
+	/*********************************************************************
+	 * Elapsed
+	 *********************************************************************/
+public:
+	/**
+	 * Get number of elapsed ticks for this function (0 unless the function
+	 * is running).
+	 *
+	 * @return Number of elapsed timer ticks since the function was started
+	 */
+	quint32 elapsed() const { return m_elapsed; }
+
 protected:
-	bool m_running;
+	/** Reset elapsed timer ticks to zero */
+	void resetElapsed() { m_elapsed = 0; }
+
+	/** Increment the elapsed timer ticks by one */
+	void incrementElapsed() { m_elapsed++; }
+
+private:
 	quint32 m_elapsed;
+
+	/*********************************************************************
+	 * Stopping
+	 *********************************************************************/
+public:
+	/**
+	 * Mark the function to be stopped ASAP. MasterTimer will stop running
+	 * the function on the next pass after this method has been called.
+	 * There is no way to cancel it, but the function can be started again
+	 * normally.
+	 */
+	virtual void stop() { m_stop = true; }
+
+	/**
+	 * Check, whether the function should be stopped ASAP.
+	 *
+	 * @return true if the function should be stopped, otherwise false.
+	 */
+	virtual bool stopped() const { return m_stop; }
+
+private:
+	/** Stop flag, private to keep functions from modifying it. */
+	bool m_stop;
 };
 
 #endif

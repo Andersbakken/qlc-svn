@@ -610,43 +610,65 @@ void Chaser_Test::writeBusZeroLoopForward()
 	s2->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	c->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == c);
-
 	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
 	/* Since hold bus' value is 0 each call to write() starts the next
-	   step in chaser. */
-	QVERIFY(c->write(&uni) == true);
+	   step in chaser. The functions must be manually removed from the
+	   stub, which is OK (we're not testing the timer now), as long as
+	   the correct step is always marked as stopped. */
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	c->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	c->stop();
+	mts->stopFunction(c);
+	QVERIFY(c->stopped() == true);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s2->stopped() == true);
 
 	c->disarm();
 	s1->disarm();
@@ -691,46 +713,64 @@ void Chaser_Test::writeBusZeroLoopBackward()
 	s2->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	c->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == c);
-
 	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
 	/* Since hold bus' value is 0 each call to write() starts the next
 	   step in chaser. Last step comes first because the chaser is now
 	   running backwards. */
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	c->stop(mts);
-	s1->stop(mts);
-	s2->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	c->stop();
+	mts->stopFunction(c);
+	QVERIFY(c->stopped() == true);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s2->stopped() == true);
 
 	c->disarm();
 	s1->disarm();
@@ -775,28 +815,38 @@ void Chaser_Test::writeBusZeroSingleShotForward()
 	s2->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	c->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == c);
-
 	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
 	/* SingleShot will stop automatically after the last step */
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == false);
-	c->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+
+	QVERIFY(c->stopped() == true);
+	mts->stopFunction(c);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s2->stopped() == true);
 
 	c->disarm();
 	s1->disarm();
@@ -842,28 +892,35 @@ void Chaser_Test::writeBusZeroSingleShotBackward()
 	s2->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	c->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == c);
-
 	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
 	/* SingleShot will stop automatically after the last step */
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == false);
-	c->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == true);
+	mts->stopFunction(c);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s2->stopped() == true);
 
 	c->disarm();
 	s1->disarm();
@@ -916,67 +973,101 @@ void Chaser_Test::writeBusZeroPingPongForward()
 	s3->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	c->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == c);
-
 	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
 	/* Since hold bus' value is 0 each call to write() starts the next
 	   step in chaser. Last step comes first because the chaser is now
 	   running backwards. */
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s3);
+	QVERIFY(s3->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s3->stopped() == true);
+	mts->stopFunction(s3);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s3);
+	QVERIFY(s3->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s3->stopped() == true);
+	mts->stopFunction(s3);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	c->stop(mts);
-	s1->stop(mts);
-	s2->stop(mts);
-	s3->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	c->stop();
+	QVERIFY(c->stopped() == true);
+	mts->stopFunction(c);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s2->stopped() == true);
+	QVERIFY(s3->stopped() == true);
 
 	c->disarm();
 	s1->disarm();
@@ -1031,67 +1122,101 @@ void Chaser_Test::writeBusZeroPingPongBackward()
 	s3->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	c->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == c);
-
 	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
 	/* Since hold bus' value is 0 each call to write() starts the next
 	   step in chaser. Last step comes first because the chaser is now
 	   running backwards. */
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s3);
+	QVERIFY(s3->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s3->stopped() == true);
+	mts->stopFunction(s3);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s3);
+	QVERIFY(s3->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s3->stopped() == true);
+	mts->stopFunction(s3);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(s1->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
+	mts->stopFunction(s1);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s2);
+	QVERIFY(s2->stopped() == false);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(s2->stopped() == true);
+	mts->stopFunction(s2);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
 	QVERIFY(mts->m_functionList[0] == c);
 	QVERIFY(mts->m_functionList[1] == s3);
+	QVERIFY(s3->stopped() == false);
 
-	c->stop(mts);
-	s1->stop(mts);
-	s2->stop(mts);
-	s3->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	c->stop();
+	QVERIFY(c->stopped() == true);
+	mts->stopFunction(c);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s2->stopped() == true);
+	QVERIFY(s3->stopped() == true);
 
 	c->disarm();
 	s1->disarm();

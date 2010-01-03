@@ -538,24 +538,22 @@ void Scene_Test::writeBusZero()
 
 	s1->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == s1);
-	
 	QByteArray uni(4 * 512, 0);
-	QVERIFY(uni[0] == (char) 0);
-	QVERIFY(uni[1] == (char) 0);
-	QVERIFY(uni[2] == (char) 0);
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
-	QVERIFY(s1->write(&uni) == false);
+	mts->startFunction(s1);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
 	QVERIFY(uni[0] == (char) 255);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
-	s1->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	mts->stopFunction(s1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
 	s1->disarm();
 
 	delete mts;
@@ -584,29 +582,35 @@ void Scene_Test::writeBusOne()
 
 	s1->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == s1);
-	
 	QByteArray uni(4 * 512, 0);
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(s1->stopped() == true);
+	mts->startFunction(s1);
+	QVERIFY(s1->stopped() == false);
+
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
 	QVERIFY(uni[2] == (char) 0);
 
-	QVERIFY(s1->write(&uni) == true);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 	QVERIFY(uni[0] == (char) 127);
 	QVERIFY(uni[1] == (char) 63);
 	QVERIFY(uni[2] == (char) 0);
 
-	QVERIFY(s1->write(&uni) == false);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
 	QVERIFY(uni[0] == (char) 255);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
-	s1->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	mts->stopFunction(s1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
 	s1->disarm();
 
 	delete mts;
@@ -635,18 +639,19 @@ void Scene_Test::writeBusTwo()
 
 	s1->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == s1);
-
 	QByteArray uni(4 * 512, 0);
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(s1->stopped() == true);
+	mts->startFunction(s1);
+	QVERIFY(s1->stopped() == false);
+
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
 	QVERIFY(uni[2] == (char) 0);
 
-	QVERIFY(s1->write(&uni) == true);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 #ifdef WIN32 // Different rounding methods in unix / win32??
 	QVERIFY(uni[0] == (char) 84);
 #else
@@ -654,8 +659,9 @@ void Scene_Test::writeBusTwo()
 #endif
 	QVERIFY(uni[1] == (char) 42);
 	QVERIFY(uni[2] == (char) 0);
-	
-	QVERIFY(s1->write(&uni) == true);
+
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 #ifdef WIN32 // Different rounding methods in unix / win32??
 	QVERIFY(uni[0] == (char) 169);
 #else
@@ -664,13 +670,18 @@ void Scene_Test::writeBusTwo()
 	QVERIFY(uni[1] == (char) 84);
 	QVERIFY(uni[2] == (char) 0);
 
-	QVERIFY(s1->write(&uni) == false);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
 	QVERIFY(uni[0] == (char) 255);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
-	s1->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	mts->stopFunction(s1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
 	s1->disarm();
 
 	delete mts;
@@ -700,23 +711,25 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
 	s1->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == s1);
-	
 	QByteArray uni(4 * 512, 0);
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(s1->stopped() == true);
+	mts->startFunction(s1);
+	QVERIFY(s1->stopped() == false);
+
 	QVERIFY(uni[0] == (char) 0);
 	QVERIFY(uni[1] == (char) 0);
 	QVERIFY(uni[2] == (char) 0);
 
-	QVERIFY(s1->write(&uni) == true);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 	QVERIFY(uni[0] == (char) 42);
 	QVERIFY(uni[1] == (char) 21);
 	QVERIFY(uni[2] == (char) 0);
 
-	QVERIFY(s1->write(&uni) == true);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 #ifdef WIN32 // Different rounding methods in unix / win32??
 	QVERIFY(uni[0] == (char) 84);
 #else
@@ -727,13 +740,18 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
 	Bus::instance()->setValue(Bus::defaultFade(), 0);
 
-	QVERIFY(s1->write(&uni) == false);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
 	QVERIFY(uni[0] == (char) 255);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
-	s1->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	mts->stopFunction(s1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
 	s1->disarm();
 
 	delete mts;
@@ -762,18 +780,19 @@ void Scene_Test::writeNonZeroStartingValues()
 
 	s1->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
-	s1->start(mts);
-
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList[0] == s1);
-	
 	QByteArray uni(4 * 512, 0);
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+	QVERIFY(s1->stopped() == true);
+	mts->startFunction(s1);
+	QVERIFY(s1->stopped() == false);
+
 	uni[0] = (char) 100;
 	uni[1] = (char) 255;
 	uni[2] = (char) 3;
 
-	QVERIFY(s1->write(&uni) == true);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 	QVERIFY(uni[0] == (char) 151);
 	QVERIFY(uni[1] == (char) 213);
 #ifdef WIN32 // Different rounding methods in unix / win32??
@@ -782,7 +801,8 @@ void Scene_Test::writeNonZeroStartingValues()
 	QVERIFY(uni[2] == (char) 2);
 #endif
 
-	QVERIFY(s1->write(&uni) == true);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == false);
 	QVERIFY(uni[0] == (char) 203);
 	QVERIFY(uni[1] == (char) 170);
 #ifdef WIN32 // Different rounding methods in unix / win32??
@@ -791,16 +811,20 @@ void Scene_Test::writeNonZeroStartingValues()
 	QVERIFY(uni[2] == (char) 1);
 #endif
 
-	QVERIFY(s1->write(&uni) == false);
+	s1->write(mts, &uni);
+	QVERIFY(s1->stopped() == true);
 	QVERIFY(uni[0] == (char) 255);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
-	s1->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	mts->stopFunction(s1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[1] == (char) 127);
+	QVERIFY(uni[2] == (char) 0);
+
 	s1->disarm();
 
 	delete mts;
 	delete doc;
 }
-

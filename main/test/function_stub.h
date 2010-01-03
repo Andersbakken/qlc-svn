@@ -42,11 +42,13 @@ public:
 	void arm();
 	void disarm();
 
-	void setReturnState(bool state);
-	bool write(QByteArray* universes);
+	void preRun(MasterTimer* timer);
+	void write(MasterTimer* timer, QByteArray* universes);
+	void postRun(MasterTimer* timer, QByteArray* universes);
 
-	bool m_returnState;
 	int m_writeCalls;
+	int m_preRunCalls;
+	int m_postRunCalls;
 };
 
 #endif

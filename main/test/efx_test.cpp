@@ -2553,19 +2553,21 @@ void EFX_Test::writeStartStopScenes()
 	QByteArray unis(512 * 4, 0);
 	OutputMapStub* oms = new OutputMapStub(this);
 	oms->setUniverses(&unis);
-	MasterTimerStub* mts = new MasterTimerStub(this, oms);
+	MasterTimerStub* mts = new MasterTimerStub(this, oms, unis);
 
-	e->start(mts);
-	QVERIFY(mts->m_functionList.size() == 1);
-	QVERIFY(mts->m_functionList.first() == e);
+	QVERIFY(e->stopped() == true);
+	mts->startFunction(e);
+	QVERIFY(e->stopped() == false);
 
-	QVERIFY(e->write(&unis) == true);
-	QVERIFY(unis[0] == (char) 205);// Start scene: shutter open
-	QVERIFY(unis[512 + 0] == (char) 205);// Start scene: shutter open
+	e->write(mts, &unis);
+	QVERIFY(e->stopped() == false);
+	QVERIFY(unis[0] == (char) 205); // Start scene: shutter open
+	QVERIFY(unis[512 + 0] == (char) 205); // Start scene: shutter open
 
-	e->stop(mts);
-	QVERIFY(unis[0] == (char) 0);// Stop scene: shutter closed
-	QVERIFY(unis[512 + 0] == (char) 0);// Stop scene: shutter closed
+	e->stop();
+	mts->stopFunction(e); // Runs postRun, that writes stop scene stuff
+	QVERIFY(unis[0] == (char) 0); // Stop scene: shutter closed
+	QVERIFY(unis[512 + 0] == (char) 0); // Stop scene: shutter closed
 
 	delete doc;
 }

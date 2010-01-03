@@ -71,20 +71,12 @@ int MasterTimer::runningFunctions()
 
 void MasterTimer::startFunction(Function* function)
 {
-	Q_ASSERT(function != NULL);
+	if (function == NULL)
+		return;
 
 	m_functionListMutex.lock();
 	if (m_functionList.contains(function) == false)
 		m_functionList.append(function);
-	m_functionListMutex.unlock();
-}
-
-void MasterTimer::stopFunction(Function* function)
-{
-	Q_ASSERT(function != NULL);
-
-	m_functionListMutex.lock();
-	m_functionList.removeAll(function);
 	m_functionListMutex.unlock();
 }
 
@@ -275,18 +267,33 @@ void MasterTimer::runFunctions()
 	for (int i = 0; i < m_functionList.size(); i++)
 	{
 		Function* function = m_functionList.at(i);
-		Q_ASSERT(function != NULL);
 
-		/* No need to access the list on this round anymore. */
+		/* No need to access function list on this round anymore */
 		m_functionListMutex.unlock();
 
-		if (function->write(universes) == false ||
-		    m_stopAllFunctions == true)
+		if (function != NULL)
 		{
-			function->stop(this);
+			if (function->elapsed() == 0)
+				function->preRun(this);
+
+			/* Check for pre-conditions before getting data */
+			if (function->stopped() == true ||
+			    m_stopAllFunctions == true)
+			{
+				/* Function should be stopped instead */
+				m_functionListMutex.lock();
+				m_functionList.removeAt(i);
+				function->postRun(this, universes);
+				m_functionListMutex.unlock();
+			}
+			else
+			{
+				/* Run normally: get function data */
+				function->write(this, universes);
+			}
 		}
 
-		/* Lock for the next round. */
+		/* Lock function list for the next round. */
 		m_functionListMutex.lock();
 	}
 

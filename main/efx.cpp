@@ -34,7 +34,6 @@
 #include "qlcfile.h"
 
 #include "mastertimer.h"
-#include "outputmap.h"
 #include "fixture.h"
 #include "scene.h"
 #include "doc.h"
@@ -1195,7 +1194,9 @@ void EFX::arm()
 	else if (m_algorithm == KLissajousAlgorithmName)
 		pointFunc = lissajousPoint;
 	else
-		pointFunc = NULL;
+		pointFunc = circlePoint; // Fallback
+
+	resetElapsed();
 }
 
 void EFX::disarm()
@@ -1204,25 +1205,35 @@ void EFX::disarm()
 	pointFunc = NULL;
 }
 
-void EFX::start(MasterTimer* timer)
+void EFX::preRun(MasterTimer* timer)
 {
-	Q_ASSERT(timer != NULL);
-
 	/* Set initial speed */
 	slotBusValueChanged(m_busID, Bus::instance()->value(m_busID));
-	Function::start(timer);
+	Function::preRun(timer);
 }
 
-bool EFX::write(QByteArray* universes)
+void EFX::postRun(MasterTimer* timer, QByteArray* universes)
+{
+	/* Reset all fixtures */
+	QListIterator <EFXFixture*> it(m_fixtures);
+	while (it.hasNext() == true)
+	{
+		EFXFixture* ef(it.next());
+
+		/* Run the EFX's stop scene for Loop & PingPong modes */
+		if (m_runOrder != SingleShot)
+			ef->stop(universes);
+		ef->reset();
+	}
+
+	Function::postRun(timer, universes);
+}
+
+void EFX::write(MasterTimer* timer, QByteArray* universes)
 {
 	int ready = 0;
 
-	Q_ASSERT(universes != NULL);
-
-	/* Check that a valid point function is present and there's at least
-	   one fixture to control. */
-	if (pointFunc == NULL || m_fixtures.isEmpty() == true)
-		return false;
+	Q_UNUSED(timer);
 
 	QListIterator <EFXFixture*> it(m_fixtures);
 	while (it.hasNext() == true)
@@ -1234,42 +1245,9 @@ bool EFX::write(QByteArray* universes)
 			ready++;
 	}
 
+	incrementElapsed();
+
 	/* Check for stop condition */
 	if (ready == m_fixtures.count())
-		return false;
-	else
-		return true;
+		stop();
 }
-
-void EFX::stop(MasterTimer* timer)
-{
-	Q_ASSERT(timer != NULL);
-
-	Function::stop(timer);
-
-	/* Reset all fixtures */
-	QListIterator <EFXFixture*> it(m_fixtures);
-	while (it.hasNext() == true)
-	{
-		EFXFixture* ef(it.next());
-
-		/* WARNING: Potential place for a deadlock if
-		   OutputMap::claimUniverses() and ::releaseUniverses() is ever
-		   changed to use a mutex.
-		   
-		   This runs the EFX's stop scene for Loop & PingPong modes.
-		   It's not exactly the best solution, but this way the change
-		   is limited only to this one place. TODO: Maybe this can be
-		   done the right way when HTP is implemented...? */
-		if (m_runOrder != SingleShot)
-		{
-			QByteArray* universes;
-			universes = timer->outputMap()->claimUniverses();
-			ef->stop(universes);
-			timer->outputMap()->releaseUniverses();
-		}
-
-		ef->reset();
-	}
-}
-

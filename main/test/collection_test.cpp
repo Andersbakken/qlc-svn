@@ -419,45 +419,53 @@ void Collection_Test::write()
 	s2->arm();
 	c->arm();
 
-	MasterTimerStub* mts = new MasterTimerStub(this);
+	QByteArray uni;
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
 	/* Collection starts all of its members immediately when it is started
 	   itself. */
-	c->start(mts);
-	QVERIFY(mts->m_functionList.size() == 3);
-	QVERIFY(mts->m_functionList[0] == s1);
-	QVERIFY(mts->m_functionList[1] == s2);
-	QVERIFY(mts->m_functionList[2] == c);
+	QVERIFY(c->stopped() == true);
+	mts->startFunction(c);
+	QVERIFY(c->stopped() == false);
 
-	QByteArray uni;
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
+	QVERIFY(mts->m_functionList.size() == 3);
+	QVERIFY(mts->m_functionList[0] == c);
+	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(mts->m_functionList[2] == s2);
 
 	/* All write calls to the collection "succeed" as long as there are
 	   members running. */
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 3);
-	QVERIFY(mts->m_functionList[0] == s1);
-	QVERIFY(mts->m_functionList[1] == s2);
-	QVERIFY(mts->m_functionList[2] == c);
+	QVERIFY(mts->m_functionList[0] == c);
+	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(mts->m_functionList[2] == s2);
 
-	QVERIFY(c->write(&uni) == true);
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 3);
-	QVERIFY(mts->m_functionList[0] == s1);
-	QVERIFY(mts->m_functionList[1] == s2);
-	QVERIFY(mts->m_functionList[2] == c);
+	QVERIFY(mts->m_functionList[0] == c);
+	QVERIFY(mts->m_functionList[1] == s1);
+	QVERIFY(mts->m_functionList[2] == s2);
 
 	/* S2 is still running after this so the collection is also running */
-	s1->stop(mts);
-	QVERIFY(c->write(&uni) == true);
+	mts->stopFunction(s1);
+	QVERIFY(s1->stopped() == true);
+
+	c->write(mts, &uni);
+	QVERIFY(c->stopped() == false);
 	QVERIFY(mts->m_functionList.size() == 2);
-	QVERIFY(mts->m_functionList[0] == s2);
-	QVERIFY(mts->m_functionList[1] == c);
+	QVERIFY(mts->m_functionList[0] == c);
+	QVERIFY(mts->m_functionList[1] == s2);
 
-	/* Now also the collection tells that it's ready by returning false */
-	s2->stop(mts);
-	QVERIFY(c->write(&uni) == false);
-
-	c->stop(mts);
-	QVERIFY(mts->m_functionList.size() == 0);
+	/* Now the collection must also tell it's ready to be stopped */
+	mts->stopFunction(s2);
+	QVERIFY(s2->stopped() == true);
+	QVERIFY(c->stopped() == true);
+	mts->stopFunction(c);
 
 	c->disarm();
 	s1->disarm();

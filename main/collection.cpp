@@ -245,67 +245,72 @@ void Collection::arm()
 		if (doc->function(it.next()) == NULL)
 			it.remove();
 	}
+
+	resetElapsed();
 }
 
 void Collection::disarm()
 {
 }
 
-void Collection::stop(MasterTimer* timer)
+void Collection::preRun(MasterTimer* timer)
+{
+	m_childCountMutex.lock();
+	m_childCount = 0;
+	m_childCountMutex.unlock();
+
+	Function::preRun(timer);
+}
+
+void Collection::postRun(MasterTimer* timer, QByteArray* universes)
 {
 	Doc* doc = qobject_cast <Doc*> (parent());
 	Q_ASSERT(doc != NULL);
 
 	/* TODO: this stops these functions, regardless of whether they
-	   were started by this collection or not */
+	   were started by this collection or not. Oh well... */
 	QListIterator <t_function_id> it(m_functions);
 	while (it.hasNext() == true)
 	{
 		Function* function = doc->function(it.next());
-		Q_ASSERT(function != NULL);
-		function->stop(timer);
+		if (function != NULL)
+			function->stop();
 	}
 
-	Function::stop(timer);
+	Function::postRun(timer, universes);
 }
 
-void Collection::start(MasterTimer* timer)
-{
-	Q_ASSERT(timer != NULL);
-
-	Doc* doc = qobject_cast <Doc*> (parent());
-	Q_ASSERT(doc != NULL);
-
-	m_childCount = 0;
-
-	QListIterator <t_function_id> it(m_functions);
-	while (it.hasNext() == true)
-	{
-		Function* function;
-		function = doc->function(it.next());
-		Q_ASSERT(function != NULL);
-
-		m_childCountMutex.lock();
-		m_childCount++;
-		m_childCountMutex.unlock();
-
-		connect(function, SIGNAL(stopped(t_function_id)),
-			this, SLOT(slotChildStopped(t_function_id)));
-
-		function->start(timer);
-	}
-
-	Function::start(timer);
-}
-
-bool Collection::write(QByteArray* universes)
+void Collection::write(MasterTimer* timer, QByteArray* universes)
 {
 	Q_UNUSED(universes);
 
+	if (elapsed() == 0)
+	{
+		Doc* doc = qobject_cast <Doc*> (parent());
+		Q_ASSERT(doc != NULL);
+
+		QListIterator <t_function_id> it(m_functions);
+		while (it.hasNext() == true)
+		{
+			Function* function = doc->function(it.next());
+			if (function == NULL)
+				continue;
+
+			m_childCountMutex.lock();
+			m_childCount++;
+			m_childCountMutex.unlock();
+
+			connect(function, SIGNAL(stopped(t_function_id)),
+				this, SLOT(slotChildStopped(t_function_id)));
+
+			timer->startFunction(function);
+		}
+	}
+
+	incrementElapsed();
+
 	if (m_childCount == 0)
-		return false;
-	else
-		return true;
+		stop();
 }
 
 void Collection::slotChildStopped(t_function_id fid)
@@ -313,14 +318,13 @@ void Collection::slotChildStopped(t_function_id fid)
 	Doc* doc = qobject_cast <Doc*> (parent());
 	Q_ASSERT(doc != NULL);
 
-	Function* function;
-	function = doc->function(fid);
-	Q_ASSERT(function != NULL);
-
+	Function* function = doc->function(fid);
 	disconnect(function, SIGNAL(stopped(t_function_id)),
 		   this, SLOT(slotChildStopped(t_function_id)));
 
 	m_childCountMutex.lock();
 	m_childCount--;
+	if (m_childCount == 0)
+		stop();
 	m_childCountMutex.unlock();
 }

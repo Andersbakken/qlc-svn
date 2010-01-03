@@ -20,13 +20,16 @@
 */
 
 #include "mastertimer_stub.h"
+#include "../function.h"
 
 /****************************************************************************
  * MasterTimer Stub
  ****************************************************************************/
 
-MasterTimerStub::MasterTimerStub(QObject* parent, OutputMap* outputMap) 
-	: MasterTimer(parent, outputMap)
+MasterTimerStub::MasterTimerStub(QObject* parent, OutputMap* outputMap,
+				 QByteArray& universes)
+	: MasterTimer(parent, outputMap),
+	m_universes(universes)
 {
 }
 
@@ -37,9 +40,11 @@ MasterTimerStub::~MasterTimerStub()
 void MasterTimerStub::startFunction(Function* function)
 {
 	m_functionList.append(function);
+	function->preRun(this);
 }
 
 void MasterTimerStub::stopFunction(Function* function)
 {
 	m_functionList.removeAll(function);
+	function->postRun(this, &m_universes);
 }

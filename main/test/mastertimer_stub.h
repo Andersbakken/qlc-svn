@@ -36,12 +36,15 @@ class MasterTimerStub : public MasterTimer
 	Q_OBJECT
 
 public:
-	MasterTimerStub(QObject* parent, OutputMap* outputMap = NULL);
+	MasterTimerStub(QObject* parent, OutputMap* outputMap,
+			QByteArray& universes);
 	~MasterTimerStub();
 
 	void startFunction(Function* function);
 	void stopFunction(Function* function);
 	QList <Function*> m_functionList;
+
+	QByteArray& m_universes;
 };
 
 #endif

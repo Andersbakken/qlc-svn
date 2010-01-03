@@ -64,7 +64,8 @@ Function::Function(QObject* parent) : QObject(parent)
 	m_direction = Forward;
 	m_busID = Bus::defaultFade();
 	m_flashing = false;
-	m_running = false;
+	m_elapsed = 0;
+	m_stop = true;
 }
 
 Function::~Function()
@@ -362,27 +363,20 @@ void Function::unFlash(QByteArray* universes)
  * Running
  *****************************************************************************/
 
-void Function::start(MasterTimer* timer)
+void Function::preRun(MasterTimer* timer)
 {
-	if (isRunning() == false)
-	{
-		Q_ASSERT(timer != NULL);
+	Q_UNUSED(timer);
 
-		m_elapsed = 0;
-		m_running = true;
-		timer->startFunction(this);
-		emit running(m_id);
-	}
+	m_stop = false;
+	emit running(m_id);
 }
 
-void Function::stop(MasterTimer* timer)
+void Function::postRun(MasterTimer* timer, QByteArray* universes)
 {
-	if (isRunning() == true)
-	{
-		Q_ASSERT(timer != NULL);
+	Q_UNUSED(timer);
+	Q_UNUSED(universes);
 
-		timer->stopFunction(this);
-		m_running = false;
-		emit stopped(m_id);
-	}
+	resetElapsed();
+	m_stop = true;
+	emit stopped(m_id);
 }

@@ -72,10 +72,7 @@ public:
 	/** Start running the given function */
 	virtual void startFunction(Function* function);
 
-	/** Stop running the given function */
-	virtual void stopFunction(Function* function);
-
-	/** Stop all functions. DMX sources aren't removed with this method. */
+	/** Stop all functions. Doesn't affect registered DMX sources. */
 	void stopAllFunctions();
 
 protected:

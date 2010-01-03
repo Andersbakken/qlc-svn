@@ -567,13 +567,13 @@ public:
 	void disarm();
 
 	/** @reimpl */
-	void start(MasterTimer* timer);
+	void preRun(MasterTimer* timer);
 
 	/** @reimpl */
-	void stop(MasterTimer* timer);
+	void postRun(MasterTimer* timer, QByteArray* universes);
 
 	/** @reimpl */
-	bool write(QByteArray* universes);
+	void write(MasterTimer* timer, QByteArray* universes);
 
 protected:
 	/**

@@ -31,6 +31,7 @@
 
 #include "vccuelistproperties.h"
 #include "virtualconsole.h"
+#include "mastertimer.h"
 #include "vccuelist.h"
 #include "function.h"
 #include "app.h"
@@ -187,7 +188,7 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 		return;
 
 	if (m_current != NULL)
-		m_current->stop(_app->masterTimer());
+		m_current->stop();
 
 	if (item == NULL)
 		return;
@@ -199,7 +200,7 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 	connect(m_current, SIGNAL(stopped(t_function_id)),
 		this, SLOT(slotFunctionStopped(t_function_id)));
 
-	m_current->start(_app->masterTimer());
+	_app->masterTimer()->startFunction(m_current);
 }
 
 /*****************************************************************************

@@ -264,7 +264,7 @@ public:
 	void disarm();
 
 	/** @reimpl */
-	bool write(QByteArray* universes);
+	void write(MasterTimer* timer, QByteArray* universes);
 
 	/**
 	 * Write the scene values to OutputMap. If fxi_id is given, writes

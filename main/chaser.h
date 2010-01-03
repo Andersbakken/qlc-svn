@@ -154,13 +154,13 @@ public:
 	void disarm();
 
 	/** @reimpl */
-	void start(MasterTimer* timer);
+	void preRun(MasterTimer* timer);
 
 	/** @reimpl */
-	void stop(MasterTimer* timer);
+	void postRun(MasterTimer* timer, QByteArray* universes);
 
 	/** @reimpl */
-	bool write(QByteArray* universes);
+	void write(MasterTimer* timer, QByteArray* universes);
 
 protected:
 	/** Check, whether the chaser has gone a full round. Returns false
@@ -170,20 +170,17 @@ protected:
 	/** Increment or decrement the next function position */
 	void nextStep();
 
-	/** Start a step function at the given index */
-	void startMemberAt(int index);
+	/** Start the current function */
+	void startCurrent(MasterTimer* timer);
 
-	/** Stop a step function at the given index */
-	void stopMemberAt(int index);
+	/** Stop the current function */
+	void stopCurrent();
 
 protected:
 	bool m_tapped;
-	bool m_stopped;
 
 	Direction m_runTimeDirection;
 	int m_runTimePosition;
-
-	MasterTimer* m_masterTimer;
 };
 
 #endif

@@ -95,7 +95,6 @@ int main(int argc, char** argv)
 	r = QTest::qExec(&scene, argc, argv);
 	if (r != 0)
 		return r;
-
 	Chaser_Test chaser;
 	r = QTest::qExec(&chaser, argc, argv);
 	if (r != 0)

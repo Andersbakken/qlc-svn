@@ -23,8 +23,9 @@
 
 Function_Stub::Function_Stub(QObject* parent) : Function(parent)
 {
-	m_returnState = true;
 	m_writeCalls = 0;
+	m_preRunCalls = 0;
+	m_postRunCalls = 0;
 }
 
 Function_Stub::~Function_Stub()
@@ -64,16 +65,26 @@ void Function_Stub::disarm()
 {
 }
 
-void Function_Stub::setReturnState(bool state)
+void Function_Stub::preRun(MasterTimer* timer)
 {
-	m_returnState = state;
+	Q_UNUSED(timer);
+	m_preRunCalls++;
+	Function::preRun(timer);
 }
 
-bool Function_Stub::write(QByteArray* universes)
+void Function_Stub::write(MasterTimer* timer, QByteArray* universes)
 {
+	Q_UNUSED(timer);
 	Q_UNUSED(universes);
 
+	incrementElapsed();
 	m_writeCalls++;
-	return m_returnState;
 }
 
+void Function_Stub::postRun(MasterTimer* timer, QByteArray* universes)
+{
+	Q_UNUSED(timer);
+	Q_UNUSED(universes);
+	m_postRunCalls++;
+	Function::postRun(timer, universes);
+}

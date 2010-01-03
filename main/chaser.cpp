@@ -42,7 +42,6 @@ Chaser::Chaser(QObject* parent) : Function(parent)
 {
 	m_runTimeDirection = Forward;
 	m_runTimePosition = 0;
-	m_masterTimer = NULL;
 
 	setName(tr("New Chaser"));
 	setBus(Bus::defaultHold());
@@ -343,29 +342,16 @@ void Chaser::arm()
 		if (doc->function(it.next()) == NULL)
 			it.remove();
 	}
+
+	resetElapsed();
 }
 
 void Chaser::disarm()
 {
 }
 
-void Chaser::start(MasterTimer* timer)
+void Chaser::preRun(MasterTimer* timer)
 {
-	Q_ASSERT(timer != NULL);
-
-	/* Don't start twice */
-	if (isRunning() == true)
-		return;
-
-	m_masterTimer = timer;
-
-	/* No point running this chaser if it has no steps */
-	if (m_steps.count() == 0)
-	{
-		emit stopped(m_id);
-		return;
-	}
-
 	/* Current position starts from invalid index because nextStep() is
 	   called first in write(). */
 	m_runTimeDirection = m_direction;
@@ -374,30 +360,24 @@ void Chaser::start(MasterTimer* timer)
 	else
 		m_runTimePosition = m_steps.count();
 
+	/* Reset bus tapping flag */
 	m_tapped = false;
 
-	Function::start(timer);
+	Function::preRun(timer);
 }
 
-void Chaser::stop(MasterTimer* timer)
+void Chaser::postRun(MasterTimer* timer, QByteArray* universes)
 {
-	Q_ASSERT(timer != NULL);
-
-	/* Don't stop twice */
-	if (isRunning() == false)
-		return;
-
 	/* Only stop a member if the current position is within range. It is
 	   not in range, when nextStep() moves it deliberately off at each
 	   end in all running modes. */
 	if (m_runTimePosition >= 0 && m_runTimePosition < m_steps.size())
-		stopMemberAt(m_runTimePosition);
+		stopCurrent();
 
-	Function::stop(timer);
-	m_masterTimer = NULL;
+	Function::postRun(timer, universes);
 }
 
-bool Chaser::write(QByteArray* universes)
+void Chaser::write(MasterTimer* timer, QByteArray* universes)
 {
 	Q_UNUSED(universes);
 
@@ -411,7 +391,7 @@ bool Chaser::write(QByteArray* universes)
 	   problem, but removing already after starting the last step would
 	   improve performance (very) slightly. */
 
-	if (m_elapsed == 0)
+	if (elapsed() == 0)
 	{
 		/* This is the first step since the last start() call */
 
@@ -419,40 +399,39 @@ bool Chaser::write(QByteArray* universes)
 		nextStep();
 
 		/* Start the current function */
-		startMemberAt(m_runTimePosition);
+		startCurrent(timer);
 
 		/* Mark one cycle being elapsed */
-		m_elapsed = 1;
+		incrementElapsed();
 	}
-	else if (m_elapsed >= Bus::instance()->value(m_busID) ||
+	else if (elapsed() >= Bus::instance()->value(m_busID) ||
 		 m_tapped == true)
 	{
 		/* Reset tapped flag even if it wasn't true */
 		m_tapped = false;
 
 		/* Stop current function */
-		stopMemberAt(m_runTimePosition);
+		stopCurrent();
 
 		/* Get the next step index */
 		nextStep();
 
 		/* Check, whether we have gone a full cycle (thru all steps) */
 		if (roundCheck() == false)
-			return false;
+			stop();
 		else
-			startMemberAt(m_runTimePosition);
+			startCurrent(timer);
 
 		/* Mark one cycle being elapsed since it tracks only the
 		   duration of the current step. */
-		m_elapsed = 1;
+		resetElapsed();
+		incrementElapsed();
 	}
 	else
 	{
 		/* Just waiting for hold time to pass */
-		m_elapsed++;
+		incrementElapsed();
 	}
-
-	return true;
 }
 
 bool Chaser::roundCheck()
@@ -463,7 +442,7 @@ bool Chaser::roundCheck()
 	{
 		if (m_runOrder == SingleShot)
 		{
-			/* One round complete. Terminate. */
+			/* One single-shot round complete. Terminate. */
 			return false;
 		}
 		else if (m_runOrder == Loop)
@@ -503,30 +482,30 @@ void Chaser::nextStep()
 		m_runTimePosition--;
 }
 
-void Chaser::startMemberAt(int index)
+void Chaser::startCurrent(MasterTimer* timer)
 {
 	Doc* doc = qobject_cast <Doc*> (parent());
 	Q_ASSERT(doc != NULL);
 
-	t_function_id fid = m_steps.at(index);
-	Q_ASSERT(fid != Function::invalidId());
-
+	t_function_id fid = m_steps.at(m_runTimePosition);
   	Function* function = doc->function(fid);
-	Q_ASSERT(function != NULL);
-
-	function->start(m_masterTimer);
+	if (function != NULL)
+		timer->startFunction(function);
+	else
+		qWarning() << name() << "step" << m_runTimePosition
+			   << "doesn't exist";
 }
 
-void Chaser::stopMemberAt(int index)
+void Chaser::stopCurrent()
 {
 	Doc* doc = qobject_cast <Doc*> (parent());
 	Q_ASSERT(doc != NULL);
 
-	t_function_id fid = m_steps.at(index);
-	Q_ASSERT(fid != Function::invalidId());
-
+	t_function_id fid = m_steps.at(m_runTimePosition);
 	Function* function = doc->function(fid);
-	Q_ASSERT(function != NULL);
-
-	function->stop(m_masterTimer);
+	if (function != NULL)
+		function->stop();
+	else
+		qWarning() << name() << "step" << m_runTimePosition
+			   << "doesn't exist";
 }
