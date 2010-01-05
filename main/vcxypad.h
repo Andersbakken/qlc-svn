@@ -25,23 +25,28 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QString>
+#include <QMutex>
 #include <QList>
 
 #include "qlctypes.h"
+
 #include "vcxypadfixture.h"
+#include "dmxsource.h"
 #include "vcwidget.h"
 
 class QDomDocument;
 class QDomElement;
 class QPaintEvent;
 class QMouseEvent;
+class MasterTimer;
+class QByteArray;
 
 #define KXMLQLCVCXYPad "XYPad"
 #define KXMLQLCVCXYPadPosition "Position"
 #define KXMLQLCVCXYPadPositionX "X"
 #define KXMLQLCVCXYPadPositionY "Y"
 
-class VCXYPad : public VCWidget
+class VCXYPad : public VCWidget, public DMXSource
 {
 	Q_OBJECT
 
@@ -95,13 +100,15 @@ public:
 	/** Set the pad's current position (i.e. move the point) */
 	void setCurrentXYPosition(const QPoint& point);
 
-protected:
-	/** Write DMX data according to the given XY position */
-	void outputDMX(const QPoint& point);
+	/** @reimp from DMXSource */
+	void writeDMX(MasterTimer* timer, QByteArray* universes);
 
 protected:
-	QPoint m_currentXYPosition;
 	QPixmap m_xyPosPixmap;
+
+	QPoint m_currentXYPosition;
+	bool m_currentXYPositionChanged;
+        QMutex m_currentXYPositionMutex;
 
 	/*********************************************************************
 	 * Application Mode

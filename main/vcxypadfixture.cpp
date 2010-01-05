@@ -29,7 +29,6 @@
 #include "qlcfile.h"
 
 #include "vcxypadfixture.h"
-#include "outputmap.h"
 #include "fixture.h"
 #include "app.h"
 #include "doc.h"
@@ -233,8 +232,10 @@ void VCXYPadFixture::disarm()
 	m_yMSB = KChannelInvalid;
 }
 
-void VCXYPadFixture::outputDMX(double xmul, double ymul)
+void VCXYPadFixture::writeDMX(double xmul, double ymul, QByteArray* universes)
 {
+	Q_ASSERT(universes != NULL);
+
 	if (m_xMSB == KChannelInvalid || m_yMSB == KChannelInvalid)
 		return;
 
@@ -246,8 +247,8 @@ void VCXYPadFixture::outputDMX(double xmul, double ymul)
 	if (m_yReverse == true)
 		yMSB = m_yMax - yMSB;
 
-	_app->outputMap()->setValue(m_xMSB, t_value(xMSB * 255));
-	_app->outputMap()->setValue(m_yMSB, t_value(yMSB * 255));
+	(*universes)[m_xMSB] = char(xMSB * 255);
+	(*universes)[m_yMSB] = char(yMSB * 255);
 
 	if (m_xLSB != KChannelInvalid && m_yLSB != KChannelInvalid)
 	{
@@ -255,8 +256,8 @@ void VCXYPadFixture::outputDMX(double xmul, double ymul)
 		double xLSB = (xMSB * 255.0) - floor(xMSB * 255.0);
 		double yLSB = (yMSB * 255.0) - floor(yMSB * 255.0);
 
-		_app->outputMap()->setValue(m_xLSB, t_value(xLSB * 255));
-		_app->outputMap()->setValue(m_yLSB, t_value(yLSB * 255));
+		(*universes)[m_xLSB] = char(xLSB * 255);
+		(*universes)[m_yLSB] = char(yLSB * 255);
 	}
 }
 

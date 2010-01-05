@@ -76,7 +76,7 @@ public:
 	void disarm();
 
 	/** Write the value using x & y multipliers for the actual range */
-	void outputDMX(double xmul, double ymul);
+	void writeDMX(double xmul, double ymul, QByteArray* universes);
 
 protected:
 	t_fixture_id m_fixture;

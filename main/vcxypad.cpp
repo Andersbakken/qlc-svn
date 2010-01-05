@@ -23,6 +23,7 @@
 #include <QTreeWidget>
 #include <QMouseEvent>
 #include <QMessageBox>
+#include <QByteArray>
 #include <QPainter>
 #include <QPixmap>
 #include <QCursor>
@@ -36,7 +37,7 @@
 
 #include "vcxypadproperties.h"
 #include "virtualconsole.h"
-#include "outputmap.h"
+#include "mastertimer.h"
 #include "vcxypad.h"
 #include "fixture.h"
 #include "app.h"
@@ -64,6 +65,7 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 	/* Set initial position to center */
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
+	m_currentXYPositionChanged = false;
 
 	connect(_app, SIGNAL(modeChanged(App::Mode)),
 		this, SLOT(slotAppModeChanged(App::Mode)));
@@ -150,21 +152,39 @@ void VCXYPad::clearFixtures()
 
 void VCXYPad::setCurrentXYPosition(const QPoint& point)
 {
+	m_currentXYPositionMutex.lock();
 	m_currentXYPosition = point;
+	m_currentXYPositionChanged = true;
+	m_currentXYPositionMutex.unlock();
+
 	update();
 }
 
-void VCXYPad::outputDMX(const QPoint& point)
+void VCXYPad::writeDMX(MasterTimer* timer, QByteArray* universes)
 {
-	/* Scale XY coordinate values to 0.0 - 1.0 */
-	float x = SCALE(float(point.x()), float(0), float(width()),
-			float(0), float(1));
-	float y = SCALE(float(point.y()), float(0), float(height()),
-			float(0), float(1));
+	Q_UNUSED(timer);
 
-	VCXYPadFixture fixture;
-	foreach (fixture, m_fixtures)
-		fixture.outputDMX(x, y);
+	m_currentXYPositionMutex.lock();
+	if (m_currentXYPositionChanged == true)
+	{
+		m_currentXYPositionChanged = false;
+
+		/* Scale XY coordinate values to 0.0 - 1.0 */
+		float x = SCALE(float(m_currentXYPosition.x()),
+				float(0), float(width()), float(0), float(1));
+		float y = SCALE(float(m_currentXYPosition.y()),
+				float(0), float(height()), float(0), float(1));
+
+		/* Write values outside mutex lock to keep UI snappy */
+		m_currentXYPositionMutex.unlock();
+		foreach (VCXYPadFixture fixture, m_fixtures)
+			fixture.writeDMX(x, y, universes);
+	}
+	else
+	{
+		/* No changes in values, unlock and get out */
+		m_currentXYPositionMutex.unlock();
+	}
 }
 
 /*****************************************************************************
@@ -183,6 +203,15 @@ void VCXYPad::slotAppModeChanged(App::Mode mode)
 			fxi.disarm();
 		it.setValue(fxi);
 	}
+
+	if (mode == App::Operate)
+		_app->masterTimer()->registerDMXSource(this);
+	else
+		_app->masterTimer()->unregisterDMXSource(this);
+
+	/* Reset this flag so that the pad won't immediately set a value
+	   when mode is changed */
+	m_currentXYPositionChanged = false;
 }
 
 /*****************************************************************************
@@ -359,7 +388,6 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 		QPoint point(x, y);
 
 		setCurrentXYPosition(point);
-		outputDMX(point);
 		setMouseTracking(true);
 		setCursor(Qt::CrossCursor);
 	}
@@ -391,7 +419,6 @@ void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 		QPoint point(x, y);
 
 		setCurrentXYPosition(point);
-		outputDMX(point);
 		update();
 	}
 
