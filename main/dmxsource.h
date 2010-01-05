@@ -22,7 +22,8 @@
 #ifndef DMXSOURCE_H
 #define DMXSOURCE_H
 
-#include <QByteArray>
+class MasterTimer;
+class QByteArray;
 
 /**
  * DMXSource should be inherited/implemented by such object that wish to
@@ -37,9 +38,10 @@ public:
 	/**
 	 * Write the source's current values to the given universe buffer.
 	 *
+	 * @param timer The calling MasterTimer instance
 	 * @param universes Universe buffer to write to
 	 */
-	virtual void writeDMX(QByteArray* universes) = 0;
+	virtual void writeDMX(MasterTimer* timer, QByteArray* universes) = 0;
 };
 
 #endif

@@ -496,20 +496,39 @@ void Scene_Test::flashUnflash()
 	s1->arm();
 
 	QByteArray uni(4 * 512, 0);
-	s1->flash(&uni);
-	QVERIFY(int(uni[0]) == 123);
-	QVERIFY(int(uni[1]) == 45);
-	QVERIFY(int(uni[2]) == 67);
+	MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+	QVERIFY(mts->m_dmxSourceList.size() == 0);
 
-	s1->flash(&uni);
-	QVERIFY(int(uni[0]) == 123);
-	QVERIFY(int(uni[1]) == 45);
-	QVERIFY(int(uni[2]) == 67);
+	s1->flash(mts);
+	QVERIFY(mts->m_dmxSourceList.size() == 1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s1->flashing() == true);
 
-	s1->unFlash(&uni);
-	QVERIFY(int(uni[0]) == 0);
-	QVERIFY(int(uni[1]) == 0);
-	QVERIFY(int(uni[2]) == 0);
+	s1->writeDMX(mts, &uni);
+	QVERIFY(uni[0] == char(123));
+	QVERIFY(uni[1] == char(45));
+	QVERIFY(uni[2] == char(67));
+
+	s1->flash(mts);
+	QVERIFY(mts->m_dmxSourceList.size() == 1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s1->flashing() == true);
+
+	s1->writeDMX(mts, &uni);
+	QVERIFY(uni[0] == char(123));
+	QVERIFY(uni[1] == char(45));
+	QVERIFY(uni[2] == char(67));
+
+	s1->unFlash(mts);
+	QVERIFY(mts->m_dmxSourceList.size() == 1);
+	QVERIFY(s1->stopped() == true);
+	QVERIFY(s1->flashing() == false);
+
+	s1->writeDMX(mts, &uni);
+	QVERIFY(mts->m_dmxSourceList.size() == 0);
+	QVERIFY(uni[0] == char(0));
+	QVERIFY(uni[1] == char(0));
+	QVERIFY(uni[2] == char(0));
 
 	s1->disarm();
 

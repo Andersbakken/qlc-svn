@@ -317,15 +317,27 @@ public:
 	 * Flash
 	 *********************************************************************/
 public:
-	virtual void flash(QByteArray* universes);
-	virtual void unFlash(QByteArray* universes);
+	/** Flash the function */
+	virtual void flash(MasterTimer* timer);
 
-	virtual bool isFlashing() const { return m_flashing; }
+	/** UnFlash the function */
+	virtual void unFlash(MasterTimer* timer);
+
+	/** Check, whether the function is flashing */
+	virtual bool flashing() const { return m_flashing; }
 
 signals:
+	/**
+	 * Tells listeners that this function is flashing or that is just
+	 * stopped flashing.
+	 *
+	 * @param fid The flashing function's ID
+	 * @param state true if the function flashing, false if the function
+	 *              just stopped flashing
+	 */
 	void flashing(t_function_id fid, bool state);
 
-protected:
+private:
 	bool m_flashing;
 
 	/*********************************************************************

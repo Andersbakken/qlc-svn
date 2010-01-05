@@ -628,11 +628,7 @@ void VCButton::pressFunction()
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
-		{
-			QByteArray* universes = _app->outputMap()->claimUniverses();
-			f->flash(universes);
-			_app->outputMap()->releaseUniverses();
-		}
+			f->flash(_app->masterTimer());
 	}
 }
 
@@ -644,23 +640,19 @@ void VCButton::releaseFunction()
 	{
 		f = _app->doc()->function(m_function);
 		if (f != NULL)
-		{
-			QByteArray* universes = _app->outputMap()->claimUniverses();
-			f->unFlash(universes);
-			_app->outputMap()->releaseUniverses();
-		}
+			f->unFlash(_app->masterTimer());
 	}
 }
 
 void VCButton::slotFunctionRunning(t_function_id fid)
 {
-	if (fid == m_function)
+	if (fid == m_function && m_action != Flash)
 		setOn(true);
 }
 
 void VCButton::slotFunctionStopped(t_function_id fid)
 {
-	if (fid == m_function)
+	if (fid == m_function && m_action != Flash)
 	{
 		setOn(false);
 		slotBlinkReady();

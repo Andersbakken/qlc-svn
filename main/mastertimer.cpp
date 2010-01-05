@@ -317,7 +317,7 @@ void MasterTimer::runDMXSources()
 		m_dmxSourceListMutex.unlock();
 
 		/* Get DMX data from the source */
-		source->writeDMX(universes);
+		source->writeDMX(this, universes);
 
 		/* Lock for the next round. */
 		m_dmxSourceListMutex.lock();

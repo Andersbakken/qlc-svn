@@ -23,6 +23,7 @@
 #include <QtTest>
 
 #include "dmxsource_stub.h"
+#include "../mastertimer.h"
 
 DMXSource_Stub::DMXSource_Stub()
 	: m_writeCalls(0)
@@ -33,8 +34,10 @@ DMXSource_Stub::~DMXSource_Stub()
 {
 }
 
-void DMXSource_Stub::writeDMX(QByteArray* universes)
+void DMXSource_Stub::writeDMX(MasterTimer* timer, QByteArray* universes)
 {
+	Q_UNUSED(timer);
 	Q_UNUSED(universes);
+
 	m_writeCalls++;
 }

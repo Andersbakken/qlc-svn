@@ -119,8 +119,8 @@ protected:
 	 * DMXSource
 	 *********************************************************************/
 public:
-	/** \reimp */
-	void writeDMX(QByteArray* universes);
+	/** @reimp */
+	void writeDMX(MasterTimer* timer, QByteArray* universes);
 
 	/*********************************************************************
 	 * Enable/disable

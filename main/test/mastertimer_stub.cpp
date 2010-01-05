@@ -48,3 +48,14 @@ void MasterTimerStub::stopFunction(Function* function)
 	m_functionList.removeAll(function);
 	function->postRun(this, &m_universes);
 }
+
+void MasterTimerStub::registerDMXSource(DMXSource* source)
+{
+	m_dmxSourceList.append(source);
+}
+
+void MasterTimerStub::unregisterDMXSource(DMXSource* source)
+{
+	m_dmxSourceList.removeAll(source);
+}
+

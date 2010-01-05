@@ -25,6 +25,7 @@
 #include <QList>
 #include <QtXml>
 
+#include "dmxsource.h"
 #include "qlctypes.h"
 #include "function.h"
 #include "fixture.h"
@@ -156,7 +157,7 @@ public:
  * are, to the target values defined in the scene (with SceneValue instances).
  * Channels that are not enabled in the scene will not be touched at all.
  */
-class Scene : public Function
+class Scene : public Function, public DMXSource
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(Scene)
@@ -248,10 +249,13 @@ public:
 	 *********************************************************************/
 public:
 	/** @reimpl */
-	void flash(QByteArray* universes);
+	void flash(MasterTimer* timer);
 
 	/** @reimpl */
-	void unFlash(QByteArray* universes);
+	void unFlash(MasterTimer* timer);
+
+	/** @reimpl from DMXSource */
+	void writeDMX(MasterTimer* timer, QByteArray* universes);
 
 	/*********************************************************************
 	 * Running

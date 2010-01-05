@@ -337,26 +337,20 @@ bool Function::loader(const QDomElement* root, Doc* doc)
  * Flash
  *****************************************************************************/
 
-void Function::flash(QByteArray* universes)
+void Function::flash(MasterTimer* timer)
 {
-	Q_UNUSED(universes);
-
+	Q_UNUSED(timer);
 	if (m_flashing == false)
-	{
-		m_flashing = true;
 		emit flashing(m_id, true);
-	}
+	m_flashing = true;
 }
 
-void Function::unFlash(QByteArray* universes)
+void Function::unFlash(MasterTimer* timer)
 {
-	Q_UNUSED(universes);
-
+	Q_UNUSED(timer);
 	if (m_flashing == true)
-	{
-		m_flashing = false;
 		emit flashing(m_id, false);
-	}
+	m_flashing = false;
 }
 
 /*****************************************************************************

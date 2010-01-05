@@ -26,6 +26,7 @@
 
 #include "../mastertimer.h"
 #include "../outputmap.h"
+#include "../dmxsource.h"
 
 /****************************************************************************
  * MasterTimer Stub
@@ -43,6 +44,10 @@ public:
 	void startFunction(Function* function);
 	void stopFunction(Function* function);
 	QList <Function*> m_functionList;
+
+	void registerDMXSource(DMXSource* source);
+	void unregisterDMXSource(DMXSource* source);
+	QList <DMXSource*> m_dmxSourceList;
 
 	QByteArray& m_universes;
 };

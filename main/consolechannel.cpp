@@ -464,8 +464,10 @@ void ConsoleChannel::slotValueChange(int value)
  * DMXSource
  *****************************************************************************/
 
-void ConsoleChannel::writeDMX(QByteArray* universes)
+void ConsoleChannel::writeDMX(MasterTimer* timer, QByteArray* universes)
 {
+	Q_UNUSED(timer);
+
 	if (m_outputDMX == false)
 		return;
 

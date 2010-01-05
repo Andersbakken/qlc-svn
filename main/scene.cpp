@@ -28,6 +28,7 @@
 #include "qlcfixturedef.h"
 #include "qlcfile.h"
 
+#include "mastertimer.h"
 #include "scene.h"
 #include "doc.h"
 #include "bus.h"
@@ -372,21 +373,38 @@ bool Scene::loadXML(const QDomElement* root)
  * Flashing
  ****************************************************************************/
 
-void Scene::flash(QByteArray* universes)
+void Scene::flash(MasterTimer* timer)
 {
-	if (isFlashing() == false)
-	{
-		Function::flash(universes);
-		writeValues(universes);
-	}
+	if (flashing() == true)
+		return;
+
+	Q_ASSERT(timer != NULL);
+	Function::flash(timer);
+	timer->registerDMXSource(this);
 }
 
-void Scene::unFlash(QByteArray* universes)
+void Scene::unFlash(MasterTimer* timer)
 {
-	if (isFlashing() == true)
+	if (flashing() == false)
+		return;
+
+	Q_ASSERT(timer != NULL);
+	Function::unFlash(timer);
+}
+
+void Scene::writeDMX(MasterTimer* timer, QByteArray* universes)
+{
+	Q_ASSERT(timer != NULL);
+	Q_ASSERT(universes != NULL);
+
+	if (flashing() == true)
 	{
-		Function::unFlash(universes);
+		writeValues(universes);
+	}
+	else
+	{
 		writeZeros(universes);
+		timer->unregisterDMXSource(this);
 	}
 }
 
