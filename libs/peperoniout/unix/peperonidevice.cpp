@@ -37,12 +37,23 @@
 /** Common interface */
 #define PEPERONI_IFACE_EP0      0x00
 
-/** Control the internal DMX buffer */
+/** CONTROL MSG: Control the internal DMX buffer */
 #define PEPERONI_TX_MEM_REQUEST  0x04
-/** Block until the DMX frame has been completely transmitted */
+/** CONTROL MSG: Block until the DMX frame has been completely transmitted */
 #define PEPERONI_TX_MEM_BLOCK    0x01
-/** Do not block during DMX frame send */
+/** CONTROL MSG: Do not block during DMX frame send */
 #define PEPERONI_TX_MEM_NONBLOCK 0x00
+
+/** BULK WRITE: Bulk out endpoint */
+#define PEPERONI_BULK_OUT_ENDPOINT 0x02
+/** BULK WRITE: Oldest firmware version with bulk write support */
+#define PEPERONI_FW_BULK_SUPPORT 0x400
+/** BULK WRITE: Size of the "old" bulk header */
+#define PEPERONI_OLD_BULK_HEADER_SIZE 4
+/** BULK WRITE: "Old" bulk protocol ID */
+#define PEPERONI_OLD_BULK_HEADER_ID 0x01
+/** BULK WRITE: "Old" bulk transmit request */
+#define PEPERONI_OLD_BULK_HEADER_REQUEST_TX 0x00
 
 /****************************************************************************
  * Initialization
@@ -55,6 +66,8 @@ PeperoniDevice::PeperoniDevice(QObject* parent, struct usb_device* device)
 
 	m_device = device;
 	m_handle = NULL;
+	m_firmwareVersion = 0;
+	m_bulkBuffer = QByteArray(512 + PEPERONI_OLD_BULK_HEADER_SIZE, 0);
 
 	extractName();
 }
@@ -122,6 +135,9 @@ void PeperoniDevice::extractName()
 	else
 		m_name = tr("Unknown");
 
+	/* Store fw version so we don't need to rely on libusb's volatile data */
+	m_firmwareVersion = m_device->descriptor.bcdDevice;
+
 	/* Close the device if it was opened for this function only. */
 	if (needToClose == true)
 		close();
@@ -140,7 +156,9 @@ QString PeperoniDevice::infoText() const
 	{
 		info += QString("<B>%1</B>").arg(name());
 		info += QString("<P>");
-		info += QString("Device is working correctly.");
+		info += QString("Device is working correctly.<BR>");
+		info += QString("<I>Firmware version: %1</I>")
+				.arg(m_firmwareVersion, 4, 16, QChar('0'));
 		info += QString("</P>");
 	}
 	else
@@ -175,6 +193,13 @@ void PeperoniDevice::open()
 		{
 			qWarning() << "PeperoniDevice:"
 				   << "Unable to claim interface EP0!";
+		}
+
+		r = usb_clear_halt(m_handle, PEPERONI_BULK_OUT_ENDPOINT);
+		if (r < 0)
+		{
+			qWarning() << "PeperoniDevice:"
+				   << "Unable to reset endpoint";
 		}
 	}
 }
@@ -212,18 +237,39 @@ const usb_dev_handle* PeperoniDevice::handle() const
 
 void PeperoniDevice::outputDMX(const QByteArray& universe)
 {
+	int r = -1;
+
 	if (m_handle == NULL)
 		return;
 
-	/* Write all 512 channels at once */
-	int r = usb_control_msg(m_handle,
-		USB_TYPE_VENDOR | USB_RECIP_INTERFACE | USB_ENDPOINT_OUT,
-		PEPERONI_TX_MEM_REQUEST, // We are writing DMX data
-		PEPERONI_TX_MEM_NONBLOCK,// Don't block during frame send
-		0,                       // Start at DMX address 0
-		(char*) universe.data(),         // Our DMX universe
-		universe.size(),         // Our DMX universe size
-		500);                    // Timeout
+	/* Choose write method based on firmware version */
+	if (m_firmwareVersion < PEPERONI_FW_BULK_SUPPORT)
+	{
+		r = usb_control_msg(m_handle,
+			USB_TYPE_VENDOR | USB_RECIP_INTERFACE | USB_ENDPOINT_OUT,
+			PEPERONI_TX_MEM_REQUEST, // We are WRITING data
+			PEPERONI_TX_MEM_BLOCK,   // Block during frame send?
+			0,                       // Start at DMX address 0
+			(char*) universe.data(), // The DMX universe data
+			universe.size(),         // Size of DMX universe
+			500);                    // Timeout (ms)
+	}
+	else
+	{
+		/* Construct a bulk header first */
+		m_bulkBuffer[0] = char(PEPERONI_OLD_BULK_HEADER_ID);
+		m_bulkBuffer[1] = char(PEPERONI_OLD_BULK_HEADER_REQUEST_TX);
+		m_bulkBuffer[2] = char(universe.size() & 0xFF);
+		m_bulkBuffer[3] = char((universe.size() >> 8) & 0xFF);
+
+		/* Append universe data */
+		m_bulkBuffer.replace(PEPERONI_OLD_BULK_HEADER_SIZE, universe.size(),
+				     universe);
+		/* Perform a bulk write */
+		r = usb_bulk_write(m_handle, PEPERONI_BULK_OUT_ENDPOINT,
+				   m_bulkBuffer.data(), m_bulkBuffer.size(), 50);
+	}
+
 	if (r < 0)
 	{
 		qWarning() << name() << "is unable to write DMX universe:"
