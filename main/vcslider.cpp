@@ -36,7 +36,7 @@
 
 #include "vcsliderproperties.h"
 #include "virtualconsole.h"
-#include "outputmap.h"
+#include "mastertimer.h"
 #include "vcslider.h"
 #include "inputmap.h"
 #include "app.h"
@@ -47,7 +47,7 @@
 extern App* _app;
 
 static const quint32 KDefaultBusLowLimit ( 0 );
-static const quint32 KDefaultBusHighLimit ( 5 );
+static const quint32 KDefaultBusHighLimit ( 10 );
 
 /*****************************************************************************
  * Initialization
@@ -75,6 +75,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_busHighLimit = KDefaultBusHighLimit;
 
 	m_sliderValue = 0;
+	m_levelValue = 0;
 
 	m_time = NULL;
 
@@ -141,6 +142,12 @@ VCSlider::~VCSlider()
 	if (m_time != NULL)
 		delete m_time;
 	m_time = NULL;
+
+	/* When application exits these are already NULL and unregistration
+	   is no longer necessary. But a normal deletion of a VCSlider in
+	   design mode must unregister the slider. */
+	if (_app != NULL && _app->masterTimer() != NULL)
+		_app->masterTimer()->unregisterDMXSource(this);
 }
 
 /*****************************************************************************
@@ -347,6 +354,10 @@ void VCSlider::setSliderMode(SliderMode mode)
 	disconnect(Bus::instance(), SIGNAL(valueChanged(quint32, quint32)),
 		   this, SLOT(slotBusValueChanged(quint32, quint32)));
 
+	/* Unregister this as a DMX source if the new mode is not "Level" */
+	if (m_sliderMode == Level && mode != Level)
+		_app->masterTimer()->unregisterDMXSource(this);
+
 	m_sliderMode = mode;
 
 	if (mode == Bus)
@@ -375,6 +386,8 @@ void VCSlider::setSliderMode(SliderMode mode)
 
 		m_bottomLabel->show();
 		m_tapButton->hide();
+
+		_app->masterTimer()->registerDMXSource(this);
 	}
 	else if (mode == Submaster)
 	{
@@ -522,20 +535,49 @@ t_value VCSlider::levelHighLimit()
 
 void VCSlider::setLevelValue(t_value value)
 {
-	Fixture* fxi = NULL;
-	t_fixture_id fxi_id = Fixture::invalidId();
-	t_channel ch = 0;
-	int dmx_ch = 0;
+	m_levelValueMutex.lock();
+	m_levelValue = value;
+	m_levelValueMutex.unlock();
+}
 
+/*********************************************************************
+ * DMXSource
+ *********************************************************************/
+
+void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
+{
+	Q_UNUSED(timer);
+
+	static char value = 0;
+	bool exit = false;
+
+	/* Check, whether the current value has changed */
+	m_levelValueMutex.lock();
+	if (m_levelValue == value)
+		exit = true;
+	else
+		value = m_levelValue;
+	m_levelValueMutex.unlock();
+
+	/* Value has not been changed -> don't do anything with it */
+	if (exit == true)
+		return;
+
+	/* Value has changed, write it to all selected channels */
 	QListIterator <int> it(m_levelChannels);
 	while (it.hasNext() == true)
 	{
-		splitCombinedValue(it.next(), &fxi_id, &ch);
-		fxi = _app->doc()->fixture(fxi_id);
-		if (fxi != NULL)
-			dmx_ch = fxi->channelAddress(ch);
+		t_fixture_id fxi_id = Fixture::invalidId();
+		t_channel ch = 0;
+		int dmx_ch = 0;
 
-		_app->outputMap()->setValue(dmx_ch, value);
+		splitCombinedValue(it.next(), &fxi_id, &ch);
+		Fixture* fxi = _app->doc()->fixture(fxi_id);
+		if (fxi != NULL)
+		{
+			dmx_ch = fxi->channelAddress(ch);
+			(*universes)[dmx_ch] = value;
+		}
 	}
 }
 

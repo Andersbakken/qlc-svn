@@ -22,8 +22,10 @@
 #ifndef VCSLIDER_H
 #define VCSLIDER_H
 
+#include <QMutex>
 #include <QList>
 
+#include "dmxsource.h"
 #include "vcwidget.h"
 #include "qlctypes.h"
 
@@ -57,7 +59,7 @@ class VCSliderProperties;
 #define KXMLQLCVCSliderChannel "Channel"
 #define KXMLQLCVCSliderChannelFixture "Fixture"
 
-class VCSlider : public VCWidget
+class VCSlider : public VCWidget, public DMXSource
 {
 	Q_OBJECT
 
@@ -332,6 +334,17 @@ protected:
 	QList <int> m_levelChannels;
 	t_value m_levelLowLimit;
 	t_value m_levelHighLimit;
+
+	/*********************************************************************
+	 * DMXSource
+	 *********************************************************************/
+public:
+	/** @reimpl */
+	void writeDMX(MasterTimer* timer, QByteArray* universes);
+
+protected:
+	QMutex m_levelValueMutex;
+	char m_levelValue;
 
 	/*********************************************************************
 	 * Top label
