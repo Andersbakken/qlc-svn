@@ -242,17 +242,22 @@ void PeperoniDevice::outputDMX(const QByteArray& universe)
 	if (m_handle == NULL)
 		return;
 
-	/* Choose write method based on firmware version */
+	/* Choose write method based on firmware version. One has to unplug
+	   and then re-plug the dongle in apple for bulk write to work,
+	   so disable it for apple, since control msg should work for all. */
+#ifndef __APPLE__
 	if (m_firmwareVersion < PEPERONI_FW_BULK_SUPPORT)
 	{
-		r = usb_control_msg(m_handle,
-			USB_TYPE_VENDOR | USB_RECIP_INTERFACE | USB_ENDPOINT_OUT,
+#endif
+		r = usb_control_msg(m_handle, USB_TYPE_VENDOR | 
+			USB_RECIP_INTERFACE | USB_ENDPOINT_OUT,
 			PEPERONI_TX_MEM_REQUEST, // We are WRITING data
 			PEPERONI_TX_MEM_BLOCK,   // Block during frame send?
 			0,                       // Start at DMX address 0
 			(char*) universe.data(), // The DMX universe data
 			universe.size(),         // Size of DMX universe
-			500);                    // Timeout (ms)
+			50);                     // Timeout (ms)
+#ifndef __APPLE__
 	}
 	else
 	{
@@ -262,13 +267,18 @@ void PeperoniDevice::outputDMX(const QByteArray& universe)
 		m_bulkBuffer[2] = char(universe.size() & 0xFF);
 		m_bulkBuffer[3] = char((universe.size() >> 8) & 0xFF);
 
-		/* Append universe data */
-		m_bulkBuffer.replace(PEPERONI_OLD_BULK_HEADER_SIZE, universe.size(),
-				     universe);
+		/* Append universe data to the buffer */
+		m_bulkBuffer.replace(PEPERONI_OLD_BULK_HEADER_SIZE,
+				     universe.size(), universe);
+
 		/* Perform a bulk write */
-		r = usb_bulk_write(m_handle, PEPERONI_BULK_OUT_ENDPOINT,
-				   m_bulkBuffer.data(), m_bulkBuffer.size(), 50);
+		r = usb_bulk_write(m_handle,
+				   PEPERONI_BULK_OUT_ENDPOINT,
+				   m_bulkBuffer.data(),
+				   m_bulkBuffer.size(),
+				   50);
 	}
+#endif
 
 	if (r < 0)
 	{
