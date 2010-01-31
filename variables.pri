@@ -1,6 +1,10 @@
 # Compiler configuration
 CONFIG			+= warn_on
 
+# Uncomment these two lines when making a release
+# CONFIG			+= release
+# CONFIG			-= debug
+
 # Treat all compiler warnings as errors
 QMAKE_CXXFLAGS		+= -Werror
 

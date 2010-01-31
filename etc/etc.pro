@@ -41,23 +41,26 @@ win32 {
 
 	# MinGW library
 	mingw.path      = $$LIBSDIR
-	mingw.files     += $$(SystemDrive)/MinGW/bin/mingwm10.dll
+	exists($$(SystemDrive)/MinGW/bin/mingwm10.dll) {
+		mingw.files     += $$(SystemDrive)/MinGW/bin/mingwm10.dll
+	}
+
+	exists($$(QTDIR)/../MinGW/bin/mingwm10.dll) {
+		mingw.files     += $$(QTDIR)/../MinGW/bin/mingwm10.dll
+	}
 
 	# GCC 4.4.0
 	exists($$(SystemDrive)/MinGW/bin/libgcc_s_dw2-1.dll) {
 		mingw.files	+= $$(SystemDrive)/MinGW/bin/libgcc_s_dw2-1.dll
 	}
 
+	exists($$(QTDIR)/../MinGW/bin/libgcc_s_dw2-1.dll) {
+		mingw.files	+= $$(QTDIR)/../MinGW/bin/libgcc_s_dw2-1.dll
+	}
+
 	# NullSoft installer files
-	nsis.path	= $$DATADIR\nsis
-	nsis.files	= qlc.nsi \
-			  qlc-input-midi.nsi \
-			  qlc-input-enttec-wing.nsi \
-			  qlc-output-enttecdmxusb.nsi \
-			  qlc-output-enttecdmxusbpro.nsi \
-			  qlc-output-midi.nsi \
-			  qlc-output-udmx.nsi \
-			  qlc-output-peperoni.nsi
+	nsis.path	= $$DATADIR
+	nsis.files	= qlc.nsi
 
         INSTALLS        += qtlibs mingw nsis
 }
