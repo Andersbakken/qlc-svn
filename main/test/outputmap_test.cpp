@@ -130,45 +130,6 @@ void OutputMap_Test::setPatch()
 	QVERIFY(om.patch(0)->output() == 3);
 }
 
-void OutputMap_Test::setValue()
-{
-	OutputMap om(this);
-
-	OutputPluginStub* stub = new OutputPluginStub();
-	om.appendPlugin(stub);
-
-	om.setPatch(0, stub->name(), 0);
-	om.setPatch(1, stub->name(), 1);
-	om.setPatch(2, stub->name(), 2);
-	om.setPatch(3, stub->name(), 3);
-
-	QVERIFY(om.value(0) == 0);
-	om.setValue(0, 255);
-	QVERIFY(om.value(0) == 255);
-
-	QVERIFY(om.value(512) == 0);
-	om.setValue(512, 127);
-	QVERIFY(om.value(512) == 127);
-
-	QVERIFY(om.value(2048) == 0);
-	om.setValue(2048, 255);
-	QVERIFY(om.value(2048) == 0);
-
-	QVERIFY(om.value(2047) == 0);
-	om.setValue(2047, 64);
-	QVERIFY(om.value(2047) == 64);
-
-	QVERIFY(stub->m_array[0] == (char) 0);
-	QVERIFY(stub->m_array[512] == (char) 0);
-	QVERIFY(stub->m_array[2047] == (char) 0);
-
-	om.dumpUniverses();
-
-	QVERIFY(stub->m_array[0] == (char) 255);
-	QVERIFY(stub->m_array[512] == (char) 127);
-	QVERIFY(stub->m_array[2047] == (char) 64);
-}
-
 void OutputMap_Test::claimReleaseDump()
 {
 	OutputMap om(this);
@@ -198,13 +159,6 @@ void OutputMap_Test::claimReleaseDump()
 		QVERIFY(stub->m_array[i] == 'c');
 	for (int i = 1536; i < 2048; i++)
 		QVERIFY(stub->m_array[i] == 'd');
-
-	/* Verify that setValue works with claim/release/dump */
-	om.setValue(1500, 'e');
-	QVERIFY(om.value(1500) == 'e');
-	om.dumpUniverses();
-	QVERIFY(stub->m_array[1500] == 'e');
-	QVERIFY(unis->data()[1500] == 'e');
 }
 
 void OutputMap_Test::blackout()

@@ -185,41 +185,21 @@ bool OutputMap::blackout() const
  * Values
  *****************************************************************************/
 
-t_value OutputMap::value(t_channel channel)
-{
-	t_value value;
-
-	if (channel >= (m_universes * 512))
-		return 0;
-
-	value = m_universeArray->data()[channel];
-
-	return value;
-}
-
-void OutputMap::setValue(t_channel channel, t_value value)
-{
-	if (channel >= m_universes * 512)
-		return;
-
-	m_universeArray->data()[channel] = value;
-	m_universeChanged = true;
-}
-
 QByteArray* OutputMap::claimUniverses()
 {
-	/* WARNING: If considering mutex usage, take a look at EFX::stop() */
+	m_universeMutex.lock();
 	return m_universeArray;
 }
 
 void OutputMap::releaseUniverses()
 {
-	/* WARNING: If considering mutex usage, take a look at EFX::stop() */
 	m_universeChanged = true;
+	m_universeMutex.unlock();
 }
 
 void OutputMap::dumpUniverses()
 {
+	m_universeMutex.lock();
 	if (m_universeChanged == true && m_blackout == false)
 	{
 		for (int i = 0; i < m_universes; i++)
@@ -227,6 +207,15 @@ void OutputMap::dumpUniverses()
 
 		m_universeChanged = false;
 	}
+	m_universeMutex.unlock();
+}
+
+t_value OutputMap::value(t_channel channel) const
+{
+	if (channel < (m_universes * 512))
+		return (*m_universeArray)[channel];
+	else
+		return 0;
 }
 
 /*****************************************************************************

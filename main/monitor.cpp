@@ -315,16 +315,11 @@ void Monitor::timerEvent(QTimerEvent* e)
 {
 	Q_UNUSED(e);
 
-	QByteArray* universes = _app->outputMap()->claimUniverses();
-	Q_ASSERT(universes != NULL);
-
+	QByteArray universes = _app->outputMap()->peekUniverses();
 	QList <MonitorFixture*> list = findChildren <MonitorFixture*>();
 	QListIterator <MonitorFixture*> it(list);
 	while (it.hasNext() == true)
-		it.next()->updateValues(*universes);
-
-	/* No need to do _app->outputMap()->releaseUniverses() since we don't
-	   change the values. */
+		it.next()->updateValues(universes);
 }
 
 /****************************************************************************

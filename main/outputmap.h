@@ -117,30 +117,6 @@ protected:
 	 *********************************************************************/
 public:
 	/**
-	 * Get the value of one channel. Channels 0-511 are for the first
-	 * universe, 512-1023 for the second etc..
-	 *
-	 * @param channel The channel whose value to get
-	 * @return The value of the channel
-	 */
-	t_value value(t_channel channel);
-
-	/**
-	 * Set the value of one channel. Channels 0-511 are for the first
-	 * universe, 512-1023 for the second etc.. This function does not
-	 * actually write the values to plugins; dumpUniverses() does that
-	 * and it is called periodically from MasterTimer. Don't call
-	 * it manually.
-	 *
-	 * This function is used from manually-controlled widgets in the UI
-	 * to write one value at a time to the given channel.
-	 *
-	 * @param channel The channel whose value to set
-	 * @param value The value to set
-	 */
-	void setValue(t_channel channel, t_value value);
-
-	/**
 	 * Claim access to all universes. This is declared virtual to make
 	 * unit testing a bit easier.
 	 */
@@ -152,8 +128,25 @@ public:
 	 */
 	virtual void releaseUniverses();
 
-	/** Write all universes' data to their plugins */
+	/**
+	 * Write current universe array data to plugins, each universe within
+	 * the array to its assigned plugin.
+	 */
 	void dumpUniverses();
+
+	/**
+	 * Grab a read-only copy of the current universe array for
+	 * monitoring purposes.
+	 */
+	QByteArray peekUniverses() const { return *m_universeArray; }
+
+	/**
+	 * Read the value of a single channel
+	 *
+	 * @param channel The channel to read the value from
+	 * @return The value of the channel (0 if channel is out of bounds)
+	 */
+	t_value value(t_channel channel) const;
 
 protected:
 	/** The values of all universes */

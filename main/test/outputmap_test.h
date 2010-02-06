@@ -32,7 +32,6 @@ private slots:
 	void initial();
 	void appendPlugin();
 	void setPatch();
-	void setValue();
 	void claimReleaseDump();
 	void blackout();
 	void pluginNames();
