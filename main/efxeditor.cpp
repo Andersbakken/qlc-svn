@@ -64,7 +64,7 @@ EFXEditor::EFXEditor(QWidget* parent, EFX* efx) : QDialog(parent)
 	/* Create a copy of the original scene so that we can freely modify it.
 	   Keep also a pointer to the original so that we can move the
 	   contents from the copied chaser to the original when OK is clicked */
-	m_efx = new EFX(this);
+	m_efx = new EFX(_app->doc());
 	m_efx->copyFrom(efx);
 	Q_ASSERT(m_efx != NULL);
 

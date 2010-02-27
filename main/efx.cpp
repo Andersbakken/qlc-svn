@@ -52,7 +52,7 @@ static const char* KLissajousAlgorithmName ( "Lissajous" );
  * Initialization
  *****************************************************************************/
 
-EFX::EFX(QObject* parent) : Function(parent)
+EFX::EFX(Doc* doc) : Function(doc)
 {
 	pointFunc = NULL;
 
@@ -86,16 +86,9 @@ EFX::EFX(QObject* parent) : Function(parent)
 	connect(Bus::instance(), SIGNAL(valueChanged(quint32,quint32)),
 		this, SLOT(slotBusValueChanged(quint32,quint32)));
 
-	Doc* doc = qobject_cast <Doc*> (parent);
-	if (doc != NULL)
-	{
-		/* Listen to function removals so that they can be removed from
-		   this efx as well. Parent might not always be Doc, but an
-		   editor dialog, for example. Such efx's cannot be run,
-		   though. */
-		connect(doc, SIGNAL(functionRemoved(t_function_id)),
-			this, SLOT(slotFunctionRemoved(t_function_id)));
-	}
+	// Listen to start/stop scene removals
+	connect(doc, SIGNAL(functionRemoved(t_function_id)),
+		this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 EFX::~EFX()

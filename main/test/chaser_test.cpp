@@ -37,9 +37,20 @@ void Chaser_Test::initTestCase()
 	m_cache.load("../../fixtures/");
 }
 
+void Chaser_Test::init()
+{
+	m_doc = new Doc(this, m_cache);
+}
+
+void Chaser_Test::cleanup()
+{
+	delete m_doc;
+	m_doc = NULL;
+}
+
 void Chaser_Test::initial()
 {
-	Chaser c(this);
+	Chaser c(m_doc);
 	QVERIFY(c.type() == Function::Chaser);
 	QVERIFY(c.name() == "New Chaser");
 	QVERIFY(c.steps().size() == 0);
@@ -50,7 +61,7 @@ void Chaser_Test::initial()
 
 void Chaser_Test::directionRunOrder()
 {
-	Chaser c(this);
+	Chaser c(m_doc);
 
 	QVERIFY(c.direction() == Chaser::Forward);
 	QVERIFY(c.runOrder() == Chaser::Loop);
@@ -84,7 +95,7 @@ void Chaser_Test::directionRunOrder()
 
 void Chaser_Test::steps()
 {
-	Chaser c(this);
+	Chaser c(m_doc);
 	c.setID(50);
 	QVERIFY(c.steps().size() == 0);
 
@@ -177,7 +188,7 @@ void Chaser_Test::steps()
 
 void Chaser_Test::functionRemoval()
 {
-	Chaser c(this);
+	Chaser c(m_doc);
 	c.setID(42);
 	QVERIFY(c.steps().size() == 0);
 
@@ -253,7 +264,7 @@ void Chaser_Test::loadSuccess()
 	s3.appendChild(s3Text);
 	root.appendChild(s3);
 
-	Chaser c(this);
+	Chaser c(m_doc);
 	QVERIFY(c.loadXML(&root) == true);
 	QVERIFY(c.busID() == 16);
 	QVERIFY(c.direction() == Chaser::Backward);
@@ -305,7 +316,7 @@ void Chaser_Test::loadWrongType()
 	s3.appendChild(s3Text);
 	root.appendChild(s3);
 
-	Chaser c(this);
+	Chaser c(m_doc);
 	QVERIFY(c.loadXML(&root) == false);
 }
 
@@ -350,13 +361,13 @@ void Chaser_Test::loadWrongRoot()
 	s3.appendChild(s3Text);
 	root.appendChild(s3);
 
-	Chaser c(this);
+	Chaser c(m_doc);
 	QVERIFY(c.loadXML(&root) == false);
 }
 
 void Chaser_Test::save()
 {
-	Chaser c(this);
+	Chaser c(m_doc);
 	c.setDirection(Chaser::Backward);
 	c.setRunOrder(Chaser::SingleShot);
 	c.setBus(9);
@@ -420,7 +431,7 @@ void Chaser_Test::save()
 
 void Chaser_Test::copyFrom()
 {
-	Chaser c1(this);
+	Chaser c1(m_doc);
 	c1.setName("First");
 	c1.setDirection(Chaser::Backward);
 	c1.setRunOrder(Chaser::PingPong);
@@ -431,7 +442,7 @@ void Chaser_Test::copyFrom()
 	c1.addStep(25);
 
 	/* Verify that chaser contents are copied */
-	Chaser c2(this);
+	Chaser c2(m_doc);
 	QVERIFY(c2.copyFrom(&c1) == true);
 	QVERIFY(c2.name() == "First");
 	QVERIFY(c2.busID() == 15);
@@ -444,11 +455,11 @@ void Chaser_Test::copyFrom()
 	QVERIFY(c2.steps().at(3) == 25);
 
 	/* Verify that a Chaser gets a copy only from another Chaser */
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(c2.copyFrom(&s) == false);
 
 	/* Make a third Chaser */
-	Chaser c3(this);
+	Chaser c3(m_doc);
 	c3.setName("Third");
 	c3.setBus(8);
 	c3.setDirection(Chaser::Forward);
@@ -474,7 +485,7 @@ void Chaser_Test::createCopy()
 {
 	Doc doc(this, m_cache);
 
-	Chaser* c1 = new Chaser(this);
+	Chaser* c1 = new Chaser(m_doc);
 	c1->setName("First");
 	c1->setBus(15);
 	c1->setDirection(Chaser::Backward);

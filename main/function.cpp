@@ -56,8 +56,10 @@ const QString KForwardString    (    "Forward" );
  * Initialization
  *****************************************************************************/
 
-Function::Function(QObject* parent) : QObject(parent)
+Function::Function(Doc* doc) : QObject(doc)
 {
+	Q_ASSERT(doc != NULL);
+
 	m_id = Function::invalidId();
 	m_name = QString::null;
 	m_runOrder = Loop;

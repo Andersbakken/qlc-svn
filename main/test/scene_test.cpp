@@ -40,9 +40,20 @@ void Scene_Test::initTestCase()
 #endif
 }
 
+void Scene_Test::init()
+{
+	m_doc = new Doc(this, m_cache);
+}
+
+void Scene_Test::cleanup()
+{
+	delete m_doc;
+	m_doc = NULL;
+}
+
 void Scene_Test::initial()
 {
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(s.type() == Function::Scene);
 	QVERIFY(s.name() == "New Scene");
 	QVERIFY(s.values().size() == 0);
@@ -51,7 +62,7 @@ void Scene_Test::initial()
 
 void Scene_Test::values()
 {
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(s.values().size() == 0);
 
 	/* Value 3 to fixture 1's channel number 2 */
@@ -117,7 +128,7 @@ void Scene_Test::values()
 
 void Scene_Test::fixtureRemoval()
 {
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(s.values().size() == 0);
 
 	s.setValue(1, 2, 3);
@@ -174,7 +185,7 @@ void Scene_Test::loadSuccess()
 	v2.appendChild(v2Text);
 	root.appendChild(v2);
 
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(s.loadXML(&root) == true);
 	QVERIFY(s.busID() == 5);
 	QVERIFY(s.values().size() == 2);
@@ -209,7 +220,7 @@ void Scene_Test::loadWrongType()
 	v2.appendChild(v2Text);
 	root.appendChild(v2);
 
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(s.loadXML(&root) == false);
 }
 
@@ -240,13 +251,13 @@ void Scene_Test::loadWrongRoot()
 	v2.appendChild(v2Text);
 	root.appendChild(v2);
 
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(s.loadXML(&root) == false);
 }
 
 void Scene_Test::save()
 {
-	Scene s(this);
+	Scene s(m_doc);
 	s.setBus(5);
 	s.setValue(1, 2, 3);
 	s.setValue(4, 5, 6);
@@ -275,7 +286,7 @@ void Scene_Test::save()
 
 void Scene_Test::copyFrom()
 {
-	Scene s1(this);
+	Scene s1(m_doc);
 	s1.setName("First");
 	s1.setBus(15);
 	s1.setValue(1, 2, 3);
@@ -283,7 +294,7 @@ void Scene_Test::copyFrom()
 	s1.setValue(7, 8, 9);
 
 	/* Verify that scene contents are copied */
-	Scene s2(this);
+	Scene s2(m_doc);
 	QVERIFY(s2.copyFrom(&s1) == true);
 	QVERIFY(s2.name() == "First");
 	QVERIFY(s2.busID() == 15);
@@ -292,11 +303,11 @@ void Scene_Test::copyFrom()
 	QVERIFY(s2.value(7, 8) == 9);
 
 	/* Verify that a Scene gets a copy only from another Scene */
-	Chaser c(this);
+	Chaser c(m_doc);
 	QVERIFY(s2.copyFrom(&c) == false);
 
 	/* Make a third Scene */
-	Scene s3(this);
+	Scene s3(m_doc);
 	s3.setName("Third");
 	s3.setBus(8);
 	s3.setValue(3, 1, 2);
@@ -316,7 +327,7 @@ void Scene_Test::createCopy()
 {
 	Doc doc(this, m_cache);
 
-	Scene* s1 = new Scene(this);
+	Scene* s1 = new Scene(m_doc);
 	s1->setName("First");
 	s1->setBus(15);
 	s1->setValue(1, 2, 3);

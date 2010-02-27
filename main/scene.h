@@ -170,9 +170,9 @@ public:
 	 * Construct a new scene function, with given parent object. If the
 	 * parent is not a Doc* object, the debug build asserts.
 	 *
-	 * @param parent The parent object who owns the scene
+	 * @param doc The parent object who owns the scene
 	 */
-	Scene(QObject* parent);
+	Scene(Doc* doc);
 
 	/**
 	 * Destroy the scene

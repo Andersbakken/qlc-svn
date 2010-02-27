@@ -60,7 +60,7 @@ SceneEditor::SceneEditor(QWidget* parent, Scene* scene) : QDialog(parent)
 	/* Create a copy of the original scene so that we can freely modify it.
 	   Keep also a pointer to the original so that we can move the
 	   contents from the copied chaser to the original when OK is clicked */
-	m_scene = new Scene(this);
+	m_scene = new Scene(_app->doc());
 	m_scene->copyFrom(scene);
 	Q_ASSERT(m_scene != NULL);
 

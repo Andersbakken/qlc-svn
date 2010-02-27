@@ -37,20 +37,13 @@
  * Initialization
  *****************************************************************************/
 
-Collection::Collection(QObject* parent) : Function(parent)
+Collection::Collection(Doc* doc) : Function(doc)
 {
 	setName(tr("New Collection"));
 
-	Doc* doc = qobject_cast <Doc*> (parent);
-	if (doc != NULL)
-	{
-		/* Listen to function removals so that they can be removed from
-		   this collection as well. Parent might not always be Doc,
-		   but an editor dialog, for example. Such collections cannot
-		   be run, though. */
-		connect(doc, SIGNAL(functionRemoved(t_function_id)),
-			this, SLOT(slotFunctionRemoved(t_function_id)));
-	}
+	// Listen to member Function removals
+	connect(doc, SIGNAL(functionRemoved(t_function_id)),
+		this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 Collection::~Collection()

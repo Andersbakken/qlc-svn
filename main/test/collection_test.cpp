@@ -37,9 +37,20 @@ void Collection_Test::initTestCase()
 	m_cache.load("../../fixtures/");
 }
 
+void Collection_Test::init()
+{
+	m_doc = new Doc(this, m_cache);
+}
+
+void Collection_Test::cleanup()
+{
+	delete m_doc;
+	m_doc = NULL;
+}
+
 void Collection_Test::initial()
 {
-	Collection c(this);
+	Collection c(m_doc);
 	QVERIFY(c.type() == Function::Collection);
 	QVERIFY(c.name() == "New Collection");
 	QVERIFY(c.functions().size() == 0);
@@ -48,7 +59,7 @@ void Collection_Test::initial()
 
 void Collection_Test::functions()
 {
-	Collection c(this);
+	Collection c(m_doc);
 	c.setID(50);
 	QVERIFY(c.functions().size() == 0);
 
@@ -91,7 +102,7 @@ void Collection_Test::functions()
 
 void Collection_Test::functionRemoval()
 {
-	Collection c(this);
+	Collection c(m_doc);
 	c.setID(42);
 	QVERIFY(c.functions().size() == 0);
 
@@ -148,7 +159,7 @@ void Collection_Test::loadSuccess()
 	s3.appendChild(s3Text);
 	root.appendChild(s3);
 
-	Collection c(this);
+	Collection c(m_doc);
 	QVERIFY(c.loadXML(&root) == true);
 	QVERIFY(c.functions().size() == 3);
 	QVERIFY(c.functions().contains(50) == true);
@@ -178,7 +189,7 @@ void Collection_Test::loadWrongType()
 	s3.appendChild(s3Text);
 	root.appendChild(s3);
 
-	Collection c(this);
+	Collection c(m_doc);
 	QVERIFY(c.loadXML(&root) == false);
 }
 
@@ -204,13 +215,13 @@ void Collection_Test::loadWrongRoot()
 	s3.appendChild(s3Text);
 	root.appendChild(s3);
 
-	Collection c(this);
+	Collection c(m_doc);
 	QVERIFY(c.loadXML(&root) == false);
 }
 
 void Collection_Test::save()
 {
-	Collection c(this);
+	Collection c(m_doc);
 	c.addFunction(3);
 	c.addFunction(1);
 	c.addFunction(0);
@@ -247,7 +258,7 @@ void Collection_Test::save()
 
 void Collection_Test::copyFrom()
 {
-	Collection c1(this);
+	Collection c1(m_doc);
 	c1.setName("First");
 	c1.addFunction(2);
 	c1.addFunction(0);
@@ -255,7 +266,7 @@ void Collection_Test::copyFrom()
 	c1.addFunction(25);
 
 	/* Verify that Collection contents are copied */
-	Collection c2(this);
+	Collection c2(m_doc);
 	QVERIFY(c2.copyFrom(&c1) == true);
 	QVERIFY(c2.name() == "First");
 	QVERIFY(c2.functions().size() == 4);
@@ -265,11 +276,11 @@ void Collection_Test::copyFrom()
 	QVERIFY(c2.functions().at(3) == 25);
 
 	/* Verify that a Collection gets a copy only from another Collection */
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(c2.copyFrom(&s) == false);
 
 	/* Make a third Collection */
-	Collection c3(this);
+	Collection c3(m_doc);
 	c3.setName("Third");
 	c3.addFunction(15);
 	c3.addFunction(94);
@@ -289,7 +300,7 @@ void Collection_Test::createCopy()
 {
 	Doc doc(this, m_cache);
 
-	Collection* c1 = new Collection(this);
+	Collection* c1 = new Collection(m_doc);
 	c1->setName("First");
 	c1->addFunction(20);
 	c1->addFunction(30);

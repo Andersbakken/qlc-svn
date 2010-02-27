@@ -29,6 +29,7 @@
 #include "outputmap_stub.h"
 #include "dmxsource_stub.h"
 #include "function_stub.h"
+#include "../doc.h"
 
 #define protected public
 #include "../mastertimer.h"
@@ -37,6 +38,22 @@
 void MasterTimer_Test::initTestCase()
 {
 	m_oms = new OutputMapStub(this);
+#ifdef WIN32
+	QVERIFY(m_cache.load("../../../fixtures/") == true);
+#else
+	QVERIFY(m_cache.load("../../fixtures/") == true);
+#endif
+}
+
+void MasterTimer_Test::init()
+{
+	m_doc = new Doc(this, m_cache);
+}
+
+void MasterTimer_Test::cleanup()
+{
+	delete m_doc;
+	m_doc = NULL;
 }
 
 void MasterTimer_Test::initial()
@@ -96,7 +113,7 @@ void MasterTimer_Test::startStopFunction()
 	MasterTimer mt(this, m_oms);
 	mt.start();
 
-	Function_Stub fs(this);
+	Function_Stub fs(m_doc);
 
 	QVERIFY(mt.runningFunctions() == 0);
 
@@ -174,7 +191,7 @@ void MasterTimer_Test::registerUnregisterDMXSource()
 void MasterTimer_Test::interval()
 {
 	MasterTimer mt(this, m_oms);
-	Function_Stub fs(this);
+	Function_Stub fs(m_doc);
 	DMXSource_Stub dss;
 
 	mt.start();
@@ -216,7 +233,7 @@ void MasterTimer_Test::interval()
 void MasterTimer_Test::functionInitiatedStop()
 {
 	MasterTimer mt(this, m_oms);
-	Function_Stub fs(this);
+	Function_Stub fs(m_doc);
 
 	mt.start();
 
@@ -252,15 +269,15 @@ void MasterTimer_Test::runMultipleFunctions()
 	MasterTimer mt(this, m_oms);
 	mt.start();
 
-	Function_Stub fs1(this);
+	Function_Stub fs1(m_doc);
 	mt.startFunction(&fs1);
 	QVERIFY(mt.runningFunctions() == 1);
 
-	Function_Stub fs2(this);
+	Function_Stub fs2(m_doc);
 	mt.startFunction(&fs2);
 	QVERIFY(mt.runningFunctions() == 2);
 
-	Function_Stub fs3(this);
+	Function_Stub fs3(m_doc);
 	mt.startFunction(&fs3);
 	QVERIFY(mt.runningFunctions() == 3);
 
@@ -289,19 +306,19 @@ void MasterTimer_Test::stopAllFunctions()
 	MasterTimer mt(this, m_oms);
 	mt.start();
 
-	Function_Stub fs1(this);
+	Function_Stub fs1(m_doc);
 	mt.startFunction(&fs1);
 
 	DMXSource_Stub s1;
 	mt.registerDMXSource(&s1);
 
-	Function_Stub fs2(this);
+	Function_Stub fs2(m_doc);
 	mt.startFunction(&fs2);
 
 	DMXSource_Stub s2;
 	mt.registerDMXSource(&s2);
 
-	Function_Stub fs3(this);
+	Function_Stub fs3(m_doc);
 	mt.startFunction(&fs3);
 
 	QVERIFY(mt.runningFunctions() == 3);
@@ -320,13 +337,13 @@ void MasterTimer_Test::stop()
 	MasterTimer mt(this, m_oms);
 	mt.start();
 
-	Function_Stub fs1(this);
+	Function_Stub fs1(m_doc);
 	mt.startFunction(&fs1);
 
-	Function_Stub fs2(this);
+	Function_Stub fs2(m_doc);
 	mt.startFunction(&fs2);
 
-	Function_Stub fs3(this);
+	Function_Stub fs3(m_doc);
 	mt.startFunction(&fs3);
 	QVERIFY(mt.runningFunctions() == 3);
 
@@ -340,13 +357,13 @@ void MasterTimer_Test::restart()
 	MasterTimer mt(this, m_oms);
 	mt.start();
 
-	Function_Stub fs1(this);
+	Function_Stub fs1(m_doc);
 	mt.startFunction(&fs1);
 
-	Function_Stub fs2(this);
+	Function_Stub fs2(m_doc);
 	mt.startFunction(&fs2);
 
-	Function_Stub fs3(this);
+	Function_Stub fs3(m_doc);
 	mt.startFunction(&fs3);
 	QVERIFY(mt.runningFunctions() == 3);
 

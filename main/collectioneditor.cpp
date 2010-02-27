@@ -54,7 +54,7 @@ CollectionEditor::CollectionEditor(QWidget* parent, Collection* fc)
 	connect(m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
 	connect(m_remove, SIGNAL(clicked()), this, SLOT(slotRemove()));
 
-	m_fc = new Collection(this);
+	m_fc = new Collection(_app->doc());
 	m_fc->copyFrom(fc);
 	Q_ASSERT(m_fc != NULL);
 

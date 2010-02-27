@@ -68,10 +68,9 @@ public:
 	/**
 	 * Create a new function
 	 *
-	 * @param parent The parent object that owns this function (Doc)
-	 * @param type The type of this function
+	 * @param doc The parent object that owns this function (Doc)
 	 */
-	Function(QObject* parent);
+	Function(Doc* doc);
 
 	/**
 	 * Destroy this function

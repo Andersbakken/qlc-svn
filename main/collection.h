@@ -38,7 +38,7 @@ class Collection : public Function
 	 * Initialization
 	 *********************************************************************/
 public:
-	Collection(QObject* parent);
+	Collection(Doc* doc);
 	virtual ~Collection();
 
 	/** Collections don't belong to any particular fixture */

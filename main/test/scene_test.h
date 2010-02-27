@@ -25,12 +25,17 @@
 #include <QObject>
 #include "qlcfixturedefcache.h"
 
+class Doc;
+
 class Scene_Test : public QObject
 {
 	Q_OBJECT
 
 private slots:
 	void initTestCase();
+	void init();
+	void cleanup();
+
 	void initial();
 	void values();
 	void fixtureRemoval();
@@ -54,6 +59,7 @@ private slots:
 	void writeNonZeroStartingValues();
 
 private:
+	Doc* m_doc;
 	QLCFixtureDefCache m_cache;
 };
 

@@ -28,6 +28,8 @@
 #include "../fixture.h"
 #include "../scene.h"
 
+class Doc;
+
 /****************************************************************************
  * Scene Stub
  ****************************************************************************/
@@ -37,7 +39,7 @@ class SceneStub : public Scene
 	Q_OBJECT
 
 public:
-	SceneStub(QObject* parent);
+	SceneStub(Doc* doc);
 	~SceneStub();
 
 	void setValue(t_channel address, t_value value);

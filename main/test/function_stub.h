@@ -24,12 +24,14 @@
 
 #include "../function.h"
 
+class Doc;
+
 class Function_Stub : public Function
 {
 	Q_OBJECT
 
 public:
-	Function_Stub(QObject* parent);
+	Function_Stub(Doc* doc);
 	~Function_Stub();
 
 	Function* createCopy(Doc* parent);

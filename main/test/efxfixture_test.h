@@ -25,12 +25,17 @@
 #include <QObject>
 #include "qlcfixturedefcache.h"
 
+class Doc;
+
 class EFXFixture_Test : public QObject
 {
 	Q_OBJECT
 
 private slots:
 	void initTestCase();
+	void init();
+	void cleanup();
+
 	void initial();
 	void copyFrom();
 	void publicProperties();
@@ -48,6 +53,10 @@ private slots:
 	void setPoint16bit();
 	void nextStepLoop();
 	void nextStepSingleShot();
+
+private:
+	Doc* m_doc;
+	QLCFixtureDefCache m_cache;
 };
 
 #endif

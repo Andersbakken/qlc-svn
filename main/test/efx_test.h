@@ -25,14 +25,18 @@
 #include <QObject>
 #include "qlcfixturedefcache.h"
 
+class Doc;
+
 class EFX_Test : public QObject
 {
 	Q_OBJECT
 
 private slots:
 	void initTestCase();
-	void initial();
+	void init();
+	void cleanup();
 
+	void initial();
 	void algorithmNames();
 	void width();
 	void height();
@@ -77,6 +81,7 @@ private slots:
 	void writeStartStopScenes();
 
 private:
+	Doc* m_doc;
 	QLCFixtureDefCache m_cache;
 };
 

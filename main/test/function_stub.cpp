@@ -19,9 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "../doc.h"
 #include "function_stub.h"
 
-Function_Stub::Function_Stub(QObject* parent) : Function(parent)
+Function_Stub::Function_Stub(Doc* doc) : Function(doc)
 {
 	m_writeCalls = 0;
 	m_preRunCalls = 0;

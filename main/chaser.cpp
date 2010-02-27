@@ -38,7 +38,7 @@
  * Initialization
  *****************************************************************************/
 
-Chaser::Chaser(QObject* parent) : Function(parent)
+Chaser::Chaser(Doc* doc) : Function(doc)
 {
 	m_runTimeDirection = Forward;
 	m_runTimePosition = 0;
@@ -49,16 +49,9 @@ Chaser::Chaser(QObject* parent) : Function(parent)
 	connect(Bus::instance(), SIGNAL(tapped(quint32)),
 		this, SLOT(slotBusTapped(quint32)));
 
-	Doc* doc = qobject_cast <Doc*> (parent);
-	if (doc != NULL)
-	{
-		/* Listen to function removals so that they can be removed from
-		   this chaser as well. Parent might not always be Doc, but an
-		   editor dialog, for example. Such chasers cannot be run,
-		   though. */
-		connect(doc, SIGNAL(functionRemoved(t_function_id)),
-			this, SLOT(slotFunctionRemoved(t_function_id)));
-	}
+	// Listen to member Function removals
+	connect(doc, SIGNAL(functionRemoved(t_function_id)),
+		this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 Chaser::~Chaser()

@@ -48,10 +48,7 @@ class Chaser : public Function
 	 * Initialization
 	 *********************************************************************/
 public:
-	/** Constructor */
-	Chaser(QObject* parent);
-
-	/** Destructor */
+	Chaser(Doc* doc);
 	virtual ~Chaser();
 
 	/*********************************************************************

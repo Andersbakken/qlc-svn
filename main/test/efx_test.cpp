@@ -50,9 +50,20 @@ void EFX_Test::initTestCase()
 #endif
 }
 
+void EFX_Test::init()
+{
+	m_doc = new Doc(this, m_cache);
+}
+
+void EFX_Test::cleanup()
+{
+	delete m_doc;
+	m_doc = NULL;
+}
+
 void EFX_Test::initial()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.type() == Function::EFX);
 	QVERIFY(e.name() == "New EFX");
 	QVERIFY(e.id() == Function::invalidId());
@@ -92,7 +103,7 @@ void EFX_Test::algorithmNames()
 	QVERIFY(list.contains("Diamond") == true);
 	QVERIFY(list.contains("Lissajous") == true);
 
-	EFX e(this);
+	EFX e(m_doc);
 
 	/* All EFX's have Circle as the initial algorithm */
 	QVERIFY(e.algorithm() == "Circle");
@@ -116,7 +127,7 @@ void EFX_Test::algorithmNames()
 
 void EFX_Test::width()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	e.setWidth(300);
 	QVERIFY(e.width() == 127);
@@ -136,7 +147,7 @@ void EFX_Test::width()
 
 void EFX_Test::height()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	e.setHeight(300);
 	QVERIFY(e.height() == 127);
@@ -156,7 +167,7 @@ void EFX_Test::height()
 
 void EFX_Test::rotation()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	e.setRotation(400);
 	QVERIFY(e.rotation() == 359);
@@ -176,7 +187,7 @@ void EFX_Test::rotation()
 
 void EFX_Test::xOffset()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	e.setXOffset(300);
 	QVERIFY(e.xOffset() == 255);
@@ -196,7 +207,7 @@ void EFX_Test::xOffset()
 
 void EFX_Test::yOffset()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	e.setYOffset(300);
 	QVERIFY(e.yOffset() == 255);
@@ -216,7 +227,7 @@ void EFX_Test::yOffset()
 
 void EFX_Test::xFrequency()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	QVERIFY(e.isFrequencyEnabled() == false);
 
@@ -256,7 +267,7 @@ void EFX_Test::xFrequency()
 
 void EFX_Test::yFrequency()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	QVERIFY(e.isFrequencyEnabled() == false);
 
@@ -296,7 +307,7 @@ void EFX_Test::yFrequency()
 
 void EFX_Test::xPhase()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	QVERIFY(e.isPhaseEnabled() == false);
 
@@ -342,7 +353,7 @@ void EFX_Test::xPhase()
 
 void EFX_Test::yPhase()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	QVERIFY(e.isPhaseEnabled() == false);
 
@@ -388,7 +399,7 @@ void EFX_Test::yPhase()
 
 void EFX_Test::fixtures()
 {
-	EFX* e = new EFX(this);
+	EFX* e = new EFX(m_doc);
 	QVERIFY(e->fixtures().size() == 0);
 
 	/* Add first fixture */
@@ -489,7 +500,7 @@ void EFX_Test::fixtures()
 
 void EFX_Test::propagationMode()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.propagationMode() == EFX::Parallel);
 
 	e.setPropagationMode(EFX::Serial);
@@ -506,7 +517,7 @@ void EFX_Test::propagationMode()
 
 void EFX_Test::startStopScenes()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	QVERIFY(e.startSceneEnabled() == false);
 	QVERIFY(e.startScene() == Function::invalidId());
@@ -566,7 +577,7 @@ void EFX_Test::startStopScenes()
 
 void EFX_Test::previewCircle()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	QPolygon poly;
 	QVERIFY(e.preview(&poly) == true);
@@ -704,7 +715,7 @@ void EFX_Test::previewCircle()
 
 void EFX_Test::previewEight()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	e.setAlgorithm("Eight");
 
 	QPolygon poly;
@@ -843,7 +854,7 @@ void EFX_Test::previewEight()
 
 void EFX_Test::previewLine()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	e.setAlgorithm("Line");
 
 	QPolygon poly;
@@ -986,7 +997,7 @@ void EFX_Test::previewLine()
 
 void EFX_Test::previewDiamond()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	e.setAlgorithm("Diamond");
 
 	QPolygon poly;
@@ -1125,7 +1136,7 @@ void EFX_Test::previewDiamond()
 
 void EFX_Test::previewLissajous()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	e.setAlgorithm("Lissajous");
 
 	QPolygon poly;
@@ -1264,7 +1275,7 @@ void EFX_Test::previewLissajous()
 
 void EFX_Test::widthHeightOffset()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	int i = 0;
 	int max = 0;
 
@@ -1429,7 +1440,7 @@ void EFX_Test::rotateAndScale()
 
 void EFX_Test::copyFrom()
 {
-	EFX e1(this);
+	EFX e1(m_doc);
 	e1.setName("First");
 	e1.setDirection(EFX::Backward);
 	e1.setRunOrder(EFX::SingleShot);
@@ -1455,7 +1466,7 @@ void EFX_Test::copyFrom()
 	e1.addFixture(ef2);
 
 	/* Verify that EFX contents are copied */
-	EFX e2(this);
+	EFX e2(m_doc);
 	QVERIFY(e2.copyFrom(&e1) == true);
 	QVERIFY(e2.name() == "First");
 	QVERIFY(e2.direction() == EFX::Backward);
@@ -1481,11 +1492,11 @@ void EFX_Test::copyFrom()
 	QVERIFY(e2.fixtures().at(1) != ef2);
 
 	/* Verify that an EFX gets a copy only from another EFX */
-	Scene s(this);
+	Scene s(m_doc);
 	QVERIFY(e2.copyFrom(&s) == false);
 
 	/* Make a third EFX */
-	EFX e3(this);
+	EFX e3(m_doc);
 	e3.setName("Third");
 	e3.setDirection(EFX::Forward);
 	e3.setRunOrder(EFX::Loop);
@@ -1542,7 +1553,7 @@ void EFX_Test::createCopy()
 {
 	Doc doc(this, m_cache);
 
-	EFX* e1 = new EFX(this);
+	EFX* e1 = new EFX(m_doc);
 	e1->setName("First");
 	e1->setDirection(EFX::Forward);
 	e1->setRunOrder(EFX::PingPong);
@@ -1623,7 +1634,7 @@ void EFX_Test::loadXAxis()
 	pha.appendChild(phaText);
 	ax.appendChild(pha);
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXMLAxis(&ax) == true);
 }
 
@@ -1649,7 +1660,7 @@ void EFX_Test::loadYAxis()
 	pha.appendChild(phaText);
 	ax.appendChild(pha);
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXMLAxis(&ax) == true);
 }
 
@@ -1675,7 +1686,7 @@ void EFX_Test::loadYAxisWrongRoot()
 	pha.appendChild(phaText);
 	ax.appendChild(pha);
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXMLAxis(&ax) == false);
 }
 
@@ -1701,7 +1712,7 @@ void EFX_Test::loadAxisNoXY()
 	pha.appendChild(phaText);
 	ax.appendChild(pha);
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXMLAxis(&ax) == false);
 	QVERIFY(e.xOffset() != 1);
 	QVERIFY(e.xFrequency() != 5);
@@ -1851,7 +1862,7 @@ void EFX_Test::loadSuccess()
 	ef3dir.appendChild(ef3dirText);
 	ef3.appendChild(ef3dir);
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXML(&root) == true);
 	QVERIFY(e.busID() == 12);
 	QVERIFY(e.direction() == EFX::Forward);
@@ -1889,7 +1900,7 @@ void EFX_Test::loadWrongType()
 	QDomElement root = doc.createElement("Function");
 	root.setAttribute("Type", "Chaser");
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXML(&root) == false);
 }
 
@@ -1900,7 +1911,7 @@ void EFX_Test::loadWrongRoot()
 	QDomElement root = doc.createElement("EFX");
 	root.setAttribute("Type", "EFX");
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXML(&root) == false);
 }
 
@@ -1939,7 +1950,7 @@ void EFX_Test::loadDuplicateFixture()
 	ef2dir.appendChild(ef2dirText);
 	ef2.appendChild(ef2dir);
 
-	EFX e(this);
+	EFX e(m_doc);
 	QVERIFY(e.loadXML(&root) == true);
 	QVERIFY(e.fixtures().size() == 1);
 	QVERIFY(e.fixtures().at(0)->direction() == EFX::Forward);
@@ -1947,7 +1958,7 @@ void EFX_Test::loadDuplicateFixture()
 
 void EFX_Test::save()
 {
-	EFX e1(this);
+	EFX e1(m_doc);
 	e1.setName("First");
 	e1.setDirection(EFX::Backward);
 	e1.setRunOrder(EFX::SingleShot);

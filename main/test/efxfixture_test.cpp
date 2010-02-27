@@ -39,11 +39,27 @@
 void EFXFixture_Test::initTestCase()
 {
 	Bus::init(this);
+#ifdef WIN32
+	QVERIFY(m_cache.load("../../../fixtures/") == true);
+#else
+	QVERIFY(m_cache.load("../../fixtures/") == true);
+#endif
+}
+
+void EFXFixture_Test::init()
+{
+	m_doc = new Doc(this, m_cache);
+}
+
+void EFXFixture_Test::cleanup()
+{
+	delete m_doc;
+	m_doc = NULL;
 }
 
 void EFXFixture_Test::initial()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	EFXFixture ef(&e);
 	QVERIFY(ef.fixture() == Fixture::invalidId());
@@ -75,7 +91,7 @@ void EFXFixture_Test::initial()
 
 void EFXFixture_Test::copyFrom()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	EFXFixture ef(&e);
 	ef.m_fixture = 15;
@@ -119,7 +135,7 @@ void EFXFixture_Test::copyFrom()
 
 void EFXFixture_Test::publicProperties()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 
 	ef.setFixture(19);
@@ -153,7 +169,7 @@ void EFXFixture_Test::loadSuccess()
 	dir.appendChild(dirText);
 	root.appendChild(dir);
 
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 	QVERIFY(ef.loadXML(&root) == true);
 	QVERIFY(ef.fixture() == 83);
@@ -176,7 +192,7 @@ void EFXFixture_Test::loadWrongRoot()
 	dir.appendChild(dirText);
 	root.appendChild(dir);
 
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 	QVERIFY(ef.loadXML(&root) == false);
 	QVERIFY(ef.fixture() == Fixture::invalidId());
@@ -199,7 +215,7 @@ void EFXFixture_Test::loadWrongDirection()
 	dir.appendChild(dirText);
 	root.appendChild(dir);
 
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 	QVERIFY(ef.loadXML(&root) == true);
 	QVERIFY(ef.fixture() == 97);
@@ -227,7 +243,7 @@ void EFXFixture_Test::loadExtraTag()
 	foo.appendChild(fooText);
 	root.appendChild(foo);
 
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 	QVERIFY(ef.loadXML(&root) == true);
 	QVERIFY(ef.fixture() == 108);
@@ -236,7 +252,7 @@ void EFXFixture_Test::loadExtraTag()
 
 void EFXFixture_Test::save()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 	ef.setFixture(56);
 	ef.setDirection(EFX::Backward);
@@ -260,7 +276,7 @@ void EFXFixture_Test::save()
 
 void EFXFixture_Test::protectedProperties()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 
 	ef.setSerialNumber(15);
@@ -287,7 +303,7 @@ void EFXFixture_Test::protectedProperties()
 
 void EFXFixture_Test::updateSkipThreshold()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	EFXFixture* ef1 = new EFXFixture(&e);
 	ef1->setFixture(1);
@@ -324,7 +340,7 @@ void EFXFixture_Test::updateSkipThreshold()
 
 void EFXFixture_Test::isValid()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 
 	QVERIFY(ef.isValid() == false);
@@ -341,7 +357,7 @@ void EFXFixture_Test::isValid()
 
 void EFXFixture_Test::reset()
 {
-	EFX e(this);
+	EFX e(m_doc);
 
 	EFXFixture* ef1 = new EFXFixture(&e);
 	ef1->setFixture(1);
@@ -400,16 +416,16 @@ void EFXFixture_Test::reset()
 
 void EFXFixture_Test::startStop()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 
-	SceneStub s1(this);
+	SceneStub s1(m_doc);
 	s1.setValue(0, 1);
 	s1.setValue(1, 2);
 	s1.setValue(2, 3);
 	ef.setStartScene(&s1);
 
-	SceneStub s2(this);
+	SceneStub s2(m_doc);
 	s2.setValue(0, 4);
 	s2.setValue(1, 5);
 	s2.setValue(2, 6);
@@ -430,7 +446,7 @@ void EFXFixture_Test::startStop()
 
 void EFXFixture_Test::setPoint8bit()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 
 	ef.m_msbPanChannel = 0;
@@ -447,7 +463,7 @@ void EFXFixture_Test::setPoint8bit()
 
 void EFXFixture_Test::setPoint16bit()
 {
-	EFX e(this);
+	EFX e(m_doc);
 	EFXFixture ef(&e);
 
 	ef.m_msbPanChannel = 0;
@@ -470,7 +486,7 @@ void EFXFixture_Test::nextStepLoop()
 {
 	QByteArray array;
 
-	EFX e(this);
+	EFX e(m_doc);
 	e.slotBusValueChanged(e.busID(), 50); /* 50 steps */
 	e.pointFunc = e.circlePoint;
 
@@ -511,7 +527,7 @@ void EFXFixture_Test::nextStepSingleShot()
 {
 	QByteArray array;
 
-	EFX e(this);
+	EFX e(m_doc);
 	e.slotBusValueChanged(e.busID(), 50); /* 50 steps */
 	e.pointFunc = e.circlePoint;
 	e.setRunOrder(EFX::SingleShot);

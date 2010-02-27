@@ -163,7 +163,7 @@ bool SceneValue::saveXML(QDomDocument* doc, QDomElement* scene_root) const
  * Initialization
  *****************************************************************************/
 
-Scene::Scene(QObject* parent) : Function(parent)
+Scene::Scene(Doc* doc) : Function(doc)
 {
 	setName(tr("New Scene"));
 	setBus(Bus::defaultFade());

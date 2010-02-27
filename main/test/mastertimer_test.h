@@ -23,8 +23,10 @@
 #define MASTERTIMER_TEST_H
 
 #include <QObject>
+#include "qlcfixturedefcache.h"
 
 class OutputMapStub;
+class Doc;
 
 class MasterTimer_Test : public QObject
 {
@@ -32,6 +34,8 @@ class MasterTimer_Test : public QObject
 
 private slots:
 	void initTestCase();
+	void init();
+	void cleanup();
 
 	void initial();
 	void startStop();
@@ -48,6 +52,8 @@ private slots:
 
 protected:
 	OutputMapStub* m_oms;
+	Doc* m_doc;
+	QLCFixtureDefCache m_cache;
 };
 
 #endif
