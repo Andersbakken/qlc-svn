@@ -76,6 +76,8 @@ FunctionManager::FunctionManager(QWidget* parent, Qt::WindowFlags flags)
 	initTree();
 	updateTree();
 	updateActionStatus();
+
+	m_tree->sortItems(KColumnName, Qt::AscendingOrder);
 }
 
 FunctionManager::~FunctionManager()
