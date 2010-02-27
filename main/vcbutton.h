@@ -32,6 +32,7 @@ class QDomDocument;
 class QDomElement;
 class QMouseEvent;
 class QPaintEvent;
+class VCButton;
 class QAction;
 class QPoint;
 class QEvent;
@@ -51,6 +52,9 @@ class QEvent;
 class VCButton : public VCWidget
 {
 	Q_OBJECT
+
+public:
+	static const QSize defaultSize;
 
 	/*********************************************************************
 	 * Initialization

@@ -59,6 +59,8 @@
 #include <X11/Xlib.h>
 #endif
 
+#define SETTINGS_BUTTON_MATRIX_SIZE "buttonmatrix/defaultSize"
+
 extern App* _app;
 extern QApplication* _qapp;
 
@@ -218,6 +220,12 @@ void VirtualConsole::initActions()
 	m_addButtonAction->setShortcut(QKeySequence("CTRL+SHIFT+B"));
 	connect(m_addButtonAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddButton()));
+
+	m_addButtonMatrixAction = new QAction(QIcon(":/buttonmatrix.png"),
+					tr("Button Matrix"), this);
+	m_addButtonMatrixAction->setShortcut(QKeySequence("CTRL+SHIFT+M"));
+	connect(m_addButtonMatrixAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotAddButtonMatrix()));
 
 	m_addSliderAction = new QAction(QIcon(":/slider.png"),
 					tr("Slider"), this);
@@ -455,6 +463,7 @@ void VirtualConsole::initMenuBar()
 	m_addMenu->setTitle(tr("&Add"));
 	menuBar->addMenu(m_addMenu);
 	m_addMenu->addAction(m_addButtonAction);
+	m_addMenu->addAction(m_addButtonMatrixAction);
 	m_addMenu->addAction(m_addSliderAction);
 	m_addMenu->addAction(m_addXYPadAction);
 	m_addMenu->addSeparator();
@@ -530,8 +539,9 @@ void VirtualConsole::initMenuBar()
 	/* Toolbar */
 	toolBar = new QToolBar(widget);
 	vbox->addWidget(toolBar);
-	
+
 	toolBar->addAction(m_addButtonAction);
+	toolBar->addAction(m_addButtonMatrixAction);
 	toolBar->addAction(m_addSliderAction);
 	toolBar->addAction(m_addXYPadAction);
 	toolBar->addAction(m_addCueListAction);
@@ -669,6 +679,81 @@ void VirtualConsole::slotAddButton()
 		button->show();
 
 		button->move(parent->lastClickPoint());
+
+		_app->doc()->setModified();
+	}
+}
+
+void VirtualConsole::slotAddButtonMatrix()
+{
+	VCFrame* parent;
+
+	Q_ASSERT(contents() != NULL);
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = contents();
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
+	if (parent != NULL)
+	{
+		QSettings settings;
+
+		// Recall the latest size setting
+		QString defSize = settings.value(SETTINGS_BUTTON_MATRIX_SIZE,
+					 QString("5 x 5 x 30")).toString();
+
+		bool ok = false;
+		QString size = QInputDialog::getText(this,
+				     tr("New Button Matrix"),
+				     tr("Horizontal x Vertical x Button Size"),
+				     QLineEdit::Normal,
+				     defSize, &ok);
+		size = size.simplified();
+		if (ok == false || size.isEmpty() == true)
+			return;
+
+		VCFrame* frame = new VCFrame(parent);
+                Q_ASSERT(frame != NULL);
+
+		QStringList list(size.split("x", QString::SkipEmptyParts));
+		int h = 5;
+		int v = 5;
+		int sz = VCButton::defaultSize.width();
+
+		// Don't attempt to fetch nonexistent values from list
+		if (list.size() >= 1)
+			h = list[0].toInt();
+		if (list.size() >= 2)
+			v = list[1].toInt();
+		if (list.size() >= 3)
+			sz = list[2].toInt();
+
+		// Store the latest size as a string to settings
+		settings.setValue(SETTINGS_BUTTON_MATRIX_SIZE,
+			  QString("%1 x %2 x %3").arg(h).arg(v).arg(sz));
+
+		// Resize the parent frame to fit the buttons nicely
+		frame->resize(QSize((h * sz) + 20, (v * sz) + 20));
+
+		for (int x = 0; x < h; x++)
+		{
+			for (int y = 0; y < v; y++)
+			{
+				VCButton* button = new VCButton(frame);
+				Q_ASSERT(button != NULL);
+				button->move(QPoint(10 + (x * sz),
+						    10 + (y * sz)));
+				button->resize(QSize(sz, sz));
+				button->show();
+			}
+		}
+
+		// Show the frame after adding buttons to prevent flickering
+                frame->show();
+                frame->move(parent->lastClickPoint());
 
 		_app->doc()->setModified();
 	}

@@ -164,8 +164,9 @@ protected:
 	QActionGroup* m_fontActionGroup;
 	QActionGroup* m_frameActionGroup;
 	QActionGroup* m_stackingActionGroup;
-	
+
 	QAction* m_addButtonAction;
+	QAction* m_addButtonMatrixAction;
 	QAction* m_addSliderAction;
 	QAction* m_addXYPadAction;
 	QAction* m_addCueListAction;
@@ -205,12 +206,13 @@ protected:
 	QMenu* m_toolsMenu;
 	QMenu* m_editMenu;
 	QMenu* m_addMenu;
-	
+
 	/*********************************************************************
 	 * Add menu callbacks
 	 *********************************************************************/
 public slots:
 	void slotAddButton();
+	void slotAddButtonMatrix();
 	void slotAddSlider();
 	void slotAddXYPad();
 	void slotAddCueList();
