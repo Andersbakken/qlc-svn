@@ -48,6 +48,7 @@ extern App* _app;
 
 static const quint32 KDefaultBusLowLimit ( 0 );
 static const quint32 KDefaultBusHighLimit ( 10 );
+const QSize VCSlider::defaultSize(QSize(60, 200));
 
 /*****************************************************************************
  * Initialization
@@ -124,7 +125,8 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_bottomLabel->setAlignment(Qt::AlignCenter);
 	m_bottomLabel->hide();
 
-	resize(QSize(60, 220));
+	setMinimumSize(VCSlider::defaultSize);
+	resize(VCSlider::defaultSize);
 
 	/* Initialize to bus mode by default */
 	setBus(Bus::defaultFade());
@@ -366,6 +368,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 		m_slider->setRange(busLowLimit() * KFrequency,
 				   busHighLimit() * KFrequency);
 		setSliderValue(busLowLimit() * KFrequency);
+		slotSliderMoved(sliderValue());
 
 		/* Reconnect to bus emitter */
 		connect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
@@ -383,6 +386,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 		/* Set the slider range */
 		m_slider->setRange(levelLowLimit(), levelHighLimit());
 		setSliderValue(levelLowLimit());
+		slotSliderMoved(sliderValue());
 
 		m_bottomLabel->show();
 		m_tapButton->hide();

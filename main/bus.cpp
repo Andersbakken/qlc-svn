@@ -131,9 +131,17 @@ QString Bus::name(quint32 bus) const
 QString Bus::idName(quint32 bus) const
 {
 	if (bus < KBusCount)
-		return QString("%1: %2").arg(bus + 1).arg(name(bus));
+	{
+		QString nomen(name(bus));
+		if (nomen.simplified().isEmpty() == true)
+			return QString("Bus %1").arg(bus + 1);
+		else
+			return nomen;
+	}
 	else
+	{
 		return QString::null;
+	}
 }
 
 QStringList Bus::idNames() const

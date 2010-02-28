@@ -67,6 +67,7 @@
         <file alias="scene.png">../gfx/scene.png</file>
 	<file alias="shutter.png">../gfx/shutter.png</file>
         <file alias="slider.png">../gfx/slider.png</file>
+        <file alias="slidermatrix.png">../gfx/slidermatrix.png</file>
         <file alias="speed.png">../gfx/speed.png</file>
 	<file alias="tilt.png">../gfx/tilt.png</file>
         <file alias="uncheck.png">../gfx/uncheck.png</file>

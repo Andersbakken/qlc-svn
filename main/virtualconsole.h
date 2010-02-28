@@ -168,6 +168,7 @@ protected:
 	QAction* m_addButtonAction;
 	QAction* m_addButtonMatrixAction;
 	QAction* m_addSliderAction;
+	QAction* m_addSliderMatrixAction;
 	QAction* m_addXYPadAction;
 	QAction* m_addCueListAction;
 	QAction* m_addFrameAction;
@@ -214,6 +215,7 @@ public slots:
 	void slotAddButton();
 	void slotAddButtonMatrix();
 	void slotAddSlider();
+	void slotAddSliderMatrix();
 	void slotAddXYPad();
 	void slotAddCueList();
 	void slotAddFrame();
@@ -307,7 +309,7 @@ protected:
 protected:
 	/** Scroll Area that contains the bottom-most VCFrame */
 	QScrollArea* m_scrollArea;
-	
+
 	/*********************************************************************
 	 * Key press handler
 	 *********************************************************************/

@@ -60,6 +60,7 @@
 #endif
 
 #define SETTINGS_BUTTON_MATRIX_SIZE "buttonmatrix/defaultSize"
+#define SETTINGS_SLIDER_MATRIX_SIZE "slidermatrix/defaultSize"
 
 extern App* _app;
 extern QApplication* _qapp;
@@ -233,6 +234,12 @@ void VirtualConsole::initActions()
 	connect(m_addSliderAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddSlider()));
 
+	m_addSliderMatrixAction = new QAction(QIcon(":/slidermatrix.png"),
+						tr("Slider Matrix"), this);
+	m_addSliderMatrixAction->setShortcut(QKeySequence("CTRL+SHIFT+I"));
+	connect(m_addSliderMatrixAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotAddSliderMatrix()));
+
 	m_addXYPadAction = new QAction(QIcon(":/xypad.png"),
 				       tr("XY pad"), this);
 	m_addXYPadAction->setShortcut(QKeySequence("CTRL+SHIFT+X"));
@@ -261,7 +268,9 @@ void VirtualConsole::initActions()
 	m_addActionGroup = new QActionGroup(this);
 	m_addActionGroup->setExclusive(false);
 	m_addActionGroup->addAction(m_addButtonAction);
+	m_addActionGroup->addAction(m_addButtonMatrixAction);
 	m_addActionGroup->addAction(m_addSliderAction);
+	m_addActionGroup->addAction(m_addSliderMatrixAction);
 	m_addActionGroup->addAction(m_addXYPadAction);
 	m_addActionGroup->addAction(m_addCueListAction);
 	m_addActionGroup->addAction(m_addFrameAction);
@@ -464,9 +473,11 @@ void VirtualConsole::initMenuBar()
 	menuBar->addMenu(m_addMenu);
 	m_addMenu->addAction(m_addButtonAction);
 	m_addMenu->addAction(m_addButtonMatrixAction);
-	m_addMenu->addAction(m_addSliderAction);
-	m_addMenu->addAction(m_addXYPadAction);
 	m_addMenu->addSeparator();
+	m_addMenu->addAction(m_addSliderAction);
+	m_addMenu->addAction(m_addSliderMatrixAction);
+	m_addMenu->addSeparator();
+	m_addMenu->addAction(m_addXYPadAction);
 	m_addMenu->addAction(m_addCueListAction);
 	m_addMenu->addSeparator();
 	m_addMenu->addAction(m_addFrameAction);
@@ -543,6 +554,7 @@ void VirtualConsole::initMenuBar()
 	toolBar->addAction(m_addButtonAction);
 	toolBar->addAction(m_addButtonMatrixAction);
 	toolBar->addAction(m_addSliderAction);
+	toolBar->addAction(m_addSliderMatrixAction);
 	toolBar->addAction(m_addXYPadAction);
 	toolBar->addAction(m_addCueListAction);
 	toolBar->addAction(m_addFrameAction);
@@ -729,7 +741,7 @@ void VirtualConsole::slotAddButtonMatrix()
 		if (list.size() >= 2)
 			v = list[1].toInt();
 		if (list.size() >= 3)
-			sz = list[2].toInt();
+			sz = MAX(list[2].toInt(), VCButton::defaultSize.width());
 
 		// Store the latest size as a string to settings
 		settings.setValue(SETTINGS_BUTTON_MATRIX_SIZE,
@@ -779,6 +791,73 @@ void VirtualConsole::slotAddSlider()
 		slider->show();
 
 		slider->move(parent->lastClickPoint());
+
+		_app->doc()->setModified();
+	}
+}
+
+void VirtualConsole::slotAddSliderMatrix()
+{
+	VCFrame* parent;
+
+	Q_ASSERT(contents() != NULL);
+
+	/* Either add to the draw area or the latest selected widget (but only
+	   if it's a VCFrame). */
+	if (m_selectedWidgets.isEmpty() == true)
+		parent = contents();
+	else
+		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+
+	if (parent != NULL)
+	{
+		QSettings settings;
+
+		int count = 5;
+		int width = VCSlider::defaultSize.width();
+		int height = VCSlider::defaultSize.height();
+
+		// Recall the latest size setting
+		QString size = QString("%1 x %2").arg(count).arg(height);
+		size = settings.value(SETTINGS_SLIDER_MATRIX_SIZE, size).toString();
+
+		bool ok = false;
+		size = QInputDialog::getText(this, tr("New Slider Matrix"),
+				     tr("Horizontal Count x Slider Height"),
+				     QLineEdit::Normal, size, &ok);
+		size = size.simplified();
+		if (ok == false || size.isEmpty() == true)
+			return;
+
+		VCFrame* frame = new VCFrame(parent);
+                Q_ASSERT(frame != NULL);
+
+		// Don't attempt to fetch nonexistent values from list
+		QStringList list(size.split("x", QString::SkipEmptyParts));
+		if (list.size() >= 1)
+			count = list[0].toInt();
+		if (list.size() >= 2)
+			height = MAX(list[1].toInt(), VCSlider::defaultSize.height());
+
+		// Store the latest size as a string to settings
+		size = QString("%1 x %2").arg(count).arg(height);
+		settings.setValue(SETTINGS_SLIDER_MATRIX_SIZE, size);
+
+		// Resize the parent frame to fit the sliders nicely
+		frame->resize(QSize((count * width) + 20, height + 20));
+
+		for (int i = 0; i < count; i++)
+		{
+			VCSlider* slider = new VCSlider(frame);
+			Q_ASSERT(slider != NULL);
+			slider->move(QPoint(10 + (width * i), 10));
+			slider->resize(QSize(width, height));
+			slider->show();
+		}
+
+		// Show the frame after adding buttons to prevent flickering
+                frame->show();
+                frame->move(parent->lastClickPoint());
 
 		_app->doc()->setModified();
 	}

@@ -65,6 +65,9 @@ class VCSlider : public VCWidget, public DMXSource
 
 	friend class VCSliderProperties;
 
+public:
+	static const QSize defaultSize;
+
 	/*********************************************************************
 	 * Initialization
 	 *********************************************************************/
