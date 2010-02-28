@@ -211,6 +211,17 @@ protected:
 	/*********************************************************************
 	 * Add menu callbacks
 	 *********************************************************************/
+private:
+	/**
+	 * Attempt to find the closest parent for new widget. It's either
+	 * the bottom frame or a newly-added VCFrame or the parent of another
+	 * newly-added (non-VCFrame) widget. If a parent cannot be found for
+	 * some reason, NULL is returned.
+	 *
+	 * @return Closest parent VCFrame*
+	 */
+	VCFrame* closestParent() const;
+
 public slots:
 	void slotAddButton();
 	void slotAddButtonMatrix();

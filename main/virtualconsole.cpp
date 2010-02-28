@@ -658,9 +658,6 @@ void VirtualConsole::updateActions()
 		}
 		else
 		{
-			/* No new children possible */
-			m_addActionGroup->setEnabled(false);
-
 			/* No pasted children possible */
 			m_editPasteAction->setEnabled(false);
 		}
@@ -671,296 +668,237 @@ void VirtualConsole::updateActions()
  * Add menu callbacks
  *****************************************************************************/
 
+VCFrame* VirtualConsole::closestParent() const
+{
+	/* Either add to the draw area or the latest selected widget or one of
+	   its parents */
+	if (m_selectedWidgets.isEmpty() == true)
+	{
+		return contents();
+	}
+	else
+	{
+		/* Traverse upwards in parent hierarchy and find the next
+		   VCFrame */
+		VCFrame* parent = NULL;
+		VCWidget* widget = m_selectedWidgets.last();
+		while (parent == NULL && widget != NULL)
+		{
+			// Attempt to cast the VCWidget into VCFrame
+			parent = qobject_cast<VCFrame*> (widget);
+			if (parent != NULL)
+			{
+				// Found a VCFrame parent widget
+				break;
+			}
+			else
+			{
+				// Cast failed, so it's not a VCFrame.
+				// Try the widget's parent widget. If it has
+				// none or it's not a VCWidget, the loop
+				// should end on the next pass & parent == NULL
+				widget = qobject_cast<VCWidget*>
+						(widget->parentWidget());
+			}
+		}
+
+		return parent;
+	}
+}
+
 void VirtualConsole::slotAddButton()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		VCButton* button = new VCButton(parent);
-		Q_ASSERT(button != NULL);
-		button->show();
-
-		button->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
-	}
+	VCButton* button = new VCButton(parent);
+	Q_ASSERT(button != NULL);
+	button->show();
+	button->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddButtonMatrix()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		QSettings settings;
-
-		// Recall the latest size setting
-		QString defSize = settings.value(SETTINGS_BUTTON_MATRIX_SIZE,
+	// Recall the latest size setting
+	QSettings settings;
+	QString defSize = settings.value(SETTINGS_BUTTON_MATRIX_SIZE,
 					 QString("5 x 5 x 30")).toString();
 
-		bool ok = false;
-		QString size = QInputDialog::getText(this,
+	bool ok = false;
+	QString size = QInputDialog::getText(this,
 				     tr("New Button Matrix"),
 				     tr("Horizontal x Vertical x Button Size"),
 				     QLineEdit::Normal,
 				     defSize, &ok);
-		size = size.simplified();
-		if (ok == false || size.isEmpty() == true)
-			return;
+	size = size.simplified();
+	if (ok == false || size.isEmpty() == true)
+		return;
 
-		VCFrame* frame = new VCFrame(parent);
-                Q_ASSERT(frame != NULL);
+	VCFrame* frame = new VCFrame(parent);
+	Q_ASSERT(frame != NULL);
 
-		QStringList list(size.split("x", QString::SkipEmptyParts));
-		int h = 5;
-		int v = 5;
-		int sz = VCButton::defaultSize.width();
+	QStringList list(size.split("x", QString::SkipEmptyParts));
+	int h = 5;
+	int v = 5;
+	int sz = VCButton::defaultSize.width();
 
-		// Don't attempt to fetch nonexistent values from list
-		if (list.size() >= 1)
-			h = list[0].toInt();
-		if (list.size() >= 2)
-			v = list[1].toInt();
-		if (list.size() >= 3)
-			sz = MAX(list[2].toInt(), VCButton::defaultSize.width());
+	// Don't attempt to fetch nonexistent values from list
+	if (list.size() >= 1)
+		h = list[0].toInt();
+	if (list.size() >= 2)
+		v = list[1].toInt();
+	if (list.size() >= 3)
+		sz = MAX(list[2].toInt(), VCButton::defaultSize.width());
 
-		// Store the latest size as a string to settings
-		settings.setValue(SETTINGS_BUTTON_MATRIX_SIZE,
+	// Store the latest size as a string to settings
+	settings.setValue(SETTINGS_BUTTON_MATRIX_SIZE,
 			  QString("%1 x %2 x %3").arg(h).arg(v).arg(sz));
 
-		// Resize the parent frame to fit the buttons nicely
-		frame->resize(QSize((h * sz) + 20, (v * sz) + 20));
+	// Resize the parent frame to fit the buttons nicely
+	frame->resize(QSize((h * sz) + 20, (v * sz) + 20));
 
-		for (int x = 0; x < h; x++)
+	for (int x = 0; x < h; x++)
+	{
+		for (int y = 0; y < v; y++)
 		{
-			for (int y = 0; y < v; y++)
-			{
-				VCButton* button = new VCButton(frame);
-				Q_ASSERT(button != NULL);
-				button->move(QPoint(10 + (x * sz),
-						    10 + (y * sz)));
-				button->resize(QSize(sz, sz));
-				button->show();
-			}
+			VCButton* button = new VCButton(frame);
+			Q_ASSERT(button != NULL);
+			button->move(QPoint(10 + (x * sz), 10 + (y * sz)));
+			button->resize(QSize(sz, sz));
+			button->show();
 		}
-
-		// Show the frame after adding buttons to prevent flickering
-                frame->show();
-                frame->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
 	}
+
+	// Show the frame after adding buttons to prevent flickering
+	frame->show();
+	frame->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddSlider()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		VCSlider* slider = new VCSlider(parent);
-		Q_ASSERT(slider != NULL);
-		slider->show();
-
-		slider->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
-	}
+	VCSlider* slider = new VCSlider(parent);
+	Q_ASSERT(slider != NULL);
+	slider->show();
+	slider->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddSliderMatrix()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
+	int count = 5;
+	int width = VCSlider::defaultSize.width();
+	int height = VCSlider::defaultSize.height();
 
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
+	// Recall the latest size setting
+	QSettings settings;
+	QString size = QString("%1 x %2").arg(count).arg(height);
+	size = settings.value(SETTINGS_SLIDER_MATRIX_SIZE, size).toString();
 
-	if (parent != NULL)
-	{
-		QSettings settings;
-
-		int count = 5;
-		int width = VCSlider::defaultSize.width();
-		int height = VCSlider::defaultSize.height();
-
-		// Recall the latest size setting
-		QString size = QString("%1 x %2").arg(count).arg(height);
-		size = settings.value(SETTINGS_SLIDER_MATRIX_SIZE, size).toString();
-
-		bool ok = false;
-		size = QInputDialog::getText(this, tr("New Slider Matrix"),
+	bool ok = false;
+	size = QInputDialog::getText(this, tr("New Slider Matrix"),
 				     tr("Horizontal Count x Slider Height"),
 				     QLineEdit::Normal, size, &ok);
-		size = size.simplified();
-		if (ok == false || size.isEmpty() == true)
-			return;
+	size = size.simplified();
+	if (ok == false || size.isEmpty() == true)
+		return;
 
-		VCFrame* frame = new VCFrame(parent);
-                Q_ASSERT(frame != NULL);
+	VCFrame* frame = new VCFrame(parent);
+	Q_ASSERT(frame != NULL);
 
-		// Don't attempt to fetch nonexistent values from list
-		QStringList list(size.split("x", QString::SkipEmptyParts));
-		if (list.size() >= 1)
-			count = list[0].toInt();
-		if (list.size() >= 2)
-			height = MAX(list[1].toInt(), VCSlider::defaultSize.height());
+	// Don't attempt to fetch nonexistent values from list
+	QStringList list(size.split("x", QString::SkipEmptyParts));
+	if (list.size() >= 1)
+		count = list[0].toInt();
+	if (list.size() >= 2)
+		height = MAX(list[1].toInt(), VCSlider::defaultSize.height());
 
-		// Store the latest size as a string to settings
-		size = QString("%1 x %2").arg(count).arg(height);
-		settings.setValue(SETTINGS_SLIDER_MATRIX_SIZE, size);
+	// Store the latest size as a string to settings
+	size = QString("%1 x %2").arg(count).arg(height);
+	settings.setValue(SETTINGS_SLIDER_MATRIX_SIZE, size);
 
-		// Resize the parent frame to fit the sliders nicely
-		frame->resize(QSize((count * width) + 20, height + 20));
+	// Resize the parent frame to fit the sliders nicely
+	frame->resize(QSize((count * width) + 20, height + 20));
 
-		for (int i = 0; i < count; i++)
-		{
-			VCSlider* slider = new VCSlider(frame);
-			Q_ASSERT(slider != NULL);
-			slider->move(QPoint(10 + (width * i), 10));
-			slider->resize(QSize(width, height));
-			slider->show();
-		}
-
-		// Show the frame after adding buttons to prevent flickering
-                frame->show();
-                frame->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
+	for (int i = 0; i < count; i++)
+	{
+		VCSlider* slider = new VCSlider(frame);
+		Q_ASSERT(slider != NULL);
+		slider->move(QPoint(10 + (width * i), 10));
+		slider->resize(QSize(width, height));
+		slider->show();
 	}
+
+	// Show the frame after adding buttons to prevent flickering
+	frame->show();
+	frame->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddXYPad()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		VCXYPad* xypad = new VCXYPad(parent);
-		Q_ASSERT(xypad != NULL);
-		xypad->show();
-
-		xypad->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
-	}
+	VCXYPad* xypad = new VCXYPad(parent);
+	Q_ASSERT(xypad != NULL);
+	xypad->show();
+	xypad->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddCueList()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		VCCueList* cuelist = new VCCueList(parent);
-		Q_ASSERT(cuelist != NULL);
-		cuelist->show();
-
-		cuelist->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
-	}
+	VCCueList* cuelist = new VCCueList(parent);
+	Q_ASSERT(cuelist != NULL);
+	cuelist->show();
+	cuelist->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddFrame()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		VCFrame* frame = new VCFrame(parent);
-		Q_ASSERT(frame != NULL);
-		frame->show();
-
-		frame->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
-	}
+	VCFrame* frame = new VCFrame(parent);
+	Q_ASSERT(frame != NULL);
+	frame->show();
+	frame->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 void VirtualConsole::slotAddLabel()
 {
-	VCFrame* parent;
+	VCFrame* parent(closestParent());
+	if (parent == NULL)
+		return;
 
-	Q_ASSERT(contents() != NULL);
-
-	/* Either add to the draw area or the latest selected widget (but only
-	   if it's a VCFrame). */
-	if (m_selectedWidgets.isEmpty() == true)
-		parent = contents();
-	else
-		parent = qobject_cast<VCFrame*> (m_selectedWidgets.last());
-
-	if (parent != NULL)
-	{
-		VCLabel* label = new VCLabel(parent);
-		Q_ASSERT(label != NULL);
-		label->show();
-
-		label->move(parent->lastClickPoint());
-
-		_app->doc()->setModified();
-	}
+	VCLabel* label = new VCLabel(parent);
+	Q_ASSERT(label != NULL);
+	label->show();
+	label->move(parent->lastClickPoint());
+	_app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -1047,7 +985,7 @@ void VirtualConsole::slotEditPaste()
 		m_editPasteAction->setEnabled(false);
 		return;
 	}
-	
+
 	VCWidget* parent;
 	VCWidget* widget;
 	QRect bounds;
@@ -1089,7 +1027,7 @@ void VirtualConsole::slotEditPaste()
 			widget->move(p);
 			widget->show();
 		}
-		
+
 		/* Clear clipboard after pasting stuff that was CUT */
 		m_clipboard.clear();
 		m_editPasteAction->setEnabled(false);
@@ -1396,7 +1334,7 @@ void VirtualConsole::slotFrameNone()
 	foreach(widget, m_selectedWidgets)
 		widget->setFrameStyle(KVCFrameStyleNone);
 }
- 
+
 /*****************************************************************************
  * Dock area
  *****************************************************************************/
@@ -1521,12 +1459,12 @@ void VirtualConsole::slotAppModeChanged(App::Mode mode)
 			XAutoRepeatOn(display);
 		else
 			XAutoRepeatOff(display);
-		
+
 		XCloseDisplay(display);
 #else
 #endif
 	}
-	
+
 	/* Grab keyboard */
 	if (s_properties.isGrabKeyboard() == true)
 	{
