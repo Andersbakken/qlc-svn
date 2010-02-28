@@ -179,6 +179,7 @@ void VCSliderProperties::slotModeBusClicked()
 
 	m_nameEdit->setEnabled(false);
 	slotBusComboActivated(m_busCombo->currentIndex());
+	m_sliderMovementInvertedRadio->setChecked(true);
 
 	m_busValueRangeGroup->show();
 	m_busGroup->show();
@@ -202,6 +203,7 @@ void VCSliderProperties::slotModeLevelClicked()
 	m_nameEdit->setEnabled(true);
 	m_busValueRangeGroup->hide();
 	m_busGroup->hide();
+	m_sliderMovementNormalRadio->setChecked(true);
 
 	m_levelValueRangeGroup->show();
 	m_levelList->show();
