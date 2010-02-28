@@ -60,13 +60,9 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 
 	setupUi(this);
 
-	/* General page connections */
-	connect(m_modeBusRadio, SIGNAL(clicked()),
+	/* Bus page connections */
+	connect(m_switchToBusModeButton, SIGNAL(clicked()),
 		this, SLOT(slotModeBusClicked()));
-	connect(m_modeLevelRadio, SIGNAL(clicked()),
-		this, SLOT(slotModeLevelClicked()));
-	connect(m_modeSubmasterRadio, SIGNAL(clicked()),
-		this, SLOT(slotModeSubmasterClicked()));
 
 	/* Level page connections */
 	connect(m_levelLowLimitSpin, SIGNAL(valueChanged(int)),
@@ -85,6 +81,8 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 		this, SLOT(slotLevelInvertClicked()));
 	connect(m_levelByGroupButton, SIGNAL(clicked()),
 		this, SLOT(slotLevelByGroupClicked()));
+	connect(m_switchToLevelModeButton, SIGNAL(clicked()),
+		this, SLOT(slotModeLevelClicked()));
 
 	/*********************************************************************
 	 * General page
@@ -94,19 +92,17 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 	m_nameEdit->setText(m_slider->caption());
 
 	/* Slider mode */
-	switch (m_slider->sliderMode())
+	m_sliderMode = m_slider->sliderMode();
+	switch (m_sliderMode)
 	{
 	default:
 	case VCSlider::Bus:
-		m_modeBusRadio->setChecked(true);
 		slotModeBusClicked();
 		break;
 	case VCSlider::Level:
-		m_modeLevelRadio->setChecked(true);
 		slotModeLevelClicked();
 		break;
 	case VCSlider::Submaster:
-		m_modeSubmasterRadio->setChecked(true);
 		slotModeLevelClicked();
 		break;
 	}
@@ -179,37 +175,49 @@ VCSliderProperties::~VCSliderProperties()
 
 void VCSliderProperties::slotModeBusClicked()
 {
+	m_sliderMode = VCSlider::Bus;
+
 	m_nameEdit->setEnabled(false);
 	slotBusComboActivated(m_busCombo->currentIndex());
 
-	m_busValueRangeGroup->setEnabled(true);
-	m_busGroup->setEnabled(true);
+	m_busValueRangeGroup->show();
+	m_busGroup->show();
 
-	m_levelValueRangeGroup->setEnabled(false);
-	m_levelList->setEnabled(false);
-	m_levelAllButton->setEnabled(false);
-	m_levelNoneButton->setEnabled(false);
-	m_levelInvertButton->setEnabled(false);
-	m_levelByGroupButton->setEnabled(false);
+	m_levelValueRangeGroup->hide();
+	m_levelList->hide();
+	m_levelAllButton->hide();
+	m_levelNoneButton->hide();
+	m_levelInvertButton->hide();
+	m_levelByGroupButton->hide();
+
+	m_switchToBusModeButton->hide();
+	m_switchToLevelModeButton->show();
+	m_busSpacer->changeSize(10, 0, QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
 void VCSliderProperties::slotModeLevelClicked()
 {
+	m_sliderMode = VCSlider::Level;
+
 	m_nameEdit->setEnabled(true);
+	m_busValueRangeGroup->hide();
+	m_busGroup->hide();
 
-	m_busValueRangeGroup->setEnabled(false);
-	m_busGroup->setEnabled(false);
+	m_levelValueRangeGroup->show();
+	m_levelList->show();
+	m_levelAllButton->show();
+	m_levelNoneButton->show();
+	m_levelInvertButton->show();
+	m_levelByGroupButton->show();
 
-	m_levelValueRangeGroup->setEnabled(true);
-	m_levelList->setEnabled(true);
-	m_levelAllButton->setEnabled(true);
-	m_levelNoneButton->setEnabled(true);
-	m_levelInvertButton->setEnabled(true);
-	m_levelByGroupButton->setEnabled(true);
+	m_switchToLevelModeButton->hide();
+	m_switchToBusModeButton->show();
+	m_busSpacer->changeSize(0, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 void VCSliderProperties::slotModeSubmasterClicked()
 {
+	m_sliderMode = VCSlider::Submaster;
 }
 
 void VCSliderProperties::slotChooseInputClicked()
@@ -687,19 +695,9 @@ void VCSliderProperties::accept()
 	storeLevelChannels();
 
 	/* Slider mode */
-	if (m_modeBusRadio->isChecked() == true)
-	{
-		m_slider->setSliderMode(VCSlider::Bus);
-	}
-	else if (m_modeLevelRadio->isChecked() == true)
-	{
-		m_slider->setSliderMode(VCSlider::Level);
+	m_slider->setSliderMode(VCSlider::SliderMode(m_sliderMode));
+	if (m_sliderMode == VCSlider::Level)
 		m_slider->setCaption(m_nameEdit->text());
-	}
-	else
-	{
-		m_slider->setSliderMode(VCSlider::Submaster);
-	}
 
 	/* Value style */
 	if (m_valueExactRadio->isChecked() == true)

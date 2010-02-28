@@ -44,49 +44,7 @@
          </item>
         </layout>
        </item>
-       <item row="1" column="0" colspan="2" >
-        <widget class="QGroupBox" name="m_modeGroup" >
-         <property name="title" >
-          <string>Operating mode</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout" >
-          <item>
-           <widget class="QRadioButton" name="m_modeBusRadio" >
-            <property name="toolTip" >
-             <string>Use this slider to control a bus</string>
-            </property>
-            <property name="text" >
-             <string>Bus</string>
-            </property>
-            <property name="checked" >
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="m_modeLevelRadio" >
-            <property name="toolTip" >
-             <string>Use this slider to control the level of selected channels</string>
-            </property>
-            <property name="text" >
-             <string>Level</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="m_modeSubmasterRadio" >
-            <property name="enabled" >
-             <bool>false</bool>
-            </property>
-            <property name="text" >
-             <string>Submaster</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0" >
+       <item row="1" column="0" >
         <widget class="QGroupBox" name="m_valueGroup" >
          <property name="title" >
           <string>Value display style</string>
@@ -118,7 +76,7 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="1" >
+       <item row="1" column="1" >
         <widget class="QGroupBox" name="m_sliderMovementGroup" >
          <property name="title" >
           <string>Slider movement</string>
@@ -144,7 +102,7 @@
          </layout>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2" >
+       <item row="2" column="0" colspan="2" >
         <widget class="QGroupBox" name="m_externalInputGroup" >
          <property name="title" >
           <string>External Input</string>
@@ -210,7 +168,7 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2" >
+       <item row="3" column="0" colspan="2" >
         <spacer>
          <property name="orientation" >
           <enum>Qt::Vertical</enum>
@@ -293,6 +251,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="m_busGroup" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title" >
           <string>Bus</string>
          </property>
@@ -304,7 +268,7 @@
         </widget>
        </item>
        <item>
-        <spacer>
+        <spacer name="m_busSpacer" >
          <property name="orientation" >
           <enum>Qt::Vertical</enum>
          </property>
@@ -315,6 +279,16 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_switchToBusModeButton" >
+         <property name="toolTip" >
+          <string>Make the slider control a bus</string>
+         </property>
+         <property name="text" >
+          <string>Switch to Bus Mode</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -406,6 +380,11 @@
          <property name="allColumnsShowFocus" >
           <bool>true</bool>
          </property>
+         <column>
+          <property name="text" >
+           <string>1</string>
+          </property>
+         </column>
         </widget>
        </item>
        <item>
@@ -465,6 +444,16 @@
          </item>
         </layout>
        </item>
+       <item>
+        <widget class="QPushButton" name="m_switchToLevelModeButton" >
+         <property name="toolTip" >
+          <string>Make the slider control the level of a set of channels</string>
+         </property>
+         <property name="text" >
+          <string>Switch to Level Mode</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="Submaster" >
@@ -507,8 +496,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>402</y>
     </hint>
     <hint type="destinationlabel" >
      <x>157</x>
@@ -523,8 +512,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>402</y>
     </hint>
     <hint type="destinationlabel" >
      <x>286</x>

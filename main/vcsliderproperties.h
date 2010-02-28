@@ -61,6 +61,7 @@ protected:
 protected:
 	t_input_universe m_inputUniverse;
 	t_input_channel m_inputChannel;
+	int m_sliderMode;
 
 	/*********************************************************************
 	 * Bus page
