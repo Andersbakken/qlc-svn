@@ -23,6 +23,12 @@ unix:unittests.commands += cd libs/common/test ; ./test_common ; \
                       cd ../../ewinginput/test ; ./test_ewing ; \
                       cd ../../../main/test ; ./test_engine
 
-win32:unittests.commands += cd libs/common/test/debug && test_common.exe && \
+win32 {
+	debug:unittests.commands += cd libs/common/test/debug && test_common.exe && \
                       cd ../../../ewinginput/test/debug && test_ewing.exe && \
                       cd ../../../../main/test/debug && test_engine.exe
+
+	release:unittests.commands += cd libs/common/test/release && test_common.exe && \
+                      cd ../../../ewinginput/test/release && test_ewing.exe && \
+                      cd ../../../../main/test/release && test_engine.exe
+}
