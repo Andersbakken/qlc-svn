@@ -682,21 +682,15 @@ void Scene_Test::writeBusTwo()
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == false);
-#ifdef WIN32 // Different rounding methods in unix / win32??
-	QVERIFY(uni[0] == (char) 84);
-#else
-	QVERIFY(uni[0] == (char) 85);
-#endif
+	// Result is 84 on AMD64, 85 on IA32
+	QVERIFY(uni[0] == (char) 84 || uni[0] == (char) 85);
 	QVERIFY(uni[1] == (char) 42);
 	QVERIFY(uni[2] == (char) 0);
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == false);
-#ifdef WIN32 // Different rounding methods in unix / win32??
-	QVERIFY(uni[0] == (char) 169);
-#else
-	QVERIFY(uni[0] == (char) 170);
-#endif
+	// Result is 169 on AMD64, 170 on IA32
+	QVERIFY(uni[0] == (char) 169 || uni[0] == (char) 170);
 	QVERIFY(uni[1] == (char) 84);
 	QVERIFY(uni[2] == (char) 0);
 
@@ -760,11 +754,8 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == false);
-#ifdef WIN32 // Different rounding methods in unix / win32??
-	QVERIFY(uni[0] == (char) 84);
-#else
-	QVERIFY(uni[0] == (char) 85);
-#endif
+	// Result is 84 on AMD64, 85 on IA32
+	QVERIFY(uni[0] == (char) 84 || uni[0] == (char) 85);
 	QVERIFY(uni[1] == (char) 42);
 	QVERIFY(uni[2] == (char) 0);
 
@@ -825,21 +816,15 @@ void Scene_Test::writeNonZeroStartingValues()
 	QVERIFY(s1->stopped() == false);
 	QVERIFY(uni[0] == (char) 151);
 	QVERIFY(uni[1] == (char) 213);
-#ifdef WIN32 // Different rounding methods in unix / win32??
-	QVERIFY(uni[2] == (char) 3);
-#else
-	QVERIFY(uni[2] == (char) 2);
-#endif
+	// Result is 3 on AMD64, 2 on IA32
+	QVERIFY(uni[2] == (char) 3 || uni[2] == (char) 2);
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == false);
 	QVERIFY(uni[0] == (char) 203);
 	QVERIFY(uni[1] == (char) 170);
-#ifdef WIN32 // Different rounding methods in unix / win32??
-	QVERIFY(uni[2] == (char) 2);
-#else
-	QVERIFY(uni[2] == (char) 1);
-#endif
+	// Result is 2 on AMD64, 1 in IA32
+	QVERIFY(uni[2] == (char) 2 || uni[2] == (char) 1);
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == true);
