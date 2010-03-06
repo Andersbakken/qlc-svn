@@ -173,11 +173,11 @@ void UDMXDevice::outputDMX(const QByteArray& universe)
 	int r = usb_control_msg(m_handle,
 			USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
 			UDMX_SET_CHANNEL_RANGE, /* Command */
-			512,			/* Number of channels to set */
+			universe.size(),	/* Number of channels to set */
 			0,                      /* Starting index */
-			(char*) universe.data(),        /* Values to set */
+			(char*)universe.data(), /* Values to set */
 			universe.size(),        /* Size of values */
-			500);                   /* Timeout */
+			500);                   /* Timeout 0.5s */
 	if (r < 0)
 	{
 		qWarning() << "uDMX: unable to write universe:"
