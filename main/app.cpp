@@ -67,6 +67,7 @@
 #include "qlcfixturedefcache.h"
 #include "qlcdocbrowser.h"
 #include "qlcfixturedef.h"
+#include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
 
@@ -102,7 +103,7 @@ App::App() : QMainWindow()
 
 	QCoreApplication::setOrganizationName("qlc");
 	QCoreApplication::setOrganizationDomain("sf.net");
-	QCoreApplication::setApplicationName("Q Light Controller");
+	QCoreApplication::setApplicationName(APPNAME);
 
 	init();
 	slotModeDesign();
@@ -149,6 +150,16 @@ App::~App()
 
 	// Remove the reference to the application
 	_app = NULL;
+}
+
+QString App::longName()
+{
+	return QString(APPNAME);
+}
+
+QString App::version()
+{
+	return QString("Version %1").arg(APPVERSION);
 }
 
 /**
@@ -362,7 +373,7 @@ void App::initInputMap()
 
 	/* Then, load system profiles */
 #ifdef __APPLE__
-	m_inputMap->loadProfiles(QString("%1/%2")
+	m_inputMap->loadProfiles(QString("%1/../%2")
 				 .arg(QApplication::applicationDirPath())
 				 .arg(INPUTPROFILEDIR));
 #else
@@ -394,7 +405,7 @@ void App::initDoc()
 
 void App::slotDocModified(bool state)
 {
-	QString caption(KApplicationNameLong);
+	QString caption(App::longName());
 
 	if (fileName() != QString::null)
 	{
@@ -439,7 +450,7 @@ void App::loadFixtureDefinitions()
 
 	/* Then, load system fixtures */
 #ifdef __APPLE__
-        m_fixtureDefCache.load(QString("%1/%2")
+        m_fixtureDefCache.load(QString("%1/../%2")
                                .arg(QApplication::applicationDirPath())
                                .arg(FIXTUREDIR));
 #else

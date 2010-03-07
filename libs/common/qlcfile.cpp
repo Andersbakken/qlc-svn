@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QtXml>
 
+#include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
 
@@ -87,13 +88,13 @@ bool QLCFile::getXMLHeader(QString content, QDomDocument** doc)
 	/* Creator name */
 	subtag = (*doc)->createElement(KXMLQLCCreatorName);
 	tag.appendChild(subtag);
-	text = (*doc)->createTextNode("Q Light Controller");
+	text = (*doc)->createTextNode(APPNAME);
 	subtag.appendChild(text);
 
 	/* Creator version */
 	subtag = (*doc)->createElement(KXMLQLCCreatorVersion);
 	tag.appendChild(subtag);
-	text = (*doc)->createTextNode(QString(VERSION));
+	text = (*doc)->createTextNode(QString(APPVERSION));
 	subtag.appendChild(text);
 
 	/* Author */

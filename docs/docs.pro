@@ -2,7 +2,7 @@ include(../variables.pri)
 
 TEMPLATE	= subdirs
 
-docs.path	= $$DOCSDIR/html
+docs.path	= $$INSTALLROOT/$$DOCSDIR/html
 docs.files	= coding-convention.html \
 		compiling.html \
 		concept.html \
@@ -14,7 +14,7 @@ docs.files	= coding-convention.html \
 		tutorial.html \
 		tutorial.png
 
-gfx.path	= $$DOCSDIR/gfx
+gfx.path	= $$INSTALLROOT/$$DOCSDIR/gfx
 gfx.files	= ../gfx/attach.png \
 		../gfx/back.png \
 		../gfx/beam.png \

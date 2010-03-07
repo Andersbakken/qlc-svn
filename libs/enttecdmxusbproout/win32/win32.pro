@@ -8,7 +8,7 @@ CONFIG		+= plugin
 INCLUDEPATH	+= ../../../libs/common
 
 # Plugin installation
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += enttecdmxusbproout.h \

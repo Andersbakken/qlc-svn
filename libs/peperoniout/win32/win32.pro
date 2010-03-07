@@ -9,7 +9,7 @@ INCLUDEPATH	+= ../../common
 DEPENDPATH	+= peperoni
 CONFIG          += plugin
 
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += peperoni/usbdmx-dynamic.h peperoniout.h peperonidevice.h

@@ -8,12 +8,12 @@ INCLUDEPATH	+= ../../libs/common
 CONFIG          += plugin
 QT		+= network
 
-target.path	= $$INPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
 INSTALLS	+= target
 
 win32 {
 	# Qt Libraries
-	qtnetwork.path  = $$LIBSDIR
+	qtnetwork.path  = $$INSTALLROOT/$$LIBSDIR
 	CONFIG(release, debug|release) qtnetwork.files = $$(QTDIR)/bin/QtNetwork4.dll
 	CONFIG(debug, debug|release) qtnetwork.files = $$(QTDIR)/bin/QtNetworkd4.dll
 	INSTALLS	+= qtnetwork

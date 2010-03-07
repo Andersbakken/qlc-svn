@@ -18,10 +18,10 @@ unix:!macx {
 
 # Mac OSX
 macx {
-	icons.path	= $$DATADIR
+	icons.path	= $$INSTALLROOT/$$DATADIR
 	icons.files	+= ../gfx/qlc.icns
 
-	plist.path	= $$DATADIR/..
+	plist.path	= $$INSTALLROOT
 	plist.files	+= Info.plist
 
 	INSTALLS	+= icons plist
@@ -30,7 +30,7 @@ macx {
 # Windows
 win32 {
 	# Qt Libraries
-        qtlibs.path  = $$LIBSDIR
+        qtlibs.path  = $$INSTALLROOT/$$LIBSDIR
         release:qtlibs.files =	$$(QTDIR)/bin/QtCore4.dll \
 				$$(QTDIR)/bin/QtGui4.dll \
 				$$(QTDIR)/bin/QtXml4.dll
@@ -40,7 +40,7 @@ win32 {
 				$$(QTDIR)/bin/QtXmld4.dll
 
 	# MinGW library
-	mingw.path      = $$LIBSDIR
+	mingw.path      = $$INSTALLROOT/$$LIBSDIR
 	exists($$(SystemDrive)/MinGW/bin/mingwm10.dll) {
 		mingw.files     += $$(SystemDrive)/MinGW/bin/mingwm10.dll
 	}
@@ -59,12 +59,12 @@ win32 {
 	}
 
 	# NullSoft installer files
-	nsis.path	= $$DATADIR
+	nsis.path	= $$INSTALLROOT/$$DATADIR
 	nsis.files	= qlc.nsi
 
         INSTALLS        += qtlibs mingw nsis
 }
 
 samples.files += Sample.qxw
-samples.path = $$DATADIR
+samples.path = $$INSTALLROOT/$$DATADIR
 INSTALLS += samples

@@ -42,6 +42,7 @@
 #include "qlcdocbrowser.h"
 #include "qlcfixturedef.h"
 #include "qlcchannel.h"
+#include "qlcconfig.h"
 #include "qlcfile.h"
 
 #include "app.h"
@@ -52,23 +53,19 @@
 
 App::App(QWidget* parent) : QMainWindow(parent)
 {
-	QCoreApplication::setOrganizationName("qlc");
-	QCoreApplication::setOrganizationDomain("sf.net");
-	QCoreApplication::setApplicationName("Q Light Controller");
-
 	m_fileMenu = NULL;
 	m_helpMenu = NULL;
 	m_toolBar = NULL;
 
 	m_copyChannel = NULL;
 
-	setWindowTitle(KApplicationName);
+	setWindowTitle(App::longName());
 	setWindowIcon(QIcon(":/qlc-fixtureeditor.png"));
 	setCentralWidget(new QMdiArea(this));
 
 	QCoreApplication::setOrganizationName("qlc");
 	QCoreApplication::setOrganizationDomain("sf.net");
-	QCoreApplication::setApplicationName("Fixture Editor");
+	QCoreApplication::setApplicationName(FXEDNAME);
 
 	initActions();
 	initMenuBar();
@@ -86,6 +83,16 @@ App::~App()
 	settings.setValue(KSettingsGeometry, saveGeometry());
 
 	setCopyChannel(NULL);
+}
+
+QString App::longName()
+{
+	return QString("%1 - %2").arg(APPNAME).arg(FXEDNAME);
+}
+
+QString App::version()
+{
+	return QString("Version %1").arg(APPVERSION);
 }
 
 void App::closeEvent(QCloseEvent* e)
@@ -194,7 +201,7 @@ void App::initActions()
 
 void App::initToolBar()
 {
-	m_toolBar = new QToolBar(KApplicationName, this);
+	m_toolBar = new QToolBar(App::longName(), this);
 	addToolBar(m_toolBar);
 	m_toolBar->setMovable(false);
 
@@ -258,7 +265,6 @@ void App::slotFileOpen()
 	QFileDialog dialog(this);
 	dialog.setWindowTitle(tr("Open a fixture definition"));
 	dialog.setAcceptMode(QFileDialog::AcceptOpen);
-	dialog.setDirectory(QString(FIXTUREDIR));
 	dialog.setNameFilter(KFixtureFilter);
 
 #ifdef Q_WS_X11
@@ -277,22 +283,15 @@ void App::slotFileOpen()
 		dir.mkpath(".");
 	sidebar.append(QUrl::fromLocalFile(path));
 	dialog.setSidebarUrls(sidebar);
-#endif
-
-#ifdef __APPLE__
-	path = QString("/Applications/qlc.app/Fixtures");
-	QList <QUrl> sidebar;
-	
-	/* Ensure that there is a directory for user fixtures and append that
-	 to the sidebar. */
-	QDir dir(path);
-	if (dir.exists() == true) {
-		sidebar.append(QUrl::fromLocalFile(path));
-		dialog.setSidebarUrls(sidebar);
-		dialog.setDirectory(path);
-	}
-#endif
-	
+#elif __APPLE__
+	/* Start from OSX bundle's own fixture definition directory */
+	path = QString("%1/../%2").arg(QApplication::applicationDirPath())
+				  .arg(FIXTUREDIR);
+	dialog.setDirectory(path);
+#else
+	/* Start from installation's fixture definition sub-directory */
+	dialog.setDirectory(QString(FIXTUREDIR));
+#endif	
 	/* Execute the dialog */
 	if (dialog.exec() != QDialog::Accepted)
 		return;
@@ -387,5 +386,5 @@ void App::slotHelpAbout()
 
 void App::slotHelpAboutQt()
 {
-	QMessageBox::aboutQt(this, KApplicationName);
+	QMessageBox::aboutQt(this, App::longName());
 }

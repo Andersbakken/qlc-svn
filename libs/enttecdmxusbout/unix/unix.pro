@@ -26,7 +26,7 @@ udev.files	= z65-enttec-dmxusb.rules
 INSTALLS	+= udev
 
 # Plugin installation
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += ../ftdi/ftd2xx.h \

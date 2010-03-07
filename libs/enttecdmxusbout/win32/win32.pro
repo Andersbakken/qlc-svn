@@ -10,7 +10,7 @@ INCLUDEPATH	+= ../ftdi
 LIBS		+= ../ftdi/win32/ftd2xx.lib
 
 # Plugin installation
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += ../ftdi/ftd2xx.h \

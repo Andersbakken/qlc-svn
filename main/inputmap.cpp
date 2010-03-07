@@ -30,6 +30,7 @@
 #include <QDir>
 
 #include "qlcinplugin.h"
+#include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
 
@@ -190,13 +191,13 @@ void InputMap::loadPlugins()
 	QString path;
 
 #ifdef __APPLE__
-	path = QString("%1/%2").arg(QApplication::applicationDirPath())
-				.arg(INPUTPLUGINDIR);
+	path = QString("%1/../%2").arg(QApplication::applicationDirPath())
+				  .arg(INPUTPLUGINDIR);
 #else
 	path = QString(INPUTPLUGINDIR);
 #endif
 
-	/* Find plugins from INPUTPLUGINDIR, sort by name, get regular files */
+	/* Find plugins from input plugin dir, sort by name, get regular files */
 	QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
 
 	/* Check that we can access the directory */

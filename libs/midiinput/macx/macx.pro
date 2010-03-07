@@ -14,7 +14,7 @@ LIBS		+= -framework CoreMIDI -framework CoreFoundation
 # Installation
 ###############################################################################
 
-target.path	= $$INPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
 INSTALLS	+= target
 
 ###############################################################################

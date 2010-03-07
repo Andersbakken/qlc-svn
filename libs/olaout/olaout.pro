@@ -22,7 +22,7 @@ CONFIG += plugin # link_pkgconfig
 CONFIG -= ppc # LibOLA is not a universal binary 
 #PKGCONFIG += libola
 
-target.path = $$OUTPUTPLUGINDIR
+target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS += target
 unix:LIBS += -lola -lolaserver -lolacommon
 

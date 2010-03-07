@@ -13,5 +13,5 @@ HEADERS += launcher.h
 SOURCES += launcher.cpp main.cpp
 
 # Installation
-target.path     = $$BINDIR
+target.path     = $$INSTALLROOT/$$BINDIR
 INSTALLS        += target

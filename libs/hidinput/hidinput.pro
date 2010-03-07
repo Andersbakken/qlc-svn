@@ -7,7 +7,7 @@ TARGET 		= hidinput
 INCLUDEPATH	+= ../../libs/common
 CONFIG          += plugin
 
-target.path	= $$INPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
 INSTALLS	+= target
 
 # Input

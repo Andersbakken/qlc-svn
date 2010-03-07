@@ -34,6 +34,7 @@
 #endif
 
 #include "qlcoutplugin.h"
+#include "qlcconfig.h"
 #include "qlctypes.h"
 
 #include "dummyoutplugin.h"
@@ -88,8 +89,8 @@ void OutputMap::loadPlugins()
 	QString path;
 
 #ifdef __APPLE__
-	path = QString("%1/%2").arg(QCoreApplication::applicationDirPath())
-				.arg(OUTPUTPLUGINDIR);
+	path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
+				  .arg(OUTPUTPLUGINDIR);
 #else
 	path = QString(OUTPUTPLUGINDIR);
 #endif

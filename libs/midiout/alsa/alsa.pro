@@ -10,7 +10,7 @@ DEPENDPATH	+= ../common
 CONFIG          += plugin link_pkgconfig
 PKGCONFIG	+= alsa
 
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 FORMS		+= ../common/configuremididevice.ui \

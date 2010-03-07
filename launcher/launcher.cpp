@@ -7,8 +7,9 @@
 #include <QLabel>
 #include <unistd.h>
 
-#include "launcher.h"
+#include "qlcconfig.h"
 #include "qlctypes.h"
+#include "launcher.h"
 
 Launcher::Launcher(char* const* argv, QWidget* parent)
 	: QWidget(parent)
@@ -18,21 +19,23 @@ Launcher::Launcher(char* const* argv, QWidget* parent)
 	lay = new QGridLayout(this);
 	setLayout(lay);
 
+	setWindowTitle(APPNAME);
+
 	QLabel* icon = new QLabel(this);
 	icon->setPixmap(QIcon(":/qlc.png").pixmap(64));
 	lay->addWidget(icon, 0, 0, 1, 1);
 
-	QString text("<H1>Q Light Controller %1</H1>");
-	QLabel* title = new QLabel(text.arg(VERSION), this);
+	QString text("<H1>%1 %2</H1>");
+	QLabel* title = new QLabel(text.arg(APPNAME).arg(APPVERSION), this);
 	lay->addWidget(title, 0, 1, 1, 2);
 
-	QPushButton* fxed = new QPushButton(tr("Fixture Editor"), this);
-	fxed->setToolTip(tr("Launch fixture definition editor"));
+	QPushButton* fxed = new QPushButton(FXEDNAME, this);
+	fxed->setToolTip(tr("Launch %1").arg(FXEDNAME));
 	connect(fxed, SIGNAL(clicked()), this, SLOT(slotFXEDClicked()));
 	lay->addWidget(fxed, 1, 1, 1, 1);
 
-	QPushButton* qlc = new QPushButton(tr("Q Light Controller"), this);
-	qlc->setToolTip(tr("Launch the main Q Light Controller application"));
+	QPushButton* qlc = new QPushButton(APPNAME, this);
+	qlc->setToolTip(tr("Launch the main %1 application").arg(APPNAME));
 	connect(qlc, SIGNAL(clicked()), this, SLOT(slotQLCClicked()));
 	lay->addWidget(qlc, 1, 2, 1, 1);
 }

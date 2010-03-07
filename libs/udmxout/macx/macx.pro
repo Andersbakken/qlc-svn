@@ -11,7 +11,7 @@ DEPENDPATH	+= ../unix
 LIBS		+= ../../macx/libusb/libusb.a
 LIBS		+= -framework IOKit -framework CoreFoundation
 
-target.path 	= $$OUTPUTPLUGINDIR
+target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 # uDMX headers

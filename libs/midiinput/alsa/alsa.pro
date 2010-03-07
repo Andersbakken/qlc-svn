@@ -14,7 +14,7 @@ PKGCONFIG	+= alsa
 # Installation
 ###############################################################################
 
-target.path	= $$INPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
 INSTALLS	+= target
 
 ###############################################################################

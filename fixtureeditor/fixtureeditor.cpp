@@ -42,6 +42,7 @@
 #include "qlccapability.h"
 #include "qlcphysical.h"
 #include "qlcchannel.h"
+#include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
 
@@ -99,21 +100,7 @@ QLCFixtureEditor::QLCFixtureEditor(QWidget* parent,
 	QSettings settings;
 	QVariant var = settings.value(KSettingsGeometry);
 	if (var.isValid() == true)
-	{
 		parentWidget()->restoreGeometry(var.toByteArray());
-	}
-	else
-	{
-		/* Backwards compatibility */
-		var = settings.value(KApplicationName +
-				     "/fixtureeditor/position");
-		if (var.isValid() == true)
-			parentWidget()->move(var.toPoint());
-
-		var = settings.value(KApplicationName + "/fixtureeditor/size");
-		if (var.isValid() == true)
-			parentWidget()->resize(var.toSize());
-	}
 }
 
 QLCFixtureEditor::~QLCFixtureEditor()

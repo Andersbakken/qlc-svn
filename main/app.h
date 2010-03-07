@@ -56,12 +56,6 @@ class InputMap;
 class Doc;
 class App;
 
-const QString KApplicationNameLong  = "Q Light Controller";
-const QString KApplicationNameShort = "QLC";
-const QString KApplicationVersion   = QString("Version ") + QString(VERSION);
-const int KApplicationDefaultWidth  = 800;
-const int KApplicationDefaultHeight = 600;
-
 #define KXMLQLCWorkspace "Workspace"
 
 class App : public QMainWindow
@@ -74,6 +68,9 @@ class App : public QMainWindow
 public:
 	App();
 	~App();
+
+	static QString longName();
+	static QString version();
 
 private:
 	Q_DISABLE_COPY(App)

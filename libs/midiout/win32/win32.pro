@@ -10,7 +10,7 @@ DEPENDPATH	+= ../common
 CONFIG          += plugin
 LIBS		+= -lwinmm
 
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 FORMS		+= ../common/configuremididevice.ui \

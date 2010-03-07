@@ -32,6 +32,7 @@
 #include <QDir>
 
 #include "qlcinputprofile.h"
+#include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
 
@@ -479,10 +480,20 @@ edit:
 		/* Ensure that the selected profile directory exists */
 		if (dir.exists() == false)
 			dir.mkpath(".");
+
+		QMessageBox::information(this, "x11", dir.path());
 #else
-		/* Use the system input profile dir for Win32/OSX */
+#ifdef __APPLE__
+		/* Use the app bundle input profile dir for OSX */
+		dir = QDir(QString("%1/../%2").arg(QApplication::applicationDirPath())
+					      .arg(INPUTPROFILEDIR));
+#else
+		/* Use the system input profile dir for Windows */
 		dir = QDir(INPUTPROFILEDIR);
 #endif
+#endif
+		QMessageBox::information(this, "", dir.path());
+
 		/* Construct a descriptive file name for the profile */
 		path = QString("%1/%2-%3%4").arg(dir.absolutePath())
 				.arg(manufacturer).arg(model)

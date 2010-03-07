@@ -28,11 +28,8 @@
 class QToolBar;
 class QAction;
 class QMenu;
-
 class QLCChannel;
 
-const QString KApplicationName = "QLC Fixture Definition Editor";
-const QString KApplicationVersion = QString("Version ") + QString(VERSION);
 const QString KFixtureFilter ("Fixtures (*.qxf)");
 
 class App : public QMainWindow
@@ -42,6 +39,9 @@ class App : public QMainWindow
 public:
 	App(QWidget* parent);
 	~App();
+
+	static QString longName();
+	static QString version();
 
 protected:
 	void closeEvent(QCloseEvent*);

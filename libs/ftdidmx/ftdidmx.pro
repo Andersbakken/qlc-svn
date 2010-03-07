@@ -20,7 +20,7 @@ unix:!macx {
 	}
 }
 
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 !macx:INSTALLS	+= target
 macx:DESTDIR    = ../../main/qlc.app/Contents/Plugins/output
 

@@ -30,23 +30,23 @@
 
 #include "qlcdocbrowser.h"
 #include "qlctypes.h"
+#include "qlcconfig.h"
+
+#define SETTINGS_GEOMETRY "documentbrowser/geometry"
 
 QLCDocBrowser::QLCDocBrowser(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
 	new QVBoxLayout(this);
 
-	setWindowTitle(tr("QLC Document Browser"));
+	setWindowTitle(tr("%1 - Document Browser").arg(APPNAME));
 	setWindowIcon(QIcon(":/help.png"));
 
 	/* Recall window size */
 	QSettings settings;
-	QVariant w = settings.value("documentbrowser/width");
-	QVariant h = settings.value("documentbrowser/height");
-	if (w.isValid() == false || h.isValid() == false)
-		resize(600, 600);
-	else
-		resize(w.toInt(), h.toInt());
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 
 	/* Actions */
 	m_backwardAction = new QAction(QIcon(":/back.png"), tr("Backward"), this);
@@ -80,7 +80,7 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent, Qt::WindowFlags f)
 	/* Set document search paths */
 	QStringList searchPaths;
 #ifdef __APPLE__
-        searchPaths << QString("%1/%2/html/")
+        searchPaths << QString("%1/../%2/html/")
                        .arg(QApplication::applicationDirPath())
                        .arg(DOCSDIR);
 #else
@@ -94,8 +94,7 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent, Qt::WindowFlags f)
 QLCDocBrowser::~QLCDocBrowser()
 {
 	QSettings settings;
-	settings.setValue("documentbrowser/width", width());
-	settings.setValue("documentbrowser/height", height());
+	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 void QLCDocBrowser::slotBackwardAvailable(bool available)

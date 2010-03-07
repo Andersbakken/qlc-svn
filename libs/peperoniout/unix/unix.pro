@@ -8,7 +8,7 @@ CONFIG          += plugin
 INCLUDEPATH	+= ../../common
 LIBS		+= -lusb
 
-target.path 	= $$OUTPUTPLUGINDIR
+target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 # UDEV rule to make Peperoni USB devices readable & writable for users in Linux

@@ -8,5 +8,5 @@ profiles.files += Novation-KS5.qxi
 profiles.files += Logitech-WingManAttack2.qxi
 profiles.files += ShowTec-ShowMaster24.qxi
 
-profiles.path = $$INPUTPROFILEDIR
+profiles.path = $$INSTALLROOT/$$INPUTPROFILEDIR
 INSTALLS += profiles

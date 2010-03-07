@@ -18,81 +18,59 @@ macx:CONFIG		+= x86 ppc
 # OLA directories
 unix:OLA_GIT		= /usr/src/ola
 
-# Install root (TODO: win32 & UNIX)
-#win32:INSTALLROOT	= $$(SystemDrive)/QLC
-#unix:!macx:INSTALLROOT	= /usr
-macx:INSTALLROOT	= ~/QLC.app
+# Application & version
+APPNAME			= Q Light Controller
+FXEDNAME		= Fixture Definition Editor
+APPVERSION		= 3.0.4
+
+# Install root
+win32:INSTALLROOT	= $$(SystemDrive)/QLC
+macx:INSTALLROOT	= ~/QLC.app/Contents
+unix:!macx:INSTALLROOT += /usr
 
 # Binaries
-win32:BINDIR		= $$(SystemDrive)/QLC
-unix:!macx:BINDIR	= /usr/bin
-macx:BINDIR		= $$INSTALLROOT/Contents/MacOS
+win32:BINDIR		=
+unix:!macx:BINDIR	= bin
+macx:BINDIR		= MacOS
 
 # Libraries
-win32:LIBSDIR		= $$BINDIR
-unix:!macx:LIBSDIR	= /usr/lib
-macx:LIBSDIR            = $$INSTALLROOT/Contents/Frameworks/
+win32:LIBSDIR		=
+unix:!macx:LIBSDIR	= lib/qlc
+macx:LIBSDIR            = Frameworks
 
 # Data
-win32:DATADIR		= $$(SystemDrive)/QLC
-unix:!macx:DATADIR	= /usr/share/qlc
-macx:DATADIR		= $$INSTALLROOT/Contents/Resources/
+win32:DATADIR		=
+unix:!macx:DATADIR	= share/qlc
+macx:DATADIR		= Resources
 
 # Documentation
-win32:DOCSDIR		= $$DATADIR/Documents
-win32:DEFINES		+= DOCSDIR=\\\"Documents\\\"
-
+win32:DOCSDIR		= Documents
 unix:!macx:DOCSDIR	= $$DATADIR/documents
-unix:!macx:DEFINES	+= DOCSDIR=\\\"$$DOCSDIR\\\"
-
-macx:DOCSDIR		= $$DATADIR/Documents/
-macx:DEFINES		+= DOCSDIR=\\\"../Resources/Documents\\\"
+macx:DOCSDIR		= $$DATADIR/Documents
 
 # Input profiles
-win32:INPUTPROFILEDIR	= $$DATADIR/InputProfiles
-win32:DEFINES		+= INPUTPROFILEDIR=\\\"InputProfiles\\\"
-
-unix:!macx:INPUTPROFILEDIR	= $$DATADIR/inputprofiles
-unix:!macx:DEFINES		+= INPUTPROFILEDIR=\\\"$$INPUTPROFILEDIR\\\"
-unix:!macx:USERINPUTPROFILEDIR	= .qlc/inputprofiles
-unix:!macx:DEFINES		+= USERINPUTPROFILEDIR=\\\"$$USERINPUTPROFILEDIR\\\"
-
+win32:INPUTPROFILEDIR	= InputProfiles
+unix:!macx:INPUTPROFILEDIR = $$DATADIR/inputprofiles
+unix:!macx:USERINPUTPROFILEDIR = .qlc/inputprofiles
 macx:INPUTPROFILEDIR	= $$DATADIR/InputProfiles
-macx:DEFINES		+= INPUTPROFILEDIR=\\\"../Resources/InputProfiles\\\"
 
 # Fixtures
-win32:FIXTUREDIR	= $$DATADIR/Fixtures
-win32:DEFINES		+= FIXTUREDIR=\\\"Fixtures\\\"
-
-unix:!macx:FIXTUREDIR		= $$DATADIR/fixtures
-unix:!macx:DEFINES		+= FIXTUREDIR=\\\"$$FIXTUREDIR\\\"
-unix:!macx:USERFIXTUREDIR	= .qlc/fixtures
-unix:!macx:DEFINES		+= USERFIXTUREDIR=\\\"$$USERFIXTUREDIR\\\"
-
+win32:FIXTUREDIR	= Fixtures
+unix:!macx:FIXTUREDIR	= $$DATADIR/fixtures
+unix:!macx:USERFIXTUREDIR = .qlc/fixtures
 macx:FIXTUREDIR		= $$DATADIR/Fixtures
-macx:DEFINES		+= FIXTUREDIR=\\\"../Resources/Fixtures\\\"
 
 # Plugins
-win32:PLUGINDIR		= $$LIBSDIR/Plugins
-unix:!macx:PLUGINDIR	= $$LIBSDIR/qlc
-macx:PLUGINDIR		= $$DATADIR/../Plugins
+win32:PLUGINDIR		= Plugins
+unix:!macx:PLUGINDIR	= $$LIBSDIR
+macx:PLUGINDIR		= $$DATADIR/Plugins
 
 # Input Plugins
 win32:INPUTPLUGINDIR	= $$PLUGINDIR/Input
-win32:DEFINES		+= INPUTPLUGINDIR=\\\"Plugins/Input\\\"
-
 unix:!macx:INPUTPLUGINDIR = $$PLUGINDIR/input
-unix:!macx:DEFINES	+= INPUTPLUGINDIR=\\\"$$INPUTPLUGINDIR\\\"
-
 macx:INPUTPLUGINDIR	= $$PLUGINDIR/Input
-macx:DEFINES		+= INPUTPLUGINDIR=\\\"../Plugins/Input\\\"
 
 # Output Plugins
 win32:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
-win32:DEFINES		+= OUTPUTPLUGINDIR=\\\"Plugins/Output\\\"
-
 unix:!macx:OUTPUTPLUGINDIR = $$PLUGINDIR/output
-unix:!macx:DEFINES	+= OUTPUTPLUGINDIR=\\\"$$OUTPUTPLUGINDIR\\\"
-
 macx:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
-macx:DEFINES		+= OUTPUTPLUGINDIR=\\\"../Plugins/Output\\\"

@@ -7,7 +7,7 @@ TARGET		= dmx4linuxout
 INCLUDEPATH	+= ../common
 CONFIG          += plugin
 
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += dmx4linuxout.h

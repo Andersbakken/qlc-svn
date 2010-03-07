@@ -10,7 +10,7 @@ DEFINES		+= DBUS_ENABLED
 INCLUDEPATH	+= ../../common
 
 # Plugin installation
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += enttecdmxusbproout.h \

@@ -9,7 +9,7 @@ INCLUDEPATH	+= ../../common
 INCLUDEPATH	+= .
 DEPENDPATH	+= ../unix
 
-target.path 	= $$OUTPUTPLUGINDIR
+target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 # Headers

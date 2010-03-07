@@ -10,7 +10,7 @@ INCLUDEPATH	+= ../unix
 DEPENDPATH	+= ../unix
 
 # Plugin installation
-target.path	= $$OUTPUTPLUGINDIR
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 HEADERS += ../unix/enttecdmxusbproout.h \

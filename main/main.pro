@@ -22,7 +22,7 @@ win32:{
 }
 
 # Installation
-target.path	= $$BINDIR
+target.path	= $$INSTALLROOT/$$BINDIR
 INSTALLS	+= target
 
 # Resources

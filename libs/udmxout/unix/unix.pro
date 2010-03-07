@@ -8,7 +8,7 @@ CONFIG          += plugin
 INCLUDEPATH	+= ../../common
 LIBS		+= -lusb
 
-target.path 	= $$OUTPUTPLUGINDIR
+target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
 
 # UDEV rule to make uDMX USB device readable & writable for users in Linux

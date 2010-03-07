@@ -28,8 +28,8 @@ AboutBox::AboutBox(QWidget* parent) : QDialog (parent)
 {
 	setupUi(this);
 
-	m_titleLabel->setText(KApplicationNameLong);
-	m_versionLabel->setText(KApplicationVersion);
+	m_titleLabel->setText(App::longName());
+	m_versionLabel->setText(App::version());
 }
 
 AboutBox::~AboutBox()
