@@ -1,27 +1,27 @@
-# Compiler configuration
-CONFIG			+= warn_on
-
-# Uncomment these two lines when making a release
-# CONFIG			+= release
-# CONFIG			-= debug
-
-# Treat all compiler warnings as errors
-QMAKE_CXXFLAGS		+= -Werror
-
-# Build universal binaries on Mac OS 10.5 with official Qt 4.5 binary release
-macx:CONFIG		+= x86 ppc
-
-# Fix for Mac OS 10.6 with Qt 4.5 (disabled until Qt works fully in Snow Leo)
-#macx:CONFIG		-= x86_64
-#macx:CONFIG		+= x86
-
-# OLA directories
-unix:OLA_GIT		= /usr/src/ola
-
 # Application & version
 APPNAME			= Q Light Controller
 FXEDNAME		= Fixture Definition Editor
 APPVERSION		= 3.0.4
+
+# Uncomment these two lines when making a release
+CONFIG			+= release
+CONFIG			-= debug
+
+# Enable both for Mac OS 10.6 Snow Leopard (PPC no longer supported)
+macx:CONFIG		-= x86_64
+macx:CONFIG		+= x86
+
+# Enable to build universal binaries on Mac OS 10.5
+# macx:CONFIG		+= x86 ppc
+
+# Treat all compiler warnings as errors
+QMAKE_CXXFLAGS		+= -Werror
+
+# Compiler configuration
+CONFIG			+= warn_on
+
+# OLA directories
+unix:OLA_GIT		= /usr/src/ola
 
 # Install root
 win32:INSTALLROOT	= $$(SystemDrive)/QLC
