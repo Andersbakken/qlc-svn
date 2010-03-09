@@ -61,7 +61,7 @@ macx {
 	conf.commands += echo \"$$LITERAL_HASH define OUTPUTPLUGINDIR \\\"$$OUTPUTPLUGINDIR\\\"\" >> $$CONFIGFILE &&
 	conf.commands += echo \"$$LITERAL_HASH endif\" >> $$CONFIGFILE
 }
-unix {
+unix:!macx {
 	conf.commands += echo \"$$LITERAL_HASH ifndef CONFIG_H\" > $$CONFIGFILE &&
 	conf.commands += echo \"$$LITERAL_HASH define CONFIG_H\" >> $$CONFIGFILE &&
 	conf.commands += echo \"$$LITERAL_HASH define APPNAME \\\"$$APPNAME\\\"\" >> $$CONFIGFILE &&
