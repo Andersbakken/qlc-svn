@@ -10,7 +10,6 @@ SUBDIRS		+= inputprofiles
 SUBDIRS		+= fixtureeditor
 SUBDIRS		+= etc
 SUBDIRS		+= docs
-SUBDIRS		+= main/test
 macx:SUBDIRS	+= launcher
 
 DEBIAN_CLEAN	+= debian/*.substvars debian/*.log debian/*.debhelper
